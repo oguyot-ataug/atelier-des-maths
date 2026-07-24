@@ -36,6 +36,8 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 
 <div class="lesson-header"><span class="num">2</span><h3>Droites perpendiculaires</h3></div>
 <span class="def-badge">Définition</span>
+<div class="def-box">Deux droites sont <b>sécantes</b> si elles se coupent en un seul point, appelé <b>point d'intersection</b>.</div>
+<span class="def-badge">Définition</span>
 <div class="def-box">Deux droites sont <b>perpendiculaires</b> si elles sont sécantes en formant un angle droit. On note (d) ⊥ (d').</div>
 <p class="example-title">Exemple : construis la droite (d') perpendiculaire à la droite (d) passant par le point M.</p>
 <p class="hint" style="margin:4px 0 8px;">Déplacez (d) ou M : la perpendiculaire se reconstruit automatiquement.</p>
@@ -114,8 +116,6 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 </div>
 
 <div class="lesson-header"><span class="num">4</span><h3>Position relative de deux droites</h3></div>
-<span class="def-badge">Définition</span>
-<div class="def-box">Deux droites sont <b>sécantes</b> si elles se coupent en un seul point, appelé <b>point d'intersection</b>.</div>
 <span class="prop-badge">Propriété 1</span>
 <div class="def-box">Deux droites sont : soit <b>sécantes</b> ; soit <b>parallèles</b>.</div>
 <span class="prop-badge">Propriété 2</span>
@@ -265,8 +265,8 @@ function updatePerpDemo(){
   dpSetPt(document.getElementById('dp-perpD1'), dpPerpD1);
   dpSetPt(document.getElementById('dp-perpD2'), dpPerpD2);
   dpSetPt(document.getElementById('dp-perpM'), dpPerpM);
-  dpSetTxt(document.getElementById('dp-perpLabelD'), {x:dpPerpD2.x+dDir.x*22, y:dpPerpD2.y+dDir.y*22}, 4, 4);
-  dpSetTxt(document.getElementById('dp-perpLabelDp'), {x:dpPerpM.x+perpDir.x*45, y:dpPerpM.y+perpDir.y*45}, 4, 4);
+  dpSetTxt(document.getElementById('dp-perpLabelD'), {x:dpPerpD2.x+dDir.x*24+perpDir.x*16, y:dpPerpD2.y+dDir.y*24+perpDir.y*16}, 0, 0);
+  dpSetTxt(document.getElementById('dp-perpLabelDp'), {x:dpPerpM.x+perpDir.x*45+dDir.x*16, y:dpPerpM.y+perpDir.y*45+dDir.y*16}, 0, 0);
   dpSetTxt(document.getElementById('dp-perpLabelM'), dpPerpM, 8, -10);
   // marque d'angle droit : orientée vers l'intérieur (vers le point M et vers D2)
   const dSign = (perpDir.x*(dpPerpM.x-inter.x)+perpDir.y*(dpPerpM.y-inter.y))>=0 ? 1 : -1;
@@ -287,6 +287,7 @@ function initPerpDemo(){
 let dpParaP1={x:60,y:190}, dpParaP2={x:300,y:110}, dpParaN={x:150,y:50};
 function updateParaDemo(){
   const dDir = dpDir(dpParaP1, dpParaP2);
+  const perpDir = {x:-dDir.y, y:dDir.x};
   const mid = {x:(dpParaP1.x+dpParaP2.x)/2, y:(dpParaP1.y+dpParaP2.y)/2};
   const dExt = dpExtend(mid, dDir, 260);
   const dppExt = dpExtend(dpParaN, dDir, 260);
@@ -295,8 +296,8 @@ function updateParaDemo(){
   dpSetPt(document.getElementById('dp-paraP1'), dpParaP1);
   dpSetPt(document.getElementById('dp-paraP2'), dpParaP2);
   dpSetPt(document.getElementById('dp-paraN'), dpParaN);
-  dpSetTxt(document.getElementById('dp-paraLabelD'), {x:dpParaP2.x+dDir.x*22, y:dpParaP2.y+dDir.y*22}, 4, 4);
-  dpSetTxt(document.getElementById('dp-paraLabelDpp'), {x:dpParaN.x+dDir.x*22, y:dpParaN.y+dDir.y*22}, 4, 4);
+  dpSetTxt(document.getElementById('dp-paraLabelD'), {x:dpParaP2.x+dDir.x*24+perpDir.x*16, y:dpParaP2.y+dDir.y*24+perpDir.y*16}, 0, 0);
+  dpSetTxt(document.getElementById('dp-paraLabelDpp'), {x:dpParaN.x+dDir.x*24+perpDir.x*16, y:dpParaN.y+dDir.y*24+perpDir.y*16}, 0, 0);
   dpSetTxt(document.getElementById('dp-paraLabelN'), dpParaN, 8, -10);
 }
 function resetParaDemo(){ dpParaP1={x:60,y:190}; dpParaP2={x:300,y:110}; dpParaN={x:150,y:50}; updateParaDemo(); }
@@ -366,8 +367,8 @@ function dpRenderPerpMethode(){
   dpSetPt(document.getElementById('dp-pm-M'), DP_PM_M);
   dpSetTxt(document.getElementById('dp-pm-labelM'), DP_PM_M, 8, -10);
   const pos = {x:DP_PM_D1.x+dpPmDir.x*s.dist, y:DP_PM_D1.y+dpPmDir.y*s.dist};
-  const c2 = {x:pos.x+dpPmDir.x*55, y:pos.y+dpPmDir.y*55};
-  const c3 = {x:pos.x+dpPmPerp.x*42, y:pos.y+dpPmPerp.y*42};
+  const c2 = {x:pos.x+dpPmDir.x*90, y:pos.y+dpPmDir.y*90};
+  const c3 = {x:pos.x+dpPmPerp.x*68, y:pos.y+dpPmPerp.y*68};
   document.getElementById('dp-pm-equerre').setAttribute('points', `${pos.x},${pos.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
   const lineDp = document.getElementById('dp-pm-lineDp'), angleMark = document.getElementById('dp-pm-angleMark');
   if(s.showLine){
@@ -407,8 +408,8 @@ function dpRenderParaMethode(){
   const ruler = document.getElementById('dp-pam-ruler');
   dpSetLine(ruler, rulerExt); ruler.style.display='';
   const corner = {x:DP_PAM_P1.x+dpPamPerp.x*dpPamSlideDist*s.frac, y:DP_PAM_P1.y+dpPamPerp.y*dpPamSlideDist*s.frac};
-  const c2 = {x:corner.x+dpPamDir.x*55, y:corner.y+dpPamDir.y*55};
-  const c3 = {x:corner.x+dpPamPerp.x*30*(dpPamSlideDist>=0?1:-1), y:corner.y+dpPamPerp.y*30*(dpPamSlideDist>=0?1:-1)};
+  const c2 = {x:corner.x+dpPamDir.x*90, y:corner.y+dpPamDir.y*90};
+  const c3 = {x:corner.x+dpPamPerp.x*55*(dpPamSlideDist>=0?1:-1), y:corner.y+dpPamPerp.y*55*(dpPamSlideDist>=0?1:-1)};
   document.getElementById('dp-pam-equerre').setAttribute('points', `${corner.x},${corner.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
   const lineDpp = document.getElementById('dp-pam-lineDpp');
   if(s.showLine){
