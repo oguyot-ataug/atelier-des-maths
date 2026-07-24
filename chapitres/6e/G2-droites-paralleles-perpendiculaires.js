@@ -67,6 +67,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <circle id="dp-pm-M" r="5" fill="#E35D3A"/>
     <text id="dp-pm-labelM" font-style="italic" font-size="14">M</text>
     <polygon id="dp-pm-equerre" fill="rgba(227,93,58,.28)" stroke="#E35D3A" stroke-width="1.6"/>
+    <polygon id="dp-pm-ruler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
     <line id="dp-pm-lineDp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
     <path id="dp-pm-angleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3" style="display:none;"/>
   </svg>
@@ -230,6 +231,14 @@ function dpRightAngleMark(corner, dir1, dir2, size){
   const s3={x:corner.x+dir2.x*size, y:corner.y+dir2.y*size};
   return `M ${s1.x} ${s1.y} L ${s2.x} ${s2.y} L ${s3.x} ${s3.y}`;
 }
+function dpRulerPolygon(center, dir, perpToDir, length, width){
+  const half=length/2, halfW=width/2;
+  const c1={x:center.x-dir.x*half+perpToDir.x*halfW, y:center.y-dir.y*half+perpToDir.y*halfW};
+  const c2={x:center.x+dir.x*half+perpToDir.x*halfW, y:center.y+dir.y*half+perpToDir.y*halfW};
+  const c3={x:center.x+dir.x*half-perpToDir.x*halfW, y:center.y+dir.y*half-perpToDir.y*halfW};
+  const c4={x:center.x-dir.x*half-perpToDir.x*halfW, y:center.y-dir.y*half-perpToDir.y*halfW};
+  return `${c1.x},${c1.y} ${c2.x},${c2.y} ${c3.x},${c3.y} ${c4.x},${c4.y}`;
+}
 function dpSetLine(el, ext){ el.setAttribute('x1',ext.x1); el.setAttribute('y1',ext.y1); el.setAttribute('x2',ext.x2); el.setAttribute('y2',ext.y2); }
 function dpSetPt(el, p){ el.setAttribute('cx',p.x); el.setAttribute('cy',p.y); }
 function dpSetTxt(el, p, dx, dy){ el.setAttribute('x',p.x+dx); el.setAttribute('y',p.y+dy); }
@@ -350,9 +359,11 @@ function initMedDemo(){
 /* ---- Construction pas à pas : perpendiculaire à l'équerre ---- */
 const DP_PM_D1={x:70,y:70}, DP_PM_D2={x:330,y:150}, DP_PM_M={x:230,y:50};
 const dpPmDir = dpDir(DP_PM_D1, DP_PM_D2);
-const dpPmPerp = {x:-dpPmDir.y, y:dpPmDir.x};
+let dpPmPerp = {x:-dpPmDir.y, y:dpPmDir.x};
 const dpPmFoot = dpIntersect(DP_PM_D1, dpPmDir, DP_PM_M, dpPmPerp);
+if(dpPmPerp.x*(DP_PM_M.x-dpPmFoot.x) + dpPmPerp.y*(DP_PM_M.y-dpPmFoot.y) < 0){ dpPmPerp = {x:-dpPmPerp.x, y:-dpPmPerp.y}; }
 const dpPmFootDist = Math.hypot(dpPmFoot.x-DP_PM_D1.x, dpPmFoot.y-DP_PM_D1.y);
+const dpPmTouchDist = Math.hypot(DP_PM_M.x-dpPmFoot.x, DP_PM_M.y-dpPmFoot.y);
 const DP_PM_STEPS = [
   {dist: 40, note:"On place un côté de l'angle droit de l'équerre sur la droite (d)."},
   {dist: 95, note:"On fait glisser l'équerre le long de (d), sans la faire tourner."},
@@ -368,18 +379,22 @@ function dpRenderPerpMethode(){
   dpSetTxt(document.getElementById('dp-pm-labelM'), DP_PM_M, 8, -10);
   const pos = {x:DP_PM_D1.x+dpPmDir.x*s.dist, y:DP_PM_D1.y+dpPmDir.y*s.dist};
   const c2 = {x:pos.x+dpPmDir.x*90, y:pos.y+dpPmDir.y*90};
-  const c3 = {x:pos.x+dpPmPerp.x*68, y:pos.y+dpPmPerp.y*68};
+  const c3 = {x:pos.x+dpPmPerp.x*dpPmTouchDist, y:pos.y+dpPmPerp.y*dpPmTouchDist};
   document.getElementById('dp-pm-equerre').setAttribute('points', `${pos.x},${pos.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
-  const lineDp = document.getElementById('dp-pm-lineDp'), angleMark = document.getElementById('dp-pm-angleMark');
+  const lineDp = document.getElementById('dp-pm-lineDp'), angleMark = document.getElementById('dp-pm-angleMark'), ruler = document.getElementById('dp-pm-ruler');
   if(s.showLine){
     const dpExt = dpExtend(DP_PM_M, dpPmPerp, 140);
     dpSetLine(lineDp, dpExt);
     lineDp.style.display='';
     angleMark.setAttribute('d', dpRightAngleMark(dpPmFoot, {x:dpPmDir.x,y:dpPmDir.y}, {x:dpPmPerp.x,y:dpPmPerp.y}, 13));
     angleMark.style.display='';
+    const rulerCenter = {x:DP_PM_M.x+dpPmPerp.x*55, y:DP_PM_M.y+dpPmPerp.y*55};
+    ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPmPerp, dpPmDir, 130, 13));
+    ruler.style.display='';
   } else {
     lineDp.style.display='none';
     angleMark.style.display='none';
+    ruler.style.display='none';
   }
   document.getElementById('dp-pm-note').textContent = s.note;
 }
@@ -391,6 +406,8 @@ const DP_PAM_P1={x:60,y:190}, DP_PAM_P2={x:300,y:110}, DP_PAM_N={x:150,y:50};
 const dpPamDir = dpDir(DP_PAM_P1, DP_PAM_P2);
 const dpPamPerp = {x:-dpPamDir.y, y:dpPamDir.x};
 const dpPamSlideDist = dpPamPerp.x*(DP_PAM_N.x-DP_PAM_P1.x) + dpPamPerp.y*(DP_PAM_N.y-DP_PAM_P1.y);
+const dpPamCornerFinal = {x:DP_PAM_P1.x+dpPamPerp.x*dpPamSlideDist, y:DP_PAM_P1.y+dpPamPerp.y*dpPamSlideDist};
+const dpPamTouchDist = Math.hypot(DP_PAM_N.x-dpPamCornerFinal.x, DP_PAM_N.y-dpPamCornerFinal.y);
 const DP_PAM_STEPS = [
   {frac: 0, note:"On place un côté de l'angle droit de l'équerre sur la droite (d), et la règle le long de l'autre côté droit."},
   {frac: 0.5, note:"L'équerre glisse le long de la règle (sans que la règle ne bouge), en direction du point N."},
@@ -408,7 +425,7 @@ function dpRenderParaMethode(){
   const ruler = document.getElementById('dp-pam-ruler');
   dpSetLine(ruler, rulerExt); ruler.style.display='';
   const corner = {x:DP_PAM_P1.x+dpPamPerp.x*dpPamSlideDist*s.frac, y:DP_PAM_P1.y+dpPamPerp.y*dpPamSlideDist*s.frac};
-  const c2 = {x:corner.x+dpPamDir.x*90, y:corner.y+dpPamDir.y*90};
+  const c2 = {x:corner.x+dpPamDir.x*dpPamTouchDist, y:corner.y+dpPamDir.y*dpPamTouchDist};
   const c3 = {x:corner.x+dpPamPerp.x*55*(dpPamSlideDist>=0?1:-1), y:corner.y+dpPamPerp.y*55*(dpPamSlideDist>=0?1:-1)};
   document.getElementById('dp-pam-equerre').setAttribute('points', `${corner.x},${corner.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
   const lineDpp = document.getElementById('dp-pam-lineDpp');
