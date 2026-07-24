@@ -422,7 +422,9 @@ function dpRenderParaMethode(){
   dpSetPt(document.getElementById('dp-pam-N'), DP_PAM_N);
   dpSetTxt(document.getElementById('dp-pam-labelN'), DP_PAM_N, 8, -10);
   const ruler = document.getElementById('dp-pam-ruler');
-  ruler.setAttribute('points', dpRulerPolygon(DP_PAM_P1, dpPamPerp, dpPamDir, 300, 12));
+  const rulerHalfWidth = 6;
+  const rulerCenter = {x:DP_PAM_P1.x+dpPamDir.x*rulerHalfWidth, y:DP_PAM_P1.y+dpPamDir.y*rulerHalfWidth};
+  ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPamPerp, dpPamDir, 300, rulerHalfWidth*2));
   ruler.style.display='';
   const corner = {x:DP_PAM_P1.x+dpPamPerp.x*dpPamSlideDist*s.frac, y:DP_PAM_P1.y+dpPamPerp.y*dpPamSlideDist*s.frac};
   const c2 = {x:corner.x+dpPamDir.x*dpPamTouchDist, y:corner.y+dpPamDir.y*dpPamTouchDist};
