@@ -105,7 +105,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <line id="dp-pam-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
     <circle id="dp-pam-N" r="5" fill="#E35D3A"/>
     <text id="dp-pam-labelN" font-style="italic" font-size="14">N</text>
-    <line id="dp-pam-ruler" stroke="#1C1B2E" stroke-width="1.4" stroke-dasharray="4 3" style="display:none;"/>
+    <polygon id="dp-pam-ruler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
     <polygon id="dp-pam-equerre" fill="rgba(227,93,58,.28)" stroke="#E35D3A" stroke-width="1.6"/>
     <line id="dp-pam-lineDpp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
   </svg>
@@ -421,9 +421,9 @@ function dpRenderParaMethode(){
   dpSetLine(document.getElementById('dp-pam-lineD'), dExt);
   dpSetPt(document.getElementById('dp-pam-N'), DP_PAM_N);
   dpSetTxt(document.getElementById('dp-pam-labelN'), DP_PAM_N, 8, -10);
-  const rulerExt = dpExtend(DP_PAM_P1, dpPamPerp, 140);
   const ruler = document.getElementById('dp-pam-ruler');
-  dpSetLine(ruler, rulerExt); ruler.style.display='';
+  ruler.setAttribute('points', dpRulerPolygon(DP_PAM_P1, dpPamPerp, dpPamDir, 300, 12));
+  ruler.style.display='';
   const corner = {x:DP_PAM_P1.x+dpPamPerp.x*dpPamSlideDist*s.frac, y:DP_PAM_P1.y+dpPamPerp.y*dpPamSlideDist*s.frac};
   const c2 = {x:corner.x+dpPamDir.x*dpPamTouchDist, y:corner.y+dpPamDir.y*dpPamTouchDist};
   const c3 = {x:corner.x+dpPamPerp.x*55*(dpPamSlideDist>=0?1:-1), y:corner.y+dpPamPerp.y*55*(dpPamSlideDist>=0?1:-1)};
