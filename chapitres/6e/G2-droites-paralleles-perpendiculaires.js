@@ -29,7 +29,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
   <tr>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">G ∈ (d)<br>H ∉ (d)</td>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le point G <b>appartient</b> à la droite (d). Le point H <b>n'appartient pas</b> à la droite (d).</td>
-    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 60" style="width:130px;"><line x1="5" y1="35" x2="135" y2="35" stroke="#1C1B2E" stroke-width="1.6"/><line x1="55" y1="29" x2="55" y2="41" stroke="#1C1B2E" stroke-width="1.6" transform="rotate(-20 55 35)"/><text x="50" y="20" font-size="13" font-style="italic">G</text><text x="95" y="18" font-size="13" font-style="italic">H</text><line x1="91" y1="12" x2="99" y2="20" stroke="#1C1B2E" stroke-width="1.3"/><line x1="99" y1="12" x2="91" y2="20" stroke="#1C1B2E" stroke-width="1.3"/></svg></td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 60" style="width:130px;"><line x1="5" y1="35" x2="135" y2="35" stroke="#1C1B2E" stroke-width="1.6"/><line x1="55" y1="29" x2="55" y2="41" stroke="#1C1B2E" stroke-width="1.6" transform="rotate(-20 55 35)"/><text x="50" y="20" font-size="13" font-style="italic">G</text><line x1="93" y1="9" x2="101" y2="17" stroke="#1C1B2E" stroke-width="1.3"/><line x1="101" y1="9" x2="93" y2="17" stroke="#1C1B2E" stroke-width="1.3"/><text x="106" y="17" font-size="13" font-style="italic">H</text></svg></td>
   </tr>
 </table>
 </div>
@@ -58,9 +58,26 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
   </div>
 </div>
 
+<p class="example-title" style="margin-top:16px;">Construction à la règle et à l'équerre :</p>
+<div class="figure-wrap">
+  <svg id="dp-perpMethodeSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-pm-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
+    <circle id="dp-pm-M" r="5" fill="#E35D3A"/>
+    <text id="dp-pm-labelM" font-style="italic" font-size="14">M</text>
+    <polygon id="dp-pm-equerre" fill="rgba(227,93,58,.28)" stroke="#E35D3A" stroke-width="1.6"/>
+    <line id="dp-pm-lineDp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
+    <path id="dp-pm-angleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3" style="display:none;"/>
+  </svg>
+  <p class="hint" id="dp-pm-note" style="text-align:center;margin-top:8px;"></p>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="dpPerpMethodeNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="dpPerpMethodeReset()">Recommencer</button>
+  </div>
+</div>
+
 <div class="lesson-header"><span class="num">3</span><h3>Droites parallèles</h3></div>
 <span class="def-badge">Définition</span>
-<div class="def-box">Deux droites sont <b>parallèles</b> si elles ne sont pas sécantes (elles ne se croisent jamais, même prolongées à l'infini). On note (d) // (d').</div>
+<div class="def-box">Deux droites sont <b>parallèles</b> si elles ne sont pas sécantes. On note (d) // (d').</div>
 <p class="example-title">Exemple : construis la droite (d'') parallèle à la droite (d) passant par le point N.</p>
 <p class="hint" style="margin:4px 0 8px;">Déplacez (d) ou N : la parallèle se reconstruit automatiquement.</p>
 <div class="figure-wrap">
@@ -79,23 +96,63 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
   </div>
 </div>
 
+<p class="example-title" style="margin-top:16px;">Construction à la règle et à l'équerre :</p>
+<div class="figure-wrap">
+  <svg id="dp-paraMethodeSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-pam-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
+    <circle id="dp-pam-N" r="5" fill="#E35D3A"/>
+    <text id="dp-pam-labelN" font-style="italic" font-size="14">N</text>
+    <line id="dp-pam-ruler" stroke="#1C1B2E" stroke-width="1.4" stroke-dasharray="4 3" style="display:none;"/>
+    <polygon id="dp-pam-equerre" fill="rgba(227,93,58,.28)" stroke="#E35D3A" stroke-width="1.6"/>
+    <line id="dp-pam-lineDpp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
+  </svg>
+  <p class="hint" id="dp-pam-note" style="text-align:center;margin-top:8px;"></p>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="dpParaMethodeNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="dpParaMethodeReset()">Recommencer</button>
+  </div>
+</div>
+
 <div class="lesson-header"><span class="num">4</span><h3>Position relative de deux droites</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Deux droites sont <b>sécantes</b> si elles se coupent en un seul point, appelé <b>point d'intersection</b>.</div>
 <span class="prop-badge">Propriété 1</span>
 <div class="def-box">Deux droites sont : soit <b>sécantes</b> ; soit <b>parallèles</b>.</div>
 <span class="prop-badge">Propriété 2</span>
 <div class="def-box">Deux droites sécantes sont : soit <b>perpendiculaires</b> ; soit <b>non perpendiculaires</b>.</div>
-<p class="hint" style="margin:10px 0 6px;">Remarque : on peut résumer ceci selon le nombre de points communs aux deux droites.</p>
-<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:.85rem;margin:10px 0;">
-  <div style="background:rgba(31,58,92,.08);border-radius:8px;padding:10px 14px;text-align:center;">Sécantes, perpendiculaires<br><b style="color:var(--accent-orange);">1 point commun</b></div>
-  <div style="background:rgba(31,58,92,.08);border-radius:8px;padding:10px 14px;text-align:center;">Sécantes, non perpendiculaires<br><b style="color:var(--accent-orange);">1 point commun</b></div>
-  <div style="background:rgba(31,58,92,.08);border-radius:8px;padding:10px 14px;text-align:center;">Parallèles confondues<br><b style="color:var(--accent-orange);">une infinité</b></div>
-  <div style="background:rgba(31,58,92,.08);border-radius:8px;padding:10px 14px;text-align:center;">Parallèles distinctes<br><b style="color:var(--accent-orange);">0 point commun</b></div>
-</div>
+<p class="hint" style="margin:10px 0 6px;">Remarque : on peut résumer tout cela dans une carte mentale, selon le nombre de points communs aux deux droites.</p>
+<svg viewBox="0 0 460 210" style="width:100%;max-width:480px;display:block;margin:10px auto;font-family:'Space Grotesk',sans-serif;">
+  <line x1="230" y1="40" x2="112" y2="68" stroke="#1C1B2E" stroke-width="1.3"/>
+  <line x1="230" y1="40" x2="348" y2="68" stroke="#1C1B2E" stroke-width="1.3"/>
+  <line x1="112" y1="100" x2="58" y2="128" stroke="#1C1B2E" stroke-width="1.1"/>
+  <line x1="112" y1="100" x2="166" y2="128" stroke="#1C1B2E" stroke-width="1.1"/>
+  <line x1="348" y1="100" x2="294" y2="128" stroke="#1C1B2E" stroke-width="1.1"/>
+  <line x1="348" y1="100" x2="402" y2="128" stroke="#1C1B2E" stroke-width="1.1"/>
+  <rect x="170" y="6" width="120" height="34" rx="8" fill="#1F3A5C"/>
+  <text x="230" y="27" text-anchor="middle" fill="#fff" font-size="12.5">Deux droites</text>
+  <rect x="57" y="68" width="110" height="32" rx="8" fill="#E35D3A"/>
+  <text x="112" y="89" text-anchor="middle" fill="#fff" font-size="12.5">Sécantes</text>
+  <rect x="293" y="68" width="110" height="32" rx="8" fill="#E35D3A"/>
+  <text x="348" y="89" text-anchor="middle" fill="#fff" font-size="12.5">Parallèles</text>
+  <rect x="10" y="128" width="96" height="48" rx="6" fill="rgba(31,58,92,.08)" stroke="#1F3A5C" stroke-width="1"/>
+  <text x="58" y="147" text-anchor="middle" font-size="11">Perpendiculaires</text>
+  <text x="58" y="164" text-anchor="middle" font-size="11" fill="#8A4210" font-weight="700">1 point commun</text>
+  <rect x="118" y="128" width="96" height="48" rx="6" fill="rgba(31,58,92,.08)" stroke="#1F3A5C" stroke-width="1"/>
+  <text x="166" y="141" text-anchor="middle" font-size="10.5">Non</text>
+  <text x="166" y="154" text-anchor="middle" font-size="10.5">perpendiculaires</text>
+  <text x="166" y="169" text-anchor="middle" font-size="11" fill="#8A4210" font-weight="700">1 point commun</text>
+  <rect x="246" y="128" width="96" height="48" rx="6" fill="rgba(31,58,92,.08)" stroke="#1F3A5C" stroke-width="1"/>
+  <text x="294" y="147" text-anchor="middle" font-size="11">Confondues</text>
+  <text x="294" y="164" text-anchor="middle" font-size="11" fill="#8A4210" font-weight="700">une infinité</text>
+  <rect x="354" y="128" width="96" height="48" rx="6" fill="rgba(31,58,92,.08)" stroke="#1F3A5C" stroke-width="1"/>
+  <text x="402" y="147" text-anchor="middle" font-size="11">Distinctes</text>
+  <text x="402" y="164" text-anchor="middle" font-size="11" fill="#8A4210" font-weight="700">0 point commun</text>
+</svg>
 
 <div class="lesson-header"><span class="num">5</span><h3>Médiatrice d'un segment</h3></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">La <b>médiatrice</b> d'un segment est la droite perpendiculaire à ce segment, en son milieu.</div>
-<p class="example-title">Exemple : construis la médiatrice du segment [PQ].</p>
+<p class="example-title">Exemple : construis la médiatrice du segment [AB].</p>
 <p class="hint" style="margin:4px 0 8px;">Déplacez P ou Q : la médiatrice se reconstruit automatiquement, avec le codage des longueurs égales.</p>
 <div class="figure-wrap">
   <svg id="dp-medSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
@@ -106,8 +163,8 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <line id="dp-medTick1b" stroke="#1F6B3A" stroke-width="1.8"/>
     <circle id="dp-medP" r="5.5" fill="#1C1B2E" style="cursor:grab;"/>
     <circle id="dp-medQ" r="5.5" fill="#1C1B2E" style="cursor:grab;"/>
-    <text id="dp-medLabelP" font-style="italic" font-size="14">P</text>
-    <text id="dp-medLabelQ" font-style="italic" font-size="14">Q</text>
+    <text id="dp-medLabelP" font-style="italic" font-size="14">A</text>
+    <text id="dp-medLabelQ" font-style="italic" font-size="14">B</text>
     <text id="dp-medLabelMed" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A">médiatrice</text>
   </svg>
   <div class="figure-toolbar">
@@ -208,11 +265,10 @@ function updatePerpDemo(){
   dpSetPt(document.getElementById('dp-perpD1'), dpPerpD1);
   dpSetPt(document.getElementById('dp-perpD2'), dpPerpD2);
   dpSetPt(document.getElementById('dp-perpM'), dpPerpM);
-  dpSetTxt(document.getElementById('dp-perpLabelD'), dExt.x1>dExt.x2?{x:dExt.x2,y:dExt.y2}:{x:dExt.x1,y:dExt.y1}, -6, -8);
-  dpSetTxt(document.getElementById('dp-perpLabelDp'), dpExt.y1<dpExt.y2?{x:dpExt.x1,y:dpExt.y1}:{x:dpExt.x2,y:dpExt.y2}, 8, -6);
+  dpSetTxt(document.getElementById('dp-perpLabelD'), {x:dpPerpD2.x+dDir.x*22, y:dpPerpD2.y+dDir.y*22}, 4, 4);
+  dpSetTxt(document.getElementById('dp-perpLabelDp'), {x:dpPerpM.x+perpDir.x*45, y:dpPerpM.y+perpDir.y*45}, 4, 4);
   dpSetTxt(document.getElementById('dp-perpLabelM'), dpPerpM, 8, -10);
   // marque d'angle droit : orientée vers l'intérieur (vers le point M et vers D2)
-  const towardM = {x:Math.sign(perpDir.x*(dpPerpM.x-inter.x)+perpDir.y*(dpPerpM.y-inter.y))||1, y:1};
   const dSign = (perpDir.x*(dpPerpM.x-inter.x)+perpDir.y*(dpPerpM.y-inter.y))>=0 ? 1 : -1;
   const dSign2 = (dDir.x*(dpPerpD2.x-inter.x)+dDir.y*(dpPerpD2.y-inter.y))>=0 ? 1 : -1;
   document.getElementById('dp-perpAngleMark').setAttribute('d',
@@ -239,8 +295,8 @@ function updateParaDemo(){
   dpSetPt(document.getElementById('dp-paraP1'), dpParaP1);
   dpSetPt(document.getElementById('dp-paraP2'), dpParaP2);
   dpSetPt(document.getElementById('dp-paraN'), dpParaN);
-  dpSetTxt(document.getElementById('dp-paraLabelD'), dExt.x1<dExt.x2?{x:dExt.x1,y:dExt.y1}:{x:dExt.x2,y:dExt.y2}, 6, -8);
-  dpSetTxt(document.getElementById('dp-paraLabelDpp'), dppExt.x1<dppExt.x2?{x:dppExt.x1,y:dppExt.y1}:{x:dppExt.x2,y:dppExt.y2}, 6, -8);
+  dpSetTxt(document.getElementById('dp-paraLabelD'), {x:dpParaP2.x+dDir.x*22, y:dpParaP2.y+dDir.y*22}, 4, 4);
+  dpSetTxt(document.getElementById('dp-paraLabelDpp'), {x:dpParaN.x+dDir.x*22, y:dpParaN.y+dDir.y*22}, 4, 4);
   dpSetTxt(document.getElementById('dp-paraLabelN'), dpParaN, 8, -10);
 }
 function resetParaDemo(){ dpParaP1={x:60,y:190}; dpParaP2={x:300,y:110}; dpParaN={x:150,y:50}; updateParaDemo(); }
@@ -265,7 +321,7 @@ function updateMedDemo(){
   dpSetPt(document.getElementById('dp-medQ'), dpMedQ);
   dpSetTxt(document.getElementById('dp-medLabelP'), dpMedP, -14, 4);
   dpSetTxt(document.getElementById('dp-medLabelQ'), dpMedQ, 8, 4);
-  dpSetTxt(document.getElementById('dp-medLabelMed'), medExt.y1<medExt.y2?{x:medExt.x1,y:medExt.y1}:{x:medExt.x2,y:medExt.y2}, -30, -6);
+  dpSetTxt(document.getElementById('dp-medLabelMed'), {x:mid.x+perpDir.x*60, y:mid.y+perpDir.y*60}, -40, -4);
   // codage des longueurs égales (petits traits obliques sur PM et MQ)
   const tickLen=9, tickAngle=Math.atan2(dDir.y,dDir.x)+Math.PI/2.6;
   const quarter1 = {x:(dpMedP.x+mid.x)/2, y:(dpMedP.y+mid.y)/2};
@@ -290,6 +346,83 @@ function initMedDemo(){
   updateMedDemo();
 }
 
+/* ---- Construction pas à pas : perpendiculaire à l'équerre ---- */
+const DP_PM_D1={x:70,y:70}, DP_PM_D2={x:330,y:150}, DP_PM_M={x:230,y:50};
+const dpPmDir = dpDir(DP_PM_D1, DP_PM_D2);
+const dpPmPerp = {x:-dpPmDir.y, y:dpPmDir.x};
+const dpPmFoot = dpIntersect(DP_PM_D1, dpPmDir, DP_PM_M, dpPmPerp);
+const dpPmFootDist = Math.hypot(dpPmFoot.x-DP_PM_D1.x, dpPmFoot.y-DP_PM_D1.y);
+const DP_PM_STEPS = [
+  {dist: 40, note:"On place un côté de l'angle droit de l'équerre sur la droite (d)."},
+  {dist: 95, note:"On fait glisser l'équerre le long de (d), sans la faire tourner."},
+  {dist: dpPmFootDist, note:"On arrête de glisser dès que l'autre côté de l'équerre touche le point M."},
+  {dist: dpPmFootDist, showLine:true, note:"On trace la droite le long de ce second côté, on la prolonge à la règle, et on nomme (d') en codant l'angle droit."},
+];
+let dpPmIdx = 0;
+function dpRenderPerpMethode(){
+  const s = DP_PM_STEPS[dpPmIdx];
+  const dExt = dpExtend({x:(DP_PM_D1.x+DP_PM_D2.x)/2,y:(DP_PM_D1.y+DP_PM_D2.y)/2}, dpPmDir, 260);
+  dpSetLine(document.getElementById('dp-pm-lineD'), dExt);
+  dpSetPt(document.getElementById('dp-pm-M'), DP_PM_M);
+  dpSetTxt(document.getElementById('dp-pm-labelM'), DP_PM_M, 8, -10);
+  const pos = {x:DP_PM_D1.x+dpPmDir.x*s.dist, y:DP_PM_D1.y+dpPmDir.y*s.dist};
+  const c2 = {x:pos.x+dpPmDir.x*55, y:pos.y+dpPmDir.y*55};
+  const c3 = {x:pos.x+dpPmPerp.x*42, y:pos.y+dpPmPerp.y*42};
+  document.getElementById('dp-pm-equerre').setAttribute('points', `${pos.x},${pos.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
+  const lineDp = document.getElementById('dp-pm-lineDp'), angleMark = document.getElementById('dp-pm-angleMark');
+  if(s.showLine){
+    const dpExt = dpExtend(DP_PM_M, dpPmPerp, 140);
+    dpSetLine(lineDp, dpExt);
+    lineDp.style.display='';
+    angleMark.setAttribute('d', dpRightAngleMark(dpPmFoot, {x:dpPmDir.x,y:dpPmDir.y}, {x:dpPmPerp.x,y:dpPmPerp.y}, 13));
+    angleMark.style.display='';
+  } else {
+    lineDp.style.display='none';
+    angleMark.style.display='none';
+  }
+  document.getElementById('dp-pm-note').textContent = s.note;
+}
+function dpPerpMethodeNext(){ if(dpPmIdx<DP_PM_STEPS.length-1) dpPmIdx++; dpRenderPerpMethode(); }
+function dpPerpMethodeReset(){ dpPmIdx=0; dpRenderPerpMethode(); }
+
+/* ---- Construction pas à pas : parallèle à l'équerre ---- */
+const DP_PAM_P1={x:60,y:190}, DP_PAM_P2={x:300,y:110}, DP_PAM_N={x:150,y:50};
+const dpPamDir = dpDir(DP_PAM_P1, DP_PAM_P2);
+const dpPamPerp = {x:-dpPamDir.y, y:dpPamDir.x};
+const dpPamSlideDist = dpPamPerp.x*(DP_PAM_N.x-DP_PAM_P1.x) + dpPamPerp.y*(DP_PAM_N.y-DP_PAM_P1.y);
+const DP_PAM_STEPS = [
+  {frac: 0, note:"On place un côté de l'angle droit de l'équerre sur la droite (d), et la règle le long de l'autre côté droit."},
+  {frac: 0.5, note:"L'équerre glisse le long de la règle (sans que la règle ne bouge), en direction du point N."},
+  {frac: 1, note:"On arrête de glisser dès que le côté de l'équerre passe par le point N."},
+  {frac: 1, showLine:true, note:"On trace la droite le long de ce côté : on nomme (d'') la droite obtenue."},
+];
+let dpPamIdx = 0;
+function dpRenderParaMethode(){
+  const s = DP_PAM_STEPS[dpPamIdx];
+  const dExt = dpExtend({x:(DP_PAM_P1.x+DP_PAM_P2.x)/2,y:(DP_PAM_P1.y+DP_PAM_P2.y)/2}, dpPamDir, 260);
+  dpSetLine(document.getElementById('dp-pam-lineD'), dExt);
+  dpSetPt(document.getElementById('dp-pam-N'), DP_PAM_N);
+  dpSetTxt(document.getElementById('dp-pam-labelN'), DP_PAM_N, 8, -10);
+  const rulerExt = dpExtend(DP_PAM_P1, dpPamPerp, 140);
+  const ruler = document.getElementById('dp-pam-ruler');
+  dpSetLine(ruler, rulerExt); ruler.style.display='';
+  const corner = {x:DP_PAM_P1.x+dpPamPerp.x*dpPamSlideDist*s.frac, y:DP_PAM_P1.y+dpPamPerp.y*dpPamSlideDist*s.frac};
+  const c2 = {x:corner.x+dpPamDir.x*55, y:corner.y+dpPamDir.y*55};
+  const c3 = {x:corner.x+dpPamPerp.x*30*(dpPamSlideDist>=0?1:-1), y:corner.y+dpPamPerp.y*30*(dpPamSlideDist>=0?1:-1)};
+  document.getElementById('dp-pam-equerre').setAttribute('points', `${corner.x},${corner.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
+  const lineDpp = document.getElementById('dp-pam-lineDpp');
+  if(s.showLine){
+    const dppExt = dpExtend(DP_PAM_N, dpPamDir, 260);
+    dpSetLine(lineDpp, dppExt);
+    lineDpp.style.display='';
+  } else {
+    lineDpp.style.display='none';
+  }
+  document.getElementById('dp-pam-note').textContent = s.note;
+}
+function dpParaMethodeNext(){ if(dpPamIdx<DP_PAM_STEPS.length-1) dpPamIdx++; dpRenderParaMethode(); }
+function dpParaMethodeReset(){ dpPamIdx=0; dpRenderParaMethode(); }
+
 /* ---- Méthode animée : tracer une perpendiculaire ---- */
 const DP_METHODE_STEPS = [
   {expr:'Droite (d) et point M', note:"On souhaite tracer la perpendiculaire à (d) passant par M."},
@@ -300,13 +433,13 @@ const DP_METHODE_STEPS = [
 const dpMethodeDemo = makeStepDemo(DP_METHODE_STEPS, 'dp-methodeDisplay');
 
 DEMO_REGISTRY['Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles',
-  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpMethodeDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); } };
+  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMethodeDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); } };
 
 DEMO_QUIZZES['Droites parallèles et perpendiculaires'] = [
   {q:"Que signifie (d) ⊥ (d') ?",
    opts:["(d) et (d') sont parallèles","(d) et (d') sont perpendiculaires","(d) et (d') sont confondues"], correct:1},
   {q:"Deux droites parallèles distinctes ont combien de points communs ?",
    opts:["0","1","une infinité"], correct:0},
-  {q:"La médiatrice d'un segment [PQ] est...",
-   opts:["la droite (PQ) elle-même","la droite perpendiculaire à [PQ] passant par son milieu","le milieu de [PQ]"], correct:1},
+  {q:"La médiatrice d'un segment [AB] est...",
+   opts:["la droite (AB) elle-même","la droite perpendiculaire à [AB] passant par son milieu","le milieu de [AB]"], correct:1},
 ];
