@@ -388,8 +388,9 @@ function dpRenderPerpMethode(){
     lineDp.style.display='';
     angleMark.setAttribute('d', dpRightAngleMark(dpPmFoot, {x:dpPmDir.x,y:dpPmDir.y}, {x:dpPmPerp.x,y:dpPmPerp.y}, 13));
     angleMark.style.display='';
-    const rulerCenter = {x:DP_PM_M.x+dpPmPerp.x*55, y:DP_PM_M.y+dpPmPerp.y*55};
-    ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPmPerp, dpPmDir, 130, 13));
+    const rulerHalfWidth = 6.5;
+    const rulerCenter = {x:DP_PM_M.x+dpPmPerp.x*55-dpPmDir.x*rulerHalfWidth, y:DP_PM_M.y+dpPmPerp.y*55-dpPmDir.y*rulerHalfWidth};
+    ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPmPerp, dpPmDir, 130, rulerHalfWidth*2));
     ruler.style.display='';
   } else {
     lineDp.style.display='none';
@@ -423,7 +424,7 @@ function dpRenderParaMethode(){
   dpSetTxt(document.getElementById('dp-pam-labelN'), DP_PAM_N, 8, -10);
   const ruler = document.getElementById('dp-pam-ruler');
   const rulerHalfWidth = 6;
-  const rulerCenter = {x:DP_PAM_P1.x+dpPamDir.x*rulerHalfWidth, y:DP_PAM_P1.y+dpPamDir.y*rulerHalfWidth};
+  const rulerCenter = {x:DP_PAM_P1.x-dpPamDir.x*rulerHalfWidth, y:DP_PAM_P1.y-dpPamDir.y*rulerHalfWidth};
   ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPamPerp, dpPamDir, 300, rulerHalfWidth*2));
   ruler.style.display='';
   const corner = {x:DP_PAM_P1.x+dpPamPerp.x*dpPamSlideDist*s.frac, y:DP_PAM_P1.y+dpPamPerp.y*dpPamSlideDist*s.frac};
