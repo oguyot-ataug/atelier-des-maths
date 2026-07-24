@@ -1,0 +1,2551 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'Atelier des Maths · 6e & 5e</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 26 26">
+      <circle cx="13" cy="5.5" r="2.1" fill="none" stroke="#1F3A5C" stroke-width="1.6"/>
+      <line x1="13" y1="7.4" x2="7.5" y2="23" stroke="#1F3A5C" stroke-width="1.8" stroke-linecap="round"/>
+      <line x1="13" y1="7.4" x2="18.5" y2="23" stroke="#E35D3A" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
+    </svg>
+    L'Atelier des Maths
+  </div>
+  <div class="nav-links">
+    <button data-nav="home" class="active">Accueil</button>
+    <button data-nav="niveau" data-lvl="6e">6e</button>
+    <button data-nav="niveau" data-lvl="5e">5e</button>
+    <button data-nav="cm">Calcul mental</button>
+    <button data-nav="correction" id="navCorrection" style="display:none;">Outil prof</button>
+    <button data-nav="cahier" id="navCahier" style="display:none;">Cahier élève</button>
+    <button data-nav="supervision" id="navSupervision" style="display:none;">Supervision</button>
+    <button data-nav="mesresultats" id="navMesResultats" style="display:none;">Mes résultats</button>
+    <button data-nav="admin" id="navAdmin" style="display:none;">Administration</button>
+  </div>
+  <div class="account-menu">
+    <span class="hint" id="activeClassBadge" style="margin-right:8px;font-weight:700;color:var(--accent);"></span>
+    <button class="account-avatar" onclick="toggleAccountMenu()" title="Mon compte">👤</button>
+    <div class="account-dropdown" id="accountDropdown" style="display:none;">
+      <div id="accountLoggedOut">
+        <strong style="font-family:'Space Grotesk',sans-serif;font-size:.9rem;">Connexion</strong>
+        <input type="text" id="globalAuthEmail" placeholder="identifiant" style="width:100%;margin-top:8px;">
+        <input type="password" id="globalAuthPassword" placeholder="mot de passe" style="width:100%;margin-top:6px;">
+        <button class="btn secondary" onclick="globalSignIn()" style="width:100%;margin-top:8px;">Se connecter</button>
+        <span class="hint" id="globalAuthStatus" style="display:block;margin-top:6px;"></span>
+      </div>
+      <div id="accountLoggedIn" style="display:none;">
+        <div id="accountNameDisplay" style="font-weight:700;font-family:'Space Grotesk',sans-serif;"></div>
+        <div id="accountRoleDisplay" class="hint" style="margin:2px 0 10px;"></div>
+        <div id="accountClassRow" style="margin-bottom:10px;">
+          <label class="hint" style="display:block;margin:0 0 4px;">Classe active :</label>
+          <button class="btn secondary" onclick="openClassModal()" style="width:100%;text-align:left;" id="accountClassButton">— Choisir une classe —</button>
+        </div>
+        <button class="btn secondary" onclick="globalSignOut()" style="width:100%;">Se déconnecter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="classModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeClassModal();">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Choisir une classe</strong>
+      <button class="modal-close" onclick="closeClassModal()">✕</button>
+    </div>
+    <div id="classModalList"></div>
+  </div>
+</div>
+
+<div id="resetPasswordModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeResetPasswordModal();">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Réinitialiser le mot de passe</strong>
+      <button class="modal-close" onclick="closeResetPasswordModal()">✕</button>
+    </div>
+    <p class="hint" id="resetPasswordModalName" style="margin:0 0 10px;"></p>
+    <input type="password" id="resetPasswordModalInput" placeholder="Nouveau mot de passe" style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);margin-bottom:10px;box-sizing:border-box;">
+    <button class="btn" style="width:100%;" onclick="adminConfirmResetPassword()">Réinitialiser</button>
+    <span class="hint" id="resetPasswordModalStatus" style="display:block;margin-top:8px;"></span>
+  </div>
+</div>
+
+<div id="changeIdentifiantModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeChangeIdentifiantModal();">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Modifier l'identifiant</strong>
+      <button class="modal-close" onclick="closeChangeIdentifiantModal()">✕</button>
+    </div>
+    <p class="hint" id="changeIdentifiantModalName" style="margin:0 0 10px;"></p>
+    <input type="text" id="changeIdentifiantModalInput" placeholder="Nouvel identifiant (ou e-mail)" style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);margin-bottom:10px;box-sizing:border-box;">
+    <button class="btn" style="width:100%;" onclick="adminConfirmChangeIdentifiant()">Modifier</button>
+    <span class="hint" id="changeIdentifiantModalStatus" style="display:block;margin-top:8px;"></span>
+  </div>
+</div>
+
+<main>
+
+<!-- ================= HOME ================= -->
+<section class="view active" id="view-home">
+  <div class="hero">
+    <div>
+      <span class="eyebrow">Programme B.O. 2026</span>
+      <h1>Les mathématiques,<br>en clair et en gestes.</h1>
+      <p class="lede">Un cours pour chaque chapitre de 6e et de 5e : figures géométriques manipulables, constructions animées pas à pas, méthodes de rédaction et quiz générés par IA pour s'entraîner à l'infini.</p>
+    </div>
+    <div class="hero-figure">
+      <svg viewBox="0 0 260 260" width="100%" style="max-width:280px">
+        <circle cx="130" cy="130" r="90" fill="none" stroke="#7A93B0" stroke-width="1.5" stroke-dasharray="2 5"/>
+        <g id="heroCompass">
+          <line x1="130" y1="130" x2="130" y2="40" stroke="#1F3A5C" stroke-width="2.5"/>
+          <circle cx="130" cy="130" r="4" fill="#1F3A5C"/>
+          <circle cx="130" cy="40" r="4" fill="#E35D3A"/>
+        </g>
+        <circle cx="130" cy="130" r="90" fill="none" stroke="#1C1B2E" stroke-width="2.5" stroke-dasharray="565" stroke-dashoffset="565" id="heroArc"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="level-grid">
+    <div class="level-card n6" data-nav="niveau" data-lvl="6e">
+      <div class="lvl-num" style="color:var(--cat-N-text)">6<span style="font-size:1.3rem;">e</span></div>
+      <div class="lvl-name">20 chapitres · Nombres entiers → Heures et durée</div>
+      <div class="lvl-count">7 sept 2026 → 13 juin 2027</div>
+    </div>
+    <div class="level-card n5" data-nav="niveau" data-lvl="5e">
+      <div class="lvl-num" style="color:var(--cat-D-text)">5<span style="font-size:1.3rem;">e</span></div>
+      <div class="lvl-name">19 chapitres · Opérations décimales → Fonctions</div>
+      <div class="lvl-count">1 sept 2026 → 13 juin 2027</div>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>Ce que propose chaque chapitre</h2></div>
+  <div class="mini-links">
+    <div class="mini-link" data-nav="chapitre" data-demo="1">
+      <div class="t">📐 Cours &amp; figures dynamiques</div>
+      <div class="d">Points déplaçables, mesures qui se recalculent en direct.</div>
+    </div>
+    <div class="mini-link" data-nav="chapitre" data-demo="1" data-tab="methode">
+      <div class="t">✏️ Constructions animées</div>
+      <div class="d">Compas et règle, étape par étape, à revoir autant que voulu.</div>
+    </div>
+    <div class="mini-link" data-nav="chapitre" data-demo="1" data-tab="exercices">
+      <div class="t">🖊️ Méthodes de rédaction</div>
+      <div class="d">Des phrases-modèles pour rédiger comme en classe.</div>
+    </div>
+    <div class="mini-link" data-nav="chapitre" data-demo="1" data-tab="quiz">
+      <div class="t">🤖 Quiz générés par IA</div>
+      <div class="d">Des questions nouvelles à chaque essai (avec votre clé API).</div>
+    </div>
+    <div class="mini-link" data-nav="cm">
+      <div class="t">🔢 Calcul mental</div>
+      <div class="d">112 séquences du cahier, générées et corrigées automatiquement.</div>
+    </div>
+    <div class="mini-link" data-nav="niveau" data-lvl="6e">
+      <div class="t">🗓️ Frise de progression</div>
+      <div class="d">Chaque chapitre situé dans l'année, semaine par semaine.</div>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>Aperçu : chapitres traités en entier</h2><span class="count">2 gabarits · géométrie &amp; numérique</span></div>
+  <div class="plain-card" style="padding:24px 28px;">
+    <p style="margin:0 0 6px;color:var(--ink-soft);">Deux chapitres sont développés intégralement pour servir de gabarit aux 37 autres — un en géométrie, un en numérique — afin de vérifier que le même principe (cours, figure dynamique, méthode animée, rédaction, quiz) fonctionne dans les deux univers.</p>
+    <div class="figure-toolbar" style="margin-top:14px;">
+      <button class="btn" data-nav="chapitre" data-chap="symetrie">Symétrie centrale (5e · géométrie) →</button>
+      <button class="btn orange" data-nav="chapitre" data-chap="relatifs">Nombres relatifs (5e · numérique) →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NIVEAU ================= -->
+<section class="view" id="view-niveau">
+  <div class="niveau-head">
+    <div>
+      <span class="back-btn" data-nav="home">← Accueil</span>
+      <h1 id="niveau-title" style="margin:4px 0 0;font-size:1.9rem;"></h1>
+    </div>
+    <div class="view-toggle">
+      <button data-view="theme" class="active">Par thème</button>
+      <button data-view="frise">Frise de l'année</button>
+    </div>
+  </div>
+  <div id="niveau-theme"></div>
+  <div id="niveau-frise" style="display:none;"></div>
+</section>
+
+<!-- ================= CHAPITRE (générique + pilote) ================= -->
+<section class="view" id="view-chapitre">
+  <span class="back-btn" id="chap-back">← Retour</span>
+  <div class="chap-head">
+    <div>
+      <div class="chap-tags"><span class="tag" id="chap-code-tag"></span><span id="chap-cat-tag"></span></div>
+      <h1 id="chap-title"></h1>
+      <div style="color:var(--ink-soft);font-size:.88rem;" id="chap-meta"></div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="cours">Cours</button>
+    <button class="tab-btn" data-tab="methode">Méthode animée</button>
+    <button class="tab-btn" data-tab="exercices">Exercices &amp; rédaction</button>
+    <button class="tab-btn" data-tab="quiz">Quiz IA</button>
+  </div>
+
+  <!-- COURS -->
+  <div class="tab-panel active" id="panel-cours">
+    <div class="figure-toolbar" style="margin-bottom:18px;">
+      <button class="btn secondary" onclick="exportCoursPDF()">📄 Exporter en PDF</button>
+      <span class="hint" id="exportHint" style="margin:0;"></span>
+    </div>
+    <div id="cours-demo-symetrie" style="display:none;">
+    </div>
+
+    <div id="cours-demo-decimaux" style="display:none;">
+    </div>
+
+    <div id="cours-demo-nombres-entiers" style="display:none;">
+    </div>
+
+    <div id="cours-generic" class="placeholder-box">
+      <strong>Cours en construction</strong>
+      Ce chapitre suivra le même gabarit que « Symétrie centrale » : définitions, figure dynamique, propriétés à retenir.
+    </div>
+
+    <div id="cours-demo-relatifs" style="display:none;">
+    </div>
+  </div>
+
+
+  <!-- METHODE -->
+  <div class="tab-panel" id="panel-methode">
+    <div id="methode-demo-symetrie" style="display:none;">
+    </div>
+
+    <div id="methode-demo-decimaux" style="display:none;">
+    </div>
+    <div id="methode-demo-nombres-entiers" style="display:none;">
+    </div>
+    <div id="methode-generic" class="placeholder-box">
+      <strong>Animation en construction</strong>
+      La construction pas-à-pas (règle et compas, ou pliage selon le chapitre) sera animée sur ce même principe : une étape à la fois, rejouable à volonté.
+    </div>
+
+    <div id="methode-demo-relatifs" style="display:none;">
+    </div>
+  </div>
+
+  <!-- EXERCICES -->
+  <div class="tab-panel" id="panel-exercices">
+    <div id="exos-demo-symetrie" style="display:none;">
+    </div>
+    <div id="exos-demo-decimaux" style="display:none;">
+    </div>
+    <div id="exos-demo-nombres-entiers" style="display:none;">
+    </div>
+    <div id="exos-generic" class="placeholder-box">
+      <strong>Banque d'exercices en construction</strong>
+      Chaque chapitre proposera une fiche de rédaction type, puis une série d'exercices progressifs.
+    </div>
+
+    <div id="exos-demo-relatifs" style="display:none;">
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="tab-panel" id="panel-quiz">
+    <div class="quiz-shell">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">Quiz généré par IA</strong>
+      <p style="color:var(--ink-soft);font-size:.88rem;margin:8px 0 0;">
+        Chaque quiz est généré à la demande à partir du cours de ce chapitre — donc jamais deux fois le même.
+      </p>
+      <div class="api-row">
+        <button class="btn orange" id="btnGenerateQuiz" onclick="generateQuiz()" style="display:none;">🎲 Générer un quiz</button>
+        <span class="hint" id="quizLoginHint" style="margin:0;">Connectez-vous pour générer un quiz par IA.</span>
+        <button class="btn secondary" onclick="generateDemoQuiz()">Questions pré-écrites (démo)</button>
+      </div>
+      <div id="quizArea"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CALCUL MENTAL ================= -->
+<section class="view" id="view-cm">
+  <span class="back-btn" data-nav="home">← Accueil</span>
+  <h1 style="margin:6px 0 4px;">Calcul mental</h1>
+  <p style="color:var(--ink-soft);max-width:60ch;">Les 112 séquences de votre cahier, prêtes à générer des exercices infinis. 8 séquences sont câblées ici à titre de démonstration ; les autres suivront le même moteur.</p>
+  <div class="cm-picker" id="cmPicker"></div>
+  <div class="cm-workspace" id="cmWorkspace">
+    <div class="placeholder-box">Choisissez une séquence ci-dessus pour générer une série de calculs.</div>
+  </div>
+</section>
+
+<!-- ================= OUTIL PROF : CORRECTION PROJETÉE ================= -->
+<section class="view" id="view-correction">
+  <span class="back-btn" data-nav="home">← Accueil</span>
+  <h1 style="margin:6px 0 4px;">Outil de correction (projection)</h1>
+  <p style="color:var(--ink-soft);max-width:70ch;">Rédigez la correction d'un exercice au clavier pendant le cours : les fractions (<span class="hint-mono">2/3</span>), puissances (<span class="hint-mono">x^2</span>) et racines (<span class="hint-mono">sqrt(2)</span>) se mettent en forme automatiquement. Pour une formule plus complexe, entourez-la de <span class="hint-mono">$...$</span> en LaTeX. Ajoutez chaque exercice corrigé au cahier, puis générez le cahier complet pour vos élèves.</p>
+
+  <div class="tool-shell" style="margin-bottom:20px;background:rgba(31,58,92,.05);border:1px solid rgba(31,58,92,.15);">
+    <strong style="font-family:'Space Grotesk',sans-serif;">📋 Classe active : <span id="classStatus" style="color:var(--accent-orange);">aucune</span></strong>
+    <p class="hint" style="margin:6px 0 0;">Changez de classe depuis le menu <span style="font-weight:700;">👤 compte</span>, en haut à droite.</p>
+  </div>
+
+  <div class="tool-shell" id="correctionForm">
+    <div class="tool-row">
+      <select id="corNiveau" onchange="fillCorChapitres()">
+        <option value="6e">6e</option>
+        <option value="5e" selected>5e</option>
+      </select>
+      <select id="corChapitre"></select>
+      <input type="text" id="corExoNum" placeholder="N° exercice (ex. 4 p.23)" style="width:150px;">
+      <input type="date" id="corDate" style="width:150px;">
+      <button class="btn secondary" onclick="toggleProjection()" id="btnProjection">🖥️ Mode projection</button>
+    </div>
+    <div class="tool-row">
+      <input type="text" id="corTitre" placeholder="Titre de l'exercice (ex. Construire un symétrique)" style="flex:1;min-width:280px;">
+    </div>
+    <div class="format-toolbar">
+      <button type="button" class="fmt-btn" onclick="applyBold()" title="Gras"><b>G</b></button>
+      <button type="button" class="fmt-swatch" style="--c:#D93025" onclick="applyColor('rouge')" title="Rouge"></button>
+      <button type="button" class="fmt-swatch" style="--c:#1F3A5C" onclick="applyColor('bleu')" title="Bleu"></button>
+      <button type="button" class="fmt-swatch" style="--c:#2C5A2E" onclick="applyColor('vert')" title="Vert"></button>
+      <button type="button" class="fmt-swatch" style="--c:#E35D3A" onclick="applyColor('orange')" title="Orange"></button>
+      <span class="hint" style="margin:0;">sélectionnez du texte puis cliquez, ou tapez directement <span class="hint-mono">**gras**</span> / <span class="hint-mono">{{rouge|texte}}</span></span>
+    </div>
+    <textarea id="correctionInput" placeholder="Ex. : On calcule 2/3 + 1/6. Le dénominateur commun est 6, donc 2/3 = 4/6. Donc 4/6 + 1/6 = 5/6." oninput="renderCorrectionPreview()"></textarea>
+    <div class="correction-preview" id="correctionPreview"></div>
+
+    <div class="tool-row" style="margin-top:14px;">
+      <button type="button" class="btn secondary" onclick="openFigureTool()">🔺 Ajouter une figure géométrique</button>
+      <span class="hint" id="figureStatus" style="margin:0;"></span>
+    </div>
+    <div id="figurePanel" class="figure-wrap" style="display:none;">
+      <div class="tool-row" style="margin-bottom:8px;">
+        <textarea id="enonceInput" rows="3" style="flex:1;min-width:260px;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);"
+          placeholder="Ex. : ABC triangle&#10;I milieu de [BC]&#10;cercle de centre A passant par B"></textarea>
+        <button type="button" class="btn secondary" onclick="buildFromEnonce()" style="align-self:flex-start;">📐 Construire à partir de l'énoncé</button>
+        <button type="button" class="btn orange" onclick="interpretEnonceWithAI()" style="align-self:flex-start;">🤖 Interpréter avec l'IA</button>
+      </div>
+      <p class="hint" style="margin:-4px 0 12px;">Phrases reconnues directement : <span class="hint-mono">ABC triangle</span> (rectangle/isocèle/équilatéral, ex. <span class="hint-mono">ABC triangle rectangle en A</span>) · <span class="hint-mono">ABCD carré/rectangle/losange/parallélogramme</span> · <span class="hint-mono">I milieu de [BC]</span> · <span class="hint-mono">cercle de centre A passant par B</span>. Pour tout le reste (ou un énoncé complet en français libre), utilisez « Interpréter avec l'IA » (nécessite une clé API, à renseigner dans l'onglet Quiz IA).</p>
+      <div class="figure-toolbar" style="margin-bottom:10px;">
+        <button type="button" class="btn secondary fig-mode" data-mode="point" onclick="setFigureMode('point')">● Point</button>
+        <button type="button" class="btn secondary fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')">✥ Déplacer</button>
+        <button type="button" class="btn secondary fig-mode" data-mode="segment" onclick="setFigureMode('segment')">— Segment</button>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <button type="button" class="btn secondary fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')">—cm Segment</button>
+          <input type="number" id="segLengthInput" value="5" min="0.5" step="0.5" style="width:56px;padding:6px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"> cm
+        </span>
+        <button type="button" class="btn secondary fig-mode" data-mode="droite" onclick="setFigureMode('droite')">⟷ Droite</button>
+        <button type="button" class="btn secondary fig-mode" data-mode="cercle" onclick="setFigureMode('cercle')">○ Cercle</button>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <button type="button" class="btn secondary fig-mode" data-mode="cercle-rayon" onclick="setFigureMode('cercle-rayon')">○cm Cercle</button>
+          <input type="number" id="circleRadiusInput" value="3" min="0.5" step="0.5" style="width:56px;padding:6px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"> cm rayon
+        </span>
+        <button type="button" class="btn secondary fig-mode" data-mode="arc" onclick="setFigureMode('arc')">◡ Arc de cercle</button>
+        <button type="button" class="btn secondary fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')">✱ Milieu</button>
+        <button type="button" class="btn secondary fig-mode" data-mode="angle" onclick="setFigureMode('angle')">∠ Angle</button>
+        <button type="button" class="btn secondary fig-mode" data-mode="perpendiculaire" onclick="setFigureMode('perpendiculaire')">⊥ Perpendiculaire</button>
+        <button type="button" class="btn secondary fig-mode" data-mode="parallele" onclick="setFigureMode('parallele')">∥ Parallèle</button>
+        <button type="button" class="btn secondary fig-mode" data-mode="mediatrice" onclick="setFigureMode('mediatrice')">⟂ Médiatrice</button>
+        <button type="button" class="btn secondary fig-mode" data-mode="bissectrice" onclick="setFigureMode('bissectrice')">⟨ Bissectrice</button>
+        <button type="button" class="btn secondary" onclick="undoFigure()">↩︎ Annuler le dernier</button>
+        <button type="button" class="btn secondary" onclick="clearFigure()">Effacer tout</button>
+      </div>
+      <div class="tool-row" style="margin-top:0;margin-bottom:8px;">
+        <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">
+          <input type="checkbox" id="compassToggle"> Simuler un compas (pour Cercle et Arc de cercle)
+        </label>
+      </div>
+      <div class="tool-row" style="margin-top:0;margin-bottom:10px;background:rgba(227,93,58,.06);border-radius:8px;padding:10px 12px;">
+        <button type="button" class="btn secondary fig-mode" data-mode="code" onclick="setFigureMode('code')" style="background:var(--accent-orange);color:#fff;">✓ Coder</button>
+        <select id="codeType">
+          <option value="longueur">Longueurs égales</option>
+          <option value="angle-egal">Angles égaux</option>
+          <option value="angle-droit">Angle droit</option>
+        </select>
+        <select id="codeGroup" title="Le nombre de traits (ou d'arcs) marqués : deux segments avec le même nombre sont annoncés comme égaux entre eux, un troisième segment avec un nombre différent formera un 2e groupe d'égalité.">
+          <option value="1">1 trait / 1 arc</option>
+          <option value="2">2 traits / 2 arcs</option>
+          <option value="3">3 traits / 3 arcs</option>
+        </select>
+        <button type="button" class="btn secondary" onclick="clearAllCodes()">🧹 Retirer tous les codages</button>
+        <span class="hint" style="margin:0;">Deux segments (ou angles) codés avec le même nombre de traits/arcs sont annoncés comme égaux entre eux. Les segments/cercles de longueur donnée sont codés automatiquement (même longueur = même nombre de traits). Ce menu sert au codage manuel (ex. pour un côté commun, ou une figure fournie sans passer par « longueur donnée »).</span>
+      </div>
+      <svg id="figureSvg" viewBox="0 0 500 320" onclick="onFigureClick(event)"
+           style="width:100%;max-width:520px;display:block;margin:0 auto;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
+      <p class="hint" style="margin-top:8px;" id="figureHint">Cliquez pour placer un point.</p>
+      <div class="figure-toolbar">
+        <button type="button" class="btn" onclick="validateFigure()">✓ Valider et insérer la figure</button>
+        <button type="button" class="btn secondary" onclick="closeFigureTool()">Fermer sans insérer</button>
+      </div>
+    </div>
+
+    <div class="tool-row" style="margin-top:14px;margin-bottom:0;">
+      <button class="btn" onclick="addToCahier()" id="btnAddCahier">+ Ajouter au cahier de corrections</button>
+      <button class="btn secondary" onclick="clearCorrectionInput()">Effacer le brouillon</button>
+      <button class="btn secondary" onclick="cancelEditCahier()" id="btnCancelEdit" style="display:none;">✕ Annuler la modification</button>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>Cahier de corrections</h2><span class="count" id="cahierCount">0 exercice(s)</span></div>
+  <div id="cahierList"></div>
+  <div class="tool-row cahier-list-actions">
+    <button class="btn orange" onclick="generateCahierPDF()">📘 Générer le cahier de corrections (PDF)</button>
+    <button class="btn secondary" onclick="clearCahier()">Vider le cahier</button>
+  </div>
+</section>
+
+<!-- ================= CAHIER ÉLÈVE ================= -->
+<section class="view" id="view-cahier-eleve">
+  <span class="back-btn" data-nav="home">← Accueil</span>
+  <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;">
+    <h1 style="margin:6px 0 4px;">Cahier de corrections</h1>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn secondary" onclick="renderCahierEleve()">🔄 Actualiser</button>
+      <button class="btn secondary" onclick="downloadCahierElevePDF()">📄 Télécharger en PDF</button>
+      <button class="btn secondary" onclick="exportCahierDataFile()">📤 Exporter le cahier (fichier)</button>
+      <button class="btn secondary" onclick="document.getElementById('cahierImportInput').click()">📥 Importer un cahier</button>
+      <input type="file" id="cahierImportInput" accept=".json" style="display:none;" onchange="importCahierDataFile(this.files[0])">
+    </div>
+  </div>
+  <p style="color:var(--ink-soft);max-width:60ch;">Toutes les corrections de l'année, dans l'ordre. Le cahier s'ouvre directement sur la dernière page.</p>
+  <div class="tool-row" style="margin:0 0 14px;">
+    <span class="hint" style="margin:0;">Classe active : <b id="studentClassStatus" style="color:var(--accent-orange);">aucune</b> — changez de classe depuis le menu 👤 compte, en haut à droite.</span>
+  </div>
+  <p class="hint" id="cahierImportStatus" style="margin:-4px 0 6px;"></p>
+  <div class="tool-row" style="margin:0 0 14px;">
+    <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">Du <input type="date" id="cahierFilterFrom" onchange="applyCahierFilter()"></label>
+    <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">au <input type="date" id="cahierFilterTo" onchange="applyCahierFilter()"></label>
+    <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">Chapitre :
+      <select id="cahierFilterChapitre" onchange="applyCahierFilter()"><option value="">Tous</option></select>
+    </label>
+    <button class="btn secondary" onclick="clearCahierFilter()">Réinitialiser</button>
+    <span class="hint" id="cahierFilterStatus" style="margin:0;"></span>
+  </div>
+  <div class="plain-card notebook-scroll" id="cahierEleveBook">
+    <div id="cahierEleveContent"></div>
+  </div>
+</section>
+
+<!-- ================= ADMINISTRATION ================= -->
+<!-- ================= SUPERVISION (résultats calcul mental) ================= -->
+<section class="view" id="view-supervision">
+  <span class="back-btn" data-nav="home">← Accueil</span>
+  <h1 style="margin:6px 0 4px;">📊 Supervision</h1>
+  <p style="color:var(--ink-soft);max-width:70ch;">Résultats de calcul mental de la classe active (visible en haut, à côté de votre compte).</p>
+  <div class="tool-row" style="margin:10px 0;">
+    <select id="supFilterEleve" onchange="renderSupervisionFiltered()"><option value="">Tous les élèves</option></select>
+    <select id="supFilterExercice" onchange="renderSupervisionFiltered()"><option value="">Tous les exercices</option></select>
+    <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">Du <input type="date" id="supFilterFrom" onchange="renderSupervisionFiltered()"></label>
+    <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">au <input type="date" id="supFilterTo" onchange="renderSupervisionFiltered()"></label>
+    <button class="btn secondary" onclick="resetSupervisionFilters()">Réinitialiser</button>
+    <button class="btn secondary" onclick="renderSupervision()">🔄 Actualiser</button>
+  </div>
+  <div id="supervisionContent" class="hint">Choisissez une classe dans le menu compte pour voir ses résultats.</div>
+</section>
+
+<section class="view" id="view-mesresultats">
+  <span class="back-btn" data-nav="home">← Accueil</span>
+  <h1 style="margin:6px 0 4px;">📊 Mes résultats</h1>
+  <p style="color:var(--ink-soft);max-width:70ch;">L'historique de vos exercices de calcul mental.</p>
+  <div class="tool-row" style="margin:10px 0;">
+    <select id="mesResFilterExercice" onchange="renderMesResultatsFiltered()"><option value="">Tous les exercices</option></select>
+    <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">Du <input type="date" id="mesResFilterFrom" onchange="renderMesResultatsFiltered()"></label>
+    <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">au <input type="date" id="mesResFilterTo" onchange="renderMesResultatsFiltered()"></label>
+    <button class="btn secondary" onclick="resetMesResultatsFilters()">Réinitialiser</button>
+    <button class="btn secondary" onclick="renderMesResultats()">🔄 Actualiser</button>
+  </div>
+  <div id="mesResultatsContent" class="hint">Chargement…</div>
+</section>
+
+<section class="view" id="view-admin">
+  <span class="back-btn" data-nav="home">← Accueil</span>
+  <h1 style="margin:6px 0 4px;">🛠️ Administration</h1>
+  <p style="color:var(--ink-soft);max-width:70ch;">Créez les comptes profs/élèves, les classes, et associez-les entre eux.</p>
+
+  <div class="tool-shell" style="margin-bottom:20px;">
+    <p class="example-title" style="margin-bottom:6px;">Créer un compte</p>
+    <div class="tool-row">
+      <input type="text" id="adminNewEmail" placeholder="identifiant (ou e-mail)" style="min-width:200px;">
+      <input type="password" id="adminNewPassword" placeholder="Mot de passe" style="width:150px;">
+      <input type="text" id="adminNewNom" placeholder="Nom (affichage)" style="width:160px;">
+      <select id="adminNewRole"><option value="prof">Professeur</option><option value="eleve">Élève</option><option value="admin">Administrateur</option></select>
+      <button class="btn" onclick="adminCreateAccount()">Créer le compte</button>
+    </div>
+    <span class="hint" id="adminAccountStatus" style="margin:0;"></span>
+
+    <p class="example-title" style="margin:16px 0 6px;">Import en masse d'élèves</p>
+    <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, identifiant puis mot de passe séparés par une tabulation — un copier-coller direct depuis un tableur fonctionne).</p>
+    <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="jdupont	Motdepasse1
+mmartin	Motdepasse2"></textarea>
+    <div class="tool-row" style="margin-top:8px;">
+      <button class="btn" onclick="adminBulkCreateStudents()">Créer tous les comptes élèves</button>
+    </div>
+    <div class="hint" id="adminBulkStatus" style="margin:0;"></div>
+
+    <p class="example-title" style="margin:16px 0 6px;">Créer une classe</p>
+    <div class="tool-row">
+      <input type="text" id="adminNewClassNom" placeholder="Nom (ex. 5e-A)">
+      <select id="adminNewClassNiveau"><option value="6e">6e</option><option value="5e" selected>5e</option></select>
+      <button class="btn" onclick="adminCreateClass()">Créer la classe</button>
+    </div>
+    <span class="hint" id="adminClassStatus" style="margin:0;"></span>
+
+    <p class="example-title" style="margin:16px 0 6px;">Associer un professeur à une classe</p>
+    <div class="tool-row">
+      <select id="adminAssignTeacherSelect"></select>
+      <select id="adminAssignTeacherClassSelect"></select>
+      <button class="btn secondary" onclick="adminAssignTeacher()">Associer</button>
+    </div>
+    <span class="hint" id="adminAssignTeacherStatus" style="margin:0;"></span>
+
+    <p class="example-title" style="margin:16px 0 6px;">Associer un élève à une classe</p>
+    <div class="tool-row">
+      <select id="adminAssignStudentSelect"></select>
+      <select id="adminAssignStudentClassSelect"></select>
+      <button class="btn secondary" onclick="adminAssignStudent()">Associer</button>
+    </div>
+    <span class="hint" id="adminAssignStudentStatus" style="margin:0;"></span>
+  </div>
+
+  <div class="tool-shell">
+    <strong style="font-family:'Space Grotesk',sans-serif;">📋 Déjà enregistré</strong>
+    <button class="btn secondary" style="float:right;" onclick="adminRefreshListings()">🔄 Actualiser</button>
+    <button class="btn secondary" style="float:right;margin-right:8px;" onclick="adminSyncEmails()">🔧 Réparer les identifiants manquants</button>
+    <p class="hint" id="adminSyncEmailsStatus" style="clear:right;margin:0 0 6px;"></p>
+    <p class="example-title" style="margin:16px 0 6px;">Comptes</p>
+    <div id="adminAccountsListing" class="hint"></div>
+    <p class="example-title" style="margin:16px 0 6px;">Classes</p>
+    <div id="adminClassesListing" class="hint"></div>
+  </div>
+
+  <div class="tool-shell">
+    <strong style="font-family:'Space Grotesk',sans-serif;">🤖 Utilisation de l'IA</strong>
+    <button class="btn secondary" style="float:right;" onclick="adminRefreshAIUsage()">🔄 Actualiser</button>
+    <p class="hint" style="margin:6px 0 14px;">Qui a généré un quiz ou utilisé l'interprétation de figures, et quand.</p>
+    <div id="adminAIUsageListing" class="hint">Chargement…</div>
+  </div>
+</section>
+
+</main>
+
+<footer>Maquette de travail — L'Atelier des Maths · Programme B.O. 2026</footer>
+
+<script>
+/* ======================= DATA ======================= */
+const CATS = {
+  N:{label:'Nombres', bg:'var(--cat-N-bg)', text:'var(--cat-N-text)'},
+  G:{label:'Géométrie', bg:'var(--cat-G-bg)', text:'var(--cat-G-text)'},
+  D:{label:'Données', bg:'var(--cat-D-bg)', text:'var(--cat-D-text)'},
+  M:{label:'Mesures', bg:'var(--cat-M-bg)', text:'var(--cat-M-text)'},
+  P:{label:'Proportionnalité', bg:'var(--cat-P-bg)', text:'var(--cat-P-text)'},
+};
+
+const CH6 = [
+ {n:1,code:'N1',cat:'N',t:'Nombres entiers',s:2,p:'4-13',d:'7-20 sept'},
+ {n:2,code:'G2',cat:'G',t:'Droites parallèles et perpendiculaires',s:1,p:'76-83',d:'21-27 sept'},
+ {n:3,code:'N2',cat:'N',t:'Fractions : nombres et partage',s:2,p:'14-23',d:'28 sept-11 oct'},
+ {n:4,code:'G1',cat:'G',t:'Distance et cercles',s:2,p:'64-75',d:'2-15 nov'},
+ {n:5,code:'N3',cat:'N',t:'Nombres décimaux',s:2,p:'24-33',d:'16-29 nov'},
+ {n:6,code:'G3',cat:'G',t:'Angles et rapporteur',s:1,p:'84-97',d:'30 nov-6 déc'},
+ {n:7,code:'N4',cat:'N',t:'Opérations et ordre de grandeur',s:1,p:'34-43',d:'7-13 déc'},
+ {n:8,code:'G5',cat:'G',t:'Construction de triangles',s:1,p:'110-118',d:'4-10 jan'},
+ {n:9,code:'N4',cat:'N',t:'Multiplication et division',s:1,p:'34-43',d:'11-17 jan'},
+ {n:10,code:'G4',cat:'G',t:'Symétrie axiale',s:2,p:'98-109',d:'18-31 jan'},
+ {n:11,code:'N5',cat:'N',t:'Fractions : comparaison et addition',s:2,p:'44-59',d:'1-14 fév'},
+ {n:12,code:'D1',cat:'D',t:'Gestion de données',s:1,p:'144-147',d:'8-14 mars'},
+ {n:13,code:'G6',cat:'G',t:'Propriétés des triangles',s:2,p:'119-125',d:'15-28 mars'},
+ {n:14,code:'N5',cat:'N',t:'Fractions : multiplication',s:1,p:'44-59',d:'29 mars-4 avr'},
+ {n:15,code:'D3',cat:'D',t:'Proportionnalité',s:1,p:'152-157',d:'5-11 avr'},
+ {n:16,code:'M1',cat:'M',t:'Aire et périmètre',s:1,p:'130-137',d:'3-16 mai'},
+ {n:17,code:'D2',cat:'D',t:'Probabilités',s:1,p:'148-151',d:'17-23 mai'},
+ {n:18,code:'N6',cat:'N',t:'Initiation à l\'algèbre',s:1,p:'60-63',d:'24-30 mai'},
+ {n:19,code:'G7',cat:'G',t:'Solides et volumes',s:1,p:'126-129',d:'31 mai-6 juin'},
+ {n:20,code:'M2',cat:'M',t:'Heures et durée',s:1,p:'138-143',d:'7-13 juin'},
+];
+
+const CH5 = [
+ {n:1,code:'N1',cat:'N',t:'Opérations sur les nombres décimaux',s:3,p:'4-13',d:'1-20 sept'},
+ {n:2,code:'G1',cat:'G',t:'Symétrie centrale',s:2,p:'58-72',d:'21 sept-4 oct'},
+ {n:3,code:'N1',cat:'N',t:'Divisibilité',s:1,p:'4-13',d:'5-11 oct'},
+ {n:4,code:'N4',cat:'N',t:'Fractions',s:2,p:'34-41',d:'2-15 nov'},
+ {n:5,code:'G2',cat:'G',t:'Angles et parallélisme',s:2,p:'72-81',d:'16-29 nov'},
+ {n:6,code:'N2',cat:'N',t:'Nombres relatifs',s:2,p:'14-23',d:'30 nov-13 déc'},
+ {n:7,code:'G3',cat:'G',t:'Droites remarquables dans un triangle',s:2,p:'82-89',d:'4-17 jan'},
+ {n:8,code:'P1',cat:'P',t:'Proportionnalité',s:1,p:'140-149',d:'18-24 jan'},
+ {n:9,code:'G4',cat:'G',t:'Parallélogrammes',s:2,p:'90-98',d:'25 jan-7 fév'},
+ {n:10,code:'D1',cat:'D',t:'Statistiques',s:1,p:'124-133',d:'8-14 fév'},
+ {n:11,code:'N3',cat:'N',t:'Opérations sur les nombres relatifs',s:2,p:'24-33',d:'8-21 mars'},
+ {n:12,code:'G5',cat:'G',t:'Parallélogrammes particuliers',s:1,p:'99-107',d:'22-28 mars'},
+ {n:13,code:'P1',cat:'P',t:'Pourcentages',s:1,p:'140-149',d:'29 mars-4 avr'},
+ {n:14,code:'G6',cat:'G',t:'Aires',s:1,p:'108-113',d:'5-11 avr'},
+ {n:15,code:'N5',cat:'N',t:'Calcul littéral',s:2,p:'42-51',d:'3-16 mai'},
+ {n:16,code:'D2',cat:'D',t:'Probabilités',s:1,p:'134-139',d:'17-23 mai'},
+ {n:17,code:'G7',cat:'G',t:'Représentation de l\'espace',s:1,p:'114-123',d:'24-30 mai'},
+ {n:18,code:'N6',cat:'N',t:'Équations',s:1,p:'52-57',d:'31 mai-6 juin'},
+ {n:19,code:'P2',cat:'P',t:'Fonctions',s:1,p:'150-155',d:'7-13 juin'},
+];
+
+const VACANCES = {
+  '6e':[{after:3,label:'Vacances de Toussaint · 17 oct → 1 nov'},{after:7,label:'Vacances de Noël · 20 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 7 mars'},{after:15,label:'Vacances de printemps · 17 avr → 2 mai'}],
+  '5e':[{after:3,label:'Vacances de Toussaint · 17 oct → 1 nov'},{after:6,label:'Vacances de Noël · 19 déc → 3 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 7 mars'},{after:14,label:'Vacances de printemps · 17 avr → 2 mai'}],
+};
+
+let currentLevel='6e';
+
+/* ======================= ROUTER ======================= */
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+document.querySelectorAll('[data-nav]').forEach(el=>{
+  el.addEventListener('click',()=>{
+    const nav = el.getAttribute('data-nav');
+    if(nav==='home'){ showView('view-home'); setActiveTopnav(null); }
+    if(nav==='niveau'){ currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
+    if(nav==='cm'){ showView('view-cm'); setActiveTopnav('cm'); }
+    if(nav==='correction'){
+      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      showView('view-correction'); setActiveTopnav('correction');
+    }
+    if(nav==='cahier'){
+      if(!currentUser){ toggleAccountMenu(); return; }
+      showView('view-cahier-eleve'); setActiveTopnav('cahier'); renderCahierEleve();
+    }
+    if(nav==='admin'){
+      if(currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      showView('view-admin'); setActiveTopnav('admin');
+    }
+    if(nav==='supervision'){
+      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      showView('view-supervision'); setActiveTopnav('supervision'); renderSupervision();
+    }
+    if(nav==='mesresultats'){
+      if(currentUserRole!=='eleve'){ toggleAccountMenu(); return; }
+      showView('view-mesresultats'); setActiveTopnav('mesresultats'); renderMesResultats();
+    }
+    if(nav==='chapitre'){
+      const pick = el.getAttribute('data-chap')||'symetrie';
+      const chaps = {
+        symetrie: {code:'G1',cat:'G',t:"Symétrie centrale",p:'58-72',s:2,d:'21 sept-4 oct'},
+        relatifs: {code:'N2',cat:'N',t:"Nombres relatifs",p:'14-23',s:2,d:'30 nov-13 déc'},
+      };
+      openChapitre(chaps[pick], el.getAttribute('data-tab'));
+    }
+  });
+});
+function setActiveTopnav(key){
+  document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));
+  if(key==='6e') document.querySelector('.nav-links button[data-lvl="6e"]').classList.add('active');
+  else if(key==='5e') document.querySelector('.nav-links button[data-lvl="5e"]').classList.add('active');
+  else if(key==='cm') document.querySelector('.nav-links button[data-nav="cm"]').classList.add('active');
+  else if(key==='correction') document.querySelector('.nav-links button[data-nav="correction"]').classList.add('active');
+  else if(key==='cahier') document.querySelector('.nav-links button[data-nav="cahier"]').classList.add('active');
+  else if(key==='admin') document.querySelector('.nav-links button[data-nav="admin"]').classList.add('active');
+  else if(key==='supervision') document.querySelector('.nav-links button[data-nav="supervision"]').classList.add('active');
+  else if(key==='mesresultats') document.querySelector('.nav-links button[data-nav="mesresultats"]').classList.add('active');
+  else document.querySelector('.nav-links button[data-nav="home"]').classList.add('active');
+}
+document.getElementById('chap-back').addEventListener('click',()=>{
+  showView('view-niveau'); setActiveTopnav(currentLevel);
+});
+
+/* ======================= NIVEAU RENDER ======================= */
+function renderNiveau(lvl){
+  document.getElementById('niveau-title').textContent = 'Progression de '+lvl;
+  const data = lvl==='6e'?CH6:CH5;
+  renderTheme(data);
+  renderFrise(data, lvl);
+}
+function renderTheme(data){
+  const order=['N','G','D','P','M'];
+  let html='';
+  order.forEach(cat=>{
+    const items = data.filter(c=>c.cat===cat);
+    if(!items.length) return;
+    html += `<div class="cat-block">
+      <span class="cat-label" style="background:${CATS[cat].bg};color:${CATS[cat].text};">
+        <span class="cat-dot" style="background:${CATS[cat].text};color:${CATS[cat].bg};">${cat}</span>${CATS[cat].label}
+      </span>
+      <div class="chap-grid">`;
+    items.forEach(c=>{
+      const ready = !!DEMO_REGISTRY[c.t];
+      html += `<div class="chap-card ${ready?'ready':''}" style="border-left-color:${CATS[cat].text}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
+        <span class="status">${ready?'pilote':'à venir'}</span>
+        <div class="code">${c.code} · ch. ${c.n}</div>
+        <div class="titre">${c.t}</div>
+        <div class="meta"><span>p. ${c.p}</span><span>${c.s} sem.</span></div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  const box=document.getElementById('niveau-theme');
+  box.innerHTML=html;
+  box.querySelectorAll('.chap-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      openChapitre({code:card.dataset.code,cat:card.dataset.cat,t:card.dataset.t,p:card.dataset.p,s:card.dataset.s,d:card.dataset.d});
+    });
+  });
+}
+function renderFrise(data, lvl){
+  let html = '<div class="timeline">';
+  const vac = VACANCES[lvl];
+  data.forEach((c,i)=>{
+    html += `<div class="tl-item" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
+      <span class="dot" style="background:${CATS[c.cat].text}"></span>
+      <span class="titre">${c.t}</span>
+      <span class="dates">${c.code} · ${c.d}</span>
+    </div>`;
+    const v = vac.find(v=>v.after===c.n);
+    if(v) html += `<div class="tl-vac">${v.label}</div>`;
+  });
+  html += '</div>';
+  const box=document.getElementById('niveau-frise');
+  box.innerHTML=html;
+  box.querySelectorAll('.tl-item').forEach(card=>{
+    card.addEventListener('click',()=>{
+      openChapitre({code:card.dataset.code,cat:card.dataset.cat,t:card.dataset.t,p:card.dataset.p,s:card.dataset.s,d:card.dataset.d});
+    });
+  });
+}
+document.querySelectorAll('.view-toggle button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.view-toggle button').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const v = b.getAttribute('data-view');
+    document.getElementById('niveau-theme').style.display = v==='theme'?'block':'none';
+    document.getElementById('niveau-frise').style.display = v==='frise'?'block':'none';
+  });
+});
+
+/* ======================= CHAPITRE ======================= */
+const DEMO_REGISTRY = {};
+let currentChapterTitle = null;
+
+function openChapitre(c, tab){
+  const demo = DEMO_REGISTRY[c.t];
+  currentChapterTitle = c.t;
+  document.getElementById('chap-code-tag').textContent = c.code;
+  document.getElementById('chap-code-tag').style.background = CATS[c.cat].bg;
+  document.getElementById('chap-code-tag').style.color = CATS[c.cat].text;
+  document.getElementById('chap-title').textContent = c.t;
+  document.getElementById('chap-meta').textContent = `pages ${c.p} · ${c.s} semaine(s) · ${c.d}`;
+
+  const allIds = new Set();
+  Object.values(DEMO_REGISTRY).forEach(d=>{ allIds.add(d.cours); allIds.add(d.methode); allIds.add(d.exos); });
+  allIds.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
+  document.getElementById('cours-generic').style.display = demo?'none':'block';
+  document.getElementById('methode-generic').style.display = demo?'none':'block';
+  document.getElementById('exos-generic').style.display = demo?'none':'block';
+  if(demo){
+    document.getElementById(demo.cours).style.display='block';
+    document.getElementById(demo.methode).style.display='block';
+    document.getElementById(demo.exos).style.display='block';
+  }
+
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  const wantTab = tab||'cours';
+  document.querySelector(`.tab-btn[data-tab="${wantTab}"]`).classList.add('active');
+  document.getElementById('panel-'+wantTab).classList.add('active');
+
+  document.getElementById('quizArea').innerHTML='';
+  if(demo) demo.init();
+  showView('view-chapitre');
+}
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---- draggable point demo ---- */
+function svgPointFromEvent(svg,evt){
+  const pt = svg.createSVGPoint();
+  const t = evt.touches?evt.touches[0]:evt;
+  pt.x=t.clientX; pt.y=t.clientY;
+  const ctm = svg.getScreenCTM().inverse();
+  return pt.matrixTransform(ctm);
+}
+/* A point that belongs to a line/segment is marked with a short perpendicular tick,
+   not a dot -- matches French collège convention. */
+function setTick(el, cx, cy, angleRad, len){
+  len = len||11;
+  const dx = Math.cos(angleRad+Math.PI/2)*len/2, dy = Math.sin(angleRad+Math.PI/2)*len/2;
+  el.setAttribute('x1',cx-dx); el.setAttribute('y1',cy-dy);
+  el.setAttribute('x2',cx+dx); el.setAttribute('y2',cy+dy);
+}
+/* Code d'égalité de longueur : un trait fin et INCLINÉ par rapport au segment (convention du
+   petit trait oblique), pour ne jamais ressembler à une marque de point (qui, elle, est perpendiculaire). */
+function setSlantTick(el, cx, cy, angleRad, len){
+  len = len||14;
+  const tilt = angleRad + 65*Math.PI/180;
+  const dx = Math.cos(tilt)*len/2, dy = Math.sin(tilt)*len/2;
+  el.setAttribute('x1',cx-dx); el.setAttribute('y1',cy-dy);
+  el.setAttribute('x2',cx+dx); el.setAttribute('y2',cy+dy);
+}
+function makeStepDemo(steps, displayId){
+  let idx = 0;
+  function render(){
+    const el = document.getElementById(displayId);
+    if(!el) return;
+    const atEnd = idx === steps.length-1;
+    const lines = steps.slice(0, idx+1).map((s,i)=>{
+      const isFinal = atEnd && i===idx;
+      return `<div class="${isFinal?'step-final':''}">${s.expr}</div>`;
+    }).join('');
+    el.innerHTML = `<div class="step-column">${lines}</div><div class="step-note">${steps[idx].note}</div>`;
+  }
+  return {
+    next(){ if(idx<steps.length-1) idx++; render(); },
+    reset(){ idx=0; render(); },
+    render,
+  };
+}
+function rotateAroundPoint(p, center, angleDeg){
+  const a = angleDeg*Math.PI/180;
+  const dx=p.x-center.x, dy=p.y-center.y;
+  return {x:center.x+dx*Math.cos(a)-dy*Math.sin(a), y:center.y+dx*Math.sin(a)+dy*Math.cos(a)};
+}
+function setCross(el1,el2,cx,cy,size){
+  size=size||6;
+  el1.setAttribute('x1',cx-size); el1.setAttribute('y1',cy-size); el1.setAttribute('x2',cx+size); el1.setAttribute('y2',cy+size);
+  el2.setAttribute('x1',cx-size); el2.setAttribute('y1',cy+size); el2.setAttribute('x2',cx+size); el2.setAttribute('y2',cy-size);
+}
+
+/* ---- 2.A : symétrique d'une droite (dynamique) ---- */
+async function callClaude(userPrompt, maxTokens, meta){
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session) throw new Error('no-session');
+  const res = await fetch(SUPABASE_URL+'/functions/v1/ai-proxy', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+    body: JSON.stringify({ prompt: userPrompt, maxTokens: maxTokens||800, feature:(meta&&meta.feature)||null, chapitre:(meta&&meta.chapitre)||null, niveau:(meta&&meta.niveau)||null }),
+  });
+  const data = await res.json();
+  if(data.error) throw new Error(data.error);
+  return data.text || '';
+}
+
+/* ---- quiz demo (static, standing in for the future AI call) ---- */
+const DEMO_QUIZZES = {};
+let currentQuizBank = null;
+function renderQuizHTML(bank, prefixHtml){
+  const area=document.getElementById('quizArea');
+  currentQuizBank = bank;
+  let html = prefixHtml || '';
+  bank.forEach((item,qi)=>{
+    html+=`<div class="quiz-q"><div style="font-weight:600;margin-bottom:8px;">${qi+1}. ${item.q}</div>`;
+    item.opts.forEach((o,oi)=>{
+      html+=`<button class="quiz-opt" onclick="answerQuiz(this,${qi},${oi})">${o}</button>`;
+    });
+    html+='</div>';
+  });
+  area.innerHTML=html;
+}
+function generateDemoQuiz(){
+  const bank = DEMO_QUIZZES[currentChapterTitle] || DEMO_QUIZZES['Symétrie centrale'];
+  renderQuizHTML(bank, '<p class="hint">Démonstration avec des questions pré-écrites.</p>');
+}
+async function generateQuiz(){
+  const area = document.getElementById('quizArea');
+  if(!currentUser){ area.innerHTML = '<p class="hint">Connectez-vous pour générer un quiz par IA — ou essayez la démo pré-écrite ci-dessous.</p>'; return; }
+  const content = getVisibleCoursContent();
+  const courseText = (content.innerText || content.textContent || '').trim();
+  if(!courseText){ area.innerHTML = '<p class="hint">Aucun contenu de cours disponible pour ce chapitre.</p>'; return; }
+  area.innerHTML = '<p class="hint">Génération du quiz en cours…</p>';
+  const prompt = `Tu es un professeur de mathématiques en collège français. Voici le cours d'un chapitre :
+
+${courseText.slice(0,6000)}
+
+Génère un quiz de 5 questions à choix multiples pour vérifier la compréhension de ce cours, adaptées à son niveau. Chaque question a exactement 3 options, une seule correcte. Réponds UNIQUEMENT avec un tableau JSON valide (sans texte avant ni après, sans balises markdown), au format exact :
+[{"q":"...","opts":["...","...","..."],"correct":0}]
+Le champ "correct" est l'index (0, 1 ou 2) de la bonne réponse dans "opts".`;
+  try{
+    const raw = await callClaude(prompt, 1500, {feature:'quiz', chapitre:currentChapterTitle});
+    const match = raw.match(/\[[\s\S]*\]/);
+    if(!match) throw new Error('no-json');
+    const quiz = JSON.parse(match[0]);
+    if(!Array.isArray(quiz) || !quiz.length) throw new Error('empty');
+    renderQuizHTML(quiz, '<p class="hint">✓ Quiz généré par IA à partir de ce cours.</p>');
+  }catch(err){
+    area.innerHTML = '<p class="hint">⚠️ Échec de la génération'+(err.message==='no-session'?' (connectez-vous)':'')+'. Réessayez, ou utilisez la démo pré-écrite ci-dessous.</p>';
+  }
+}
+function answerQuiz(btn,qi,oi){
+  const parent=btn.parentElement;
+  const correct=currentQuizBank[qi].correct;
+  parent.querySelectorAll('.quiz-opt').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===correct) b.classList.add('correct');
+    else if(i===oi) b.classList.add('wrong');
+  });
+}
+
+/* ======================= CALCUL MENTAL ======================= */
+/* Voir calcul-mental/calcul-mental.js, chargé en fin de page. */
+
+
+/* ======================= EXPORT DU COURS (PDF réel via html2pdf, sans popup) ======================= */
+function getVisibleCoursContent(){
+  const panel = document.getElementById('panel-cours');
+  for(const child of panel.children){
+    if(child.tagName==='DIV' && !child.classList.contains('figure-toolbar') && getComputedStyle(child).display!=='none') return child;
+  }
+  return panel;
+}
+function exportCoursPDF(){
+  const hint=document.getElementById('exportHint');
+  if(typeof html2pdf==='undefined'){ hint.textContent="La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?) — utilisez Ctrl/Cmd+P pour imprimer à la place."; return; }
+  const content = getVisibleCoursContent();
+  const title = document.getElementById('chap-title').textContent || 'cours';
+  const clone = content.cloneNode(true);
+  clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
+  // Important : html2canvas rend une page blanche si l'élément capturé est en position fixed/absolute
+  // (bug connu). On le garde donc dans le flux normal, juste masqué visuellement par un parent
+  // de hauteur nulle et overflow:hidden.
+  const clip = document.createElement('div');
+  clip.style.cssText='height:0;overflow:hidden;';
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText='width:700px;background:#fff;padding:20px;font-family:Inter,sans-serif;color:#1C1B2E;';
+  wrapper.innerHTML = `<h1 style="font-family:'Space Grotesk',sans-serif;">${title}</h1>` + clone.innerHTML;
+  clip.appendChild(wrapper);
+  document.body.appendChild(clip);
+  hint.textContent='Génération du PDF en cours…';
+  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+    .from(wrapper).save()
+    .then(()=>{ clip.remove(); hint.textContent='PDF téléchargé ✓'; setTimeout(()=>hint.textContent='',4000); })
+    .catch(()=>{ clip.remove(); hint.textContent="Échec de la génération dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer à la place."; });
+}
+
+
+/* ======================= OUTIL PROF : rendu maths ======================= */
+function katexSpan(expr){
+  try{ return katex.renderToString(expr, {throwOnError:false}); }
+  catch(e){ return expr; }
+}
+/* Rend en LaTeX (via KaTeX) tout élément statique du cours marqué class="tex",
+   son contenu texte étant la source LaTeX à afficher (ex. \frac{3}{4}).
+   Réutilisable pour n'importe quel chapitre. */
+function renderStaticMath(container){
+  if(!container) return;
+  container.querySelectorAll('.tex').forEach(el=>{
+    if(el.dataset.rendered) return;
+    el.innerHTML = katexSpan(el.textContent);
+    el.dataset.rendered = '1';
+  });
+}
+function cleanExpr(s){
+  return s.replace(/\*/g, '\\times ');
+}
+function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function renderMathText(raw){
+  let text = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // 0) mini mise en forme : **gras** et {{couleur|texte}}
+  const COLOR_MAP={rouge:'#D93025',bleu:'#1F3A5C',vert:'#2C5A2E',orange:'#E35D3A'};
+  text = text.replace(/\*\*([^*]+)\*\*/g, (m,inner)=>`<b>${inner}</b>`);
+  text = text.replace(/\{\{(rouge|bleu|vert|orange)\|([^}]+)\}\}/g, (m,c,inner)=>`<span style="color:${COLOR_MAP[c]}">${inner}</span>`);
+
+  // 1) explicit LaTeX between $...$
+  text = text.replace(/\$([^$]+)\$/g, (m,expr)=>katexSpan(expr));
+  // 2) sqrt(...) -- processed before fractions so "sqrt(2)/3" isn't mistaken for a fraction
+  text = text.replace(/sqrt\(([^()]+)\)/g, (m,inner)=>katexSpan(`\\sqrt{${cleanExpr(inner)}}`));
+  // 3) fractions with a parenthesised expression on one or both sides: (2*2)/(3*2), (2+1)/4, 3/(1+2)
+  text = text.replace(/\(([^()]+)\)\/\(([^()]+)\)/g, (m,a,b)=>katexSpan(`\\frac{${cleanExpr(a)}}{${cleanExpr(b)}}`));
+  text = text.replace(/\(([^()]+)\)\/(\d+(?:[.,]\d+)?)/g, (m,a,b)=>katexSpan(`\\frac{${cleanExpr(a)}}{${b.replace(',','.')}}`));
+  text = text.replace(/(\d+(?:[.,]\d+)?)\/\(([^()]+)\)/g, (m,a,b)=>katexSpan(`\\frac{${a.replace(',','.')}}{${cleanExpr(b)}}`));
+  // 4) plain fractions a/b (integers or decimals)
+  text = text.replace(/(\d+(?:[.,]\d+)?)\/(\d+(?:[.,]\d+)?)/g, (m,a,b)=>katexSpan(`\\frac{${a.replace(',','.')}}{${b.replace(',','.')}}`));
+  // 5) exponents  base^exp  (exp = digits or {...})
+  text = text.replace(/([A-Za-z0-9\)\]])\^(-?\d+(?:[.,]\d+)?|\{[^}]+\})/g, (m,base,exp)=>{
+    const e = exp.startsWith('{') ? exp.slice(1,-1) : exp;
+    return katexSpan(`${base}^{${e}}`);
+  });
+  text = text.replace(/\n/g,'<br>');
+  return text;
+}
+function renderCorrectionPreview(){
+  const raw = document.getElementById('correctionInput').value;
+  document.getElementById('correctionPreview').innerHTML = raw.trim()? renderMathText(raw) : '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>';
+}
+function toggleProjection(){
+  const preview=document.getElementById('correctionPreview');
+  preview.classList.toggle('projection');
+  document.getElementById('btnProjection').textContent = preview.classList.contains('projection') ? '↩︎ Quitter le mode projection' : '🖥️ Mode projection';
+}
+function wrapSelection(before, after){
+  const ta = document.getElementById('correctionInput');
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const val = ta.value;
+  const selected = val.slice(start,end) || 'texte';
+  ta.value = val.slice(0,start) + before + selected + after + val.slice(end);
+  ta.focus();
+  ta.selectionStart = start + before.length;
+  ta.selectionEnd = start + before.length + selected.length;
+  renderCorrectionPreview();
+}
+function applyBold(){ wrapSelection('**','**'); }
+function applyColor(color){ wrapSelection('{{'+color+'|','}}'); }
+
+/* ---- mini outil de figure géométrique ---- */
+let figState = {points:[], shapes:[], mode:'point', selected:[], refShape:null, nextLabel:0};
+let pendingFigureSVG = null;
+let figDragPoint = null;
+const SCALE_PX_PER_CM = 20;
+
+function openFigureTool(){
+  document.getElementById('figurePanel').style.display='block';
+  resetFigureState();
+  setFigureMode('point');
+  document.getElementById('figurePanel').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function closeFigureTool(){ document.getElementById('figurePanel').style.display='none'; }
+function resetFigureState(){
+  figState = {points:[], shapes:[], mode:(figState&&figState.mode)||'point', selected:[], refShape:null, nextLabel:0, lengthGroups:{}};
+  renderFigureSvg();
+}
+function clearFigure(){ resetFigureState(); }
+function clearAllCodes(){
+  figState.shapes = figState.shapes.filter(s=>!['code-longueur','code-angle','code-droit'].includes(s.type));
+  figState.shapes.forEach(s=>{ if(s.codeGroup) delete s.codeGroup; });
+  figState.lengthGroups = {};
+  renderFigureSvg();
+}
+function lengthGroupFor(cm){
+  if(!figState.lengthGroups) figState.lengthGroups = {};
+  const key = (+cm).toFixed(2);
+  if(!figState.lengthGroups[key]) figState.lengthGroups[key] = Object.keys(figState.lengthGroups).length+1;
+  return figState.lengthGroups[key];
+}
+function undoFigure(){
+  if(figState.shapes.length) figState.shapes.pop();
+  else if(figState.points.length) figState.points.pop();
+  renderFigureSvg();
+}
+function setFigureMode(mode){
+  figState.mode = mode; figState.selected = []; figState.refShape = null;
+  document.querySelectorAll('.fig-mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+  const hints = {
+    point:'Cliquez pour placer un point.',
+    deplacer:'Faites glisser un point existant pour le déplacer (les points construits, comme un milieu, suivent automatiquement).',
+    segment:'Cliquez deux points existants pour tracer le segment qui les relie.',
+    'segment-longueur':'Cliquez le point de départ, puis un point donnant la direction : la longueur exacte (en cm) vous sera demandée.',
+    droite:'Cliquez deux points existants pour tracer la droite qui les relie.',
+    cercle:'Cliquez le centre, puis un point du cercle.',
+    'cercle-rayon':'Cliquez le centre : le rayon exact (en cm) vous sera demandé.',
+    arc:'Cliquez le centre, puis le point de départ de l\'arc, puis un point donnant la direction d\'arrivée.',
+    milieu:'Cliquez deux points existants pour placer leur milieu.',
+    angle:'Cliquez un point sur le premier côté, puis le sommet de l\'angle, puis un point sur le second côté.',
+    perpendiculaire:'Cliquez directement sur une droite/un segment existant (ou deux points), puis le point par lequel doit passer la perpendiculaire.',
+    parallele:'Cliquez directement sur une droite/un segment existant (ou deux points), puis le point par lequel doit passer la parallèle.',
+    mediatrice:'Cliquez directement sur un segment existant (ou ses deux extrémités) pour tracer sa médiatrice.',
+    bissectrice:'Cliquez un point sur le premier côté, puis le sommet de l\'angle, puis un point sur le second côté.',
+    code:'Choisissez le type de codage ci-dessus, puis cliquez sur le segment ou l\'angle concerné.',
+  };
+  document.getElementById('figureHint').textContent = hints[mode] || '';
+  renderFigureSvg();
+}
+function nextPointLabel(){
+  const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let lab;
+  do{ lab = letters[figState.nextLabel++ % letters.length]; } while(figState.points.some(p=>p.label===lab));
+  return lab;
+}
+function svgCoordsFromEvent(svg, evt){
+  const pt = svg.createSVGPoint();
+  const t = evt.touches ? evt.touches[0] : evt;
+  pt.x = t.clientX; pt.y = t.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+function findNearbyPoint(x,y){
+  const thresh = 16;
+  return figState.points.find(p=>Math.hypot(p.x-x,p.y-y)<thresh);
+}
+function distToSegment(px,py,ax,ay,bx,by){
+  const dx=bx-ax, dy=by-ay;
+  const len2 = dx*dx+dy*dy || 1;
+  let t = ((px-ax)*dx+(py-ay)*dy)/len2;
+  t = Math.max(0, Math.min(1,t));
+  return Math.hypot(px-(ax+t*dx), py-(ay+t*dy));
+}
+function distToLine(px,py,ax,ay,bx,by){
+  const dx=bx-ax, dy=by-ay;
+  const len=Math.hypot(dx,dy)||1;
+  return Math.abs((px-ax)*dy-(py-ay)*dx)/len;
+}
+function findNearbyShape(x,y){
+  const thresh = 10;
+  return figState.shapes.find(s=>{
+    if(s.type==='segment') return distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    if(s.type==='droite') return distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    return false;
+  });
+}
+function handleLineToolClick(x,y){
+  if(!figState.refShape){
+    const shape = findNearbyShape(x,y);
+    if(shape){ figState.refShape = {p1:shape.p1, p2:shape.p2}; renderFigureSvg(); return; }
+    const pt = findNearbyPoint(x,y);
+    if(pt){
+      if(!figState.selected.length){ figState.selected.push(pt); renderFigureSvg(); return; }
+      if(figState.selected[0]!==pt){
+        figState.refShape = {p1:figState.selected[0], p2:pt};
+        figState.selected = [];
+        renderFigureSvg();
+      }
+    }
+    return;
+  }
+  if(figState.mode==='mediatrice'){
+    figState.shapes.push({type:'mediatrice', p1:figState.refShape.p1, p2:figState.refShape.p2});
+    figState.refShape = null;
+    renderFigureSvg();
+    return;
+  }
+  const through = findNearbyPoint(x,y);
+  if(!through) return;
+  figState.shapes.push({type:figState.mode, refA:figState.refShape.p1, refB:figState.refShape.p2, through});
+  figState.refShape = null;
+  renderFigureSvg();
+}
+function currentCodeType(){ const el=document.getElementById('codeType'); return el?el.value:'longueur'; }
+function currentCodeGroup(){ const el=document.getElementById('codeGroup'); return el?+el.value:1; }
+function handleCodeClick(x,y){
+  const type = currentCodeType();
+  if(type==='longueur'){
+    if(!figState.selected.length){
+      const shape = findNearbyShape(x,y);
+      if(shape){ figState.shapes.push({type:'code-longueur', p1:shape.p1, p2:shape.p2, group:currentCodeGroup()}); renderFigureSvg(); return; }
+      const pt = findNearbyPoint(x,y);
+      if(pt){ figState.selected.push(pt); renderFigureSvg(); }
+      return;
+    }
+    const pt = findNearbyPoint(x,y);
+    if(pt && pt!==figState.selected[0]){
+      figState.shapes.push({type:'code-longueur', p1:figState.selected[0], p2:pt, group:currentCodeGroup()});
+      figState.selected=[];
+      renderFigureSvg();
+    }
+    return;
+  }
+  // angle-egal / angle-droit : 3 clics, sommet = 2e clic
+  const pt = findNearbyPoint(x,y);
+  if(!pt || figState.selected.includes(pt)) return;
+  figState.selected.push(pt);
+  if(figState.selected.length===3){
+    const [p1,vertex,p2] = figState.selected;
+    if(type==='angle-egal') figState.shapes.push({type:'code-angle', vertex, p1, p2, group:currentCodeGroup()});
+    else figState.shapes.push({type:'code-droit', vertex, p1, p2});
+    figState.selected=[];
+  }
+  renderFigureSvg();
+}
+function handleLengthSegmentClick(x,y){
+  if(!figState.selected.length){
+    let pt = findNearbyPoint(x,y);
+    if(!pt){ pt = {label:nextPointLabel(), x, y}; figState.points.push(pt); }
+    figState.selected.push(pt);
+    renderFigureSvg();
+    return;
+  }
+  const start = figState.selected[0];
+  const dx=x-start.x, dy=y-start.y; const len=Math.hypot(dx,dy)||1;
+  figState.selected = [];
+  const raw = document.getElementById('segLengthInput').value;
+  const cm = parseFloat(String(raw).replace(',','.'));
+  if(!isFinite(cm) || cm<=0){ document.getElementById('figureHint').textContent = 'Longueur invalide — vérifiez le champ "cm" à côté du bouton Segment.'; renderFigureSvg(); return; }
+  const px = cm*SCALE_PX_PER_CM;
+  const end = {label:nextPointLabel(), x:start.x+dx/len*px, y:start.y+dy/len*px};
+  figState.points.push(end);
+  figState.shapes.push({type:'segment', p1:start, p2:end, lengthLabel:cm+' cm', codeGroup:lengthGroupFor(cm)});
+  renderFigureSvg();
+}
+function handleRadiusCircleClick(x,y){
+  let center = findNearbyPoint(x,y);
+  if(!center){ center = {label:nextPointLabel(), x, y}; figState.points.push(center); }
+  const raw = document.getElementById('circleRadiusInput').value;
+  const cm = parseFloat(String(raw).replace(',','.'));
+  if(!isFinite(cm) || cm<=0){ document.getElementById('figureHint').textContent = 'Rayon invalide — vérifiez le champ "cm" à côté du bouton Cercle.'; return; }
+  const px = cm*SCALE_PX_PER_CM;
+  const withCompass = document.getElementById('compassToggle') && document.getElementById('compassToggle').checked;
+  // radius stocké comme nombre fixe (pas un point) : le cercle garde sa taille exacte
+  // même si on déplace ensuite le centre.
+  figState.shapes.push({type:'cercle', p1:center, radius:px, angle:0, compass:withCompass, radiusLabel:cm+' cm', codeGroup:lengthGroupFor(cm)});
+  renderFigureSvg();
+}
+function recomputeDependents(){
+  // les points construits (ex. un milieu) se recalculent à partir des points dont ils dépendent,
+  // donc si on déplace un point d'origine, tout ce qui en découle suit automatiquement.
+  figState.points.forEach(p=>{
+    if(p.def && p.def.type==='milieu'){
+      p.x = (p.def.a.x + p.def.b.x)/2;
+      p.y = (p.def.a.y + p.def.b.y)/2;
+    }
+  });
+}
+function onFigureMouseDown(evt){
+  if(figState.mode!=='deplacer') return;
+  const svg=document.getElementById('figureSvg');
+  const {x,y} = svgCoordsFromEvent(svg,evt);
+  const p = findNearbyPoint(x,y);
+  if(p && !p.def){ figDragPoint = p; evt.preventDefault(); }
+}
+function onFigureMouseMove(evt){
+  if(!figDragPoint) return;
+  const svg=document.getElementById('figureSvg');
+  const {x,y} = svgCoordsFromEvent(svg,evt);
+  figDragPoint.x = Math.max(10,Math.min(490,x));
+  figDragPoint.y = Math.max(10,Math.min(310,y));
+  recomputeDependents();
+  renderFigureSvg();
+}
+function onFigureMouseUp(){ figDragPoint = null; }
+function onFigureClick(evt){
+  if(figState.mode==='deplacer') return; // géré par mousedown/mousemove
+  const svg=document.getElementById('figureSvg');
+  const {x,y} = svgCoordsFromEvent(svg,evt);
+  if(figState.mode==='point'){
+    if(findNearbyPoint(x,y)) return;
+    figState.points.push({label:nextPointLabel(), x, y});
+    renderFigureSvg();
+    return;
+  }
+  if(figState.mode==='segment-longueur'){ handleLengthSegmentClick(x,y); return; }
+  if(figState.mode==='cercle-rayon'){ handleRadiusCircleClick(x,y); return; }
+  if(figState.mode==='perpendiculaire' || figState.mode==='parallele' || figState.mode==='mediatrice'){ handleLineToolClick(x,y); return; }
+  if(figState.mode==='code'){ handleCodeClick(x,y); return; }
+
+  const near = findNearbyPoint(x,y);
+  if(!near || figState.selected.includes(near)) return;
+  figState.selected.push(near);
+  const neededMap = {angle:3, bissectrice:3, arc:3};
+  const needed = neededMap[figState.mode] || 2;
+  if(figState.selected.length===needed){
+    const withCompass = document.getElementById('compassToggle') && document.getElementById('compassToggle').checked;
+    if(figState.mode==='milieu'){
+      const [a,b] = figState.selected;
+      figState.points.push({label:nextPointLabel(), x:(a.x+b.x)/2, y:(a.y+b.y)/2, def:{type:'milieu', a, b}});
+    } else if(figState.mode==='angle' || figState.mode==='bissectrice'){
+      const [p1,vertex,p2] = figState.selected; // le sommet est le 2e point cliqué
+      figState.shapes.push({type:figState.mode, vertex, p1, p2});
+    } else if(figState.mode==='arc'){
+      const [center,p1,p2] = figState.selected;
+      figState.shapes.push({type:'arc', center, p1, p2, compass:withCompass});
+    } else if(figState.mode==='cercle'){
+      const [a,b] = figState.selected;
+      figState.shapes.push({type:'cercle', p1:a, p2:b, compass:withCompass});
+    } else {
+      const [a,b] = figState.selected;
+      figState.shapes.push({type:figState.mode, p1:a, p2:b});
+    }
+    figState.selected = [];
+  }
+  renderFigureSvg();
+}
+function angleDegrees(vertex,p1,p2){
+  const a1 = Math.atan2(p1.y-vertex.y, p1.x-vertex.x);
+  const a2 = Math.atan2(p2.y-vertex.y, p2.x-vertex.x);
+  let diff = Math.abs(a1-a2)*180/Math.PI;
+  if(diff>180) diff = 360-diff;
+  return Math.round(diff);
+}
+function angleArcPoints(vertex,p1,p2,r){
+  const a1 = Math.atan2(p1.y-vertex.y, p1.x-vertex.x);
+  let a2 = Math.atan2(p2.y-vertex.y, p2.x-vertex.x);
+  let delta = a2-a1;
+  while(delta> Math.PI) delta-=2*Math.PI;
+  while(delta<-Math.PI) delta+=2*Math.PI;
+  const steps=18, pts=[];
+  for(let i=0;i<=steps;i++){
+    const a=a1+delta*(i/steps);
+    pts.push(`${vertex.x+r*Math.cos(a)},${vertex.y+r*Math.sin(a)}`);
+  }
+  return {points:pts.join(' '), mid:a1+delta/2};
+}
+function compassGraphic(center, pencil){
+  const r = Math.hypot(pencil.x-center.x, pencil.y-center.y) || 1;
+  const legLen = 0.7*r+30;
+  const mid = {x:(center.x+pencil.x)/2, y:(center.y+pencil.y)/2};
+  const ux=(pencil.x-center.x)/r, uy=(pencil.y-center.y)/r;
+  let perp = {x:-uy, y:ux};
+  if(perp.y>0) perp={x:uy,y:-ux};
+  const h = Math.sqrt(Math.max(0, legLen*legLen-(r/2)*(r/2)));
+  const H = {x:mid.x+perp.x*h, y:mid.y+perp.y*h};
+  return `<line x1="${center.x}" y1="${center.y}" x2="${H.x}" y2="${H.y}" stroke="#5B6B78" stroke-width="2" stroke-linecap="round"/>
+          <line x1="${pencil.x}" y1="${pencil.y}" x2="${H.x}" y2="${H.y}" stroke="#5B6B78" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="${H.x}" cy="${H.y}" r="5" fill="#5B6B78"/>
+          <circle cx="${pencil.x}" cy="${pencil.y}" r="4" fill="#E35D3A"/>`;
+}
+const CODE_GROUP_COLORS = {1:'#E35D3A', 2:'#1F3A5C', 3:'#1F6B3A'};
+function renderLengthCode(p1,p2,group,color){
+  color = color || CODE_GROUP_COLORS[group] || '#E35D3A';
+  const dx=p2.x-p1.x, dy=p2.y-p1.y; const len=Math.hypot(dx,dy)||1;
+  const ux=dx/len, uy=dy/len;
+  const segAngle = Math.atan2(dy,dx);
+  const tilt = segAngle + 65*Math.PI/180;
+  const tx=Math.cos(tilt), ty=Math.sin(tilt);
+  const mid={x:(p1.x+p2.x)/2, y:(p1.y+p2.y)/2};
+  const spacing=8, offsetStart=-((group-1)*spacing)/2;
+  let html='';
+  for(let i=0;i<group;i++){
+    const off=offsetStart+i*spacing;
+    const cx=mid.x+ux*off, cy=mid.y+uy*off;
+    html+=`<line x1="${cx-tx*8}" y1="${cy-ty*8}" x2="${cx+tx*8}" y2="${cy+ty*8}" stroke="${color}" stroke-width="1.5"/>`;
+  }
+  return html;
+}
+function renderAngleCode(vertex,p1,p2,group,color){
+  color = color || CODE_GROUP_COLORS[group] || '#E35D3A';
+  let html='';
+  for(let i=0;i<group;i++){
+    const {points} = angleArcPoints(vertex,p1,p2,20+i*7);
+    html+=`<polyline points="${points}" fill="none" stroke="${color}" stroke-width="2"/>`;
+  }
+  return html;
+}
+function renderRightAngleCode(vertex,p1,p2){
+  const a1=Math.atan2(p1.y-vertex.y,p1.x-vertex.x), a2=Math.atan2(p2.y-vertex.y,p2.x-vertex.x);
+  const size=15;
+  const c1={x:vertex.x+size*Math.cos(a1), y:vertex.y+size*Math.sin(a1)};
+  const c2={x:vertex.x+size*Math.cos(a2), y:vertex.y+size*Math.sin(a2)};
+  const c3={x:c1.x+c2.x-vertex.x, y:c1.y+c2.y-vertex.y};
+  return `<polyline points="${c1.x},${c1.y} ${c3.x},${c3.y} ${c2.x},${c2.y}" fill="none" stroke="#E35D3A" stroke-width="2"/>`;
+}
+/* Codage d'un côté par SYMBOLE (pas seulement par couleur) : 1 trait, 2 traits, petit cercle,
+   ou # -- quatre conventions différentes qu'on peut cycler pour ne jamais confondre deux côtés,
+   même pour un daltonien qui ne distinguerait pas les couleurs. */
+function renderSideCode(p1,p2,styleIdx,color){
+  const style = ((styleIdx%4)+4)%4;
+  const mid={x:(p1.x+p2.x)/2, y:(p1.y+p2.y)/2};
+  if(style===0) return renderLengthCode(p1,p2,1,color);
+  if(style===1) return renderLengthCode(p1,p2,2,color);
+  if(style===2) return `<circle cx="${mid.x}" cy="${mid.y}" r="5.5" fill="none" stroke="${color}" stroke-width="1.6"/>`;
+  return `<text x="${mid.x}" y="${mid.y+5}" font-family="JetBrains Mono" font-size="16" font-weight="700" fill="${color}" text-anchor="middle">#</text>`;
+}
+/* Les angles utilisent un vocabulaire de symboles totalement différent de celui des côtés
+   (carré / losange au lieu de cercle / #) : un même symbole ne peut donc jamais désigner
+   à la fois une longueur et un angle, même par coïncidence de cycle. */
+/* Les angles restent toujours codés par des arcs (jamais par des cercles/carrés, qui sont réservés
+   aux côtés) : le nombre d'arcs, leur couleur, et pour aller plus loin un petit trait qui vient
+   intercepter le ou les arcs -- convention géométrique standard. */
+function renderVertexCode(vertex,p1,p2,styleIdx,color){
+  const style = ((styleIdx%4)+4)%4;
+  const arcCount = (style===0||style===2) ? 1 : 2;
+  let html = renderAngleCode(vertex,p1,p2,arcCount,color);
+  if(style===2 || style===3){
+    const a1=Math.atan2(p1.y-vertex.y,p1.x-vertex.x);
+    let a2=Math.atan2(p2.y-vertex.y,p2.x-vertex.x);
+    let delta=a2-a1; while(delta>Math.PI) delta-=2*Math.PI; while(delta<-Math.PI) delta+=2*Math.PI;
+    const bis=a1+delta/2;
+    const rInner=20, rOuter=arcCount===1?20:27;
+    const x1=vertex.x+(rInner-7)*Math.cos(bis), y1=vertex.y+(rInner-7)*Math.sin(bis);
+    const x2=vertex.x+(rOuter+7)*Math.cos(bis), y2=vertex.y+(rOuter+7)*Math.sin(bis);
+    html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="1.6"/>`;
+  }
+  return html;
+}
+function renderFigureSvg(){
+  const svg=document.getElementById('figureSvg');
+  let html='';
+  if(figState.refShape){
+    html+=`<line x1="${figState.refShape.p1.x}" y1="${figState.refShape.p1.y}" x2="${figState.refShape.p2.x}" y2="${figState.refShape.p2.y}" stroke="#E35D3A" stroke-width="4" stroke-opacity=".35"/>`;
+  }
+  figState.shapes.forEach(s=>{
+    if(s.type==='segment'){
+      html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x}" y2="${s.p2.y}" stroke="#1C1B2E" stroke-width="2"/>`;
+      if(s.lengthLabel){
+        const mx=(s.p1.x+s.p2.x)/2, my=(s.p1.y+s.p2.y)/2;
+        html+=`<text x="${mx}" y="${my-9}" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">${s.lengthLabel}</text>`;
+      }
+      if(s.codeGroup) html += renderLengthCode(s.p1, s.p2, s.codeGroup);
+    } else if(s.type==='droite'){
+      const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y; const len=Math.hypot(dx,dy)||1; const ext=400;
+      html+=`<line x1="${s.p1.x-dx/len*ext}" y1="${s.p1.y-dy/len*ext}" x2="${s.p2.x+dx/len*ext}" y2="${s.p2.y+dy/len*ext}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+    } else if(s.type==='cercle'){
+      const hasFixedRadius = s.radius!=null;
+      const r = hasFixedRadius ? s.radius : Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y);
+      const refPoint = hasFixedRadius ? {x:s.p1.x+r*Math.cos(s.angle||0), y:s.p1.y+r*Math.sin(s.angle||0)} : s.p2;
+      html+=`<circle cx="${s.p1.x}" cy="${s.p1.y}" r="${r}" fill="none" stroke="#1F3A5C" stroke-width="1.8"/>`;
+      if(s.compass) html += compassGraphic(s.p1, refPoint);
+      if(s.radiusLabel) html+=`<text x="${s.p1.x+(refPoint.x-s.p1.x)/2}" y="${s.p1.y+(refPoint.y-s.p1.y)/2-8}" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">${s.radiusLabel}</text>`;
+      if(s.codeGroup) html += renderLengthCode(s.p1, refPoint, s.codeGroup);
+    } else if(s.type==='arc'){
+      const r=Math.hypot(s.p1.x-s.center.x, s.p1.y-s.center.y);
+      const {points} = angleArcPoints(s.center, s.p1, s.p2, r);
+      html+=`<polyline points="${points}" fill="none" stroke="#1F3A5C" stroke-width="1.8"/>`;
+      if(s.compass) html += compassGraphic(s.center, s.p1);
+    } else if(s.type==='angle' || s.type==='bissectrice'){
+      const r=26;
+      const {points,mid}=angleArcPoints(s.vertex,s.p1,s.p2,r);
+      const color = s.type==='angle' ? '#E35D3A' : '#8A2F52';
+      html+=`<polyline points="${points}" fill="none" stroke="${color}" stroke-width="1.8"/>`;
+      if(s.type==='angle'){
+        const lx=s.vertex.x+(r+14)*Math.cos(mid), ly=s.vertex.y+(r+14)*Math.sin(mid);
+        html+=`<text x="${lx}" y="${ly}" font-family="JetBrains Mono" font-size="12" fill="${color}" text-anchor="middle">${angleDegrees(s.vertex,s.p1,s.p2)}°</text>`;
+      } else {
+        const a1=Math.atan2(s.p1.y-s.vertex.y, s.p1.x-s.vertex.x);
+        let a2=Math.atan2(s.p2.y-s.vertex.y, s.p2.x-s.vertex.x);
+        let delta=a2-a1; while(delta>Math.PI) delta-=2*Math.PI; while(delta<-Math.PI) delta+=2*Math.PI;
+        const bisA=a1+delta/2, len=260;
+        html+=`<line x1="${s.vertex.x}" y1="${s.vertex.y}" x2="${s.vertex.x+len*Math.cos(bisA)}" y2="${s.vertex.y+len*Math.sin(bisA)}" stroke="${color}" stroke-width="1.6" stroke-dasharray="2 3"/>`;
+      }
+    } else if(s.type==='perpendiculaire' || s.type==='parallele'){
+      let dx=s.refB.x-s.refA.x, dy=s.refB.y-s.refA.y;
+      if(s.type==='perpendiculaire'){ const t=dx; dx=-dy; dy=t; }
+      const len=Math.hypot(dx,dy)||1; const ext=400;
+      const color = s.type==='perpendiculaire' ? '#2C5A2E' : '#1F3A5C';
+      html+=`<line x1="${s.through.x-dx/len*ext}" y1="${s.through.y-dy/len*ext}" x2="${s.through.x+dx/len*ext}" y2="${s.through.y+dy/len*ext}" stroke="${color}" stroke-width="1.6"/>`;
+    } else if(s.type==='mediatrice'){
+      const mid={x:(s.p1.x+s.p2.x)/2, y:(s.p1.y+s.p2.y)/2};
+      const dx=-(s.p2.y-s.p1.y), dy=(s.p2.x-s.p1.x);
+      const len=Math.hypot(dx,dy)||1; const ext=400;
+      html+=`<line x1="${mid.x-dx/len*ext}" y1="${mid.y-dy/len*ext}" x2="${mid.x+dx/len*ext}" y2="${mid.y+dy/len*ext}" stroke="#2C5A2E" stroke-width="1.6" stroke-dasharray="6 4"/>`;
+    } else if(s.type==='code-longueur'){
+      html += renderLengthCode(s.p1,s.p2,s.group||1);
+    } else if(s.type==='code-angle'){
+      html += renderAngleCode(s.vertex,s.p1,s.p2,s.group||1);
+    } else if(s.type==='code-droit'){
+      html += renderRightAngleCode(s.vertex,s.p1,s.p2);
+    }
+  });
+  figState.points.forEach(p=>{
+    const sel = figState.selected.includes(p);
+    const c = sel?'#E35D3A':(p.def?'#7A8A98':'#1C1B2E');
+    html+=`<line x1="${p.x-6}" y1="${p.y-6}" x2="${p.x+6}" y2="${p.y+6}" stroke="${c}" stroke-width="2"/>`;
+    html+=`<line x1="${p.x-6}" y1="${p.y+6}" x2="${p.x+6}" y2="${p.y-6}" stroke="${c}" stroke-width="2"/>`;
+    html+=`<text x="${p.x+9}" y="${p.y-9}" font-family="Space Grotesk" font-size="14" font-weight="700" fill="${p.def?'#7A8A98':'#1C1B2E'}">${p.label}</text>`;
+  });
+  svg.innerHTML = html;
+}
+
+/* ---- construction à partir d'un énoncé (mini-langage reconnu) ---- */
+function stripAccents(s){ return s.normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+function quadCoords(kind){
+  const cx=250, cy=160;
+  if(kind==='carre') return [{x:cx-90,y:cy-90},{x:cx+90,y:cy-90},{x:cx+90,y:cy+90},{x:cx-90,y:cy+90}];
+  if(kind==='rectangle') return [{x:cx-130,y:cy-70},{x:cx+130,y:cy-70},{x:cx+130,y:cy+70},{x:cx-130,y:cy+70}];
+  if(kind==='losange') return [{x:cx,y:cy-100},{x:cx+120,y:cy},{x:cx,y:cy+100},{x:cx-120,y:cy}];
+  return [{x:cx-120,y:cy-70},{x:cx+80,y:cy-70},{x:cx+120,y:cy+70},{x:cx-80,y:cy+70}]; // parallélogramme
+}
+function triangleCoords(kind, rightIdx){
+  kind = kind || '';
+  if(kind.includes('equilateral')){
+    return [{x:250,y:70},{x:140.3,y:260},{x:359.7,y:260}];
+  }
+  if(kind.includes('rectangle')){
+    const base=[{x:150,y:250},{x:350,y:250},{x:150,y:90}]; // angle droit sur base[0]
+    const idx = (typeof rightIdx==='number') ? rightIdx : 0;
+    const out=[null,null,null];
+    out[idx]=base[0]; out[(idx+1)%3]=base[1]; out[(idx+2)%3]=base[2];
+    return out;
+  }
+  if(kind.includes('isocele')){
+    return [{x:250,y:70},{x:130,y:260},{x:370,y:260}];
+  }
+  return [{x:250,y:70},{x:120,y:260},{x:380,y:260}]; // scalène par défaut
+}
+function figByLabel(map, lab){ return map[lab]; }
+function buildFromEnonce(){
+  const text = document.getElementById('enonceInput').value;
+  const byLabel = {};
+  figState.points.forEach(p=>{ byLabel[p.label]=p; });
+  let unresolved = [];
+  text.split('\n').forEach(raw=>{
+    const line = raw.trim();
+    if(!line) return;
+    let m;
+    if((m = line.match(/^([A-Za-z]{4})\s+(carr[ée]|rectangle|losange|parall[ée]logramme)/i))){
+      const labels = m[1].toUpperCase().split('');
+      const kind = stripAccents(m[2].toLowerCase());
+      const coords = quadCoords(kind.startsWith('carr')?'carre':kind);
+      labels.forEach((lab,i)=>{ byLabel[lab]=byLabel[lab]||{label:lab}; Object.assign(byLabel[lab],coords[i]); });
+      for(let i=0;i<4;i++) figState.shapes.push({type:'segment', p1:byLabel[labels[i]], p2:byLabel[labels[(i+1)%4]]});
+    }
+    else if((m = line.match(/^([A-Za-z]{3})\s+triangle((?:\s+(?:rectangle|isoc[eè]le|[ée]quilat[ée]ral))*)(?:\s+en\s+([A-Za-z]))?/i))){
+      const labels = m[1].toUpperCase().split('');
+      const kind = stripAccents((m[2]||'').toLowerCase());
+      const rightVertex = m[3] ? m[3].toUpperCase() : null;
+      const rightIdx = rightVertex ? labels.indexOf(rightVertex) : 0;
+      const coords = triangleCoords(kind, rightIdx>=0?rightIdx:0);
+      labels.forEach((lab,i)=>{ byLabel[lab]=byLabel[lab]||{label:lab}; Object.assign(byLabel[lab],coords[i]); });
+      for(let i=0;i<3;i++) figState.shapes.push({type:'segment', p1:byLabel[labels[i]], p2:byLabel[labels[(i+1)%3]]});
+    }
+    else if((m = line.match(/^([A-Za-z])\s+milieu\s+de\s*\[?([A-Za-z])([A-Za-z])\]?/i))){
+      const lab=m[1].toUpperCase(), l1=m[2].toUpperCase(), l2=m[3].toUpperCase();
+      const p1=byLabel[l1], p2=byLabel[l2];
+      if(p1 && p2){ byLabel[lab]=byLabel[lab]||{label:lab}; Object.assign(byLabel[lab], {x:(p1.x+p2.x)/2, y:(p1.y+p2.y)/2, def:{type:'milieu', a:p1, b:p2}}); }
+      else unresolved.push(line);
+    }
+    else if((m = line.match(/^cercle\s+de\s+centre\s+([A-Za-z])(?:\s+passant\s+par\s+([A-Za-z])|\s+(?:et\s+)?de\s+rayon)/i))){
+      const cLab=m[1].toUpperCase(), tLab=m[2]?m[2].toUpperCase():null;
+      const center = byLabel[cLab];
+      if(center){
+        const radiusPoint = tLab ? byLabel[tLab] : {x:center.x+80, y:center.y};
+        if(radiusPoint) figState.shapes.push({type:'cercle', p1:center, p2:radiusPoint});
+      } else unresolved.push(line);
+    }
+    else if((m = line.match(/^([A-Za-z])\s*(?:point)?$/i))){
+      const lab = m[1].toUpperCase();
+      if(!byLabel[lab]) byLabel[lab] = {label:lab, x:60+Math.random()*380, y:50+Math.random()*220};
+    }
+    else unresolved.push(line);
+  });
+  figState.points = Object.values(byLabel);
+  recomputeDependents();
+  renderFigureSvg();
+  const hint = document.getElementById('figureHint');
+  hint.textContent = unresolved.length
+    ? `Construit, mais non reconnu : « ${unresolved.join(' / ')} ». Ajustez à la main, ou essayez « Interpréter avec l'IA ».`
+    : 'Construction faite — ajustez à la main si besoin, ou validez.';
+}
+function figurePrompt(text){
+  return `Tu convertis un énoncé de géométrie de collège (6e/5e) en une figure décrite en JSON strict, rien d'autre autour (pas de \`\`\`, pas de texte).
+Schéma exact attendu :
+{"points":[{"label":"A","x":150,"y":80}, ...],
+ "shapes":[{"type":"segment","p1":"A","p2":"B"}, {"type":"droite","p1":"A","p2":"B"}, {"type":"cercle","p1":"A","p2":"B"}, {"type":"angle","vertex":"B","p1":"A","p2":"C"}]}
+Contraintes : coordonnées x entre 20 et 480, y entre 20 et 300, dans un repère où y augmente vers le bas. Respecte la géométrie réelle décrite (angles droits, longueurs égales, alignements, milieux...) du mieux possible avec des coordonnées cohérentes. "p1"/"p2"/"vertex" référencent des labels déclarés dans "points". N'invente pas de figure si l'énoncé est incompréhensible : renvoie {"points":[],"shapes":[]} dans ce cas.
+Énoncé : """${text}"""`;
+}
+async function interpretEnonceWithAI(){
+  const hint = document.getElementById('figureHint');
+  const text = document.getElementById('enonceInput').value.trim();
+  if(!text){ hint.textContent = "Tapez d'abord un énoncé dans le champ ci-dessus."; return; }
+  if(!currentUser){ hint.textContent = "Connectez-vous pour utiliser l'interprétation par IA."; return; }
+  hint.textContent = "Interprétation par l'IA en cours…";
+  try{
+    const raw = await callClaude(figurePrompt(text), 900, {feature:'figure', chapitre:currentChapterTitle});
+    const match = raw.match(/\{[\s\S]*\}/);
+    if(!match) throw new Error('no-json');
+    const json = JSON.parse(match[0]);
+    applyAIFigure(json);
+    hint.textContent = "Figure interprétée par l'IA — vérifiez et ajustez si besoin, ou validez.";
+  }catch(err){
+    if(err.message==='no-session') hint.textContent = "Connectez-vous pour utiliser l'interprétation par IA.";
+    else hint.textContent = "Échec de l'interprétation IA (réseau, ou réponse inattendue). Réessayez, ou construisez à la main.";
+  }
+}
+function applyAIFigure(json){
+  const byLabel = {};
+  (json.points||[]).forEach(p=>{
+    if(p && p.label) byLabel[String(p.label).toUpperCase()] = {label:String(p.label).toUpperCase(), x:+p.x||250, y:+p.y||160};
+  });
+  const shapes = [];
+  (json.shapes||[]).forEach(s=>{
+    if(!s || !s.type) return;
+    if(s.type==='angle'){
+      const v=byLabel[String(s.vertex).toUpperCase()], p1=byLabel[String(s.p1).toUpperCase()], p2=byLabel[String(s.p2).toUpperCase()];
+      if(v&&p1&&p2) shapes.push({type:'angle', vertex:v, p1, p2});
+    } else if(['segment','droite','cercle'].includes(s.type)){
+      const p1=byLabel[String(s.p1).toUpperCase()], p2=byLabel[String(s.p2).toUpperCase()];
+      if(p1&&p2) shapes.push({type:s.type, p1, p2});
+    }
+  });
+  if(!Object.keys(byLabel).length) return;
+  figState.points = Object.values(byLabel);
+  figState.shapes = shapes;
+  figState.nextLabel = 0;
+  renderFigureSvg();
+}
+function validateFigure(){
+  const svg=document.getElementById('figureSvg');
+  pendingFigureSVG = `<svg viewBox="0 0 500 320" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;border:1px solid rgba(28,43,57,.12);border-radius:8px;">${svg.innerHTML}</svg>`;
+  document.getElementById('figureStatus').innerHTML = '✓ Figure prête — <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">retirer</a>';
+  closeFigureTool();
+}
+function removePendingFigure(){ pendingFigureSVG=null; document.getElementById('figureStatus').textContent=''; }
+(function initFigureDrag(){
+  const attach = ()=>{
+    const svg = document.getElementById('figureSvg');
+    if(!svg) return;
+    svg.addEventListener('mousedown', onFigureMouseDown);
+    window.addEventListener('mousemove', onFigureMouseMove);
+    window.addEventListener('mouseup', onFigureMouseUp);
+    svg.addEventListener('touchstart', onFigureMouseDown, {passive:false});
+    svg.addEventListener('touchmove', onFigureMouseMove, {passive:false});
+    svg.addEventListener('touchend', onFigureMouseUp);
+  };
+  attach();
+})();
+function fillCorChapitres(){
+  const niveau = document.getElementById('corNiveau').value;
+  const data = niveau==='6e'?CH6:CH5;
+  const sel=document.getElementById('corChapitre');
+  sel.innerHTML = data.map(c=>`<option value="${c.code} · ${c.t}">${c.code} — ${c.t}</option>`).join('');
+}
+fillCorChapitres();
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function fmtDateFR(iso){
+  if(!iso) return 'Date non précisée';
+  const d = new Date(iso+'T00:00:00');
+  const s = d.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  return s.charAt(0).toUpperCase()+s.slice(1);
+}
+
+/* ======================= CAHIER DE CORRECTIONS (persisté, groupé par jour) ======================= */
+/* ======================= SUPABASE : comptes profs, classes, cahier partagé =======================
+   Chaque classe appartient à un professeur (connexion par lien e-mail, sans mot de passe).
+   Le cahier d'une classe est visible par tous (élèves compris, sans compte), mais seul le
+   professeur propriétaire de la classe peut y ajouter ou en retirer une correction — la
+   sécurité est appliquée côté serveur (Supabase Row Level Security), pas seulement ici. */
+const SUPABASE_URL = 'https://rngzubhnypmistjsumpz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZ3p1YmhueXBtaXN0anN1bXB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MTExNjEsImV4cCI6MjEwMDM4NzE2MX0.V56LFlb1ITWPmoO-DwLw3coeS7epY9NM5K2Waj03pac';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let currentUserRole = null; // 'admin' | 'prof' | 'eleve' | null
+let currentClassId = null;
+
+function toggleAccountMenu(){
+  const d = document.getElementById('accountDropdown');
+  d.style.display = (d.style.display==='none'||!d.style.display) ? 'block' : 'none';
+}
+document.addEventListener('click', (e)=>{
+  const menu = document.querySelector('.account-menu');
+  if(menu && !menu.contains(e.target)) document.getElementById('accountDropdown').style.display='none';
+});
+/* Les comptes n'ont pas forcément un vrai e-mail (élèves, parfois profs) : on convertit tout
+   identifiant sans "@" en une adresse interne, jamais envoyée nulle part, qui ne sert qu'à
+   Supabase Auth en coulisses. La même conversion doit être appliquée à la connexion et à la
+   création de compte, sinon un identifiant créé d'un côté ne serait pas reconnu de l'autre. */
+function toAuthEmail(identifiant){
+  identifiant = (identifiant||'').trim();
+  return identifiant.includes('@') ? identifiant : identifiant.toLowerCase().replace(/\s+/g,'.')+'@mathcollege.local';
+}
+async function globalSignIn(){
+  const identifiant = document.getElementById('globalAuthEmail').value.trim();
+  const password = document.getElementById('globalAuthPassword').value;
+  const status = document.getElementById('globalAuthStatus');
+  if(!identifiant || !password){ status.textContent = 'Entrez votre identifiant et votre mot de passe.'; return; }
+  status.textContent = 'Connexion en cours…';
+  const { error } = await sb.auth.signInWithPassword({ email: toAuthEmail(identifiant), password });
+  status.textContent = error ? "Erreur : "+(error.message.includes('Invalid login') ? 'identifiant ou mot de passe incorrect.' : error.message) : '';
+}
+async function globalSignOut(){
+  await sb.auth.signOut();
+  currentUser = null; currentUserRole = null; currentClassId = null;
+  refreshAuthUI();
+}
+async function refreshAuthUI(){
+  const { data:{ session } } = await sb.auth.getSession();
+  const loggedOutEl = document.getElementById('accountLoggedOut'), loggedInEl = document.getElementById('accountLoggedIn');
+  const navAdmin = document.getElementById('navAdmin');
+  const navCorrection = document.getElementById('navCorrection'), navCahier = document.getElementById('navCahier');
+  const navSupervision = document.getElementById('navSupervision');
+  const navMesResultats = document.getElementById('navMesResultats');
+
+  if(session){
+    currentUser = session.user;
+    const { data: profile } = await sb.from('profiles').select('role,nom').eq('id', currentUser.id).single();
+    currentUserRole = profile ? profile.role : null;
+
+    loggedOutEl.style.display='none'; loggedInEl.style.display='block';
+    document.getElementById('accountNameDisplay').textContent = (profile && profile.nom) || currentUser.email;
+    document.getElementById('accountRoleDisplay').textContent =
+      currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='eleve' ? 'Élève' : '';
+
+    const isStaff = currentUserRole==='admin' || currentUserRole==='prof';
+    if(navCorrection) navCorrection.style.display = isStaff ? 'inline-block' : 'none';
+    if(navCahier) navCahier.style.display = 'inline-block'; // accessible à tous les comptes connectés (prof, admin, élève)
+    if(navSupervision) navSupervision.style.display = isStaff ? 'inline-block' : 'none';
+    if(navMesResultats) navMesResultats.style.display = currentUserRole==='eleve' ? 'inline-block' : 'none';
+    if(navAdmin) navAdmin.style.display = currentUserRole==='admin' ? 'inline-block' : 'none';
+    const classRow = document.getElementById('accountClassRow');
+    if(classRow) classRow.style.display = isStaff ? 'block' : 'none'; // un élève ne choisit pas sa classe, elle lui est assignée
+    const btnGenerateQuiz = document.getElementById('btnGenerateQuiz'), quizLoginHint = document.getElementById('quizLoginHint');
+    if(btnGenerateQuiz) btnGenerateQuiz.style.display = 'inline-block';
+    if(quizLoginHint) quizLoginHint.style.display = 'none';
+
+    if(currentUserRole==='admin') await adminRefreshDropdowns();
+    if(isStaff) await loadMyClasses();
+    if(currentUserRole==='eleve') await loadMyStudentClasses();
+  } else {
+    currentUser = null; currentUserRole = null; currentClassId = null;
+    loggedOutEl.style.display='block'; loggedInEl.style.display='none';
+    if(navCorrection) navCorrection.style.display='none';
+    if(navCahier) navCahier.style.display='none';
+    if(navSupervision) navSupervision.style.display='none';
+    if(navMesResultats) navMesResultats.style.display='none';
+    if(navAdmin) navAdmin.style.display='none';
+    const btnGenerateQuiz = document.getElementById('btnGenerateQuiz'), quizLoginHint = document.getElementById('quizLoginHint');
+    if(btnGenerateQuiz) btnGenerateQuiz.style.display='none';
+    if(quizLoginHint) quizLoginHint.style.display='inline';
+  }
+  // reflète l'état de connexion sur les boutons "+ Cahier" déjà injectés dans les cours ouverts
+  updateCourseAddButtonsState();
+}
+sb.auth.onAuthStateChange(()=>refreshAuthUI());
+
+function updateClassDisplays(name){
+  const badge = document.getElementById('activeClassBadge');
+  if(badge) badge.textContent = name ? '· '+name : '';
+  const classStatus = document.getElementById('classStatus');
+  if(classStatus) classStatus.textContent = name || 'aucune';
+  const studentClassStatus = document.getElementById('studentClassStatus');
+  if(studentClassStatus) studentClassStatus.textContent = name || 'aucune';
+  const btn = document.getElementById('accountClassButton');
+  if(btn) btn.textContent = name || '— Choisir une classe —';
+}
+let accountClassesList = [];
+function populateAccountClassList(classesList){
+  accountClassesList = classesList.map(c=>({id:c.id, label:`${c.nom} (${c.niveau})`}));
+}
+function openClassModal(){
+  renderClassModalList();
+  document.getElementById('classModalOverlay').style.display='flex';
+}
+function closeClassModal(){
+  document.getElementById('classModalOverlay').style.display='none';
+}
+function renderClassModalList(){
+  const list = document.getElementById('classModalList');
+  if(!accountClassesList.length){ list.innerHTML = '<p class="hint">Aucune classe disponible pour ce compte.</p>'; return; }
+  list.innerHTML = accountClassesList.map(c=>`
+    <div class="class-modal-item ${c.id===currentClassId?'active':''}" onclick="selectClassFromModal('${c.id}')">
+      <span>${escapeHtml(c.label)}</span>${c.id===currentClassId?'<span>✓</span>':''}
+    </div>`).join('');
+}
+async function selectClassFromModal(id){
+  currentClassId = id;
+  closeClassModal();
+  await applyClassSelection();
+}
+async function loadMyClasses(){
+  if(!currentUser) return;
+  let classesList, error;
+  if(currentUserRole==='admin'){
+    const res = await sb.from('classes').select('id,nom,niveau');
+    classesList = res.data || []; error = res.error;
+  } else {
+    const res = await sb.from('class_teachers').select('classes(id,nom,niveau)').eq('teacher_id', currentUser.id);
+    classesList = (res.data||[]).map(row=>row.classes).filter(Boolean); error = res.error;
+  }
+  classesList.sort((a,b)=>a.nom.localeCompare(b.nom));
+  populateAccountClassList(classesList);
+  if(!accountClassesList.some(c=>c.id===currentClassId)) currentClassId = null;
+  await applyClassSelection();
+  if(error) console.error(error);
+}
+async function applyClassSelection(){
+  const found = accountClassesList.find(c=>c.id===currentClassId);
+  const className = found ? found.label : null;
+  updateClassDisplays(className);
+  if(currentClassId){
+    const remote = await syncFetchAll();
+    if(remote){ cahier = remote; saveCahier(); }
+  } else {
+    cahier = [];
+  }
+  if(document.getElementById('cahierList')) renderCahier();
+  if(document.getElementById('cahierEleveContent')) renderCahierEleve();
+  if(document.getElementById('view-supervision').classList.contains('active')) renderSupervision();
+  updateCourseAddButtonsState();
+}
+let supervisionData = [];
+async function renderSupervision(){
+  const el = document.getElementById('supervisionContent');
+  if(!el) return;
+  if(!currentClassId){ el.innerHTML = 'Choisissez une classe dans le menu compte pour voir ses résultats.'; return; }
+  el.innerHTML = 'Chargement…';
+  const { data, error } = await sb.from('cm_results')
+    .select('score,total,sequence_label,created_at,profiles(nom,email)')
+    .eq('class_id', currentClassId)
+    .order('created_at', {ascending:false});
+  if(error){ el.innerHTML = "Erreur : "+error.message; return; }
+  supervisionData = data || [];
+  populateSupervisionFilters();
+  renderSupervisionFiltered();
+}
+function populateSupervisionFilters(){
+  const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
+  const eleves = Array.from(new Set(supervisionData.map(nameOf))).sort();
+  const exercices = Array.from(new Set(supervisionData.map(r=>r.sequence_label||'—'))).sort();
+  const selEleve = document.getElementById('supFilterEleve'), selExo = document.getElementById('supFilterExercice');
+  if(selEleve){
+    const prev = selEleve.value;
+    selEleve.innerHTML = '<option value="">Tous les élèves</option>' + eleves.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+    if(eleves.includes(prev)) selEleve.value = prev;
+  }
+  if(selExo){
+    const prev = selExo.value;
+    selExo.innerHTML = '<option value="">Tous les exercices</option>' + exercices.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+    if(exercices.includes(prev)) selExo.value = prev;
+  }
+}
+function resetSupervisionFilters(){
+  ['supFilterEleve','supFilterExercice','supFilterFrom','supFilterTo'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  renderSupervisionFiltered();
+}
+function renderSupervisionFiltered(){
+  const el = document.getElementById('supervisionContent');
+  if(!el) return;
+  if(!supervisionData.length){ el.innerHTML = 'Aucun résultat de calcul mental pour cette classe pour le moment.'; return; }
+  const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
+  const eleveFilter = document.getElementById('supFilterEleve').value;
+  const exoFilter = document.getElementById('supFilterExercice').value;
+  const fromFilter = document.getElementById('supFilterFrom').value;
+  const toFilter = document.getElementById('supFilterTo').value;
+
+  const filtered = supervisionData.filter(r=>{
+    if(eleveFilter && nameOf(r)!==eleveFilter) return false;
+    if(exoFilter && (r.sequence_label||'—')!==exoFilter) return false;
+    const d = (r.created_at||'').slice(0,10);
+    if(fromFilter && d<fromFilter) return false;
+    if(toFilter && d>toFilter) return false;
+    return true;
+  });
+  if(!filtered.length){ el.innerHTML = 'Aucun résultat pour ce filtre.'; return; }
+
+  const byStudent = {};
+  filtered.forEach(r=>{
+    const name = nameOf(r);
+    byStudent[name] = byStudent[name] || [];
+    byStudent[name].push(r);
+  });
+  el.innerHTML = Object.keys(byStudent).sort().map(name=>{
+    const results = byStudent[name];
+    const rows = results.map(r=>{
+      const pct = Math.round(100*r.score/r.total);
+      const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+      return `<div style="display:flex;justify-content:space-between;gap:12px;padding:3px 0;">
+        <span>${escapeHtml(r.sequence_label||'—')}</span>
+        <span style="font-weight:700;color:${pct>=70?'#1F6B3A':pct>=40?'#8A4210':'#9E1F5E'};">${r.score}/${r.total}</span>
+        <span style="color:var(--ink-soft);">${date}</span>
+      </div>`;
+    }).join('');
+    return `<div class="tool-shell" style="margin-bottom:14px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;">${escapeHtml(name)}</strong>
+      <div style="margin-top:8px;">${rows}</div>
+    </div>`;
+  }).join('');
+}
+
+let mesResultatsData = [];
+async function renderMesResultats(){
+  const el = document.getElementById('mesResultatsContent');
+  if(!el || !currentUser) return;
+  el.innerHTML = 'Chargement…';
+  const { data, error } = await sb.from('cm_results')
+    .select('score,total,sequence_label,created_at')
+    .eq('student_id', currentUser.id)
+    .order('created_at', {ascending:false});
+  if(error){ el.innerHTML = "Erreur : "+error.message; return; }
+  mesResultatsData = data || [];
+  const selExo = document.getElementById('mesResFilterExercice');
+  if(selExo){
+    const prev = selExo.value;
+    const exercices = Array.from(new Set(mesResultatsData.map(r=>r.sequence_label||'—'))).sort();
+    selExo.innerHTML = '<option value="">Tous les exercices</option>' + exercices.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+    if(exercices.includes(prev)) selExo.value = prev;
+  }
+  renderMesResultatsFiltered();
+}
+function resetMesResultatsFilters(){
+  ['mesResFilterExercice','mesResFilterFrom','mesResFilterTo'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  renderMesResultatsFiltered();
+}
+function renderMesResultatsFiltered(){
+  const el = document.getElementById('mesResultatsContent');
+  if(!el) return;
+  if(!mesResultatsData.length){ el.innerHTML = "Vous n'avez pas encore fait d'exercice de calcul mental."; return; }
+  const exoFilter = document.getElementById('mesResFilterExercice').value;
+  const fromFilter = document.getElementById('mesResFilterFrom').value;
+  const toFilter = document.getElementById('mesResFilterTo').value;
+  const filtered = mesResultatsData.filter(r=>{
+    if(exoFilter && (r.sequence_label||'—')!==exoFilter) return false;
+    const d = (r.created_at||'').slice(0,10);
+    if(fromFilter && d<fromFilter) return false;
+    if(toFilter && d>toFilter) return false;
+    return true;
+  });
+  if(!filtered.length){ el.innerHTML = 'Aucun résultat pour ce filtre.'; return; }
+  const totalScore = filtered.reduce((s,r)=>s+r.score,0), totalMax = filtered.reduce((s,r)=>s+r.total,0);
+  const avg = totalMax ? Math.round(100*totalScore/totalMax) : 0;
+  const rows = filtered.map(r=>{
+    const pct = Math.round(100*r.score/r.total);
+    const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+    return `<div style="display:flex;justify-content:space-between;gap:12px;padding:4px 0;">
+      <span>${escapeHtml(r.sequence_label||'—')}</span>
+      <span style="font-weight:700;color:${pct>=70?'#1F6B3A':pct>=40?'#8A4210':'#9E1F5E'};">${r.score}/${r.total}</span>
+      <span style="color:var(--ink-soft);">${date}</span>
+    </div>`;
+  }).join('');
+  el.innerHTML = `<p class="hint" style="margin:0 0 10px;">Moyenne sur cette sélection : <b>${avg}%</b> (${filtered.length} exercice(s))</p>
+    <div class="tool-shell">${rows}</div>`;
+}
+
+function isSyncEnabled(){ return !!currentClassId; }
+async function syncFetchAll(){
+  if(!currentClassId) return null;
+  const { data, error } = await sb.from('cahier_entries').select('*').eq('class_id', currentClassId).order('date');
+  if(error){ console.error('sync fetch failed', error); return null; }
+  return data;
+}
+async function syncAddEntry(entry){
+  if(!currentClassId) return {ok:false, offline:true};
+  const { data, error } = await sb.from('cahier_entries').insert({ ...entry, class_id: currentClassId }).select().single();
+  if(error) return {ok:false, error: error.message.includes('row-level security') ? "vous n'êtes pas assigné à cette classe." : error.message};
+  return {ok:true, id:data.id};
+}
+async function syncRemoveEntry(id){
+  if(!id) return {ok:false, offline:true};
+  const { error } = await sb.from('cahier_entries').delete().eq('id', id);
+  if(error) return {ok:false, error: error.message};
+  return {ok:true};
+}
+
+/* ================= PANNEAU ADMINISTRATEUR ================= */
+async function adminCreateAccount(){
+  const identifiant = document.getElementById('adminNewEmail').value.trim();
+  const password = document.getElementById('adminNewPassword').value;
+  const nom = document.getElementById('adminNewNom').value.trim();
+  const role = document.getElementById('adminNewRole').value;
+  const status = document.getElementById('adminAccountStatus');
+  if(!identifiant || !password){ status.textContent = 'Identifiant et mot de passe requis.'; return; }
+  const email = toAuthEmail(identifiant);
+  status.textContent = 'Création en cours…';
+  const { data:{ session } } = await sb.auth.getSession();
+  try{
+    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+      body: JSON.stringify({ email, password, role, nom: nom || identifiant }),
+    });
+    const data = await res.json();
+    if(data.error){ status.textContent = "Erreur : "+data.error; return; }
+    status.textContent = '✓ Compte créé ('+role+').';
+    document.getElementById('adminNewEmail').value=''; document.getElementById('adminNewPassword').value=''; document.getElementById('adminNewNom').value='';
+    await adminRefreshDropdowns();
+  }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
+}
+let resetPasswordTargetUserId = null;
+function adminResetPasswordPrompt(userId, name){
+  resetPasswordTargetUserId = userId;
+  document.getElementById('resetPasswordModalName').textContent = 'Compte : '+name;
+  document.getElementById('resetPasswordModalInput').value = '';
+  document.getElementById('resetPasswordModalStatus').textContent = '';
+  document.getElementById('resetPasswordModalOverlay').style.display='flex';
+}
+function closeResetPasswordModal(){
+  document.getElementById('resetPasswordModalOverlay').style.display='none';
+}
+async function adminConfirmResetPassword(){
+  const newPassword = document.getElementById('resetPasswordModalInput').value;
+  const status = document.getElementById('resetPasswordModalStatus');
+  if(!newPassword || newPassword.length<6){ status.textContent = 'Mot de passe trop court (6 caractères minimum).'; return; }
+  status.textContent = 'En cours…';
+  const { data:{ session } } = await sb.auth.getSession();
+  try{
+    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+      body: JSON.stringify({ action:'reset-password', userId: resetPasswordTargetUserId, newPassword }),
+    });
+    const data = await res.json();
+    if(data.error){ status.textContent = "Erreur : "+data.error; return; }
+    status.textContent = '✓ Mot de passe réinitialisé.';
+    setTimeout(closeResetPasswordModal, 1200);
+  }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
+}
+let changeIdentifiantTargetUserId = null;
+function adminChangeIdentifiantPrompt(userId, name){
+  changeIdentifiantTargetUserId = userId;
+  document.getElementById('changeIdentifiantModalName').textContent = 'Compte : '+name;
+  document.getElementById('changeIdentifiantModalInput').value = '';
+  document.getElementById('changeIdentifiantModalStatus').textContent = '';
+  document.getElementById('changeIdentifiantModalOverlay').style.display='flex';
+}
+function closeChangeIdentifiantModal(){
+  document.getElementById('changeIdentifiantModalOverlay').style.display='none';
+}
+async function adminConfirmChangeIdentifiant(){
+  const raw = document.getElementById('changeIdentifiantModalInput').value.trim();
+  const status = document.getElementById('changeIdentifiantModalStatus');
+  if(!raw){ status.textContent = 'Entrez un identifiant.'; return; }
+  const newEmail = toAuthEmail(raw);
+  status.textContent = 'En cours…';
+  const { data:{ session } } = await sb.auth.getSession();
+  try{
+    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+      body: JSON.stringify({ action:'update-email', userId: changeIdentifiantTargetUserId, newEmail }),
+    });
+    const data = await res.json();
+    if(data.error){ status.textContent = "Erreur : "+data.error; return; }
+    status.textContent = '✓ Identifiant modifié.';
+    await adminRefreshListings();
+    setTimeout(closeChangeIdentifiantModal, 1200);
+  }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
+}
+async function adminDeleteUser(userId, btn){
+  if(btn.dataset.armed!=='1'){
+    btn.dataset.armed='1';
+    btn.dataset.origText = btn.textContent;
+    btn.textContent = 'Confirmer ?';
+    setTimeout(()=>{ if(btn.isConnected){ btn.dataset.armed=''; btn.textContent=btn.dataset.origText; } }, 2500);
+    return;
+  }
+  btn.disabled = true;
+  const { data:{ session } } = await sb.auth.getSession();
+  try{
+    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+      body: JSON.stringify({ action:'delete', userId }),
+    });
+    const data = await res.json();
+    if(data.error){ alert("Erreur : "+data.error); btn.disabled=false; return; }
+    await adminRefreshDropdowns();
+  }catch(err){ alert('Erreur réseau : '+err.message); btn.disabled=false; }
+}
+async function adminSyncEmails(){
+  const status = document.getElementById('adminSyncEmailsStatus');
+  status.textContent = 'Réparation en cours…';
+  const { data:{ session } } = await sb.auth.getSession();
+  try{
+    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+      body: JSON.stringify({ action:'sync-emails' }),
+    });
+    const data = await res.json();
+    if(data.error){ status.textContent = "Erreur : "+data.error; return; }
+    status.textContent = `✓ ${data.updated} identifiant(s) mis à jour.`;
+    await adminRefreshListings();
+  }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
+}
+async function adminCreateClass(){
+  const nom = document.getElementById('adminNewClassNom').value.trim();
+  const niveau = document.getElementById('adminNewClassNiveau').value;
+  const status = document.getElementById('adminClassStatus');
+  if(!nom){ status.textContent = 'Le nom est requis.'; return; }
+  const { error } = await sb.from('classes').insert({ nom, niveau });
+  status.textContent = error ? "Erreur : "+error.message : '✓ Classe créée.';
+  if(!error){ document.getElementById('adminNewClassNom').value=''; await adminRefreshDropdowns(); await loadMyClasses(); }
+}
+async function adminRefreshDropdowns(){
+  const { data: profs } = await sb.from('profiles').select('id,nom,role').in('role',['prof','admin']);
+  const { data: eleves } = await sb.from('profiles').select('id,nom').eq('role','eleve');
+  const { data: classesList } = await sb.from('classes').select('id,nom,niveau').order('nom');
+  const fillSelect = (id, items, label)=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.innerHTML = `<option value="">— ${label} —</option>` + items.map(it=>`<option value="${it.id}">${it.label}</option>`).join('');
+  };
+  fillSelect('adminAssignTeacherSelect', (profs||[]).map(p=>({id:p.id, label:escapeHtml(p.nom||p.id)+(p.role==='admin'?' (admin)':'')})), 'Choisir un prof');
+  fillSelect('adminAssignStudentSelect', (eleves||[]).map(p=>({id:p.id, label:escapeHtml(p.nom||p.id)})), 'Choisir un élève');
+  fillSelect('adminAssignTeacherClassSelect', (classesList||[]).map(c=>({id:c.id, label:escapeHtml(c.nom)+' ('+escapeHtml(c.niveau)+')'})), 'Choisir une classe');
+  fillSelect('adminAssignStudentClassSelect', (classesList||[]).map(c=>({id:c.id, label:escapeHtml(c.nom)+' ('+escapeHtml(c.niveau)+')'})), 'Choisir une classe');
+  await adminRefreshListings();
+}
+async function adminRefreshListings(){
+  await adminRefreshAIUsage();
+  const { data: profs } = await sb.from('profiles').select('id,nom,email,role').in('role',['prof','admin']).order('nom');
+  const { data: eleves } = await sb.from('profiles').select('id,nom,email,role').eq('role','eleve').order('nom');
+  const accEl = document.getElementById('adminAccountsListing');
+  if(accEl){
+    const loginIdentifiant = email => email ? (email.endsWith('@mathcollege.local') ? email.slice(0, -('@mathcollege.local'.length)) : email) : '(inconnu)';
+    const rowHTML = p => {
+      const label = escapeHtml(p.nom||'(sans nom)') + ' — <b>identifiant :</b> ' + escapeHtml(loginIdentifiant(p.email)) + (p.role==='admin'?' [admin]':'');
+      const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
+      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(28,43,57,.06);">
+        <span>${label}</span>
+        <span style="display:flex;gap:6px;flex:none;">
+          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeIdentifiantPrompt('${p.id}','${safeName}')">✏️ Identifiant</button>
+          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminResetPasswordPrompt('${p.id}','${safeName}')">🔑 Réinitialiser</button>
+          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="adminDeleteUser('${p.id}', this)">🗑️ Supprimer</button>
+        </span>
+      </div>`;
+    };
+    accEl.innerHTML =
+      `<b>Profs/admins (${(profs||[]).length})</b>` + ((profs||[]).length ? (profs||[]).map(rowHTML).join('') : '<div class="hint">aucun</div>') +
+      `<div style="margin-top:12px;"><b>Élèves (${(eleves||[]).length})</b></div>` + ((eleves||[]).length ? (eleves||[]).map(rowHTML).join('') : '<div class="hint">aucun</div>');
+  }
+  const { data: classesList } = await sb.from('classes').select('id,nom,niveau').order('nom');
+  const { data: classTeachers } = await sb.from('class_teachers').select('class_id, profiles(nom,email)');
+  const { data: classStudents } = await sb.from('class_students').select('class_id, profiles(nom,email)');
+  const classesEl = document.getElementById('adminClassesListing');
+  if(classesEl){
+    if(!classesList || !classesList.length){ classesEl.textContent = 'Aucune classe créée pour l\'instant.'; return; }
+    classesEl.innerHTML = classesList.map(c=>{
+      const profsHere = (classTeachers||[]).filter(r=>r.class_id===c.id).map(r=>r.profiles && (r.profiles.nom||r.profiles.email)).filter(Boolean);
+      const elevesHere = (classStudents||[]).filter(r=>r.class_id===c.id).map(r=>r.profiles && (r.profiles.nom||r.profiles.email)).filter(Boolean);
+      return `<div style="margin-bottom:10px;"><b>${escapeHtml(c.nom)}</b> (${escapeHtml(c.niveau)})<br>
+        Profs : ${profsHere.map(escapeHtml).join(', ')||'aucun'}<br>
+        Élèves (${elevesHere.length}) : ${elevesHere.map(escapeHtml).join(', ')||'aucun'}</div>`;
+    }).join('');
+  }
+}
+async function adminRefreshAIUsage(){
+  const el = document.getElementById('adminAIUsageListing');
+  if(!el) return;
+  const { data, error } = await sb.from('ai_usage_log')
+    .select('feature,chapitre,niveau,created_at,profiles(nom,email)')
+    .order('created_at', {ascending:false})
+    .limit(200);
+  if(error){ el.textContent = "Erreur : "+error.message; return; }
+  if(!data || !data.length){ el.textContent = "Aucune utilisation de l'IA enregistrée pour l'instant."; return; }
+  el.innerHTML = data.map(r=>{
+    const name = (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Utilisateur inconnu';
+    const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+    const featureLabel = r.feature==='quiz' ? 'Quiz généré' : r.feature==='figure' ? 'Figure interprétée' : (r.feature||'—');
+    return `<div style="display:flex;justify-content:space-between;gap:12px;padding:3px 0;">
+      <span>${escapeHtml(name)}</span>
+      <span>${escapeHtml(featureLabel)}${r.chapitre?' — '+escapeHtml(r.chapitre):''}</span>
+      <span style="color:var(--ink-soft);">${date}</span>
+    </div>`;
+  }).join('');
+}
+async function adminBulkCreateStudents(){
+  const raw = document.getElementById('adminBulkStudents').value;
+  const status = document.getElementById('adminBulkStatus');
+  const lines = raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  if(!lines.length){ status.textContent = 'Collez au moins une ligne (identifiant, tabulation, mot de passe).'; return; }
+  const { data:{ session } } = await sb.auth.getSession();
+  let ok=0, fail=0; const errors=[];
+  for(let i=0;i<lines.length;i++){
+    status.textContent = `Création en cours… (${i+1}/${lines.length})`;
+    const parts = lines[i].split('\t').map(s=>s.trim()).filter(s=>s!=='');
+    if(parts.length<2){ fail++; errors.push(`Ligne ${i+1} : format invalide (identifiant [tabulation] mot de passe attendus)`); continue; }
+    const [identifiant, password] = parts;
+    const email = toAuthEmail(identifiant);
+    try{
+      const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+        body: JSON.stringify({ email, password, role:'eleve', nom: identifiant }),
+      });
+      const data = await res.json();
+      if(data.error){ fail++; errors.push(`${identifiant} : ${data.error}`); }
+      else ok++;
+    }catch(err){ fail++; errors.push(`${identifiant} : erreur réseau`); }
+  }
+  status.innerHTML = `✓ ${ok} compte(s) créé(s)` + (fail?`, ⚠️ ${fail} échec(s) :<br>`+errors.map(escapeHtml).join('<br>') : '.');
+  if(ok) document.getElementById('adminBulkStudents').value='';
+  await adminRefreshDropdowns();
+}
+async function adminAssignTeacher(){
+  const teacher_id = document.getElementById('adminAssignTeacherSelect').value;
+  const class_id = document.getElementById('adminAssignTeacherClassSelect').value;
+  const status = document.getElementById('adminAssignTeacherStatus');
+  if(!teacher_id || !class_id){ status.textContent = 'Choisissez un prof et une classe.'; return; }
+  const { error } = await sb.from('class_teachers').insert({ teacher_id, class_id });
+  status.textContent = error ? "Erreur : "+error.message : '✓ Associé.';
+  if(!error) await adminRefreshListings();
+}
+async function adminAssignStudent(){
+  const student_id = document.getElementById('adminAssignStudentSelect').value;
+  const class_id = document.getElementById('adminAssignStudentClassSelect').value;
+  const status = document.getElementById('adminAssignStudentStatus');
+  if(!student_id || !class_id){ status.textContent = 'Choisissez un élève et une classe.'; return; }
+  const { error } = await sb.from('class_students').insert({ student_id, class_id });
+  status.textContent = error ? "Erreur : "+error.message : '✓ Associé.';
+  if(!error) await adminRefreshListings();
+}
+
+/* ================= CÔTÉ ÉLÈVE : classes ================= */
+async function loadMyStudentClasses(){
+  if(!currentUser) return;
+  const { data, error } = await sb.from('class_students').select('classes(id,nom,niveau)').eq('student_id', currentUser.id);
+  const classesList = (data||[]).map(row=>row.classes).filter(Boolean);
+  populateAccountClassList(classesList);
+  if(!currentClassId || !accountClassesList.some(c=>c.id===currentClassId)){
+    currentClassId = classesList[0] ? classesList[0].id : null;
+  }
+  await applyClassSelection();
+  if(error) console.error(error);
+}
+
+/* ======================= CAHIER DE CORRECTIONS (persisté, groupé par jour) ======================= */
+function loadCahier(){
+  try{ const raw=localStorage.getItem('mathcollege_cahier'); return raw?JSON.parse(raw):[]; }
+  catch(e){ return []; }
+}
+function saveCahier(){
+  try{ localStorage.setItem('mathcollege_cahier', JSON.stringify(cahier)); }catch(e){ /* stockage indisponible dans ce contexte */ }
+}
+let cahier = loadCahier();
+let editingIndex = null;
+function sortCahierInPlace(){ cahier.sort((a,b)=> (a.date||'').localeCompare(b.date||'')); }
+
+async function addToCahier(){
+  const raw = document.getElementById('correctionInput').value.trim();
+  if(!raw){ return; }
+  const entry = {
+    niveau: document.getElementById('corNiveau').value,
+    chapitre: document.getElementById('corChapitre').value,
+    exo: document.getElementById('corExoNum').value || '—',
+    titre: document.getElementById('corTitre').value.trim(),
+    date: document.getElementById('corDate').value || todayISO(),
+    raw: raw,
+    figure: pendingFigureSVG,
+  };
+  let oldServerId = null;
+  if(editingIndex!==null){
+    oldServerId = cahier[editingIndex].id || null;
+    cahier[editingIndex] = entry;
+    editingIndex = null;
+    document.getElementById('btnAddCahier').textContent = '+ Ajouter au cahier de corrections';
+    document.getElementById('btnCancelEdit').style.display = 'none';
+  } else {
+    cahier.push(entry);
+  }
+  sortCahierInPlace();
+  saveCahier();
+  renderCahier();
+  clearCorrectionInput();
+  if(isSyncEnabled()){
+    if(oldServerId) await syncRemoveEntry(oldServerId);
+    const res = await syncAddEntry(entry);
+    if(res.ok){ entry.id = res.id; saveCahier(); renderCahier(); }
+    else if(!res.offline){ alert("⚠️ Enregistré localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez l'adresse du script et le code secret dans la configuration de synchronisation."); }
+  }
+}
+function editCahierEntry(i){
+  const e = cahier[i];
+  document.getElementById('corNiveau').value = e.niveau;
+  fillCorChapitres();
+  document.getElementById('corChapitre').value = e.chapitre;
+  document.getElementById('corExoNum').value = e.exo==='—'?'':e.exo;
+  document.getElementById('corTitre').value = e.titre||'';
+  document.getElementById('corDate').value = e.date||todayISO();
+  document.getElementById('correctionInput').value = e.raw;
+  renderCorrectionPreview();
+  pendingFigureSVG = e.figure || null;
+  document.getElementById('figureStatus').innerHTML = pendingFigureSVG ? '✓ Figure jointe — <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">retirer</a>' : '';
+  editingIndex = i;
+  document.getElementById('btnAddCahier').textContent = '💾 Enregistrer la modification';
+  document.getElementById('btnCancelEdit').style.display = 'inline-block';
+  document.getElementById('correctionForm').scrollIntoView({behavior:'smooth', block:'start'});
+  document.getElementById('correctionInput').focus();
+}
+function cancelEditCahier(){
+  editingIndex = null;
+  document.getElementById('btnAddCahier').textContent = '+ Ajouter au cahier de corrections';
+  document.getElementById('btnCancelEdit').style.display = 'none';
+  clearCorrectionInput();
+}
+function clearCorrectionInput(){
+  document.getElementById('correctionInput').value='';
+  document.getElementById('corExoNum').value='';
+  document.getElementById('corTitre').value='';
+  removePendingFigure();
+  renderCorrectionPreview();
+}
+async function removeCahierEntry(i){
+  if(editingIndex===i) cancelEditCahier();
+  const entry = cahier[i];
+  if(isSyncEnabled() && entry && entry.id){
+    const res = await syncRemoveEntry(entry.id);
+    if(!res.ok){ alert("Échec de la suppression sur le serveur : "+(res.error||'erreur inconnue')); return; }
+  }
+  cahier.splice(i,1); saveCahier(); renderCahier();
+}
+function clearCahier(btn){
+  if(!cahier.length) return;
+  if(btn && btn.dataset.armed!=='1'){
+    btn.dataset.armed='1';
+    const original = btn.textContent;
+    btn.textContent = 'Confirmer ?';
+    btn.style.background = 'rgba(211,90,60,.2)';
+    setTimeout(()=>{ if(btn.isConnected){ btn.dataset.armed=''; btn.textContent=original; btn.style.background=''; } }, 2500);
+    return;
+  }
+  cahier=[]; editingIndex=null; saveCahier(); renderCahier();
+}
+
+function entryRowsHTML(e, idx, editable){
+  const refLabel = e.exo==='Cours' ? 'Cours' : ('Exercice '+e.exo);
+  let html = `<div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' — '+escapeHtml(e.titre):''}</div>`;
+  if(editable){
+    html += `<button type="button" class="nb-remove-btn" onclick="removeCahierEntryFromNotebook(${idx}, this)" title="Retirer ce bloc du cahier">✕ Retirer</button>`;
+  }
+  html += `</div>`;
+  html += `<div class="nb-body">${e.html!=null ? e.html : renderMathText(e.raw)}</div>`;
+  if(e.figure) html += `<div class="nb-figure-row">${e.figure}</div>`;
+  return html;
+}
+function groupedEntriesHTML(entries, renderItem){
+  let html=''; let lastKey=null;
+  entries.forEach((e,i)=>{
+    const key = (e.date||'')+'|'+(e.chapitre||'');
+    if(key!==lastKey){
+      if(lastKey!==null) html+='<hr class="nb-daysep">';
+      html+=`<div class="nb-date-row"><div class="nb-date">${fmtDateFR(e.date)}</div><div class="nb-chapitre">${escapeHtml(e.chapitre||'')}</div></div>`;
+      lastKey=key;
+    }
+    html+=renderItem(e,i);
+  });
+  return html;
+}
+function renderCahier(){
+  document.getElementById('cahierCount').textContent = cahier.length+' exercice(s)';
+  const list=document.getElementById('cahierList');
+  if(!currentClassId){ list.innerHTML = '<div class="placeholder-box">Choisissez une classe ci-dessus pour voir et ajouter des corrections.</div>'; return; }
+  if(!cahier.length){ list.innerHTML = '<div class="placeholder-box">Le cahier est vide pour l\'instant — ajoutez une correction ci-dessus.</div>'; return; }
+  list.innerHTML = groupedEntriesHTML(cahier, (e,i)=>`
+    <div class="cahier-entry">
+      <div style="flex:1;">${entryRowsHTML(e)}</div>
+      <div style="display:flex;flex-direction:column;gap:6px;flex:none;">
+        <button class="remove" style="color:var(--accent);" onclick="editCahierEntry(${i})">Modifier</button>
+        <button class="remove" onclick="removeCahierEntry(${i})">Retirer</button>
+      </div>
+    </div>`);
+}
+let cahierFilterFrom = null, cahierFilterTo = null;
+let cahierFilterChapitre = '';
+function filteredCahier(){
+  if(!cahierFilterFrom && !cahierFilterTo && !cahierFilterChapitre) return cahier;
+  return cahier.filter(e=>{
+    if(cahierFilterFrom && (e.date||'') < cahierFilterFrom) return false;
+    if(cahierFilterTo && (e.date||'') > cahierFilterTo) return false;
+    if(cahierFilterChapitre && e.chapitre!==cahierFilterChapitre) return false;
+    return true;
+  });
+}
+function populateCahierChapitreFilter(){
+  const sel = document.getElementById('cahierFilterChapitre');
+  if(!sel) return;
+  const current = sel.value;
+  const chapitres = Array.from(new Set(cahier.map(e=>e.chapitre).filter(Boolean))).sort();
+  sel.innerHTML = '<option value="">Tous</option>' + chapitres.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  if(chapitres.includes(current)) sel.value = current;
+}
+function applyCahierFilter(){
+  cahierFilterFrom = document.getElementById('cahierFilterFrom').value || null;
+  cahierFilterTo = document.getElementById('cahierFilterTo').value || null;
+  cahierFilterChapitre = document.getElementById('cahierFilterChapitre').value || '';
+  renderCahierEleve();
+}
+function clearCahierFilter(){
+  cahierFilterFrom = null; cahierFilterTo = null; cahierFilterChapitre = '';
+  document.getElementById('cahierFilterFrom').value = '';
+  document.getElementById('cahierFilterTo').value = '';
+  const sel = document.getElementById('cahierFilterChapitre'); if(sel) sel.value = '';
+  renderCahierEleve();
+}
+function buildCahierNotebookHTML(editable){
+  const list = filteredCahier();
+  const status = document.getElementById('cahierFilterStatus');
+  if(status){
+    status.textContent = (cahierFilterFrom||cahierFilterTo||cahierFilterChapitre) ? `${list.length} résultat(s) sur ${cahier.length}` : '';
+  }
+  if(!cahier.length) return '<p class="hint">Le cahier est vide pour l\'instant.</p>';
+  if(!list.length) return '<p class="hint">Aucune correction dans cette période.</p>';
+  return groupedEntriesHTML(list, (e)=>entryRowsHTML(e, cahier.indexOf(e), editable));
+}
+async function removeCahierEntryFromNotebook(i, btn){
+  if(btn && btn.dataset.armed!=='1'){
+    btn.dataset.armed='1';
+    btn.dataset.originalText = btn.textContent;
+    btn.textContent = 'Confirmer ?';
+    btn.style.background = 'rgba(211,90,60,.3)';
+    btn.dataset.timeoutId = setTimeout(()=>{
+      if(btn.isConnected){ btn.dataset.armed=''; btn.textContent=btn.dataset.originalText; btn.style.background=''; }
+    }, 2500);
+    return;
+  }
+  const entry = cahier[i];
+  if(isSyncEnabled() && entry && entry.id){
+    const res = await syncRemoveEntry(entry.id);
+    if(!res.ok){
+      alert(res.error==='unauthorized'
+        ? "Seul le professeur peut retirer un élément de ce cahier partagé (code secret requis, configuré dans l'outil prof)."
+        : "Échec de la suppression sur le serveur : "+(res.error||'erreur inconnue'));
+      return;
+    }
+  }
+  cahier.splice(i,1);
+  saveCahier();
+  renderCahierEleve();
+  if(document.getElementById('cahierList')) renderCahier();
+}
+async function renderCahierEleve(){
+  populateCahierChapitreFilter();
+  if(!currentClassId){
+    document.getElementById('cahierEleveContent').innerHTML = '<p class="hint">Choisissez une classe ci-dessus pour voir son cahier.</p>';
+    return;
+  }
+  let warning = '';
+  if(isSyncEnabled()){
+    document.getElementById('cahierEleveContent').innerHTML = '<p class="hint">Chargement depuis le cahier partagé…</p>';
+    const remote = await syncFetchAll();
+    if(remote){
+      cahier = remote;
+      saveCahier();
+      populateCahierChapitreFilter();
+    } else {
+      warning = '<p class="hint">⚠️ Impossible de joindre le cahier partagé — affichage de la dernière copie connue sur cet appareil.</p>';
+    }
+  }
+  document.getElementById('cahierEleveContent').innerHTML = warning + buildCahierNotebookHTML(currentUserRole==='prof' || currentUserRole==='admin');
+  const book=document.getElementById('cahierEleveBook');
+  requestAnimationFrame(()=>{ book.scrollTop = book.scrollHeight; });
+}
+function exportCahierAsPDF(){
+  if(!cahier.length){ alert('Le cahier est vide : ajoutez au moins une correction avant de générer le PDF.'); return; }
+  if(typeof html2pdf==='undefined'){ alert("La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?)."); return; }
+  // Important : voir la note dans exportCoursPDF — jamais de position fixed/absolute ici.
+  const clip = document.createElement('div');
+  clip.style.cssText='height:0;overflow:hidden;';
+  const wrapper=document.createElement('div');
+  wrapper.style.cssText='width:700px;background:#FEFDFB;padding:30px 30px 30px 60px;font-family:Inter,sans-serif;color:#1C1B2E;';
+  wrapper.innerHTML = `<h1 style="font-family:'Space Grotesk',sans-serif;">Cahier de corrections</h1>` + buildCahierNotebookHTML();
+  clip.appendChild(wrapper);
+  document.body.appendChild(clip);
+  html2pdf().set({margin:10, filename:'cahier-de-corrections.pdf', html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+    .from(wrapper).save()
+    .then(()=>clip.remove())
+    .catch(()=>{ clip.remove(); alert("La génération du PDF a échoué dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer la page à la place."); });
+}
+function generateCahierPDF(){ exportCahierAsPDF(); }
+function downloadCahierElevePDF(){ exportCahierAsPDF(); }
+function exportCahierDataFile(){
+  if(!cahier.length){ alert('Le cahier est vide : rien à exporter pour le moment.'); return; }
+  const blob = new Blob([JSON.stringify(cahier, null, 2)], {type:'application/json'});
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'cahier-mathcollege.json';
+  document.body.appendChild(link); link.click(); link.remove();
+  const status=document.getElementById('cahierImportStatus');
+  status.textContent = '✓ Fichier téléchargé — partagez-le (ENT, e-mail, clé USB...) pour que d\'autres l\'importent sur leur propre appareil.';
+  setTimeout(()=>status.textContent='', 8000);
+}
+function importCahierDataFile(file){
+  if(!file) return;
+  const status=document.getElementById('cahierImportStatus');
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    let imported;
+    try{ imported = JSON.parse(reader.result); }
+    catch(e){ status.textContent = "Fichier invalide : ce n'est pas un cahier exporté depuis ce site."; return; }
+    if(!Array.isArray(imported)){ status.textContent = "Fichier invalide : format inattendu."; return; }
+    cahier = cahier.concat(imported);
+    sortCahierInPlace();
+    saveCahier();
+    renderCahierEleve();
+    if(document.getElementById('cahierList')) renderCahier();
+    status.textContent = `✓ ${imported.length} entrée(s) importée(s) et ajoutée(s) à ce cahier.`;
+    setTimeout(()=>status.textContent='', 8000);
+  };
+  reader.onerror = ()=>{ status.textContent = "Impossible de lire ce fichier."; };
+  reader.readAsText(file);
+}
+
+/* ---- ajouter une partie du cours au cahier de l'élève ---- */
+function injectCourseAddButtons(container){
+  if(!container) return;
+  container.querySelectorAll('.lesson-header, .sub-header').forEach(h=>{
+    if(h.querySelector('.add-to-cahier-btn')) return;
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='add-to-cahier-btn';
+    btn.title="Ajouter cette partie au cahier de l'élève";
+    btn.textContent='+ Cahier';
+    btn.onclick=(e)=>{ e.stopPropagation(); if(!btn.disabled) addSectionToCahier(h); };
+    h.appendChild(btn);
+  });
+  updateCourseAddButtonsState();
+}
+function updateCourseAddButtonsState(){
+  const isStaff = currentUserRole==='prof' || currentUserRole==='admin';
+  const canAdd = isStaff && !!currentClassId;
+  document.querySelectorAll('.add-to-cahier-btn').forEach(btn=>{
+    if(!isStaff){
+      btn.style.display = 'none';
+    } else {
+      btn.style.display = '';
+      btn.disabled = !canAdd;
+      btn.title = canAdd ? "Ajouter cette partie au cahier de l'élève" : "Choisissez une classe dans Outil prof avant d'ajouter au cahier";
+      btn.style.opacity = canAdd ? '1' : '.45';
+      btn.style.cursor = canAdd ? 'pointer' : 'not-allowed';
+    }
+  });
+}
+async function addSectionToCahier(headerEl){
+  const isLesson = headerEl.classList.contains('lesson-header');
+  const titleEl = headerEl.querySelector('h3,h4');
+  const titre = titleEl ? titleEl.textContent.trim() : 'Cours';
+  const wrapper = document.createElement('div');
+  const headerClone = headerEl.cloneNode(true);
+  headerClone.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
+  wrapper.appendChild(headerClone);
+  let node = headerEl.nextElementSibling;
+  while(node){
+    const isNodeLesson = node.classList && node.classList.contains('lesson-header');
+    const isNodeSub = node.classList && node.classList.contains('sub-header');
+    if(isNodeLesson) break;
+    if(!isLesson && isNodeSub) break;
+    wrapper.appendChild(node.cloneNode(true));
+    node = node.nextElementSibling;
+  }
+  wrapper.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
+  wrapper.querySelectorAll('.figure-toolbar').forEach(b=>b.remove());
+  wrapper.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id')); // évite tout doublon d'id avec la figure d'origine
+  const niveauSel = document.getElementById('corNiveau');
+  const entry = {
+    niveau: niveauSel ? niveauSel.value : '5e',
+    chapitre: currentChapterTitle || '',
+    exo: 'Cours',
+    titre: titre,
+    date: todayISO(),
+    raw: '',
+    html: wrapper.innerHTML,
+  };
+  cahier.push(entry);
+  sortCahierInPlace();
+  saveCahier();
+  if(document.getElementById('cahierList')) renderCahier();
+  const btn = headerEl.querySelector('.add-to-cahier-btn');
+  if(btn){ const old=btn.textContent; btn.textContent='✓ Ajouté'; setTimeout(()=>btn.textContent=old,1600); }
+  if(isSyncEnabled()){
+    const res = await syncAddEntry(entry);
+    if(res.ok){ entry.id = res.id; saveCahier(); }
+    else if(!res.offline){ alert("⚠️ Ajouté localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez la configuration de synchronisation (adresse + code secret) dans l'outil prof."); }
+  }
+}
+
+renderCahier();
+renderCorrectionPreview();
+document.getElementById('corDate').value = todayISO();
+
+/* ======================= init ======================= */
+renderNiveau('6e');
+(function heroAnim(){
+  const arc=document.getElementById('heroArc');
+  const compass=document.getElementById('heroCompass');
+  let start=null;
+  function frame(t){
+    if(!start) start=t;
+    const dur=3000;
+    const p=((t-start)%dur)/dur;
+    const angle = p*360;
+    arc.setAttribute('stroke-dashoffset', 565-(565*Math.min(1,p*1.05)));
+    compass.setAttribute('transform',`rotate(${angle} 130 130)`);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+<script src="chapitres/5e/G1-symetrie-centrale.js"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js"></script>
+<script src="calcul-mental/calcul-mental.js"></script>
+</body>
+</html>
