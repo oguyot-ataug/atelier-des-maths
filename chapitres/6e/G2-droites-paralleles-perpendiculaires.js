@@ -213,6 +213,82 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <button class="btn secondary" onclick="dpMedMethodeReset()">Recommencer</button>
   </div>
 </div>
+
+<div class="lesson-header"><span class="num">6</span><h3>Utiliser une réquerre (règle-équerre)</h3></div>
+<div class="def-box">La <b>réquerre</b> (ou règle-équerre) combine une règle graduée et un angle droit intégré en son centre (repéré par le 0) : un seul outil pour tracer perpendiculaires, parallèles et médiatrices, sans avoir à poser une règle séparée.</div>
+
+<p class="example-title">Perpendiculaire à (d) passant par M :</p>
+<div class="figure-wrap">
+  <svg id="dp-rqp-svg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-rqp-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
+    <circle id="dp-rqp-M" r="5" fill="#E35D3A"/>
+    <text id="dp-rqp-labelM" font-style="italic" font-size="14">M</text>
+    <text id="dp-rqp-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C">(d)</text>
+    <polygon id="dp-rqp-tool" fill="rgba(230,214,110,.55)" stroke="#8A7A20" stroke-width="1.6"/>
+    <line id="dp-rqp-centerMark" stroke="#1C1B2E" stroke-width="2"/>
+    <polygon id="dp-rqp-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
+    <polygon id="dp-rqp-pencil-tip" fill="#3A2A1A" style="display:none;"/>
+    <line id="dp-rqp-lineDp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
+    <path id="dp-rqp-angleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3" style="display:none;"/>
+    <text id="dp-rqp-labelDp" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A" style="display:none;">(d')</text>
+  </svg>
+  <p class="hint" id="dp-rqp-note" style="text-align:center;margin-top:8px;"></p>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="dpRqPerpNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="dpRqPerpReset()">Recommencer</button>
+  </div>
+</div>
+
+<p class="example-title" style="margin-top:16px;">Parallèle à (d) passant par A (méthode 1 : deux perpendiculaires successives) :</p>
+<div class="figure-wrap">
+  <svg id="dp-rqa-svg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-rqa-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
+    <circle id="dp-rqa-A" r="5" fill="#E35D3A"/>
+    <text id="dp-rqa-labelA" font-style="italic" font-size="14">A</text>
+    <text id="dp-rqa-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C">(d)</text>
+    <polygon id="dp-rqa-tool" fill="rgba(230,214,110,.55)" stroke="#8A7A20" stroke-width="1.6"/>
+    <line id="dp-rqa-centerMark" stroke="#1C1B2E" stroke-width="2"/>
+    <polygon id="dp-rqa-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
+    <polygon id="dp-rqa-pencil-tip" fill="#3A2A1A" style="display:none;"/>
+    <line id="dp-rqa-lineDelta" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
+    <path id="dp-rqa-angleMark1" fill="none" stroke="#1C1B2E" stroke-width="1.3" style="display:none;"/>
+    <text id="dp-rqa-labelDelta" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F6B3A" style="display:none;">(Δ)</text>
+    <line id="dp-rqa-lineDp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
+    <path id="dp-rqa-angleMark2" fill="none" stroke="#1C1B2E" stroke-width="1.3" style="display:none;"/>
+    <text id="dp-rqa-labelDp" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A" style="display:none;">(d')</text>
+  </svg>
+  <p class="hint" id="dp-rqa-note" style="text-align:center;margin-top:8px;"></p>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="dpRqParaNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="dpRqParaReset()">Recommencer</button>
+  </div>
+</div>
+
+<p class="example-title" style="margin-top:16px;">Médiatrice du segment [AB] :</p>
+<div class="figure-wrap">
+  <svg id="dp-rqm-svg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-rqm-seg" stroke="#1C1B2E" stroke-width="1.8"/>
+    <circle id="dp-rqm-A" r="5" fill="#1C1B2E"/>
+    <circle id="dp-rqm-B" r="5" fill="#1C1B2E"/>
+    <text id="dp-rqm-labelA" font-style="italic" font-size="14">A</text>
+    <text id="dp-rqm-labelB" font-style="italic" font-size="14">B</text>
+    <circle id="dp-rqm-midpoint" r="3.5" fill="#1C1B2E" style="display:none;"/>
+    <line id="dp-rqm-tick1a" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
+    <line id="dp-rqm-tick1b" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
+    <polygon id="dp-rqm-tool" fill="rgba(230,214,110,.55)" stroke="#8A7A20" stroke-width="1.6" style="display:none;"/>
+    <line id="dp-rqm-centerMark" stroke="#1C1B2E" stroke-width="2" style="display:none;"/>
+    <polygon id="dp-rqm-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
+    <polygon id="dp-rqm-pencil-tip" fill="#3A2A1A" style="display:none;"/>
+    <line id="dp-rqm-medLine" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
+    <path id="dp-rqm-angleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3" style="display:none;"/>
+    <text id="dp-rqm-labelMed" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A" style="display:none;">médiatrice</text>
+  </svg>
+  <p class="hint" id="dp-rqm-note" style="text-align:center;margin-top:8px;"></p>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="dpRqMedNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="dpRqMedReset()">Recommencer</button>
+  </div>
+</div>
 `;
 
 document.getElementById('methode-demo-droites-paralleles').innerHTML = `
@@ -760,6 +836,247 @@ function dpRenderParaMethode(animate){
 function dpParaMethodeNext(){ if(dpPamIdx<DP_PAM_STEPS.length-1){ dpPamIdx++; dpRenderParaMethode(DP_PAM_STEPS[dpPamIdx].phase==='traced'); } }
 function dpParaMethodeReset(){ dpPamIdx=0; dpRenderParaMethode(false); }
 
+/* ================= RÉQUERRE : perpendiculaire ================= */
+const DP_RQP_D1={x:60,y:190}, DP_RQP_D2={x:340,y:110}, DP_RQP_M={x:230,y:50};
+const dpRqpDir = dpDir(DP_RQP_D1, DP_RQP_D2);
+let dpRqpPerp = {x:-dpRqpDir.y, y:dpRqpDir.x};
+const dpRqpFoot = dpIntersect(DP_RQP_D1, dpRqpDir, DP_RQP_M, dpRqpPerp);
+if(dpRqpPerp.x*(DP_RQP_M.x-dpRqpFoot.x)+dpRqpPerp.y*(DP_RQP_M.y-dpRqpFoot.y) < 0){ dpRqpPerp = {x:-dpRqpPerp.x, y:-dpRqpPerp.y}; }
+const dpRqpFootDist = Math.hypot(dpRqpFoot.x-DP_RQP_D1.x, dpRqpFoot.y-DP_RQP_D1.y);
+const dpRqpTouchDist = Math.hypot(DP_RQP_M.x-dpRqpFoot.x, DP_RQP_M.y-dpRqpFoot.y);
+const DP_RQ_TOOL_LEN = 190, DP_RQ_TOOL_W = 34;
+const DP_RQP_STEPS = [
+  {dist: 50, phase:'slide', note:"On place le bord de la réquerre le long de la droite (d)."},
+  {dist: dpRqpFootDist, phase:'slide', note:"On fait glisser la réquerre le long de (d) : son trait central (repère 0) atteint M."},
+  {dist: dpRqpFootDist, phase:'traced', note:"On trace le long du trait central, qui passe par M : on nomme cette droite (d') et on code l'angle droit."},
+  {dist: dpRqpFootDist, phase:'clean', note:"On retire la réquerre : (d) et (d') sont perpendiculaires."},
+];
+let dpRqpIdx = 0;
+function dpRenderRqPerp(animate){
+  dpAnimationToken++;
+  const s = DP_RQP_STEPS[dpRqpIdx];
+  const dExt = dpExtend({x:(DP_RQP_D1.x+DP_RQP_D2.x)/2,y:(DP_RQP_D1.y+DP_RQP_D2.y)/2}, dpRqpDir, 260);
+  dpSetLine(document.getElementById('dp-rqp-lineD'), dExt);
+  dpSetPt(document.getElementById('dp-rqp-M'), DP_RQP_M);
+  dpSetTxt(document.getElementById('dp-rqp-labelM'), DP_RQP_M, 8, -10);
+  dpSetTxt(document.getElementById('dp-rqp-labelD'), {x:DP_RQP_D2.x+dpRqpDir.x*24+dpRqpPerp.x*16, y:DP_RQP_D2.y+dpRqpDir.y*24+dpRqpPerp.y*16}, 0, 0);
+
+  const pos = {x:DP_RQP_D1.x+dpRqpDir.x*s.dist, y:DP_RQP_D1.y+dpRqpDir.y*s.dist};
+  const tool = document.getElementById('dp-rqp-tool'), centerMark = document.getElementById('dp-rqp-centerMark');
+  if(s.phase==='clean'){
+    tool.style.display='none'; centerMark.style.display='none';
+  } else {
+    tool.setAttribute('points', dpRulerPolygon(pos, dpRqpDir, dpRqpPerp, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
+    tool.style.display='';
+    dpSetLine(centerMark, dpExtend(pos, dpRqpPerp, DP_RQ_TOOL_W/2));
+    centerMark.style.display='';
+  }
+
+  const lineDp = document.getElementById('dp-rqp-lineDp'), angleMark = document.getElementById('dp-rqp-angleMark'), labelDp = document.getElementById('dp-rqp-labelDp');
+  const pencil = document.getElementById('dp-rqp-pencil'), pencilTip = document.getElementById('dp-rqp-pencil-tip');
+  if(s.phase==='traced' || s.phase==='clean'){
+    const dpExt = dpExtend(dpRqpFoot, dpRqpPerp, DP_RQ_TOOL_W/2 + dpRqpTouchDist + 30);
+    angleMark.setAttribute('d', dpRightAngleMark(dpRqpFoot, {x:dpRqpDir.x,y:dpRqpDir.y}, {x:dpRqpPerp.x,y:dpRqpPerp.y}, 13));
+    angleMark.style.display='';
+    dpSetTxt(labelDp, {x:dpExt.x2+dpRqpDir.x*16, y:dpExt.y2+dpRqpDir.y*16}, 0, 0);
+    labelDp.style.display='';
+    lineDp.style.display='';
+    if(s.phase==='traced'){
+      pencil.style.display=''; pencilTip.style.display='';
+      if(animate){
+        dpAnimateTrace(lineDp, pencil, pencilTip, {x:dpExt.x1,y:dpExt.y1}, {x:dpExt.x2,y:dpExt.y2}, dpRqpDir, 900);
+      } else {
+        dpSetLine(lineDp, dpExt);
+        const shapes = dpPencilPolygons({x:dpExt.x2,y:dpExt.y2}, dpRqpPerp, dpRqpDir);
+        pencil.setAttribute('points', shapes.body); pencilTip.setAttribute('points', shapes.tip);
+      }
+    } else {
+      dpSetLine(lineDp, dpExt);
+      pencil.style.display='none'; pencilTip.style.display='none';
+    }
+  } else {
+    lineDp.style.display='none'; angleMark.style.display='none'; labelDp.style.display='none';
+    pencil.style.display='none'; pencilTip.style.display='none';
+  }
+  document.getElementById('dp-rqp-note').textContent = s.note;
+}
+function dpRqPerpNext(){ if(dpRqpIdx<DP_RQP_STEPS.length-1){ dpRqpIdx++; dpRenderRqPerp(DP_RQP_STEPS[dpRqpIdx].phase==='traced'); } }
+function dpRqPerpReset(){ dpRqpIdx=0; dpRenderRqPerp(false); }
+
+/* ================= RÉQUERRE : parallèle (méthode 1 : deux perpendiculaires) ================= */
+const DP_RQA_D1={x:60,y:190}, DP_RQA_D2={x:300,y:120}, DP_RQA_A={x:150,y:50};
+const dpRqaDir = dpDir(DP_RQA_D1, DP_RQA_D2);
+let dpRqaPerp = {x:-dpRqaDir.y, y:dpRqaDir.x};
+const dpRqaFoot1 = dpIntersect(DP_RQA_D1, dpRqaDir, DP_RQA_A, dpRqaPerp);
+if(dpRqaPerp.x*(DP_RQA_A.x-dpRqaFoot1.x)+dpRqaPerp.y*(DP_RQA_A.y-dpRqaFoot1.y) < 0){ dpRqaPerp = {x:-dpRqaPerp.x, y:-dpRqaPerp.y}; }
+const dpRqaFoot1Dist = Math.hypot(dpRqaFoot1.x-DP_RQA_D1.x, dpRqaFoot1.y-DP_RQA_D1.y);
+const dpRqaStage2Dist = 120;
+const dpRqaStage2Start = {x:DP_RQA_A.x-dpRqaPerp.x*dpRqaStage2Dist, y:DP_RQA_A.y-dpRqaPerp.y*dpRqaStage2Dist};
+const DP_RQA_STEPS = [
+  {stage:1, dist: 40, phase:'slide', note:"Première perpendiculaire (Δ) : réquerre posée sur (d), on la fait glisser vers A."},
+  {stage:1, dist: dpRqaFoot1Dist, phase:'slide', note:"Le trait central de la réquerre atteint A."},
+  {stage:1, dist: dpRqaFoot1Dist, phase:'traced', note:"On trace (Δ), perpendiculaire à (d) passant par A, et on code l'angle droit."},
+  {stage:1, dist: dpRqaFoot1Dist, phase:'clean', note:"(Δ) est tracée. Passons à la seconde perpendiculaire, cette fois par rapport à (Δ)."},
+  {stage:2, dist: 30, phase:'slide', note:"On pose maintenant la réquerre le long de (Δ), on la fait glisser vers A."},
+  {stage:2, dist: dpRqaStage2Dist, phase:'slide', note:"Le trait central de la réquerre atteint A (déjà sur (Δ))."},
+  {stage:2, dist: dpRqaStage2Dist, phase:'traced', note:"On trace (d'), perpendiculaire à (Δ) passant par A, et on code l'angle droit."},
+  {stage:2, dist: dpRqaStage2Dist, phase:'clean', note:"(d') est parallèle à (d) — vérifiable avec les graduations latérales de la réquerre."},
+];
+let dpRqaIdx = 0;
+function dpRenderRqPara(animate){
+  dpAnimationToken++;
+  const s = DP_RQA_STEPS[dpRqaIdx];
+  const dExt = dpExtend({x:(DP_RQA_D1.x+DP_RQA_D2.x)/2,y:(DP_RQA_D1.y+DP_RQA_D2.y)/2}, dpRqaDir, 260);
+  dpSetLine(document.getElementById('dp-rqa-lineD'), dExt);
+  dpSetPt(document.getElementById('dp-rqa-A'), DP_RQA_A);
+  dpSetTxt(document.getElementById('dp-rqa-labelA'), DP_RQA_A, 8, -10);
+  dpSetTxt(document.getElementById('dp-rqa-labelD'), {x:DP_RQA_D2.x+dpRqaDir.x*24+dpRqaPerp.x*16, y:DP_RQA_D2.y+dpRqaDir.y*24+dpRqaPerp.y*16}, 0, 0);
+
+  let pos, toolDir, toolPerp;
+  if(s.stage===1){ pos = {x:DP_RQA_D1.x+dpRqaDir.x*s.dist, y:DP_RQA_D1.y+dpRqaDir.y*s.dist}; toolDir=dpRqaDir; toolPerp=dpRqaPerp; }
+  else { pos = {x:dpRqaStage2Start.x+dpRqaPerp.x*s.dist, y:dpRqaStage2Start.y+dpRqaPerp.y*s.dist}; toolDir=dpRqaPerp; toolPerp=dpRqaDir; }
+
+  const tool = document.getElementById('dp-rqa-tool'), centerMark = document.getElementById('dp-rqa-centerMark');
+  if(s.phase==='clean'){
+    tool.style.display='none'; centerMark.style.display='none';
+  } else {
+    tool.setAttribute('points', dpRulerPolygon(pos, toolDir, toolPerp, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
+    tool.style.display='';
+    dpSetLine(centerMark, dpExtend(pos, toolPerp, DP_RQ_TOOL_W/2));
+    centerMark.style.display='';
+  }
+
+  const lineDelta = document.getElementById('dp-rqa-lineDelta'), angleMark1 = document.getElementById('dp-rqa-angleMark1'), labelDelta = document.getElementById('dp-rqa-labelDelta');
+  const lineDp = document.getElementById('dp-rqa-lineDp'), angleMark2 = document.getElementById('dp-rqa-angleMark2'), labelDp = document.getElementById('dp-rqa-labelDp');
+  const pencil = document.getElementById('dp-rqa-pencil'), pencilTip = document.getElementById('dp-rqa-pencil-tip');
+
+  const deltaVisible = (s.stage===1 && (s.phase==='traced'||s.phase==='clean')) || s.stage===2;
+  const deltaExt = dpExtend(DP_RQA_A, dpRqaPerp, 130);
+  if(deltaVisible){
+    angleMark1.setAttribute('d', dpRightAngleMark(dpRqaFoot1, {x:dpRqaDir.x,y:dpRqaDir.y}, {x:dpRqaPerp.x,y:dpRqaPerp.y}, 13));
+    angleMark1.style.display=''; labelDelta.style.display='';
+    dpSetTxt(labelDelta, {x:deltaExt.x2+dpRqaDir.x*16, y:deltaExt.y2+dpRqaDir.y*16}, 0, 0);
+    lineDelta.style.display='';
+  } else {
+    lineDelta.style.display='none'; angleMark1.style.display='none'; labelDelta.style.display='none';
+  }
+
+  const dpVisible = s.stage===2 && (s.phase==='traced'||s.phase==='clean');
+  const dpExt = dpExtend(DP_RQA_A, dpRqaDir, 180);
+  if(dpVisible){
+    angleMark2.setAttribute('d', dpRightAngleMark(DP_RQA_A, {x:dpRqaPerp.x,y:dpRqaPerp.y}, {x:dpRqaDir.x,y:dpRqaDir.y}, 13));
+    angleMark2.style.display=''; labelDp.style.display='';
+    dpSetTxt(labelDp, {x:dpExt.x2+dpRqaPerp.x*16, y:dpExt.y2+dpRqaPerp.y*16}, 0, 0);
+    lineDp.style.display='';
+  } else {
+    lineDp.style.display='none'; angleMark2.style.display='none'; labelDp.style.display='none';
+  }
+
+  pencil.style.display='none'; pencilTip.style.display='none';
+  if(s.phase==='traced'){
+    if(s.stage===1){
+      if(animate) dpAnimateTrace(lineDelta, pencil, pencilTip, {x:deltaExt.x1,y:deltaExt.y1}, {x:deltaExt.x2,y:deltaExt.y2}, dpRqaDir, 900);
+      else { dpSetLine(lineDelta, deltaExt); const sh=dpPencilPolygons({x:deltaExt.x2,y:deltaExt.y2}, dpRqaPerp, dpRqaDir); pencil.setAttribute('points',sh.body); pencilTip.setAttribute('points',sh.tip); }
+      pencil.style.display=''; pencilTip.style.display='';
+    } else {
+      if(animate) dpAnimateTrace(lineDp, pencil, pencilTip, {x:dpExt.x1,y:dpExt.y1}, {x:dpExt.x2,y:dpExt.y2}, dpRqaPerp, 900);
+      else { dpSetLine(lineDp, dpExt); const sh=dpPencilPolygons({x:dpExt.x2,y:dpExt.y2}, dpRqaDir, dpRqaPerp); pencil.setAttribute('points',sh.body); pencilTip.setAttribute('points',sh.tip); }
+      pencil.style.display=''; pencilTip.style.display='';
+    }
+  } else {
+    if(deltaVisible) dpSetLine(lineDelta, deltaExt);
+    if(dpVisible) dpSetLine(lineDp, dpExt);
+  }
+  document.getElementById('dp-rqa-note').textContent = s.note;
+}
+function dpRqParaNext(){ if(dpRqaIdx<DP_RQA_STEPS.length-1){ dpRqaIdx++; dpRenderRqPara(DP_RQA_STEPS[dpRqaIdx].phase==='traced'); } }
+function dpRqParaReset(){ dpRqaIdx=0; dpRenderRqPara(false); }
+
+/* ================= RÉQUERRE : médiatrice ================= */
+const DP_RQM_A={x:90,y:190}, DP_RQM_B={x:310,y:90};
+const dpRqmDir = dpDir(DP_RQM_A, DP_RQM_B);
+const dpRqmPerp = {x:-dpRqmDir.y, y:dpRqmDir.x};
+const dpRqmMid = {x:(DP_RQM_A.x+DP_RQM_B.x)/2, y:(DP_RQM_A.y+DP_RQM_B.y)/2};
+const DP_RQM_STEPS = [
+  {phase:'measure', note:"On mesure le segment [AB] avec la réquerre : le 0 posé sur A, on lit la longueur sur B."},
+  {phase:'midpoint', note:"On repère le milieu M (la moitié de la longueur mesurée), et on code les longueurs égales AM = MB."},
+  {phase:'place', note:"On pose la réquerre le long de [AB] : son trait central est déjà positionné sur M."},
+  {phase:'traced', note:"On trace le long du trait central : c'est la médiatrice, on code l'angle droit."},
+  {phase:'clean', note:"On retire la réquerre : cette droite est la médiatrice de [AB]."},
+];
+let dpRqmIdx = 0;
+function dpRenderRqMed(animate){
+  dpAnimationToken++;
+  const s = DP_RQM_STEPS[dpRqmIdx];
+  dpSetLine(document.getElementById('dp-rqm-seg'), {x1:DP_RQM_A.x,y1:DP_RQM_A.y,x2:DP_RQM_B.x,y2:DP_RQM_B.y});
+  dpSetPt(document.getElementById('dp-rqm-A'), DP_RQM_A);
+  dpSetPt(document.getElementById('dp-rqm-B'), DP_RQM_B);
+  dpSetTxt(document.getElementById('dp-rqm-labelA'), DP_RQM_A, -16, 5);
+  dpSetTxt(document.getElementById('dp-rqm-labelB'), DP_RQM_B, 8, 5);
+
+  const measureOnly = s.phase==='measure';
+  const tool = document.getElementById('dp-rqm-tool'), centerMark = document.getElementById('dp-rqm-centerMark');
+  if(measureOnly){
+    const segLen = Math.hypot(DP_RQM_B.x-DP_RQM_A.x, DP_RQM_B.y-DP_RQM_A.y);
+    tool.setAttribute('points', dpRulerPolygon({x:DP_RQM_A.x+dpRqmDir.x*(segLen/2), y:DP_RQM_A.y+dpRqmDir.y*(segLen/2)}, dpRqmDir, dpRqmPerp, segLen+40, DP_RQ_TOOL_W));
+    tool.style.display='';
+    centerMark.style.display='none';
+  } else if(s.phase==='place' || s.phase==='traced' || s.phase==='clean'){
+    tool.setAttribute('points', dpRulerPolygon(dpRqmMid, dpRqmDir, dpRqmPerp, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
+    tool.style.display = s.phase==='clean' ? 'none' : '';
+    dpSetLine(centerMark, dpExtend(dpRqmMid, dpRqmPerp, DP_RQ_TOOL_W/2));
+    centerMark.style.display = s.phase==='clean' ? 'none' : '';
+  } else {
+    tool.style.display='none'; centerMark.style.display='none';
+  }
+
+  const tick1a = document.getElementById('dp-rqm-tick1a'), tick1b = document.getElementById('dp-rqm-tick1b'), midpoint = document.getElementById('dp-rqm-midpoint');
+  const midpointOnwards = ['midpoint','place','traced','clean'];
+  if(midpointOnwards.indexOf(s.phase)!==-1){
+    const tickLen=9, tickAngle=Math.atan2(dpRqmDir.y,dpRqmDir.x)+Math.PI/2.6;
+    const q1 = {x:(DP_RQM_A.x+dpRqmMid.x)/2, y:(DP_RQM_A.y+dpRqmMid.y)/2};
+    const q2 = {x:(dpRqmMid.x+DP_RQM_B.x)/2, y:(dpRqmMid.y+DP_RQM_B.y)/2};
+    tick1a.setAttribute('x1', q1.x-Math.cos(tickAngle)*tickLen); tick1a.setAttribute('y1', q1.y-Math.sin(tickAngle)*tickLen);
+    tick1a.setAttribute('x2', q1.x+Math.cos(tickAngle)*tickLen); tick1a.setAttribute('y2', q1.y+Math.sin(tickAngle)*tickLen);
+    tick1b.setAttribute('x1', q2.x-Math.cos(tickAngle)*tickLen); tick1b.setAttribute('y1', q2.y-Math.sin(tickAngle)*tickLen);
+    tick1b.setAttribute('x2', q2.x+Math.cos(tickAngle)*tickLen); tick1b.setAttribute('y2', q2.y+Math.sin(tickAngle)*tickLen);
+    tick1a.style.display=''; tick1b.style.display='';
+    dpSetPt(midpoint, dpRqmMid); midpoint.style.display='';
+  } else {
+    tick1a.style.display='none'; tick1b.style.display='none'; midpoint.style.display='none';
+  }
+
+  const medLine = document.getElementById('dp-rqm-medLine'), angleMark = document.getElementById('dp-rqm-angleMark'), labelMed = document.getElementById('dp-rqm-labelMed');
+  const pencil = document.getElementById('dp-rqm-pencil'), pencilTip = document.getElementById('dp-rqm-pencil-tip');
+  if(s.phase==='traced' || s.phase==='clean'){
+    const medExt = dpExtend(dpRqmMid, dpRqmPerp, DP_RQ_TOOL_W/2 + 90);
+    angleMark.setAttribute('d', dpRightAngleMark(dpRqmMid, {x:dpRqmDir.x,y:dpRqmDir.y}, {x:dpRqmPerp.x,y:dpRqmPerp.y}, 13));
+    angleMark.style.display='';
+    dpSetTxt(labelMed, {x:medExt.x2+dpRqmDir.x*16, y:medExt.y2+dpRqmDir.y*16}, 0, 0);
+    labelMed.style.display='';
+    medLine.style.display='';
+    if(s.phase==='traced'){
+      pencil.style.display=''; pencilTip.style.display='';
+      if(animate){
+        dpAnimateTrace(medLine, pencil, pencilTip, {x:medExt.x1,y:medExt.y1}, {x:medExt.x2,y:medExt.y2}, dpRqmDir, 900);
+      } else {
+        dpSetLine(medLine, medExt);
+        const sh = dpPencilPolygons({x:medExt.x2,y:medExt.y2}, dpRqmPerp, dpRqmDir);
+        pencil.setAttribute('points', sh.body); pencilTip.setAttribute('points', sh.tip);
+      }
+    } else {
+      dpSetLine(medLine, medExt);
+      pencil.style.display='none'; pencilTip.style.display='none';
+    }
+  } else {
+    medLine.style.display='none'; angleMark.style.display='none'; labelMed.style.display='none';
+    pencil.style.display='none'; pencilTip.style.display='none';
+  }
+  document.getElementById('dp-rqm-note').textContent = s.note;
+}
+function dpRqMedNext(){ if(dpRqmIdx<DP_RQM_STEPS.length-1){ dpRqmIdx++; dpRenderRqMed(DP_RQM_STEPS[dpRqmIdx].phase==='traced'); } }
+function dpRqMedReset(){ dpRqmIdx=0; dpRenderRqMed(false); }
+
 /* ---- Méthode animée : tracer une perpendiculaire ---- */
 const DP_METHODE_STEPS = [
   {expr:'Droite (d) et point M', note:"On souhaite tracer la perpendiculaire à (d) passant par M."},
@@ -770,7 +1087,7 @@ const DP_METHODE_STEPS = [
 const dpMethodeDemo = makeStepDemo(DP_METHODE_STEPS, 'dp-methodeDisplay');
 
 DEMO_REGISTRY['Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles',
-  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpMethodeDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); } };
+  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpRqMedReset(); dpMethodeDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); } };
 
 DEMO_QUIZZES['Droites parallèles et perpendiculaires'] = [
   {q:"Que signifie (d) ⊥ (d') ?",
