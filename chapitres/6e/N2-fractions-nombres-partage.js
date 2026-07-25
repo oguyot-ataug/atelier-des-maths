@@ -6,7 +6,7 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Écriture fractionnaire</h3></div>
 <p class="example-title" style="margin-top:0;">A. Quotient</p>
 <span class="def-badge">Définition</span>
-<div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="tex">\\dfrac{a}{b}</span> est le résultat de la division de <i>a</i> par <i>b</i> : <span class="tex">\\dfrac{a}{b} = a \\div b</span>. Elle se lit « a divisé par b » ou « a sur b ».</div>
+<div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="tex">\\dfrac{a}{b}</span> est le résultat de la division de <i>a</i> par <i>b</i> : <span class="tex">\\dfrac{a}{b} = a : b</span>. Elle se lit « a divisé par b » ou « a sur b ».</div>
 <p class="example-title">Exemple : comment se lit la fraction <span class="tex">\\dfrac{3}{4}</span> ?</p>
 <p style="margin:4px 0 12px;">Elle se lit « trois quarts », ou « 3 divisé par 4 », ou « 3 sur 4 ».</p>
 
@@ -21,19 +21,19 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
 <div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="tex">\\dfrac{a}{b}</span> est <b>soit un nombre entier</b>, <b>soit un nombre décimal non entier</b>, <b>soit un nombre non décimal</b>.</div>
 <p class="example-title">Exemple : dans quel ensemble de nombres se trouve chacune des fractions <span class="tex">\\dfrac{48}{6}</span>, <span class="tex">\\dfrac{3}{4}</span> et <span class="tex">\\dfrac{1}{3}</span> ?</p>
 <ul class="example-list">
-  <li><span class="tex">\\dfrac{48}{6}</span> est le résultat de la division 48 ÷ 6 = 8. On a donc <span class="tex">\\dfrac{48}{6} = 8</span> : la fraction <span class="tex">\\dfrac{48}{6}</span> est donc un <b>nombre entier</b>.</li>
-  <li><span class="tex">\\dfrac{3}{4}</span> est le résultat de la division 3 ÷ 4. On vérifie que 0,75 × 4 = 3, donc <span class="tex">\\dfrac{3}{4} = 0{,}75</span> : la fraction <span class="tex">\\dfrac{3}{4}</span> est donc un <b>nombre décimal non entier</b>.</li>
-  <li><span class="tex">\\dfrac{1}{3}</span> est le nombre qui, multiplié par 3, donne 1 : <span class="tex">\\dfrac{1}{3} \\times 3 = 1</span>. La division 1 ÷ 3 ne se termine jamais ; on peut seulement écrire <span class="tex">\\dfrac{1}{3} \\approx 0{,}33</span> : la fraction <span class="tex">\\dfrac{1}{3}</span> est donc un <b>nombre non décimal</b>.</li>
+  <li><span class="tex">\\dfrac{48}{6}</span> est le résultat de la division 48 : 6 = 8. On a donc <span class="tex">\\dfrac{48}{6} = 8</span> : la fraction <span class="tex">\\dfrac{48}{6}</span> est donc un <b>nombre entier</b>.</li>
+  <li><span class="tex">\\dfrac{3}{4}</span> est le résultat de la division 3 : 4. On vérifie que 0,75 × 4 = 3, donc <span class="tex">\\dfrac{3}{4} = 0{,}75</span> : la fraction <span class="tex">\\dfrac{3}{4}</span> est donc un <b>nombre décimal non entier</b>.</li>
+  <li><span class="tex">\\dfrac{1}{3}</span> est le nombre qui, multiplié par 3, donne 1 : <span class="tex">\\dfrac{1}{3} \\times 3 = 1</span>. La division 1 : 3 ne se termine jamais ; on peut seulement écrire <span class="tex">\\dfrac{1}{3} \\approx 0{,}33</span> : la fraction <span class="tex">\\dfrac{1}{3}</span> est donc un <b>nombre non décimal</b>.</li>
 </ul>
 
 <div class="lesson-header"><span class="num">2</span><h3>Égalité de fractions</h3></div>
 <span class="prop-badge">Propriété</span>
 <div class="def-box">
-  Une fraction ne change pas de valeur quand on multiplie — ou quand on divise — son numérateur <b>et</b> son dénominateur par un même nombre non nul.<br>
-  Pour tous entiers a, b (non nul) et k (non nul) : <span class="tex">\\dfrac{a}{b} = \\dfrac{a \\times k}{b \\times k}</span> et <span class="tex">\\dfrac{a}{b} = \\dfrac{a \\div k}{b \\div k}</span>.
+  Une fraction ne change pas de valeur quand on multiplie (ou quand on divise) son numérateur <b>et</b> son dénominateur par un même nombre non nul.<br>
+  Pour tous entiers a, b (non nul) et k (non nul) : <span class="tex">\\dfrac{a}{b} = \\dfrac{a \\times k}{b \\times k}</span> et <span class="tex">\\dfrac{a}{b} = \\dfrac{a : k}{b : k}</span>.
 </div>
 <p class="example-title">Exemple : complète l'égalité de fractions <span class="tex">\\dfrac{3}{5} = \\dfrac{?}{20}</span>.</p>
-<p style="margin:4px 0 12px;">Pour passer du dénominateur 5 au dénominateur 20, on multiplie par 4 (donc 20 ÷ 5 = 4). Donc pour obtenir le numérateur manquant, on multiplie aussi le numérateur 3 par 4 : on obtient <span class="tex">\\dfrac{3}{5} = \\dfrac{12}{20}</span>.</p>
+<p style="margin:4px 0 12px;">Pour passer du dénominateur 5 au dénominateur 20, on multiplie par 4 (donc 20 : 5 = 4). Donc pour obtenir le numérateur manquant, on multiplie aussi le numérateur 3 par 4 : on obtient <span class="tex">\\dfrac{3}{5} = \\dfrac{12}{20}</span>.</p>
 
 <div class="lesson-header"><span class="num">3</span><h3>Proportion et pourcentages</h3></div>
 <span class="def-badge">Définition</span>
@@ -66,7 +66,7 @@ document.getElementById('exos-demo-fractions-partage').innerHTML = `
 <div class="redaction-block">
   <h3>Rédaction type : « Dans quel ensemble de nombres se trouve une fraction ? »</h3>
   <div class="redaction-template">
-    <div class="we-row"><span class="we-expr"><span class="tex">\\dfrac{21}{3}</span> est le résultat de la division 21 ÷ 3 = 7.</span><span class="we-comment">On calcule la division.</span></div>
+    <div class="we-row"><span class="we-expr"><span class="tex">\\dfrac{21}{3}</span> est le résultat de la division 21 : 3 = 7.</span><span class="we-comment">On calcule la division.</span></div>
     <div class="we-row"><span class="we-expr">On a donc <span class="tex">\\dfrac{21}{3} = 7</span>.</span><span class="we-comment">On identifie le résultat.</span></div>
     <div class="we-row"><span class="we-expr">La fraction <span class="tex">\\dfrac{21}{3}</span> est donc un nombre entier.</span><span class="we-comment">Conclusion.</span></div>
   </div>
