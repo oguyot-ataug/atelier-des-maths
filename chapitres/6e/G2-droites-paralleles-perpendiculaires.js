@@ -67,7 +67,6 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <circle id="dp-pm-M" r="5" fill="#E35D3A"/>
     <text id="dp-pm-labelM" font-style="italic" font-size="14">M</text>
     <polygon id="dp-pm-equerre" fill="rgba(210,214,222,.6)" stroke="#4A4A55" stroke-width="1.8"/>
-    <path id="dp-pm-equerre-ticks" stroke="#4A4A55" stroke-width="1" fill="none"/>
     <circle id="dp-pm-equerre-hole" r="4" fill="var(--white)" stroke="#4A4A55" stroke-width="1.2"/>
     <polygon id="dp-pm-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
     <polygon id="dp-pm-pencil-tip" fill="#3A2A1A" style="display:none;"/>
@@ -118,7 +117,6 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <polygon id="dp-pam-ruler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
     <polygon id="dp-pam-ruler2" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
     <polygon id="dp-pam-equerre" fill="rgba(210,214,222,.6)" stroke="#4A4A55" stroke-width="1.8"/>
-    <path id="dp-pam-equerre-ticks" stroke="#4A4A55" stroke-width="1" fill="none"/>
     <circle id="dp-pam-equerre-hole" r="4" fill="var(--white)" stroke="#4A4A55" stroke-width="1.2"/>
     <polygon id="dp-pam-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
     <polygon id="dp-pam-pencil-tip" fill="#3A2A1A" style="display:none;"/>
@@ -253,18 +251,6 @@ function dpRulerPolygon(center, dir, perpToDir, length, width){
   const c3={x:center.x+dir.x*half-perpToDir.x*halfW, y:center.y+dir.y*half-perpToDir.y*halfW};
   const c4={x:center.x-dir.x*half-perpToDir.x*halfW, y:center.y-dir.y*half-perpToDir.y*halfW};
   return `${c1.x},${c1.y} ${c2.x},${c2.y} ${c3.x},${c3.y} ${c4.x},${c4.y}`;
-}
-/* Petites graduations le long d'un côté de l'équerre (aspect "règle graduée"), en partant du coin. */
-function dpEquerreTicksPath(corner, dir, tickDir, legLength, numTicks, tickSize){
-  let path = '';
-  for(let i=1;i<=numTicks;i++){
-    const t = (legLength/(numTicks+1))*i;
-    const base = {x:corner.x+dir.x*t, y:corner.y+dir.y*t};
-    const p1 = {x:base.x-tickDir.x*tickSize/2, y:base.y-tickDir.y*tickSize/2};
-    const p2 = {x:base.x+tickDir.x*tickSize/2, y:base.y+tickDir.y*tickSize/2};
-    path += `M ${p1.x} ${p1.y} L ${p2.x} ${p2.y} `;
-  }
-  return path;
 }
 /* Crayon (corps + mine) positionné en bout de tracé, orienté selon la direction du trait. */
 function dpPencilPolygons(tipPoint, dir, perpDir){
@@ -463,19 +449,16 @@ function dpRenderPerpMethode(animate){
   const c2 = {x:pos.x+dpPmDir.x*90, y:pos.y+dpPmDir.y*90};
   const c3 = {x:pos.x+dpPmPerp.x*(dpPmTouchDist+22), y:pos.y+dpPmPerp.y*(dpPmTouchDist+22)};
   const equerre = document.getElementById('dp-pm-equerre');
-  const ticks = document.getElementById('dp-pm-equerre-ticks'), hole = document.getElementById('dp-pm-equerre-hole');
+  const hole = document.getElementById('dp-pm-equerre-hole');
   const lineDp = document.getElementById('dp-pm-lineDp'), angleMark = document.getElementById('dp-pm-angleMark'), ruler = document.getElementById('dp-pm-ruler');
   const pencil = document.getElementById('dp-pm-pencil'), pencilTip = document.getElementById('dp-pm-pencil-tip');
 
   if(s.phase==='removed' || s.phase==='traced'){
     equerre.style.display='none';
-    ticks.style.display='none';
     hole.style.display='none';
   } else {
     equerre.setAttribute('points', `${pos.x},${pos.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
     equerre.style.display='';
-    ticks.setAttribute('d', dpEquerreTicksPath(pos, dpPmDir, {x:-dpPmPerp.x,y:-dpPmPerp.y}, 90, 5, 12));
-    ticks.style.display='';
     const holePos = {x:pos.x+dpPmDir.x*14+dpPmPerp.x*14, y:pos.y+dpPmDir.y*14+dpPmPerp.y*14};
     dpSetPt(hole, holePos);
     hole.style.display='';
@@ -491,7 +474,7 @@ function dpRenderPerpMethode(animate){
   }
 
   if(s.phase==='traced'){
-    const dpExt = dpExtend(rulerCenter, dpPmPerp, rulerLength/2);
+    const dpExt = dpExtend(dpPmFoot, dpPmPerp, rulerLength/2);
     lineDp.style.display='';
     angleMark.setAttribute('d', dpRightAngleMark(dpPmFoot, {x:dpPmDir.x,y:dpPmDir.y}, {x:dpPmPerp.x,y:dpPmPerp.y}, 13));
     angleMark.style.display='';
@@ -554,16 +537,13 @@ function dpRenderParaMethode(animate){
   const sign = (dpPamSlideDist>=0?1:-1);
   const c3 = {x:corner.x+dpPamPerp.x*55*sign, y:corner.y+dpPamPerp.y*55*sign};
   const equerre = document.getElementById('dp-pam-equerre');
-  const ticks = document.getElementById('dp-pam-equerre-ticks'), hole = document.getElementById('dp-pam-equerre-hole');
+  const hole = document.getElementById('dp-pam-equerre-hole');
   if(s.phase==='removed' || s.phase==='traced'){
     equerre.style.display='none';
-    ticks.style.display='none';
     hole.style.display='none';
   } else {
     equerre.setAttribute('points', `${corner.x},${corner.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
     equerre.style.display='';
-    ticks.setAttribute('d', dpEquerreTicksPath(corner, dpPamDir, {x:-dpPamPerp.x*sign,y:-dpPamPerp.y*sign}, 90, 5, 12));
-    ticks.style.display='';
     const holePos = {x:corner.x+dpPamDir.x*14+dpPamPerp.x*14*sign, y:corner.y+dpPamDir.y*14+dpPamPerp.y*14*sign};
     dpSetPt(hole, holePos);
     hole.style.display='';
@@ -582,7 +562,7 @@ function dpRenderParaMethode(animate){
   const lineDpp = document.getElementById('dp-pam-lineDpp');
   const pencil = document.getElementById('dp-pam-pencil'), pencilTip = document.getElementById('dp-pam-pencil-tip');
   if(s.phase==='traced'){
-    const dppExt = dpExtend(ruler2Center, dpPamDir, ruler2Length/2);
+    const dppExt = dpExtend(DP_PAM_N, dpPamDir, ruler2Length/2);
     lineDpp.style.display='';
     pencil.style.display=''; pencilTip.style.display='';
     if(animate){
