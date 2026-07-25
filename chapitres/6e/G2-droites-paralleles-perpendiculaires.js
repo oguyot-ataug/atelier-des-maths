@@ -363,6 +363,27 @@ function initMedDemo(){
   updateMedDemo();
 }
 
+/* ---- Test : la même construction perpendiculaire avec ApiGeom ---- */
+function initApiGeomTest(){
+  const container = document.getElementById('dp-apigeom-test');
+  if(!container) return;
+  if(!window.ApiGeomBundle){ container.innerHTML = '<p class="hint" style="padding:12px;">ApiGeom introuvable (vérifiez que apigeom/apigeom.bundle.js est bien chargé).</p>'; return; }
+  container.innerHTML = '';
+  container.dataset.initialized = '';
+  try{
+    const Figure = window.ApiGeomBundle.Figure;
+    const figure = new Figure({ width: container.clientWidth || 440, height: 300 });
+    figure.setContainer(container);
+    const D1 = figure.create('Point', { x: -3, y: -1, label: 'D1' });
+    const D2 = figure.create('Point', { x: 4, y: 1, label: 'D2' });
+    const d = figure.create('Line', { point1: D1, point2: D2 });
+    const M = figure.create('Point', { x: 1, y: 3, label: 'M', color:'#E35D3A' });
+    figure.create('LinePerpendicular', { line: d, point: M, color:'#E35D3A', thickness: 2 });
+  }catch(e){
+    container.innerHTML = '<p class="hint" style="padding:12px;">Erreur ApiGeom : '+e.message+'</p>';
+  }
+}
+
 /* ---- Construction pas à pas : perpendiculaire à l'équerre ---- */
 const DP_PM_D1={x:70,y:70}, DP_PM_D2={x:330,y:150}, DP_PM_M={x:230,y:50};
 const dpPmDir = dpDir(DP_PM_D1, DP_PM_D2);
@@ -501,7 +522,7 @@ const DP_METHODE_STEPS = [
 const dpMethodeDemo = makeStepDemo(DP_METHODE_STEPS, 'dp-methodeDisplay');
 
 DEMO_REGISTRY['Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles',
-  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMethodeDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); } };
+  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMethodeDemo.reset(); initApiGeomTest(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); } };
 
 DEMO_QUIZZES['Droites parallèles et perpendiculaires'] = [
   {q:"Que signifie (d) ⊥ (d') ?",
