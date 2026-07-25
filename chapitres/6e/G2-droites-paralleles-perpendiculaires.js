@@ -846,8 +846,8 @@ const dpRqpFootDist = Math.hypot(dpRqpFoot.x-DP_RQP_D1.x, dpRqpFoot.y-DP_RQP_D1.
 const dpRqpTouchDist = Math.hypot(DP_RQP_M.x-dpRqpFoot.x, DP_RQP_M.y-dpRqpFoot.y);
 const DP_RQ_TOOL_LEN = 190, DP_RQ_TOOL_W = 34;
 const DP_RQP_STEPS = [
-  {dist: 50, phase:'slide', note:"On place le bord de la réquerre le long de la droite (d)."},
-  {dist: dpRqpFootDist, phase:'slide', note:"On fait glisser la réquerre le long de (d) : son trait central (repère 0) atteint M."},
+  {dist: 50, phase:'slide', note:"On pose la réquerre perpendiculairement à (d) (sa longueur croise (d))."},
+  {dist: dpRqpFootDist, phase:'slide', note:"On fait glisser la réquerre le long de (d) jusqu'à ce que son trait central passe par M."},
   {dist: dpRqpFootDist, phase:'traced', note:"On trace le long du trait central, qui passe par M : on nomme cette droite (d') et on code l'angle droit."},
   {dist: dpRqpFootDist, phase:'clean', note:"On retire la réquerre : (d) et (d') sont perpendiculaires."},
 ];
@@ -866,16 +866,16 @@ function dpRenderRqPerp(animate){
   if(s.phase==='clean'){
     tool.style.display='none'; centerMark.style.display='none';
   } else {
-    tool.setAttribute('points', dpRulerPolygon(pos, dpRqpDir, dpRqpPerp, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
+    tool.setAttribute('points', dpRulerPolygon(pos, dpRqpPerp, dpRqpDir, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
     tool.style.display='';
-    dpSetLine(centerMark, dpExtend(pos, dpRqpPerp, DP_RQ_TOOL_W/2));
+    dpSetLine(centerMark, dpExtend(pos, dpRqpPerp, DP_RQ_TOOL_LEN/2));
     centerMark.style.display='';
   }
 
   const lineDp = document.getElementById('dp-rqp-lineDp'), angleMark = document.getElementById('dp-rqp-angleMark'), labelDp = document.getElementById('dp-rqp-labelDp');
   const pencil = document.getElementById('dp-rqp-pencil'), pencilTip = document.getElementById('dp-rqp-pencil-tip');
   if(s.phase==='traced' || s.phase==='clean'){
-    const dpExt = dpExtend(dpRqpFoot, dpRqpPerp, DP_RQ_TOOL_W/2 + dpRqpTouchDist + 30);
+    const dpExt = dpExtend(dpRqpFoot, dpRqpPerp, Math.max(DP_RQ_TOOL_LEN/2, dpRqpTouchDist + 30));
     angleMark.setAttribute('d', dpRightAngleMark(dpRqpFoot, {x:dpRqpDir.x,y:dpRqpDir.y}, {x:dpRqpPerp.x,y:dpRqpPerp.y}, 13));
     angleMark.style.display='';
     dpSetTxt(labelDp, {x:dpExt.x2+dpRqpDir.x*16, y:dpExt.y2+dpRqpDir.y*16}, 0, 0);
@@ -913,11 +913,11 @@ const dpRqaFoot1Dist = Math.hypot(dpRqaFoot1.x-DP_RQA_D1.x, dpRqaFoot1.y-DP_RQA_
 const dpRqaStage2Dist = 120;
 const dpRqaStage2Start = {x:DP_RQA_A.x-dpRqaPerp.x*dpRqaStage2Dist, y:DP_RQA_A.y-dpRqaPerp.y*dpRqaStage2Dist};
 const DP_RQA_STEPS = [
-  {stage:1, dist: 40, phase:'slide', note:"Première perpendiculaire (Δ) : réquerre posée sur (d), on la fait glisser vers A."},
+  {stage:1, dist: 40, phase:'slide', note:"Première perpendiculaire (Δ) : réquerre posée perpendiculairement à (d), on la fait glisser vers A."},
   {stage:1, dist: dpRqaFoot1Dist, phase:'slide', note:"Le trait central de la réquerre atteint A."},
   {stage:1, dist: dpRqaFoot1Dist, phase:'traced', note:"On trace (Δ), perpendiculaire à (d) passant par A, et on code l'angle droit."},
   {stage:1, dist: dpRqaFoot1Dist, phase:'clean', note:"(Δ) est tracée. Passons à la seconde perpendiculaire, cette fois par rapport à (Δ)."},
-  {stage:2, dist: 30, phase:'slide', note:"On pose maintenant la réquerre le long de (Δ), on la fait glisser vers A."},
+  {stage:2, dist: 30, phase:'slide', note:"On pose maintenant la réquerre perpendiculairement à (Δ), on la fait glisser vers A."},
   {stage:2, dist: dpRqaStage2Dist, phase:'slide', note:"Le trait central de la réquerre atteint A (déjà sur (Δ))."},
   {stage:2, dist: dpRqaStage2Dist, phase:'traced', note:"On trace (d'), perpendiculaire à (Δ) passant par A, et on code l'angle droit."},
   {stage:2, dist: dpRqaStage2Dist, phase:'clean', note:"(d') est parallèle à (d) — vérifiable avec les graduations latérales de la réquerre."},
@@ -933,8 +933,8 @@ function dpRenderRqPara(animate){
   dpSetTxt(document.getElementById('dp-rqa-labelD'), {x:DP_RQA_D2.x+dpRqaDir.x*24+dpRqaPerp.x*16, y:DP_RQA_D2.y+dpRqaDir.y*24+dpRqaPerp.y*16}, 0, 0);
 
   let pos, toolDir, toolPerp;
-  if(s.stage===1){ pos = {x:DP_RQA_D1.x+dpRqaDir.x*s.dist, y:DP_RQA_D1.y+dpRqaDir.y*s.dist}; toolDir=dpRqaDir; toolPerp=dpRqaPerp; }
-  else { pos = {x:dpRqaStage2Start.x+dpRqaPerp.x*s.dist, y:dpRqaStage2Start.y+dpRqaPerp.y*s.dist}; toolDir=dpRqaPerp; toolPerp=dpRqaDir; }
+  if(s.stage===1){ pos = {x:DP_RQA_D1.x+dpRqaDir.x*s.dist, y:DP_RQA_D1.y+dpRqaDir.y*s.dist}; toolDir=dpRqaPerp; toolPerp=dpRqaDir; }
+  else { pos = {x:dpRqaStage2Start.x+dpRqaPerp.x*s.dist, y:dpRqaStage2Start.y+dpRqaPerp.y*s.dist}; toolDir=dpRqaDir; toolPerp=dpRqaPerp; }
 
   const tool = document.getElementById('dp-rqa-tool'), centerMark = document.getElementById('dp-rqa-centerMark');
   if(s.phase==='clean'){
@@ -942,7 +942,7 @@ function dpRenderRqPara(animate){
   } else {
     tool.setAttribute('points', dpRulerPolygon(pos, toolDir, toolPerp, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
     tool.style.display='';
-    dpSetLine(centerMark, dpExtend(pos, toolPerp, DP_RQ_TOOL_W/2));
+    dpSetLine(centerMark, dpExtend(pos, toolDir, DP_RQ_TOOL_LEN/2));
     centerMark.style.display='';
   }
 
@@ -1000,7 +1000,7 @@ const dpRqmMid = {x:(DP_RQM_A.x+DP_RQM_B.x)/2, y:(DP_RQM_A.y+DP_RQM_B.y)/2};
 const DP_RQM_STEPS = [
   {phase:'measure', note:"On mesure le segment [AB] avec la réquerre : le 0 posé sur A, on lit la longueur sur B."},
   {phase:'midpoint', note:"On repère le milieu M (la moitié de la longueur mesurée), et on code les longueurs égales AM = MB."},
-  {phase:'place', note:"On pose la réquerre le long de [AB] : son trait central est déjà positionné sur M."},
+  {phase:'place', note:"On pose la réquerre perpendiculairement à [AB] : son trait central est déjà positionné sur M."},
   {phase:'traced', note:"On trace le long du trait central : c'est la médiatrice, on code l'angle droit."},
   {phase:'clean', note:"On retire la réquerre : cette droite est la médiatrice de [AB]."},
 ];
@@ -1022,9 +1022,9 @@ function dpRenderRqMed(animate){
     tool.style.display='';
     centerMark.style.display='none';
   } else if(s.phase==='place' || s.phase==='traced' || s.phase==='clean'){
-    tool.setAttribute('points', dpRulerPolygon(dpRqmMid, dpRqmDir, dpRqmPerp, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
+    tool.setAttribute('points', dpRulerPolygon(dpRqmMid, dpRqmPerp, dpRqmDir, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
     tool.style.display = s.phase==='clean' ? 'none' : '';
-    dpSetLine(centerMark, dpExtend(dpRqmMid, dpRqmPerp, DP_RQ_TOOL_W/2));
+    dpSetLine(centerMark, dpExtend(dpRqmMid, dpRqmPerp, DP_RQ_TOOL_LEN/2));
     centerMark.style.display = s.phase==='clean' ? 'none' : '';
   } else {
     tool.style.display='none'; centerMark.style.display='none';
@@ -1049,7 +1049,7 @@ function dpRenderRqMed(animate){
   const medLine = document.getElementById('dp-rqm-medLine'), angleMark = document.getElementById('dp-rqm-angleMark'), labelMed = document.getElementById('dp-rqm-labelMed');
   const pencil = document.getElementById('dp-rqm-pencil'), pencilTip = document.getElementById('dp-rqm-pencil-tip');
   if(s.phase==='traced' || s.phase==='clean'){
-    const medExt = dpExtend(dpRqmMid, dpRqmPerp, DP_RQ_TOOL_W/2 + 90);
+    const medExt = dpExtend(dpRqmMid, dpRqmPerp, DP_RQ_TOOL_LEN/2 + 30);
     angleMark.setAttribute('d', dpRightAngleMark(dpRqmMid, {x:dpRqmDir.x,y:dpRqmDir.y}, {x:dpRqmPerp.x,y:dpRqmPerp.y}, 13));
     angleMark.style.display='';
     dpSetTxt(labelMed, {x:medExt.x2+dpRqmDir.x*16, y:medExt.y2+dpRqmDir.y*16}, 0, 0);
