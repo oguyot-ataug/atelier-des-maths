@@ -268,11 +268,13 @@ function dpPencilPolygons(tipPoint, dir, perpDir){
   return { body, tip };
 }
 /* Anime le tracé : le trait grandit de start vers end, le crayon suit le bout qui avance. */
+let dpAnimationToken = 0;
 function dpAnimateTrace(lineEl, pencilEl, pencilTipEl, start, end, pencilPerpDir, duration){
+  const myToken = ++dpAnimationToken;
   const dir = dpDir(start, end);
-  const fullLen = Math.hypot(end.x-start.x, end.y-start.y);
   const startTime = performance.now();
   function frame(now){
+    if(myToken !== dpAnimationToken) return; // une étape plus récente a pris le dessus : on abandonne
     const t = Math.min(1, (now-startTime)/duration);
     const currentEnd = {x:start.x+(end.x-start.x)*t, y:start.y+(end.y-start.y)*t};
     lineEl.setAttribute('x1', start.x); lineEl.setAttribute('y1', start.y);
@@ -441,6 +443,7 @@ const DP_PM_STEPS = [
 ];
 let dpPmIdx = 0;
 function dpRenderPerpMethode(animate){
+  dpAnimationToken++; // invalide toute animation en cours d'une étape précédente
   const s = DP_PM_STEPS[dpPmIdx];
   const dExt = dpExtend({x:(DP_PM_D1.x+DP_PM_D2.x)/2,y:(DP_PM_D1.y+DP_PM_D2.y)/2}, dpPmDir, 260);
   dpSetLine(document.getElementById('dp-pm-lineD'), dExt);
@@ -524,6 +527,7 @@ const DP_PAM_STEPS = [
 ];
 let dpPamIdx = 0;
 function dpRenderParaMethode(animate){
+  dpAnimationToken++; // invalide toute animation en cours d'une étape précédente
   const s = DP_PAM_STEPS[dpPamIdx];
   const dExt = dpExtend({x:(DP_PAM_P1.x+DP_PAM_P2.x)/2,y:(DP_PAM_P1.y+DP_PAM_P2.y)/2}, dpPamDir, 260);
   dpSetLine(document.getElementById('dp-pam-lineD'), dExt);
