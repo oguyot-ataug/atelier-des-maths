@@ -437,6 +437,7 @@ const DP_PM_STEPS = [
   {dist: dpPmFootDist, phase:'ruler', note:"On pose la règle le long de ce côté de l'équerre : elle est sécante à la droite (d)."},
   {dist: dpPmFootDist, phase:'removed', note:"On retire l'équerre : seule la règle reste en place."},
   {dist: dpPmFootDist, phase:'traced', note:"On trace la droite le long de la règle, et on nomme (d') en codant l'angle droit."},
+  {dist: dpPmFootDist, phase:'clean', note:"On retire la règle : (d) et (d') sont perpendiculaires."},
 ];
 let dpPmIdx = 0;
 function dpRenderPerpMethode(animate){
@@ -453,7 +454,7 @@ function dpRenderPerpMethode(animate){
   const lineDp = document.getElementById('dp-pm-lineDp'), angleMark = document.getElementById('dp-pm-angleMark'), ruler = document.getElementById('dp-pm-ruler');
   const pencil = document.getElementById('dp-pm-pencil'), pencilTip = document.getElementById('dp-pm-pencil-tip');
 
-  if(s.phase==='removed' || s.phase==='traced'){
+  if(s.phase==='removed' || s.phase==='traced' || s.phase==='clean'){
     equerre.style.display='none';
     hole.style.display='none';
   } else {
@@ -473,20 +474,26 @@ function dpRenderPerpMethode(animate){
     ruler.style.display='none';
   }
 
-  if(s.phase==='traced'){
+  if(s.phase==='traced' || s.phase==='clean'){
     const dpExt = dpExtend(dpPmFoot, dpPmPerp, rulerLength/2);
     lineDp.style.display='';
     angleMark.setAttribute('d', dpRightAngleMark(dpPmFoot, {x:dpPmDir.x,y:dpPmDir.y}, {x:dpPmPerp.x,y:dpPmPerp.y}, 13));
     angleMark.style.display='';
-    pencil.style.display=''; pencilTip.style.display='';
-    if(animate){
-      dpAnimateTrace(lineDp, pencil, pencilTip, {x:dpExt.x1,y:dpExt.y1}, {x:dpExt.x2,y:dpExt.y2}, dpPmDir, 900);
+    if(s.phase==='traced'){
+      pencil.style.display=''; pencilTip.style.display='';
+      if(animate){
+        dpAnimateTrace(lineDp, pencil, pencilTip, {x:dpExt.x1,y:dpExt.y1}, {x:dpExt.x2,y:dpExt.y2}, dpPmDir, 900);
+      } else {
+        dpSetLine(lineDp, dpExt);
+        const tipPoint = {x:dpExt.x2, y:dpExt.y2};
+        const pencilShapes = dpPencilPolygons(tipPoint, dpPmPerp, dpPmDir);
+        pencil.setAttribute('points', pencilShapes.body);
+        pencilTip.setAttribute('points', pencilShapes.tip);
+      }
     } else {
       dpSetLine(lineDp, dpExt);
-      const tipPoint = {x:dpExt.x2, y:dpExt.y2};
-      const pencilShapes = dpPencilPolygons(tipPoint, dpPmPerp, dpPmDir);
-      pencil.setAttribute('points', pencilShapes.body);
-      pencilTip.setAttribute('points', pencilShapes.tip);
+      pencil.style.display='none';
+      pencilTip.style.display='none';
     }
   } else {
     lineDp.style.display='none';
@@ -513,6 +520,7 @@ const DP_PAM_STEPS = [
   {frac: 1, phase:'ruler2', note:"On vient poser une seconde règle le long de ce côté de l'équerre."},
   {frac: 1, phase:'removed', note:"On retire l'équerre (et la première règle) : seule la seconde règle reste en place."},
   {frac: 1, phase:'traced', note:"On trace la parallèle le long de cette règle : on nomme (d'') la droite obtenue."},
+  {frac: 1, phase:'clean', note:"On retire la seconde règle : (d) et (d'') sont parallèles."},
 ];
 let dpPamIdx = 0;
 function dpRenderParaMethode(animate){
@@ -538,7 +546,7 @@ function dpRenderParaMethode(animate){
   const c3 = {x:corner.x+dpPamPerp.x*55*sign, y:corner.y+dpPamPerp.y*55*sign};
   const equerre = document.getElementById('dp-pam-equerre');
   const hole = document.getElementById('dp-pam-equerre-hole');
-  if(s.phase==='removed' || s.phase==='traced'){
+  if(s.phase==='removed' || s.phase==='traced' || s.phase==='clean'){
     equerre.style.display='none';
     hole.style.display='none';
   } else {
@@ -561,18 +569,24 @@ function dpRenderParaMethode(animate){
 
   const lineDpp = document.getElementById('dp-pam-lineDpp');
   const pencil = document.getElementById('dp-pam-pencil'), pencilTip = document.getElementById('dp-pam-pencil-tip');
-  if(s.phase==='traced'){
+  if(s.phase==='traced' || s.phase==='clean'){
     const dppExt = dpExtend(DP_PAM_N, dpPamDir, ruler2Length/2);
     lineDpp.style.display='';
-    pencil.style.display=''; pencilTip.style.display='';
-    if(animate){
-      dpAnimateTrace(lineDpp, pencil, pencilTip, {x:dppExt.x1,y:dppExt.y1}, {x:dppExt.x2,y:dppExt.y2}, dpPamPerp, 900);
+    if(s.phase==='traced'){
+      pencil.style.display=''; pencilTip.style.display='';
+      if(animate){
+        dpAnimateTrace(lineDpp, pencil, pencilTip, {x:dppExt.x1,y:dppExt.y1}, {x:dppExt.x2,y:dppExt.y2}, dpPamPerp, 900);
+      } else {
+        dpSetLine(lineDpp, dppExt);
+        const tipPoint = {x:dppExt.x2, y:dppExt.y2};
+        const pencilShapes = dpPencilPolygons(tipPoint, dpPamDir, dpPamPerp);
+        pencil.setAttribute('points', pencilShapes.body);
+        pencilTip.setAttribute('points', pencilShapes.tip);
+      }
     } else {
       dpSetLine(lineDpp, dppExt);
-      const tipPoint = {x:dppExt.x2, y:dppExt.y2};
-      const pencilShapes = dpPencilPolygons(tipPoint, dpPamDir, dpPamPerp);
-      pencil.setAttribute('points', pencilShapes.body);
-      pencilTip.setAttribute('points', pencilShapes.tip);
+      pencil.style.display='none';
+      pencilTip.style.display='none';
     }
   } else {
     lineDpp.style.display='none';
