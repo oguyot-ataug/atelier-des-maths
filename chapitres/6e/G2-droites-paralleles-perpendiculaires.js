@@ -83,12 +83,6 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
   </div>
 </div>
 
-<p class="example-title" style="margin-top:16px;">Test : la même construction avec la bibliothèque ApiGeom</p>
-<p class="hint" style="margin:4px 0 8px;">Points D1, D2 et M déplaçables — moteur de géométrie externe, à comparer avec la figure faite main plus haut.</p>
-<div class="figure-wrap">
-  <div id="dp-apigeom-test" style="width:400px;height:400px;margin:0 auto;background:var(--white);border-radius:8px;"></div>
-</div>
-
 <div class="lesson-header"><span class="num">3</span><h3>Droites parallèles</h3></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Deux droites sont <b>parallèles</b> si elles ne sont pas sécantes. On note (d) // (d').</div>
@@ -199,6 +193,8 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <text id="dp-mm-labelA" font-style="italic" font-size="14">A</text>
     <text id="dp-mm-labelB" font-style="italic" font-size="14">B</text>
     <polygon id="dp-mm-measureRuler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
+    <path id="dp-mm-measureTicks" stroke="#1C1B2E" stroke-width="1" fill="none" style="display:none;"/>
+    <g id="dp-mm-measureLabels" style="display:none;"></g>
     <line id="dp-mm-tick1a" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
     <line id="dp-mm-tick1b" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
     <circle id="dp-mm-midpoint" r="3.5" fill="#1C1B2E" style="display:none;"/>
@@ -441,8 +437,8 @@ const dpMmDir = dpDir(DP_MM_A, DP_MM_B);
 const dpMmPerp = {x:-dpMmDir.y, y:dpMmDir.x};
 const dpMmMid = {x:(DP_MM_A.x+DP_MM_B.x)/2, y:(DP_MM_A.y+DP_MM_B.y)/2};
 const DP_MM_STEPS = [
-  {phase:'measure', note:"On mesure le segment [AB] à la règle."},
-  {phase:'midpoint', note:"On place le milieu M de [AB], et on code les longueurs égales AM = MB."},
+  {phase:'measure', note:"On mesure le segment [AB] à la règle graduée : le 0 est posé sur A, on lit 8 cm sur B."},
+  {phase:'midpoint', note:"On prend la moitié de 8 cm, soit 4 cm : c'est là que se trouve le milieu M. On code les longueurs égales AM = MB."},
   {phase:'equerre', note:"On place un côté de l'angle droit de l'équerre le long de [AB], au niveau de M."},
   {phase:'ruler', note:"On pose la règle le long de l'autre côté de l'équerre : elle est perpendiculaire à [AB] en M."},
   {phase:'removed', note:"On retire l'équerre : seule la règle reste en place."},
@@ -460,14 +456,36 @@ function dpRenderMedMethode(animate){
   dpSetTxt(document.getElementById('dp-mm-labelB'), DP_MM_B, 8, 5);
 
   const measureRuler = document.getElementById('dp-mm-measureRuler');
+  const measureTicks = document.getElementById('dp-mm-measureTicks'), measureLabels = document.getElementById('dp-mm-measureLabels');
   if(s.phase==='measure'){
-    const measureHalfWidth = 6;
+    const measureHalfWidth = 9;
     const segLen = Math.hypot(DP_MM_B.x-DP_MM_A.x, DP_MM_B.y-DP_MM_A.y);
     const measureCenter = {x:dpMmMid.x-dpMmPerp.x*measureHalfWidth, y:dpMmMid.y-dpMmPerp.y*measureHalfWidth};
     measureRuler.setAttribute('points', dpRulerPolygon(measureCenter, dpMmDir, dpMmPerp, segLen+40, measureHalfWidth*2));
     measureRuler.style.display='';
+    // Graduations : 0 posé sur A, lecture à 8 cm sur B (nombre rond pour l'exemple pédagogique).
+    const cmPx = segLen/8;
+    let ticksPath = '';
+    let labelsHtml = '';
+    for(let i=0;i<=8;i++){
+      const pt = {x:DP_MM_A.x+dpMmDir.x*cmPx*i, y:DP_MM_A.y+dpMmDir.y*cmPx*i};
+      const big = (i===0||i===8||i===4);
+      const tickLen = big ? measureHalfWidth : measureHalfWidth*0.6;
+      const t1 = {x:pt.x-dpMmPerp.x*tickLen, y:pt.y-dpMmPerp.y*tickLen};
+      const t2 = {x:pt.x+dpMmPerp.x*tickLen, y:pt.y+dpMmPerp.y*tickLen};
+      ticksPath += `M ${t1.x} ${t1.y} L ${t2.x} ${t2.y} `;
+      const labelPos = {x:pt.x-dpMmPerp.x*(measureHalfWidth+9), y:pt.y-dpMmPerp.y*(measureHalfWidth+9)};
+      const isHalf = i===4;
+      labelsHtml += `<text x="${labelPos.x}" y="${labelPos.y}" font-size="${isHalf?12:10}" text-anchor="middle" fill="${isHalf?'#1F6B3A':'#1C1B2E'}" font-weight="${isHalf?700:400}">${i}</text>`;
+    }
+    measureTicks.setAttribute('d', ticksPath);
+    measureTicks.style.display='';
+    measureLabels.innerHTML = labelsHtml;
+    measureLabels.style.display='';
   } else {
     measureRuler.style.display='none';
+    measureTicks.style.display='none';
+    measureLabels.style.display='none';
   }
 
   const tick1a = document.getElementById('dp-mm-tick1a'), tick1b = document.getElementById('dp-mm-tick1b'), midpoint = document.getElementById('dp-mm-midpoint');
@@ -543,27 +561,6 @@ function dpRenderMedMethode(animate){
 }
 function dpMedMethodeNext(){ if(dpMmIdx<DP_MM_STEPS.length-1){ dpMmIdx++; dpRenderMedMethode(DP_MM_STEPS[dpMmIdx].phase==='traced'); } }
 function dpMedMethodeReset(){ dpMmIdx=0; dpRenderMedMethode(false); }
-
-/* ---- Test : la même construction perpendiculaire avec ApiGeom ---- */
-function initApiGeomTest(){
-  const container = document.getElementById('dp-apigeom-test');
-  if(!container) return;
-  if(!window.ApiGeomBundle){ container.innerHTML = '<p class="hint" style="padding:12px;">ApiGeom introuvable (vérifiez que apigeom/apigeom.bundle.js est bien chargé).</p>'; return; }
-  container.innerHTML = '';
-  container.dataset.initialized = '';
-  try{
-    const Figure = window.ApiGeomBundle.Figure;
-    const figure = new Figure({ width: 400, height: 400 });
-    figure.setContainer(container);
-    const D1 = figure.create('Point', { x: -3, y: -1, label: 'D1' });
-    const D2 = figure.create('Point', { x: 4, y: 1, label: 'D2' });
-    const d = figure.create('Line', { point1: D1, point2: D2 });
-    const M = figure.create('Point', { x: 1, y: 3, label: 'M', color:'#E35D3A' });
-    figure.create('LinePerpendicular', { line: d, point: M, color:'#E35D3A', thickness: 2 });
-  }catch(e){
-    container.innerHTML = '<p class="hint" style="padding:12px;">Erreur ApiGeom : '+e.message+'</p>';
-  }
-}
 
 /* ---- Construction pas à pas : perpendiculaire à l'équerre ---- */
 const DP_PM_D1={x:70,y:70}, DP_PM_D2={x:330,y:150}, DP_PM_M={x:230,y:50};
@@ -764,7 +761,7 @@ const DP_METHODE_STEPS = [
 const dpMethodeDemo = makeStepDemo(DP_METHODE_STEPS, 'dp-methodeDisplay');
 
 DEMO_REGISTRY['Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles',
-  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpMethodeDemo.reset(); initApiGeomTest(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); } };
+  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpMethodeDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); } };
 
 DEMO_QUIZZES['Droites parallèles et perpendiculaires'] = [
   {q:"Que signifie (d) ⊥ (d') ?",
