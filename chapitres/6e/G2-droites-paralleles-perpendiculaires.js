@@ -66,7 +66,11 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <line id="dp-pm-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
     <circle id="dp-pm-M" r="5" fill="#E35D3A"/>
     <text id="dp-pm-labelM" font-style="italic" font-size="14">M</text>
-    <polygon id="dp-pm-equerre" fill="rgba(227,93,58,.28)" stroke="#E35D3A" stroke-width="1.6"/>
+    <polygon id="dp-pm-equerre" fill="rgba(210,214,222,.6)" stroke="#4A4A55" stroke-width="1.8"/>
+    <path id="dp-pm-equerre-ticks" stroke="#4A4A55" stroke-width="1" fill="none"/>
+    <circle id="dp-pm-equerre-hole" r="4" fill="var(--white)" stroke="#4A4A55" stroke-width="1.2"/>
+    <polygon id="dp-pm-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
+    <polygon id="dp-pm-pencil-tip" fill="#3A2A1A" style="display:none;"/>
     <polygon id="dp-pm-ruler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
     <line id="dp-pm-lineDp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
     <path id="dp-pm-angleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3" style="display:none;"/>
@@ -81,7 +85,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 <p class="example-title" style="margin-top:16px;">Test : la même construction avec la bibliothèque ApiGeom</p>
 <p class="hint" style="margin:4px 0 8px;">Points D1, D2 et M déplaçables — moteur de géométrie externe, à comparer avec la figure faite main plus haut.</p>
 <div class="figure-wrap">
-  <div id="dp-apigeom-test" style="width:100%;max-width:460px;height:300px;margin:0 auto;background:var(--white);border-radius:8px;"></div>
+  <div id="dp-apigeom-test" style="width:400px;height:400px;margin:0 auto;background:var(--white);border-radius:8px;"></div>
 </div>
 
 <div class="lesson-header"><span class="num">3</span><h3>Droites parallèles</h3></div>
@@ -113,7 +117,11 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <text id="dp-pam-labelN" font-style="italic" font-size="14">N</text>
     <polygon id="dp-pam-ruler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
     <polygon id="dp-pam-ruler2" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
-    <polygon id="dp-pam-equerre" fill="rgba(227,93,58,.28)" stroke="#E35D3A" stroke-width="1.6"/>
+    <polygon id="dp-pam-equerre" fill="rgba(210,214,222,.6)" stroke="#4A4A55" stroke-width="1.8"/>
+    <path id="dp-pam-equerre-ticks" stroke="#4A4A55" stroke-width="1" fill="none"/>
+    <circle id="dp-pam-equerre-hole" r="4" fill="var(--white)" stroke="#4A4A55" stroke-width="1.2"/>
+    <polygon id="dp-pam-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
+    <polygon id="dp-pam-pencil-tip" fill="#3A2A1A" style="display:none;"/>
     <line id="dp-pam-lineDpp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
   </svg>
   <p class="hint" id="dp-pam-note" style="text-align:center;margin-top:8px;"></p>
@@ -246,6 +254,32 @@ function dpRulerPolygon(center, dir, perpToDir, length, width){
   const c4={x:center.x-dir.x*half-perpToDir.x*halfW, y:center.y-dir.y*half-perpToDir.y*halfW};
   return `${c1.x},${c1.y} ${c2.x},${c2.y} ${c3.x},${c3.y} ${c4.x},${c4.y}`;
 }
+/* Petites graduations le long d'un côté de l'équerre (aspect "règle graduée"), en partant du coin. */
+function dpEquerreTicksPath(corner, dir, tickDir, legLength, numTicks, tickSize){
+  let path = '';
+  for(let i=1;i<=numTicks;i++){
+    const t = (legLength/(numTicks+1))*i;
+    const base = {x:corner.x+dir.x*t, y:corner.y+dir.y*t};
+    const tip = {x:base.x+tickDir.x*tickSize, y:base.y+tickDir.y*tickSize};
+    path += `M ${base.x} ${base.y} L ${tip.x} ${tip.y} `;
+  }
+  return path;
+}
+/* Crayon (corps + mine) positionné en bout de tracé, orienté selon la direction du trait. */
+function dpPencilPolygons(tipPoint, dir, perpDir){
+  const bodyLen = 30, halfW = 4.5, tipLen = 9;
+  const back = {x:tipPoint.x-dir.x*(bodyLen+tipLen), y:tipPoint.y-dir.y*(bodyLen+tipLen)};
+  const shoulder = {x:tipPoint.x-dir.x*tipLen, y:tipPoint.y-dir.y*tipLen};
+  const b1={x:back.x+perpDir.x*halfW, y:back.y+perpDir.y*halfW};
+  const b2={x:shoulder.x+perpDir.x*halfW, y:shoulder.y+perpDir.y*halfW};
+  const b3={x:shoulder.x-perpDir.x*halfW, y:shoulder.y-perpDir.y*halfW};
+  const b4={x:back.x-perpDir.x*halfW, y:back.y-perpDir.y*halfW};
+  const body = `${b1.x},${b1.y} ${b2.x},${b2.y} ${b3.x},${b3.y} ${b4.x},${b4.y}`;
+  const t1={x:shoulder.x+perpDir.x*halfW, y:shoulder.y+perpDir.y*halfW};
+  const t2={x:shoulder.x-perpDir.x*halfW, y:shoulder.y-perpDir.y*halfW};
+  const tip = `${t1.x},${t1.y} ${t2.x},${t2.y} ${tipPoint.x},${tipPoint.y}`;
+  return { body, tip };
+}
 function dpSetLine(el, ext){ el.setAttribute('x1',ext.x1); el.setAttribute('y1',ext.y1); el.setAttribute('x2',ext.x2); el.setAttribute('y2',ext.y2); }
 function dpSetPt(el, p){ el.setAttribute('cx',p.x); el.setAttribute('cy',p.y); }
 function dpSetTxt(el, p, dx, dy){ el.setAttribute('x',p.x+dx); el.setAttribute('y',p.y+dy); }
@@ -372,7 +406,7 @@ function initApiGeomTest(){
   container.dataset.initialized = '';
   try{
     const Figure = window.ApiGeomBundle.Figure;
-    const figure = new Figure({ width: container.clientWidth || 440, height: 300 });
+    const figure = new Figure({ width: 400, height: 400 });
     figure.setContainer(container);
     const D1 = figure.create('Point', { x: -3, y: -1, label: 'D1' });
     const D2 = figure.create('Point', { x: 4, y: 1, label: 'D2' });
@@ -411,32 +445,47 @@ function dpRenderPerpMethode(){
   const c2 = {x:pos.x+dpPmDir.x*90, y:pos.y+dpPmDir.y*90};
   const c3 = {x:pos.x+dpPmPerp.x*(dpPmTouchDist+22), y:pos.y+dpPmPerp.y*(dpPmTouchDist+22)};
   const equerre = document.getElementById('dp-pm-equerre');
+  const ticks = document.getElementById('dp-pm-equerre-ticks'), hole = document.getElementById('dp-pm-equerre-hole');
   const lineDp = document.getElementById('dp-pm-lineDp'), angleMark = document.getElementById('dp-pm-angleMark'), ruler = document.getElementById('dp-pm-ruler');
+  const pencil = document.getElementById('dp-pm-pencil'), pencilTip = document.getElementById('dp-pm-pencil-tip');
 
   if(s.phase==='removed' || s.phase==='traced'){
     equerre.style.display='none';
+    ticks.style.display='none';
+    hole.style.display='none';
   } else {
     equerre.setAttribute('points', `${pos.x},${pos.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
     equerre.style.display='';
+    ticks.setAttribute('d', dpEquerreTicksPath(pos, dpPmDir, {x:-dpPmPerp.x,y:-dpPmPerp.y}, 90, 5, 6));
+    ticks.style.display='';
+    const holePos = {x:pos.x+dpPmDir.x*14+dpPmPerp.x*14, y:pos.y+dpPmDir.y*14+dpPmPerp.y*14};
+    dpSetPt(hole, holePos);
+    hole.style.display='';
   }
 
+  const rulerHalfWidth = 6.5, rulerLength = 220;
+  const rulerCenter = {x:dpPmFoot.x-dpPmDir.x*rulerHalfWidth, y:dpPmFoot.y-dpPmDir.y*rulerHalfWidth};
   if(s.phase==='ruler' || s.phase==='removed' || s.phase==='traced'){
-    const rulerHalfWidth = 6.5;
-    const rulerCenter = {x:dpPmFoot.x-dpPmDir.x*rulerHalfWidth, y:dpPmFoot.y-dpPmDir.y*rulerHalfWidth};
-    ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPmPerp, dpPmDir, 220, rulerHalfWidth*2));
+    ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPmPerp, dpPmDir, rulerLength, rulerHalfWidth*2));
     ruler.style.display='';
   } else {
     ruler.style.display='none';
   }
 
   if(s.phase==='traced'){
-    const dpExt = dpExtend(DP_PM_M, dpPmPerp, 140);
+    const dpExt = dpExtend(rulerCenter, dpPmPerp, rulerLength/2);
     dpSetLine(lineDp, dpExt);
     lineDp.style.display='';
     angleMark.setAttribute('d', dpRightAngleMark(dpPmFoot, {x:dpPmDir.x,y:dpPmDir.y}, {x:dpPmPerp.x,y:dpPmPerp.y}, 13));
     angleMark.style.display='';
+    const tipPoint = {x:dpExt.x1, y:dpExt.y1};
+    const pencilShapes = dpPencilPolygons(tipPoint, {x:-dpPmPerp.x,y:-dpPmPerp.y}, dpPmDir);
+    pencil.setAttribute('points', pencilShapes.body); pencil.style.display='';
+    pencilTip.setAttribute('points', pencilShapes.tip); pencilTip.style.display='';
   } else {
     lineDp.style.display='none';
+    pencil.style.display='none';
+    pencilTip.style.display='none';
     angleMark.style.display='none';
   }
   document.getElementById('dp-pm-note').textContent = s.note;
@@ -482,30 +531,45 @@ function dpRenderParaMethode(){
   const sign = (dpPamSlideDist>=0?1:-1);
   const c3 = {x:corner.x+dpPamPerp.x*55*sign, y:corner.y+dpPamPerp.y*55*sign};
   const equerre = document.getElementById('dp-pam-equerre');
+  const ticks = document.getElementById('dp-pam-equerre-ticks'), hole = document.getElementById('dp-pam-equerre-hole');
   if(s.phase==='removed' || s.phase==='traced'){
     equerre.style.display='none';
+    ticks.style.display='none';
+    hole.style.display='none';
   } else {
     equerre.setAttribute('points', `${corner.x},${corner.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
     equerre.style.display='';
+    ticks.setAttribute('d', dpEquerreTicksPath(corner, dpPamDir, {x:-dpPamPerp.x*sign,y:-dpPamPerp.y*sign}, 90, 5, 6));
+    ticks.style.display='';
+    const holePos = {x:corner.x+dpPamDir.x*14+dpPamPerp.x*14*sign, y:corner.y+dpPamDir.y*14+dpPamPerp.y*14*sign};
+    dpSetPt(hole, holePos);
+    hole.style.display='';
   }
 
   const ruler2 = document.getElementById('dp-pam-ruler2');
+  const ruler2HalfWidth = 6.5, ruler2Length = 300;
+  const ruler2Center = {x:DP_PAM_N.x-dpPamPerp.x*ruler2HalfWidth*sign, y:DP_PAM_N.y-dpPamPerp.y*ruler2HalfWidth*sign};
   if(s.phase==='ruler2' || s.phase==='removed' || s.phase==='traced'){
-    const ruler2HalfWidth = 6.5;
-    const ruler2Center = {x:DP_PAM_N.x-dpPamPerp.x*ruler2HalfWidth*sign, y:DP_PAM_N.y-dpPamPerp.y*ruler2HalfWidth*sign};
-    ruler2.setAttribute('points', dpRulerPolygon(ruler2Center, dpPamDir, dpPamPerp, 300, ruler2HalfWidth*2));
+    ruler2.setAttribute('points', dpRulerPolygon(ruler2Center, dpPamDir, dpPamPerp, ruler2Length, ruler2HalfWidth*2));
     ruler2.style.display='';
   } else {
     ruler2.style.display='none';
   }
 
   const lineDpp = document.getElementById('dp-pam-lineDpp');
+  const pencil = document.getElementById('dp-pam-pencil'), pencilTip = document.getElementById('dp-pam-pencil-tip');
   if(s.phase==='traced'){
-    const dppExt = dpExtend(DP_PAM_N, dpPamDir, 260);
+    const dppExt = dpExtend(ruler2Center, dpPamDir, ruler2Length/2);
     dpSetLine(lineDpp, dppExt);
     lineDpp.style.display='';
+    const tipPoint = {x:dppExt.x1, y:dppExt.y1};
+    const pencilShapes = dpPencilPolygons(tipPoint, {x:-dpPamDir.x,y:-dpPamDir.y}, dpPamPerp);
+    pencil.setAttribute('points', pencilShapes.body); pencil.style.display='';
+    pencilTip.setAttribute('points', pencilShapes.tip); pencilTip.style.display='';
   } else {
     lineDpp.style.display='none';
+    pencil.style.display='none';
+    pencilTip.style.display='none';
   }
   document.getElementById('dp-pam-note').textContent = s.note;
 }
