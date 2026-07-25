@@ -379,7 +379,7 @@ function dpRenderPerpMethode(){
   dpSetTxt(document.getElementById('dp-pm-labelM'), DP_PM_M, 8, -10);
   const pos = {x:DP_PM_D1.x+dpPmDir.x*s.dist, y:DP_PM_D1.y+dpPmDir.y*s.dist};
   const c2 = {x:pos.x+dpPmDir.x*90, y:pos.y+dpPmDir.y*90};
-  const c3 = {x:pos.x+dpPmPerp.x*dpPmTouchDist, y:pos.y+dpPmPerp.y*dpPmTouchDist};
+  const c3 = {x:pos.x+dpPmPerp.x*(dpPmTouchDist+22), y:pos.y+dpPmPerp.y*(dpPmTouchDist+22)};
   document.getElementById('dp-pm-equerre').setAttribute('points', `${pos.x},${pos.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
   const lineDp = document.getElementById('dp-pm-lineDp'), angleMark = document.getElementById('dp-pm-angleMark'), ruler = document.getElementById('dp-pm-ruler');
   if(s.showLine){
@@ -428,7 +428,7 @@ function dpRenderParaMethode(){
   ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPamPerp, dpPamDir, 300, rulerHalfWidth*2));
   ruler.style.display='';
   const corner = {x:DP_PAM_P1.x+dpPamPerp.x*dpPamSlideDist*s.frac, y:DP_PAM_P1.y+dpPamPerp.y*dpPamSlideDist*s.frac};
-  const c2 = {x:corner.x+dpPamDir.x*dpPamTouchDist, y:corner.y+dpPamDir.y*dpPamTouchDist};
+  const c2 = {x:corner.x+dpPamDir.x*(dpPamTouchDist+22), y:corner.y+dpPamDir.y*(dpPamTouchDist+22)};
   const c3 = {x:corner.x+dpPamPerp.x*55*(dpPamSlideDist>=0?1:-1), y:corner.y+dpPamPerp.y*55*(dpPamSlideDist>=0?1:-1)};
   document.getElementById('dp-pam-equerre').setAttribute('points', `${corner.x},${corner.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
   const lineDpp = document.getElementById('dp-pam-lineDpp');
