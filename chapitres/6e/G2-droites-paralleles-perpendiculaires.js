@@ -460,15 +460,18 @@ function dpRenderMedMethode(animate){
   if(s.phase==='measure'){
     const rulerW = 30; // largeur totale de la règle
     const segLen = Math.hypot(DP_MM_B.x-DP_MM_A.x, DP_MM_B.y-DP_MM_A.y);
-    // La règle est posée EN DESSOUS du segment : le segment [AB] coïncide avec son bord supérieur.
-    const measureCenter = {x:dpMmMid.x+dpMmPerp.x*(rulerW/2), y:dpMmMid.y+dpMmPerp.y*(rulerW/2)};
-    measureRuler.setAttribute('points', dpRulerPolygon(measureCenter, dpMmDir, dpMmPerp, segLen+150, rulerW));
-    measureRuler.style.display='';
-    // Graduations : 0 posé sur A, lecture à 8 cm sur B (nombre rond pour l'exemple pédagogique).
     const cmPx = segLen/8, mmPx = cmPx/10;
+    const totalCm = 10; // règle qui dépasse la lecture, sans sortir du cadre visible
+    const rulerLenPx = cmPx*totalCm;
+    // La règle est posée EN DESSOUS du segment, son "0" pile au bord (sur A), et elle se poursuit après la lecture à 8.
+    const rulerMidAlong = {x:DP_MM_A.x+dpMmDir.x*(rulerLenPx/2), y:DP_MM_A.y+dpMmDir.y*(rulerLenPx/2)};
+    const measureCenter = {x:rulerMidAlong.x+dpMmPerp.x*(rulerW/2), y:rulerMidAlong.y+dpMmPerp.y*(rulerW/2)};
+    measureRuler.setAttribute('points', dpRulerPolygon(measureCenter, dpMmDir, dpMmPerp, rulerLenPx, rulerW));
+    measureRuler.style.display='';
+    // Graduations : 0 posé sur A, lecture à 8 cm sur B, la règle et ses graduations continuent au-delà.
     let ticksPath = '';
     let labelsHtml = '';
-    const nbMm = 80;
+    const nbMm = totalCm*10;
     for(let i=0;i<=nbMm;i++){
       const isCm = i%10===0;
       const pt = {x:DP_MM_A.x+dpMmDir.x*mmPx*i, y:DP_MM_A.y+dpMmDir.y*mmPx*i};
