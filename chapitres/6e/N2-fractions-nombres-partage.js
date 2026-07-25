@@ -6,13 +6,13 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Écriture fractionnaire</h3></div>
 <p class="example-title" style="margin-top:0;">A. Quotient</p>
 <span class="def-badge">Définition</span>
-<div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="frac"><span class="num2">a</span><span class="den">b</span></span> est le résultat de la division de <i>a</i> par <i>b</i> : <span class="frac"><span class="num2">a</span><span class="den">b</span></span> = a ÷ b. Elle se lit « a divisé par b » ou « a sur b ».</div>
-<p class="example-title">Exemple : comment se lit la fraction 3/4 ?</p>
-<p class="hint" style="margin:4px 0 12px;">Elle se lit « trois quarts », ou « 3 divisé par 4 », ou « 3 sur 4 ».</p>
+<div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="tex">\\frac{a}{b}</span> est le résultat de la division de <i>a</i> par <i>b</i> : <span class="tex">\\frac{a}{b} = a \\div b</span>. Elle se lit « a divisé par b » ou « a sur b ».</div>
+<p class="example-title">Exemple : comment se lit la fraction <span class="tex">\\frac{3}{4}</span> ?</p>
+<p style="margin:4px 0 12px;">Elle se lit « trois quarts », ou « 3 divisé par 4 », ou « 3 sur 4 ».</p>
 
 <p class="example-title">Exemple : partager un segment de 6 cm en 7 parts égales, à l'aide d'un guide-âne</p>
-<p class="hint" style="margin:4px 0 8px;">Un <b>guide-âne</b> est un réseau de droites parallèles équidistantes. On pose son segment en travers, en plaçant ses deux extrémités sur deux droites du réseau : les droites intermédiaires le partagent alors en parts rigoureusement égales, quel que soit l'angle choisi.</p>
-<p class="hint" style="margin:4px 0 8px;">Déplacez les deux extrémités du segment (chacune reste sur sa droite) : les 7 parts restent toujours égales.</p>
+<p style="margin:4px 0 8px;">Un <b>guide-âne</b> est un réseau de droites parallèles équidistantes. On déplace son segment (de longueur fixe) et on l'oriente pour que ses deux extrémités tombent chacune sur une droite du réseau : les droites intermédiaires le partagent alors en parts rigoureusement égales.</p>
+<p style="margin:4px 0 8px;">Déplacez le point bleu de gauche pour translater le segment, ou le point bleu de droite pour le faire pivoter (sa longueur ne change jamais) : cherchez la position où il traverse 6 droites intermédiaires, pour obtenir 7 parts égales.</p>
 <div class="figure-wrap">
   <svg id="fp-guideAneSvg" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
   </svg>
@@ -24,38 +24,37 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
 
 <p class="example-title" style="margin-top:20px;">B. Nombre fraction</p>
 <span class="def-badge">Définition</span>
-<div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="frac"><span class="num2">a</span><span class="den">b</span></span> est le nombre qui, multiplié par <i>b</i>, donne <i>a</i>. Elle vérifie donc : <span class="frac"><span class="num2">a</span><span class="den">b</span></span> × b = a et b × <span class="frac"><span class="num2">a</span><span class="den">b</span></span> = a. Dans le cas particulier où b = 1, on a : <span class="frac"><span class="num2">a</span><span class="den">1</span></span> = a.</div>
+<div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="tex">\\frac{a}{b}</span> est le nombre qui, multiplié par <i>b</i>, donne <i>a</i>. Elle vérifie donc : <span class="tex">\\frac{a}{b} \\times b = a</span> et <span class="tex">b \\times \\frac{a}{b} = a</span>. Dans le cas particulier où b = 1, on a : <span class="tex">\\frac{a}{1} = a</span>.</div>
 <p class="example-title">Exemple : complète les égalités … × 5 = 4 et … × 7 = 9.</p>
-<p class="hint" style="margin:4px 0 12px;">La fraction 4/5 est le nombre qui, multiplié par 5, donne 4, donc on peut écrire 4/5 × 5 = 4.<br>La fraction 9/7 est le nombre qui, multiplié par 7, donne 9, donc on peut écrire 9/7 × 7 = 9.</p>
+<p style="margin:4px 0 12px;">La fraction <span class="tex">\\frac{4}{5}</span> est le nombre qui, multiplié par 5, donne 4, donc on peut écrire <span class="tex">\\frac{4}{5} \\times 5 = 4</span>.<br>La fraction <span class="tex">\\frac{9}{7}</span> est le nombre qui, multiplié par 7, donne 9, donc on peut écrire <span class="tex">\\frac{9}{7} \\times 7 = 9</span>.</p>
 
 <p class="example-title" style="margin-top:20px;">C. Écriture d'une fraction</p>
 <span class="prop-badge">Règle</span>
-<div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="frac"><span class="num2">a</span><span class="den">b</span></span> est <b>soit un nombre entier</b>, <b>soit un nombre décimal non entier</b>, <b>soit un nombre non décimal</b>.</div>
-<p class="example-title">Exemple : dans quel ensemble de nombres se trouve chacune des fractions 48/6, 3/4 et 1/3 ?</p>
-<ul style="margin:4px 0 12px;padding-left:20px;color:var(--ink-soft);font-size:.92rem;">
-  <li>48/6 est le résultat de la division 48 ÷ 6 = 8. On a donc 48/6 = 8 : la fraction 48/6 est donc un <b>nombre entier</b>.</li>
-  <li>3/4 est le résultat de la division 3 ÷ 4. On vérifie que 0,75 × 4 = 3, donc 3/4 = 0,75 : la fraction 3/4 est donc un <b>nombre décimal non entier</b>.</li>
-  <li>1/3 est le nombre qui, multiplié par 3, donne 1 : 1/3 × 3 = 1. La division 1 ÷ 3 ne se termine jamais ; on peut seulement écrire 1/3 ≈ 0,33 : la fraction 1/3 est donc un <b>nombre non décimal</b>.</li>
+<div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="tex">\\frac{a}{b}</span> est <b>soit un nombre entier</b>, <b>soit un nombre décimal non entier</b>, <b>soit un nombre non décimal</b>.</div>
+<p class="example-title">Exemple : dans quel ensemble de nombres se trouve chacune des fractions <span class="tex">\\frac{48}{6}</span>, <span class="tex">\\frac{3}{4}</span> et <span class="tex">\\frac{1}{3}</span> ?</p>
+<ul class="example-list">
+  <li><span class="tex">\\frac{48}{6}</span> est le résultat de la division 48 ÷ 6 = 8. On a donc <span class="tex">\\frac{48}{6} = 8</span> : la fraction <span class="tex">\\frac{48}{6}</span> est donc un <b>nombre entier</b>.</li>
+  <li><span class="tex">\\frac{3}{4}</span> est le résultat de la division 3 ÷ 4. On vérifie que 0,75 × 4 = 3, donc <span class="tex">\\frac{3}{4} = 0{,}75</span> : la fraction <span class="tex">\\frac{3}{4}</span> est donc un <b>nombre décimal non entier</b>.</li>
+  <li><span class="tex">\\frac{1}{3}</span> est le nombre qui, multiplié par 3, donne 1 : <span class="tex">\\frac{1}{3} \\times 3 = 1</span>. La division 1 ÷ 3 ne se termine jamais ; on peut seulement écrire <span class="tex">\\frac{1}{3} \\approx 0{,}33</span> : la fraction <span class="tex">\\frac{1}{3}</span> est donc un <b>nombre non décimal</b>.</li>
 </ul>
 
 <div class="lesson-header"><span class="num">2</span><h3>Égalité de fractions</h3></div>
 <span class="prop-badge">Propriété</span>
 <div class="def-box">
   Une fraction ne change pas de valeur quand on multiplie — ou quand on divise — son numérateur <b>et</b> son dénominateur par un même nombre non nul.<br>
-  Pour tous entiers a, b (non nul) et k (non nul) : <span class="frac"><span class="num2">a</span><span class="den">b</span></span> = <span class="frac"><span class="num2">a × k</span><span class="den">b × k</span></span> et <span class="frac"><span class="num2">a</span><span class="den">b</span></span> = <span class="frac"><span class="num2">a ÷ k</span><span class="den">b ÷ k</span></span>.
+  Pour tous entiers a, b (non nul) et k (non nul) : <span class="tex">\\frac{a}{b} = \\frac{a \\times k}{b \\times k}</span> et <span class="tex">\\frac{a}{b} = \\frac{a \\div k}{b \\div k}</span>.
 </div>
-<p class="example-title">Exemple : complète l'égalité de fractions 3/5 = …/20.</p>
-<p class="hint" style="margin:4px 0 12px;">Pour passer du dénominateur 5 au dénominateur 20, on multiplie par 4 (car 20 ÷ 5 = 4). Donc pour obtenir le numérateur manquant, on multiplie aussi le numérateur 3 par 4 : on obtient 3/5 = 12/20.</p>
+<p class="example-title">Exemple : complète l'égalité de fractions <span class="tex">\\frac{3}{5} = \\frac{?}{20}</span>.</p>
+<p style="margin:4px 0 12px;">Pour passer du dénominateur 5 au dénominateur 20, on multiplie par 4 (donc 20 ÷ 5 = 4). Donc pour obtenir le numérateur manquant, on multiplie aussi le numérateur 3 par 4 : on obtient <span class="tex">\\frac{3}{5} = \\frac{12}{20}</span>.</p>
 
 <div class="lesson-header"><span class="num">3</span><h3>Proportion et pourcentages</h3></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Quand une proportion est écrite sous la forme d'un quotient dont le dénominateur est 100, on obtient ce qu'on appelle la <b>proportion en pourcentage</b>.</div>
 <p class="example-title">Exemple : calcule le pourcentage de boules vertes dans un sac contenant 3 boules vertes et 9 boules rouges.</p>
-<p class="hint" style="margin:4px 0 12px;">
-  La proportion de boules vertes dans ce sac est égale à 3/(3+9), soit 3/12.<br>
-  On peut écrire cette fraction avec pour dénominateur 100 : 3/12 = (3 × 25)/(12 × 25) = 75/300... <br>
-  Autre méthode plus directe : 3/12 = 1/4, et 1/4 = 25/100.<br>
-  La proportion est donc égale à 25/100 : le pourcentage de boules vertes dans ce sac est de <b>25 %</b>.
+<p style="margin:4px 0 12px;">
+  La proportion de boules vertes dans ce sac est égale à <span class="tex">\\frac{3}{3+9}</span>, soit <span class="tex">\\frac{3}{12}</span>.<br>
+  On simplifie : <span class="tex">\\frac{3}{12} = \\frac{1}{4}</span>, puis on écrit cette fraction avec pour dénominateur 100 : <span class="tex">\\frac{1}{4} = \\frac{25}{100}</span>.<br>
+  La proportion est donc égale à <span class="tex">\\frac{25}{100}</span> : le pourcentage de boules vertes dans ce sac est de <b>25 %</b>.
 </p>
 `;
 
@@ -79,20 +78,20 @@ document.getElementById('exos-demo-fractions-partage').innerHTML = `
 <div class="redaction-block">
   <h3>Rédaction type : « Dans quel ensemble de nombres se trouve une fraction ? »</h3>
   <div class="redaction-template">
-    <div class="we-row"><span class="we-expr">21/3 est le résultat de la division 21 ÷ 3 = 7.</span><span class="we-comment">On calcule la division.</span></div>
-    <div class="we-row"><span class="we-expr">On a donc 21/3 = 7.</span><span class="we-comment">On identifie le résultat.</span></div>
-    <div class="we-row"><span class="we-expr">La fraction 21/3 est donc un nombre entier.</span><span class="we-comment">Conclusion.</span></div>
+    <div class="we-row"><span class="we-expr"><span class="tex">\\frac{21}{3}</span> est le résultat de la division 21 ÷ 3 = 7.</span><span class="we-comment">On calcule la division.</span></div>
+    <div class="we-row"><span class="we-expr">On a donc <span class="tex">\\frac{21}{3} = 7</span>.</span><span class="we-comment">On identifie le résultat.</span></div>
+    <div class="we-row"><span class="we-expr">La fraction <span class="tex">\\frac{21}{3}</span> est donc un nombre entier.</span><span class="we-comment">Conclusion.</span></div>
   </div>
 </div>
 <div class="redaction-block">
   <h3>Exercices</h3>
   <div class="exo-card">
     <div class="num">Exercice 1</div>
-    Dans quel ensemble de nombres se trouve chacune des fractions 36/4, 5/2 et 2/7 ? Rédige tes réponses.
+    Dans quel ensemble de nombres se trouve chacune des fractions <span class="tex">\\frac{36}{4}</span>, <span class="tex">\\frac{5}{2}</span> et <span class="tex">\\frac{2}{7}</span> ? Rédige tes réponses.
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
-    Complète l'égalité de fractions 4/7 = …/28.
+    Complète l'égalité de fractions <span class="tex">\\frac{4}{7} = \\frac{?}{28}</span>.
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
@@ -102,10 +101,15 @@ document.getElementById('exos-demo-fractions-partage').innerHTML = `
 `;
 
 /* ================= Figure dynamique : guide-âne ================= */
-const FP_GRID_LINES = 8; // 8 droites -> 7 parts égales
-const FP_GRID_X0 = 60, FP_GRID_GAP = 40, FP_GRID_Y_TOP = 30, FP_GRID_Y_BOT = 230;
-let fpP1 = {x: FP_GRID_X0, y: 80};
-let fpP2 = {x: FP_GRID_X0 + FP_GRID_GAP*(FP_GRID_LINES-1), y: 190};
+const FP_GRID_LINES = 9;
+const FP_GRID_X0 = 40, FP_GRID_GAP = 40, FP_GRID_Y_TOP = 20, FP_GRID_Y_BOT = 240;
+const FP_SEG_LENGTH = 280; // longueur FIXE du segment (représente les 6 cm) : elle ne change jamais.
+let fpPivot = {x: 90, y: 160};
+let fpAngle = -22 * Math.PI/180;
+
+function fpEndpoint(){
+  return { x: fpPivot.x + Math.cos(fpAngle)*FP_SEG_LENGTH, y: fpPivot.y + Math.sin(fpAngle)*FP_SEG_LENGTH };
+}
 
 function fpBuildStaticGrid(){
   const svg = document.getElementById('fp-guideAneSvg');
@@ -114,46 +118,73 @@ function fpBuildStaticGrid(){
     const x = FP_GRID_X0 + i*FP_GRID_GAP;
     html += `<line x1="${x}" y1="${FP_GRID_Y_TOP}" x2="${x}" y2="${FP_GRID_Y_BOT}" stroke="rgba(28,43,57,.28)" stroke-width="1.2"/>`;
   }
-  html += `<line id="fp-segment" stroke="#E35D3A" stroke-width="2.4"/>`;
+  html += `<line id="fp-segment" stroke="#E35D3A" stroke-width="3"/>`;
   html += `<g id="fp-divisionMarks"></g>`;
-  html += `<circle id="fp-P1" r="7" fill="#1F3A5C" style="cursor:grab;"/>`;
-  html += `<circle id="fp-P2" r="7" fill="#1F3A5C" style="cursor:grab;"/>`;
+  html += `<circle id="fp-P1" r="8" fill="#1F3A5C" style="cursor:grab;"/>`;
+  html += `<circle id="fp-P2" r="8" fill="#1F3A5C" style="cursor:grab;"/>`;
   svg.innerHTML = html;
 }
 
 function fpUpdateGuideAne(){
+  const P1 = fpPivot, P2 = fpEndpoint();
   const seg = document.getElementById('fp-segment');
-  seg.setAttribute('x1', fpP1.x); seg.setAttribute('y1', fpP1.y);
-  seg.setAttribute('x2', fpP2.x); seg.setAttribute('y2', fpP2.y);
-  dpSetPtGeneric(document.getElementById('fp-P1'), fpP1);
-  dpSetPtGeneric(document.getElementById('fp-P2'), fpP2);
+  seg.setAttribute('x1', P1.x); seg.setAttribute('y1', P1.y);
+  seg.setAttribute('x2', P2.x); seg.setAttribute('y2', P2.y);
+  dpSetPtGeneric(document.getElementById('fp-P1'), P1);
+  dpSetPtGeneric(document.getElementById('fp-P2'), P2);
+
+  // Cherche les points où le segment croise réellement les droites du guide-âne (0 <= t <= 1).
+  const crossings = [];
+  const dx = P2.x - P1.x;
+  if(Math.abs(dx) > 1e-6){
+    for(let i=0;i<FP_GRID_LINES;i++){
+      const xi = FP_GRID_X0 + i*FP_GRID_GAP;
+      const t = (xi - P1.x)/dx;
+      if(t>0.001 && t<0.999){
+        crossings.push({t, x:xi, y: P1.y + t*(P2.y-P1.y)});
+      }
+    }
+  }
+  crossings.sort((a,b)=>a.t-b.t);
 
   let marksHtml = '';
-  for(let i=1;i<FP_GRID_LINES-1;i++){
-    const t = i/(FP_GRID_LINES-1);
-    const pt = {x: fpP1.x+t*(fpP2.x-fpP1.x), y: fpP1.y+t*(fpP2.y-fpP1.y)};
-    marksHtml += `<circle cx="${pt.x}" cy="${pt.y}" r="4" fill="#1F6B3A"/>`;
-  }
+  crossings.forEach(c=>{ marksHtml += `<circle cx="${c.x}" cy="${c.y}" r="4.5" fill="#1F6B3A"/>`; });
   document.getElementById('fp-divisionMarks').innerHTML = marksHtml;
 
-  const segLen = Math.hypot(fpP2.x-fpP1.x, fpP2.y-fpP1.y);
-  const cmLen = (segLen/200*6).toFixed(1); // échelle approximative pour l'affichage pédagogique
-  const partLen = (6/7).toFixed(2);
-  document.getElementById('fp-guideAneNote').textContent =
-    `Le segment mesure toujours 6 cm ; chaque part mesure 6/7 ≈ ${partLen} cm, quel que soit l'angle choisi.`;
+  const nbParts = crossings.length + 1;
+  const note = document.getElementById('fp-guideAneNote');
+  if(crossings.length === 0){
+    note.textContent = "Ce segment de longueur fixe (6 cm) ne croise aucune droite intermédiaire ici : déplacez-le ou faites-le pivoter pour qu'il en traverse plusieurs.";
+  } else {
+    note.textContent = `Ce segment de longueur fixe (6 cm) traverse ${crossings.length} droite${crossings.length>1?'s':''} intermédiaire${crossings.length>1?'s':''} : il est donc partagé en ${nbParts} parts égales${nbParts===7?' — exactement le partage en 7 recherché !':''}.`;
+  }
 }
 function dpSetPtGeneric(el, p){ el.setAttribute('cx',p.x); el.setAttribute('cy',p.y); }
 
-function fpMakeDraggableVertical(circleEl, svg, fixedX, getPoint, setPoint, onMove){
+function fpMakeDraggablePivot(circleEl, svg, onMove){
   let dragging=false;
   circleEl.addEventListener('mousedown', e=>{ dragging=true; e.preventDefault(); });
   circleEl.addEventListener('touchstart', e=>{ dragging=true; }, {passive:true});
   function move(e){
     if(!dragging) return;
     const pt = svgPointFromEvent(svg, e);
-    let y = pt.y;
-    y = Math.max(FP_GRID_Y_TOP+10, Math.min(FP_GRID_Y_BOT-10, y));
-    setPoint({x:fixedX, y});
+    fpPivot = {x: pt.x, y: pt.y};
+    onMove();
+  }
+  function up(){ dragging=false; }
+  svg.addEventListener('mousemove', move);
+  svg.addEventListener('touchmove', move, {passive:true});
+  window.addEventListener('mouseup', up);
+  window.addEventListener('touchend', up);
+}
+function fpMakeDraggableEndpoint(circleEl, svg, onMove){
+  let dragging=false;
+  circleEl.addEventListener('mousedown', e=>{ dragging=true; e.preventDefault(); });
+  circleEl.addEventListener('touchstart', e=>{ dragging=true; }, {passive:true});
+  function move(e){
+    if(!dragging) return;
+    const pt = svgPointFromEvent(svg, e);
+    fpAngle = Math.atan2(pt.y-fpPivot.y, pt.x-fpPivot.x);
     onMove();
   }
   function up(){ dragging=false; }
@@ -166,13 +197,13 @@ function fpMakeDraggableVertical(circleEl, svg, fixedX, getPoint, setPoint, onMo
 function initGuideAneDemo(){
   fpBuildStaticGrid();
   const svg = document.getElementById('fp-guideAneSvg');
-  fpMakeDraggableVertical(document.getElementById('fp-P1'), svg, FP_GRID_X0, ()=>fpP1, p=>fpP1=p, fpUpdateGuideAne);
-  fpMakeDraggableVertical(document.getElementById('fp-P2'), svg, FP_GRID_X0+FP_GRID_GAP*(FP_GRID_LINES-1), ()=>fpP2, p=>fpP2=p, fpUpdateGuideAne);
+  fpMakeDraggablePivot(document.getElementById('fp-P1'), svg, fpUpdateGuideAne);
+  fpMakeDraggableEndpoint(document.getElementById('fp-P2'), svg, fpUpdateGuideAne);
   fpUpdateGuideAne();
 }
 function resetGuideAneDemo(){
-  fpP1 = {x: FP_GRID_X0, y: 80};
-  fpP2 = {x: FP_GRID_X0 + FP_GRID_GAP*(FP_GRID_LINES-1), y: 190};
+  fpPivot = {x: 90, y: 160};
+  fpAngle = -22 * Math.PI/180;
   fpUpdateGuideAne();
 }
 
@@ -187,7 +218,7 @@ const FP_METHODE_STEPS = [
 const fpMethodeDemo = makeStepDemo(FP_METHODE_STEPS, 'fp-methodeDisplay');
 
 DEMO_REGISTRY['Fractions : nombres et partage'] = { cours:'cours-demo-fractions-partage', methode:'methode-demo-fractions-partage', exos:'exos-demo-fractions-partage',
-  init:()=>{ initGuideAneDemo(); fpMethodeDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-fractions-partage')); } };
+  init:()=>{ initGuideAneDemo(); fpMethodeDemo.reset(); renderStaticMath(document.getElementById('cours-demo-fractions-partage')); renderStaticMath(document.getElementById('exos-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-partage')); } };
 
 DEMO_QUIZZES['Fractions : nombres et partage'] = [
   {q:"Comment se lit la fraction 5/8 ?",
