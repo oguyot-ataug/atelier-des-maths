@@ -78,6 +78,12 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
   </div>
 </div>
 
+<p class="example-title" style="margin-top:16px;">Test : la même construction avec la bibliothèque ApiGeom</p>
+<p class="hint" style="margin:4px 0 8px;">Points D1, D2 et M déplaçables — moteur de géométrie externe, à comparer avec la figure faite main plus haut.</p>
+<div class="figure-wrap">
+  <div id="dp-apigeom-test" style="width:100%;max-width:460px;height:300px;margin:0 auto;background:var(--white);border-radius:8px;"></div>
+</div>
+
 <div class="lesson-header"><span class="num">3</span><h3>Droites parallèles</h3></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Deux droites sont <b>parallèles</b> si elles ne sont pas sécantes. On note (d) // (d').</div>
