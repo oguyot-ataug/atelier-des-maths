@@ -395,8 +395,8 @@ function dpRenderPerpMethode(){
 
   if(s.phase==='ruler' || s.phase==='removed' || s.phase==='traced'){
     const rulerHalfWidth = 6.5;
-    const rulerCenter = {x:DP_PM_M.x+dpPmPerp.x*55-dpPmDir.x*rulerHalfWidth, y:DP_PM_M.y+dpPmPerp.y*55-dpPmDir.y*rulerHalfWidth};
-    ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPmPerp, dpPmDir, 130, rulerHalfWidth*2));
+    const rulerCenter = {x:dpPmFoot.x-dpPmDir.x*rulerHalfWidth, y:dpPmFoot.y-dpPmDir.y*rulerHalfWidth};
+    ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPmPerp, dpPmDir, 220, rulerHalfWidth*2));
     ruler.style.display='';
   } else {
     ruler.style.display='none';
