@@ -458,25 +458,31 @@ function dpRenderMedMethode(animate){
   const measureRuler = document.getElementById('dp-mm-measureRuler');
   const measureTicks = document.getElementById('dp-mm-measureTicks'), measureLabels = document.getElementById('dp-mm-measureLabels');
   if(s.phase==='measure'){
-    const measureHalfWidth = 9;
+    const rulerW = 30; // largeur totale de la règle
     const segLen = Math.hypot(DP_MM_B.x-DP_MM_A.x, DP_MM_B.y-DP_MM_A.y);
-    const measureCenter = {x:dpMmMid.x-dpMmPerp.x*measureHalfWidth, y:dpMmMid.y-dpMmPerp.y*measureHalfWidth};
-    measureRuler.setAttribute('points', dpRulerPolygon(measureCenter, dpMmDir, dpMmPerp, segLen+40, measureHalfWidth*2));
+    // La règle est posée EN DESSOUS du segment : le segment [AB] coïncide avec son bord supérieur.
+    const measureCenter = {x:dpMmMid.x+dpMmPerp.x*(rulerW/2), y:dpMmMid.y+dpMmPerp.y*(rulerW/2)};
+    measureRuler.setAttribute('points', dpRulerPolygon(measureCenter, dpMmDir, dpMmPerp, segLen+40, rulerW));
     measureRuler.style.display='';
     // Graduations : 0 posé sur A, lecture à 8 cm sur B (nombre rond pour l'exemple pédagogique).
-    const cmPx = segLen/8;
+    const cmPx = segLen/8, mmPx = cmPx/10;
     let ticksPath = '';
     let labelsHtml = '';
-    for(let i=0;i<=8;i++){
-      const pt = {x:DP_MM_A.x+dpMmDir.x*cmPx*i, y:DP_MM_A.y+dpMmDir.y*cmPx*i};
-      const big = (i===0||i===8||i===4);
-      const tickLen = big ? measureHalfWidth : measureHalfWidth*0.6;
-      const t1 = {x:pt.x-dpMmPerp.x*tickLen, y:pt.y-dpMmPerp.y*tickLen};
-      const t2 = {x:pt.x+dpMmPerp.x*tickLen, y:pt.y+dpMmPerp.y*tickLen};
+    const nbMm = 80;
+    for(let i=0;i<=nbMm;i++){
+      const isCm = i%10===0;
+      const pt = {x:DP_MM_A.x+dpMmDir.x*mmPx*i, y:DP_MM_A.y+dpMmDir.y*mmPx*i};
+      const isHalfCm = i%10===5;
+      const tickDepth = isCm ? 11 : (isHalfCm ? 8 : 5);
+      const t1 = {x:pt.x, y:pt.y};
+      const t2 = {x:pt.x+dpMmPerp.x*tickDepth, y:pt.y+dpMmPerp.y*tickDepth};
       ticksPath += `M ${t1.x} ${t1.y} L ${t2.x} ${t2.y} `;
-      const labelPos = {x:pt.x-dpMmPerp.x*(measureHalfWidth+9), y:pt.y-dpMmPerp.y*(measureHalfWidth+9)};
-      const isHalf = i===4;
-      labelsHtml += `<text x="${labelPos.x}" y="${labelPos.y}" font-size="${isHalf?12:10}" text-anchor="middle" fill="${isHalf?'#1F6B3A':'#1C1B2E'}" font-weight="${isHalf?700:400}">${i}</text>`;
+      if(isCm){
+        const cmIndex = i/10;
+        const isHalf = cmIndex===4;
+        const labelPos = {x:pt.x+dpMmPerp.x*20, y:pt.y+dpMmPerp.y*20};
+        labelsHtml += `<text x="${labelPos.x}" y="${labelPos.y}" font-size="${isHalf?11:9}" text-anchor="middle" fill="${isHalf?'#1F6B3A':'#1C1B2E'}" font-weight="${isHalf?700:400}">${cmIndex}</text>`;
+      }
     }
     measureTicks.setAttribute('d', ticksPath);
     measureTicks.style.display='';
