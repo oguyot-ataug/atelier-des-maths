@@ -106,6 +106,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <circle id="dp-pam-N" r="5" fill="#E35D3A"/>
     <text id="dp-pam-labelN" font-style="italic" font-size="14">N</text>
     <polygon id="dp-pam-ruler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
+    <polygon id="dp-pam-ruler2" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
     <polygon id="dp-pam-equerre" fill="rgba(227,93,58,.28)" stroke="#E35D3A" stroke-width="1.6"/>
     <line id="dp-pam-lineDpp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
   </svg>
@@ -365,10 +366,12 @@ if(dpPmPerp.x*(DP_PM_M.x-dpPmFoot.x) + dpPmPerp.y*(DP_PM_M.y-dpPmFoot.y) < 0){ d
 const dpPmFootDist = Math.hypot(dpPmFoot.x-DP_PM_D1.x, dpPmFoot.y-DP_PM_D1.y);
 const dpPmTouchDist = Math.hypot(DP_PM_M.x-dpPmFoot.x, DP_PM_M.y-dpPmFoot.y);
 const DP_PM_STEPS = [
-  {dist: 40, note:"On place un côté de l'angle droit de l'équerre sur la droite (d)."},
-  {dist: 95, note:"On fait glisser l'équerre le long de (d), sans la faire tourner."},
-  {dist: dpPmFootDist, note:"On arrête de glisser dès que l'autre côté de l'équerre touche le point M."},
-  {dist: dpPmFootDist, showLine:true, note:"On trace la droite le long de ce second côté, on la prolonge à la règle, et on nomme (d') en codant l'angle droit."},
+  {dist: 40, phase:'slide', note:"On place un côté de l'angle droit de l'équerre sur la droite (d)."},
+  {dist: 95, phase:'slide', note:"On fait glisser l'équerre le long de (d), sans la faire tourner."},
+  {dist: dpPmFootDist, phase:'slide', note:"On arrête de glisser dès que l'autre côté de l'équerre touche le point M."},
+  {dist: dpPmFootDist, phase:'ruler', note:"On pose la règle le long de ce côté de l'équerre : elle est sécante à la droite (d)."},
+  {dist: dpPmFootDist, phase:'removed', note:"On retire l'équerre : seule la règle reste en place."},
+  {dist: dpPmFootDist, phase:'traced', note:"On trace la droite le long de la règle, et on nomme (d') en codant l'angle droit."},
 ];
 let dpPmIdx = 0;
 function dpRenderPerpMethode(){
@@ -380,22 +383,34 @@ function dpRenderPerpMethode(){
   const pos = {x:DP_PM_D1.x+dpPmDir.x*s.dist, y:DP_PM_D1.y+dpPmDir.y*s.dist};
   const c2 = {x:pos.x+dpPmDir.x*90, y:pos.y+dpPmDir.y*90};
   const c3 = {x:pos.x+dpPmPerp.x*(dpPmTouchDist+22), y:pos.y+dpPmPerp.y*(dpPmTouchDist+22)};
-  document.getElementById('dp-pm-equerre').setAttribute('points', `${pos.x},${pos.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
+  const equerre = document.getElementById('dp-pm-equerre');
   const lineDp = document.getElementById('dp-pm-lineDp'), angleMark = document.getElementById('dp-pm-angleMark'), ruler = document.getElementById('dp-pm-ruler');
-  if(s.showLine){
-    const dpExt = dpExtend(DP_PM_M, dpPmPerp, 140);
-    dpSetLine(lineDp, dpExt);
-    lineDp.style.display='';
-    angleMark.setAttribute('d', dpRightAngleMark(dpPmFoot, {x:dpPmDir.x,y:dpPmDir.y}, {x:dpPmPerp.x,y:dpPmPerp.y}, 13));
-    angleMark.style.display='';
+
+  if(s.phase==='removed' || s.phase==='traced'){
+    equerre.style.display='none';
+  } else {
+    equerre.setAttribute('points', `${pos.x},${pos.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
+    equerre.style.display='';
+  }
+
+  if(s.phase==='ruler' || s.phase==='removed' || s.phase==='traced'){
     const rulerHalfWidth = 6.5;
     const rulerCenter = {x:DP_PM_M.x+dpPmPerp.x*55-dpPmDir.x*rulerHalfWidth, y:DP_PM_M.y+dpPmPerp.y*55-dpPmDir.y*rulerHalfWidth};
     ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPmPerp, dpPmDir, 130, rulerHalfWidth*2));
     ruler.style.display='';
   } else {
+    ruler.style.display='none';
+  }
+
+  if(s.phase==='traced'){
+    const dpExt = dpExtend(DP_PM_M, dpPmPerp, 140);
+    dpSetLine(lineDp, dpExt);
+    lineDp.style.display='';
+    angleMark.setAttribute('d', dpRightAngleMark(dpPmFoot, {x:dpPmDir.x,y:dpPmDir.y}, {x:dpPmPerp.x,y:dpPmPerp.y}, 13));
+    angleMark.style.display='';
+  } else {
     lineDp.style.display='none';
     angleMark.style.display='none';
-    ruler.style.display='none';
   }
   document.getElementById('dp-pm-note').textContent = s.note;
 }
@@ -410,10 +425,12 @@ const dpPamSlideDist = dpPamPerp.x*(DP_PAM_N.x-DP_PAM_P1.x) + dpPamPerp.y*(DP_PA
 const dpPamCornerFinal = {x:DP_PAM_P1.x+dpPamPerp.x*dpPamSlideDist, y:DP_PAM_P1.y+dpPamPerp.y*dpPamSlideDist};
 const dpPamTouchDist = Math.hypot(DP_PAM_N.x-dpPamCornerFinal.x, DP_PAM_N.y-dpPamCornerFinal.y);
 const DP_PAM_STEPS = [
-  {frac: 0, note:"On place un côté de l'angle droit de l'équerre sur la droite (d), et la règle le long de l'autre côté droit."},
-  {frac: 0.5, note:"L'équerre glisse le long de la règle (sans que la règle ne bouge), en direction du point N."},
-  {frac: 1, note:"On arrête de glisser dès que le côté de l'équerre passe par le point N."},
-  {frac: 1, showLine:true, note:"On trace la droite le long de ce côté : on nomme (d'') la droite obtenue."},
+  {frac: 0, phase:'slide', note:"On place un côté de l'angle droit de l'équerre sur la droite (d), et la règle le long de l'autre côté droit."},
+  {frac: 0.5, phase:'slide', note:"L'équerre glisse le long de la règle (sans que la règle ne bouge), en direction du point N."},
+  {frac: 1, phase:'slide', note:"On arrête de glisser dès que le côté de l'équerre passe par le point N."},
+  {frac: 1, phase:'ruler2', note:"On vient poser une seconde règle le long de ce côté de l'équerre."},
+  {frac: 1, phase:'removed', note:"On retire l'équerre (et la première règle) : seule la seconde règle reste en place."},
+  {frac: 1, phase:'traced', note:"On trace la parallèle le long de cette règle : on nomme (d'') la droite obtenue."},
 ];
 let dpPamIdx = 0;
 function dpRenderParaMethode(){
@@ -422,17 +439,41 @@ function dpRenderParaMethode(){
   dpSetLine(document.getElementById('dp-pam-lineD'), dExt);
   dpSetPt(document.getElementById('dp-pam-N'), DP_PAM_N);
   dpSetTxt(document.getElementById('dp-pam-labelN'), DP_PAM_N, 8, -10);
+
   const ruler = document.getElementById('dp-pam-ruler');
-  const rulerHalfWidth = 6;
-  const rulerCenter = {x:DP_PAM_P1.x-dpPamDir.x*rulerHalfWidth, y:DP_PAM_P1.y-dpPamDir.y*rulerHalfWidth};
-  ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPamPerp, dpPamDir, 300, rulerHalfWidth*2));
-  ruler.style.display='';
+  if(s.phase==='slide'){
+    const rulerHalfWidth = 6;
+    const rulerCenter = {x:DP_PAM_P1.x-dpPamDir.x*rulerHalfWidth, y:DP_PAM_P1.y-dpPamDir.y*rulerHalfWidth};
+    ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPamPerp, dpPamDir, 300, rulerHalfWidth*2));
+    ruler.style.display='';
+  } else {
+    ruler.style.display='none';
+  }
+
   const corner = {x:DP_PAM_P1.x+dpPamPerp.x*dpPamSlideDist*s.frac, y:DP_PAM_P1.y+dpPamPerp.y*dpPamSlideDist*s.frac};
   const c2 = {x:corner.x+dpPamDir.x*(dpPamTouchDist+22), y:corner.y+dpPamDir.y*(dpPamTouchDist+22)};
-  const c3 = {x:corner.x+dpPamPerp.x*55*(dpPamSlideDist>=0?1:-1), y:corner.y+dpPamPerp.y*55*(dpPamSlideDist>=0?1:-1)};
-  document.getElementById('dp-pam-equerre').setAttribute('points', `${corner.x},${corner.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
+  const sign = (dpPamSlideDist>=0?1:-1);
+  const c3 = {x:corner.x+dpPamPerp.x*55*sign, y:corner.y+dpPamPerp.y*55*sign};
+  const equerre = document.getElementById('dp-pam-equerre');
+  if(s.phase==='removed' || s.phase==='traced'){
+    equerre.style.display='none';
+  } else {
+    equerre.setAttribute('points', `${corner.x},${corner.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
+    equerre.style.display='';
+  }
+
+  const ruler2 = document.getElementById('dp-pam-ruler2');
+  if(s.phase==='ruler2' || s.phase==='removed' || s.phase==='traced'){
+    const ruler2HalfWidth = 6.5;
+    const ruler2Center = {x:DP_PAM_N.x-dpPamPerp.x*ruler2HalfWidth*sign, y:DP_PAM_N.y-dpPamPerp.y*ruler2HalfWidth*sign};
+    ruler2.setAttribute('points', dpRulerPolygon(ruler2Center, dpPamDir, dpPamPerp, 300, ruler2HalfWidth*2));
+    ruler2.style.display='';
+  } else {
+    ruler2.style.display='none';
+  }
+
   const lineDpp = document.getElementById('dp-pam-lineDpp');
-  if(s.showLine){
+  if(s.phase==='traced'){
     const dppExt = dpExtend(DP_PAM_N, dpPamDir, 260);
     dpSetLine(lineDpp, dppExt);
     lineDpp.style.display='';
