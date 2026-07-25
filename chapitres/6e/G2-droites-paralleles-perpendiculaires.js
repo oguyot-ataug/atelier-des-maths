@@ -462,7 +462,7 @@ function dpRenderMedMethode(animate){
     const segLen = Math.hypot(DP_MM_B.x-DP_MM_A.x, DP_MM_B.y-DP_MM_A.y);
     // La règle est posée EN DESSOUS du segment : le segment [AB] coïncide avec son bord supérieur.
     const measureCenter = {x:dpMmMid.x+dpMmPerp.x*(rulerW/2), y:dpMmMid.y+dpMmPerp.y*(rulerW/2)};
-    measureRuler.setAttribute('points', dpRulerPolygon(measureCenter, dpMmDir, dpMmPerp, segLen+40, rulerW));
+    measureRuler.setAttribute('points', dpRulerPolygon(measureCenter, dpMmDir, dpMmPerp, segLen+150, rulerW));
     measureRuler.style.display='';
     // Graduations : 0 posé sur A, lecture à 8 cm sur B (nombre rond pour l'exemple pédagogique).
     const cmPx = segLen/8, mmPx = cmPx/10;
