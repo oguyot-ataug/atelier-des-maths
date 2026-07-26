@@ -137,10 +137,24 @@ document.getElementById('methode-demo-distance-cercles').innerHTML = `
 <div class="figure-wrap">
   <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : construire le milieu d'un segment à la règle</strong>
   <p class="interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
-  <div class="step-display" id="dc-methodeDisplay"></div>
+  <svg id="dc-mm-svg" viewBox="0 0 400 220" style="width:100%;max-width:460px;display:block;margin:10px auto 0;background:var(--white);border-radius:8px;">
+    <line id="dc-mm-seg" stroke="#1C1B2E" stroke-width="1.8"/>
+    <circle id="dc-mm-R" r="5" fill="#1C1B2E"/>
+    <circle id="dc-mm-T" r="5" fill="#1C1B2E"/>
+    <text id="dc-mm-labelR" font-style="italic" font-size="14">R</text>
+    <text id="dc-mm-labelT" font-style="italic" font-size="14">T</text>
+    <polygon id="dc-mm-ruler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
+    <path id="dc-mm-ticks" stroke="#1C1B2E" stroke-width="1" fill="none" style="display:none;"/>
+    <g id="dc-mm-labels" style="display:none;"></g>
+    <circle id="dc-mm-A" r="4.5" fill="#E35D3A" style="display:none;"/>
+    <text id="dc-mm-labelA" font-style="italic" font-size="14" fill="#E35D3A" style="display:none;">A</text>
+    <line id="dc-mm-tick1" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
+    <line id="dc-mm-tick2" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
+  </svg>
+  <p class="hint" id="dc-mm-note" style="text-align:center;margin-top:8px;"></p>
   <div class="figure-toolbar">
-    <button class="btn" onclick="dcMethodeDemo.next()">Étape suivante →</button>
-    <button class="btn secondary" onclick="dcMethodeDemo.reset()">Recommencer</button>
+    <button class="btn" onclick="dcMmNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="dcMmReset()">Recommencer</button>
   </div>
 </div>
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
@@ -292,17 +306,84 @@ function initDistDemo(){
 }
 function resetDistDemo(){ dcDistP={x:320,y:130}; dcUpdateDist(); }
 
-/* ================= Méthode animée : milieu d'un segment ================= */
-const DC_METHODE_STEPS = [
-  {expr:'Segment [RT] de 6 cm', note:"On trace un segment [RT] de longueur 6 cm."},
-  {expr:'Règle posée le long de [RT]', note:"On place la règle le long de [RT], avec le 0 sur R."},
-  {expr:'Point A placé à 3 cm', note:"On place le point A à 3 cm du point R sur le segment [RT] (soit la moitié de 6 cm)."},
-  {expr:'Longueurs codées', note:"On code les segments [RA] et [AT] avec le même symbole : ils ont la même longueur, donc A est le milieu de [RT]."},
+/* ================= Méthode animée : milieu d'un segment à la règle ================= */
+const DC_MM_R = {x:70,y:150}, DC_MM_T = {x:330,y:110};
+const dcMmDir = dpDir(DC_MM_R, DC_MM_T);
+const dcMmPerp = {x:-dcMmDir.y, y:dcMmDir.x};
+const dcMmSegLen = Math.hypot(DC_MM_T.x-DC_MM_R.x, DC_MM_T.y-DC_MM_R.y);
+const dcMmMid = {x:(DC_MM_R.x+DC_MM_T.x)/2, y:(DC_MM_R.y+DC_MM_T.y)/2};
+const DC_MM_STEPS = [
+  {phase:'segment', note:"On trace un segment [RT] de longueur 6 cm."},
+  {phase:'ruler', note:"On place la règle le long de [RT], avec le 0 posé sur R."},
+  {phase:'point', note:"On place le point A à 3 cm du point R sur le segment [RT] (soit la moitié de 6 cm)."},
+  {phase:'coded', note:"On code les segments [RA] et [AT] avec le même symbole : ils ont la même longueur, donc A est le milieu de [RT]."},
 ];
-const dcMethodeDemo = makeStepDemo(DC_METHODE_STEPS, 'dc-methodeDisplay');
+let dcMmIdx = 0;
+function dcRenderMm(){
+  const s = DC_MM_STEPS[dcMmIdx];
+  dpSetLine(document.getElementById('dc-mm-seg'), {x1:DC_MM_R.x,y1:DC_MM_R.y,x2:DC_MM_T.x,y2:DC_MM_T.y});
+  dpSetPt(document.getElementById('dc-mm-R'), DC_MM_R);
+  dpSetPt(document.getElementById('dc-mm-T'), DC_MM_T);
+  dpSetTxt(document.getElementById('dc-mm-labelR'), DC_MM_R, -16, 5);
+  dpSetTxt(document.getElementById('dc-mm-labelT'), DC_MM_T, 8, 5);
+
+  const ruler = document.getElementById('dc-mm-ruler'), ticks = document.getElementById('dc-mm-ticks'), labels = document.getElementById('dc-mm-labels');
+  if(s.phase==='ruler'){
+    const rulerW = 26;
+    const rulerCenter = {x:DC_MM_R.x+dcMmDir.x*(dcMmSegLen/2)+dcMmPerp.x*(rulerW/2), y:DC_MM_R.y+dcMmDir.y*(dcMmSegLen/2)+dcMmPerp.y*(rulerW/2)};
+    ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dcMmDir, dcMmPerp, dcMmSegLen+30, rulerW));
+    ruler.style.display='';
+    const cmPx = dcMmSegLen/6, mmPx = cmPx/10;
+    let ticksPath = '', labelsHtml = '';
+    for(let i=0;i<=60;i++){
+      const isCm = i%10===0;
+      const pt = {x:DC_MM_R.x+dcMmDir.x*mmPx*i, y:DC_MM_R.y+dcMmDir.y*mmPx*i};
+      const isHalfCm = i%10===5;
+      const depth = isCm ? 10 : (isHalfCm ? 7 : 4);
+      const t2 = {x:pt.x+dcMmPerp.x*depth, y:pt.y+dcMmPerp.y*depth};
+      ticksPath += `M ${pt.x} ${pt.y} L ${t2.x} ${t2.y} `;
+      if(isCm){
+        const cmIndex = i/10;
+        const isHalf = cmIndex===3;
+        const labelPos = {x:pt.x+dcMmPerp.x*18, y:pt.y+dcMmPerp.y*18};
+        labelsHtml += `<text x="${labelPos.x}" y="${labelPos.y}" font-size="${isHalf?11:9}" text-anchor="middle" fill="${isHalf?'#1F6B3A':'#1C1B2E'}" font-weight="${isHalf?700:400}">${cmIndex}</text>`;
+      }
+    }
+    ticks.setAttribute('d', ticksPath); ticks.style.display='';
+    labels.innerHTML = labelsHtml; labels.style.display='';
+  } else {
+    ruler.style.display='none'; ticks.style.display='none'; labels.style.display='none';
+  }
+
+  const A = document.getElementById('dc-mm-A'), labelA = document.getElementById('dc-mm-labelA');
+  if(s.phase==='point' || s.phase==='coded'){
+    dpSetPt(A, dcMmMid); A.style.display='';
+    dpSetTxt(labelA, dcMmMid, -4, -12); labelA.style.display='';
+  } else {
+    A.style.display='none'; labelA.style.display='none';
+  }
+
+  const tick1 = document.getElementById('dc-mm-tick1'), tick2 = document.getElementById('dc-mm-tick2');
+  if(s.phase==='coded'){
+    const tickLen = 8;
+    const q1 = {x:(DC_MM_R.x+dcMmMid.x)/2, y:(DC_MM_R.y+dcMmMid.y)/2};
+    const q2 = {x:(dcMmMid.x+DC_MM_T.x)/2, y:(dcMmMid.y+DC_MM_T.y)/2};
+    tick1.setAttribute('x1', q1.x-dcMmPerp.x*tickLen); tick1.setAttribute('y1', q1.y-dcMmPerp.y*tickLen);
+    tick1.setAttribute('x2', q1.x+dcMmPerp.x*tickLen); tick1.setAttribute('y2', q1.y+dcMmPerp.y*tickLen);
+    tick2.setAttribute('x1', q2.x-dcMmPerp.x*tickLen); tick2.setAttribute('y1', q2.y-dcMmPerp.y*tickLen);
+    tick2.setAttribute('x2', q2.x+dcMmPerp.x*tickLen); tick2.setAttribute('y2', q2.y+dcMmPerp.y*tickLen);
+    tick1.style.display=''; tick2.style.display='';
+  } else {
+    tick1.style.display='none'; tick2.style.display='none';
+  }
+
+  document.getElementById('dc-mm-note').textContent = s.note;
+}
+function dcMmNext(){ if(dcMmIdx<DC_MM_STEPS.length-1) dcMmIdx++; dcRenderMm(); }
+function dcMmReset(){ dcMmIdx=0; dcRenderMm(); }
 
 DEMO_REGISTRY['Distance et cercles'] = { cours:'cours-demo-distance-cercles', methode:'methode-demo-distance-cercles', exos:'exos-demo-distance-cercles',
-  init:()=>{ initMilieuDemo(); initVocabDemo(); initDistDemo(); dcMethodeDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-distance-cercles')); } };
+  init:()=>{ initMilieuDemo(); initVocabDemo(); initDistDemo(); dcMmReset(); registerGeoStepDemo('dc-mm-svg', { steps:()=>DC_MM_STEPS, getIdx:()=>dcMmIdx, goto:(i)=>{ dcMmIdx=i; dcRenderMm(); } }); injectCourseAddButtons(document.getElementById('cours-demo-distance-cercles')); } };
 
 DEMO_QUIZZES['Distance et cercles'] = [
   {q:"Le milieu d'un segment [RT] est un point qui...",
