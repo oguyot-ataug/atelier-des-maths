@@ -1016,9 +1016,14 @@ function exportCoursPDF(){
   const content = getVisibleCoursContent();
   const title = document.getElementById('chap-title').textContent || 'cours';
   const clone = content.cloneNode(true);
+  clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
   clone.querySelectorAll('.interaction-hint').forEach(el=>el.remove());
   expandStepDemosInClone(clone);
+  // Empêche un saut de page de couper une formule en deux (ce qui provoque un chevauchement visuel).
+  clone.querySelectorAll('p, li, .def-box, .step-column > div').forEach(el=>{
+    if(el.querySelector('.tex')){ el.style.pageBreakInside='avoid'; el.style.breakInside='avoid'; }
+  });
   // Important : html2canvas rend une page blanche si l'élément capturé est en position fixed/absolute
   // (bug connu). On le garde donc dans le flux normal, juste masqué visuellement par un parent
   // de hauteur nulle et overflow:hidden.

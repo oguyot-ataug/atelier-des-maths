@@ -130,6 +130,8 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .grp-b{color:var(--accent);font-weight:700;}
 .step-display{font-family:'JetBrains Mono',monospace;font-size:1.35rem;text-align:left;padding:24px 10px 24px 30px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);}
 .step-column{display:inline-flex;flex-direction:column;gap:6px;}
+.step-column > div{margin-bottom:6px;}
+.step-column > div:last-child{margin-bottom:0;}
 .step-final{font-weight:700;color:var(--accent-orange);}
 .dp-sub-inner{display:inline-block;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;}
 .dp-tag{font-family:'Space Grotesk',sans-serif;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;}

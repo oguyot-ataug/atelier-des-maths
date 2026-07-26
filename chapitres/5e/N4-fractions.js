@@ -24,7 +24,7 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 <p class="example-title">Exemple : calcule 2,4 : 0,3.</p>
 <p style="margin:4px 0 12px;"><span class="tex">2{,}4 : 0{,}3 = \\dfrac{2{,}4}{0{,}3} = \\dfrac{2{,}4 \\times 10}{0{,}3 \\times 10} = \\dfrac{24}{3} = 8</span></p>
 <p class="example-title">Exemple : calcule 5,85 : 1,5.</p>
-<p style="margin:4px 0 8px;"><span class="tex">5{,}85 : 1{,}5 = \\dfrac{5{,}85}{1{,}5} = \\dfrac{5{,}85 \\times 10}{1{,}5 \\times 10} = \\dfrac{58{,}5}{15}</span></p>
+<p style="margin:4px 0 8px;"><span class="tex">5{,}85 : 1{,}5 = \\dfrac{5{,}85}{1{,}5}</span><br><span class="tex">= \\dfrac{5{,}85 \\times 10}{1{,}5 \\times 10} = \\dfrac{58{,}5}{15}</span></p>
 <div class="figure-wrap">
   <div class="step-display" id="fq-diviseDisplay"></div>
   <div class="figure-toolbar">
@@ -42,8 +42,8 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 
 <p class="interaction-hint" style="margin:4px 0 8px;">Déplacez le curseur pour changer le numérateur de chaque fraction, et observez comment les bandes (qui représentent chaque fraction) évoluent.</p>
 <div class="figure-wrap">
-  <svg id="fq-compareSvg" viewBox="0 0 400 140" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-  </svg>
+  <div id="fq-compareSvg" style="max-width:460px;margin:0 auto;background:var(--white);border-radius:8px;padding:12px 0;">
+  </div>
   <div class="figure-toolbar" style="display:flex;gap:20px;justify-content:center;margin-top:8px;flex-wrap:wrap;">
     <label class="hint" style="margin:0;">Numérateur de A : <input type="range" id="fq-numA" min="0" max="8" value="5" oninput="fqUpdateCompare()"> <span id="fq-numA-val">5</span>/8</label>
     <label class="hint" style="margin:0;">Numérateur de B : <input type="range" id="fq-numB" min="0" max="8" value="7" oninput="fqUpdateCompare()"> <span id="fq-numB-val">7</span>/8</label>
@@ -76,14 +76,14 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 <span class="prop-badge">Règle 1</span>
 <div class="def-box">Pour additionner (ou soustraire) deux fractions de <b>dénominateurs multiples</b> l'un de l'autre, on commence par les réduire au même dénominateur (le plus grand des deux), puis on applique la règle du paragraphe précédent.</div>
 <ul class="example-list">
-  <li><span class="tex">C = \\dfrac{7}{3} + \\dfrac{6}{12} = \\dfrac{7 \\times 4}{3 \\times 4} + \\dfrac{6}{12} = \\dfrac{28}{12} + \\dfrac{6}{12} = \\dfrac{34}{12}</span></li>
+  <li><span class="tex">C = \\dfrac{7}{3} + \\dfrac{6}{12} = \\dfrac{7 \\times 4}{3 \\times 4} + \\dfrac{6}{12}</span><br><span class="tex">= \\dfrac{28}{12} + \\dfrac{6}{12} = \\dfrac{34}{12}</span></li>
   <li><span class="tex">D = \\dfrac{7}{3} - \\dfrac{6}{12} = \\dfrac{28}{12} - \\dfrac{6}{12} = \\dfrac{22}{12}</span></li>
 </ul>
 <span class="prop-badge">Règle 2</span>
 <div class="def-box">Pour additionner (ou soustraire) deux fractions de <b>dénominateurs quelconques</b>, on les réduit au même dénominateur, puis on applique la règle du paragraphe précédent.</div>
 <ul class="example-list">
-  <li><span class="tex">E = \\dfrac{2}{3} + \\dfrac{8}{7} = \\dfrac{2 \\times 7}{3 \\times 7} + \\dfrac{8 \\times 3}{7 \\times 3} = \\dfrac{14}{21} + \\dfrac{24}{21} = \\dfrac{38}{21}</span></li>
-  <li><span class="tex">F = \\dfrac{10}{9} - \\dfrac{5}{6} = \\dfrac{10 \\times 2}{9 \\times 2} - \\dfrac{5 \\times 3}{6 \\times 3} = \\dfrac{20}{18} - \\dfrac{15}{18} = \\dfrac{5}{18}</span></li>
+  <li><span class="tex">E = \\dfrac{2}{3} + \\dfrac{8}{7} = \\dfrac{2 \\times 7}{3 \\times 7} + \\dfrac{8 \\times 3}{7 \\times 3}</span><br><span class="tex">= \\dfrac{14}{21} + \\dfrac{24}{21} = \\dfrac{38}{21}</span></li>
+  <li><span class="tex">F = \\dfrac{10}{9} - \\dfrac{5}{6} = \\dfrac{10 \\times 2}{9 \\times 2} - \\dfrac{5 \\times 3}{6 \\times 3}</span><br><span class="tex">= \\dfrac{20}{18} - \\dfrac{15}{18} = \\dfrac{5}{18}</span></li>
 </ul>
 `;
 
@@ -136,26 +136,24 @@ function fqUpdateCompare(){
   document.getElementById('fq-numA-val').textContent = numA;
   document.getElementById('fq-numB-val').textContent = numB;
 
-  const barWidth = 320, barX = 40, barHeight = 30;
-  const yA = 20, yB = 80;
   const denom = 8;
-
-  function buildBar(y, num, color, label){
-    let html = `<rect x="${barX}" y="${y}" width="${barWidth}" height="${barHeight}" fill="none" stroke="#1C1B2E" stroke-width="1.5"/>`;
-    for(let i=1;i<denom;i++){
-      const x = barX + (barWidth/denom)*i;
-      html += `<line x1="${x}" y1="${y}" x2="${x}" y2="${y+barHeight}" stroke="rgba(28,43,57,.25)" stroke-width="1"/>`;
+  function buildBar(num, color, label){
+    const pct = (num/denom)*100;
+    let cells = '';
+    for(let i=0;i<denom;i++){
+      cells += `<div style="flex:1;${i<denom-1?'border-right:1px solid rgba(28,43,57,.25);':''}"></div>`;
     }
-    const filledWidth = (barWidth/denom)*num;
-    html += `<rect x="${barX}" y="${y}" width="${filledWidth}" height="${barHeight}" fill="${color}" opacity="0.55"/>`;
-    html += `<text x="${barX-8}" y="${y+barHeight/2+5}" text-anchor="end" font-size="14" font-weight="700" fill="${color}">${label}</text>`;
-    html += `<text x="${barX+barWidth+8}" y="${y+barHeight/2+5}" font-size="13" fill="var(--ink-soft)">${num}/8</text>`;
-    return html;
+    return `<div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
+      <div style="font-weight:700;color:${color};width:18px;text-align:right;font-family:'Space Grotesk',sans-serif;">${label}</div>
+      <div style="position:relative;width:320px;max-width:60%;height:36px;border:1.5px solid #1C1B2E;border-radius:2px;">
+        <div style="position:absolute;top:0;left:0;height:100%;width:${pct}%;background:${color};opacity:.55;"></div>
+        <div style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;">${cells}</div>
+      </div>
+      <div style="color:var(--ink-soft);font-size:.85rem;white-space:nowrap;">${num}/8</div>
+    </div>`;
   }
 
-  let svgHtml = buildBar(yA, numA, '#1F3A5C', 'A');
-  svgHtml += buildBar(yB, numB, '#E35D3A', 'B');
-  document.getElementById('fq-compareSvg').innerHTML = svgHtml;
+  document.getElementById('fq-compareSvg').innerHTML = buildBar(numA, '#1F3A5C', 'A') + buildBar(numB, '#E35D3A', 'B');
 
   const note = document.getElementById('fq-compareNote');
   if(numA===numB) note.textContent = `${numA}/8 = ${numB}/8 : les deux fractions sont égales, les bandes sont remplies pareil.`;
