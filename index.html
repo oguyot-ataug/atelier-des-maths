@@ -1022,7 +1022,10 @@ function exportCoursPDF(){
   expandStepDemosInClone(clone);
   // Empêche un saut de page de couper une formule en deux (ce qui provoque un chevauchement visuel).
   clone.querySelectorAll('p, li, .def-box, .step-column > div').forEach(el=>{
-    if(el.querySelector('.tex')){ el.style.pageBreakInside='avoid'; el.style.breakInside='avoid'; }
+    if(el.querySelector('.tex')){
+      el.style.pageBreakInside='avoid'; el.style.breakInside='avoid';
+      el.style.lineHeight='2.2'; // laisse assez de place verticale au numérateur/dénominateur d'une fraction
+    }
   });
   // Empêche un saut de page de séparer un titre (ou un badge Règle/Définition) du contenu qui le suit juste après.
   clone.querySelectorAll('.lesson-header, .sub-header, .def-badge, .prop-badge, .example-title').forEach(el=>{
@@ -1030,6 +1033,10 @@ function exportCoursPDF(){
   });
   clone.querySelectorAll('.def-box').forEach(el=>{
     el.style.pageBreakBefore='avoid'; el.style.breakBefore='avoid';
+  });
+  // Empêche un bloc "méthode animée" (titre + démo pas-à-pas) d'être coupé entre son titre et son contenu.
+  clone.querySelectorAll('.figure-wrap').forEach(el=>{
+    if(el.querySelector('.step-display')){ el.style.pageBreakInside='avoid'; el.style.breakInside='avoid'; }
   });
   // Important : html2canvas rend une page blanche si l'élément capturé est en position fixed/absolute
   // (bug connu). On le garde donc dans le flux normal, juste masqué visuellement par un parent
