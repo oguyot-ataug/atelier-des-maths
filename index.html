@@ -1027,13 +1027,25 @@ function exportCoursPDF(){
       el.style.lineHeight='2.2'; // laisse assez de place verticale au numérateur/dénominateur d'une fraction
     }
   });
-  // Empêche un saut de page de séparer un titre (ou un badge Règle/Définition) du contenu qui le suit juste après.
-  clone.querySelectorAll('.lesson-header, .sub-header, .def-badge, .prop-badge, .example-title').forEach(el=>{
-    el.style.pageBreakAfter='avoid'; el.style.breakAfter='avoid';
-  });
-  clone.querySelectorAll('.def-box').forEach(el=>{
-    el.style.pageBreakBefore='avoid'; el.style.breakBefore='avoid';
-  });
+  // Empêche un saut de page de séparer un titre (ou un badge Règle/Définition) du contenu qui le suit juste après :
+  // html2pdf ne "colle" pas fiablement deux éléments voisins avec page-break-before/after, donc on les regroupe
+  // physiquement dans un même conteneur, qui lui est traité comme un bloc insécable.
+  function glueWithNextSibling(el){
+    if(!el || !el.parentNode) return; // déjà déplacé par un regroupement précédent
+    if(el.parentNode.classList && el.parentNode.classList.contains('pdf-glue-group')) return;
+    const next = el.nextElementSibling;
+    if(!next) return;
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'pdf-glue-group';
+    groupDiv.style.pageBreakInside='avoid'; groupDiv.style.breakInside='avoid';
+    el.parentNode.insertBefore(groupDiv, el);
+    groupDiv.appendChild(el);
+    groupDiv.appendChild(next);
+  }
+  // Ordre inverse du document : un badge doit d'abord se lier à sa def-box juste après ; ensuite seulement
+  // le titre qui précède peut se lier à ce groupe déjà formé (sinon le titre "volerait" le badge en premier,
+  // laissant sa def-box orpheline).
+  Array.from(clone.querySelectorAll('.lesson-header, .sub-header, .example-title, .def-badge, .prop-badge')).reverse().forEach(glueWithNextSibling);
   // Empêche un bloc "méthode animée" (titre + démo pas-à-pas) d'être coupé entre son titre et son contenu.
   clone.querySelectorAll('.figure-wrap').forEach(el=>{
     if(el.querySelector('.step-display')){ el.style.pageBreakInside='avoid'; el.style.breakInside='avoid'; }
