@@ -374,6 +374,7 @@
         <button type="button" class="btn secondary" onclick="previewDivisionPosee()">Calculer</button>
       </div>
       <div id="divisionPreview"></div>
+      <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="divStepByStep"> Insérer le détail étape par étape (plutôt que le résultat final seul)</label>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="insertDivisionPosee()">Insérer la division posée</button>
         <button type="button" class="btn secondary" onclick="closeDivisionTool()">Fermer sans insérer</button>
@@ -1188,6 +1189,26 @@ function dpAlignedCells(str, endCol, N){
   }
   return cells;
 }
+function dpRenderDivisionTable(rows, quotient, divisor){
+  const cellStyle = 'width:22px;text-align:center;padding:2px 0;';
+  const rowsHtml = rows.map(r=>{
+    const signTd = `<td style="width:16px;text-align:center;${r.underline?'border-bottom:1.5px solid var(--ink);':''}">${r.sign?'−':''}</td>`;
+    const tds = r.cells.map((c,ci)=>{
+      let style = cellStyle;
+      if(r.bold) style += 'font-weight:700;';
+      if(r.underline && (r.endCol===undefined || ci<=r.endCol)) style += 'border-bottom:1.5px solid var(--ink);';
+      return `<td style="${style}">${c}</td>`;
+    }).join('');
+    return `<tr>${signTd}${tds}</tr>`;
+  }).join('');
+  return `<div style="display:flex;gap:18px;align-items:flex-start;font-family:'JetBrains Mono',monospace;font-size:1.05rem;">
+    <table style="border-collapse:collapse;">${rowsHtml}</table>
+    <div style="border-left:1.5px solid var(--ink);padding-left:14px;line-height:1.9;">
+      <div>${divisor}</div>
+      <div style="border-top:1.5px solid var(--ink);">${quotient||'&nbsp;'}</div>
+    </div>
+  </div>`;
+}
 function divisionPoseeHTML(res){
   if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le dividende et le diviseur doivent être des entiers, et le diviseur non nul.</p>';
   const dividendStr = String(res.dividend);
@@ -1202,30 +1223,46 @@ function divisionPoseeHTML(res){
     }
   });
   if(lastEndCol < N-1) rows.push({cells: dpAlignedCells(String(res.remainder), N-1, N)});
-  const cellStyle = 'width:22px;text-align:center;padding:2px 0;';
-  const rowsHtml = rows.map(r=>{
-    const signTd = `<td style="width:16px;text-align:center;${r.underline?'border-bottom:1.5px solid var(--ink);':''}">${r.sign?'−':''}</td>`;
-    const tds = r.cells.map((c,ci)=>{
-      let style = cellStyle;
-      if(r.bold) style += 'font-weight:700;';
-      if(r.underline && (r.endCol===undefined || ci<=r.endCol)) style += 'border-bottom:1.5px solid var(--ink);';
-      return `<td style="${style}">${c}</td>`;
-    }).join('');
-    return `<tr>${signTd}${tds}</tr>`;
-  }).join('');
-  return `<div style="display:flex;gap:18px;align-items:flex-start;font-family:'JetBrains Mono',monospace;font-size:1.05rem;margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
-    <table style="border-collapse:collapse;">${rowsHtml}</table>
-    <div style="border-left:1.5px solid var(--ink);padding-left:14px;line-height:1.9;">
-      <div>${res.divisor}</div>
-      <div style="border-top:1.5px solid var(--ink);">${res.quotient}</div>
-    </div>
-  </div>
+  return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">${dpRenderDivisionTable(rows, res.quotient, res.divisor)}</div>
   <p class="hint" style="margin:0;">${res.dividend} = (${res.divisor} × ${res.quotient}) + ${res.remainder}</p>`;
+}
+function buildDivisionStages(res){
+  const dividendStr = String(res.dividend);
+  const N = dividendStr.length;
+  const rows = [{cells: dpAlignedCells(dividendStr, N-1, N), bold:true}];
+  const stages = [];
+  let quotientSoFar = '';
+  stages.push({rows: rows.slice(), quotient: '', caption: `On pose la division de ${res.dividend} par ${res.divisor}.`});
+  res.steps.forEach((s,i)=>{
+    if(s.qDigit===null){
+      stages.push({rows: rows.slice(), quotient: quotientSoFar, caption: `On prend le nombre ${s.value} : il est inférieur à ${res.divisor}, donc on prend un chiffre de plus.`});
+    } else if(s.sub>0){
+      rows.push({cells: dpAlignedCells(String(s.sub), i, N), sign:true, underline:true, endCol:i});
+      rows.push({cells: dpAlignedCells(String(s.value-s.sub), i, N)});
+      quotientSoFar += s.qDigit;
+      stages.push({rows: rows.slice(), quotient: quotientSoFar, caption: `${res.divisor} × ${s.qDigit} = ${s.sub}, le plus proche de ${s.value} sans le dépasser. ${s.value} − ${s.sub} = ${s.value-s.sub}.`});
+    } else {
+      quotientSoFar += '0';
+      stages.push({rows: rows.slice(), quotient: quotientSoFar, caption: `On abaisse le chiffre suivant du dividende. ${s.value} reste inférieur à ${res.divisor}, donc on pose 0 au quotient et on abaisse encore.`});
+    }
+  });
+  stages.push({rows: rows.slice(), quotient: String(res.quotient), caption: `La division est terminée : ${res.dividend} = (${res.divisor} × ${res.quotient}) + ${res.remainder}.`, final:true});
+  return stages;
+}
+function divisionStagesHTML(stages, res){
+  const panels = stages.map((st,i)=>`<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
+    ${dpRenderDivisionTable(st.rows, st.quotient, res.divisor)}
+    <p class="hint" style="margin:8px 0 0;">${i+1}. ${st.caption}</p>
+  </div>`).join('');
+  return panels;
 }
 function previewDivisionPosee(){
   const a = parseInt(document.getElementById('divDividende').value);
   const b = parseInt(document.getElementById('divDiviseur').value);
-  document.getElementById('divisionPreview').innerHTML = divisionPoseeHTML(computeDivisionPosee(a,b));
+  const res = computeDivisionPosee(a,b);
+  if(!res){ document.getElementById('divisionPreview').innerHTML = divisionPoseeHTML(null); return; }
+  const stepByStep = document.getElementById('divStepByStep').checked;
+  document.getElementById('divisionPreview').innerHTML = stepByStep ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res);
 }
 function openDivisionTool(){
   document.getElementById('divisionPanel').style.display='block';
@@ -1238,8 +1275,10 @@ function insertDivisionPosee(){
   const b = parseInt(document.getElementById('divDiviseur').value);
   const res = computeDivisionPosee(a,b);
   if(!res){ document.getElementById('divisionPreview').innerHTML = divisionPoseeHTML(null); return; }
-  pendingFigureSVG = (pendingFigureSVG||'') + divisionPoseeHTML(res);
-  document.getElementById('figureStatus').innerHTML = '✓ Contenu joint — <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
+  const stepByStep = document.getElementById('divStepByStep').checked;
+  const html = stepByStep ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res);
+  pendingFigureSVG = (pendingFigureSVG||'') + html;
+  document.getElementById('figureStatus').innerHTML = '✓ Contenu joint : <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
   closeDivisionTool();
 }
 function resetFigureState(){
