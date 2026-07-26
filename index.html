@@ -1018,6 +1018,7 @@ function exportCoursPDF(){
   const clone = content.cloneNode(true);
   clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
   clone.querySelectorAll('.interaction-hint').forEach(el=>el.remove());
+  expandStepDemosInClone(clone);
   // Important : html2canvas rend une page blanche si l'élément capturé est en position fixed/absolute
   // (bug connu). On le garde donc dans le flux normal, juste masqué visuellement par un parent
   // de hauteur nulle et overflow:hidden.
@@ -2758,6 +2759,35 @@ function updateCourseAddButtonsState(){
     }
   });
 }
+// Reconstitue dans un clone (avant capture cahier ou export PDF) toutes les étapes des démos
+// pas-à-pas (texte + LaTeX, ou constructions géométriques), plutôt que de figer l'étape affichée.
+function expandStepDemosInClone(wrapper){
+  wrapper.querySelectorAll('.step-display[id]').forEach(cloneEl=>{
+    const liveEl = document.getElementById(cloneEl.id);
+    if(liveEl && liveEl._stepDemoSteps){
+      const steps = liveEl._stepDemoSteps;
+      const lines = steps.map((s,i)=>{
+        const isFinal = i===steps.length-1;
+        return `<div class="${isFinal?'step-final':''}">${s.expr}</div>`;
+      }).join('');
+      cloneEl.innerHTML = `<div class="step-column">${lines}</div><div class="step-note">${steps[steps.length-1].note}</div>`;
+      renderStaticMath(cloneEl); // certaines étapes contiennent des fractions en LaTeX (class="tex"), pas encore rendues sous cette forme
+    }
+  });
+  wrapper.querySelectorAll('svg[id]').forEach(cloneSvg=>{
+    const liveSvg = document.getElementById(cloneSvg.id);
+    const demo = window.GEO_STEP_DEMOS[cloneSvg.id];
+    if(liveSvg && demo){
+      const steps = demo.steps();
+      const originalIdx = demo.getIdx();
+      const filmstripHtml = captureGeoFilmstrip(liveSvg, steps, demo.goto, originalIdx);
+      const figureWrap = cloneSvg.closest('.figure-wrap');
+      if(figureWrap){
+        figureWrap.innerHTML = `<strong style="font-family:'Space Grotesk',sans-serif;font-size:.85rem;">Étapes de la construction :</strong><div style="margin-top:8px;">${filmstripHtml}</div>`;
+      }
+    }
+  });
+}
 async function addSectionToCahier(headerEl){
   const isLesson = headerEl.classList.contains('lesson-header');
   const titleEl = headerEl.querySelector('h3,h4');
@@ -2778,36 +2808,9 @@ async function addSectionToCahier(headerEl){
   wrapper.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
   wrapper.querySelectorAll('.figure-toolbar').forEach(b=>b.remove());
   wrapper.querySelectorAll('.interaction-hint').forEach(b=>b.remove());
-  // Les blocs "étape par étape" n'affichent que l'étape en cours dans le DOM : on reconstitue
-  // ici la séquence complète (toutes les étapes) avant de figer la copie dans le cahier.
-  wrapper.querySelectorAll('.step-display[id]').forEach(cloneEl=>{
-    const liveEl = document.getElementById(cloneEl.id);
-    if(liveEl && liveEl._stepDemoSteps){
-      const steps = liveEl._stepDemoSteps;
-      const lines = steps.map((s,i)=>{
-        const isFinal = i===steps.length-1;
-        return `<div class="${isFinal?'step-final':''}">${s.expr}</div>`;
-      }).join('');
-      cloneEl.innerHTML = `<div class="step-column">${lines}</div><div class="step-note">${steps[steps.length-1].note}</div>`;
-      renderStaticMath(cloneEl); // certaines étapes contiennent des fractions en LaTeX (class="tex"), pas encore rendues sous cette forme
-    }
-  });
-  // Constructions géométriques pas-à-pas (équerre/règle/réquerre) : remplace la figure par
-  // une bande de vignettes montrant CHAQUE étape, plutôt que de figer l'étape actuellement affichée.
-  wrapper.querySelectorAll('svg[id]').forEach(cloneSvg=>{
-    const liveSvg = document.getElementById(cloneSvg.id);
-    const demo = window.GEO_STEP_DEMOS[cloneSvg.id];
-    if(liveSvg && demo){
-      const steps = demo.steps();
-      const originalIdx = demo.getIdx();
-      const filmstripHtml = captureGeoFilmstrip(liveSvg, steps, demo.goto, originalIdx);
-      const figureWrap = cloneSvg.closest('.figure-wrap');
-      if(figureWrap){
-        figureWrap.innerHTML = `<strong style="font-family:'Space Grotesk',sans-serif;font-size:.85rem;">Étapes de la construction :</strong><div style="margin-top:8px;">${filmstripHtml}</div>`;
-      }
-    }
-  });
+  expandStepDemosInClone(wrapper);
   wrapper.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id')); // évite tout doublon d'id avec la figure d'origine
+
   const niveauSel = document.getElementById('corNiveau');
   const entry = {
     niveau: niveauSel ? niveauSel.value : '5e',

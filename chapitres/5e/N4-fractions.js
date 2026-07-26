@@ -44,7 +44,7 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 <div class="figure-wrap">
   <svg id="fq-compareSvg" viewBox="0 0 400 140" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
   </svg>
-  <div style="display:flex;gap:20px;justify-content:center;margin-top:8px;flex-wrap:wrap;">
+  <div class="figure-toolbar" style="display:flex;gap:20px;justify-content:center;margin-top:8px;flex-wrap:wrap;">
     <label class="hint" style="margin:0;">Numérateur de A : <input type="range" id="fq-numA" min="0" max="8" value="5" oninput="fqUpdateCompare()"> <span id="fq-numA-val">5</span>/8</label>
     <label class="hint" style="margin:0;">Numérateur de B : <input type="range" id="fq-numB" min="0" max="8" value="7" oninput="fqUpdateCompare()"> <span id="fq-numB-val">7</span>/8</label>
   </div>
