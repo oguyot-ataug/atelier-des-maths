@@ -910,6 +910,7 @@ function makeStepDemo(steps, displayId){
       return `<div class="${isFinal?'step-final':''}">${s.expr}</div>`;
     }).join('');
     el.innerHTML = `<div class="step-column">${lines}</div><div class="step-note">${steps[idx].note}</div>`;
+    renderStaticMath(el);
   }
   return {
     next(){ if(idx<steps.length-1) idx++; render(); },
