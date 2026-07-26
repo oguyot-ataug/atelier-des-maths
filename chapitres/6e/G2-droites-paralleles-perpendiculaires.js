@@ -980,8 +980,15 @@ const DP_METHODE_STEPS = [
 ];
 const dpMethodeDemo = makeStepDemo(DP_METHODE_STEPS, 'dp-methodeDisplay');
 
+function dpRegisterGeoDemos(){
+  registerGeoStepDemo('dp-perpMethodeSvg', { steps:()=>DP_PM_STEPS, getIdx:()=>dpPmIdx, goto:(i,animate)=>{ dpPmIdx=i; dpRenderPerpMethode(animate); } });
+  registerGeoStepDemo('dp-paraMethodeSvg', { steps:()=>DP_PAM_STEPS, getIdx:()=>dpPamIdx, goto:(i,animate)=>{ dpPamIdx=i; dpRenderParaMethode(animate); } });
+  registerGeoStepDemo('dp-medMethodeSvg', { steps:()=>DP_MM_STEPS, getIdx:()=>dpMmIdx, goto:(i,animate)=>{ dpMmIdx=i; dpRenderMedMethode(animate); } });
+  registerGeoStepDemo('dp-rqp-svg', { steps:()=>DP_RQP_STEPS, getIdx:()=>dpRqpIdx, goto:(i,animate)=>{ dpRqpIdx=i; dpRenderRqPerp(animate); } });
+  registerGeoStepDemo('dp-rqa-svg', { steps:()=>DP_RQA_STEPS, getIdx:()=>dpRqaIdx, goto:(i,animate)=>{ dpRqaIdx=i; dpRenderRqPara(animate); } });
+}
 DEMO_REGISTRY['Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles',
-  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethodeDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); } };
+  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethodeDemo.reset(); dpRegisterGeoDemos(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); } };
 
 DEMO_QUIZZES['Droites parallèles et perpendiculaires'] = [
   {q:"Que signifie (d) ⊥ (d') ?",
