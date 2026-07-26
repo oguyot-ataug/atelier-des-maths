@@ -76,14 +76,14 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 <span class="prop-badge">Règle 1</span>
 <div class="def-box">Pour additionner (ou soustraire) deux fractions de <b>dénominateurs multiples</b> l'un de l'autre, on commence par les réduire au même dénominateur (le plus grand des deux), puis on applique la règle du paragraphe précédent.</div>
 <ul class="example-list">
-  <li><span class="tex">C = \\dfrac{7}{3} + \\dfrac{6}{12} = \\dfrac{7 \\times 4}{3 \\times 4} + \\dfrac{6}{12}</span><br><span class="tex">= \\dfrac{28}{12} + \\dfrac{6}{12} = \\dfrac{34}{12}</span></li>
+  <li><span class="tex">\\begin{aligned} C &= \\dfrac{7}{3} + \\dfrac{6}{12} \\\\ &= \\dfrac{7 \\times 4}{3 \\times 4} + \\dfrac{6}{12} \\\\ &= \\dfrac{28}{12} + \\dfrac{6}{12} \\\\ &= \\dfrac{34}{12} \\end{aligned}</span></li>
   <li><span class="tex">D = \\dfrac{7}{3} - \\dfrac{6}{12} = \\dfrac{28}{12} - \\dfrac{6}{12} = \\dfrac{22}{12}</span></li>
 </ul>
 <span class="prop-badge">Règle 2</span>
 <div class="def-box">Pour additionner (ou soustraire) deux fractions de <b>dénominateurs quelconques</b>, on les réduit au même dénominateur, puis on applique la règle du paragraphe précédent.</div>
 <ul class="example-list">
-  <li><span class="tex">E = \\dfrac{2}{3} + \\dfrac{8}{7} = \\dfrac{2 \\times 7}{3 \\times 7} + \\dfrac{8 \\times 3}{7 \\times 3}</span><br><span class="tex">= \\dfrac{14}{21} + \\dfrac{24}{21} = \\dfrac{38}{21}</span></li>
-  <li><span class="tex">F = \\dfrac{10}{9} - \\dfrac{5}{6} = \\dfrac{10 \\times 2}{9 \\times 2} - \\dfrac{5 \\times 3}{6 \\times 3}</span><br><span class="tex">= \\dfrac{20}{18} - \\dfrac{15}{18} = \\dfrac{5}{18}</span></li>
+  <li><span class="tex">\\begin{aligned} E &= \\dfrac{2}{3} + \\dfrac{8}{7} \\\\ &= \\dfrac{2 \\times 7}{3 \\times 7} + \\dfrac{8 \\times 3}{7 \\times 3} \\\\ &= \\dfrac{14}{21} + \\dfrac{24}{21} \\\\ &= \\dfrac{38}{21} \\end{aligned}</span></li>
+  <li><span class="tex">\\begin{aligned} F &= \\dfrac{10}{9} - \\dfrac{5}{6} \\\\ &= \\dfrac{10 \\times 2}{9 \\times 2} - \\dfrac{5 \\times 3}{6 \\times 3} \\\\ &= \\dfrac{20}{18} - \\dfrac{15}{18} \\\\ &= \\dfrac{5}{18} \\end{aligned}</span></li>
 </ul>
 `;
 
