@@ -107,6 +107,7 @@ let fpEquivIdx = 0;
 function fpRenderEquiv(){
   const el = document.getElementById('fp-equivDisplay');
   if(!el) return;
+  el._stepDemoSteps = FP_EQUIV_STEPS.map(s=>({expr:s.expr, note:s.note})); // permet la reconstitution complète lors de l'ajout au cahier
   const atEnd = fpEquivIdx === FP_EQUIV_STEPS.length-1;
   const lines = FP_EQUIV_STEPS.slice(0, fpEquivIdx+1).map((s,i)=>{
     const isFinal = atEnd && i===fpEquivIdx;
