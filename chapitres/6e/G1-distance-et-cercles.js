@@ -95,6 +95,11 @@ document.getElementById('cours-demo-distance-cercles').innerHTML = `
 </div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Le <b>cercle</b> de centre O et de rayon r est l'ensemble des points situés exactement à une distance r de O.</div>
+<p class="example-title">Exemple : un cercle a pour centre O et pour rayon 2 cm.</p>
+<ul class="example-list">
+  <li>Un point A est tel que OA = 2 cm. Donc A appartient au cercle.</li>
+  <li>Un point B est tel que OB = 5 cm. Or, 5 cm est différent de 2 cm. Donc B n'appartient pas au cercle.</li>
+</ul>
 
 <p class="example-title">B. Disque</p>
 <span class="prop-badge">Propriétés</span>
@@ -104,6 +109,11 @@ document.getElementById('cours-demo-distance-cercles').innerHTML = `
 </div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Le <b>disque</b> de centre O et de rayon r est l'ensemble des points dont la distance à O est inférieure ou égale à r.</div>
+<p class="example-title">Exemple : reprenons le même cercle (centre O, rayon 2 cm).</p>
+<ul class="example-list">
+  <li>Un point C est tel que OC = 1,5 cm. Or, 1,5 cm est inférieur à 2 cm. Donc C appartient au disque (mais pas au cercle, puisque sa distance à O n'est pas exactement 2 cm).</li>
+  <li>Un point D est tel que OD = 4 cm. Or, 4 cm est supérieur à 2 cm. Donc D n'appartient pas au disque.</li>
+</ul>
 
 <p class="interaction-hint" style="margin:8px 0 8px;">Déplacez le point P : sa distance à O et sa position (sur le cercle, dans le disque, ou à l'extérieur) se recalculent en direct.</p>
 <div class="figure-wrap">
