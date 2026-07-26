@@ -17,7 +17,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
 
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple : un demi-tour autour de O</strong>
-        <p class="hint" style="margin-top:6px;">Déplacez les 3 sommets du triangle bleu, puis lancez l'animation : elle tourne d'un demi-tour (180°) autour de O et vient se superposer exactement à son image (contour orange).</p>
+        <p class="hint interaction-hint" style="margin-top:6px;">Déplacez les 3 sommets du triangle bleu, puis lancez l'animation : elle tourne d'un demi-tour (180°) autour de O et vient se superposer exactement à son image (contour orange).</p>
         <svg id="svgTri" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:10px auto;touch-action:none;">
           <line x1="192" y1="122" x2="208" y2="138" stroke="#1C1B2E" stroke-width="2" class="pt-cross"/>
           <line x1="208" y1="122" x2="192" y2="138" stroke="#1C1B2E" stroke-width="2" class="pt-cross"/>
@@ -40,7 +40,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
 
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple : le symétrique d'un point</strong>
-        <p class="hint" style="margin-top:6px;">Déplacez le point <b>A</b> (bleu) : son symétrique <b>A'</b> (orange) se recalcule en temps réel. O reste le centre de symétrie.</p>
+        <p class="hint interaction-hint" style="margin-top:6px;">Déplacez le point <b>A</b> (bleu) : son symétrique <b>A'</b> (orange) se recalcule en temps réel. O reste le centre de symétrie.</p>
         <svg id="svgPoint" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:10px auto;touch-action:none;">
           <line id="ptLine" x1="0" y1="0" x2="0" y2="0" stroke="#B7C3CD" stroke-width="1.5" stroke-dasharray="4 4"/>
           <line id="markO" class="pt-tick" stroke="#1C1B2E" stroke-width="2"/>
@@ -69,7 +69,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
       <div class="def-box">Le symétrique d'une droite par une symétrie centrale est une droite <b>parallèle</b> à la droite de départ. La symétrie centrale <b>conserve l'alignement</b> des points.</div>
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple</strong>
-        <p class="hint" style="margin-top:6px;">Déplacez les points I et J : la droite (d) les suit toujours exactement, et son image (d') reste parallèle.</p>
+        <p class="hint interaction-hint" style="margin-top:6px;">Déplacez les points I et J : la droite (d) les suit toujours exactement, et son image (d') reste parallèle.</p>
         <svg id="svgDroite" viewBox="0 0 400 240" style="width:100%;max-width:440px;display:block;margin:10px auto;touch-action:none;">
           <line id="lineD" stroke="#1F3A5C" stroke-width="1.6"/>
           <line id="lineDprime" stroke="#E35D3A" stroke-width="1.6" stroke-dasharray="6 4"/>
@@ -99,7 +99,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
       <div class="def-box">Le symétrique d'un segment par une symétrie centrale est un segment de <b>même longueur</b>. La symétrie centrale <b>conserve les longueurs</b>.</div>
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple</strong>
-        <p class="hint" style="margin-top:6px;">Déplacez R ou S : [R'S'] suit, et les petits traits codent que R'S' = RS.</p>
+        <p class="hint interaction-hint" style="margin-top:6px;">Déplacez R ou S : [R'S'] suit, et les petits traits codent que R'S' = RS.</p>
         <svg id="svgSegment" viewBox="0 0 400 200" style="width:100%;max-width:400px;display:block;margin:10px auto;touch-action:none;">
           <line id="segRS" stroke="#1F3A5C" stroke-width="2.2"/>
           <line id="segRSprime" stroke="#E35D3A" stroke-width="2.2"/>
@@ -131,7 +131,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
       <div class="def-box">Le symétrique d'un polygone par une symétrie centrale est un polygone <b>superposable</b> au premier : <b>mêmes longueurs de côtés, mêmes mesures d'angles, même périmètre et même aire</b>.</div>
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple</strong>
-        <p class="hint" style="margin-top:6px;">Déplacez n'importe quel sommet, ou changez le nombre de sommets : l'image et le codage (longueurs, angles) se recalculent automatiquement.</p>
+        <p class="hint interaction-hint" style="margin-top:6px;">Déplacez n'importe quel sommet, ou changez le nombre de sommets : l'image et le codage (longueurs, angles) se recalculent automatiquement.</p>
         <div class="tool-row" style="margin:8px 0;">
           <label class="hint" style="display:flex;align-items:center;gap:8px;margin:0;">Nombre de sommets :
             <select id="polySides" onchange="regeneratePolygon()">
@@ -162,7 +162,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
       <div class="def-box">Le symétrique d'un cercle par une symétrie centrale est un cercle de <b>même rayon</b>, dont le <b>centre est le symétrique</b> du centre de départ.</div>
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple</strong>
-        <p class="hint" style="margin-top:6px;">Déplacez le centre N ou le point M (qui fixe le rayon) : le cercle symétrique suit, avec le même rayon codé sur les deux figures.</p>
+        <p class="hint interaction-hint" style="margin-top:6px;">Déplacez le centre N ou le point M (qui fixe le rayon) : le cercle symétrique suit, avec le même rayon codé sur les deux figures.</p>
         <svg id="svgCercle" viewBox="0 0 400 220" style="width:100%;max-width:400px;display:block;margin:10px auto;touch-action:none;">
           <circle id="cercleN" fill="none" stroke="#1F3A5C" stroke-width="1.8"/>
           <circle id="cercleNprime" fill="none" stroke="#E35D3A" stroke-width="1.8"/>
@@ -290,6 +290,7 @@ document.getElementById('exos-demo-symetrie').innerHTML = `
           <div class="num">Exercice 2</div>
           ABCD est un parallélogramme de centre O. Explique pourquoi C est le symétrique de A par rapport à O.
         </div>
+      </div>
 `;
 
 const O = {x:200,y:130};
