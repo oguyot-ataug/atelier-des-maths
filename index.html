@@ -1180,7 +1180,7 @@ function computeDivisionPosee(dividend, divisor){
 }
 function divisionPoseeHTML(res){
   if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le dividende et le diviseur doivent être des entiers, et le diviseur non nul.</p>';
-  const meaningfulSteps = res.steps.filter(s=>s.qDigit!==null);
+  const meaningfulSteps = res.steps.filter(s=>s.sub>0);
   let rows = '';
   meaningfulSteps.forEach(s=>{
     rows += `<div>${s.value}</div><div style="border-bottom:1.5px solid var(--ink);display:inline-block;padding:0 4px;">− ${s.sub}</div><br>`;
