@@ -18,8 +18,8 @@ document.getElementById('cours-demo-relatifs').innerHTML = `
       <ul class="example-list">
         <li>+7 est un nombre positif ; on peut aussi l'écrire simplement 7.</li>
         <li>−4,5 est un nombre négatif : c'est un nombre décimal relatif.</li>
-        <li>Autres nombres positifs : +20 ; 1,5 ; <span class="tex">\\frac{3}{4}</span>.</li>
-        <li>Autres nombres négatifs : −8,3 ; <span class="tex">-\\frac{2}{5}</span> ; −0,12.</li>
+        <li>Autres nombres positifs : +20 ; 1,5 ; <span class="tex">\\dfrac{3}{4}</span>.</li>
+        <li>Autres nombres négatifs : −8,3 ; <span class="tex">-\\dfrac{2}{5}</span> ; −0,12.</li>
       </ul>
 
       <div class="lesson-header"><span class="num">2</span><h3>Repérage sur une droite</h3></div>
