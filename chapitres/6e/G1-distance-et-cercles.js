@@ -46,7 +46,7 @@ document.getElementById('cours-demo-distance-cercles').innerHTML = `
 
 <div class="lesson-header"><span class="num">3</span><h3>Vocabulaire du cercle</h3></div>
 <span class="def-badge">Définition</span>
-<div class="def-box">Un <b>cercle</b> est l'ensemble des points équidistants d'un point appelé <b>centre</b>. Cette distance est le <b>rayon</b> du cercle.</div>
+<div class="def-box">Un <b>cercle</b> est l'ensemble des points équidistants d'un point appelé <b>centre</b>. Cette distance est le <b>rayon</b> du cercle.<br>Autrement dit, le cercle (C) de centre O et de rayon r est l'ensemble des points M tels que OM = r.</div>
 <p class="interaction-hint" style="margin:4px 0 8px;">Déplacez le point A : tout le reste de la figure (diamètre, corde) suit, en gardant les mêmes proportions.</p>
 <div class="figure-wrap">
   <svg id="dc-vocabSvg" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
@@ -76,7 +76,7 @@ document.getElementById('cours-demo-distance-cercles').innerHTML = `
   <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le <b>centre</b> est le point équidistant de tous les points du cercle.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le point O est le <b>centre</b> du cercle.</td></tr>
   <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Un <b>rayon</b> est un segment joignant un point du cercle à son centre.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le segment [OA] est un <b>rayon</b> du cercle.</td></tr>
   <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Une <b>corde</b> est un segment joignant deux points du cercle.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le segment [MN] est une <b>corde</b> du cercle.</td></tr>
-  <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Un <b>diamètre</b> est une corde qui passe par le centre du cercle.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le segment [EF] est un <b>diamètre</b> du cercle.</td></tr>
+  <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Un <b>diamètre</b> est un segment joignant deux points du cercle et passant par son centre.<br>Autrement dit, c'est une <b>corde</b> qui passe par le centre du cercle.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le segment [EF] est un <b>diamètre</b> du cercle.</td></tr>
 </table>
 </div>
 <p class="hint" style="margin:6px 0 0;">Remarque 1 : par commodité de langage, on appelle aussi « rayon » la longueur du rayon d'un cercle, et « diamètre » la longueur de son diamètre.</p>
@@ -84,7 +84,7 @@ document.getElementById('cours-demo-distance-cercles').innerHTML = `
 <p class="hint" style="margin:6px 0 16px;">Remarque 3 : <b>un</b> rayon est un segment parmi une infinité (chaque point du cercle donne un rayon différent), alors que <b>le</b> rayon est une longueur : elle est unique. Il en va de même pour <b>un</b> diamètre et <b>le</b> diamètre : remarquez le rôle de l'article indéfini (« un », un segment parmi d'autres) et de l'article défini (« le », une valeur unique).</p>
 
 <span class="def-badge">Définition</span>
-<div class="def-box">Un <b>disque</b> est l'ensemble des points situés à une distance inférieure ou égale à un nombre donné (le <b>rayon</b>) d'un point donné (le <b>centre</b>).</div>
+<div class="def-box">Un <b>disque</b> est l'ensemble des points situés à une distance inférieure ou égale à un nombre donné (le <b>rayon</b>) d'un point donné (le <b>centre</b>).<br>Autrement dit, le disque de centre O et de rayon r est l'ensemble des points M tels que OM ≤ r.</div>
 
 <div class="lesson-header"><span class="num">4</span><h3>Distance à un point</h3></div>
 <p class="example-title" style="margin-top:0;">A. Cercle</p>
