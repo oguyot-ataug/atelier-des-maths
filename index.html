@@ -813,6 +813,28 @@ function setSlantTick(el, cx, cy, angleRad, len){
   el.setAttribute('x1',cx-dx); el.setAttribute('y1',cy-dy);
   el.setAttribute('x2',cx+dx); el.setAttribute('y2',cy+dy);
 }
+/* Registre des démonstrations géométriques pas-à-pas (équerre/règle/réquerre) : chaque chapitre
+   y enregistre ses figures pour que l'ajout au cahier puisse reconstituer TOUTES les étapes
+   en vignettes côte à côte, plutôt que de figer uniquement l'étape actuellement affichée. */
+window.GEO_STEP_DEMOS = window.GEO_STEP_DEMOS || {};
+function registerGeoStepDemo(svgId, config){ window.GEO_STEP_DEMOS[svgId] = config; }
+function captureGeoFilmstrip(svgEl, steps, gotoFn, originalIdx){
+  const panels = [];
+  for(let i=0;i<steps.length;i++){
+    gotoFn(i, false);
+    const clone = svgEl.cloneNode(true);
+    clone.removeAttribute('id');
+    clone.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+    clone.setAttribute('style', 'width:140px;height:auto;background:var(--white);border-radius:6px;border:1px solid rgba(28,43,57,.12);display:block;');
+    panels.push(`<div style="display:inline-block;vertical-align:top;margin:3px;text-align:center;width:140px;">
+      ${clone.outerHTML}
+      <div style="font-size:.66rem;color:var(--ink-soft);margin-top:4px;line-height:1.3;">${i+1}. ${steps[i].note}</div>
+    </div>`);
+  }
+  gotoFn(originalIdx, false);
+  return `<div style="display:flex;flex-wrap:wrap;gap:4px;">${panels.join('')}</div>`;
+}
+
 function makeStepDemo(steps, displayId){
   let idx = 0;
   function render(){
@@ -2523,6 +2545,21 @@ async function addSectionToCahier(headerEl){
       }).join('');
       cloneEl.innerHTML = `<div class="step-column">${lines}</div><div class="step-note">${steps[steps.length-1].note}</div>`;
       renderStaticMath(cloneEl); // certaines étapes contiennent des fractions en LaTeX (class="tex"), pas encore rendues sous cette forme
+    }
+  });
+  // Constructions géométriques pas-à-pas (équerre/règle/réquerre) : remplace la figure par
+  // une bande de vignettes montrant CHAQUE étape, plutôt que de figer l'étape actuellement affichée.
+  wrapper.querySelectorAll('svg[id]').forEach(cloneSvg=>{
+    const liveSvg = document.getElementById(cloneSvg.id);
+    const demo = window.GEO_STEP_DEMOS[cloneSvg.id];
+    if(liveSvg && demo){
+      const steps = demo.steps();
+      const originalIdx = demo.getIdx();
+      const filmstripHtml = captureGeoFilmstrip(liveSvg, steps, demo.goto, originalIdx);
+      const figureWrap = cloneSvg.closest('.figure-wrap');
+      if(figureWrap){
+        figureWrap.innerHTML = `<strong style="font-family:'Space Grotesk',sans-serif;font-size:.85rem;">Étapes de la construction :</strong><div style="margin-top:8px;">${filmstripHtml}</div>`;
+      }
     }
   });
   wrapper.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id')); // évite tout doublon d'id avec la figure d'origine
