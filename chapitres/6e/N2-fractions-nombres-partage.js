@@ -34,7 +34,7 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
   Pour tous entiers a, b (non nul) et k (non nul) : <span class="tex">\\dfrac{a}{b} = \\dfrac{a \\times k}{b \\times k}</span> et <span class="tex">\\dfrac{a}{b} = \\dfrac{a : k}{b : k}</span>.
 </div>
 <p class="example-title">Exemple : complète l'égalité de fractions <span class="tex">\\dfrac{3}{5} = \\dfrac{?}{20}</span>.</p>
-<p style="margin:4px 0 8px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+<p class="interaction-hint" style="margin:4px 0 8px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
 <div class="figure-wrap">
   <div class="step-display" id="fp-equivDisplay"></div>
   <div class="figure-toolbar">
@@ -57,7 +57,7 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
 document.getElementById('methode-demo-fractions-partage').innerHTML = `
 <div class="figure-wrap">
   <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : calculer un pourcentage</strong>
-  <p class="hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="fp-methodeDisplay"></div>
   <div class="figure-toolbar">
     <button class="btn" onclick="fpMethodeDemo.next()">Étape suivante →</button>
