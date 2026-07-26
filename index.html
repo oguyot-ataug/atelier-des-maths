@@ -420,6 +420,27 @@
     </div>
   </div>
 
+  <div class="tool-shell" id="tdRefForm" style="background:rgba(45,106,79,.05);border:1px solid rgba(45,106,79,.15);">
+    <strong style="font-family:'Space Grotesk',sans-serif;">📎 Référencer des exercices de TD</strong>
+    <p class="hint" style="margin:6px 0 10px;">Pour noter simplement qu'une série d'exercices a été travaillée (par exemple faits directement sur le cahier d'exercices papier, faute de place), sans avoir à en recopier la correction.</p>
+    <div class="tool-row">
+      <select id="tdNiveau" onchange="fillTdChapitres()">
+        <option value="6e">6e</option>
+        <option value="5e" selected>5e</option>
+      </select>
+      <select id="tdChapitre"></select>
+      <input type="text" id="tdPage" placeholder="Page (ex. 12)" style="width:110px;">
+      <input type="date" id="tdDate" style="width:150px;">
+    </div>
+    <div class="tool-row">
+      <input type="text" id="tdExosNum" placeholder="Numéros d'exercices, séparés par des virgules (ex. 7, 8, 9)" style="flex:1;min-width:280px;">
+    </div>
+    <div class="tool-row" style="margin-top:10px;margin-bottom:0;">
+      <button class="btn" onclick="addTdReference()">+ Référencer dans le cahier</button>
+      <span class="hint" id="tdRefStatus" style="margin:0;"></span>
+    </div>
+  </div>
+
   <div class="section-title"><h2>Cahier de corrections</h2><span class="count" id="cahierCount">0 exercice(s)</span></div>
   <div id="cahierList"></div>
   <div class="tool-row cahier-list-actions">
@@ -1630,9 +1651,16 @@ function fillCorChapitres(){
   const niveau = document.getElementById('corNiveau').value;
   const data = niveau==='6e'?CH6:CH5;
   const sel=document.getElementById('corChapitre');
-  sel.innerHTML = data.map(c=>`<option value="${c.code} · ${c.t}">${c.code} — ${c.t}</option>`).join('');
+  sel.innerHTML = data.map(c=>`<option value="${c.code} · ${c.t}">${c.code} (${c.t})</option>`).join('');
 }
 fillCorChapitres();
+function fillTdChapitres(){
+  const niveau = document.getElementById('tdNiveau').value;
+  const data = niveau==='6e'?CH6:CH5;
+  const sel=document.getElementById('tdChapitre');
+  sel.innerHTML = data.map(c=>`<option value="${c.code} · ${c.t}">${c.code} (${c.t})</option>`).join('');
+}
+fillTdChapitres();
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 function fmtDateFR(iso){
   if(!iso) return 'Date non précisée';
@@ -2315,8 +2343,8 @@ function clearCahier(btn){
 }
 
 function entryRowsHTML(e, idx, editable){
-  const refLabel = e.exo==='Cours' ? 'Cours' : ('Exercice '+e.exo);
-  let html = `<div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' — '+escapeHtml(e.titre):''}</div>`;
+  const refLabel = e.exo==='Cours' ? 'Cours' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo));
+  let html = `<div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}</div>`;
   if(editable){
     html += `<button type="button" class="nb-remove-btn" onclick="removeCahierEntryFromNotebook(${idx}, this)" title="Retirer ce bloc du cahier">✕ Retirer</button>`;
   }
@@ -2597,7 +2625,37 @@ async function addSectionToCahier(headerEl){
 
 renderCahier();
 renderCorrectionPreview();
+async function addTdReference(){
+  const status = document.getElementById('tdRefStatus');
+  const pageRaw = document.getElementById('tdPage').value.trim();
+  const exosRaw = document.getElementById('tdExosNum').value.trim();
+  const exos = exosRaw.split(',').map(s=>s.trim()).filter(Boolean);
+  if(!exos.length){ status.textContent = "Indiquez au moins un numéro d'exercice."; return; }
+  const titre = `Exercices ${exos.join(', ')}` + (pageRaw ? ` (page ${pageRaw})` : '');
+  const entry = {
+    niveau: document.getElementById('tdNiveau').value,
+    chapitre: document.getElementById('tdChapitre').value,
+    exo: 'TD',
+    titre: titre,
+    date: document.getElementById('tdDate').value || todayISO(),
+    raw: '',
+  };
+  cahier.push(entry);
+  sortCahierInPlace();
+  saveCahier();
+  renderCahier();
+  document.getElementById('tdExosNum').value = '';
+  document.getElementById('tdPage').value = '';
+  status.textContent = 'Référencé ✓';
+  setTimeout(()=>{ if(status.textContent==='Référencé ✓') status.textContent=''; }, 2500);
+  if(isSyncEnabled()){
+    const res = await syncAddEntry(entry);
+    if(res.ok){ entry.id = res.id; saveCahier(); renderCahier(); }
+    else if(!res.offline){ status.textContent = "⚠️ Enregistré localement, échec de synchronisation : "+(res.error||'erreur inconnue'); }
+  }
+}
 document.getElementById('corDate').value = todayISO();
+document.getElementById('tdDate').value = todayISO();
 
 /* ======================= init ======================= */
 renderNiveau('6e');
