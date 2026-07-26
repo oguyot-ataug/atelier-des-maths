@@ -1179,21 +1179,41 @@ function computeDivisionPosee(dividend, divisor){
   }
   return {quotient: parseInt(quotientDigits.join('')||'0'), remainder: current, steps, dividend, divisor};
 }
-function dpStepValueDisplay(s, idx){
-  // Montre clairement quel chiffre du dividende vient d'être "descendu", pour qu'on ne perde jamais le fil des chiffres.
-  if(idx===0) return String(s.value);
-  return String(s.priorRemainder) + '<span style="color:var(--accent-orange);font-weight:700;">'+s.broughtDown+'</span>';
+function dpAlignedCells(str, endCol, N){
+  const cells = new Array(N).fill('');
+  const chars = String(str).split('');
+  for(let k=0;k<chars.length;k++){
+    const col = endCol - (chars.length-1-k);
+    if(col>=0 && col<N) cells[col] = chars[k];
+  }
+  return cells;
 }
 function divisionPoseeHTML(res){
   if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le dividende et le diviseur doivent être des entiers, et le diviseur non nul.</p>';
-  let rows = '';
-  res.steps.forEach((s,idx)=>{
-    if(s.sub>0) rows += `<div>${dpStepValueDisplay(s,idx)}</div><div style="border-bottom:1.5px solid var(--ink);display:inline-block;padding:0 4px;">− ${s.sub}</div><br>`;
+  const dividendStr = String(res.dividend);
+  const N = dividendStr.length;
+  const rows = [{cells: dpAlignedCells(dividendStr, N-1, N), bold:true}];
+  let lastEndCol = -1;
+  res.steps.forEach((s,i)=>{
+    if(s.sub>0){
+      rows.push({cells: dpAlignedCells(String(s.sub), i, N), sign:true, underline:true});
+      rows.push({cells: dpAlignedCells(String(s.value-s.sub), i, N)});
+      lastEndCol = i;
+    }
   });
-  const lastStep = res.steps[res.steps.length-1];
-  const remainderDisplay = lastStep.sub>0 ? String(res.remainder) : dpStepValueDisplay(lastStep, res.steps.length-1);
+  if(lastEndCol < N-1) rows.push({cells: dpAlignedCells(String(res.remainder), N-1, N)});
+  const cellStyle = 'width:22px;text-align:center;padding:2px 0;';
+  const rowsHtml = rows.map(r=>{
+    const tds = r.cells.map((c,ci)=>{
+      let style = cellStyle;
+      if(r.bold) style += 'font-weight:700;';
+      if(r.underline) style += 'border-bottom:1.5px solid var(--ink);';
+      return `<td style="${style}">${r.sign && ci===0 ? '−&nbsp;' : ''}${c}</td>`;
+    }).join('');
+    return `<tr>${tds}</tr>`;
+  }).join('');
   return `<div style="display:flex;gap:18px;align-items:flex-start;font-family:'JetBrains Mono',monospace;font-size:1.05rem;margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
-    <div style="text-align:right;line-height:1.9;">${rows}<div>${remainderDisplay}</div></div>
+    <table style="border-collapse:collapse;">${rowsHtml}</table>
     <div style="border-left:1.5px solid var(--ink);padding-left:14px;line-height:1.9;">
       <div>${res.divisor}</div>
       <div style="border-top:1.5px solid var(--ink);">${res.quotient}</div>
