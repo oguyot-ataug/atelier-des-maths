@@ -40,7 +40,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 <span class="def-badge">Définition</span>
 <div class="def-box">Deux droites sont <b>perpendiculaires</b> si elles sont sécantes en formant un angle droit. On note (d) ⊥ (d').</div>
 <p class="example-title">Exemple : construis la droite (d') perpendiculaire à la droite (d) passant par le point M.</p>
-<p class="hint" style="margin:4px 0 8px;">Déplacez (d) ou M : la perpendiculaire se reconstruit automatiquement.</p>
+<p class="hint interaction-hint" style="margin:4px 0 8px;">Déplacez (d) ou M : la perpendiculaire se reconstruit automatiquement.</p>
 <div class="figure-wrap">
   <svg id="dp-perpSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
     <line id="dp-perpLineD" stroke="#1F3A5C" stroke-width="1.8"/>
@@ -87,7 +87,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 <span class="def-badge">Définition</span>
 <div class="def-box">Deux droites sont <b>parallèles</b> si elles ne sont pas sécantes. On note (d) // (d').</div>
 <p class="example-title">Exemple : construis la droite (d'') parallèle à la droite (d) passant par le point N.</p>
-<p class="hint" style="margin:4px 0 8px;">Déplacez (d) ou N : la parallèle se reconstruit automatiquement.</p>
+<p class="hint interaction-hint" style="margin:4px 0 8px;">Déplacez (d) ou N : la parallèle se reconstruit automatiquement.</p>
 <div class="figure-wrap">
   <svg id="dp-paraSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
     <line id="dp-paraLineD" stroke="#1F3A5C" stroke-width="1.8"/>
@@ -165,7 +165,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 <span class="def-badge">Définition</span>
 <div class="def-box">La <b>médiatrice</b> d'un segment est la droite perpendiculaire à ce segment, en son milieu.</div>
 <p class="example-title">Exemple : construis la médiatrice du segment [AB].</p>
-<p class="hint" style="margin:4px 0 8px;">Déplacez P ou Q : la médiatrice se reconstruit automatiquement, avec le codage des longueurs égales.</p>
+<p class="hint interaction-hint" style="margin:4px 0 8px;">Déplacez P ou Q : la médiatrice se reconstruit automatiquement, avec le codage des longueurs égales.</p>
 <div class="figure-wrap">
   <svg id="dp-medSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
     <line id="dp-medSeg" stroke="#1C1B2E" stroke-width="1.8"/>
@@ -268,7 +268,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 document.getElementById('methode-demo-droites-paralleles').innerHTML = `
 <div class="figure-wrap">
   <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : tracer une perpendiculaire à l'équerre et à la règle</strong>
-  <p class="hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="dp-methodeDisplay"></div>
   <div class="figure-toolbar">
     <button class="btn" onclick="dpMethodeDemo.next()">Étape suivante →</button>
