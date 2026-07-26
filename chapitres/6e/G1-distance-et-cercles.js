@@ -75,12 +75,13 @@ document.getElementById('cours-demo-distance-cercles').innerHTML = `
 <table style="border-collapse:collapse;width:100%;font-size:.9rem;margin:10px 0 12px;">
   <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le <b>centre</b> est le point équidistant de tous les points du cercle.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le point O est le <b>centre</b> du cercle.</td></tr>
   <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Un <b>rayon</b> est un segment joignant un point du cercle à son centre.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le segment [OA] est un <b>rayon</b> du cercle.</td></tr>
-  <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Un <b>diamètre</b> est un segment joignant deux points du cercle et passant par son centre.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le segment [EF] est un <b>diamètre</b> du cercle.</td></tr>
   <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Une <b>corde</b> est un segment joignant deux points du cercle.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le segment [MN] est une <b>corde</b> du cercle.</td></tr>
+  <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Un <b>diamètre</b> est une corde qui passe par le centre du cercle.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le segment [EF] est un <b>diamètre</b> du cercle.</td></tr>
 </table>
 </div>
 <p class="hint" style="margin:6px 0 0;">Remarque 1 : par commodité de langage, on appelle aussi « rayon » la longueur du rayon d'un cercle, et « diamètre » la longueur de son diamètre.</p>
 <p class="hint" style="margin:6px 0 0;">Remarque 2 : le diamètre d'un cercle est égal au double de son rayon, et il est toujours supérieur ou égal à la longueur de n'importe quelle corde.</p>
+<p class="hint" style="margin:6px 0 16px;">Remarque 3 : <b>un</b> rayon est un segment parmi une infinité (chaque point du cercle donne un rayon différent), alors que <b>le</b> rayon est une longueur : elle est unique. Il en va de même pour <b>un</b> diamètre et <b>le</b> diamètre : remarquez le rôle de l'article indéfini (« un », un segment parmi d'autres) et de l'article défini (« le », une valeur unique).</p>
 
 <span class="def-badge">Définition</span>
 <div class="def-box">Un <b>disque</b> est l'ensemble des points situés à une distance inférieure ou égale à un nombre donné (le <b>rayon</b>) d'un point donné (le <b>centre</b>).</div>
