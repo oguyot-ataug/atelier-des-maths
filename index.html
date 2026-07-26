@@ -818,6 +818,7 @@ function makeStepDemo(steps, displayId){
   function render(){
     const el = document.getElementById(displayId);
     if(!el) return;
+    el._stepDemoSteps = steps; // permet à l'ajout au cahier de reconstituer toutes les étapes, pas juste l'étape affichée
     const atEnd = idx === steps.length-1;
     const lines = steps.slice(0, idx+1).map((s,i)=>{
       const isFinal = atEnd && i===idx;
@@ -2510,6 +2511,20 @@ async function addSectionToCahier(headerEl){
   }
   wrapper.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
   wrapper.querySelectorAll('.figure-toolbar').forEach(b=>b.remove());
+  // Les blocs "étape par étape" n'affichent que l'étape en cours dans le DOM : on reconstitue
+  // ici la séquence complète (toutes les étapes) avant de figer la copie dans le cahier.
+  wrapper.querySelectorAll('.step-display[id]').forEach(cloneEl=>{
+    const liveEl = document.getElementById(cloneEl.id);
+    if(liveEl && liveEl._stepDemoSteps){
+      const steps = liveEl._stepDemoSteps;
+      const lines = steps.map((s,i)=>{
+        const isFinal = i===steps.length-1;
+        return `<div class="${isFinal?'step-final':''}">${s.expr}</div>`;
+      }).join('');
+      cloneEl.innerHTML = `<div class="step-column">${lines}</div><div class="step-note">${steps[steps.length-1].note}</div>`;
+      renderStaticMath(cloneEl); // certaines étapes contiennent des fractions en LaTeX (class="tex"), pas encore rendues sous cette forme
+    }
+  });
   wrapper.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id')); // évite tout doublon d'id avec la figure d'origine
   const niveauSel = document.getElementById('corNiveau');
   const entry = {
