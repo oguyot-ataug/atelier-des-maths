@@ -350,7 +350,34 @@
 
     <div class="tool-row" style="margin-top:14px;">
       <button type="button" class="btn secondary" onclick="openFigureTool()">🔺 Ajouter une figure géométrique</button>
+      <button type="button" class="btn secondary" onclick="openTableauTool()">▦ Insérer un tableau</button>
+      <button type="button" class="btn secondary" onclick="openDivisionTool()">➗ Insérer une division posée</button>
       <span class="hint" id="figureStatus" style="margin:0;"></span>
+    </div>
+    <div id="tableauPanel" class="figure-wrap" style="display:none;">
+      <div class="tool-row" style="margin-bottom:10px;">
+        <label class="hint" style="margin:0;">Colonnes : <input type="number" id="tabCols" value="3" min="1" max="8" style="width:60px;"></label>
+        <label class="hint" style="margin:0;">Lignes : <input type="number" id="tabRows" value="3" min="1" max="12" style="width:60px;"></label>
+        <button type="button" class="btn secondary" onclick="buildTableauGrid()">Générer la grille</button>
+      </div>
+      <div id="tableauGrid" style="overflow-x:auto;"></div>
+      <div class="figure-toolbar" style="margin-top:10px;">
+        <button type="button" class="btn" onclick="insertTableau()">Insérer le tableau</button>
+        <button type="button" class="btn secondary" onclick="closeTableauTool()">Fermer sans insérer</button>
+      </div>
+    </div>
+    <div id="divisionPanel" class="figure-wrap" style="display:none;">
+      <p class="hint" style="margin:0 0 10px;">Indiquez le dividende et le diviseur : la division posée est calculée et mise en forme automatiquement.</p>
+      <div class="tool-row" style="margin-bottom:10px;">
+        <input type="number" id="divDividende" placeholder="Dividende (ex. 823)" style="width:160px;">
+        <input type="number" id="divDiviseur" placeholder="Diviseur (ex. 14)" style="width:160px;">
+        <button type="button" class="btn secondary" onclick="previewDivisionPosee()">Calculer</button>
+      </div>
+      <div id="divisionPreview"></div>
+      <div class="figure-toolbar" style="margin-top:10px;">
+        <button type="button" class="btn" onclick="insertDivisionPosee()">Insérer la division posée</button>
+        <button type="button" class="btn secondary" onclick="closeDivisionTool()">Fermer sans insérer</button>
+      </div>
     </div>
     <div id="figurePanel" class="figure-wrap" style="display:none;">
       <div class="tool-row" style="margin-bottom:8px;">
@@ -1081,6 +1108,112 @@ function openFigureTool(){
   document.getElementById('figurePanel').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 function closeFigureTool(){ document.getElementById('figurePanel').style.display='none'; }
+
+/* ---- mini outil : insérer un tableau ---- */
+function openTableauTool(){
+  document.getElementById('tableauPanel').style.display='block';
+  buildTableauGrid();
+  document.getElementById('tableauPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function closeTableauTool(){ document.getElementById('tableauPanel').style.display='none'; }
+function buildTableauGrid(){
+  const cols = Math.max(1, Math.min(8, parseInt(document.getElementById('tabCols').value)||3));
+  const rows = Math.max(1, Math.min(12, parseInt(document.getElementById('tabRows').value)||3));
+  let html = '<table style="border-collapse:collapse;">';
+  for(let r=0;r<rows;r++){
+    html += '<tr>';
+    for(let c=0;c<cols;c++){
+      html += `<td style="padding:2px;border:1px solid rgba(28,43,57,.15);">
+        <input type="text" data-r="${r}" data-c="${c}" style="width:90px;padding:6px;border:none;text-align:center;${r===0?'font-weight:700;':''}" placeholder="${r===0?'En-tête':''}">
+      </td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</table>';
+  document.getElementById('tableauGrid').innerHTML = html;
+}
+function insertTableau(){
+  const cols = Math.max(1, Math.min(8, parseInt(document.getElementById('tabCols').value)||3));
+  const rows = Math.max(1, Math.min(12, parseInt(document.getElementById('tabRows').value)||3));
+  const grid = [];
+  for(let r=0;r<rows;r++) grid.push(new Array(cols).fill(''));
+  document.querySelectorAll('#tableauGrid input').forEach(inp=>{
+    grid[parseInt(inp.dataset.r)][parseInt(inp.dataset.c)] = inp.value.trim();
+  });
+  let html = '<table style="border-collapse:collapse;width:auto;margin:8px 0;font-size:.92rem;">';
+  grid.forEach((row,r)=>{
+    html += '<tr>';
+    row.forEach(cell=>{
+      const tag = r===0 ? 'th' : 'td';
+      const style = r===0 ? 'background:rgba(31,58,92,.06);font-weight:700;' : '';
+      html += `<${tag} style="padding:7px 12px;border:1px solid rgba(28,43,57,.18);${style}">${escapeHtml(cell)}</${tag}>`;
+    });
+    html += '</tr>';
+  });
+  html += '</table>';
+  pendingFigureSVG = (pendingFigureSVG||'') + html;
+  document.getElementById('figureStatus').innerHTML = '✓ Contenu joint — <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
+  closeTableauTool();
+}
+
+/* ---- mini outil : insérer une division posée (calculée automatiquement) ---- */
+function computeDivisionPosee(dividend, divisor){
+  if(!Number.isInteger(dividend) || !Number.isInteger(divisor) || divisor<=0 || dividend<0) return null;
+  const digits = String(dividend).split('').map(Number);
+  const quotientDigits = [];
+  let current = 0, started = false;
+  const steps = [];
+  for(let i=0;i<digits.length;i++){
+    current = current*10 + digits[i];
+    if(current >= divisor){
+      const q = Math.floor(current/divisor), sub = q*divisor;
+      steps.push({value:current, qDigit:q, sub:sub});
+      current -= sub;
+      quotientDigits.push(q);
+      started = true;
+    } else {
+      if(started){ quotientDigits.push(0); steps.push({value:current, qDigit:0, sub:0}); }
+      else steps.push({value:current, qDigit:null, sub:null});
+    }
+  }
+  return {quotient: parseInt(quotientDigits.join('')||'0'), remainder: current, steps, dividend, divisor};
+}
+function divisionPoseeHTML(res){
+  if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le dividende et le diviseur doivent être des entiers, et le diviseur non nul.</p>';
+  const meaningfulSteps = res.steps.filter(s=>s.qDigit!==null);
+  let rows = '';
+  meaningfulSteps.forEach(s=>{
+    rows += `<div>${s.value}</div><div style="border-bottom:1.5px solid var(--ink);display:inline-block;padding:0 4px;">− ${s.sub}</div><br>`;
+  });
+  return `<div style="display:flex;gap:18px;align-items:flex-start;font-family:'JetBrains Mono',monospace;font-size:1.05rem;margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
+    <div style="text-align:right;line-height:1.9;">${rows}<div>${res.remainder}</div></div>
+    <div style="border-left:1.5px solid var(--ink);padding-left:14px;line-height:1.9;">
+      <div>${res.divisor}</div>
+      <div style="border-top:1.5px solid var(--ink);">${res.quotient}</div>
+    </div>
+  </div>
+  <p class="hint" style="margin:0;">${res.dividend} = (${res.divisor} × ${res.quotient}) + ${res.remainder}</p>`;
+}
+function previewDivisionPosee(){
+  const a = parseInt(document.getElementById('divDividende').value);
+  const b = parseInt(document.getElementById('divDiviseur').value);
+  document.getElementById('divisionPreview').innerHTML = divisionPoseeHTML(computeDivisionPosee(a,b));
+}
+function openDivisionTool(){
+  document.getElementById('divisionPanel').style.display='block';
+  document.getElementById('divisionPreview').innerHTML = '';
+  document.getElementById('divisionPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function closeDivisionTool(){ document.getElementById('divisionPanel').style.display='none'; }
+function insertDivisionPosee(){
+  const a = parseInt(document.getElementById('divDividende').value);
+  const b = parseInt(document.getElementById('divDiviseur').value);
+  const res = computeDivisionPosee(a,b);
+  if(!res){ document.getElementById('divisionPreview').innerHTML = divisionPoseeHTML(null); return; }
+  pendingFigureSVG = (pendingFigureSVG||'') + divisionPoseeHTML(res);
+  document.getElementById('figureStatus').innerHTML = '✓ Contenu joint — <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
+  closeDivisionTool();
+}
 function resetFigureState(){
   figState = {points:[], shapes:[], mode:(figState&&figState.mode)||'point', selected:[], refShape:null, nextLabel:0, lengthGroups:{}};
   renderFigureSvg();
@@ -1629,7 +1762,7 @@ function applyAIFigure(json){
 }
 function validateFigure(){
   const svg=document.getElementById('figureSvg');
-  pendingFigureSVG = `<svg viewBox="0 0 500 320" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;border:1px solid rgba(28,43,57,.12);border-radius:8px;">${svg.innerHTML}</svg>`;
+  pendingFigureSVG = (pendingFigureSVG||'') + `<svg viewBox="0 0 500 320" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;border:1px solid rgba(28,43,57,.12);border-radius:8px;">${svg.innerHTML}</svg>`;
   document.getElementById('figureStatus').innerHTML = '✓ Figure prête — <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">retirer</a>';
   closeFigureTool();
 }
@@ -2300,7 +2433,7 @@ function editCahierEntry(i){
   document.getElementById('correctionInput').value = e.raw;
   renderCorrectionPreview();
   pendingFigureSVG = e.figure || null;
-  document.getElementById('figureStatus').innerHTML = pendingFigureSVG ? '✓ Figure jointe — <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">retirer</a>' : '';
+  document.getElementById('figureStatus').innerHTML = pendingFigureSVG ? '✓ Contenu joint : <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">retirer</a>' : '';
   editingIndex = i;
   document.getElementById('btnAddCahier').textContent = '💾 Enregistrer la modification';
   document.getElementById('btnCancelEdit').style.display = 'inline-block';
