@@ -23,7 +23,7 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
 
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple déroulé : B = 2,4 × 3 − 18 : 4 − 1,5</strong>
-        <p class="hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler le calcul dans le bon ordre.</p>
+        <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler le calcul dans le bon ordre.</p>
         <div class="step-display" id="enchainementDisplay"></div>
         <div class="figure-toolbar">
           <button class="btn" onclick="enchainementDemo.next()">Étape suivante →</button>
@@ -43,7 +43,7 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
 
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple déroulé : D = 10 − [(9 − 3) × 0,5]</strong>
-        <p class="hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler le calcul.</p>
+        <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler le calcul.</p>
         <div class="step-display" id="parenthesesDisplay"></div>
         <div class="figure-toolbar">
           <button class="btn" onclick="parenthesesDemo.next()">Étape suivante →</button>
@@ -61,7 +61,7 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
 
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple posé : la division de 758 par 12</strong>
-        <p class="hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la division posée.</p>
+        <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la division posée.</p>
         <div style="display:flex;justify-content:center;align-items:flex-start;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.25rem;padding:20px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);">
           <div style="text-align:right;padding-right:16px;">
             <div class="dp-tag" style="color:var(--accent);">dividende</div>
@@ -134,7 +134,7 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
 document.getElementById('methode-demo-decimaux').innerHTML = `
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Trouver tous les diviseurs d'un nombre : 60</strong>
-        <p class="hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+        <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
         <div class="step-display" id="diviseursDisplay"></div>
         <div class="figure-toolbar">
           <button class="btn" onclick="diviseursDemo.next()">Étape suivante →</button>
