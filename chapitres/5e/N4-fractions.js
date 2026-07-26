@@ -37,8 +37,10 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 <p class="example-title" style="margin-top:0;">A. Comparaison de fractions de même dénominateur</p>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Deux fractions de <b>même dénominateur</b> sont rangées dans le même ordre que leur numérateur.</div>
-<p class="example-title">Exemple : ordonne les fractions 5/8, 9/8, 8/8, 4/8 dans l'ordre croissant.</p>
-<p style="margin:4px 0 12px;">Ces fractions ont toutes le même dénominateur 8 ; elles sont donc ordonnées dans l'ordre croissant de leur numérateur. Comme 4 &lt; 5 &lt; 8 &lt; 9, on en déduit que <span class="tex">\\dfrac{4}{8} < \\dfrac{5}{8} < \\dfrac{8}{8} < \\dfrac{9}{8}</span>.</p>
+<p class="example-title">Exemple : ordonne les fractions <span class="tex">\\dfrac{5}{8}</span>, <span class="tex">\\dfrac{9}{8}</span>, <span class="tex">\\dfrac{8}{8}</span>, <span class="tex">\\dfrac{4}{8}</span> dans l'ordre croissant.</p>
+<p style="margin:4px 0 4px;">Ces fractions ont toutes le même dénominateur 8.</p>
+<p style="margin:4px 0 4px;">Elles sont donc ordonnées dans l'ordre croissant de leur numérateur.</p>
+<p style="margin:4px 0 12px;">Comme 4 &lt; 5 &lt; 8 &lt; 9, on en déduit que <span class="tex">\\dfrac{4}{8} < \\dfrac{5}{8} < \\dfrac{8}{8} < \\dfrac{9}{8}</span>.</p>
 
 <p class="interaction-hint" style="margin:4px 0 8px;">Déplacez le curseur pour changer le numérateur de chaque fraction, et observez comment les bandes (qui représentent chaque fraction) évoluent.</p>
 <div class="figure-wrap">
@@ -54,14 +56,21 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 <p class="example-title" style="margin-top:20px;">B. Comparaison de fractions de dénominateurs différents</p>
 <span class="prop-badge">Règle 1</span>
 <div class="def-box">Pour comparer deux fractions de <b>dénominateurs multiples</b> l'un de l'autre, on les réduit au même dénominateur (le plus grand des deux), puis on applique la règle du paragraphe précédent.</div>
-<p class="example-title">Exemple : compare les fractions 7/4 et 31/20.</p>
-<p style="margin:4px 0 12px;"><span class="tex">\\dfrac{7}{4} = \\dfrac{7 \\times 5}{4 \\times 5} = \\dfrac{35}{20}</span> et <span class="tex">\\dfrac{31}{20}</span>. Or, 35 &gt; 31 donc <span class="tex">\\dfrac{35}{20} > \\dfrac{31}{20}</span> et <span class="tex">\\dfrac{7}{4} > \\dfrac{31}{20}</span>.</p>
+<p class="example-title">Exemple : compare les fractions <span class="tex">\\dfrac{7}{4}</span> et <span class="tex">\\dfrac{31}{20}</span>.</p>
+<p style="margin:4px 0 4px;"><span class="tex">\\dfrac{7}{4} = \\dfrac{7 \\times 5}{4 \\times 5} = \\dfrac{35}{20}</span> et on garde <span class="tex">\\dfrac{31}{20}</span>.</p>
+<p style="margin:4px 0 4px;">Or, 35 &gt; 31.</p>
+<p style="margin:4px 0 12px;">Donc <span class="tex">\\dfrac{35}{20} > \\dfrac{31}{20}</span>, donc <span class="tex">\\dfrac{7}{4} > \\dfrac{31}{20}</span>.</p>
 <span class="prop-badge">Règle 2</span>
 <div class="def-box">Pour comparer deux fractions de <b>dénominateurs quelconques</b>, on les réduit au même dénominateur, puis on applique la règle du paragraphe précédent.</div>
-<p class="example-title">Exemple : compare les fractions 1/3 et 4/7.</p>
-<p style="margin:4px 0 12px;"><span class="tex">\\dfrac{1}{3} = \\dfrac{1 \\times 7}{3 \\times 7} = \\dfrac{7}{21}</span> et <span class="tex">\\dfrac{4}{7} = \\dfrac{4 \\times 3}{7 \\times 3} = \\dfrac{12}{21}</span>. Or, 7 &lt; 12 donc <span class="tex">\\dfrac{7}{21} < \\dfrac{12}{21}</span> et <span class="tex">\\dfrac{1}{3} < \\dfrac{4}{7}</span>.</p>
-<p class="example-title">Exemple : compare les fractions 5/6 et 7/9.</p>
-<p style="margin:4px 0 12px;"><span class="tex">\\dfrac{5}{6} = \\dfrac{5 \\times 3}{6 \\times 3} = \\dfrac{15}{18}</span> et <span class="tex">\\dfrac{7}{9} = \\dfrac{7 \\times 2}{9 \\times 2} = \\dfrac{14}{18}</span>. Or, 15 &gt; 14 donc <span class="tex">\\dfrac{15}{18} > \\dfrac{14}{18}</span> et <span class="tex">\\dfrac{5}{6} > \\dfrac{7}{9}</span>.</p>
+<p class="example-title">Exemple : compare les fractions <span class="tex">\\dfrac{1}{3}</span> et <span class="tex">\\dfrac{4}{7}</span>.</p>
+<p style="margin:4px 0 4px;"><span class="tex">\\dfrac{1}{3} = \\dfrac{1 \\times 7}{3 \\times 7} = \\dfrac{7}{21}</span> et <span class="tex">\\dfrac{4}{7} = \\dfrac{4 \\times 3}{7 \\times 3} = \\dfrac{12}{21}</span>.</p>
+<p style="margin:4px 0 4px;">Or, 7 &lt; 12.</p>
+<p style="margin:4px 0 12px;">Donc <span class="tex">\\dfrac{7}{21} < \\dfrac{12}{21}</span>, donc <span class="tex">\\dfrac{1}{3} < \\dfrac{4}{7}</span>.</p>
+<p class="example-title">Exemple : compare les fractions <span class="tex">\\dfrac{5}{6}</span> et <span class="tex">\\dfrac{7}{9}</span>.</p>
+<p style="margin:4px 0 4px;"><span class="tex">\\dfrac{5}{6} = \\dfrac{5 \\times 3}{6 \\times 3} = \\dfrac{15}{18}</span> et <span class="tex">\\dfrac{7}{9} = \\dfrac{7 \\times 2}{9 \\times 2} = \\dfrac{14}{18}</span>.</p>
+<p style="margin:4px 0 4px;">Or, 15 &gt; 14.</p>
+<p style="margin:4px 0 12px;">Donc <span class="tex">\\dfrac{15}{18} > \\dfrac{14}{18}</span>, donc <span class="tex">\\dfrac{5}{6} > \\dfrac{7}{9}</span>.</p>
+
 
 <div class="lesson-header"><span class="num">3</span><h3>Addition et soustraction de fractions</h3></div>
 <p class="example-title" style="margin-top:0;">A. Fractions de même dénominateur</p>
@@ -76,14 +85,14 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 <span class="prop-badge">Règle 1</span>
 <div class="def-box">Pour additionner (ou soustraire) deux fractions de <b>dénominateurs multiples</b> l'un de l'autre, on commence par les réduire au même dénominateur (le plus grand des deux), puis on applique la règle du paragraphe précédent.</div>
 <ul class="example-list">
-  <li><span class="tex">\\begin{aligned} C &= \\dfrac{7}{3} + \\dfrac{6}{12} \\\\ &= \\dfrac{7 \\times 4}{3 \\times 4} + \\dfrac{6}{12} \\\\ &= \\dfrac{28}{12} + \\dfrac{6}{12} \\\\ &= \\dfrac{34}{12} \\end{aligned}</span></li>
-  <li><span class="tex">D = \\dfrac{7}{3} - \\dfrac{6}{12} = \\dfrac{28}{12} - \\dfrac{6}{12} = \\dfrac{22}{12}</span></li>
+  <li><span class="tex">\\begin{aligned} C &= \\dfrac{7}{3} + \\dfrac{6}{12} \\\\ C &= \\dfrac{7 \\times 4}{3 \\times 4} + \\dfrac{6}{12} \\\\ C &= \\dfrac{28}{12} + \\dfrac{6}{12} \\\\ C &= \\dfrac{34}{12} \\end{aligned}</span></li>
+  <li><span class="tex">\\begin{aligned} D &= \\dfrac{7}{3} - \\dfrac{6}{12} \\\\ D &= \\dfrac{28}{12} - \\dfrac{6}{12} \\\\ D &= \\dfrac{22}{12} \\end{aligned}</span></li>
 </ul>
 <span class="prop-badge">Règle 2</span>
 <div class="def-box">Pour additionner (ou soustraire) deux fractions de <b>dénominateurs quelconques</b>, on les réduit au même dénominateur, puis on applique la règle du paragraphe précédent.</div>
 <ul class="example-list">
-  <li><span class="tex">\\begin{aligned} E &= \\dfrac{2}{3} + \\dfrac{8}{7} \\\\ &= \\dfrac{2 \\times 7}{3 \\times 7} + \\dfrac{8 \\times 3}{7 \\times 3} \\\\ &= \\dfrac{14}{21} + \\dfrac{24}{21} \\\\ &= \\dfrac{38}{21} \\end{aligned}</span></li>
-  <li><span class="tex">\\begin{aligned} F &= \\dfrac{10}{9} - \\dfrac{5}{6} \\\\ &= \\dfrac{10 \\times 2}{9 \\times 2} - \\dfrac{5 \\times 3}{6 \\times 3} \\\\ &= \\dfrac{20}{18} - \\dfrac{15}{18} \\\\ &= \\dfrac{5}{18} \\end{aligned}</span></li>
+  <li><span class="tex">\\begin{aligned} E &= \\dfrac{2}{3} + \\dfrac{8}{7} \\\\ E &= \\dfrac{2 \\times 7}{3 \\times 7} + \\dfrac{8 \\times 3}{7 \\times 3} \\\\ E &= \\dfrac{14}{21} + \\dfrac{24}{21} \\\\ E &= \\dfrac{38}{21} \\end{aligned}</span></li>
+  <li><span class="tex">\\begin{aligned} F &= \\dfrac{10}{9} - \\dfrac{5}{6} \\\\ F &= \\dfrac{10 \\times 2}{9 \\times 2} - \\dfrac{5 \\times 3}{6 \\times 3} \\\\ F &= \\dfrac{20}{18} - \\dfrac{15}{18} \\\\ F &= \\dfrac{5}{18} \\end{aligned}</span></li>
 </ul>
 `;
 
