@@ -1196,7 +1196,7 @@ function divisionPoseeHTML(res){
   let lastEndCol = -1;
   res.steps.forEach((s,i)=>{
     if(s.sub>0){
-      rows.push({cells: dpAlignedCells(String(s.sub), i, N), sign:true, underline:true});
+      rows.push({cells: dpAlignedCells(String(s.sub), i, N), sign:true, underline:true, endCol:i});
       rows.push({cells: dpAlignedCells(String(s.value-s.sub), i, N)});
       lastEndCol = i;
     }
@@ -1204,13 +1204,14 @@ function divisionPoseeHTML(res){
   if(lastEndCol < N-1) rows.push({cells: dpAlignedCells(String(res.remainder), N-1, N)});
   const cellStyle = 'width:22px;text-align:center;padding:2px 0;';
   const rowsHtml = rows.map(r=>{
+    const signTd = `<td style="width:16px;text-align:center;${r.underline?'border-bottom:1.5px solid var(--ink);':''}">${r.sign?'−':''}</td>`;
     const tds = r.cells.map((c,ci)=>{
       let style = cellStyle;
       if(r.bold) style += 'font-weight:700;';
-      if(r.underline) style += 'border-bottom:1.5px solid var(--ink);';
-      return `<td style="${style}">${r.sign && ci===0 ? '−&nbsp;' : ''}${c}</td>`;
+      if(r.underline && (r.endCol===undefined || ci<=r.endCol)) style += 'border-bottom:1.5px solid var(--ink);';
+      return `<td style="${style}">${c}</td>`;
     }).join('');
-    return `<tr>${tds}</tr>`;
+    return `<tr>${signTd}${tds}</tr>`;
   }).join('');
   return `<div style="display:flex;gap:18px;align-items:flex-start;font-family:'JetBrains Mono',monospace;font-size:1.05rem;margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
     <table style="border-collapse:collapse;">${rowsHtml}</table>
