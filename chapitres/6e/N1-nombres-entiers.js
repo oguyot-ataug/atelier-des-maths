@@ -94,7 +94,7 @@ document.getElementById('cours-demo-nombres-entiers').innerHTML = `
 <div class="def-box">Dans une division euclidienne, on a toujours : <b>dividende = (diviseur × quotient) + reste</b>, avec <b>reste &lt; diviseur</b>.</div>
 <div class="figure-wrap">
   <strong style="font-family:'Space Grotesk',sans-serif;">Exemple posé : la division de 823 par 14</strong>
-  <p class="hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la division posée.</p>
+  <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la division posée.</p>
   <div style="display:flex;justify-content:center;align-items:flex-start;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.25rem;padding:20px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);">
     <div style="text-align:right;padding-right:16px;">
       <div class="dp-tag" style="color:var(--accent);">dividende</div>
@@ -166,7 +166,7 @@ document.getElementById('methode-demo-nombres-entiers').innerHTML = `
 </div>
 <div class="figure-wrap">
   <strong style="font-family:'Space Grotesk',sans-serif;">Trouver les premiers multiples d'un nombre : 7</strong>
-  <p class="hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="ne-multiplesDisplay"></div>
   <div class="figure-toolbar">
     <button class="btn" onclick="neMultiplesDemo.next()">Étape suivante →</button>
