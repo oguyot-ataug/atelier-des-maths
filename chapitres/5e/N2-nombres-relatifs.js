@@ -30,7 +30,7 @@ document.getElementById('cours-demo-relatifs').innerHTML = `
 
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple : un nombre relatif et son opposé</strong>
-        <p class="hint" style="margin-top:6px;">Déplacez le point sur la droite graduée : son opposé (orange) se place automatiquement à la même distance de 0, de l'autre côté.</p>
+        <p class="hint interaction-hint" style="margin-top:6px;">Déplacez le point sur la droite graduée : son opposé (orange) se place automatiquement à la même distance de 0, de l'autre côté.</p>
         <svg id="svgRelLine" viewBox="0 0 600 130" style="width:100%;max-width:560px;display:block;margin:10px auto;touch-action:none;">
           <line x1="30" y1="70" x2="570" y2="70" stroke="#1C1B2E" stroke-width="1.6"/>
           <polygon points="570,70 560,65 560,75" fill="#1C1B2E"/>
@@ -71,7 +71,7 @@ document.getElementById('cours-demo-relatifs').innerHTML = `
 
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple : repérer un point dans le plan</strong>
-        <p class="hint" style="margin-top:6px;">Déplacez le point M : ses coordonnées (abscisse ; ordonnée) se recalculent en direct, avec la projection sur chaque axe.</p>
+        <p class="hint interaction-hint" style="margin-top:6px;">Déplacez le point M : ses coordonnées (abscisse ; ordonnée) se recalculent en direct, avec la projection sur chaque axe.</p>
         <svg id="svgPlane" viewBox="0 0 480 300" style="width:100%;max-width:460px;display:block;margin:10px auto;touch-action:none;">
           <g id="planeGrid"></g>
           <line x1="20" y1="170" x2="460" y2="170" stroke="#1F3A5C" stroke-width="1.6"/>
@@ -119,6 +119,7 @@ document.getElementById('cours-demo-relatifs').innerHTML = `
 
       <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
         ⚠️ Piège classique : un nombre négatif de grande valeur absolue reste un <b>petit</b> nombre. On voit souvent l'erreur −10 &gt; −3 (en ne comparant que les chiffres 10 et 3) — c'est l'inverse : −10 &lt; −3.
+      </div>
 `;
 document.getElementById('methode-demo-relatifs').innerHTML = `
       <div class="figure-wrap">
@@ -165,6 +166,7 @@ document.getElementById('exos-demo-relatifs').innerHTML = `
           <div class="num">Exercice 2</div>
           Donne l'opposé de chacun des nombres suivants : 6 ; −3,5 ; 0 ; −12.
         </div>
+      </div>
 `;
 
 const REL_MIN=-7, REL_MAX=7, REL_ORIGIN_X=300, REL_UNIT=36, REL_Y=70;
