@@ -24,7 +24,7 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 <p class="example-title">Exemple : calcule 2,4 : 0,3.</p>
 <p style="margin:4px 0 12px;"><span class="tex">2{,}4 : 0{,}3 = \\dfrac{2{,}4}{0{,}3} = \\dfrac{2{,}4 \\times 10}{0{,}3 \\times 10} = \\dfrac{24}{3} = 8</span></p>
 <p class="example-title">Exemple : calcule 5,85 : 1,5.</p>
-<p style="margin:4px 0 8px;"><span class="tex">5{,}85 : 1{,}5 = \\dfrac{5{,}85}{1{,}5}</span><br><span class="tex">= \\dfrac{5{,}85 \\times 10}{1{,}5 \\times 10} = \\dfrac{58{,}5}{15}</span></p>
+<p class="interaction-hint" style="margin:4px 0 8px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
 <div class="figure-wrap">
   <div class="step-display" id="fq-diviseDisplay"></div>
   <div class="figure-toolbar">
