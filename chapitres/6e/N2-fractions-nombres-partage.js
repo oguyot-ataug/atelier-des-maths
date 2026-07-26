@@ -14,7 +14,8 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
 <span class="def-badge">Définition</span>
 <div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="tex">\\dfrac{a}{b}</span> est le nombre qui, multiplié par <i>b</i>, donne <i>a</i>. Elle vérifie donc : <span class="tex">\\dfrac{a}{b} \\times b = a</span> et <span class="tex">b \\times \\dfrac{a}{b} = a</span>. Dans le cas particulier où b = 1, on a : <span class="tex">\\dfrac{a}{1} = a</span>.</div>
 <p class="example-title">Exemple : complète les égalités … × 5 = 4 et … × 7 = 9.</p>
-<p style="margin:4px 0 12px;">La fraction <span class="tex">\\dfrac{4}{5}</span> est le nombre qui, multiplié par 5, donne 4, donc on peut écrire <span class="tex">\\dfrac{4}{5} \\times 5 = 4</span>.<br>La fraction <span class="tex">\\dfrac{9}{7}</span> est le nombre qui, multiplié par 7, donne 9, donc on peut écrire <span class="tex">\\dfrac{9}{7} \\times 7 = 9</span>.</p>
+<p style="margin:4px 0 4px;">La fraction <span class="tex">\\dfrac{4}{5}</span> est le nombre qui, multiplié par 5, donne 4, donc on peut écrire <span class="tex">\\dfrac{4}{5} \\times 5 = 4</span>.</p>
+<p style="margin:4px 0 12px;">La fraction <span class="tex">\\dfrac{9}{7}</span> est le nombre qui, multiplié par 7, donne 9, donc on peut écrire <span class="tex">\\dfrac{9}{7} \\times 7 = 9</span>.</p>
 
 <p class="example-title" style="margin-top:20px;">C. Écriture d'une fraction</p>
 <span class="prop-badge">Règle</span>
@@ -33,7 +34,14 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
   Pour tous entiers a, b (non nul) et k (non nul) : <span class="tex">\\dfrac{a}{b} = \\dfrac{a \\times k}{b \\times k}</span> et <span class="tex">\\dfrac{a}{b} = \\dfrac{a : k}{b : k}</span>.
 </div>
 <p class="example-title">Exemple : complète l'égalité de fractions <span class="tex">\\dfrac{3}{5} = \\dfrac{?}{20}</span>.</p>
-<p style="margin:4px 0 12px;">Pour passer du dénominateur 5 au dénominateur 20, on multiplie par 4 (donc 20 : 5 = 4). Donc pour obtenir le numérateur manquant, on multiplie aussi le numérateur 3 par 4 : on obtient <span class="tex">\\dfrac{3}{5} = \\dfrac{12}{20}</span>.</p>
+<p style="margin:4px 0 8px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+<div class="figure-wrap">
+  <div class="step-display" id="fp-equivDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="fpEquivNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="fpEquivReset()">Recommencer</button>
+  </div>
+</div>
 
 <div class="lesson-header"><span class="num">3</span><h3>Proportion et pourcentages</h3></div>
 <span class="def-badge">Définition</span>
@@ -88,6 +96,29 @@ document.getElementById('exos-demo-fractions-partage').innerHTML = `
 </div>
 `;
 
+/* ================= Démonstration pas à pas : égalité de fractions ================= */
+const FP_EQUIV_STEPS = [
+  {expr:'<span class="tex">\\\\dfrac{3}{5} = \\\\dfrac{?}{20}</span>', note:"On veut compléter cette égalité : le dénominateur passe de 5 à 20."},
+  {expr:'<span class="tex">20 : 5 = 4</span>', note:"On cherche par quel nombre on multiplie 5 pour obtenir 20."},
+  {expr:'<span class="tex">5 \\\\xrightarrow{\\\\times\\\\, 4} 20</span>', note:"Le dénominateur est donc multiplié par 4."},
+  {expr:'<span class="tex">3 \\\\xrightarrow{\\\\times\\\\, 4} 12</span>', note:"Puisqu'il s'agit d'une égalité de fractions, on multiplie aussi le numérateur par 4 (même nombre des deux côtés)."},
+  {expr:'<span class="tex">\\\\dfrac{3}{5} = \\\\dfrac{12}{20}</span>', note:"On obtient l'égalité complète."},
+];
+let fpEquivIdx = 0;
+function fpRenderEquiv(){
+  const el = document.getElementById('fp-equivDisplay');
+  if(!el) return;
+  const atEnd = fpEquivIdx === FP_EQUIV_STEPS.length-1;
+  const lines = FP_EQUIV_STEPS.slice(0, fpEquivIdx+1).map((s,i)=>{
+    const isFinal = atEnd && i===fpEquivIdx;
+    return `<div class="${isFinal?'step-final':''}" style="margin:10px 0;">${s.expr}</div>`;
+  }).join('');
+  el.innerHTML = `<div class="step-column">${lines}</div><div class="step-note">${FP_EQUIV_STEPS[fpEquivIdx].note}</div>`;
+  renderStaticMath(el);
+}
+function fpEquivNext(){ if(fpEquivIdx<FP_EQUIV_STEPS.length-1) fpEquivIdx++; fpRenderEquiv(); }
+function fpEquivReset(){ fpEquivIdx=0; fpRenderEquiv(); }
+
 /* ================= Méthode animée ================= */
 const FP_METHODE_STEPS = [
   {expr:'Sac de 6 boules rouges et 14 boules noires', note:"On souhaite calculer le pourcentage de boules rouges dans ce sac."},
@@ -99,7 +130,7 @@ const FP_METHODE_STEPS = [
 const fpMethodeDemo = makeStepDemo(FP_METHODE_STEPS, 'fp-methodeDisplay');
 
 DEMO_REGISTRY['Fractions : nombres et partage'] = { cours:'cours-demo-fractions-partage', methode:'methode-demo-fractions-partage', exos:'exos-demo-fractions-partage',
-  init:()=>{ fpMethodeDemo.reset(); renderStaticMath(document.getElementById('cours-demo-fractions-partage')); renderStaticMath(document.getElementById('exos-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-partage')); } };
+  init:()=>{ fpMethodeDemo.reset(); fpEquivReset(); renderStaticMath(document.getElementById('cours-demo-fractions-partage')); renderStaticMath(document.getElementById('exos-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-partage')); } };
 
 DEMO_QUIZZES['Fractions : nombres et partage'] = [
   {q:"Comment se lit la fraction 5/8 ?",
