@@ -1164,29 +1164,36 @@ function computeDivisionPosee(dividend, divisor){
   let current = 0, started = false;
   const steps = [];
   for(let i=0;i<digits.length;i++){
+    const priorRemainder = current;
     current = current*10 + digits[i];
     if(current >= divisor){
       const q = Math.floor(current/divisor), sub = q*divisor;
-      steps.push({value:current, qDigit:q, sub:sub});
+      steps.push({value:current, priorRemainder, broughtDown:digits[i], qDigit:q, sub:sub});
       current -= sub;
       quotientDigits.push(q);
       started = true;
     } else {
-      if(started){ quotientDigits.push(0); steps.push({value:current, qDigit:0, sub:0}); }
-      else steps.push({value:current, qDigit:null, sub:null});
+      if(started){ quotientDigits.push(0); steps.push({value:current, priorRemainder, broughtDown:digits[i], qDigit:0, sub:0}); }
+      else steps.push({value:current, priorRemainder, broughtDown:digits[i], qDigit:null, sub:null});
     }
   }
   return {quotient: parseInt(quotientDigits.join('')||'0'), remainder: current, steps, dividend, divisor};
 }
+function dpStepValueDisplay(s, idx){
+  // Montre clairement quel chiffre du dividende vient d'être "descendu", pour qu'on ne perde jamais le fil des chiffres.
+  if(idx===0) return String(s.value);
+  return String(s.priorRemainder) + '<span style="color:var(--accent-orange);font-weight:700;">'+s.broughtDown+'</span>';
+}
 function divisionPoseeHTML(res){
   if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le dividende et le diviseur doivent être des entiers, et le diviseur non nul.</p>';
-  const meaningfulSteps = res.steps.filter(s=>s.sub>0);
   let rows = '';
-  meaningfulSteps.forEach(s=>{
-    rows += `<div>${s.value}</div><div style="border-bottom:1.5px solid var(--ink);display:inline-block;padding:0 4px;">− ${s.sub}</div><br>`;
+  res.steps.forEach((s,idx)=>{
+    if(s.sub>0) rows += `<div>${dpStepValueDisplay(s,idx)}</div><div style="border-bottom:1.5px solid var(--ink);display:inline-block;padding:0 4px;">− ${s.sub}</div><br>`;
   });
+  const lastStep = res.steps[res.steps.length-1];
+  const remainderDisplay = lastStep.sub>0 ? String(res.remainder) : dpStepValueDisplay(lastStep, res.steps.length-1);
   return `<div style="display:flex;gap:18px;align-items:flex-start;font-family:'JetBrains Mono',monospace;font-size:1.05rem;margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
-    <div style="text-align:right;line-height:1.9;">${rows}<div>${res.remainder}</div></div>
+    <div style="text-align:right;line-height:1.9;">${rows}<div>${remainderDisplay}</div></div>
     <div style="border-left:1.5px solid var(--ink);padding-left:14px;line-height:1.9;">
       <div>${res.divisor}</div>
       <div style="border-top:1.5px solid var(--ink);">${res.quotient}</div>
