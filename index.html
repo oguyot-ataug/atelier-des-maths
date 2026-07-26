@@ -953,6 +953,7 @@ function exportCoursPDF(){
   const title = document.getElementById('chap-title').textContent || 'cours';
   const clone = content.cloneNode(true);
   clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
+  clone.querySelectorAll('.interaction-hint').forEach(el=>el.remove());
   // Important : html2canvas rend une page blanche si l'élément capturé est en position fixed/absolute
   // (bug connu). On le garde donc dans le flux normal, juste masqué visuellement par un parent
   // de hauteur nulle et overflow:hidden.
@@ -2533,6 +2534,7 @@ async function addSectionToCahier(headerEl){
   }
   wrapper.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
   wrapper.querySelectorAll('.figure-toolbar').forEach(b=>b.remove());
+  wrapper.querySelectorAll('.interaction-hint').forEach(b=>b.remove());
   // Les blocs "étape par étape" n'affichent que l'étape en cours dans le DOM : on reconstitue
   // ici la séquence complète (toutes les étapes) avant de figer la copie dans le cahier.
   wrapper.querySelectorAll('.step-display[id]').forEach(cloneEl=>{
