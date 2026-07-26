@@ -100,9 +100,8 @@ document.getElementById('exos-demo-fractions-partage').innerHTML = `
 const FP_EQUIV_STEPS = [
   {expr:'<span class="tex">\\dfrac{3}{5} = \\dfrac{?}{20}</span>', note:"On veut compléter cette égalité : le dénominateur passe de 5 à 20."},
   {expr:'<span class="tex">20 : 5 = 4</span>', note:"On cherche par quel nombre on multiplie 5 pour obtenir 20."},
-  {expr:'<span class="tex">5 \\xrightarrow{\\times\\, 4} 20</span>', note:"Le dénominateur est donc multiplié par 4."},
-  {expr:'<span class="tex">3 \\xrightarrow{\\times\\, 4} 12</span>', note:"Puisqu'il s'agit d'une égalité de fractions, on multiplie aussi le numérateur par 4 (même nombre des deux côtés)."},
-  {expr:'<span class="tex">\\dfrac{3}{5} = \\dfrac{12}{20}</span>', note:"On obtient l'égalité complète."},
+  {expr:'<span class="tex">\\dfrac{3}{5} = \\dfrac{3 \\times 4}{5 \\times 4}</span>', note:"On multiplie le numérateur ET le dénominateur par ce même nombre 4 : c'est ainsi qu'on rédige l'étape."},
+  {expr:'<span class="tex">\\dfrac{3}{5} = \\dfrac{12}{20}</span>', note:"On calcule : 3 × 4 = 12 et 5 × 4 = 20. On obtient l'égalité complète."},
 ];
 let fpEquivIdx = 0;
 function fpRenderEquiv(){
