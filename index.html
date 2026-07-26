@@ -704,7 +704,7 @@ function renderTheme(data){
     items.forEach(c=>{
       const ready = !!DEMO_REGISTRY[c.t];
       html += `<div class="chap-card ${ready?'ready':''}" style="border-left-color:${CATS[cat].text}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
-        <span class="status">${ready?'pilote':'à venir'}</span>
+        ${ready?'':'<span class="status">à venir</span>'}
         <div class="code">${c.code} · ch. ${c.n}</div>
         <div class="titre">${c.t}</div>
         <div class="meta"><span>p. ${c.p}</span><span>${c.s} sem.</span></div>
