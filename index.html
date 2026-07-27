@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-27.1</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-27.2</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -946,6 +946,8 @@ function svgToRasterDataUri(svgEl, displayWidth){
         canvas.width = Math.round(displayWidth*scale);
         canvas.height = Math.round(displayHeight*scale);
         const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true;
+        if('imageSmoothingQuality' in ctx) ctx.imageSmoothingQuality = 'high';
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0,0,canvas.width,canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -1121,9 +1123,9 @@ async function exportCoursPDF(){
   // le titre qui précède peut se lier à ce groupe déjà formé (sinon le titre "volerait" le badge en premier,
   // laissant sa def-box orpheline).
   Array.from(clone.querySelectorAll('.lesson-header, .sub-header, .example-title, .def-badge, .prop-badge')).reverse().forEach(glueWithNextSibling);
-  // Empêche un bloc "méthode animée" (titre + démo pas-à-pas) d'être coupé entre son titre et son contenu.
+  // Empêche une figure -- animée à étapes ou simple image -- d'être coupée entre deux pages.
   clone.querySelectorAll('.figure-wrap').forEach(el=>{
-    if(el.querySelector('.step-display')){ el.style.pageBreakInside='avoid'; el.style.breakInside='avoid'; }
+    el.style.pageBreakInside='avoid'; el.style.breakInside='avoid';
   });
   // Important : html2canvas rend une page blanche si l'élément capturé est en position fixed/absolute
   // (bug connu). On le garde donc dans le flux normal, juste masqué visuellement par un parent
