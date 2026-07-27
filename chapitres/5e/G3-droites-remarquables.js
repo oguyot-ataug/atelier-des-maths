@@ -45,6 +45,23 @@ function drTick(mid, dir, size){
   const p2 = drAdd(mid, drScale(perp, -size));
   return `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#1C1B2E" stroke-width="1.4"/>`;
 }
+/* Codage à n traits (1, 2 ou 3), pour distinguer plusieurs paires de milieux
+   codés simultanément sur une même figure (chaque côté doit avoir un nombre
+   de traits différent, jamais le même codage pour deux côtés distincts). */
+function drTickN(mid, dir, size, n){
+  size = size||5;
+  const perp = drPerp(dir);
+  const spacing = 3.2;
+  let out = '';
+  for(let i=0;i<n;i++){
+    const offset = (i-(n-1)/2)*spacing;
+    const base = drAdd(mid, drScale(dir, offset));
+    const p1 = drAdd(base, drScale(perp, size));
+    const p2 = drAdd(base, drScale(perp, -size));
+    out += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="#1C1B2E" stroke-width="1.4"/>`;
+  }
+  return out;
+}
 function drAngleArc(vertex, p1, p2, r, color){
   const {points} = angleArcPoints(vertex, p1, p2, r);
   return `<polyline points="${points}" fill="none" stroke="${color||'#1C1B2E'}" stroke-width="1.3"/>`;
@@ -58,10 +75,12 @@ function drAngleTick(vertex, p1, p2, r){
   return `<line x1="${t1.x}" y1="${t1.y}" x2="${t2.x}" y2="${t2.y}" stroke="#1C1B2E" stroke-width="1.3"/>`;
 }
 
-/* Triangles de référence, vérifiés numériquement (angles, position des centres) avant intégration */
-const DR_T_DEF = { A:{x:150,y:40}, B:{x:50,y:190}, C:{x:320,y:180} };          // scalène, tous angles aigus
-const DR_T_OBTUS = { A:{x:170,y:70}, B:{x:30,y:190}, C:{x:340,y:170} };        // angle obtus en A (~109°)
-const DR_T_RIGHT = { A:{x:60,y:180}, B:{x:60,y:40}, C:{x:320,y:180} };        // angle droit en A
+/* Triangles de référence, vérifiés numériquement (angles, longueurs des côtés,
+   position des centres) avant intégration -- volontairement bien scalènes
+   (aucun ne doit avoir l'air isocèle) */
+const DR_T_DEF = { A:{x:90,y:50}, B:{x:35,y:205}, C:{x:330,y:150} };           // scalène, tous angles aigus (87°/60°/33°, côtés 164/260/300)
+const DR_T_OBTUS = { A:{x:120,y:60}, B:{x:20,y:190}, C:{x:350,y:175} };       // angle obtus en A (~101°), scalène (côtés 164/257/330)
+const DR_T_RIGHT = { A:{x:60,y:180}, B:{x:60,y:40}, C:{x:320,y:180} };        // angle droit en A, scalène (côtés 140/260/295)
 
 /* ================= Figure : définition de la médiatrice ================= */
 function drBuildMediatriceSvg(){
@@ -168,6 +187,7 @@ function drBuildCircumcenterSvg(T, viewW, viewH){
   const {A,B,C} = T;
   const midAB=drMid(A,B), midAC=drMid(A,C), midBC=drMid(B,C);
   const dAB=drPerp(drNorm(drSub(B,A))), dAC=drPerp(drNorm(drSub(C,A))), dBC=drPerp(drNorm(drSub(C,B)));
+  const alongAB=drNorm(drSub(B,A)), alongAC=drNorm(drSub(C,A)), alongBC=drNorm(drSub(C,B));
   const O = drLineIntersection(midAB,dAB,midAC,dAC);
   const R = drDist(O,A);
   const [P1a,P2a] = drLineCovering(midAB, dAB, [O], 15);
@@ -179,6 +199,12 @@ function drBuildCircumcenterSvg(T, viewW, viewH){
     <line x1="${P1a.x}" y1="${P1a.y}" x2="${P2a.x}" y2="${P2a.y}" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"/>
     <line x1="${P1b.x}" y1="${P1b.y}" x2="${P2b.x}" y2="${P2b.y}" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"/>
     <line x1="${P1c.x}" y1="${P1c.y}" x2="${P2c.x}" y2="${P2c.y}" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"/>
+    ${drRightMark(midAB, alongAB, dAB, 7)}
+    ${drRightMark(midAC, alongAC, dAC, 7)}
+    ${drRightMark(midBC, alongBC, dBC, 7)}
+    ${drTickN(drMid(A,midAB), alongAB, 4, 1)}${drTickN(drMid(midAB,B), alongAB, 4, 1)}
+    ${drTickN(drMid(A,midAC), alongAC, 4, 2)}${drTickN(drMid(midAC,C), alongAC, 4, 2)}
+    ${drTickN(drMid(B,midBC), alongBC, 4, 3)}${drTickN(drMid(midBC,C), alongBC, 4, 3)}
     <circle cx="${O.x}" cy="${O.y}" r="3" fill="#E35D3A"/>
     ${drLabel(A.x-6, A.y-8, 'A')}
     ${drLabel(B.x-14, B.y+6, 'B')}
@@ -198,7 +224,7 @@ function drBuildRightTriangleCircumSvg(){
     <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}" fill="none" stroke="#1C1B2E" stroke-width="1.6"/>
     ${drRightMark(A, drNorm(drSub(B,A)), drNorm(drSub(C,A)), 10)}
     <circle cx="${O.x}" cy="${O.y}" r="3" fill="#E35D3A"/>
-    ${drLabel(A.x-6, A.y-8, 'A')}
+    ${drLabel(A.x-20, A.y+16, 'A')}
     ${drLabel(B.x-16, B.y+4, 'B')}
     ${drLabel(C.x+8, C.y+4, 'C')}
     ${drLabel(O.x+6, O.y-8, 'O')}
@@ -240,9 +266,9 @@ function drBuildCentroidSvg(T, viewW, viewH){
     <line x1="${A.x}" y1="${A.y}" x2="${midBC.x}" y2="${midBC.y}" stroke="#9E1F5E" stroke-width="1.4"/>
     <line x1="${B.x}" y1="${B.y}" x2="${midAC.x}" y2="${midAC.y}" stroke="#9E1F5E" stroke-width="1.4"/>
     <line x1="${C.x}" y1="${C.y}" x2="${midAB.x}" y2="${midAB.y}" stroke="#9E1F5E" stroke-width="1.4"/>
-    ${drTick(drMid(B,midBC), alongBC, 4)}${drTick(drMid(midBC,C), alongBC, 4)}
-    ${drTick(drMid(A,midAC), alongAC, 4)}${drTick(drMid(midAC,C), alongAC, 4)}
-    ${drTick(drMid(A,midAB), alongAB, 4)}${drTick(drMid(midAB,B), alongAB, 4)}
+    ${drTickN(drMid(B,midBC), alongBC, 4, 1)}${drTickN(drMid(midBC,C), alongBC, 4, 1)}
+    ${drTickN(drMid(A,midAC), alongAC, 4, 2)}${drTickN(drMid(midAC,C), alongAC, 4, 2)}
+    ${drTickN(drMid(A,midAB), alongAB, 4, 3)}${drTickN(drMid(midAB,B), alongAB, 4, 3)}
     <circle cx="${G.x}" cy="${G.y}" r="3" fill="#E35D3A"/>
     ${drLabel(A.x-6, A.y-8, 'A')}
     ${drLabel(B.x-14, B.y+6, 'B')}
@@ -290,7 +316,7 @@ document.getElementById('cours-demo-droites-remarquables-5e').innerHTML = `
 <div class="def-box">Les médiatrices des trois côtés d'un triangle sont <b>concourantes</b> en un point qui est le <b>centre du cercle circonscrit</b> à ce triangle.</div>
 <div style="display:flex;flex-wrap:wrap;gap:18px;justify-content:center;">
   <div class="figure-wrap">${drBuildCircumcenterSvg(DR_T_DEF, 380, 340)}<p class="hint" style="text-align:center;">Triangle à angles aigus : O est à l'intérieur.</p></div>
-  <div class="figure-wrap">${drBuildCircumcenterSvg(DR_T_OBTUS, 380, 420)}<p class="hint" style="text-align:center;">Triangle obtusangle : O est à l'extérieur.</p></div>
+  <div class="figure-wrap">${drBuildCircumcenterSvg(DR_T_OBTUS, 380, 420)}<p class="hint" style="text-align:center;">Triangle avec un angle obtus : O est à l'extérieur.</p></div>
 </div>
 <p style="margin:10px 0 4px;">Dans un triangle qui a tous ses angles aigus, le centre du cercle circonscrit se trouve à l'intérieur du triangle.</p>
 <p style="margin:4px 0 12px;">Dans un triangle qui a un de ses angles obtus, le centre du cercle circonscrit se trouve à l'extérieur du triangle.</p>
@@ -318,7 +344,7 @@ document.getElementById('cours-demo-droites-remarquables-5e').innerHTML = `
 <p style="margin:10px 0 12px;">Le centre de gravité est toujours situé à l'intérieur du triangle, quels que soient ses angles.</p>
 `;
 document.getElementById('dr-ortho-def-wrap').innerHTML = drBuildOrthocenterSvg(DR_T_DEF, 380, 230) + "<p class=\"hint\" style=\"text-align:center;\">Triangle à angles aigus : H est à l'intérieur.</p>";
-document.getElementById('dr-ortho-obtus-wrap').innerHTML = drBuildOrthocenterSvg(drTranslateTri(DR_T_OBTUS,0,70), 380, 300) + "<p class=\"hint\" style=\"text-align:center;\">Triangle obtusangle : H est à l'extérieur.</p>";
+document.getElementById('dr-ortho-obtus-wrap').innerHTML = drBuildOrthocenterSvg(drTranslateTri(DR_T_OBTUS,0,25), 380, 260) + "<p class=\"hint\" style=\"text-align:center;\">Triangle avec un angle obtus : H est à l'extérieur.</p>";
 
 /* ================= METHODE ================= */
 document.getElementById('methode-demo-droites-remarquables-5e').innerHTML = `
@@ -440,5 +466,5 @@ DEMO_QUIZZES['Droites remarquables dans un triangle'] = [
   {q:"Dans un triangle rectangle, le centre du cercle circonscrit est...",
    opts:["Toujours à l'extérieur du triangle","Le milieu de l'hypoténuse","Le sommet de l'angle droit"], correct:1},
   {q:"Le centre de gravité d'un triangle peut-il se trouver à l'extérieur du triangle ?",
-   opts:["Oui, si le triangle est obtusangle","Non, jamais","Oui, si le triangle est rectangle"], correct:1},
+   opts:["Oui, si le triangle a un angle obtus","Non, jamais","Oui, si le triangle est rectangle"], correct:1},
 ];
