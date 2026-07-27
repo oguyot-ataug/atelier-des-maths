@@ -688,11 +688,7 @@ function resetMethod(){
 
 function nextMethodStep(){
   methodStep++;
-  if(methodStep===1){
-    document.getElementById('mStep1').setAttribute('opacity','1');
-    document.getElementById('mStep1').setAttribute('x2',280); document.getElementById('mStep1').setAttribute('y2',200);
-    document.querySelector('.step-item[data-step="1"]').classList.add('done');
-  } else if(methodStep===2){
+  if(methodStep===2){
     document.getElementById('mArc').setAttribute('opacity','1');
     document.querySelector('.step-item[data-step="2"]').classList.add('done');
     document.getElementById('btnMethodNext').disabled=true;
@@ -708,25 +704,59 @@ function nextMethodStep(){
       else document.getElementById('btnMethodNext').disabled=false;
     }
     requestAnimationFrame(frame);
-  } else if(methodStep===3){
-    const Aprime = pointOnCircle(mAngleA+Math.PI);
-    document.getElementById('mTickAprime').setAttribute('opacity','1');
-    setTick(document.getElementById('mTickAprime'), Aprime.x, Aprime.y, mAngleA);
-    document.getElementById('mStep3t').setAttribute('opacity','1');
-    document.getElementById('mStep3t').setAttribute('x', Aprime.x+10);
-    document.getElementById('mStep3t').setAttribute('y', Aprime.y+18);
-    document.getElementById('mCompass').setAttribute('opacity','0');
-    document.querySelector('.step-item[data-step="3"]').classList.add('done');
-    document.getElementById('btnMethodNext').disabled=true;
-    document.getElementById('btnMethodNext').textContent='Terminé ✓';
+  } else {
+    mRenderStepInstant(methodStep);
   }
 }
+
+/* Rendu instantané (sans animation) de l'état final d'une étape donnée (0, 1, 2 ou 3) --
+   utilisé à la fois par resetMethod() et par la reconstitution des étapes pour le cahier
+   de l'élève / l'export PDF (voir registerGeoStepDemo ci-dessous). */
+function mRenderStepInstant(step){
+  document.querySelectorAll('.step-item').forEach(s=>s.classList.remove('done'));
+  document.getElementById('mStep1').setAttribute('opacity', step>=1?'1':'0');
+  if(step>=1){
+    document.getElementById('mStep1').setAttribute('x2',280); document.getElementById('mStep1').setAttribute('y2',200);
+    document.querySelector('.step-item[data-step="1"]').classList.add('done');
+  }
+  const showArc = step>=2;
+  document.getElementById('mArc').setAttribute('opacity', showArc?'1':'0');
+  if(showArc){
+    const pts=[]; for(let a=mAngleA;a<=mAngleA+Math.PI+1e-6;a+=Math.PI/60){ const p=pointOnCircle(a); pts.push(`${p.x},${p.y}`); }
+    document.getElementById('mArc').setAttribute('points', pts.join(' '));
+    document.querySelector('.step-item[data-step="2"]').classList.add('done');
+  } else {
+    document.getElementById('mArc').setAttribute('points','');
+  }
+  document.getElementById('mCompass').setAttribute('opacity', step===2?'1':'0');
+  if(step===2) placeCompass(mAngleA+Math.PI);
+  const showAprime = step>=3;
+  document.getElementById('mTickAprime').setAttribute('opacity', showAprime?'1':'0');
+  document.getElementById('mStep3t').setAttribute('opacity', showAprime?'1':'0');
+  if(showAprime){
+    const Aprime = pointOnCircle(mAngleA+Math.PI);
+    setTick(document.getElementById('mTickAprime'), Aprime.x, Aprime.y, mAngleA);
+    document.getElementById('mStep3t').setAttribute('x', Aprime.x+10);
+    document.getElementById('mStep3t').setAttribute('y', Aprime.y+18);
+    document.querySelector('.step-item[data-step="3"]').classList.add('done');
+  }
+  document.getElementById('btnMethodNext').disabled = (step===3);
+  document.getElementById('btnMethodNext').textContent = step===3?'Terminé ✓':'Étape suivante →';
+}
+
+/* Notes des 3 étapes de la construction, pour la reconstitution en filmstrip (cahier/PDF) */
+const M_STEPS = [
+  {note:"Je trace la demi-droite [AO) à la règle, en la prolongeant largement au-delà de O."},
+  {note:"Je pique le compas en A, j'ouvre jusqu'à O, puis je reporte cette longueur OA de l'autre côté de O sur la demi-droite (arc de cercle)."},
+  {note:"Le point où l'arc coupe la droite est A', le symétrique de A : on a bien OA' = OA, avec O entre A et A'."},
+];
+function mGotoStep(i){ methodStep = i+1; mRenderStepInstant(methodStep); }
 
 /* ---- nombres relatifs : point + opposé sur droite graduée ---- */
 
 
 DEMO_REGISTRY['Symétrie centrale'] = { cours:'cours-demo-symetrie', methode:'methode-demo-symetrie', exos:'exos-demo-symetrie',
-  init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); injectCourseAddButtons(document.getElementById('methode-demo-symetrie')); } };
+  init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); registerGeoStepDemo('svgMethod', { steps:()=>M_STEPS, getIdx:()=>methodStep-1, goto:(i)=>mGotoStep(i) }); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); injectCourseAddButtons(document.getElementById('methode-demo-symetrie')); } };
 
 DEMO_QUIZZES['Symétrie centrale'] = [
   {q:"O est le milieu de [AA']. Que peut-on dire de A' par rapport à A ?",
