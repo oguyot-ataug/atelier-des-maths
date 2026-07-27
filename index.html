@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-27.5</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-27.6</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -693,11 +693,12 @@ mmartin	Motdepasse2"></textarea>
   </div>
 
   <div class="tool-shell">
-    <strong style="font-family:'Space Grotesk',sans-serif;">🤖 Utilisation de l'IA</strong>
-    <button class="btn secondary" style="float:right;" onclick="adminRefreshAIUsage()">🔄 Actualiser</button>
-    <p class="hint" style="margin:6px 0 14px;">Qui a généré un quiz ou utilisé l'interprétation de figures, et quand.</p>
-    <div id="adminAIUsageListing" class="hint">Chargement…</div>
+    <strong style="font-family:'Space Grotesk',sans-serif;">🐞 Signalements (bugs / améliorations)</strong>
+    <button class="btn secondary" style="float:right;" onclick="adminRefreshBugReports()">🔄 Actualiser</button>
+    <p class="hint" style="margin:6px 0 14px;">Signalements envoyés par les profs depuis le menu de leur compte.</p>
+    <div id="adminBugReportsListing" class="hint">Chargement…</div>
   </div>
+
 </section>
 
 </main>
@@ -2206,6 +2207,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-27.6', items:[
+    "Ajout d'un écran « Signalements (bugs / améliorations) » dans Administration : liste tous les signalements envoyés, avec possibilité de changer leur statut (nouveau / en cours / résolu) directement dans l'appli, sans passer par Supabase.",
+  ]},
   { version:'2026-07-27.5', items:[
     "Ajout d'une modale « Signaler un bug / une amélioration » dans le menu du compte (profs et admin), avec choix de la partie concernée et récapitulatif de toutes les évolutions par version (celui que tu regardes en ce moment).",
   ]},
@@ -2625,6 +2629,7 @@ async function adminRefreshDropdowns(){
 }
 async function adminRefreshListings(){
   await adminRefreshAIUsage();
+  await adminRefreshBugReports();
   const { data: profs } = await sb.from('profiles').select('id,nom,email,role').in('role',['prof','admin']).order('nom');
   const { data: eleves } = await sb.from('profiles').select('id,nom,email,role').eq('role','eleve').order('nom');
   const accEl = document.getElementById('adminAccountsListing');
@@ -2660,6 +2665,39 @@ async function adminRefreshListings(){
         Élèves (${elevesHere.length}) : ${elevesHere.map(escapeHtml).join(', ')||'aucun'}</div>`;
     }).join('');
   }
+}
+async function adminRefreshBugReports(){
+  const el = document.getElementById('adminBugReportsListing');
+  if(!el) return;
+  el.textContent = 'Chargement…';
+  const { data, error } = await sb.from('bug_reports')
+    .select('id,created_at,section,chapitre,message,build_version,status,profiles(nom,email)')
+    .order('created_at', {ascending:false})
+    .limit(300);
+  if(error){ el.textContent = "Erreur : "+error.message; return; }
+  if(!data || !data.length){ el.textContent = "Aucun signalement pour l'instant."; return; }
+  const STATUS_OPTIONS = ['nouveau','en cours','résolu'];
+  el.innerHTML = data.map(r=>{
+    const name = (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Utilisateur inconnu';
+    const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+    const statusColor = r.status==='résolu' ? 'var(--accent-green, #1F6B3A)' : r.status==='en cours' ? 'var(--accent-orange)' : 'var(--accent)';
+    return `<div class="bug-report-row" style="border:1px solid rgba(28,43,57,.12);border-radius:8px;padding:10px 12px;margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
+        <span><b>${escapeHtml(r.section)}</b>${r.chapitre?' — '+escapeHtml(r.chapitre):''}</span>
+        <span style="color:var(--ink-soft);font-size:.85rem;">${escapeHtml(name)} · ${date}${r.build_version?' · build '+escapeHtml(r.build_version):''}</span>
+      </div>
+      <div style="margin:6px 0;white-space:pre-wrap;">${escapeHtml(r.message)}</div>
+      <label class="hint" style="display:inline-flex;align-items:center;gap:6px;">
+        Statut :
+        <select onchange="adminUpdateBugStatus('${r.id}', this.value)" style="color:${statusColor};font-weight:600;">
+          ${STATUS_OPTIONS.map(s=>`<option value="${s}" ${s===r.status?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </label>
+    </div>`;
+  }).join('');
+}
+async function adminUpdateBugStatus(id, status){
+  await sb.from('bug_reports').update({status}).eq('id', id);
 }
 async function adminRefreshAIUsage(){
   const el = document.getElementById('adminAIUsageListing');
