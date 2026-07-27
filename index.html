@@ -918,14 +918,31 @@ window.GEO_STEP_DEMOS = window.GEO_STEP_DEMOS || {};
 function registerGeoStepDemo(svgId, config){ window.GEO_STEP_DEMOS[svgId] = config; }
 function captureGeoFilmstrip(svgEl, steps, gotoFn, originalIdx){
   const panels = [];
+  // Dimensions issues du viewBox (nécessaires pour une sérialisation SVG->image correcte)
+  const vbAttr = svgEl.getAttribute('viewBox');
+  const vbParts = vbAttr ? vbAttr.trim().split(/\s+/).map(Number) : [0,0,400,240];
+  const vbW = vbParts[2] || 400, vbH = vbParts[3] || 240;
   for(let i=0;i<steps.length;i++){
     gotoFn(i, false);
     const clone = svgEl.cloneNode(true);
     clone.removeAttribute('id');
     clone.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
-    clone.setAttribute('style', 'width:170px;height:auto;background:var(--white);border-radius:6px;border:1px solid rgba(28,43,57,.12);flex:none;display:block;');
+    clone.removeAttribute('style');
+    clone.setAttribute('width', vbW);
+    clone.setAttribute('height', vbH);
+    clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    // html2canvas gère mal le SVG inséré dynamiquement : on le convertit donc en image
+    // (data URI) avant insertion, pour un rendu fiable aussi bien à l'écran qu'au PDF.
+    let imgTag;
+    try{
+      const svgString = new XMLSerializer().serializeToString(clone);
+      const dataUri = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
+      imgTag = `<img src="${dataUri}" style="width:170px;height:auto;background:var(--white);border-radius:6px;border:1px solid rgba(28,43,57,.12);flex:none;display:block;" alt="Étape ${i+1}"/>`;
+    } catch(e){
+      imgTag = clone.outerHTML; // filet de sécurité si la sérialisation échoue
+    }
     panels.push(`<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-      ${clone.outerHTML}
+      ${imgTag}
       <div style="font-size:.8rem;color:var(--ink-soft);line-height:1.4;"><b>Étape ${i+1}.</b> ${steps[i].note}</div>
     </div>`);
   }
