@@ -28,7 +28,7 @@ function ndGridCentieme(shadedIndex){
 const ND_LINE_MIN = 0, ND_LINE_MAX = 6, ND_LINE_ORIGIN_X = 30, ND_LINE_UNIT = 70, ND_LINE_Y = 60;
 function ndLineValToX(v){ return ND_LINE_ORIGIN_X + v*ND_LINE_UNIT; }
 function ndLineXToVal(x){ return (x-ND_LINE_ORIGIN_X)/ND_LINE_UNIT; }
-let ndPointP = 1.4, ndPointQ = 4.7;
+let ndPointM = 1.4, ndPointN = 4.7;
 
 function ndBuildDemiDroiteSvg(){
   const lastX = ndLineValToX(ND_LINE_MAX);
@@ -49,43 +49,43 @@ function ndBuildDemiDroiteSvg(){
     <line x1="${ND_LINE_ORIGIN_X-15}" y1="${ND_LINE_Y}" x2="${arrowX}" y2="${ND_LINE_Y}" stroke="#1C1B2E" stroke-width="1.6"/>
     <polygon points="${arrowX},${ND_LINE_Y} ${arrowX-10},${ND_LINE_Y-5} ${arrowX-10},${ND_LINE_Y+5}" fill="#1C1B2E"/>
     ${ticks}
-    <line id="ndPointP" x1="0" y1="${ND_LINE_Y-11}" x2="0" y2="${ND_LINE_Y+11}" stroke="#1F3A5C" stroke-width="3" style="cursor:grab;"/>
-    <text id="ndLabelP" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#1F3A5C" text-anchor="middle"></text>
-    <line id="ndPointQ" x1="0" y1="${ND_LINE_Y-11}" x2="0" y2="${ND_LINE_Y+11}" stroke="#E35D3A" stroke-width="3" style="cursor:grab;"/>
-    <text id="ndLabelQ" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#E35D3A" text-anchor="middle"></text>
+    <line id="ndPointM" x1="0" y1="${ND_LINE_Y-11}" x2="0" y2="${ND_LINE_Y+11}" stroke="#1F3A5C" stroke-width="3" style="cursor:grab;"/>
+    <text id="ndLabelM" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#1F3A5C" text-anchor="middle"></text>
+    <line id="ndPointN" x1="0" y1="${ND_LINE_Y-11}" x2="0" y2="${ND_LINE_Y+11}" stroke="#E35D3A" stroke-width="3" style="cursor:grab;"/>
+    <text id="ndLabelN" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#E35D3A" text-anchor="middle"></text>
   </svg>`;
 }
 function ndUpdateDemiDroite(){
-  const xP = ndLineValToX(ndPointP), xQ = ndLineValToX(ndPointQ);
-  const pEl2 = document.getElementById('ndPointP'), qEl2 = document.getElementById('ndPointQ');
-  pEl2.setAttribute('x1',xP); pEl2.setAttribute('x2',xP);
-  qEl2.setAttribute('x1',xQ); qEl2.setAttribute('x2',xQ);
-  const lP = document.getElementById('ndLabelP'); lP.setAttribute('x',xP); lP.setAttribute('y',ND_LINE_Y-14); lP.textContent = 'P';
-  const lQ = document.getElementById('ndLabelQ'); lQ.setAttribute('x',xQ); lQ.setAttribute('y',ND_LINE_Y-14); lQ.textContent = 'Q';
+  const xM = ndLineValToX(ndPointM), xN = ndLineValToX(ndPointN);
+  const mEl2 = document.getElementById('ndPointM'), nEl2 = document.getElementById('ndPointN');
+  mEl2.setAttribute('x1',xM); mEl2.setAttribute('x2',xM);
+  nEl2.setAttribute('x1',xN); nEl2.setAttribute('x2',xN);
+  const lM = document.getElementById('ndLabelM'); lM.setAttribute('x',xM); lM.setAttribute('y',ND_LINE_Y-14); lM.textContent = 'M';
+  const lN = document.getElementById('ndLabelN'); lN.setAttribute('x',xN); lN.setAttribute('y',ND_LINE_Y-14); lN.textContent = 'N';
   const note = document.getElementById('ndAbscisseNote');
-  if(note) note.innerHTML = `Point P : abscisse <b>${ndPointP.toFixed(1).replace('.',',')}</b> &nbsp;·&nbsp; Point Q : abscisse <b>${ndPointQ.toFixed(1).replace('.',',')}</b>`;
+  if(note) note.innerHTML = `Point M : abscisse <b>${ndPointM.toFixed(1).replace('.',',')}</b> &nbsp;·&nbsp; Point N : abscisse <b>${ndPointN.toFixed(1).replace('.',',')}</b>`;
 }
-function ndResetDemiDroite(){ ndPointP=1.4; ndPointQ=4.7; ndUpdateDemiDroite(); }
+function ndResetDemiDroite(){ ndPointM=1.4; ndPointN=4.7; ndUpdateDemiDroite(); }
 function ndInitDemiDroiteDrag(){
   ndUpdateDemiDroite();
   const svgEl = document.getElementById('svgNdLine');
   let dragging = null;
-  const startP = e=>{dragging='P'; e.preventDefault();};
-  const startQ = e=>{dragging='Q'; e.preventDefault();};
+  const startM = e=>{dragging='M'; e.preventDefault();};
+  const startN = e=>{dragging='N'; e.preventDefault();};
   const move = e=>{
     if(!dragging) return;
     const p = svgPointFromEvent(svgEl,e);
     let v = ndLineXToVal(p.x);
     v = Math.round(v*10)/10;
     v = Math.max(ND_LINE_MIN, Math.min(ND_LINE_MAX, v));
-    if(dragging==='P') ndPointP=v; else ndPointQ=v;
+    if(dragging==='M') ndPointM=v; else ndPointN=v;
     ndUpdateDemiDroite();
   };
   const end = ()=>dragging=null;
-  const pEl = document.getElementById('ndPointP'), qEl = document.getElementById('ndPointQ');
-  pEl.onmousedown=startP; qEl.onmousedown=startQ;
+  const mEl = document.getElementById('ndPointM'), nEl = document.getElementById('ndPointN');
+  mEl.onmousedown=startM; nEl.onmousedown=startN;
   window.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
-  pEl.ontouchstart=startP; qEl.ontouchstart=startQ;
+  mEl.ontouchstart=startM; nEl.ontouchstart=startN;
   svgEl.addEventListener('touchmove',move,{passive:false}); svgEl.addEventListener('touchend',end);
 }
 
@@ -154,8 +154,8 @@ ${ndGridCentieme(47)}
 </div>
 
 <div class="lesson-header"><span class="num">3</span><h3>Repérage sur une demi-droite graduée</h3></div>
-<p class="example-title">Exemple : quelles sont les abscisses des points P et Q ?</p>
-<p class="interaction-hint" style="margin:4px 0 8px;">Déplacez les points P (bleu) et Q (orange) sur la droite graduée pour changer leur abscisse.</p>
+<p class="example-title">Exemple : quelles sont les abscisses des points M et N ?</p>
+<p class="interaction-hint" style="margin:4px 0 8px;">Déplacez les points M (bleu) et N (orange) sur la droite graduée pour changer leur abscisse.</p>
 <div class="figure-wrap">
   ${ndBuildDemiDroiteSvg()}
   <div class="figure-toolbar" style="justify-content:center;">
@@ -163,8 +163,8 @@ ${ndGridCentieme(47)}
   </div>
   <p class="hint" id="ndAbscisseNote" style="text-align:center;margin-top:8px;"></p>
 </div>
-<p style="margin:10px 0 4px;">Dans la position de départ, le point P a pour abscisse <span class="tex">1 + \\dfrac{4}{10}</span>, soit 1,4. Le point Q a pour abscisse <span class="tex">4 + \\dfrac{7}{10}</span>, soit 4,7.</p>
-<p style="margin:4px 0 12px;">On note P(1,4) et Q(4,7).</p>
+<p style="margin:10px 0 4px;">Dans la position de départ, le point M a pour abscisse <span class="tex">1 + \\dfrac{4}{10}</span>, soit 1,4. Le point N a pour abscisse <span class="tex">4 + \\dfrac{7}{10}</span>, soit 4,7.</p>
+<p style="margin:4px 0 12px;">On note M(1,4) et N(4,7).</p>
 
 <div class="lesson-header"><span class="num">4</span><h3>Comparaison et rangement</h3></div>
 <div class="sub-header"><span class="letter">A</span><h4>Comparaison de deux nombres décimaux</h4></div>
