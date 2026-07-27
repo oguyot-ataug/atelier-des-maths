@@ -30,6 +30,13 @@ function ndBuildDemiDroiteSvg(){
   let ticks = '';
   for(let v=0;v<=6;v++){
     const x = originX + v*unit;
+    // graduations intermédiaires (dixièmes) entre ce nombre entier et le suivant
+    if(v<6){
+      for(let k=1;k<10;k++){
+        const xk = originX + (v+k/10)*unit;
+        ticks += `<line x1="${xk}" y1="${y-3}" x2="${xk}" y2="${y+3}" stroke="#1C1B2E" stroke-width="1"/>`;
+      }
+    }
     ticks += `<line x1="${x}" y1="${y-6}" x2="${x}" y2="${y+6}" stroke="#1C1B2E" stroke-width="1.3"/>`;
     ticks += `<text x="${x}" y="${y+24}" font-family="JetBrains Mono" font-size="13" fill="#1C1B2E" text-anchor="middle">${v}</text>`;
   }
@@ -90,8 +97,8 @@ ${ndGridCentieme(47)}
     <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(227,93,58,.06);"></th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(227,93,58,.06);"></th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(227,93,58,.06);"></th>
   </tr>
   <tr>
-    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">5</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">2</td>
-    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">1</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">8</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">,</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">5</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">2</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">1</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">8</td>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">6</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">4</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">7</td>
   </tr>
 </table>
