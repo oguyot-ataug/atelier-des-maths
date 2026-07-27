@@ -132,8 +132,8 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
       </ul>
 `;
 document.getElementById('methode-demo-decimaux').innerHTML = `
-      <div class="figure-wrap">
-        <div class="sub-header"><span class="letter">M</span><h4>Trouver tous les diviseurs d'un nombre : 60</h4></div>
+      <div class="sub-header"><span class="letter">M</span><h4>Trouver tous les diviseurs d'un nombre : 60</h4></div>
+<div class="figure-wrap">
         <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
         <div class="step-display" id="diviseursDisplay"></div>
         <div class="figure-toolbar">

@@ -266,8 +266,8 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 `;
 
 document.getElementById('methode-demo-droites-paralleles').innerHTML = `
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : tracer une perpendiculaire à l'équerre et à la règle</h4></div>
 <div class="figure-wrap">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode : tracer une perpendiculaire à l'équerre et à la règle</h4></div>
   <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="dp-methodeDisplay"></div>
   <div class="figure-toolbar">

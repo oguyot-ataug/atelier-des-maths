@@ -134,8 +134,8 @@ document.getElementById('cours-demo-distance-cercles').innerHTML = `
 `;
 
 document.getElementById('methode-demo-distance-cercles').innerHTML = `
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : construire le milieu d'un segment à la règle</h4></div>
 <div class="figure-wrap">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode : construire le milieu d'un segment à la règle</h4></div>
   <p class="interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <svg id="dc-mm-svg" viewBox="0 0 400 220" style="width:100%;max-width:460px;display:block;margin:10px auto 0;background:var(--white);border-radius:8px;">
     <line id="dc-mm-seg" stroke="#1C1B2E" stroke-width="1.8"/>

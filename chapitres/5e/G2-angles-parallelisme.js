@@ -535,8 +535,8 @@ document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
   ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. La méthode est toujours la même, en trois temps : <b>ce que je sais</b> (les constats), puis <span style="color:var(--accent-orange);font-weight:700;">Or,</span> suivi de la propriété que l'on va utiliser, puis <span style="color:var(--accent);font-weight:700;">Donc</span>, suivi de la conclusion.
 </div>
 
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : justifier que deux droites sont parallèles à l'aide d'angles alternes-internes</h4></div>
 <div class="figure-wrap">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : justifier que deux droites sont parallèles à l'aide d'angles alternes-internes</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${apBuildMethodeAltSvg()}</div>
   <div class="step-display" id="ap-methodeDisplay"></div>
@@ -546,8 +546,8 @@ document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
   </div>
 </div>
 
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : calculer une mesure d'angle à l'aide des angles opposés par le sommet</h4></div>
 <div class="figure-wrap" style="margin-top:24px;">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : calculer une mesure d'angle à l'aide des angles opposés par le sommet</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${apBuildMethodeOpposesSvg()}</div>
   <div class="step-display" id="ap-methodeOpposesDisplay"></div>
@@ -557,8 +557,8 @@ document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
   </div>
 </div>
 
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : justifier que des points sont alignés à l'aide d'angles supplémentaires</h4></div>
 <div class="figure-wrap" style="margin-top:24px;">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : justifier que des points sont alignés à l'aide d'angles supplémentaires</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${apBuildMethodeAlignementSvg()}</div>
   <div class="step-display" id="ap-methodeAlignementDisplay"></div>
@@ -568,8 +568,8 @@ document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
   </div>
 </div>
 
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 4 : calculer une mesure d'angle inconnue dans un triangle</h4></div>
 <div class="figure-wrap" style="margin-top:24px;">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode 4 : calculer une mesure d'angle inconnue dans un triangle</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${apBuildMethodeTriangleSvg()}</div>
   <div class="step-display" id="ap-methodeTriangleDisplay"></div>
@@ -579,8 +579,8 @@ document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
   </div>
 </div>
 
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 5 : justifier que deux droites sont parallèles à l'aide d'angles correspondants</h4></div>
 <div class="figure-wrap" style="margin-top:24px;">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode 5 : justifier que deux droites sont parallèles à l'aide d'angles correspondants</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${apBuildMethodeCorrespondantsSvg()}</div>
   <div class="step-display" id="ap-methodeCorrDisplay"></div>
@@ -590,8 +590,8 @@ document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
   </div>
 </div>
 
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 6 : deux droites parallèles et une sécante, cas des angles correspondants</h4></div>
 <div class="figure-wrap" style="margin-top:24px;">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode 6 : deux droites parallèles et une sécante, cas des angles correspondants</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${apBuildMethodeCorrespondantsSvg()}</div>
   <div class="step-display" id="ap-methodeCorrDirectDisplay"></div>
@@ -601,8 +601,8 @@ document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
   </div>
 </div>
 
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 7 : deux droites parallèles et une sécante, cas des angles alternes-internes</h4></div>
 <div class="figure-wrap" style="margin-top:24px;">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode 7 : deux droites parallèles et une sécante, cas des angles alternes-internes</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${apBuildMethodeAltSvg()}</div>
   <div class="step-display" id="ap-methodeAltDirectDisplay"></div>

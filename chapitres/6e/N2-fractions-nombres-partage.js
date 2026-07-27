@@ -55,8 +55,8 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
 `;
 
 document.getElementById('methode-demo-fractions-partage').innerHTML = `
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : calculer un pourcentage</h4></div>
 <div class="figure-wrap">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode : calculer un pourcentage</h4></div>
   <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="fp-methodeDisplay"></div>
   <div class="figure-toolbar">

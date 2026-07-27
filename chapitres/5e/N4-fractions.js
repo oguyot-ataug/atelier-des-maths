@@ -97,8 +97,8 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 `;
 
 document.getElementById('methode-demo-fractions-5e').innerHTML = `
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : additionner deux fractions de dénominateurs différents</h4></div>
 <div class="figure-wrap">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode : additionner deux fractions de dénominateurs différents</h4></div>
   <p class="interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="fq-methodeDisplay"></div>
   <div class="figure-toolbar">

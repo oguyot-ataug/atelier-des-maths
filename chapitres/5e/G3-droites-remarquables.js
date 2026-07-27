@@ -353,8 +353,8 @@ document.getElementById('methode-demo-droites-remarquables-5e').innerHTML = `
   ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. La méthode est toujours la même, en trois temps : <b>ce que je sais</b> (les constats), puis <span style="color:var(--accent-orange);font-weight:700;">Or,</span> suivi de la propriété que l'on va utiliser, puis <span style="color:var(--accent);font-weight:700;">Donc</span>, suivi de la conclusion.
 </div>
 
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : démontrer qu'un triangle est rectangle grâce au cercle circonscrit</h4></div>
 <div class="figure-wrap">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : démontrer qu'un triangle est rectangle grâce au cercle circonscrit</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${drBuildRightTriangleCircumSvg()}</div>
   <div class="step-display" id="dr-methodeRectDisplay"></div>
@@ -364,8 +364,8 @@ document.getElementById('methode-demo-droites-remarquables-5e').innerHTML = `
   </div>
 </div>
 
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : construire le centre du cercle circonscrit à un triangle</h4></div>
 <div class="figure-wrap" style="margin-top:24px;">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : construire le centre du cercle circonscrit à un triangle</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${drBuildCircumcenterSvg(DR_T_DEF, 380, 340)}</div>
   <div class="step-display" id="dr-methodeCircumDisplay"></div>
@@ -375,8 +375,8 @@ document.getElementById('methode-demo-droites-remarquables-5e').innerHTML = `
   </div>
 </div>
 
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : construire l'orthocentre d'un triangle</h4></div>
 <div class="figure-wrap" style="margin-top:24px;">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : construire l'orthocentre d'un triangle</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${drBuildOrthocenterSvg(DR_T_DEF, 380, 230)}</div>
   <div class="step-display" id="dr-methodeOrthoDisplay"></div>

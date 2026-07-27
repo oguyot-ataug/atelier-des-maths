@@ -195,8 +195,8 @@ ${ndGridCentieme(47)}
 `;
 
 document.getElementById('methode-demo-decimaux-6e').innerHTML = `
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : comparer deux nombres décimaux</h4></div>
 <div class="figure-wrap">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode : comparer deux nombres décimaux</h4></div>
   <p class="interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="nd-comparerDisplay"></div>
   <div class="figure-toolbar">
@@ -204,8 +204,8 @@ document.getElementById('methode-demo-decimaux-6e').innerHTML = `
     <button class="btn secondary" onclick="ndComparerDemo.reset()">Recommencer</button>
   </div>
 </div>
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : décomposer un nombre décimal</h4></div>
 <div class="figure-wrap" style="margin-top:20px;">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode : décomposer un nombre décimal</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="nd-decomposerDisplay"></div>
   <div class="figure-toolbar">
@@ -213,8 +213,8 @@ document.getElementById('methode-demo-decimaux-6e').innerHTML = `
     <button class="btn secondary" onclick="ndDecomposerDemo.reset()">Recommencer</button>
   </div>
 </div>
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : ne pas confondre « chiffre des... » et « nombre de... »</h4></div>
 <div class="figure-wrap" style="margin-top:20px;">
-  <div class="sub-header"><span class="letter">M</span><h4>Méthode : ne pas confondre « chiffre des... » et « nombre de... »</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="nd-chiffreNombreDisplay"></div>
   <div class="figure-toolbar">

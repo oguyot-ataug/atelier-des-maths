@@ -238,8 +238,8 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
       </div>
 `;
 document.getElementById('methode-demo-symetrie').innerHTML = `
-      <div class="figure-wrap">
-        <div class="sub-header"><span class="letter">M</span><h4>Construire le symétrique d'un point A, au compas et à la règle</h4></div>
+      <div class="sub-header"><span class="letter">M</span><h4>Construire le symétrique d'un point A, au compas et à la règle</h4></div>
+<div class="figure-wrap">
         <svg id="svgMethod" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:14px auto;">
           <line id="mTickO" class="pt-tick" stroke="#1C1B2E" stroke-width="2"/>
           <text x="207" y="122" font-family="Space Grotesk" font-size="13" fill="#1C1B2E">O</text>
