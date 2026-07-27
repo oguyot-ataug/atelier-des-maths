@@ -11,7 +11,7 @@ function apWedge(vertex, p1, p2, r, color, opacity){
   return `<polygon points="${vertex.x},${vertex.y} ${points}" fill="${color}" fill-opacity="${opacity===undefined?0.55:opacity}"/>`;
 }
 function apLabel(x, y, text, size, italic){
-  return `<text x="${x}" y="${y}" font-size="${size||14}" ${italic===false?'':'font-style="italic"'} fill="#1C1B2E">${text}</text>`;
+  return `<text x="${x}" y="${y}" font-size="${size||12}" ${italic===false?'':'font-style="italic"'} fill="#1C1B2E">${text}</text>`;
 }
 
 /* ================= Figure A : angles opposés par le sommet ================= */
@@ -38,19 +38,19 @@ function apBuildOpposesSvg(){
 
 /* ================= Figure B : angles adjacents ================= */
 function apBuildAdjacentsSvg(){
-  const O = {x:90, y:190};
-  const I = apPt(O,-150,140), J = apPt(O,-90,140), K = apPt(O,-40,140);
-  const w1 = apWedge(O, I, J, 40, '#1F3A5C');
-  const w2 = apWedge(O, J, K, 40, '#1F6B3A');
-  return `<svg viewBox="0 0 260 220" style="width:100%;max-width:280px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+  const O = {x:190, y:190};
+  const I = apPt(O,-150,110), J = apPt(O,-90,110), K = apPt(O,-40,110);
+  const w1 = apWedge(O, I, J, 34, '#1F3A5C');
+  const w2 = apWedge(O, J, K, 34, '#1F6B3A');
+  return `<svg viewBox="0 0 320 220" style="width:100%;max-width:300px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
     <line x1="${O.x}" y1="${O.y}" x2="${I.x}" y2="${I.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="${O.x}" y1="${O.y}" x2="${J.x}" y2="${J.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="${O.x}" y1="${O.y}" x2="${K.x}" y2="${K.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${w1}${w2}
     <circle cx="${O.x}" cy="${O.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(I.x-10, I.y-6, 'I')}
+    ${apLabel(I.x-14, I.y-2, 'I')}
     ${apLabel(J.x-6, J.y-8, 'J')}
-    ${apLabel(K.x+6, K.y-6, 'K')}
+    ${apLabel(K.x+6, K.y-4, 'K')}
     ${apLabel(O.x+6, O.y+16, 'O')}
   </svg>`;
 }
@@ -58,17 +58,17 @@ function apBuildAdjacentsSvg(){
 /* ================= Figure C : angles supplémentaires ================= */
 function apBuildSupplSvg(){
   const O = {x:200, y:150};
-  const D = apPt(O,180,160), F = apPt(O,0,160), E = apPt(O,-115,160);
-  const w1 = apWedge(O, D, E, 42, '#1F3A5C');
-  const w2 = apWedge(O, E, F, 42, '#1F6B3A');
-  return `<svg viewBox="0 0 400 200" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+  const D = apPt(O,180,140), F = apPt(O,0,140), E = apPt(O,-115,140);
+  const w1 = apWedge(O, D, E, 40, '#1F3A5C');
+  const w2 = apWedge(O, E, F, 40, '#1F6B3A');
+  return `<svg viewBox="0 0 400 220" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
     <line x1="${D.x}" y1="${D.y}" x2="${F.x}" y2="${F.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="${O.x}" y1="${O.y}" x2="${E.x}" y2="${E.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${w1}${w2}
     <circle cx="${O.x}" cy="${O.y}" r="2.6" fill="#1C1B2E"/>
     ${apLabel(D.x-4, D.y-10, 'D')}
     ${apLabel(F.x-6, F.y-10, 'F')}
-    ${apLabel(E.x-6, E.y-10, 'E')}
+    ${apLabel(E.x-6, E.y+16, 'E')}
     ${apLabel(O.x-4, O.y+18, 'O')}
   </svg>`;
 }
@@ -91,9 +91,9 @@ function apBuildDefinitionsSvg(){
     ${wBleuA}${wBleuB}${wVertA}${wVertB}
     <circle cx="${AP_A.x}" cy="${AP_A.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${AP_B.x}" cy="${AP_B.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(AP_DLEFT.x-2, AP_DLEFT.y-8, '(d)', 13, false)}
-    ${apLabel(AP_DPLEFT.x-2, AP_DPLEFT.y-8, "(d')", 13, false)}
-    ${apLabel(AP_STOP.x+6, AP_STOP.y+14, '(s)', 13, false)}
+    ${apLabel(AP_DLEFT.x-2, AP_DLEFT.y-8, '(d)', 11, false)}
+    ${apLabel(AP_DPLEFT.x-2, AP_DPLEFT.y-8, "(d')", 11, false)}
+    ${apLabel(AP_STOP.x+6, AP_STOP.y+14, '(s)', 11, false)}
     ${apLabel(AP_A.x+8, AP_A.y-8, 'A')}
     ${apLabel(AP_B.x+8, AP_B.y+16, 'B')}
   </svg>
@@ -114,12 +114,12 @@ function apBuildExemple1Svg(){
     ${wBleuA}${wBleuB}
     <circle cx="${AP_A.x}" cy="${AP_A.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${AP_B.x}" cy="${AP_B.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(AP_DLEFT.x-2, AP_DLEFT.y-8, '(d)', 13, false)}
-    ${apLabel(AP_DPLEFT.x-2, AP_DPLEFT.y-8, "(d')", 13, false)}
+    ${apLabel(AP_DLEFT.x-2, AP_DLEFT.y-8, '(d)', 11, false)}
+    ${apLabel(AP_DPLEFT.x-2, AP_DPLEFT.y-8, "(d')", 11, false)}
     ${apLabel(AP_A.x+8, AP_A.y-8, 'A')}
     ${apLabel(AP_B.x+8, AP_B.y+16, 'B')}
-    ${apLabel(labA.x-10, labA.y+4, '47°', 13, false)}
-    ${apLabel(labB.x-10, labB.y+4, '47°', 13, false)}
+    ${apLabel(labA.x-10, labA.y+4, '47°', 12, false)}
+    ${apLabel(labB.x-10, labB.y+4, '47°', 12, false)}
   </svg>`;
 }
 
@@ -162,24 +162,23 @@ function apUpdateAltCorr(){
     ${bleuA}${bleuB}${vertA}${vertB}
     <circle cx="${A.x}" cy="${A.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${B.x}" cy="${B.y}" r="2.6" fill="#1C1B2E"/>
-    <path d="M ${Dleft.x+18} ${Dleft.y-16} l 8 8 l -8 8" fill="none" stroke="#1C1B2E" stroke-width="1.4"/>
-    <path d="M ${Dpleft.x+18} ${Dpleft.y-16} l 8 8 l -8 8" fill="none" stroke="#1C1B2E" stroke-width="1.4"/>
-    ${apLabel(Dleft.x-2, Dleft.y-24, '(d)', 13, false)}
-    ${apLabel(Dpleft.x-2, Dpleft.y-24, "(d')", 13, false)}
+    ${apLabel(Dleft.x-2, Dleft.y-10, '(d)', 11, false)}
+    ${apLabel(Dpleft.x-2, Dpleft.y-10, "(d')", 11, false)}
     ${apLabel(A.x+8, A.y-8, 'A')}
     ${apLabel(B.x+8, B.y+16, 'B')}
-    ${apLabel(lBleuA.x-10, lBleuA.y+4, angBleu+'°', 13, false)}
-    ${apLabel(lBleuB.x-10, lBleuB.y+4, angBleu+'°', 13, false)}
-    ${apLabel(lVertA.x-14, lVertA.y+4, angVert+'°', 13, false)}
-    ${apLabel(lVertB.x-14, lVertB.y+4, angVert+'°', 13, false)}
+    ${apLabel(lBleuA.x-10, lBleuA.y+4, angBleu+'°', 12, false)}
+    ${apLabel(lBleuB.x-10, lBleuB.y+4, angBleu+'°', 12, false)}
+    ${apLabel(lVertA.x-14, lVertA.y+4, angVert+'°', 12, false)}
+    ${apLabel(lVertB.x-14, lVertB.y+4, angVert+'°', 12, false)}
   </svg>`;
   const note = document.getElementById('ap-altcorrNote');
   if(note) note.textContent = `Les droites (d) et (d') restent parallèles quel que soit l'angle de la sécante : les angles alternes-internes bleus valent toujours ${angBleu}° chacun, et les angles correspondants verts valent toujours ${angVert}° chacun.`;
 }
 
-/* ================= Figure : somme des angles d'un triangle ================= */
+/* ================= Figure : somme des angles d'un triangle (triangle non isocèle, IJ ≠ IK ≠ JK) ================= */
+const AP_TRI_I = {x:150,y:30}, AP_TRI_J = {x:40,y:200}, AP_TRI_K = {x:340,y:200};
 function apBuildTriangleSvg(){
-  const I = {x:190,y:30}, J = {x:40,y:200}, K = {x:340,y:200};
+  const I=AP_TRI_I, J=AP_TRI_J, K=AP_TRI_K;
   const wI = apWedge(I, J, K, 26, '#9E1F5E');
   const wJ = apWedge(J, I, K, 26, '#1F6B3A');
   const wK = apWedge(K, J, I, 26, '#1F3A5C');
@@ -191,6 +190,46 @@ function apBuildTriangleSvg(){
     ${apLabel(K.x+8, K.y+10, 'K')}
   </svg>`;
 }
+
+/* ================= Démonstration pas à pas : somme des angles d'un triangle ================= */
+const AP_TRI_STEPS = [
+  {note:"On trace la droite parallèle à (JK) qui passe par I."},
+  {note:"On repère les angles alternes-internes égaux : à gauche de I, l'angle vert a la même mesure que l'angle IJK ; à droite de I, l'angle bleu a la même mesure que l'angle IKJ."},
+  {note:"Comme la droite tracée est une droite (elle forme un angle plat en I), la somme des trois angles autour de I sur cette droite vaut 180°. Donc IJK + JIK + IKJ = 180°."},
+];
+let apTriIdx = 0;
+function apRenderTriDemo(){
+  const el = document.getElementById('ap-triDemoSvg');
+  if(!el) return;
+  const I=AP_TRI_I, J=AP_TRI_J, K=AP_TRI_K;
+  const L = {x: I.x-140, y: I.y}, M = {x: I.x+140, y: I.y};
+  const wI = apWedge(I, J, K, 26, '#9E1F5E');
+  const wJ = apWedge(J, I, K, 26, '#1F6B3A');
+  const wK = apWedge(K, J, I, 26, '#1F3A5C');
+  let extra = '';
+  if(apTriIdx>=1){
+    extra += `<line x1="${L.x}" y1="${L.y}" x2="${M.x}" y2="${M.y}" stroke="#5B6B78" stroke-width="1.4" stroke-dasharray="5,4"/>`;
+    extra += apLabel(L.x-16, L.y+4, 'L', 12, false) + apLabel(M.x+6, M.y+4, 'M', 12, false);
+  }
+  if(apTriIdx>=2){
+    extra += apWedge(I, L, J, 36, '#1F6B3A', 0.55);
+    extra += apWedge(I, K, M, 36, '#1F3A5C', 0.55);
+  }
+  const svg = `<svg id="ap-tri-svg" viewBox="0 0 380 230" style="width:100%;max-width:360px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <polygon points="${I.x},${I.y} ${J.x},${J.y} ${K.x},${K.y}" fill="none" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${wI}${wJ}${wK}
+    ${extra}
+    ${apLabel(I.x-4, I.y-8, 'I')}
+    ${apLabel(J.x-16, J.y+10, 'J')}
+    ${apLabel(K.x+8, K.y+10, 'K')}
+  </svg>`;
+  el.innerHTML = svg + `<div class="step-note">Étape ${apTriIdx+1} : ${AP_TRI_STEPS[apTriIdx].note}</div>`;
+}
+const apTriDemo = {
+  next(){ if(apTriIdx<AP_TRI_STEPS.length-1) apTriIdx++; apRenderTriDemo(); },
+  reset(){ apTriIdx=0; apRenderTriDemo(); },
+};
+registerGeoStepDemo('ap-tri-svg', { steps:()=>AP_TRI_STEPS, getIdx:()=>apTriIdx, goto:(i)=>{ apTriIdx=i; apRenderTriDemo(); } });
 
 /* ================= COURS ================= */
 document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
@@ -263,7 +302,18 @@ document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
 <div class="def-box">La somme des mesures des angles d'un triangle est égale à 180°.</div>
 <div class="figure-wrap">${apBuildTriangleSvg()}</div>
 <p style="text-align:center;margin:8px 0 12px;"><span class="tex">\\widehat{IJK} + \\widehat{JKI} + \\widehat{KIJ} = 180°</span></p>
-<p class="example-title">Exemple : dans le triangle IJK, <span class="tex">\\widehat{IJK} = 48°</span> et <span class="tex">\\widehat{JKI} = 67°</span>. Quelle est la mesure de l'angle <span class="tex">\\widehat{KIJ}</span> ?</p>
+
+<p class="example-title" style="margin-top:20px;">Démonstration</p>
+<p class="interaction-hint" style="margin:4px 0 8px;">Cliquez sur "Étape suivante" pour dérouler la démonstration (le triangle n'est volontairement pas isocèle).</p>
+<div class="figure-wrap">
+  <div id="ap-triDemoSvg"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="apTriDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="apTriDemo.reset()">Recommencer</button>
+  </div>
+</div>
+
+<p class="example-title" style="margin-top:20px;">Exemple : dans le triangle IJK, <span class="tex">\\widehat{IJK} = 48°</span> et <span class="tex">\\widehat{JKI} = 67°</span>. Quelle est la mesure de l'angle <span class="tex">\\widehat{KIJ}</span> ?</p>
 <p style="margin:4px 0 4px;">On sait que <span class="tex">\\widehat{IJK} + \\widehat{JKI} + \\widehat{KIJ} = 180°</span>.</p>
 <p style="margin:4px 0 12px;">Donc <span class="tex">\\widehat{KIJ} = 180° - (48° + 67°) = 180° - 115° = 65°</span>.</p>
 `;
@@ -329,6 +379,7 @@ DEMO_REGISTRY['Angles et parallélisme'] = {
   cours:'cours-demo-angles-parallelisme-5e', methode:'methode-demo-angles-parallelisme-5e', exos:'exos-demo-angles-parallelisme-5e',
   init:()=>{
     apUpdateAltCorr();
+    apTriDemo.reset();
     apMethodeDemo.reset();
     renderStaticMath(document.getElementById('cours-demo-angles-parallelisme-5e'));
     renderStaticMath(document.getElementById('exos-demo-angles-parallelisme-5e'));
