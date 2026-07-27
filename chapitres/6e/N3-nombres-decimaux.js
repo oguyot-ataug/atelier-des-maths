@@ -24,33 +24,68 @@ function ndGridCentieme(shadedIndex){
   return `<div style="display:flex;flex-direction:column;width:160px;height:160px;border:1.5px solid #1C1B2E;margin:10px auto;">${rows}</div>`;
 }
 
-/* ---- Figure : repérage sur une demi-droite graduée ---- */
+/* ---- Figure interactive : repérage sur une demi-droite graduée (points déplaçables) ---- */
+const ND_LINE_MIN = 0, ND_LINE_MAX = 6, ND_LINE_ORIGIN_X = 30, ND_LINE_UNIT = 70, ND_LINE_Y = 60;
+function ndLineValToX(v){ return ND_LINE_ORIGIN_X + v*ND_LINE_UNIT; }
+function ndLineXToVal(x){ return (x-ND_LINE_ORIGIN_X)/ND_LINE_UNIT; }
+let ndPointP = 1.4, ndPointQ = 4.7;
+
 function ndBuildDemiDroiteSvg(){
-  const originX = 30, unit = 75, y = 60;
+  const lastX = ndLineValToX(ND_LINE_MAX);
+  const arrowX = lastX + 30;
   let ticks = '';
-  for(let v=0;v<=6;v++){
-    const x = originX + v*unit;
-    // graduations intermédiaires (dixièmes) entre ce nombre entier et le suivant
-    if(v<6){
+  for(let v=ND_LINE_MIN;v<=ND_LINE_MAX;v++){
+    const x = ndLineValToX(v);
+    if(v<ND_LINE_MAX){
       for(let k=1;k<10;k++){
-        const xk = originX + (v+k/10)*unit;
-        ticks += `<line x1="${xk}" y1="${y-3}" x2="${xk}" y2="${y+3}" stroke="#1C1B2E" stroke-width="1"/>`;
+        const xk = ndLineValToX(v+k/10);
+        ticks += `<line x1="${xk}" y1="${ND_LINE_Y-3}" x2="${xk}" y2="${ND_LINE_Y+3}" stroke="#1C1B2E" stroke-width="1"/>`;
       }
     }
-    ticks += `<line x1="${x}" y1="${y-6}" x2="${x}" y2="${y+6}" stroke="#1C1B2E" stroke-width="1.3"/>`;
-    ticks += `<text x="${x}" y="${y+24}" font-family="JetBrains Mono" font-size="13" fill="#1C1B2E" text-anchor="middle">${v}</text>`;
+    ticks += `<line x1="${x}" y1="${ND_LINE_Y-6}" x2="${x}" y2="${ND_LINE_Y+6}" stroke="#1C1B2E" stroke-width="1.3"/>`;
+    ticks += `<text x="${x}" y="${ND_LINE_Y+24}" font-family="JetBrains Mono" font-size="13" fill="#1C1B2E" text-anchor="middle">${v}</text>`;
   }
-  // Point P à l'abscisse 1,4  ;  Point Q à l'abscisse 4,7
-  const px = originX + 1.4*unit, qx = originX + 4.7*unit;
-  return `<svg viewBox="0 0 500 110" style="width:100%;max-width:480px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line x1="${originX-10}" y1="${y}" x2="470" y2="${y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <polygon points="470,${y} 460,${y-5} 460,${y+5}" fill="#1C1B2E"/>
+  return `<svg id="svgNdLine" viewBox="0 0 ${arrowX+30} 110" style="width:100%;max-width:480px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="${ND_LINE_ORIGIN_X-15}" y1="${ND_LINE_Y}" x2="${arrowX}" y2="${ND_LINE_Y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <polygon points="${arrowX},${ND_LINE_Y} ${arrowX-10},${ND_LINE_Y-5} ${arrowX-10},${ND_LINE_Y+5}" fill="#1C1B2E"/>
     ${ticks}
-    <circle cx="${px}" cy="${y}" r="4.5" fill="#1F3A5C"/>
-    <text x="${px}" y="${y-14}" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#1F3A5C" text-anchor="middle">P</text>
-    <circle cx="${qx}" cy="${y}" r="4.5" fill="#E35D3A"/>
-    <text x="${qx}" y="${y-14}" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#E35D3A" text-anchor="middle">Q</text>
+    <circle id="ndPointP" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+    <text id="ndLabelP" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#1F3A5C" text-anchor="middle"></text>
+    <circle id="ndPointQ" r="7" fill="#E35D3A" style="cursor:grab;"/>
+    <text id="ndLabelQ" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#E35D3A" text-anchor="middle"></text>
   </svg>`;
+}
+function ndUpdateDemiDroite(){
+  const xP = ndLineValToX(ndPointP), xQ = ndLineValToX(ndPointQ);
+  document.getElementById('ndPointP').setAttribute('cx',xP); document.getElementById('ndPointP').setAttribute('cy',ND_LINE_Y);
+  document.getElementById('ndPointQ').setAttribute('cx',xQ); document.getElementById('ndPointQ').setAttribute('cy',ND_LINE_Y);
+  const lP = document.getElementById('ndLabelP'); lP.setAttribute('x',xP); lP.setAttribute('y',ND_LINE_Y-14); lP.textContent = 'P';
+  const lQ = document.getElementById('ndLabelQ'); lQ.setAttribute('x',xQ); lQ.setAttribute('y',ND_LINE_Y-14); lQ.textContent = 'Q';
+  const note = document.getElementById('ndAbscisseNote');
+  if(note) note.innerHTML = `Point P : abscisse <b>${ndPointP.toFixed(1).replace('.',',')}</b> &nbsp;·&nbsp; Point Q : abscisse <b>${ndPointQ.toFixed(1).replace('.',',')}</b>`;
+}
+function ndResetDemiDroite(){ ndPointP=1.4; ndPointQ=4.7; ndUpdateDemiDroite(); }
+function ndInitDemiDroiteDrag(){
+  ndUpdateDemiDroite();
+  const svgEl = document.getElementById('svgNdLine');
+  let dragging = null;
+  const startP = e=>{dragging='P'; e.preventDefault();};
+  const startQ = e=>{dragging='Q'; e.preventDefault();};
+  const move = e=>{
+    if(!dragging) return;
+    const p = svgPointFromEvent(svgEl,e);
+    let v = ndLineXToVal(p.x);
+    v = Math.round(v*10)/10;
+    v = Math.max(ND_LINE_MIN, Math.min(ND_LINE_MAX, v));
+    if(dragging==='P') ndPointP=v; else ndPointQ=v;
+    ndUpdateDemiDroite();
+  };
+  const end = ()=>dragging=null;
+  const pEl = document.getElementById('ndPointP'), qEl = document.getElementById('ndPointQ');
+  pEl.onmousedown=startP; qEl.onmousedown=startQ;
+  window.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+  pEl.ontouchstart=startP; qEl.ontouchstart=startQ;
+  svgEl.addEventListener('touchmove',move,{passive:false}); svgEl.addEventListener('touchend',end);
 }
 
 document.getElementById('cours-demo-decimaux-6e').innerHTML = `
@@ -119,8 +154,15 @@ ${ndGridCentieme(47)}
 
 <div class="lesson-header"><span class="num">3</span><h3>Repérage sur une demi-droite graduée</h3></div>
 <p class="example-title">Exemple : quelles sont les abscisses des points P et Q ?</p>
-<div class="figure-wrap">${ndBuildDemiDroiteSvg()}</div>
-<p style="margin:10px 0 4px;">Le point P a pour abscisse <span class="tex">1 + \\dfrac{4}{10}</span>, soit 1,4. Le point Q a pour abscisse <span class="tex">4 + \\dfrac{7}{10}</span>, soit 4,7.</p>
+<p class="interaction-hint" style="margin:4px 0 8px;">Déplacez les points P (bleu) et Q (orange) sur la droite graduée pour changer leur abscisse.</p>
+<div class="figure-wrap">
+  ${ndBuildDemiDroiteSvg()}
+  <div class="figure-toolbar" style="justify-content:center;">
+    <button class="btn secondary" onclick="ndResetDemiDroite()">Revenir à l'exemple</button>
+  </div>
+  <p class="hint" id="ndAbscisseNote" style="text-align:center;margin-top:8px;"></p>
+</div>
+<p style="margin:10px 0 4px;">Dans la position de départ, le point P a pour abscisse <span class="tex">1 + \\dfrac{4}{10}</span>, soit 1,4. Le point Q a pour abscisse <span class="tex">4 + \\dfrac{7}{10}</span>, soit 4,7.</p>
 <p style="margin:4px 0 12px;">On note P(1,4) et Q(4,7).</p>
 
 <div class="lesson-header"><span class="num">4</span><h3>Comparaison et rangement</h3></div>
@@ -228,6 +270,7 @@ const ndDecomposerDemo = makeStepDemo(ND_DECOMPOSER_STEPS, 'nd-decomposerDisplay
 DEMO_REGISTRY['Nombres décimaux'] = {
   cours:'cours-demo-decimaux-6e', methode:'methode-demo-decimaux-6e', exos:'exos-demo-decimaux-6e',
   init:()=>{
+    ndInitDemiDroiteDrag();
     ndComparerDemo.reset();
     ndDecomposerDemo.reset();
     renderStaticMath(document.getElementById('cours-demo-decimaux-6e'));
