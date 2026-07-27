@@ -1,0 +1,243 @@
+/* ============================================================
+   CHAPITRE : Nombres décimaux (6e, N3)
+   Fichier autonome -- voir la note dans chapitres/5e/G1-symetrie-centrale.js.
+   ============================================================ */
+
+/* ---- Petites figures de partage en divs (dixièmes / centièmes) ---- */
+function ndGridDixieme(shaded){
+  let cells = '';
+  for(let i=0;i<10;i++){
+    cells += `<div style="flex:1;height:100%;border-right:${i<9?'1px solid rgba(28,43,57,.3)':'none'};background:${i===shaded?'var(--accent)':'transparent'};"></div>`;
+  }
+  return `<div style="display:flex;width:220px;height:70px;border:1.5px solid #1C1B2E;margin:10px auto;">${cells}</div>`;
+}
+function ndGridCentieme(shadedIndex){
+  let rows = '';
+  for(let r=0;r<10;r++){
+    let cells = '';
+    for(let c=0;c<10;c++){
+      const idx = r*10+c;
+      cells += `<div style="flex:1;border:0.5px solid rgba(28,43,57,.25);background:${idx===shadedIndex?'var(--accent)':'transparent'};"></div>`;
+    }
+    rows += `<div style="display:flex;flex:1;">${cells}</div>`;
+  }
+  return `<div style="display:flex;flex-direction:column;width:160px;height:160px;border:1.5px solid #1C1B2E;margin:10px auto;">${rows}</div>`;
+}
+
+/* ---- Figure : repérage sur une demi-droite graduée ---- */
+function ndBuildDemiDroiteSvg(){
+  const originX = 30, unit = 75, y = 60;
+  let ticks = '';
+  for(let v=0;v<=6;v++){
+    const x = originX + v*unit;
+    ticks += `<line x1="${x}" y1="${y-6}" x2="${x}" y2="${y+6}" stroke="#1C1B2E" stroke-width="1.3"/>`;
+    ticks += `<text x="${x}" y="${y+24}" font-family="JetBrains Mono" font-size="13" fill="#1C1B2E" text-anchor="middle">${v}</text>`;
+  }
+  // Point P à l'abscisse 1,4  ;  Point Q à l'abscisse 4,7
+  const px = originX + 1.4*unit, qx = originX + 4.7*unit;
+  return `<svg viewBox="0 0 500 110" style="width:100%;max-width:480px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="${originX-10}" y1="${y}" x2="470" y2="${y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <polygon points="470,${y} 460,${y-5} 460,${y+5}" fill="#1C1B2E"/>
+    ${ticks}
+    <circle cx="${px}" cy="${y}" r="4.5" fill="#1F3A5C"/>
+    <text x="${px}" y="${y-14}" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#1F3A5C" text-anchor="middle">P</text>
+    <circle cx="${qx}" cy="${y}" r="4.5" fill="#E35D3A"/>
+    <text x="${qx}" y="${y-14}" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#E35D3A" text-anchor="middle">Q</text>
+  </svg>`;
+}
+
+document.getElementById('cours-demo-decimaux-6e').innerHTML = `
+<div class="lesson-header"><span class="num">1</span><h3>Sous-multiples de l'unité</h3></div>
+
+<div class="sub-header"><span class="letter">A</span><h4>Les dixièmes</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Quand on coupe une unité en 10 parties égales, on obtient des <b>dixièmes</b>. Un dixième se note <span class="tex">\\dfrac{1}{10}</span>. Dans l'unité, il y a 10 dixièmes, donc <span class="tex">1 = \\dfrac{10}{10}</span>.</div>
+${ndGridDixieme(3)}
+
+<div class="sub-header"><span class="letter">B</span><h4>Les centièmes</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Quand on coupe une unité en 100 parties égales, on obtient des <b>centièmes</b>. Un centième se note <span class="tex">\\dfrac{1}{100}</span>. Dans l'unité, il y a 100 centièmes, donc <span class="tex">1 = \\dfrac{100}{100}</span>.</div>
+${ndGridCentieme(47)}
+
+<div class="sub-header"><span class="letter">C</span><h4>Les millièmes</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Quand on coupe une unité en 1 000 parties égales, on obtient des <b>millièmes</b>. Un millième se note <span class="tex">\\dfrac{1}{1\\,000}</span>. Dans l'unité, il y a 1 000 millièmes, donc <span class="tex">1 = \\dfrac{1\\,000}{1\\,000}</span>.</div>
+<p class="example-title">Exemple :</p>
+<p style="text-align:center;margin:4px 0 12px;"><span class="tex">\\dfrac{8\\,347}{1\\,000} = 8 + \\dfrac{347}{1\\,000} = 8,347</span></p>
+
+<div class="lesson-header"><span class="num">2</span><h3>Décomposition et nom des chiffres</h3></div>
+<span class="def-badge">Définitions</span>
+<div class="def-box">Un nombre pouvant s'écrire sous la forme d'une fraction décimale est un <b>nombre décimal</b>. Il peut aussi se noter en utilisant une virgule : c'est son <b>écriture décimale</b>.</div>
+<p class="example-title">Exemple : on considère le nombre décimal 5 218,647.</p>
+<ul class="example-list">
+  <li><b>a.</b> Écris-le en toutes lettres.</li>
+  <li><b>b.</b> Donnes-en une décomposition.</li>
+  <li><b>c.</b> Donne le nom de chaque chiffre.</li>
+</ul>
+<p class="hint" style="margin:10px 0 6px;">On peut s'aider d'un tableau de classes :</p>
+<div style="overflow-x:auto;">
+<table style="border-collapse:collapse;width:100%;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin:0 0 16px;">
+  <tr>
+    <th colspan="3" style="background:var(--accent);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Classe des mille</th>
+    <th colspan="3" style="background:var(--accent);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Classe des unités</th>
+    <th style="background:var(--accent-orange);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Dixièmes<br><span class="tex">\\dfrac{1}{10}</span></th>
+    <th style="background:var(--accent-orange);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Centièmes<br><span class="tex">\\dfrac{1}{100}</span></th>
+    <th style="background:var(--accent-orange);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Millièmes<br><span class="tex">\\dfrac{1}{1\\,000}</span></th>
+  </tr>
+  <tr>
+    <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">C</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">D</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">U</th>
+    <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">C</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">D</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">U</th>
+    <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(227,93,58,.06);"></th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(227,93,58,.06);"></th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(227,93,58,.06);"></th>
+  </tr>
+  <tr>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">5</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">2</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">1</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">8</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">,</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">6</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">4</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">7</td>
+  </tr>
+</table>
+</div>
+<ul class="example-list">
+  <li><b>a.</b> Ce nombre se lit donc : cinq-mille-deux-cent-dix-huit virgule six-cent-quarante-sept.</li>
+  <li><b>b.</b> Il peut se décomposer ainsi :<br>
+    5 218,647 = (5 × 1 000) + (2 × 100) + (1 × 10) + (8 × 1) + <span class="tex">\\left(6 \\times \\dfrac{1}{10}\\right) + \\left(4 \\times \\dfrac{1}{100}\\right) + \\left(7 \\times \\dfrac{1}{1\\,000}\\right)</span>
+  </li>
+  <li><b>c.</b>
+    5 est le chiffre des unités de mille &nbsp;·&nbsp; 2 est le chiffre des centaines &nbsp;·&nbsp; 1 est le chiffre des dizaines<br>
+    8 est le chiffre des unités &nbsp;·&nbsp; 6 est le chiffre des dixièmes &nbsp;·&nbsp; 4 est le chiffre des centièmes &nbsp;·&nbsp; 7 est le chiffre des millièmes
+  </li>
+</ul>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
+  Remarque : un nombre entier est un nombre décimal particulier. En effet, 12 peut s'écrire avec une virgule (12,0) ou sous la forme d'une fraction décimale <span class="tex">\\left(\\dfrac{120}{10}\\right)</span>.
+</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Repérage sur une demi-droite graduée</h3></div>
+<p class="example-title">Exemple : quelles sont les abscisses des points P et Q ?</p>
+<div class="figure-wrap">${ndBuildDemiDroiteSvg()}</div>
+<p style="margin:10px 0 4px;">Le point P a pour abscisse <span class="tex">1 + \\dfrac{4}{10}</span>, soit 1,4. Le point Q a pour abscisse <span class="tex">4 + \\dfrac{7}{10}</span>, soit 4,7.</p>
+<p style="margin:4px 0 12px;">On note P(1,4) et Q(4,7).</p>
+
+<div class="lesson-header"><span class="num">4</span><h3>Comparaison et rangement</h3></div>
+<div class="sub-header"><span class="letter">A</span><h4>Comparaison de deux nombres décimaux</h4></div>
+<span class="prop-badge">Règle</span>
+<div class="def-box">
+  Pour comparer deux nombres décimaux écrits sous forme décimale :
+  <ul style="margin:8px 0 0;padding-left:20px;line-height:1.8;">
+    <li>on compare les <b>parties entières</b> ;</li>
+    <li>si les parties entières sont égales, alors on compare les <b>chiffres des dixièmes</b> ;</li>
+    <li>si les chiffres des dixièmes sont égaux, alors on compare les <b>chiffres des centièmes</b> ;</li>
+    <li>et ainsi de suite jusqu'à ce que les deux nombres aient des chiffres différents.</li>
+  </ul>
+</div>
+<p class="example-title">Exemple : compare les nombres 46,285 et 46,29.</p>
+<ul class="example-list">
+  <li>On compare d'abord les <b>parties entières</b> des deux nombres : elles sont égales, donc on compare les <b>chiffres des dixièmes</b> ;</li>
+  <li>ils sont égaux, donc on compare les <b>chiffres des centièmes</b> ;</li>
+  <li>8 &lt; 9 donc 46,285 &lt; 46,29.</li>
+</ul>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
+  Remarque : quand les parties entières sont égales, on peut comparer les parties décimales en millièmes. <span class="tex">46,285 = 46 + \\dfrac{285}{1\\,000}</span> et <span class="tex">46,29 = 46 + \\dfrac{290}{1\\,000}</span>. Or, 290 millièmes est plus grand que 285 millièmes, donc 46,29 &gt; 46,285.
+</div>
+
+<div class="sub-header" style="margin-top:16px;"><span class="letter">B</span><h4>Rangement de nombres décimaux</h4></div>
+<p class="example-title">Exemple : range les nombres 12,6 ; 126,4 ; 12,64 ; 12,46 dans l'ordre croissant.</p>
+<p style="margin:4px 0 4px;">On repère le plus petit, puis le plus petit des nombres qui restent, et ainsi de suite.</p>
+<p style="margin:4px 0 12px;">On obtient donc : 12,46 &lt; 12,6 &lt; 12,64 &lt; 126,4.</p>
+`;
+
+document.getElementById('methode-demo-decimaux-6e').innerHTML = `
+<div class="figure-wrap">
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : comparer deux nombres décimaux</strong>
+  <p class="interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="step-display" id="nd-comparerDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="ndComparerDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ndComparerDemo.reset()">Recommencer</button>
+  </div>
+</div>
+<div class="figure-wrap" style="margin-top:20px;">
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : décomposer un nombre décimal</strong>
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="step-display" id="nd-decomposerDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="ndDecomposerDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ndDecomposerDemo.reset()">Recommencer</button>
+  </div>
+</div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
+  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).
+</div>
+`;
+
+document.getElementById('exos-demo-decimaux-6e').innerHTML = `
+<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
+<div class="redaction-block">
+  <h3>Rédaction type : « Comparer deux nombres décimaux »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">On compare les parties entières de 9,42 et 9,4 : elles sont égales.</span><span class="we-comment">Ce que je sais.</span></div>
+    <div class="we-row"><span class="we-expr">Or, 9,4 = 9,40, donc on compare les chiffres des dixièmes (4 = 4), puis des centièmes (2 &gt; 0).</span><span class="we-comment">On énonce la règle et on l'applique.</span></div>
+    <div class="we-row"><span class="we-expr">Donc 9,42 &gt; 9,4.</span><span class="we-comment">Conclusion.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Écris en toutes lettres le nombre 3 067,452, puis donnes-en une décomposition.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Compare les nombres 58,371 et 58,38. Rédige ta réponse.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Range dans l'ordre décroissant : 7,05 ; 7,5 ; 70,5 ; 7,505.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Sur une demi-droite graduée, place les points R(2,3) et S(0,8).
+  </div>
+</div>
+`;
+
+/* ---- Méthode : comparer deux nombres décimaux ---- */
+const ND_COMPARER_STEPS = [
+  {expr:'Compare 34,158 et 34,16.', note:"On part des deux nombres à comparer."},
+  {expr:'On compare les parties entières : 34 = 34.', note:"Elles sont égales, donc on continue avec les dixièmes."},
+  {expr:'On compare les chiffres des dixièmes : 1 = 1.', note:"Ils sont égaux, donc on continue avec les centièmes."},
+  {expr:'On compare les chiffres des centièmes : 5 < 6.', note:"Ils sont différents : on peut conclure."},
+  {expr:'Donc 34,158 < 34,16.', note:"Conclusion."},
+];
+const ndComparerDemo = makeStepDemo(ND_COMPARER_STEPS, 'nd-comparerDisplay');
+
+/* ---- Méthode : décomposer un nombre décimal ---- */
+const ND_DECOMPOSER_STEPS = [
+  {expr:'Décompose le nombre 47,206.', note:"On repère chaque chiffre et sa position."},
+  {expr:'4 est le chiffre des dizaines, 7 celui des unités.', note:"Partie entière."},
+  {expr:'2 est le chiffre des dixièmes, 0 celui des centièmes, 6 celui des millièmes.', note:"Partie décimale."},
+  {expr:'47,206 = (4 × 10) + (7 × 1) + (2 × 0,1) + (0 × 0,01) + (6 × 0,001)', note:"Décomposition complète."},
+];
+const ndDecomposerDemo = makeStepDemo(ND_DECOMPOSER_STEPS, 'nd-decomposerDisplay');
+
+DEMO_REGISTRY['Nombres décimaux'] = {
+  cours:'cours-demo-decimaux-6e', methode:'methode-demo-decimaux-6e', exos:'exos-demo-decimaux-6e',
+  init:()=>{
+    ndComparerDemo.reset();
+    ndDecomposerDemo.reset();
+    renderStaticMath(document.getElementById('cours-demo-decimaux-6e'));
+    renderStaticMath(document.getElementById('exos-demo-decimaux-6e'));
+    injectCourseAddButtons(document.getElementById('cours-demo-decimaux-6e'));
+  }
+};
+
+DEMO_QUIZZES['Nombres décimaux'] = [
+  {q:"Un dixième se note...",
+   opts:["1/10","1/100","1/1000"], correct:0},
+  {q:"Combien y a-t-il de centièmes dans une unité ?",
+   opts:["10","100","1000"], correct:1},
+  {q:"Pour comparer deux nombres décimaux, on compare d'abord...",
+   opts:["Les chiffres des dixièmes","Les parties entières","Le nombre de chiffres"], correct:1},
+  {q:"12 peut s'écrire sous la forme décimale...",
+   opts:["12,0","120,0","1,20"], correct:0},
+  {q:"Lequel de ces nombres est le plus grand ?",
+   opts:["6,08","6,2","6,099"], correct:1},
+];
