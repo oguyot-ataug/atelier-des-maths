@@ -2901,6 +2901,33 @@ async function expandStepDemosInClone(wrapper){
       console.error(`Cahier/PDF : erreur lors de la reconstitution des étapes pour #${cloneSvg.id}`, e);
     }
   }
+  // Toute autre figure SVG interactive (point/triangle/segment/cercle/polygone déplaçables,
+  // etc.) n'est pas une construction pas-à-pas, mais reste un SVG mis à jour dynamiquement en
+  // JS -- donc tout aussi mal gérée par html2canvas. On la rastérise également en image, à la
+  // taille d'affichage réelle qu'elle a en direct (celle du clone, détaché du DOM, est inconnue).
+  const remainingSvgs = Array.from(wrapper.querySelectorAll('svg[id]'));
+  for(const cloneSvg of remainingSvgs){
+    try{
+      const liveSvg = document.getElementById(cloneSvg.id);
+      let displayWidth = 400;
+      if(liveSvg){
+        const rect = liveSvg.getBoundingClientRect();
+        if(rect.width > 20) displayWidth = rect.width;
+      }
+      const dataUri = await svgToRasterDataUri(cloneSvg, displayWidth);
+      if(dataUri){
+        const img = document.createElement('img');
+        img.src = dataUri;
+        img.style.cssText = 'width:100%;max-width:'+Math.round(displayWidth)+'px;height:auto;display:block;margin:0 auto;';
+        img.alt = 'Figure';
+        cloneSvg.replaceWith(img);
+      } else {
+        console.warn(`Cahier/PDF : rastérisation impossible pour #${cloneSvg.id}, figure conservée telle quelle.`);
+      }
+    } catch(e){
+      console.error(`Cahier/PDF : erreur lors de la rastérisation de #${cloneSvg.id}`, e);
+    }
+  }
 }
 async function addSectionToCahier(headerEl){
   const isLesson = headerEl.classList.contains('lesson-header');
