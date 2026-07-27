@@ -252,6 +252,92 @@ function apBuildMethodeAlignementSvg(){
 }
 
 /* ================= Figure : méthode "somme des angles d'un triangle" ================= */
+function apParallelTick(x,y){
+  return `<path d="M ${x-6} ${y-6} L ${x+5} ${y} L ${x-6} ${y+6}" fill="none" stroke="#1C1B2E" stroke-width="1.6"/>`;
+}
+
+/* ================= Figure : méthode "angles correspondants -> parallélisme" ================= */
+function apBuildMethodeCorrespParallelSvg(){
+  const B = AP_A, C = AP_B;
+  const E = AP_STOP, A = AP_DRIGHT, D = AP_DPRIGHT;
+  const wB = apWedge(B, E, A, 34, '#1F6B3A');
+  const wC = apWedge(C, E, D, 34, '#1F6B3A');
+  const midB = angleArcPoints(B, E, A, 52).mid;
+  const midC = angleArcPoints(C, E, D, 52).mid;
+  const labB = {x:B.x+52*Math.cos(midB), y:B.y+52*Math.sin(midB)};
+  const labC = {x:C.x+52*Math.cos(midC), y:C.y+52*Math.sin(midC)};
+  return `<svg viewBox="0 0 460 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${wB}${wC}
+    <circle cx="${B.x}" cy="${B.y}" r="2.6" fill="#1C1B2E"/>
+    <circle cx="${C.x}" cy="${C.y}" r="2.6" fill="#1C1B2E"/>
+    ${apLabel(E.x+6, E.y+14, 'E')}
+    ${apLabel(B.x+8, B.y-8, 'B')}
+    ${apLabel(C.x-16, C.y+18, 'C')}
+    ${apLabel(A.x-16, A.y-8, 'A')}
+    ${apLabel(D.x-18, D.y+18, 'D')}
+    ${apLabel(labB.x-14, labB.y+4, '127°', 12, false)}
+    ${apLabel(labC.x-14, labC.y+4, '127°', 12, false)}
+  </svg>`;
+}
+
+/* ================= Figure : méthode "égalité par correspondants" (droites déjà parallèles) ================= */
+function apBuildMethodeCorrespEgaliteSvg(){
+  const B = AP_A, C = AP_B;
+  const E = AP_STOP, A = AP_DRIGHT, D = AP_DPRIGHT;
+  const wB = apWedge(B, E, A, 34, '#1F6B3A');
+  const wC = apWedge(C, E, D, 34, '#1F6B3A');
+  const midB = angleArcPoints(B, E, A, 52).mid;
+  const midC = angleArcPoints(C, E, D, 52).mid;
+  const labB = {x:B.x+52*Math.cos(midB), y:B.y+52*Math.sin(midB)};
+  const labC = {x:C.x+52*Math.cos(midC), y:C.y+52*Math.sin(midC)};
+  return `<svg viewBox="0 0 460 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${apParallelTick(230,90)}${apParallelTick(230,190)}
+    ${wB}${wC}
+    <circle cx="${B.x}" cy="${B.y}" r="2.6" fill="#1C1B2E"/>
+    <circle cx="${C.x}" cy="${C.y}" r="2.6" fill="#1C1B2E"/>
+    ${apLabel(E.x+6, E.y+14, 'E')}
+    ${apLabel(B.x+8, B.y-8, 'B')}
+    ${apLabel(C.x-16, C.y+18, 'C')}
+    ${apLabel(A.x-16, A.y-8, 'A')}
+    ${apLabel(D.x-18, D.y+18, 'D')}
+    ${apLabel(labB.x-14, labB.y+4, '127°', 12, false)}
+    ${apLabel(labC.x-14, labC.y+4, '?', 12, false)}
+  </svg>`;
+}
+
+/* ================= Figure : méthode "égalité par alternes-internes" (droites déjà parallèles) ================= */
+function apBuildMethodeAltEgaliteSvg(){
+  const B = AP_A, C = AP_B;
+  const A = AP_DRIGHT, D = AP_DPLEFT;
+  const wB = apWedge(B, A, AP_SBOT, 34, '#1F3A5C');
+  const wC = apWedge(C, AP_STOP, D, 34, '#1F3A5C');
+  const midB = angleArcPoints(B, A, AP_SBOT, 50).mid;
+  const midC = angleArcPoints(C, AP_STOP, D, 50).mid;
+  const labB = {x:B.x+50*Math.cos(midB), y:B.y+50*Math.sin(midB)};
+  const labC = {x:C.x+50*Math.cos(midC), y:C.y+50*Math.sin(midC)};
+  return `<svg viewBox="0 0 460 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${apParallelTick(230,90)}${apParallelTick(230,190)}
+    ${wB}${wC}
+    <circle cx="${B.x}" cy="${B.y}" r="2.6" fill="#1C1B2E"/>
+    <circle cx="${C.x}" cy="${C.y}" r="2.6" fill="#1C1B2E"/>
+    ${apLabel(A.x-16, A.y-8, 'A')}
+    ${apLabel(B.x+8, B.y-8, 'B')}
+    ${apLabel(C.x-16, C.y+18, 'C')}
+    ${apLabel(D.x+6, D.y+18, 'D')}
+    ${apLabel(labB.x-14, labB.y+4, '53°', 12, false)}
+    ${apLabel(labC.x-10, labC.y+4, '?', 12, false)}
+  </svg>`;
+}
+
 function apBuildMethodeTriangleSvg(){
   const R={x:150,y:30}, S={x:40,y:200}, T={x:340,y:200};
   const wR = apWedge(R, S, T, 26, '#9E1F5E');
@@ -270,6 +356,33 @@ function apBuildMethodeTriangleSvg(){
     ${apLabel(labS.x-14, labS.y+4, '54°', 12, false)}
     ${apLabel(labT.x-6, labT.y+4, '71°', 12, false)}
     ${apLabel(R.x-6, R.y+30, '?', 12, false)}
+  </svg>`;
+}
+
+/* ================= Figure : méthode "angles correspondants" (M,N,K,L,P) ================= */
+function apBuildMethodeCorrespondantsSvg(){
+  const M = AP_A, N = AP_B;
+  const K = AP_DRIGHT, P = AP_DPRIGHT, L = AP_STOP;
+  const wM = apWedge(M, K, L, 34, '#1F6B3A');
+  const wN = apWedge(N, M, P, 34, '#1F6B3A');
+  const midM = angleArcPoints(M, K, L, 50).mid;
+  const midN = angleArcPoints(N, M, P, 50).mid;
+  const labM = {x: M.x+50*Math.cos(midM), y: M.y+50*Math.sin(midM)};
+  const labN = {x: N.x+50*Math.cos(midN), y: N.y+50*Math.sin(midN)};
+  return `<svg viewBox="0 0 460 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${wM}${wN}
+    <circle cx="${M.x}" cy="${M.y}" r="2.6" fill="#1C1B2E"/>
+    <circle cx="${N.x}" cy="${N.y}" r="2.6" fill="#1C1B2E"/>
+    ${apLabel(L.x+6, L.y+14, 'L', 12, false)}
+    ${apLabel(K.x-16, K.y-8, 'K')}
+    ${apLabel(M.x+8, M.y-8, 'M')}
+    ${apLabel(N.x-16, N.y+18, 'N')}
+    ${apLabel(P.x-18, P.y+18, 'P')}
+    ${apLabel(labM.x-10, labM.y+4, '58°', 12, false)}
+    ${apLabel(labN.x-10, labN.y+4, '58°', 12, false)}
   </svg>`;
 }
 
@@ -465,6 +578,39 @@ document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
     <button class="btn secondary" onclick="apMethodeTriangleDemo.reset()">Recommencer</button>
   </div>
 </div>
+
+<div class="figure-wrap" style="margin-top:24px;">
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 5 : justifier que deux droites sont parallèles à l'aide d'angles correspondants</strong>
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="figure-wrap">${apBuildMethodeCorrespondantsSvg()}</div>
+  <div class="step-display" id="ap-methodeCorrDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="apMethodeCorrDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="apMethodeCorrDemo.reset()">Recommencer</button>
+  </div>
+</div>
+
+<div class="figure-wrap" style="margin-top:24px;">
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 6 : deux droites parallèles et une sécante, cas des angles correspondants</strong>
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="figure-wrap">${apBuildMethodeCorrespondantsSvg()}</div>
+  <div class="step-display" id="ap-methodeCorrDirectDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="apMethodeCorrDirectDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="apMethodeCorrDirectDemo.reset()">Recommencer</button>
+  </div>
+</div>
+
+<div class="figure-wrap" style="margin-top:24px;">
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 7 : deux droites parallèles et une sécante, cas des angles alternes-internes</strong>
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="figure-wrap">${apBuildMethodeAltSvg()}</div>
+  <div class="step-display" id="ap-methodeAltDirectDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="apMethodeAltDirectDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="apMethodeAltDirectDemo.reset()">Recommencer</button>
+  </div>
+</div>
 `;
 
 /* ================= EXOS ================= */
@@ -532,6 +678,31 @@ const AP_METHODE_TRIANGLE_STEPS = [
 ];
 const apMethodeTriangleDemo = makeStepDemo(AP_METHODE_TRIANGLE_STEPS, 'ap-methodeTriangleDisplay');
 
+const AP_METHODE_CORR_STEPS = [
+  {expr:'Les droites (MK) et (NP) sont coupées par la sécante (MN).', note:"Ce que je sais : on repère les deux droites concernées et la sécante qui les coupe."},
+  {expr:'Les angles <span class="tex">\\widehat{KML}</span> et <span class="tex">\\widehat{MNP}</span> sont correspondants.', note:"On identifie les deux angles correspondants déterminés par cette configuration."},
+  {expr:'De plus, <span class="tex">\\widehat{KML} = \\widehat{MNP} = 58°</span>.', note:"On relève que ces deux angles ont la même mesure (donnée dans l'énoncé ou par codage sur la figure)."},
+  {expr:'<span style="color:var(--accent-orange);font-weight:700;">Or,</span> si deux angles correspondants ont la même mesure, alors les deux droites coupées par la sécante sont parallèles.', note:"On énonce la propriété qui va permettre de conclure."},
+  {expr:'<span style="color:var(--accent);font-weight:700;">Donc</span> les droites (MK) et (NP) sont parallèles.', note:"Conclusion, en appliquant la propriété énoncée juste avant."},
+];
+const apMethodeCorrDemo = makeStepDemo(AP_METHODE_CORR_STEPS, 'ap-methodeCorrDisplay');
+
+const AP_METHODE_CORR_DIRECT_STEPS = [
+  {expr:'Les droites (MK) et (NP) sont parallèles, coupées par la sécante (MN).', note:"Ce que je sais."},
+  {expr:'Les angles <span class="tex">\\widehat{KML}</span> et <span class="tex">\\widehat{MNP}</span> sont correspondants.', note:"On identifie la configuration."},
+  {expr:'<span style="color:var(--accent-orange);font-weight:700;">Or,</span> si deux angles correspondants sont déterminés par des droites parallèles, alors ils ont la même mesure.', note:"On énonce la propriété."},
+  {expr:'<span style="color:var(--accent);font-weight:700;">Donc</span>, comme <span class="tex">\\widehat{KML} = 58°</span>, on a <span class="tex">\\widehat{MNP} = 58°</span>.', note:"Conclusion."},
+];
+const apMethodeCorrDirectDemo = makeStepDemo(AP_METHODE_CORR_DIRECT_STEPS, 'ap-methodeCorrDirectDisplay');
+
+const AP_METHODE_ALT_DIRECT_STEPS = [
+  {expr:'Les droites (AB) et (CD) sont parallèles, coupées par la sécante (BC).', note:"Ce que je sais."},
+  {expr:'Les angles <span class="tex">\\widehat{ABC}</span> et <span class="tex">\\widehat{BCD}</span> sont alternes-internes.', note:"On identifie la configuration."},
+  {expr:'<span style="color:var(--accent-orange);font-weight:700;">Or,</span> si deux angles alternes-internes sont déterminés par des droites parallèles, alors ils ont la même mesure.', note:"On énonce la propriété."},
+  {expr:'<span style="color:var(--accent);font-weight:700;">Donc</span>, comme <span class="tex">\\widehat{ABC} = 55°</span>, on a <span class="tex">\\widehat{BCD} = 55°</span>.', note:"Conclusion."},
+];
+const apMethodeAltDirectDemo = makeStepDemo(AP_METHODE_ALT_DIRECT_STEPS, 'ap-methodeAltDirectDisplay');
+
 DEMO_REGISTRY['Angles et parallélisme'] = {
   cours:'cours-demo-angles-parallelisme-5e', methode:'methode-demo-angles-parallelisme-5e', exos:'exos-demo-angles-parallelisme-5e',
   init:()=>{
@@ -541,6 +712,9 @@ DEMO_REGISTRY['Angles et parallélisme'] = {
     apMethodeOpposesDemo.reset();
     apMethodeAlignementDemo.reset();
     apMethodeTriangleDemo.reset();
+    apMethodeCorrDemo.reset();
+    apMethodeCorrDirectDemo.reset();
+    apMethodeAltDirectDemo.reset();
     renderStaticMath(document.getElementById('cours-demo-angles-parallelisme-5e'));
     renderStaticMath(document.getElementById('exos-demo-angles-parallelisme-5e'));
     injectCourseAddButtons(document.getElementById('cours-demo-angles-parallelisme-5e'));
