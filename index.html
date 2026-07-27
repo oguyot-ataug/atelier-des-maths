@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-27.6</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-27.7</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -273,6 +273,9 @@
     <div id="cours-demo-fractions-partage" style="display:none;">
     </div>
 
+    <div id="cours-demo-angles-rapporteur-6e" style="display:none;">
+    </div>
+
     <div id="cours-demo-decimaux-6e" style="display:none;">
     </div>
 
@@ -317,6 +320,8 @@
     </div>
     <div id="methode-demo-fractions-partage" style="display:none;">
     </div>
+    <div id="methode-demo-angles-rapporteur-6e" style="display:none;">
+    </div>
     <div id="methode-demo-decimaux-6e" style="display:none;">
     </div>
     <div id="methode-demo-distance-cercles" style="display:none;">
@@ -351,6 +356,8 @@
     <div id="exos-demo-droites-paralleles" style="display:none;">
     </div>
     <div id="exos-demo-fractions-partage" style="display:none;">
+    </div>
+    <div id="exos-demo-angles-rapporteur-6e" style="display:none;">
     </div>
     <div id="exos-demo-decimaux-6e" style="display:none;">
     </div>
@@ -2207,6 +2214,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-27.7', items:[
+    "Nouveau chapitre 6e : Angles et rapporteur (notion d'angle, types d'angles, utilisation du rapporteur avec deux exercices interactifs utilisant une vraie image de rapporteur translucide, paires d'angles particuliers, bissectrice).",
+  ]},
   { version:'2026-07-27.6', items:[
     "Ajout d'un écran « Signalements (bugs / améliorations) » dans Administration : liste tous les signalements envoyés, avec possibilité de changer leur statut (nouveau / en cours / résolu) directement dans l'appli, sans passer par Supabase.",
   ]},
@@ -3255,6 +3265,7 @@ renderNiveau('6e');
 <script src="chapitres/6e/N1-nombres-entiers.js"></script>
 <script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js"></script>
 <script src="chapitres/6e/N2-fractions-nombres-partage.js"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js"></script>
 <script src="chapitres/6e/N3-nombres-decimaux.js"></script>
 <script src="chapitres/6e/G1-distance-et-cercles.js"></script>
 <script src="chapitres/5e/N4-fractions.js"></script>
