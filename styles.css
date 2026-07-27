@@ -387,3 +387,9 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px;}
   .mini-links{grid-template-columns:1fr;}
   .nav-links button{padding:8px 9px;font-size:.82rem;}
 }
+
+/* KaTeX applique par défaut font:1.21em à sa classe racine .katex (voir katex.css),
+   ce qui fait apparaître toutes les formules ~21% plus grandes que le texte
+   environnant. On neutralise ce facteur pour aligner la taille des formules
+   (fractions, \widehat, etc.) sur celle du texte courant. */
+.katex { font-size: 0.83em; }

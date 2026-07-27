@@ -39,7 +39,7 @@ function apBuildOpposesSvg(){
 /* ================= Figure B : angles adjacents ================= */
 function apBuildAdjacentsSvg(){
   const O = {x:190, y:190};
-  const I = apPt(O,-150,110), J = apPt(O,-90,110), K = apPt(O,-40,110);
+  const I = apPt(O,-160,110), J = apPt(O,-90,110), K = apPt(O,-50,110);
   const w1 = apWedge(O, I, J, 34, '#1F3A5C');
   const w2 = apWedge(O, J, K, 34, '#1F6B3A');
   return `<svg viewBox="0 0 320 220" style="width:100%;max-width:300px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
