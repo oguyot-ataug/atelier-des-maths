@@ -49,16 +49,17 @@ function ndBuildDemiDroiteSvg(){
     <line x1="${ND_LINE_ORIGIN_X-15}" y1="${ND_LINE_Y}" x2="${arrowX}" y2="${ND_LINE_Y}" stroke="#1C1B2E" stroke-width="1.6"/>
     <polygon points="${arrowX},${ND_LINE_Y} ${arrowX-10},${ND_LINE_Y-5} ${arrowX-10},${ND_LINE_Y+5}" fill="#1C1B2E"/>
     ${ticks}
-    <circle id="ndPointP" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+    <line id="ndPointP" x1="0" y1="${ND_LINE_Y-11}" x2="0" y2="${ND_LINE_Y+11}" stroke="#1F3A5C" stroke-width="3" style="cursor:grab;"/>
     <text id="ndLabelP" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#1F3A5C" text-anchor="middle"></text>
-    <circle id="ndPointQ" r="7" fill="#E35D3A" style="cursor:grab;"/>
+    <line id="ndPointQ" x1="0" y1="${ND_LINE_Y-11}" x2="0" y2="${ND_LINE_Y+11}" stroke="#E35D3A" stroke-width="3" style="cursor:grab;"/>
     <text id="ndLabelQ" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#E35D3A" text-anchor="middle"></text>
   </svg>`;
 }
 function ndUpdateDemiDroite(){
   const xP = ndLineValToX(ndPointP), xQ = ndLineValToX(ndPointQ);
-  document.getElementById('ndPointP').setAttribute('cx',xP); document.getElementById('ndPointP').setAttribute('cy',ND_LINE_Y);
-  document.getElementById('ndPointQ').setAttribute('cx',xQ); document.getElementById('ndPointQ').setAttribute('cy',ND_LINE_Y);
+  const pEl2 = document.getElementById('ndPointP'), qEl2 = document.getElementById('ndPointQ');
+  pEl2.setAttribute('x1',xP); pEl2.setAttribute('x2',xP);
+  qEl2.setAttribute('x1',xQ); qEl2.setAttribute('x2',xQ);
   const lP = document.getElementById('ndLabelP'); lP.setAttribute('x',xP); lP.setAttribute('y',ND_LINE_Y-14); lP.textContent = 'P';
   const lQ = document.getElementById('ndLabelQ'); lQ.setAttribute('x',xQ); lQ.setAttribute('y',ND_LINE_Y-14); lQ.textContent = 'Q';
   const note = document.getElementById('ndAbscisseNote');
