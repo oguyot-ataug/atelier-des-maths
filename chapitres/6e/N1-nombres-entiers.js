@@ -119,39 +119,6 @@ document.getElementById('cours-demo-nombres-entiers').innerHTML = `
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
   Remarque : à la fin, on retrouve l'égalité <b>823 = (14 × 58) + 11</b>, avec 11 &lt; 14.
 </div>
-
-<div class="lesson-header"><span class="num">4</span><h3>Multiples et diviseurs d'un nombre entier</h3></div>
-
-<div class="sub-header"><span class="letter">A</span><h4>Multiples et diviseurs d'un nombre entier</h4></div>
-<span class="def-badge">Définitions</span>
-<div class="def-box">
-  Soient a et b deux nombres entiers.
-  <ul style="margin:8px 0 0;padding-left:20px;line-height:1.8;">
-    <li>a est un <b>multiple</b> de b si a est le produit de b par un nombre entier ;</li>
-    <li>b est alors un <b>diviseur</b> de a.</li>
-  </ul>
-</div>
-<p class="example-title">Exemple : soit l'égalité 4 216 = 68 × 62. Fais une phrase avec les mots multiple et diviseur.</p>
-<ul class="example-list">
-  <li>4 216 est un <b>multiple</b> de 68. (Et de 62 aussi !)</li>
-  <li>68 est un <b>diviseur</b> de 4 216. On dit aussi « 4 216 est divisible par 68 » ou « 68 divise 4 216 ».</li>
-</ul>
-
-<div class="sub-header"><span class="letter">B</span><h4>Critères de divisibilité</h4></div>
-<span class="prop-badge">Règles</span>
-<div class="def-box">
-  <ul style="margin:0;padding-left:20px;line-height:1.8;">
-    <li>Un nombre entier est <b>divisible par 2</b> (pair) si son chiffre des unités est 0, 2, 4, 6 ou 8.</li>
-    <li>Un nombre entier est <b>divisible par 5</b> si son chiffre des unités est 0 ou 5.</li>
-    <li>Un nombre entier est <b>divisible par 10</b> si son chiffre des unités est 0.</li>
-  </ul>
-</div>
-<p class="example-title">Exemple : on considère le nombre 92 815. Est-il divisible par 2, par 5 et par 10 ?</p>
-<ul class="example-list">
-  <li>Son chiffre des unités est 5, donc 92 815 <b>n'est pas divisible par 2</b>.</li>
-  <li>Son chiffre des unités est 5, donc 92 815 est <b>divisible par 5</b>.</li>
-  <li>Son chiffre des unités n'est pas 0, donc 92 815 <b>n'est pas divisible par 10</b>.</li>
-</ul>
 `;
 
 document.getElementById('methode-demo-nombres-entiers').innerHTML = `
@@ -162,15 +129,6 @@ document.getElementById('methode-demo-nombres-entiers').innerHTML = `
   <div class="figure-toolbar">
     <button class="btn" onclick="neChiffreNombreDemo.next()">Étape suivante →</button>
     <button class="btn secondary" onclick="neChiffreNombreDemo.reset()">Recommencer</button>
-  </div>
-</div>
-<div class="figure-wrap">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Trouver les premiers multiples d'un nombre : 7</strong>
-  <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
-  <div class="step-display" id="ne-multiplesDisplay"></div>
-  <div class="figure-toolbar">
-    <button class="btn" onclick="neMultiplesDemo.next()">Étape suivante →</button>
-    <button class="btn secondary" onclick="neMultiplesDemo.reset()">Recommencer</button>
   </div>
 </div>
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
@@ -186,12 +144,6 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
     <div class="we-row"><span class="we-expr">1 205 067</span><span class="we-comment">On repère les tranches de trois chiffres en partant de la droite.</span></div>
     <div class="we-row"><span class="we-expr">= (1×1 000 000) + (2×100 000) + (0×10 000) + (5×1 000) + (0×100) + (6×10) + (7×1)</span><span class="we-comment">On décompose selon la valeur de chaque chiffre.</span></div>
   </div>
-  <h3 style="margin-top:18px;">Rédaction type : « Justifier qu'un nombre est un multiple d'un autre »</h3>
-  <div class="redaction-template">
-    <div class="we-row"><span class="we-expr">On considère 96 et 8.</span><span class="we-comment"></span></div>
-    <div class="we-row"><span class="we-expr">96 = 8 × 12</span><span class="we-comment">96 est bien le produit de 8 par un nombre entier.</span></div>
-    <div class="we-row"><span class="we-expr">Donc 96 est un multiple de 8, et 8 est un diviseur de 96.</span><span class="we-comment"></span></div>
-  </div>
 </div>
 <div class="redaction-block">
   <h3>Exercices</h3>
@@ -202,10 +154,6 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Pose la division euclidienne de 946 par 15, puis vérifie ton résultat avec l'égalité dividende = (diviseur × quotient) + reste.
-  </div>
-  <div class="exo-card">
-    <div class="num">Exercice 3</div>
-    En utilisant les critères de divisibilité, dis si 63 480 est divisible par 2, par 5 et par 10.
   </div>
 </div>
 `;
@@ -239,19 +187,6 @@ function neRenderDivisionPosee(){
 function neDivisionPoseeNext(){ if(neDivisionPoseeIdx<NE_DIVISION_POSEE_STEPS.length-1) neDivisionPoseeIdx++; neRenderDivisionPosee(); }
 function neDivisionPoseeReset(){ neDivisionPoseeIdx=0; neRenderDivisionPosee(); }
 
-/* ---- Méthode : premiers multiples de 7 ---- */
-const NE_MULTIPLES_STEPS = [
-  {expr:'Multiples de 7 ?', note:"On multiplie 7 par 0, puis 1, puis 2... dans l'ordre."},
-  {expr:'7 × 0 = 0', note:'0 est un multiple de tout nombre entier.'},
-  {expr:'7 × 1 = 7', note:'7 est un multiple de 7 (comme tout nombre est multiple de lui-même).'},
-  {expr:'7 × 2 = 14', note:'…'},
-  {expr:'7 × 3 = 21', note:'…'},
-  {expr:'7 × 4 = 28', note:'…'},
-  {expr:'7 × 5 = 35', note:'…'},
-  {expr:'0 — 7 — 14 — 21 — 28 — 35 — …', note:'On continue ainsi indéfiniment : il existe une infinité de multiples de 7.'},
-];
-const neMultiplesDemo = makeStepDemo(NE_MULTIPLES_STEPS, 'ne-multiplesDisplay');
-
 /* ---- Méthode : chiffre des... vs nombre de... ---- */
 const NE_CHIFFRE_NOMBRE_STEPS = [
   {expr:'2 384 907 156', note:'On reprend le nombre étudié en cours.'},
@@ -262,13 +197,13 @@ const NE_CHIFFRE_NOMBRE_STEPS = [
 const neChiffreNombreDemo = makeStepDemo(NE_CHIFFRE_NOMBRE_STEPS, 'ne-chiffreNombreDisplay');
 
 DEMO_REGISTRY['Nombres entiers'] = { cours:'cours-demo-nombres-entiers', methode:'methode-demo-nombres-entiers', exos:'exos-demo-nombres-entiers',
-  init:()=>{ neDivisionPoseeReset(); neMultiplesDemo.reset(); neChiffreNombreDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-nombres-entiers')); } };
+  init:()=>{ neDivisionPoseeReset(); neChiffreNombreDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-nombres-entiers')); } };
 
 DEMO_QUIZZES['Nombres entiers'] = [
   {q:"Comment s'appelle le résultat d'une multiplication ?",
    opts:["La différence","Le produit","Le quotient"], correct:1},
-  {q:"96 = 8 × 12. Que peut-on dire de 96 par rapport à 8 ?",
-   opts:["96 est un diviseur de 8","96 est un multiple de 8","96 n'a aucun lien avec 8"], correct:1},
-  {q:"52 340 est-il divisible par 5 ?",
-   opts:["Oui (chiffre des unités 0)","Non","On ne peut pas savoir"], correct:0},
+  {q:"Dans la division euclidienne 823 = (14 × 58) + 11, comment s'appelle le nombre 11 ?",
+   opts:["Le quotient","Le reste","Le diviseur"], correct:1},
+  {q:"Dans le nombre 2 384 907 156, quel est le chiffre des centaines de mille ?",
+   opts:["9","23 849","7"], correct:0},
 ];
