@@ -56,7 +56,7 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
 
 document.getElementById('methode-demo-fractions-partage').innerHTML = `
 <div class="figure-wrap">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : calculer un pourcentage</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode : calculer un pourcentage</h4></div>
   <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="fp-methodeDisplay"></div>
   <div class="figure-toolbar">
@@ -130,7 +130,7 @@ const FP_METHODE_STEPS = [
 const fpMethodeDemo = makeStepDemo(FP_METHODE_STEPS, 'fp-methodeDisplay');
 
 DEMO_REGISTRY['Fractions : nombres et partage'] = { cours:'cours-demo-fractions-partage', methode:'methode-demo-fractions-partage', exos:'exos-demo-fractions-partage',
-  init:()=>{ fpMethodeDemo.reset(); fpEquivReset(); renderStaticMath(document.getElementById('cours-demo-fractions-partage')); renderStaticMath(document.getElementById('exos-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-partage')); } };
+  init:()=>{ fpMethodeDemo.reset(); fpEquivReset(); renderStaticMath(document.getElementById('cours-demo-fractions-partage')); renderStaticMath(document.getElementById('exos-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('methode-demo-fractions-partage')); } };
 
 DEMO_QUIZZES['Fractions : nombres et partage'] = [
   {q:"Comment se lit la fraction 5/8 ?",

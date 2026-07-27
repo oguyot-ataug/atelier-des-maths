@@ -49,7 +49,7 @@ document.getElementById('cours-demo-divisibilite-5e').innerHTML = `
 
 document.getElementById('methode-demo-divisibilite-5e').innerHTML = `
 <div class="figure-wrap">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Trouver les premiers multiples d'un nombre : 7</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Trouver les premiers multiples d'un nombre : 7</h4></div>
   <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="dv-multiplesDisplay"></div>
   <div class="figure-toolbar">
@@ -58,7 +58,7 @@ document.getElementById('methode-demo-divisibilite-5e').innerHTML = `
   </div>
 </div>
 <div class="figure-wrap" style="margin-top:20px;">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Tester la divisibilité par 3 d'un grand nombre</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Tester la divisibilité par 3 d'un grand nombre</h4></div>
   <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="dv-div3Display"></div>
   <div class="figure-toolbar">
@@ -125,7 +125,7 @@ DEMO_REGISTRY['Divisibilité'] = {
   init:()=>{
     dvMultiplesDemo.reset();
     dvDiv3Demo.reset();
-    injectCourseAddButtons(document.getElementById('cours-demo-divisibilite-5e'));
+    injectCourseAddButtons(document.getElementById('cours-demo-divisibilite-5e')); injectCourseAddButtons(document.getElementById('methode-demo-divisibilite-5e'));
   }
 };
 

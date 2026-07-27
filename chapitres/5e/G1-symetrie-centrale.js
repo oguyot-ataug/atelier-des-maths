@@ -239,7 +239,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
 `;
 document.getElementById('methode-demo-symetrie').innerHTML = `
       <div class="figure-wrap">
-        <strong style="font-family:'Space Grotesk',sans-serif;">Construire le symétrique d'un point A, au compas et à la règle</strong>
+        <div class="sub-header"><span class="letter">M</span><h4>Construire le symétrique d'un point A, au compas et à la règle</h4></div>
         <svg id="svgMethod" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:14px auto;">
           <line id="mTickO" class="pt-tick" stroke="#1C1B2E" stroke-width="2"/>
           <text x="207" y="122" font-family="Space Grotesk" font-size="13" fill="#1C1B2E">O</text>
@@ -726,7 +726,7 @@ function nextMethodStep(){
 
 
 DEMO_REGISTRY['Symétrie centrale'] = { cours:'cours-demo-symetrie', methode:'methode-demo-symetrie', exos:'exos-demo-symetrie',
-  init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); } };
+  init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); injectCourseAddButtons(document.getElementById('methode-demo-symetrie')); } };
 
 DEMO_QUIZZES['Symétrie centrale'] = [
   {q:"O est le milieu de [AA']. Que peut-on dire de A' par rapport à A ?",

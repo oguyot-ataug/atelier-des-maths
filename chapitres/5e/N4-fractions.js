@@ -98,7 +98,7 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 
 document.getElementById('methode-demo-fractions-5e').innerHTML = `
 <div class="figure-wrap">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : additionner deux fractions de dénominateurs différents</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode : additionner deux fractions de dénominateurs différents</h4></div>
   <p class="interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="fq-methodeDisplay"></div>
   <div class="figure-toolbar">
@@ -205,7 +205,7 @@ const FQ_METHODE_STEPS = [
 const fqMethodeDemo = makeStepDemo(FQ_METHODE_STEPS, 'fq-methodeDisplay');
 
 DEMO_REGISTRY['Fractions'] = { cours:'cours-demo-fractions-5e', methode:'methode-demo-fractions-5e', exos:'exos-demo-fractions-5e',
-  init:()=>{ initCompareDemo(); fqDiviseDemo.reset(); fqMethodeDemo.reset(); renderStaticMath(document.getElementById('cours-demo-fractions-5e')); renderStaticMath(document.getElementById('exos-demo-fractions-5e')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-5e')); } };
+  init:()=>{ initCompareDemo(); fqDiviseDemo.reset(); fqMethodeDemo.reset(); renderStaticMath(document.getElementById('cours-demo-fractions-5e')); renderStaticMath(document.getElementById('exos-demo-fractions-5e')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-5e')); injectCourseAddButtons(document.getElementById('methode-demo-fractions-5e')); } };
 
 DEMO_QUIZZES['Fractions'] = [
   {q:"3/7 = ?/21 : par quel nombre multiplie-t-on le numérateur 3 ?",

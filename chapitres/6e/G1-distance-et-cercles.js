@@ -135,7 +135,7 @@ document.getElementById('cours-demo-distance-cercles').innerHTML = `
 
 document.getElementById('methode-demo-distance-cercles').innerHTML = `
 <div class="figure-wrap">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : construire le milieu d'un segment à la règle</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode : construire le milieu d'un segment à la règle</h4></div>
   <p class="interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <svg id="dc-mm-svg" viewBox="0 0 400 220" style="width:100%;max-width:460px;display:block;margin:10px auto 0;background:var(--white);border-radius:8px;">
     <line id="dc-mm-seg" stroke="#1C1B2E" stroke-width="1.8"/>
@@ -383,7 +383,7 @@ function dcMmNext(){ if(dcMmIdx<DC_MM_STEPS.length-1) dcMmIdx++; dcRenderMm(); }
 function dcMmReset(){ dcMmIdx=0; dcRenderMm(); }
 
 DEMO_REGISTRY['Distance et cercles'] = { cours:'cours-demo-distance-cercles', methode:'methode-demo-distance-cercles', exos:'exos-demo-distance-cercles',
-  init:()=>{ initMilieuDemo(); initVocabDemo(); initDistDemo(); dcMmReset(); registerGeoStepDemo('dc-mm-svg', { steps:()=>DC_MM_STEPS, getIdx:()=>dcMmIdx, goto:(i)=>{ dcMmIdx=i; dcRenderMm(); } }); injectCourseAddButtons(document.getElementById('cours-demo-distance-cercles')); } };
+  init:()=>{ initMilieuDemo(); initVocabDemo(); initDistDemo(); dcMmReset(); registerGeoStepDemo('dc-mm-svg', { steps:()=>DC_MM_STEPS, getIdx:()=>dcMmIdx, goto:(i)=>{ dcMmIdx=i; dcRenderMm(); } }); injectCourseAddButtons(document.getElementById('cours-demo-distance-cercles')); injectCourseAddButtons(document.getElementById('methode-demo-distance-cercles')); } };
 
 DEMO_QUIZZES['Distance et cercles'] = [
   {q:"Le milieu d'un segment [RT] est un point qui...",

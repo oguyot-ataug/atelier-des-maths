@@ -123,7 +123,7 @@ document.getElementById('cours-demo-nombres-entiers').innerHTML = `
 
 document.getElementById('methode-demo-nombres-entiers').innerHTML = `
 <div class="figure-wrap">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Ne pas confondre « chiffre des... » et « nombre de... »</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Ne pas confondre « chiffre des... » et « nombre de... »</h4></div>
   <p class="hint" style="margin-top:6px;">Sur le nombre 2 384 907 156 déjà étudié en cours — cliquez sur "Étape suivante".</p>
   <div class="step-display" id="ne-chiffreNombreDisplay"></div>
   <div class="figure-toolbar">
@@ -197,7 +197,7 @@ const NE_CHIFFRE_NOMBRE_STEPS = [
 const neChiffreNombreDemo = makeStepDemo(NE_CHIFFRE_NOMBRE_STEPS, 'ne-chiffreNombreDisplay');
 
 DEMO_REGISTRY['Nombres entiers'] = { cours:'cours-demo-nombres-entiers', methode:'methode-demo-nombres-entiers', exos:'exos-demo-nombres-entiers',
-  init:()=>{ neDivisionPoseeReset(); neChiffreNombreDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-nombres-entiers')); } };
+  init:()=>{ neDivisionPoseeReset(); neChiffreNombreDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-nombres-entiers')); injectCourseAddButtons(document.getElementById('methode-demo-nombres-entiers')); } };
 
 DEMO_QUIZZES['Nombres entiers'] = [
   {q:"Comment s'appelle le résultat d'une multiplication ?",

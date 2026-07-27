@@ -196,7 +196,7 @@ ${ndGridCentieme(47)}
 
 document.getElementById('methode-demo-decimaux-6e').innerHTML = `
 <div class="figure-wrap">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : comparer deux nombres décimaux</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode : comparer deux nombres décimaux</h4></div>
   <p class="interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="nd-comparerDisplay"></div>
   <div class="figure-toolbar">
@@ -205,7 +205,7 @@ document.getElementById('methode-demo-decimaux-6e').innerHTML = `
   </div>
 </div>
 <div class="figure-wrap" style="margin-top:20px;">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : décomposer un nombre décimal</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode : décomposer un nombre décimal</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="nd-decomposerDisplay"></div>
   <div class="figure-toolbar">
@@ -214,7 +214,7 @@ document.getElementById('methode-demo-decimaux-6e').innerHTML = `
   </div>
 </div>
 <div class="figure-wrap" style="margin-top:20px;">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : ne pas confondre « chiffre des... » et « nombre de... »</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode : ne pas confondre « chiffre des... » et « nombre de... »</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="nd-chiffreNombreDisplay"></div>
   <div class="figure-toolbar">
@@ -300,7 +300,7 @@ DEMO_REGISTRY['Nombres décimaux'] = {
     ndChiffreNombreDemo.reset();
     renderStaticMath(document.getElementById('cours-demo-decimaux-6e'));
     renderStaticMath(document.getElementById('exos-demo-decimaux-6e'));
-    injectCourseAddButtons(document.getElementById('cours-demo-decimaux-6e'));
+    injectCourseAddButtons(document.getElementById('cours-demo-decimaux-6e')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux-6e'));
   }
 };
 

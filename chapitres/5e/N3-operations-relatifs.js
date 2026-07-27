@@ -72,7 +72,7 @@ document.getElementById('cours-demo-operations-relatifs-5e').innerHTML = `
 
 document.getElementById('methode-demo-operations-relatifs-5e').innerHTML = `
 <div class="figure-wrap">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 1 : additionner deux nombres relatifs, un « bond » sur la droite graduée</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : additionner deux nombres relatifs, un « bond » sur la droite graduée</h4></div>
   <p class="hint" style="margin-top:6px;">Choisis un exemple : le point part de départ, bondit du nombre de cases indiqué, et atterrit sur le résultat.</p>
   <svg id="or-svgJump" viewBox="0 0 600 150" style="width:100%;max-width:560px;display:block;margin:14px auto;">
     <line x1="30" y1="100" x2="570" y2="100" stroke="#1C1B2E" stroke-width="1.6"/>
@@ -94,7 +94,7 @@ document.getElementById('methode-demo-operations-relatifs-5e').innerHTML = `
 </div>
 
 <div class="figure-wrap" style="margin-top:20px;">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 2 : additionner deux nombres relatifs de signes contraires</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : additionner deux nombres relatifs de signes contraires</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="or-additionDisplay"></div>
   <div class="figure-toolbar">
@@ -104,7 +104,7 @@ document.getElementById('methode-demo-operations-relatifs-5e').innerHTML = `
 </div>
 
 <div class="figure-wrap" style="margin-top:20px;">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 3 : calculer une somme algébrique</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : calculer une somme algébrique</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="or-sommeDisplay"></div>
   <div class="figure-toolbar">
@@ -224,7 +224,7 @@ DEMO_REGISTRY['Opérations sur les nombres relatifs'] = {
     orResetJumpFigure();
     orAdditionDemo.reset();
     orSommeDemo.reset();
-    injectCourseAddButtons(document.getElementById('cours-demo-operations-relatifs-5e'));
+    injectCourseAddButtons(document.getElementById('cours-demo-operations-relatifs-5e')); injectCourseAddButtons(document.getElementById('methode-demo-operations-relatifs-5e'));
   }
 };
 

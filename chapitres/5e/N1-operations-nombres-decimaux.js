@@ -133,7 +133,7 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
 `;
 document.getElementById('methode-demo-decimaux').innerHTML = `
       <div class="figure-wrap">
-        <strong style="font-family:'Space Grotesk',sans-serif;">Trouver tous les diviseurs d'un nombre : 60</strong>
+        <div class="sub-header"><span class="letter">M</span><h4>Trouver tous les diviseurs d'un nombre : 60</h4></div>
         <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
         <div class="step-display" id="diviseursDisplay"></div>
         <div class="figure-toolbar">
@@ -246,7 +246,7 @@ const diviseursDemo = makeStepDemo(DIVISEURS_STEPS, 'diviseursDisplay');
 
 
 DEMO_REGISTRY['Opérations sur les nombres décimaux'] = { cours:'cours-demo-decimaux', methode:'methode-demo-decimaux', exos:'exos-demo-decimaux',
-  init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); diviseursDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); } };
+  init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); diviseursDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };
 
 DEMO_QUIZZES['Opérations sur les nombres décimaux'] = [
   {q:"Que vaut 4 + 2 × 3 ?",

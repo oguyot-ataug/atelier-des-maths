@@ -354,7 +354,7 @@ document.getElementById('methode-demo-droites-remarquables-5e').innerHTML = `
 </div>
 
 <div class="figure-wrap">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 1 : démontrer qu'un triangle est rectangle grâce au cercle circonscrit</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : démontrer qu'un triangle est rectangle grâce au cercle circonscrit</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${drBuildRightTriangleCircumSvg()}</div>
   <div class="step-display" id="dr-methodeRectDisplay"></div>
@@ -365,7 +365,7 @@ document.getElementById('methode-demo-droites-remarquables-5e').innerHTML = `
 </div>
 
 <div class="figure-wrap" style="margin-top:24px;">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 2 : construire le centre du cercle circonscrit à un triangle</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : construire le centre du cercle circonscrit à un triangle</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${drBuildCircumcenterSvg(DR_T_DEF, 380, 340)}</div>
   <div class="step-display" id="dr-methodeCircumDisplay"></div>
@@ -376,7 +376,7 @@ document.getElementById('methode-demo-droites-remarquables-5e').innerHTML = `
 </div>
 
 <div class="figure-wrap" style="margin-top:24px;">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 3 : construire l'orthocentre d'un triangle</strong>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : construire l'orthocentre d'un triangle</h4></div>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="figure-wrap">${drBuildOrthocenterSvg(DR_T_DEF, 380, 230)}</div>
   <div class="step-display" id="dr-methodeOrthoDisplay"></div>
@@ -451,7 +451,7 @@ DEMO_REGISTRY['Droites remarquables dans un triangle'] = {
     drMethodeOrthoDemo.reset();
     renderStaticMath(document.getElementById('cours-demo-droites-remarquables-5e'));
     renderStaticMath(document.getElementById('exos-demo-droites-remarquables-5e'));
-    injectCourseAddButtons(document.getElementById('cours-demo-droites-remarquables-5e'));
+    injectCourseAddButtons(document.getElementById('cours-demo-droites-remarquables-5e')); injectCourseAddButtons(document.getElementById('methode-demo-droites-remarquables-5e'));
   }
 };
 
