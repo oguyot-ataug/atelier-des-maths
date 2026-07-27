@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-27.2</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-27.3</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -920,12 +920,36 @@ function registerGeoStepDemo(svgId, config){ window.GEO_STEP_DEMOS[svgId] = conf
 /* Convertit un SVG en image PNG (data URI), rastérisée à une taille en pixels fixe
    et explicite (plutôt que de compter sur un <img> pour redimensionner un SVG, ce
    qu'html2canvas gère de façon peu fiable -- images énormes, tronquées ou absentes). */
+/* Copie, sous forme d'attribut style inline, l'apparence RÉELLEMENT appliquée (via CSS calculé)
+   de chaque élément du SVG en direct vers son clone -- indispensable car les classes CSS
+   externes (ex. .vertex-handle{fill:transparent} pour les poignées de glisser-déposer, invisibles
+   au repos) ne sont pas incluses quand le SVG est sérialisé et rendu isolément comme une image :
+   sans ça, ces éléments retombent sur le remplissage noir par défaut du SVG. */
+function inlineComputedStyles(liveRoot, cloneRoot){
+  const props = ['fill','stroke','stroke-width','stroke-dasharray','stroke-linecap','stroke-linejoin',
+    'opacity','fill-opacity','stroke-opacity','font-family','font-size','font-weight','text-anchor'];
+  const liveEls = [liveRoot, ...liveRoot.querySelectorAll('*')];
+  const cloneEls = [cloneRoot, ...cloneRoot.querySelectorAll('*')];
+  const n = Math.min(liveEls.length, cloneEls.length);
+  for(let i=0;i<n;i++){
+    let cs;
+    try{ cs = getComputedStyle(liveEls[i]); } catch(e){ continue; }
+    let extra = '';
+    props.forEach(p=>{
+      const val = cs.getPropertyValue(p);
+      if(val) extra += `${p}:${val};`;
+    });
+    const existing = cloneEls[i].getAttribute('style') || '';
+    cloneEls[i].setAttribute('style', existing + ';' + extra);
+  }
+}
 function svgToRasterDataUri(svgEl, displayWidth){
   return new Promise((resolve)=>{
     const vbAttr = svgEl.getAttribute('viewBox');
     const vbParts = vbAttr ? vbAttr.trim().split(/\s+/).map(Number) : [0,0,400,240];
     const vbW = vbParts[2] || 400, vbH = vbParts[3] || 240;
     const clone = svgEl.cloneNode(true);
+    try{ inlineComputedStyles(svgEl, clone); } catch(e){ console.error('svgToRasterDataUri: échec figement des styles', e); }
     clone.removeAttribute('id');
     clone.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
     clone.removeAttribute('style');
@@ -2917,7 +2941,7 @@ async function expandStepDemosInClone(wrapper){
         const rect = liveSvg.getBoundingClientRect();
         if(rect.width > 20) displayWidth = rect.width;
       }
-      const dataUri = await svgToRasterDataUri(cloneSvg, displayWidth);
+      const dataUri = await svgToRasterDataUri(liveSvg || cloneSvg, displayWidth);
       if(dataUri){
         const img = document.createElement('img');
         img.src = dataUri;
