@@ -77,9 +77,10 @@ function drAngleTick(vertex, p1, p2, r){
 
 /* Triangles de référence, vérifiés numériquement (angles, longueurs des côtés,
    position des centres) avant intégration -- volontairement bien scalènes
-   (aucun ne doit avoir l'air isocèle) */
-const DR_T_DEF = { A:{x:90,y:50}, B:{x:35,y:205}, C:{x:330,y:150} };           // scalène, tous angles aigus (87°/60°/33°, côtés 164/260/300)
-const DR_T_OBTUS = { A:{x:120,y:60}, B:{x:20,y:190}, C:{x:350,y:175} };       // angle obtus en A (~101°), scalène (côtés 164/257/330)
+   (aucun ne doit avoir l'air isocèle) ET avec des angles nettement éloignés
+   de 90° (aucun ne doit avoir l'air d'un triangle rectangle) */
+const DR_T_DEF = { A:{x:220,y:20}, B:{x:30,y:210}, C:{x:330,y:210} };          // scalène, angles aigus 75°/45°/60°, côtés 269/220/300
+const DR_T_OBTUS = { A:{x:137,y:105}, B:{x:30,y:195}, C:{x:330,y:195} };      // angle obtus net en A (~115°), scalène, côtés 140/213/300
 const DR_T_RIGHT = { A:{x:60,y:180}, B:{x:60,y:40}, C:{x:320,y:180} };        // angle droit en A, scalène (côtés 140/260/295)
 
 /* ================= Figure : définition de la médiatrice ================= */
@@ -316,7 +317,7 @@ document.getElementById('cours-demo-droites-remarquables-5e').innerHTML = `
 <div class="def-box">Les médiatrices des trois côtés d'un triangle sont <b>concourantes</b> en un point qui est le <b>centre du cercle circonscrit</b> à ce triangle.</div>
 <div style="display:flex;flex-wrap:wrap;gap:18px;justify-content:center;">
   <div class="figure-wrap">${drBuildCircumcenterSvg(DR_T_DEF, 380, 340)}<p class="hint" style="text-align:center;">Triangle à angles aigus : O est à l'intérieur.</p></div>
-  <div class="figure-wrap">${drBuildCircumcenterSvg(DR_T_OBTUS, 380, 420)}<p class="hint" style="text-align:center;">Triangle avec un angle obtus : O est à l'extérieur.</p></div>
+  <div class="figure-wrap">${drBuildCircumcenterSvg(DR_T_OBTUS, 380, 440)}<p class="hint" style="text-align:center;">Triangle avec un angle obtus : O est à l'extérieur.</p></div>
 </div>
 <p style="margin:10px 0 4px;">Dans un triangle qui a tous ses angles aigus, le centre du cercle circonscrit se trouve à l'intérieur du triangle.</p>
 <p style="margin:4px 0 12px;">Dans un triangle qui a un de ses angles obtus, le centre du cercle circonscrit se trouve à l'extérieur du triangle.</p>
@@ -344,7 +345,7 @@ document.getElementById('cours-demo-droites-remarquables-5e').innerHTML = `
 <p style="margin:10px 0 12px;">Le centre de gravité est toujours situé à l'intérieur du triangle, quels que soient ses angles.</p>
 `;
 document.getElementById('dr-ortho-def-wrap').innerHTML = drBuildOrthocenterSvg(DR_T_DEF, 380, 230) + "<p class=\"hint\" style=\"text-align:center;\">Triangle à angles aigus : H est à l'intérieur.</p>";
-document.getElementById('dr-ortho-obtus-wrap').innerHTML = drBuildOrthocenterSvg(drTranslateTri(DR_T_OBTUS,0,25), 380, 260) + "<p class=\"hint\" style=\"text-align:center;\">Triangle avec un angle obtus : H est à l'extérieur.</p>";
+document.getElementById('dr-ortho-obtus-wrap').innerHTML = drBuildOrthocenterSvg(drTranslateTri(DR_T_OBTUS,0,45), 380, 300) + "<p class=\"hint\" style=\"text-align:center;\">Triangle avec un angle obtus : H est à l'extérieur.</p>";
 
 /* ================= METHODE ================= */
 document.getElementById('methode-demo-droites-remarquables-5e').innerHTML = `
