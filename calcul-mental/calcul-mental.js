@@ -1,5 +1,5 @@
 /* ============================================================
-   CALCUL MENTAL — 112 séquences (8 câblées pour l'instant)
+   AUTOMATISMES — 112 séquences (8 câblées pour l'instant)
    Fichier autonome : dépend des fonctions/variables partagées définies
    dans index.html (sb, currentUser, currentUserRole, currentClassId).
    Les conteneurs #cmPicker / #cmWorkspace existent déjà dans index.html.

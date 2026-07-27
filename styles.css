@@ -324,7 +324,7 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
 .quiz-opt.correct{background:rgba(45,106,79,.18);border-color:#2C5A2E;}
 .quiz-opt.wrong{background:rgba(211,90,60,.15);border-color:#a83c1f;}
 
-/* ---------- calcul mental ---------- */
+/* ---------- automatismes ---------- */
 .cm-picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:22px;}
 .cm-chip{
   background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;padding:10px 12px;

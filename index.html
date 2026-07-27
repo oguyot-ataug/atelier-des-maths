@@ -28,7 +28,7 @@
     <button data-nav="home" class="active">Accueil</button>
     <button data-nav="niveau" data-lvl="6e">6e</button>
     <button data-nav="niveau" data-lvl="5e">5e</button>
-    <button data-nav="cm">Calcul mental</button>
+    <button data-nav="cm">Automatismes</button>
     <button data-nav="correction" id="navCorrection" style="display:none;">Outil prof</button>
     <button data-nav="cahier" id="navCahier" style="display:none;">Cahier élève</button>
     <button data-nav="supervision" id="navSupervision" style="display:none;">Supervision</button>
@@ -150,7 +150,7 @@
       <div class="d">Des questions nouvelles à chaque essai (avec votre clé API).</div>
     </div>
     <div class="mini-link" data-nav="cm">
-      <div class="t">🔢 Calcul mental</div>
+      <div class="t">🔢 Automatismes</div>
       <div class="d">112 séquences du cahier, générées et corrigées automatiquement.</div>
     </div>
     <div class="mini-link" data-nav="niveau" data-lvl="6e">
@@ -308,10 +308,10 @@
   </div>
 </section>
 
-<!-- ================= CALCUL MENTAL ================= -->
+<!-- ================= AUTOMATISMES ================= -->
 <section class="view" id="view-cm">
   <span class="back-btn" data-nav="home">← Accueil</span>
-  <h1 style="margin:6px 0 4px;">Calcul mental</h1>
+  <h1 style="margin:6px 0 4px;">Automatismes</h1>
   <p style="color:var(--ink-soft);max-width:60ch;">Les 112 séquences de votre cahier, prêtes à générer des exercices infinis. 8 séquences sont câblées ici à titre de démonstration ; les autres suivront le même moteur.</p>
   <div class="cm-picker" id="cmPicker"></div>
   <div class="cm-workspace" id="cmWorkspace">
@@ -517,11 +517,11 @@
 </section>
 
 <!-- ================= ADMINISTRATION ================= -->
-<!-- ================= SUPERVISION (résultats calcul mental) ================= -->
+<!-- ================= SUPERVISION (résultats automatismes) ================= -->
 <section class="view" id="view-supervision">
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;">📊 Supervision</h1>
-  <p style="color:var(--ink-soft);max-width:70ch;">Résultats de calcul mental de la classe active (visible en haut, à côté de votre compte).</p>
+  <p style="color:var(--ink-soft);max-width:70ch;">Résultats d'automatismes de la classe active (visible en haut, à côté de votre compte).</p>
   <div class="tool-row" style="margin:10px 0;">
     <select id="supFilterEleve" onchange="renderSupervisionFiltered()"><option value="">Tous les élèves</option></select>
     <select id="supFilterExercice" onchange="renderSupervisionFiltered()"><option value="">Tous les exercices</option></select>
@@ -536,7 +536,7 @@
 <section class="view" id="view-mesresultats">
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;">📊 Mes résultats</h1>
-  <p style="color:var(--ink-soft);max-width:70ch;">L'historique de vos exercices de calcul mental.</p>
+  <p style="color:var(--ink-soft);max-width:70ch;">L'historique de vos exercices d'automatismes.</p>
   <div class="tool-row" style="margin:10px 0;">
     <select id="mesResFilterExercice" onchange="renderMesResultatsFiltered()"><option value="">Tous les exercices</option></select>
     <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">Du <input type="date" id="mesResFilterFrom" onchange="renderMesResultatsFiltered()"></label>
@@ -998,7 +998,7 @@ function answerQuiz(btn,qi,oi){
   });
 }
 
-/* ======================= CALCUL MENTAL ======================= */
+/* ======================= AUTOMATISMES ======================= */
 /* Voir calcul-mental/calcul-mental.js, chargé en fin de page. */
 
 
@@ -2106,7 +2106,7 @@ function resetSupervisionFilters(){
 function renderSupervisionFiltered(){
   const el = document.getElementById('supervisionContent');
   if(!el) return;
-  if(!supervisionData.length){ el.innerHTML = 'Aucun résultat de calcul mental pour cette classe pour le moment.'; return; }
+  if(!supervisionData.length){ el.innerHTML = "Aucun résultat d'automatismes pour cette classe pour le moment."; return; }
   const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
   const eleveFilter = document.getElementById('supFilterEleve').value;
   const exoFilter = document.getElementById('supFilterExercice').value;
@@ -2174,7 +2174,7 @@ function resetMesResultatsFilters(){
 function renderMesResultatsFiltered(){
   const el = document.getElementById('mesResultatsContent');
   if(!el) return;
-  if(!mesResultatsData.length){ el.innerHTML = "Vous n'avez pas encore fait d'exercice de calcul mental."; return; }
+  if(!mesResultatsData.length){ el.innerHTML = "Vous n'avez pas encore fait d'exercice d'automatismes."; return; }
   const exoFilter = document.getElementById('mesResFilterExercice').value;
   const fromFilter = document.getElementById('mesResFilterFrom').value;
   const toFilter = document.getElementById('mesResFilterTo').value;
