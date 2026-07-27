@@ -175,6 +175,104 @@ function apUpdateAltCorr(){
   if(note) note.textContent = `Les droites (d) et (d') restent parallèles quel que soit l'angle de la sécante : les angles alternes-internes bleus valent toujours ${angBleu}° chacun, et les angles correspondants verts valent toujours ${angVert}° chacun.`;
 }
 
+/* ================= Figure : méthode "angles alternes-internes -> parallélisme" ================= */
+function apBuildMethodeAltSvg(){
+  const B = AP_A, C = AP_B;
+  const A = AP_DRIGHT, D = AP_DPLEFT;
+  const wB = apWedge(B, A, AP_SBOT, 34, '#1F3A5C');
+  const wC = apWedge(C, AP_STOP, D, 34, '#1F3A5C');
+  const midB = angleArcPoints(B, A, AP_SBOT, 50).mid;
+  const midC = angleArcPoints(C, AP_STOP, D, 50).mid;
+  const labB = {x: B.x+50*Math.cos(midB), y: B.y+50*Math.sin(midB)};
+  const labC = {x: C.x+50*Math.cos(midC), y: C.y+50*Math.sin(midC)};
+  return `<svg viewBox="0 0 460 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${wB}${wC}
+    <circle cx="${B.x}" cy="${B.y}" r="2.6" fill="#1C1B2E"/>
+    <circle cx="${C.x}" cy="${C.y}" r="2.6" fill="#1C1B2E"/>
+    ${apLabel(A.x-16, A.y-8, 'A')}
+    ${apLabel(B.x+8, B.y-8, 'B')}
+    ${apLabel(C.x-16, C.y+18, 'C')}
+    ${apLabel(D.x+6, D.y+18, 'D')}
+    ${apLabel(labB.x-10, labB.y+4, '55°', 12, false)}
+    ${apLabel(labC.x-10, labC.y+4, '55°', 12, false)}
+  </svg>`;
+}
+
+/* ================= Figure : méthode "angles opposés par le sommet" ================= */
+function apBuildMethodeOpposesSvg(){
+  const O = {x:200, y:110};
+  const P = apPt(O,0,150), Pp = apPt(O,180,150);
+  const Q = apPt(O,-35,150), Qp = apPt(O,145,150);
+  const wGiven = apWedge(O, Q, P, 36, '#1F3A5C');
+  const wFind = apWedge(O, Qp, Pp, 36, '#1F3A5C');
+  const midGiven = angleArcPoints(O, Q, P, 52).mid;
+  const midFind = angleArcPoints(O, Qp, Pp, 52).mid;
+  const labGiven = {x:O.x+52*Math.cos(midGiven), y:O.y+52*Math.sin(midGiven)};
+  const labFind = {x:O.x+52*Math.cos(midFind), y:O.y+52*Math.sin(midFind)};
+  return `<svg viewBox="0 0 400 220" style="width:100%;max-width:360px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="${Pp.x}" y1="${Pp.y}" x2="${P.x}" y2="${P.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${Qp.x}" y1="${Qp.y}" x2="${Q.x}" y2="${Q.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${wGiven}${wFind}
+    <circle cx="${O.x}" cy="${O.y}" r="2.6" fill="#1C1B2E"/>
+    ${apLabel(P.x+8, P.y+4, 'P')}
+    ${apLabel(Pp.x-20, Pp.y+4, "P'")}
+    ${apLabel(Q.x-2, Q.y-8, 'Q')}
+    ${apLabel(Qp.x-18, Qp.y+16, "Q'")}
+    ${apLabel(O.x-16, O.y+18, 'O')}
+    ${apLabel(labGiven.x-10, labGiven.y+4, '35°', 12, false)}
+    ${apLabel(labFind.x-8, labFind.y+4, '?', 12, false)}
+  </svg>`;
+}
+
+/* ================= Figure : méthode "alignement par angles supplémentaires" ================= */
+function apBuildMethodeAlignementSvg(){
+  const O = {x:200, y:150};
+  const D = apPt(O,180,140), F = apPt(O,0,140), E = apPt(O,-68,140);
+  const w1 = apWedge(O, D, E, 42, '#1F3A5C');
+  const w2 = apWedge(O, E, F, 42, '#1F6B3A');
+  const mid1 = angleArcPoints(O, D, E, 58).mid;
+  const mid2 = angleArcPoints(O, E, F, 58).mid;
+  const lab1 = {x:O.x+58*Math.cos(mid1), y:O.y+58*Math.sin(mid1)};
+  const lab2 = {x:O.x+58*Math.cos(mid2), y:O.y+58*Math.sin(mid2)};
+  return `<svg viewBox="0 0 400 220" style="width:100%;max-width:360px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="${D.x}" y1="${D.y}" x2="${F.x}" y2="${F.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${O.x}" y1="${O.y}" x2="${E.x}" y2="${E.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${w1}${w2}
+    <circle cx="${O.x}" cy="${O.y}" r="2.6" fill="#1C1B2E"/>
+    ${apLabel(D.x-4, D.y-10, 'D')}
+    ${apLabel(F.x-6, F.y-10, 'F')}
+    ${apLabel(E.x-6, E.y-10, 'E')}
+    ${apLabel(O.x-4, O.y+18, 'O')}
+    ${apLabel(lab1.x-14, lab1.y, '112°', 12, false)}
+    ${apLabel(lab2.x-10, lab2.y, '68°', 12, false)}
+  </svg>`;
+}
+
+/* ================= Figure : méthode "somme des angles d'un triangle" ================= */
+function apBuildMethodeTriangleSvg(){
+  const R={x:150,y:30}, S={x:40,y:200}, T={x:340,y:200};
+  const wR = apWedge(R, S, T, 26, '#9E1F5E');
+  const wS = apWedge(S, R, T, 26, '#1F6B3A');
+  const wT = apWedge(T, S, R, 26, '#1F3A5C');
+  const midS = angleArcPoints(S, R, T, 40).mid;
+  const midT = angleArcPoints(T, S, R, 40).mid;
+  const labS = {x:S.x+40*Math.cos(midS), y:S.y+40*Math.sin(midS)};
+  const labT = {x:T.x+40*Math.cos(midT), y:T.y+40*Math.sin(midT)};
+  return `<svg viewBox="0 0 380 230" style="width:100%;max-width:340px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <polygon points="${R.x},${R.y} ${S.x},${S.y} ${T.x},${T.y}" fill="none" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${wR}${wS}${wT}
+    ${apLabel(R.x-4, R.y-8, 'R')}
+    ${apLabel(S.x-16, S.y+10, 'S')}
+    ${apLabel(T.x+8, T.y+10, 'T')}
+    ${apLabel(labS.x-14, labS.y+4, '54°', 12, false)}
+    ${apLabel(labT.x-6, labT.y+4, '71°', 12, false)}
+    ${apLabel(R.x-6, R.y+30, '?', 12, false)}
+  </svg>`;
+}
+
 /* ================= Figure : somme des angles d'un triangle (triangle non isocèle, IJ ≠ IK ≠ JK) ================= */
 const AP_TRI_I = {x:150,y:30}, AP_TRI_J = {x:40,y:200}, AP_TRI_K = {x:340,y:200};
 function apBuildTriangleSvg(){
@@ -320,17 +418,52 @@ document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
 
 /* ================= METHODE ================= */
 document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
+  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. La méthode est toujours la même, en trois temps : <b>ce que je sais</b> (les constats), puis <span style="color:var(--accent-orange);font-weight:700;">Or,</span> suivi de la propriété que l'on va utiliser, puis <span style="color:var(--accent);font-weight:700;">Donc</span>, suivi de la conclusion.
+</div>
+
 <div class="figure-wrap">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : justifier que deux droites sont parallèles à l'aide d'angles alternes-internes</strong>
-  <p class="interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 1 : justifier que deux droites sont parallèles à l'aide d'angles alternes-internes</strong>
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="figure-wrap">${apBuildMethodeAltSvg()}</div>
   <div class="step-display" id="ap-methodeDisplay"></div>
   <div class="figure-toolbar">
     <button class="btn" onclick="apMethodeDemo.next()">Étape suivante →</button>
     <button class="btn secondary" onclick="apMethodeDemo.reset()">Recommencer</button>
   </div>
 </div>
-<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
-  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. La méthode est toujours la même, en trois temps : <b>ce que je sais</b> (les constats), puis <span style="color:var(--accent-orange);font-weight:700;">Or,</span> suivi de la propriété que l'on va utiliser, puis <span style="color:var(--accent);font-weight:700;">Donc</span>, suivi de la conclusion.
+
+<div class="figure-wrap" style="margin-top:24px;">
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 2 : calculer une mesure d'angle à l'aide des angles opposés par le sommet</strong>
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="figure-wrap">${apBuildMethodeOpposesSvg()}</div>
+  <div class="step-display" id="ap-methodeOpposesDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="apMethodeOpposesDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="apMethodeOpposesDemo.reset()">Recommencer</button>
+  </div>
+</div>
+
+<div class="figure-wrap" style="margin-top:24px;">
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 3 : justifier que des points sont alignés à l'aide d'angles supplémentaires</strong>
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="figure-wrap">${apBuildMethodeAlignementSvg()}</div>
+  <div class="step-display" id="ap-methodeAlignementDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="apMethodeAlignementDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="apMethodeAlignementDemo.reset()">Recommencer</button>
+  </div>
+</div>
+
+<div class="figure-wrap" style="margin-top:24px;">
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 4 : calculer une mesure d'angle inconnue dans un triangle</strong>
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="figure-wrap">${apBuildMethodeTriangleSvg()}</div>
+  <div class="step-display" id="ap-methodeTriangleDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="apMethodeTriangleDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="apMethodeTriangleDemo.reset()">Recommencer</button>
+  </div>
 </div>
 `;
 
@@ -377,12 +510,37 @@ const AP_METHODE_STEPS = [
 ];
 const apMethodeDemo = makeStepDemo(AP_METHODE_STEPS, 'ap-methodeDisplay');
 
+const AP_METHODE_OPPOSES_STEPS = [
+  {expr:'Les angles <span class="tex">\\widehat{POQ}</span> et <span class="tex">\\widehat{P\'OQ\'}</span> sont opposés par le sommet.', note:"Ce que je sais : on repère deux angles opposés par le sommet."},
+  {expr:'<span style="color:var(--accent-orange);font-weight:700;">Or,</span> deux angles opposés par le sommet ont la même mesure.', note:"On énonce la propriété."},
+  {expr:'<span style="color:var(--accent);font-weight:700;">Donc</span>, comme <span class="tex">\\widehat{POQ} = 35°</span>, on a <span class="tex">\\widehat{P\'OQ\'} = 35°</span>.', note:"Conclusion."},
+];
+const apMethodeOpposesDemo = makeStepDemo(AP_METHODE_OPPOSES_STEPS, 'ap-methodeOpposesDisplay');
+
+const AP_METHODE_ALIGNEMENT_STEPS = [
+  {expr:'Les angles adjacents <span class="tex">\\widehat{DOE}</span> et <span class="tex">\\widehat{EOF}</span> sont tels que <span class="tex">\\widehat{DOE} = 112°</span> et <span class="tex">\\widehat{EOF} = 68°</span>.', note:"Ce que je sais."},
+  {expr:'<span style="color:var(--accent-orange);font-weight:700;">Or,</span> <span class="tex">112° + 68° = 180°</span>, donc les angles DOE et EOF sont supplémentaires.', note:"On calcule la somme des deux mesures."},
+  {expr:'<span style="color:var(--accent-orange);font-weight:700;">Or,</span> deux angles adjacents et supplémentaires forment un angle plat.', note:"On énonce la propriété (remarque du cours)."},
+  {expr:'<span style="color:var(--accent);font-weight:700;">Donc</span> les points D, O et F sont alignés.', note:"Conclusion."},
+];
+const apMethodeAlignementDemo = makeStepDemo(AP_METHODE_ALIGNEMENT_STEPS, 'ap-methodeAlignementDisplay');
+
+const AP_METHODE_TRIANGLE_STEPS = [
+  {expr:'Dans le triangle RST, on sait que <span class="tex">\\widehat{RST} = 54°</span> et <span class="tex">\\widehat{STR} = 71°</span>.', note:"Ce que je sais."},
+  {expr:"<span style=\"color:var(--accent-orange);font-weight:700;\">Or,</span> la somme des mesures des angles d'un triangle est égale à 180°.", note:"On énonce la propriété."},
+  {expr:'<span style="color:var(--accent);font-weight:700;">Donc</span> <span class="tex">\\widehat{SRT} = 180° - (54° + 71°) = 180° - 125° = 55°</span>.', note:"Conclusion : on calcule la mesure manquante."},
+];
+const apMethodeTriangleDemo = makeStepDemo(AP_METHODE_TRIANGLE_STEPS, 'ap-methodeTriangleDisplay');
+
 DEMO_REGISTRY['Angles et parallélisme'] = {
   cours:'cours-demo-angles-parallelisme-5e', methode:'methode-demo-angles-parallelisme-5e', exos:'exos-demo-angles-parallelisme-5e',
   init:()=>{
     apUpdateAltCorr();
     apTriDemo.reset();
     apMethodeDemo.reset();
+    apMethodeOpposesDemo.reset();
+    apMethodeAlignementDemo.reset();
+    apMethodeTriangleDemo.reset();
     renderStaticMath(document.getElementById('cours-demo-angles-parallelisme-5e'));
     renderStaticMath(document.getElementById('exos-demo-angles-parallelisme-5e'));
     injectCourseAddButtons(document.getElementById('cours-demo-angles-parallelisme-5e'));
