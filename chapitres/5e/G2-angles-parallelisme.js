@@ -330,19 +330,20 @@ document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
   </div>
 </div>
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
-  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).
+  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. La méthode est toujours la même, en trois temps : <b>ce que je sais</b> (les constats), puis <span style="color:var(--accent-orange);font-weight:700;">Or,</span> suivi de la propriété que l'on va utiliser, puis <span style="color:var(--accent);font-weight:700;">Donc</span>, suivi de la conclusion.
 </div>
 `;
 
 /* ================= EXOS ================= */
 document.getElementById('exos-demo-angles-parallelisme-5e').innerHTML = `
-<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
+<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. La méthode est toujours la même, en trois temps : <b>ce que je sais</b> (les constats), puis <span style="color:var(--accent-orange);font-weight:700;">Or,</span> suivi de la propriété que l'on va utiliser, puis <span style="color:var(--accent);font-weight:700;">Donc</span>, suivi de la conclusion.</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Justifier que deux droites sont parallèles »</h3>
   <div class="redaction-template">
-    <div class="we-row"><span class="we-expr">Les angles <span class="tex">\\widehat{ABC}</span> et <span class="tex">\\widehat{BCD}</span> sont alternes-internes, déterminés par la sécante (BC) et les droites (AB) et (CD).</span><span class="we-comment">On identifie la configuration.</span></div>
-    <div class="we-row"><span class="we-expr">Or, <span class="tex">\\widehat{ABC} = \\widehat{BCD} = 63°</span>.</span><span class="we-comment">On relève les mesures égales.</span></div>
-    <div class="we-row"><span class="we-expr">Donc les droites (AB) et (CD) sont parallèles.</span><span class="we-comment">Conclusion, grâce à la propriété.</span></div>
+    <div class="we-row"><span class="we-expr">Les angles <span class="tex">\\widehat{ABC}</span> et <span class="tex">\\widehat{BCD}</span> sont alternes-internes, déterminés par la sécante (BC) et les droites (AB) et (CD).</span><span class="we-comment">Ce que je sais : on identifie la configuration.</span></div>
+    <div class="we-row"><span class="we-expr">De plus, <span class="tex">\\widehat{ABC} = \\widehat{BCD} = 63°</span>.</span><span class="we-comment">Ce que je sais : on relève les mesures égales.</span></div>
+    <div class="we-row"><span class="we-expr"><span style="color:var(--accent-orange);font-weight:700;">Or,</span> si deux angles alternes-internes ont la même mesure, alors les deux droites coupées par la sécante sont parallèles.</span><span class="we-comment">On énonce la propriété.</span></div>
+    <div class="we-row"><span class="we-expr"><span style="color:var(--accent);font-weight:700;">Donc</span> les droites (AB) et (CD) sont parallèles.</span><span class="we-comment">Conclusion, en appliquant la propriété.</span></div>
   </div>
 </div>
 <div class="redaction-block">
@@ -368,10 +369,11 @@ document.getElementById('exos-demo-angles-parallelisme-5e').innerHTML = `
 
 /* ================= Méthode animée : pas à pas ================= */
 const AP_METHODE_STEPS = [
-  {expr:"Les droites (AB) et (CD) sont coupées par la sécante (BC).", note:"On repère les deux droites concernées et la sécante qui les coupe."},
-  {expr:'<span class="tex">\\widehat{ABC}</span> et <span class="tex">\\widehat{BCD}</span> sont alternes-internes.', note:"On identifie les deux angles alternes-internes déterminés par cette configuration."},
-  {expr:'Or, <span class="tex">\\widehat{ABC} = \\widehat{BCD} = 55°</span>.', note:"On vérifie que ces deux angles ont la même mesure (donnée dans l'énoncé ou par codage sur la figure)."},
-  {expr:"Donc les droites (AB) et (CD) sont parallèles.", note:"On conclut grâce à la propriété : deux angles alternes-internes de même mesure entraînent des droites parallèles."},
+  {expr:"Les droites (AB) et (CD) sont coupées par la sécante (BC).", note:"Ce que je sais : on repère les deux droites concernées et la sécante qui les coupe."},
+  {expr:'<span class="tex">\\widehat{ABC}</span> et <span class="tex">\\widehat{BCD}</span> sont alternes-internes.', note:"Ce que je sais : on identifie les deux angles alternes-internes déterminés par cette configuration."},
+  {expr:'De plus, <span class="tex">\\widehat{ABC} = \\widehat{BCD} = 55°</span>.', note:"Ce que je sais : on relève que ces deux angles ont la même mesure (donnée dans l'énoncé ou par codage sur la figure)."},
+  {expr:'<span style="color:var(--accent-orange);font-weight:700;">Or,</span> si deux angles alternes-internes ont la même mesure, alors les deux droites coupées par la sécante sont parallèles.', note:"On énonce la propriété qui va permettre de conclure."},
+  {expr:'<span style="color:var(--accent);font-weight:700;">Donc</span> les droites (AB) et (CD) sont parallèles.', note:"Conclusion, en appliquant la propriété énoncée juste avant."},
 ];
 const apMethodeDemo = makeStepDemo(AP_METHODE_STEPS, 'ap-methodeDisplay');
 
