@@ -72,7 +72,29 @@ document.getElementById('cours-demo-operations-relatifs-5e').innerHTML = `
 
 document.getElementById('methode-demo-operations-relatifs-5e').innerHTML = `
 <div class="figure-wrap">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 1 : additionner deux nombres relatifs de signes contraires</strong>
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 1 : additionner deux nombres relatifs, un « bond » sur la droite graduée</strong>
+  <p class="hint" style="margin-top:6px;">Choisis un exemple : le point part de départ, bondit du nombre de cases indiqué, et atterrit sur le résultat.</p>
+  <svg id="or-svgJump" viewBox="0 0 600 150" style="width:100%;max-width:560px;display:block;margin:14px auto;">
+    <line x1="30" y1="100" x2="570" y2="100" stroke="#1C1B2E" stroke-width="1.6"/>
+    <polygon points="570,100 560,95 560,105" fill="#1C1B2E"/>
+    <g id="or-jumpTicks"></g>
+    <path id="or-jumpArc" fill="none" stroke="#E35D3A" stroke-width="2" stroke-dasharray="5 4" opacity="0"/>
+    <circle id="or-jumpDot" r="8" fill="#1F3A5C"/>
+    <text id="or-jumpLabel" font-family="JetBrains Mono" font-size="15" font-weight="700" fill="#1F3A5C" text-anchor="middle"></text>
+  </svg>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="orPlayJumpExample(-3,5)">(−3) + 5</button>
+    <button class="btn" onclick="orPlayJumpExample(2,-6)">2 + (−6)</button>
+    <button class="btn" onclick="orPlayJumpExample(-4,-2)">(−4) + (−2)</button>
+  </div>
+  <div class="step-list" id="or-jumpRuleSteps">
+    <div class="step-item" data-rule="diff"><div class="step-num">≠</div><div><b>Signes différents</b> : on soustrait la plus petite valeur absolue de la plus grande, et on garde le signe du nombre qui a la plus grande valeur absolue.</div></div>
+    <div class="step-item" data-rule="same"><div class="step-num">=</div><div><b>Même signe</b> : on additionne les valeurs absolues, et on garde le signe commun.</div></div>
+  </div>
+</div>
+
+<div class="figure-wrap" style="margin-top:20px;">
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 2 : additionner deux nombres relatifs de signes contraires</strong>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="or-additionDisplay"></div>
   <div class="figure-toolbar">
@@ -82,7 +104,7 @@ document.getElementById('methode-demo-operations-relatifs-5e').innerHTML = `
 </div>
 
 <div class="figure-wrap" style="margin-top:20px;">
-  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 2 : calculer une somme algébrique</strong>
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode 3 : calculer une somme algébrique</strong>
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="or-sommeDisplay"></div>
   <div class="figure-toolbar">
@@ -127,7 +149,58 @@ document.getElementById('exos-demo-operations-relatifs-5e').innerHTML = `
 </div>
 `;
 
-/* ---- Méthode 1 : addition de signes contraires ---- */
+/* ---- Méthode 1 : addition visualisée comme un bond sur la droite graduée ---- */
+const OR_JUMP_MIN=-7, OR_JUMP_MAX=7, OR_JUMP_ORIGIN_X=300, OR_JUMP_UNIT=36, OR_JUMP_Y=70;
+function orJumpValToX(v){ return OR_JUMP_ORIGIN_X + v*OR_JUMP_UNIT; }
+function orBuildJumpTicks(){
+  const g=document.getElementById('or-jumpTicks');
+  let html='';
+  for(let v=OR_JUMP_MIN;v<=OR_JUMP_MAX;v++){
+    const x=orJumpValToX(v);
+    html+=`<line x1="${x}" y1="93" x2="${x}" y2="107" stroke="#1C1B2E" stroke-width="1.3"/>`;
+    html+=`<text x="${x}" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">${v}</text>`;
+  }
+  g.innerHTML=html;
+}
+function orResetJumpFigure(){
+  orBuildJumpTicks();
+  document.getElementById('or-jumpDot').setAttribute('cx',orJumpValToX(0));
+  document.getElementById('or-jumpDot').setAttribute('cy',100);
+  document.getElementById('or-jumpArc').setAttribute('opacity','0');
+  document.getElementById('or-jumpLabel').textContent='';
+  document.querySelectorAll('#or-jumpRuleSteps .step-item').forEach(s=>s.classList.remove('done'));
+}
+function orFmtRel(v){ return (v>0?'+':'')+ (Number.isInteger(v)?v:v.toFixed(1)); }
+function orPlayJumpExample(start,delta){
+  orResetJumpFigure();
+  const end = start+delta;
+  const x1=orJumpValToX(start), x2=orJumpValToX(end);
+  const sameSign = (start>=0 && delta>=0) || (start<=0 && delta<=0);
+  document.querySelector('#or-jumpRuleSteps .step-item[data-rule="'+(sameSign?'same':'diff')+'"]').classList.add('done');
+  const dot=document.getElementById('or-jumpDot'), arc=document.getElementById('or-jumpArc'), label=document.getElementById('or-jumpLabel');
+  dot.setAttribute('cx',x1); dot.setAttribute('cy',100);
+  arc.setAttribute('opacity','1');
+  label.setAttribute('x',(x1+x2)/2); label.setAttribute('y',35);
+  label.textContent = `${orFmtRel(start)} + (${orFmtRel(delta)})`;
+  const start_t=performance.now(), dur=1300;
+  function frame(now){
+    const t=Math.min(1,(now-start_t)/dur);
+    const eased = t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+    const cx = x1+(x2-x1)*eased;
+    const bumpHeight = 55*Math.sin(Math.PI*eased);
+    dot.setAttribute('cx',cx); dot.setAttribute('cy',100-bumpHeight);
+    const midx=(x1+cx)/2;
+    arc.setAttribute('d', `M${x1},100 Q${midx},${100-bumpHeight*1.5} ${cx},${100-bumpHeight}`);
+    if(t<1) requestAnimationFrame(frame);
+    else {
+      dot.setAttribute('cy',100);
+      label.textContent = `${orFmtRel(start)} + (${orFmtRel(delta)}) = ${orFmtRel(end)}`;
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---- Méthode 2 : addition de signes contraires ---- */
 const OR_ADDITION_STEPS = [
   {expr:'N = (+8) + (−14)', note:"On repère les deux nombres relatifs à additionner."},
   {expr:"C'est (−14) qui a la plus grande valeur absolue (14 > 8).", note:"On compare les valeurs absolues des deux nombres."},
@@ -136,7 +209,7 @@ const OR_ADDITION_STEPS = [
 ];
 const orAdditionDemo = makeStepDemo(OR_ADDITION_STEPS, 'or-additionDisplay');
 
-/* ---- Méthode 2 : somme algébrique ---- */
+/* ---- Méthode 3 : somme algébrique ---- */
 const OR_SOMME_STEPS = [
   {expr:'P = 5,2 − 8 + 3 − 1,2 + 9 − 4', note:"On part d'une somme algébrique déjà simplifiée (sans parenthèses)."},
   {expr:'P = 5,2 + 3 + 9 − 8 − 1,2 − 4', note:"On regroupe les nombres positifs entre eux et les nombres négatifs entre eux."},
@@ -148,6 +221,7 @@ const orSommeDemo = makeStepDemo(OR_SOMME_STEPS, 'or-sommeDisplay');
 DEMO_REGISTRY['Opérations sur les nombres relatifs'] = {
   cours:'cours-demo-operations-relatifs-5e', methode:'methode-demo-operations-relatifs-5e', exos:'exos-demo-operations-relatifs-5e',
   init:()=>{
+    orResetJumpFigure();
     orAdditionDemo.reset();
     orSommeDemo.reset();
     injectCourseAddButtons(document.getElementById('cours-demo-operations-relatifs-5e'));

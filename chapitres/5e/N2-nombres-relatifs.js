@@ -121,29 +121,6 @@ document.getElementById('cours-demo-relatifs').innerHTML = `
         ⚠️ Piège classique : un nombre négatif de grande valeur absolue reste un <b>petit</b> nombre. On voit souvent l'erreur −10 &gt; −3 (en ne comparant que les chiffres 10 et 3) — c'est l'inverse : −10 &lt; −3.
       </div>
 `;
-document.getElementById('methode-demo-relatifs').innerHTML = `
-      <div class="figure-wrap">
-        <strong style="font-family:'Space Grotesk',sans-serif;">Additionner deux nombres relatifs : un « bond » sur la droite graduée</strong>
-        <p class="hint" style="margin-top:6px;">Choisis un exemple : le point part de départ, bondit du nombre de cases indiqué, et atterrit sur le résultat.</p>
-        <svg id="svgJump" viewBox="0 0 600 150" style="width:100%;max-width:560px;display:block;margin:14px auto;">
-          <line x1="30" y1="100" x2="570" y2="100" stroke="#1C1B2E" stroke-width="1.6"/>
-          <polygon points="570,100 560,95 560,105" fill="#1C1B2E"/>
-          <g id="jumpTicks"></g>
-          <path id="jumpArc" fill="none" stroke="#E35D3A" stroke-width="2" stroke-dasharray="5 4" opacity="0"/>
-          <circle id="jumpDot" r="8" fill="#1F3A5C"/>
-          <text id="jumpLabel" font-family="JetBrains Mono" font-size="15" font-weight="700" fill="#1F3A5C" text-anchor="middle"></text>
-        </svg>
-        <div class="figure-toolbar">
-          <button class="btn" onclick="playJumpExample(-3,5)">(−3) + 5</button>
-          <button class="btn" onclick="playJumpExample(2,-6)">2 + (−6)</button>
-          <button class="btn" onclick="playJumpExample(-4,-2)">(−4) + (−2)</button>
-        </div>
-        <div class="step-list" id="jumpRuleSteps">
-          <div class="step-item" data-rule="diff"><div class="step-num">≠</div><div><b>Signes différents</b> : on soustrait la plus petite valeur absolue de la plus grande, et on garde le signe du nombre qui a la plus grande valeur absolue.</div></div>
-          <div class="step-item" data-rule="same"><div class="step-num">=</div><div><b>Même signe</b> : on additionne les valeurs absolues, et on garde le signe commun.</div></div>
-        </div>
-      </div>
-`;
 document.getElementById('exos-demo-relatifs').innerHTML = `
       <div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
       <div class="redaction-block">
@@ -284,64 +261,11 @@ function initPlaneDemo(){
   handle.ontouchstart=start; svgEl.addEventListener('touchmove',move,{passive:false}); svgEl.addEventListener('touchend',end);
 }
 
-/* ---- nombres relatifs : addition visualisée comme un bond ---- */
-
-function buildJumpTicks(){
-  const g=document.getElementById('jumpTicks');
-  let html='';
-  for(let v=REL_MIN;v<=REL_MAX;v++){
-    const x=relValToX(v);
-    html+=`<line x1="${x}" y1="93" x2="${x}" y2="107" stroke="#1C1B2E" stroke-width="1.3"/>`;
-    html+=`<text x="${x}" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">${v}</text>`;
-  }
-  g.innerHTML=html;
-}
-
-function resetJumpFigure(){
-  buildJumpTicks();
-  document.getElementById('jumpDot').setAttribute('cx',relValToX(0));
-  document.getElementById('jumpDot').setAttribute('cy',100);
-  document.getElementById('jumpArc').setAttribute('opacity','0');
-  document.getElementById('jumpLabel').textContent='';
-  document.querySelectorAll('#jumpRuleSteps .step-item').forEach(s=>s.classList.remove('done'));
-}
-
-function fmtRel(v){ return (v>0?'+':'')+ (Number.isInteger(v)?v:v.toFixed(1)); }
-
-function playJumpExample(start,delta){
-  resetJumpFigure();
-  const end = start+delta;
-  const x1=relValToX(start), x2=relValToX(end);
-  const sameSign = (start>=0 && delta>=0) || (start<=0 && delta<=0);
-  document.querySelector('#jumpRuleSteps .step-item[data-rule="'+(sameSign?'same':'diff')+'"]').classList.add('done');
-  const dot=document.getElementById('jumpDot'), arc=document.getElementById('jumpArc'), label=document.getElementById('jumpLabel');
-  dot.setAttribute('cx',x1); dot.setAttribute('cy',100);
-  arc.setAttribute('opacity','1');
-  label.setAttribute('x',(x1+x2)/2); label.setAttribute('y',35);
-  label.textContent = `${fmtRel(start)} + (${fmtRel(delta)})`;
-  const start_t=performance.now(), dur=1300;
-  function frame(now){
-    const t=Math.min(1,(now-start_t)/dur);
-    const eased = t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
-    const cx = x1+(x2-x1)*eased;
-    const bumpHeight = 55*Math.sin(Math.PI*eased);
-    dot.setAttribute('cx',cx); dot.setAttribute('cy',100-bumpHeight);
-    const midx=(x1+cx)/2;
-    arc.setAttribute('d', `M${x1},100 Q${midx},${100-bumpHeight*1.5} ${cx},${100-bumpHeight}`);
-    if(t<1) requestAnimationFrame(frame);
-    else {
-      dot.setAttribute('cy',100);
-      label.textContent = `${fmtRel(start)} + (${fmtRel(delta)}) = ${fmtRel(end)}`;
-    }
-  }
-  requestAnimationFrame(frame);
-}
-
 /* ---- clé API partagée (quiz IA + interprétation de figures) ---- */
 
 
 DEMO_REGISTRY['Nombres relatifs'] = { cours:'cours-demo-relatifs', methode:'methode-demo-relatifs', exos:'exos-demo-relatifs',
-  init:()=>{ initRelDemo(); initPlaneDemo(); resetJumpFigure(); renderStaticMath(document.getElementById('cours-demo-relatifs')); injectCourseAddButtons(document.getElementById('cours-demo-relatifs')); } };
+  init:()=>{ initRelDemo(); initPlaneDemo(); renderStaticMath(document.getElementById('cours-demo-relatifs')); injectCourseAddButtons(document.getElementById('cours-demo-relatifs')); } };
 
 DEMO_QUIZZES['Nombres relatifs'] = [
   {q:"Quelle est la valeur absolue de −8 ?",
