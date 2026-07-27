@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-27.3</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-27.4</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -943,6 +943,31 @@ function inlineComputedStyles(liveRoot, cloneRoot){
     cloneEls[i].setAttribute('style', existing + ';' + extra);
   }
 }
+/* Convention d'impression pour les points d'une figure (voir aussi setTick/setCross) :
+   - un sommet de polygone/triangle ne se marque pas d'un point (l'intersection des côtés suffit) ;
+   - une extrémité, une origine ou un point sur une droite se marque d'une petite croix.
+   Les points concernés portent l'attribut data-marker="hidden" ou "cross" dans le SVG source ;
+   cette fonction les transforme juste avant la rastérisation (elle ne touche jamais à la version
+   interactive à l'écran, seulement au clone utilisé pour le cahier/PDF). */
+function applyPrintMarkers(clone){
+  clone.querySelectorAll('[data-marker]').forEach(el=>{
+    const role = el.getAttribute('data-marker');
+    if(role === 'hidden'){ el.remove(); return; }
+    if(role === 'cross'){
+      const style = el.getAttribute('style') || '';
+      const isInvisible = /display\s*:\s*none/.test(style) || /opacity\s*:\s*0(?:[^.\d]|$)/.test(style) || el.getAttribute('opacity')==='0';
+      if(isInvisible){ el.remove(); return; }
+      const cx = parseFloat(el.getAttribute('cx')||0);
+      const cy = parseFloat(el.getAttribute('cy')||0);
+      const color = el.getAttribute('fill') || '#1C1B2E';
+      const size = 6;
+      const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.innerHTML = `<line x1="${cx-size}" y1="${cy-size}" x2="${cx+size}" y2="${cy+size}" stroke="${color}" stroke-width="1.6" stroke-linecap="round"/>`
+        + `<line x1="${cx-size}" y1="${cy+size}" x2="${cx+size}" y2="${cy-size}" stroke="${color}" stroke-width="1.6" stroke-linecap="round"/>`;
+      el.replaceWith(g);
+    }
+  });
+}
 function svgToRasterDataUri(svgEl, displayWidth){
   return new Promise((resolve)=>{
     const vbAttr = svgEl.getAttribute('viewBox');
@@ -950,6 +975,7 @@ function svgToRasterDataUri(svgEl, displayWidth){
     const vbW = vbParts[2] || 400, vbH = vbParts[3] || 240;
     const clone = svgEl.cloneNode(true);
     try{ inlineComputedStyles(svgEl, clone); } catch(e){ console.error('svgToRasterDataUri: échec figement des styles', e); }
+    try{ applyPrintMarkers(clone); } catch(e){ console.error('svgToRasterDataUri: échec transformation des marqueurs', e); }
     clone.removeAttribute('id');
     clone.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
     clone.removeAttribute('style');

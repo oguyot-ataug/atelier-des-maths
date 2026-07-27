@@ -48,9 +48,9 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <path id="dp-perpAngleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3"/>
     <line id="dp-perpTick1" stroke="#1C1B2E" stroke-width="1.6"/>
     <line id="dp-perpTick2" stroke="#1C1B2E" stroke-width="1.6"/>
-    <circle id="dp-perpD1" r="5.5" fill="#1F3A5C" style="cursor:grab;"/>
-    <circle id="dp-perpD2" r="5.5" fill="#1F3A5C" style="cursor:grab;"/>
-    <circle id="dp-perpM" r="5.5" fill="#E35D3A" style="cursor:grab;"/>
+    <circle id="dp-perpD1" r="5.5" fill="#1F3A5C" style="cursor:grab;" data-marker="cross"/>
+    <circle id="dp-perpD2" r="5.5" fill="#1F3A5C" style="cursor:grab;" data-marker="cross"/>
+    <circle id="dp-perpM" r="5.5" fill="#E35D3A" style="cursor:grab;" data-marker="cross"/>
     <text id="dp-perpLabelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C">(d)</text>
     <text id="dp-perpLabelDp" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A">(d')</text>
     <text id="dp-perpLabelM" font-style="italic" font-size="14">M</text>
@@ -64,7 +64,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 <div class="figure-wrap">
   <svg id="dp-perpMethodeSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
     <line id="dp-pm-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
-    <circle id="dp-pm-M" r="5" fill="#E35D3A"/>
+    <circle id="dp-pm-M" r="5" fill="#E35D3A" data-marker="cross"/>
     <text id="dp-pm-labelM" font-style="italic" font-size="14">M</text>
     <polygon id="dp-pm-equerre" fill="rgba(210,214,222,.6)" stroke="#4A4A55" stroke-width="1.8"/>
     <circle id="dp-pm-equerre-hole" r="4" fill="var(--white)" stroke="#4A4A55" stroke-width="1.2"/>
@@ -92,9 +92,9 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
   <svg id="dp-paraSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
     <line id="dp-paraLineD" stroke="#1F3A5C" stroke-width="1.8"/>
     <line id="dp-paraLineDpp" stroke="#E35D3A" stroke-width="1.8"/>
-    <circle id="dp-paraP1" r="5.5" fill="#1F3A5C" style="cursor:grab;"/>
-    <circle id="dp-paraP2" r="5.5" fill="#1F3A5C" style="cursor:grab;"/>
-    <circle id="dp-paraN" r="5.5" fill="#E35D3A" style="cursor:grab;"/>
+    <circle id="dp-paraP1" r="5.5" fill="#1F3A5C" style="cursor:grab;" data-marker="cross"/>
+    <circle id="dp-paraP2" r="5.5" fill="#1F3A5C" style="cursor:grab;" data-marker="cross"/>
+    <circle id="dp-paraN" r="5.5" fill="#E35D3A" style="cursor:grab;" data-marker="cross"/>
     <text id="dp-paraLabelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C">(d)</text>
     <text id="dp-paraLabelDpp" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A">(d'')</text>
     <text id="dp-paraLabelN" font-style="italic" font-size="14">N</text>
@@ -108,7 +108,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 <div class="figure-wrap">
   <svg id="dp-paraMethodeSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
     <line id="dp-pam-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
-    <circle id="dp-pam-N" r="5" fill="#E35D3A"/>
+    <circle id="dp-pam-N" r="5" fill="#E35D3A" data-marker="cross"/>
     <text id="dp-pam-labelN" font-style="italic" font-size="14">N</text>
     <polygon id="dp-pam-ruler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
     <polygon id="dp-pam-ruler2" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
@@ -173,8 +173,8 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <path id="dp-medAngleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3"/>
     <line id="dp-medTick1a" stroke="#1F6B3A" stroke-width="1.8"/>
     <line id="dp-medTick1b" stroke="#1F6B3A" stroke-width="1.8"/>
-    <circle id="dp-medP" r="5.5" fill="#1C1B2E" style="cursor:grab;"/>
-    <circle id="dp-medQ" r="5.5" fill="#1C1B2E" style="cursor:grab;"/>
+    <circle id="dp-medP" r="5.5" fill="#1C1B2E" style="cursor:grab;" data-marker="cross"/>
+    <circle id="dp-medQ" r="5.5" fill="#1C1B2E" style="cursor:grab;" data-marker="cross"/>
     <text id="dp-medLabelP" font-style="italic" font-size="14">A</text>
     <text id="dp-medLabelQ" font-style="italic" font-size="14">B</text>
     <text id="dp-medLabelMed" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A">médiatrice</text>
@@ -188,8 +188,8 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 <div class="figure-wrap">
   <svg id="dp-medMethodeSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
     <line id="dp-mm-seg" stroke="#1C1B2E" stroke-width="1.8"/>
-    <circle id="dp-mm-A" r="5" fill="#1C1B2E"/>
-    <circle id="dp-mm-B" r="5" fill="#1C1B2E"/>
+    <circle id="dp-mm-A" r="5" fill="#1C1B2E" data-marker="cross"/>
+    <circle id="dp-mm-B" r="5" fill="#1C1B2E" data-marker="cross"/>
     <text id="dp-mm-labelA" font-style="italic" font-size="14">A</text>
     <text id="dp-mm-labelB" font-style="italic" font-size="14">B</text>
     <polygon id="dp-mm-measureRuler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
@@ -197,7 +197,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <g id="dp-mm-measureLabels" style="display:none;"></g>
     <line id="dp-mm-tick1a" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
     <line id="dp-mm-tick1b" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
-    <circle id="dp-mm-midpoint" r="3.5" fill="#1C1B2E" style="display:none;"/>
+    <circle id="dp-mm-midpoint" r="3.5" fill="#1C1B2E" style="display:none;" data-marker="cross"/>
     <polygon id="dp-mm-equerre" fill="rgba(210,214,222,.6)" stroke="#4A4A55" stroke-width="1.8" style="display:none;"/>
     <circle id="dp-mm-equerre-hole" r="4" fill="var(--white)" stroke="#4A4A55" stroke-width="1.2" style="display:none;"/>
     <polygon id="dp-mm-ruler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
@@ -221,7 +221,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 <div class="figure-wrap">
   <svg id="dp-rqp-svg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
     <line id="dp-rqp-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
-    <circle id="dp-rqp-M" r="5" fill="#E35D3A"/>
+    <circle id="dp-rqp-M" r="5" fill="#E35D3A" data-marker="cross"/>
     <text id="dp-rqp-labelM" font-style="italic" font-size="14">M</text>
     <text id="dp-rqp-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C">(d)</text>
     <polygon id="dp-rqp-tool" fill="rgba(230,214,110,.55)" stroke="#8A7A20" stroke-width="1.6"/>
@@ -243,7 +243,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 <div class="figure-wrap">
   <svg id="dp-rqa-svg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
     <line id="dp-rqa-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
-    <circle id="dp-rqa-A" r="5" fill="#E35D3A"/>
+    <circle id="dp-rqa-A" r="5" fill="#E35D3A" data-marker="cross"/>
     <text id="dp-rqa-labelA" font-style="italic" font-size="14">A</text>
     <text id="dp-rqa-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C">(d)</text>
     <polygon id="dp-rqa-tool" fill="rgba(230,214,110,.55)" stroke="#8A7A20" stroke-width="1.6"/>
