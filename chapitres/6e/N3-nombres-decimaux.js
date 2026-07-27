@@ -213,6 +213,15 @@ document.getElementById('methode-demo-decimaux-6e').innerHTML = `
     <button class="btn secondary" onclick="ndDecomposerDemo.reset()">Recommencer</button>
   </div>
 </div>
+<div class="figure-wrap" style="margin-top:20px;">
+  <strong style="font-family:'Space Grotesk',sans-serif;">Méthode : ne pas confondre « chiffre des... » et « nombre de... »</strong>
+  <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div class="step-display" id="nd-chiffreNombreDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="ndChiffreNombreDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ndChiffreNombreDemo.reset()">Recommencer</button>
+  </div>
+</div>
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
   ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).
 </div>
@@ -246,6 +255,10 @@ document.getElementById('exos-demo-decimaux-6e').innerHTML = `
     <div class="num">Exercice 4</div>
     Sur une demi-droite graduée, place les points R(2,3) et S(0,8).
   </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Pour le nombre 62,489, donne : <b>a.</b> le chiffre des centièmes ; <b>b.</b> le nombre de centièmes. Explique la différence entre les deux réponses.
+  </div>
 </div>
 `;
 
@@ -268,12 +281,23 @@ const ND_DECOMPOSER_STEPS = [
 ];
 const ndDecomposerDemo = makeStepDemo(ND_DECOMPOSER_STEPS, 'nd-decomposerDisplay');
 
+/* ---- Méthode : chiffre des... vs nombre de... (adapté aux décimaux) ---- */
+const ND_CHIFFRE_NOMBRE_STEPS = [
+  {expr:'84,153', note:"On reprend un nombre décimal."},
+  {expr:'Chiffre des dixièmes = 1', note:"C'est uniquement le symbole qui se trouve à cette position précise."},
+  {expr:'Nombre de dixièmes = 841', note:"C'est le nombre total de dixièmes complets contenus dans 84,153 — on lit tous les chiffres situés à gauche de cette position, elle comprise."},
+  {expr:'Vérification : 841 × 0,1 = 84,1', note:"84,153 = 84,1 + 0,053. Il y a bien 841 dixièmes complets dans 84,153 (il reste 0,053)."},
+  {expr:'Chiffre des centièmes = 5 &nbsp;·&nbsp; Nombre de centièmes = 8 415', note:"Même distinction, une position plus loin : 8 415 × 0,01 = 84,15, et 84,153 = 84,15 + 0,003."},
+];
+const ndChiffreNombreDemo = makeStepDemo(ND_CHIFFRE_NOMBRE_STEPS, 'nd-chiffreNombreDisplay');
+
 DEMO_REGISTRY['Nombres décimaux'] = {
   cours:'cours-demo-decimaux-6e', methode:'methode-demo-decimaux-6e', exos:'exos-demo-decimaux-6e',
   init:()=>{
     ndInitDemiDroiteDrag();
     ndComparerDemo.reset();
     ndDecomposerDemo.reset();
+    ndChiffreNombreDemo.reset();
     renderStaticMath(document.getElementById('cours-demo-decimaux-6e'));
     renderStaticMath(document.getElementById('exos-demo-decimaux-6e'));
     injectCourseAddButtons(document.getElementById('cours-demo-decimaux-6e'));
