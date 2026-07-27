@@ -916,14 +916,14 @@ function setSlantTick(el, cx, cy, angleRad, len){
    en vignettes côte à côte, plutôt que de figer uniquement l'étape actuellement affichée. */
 window.GEO_STEP_DEMOS = window.GEO_STEP_DEMOS || {};
 function registerGeoStepDemo(svgId, config){ window.GEO_STEP_DEMOS[svgId] = config; }
-function captureGeoFilmstrip(svgEl, steps, gotoFn, originalIdx){
-  const panels = [];
-  // Dimensions issues du viewBox (nécessaires pour une sérialisation SVG->image correcte)
-  const vbAttr = svgEl.getAttribute('viewBox');
-  const vbParts = vbAttr ? vbAttr.trim().split(/\s+/).map(Number) : [0,0,400,240];
-  const vbW = vbParts[2] || 400, vbH = vbParts[3] || 240;
-  for(let i=0;i<steps.length;i++){
-    gotoFn(i, false);
+/* Convertit un SVG en image PNG (data URI), rastérisée à une taille en pixels fixe
+   et explicite (plutôt que de compter sur un <img> pour redimensionner un SVG, ce
+   qu'html2canvas gère de façon peu fiable -- images énormes, tronquées ou absentes). */
+function svgToRasterDataUri(svgEl, displayWidth){
+  return new Promise((resolve)=>{
+    const vbAttr = svgEl.getAttribute('viewBox');
+    const vbParts = vbAttr ? vbAttr.trim().split(/\s+/).map(Number) : [0,0,400,240];
+    const vbW = vbParts[2] || 400, vbH = vbParts[3] || 240;
     const clone = svgEl.cloneNode(true);
     clone.removeAttribute('id');
     clone.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
@@ -931,16 +931,38 @@ function captureGeoFilmstrip(svgEl, steps, gotoFn, originalIdx){
     clone.setAttribute('width', vbW);
     clone.setAttribute('height', vbH);
     clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    // html2canvas gère mal le SVG inséré dynamiquement : on le convertit donc en image
-    // (data URI) avant insertion, pour un rendu fiable aussi bien à l'écran qu'au PDF.
-    let imgTag;
+    let svgDataUri;
     try{
       const svgString = new XMLSerializer().serializeToString(clone);
-      const dataUri = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
-      imgTag = `<img src="${dataUri}" style="width:170px;height:auto;background:var(--white);border-radius:6px;border:1px solid rgba(28,43,57,.12);flex:none;display:block;" alt="Étape ${i+1}"/>`;
-    } catch(e){
-      imgTag = clone.outerHTML; // filet de sécurité si la sérialisation échoue
-    }
+      svgDataUri = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
+    } catch(e){ console.error('svgToRasterDataUri: échec de sérialisation', e); resolve(null); return; }
+    const img = new Image();
+    const scale = 2; // netteté sur écrans haute densité / impression
+    const displayHeight = displayWidth * (vbH / vbW);
+    img.onload = () => {
+      try{
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(displayWidth*scale);
+        canvas.height = Math.round(displayHeight*scale);
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/png'));
+      } catch(e){ console.error('svgToRasterDataUri: échec de rastérisation', e); resolve(null); }
+    };
+    img.onerror = (e) => { console.error('svgToRasterDataUri: échec de chargement de l\'image SVG', e); resolve(null); };
+    img.src = svgDataUri;
+  });
+}
+async function captureGeoFilmstrip(svgEl, steps, gotoFn, originalIdx){
+  const panels = [];
+  for(let i=0;i<steps.length;i++){
+    gotoFn(i, false);
+    const dataUri = await svgToRasterDataUri(svgEl, 170);
+    const imgTag = dataUri
+      ? `<img src="${dataUri}" style="width:170px;height:auto;border-radius:6px;border:1px solid rgba(28,43,57,.12);flex:none;display:block;" alt="Étape ${i+1}"/>`
+      : `<div style="width:170px;height:100px;flex:none;background:#f2f2f2;border-radius:6px;border:1px solid rgba(28,43,57,.12);"></div>`;
     panels.push(`<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
       ${imgTag}
       <div style="font-size:.8rem;color:var(--ink-soft);line-height:1.4;"><b>Étape ${i+1}.</b> ${steps[i].note}</div>
@@ -1062,7 +1084,7 @@ function getVisibleCoursContent(){
   }
   return panel;
 }
-function exportCoursPDF(){
+async function exportCoursPDF(){
   const hint=document.getElementById('exportHint');
   if(typeof html2pdf==='undefined'){ hint.textContent="La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?) — utilisez Ctrl/Cmd+P pour imprimer à la place."; return; }
   const content = getVisibleCoursContent();
@@ -1071,7 +1093,7 @@ function exportCoursPDF(){
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
   clone.querySelectorAll('.interaction-hint').forEach(el=>el.remove());
-  expandStepDemosInClone(clone);
+  await expandStepDemosInClone(clone);
   // Empêche un saut de page de couper une formule en deux (ce qui provoque un chevauchement visuel).
   clone.querySelectorAll('p, li, .def-box, .step-column > div').forEach(el=>{
     if(el.querySelector('.tex')){
@@ -2844,7 +2866,7 @@ function updateCourseAddButtonsState(){
 }
 // Reconstitue dans un clone (avant capture cahier ou export PDF) toutes les étapes des démos
 // pas-à-pas (texte + LaTeX, ou constructions géométriques), plutôt que de figer l'étape affichée.
-function expandStepDemosInClone(wrapper){
+async function expandStepDemosInClone(wrapper){
   wrapper.querySelectorAll('.step-display[id]').forEach(cloneEl=>{
     const liveEl = document.getElementById(cloneEl.id);
     if(liveEl && liveEl._stepDemoSteps){
@@ -2857,19 +2879,28 @@ function expandStepDemosInClone(wrapper){
       renderStaticMath(cloneEl); // certaines étapes contiennent des fractions en LaTeX (class="tex"), pas encore rendues sous cette forme
     }
   });
-  wrapper.querySelectorAll('svg[id]').forEach(cloneSvg=>{
-    const liveSvg = document.getElementById(cloneSvg.id);
-    const demo = window.GEO_STEP_DEMOS[cloneSvg.id];
-    if(liveSvg && demo){
+  const svgEls = Array.from(wrapper.querySelectorAll('svg[id]'));
+  for(const cloneSvg of svgEls){
+    try{
+      const liveSvg = document.getElementById(cloneSvg.id);
+      const demo = window.GEO_STEP_DEMOS[cloneSvg.id];
+      if(!liveSvg || !demo){
+        console.warn(`Cahier/PDF : étapes non reconstituées pour #${cloneSvg.id} (liveSvg=${!!liveSvg}, demo enregistrée=${!!demo}). La figure conserve son état affiché au moment du clic.`);
+        continue;
+      }
       const steps = demo.steps();
       const originalIdx = demo.getIdx();
-      const filmstripHtml = captureGeoFilmstrip(liveSvg, steps, demo.goto, originalIdx);
+      const filmstripHtml = await captureGeoFilmstrip(liveSvg, steps, demo.goto, originalIdx);
       const figureWrap = cloneSvg.closest('.figure-wrap');
       if(figureWrap){
         figureWrap.innerHTML = `<strong style="font-family:'Space Grotesk',sans-serif;font-size:.85rem;">Étapes de la construction :</strong><div style="margin-top:8px;">${filmstripHtml}</div>`;
+      } else {
+        console.warn(`Cahier/PDF : aucun .figure-wrap parent trouvé pour #${cloneSvg.id}.`);
       }
+    } catch(e){
+      console.error(`Cahier/PDF : erreur lors de la reconstitution des étapes pour #${cloneSvg.id}`, e);
     }
-  });
+  }
 }
 async function addSectionToCahier(headerEl){
   const isLesson = headerEl.classList.contains('lesson-header');
@@ -2891,7 +2922,7 @@ async function addSectionToCahier(headerEl){
   wrapper.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
   wrapper.querySelectorAll('.figure-toolbar').forEach(b=>b.remove());
   wrapper.querySelectorAll('.interaction-hint').forEach(b=>b.remove());
-  expandStepDemosInClone(wrapper);
+  await expandStepDemosInClone(wrapper);
   wrapper.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id')); // évite tout doublon d'id avec la figure d'origine
 
   const niveauSel = document.getElementById('corNiveau');
