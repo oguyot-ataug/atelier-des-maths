@@ -455,10 +455,10 @@ function arDemoLireSteps(){
   return [
     {note:"On souhaite mesurer cet angle. Le rapporteur n'est pas encore placé dessus."},
     {note:"On place le centre du rapporteur exactement sur le sommet de l'angle."},
-    {note: arDemoLireMode==='interieur'
+    {note: arDemoLireMode==='exterieur'
       ? "On fait pivoter le rapporteur pour aligner son 0° extérieur (anneau jaune) sur le premier côté de l'angle : l'autre côté reste bien dans le rapporteur."
       : "On fait pivoter le rapporteur pour aligner son 0° intérieur (anneau vert) sur le second côté de l'angle : l'autre côté reste bien dans le rapporteur."},
-    {note: arDemoLireMode==='interieur'
+    {note: arDemoLireMode==='exterieur'
       ? `On lit alors la mesure sur l'autre côté, sur l'anneau jaune extérieur : ici, ${AR_DEMO_LIRE_SPREAD}°.`
       : `On lit alors la mesure sur le premier côté, sur l'anneau vert intérieur : ici, ${AR_DEMO_LIRE_SPREAD}°.`},
   ];
@@ -498,7 +498,7 @@ function arDemoLireGoto(idx){
   // Extérieur : on aligne le 0° jaune sur le premier côté, on lit le second directement (extérieur).
   // Intérieur : on aligne le 0° vert sur le SECOND côté (l'autre reste bien dans le rapporteur),
   // et on lit le premier côté directement (intérieur) -- aucun miroir, une simple rotation différente.
-  const alignDeg = arDemoLireMode==='interieur' ? AR_DEMO_LIRE_BASE_DEG : ((AR_DEMO_LIRE_BASE_DEG+AR_DEMO_LIRE_SPREAD-180)%360+360)%360;
+  const alignDeg = arDemoLireMode==='exterieur' ? AR_DEMO_LIRE_BASE_DEG : ((AR_DEMO_LIRE_BASE_DEG+AR_DEMO_LIRE_SPREAD-180)%360+360)%360;
   if(idx===0){ arDemoLireProtState.x=90; arDemoLireProtState.y=90; arDemoLireProtState.rot=0; }
   else if(idx===1){ arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=0; }
   else { arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=alignDeg; }
@@ -549,6 +549,7 @@ function arBuildDemoConsScene(){
   const R = AR_PROT_H*AR_PENCIL_R_RATIO;
   const tickInner = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R-6);
   const tickOuter = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R+6);
+  const labelPt = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R+30);
   return `<div class="figure-toolbar" style="justify-content:center;margin-bottom:8px;">
     <button class="btn secondary active" id="ar-demoConsModeExt" onclick="arSetDemoConsMode('exterieur')">Lecture extérieure</button>
     <button class="btn secondary" id="ar-demoConsModeInt" onclick="arSetDemoConsMode('interieur')">Lecture intérieure</button>
@@ -558,6 +559,7 @@ function arBuildDemoConsScene(){
       <line x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${baseEnd.x}" y2="${baseEnd.y}" stroke="#1F3A5C" stroke-width="1.3"/>
       <line id="ar-demoConsFinalRay" x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${AR_DEMO_CONS_VERTEX.x}" y2="${AR_DEMO_CONS_VERTEX.y}" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
       <line id="ar-demoConsTick" x1="${tickInner.x}" y1="${tickInner.y}" x2="${tickOuter.x}" y2="${tickOuter.y}" stroke="#1C1B2E" stroke-width="2.2" opacity="0"/>
+      <text id="ar-demoConsGradLabel" x="${labelPt.x}" y="${labelPt.y}" font-size="20" font-weight="700" text-anchor="middle" opacity="0"></text>
     </svg>
     <div id="ar-demoConsProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
       <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
@@ -593,6 +595,17 @@ function arDemoConsGoto(idx){
   if(noteEl) noteEl.textContent = steps[idx].note;
   const tick = document.getElementById('ar-demoConsTick');
   if(tick) tick.setAttribute('opacity', idx>=3?'1':'0');
+  const gradLabel = document.getElementById('ar-demoConsGradLabel');
+  if(gradLabel){
+    if(idx>=2 && idx<=3){
+      const graduation = arDemoConsMode==='exterieur' ? AR_DEMO_CONS_TARGET : (180-AR_DEMO_CONS_TARGET);
+      gradLabel.textContent = graduation+'°';
+      gradLabel.setAttribute('fill', arDemoConsMode==='exterieur' ? '#B8860B' : '#1F6B3A');
+      gradLabel.setAttribute('opacity','1');
+    } else {
+      gradLabel.setAttribute('opacity','0');
+    }
+  }
   const finalRay = document.getElementById('ar-demoConsFinalRay');
   if(finalRay){
     if(idx>=5){
