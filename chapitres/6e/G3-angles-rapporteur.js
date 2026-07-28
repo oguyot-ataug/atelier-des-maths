@@ -170,8 +170,7 @@ function arRenderProtractor(id, state){
   const el = document.getElementById(id);
   if(!el) return;
   const tx = state.x - AR_PROT_PIVOT.x, ty = state.y - AR_PROT_PIVOT.y;
-  const mirror = state.mirror ? ' scaleX(-1)' : '';
-  el.style.transform = `translate(${tx}px, ${ty}px) rotate(${-state.rot}deg)${mirror}`;
+  el.style.transform = `translate(${tx}px, ${ty}px) rotate(${-state.rot}deg)`;
 }
 /* rayAngles : les orientations (°) des côtés de l'angle sur lesquelles la rotation du rapporteur
    doit s'accrocher (la ligne 0°-180° du rapporteur est une droite : on teste aussi +180). */
@@ -457,9 +456,11 @@ function arDemoLireSteps(){
     {note:"On souhaite mesurer cet angle. Le rapporteur n'est pas encore placé dessus."},
     {note:"On place le centre du rapporteur exactement sur le sommet de l'angle."},
     {note: arDemoLireMode==='exterieur'
-      ? "On fait pivoter le rapporteur pour aligner son 0° extérieur (anneau jaune) sur un des côtés de l'angle."
-      : "On fait pivoter le rapporteur pour aligner son 0° intérieur (anneau vert) sur un des côtés de l'angle : on peut poser le rapporteur des deux côtés, ça marche aussi !"},
-    {note: `On lit alors la mesure sur l'autre côté, sur ce même anneau (${arDemoLireMode==='exterieur'?'jaune extérieur':'vert intérieur'}) : ici, ${AR_DEMO_LIRE_SPREAD}°.`},
+      ? "On fait pivoter le rapporteur pour aligner son 0° extérieur (anneau jaune) sur le premier côté de l'angle : l'autre côté reste bien dans le rapporteur."
+      : "On fait pivoter le rapporteur pour aligner son 0° intérieur (anneau vert) sur le second côté de l'angle : l'autre côté reste bien dans le rapporteur."},
+    {note: arDemoLireMode==='exterieur'
+      ? `On lit alors la mesure sur l'autre côté, sur l'anneau jaune extérieur : ici, ${AR_DEMO_LIRE_SPREAD}°.`
+      : `On lit alors la mesure sur le premier côté, sur l'anneau vert intérieur : ici, ${AR_DEMO_LIRE_SPREAD}°.`},
   ];
 }
 function arSetDemoLireMode(mode){
@@ -492,11 +493,13 @@ function arBuildDemoLireScene(){
 function arDemoLireGoto(idx){
   arDemoLireStepIdx = idx;
   const steps = arDemoLireSteps();
-  const mirror = arDemoLireMode==='interieur';
-  arDemoLireProtState.mirror = mirror;
+  // Extérieur : on aligne le 0° jaune sur le premier côté, on lit le second directement (extérieur).
+  // Intérieur : on aligne le 0° vert sur le SECOND côté (l'autre reste bien dans le rapporteur),
+  // et on lit le premier côté directement (intérieur) -- aucun miroir, une simple rotation différente.
+  const alignDeg = arDemoLireMode==='exterieur' ? AR_DEMO_LIRE_BASE_DEG : ((AR_DEMO_LIRE_BASE_DEG+AR_DEMO_LIRE_SPREAD-180)%360+360)%360;
   if(idx===0){ arDemoLireProtState.x=90; arDemoLireProtState.y=90; arDemoLireProtState.rot=0; }
   else if(idx===1){ arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=0; }
-  else { arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=AR_DEMO_LIRE_BASE_DEG; }
+  else { arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=alignDeg; }
   arRenderProtractor('ar-demoLireProtractor', arDemoLireProtState);
   const noteEl = document.getElementById('ar-demoLireNote');
   if(noteEl) noteEl.textContent = steps[idx].note;
@@ -516,13 +519,14 @@ let arDemoConsProtState = {x:90, y:90, rot:0, mirror:false};
 let arDemoConsStepIdx = 0;
 let arDemoConsMode = 'exterieur';
 function arDemoConsSteps(){
+  const graduation = arDemoConsMode==='exterieur' ? AR_DEMO_CONS_TARGET : (180-AR_DEMO_CONS_TARGET);
   const anneau = arDemoConsMode==='exterieur' ? 'jaune extérieur' : 'vert intérieur';
   return [
     {note:`On veut construire un angle de ${AR_DEMO_CONS_TARGET}° à partir de ce côté déjà tracé.`},
+    {note:"On place le centre du rapporteur sur le sommet, et on aligne son 0° extérieur sur le côté déjà tracé."},
     {note: arDemoConsMode==='exterieur'
-      ? "On place le centre du rapporteur sur le sommet, et on aligne son 0° extérieur sur le côté déjà tracé."
-      : "On place le centre du rapporteur sur le sommet, et on aligne son 0° intérieur sur le côté déjà tracé (le rapporteur est vu de l'autre côté)."},
-    {note:`On place la pointe du crayon sur le bord du rapporteur, à la graduation ${AR_DEMO_CONS_TARGET}° de l'anneau ${anneau}.`},
+      ? `On place la pointe du crayon sur le bord du rapporteur, à la graduation ${graduation}° de l'anneau ${anneau}.`
+      : `Au même endroit, l'anneau ${anneau} affiche ${graduation}° (180° − ${AR_DEMO_CONS_TARGET}°) : on y place la pointe du crayon.`},
     {note:"On trace un petit trait dans le prolongement de cette lecture : c'est le trait-repère."},
     {note:"On retire le rapporteur (et le crayon) : seul le trait-repère reste sur la feuille."},
     {note:"On pose la règle contre le sommet et le trait-repère, et on trace la demi-droite : l'angle est construit."},
@@ -570,16 +574,16 @@ function arDemoConsGoto(idx){
   const steps = arDemoConsSteps();
   const prot = document.getElementById('ar-demoConsProtractor');
   const pencil = document.getElementById('ar-demoConsPencil');
-  const mirror = arDemoConsMode==='interieur';
-  arDemoConsProtState.mirror = mirror;
   if(idx===0){ arDemoConsProtState.x=90; arDemoConsProtState.y=90; arDemoConsProtState.rot=0; if(prot) prot.style.opacity='1'; }
   else if(idx===1){ arDemoConsProtState.x=AR_DEMO_CONS_VERTEX.x; arDemoConsProtState.y=AR_DEMO_CONS_VERTEX.y; arDemoConsProtState.rot=AR_DEMO_CONS_BASE_DEG; if(prot) prot.style.opacity='1'; }
   else if(prot){ prot.style.opacity = idx>=4 ? '0' : '1'; }
   arRenderProtractor('ar-demoConsProtractor', arDemoConsProtState);
   if(pencil){
     pencil.style.opacity = (idx>=2 && idx<=3) ? '1' : '0';
-    const storedDeg = mirror ? (180-AR_DEMO_CONS_TARGET) : AR_DEMO_CONS_TARGET;
-    arRenderPencilTip(pencil, arDemoConsProtState, storedDeg);
+    // Le crayon marque toujours la même position réelle (target° depuis le côté déjà tracé),
+    // que l'on choisisse de lire "target" sur l'anneau jaune ou "180-target" sur l'anneau vert
+    // à ce même endroit : la rotation du rapporteur ne change jamais.
+    arRenderPencilTip(pencil, arDemoConsProtState, AR_DEMO_CONS_TARGET);
   }
   const noteEl = document.getElementById('ar-demoConsNote');
   if(noteEl) noteEl.textContent = steps[idx].note;
@@ -1114,8 +1118,7 @@ DEMO_REGISTRY['Angles et rapporteur'] = {
         goto: (i)=>arDemoConsGoto(i),
         capture: (i)=>{
           const protOpacity = i>=4 ? 0 : 1;
-          const storedDeg = arDemoConsProtState.mirror ? (180-AR_DEMO_CONS_TARGET) : AR_DEMO_CONS_TARGET;
-          const pencilDeg = (i>=2 && i<=3) ? storedDeg : null;
+          const pencilDeg = (i>=2 && i<=3) ? AR_DEMO_CONS_TARGET : null;
           return arCaptureRapporteurScene('ar-demoConsScene', 'svg', arDemoConsProtState, protOpacity, pencilDeg, 260);
         },
       });

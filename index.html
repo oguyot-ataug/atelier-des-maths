@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.6</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.7</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2240,6 +2240,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-28.7', items:[
+    "Chapitre Angles et rapporteur (6e) : le rapporteur ne se retourne plus jamais (retiré l'effet miroir, qui donnait un placement absurde). Retour à une simple rotation : pour la lecture intérieure, on aligne le 0° vert sur le SECOND côté de l'angle (pas le premier) -- l'autre côté reste ainsi dans le rapporteur, comme demandé. Pour la construction, la rotation est désormais identique dans les deux modes (jamais de retournement) : seule la graduation à lire change (180°−cible sur l'anneau vert, à la même position réelle que la cible sur le jaune).",
+  ]},
   { version:'2026-07-28.6', items:[
     "PDF : correction d'une vraie cause de figures manquantes -- une figure statique (icône « angle rentrant ») utilisait une variable CSS (var(--white)) dans un attribut fill, qui ne se résout pas sur un clone détaché du DOM lors de la capture. Remplacée par une couleur littérale, et la rastérisation PDF est étendue à TOUTE figure SVG restante (pas seulement celles avec un identifiant), pour couvrir aussi les figures statiques.",
     "Correction d'un risque similaire pour toutes les figures : le figement des styles calculés n'est plus tenté sur un élément détaché du DOM (ce qui écrasait par erreur des couleurs correctes par des valeurs par défaut) -- seuls les éléments encore présents en direct dans la page sont concernés.",
