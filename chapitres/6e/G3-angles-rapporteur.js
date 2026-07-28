@@ -121,13 +121,16 @@ const AR_RATIO = 900/483;      // proportions réelles de l'image assets/rapport
 /* Le vrai pivot du rapporteur (là où convergent les graduations) n'est pas tout en bas de
    l'image : il y a une marge en dessous (étiquettes "0"/"180°" et un cadre) mesurée précisément
    par analyse des pixels de l'image (voir vérification faite avant intégration). */
-const AR_BASELINE_RATIO = 450/483;
+/* Position du pivot obtenue par ajustement d'un cercle sur le bord rose du rapporteur
+   (plus robuste que le simple repérage de la ligne de base), voir vérification avant intégration. */
+const AR_BASELINE_RATIO = 0.9349;
+const AR_CENTER_X_RATIO = 0.4992;
 
-const AR_SCENE_W = 520, AR_SCENE_H = 360;   // scène : assez grande pour que les côtés de l'angle dépassent du rapporteur
-const AR_PROT_W = 280, AR_PROT_H = AR_PROT_W/AR_RATIO;   // taille d'affichage du rapporteur dans la scène
-const AR_PROT_PIVOT = {x: AR_PROT_W/2, y: AR_PROT_H*AR_BASELINE_RATIO};
-const AR_RAY_LEN = 235;          // longueur des côtés de l'angle tracé (dépasse le rapporteur)
-const AR_SNAP_DIST = 22;         // distance (px, coordonnées de la scène) déclenchant l'aimant sur le sommet
+const AR_SCENE_W = 680, AR_SCENE_H = 480;   // scène agrandie : assez grande pour que les côtés de l'angle dépassent largement du rapporteur
+const AR_PROT_W = 400, AR_PROT_H = AR_PROT_W/AR_RATIO;   // rapporteur plus grand et plus lisible
+const AR_PROT_PIVOT = {x: AR_PROT_W*AR_CENTER_X_RATIO, y: AR_PROT_H*AR_BASELINE_RATIO};
+const AR_RAY_LEN = 310;          // longueur des côtés de l'angle tracé (dépasse largement le rapporteur)
+const AR_SNAP_DIST = 26;         // distance (px, coordonnées de la scène) déclenchant l'aimant sur le sommet
 const AR_SNAP_ROT = 4;           // tolérance (°) pour l'accroche de la rotation sur un côté de l'angle
 
 function arDegToPt(vertex, angleDeg, len){
@@ -204,7 +207,7 @@ function arInitProtractorDrag(id, sceneId, state, vertex, rayAngles, onUpdate){
 
 /* --- Widget 1 : lire une mesure au rapporteur (angle quelconque, à toute orientation) --- */
 let arLireVertex = {x:230,y:190}, arLireRay1Deg = 0, arLireSpread = 60;
-let arLireProtState = {x:60,y:60,rot:0};
+let arLireProtState = {x:90,y:90,rot:0};
 let arLireRayAngles = [0,60];
 function arBuildLireScene(){
   return `<div class="ar-scene" id="ar-lireScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
@@ -223,11 +226,11 @@ function arDrawLireAngle(){
   if(r2){ r2.setAttribute('x1',arLireVertex.x); r2.setAttribute('y1',arLireVertex.y); r2.setAttribute('x2',ray2End.x); r2.setAttribute('y2',ray2End.y); }
 }
 function arResetLire(){
-  arLireVertex.x = 190+Math.random()*100; arLireVertex.y = 140+Math.random()*80;
+  arLireVertex.x = 250+Math.random()*140; arLireVertex.y = 190+Math.random()*110;
   arLireRay1Deg = Math.floor(Math.random()*360);
   arLireSpread = [35,50,65,75,90,105,125,140,155][Math.floor(Math.random()*9)];
   arDrawLireAngle();
-  arLireProtState.x=55; arLireProtState.y=55; arLireProtState.rot=0;
+  arLireProtState.x=90; arLireProtState.y=90; arLireProtState.rot=0;
   arLireRayAngles[0] = arLireRay1Deg; arLireRayAngles[1] = arLireRay1Deg+arLireSpread;
   arRenderProtractor('ar-lireProtractor', arLireProtState);
   document.getElementById('ar-lireInput').value = '';
@@ -243,7 +246,7 @@ function arCheckLire(){
 
 /* --- Widget 2 : construire un angle donné (côté de départ à toute orientation) --- */
 let arConstruireVertex = {x:230,y:190}, arConstruireBaseDeg = 0, arConstruireTarget = 100, arConstruireCurrentDeg = 15;
-let arConstruireProtState = {x:60,y:60,rot:0};
+let arConstruireProtState = {x:90,y:90,rot:0};
 let arConstruireRayAngles = [0,15];
 function arBuildConstruireScene(){
   return `<div class="ar-scene" id="ar-construireScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
@@ -270,12 +273,12 @@ function arConstruireSpread(){
   return diff;
 }
 function arResetConstruire(){
-  arConstruireVertex.x = 190+Math.random()*100; arConstruireVertex.y = 140+Math.random()*80;
+  arConstruireVertex.x = 250+Math.random()*140; arConstruireVertex.y = 190+Math.random()*110;
   arConstruireBaseDeg = Math.floor(Math.random()*360);
   arConstruireTarget = [40,55,70,95,115,130,150,165][Math.floor(Math.random()*8)];
   arConstruireCurrentDeg = arConstruireBaseDeg + 15;
   arDrawConstruireAngle();
-  arConstruireProtState.x=60; arConstruireProtState.y=60; arConstruireProtState.rot=0;
+  arConstruireProtState.x=90; arConstruireProtState.y=90; arConstruireProtState.rot=0;
   arConstruireRayAngles[0] = arConstruireBaseDeg; arConstruireRayAngles[1] = arConstruireCurrentDeg;
   arRenderProtractor('ar-construireProtractor', arConstruireProtState);
   document.getElementById('ar-construireCible').textContent = arConstruireTarget+'°';
@@ -308,9 +311,54 @@ function arInitConstruireRayDrag(){
   svgEl.addEventListener('touchend', ()=>dragging=false);
 }
 
+/* --- Démonstration pas-à-pas (cours) : méthode générale d'utilisation du rapporteur ---
+   Contrairement aux widgets 1 et 2 (ci-dessus), rien à glisser ici : c'est une démonstration
+   automatique (le rapporteur s'anime tout seul d'une étape à l'autre), pas un exercice. */
+const AR_DEMO_VERTEX = {x:340, y:260};
+const AR_DEMO_BASE_DEG = 25;
+const AR_DEMO_SPREAD = 65;
+let arDemoProtState = {x:90, y:90, rot:0};
+let arDemoStepIdx = 0;
+const AR_DEMO_STEPS = [
+  {note:"On souhaite mesurer cet angle. Le rapporteur n'est pas encore placé dessus."},
+  {note:"On place le centre du rapporteur exactement sur le sommet de l'angle."},
+  {note:"On fait pivoter le rapporteur pour aligner sa ligne 0°-180° sur un des côtés de l'angle."},
+  {note:`On lit alors la mesure sur l'autre côté : ici, ${AR_DEMO_SPREAD}°.`},
+];
+function arBuildDemoScene(){
+  const end1 = arDegToPt(AR_DEMO_VERTEX, AR_DEMO_BASE_DEG, AR_RAY_LEN);
+  const end2 = arDegToPt(AR_DEMO_VERTEX, AR_DEMO_BASE_DEG+AR_DEMO_SPREAD, AR_RAY_LEN);
+  const readingPt = arDegToPt(AR_DEMO_VERTEX, AR_DEMO_BASE_DEG+AR_DEMO_SPREAD, AR_PROT_H*0.55);
+  return `<div class="ar-scene" id="ar-demoScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+    <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+      <line x1="${AR_DEMO_VERTEX.x}" y1="${AR_DEMO_VERTEX.y}" x2="${end1.x}" y2="${end1.y}" stroke="#1C1B2E" stroke-width="2.6"/>
+      <line x1="${AR_DEMO_VERTEX.x}" y1="${AR_DEMO_VERTEX.y}" x2="${end2.x}" y2="${end2.y}" stroke="#1C1B2E" stroke-width="2.6"/>
+      <text id="ar-demoReading" x="${readingPt.x}" y="${readingPt.y}" font-size="20" font-weight="700" fill="#E35D3A" text-anchor="middle" opacity="0">${AR_DEMO_SPREAD}°</text>
+    </svg>
+    <div id="ar-demoProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease;">
+      <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
+    </div>
+  </div>`;
+}
+function arDemoGoto(idx){
+  arDemoStepIdx = idx;
+  if(idx===0){ arDemoProtState.x=90; arDemoProtState.y=90; arDemoProtState.rot=0; }
+  else if(idx===1){ arDemoProtState.x=AR_DEMO_VERTEX.x; arDemoProtState.y=AR_DEMO_VERTEX.y; arDemoProtState.rot=0; }
+  else { arDemoProtState.x=AR_DEMO_VERTEX.x; arDemoProtState.y=AR_DEMO_VERTEX.y; arDemoProtState.rot=AR_DEMO_BASE_DEG; }
+  arRenderProtractor('ar-demoProtractor', arDemoProtState);
+  const noteEl = document.getElementById('ar-demoNote');
+  if(noteEl) noteEl.textContent = AR_DEMO_STEPS[idx].note;
+  const reading = document.getElementById('ar-demoReading');
+  if(reading) reading.setAttribute('opacity', idx>=3?'1':'0');
+  const btn = document.getElementById('ar-demoNextBtn');
+  if(btn){ btn.disabled = (idx===AR_DEMO_STEPS.length-1); btn.textContent = idx===AR_DEMO_STEPS.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
+}
+function arDemoNext(){ if(arDemoStepIdx<AR_DEMO_STEPS.length-1) arDemoGoto(arDemoStepIdx+1); }
+function arDemoReset(){ arDemoGoto(0); }
+
 /* --- Widget 3 : construire la bissectrice d'un angle donné --- */
 const AR_BISSECTRICE_ANGLE = 108;
-const AR_BIS_VERTEX = {x:230,y:190};
+const AR_BIS_VERTEX = {x:300,y:250};
 function arBuildBissectriceSvg(){
   const M = arDegToPt(AR_BIS_VERTEX, AR_BISSECTRICE_ANGLE, AR_RAY_LEN);
   const N = arDegToPt(AR_BIS_VERTEX, 0, AR_RAY_LEN);
@@ -326,12 +374,12 @@ function arBuildBissectriceSvg(){
     ${arBuildProtractorOverlay('ar-bissectriceProtractor')}
   </div>`;
 }
-let arBissectriceProtState = {x:60,y:60,rot:0};
+let arBissectriceProtState = {x:90,y:90,rot:0};
 function arResetBissectrice(){
   const line = document.getElementById('ar-bissectriceLine');
   if(line){ line.setAttribute('opacity','0'); line.setAttribute('x2',AR_BIS_VERTEX.x); line.setAttribute('y2',AR_BIS_VERTEX.y); }
   document.getElementById('ar-bissectriceStatus').textContent = '';
-  arBissectriceProtState.x=60; arBissectriceProtState.y=60; arBissectriceProtState.rot=0;
+  arBissectriceProtState.x=90; arBissectriceProtState.y=90; arBissectriceProtState.rot=0;
   arRenderProtractor('ar-bissectriceProtractor', arBissectriceProtState);
 }
 function arTraceBissectrice(){
@@ -402,28 +450,14 @@ document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
 <div class="def-box">On peut mesurer « l'ouverture » d'un angle. L'unité que l'on utilise au collège est le <b>degré</b>. L'instrument qui permet de mesurer des angles est le <b>rapporteur</b>.</div>
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : un rapporteur gradué en degrés a souvent une double graduation (une qui va de 0 à 180° dans un sens, une autre dans l'autre sens), source de nombreuses erreurs. Il faut bien vérifier si l'angle étudié est aigu ou obtus avant de lire sa mesure.</div>
 
-<p class="example-title">Exemple 1 : entraîne-toi à lire une mesure au rapporteur</p>
-<p class="interaction-hint" style="margin:4px 0 8px;">Déplace le rapporteur (glisse dessus) pour amener son centre sur le sommet de l'angle (un effet d'aimant t'aide à bien le placer), puis fais-le pivoter (glisse sur le bouton ↻) pour aligner le 0° sur un des côtés. Lis alors la mesure sur l'autre côté, puis vérifie ta lecture.</p>
+<p class="example-title">Démonstration : mesurer un angle au rapporteur</p>
 <div class="figure-wrap">
-  ${arBuildLireScene()}
+  ${arBuildDemoScene()}
+  <p class="hint" id="ar-demoNote" style="text-align:center;margin:10px 0 0;font-weight:600;"></p>
   <div class="figure-toolbar" style="justify-content:center;">
-    <label class="hint" style="margin:0;">Ma lecture : <input type="number" id="ar-lireInput" style="width:70px;"> °</label>
-    <button class="btn" onclick="arCheckLire()">Vérifier</button>
-    <button class="btn secondary" onclick="arResetLire()">Nouvel angle</button>
+    <button class="btn" id="ar-demoNextBtn" onclick="arDemoNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="arDemoReset()">Recommencer</button>
   </div>
-  <p class="hint" id="ar-lireStatus" style="text-align:center;margin-top:8px;"></p>
-</div>
-
-<p class="example-title">Exemple 2 : entraîne-toi à construire un angle donné</p>
-<p class="interaction-hint" style="margin:4px 0 8px;">Déplace le trait rouge (son extrémité) pour construire un angle de la mesure demandée, en t'aidant du rapporteur : place son centre sur le sommet (effet d'aimant) et fais-le pivoter pour aligner le 0° sur le côté bleu.</p>
-<div class="figure-wrap">
-  <p style="text-align:center;margin:0 0 8px;">Angle à construire : <b id="ar-construireCible">100°</b></p>
-  ${arBuildConstruireScene()}
-  <div class="figure-toolbar" style="justify-content:center;">
-    <button class="btn" onclick="arCheckConstruire()">Vérifier</button>
-    <button class="btn secondary" onclick="arResetConstruire()">Nouvel angle à construire</button>
-  </div>
-  <p class="hint" id="ar-construireStatus" style="text-align:center;margin-top:8px;"></p>
 </div>
 
 <div class="lesson-header"><span class="num">4</span><h3>Paire d'angles particuliers</h3></div>
@@ -468,11 +502,35 @@ document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
 
 /* ================= METHODE ================= */
 document.getElementById('methode-demo-angles-rapporteur-6e').innerHTML = `
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : entraîne-toi à lire une mesure au rapporteur</h4></div>
+<div class="figure-wrap">
+  <p class="interaction-hint" style="margin:0 0 8px;">Déplace le rapporteur (glisse dessus) pour amener son centre sur le sommet de l'angle (un effet d'aimant t'aide à bien le placer), puis fais-le pivoter (glisse sur le bouton ↻) pour aligner le 0° sur un des côtés. Lis alors la mesure sur l'autre côté, puis vérifie ta lecture.</p>
+  ${arBuildLireScene()}
+  <div class="figure-toolbar" style="justify-content:center;">
+    <label class="hint" style="margin:0;">Ma lecture : <input type="number" id="ar-lireInput" style="width:70px;"> °</label>
+    <button class="btn" onclick="arCheckLire()">Vérifier</button>
+    <button class="btn secondary" onclick="arResetLire()">Nouvel angle</button>
+  </div>
+  <p class="hint" id="ar-lireStatus" style="text-align:center;margin-top:8px;"></p>
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : entraîne-toi à construire un angle donné</h4></div>
+<div class="figure-wrap">
+  <p class="interaction-hint" style="margin:0 0 8px;">Déplace le trait rouge (son extrémité) pour construire un angle de la mesure demandée, en t'aidant du rapporteur : place son centre sur le sommet (effet d'aimant) et fais-le pivoter pour aligner le 0° sur le côté bleu.</p>
+  <p style="text-align:center;margin:0 0 8px;">Angle à construire : <b id="ar-construireCible">100°</b></p>
+  ${arBuildConstruireScene()}
+  <div class="figure-toolbar" style="justify-content:center;">
+    <button class="btn" onclick="arCheckConstruire()">Vérifier</button>
+    <button class="btn secondary" onclick="arResetConstruire()">Nouvel angle à construire</button>
+  </div>
+  <p class="hint" id="ar-construireStatus" style="text-align:center;margin-top:8px;"></p>
+</div>
+
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
   ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. La méthode est toujours la même, en trois temps : <b>ce que je sais</b> (les constats), puis <span style="color:var(--accent-orange);font-weight:700;">Or,</span> suivi de la propriété que l'on va utiliser, puis <span style="color:var(--accent);font-weight:700;">Donc</span>, suivi de la conclusion.
 </div>
 
-<div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : calculer une mesure grâce aux angles opposés par le sommet</h4></div>
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : calculer une mesure grâce aux angles opposés par le sommet</h4></div>
 <div class="figure-wrap">
   <p class="interaction-hint" style="margin:0 0 6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="ar-methodeOpposesDisplay"></div>
@@ -482,7 +540,7 @@ document.getElementById('methode-demo-angles-rapporteur-6e').innerHTML = `
   </div>
 </div>
 
-<div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : justifier un alignement grâce aux angles supplémentaires</h4></div>
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 4 : justifier un alignement grâce aux angles supplémentaires</h4></div>
 <div class="figure-wrap">
   <p class="interaction-hint" style="margin:0 0 6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
   <div class="step-display" id="ar-methodeAlignementDisplay"></div>
@@ -545,6 +603,7 @@ let arDragInitialized = false;
 DEMO_REGISTRY['Angles et rapporteur'] = {
   cours:'cours-demo-angles-rapporteur-6e', methode:'methode-demo-angles-rapporteur-6e', exos:'exos-demo-angles-rapporteur-6e',
   init:()=>{
+    arDemoReset();
     arResetLire();
     arResetConstruire();
     arResetBissectrice();
