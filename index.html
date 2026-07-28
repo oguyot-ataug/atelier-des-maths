@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-27.7</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-27.8</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2214,6 +2214,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-27.8', items:[
+    "Correction du chapitre Angles et rapporteur (6e) : le sommet de l'angle n'était pas placé sur le vrai centre du rapporteur dans l'image (il y a une marge sous la ligne 0°-180° pour les étiquettes, non prise en compte au départ). Position recalculée par analyse précise de l'image.",
+  ]},
   { version:'2026-07-27.7', items:[
     "Nouveau chapitre 6e : Angles et rapporteur (notion d'angle, types d'angles, utilisation du rapporteur avec deux exercices interactifs utilisant une vraie image de rapporteur translucide, paires d'angles particuliers, bissectrice).",
   ]},

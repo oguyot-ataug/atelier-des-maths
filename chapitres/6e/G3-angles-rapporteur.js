@@ -120,8 +120,12 @@ function arBuildSupplSvg(){
 const AR_RATIO = 900/483;      // proportions réelles de l'image assets/rapporteur-translucide.png
 const AR_W = 460;              // largeur d'affichage du widget
 const AR_H = AR_W / AR_RATIO;
-const AR_VERTEX = {x: AR_W/2, y: AR_H};
-const AR_RAY_LEN = AR_H * 0.86;
+/* Le vrai pivot du rapporteur (là où convergent les graduations) n'est pas tout en bas de
+   l'image : il y a une marge en dessous (étiquettes "0"/"180°" et un cadre) mesurée précisément
+   par analyse des pixels de l'image (voir vérification faite avant intégration). */
+const AR_BASELINE_RATIO = 450/483;
+const AR_VERTEX = {x: AR_W/2, y: AR_H * AR_BASELINE_RATIO};
+const AR_RAY_LEN = AR_H * 0.72;
 
 function arPointAtAngle(thetaDeg, len){
   const t = thetaDeg*Math.PI/180;
