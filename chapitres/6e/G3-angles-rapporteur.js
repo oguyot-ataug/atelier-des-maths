@@ -456,11 +456,11 @@ function arDemoLireSteps(){
     {note:"On souhaite mesurer cet angle. Le rapporteur n'est pas encore placé dessus."},
     {note:"On place le centre du rapporteur exactement sur le sommet de l'angle."},
     {note: arDemoLireMode==='exterieur'
-      ? "On fait pivoter le rapporteur pour aligner son 0° extérieur (anneau jaune) sur le premier côté de l'angle : l'autre côté reste bien dans le rapporteur."
-      : "On fait pivoter le rapporteur pour aligner son 0° intérieur (anneau vert) sur le second côté de l'angle : l'autre côté reste bien dans le rapporteur."},
+      ? "On fait pivoter le rapporteur pour aligner son 0° extérieur (anneau jaune) sur le second côté de l'angle : l'autre côté reste bien dans le rapporteur."
+      : "On fait pivoter le rapporteur pour aligner son 0° intérieur (anneau vert) sur le premier côté de l'angle : l'autre côté reste bien dans le rapporteur."},
     {note: arDemoLireMode==='exterieur'
-      ? `On lit alors la mesure sur l'autre côté, sur l'anneau jaune extérieur : ici, ${AR_DEMO_LIRE_SPREAD}°.`
-      : `On lit alors la mesure sur le premier côté, sur l'anneau vert intérieur : ici, ${AR_DEMO_LIRE_SPREAD}°.`},
+      ? `On lit alors la mesure sur le premier côté, sur l'anneau jaune extérieur : ici, ${AR_DEMO_LIRE_SPREAD}°.`
+      : `On lit alors la mesure sur le second côté, sur l'anneau vert intérieur : ici, ${AR_DEMO_LIRE_SPREAD}°.`},
   ];
 }
 function arSetDemoLireMode(mode){
@@ -498,7 +498,14 @@ function arDemoLireGoto(idx){
   // Extérieur : on aligne le 0° jaune sur le premier côté, on lit le second directement (extérieur).
   // Intérieur : on aligne le 0° vert sur le SECOND côté (l'autre reste bien dans le rapporteur),
   // et on lit le premier côté directement (intérieur) -- aucun miroir, une simple rotation différente.
-  const alignDeg = arDemoLireMode==='exterieur' ? AR_DEMO_LIRE_BASE_DEG : ((AR_DEMO_LIRE_BASE_DEG+AR_DEMO_LIRE_SPREAD-180)%360+360)%360;
+  // Convention réelle de l'image (confirmée) : jaune (extérieur) a son 0° à GAUCHE, lu en sens
+  // horaire ; vert (intérieur) a son 0° à DROITE, lu en sens anti-horaire. Pour que la lecture
+  // reste directe (sans calcul supplémentaire) tout en gardant les deux côtés dans le rapporteur :
+  // extérieur -> on aligne le 0° jaune sur le SECOND côté (puis on lit le premier) ;
+  // intérieur -> on aligne le 0° vert sur le PREMIER côté (puis on lit le second).
+  const alignDeg = arDemoLireMode==='exterieur'
+    ? ((AR_DEMO_LIRE_BASE_DEG+AR_DEMO_LIRE_SPREAD-180)%360+360)%360
+    : AR_DEMO_LIRE_BASE_DEG;
   if(idx===0){ arDemoLireProtState.x=90; arDemoLireProtState.y=90; arDemoLireProtState.rot=0; }
   else if(idx===1){ arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=0; }
   else { arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=alignDeg; }
@@ -513,22 +520,33 @@ function arDemoLireGoto(idx){
 function arDemoLireNext(){ if(arDemoLireStepIdx<arDemoLireSteps().length-1) arDemoLireGoto(arDemoLireStepIdx+1); }
 function arDemoLireReset(){ arDemoLireGoto(0); }
 
-/* Démonstration B : comment construire un angle donné (avec le crayon sur l'arc) */
+/* Démonstration B : comment construire un angle donné (avec le crayon sur l'arc)
+   Convention réelle du rapporteur (confirmée) : jaune (extérieur) a son 0° à gauche, lu en sens
+   horaire ; vert (intérieur) a son 0° à droite, lu en sens anti-horaire. Concrètement :
+   - Extérieur : on aligne le 0° jaune sur le côté déjà tracé, on compte en sens horaire -- le
+     nouveau côté se construit donc du côté HORAIRE du côté déjà tracé.
+   - Intérieur : on aligne le 0° vert sur le côté déjà tracé, on compte en sens anti-horaire -- le
+     nouveau côté se construit donc du côté ANTI-HORAIRE du côté déjà tracé.
+   Les deux constructions sont géométriquement valables (un angle de la mesure demandée existe des
+   deux côtés du côté déjà tracé) ; seul le sens diffère. */
 const AR_DEMO_CONS_VERTEX = {x:430, y:325};
 const AR_DEMO_CONS_BASE_DEG = 200;
 const AR_DEMO_CONS_TARGET = 72;
-let arDemoConsProtState = {x:90, y:90, rot:0, mirror:false};
+let arDemoConsProtState = {x:90, y:90, rot:0};
 let arDemoConsStepIdx = 0;
 let arDemoConsMode = 'exterieur';
+function arDemoConsFinalDeg(){
+  return arDemoConsMode==='exterieur'
+    ? ((AR_DEMO_CONS_BASE_DEG - AR_DEMO_CONS_TARGET)%360+360)%360   // jaune : sens horaire depuis la base
+    : ((AR_DEMO_CONS_BASE_DEG + AR_DEMO_CONS_TARGET)%360+360)%360; // vert : sens anti-horaire depuis la base
+}
 function arDemoConsSteps(){
-  const graduation = arDemoConsMode==='exterieur' ? AR_DEMO_CONS_TARGET : (180-AR_DEMO_CONS_TARGET);
   const anneau = arDemoConsMode==='exterieur' ? 'jaune extérieur' : 'vert intérieur';
+  const sens = arDemoConsMode==='exterieur' ? 'horaire' : 'anti-horaire';
   return [
     {note:`On veut construire un angle de ${AR_DEMO_CONS_TARGET}° à partir de ce côté déjà tracé.`},
-    {note:"On place le centre du rapporteur sur le sommet, et on aligne son 0° extérieur sur le côté déjà tracé."},
-    {note: arDemoConsMode==='exterieur'
-      ? `On place la pointe du crayon sur le bord du rapporteur, à la graduation ${graduation}° de l'anneau ${anneau}.`
-      : `Au même endroit, l'anneau ${anneau} affiche ${graduation}° (180° − ${AR_DEMO_CONS_TARGET}°) : on y place la pointe du crayon.`},
+    {note:`On place le centre du rapporteur sur le sommet, et on aligne son 0° ${arDemoConsMode==='exterieur'?'extérieur (jaune)':'intérieur (vert)'} sur le côté déjà tracé.`},
+    {note:`On compte ${AR_DEMO_CONS_TARGET}° en sens ${sens} sur l'anneau ${anneau}, et on place la pointe du crayon sur le bord du rapporteur à cet endroit.`},
     {note:"On trace un petit trait dans le prolongement de cette lecture : c'est le trait-repère."},
     {note:"On retire le rapporteur (et le crayon) : seul le trait-repère reste sur la feuille."},
     {note:"On pose la règle contre le sommet et le trait-repère, et on trace la demi-droite : l'angle est construit."},
@@ -539,17 +557,10 @@ function arSetDemoConsMode(mode){
   const extBtn = document.getElementById('ar-demoConsModeExt'), intBtn = document.getElementById('ar-demoConsModeInt');
   if(extBtn) extBtn.classList.toggle('active', mode==='exterieur');
   if(intBtn) intBtn.classList.toggle('active', mode==='interieur');
-  // le mode ne change visiblement que le texte de l'étape 2 (lecture du crayon) : on s'y place
-  // directement si on n'y est pas encore, pour que le clic sur le bouton produise un effet visible.
-  arDemoConsGoto(arDemoConsStepIdx < 2 ? 2 : arDemoConsStepIdx);
+  arDemoConsGoto(arDemoConsStepIdx < 1 ? 1 : arDemoConsStepIdx);
 }
 function arBuildDemoConsScene(){
   const baseEnd = arDegToPt(AR_DEMO_CONS_VERTEX, AR_DEMO_CONS_BASE_DEG, AR_RAY_LEN);
-  const finalDeg = AR_DEMO_CONS_BASE_DEG + AR_DEMO_CONS_TARGET;
-  const R = AR_PROT_H*AR_PENCIL_R_RATIO;
-  const tickInner = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R-6);
-  const tickOuter = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R+6);
-  const labelPt = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R+30);
   return `<div class="figure-toolbar" style="justify-content:center;margin-bottom:8px;">
     <button class="btn secondary active" id="ar-demoConsModeExt" onclick="arSetDemoConsMode('exterieur')">Lecture extérieure</button>
     <button class="btn secondary" id="ar-demoConsModeInt" onclick="arSetDemoConsMode('interieur')">Lecture intérieure</button>
@@ -558,8 +569,8 @@ function arBuildDemoConsScene(){
     <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
       <line x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${baseEnd.x}" y2="${baseEnd.y}" stroke="#1F3A5C" stroke-width="1.3"/>
       <line id="ar-demoConsFinalRay" x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${AR_DEMO_CONS_VERTEX.x}" y2="${AR_DEMO_CONS_VERTEX.y}" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
-      <line id="ar-demoConsTick" x1="${tickInner.x}" y1="${tickInner.y}" x2="${tickOuter.x}" y2="${tickOuter.y}" stroke="#1C1B2E" stroke-width="2.2" opacity="0"/>
-      <text id="ar-demoConsGradLabel" x="${labelPt.x}" y="${labelPt.y}" font-size="20" font-weight="700" text-anchor="middle" opacity="0"></text>
+      <line id="ar-demoConsTick" x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${AR_DEMO_CONS_VERTEX.x}" y2="${AR_DEMO_CONS_VERTEX.y}" stroke="#1C1B2E" stroke-width="2.2" opacity="0"/>
+      <text id="ar-demoConsGradLabel" x="0" y="0" font-size="20" font-weight="700" text-anchor="middle" opacity="0"></text>
     </svg>
     <div id="ar-demoConsProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
       <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
@@ -580,26 +591,37 @@ function arDemoConsGoto(idx){
   const steps = arDemoConsSteps();
   const prot = document.getElementById('ar-demoConsProtractor');
   const pencil = document.getElementById('ar-demoConsPencil');
+  const finalDeg = arDemoConsFinalDeg();
+  // Extérieur : on aligne le 0° jaune (local=180) sur la base -> rot = base-180.
+  // Intérieur : on aligne le 0° vert (local=0) sur la base -> rot = base.
+  const alignRot = arDemoConsMode==='exterieur' ? ((AR_DEMO_CONS_BASE_DEG-180)%360+360)%360 : AR_DEMO_CONS_BASE_DEG;
+  // Degré LOCAL où se trouve le point à marquer (target sur l'anneau concerné) :
+  const pencilLocalDeg = arDemoConsMode==='exterieur' ? (180-AR_DEMO_CONS_TARGET) : AR_DEMO_CONS_TARGET;
   if(idx===0){ arDemoConsProtState.x=90; arDemoConsProtState.y=90; arDemoConsProtState.rot=0; if(prot) prot.style.opacity='1'; }
-  else if(idx===1){ arDemoConsProtState.x=AR_DEMO_CONS_VERTEX.x; arDemoConsProtState.y=AR_DEMO_CONS_VERTEX.y; arDemoConsProtState.rot=AR_DEMO_CONS_BASE_DEG; if(prot) prot.style.opacity='1'; }
-  else if(prot){ prot.style.opacity = idx>=4 ? '0' : '1'; }
+  else if(idx===1){ arDemoConsProtState.x=AR_DEMO_CONS_VERTEX.x; arDemoConsProtState.y=AR_DEMO_CONS_VERTEX.y; arDemoConsProtState.rot=alignRot; if(prot) prot.style.opacity='1'; }
+  else if(prot){ arDemoConsProtState.rot=alignRot; prot.style.opacity = idx>=4 ? '0' : '1'; }
   arRenderProtractor('ar-demoConsProtractor', arDemoConsProtState);
   if(pencil){
     pencil.style.opacity = (idx>=2 && idx<=3) ? '1' : '0';
-    // Le crayon marque toujours la même position réelle (target° depuis le côté déjà tracé),
-    // que l'on choisisse de lire "target" sur l'anneau jaune ou "180-target" sur l'anneau vert
-    // à ce même endroit : la rotation du rapporteur ne change jamais.
-    arRenderPencilTip(pencil, arDemoConsProtState, AR_DEMO_CONS_TARGET);
+    arRenderPencilTip(pencil, arDemoConsProtState, pencilLocalDeg);
   }
   const noteEl = document.getElementById('ar-demoConsNote');
   if(noteEl) noteEl.textContent = steps[idx].note;
+  const R = AR_PROT_H*AR_PENCIL_R_RATIO;
+  const tickInner = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R-6);
+  const tickOuter = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R+6);
   const tick = document.getElementById('ar-demoConsTick');
-  if(tick) tick.setAttribute('opacity', idx>=3?'1':'0');
+  if(tick){
+    tick.setAttribute('x1', tickInner.x); tick.setAttribute('y1', tickInner.y);
+    tick.setAttribute('x2', tickOuter.x); tick.setAttribute('y2', tickOuter.y);
+    tick.setAttribute('opacity', idx>=3?'1':'0');
+  }
   const gradLabel = document.getElementById('ar-demoConsGradLabel');
   if(gradLabel){
     if(idx>=2 && idx<=3){
-      const graduation = arDemoConsMode==='exterieur' ? AR_DEMO_CONS_TARGET : (180-AR_DEMO_CONS_TARGET);
-      gradLabel.textContent = graduation+'°';
+      const labelPt = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R+30);
+      gradLabel.setAttribute('x', labelPt.x); gradLabel.setAttribute('y', labelPt.y);
+      gradLabel.textContent = AR_DEMO_CONS_TARGET+'°';
       gradLabel.setAttribute('fill', arDemoConsMode==='exterieur' ? '#B8860B' : '#1F6B3A');
       gradLabel.setAttribute('opacity','1');
     } else {
@@ -609,7 +631,6 @@ function arDemoConsGoto(idx){
   const finalRay = document.getElementById('ar-demoConsFinalRay');
   if(finalRay){
     if(idx>=5){
-      const finalDeg = AR_DEMO_CONS_BASE_DEG + AR_DEMO_CONS_TARGET;
       const end = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, AR_RAY_LEN);
       finalRay.setAttribute('x2', end.x); finalRay.setAttribute('y2', end.y); finalRay.setAttribute('opacity','1');
     } else {
@@ -1135,7 +1156,8 @@ DEMO_REGISTRY['Angles et rapporteur'] = {
         goto: (i)=>arDemoConsGoto(i),
         capture: (i)=>{
           const protOpacity = i>=4 ? 0 : 1;
-          const pencilDeg = (i>=2 && i<=3) ? AR_DEMO_CONS_TARGET : null;
+          const localDeg = arDemoConsMode==='exterieur' ? (180-AR_DEMO_CONS_TARGET) : AR_DEMO_CONS_TARGET;
+          const pencilDeg = (i>=2 && i<=3) ? localDeg : null;
           return arCaptureRapporteurScene('ar-demoConsScene', 'svg', arDemoConsProtState, protOpacity, pencilDeg, 260);
         },
       });
