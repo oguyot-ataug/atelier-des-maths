@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.3</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.4</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -973,6 +973,28 @@ function setSlantTick(el, cx, cy, angleRad, len){
    en vignettes côte à côte, plutôt que de figer uniquement l'étape actuellement affichée. */
 window.GEO_STEP_DEMOS = window.GEO_STEP_DEMOS || {};
 function registerGeoStepDemo(svgId, config){ window.GEO_STEP_DEMOS[svgId] = config; }
+/* Même principe que registerGeoStepDemo, mais pour une "scène" mixte (SVG + image HTML
+   superposée en CSS, comme les figures du rapporteur) plutôt qu'un simple <svg> isolé.
+   config attend : { steps():Array, getIdx():number, goto(i), capture(i):Promise<dataURI> }
+   -- capture(i) doit renvoyer une image de TOUTE la scène à l'étape i (voir arCaptureRapporteurScene). */
+window.SCENE_STEP_DEMOS = window.SCENE_STEP_DEMOS || {};
+function registerSceneStepDemo(sceneId, config){ window.SCENE_STEP_DEMOS[sceneId] = config; }
+async function captureSceneFilmstrip(steps, gotoFn, captureFn, originalIdx){
+  const panels = [];
+  for(let i=0;i<steps.length;i++){
+    gotoFn(i);
+    const dataUri = await captureFn(i);
+    const imgTag = dataUri
+      ? `<img src="${dataUri}" style="width:260px;height:auto;border-radius:6px;border:1px solid rgba(28,43,57,.12);flex:none;display:block;" alt="Étape ${i+1}"/>`
+      : `<div style="width:260px;height:150px;flex:none;background:#f2f2f2;border-radius:6px;border:1px solid rgba(28,43,57,.12);"></div>`;
+    panels.push(`<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      ${imgTag}
+      <div style="font-size:.8rem;color:var(--ink-soft);line-height:1.4;"><b>Étape ${i+1}.</b> ${steps[i].note}</div>
+    </div>`);
+  }
+  gotoFn(originalIdx);
+  return `<div style="display:flex;flex-direction:column;gap:14px;">${panels.join('')}</div>`;
+}
 /* Convertit un SVG en image PNG (data URI), rastérisée à une taille en pixels fixe
    et explicite (plutôt que de compter sur un <img> pour redimensionner un SVG, ce
    qu'html2canvas gère de façon peu fiable -- images énormes, tronquées ou absentes). */
@@ -2214,6 +2236,13 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-28.4', items:[
+    "Chapitre Angles et rapporteur (6e) : le bouton lecture intérieure/extérieure est déplacé du Méthode vers la démonstration du Cours (c'était son bon endroit -- il montre qu'on peut toujours poser le rapporteur de deux manières, pas un réglage d'entraînement).",
+    "Recalibrage du rayon du crayon (0.90 au lieu de 0.85) : il ne touchait pas le bord du rapporteur.",
+    "Démonstration 'construire un angle' du cours détaillée en 6 étapes : crayon posé visuellement sur le bord, petit trait-repère tracé dans le prolongement, rapporteur et crayon retirés, puis règle et tracé final.",
+    "Les deux démonstrations du cours (lire, construire) se capturent maintenant correctement étape par étape dans le cahier de l'élève et l'export PDF (nouveau mécanisme de capture composite, dédié aux scènes mêlant SVG et image de rapporteur).",
+    "Permis Rapporteur : passage d'une simple activation par classe à un système de sessions avec code (le prof démarre une ou plusieurs sessions pour sa classe depuis Administration, chacune avec son propre code à 6 caractères ; l'élève entre ce code pour accéder à l'examen). Une session peut être clôturée.",
+  ]},
   { version:'2026-07-28.3', items:[
     "Chapitre Angles et rapporteur (6e) : le crayon de construction est redessiné en dehors du rapporteur, sa pointe posée exactement sur le bord/l'arc (vérifié mathématiquement pour tous les angles) -- avant, il était centré sur l'arc, à moitié dedans.",
     "Traits des côtés des angles nettement affinés (1.3 au lieu de 2.4-2.6) dans tous les exercices et démonstrations du rapporteur, pour une lecture plus précise face aux fines graduations.",
@@ -2685,27 +2714,51 @@ async function adminRefreshListings(){
       `<b>Profs/admins (${(profs||[]).length})</b>` + ((profs||[]).length ? (profs||[]).map(rowHTML).join('') : '<div class="hint">aucun</div>') +
       `<div style="margin-top:12px;"><b>Élèves (${(eleves||[]).length})</b></div>` + ((eleves||[]).length ? (eleves||[]).map(rowHTML).join('') : '<div class="hint">aucun</div>');
   }
-  const { data: classesList } = await sb.from('classes').select('id,nom,niveau,permis_rapporteur_actif').order('nom');
+  const { data: classesList } = await sb.from('classes').select('id,nom,niveau').order('nom');
   const { data: classTeachers } = await sb.from('class_teachers').select('class_id, profiles(nom,email)');
   const { data: classStudents } = await sb.from('class_students').select('class_id, profiles(nom,email)');
+  const { data: permisSessionsList } = await sb.from('permis_rapporteur_sessions').select('id,code,classe_id,cloturee,created_at').order('created_at',{ascending:false});
   const classesEl = document.getElementById('adminClassesListing');
   if(classesEl){
     if(!classesList || !classesList.length){ classesEl.textContent = 'Aucune classe créée pour l\'instant.'; return; }
     classesEl.innerHTML = classesList.map(c=>{
       const profsHere = (classTeachers||[]).filter(r=>r.class_id===c.id).map(r=>r.profiles && (r.profiles.nom||r.profiles.email)).filter(Boolean);
       const elevesHere = (classStudents||[]).filter(r=>r.class_id===c.id).map(r=>r.profiles && (r.profiles.nom||r.profiles.email)).filter(Boolean);
-      return `<div style="margin-bottom:10px;"><b>${escapeHtml(c.nom)}</b> (${escapeHtml(c.niveau)})<br>
+      const sessionsHere = (permisSessionsList||[]).filter(s=>s.classe_id===c.id);
+      const sessionsHtml = sessionsHere.length ? sessionsHere.map(s=>`
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-weight:700;${s.cloturee?'text-decoration:line-through;color:var(--ink-soft);':'color:var(--accent);'}">${escapeHtml(s.code)}</span>
+          <span class="hint" style="margin:0;">${s.cloturee?'clôturée':'active'}</span>
+          ${s.cloturee?'':`<button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="adminCloturerPermisSession('${s.id}')">Clôturer</button>`}
+        </div>`).join('') : '<p class="hint" style="margin:4px 0 0;">Aucune session pour l\'instant.</p>';
+      return `<div style="margin-bottom:14px;"><b>${escapeHtml(c.nom)}</b> (${escapeHtml(c.niveau)})<br>
         Profs : ${profsHere.map(escapeHtml).join(', ')||'aucun'}<br>
-        Élèves (${elevesHere.length}) : ${elevesHere.map(escapeHtml).join(', ')||'aucun'}<br>
-        <label class="hint" style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;">
-          <input type="checkbox" ${c.permis_rapporteur_actif?'checked':''} onchange="adminTogglePermisRapporteur('${c.id}', this.checked)">
-          Permis Rapporteur activé pour cette classe
-        </label></div>`;
+        Élèves (${elevesHere.length}) : ${elevesHere.map(escapeHtml).join(', ')||'aucun'}
+        <div style="margin-top:6px;padding:8px;background:rgba(31,58,92,.05);border-radius:6px;">
+          <b style="font-size:.85rem;">🎓 Permis Rapporteur</b>
+          <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="adminDemarrerPermisSession('${c.id}')">+ Nouvelle session</button>
+          ${sessionsHtml}
+        </div></div>`;
     }).join('');
   }
 }
-async function adminTogglePermisRapporteur(classId, actif){
-  await sb.from('classes').update({permis_rapporteur_actif: actif}).eq('id', classId);
+function arGenererCodeSession(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sans lettres/chiffres ambigus (0/O, 1/I...)
+  let code = '';
+  for(let i=0;i<6;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+async function adminDemarrerPermisSession(classId){
+  const code = arGenererCodeSession();
+  const { error } = await sb.from('permis_rapporteur_sessions').insert({
+    code, classe_id: classId, prof_id: currentUser ? currentUser.id : null,
+  });
+  if(error){ alert("Échec : "+error.message); return; }
+  await adminRefreshDropdowns();
+}
+async function adminCloturerPermisSession(sessionId){
+  await sb.from('permis_rapporteur_sessions').update({cloturee:true}).eq('id', sessionId);
+  await adminRefreshDropdowns();
 }
 async function adminRefreshBugReports(){
   const el = document.getElementById('adminBugReportsListing');
@@ -3141,6 +3194,27 @@ async function expandStepDemosInClone(wrapper){
       renderStaticMath(cloneEl); // certaines étapes contiennent des fractions en LaTeX (class="tex"), pas encore rendues sous cette forme
     }
   });
+  const sceneEls = Array.from(wrapper.querySelectorAll('.ar-scene[id]'));
+  for(const cloneScene of sceneEls){
+    try{
+      const demo = window.SCENE_STEP_DEMOS[cloneScene.id];
+      if(!demo){
+        console.warn(`Cahier/PDF : scène non reconstituée pour #${cloneScene.id} (pas de démo enregistrée).`);
+        continue;
+      }
+      const steps = demo.steps();
+      const originalIdx = demo.getIdx();
+      const filmstripHtml = await captureSceneFilmstrip(steps, demo.goto, demo.capture, originalIdx);
+      const figureWrap = cloneScene.closest('.figure-wrap');
+      if(figureWrap){
+        figureWrap.innerHTML = `<strong style="font-family:'Space Grotesk',sans-serif;font-size:.85rem;">Étapes :</strong><div style="margin-top:8px;">${filmstripHtml}</div>`;
+      } else {
+        console.warn(`Cahier/PDF : aucun .figure-wrap parent trouvé pour #${cloneScene.id}.`);
+      }
+    } catch(e){
+      console.error(`Cahier/PDF : erreur lors de la reconstitution de la scène #${cloneScene.id}`, e);
+    }
+  }
   const svgEls = Array.from(wrapper.querySelectorAll('svg[id]'));
   for(const cloneSvg of svgEls){
     try{
