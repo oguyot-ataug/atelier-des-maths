@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.4</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.5</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2236,6 +2236,14 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-28.5', items:[
+    "Chapitre Angles et rapporteur (6e) : correction du vrai bug de positionnement du crayon (il était imbriqué dans la rotation CSS du rapporteur, ce qui le faisait apparaître complètement décalé) -- il est maintenant positionné indépendamment par un calcul d'angle absolu direct, vérifié mathématiquement (la pointe reste exactement à la bonne distance du sommet, quel que soit l'angle).",
+    "Trait-repère réduit (plus petit, moins imprécis à la lecture).",
+    "Lecture intérieure/extérieure : remplacé la rotation à 180° (qui retournait le rapporteur à l'envers, incohérent) par un véritable effet miroir, correspondant à la façon dont un rapporteur transparent se retourne réellement. Vérifié mathématiquement : la lecture sur l'anneau intérieur après ce placement donne bien la vraie mesure de l'angle.",
+    "Option lecture intérieure/extérieure ajoutée également à la démonstration de construction (elle n'était présente que pour la lecture).",
+    "Bissectrice entièrement reconstruite en 8 étapes animées (mesure de l'angle, calcul de la moitié, crayon posé sur l'arc, trait-repère tracé, rapporteur retiré, tracé final) -- au lieu d'un simple bouton 'tracer' instantané. Enregistrée pour la capture pas-à-pas dans le cahier/PDF.",
+    "Correction d'un bug distinct trouvé au passage : le glisser du crayon dans le Permis Rapporteur modifiait par erreur la variable de l'exercice d'entraînement au lieu de la sienne.",
+  ]},
   { version:'2026-07-28.4', items:[
     "Chapitre Angles et rapporteur (6e) : le bouton lecture intérieure/extérieure est déplacé du Méthode vers la démonstration du Cours (c'était son bon endroit -- il montre qu'on peut toujours poser le rapporteur de deux manières, pas un réglage d'entraînement).",
     "Recalibrage du rayon du crayon (0.90 au lieu de 0.85) : il ne touchait pas le bord du rapporteur.",

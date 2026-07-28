@@ -149,8 +149,8 @@ function arScenePoint(sceneEl, evt){
 }
 
 /* ---- Le rapporteur déplaçable/pivotable : un état {x,y,rot} + rendu + glisser-déposer ---- */
-function arBuildProtractorOverlay(id, withPencil){
-  const pencilHtml = withPencil ? `<div id="${id}-pencil" title="Crayon : glisse-le le long de l'arc, degré par degré" style="position:absolute;top:0;left:0;width:16px;transform-origin:8px 46px;cursor:grab;user-select:none;">
+function arBuildPencilHtml(id){
+  return `<div id="${id}-pencil" title="Crayon : glisse-le le long de l'arc, degré par degré" style="position:absolute;top:0;left:0;width:16px;transform-origin:8px 46px;cursor:grab;user-select:none;z-index:5;">
     <svg viewBox="0 0 16 46" width="16" height="46" style="display:block;overflow:visible;">
       <rect x="4" y="0" width="8" height="5" rx="1.5" fill="#E35D3A"/>
       <rect x="4" y="5" width="8" height="4" fill="#1C1B2E"/>
@@ -158,18 +158,20 @@ function arBuildProtractorOverlay(id, withPencil){
       <polygon points="4,36 12,36 8,46" fill="#D9A441"/>
       <polygon points="6,42 10,42 8,46" fill="#4A4A55"/>
     </svg>
-  </div>` : '';
+  </div>`;
+}
+function arBuildProtractorOverlay(id){
   return `<div id="${id}" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;cursor:grab;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;touch-action:none;user-select:none;">
     <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;-webkit-user-drag:none;user-select:none;pointer-events:auto;">
     <div id="${id}-rotate" title="Faire pivoter le rapporteur" style="position:absolute;left:${AR_PROT_W-15}px;top:${AR_PROT_PIVOT.y-15}px;width:30px;height:30px;border-radius:50%;background:rgba(227,93,58,.85);cursor:grab;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;user-select:none;">↻</div>
-    ${pencilHtml}
   </div>`;
 }
 function arRenderProtractor(id, state){
   const el = document.getElementById(id);
   if(!el) return;
   const tx = state.x - AR_PROT_PIVOT.x, ty = state.y - AR_PROT_PIVOT.y;
-  el.style.transform = `translate(${tx}px, ${ty}px) rotate(${-state.rot}deg)`;
+  const mirror = state.mirror ? ' scaleX(-1)' : '';
+  el.style.transform = `translate(${tx}px, ${ty}px) rotate(${-state.rot}deg)${mirror}`;
 }
 /* rayAngles : les orientations (°) des côtés de l'angle sur lesquelles la rotation du rapporteur
    doit s'accrocher (la ligne 0°-180° du rapporteur est une droite : on teste aussi +180). */
@@ -271,7 +273,8 @@ function arBuildConstruireScene(){
       <line id="ar-construireRayBase" x1="0" y1="0" x2="0" y2="0" stroke="#1F3A5C" stroke-width="1.3"/>
       <line id="ar-construireRay" x1="0" y1="0" x2="0" y2="0" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
     </svg>
-    ${arBuildProtractorOverlay('ar-construireProtractor', true)}
+    ${arBuildProtractorOverlay('ar-construireProtractor')}
+    ${arBuildPencilHtml('ar-construireProtractor')}
   </div>`;
 }
 /* Positionne le crayon : sa pointe (transform-origin, en bas du dessin) touche exactement le
@@ -291,7 +294,7 @@ function arGetRapporteurImg(){
     img.src = 'assets/rapporteur-translucide.png';
   });
 }
-async function arCaptureRapporteurScene(sceneId, svgSelector, protState, protOpacity, pencilLocalDeg, displayWidth){
+async function arCaptureRapporteurScene(sceneId, svgSelector, protState, protOpacity, pencilStoredDeg, displayWidth){
   const sceneEl = document.getElementById(sceneId);
   if(!sceneEl) return null;
   const svgEl = sceneEl.querySelector(svgSelector||'svg');
@@ -318,38 +321,48 @@ async function arCaptureRapporteurScene(sceneId, svgSelector, protState, protOpa
       ctx.globalAlpha = protOpacity*0.9; // l'image a elle-même opacity:.9 en CSS
       ctx.translate(protState.x*scale*dpr, protState.y*scale*dpr);
       ctx.rotate(-protState.rot*Math.PI/180);
+      if(protState.mirror) ctx.scale(-1,1);
       ctx.drawImage(protImg, -AR_PROT_PIVOT.x*scale*dpr, -AR_PROT_PIVOT.y*scale*dpr, AR_PROT_W*scale*dpr, AR_PROT_H*scale*dpr);
-      if(pencilLocalDeg!==null && pencilLocalDeg!==undefined){
-        const R = AR_PROT_H*AR_PENCIL_R_RATIO;
-        const rad = pencilLocalDeg*Math.PI/180;
-        const tipX = (AR_PROT_PIVOT.x + R*Math.cos(rad))*scale*dpr, tipY = (AR_PROT_PIVOT.y - R*Math.sin(rad))*scale*dpr;
-        ctx.save();
-        ctx.globalAlpha = 1;
-        ctx.translate(tipX, tipY);
-        ctx.rotate((90-pencilLocalDeg)*Math.PI/180);
-        const u = scale*dpr; // 1 unité du dessin local du crayon (16x46) mise à l'échelle
-        ctx.fillStyle = '#4A4A55'; ctx.beginPath(); ctx.moveTo(-2*u,-42*u); ctx.lineTo(2*u,-42*u); ctx.lineTo(0,-46*u); ctx.fill();
-        ctx.fillStyle = '#D9A441'; ctx.beginPath(); ctx.moveTo(-4*u,-36*u); ctx.lineTo(4*u,-36*u); ctx.lineTo(0,-46*u); ctx.fill();
-        ctx.fillStyle = '#E9C46A'; ctx.fillRect(-4*u,-36*u,8*u,27*u);
-        ctx.fillStyle = '#1C1B2E'; ctx.fillRect(-4*u,-41*u,8*u,4*u);
-        ctx.fillStyle = '#E35D3A'; ctx.fillRect(-4*u,-46*u,8*u,5*u);
-        ctx.restore();
-      }
       ctx.restore();
     }
   }
+  if(pencilStoredDeg!==null && pencilStoredDeg!==undefined){
+    // le crayon est positionné indépendamment (angle absolu), comme à l'écran (voir arRenderPencilTip)
+    const effectiveLocalDeg = protState.mirror ? (180-pencilStoredDeg) : pencilStoredDeg;
+    const absDeg = effectiveLocalDeg + protState.rot;
+    const R = AR_PROT_H*AR_PENCIL_R_RATIO;
+    const rad = absDeg*Math.PI/180;
+    const tipX = (protState.x + R*Math.cos(rad))*scale*dpr, tipY = (protState.y - R*Math.sin(rad))*scale*dpr;
+    ctx.save();
+    ctx.translate(tipX, tipY);
+    ctx.rotate((90-absDeg)*Math.PI/180);
+    const u = scale*dpr; // 1 unité du dessin local du crayon (16x46) mise à l'échelle
+    ctx.fillStyle = '#4A4A55'; ctx.beginPath(); ctx.moveTo(-2*u,-42*u); ctx.lineTo(2*u,-42*u); ctx.lineTo(0,-46*u); ctx.fill();
+    ctx.fillStyle = '#D9A441'; ctx.beginPath(); ctx.moveTo(-4*u,-36*u); ctx.lineTo(4*u,-36*u); ctx.lineTo(0,-46*u); ctx.fill();
+    ctx.fillStyle = '#E9C46A'; ctx.fillRect(-4*u,-36*u,8*u,27*u);
+    ctx.fillStyle = '#1C1B2E'; ctx.fillRect(-4*u,-41*u,8*u,4*u);
+    ctx.fillStyle = '#E35D3A'; ctx.fillRect(-4*u,-46*u,8*u,5*u);
+    ctx.restore();
+  }
   return canvas.toDataURL('image/png');
 }
-function arRenderPencilTip(pencilEl, localDeg){
+/* Le crayon est positionné indépendamment (pas imbriqué dans le conteneur du rapporteur, pour
+   éviter toute ambiguïté d'empilement de transformations CSS) : on calcule directement sa
+   position ABSOLUE dans la scène à partir de l'état courant du rapporteur (position, rotation,
+   miroir) et du degré LOCAL visé sur l'arc. */
+function arRenderPencilTip(pencilEl, protState, localDeg){
   if(!pencilEl) return;
   const R = AR_PROT_H*AR_PENCIL_R_RATIO;
-  const rad = localDeg*Math.PI/180;
-  const tipX = AR_PROT_PIVOT.x + R*Math.cos(rad);
-  const tipY = AR_PROT_PIVOT.y - R*Math.sin(rad);
-  pencilEl.style.transform = `translate(${tipX-8}px, ${tipY-46}px) rotate(${90-localDeg}deg)`;
+  // en mode miroir, le degré local se lit à l'envers sur l'arc (voir arSetProtractorMirror)
+  const effectiveLocalDeg = protState.mirror ? (180-localDeg) : localDeg;
+  const absDeg = effectiveLocalDeg + protState.rot;
+  const rad = absDeg*Math.PI/180;
+  const tipX = protState.x + R*Math.cos(rad);
+  const tipY = protState.y - R*Math.sin(rad);
+  pencilEl.style.transform = `translate(${tipX-8}px, ${tipY-46}px) rotate(${90-absDeg}deg)`;
 }
 function arRenderConstruirePencil(){
-  arRenderPencilTip(document.getElementById('ar-construireProtractor-pencil'), arConstruirePencilDeg);
+  arRenderPencilTip(document.getElementById('ar-construireProtractor-pencil'), arConstruireProtState, arConstruirePencilDeg);
 }
 function arDrawConstruireAngle(){
   const baseEnd = arDegToPt(arConstruireVertex, arConstruireBaseDeg, AR_RAY_LEN);
@@ -357,8 +370,12 @@ function arDrawConstruireAngle(){
   if(rb){ rb.setAttribute('x1',arConstruireVertex.x); rb.setAttribute('y1',arConstruireVertex.y); rb.setAttribute('x2',baseEnd.x); rb.setAttribute('y2',baseEnd.y); }
   arConstruireRayAngles[0] = arConstruireBaseDeg;
 }
+function arEffectiveAbsDeg(protState, storedDeg){
+  const effectiveLocalDeg = protState.mirror ? (180-storedDeg) : storedDeg;
+  return ((effectiveLocalDeg + protState.rot) % 360 + 360) % 360;
+}
 function arValiderConstruire(){
-  arConstruireCurrentDeg = (arConstruireProtState.rot + arConstruirePencilDeg + 360) % 360;
+  arConstruireCurrentDeg = arEffectiveAbsDeg(arConstruireProtState, arConstruirePencilDeg);
   const rayEnd = arDegToPt(arConstruireVertex, arConstruireCurrentDeg, AR_RAY_LEN);
   const rr = document.getElementById('ar-construireRay');
   if(rr){ rr.setAttribute('x1',arConstruireVertex.x); rr.setAttribute('y1',arConstruireVertex.y); rr.setAttribute('x2',rayEnd.x); rr.setAttribute('y2',rayEnd.y); rr.setAttribute('opacity','1'); }
@@ -398,7 +415,7 @@ function arCheckConstruire(){
 /* Glisser le crayon le long de l'arc, en degrés entiers, dans le repère LOCAL du rapporteur
    (indépendant de sa position/rotation actuelle -- c'est tout l'intérêt : le crayon reste sur
    l'arc quel que soit l'endroit où le rapporteur a été placé). */
-function arInitPencilDrag(protractorId, pencilId, sceneId, protState){
+function arInitPencilDrag(protractorId, pencilId, sceneId, protState, onDegChange){
   const pencil = document.getElementById(pencilId);
   const sceneEl = document.getElementById(sceneId);
   if(!pencil || !sceneEl) return;
@@ -409,11 +426,12 @@ function arInitPencilDrag(protractorId, pencilId, sceneId, protState){
     if(!dragging) return;
     const p = arScenePoint(sceneEl, e);
     const dx = p.x-protState.x, dy = protState.y-p.y;
-    let localDeg = Math.atan2(dy,dx)*180/Math.PI - protState.rot;
-    localDeg = ((localDeg%360)+360)%360;
-    if(localDeg>180) localDeg = localDeg>270 ? 0 : 180; // hors de l'arc (0-180) : on ramène à l'extrémité la plus proche
-    arConstruirePencilDeg = Math.round(localDeg);
-    arRenderConstruirePencil();
+    let geometricDeg = Math.atan2(dy,dx)*180/Math.PI - protState.rot;
+    geometricDeg = ((geometricDeg%360)+360)%360;
+    if(geometricDeg>180) geometricDeg = geometricDeg>270 ? 0 : 180; // hors de l'arc (0-180) : on ramène à l'extrémité la plus proche
+    // en mode miroir, le degré affiché/lu sur l'arc est inversé par rapport au calcul géométrique brut
+    const storedDeg = protState.mirror ? (180-geometricDeg) : geometricDeg;
+    onDegChange(Math.round(storedDeg));
     e.preventDefault();
   }
   function up(){ dragging=false; }
@@ -474,10 +492,11 @@ function arBuildDemoLireScene(){
 function arDemoLireGoto(idx){
   arDemoLireStepIdx = idx;
   const steps = arDemoLireSteps();
-  const alignDeg = arDemoLireMode==='exterieur' ? AR_DEMO_LIRE_BASE_DEG : ((AR_DEMO_LIRE_BASE_DEG+180)%360);
+  const mirror = arDemoLireMode==='interieur';
+  arDemoLireProtState.mirror = mirror;
   if(idx===0){ arDemoLireProtState.x=90; arDemoLireProtState.y=90; arDemoLireProtState.rot=0; }
   else if(idx===1){ arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=0; }
-  else { arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=alignDeg; }
+  else { arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=AR_DEMO_LIRE_BASE_DEG; }
   arRenderProtractor('ar-demoLireProtractor', arDemoLireProtState);
   const noteEl = document.getElementById('ar-demoLireNote');
   if(noteEl) noteEl.textContent = steps[idx].note;
@@ -493,23 +512,40 @@ function arDemoLireReset(){ arDemoLireGoto(0); }
 const AR_DEMO_CONS_VERTEX = {x:430, y:325};
 const AR_DEMO_CONS_BASE_DEG = 200;
 const AR_DEMO_CONS_TARGET = 72;
-let arDemoConsProtState = {x:90, y:90, rot:0};
+let arDemoConsProtState = {x:90, y:90, rot:0, mirror:false};
 let arDemoConsStepIdx = 0;
-const AR_DEMO_CONS_STEPS = [
-  {note:`On veut construire un angle de ${AR_DEMO_CONS_TARGET}° à partir de ce côté déjà tracé.`},
-  {note:"On place le centre du rapporteur sur le sommet, et on aligne sa ligne 0°-180° sur le côté déjà tracé."},
-  {note:`On place la pointe du crayon sur le bord du rapporteur, à la graduation ${AR_DEMO_CONS_TARGET}°.`},
-  {note:"On trace un petit trait dans le prolongement de cette lecture : c'est le trait-repère."},
-  {note:"On retire le rapporteur (et le crayon) : seul le trait-repère reste sur la feuille."},
-  {note:"On pose la règle contre le sommet et le trait-repère, et on trace la demi-droite : l'angle est construit."},
-];
+let arDemoConsMode = 'exterieur';
+function arDemoConsSteps(){
+  const anneau = arDemoConsMode==='exterieur' ? 'jaune extérieur' : 'vert intérieur';
+  return [
+    {note:`On veut construire un angle de ${AR_DEMO_CONS_TARGET}° à partir de ce côté déjà tracé.`},
+    {note: arDemoConsMode==='exterieur'
+      ? "On place le centre du rapporteur sur le sommet, et on aligne son 0° extérieur sur le côté déjà tracé."
+      : "On place le centre du rapporteur sur le sommet, et on aligne son 0° intérieur sur le côté déjà tracé (le rapporteur est vu de l'autre côté)."},
+    {note:`On place la pointe du crayon sur le bord du rapporteur, à la graduation ${AR_DEMO_CONS_TARGET}° de l'anneau ${anneau}.`},
+    {note:"On trace un petit trait dans le prolongement de cette lecture : c'est le trait-repère."},
+    {note:"On retire le rapporteur (et le crayon) : seul le trait-repère reste sur la feuille."},
+    {note:"On pose la règle contre le sommet et le trait-repère, et on trace la demi-droite : l'angle est construit."},
+  ];
+}
+function arSetDemoConsMode(mode){
+  arDemoConsMode = mode;
+  const extBtn = document.getElementById('ar-demoConsModeExt'), intBtn = document.getElementById('ar-demoConsModeInt');
+  if(extBtn) extBtn.classList.toggle('active', mode==='exterieur');
+  if(intBtn) intBtn.classList.toggle('active', mode==='interieur');
+  arDemoConsGoto(arDemoConsStepIdx);
+}
 function arBuildDemoConsScene(){
   const baseEnd = arDegToPt(AR_DEMO_CONS_VERTEX, AR_DEMO_CONS_BASE_DEG, AR_RAY_LEN);
   const finalDeg = AR_DEMO_CONS_BASE_DEG + AR_DEMO_CONS_TARGET;
   const R = AR_PROT_H*AR_PENCIL_R_RATIO;
-  const tickInner = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R-12);
-  const tickOuter = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R+12);
-  return `<div class="ar-scene" id="ar-demoConsScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+  const tickInner = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R-6);
+  const tickOuter = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, R+6);
+  return `<div class="figure-toolbar" style="justify-content:center;margin-bottom:8px;">
+    <button class="btn secondary active" id="ar-demoConsModeExt" onclick="arSetDemoConsMode('exterieur')">Lecture extérieure</button>
+    <button class="btn secondary" id="ar-demoConsModeInt" onclick="arSetDemoConsMode('interieur')">Lecture intérieure</button>
+  </div>
+  <div class="ar-scene" id="ar-demoConsScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
     <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
       <line x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${baseEnd.x}" y2="${baseEnd.y}" stroke="#1F3A5C" stroke-width="1.3"/>
       <line id="ar-demoConsFinalRay" x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${AR_DEMO_CONS_VERTEX.x}" y2="${AR_DEMO_CONS_VERTEX.y}" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
@@ -517,32 +553,36 @@ function arBuildDemoConsScene(){
     </svg>
     <div id="ar-demoConsProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
       <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
-      <div id="ar-demoConsPencil" style="position:absolute;top:0;left:0;width:16px;transform-origin:8px 46px;opacity:0;transition:opacity .4s ease;">
-        <svg viewBox="0 0 16 46" width="16" height="46" style="display:block;overflow:visible;">
-          <rect x="4" y="0" width="8" height="5" rx="1.5" fill="#E35D3A"/>
-          <rect x="4" y="5" width="8" height="4" fill="#1C1B2E"/>
-          <rect x="4" y="9" width="8" height="27" fill="#E9C46A"/>
-          <polygon points="4,36 12,36 8,46" fill="#D9A441"/>
-          <polygon points="6,42 10,42 8,46" fill="#4A4A55"/>
-        </svg>
-      </div>
+    </div>
+    <div id="ar-demoConsPencil" style="position:absolute;top:0;left:0;width:16px;transform-origin:8px 46px;opacity:0;transition:opacity .4s ease;">
+      <svg viewBox="0 0 16 46" width="16" height="46" style="display:block;overflow:visible;">
+        <rect x="4" y="0" width="8" height="5" rx="1.5" fill="#E35D3A"/>
+        <rect x="4" y="5" width="8" height="4" fill="#1C1B2E"/>
+        <rect x="4" y="9" width="8" height="27" fill="#E9C46A"/>
+        <polygon points="4,36 12,36 8,46" fill="#D9A441"/>
+        <polygon points="6,42 10,42 8,46" fill="#4A4A55"/>
+      </svg>
     </div>
   </div>`;
 }
 function arDemoConsGoto(idx){
   arDemoConsStepIdx = idx;
+  const steps = arDemoConsSteps();
   const prot = document.getElementById('ar-demoConsProtractor');
   const pencil = document.getElementById('ar-demoConsPencil');
+  const mirror = arDemoConsMode==='interieur';
+  arDemoConsProtState.mirror = mirror;
   if(idx===0){ arDemoConsProtState.x=90; arDemoConsProtState.y=90; arDemoConsProtState.rot=0; if(prot) prot.style.opacity='1'; }
   else if(idx===1){ arDemoConsProtState.x=AR_DEMO_CONS_VERTEX.x; arDemoConsProtState.y=AR_DEMO_CONS_VERTEX.y; arDemoConsProtState.rot=AR_DEMO_CONS_BASE_DEG; if(prot) prot.style.opacity='1'; }
   else if(prot){ prot.style.opacity = idx>=4 ? '0' : '1'; }
   arRenderProtractor('ar-demoConsProtractor', arDemoConsProtState);
   if(pencil){
     pencil.style.opacity = (idx>=2 && idx<=3) ? '1' : '0';
-    arRenderPencilTip(pencil, AR_DEMO_CONS_TARGET);
+    const storedDeg = mirror ? (180-AR_DEMO_CONS_TARGET) : AR_DEMO_CONS_TARGET;
+    arRenderPencilTip(pencil, arDemoConsProtState, storedDeg);
   }
   const noteEl = document.getElementById('ar-demoConsNote');
-  if(noteEl) noteEl.textContent = AR_DEMO_CONS_STEPS[idx].note;
+  if(noteEl) noteEl.textContent = steps[idx].note;
   const tick = document.getElementById('ar-demoConsTick');
   if(tick) tick.setAttribute('opacity', idx>=3?'1':'0');
   const finalRay = document.getElementById('ar-demoConsFinalRay');
@@ -556,44 +596,81 @@ function arDemoConsGoto(idx){
     }
   }
   const btn = document.getElementById('ar-demoConsNextBtn');
-  if(btn){ btn.disabled = (idx===AR_DEMO_CONS_STEPS.length-1); btn.textContent = idx===AR_DEMO_CONS_STEPS.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
+  if(btn){ btn.disabled = (idx===steps.length-1); btn.textContent = idx===steps.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
 }
-function arDemoConsNext(){ if(arDemoConsStepIdx<AR_DEMO_CONS_STEPS.length-1) arDemoConsGoto(arDemoConsStepIdx+1); }
+function arDemoConsNext(){ if(arDemoConsStepIdx<arDemoConsSteps().length-1) arDemoConsGoto(arDemoConsStepIdx+1); }
 function arDemoConsReset(){ arDemoConsGoto(0); }
 
-/* --- Widget 3 : construire la bissectrice d'un angle donné --- */
-const AR_BISSECTRICE_ANGLE = 108;
+/* --- Widget 3 : construire la bissectrice d'un angle donné, étape par étape --- */
+const AR_BIS_ANGLE = 108;
 const AR_BIS_VERTEX = {x:380,y:310};
+let arBisProtState = {x:90,y:90,rot:0,mirror:false};
+let arBisStepIdx = 0;
+const AR_BIS_STEPS = [
+  {note:"On veut tracer la bissectrice de l'angle MON."},
+  {note:"On place le centre du rapporteur sur le sommet O, aligné sur le côté [ON)."},
+  {note:`On mesure l'angle : il mesure ${AR_BIS_ANGLE}°.`},
+  {note:`On calcule la moitié de cette mesure : ${AR_BIS_ANGLE}° ÷ 2 = ${AR_BIS_ANGLE/2}°.`},
+  {note:`On place la pointe du crayon sur le bord du rapporteur, à la graduation ${AR_BIS_ANGLE/2}°.`},
+  {note:"On trace un petit trait dans le prolongement de cette lecture : c'est le trait-repère."},
+  {note:"On retire le rapporteur (et le crayon) : seul le trait-repère reste."},
+  {note:"On trace la demi-droite [OB) qui part de O et qui passe par le trait-repère : c'est la bissectrice."},
+];
 function arBuildBissectriceSvg(){
-  const M = arDegToPt(AR_BIS_VERTEX, AR_BISSECTRICE_ANGLE, AR_RAY_LEN);
   const N = arDegToPt(AR_BIS_VERTEX, 0, AR_RAY_LEN);
+  const M = arDegToPt(AR_BIS_VERTEX, AR_BIS_ANGLE, AR_RAY_LEN);
+  const half = AR_BIS_ANGLE/2;
+  const R = AR_PROT_H*AR_PENCIL_R_RATIO;
+  const tickInner = arDegToPt(AR_BIS_VERTEX, half, R-6);
+  const tickOuter = arDegToPt(AR_BIS_VERTEX, half, R+6);
+  const readingPt = arDegToPt(AR_BIS_VERTEX, half, AR_PROT_H*0.55);
   return `<div class="ar-scene" id="ar-bissectriceScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
-    <svg id="ar-bissectriceSvg" viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+    <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
       <line x1="${AR_BIS_VERTEX.x}" y1="${AR_BIS_VERTEX.y}" x2="${N.x}" y2="${N.y}" stroke="#1F3A5C" stroke-width="1.3"/>
       <line x1="${AR_BIS_VERTEX.x}" y1="${AR_BIS_VERTEX.y}" x2="${M.x}" y2="${M.y}" stroke="#1F3A5C" stroke-width="1.3"/>
-      <line id="ar-bissectriceLine" x1="${AR_BIS_VERTEX.x}" y1="${AR_BIS_VERTEX.y}" x2="${AR_BIS_VERTEX.x}" y2="${AR_BIS_VERTEX.y}" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
+      <line id="ar-bisTick" x1="${tickInner.x}" y1="${tickInner.y}" x2="${tickOuter.x}" y2="${tickOuter.y}" stroke="#1C1B2E" stroke-width="2.2" opacity="0"/>
+      <line id="ar-bisFinalRay" x1="${AR_BIS_VERTEX.x}" y1="${AR_BIS_VERTEX.y}" x2="${AR_BIS_VERTEX.x}" y2="${AR_BIS_VERTEX.y}" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
+      <text id="ar-bisReading" x="${readingPt.x}" y="${readingPt.y}" font-size="18" font-weight="700" fill="#E35D3A" text-anchor="middle" opacity="0">${AR_BIS_ANGLE}°</text>
       ${arLabel(N.x+6, N.y+2, 'N', 13, false)}
       ${arLabel(M.x-2, M.y-8, 'M', 13, false)}
       ${arLabel(AR_BIS_VERTEX.x-4, AR_BIS_VERTEX.y-6, 'O', 13, false)}
     </svg>
-    ${arBuildProtractorOverlay('ar-bissectriceProtractor')}
+    <div id="ar-bissectriceProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
+      <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
+    </div>
+    ${arBuildPencilHtml('ar-bissectriceProtractor')}
   </div>`;
 }
-let arBissectriceProtState = {x:90,y:90,rot:0};
-function arResetBissectrice(){
-  const line = document.getElementById('ar-bissectriceLine');
-  if(line){ line.setAttribute('opacity','0'); line.setAttribute('x2',AR_BIS_VERTEX.x); line.setAttribute('y2',AR_BIS_VERTEX.y); }
-  document.getElementById('ar-bissectriceStatus').textContent = '';
-  arBissectriceProtState.x=90; arBissectriceProtState.y=90; arBissectriceProtState.rot=0;
-  arRenderProtractor('ar-bissectriceProtractor', arBissectriceProtState);
+function arBisGoto(idx){
+  arBisStepIdx = idx;
+  const prot = document.getElementById('ar-bissectriceProtractor');
+  const pencil = document.getElementById('ar-bissectriceProtractor-pencil');
+  const half = AR_BIS_ANGLE/2;
+  if(idx===0){ arBisProtState.x=90; arBisProtState.y=90; arBisProtState.rot=0; if(prot) prot.style.opacity='1'; }
+  else { arBisProtState.x=AR_BIS_VERTEX.x; arBisProtState.y=AR_BIS_VERTEX.y; arBisProtState.rot=0; if(prot) prot.style.opacity = idx>=6 ? '0' : '1'; }
+  arRenderProtractor('ar-bissectriceProtractor', arBisProtState);
+  if(pencil){
+    pencil.style.opacity = (idx>=4 && idx<=5) ? '1' : '0';
+    arRenderPencilTip(pencil, arBisProtState, half);
+  }
+  const noteEl = document.getElementById('ar-bissectriceNote');
+  if(noteEl) noteEl.textContent = AR_BIS_STEPS[idx].note;
+  const reading = document.getElementById('ar-bisReading');
+  if(reading) reading.setAttribute('opacity', (idx>=2 && idx<=3) ?'1':'0');
+  const tick = document.getElementById('ar-bisTick');
+  if(tick) tick.setAttribute('opacity', idx>=5?'1':'0');
+  const finalRay = document.getElementById('ar-bisFinalRay');
+  if(finalRay){
+    if(idx>=7){
+      const end = arDegToPt(AR_BIS_VERTEX, half, AR_RAY_LEN);
+      finalRay.setAttribute('x2', end.x); finalRay.setAttribute('y2', end.y); finalRay.setAttribute('opacity','1');
+    } else finalRay.setAttribute('opacity','0');
+  }
+  const btn = document.getElementById('ar-bissectriceNextBtn');
+  if(btn){ btn.disabled = (idx===AR_BIS_STEPS.length-1); btn.textContent = idx===AR_BIS_STEPS.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
 }
-function arTraceBissectrice(){
-  const half = AR_BISSECTRICE_ANGLE/2;
-  const B = arDegToPt(AR_BIS_VERTEX, half, AR_RAY_LEN);
-  const line = document.getElementById('ar-bissectriceLine');
-  line.setAttribute('x2', B.x); line.setAttribute('y2', B.y); line.setAttribute('opacity','1');
-  document.getElementById('ar-bissectriceStatus').innerHTML = `${AR_BISSECTRICE_ANGLE}° ÷ 2 = ${half}°, donc on trace le trait-repère à ${half}° sur le rapporteur, puis la demi-droite [OB) : c'est la bissectrice de l'angle MON.`;
-}
+function arBisNext(){ if(arBisStepIdx<AR_BIS_STEPS.length-1) arBisGoto(arBisStepIdx+1); }
+function arBisReset(){ arBisGoto(0); }
 
 /* ================= Permis Rapporteur (examen noté, élève, activé par le prof pour sa classe) ================= */
 const AR_PERMIS_TOTAL = 20, AR_PERMIS_READ_COUNT = 10;
@@ -671,7 +748,7 @@ function arPermisRenderQuestion(){
         <line x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${end1.x}" y2="${end1.y}" stroke="#1C1B2E" stroke-width="1.3"/>
         <line x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${end2.x}" y2="${end2.y}" stroke="#1C1B2E" stroke-width="1.3"/>
       </svg>
-      ${arBuildProtractorOverlay('ar-permisProtractor', false)}
+      ${arBuildProtractorOverlay('ar-permisProtractor')}
     </div>`;
     toolbar.innerHTML = `<label class="hint" style="margin:0;">Ma lecture : <input type="number" id="ar-permisInput" style="width:70px;"> °</label>
       <button class="btn" onclick="arPermisValidateAnswer()">Valider la réponse</button>`;
@@ -686,19 +763,20 @@ function arPermisRenderQuestion(){
         <line x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${baseEnd.x}" y2="${baseEnd.y}" stroke="#1F3A5C" stroke-width="1.3"/>
         <line id="ar-permisRay" x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${arPermisVertex.x}" y2="${arPermisVertex.y}" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
       </svg>
-      ${arBuildProtractorOverlay('ar-permisProtractor', true)}
+      ${arBuildProtractorOverlay('ar-permisProtractor')}
+      ${arBuildPencilHtml('ar-permisProtractor')}
     </div>`;
     toolbar.innerHTML = `<button class="btn" onclick="arPermisValiderTrait()">Valider le trait-repère</button>
       <button class="btn" onclick="arPermisValidateAnswer()">Valider la réponse</button>`;
     arPermisRayAngles[0] = arPermisBaseDeg; arPermisRayAngles[1] = arPermisBaseDeg;
     arRenderProtractor('ar-permisProtractor', arPermisProtState);
     arInitProtractorDrag('ar-permisProtractor','ar-permisScene', arPermisProtState, arPermisVertex, arPermisRayAngles);
-    arInitPencilDrag('ar-permisProtractor','ar-permisProtractor-pencil','ar-permisScene', arPermisProtState);
-    arRenderPencilTip(document.getElementById('ar-permisProtractor-pencil'), arPermisPencilDeg);
+    arInitPencilDrag('ar-permisProtractor','ar-permisProtractor-pencil','ar-permisScene', arPermisProtState, (deg)=>{ arPermisPencilDeg=deg; arRenderPencilTip(document.getElementById('ar-permisProtractor-pencil'), arPermisProtState, deg); });
+    arRenderPencilTip(document.getElementById('ar-permisProtractor-pencil'), arPermisProtState, arPermisPencilDeg);
   }
 }
 function arPermisValiderTrait(){
-  arPermisCurrentDeg = (arPermisProtState.rot + arPermisPencilDeg + 360) % 360;
+  arPermisCurrentDeg = arEffectiveAbsDeg(arPermisProtState, arPermisPencilDeg);
   const rayEnd = arDegToPt(arPermisVertex, arPermisCurrentDeg, AR_RAY_LEN);
   const ray = document.getElementById('ar-permisRay');
   if(ray){ ray.setAttribute('x2', rayEnd.x); ray.setAttribute('y2', rayEnd.y); ray.setAttribute('opacity','1'); }
@@ -852,15 +930,14 @@ document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
 <div class="lesson-header"><span class="num">5</span><h3>Bissectrice d'un angle saillant</h3></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">La <b>bissectrice d'un angle saillant</b> est la droite qui partage cet angle en deux angles adjacents de même mesure.</div>
-<p class="example-title">Exemple : construis la bissectrice de l'angle <span class="tex">\\widehat{MON}</span> avec un rapporteur.</p>
-<p class="interaction-hint" style="margin:4px 0 8px;">Déplace et pivote le rapporteur pour vérifier la mesure de l'angle MON, puis clique pour tracer la bissectrice.</p>
+<p class="example-title">Méthode : construis la bissectrice de l'angle <span class="tex">\\widehat{MON}</span> avec un rapporteur.</p>
 <div class="figure-wrap">
   ${arBuildBissectriceSvg()}
+  <p class="hint" id="ar-bissectriceNote" style="text-align:center;margin:10px 0 0;font-weight:600;"></p>
   <div class="figure-toolbar" style="justify-content:center;">
-    <button class="btn" onclick="arTraceBissectrice()">Tracer la bissectrice</button>
-    <button class="btn secondary" onclick="arResetBissectrice()">Recommencer</button>
+    <button class="btn" id="ar-bissectriceNextBtn" onclick="arBisNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="arBisReset()">Recommencer</button>
   </div>
-  <p class="hint" id="ar-bissectriceStatus" style="text-align:center;margin-top:8px;"></p>
 </div>
 `;
 
@@ -1009,12 +1086,13 @@ DEMO_REGISTRY['Angles et rapporteur'] = {
         capture: (i)=>arCaptureRapporteurScene('ar-demoLireScene', 'svg', arDemoLireProtState, 1, null, 260),
       });
       registerSceneStepDemo('ar-demoConsScene', {
-        steps: ()=>AR_DEMO_CONS_STEPS,
+        steps: ()=>arDemoConsSteps(),
         getIdx: ()=>arDemoConsStepIdx,
         goto: (i)=>arDemoConsGoto(i),
         capture: (i)=>{
           const protOpacity = i>=4 ? 0 : 1;
-          const pencilDeg = (i>=2 && i<=3) ? AR_DEMO_CONS_TARGET : null;
+          const storedDeg = arDemoConsProtState.mirror ? (180-AR_DEMO_CONS_TARGET) : AR_DEMO_CONS_TARGET;
+          const pencilDeg = (i>=2 && i<=3) ? storedDeg : null;
           return arCaptureRapporteurScene('ar-demoConsScene', 'svg', arDemoConsProtState, protOpacity, pencilDeg, 260);
         },
       });
@@ -1023,13 +1101,22 @@ DEMO_REGISTRY['Angles et rapporteur'] = {
     arDemoConsReset();
     arResetLire();
     arResetConstruire();
-    arResetBissectrice();
+    arBisReset();
     if(!arDragInitialized){
       arDragInitialized = true;
       arInitProtractorDrag('ar-lireProtractor','ar-lireScene', arLireProtState, arLireVertex, arLireRayAngles);
       arInitProtractorDrag('ar-construireProtractor','ar-construireScene', arConstruireProtState, arConstruireVertex, arConstruireRayAngles);
-      arInitProtractorDrag('ar-bissectriceProtractor','ar-bissectriceScene', arBissectriceProtState, AR_BIS_VERTEX, [0, AR_BISSECTRICE_ANGLE]);
-      arInitPencilDrag('ar-construireProtractor','ar-construireProtractor-pencil','ar-construireScene', arConstruireProtState);
+      registerSceneStepDemo('ar-bissectriceScene', {
+        steps: ()=>AR_BIS_STEPS,
+        getIdx: ()=>arBisStepIdx,
+        goto: (i)=>arBisGoto(i),
+        capture: (i)=>{
+          const protOpacity = i>=6 ? 0 : 1;
+          const pencilDeg = (i>=4 && i<=5) ? (AR_BIS_ANGLE/2) : null;
+          return arCaptureRapporteurScene('ar-bissectriceScene', 'svg', arBisProtState, protOpacity, pencilDeg, 260);
+        },
+      });
+      arInitPencilDrag('ar-construireProtractor','ar-construireProtractor-pencil','ar-construireScene', arConstruireProtState, (deg)=>{ arConstruirePencilDeg=deg; arRenderConstruirePencil(); });
     }
     arMethodeOpposesDemo.reset();
     arMethodeAlignementDemo.reset();
