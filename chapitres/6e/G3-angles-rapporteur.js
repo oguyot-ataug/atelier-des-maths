@@ -45,7 +45,7 @@ function arTypeIcon(angleDeg, label){
   } else if(angleDeg===200){ // repère "rentrant" : on colore la grande région (le complément du petit angle saillant de 45°)
     const P1 = arDegToPt(O,0,32), P2 = arDegToPt(O,45,32);
     content = `<circle cx="${O.x}" cy="${O.y}" r="26" fill="#1F3A5C" fill-opacity="0.5"/>
-      <polygon points="${O.x},${O.y} ${angleArcPoints(O,P1,P2,26).points}" fill="var(--white)"/>
+      <polygon points="${O.x},${O.y} ${angleArcPoints(O,P1,P2,26).points}" fill="#FFFFFF"/>
       <line x1="${O.x}" y1="${O.y}" x2="${P1.x}" y2="${P1.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${O.x}" y1="${O.y}" x2="${P2.x}" y2="${P2.y}" stroke="#1C1B2E" stroke-width="1.6"/>`;
   } else {
@@ -133,7 +133,7 @@ const AR_SNAP_DIST = 30;         // distance (px, coordonnées de la scène) dé
 const AR_SNAP_ROT = 4;           // tolérance (°) pour l'accroche de la rotation sur un côté de l'angle
 /* Rayon où la pointe du crayon touche le bord du rapporteur : mesuré par ajustement de cercle sur
    le bord rose de l'image (rayon réel ≈ 0,927 x hauteur), avec une petite marge de sécurité. */
-const AR_PENCIL_R_RATIO = 0.90;
+const AR_PENCIL_R_RATIO = 0.93;
 
 function arDegToPt(vertex, angleDeg, len){
   const t = angleDeg*Math.PI/180;
@@ -477,7 +477,7 @@ function arBuildDemoLireScene(){
     <button class="btn secondary active" id="ar-demoLireModeExt" onclick="arSetDemoLireMode('exterieur')">Lecture extérieure</button>
     <button class="btn secondary" id="ar-demoLireModeInt" onclick="arSetDemoLireMode('interieur')">Lecture intérieure</button>
   </div>
-  <p class="hint" style="text-align:center;margin:0 0 10px;">Ce bouton montre qu'on peut toujours poser le rapporteur de deux manières : en alignant le 0° extérieur (jaune) ou le 0° intérieur (vert) sur le côté -- le résultat de la lecture est le même.</p>
+  <p class="hint" style="text-align:center;margin:0 0 10px;">Pour une <b>lecture extérieure</b>, place le 0° jaune sur un des côtés de l'angle, en veillant à ce que l'autre côté reste dans le rapporteur. Pour une <b>lecture intérieure</b>, c'est le 0° vert qui doit être placé sur un des côtés (l'autre côté reste alors aussi dans le rapporteur) : le résultat de la lecture est le même.</p>
   <div class="ar-scene" id="ar-demoLireScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
     <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
       <line x1="${AR_DEMO_LIRE_VERTEX.x}" y1="${AR_DEMO_LIRE_VERTEX.y}" x2="${end1.x}" y2="${end1.y}" stroke="#1C1B2E" stroke-width="1.3"/>
@@ -615,15 +615,27 @@ const AR_BIS_STEPS = [
   {note:"On trace un petit trait dans le prolongement de cette lecture : c'est le trait-repère."},
   {note:"On retire le rapporteur (et le crayon) : seul le trait-repère reste."},
   {note:"On trace la demi-droite [OB) qui part de O et qui passe par le trait-repère : c'est la bissectrice."},
+  {note:`On code les angles NOB et BOM du même trait : ils ont tous les deux pour mesure ${AR_BIS_ANGLE/2}°.`},
 ];
 function arBuildBissectriceSvg(){
   const N = arDegToPt(AR_BIS_VERTEX, 0, AR_RAY_LEN);
   const M = arDegToPt(AR_BIS_VERTEX, AR_BIS_ANGLE, AR_RAY_LEN);
   const half = AR_BIS_ANGLE/2;
+  const B = arDegToPt(AR_BIS_VERTEX, half, AR_RAY_LEN);
   const R = AR_PROT_H*AR_PENCIL_R_RATIO;
   const tickInner = arDegToPt(AR_BIS_VERTEX, half, R-6);
   const tickOuter = arDegToPt(AR_BIS_VERTEX, half, R+6);
   const readingPt = arDegToPt(AR_BIS_VERTEX, half, AR_PROT_H*0.55);
+  // codage des deux angles NOB et BOM (même mesure) : petit arc + trait perpendiculaire au milieu
+  const codeR = 40;
+  const arc1 = angleArcPoints(AR_BIS_VERTEX, N, B, codeR), arc2 = angleArcPoints(AR_BIS_VERTEX, B, M, codeR);
+  const mid1 = {x:AR_BIS_VERTEX.x+codeR*Math.cos(arc1.mid), y:AR_BIS_VERTEX.y+codeR*Math.sin(arc1.mid)};
+  const mid2 = {x:AR_BIS_VERTEX.x+codeR*Math.cos(arc2.mid), y:AR_BIS_VERTEX.y+codeR*Math.sin(arc2.mid)};
+  const tickLen = 7;
+  const codeTick = (mid, arcAngle) => {
+    const perp = arcAngle + Math.PI/2;
+    return `<line x1="${mid.x-tickLen*Math.cos(perp)}" y1="${mid.y-tickLen*Math.sin(perp)}" x2="${mid.x+tickLen*Math.cos(perp)}" y2="${mid.y+tickLen*Math.sin(perp)}" stroke="#1F6B3A" stroke-width="2"/>`;
+  };
   return `<div class="ar-scene" id="ar-bissectriceScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
     <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
       <line x1="${AR_BIS_VERTEX.x}" y1="${AR_BIS_VERTEX.y}" x2="${N.x}" y2="${N.y}" stroke="#1F3A5C" stroke-width="1.3"/>
@@ -631,9 +643,16 @@ function arBuildBissectriceSvg(){
       <line id="ar-bisTick" x1="${tickInner.x}" y1="${tickInner.y}" x2="${tickOuter.x}" y2="${tickOuter.y}" stroke="#1C1B2E" stroke-width="2.2" opacity="0"/>
       <line id="ar-bisFinalRay" x1="${AR_BIS_VERTEX.x}" y1="${AR_BIS_VERTEX.y}" x2="${AR_BIS_VERTEX.x}" y2="${AR_BIS_VERTEX.y}" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
       <text id="ar-bisReading" x="${readingPt.x}" y="${readingPt.y}" font-size="18" font-weight="700" fill="#E35D3A" text-anchor="middle" opacity="0">${AR_BIS_ANGLE}°</text>
+      <g id="ar-bisCodage" opacity="0">
+        <polyline points="${arc1.points}" fill="none" stroke="#1F6B3A" stroke-width="1.6"/>
+        <polyline points="${arc2.points}" fill="none" stroke="#1F6B3A" stroke-width="1.6"/>
+        ${codeTick(mid1, arc1.mid)}
+        ${codeTick(mid2, arc2.mid)}
+      </g>
       ${arLabel(N.x+6, N.y+2, 'N', 13, false)}
       ${arLabel(M.x-2, M.y-8, 'M', 13, false)}
       ${arLabel(AR_BIS_VERTEX.x-4, AR_BIS_VERTEX.y-6, 'O', 13, false)}
+      <text id="ar-bisLabelB" x="${B.x+6}" y="${B.y-6}" font-size="13" fill="#E35D3A" opacity="0">B</text>
     </svg>
     <div id="ar-bissectriceProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
       <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
@@ -666,6 +685,10 @@ function arBisGoto(idx){
       finalRay.setAttribute('x2', end.x); finalRay.setAttribute('y2', end.y); finalRay.setAttribute('opacity','1');
     } else finalRay.setAttribute('opacity','0');
   }
+  const codage = document.getElementById('ar-bisCodage');
+  if(codage) codage.setAttribute('opacity', idx>=8?'1':'0');
+  const labelB = document.getElementById('ar-bisLabelB');
+  if(labelB) labelB.setAttribute('opacity', idx>=7?'1':'0');
   const btn = document.getElementById('ar-bissectriceNextBtn');
   if(btn){ btn.disabled = (idx===AR_BIS_STEPS.length-1); btn.textContent = idx===AR_BIS_STEPS.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
 }

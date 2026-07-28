@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.5</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.6</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -1052,7 +1052,11 @@ function svgToRasterDataUri(svgEl, displayWidth){
     const vbParts = vbAttr ? vbAttr.trim().split(/\s+/).map(Number) : [0,0,400,240];
     const vbW = vbParts[2] || 400, vbH = vbParts[3] || 240;
     const clone = svgEl.cloneNode(true);
-    try{ inlineComputedStyles(svgEl, clone); } catch(e){ console.error('svgToRasterDataUri: échec figement des styles', e); }
+    if(document.contains(svgEl)){
+      try{ inlineComputedStyles(svgEl, clone); } catch(e){ console.error('svgToRasterDataUri: échec figement des styles', e); }
+    } // sinon (figure statique déjà détachée) : ses attributs littéraux sont fiables tels quels --
+      // les calculer via getComputedStyle sur un nœud détaché résoudrait mal les variables CSS et
+      // écraserait les bonnes valeurs par des valeurs par défaut.
     try{ applyPrintMarkers(clone); } catch(e){ console.error('svgToRasterDataUri: échec transformation des marqueurs', e); }
     clone.removeAttribute('id');
     clone.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
@@ -2236,6 +2240,13 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-28.6', items:[
+    "PDF : correction d'une vraie cause de figures manquantes -- une figure statique (icône « angle rentrant ») utilisait une variable CSS (var(--white)) dans un attribut fill, qui ne se résout pas sur un clone détaché du DOM lors de la capture. Remplacée par une couleur littérale, et la rastérisation PDF est étendue à TOUTE figure SVG restante (pas seulement celles avec un identifiant), pour couvrir aussi les figures statiques.",
+    "Correction d'un risque similaire pour toutes les figures : le figement des styles calculés n'est plus tenté sur un élément détaché du DOM (ce qui écrasait par erreur des couleurs correctes par des valeurs par défaut) -- seuls les éléments encore présents en direct dans la page sont concernés.",
+    "Chapitre Angles et rapporteur (6e) : rayon du crayon encore augmenté (0.93, au niveau du bord réel où passe le trait rouge).",
+    "Textes de lecture intérieure/extérieure précisés : le 0° jaune (extérieur) ou le 0° vert (intérieur) doit être placé sur un des côtés de l'angle, l'autre côté restant dans le rapporteur.",
+    "Bissectrice : ajout d'une dernière étape codant les deux angles NOB et BOM obtenus comme étant de même mesure (petit arc + trait), et capturable dans le cahier/PDF.",
+  ]},
   { version:'2026-07-28.5', items:[
     "Chapitre Angles et rapporteur (6e) : correction du vrai bug de positionnement du crayon (il était imbriqué dans la rotation CSS du rapporteur, ce qui le faisait apparaître complètement décalé) -- il est maintenant positionné indépendamment par un calcul d'angle absolu direct, vérifié mathématiquement (la pointe reste exactement à la bonne distance du sommet, quel que soit l'angle).",
     "Trait-repère réduit (plus petit, moins imprécis à la lecture).",
@@ -3245,18 +3256,27 @@ async function expandStepDemosInClone(wrapper){
       console.error(`Cahier/PDF : erreur lors de la reconstitution des étapes pour #${cloneSvg.id}`, e);
     }
   }
-  // Toute autre figure SVG interactive (point/triangle/segment/cercle/polygone déplaçables,
-  // etc.) n'est pas une construction pas-à-pas, mais reste un SVG mis à jour dynamiquement en
-  // JS -- donc tout aussi mal gérée par html2canvas. On la rastérise également en image, à la
-  // taille d'affichage réelle qu'elle a en direct (celle du clone, détaché du DOM, est inconnue).
-  const remainingSvgs = Array.from(wrapper.querySelectorAll('svg[id]'));
+  // Toute autre figure SVG (interactive et mise à jour en JS, ou simple figure statique) reste
+  // du SVG -- html2canvas le gère de façon peu fiable dans les deux cas (pas seulement le
+  // dynamique), et une figure statique peut aussi utiliser une variable CSS (var(--xxx)) dans un
+  // attribut fill/stroke, qui ne se résout pas sur un clone détaché du DOM. On rastérise donc
+  // systématiquement tout SVG restant, y compris ceux sans id.
+  const remainingSvgs = Array.from(wrapper.querySelectorAll('svg'));
   for(const cloneSvg of remainingSvgs){
+    const label = cloneSvg.id ? `#${cloneSvg.id}` : '(figure statique sans id)';
     try{
-      const liveSvg = document.getElementById(cloneSvg.id);
+      const liveSvg = cloneSvg.id ? document.getElementById(cloneSvg.id) : null;
       let displayWidth = 400;
       if(liveSvg){
         const rect = liveSvg.getBoundingClientRect();
         if(rect.width > 20) displayWidth = rect.width;
+      } else {
+        // pas d'élément en direct (figure statique) : on déduit une largeur raisonnable du viewBox
+        const vb = cloneSvg.getAttribute('viewBox');
+        if(vb){
+          const parts = vb.trim().split(/\s+/).map(Number);
+          if(parts[2] > 20) displayWidth = Math.min(parts[2], 480);
+        }
       }
       const dataUri = await svgToRasterDataUri(liveSvg || cloneSvg, displayWidth);
       if(dataUri){
@@ -3266,10 +3286,10 @@ async function expandStepDemosInClone(wrapper){
         img.alt = 'Figure';
         cloneSvg.replaceWith(img);
       } else {
-        console.warn(`Cahier/PDF : rastérisation impossible pour #${cloneSvg.id}, figure conservée telle quelle.`);
+        console.warn(`Cahier/PDF : rastérisation impossible pour ${label}, figure conservée telle quelle.`);
       }
     } catch(e){
-      console.error(`Cahier/PDF : erreur lors de la rastérisation de #${cloneSvg.id}`, e);
+      console.error(`Cahier/PDF : erreur lors de la rastérisation de ${label}`, e);
     }
   }
 }
