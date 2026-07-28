@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.1</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.2</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2214,6 +2214,10 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-28.2', items:[
+    "Chapitre Angles et rapporteur (6e) : refonte majeure -- angles à trouver vraiment aléatoires (n'importe quel degré, plus seulement des multiples de 5) ; scène et rapporteur encore agrandis (860x600, rapporteur 480px) ; le cours affiche maintenant deux démonstrations pas-à-pas séparées (lire / construire) ; la construction se fait désormais avec un crayon qui se déplace degré par degré sur l'arc du rapporteur, validé pour tracer le côté (au lieu de faire tourner un trait directement).",
+    "Nouveau : Permis Rapporteur, un examen noté sur 20 (10 lectures + 10 constructions) accessible aux élèves connectés dont le professeur a activé le permis pour leur classe (case à cocher dans Administration, à côté de chaque classe). Résultat enregistré automatiquement.",
+  ]},
   { version:'2026-07-28.1', items:[
     "Chapitre Angles et rapporteur (6e) : réorganisation -- le Cours affiche maintenant une démonstration animée pas-à-pas (le rapporteur s'anime tout seul, rien à glisser) au lieu des exercices interactifs, déplacés dans Méthode animée (où on s'entraîne vraiment). Scène et rapporteur agrandis (plus lisibles). Repositionnement du pivot par une méthode plus précise (ajustement de cercle sur le bord du rapporteur) pour réduire le léger décalage constaté.",
   ]},
@@ -2673,7 +2677,7 @@ async function adminRefreshListings(){
       `<b>Profs/admins (${(profs||[]).length})</b>` + ((profs||[]).length ? (profs||[]).map(rowHTML).join('') : '<div class="hint">aucun</div>') +
       `<div style="margin-top:12px;"><b>Élèves (${(eleves||[]).length})</b></div>` + ((eleves||[]).length ? (eleves||[]).map(rowHTML).join('') : '<div class="hint">aucun</div>');
   }
-  const { data: classesList } = await sb.from('classes').select('id,nom,niveau').order('nom');
+  const { data: classesList } = await sb.from('classes').select('id,nom,niveau,permis_rapporteur_actif').order('nom');
   const { data: classTeachers } = await sb.from('class_teachers').select('class_id, profiles(nom,email)');
   const { data: classStudents } = await sb.from('class_students').select('class_id, profiles(nom,email)');
   const classesEl = document.getElementById('adminClassesListing');
@@ -2684,9 +2688,16 @@ async function adminRefreshListings(){
       const elevesHere = (classStudents||[]).filter(r=>r.class_id===c.id).map(r=>r.profiles && (r.profiles.nom||r.profiles.email)).filter(Boolean);
       return `<div style="margin-bottom:10px;"><b>${escapeHtml(c.nom)}</b> (${escapeHtml(c.niveau)})<br>
         Profs : ${profsHere.map(escapeHtml).join(', ')||'aucun'}<br>
-        Élèves (${elevesHere.length}) : ${elevesHere.map(escapeHtml).join(', ')||'aucun'}</div>`;
+        Élèves (${elevesHere.length}) : ${elevesHere.map(escapeHtml).join(', ')||'aucun'}<br>
+        <label class="hint" style="display:inline-flex;align-items:center;gap:6px;margin-top:4px;">
+          <input type="checkbox" ${c.permis_rapporteur_actif?'checked':''} onchange="adminTogglePermisRapporteur('${c.id}', this.checked)">
+          Permis Rapporteur activé pour cette classe
+        </label></div>`;
     }).join('');
   }
+}
+async function adminTogglePermisRapporteur(classId, actif){
+  await sb.from('classes').update({permis_rapporteur_actif: actif}).eq('id', classId);
 }
 async function adminRefreshBugReports(){
   const el = document.getElementById('adminBugReportsListing');

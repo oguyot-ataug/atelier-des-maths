@@ -126,11 +126,11 @@ const AR_RATIO = 900/483;      // proportions réelles de l'image assets/rapport
 const AR_BASELINE_RATIO = 0.9349;
 const AR_CENTER_X_RATIO = 0.4992;
 
-const AR_SCENE_W = 680, AR_SCENE_H = 480;   // scène agrandie : assez grande pour que les côtés de l'angle dépassent largement du rapporteur
-const AR_PROT_W = 400, AR_PROT_H = AR_PROT_W/AR_RATIO;   // rapporteur plus grand et plus lisible
+const AR_SCENE_W = 860, AR_SCENE_H = 600;   // scène large : assez de place pour déplacer le rapporteur sans être à l'étroit
+const AR_PROT_W = 480, AR_PROT_H = AR_PROT_W/AR_RATIO;   // rapporteur grand et lisible
 const AR_PROT_PIVOT = {x: AR_PROT_W*AR_CENTER_X_RATIO, y: AR_PROT_H*AR_BASELINE_RATIO};
-const AR_RAY_LEN = 310;          // longueur des côtés de l'angle tracé (dépasse largement le rapporteur)
-const AR_SNAP_DIST = 26;         // distance (px, coordonnées de la scène) déclenchant l'aimant sur le sommet
+const AR_RAY_LEN = 390;          // longueur des côtés de l'angle tracé (dépasse largement le rapporteur)
+const AR_SNAP_DIST = 30;         // distance (px, coordonnées de la scène) déclenchant l'aimant sur le sommet
 const AR_SNAP_ROT = 4;           // tolérance (°) pour l'accroche de la rotation sur un côté de l'angle
 
 function arDegToPt(vertex, angleDeg, len){
@@ -147,10 +147,12 @@ function arScenePoint(sceneEl, evt){
 }
 
 /* ---- Le rapporteur déplaçable/pivotable : un état {x,y,rot} + rendu + glisser-déposer ---- */
-function arBuildProtractorOverlay(id){
+function arBuildProtractorOverlay(id, withPencil){
+  const pencilHtml = withPencil ? `<div id="${id}-pencil" title="Crayon : glisse-le le long de l'arc, degré par degré" style="position:absolute;width:30px;height:30px;margin-left:-15px;margin-top:-15px;border-radius:50%;background:#1C1B2E;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:grab;user-select:none;">✏️</div>` : '';
   return `<div id="${id}" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;cursor:grab;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;touch-action:none;user-select:none;">
     <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;-webkit-user-drag:none;user-select:none;pointer-events:auto;">
     <div id="${id}-rotate" title="Faire pivoter le rapporteur" style="position:absolute;left:${AR_PROT_W-15}px;top:${AR_PROT_PIVOT.y-15}px;width:30px;height:30px;border-radius:50%;background:rgba(227,93,58,.85);cursor:grab;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;user-select:none;">↻</div>
+    ${pencilHtml}
   </div>`;
 }
 function arRenderProtractor(id, state){
@@ -226,9 +228,9 @@ function arDrawLireAngle(){
   if(r2){ r2.setAttribute('x1',arLireVertex.x); r2.setAttribute('y1',arLireVertex.y); r2.setAttribute('x2',ray2End.x); r2.setAttribute('y2',ray2End.y); }
 }
 function arResetLire(){
-  arLireVertex.x = 250+Math.random()*140; arLireVertex.y = 190+Math.random()*110;
+  arLireVertex.x = 320+Math.random()*180; arLireVertex.y = 240+Math.random()*140;
   arLireRay1Deg = Math.floor(Math.random()*360);
-  arLireSpread = [35,50,65,75,90,105,125,140,155][Math.floor(Math.random()*9)];
+  arLireSpread = Math.round(15 + Math.random()*150); // n'importe quel angle entier entre 15° et 165°, pas seulement des multiples de 5
   arDrawLireAngle();
   arLireProtState.x=90; arLireProtState.y=90; arLireProtState.rot=0;
   arLireRayAngles[0] = arLireRay1Deg; arLireRayAngles[1] = arLireRay1Deg+arLireSpread;
@@ -244,28 +246,47 @@ function arCheckLire(){
   else { status.textContent = `❌ Pas tout à fait : l'angle mesure ${arLireSpread}°. Place bien le centre du rapporteur sur le sommet et son 0° sur un côté avant de lire l'autre côté.`; status.style.color = '#E35D3A'; }
 }
 
-/* --- Widget 2 : construire un angle donné (côté de départ à toute orientation) --- */
-let arConstruireVertex = {x:230,y:190}, arConstruireBaseDeg = 0, arConstruireTarget = 100, arConstruireCurrentDeg = 15;
+/* --- Widget 2 : construire un angle donné, avec un crayon qui marque le trait-repère
+   degré par degré sur l'arc du rapporteur (au lieu de faire tourner directement un trait) --- */
+let arConstruireVertex = {x:230,y:190}, arConstruireBaseDeg = 0, arConstruireTarget = 100;
+let arConstruireCurrentDeg = 15; // angle absolu du côté une fois validé (sert à la vérification)
 let arConstruireProtState = {x:90,y:90,rot:0};
 let arConstruireRayAngles = [0,15];
+let arConstruirePencilDeg = 90;  // degré LOCAL du crayon sur l'arc (0 à 180, dans le repère du rapporteur)
+let arConstruireValide = false;
+
 function arBuildConstruireScene(){
   return `<div class="ar-scene" id="ar-construireScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
     <svg id="ar-construireAngleSvg" viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
-      <line id="ar-construireRayBase" x1="0" y1="0" x2="0" y2="0" stroke="#1F3A5C" stroke-width="2.4"/>
-      <line id="ar-construireRay" x1="0" y1="0" x2="0" y2="0" stroke="#E35D3A" stroke-width="2.4"/>
-      <circle id="ar-construireHandle" cx="0" cy="0" r="12" fill="#E35D3A" fill-opacity="0.001" style="cursor:grab;"/>
+      <line id="ar-construireRayBase" x1="0" y1="0" x2="0" y2="0" stroke="#1F3A5C" stroke-width="2.6"/>
+      <line id="ar-construireRay" x1="0" y1="0" x2="0" y2="0" stroke="#E35D3A" stroke-width="2.6" opacity="0"/>
     </svg>
-    ${arBuildProtractorOverlay('ar-construireProtractor')}
+    ${arBuildProtractorOverlay('ar-construireProtractor', true)}
   </div>`;
+}
+function arRenderConstruirePencil(){
+  const pencil = document.getElementById('ar-construireProtractor-pencil');
+  if(!pencil) return;
+  const R = AR_PROT_H*0.85;
+  const rad = arConstruirePencilDeg*Math.PI/180;
+  const x = AR_PROT_PIVOT.x + R*Math.cos(rad);
+  const y = AR_PROT_PIVOT.y - R*Math.sin(rad);
+  pencil.style.left = x+'px'; pencil.style.top = y+'px';
 }
 function arDrawConstruireAngle(){
   const baseEnd = arDegToPt(arConstruireVertex, arConstruireBaseDeg, AR_RAY_LEN);
-  const rayEnd = arDegToPt(arConstruireVertex, arConstruireCurrentDeg, AR_RAY_LEN);
-  const rb = document.getElementById('ar-construireRayBase'), rr = document.getElementById('ar-construireRay'), h = document.getElementById('ar-construireHandle');
+  const rb = document.getElementById('ar-construireRayBase');
   if(rb){ rb.setAttribute('x1',arConstruireVertex.x); rb.setAttribute('y1',arConstruireVertex.y); rb.setAttribute('x2',baseEnd.x); rb.setAttribute('y2',baseEnd.y); }
-  if(rr){ rr.setAttribute('x1',arConstruireVertex.x); rr.setAttribute('y1',arConstruireVertex.y); rr.setAttribute('x2',rayEnd.x); rr.setAttribute('y2',rayEnd.y); }
-  if(h){ h.setAttribute('cx',rayEnd.x); h.setAttribute('cy',rayEnd.y); }
-  arConstruireRayAngles[0] = arConstruireBaseDeg; arConstruireRayAngles[1] = arConstruireCurrentDeg;
+  arConstruireRayAngles[0] = arConstruireBaseDeg;
+}
+function arValiderConstruire(){
+  arConstruireCurrentDeg = (arConstruireProtState.rot + arConstruirePencilDeg + 360) % 360;
+  const rayEnd = arDegToPt(arConstruireVertex, arConstruireCurrentDeg, AR_RAY_LEN);
+  const rr = document.getElementById('ar-construireRay');
+  if(rr){ rr.setAttribute('x1',arConstruireVertex.x); rr.setAttribute('y1',arConstruireVertex.y); rr.setAttribute('x2',rayEnd.x); rr.setAttribute('y2',rayEnd.y); rr.setAttribute('opacity','1'); }
+  arConstruireRayAngles[1] = arConstruireCurrentDeg;
+  arConstruireValide = true;
+  document.getElementById('ar-construireStatus').textContent = '';
 }
 function arConstruireSpread(){
   let diff = Math.abs(arConstruireCurrentDeg - arConstruireBaseDeg) % 360;
@@ -273,92 +294,163 @@ function arConstruireSpread(){
   return diff;
 }
 function arResetConstruire(){
-  arConstruireVertex.x = 250+Math.random()*140; arConstruireVertex.y = 190+Math.random()*110;
+  arConstruireVertex.x = 320+Math.random()*180; arConstruireVertex.y = 240+Math.random()*140;
   arConstruireBaseDeg = Math.floor(Math.random()*360);
-  arConstruireTarget = [40,55,70,95,115,130,150,165][Math.floor(Math.random()*8)];
-  arConstruireCurrentDeg = arConstruireBaseDeg + 15;
+  arConstruireTarget = Math.round(15 + Math.random()*150); // n'importe quel angle entier entre 15° et 165°, pas seulement des multiples de 5
+  arConstruireCurrentDeg = arConstruireBaseDeg;
+  arConstruirePencilDeg = 90;
+  arConstruireValide = false;
   arDrawConstruireAngle();
+  const rr = document.getElementById('ar-construireRay');
+  if(rr) rr.setAttribute('opacity','0');
   arConstruireProtState.x=90; arConstruireProtState.y=90; arConstruireProtState.rot=0;
-  arConstruireRayAngles[0] = arConstruireBaseDeg; arConstruireRayAngles[1] = arConstruireCurrentDeg;
+  arConstruireRayAngles[0] = arConstruireBaseDeg; arConstruireRayAngles[1] = arConstruireBaseDeg;
   arRenderProtractor('ar-construireProtractor', arConstruireProtState);
+  arRenderConstruirePencil();
   document.getElementById('ar-construireCible').textContent = arConstruireTarget+'°';
   document.getElementById('ar-construireStatus').textContent = '';
 }
 function arCheckConstruire(){
   const status = document.getElementById('ar-construireStatus');
+  if(!arConstruireValide){ status.textContent = "Marque d'abord le trait-repère au crayon, puis clique sur \"Valider le trait-repère\"."; status.style.color = '#E35D3A'; return; }
   const current = Math.round(arConstruireSpread());
   if(Math.abs(current-arConstruireTarget)<=2){ status.textContent = `✅ Bravo, ton angle mesure environ ${current}°, c'est le bon angle !`; status.style.color = '#1F6B3A'; }
-  else { status.textContent = `Ton angle mesure pour l'instant environ ${current}°. Ajuste le trait rouge pour obtenir ${arConstruireTarget}°.`; status.style.color = '#E35D3A'; }
+  else { status.textContent = `Ton angle mesure pour l'instant environ ${current}°. Repositionne le crayon et revalide pour obtenir ${arConstruireTarget}°.`; status.style.color = '#E35D3A'; }
 }
-function arInitConstruireRayDrag(){
-  const svgEl = document.getElementById('ar-construireAngleSvg');
-  const handle = document.getElementById('ar-construireHandle');
-  if(!svgEl || !handle) return;
+/* Glisser le crayon le long de l'arc, en degrés entiers, dans le repère LOCAL du rapporteur
+   (indépendant de sa position/rotation actuelle -- c'est tout l'intérêt : le crayon reste sur
+   l'arc quel que soit l'endroit où le rapporteur a été placé). */
+function arInitPencilDrag(protractorId, pencilId, sceneId, protState){
+  const pencil = document.getElementById(pencilId);
+  const sceneEl = document.getElementById(sceneId);
+  if(!pencil || !sceneEl) return;
   let dragging = false;
-  const move = (e)=>{
+  pencil.onmousedown = (e)=>{ dragging=true; e.stopPropagation(); e.preventDefault(); };
+  pencil.ontouchstart = (e)=>{ dragging=true; e.stopPropagation(); e.preventDefault(); };
+  function move(e){
     if(!dragging) return;
-    const p = arScenePoint(svgEl, e);
-    const dx = p.x-arConstruireVertex.x, dy = arConstruireVertex.y-p.y;
-    arConstruireCurrentDeg = Math.atan2(dy,dx)*180/Math.PI;
-    arDrawConstruireAngle();
+    const p = arScenePoint(sceneEl, e);
+    const dx = p.x-protState.x, dy = protState.y-p.y;
+    let localDeg = Math.atan2(dy,dx)*180/Math.PI - protState.rot;
+    localDeg = ((localDeg%360)+360)%360;
+    if(localDeg>180) localDeg = localDeg>270 ? 0 : 180; // hors de l'arc (0-180) : on ramène à l'extrémité la plus proche
+    arConstruirePencilDeg = Math.round(localDeg);
+    arRenderConstruirePencil();
     e.preventDefault();
-  };
-  handle.onmousedown = ()=>{ dragging=true; };
-  handle.ontouchstart = ()=>{ dragging=true; };
+  }
+  function up(){ dragging=false; }
   window.addEventListener('mousemove', move);
-  window.addEventListener('mouseup', ()=>dragging=false);
-  svgEl.addEventListener('touchmove', move, {passive:false});
-  svgEl.addEventListener('touchend', ()=>dragging=false);
+  window.addEventListener('mouseup', up);
+  sceneEl.addEventListener('touchmove', move, {passive:false});
+  sceneEl.addEventListener('touchend', up);
 }
 
-/* --- Démonstration pas-à-pas (cours) : méthode générale d'utilisation du rapporteur ---
-   Contrairement aux widgets 1 et 2 (ci-dessus), rien à glisser ici : c'est une démonstration
-   automatique (le rapporteur s'anime tout seul d'une étape à l'autre), pas un exercice. */
-const AR_DEMO_VERTEX = {x:340, y:260};
-const AR_DEMO_BASE_DEG = 25;
-const AR_DEMO_SPREAD = 65;
-let arDemoProtState = {x:90, y:90, rot:0};
-let arDemoStepIdx = 0;
-const AR_DEMO_STEPS = [
+/* --- Démonstrations pas-à-pas (cours) : rien à glisser ici, le rapporteur s'anime tout seul ---
+   Deux démonstrations séparées, comme dans le document source : une pour lire une mesure, une
+   pour construire un angle donné (avec le crayon qui marque le trait-repère). */
+
+/* Démonstration A : comment lire un angle au rapporteur */
+const AR_DEMO_LIRE_VERTEX = {x:430, y:325};
+const AR_DEMO_LIRE_BASE_DEG = 25;
+const AR_DEMO_LIRE_SPREAD = 63;
+let arDemoLireProtState = {x:90, y:90, rot:0};
+let arDemoLireStepIdx = 0;
+const AR_DEMO_LIRE_STEPS = [
   {note:"On souhaite mesurer cet angle. Le rapporteur n'est pas encore placé dessus."},
   {note:"On place le centre du rapporteur exactement sur le sommet de l'angle."},
   {note:"On fait pivoter le rapporteur pour aligner sa ligne 0°-180° sur un des côtés de l'angle."},
-  {note:`On lit alors la mesure sur l'autre côté : ici, ${AR_DEMO_SPREAD}°.`},
+  {note:`On lit alors la mesure sur l'autre côté : ici, ${AR_DEMO_LIRE_SPREAD}°.`},
 ];
-function arBuildDemoScene(){
-  const end1 = arDegToPt(AR_DEMO_VERTEX, AR_DEMO_BASE_DEG, AR_RAY_LEN);
-  const end2 = arDegToPt(AR_DEMO_VERTEX, AR_DEMO_BASE_DEG+AR_DEMO_SPREAD, AR_RAY_LEN);
-  const readingPt = arDegToPt(AR_DEMO_VERTEX, AR_DEMO_BASE_DEG+AR_DEMO_SPREAD, AR_PROT_H*0.55);
-  return `<div class="ar-scene" id="ar-demoScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+function arBuildDemoLireScene(){
+  const end1 = arDegToPt(AR_DEMO_LIRE_VERTEX, AR_DEMO_LIRE_BASE_DEG, AR_RAY_LEN);
+  const end2 = arDegToPt(AR_DEMO_LIRE_VERTEX, AR_DEMO_LIRE_BASE_DEG+AR_DEMO_LIRE_SPREAD, AR_RAY_LEN);
+  const readingPt = arDegToPt(AR_DEMO_LIRE_VERTEX, AR_DEMO_LIRE_BASE_DEG+AR_DEMO_LIRE_SPREAD, AR_PROT_H*0.55);
+  return `<div class="ar-scene" id="ar-demoLireScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
     <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
-      <line x1="${AR_DEMO_VERTEX.x}" y1="${AR_DEMO_VERTEX.y}" x2="${end1.x}" y2="${end1.y}" stroke="#1C1B2E" stroke-width="2.6"/>
-      <line x1="${AR_DEMO_VERTEX.x}" y1="${AR_DEMO_VERTEX.y}" x2="${end2.x}" y2="${end2.y}" stroke="#1C1B2E" stroke-width="2.6"/>
-      <text id="ar-demoReading" x="${readingPt.x}" y="${readingPt.y}" font-size="20" font-weight="700" fill="#E35D3A" text-anchor="middle" opacity="0">${AR_DEMO_SPREAD}°</text>
+      <line x1="${AR_DEMO_LIRE_VERTEX.x}" y1="${AR_DEMO_LIRE_VERTEX.y}" x2="${end1.x}" y2="${end1.y}" stroke="#1C1B2E" stroke-width="2.6"/>
+      <line x1="${AR_DEMO_LIRE_VERTEX.x}" y1="${AR_DEMO_LIRE_VERTEX.y}" x2="${end2.x}" y2="${end2.y}" stroke="#1C1B2E" stroke-width="2.6"/>
+      <text id="ar-demoLireReading" x="${readingPt.x}" y="${readingPt.y}" font-size="22" font-weight="700" fill="#E35D3A" text-anchor="middle" opacity="0">${AR_DEMO_LIRE_SPREAD}°</text>
     </svg>
-    <div id="ar-demoProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease;">
+    <div id="ar-demoLireProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease;">
       <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
     </div>
   </div>`;
 }
-function arDemoGoto(idx){
-  arDemoStepIdx = idx;
-  if(idx===0){ arDemoProtState.x=90; arDemoProtState.y=90; arDemoProtState.rot=0; }
-  else if(idx===1){ arDemoProtState.x=AR_DEMO_VERTEX.x; arDemoProtState.y=AR_DEMO_VERTEX.y; arDemoProtState.rot=0; }
-  else { arDemoProtState.x=AR_DEMO_VERTEX.x; arDemoProtState.y=AR_DEMO_VERTEX.y; arDemoProtState.rot=AR_DEMO_BASE_DEG; }
-  arRenderProtractor('ar-demoProtractor', arDemoProtState);
-  const noteEl = document.getElementById('ar-demoNote');
-  if(noteEl) noteEl.textContent = AR_DEMO_STEPS[idx].note;
-  const reading = document.getElementById('ar-demoReading');
+function arDemoLireGoto(idx){
+  arDemoLireStepIdx = idx;
+  if(idx===0){ arDemoLireProtState.x=90; arDemoLireProtState.y=90; arDemoLireProtState.rot=0; }
+  else if(idx===1){ arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=0; }
+  else { arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=AR_DEMO_LIRE_BASE_DEG; }
+  arRenderProtractor('ar-demoLireProtractor', arDemoLireProtState);
+  const noteEl = document.getElementById('ar-demoLireNote');
+  if(noteEl) noteEl.textContent = AR_DEMO_LIRE_STEPS[idx].note;
+  const reading = document.getElementById('ar-demoLireReading');
   if(reading) reading.setAttribute('opacity', idx>=3?'1':'0');
-  const btn = document.getElementById('ar-demoNextBtn');
-  if(btn){ btn.disabled = (idx===AR_DEMO_STEPS.length-1); btn.textContent = idx===AR_DEMO_STEPS.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
+  const btn = document.getElementById('ar-demoLireNextBtn');
+  if(btn){ btn.disabled = (idx===AR_DEMO_LIRE_STEPS.length-1); btn.textContent = idx===AR_DEMO_LIRE_STEPS.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
 }
-function arDemoNext(){ if(arDemoStepIdx<AR_DEMO_STEPS.length-1) arDemoGoto(arDemoStepIdx+1); }
-function arDemoReset(){ arDemoGoto(0); }
+function arDemoLireNext(){ if(arDemoLireStepIdx<AR_DEMO_LIRE_STEPS.length-1) arDemoLireGoto(arDemoLireStepIdx+1); }
+function arDemoLireReset(){ arDemoLireGoto(0); }
+
+/* Démonstration B : comment construire un angle donné (avec le crayon sur l'arc) */
+const AR_DEMO_CONS_VERTEX = {x:430, y:325};
+const AR_DEMO_CONS_BASE_DEG = 200;
+const AR_DEMO_CONS_TARGET = 72;
+let arDemoConsProtState = {x:90, y:90, rot:0};
+let arDemoConsStepIdx = 0;
+const AR_DEMO_CONS_STEPS = [
+  {note:`On veut construire un angle de ${AR_DEMO_CONS_TARGET}° à partir de ce côté déjà tracé.`},
+  {note:"On place le centre du rapporteur sur le sommet, et on aligne sa ligne 0°-180° sur le côté déjà tracé."},
+  {note:`On marque un petit trait-repère au crayon, sur l'arc, à la graduation ${AR_DEMO_CONS_TARGET}°.`},
+  {note:"On retire le rapporteur : seul le trait-repère reste."},
+  {note:"On trace la demi-droite qui part du sommet et qui passe par le trait-repère : l'angle est construit."},
+];
+function arBuildDemoConsScene(){
+  const baseEnd = arDegToPt(AR_DEMO_CONS_VERTEX, AR_DEMO_CONS_BASE_DEG, AR_RAY_LEN);
+  const finalDeg = AR_DEMO_CONS_BASE_DEG + AR_DEMO_CONS_TARGET;
+  const finalEnd = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, AR_RAY_LEN);
+  const markPt = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, AR_PROT_H*0.85);
+  return `<div class="ar-scene" id="ar-demoConsScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+    <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+      <line x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${baseEnd.x}" y2="${baseEnd.y}" stroke="#1F3A5C" stroke-width="2.6"/>
+      <line id="ar-demoConsFinalRay" x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${AR_DEMO_CONS_VERTEX.x}" y2="${AR_DEMO_CONS_VERTEX.y}" stroke="#E35D3A" stroke-width="2.6" opacity="0"/>
+      <circle id="ar-demoConsMark" cx="${markPt.x}" cy="${markPt.y}" r="5" fill="#E35D3A" opacity="0"/>
+    </svg>
+    <div id="ar-demoConsProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
+      <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
+    </div>
+  </div>`;
+}
+function arDemoConsGoto(idx){
+  arDemoConsStepIdx = idx;
+  const prot = document.getElementById('ar-demoConsProtractor');
+  if(idx===0){ arDemoConsProtState.x=90; arDemoConsProtState.y=90; arDemoConsProtState.rot=0; if(prot) prot.style.opacity='1'; }
+  else if(idx===1){ arDemoConsProtState.x=AR_DEMO_CONS_VERTEX.x; arDemoConsProtState.y=AR_DEMO_CONS_VERTEX.y; arDemoConsProtState.rot=AR_DEMO_CONS_BASE_DEG; if(prot) prot.style.opacity='1'; }
+  else if(idx>=2){ if(prot) prot.style.opacity = idx>=3 ? '0' : '1'; }
+  arRenderProtractor('ar-demoConsProtractor', arDemoConsProtState);
+  const noteEl = document.getElementById('ar-demoConsNote');
+  if(noteEl) noteEl.textContent = AR_DEMO_CONS_STEPS[idx].note;
+  const mark = document.getElementById('ar-demoConsMark');
+  if(mark) mark.setAttribute('opacity', idx>=2?'1':'0');
+  const finalRay = document.getElementById('ar-demoConsFinalRay');
+  if(finalRay){
+    if(idx>=4){
+      const finalDeg = AR_DEMO_CONS_BASE_DEG + AR_DEMO_CONS_TARGET;
+      const end = arDegToPt(AR_DEMO_CONS_VERTEX, finalDeg, AR_RAY_LEN);
+      finalRay.setAttribute('x2', end.x); finalRay.setAttribute('y2', end.y); finalRay.setAttribute('opacity','1');
+    } else {
+      finalRay.setAttribute('opacity','0');
+    }
+  }
+  const btn = document.getElementById('ar-demoConsNextBtn');
+  if(btn){ btn.disabled = (idx===AR_DEMO_CONS_STEPS.length-1); btn.textContent = idx===AR_DEMO_CONS_STEPS.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
+}
+function arDemoConsNext(){ if(arDemoConsStepIdx<AR_DEMO_CONS_STEPS.length-1) arDemoConsGoto(arDemoConsStepIdx+1); }
+function arDemoConsReset(){ arDemoConsGoto(0); }
 
 /* --- Widget 3 : construire la bissectrice d'un angle donné --- */
 const AR_BISSECTRICE_ANGLE = 108;
-const AR_BIS_VERTEX = {x:300,y:250};
+const AR_BIS_VERTEX = {x:380,y:310};
 function arBuildBissectriceSvg(){
   const M = arDegToPt(AR_BIS_VERTEX, AR_BISSECTRICE_ANGLE, AR_RAY_LEN);
   const N = arDegToPt(AR_BIS_VERTEX, 0, AR_RAY_LEN);
@@ -388,6 +480,145 @@ function arTraceBissectrice(){
   const line = document.getElementById('ar-bissectriceLine');
   line.setAttribute('x2', B.x); line.setAttribute('y2', B.y); line.setAttribute('opacity','1');
   document.getElementById('ar-bissectriceStatus').innerHTML = `${AR_BISSECTRICE_ANGLE}° ÷ 2 = ${half}°, donc on trace le trait-repère à ${half}° sur le rapporteur, puis la demi-droite [OB) : c'est la bissectrice de l'angle MON.`;
+}
+
+/* ================= Permis Rapporteur (examen noté, élève, activé par le prof pour sa classe) ================= */
+const AR_PERMIS_TOTAL = 20, AR_PERMIS_READ_COUNT = 10;
+let arPermisQuestions = [];   // ex: [{type:'lire'}, {type:'construire'}, ...] mélangées
+let arPermisIndex = 0;
+let arPermisScore = 0;
+let arPermisVertex = {x:0,y:0};
+let arPermisBaseDeg = 0;
+let arPermisValue = 0;        // mesure à lire, ou mesure cible à construire
+let arPermisProtState = {x:90,y:90,rot:0};
+let arPermisRayAngles = [0,0];
+let arPermisPencilDeg = 90;
+let arPermisCurrentDeg = 0;
+let arPermisValide = false;
+let arPermisAnswered = false;
+
+async function arCheckPermisEligibility(){
+  const section = document.getElementById('ar-permisSection');
+  if(!section) return;
+  if(typeof currentUserRole==='undefined' || currentUserRole!=='eleve' || typeof currentClassId==='undefined' || !currentClassId || typeof sb==='undefined'){
+    section.style.display='none'; return;
+  }
+  try{
+    const { data } = await sb.from('classes').select('permis_rapporteur_actif').eq('id', currentClassId).single();
+    section.style.display = (data && data.permis_rapporteur_actif) ? 'block' : 'none';
+  } catch(e){ section.style.display='none'; }
+}
+function arPermisStart(){
+  arPermisQuestions = [];
+  for(let i=0;i<AR_PERMIS_READ_COUNT;i++) arPermisQuestions.push('lire');
+  for(let i=0;i<AR_PERMIS_TOTAL-AR_PERMIS_READ_COUNT;i++) arPermisQuestions.push('construire');
+  // mélange (Fisher-Yates)
+  for(let i=arPermisQuestions.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arPermisQuestions[i],arPermisQuestions[j]]=[arPermisQuestions[j],arPermisQuestions[i]]; }
+  arPermisIndex = 0; arPermisScore = 0;
+  document.getElementById('ar-permisIntro').style.display='none';
+  document.getElementById('ar-permisResult').style.display='none';
+  document.getElementById('ar-permisExam').style.display='block';
+  arPermisRenderQuestion();
+}
+function arPermisRenderQuestion(){
+  arPermisValide = false; arPermisAnswered = false;
+  document.getElementById('ar-permisProgress').textContent = `Question ${arPermisIndex+1}/${AR_PERMIS_TOTAL}`;
+  document.getElementById('ar-permisStatus').textContent = '';
+  const type = arPermisQuestions[arPermisIndex];
+  arPermisVertex.x = 320+Math.random()*180; arPermisVertex.y = 240+Math.random()*140;
+  arPermisBaseDeg = Math.floor(Math.random()*360);
+  arPermisValue = Math.round(15 + Math.random()*150);
+  arPermisProtState.x=90; arPermisProtState.y=90; arPermisProtState.rot=0;
+  arPermisPencilDeg = 90;
+  arPermisCurrentDeg = arPermisBaseDeg;
+
+  const typeEl = document.getElementById('ar-permisType');
+  const sceneWrap = document.getElementById('ar-permisSceneWrap');
+  const toolbar = document.getElementById('ar-permisToolbar');
+  if(type==='lire'){
+    typeEl.textContent = 'Lis la mesure de cet angle.';
+    const end1 = arDegToPt(arPermisVertex, arPermisBaseDeg, AR_RAY_LEN);
+    const end2 = arDegToPt(arPermisVertex, arPermisBaseDeg+arPermisValue, AR_RAY_LEN);
+    sceneWrap.innerHTML = `<div class="ar-scene" id="ar-permisScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+      <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+        <line x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${end1.x}" y2="${end1.y}" stroke="#1C1B2E" stroke-width="2.6"/>
+        <line x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${end2.x}" y2="${end2.y}" stroke="#1C1B2E" stroke-width="2.6"/>
+      </svg>
+      ${arBuildProtractorOverlay('ar-permisProtractor', false)}
+    </div>`;
+    toolbar.innerHTML = `<label class="hint" style="margin:0;">Ma lecture : <input type="number" id="ar-permisInput" style="width:70px;"> °</label>
+      <button class="btn" onclick="arPermisValidateAnswer()">Valider la réponse</button>`;
+    arPermisRayAngles[0] = arPermisBaseDeg; arPermisRayAngles[1] = arPermisBaseDeg+arPermisValue;
+    arRenderProtractor('ar-permisProtractor', arPermisProtState);
+    arInitProtractorDrag('ar-permisProtractor','ar-permisScene', arPermisProtState, arPermisVertex, arPermisRayAngles);
+  } else {
+    typeEl.textContent = `Construis un angle de ${arPermisValue}°.`;
+    const baseEnd = arDegToPt(arPermisVertex, arPermisBaseDeg, AR_RAY_LEN);
+    sceneWrap.innerHTML = `<div class="ar-scene" id="ar-permisScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+      <svg id="ar-permisAngleSvg" viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+        <line x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${baseEnd.x}" y2="${baseEnd.y}" stroke="#1F3A5C" stroke-width="2.6"/>
+        <line id="ar-permisRay" x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${arPermisVertex.x}" y2="${arPermisVertex.y}" stroke="#E35D3A" stroke-width="2.6" opacity="0"/>
+      </svg>
+      ${arBuildProtractorOverlay('ar-permisProtractor', true)}
+    </div>`;
+    toolbar.innerHTML = `<button class="btn" onclick="arPermisValiderTrait()">Valider le trait-repère</button>
+      <button class="btn" onclick="arPermisValidateAnswer()">Valider la réponse</button>`;
+    arPermisRayAngles[0] = arPermisBaseDeg; arPermisRayAngles[1] = arPermisBaseDeg;
+    arRenderProtractor('ar-permisProtractor', arPermisProtState);
+    arInitProtractorDrag('ar-permisProtractor','ar-permisScene', arPermisProtState, arPermisVertex, arPermisRayAngles);
+    arInitPencilDrag('ar-permisProtractor','ar-permisProtractor-pencil','ar-permisScene', arPermisProtState);
+    const pencil = document.getElementById('ar-permisProtractor-pencil');
+    if(pencil){
+      const R = AR_PROT_H*0.85, rad = arPermisPencilDeg*Math.PI/180;
+      pencil.style.left = (AR_PROT_PIVOT.x + R*Math.cos(rad))+'px';
+      pencil.style.top = (AR_PROT_PIVOT.y - R*Math.sin(rad))+'px';
+    }
+  }
+}
+function arPermisValiderTrait(){
+  arPermisCurrentDeg = (arPermisProtState.rot + arPermisPencilDeg + 360) % 360;
+  const rayEnd = arDegToPt(arPermisVertex, arPermisCurrentDeg, AR_RAY_LEN);
+  const ray = document.getElementById('ar-permisRay');
+  if(ray){ ray.setAttribute('x2', rayEnd.x); ray.setAttribute('y2', rayEnd.y); ray.setAttribute('opacity','1'); }
+  arPermisRayAngles[1] = arPermisCurrentDeg;
+  arPermisValide = true;
+}
+function arPermisValidateAnswer(){
+  if(arPermisAnswered) return;
+  const type = arPermisQuestions[arPermisIndex];
+  let correct = false;
+  if(type==='lire'){
+    const val = parseFloat(document.getElementById('ar-permisInput').value);
+    correct = !isNaN(val) && Math.abs(val-arPermisValue)<=2;
+  } else {
+    let diff = Math.abs(arPermisCurrentDeg - arPermisBaseDeg) % 360;
+    if(diff>180) diff = 360-diff;
+    correct = arPermisValide && Math.abs(Math.round(diff)-arPermisValue)<=2;
+  }
+  arPermisAnswered = true;
+  if(correct) arPermisScore++;
+  const status = document.getElementById('ar-permisStatus');
+  status.textContent = correct ? '✅ Correct !' : `❌ Incorrect (la bonne mesure était ${arPermisValue}°).`;
+  status.style.color = correct ? '#1F6B3A' : '#E35D3A';
+  setTimeout(()=>{
+    arPermisIndex++;
+    if(arPermisIndex>=AR_PERMIS_TOTAL) arPermisFinish();
+    else arPermisRenderQuestion();
+  }, 1400);
+}
+async function arPermisFinish(){
+  document.getElementById('ar-permisExam').style.display='none';
+  document.getElementById('ar-permisResult').style.display='block';
+  document.getElementById('ar-permisScoreText').textContent = `Score : ${arPermisScore} / ${AR_PERMIS_TOTAL}`;
+  try{
+    if(typeof sb!=='undefined' && typeof currentUser!=='undefined' && currentUser && typeof currentClassId!=='undefined'){
+      await sb.from('permis_rapporteur_resultats').insert({
+        eleve_id: currentUser.id,
+        classe_id: currentClassId,
+        score: arPermisScore,
+      });
+    }
+  } catch(e){ console.error("Permis Rapporteur : échec de l'enregistrement du résultat", e); }
 }
 
 /* ================= COURS ================= */
@@ -450,13 +681,23 @@ document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
 <div class="def-box">On peut mesurer « l'ouverture » d'un angle. L'unité que l'on utilise au collège est le <b>degré</b>. L'instrument qui permet de mesurer des angles est le <b>rapporteur</b>.</div>
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : un rapporteur gradué en degrés a souvent une double graduation (une qui va de 0 à 180° dans un sens, une autre dans l'autre sens), source de nombreuses erreurs. Il faut bien vérifier si l'angle étudié est aigu ou obtus avant de lire sa mesure.</div>
 
-<p class="example-title">Démonstration : mesurer un angle au rapporteur</p>
+<p class="example-title">Démonstration 1 : lire une mesure au rapporteur</p>
 <div class="figure-wrap">
-  ${arBuildDemoScene()}
-  <p class="hint" id="ar-demoNote" style="text-align:center;margin:10px 0 0;font-weight:600;"></p>
+  ${arBuildDemoLireScene()}
+  <p class="hint" id="ar-demoLireNote" style="text-align:center;margin:10px 0 0;font-weight:600;"></p>
   <div class="figure-toolbar" style="justify-content:center;">
-    <button class="btn" id="ar-demoNextBtn" onclick="arDemoNext()">Étape suivante →</button>
-    <button class="btn secondary" onclick="arDemoReset()">Recommencer</button>
+    <button class="btn" id="ar-demoLireNextBtn" onclick="arDemoLireNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="arDemoLireReset()">Recommencer</button>
+  </div>
+</div>
+
+<p class="example-title">Démonstration 2 : construire un angle donné au rapporteur</p>
+<div class="figure-wrap">
+  ${arBuildDemoConsScene()}
+  <p class="hint" id="ar-demoConsNote" style="text-align:center;margin:10px 0 0;font-weight:600;"></p>
+  <div class="figure-toolbar" style="justify-content:center;">
+    <button class="btn" id="ar-demoConsNextBtn" onclick="arDemoConsNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="arDemoConsReset()">Recommencer</button>
   </div>
 </div>
 
@@ -516,10 +757,11 @@ document.getElementById('methode-demo-angles-rapporteur-6e').innerHTML = `
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : entraîne-toi à construire un angle donné</h4></div>
 <div class="figure-wrap">
-  <p class="interaction-hint" style="margin:0 0 8px;">Déplace le trait rouge (son extrémité) pour construire un angle de la mesure demandée, en t'aidant du rapporteur : place son centre sur le sommet (effet d'aimant) et fais-le pivoter pour aligner le 0° sur le côté bleu.</p>
+  <p class="interaction-hint" style="margin:0 0 8px;">Place le centre du rapporteur sur le sommet (effet d'aimant) et fais-le pivoter pour aligner le 0° sur le côté bleu. Déplace ensuite le crayon ✏️ le long de l'arc, degré par degré, jusqu'à la graduation demandée, puis valide : le côté se trace tout seul.</p>
   <p style="text-align:center;margin:0 0 8px;">Angle à construire : <b id="ar-construireCible">100°</b></p>
   ${arBuildConstruireScene()}
   <div class="figure-toolbar" style="justify-content:center;">
+    <button class="btn" onclick="arValiderConstruire()">Valider le trait-repère</button>
     <button class="btn" onclick="arCheckConstruire()">Vérifier</button>
     <button class="btn secondary" onclick="arResetConstruire()">Nouvel angle à construire</button>
   </div>
@@ -547,6 +789,28 @@ document.getElementById('methode-demo-angles-rapporteur-6e').innerHTML = `
   <div class="figure-toolbar">
     <button class="btn" onclick="arMethodeAlignementDemo.next()">Étape suivante →</button>
     <button class="btn secondary" onclick="arMethodeAlignementDemo.reset()">Recommencer</button>
+  </div>
+</div>
+
+<div id="ar-permisSection" style="display:none;">
+  <div class="sub-header"><span class="letter">🎓</span><h4>Permis Rapporteur</h4></div>
+  <div class="figure-wrap">
+    <div id="ar-permisIntro">
+      <p>Une fois entraîné·e avec les méthodes ci-dessus, passe le <b>Permis Rapporteur</b> : 10 lectures de mesures et 10 constructions d'angles, noté sur 20.</p>
+      <div class="figure-toolbar" style="justify-content:center;">
+        <button class="btn" onclick="arPermisStart()">Démarrer le Permis Rapporteur</button>
+      </div>
+    </div>
+    <div id="ar-permisExam" style="display:none;">
+      <p style="text-align:center;margin:0 0 8px;"><b id="ar-permisProgress">Question 1/20</b> — <span id="ar-permisType"></span></p>
+      <div id="ar-permisSceneWrap"></div>
+      <div class="figure-toolbar" style="justify-content:center;" id="ar-permisToolbar"></div>
+      <p class="hint" id="ar-permisStatus" style="text-align:center;margin-top:8px;"></p>
+    </div>
+    <div id="ar-permisResult" style="display:none;text-align:center;">
+      <p style="font-size:1.3rem;font-weight:700;" id="ar-permisScoreText"></p>
+      <button class="btn secondary" onclick="arPermisStart()">Repasser le Permis</button>
+    </div>
   </div>
 </div>
 `;
@@ -603,7 +867,9 @@ let arDragInitialized = false;
 DEMO_REGISTRY['Angles et rapporteur'] = {
   cours:'cours-demo-angles-rapporteur-6e', methode:'methode-demo-angles-rapporteur-6e', exos:'exos-demo-angles-rapporteur-6e',
   init:()=>{
-    arDemoReset();
+    arCheckPermisEligibility();
+    arDemoLireReset();
+    arDemoConsReset();
     arResetLire();
     arResetConstruire();
     arResetBissectrice();
@@ -612,7 +878,7 @@ DEMO_REGISTRY['Angles et rapporteur'] = {
       arInitProtractorDrag('ar-lireProtractor','ar-lireScene', arLireProtState, arLireVertex, arLireRayAngles);
       arInitProtractorDrag('ar-construireProtractor','ar-construireScene', arConstruireProtState, arConstruireVertex, arConstruireRayAngles);
       arInitProtractorDrag('ar-bissectriceProtractor','ar-bissectriceScene', arBissectriceProtState, AR_BIS_VERTEX, [0, AR_BISSECTRICE_ANGLE]);
-      arInitConstruireRayDrag();
+      arInitPencilDrag('ar-construireProtractor','ar-construireProtractor-pencil','ar-construireScene', arConstruireProtState);
     }
     arMethodeOpposesDemo.reset();
     arMethodeAlignementDemo.reset();
