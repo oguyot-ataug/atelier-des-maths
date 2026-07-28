@@ -12,6 +12,17 @@ function arWedge(vertex,p1,p2,r,color,opacity){
 function arLabel(x,y,text,size,italic){
   return `<text x="${x}" y="${y}" font-size="${size||12}" ${italic===false?'':'font-style="italic"'} fill="#1C1B2E">${text}</text>`;
 }
+/* Repère un point situé sur un côté (demi-droite) par un petit trait perpendiculaire au côté,
+   centré sur le point -- convention du site pour un point sur une droite (jamais un point/rond
+   en bout de trait). */
+function arPointTick(vertex, pt, size){
+  const angle = Math.atan2(pt.y-vertex.y, pt.x-vertex.x);
+  const perp = angle + Math.PI/2;
+  const s = size || 8;
+  const x1 = pt.x - s*Math.cos(perp), y1 = pt.y - s*Math.sin(perp);
+  const x2 = pt.x + s*Math.cos(perp), y2 = pt.y + s*Math.sin(perp);
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+}
 
 /* ================= Figure : notion d'angle (saillant) ================= */
 function arBuildNotionSvg(){
@@ -74,6 +85,7 @@ function arBuildOpposesSvg(){
     <line x1="${Np.x}" y1="${Np.y}" x2="${N.x}" y2="${N.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${w1}${w2}${w3}${w4}
     <circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>
+    ${arPointTick(O,M)}${arPointTick(O,Mp)}${arPointTick(O,N)}${arPointTick(O,Np)}
     ${arLabel(M.x+8, M.y+4, 'M')}
     ${arLabel(Mp.x-20, Mp.y+4, "M'")}
     ${arLabel(N.x-4, N.y-8, 'N')}
@@ -92,6 +104,7 @@ function arBuildAdjacentsSvg(){
     <line x1="${O.x}" y1="${O.y}" x2="${K.x}" y2="${K.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${w1}${w2}
     <circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>
+    ${arPointTick(O,I)}${arPointTick(O,J)}${arPointTick(O,K)}
     ${arLabel(I.x-14, I.y-2, 'A')}
     ${arLabel(J.x-6, J.y-8, 'B')}
     ${arLabel(K.x+6, K.y-4, 'C')}
@@ -108,6 +121,7 @@ function arBuildSupplSvg(){
     <line x1="${O.x}" y1="${O.y}" x2="${E.x}" y2="${E.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${w1}${w2}
     <circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>
+    ${arPointTick(O,D)}${arPointTick(O,F)}${arPointTick(O,E)}
     ${arLabel(D.x-4, D.y-10, 'D')}
     ${arLabel(F.x-6, F.y-10, 'F')}
     ${arLabel(E.x-6, E.y-10, 'E')}
@@ -691,10 +705,14 @@ function arBuildBissectriceSvg(){
         ${codeTick(mid1, arc1.mid)}
         ${codeTick(mid2, arc2.mid)}
       </g>
+      ${arPointTick(AR_BIS_VERTEX, N)}${arPointTick(AR_BIS_VERTEX, M)}
       ${arLabel(N.x+6, N.y+2, 'N', 13, false)}
       ${arLabel(M.x-2, M.y-8, 'M', 13, false)}
       ${arLabel(AR_BIS_VERTEX.x-4, AR_BIS_VERTEX.y-6, 'O', 13, false)}
-      <text id="ar-bisLabelB" x="${B.x+6}" y="${B.y-6}" font-size="13" fill="#E35D3A" opacity="0">B</text>
+      <g id="ar-bisLabelBGroup" opacity="0">
+        ${arPointTick(AR_BIS_VERTEX, B)}
+        <text x="${B.x+6}" y="${B.y-6}" font-size="13" fill="#E35D3A">B</text>
+      </g>
     </svg>
     <div id="ar-bissectriceProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
       <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
@@ -729,7 +747,7 @@ function arBisGoto(idx){
   }
   const codage = document.getElementById('ar-bisCodage');
   if(codage) codage.setAttribute('opacity', idx>=8?'1':'0');
-  const labelB = document.getElementById('ar-bisLabelB');
+  const labelB = document.getElementById('ar-bisLabelBGroup');
   if(labelB) labelB.setAttribute('opacity', idx>=7?'1':'0');
   const btn = document.getElementById('ar-bissectriceNextBtn');
   if(btn){ btn.disabled = (idx===AR_BIS_STEPS.length-1); btn.textContent = idx===AR_BIS_STEPS.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
