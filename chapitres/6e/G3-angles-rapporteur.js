@@ -23,6 +23,34 @@ function arPointTick(vertex, pt, size){
   const x2 = pt.x + s*Math.cos(perp), y2 = pt.y + s*Math.sin(perp);
   return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1C1B2E" stroke-width="1.6"/>`;
 }
+/* Étiquette d'un point situé sur un côté : décalée PERPENDICULAIREMENT au côté (jamais dans le
+   prolongement de la droite, qui donnerait l'impression que l'étiquette fait partie du tracé). */
+function arSideLabel(vertex, pt, text, opts){
+  opts = opts || {};
+  const dist = opts.dist===undefined ? 16 : opts.dist;
+  const side = opts.side || 1;
+  const angle = Math.atan2(pt.y-vertex.y, pt.x-vertex.x);
+  const perp = angle + side*Math.PI/2;
+  const x = pt.x + dist*Math.cos(perp);
+  const y = pt.y + dist*Math.sin(perp);
+  return `<text x="${x}" y="${y}" font-size="${opts.size||13}" text-anchor="middle" dominant-baseline="middle" fill="${opts.fill||'#1C1B2E'}">${text}</text>`;
+}
+/* Trouve la direction (dans le plus grand espace libre entre les côtés donnés) où placer
+   l'étiquette du sommet, pour qu'elle reste à l'extérieur de l'angle étudié. */
+function arOutsideDirection(rayAngles){
+  const sorted = rayAngles.map(a=>((a%360)+360)%360).sort((a,b)=>a-b);
+  let bestGapStart=0, bestGapSize=-1;
+  for(let i=0;i<sorted.length;i++){
+    const a=sorted[i], b=sorted[(i+1)%sorted.length];
+    let gap = b-a; if(gap<=0) gap+=360;
+    if(gap>bestGapSize){ bestGapSize=gap; bestGapStart=a; }
+  }
+  return (bestGapStart + bestGapSize/2) % 360;
+}
+function arVertexLabel(vertex, rayAngles, text, dist){
+  const pt = arDegToPt(vertex, arOutsideDirection(rayAngles), dist===undefined?26:dist);
+  return `<text x="${pt.x}" y="${pt.y}" font-size="13" text-anchor="middle" dominant-baseline="middle" fill="#1C1B2E">${text}</text>`;
+}
 
 /* ================= Figure : notion d'angle (saillant) ================= */
 function arBuildNotionSvg(){
@@ -88,11 +116,11 @@ function arBuildOpposesSvg(){
     ${w1}${w2}${w3}${w4}
     <circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>
     ${arPointTick(O,M)}${arPointTick(O,Mp)}${arPointTick(O,N)}${arPointTick(O,Np)}
-    ${arLabel(M.x+8, M.y+4, 'M')}
-    ${arLabel(Mp.x-20, Mp.y+4, "M'")}
-    ${arLabel(N.x-4, N.y-8, 'N')}
-    ${arLabel(Np.x-16, Np.y+16, "N'")}
-    ${arLabel(O.x-16, O.y+18, 'O')}
+    ${arSideLabel(O,M,'M')}
+    ${arSideLabel(O,Mp,"M'")}
+    ${arSideLabel(O,N,'N')}
+    ${arSideLabel(O,Np,"N'")}
+    ${arVertexLabel(O,[0,180,50,230],'O')}
   </svg>`;
 }
 function arBuildAdjacentsSvg(){
@@ -108,10 +136,10 @@ function arBuildAdjacentsSvg(){
     ${w1}${w2}
     <circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>
     ${arPointTick(O,I)}${arPointTick(O,J)}${arPointTick(O,K)}
-    ${arLabel(I.x-14, I.y-2, 'A')}
-    ${arLabel(J.x-6, J.y-8, 'B')}
-    ${arLabel(K.x+6, K.y-4, 'C')}
-    ${arLabel(O.x+6, O.y+16, 'O')}
+    ${arSideLabel(O,I,'A',{side:1})}
+    ${arSideLabel(O,J,'B',{side:1})}
+    ${arSideLabel(O,K,'C',{side:-1})}
+    ${arVertexLabel(O,[170,90,25],'O')}
   </svg>`;
 }
 function arBuildSupplSvg(){
@@ -126,10 +154,10 @@ function arBuildSupplSvg(){
     ${w1}${w2}
     <circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>
     ${arPointTick(O,D)}${arPointTick(O,F)}${arPointTick(O,E)}
-    ${arLabel(D.x-4, D.y-10, 'D')}
-    ${arLabel(F.x-6, F.y-10, 'F')}
-    ${arLabel(E.x-6, E.y-10, 'E')}
-    ${arLabel(O.x-4, O.y+18, 'O')}
+    ${arSideLabel(O,D,'D',{side:1})}
+    ${arSideLabel(O,F,'F',{side:-1})}
+    ${arSideLabel(O,E,'E',{side:1})}
+    ${arVertexLabel(O,[180,0,108],'O')}
   </svg>`;
 }
 
@@ -714,12 +742,12 @@ function arBuildBissectriceSvg(){
         ${codeTick(mid2, arc2.mid)}
       </g>
       ${arPointTick(AR_BIS_VERTEX, Nlbl)}${arPointTick(AR_BIS_VERTEX, Mlbl)}
-      ${arLabel(Nlbl.x+6, Nlbl.y+2, 'N', 13, false)}
-      ${arLabel(Mlbl.x-2, Mlbl.y-8, 'M', 13, false)}
-      ${arLabel(AR_BIS_VERTEX.x-4, AR_BIS_VERTEX.y-6, 'O', 13, false)}
+      ${arSideLabel(AR_BIS_VERTEX, Nlbl, 'N', {side:-1})}
+      ${arSideLabel(AR_BIS_VERTEX, Mlbl, 'M', {side:1})}
+      ${arVertexLabel(AR_BIS_VERTEX,[0,AR_BIS_ANGLE],'O')}
       <g id="ar-bisLabelBGroup" opacity="0">
         ${arPointTick(AR_BIS_VERTEX, Blbl)}
-        <text x="${Blbl.x+6}" y="${Blbl.y-6}" font-size="13" fill="#E35D3A">B</text>
+        ${arSideLabel(AR_BIS_VERTEX, Blbl, 'B', {side:-1, dist:14, fill:'#E35D3A'})}
       </g>
     </svg>
     <div id="ar-bissectriceProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">

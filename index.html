@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.12</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.13</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2240,6 +2240,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-28.13', items:[
+    "Chapitre Angles et rapporteur (6e) : les étiquettes des points (M, N, A, B, C, D, E, F...) sont maintenant décalées perpendiculairement au côté qu'elles repèrent, jamais dans le prolongement de la droite. L'étiquette du sommet (O) est systématiquement placée dans le plus grand espace libre autour de l'angle étudié, donc à l'extérieur de celui-ci.",
+  ]},
   { version:'2026-07-28.12', items:[
     "Chapitre Angles et rapporteur (6e) : les côtés des figures (opposés par le sommet, adjacents, supplémentaires, bissectrice) prolongent maintenant leur trait au-delà du point qui les repère (M, N, A, B, C, D, E, F...), comme il se doit pour une demi-droite -- le trait ne s'arrête plus pile au point.",
   ]},
