@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.2</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.3</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2214,6 +2214,14 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-28.3', items:[
+    "Chapitre Angles et rapporteur (6e) : le crayon de construction est redessiné en dehors du rapporteur, sa pointe posée exactement sur le bord/l'arc (vérifié mathématiquement pour tous les angles) -- avant, il était centré sur l'arc, à moitié dedans.",
+    "Traits des côtés des angles nettement affinés (1.3 au lieu de 2.4-2.6) dans tous les exercices et démonstrations du rapporteur, pour une lecture plus précise face aux fines graduations.",
+    "Ajout de deux boutons « Lecture extérieure » / « Lecture intérieure » avec texte d'aide associé, pour bien choisir et annoncer sur quel anneau du rapporteur (jaune extérieur ou vert intérieur) on lit sa mesure.",
+    "Cours : renommé « Démonstration » en « Méthode » dans les titres.",
+    "Correction des icônes du tableau de classification des angles (partie 1) : recentrées, et le rayon des icônes rentrant/plein ne dépasse plus du cadre (elles étaient coupées en bas).",
+    "Ajout d'une note explicative pour les profs/admin dans la section Permis Rapporteur : rappelle que ce dernier n'est visible qu'aux élèves connectés dont la classe a été activée (case à cocher en Administration).",
+  ]},
   { version:'2026-07-28.2', items:[
     "Chapitre Angles et rapporteur (6e) : refonte majeure -- angles à trouver vraiment aléatoires (n'importe quel degré, plus seulement des multiples de 5) ; scène et rapporteur encore agrandis (860x600, rapporteur 480px) ; le cours affiche maintenant deux démonstrations pas-à-pas séparées (lire / construire) ; la construction se fait désormais avec un crayon qui se déplace degré par degré sur l'arc du rapporteur, validé pour tracer le côté (au lieu de faire tourner un trait directement).",
     "Nouveau : Permis Rapporteur, un examen noté sur 20 (10 lectures + 10 constructions) accessible aux élèves connectés dont le professeur a activé le permis pour leur classe (case à cocher dans Administration, à côté de chaque classe). Résultat enregistré automatiquement.",

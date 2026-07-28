@@ -397,3 +397,6 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px;}
 /* ---------- modale signalement de bug ---------- */
 .bug-tab{background:none;border:none;padding:8px 4px;margin-right:14px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.9rem;color:var(--ink-soft);cursor:pointer;border-bottom:2px solid transparent;}
 .bug-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* ---------- bouton bascule (ex: lecture intérieure/extérieure du rapporteur) ---------- */
+button.btn.secondary.active{background:var(--accent);color:#fff;}
