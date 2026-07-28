@@ -116,58 +116,188 @@ function arBuildSupplSvg(){
   </svg>`;
 }
 
-/* ================= Widget interactif : rapporteur translucide ================= */
+/* ================= Widget interactif : rapporteur translucide, déplaçable et pivotable ================= */
 const AR_RATIO = 900/483;      // proportions réelles de l'image assets/rapporteur-translucide.png
-const AR_W = 460;              // largeur d'affichage du widget
-const AR_H = AR_W / AR_RATIO;
 /* Le vrai pivot du rapporteur (là où convergent les graduations) n'est pas tout en bas de
    l'image : il y a une marge en dessous (étiquettes "0"/"180°" et un cadre) mesurée précisément
    par analyse des pixels de l'image (voir vérification faite avant intégration). */
 const AR_BASELINE_RATIO = 450/483;
-const AR_VERTEX = {x: AR_W/2, y: AR_H * AR_BASELINE_RATIO};
-const AR_RAY_LEN = AR_H * 0.72;
 
-function arPointAtAngle(thetaDeg, len){
-  const t = thetaDeg*Math.PI/180;
-  return { x: AR_VERTEX.x + (len===undefined?AR_RAY_LEN:len)*Math.cos(t), y: AR_VERTEX.y - (len===undefined?AR_RAY_LEN:len)*Math.sin(t) };
+const AR_SCENE_W = 520, AR_SCENE_H = 360;   // scène : assez grande pour que les côtés de l'angle dépassent du rapporteur
+const AR_PROT_W = 280, AR_PROT_H = AR_PROT_W/AR_RATIO;   // taille d'affichage du rapporteur dans la scène
+const AR_PROT_PIVOT = {x: AR_PROT_W/2, y: AR_PROT_H*AR_BASELINE_RATIO};
+const AR_RAY_LEN = 235;          // longueur des côtés de l'angle tracé (dépasse le rapporteur)
+const AR_SNAP_DIST = 22;         // distance (px, coordonnées de la scène) déclenchant l'aimant sur le sommet
+const AR_SNAP_ROT = 4;           // tolérance (°) pour l'accroche de la rotation sur un côté de l'angle
+
+function arDegToPt(vertex, angleDeg, len){
+  const t = angleDeg*Math.PI/180;
+  return { x: vertex.x + len*Math.cos(t), y: vertex.y - len*Math.sin(t) };
 }
-function arAngleFromPoint(mx,my){
-  const dx = mx-AR_VERTEX.x, dy = AR_VERTEX.y-my;
-  let deg = Math.atan2(dy,dx)*180/Math.PI;
-  if(deg<0) deg=0; if(deg>180) deg=180;
-  return deg;
+/* Convertit la position d'un événement souris/tactile en coordonnées de la scène (indépendant
+   du redimensionnement CSS responsive de la scène, contrairement à ses dimensions déclarées). */
+function arScenePoint(sceneEl, evt){
+  const rect = sceneEl.getBoundingClientRect();
+  const t = evt.touches ? evt.touches[0] : evt;
+  const scaleX = AR_SCENE_W/rect.width, scaleY = AR_SCENE_H/rect.height;
+  return { x: (t.clientX-rect.left)*scaleX, y: (t.clientY-rect.top)*scaleY };
 }
 
-/* --- Widget 1 : lire une mesure au rapporteur --- */
-let arLireTarget = 60;
-function arBuildRapporteurShell(svgId, handleId, fixedRayVisible){
-  const fixedEnd = arPointAtAngle(0);
-  return `<div style="position:relative;width:100%;max-width:${AR_W}px;margin:0 auto;">
-    <img src="assets/rapporteur-translucide.png" alt="Rapporteur" style="position:absolute;top:0;left:0;width:100%;height:auto;pointer-events:none;opacity:.92;">
-    <svg id="${svgId}" viewBox="0 0 ${AR_W} ${AR_H}" style="position:relative;width:100%;height:auto;display:block;">
-      ${fixedRayVisible ? `<line x1="${AR_VERTEX.x}" y1="${AR_VERTEX.y}" x2="${fixedEnd.x}" y2="${fixedEnd.y}" stroke="#1F3A5C" stroke-width="2"/>` : ''}
-      <line id="${svgId}-ray" x1="${AR_VERTEX.x}" y1="${AR_VERTEX.y}" x2="0" y2="0" stroke="#E35D3A" stroke-width="2.4"/>
-      <circle id="${handleId}" cx="0" cy="0" r="11" fill="#E35D3A" fill-opacity="0.001" style="cursor:grab;"/>
-    </svg>
+/* ---- Le rapporteur déplaçable/pivotable : un état {x,y,rot} + rendu + glisser-déposer ---- */
+function arBuildProtractorOverlay(id){
+  return `<div id="${id}" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;cursor:grab;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;">
+    <img src="assets/rapporteur-translucide.png" alt="Rapporteur" style="width:100%;display:block;pointer-events:none;opacity:.9;">
+    <div id="${id}-rotate" title="Faire pivoter le rapporteur" style="position:absolute;left:${AR_PROT_W-15}px;top:${AR_PROT_PIVOT.y-15}px;width:30px;height:30px;border-radius:50%;background:rgba(227,93,58,.85);cursor:grab;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">↻</div>
   </div>`;
 }
-function arUpdateRay(svgId, handleId, thetaDeg){
-  const p = arPointAtAngle(thetaDeg);
-  const ray = document.getElementById(svgId+'-ray');
-  const handle = document.getElementById(handleId);
-  if(ray){ ray.setAttribute('x2', p.x); ray.setAttribute('y2', p.y); }
-  if(handle){ handle.setAttribute('cx', p.x); handle.setAttribute('cy', p.y); }
+function arRenderProtractor(id, state){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const tx = state.x - AR_PROT_PIVOT.x, ty = state.y - AR_PROT_PIVOT.y;
+  el.style.transform = `translate(${tx}px, ${ty}px) rotate(${-state.rot}deg)`;
 }
-function arInitDrag(svgId, handleId, onChange){
-  const svgEl = document.getElementById(svgId);
-  const handle = document.getElementById(handleId);
+/* rayAngles : les orientations (°) des côtés de l'angle sur lesquelles la rotation du rapporteur
+   doit s'accrocher (la ligne 0°-180° du rapporteur est une droite : on teste aussi +180). */
+function arInitProtractorDrag(id, sceneId, state, vertex, rayAngles, onUpdate){
+  const container = document.getElementById(id);
+  const img = container.querySelector('img');
+  const rotateHandle = document.getElementById(id+'-rotate');
+  const sceneEl = document.getElementById(sceneId);
+  let mode = null; // 'translate' | 'rotate'
+  let startPointer = null, startState = null;
+
+  function pointerDown(m){ return (e)=>{ mode=m; startPointer=arScenePoint(sceneEl,e); startState={...state}; e.stopPropagation(); e.preventDefault(); }; }
+  img.onmousedown = pointerDown('translate');
+  img.ontouchstart = pointerDown('translate');
+  rotateHandle.onmousedown = pointerDown('rotate');
+  rotateHandle.ontouchstart = pointerDown('rotate');
+
+  function move(e){
+    if(!mode) return;
+    const p = arScenePoint(sceneEl, e);
+    if(mode==='translate'){
+      state.x = startState.x + (p.x-startPointer.x);
+      state.y = startState.y + (p.y-startPointer.y);
+      const d = Math.hypot(state.x-vertex.x, state.y-vertex.y);
+      if(d <= AR_SNAP_DIST){ state.x = vertex.x; state.y = vertex.y; }
+    } else if(mode==='rotate'){
+      const dx = p.x-state.x, dy = state.y-p.y;
+      let deg = Math.atan2(dy,dx)*180/Math.PI;
+      for(const ray of rayAngles){
+        for(const cand of [ray, ray+180]){
+          let diff = Math.abs(((deg-cand)%360+540)%360-180);
+          if(diff <= AR_SNAP_ROT){ deg = cand; break; }
+        }
+      }
+      state.rot = deg;
+    }
+    arRenderProtractor(id, state);
+    if(onUpdate) onUpdate(state);
+    e.preventDefault();
+  }
+  function up(){ mode=null; }
+  window.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', up);
+  sceneEl.addEventListener('touchmove', move, {passive:false});
+  sceneEl.addEventListener('touchend', up);
+}
+
+/* --- Widget 1 : lire une mesure au rapporteur (angle quelconque, à toute orientation) --- */
+let arLireVertex = {x:230,y:190}, arLireRay1Deg = 0, arLireSpread = 60;
+let arLireProtState = {x:60,y:60,rot:0};
+let arLireRayAngles = [0,60];
+function arBuildLireScene(){
+  return `<div class="ar-scene" id="ar-lireScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+    <svg id="ar-lireAngleSvg" viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+      <line id="ar-lireRay1" x1="0" y1="0" x2="0" y2="0" stroke="#1C1B2E" stroke-width="2.4"/>
+      <line id="ar-lireRay2" x1="0" y1="0" x2="0" y2="0" stroke="#1C1B2E" stroke-width="2.4"/>
+    </svg>
+    ${arBuildProtractorOverlay('ar-lireProtractor')}
+  </div>`;
+}
+function arDrawLireAngle(){
+  const ray1End = arDegToPt(arLireVertex, arLireRay1Deg, AR_RAY_LEN);
+  const ray2End = arDegToPt(arLireVertex, arLireRay1Deg+arLireSpread, AR_RAY_LEN);
+  const r1 = document.getElementById('ar-lireRay1'), r2 = document.getElementById('ar-lireRay2');
+  if(r1){ r1.setAttribute('x1',arLireVertex.x); r1.setAttribute('y1',arLireVertex.y); r1.setAttribute('x2',ray1End.x); r1.setAttribute('y2',ray1End.y); }
+  if(r2){ r2.setAttribute('x1',arLireVertex.x); r2.setAttribute('y1',arLireVertex.y); r2.setAttribute('x2',ray2End.x); r2.setAttribute('y2',ray2End.y); }
+}
+function arResetLire(){
+  arLireVertex.x = 190+Math.random()*100; arLireVertex.y = 140+Math.random()*80;
+  arLireRay1Deg = Math.floor(Math.random()*360);
+  arLireSpread = [35,50,65,75,90,105,125,140,155][Math.floor(Math.random()*9)];
+  arDrawLireAngle();
+  arLireProtState.x=55; arLireProtState.y=55; arLireProtState.rot=0;
+  arLireRayAngles[0] = arLireRay1Deg; arLireRayAngles[1] = arLireRay1Deg+arLireSpread;
+  arRenderProtractor('ar-lireProtractor', arLireProtState);
+  document.getElementById('ar-lireInput').value = '';
+  document.getElementById('ar-lireStatus').textContent = '';
+}
+function arCheckLire(){
+  const val = parseFloat(document.getElementById('ar-lireInput').value);
+  const status = document.getElementById('ar-lireStatus');
+  if(isNaN(val)){ status.textContent = 'Indique ta lecture en degrés.'; return; }
+  if(Math.abs(val-arLireSpread)<=2){ status.textContent = `✅ Bravo, l'angle mesure bien ${arLireSpread}°.`; status.style.color = '#1F6B3A'; }
+  else { status.textContent = `❌ Pas tout à fait : l'angle mesure ${arLireSpread}°. Place bien le centre du rapporteur sur le sommet et son 0° sur un côté avant de lire l'autre côté.`; status.style.color = '#E35D3A'; }
+}
+
+/* --- Widget 2 : construire un angle donné (côté de départ à toute orientation) --- */
+let arConstruireVertex = {x:230,y:190}, arConstruireBaseDeg = 0, arConstruireTarget = 100, arConstruireCurrentDeg = 15;
+let arConstruireProtState = {x:60,y:60,rot:0};
+let arConstruireRayAngles = [0,15];
+function arBuildConstruireScene(){
+  return `<div class="ar-scene" id="ar-construireScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+    <svg id="ar-construireAngleSvg" viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+      <line id="ar-construireRayBase" x1="0" y1="0" x2="0" y2="0" stroke="#1F3A5C" stroke-width="2.4"/>
+      <line id="ar-construireRay" x1="0" y1="0" x2="0" y2="0" stroke="#E35D3A" stroke-width="2.4"/>
+      <circle id="ar-construireHandle" cx="0" cy="0" r="12" fill="#E35D3A" fill-opacity="0.001" style="cursor:grab;"/>
+    </svg>
+    ${arBuildProtractorOverlay('ar-construireProtractor')}
+  </div>`;
+}
+function arDrawConstruireAngle(){
+  const baseEnd = arDegToPt(arConstruireVertex, arConstruireBaseDeg, AR_RAY_LEN);
+  const rayEnd = arDegToPt(arConstruireVertex, arConstruireCurrentDeg, AR_RAY_LEN);
+  const rb = document.getElementById('ar-construireRayBase'), rr = document.getElementById('ar-construireRay'), h = document.getElementById('ar-construireHandle');
+  if(rb){ rb.setAttribute('x1',arConstruireVertex.x); rb.setAttribute('y1',arConstruireVertex.y); rb.setAttribute('x2',baseEnd.x); rb.setAttribute('y2',baseEnd.y); }
+  if(rr){ rr.setAttribute('x1',arConstruireVertex.x); rr.setAttribute('y1',arConstruireVertex.y); rr.setAttribute('x2',rayEnd.x); rr.setAttribute('y2',rayEnd.y); }
+  if(h){ h.setAttribute('cx',rayEnd.x); h.setAttribute('cy',rayEnd.y); }
+  arConstruireRayAngles[0] = arConstruireBaseDeg; arConstruireRayAngles[1] = arConstruireCurrentDeg;
+}
+function arConstruireSpread(){
+  let diff = Math.abs(arConstruireCurrentDeg - arConstruireBaseDeg) % 360;
+  if(diff>180) diff = 360-diff;
+  return diff;
+}
+function arResetConstruire(){
+  arConstruireVertex.x = 190+Math.random()*100; arConstruireVertex.y = 140+Math.random()*80;
+  arConstruireBaseDeg = Math.floor(Math.random()*360);
+  arConstruireTarget = [40,55,70,95,115,130,150,165][Math.floor(Math.random()*8)];
+  arConstruireCurrentDeg = arConstruireBaseDeg + 15;
+  arDrawConstruireAngle();
+  arConstruireProtState.x=60; arConstruireProtState.y=60; arConstruireProtState.rot=0;
+  arConstruireRayAngles[0] = arConstruireBaseDeg; arConstruireRayAngles[1] = arConstruireCurrentDeg;
+  arRenderProtractor('ar-construireProtractor', arConstruireProtState);
+  document.getElementById('ar-construireCible').textContent = arConstruireTarget+'°';
+  document.getElementById('ar-construireStatus').textContent = '';
+}
+function arCheckConstruire(){
+  const status = document.getElementById('ar-construireStatus');
+  const current = Math.round(arConstruireSpread());
+  if(Math.abs(current-arConstruireTarget)<=2){ status.textContent = `✅ Bravo, ton angle mesure environ ${current}°, c'est le bon angle !`; status.style.color = '#1F6B3A'; }
+  else { status.textContent = `Ton angle mesure pour l'instant environ ${current}°. Ajuste le trait rouge pour obtenir ${arConstruireTarget}°.`; status.style.color = '#E35D3A'; }
+}
+function arInitConstruireRayDrag(){
+  const svgEl = document.getElementById('ar-construireAngleSvg');
+  const handle = document.getElementById('ar-construireHandle');
   if(!svgEl || !handle) return;
   let dragging = false;
   const move = (e)=>{
     if(!dragging) return;
-    const p = svgPointFromEvent(svgEl, e);
-    const deg = arAngleFromPoint(p.x, p.y);
-    onChange(deg);
+    const p = arScenePoint(svgEl, e);
+    const dx = p.x-arConstruireVertex.x, dy = arConstruireVertex.y-p.y;
+    arConstruireCurrentDeg = Math.atan2(dy,dx)*180/Math.PI;
+    arDrawConstruireAngle();
     e.preventDefault();
   };
   handle.onmousedown = ()=>{ dragging=true; };
@@ -178,60 +308,35 @@ function arInitDrag(svgId, handleId, onChange){
   svgEl.addEventListener('touchend', ()=>dragging=false);
 }
 
-function arResetLire(){
-  arLireTarget = [35,50,65,75,105,125,140,155][Math.floor(Math.random()*8)];
-  arUpdateRay('ar-lireSvg','ar-lireHandle', arLireTarget);
-  document.getElementById('ar-lireInput').value = '';
-  document.getElementById('ar-lireStatus').textContent = '';
-}
-function arCheckLire(){
-  const val = parseFloat(document.getElementById('ar-lireInput').value);
-  const status = document.getElementById('ar-lireStatus');
-  if(isNaN(val)){ status.textContent = 'Indique ta lecture en degrés.'; return; }
-  if(Math.abs(val-arLireTarget)<=2){ status.textContent = `✅ Bravo, l'angle mesure bien ${arLireTarget}°.`; status.style.color = '#1F6B3A'; }
-  else { status.textContent = `❌ Pas tout à fait : l'angle mesure ${arLireTarget}°. Regarde bien sur quelle graduation lire (intérieure ou extérieure).`; status.style.color = '#E35D3A'; }
-}
-
-/* --- Widget 2 : construire un angle donné --- */
-let arConstruireTarget = 100, arConstruireCurrent = 15;
-function arResetConstruire(){
-  arConstruireTarget = [40,55,70,95,115,130,150,165][Math.floor(Math.random()*8)];
-  arConstruireCurrent = 15;
-  arUpdateRay('ar-construireSvg','ar-construireHandle', arConstruireCurrent);
-  document.getElementById('ar-construireCible').textContent = arConstruireTarget+'°';
-  document.getElementById('ar-construireStatus').textContent = '';
-}
-function arCheckConstruire(){
-  const status = document.getElementById('ar-construireStatus');
-  if(Math.abs(arConstruireCurrent-arConstruireTarget)<=2){ status.textContent = `✅ Bravo, ton angle mesure environ ${Math.round(arConstruireCurrent)}°, c'est le bon angle !`; status.style.color = '#1F6B3A'; }
-  else { status.textContent = `Ton angle mesure pour l'instant environ ${Math.round(arConstruireCurrent)}°. Ajuste le trait rouge pour obtenir ${arConstruireTarget}°.`; status.style.color = '#E35D3A'; }
-}
-
 /* --- Widget 3 : construire la bissectrice d'un angle donné --- */
 const AR_BISSECTRICE_ANGLE = 108;
+const AR_BIS_VERTEX = {x:230,y:190};
 function arBuildBissectriceSvg(){
-  const M = arPointAtAngle(AR_BISSECTRICE_ANGLE);
-  const N = arPointAtAngle(0);
-  return `<div style="position:relative;width:100%;max-width:${AR_W}px;margin:0 auto;">
-    <img src="assets/rapporteur-translucide.png" alt="Rapporteur" style="position:absolute;top:0;left:0;width:100%;height:auto;pointer-events:none;opacity:.92;">
-    <svg id="ar-bissectriceSvg" viewBox="0 0 ${AR_W} ${AR_H}" style="position:relative;width:100%;height:auto;display:block;">
-      <line x1="${AR_VERTEX.x}" y1="${AR_VERTEX.y}" x2="${N.x}" y2="${N.y}" stroke="#1F3A5C" stroke-width="2"/>
-      <line x1="${AR_VERTEX.x}" y1="${AR_VERTEX.y}" x2="${M.x}" y2="${M.y}" stroke="#1F3A5C" stroke-width="2"/>
-      <line id="ar-bissectriceLine" x1="${AR_VERTEX.x}" y1="${AR_VERTEX.y}" x2="${AR_VERTEX.x}" y2="${AR_VERTEX.y}" stroke="#E35D3A" stroke-width="2.4" stroke-dasharray="0" opacity="0"/>
+  const M = arDegToPt(AR_BIS_VERTEX, AR_BISSECTRICE_ANGLE, AR_RAY_LEN);
+  const N = arDegToPt(AR_BIS_VERTEX, 0, AR_RAY_LEN);
+  return `<div class="ar-scene" id="ar-bissectriceScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+    <svg id="ar-bissectriceSvg" viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
+      <line x1="${AR_BIS_VERTEX.x}" y1="${AR_BIS_VERTEX.y}" x2="${N.x}" y2="${N.y}" stroke="#1F3A5C" stroke-width="2.4"/>
+      <line x1="${AR_BIS_VERTEX.x}" y1="${AR_BIS_VERTEX.y}" x2="${M.x}" y2="${M.y}" stroke="#1F3A5C" stroke-width="2.4"/>
+      <line id="ar-bissectriceLine" x1="${AR_BIS_VERTEX.x}" y1="${AR_BIS_VERTEX.y}" x2="${AR_BIS_VERTEX.x}" y2="${AR_BIS_VERTEX.y}" stroke="#E35D3A" stroke-width="2.6" opacity="0"/>
       ${arLabel(N.x+6, N.y+2, 'N', 13, false)}
       ${arLabel(M.x-2, M.y-8, 'M', 13, false)}
-      ${arLabel(AR_VERTEX.x-4, AR_VERTEX.y-6, 'O', 13, false)}
+      ${arLabel(AR_BIS_VERTEX.x-4, AR_BIS_VERTEX.y-6, 'O', 13, false)}
     </svg>
+    ${arBuildProtractorOverlay('ar-bissectriceProtractor')}
   </div>`;
 }
+let arBissectriceProtState = {x:60,y:60,rot:0};
 function arResetBissectrice(){
   const line = document.getElementById('ar-bissectriceLine');
-  if(line){ line.setAttribute('opacity','0'); const O=AR_VERTEX; line.setAttribute('x2',O.x); line.setAttribute('y2',O.y); }
+  if(line){ line.setAttribute('opacity','0'); line.setAttribute('x2',AR_BIS_VERTEX.x); line.setAttribute('y2',AR_BIS_VERTEX.y); }
   document.getElementById('ar-bissectriceStatus').textContent = '';
+  arBissectriceProtState.x=60; arBissectriceProtState.y=60; arBissectriceProtState.rot=0;
+  arRenderProtractor('ar-bissectriceProtractor', arBissectriceProtState);
 }
 function arTraceBissectrice(){
   const half = AR_BISSECTRICE_ANGLE/2;
-  const B = arPointAtAngle(half);
+  const B = arDegToPt(AR_BIS_VERTEX, half, AR_RAY_LEN);
   const line = document.getElementById('ar-bissectriceLine');
   line.setAttribute('x2', B.x); line.setAttribute('y2', B.y); line.setAttribute('opacity','1');
   document.getElementById('ar-bissectriceStatus').innerHTML = `${AR_BISSECTRICE_ANGLE}° ÷ 2 = ${half}°, donc on trace le trait-repère à ${half}° sur le rapporteur, puis la demi-droite [OB) : c'est la bissectrice de l'angle MON.`;
@@ -298,9 +403,9 @@ document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : un rapporteur gradué en degrés a souvent une double graduation (une qui va de 0 à 180° dans un sens, une autre dans l'autre sens), source de nombreuses erreurs. Il faut bien vérifier si l'angle étudié est aigu ou obtus avant de lire sa mesure.</div>
 
 <p class="example-title">Exemple 1 : entraîne-toi à lire une mesure au rapporteur</p>
-<p class="interaction-hint" style="margin:4px 0 8px;">Une des deux demi-droites (bleue) est fixée sur la graduation 0°. Lis la mesure de l'angle formé avec l'autre demi-droite (rouge), puis vérifie ta lecture.</p>
+<p class="interaction-hint" style="margin:4px 0 8px;">Déplace le rapporteur (glisse dessus) pour amener son centre sur le sommet de l'angle (un effet d'aimant t'aide à bien le placer), puis fais-le pivoter (glisse sur le bouton ↻) pour aligner le 0° sur un des côtés. Lis alors la mesure sur l'autre côté, puis vérifie ta lecture.</p>
 <div class="figure-wrap">
-  ${arBuildRapporteurShell('ar-lireSvg','ar-lireHandle', true)}
+  ${arBuildLireScene()}
   <div class="figure-toolbar" style="justify-content:center;">
     <label class="hint" style="margin:0;">Ma lecture : <input type="number" id="ar-lireInput" style="width:70px;"> °</label>
     <button class="btn" onclick="arCheckLire()">Vérifier</button>
@@ -310,10 +415,10 @@ document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
 </div>
 
 <p class="example-title">Exemple 2 : entraîne-toi à construire un angle donné</p>
-<p class="interaction-hint" style="margin:4px 0 8px;">Déplace la demi-droite rouge pour construire un angle de la mesure demandée, en t'aidant du rapporteur.</p>
+<p class="interaction-hint" style="margin:4px 0 8px;">Déplace le trait rouge (son extrémité) pour construire un angle de la mesure demandée, en t'aidant du rapporteur : place son centre sur le sommet (effet d'aimant) et fais-le pivoter pour aligner le 0° sur le côté bleu.</p>
 <div class="figure-wrap">
   <p style="text-align:center;margin:0 0 8px;">Angle à construire : <b id="ar-construireCible">100°</b></p>
-  ${arBuildRapporteurShell('ar-construireSvg','ar-construireHandle', true)}
+  ${arBuildConstruireScene()}
   <div class="figure-toolbar" style="justify-content:center;">
     <button class="btn" onclick="arCheckConstruire()">Vérifier</button>
     <button class="btn secondary" onclick="arResetConstruire()">Nouvel angle à construire</button>
@@ -350,7 +455,7 @@ document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
 <span class="def-badge">Définition</span>
 <div class="def-box">La <b>bissectrice d'un angle saillant</b> est la droite qui partage cet angle en deux angles adjacents de même mesure.</div>
 <p class="example-title">Exemple : construis la bissectrice de l'angle <span class="tex">\\widehat{MON}</span> avec un rapporteur.</p>
-<p class="interaction-hint" style="margin:4px 0 8px;">Utilise le rapporteur pour lire la mesure de l'angle, puis clique pour tracer la bissectrice.</p>
+<p class="interaction-hint" style="margin:4px 0 8px;">Déplace et pivote le rapporteur pour vérifier la mesure de l'angle MON, puis clique pour tracer la bissectrice.</p>
 <div class="figure-wrap">
   ${arBuildBissectriceSvg()}
   <div class="figure-toolbar" style="justify-content:center;">
@@ -436,14 +541,20 @@ const AR_METHODE_ALIGNEMENT_STEPS = [
 ];
 const arMethodeAlignementDemo = makeStepDemo(AR_METHODE_ALIGNEMENT_STEPS, 'ar-methodeAlignementDisplay');
 
+let arDragInitialized = false;
 DEMO_REGISTRY['Angles et rapporteur'] = {
   cours:'cours-demo-angles-rapporteur-6e', methode:'methode-demo-angles-rapporteur-6e', exos:'exos-demo-angles-rapporteur-6e',
   init:()=>{
     arResetLire();
     arResetConstruire();
     arResetBissectrice();
-    arInitDrag('ar-lireSvg','ar-lireHandle', (deg)=>{}); // lecture : le trait est fixé par arResetLire, pas de glisser-déposer (on lit, on ne construit pas)
-    arInitDrag('ar-construireSvg','ar-construireHandle', (deg)=>{ arConstruireCurrent = deg; arUpdateRay('ar-construireSvg','ar-construireHandle', deg); });
+    if(!arDragInitialized){
+      arDragInitialized = true;
+      arInitProtractorDrag('ar-lireProtractor','ar-lireScene', arLireProtState, arLireVertex, arLireRayAngles);
+      arInitProtractorDrag('ar-construireProtractor','ar-construireScene', arConstruireProtState, arConstruireVertex, arConstruireRayAngles);
+      arInitProtractorDrag('ar-bissectriceProtractor','ar-bissectriceScene', arBissectriceProtState, AR_BIS_VERTEX, [0, AR_BISSECTRICE_ANGLE]);
+      arInitConstruireRayDrag();
+    }
     arMethodeOpposesDemo.reset();
     arMethodeAlignementDemo.reset();
     renderStaticMath(document.getElementById('cours-demo-angles-rapporteur-6e'));
