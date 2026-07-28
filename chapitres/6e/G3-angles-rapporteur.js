@@ -455,10 +455,10 @@ function arDemoLireSteps(){
   return [
     {note:"On souhaite mesurer cet angle. Le rapporteur n'est pas encore placé dessus."},
     {note:"On place le centre du rapporteur exactement sur le sommet de l'angle."},
-    {note: arDemoLireMode==='exterieur'
+    {note: arDemoLireMode==='interieur'
       ? "On fait pivoter le rapporteur pour aligner son 0° extérieur (anneau jaune) sur le premier côté de l'angle : l'autre côté reste bien dans le rapporteur."
       : "On fait pivoter le rapporteur pour aligner son 0° intérieur (anneau vert) sur le second côté de l'angle : l'autre côté reste bien dans le rapporteur."},
-    {note: arDemoLireMode==='exterieur'
+    {note: arDemoLireMode==='interieur'
       ? `On lit alors la mesure sur l'autre côté, sur l'anneau jaune extérieur : ici, ${AR_DEMO_LIRE_SPREAD}°.`
       : `On lit alors la mesure sur le premier côté, sur l'anneau vert intérieur : ici, ${AR_DEMO_LIRE_SPREAD}°.`},
   ];
@@ -468,7 +468,9 @@ function arSetDemoLireMode(mode){
   const extBtn = document.getElementById('ar-demoLireModeExt'), intBtn = document.getElementById('ar-demoLireModeInt');
   if(extBtn) extBtn.classList.toggle('active', mode==='exterieur');
   if(intBtn) intBtn.classList.toggle('active', mode==='interieur');
-  arDemoLireGoto(arDemoLireStepIdx);
+  // la rotation ne diffère visiblement qu'à partir de l'étape 2 (alignement) : on s'y place
+  // directement si on n'y est pas encore, pour que le clic sur le bouton produise un effet visible.
+  arDemoLireGoto(arDemoLireStepIdx < 2 ? 2 : arDemoLireStepIdx);
 }
 function arBuildDemoLireScene(){
   const end1 = arDegToPt(AR_DEMO_LIRE_VERTEX, AR_DEMO_LIRE_BASE_DEG, AR_RAY_LEN);
@@ -496,7 +498,7 @@ function arDemoLireGoto(idx){
   // Extérieur : on aligne le 0° jaune sur le premier côté, on lit le second directement (extérieur).
   // Intérieur : on aligne le 0° vert sur le SECOND côté (l'autre reste bien dans le rapporteur),
   // et on lit le premier côté directement (intérieur) -- aucun miroir, une simple rotation différente.
-  const alignDeg = arDemoLireMode==='exterieur' ? AR_DEMO_LIRE_BASE_DEG : ((AR_DEMO_LIRE_BASE_DEG+AR_DEMO_LIRE_SPREAD-180)%360+360)%360;
+  const alignDeg = arDemoLireMode==='interieur' ? AR_DEMO_LIRE_BASE_DEG : ((AR_DEMO_LIRE_BASE_DEG+AR_DEMO_LIRE_SPREAD-180)%360+360)%360;
   if(idx===0){ arDemoLireProtState.x=90; arDemoLireProtState.y=90; arDemoLireProtState.rot=0; }
   else if(idx===1){ arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=0; }
   else { arDemoLireProtState.x=AR_DEMO_LIRE_VERTEX.x; arDemoLireProtState.y=AR_DEMO_LIRE_VERTEX.y; arDemoLireProtState.rot=alignDeg; }
@@ -537,7 +539,9 @@ function arSetDemoConsMode(mode){
   const extBtn = document.getElementById('ar-demoConsModeExt'), intBtn = document.getElementById('ar-demoConsModeInt');
   if(extBtn) extBtn.classList.toggle('active', mode==='exterieur');
   if(intBtn) intBtn.classList.toggle('active', mode==='interieur');
-  arDemoConsGoto(arDemoConsStepIdx);
+  // le mode ne change visiblement que le texte de l'étape 2 (lecture du crayon) : on s'y place
+  // directement si on n'y est pas encore, pour que le clic sur le bouton produise un effet visible.
+  arDemoConsGoto(arDemoConsStepIdx < 2 ? 2 : arDemoConsStepIdx);
 }
 function arBuildDemoConsScene(){
   const baseEnd = arDegToPt(AR_DEMO_CONS_VERTEX, AR_DEMO_CONS_BASE_DEG, AR_RAY_LEN);
