@@ -76,13 +76,15 @@ function arBuildOpposesSvg(){
   const O = {x:200, y:130};
   const M = arDegToPt(O,0,150), Mp = arDegToPt(O,180,150);
   const N = arDegToPt(O,50,150), Np = arDegToPt(O,230,150);
+  const Mext = arDegToPt(O,0,160), Mpext = arDegToPt(O,180,160);
+  const Next = arDegToPt(O,50,160), Npext = arDegToPt(O,230,160);
   const w1 = arWedge(O, M, N, 36, '#1F3A5C');
   const w2 = arWedge(O, Mp, Np, 36, '#1F3A5C');
   const w3 = arWedge(O, N, Mp, 36, '#E35D3A');
   const w4 = arWedge(O, Np, M, 36, '#E35D3A');
   return `<svg viewBox="0 0 400 260" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line x1="${Mp.x}" y1="${Mp.y}" x2="${M.x}" y2="${M.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${Np.x}" y1="${Np.y}" x2="${N.x}" y2="${N.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${Mpext.x}" y1="${Mpext.y}" x2="${Mext.x}" y2="${Mext.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${Npext.x}" y1="${Npext.y}" x2="${Next.x}" y2="${Next.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${w1}${w2}${w3}${w4}
     <circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>
     ${arPointTick(O,M)}${arPointTick(O,Mp)}${arPointTick(O,N)}${arPointTick(O,Np)}
@@ -96,12 +98,13 @@ function arBuildOpposesSvg(){
 function arBuildAdjacentsSvg(){
   const O = {x:180, y:195};
   const I = arDegToPt(O,170,130), J = arDegToPt(O,90,130), K = arDegToPt(O,25,130);
+  const Iext = arDegToPt(O,170,145), Jext = arDegToPt(O,90,145), Kext = arDegToPt(O,25,145);
   const w1 = arWedge(O, I, J, 38, '#1F3A5C');
   const w2 = arWedge(O, J, K, 38, '#1F6B3A');
   return `<svg viewBox="0 0 380 220" style="width:100%;max-width:360px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line x1="${O.x}" y1="${O.y}" x2="${I.x}" y2="${I.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${O.x}" y1="${O.y}" x2="${J.x}" y2="${J.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${O.x}" y1="${O.y}" x2="${K.x}" y2="${K.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${O.x}" y1="${O.y}" x2="${Iext.x}" y2="${Iext.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${O.x}" y1="${O.y}" x2="${Jext.x}" y2="${Jext.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${O.x}" y1="${O.y}" x2="${Kext.x}" y2="${Kext.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${w1}${w2}
     <circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>
     ${arPointTick(O,I)}${arPointTick(O,J)}${arPointTick(O,K)}
@@ -114,11 +117,12 @@ function arBuildAdjacentsSvg(){
 function arBuildSupplSvg(){
   const O = {x:200, y:170};
   const D = arDegToPt(O,180,140), F = arDegToPt(O,0,140), E = arDegToPt(O,108,140);
+  const Dext = arDegToPt(O,180,155), Fext = arDegToPt(O,0,155), Eext = arDegToPt(O,108,155);
   const w1 = arWedge(O, D, E, 42, '#1F3A5C');
   const w2 = arWedge(O, E, F, 42, '#1F6B3A');
   return `<svg viewBox="0 0 400 220" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line x1="${D.x}" y1="${D.y}" x2="${F.x}" y2="${F.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${O.x}" y1="${O.y}" x2="${E.x}" y2="${E.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${Dext.x}" y1="${Dext.y}" x2="${Fext.x}" y2="${Fext.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${O.x}" y1="${O.y}" x2="${Eext.x}" y2="${Eext.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${w1}${w2}
     <circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>
     ${arPointTick(O,D)}${arPointTick(O,F)}${arPointTick(O,E)}
@@ -674,10 +678,14 @@ const AR_BIS_STEPS = [
   {note:`On code les angles NOB et BOM du même trait : ils ont tous les deux pour mesure ${AR_BIS_ANGLE/2}°.`},
 ];
 function arBuildBissectriceSvg(){
+  const AR_BIS_LABEL_LEN = 280; // distance (< AR_RAY_LEN) pour repérer N, M, B : le trait continue au-delà, comme une vraie demi-droite
   const N = arDegToPt(AR_BIS_VERTEX, 0, AR_RAY_LEN);
   const M = arDegToPt(AR_BIS_VERTEX, AR_BIS_ANGLE, AR_RAY_LEN);
+  const Nlbl = arDegToPt(AR_BIS_VERTEX, 0, AR_BIS_LABEL_LEN);
+  const Mlbl = arDegToPt(AR_BIS_VERTEX, AR_BIS_ANGLE, AR_BIS_LABEL_LEN);
   const half = AR_BIS_ANGLE/2;
   const B = arDegToPt(AR_BIS_VERTEX, half, AR_RAY_LEN);
+  const Blbl = arDegToPt(AR_BIS_VERTEX, half, AR_BIS_LABEL_LEN);
   const R = AR_PROT_H*AR_PENCIL_R_RATIO;
   const tickInner = arDegToPt(AR_BIS_VERTEX, half, R-6);
   const tickOuter = arDegToPt(AR_BIS_VERTEX, half, R+6);
@@ -705,13 +713,13 @@ function arBuildBissectriceSvg(){
         ${codeTick(mid1, arc1.mid)}
         ${codeTick(mid2, arc2.mid)}
       </g>
-      ${arPointTick(AR_BIS_VERTEX, N)}${arPointTick(AR_BIS_VERTEX, M)}
-      ${arLabel(N.x+6, N.y+2, 'N', 13, false)}
-      ${arLabel(M.x-2, M.y-8, 'M', 13, false)}
+      ${arPointTick(AR_BIS_VERTEX, Nlbl)}${arPointTick(AR_BIS_VERTEX, Mlbl)}
+      ${arLabel(Nlbl.x+6, Nlbl.y+2, 'N', 13, false)}
+      ${arLabel(Mlbl.x-2, Mlbl.y-8, 'M', 13, false)}
       ${arLabel(AR_BIS_VERTEX.x-4, AR_BIS_VERTEX.y-6, 'O', 13, false)}
       <g id="ar-bisLabelBGroup" opacity="0">
-        ${arPointTick(AR_BIS_VERTEX, B)}
-        <text x="${B.x+6}" y="${B.y-6}" font-size="13" fill="#E35D3A">B</text>
+        ${arPointTick(AR_BIS_VERTEX, Blbl)}
+        <text x="${Blbl.x+6}" y="${Blbl.y-6}" font-size="13" fill="#E35D3A">B</text>
       </g>
     </svg>
     <div id="ar-bissectriceProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
