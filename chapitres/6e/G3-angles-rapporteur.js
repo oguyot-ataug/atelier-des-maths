@@ -466,7 +466,7 @@ function arConstruireSpread(){
   return diff;
 }
 function arResetConstruire(){
-  arConstruireVertex.x = 320+Math.random()*180; arConstruireVertex.y = 240+Math.random()*140;
+  arConstruireVertex.x = 240+Math.random()*380; arConstruireVertex.y = 240+Math.random()*120;
   arConstruireBaseDeg = Math.floor(Math.random()*360);
   arConstruireTarget = Math.round(15 + Math.random()*150); // n'importe quel angle entier entre 15° et 165°, pas seulement des multiples de 5
   arConstruireCurrentDeg = arConstruireBaseDeg;
@@ -880,7 +880,7 @@ function arPermisRenderQuestion(){
   document.getElementById('ar-permisProgress').textContent = `Question ${arPermisIndex+1}/${AR_PERMIS_TOTAL}`;
   document.getElementById('ar-permisStatus').textContent = '';
   const type = arPermisQuestions[arPermisIndex];
-  arPermisVertex.x = 320+Math.random()*180; arPermisVertex.y = 240+Math.random()*140;
+  arPermisVertex.x = 240+Math.random()*380; arPermisVertex.y = 240+Math.random()*120;
   arPermisBaseDeg = Math.floor(Math.random()*360);
   arPermisValue = Math.round(15 + Math.random()*150);
   arPermisProtState.x=90; arPermisProtState.y=90; arPermisProtState.rot=0;

@@ -386,6 +386,10 @@ footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px;}
   .level-grid{grid-template-columns:1fr;}
   .mini-links{grid-template-columns:1fr;}
   .nav-links button{padding:8px 9px;font-size:.82rem;}
+  /* Sur petit écran, chaque pixel compte pour les figures et widgets interactifs (rapporteur,
+     schémas...) : on réduit les marges qui ne servent qu'à aérer la mise en page. */
+  main{padding-left:10px;padding-right:10px;}
+  .figure-wrap{padding-left:8px;padding-right:8px;}
 }
 
 /* KaTeX applique par défaut font:1.21em à sa classe racine .katex (voir katex.css),
