@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.20</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.21</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2240,6 +2240,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-28.21', items:[
+    "Chapitre Angles et rapporteur (6e) : le crayon (Méthode 2 : construire un angle, et Permis Rapporteur) était invisible par défaut -- sa position initiale (90° sur l'arc) tombait hors de la scène tant que le rapporteur n'était pas encore glissé sur le sommet. Position de départ corrigée (0° au lieu de 90°) pour qu'il reste toujours visible dès le départ.",
+  ]},
   { version:'2026-07-28.20', items:[
     "Chapitre Angles et rapporteur (6e) : refonte complète du positionnement du rapporteur sur mobile. Toutes les tentatives précédentes reposaient sur un calcul d'échelle en JavaScript (mesure de la taille réellement affichée), fragile et sujet à des problèmes de timing. Remplacé par un positionnement 100% en pourcentages CSS (position, taille et pivot du rapporteur et du crayon exprimés en % de la scène), qui s'adapte automatiquement à n'importe quelle taille d'écran sans aucun calcul JavaScript ni dépendance au moment où la page se charge. Vérifié mathématiquement que le sommet du rapporteur tombe exactement au bon endroit à plusieurs tailles simulées (320px, 375px, 860px, 1200px).",
   ]},

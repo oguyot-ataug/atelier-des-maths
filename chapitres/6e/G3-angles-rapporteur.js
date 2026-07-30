@@ -340,7 +340,7 @@ let arConstruireVertex = {x:230,y:190}, arConstruireBaseDeg = 0, arConstruireTar
 let arConstruireCurrentDeg = 15; // angle absolu du côté une fois validé (sert à la vérification)
 let arConstruireProtState = {x:90,y:90,rot:0};
 let arConstruireRayAngles = [0,15];
-let arConstruirePencilDeg = 90;  // degré LOCAL du crayon sur l'arc (0 à 180, dans le repère du rapporteur)
+let arConstruirePencilDeg = 0;  // degré LOCAL du crayon sur l'arc (0 à 180, dans le repère du rapporteur) -- 0 par défaut pour rester visible tant que le rapporteur n'est pas encore aligné
 let arConstruireValide = false;
 
 function arBuildConstruireScene(){
@@ -470,7 +470,7 @@ function arResetConstruire(){
   arConstruireBaseDeg = Math.floor(Math.random()*360);
   arConstruireTarget = Math.round(15 + Math.random()*150); // n'importe quel angle entier entre 15° et 165°, pas seulement des multiples de 5
   arConstruireCurrentDeg = arConstruireBaseDeg;
-  arConstruirePencilDeg = 90;
+  arConstruirePencilDeg = 0;
   arConstruireValide = false;
   arDrawConstruireAngle();
   const rr = document.getElementById('ar-construireRay');
@@ -833,7 +833,7 @@ let arPermisBaseDeg = 0;
 let arPermisValue = 0;        // mesure à lire, ou mesure cible à construire
 let arPermisProtState = {x:90,y:90,rot:0};
 let arPermisRayAngles = [0,0];
-let arPermisPencilDeg = 90;
+let arPermisPencilDeg = 0;
 let arPermisCurrentDeg = 0;
 let arPermisValide = false;
 let arPermisAnswered = false;
@@ -884,7 +884,7 @@ function arPermisRenderQuestion(){
   arPermisBaseDeg = Math.floor(Math.random()*360);
   arPermisValue = Math.round(15 + Math.random()*150);
   arPermisProtState.x=90; arPermisProtState.y=90; arPermisProtState.rot=0;
-  arPermisPencilDeg = 90;
+  arPermisPencilDeg = 0;
   arPermisCurrentDeg = arPermisBaseDeg;
 
   const typeEl = document.getElementById('ar-permisType');
