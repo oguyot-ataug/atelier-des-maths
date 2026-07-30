@@ -216,6 +216,36 @@ function arScenePoint(sceneEl, evt){
   const scaleX = AR_SCENE_W/rect.width, scaleY = AR_SCENE_H/rect.height;
   return { x: (t.clientX-rect.left)*scaleX, y: (t.clientY-rect.top)*scaleY };
 }
+/* La scène (SVG) se redimensionne de façon responsive (width:100%;max-width), mais le rapporteur
+   et le crayon sont des éléments HTML positionnés en pixels bruts dans le repère "logique" de la
+   scène (0 à AR_SCENE_W/H) : il faut donc les envelopper dans une couche qui applique la MÊME
+   mise à l'échelle que la scène, sinon ils restent à leur taille/position d'origine quand la
+   scène rétrécit (typiquement sur smartphone), d'où un rapporteur qui semble "n'importe où". */
+function arBuildScaledOverlay(sceneId, innerHtml){
+  return `<div id="${sceneId}-scaler" style="position:absolute;top:0;left:0;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;transform-origin:0 0;">${innerHtml}</div>`;
+}
+let arScaledSceneIds = [];
+function arSyncSceneScale(sceneId){
+  const sceneEl = document.getElementById(sceneId);
+  const scalerEl = document.getElementById(sceneId+'-scaler');
+  if(!sceneEl || !scalerEl) return;
+  const rect = sceneEl.getBoundingClientRect();
+  if(rect.width < 1) return; // pas encore mis en page (display:none, etc.)
+  const scale = rect.width/AR_SCENE_W;
+  scalerEl.style.transform = `scale(${scale})`;
+  if(arScaledSceneIds.indexOf(sceneId)===-1) arScaledSceneIds.push(sceneId);
+}
+function arSyncAllSceneScales(){
+  arScaledSceneIds.forEach(id=>arSyncSceneScale(id));
+}
+if(typeof window!=='undefined' && !window.__arResizeListenerAdded){
+  window.__arResizeListenerAdded = true;
+  let arResizeTimer = null;
+  window.addEventListener('resize', ()=>{
+    clearTimeout(arResizeTimer);
+    arResizeTimer = setTimeout(arSyncAllSceneScales, 120);
+  });
+}
 
 /* ---- Le rapporteur déplaçable/pivotable : un état {x,y,rot} + rendu + glisser-déposer ---- */
 function arBuildPencilHtml(id){
@@ -292,13 +322,13 @@ let arLireVertex = {x:230,y:190}, arLireRay1Deg = 0, arLireSpread = 60;
 let arLireProtState = {x:90,y:90,rot:0};
 let arLireRayAngles = [0,60];
 function arBuildLireScene(){
-  return `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px;"><div class="ar-scene" id="ar-lireScene" style="position:relative;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;flex:none;margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+  return `<div class="ar-scene" id="ar-lireScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
     <svg id="ar-lireAngleSvg" viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
       <line id="ar-lireRay1" x1="0" y1="0" x2="0" y2="0" stroke="#1C1B2E" stroke-width="1.3"/>
       <line id="ar-lireRay2" x1="0" y1="0" x2="0" y2="0" stroke="#1C1B2E" stroke-width="1.3"/>
     </svg>
-    ${arBuildProtractorOverlay('ar-lireProtractor')}
-  </div></div>`;
+    ${arBuildScaledOverlay('ar-lireScene', arBuildProtractorOverlay('ar-lireProtractor'))}
+  </div>`;
 }
 function arDrawLireAngle(){
   const ray1End = arDegToPt(arLireVertex, arLireRay1Deg, AR_RAY_LEN);
@@ -317,6 +347,7 @@ function arResetLire(){
   arRenderProtractor('ar-lireProtractor', arLireProtState);
   document.getElementById('ar-lireInput').value = '';
   document.getElementById('ar-lireStatus').textContent = '';
+  arSyncSceneScale('ar-lireScene');
 }
 function arCheckLire(){
   const val = parseFloat(document.getElementById('ar-lireInput').value);
@@ -336,14 +367,13 @@ let arConstruirePencilDeg = 90;  // degré LOCAL du crayon sur l'arc (0 à 180, 
 let arConstruireValide = false;
 
 function arBuildConstruireScene(){
-  return `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px;"><div class="ar-scene" id="ar-construireScene" style="position:relative;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;flex:none;margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+  return `<div class="ar-scene" id="ar-construireScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
     <svg id="ar-construireAngleSvg" viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
       <line id="ar-construireRayBase" x1="0" y1="0" x2="0" y2="0" stroke="#1F3A5C" stroke-width="1.3"/>
       <line id="ar-construireRay" x1="0" y1="0" x2="0" y2="0" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
     </svg>
-    ${arBuildProtractorOverlay('ar-construireProtractor')}
-    ${arBuildPencilHtml('ar-construireProtractor')}
-  </div></div>`;
+    ${arBuildScaledOverlay('ar-construireScene', arBuildProtractorOverlay('ar-construireProtractor') + arBuildPencilHtml('ar-construireProtractor'))}
+  </div>`;
 }
 /* Positionne le crayon : sa pointe (transform-origin, en bas du dessin) touche exactement le
    bord/l'arc du rapporteur au degré local demandé, et son corps pivote vers l'extérieur. */
@@ -472,6 +502,7 @@ function arResetConstruire(){
   arRenderConstruirePencil();
   document.getElementById('ar-construireCible').textContent = arConstruireTarget+'°';
   document.getElementById('ar-construireStatus').textContent = '';
+  arSyncSceneScale('ar-construireScene');
 }
 function arCheckConstruire(){
   const status = document.getElementById('ar-construireStatus');
@@ -550,16 +581,18 @@ function arBuildDemoLireScene(){
     <button class="btn secondary" id="ar-demoLireModeInt" onclick="arSetDemoLireMode('interieur')">Lecture intérieure</button>
   </div>
   <p class="hint" style="text-align:center;margin:0 0 10px;">Pour une <b>lecture extérieure</b>, place le 0° jaune sur un des côtés de l'angle, en veillant à ce que l'autre côté reste dans le rapporteur. Pour une <b>lecture intérieure</b>, c'est le 0° vert qui doit être placé sur un des côtés (l'autre côté reste alors aussi dans le rapporteur) : le résultat de la lecture est le même.</p>
-  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px;"><div class="ar-scene" id="ar-demoLireScene" style="position:relative;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;flex:none;margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+  <div class="ar-scene" id="ar-demoLireScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
     <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
       <line x1="${AR_DEMO_LIRE_VERTEX.x}" y1="${AR_DEMO_LIRE_VERTEX.y}" x2="${end1.x}" y2="${end1.y}" stroke="#1C1B2E" stroke-width="1.3"/>
       <line x1="${AR_DEMO_LIRE_VERTEX.x}" y1="${AR_DEMO_LIRE_VERTEX.y}" x2="${end2.x}" y2="${end2.y}" stroke="#1C1B2E" stroke-width="1.3"/>
       <text id="ar-demoLireReading" x="${readingPt.x}" y="${readingPt.y}" font-size="22" font-weight="700" fill="#E35D3A" text-anchor="middle" opacity="0">${AR_DEMO_LIRE_SPREAD}°</text>
     </svg>
-    <div id="ar-demoLireProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease;">
-      <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
+    <div id="ar-demoLireScene-scaler" style="position:absolute;top:0;left:0;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;transform-origin:0 0;">
+      <div id="ar-demoLireProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease;">
+        <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
+      </div>
     </div>
-  </div></div>`;
+  </div>`;
 }
 function arDemoLireGoto(idx){
   arDemoLireStepIdx = idx;
@@ -634,26 +667,28 @@ function arBuildDemoConsScene(){
     <button class="btn secondary active" id="ar-demoConsModeExt" onclick="arSetDemoConsMode('exterieur')">Lecture extérieure</button>
     <button class="btn secondary" id="ar-demoConsModeInt" onclick="arSetDemoConsMode('interieur')">Lecture intérieure</button>
   </div>
-  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px;"><div class="ar-scene" id="ar-demoConsScene" style="position:relative;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;flex:none;margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+  <div class="ar-scene" id="ar-demoConsScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
     <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
       <line x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${baseEnd.x}" y2="${baseEnd.y}" stroke="#1F3A5C" stroke-width="1.3"/>
       <line id="ar-demoConsFinalRay" x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${AR_DEMO_CONS_VERTEX.x}" y2="${AR_DEMO_CONS_VERTEX.y}" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
       <line id="ar-demoConsTick" x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${AR_DEMO_CONS_VERTEX.x}" y2="${AR_DEMO_CONS_VERTEX.y}" stroke="#1C1B2E" stroke-width="2.2" opacity="0"/>
       <text id="ar-demoConsGradLabel" x="0" y="0" font-size="20" font-weight="700" text-anchor="middle" opacity="0"></text>
     </svg>
-    <div id="ar-demoConsProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
-      <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
+    <div id="ar-demoConsScene-scaler" style="position:absolute;top:0;left:0;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;transform-origin:0 0;">
+      <div id="ar-demoConsProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
+        <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
+      </div>
+      <div id="ar-demoConsPencil" style="position:absolute;top:0;left:0;width:16px;transform-origin:8px 46px;opacity:0;transition:opacity .4s ease;">
+        <svg viewBox="0 0 16 46" width="16" height="46" style="display:block;overflow:visible;">
+          <rect x="4" y="0" width="8" height="5" rx="1.5" fill="#E35D3A"/>
+          <rect x="4" y="5" width="8" height="4" fill="#1C1B2E"/>
+          <rect x="4" y="9" width="8" height="27" fill="#E9C46A"/>
+          <polygon points="4,36 12,36 8,46" fill="#D9A441"/>
+          <polygon points="6,42 10,42 8,46" fill="#4A4A55"/>
+        </svg>
+      </div>
     </div>
-    <div id="ar-demoConsPencil" style="position:absolute;top:0;left:0;width:16px;transform-origin:8px 46px;opacity:0;transition:opacity .4s ease;">
-      <svg viewBox="0 0 16 46" width="16" height="46" style="display:block;overflow:visible;">
-        <rect x="4" y="0" width="8" height="5" rx="1.5" fill="#E35D3A"/>
-        <rect x="4" y="5" width="8" height="4" fill="#1C1B2E"/>
-        <rect x="4" y="9" width="8" height="27" fill="#E9C46A"/>
-        <polygon points="4,36 12,36 8,46" fill="#D9A441"/>
-        <polygon points="6,42 10,42 8,46" fill="#4A4A55"/>
-      </svg>
-    </div>
-  </div></div>`;
+  </div>`;
 }
 function arDemoConsGoto(idx){
   arDemoConsStepIdx = idx;
@@ -751,7 +786,7 @@ function arBuildBissectriceSvg(){
     const perp = arcAngle + Math.PI/2;
     return `<line x1="${mid.x-tickLen*Math.cos(perp)}" y1="${mid.y-tickLen*Math.sin(perp)}" x2="${mid.x+tickLen*Math.cos(perp)}" y2="${mid.y+tickLen*Math.sin(perp)}" stroke="#1F6B3A" stroke-width="2"/>`;
   };
-  return `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px;"><div class="ar-scene" id="ar-bissectriceScene" style="position:relative;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;flex:none;margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+  return `<div class="ar-scene" id="ar-bissectriceScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
     <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
       <line x1="${AR_BIS_VERTEX.x}" y1="${AR_BIS_VERTEX.y}" x2="${N.x}" y2="${N.y}" stroke="#1F3A5C" stroke-width="1.3"/>
       <line x1="${AR_BIS_VERTEX.x}" y1="${AR_BIS_VERTEX.y}" x2="${M.x}" y2="${M.y}" stroke="#1F3A5C" stroke-width="1.3"/>
@@ -773,11 +808,13 @@ function arBuildBissectriceSvg(){
         ${arSideLabel(AR_BIS_VERTEX, Blbl, 'B', {side:-1, dist:14, fill:'#E35D3A'})}
       </g>
     </svg>
-    <div id="ar-bissectriceProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
-      <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
+    <div id="ar-bissectriceScene-scaler" style="position:absolute;top:0;left:0;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;transform-origin:0 0;">
+      <div id="ar-bissectriceProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
+        <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
+      </div>
+      ${arBuildPencilHtml('ar-bissectriceProtractor')}
     </div>
-    ${arBuildPencilHtml('ar-bissectriceProtractor')}
-  </div></div>`;
+  </div>`;
 }
 function arBisGoto(idx){
   arBisStepIdx = idx;
@@ -885,13 +922,13 @@ function arPermisRenderQuestion(){
     typeEl.textContent = 'Lis la mesure de cet angle.';
     const end1 = arDegToPt(arPermisVertex, arPermisBaseDeg, AR_RAY_LEN);
     const end2 = arDegToPt(arPermisVertex, arPermisBaseDeg+arPermisValue, AR_RAY_LEN);
-    sceneWrap.innerHTML = `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px;"><div class="ar-scene" id="ar-permisScene" style="position:relative;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;flex:none;margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+    sceneWrap.innerHTML = `<div class="ar-scene" id="ar-permisScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
       <svg viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
         <line x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${end1.x}" y2="${end1.y}" stroke="#1C1B2E" stroke-width="1.3"/>
         <line x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${end2.x}" y2="${end2.y}" stroke="#1C1B2E" stroke-width="1.3"/>
       </svg>
-      ${arBuildProtractorOverlay('ar-permisProtractor')}
-    </div></div>`;
+      ${arBuildScaledOverlay('ar-permisScene', arBuildProtractorOverlay('ar-permisProtractor'))}
+    </div>`;
     toolbar.innerHTML = `<label class="hint" style="margin:0;">Ma lecture : <input type="number" id="ar-permisInput" style="width:70px;"> °</label>
       <button class="btn" onclick="arPermisValidateAnswer()">Valider la réponse</button>`;
     arPermisRayAngles[0] = arPermisBaseDeg; arPermisRayAngles[1] = arPermisBaseDeg+arPermisValue;
@@ -900,14 +937,13 @@ function arPermisRenderQuestion(){
   } else {
     typeEl.textContent = `Construis un angle de ${arPermisValue}°.`;
     const baseEnd = arDegToPt(arPermisVertex, arPermisBaseDeg, AR_RAY_LEN);
-    sceneWrap.innerHTML = `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px;"><div class="ar-scene" id="ar-permisScene" style="position:relative;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;flex:none;margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
+    sceneWrap.innerHTML = `<div class="ar-scene" id="ar-permisScene" style="position:relative;width:100%;max-width:${AR_SCENE_W}px;aspect-ratio:${AR_SCENE_W}/${AR_SCENE_H};margin:0 auto;background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;overflow:hidden;">
       <svg id="ar-permisAngleSvg" viewBox="0 0 ${AR_SCENE_W} ${AR_SCENE_H}" style="position:absolute;top:0;left:0;width:100%;height:100%;">
         <line x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${baseEnd.x}" y2="${baseEnd.y}" stroke="#1F3A5C" stroke-width="1.3"/>
         <line id="ar-permisRay" x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${arPermisVertex.x}" y2="${arPermisVertex.y}" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
       </svg>
-      ${arBuildProtractorOverlay('ar-permisProtractor')}
-      ${arBuildPencilHtml('ar-permisProtractor')}
-    </div></div>`;
+      ${arBuildScaledOverlay('ar-permisScene', arBuildProtractorOverlay('ar-permisProtractor') + arBuildPencilHtml('ar-permisProtractor'))}
+    </div>`;
     toolbar.innerHTML = `<button class="btn" onclick="arPermisValiderTrait()">Valider le trait-repère</button>
       <button class="btn" onclick="arPermisValidateAnswer()">Valider la réponse</button>`;
     arPermisRayAngles[0] = arPermisBaseDeg; arPermisRayAngles[1] = arPermisBaseDeg;
@@ -916,6 +952,7 @@ function arPermisRenderQuestion(){
     arInitPencilDrag('ar-permisProtractor','ar-permisProtractor-pencil','ar-permisScene', arPermisProtState, (deg)=>{ arPermisPencilDeg=deg; arRenderPencilTip(document.getElementById('ar-permisProtractor-pencil'), arPermisProtState, deg); });
     arRenderPencilTip(document.getElementById('ar-permisProtractor-pencil'), arPermisProtState, arPermisPencilDeg);
   }
+  arSyncSceneScale('ar-permisScene');
 }
 function arPermisValiderTrait(){
   arPermisCurrentDeg = arEffectiveAbsDeg(arPermisProtState, arPermisPencilDeg);
@@ -1270,6 +1307,8 @@ DEMO_REGISTRY['Angles et rapporteur'] = {
     renderStaticMath(document.getElementById('exos-demo-angles-rapporteur-6e'));
     injectCourseAddButtons(document.getElementById('cours-demo-angles-rapporteur-6e'));
     injectCourseAddButtons(document.getElementById('methode-demo-angles-rapporteur-6e'));
+    arSyncAllSceneScales();
+    setTimeout(arSyncAllSceneScales, 60); // sécurité : relance après mise en page complète (onglet qui vient de s'afficher, etc.)
   }
 };
 
