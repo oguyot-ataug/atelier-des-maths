@@ -230,10 +230,29 @@ function arSyncSceneScale(sceneId){
   const scalerEl = document.getElementById(sceneId+'-scaler');
   if(!sceneEl || !scalerEl) return;
   const rect = sceneEl.getBoundingClientRect();
-  if(rect.width < 1) return; // pas encore mis en page (display:none, etc.)
+  if(rect.width < 1){
+    // Pas encore mis en page (onglet pas encore affiché, display:none le temps du chargement...) :
+    // on réessaie régulièrement plutôt que d'abandonner silencieusement.
+    let attempts = 0;
+    const retry = ()=>{
+      attempts++;
+      const r2 = sceneEl.getBoundingClientRect();
+      if(r2.width>=1){ arSyncSceneScale(sceneId); return; }
+      if(attempts<20) setTimeout(retry, 200);
+    };
+    setTimeout(retry, 150);
+    return;
+  }
   const scale = rect.width/AR_SCENE_W;
   scalerEl.style.transform = `scale(${scale})`;
   if(arScaledSceneIds.indexOf(sceneId)===-1) arScaledSceneIds.push(sceneId);
+  // Se resynchronise automatiquement à tout changement de taille de la scène (rotation d'écran,
+  // changement d'onglet qui modifie la largeur disponible, redimensionnement...) -- bien plus
+  // fiable qu'un simple écouteur sur le redimensionnement de la fenêtre.
+  if(typeof ResizeObserver!=='undefined' && !sceneEl.__arResizeObserver){
+    sceneEl.__arResizeObserver = new ResizeObserver(()=>arSyncSceneScale(sceneId));
+    sceneEl.__arResizeObserver.observe(sceneEl);
+  }
 }
 function arSyncAllSceneScales(){
   arScaledSceneIds.forEach(id=>arSyncSceneScale(id));
