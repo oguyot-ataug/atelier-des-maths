@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.17</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.18</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2240,6 +2240,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-28.18', items:[
+    "Chapitre Angles et rapporteur (6e) : corrige un oubli dans le correctif mobile précédent -- les trois démonstrations du cours (lire, construire, bissectrice) n'appelaient jamais la synchronisation d'échelle du rapporteur, qui restait donc à sa taille réelle (480px) au lieu de rétrécir avec la scène sur petit écran, débordant hors du cadre. Corrigé : la synchronisation est maintenant appelée à chaque étape de ces trois démonstrations.",
+  ]},
   { version:'2026-07-28.17', items:[
     "Chapitre Angles et rapporteur (6e) : nouvelle approche pour le décalage du rapporteur sur smartphone. Le défilement horizontal (essayé précédemment) entrait en conflit avec le glisser tactile -- le navigateur interprétait le geste comme un défilement de page. Le rapporteur et le crayon sont maintenant placés dans une couche qui se met à l'échelle exactement comme la scène qui rétrécit sur petit écran (au lieu de rester à taille fixe), avec une resynchronisation automatique au redimensionnement de la fenêtre.",
   ]},

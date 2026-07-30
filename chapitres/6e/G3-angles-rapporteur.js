@@ -618,6 +618,7 @@ function arDemoLireGoto(idx){
   if(reading) reading.setAttribute('opacity', idx>=3?'1':'0');
   const btn = document.getElementById('ar-demoLireNextBtn');
   if(btn){ btn.disabled = (idx===steps.length-1); btn.textContent = idx===steps.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
+  arSyncSceneScale('ar-demoLireScene');
 }
 function arDemoLireNext(){ if(arDemoLireStepIdx<arDemoLireSteps().length-1) arDemoLireGoto(arDemoLireStepIdx+1); }
 function arDemoLireReset(){ arDemoLireGoto(0); }
@@ -743,6 +744,7 @@ function arDemoConsGoto(idx){
   }
   const btn = document.getElementById('ar-demoConsNextBtn');
   if(btn){ btn.disabled = (idx===steps.length-1); btn.textContent = idx===steps.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
+  arSyncSceneScale('ar-demoConsScene');
 }
 function arDemoConsNext(){ if(arDemoConsStepIdx<arDemoConsSteps().length-1) arDemoConsGoto(arDemoConsStepIdx+1); }
 function arDemoConsReset(){ arDemoConsGoto(0); }
@@ -847,6 +849,7 @@ function arBisGoto(idx){
   if(labelB) labelB.setAttribute('opacity', idx>=7?'1':'0');
   const btn = document.getElementById('ar-bissectriceNextBtn');
   if(btn){ btn.disabled = (idx===AR_BIS_STEPS.length-1); btn.textContent = idx===AR_BIS_STEPS.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
+  arSyncSceneScale('ar-bissectriceScene');
 }
 function arBisNext(){ if(arBisStepIdx<AR_BIS_STEPS.length-1) arBisGoto(arBisStepIdx+1); }
 function arBisReset(){ arBisGoto(0); }
