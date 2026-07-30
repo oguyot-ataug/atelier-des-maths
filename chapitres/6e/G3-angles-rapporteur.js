@@ -197,6 +197,14 @@ const AR_CENTER_X_RATIO = 0.4992;
 const AR_SCENE_W = 860, AR_SCENE_H = 600;   // scène large : assez de place pour déplacer le rapporteur sans être à l'étroit
 const AR_PROT_W = 480, AR_PROT_H = AR_PROT_W/AR_RATIO;   // rapporteur grand et lisible
 const AR_PROT_PIVOT = {x: AR_PROT_W*AR_CENTER_X_RATIO, y: AR_PROT_H*AR_BASELINE_RATIO};
+/* Constantes en POURCENTAGE (de la largeur/hauteur de la scène, ou du rapporteur lui-même) pour
+   positionner le rapporteur et le crayon en CSS pur, sans jamais calculer d'échelle en JS : un
+   positionnement en % s'adapte automatiquement à la taille réellement affichée, quelle qu'elle
+   soit et quel que soit le moment où elle change (bien plus robuste que mesurer la taille rendue
+   via JS, qui s'est révélé peu fiable -- timing, onglets cachés, etc.). */
+const AR_PROT_PIVOT_X_PCT = (AR_PROT_PIVOT.x/AR_PROT_W)*100;   // position du pivot, en % de la largeur du rapporteur
+const AR_PROT_PIVOT_Y_PCT = (AR_PROT_PIVOT.y/AR_PROT_H)*100;   // position du pivot, en % de la hauteur du rapporteur
+const AR_PROT_W_PCT = (AR_PROT_W/AR_SCENE_W)*100;              // largeur du rapporteur, en % de la largeur de la scène
 const AR_RAY_LEN = 390;          // longueur des côtés de l'angle tracé (dépasse largement le rapporteur)
 const AR_SNAP_DIST = 30;         // distance (px, coordonnées de la scène) déclenchant l'aimant sur le sommet
 const AR_SNAP_ROT = 4;           // tolérance (°) pour l'accroche de la rotation sur un côté de l'angle
@@ -216,56 +224,6 @@ function arScenePoint(sceneEl, evt){
   const scaleX = AR_SCENE_W/rect.width, scaleY = AR_SCENE_H/rect.height;
   return { x: (t.clientX-rect.left)*scaleX, y: (t.clientY-rect.top)*scaleY };
 }
-/* La scène (SVG) se redimensionne de façon responsive (width:100%;max-width), mais le rapporteur
-   et le crayon sont des éléments HTML positionnés en pixels bruts dans le repère "logique" de la
-   scène (0 à AR_SCENE_W/H) : il faut donc les envelopper dans une couche qui applique la MÊME
-   mise à l'échelle que la scène, sinon ils restent à leur taille/position d'origine quand la
-   scène rétrécit (typiquement sur smartphone), d'où un rapporteur qui semble "n'importe où". */
-function arBuildScaledOverlay(sceneId, innerHtml){
-  return `<div id="${sceneId}-scaler" style="position:absolute;top:0;left:0;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;transform-origin:0 0;">${innerHtml}</div>`;
-}
-let arScaledSceneIds = [];
-function arSyncSceneScale(sceneId){
-  const sceneEl = document.getElementById(sceneId);
-  const scalerEl = document.getElementById(sceneId+'-scaler');
-  if(!sceneEl || !scalerEl) return;
-  const rect = sceneEl.getBoundingClientRect();
-  if(rect.width < 1){
-    // Pas encore mis en page (onglet pas encore affiché, display:none le temps du chargement...) :
-    // on réessaie régulièrement plutôt que d'abandonner silencieusement.
-    let attempts = 0;
-    const retry = ()=>{
-      attempts++;
-      const r2 = sceneEl.getBoundingClientRect();
-      if(r2.width>=1){ arSyncSceneScale(sceneId); return; }
-      if(attempts<20) setTimeout(retry, 200);
-    };
-    setTimeout(retry, 150);
-    return;
-  }
-  const scale = rect.width/AR_SCENE_W;
-  scalerEl.style.transform = `scale(${scale})`;
-  if(arScaledSceneIds.indexOf(sceneId)===-1) arScaledSceneIds.push(sceneId);
-  // Se resynchronise automatiquement à tout changement de taille de la scène (rotation d'écran,
-  // changement d'onglet qui modifie la largeur disponible, redimensionnement...) -- bien plus
-  // fiable qu'un simple écouteur sur le redimensionnement de la fenêtre.
-  if(typeof ResizeObserver!=='undefined' && !sceneEl.__arResizeObserver){
-    sceneEl.__arResizeObserver = new ResizeObserver(()=>arSyncSceneScale(sceneId));
-    sceneEl.__arResizeObserver.observe(sceneEl);
-  }
-}
-function arSyncAllSceneScales(){
-  arScaledSceneIds.forEach(id=>arSyncSceneScale(id));
-}
-if(typeof window!=='undefined' && !window.__arResizeListenerAdded){
-  window.__arResizeListenerAdded = true;
-  let arResizeTimer = null;
-  window.addEventListener('resize', ()=>{
-    clearTimeout(arResizeTimer);
-    arResizeTimer = setTimeout(arSyncAllSceneScales, 120);
-  });
-}
-
 /* ---- Le rapporteur déplaçable/pivotable : un état {x,y,rot} + rendu + glisser-déposer ---- */
 function arBuildPencilHtml(id){
   return `<div id="${id}-pencil" title="Crayon : glisse-le le long de l'arc, degré par degré" style="position:absolute;top:0;left:0;width:16px;transform-origin:8px 46px;cursor:grab;user-select:none;z-index:5;">
@@ -279,16 +237,17 @@ function arBuildPencilHtml(id){
   </div>`;
 }
 function arBuildProtractorOverlay(id){
-  return `<div id="${id}" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;cursor:grab;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;touch-action:none;user-select:none;">
+  return `<div id="${id}" style="position:absolute;top:0;left:0;width:${AR_PROT_W_PCT}%;cursor:grab;transform-origin:${AR_PROT_PIVOT_X_PCT}% ${AR_PROT_PIVOT_Y_PCT}%;touch-action:none;user-select:none;">
     <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;-webkit-user-drag:none;user-select:none;pointer-events:auto;">
-    <div id="${id}-rotate" title="Faire pivoter le rapporteur" style="position:absolute;left:${AR_PROT_W-15}px;top:${AR_PROT_PIVOT.y-15}px;width:30px;height:30px;border-radius:50%;background:rgba(227,93,58,.85);cursor:grab;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;user-select:none;">↻</div>
+    <div id="${id}-rotate" title="Faire pivoter le rapporteur" style="position:absolute;left:calc(100% - 15px);top:calc(${AR_PROT_PIVOT_Y_PCT}% - 15px);width:30px;height:30px;border-radius:50%;background:rgba(227,93,58,.85);cursor:grab;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;user-select:none;">↻</div>
   </div>`;
 }
 function arRenderProtractor(id, state){
   const el = document.getElementById(id);
   if(!el) return;
-  const tx = state.x - AR_PROT_PIVOT.x, ty = state.y - AR_PROT_PIVOT.y;
-  el.style.transform = `translate(${tx}px, ${ty}px) rotate(${-state.rot}deg)`;
+  el.style.left = (state.x/AR_SCENE_W*100)+'%';
+  el.style.top = (state.y/AR_SCENE_H*100)+'%';
+  el.style.transform = `translate(-${AR_PROT_PIVOT_X_PCT}%, -${AR_PROT_PIVOT_Y_PCT}%) rotate(${-state.rot}deg)`;
 }
 /* rayAngles : les orientations (°) des côtés de l'angle sur lesquelles la rotation du rapporteur
    doit s'accrocher (la ligne 0°-180° du rapporteur est une droite : on teste aussi +180). */
@@ -346,7 +305,7 @@ function arBuildLireScene(){
       <line id="ar-lireRay1" x1="0" y1="0" x2="0" y2="0" stroke="#1C1B2E" stroke-width="1.3"/>
       <line id="ar-lireRay2" x1="0" y1="0" x2="0" y2="0" stroke="#1C1B2E" stroke-width="1.3"/>
     </svg>
-    ${arBuildScaledOverlay('ar-lireScene', arBuildProtractorOverlay('ar-lireProtractor'))}
+    ${arBuildProtractorOverlay('ar-lireProtractor')}
   </div>`;
 }
 function arDrawLireAngle(){
@@ -366,7 +325,6 @@ function arResetLire(){
   arRenderProtractor('ar-lireProtractor', arLireProtState);
   document.getElementById('ar-lireInput').value = '';
   document.getElementById('ar-lireStatus').textContent = '';
-  arSyncSceneScale('ar-lireScene');
 }
 function arCheckLire(){
   const val = parseFloat(document.getElementById('ar-lireInput').value);
@@ -391,7 +349,7 @@ function arBuildConstruireScene(){
       <line id="ar-construireRayBase" x1="0" y1="0" x2="0" y2="0" stroke="#1F3A5C" stroke-width="1.3"/>
       <line id="ar-construireRay" x1="0" y1="0" x2="0" y2="0" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
     </svg>
-    ${arBuildScaledOverlay('ar-construireScene', arBuildProtractorOverlay('ar-construireProtractor') + arBuildPencilHtml('ar-construireProtractor'))}
+    ${arBuildProtractorOverlay('ar-construireProtractor') + arBuildPencilHtml('ar-construireProtractor')}
   </div>`;
 }
 /* Positionne le crayon : sa pointe (transform-origin, en bas du dessin) touche exactement le
@@ -476,7 +434,9 @@ function arRenderPencilTip(pencilEl, protState, localDeg){
   const rad = absDeg*Math.PI/180;
   const tipX = protState.x + R*Math.cos(rad);
   const tipY = protState.y - R*Math.sin(rad);
-  pencilEl.style.transform = `translate(${tipX-8}px, ${tipY-46}px) rotate(${90-absDeg}deg)`;
+  pencilEl.style.left = (tipX/AR_SCENE_W*100)+'%';
+  pencilEl.style.top = (tipY/AR_SCENE_H*100)+'%';
+  pencilEl.style.transform = `translate(-8px, -46px) rotate(${90-absDeg}deg)`;
 }
 function arRenderConstruirePencil(){
   arRenderPencilTip(document.getElementById('ar-construireProtractor-pencil'), arConstruireProtState, arConstruirePencilDeg);
@@ -521,7 +481,6 @@ function arResetConstruire(){
   arRenderConstruirePencil();
   document.getElementById('ar-construireCible').textContent = arConstruireTarget+'°';
   document.getElementById('ar-construireStatus').textContent = '';
-  arSyncSceneScale('ar-construireScene');
 }
 function arCheckConstruire(){
   const status = document.getElementById('ar-construireStatus');
@@ -606,10 +565,8 @@ function arBuildDemoLireScene(){
       <line x1="${AR_DEMO_LIRE_VERTEX.x}" y1="${AR_DEMO_LIRE_VERTEX.y}" x2="${end2.x}" y2="${end2.y}" stroke="#1C1B2E" stroke-width="1.3"/>
       <text id="ar-demoLireReading" x="${readingPt.x}" y="${readingPt.y}" font-size="22" font-weight="700" fill="#E35D3A" text-anchor="middle" opacity="0">${AR_DEMO_LIRE_SPREAD}°</text>
     </svg>
-    <div id="ar-demoLireScene-scaler" style="position:absolute;top:0;left:0;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;transform-origin:0 0;">
-      <div id="ar-demoLireProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease;">
-        <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
-      </div>
+    <div id="ar-demoLireProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W_PCT}%;transform-origin:${AR_PROT_PIVOT_X_PCT}% ${AR_PROT_PIVOT_Y_PCT}%;transition:transform 1s ease;">
+      <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
     </div>
   </div>`;
 }
@@ -637,7 +594,6 @@ function arDemoLireGoto(idx){
   if(reading) reading.setAttribute('opacity', idx>=3?'1':'0');
   const btn = document.getElementById('ar-demoLireNextBtn');
   if(btn){ btn.disabled = (idx===steps.length-1); btn.textContent = idx===steps.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
-  arSyncSceneScale('ar-demoLireScene');
 }
 function arDemoLireNext(){ if(arDemoLireStepIdx<arDemoLireSteps().length-1) arDemoLireGoto(arDemoLireStepIdx+1); }
 function arDemoLireReset(){ arDemoLireGoto(0); }
@@ -694,19 +650,17 @@ function arBuildDemoConsScene(){
       <line id="ar-demoConsTick" x1="${AR_DEMO_CONS_VERTEX.x}" y1="${AR_DEMO_CONS_VERTEX.y}" x2="${AR_DEMO_CONS_VERTEX.x}" y2="${AR_DEMO_CONS_VERTEX.y}" stroke="#1C1B2E" stroke-width="2.2" opacity="0"/>
       <text id="ar-demoConsGradLabel" x="0" y="0" font-size="20" font-weight="700" text-anchor="middle" opacity="0"></text>
     </svg>
-    <div id="ar-demoConsScene-scaler" style="position:absolute;top:0;left:0;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;transform-origin:0 0;">
-      <div id="ar-demoConsProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
-        <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
-      </div>
-      <div id="ar-demoConsPencil" style="position:absolute;top:0;left:0;width:16px;transform-origin:8px 46px;opacity:0;transition:opacity .4s ease;">
-        <svg viewBox="0 0 16 46" width="16" height="46" style="display:block;overflow:visible;">
-          <rect x="4" y="0" width="8" height="5" rx="1.5" fill="#E35D3A"/>
-          <rect x="4" y="5" width="8" height="4" fill="#1C1B2E"/>
-          <rect x="4" y="9" width="8" height="27" fill="#E9C46A"/>
-          <polygon points="4,36 12,36 8,46" fill="#D9A441"/>
-          <polygon points="6,42 10,42 8,46" fill="#4A4A55"/>
-        </svg>
-      </div>
+    <div id="ar-demoConsProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W_PCT}%;transform-origin:${AR_PROT_PIVOT_X_PCT}% ${AR_PROT_PIVOT_Y_PCT}%;transition:transform 1s ease, opacity .6s ease;">
+      <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
+    </div>
+    <div id="ar-demoConsPencil" style="position:absolute;top:0;left:0;width:16px;transform-origin:8px 46px;opacity:0;transition:opacity .4s ease;">
+      <svg viewBox="0 0 16 46" width="16" height="46" style="display:block;overflow:visible;">
+        <rect x="4" y="0" width="8" height="5" rx="1.5" fill="#E35D3A"/>
+        <rect x="4" y="5" width="8" height="4" fill="#1C1B2E"/>
+        <rect x="4" y="9" width="8" height="27" fill="#E9C46A"/>
+        <polygon points="4,36 12,36 8,46" fill="#D9A441"/>
+        <polygon points="6,42 10,42 8,46" fill="#4A4A55"/>
+      </svg>
     </div>
   </div>`;
 }
@@ -763,7 +717,6 @@ function arDemoConsGoto(idx){
   }
   const btn = document.getElementById('ar-demoConsNextBtn');
   if(btn){ btn.disabled = (idx===steps.length-1); btn.textContent = idx===steps.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
-  arSyncSceneScale('ar-demoConsScene');
 }
 function arDemoConsNext(){ if(arDemoConsStepIdx<arDemoConsSteps().length-1) arDemoConsGoto(arDemoConsStepIdx+1); }
 function arDemoConsReset(){ arDemoConsGoto(0); }
@@ -829,12 +782,10 @@ function arBuildBissectriceSvg(){
         ${arSideLabel(AR_BIS_VERTEX, Blbl, 'B', {side:-1, dist:14, fill:'#E35D3A'})}
       </g>
     </svg>
-    <div id="ar-bissectriceScene-scaler" style="position:absolute;top:0;left:0;width:${AR_SCENE_W}px;height:${AR_SCENE_H}px;transform-origin:0 0;">
-      <div id="ar-bissectriceProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W}px;transform-origin:${AR_PROT_PIVOT.x}px ${AR_PROT_PIVOT.y}px;transition:transform 1s ease, opacity .6s ease;">
-        <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
-      </div>
-      ${arBuildPencilHtml('ar-bissectriceProtractor')}
+    <div id="ar-bissectriceProtractor" style="position:absolute;top:0;left:0;width:${AR_PROT_W_PCT}%;transform-origin:${AR_PROT_PIVOT_X_PCT}% ${AR_PROT_PIVOT_Y_PCT}%;transition:transform 1s ease, opacity .6s ease;">
+      <img src="assets/rapporteur-translucide.png" alt="Rapporteur" draggable="false" style="width:100%;display:block;opacity:.9;">
     </div>
+    ${arBuildPencilHtml('ar-bissectriceProtractor')}
   </div>`;
 }
 function arBisGoto(idx){
@@ -868,7 +819,6 @@ function arBisGoto(idx){
   if(labelB) labelB.setAttribute('opacity', idx>=7?'1':'0');
   const btn = document.getElementById('ar-bissectriceNextBtn');
   if(btn){ btn.disabled = (idx===AR_BIS_STEPS.length-1); btn.textContent = idx===AR_BIS_STEPS.length-1 ? 'Terminé ✓' : 'Étape suivante →'; }
-  arSyncSceneScale('ar-bissectriceScene');
 }
 function arBisNext(){ if(arBisStepIdx<AR_BIS_STEPS.length-1) arBisGoto(arBisStepIdx+1); }
 function arBisReset(){ arBisGoto(0); }
@@ -949,7 +899,7 @@ function arPermisRenderQuestion(){
         <line x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${end1.x}" y2="${end1.y}" stroke="#1C1B2E" stroke-width="1.3"/>
         <line x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${end2.x}" y2="${end2.y}" stroke="#1C1B2E" stroke-width="1.3"/>
       </svg>
-      ${arBuildScaledOverlay('ar-permisScene', arBuildProtractorOverlay('ar-permisProtractor'))}
+      ${arBuildProtractorOverlay('ar-permisProtractor')}
     </div>`;
     toolbar.innerHTML = `<label class="hint" style="margin:0;">Ma lecture : <input type="number" id="ar-permisInput" style="width:70px;"> °</label>
       <button class="btn" onclick="arPermisValidateAnswer()">Valider la réponse</button>`;
@@ -964,7 +914,7 @@ function arPermisRenderQuestion(){
         <line x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${baseEnd.x}" y2="${baseEnd.y}" stroke="#1F3A5C" stroke-width="1.3"/>
         <line id="ar-permisRay" x1="${arPermisVertex.x}" y1="${arPermisVertex.y}" x2="${arPermisVertex.x}" y2="${arPermisVertex.y}" stroke="#E35D3A" stroke-width="1.3" opacity="0"/>
       </svg>
-      ${arBuildScaledOverlay('ar-permisScene', arBuildProtractorOverlay('ar-permisProtractor') + arBuildPencilHtml('ar-permisProtractor'))}
+      ${arBuildProtractorOverlay('ar-permisProtractor') + arBuildPencilHtml('ar-permisProtractor')}
     </div>`;
     toolbar.innerHTML = `<button class="btn" onclick="arPermisValiderTrait()">Valider le trait-repère</button>
       <button class="btn" onclick="arPermisValidateAnswer()">Valider la réponse</button>`;
@@ -974,7 +924,6 @@ function arPermisRenderQuestion(){
     arInitPencilDrag('ar-permisProtractor','ar-permisProtractor-pencil','ar-permisScene', arPermisProtState, (deg)=>{ arPermisPencilDeg=deg; arRenderPencilTip(document.getElementById('ar-permisProtractor-pencil'), arPermisProtState, deg); });
     arRenderPencilTip(document.getElementById('ar-permisProtractor-pencil'), arPermisProtState, arPermisPencilDeg);
   }
-  arSyncSceneScale('ar-permisScene');
 }
 function arPermisValiderTrait(){
   arPermisCurrentDeg = arEffectiveAbsDeg(arPermisProtState, arPermisPencilDeg);
@@ -1329,8 +1278,6 @@ DEMO_REGISTRY['Angles et rapporteur'] = {
     renderStaticMath(document.getElementById('exos-demo-angles-rapporteur-6e'));
     injectCourseAddButtons(document.getElementById('cours-demo-angles-rapporteur-6e'));
     injectCourseAddButtons(document.getElementById('methode-demo-angles-rapporteur-6e'));
-    arSyncAllSceneScales();
-    setTimeout(arSyncAllSceneScales, 60); // sécurité : relance après mise en page complète (onglet qui vient de s'afficher, etc.)
   }
 };
 
