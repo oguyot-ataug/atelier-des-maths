@@ -325,7 +325,7 @@ function apBuildMethodeAltEgaliteSvg(){
     <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    ${apParallelTick(230,90)}${apParallelTick(230,190)}
+    <text x="70" y="24" font-size="13" font-weight="700" fill="#1F3A5C">(AB) // (CD)</text>
     ${wB}${wC}
     <circle cx="${B.x}" cy="${B.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${C.x}" cy="${C.y}" r="2.6" fill="#1C1B2E"/>
@@ -400,7 +400,7 @@ function apBuildMethodeCorrDirectSvg(){
     <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    ${apParallelTick(230,90)}${apParallelTick(230,190)}
+    <text x="70" y="24" font-size="13" font-weight="700" fill="#1F3A5C">(MK) // (NP)</text>
     ${wM}${wN}
     <circle cx="${M.x}" cy="${M.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${N.x}" cy="${N.y}" r="2.6" fill="#1C1B2E"/>
