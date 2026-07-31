@@ -13,12 +13,39 @@ function apWedge(vertex, p1, p2, r, color, opacity){
 function apLabel(x, y, text, size, italic){
   return `<text x="${x}" y="${y}" font-size="${size||12}" ${italic===false?'':'font-style="italic"'} fill="#1C1B2E">${text}</text>`;
 }
+/* Repère un point situé sur une droite/demi-droite (pas une extrémité) par un petit trait
+   perpendiculaire à la droite, centré sur le point -- jamais un rond en bout de trait.
+   `ref` est un autre point de la même droite, utilisé uniquement pour connaître sa direction.
+   Convention du site, reprise de arPointTick (chapitres/6e/G3-angles-rapporteur.js). */
+function apPointTick(ref, pt, size){
+  const angle = Math.atan2(pt.y-ref.y, pt.x-ref.x);
+  const perp = angle + Math.PI/2;
+  const s = size || 8;
+  const x1 = pt.x - s*Math.cos(perp), y1 = pt.y - s*Math.sin(perp);
+  const x2 = pt.x + s*Math.cos(perp), y2 = pt.y + s*Math.sin(perp);
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+}
+/* Étiquette d'un point situé sur une droite/demi-droite : décalée PERPENDICULAIREMENT à la droite
+   (jamais dans son prolongement, ce qui donnerait l'impression que l'étiquette fait partie du tracé). */
+function apSideLabel(ref, pt, text, opts){
+  opts = opts || {};
+  const dist = opts.dist===undefined ? 15 : opts.dist;
+  const side = opts.side || 1;
+  const italic = opts.italic===false ? '' : 'font-style="italic"';
+  const angle = Math.atan2(pt.y-ref.y, pt.x-ref.x);
+  const perp = angle + side*Math.PI/2;
+  const x = pt.x + dist*Math.cos(perp);
+  const y = pt.y + dist*Math.sin(perp);
+  return `<text x="${x}" y="${y}" font-size="${opts.size||13}" ${italic} text-anchor="middle" dominant-baseline="middle" fill="${opts.fill||'#1C1B2E'}">${text}</text>`;
+}
 
 /* ================= Figure A : angles opposés par le sommet ================= */
 function apBuildOpposesSvg(){
   const O = {x:200, y:110};
   const M = apPt(O,0,150), Mp = apPt(O,180,150);
   const N = apPt(O,-35,150), Np = apPt(O,145,150);
+  const Mt = apPt(O,0,133), Mpt = apPt(O,180,133);
+  const Nt = apPt(O,-35,133), Npt = apPt(O,145,133);
   const w1 = apWedge(O, M, Np, 36, '#1F3A5C');
   const w2 = apWedge(O, Mp, N, 36, '#1F3A5C');
   const w3 = apWedge(O, Np, Mp, 36, '#E35D3A');
@@ -28,10 +55,11 @@ function apBuildOpposesSvg(){
     <line x1="${Np.x}" y1="${Np.y}" x2="${N.x}" y2="${N.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${w1}${w2}${w3}${w4}
     <circle cx="${O.x}" cy="${O.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(M.x+8, M.y+4, 'M')}
-    ${apLabel(Mp.x-20, Mp.y+4, "M'")}
-    ${apLabel(N.x-2, N.y-8, 'N')}
-    ${apLabel(Np.x-18, Np.y+16, "N'")}
+    ${apPointTick(O,Mt)}${apPointTick(O,Mpt)}${apPointTick(O,Nt)}${apPointTick(O,Npt)}
+    ${apSideLabel(O,Mt,'M')}
+    ${apSideLabel(O,Mpt,"M'")}
+    ${apSideLabel(O,Nt,'N')}
+    ${apSideLabel(O,Npt,"N'")}
     ${apLabel(O.x-16, O.y+18, 'O')}
   </svg>`;
 }
@@ -40,6 +68,7 @@ function apBuildOpposesSvg(){
 function apBuildAdjacentsSvg(){
   const O = {x:190, y:190};
   const I = apPt(O,-160,110), J = apPt(O,-90,110), K = apPt(O,-50,110);
+  const It = apPt(O,-160,95), Jt = apPt(O,-90,95), Kt = apPt(O,-50,95);
   const w1 = apWedge(O, I, J, 34, '#1F3A5C');
   const w2 = apWedge(O, J, K, 34, '#1F6B3A');
   return `<svg viewBox="0 0 320 220" style="width:100%;max-width:300px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
@@ -48,9 +77,10 @@ function apBuildAdjacentsSvg(){
     <line x1="${O.x}" y1="${O.y}" x2="${K.x}" y2="${K.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${w1}${w2}
     <circle cx="${O.x}" cy="${O.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(I.x-14, I.y-2, 'I')}
-    ${apLabel(J.x-6, J.y-8, 'J')}
-    ${apLabel(K.x+6, K.y-4, 'K')}
+    ${apPointTick(O,It)}${apPointTick(O,Jt)}${apPointTick(O,Kt)}
+    ${apSideLabel(O,It,'I')}
+    ${apSideLabel(O,Jt,'J')}
+    ${apSideLabel(O,Kt,'K')}
     ${apLabel(O.x+6, O.y+16, 'O')}
   </svg>`;
 }
@@ -59,6 +89,7 @@ function apBuildAdjacentsSvg(){
 function apBuildSupplSvg(){
   const O = {x:200, y:150};
   const D = apPt(O,180,140), F = apPt(O,0,140), E = apPt(O,-115,140);
+  const Dt = apPt(O,180,124), Ft = apPt(O,0,124), Et = apPt(O,-115,124);
   const w1 = apWedge(O, D, E, 40, '#1F3A5C');
   const w2 = apWedge(O, E, F, 40, '#1F6B3A');
   return `<svg viewBox="0 0 400 220" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
@@ -66,9 +97,10 @@ function apBuildSupplSvg(){
     <line x1="${O.x}" y1="${O.y}" x2="${E.x}" y2="${E.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${w1}${w2}
     <circle cx="${O.x}" cy="${O.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(D.x-4, D.y-10, 'D')}
-    ${apLabel(F.x-6, F.y-10, 'F')}
-    ${apLabel(E.x-6, E.y+16, 'E')}
+    ${apPointTick(O,Dt)}${apPointTick(O,Ft)}${apPointTick(O,Et)}
+    ${apSideLabel(O,Dt,'D')}
+    ${apSideLabel(O,Ft,'F',{side:-1})}
+    ${apSideLabel(O,Et,'E')}
     ${apLabel(O.x-4, O.y+18, 'O')}
   </svg>`;
 }
@@ -79,15 +111,33 @@ const AP_DLEFT = {x:60,y:90}, AP_DRIGHT = {x:400,y:90};
 const AP_DPLEFT = {x:60,y:190}, AP_DPRIGHT = {x:400,y:190};
 const AP_STOP = {x:133.6, y:0}, AP_SBOT = {x:346.4, y:280};
 
+/* La droite (d)/(d') et la sécante (s) sont dessinées un peu plus longues que les points nommés
+   qu'elles portent (K, P, A, D, L, E...), pour qu'aucun point ne se retrouve à une extrémité. */
+const AP_LINE_EXT = 15;
+const AP_DLEFT_EXT = {x:AP_DLEFT.x-AP_LINE_EXT, y:AP_DLEFT.y};
+const AP_DRIGHT_EXT = {x:AP_DRIGHT.x+AP_LINE_EXT, y:AP_DRIGHT.y};
+const AP_DPLEFT_EXT = {x:AP_DPLEFT.x-AP_LINE_EXT, y:AP_DPLEFT.y};
+const AP_DPRIGHT_EXT = {x:AP_DPRIGHT.x+AP_LINE_EXT, y:AP_DPRIGHT.y};
+/* Le point nommé sur la sécante (L ou E, selon l'exercice) est légèrement en retrait de son
+   extrémité haute AP_STOP, qui elle-même touche déjà le bord du cadre -- on ne peut pas prolonger
+   au-delà du cadre, donc c'est le point qui recule plutôt que la droite qui s'allonge. */
+const AP_S_LEN = Math.hypot(AP_SBOT.x-AP_STOP.x, AP_SBOT.y-AP_STOP.y);
+const AP_S_UX = (AP_SBOT.x-AP_STOP.x)/AP_S_LEN, AP_S_UY = (AP_SBOT.y-AP_STOP.y)/AP_S_LEN;
+const AP_S_PT = {x:AP_STOP.x+AP_LINE_EXT*AP_S_UX, y:AP_STOP.y+AP_LINE_EXT*AP_S_UY};
+/* Fragment commun des 3 droites de base (d), (d') et (s), prolongées au-delà des points nommés. */
+function apBaseLinesSvg(){
+  return `<line x1="${AP_DLEFT_EXT.x}" y1="${AP_DLEFT_EXT.y}" x2="${AP_DRIGHT_EXT.x}" y2="${AP_DRIGHT_EXT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_DPLEFT_EXT.x}" y1="${AP_DPLEFT_EXT.y}" x2="${AP_DPRIGHT_EXT.x}" y2="${AP_DPRIGHT_EXT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+}
+
 function apBuildDefinitionsSvg(){
   const wBleuA = apWedge(AP_A, AP_DRIGHT, AP_SBOT, 34, '#1F3A5C');
   const wBleuB = apWedge(AP_B, AP_DPLEFT, AP_STOP, 34, '#1F3A5C');
   const wVertA = apWedge(AP_A, AP_STOP, AP_DRIGHT, 34, '#1F6B3A');
   const wVertB = apWedge(AP_B, AP_STOP, AP_DPRIGHT, 34, '#1F6B3A');
   return `<svg viewBox="0 0 460 300" style="width:100%;max-width:420px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${apBaseLinesSvg()}
     ${wBleuA}${wBleuB}${wVertA}${wVertB}
     <circle cx="${AP_A.x}" cy="${AP_A.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${AP_B.x}" cy="${AP_B.y}" r="2.6" fill="#1C1B2E"/>
@@ -108,9 +158,7 @@ function apBuildExemple1Svg(){
   const labA = {x: AP_A.x+50*Math.cos(midA), y: AP_A.y+50*Math.sin(midA)};
   const labB = {x: AP_B.x+50*Math.cos(midB), y: AP_B.y+50*Math.sin(midB)};
   return `<svg viewBox="0 0 460 300" style="width:100%;max-width:420px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${apBaseLinesSvg()}
     ${wBleuA}${wBleuB}
     <circle cx="${AP_A.x}" cy="${AP_A.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${AP_B.x}" cy="${AP_B.y}" r="2.6" fill="#1C1B2E"/>
@@ -186,16 +234,15 @@ function apBuildMethodeAltSvg(){
   const labB = {x: B.x+50*Math.cos(midB), y: B.y+50*Math.sin(midB)};
   const labC = {x: C.x+50*Math.cos(midC), y: C.y+50*Math.sin(midC)};
   return `<svg viewBox="0 0 460 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${apBaseLinesSvg()}
+    ${apPointTick(AP_DLEFT, A)}${apPointTick(AP_DPRIGHT, D)}
     ${wB}${wC}
     <circle cx="${B.x}" cy="${B.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${C.x}" cy="${C.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(A.x-16, A.y-8, 'A')}
+    ${apSideLabel(AP_DLEFT, A, 'A', {side:-1})}
     ${apLabel(B.x+8, B.y-8, 'B')}
     ${apLabel(C.x-16, C.y+18, 'C')}
-    ${apLabel(D.x+6, D.y+18, 'D')}
+    ${apSideLabel(AP_DPRIGHT, D, 'D', {side:1})}
     ${apLabel(labB.x-10, labB.y+4, '55°', 12, false)}
     ${apLabel(labC.x-10, labC.y+4, '55°', 12, false)}
   </svg>`;
@@ -206,6 +253,8 @@ function apBuildMethodeOpposesSvg(){
   const O = {x:200, y:110};
   const P = apPt(O,0,150), Pp = apPt(O,180,150);
   const Q = apPt(O,-35,150), Qp = apPt(O,145,150);
+  const Pt = apPt(O,0,133), Ppt = apPt(O,180,133);
+  const Qt = apPt(O,-35,133), Qpt = apPt(O,145,133);
   const wGiven = apWedge(O, Q, P, 36, '#1F3A5C');
   const wFind = apWedge(O, Qp, Pp, 36, '#1F3A5C');
   const midGiven = angleArcPoints(O, Q, P, 52).mid;
@@ -217,10 +266,11 @@ function apBuildMethodeOpposesSvg(){
     <line x1="${Qp.x}" y1="${Qp.y}" x2="${Q.x}" y2="${Q.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${wGiven}${wFind}
     <circle cx="${O.x}" cy="${O.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(P.x+8, P.y+4, 'P')}
-    ${apLabel(Pp.x-20, Pp.y+4, "P'")}
-    ${apLabel(Q.x-2, Q.y-8, 'Q')}
-    ${apLabel(Qp.x-18, Qp.y+16, "Q'")}
+    ${apPointTick(O,Pt)}${apPointTick(O,Ppt)}${apPointTick(O,Qt)}${apPointTick(O,Qpt)}
+    ${apSideLabel(O,Pt,'P')}
+    ${apSideLabel(O,Ppt,"P'")}
+    ${apSideLabel(O,Qt,'Q')}
+    ${apSideLabel(O,Qpt,"Q'")}
     ${apLabel(O.x-16, O.y+18, 'O')}
     ${apLabel(labGiven.x-10, labGiven.y+4, '35°', 12, false)}
     ${apLabel(labFind.x-8, labFind.y+4, '?', 12, false)}
@@ -231,6 +281,7 @@ function apBuildMethodeOpposesSvg(){
 function apBuildMethodeAlignementSvg(){
   const O = {x:200, y:150};
   const D = apPt(O,180,140), F = apPt(O,0,140), E = apPt(O,-68,140);
+  const Dt = apPt(O,180,124), Ft = apPt(O,0,124), Et = apPt(O,-68,124);
   const w1 = apWedge(O, D, E, 42, '#1F3A5C');
   const w2 = apWedge(O, E, F, 42, '#1F6B3A');
   const mid1 = angleArcPoints(O, D, E, 58).mid;
@@ -242,24 +293,20 @@ function apBuildMethodeAlignementSvg(){
     <line x1="${O.x}" y1="${O.y}" x2="${E.x}" y2="${E.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     ${w1}${w2}
     <circle cx="${O.x}" cy="${O.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(D.x-4, D.y-10, 'D')}
-    ${apLabel(F.x-6, F.y-10, 'F')}
-    ${apLabel(E.x-6, E.y-10, 'E')}
+    ${apPointTick(O,Dt)}${apPointTick(O,Ft)}${apPointTick(O,Et)}
+    ${apSideLabel(O,Dt,'D')}
+    ${apSideLabel(O,Ft,'F',{side:-1})}
+    ${apSideLabel(O,Et,'E')}
     ${apLabel(O.x-4, O.y+18, 'O')}
     ${apLabel(lab1.x-14, lab1.y, '112°', 12, false)}
     ${apLabel(lab2.x-10, lab2.y, '68°', 12, false)}
   </svg>`;
 }
 
-/* ================= Figure : méthode "somme des angles d'un triangle" ================= */
-function apParallelTick(x,y){
-  return `<path d="M ${x-6} ${y-6} L ${x+5} ${y} L ${x-6} ${y+6}" fill="none" stroke="#1C1B2E" stroke-width="1.6"/>`;
-}
-
 /* ================= Figure : méthode "angles correspondants -> parallélisme" ================= */
 function apBuildMethodeCorrespParallelSvg(){
   const B = AP_A, C = AP_B;
-  const E = AP_STOP, A = AP_DRIGHT, D = AP_DPRIGHT;
+  const E = AP_S_PT, A = AP_DRIGHT, D = AP_DPRIGHT;
   const wB = apWedge(B, E, A, 34, '#1F6B3A');
   const wC = apWedge(C, E, D, 34, '#1F6B3A');
   const midB = angleArcPoints(B, E, A, 52).mid;
@@ -267,17 +314,16 @@ function apBuildMethodeCorrespParallelSvg(){
   const labB = {x:B.x+52*Math.cos(midB), y:B.y+52*Math.sin(midB)};
   const labC = {x:C.x+52*Math.cos(midC), y:C.y+52*Math.sin(midC)};
   return `<svg viewBox="0 0 460 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${apBaseLinesSvg()}
+    ${apPointTick(AP_SBOT, E)}${apPointTick(AP_DLEFT, A)}${apPointTick(AP_DPLEFT, D)}
     ${wB}${wC}
     <circle cx="${B.x}" cy="${B.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${C.x}" cy="${C.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(E.x+6, E.y+14, 'E')}
+    ${apSideLabel(AP_SBOT, E, 'E', {side:1, dist:14})}
     ${apLabel(B.x+8, B.y-8, 'B')}
     ${apLabel(C.x-16, C.y+18, 'C')}
-    ${apLabel(A.x-16, A.y-8, 'A')}
-    ${apLabel(D.x-18, D.y+18, 'D')}
+    ${apSideLabel(AP_DLEFT, A, 'A', {side:-1})}
+    ${apSideLabel(AP_DPLEFT, D, 'D', {side:1})}
     ${apLabel(labB.x-14, labB.y+4, '127°', 12, false)}
     ${apLabel(labC.x-14, labC.y+4, '127°', 12, false)}
   </svg>`;
@@ -286,7 +332,7 @@ function apBuildMethodeCorrespParallelSvg(){
 /* ================= Figure : méthode "égalité par correspondants" (droites déjà parallèles) ================= */
 function apBuildMethodeCorrespEgaliteSvg(){
   const B = AP_A, C = AP_B;
-  const E = AP_STOP, A = AP_DRIGHT, D = AP_DPRIGHT;
+  const E = AP_S_PT, A = AP_DRIGHT, D = AP_DPRIGHT;
   const wB = apWedge(B, E, A, 34, '#1F6B3A');
   const wC = apWedge(C, E, D, 34, '#1F6B3A');
   const midB = angleArcPoints(B, E, A, 52).mid;
@@ -294,18 +340,17 @@ function apBuildMethodeCorrespEgaliteSvg(){
   const labB = {x:B.x+52*Math.cos(midB), y:B.y+52*Math.sin(midB)};
   const labC = {x:C.x+52*Math.cos(midC), y:C.y+52*Math.sin(midC)};
   return `<svg viewBox="0 0 460 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    ${apParallelTick(230,90)}${apParallelTick(230,190)}
+    ${apBaseLinesSvg()}
+    <text x="70" y="24" font-size="13" font-weight="700" fill="#1F3A5C">(AB) // (CD)</text>
+    ${apPointTick(AP_SBOT, E)}${apPointTick(AP_DLEFT, A)}${apPointTick(AP_DPLEFT, D)}
     ${wB}${wC}
     <circle cx="${B.x}" cy="${B.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${C.x}" cy="${C.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(E.x+6, E.y+14, 'E')}
+    ${apSideLabel(AP_SBOT, E, 'E', {side:1, dist:14})}
     ${apLabel(B.x+8, B.y-8, 'B')}
     ${apLabel(C.x-16, C.y+18, 'C')}
-    ${apLabel(A.x-16, A.y-8, 'A')}
-    ${apLabel(D.x-18, D.y+18, 'D')}
+    ${apSideLabel(AP_DLEFT, A, 'A', {side:-1})}
+    ${apSideLabel(AP_DPLEFT, D, 'D', {side:1})}
     ${apLabel(labB.x-14, labB.y+4, '127°', 12, false)}
     ${apLabel(labC.x-14, labC.y+4, '?', 12, false)}
   </svg>`;
@@ -322,17 +367,16 @@ function apBuildMethodeAltEgaliteSvg(){
   const labB = {x:B.x+50*Math.cos(midB), y:B.y+50*Math.sin(midB)};
   const labC = {x:C.x+50*Math.cos(midC), y:C.y+50*Math.sin(midC)};
   return `<svg viewBox="0 0 460 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${apBaseLinesSvg()}
     <text x="70" y="24" font-size="13" font-weight="700" fill="#1F3A5C">(AB) // (CD)</text>
+    ${apPointTick(AP_DLEFT, A)}${apPointTick(AP_DPRIGHT, D)}
     ${wB}${wC}
     <circle cx="${B.x}" cy="${B.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${C.x}" cy="${C.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(A.x-16, A.y-8, 'A')}
+    ${apSideLabel(AP_DLEFT, A, 'A', {side:-1})}
     ${apLabel(B.x+8, B.y-8, 'B')}
     ${apLabel(C.x-16, C.y+18, 'C')}
-    ${apLabel(D.x+6, D.y+18, 'D')}
+    ${apSideLabel(AP_DPRIGHT, D, 'D', {side:1})}
     ${apLabel(labB.x-14, labB.y+4, '55°', 12, false)}
     ${apLabel(labC.x-10, labC.y+4, '?', 12, false)}
   </svg>`;
@@ -362,7 +406,7 @@ function apBuildMethodeTriangleSvg(){
 /* ================= Figure : méthode "angles correspondants" (M,N,K,L,P) ================= */
 function apBuildMethodeCorrespondantsSvg(){
   const M = AP_A, N = AP_B;
-  const K = AP_DRIGHT, P = AP_DPRIGHT, L = AP_STOP;
+  const K = AP_DRIGHT, P = AP_DPRIGHT, L = AP_S_PT;
   const wM = apWedge(M, K, L, 34, '#1F6B3A');
   const wN = apWedge(N, M, P, 34, '#1F6B3A');
   const midM = angleArcPoints(M, K, L, 50).mid;
@@ -370,17 +414,16 @@ function apBuildMethodeCorrespondantsSvg(){
   const labM = {x: M.x+50*Math.cos(midM), y: M.y+50*Math.sin(midM)};
   const labN = {x: N.x+50*Math.cos(midN), y: N.y+50*Math.sin(midN)};
   return `<svg viewBox="0 0 460 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${apBaseLinesSvg()}
+    ${apPointTick(AP_SBOT, L)}${apPointTick(AP_DLEFT, K)}${apPointTick(AP_DPLEFT, P)}
     ${wM}${wN}
     <circle cx="${M.x}" cy="${M.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${N.x}" cy="${N.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(L.x+6, L.y+14, 'L', 12, false)}
-    ${apLabel(K.x-16, K.y-8, 'K')}
+    ${apSideLabel(AP_SBOT, L, 'L', {side:1, dist:14})}
+    ${apSideLabel(AP_DLEFT, K, 'K', {side:-1})}
     ${apLabel(M.x+8, M.y-8, 'M')}
     ${apLabel(N.x-16, N.y+18, 'N')}
-    ${apLabel(P.x-18, P.y+18, 'P')}
+    ${apSideLabel(AP_DPLEFT, P, 'P', {side:1})}
     ${apLabel(labM.x-10, labM.y+4, '58°', 12, false)}
     ${apLabel(labN.x-10, labN.y+4, '58°', 12, false)}
   </svg>`;
@@ -389,7 +432,7 @@ function apBuildMethodeCorrespondantsSvg(){
 /* ================= Figure : méthode "correspondants, droites déjà parallèles" (M6, points M/K/L/N/P) ================= */
 function apBuildMethodeCorrDirectSvg(){
   const M = AP_A, N = AP_B;
-  const K = AP_DRIGHT, P = AP_DPRIGHT, L = AP_STOP;
+  const K = AP_DRIGHT, P = AP_DPRIGHT, L = AP_S_PT;
   const wM = apWedge(M, K, L, 34, '#1F6B3A');
   const wN = apWedge(N, M, P, 34, '#1F6B3A');
   const midM = angleArcPoints(M, K, L, 50).mid;
@@ -397,18 +440,17 @@ function apBuildMethodeCorrDirectSvg(){
   const labM = {x: M.x+50*Math.cos(midM), y: M.y+50*Math.sin(midM)};
   const labN = {x: N.x+50*Math.cos(midN), y: N.y+50*Math.sin(midN)};
   return `<svg viewBox="0 0 460 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${apBaseLinesSvg()}
     <text x="70" y="24" font-size="13" font-weight="700" fill="#1F3A5C">(MK) // (NP)</text>
+    ${apPointTick(AP_SBOT, L)}${apPointTick(AP_DLEFT, K)}${apPointTick(AP_DPLEFT, P)}
     ${wM}${wN}
     <circle cx="${M.x}" cy="${M.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${N.x}" cy="${N.y}" r="2.6" fill="#1C1B2E"/>
-    ${apLabel(L.x+6, L.y+14, 'L', 12, false)}
-    ${apLabel(K.x-16, K.y-8, 'K')}
+    ${apSideLabel(AP_SBOT, L, 'L', {side:1, dist:14})}
+    ${apSideLabel(AP_DLEFT, K, 'K', {side:-1})}
     ${apLabel(M.x+8, M.y-8, 'M')}
     ${apLabel(N.x-16, N.y+18, 'N')}
-    ${apLabel(P.x-18, P.y+18, 'P')}
+    ${apSideLabel(AP_DPLEFT, P, 'P', {side:1})}
     ${apLabel(labM.x-10, labM.y+4, '58°', 12, false)}
     ${apLabel(labN.x-10, labN.y+4, '?', 12, false)}
   </svg>`;
@@ -442,13 +484,15 @@ function apRenderTriDemo(){
   if(!el) return;
   const I=AP_TRI_I, J=AP_TRI_J, K=AP_TRI_K;
   const L = {x: I.x-140, y: I.y}, M = {x: I.x+140, y: I.y};
+  const Lt = {x: I.x-124, y: I.y}, Mt = {x: I.x+124, y: I.y};
   const wI = apWedge(I, J, K, 26, '#9E1F5E');
   const wJ = apWedge(J, I, K, 26, '#1F6B3A');
   const wK = apWedge(K, J, I, 26, '#1F3A5C');
   let extra = '';
   if(apTriIdx>=1){
     extra += `<line x1="${L.x}" y1="${L.y}" x2="${M.x}" y2="${M.y}" stroke="#5B6B78" stroke-width="1.4" stroke-dasharray="5,4"/>`;
-    extra += apLabel(L.x-16, L.y+4, 'L', 12, false) + apLabel(M.x+6, M.y+4, 'M', 12, false);
+    extra += apPointTick(I,Lt) + apPointTick(I,Mt);
+    extra += apSideLabel(I,Lt,'L',{size:12,italic:false}) + apSideLabel(I,Mt,'M',{size:12,italic:false});
   }
   if(apTriIdx>=2){
     extra += apWedge(I, L, J, 36, '#1F6B3A', 0.55);
