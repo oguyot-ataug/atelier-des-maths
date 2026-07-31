@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-31.2</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-31.3</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2240,6 +2240,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-31.3', items:[
+    "Administration > Signalements : le changement de statut (nouveau/en cours/résolu) échouait silencieusement dans certains cas sans aucun message. Ajout d'une détection d'erreur explicite, avec un message distinct si la mise à jour est bloquée par une policy Supabase (0 ligne modifiée en base).",
+  ]},
   { version:'2026-07-31.2', items:[
     "5e -- N1 Opérations sur les nombres décimaux / N1 Divisibilité : les paragraphes « Multiples et diviseurs » et « Critères de divisibilité », avec leur méthode, leurs exercices et leur question de quiz, ont été déplacés du chapitre Opérations sur les nombres décimaux vers le chapitre Divisibilité, où ils avaient davantage leur place.",
   ]},
@@ -2864,7 +2867,18 @@ async function adminRefreshBugReports(){
   }).join('');
 }
 async function adminUpdateBugStatus(id, status){
-  await sb.from('bug_reports').update({status}).eq('id', id);
+  const { data, error } = await sb.from('bug_reports').update({status}).eq('id', id).select();
+  if(error){
+    alert("Échec de l'enregistrement du statut : "+error.message);
+    await adminRefreshBugReports();
+    return;
+  }
+  if(!data || !data.length){
+    alert("Le statut n'a pas été enregistré (0 ligne modifiée en base). C'est très probablement une policy Supabase (RLS) qui bloque la mise à jour pour ce compte -- il faudra vérifier la policy UPDATE de la table bug_reports.");
+    await adminRefreshBugReports();
+    return;
+  }
+  await adminRefreshBugReports();
 }
 async function adminRefreshAIUsage(){
   const el = document.getElementById('adminAIUsageListing');
