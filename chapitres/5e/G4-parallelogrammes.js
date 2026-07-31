@@ -128,15 +128,13 @@ function pgBuildRecoProp2Svg(){
 }
 
 document.getElementById('cours-demo-parallelogrammes-5e').innerHTML = `
-<div class="lesson-header"><span class="num">1</span><h3>Propriétés du parallélogramme</h3></div>
-
-<p class="example-title" style="margin-top:0;">A. Définition</p>
+<div class="lesson-header"><span class="num">1</span><h3>Définition</h3></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Un <b>parallélogramme</b> est un quadrilatère qui a ses côtés opposés parallèles.</div>
 <div class="figure-wrap">${pgBuildDefinitionSvg()}</div>
 <p style="margin:10px 0 12px;">On considère la figure ci-dessus. Les côtés [AB] et [DC] sont parallèles. Les côtés [AD] et [BC] sont parallèles. Le quadrilatère ABCD est donc un parallélogramme.</p>
 
-<p class="example-title" style="margin-top:20px;">B. Propriétés caractéristiques</p>
+<div class="lesson-header"><span class="num">2</span><h3>Propriétés du parallélogramme</h3></div>
 
 <span class="prop-badge">Propriété 1</span>
 <div class="def-box">Un parallélogramme a un <b>centre de symétrie</b> qui est le point d'intersection de ses diagonales.</div>
@@ -158,7 +156,7 @@ document.getElementById('cours-demo-parallelogrammes-5e').innerHTML = `
 <div class="figure-wrap">${pgBuildProp4Svg()}</div>
 <p style="margin:10px 0 12px;">ABCD est un parallélogramme. Ses angles opposés ont la même mesure, donc <span class="tex">\\widehat{DAB} = \\widehat{BCD}</span> et <span class="tex">\\widehat{ABC} = \\widehat{CDA}</span>.</p>
 
-<div class="lesson-header"><span class="num">2</span><h3>Reconnaître un parallélogramme</h3></div>
+<div class="lesson-header"><span class="num">3</span><h3>Reconnaître un parallélogramme</h3></div>
 
 <span class="prop-badge">Propriété 1</span>
 <div class="def-box">Si un quadrilatère a ses <b>diagonales qui se coupent en leur milieu</b> alors c'est un <b>parallélogramme</b>.</div>
