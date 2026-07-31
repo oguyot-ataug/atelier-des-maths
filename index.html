@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-28.23</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-31.1</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -749,11 +749,11 @@ const CH5 = [
  {n:1,code:'N1',cat:'N',t:'Opérations sur les nombres décimaux',s:3,p:'4-13',d:'1-20 sept'},
  {n:2,code:'G1',cat:'G',t:'Symétrie centrale',s:2,p:'58-72',d:'21 sept-4 oct'},
  {n:3,code:'N1',cat:'N',t:'Divisibilité',s:1,p:'4-13',d:'5-11 oct'},
- {n:4,code:'N4',cat:'N',t:'Fractions',s:2,p:'34-41',d:'2-15 nov'},
- {n:5,code:'G2',cat:'G',t:'Angles et parallélisme',s:2,p:'72-81',d:'16-29 nov'},
- {n:6,code:'N2',cat:'N',t:'Nombres relatifs',s:2,p:'14-23',d:'30 nov-13 déc'},
- {n:7,code:'G3',cat:'G',t:'Droites remarquables dans un triangle',s:2,p:'82-89',d:'4-17 jan'},
- {n:8,code:'P1',cat:'P',t:'Proportionnalité',s:1,p:'140-149',d:'18-24 jan'},
+ {n:4,code:'G2',cat:'G',t:'Angles et parallélisme',s:2,p:'72-81',d:'2-15 nov'},
+ {n:5,code:'N4',cat:'N',t:'Fractions',s:2,p:'34-41',d:'16-29 nov'},
+ {n:6,code:'G3',cat:'G',t:'Droites remarquables dans un triangle',s:2,p:'82-89',d:'30 nov-13 déc'},
+ {n:7,code:'P1',cat:'P',t:'Proportionnalité',s:1,p:'140-149',d:'4-10 jan'},
+ {n:8,code:'N2',cat:'N',t:'Nombres relatifs',s:2,p:'14-23',d:'11-24 jan'},
  {n:9,code:'G4',cat:'G',t:'Parallélogrammes',s:2,p:'90-98',d:'25 jan-7 fév'},
  {n:10,code:'D1',cat:'D',t:'Statistiques',s:1,p:'124-133',d:'8-14 fév'},
  {n:11,code:'N3',cat:'N',t:'Opérations sur les nombres relatifs',s:2,p:'24-33',d:'8-21 mars'},
@@ -809,7 +809,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       const pick = el.getAttribute('data-chap')||'symetrie';
       const chaps = {
         symetrie: {code:'G1',cat:'G',t:"Symétrie centrale",p:'58-72',s:2,d:'21 sept-4 oct'},
-        relatifs: {code:'N2',cat:'N',t:"Nombres relatifs",p:'14-23',s:2,d:'30 nov-13 déc'},
+        relatifs: {code:'N2',cat:'N',t:"Nombres relatifs",p:'14-23',s:2,d:'11-24 jan'},
       };
       openChapitre(chaps[pick], el.getAttribute('data-tab'));
     }
@@ -2240,6 +2240,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-31.1', items:[
+    "Progression de 5e : correction de l'ordre et des dates des chapitres 4 à 8 (Angles et parallélisme, Fractions, Droites remarquables dans un triangle, Proportionnalité, Nombres relatifs) pour être conformes au B.O. 2026.",
+  ]},
   { version:'2026-07-28.23', items:[
     "Bande de menu (haut de page) qui ne s'étendait pas jusqu'au bord droit sur smartphone : largeur explicite ajoutée, et protection générale contre tout débordement horizontal imprévu de la page.",
   ]},
