@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-31.9</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-31.10</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -1335,7 +1335,9 @@ function renderMathText(raw){
 }
 function renderCorrectionPreview(){
   const raw = document.getElementById('correctionInput').value;
-  document.getElementById('correctionPreview').innerHTML = raw.trim()? renderMathText(raw) : '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>';
+  let html = raw.trim() ? renderMathText(raw) : '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>';
+  if(pendingFigureSVG) html += `<div class="nb-figure-row">${pendingFigureSVG}</div>`;
+  document.getElementById('correctionPreview').innerHTML = html;
 }
 function toggleProjection(){
   const preview=document.getElementById('correctionPreview');
@@ -1415,6 +1417,7 @@ function insertTableau(){
   pendingFigureSVG = (pendingFigureSVG||'') + html;
   document.getElementById('figureStatus').innerHTML = '✓ Contenu joint — <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
   closeTableauTool();
+  renderCorrectionPreview();
 }
 
 /* ---- mini outil : insérer une division posée (calculée automatiquement) ---- */
@@ -1540,6 +1543,7 @@ function insertDivisionPosee(){
   pendingFigureSVG = (pendingFigureSVG||'') + html;
   document.getElementById('figureStatus').innerHTML = '✓ Contenu joint : <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
   closeDivisionTool();
+  renderCorrectionPreview();
 }
 function resetFigureState(){
   figState = {points:[], shapes:[], mode:(figState&&figState.mode)||'point', selected:[], refShape:null, nextLabel:0, lengthGroups:{}};
@@ -2092,8 +2096,9 @@ function validateFigure(){
   pendingFigureSVG = (pendingFigureSVG||'') + `<svg viewBox="0 0 500 320" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;border:1px solid rgba(28,43,57,.12);border-radius:8px;">${svg.innerHTML}</svg>`;
   document.getElementById('figureStatus').innerHTML = '✓ Figure prête — <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">retirer</a>';
   closeFigureTool();
+  renderCorrectionPreview();
 }
-function removePendingFigure(){ pendingFigureSVG=null; document.getElementById('figureStatus').textContent=''; }
+function removePendingFigure(){ pendingFigureSVG=null; document.getElementById('figureStatus').textContent=''; renderCorrectionPreview(); }
 (function initFigureDrag(){
   const attach = ()=>{
     const svg = document.getElementById('figureSvg');
@@ -2251,6 +2256,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-31.10', items:[
+    "Outil prof (éditeur de correction) : le contenu joint (figure, tableau, division posée) était bien enregistré (« ✓ Contenu joint ») mais n'apparaissait jamais dans l'aperçu ni en mode projection, qui ne se basaient que sur le texte saisi. L'aperçu inclut maintenant ce contenu, et se rafraîchit immédiatement après chaque insertion, retrait, ou ouverture d'une correction existante pour modification.",
+  ]},
   { version:'2026-07-31.9', items:[
     "Automatismes : les trois records sous chaque vignette tiennent maintenant sur une seule ligne, avec une icône par catégorie (👤 moi, 🏫 classe, 🏛️ établissement -- renommé depuis « interclasse », plus clair).",
   ]},
@@ -3052,9 +3060,9 @@ function editCahierEntry(i){
   document.getElementById('corTitre').value = e.titre||'';
   document.getElementById('corDate').value = e.date||todayISO();
   document.getElementById('correctionInput').value = e.raw;
-  renderCorrectionPreview();
   pendingFigureSVG = e.figure || null;
   document.getElementById('figureStatus').innerHTML = pendingFigureSVG ? '✓ Contenu joint : <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">retirer</a>' : '';
+  renderCorrectionPreview();
   editingIndex = i;
   document.getElementById('btnAddCahier').textContent = '💾 Enregistrer la modification';
   document.getElementById('btnCancelEdit').style.display = 'inline-block';
