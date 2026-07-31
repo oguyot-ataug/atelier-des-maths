@@ -337,7 +337,7 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
 .cm-chip-badge{position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;}
 .cm-chip-badge.cm-badge-done{background:#C77D1E;}
 .cm-chip-badge.cm-badge-perfect{background:#1F6B3A;}
-.cm-chip-records{margin-top:8px;padding-top:6px;border-top:1px dashed rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--ink-soft);line-height:1.5;}
+.cm-chip-records{margin-top:8px;padding-top:6px;border-top:1px dashed rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:8px;}
 .cm-timer{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--accent);}
 .cm-legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:middle;}
 .cm-legend-dot.cm-legend-done{background:#C77D1E;}

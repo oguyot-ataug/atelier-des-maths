@@ -163,7 +163,7 @@ function applyCMBadges(){
   if(legend && (cmAttempted.size || cmPerfected.size)) legend.style.display = 'block';
 }
 
-/* Records (perso / classe / interclasse) affichés sous chaque vignette, chargés en un seul
+/* Records (perso / classe / établissement) affichés sous chaque vignette, chargés en un seul
    appel groupé plutôt qu'une requête par séquence. */
 let cmRecordsMap = {};
 async function refreshCMRecords(){
@@ -181,10 +181,11 @@ function applyCMChipRecords(){
     if(!rec || (rec.my_best==null && rec.class_best==null && rec.global_best==null)) return;
     const box = document.createElement('div');
     box.className = 'cm-chip-records';
-    box.innerHTML =
-      (rec.my_best!=null ? `<div>Moi : ${formatDuration(rec.my_best)}</div>` : '') +
-      (rec.class_best!=null ? `<div>Classe : ${formatDuration(rec.class_best)}</div>` : '') +
-      (rec.global_best!=null ? `<div>Interclasse : ${formatDuration(rec.global_best)}</div>` : '');
+    box.innerHTML = [
+      rec.my_best!=null ? `<span title="Mon record">👤 ${formatDuration(rec.my_best)}</span>` : '',
+      rec.class_best!=null ? `<span title="Record de la classe">🏫 ${formatDuration(rec.class_best)}</span>` : '',
+      rec.global_best!=null ? `<span title="Record de l'établissement">🏛️ ${formatDuration(rec.global_best)}</span>` : '',
+    ].filter(Boolean).join('');
     chip.appendChild(box);
   });
 }
@@ -288,9 +289,9 @@ async function showCMRecords(sequenceId, myDurationMs){
   const justSetMine = rec.my_best !== null && rec.my_best !== undefined && rec.my_best <= myDurationMs;
   box.style.display = 'flex';
   box.innerHTML = `
-    <div class="cm-record-box cm-record-mine">Mon record<span class="cm-record-val">${formatDuration(rec.my_best)}</span>${justSetMine && rec.my_best===myDurationMs ? '<div class="hint" style="margin-top:2px;">🎉 nouveau record !</div>' : ''}</div>
-    <div class="cm-record-box">Record de la classe<span class="cm-record-val">${formatDuration(rec.class_best)}</span></div>
-    <div class="cm-record-box">Record interclasse<span class="cm-record-val">${formatDuration(rec.global_best)}</span></div>
+    <div class="cm-record-box cm-record-mine">👤 Mon record<span class="cm-record-val">${formatDuration(rec.my_best)}</span>${justSetMine && rec.my_best===myDurationMs ? '<div class="hint" style="margin-top:2px;">🎉 nouveau record !</div>' : ''}</div>
+    <div class="cm-record-box">🏫 Record de la classe<span class="cm-record-val">${formatDuration(rec.class_best)}</span></div>
+    <div class="cm-record-box">🏛️ Record de l'établissement<span class="cm-record-val">${formatDuration(rec.global_best)}</span></div>
   `;
 }
 renderCMPicker();
