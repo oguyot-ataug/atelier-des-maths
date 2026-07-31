@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-31.7</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-07-31.8</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -795,7 +795,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     const nav = el.getAttribute('data-nav');
     if(nav==='home'){ showView('view-home'); setActiveTopnav(null); }
     if(nav==='niveau'){ currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
-    if(nav==='cm'){ showView('view-cm'); setActiveTopnav('cm'); if(typeof refreshCMProgress==='function') refreshCMProgress(); }
+    if(nav==='cm'){ showView('view-cm'); setActiveTopnav('cm'); if(typeof refreshCMProgress==='function') refreshCMProgress(); if(typeof refreshCMRecords==='function') refreshCMRecords(); }
     if(nav==='correction'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-correction'); setActiveTopnav('correction');
@@ -2251,6 +2251,10 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-07-31.8', items:[
+    "Automatismes : le chronomètre défile maintenant visiblement pendant l'exercice (mis à jour toutes les 100 ms), et se fige au moment de la correction.",
+    "Automatismes : les records (mon record, record de la classe, record interclasse) s'affichent désormais directement sous chaque vignette, dès la page d'accueil des séquences, sans attendre d'avoir refait l'exercice.",
+  ]},
   { version:'2026-07-31.7', items:[
     "Automatismes : l'exercice s'ouvre maintenant dans une modale (toujours visible, ne se perd plus en bas d'une longue page).",
     "Automatismes : chronométrage sans compte à rebours -- en cas de sans-faute, affichage de mon record personnel, du record de la classe et du record interclasse pour la séquence en cours, avec le lieu où le nouveau record est signalé.",

@@ -163,6 +163,32 @@ function applyCMBadges(){
   if(legend && (cmAttempted.size || cmPerfected.size)) legend.style.display = 'block';
 }
 
+/* Records (perso / classe / interclasse) affichés sous chaque vignette, chargés en un seul
+   appel groupé plutôt qu'une requête par séquence. */
+let cmRecordsMap = {};
+async function refreshCMRecords(){
+  const { data, error } = await sb.rpc('cm_get_all_records', {p_class_id: currentClassId||null});
+  if(error || !data) return;
+  cmRecordsMap = {};
+  data.forEach(r=>{ cmRecordsMap[r.sequence_id] = r; });
+  applyCMChipRecords();
+}
+function applyCMChipRecords(){
+  document.querySelectorAll('.cm-chip[data-id]').forEach(chip=>{
+    const old = chip.querySelector('.cm-chip-records');
+    if(old) old.remove();
+    const rec = cmRecordsMap[chip.dataset.id];
+    if(!rec || (rec.my_best==null && rec.class_best==null && rec.global_best==null)) return;
+    const box = document.createElement('div');
+    box.className = 'cm-chip-records';
+    box.innerHTML =
+      (rec.my_best!=null ? `<div>Moi : ${formatDuration(rec.my_best)}</div>` : '') +
+      (rec.class_best!=null ? `<div>Classe : ${formatDuration(rec.class_best)}</div>` : '') +
+      (rec.global_best!=null ? `<div>Interclasse : ${formatDuration(rec.global_best)}</div>` : '');
+    chip.appendChild(box);
+  });
+}
+
 function renderCMPicker(){
   const box=document.getElementById('cmPicker');
   box.innerHTML = CM_SEQUENCES.slice().sort((a,b)=>a.seq-b.seq).map(s=>`<div class="cm-chip" data-id="${s.id}"><div>${s.label}</div><div class="seq">séquence ${s.seq}</div></div>`).join('')
@@ -173,12 +199,24 @@ function renderCMPicker(){
     });
   });
   refreshCMProgress();
+  refreshCMRecords();
 }
 
 let currentCMSeq = null;
 let cmStartTime = null;
+let cmTimerInterval = null;
+function formatStopwatch(ms){
+  const s = ms/1000;
+  return s.toFixed(1).replace('.',',')+'\u00A0s';
+}
+function updateCMTimerDisplay(){
+  const el = document.getElementById('cmTimerDisplay');
+  if(!el || cmStartTime===null) return;
+  el.textContent = formatStopwatch(performance.now()-cmStartTime);
+}
 function closeCMModal(){
   document.getElementById('cmExerciseModalOverlay').style.display='none';
+  if(cmTimerInterval){ clearInterval(cmTimerInterval); cmTimerInterval=null; }
 }
 function runCM(id){
   const seqDef = CM_SEQUENCES.find(s=>s.id===id);
@@ -186,8 +224,9 @@ function runCM(id){
   const qs = Array.from({length:8},()=>seqDef.gen());
   document.getElementById('cmModalTitle').textContent = seqDef.label;
   const ws=document.getElementById('cmWorkspace');
-  ws.innerHTML = `<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px;">
-      <button class="btn secondary" onclick="runCM('${id}')">Nouvelle série ↻</button> <button class="btn" onclick="checkCM()">Corriger</button>
+  ws.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;">
+      <span class="cm-timer" id="cmTimerDisplay">0,0\u00A0s</span>
+      <div><button class="btn secondary" onclick="runCM('${id}')">Nouvelle série ↻</button> <button class="btn" onclick="checkCM()">Corriger</button></div>
     </div>
     <div class="cm-q-grid">${qs.map((q,i)=>{
       const parts = q.text.split('...');
@@ -197,11 +236,16 @@ function runCM(id){
     <div class="cm-records" id="cmRecordsBox" style="display:none;"></div>`;
   document.getElementById('cmExerciseModalOverlay').style.display='flex';
   cmStartTime = performance.now();
+  if(cmTimerInterval) clearInterval(cmTimerInterval);
+  cmTimerInterval = setInterval(updateCMTimerDisplay, 100);
+  updateCMTimerDisplay();
   const firstInput = ws.querySelector('.cm-q input');
   if(firstInput) firstInput.focus();
 }
 async function checkCM(){
+  if(cmTimerInterval){ clearInterval(cmTimerInterval); cmTimerInterval=null; }
   const durationMs = cmStartTime ? Math.round(performance.now()-cmStartTime) : null;
+  updateCMTimerDisplay();
   let score=0, total=0;
   document.querySelectorAll('.cm-q').forEach(box=>{
     const input=box.querySelector('input');
@@ -230,7 +274,7 @@ async function checkCM(){
       if(currentCMSeq){ cmAttempted.add(currentCMSeq.id); if(perfect) cmPerfected.add(currentCMSeq.id); }
       applyCMBadges();
     }
-    if(!error && perfect && currentCMSeq) await showCMRecords(currentCMSeq.id, durationMs);
+    if(!error && perfect && currentCMSeq){ await showCMRecords(currentCMSeq.id, durationMs); refreshCMRecords(); }
   } else if(status){
     status.textContent = "Score : "+score+"/"+total+(perfect ? " — en "+formatDuration(durationMs)+"." : ".");
   }
