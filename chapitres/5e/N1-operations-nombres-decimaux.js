@@ -87,60 +87,8 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
         Remarque : à la fin, on retrouve l'égalité <b>758 = (12 × 63) + 2</b>, avec 2 &lt; 12.
       </div>
 
-      <div class="lesson-header"><span class="num">4</span><h3>Multiples et diviseurs</h3></div>
-      <span class="def-badge">Définitions</span>
-      <div class="def-box">
-        Soient a et b deux nombres entiers naturels. Si le reste de la division euclidienne de a par b est nul, <b>alors</b> :
-        <ul style="margin:8px 0 0;padding-left:20px;line-height:1.8;">
-          <li>a est <b>divisible</b> par b ;</li>
-          <li>b est un <b>diviseur</b> de a ;</li>
-          <li>a est un <b>multiple</b> de b.</li>
-        </ul>
-      </div>
-      <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
-        Remarque : le nombre 1 est un diviseur de tous les nombres entiers naturels.
-      </div>
-
-      <p class="example-title">Exemple 1 : considérons l'égalité 2 016 = 42 × 48.</p>
-      <ul class="example-list">
-        <li>2 016 est divisible par 48 ; 48 est un diviseur de 2 016 ; 2 016 est un multiple de 48.</li>
-        <li>Mais on a également : 2 016 est divisible par 42 ; 42 est un diviseur de 2 016 ; 2 016 est un multiple de 42.</li>
-      </ul>
-
-      <p class="example-title">Exemple 2 :</p>
-      <ul class="example-list">
-        <li>Les multiples de 6 sont : 0 – 6 – 12 – 18 – 24 – 30 – 36... Il en existe une infinité.</li>
-        <li>Les diviseurs de 36 sont : 1 – 2 – 3 – 4 – 6 – 9 – 12 – 18 – 36. Il en existe 9.</li>
-      </ul>
-
-      <div class="lesson-header"><span class="num">5</span><h3>Critères de divisibilité</h3></div>
-      <span class="prop-badge">Règles</span>
-      <div class="def-box">
-        <ul style="margin:0;padding-left:20px;line-height:1.8;">
-          <li>Un nombre entier est <b>divisible par 2</b> (pair) si son chiffre des unités est 0, 2, 4, 6 ou 8.</li>
-          <li>Un nombre entier est <b>divisible par 5</b> si son chiffre des unités est 0 ou 5.</li>
-          <li>Un nombre entier est <b>divisible par 10</b> si son chiffre des unités est 0.</li>
-          <li>Un nombre entier est <b>divisible par 3</b> si la somme de ses chiffres est un multiple de 3.</li>
-          <li>Un nombre entier est <b>divisible par 9</b> si la somme de ses chiffres est un multiple de 9.</li>
-        </ul>
-      </div>
-      <p class="example-title">Exemple : on considère le nombre 41 730. Est-il divisible par 2, 5, 10, 3 et 9 ?</p>
-      <ul class="example-list">
-        <li>Son chiffre des unités est 0, donc 41 730 est <b>divisible par 2</b>, <b>par 5</b> et <b>par 10</b>.</li>
-        <li>La somme de ses chiffres : 4 + 1 + 7 + 3 + 0, soit 15, est un multiple de 3, donc 41 730 est <b>divisible par 3</b>.</li>
-        <li>15 n'est pas un multiple de 9, donc 41 730 <b>n'est pas divisible par 9</b>.</li>
-      </ul>
 `;
 document.getElementById('methode-demo-decimaux').innerHTML = `
-      <div class="sub-header"><span class="letter">M</span><h4>Trouver tous les diviseurs d'un nombre : 60</h4></div>
-<div class="figure-wrap">
-        <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
-        <div class="step-display" id="diviseursDisplay"></div>
-        <div class="figure-toolbar">
-          <button class="btn" onclick="diviseursDemo.next()">Étape suivante →</button>
-          <button class="btn secondary" onclick="diviseursDemo.reset()">Recommencer</button>
-        </div>
-      </div>
       <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
         ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).
       </div>
@@ -155,26 +103,12 @@ document.getElementById('exos-demo-decimaux').innerHTML = `
           <div class="we-row"><span class="we-expr">E = 4 + 8</span><span class="we-comment">Il ne reste que l'addition.</span></div>
           <div class="we-row"><span class="we-expr">E = 12</span><span class="we-comment">Résultat final.</span></div>
         </div>
-        <h3 style="margin-top:18px;">Rédaction type : « Justifier qu'un nombre est un multiple d'un autre »</h3>
-        <div class="redaction-template">
-          On considère 84 et 7.<br>
-          Le reste de la division euclidienne de <span class="fill">84</span> par <span class="fill">7</span> est <span class="fill">nul</span> (84 = 7 × 12).<br>
-          Donc <span class="fill">84</span> est un multiple de <span class="fill">7</span>, et <span class="fill">7</span> est un diviseur de <span class="fill">84</span>.
-        </div>
       </div>
       <div class="redaction-block">
         <h3>Exercices</h3>
         <div class="exo-card">
           <div class="num">Exercice 1</div>
           Calcule en respectant les priorités opératoires : 6 + 3 × (9 − 5).
-        </div>
-        <div class="exo-card">
-          <div class="num">Exercice 2</div>
-          En utilisant les critères de divisibilité, dis si 52 470 est divisible par 2, par 5, par 10, par 3 et par 9.
-        </div>
-        <div class="exo-card">
-          <div class="num">Exercice 3</div>
-          Trouve tous les diviseurs de 48.
         </div>
       </div>
 `;
@@ -230,29 +164,12 @@ function divisionPoseeNext(){ if(divisionPoseeIdx<DIVISION_POSEE_STEPS.length-1)
 
 function divisionPoseeReset(){ divisionPoseeIdx=0; renderDivisionPosee(); }
 
-const DIVISEURS_STEPS = [
-  {expr:'Diviseurs de 60 ?', note:'On teste chaque nombre entier à partir de 1, dans l\'ordre.'},
-  {expr:'1 × 60 = 60', note:'1 et 60 sont diviseurs de 60.'},
-  {expr:'2 × 30 = 60', note:'2 et 30 sont diviseurs de 60.'},
-  {expr:'3 × 20 = 60', note:'3 et 20 sont diviseurs de 60.'},
-  {expr:'4 × 15 = 60', note:'4 et 15 sont diviseurs de 60.'},
-  {expr:'5 × 12 = 60', note:'5 et 12 sont diviseurs de 60.'},
-  {expr:'6 × 10 = 60', note:'6 et 10 sont diviseurs de 60. 7, 8 et 9 ne divisent pas 60 : les deux facteurs se croisent, on peut s\'arrêter.'},
-  {expr:'1 – 2 – 3 – 4 – 5 – 6 – 10 – 12 – 15 – 20 – 30 – 60', note:'60 possède 12 diviseurs.'},
-];
-
-const diviseursDemo = makeStepDemo(DIVISEURS_STEPS, 'diviseursDisplay');
-
-
-
 DEMO_REGISTRY['Opérations sur les nombres décimaux'] = { cours:'cours-demo-decimaux', methode:'methode-demo-decimaux', exos:'exos-demo-decimaux',
-  init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); diviseursDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };
+  init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };
 
 DEMO_QUIZZES['Opérations sur les nombres décimaux'] = [
   {q:"Que vaut 4 + 2 × 3 ?",
    opts:["18","10","9"], correct:1},
   {q:"Comment s'appelle le résultat d'une division ?",
    opts:["La somme","Le produit","Le quotient"], correct:2},
-  {q:"36 est-il divisible par 9 ?",
-   opts:["Oui (3+6=9, multiple de 9)","Non","On ne peut pas savoir sans poser la division"], correct:0},
 ];
