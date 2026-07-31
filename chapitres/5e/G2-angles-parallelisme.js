@@ -333,7 +333,7 @@ function apBuildMethodeAltEgaliteSvg(){
     ${apLabel(B.x+8, B.y-8, 'B')}
     ${apLabel(C.x-16, C.y+18, 'C')}
     ${apLabel(D.x+6, D.y+18, 'D')}
-    ${apLabel(labB.x-14, labB.y+4, '53°', 12, false)}
+    ${apLabel(labB.x-14, labB.y+4, '55°', 12, false)}
     ${apLabel(labC.x-10, labC.y+4, '?', 12, false)}
   </svg>`;
 }
@@ -383,6 +383,34 @@ function apBuildMethodeCorrespondantsSvg(){
     ${apLabel(P.x-18, P.y+18, 'P')}
     ${apLabel(labM.x-10, labM.y+4, '58°', 12, false)}
     ${apLabel(labN.x-10, labN.y+4, '58°', 12, false)}
+  </svg>`;
+}
+
+/* ================= Figure : méthode "correspondants, droites déjà parallèles" (M6, points M/K/L/N/P) ================= */
+function apBuildMethodeCorrDirectSvg(){
+  const M = AP_A, N = AP_B;
+  const K = AP_DRIGHT, P = AP_DPRIGHT, L = AP_STOP;
+  const wM = apWedge(M, K, L, 34, '#1F6B3A');
+  const wN = apWedge(N, M, P, 34, '#1F6B3A');
+  const midM = angleArcPoints(M, K, L, 50).mid;
+  const midN = angleArcPoints(N, M, P, 50).mid;
+  const labM = {x: M.x+50*Math.cos(midM), y: M.y+50*Math.sin(midM)};
+  const labN = {x: N.x+50*Math.cos(midN), y: N.y+50*Math.sin(midN)};
+  return `<svg viewBox="0 0 460 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="${AP_DLEFT.x}" y1="${AP_DLEFT.y}" x2="${AP_DRIGHT.x}" y2="${AP_DRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_DPLEFT.x}" y1="${AP_DPLEFT.y}" x2="${AP_DPRIGHT.x}" y2="${AP_DPRIGHT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${AP_STOP.x}" y1="${AP_STOP.y}" x2="${AP_SBOT.x}" y2="${AP_SBOT.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${apParallelTick(230,90)}${apParallelTick(230,190)}
+    ${wM}${wN}
+    <circle cx="${M.x}" cy="${M.y}" r="2.6" fill="#1C1B2E"/>
+    <circle cx="${N.x}" cy="${N.y}" r="2.6" fill="#1C1B2E"/>
+    ${apLabel(L.x+6, L.y+14, 'L', 12, false)}
+    ${apLabel(K.x-16, K.y-8, 'K')}
+    ${apLabel(M.x+8, M.y-8, 'M')}
+    ${apLabel(N.x-16, N.y+18, 'N')}
+    ${apLabel(P.x-18, P.y+18, 'P')}
+    ${apLabel(labM.x-10, labM.y+4, '58°', 12, false)}
+    ${apLabel(labN.x-10, labN.y+4, '?', 12, false)}
   </svg>`;
 }
 
@@ -593,7 +621,7 @@ document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 6 : deux droites parallèles et une sécante, cas des angles correspondants</h4></div>
 <div class="figure-wrap" style="margin-top:24px;">
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
-  <div class="figure-wrap">${apBuildMethodeCorrespondantsSvg()}</div>
+  <div class="figure-wrap">${apBuildMethodeCorrDirectSvg()}</div>
   <div class="step-display" id="ap-methodeCorrDirectDisplay"></div>
   <div class="figure-toolbar">
     <button class="btn" onclick="apMethodeCorrDirectDemo.next()">Étape suivante →</button>
@@ -604,7 +632,7 @@ document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 7 : deux droites parallèles et une sécante, cas des angles alternes-internes</h4></div>
 <div class="figure-wrap" style="margin-top:24px;">
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
-  <div class="figure-wrap">${apBuildMethodeAltSvg()}</div>
+  <div class="figure-wrap">${apBuildMethodeAltEgaliteSvg()}</div>
   <div class="step-display" id="ap-methodeAltDirectDisplay"></div>
   <div class="figure-toolbar">
     <button class="btn" onclick="apMethodeAltDirectDemo.next()">Étape suivante →</button>
