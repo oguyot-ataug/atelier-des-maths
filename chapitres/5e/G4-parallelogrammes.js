@@ -356,13 +356,14 @@ document.getElementById('methode-demo-parallelogrammes-5e').innerHTML = `
 
 /* ================= EXERCICES ================= */
 document.getElementById('exos-demo-parallelogrammes-5e').innerHTML = `
-<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
+<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. La méthode est toujours la même, en trois temps : <b>ce que je sais</b> (les constats), puis <span style="color:var(--accent-orange);font-weight:700;">Or,</span> suivi de la propriété que l'on va utiliser, puis <span style="color:var(--accent);font-weight:700;">Donc</span>, suivi de la conclusion.</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Justifier qu'un quadrilatère est un parallélogramme »</h3>
+  <p style="margin:0 0 12px;"><b>Énoncé</b> : EFGH est un quadrilatère dont les diagonales [EG] et [FH] se coupent en K, milieu de [EG] et de [FH]. Justifie que EFGH est un parallélogramme.</p>
   <div class="redaction-template">
-    On considère le quadrilatère EFGH.<br>
-    Les diagonales [EG] et [FH] du quadrilatère EFGH se coupent en <span class="fill">K</span>, qui est le milieu de <span class="fill">[EG]</span> et de <span class="fill">[FH]</span>.<br>
-    Donc le quadrilatère <span class="fill">EFGH</span> est un parallélogramme.
+    <div class="we-row"><span class="we-expr">Les diagonales [EG] et [FH] du quadrilatère EFGH se coupent en K, qui est le milieu de [EG] et de [FH].</span><span class="we-comment">Ce que je sais.</span></div>
+    <div class="we-row"><span class="we-expr"><span style="color:var(--accent-orange);font-weight:700;">Or,</span> si un quadrilatère a ses diagonales qui se coupent en leur milieu, alors c'est un parallélogramme.</span><span class="we-comment">On énonce la propriété.</span></div>
+    <div class="we-row"><span class="we-expr"><span style="color:var(--accent);font-weight:700;">Donc</span> le quadrilatère EFGH est un parallélogramme.</span><span class="we-comment">Conclusion, en appliquant la propriété.</span></div>
   </div>
 </div>
 <div class="redaction-block">
