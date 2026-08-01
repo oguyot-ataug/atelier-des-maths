@@ -175,12 +175,179 @@ document.getElementById('cours-demo-parallelogrammes-5e').innerHTML = `
 `;
 
 /* ================= METHODE ================= */
+/* ================= Construction : points de base des 3 méthodes ================= */
+const PGM_A = {x:110, y:200}, PGM_B = {x:230, y:230}, PGM_C = {x:280, y:90};
+const PGM_D = pgAdd(PGM_A, pgSub(PGM_C, PGM_B));
+const PGM_O = pgMid(PGM_A, PGM_C);
+
+function pgArcSample(center, radius, angleCenter, spanDeg, n){
+  n = n||24;
+  const span = spanDeg*Math.PI/180;
+  const pts = [];
+  for(let i=0;i<=n;i++){
+    const a = angleCenter - span/2 + span*i/n;
+    pts.push(`${(center.x+radius*Math.cos(a)).toFixed(1)},${(center.y+radius*Math.sin(a)).toFixed(1)}`);
+  }
+  return pts.join(' ');
+}
+function pgExtend(p1, p2, extra){
+  const dir = pgNorm(pgSub(p2,p1));
+  return {a: pgSub(p1, pgScale(dir, extra)), b: pgAdd(p2, pgScale(dir, extra))};
+}
+function pgGivenTriangle(){
+  return `<line x1="${PGM_A.x}" y1="${PGM_A.y}" x2="${PGM_B.x}" y2="${PGM_B.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${PGM_B.x}" y1="${PGM_B.y}" x2="${PGM_C.x}" y2="${PGM_C.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <circle cx="${PGM_A.x}" cy="${PGM_A.y}" r="2.6" fill="#1C1B2E"/><circle cx="${PGM_B.x}" cy="${PGM_B.y}" r="2.6" fill="#1C1B2E"/><circle cx="${PGM_C.x}" cy="${PGM_C.y}" r="2.6" fill="#1C1B2E"/>
+    ${pgLabel(PGM_A.x-16, PGM_A.y+6, 'A')}${pgLabel(PGM_B.x+8, PGM_B.y+6, 'B')}${pgLabel(PGM_C.x+8, PGM_C.y-4, 'C')}`;
+}
+function pgDSide(){
+  return `<line x1="${PGM_A.x}" y1="${PGM_A.y}" x2="${PGM_D.x}" y2="${PGM_D.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${PGM_D.x}" y1="${PGM_D.y}" x2="${PGM_C.x}" y2="${PGM_C.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <circle cx="${PGM_D.x}" cy="${PGM_D.y}" r="2.6" fill="#1C1B2E"/>${pgLabel(PGM_D.x-6, PGM_D.y-8, 'D')}`;
+}
+
+/* ---- Méthode 1 : à partir de la définition (deux parallèles) ---- */
+let pgm1Step = 0;
+function pgm1Render(step){
+  const parC = pgExtend(pgSub(PGM_C, pgScale(pgSub(PGM_B,PGM_A),0.45)), pgAdd(PGM_C, pgScale(pgSub(PGM_B,PGM_A),0.45)), 20);
+  const parA = pgExtend(pgSub(PGM_A, pgScale(pgSub(PGM_C,PGM_B),0.45)), pgAdd(PGM_A, pgScale(pgSub(PGM_C,PGM_B),0.45)), 20);
+  document.getElementById('pgm1-parC').setAttribute('opacity', step>=1?'1':'0');
+  document.getElementById('pgm1-parC').setAttribute('x1',parC.a.x); document.getElementById('pgm1-parC').setAttribute('y1',parC.a.y);
+  document.getElementById('pgm1-parC').setAttribute('x2',parC.b.x); document.getElementById('pgm1-parC').setAttribute('y2',parC.b.y);
+  document.getElementById('pgm1-parA').setAttribute('opacity', step>=2?'1':'0');
+  document.getElementById('pgm1-parA').setAttribute('x1',parA.a.x); document.getElementById('pgm1-parA').setAttribute('y1',parA.a.y);
+  document.getElementById('pgm1-parA').setAttribute('x2',parA.b.x); document.getElementById('pgm1-parA').setAttribute('y2',parA.b.y);
+  document.getElementById('pgm1-done').setAttribute('opacity', step>=3?'1':'0');
+  document.querySelectorAll('#pgm1-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<step));
+  document.getElementById('pgm1-next').textContent = step>=3 ? 'Terminé ✓' : 'Étape suivante →';
+  document.getElementById('pgm1-next').disabled = step>=3;
+}
+function pgm1Next(){ if(pgm1Step<3){ pgm1Step++; pgm1Render(pgm1Step); } }
+function pgm1Reset(){ pgm1Step=0; pgm1Render(0); }
+const PGM1_STEPS = [
+  {note:"On considère 3 points A, B et C non alignés. On veut construire le point D tel que ABCD soit un parallélogramme."},
+  {note:"Je trace la droite parallèle à (AB) passant par C, à la règle et à l'équerre."},
+  {note:"Je trace la droite parallèle à (BC) passant par A."},
+  {note:"Ces deux droites se coupent en D. Le quadrilatère ABCD est un parallélogramme, d'après la définition."},
+];
+
+/* ---- Méthode 2 : à partir des longueurs des côtés (compas) ---- */
+let pgm2Step = 0;
+function pgm2Render(step){
+  const rBC = Math.hypot(PGM_C.x-PGM_B.x, PGM_C.y-PGM_B.y);
+  const rAB = Math.hypot(PGM_B.x-PGM_A.x, PGM_B.y-PGM_A.y);
+  const angAD = Math.atan2(PGM_D.y-PGM_A.y, PGM_D.x-PGM_A.x);
+  const angCD = Math.atan2(PGM_D.y-PGM_C.y, PGM_D.x-PGM_C.x);
+  document.getElementById('pgm2-arcA').setAttribute('opacity', step>=1?'1':'0');
+  document.getElementById('pgm2-arcA').setAttribute('points', pgArcSample(PGM_A, rBC, angAD, 55));
+  document.getElementById('pgm2-arcC').setAttribute('opacity', step>=2?'1':'0');
+  document.getElementById('pgm2-arcC').setAttribute('points', pgArcSample(PGM_C, rAB, angCD, 55));
+  document.getElementById('pgm2-done').setAttribute('opacity', step>=3?'1':'0');
+  document.querySelectorAll('#pgm2-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<step));
+  document.getElementById('pgm2-next').textContent = step>=3 ? 'Terminé ✓' : 'Étape suivante →';
+  document.getElementById('pgm2-next').disabled = step>=3;
+}
+function pgm2Next(){ if(pgm2Step<3){ pgm2Step++; pgm2Render(pgm2Step); } }
+function pgm2Reset(){ pgm2Step=0; pgm2Render(0); }
+const PGM2_STEPS = [
+  {note:"On considère 3 points A, B et C non alignés. On veut construire le point D tel que ABCD soit un parallélogramme, à l'aide du compas."},
+  {note:"Je pique le compas en A, j'ouvre à l'écartement BC, et je trace un arc de cercle."},
+  {note:"Je pique le compas en C, j'ouvre à l'écartement AB, et je trace un arc de cercle."},
+  {note:"Les deux arcs se coupent en D. Le quadrilatère ABCD est un parallélogramme, car AD = BC et DC = AB."},
+];
+
+/* ---- Méthode 3 : à partir des diagonales (compas) ---- */
+let pgm3Step = 0;
+function pgm3Render(step){
+  document.getElementById('pgm3-diagAC').setAttribute('opacity', step>=1?'1':'0');
+  document.getElementById('pgm3-O').setAttribute('opacity', step>=1?'1':'0');
+  document.getElementById('pgm3-Olabel').setAttribute('opacity', step>=1?'1':'0');
+  const ext = pgExtend(PGM_B, PGM_D, 20);
+  document.getElementById('pgm3-lineBO').setAttribute('opacity', step>=2?'1':'0');
+  document.getElementById('pgm3-lineBO').setAttribute('x1',ext.a.x); document.getElementById('pgm3-lineBO').setAttribute('y1',ext.a.y);
+  document.getElementById('pgm3-lineBO').setAttribute('x2',ext.b.x); document.getElementById('pgm3-lineBO').setAttribute('y2',ext.b.y);
+  document.getElementById('pgm3-tickOB').setAttribute('opacity', step>=2?'1':'0');
+  document.getElementById('pgm3-tickOD').setAttribute('opacity', step>=3?'1':'0');
+  document.getElementById('pgm3-done').setAttribute('opacity', step>=3?'1':'0');
+  document.querySelectorAll('#pgm3-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<step));
+  document.getElementById('pgm3-next').textContent = step>=3 ? 'Terminé ✓' : 'Étape suivante →';
+  document.getElementById('pgm3-next').disabled = step>=3;
+}
+function pgm3Next(){ if(pgm3Step<3){ pgm3Step++; pgm3Render(pgm3Step); } }
+function pgm3Reset(){ pgm3Step=0; pgm3Render(0); }
+const PGM3_STEPS = [
+  {note:"On considère 3 points A, B et C non alignés. On veut construire le point D tel que ABCD soit un parallélogramme, à l'aide du compas."},
+  {note:"Je trace la diagonale [AC], puis je construis son milieu O."},
+  {note:"Je trace la droite (BO), prolongée au-delà de O."},
+  {note:"Je pique le compas en O, j'ouvre à l'écartement OB, et je reporte cette longueur de l'autre côté de O sur la droite (BO) : j'obtiens D. Le quadrilatère ABCD est un parallélogramme, car ses diagonales [AC] et [BD] se coupent en leur milieu O."},
+];
+
 document.getElementById('methode-demo-parallelogrammes-5e').innerHTML = `
-<div class="placeholder-box">
-  <strong>Constructions en préparation</strong>
-  Les 3 méthodes de construction d'un parallélogramme ABCD (à partir de la définition, à partir des longueurs des côtés, à partir des diagonales) suivront dans une prochaine session : elles demandent une animation pas à pas avec équerre et compas.
+<p class="example-title" style="margin-top:0;">En utilisant la définition du parallélogramme</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la construction.</p>
+  <svg id="pgm1-svg" viewBox="0 0 400 280" style="width:100%;max-width:380px;display:block;margin:6px auto;background:var(--white);border-radius:8px;">
+    ${pgGivenTriangle()}
+    <line id="pgm1-parC" opacity="0" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="5,4"/>
+    <line id="pgm1-parA" opacity="0" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="5,4"/>
+    <g id="pgm1-done" opacity="0">${pgDSide()}</g>
+  </svg>
+  <div class="step-list" id="pgm1-steps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>On trace la droite parallèle à (AB) passant par C.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On trace la droite parallèle à (BC) passant par A.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>Les deux droites se coupent en D.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="pgm1-next" onclick="pgm1Next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="pgm1Reset()">Recommencer</button>
+  </div>
+</div>
+
+<p class="example-title" style="margin-top:26px;">En utilisant la propriété des longueurs des côtés d'un parallélogramme</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la construction.</p>
+  <svg id="pgm2-svg" viewBox="0 0 400 280" style="width:100%;max-width:380px;display:block;margin:6px auto;background:var(--white);border-radius:8px;">
+    ${pgGivenTriangle()}
+    <polyline id="pgm2-arcA" opacity="0" fill="none" stroke="#1F6B3A" stroke-width="1.3"/>
+    <polyline id="pgm2-arcC" opacity="0" fill="none" stroke="#1F6B3A" stroke-width="1.3"/>
+    <g id="pgm2-done" opacity="0">${pgDSide()}</g>
+  </svg>
+  <div class="step-list" id="pgm2-steps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>On trace un arc de centre A et de rayon BC.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On trace un arc de centre C et de rayon AB.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>Les deux arcs se coupent en D.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="pgm2-next" onclick="pgm2Next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="pgm2Reset()">Recommencer</button>
+  </div>
+</div>
+
+<p class="example-title" style="margin-top:26px;">En utilisant la propriété des diagonales d'un parallélogramme</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la construction.</p>
+  <svg id="pgm3-svg" viewBox="0 0 400 280" style="width:100%;max-width:380px;display:block;margin:6px auto;background:var(--white);border-radius:8px;">
+    ${pgGivenTriangle()}
+    <line id="pgm3-diagAC" opacity="0" x1="${PGM_A.x}" y1="${PGM_A.y}" x2="${PGM_C.x}" y2="${PGM_C.y}" stroke="#1C1B2E" stroke-width="1.2" stroke-dasharray="4,3"/>
+    <circle id="pgm3-O" opacity="0" cx="${PGM_O.x}" cy="${PGM_O.y}" r="2.6" fill="#1C1B2E"/>
+    <g id="pgm3-Olabel" opacity="0">${pgLabel(PGM_O.x+7, PGM_O.y-6, 'O')}</g>
+    <line id="pgm3-lineBO" opacity="0" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="5,4"/>
+    <g id="pgm3-tickOB" opacity="0">${pgTickN(pgMid(PGM_B,PGM_O), pgNorm(pgSub(PGM_O,PGM_B)), 1)}</g>
+    <g id="pgm3-tickOD" opacity="0">${pgTickN(pgMid(PGM_O,PGM_D), pgNorm(pgSub(PGM_D,PGM_O)), 1)}</g>
+    <g id="pgm3-done" opacity="0">${pgDSide()}</g>
+  </svg>
+  <div class="step-list" id="pgm3-steps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>On trace la diagonale [AC] et son milieu O.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On trace la droite (BO), prolongée au-delà de O.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>On reporte la longueur OB de l'autre côté de O : on obtient D.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="pgm3-next" onclick="pgm3Next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="pgm3Reset()">Recommencer</button>
+  </div>
 </div>
 `;
+
 
 /* ================= EXERCICES ================= */
 document.getElementById('exos-demo-parallelogrammes-5e').innerHTML = `
@@ -220,6 +387,10 @@ DEMO_REGISTRY['Parallélogrammes'] = {
     renderStaticMath(document.getElementById('cours-demo-parallelogrammes-5e'));
     renderStaticMath(document.getElementById('exos-demo-parallelogrammes-5e'));
     injectCourseAddButtons(document.getElementById('cours-demo-parallelogrammes-5e'));
+    pgm1Reset(); pgm2Reset(); pgm3Reset();
+    registerGeoStepDemo('pgm1-svg', { steps:()=>PGM1_STEPS, getIdx:()=>pgm1Step, goto:(i)=>{ pgm1Step=i; pgm1Render(i); } });
+    registerGeoStepDemo('pgm2-svg', { steps:()=>PGM2_STEPS, getIdx:()=>pgm2Step, goto:(i)=>{ pgm2Step=i; pgm2Render(i); } });
+    registerGeoStepDemo('pgm3-svg', { steps:()=>PGM3_STEPS, getIdx:()=>pgm3Step, goto:(i)=>{ pgm3Step=i; pgm3Render(i); } });
   }
 };
 
