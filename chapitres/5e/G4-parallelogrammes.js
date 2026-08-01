@@ -209,8 +209,8 @@ function pgDSide(){
 /* ---- Méthode 1 : à partir de la définition (deux parallèles) ---- */
 let pgm1Step = 0;
 function pgm1Render(step){
-  const parC = pgExtend(pgSub(PGM_C, pgScale(pgSub(PGM_B,PGM_A),0.45)), pgAdd(PGM_C, pgScale(pgSub(PGM_B,PGM_A),0.45)), 20);
-  const parA = pgExtend(pgSub(PGM_A, pgScale(pgSub(PGM_C,PGM_B),0.45)), pgAdd(PGM_A, pgScale(pgSub(PGM_C,PGM_B),0.45)), 20);
+  const parC = pgExtend(PGM_C, PGM_D, 35);
+  const parA = pgExtend(PGM_A, PGM_D, 35);
   document.getElementById('pgm1-parC').setAttribute('opacity', step>=1?'1':'0');
   document.getElementById('pgm1-parC').setAttribute('x1',parC.a.x); document.getElementById('pgm1-parC').setAttribute('y1',parC.a.y);
   document.getElementById('pgm1-parC').setAttribute('x2',parC.b.x); document.getElementById('pgm1-parC').setAttribute('y2',parC.b.y);
@@ -241,7 +241,7 @@ function pgm2Render(step){
   document.getElementById('pgm2-arcA').setAttribute('opacity', step>=1?'1':'0');
   document.getElementById('pgm2-arcA').setAttribute('points', pgArcSample(PGM_A, rBC, angAD, 55));
   document.getElementById('pgm2-arcC').setAttribute('opacity', step>=2?'1':'0');
-  document.getElementById('pgm2-arcC').setAttribute('points', pgArcSample(PGM_C, rAB, angCD, 55));
+  document.getElementById('pgm2-arcC').setAttribute('points', pgArcSample(PGM_C, rAB, angCD, 26));
   document.getElementById('pgm2-done').setAttribute('opacity', step>=3?'1':'0');
   document.querySelectorAll('#pgm2-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<step));
   document.getElementById('pgm2-next').textContent = step>=3 ? 'Terminé ✓' : 'Étape suivante →';
@@ -262,10 +262,13 @@ function pgm3Render(step){
   document.getElementById('pgm3-diagAC').setAttribute('opacity', step>=1?'1':'0');
   document.getElementById('pgm3-O').setAttribute('opacity', step>=1?'1':'0');
   document.getElementById('pgm3-Olabel').setAttribute('opacity', step>=1?'1':'0');
-  const ext = pgExtend(PGM_B, PGM_D, 20);
+  document.getElementById('pgm3-tickAO').setAttribute('opacity', step>=1?'1':'0');
+  document.getElementById('pgm3-tickOC').setAttribute('opacity', step>=1?'1':'0');
+  const dirBD = pgNorm(pgSub(PGM_D, PGM_B));
+  const endBO = pgAdd(PGM_D, pgScale(dirBD, 20));
   document.getElementById('pgm3-lineBO').setAttribute('opacity', step>=2?'1':'0');
-  document.getElementById('pgm3-lineBO').setAttribute('x1',ext.a.x); document.getElementById('pgm3-lineBO').setAttribute('y1',ext.a.y);
-  document.getElementById('pgm3-lineBO').setAttribute('x2',ext.b.x); document.getElementById('pgm3-lineBO').setAttribute('y2',ext.b.y);
+  document.getElementById('pgm3-lineBO').setAttribute('x1',PGM_B.x); document.getElementById('pgm3-lineBO').setAttribute('y1',PGM_B.y);
+  document.getElementById('pgm3-lineBO').setAttribute('x2',endBO.x); document.getElementById('pgm3-lineBO').setAttribute('y2',endBO.y);
   document.getElementById('pgm3-tickOB').setAttribute('opacity', step>=2?'1':'0');
   document.getElementById('pgm3-tickOD').setAttribute('opacity', step>=3?'1':'0');
   document.getElementById('pgm3-done').setAttribute('opacity', step>=3?'1':'0');
@@ -277,9 +280,9 @@ function pgm3Next(){ if(pgm3Step<3){ pgm3Step++; pgm3Render(pgm3Step); } }
 function pgm3Reset(){ pgm3Step=0; pgm3Render(0); }
 const PGM3_STEPS = [
   {note:"On considère 3 points A, B et C non alignés. On veut construire le point D tel que ABCD soit un parallélogramme, à l'aide du compas."},
-  {note:"Je trace la diagonale [AC], puis je construis son milieu O."},
-  {note:"Je trace la droite (BO), prolongée au-delà de O."},
-  {note:"Je pique le compas en O, j'ouvre à l'écartement OB, et je reporte cette longueur de l'autre côté de O sur la droite (BO) : j'obtiens D. Le quadrilatère ABCD est un parallélogramme, car ses diagonales [AC] et [BD] se coupent en leur milieu O."},
+  {note:"Je trace la diagonale [AC], puis je construis son milieu O : AO = OC."},
+  {note:"Je trace la demi-droite [BO), prolongée au-delà de O."},
+  {note:"Je pique le compas en O, j'ouvre à l'écartement OB, et je reporte cette longueur de l'autre côté de O sur la demi-droite [BO) : j'obtiens D. Le quadrilatère ABCD est un parallélogramme, car ses diagonales [AC] et [BD] se coupent en leur milieu O."},
 ];
 
 document.getElementById('methode-demo-parallelogrammes-5e').innerHTML = `
@@ -331,14 +334,16 @@ document.getElementById('methode-demo-parallelogrammes-5e').innerHTML = `
     <line id="pgm3-diagAC" opacity="0" x1="${PGM_A.x}" y1="${PGM_A.y}" x2="${PGM_C.x}" y2="${PGM_C.y}" stroke="#1C1B2E" stroke-width="1.2" stroke-dasharray="4,3"/>
     <circle id="pgm3-O" opacity="0" cx="${PGM_O.x}" cy="${PGM_O.y}" r="2.6" fill="#1C1B2E"/>
     <g id="pgm3-Olabel" opacity="0">${pgLabel(PGM_O.x+7, PGM_O.y-6, 'O')}</g>
+    <g id="pgm3-tickAO" opacity="0">${pgTickN(pgMid(PGM_A,PGM_O), pgNorm(pgSub(PGM_O,PGM_A)), 1)}</g>
+    <g id="pgm3-tickOC" opacity="0">${pgTickN(pgMid(PGM_O,PGM_C), pgNorm(pgSub(PGM_C,PGM_O)), 1)}</g>
     <line id="pgm3-lineBO" opacity="0" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="5,4"/>
-    <g id="pgm3-tickOB" opacity="0">${pgTickN(pgMid(PGM_B,PGM_O), pgNorm(pgSub(PGM_O,PGM_B)), 1)}</g>
-    <g id="pgm3-tickOD" opacity="0">${pgTickN(pgMid(PGM_O,PGM_D), pgNorm(pgSub(PGM_D,PGM_O)), 1)}</g>
+    <g id="pgm3-tickOB" opacity="0">${pgTickN(pgMid(PGM_B,PGM_O), pgNorm(pgSub(PGM_O,PGM_B)), 2)}</g>
+    <g id="pgm3-tickOD" opacity="0">${pgTickN(pgMid(PGM_O,PGM_D), pgNorm(pgSub(PGM_D,PGM_O)), 2)}</g>
     <g id="pgm3-done" opacity="0">${pgDSide()}</g>
   </svg>
   <div class="step-list" id="pgm3-steps">
     <div class="step-item" data-step="0"><div class="step-num">1</div><div>On trace la diagonale [AC] et son milieu O.</div></div>
-    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On trace la droite (BO), prolongée au-delà de O.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On trace la demi-droite [BO), prolongée au-delà de O.</div></div>
     <div class="step-item" data-step="2"><div class="step-num">3</div><div>On reporte la longueur OB de l'autre côté de O : on obtient D.</div></div>
   </div>
   <div class="figure-toolbar">
