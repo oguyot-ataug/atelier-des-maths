@@ -216,13 +216,25 @@ function ppArrowHead(x,y,angleDeg,size,color){
   const b2 = {x:x-size*Math.cos(a+0.45), y:y-size*Math.sin(a+0.45)};
   return `<polygon points="${x},${y} ${b1.x.toFixed(1)},${b1.y.toFixed(1)} ${b2.x.toFixed(1)},${b2.y.toFixed(1)}" fill="${color}"/>`;
 }
-function ppLinArrows(c1,c2,c3,rowY,label,color){
-  const apexY = rowY-38;
-  return `<line x1="${c1}" y1="${rowY-22}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
-    <line x1="${c2}" y1="${rowY-22}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
-    <line x1="${c3}" y1="${apexY}" x2="${c3}" y2="${rowY-24}" stroke="${color}" stroke-width="1.5"/>
-    ${ppArrowHead(c3, rowY-22, 90, 6, color)}
+/* Flèches AU-DESSUS de la ligne (utilisé pour la 1ère ligne du tableau) : partent du bord
+   supérieur des deux cellules connues et pointent vers le bas, dans la 3e cellule. */
+function ppLinArrowsAbove(c1,c2,c3,topY,label,color){
+  const apexY = topY-38;
+  return `<line x1="${c1}" y1="${topY}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
+    <line x1="${c2}" y1="${topY}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
+    <line x1="${c3}" y1="${apexY}" x2="${c3}" y2="${topY-2}" stroke="${color}" stroke-width="1.5"/>
+    ${ppArrowHead(c3, topY, 90, 6, color)}
     <text x="${c3}" y="${apexY-6}" font-size="13" text-anchor="middle" fill="${color}" font-weight="700">${label}</text>`;
+}
+/* Flèches EN DESSOUS de la ligne (utilisé pour la 2e ligne du tableau) : partent du bord
+   inférieur des deux cellules connues et pointent vers le haut, dans la 3e cellule. */
+function ppLinArrowsBelow(c1,c2,c3,bottomY,label,color){
+  const apexY = bottomY+38;
+  return `<line x1="${c1}" y1="${bottomY}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
+    <line x1="${c2}" y1="${bottomY}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
+    <line x1="${c3}" y1="${apexY}" x2="${c3}" y2="${bottomY+2}" stroke="${color}" stroke-width="1.5"/>
+    ${ppArrowHead(c3, bottomY, -90, 6, color)}
+    <text x="${c3}" y="${apexY+15}" font-size="13" text-anchor="middle" fill="${color}" font-weight="700">${label}</text>`;
 }
 function ppLinCell(x,y,val,highlight){
   return `<rect x="${x-45}" y="${y-22}" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"/>
@@ -234,14 +246,14 @@ function ppLinLabelCell(y, text){
     <text x="${x0+w/2}" y="${y+5}" font-size="13" text-anchor="middle" fill="#1C1B2E" font-weight="700">${text}</text>`;
 }
 function ppLinBuildSvg(id, valsA, valsB, unknownIsA, labelA, labelB, showArrowsA, showArrowsB){
-  const c1=205,c2=305,c3=405, yA=85, yB=185;
-  let s = `<svg id="${id}" viewBox="0 0 465 220" style="width:100%;max-width:440px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
+  const c1=205,c2=305,c3=405, yA=84, yB=128;
+  let s = `<svg id="${id}" viewBox="0 0 465 224" style="width:100%;max-width:440px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
   s += ppLinLabelCell(yA, 'Grandeur A');
   s += ppLinLabelCell(yB, 'Grandeur B');
   s += ppLinCell(c1,yA,valsA[0]) + ppLinCell(c2,yA,valsA[1]) + ppLinCell(c3,yA,valsA[2], unknownIsA);
   s += ppLinCell(c1,yB,valsB[0]) + ppLinCell(c2,yB,valsB[1]) + ppLinCell(c3,yB,valsB[2], !unknownIsA);
-  if(showArrowsA) s += ppLinArrows(c1,c2,c3,yA,labelA,'#1F6B3A');
-  if(showArrowsB) s += ppLinArrows(c1,c2,c3,yB,labelB,'#1F6B3A');
+  if(showArrowsA) s += ppLinArrowsAbove(c1,c2,c3,yA-22,labelA,'#1F6B3A');
+  if(showArrowsB) s += ppLinArrowsBelow(c1,c2,c3,yB+22,labelB,'#1F6B3A');
   s += `</svg>`;
   return s;
 }
