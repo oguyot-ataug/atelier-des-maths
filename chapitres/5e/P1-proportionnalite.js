@@ -193,10 +193,73 @@ const PP_EVOL_STEPS = [
        +'<span style="padding:0 6px;"><span style="color:var(--accent);font-weight:700;">100</span> <s>km</s></span>'
        +'</span>',
    note:"La fraction représente l'évolution de la distance : au numérateur la valeur à atteindre, au dénominateur la donnée initiale. Les unités km sont les mêmes en haut et en bas : elles se simplifient."},
-  {expr:'5 &times; 2,5 = 12,5 L',
-   note:"On termine le calcul. La consommation pour 250 km est donc 12,5 L."},
+  {expr:'5 L &times; 2,5 = 12,5 L',
+   note:"On termine le calcul, sans oublier l'unité. La consommation pour 250 km est donc 12,5 L."},
 ];
 const ppEvolDemo = makeStepDemo(PP_EVOL_STEPS, 'ppEvolDisplay');
+
+/* ================= METHODE : association dans un tableau (addition puis différence) ================= */
+function ppArrowHead(x,y,angleDeg,size,color){
+  size = size||6;
+  const a = angleDeg*Math.PI/180;
+  const b1 = {x:x-size*Math.cos(a-0.45), y:y-size*Math.sin(a-0.45)};
+  const b2 = {x:x-size*Math.cos(a+0.45), y:y-size*Math.sin(a+0.45)};
+  return `<polygon points="${x},${y} ${b1.x.toFixed(1)},${b1.y.toFixed(1)} ${b2.x.toFixed(1)},${b2.y.toFixed(1)}" fill="${color}"/>`;
+}
+function ppLinArrows(c1,c2,c3,rowY,label,color){
+  const apexY = rowY-38;
+  return `<line x1="${c1}" y1="${rowY-22}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
+    <line x1="${c2}" y1="${rowY-22}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
+    <line x1="${c3}" y1="${apexY}" x2="${c3}" y2="${rowY-24}" stroke="${color}" stroke-width="1.5"/>
+    ${ppArrowHead(c3, rowY-22, 90, 6, color)}
+    <text x="${c3}" y="${apexY-6}" font-size="14" text-anchor="middle" fill="${color}" font-weight="700">${label}</text>`;
+}
+function ppLinCell(x,y,val,highlight){
+  return `<rect x="${x-45}" y="${y-22}" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"/>
+    <text x="${x}" y="${y+5}" font-size="15" text-anchor="middle" fill="${highlight?'var(--accent-orange)':'#1C1B2E'}" font-weight="${highlight?'700':'400'}">${val}</text>`;
+}
+function ppLinBuildSvg(id, valsA, valsB, unknownIsA, op, showArrowsA, showArrowsB){
+  const c1=90,c2=210,c3=330, yA=90, yB=170;
+  let s = `<svg id="${id}" viewBox="0 0 400 220" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
+  s += `<text x="18" y="${yA+5}" font-size="12" fill="#5B6B78">Grandeur A</text>`;
+  s += `<text x="18" y="${yB+5}" font-size="12" fill="#5B6B78">Grandeur B</text>`;
+  s += ppLinCell(c1,yA,valsA[0]) + ppLinCell(c2,yA,valsA[1]) + ppLinCell(c3,yA,valsA[2], unknownIsA);
+  s += ppLinCell(c1,yB,valsB[0]) + ppLinCell(c2,yB,valsB[1]) + ppLinCell(c3,yB,valsB[2], !unknownIsA);
+  if(showArrowsA) s += ppLinArrows(c1,c2,c3,yA,op,'#1F6B3A');
+  if(showArrowsB) s += ppLinArrows(c1,c2,c3,yB,op,'#1F6B3A');
+  s += `</svg>`;
+  return s;
+}
+
+let ppLin1Step = 0;
+function ppLin1Render(step){
+  document.getElementById('pplin1-wrap').innerHTML = ppLinBuildSvg('pplin1-svg', [5,3,8], [100,60, step>=2?160:'?'], false, '+', step>=1, step>=2);
+  document.querySelectorAll('#pplin1-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<step));
+  document.getElementById('pplin1-next').textContent = step>=2 ? 'Terminé ✓' : 'Étape suivante →';
+  document.getElementById('pplin1-next').disabled = step>=2;
+}
+function ppLin1Next(){ if(ppLin1Step<2){ ppLin1Step++; ppLin1Render(ppLin1Step); } }
+function ppLin1Reset(){ ppLin1Step=0; ppLin1Render(0); }
+const PPLIN1_STEPS = [
+  {note:"On considère A = 8. On veut trouver la valeur de B qui lui correspond."},
+  {note:"On remarque que 8 = 5 + 3."},
+  {note:"On applique la même addition à B : 100 + 60 = 160."},
+];
+
+let ppLin2Step = 0;
+function ppLin2Render(step){
+  document.getElementById('pplin2-wrap').innerHTML = ppLinBuildSvg('pplin2-svg', [5,3, step>=2?2:'?'], [100,60,40], true, '\u2212', step>=1, step>=2);
+  document.querySelectorAll('#pplin2-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<step));
+  document.getElementById('pplin2-next').textContent = step>=2 ? 'Terminé ✓' : 'Étape suivante →';
+  document.getElementById('pplin2-next').disabled = step>=2;
+}
+function ppLin2Next(){ if(ppLin2Step<2){ ppLin2Step++; ppLin2Render(ppLin2Step); } }
+function ppLin2Reset(){ ppLin2Step=0; ppLin2Render(0); }
+const PPLIN2_STEPS = [
+  {note:"On considère B = 40. On veut trouver la valeur de A qui lui correspond."},
+  {note:"On remarque que 40 = 100 − 60."},
+  {note:"On applique la même soustraction à A : 5 − 3 = 2."},
+];
 
 document.getElementById('methode-demo-proportionnalite-5e').innerHTML = `
 <p class="example-title" style="margin-top:0;">Grandeur et unité</p>
@@ -230,15 +293,37 @@ document.getElementById('methode-demo-proportionnalite-5e').innerHTML = `
 
 <p class="example-title" style="margin-top:26px;">Autre méthode : l'association dans un tableau</p>
 <span class="prop-badge">Méthode</span>
-<div class="def-box">Quand on connaît <b>deux paires</b> de valeurs associées, on peut les placer dans un tableau de proportionnalité pour vérifier le coefficient, puis compléter une 3e colonne partiellement connue avec ce même coefficient.</div>
+<div class="def-box">Quand on connaît <b>deux paires</b> de valeurs associées, on peut parfois passer de l'une à l'autre par une opération simple, et appliquer cette même opération sur l'autre grandeur.</div>
+
 <p style="margin:14px 0 6px;"><b>Exemple</b> : on connaît les paires (5 ; 100) et (3 ; 60). On cherche la valeur de B associée à A = 8.</p>
-<table style="border-collapse:collapse;width:100%;max-width:360px;text-align:center;font-size:.95rem;margin:12px auto;">
-  <tr><th style="padding:8px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Grandeur A</th><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">5</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">3</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">8</td></tr>
-  <tr><th style="padding:8px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Grandeur B</th><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">100</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">60</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;color:var(--accent-orange);">?</td></tr>
-</table>
-<p style="margin:8px 0;">On vérifie que ce tableau est un tableau de proportionnalité : <span class="tex">\\dfrac{100}{5} = 20</span> et <span class="tex">\\dfrac{60}{3} = 20</span>. Le coefficient de proportionnalité est donc 20.</p>
-<p style="margin:8px 0;">On complète la 3e colonne avec ce même coefficient : <span class="tex">8 \\times 20 = 160</span>.</p>
-<p style="margin:8px 0;">On aurait pu tout aussi bien connaître B = 40 et chercher A : comme le coefficient est 20, on aurait alors <span class="tex">A = 40 : 20 = 2</span>.</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le raisonnement.</p>
+  <div id="pplin1-wrap"></div>
+  <div class="step-list" id="pplin1-steps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>On considère A = 8. On veut trouver B.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On remarque que 8 = 5 + 3.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>On applique la même addition à B : 100 + 60 = 160.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="pplin1-next" onclick="ppLin1Next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ppLin1Reset()">Recommencer</button>
+  </div>
+</div>
+
+<p style="margin:22px 0 6px;"><b>Autre exemple</b> : toujours avec (5 ; 100) et (3 ; 60), on cherche cette fois la valeur de A associée à B = 40.</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le raisonnement.</p>
+  <div id="pplin2-wrap"></div>
+  <div class="step-list" id="pplin2-steps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>On considère B = 40. On veut trouver A.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On remarque que 40 = 100 − 60.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>On applique la même soustraction à A : 5 − 3 = 2.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="pplin2-next" onclick="ppLin2Next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ppLin2Reset()">Recommencer</button>
+  </div>
+</div>
 `;
 
 
@@ -297,6 +382,9 @@ DEMO_REGISTRY['Proportionnalité'] = {
     injectCourseAddButtons(document.getElementById('methode-demo-proportionnalite-5e'));
     ppGameReset();
     ppEvolDemo.reset();
+    ppLin1Reset(); ppLin2Reset();
+    registerGeoStepDemo('pplin1-svg', { steps:()=>PPLIN1_STEPS, getIdx:()=>ppLin1Step, goto:(i)=>{ ppLin1Step=i; ppLin1Render(i); } });
+    registerGeoStepDemo('pplin2-svg', { steps:()=>PPLIN2_STEPS, getIdx:()=>ppLin2Step, goto:(i)=>{ ppLin2Step=i; ppLin2Render(i); } });
   }
 };
 
