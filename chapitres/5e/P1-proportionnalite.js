@@ -185,15 +185,25 @@ function ppGameClick(card){
   ppGameSelectedCard = null;
 }
 
+function ppEvolFrac(strike){
+  const km = strike ? '<s>km</s>' : 'km';
+  return '<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;font-size:.95rem;">'
+       +'<span style="border-bottom:1.5px solid #1C1B2E;padding:0 6px;"><span style="color:var(--accent-orange);font-weight:700;">250</span> '+km+'</span>'
+       +'<span style="padding:0 6px;"><span style="color:var(--accent);font-weight:700;">100</span> '+km+'</span>'
+       +'</span>';
+}
 const PP_EVOL_STEPS = [
-  {expr:'5 L &times; ( ... / ... )',
+  {expr:'On note C la consommation cherchée pour 250 km.',
    note:"On cherche une consommation. Donc on va faire évoluer la consommation initiale (5 L)."},
-  {expr:'5 L &times; <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;font-size:.95rem;">'
-       +'<span style="border-bottom:1.5px solid #1C1B2E;padding:0 6px;"><span style="color:var(--accent-orange);font-weight:700;">250</span> <s>km</s></span>'
-       +'<span style="padding:0 6px;"><span style="color:var(--accent);font-weight:700;">100</span> <s>km</s></span>'
-       +'</span>',
-   note:"La fraction représente l'évolution de la distance : au numérateur la valeur à atteindre, au dénominateur la donnée initiale. Les unités km sont les mêmes en haut et en bas : elles se simplifient."},
-  {expr:'5 L &times; 2,5 = 12,5 L',
+  {expr:'C = 5 L &times; ( ... / ... )',
+   note:"On pose l'écriture : la valeur initiale, multipliée par une fraction."},
+  {expr:'C = 5 L &times; '+ppEvolFrac(false),
+   note:"La fraction représente l'évolution de la distance : au numérateur la valeur à atteindre, au dénominateur la donnée initiale."},
+  {expr:'C = 5 L &times; '+ppEvolFrac(true),
+   note:"Les unités km sont les mêmes en haut et en bas : elles se simplifient."},
+  {expr:'C = 5 L &times; 2,5',
+   note:"On calcule le quotient : 250 : 100 = 2,5."},
+  {expr:'C = 12,5 L',
    note:"On termine le calcul, sans oublier l'unité. La consommation pour 250 km est donc 12,5 L."},
 ];
 const ppEvolDemo = makeStepDemo(PP_EVOL_STEPS, 'ppEvolDisplay');
@@ -219,10 +229,10 @@ function ppLinCell(x,y,val,highlight){
     <text x="${x}" y="${y+5}" font-size="15" text-anchor="middle" fill="${highlight?'var(--accent-orange)':'#1C1B2E'}" font-weight="${highlight?'700':'400'}">${val}</text>`;
 }
 function ppLinBuildSvg(id, valsA, valsB, unknownIsA, op, showArrowsA, showArrowsB){
-  const c1=90,c2=210,c3=330, yA=90, yB=170;
-  let s = `<svg id="${id}" viewBox="0 0 400 220" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
-  s += `<text x="18" y="${yA+5}" font-size="12" fill="#5B6B78">Grandeur A</text>`;
-  s += `<text x="18" y="${yB+5}" font-size="12" fill="#5B6B78">Grandeur B</text>`;
+  const c1=140,c2=260,c3=380, yA=90, yB=170;
+  let s = `<svg id="${id}" viewBox="0 0 460 220" style="width:100%;max-width:440px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
+  s += `<text x="${c1-55}" y="${yA+5}" font-size="12" text-anchor="end" fill="#5B6B78">Grandeur A</text>`;
+  s += `<text x="${c1-55}" y="${yB+5}" font-size="12" text-anchor="end" fill="#5B6B78">Grandeur B</text>`;
   s += ppLinCell(c1,yA,valsA[0]) + ppLinCell(c2,yA,valsA[1]) + ppLinCell(c3,yA,valsA[2], unknownIsA);
   s += ppLinCell(c1,yB,valsB[0]) + ppLinCell(c2,yB,valsB[1]) + ppLinCell(c3,yB,valsB[2], !unknownIsA);
   if(showArrowsA) s += ppLinArrows(c1,c2,c3,yA,op,'#1F6B3A');
