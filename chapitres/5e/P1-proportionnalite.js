@@ -222,28 +222,33 @@ function ppLinArrows(c1,c2,c3,rowY,label,color){
     <line x1="${c2}" y1="${rowY-22}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
     <line x1="${c3}" y1="${apexY}" x2="${c3}" y2="${rowY-24}" stroke="${color}" stroke-width="1.5"/>
     ${ppArrowHead(c3, rowY-22, 90, 6, color)}
-    <text x="${c3}" y="${apexY-6}" font-size="14" text-anchor="middle" fill="${color}" font-weight="700">${label}</text>`;
+    <text x="${c3}" y="${apexY-6}" font-size="13" text-anchor="middle" fill="${color}" font-weight="700">${label}</text>`;
 }
 function ppLinCell(x,y,val,highlight){
   return `<rect x="${x-45}" y="${y-22}" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"/>
     <text x="${x}" y="${y+5}" font-size="15" text-anchor="middle" fill="${highlight?'var(--accent-orange)':'#1C1B2E'}" font-weight="${highlight?'700':'400'}">${val}</text>`;
 }
-function ppLinBuildSvg(id, valsA, valsB, unknownIsA, op, showArrowsA, showArrowsB){
-  const c1=140,c2=260,c3=380, yA=90, yB=170;
-  let s = `<svg id="${id}" viewBox="0 0 460 220" style="width:100%;max-width:440px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
-  s += `<text x="${c1-55}" y="${yA+5}" font-size="12" text-anchor="end" fill="#5B6B78">Grandeur A</text>`;
-  s += `<text x="${c1-55}" y="${yB+5}" font-size="12" text-anchor="end" fill="#5B6B78">Grandeur B</text>`;
+function ppLinLabelCell(y, text){
+  const x0=10, w=140;
+  return `<rect x="${x0}" y="${y-22}" width="${w}" height="44" fill="rgba(31,58,92,.06)" stroke="#1C1B2E" stroke-width="1.3"/>
+    <text x="${x0+w/2}" y="${y+5}" font-size="13" text-anchor="middle" fill="#1C1B2E" font-weight="700">${text}</text>`;
+}
+function ppLinBuildSvg(id, valsA, valsB, unknownIsA, labelA, labelB, showArrowsA, showArrowsB){
+  const c1=205,c2=305,c3=405, yA=85, yB=185;
+  let s = `<svg id="${id}" viewBox="0 0 465 220" style="width:100%;max-width:440px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
+  s += ppLinLabelCell(yA, 'Grandeur A');
+  s += ppLinLabelCell(yB, 'Grandeur B');
   s += ppLinCell(c1,yA,valsA[0]) + ppLinCell(c2,yA,valsA[1]) + ppLinCell(c3,yA,valsA[2], unknownIsA);
   s += ppLinCell(c1,yB,valsB[0]) + ppLinCell(c2,yB,valsB[1]) + ppLinCell(c3,yB,valsB[2], !unknownIsA);
-  if(showArrowsA) s += ppLinArrows(c1,c2,c3,yA,op,'#1F6B3A');
-  if(showArrowsB) s += ppLinArrows(c1,c2,c3,yB,op,'#1F6B3A');
+  if(showArrowsA) s += ppLinArrows(c1,c2,c3,yA,labelA,'#1F6B3A');
+  if(showArrowsB) s += ppLinArrows(c1,c2,c3,yB,labelB,'#1F6B3A');
   s += `</svg>`;
   return s;
 }
 
 let ppLin1Step = 0;
 function ppLin1Render(step){
-  document.getElementById('pplin1-wrap').innerHTML = ppLinBuildSvg('pplin1-svg', [5,3,8], [100,60, step>=2?160:'?'], false, '+', step>=1, step>=2);
+  document.getElementById('pplin1-wrap').innerHTML = ppLinBuildSvg('pplin1-svg', [5,3,8], [100,60, step>=2?160:'?'], false, '5 + 3', '100 + 60', step>=1, step>=2);
   document.querySelectorAll('#pplin1-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<step));
   document.getElementById('pplin1-next').textContent = step>=2 ? 'Terminé ✓' : 'Étape suivante →';
   document.getElementById('pplin1-next').disabled = step>=2;
@@ -258,7 +263,7 @@ const PPLIN1_STEPS = [
 
 let ppLin2Step = 0;
 function ppLin2Render(step){
-  document.getElementById('pplin2-wrap').innerHTML = ppLinBuildSvg('pplin2-svg', [5,3, step>=2?2:'?'], [100,60,40], true, '\u2212', step>=1, step>=2);
+  document.getElementById('pplin2-wrap').innerHTML = ppLinBuildSvg('pplin2-svg', [5,3, step>=2?2:'?'], [100,60,40], true, '5 \u2212 3', '100 \u2212 60', step>=1, step>=2);
   document.querySelectorAll('#pplin2-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<step));
   document.getElementById('pplin2-next').textContent = step>=2 ? 'Terminé ✓' : 'Étape suivante →';
   document.getElementById('pplin2-next').disabled = step>=2;
