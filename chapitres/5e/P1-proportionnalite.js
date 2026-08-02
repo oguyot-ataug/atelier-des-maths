@@ -131,13 +131,109 @@ document.getElementById('cours-demo-proportionnalite-5e').innerHTML = `
 </div>
 `;
 
-/* ================= METHODE ================= */
+/* ================= METHODE : jeu d'association grandeur / unité ================= */
+const PP_PAIRS = [
+  ['Longueur','m'], ['Durée','s'], ['Masse','kg'], ['Prix','€'], ['Volume','L'], ['Aire','m²'],
+];
+let ppGameSelectedCard = null;
+let ppGameFound = 0;
+function ppShuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+function ppGameReset(){
+  ppGameSelectedCard = null;
+  ppGameFound = 0;
+  const gCol = ppShuffle(PP_PAIRS.map(p=>p[0]));
+  const uCol = ppShuffle(PP_PAIRS.map(p=>p[1]));
+  const board = document.getElementById('pgame-board');
+  board.innerHTML = `
+    <div class="pgame-col">${gCol.map(g=>`<div class="pgame-card" data-role="g" data-val="${g}">${g}</div>`).join('')}</div>
+    <div class="pgame-col">${uCol.map(u=>`<div class="pgame-card" data-role="u" data-val="${u}">${u}</div>`).join('')}</div>
+  `;
+  board.querySelectorAll('.pgame-card').forEach(card=>card.addEventListener('click', ()=>ppGameClick(card)));
+  document.getElementById('pgame-status').textContent = `0 / ${PP_PAIRS.length} paires trouvées.`;
+}
+function ppGameClick(card){
+  if(card.classList.contains('matched')) return;
+  if(!ppGameSelectedCard){
+    document.querySelectorAll('.pgame-card').forEach(c=>c.classList.remove('selected'));
+    card.classList.add('selected');
+    ppGameSelectedCard = card;
+    return;
+  }
+  if(ppGameSelectedCard===card){ card.classList.remove('selected'); ppGameSelectedCard=null; return; }
+  if(ppGameSelectedCard.dataset.role===card.dataset.role){
+    document.querySelectorAll('.pgame-card').forEach(c=>c.classList.remove('selected'));
+    card.classList.add('selected');
+    ppGameSelectedCard = card;
+    return;
+  }
+  const gCard = ppGameSelectedCard.dataset.role==='g' ? ppGameSelectedCard : card;
+  const uCard = ppGameSelectedCard.dataset.role==='u' ? ppGameSelectedCard : card;
+  const pair = PP_PAIRS.find(p=>p[0]===gCard.dataset.val);
+  if(pair && pair[1]===uCard.dataset.val){
+    gCard.classList.remove('selected'); gCard.classList.add('matched');
+    uCard.classList.add('matched');
+    ppGameFound++;
+    document.getElementById('pgame-status').textContent = `${ppGameFound} / ${PP_PAIRS.length} paires trouvées.` + (ppGameFound===PP_PAIRS.length ? ' Bravo, terminé !' : '');
+  } else {
+    gCard.classList.add('wrong'); uCard.classList.add('wrong');
+    setTimeout(()=>{ gCard.classList.remove('wrong','selected'); uCard.classList.remove('wrong'); }, 500);
+  }
+  ppGameSelectedCard = null;
+}
+
 document.getElementById('methode-demo-proportionnalite-5e').innerHTML = `
-<div class="placeholder-box">
-  <strong>Méthode en préparation</strong>
-  Une méthode animée (choisir et appliquer la bonne technique pour compléter un tableau de proportionnalité) suivra dans une prochaine session.
+<p class="example-title" style="margin-top:0;">Grandeur et unité</p>
+<span class="def-badge">Définition</span>
+<div class="def-box">
+  Une <b>grandeur</b> est ce que l'on peut mesurer (une longueur, une durée, un prix, une masse, un volume, une aire...). Une <b>unité</b> permet d'exprimer la mesure d'une grandeur.
 </div>
+<table style="border-collapse:collapse;width:100%;max-width:420px;text-align:center;font-size:.88rem;margin:12px 0 16px;">
+  <tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Grandeur</th><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Exemple d'unité</th></tr>
+  <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">Longueur</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">m (mètre)</td></tr>
+  <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">Durée</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">s (seconde)</td></tr>
+  <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">Masse</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">kg (kilogramme)</td></tr>
+  <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">Prix</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">€ (euro)</td></tr>
+  <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">Volume</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">L (litre)</td></tr>
+  <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">Aire</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">m² (mètre carré)</td></tr>
+</table>
+
+<p class="example-title">Jeu : associe chaque grandeur à son unité</p>
+<p class="hint interaction-hint" style="margin:0 0 10px;">Clique sur une grandeur, puis sur l'unité qui lui correspond.</p>
+<div class="pgame-board" id="pgame-board"></div>
+<p class="hint" id="pgame-status" style="margin:10px 0;"></p>
+<button class="btn secondary" onclick="ppGameReset()">Recommencer</button>
+
+<p class="example-title" style="margin-top:26px;">Méthode : le produit en croix</p>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">
+  On considère deux grandeurs A et B proportionnelles. On connaît une valeur initiale de A associée à une valeur initiale de B, ainsi qu'un objectif pour B. Pour trouver la nouvelle valeur de A qui correspond à cet objectif :
+</div>
+<div style="text-align:center;margin:14px 0;font-size:1.05rem;">
+  <span class="tex">A_{nouveau} = A_{initial} \\times \\dfrac{B_{objectif}}{B_{initial}}</span>
+</div>
+
+<p style="margin:14px 0 6px;"><b>Exemple</b> : une voiture consomme 5 L pour parcourir 100 km. Quelle est sa consommation pour 250 km ?</p>
+<p style="margin:2px 0;">La grandeur A à faire évoluer est la consommation (5 L pour une distance initiale de 100 km). La grandeur B est la distance, avec un objectif de 250 km.</p>
+<table style="border-collapse:collapse;width:100%;max-width:360px;text-align:center;font-size:.9rem;margin:10px 0 8px;">
+  <tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Distance (B)</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">100 km</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">250 km</td></tr>
+  <tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Consommation (A)</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">5 L</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);font-weight:700;color:var(--accent-orange);">?</td></tr>
+</table>
+<p style="margin:8px 0;"><span class="tex">A_{nouveau} = 5 \\times \\dfrac{250}{100} = 5 \\times 2,5 = 12,5</span> L.</p>
+
+<p class="example-title" style="margin-top:26px;">Autre méthode : l'association linéaire en tableau</p>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">On peut organiser les 4 valeurs (2 valeurs de A, 2 valeurs de B) dans un tableau à deux lignes, et relier en diagonale les deux valeurs connues au nombre cherché : on multiplie en diagonale, puis on divise par la valeur restante.</div>
+<table style="border-collapse:collapse;width:100%;max-width:320px;text-align:center;font-size:.95rem;margin:12px auto;">
+  <tr><th style="padding:8px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Grandeur A</th><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">5</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;color:var(--accent-orange);">?</td></tr>
+  <tr><th style="padding:8px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Grandeur B</th><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">100</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">250</td></tr>
+</table>
+<p style="margin:8px 0;">On multiplie en diagonale les deux valeurs opposées à la case « ? » (5 et 250), puis on divise par la 4e valeur (100) : <span class="tex">\\dfrac{5 \\times 250}{100} = 12,5</span>.</p>
 `;
+
 
 /* ================= EXERCICES ================= */
 document.getElementById('exos-demo-proportionnalite-5e').innerHTML = `
@@ -188,8 +284,11 @@ DEMO_REGISTRY['Proportionnalité'] = {
   cours:'cours-demo-proportionnalite-5e', methode:'methode-demo-proportionnalite-5e', exos:'exos-demo-proportionnalite-5e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-proportionnalite-5e'));
+    renderStaticMath(document.getElementById('methode-demo-proportionnalite-5e'));
     renderStaticMath(document.getElementById('exos-demo-proportionnalite-5e'));
     injectCourseAddButtons(document.getElementById('cours-demo-proportionnalite-5e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-proportionnalite-5e'));
+    ppGameReset();
   }
 };
 
