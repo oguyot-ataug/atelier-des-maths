@@ -283,7 +283,6 @@ document.getElementById('exos-demo-calcul-litteral-5e').innerHTML = `
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr">Calcul du membre de gauche pour x = 9 : <span class="tex">3x + 7 = 3 \\times 9 + 7 = 27 + 7 = 34</span>.</span><span class="we-comment">Ce que je sais (1/2) : je calcule le membre de gauche.</span></div>
     <div class="we-row"><span class="we-expr">Calcul du membre de droite pour x = 9 : <span class="tex">4x - 2 = 4 \\times 9 - 2 = 36 - 2 = 34</span>.</span><span class="we-comment">Ce que je sais (2/2) : je calcule le membre de droite.</span></div>
-    <div class="we-row"><span class="we-expr"><span style="color:var(--accent-orange);font-weight:700;">Or,</span> si les deux membres d'une égalité sont égaux pour une valeur donnée, alors l'égalité est vraie pour cette valeur.</span><span class="we-comment">On énonce la propriété.</span></div>
     <div class="we-row"><span class="we-expr"><span style="color:var(--accent);font-weight:700;">Donc</span> les deux membres sont égaux (34 = 34) : cette égalité est vraie pour x = 9.</span><span class="we-comment">Conclusion.</span></div>
   </div>
 </div>
