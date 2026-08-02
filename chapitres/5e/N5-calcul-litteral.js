@@ -153,11 +153,115 @@ document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
 </div>
 `;
 
-/* ================= METHODE ================= */
+/* ================= METHODE : développer et factoriser, pas à pas ================= */
+function clArrowHead(x,y,angleDeg,size,color){
+  size = size||6;
+  const a = angleDeg*Math.PI/180;
+  const b1 = {x:x-size*Math.cos(a-0.45), y:y-size*Math.sin(a-0.45)};
+  const b2 = {x:x-size*Math.cos(a+0.45), y:y-size*Math.sin(a+0.45)};
+  return `<polygon points="${x},${y} ${b1.x.toFixed(1)},${b1.y.toFixed(1)} ${b2.x.toFixed(1)},${b2.y.toFixed(1)}" fill="${color}"/>`;
+}
+/* Flèche courbe au-dessus de l'expression, du facteur k vers le terme qu'il multiplie. */
+function clDevArc(x1,x2,y,color){
+  const midX=(x1+x2)/2, top=y-46;
+  return `<path d="M ${x1} ${y-16} Q ${midX} ${top} ${x2} ${y-16}" fill="none" stroke="${color}" stroke-width="1.7"/>
+    ${clArrowHead(x2, y-16, 100, 6, color)}`;
+}
+const CL_MONO = "font-family:'JetBrains Mono',monospace;";
+function clText(x,y,size,color,weight,txt){
+  return `<text x="${x}" y="${y}" style="${CL_MONO}font-size:${size}px;${weight?'font-weight:700;':''}" fill="${color}">${txt}</text>`;
+}
+
+let clMDevStep = 0;
+function clMDevRender(step){
+  const y=60, k=40, xTerm=88, minus=112, four=142;
+  let s = `<svg id="clMDevSvg" viewBox="0 0 400 210" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
+  s += clText(k,y,22,'#1C1B2E',false,'6') + clText(65,y,22,'#1C1B2E',false,'(') + clText(xTerm,y,22,'#1C1B2E',false,'x')
+     + clText(minus,y,22,'#1C1B2E',false,'\u2212') + clText(four,y,22,'#1C1B2E',false,'4') + clText(165,y,22,'#1C1B2E',false,')');
+  if(step>=1) s += clDevArc(k+8, xTerm+6, y, '#1F6B3A') + clText(40,y+65,20,'#1F6B3A',false,'6 &times; x');
+  if(step>=2) s += clDevArc(k+8, four+6, y, '#9E1F5E') + clText(112,y+65,20,'#1C1B2E',false,'\u2212') + clText(140,y+65,20,'#9E1F5E',false,'6 &times; 4');
+  if(step>=3) s += clText(40,y+110,22,'var(--accent-orange)',true,'6x \u2212 24');
+  s += `</svg>`;
+  return s;
+}
+function clMDevUpdate(step){
+  document.getElementById('clMDevWrap').innerHTML = clMDevRender(step);
+  document.querySelectorAll('#clMDevSteps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=step));
+  document.getElementById('clMDevNext').textContent = step>=3 ? 'Terminé ✓' : 'Étape suivante →';
+  document.getElementById('clMDevNext').disabled = step>=3;
+}
+function clMDevNext(){ if(clMDevStep<3){ clMDevStep++; clMDevUpdate(clMDevStep); } }
+function clMDevReset(){ clMDevStep=0; clMDevUpdate(0); }
+const CL_MDEV_STEPS = [
+  {note:"On part de l'expression à développer : 6(x − 4)."},
+  {note:"6 multiplie le premier terme : 6 × x."},
+  {note:"6 multiplie aussi le second terme, avec son signe : − 6 × 4."},
+  {note:"On calcule chaque produit : 6x − 24."},
+];
+
+let clMFactStep = 0;
+function clMFactRender(step){
+  const y=60;
+  let s = `<svg id="clMFactSvg" viewBox="0 0 400 150" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
+  if(step===0){
+    s += clText(40,y,22,'#1C1B2E',false,'12x + 18');
+  } else if(step===1){
+    s += clText(40,y,22,'var(--accent-orange)',true,'6') + clText(60,y,22,'#1C1B2E',false,' &times; 2x + ')
+       + clText(210,y,22,'var(--accent-orange)',true,'6') + clText(230,y,22,'#1C1B2E',false,' &times; 3');
+  } else if(step===2){
+    s += clText(40,y,22,'var(--accent-orange)',true,'6') + clText(60,y,22,'#1C1B2E',false,' &times; (2x + 3)');
+  } else {
+    s += clText(40,y,22,'var(--accent-orange)',true,'6') + clText(60,y,22,'#1C1B2E',false,'(2x + 3)');
+  }
+  s += `</svg>`;
+  return s;
+}
+function clMFactUpdate(step){
+  document.getElementById('clMFactWrap').innerHTML = clMFactRender(step);
+  document.querySelectorAll('#clMFactSteps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=step));
+  document.getElementById('clMFactNext').textContent = step>=3 ? 'Terminé ✓' : 'Étape suivante →';
+  document.getElementById('clMFactNext').disabled = step>=3;
+}
+function clMFactNext(){ if(clMFactStep<3){ clMFactStep++; clMFactUpdate(clMFactStep); } }
+function clMFactReset(){ clMFactStep=0; clMFactUpdate(0); }
+const CL_MFACT_STEPS = [
+  {note:"On part de l'expression à factoriser : 12x + 18."},
+  {note:"On repère un même facteur, 6, caché dans chacun des deux termes : 12x = 6 × 2x et 18 = 6 × 3."},
+  {note:"On met ce facteur commun en évidence, devant une parenthèse."},
+  {note:"On simplifie l'écriture en supprimant le signe ×."},
+];
+
 document.getElementById('methode-demo-calcul-litteral-5e').innerHTML = `
-<div class="placeholder-box">
-  <strong>Méthode en préparation</strong>
-  Une méthode animée (développer et factoriser pas à pas) suivra dans une prochaine session.
+<p class="example-title" style="margin-top:0;">Développer, avec les flèches de distribution</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le développement.</p>
+  <div id="clMDevWrap"></div>
+  <div class="step-list" id="clMDevSteps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>On part de l'expression à développer : 6(x − 4).</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>6 multiplie le premier terme : 6 × x.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>6 multiplie aussi le second terme, avec son signe : − 6 × 4.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">4</div><div>On calcule chaque produit : 6x − 24.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="clMDevNext" onclick="clMDevNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="clMDevReset()">Recommencer</button>
+  </div>
+</div>
+
+<p class="example-title" style="margin-top:26px;">Factoriser, en repérant le facteur commun</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la factorisation.</p>
+  <div id="clMFactWrap"></div>
+  <div class="step-list" id="clMFactSteps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>On part de l'expression à factoriser : 12x + 18.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On repère un même facteur, 6, caché dans chacun des deux termes.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>On met ce facteur commun en évidence, devant une parenthèse.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">4</div><div>On simplifie l'écriture en supprimant le signe ×.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="clMFactNext" onclick="clMFactNext()">Étape suivante →</button>
+    <button class="btn secondary" onclick="clMFactReset()">Recommencer</button>
+  </div>
 </div>
 `;
 
@@ -204,7 +308,11 @@ DEMO_REGISTRY['Calcul littéral'] = {
     renderStaticMath(document.getElementById('cours-demo-calcul-litteral-5e'));
     renderStaticMath(document.getElementById('exos-demo-calcul-litteral-5e'));
     injectCourseAddButtons(document.getElementById('cours-demo-calcul-litteral-5e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-calcul-litteral-5e'));
     clCDDemo.reset(); clEqDemo.reset(); clDevDemo.reset(); clFactDemo.reset();
+    clMDevReset(); clMFactReset();
+    registerGeoStepDemo('clMDevSvg', { steps:()=>CL_MDEV_STEPS, getIdx:()=>clMDevStep, goto:(i)=>{ clMDevStep=i; clMDevUpdate(i); } });
+    registerGeoStepDemo('clMFactSvg', { steps:()=>CL_MFACT_STEPS, getIdx:()=>clMFactStep, goto:(i)=>{ clMFactStep=i; clMFactUpdate(i); } });
   }
 };
 
