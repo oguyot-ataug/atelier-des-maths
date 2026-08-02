@@ -185,6 +185,19 @@ function ppGameClick(card){
   ppGameSelectedCard = null;
 }
 
+const PP_EVOL_STEPS = [
+  {expr:'5 L &times; ( ... / ... )',
+   note:"On cherche une consommation. Donc on va faire évoluer la consommation initiale (5 L)."},
+  {expr:'5 L &times; <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;font-size:.95rem;">'
+       +'<span style="border-bottom:1.5px solid #1C1B2E;padding:0 6px;"><span style="color:var(--accent-orange);font-weight:700;">250</span> <s>km</s></span>'
+       +'<span style="padding:0 6px;"><span style="color:var(--accent);font-weight:700;">100</span> <s>km</s></span>'
+       +'</span>',
+   note:"La fraction représente l'évolution de la distance : au numérateur la valeur à atteindre, au dénominateur la donnée initiale. Les unités km sont les mêmes en haut et en bas : elles se simplifient."},
+  {expr:'5 &times; 2,5 = 12,5 L',
+   note:"On termine le calcul. La consommation pour 250 km est donc 12,5 L."},
+];
+const ppEvolDemo = makeStepDemo(PP_EVOL_STEPS, 'ppEvolDisplay');
+
 document.getElementById('methode-demo-proportionnalite-5e').innerHTML = `
 <p class="example-title" style="margin-top:0;">Grandeur et unité</p>
 <span class="def-badge">Définition</span>
@@ -199,31 +212,33 @@ document.getElementById('methode-demo-proportionnalite-5e').innerHTML = `
 <p class="hint" id="pgame-status" style="margin:10px 0;"></p>
 <button class="btn secondary" onclick="ppGameReset()">Recommencer</button>
 
-<p class="example-title" style="margin-top:26px;">Méthode : le produit en croix</p>
+<p class="example-title" style="margin-top:26px;">Évolution d'une grandeur</p>
 <span class="prop-badge">Méthode</span>
 <div class="def-box">
-  On considère deux grandeurs A et B proportionnelles. On connaît une valeur initiale de A associée à une valeur initiale de B, ainsi qu'un objectif pour B. Pour trouver la nouvelle valeur de A qui correspond à cet objectif :
-</div>
-<div style="text-align:center;margin:14px 0;font-size:1.05rem;">
-  <span class="tex">A_{nouveau} = A_{initial} \\times \\dfrac{B_{objectif}}{B_{initial}}</span>
+  On connaît une valeur initiale de deux grandeurs A et B associées, ainsi qu'un objectif pour B. On veut faire évoluer A pour atteindre cet objectif.
 </div>
 
-<p style="margin:14px 0 6px;"><b>Exemple</b> : une voiture consomme 5 L pour parcourir 100 km. Quelle est sa consommation pour 250 km ?</p>
-<p style="margin:2px 0;">La grandeur A à faire évoluer est la consommation (5 L pour une distance initiale de 100 km). La grandeur B est la distance, avec un objectif de 250 km.</p>
-<table style="border-collapse:collapse;width:100%;max-width:360px;text-align:center;font-size:.9rem;margin:10px 0 8px;">
-  <tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Distance (B)</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">100 km</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">250 km</td></tr>
-  <tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Consommation (A)</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">5 L</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);font-weight:700;color:var(--accent-orange);">?</td></tr>
-</table>
-<p style="margin:8px 0;"><span class="tex">A_{nouveau} = 5 \\times \\dfrac{250}{100} = 5 \\times 2,5 = 12,5</span> L.</p>
+<p style="margin:14px 0 10px;"><b>Exemple</b> : une voiture consomme <span style="color:var(--accent);font-weight:700;">5 L</span> pour parcourir <span style="color:var(--accent);font-weight:700;">100 km</span>. Quelle est sa consommation pour <span style="color:var(--accent-orange);font-weight:700;">250 km</span> ?</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le calcul.</p>
+  <div class="step-display" id="ppEvolDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="ppEvolDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ppEvolDemo.reset()">Recommencer</button>
+  </div>
+</div>
 
-<p class="example-title" style="margin-top:26px;">Autre méthode : l'association linéaire en tableau</p>
+<p class="example-title" style="margin-top:26px;">Autre méthode : l'association dans un tableau</p>
 <span class="prop-badge">Méthode</span>
-<div class="def-box">On peut organiser les 4 valeurs (2 valeurs de A, 2 valeurs de B) dans un tableau à deux lignes, et relier en diagonale les deux valeurs connues au nombre cherché : on multiplie en diagonale, puis on divise par la valeur restante.</div>
-<table style="border-collapse:collapse;width:100%;max-width:320px;text-align:center;font-size:.95rem;margin:12px auto;">
-  <tr><th style="padding:8px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Grandeur A</th><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">5</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;color:var(--accent-orange);">?</td></tr>
-  <tr><th style="padding:8px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Grandeur B</th><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">100</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">250</td></tr>
+<div class="def-box">Quand on connaît <b>deux paires</b> de valeurs associées, on peut les placer dans un tableau de proportionnalité pour vérifier le coefficient, puis compléter une 3e colonne partiellement connue avec ce même coefficient.</div>
+<p style="margin:14px 0 6px;"><b>Exemple</b> : on connaît les paires (5 ; 100) et (3 ; 60). On cherche la valeur de B associée à A = 8.</p>
+<table style="border-collapse:collapse;width:100%;max-width:360px;text-align:center;font-size:.95rem;margin:12px auto;">
+  <tr><th style="padding:8px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Grandeur A</th><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">5</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">3</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">8</td></tr>
+  <tr><th style="padding:8px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Grandeur B</th><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">100</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);">60</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;color:var(--accent-orange);">?</td></tr>
 </table>
-<p style="margin:8px 0;">On multiplie en diagonale les deux valeurs opposées à la case « ? » (5 et 250), puis on divise par la 4e valeur (100) : <span class="tex">\\dfrac{5 \\times 250}{100} = 12,5</span>.</p>
+<p style="margin:8px 0;">On vérifie que ce tableau est un tableau de proportionnalité : <span class="tex">\\dfrac{100}{5} = 20</span> et <span class="tex">\\dfrac{60}{3} = 20</span>. Le coefficient de proportionnalité est donc 20.</p>
+<p style="margin:8px 0;">On complète la 3e colonne avec ce même coefficient : <span class="tex">8 \\times 20 = 160</span>.</p>
+<p style="margin:8px 0;">On aurait pu tout aussi bien connaître B = 40 et chercher A : comme le coefficient est 20, on aurait alors <span class="tex">A = 40 : 20 = 2</span>.</p>
 `;
 
 
@@ -281,6 +296,7 @@ DEMO_REGISTRY['Proportionnalité'] = {
     injectCourseAddButtons(document.getElementById('cours-demo-proportionnalite-5e'));
     injectCourseAddButtons(document.getElementById('methode-demo-proportionnalite-5e'));
     ppGameReset();
+    ppEvolDemo.reset();
   }
 };
 
