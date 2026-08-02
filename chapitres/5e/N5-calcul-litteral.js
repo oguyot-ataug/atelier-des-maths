@@ -281,9 +281,10 @@ document.getElementById('exos-demo-calcul-litteral-5e').innerHTML = `
   <h3>Rédaction type : « Tester une égalité »</h3>
   <p style="margin:0 0 12px;"><b>Énoncé</b> : soit l'égalité <span class="tex">3x + 7 = 4x - 2</span>. Teste cette égalité pour <span class="tex">x = 9</span>.</p>
   <div class="redaction-template">
-    <div class="we-row"><span class="we-expr">Pour x = 9, le membre de gauche est égal à <span class="tex">3 \\times 9 + 7 = 34</span> et le membre de droite est égal à <span class="tex">4 \\times 9 - 2 = 34</span>.</span><span class="we-comment">Ce que je sais : je calcule chaque membre.</span></div>
+    <div class="we-row"><span class="we-expr">Calcul du membre de gauche pour x = 9 : <span class="tex">3x + 7 = 3 \\times 9 + 7 = 27 + 7 = 34</span>.</span><span class="we-comment">Ce que je sais (1/2) : je calcule le membre de gauche.</span></div>
+    <div class="we-row"><span class="we-expr">Calcul du membre de droite pour x = 9 : <span class="tex">4x - 2 = 4 \\times 9 - 2 = 36 - 2 = 34</span>.</span><span class="we-comment">Ce que je sais (2/2) : je calcule le membre de droite.</span></div>
     <div class="we-row"><span class="we-expr"><span style="color:var(--accent-orange);font-weight:700;">Or,</span> si les deux membres d'une égalité sont égaux pour une valeur donnée, alors l'égalité est vraie pour cette valeur.</span><span class="we-comment">On énonce la propriété.</span></div>
-    <div class="we-row"><span class="we-expr"><span style="color:var(--accent);font-weight:700;">Donc</span> cette égalité est vraie pour x = 9.</span><span class="we-comment">Conclusion.</span></div>
+    <div class="we-row"><span class="we-expr"><span style="color:var(--accent);font-weight:700;">Donc</span> les deux membres sont égaux (34 = 34) : cette égalité est vraie pour x = 9.</span><span class="we-comment">Conclusion.</span></div>
   </div>
 </div>
 <div class="redaction-block">
