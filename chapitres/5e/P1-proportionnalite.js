@@ -261,7 +261,7 @@ function ppLinBuildSvg(id, valsA, valsB, unknownIsA, labelA, labelB, showArrowsA
 let ppLin1Step = 0;
 function ppLin1Render(step){
   document.getElementById('pplin1-wrap').innerHTML = ppLinBuildSvg('pplin1-svg', [5,3,8], [100,60, step>=2?160:'?'], false, '5 + 3', '100 + 60', step>=1, step>=2);
-  document.querySelectorAll('#pplin1-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<step));
+  document.querySelectorAll('#pplin1-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=step));
   document.getElementById('pplin1-next').textContent = step>=2 ? 'Terminé ✓' : 'Étape suivante →';
   document.getElementById('pplin1-next').disabled = step>=2;
 }
@@ -276,7 +276,7 @@ const PPLIN1_STEPS = [
 let ppLin2Step = 0;
 function ppLin2Render(step){
   document.getElementById('pplin2-wrap').innerHTML = ppLinBuildSvg('pplin2-svg', [5,3, step>=2?2:'?'], [100,60,40], true, '5 \u2212 3', '100 \u2212 60', step>=1, step>=2);
-  document.querySelectorAll('#pplin2-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<step));
+  document.querySelectorAll('#pplin2-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=step));
   document.getElementById('pplin2-next').textContent = step>=2 ? 'Terminé ✓' : 'Étape suivante →';
   document.getElementById('pplin2-next').disabled = step>=2;
 }
