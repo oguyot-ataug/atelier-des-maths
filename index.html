@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-02.8</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-02.9</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2277,6 +2277,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-02.9', items:[
+    "5e -- N5 Calcul littéral, Méthode : les deux démonstrations affichent maintenant un vrai nom d'expression (A = ... / B = ...) à chaque étape. La factorisation, qui remplaçait chaque étape par la suivante, est corrigée pour empiler progressivement les lignes en laissant les précédentes affichées, comme le développement.",
+  ]},
   { version:'2026-08-02.8', items:[
     "5e -- N5 Calcul littéral, Méthode : deux démonstrations animées pas à pas -- développer 6(x − 4) avec les flèches de distribution qui swooshent du facteur vers chaque terme, et factoriser 12x + 18 en repérant puis en mettant en évidence le facteur commun 6 (mis en couleur).",
   ]},
