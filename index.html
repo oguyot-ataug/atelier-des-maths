@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-02.4</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-02.5</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2270,6 +2270,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-02.5', items:[
+    "5e -- P1 Proportionnalité, Méthode : dans l'exemple par différence, les flèches des lignes A et B étaient inversées -- 5-3 s'affichait avant 100-60, alors que c'est la relation déjà connue (100-60=40) qui doit apparaître en premier, avant de l'appliquer à A.",
+  ]},
   { version:'2026-08-02.4', items:[
     "5e -- P1 Proportionnalité, Méthode : corrigé un décalage entre les étapes écrites et ce qui s'affichait visuellement dans les 2 démos 'association dans un tableau' -- l'étape en cours de réalisation restait affichée comme non faite jusqu'au clic suivant. Elle est maintenant cochée dès que son effet est visible.",
   ]},
