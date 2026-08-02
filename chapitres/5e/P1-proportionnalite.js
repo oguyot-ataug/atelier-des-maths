@@ -191,15 +191,7 @@ document.getElementById('methode-demo-proportionnalite-5e').innerHTML = `
 <div class="def-box">
   Une <b>grandeur</b> est ce que l'on peut mesurer (une longueur, une durée, un prix, une masse, un volume, une aire...). Une <b>unité</b> permet d'exprimer la mesure d'une grandeur.
 </div>
-<table style="border-collapse:collapse;width:100%;max-width:420px;text-align:center;font-size:.88rem;margin:12px 0 16px;">
-  <tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Grandeur</th><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Exemple d'unité</th></tr>
-  <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">Longueur</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">m (mètre)</td></tr>
-  <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">Durée</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">s (seconde)</td></tr>
-  <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">Masse</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">kg (kilogramme)</td></tr>
-  <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">Prix</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">€ (euro)</td></tr>
-  <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">Volume</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">L (litre)</td></tr>
-  <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">Aire</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">m² (mètre carré)</td></tr>
-</table>
+<p style="margin:10px 0 0;">Par exemple, une <b>température</b> est une grandeur, et elle peut s'exprimer dans l'unité <b>°C</b> (degré Celsius).</p>
 
 <p class="example-title">Jeu : associe chaque grandeur à son unité</p>
 <p class="hint interaction-hint" style="margin:0 0 10px;">Clique sur une grandeur, puis sur l'unité qui lui correspond.</p>
