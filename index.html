@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-02.6</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-02.7</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2277,6 +2277,10 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-02.7', items:[
+    "5e -- N5 Calcul littéral : les 4 exemples travaillés du Cours (valeur C/D, égalité, développement, factorisation) sont maintenant des démonstrations pas-à-pas avec bouton \"Étape suivante\", au lieu de texte tout affiché d'un coup.",
+    "Toutes pages -- Taille des formules KaTeX augmentée (elle paraissait souvent trop petite par rapport au texte environnant, même après la correction précédente).",
+  ]},
   { version:'2026-08-02.6', items:[
     "Nouveau chapitre 5e -- N5 Calcul littéral : Cours complet en 4 sections (expression littérale et puissances, valeur d'une expression littérale, égalité, distributivité simple -- développement et factorisation), avec des exemples originaux et des étapes détaillées et expliquées à chaque calcul, 5 exercices et un quiz. La partie Méthode (développer/factoriser pas à pas) suivra dans une prochaine session.",
   ]},

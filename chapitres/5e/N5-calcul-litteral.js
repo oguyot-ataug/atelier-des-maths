@@ -3,6 +3,49 @@
    Fichier autonome -- voir la note dans chapitres/5e/G1-symetrie-centrale.js.
    ============================================================ */
 
+const CL_CD_STEPS = [
+  {expr:'<span class="tex">C = 2 \\times 3^2 + 5</span>', note:"On remplace x par 3 dans l'expression de C."},
+  {expr:'<span class="tex">C = 2 \\times 9 + 5</span>', note:"On calcule d'abord la puissance : 3² = 9."},
+  {expr:'<span class="tex">C = 23</span>', note:"On termine avec les priorités opératoires : 2×9=18, puis 18+5=23."},
+  {expr:'<span class="tex">D = (2 \\times 3)^2 + 5</span>', note:"On remplace x par 3 dans l'expression de D."},
+  {expr:'<span class="tex">D = 6^2 + 5</span>', note:"On calcule d'abord la parenthèse : 2×3=6."},
+  {expr:'<span class="tex">D = 41</span>', note:"On calcule la puissance (6²=36), puis l'addition (36+5=41)."},
+];
+const clCDDemo = makeStepDemo(CL_CD_STEPS, 'clCDDisplay');
+
+const CL_EQ_STEPS = [
+  {expr:'<span class="tex">5 \\times 3 + 3 = 18</span>', note:"Pour x = 3, on calcule le membre de gauche."},
+  {expr:'<span class="tex">2 \\times 3 + 12 = 18</span>', note:"On calcule le membre de droite."},
+  {expr:"18 = 18, donc l'égalité est vraie pour x = 3.", note:"Les deux membres sont égaux : l'égalité est vraie pour cette valeur."},
+  {expr:'<span class="tex">5 \\times 5 + 3 = 28</span>', note:"Pour x = 5, on calcule le membre de gauche."},
+  {expr:'<span class="tex">2 \\times 5 + 12 = 22</span>', note:"On calcule le membre de droite."},
+  {expr:"28 ≠ 22, donc l'égalité est fausse pour x = 5.", note:"Les deux membres sont différents : l'égalité est fausse pour cette valeur."},
+];
+const clEqDemo = makeStepDemo(CL_EQ_STEPS, 'clEqDisplay');
+
+const CL_DEV_STEPS = [
+  {expr:'<span class="tex">H = 4 \\times (x+5)</span>', note:"On remplace le signe × devant la parenthèse."},
+  {expr:'<span class="tex">H = 4 \\times x + 4 \\times 5</span>', note:"On distribue : 4 multiplie chacun des deux termes."},
+  {expr:'<span class="tex">H = 4x + 20</span>', note:"On calcule chaque produit."},
+  {expr:'<span class="tex">I = 2,5 \\times (y-3)</span>', note:"On remplace le signe × devant la parenthèse."},
+  {expr:'<span class="tex">I = 2,5 \\times y - 2,5 \\times 3</span>', note:"On distribue : 2,5 multiplie chacun des deux termes."},
+  {expr:'<span class="tex">I = 2,5y - 7,5</span>', note:"On calcule chaque produit."},
+  {expr:'<span class="tex">J = t \\times (6+t)</span>', note:"On remplace le signe × devant la parenthèse."},
+  {expr:'<span class="tex">J = t \\times 6 + t \\times t</span>', note:"On distribue : t multiplie chacun des deux termes."},
+  {expr:'<span class="tex">J = 6t + t^2</span>', note:"On calcule et on simplifie chaque produit."},
+];
+const clDevDemo = makeStepDemo(CL_DEV_STEPS, 'clDevDisplay');
+
+const CL_FACT_STEPS = [
+  {expr:'<span class="tex">K = 7x + 2x</span>', note:"On repère le facteur commun aux deux termes : x."},
+  {expr:'<span class="tex">K = (7+2) \\times x</span>', note:"On met ce facteur commun en évidence."},
+  {expr:'<span class="tex">K = 9x</span>', note:"On calcule et on simplifie."},
+  {expr:'<span class="tex">L = 8,1y - y</span>', note:"On repère le facteur commun aux deux termes : y (on peut écrire y = 1 × y)."},
+  {expr:'<span class="tex">L = (8,1-1) \\times y</span>', note:"On met ce facteur commun en évidence."},
+  {expr:'<span class="tex">L = 7,1y</span>', note:"On calcule et on simplifie."},
+];
+const clFactDemo = makeStepDemo(CL_FACT_STEPS, 'clFactDisplay');
+
 document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Expression littérale</h3></div>
 
@@ -41,22 +84,12 @@ document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
 <div class="def-box">Pour calculer la <b>valeur d'une expression littérale</b> par substitution, on remplace chaque lettre par une valeur numérique donnée.</div>
 
 <p style="margin:12px 0 8px;"><b>Exemple</b> : soient <span class="tex">C = 2x^2 + 5</span> et <span class="tex">D = (2x)^2 + 5</span>. Calcule C et D pour <span class="tex">x = 3</span>.</p>
-<div style="display:flex;flex-wrap:wrap;gap:24px;">
-  <div style="flex:1;min-width:220px;">
-    <p style="margin:2px 0;">On remplace <span class="tex">x</span> par 3 dans l'expression de C.</p>
-    <p style="margin:2px 0;"><span class="tex">C = 2 \\times 3^2 + 5</span></p>
-    <p style="margin:2px 0;">On calcule d'abord la puissance : <span class="tex">3^2 = 9</span>.</p>
-    <p style="margin:2px 0;"><span class="tex">C = 2 \\times 9 + 5</span></p>
-    <p style="margin:2px 0;">On termine avec les priorités opératoires (la multiplication avant l'addition).</p>
-    <p style="margin:2px 0;"><span class="tex">C = 18 + 5 = 23</span></p>
-  </div>
-  <div style="flex:1;min-width:220px;">
-    <p style="margin:2px 0;">On remplace <span class="tex">x</span> par 3 dans l'expression de D.</p>
-    <p style="margin:2px 0;"><span class="tex">D = (2 \\times 3)^2 + 5</span></p>
-    <p style="margin:2px 0;">On calcule d'abord la parenthèse : <span class="tex">2 \\times 3 = 6</span>.</p>
-    <p style="margin:2px 0;"><span class="tex">D = 6^2 + 5</span></p>
-    <p style="margin:2px 0;">On calcule ensuite la puissance, puis l'addition.</p>
-    <p style="margin:2px 0;"><span class="tex">D = 36 + 5 = 41</span></p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le calcul.</p>
+  <div class="step-display" id="clCDDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="clCDDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="clCDDemo.reset()">Recommencer</button>
   </div>
 </div>
 <p class="hint" style="margin:10px 0 0;">Remarque : C et D ne donnent pas le même résultat pour x = 3, alors que les deux expressions se ressemblent. <span class="tex">2x^2</span> et <span class="tex">(2x)^2</span> ne désignent pas la même chose : dans <span class="tex">2x^2</span>, seul x est élevé au carré ; dans <span class="tex">(2x)^2</span>, c'est le produit <span class="tex">2x</span> tout entier qui l'est.</p>
@@ -76,10 +109,14 @@ document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
 </div>
 
 <p style="margin:12px 0 8px;"><b>Exemple</b> : soit l'égalité <span class="tex">5x + 3 = 2x + 12</span>. Cette égalité est-elle vraie pour <span class="tex">x = 3</span> ? Pour <span class="tex">x = 5</span> ?</p>
-<p style="margin:2px 0;">Pour <span class="tex">x = 3</span> : le membre de gauche est égal à <span class="tex">5 \\times 3 + 3 = 15 + 3 = 18</span>, et le membre de droite est égal à <span class="tex">2 \\times 3 + 12 = 6 + 12 = 18</span>.</p>
-<p style="margin:2px 0 10px;">Les deux membres sont égaux (18 = 18). Donc cette égalité est vraie pour x = 3.</p>
-<p style="margin:2px 0;">Pour <span class="tex">x = 5</span> : le membre de gauche est égal à <span class="tex">5 \\times 5 + 3 = 25 + 3 = 28</span>, et le membre de droite est égal à <span class="tex">2 \\times 5 + 12 = 10 + 12 = 22</span>.</p>
-<p style="margin:2px 0 14px;">Les deux membres sont différents (28 ≠ 22). Donc cette égalité est fausse pour x = 5.</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le raisonnement.</p>
+  <div class="step-display" id="clEqDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="clEqDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="clEqDemo.reset()">Recommencer</button>
+  </div>
+</div>
 
 <div class="lesson-header"><span class="num">4</span><h3>Distributivité simple</h3></div>
 
@@ -90,33 +127,12 @@ document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
 <div class="def-box">Pour tous nombres relatifs <span class="tex">k</span>, <span class="tex">a</span> et <span class="tex">b</span> : <span class="tex">k \\times (a+b) = k \\times a + k \\times b</span> et <span class="tex">k \\times (a-b) = k \\times a - k \\times b</span>.</div>
 
 <p style="margin:12px 0 8px;"><b>Exemples</b> : développe chaque expression, en détaillant chaque étape.</p>
-<div style="display:flex;flex-wrap:wrap;gap:20px;">
-  <div style="flex:1;min-width:200px;">
-    <p style="margin:2px 0;"><span class="tex">H = 4(x+5)</span></p>
-    <p style="margin:2px 0;">On remplace le signe × devant la parenthèse :</p>
-    <p style="margin:2px 0;"><span class="tex">H = 4 \\times (x+5)</span></p>
-    <p style="margin:2px 0;">On distribue : 4 multiplie chacun des deux termes.</p>
-    <p style="margin:2px 0;"><span class="tex">H = 4 \\times x + 4 \\times 5</span></p>
-    <p style="margin:2px 0;">On calcule chaque produit.</p>
-    <p style="margin:2px 0;"><span class="tex">H = 4x + 20</span></p>
-  </div>
-  <div style="flex:1;min-width:200px;">
-    <p style="margin:2px 0;"><span class="tex">I = 2,5(y-3)</span></p>
-    <p style="margin:2px 0;">On remplace le signe × devant la parenthèse :</p>
-    <p style="margin:2px 0;"><span class="tex">I = 2,5 \\times (y-3)</span></p>
-    <p style="margin:2px 0;">On distribue : 2,5 multiplie chacun des deux termes.</p>
-    <p style="margin:2px 0;"><span class="tex">I = 2,5 \\times y - 2,5 \\times 3</span></p>
-    <p style="margin:2px 0;">On calcule chaque produit.</p>
-    <p style="margin:2px 0;"><span class="tex">I = 2,5y - 7,5</span></p>
-  </div>
-  <div style="flex:1;min-width:200px;">
-    <p style="margin:2px 0;"><span class="tex">J = t(6+t)</span></p>
-    <p style="margin:2px 0;">On remplace le signe × devant la parenthèse :</p>
-    <p style="margin:2px 0;"><span class="tex">J = t \\times (6+t)</span></p>
-    <p style="margin:2px 0;">On distribue : t multiplie chacun des deux termes.</p>
-    <p style="margin:2px 0;"><span class="tex">J = t \\times 6 + t \\times t</span></p>
-    <p style="margin:2px 0;">On calcule et on simplifie chaque produit.</p>
-    <p style="margin:2px 0;"><span class="tex">J = 6t + t^2</span></p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler chaque développement.</p>
+  <div class="step-display" id="clDevDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="clDevDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="clDevDemo.reset()">Recommencer</button>
   </div>
 </div>
 
@@ -127,22 +143,12 @@ document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
 <div class="def-box">Pour tous nombres relatifs <span class="tex">k</span>, <span class="tex">a</span> et <span class="tex">b</span> : <span class="tex">k \\times a + k \\times b = k \\times (a+b)</span> et <span class="tex">k \\times a - k \\times b = k \\times (a-b)</span>.</div>
 
 <p style="margin:12px 0 8px;">La factorisation permet de réduire des expressions littérales de la forme <span class="tex">ka + kb</span> et <span class="tex">ay - by</span>, où <span class="tex">a</span> et <span class="tex">b</span> sont des nombres décimaux.</p>
-<div style="display:flex;flex-wrap:wrap;gap:20px;">
-  <div style="flex:1;min-width:220px;">
-    <p style="margin:2px 0;"><span class="tex">K = 7x + 2x</span></p>
-    <p style="margin:2px 0;">On repère le facteur commun aux deux termes : c'est <span class="tex">x</span>.</p>
-    <p style="margin:2px 0;">On met ce facteur commun en évidence.</p>
-    <p style="margin:2px 0;"><span class="tex">K = (7+2) \\times x</span></p>
-    <p style="margin:2px 0;">On calcule et on simplifie.</p>
-    <p style="margin:2px 0;"><span class="tex">K = 9x</span></p>
-  </div>
-  <div style="flex:1;min-width:220px;">
-    <p style="margin:2px 0;"><span class="tex">L = 8,1y - y</span></p>
-    <p style="margin:2px 0;">On repère le facteur commun aux deux termes : c'est <span class="tex">y</span> (on peut écrire <span class="tex">y = 1 \\times y</span>).</p>
-    <p style="margin:2px 0;">On met ce facteur commun en évidence.</p>
-    <p style="margin:2px 0;"><span class="tex">L = (8,1-1) \\times y</span></p>
-    <p style="margin:2px 0;">On calcule et on simplifie.</p>
-    <p style="margin:2px 0;"><span class="tex">L = 7,1y</span></p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler chaque factorisation.</p>
+  <div class="step-display" id="clFactDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="clFactDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="clFactDemo.reset()">Recommencer</button>
   </div>
 </div>
 `;
@@ -198,6 +204,7 @@ DEMO_REGISTRY['Calcul littéral'] = {
     renderStaticMath(document.getElementById('cours-demo-calcul-litteral-5e'));
     renderStaticMath(document.getElementById('exos-demo-calcul-litteral-5e'));
     injectCourseAddButtons(document.getElementById('cours-demo-calcul-litteral-5e'));
+    clCDDemo.reset(); clEqDemo.reset(); clDevDemo.reset(); clFactDemo.reset();
   }
 };
 
