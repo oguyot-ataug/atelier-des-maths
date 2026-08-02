@@ -210,7 +210,7 @@ function clMFactRender(step){
     y += lineH;
     s += clText(lbl,y,22,'#1C1B2E',false,'B =')
        + clText(x0,y,22,'var(--accent-orange)',true,'6') + clText(x0+22,y,22,'#1C1B2E',false,' &times; 2x + ')
-       + clText(x0+165,y,22,'var(--accent-orange)',true,'6') + clText(x0+187,y,22,'#1C1B2E',false,' &times; 3');
+       + clText(x0+127,y,22,'var(--accent-orange)',true,'6') + clText(x0+143,y,22,'#1C1B2E',false,' &times; 3');
   }
   if(step>=2){
     y += lineH;
