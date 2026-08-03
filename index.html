@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.11</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.12</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -307,6 +307,9 @@
     <div id="cours-demo-parallelogrammes-5e" style="display:none;">
     </div>
 
+    <div id="cours-demo-parallelogrammes-particuliers-5e" style="display:none;">
+    </div>
+
     <div id="cours-demo-proportionnalite-5e" style="display:none;">
     </div>
 
@@ -358,6 +361,8 @@
     </div>
     <div id="methode-demo-parallelogrammes-5e" style="display:none;">
     </div>
+    <div id="methode-demo-parallelogrammes-particuliers-5e" style="display:none;">
+    </div>
     <div id="methode-demo-proportionnalite-5e" style="display:none;">
     </div>
     <div id="methode-demo-calcul-litteral-5e" style="display:none;">
@@ -402,6 +407,8 @@
     <div id="exos-demo-droites-remarquables-5e" style="display:none;">
     </div>
     <div id="exos-demo-parallelogrammes-5e" style="display:none;">
+    </div>
+    <div id="exos-demo-parallelogrammes-particuliers-5e" style="display:none;">
     </div>
     <div id="exos-demo-proportionnalite-5e" style="display:none;">
     </div>
@@ -2284,6 +2291,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-03.12', items:[
+    "Nouveau chapitre 5e -- G5 Parallélogrammes particuliers : Cours complet (rectangle, losange, carré -- définitions, propriétés caractéristiques avec démonstrations, propriétés de reconnaissance), 5 exercices et un quiz. La partie Méthode (constructions du rectangle et du losange à partir de leurs diagonales) suivra dans une prochaine session.",
+  ]},
   { version:'2026-08-03.11', items:[
     "5e -- N6 Équations, jeu : le retrait est maintenant bloqué (avec message) si l'autre plateau n'a pas assez de masse pour faire la même opération. Ajout d'une vignette « + boule » dans la réserve. Le journal note désormais l'étape intermédiaire complète (ex. x + 20 - 20 = 70 - 20) avant la ligne simplifiée (x = 50).",
   ]},
@@ -3647,6 +3657,7 @@ renderNiveau('6e');
 <script src="chapitres/5e/N1-divisibilite.js"></script>
 <script src="chapitres/5e/G3-droites-remarquables.js"></script>
 <script src="chapitres/5e/G4-parallelogrammes.js"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js"></script>
 <script src="chapitres/5e/P1-proportionnalite.js"></script>
 <script src="chapitres/5e/N5-calcul-litteral.js"></script>
 <script src="chapitres/5e/N6-equations.js"></script>
