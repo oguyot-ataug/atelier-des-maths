@@ -243,13 +243,37 @@ function eqGameRender(){
     logEl.scrollTop = logEl.scrollHeight;
   }
 }
+let eqGameKeepBalance = false;
+/* Applique la même opération (ajout/retrait d'une masse) de l'autre côté, pour matérialiser
+   qu'on fait la même chose aux deux membres de l'égalité. */
+function eqGameAdjustOtherSide(otherSide, amount){
+  const arr = otherSide==='left' ? eqGameLeft : eqGameRight;
+  const exactIdx = arr.findIndex(it=>!it.ball && it.value===amount);
+  if(exactIdx>=0){ arr.splice(exactIdx,1); return; }
+  let bestIdx=-1, bestVal=-1;
+  arr.forEach((it,i)=>{ if(!it.ball && it.value>bestVal){ bestVal=it.value; bestIdx=i; } });
+  if(bestIdx>=0 && arr[bestIdx].value>=amount){
+    arr[bestIdx].value -= amount;
+    arr[bestIdx].label = arr[bestIdx].value+' g';
+    if(arr[bestIdx].value===0) arr.splice(bestIdx,1);
+  }
+}
 function eqGameAdd(side, item){
   (side==='left' ? eqGameLeft : eqGameRight).push(item);
+  if(eqGameKeepBalance && !item.ball){
+    const other = side==='left' ? 'right' : 'left';
+    (other==='left' ? eqGameLeft : eqGameRight).push({label:item.label, value:item.value});
+  }
   eqGameRender();
 }
 function eqGameRemoveAt(side, idx){
   const arr = side==='left' ? eqGameLeft : eqGameRight;
+  const item = arr[idx];
+  if(!item) return;
   arr.splice(idx,1);
+  if(eqGameKeepBalance && !item.ball){
+    eqGameAdjustOtherSide(side==='left' ? 'right' : 'left', item.value);
+  }
   eqGameRender();
 }
 function eqGameMoveTo(side, idx, targetSide){
@@ -260,6 +284,7 @@ function eqGameMoveTo(side, idx, targetSide){
   (targetSide==='left' ? eqGameLeft : eqGameRight).push(item);
   eqGameRender();
 }
+function eqGameToggleKeepBalance(checked){ eqGameKeepBalance = checked; }
 function eqGameReset(){
   const sc = EQ_GAME_SCENARIOS[Math.floor(Math.random()*EQ_GAME_SCENARIOS.length)];
   EQ_GAME_BALL_WEIGHT = sc.ball;
@@ -268,6 +293,9 @@ function eqGameReset(){
   if(sc.leftWeight>0) eqGameLeft.push({label:sc.leftWeight+' g', value:sc.leftWeight});
   eqGameRight = [{label:sc.rightWeight+' g', value:sc.rightWeight}];
   eqGameLog = [];
+  eqGameKeepBalance = false;
+  const box = document.getElementById('eqKeepBalanceBox');
+  if(box) box.checked = false;
   eqGameRender();
 }
 /* Glisser depuis la réserve (copie infinie, source HTML fiable) : payload "new:valeur". */
@@ -372,16 +400,21 @@ document.getElementById('methode-demo-equations-5e').innerHTML = `
 
 <p class="example-title" style="margin-top:26px;">🎮 Jeu : manipule la balance</p>
 <div class="figure-wrap">
-  <p class="hint interaction-hint" style="margin-top:0;">La balance part d'une situation qui traduit une équation (par exemple « une boule et 20 g à gauche, 70 g à droite » pour x + 20 = 70). Fais glisser une masse depuis la réserve pour en ajouter une. Pour un objet déjà posé (y compris une boule) : cliquer pour supprimer, ou maintenir le clic et déplacer vers l'autre plateau. Le bouton "Recommencer" tire une nouvelle situation au hasard.</p>
+  <p class="hint interaction-hint" style="margin-top:0;">La balance part d'une situation qui traduit une équation (par exemple « une boule et 20 g à gauche, 70 g à droite » pour x + 20 = 70). Fais glisser une masse depuis la réserve pour en ajouter une. Pour un objet déjà posé (y compris une boule) : cliquer pour supprimer, ou maintenir le clic et déplacer vers l'autre plateau. Coche « Garder l'équilibre » pour qu'ajouter ou retirer une masse fasse automatiquement la même chose de l'autre côté (exactement comme on fait la même opération aux deux membres d'une égalité). Le bouton "Recommencer" tire une nouvelle situation au hasard.</p>
   <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;justify-content:center;">
     <div style="flex:1;min-width:280px;max-width:380px;">
       <div id="eqGameWrap" ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';" ondrop="eqGameDropAuto(event)"></div>
       <p class="hint" id="eqGameStatus" style="text-align:center;font-weight:700;margin:8px 0;"></p>
+      <label style="display:flex;align-items:center;gap:8px;justify-content:center;margin:0 0 10px;cursor:pointer;font-weight:700;">
+        <input type="checkbox" id="eqKeepBalanceBox" onchange="eqGameToggleKeepBalance(this.checked)" style="width:18px;height:18px;">
+        Garder l'équilibre (faire la même opération des deux côtés)
+      </label>
       <p class="hint" style="text-align:center;margin:0 0 6px;">Réserve (glisser pour ajouter) :</p>
       <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
         <div draggable="true" ondragstart="eqGameDragStart(event,5)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">5 g</div>
         <div draggable="true" ondragstart="eqGameDragStart(event,10)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">10 g</div>
         <div draggable="true" ondragstart="eqGameDragStart(event,20)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">20 g</div>
+        <div draggable="true" ondragstart="eqGameDragStart(event,30)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">30 g</div>
         <div draggable="true" ondragstart="eqGameDragStart(event,50)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">50 g</div>
       </div>
     </div>

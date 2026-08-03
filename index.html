@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.9</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.10</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2284,6 +2284,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-03.10', items:[
+    "5e -- N6 Équations, jeu : ajout de la masse de 30 g dans la réserve. Nouvelle case à cocher « Garder l'équilibre » : quand elle est cochée, ajouter ou retirer une masse d'un côté fait automatiquement la même opération de l'autre côté, matérialisant x + 20 - 20 = 70 - 20 puis x = 50 dans le journal des équations.",
+  ]},
   { version:'2026-08-03.9', items:[
     "5e -- N6 Équations, jeu : corbeille retirée (le clic pour supprimer suffit), texte d'aide simplifié. Ajout d'un journal à droite de la balance qui note l'équation (ou l'inéquation, si la balance penche) correspondant à la situation après chaque mouvement.",
   ]},
