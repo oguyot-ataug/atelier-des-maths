@@ -389,9 +389,62 @@ document.getElementById('cours-demo-parallelogrammes-particuliers-5e').innerHTML
 `;
 
 /* ================= METHODE ================= */
+const QC_PROPS = [
+  {code:'P1', label:'(AB) ∥ (CD) -- un couple de côtés opposés parallèles'},
+  {code:'P2', label:'(AD) ∥ (BC) -- l\'autre couple de côtés opposés parallèles'},
+  {code:'Dbis', label:'Les diagonales se coupent en leur milieu'},
+  {code:'Deq', label:'Les diagonales sont de même longueur'},
+  {code:'Dperp', label:'Les diagonales sont perpendiculaires'},
+  {code:'Sconsec', label:'Deux côtés consécutifs sont de même longueur'},
+  {code:'Angle90', label:'Un angle est droit'},
+  {code:'Kite', label:'Deux paires de côtés consécutifs sont de même longueur'},
+];
+let qcActive = new Set();
+function qcClassify(){
+  const has = p => qcActive.has(p);
+  const isParallelogram = (has('P1') && has('P2')) || has('Dbis');
+  const isRectangle = isParallelogram && (has('Deq') || has('Angle90'));
+  const isLosange = isParallelogram && (has('Sconsec') || has('Dperp'));
+  const isCarre = isRectangle && isLosange;
+  if(isCarre) return 'Carré';
+  if(isLosange) return 'Losange';
+  if(isRectangle) return 'Rectangle';
+  if(isParallelogram) return 'Parallélogramme';
+  if(has('Kite')) return 'Cerf-volant';
+  if(has('P1') !== has('P2')) return 'Trapèze';
+  return 'Quelconque';
+}
+function qcToggle(code){
+  if(qcActive.has(code)) qcActive.delete(code); else qcActive.add(code);
+  qcRender();
+}
+function qcReset(){ qcActive = new Set(); qcRender(); }
+function qcRender(){
+  document.querySelectorAll('.qc-btn').forEach(btn=>{
+    btn.classList.toggle('active', qcActive.has(btn.dataset.code));
+  });
+  const result = document.getElementById('qcResult');
+  if(result) result.textContent = qcClassify();
+}
 document.getElementById('methode-demo-parallelogrammes-particuliers-5e').innerHTML = `
+<p class="example-title" style="margin-top:0;">🔎 Utilitaire : quel est ce quadrilatère ?</p>
+<p style="margin:0 0 14px;">Coche les propriétés que vérifie un quadrilatère ABCD : l'outil détermine le nom le plus précis qui correspond à cette combinaison.</p>
+<div class="figure-wrap">
+  <div style="display:flex;flex-direction:column;gap:8px;max-width:440px;margin:0 auto 16px;">
+    ${QC_PROPS.map(p=>`<button class="btn secondary qc-btn" data-code="${p.code}" onclick="qcToggle('${p.code}')" style="text-align:left;">${p.label}</button>`).join('')}
+  </div>
+  <div style="text-align:center;">
+    <p class="hint" style="margin:0 0 4px;">Ce quadrilatère est un(e) :</p>
+    <p id="qcResult" style="font-size:1.6rem;font-weight:700;font-family:'Space Grotesk',sans-serif;color:var(--accent-orange);margin:0 0 14px;">Quelconque</p>
+  </div>
+  <div class="figure-toolbar" style="justify-content:center;">
+    <button class="btn secondary" onclick="qcReset()">Tout décocher</button>
+  </div>
+</div>
+
+<p class="example-title" style="margin-top:26px;">Constructions pas à pas</p>
 <div class="placeholder-box">
-  <strong>Méthode en préparation</strong>
+  <strong>En préparation</strong>
   Les constructions (rectangle connaissant une diagonale et un côté, losange connaissant ses deux diagonales) suivront dans une prochaine session.
 </div>
 `;
@@ -437,6 +490,7 @@ DEMO_REGISTRY['Parallélogrammes particuliers'] = {
   cours:'cours-demo-parallelogrammes-particuliers-5e', methode:'methode-demo-parallelogrammes-particuliers-5e', exos:'exos-demo-parallelogrammes-particuliers-5e',
   init:()=>{
     injectCourseAddButtons(document.getElementById('cours-demo-parallelogrammes-particuliers-5e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-parallelogrammes-particuliers-5e'));
     const A={x:160,y:250}, B={x:290,y:250};
     pcDynInit('rectAngle', A, B, {x:190,y:130}, 'rect', 'angle');
     pcDynInit('rectDiag', A, B, {x:210,y:120}, 'rect', 'diagonals');
@@ -445,6 +499,7 @@ DEMO_REGISTRY['Parallélogrammes particuliers'] = {
     pcDynInit('carre1', A, B, {x:238,y:146}, 'carre1', 'angle');
     pcDynInit('carre2', A, B, {x:160,y:100}, 'carre2', 'sides');
     ['rectAngle','rectDiag','losSides','losDiag','carre1','carre2'].forEach(pcDynRender);
+    qcRender();
   }
 };
 
