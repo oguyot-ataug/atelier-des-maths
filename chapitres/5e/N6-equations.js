@@ -4,22 +4,22 @@
    ============================================================ */
 
 const EQ_AB_STEPS = [
-  {expr:'<span class="tex">x + 12 = 25</span>', note:"On part de l'équation."},
+  {expr:'<span class="tex">x + 12 = 25</span>', note:"On part de la première équation."},
   {expr:'<span class="tex">x + 12 - 12 = 25 - 12</span>', note:"On soustrait 12 aux deux membres, pour isoler le terme x."},
   {expr:'<span class="tex">x = 13</span>', note:"On simplifie chaque membre. 13 est la solution de x + 12 = 25."},
-  {expr:'<span class="tex">x - 9 = -14</span>', note:"On part de la seconde équation."},
-  {expr:'<span class="tex">x - 9 + 9 = -14 + 9</span>', note:"On ajoute 9 aux deux membres, pour isoler le terme x."},
-  {expr:'<span class="tex">x = -5</span>', note:"On simplifie chaque membre. -5 est la solution de x - 9 = -14."},
+  {expr:'<div style="margin-top:20px;"><span class="tex">y - 9 = -14</span></div>', note:"On passe à la seconde équation, dont l'inconnue est notée y."},
+  {expr:'<span class="tex">y - 9 + 9 = -14 + 9</span>', note:"On ajoute 9 aux deux membres, pour isoler le terme y."},
+  {expr:'<span class="tex">y = -5</span>', note:"On simplifie chaque membre. -5 est la solution de y - 9 = -14."},
 ];
 const eqAbDemo = makeStepDemo(EQ_AB_STEPS, 'eqAbDisplay');
 
 const EQ_AX_STEPS = [
-  {expr:'<span class="tex">6x = 42</span>', note:"On part de l'équation."},
+  {expr:'<span class="tex">6x = 42</span>', note:"On part de la première équation."},
   {expr:'<span class="tex">\\dfrac{6x}{6} = \\dfrac{42}{6}</span>', note:"On divise les deux membres par 6, pour isoler le terme x."},
   {expr:'<span class="tex">x = 7</span>', note:"On simplifie chaque membre. 7 est la solution de 6x = 42."},
-  {expr:'<span class="tex">\\dfrac{x}{4} = 3,5</span>', note:"On part de la seconde équation."},
-  {expr:'<span class="tex">\\dfrac{x}{4} \\times 4 = 3,5 \\times 4</span>', note:"On multiplie les deux membres par 4, pour isoler le terme x."},
-  {expr:'<span class="tex">x = 14</span>', note:"On simplifie chaque membre. 14 est la solution de x/4 = 3,5."},
+  {expr:'<div style="margin-top:20px;"><span class="tex">\\dfrac{y}{4} = 3,5</span></div>', note:"On passe à la seconde équation, dont l'inconnue est notée y."},
+  {expr:'<span class="tex">\\dfrac{y}{4} \\times 4 = 3,5 \\times 4</span>', note:"On multiplie les deux membres par 4, pour isoler le terme y."},
+  {expr:'<span class="tex">y = 14</span>', note:"On simplifie chaque membre. 14 est la solution de y/4 = 3,5."},
 ];
 const eqAxDemo = makeStepDemo(EQ_AX_STEPS, 'eqAxDisplay');
 
@@ -47,7 +47,7 @@ document.getElementById('cours-demo-equations-5e').innerHTML = `
 <span class="prop-badge">Propriété 2</span>
 <div class="def-box">On ne change pas une égalité quand on <b>additionne</b> ou <b>soustrait</b> un même nombre aux deux membres de l'égalité.</div>
 
-<p style="margin:12px 0 8px;"><b>Exemples</b> : résous ces deux équations.</p>
+<p style="margin:12px 0 8px;"><b>Exemples</b> : résous les équations <span class="tex">x + 12 = 25</span> et <span class="tex">y - 9 = -14</span>.</p>
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la résolution.</p>
   <div class="step-display" id="eqAbDisplay"></div>
@@ -61,7 +61,7 @@ document.getElementById('cours-demo-equations-5e').innerHTML = `
 <span class="prop-badge">Propriété 3</span>
 <div class="def-box">On ne change pas une égalité quand on <b>multiplie</b> ou <b>divise</b> les deux membres de l'égalité par un même nombre non nul.</div>
 
-<p style="margin:12px 0 8px;"><b>Exemples</b> : résous ces deux équations.</p>
+<p style="margin:12px 0 8px;"><b>Exemples</b> : résous les équations <span class="tex">6x = 42</span> et <span class="tex">\\dfrac{y}{4} = 3,5</span>.</p>
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la résolution.</p>
   <div class="step-display" id="eqAxDisplay"></div>
