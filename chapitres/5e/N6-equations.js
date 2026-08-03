@@ -224,6 +224,10 @@ function eqGameEquationLine(){
   const rel = leftW===rightW ? '=' : (leftW>rightW ? '>' : '<');
   return `${eqGameExprSide(eqGameLeft)} ${rel} ${eqGameExprSide(eqGameRight)}`;
 }
+function eqGameCurrentRel(){
+  const leftW = eqGameWeight(eqGameLeft), rightW = eqGameWeight(eqGameRight);
+  return leftW===rightW ? '=' : (leftW>rightW ? '>' : '<');
+}
 let eqGameLog = [];
 function eqGameRender(){
   const leftW = eqGameWeight(eqGameLeft), rightW = eqGameWeight(eqGameRight);
@@ -244,36 +248,58 @@ function eqGameRender(){
   }
 }
 let eqGameKeepBalance = false;
-/* Applique la même opération (ajout/retrait d'une masse) de l'autre côté, pour matérialiser
-   qu'on fait la même chose aux deux membres de l'égalité. */
+/* La masse totale disponible (hors boules) de l'autre côté suffit-elle pour retirer `amount` ? */
+function eqGameCanAdjustOtherSide(otherSide, amount){
+  const arr = otherSide==='left' ? eqGameLeft : eqGameRight;
+  const total = arr.filter(it=>!it.ball).reduce((s,it)=>s+it.value,0);
+  return total >= amount;
+}
+/* Retire `amount` de l'autre côté, si besoin en combinant/réduisant plusieurs masses
+   (en commençant par les plus grandes). N'est appelée qu'après avoir vérifié que c'est possible. */
 function eqGameAdjustOtherSide(otherSide, amount){
   const arr = otherSide==='left' ? eqGameLeft : eqGameRight;
-  const exactIdx = arr.findIndex(it=>!it.ball && it.value===amount);
-  if(exactIdx>=0){ arr.splice(exactIdx,1); return; }
-  let bestIdx=-1, bestVal=-1;
-  arr.forEach((it,i)=>{ if(!it.ball && it.value>bestVal){ bestVal=it.value; bestIdx=i; } });
-  if(bestIdx>=0 && arr[bestIdx].value>=amount){
-    arr[bestIdx].value -= amount;
-    arr[bestIdx].label = arr[bestIdx].value+' g';
-    if(arr[bestIdx].value===0) arr.splice(bestIdx,1);
+  let remaining = amount;
+  const idxs = arr.map((it,i)=>i).filter(i=>!arr[i].ball).sort((a,b)=>arr[b].value-arr[a].value);
+  const toRemove = [];
+  for(const i of idxs){
+    if(remaining<=0) break;
+    if(arr[i].value<=remaining){ remaining -= arr[i].value; toRemove.push(i); }
+    else { arr[i].value -= remaining; arr[i].label = arr[i].value+' g'; remaining = 0; }
   }
+  toRemove.sort((a,b)=>b-a).forEach(i=>arr.splice(i,1));
 }
 function eqGameAdd(side, item){
-  (side==='left' ? eqGameLeft : eqGameRight).push(item);
   if(eqGameKeepBalance && !item.ball){
+    const beforeLeft = eqGameExprSide(eqGameLeft), beforeRight = eqGameExprSide(eqGameRight), beforeRel = eqGameCurrentRel();
+    (side==='left' ? eqGameLeft : eqGameRight).push(item);
     const other = side==='left' ? 'right' : 'left';
     (other==='left' ? eqGameLeft : eqGameRight).push({label:item.label, value:item.value});
+    eqGameLog.push(`${beforeLeft} + ${item.value} ${beforeRel} ${beforeRight} + ${item.value}`);
+    eqGameRender();
+    return;
   }
+  (side==='left' ? eqGameLeft : eqGameRight).push(item);
   eqGameRender();
 }
 function eqGameRemoveAt(side, idx){
   const arr = side==='left' ? eqGameLeft : eqGameRight;
   const item = arr[idx];
   if(!item) return;
-  arr.splice(idx,1);
   if(eqGameKeepBalance && !item.ball){
-    eqGameAdjustOtherSide(side==='left' ? 'right' : 'left', item.value);
+    const other = side==='left' ? 'right' : 'left';
+    if(!eqGameCanAdjustOtherSide(other, item.value)){
+      const status = document.getElementById('eqGameStatus');
+      if(status){ status.textContent = "Retrait impossible : l'autre plateau n'a pas assez de masse pour faire la même opération."; status.style.color = '#9E1F5E'; }
+      return;
+    }
+    const beforeLeft = eqGameExprSide(eqGameLeft), beforeRight = eqGameExprSide(eqGameRight), beforeRel = eqGameCurrentRel();
+    arr.splice(idx,1);
+    eqGameAdjustOtherSide(other, item.value);
+    eqGameLog.push(`${beforeLeft} - ${item.value} ${beforeRel} ${beforeRight} - ${item.value}`);
+    eqGameRender();
+    return;
   }
+  arr.splice(idx,1);
   eqGameRender();
 }
 function eqGameMoveTo(side, idx, targetSide){
@@ -298,14 +324,16 @@ function eqGameReset(){
   if(box) box.checked = false;
   eqGameRender();
 }
-/* Glisser depuis la réserve (copie infinie, source HTML fiable) : payload "new:valeur". */
+/* Glisser depuis la réserve (copie infinie, source HTML fiable) : payload "new:valeur" ou "newball". */
 function eqGameDragStart(e, value){
-  e.dataTransfer.setData('text/plain', 'new:'+value);
+  e.dataTransfer.setData('text/plain', value==='ball' ? 'newball' : 'new:'+value);
 }
 function eqGameDrop(e, side){
   e.preventDefault();
   const data = e.dataTransfer.getData('text/plain');
-  if(data.indexOf('new:')===0){
+  if(data==='newball'){
+    eqGameAdd(side, {ball:true, color:'green'});
+  } else if(data.indexOf('new:')===0){
     const value = parseInt(data.slice(4), 10);
     if(value) eqGameAdd(side, {label: value+' g', value});
   }
@@ -411,6 +439,7 @@ document.getElementById('methode-demo-equations-5e').innerHTML = `
       </label>
       <p class="hint" style="text-align:center;margin:0 0 6px;">Réserve (glisser pour ajouter) :</p>
       <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
+        <div draggable="true" ondragstart="eqGameDragStart(event,'ball')" style="padding:9px 16px;background:#fff;border:2px solid #4C8C2B;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">+ boule</div>
         <div draggable="true" ondragstart="eqGameDragStart(event,5)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">5 g</div>
         <div draggable="true" ondragstart="eqGameDragStart(event,10)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">10 g</div>
         <div draggable="true" ondragstart="eqGameDragStart(event,20)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">20 g</div>

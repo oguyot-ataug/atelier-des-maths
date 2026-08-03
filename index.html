@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.10</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.11</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2284,6 +2284,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-03.11', items:[
+    "5e -- N6 Équations, jeu : le retrait est maintenant bloqué (avec message) si l'autre plateau n'a pas assez de masse pour faire la même opération. Ajout d'une vignette « + boule » dans la réserve. Le journal note désormais l'étape intermédiaire complète (ex. x + 20 - 20 = 70 - 20) avant la ligne simplifiée (x = 50).",
+  ]},
   { version:'2026-08-03.10', items:[
     "5e -- N6 Équations, jeu : ajout de la masse de 30 g dans la réserve. Nouvelle case à cocher « Garder l'équilibre » : quand elle est cochée, ajouter ou retirer une masse d'un côté fait automatiquement la même opération de l'autre côté, matérialisant x + 20 - 20 = 70 - 20 puis x = 50 dans le journal des équations.",
   ]},
