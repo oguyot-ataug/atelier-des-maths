@@ -154,7 +154,7 @@ function pcDynRender(tag){
   const C = pcDynC(A,B,D);
   const abLen = Math.hypot(B.x-A.x,B.y-A.y);
   let satisfied;
-  if(kind==='rect'){ satisfied = Math.abs(pcDynAngleDeg(A,B,D)-90)<0.6; }
+  if(kind==='rect' || kind==='carre1'){ satisfied = Math.abs(pcDynAngleDeg(A,B,D)-90)<0.6; }
   else { satisfied = Math.abs(Math.hypot(D.x-A.x,D.y-A.y)-abLen)<2; }
   const dAB = pcNorm(pcSub(B,A)), dAD = pcNorm(pcSub(D,A));
   let extra = '';
@@ -169,7 +169,7 @@ function pcDynRender(tag){
              + pcTickN(pcMid(Od,B), pcNorm(pcSub(B,Od)),1) + pcTickN(pcMid(Od,D), pcNorm(pcSub(D,Od)),1);
     }
   } else if(kind==='los' && mode==='sides'){
-    extra += pcTickN(pcMid(A,B), dAB, 1) + pcTickN(pcMid(A,D), dAD, 1);
+    if(satisfied) extra += pcTickN(pcMid(A,B), dAB, 1) + pcTickN(pcMid(A,D), dAD, 1);
   } else if(kind==='los' && mode==='diagonals'){
     extra += `<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#1F3A5C" stroke-width="1.3"/>
       <line x1="${B.x}" y1="${B.y}" x2="${D.x}" y2="${D.y}" stroke="#9E1F5E" stroke-width="1.3"/>`;
@@ -177,13 +177,32 @@ function pcDynRender(tag){
       const Od = pcMid(A,C);
       extra += pcRightAngle(Od, pcNorm(pcSub(C,A)), pcNorm(pcSub(D,B)), 11);
     }
+  } else if(kind==='carre1'){
+    // toujours un losange (D contraint sur le cercle de rayon AB) : on code les 4 côtés en continu.
+    extra += pcTickN(pcMid(A,B), dAB, 1) + pcTickN(pcMid(B,C), pcNorm(pcSub(C,B)),1)
+           + pcTickN(pcMid(C,D), pcNorm(pcSub(D,C)),1) + pcTickN(pcMid(D,A), pcNorm(pcSub(A,D)),1);
+    if(satisfied) extra += pcRightAngle(A,dAB,dAD,14);
+  } else if(kind==='carre2'){
+    // toujours un rectangle (D contraint sur la perpendiculaire en A) : on code les 4 angles droits en continu.
+    const dirs = {A:[dAB,dAD], B:[pcNorm(pcSub(A,B)),pcNorm(pcSub(C,B))], C:[pcNorm(pcSub(B,C)),pcNorm(pcSub(D,C))], D:[pcNorm(pcSub(A,D)),pcNorm(pcSub(C,D))]};
+    extra += pcRightAngle(A,dirs.A[0],dirs.A[1]) + pcRightAngle(B,dirs.B[0],dirs.B[1]) + pcRightAngle(C,dirs.C[0],dirs.C[1]) + pcRightAngle(D,dirs.D[0],dirs.D[1]);
+    if(satisfied) extra += pcTickN(pcMid(A,B), dAB, 1) + pcTickN(pcMid(A,D), dAD, 1);
   }
   const labels = pcLabel(A.x-16,A.y+4,'A') + pcLabel(B.x+8,B.y+4,'B') + pcLabel(C.x+8,C.y-6,'C') + pcLabel(D.x-8,D.y-10,'D');
   const handleColor = satisfied ? '#1F6B3A' : 'var(--accent-orange)';
   const handle = `<circle cx="${D.x}" cy="${D.y}" r="10" fill="${handleColor}" stroke="#fff" stroke-width="2" style="cursor:grab;" data-pcdyn="${tag}"/>`;
-  const msg = satisfied ? (kind==='rect' ? "Angle droit : c'est un rectangle !" : "Côtés égaux : c'est un losange !") : 'Fais glisser le point orange.';
+  const msgMap = {
+    'rect-angle': "Angle droit : c'est un rectangle !",
+    'rect-diagonals': "Diagonales de même longueur : c'est un rectangle !",
+    'los-sides': "Côtés consécutifs égaux : c'est un losange !",
+    'los-diagonals': "Diagonales perpendiculaires : c'est un losange !",
+    'carre1-angle': "Angle droit : ce losange est un carré !",
+    'carre2-sides': "Côtés consécutifs égaux : ce rectangle est un carré !",
+  };
+  const msgKey = (kind==='carre1') ? 'carre1-angle' : (kind==='carre2') ? 'carre2-sides' : `${kind}-${mode}`;
+  const msg = satisfied ? msgMap[msgKey] : 'Fais glisser le point orange.';
   const svgId = 'pcDynSvg-'+tag;
-  const svg = `<svg id="${svgId}" viewBox="0 0 420 280" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;touch-action:none;">
+  const svg = `<svg id="${svgId}" viewBox="0 0 440 400" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;touch-action:none;">
     <line x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="${B.x}" y1="${B.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="${C.x}" y1="${C.y}" x2="${D.x}" y2="${D.y}" stroke="#1C1B2E" stroke-width="1.6"/>
@@ -231,11 +250,28 @@ function pcDynMove(ev){
       const side = ((D.x-A.x)*perp.x + (D.y-A.y)*perp.y) >= 0 ? 1 : -1;
       D = pcAdd(A, pcScale(perp, side*dist));
     }
-  } else {
+  } else if(kind==='los'){
     const adLen = Math.hypot(D.x-A.x, D.y-A.y) || 1;
     if(Math.abs(adLen-abLen)<8){
       D = pcAdd(A, pcScale(pcNorm(pcSub(D,A)), abLen));
     }
+  } else if(kind==='carre1'){
+    // toujours un losange : D reste en permanence sur le cercle de rayon AB, seul l'angle varie.
+    D = pcAdd(A, pcScale(pcNorm(pcSub(D,A)), abLen));
+    const angle = pcDynAngleDeg(A,B,D);
+    if(Math.abs(angle-90)<4){
+      const perp = pcPerp(pcNorm(pcSub(B,A)));
+      const side = ((D.x-A.x)*perp.x + (D.y-A.y)*perp.y) >= 0 ? 1 : -1;
+      D = pcAdd(A, pcScale(perp, side*abLen));
+    }
+  } else if(kind==='carre2'){
+    // toujours un rectangle : D reste en permanence sur la perpendiculaire en A, seule la distance varie.
+    const perp = pcPerp(pcNorm(pcSub(B,A)));
+    const v = pcSub(D,A);
+    const signedDist = v.x*perp.x + v.y*perp.y;
+    let dist = Math.abs(signedDist) || 1;
+    if(Math.abs(dist-abLen)<8) dist = abLen;
+    D = pcAdd(A, pcScale(perp, (signedDist>=0?1:-1)*dist));
   }
   st.D = D;
   pcDynRender(tag);
@@ -343,12 +379,12 @@ document.getElementById('cours-demo-parallelogrammes-particuliers-5e').innerHTML
 <p class="example-title" style="margin-top:0;">Reconnaître un carré</p>
 <span class="prop-badge">Propriété 1</span>
 <div class="def-box">Si un <b>losange</b> a un <b>angle droit</b> alors c'est un <b>carré</b>.</div>
-<div class="figure-wrap">${pcBuildLosOneRightSvg()}</div>
+<div class="figure-wrap">${pcDynWidget('carre1')}<p class="hint interaction-hint" style="text-align:center;">Ce quadrilatère reste toujours un losange, quel que soit l'endroit où tu déplaces D. Fais-le glisser pour modifier l'angle en A : quand il devient droit, le losange devient un carré.</p></div>
 <p style="margin:10px 0 14px;">ABCD est un losange dont l'angle en A est droit. Un losange a toutes les propriétés du parallélogramme, donc les angles en B, C et D sont droits également (Propriété 3 du rectangle). ABCD a donc ses quatre côtés égaux et ses quatre angles droits : c'est un carré.</p>
 
 <span class="prop-badge">Propriété 2</span>
 <div class="def-box">Si un <b>rectangle</b> a <b>deux côtés consécutifs de même longueur</b> alors c'est un <b>carré</b>.</div>
-<div class="figure-wrap">${pcBuildRectTwoSidesSvg()}</div>
+<div class="figure-wrap">${pcDynWidget('carre2')}<p class="hint interaction-hint" style="text-align:center;">Ce quadrilatère reste toujours un rectangle, quel que soit l'endroit où tu déplaces D. Fais-le glisser pour modifier la longueur AD : quand elle devient égale à AB, le rectangle devient un carré.</p></div>
 <p style="margin:10px 0 14px;">ABCD est un rectangle tel que AB = AD. Un rectangle est un parallélogramme, donc ABCD est aussi un losange (Propriété 1 du losange). ABCD a donc ses quatre angles droits et ses quatre côtés égaux : c'est un carré.</p>
 `;
 
@@ -401,12 +437,14 @@ DEMO_REGISTRY['Parallélogrammes particuliers'] = {
   cours:'cours-demo-parallelogrammes-particuliers-5e', methode:'methode-demo-parallelogrammes-particuliers-5e', exos:'exos-demo-parallelogrammes-particuliers-5e',
   init:()=>{
     injectCourseAddButtons(document.getElementById('cours-demo-parallelogrammes-particuliers-5e'));
-    const A={x:110,y:210}, B={x:310,y:210};
-    pcDynInit('rectAngle', A, B, {x:150,y:90}, 'rect', 'angle');
-    pcDynInit('rectDiag', A, B, {x:170,y:80}, 'rect', 'diagonals');
-    pcDynInit('losSides', A, B, {x:180,y:70}, 'los', 'sides');
-    pcDynInit('losDiag', A, B, {x:190,y:60}, 'los', 'diagonals');
-    ['rectAngle','rectDiag','losSides','losDiag'].forEach(pcDynRender);
+    const A={x:160,y:250}, B={x:290,y:250};
+    pcDynInit('rectAngle', A, B, {x:190,y:130}, 'rect', 'angle');
+    pcDynInit('rectDiag', A, B, {x:210,y:120}, 'rect', 'diagonals');
+    pcDynInit('losSides', A, B, {x:220,y:110}, 'los', 'sides');
+    pcDynInit('losDiag', A, B, {x:230,y:100}, 'los', 'diagonals');
+    pcDynInit('carre1', A, B, {x:238,y:146}, 'carre1', 'angle');
+    pcDynInit('carre2', A, B, {x:160,y:100}, 'carre2', 'sides');
+    ['rectAngle','rectDiag','losSides','losDiag','carre1','carre2'].forEach(pcDynRender);
   }
 };
 
