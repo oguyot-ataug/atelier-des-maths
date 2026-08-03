@@ -422,43 +422,64 @@ function qcReset(){ qcActive = new Set(); qcRender(); }
 function qcQuadLabelsGeneric(A,B,C,D){
   return pcLabel(A.x-16,A.y+6,'A') + pcLabel(B.x+8,B.y+10,'B') + pcLabel(C.x+8,C.y-6,'C') + pcLabel(D.x-8,D.y-10,'D');
 }
-function qcFigureQuelconque(){
-  const A={x:90,y:200},B={x:300,y:230},C={x:330,y:90},D={x:150,y:60};
-  return pcSvgWrap(pcQuadSides(A,B,C,D)+qcQuadLabelsGeneric(A,B,C,D), 400,260,340);
-}
-function qcFigureTrapeze(){
-  const A={x:70,y:220},B={x:330,y:220},C={x:270,y:80},D={x:130,y:80};
-  const tag = `<text x="30" y="24" font-size="13" font-weight="700" fill="#1F3A5C">(AB) ∥ (DC)</text>`;
-  return pcSvgWrap(pcQuadSides(A,B,C,D)+tag+qcQuadLabelsGeneric(A,B,C,D), 400,260,340);
-}
-function qcFigureCerfVolant(){
-  const A={x:200,y:50},B={x:320,y:150},C={x:200,y:260},D={x:80,y:150};
-  const ticks = pcTickN(pcMid(A,B),pcNorm(pcSub(B,A)),1) + pcTickN(pcMid(A,D),pcNorm(pcSub(D,A)),1)
-    + pcTickN(pcMid(C,B),pcNorm(pcSub(B,C)),2) + pcTickN(pcMid(C,D),pcNorm(pcSub(D,C)),2);
-  const labels = pcLabel(A.x-6,A.y-10,'A') + pcLabel(B.x+8,B.y+4,'B') + pcLabel(C.x-6,C.y+20,'C') + pcLabel(D.x-20,D.y+4,'D');
-  return pcSvgWrap(pcQuadSides(A,B,C,D)+ticks+labels, 400,300,340);
-}
-function qcFigureFor(name){
+/* Points de base selon la classification atteinte, pour que la figure soit réellement
+   cohérente avec ce qui a déjà été établi (un vrai parallélogramme dès que Dbis ou P1+P2
+   sont cochés, un vrai losange une fois la classification atteinte, etc.). */
+function qcPointsFor(name){
   switch(name){
-    case 'Quelconque': return qcFigureQuelconque();
-    case 'Trapèze': return qcFigureTrapeze();
-    case 'Cerf-volant': return qcFigureCerfVolant();
-    case 'Parallélogramme': return pgSvgWrap(pgBaseSides()+pgBaseLabels());
-    case 'Rectangle': return pcBuildRectAnglesSvg(['A','B','C','D']);
-    case 'Losange': return pcBuildLosSidesSvg();
-    case 'Carré': return pcBuildSquareSvg();
-    default: return '';
+    case 'Carré': return {A:PC_S_A,B:PC_S_B,C:PC_S_C,D:PC_S_D};
+    case 'Rectangle': return {A:PC_R_A,B:PC_R_B,C:PC_R_C,D:PC_R_D};
+    case 'Losange': return {A:PC_L_A,B:PC_L_B,C:PC_L_C,D:PC_L_D};
+    case 'Parallélogramme': return {A:PG_A,B:PG_B,C:PG_C,D:PG_D};
+    case 'Trapèze': return {A:{x:70,y:220},B:{x:330,y:220},C:{x:270,y:80},D:{x:130,y:80}};
+    case 'Cerf-volant': return {A:{x:200,y:50},B:{x:320,y:150},C:{x:200,y:260},D:{x:80,y:150}};
+    default: return {A:{x:90,y:200},B:{x:300,y:230},C:{x:330,y:90},D:{x:150,y:60}};
   }
+}
+/* Construit la figure en codant exactement les propriétés actuellement cochées (et pas
+   seulement la classification finale) : diagonales et leur codage dès qu'une propriété de
+   diagonale est cochée, côtés codés dès qu'une propriété de côté est cochée, etc. */
+function qcBuildFigure(){
+  const name = qcClassify();
+  const {A,B,C,D} = qcPointsFor(name);
+  const has = p => qcActive.has(p);
+  const O = pcMid(A,C);
+  let extra = '';
+  const needDiag = has('Dbis') || has('Deq') || has('Dperp');
+  if(needDiag){
+    extra += `<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#1F3A5C" stroke-width="1.3"/>
+      <line x1="${B.x}" y1="${B.y}" x2="${D.x}" y2="${D.y}" stroke="#9E1F5E" stroke-width="1.3"/>`;
+    if(has('Dbis')) extra += `<circle cx="${O.x}" cy="${O.y}" r="2.6" fill="#1C1B2E"/>`+pcLabel(O.x+7,O.y-6,'O');
+    if(has('Deq') && has('Dbis')){
+      extra += pcTickN(pcMid(O,A),pcNorm(pcSub(A,O)),1) + pcTickN(pcMid(O,C),pcNorm(pcSub(C,O)),1)
+             + pcTickN(pcMid(O,B),pcNorm(pcSub(B,O)),1) + pcTickN(pcMid(O,D),pcNorm(pcSub(D,O)),1);
+    } else if(has('Deq')){
+      extra += pcTickN(pcMid(A,C),pcNorm(pcSub(C,A)),1) + pcTickN(pcMid(B,D),pcNorm(pcSub(D,B)),1);
+    }
+    if(has('Dperp')) extra += pcRightAngle(O, pcNorm(pcSub(C,A)), pcNorm(pcSub(D,B)), 11);
+  }
+  if(has('Sconsec')){
+    extra += pcTickN(pcMid(A,B),pcNorm(pcSub(B,A)),1) + pcTickN(pcMid(A,D),pcNorm(pcSub(D,A)),1);
+  }
+  if(has('Kite')){
+    extra += pcTickN(pcMid(A,B),pcNorm(pcSub(B,A)),1) + pcTickN(pcMid(A,D),pcNorm(pcSub(D,A)),1)
+           + pcTickN(pcMid(C,B),pcNorm(pcSub(B,C)),2) + pcTickN(pcMid(C,D),pcNorm(pcSub(D,C)),2);
+  }
+  if(has('Angle90')) extra += pcRightAngle(A, pcNorm(pcSub(B,A)), pcNorm(pcSub(D,A)), 14);
+  let tagY = 22;
+  if(has('P1')){ extra += `<text x="16" y="${tagY}" font-size="12" font-weight="700" fill="#1F3A5C">(AB) ∥ (DC)</text>`; tagY += 16; }
+  if(has('P2')){ extra += `<text x="16" y="${tagY}" font-size="12" font-weight="700" fill="#1F3A5C">(AD) ∥ (BC)</text>`; }
+  const labels = qcQuadLabelsGeneric(A,B,C,D);
+  return pcSvgWrap(pcQuadSides(A,B,C,D)+extra+labels, 420,320,360);
 }
 function qcRender(){
   document.querySelectorAll('.qc-btn').forEach(btn=>{
     btn.classList.toggle('active', qcActive.has(btn.dataset.code));
   });
-  const name = qcClassify();
   const result = document.getElementById('qcResult');
-  if(result) result.textContent = name;
+  if(result) result.textContent = qcClassify();
   const fig = document.getElementById('qcFigure');
-  if(fig) fig.innerHTML = qcFigureFor(name);
+  if(fig) fig.innerHTML = qcBuildFigure();
 }
 document.getElementById('methode-demo-parallelogrammes-particuliers-5e').innerHTML = `
 <p class="example-title" style="margin-top:0;">🔎 Utilitaire : quel est ce quadrilatère ?</p>
