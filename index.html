@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.4</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.5</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2284,6 +2284,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-03.5', items:[
+    "5e -- N6 Équations : géométrie de la balance corrigée -- les plateaux reposent maintenant sur de courts montants au-dessus des bras, au lieu d'être suspendus par des fils. Corrigé un bug où la balance penchait du mauvais côté. Le jeu part maintenant d'une situation de départ (une boule déjà posée à gauche, de masse cachée), et se joue en faisant glisser des poids (5/10/20/50 g) depuis une réserve jusqu'à un plateau, plutôt qu'avec des boutons.",
+  ]},
   { version:'2026-08-03.4', items:[
     "5e -- N6 Équations : les balances sont redessinées (sphères en dégradé, plateaux dorés). Nouveau jeu interactif dans la Méthode -- l'élève ajoute des boules ou des masses sur chaque plateau (masse de la boule fixée mais non révélée), la balance penche visuellement en fonction de ses choix. Nouvel exercice avec 2 pesées illustrées à traduire en équation.",
   ]},
