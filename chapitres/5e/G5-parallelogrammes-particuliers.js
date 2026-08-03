@@ -419,16 +419,50 @@ function qcToggle(code){
   qcRender();
 }
 function qcReset(){ qcActive = new Set(); qcRender(); }
+function qcQuadLabelsGeneric(A,B,C,D){
+  return pcLabel(A.x-16,A.y+6,'A') + pcLabel(B.x+8,B.y+10,'B') + pcLabel(C.x+8,C.y-6,'C') + pcLabel(D.x-8,D.y-10,'D');
+}
+function qcFigureQuelconque(){
+  const A={x:90,y:200},B={x:300,y:230},C={x:330,y:90},D={x:150,y:60};
+  return pcSvgWrap(pcQuadSides(A,B,C,D)+qcQuadLabelsGeneric(A,B,C,D), 400,260,340);
+}
+function qcFigureTrapeze(){
+  const A={x:70,y:220},B={x:330,y:220},C={x:270,y:80},D={x:130,y:80};
+  const tag = `<text x="30" y="24" font-size="13" font-weight="700" fill="#1F3A5C">(AB) ∥ (DC)</text>`;
+  return pcSvgWrap(pcQuadSides(A,B,C,D)+tag+qcQuadLabelsGeneric(A,B,C,D), 400,260,340);
+}
+function qcFigureCerfVolant(){
+  const A={x:200,y:50},B={x:320,y:150},C={x:200,y:260},D={x:80,y:150};
+  const ticks = pcTickN(pcMid(A,B),pcNorm(pcSub(B,A)),1) + pcTickN(pcMid(A,D),pcNorm(pcSub(D,A)),1)
+    + pcTickN(pcMid(C,B),pcNorm(pcSub(B,C)),2) + pcTickN(pcMid(C,D),pcNorm(pcSub(D,C)),2);
+  const labels = pcLabel(A.x-6,A.y-10,'A') + pcLabel(B.x+8,B.y+4,'B') + pcLabel(C.x-6,C.y+20,'C') + pcLabel(D.x-20,D.y+4,'D');
+  return pcSvgWrap(pcQuadSides(A,B,C,D)+ticks+labels, 400,300,340);
+}
+function qcFigureFor(name){
+  switch(name){
+    case 'Quelconque': return qcFigureQuelconque();
+    case 'Trapèze': return qcFigureTrapeze();
+    case 'Cerf-volant': return qcFigureCerfVolant();
+    case 'Parallélogramme': return pgSvgWrap(pgBaseSides()+pgBaseLabels());
+    case 'Rectangle': return pcBuildRectAnglesSvg(['A','B','C','D']);
+    case 'Losange': return pcBuildLosSidesSvg();
+    case 'Carré': return pcBuildSquareSvg();
+    default: return '';
+  }
+}
 function qcRender(){
   document.querySelectorAll('.qc-btn').forEach(btn=>{
     btn.classList.toggle('active', qcActive.has(btn.dataset.code));
   });
+  const name = qcClassify();
   const result = document.getElementById('qcResult');
-  if(result) result.textContent = qcClassify();
+  if(result) result.textContent = name;
+  const fig = document.getElementById('qcFigure');
+  if(fig) fig.innerHTML = qcFigureFor(name);
 }
 document.getElementById('methode-demo-parallelogrammes-particuliers-5e').innerHTML = `
 <p class="example-title" style="margin-top:0;">🔎 Utilitaire : quel est ce quadrilatère ?</p>
-<p style="margin:0 0 14px;">Coche les propriétés que vérifie un quadrilatère ABCD : l'outil détermine le nom le plus précis qui correspond à cette combinaison.</p>
+<p style="margin:0 0 14px;">Coche les propriétés que vérifie un quadrilatère ABCD : l'outil détermine le nom le plus précis qui correspond à cette combinaison, et affiche une figure correspondante.</p>
 <div class="figure-wrap">
   <div style="display:flex;flex-direction:column;gap:8px;max-width:440px;margin:0 auto 16px;">
     ${QC_PROPS.map(p=>`<button class="btn secondary qc-btn" data-code="${p.code}" onclick="qcToggle('${p.code}')" style="text-align:left;">${p.label}</button>`).join('')}
@@ -437,6 +471,7 @@ document.getElementById('methode-demo-parallelogrammes-particuliers-5e').innerHT
     <p class="hint" style="margin:0 0 4px;">Ce quadrilatère est un(e) :</p>
     <p id="qcResult" style="font-size:1.6rem;font-weight:700;font-family:'Space Grotesk',sans-serif;color:var(--accent-orange);margin:0 0 14px;">Quelconque</p>
   </div>
+  <div id="qcFigure"></div>
   <div class="figure-toolbar" style="justify-content:center;">
     <button class="btn secondary" onclick="qcReset()">Tout décocher</button>
   </div>
