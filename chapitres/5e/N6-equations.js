@@ -84,20 +84,19 @@ const EQ_DEFS = `<defs>
     <stop offset="0%" stop-color="#FFDD86"/><stop offset="100%" stop-color="#F0A93A"/>
   </linearGradient>
 </defs>`;
-function eqDrawItem(x, y, item, onclick, dragPayload){
-  const click = onclick ? ` onclick="${onclick}" style="cursor:pointer;"` : '';
-  const drag = dragPayload ? ` draggable="true" ondragstart="eqGameDragStartItem(event,'${dragPayload}')"` : '';
+function eqDrawItem(x, y, item, dataAttr){
+  const data = dataAttr ? ` data-eqitem="${dataAttr}"` : '';
   if(item.ball){
     const grad = item.color==='orange' ? 'eqGradOrange' : 'eqGradGreen';
     const stroke = item.color==='orange' ? '#c96b12' : '#2f6d1c';
-    return `<circle cx="${x}" cy="${y}" r="19" fill="url(#${grad})" stroke="${stroke}" stroke-width="1.4"${click}${drag}/>`;
+    return `<circle cx="${x}" cy="${y}" r="19" fill="url(#${grad})" stroke="${stroke}" stroke-width="1.4"${data}/>`;
   }
-  return `<g${click}${drag}><rect x="${x-23}" y="${y-15}" width="46" height="28" rx="4" fill="#fff" stroke="#1C1B2E" stroke-width="1.5"/>
+  return `<g${data}><rect x="${x-23}" y="${y-15}" width="46" height="28" rx="4" fill="#fff" stroke="#1C1B2E" stroke-width="1.5"/>
     <text x="${x}" y="${y+5}" font-size="13" text-anchor="middle" font-weight="700" fill="#1C1B2E">${item.label}</text></g>`;
 }
 function eqDrawPanItems(cx, y, items, spacing, side){
   const startX = cx - (items.length-1)*spacing/2;
-  return items.map((it,i)=>eqDrawItem(startX+i*spacing, y, it, side?`eqGameRemove('${side}',${i})`:null, side&&!it.fixed?`move:${side}:${i}`:null)).join('');
+  return items.map((it,i)=>eqDrawItem(startX+i*spacing, y, it, side?`${side}:${i}`:null)).join('');
 }
 /* Géométrie commune : le fléau (bras horizontal) est en bas, posé sur le pivot ; les plateaux
    reposent sur un court montant AU-DESSUS de chaque bras (pas suspendus par des fils). */
@@ -158,7 +157,7 @@ function eqBal1Update(step){
 function eqBal1Next(){ if(eqBal1Step<1){ eqBal1Step++; eqBal1Update(eqBal1Step); } }
 function eqBal1Reset(){ eqBal1Step=0; eqBal1Update(0); }
 const EQ_BAL1_STEPS = [
-  {note:"Une boule de masse inconnue x et un poids de 20 g sont posés à gauche ; un poids de 60 g est posé à droite. La balance est équilibrée : x + 20 = 60."},
+  {note:"Une boule de masse inconnue x et une masse de 20 g sont posées à gauche ; une masse de 60 g est posée à droite. La balance est équilibrée : x + 20 = 60."},
   {note:"On retire 20 g de chaque plateau : la balance reste équilibrée. À gauche il reste la boule, à droite 60 − 20 = 40 g. Donc x = 40."},
 ];
 
@@ -174,7 +173,7 @@ function eqBal2Update(step){
 function eqBal2Next(){ if(eqBal2Step<1){ eqBal2Step++; eqBal2Update(eqBal2Step); } }
 function eqBal2Reset(){ eqBal2Step=0; eqBal2Update(0); }
 const EQ_BAL2_STEPS = [
-  {note:"Deux boules identiques (chacune de masse x) sont posées à gauche ; un poids de 90 g est posé à droite. La balance est équilibrée : 2x = 90."},
+  {note:"Deux boules identiques (chacune de masse x) sont posées à gauche ; une masse de 90 g est posée à droite. La balance est équilibrée : 2x = 90."},
   {note:"On partage chaque plateau en 2 parts égales : il reste une boule à gauche, et 90 : 2 = 45 g à droite. Donc x = 45."},
 ];
 
@@ -192,7 +191,7 @@ function eqBal3Update(step){
 function eqBal3Next(){ if(eqBal3Step<2){ eqBal3Step++; eqBal3Update(eqBal3Step); } }
 function eqBal3Reset(){ eqBal3Step=0; eqBal3Update(0); }
 const EQ_BAL3_STEPS = [
-  {note:"Trois boules identiques et un poids de 15 g sont posés à gauche ; un poids de 60 g est posé à droite. La balance est équilibrée : 3x + 15 = 60."},
+  {note:"Trois boules identiques et une masse de 15 g sont posées à gauche ; une masse de 60 g est posée à droite. La balance est équilibrée : 3x + 15 = 60."},
   {note:"On retire 15 g de chaque plateau : il reste 3 boules à gauche, et 60 − 15 = 45 g à droite. 3x = 45."},
   {note:"On partage chaque plateau en 3 parts égales : il reste une boule à gauche, et 45 : 3 = 15 g à droite. Donc x = 15."},
 ];
@@ -216,7 +215,7 @@ function eqGameRender(){
   const diff = leftW - rightW;
   const angle = Math.max(-16, Math.min(16, -diff/4));
   const wrap = document.getElementById('eqGameWrap');
-  if(wrap) wrap.innerHTML = eqBuildTiltBalanceSvg('eqGameSvg', eqGameLeft, eqGameRight, angle);
+  if(wrap){ wrap.innerHTML = eqBuildTiltBalanceSvg('eqGameSvg', eqGameLeft, eqGameRight, angle); eqGameAttachHandlers(); }
   const status = document.getElementById('eqGameStatus');
   if(status){
     status.textContent = diff===0 ? "La balance est à l'équilibre !" : (diff>0 ? 'Le plateau de gauche penche : il est plus lourd.' : 'Le plateau de droite penche : il est plus lourd.');
@@ -227,29 +226,31 @@ function eqGameAdd(side, item){
   (side==='left' ? eqGameLeft : eqGameRight).push(item);
   eqGameRender();
 }
-function eqGameRemove(side, idx){
+function eqGameRemoveAt(side, idx){
   const arr = side==='left' ? eqGameLeft : eqGameRight;
-  if(arr[idx] && arr[idx].fixed) return; // la boule ne se retire pas, c'est elle qu'on cherche
   arr.splice(idx,1);
+  eqGameRender();
+}
+function eqGameMoveTo(side, idx, targetSide){
+  const arr = side==='left' ? eqGameLeft : eqGameRight;
+  const item = arr[idx];
+  if(!item || targetSide===side) return;
+  arr.splice(idx,1);
+  (targetSide==='left' ? eqGameLeft : eqGameRight).push(item);
   eqGameRender();
 }
 function eqGameReset(){
   const sc = EQ_GAME_SCENARIOS[Math.floor(Math.random()*EQ_GAME_SCENARIOS.length)];
   EQ_GAME_BALL_WEIGHT = sc.ball;
   eqGameLeft = [];
-  for(let i=0;i<sc.leftBalls;i++) eqGameLeft.push({ball:true, color:'green', fixed:true});
+  for(let i=0;i<sc.leftBalls;i++) eqGameLeft.push({ball:true, color:'green'});
   if(sc.leftWeight>0) eqGameLeft.push({label:sc.leftWeight+' g', value:sc.leftWeight});
   eqGameRight = [{label:sc.rightWeight+' g', value:sc.rightWeight}];
   eqGameRender();
 }
-/* Glisser depuis la réserve (copie infinie) : payload "new:valeur". */
+/* Glisser depuis la réserve (copie infinie, source HTML fiable) : payload "new:valeur". */
 function eqGameDragStart(e, value){
   e.dataTransfer.setData('text/plain', 'new:'+value);
-}
-/* Glisser un objet déjà posé (déplacement ou suppression) : payload "move:côté:index". */
-function eqGameDragStartItem(e, payload){
-  e.dataTransfer.setData('text/plain', payload);
-  e.stopPropagation();
 }
 function eqGameDrop(e, side){
   e.preventDefault();
@@ -257,40 +258,59 @@ function eqGameDrop(e, side){
   if(data.indexOf('new:')===0){
     const value = parseInt(data.slice(4), 10);
     if(value) eqGameAdd(side, {label: value+' g', value});
-  } else if(data.indexOf('move:')===0){
-    const parts = data.split(':'); const fromSide = parts[1], idx = parseInt(parts[2],10);
-    const fromArr = fromSide==='left' ? eqGameLeft : eqGameRight;
-    const item = fromArr[idx];
-    if(!item || item.fixed) return;
-    fromArr.splice(idx,1);
-    (side==='left' ? eqGameLeft : eqGameRight).push(item);
-    eqGameRender();
   }
 }
-/* Détermine le plateau visé d'après la position du curseur au moment du dépôt (gauche/droite
-   de la moitié du conteneur), pour ne pas avoir besoin d'un calque de dépôt superposé au SVG
-   (qui bloquerait les clics et le glisser des objets déjà posés). */
 function eqGameDropAuto(e){
   const rect = e.currentTarget.getBoundingClientRect();
   const side = (e.clientX - rect.left) < rect.width/2 ? 'left' : 'right';
   eqGameDrop(e, side);
 }
-function eqGameDropTrash(e){
-  e.preventDefault();
-  const data = e.dataTransfer.getData('text/plain');
-  if(data.indexOf('move:')===0){
-    const parts = data.split(':'); const fromSide = parts[1], idx = parseInt(parts[2],10);
-    const arr = fromSide==='left' ? eqGameLeft : eqGameRight;
-    if(arr[idx] && arr[idx].fixed) return;
-    arr.splice(idx,1);
-    eqGameRender();
+
+/* Déplacement/suppression des objets déjà posés : basé sur les événements pointeur plutôt que
+   sur le drag HTML5 natif, qui n'est pas fiable depuis une source SVG selon les navigateurs.
+   Un simple clic (peu de déplacement du curseur) retire l'objet ; un vrai glisser le déplace
+   vers l'autre plateau ou vers la corbeille selon l'endroit du relâchement. */
+let eqDragInfo = null;
+function eqGameAttachHandlers(){
+  const wrap = document.getElementById('eqGameWrap');
+  if(!wrap) return;
+  wrap.querySelectorAll('[data-eqitem]').forEach(el=>{
+    el.style.cursor = 'grab';
+    el.onpointerdown = function(ev){
+      ev.preventDefault();
+      const [side, idxStr] = this.dataset.eqitem.split(':');
+      eqDragInfo = {side, idx: parseInt(idxStr,10), startX: ev.clientX, startY: ev.clientY};
+      document.addEventListener('pointerup', eqGamePointerUp, {once:true});
+    };
+  });
+}
+function eqGamePointerUp(ev){
+  if(!eqDragInfo) return;
+  const {side, idx, startX, startY} = eqDragInfo;
+  eqDragInfo = null;
+  const dist = Math.hypot(ev.clientX-startX, ev.clientY-startY);
+  if(dist < 8){ eqGameRemoveAt(side, idx); return; }
+  const x = ev.clientX, y = ev.clientY;
+  const trash = document.getElementById('eqTrashZone');
+  if(trash){
+    const tr = trash.getBoundingClientRect();
+    if(x>=tr.left && x<=tr.right && y>=tr.top && y<=tr.bottom){ eqGameRemoveAt(side, idx); return; }
+  }
+  const wrap = document.getElementById('eqGameWrap');
+  if(wrap){
+    const wr = wrap.getBoundingClientRect();
+    if(x>=wr.left && x<=wr.right && y>=wr.top-20 && y<=wr.bottom+20){
+      const targetSide = (x - wr.left) < wr.width/2 ? 'left' : 'right';
+      eqGameMoveTo(side, idx, targetSide);
+      return;
+    }
   }
 }
 
 document.getElementById('methode-demo-equations-5e').innerHTML = `
-<p style="margin:0 0 14px;">Une équation peut se représenter par une <b>balance équilibrée</b> : chaque plateau porte le même poids total. Une boule représente la masse inconnue x. Faire la même opération sur les deux plateaux garde la balance équilibrée -- exactement comme faire la même opération sur les deux membres d'une égalité.</p>
+<p style="margin:0 0 14px;">Une équation peut se représenter par une <b>balance équilibrée</b> : chaque plateau porte la même masse totale. Une boule représente la masse inconnue x. Faire la même opération sur les deux plateaux garde la balance équilibrée -- exactement comme faire la même opération sur les deux membres d'une égalité.</p>
 
-<p class="example-title" style="margin-top:0;">Une boule et un poids</p>
+<p class="example-title" style="margin-top:0;">Une boule et une masse</p>
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le raisonnement.</p>
   <div id="eqBal1Wrap"></div>
@@ -318,7 +338,7 @@ document.getElementById('methode-demo-equations-5e').innerHTML = `
   </div>
 </div>
 
-<p class="example-title" style="margin-top:26px;">On complexifie encore : boules et poids ensemble</p>
+<p class="example-title" style="margin-top:26px;">On complexifie encore : boules et masses ensemble</p>
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le raisonnement.</p>
   <div id="eqBal3Wrap"></div>
@@ -335,7 +355,7 @@ document.getElementById('methode-demo-equations-5e').innerHTML = `
 
 <p class="example-title" style="margin-top:26px;">🎮 Jeu : manipule la balance</p>
 <div class="figure-wrap">
-  <p class="hint interaction-hint" style="margin-top:0;">La balance part d'une situation qui traduit une équation (par exemple « une boule et 20 g à gauche, 70 g à droite » pour x + 20 = 70). Fais glisser un poids depuis la réserve pour en ajouter un, fais glisser un poids déjà posé vers l'autre plateau pour le déplacer, ou vers la corbeille pour le supprimer. Le bouton "Recommencer" tire une nouvelle situation au hasard.</p>
+  <p class="hint interaction-hint" style="margin-top:0;">La balance part d'une situation qui traduit une équation (par exemple « une boule et 20 g à gauche, 70 g à droite » pour x + 20 = 70). Fais glisser une masse depuis la réserve pour en ajouter une. Pour un objet déjà posé (y compris une boule) : clique dessus pour le retirer directement, ou maintiens le clic et déplace-le vers l'autre plateau ou vers la corbeille. Le bouton "Recommencer" tire une nouvelle situation au hasard.</p>
   <div style="position:relative;max-width:380px;margin:0 auto;">
     <div id="eqGameWrap" ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';" ondrop="eqGameDropAuto(event)"></div>
   </div>
@@ -352,7 +372,7 @@ document.getElementById('methode-demo-equations-5e').innerHTML = `
     </div>
     <div style="text-align:center;">
       <p class="hint" style="margin:0 0 6px;">Corbeille (glisser pour supprimer) :</p>
-      <div ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';" ondrop="eqGameDropTrash(event)" style="width:64px;height:64px;margin:0 auto;border:2px dashed #9E1F5E;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">🗑️</div>
+      <div id="eqTrashZone" style="width:64px;height:64px;margin:0 auto;border:2px dashed #9E1F5E;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">🗑️</div>
     </div>
   </div>
   <div class="figure-toolbar" style="justify-content:center;">
