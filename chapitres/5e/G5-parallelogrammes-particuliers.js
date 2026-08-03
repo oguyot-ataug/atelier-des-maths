@@ -125,35 +125,124 @@ function pcBuildSquareSvg(){
 }
 
 /* ================= Figures "reconnaître" : parallélogramme quelconque (réutilise G4) ================= */
-function pcBuildParaOneRightAngleSvg(){
-  const dAB = pgNorm(pgSub(PG_B,PG_A));
-  const dAD = pgNorm(pgSub(PG_D,PG_A));
-  const mark = pcRightAngle(PG_A, dAB, dAD, 14);
-  return pgSvgWrap(pgBaseSides() + mark + pgBaseLabels());
+/* ============================================================
+   MOTEUR INTERACTIF : on fait glisser le point D (A et B restent fixes) ;
+   C = B + (D-A) pour que ABCD reste toujours un parallélogramme, quelle que
+   soit la position de D. Un effet d'aimant verrouille D exactement sur la
+   condition ciblée (angle droit ou côtés égaux) dès qu'on s'en approche.
+   - kind='rect' : la condition est que l'angle en A soit droit (ce qui,
+     dans un parallélogramme, équivaut exactement à avoir des diagonales de
+     même longueur -- même lieu géométrique pour D, le cercle de Thalès sur [AB]).
+   - kind='los'  : la condition est que AD = AB (ce qui équivaut exactement
+     à avoir des diagonales perpendiculaires -- même lieu géométrique pour D,
+     le cercle de centre A et de rayon AB).
+   ============================================================ */
+let pcDynState = {};
+let pcDragTag = null;
+function pcDynC(A,B,D){ return pcAdd(B, pcSub(D,A)); }
+function pcDynAngleDeg(A,B,D){
+  const v1=pcSub(B,A), v2=pcSub(D,A);
+  const dot=v1.x*v2.x+v1.y*v2.y;
+  const mag=Math.hypot(v1.x,v1.y)*Math.hypot(v2.x,v2.y)||1;
+  return Math.acos(Math.max(-1,Math.min(1,dot/mag)))*180/Math.PI;
 }
-function pcBuildParaEqualDiagSvg(){
-  const O = pgMid(PG_A,PG_C);
-  const diag = `<line x1="${PG_A.x}" y1="${PG_A.y}" x2="${PG_C.x}" y2="${PG_C.y}" stroke="#1C1B2E" stroke-width="1.3"/>
-    <line x1="${PG_B.x}" y1="${PG_B.y}" x2="${PG_D.x}" y2="${PG_D.y}" stroke="#1C1B2E" stroke-width="1.3"/>`;
-  const ticks = pgTickN(pgMid(O,PG_A), pgNorm(pgSub(PG_A,O)),1) + pgTickN(pgMid(O,PG_C), pgNorm(pgSub(PG_C,O)),1)
-    + pgTickN(pgMid(O,PG_B), pgNorm(pgSub(PG_B,O)),1) + pgTickN(pgMid(O,PG_D), pgNorm(pgSub(PG_D,O)),1);
-  const oMark = `<circle cx="${O.x}" cy="${O.y}" r="2.6" fill="#1C1B2E"/>`+pgLabel(O.x+7,O.y-6,'O');
-  return pgSvgWrap(pgBaseSides() + diag + ticks + oMark + pgBaseLabels());
+function pcDynInit(tag, A, B, D, kind, mode){ pcDynState[tag] = {A,B,D,kind,mode}; }
+function pcDynRender(tag){
+  const st = pcDynState[tag];
+  const {A,B,kind,mode} = st;
+  const D = st.D;
+  const C = pcDynC(A,B,D);
+  const abLen = Math.hypot(B.x-A.x,B.y-A.y);
+  let satisfied;
+  if(kind==='rect'){ satisfied = Math.abs(pcDynAngleDeg(A,B,D)-90)<0.6; }
+  else { satisfied = Math.abs(Math.hypot(D.x-A.x,D.y-A.y)-abLen)<2; }
+  const dAB = pcNorm(pcSub(B,A)), dAD = pcNorm(pcSub(D,A));
+  let extra = '';
+  if(kind==='rect' && mode==='angle'){
+    if(satisfied) extra += pcRightAngle(A,dAB,dAD,14);
+  } else if(kind==='rect' && mode==='diagonals'){
+    extra += `<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#1F3A5C" stroke-width="1.3"/>
+      <line x1="${B.x}" y1="${B.y}" x2="${D.x}" y2="${D.y}" stroke="#9E1F5E" stroke-width="1.3"/>`;
+    if(satisfied){
+      const Od = pcMid(A,C);
+      extra += pcTickN(pcMid(Od,A), pcNorm(pcSub(A,Od)),1) + pcTickN(pcMid(Od,C), pcNorm(pcSub(C,Od)),1)
+             + pcTickN(pcMid(Od,B), pcNorm(pcSub(B,Od)),1) + pcTickN(pcMid(Od,D), pcNorm(pcSub(D,Od)),1);
+    }
+  } else if(kind==='los' && mode==='sides'){
+    extra += pcTickN(pcMid(A,B), dAB, 1) + pcTickN(pcMid(A,D), dAD, 1);
+  } else if(kind==='los' && mode==='diagonals'){
+    extra += `<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#1F3A5C" stroke-width="1.3"/>
+      <line x1="${B.x}" y1="${B.y}" x2="${D.x}" y2="${D.y}" stroke="#9E1F5E" stroke-width="1.3"/>`;
+    if(satisfied){
+      const Od = pcMid(A,C);
+      extra += pcRightAngle(Od, pcNorm(pcSub(C,A)), pcNorm(pcSub(D,B)), 11);
+    }
+  }
+  const labels = pcLabel(A.x-16,A.y+4,'A') + pcLabel(B.x+8,B.y+4,'B') + pcLabel(C.x+8,C.y-6,'C') + pcLabel(D.x-8,D.y-10,'D');
+  const handleColor = satisfied ? '#1F6B3A' : 'var(--accent-orange)';
+  const handle = `<circle cx="${D.x}" cy="${D.y}" r="10" fill="${handleColor}" stroke="#fff" stroke-width="2" style="cursor:grab;" data-pcdyn="${tag}"/>`;
+  const msg = satisfied ? (kind==='rect' ? "Angle droit : c'est un rectangle !" : "Côtés égaux : c'est un losange !") : 'Fais glisser le point orange.';
+  const svgId = 'pcDynSvg-'+tag;
+  const svg = `<svg id="${svgId}" viewBox="0 0 420 280" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;touch-action:none;">
+    <line x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${B.x}" y1="${B.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${C.x}" y1="${C.y}" x2="${D.x}" y2="${D.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${D.x}" y1="${D.y}" x2="${A.x}" y2="${A.y}" stroke="#1C1B2E" stroke-width="1.6"/>
+    ${extra}${labels}${handle}
+  </svg>`;
+  const wrap = document.getElementById('pcDynWrap-'+tag);
+  if(wrap) wrap.innerHTML = svg;
+  const status = document.getElementById('pcDynStatus-'+tag);
+  if(status){ status.textContent = msg; status.style.color = satisfied ? '#1F6B3A' : 'var(--ink-soft)'; }
+  pcDynAttach(tag);
 }
-function pcBuildParaTwoSidesSvg(){
-  const abDir = pgNorm(pgSub(PG_B,PG_A));
-  const adDir = pgNorm(pgSub(PG_D,PG_A));
-  const ticks = pgTickN(pgMid(PG_A,PG_B), abDir, 1) + pgTickN(pgMid(PG_A,PG_D), adDir, 1);
-  return pgSvgWrap(pgBaseSides() + ticks + pgBaseLabels());
+function pcDynAttach(tag){
+  const wrap = document.getElementById('pcDynWrap-'+tag);
+  if(!wrap) return;
+  const handle = wrap.querySelector(`[data-pcdyn="${tag}"]`);
+  if(!handle) return;
+  handle.onpointerdown = function(ev){
+    ev.preventDefault();
+    pcDragTag = tag;
+    document.addEventListener('pointermove', pcDynMove);
+    document.addEventListener('pointerup', pcDynUp, {once:true});
+  };
 }
-function pcBuildParaPerpDiagSvg(){
-  const O = pgMid(PG_A,PG_C);
-  const diag = `<line x1="${PG_A.x}" y1="${PG_A.y}" x2="${PG_C.x}" y2="${PG_C.y}" stroke="#1C1B2E" stroke-width="1.3"/>
-    <line x1="${PG_B.x}" y1="${PG_B.y}" x2="${PG_D.x}" y2="${PG_D.y}" stroke="#1C1B2E" stroke-width="1.3"/>`;
-  const dAC = pgNorm(pgSub(PG_C,PG_A)), dBD = pgNorm(pgSub(PG_D,PG_B));
-  const rightAngle = pcRightAngle(O, dAC, dBD, 11);
-  const oMark = `<circle cx="${O.x}" cy="${O.y}" r="2.6" fill="#1C1B2E"/>`+pgLabel(O.x+7,O.y-6,'O');
-  return pgSvgWrap(pgBaseSides() + diag + rightAngle + oMark + pgBaseLabels());
+function pcDynSvgPoint(svg, clientX, clientY){
+  const pt = svg.createSVGPoint();
+  pt.x = clientX; pt.y = clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+function pcDynMove(ev){
+  if(!pcDragTag) return;
+  const tag = pcDragTag;
+  const st = pcDynState[tag];
+  const svg = document.getElementById('pcDynSvg-'+tag);
+  if(!svg) return;
+  const p = pcDynSvgPoint(svg, ev.clientX, ev.clientY);
+  let D = {x:p.x, y:p.y};
+  const {A,B,kind} = st;
+  const abLen = Math.hypot(B.x-A.x,B.y-A.y);
+  if(kind==='rect'){
+    const angle = pcDynAngleDeg(A,B,D);
+    if(Math.abs(angle-90)<4){
+      const dist = Math.hypot(D.x-A.x, D.y-A.y);
+      const perp = pcPerp(pcNorm(pcSub(B,A)));
+      const side = ((D.x-A.x)*perp.x + (D.y-A.y)*perp.y) >= 0 ? 1 : -1;
+      D = pcAdd(A, pcScale(perp, side*dist));
+    }
+  } else {
+    const adLen = Math.hypot(D.x-A.x, D.y-A.y) || 1;
+    if(Math.abs(adLen-abLen)<8){
+      D = pcAdd(A, pcScale(pcNorm(pcSub(D,A)), abLen));
+    }
+  }
+  st.D = D;
+  pcDynRender(tag);
+}
+function pcDynUp(){ document.removeEventListener('pointermove', pcDynMove); pcDragTag = null; }
+function pcDynWidget(tag){
+  return `<div id="pcDynWrap-${tag}"></div><p class="hint" id="pcDynStatus-${tag}" style="text-align:center;font-weight:700;margin:6px 0;"></p>`;
 }
 function pcBuildLosOneRightSvg(){
   const dAB = pcNorm(pcSub(PC_L_B,PC_L_A));
@@ -200,13 +289,13 @@ document.getElementById('cours-demo-parallelogrammes-particuliers-5e').innerHTML
 
 <span class="prop-badge">Propriété 2</span>
 <div class="def-box">Si un <b>parallélogramme</b> a ses diagonales de <b>même longueur</b> alors c'est un <b>rectangle</b>.</div>
-<div class="figure-wrap">${pcBuildParaEqualDiagSvg()}</div>
+<div class="figure-wrap">${pcDynWidget('rectDiag')}<p class="hint interaction-hint" style="text-align:center;">Fais glisser le point D : quand les diagonales deviennent égales, la figure devient un rectangle.</p></div>
 <p style="margin:10px 0 6px;"><b>Démonstration</b> :</p>
 <p style="margin:2px 0 14px;">ABCD est un parallélogramme tel que AC = BD. Ses côtés opposés ont donc la même longueur deux à deux, et ses diagonales ont la même longueur : ABCD est donc un rectangle.</p>
 
 <span class="prop-badge">Propriété 3</span>
 <div class="def-box">Si un <b>parallélogramme</b> a un <b>angle droit</b> alors c'est un <b>rectangle</b>.</div>
-<div class="figure-wrap">${pcBuildParaOneRightAngleSvg()}</div>
+<div class="figure-wrap">${pcDynWidget('rectAngle')}<p class="hint interaction-hint" style="text-align:center;">Fais glisser le point D pour modifier l'angle en A : quand il devient droit, la figure devient un rectangle.</p></div>
 <p style="margin:10px 0 6px;"><b>Démonstration</b> :</p>
 <p style="margin:2px 0;">ABCD est un parallélogramme dont l'angle en A est droit.</p>
 <p style="margin:2px 0;">Les côtés (AB) et (CD) sont parallèles et, comme (AD) est perpendiculaire à (AB), (AD) est également perpendiculaire à (CD). Donc l'angle en D est droit également.</p>
@@ -233,14 +322,14 @@ document.getElementById('cours-demo-parallelogrammes-particuliers-5e').innerHTML
 <p class="example-title" style="margin-top:22px;">B. Reconnaître un losange</p>
 <span class="prop-badge">Propriété 1</span>
 <div class="def-box">Si un <b>parallélogramme</b> a <b>deux côtés consécutifs de même longueur</b> alors c'est un <b>losange</b>.</div>
-<div class="figure-wrap">${pcBuildParaTwoSidesSvg()}</div>
+<div class="figure-wrap">${pcDynWidget('losSides')}<p class="hint interaction-hint" style="text-align:center;">Fais glisser le point D : quand AD devient égal à AB, la figure devient un losange.</p></div>
 <p style="margin:10px 0 6px;"><b>Démonstration</b> :</p>
 <p style="margin:2px 0;">ABCD est un parallélogramme tel que AB = AD. Ses côtés opposés ont donc la même longueur deux à deux : AB = CD et AD = BC.</p>
 <p style="margin:2px 0 14px;">Or AB = AD, donc AB = BC = CD = DA. Le quadrilatère ABCD a ses quatre côtés de même longueur : c'est donc un losange.</p>
 
 <span class="prop-badge">Propriété 2</span>
 <div class="def-box">Si un <b>parallélogramme</b> a ses diagonales <b>perpendiculaires</b> alors c'est un <b>losange</b>.</div>
-<div class="figure-wrap">${pcBuildParaPerpDiagSvg()}</div>
+<div class="figure-wrap">${pcDynWidget('losDiag')}<p class="hint interaction-hint" style="text-align:center;">Fais glisser le point D : quand les diagonales deviennent perpendiculaires, la figure devient un losange.</p></div>
 <p style="margin:10px 0 14px;">ABCD est un parallélogramme dont les diagonales [AC] et [BD] sont perpendiculaires. Donc le parallélogramme ABCD est un losange.</p>
 
 <div class="lesson-header"><span class="num">3</span><h3>Le carré</h3></div>
@@ -312,6 +401,12 @@ DEMO_REGISTRY['Parallélogrammes particuliers'] = {
   cours:'cours-demo-parallelogrammes-particuliers-5e', methode:'methode-demo-parallelogrammes-particuliers-5e', exos:'exos-demo-parallelogrammes-particuliers-5e',
   init:()=>{
     injectCourseAddButtons(document.getElementById('cours-demo-parallelogrammes-particuliers-5e'));
+    const A={x:110,y:210}, B={x:310,y:210};
+    pcDynInit('rectAngle', A, B, {x:150,y:90}, 'rect', 'angle');
+    pcDynInit('rectDiag', A, B, {x:170,y:80}, 'rect', 'diagonals');
+    pcDynInit('losSides', A, B, {x:180,y:70}, 'los', 'sides');
+    pcDynInit('losDiag', A, B, {x:190,y:60}, 'los', 'diagonals');
+    ['rectAngle','rectDiag','losSides','losDiag'].forEach(pcDynRender);
   }
 };
 
