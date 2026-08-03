@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-02.12</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.1</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -313,6 +313,9 @@
     <div id="cours-demo-calcul-litteral-5e" style="display:none;">
     </div>
 
+    <div id="cours-demo-equations-5e" style="display:none;">
+    </div>
+
     <div id="cours-generic" class="placeholder-box">
       <strong>Cours en construction</strong>
       Ce chapitre suivra le même gabarit que « Symétrie centrale » : définitions, figure dynamique, propriétés à retenir.
@@ -359,6 +362,8 @@
     </div>
     <div id="methode-demo-calcul-litteral-5e" style="display:none;">
     </div>
+    <div id="methode-demo-equations-5e" style="display:none;">
+    </div>
     <div id="methode-generic" class="placeholder-box">
       <strong>Animation en construction</strong>
       La construction pas-à-pas (règle et compas, ou pliage selon le chapitre) sera animée sur ce même principe : une étape à la fois, rejouable à volonté.
@@ -401,6 +406,8 @@
     <div id="exos-demo-proportionnalite-5e" style="display:none;">
     </div>
     <div id="exos-demo-calcul-litteral-5e" style="display:none;">
+    </div>
+    <div id="exos-demo-equations-5e" style="display:none;">
     </div>
     <div id="exos-generic" class="placeholder-box">
       <strong>Banque d'exercices en construction</strong>
@@ -2277,6 +2284,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-03.1', items:[
+    "Nouveau chapitre 5e -- N6 Équations : Cours complet (notion d'équation, résolution des types x+b=c et ax=c avec démos pas-à-pas), 5 exercices et un quiz. La partie Méthode suivra dans une prochaine session.",
+  ]},
   { version:'2026-08-02.12', items:[
     "5e -- N5 Calcul littéral, Exercices : retiré la ligne « Or, propriété » de la rédaction type « Tester une égalité », jugée superflue ici -- on passe directement des deux calculs à la conclusion.",
   ]},
@@ -3609,6 +3619,7 @@ renderNiveau('6e');
 <script src="chapitres/5e/G4-parallelogrammes.js"></script>
 <script src="chapitres/5e/P1-proportionnalite.js"></script>
 <script src="chapitres/5e/N5-calcul-litteral.js"></script>
+<script src="chapitres/5e/N6-equations.js"></script>
 <script src="chapitres/5e/G2-angles-parallelisme.js"></script>
 <script src="calcul-mental/calcul-mental.js"></script>
 </body>
