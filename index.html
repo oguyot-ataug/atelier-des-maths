@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.15</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.16</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2291,6 +2291,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-03.16', items:[
+    "5e -- G5 Parallélogrammes particuliers, utilitaire quadrilatère : « Diagonales perpendiculaires » cochée seule (sans propriété de parallélogramme) donne maintenant « Cerf-volant », au lieu de « Quelconque ».",
+  ]},
   { version:'2026-08-03.15', items:[
     "5e -- G5 Parallélogrammes particuliers, Méthode : nouvel utilitaire « Quel est ce quadrilatère ? » -- on coche les propriétés vérifiées (diagonales perpendiculaires, côtés consécutifs égaux, diagonales égales, diagonales qui se coupent en leur milieu, côtés opposés parallèles, un angle droit, cerf-volant) et l'outil affiche le nom le plus précis correspondant (quelconque, trapèze, cerf-volant, parallélogramme, rectangle, losange, carré). Les constructions pas-à-pas restent en préparation.",
   ]},
