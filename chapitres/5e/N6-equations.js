@@ -84,19 +84,20 @@ const EQ_DEFS = `<defs>
     <stop offset="0%" stop-color="#FFDD86"/><stop offset="100%" stop-color="#F0A93A"/>
   </linearGradient>
 </defs>`;
-function eqDrawItem(x, y, item, onclick){
+function eqDrawItem(x, y, item, onclick, dragPayload){
   const click = onclick ? ` onclick="${onclick}" style="cursor:pointer;"` : '';
+  const drag = dragPayload ? ` draggable="true" ondragstart="eqGameDragStartItem(event,'${dragPayload}')"` : '';
   if(item.ball){
     const grad = item.color==='orange' ? 'eqGradOrange' : 'eqGradGreen';
     const stroke = item.color==='orange' ? '#c96b12' : '#2f6d1c';
-    return `<circle cx="${x}" cy="${y}" r="19" fill="url(#${grad})" stroke="${stroke}" stroke-width="1.4"${click}/>`;
+    return `<circle cx="${x}" cy="${y}" r="19" fill="url(#${grad})" stroke="${stroke}" stroke-width="1.4"${click}${drag}/>`;
   }
-  return `<g${click}><rect x="${x-23}" y="${y-15}" width="46" height="28" rx="4" fill="#fff" stroke="#1C1B2E" stroke-width="1.5"/>
+  return `<g${click}${drag}><rect x="${x-23}" y="${y-15}" width="46" height="28" rx="4" fill="#fff" stroke="#1C1B2E" stroke-width="1.5"/>
     <text x="${x}" y="${y+5}" font-size="13" text-anchor="middle" font-weight="700" fill="#1C1B2E">${item.label}</text></g>`;
 }
 function eqDrawPanItems(cx, y, items, spacing, side){
   const startX = cx - (items.length-1)*spacing/2;
-  return items.map((it,i)=>eqDrawItem(startX+i*spacing, y, it, side?`eqGameRemove('${side}',${i})`:null)).join('');
+  return items.map((it,i)=>eqDrawItem(startX+i*spacing, y, it, side?`eqGameRemove('${side}',${i})`:null, side&&!it.fixed?`move:${side}:${i}`:null)).join('');
 }
 /* Géométrie commune : le fléau (bras horizontal) est en bas, posé sur le pivot ; les plateaux
    reposent sur un court montant AU-DESSUS de chaque bras (pas suspendus par des fils). */
@@ -196,9 +197,9 @@ const EQ_BAL3_STEPS = [
   {note:"On partage chaque plateau en 3 parts égales : il reste une boule à gauche, et 45 : 3 = 15 g à droite. Donc x = 15."},
 ];
 
-/* ---- Jeu : balance inclinable avec masse cachée, situation de départ + glisser-déposer ---- */
+/* ---- Jeu : balance inclinable, situation de départ = équation, tout en glisser-déposer ---- */
 let eqGameLeft = [], eqGameRight = [];
-const EQ_GAME_BALL_WEIGHT = 35; // masse réelle de la boule, jamais révélée à l'élève -- atteignable avec 5+10+20
+const EQ_GAME_BALL_WEIGHT = 50; // masse réelle de la boule (cachée) : x + 20 = 70, donc x = 50
 function eqGameWeight(items){
   return items.reduce((sum,it)=>sum+(it.ball?EQ_GAME_BALL_WEIGHT:it.value),0);
 }
@@ -210,7 +211,7 @@ function eqGameRender(){
   if(wrap) wrap.innerHTML = eqBuildTiltBalanceSvg('eqGameSvg', eqGameLeft, eqGameRight, angle);
   const status = document.getElementById('eqGameStatus');
   if(status){
-    status.textContent = diff===0 ? "La balance est à l'équilibre ! Tu as trouvé la masse de la boule." : (diff>0 ? 'Le plateau de gauche penche : il est plus lourd.' : 'Le plateau de droite penche : il est plus lourd.');
+    status.textContent = diff===0 ? "La balance est à l'équilibre !" : (diff>0 ? 'Le plateau de gauche penche : il est plus lourd.' : 'Le plateau de droite penche : il est plus lourd.');
     status.style.color = diff===0 ? '#1F6B3A' : 'var(--accent-orange)';
   }
 }
@@ -220,23 +221,58 @@ function eqGameAdd(side, item){
 }
 function eqGameRemove(side, idx){
   const arr = side==='left' ? eqGameLeft : eqGameRight;
-  if(arr[idx] && arr[idx].fixed) return; // la boule de la situation de départ ne se retire pas
+  if(arr[idx] && arr[idx].fixed) return; // la boule ne se retire pas, c'est elle qu'on cherche
   arr.splice(idx,1);
   eqGameRender();
 }
 function eqGameReset(){
-  eqGameLeft = [{ball:true, color:'green', fixed:true}];
-  eqGameRight = [];
+  eqGameLeft = [{ball:true, color:'green', fixed:true}, {label:'20 g', value:20}];
+  eqGameRight = [{label:'70 g', value:70}];
   eqGameRender();
 }
+/* Glisser depuis la réserve (copie infinie) : payload "new:valeur". */
 function eqGameDragStart(e, value){
-  e.dataTransfer.setData('text/plain', String(value));
+  e.dataTransfer.setData('text/plain', 'new:'+value);
+}
+/* Glisser un objet déjà posé (déplacement ou suppression) : payload "move:côté:index". */
+function eqGameDragStartItem(e, payload){
+  e.dataTransfer.setData('text/plain', payload);
+  e.stopPropagation();
 }
 function eqGameDrop(e, side){
   e.preventDefault();
-  const value = parseInt(e.dataTransfer.getData('text/plain'), 10);
-  if(!value) return;
-  eqGameAdd(side, {label: value+' g', value});
+  const data = e.dataTransfer.getData('text/plain');
+  if(data.indexOf('new:')===0){
+    const value = parseInt(data.slice(4), 10);
+    if(value) eqGameAdd(side, {label: value+' g', value});
+  } else if(data.indexOf('move:')===0){
+    const parts = data.split(':'); const fromSide = parts[1], idx = parseInt(parts[2],10);
+    const fromArr = fromSide==='left' ? eqGameLeft : eqGameRight;
+    const item = fromArr[idx];
+    if(!item || item.fixed) return;
+    fromArr.splice(idx,1);
+    (side==='left' ? eqGameLeft : eqGameRight).push(item);
+    eqGameRender();
+  }
+}
+/* Détermine le plateau visé d'après la position du curseur au moment du dépôt (gauche/droite
+   de la moitié du conteneur), pour ne pas avoir besoin d'un calque de dépôt superposé au SVG
+   (qui bloquerait les clics et le glisser des objets déjà posés). */
+function eqGameDropAuto(e){
+  const rect = e.currentTarget.getBoundingClientRect();
+  const side = (e.clientX - rect.left) < rect.width/2 ? 'left' : 'right';
+  eqGameDrop(e, side);
+}
+function eqGameDropTrash(e){
+  e.preventDefault();
+  const data = e.dataTransfer.getData('text/plain');
+  if(data.indexOf('move:')===0){
+    const parts = data.split(':'); const fromSide = parts[1], idx = parseInt(parts[2],10);
+    const arr = fromSide==='left' ? eqGameLeft : eqGameRight;
+    if(arr[idx] && arr[idx].fixed) return;
+    arr.splice(idx,1);
+    eqGameRender();
+  }
 }
 
 document.getElementById('methode-demo-equations-5e').innerHTML = `
@@ -285,21 +321,27 @@ document.getElementById('methode-demo-equations-5e').innerHTML = `
   </div>
 </div>
 
-<p class="example-title" style="margin-top:26px;">🎮 Jeu : fais pencher la balance</p>
+<p class="example-title" style="margin-top:26px;">🎮 Jeu : manipule la balance</p>
 <div class="figure-wrap">
-  <p class="hint interaction-hint" style="margin-top:0;">La boule (à gauche) a une masse fixée mais inconnue. Fais glisser des poids depuis la réserve jusqu'à un plateau pour essayer d'équilibrer la balance. Clique sur un poids déjà posé pour le retirer.</p>
+  <p class="hint interaction-hint" style="margin-top:0;">La balance part de la situation « une boule et 20 g à gauche, 70 g à droite » : elle traduit l'équation x + 20 = 70. Fais glisser un poids depuis la réserve pour en ajouter un, fais glisser un poids déjà posé vers l'autre plateau pour le déplacer, ou vers la corbeille pour le supprimer.</p>
   <div style="position:relative;max-width:380px;margin:0 auto;">
-    <div id="eqGameWrap"></div>
-    <div ondragover="event.preventDefault()" ondrop="eqGameDrop(event,'left')" style="position:absolute;left:0;top:0;width:46%;height:70%;"></div>
-    <div ondragover="event.preventDefault()" ondrop="eqGameDrop(event,'right')" style="position:absolute;right:0;top:0;width:46%;height:70%;"></div>
+    <div id="eqGameWrap" ondragover="event.preventDefault()" ondrop="eqGameDropAuto(event)"></div>
   </div>
   <p class="hint" id="eqGameStatus" style="text-align:center;font-weight:700;margin:8px 0;"></p>
-  <p class="hint" style="text-align:center;margin:0 0 6px;">Réserve de poids (glisse-les sur un plateau) :</p>
-  <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
-    <div draggable="true" ondragstart="eqGameDragStart(event,5)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">5 g</div>
-    <div draggable="true" ondragstart="eqGameDragStart(event,10)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">10 g</div>
-    <div draggable="true" ondragstart="eqGameDragStart(event,20)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">20 g</div>
-    <div draggable="true" ondragstart="eqGameDragStart(event,50)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">50 g</div>
+  <div style="display:flex;flex-wrap:wrap;gap:18px;justify-content:center;align-items:center;">
+    <div>
+      <p class="hint" style="text-align:center;margin:0 0 6px;">Réserve (glisser pour ajouter) :</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
+        <div draggable="true" ondragstart="eqGameDragStart(event,5)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">5 g</div>
+        <div draggable="true" ondragstart="eqGameDragStart(event,10)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">10 g</div>
+        <div draggable="true" ondragstart="eqGameDragStart(event,20)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">20 g</div>
+        <div draggable="true" ondragstart="eqGameDragStart(event,50)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">50 g</div>
+      </div>
+    </div>
+    <div ondragover="event.preventDefault()" ondrop="eqGameDropTrash(event)" style="text-align:center;">
+      <p class="hint" style="margin:0 0 6px;">Corbeille (glisser pour supprimer) :</p>
+      <div style="width:56px;height:56px;margin:0 auto;border:2px dashed #9E1F5E;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;">🗑️</div>
+    </div>
   </div>
   <div class="figure-toolbar" style="justify-content:center;">
     <button class="btn secondary" onclick="eqGameReset()">Recommencer</button>
