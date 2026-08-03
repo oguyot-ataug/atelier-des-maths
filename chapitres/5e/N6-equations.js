@@ -210,6 +210,21 @@ const EQ_GAME_SCENARIOS = [
 function eqGameWeight(items){
   return items.reduce((sum,it)=>sum+(it.ball?EQ_GAME_BALL_WEIGHT:it.value),0);
 }
+function eqGameExprSide(items){
+  const ballCount = items.filter(it=>it.ball).length;
+  const weightSum = items.filter(it=>!it.ball).reduce((s,it)=>s+it.value,0);
+  let expr = '';
+  if(ballCount===1) expr = 'x';
+  else if(ballCount>1) expr = ballCount+'x';
+  if(weightSum>0) expr = expr ? expr+' + '+weightSum : String(weightSum);
+  return expr || '0';
+}
+function eqGameEquationLine(){
+  const leftW = eqGameWeight(eqGameLeft), rightW = eqGameWeight(eqGameRight);
+  const rel = leftW===rightW ? '=' : (leftW>rightW ? '>' : '<');
+  return `${eqGameExprSide(eqGameLeft)} ${rel} ${eqGameExprSide(eqGameRight)}`;
+}
+let eqGameLog = [];
 function eqGameRender(){
   const leftW = eqGameWeight(eqGameLeft), rightW = eqGameWeight(eqGameRight);
   const diff = leftW - rightW;
@@ -220,6 +235,12 @@ function eqGameRender(){
   if(status){
     status.textContent = diff===0 ? "La balance est à l'équilibre !" : (diff>0 ? 'Le plateau de gauche penche : il est plus lourd.' : 'Le plateau de droite penche : il est plus lourd.');
     status.style.color = diff===0 ? '#1F6B3A' : 'var(--accent-orange)';
+  }
+  eqGameLog.push(eqGameEquationLine());
+  const logEl = document.getElementById('eqGameLogList');
+  if(logEl){
+    logEl.innerHTML = eqGameLog.map((l,i)=>`<div style="padding:3px 0;${i===eqGameLog.length-1?'font-weight:700;color:var(--accent-orange);':'color:var(--ink-soft);'}">${l}</div>`).join('');
+    logEl.scrollTop = logEl.scrollHeight;
   }
 }
 function eqGameAdd(side, item){
@@ -246,6 +267,7 @@ function eqGameReset(){
   for(let i=0;i<sc.leftBalls;i++) eqGameLeft.push({ball:true, color:'green'});
   if(sc.leftWeight>0) eqGameLeft.push({label:sc.leftWeight+' g', value:sc.leftWeight});
   eqGameRight = [{label:sc.rightWeight+' g', value:sc.rightWeight}];
+  eqGameLog = [];
   eqGameRender();
 }
 /* Glisser depuis la réserve (copie infinie, source HTML fiable) : payload "new:valeur". */
@@ -269,7 +291,7 @@ function eqGameDropAuto(e){
 /* Déplacement/suppression des objets déjà posés : basé sur les événements pointeur plutôt que
    sur le drag HTML5 natif, qui n'est pas fiable depuis une source SVG selon les navigateurs.
    Un simple clic (peu de déplacement du curseur) retire l'objet ; un vrai glisser le déplace
-   vers l'autre plateau ou vers la corbeille selon l'endroit du relâchement. */
+   vers l'autre plateau selon l'endroit du relâchement. */
 let eqDragInfo = null;
 function eqGameAttachHandlers(){
   const wrap = document.getElementById('eqGameWrap');
@@ -291,11 +313,6 @@ function eqGamePointerUp(ev){
   const dist = Math.hypot(ev.clientX-startX, ev.clientY-startY);
   if(dist < 8){ eqGameRemoveAt(side, idx); return; }
   const x = ev.clientX, y = ev.clientY;
-  const trash = document.getElementById('eqTrashZone');
-  if(trash){
-    const tr = trash.getBoundingClientRect();
-    if(x>=tr.left && x<=tr.right && y>=tr.top && y<=tr.bottom){ eqGameRemoveAt(side, idx); return; }
-  }
   const wrap = document.getElementById('eqGameWrap');
   if(wrap){
     const wr = wrap.getBoundingClientRect();
@@ -355,13 +372,11 @@ document.getElementById('methode-demo-equations-5e').innerHTML = `
 
 <p class="example-title" style="margin-top:26px;">🎮 Jeu : manipule la balance</p>
 <div class="figure-wrap">
-  <p class="hint interaction-hint" style="margin-top:0;">La balance part d'une situation qui traduit une équation (par exemple « une boule et 20 g à gauche, 70 g à droite » pour x + 20 = 70). Fais glisser une masse depuis la réserve pour en ajouter une. Pour un objet déjà posé (y compris une boule) : clique dessus pour le retirer directement, ou maintiens le clic et déplace-le vers l'autre plateau ou vers la corbeille. Le bouton "Recommencer" tire une nouvelle situation au hasard.</p>
-  <div style="position:relative;max-width:380px;margin:0 auto;">
-    <div id="eqGameWrap" ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';" ondrop="eqGameDropAuto(event)"></div>
-  </div>
-  <p class="hint" id="eqGameStatus" style="text-align:center;font-weight:700;margin:8px 0;"></p>
-  <div style="display:flex;flex-wrap:wrap;gap:18px;justify-content:center;align-items:center;">
-    <div>
+  <p class="hint interaction-hint" style="margin-top:0;">La balance part d'une situation qui traduit une équation (par exemple « une boule et 20 g à gauche, 70 g à droite » pour x + 20 = 70). Fais glisser une masse depuis la réserve pour en ajouter une. Pour un objet déjà posé (y compris une boule) : cliquer pour supprimer, ou maintenir le clic et déplacer vers l'autre plateau. Le bouton "Recommencer" tire une nouvelle situation au hasard.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;justify-content:center;">
+    <div style="flex:1;min-width:280px;max-width:380px;">
+      <div id="eqGameWrap" ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';" ondrop="eqGameDropAuto(event)"></div>
+      <p class="hint" id="eqGameStatus" style="text-align:center;font-weight:700;margin:8px 0;"></p>
       <p class="hint" style="text-align:center;margin:0 0 6px;">Réserve (glisser pour ajouter) :</p>
       <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
         <div draggable="true" ondragstart="eqGameDragStart(event,5)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">5 g</div>
@@ -370,9 +385,9 @@ document.getElementById('methode-demo-equations-5e').innerHTML = `
         <div draggable="true" ondragstart="eqGameDragStart(event,50)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">50 g</div>
       </div>
     </div>
-    <div style="text-align:center;">
-      <p class="hint" style="margin:0 0 6px;">Corbeille (glisser pour supprimer) :</p>
-      <div id="eqTrashZone" style="width:64px;height:64px;margin:0 auto;border:2px dashed #9E1F5E;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">🗑️</div>
+    <div style="flex:1;min-width:180px;max-width:220px;">
+      <p class="hint" style="margin:0 0 6px;font-weight:700;">Équations successives :</p>
+      <div id="eqGameLogList" style="background:var(--paper);border-radius:8px;padding:10px 14px;max-height:280px;overflow-y:auto;font-family:'JetBrains Mono',monospace;font-size:.92rem;"></div>
     </div>
   </div>
   <div class="figure-toolbar" style="justify-content:center;">
