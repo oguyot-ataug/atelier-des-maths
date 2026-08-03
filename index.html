@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.20</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.21</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2291,6 +2291,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-03.21', items:[
+    "5e -- G5 Parallélogrammes particuliers, Méthode : ajout des 2 constructions pas-à-pas -- rectangle ABCD de centre O (diagonales 3,4 cm, AB = 3 cm) par la propriété du cercle circonscrit, et losange ABCD de centre O (AC = 3,6 cm, BD = 2 cm) par la médiatrice de [AC].",
+  ]},
   { version:'2026-08-03.20', items:[
     "5e -- G5 Parallélogrammes particuliers, utilitaire quadrilatère : corrigé une incohérence -- « diagonales qui se coupent en leur milieu » + « deux paires de côtés consécutifs égaux » cochées ensemble donnaient « Parallélogramme » avec un codage 1 trait/2 traits contradictoire (les 2 propriétés impliquent en réalité que les 4 côtés sont égaux). Donne maintenant « Losange », avec un codage uniforme sur les 4 côtés.",
   ]},
