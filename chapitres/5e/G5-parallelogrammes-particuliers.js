@@ -410,7 +410,7 @@ function qcClassify(){
   if(isLosange) return 'Losange';
   if(isRectangle) return 'Rectangle';
   if(isParallelogram) return 'Parallélogramme';
-  if(has('Kite') || has('Dperp')) return 'Cerf-volant';
+  if(has('Kite')) return 'Cerf-volant';
   if(has('P1') !== has('P2')) return 'Trapèze';
   return 'Quelconque';
 }
