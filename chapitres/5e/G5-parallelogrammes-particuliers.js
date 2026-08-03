@@ -404,7 +404,7 @@ function qcClassify(){
   const has = p => qcActive.has(p);
   const isParallelogram = (has('P1') && has('P2')) || has('Dbis');
   const isRectangle = isParallelogram && (has('Deq') || has('Angle90'));
-  const isLosange = isParallelogram && (has('Sconsec') || has('Dperp'));
+  const isLosange = isParallelogram && (has('Sconsec') || has('Dperp') || has('Kite'));
   const isCarre = isRectangle && isLosange;
   if(isCarre) return 'Carré';
   if(isLosange) return 'Losange';
@@ -461,7 +461,12 @@ function qcBuildFigure(){
   if(has('Sconsec')){
     extra += pcTickN(pcMid(A,B),pcNorm(pcSub(B,A)),1) + pcTickN(pcMid(A,D),pcNorm(pcSub(D,A)),1);
   }
-  if(has('Kite')){
+  const isParallelogramNow = (has('P1') && has('P2')) || has('Dbis');
+  if(has('Kite') && isParallelogramNow){
+    // Kite + parallélogramme ⇒ les 4 côtés sont en réalité égaux (c'est un losange) : codage uniforme.
+    extra += pcTickN(pcMid(A,B),pcNorm(pcSub(B,A)),1) + pcTickN(pcMid(B,C),pcNorm(pcSub(C,B)),1)
+           + pcTickN(pcMid(C,D),pcNorm(pcSub(D,C)),1) + pcTickN(pcMid(D,A),pcNorm(pcSub(A,D)),1);
+  } else if(has('Kite')){
     extra += pcTickN(pcMid(A,B),pcNorm(pcSub(B,A)),1) + pcTickN(pcMid(A,D),pcNorm(pcSub(D,A)),1)
            + pcTickN(pcMid(C,B),pcNorm(pcSub(B,C)),2) + pcTickN(pcMid(C,D),pcNorm(pcSub(D,C)),2);
   }
