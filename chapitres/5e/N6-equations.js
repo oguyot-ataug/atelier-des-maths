@@ -72,11 +72,137 @@ document.getElementById('cours-demo-equations-5e').innerHTML = `
 </div>
 `;
 
-/* ================= METHODE ================= */
+/* ================= METHODE : mise en équation avec une balance ================= */
+function eqDrawItem(x, y, item){
+  if(item.ball){
+    return `<circle cx="${x}" cy="${y}" r="16" fill="#EADCF8" stroke="#6b3fa0" stroke-width="1.5"/>
+      <text x="${x}" y="${y+5}" font-size="14" text-anchor="middle" font-weight="700" fill="#5b2d91">x</text>`;
+  }
+  return `<rect x="${x-18}" y="${y-12}" width="36" height="24" rx="4" fill="#FDECD8" stroke="#C77D1E" stroke-width="1.5"/>
+    <text x="${x}" y="${y+5}" font-size="11" text-anchor="middle" font-weight="700" fill="#8A4210">${item.label}</text>`;
+}
+function eqDrawPanItems(cx, y, items, spacing){
+  const startX = cx - (items.length-1)*spacing/2;
+  return items.map((it,i)=>eqDrawItem(startX+i*spacing, y, it)).join('');
+}
+function eqBuildBalanceSvg(svgId, leftItems, rightItems){
+  const midX=200, beamY=70, panY=125, leftX=90, rightX=310;
+  const maxCount = Math.max(leftItems.length, rightItems.length, 1);
+  const spacing = maxCount>=4 ? 110/(maxCount-1) : 40;
+  const panHalf = Math.max(32, (maxCount-1)*spacing/2 + 22);
+  let s = `<svg id="${svgId}" viewBox="0 0 400 220" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
+  s += `<polygon points="${midX-14},172 ${midX+14},172 ${midX},144" fill="#1C1B2E"/>`;
+  s += `<rect x="${midX-30}" y="190" width="60" height="8" rx="3" fill="#1C1B2E"/>`;
+  s += `<line x1="${leftX}" y1="${beamY}" x2="${rightX}" y2="${beamY}" stroke="#1C1B2E" stroke-width="3"/>`;
+  s += `<line x1="${midX}" y1="${beamY}" x2="${midX}" y2="144" stroke="#1C1B2E" stroke-width="2"/>`;
+  [leftX,rightX].forEach(px=>{
+    s += `<line x1="${px-panHalf+6}" y1="${beamY}" x2="${px-panHalf+6}" y2="${panY}" stroke="#5B6B78" stroke-width="1.2"/>`;
+    s += `<line x1="${px+panHalf-6}" y1="${beamY}" x2="${px+panHalf-6}" y2="${panY}" stroke="#5B6B78" stroke-width="1.2"/>`;
+    s += `<path d="M ${px-panHalf} ${panY} Q ${px} ${panY+22} ${px+panHalf} ${panY}" fill="none" stroke="#1C1B2E" stroke-width="2"/>`;
+  });
+  s += eqDrawPanItems(leftX, panY-22, leftItems, spacing);
+  s += eqDrawPanItems(rightX, panY-22, rightItems, spacing);
+  s += `</svg>`;
+  return s;
+}
+const EQ_BALL = {ball:true};
+function eqW(label){ return {label}; }
+
+let eqBal1Step = 0;
+function eqBal1Update(step){
+  const left = step>=1 ? [EQ_BALL] : [EQ_BALL, eqW('20 g')];
+  const right = step>=1 ? [eqW('40 g')] : [eqW('60 g')];
+  document.getElementById('eqBal1Wrap').innerHTML = eqBuildBalanceSvg('eqBal1Svg', left, right);
+  document.querySelectorAll('#eqBal1Steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=step));
+  document.getElementById('eqBal1Next').textContent = step>=1 ? 'Terminé ✓' : 'Étape suivante →';
+  document.getElementById('eqBal1Next').disabled = step>=1;
+}
+function eqBal1Next(){ if(eqBal1Step<1){ eqBal1Step++; eqBal1Update(eqBal1Step); } }
+function eqBal1Reset(){ eqBal1Step=0; eqBal1Update(0); }
+const EQ_BAL1_STEPS = [
+  {note:"Une boule de masse inconnue x et un poids de 20 g sont posés à gauche ; un poids de 60 g est posé à droite. La balance est équilibrée : x + 20 = 60."},
+  {note:"On retire 20 g de chaque plateau : la balance reste équilibrée. À gauche il reste la boule, à droite 60 − 20 = 40 g. Donc x = 40."},
+];
+
+let eqBal2Step = 0;
+function eqBal2Update(step){
+  const left = step>=1 ? [EQ_BALL] : [EQ_BALL, EQ_BALL];
+  const right = step>=1 ? [eqW('45 g')] : [eqW('90 g')];
+  document.getElementById('eqBal2Wrap').innerHTML = eqBuildBalanceSvg('eqBal2Svg', left, right);
+  document.querySelectorAll('#eqBal2Steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=step));
+  document.getElementById('eqBal2Next').textContent = step>=1 ? 'Terminé ✓' : 'Étape suivante →';
+  document.getElementById('eqBal2Next').disabled = step>=1;
+}
+function eqBal2Next(){ if(eqBal2Step<1){ eqBal2Step++; eqBal2Update(eqBal2Step); } }
+function eqBal2Reset(){ eqBal2Step=0; eqBal2Update(0); }
+const EQ_BAL2_STEPS = [
+  {note:"Deux boules identiques (chacune de masse x) sont posées à gauche ; un poids de 90 g est posé à droite. La balance est équilibrée : 2x = 90."},
+  {note:"On partage chaque plateau en 2 parts égales : il reste une boule à gauche, et 90 : 2 = 45 g à droite. Donc x = 45."},
+];
+
+let eqBal3Step = 0;
+function eqBal3Update(step){
+  let left, right;
+  if(step===0){ left=[EQ_BALL,EQ_BALL,EQ_BALL,eqW('15 g')]; right=[eqW('60 g')]; }
+  else if(step===1){ left=[EQ_BALL,EQ_BALL,EQ_BALL]; right=[eqW('45 g')]; }
+  else { left=[EQ_BALL]; right=[eqW('15 g')]; }
+  document.getElementById('eqBal3Wrap').innerHTML = eqBuildBalanceSvg('eqBal3Svg', left, right);
+  document.querySelectorAll('#eqBal3Steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=step));
+  document.getElementById('eqBal3Next').textContent = step>=2 ? 'Terminé ✓' : 'Étape suivante →';
+  document.getElementById('eqBal3Next').disabled = step>=2;
+}
+function eqBal3Next(){ if(eqBal3Step<2){ eqBal3Step++; eqBal3Update(eqBal3Step); } }
+function eqBal3Reset(){ eqBal3Step=0; eqBal3Update(0); }
+const EQ_BAL3_STEPS = [
+  {note:"Trois boules identiques et un poids de 15 g sont posés à gauche ; un poids de 60 g est posé à droite. La balance est équilibrée : 3x + 15 = 60."},
+  {note:"On retire 15 g de chaque plateau : il reste 3 boules à gauche, et 60 − 15 = 45 g à droite. 3x = 45."},
+  {note:"On partage chaque plateau en 3 parts égales : il reste une boule à gauche, et 45 : 3 = 15 g à droite. Donc x = 15."},
+];
+
 document.getElementById('methode-demo-equations-5e').innerHTML = `
-<div class="placeholder-box">
-  <strong>Méthode en préparation</strong>
-  Une méthode animée (choisir la bonne opération pour résoudre une équation) suivra dans une prochaine session.
+<p style="margin:0 0 14px;">Une équation peut se représenter par une <b>balance équilibrée</b> : chaque plateau porte le même poids total. Une boule représente la masse inconnue x. Faire la même opération sur les deux plateaux garde la balance équilibrée -- exactement comme faire la même opération sur les deux membres d'une égalité.</p>
+
+<p class="example-title" style="margin-top:0;">Une boule et un poids</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le raisonnement.</p>
+  <div id="eqBal1Wrap"></div>
+  <div class="step-list" id="eqBal1Steps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>La balance équilibrée traduit l'équation x + 20 = 60.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On retire 20 g de chaque plateau : x = 40.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="eqBal1Next" onclick="eqBal1Next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="eqBal1Reset()">Recommencer</button>
+  </div>
+</div>
+
+<p class="example-title" style="margin-top:26px;">On complexifie : plusieurs boules</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le raisonnement.</p>
+  <div id="eqBal2Wrap"></div>
+  <div class="step-list" id="eqBal2Steps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>La balance équilibrée traduit l'équation 2x = 90.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On partage chaque plateau en 2 parts égales : x = 45.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="eqBal2Next" onclick="eqBal2Next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="eqBal2Reset()">Recommencer</button>
+  </div>
+</div>
+
+<p class="example-title" style="margin-top:26px;">On complexifie encore : boules et poids ensemble</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le raisonnement.</p>
+  <div id="eqBal3Wrap"></div>
+  <div class="step-list" id="eqBal3Steps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>La balance équilibrée traduit l'équation 3x + 15 = 60.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On retire 15 g de chaque plateau : 3x = 45.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>On partage chaque plateau en 3 parts égales : x = 15.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="eqBal3Next" onclick="eqBal3Next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="eqBal3Reset()">Recommencer</button>
+  </div>
 </div>
 `;
 
@@ -123,7 +249,12 @@ DEMO_REGISTRY['Équations'] = {
     renderStaticMath(document.getElementById('cours-demo-equations-5e'));
     renderStaticMath(document.getElementById('exos-demo-equations-5e'));
     injectCourseAddButtons(document.getElementById('cours-demo-equations-5e'));
+    injectCourseAddButtons(document.getElementById('methode-demo-equations-5e'));
     eqAbDemo.reset(); eqAxDemo.reset();
+    eqBal1Reset(); eqBal2Reset(); eqBal3Reset();
+    registerGeoStepDemo('eqBal1Svg', { steps:()=>EQ_BAL1_STEPS, getIdx:()=>eqBal1Step, goto:(i)=>{ eqBal1Step=i; eqBal1Update(i); } });
+    registerGeoStepDemo('eqBal2Svg', { steps:()=>EQ_BAL2_STEPS, getIdx:()=>eqBal2Step, goto:(i)=>{ eqBal2Step=i; eqBal2Update(i); } });
+    registerGeoStepDemo('eqBal3Svg', { steps:()=>EQ_BAL3_STEPS, getIdx:()=>eqBal3Step, goto:(i)=>{ eqBal3Step=i; eqBal3Update(i); } });
   }
 };
 
