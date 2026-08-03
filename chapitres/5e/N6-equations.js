@@ -199,7 +199,15 @@ const EQ_BAL3_STEPS = [
 
 /* ---- Jeu : balance inclinable, situation de départ = équation, tout en glisser-déposer ---- */
 let eqGameLeft = [], eqGameRight = [];
-const EQ_GAME_BALL_WEIGHT = 50; // masse réelle de la boule (cachée) : x + 20 = 70, donc x = 50
+let EQ_GAME_BALL_WEIGHT = 50; // masse réelle de la boule (cachée), dépend du scénario tiré au sort
+const EQ_GAME_SCENARIOS = [
+  {leftBalls:1, leftWeight:20, rightWeight:70, ball:50},  // x + 20 = 70
+  {leftBalls:1, leftWeight:15, rightWeight:45, ball:30},  // x + 15 = 45
+  {leftBalls:1, leftWeight:35, rightWeight:50, ball:15},  // x + 35 = 50
+  {leftBalls:1, leftWeight:12, rightWeight:52, ball:40},  // x + 12 = 52
+  {leftBalls:2, leftWeight:0,  rightWeight:80, ball:40},  // 2x = 80
+  {leftBalls:3, leftWeight:0,  rightWeight:90, ball:30},  // 3x = 90
+];
 function eqGameWeight(items){
   return items.reduce((sum,it)=>sum+(it.ball?EQ_GAME_BALL_WEIGHT:it.value),0);
 }
@@ -226,8 +234,12 @@ function eqGameRemove(side, idx){
   eqGameRender();
 }
 function eqGameReset(){
-  eqGameLeft = [{ball:true, color:'green', fixed:true}, {label:'20 g', value:20}];
-  eqGameRight = [{label:'70 g', value:70}];
+  const sc = EQ_GAME_SCENARIOS[Math.floor(Math.random()*EQ_GAME_SCENARIOS.length)];
+  EQ_GAME_BALL_WEIGHT = sc.ball;
+  eqGameLeft = [];
+  for(let i=0;i<sc.leftBalls;i++) eqGameLeft.push({ball:true, color:'green', fixed:true});
+  if(sc.leftWeight>0) eqGameLeft.push({label:sc.leftWeight+' g', value:sc.leftWeight});
+  eqGameRight = [{label:sc.rightWeight+' g', value:sc.rightWeight}];
   eqGameRender();
 }
 /* Glisser depuis la réserve (copie infinie) : payload "new:valeur". */
@@ -323,9 +335,9 @@ document.getElementById('methode-demo-equations-5e').innerHTML = `
 
 <p class="example-title" style="margin-top:26px;">🎮 Jeu : manipule la balance</p>
 <div class="figure-wrap">
-  <p class="hint interaction-hint" style="margin-top:0;">La balance part de la situation « une boule et 20 g à gauche, 70 g à droite » : elle traduit l'équation x + 20 = 70. Fais glisser un poids depuis la réserve pour en ajouter un, fais glisser un poids déjà posé vers l'autre plateau pour le déplacer, ou vers la corbeille pour le supprimer.</p>
+  <p class="hint interaction-hint" style="margin-top:0;">La balance part d'une situation qui traduit une équation (par exemple « une boule et 20 g à gauche, 70 g à droite » pour x + 20 = 70). Fais glisser un poids depuis la réserve pour en ajouter un, fais glisser un poids déjà posé vers l'autre plateau pour le déplacer, ou vers la corbeille pour le supprimer. Le bouton "Recommencer" tire une nouvelle situation au hasard.</p>
   <div style="position:relative;max-width:380px;margin:0 auto;">
-    <div id="eqGameWrap" ondragover="event.preventDefault()" ondrop="eqGameDropAuto(event)"></div>
+    <div id="eqGameWrap" ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';" ondrop="eqGameDropAuto(event)"></div>
   </div>
   <p class="hint" id="eqGameStatus" style="text-align:center;font-weight:700;margin:8px 0;"></p>
   <div style="display:flex;flex-wrap:wrap;gap:18px;justify-content:center;align-items:center;">
@@ -338,9 +350,9 @@ document.getElementById('methode-demo-equations-5e').innerHTML = `
         <div draggable="true" ondragstart="eqGameDragStart(event,50)" style="padding:9px 16px;background:#fff;border:2px solid #C77D1E;border-radius:20px;font-weight:700;cursor:grab;user-select:none;">50 g</div>
       </div>
     </div>
-    <div ondragover="event.preventDefault()" ondrop="eqGameDropTrash(event)" style="text-align:center;">
+    <div style="text-align:center;">
       <p class="hint" style="margin:0 0 6px;">Corbeille (glisser pour supprimer) :</p>
-      <div style="width:56px;height:56px;margin:0 auto;border:2px dashed #9E1F5E;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;">🗑️</div>
+      <div ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';" ondrop="eqGameDropTrash(event)" style="width:64px;height:64px;margin:0 auto;border:2px dashed #9E1F5E;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;">🗑️</div>
     </div>
   </div>
   <div class="figure-toolbar" style="justify-content:center;">
