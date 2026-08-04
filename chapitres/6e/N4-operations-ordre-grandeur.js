@@ -145,9 +145,9 @@ document.getElementById('cours-demo-operations-ordre-grandeur-6e').innerHTML = `
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la division posée.</p>
   <div style="display:flex;justify-content:center;align-items:flex-start;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.25rem;padding:20px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);">
-    <div style="text-align:right;padding-right:16px;">
+    <div style="text-align:right;padding-left:30px;padding-right:40px;">
       <div class="dp-tag" style="color:var(--accent);">dividende</div>
-      <div id="og-dpLeft" style="line-height:2;min-width:80px;"></div>
+      <div id="og-dpLeft" style="line-height:2;min-width:80px;margin-left:auto;"></div>
       <div class="dp-tag" id="og-dpResteTag" style="color:#9E1F5E;min-height:1.1em;"></div>
     </div>
     <div style="border-left:2px solid #1C1B2E;padding-left:16px;">
