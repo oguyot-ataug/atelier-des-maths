@@ -7,16 +7,30 @@
    à chaque étape.
    ============================================================ */
 
-/* ---- Division posée décimale : 57 ÷ 8 = 7,125 (exacte) ---- */
-const OG_DP_57  = '&nbsp;&nbsp;57';
-const OG_DP_M56 = '−&nbsp;56';
-const OG_DP_10  = '&nbsp;&nbsp;10';
-const OG_DP_M8  = '−&nbsp;&nbsp;8';
-const OG_DP_20  = '&nbsp;&nbsp;20';
-const OG_DP_M16 = '−&nbsp;16';
-const OG_DP_40  = '&nbsp;&nbsp;40';
-const OG_DP_M40 = '−&nbsp;40';
-const OG_DP_0   = '&nbsp;&nbsp;&nbsp;0';
+/* ---- Division posée décimale : 57 ÷ 8 = 7,125 (exacte) ----
+   Chaque ligne est une liste de 4 "cases" (chiffre, signe ou espace). On les
+   affiche dans des cellules de largeur fixe en pixels (pas en caractères de
+   police) : l'alignement des chiffres ne dépend donc plus du bon chargement
+   d'une police à chasse fixe (JetBrains Mono), ce qui le rend fiable même
+   hors-ligne, à l'impression, ou si la police web échoue à se charger. */
+const OG_CELL_W = 20;
+function ogCells(slots){
+  return slots.map(c=>`<span style="display:inline-block;width:${OG_CELL_W}px;text-align:center;">${c===' '?'':c}</span>`).join('');
+}
+function ogRow(slots, sub){
+  const w = OG_CELL_W*slots.length;
+  const border = sub ? `border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;` : '';
+  return `<div style="width:${w}px;${border}">${ogCells(slots)}</div>`;
+}
+const OG_DP_57  = [' ',' ','5','7'];
+const OG_DP_M56 = ['−',' ','5','6'];
+const OG_DP_10  = [' ',' ','1','0'];
+const OG_DP_M8  = ['−',' ',' ','8'];
+const OG_DP_20  = [' ',' ','2','0'];
+const OG_DP_M16 = ['−',' ','1','6'];
+const OG_DP_40  = [' ',' ','4','0'];
+const OG_DP_M40 = ['−',' ','4','0'];
+const OG_DP_0   = [' ',' ',' ','0'];
 const OG_DIVISION_POSEE_STEPS = [
   {rows:[{t:OG_DP_57}], quotient:'', note:"57 ÷ 8 : 8 × 7 = 56 est le plus proche de 57 sans le dépasser."},
   {rows:[{t:OG_DP_57},{t:OG_DP_M56,sub:true}], quotient:'7', note:"57 − 56 = 1. Le reste n'est pas nul : la division continue."},
@@ -31,9 +45,7 @@ const OG_DIVISION_POSEE_STEPS = [
 let ogDivisionPoseeIdx = 0;
 function ogRenderDivisionPosee(){
   const s = OG_DIVISION_POSEE_STEPS[ogDivisionPoseeIdx];
-  document.getElementById('og-dpLeft').innerHTML = s.rows.map(r=>
-    r.sub ? `<div><span class="dp-sub-inner">${r.t}</span></div>` : `<div>${r.t}</div>`
-  ).join('');
+  document.getElementById('og-dpLeft').innerHTML = s.rows.map(r=>ogRow(r.t, r.sub)).join('');
   document.getElementById('og-dpQuotient').innerHTML = s.quotient;
   document.getElementById('og-dpNote').textContent = s.note;
   const isLastStep = ogDivisionPoseeIdx === OG_DIVISION_POSEE_STEPS.length-1;
@@ -135,7 +147,7 @@ document.getElementById('cours-demo-operations-ordre-grandeur-6e').innerHTML = `
   <div style="display:flex;justify-content:center;align-items:flex-start;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.25rem;padding:20px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);">
     <div style="text-align:right;padding-right:16px;">
       <div class="dp-tag" style="color:var(--accent);">dividende</div>
-      <div id="og-dpLeft" style="text-align:right;line-height:2;min-width:70px;"></div>
+      <div id="og-dpLeft" style="line-height:2;min-width:80px;"></div>
       <div class="dp-tag" id="og-dpResteTag" style="color:#9E1F5E;min-height:1.1em;"></div>
     </div>
     <div style="border-left:2px solid #1C1B2E;padding-left:16px;">
