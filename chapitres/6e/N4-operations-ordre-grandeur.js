@@ -45,7 +45,7 @@ const OG_57s=ogShift(OG_DP_57), OG_M56s=ogShift(OG_DP_M56), OG_10s=ogShift(OG_DP
 const OG_DIVISION_POSEE_STEPS = [
   {rows:[{t:OG_57s}], quotient:'', note:"57 ÷ 8 : 8 × 7 = 56 est le plus proche de 57 sans le dépasser."},
   {rows:[{t:OG_57s},{t:OG_M56s,sub:true}], quotient:'7', note:"57 − 56 = 1. Le 1 reste sous la colonne des unités. Le reste n'est pas nul : la division continue."},
-  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s}], quotient:'7,', note:"On abaisse un chiffre des dixièmes (0), dans la colonne juste à droite des unités : dès cet instant, on place la virgule au quotient. Le reste 1 (unités) et le 0 abaissé (dixièmes) forment 10."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s}], quotient:'7,', note:"On abaisse un chiffre des dixièmes (0) : dès cet instant, on place la virgule au quotient. Le reste 1 (unités) et le 0 abaissé (dixièmes) forment 10."},
   {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true}], quotient:'7,1', note:"10 ÷ 8 : 8 × 1 = 8 est le plus proche de 10 sans le dépasser. 10 − 8 = 2 (colonne des dixièmes)."},
   {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s}], quotient:'7,1', note:"On abaisse un nouveau 0 (colonne des centièmes) : le reste 2 devient 20."},
   {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s},{t:OG_M16s,sub:true}], quotient:'7,12', note:"20 ÷ 8 : 8 × 2 = 16 est le plus proche de 20 sans le dépasser. 20 − 16 = 4 (colonne des centièmes)."},
@@ -128,10 +128,10 @@ ${ogAddBlock(OG_SUB_15)}
 <div class="lesson-header"><span class="num">2</span><h3>Multiplication et division par 10 ; 100 ; 1 000</h3></div>
 <div style="display:flex;flex-wrap:wrap;gap:24px;">
   <table style="border-collapse:collapse;font-size:.92rem;">
-    <tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Pour multiplier par :</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">on décale les chiffres de :</th></tr>
-    <tr><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">10</td><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">1 rang vers la gauche.</td></tr>
-    <tr><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">100</td><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">2 rangs vers la gauche.</td></tr>
-    <tr><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">1 000</td><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">3 rangs vers la gauche.</td></tr>
+    <tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Pour multiplier par :</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">le chiffre des unités devient :</th></tr>
+    <tr><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">10</td><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">le chiffre des dizaines.</td></tr>
+    <tr><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">100</td><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">le chiffre des centaines.</td></tr>
+    <tr><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">1 000</td><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">le chiffre des milliers.</td></tr>
   </table>
   <div>
     <p style="margin:0 0 4px;"><b>Exemples</b> :</p>
@@ -142,10 +142,10 @@ ${ogAddBlock(OG_SUB_15)}
 </div>
 <div style="display:flex;flex-wrap:wrap;gap:24px;margin-top:14px;">
   <table style="border-collapse:collapse;font-size:.92rem;">
-    <tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Pour diviser par :</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">on décale les chiffres de :</th></tr>
-    <tr><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">10</td><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">1 rang vers la droite.</td></tr>
-    <tr><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">100</td><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">2 rangs vers la droite.</td></tr>
-    <tr><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">1 000</td><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">3 rangs vers la droite.</td></tr>
+    <tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Pour diviser par :</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">le chiffre des unités devient :</th></tr>
+    <tr><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">10</td><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">le chiffre des dixièmes.</td></tr>
+    <tr><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">100</td><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">le chiffre des centièmes.</td></tr>
+    <tr><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">1 000</td><td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">le chiffre des millièmes.</td></tr>
   </table>
   <div>
     <p style="margin:0 0 4px;"><b>Exemples</b> :</p>
@@ -255,10 +255,10 @@ function ogPvTable(id, map, hi){
 
 /* ---- Méthode A : multiplier par 10, 100 ou 1 000 -- 13,567 × 100 ---- */
 const OG_MA_BEFORE = {2:'1', 3:'3', 4:'5', 5:'6', 6:'7'}; // 13,567 : dizaines=1, unités=3, dixièmes=5, centièmes=6, millièmes=7
-const OG_MA_AFTER  = {0:'1', 1:'3', 2:'5', 3:'6', 4:'7'}; // 1356,7 : décalé de 2 rangs vers la gauche
+const OG_MA_AFTER  = {0:'1', 1:'3', 2:'5', 3:'6', 4:'7'}; // 1356,7 : le chiffre des unités (3) devient le chiffre des centaines
 const OG_MA_STEPS = [
   {note:"On repère le chiffre des unités du nombre 13,567 : c'est le 3.", hi:3, map:OG_MA_BEFORE},
-  {note:"On multiplie par 100 : chaque chiffre avance de 2 rangs vers la gauche. Le chiffre des unités (3) va donc devenir le chiffre des centaines.", hi:3, map:OG_MA_BEFORE},
+  {note:"On multiplie par 100 : le chiffre des unités (3) va devenir le chiffre des centaines.", hi:3, map:OG_MA_BEFORE},
   {note:"On réécrit tous les chiffres à leur nouvelle place, dans le même ordre. Le nouveau chiffre des unités est le 6.", hi:3, map:OG_MA_AFTER},
   {note:"13,567 × 100 = 1 356,7.", hi:3, map:OG_MA_AFTER, final:true},
 ];
@@ -277,10 +277,10 @@ function ogMaReset(){ ogMaIdx=0; ogRenderMa(); }
 
 /* ---- Méthode B : multiplier par 0,1 ; 0,01 ou 0,001 -- 24 × 0,1 ---- */
 const OG_MB_BEFORE = {2:'2', 3:'4'}; // 24 : dizaines=2, unités=4
-const OG_MB_AFTER  = {3:'2', 4:'4'}; // 2,4 : décalé d'1 rang vers la droite
+const OG_MB_AFTER  = {3:'2', 4:'4'}; // 2,4 : le chiffre des unités (4) devient le chiffre des dixièmes
 const OG_MB_STEPS = [
   {note:"On repère le chiffre des unités du nombre 24 : c'est le 4.", hi:3, map:OG_MB_BEFORE},
-  {note:"On multiplie par 0,1 : chaque chiffre recule d'1 rang vers la droite. Le chiffre des unités (4) va donc devenir le chiffre des dixièmes.", hi:3, map:OG_MB_BEFORE},
+  {note:"On multiplie par 0,1 : le chiffre des unités (4) va devenir le chiffre des dixièmes.", hi:3, map:OG_MB_BEFORE},
   {note:"On réécrit tous les chiffres à leur nouvelle place, dans le même ordre. Le nouveau chiffre des unités est le 2.", hi:3, map:OG_MB_AFTER},
   {note:"24 × 0,1 = 2,4.", hi:3, map:OG_MB_AFTER, final:true},
 ];
@@ -307,7 +307,7 @@ document.getElementById('methode-demo-operations-ordre-grandeur-6e').innerHTML =
   <div class="step-note" id="og-ma-note" style="text-align:center;margin-top:10px;"></div>
   <div class="step-list" id="og-ma-steps">
     <div class="step-item" data-step="0"><div class="step-num">1</div><div>On repère le chiffre des unités.</div></div>
-    <div class="step-item" data-step="1"><div class="step-num">2</div><div>×100 : ce chiffre avance de 2 rangs vers la gauche (il devient le chiffre des centaines).</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>×100 : le chiffre des unités devient le chiffre des centaines.</div></div>
     <div class="step-item" data-step="2"><div class="step-num">3</div><div>On réécrit tous les chiffres à leur nouvelle place.</div></div>
     <div class="step-item" data-step="3"><div class="step-num">4</div><div>On lit le résultat : 1 356,7.</div></div>
   </div>
@@ -318,7 +318,7 @@ document.getElementById('methode-demo-operations-ordre-grandeur-6e').innerHTML =
 </div>
 
 <p class="example-title" style="margin-top:26px;">Multiplier par 0,1 ; 0,01 ou 0,001 : la même méthode, dans l'autre sens</p>
-<p style="margin:0 0 14px;">Le chiffre des unités recule cette fois vers la droite (vers les dixièmes, centièmes...).</p>
+<p style="margin:0 0 14px;">Le chiffre des unités devient cette fois un chiffre après la virgule (dixièmes, centièmes...).</p>
 <p style="margin:0 0 8px;"><b>Exemple</b> : calcule 24 × 0,1.</p>
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
@@ -326,7 +326,7 @@ document.getElementById('methode-demo-operations-ordre-grandeur-6e').innerHTML =
   <div class="step-note" id="og-mb-note" style="text-align:center;margin-top:10px;"></div>
   <div class="step-list" id="og-mb-steps">
     <div class="step-item" data-step="0"><div class="step-num">1</div><div>On repère le chiffre des unités.</div></div>
-    <div class="step-item" data-step="1"><div class="step-num">2</div><div>×0,1 : ce chiffre recule d'1 rang vers la droite (il devient le chiffre des dixièmes).</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>×0,1 : le chiffre des unités devient le chiffre des dixièmes.</div></div>
     <div class="step-item" data-step="2"><div class="step-num">3</div><div>On réécrit tous les chiffres à leur nouvelle place.</div></div>
     <div class="step-item" data-step="3"><div class="step-num">4</div><div>On lit le résultat : 2,4.</div></div>
   </div>
