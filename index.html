@@ -17,9 +17,9 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.7</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.8</span>
   </div>
-  <div class="nav-links">
+  <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
     <button data-nav="niveau" data-lvl="6e">6e</button>
     <button data-nav="niveau" data-lvl="5e">5e</button>
@@ -30,6 +30,9 @@
     <button data-nav="mesresultats" id="navMesResultats" style="display:none;">Mes résultats</button>
     <button data-nav="admin" id="navAdmin" style="display:none;">Administration</button>
   </div>
+  <button class="hamburger" id="hamburgerBtn" aria-label="Ouvrir le menu" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </button>
   <div class="account-menu">
     <span class="hint" id="activeClassBadge" style="margin-right:8px;font-weight:700;color:var(--accent);"></span>
     <button class="account-avatar" onclick="toggleAccountMenu()" title="Mon compte">👤</button>
@@ -812,6 +815,12 @@ const VACANCES = {
 };
 
 let currentLevel='6e';
+function toggleMobileNav(){
+  document.getElementById('navLinks').classList.toggle('open');
+}
+document.querySelectorAll('#navLinks button').forEach(b=>{
+  b.addEventListener('click', ()=>{ document.getElementById('navLinks').classList.remove('open'); });
+});
 
 /* ======================= ROUTER ======================= */
 function showView(id){
@@ -2308,6 +2317,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.8', items:[
+    "Navigation mobile -- sur petit écran (≤720px), la liste des boutons de navigation est remplacée par un menu hamburger : elle se replie dans un panneau déroulant sous la barre, pour laisser la place au logo agrandi.",
+  ]},
   { version:'2026-08-04.7', items:[
     "Pied de page -- \"Maquette de travail\" remplacé par \"Une production de L'Atelier Augmenté\", avec un lien vers www.latelieraugmente.fr.",
   ]},
