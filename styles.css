@@ -303,6 +303,9 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
 #view-chapitre.lvl-6e button.btn:not(.secondary):not(.orange){background:var(--accent-orange);}
 #view-chapitre.lvl-5e .tab-btn.active{border-bottom-color:var(--accent);}
 #view-chapitre.lvl-5e button.btn:not(.secondary):not(.orange){background:var(--accent);}
+#view-chapitre.lvl-5e .lesson-header{background:var(--accent);}
+#view-chapitre.lvl-5e .lesson-header .num{color:var(--accent);}
+#view-chapitre.lvl-5e .prop-badge{background:var(--accent);}
 
 .step-list{margin-top:14px;}
 .step-item{
