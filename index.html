@@ -16,14 +16,9 @@
 
 <div class="topbar">
   <div class="brand">
-    <svg class="brand-mark" viewBox="0 0 26 26">
-      <circle cx="13" cy="5.5" r="2.1" fill="none" stroke="#1F3A5C" stroke-width="1.6"/>
-      <line x1="13" y1="7.4" x2="7.5" y2="23" stroke="#1F3A5C" stroke-width="1.8" stroke-linecap="round"/>
-      <line x1="13" y1="7.4" x2="18.5" y2="23" stroke="#E35D3A" stroke-width="1.8" stroke-linecap="round"/>
-      <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
-    </svg>
+    <img class="brand-mark" src="assets/logo-icon.png" alt="Logo L'Atelier des Maths" style="width:34px;height:auto;flex:none;">
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.1</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.2</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2298,6 +2293,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.2', items:[
+    "Style général -- le logo « L'Atelier des Maths » (compas, fraction, engrenage/ampoule, rapporteur) remplace l'icône de la barre de navigation. Les couleurs d'accent du site (--accent, --accent-orange) sont mises à jour pour se rapprocher de la palette vive du logo (bleu #0C5BA0, orange #FF8208), avec deux nouvelles variables disponibles (--accent-teal, --accent-yellow) pour les prochains éléments visuels.",
+  ]},
   { version:'2026-08-04.1', items:[
     "Nouveau chapitre 6e -- N4 Opérations et ordre de grandeur : Cours complet (addition/soustraction de décimaux, multiplication/division par 10-100-1000, multiplication de deux décimaux, division d'un décimal par un entier avec division posée interactive inspirée de la division euclidienne du chapitre Nombres entiers), 5 exercices et un quiz. La partie Méthode suivra dans une prochaine session.",
   ]},
