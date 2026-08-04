@@ -487,8 +487,8 @@ function qcRender(){
   if(fig) fig.innerHTML = qcBuildFigure();
 }
 /* ================= Constructions pas à pas ================= */
-function pccArc(center, radius, angleCenterDeg, spanDeg, color){
-  return `<polyline points="${pgArcSample(center, radius, angleCenterDeg, spanDeg)}" fill="none" stroke="${color||'#1F6B3A'}" stroke-width="1.4"/>`;
+function pccArc(center, radius, angleCenterRad, spanDeg, color){
+  return `<polyline points="${pgArcSample(center, radius, angleCenterRad, spanDeg)}" fill="none" stroke="${color||'#1F6B3A'}" stroke-width="1.4"/>`;
 }
 
 /* ---- Construction 1 : rectangle ABCD de centre O, diagonales 3,4 cm, AB = 3 cm ---- */
@@ -496,6 +496,19 @@ const PCC_R_A = {x:140,y:220}, PCC_R_B = {x:260,y:220};
 const PCC_R_O = {x:200,y:188};
 const PCC_R_C = {x:260,y:156}, PCC_R_D = {x:140,y:156};
 const PCC_R_RADIUS = 68;
+function pccR1Sketch(){
+  const A=PCC_R_A,B=PCC_R_B,O=PCC_R_O,C=PCC_R_C,D=PCC_R_D;
+  const dirs = {
+    A:[pcNorm(pcSub(B,A)), pcNorm(pcSub(D,A))], B:[pcNorm(pcSub(A,B)), pcNorm(pcSub(C,B))],
+    C:[pcNorm(pcSub(B,C)), pcNorm(pcSub(D,C))], D:[pcNorm(pcSub(A,D)), pcNorm(pcSub(C,D))],
+  };
+  const marks = ['A','B','C','D'].map(k=>pcRightAngle({A,B,C,D}[k],dirs[k][0],dirs[k][1],12)).join('');
+  const diag = `<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"/>`;
+  const oMark = `<circle cx="${O.x}" cy="${O.y}" r="2" fill="#1C1B2E"/>`+pcLabel(O.x+6,O.y-8,'O');
+  const labels = pcLabel(A.x-14,A.y+18,'A')+pcLabel(B.x+6,B.y+18,'B')+pcLabel(C.x+6,C.y-6,'C')+pcLabel(D.x-14,D.y-6,'D');
+  const measures = pcLabel((A.x+B.x)/2-16, A.y+34, '3 cm', 12,false) + pcLabel((A.x+C.x)/2+8, (A.y+C.y)/2-2, '3,4 cm', 12, false);
+  return pcSvgWrap(pcQuadSides(A,B,C,D)+marks+diag+oMark+labels+measures, 400,280,320);
+}
 let pccR1Step = 0;
 function pccR1Render(step){
   const A=PCC_R_A,B=PCC_R_B,O=PCC_R_O,C=PCC_R_C,D=PCC_R_D,r=PCC_R_RADIUS;
@@ -504,15 +517,19 @@ function pccR1Render(step){
   s += `<circle cx="${A.x}" cy="${A.y}" r="2.4" fill="#1C1B2E"/><circle cx="${B.x}" cy="${B.y}" r="2.4" fill="#1C1B2E"/>`;
   s += pcLabel(A.x-14,A.y+18,'A') + pcLabel(B.x+6,B.y+18,'B');
   if(step>=1){
-    const angA = Math.atan2(O.y-A.y,O.x-A.x)*180/Math.PI;
-    const angB = Math.atan2(O.y-B.y,O.x-B.x)*180/Math.PI;
-    s += pccArc(A,r,angA,55,'#1F6B3A') + pccArc(B,r,angB,55,'#9E1F5E');
+    const angA = Math.atan2(O.y-A.y,O.x-A.x);
+    const angB = Math.atan2(O.y-B.y,O.x-B.x);
+    s += pccArc(A,r,angA,60,'#1F6B3A') + pccArc(B,r,angB,60,'#9E1F5E');
   }
   if(step>=2){
-    s += `<circle cx="${O.x}" cy="${O.y}" r="${r}" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="4,3"/>`;
     s += `<circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>`+pcLabel(O.x+6,O.y-8,'O');
+    const extAC = pgExtend(A, C, 16), extBD = pgExtend(B, D, 16);
+    s += `<line x1="${A.x}" y1="${A.y}" x2="${extAC.b.x}" y2="${extAC.b.y}" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="5,4"/>`;
+    s += `<line x1="${B.x}" y1="${B.y}" x2="${extBD.b.x}" y2="${extBD.b.y}" stroke="#9E1F5E" stroke-width="1.2" stroke-dasharray="5,4"/>`;
   }
   if(step>=3){
+    s += pcTickN(pcMid(O,A), pcNorm(pcSub(A,O)),1) + pcTickN(pcMid(O,C), pcNorm(pcSub(C,O)),1);
+    s += pcTickN(pcMid(O,B), pcNorm(pcSub(B,O)),2) + pcTickN(pcMid(O,D), pcNorm(pcSub(D,O)),2);
     s += `<line x1="${B.x}" y1="${B.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${C.x}" y1="${C.y}" x2="${D.x}" y2="${D.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${D.x}" y1="${D.y}" x2="${A.x}" y2="${A.y}" stroke="#1C1B2E" stroke-width="1.6"/>`;
@@ -531,8 +548,8 @@ function pccR1Reset(){ pccR1Step=0; pccR1Render(0); }
 const PCC_R1_STEPS = [
   {note:"On trace le segment [AB] de longueur 3 cm."},
   {note:"On trace un arc de centre A et de rayon 1,7 cm, puis un arc de centre B et de rayon 1,7 cm : ils se coupent en O, au-dessus de [AB]."},
-  {note:"O est le centre du rectangle : OA = OB = 1,7 cm (la moitié de la diagonale 3,4 cm). Le cercle de centre O et de rayon 1,7 cm passera par les 4 sommets."},
-  {note:"C est le symétrique de A par rapport à O, D est le symétrique de B par rapport à O : ils sont sur ce cercle. ABCD est le rectangle cherché."},
+  {note:"O est le centre du rectangle : OA = OB = 1,7 cm. On trace les demi-droites [AO) et [BO), prolongées au-delà de O."},
+  {note:"On reporte la longueur OA au-delà de O sur [AO) : on obtient C. On reporte la longueur OB au-delà de O sur [BO) : on obtient D. ABCD est le rectangle cherché."},
 ];
 
 /* ---- Construction 2 : losange ABCD de centre O, AC = 3,6 cm, BD = 2 cm ---- */
@@ -540,6 +557,18 @@ const PCC_L_A = {x:120,y:190}, PCC_L_C = {x:264,y:190};
 const PCC_L_O = pcMid(PCC_L_A, PCC_L_C);
 const PCC_L_B = {x:192,y:150}, PCC_L_D = {x:192,y:230};
 const PCC_L_MEDIA_R = 100;
+function pccL1Sketch(){
+  const A=PCC_L_A,B=PCC_L_B,C=PCC_L_C,D=PCC_L_D,O=PCC_L_O;
+  const ticks = pcTickN(pcMid(A,B),pcNorm(pcSub(B,A)),1) + pcTickN(pcMid(B,C),pcNorm(pcSub(C,B)),1)
+    + pcTickN(pcMid(C,D),pcNorm(pcSub(D,C)),1) + pcTickN(pcMid(D,A),pcNorm(pcSub(A,D)),1);
+  const diag = `<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="${B.x}" y1="${B.y}" x2="${D.x}" y2="${D.y}" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"/>`;
+  const rightAngle = pcRightAngle(O, pcNorm(pcSub(C,A)), pcNorm(pcSub(D,B)), 10);
+  const oMark = `<circle cx="${O.x}" cy="${O.y}" r="2" fill="#1C1B2E"/>`+pcLabel(O.x+6,O.y-8,'O');
+  const labels = pcLabel(A.x-14,A.y+18,'A')+pcLabel(B.x+6,B.y-6,'B')+pcLabel(C.x+6,C.y+18,'C')+pcLabel(D.x+6,D.y+18,'D');
+  const measures = pcLabel((A.x+C.x)/2-14, A.y+16, '3,6 cm',12,false) + pcLabel(O.x+10,(B.y+O.y)/2+4,'2 cm',12,false);
+  return pcSvgWrap(pcQuadSides(A,B,C,D)+ticks+diag+rightAngle+oMark+labels+measures, 400,300,320);
+}
 let pccL1Step = 0;
 function pccL1Render(step){
   const A=PCC_L_A,C=PCC_L_C,O=PCC_L_O,B=PCC_L_B,D=PCC_L_D,r=PCC_L_MEDIA_R;
@@ -551,12 +580,12 @@ function pccL1Render(step){
   s += `<circle cx="${A.x}" cy="${A.y}" r="2.4" fill="#1C1B2E"/><circle cx="${C.x}" cy="${C.y}" r="2.4" fill="#1C1B2E"/>`;
   s += pcLabel(A.x-14,A.y+18,'A') + pcLabel(C.x+6,C.y+18,'C');
   if(step>=1){
-    const angAUp = Math.atan2(upPt.y-A.y,upPt.x-A.x)*180/Math.PI;
-    const angADown = Math.atan2(downPt.y-A.y,downPt.x-A.x)*180/Math.PI;
-    const angCUp = Math.atan2(upPt.y-C.y,upPt.x-C.x)*180/Math.PI;
-    const angCDown = Math.atan2(downPt.y-C.y,downPt.x-C.x)*180/Math.PI;
-    s += pccArc(A,r,angAUp,28,'#1F6B3A') + pccArc(A,r,angADown,28,'#1F6B3A');
-    s += pccArc(C,r,angCUp,28,'#9E1F5E') + pccArc(C,r,angCDown,28,'#9E1F5E');
+    const angAUp = Math.atan2(upPt.y-A.y,upPt.x-A.x);
+    const angADown = Math.atan2(downPt.y-A.y,downPt.x-A.x);
+    const angCUp = Math.atan2(upPt.y-C.y,upPt.x-C.x);
+    const angCDown = Math.atan2(downPt.y-C.y,downPt.x-C.x);
+    s += pccArc(A,r,angAUp,30,'#1F6B3A') + pccArc(A,r,angADown,30,'#1F6B3A');
+    s += pccArc(C,r,angCUp,30,'#9E1F5E') + pccArc(C,r,angCDown,30,'#9E1F5E');
     s += `<line x1="${upPt.x}" y1="${upPt.y}" x2="${downPt.x}" y2="${downPt.y}" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"/>`;
   }
   if(step>=2){
@@ -568,6 +597,7 @@ function pccL1Render(step){
       <line x1="${C.x}" y1="${C.y}" x2="${D.x}" y2="${D.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${D.x}" y1="${D.y}" x2="${A.x}" y2="${A.y}" stroke="#1C1B2E" stroke-width="1.6"/>`;
     s += `<circle cx="${B.x}" cy="${B.y}" r="2.4" fill="#1C1B2E"/><circle cx="${D.x}" cy="${D.y}" r="2.4" fill="#1C1B2E"/>`;
+    s += `<circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>`+pcLabel(O.x+6,O.y-8,'O');
     s += pcLabel(B.x+6,B.y-6,'B') + pcLabel(D.x+6,D.y+18,'D');
   }
   s += `</svg>`;
@@ -604,14 +634,16 @@ document.getElementById('methode-demo-parallelogrammes-particuliers-5e').innerHT
 </div>
 
 <p class="example-title" style="margin-top:26px;">Construis un rectangle ABCD de centre O dont les diagonales mesurent 3,4 cm et tel que AB = 3 cm</p>
+<p style="margin:8px 0;"><b>Avant de construire</b>, on représente à main levée ce que l'on cherche, avec les données de l'énoncé codées :</p>
+<div class="figure-wrap">${pccR1Sketch()}</div>
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la construction.</p>
   <div id="pccR1Wrap"></div>
   <div class="step-list" id="pccR1Steps">
     <div class="step-item" data-step="0"><div class="step-num">1</div><div>On trace le segment [AB] de longueur 3 cm.</div></div>
     <div class="step-item" data-step="1"><div class="step-num">2</div><div>Arcs de centre A et de centre B, de rayon 1,7 cm : ils se coupent en O.</div></div>
-    <div class="step-item" data-step="2"><div class="step-num">3</div><div>O est le centre du rectangle. Le cercle de centre O et de rayon 1,7 cm passe par les 4 sommets.</div></div>
-    <div class="step-item" data-step="3"><div class="step-num">4</div><div>C et D sont les symétriques de A et B par rapport à O.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>O est le centre du rectangle. On trace les demi-droites [AO) et [BO), prolongées au-delà de O.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">4</div><div>On reporte OA au-delà de O sur [AO) pour obtenir C, et OB au-delà de O sur [BO) pour obtenir D.</div></div>
   </div>
   <div class="figure-toolbar">
     <button class="btn" id="pccR1Next" onclick="pccR1Next()">Étape suivante →</button>
@@ -620,6 +652,8 @@ document.getElementById('methode-demo-parallelogrammes-particuliers-5e').innerHT
 </div>
 
 <p class="example-title" style="margin-top:26px;">Construis un losange ABCD de centre O dont les diagonales vérifient AC = 3,6 cm et BD = 2 cm</p>
+<p style="margin:8px 0;"><b>Avant de construire</b>, on représente à main levée ce que l'on cherche, avec les données de l'énoncé codées :</p>
+<div class="figure-wrap">${pccL1Sketch()}</div>
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la construction.</p>
   <div id="pccL1Wrap"></div>

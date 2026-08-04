@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.21</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.22</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2291,6 +2291,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-03.22', items:[
+    "5e -- G5 Parallélogrammes particuliers, Méthode : corrigé un bug (angle passé en degrés à une fonction attendant des radians) qui empêchait les arcs de cercle de se croiser correctement, dans les 2 constructions. Ajout d'une figure à main levée avant chaque construction, avec le codage des données de l'énoncé. La construction du rectangle utilise maintenant les demi-droites [AO)/[BO) et un report de longueur pour C et D, plutôt qu'un cercle complet.",
+  ]},
   { version:'2026-08-03.21', items:[
     "5e -- G5 Parallélogrammes particuliers, Méthode : ajout des 2 constructions pas-à-pas -- rectangle ABCD de centre O (diagonales 3,4 cm, AB = 3 cm) par la propriété du cercle circonscrit, et losange ABCD de centre O (AC = 3,6 cm, BD = 2 cm) par la médiatrice de [AC].",
   ]},
