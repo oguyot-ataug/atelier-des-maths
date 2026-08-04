@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.22</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.23</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2291,6 +2291,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-03.23', items:[
+    "5e -- G5 Parallélogrammes particuliers, Méthode : les figures à main levée sont maintenant vraiment tracées à main levée (traits ondulés, quadrilatère volontairement imprécis) plutôt que de reprendre les points exacts de la construction. Figure de construction du rectangle agrandie, arcs de cercle réduits. Codage des 4 demi-diagonales du rectangle uniformisé (elles sont toutes égales, le codage à 1/2 traits était incohérent). Ajout des arcs de compas manquants lors des reports de longueur (rectangle : report de OA et OB ; losange : report de 1 cm de part et d'autre de O).",
+  ]},
   { version:'2026-08-03.22', items:[
     "5e -- G5 Parallélogrammes particuliers, Méthode : corrigé un bug (angle passé en degrés à une fonction attendant des radians) qui empêchait les arcs de cercle de se croiser correctement, dans les 2 constructions. Ajout d'une figure à main levée avant chaque construction, avec le codage des données de l'énoncé. La construction du rectangle utilise maintenant les demi-droites [AO)/[BO) et un report de longueur pour C et D, plutôt qu'un cercle complet.",
   ]},

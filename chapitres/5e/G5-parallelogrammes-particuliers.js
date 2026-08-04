@@ -490,14 +490,23 @@ function qcRender(){
 function pccArc(center, radius, angleCenterRad, spanDeg, color){
   return `<polyline points="${pgArcSample(center, radius, angleCenterRad, spanDeg)}" fill="none" stroke="${color||'#1F6B3A'}" stroke-width="1.4"/>`;
 }
+/* Trait légèrement ondulé (à main levée), via une courbe dont les points de contrôle sont
+   décalés perpendiculairement au segment -- volontairement imprécis. */
+function pcSketchSide(p1,p2,bulge1,bulge2){
+  const dir = pcNorm(pcSub(p2,p1));
+  const perp = pcPerp(dir);
+  const q1 = pcAdd(pcAdd(p1, pcScale(pcSub(p2,p1),0.33)), pcScale(perp, bulge1));
+  const q2 = pcAdd(pcAdd(p1, pcScale(pcSub(p2,p1),0.66)), pcScale(perp, bulge2));
+  return `<path d="M ${p1.x} ${p1.y} C ${q1.x} ${q1.y} ${q2.x} ${q2.y} ${p2.x} ${p2.y}" fill="none" stroke="#1C1B2E" stroke-width="1.5" stroke-linecap="round"/>`;
+}
 
 /* ---- Construction 1 : rectangle ABCD de centre O, diagonales 3,4 cm, AB = 3 cm ---- */
-const PCC_R_A = {x:140,y:220}, PCC_R_B = {x:260,y:220};
-const PCC_R_O = {x:200,y:188};
-const PCC_R_C = {x:260,y:156}, PCC_R_D = {x:140,y:156};
-const PCC_R_RADIUS = 68;
+/* Figure à main levée : quadrilatère volontairement imprécis (pas un vrai rectangle au pixel
+   près), avec le codage qui indique ce qui est donné dans l'énoncé. */
 function pccR1Sketch(){
-  const A=PCC_R_A,B=PCC_R_B,O=PCC_R_O,C=PCC_R_C,D=PCC_R_D;
+  const A={x:85,y:205}, B={x:300,y:190}, C={x:312,y:78}, D={x:80,y:95};
+  const O = pcMid(A,C);
+  const sides = pcSketchSide(A,B,-3,4)+pcSketchSide(B,C,4,-3)+pcSketchSide(C,D,-3,4)+pcSketchSide(D,A,4,-3);
   const dirs = {
     A:[pcNorm(pcSub(B,A)), pcNorm(pcSub(D,A))], B:[pcNorm(pcSub(A,B)), pcNorm(pcSub(C,B))],
     C:[pcNorm(pcSub(B,C)), pcNorm(pcSub(D,C))], D:[pcNorm(pcSub(A,D)), pcNorm(pcSub(C,D))],
@@ -507,29 +516,36 @@ function pccR1Sketch(){
   const oMark = `<circle cx="${O.x}" cy="${O.y}" r="2" fill="#1C1B2E"/>`+pcLabel(O.x+6,O.y-8,'O');
   const labels = pcLabel(A.x-14,A.y+18,'A')+pcLabel(B.x+6,B.y+18,'B')+pcLabel(C.x+6,C.y-6,'C')+pcLabel(D.x-14,D.y-6,'D');
   const measures = pcLabel((A.x+B.x)/2-16, A.y+34, '3 cm', 12,false) + pcLabel((A.x+C.x)/2+8, (A.y+C.y)/2-2, '3,4 cm', 12, false);
-  return pcSvgWrap(pcQuadSides(A,B,C,D)+marks+diag+oMark+labels+measures, 400,280,320);
+  return pcSvgWrap(sides+marks+diag+oMark+labels+measures, 400,280,320);
 }
+/* Figure de construction précise (échelle agrandie pour la lisibilité à l'impression). */
+const PCC_R_A = {x:105,y:250}, PCC_R_B = {x:295,y:250};
+const PCC_R_O = {x:200,y:200};
+const PCC_R_C = {x:295,y:150}, PCC_R_D = {x:105,y:150};
+const PCC_R_RADIUS = Math.hypot(PCC_R_O.x-PCC_R_A.x, PCC_R_O.y-PCC_R_A.y);
 let pccR1Step = 0;
 function pccR1Render(step){
   const A=PCC_R_A,B=PCC_R_B,O=PCC_R_O,C=PCC_R_C,D=PCC_R_D,r=PCC_R_RADIUS;
-  let s = `<svg id="pccR1Svg" viewBox="0 0 400 280" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
+  let s = `<svg id="pccR1Svg" viewBox="0 0 400 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
   s += `<line x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}" stroke="#1C1B2E" stroke-width="1.6"/>`;
   s += `<circle cx="${A.x}" cy="${A.y}" r="2.4" fill="#1C1B2E"/><circle cx="${B.x}" cy="${B.y}" r="2.4" fill="#1C1B2E"/>`;
   s += pcLabel(A.x-14,A.y+18,'A') + pcLabel(B.x+6,B.y+18,'B');
   if(step>=1){
     const angA = Math.atan2(O.y-A.y,O.x-A.x);
     const angB = Math.atan2(O.y-B.y,O.x-B.x);
-    s += pccArc(A,r,angA,60,'#1F6B3A') + pccArc(B,r,angB,60,'#9E1F5E');
+    s += pccArc(A,r,angA,34,'#1F6B3A') + pccArc(B,r,angB,34,'#9E1F5E');
   }
   if(step>=2){
     s += `<circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>`+pcLabel(O.x+6,O.y-8,'O');
-    const extAC = pgExtend(A, C, 16), extBD = pgExtend(B, D, 16);
+    const extAC = pgExtend(A, C, 18), extBD = pgExtend(B, D, 18);
     s += `<line x1="${A.x}" y1="${A.y}" x2="${extAC.b.x}" y2="${extAC.b.y}" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="5,4"/>`;
     s += `<line x1="${B.x}" y1="${B.y}" x2="${extBD.b.x}" y2="${extBD.b.y}" stroke="#9E1F5E" stroke-width="1.2" stroke-dasharray="5,4"/>`;
   }
   if(step>=3){
-    s += pcTickN(pcMid(O,A), pcNorm(pcSub(A,O)),1) + pcTickN(pcMid(O,C), pcNorm(pcSub(C,O)),1);
-    s += pcTickN(pcMid(O,B), pcNorm(pcSub(B,O)),2) + pcTickN(pcMid(O,D), pcNorm(pcSub(D,O)),2);
+    const angOC = Math.atan2(C.y-O.y, C.x-O.x), angOD = Math.atan2(D.y-O.y, D.x-O.x);
+    s += pccArc(O,r,angOC,26,'#1F6B3A') + pccArc(O,r,angOD,26,'#9E1F5E');
+    s += pcTickN(pcMid(O,A), pcNorm(pcSub(A,O)),1) + pcTickN(pcMid(O,C), pcNorm(pcSub(C,O)),1)
+       + pcTickN(pcMid(O,B), pcNorm(pcSub(B,O)),1) + pcTickN(pcMid(O,D), pcNorm(pcSub(D,O)),1);
     s += `<line x1="${B.x}" y1="${B.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${C.x}" y1="${C.y}" x2="${D.x}" y2="${D.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${D.x}" y1="${D.y}" x2="${A.x}" y2="${A.y}" stroke="#1C1B2E" stroke-width="1.6"/>`;
@@ -549,16 +565,14 @@ const PCC_R1_STEPS = [
   {note:"On trace le segment [AB] de longueur 3 cm."},
   {note:"On trace un arc de centre A et de rayon 1,7 cm, puis un arc de centre B et de rayon 1,7 cm : ils se coupent en O, au-dessus de [AB]."},
   {note:"O est le centre du rectangle : OA = OB = 1,7 cm. On trace les demi-droites [AO) et [BO), prolongées au-delà de O."},
-  {note:"On reporte la longueur OA au-delà de O sur [AO) : on obtient C. On reporte la longueur OB au-delà de O sur [BO) : on obtient D. ABCD est le rectangle cherché."},
+  {note:"On reporte au compas la longueur OA au-delà de O sur [AO) (petit arc de centre O) : on obtient C. On reporte de même OB sur [BO) : on obtient D. ABCD est le rectangle cherché."},
 ];
 
 /* ---- Construction 2 : losange ABCD de centre O, AC = 3,6 cm, BD = 2 cm ---- */
-const PCC_L_A = {x:120,y:190}, PCC_L_C = {x:264,y:190};
-const PCC_L_O = pcMid(PCC_L_A, PCC_L_C);
-const PCC_L_B = {x:192,y:150}, PCC_L_D = {x:192,y:230};
-const PCC_L_MEDIA_R = 100;
 function pccL1Sketch(){
-  const A=PCC_L_A,B=PCC_L_B,C=PCC_L_C,D=PCC_L_D,O=PCC_L_O;
+  const A={x:75,y:190}, C={x:305,y:175}, B={x:200,y:75}, D={x:185,y:260};
+  const O = pcMid(A,C);
+  const sides = pcSketchSide(A,B,3,-4)+pcSketchSide(B,C,-4,3)+pcSketchSide(C,D,3,-4)+pcSketchSide(D,A,-4,3);
   const ticks = pcTickN(pcMid(A,B),pcNorm(pcSub(B,A)),1) + pcTickN(pcMid(B,C),pcNorm(pcSub(C,B)),1)
     + pcTickN(pcMid(C,D),pcNorm(pcSub(D,C)),1) + pcTickN(pcMid(D,A),pcNorm(pcSub(A,D)),1);
   const diag = `<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"/>
@@ -567,15 +581,20 @@ function pccL1Sketch(){
   const oMark = `<circle cx="${O.x}" cy="${O.y}" r="2" fill="#1C1B2E"/>`+pcLabel(O.x+6,O.y-8,'O');
   const labels = pcLabel(A.x-14,A.y+18,'A')+pcLabel(B.x+6,B.y-6,'B')+pcLabel(C.x+6,C.y+18,'C')+pcLabel(D.x+6,D.y+18,'D');
   const measures = pcLabel((A.x+C.x)/2-14, A.y+16, '3,6 cm',12,false) + pcLabel(O.x+10,(B.y+O.y)/2+4,'2 cm',12,false);
-  return pcSvgWrap(pcQuadSides(A,B,C,D)+ticks+diag+rightAngle+oMark+labels+measures, 400,300,320);
+  return pcSvgWrap(sides+ticks+diag+rightAngle+oMark+labels+measures, 400,300,320);
 }
+const PCC_L_A = {x:100,y:210}, PCC_L_C = {x:300,y:210};
+const PCC_L_O = pcMid(PCC_L_A, PCC_L_C);
+const PCC_L_B = {x:200,y:150}, PCC_L_D = {x:200,y:270};
+const PCC_L_MEDIA_R = 130;
+const PCC_L_BD_R = Math.hypot(PCC_L_O.x-PCC_L_B.x, PCC_L_O.y-PCC_L_B.y);
 let pccL1Step = 0;
 function pccL1Render(step){
-  const A=PCC_L_A,C=PCC_L_C,O=PCC_L_O,B=PCC_L_B,D=PCC_L_D,r=PCC_L_MEDIA_R;
+  const A=PCC_L_A,C=PCC_L_C,O=PCC_L_O,B=PCC_L_B,D=PCC_L_D,r=PCC_L_MEDIA_R,rBD=PCC_L_BD_R;
   const halfAC = Math.hypot(C.x-A.x,C.y-A.y)/2;
   const h = Math.sqrt(Math.max(r*r-halfAC*halfAC,0));
   const upPt = {x:O.x, y:O.y-h}, downPt = {x:O.x, y:O.y+h};
-  let s = `<svg id="pccL1Svg" viewBox="0 0 400 300" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
+  let s = `<svg id="pccL1Svg" viewBox="0 0 400 340" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
   s += `<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1.6"/>`;
   s += `<circle cx="${A.x}" cy="${A.y}" r="2.4" fill="#1C1B2E"/><circle cx="${C.x}" cy="${C.y}" r="2.4" fill="#1C1B2E"/>`;
   s += pcLabel(A.x-14,A.y+18,'A') + pcLabel(C.x+6,C.y+18,'C');
@@ -584,14 +603,16 @@ function pccL1Render(step){
     const angADown = Math.atan2(downPt.y-A.y,downPt.x-A.x);
     const angCUp = Math.atan2(upPt.y-C.y,upPt.x-C.x);
     const angCDown = Math.atan2(downPt.y-C.y,downPt.x-C.x);
-    s += pccArc(A,r,angAUp,30,'#1F6B3A') + pccArc(A,r,angADown,30,'#1F6B3A');
-    s += pccArc(C,r,angCUp,30,'#9E1F5E') + pccArc(C,r,angCDown,30,'#9E1F5E');
+    s += pccArc(A,r,angAUp,22,'#1F6B3A') + pccArc(A,r,angADown,22,'#1F6B3A');
+    s += pccArc(C,r,angCUp,22,'#9E1F5E') + pccArc(C,r,angCDown,22,'#9E1F5E');
     s += `<line x1="${upPt.x}" y1="${upPt.y}" x2="${downPt.x}" y2="${downPt.y}" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"/>`;
   }
   if(step>=2){
     s += `<circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>`+pcLabel(O.x+6,O.y-8,'O');
   }
   if(step>=3){
+    const angOB = Math.atan2(B.y-O.y,B.x-O.x), angOD = Math.atan2(D.y-O.y,D.x-O.x);
+    s += pccArc(O,rBD,angOB,30,'#1F6B3A') + pccArc(O,rBD,angOD,30,'#9E1F5E');
     s += `<line x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${B.x}" y1="${B.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${C.x}" y1="${C.y}" x2="${D.x}" y2="${D.y}" stroke="#1C1B2E" stroke-width="1.6"/>
@@ -613,8 +634,9 @@ const PCC_L1_STEPS = [
   {note:"On trace le segment [AC] de longueur 3,6 cm."},
   {note:"On trace la médiatrice de [AC] : deux arcs de même rayon, centrés en A et en C, se coupant de part et d'autre de (AC)."},
   {note:"O, milieu de [AC], est le point d'intersection de la médiatrice et du segment [AC]."},
-  {note:"Sur la médiatrice, on place B et D tels que OB = OD = 1 cm, de part et d'autre de O. ABCD est le losange cherché."},
+  {note:"On reporte au compas 1 cm de part et d'autre de O sur la médiatrice (petits arcs de centre O) : on obtient B et D. ABCD est le losange cherché."},
 ];
+
 
 document.getElementById('methode-demo-parallelogrammes-particuliers-5e').innerHTML = `
 <p class="example-title" style="margin-top:0;">🔎 Utilitaire : quel est ce quadrilatère ?</p>
@@ -643,7 +665,7 @@ document.getElementById('methode-demo-parallelogrammes-particuliers-5e').innerHT
     <div class="step-item" data-step="0"><div class="step-num">1</div><div>On trace le segment [AB] de longueur 3 cm.</div></div>
     <div class="step-item" data-step="1"><div class="step-num">2</div><div>Arcs de centre A et de centre B, de rayon 1,7 cm : ils se coupent en O.</div></div>
     <div class="step-item" data-step="2"><div class="step-num">3</div><div>O est le centre du rectangle. On trace les demi-droites [AO) et [BO), prolongées au-delà de O.</div></div>
-    <div class="step-item" data-step="3"><div class="step-num">4</div><div>On reporte OA au-delà de O sur [AO) pour obtenir C, et OB au-delà de O sur [BO) pour obtenir D.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">4</div><div>Au compas, on reporte OA au-delà de O sur [AO) pour obtenir C, et OB au-delà de O sur [BO) pour obtenir D.</div></div>
   </div>
   <div class="figure-toolbar">
     <button class="btn" id="pccR1Next" onclick="pccR1Next()">Étape suivante →</button>
@@ -661,7 +683,7 @@ document.getElementById('methode-demo-parallelogrammes-particuliers-5e').innerHT
     <div class="step-item" data-step="0"><div class="step-num">1</div><div>On trace le segment [AC] de longueur 3,6 cm.</div></div>
     <div class="step-item" data-step="1"><div class="step-num">2</div><div>On trace la médiatrice de [AC] (arcs de même rayon centrés en A et en C).</div></div>
     <div class="step-item" data-step="2"><div class="step-num">3</div><div>O, milieu de [AC], est à l'intersection de la médiatrice et de [AC].</div></div>
-    <div class="step-item" data-step="3"><div class="step-num">4</div><div>Sur la médiatrice, on place B et D tels que OB = OD = 1 cm.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">4</div><div>Au compas, on reporte 1 cm de part et d'autre de O sur la médiatrice, pour obtenir B et D.</div></div>
   </div>
   <div class="figure-toolbar">
     <button class="btn" id="pccL1Next" onclick="pccL1Next()">Étape suivante →</button>
