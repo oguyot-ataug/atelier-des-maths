@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.26</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.1</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -289,6 +289,9 @@
     <div id="cours-demo-decimaux-6e" style="display:none;">
     </div>
 
+    <div id="cours-demo-operations-ordre-grandeur-6e" style="display:none;">
+    </div>
+
     <div id="cours-demo-distance-cercles" style="display:none;">
     </div>
 
@@ -349,6 +352,8 @@
     </div>
     <div id="methode-demo-decimaux-6e" style="display:none;">
     </div>
+    <div id="methode-demo-operations-ordre-grandeur-6e" style="display:none;">
+    </div>
     <div id="methode-demo-distance-cercles" style="display:none;">
     </div>
     <div id="methode-demo-fractions-5e" style="display:none;">
@@ -395,6 +400,8 @@
     <div id="exos-demo-angles-rapporteur-6e" style="display:none;">
     </div>
     <div id="exos-demo-decimaux-6e" style="display:none;">
+    </div>
+    <div id="exos-demo-operations-ordre-grandeur-6e" style="display:none;">
     </div>
     <div id="exos-demo-distance-cercles" style="display:none;">
     </div>
@@ -2291,6 +2298,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.1', items:[
+    "Nouveau chapitre 6e -- N4 Opérations et ordre de grandeur : Cours complet (addition/soustraction de décimaux, multiplication/division par 10-100-1000, multiplication de deux décimaux, division d'un décimal par un entier avec division posée interactive inspirée de la division euclidienne du chapitre Nombres entiers), 5 exercices et un quiz. La partie Méthode suivra dans une prochaine session.",
+  ]},
   { version:'2026-08-03.26', items:[
     "5e -- G5 Parallélogrammes particuliers, Méthode : figures à main levée -- le rectangle code maintenant les 2 diagonales égales se coupant en leur milieu (au lieu des angles droits), avec chaque demi-diagonale étiquetée 1,7 cm. Le losange étiquette chaque demi-diagonale (1,8 cm, 1,8 cm, 1 cm, 1 cm) plutôt que la diagonale entière une seule fois.",
   ]},
@@ -3694,6 +3704,7 @@ renderNiveau('6e');
 <script src="chapitres/6e/N2-fractions-nombres-partage.js"></script>
 <script src="chapitres/6e/G3-angles-rapporteur.js"></script>
 <script src="chapitres/6e/N3-nombres-decimaux.js"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js"></script>
 <script src="chapitres/6e/G1-distance-et-cercles.js"></script>
 <script src="chapitres/5e/N4-fractions.js"></script>
 <script src="chapitres/5e/N1-divisibilite.js"></script>
