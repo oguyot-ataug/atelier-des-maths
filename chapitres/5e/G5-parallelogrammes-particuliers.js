@@ -507,16 +507,16 @@ function pccR1Sketch(){
   const A={x:85,y:205}, B={x:300,y:190}, C={x:312,y:78}, D={x:80,y:95};
   const O = pcMid(A,C);
   const sides = pcSketchSide(A,B,-3,4)+pcSketchSide(B,C,4,-3)+pcSketchSide(C,D,-3,4)+pcSketchSide(D,A,4,-3);
-  const dirs = {
-    A:[pcNorm(pcSub(B,A)), pcNorm(pcSub(D,A))], B:[pcNorm(pcSub(A,B)), pcNorm(pcSub(C,B))],
-    C:[pcNorm(pcSub(B,C)), pcNorm(pcSub(D,C))], D:[pcNorm(pcSub(A,D)), pcNorm(pcSub(C,D))],
-  };
-  const marks = ['A','B','C','D'].map(k=>pcRightAngle({A,B,C,D}[k],dirs[k][0],dirs[k][1],12)).join('');
-  const diag = `<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"/>`;
+  const diag = `<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"/>
+    <line x1="${B.x}" y1="${B.y}" x2="${D.x}" y2="${D.y}" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"/>`;
+  const ticks = pcTickN(pcMid(O,A),pcNorm(pcSub(A,O)),1) + pcTickN(pcMid(O,C),pcNorm(pcSub(C,O)),1)
+    + pcTickN(pcMid(O,B),pcNorm(pcSub(B,O)),1) + pcTickN(pcMid(O,D),pcNorm(pcSub(D,O)),1);
   const oMark = `<circle cx="${O.x}" cy="${O.y}" r="2" fill="#1C1B2E"/>`+pcLabel(O.x+6,O.y-8,'O');
   const labels = pcLabel(A.x-14,A.y+18,'A')+pcLabel(B.x+6,B.y+18,'B')+pcLabel(C.x+6,C.y-6,'C')+pcLabel(D.x-14,D.y-6,'D');
-  const measures = pcLabel((A.x+B.x)/2-16, A.y+34, '3 cm', 12,false) + pcLabel((A.x+C.x)/2+8, (A.y+C.y)/2-2, '3,4 cm', 12, false);
-  return pcSvgWrap(sides+marks+diag+oMark+labels+measures, 400,280,320);
+  const halfLabel = (P,Q,dx,dy)=>pcLabel((P.x+Q.x)/2+dx,(P.y+Q.y)/2+dy,'1,7 cm',11,false);
+  const measures = pcLabel((A.x+B.x)/2-16, A.y+34, '3 cm', 12,false)
+    + halfLabel(O,A,-38,4) + halfLabel(O,C,10,-2) + halfLabel(O,B,6,-10) + halfLabel(O,D,-6,16);
+  return pcSvgWrap(sides+diag+ticks+oMark+labels+measures, 400,280,320);
 }
 /* Figure de construction précise (échelle agrandie pour la lisibilité à l'impression). */
 const PCC_R_A = {x:105,y:250}, PCC_R_B = {x:295,y:250};
@@ -583,7 +583,8 @@ function pccL1Sketch(){
   const rightAngle = pcRightAngle(O, pcNorm(pcSub(C,A)), pcNorm(pcSub(D,B)), 10);
   const oMark = `<circle cx="${O.x}" cy="${O.y}" r="2" fill="#1C1B2E"/>`+pcLabel(O.x+6,O.y-8,'O');
   const labels = pcLabel(A.x-14,A.y+18,'A')+pcLabel(B.x+6,B.y-6,'B')+pcLabel(C.x+6,C.y+18,'C')+pcLabel(D.x+6,D.y+18,'D');
-  const measures = pcLabel((A.x+C.x)/2-14, A.y+16, '3,6 cm',12,false) + pcLabel(O.x+10,(B.y+O.y)/2+4,'2 cm',12,false);
+  const halfLabel = (P,Q,dx,dy,txt)=>pcLabel((P.x+Q.x)/2+dx,(P.y+Q.y)/2+dy,txt,11,false);
+  const measures = halfLabel(O,A,-40,2,'1,8 cm') + halfLabel(O,C,8,-4,'1,8 cm') + halfLabel(O,B,8,-8,'1 cm') + halfLabel(O,D,8,16,'1 cm');
   return pcSvgWrap(sides+ticks+diag+rightAngle+oMark+labels+measures, 400,300,320);
 }
 const PCC_L_A = {x:100,y:210}, PCC_L_C = {x:300,y:210};
