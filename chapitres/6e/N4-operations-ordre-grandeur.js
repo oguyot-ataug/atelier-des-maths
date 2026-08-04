@@ -8,39 +8,50 @@
    ============================================================ */
 
 /* ---- Division posée décimale : 57 ÷ 8 = 7,125 (exacte) ----
-   Chaque ligne est une liste de 4 "cases" (chiffre, signe ou espace). On les
-   affiche dans des cellules de largeur fixe en pixels (pas en caractères de
-   police) : l'alignement des chiffres ne dépend donc plus du bon chargement
-   d'une police à chasse fixe (JetBrains Mono), ce qui le rend fiable même
-   hors-ligne, à l'impression, ou si la police web échoue à se charger. */
+   Colonnes ABSOLUES en valeur de position (pas une boîte à largeur fixe par
+   ligne) : le reste d'une soustraction reste dans la colonne qu'il occupait
+   (unités, dixièmes...), et chaque chiffre abaissé prend la colonne suivante
+   à droite. C'est ce qui fait qu'ici, "1" (reste de 57-56) reste sous les
+   unités, et le "0" abaissé va dans la colonne des dixièmes juste à côté --
+   au lieu d'un bloc "10" recalé au même endroit que "57".
+   Colonnes : 0=signe/dizaines, 1=unités, 2=dixièmes, 3=centièmes, 4=millièmes. */
 const OG_CELL_W = 20;
-function ogCells(slots){
-  return slots.map(c=>`<span style="display:inline-block;width:${OG_CELL_W}px;text-align:center;">${c===' '?'':c}</span>`).join('');
+const OG_NCOLS = 7;
+function ogCells(map){
+  let out = '';
+  for(let i=0;i<OG_NCOLS;i++){
+    const c = map[i];
+    out += `<span style="display:inline-block;width:${OG_CELL_W}px;text-align:center;">${c?c:''}</span>`;
+  }
+  return out;
 }
-function ogRow(slots, sub){
-  const w = OG_CELL_W*slots.length;
+function ogRow(map, sub){
   const border = sub ? `border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;` : '';
-  return `<div style="width:${w}px;${border}">${ogCells(slots)}</div>`;
+  return `<div style="width:${OG_CELL_W*OG_NCOLS}px;${border}">${ogCells(map)}</div>`;
 }
-const OG_DP_57  = [' ',' ','5','7'];
-const OG_DP_M56 = [' ','−','5','6'];
-const OG_DP_10  = [' ',' ','1','0'];
-const OG_DP_M8  = [' ',' ','−','8'];
-const OG_DP_20  = [' ',' ','2','0'];
-const OG_DP_M16 = [' ','−','1','6'];
-const OG_DP_40  = [' ',' ','4','0'];
-const OG_DP_M40 = [' ','−','4','0'];
-const OG_DP_0   = [' ',' ',' ','0'];
+const OG_DP_57  = {0:'5', 1:'7'};
+const OG_DP_M56 = {'-1':'−', 0:'5', 1:'6'};
+const OG_DP_10  = {1:'1', 2:'0'};
+const OG_DP_M8  = {1:'−', 2:'8'};
+const OG_DP_20  = {2:'2', 3:'0'};
+const OG_DP_M16 = {1:'−', 2:'1', 3:'6'};
+const OG_DP_40  = {3:'4', 4:'0'};
+const OG_DP_M40 = {2:'−', 3:'4', 4:'0'};
+const OG_DP_0   = {4:'0'};
+/* décale tous les indices d'un tableau de +2 pour rester dans une plage positive (0..5) */
+function ogShift(map){ const r={}; for(const k in map) r[(+k)+2]=map[k]; return r; }
+const OG_57s=ogShift(OG_DP_57), OG_M56s=ogShift(OG_DP_M56), OG_10s=ogShift(OG_DP_10), OG_M8s=ogShift(OG_DP_M8),
+      OG_20s=ogShift(OG_DP_20), OG_M16s=ogShift(OG_DP_M16), OG_40s=ogShift(OG_DP_40), OG_M40s=ogShift(OG_DP_M40), OG_0s=ogShift(OG_DP_0);
 const OG_DIVISION_POSEE_STEPS = [
-  {rows:[{t:OG_DP_57}], quotient:'', note:"57 ÷ 8 : 8 × 7 = 56 est le plus proche de 57 sans le dépasser."},
-  {rows:[{t:OG_DP_57},{t:OG_DP_M56,sub:true}], quotient:'7', note:"57 − 56 = 1. Le reste n'est pas nul : la division continue."},
-  {rows:[{t:OG_DP_57},{t:OG_DP_M56,sub:true},{t:OG_DP_10}], quotient:'7,', note:"On abaisse un chiffre des dixièmes (0) : dès cet instant, on place la virgule au quotient. Le reste 1 devient 10."},
-  {rows:[{t:OG_DP_57},{t:OG_DP_M56,sub:true},{t:OG_DP_10},{t:OG_DP_M8,sub:true}], quotient:'7,1', note:"10 ÷ 8 : 8 × 1 = 8 est le plus proche de 10 sans le dépasser. 10 − 8 = 2."},
-  {rows:[{t:OG_DP_57},{t:OG_DP_M56,sub:true},{t:OG_DP_10},{t:OG_DP_M8,sub:true},{t:OG_DP_20}], quotient:'7,1', note:"On abaisse un nouveau 0 : le reste 2 devient 20."},
-  {rows:[{t:OG_DP_57},{t:OG_DP_M56,sub:true},{t:OG_DP_10},{t:OG_DP_M8,sub:true},{t:OG_DP_20},{t:OG_DP_M16,sub:true}], quotient:'7,12', note:"20 ÷ 8 : 8 × 2 = 16 est le plus proche de 20 sans le dépasser. 20 − 16 = 4."},
-  {rows:[{t:OG_DP_57},{t:OG_DP_M56,sub:true},{t:OG_DP_10},{t:OG_DP_M8,sub:true},{t:OG_DP_20},{t:OG_DP_M16,sub:true},{t:OG_DP_40}], quotient:'7,12', note:"On abaisse un nouveau 0 : le reste 4 devient 40."},
-  {rows:[{t:OG_DP_57},{t:OG_DP_M56,sub:true},{t:OG_DP_10},{t:OG_DP_M8,sub:true},{t:OG_DP_20},{t:OG_DP_M16,sub:true},{t:OG_DP_40},{t:OG_DP_M40,sub:true}], quotient:'7,125', note:"40 ÷ 8 = 5 exactement (8 × 5 = 40). 40 − 40 = 0."},
-  {rows:[{t:OG_DP_57},{t:OG_DP_M56,sub:true},{t:OG_DP_10},{t:OG_DP_M8,sub:true},{t:OG_DP_20},{t:OG_DP_M16,sub:true},{t:OG_DP_40},{t:OG_DP_M40,sub:true},{t:OG_DP_0}], quotient:'7,125', note:"Le reste est 0 : la division est terminée. 57 ÷ 8 = 7,125 (valeur exacte)."},
+  {rows:[{t:OG_57s}], quotient:'', note:"57 ÷ 8 : 8 × 7 = 56 est le plus proche de 57 sans le dépasser."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true}], quotient:'7', note:"57 − 56 = 1. Le 1 reste sous la colonne des unités. Le reste n'est pas nul : la division continue."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s}], quotient:'7,', note:"On abaisse un chiffre des dixièmes (0), dans la colonne juste à droite des unités : dès cet instant, on place la virgule au quotient. Le reste 1 (unités) et le 0 abaissé (dixièmes) forment 10."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true}], quotient:'7,1', note:"10 ÷ 8 : 8 × 1 = 8 est le plus proche de 10 sans le dépasser. 10 − 8 = 2 (colonne des dixièmes)."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s}], quotient:'7,1', note:"On abaisse un nouveau 0 (colonne des centièmes) : le reste 2 devient 20."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s},{t:OG_M16s,sub:true}], quotient:'7,12', note:"20 ÷ 8 : 8 × 2 = 16 est le plus proche de 20 sans le dépasser. 20 − 16 = 4 (colonne des centièmes)."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s},{t:OG_M16s,sub:true},{t:OG_40s}], quotient:'7,12', note:"On abaisse un nouveau 0 (colonne des millièmes) : le reste 4 devient 40."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s},{t:OG_M16s,sub:true},{t:OG_40s},{t:OG_M40s,sub:true}], quotient:'7,125', note:"40 ÷ 8 = 5 exactement (8 × 5 = 40). 40 − 40 = 0."},
+  {rows:[{t:OG_57s},{t:OG_M56s,sub:true},{t:OG_10s},{t:OG_M8s,sub:true},{t:OG_20s},{t:OG_M16s,sub:true},{t:OG_40s},{t:OG_M40s,sub:true},{t:OG_0s}], quotient:'7,125', note:"Le reste est 0 : la division est terminée. 57 ÷ 8 = 7,125 (valeur exacte)."},
 ];
 let ogDivisionPoseeIdx = 0;
 function ogRenderDivisionPosee(){
@@ -147,7 +158,7 @@ document.getElementById('cours-demo-operations-ordre-grandeur-6e').innerHTML = `
   <div style="display:flex;justify-content:center;align-items:flex-start;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.25rem;padding:20px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);">
     <div style="text-align:right;padding-left:30px;padding-right:40px;">
       <div class="dp-tag" style="color:var(--accent);">dividende</div>
-      <div id="og-dpLeft" style="line-height:2;min-width:80px;margin-left:auto;"></div>
+      <div id="og-dpLeft" style="line-height:2;min-width:140px;margin-left:auto;"></div>
       <div class="dp-tag" id="og-dpResteTag" style="color:#9E1F5E;min-height:1.1em;"></div>
     </div>
     <div style="border-left:2px solid #1C1B2E;padding-left:16px;">
