@@ -377,6 +377,8 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
 .cm-q.ko input{background:rgba(211,90,60,.12);border-color:#a83c1f;}
 
 footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px;}
+footer a{text-decoration:underline;text-underline-offset:2px;}
+footer a:hover{color:var(--accent);}
 
 /* ---------- print export ---------- */
 @media print{

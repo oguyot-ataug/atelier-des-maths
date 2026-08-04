@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.6</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.7</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -749,7 +749,7 @@ mmartin	Motdepasse2"></textarea>
 
 </main>
 
-<footer>Maquette de travail — L'Atelier des Maths · Programme B.O. 2026</footer>
+<footer>Une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a> · L'Atelier des Maths · Programme B.O. 2026</footer>
 
 <script>
 /* ======================= DATA ======================= */
@@ -2308,6 +2308,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.7', items:[
+    "Pied de page -- \"Maquette de travail\" remplacé par \"Une production de L'Atelier Augmenté\", avec un lien vers www.latelieraugmente.fr.",
+  ]},
   { version:'2026-08-04.6', items:[
     "Style -- le logo du hero (page d'accueil) était tronqué juste avant le slogan \"Apprendre, S'entraîner, Exceller\" ; il est maintenant recadré pour inclure l'intégralité du logo, slogan compris.",
   ]},
