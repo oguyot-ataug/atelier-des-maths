@@ -92,13 +92,13 @@ const OG_ADD_WELL = [
   {m:{0:'+', 1:'1', 2:'2'}},
   {m:{0:'=', 1:'2', 2:'2', 3:',', 4:'0', 5:'3'}, top:true},
 ];
-/* Erreur classique : 12 est écrit "1,2" par erreur -- le 1 (dizaines) et le 2
-   (dixièmes, alors que ce devrait être les unités) ne tombent plus dans les
-   mêmes colonnes que les autres lignes : la case des unités reste vide. */
+/* Erreur classique : 12 est aligné à droite sans tenir compte des unités --
+   le 1 tombe sur la colonne des unités et le 2 sur celle des dixièmes (aucune
+   virgule n'est écrite), au lieu du 1 en dizaines et du 2 en unités. */
 const OG_ADD_BAD = [
   {m:{2:'9', 3:',', 4:'4'}},
   {m:{0:'+', 2:'0', 3:',', 4:'6', 5:'3'}},
-  {m:{0:'+', 1:'1', 3:',', 4:'2'}},
+  {m:{0:'+', 2:'1', 4:'2'}},
 ];
 const OG_SUB_15 = [
   {m:{1:'1', 2:'5', 3:',', 4:'0'}},
