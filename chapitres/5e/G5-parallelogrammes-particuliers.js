@@ -546,26 +546,29 @@ function pccR1Render(step){
     s += pccArc(O,r,angOC,26,'#1F6B3A') + pccArc(O,r,angOD,26,'#9E1F5E');
     s += pcTickN(pcMid(O,A), pcNorm(pcSub(A,O)),1) + pcTickN(pcMid(O,C), pcNorm(pcSub(C,O)),1)
        + pcTickN(pcMid(O,B), pcNorm(pcSub(B,O)),1) + pcTickN(pcMid(O,D), pcNorm(pcSub(D,O)),1);
+    s += `<circle cx="${C.x}" cy="${C.y}" r="2.4" fill="#1C1B2E"/><circle cx="${D.x}" cy="${D.y}" r="2.4" fill="#1C1B2E"/>`;
+    s += pcLabel(C.x+6,C.y-6,'C') + pcLabel(D.x-14,D.y-6,'D');
+  }
+  if(step>=4){
     s += `<line x1="${B.x}" y1="${B.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${C.x}" y1="${C.y}" x2="${D.x}" y2="${D.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${D.x}" y1="${D.y}" x2="${A.x}" y2="${A.y}" stroke="#1C1B2E" stroke-width="1.6"/>`;
-    s += `<circle cx="${C.x}" cy="${C.y}" r="2.4" fill="#1C1B2E"/><circle cx="${D.x}" cy="${D.y}" r="2.4" fill="#1C1B2E"/>`;
-    s += pcLabel(C.x+6,C.y-6,'C') + pcLabel(D.x-14,D.y-6,'D');
   }
   s += `</svg>`;
   const wrap = document.getElementById('pccR1Wrap');
   if(wrap) wrap.innerHTML = s;
   document.querySelectorAll('#pccR1Steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=step));
   const btn = document.getElementById('pccR1Next');
-  if(btn){ btn.textContent = step>=3 ? 'Terminé ✓' : 'Étape suivante →'; btn.disabled = step>=3; }
+  if(btn){ btn.textContent = step>=4 ? 'Terminé ✓' : 'Étape suivante →'; btn.disabled = step>=4; }
 }
-function pccR1Next(){ if(pccR1Step<3){ pccR1Step++; pccR1Render(pccR1Step); } }
+function pccR1Next(){ if(pccR1Step<4){ pccR1Step++; pccR1Render(pccR1Step); } }
 function pccR1Reset(){ pccR1Step=0; pccR1Render(0); }
 const PCC_R1_STEPS = [
   {note:"On trace le segment [AB] de longueur 3 cm."},
   {note:"On trace un arc de centre A et de rayon 1,7 cm, puis un arc de centre B et de rayon 1,7 cm : ils se coupent en O, au-dessus de [AB]."},
   {note:"O est le centre du rectangle : OA = OB = 1,7 cm. On trace les demi-droites [AO) et [BO), prolongées au-delà de O."},
-  {note:"On reporte au compas la longueur OA au-delà de O sur [AO) (petit arc de centre O) : on obtient C. On reporte de même OB sur [BO) : on obtient D. ABCD est le rectangle cherché."},
+  {note:"Au compas, on reporte OA au-delà de O sur [AO) (petit arc de centre O) : on obtient C. On reporte de même OB sur [BO) : on obtient D."},
+  {note:"On trace les côtés [BC], [CD] et [DA]. ABCD est le rectangle cherché."},
 ];
 
 /* ---- Construction 2 : losange ABCD de centre O, AC = 3,6 cm, BD = 2 cm ---- */
@@ -613,28 +616,31 @@ function pccL1Render(step){
   if(step>=3){
     const angOB = Math.atan2(B.y-O.y,B.x-O.x), angOD = Math.atan2(D.y-O.y,D.x-O.x);
     s += pccArc(O,rBD,angOB,30,'#1F6B3A') + pccArc(O,rBD,angOD,30,'#9E1F5E');
+    s += `<circle cx="${B.x}" cy="${B.y}" r="2.4" fill="#1C1B2E"/><circle cx="${D.x}" cy="${D.y}" r="2.4" fill="#1C1B2E"/>`;
+    s += `<circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>`+pcLabel(O.x+6,O.y-8,'O');
+    s += pcLabel(B.x+6,B.y-6,'B') + pcLabel(D.x+6,D.y+18,'D');
+  }
+  if(step>=4){
     s += `<line x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${B.x}" y1="${B.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${C.x}" y1="${C.y}" x2="${D.x}" y2="${D.y}" stroke="#1C1B2E" stroke-width="1.6"/>
       <line x1="${D.x}" y1="${D.y}" x2="${A.x}" y2="${A.y}" stroke="#1C1B2E" stroke-width="1.6"/>`;
-    s += `<circle cx="${B.x}" cy="${B.y}" r="2.4" fill="#1C1B2E"/><circle cx="${D.x}" cy="${D.y}" r="2.4" fill="#1C1B2E"/>`;
-    s += `<circle cx="${O.x}" cy="${O.y}" r="2.4" fill="#1C1B2E"/>`+pcLabel(O.x+6,O.y-8,'O');
-    s += pcLabel(B.x+6,B.y-6,'B') + pcLabel(D.x+6,D.y+18,'D');
   }
   s += `</svg>`;
   const wrap = document.getElementById('pccL1Wrap');
   if(wrap) wrap.innerHTML = s;
   document.querySelectorAll('#pccL1Steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=step));
   const btn = document.getElementById('pccL1Next');
-  if(btn){ btn.textContent = step>=3 ? 'Terminé ✓' : 'Étape suivante →'; btn.disabled = step>=3; }
+  if(btn){ btn.textContent = step>=4 ? 'Terminé ✓' : 'Étape suivante →'; btn.disabled = step>=4; }
 }
-function pccL1Next(){ if(pccL1Step<3){ pccL1Step++; pccL1Render(pccL1Step); } }
+function pccL1Next(){ if(pccL1Step<4){ pccL1Step++; pccL1Render(pccL1Step); } }
 function pccL1Reset(){ pccL1Step=0; pccL1Render(0); }
 const PCC_L1_STEPS = [
   {note:"On trace le segment [AC] de longueur 3,6 cm."},
   {note:"On trace la médiatrice de [AC] : deux arcs de même rayon, centrés en A et en C, se coupant de part et d'autre de (AC)."},
   {note:"O, milieu de [AC], est le point d'intersection de la médiatrice et du segment [AC]."},
-  {note:"On reporte au compas 1 cm de part et d'autre de O sur la médiatrice (petits arcs de centre O) : on obtient B et D. ABCD est le losange cherché."},
+  {note:"Au compas, on reporte 1 cm de part et d'autre de O sur la médiatrice (petits arcs de centre O) : on obtient B et D."},
+  {note:"On trace les côtés [AB], [BC], [CD] et [DA]. ABCD est le losange cherché."},
 ];
 
 
@@ -666,6 +672,7 @@ document.getElementById('methode-demo-parallelogrammes-particuliers-5e').innerHT
     <div class="step-item" data-step="1"><div class="step-num">2</div><div>Arcs de centre A et de centre B, de rayon 1,7 cm : ils se coupent en O.</div></div>
     <div class="step-item" data-step="2"><div class="step-num">3</div><div>O est le centre du rectangle. On trace les demi-droites [AO) et [BO), prolongées au-delà de O.</div></div>
     <div class="step-item" data-step="3"><div class="step-num">4</div><div>Au compas, on reporte OA au-delà de O sur [AO) pour obtenir C, et OB au-delà de O sur [BO) pour obtenir D.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">5</div><div>On trace les côtés [BC], [CD] et [DA]. ABCD est le rectangle cherché.</div></div>
   </div>
   <div class="figure-toolbar">
     <button class="btn" id="pccR1Next" onclick="pccR1Next()">Étape suivante →</button>
@@ -684,6 +691,7 @@ document.getElementById('methode-demo-parallelogrammes-particuliers-5e').innerHT
     <div class="step-item" data-step="1"><div class="step-num">2</div><div>On trace la médiatrice de [AC] (arcs de même rayon centrés en A et en C).</div></div>
     <div class="step-item" data-step="2"><div class="step-num">3</div><div>O, milieu de [AC], est à l'intersection de la médiatrice et de [AC].</div></div>
     <div class="step-item" data-step="3"><div class="step-num">4</div><div>Au compas, on reporte 1 cm de part et d'autre de O sur la médiatrice, pour obtenir B et D.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">5</div><div>On trace les côtés [AB], [BC], [CD] et [DA]. ABCD est le losange cherché.</div></div>
   </div>
   <div class="figure-toolbar">
     <button class="btn" id="pccL1Next" onclick="pccL1Next()">Étape suivante →</button>
