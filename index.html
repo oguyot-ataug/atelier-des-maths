@@ -16,8 +16,8 @@
 
 <div class="topbar">
   <div class="brand">
-    <img class="brand-mark" src="assets/logo-icon.png" alt="L'Atelier des Maths" style="width:auto;height:46px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.4</span>
+    <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.5</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2308,6 +2308,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.5', items:[
+    "Style -- utilisation de la version horizontale du logo (icône + texte côte à côte) dans la barre de navigation, fond rendu transparent, taille augmentée à 52px : le nom complet \"L'Atelier des Maths\" est de nouveau lisible directement dans le logo.",
+  ]},
   { version:'2026-08-04.4', items:[
     "Style -- le logo dans la barre de navigation est agrandi, transparent (fond retiré), et le texte redondant à côté a été supprimé. Le logo complet (icône + texte) est désormais affiché en grand dans le hero de la page d'accueil. Dominance de couleur par niveau : les pages de chapitre en 6e sont désormais dominées par l'orange, celles en 5e par le bleu (issus de la palette du logo), sur les onglets actifs et les boutons.",
     "Page d'accueil -- \"Automatismes\" et \"Frise de progression\" sortent de la grille \"Ce que propose chaque chapitre\" et ont chacun leur propre section. La section \"Aperçu : chapitres traités en entier\" est supprimée.",
