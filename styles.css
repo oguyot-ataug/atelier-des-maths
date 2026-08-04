@@ -7,7 +7,7 @@
   --margin-red:#E6A0C4;
   --accent:#0C5BA0;
   --accent-orange:#FF8208;
-  --accent-teal:#27A7AD;
+  --accent-teal:#26AAB1;
   --accent-yellow:#F8AF23;
   --white:#FFFFFF;
   --cream-box:#F3ECDD;
@@ -151,7 +151,7 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 }
 .sub-header h4{margin:0;font-family:'Space Grotesk',sans-serif;font-size:1.02rem;font-weight:700;color:var(--ink);}
 .prop-badge{
-  display:inline-block;background:var(--accent-orange);color:#fff;font-weight:700;font-size:.8rem;
+  display:inline-block;background:var(--accent-teal);color:#fff;font-weight:700;font-size:.8rem;
   padding:5px 16px;border-radius:6px;margin-bottom:10px;font-family:'Space Grotesk',sans-serif;
 }
 
@@ -305,7 +305,6 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
 #view-chapitre.lvl-5e button.btn:not(.secondary):not(.orange){background:var(--accent);}
 #view-chapitre.lvl-5e .lesson-header{background:var(--accent);}
 #view-chapitre.lvl-5e .lesson-header .num{color:var(--accent);}
-#view-chapitre.lvl-5e .prop-badge{background:var(--accent);}
 
 .step-list{margin-top:14px;}
 .step-item{
