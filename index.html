@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.5</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.6</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2308,6 +2308,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.6', items:[
+    "Style -- le logo du hero (page d'accueil) était tronqué juste avant le slogan \"Apprendre, S'entraîner, Exceller\" ; il est maintenant recadré pour inclure l'intégralité du logo, slogan compris.",
+  ]},
   { version:'2026-08-04.5', items:[
     "Style -- utilisation de la version horizontale du logo (icône + texte côte à côte) dans la barre de navigation, fond rendu transparent, taille augmentée à 52px : le nom complet \"L'Atelier des Maths\" est de nouveau lisible directement dans le logo.",
   ]},
