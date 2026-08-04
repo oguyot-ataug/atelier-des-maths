@@ -16,9 +16,8 @@
 
 <div class="topbar">
   <div class="brand">
-    <img class="brand-mark" src="assets/logo-icon.png" alt="Logo L'Atelier des Maths" style="width:34px;height:auto;flex:none;">
-    L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.3</span>
+    <img class="brand-mark" src="assets/logo-icon.png" alt="L'Atelier des Maths" style="width:auto;height:46px;flex:none;">
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.4</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -160,15 +159,7 @@
       <p class="lede">Un cours pour chaque chapitre de 6e et de 5e : figures géométriques manipulables, constructions animées pas à pas, méthodes de rédaction et quiz générés par IA pour s'entraîner à l'infini.</p>
     </div>
     <div class="hero-figure">
-      <svg viewBox="0 0 260 260" width="100%" style="max-width:280px">
-        <circle cx="130" cy="130" r="90" fill="none" stroke="#7A93B0" stroke-width="1.5" stroke-dasharray="2 5"/>
-        <g id="heroCompass">
-          <line x1="130" y1="130" x2="130" y2="40" stroke="var(--accent)" stroke-width="2.5"/>
-          <circle cx="130" cy="130" r="4" fill="var(--accent)"/>
-          <circle cx="130" cy="40" r="4" fill="var(--accent-orange)"/>
-        </g>
-        <circle cx="130" cy="130" r="90" fill="none" stroke="#1C1B2E" stroke-width="2.5" stroke-dasharray="565" stroke-dashoffset="565" id="heroArc"/>
-      </svg>
+      <img src="assets/logo-header.png" alt="L'Atelier des Maths" style="width:100%;max-width:260px;display:block;margin:0 auto;">
     </div>
   </div>
 
@@ -203,22 +194,22 @@
       <div class="t">🤖 Quiz générés par IA</div>
       <div class="d">Des questions nouvelles à chaque essai (avec votre clé API).</div>
     </div>
-    <div class="mini-link" data-nav="cm">
-      <div class="t">🔢 Automatismes</div>
-      <div class="d">112 séquences du cahier, générées et corrigées automatiquement.</div>
-    </div>
-    <div class="mini-link" data-nav="niveau" data-lvl="6e">
-      <div class="t">🗓️ Frise de progression</div>
-      <div class="d">Chaque chapitre situé dans l'année, semaine par semaine.</div>
+  </div>
+
+  <div class="section-title"><h2>🔢 Automatismes</h2></div>
+  <div class="plain-card" style="padding:24px 28px;">
+    <p style="margin:0 0 14px;color:var(--ink-soft);">112 séquences du cahier, générées et corrigées automatiquement, pour s'entraîner au calcul mental chaque semaine.</p>
+    <div class="figure-toolbar">
+      <button class="btn" data-nav="cm">Ouvrir les automatismes →</button>
     </div>
   </div>
 
-  <div class="section-title"><h2>Aperçu : chapitres traités en entier</h2><span class="count">2 gabarits · géométrie &amp; numérique</span></div>
+  <div class="section-title"><h2>🗓️ Frise de progression</h2></div>
   <div class="plain-card" style="padding:24px 28px;">
-    <p style="margin:0 0 6px;color:var(--ink-soft);">Deux chapitres sont développés intégralement pour servir de gabarit aux 37 autres — un en géométrie, un en numérique — afin de vérifier que le même principe (cours, figure dynamique, méthode animée, rédaction, quiz) fonctionne dans les deux univers.</p>
-    <div class="figure-toolbar" style="margin-top:14px;">
-      <button class="btn" data-nav="chapitre" data-chap="symetrie">Symétrie centrale (5e · géométrie) →</button>
-      <button class="btn orange" data-nav="chapitre" data-chap="relatifs">Nombres relatifs (5e · numérique) →</button>
+    <p style="margin:0 0 14px;color:var(--ink-soft);">Chaque chapitre situé dans l'année, semaine par semaine, avec les vacances scolaires -- pour les niveaux 6e et 5e.</p>
+    <div class="figure-toolbar">
+      <button class="btn" data-nav="niveau" data-lvl="6e">Frise 6e →</button>
+      <button class="btn orange" data-nav="niveau" data-lvl="5e">Frise 5e →</button>
     </div>
   </div>
 </section>
@@ -859,7 +850,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
         symetrie: {code:'G1',cat:'G',t:"Symétrie centrale",p:'58-72',s:2,d:'21 sept-4 oct'},
         relatifs: {code:'N2',cat:'N',t:"Nombres relatifs",p:'14-23',s:2,d:'11-24 jan'},
       };
-      openChapitre(chaps[pick], el.getAttribute('data-tab'));
+      openChapitre(chaps[pick], el.getAttribute('data-tab'), '5e');
     }
   });
 });
@@ -916,14 +907,34 @@ function renderTheme(data){
     });
   });
 }
+const FR_MONTHS = {jan:0,'fév':1,mars:2,avr:3,mai:4,juin:5,juil:6,'août':7,sept:8,oct:9,nov:10,'déc':11};
+const FRISE_YEAR_START = 2026; // année civile du mois de septembre de cette progression
+function friseEndDate(dStr){
+  if(!dStr || dStr==='POST') return null;
+  const parts = dStr.replace('→','-').split('-');
+  const last = parts[parts.length-1].trim();
+  const m = last.match(/(\d+)\s*([a-zA-Zéû]+)/);
+  if(!m) return null;
+  const day = parseInt(m[1],10);
+  const key = m[2].toLowerCase();
+  let monIdx = null;
+  for(const k in FR_MONTHS){ if(key.startsWith(k) || k.startsWith(key.slice(0,3))){ monIdx=FR_MONTHS[k]; break; } }
+  if(monIdx===null) return null;
+  const year = monIdx>=8 ? FRISE_YEAR_START : FRISE_YEAR_START+1;
+  return new Date(year, monIdx, day, 23, 59, 59);
+}
 function renderFrise(data, lvl){
   let html = '<div class="timeline">';
   const vac = VACANCES[lvl];
+  const now = new Date();
   data.forEach((c,i)=>{
-    html += `<div class="tl-item" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
+    const endDate = friseEndDate(c.d);
+    const done = endDate && endDate < now;
+    html += `<div class="tl-item${done?' tl-done':''}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
       <span class="dot" style="background:${CATS[c.cat].text}"></span>
       <span class="titre">${c.t}</span>
       <span class="dates">${c.code} · ${c.d}</span>
+      ${done?'<span class="tl-check" title="Chapitre déjà traité">✓</span>':''}
     </div>`;
     const v = vac.find(v=>v.after===c.n);
     if(v) html += `<div class="tl-vac">${v.label}</div>`;
@@ -951,7 +962,11 @@ document.querySelectorAll('.view-toggle button').forEach(b=>{
 const DEMO_REGISTRY = {};
 let currentChapterTitle = null;
 
-function openChapitre(c, tab){
+function openChapitre(c, tab, lvlOverride){
+  const lvl = lvlOverride || currentLevel;
+  const chapView = document.getElementById('view-chapitre');
+  chapView.classList.toggle('lvl-6e', lvl==='6e');
+  chapView.classList.toggle('lvl-5e', lvl==='5e');
   const demo = DEMO_REGISTRY[c.t];
   currentChapterTitle = c.t;
   document.getElementById('chap-code-tag').textContent = c.code;
@@ -2293,6 +2308,11 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.4', items:[
+    "Style -- le logo dans la barre de navigation est agrandi, transparent (fond retiré), et le texte redondant à côté a été supprimé. Le logo complet (icône + texte) est désormais affiché en grand dans le hero de la page d'accueil. Dominance de couleur par niveau : les pages de chapitre en 6e sont désormais dominées par l'orange, celles en 5e par le bleu (issus de la palette du logo), sur les onglets actifs et les boutons.",
+    "Page d'accueil -- \"Automatismes\" et \"Frise de progression\" sortent de la grille \"Ce que propose chaque chapitre\" et ont chacun leur propre section. La section \"Aperçu : chapitres traités en entier\" est supprimée.",
+    "Frise de progression -- en mode \"Frise de l'année\", chaque chapitre déjà passé (d'après sa date de fin et la date du jour) affiche une coche verte de validation.",
+  ]},
   { version:'2026-08-04.3', items:[
     "Style -- recadrage du logo dans la barre de navigation corrigé (marge confortable autour de l'icône, plus rien de coupé). Couleur de fond du site alignée exactement sur celle du logo (#FDF9F6). Page d'accueil : le titre \"Les mathématiques, en clair et en gestes.\" est remplacé par \"L'Atelier des Maths\".",
   ]},
@@ -3680,21 +3700,6 @@ document.getElementById('tdDate').value = todayISO();
 
 /* ======================= init ======================= */
 renderNiveau('6e');
-(function heroAnim(){
-  const arc=document.getElementById('heroArc');
-  const compass=document.getElementById('heroCompass');
-  let start=null;
-  function frame(t){
-    if(!start) start=t;
-    const dur=3000;
-    const p=((t-start)%dur)/dur;
-    const angle = p*360;
-    arc.setAttribute('stroke-dashoffset', 565-(565*Math.min(1,p*1.05)));
-    compass.setAttribute('transform',`rotate(${angle} 130 130)`);
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-})();
 </script>
 <script src="chapitres/5e/G1-symetrie-centrale.js"></script>
 <script src="chapitres/5e/N2-nombres-relatifs.js"></script>
