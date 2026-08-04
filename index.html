@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.17</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.18</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -2317,6 +2317,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.18', items:[
+    "Technique -- ajout d'un paramètre de version sur les 21 fichiers JavaScript de chapitres (et le module Automatismes) : les navigateurs, surtout mobiles, pouvaient continuer à servir une ancienne version en cache après une correction, comme ce fut le cas pour la division posée du chapitre N4 (6e) qui semblait ne \"rien avoir changé\" alors que le correctif était bien déployé.",
+  ]},
   { version:'2026-08-04.17', items:[
     "6e -- N4 Opérations et ordre de grandeur : le signe moins des lignes de soustraction restait à une position fixe, créant un écart incohérent avec le chiffre selon qu'il s'agissait d'un nombre à 1 ou 2 chiffres (ex. « −　　8 » très espacé contre « − 56 » serré). Il colle maintenant systématiquement au premier chiffre significatif.",
   ]},
@@ -3749,26 +3752,26 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js"></script>
-<script src="chapitres/5e/N4-fractions.js"></script>
-<script src="chapitres/5e/N1-divisibilite.js"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js"></script>
-<script src="chapitres/5e/P1-proportionnalite.js"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js"></script>
-<script src="chapitres/5e/N6-equations.js"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js"></script>
-<script src="calcul-mental/calcul-mental.js"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-17"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-17"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-17"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-17"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-17"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-17"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-17"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-17"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-17"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-17"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-17"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-17"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-17"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-17"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-17"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-17"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-17"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-17"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-17"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-17"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-17"></script>
 </body>
 </html>
