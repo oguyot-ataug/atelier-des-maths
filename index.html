@@ -23,7 +23,7 @@
       <path d="M7.5 23 A9 9 0 0 1 18.5 23" fill="none" stroke="#1F3A5C" stroke-width="1.1" stroke-dasharray="1.6 2.2" opacity=".55"/>
     </svg>
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.24</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-03.25</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -2291,6 +2291,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-03.25', items:[
+    "5e -- G5 Parallélogrammes particuliers, Méthode : la figure à main levée du losange codait à tort l'égalité des 4 côtés (propriété non utilisée dans cette construction) ; elle code maintenant que les diagonales se coupent en leur milieu O (traits sur OA=OC et OB=OD, angle droit en O), conformément à la méthode réellement employée.",
+  ]},
   { version:'2026-08-03.24', items:[
     "5e -- G5 Parallélogrammes particuliers, Méthode : dans les 2 constructions, l'étape de report au compas (arcs de cercle localisant C et D pour le rectangle, B et D pour le losange) est désormais une étape à part entière, affichée avant le tracé des côtés correspondants (qui devient une 5e étape séparée).",
   ]},

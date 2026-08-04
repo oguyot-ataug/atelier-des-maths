@@ -576,8 +576,8 @@ function pccL1Sketch(){
   const A={x:75,y:190}, C={x:305,y:175}, B={x:200,y:75}, D={x:185,y:260};
   const O = pcMid(A,C);
   const sides = pcSketchSide(A,B,3,-4)+pcSketchSide(B,C,-4,3)+pcSketchSide(C,D,3,-4)+pcSketchSide(D,A,-4,3);
-  const ticks = pcTickN(pcMid(A,B),pcNorm(pcSub(B,A)),1) + pcTickN(pcMid(B,C),pcNorm(pcSub(C,B)),1)
-    + pcTickN(pcMid(C,D),pcNorm(pcSub(D,C)),1) + pcTickN(pcMid(D,A),pcNorm(pcSub(A,D)),1);
+  const ticks = pcTickN(pcMid(O,A),pcNorm(pcSub(A,O)),1) + pcTickN(pcMid(O,C),pcNorm(pcSub(C,O)),1)
+    + pcTickN(pcMid(O,B),pcNorm(pcSub(B,O)),2) + pcTickN(pcMid(O,D),pcNorm(pcSub(D,O)),2);
   const diag = `<line x1="${A.x}" y1="${A.y}" x2="${C.x}" y2="${C.y}" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"/>
     <line x1="${B.x}" y1="${B.y}" x2="${D.x}" y2="${D.y}" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"/>`;
   const rightAngle = pcRightAngle(O, pcNorm(pcSub(C,A)), pcNorm(pcSub(D,B)), 10);
