@@ -65,6 +65,47 @@ function ogRenderDivisionPosee(){
 function ogDivisionPoseeNext(){ if(ogDivisionPoseeIdx<OG_DIVISION_POSEE_STEPS.length-1) ogDivisionPoseeIdx++; ogRenderDivisionPosee(); }
 function ogDivisionPoseeReset(){ ogDivisionPoseeIdx=0; ogRenderDivisionPosee(); }
 
+/* ---- Addition/soustraction posées : colonnes absolues calées sur la virgule ----
+   Colonnes : 0=signe, 1=dizaines, 2=unités, 3=virgule, 4=dixièmes, 5=centièmes.
+   Comme pour la division, on n'aligne jamais par simple "text-align:right" (qui
+   ne garantit pas du tout que les virgules tombent dans la même colonne dès
+   que les nombres n'ont pas le même nombre de chiffres après la virgule). */
+const OG_ADD_NCOLS = 6;
+function ogAddCells(map){
+  let out = '';
+  for(let i=0;i<OG_ADD_NCOLS;i++){
+    const c = map[i];
+    out += `<span style="display:inline-block;width:${OG_CELL_W}px;text-align:center;">${c?c:''}</span>`;
+  }
+  return out;
+}
+function ogAddRow(map, topline){
+  const border = topline ? 'border-top:1.5px solid #1C1B2E;padding-top:2px;' : '';
+  return `<div style="width:${OG_CELL_W*OG_ADD_NCOLS}px;${border}">${ogAddCells(map)}</div>`;
+}
+function ogAddBlock(rows){
+  return `<div style="font-family:'JetBrains Mono',monospace;font-size:1.15rem;">${rows.map(r=>ogAddRow(r.m, r.top)).join('')}</div>`;
+}
+const OG_ADD_WELL = [
+  {m:{2:'9', 3:',', 4:'4'}},
+  {m:{0:'+', 2:'0', 3:',', 4:'6', 5:'3'}},
+  {m:{0:'+', 1:'1', 2:'2'}},
+  {m:{0:'=', 1:'2', 2:'2', 3:',', 4:'0', 5:'3'}, top:true},
+];
+/* Erreur classique : 12 est écrit "1,2" par erreur -- le 1 (dizaines) et le 2
+   (dixièmes, alors que ce devrait être les unités) ne tombent plus dans les
+   mêmes colonnes que les autres lignes : la case des unités reste vide. */
+const OG_ADD_BAD = [
+  {m:{2:'9', 3:',', 4:'4'}},
+  {m:{0:'+', 2:'0', 3:',', 4:'6', 5:'3'}},
+  {m:{0:'+', 1:'1', 3:',', 4:'2'}},
+];
+const OG_SUB_15 = [
+  {m:{1:'1', 2:'5', 3:',', 4:'0'}},
+  {m:{0:'−', 2:'6', 3:',', 4:'3'}},
+  {m:{0:'=', 2:'8', 3:',', 4:'7'}, top:true},
+];
+
 document.getElementById('cours-demo-operations-ordre-grandeur-6e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Addition et soustraction de nombres décimaux</h3></div>
 <span class="prop-badge">Règle</span>
@@ -73,20 +114,16 @@ document.getElementById('cours-demo-operations-ordre-grandeur-6e').innerHTML = `
 <p style="margin:12px 0 8px;"><b>Exemples</b> :</p>
 <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
   <div>
-    <p style="margin:0 0 4px;font-family:'JetBrains Mono',monospace;text-align:right;line-height:1.9;">
-      &nbsp;&nbsp;9,4<br>+&nbsp;0,63<br>+&nbsp;12<br>= 22,03
-    </p>
+    ${ogAddBlock(OG_ADD_WELL)}
     <p class="hint" style="text-align:center;margin:2px 0;">Addition bien posée</p>
   </div>
   <div>
-    <p style="margin:0 0 4px;font-family:'JetBrains Mono',monospace;text-align:right;line-height:1.9;color:#9E1F5E;">
-      &nbsp;&nbsp;9,4<br>+&nbsp;0,63<br>+1,2<br>(virgules non alignées)
-    </p>
-    <p class="hint" style="text-align:center;margin:2px 0;">Addition mal posée</p>
+    <div style="color:#9E1F5E;">${ogAddBlock(OG_ADD_BAD)}</div>
+    <p class="hint" style="text-align:center;margin:2px 0;color:#9E1F5E;">Addition mal posée (virgules non alignées)</p>
   </div>
 </div>
 <p style="margin:14px 0 6px;">Pour poser la soustraction 15 − 6,3, on place les nombres correctement et on ajoute un zéro pour que les deux nombres aient le même nombre de chiffres dans leur partie décimale (en effet, 15 = 15,0).</p>
-<p style="margin:0;font-family:'JetBrains Mono',monospace;text-align:right;line-height:1.9;">15,0<br>−&nbsp;6,3<br>= 8,7</p>
+${ogAddBlock(OG_SUB_15)}
 
 <div class="lesson-header"><span class="num">2</span><h3>Multiplication et division par 10 ; 100 ; 1 000</h3></div>
 <div style="display:flex;flex-wrap:wrap;gap:24px;">
