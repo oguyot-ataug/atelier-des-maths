@@ -181,6 +181,8 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 }
 .level-card.n6::before{background:radial-gradient(circle, rgba(255,130,8,.16), transparent 70%);}
 .level-card.n5::before{background:radial-gradient(circle, rgba(12,91,160,.16), transparent 70%);}
+.level-card.n6{border-top:3px solid var(--accent-orange);}
+.level-card.n5{border-top:3px solid var(--accent);}
 
 .section-title{display:flex;align-items:baseline;gap:10px;margin:44px 0 16px;}
 .section-title h2{font-size:1.3rem;margin:0;}

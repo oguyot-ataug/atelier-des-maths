@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-13">
+<link rel="stylesheet" href="styles.css?v=20260804-14">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.13</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.14</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -168,12 +168,12 @@
 
   <div class="level-grid">
     <div class="level-card n6" data-nav="niveau" data-lvl="6e">
-      <div class="lvl-num" style="color:var(--cat-N-text)">6<span style="font-size:1.3rem;">e</span></div>
+      <div class="lvl-num" style="color:var(--accent-orange)">6<span style="font-size:1.3rem;">e</span></div>
       <div class="lvl-name">20 chapitres · Nombres entiers → Heures et durée</div>
       <div class="lvl-count">7 sept 2026 → 13 juin 2027</div>
     </div>
     <div class="level-card n5" data-nav="niveau" data-lvl="5e">
-      <div class="lvl-num" style="color:var(--cat-D-text)">5<span style="font-size:1.3rem;">e</span></div>
+      <div class="lvl-num" style="color:var(--accent)">5<span style="font-size:1.3rem;">e</span></div>
       <div class="lvl-name">19 chapitres · Opérations décimales → Fonctions</div>
       <div class="lvl-count">1 sept 2026 → 13 juin 2027</div>
     </div>
@@ -2317,6 +2317,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.14', items:[
+    "Page d'accueil -- les vignettes 6e et 5e reprennent désormais exactement les mêmes couleurs de dominance que dans les pages de chapitre (orange pour la 6e, bleu pour la 5e) : le grand numéro et une bordure supérieure colorée, au lieu des couleurs de catégorie N/D utilisées auparavant.",
+  ]},
   { version:'2026-08-04.13', items:[
     "Style -- le badge Définition prend sa propre couleur (#8A4210), distincte du teal désormais utilisé pour Règle/Propriété, en 6e comme en 5e.",
   ]},
