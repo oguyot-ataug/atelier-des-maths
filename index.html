@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.16</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.17</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -2317,6 +2317,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.17', items:[
+    "6e -- N4 Opérations et ordre de grandeur : le signe moins des lignes de soustraction restait à une position fixe, créant un écart incohérent avec le chiffre selon qu'il s'agissait d'un nombre à 1 ou 2 chiffres (ex. « −　　8 » très espacé contre « − 56 » serré). Il colle maintenant systématiquement au premier chiffre significatif.",
+  ]},
   { version:'2026-08-04.16', items:[
     "6e -- N4 Opérations et ordre de grandeur : corrige l'alignement de la division posée (57 ÷ 8). L'ancien système reposait sur des espaces insécables + police à chasse fixe, qui se désalignaient si la police web ne se chargeait pas. Remplacé par une grille à cellules de largeur fixe en pixels, alignée quelle que soit la police.",
   ]},

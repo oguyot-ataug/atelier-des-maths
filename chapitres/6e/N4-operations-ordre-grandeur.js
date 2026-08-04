@@ -23,13 +23,13 @@ function ogRow(slots, sub){
   return `<div style="width:${w}px;${border}">${ogCells(slots)}</div>`;
 }
 const OG_DP_57  = [' ',' ','5','7'];
-const OG_DP_M56 = ['−',' ','5','6'];
+const OG_DP_M56 = [' ','−','5','6'];
 const OG_DP_10  = [' ',' ','1','0'];
-const OG_DP_M8  = ['−',' ',' ','8'];
+const OG_DP_M8  = [' ',' ','−','8'];
 const OG_DP_20  = [' ',' ','2','0'];
-const OG_DP_M16 = ['−',' ','1','6'];
+const OG_DP_M16 = [' ','−','1','6'];
 const OG_DP_40  = [' ',' ','4','0'];
-const OG_DP_M40 = ['−',' ','4','0'];
+const OG_DP_M40 = [' ','−','4','0'];
 const OG_DP_0   = [' ',' ',' ','0'];
 const OG_DIVISION_POSEE_STEPS = [
   {rows:[{t:OG_DP_57}], quotient:'', note:"57 ÷ 8 : 8 × 7 = 56 est le plus proche de 57 sans le dépasser."},
