@@ -1,5 +1,5 @@
 :root{
-  --paper:#FAF8F3;
+  --paper:#FDF9F6;
   --ink:#20242E;
   --ink-soft:#5B6472;
   --line-blue:#C9C3EC;
@@ -24,7 +24,7 @@
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;overflow-x:hidden;}
 body{
-  background:radial-gradient(circle at 15% 0%, #FEFCF7 0%, var(--paper) 55%);
+  background:radial-gradient(circle at 15% 0%, #FFFEFC 0%, var(--paper) 55%);
   color:var(--ink);
   font-family:'Inter',sans-serif;
   min-height:100vh;
@@ -44,7 +44,7 @@ a{color:inherit;text-decoration:none;}
   display:flex; align-items:center; justify-content:space-between;
   width:100%;
   padding:14px 28px;
-  background:rgba(247,245,239,.92);
+  background:rgba(253,249,246,.92);
   backdrop-filter:blur(6px);
   border-bottom:1px solid rgba(28,43,57,.1);
 }

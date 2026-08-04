@@ -18,7 +18,7 @@
   <div class="brand">
     <img class="brand-mark" src="assets/logo-icon.png" alt="Logo L'Atelier des Maths" style="width:34px;height:auto;flex:none;">
     L'Atelier des Maths
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.2</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:8px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.3</span>
   </div>
   <div class="nav-links">
     <button data-nav="home" class="active">Accueil</button>
@@ -156,16 +156,16 @@
   <div class="hero">
     <div>
       <span class="eyebrow">Programme B.O. 2026</span>
-      <h1>Les mathématiques,<br>en clair et en gestes.</h1>
+      <h1>L'Atelier des Maths</h1>
       <p class="lede">Un cours pour chaque chapitre de 6e et de 5e : figures géométriques manipulables, constructions animées pas à pas, méthodes de rédaction et quiz générés par IA pour s'entraîner à l'infini.</p>
     </div>
     <div class="hero-figure">
       <svg viewBox="0 0 260 260" width="100%" style="max-width:280px">
         <circle cx="130" cy="130" r="90" fill="none" stroke="#7A93B0" stroke-width="1.5" stroke-dasharray="2 5"/>
         <g id="heroCompass">
-          <line x1="130" y1="130" x2="130" y2="40" stroke="#1F3A5C" stroke-width="2.5"/>
-          <circle cx="130" cy="130" r="4" fill="#1F3A5C"/>
-          <circle cx="130" cy="40" r="4" fill="#E35D3A"/>
+          <line x1="130" y1="130" x2="130" y2="40" stroke="var(--accent)" stroke-width="2.5"/>
+          <circle cx="130" cy="130" r="4" fill="var(--accent)"/>
+          <circle cx="130" cy="40" r="4" fill="var(--accent-orange)"/>
         </g>
         <circle cx="130" cy="130" r="90" fill="none" stroke="#1C1B2E" stroke-width="2.5" stroke-dasharray="565" stroke-dashoffset="565" id="heroArc"/>
       </svg>
@@ -2293,6 +2293,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.3', items:[
+    "Style -- recadrage du logo dans la barre de navigation corrigé (marge confortable autour de l'icône, plus rien de coupé). Couleur de fond du site alignée exactement sur celle du logo (#FDF9F6). Page d'accueil : le titre \"Les mathématiques, en clair et en gestes.\" est remplacé par \"L'Atelier des Maths\".",
+  ]},
   { version:'2026-08-04.2', items:[
     "Style général -- le logo « L'Atelier des Maths » (compas, fraction, engrenage/ampoule, rapporteur) remplace l'icône de la barre de navigation. Les couleurs d'accent du site (--accent, --accent-orange) sont mises à jour pour se rapprocher de la palette vive du logo (bleu #0C5BA0, orange #FF8208), avec deux nouvelles variables disponibles (--accent-teal, --accent-yellow) pour les prochains éléments visuels.",
   ]},
