@@ -458,6 +458,12 @@ footer a:hover{color:var(--accent);}
   .nav-links.open{display:flex;}
   .nav-links button{width:100%;text-align:left;padding:12px 14px;font-size:.92rem;}
   .brand-mark{height:40px !important;}
+
+  /* Barre d'onglets des chapitres (Cours/Méthode/Exercices/Quiz/Histoire) : 5 onglets ne
+     tiennent pas sur la largeur d'un téléphone. Plutôt que de les tasser ou de les faire
+     retourner à la ligne, on les rend défilables horizontalement, sur une seule ligne. */
+  .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:thin;}
+  .tab-btn{white-space:nowrap;flex:none;padding:10px 12px;font-size:.82rem;}
 }
 
 /* KaTeX applique par défaut font:1.21em à sa classe racine .katex (voir katex.css),
