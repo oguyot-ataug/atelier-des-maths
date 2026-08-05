@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.41</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.42</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1408,6 +1408,13 @@ function katexSpan(expr){
   try{ return katex.renderToString(expr, {throwOnError:false}); }
   catch(e){ return expr; }
 }
+/* Police italique arrondie pour les variables (x, y, n...), cohérente avec l'aspect du chapitre
+   Calcul littéral, sans dépendre du chargement de KaTeX (contrairement à katexSpan, qui peut
+   dupliquer visuellement le texte si sa feuille de style ne charge pas -- overkill pour une
+   simple lettre isolée). */
+function mathVarSpan(letter){
+  return `<i style="font-family:'Cambria Math','STIX Two Text',Georgia,serif;font-style:italic;">${letter}</i>`;
+}
 /* Rend en LaTeX (via KaTeX) tout élément statique du cours marqué class="tex",
    son contenu texte étant la source LaTeX à afficher (ex. \frac{3}{4}).
    Réutilisable pour n'importe quel chapitre. */
@@ -1448,13 +1455,13 @@ function renderMathText(raw){
   // 6) astérisque isolé restant (hors fractions/racines/exposants déjà traités ci-dessus,
   //    et hors ** de gras déjà consommé) : c'est une multiplication, simple signe ×.
   text = text.replace(/\*/g, '×');
-  // 7) coefficient collé à une variable (5x, 12y, 2,5x...) : multiplication implicite, notation
-  //    mathématique standard -- rendue via KaTeX en un seul bloc (chiffre droit, lettre italique).
-  text = text.replace(/\b(\d+(?:[.,]\d+)?)([xyznkt])\b/g, (m,digits,letter)=>katexSpan(`${digits.replace(',','.')}${letter}`));
-  // 8) lettres isolées utilisées comme variables (x, y, z, n, k, t...) : rendues via KaTeX pour
-  //    une police italique arrondie, cohérente avec le chapitre Calcul littéral, plutôt que la
-  //    police du texte courant.
-  text = text.replace(/\b([xyznkt])\b/g, (m,letter)=>katexSpan(letter));
+  // 7) variable (x, y, z, n, k, t...), isolée ou précédée d'un coefficient collé (5x, 12y, 2,5x...
+  //    = multiplication implicite, notation mathématique standard) : une seule passe, pour éviter
+  //    qu'une lettre déjà mise en forme ne soit recapturée par une deuxième règle.
+  text = text.replace(/\b(\d+(?:[.,]\d+)?)?([xyznkt])\b/g, (m,digits,letter)=>{
+    const prefix = digits ? digits.replace(',','.') : '';
+    return `${prefix}${mathVarSpan(letter)}`;
+  });
   text = text.replace(/\n/g,'<br>');
   return text;
 }
@@ -2444,6 +2451,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.42', items:[
+    "Fix -- Outil de correction : 5x affichait un texte dupliqué et illisible. Deux causes corrigées : (1) KaTeX pouvait dupliquer visuellement le texte via sa balise d'accessibilité si sa feuille de style ne chargeait pas -- remplacé par un simple style italique robuste, sans dépendance externe ; (2) les deux règles (coefficient+variable, puis variable isolée) se recapturaient l'une l'autre -- fusionnées en une seule passe.",
+  ]},
   { version:'2026-08-04.41', items:[
     "Fix -- Outil de correction : 5x (coefficient collé à une variable, sans opérateur) n'était pas mis en forme, faute de frontière de mot entre le chiffre et la lettre. Corrigé : ce cas passe désormais aussi par KaTeX, comme 3*x.",
   ]},
