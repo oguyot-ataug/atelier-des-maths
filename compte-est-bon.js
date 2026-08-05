@@ -160,6 +160,7 @@ function cebRenderSetup(){
     <p class="hint" style="margin:0 0 6px;">Chronomètre :</p>
     <div class="figure-toolbar" id="cebTimerPicker" style="margin-bottom:20px;"></div>
     <button class="btn" onclick="cebStartGame()">Nouveau tirage →</button>
+    <div id="cebStatsBox" style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(28,43,57,.1);"></div>
   </div>
   `;
   const nlBox = document.getElementById('cebNLargePicker');
@@ -182,6 +183,7 @@ function cebRenderSetup(){
     b.onclick = ()=>{ cebSettings.timerOn=o.on; if(o.on) cebSettings.timerDuration=o.dur; cebRenderSetup(); };
     tBox.appendChild(b);
   });
+  cebRefreshStats();
 }
 
 function cebStartGame(){
@@ -337,14 +339,63 @@ function cebUndo(){
   cebRenderTiles(); cebRenderOps(); cebRenderSteps();
 }
 
-function cebFinish(){
+async function cebFinish(){
   if(cebState.finished) return;
   cebState.finished = true;
   clearInterval(cebState.timerId);
   const active = cebActiveTiles();
   let best = active[0];
   active.forEach(t=>{ if(Math.abs(t.value-cebState.target) < Math.abs(best.value-cebState.target)) best = t; });
+  await cebSaveAttempt(best);
   cebRenderResult(best);
+}
+
+/* Enregistre la tentative dans Supabase (uniquement pour un élève connecté),
+   pour permettre à l'élève de suivre ses stats et au professeur de les consulter
+   (mêmes règles de visibilité que pour les Automatismes : soi-même, son professeur,
+   ou un administrateur). */
+async function cebSaveAttempt(best){
+  if(!(currentUserRole==='eleve' && currentUser)) return;
+  if(!best) return;
+  const gap = Math.abs(best.value - cebState.target);
+  try{
+    await sb.from('ceb_results').insert({
+      student_id: currentUser.id,
+      class_id: currentClassId,
+      target: cebState.target,
+      numbers: cebState.numbers,
+      n_large: cebSettings.nLarge,
+      result_value: best.value,
+      gap,
+      timed: cebState.timerOn,
+      timer_duration: cebState.timerOn ? cebSettings.timerDuration : null,
+      time_used_ms: cebState.timerOn ? (cebSettings.timerDuration - Math.max(0,cebState.timeLeft)) * 1000 : null,
+      expression: best.expr,
+    });
+  }catch(e){ /* enregistrement best-effort : ne bloque jamais l'affichage du résultat */ }
+}
+
+/* Stats persos de l'élève connecté (tentatives / réussites / taux, par mode). */
+async function cebRefreshStats(){
+  const box = document.getElementById('cebStatsBox');
+  if(!box) return;
+  if(!(currentUserRole==='eleve' && currentUser)){
+    box.innerHTML = '';
+    return;
+  }
+  try{
+    const { data, error } = await sb.rpc('ceb_get_my_stats');
+    if(error || !data || !data.length){ box.innerHTML=''; return; }
+    const rows = { chrono:null, illimite:null };
+    data.forEach(r=>{ rows[r.mode] = r; });
+    const line = (label, r) => r ? `<div class="ceb-stat-line"><b>${label}</b> : ${r.attempts} tentative${r.attempts>1?'s':''}, ${r.successes} réussie${r.successes>1?'s':''} (${r.success_rate}%)</div>` : '';
+    box.innerHTML = `
+      <p class="hint" style="margin:0 0 6px;font-weight:700;">Tes statistiques</p>
+      ${line('Illimité', rows.illimite)}
+      ${line('Chronométré', rows.chrono)}
+      ${!rows.chrono && !rows.illimite ? '<p class="hint" style="margin:0;">Pas encore de tentative enregistrée.</p>' : ''}
+    `;
+  }catch(e){ box.innerHTML=''; }
 }
 
 function cebRenderResult(best){
@@ -366,9 +417,11 @@ function cebRenderResult(best){
       <button class="btn" onclick="cebRenderSetup()">Nouveau tirage →</button>
     </div>
     <div id="cebSolutionBox"></div>
+    <div id="cebStatsBox" style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(28,43,57,.1);"></div>
   </div>
   `;
   cebRenderSteps();
+  cebRefreshStats();
   if(window.renderStaticMath) renderStaticMath(root);
 }
 

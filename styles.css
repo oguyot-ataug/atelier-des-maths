@@ -176,6 +176,7 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .ceb-op-btn:disabled{opacity:.35;cursor:not-allowed;}
 .ceb-op-btn:not(:disabled):hover{border-color:var(--accent-teal);}
 .ceb-op-selected{border-color:var(--accent-teal);background:rgba(38,170,177,.12);}
+.ceb-stat-line{font-size:.88rem;color:var(--ink-soft);margin:3px 0;}
 
 /* ---------- home ---------- */
 .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;margin-bottom:56px;}
