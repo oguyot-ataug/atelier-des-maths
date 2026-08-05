@@ -297,6 +297,66 @@ function ogRenderMb(){
 function ogMbNext(){ if(ogMbIdx<OG_MB_STEPS.length-1) ogMbIdx++; ogRenderMb(); }
 function ogMbReset(){ ogMbIdx=0; ogRenderMb(); }
 
+/* ---- Méthode C : arrondir un nombre décimal ----
+   On repère le chiffre au rang demandé (orange), puis le chiffre juste après
+   (teal) qui sert à décider : 0-4 → on ne change rien ; 5-9 → on augmente le
+   chiffre repéré de 1 (avec parfois une retenue en cascade). */
+function ogRoundRow(map, target, decision){
+  let out = `<div style="display:flex;font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;">`;
+  for(let i=0;i<OG_PV_NCOLS;i++){
+    const d = map[i]||'';
+    let bg = '';
+    if(i===target) bg = 'background:rgba(255,130,8,.20);';
+    else if(i===decision) bg = 'background:rgba(38,170,177,.22);';
+    out += `<div style="width:${OG_PV_CELL_W}px;text-align:center;border-radius:6px;${bg}${i===3?'border-right:2px dashed #1C1B2E;':''}">${d}</div>`;
+  }
+  out += `</div>`;
+  return out;
+}
+function ogRoundTable(map, target, decision){
+  return `<div style="overflow-x:auto;padding:6px 0;">${ogPvHeader(target)}${ogRoundRow(map, target, decision)}</div>`;
+}
+/* Exemple 1 : arrondis 27,342 au dixième (le chiffre suivant, 4, est < 5 : on ne change rien). */
+const OG_R1_STEPS = [
+  {note:"On veut arrondir 27,342 au dixième. On repère le chiffre des dixièmes : 3.", map:{2:'2',3:'7',4:'3',5:'4',6:'2'}, target:4, decision:-1},
+  {note:"On regarde le chiffre juste après (le chiffre des centièmes) : 4.", map:{2:'2',3:'7',4:'3',5:'4',6:'2'}, target:4, decision:5},
+  {note:"4 est inférieur à 5 : on ne change rien au chiffre des dixièmes, et on supprime tout ce qui suit.", map:{2:'2',3:'7',4:'3'}, target:4, decision:-1},
+  {note:"27,342 ≈ 27,3 (arrondi au dixième).", map:{2:'2',3:'7',4:'3'}, target:4, decision:-1, final:true},
+];
+let ogR1Idx = 0;
+function ogRenderR1(){
+  const s = OG_R1_STEPS[ogR1Idx];
+  document.getElementById('og-r1-table').innerHTML = ogRoundTable(s.map, s.target, s.decision);
+  document.getElementById('og-r1-note').textContent = s.note;
+  document.querySelectorAll('#og-r1-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=ogR1Idx));
+  const btn = document.getElementById('og-r1-next');
+  btn.textContent = ogR1Idx>=OG_R1_STEPS.length-1 ? 'Terminé ✓' : 'Étape suivante →';
+  btn.disabled = ogR1Idx>=OG_R1_STEPS.length-1;
+}
+function ogR1Next(){ if(ogR1Idx<OG_R1_STEPS.length-1) ogR1Idx++; ogRenderR1(); }
+function ogR1Reset(){ ogR1Idx=0; ogRenderR1(); }
+
+/* Exemple 2 : arrondis 9,96 à l'unité (le chiffre suivant, 9, est ≥ 5 : on
+   augmente le chiffre des unités de 1, ce qui provoque une retenue car 9+1=10). */
+const OG_R2_STEPS = [
+  {note:"On veut arrondir 9,96 à l'unité. On repère le chiffre des unités : 9.", map:{3:'9',4:'9',5:'6'}, target:3, decision:-1},
+  {note:"On regarde le chiffre juste après (le chiffre des dixièmes) : 9.", map:{3:'9',4:'9',5:'6'}, target:3, decision:4},
+  {note:"9 est 5 ou plus : il faut augmenter le chiffre des unités de 1. Attention : 9 + 1 = 10, cela provoque une retenue sur le chiffre des dizaines !", map:{2:'1',3:'0'}, target:3, decision:-1},
+  {note:"9,96 ≈ 10 (arrondi à l'unité).", map:{2:'1',3:'0'}, target:3, decision:-1, final:true},
+];
+let ogR2Idx = 0;
+function ogRenderR2(){
+  const s = OG_R2_STEPS[ogR2Idx];
+  document.getElementById('og-r2-table').innerHTML = ogRoundTable(s.map, s.target, s.decision);
+  document.getElementById('og-r2-note').textContent = s.note;
+  document.querySelectorAll('#og-r2-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=ogR2Idx));
+  const btn = document.getElementById('og-r2-next');
+  btn.textContent = ogR2Idx>=OG_R2_STEPS.length-1 ? 'Terminé ✓' : 'Étape suivante →';
+  btn.disabled = ogR2Idx>=OG_R2_STEPS.length-1;
+}
+function ogR2Next(){ if(ogR2Idx<OG_R2_STEPS.length-1) ogR2Idx++; ogRenderR2(); }
+function ogR2Reset(){ ogR2Idx=0; ogRenderR2(); }
+
 document.getElementById('methode-demo-operations-ordre-grandeur-6e').innerHTML = `
 <p class="example-title" style="margin-top:0;">Multiplier par 10, 100 ou 1 000 : repérer le chiffre des unités</p>
 <p style="margin:0 0 14px;">Plutôt que de "décaler la virgule" sans réfléchir, on peut repérer le chiffre des <b>unités</b> et se demander quel chiffre il devient une fois l'opération effectuée.</p>
@@ -333,6 +393,49 @@ document.getElementById('methode-demo-operations-ordre-grandeur-6e').innerHTML =
   <div class="figure-toolbar">
     <button class="btn" id="og-mb-next" onclick="ogMbNext()">Étape suivante →</button>
     <button class="btn secondary" onclick="ogMbReset()">Recommencer</button>
+  </div>
+</div>
+
+<p class="example-title" style="margin-top:26px;">Arrondir un nombre décimal</p>
+<span class="prop-badge">Règle</span>
+<div class="def-box">Pour arrondir un nombre à un rang donné, on repère le chiffre de ce rang, puis on regarde le chiffre juste après.
+  <ul style="margin:8px 0 0;padding-left:20px;line-height:1.8;">
+    <li>S'il vaut <b>0, 1, 2, 3 ou 4</b>, on ne change rien au chiffre repéré, et on supprime tout ce qui suit.</li>
+    <li>S'il vaut <b>5, 6, 7, 8 ou 9</b>, on augmente le chiffre repéré de 1 (avec parfois une retenue), et on supprime tout ce qui suit.</li>
+  </ul>
+</div>
+
+<p style="margin:12px 0 8px;"><b>Exemple 1</b> : arrondis 27,342 au dixième.</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div id="og-r1-table"></div>
+  <div class="step-note" id="og-r1-note" style="text-align:center;margin-top:10px;"></div>
+  <div class="step-list" id="og-r1-steps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>On repère le chiffre des dixièmes.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On regarde le chiffre juste après (les centièmes).</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>Il est inférieur à 5 : on ne change rien, on supprime la suite.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">4</div><div>On lit le résultat : 27,3.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="og-r1-next" onclick="ogR1Next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ogR1Reset()">Recommencer</button>
+  </div>
+</div>
+
+<p style="margin:18px 0 8px;"><b>Exemple 2</b> : arrondis 9,96 à l'unité (attention à la retenue).</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
+  <div id="og-r2-table"></div>
+  <div class="step-note" id="og-r2-note" style="text-align:center;margin-top:10px;"></div>
+  <div class="step-list" id="og-r2-steps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>On repère le chiffre des unités.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On regarde le chiffre juste après (les dixièmes).</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>Il est 5 ou plus : on augmente le chiffre des unités de 1, avec une retenue.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">4</div><div>On lit le résultat : 10.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="og-r2-next" onclick="ogR2Next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ogR2Reset()">Recommencer</button>
   </div>
 </div>
 `;
@@ -372,6 +475,7 @@ DEMO_REGISTRY['Opérations et ordre de grandeur'] = {
     injectCourseAddButtons(document.getElementById('cours-demo-operations-ordre-grandeur-6e'));
     ogDivisionPoseeReset();
     ogMaReset(); ogMbReset();
+    ogR1Reset(); ogR2Reset();
     injectCourseAddButtons(document.getElementById('methode-demo-operations-ordre-grandeur-6e'));
   }
 };
