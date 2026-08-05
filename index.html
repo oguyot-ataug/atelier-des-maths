@@ -10,20 +10,21 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-31">
+<link rel="stylesheet" href="styles.css?v=20260804-32">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.31</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.32</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
     <button data-nav="niveau" data-lvl="6e">6e</button>
     <button data-nav="niveau" data-lvl="5e">5e</button>
     <button data-nav="cm">Automatismes</button>
+    <button data-nav="compte">Le compte est bon</button>
     <button data-nav="correction" id="navCorrection" style="display:none;">Outil prof</button>
     <button data-nav="cahier" id="navCahier" style="display:none;">Cahier élève</button>
     <button data-nav="supervision" id="navSupervision" style="display:none;">Supervision</button>
@@ -204,6 +205,14 @@
     <p style="margin:0 0 14px;color:var(--ink-soft);">112 séquences du cahier, générées et corrigées automatiquement, pour s'entraîner au calcul mental chaque semaine.</p>
     <div class="figure-toolbar">
       <button class="btn" data-nav="cm">Ouvrir les automatismes →</button>
+    </div>
+  </div>
+
+  <div class="section-title"><h2>🎲 Le compte est bon</h2></div>
+  <div class="plain-card" style="padding:24px 28px;">
+    <p style="margin:0 0 14px;color:var(--ink-soft);">Comme dans l'émission : un tirage de 6 nombres, un compte à atteindre avec +, −, × et ÷, et toujours une solution exacte possible. Idéal pour muscler le calcul mental.</p>
+    <div class="figure-toolbar">
+      <button class="btn orange" data-nav="compte">Jouer →</button>
     </div>
   </div>
 
@@ -479,6 +488,14 @@
     <span class="cm-legend-dot cm-legend-perfect" style="margin-left:14px;"></span> sans-faute obtenu (record possible)
   </p>
   <div class="cm-picker" id="cmPicker"></div>
+</section>
+
+<!-- ================= LE COMPTE EST BON ================= -->
+<section class="view" id="view-compte">
+  <span class="back-btn" data-nav="home">← Accueil</span>
+  <h1 style="margin:6px 0 4px;">Le compte est bon</h1>
+  <p style="color:var(--ink-soft);max-width:60ch;">Combine les nombres tirés avec +, −, × et ÷ pour t'approcher le plus possible du compte, ou tomber pile dessus. Chaque tirage proposé est garanti réalisable exactement.</p>
+  <div id="cebRoot"></div>
 </section>
 
 <!-- ================= OUTIL PROF : CORRECTION PROJETÉE ================= -->
@@ -862,6 +879,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     if(nav==='home'){ showView('view-home'); setActiveTopnav(null); }
     if(nav==='niveau'){ currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
     if(nav==='cm'){ showView('view-cm'); setActiveTopnav('cm'); if(typeof refreshCMProgress==='function') refreshCMProgress(); if(typeof refreshCMRecords==='function') refreshCMRecords(); }
+    if(nav==='compte'){ showView('view-compte'); setActiveTopnav('compte'); if(typeof cebInit==='function') cebInit(); }
     if(nav==='correction'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-correction'); setActiveTopnav('correction');
@@ -897,6 +915,7 @@ function setActiveTopnav(key){
   if(key==='6e') document.querySelector('.nav-links button[data-lvl="6e"]').classList.add('active');
   else if(key==='5e') document.querySelector('.nav-links button[data-lvl="5e"]').classList.add('active');
   else if(key==='cm') document.querySelector('.nav-links button[data-nav="cm"]').classList.add('active');
+  else if(key==='compte') document.querySelector('.nav-links button[data-nav="compte"]').classList.add('active');
   else if(key==='correction') document.querySelector('.nav-links button[data-nav="correction"]').classList.add('active');
   else if(key==='cahier') document.querySelector('.nav-links button[data-nav="cahier"]').classList.add('active');
   else if(key==='admin') document.querySelector('.nav-links button[data-nav="admin"]').classList.add('active');
@@ -2348,6 +2367,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.32', items:[
+    "Nouveau module « Le compte est bon » (accessible depuis le menu et la page d'accueil) : tirage de 6 nombres (petits 1-10, grands 25/50/75/100 en quantité réglable) et un compte entre 100 et 999, systématiquement vérifié réalisable exactement par un solveur avant d'être proposé. Chronomètre optionnel (30 s / 1 min / 1 min 30 / illimité). Le joueur combine les nombres deux par deux ; à la validation, le calcul est reconstitué automatiquement en une seule expression mathématique, comparée au compte, avec possibilité d'afficher une solution.",
+  ]},
   { version:'2026-08-04.31', items:[
     "Mobile -- la barre d'onglets des chapitres (Cours/Méthode/Exercices/Quiz/Histoire) ne tenait plus sur la largeur d'un téléphone depuis l'ajout du 5e onglet. Elle est maintenant défilable horizontalement sur une seule ligne, plutôt que tassée ou coupée.",
   ]},
@@ -3822,26 +3844,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-31"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-31"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-31"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-31"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-31"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-31"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-31"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-31"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-31"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-31"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-31"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-31"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-31"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-31"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-31"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-31"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-31"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-31"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-31"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-31"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-31"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-32"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-32"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-32"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-32"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-32"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-32"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-32"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-32"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-32"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-32"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-32"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-32"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-32"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-32"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-32"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-32"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-32"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-32"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-32"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-32"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-32"></script>
+<script src="compte-est-bon.js?v=20260804-32"></script>
 </body>
 </html>

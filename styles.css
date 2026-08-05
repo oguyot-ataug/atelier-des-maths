@@ -162,6 +162,20 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
   font-family:'Space Grotesk',sans-serif;font-weight:700;font-style:italic;color:#8a6205;
   margin-bottom:6px;display:flex;align-items:center;gap:8px;
 }
+.ceb-tile{
+  min-width:64px;height:64px;padding:0 10px;border-radius:12px;border:2px solid rgba(28,43,57,.15);
+  background:var(--white);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;
+  cursor:pointer;transition:transform .1s ease, border-color .15s ease;
+}
+.ceb-tile:hover{border-color:var(--accent-orange);transform:translateY(-2px);}
+.ceb-tile-selected{border-color:var(--accent-orange);background:rgba(255,130,8,.1);}
+.ceb-op-btn{
+  width:52px;height:52px;border-radius:50%;border:2px solid rgba(28,43,57,.15);background:var(--white);
+  font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;cursor:pointer;
+}
+.ceb-op-btn:disabled{opacity:.35;cursor:not-allowed;}
+.ceb-op-btn:not(:disabled):hover{border-color:var(--accent-teal);}
+.ceb-op-selected{border-color:var(--accent-teal);background:rgba(38,170,177,.12);}
 
 /* ---------- home ---------- */
 .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;margin-bottom:56px;}
