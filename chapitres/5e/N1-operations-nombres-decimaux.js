@@ -88,6 +88,13 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
       </div>
 
 `;
+
+document.getElementById('histoire-demo-decimaux').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Avant l'invention de l'écriture décimale par Simon Stevin en 1585, poser une addition ou une multiplication avec des parties non entières était bien plus compliqué : il fallait passer par des fractions, avec des dénominateurs différents à mettre au même niveau à chaque étape. Dans son livre <i>La Thiende</i>, Stevin montre justement comment additionner, soustraire, multiplier et diviser des nombres décimaux presque aussi facilement que des nombres entiers — c'est précisément ce gain de simplicité qui a permis à cette écriture de s'imposer aussi vite chez les commerçants et les savants de son époque.
+</div>
+`;
 document.getElementById('methode-demo-decimaux').innerHTML = `
       <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
         ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).
@@ -164,7 +171,7 @@ function divisionPoseeNext(){ if(divisionPoseeIdx<DIVISION_POSEE_STEPS.length-1)
 
 function divisionPoseeReset(){ divisionPoseeIdx=0; renderDivisionPosee(); }
 
-DEMO_REGISTRY['Opérations sur les nombres décimaux'] = { cours:'cours-demo-decimaux', methode:'methode-demo-decimaux', exos:'exos-demo-decimaux',
+DEMO_REGISTRY['Opérations sur les nombres décimaux'] = { cours:'cours-demo-decimaux', methode:'methode-demo-decimaux', exos:'exos-demo-decimaux', histoire:'histoire-demo-decimaux',
   init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };
 
 DEMO_QUIZZES['Opérations sur les nombres décimaux'] = [

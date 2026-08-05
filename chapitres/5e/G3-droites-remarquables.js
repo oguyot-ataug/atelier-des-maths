@@ -347,6 +347,13 @@ document.getElementById('cours-demo-droites-remarquables-5e').innerHTML = `
 document.getElementById('dr-ortho-def-wrap').innerHTML = drBuildOrthocenterSvg(DR_T_DEF, 380, 230) + "<p class=\"hint\" style=\"text-align:center;\">Triangle à angles aigus : H est à l'intérieur.</p>";
 document.getElementById('dr-ortho-obtus-wrap').innerHTML = drBuildOrthocenterSvg(drTranslateTri(DR_T_OBTUS,0,45), 380, 300) + "<p class=\"hint\" style=\"text-align:center;\">Triangle avec un angle obtus : H est à l'extérieur.</p>";
 
+document.getElementById('histoire-demo-droites-remarquables-5e').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Les quatre droites remarquables d'un triangle (médiatrices, bissectrices, hauteurs, médianes) et leurs points de concours étaient déjà connus des mathématiciens grecs de l'Antiquité. Mais il faudra attendre 1765 pour qu'une découverte surprenante soit faite : le mathématicien suisse Leonhard Euler démontre que, dans un même triangle, le centre de gravité, l'orthocentre et le centre du cercle circonscrit sont toujours alignés sur une même droite, aujourd'hui appelée la <b>droite d'Euler</b>. Un lien inattendu entre des points qu'on pensait indépendants !
+</div>
+`;
+
 /* ================= METHODE ================= */
 document.getElementById('methode-demo-droites-remarquables-5e').innerHTML = `
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
@@ -444,7 +451,7 @@ const DR_METHODE_ORTHO_STEPS = [
 const drMethodeOrthoDemo = makeStepDemo(DR_METHODE_ORTHO_STEPS, 'dr-methodeOrthoDisplay');
 
 DEMO_REGISTRY['Droites remarquables dans un triangle'] = {
-  cours:'cours-demo-droites-remarquables-5e', methode:'methode-demo-droites-remarquables-5e', exos:'exos-demo-droites-remarquables-5e',
+  cours:'cours-demo-droites-remarquables-5e', methode:'methode-demo-droites-remarquables-5e', exos:'exos-demo-droites-remarquables-5e', histoire:'histoire-demo-droites-remarquables-5e',
   init:()=>{
     drMethodeRectDemo.reset();
     drMethodeCircumDemo.reset();

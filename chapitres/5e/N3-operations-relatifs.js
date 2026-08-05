@@ -70,6 +70,13 @@ document.getElementById('cours-demo-operations-relatifs-5e').innerHTML = `
 <p style="margin:4px 0 12px;">L = 7</p>
 `;
 
+document.getElementById('histoire-demo-operations-relatifs-5e').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Poser des règles pour calculer avec des nombres négatifs n'a rien d'évident : c'est le mathématicien indien Brahmagupta qui, en 628, dans son livre <i>Brahmasphutasiddhanta</i>, pose le premier des règles complètes pour additionner, soustraire, multiplier et diviser des nombres positifs et négatifs — y compris la fameuse règle « moins fois moins donne plus ». Curieusement, alors que les calculs étaient déjà maîtrisés, de nombreux mathématiciens européens ont continué, bien plus tard, à considérer les nombres négatifs comme des résultats « absurdes » ou dépourvus de sens, jusqu'au 17e-18e siècle.
+</div>
+`;
+
 document.getElementById('methode-demo-operations-relatifs-5e').innerHTML = `
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : additionner deux nombres relatifs, un « bond » sur la droite graduée</h4></div>
 <div class="figure-wrap">
@@ -219,7 +226,7 @@ const OR_SOMME_STEPS = [
 const orSommeDemo = makeStepDemo(OR_SOMME_STEPS, 'or-sommeDisplay');
 
 DEMO_REGISTRY['Opérations sur les nombres relatifs'] = {
-  cours:'cours-demo-operations-relatifs-5e', methode:'methode-demo-operations-relatifs-5e', exos:'exos-demo-operations-relatifs-5e',
+  cours:'cours-demo-operations-relatifs-5e', methode:'methode-demo-operations-relatifs-5e', exos:'exos-demo-operations-relatifs-5e', histoire:'histoire-demo-operations-relatifs-5e',
   init:()=>{
     orResetJumpFigure();
     orAdditionDemo.reset();

@@ -227,6 +227,13 @@ ${ogAddBlock(OG_SUB_15)}
 <p style="margin:2px 0;">On tape sur la calculatrice : <span style="font-family:'JetBrains Mono',monospace;background:rgba(28,43,57,.06);padding:2px 6px;border-radius:4px;">4 2 . 5 0 ÷ 2 5 =</span> et on lit <b>1,7</b>. Un litre d'essence coûte donc 1,70 €.</p>
 `;
 
+document.getElementById('histoire-demo-operations-ordre-grandeur-6e').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Estimer un ordre de grandeur, c'est un peu ce que le savant grec Archimède a fait vers 250 av. J.-C., dans un texte appelé <i>L'Arénaire</i> (« Celui qui compte les grains de sable »). À une époque où les Grecs ne savaient nommer que des nombres allant jusqu'à la « myriade » (10 000), Archimède invente un système pour écrire des nombres immensément plus grands, et calcule qu'il faudrait environ 10<sup>63</sup> grains de sable pour remplir tout l'Univers tel qu'on l'imaginait alors ! Cet exercice, à la fois amusant et sérieux, est l'un des tout premiers exemples connus de calcul d'ordre de grandeur.
+</div>
+`;
+
 /* ================= METHODE ================= */
 /* Tableau de valeurs de position : milliers…millièmes, avec une frontière fixe
    (la virgule) entre la colonne des unités et celle des dixièmes. On ne fait
@@ -509,7 +516,7 @@ document.getElementById('exos-demo-operations-ordre-grandeur-6e').innerHTML = `
 `;
 
 DEMO_REGISTRY['Opérations et ordre de grandeur'] = {
-  cours:'cours-demo-operations-ordre-grandeur-6e', methode:'methode-demo-operations-ordre-grandeur-6e', exos:'exos-demo-operations-ordre-grandeur-6e',
+  cours:'cours-demo-operations-ordre-grandeur-6e', methode:'methode-demo-operations-ordre-grandeur-6e', exos:'exos-demo-operations-ordre-grandeur-6e', histoire:'histoire-demo-operations-ordre-grandeur-6e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-operations-ordre-grandeur-6e'));
     injectCourseAddButtons(document.getElementById('cours-demo-operations-ordre-grandeur-6e'));

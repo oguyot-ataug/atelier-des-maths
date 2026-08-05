@@ -237,6 +237,13 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
         ⚠️ Piège classique : ne pas confondre la <b>symétrie centrale</b> (demi-tour autour d'un point, la figure « tourne ») avec la <b>symétrie axiale</b> (retournement autour d'une droite, la figure est « retournée comme dans un miroir »). Un bon réflexe : si l'énoncé donne un point, c'est une symétrie centrale ; s'il donne une droite, c'est une symétrie axiale.
       </div>
 `;
+
+document.getElementById('histoire-demo-symetrie').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Contrairement à beaucoup d'autres notions de ce cours, la symétrie n'a pas vraiment d'inventeur : elle est utilisée depuis la Préhistoire, bien avant d'être étudiée mathématiquement. On retrouve des motifs symétriques (par rotation, comme la symétrie centrale, ou par réflexion) dans des ornements vieux de plusieurs dizaines de milliers d'années, sur toutes les civilisations. Ce sont les mathématiciens grecs, notamment autour d'Euclide, qui commencent à étudier ces transformations de façon rigoureuse, en s'intéressant en particulier aux propriétés des figures régulières.
+</div>
+`;
 document.getElementById('methode-demo-symetrie').innerHTML = `
       <div class="sub-header"><span class="letter">M</span><h4>Construire le symétrique d'un point A, au compas et à la règle</h4></div>
 <div class="figure-wrap">
@@ -755,7 +762,7 @@ function mGotoStep(i){ methodStep = i+1; mRenderStepInstant(methodStep); }
 /* ---- nombres relatifs : point + opposé sur droite graduée ---- */
 
 
-DEMO_REGISTRY['Symétrie centrale'] = { cours:'cours-demo-symetrie', methode:'methode-demo-symetrie', exos:'exos-demo-symetrie',
+DEMO_REGISTRY['Symétrie centrale'] = { cours:'cours-demo-symetrie', methode:'methode-demo-symetrie', exos:'exos-demo-symetrie', histoire:'histoire-demo-symetrie',
   init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); registerGeoStepDemo('svgMethod', { steps:()=>M_STEPS, getIdx:()=>methodStep-1, goto:(i)=>mGotoStep(i) }); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); injectCourseAddButtons(document.getElementById('methode-demo-symetrie')); } };
 
 DEMO_QUIZZES['Symétrie centrale'] = [

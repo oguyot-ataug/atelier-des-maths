@@ -388,6 +388,13 @@ document.getElementById('cours-demo-parallelogrammes-particuliers-5e').innerHTML
 <p style="margin:10px 0 14px;">ABCD est un rectangle tel que AB = AD. Un rectangle est un parallélogramme, donc ABCD est aussi un losange (Propriété 1 du losange). ABCD a donc ses quatre angles droits et ses quatre côtés égaux : c'est un carré.</p>
 `;
 
+document.getElementById('histoire-demo-parallelogrammes-particuliers-5e').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Bien avant qu'on démontre leurs propriétés, les rectangles et les carrés étaient déjà utilisés en pratique : en Égypte antique, des arpenteurs surnommés les « tendeurs de corde » utilisaient une corde à 12 nœuds régulièrement espacés pour tracer des angles droits sur le terrain, en formant un triangle de côtés 3, 4 et 5 nœuds (aujourd'hui on dirait un « triangle 3-4-5 »). Cette technique très simple leur permettait de construire des rectangles bien droits pour délimiter des champs ou poser les fondations de monuments, sans le moindre instrument de mesure d'angle.
+</div>
+`;
+
 /* ================= METHODE ================= */
 const QC_PROPS = [
   {code:'P1', label:'(AB) ∥ (CD) -- un couple de côtés opposés parallèles'},
@@ -739,7 +746,7 @@ document.getElementById('exos-demo-parallelogrammes-particuliers-5e').innerHTML 
 `;
 
 DEMO_REGISTRY['Parallélogrammes particuliers'] = {
-  cours:'cours-demo-parallelogrammes-particuliers-5e', methode:'methode-demo-parallelogrammes-particuliers-5e', exos:'exos-demo-parallelogrammes-particuliers-5e',
+  cours:'cours-demo-parallelogrammes-particuliers-5e', methode:'methode-demo-parallelogrammes-particuliers-5e', exos:'exos-demo-parallelogrammes-particuliers-5e', histoire:'histoire-demo-parallelogrammes-particuliers-5e',
   init:()=>{
     injectCourseAddButtons(document.getElementById('cours-demo-parallelogrammes-particuliers-5e'));
     injectCourseAddButtons(document.getElementById('methode-demo-parallelogrammes-particuliers-5e'));

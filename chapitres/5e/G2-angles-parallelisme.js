@@ -601,6 +601,13 @@ document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
 <p style="margin:4px 0 12px;">Donc <span class="tex">\\widehat{KIJ} = 180° - (48° + 67°) = 180° - 115° = 65°</span>.</p>
 `;
 
+document.getElementById('histoire-demo-angles-parallelisme-5e').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  La propriété des angles alternes-internes égaux quand deux droites parallèles sont coupées par une sécante repose sur une règle qu'Euclide avait posée sans démonstration vers 300 av. J.-C. Pendant plus de 2 000 ans, des générations entières de mathématiciens ont cherché, sans succès, à démontrer cette règle à partir des autres. Ce n'est qu'au 19e siècle que Gauss, Bolyai et Lobatchevski découvrent, chacun de leur côté, qu'on peut construire des géométries parfaitement cohérentes où cette règle ne s'applique pas (par exemple à la surface d'une sphère) : c'est la naissance des géométries dites « non euclidiennes ».
+</div>
+`;
+
 /* ================= METHODE ================= */
 document.getElementById('methode-demo-angles-parallelisme-5e').innerHTML = `
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
@@ -776,7 +783,7 @@ const AP_METHODE_ALT_DIRECT_STEPS = [
 const apMethodeAltDirectDemo = makeStepDemo(AP_METHODE_ALT_DIRECT_STEPS, 'ap-methodeAltDirectDisplay');
 
 DEMO_REGISTRY['Angles et parallélisme'] = {
-  cours:'cours-demo-angles-parallelisme-5e', methode:'methode-demo-angles-parallelisme-5e', exos:'exos-demo-angles-parallelisme-5e',
+  cours:'cours-demo-angles-parallelisme-5e', methode:'methode-demo-angles-parallelisme-5e', exos:'exos-demo-angles-parallelisme-5e', histoire:'histoire-demo-angles-parallelisme-5e',
   init:()=>{
     apUpdateAltCorr();
     apTriDemo.reset();

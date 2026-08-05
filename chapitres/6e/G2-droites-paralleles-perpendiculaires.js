@@ -265,6 +265,13 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 </div>
 `;
 
+document.getElementById('histoire-demo-droites-paralleles').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Comment être sûr que deux droites ne se croiseront jamais, même si on les prolonge indéfiniment ? Cette question a longtemps préoccupé les mathématiciens. Vers 300 av. J.-C., Euclide pose comme règle de base (un « postulat », qu'on admet sans démonstration) une phrase compliquée sur les droites parallèles, dans son livre <i>Les Éléments</i>. Pendant plus de 2 000 ans, de nombreux mathématiciens ont essayé de démontrer que cette règle n'était pas vraiment nécessaire, sans jamais y parvenir — jusqu'à ce qu'on découvre, au 19e siècle, qu'elle décrit bien une propriété propre à notre géométrie « plate », et qu'il existe d'autres géométries où elle ne s'applique pas !
+</div>
+`;
+
 document.getElementById('methode-demo-droites-paralleles').innerHTML = `
 <div class="sub-header"><span class="letter">M</span><h4>Méthode : tracer une perpendiculaire à l'équerre et à la règle</h4></div>
 <div class="figure-wrap">
@@ -987,7 +994,7 @@ function dpRegisterGeoDemos(){
   registerGeoStepDemo('dp-rqp-svg', { steps:()=>DP_RQP_STEPS, getIdx:()=>dpRqpIdx, goto:(i,animate)=>{ dpRqpIdx=i; dpRenderRqPerp(animate); } });
   registerGeoStepDemo('dp-rqa-svg', { steps:()=>DP_RQA_STEPS, getIdx:()=>dpRqaIdx, goto:(i,animate)=>{ dpRqaIdx=i; dpRenderRqPara(animate); } });
 }
-DEMO_REGISTRY['Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles',
+DEMO_REGISTRY['Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles', histoire:'histoire-demo-droites-paralleles',
   init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethodeDemo.reset(); dpRegisterGeoDemos(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); injectCourseAddButtons(document.getElementById('methode-demo-droites-paralleles')); } };
 
 DEMO_QUIZZES['Droites parallèles et perpendiculaires'] = [

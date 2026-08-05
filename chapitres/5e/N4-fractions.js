@@ -96,6 +96,13 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 </ul>
 `;
 
+document.getElementById('histoire-demo-fractions-5e').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  La petite barre horizontale qui sépare le numérateur du dénominateur, aujourd'hui si naturelle, n'a pas toujours existé. Elle apparaît vers 1200 sous la plume du mathématicien arabe Al-Hassar, puis c'est l'Italien Fibonacci (Léonard de Pise) qui la fait connaître en Europe, dans son célèbre <i>Liber Abaci</i> (« Livre du calcul »), publié en 1202. Avant cette invention, on écrivait souvent le numérateur juste au-dessus du dénominateur, sans aucun trait pour les séparer clairement — ce qui pouvait facilement prêter à confusion !
+</div>
+`;
+
 document.getElementById('methode-demo-fractions-5e').innerHTML = `
 <div class="sub-header"><span class="letter">M</span><h4>Méthode : additionner deux fractions de dénominateurs différents</h4></div>
 <div class="figure-wrap">
@@ -204,7 +211,7 @@ const FQ_METHODE_STEPS = [
 ];
 const fqMethodeDemo = makeStepDemo(FQ_METHODE_STEPS, 'fq-methodeDisplay');
 
-DEMO_REGISTRY['Fractions'] = { cours:'cours-demo-fractions-5e', methode:'methode-demo-fractions-5e', exos:'exos-demo-fractions-5e',
+DEMO_REGISTRY['Fractions'] = { cours:'cours-demo-fractions-5e', methode:'methode-demo-fractions-5e', exos:'exos-demo-fractions-5e', histoire:'histoire-demo-fractions-5e',
   init:()=>{ initCompareDemo(); fqDiviseDemo.reset(); fqMethodeDemo.reset(); renderStaticMath(document.getElementById('cours-demo-fractions-5e')); renderStaticMath(document.getElementById('exos-demo-fractions-5e')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-5e')); injectCourseAddButtons(document.getElementById('methode-demo-fractions-5e')); } };
 
 DEMO_QUIZZES['Fractions'] = [

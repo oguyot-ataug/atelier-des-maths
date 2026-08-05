@@ -174,6 +174,13 @@ document.getElementById('cours-demo-parallelogrammes-5e').innerHTML = `
 <p style="margin:10px 0 12px;">AB = DC et AD = BC. Le quadrilatère ABCD non croisé a ses côtés opposés de même longueur. Donc le quadrilatère ABCD est un parallélogramme.</p>
 `;
 
+document.getElementById('histoire-demo-parallelogrammes-5e').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Les propriétés des parallélogrammes figurent déjà, démontrées, dans <i>Les Éléments</i> d'Euclide, vers 300 av. J.-C. — notamment dans son premier livre, consacré aux triangles et aux quadrilatères. Les Grecs s'intéressaient beaucoup à ces figures car elles servaient à comparer des aires : une méthode qu'ils appelaient l'« application des aires » permettait de transformer n'importe quelle figure en un parallélogramme de même aire, une façon très ingénieuse de « mesurer » les surfaces sans les nombres décimaux que nous utilisons aujourd'hui.
+</div>
+`;
+
 /* ================= METHODE ================= */
 /* ================= Construction : points de base des 3 méthodes ================= */
 const PGM_A = {x:110, y:200}, PGM_B = {x:230, y:230}, PGM_C = {x:280, y:90};
@@ -388,7 +395,7 @@ document.getElementById('exos-demo-parallelogrammes-5e').innerHTML = `
 `;
 
 DEMO_REGISTRY['Parallélogrammes'] = {
-  cours:'cours-demo-parallelogrammes-5e', methode:'methode-demo-parallelogrammes-5e', exos:'exos-demo-parallelogrammes-5e',
+  cours:'cours-demo-parallelogrammes-5e', methode:'methode-demo-parallelogrammes-5e', exos:'exos-demo-parallelogrammes-5e', histoire:'histoire-demo-parallelogrammes-5e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-parallelogrammes-5e'));
     renderStaticMath(document.getElementById('exos-demo-parallelogrammes-5e'));

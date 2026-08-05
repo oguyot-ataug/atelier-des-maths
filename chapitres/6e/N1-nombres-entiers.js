@@ -121,6 +121,13 @@ document.getElementById('cours-demo-nombres-entiers').innerHTML = `
 </div>
 `;
 
+document.getElementById('histoire-demo-nombres-entiers').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Compter est sans doute l'une des toutes premières activités mathématiques de l'humanité. L'os de Lebombo, découvert en Afrique australe et vieux d'environ 35 000 ans, porte 29 encoches gravées, probablement pour suivre le cycle de la Lune : c'est l'un des plus anciens objets connus liés au comptage. Beaucoup plus tard, vers 3400 av. J.-C., les Sumériens, en Mésopotamie, inventent l'une des premières écritures des nombres, en gravant des symboles dans des tablettes d'argile pour tenir les comptes de leurs récoltes et de leurs troupeaux.
+</div>
+`;
+
 document.getElementById('methode-demo-nombres-entiers').innerHTML = `
 <div class="sub-header"><span class="letter">M</span><h4>Ne pas confondre « chiffre des... » et « nombre de... »</h4></div>
 <div class="figure-wrap">
@@ -196,7 +203,7 @@ const NE_CHIFFRE_NOMBRE_STEPS = [
 ];
 const neChiffreNombreDemo = makeStepDemo(NE_CHIFFRE_NOMBRE_STEPS, 'ne-chiffreNombreDisplay');
 
-DEMO_REGISTRY['Nombres entiers'] = { cours:'cours-demo-nombres-entiers', methode:'methode-demo-nombres-entiers', exos:'exos-demo-nombres-entiers',
+DEMO_REGISTRY['Nombres entiers'] = { cours:'cours-demo-nombres-entiers', methode:'methode-demo-nombres-entiers', exos:'exos-demo-nombres-entiers', histoire:'histoire-demo-nombres-entiers',
   init:()=>{ neDivisionPoseeReset(); neChiffreNombreDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-nombres-entiers')); injectCourseAddButtons(document.getElementById('methode-demo-nombres-entiers')); } };
 
 DEMO_QUIZZES['Nombres entiers'] = [
