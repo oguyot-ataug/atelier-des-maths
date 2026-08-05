@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.40</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.41</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1448,7 +1448,10 @@ function renderMathText(raw){
   // 6) astérisque isolé restant (hors fractions/racines/exposants déjà traités ci-dessus,
   //    et hors ** de gras déjà consommé) : c'est une multiplication, simple signe ×.
   text = text.replace(/\*/g, '×');
-  // 7) lettres isolées utilisées comme variables (x, y, z, n, k, t...) : rendues via KaTeX pour
+  // 7) coefficient collé à une variable (5x, 12y, 2,5x...) : multiplication implicite, notation
+  //    mathématique standard -- rendue via KaTeX en un seul bloc (chiffre droit, lettre italique).
+  text = text.replace(/\b(\d+(?:[.,]\d+)?)([xyznkt])\b/g, (m,digits,letter)=>katexSpan(`${digits.replace(',','.')}${letter}`));
+  // 8) lettres isolées utilisées comme variables (x, y, z, n, k, t...) : rendues via KaTeX pour
   //    une police italique arrondie, cohérente avec le chapitre Calcul littéral, plutôt que la
   //    police du texte courant.
   text = text.replace(/\b([xyznkt])\b/g, (m,letter)=>katexSpan(letter));
@@ -2441,6 +2444,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.41', items:[
+    "Fix -- Outil de correction : 5x (coefficient collé à une variable, sans opérateur) n'était pas mis en forme, faute de frontière de mot entre le chiffre et la lettre. Corrigé : ce cas passe désormais aussi par KaTeX, comme 3*x.",
+  ]},
   { version:'2026-08-04.40', items:[
     "Outil de correction -- ajustements suite retour : le signe de multiplication revient à un simple × (ce n'était pas lui le problème) ; ce sont les lettres-variables isolées (x, y, z, n, k, t) qui passent maintenant par KaTeX, pour une police italique arrondie cohérente avec le chapitre Calcul littéral. La date apparaît désormais avant la référence d'exercice dans l'en-tête.",
   ]},
