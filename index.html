@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.35</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.36</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1445,6 +1445,9 @@ function renderMathText(raw){
     const e = exp.startsWith('{') ? exp.slice(1,-1) : exp;
     return katexSpan(`${base}^{${e}}`);
   });
+  // 6) astérisque isolé restant (hors fractions/racines/exposants déjà traités ci-dessus,
+  //    et hors ** de gras déjà consommé) : c'est une multiplication, affichée avec le vrai signe ×.
+  text = text.replace(/\*/g, '×');
   text = text.replace(/\n/g,'<br>');
   return text;
 }
@@ -2371,6 +2374,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.36', items:[
+    "Fix -- Outil de correction (projection) : un astérisque * tapé pour une multiplication en dehors d'une fraction, d'une racine ou d'un exposant restait affiché tel quel au lieu d'être converti en signe ×. Corrigé (testé sur multiplication seule, dans une fraction, et après du texte en gras).",
+  ]},
   { version:'2026-08-04.35', items:[
     "Supervision -- ajout d'une section « 🎲 Le compte est bon » : pour chaque élève de la classe active, le taux de réussite en mode illimité et en mode chronométré, ainsi que les 5 dernières tentatives (exact ou à combien près, mode, date).",
   ]},
