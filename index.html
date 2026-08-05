@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.42</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.43</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1432,37 +1432,48 @@ function cleanExpr(s){
 function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function renderMathText(raw){
   let text = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Chaque bloc déjà rendu par KaTeX (fraction, racine, exposant, $...$) est mis de côté
+  // derrière un jeton opaque le temps du reste du traitement, pour qu'aucune règle suivante
+  // (multiplication, variables) ne vienne s'insérer À L'INTÉRIEUR du LaTeX déjà construit et
+  // le casser (c'était le bug de "(5x+3x)/2" : la règle des variables repérait le x à
+  // l'intérieur de \frac{5x+3x}{2} et y insérait une balise, rendant le LaTeX illisible pour KaTeX).
+  const protectedBlocks = [];
+  function protect(html){ protectedBlocks.push(html); return `\u0000${protectedBlocks.length-1}\u0000`; }
+
   // 0) mini mise en forme : **gras** et {{couleur|texte}}
   const COLOR_MAP={rouge:'#D93025',bleu:'#1F3A5C',vert:'#2C5A2E',orange:'#E35D3A'};
   text = text.replace(/\*\*([^*]+)\*\*/g, (m,inner)=>`<b>${inner}</b>`);
   text = text.replace(/\{\{(rouge|bleu|vert|orange)\|([^}]+)\}\}/g, (m,c,inner)=>`<span style="color:${COLOR_MAP[c]}">${inner}</span>`);
 
   // 1) explicit LaTeX between $...$
-  text = text.replace(/\$([^$]+)\$/g, (m,expr)=>katexSpan(expr));
+  text = text.replace(/\$([^$]+)\$/g, (m,expr)=>protect(katexSpan(expr)));
   // 2) sqrt(...) -- processed before fractions so "sqrt(2)/3" isn't mistaken for a fraction
-  text = text.replace(/sqrt\(([^()]+)\)/g, (m,inner)=>katexSpan(`\\sqrt{${cleanExpr(inner)}}`));
+  text = text.replace(/sqrt\(([^()]+)\)/g, (m,inner)=>protect(katexSpan(`\\sqrt{${cleanExpr(inner)}}`)));
   // 3) fractions with a parenthesised expression on one or both sides: (2*2)/(3*2), (2+1)/4, 3/(1+2)
-  text = text.replace(/\(([^()]+)\)\/\(([^()]+)\)/g, (m,a,b)=>katexSpan(`\\frac{${cleanExpr(a)}}{${cleanExpr(b)}}`));
-  text = text.replace(/\(([^()]+)\)\/(\d+(?:[.,]\d+)?)/g, (m,a,b)=>katexSpan(`\\frac{${cleanExpr(a)}}{${b.replace(',','.')}}`));
-  text = text.replace(/(\d+(?:[.,]\d+)?)\/\(([^()]+)\)/g, (m,a,b)=>katexSpan(`\\frac{${a.replace(',','.')}}{${cleanExpr(b)}}`));
+  text = text.replace(/\(([^()]+)\)\/\(([^()]+)\)/g, (m,a,b)=>protect(katexSpan(`\\frac{${cleanExpr(a)}}{${cleanExpr(b)}}`)));
+  text = text.replace(/\(([^()]+)\)\/(\d+(?:[.,]\d+)?)/g, (m,a,b)=>protect(katexSpan(`\\frac{${cleanExpr(a)}}{${b.replace(',','.')}}`)));
+  text = text.replace(/(\d+(?:[.,]\d+)?)\/\(([^()]+)\)/g, (m,a,b)=>protect(katexSpan(`\\frac{${a.replace(',','.')}}{${cleanExpr(b)}}`)));
   // 4) plain fractions a/b (integers or decimals)
-  text = text.replace(/(\d+(?:[.,]\d+)?)\/(\d+(?:[.,]\d+)?)/g, (m,a,b)=>katexSpan(`\\frac{${a.replace(',','.')}}{${b.replace(',','.')}}`));
+  text = text.replace(/(\d+(?:[.,]\d+)?)\/(\d+(?:[.,]\d+)?)/g, (m,a,b)=>protect(katexSpan(`\\frac{${a.replace(',','.')}}{${b.replace(',','.')}}`)));
   // 5) exponents  base^exp  (exp = digits or {...})
   text = text.replace(/([A-Za-z0-9\)\]])\^(-?\d+(?:[.,]\d+)?|\{[^}]+\})/g, (m,base,exp)=>{
     const e = exp.startsWith('{') ? exp.slice(1,-1) : exp;
-    return katexSpan(`${base}^{${e}}`);
+    return protect(katexSpan(`${base}^{${e}}`));
   });
   // 6) astérisque isolé restant (hors fractions/racines/exposants déjà traités ci-dessus,
   //    et hors ** de gras déjà consommé) : c'est une multiplication, simple signe ×.
   text = text.replace(/\*/g, '×');
   // 7) variable (x, y, z, n, k, t...), isolée ou précédée d'un coefficient collé (5x, 12y, 2,5x...
-  //    = multiplication implicite, notation mathématique standard) : une seule passe, pour éviter
-  //    qu'une lettre déjà mise en forme ne soit recapturée par une deuxième règle.
+  //    = multiplication implicite, notation mathématique standard). Les occurrences déjà à
+  //    l'intérieur d'une fraction/racine/exposant sont protégées (étape ci-dessus) et donc hors
+  //    d'atteinte : KaTeX les italicise déjà tout seul.
   text = text.replace(/\b(\d+(?:[.,]\d+)?)?([xyznkt])\b/g, (m,digits,letter)=>{
     const prefix = digits ? digits.replace(',','.') : '';
     return `${prefix}${mathVarSpan(letter)}`;
   });
   text = text.replace(/\n/g,'<br>');
+  // on restitue les blocs protégés
+  text = text.replace(/\u0000(\d+)\u0000/g, (m,i)=>protectedBlocks[+i]);
   return text;
 }
 function renderCorrectionPreview(){
@@ -2451,6 +2462,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.43', items:[
+    "Fix -- Outil de correction : (5x+3x)/2 affichait du texte KaTeX interne illisible (ex. \"vlist-t2\"). Cause : la règle de mise en forme des variables repérait le x à l'intérieur du LaTeX déjà construit pour la fraction (\\frac{5x+3x}{2}) et y insérait une balise, cassant la syntaxe reçue par KaTeX. Chaque bloc fraction/racine/exposant/$...$ est désormais protégé par un jeton le temps du traitement, hors d'atteinte des règles suivantes.",
+  ]},
   { version:'2026-08-04.42', items:[
     "Fix -- Outil de correction : 5x affichait un texte dupliqué et illisible. Deux causes corrigées : (1) KaTeX pouvait dupliquer visuellement le texte via sa balise d'accessibilité si sa feuille de style ne chargeait pas -- remplacé par un simple style italique robuste, sans dépendance externe ; (2) les deux règles (coefficient+variable, puis variable isolée) se recapturaient l'une l'autre -- fusionnées en une seule passe.",
   ]},
