@@ -154,6 +154,14 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
   display:inline-block;background:var(--accent-teal);color:#fff;font-weight:700;font-size:.8rem;
   padding:5px 16px;border-radius:6px;margin-bottom:10px;font-family:'Space Grotesk',sans-serif;
 }
+.history-box{
+  background:rgba(248,175,35,.09);border:1px dashed rgba(248,175,35,.5);border-radius:8px;
+  padding:14px 20px;margin:26px 0 0;font-size:.9rem;line-height:1.65;
+}
+.history-box .history-title{
+  font-family:'Space Grotesk',sans-serif;font-weight:700;font-style:italic;color:#8a6205;
+  margin-bottom:6px;display:flex;align-items:center;gap:8px;
+}
 
 /* ---------- home ---------- */
 .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;margin-bottom:56px;}

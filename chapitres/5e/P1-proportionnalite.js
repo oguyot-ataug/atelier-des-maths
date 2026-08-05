@@ -129,6 +129,11 @@ document.getElementById('cours-demo-proportionnalite-5e').innerHTML = `
     <p style="margin:8px 0;"><b>Non</b>, ce graphique ne représente pas une situation de proportionnalité : les points ne sont pas alignés.</p>
   </div>
 </div>
+
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Selon une légende rapportée par plusieurs auteurs antiques, le savant grec Thalès (6e siècle av. J.-C.) aurait mesuré la hauteur de la grande pyramide d'Égypte sans même y monter, en utilisant un simple bâton planté dans le sol : il aurait attendu le moment où l'ombre du bâton était égale à sa propre hauteur, sachant qu'à cet instant précis, l'ombre de la pyramide serait elle aussi égale à sa hauteur. Les historiens doutent aujourd'hui que Thalès soit vraiment l'inventeur de cette idée (les Babyloniens et les Égyptiens connaissaient déjà ce principe de proportionnalité), mais l'anecdote reste un bel exemple de la puissance de ces méthodes : mesurer un objet immense sans y toucher.
+</div>
 `;
 
 /* ================= METHODE : jeu d'association grandeur / unité ================= */

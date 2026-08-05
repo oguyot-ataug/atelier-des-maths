@@ -1089,6 +1089,11 @@ document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
     <button class="btn secondary" onclick="arBisReset()">Recommencer</button>
   </div>
 </div>
+
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Pourquoi un cercle complet mesure-t-il 360° et pas 100°, comme le reste de nos unités ? La réponse vient des astronomes babyloniens, en Mésopotamie, il y a environ 3 500 ans : ils comptaient en base 60 (au lieu de notre base 10), et 360 est un nombre qui se divise très facilement par beaucoup d'autres (2, 3, 4, 5, 6, 8, 9, 10, 12...), en plus d'être proche du nombre de jours dans une année. Le rapporteur lui-même, tel qu'on le connaît, est un instrument bien plus récent : le premier outil vraiment dédié à tracer et mesurer des angles est décrit en 1589 par l'Anglais Thomas Blundeville, dans un ouvrage destiné à la navigation en mer.
+</div>
 `;
 
 /* ================= METHODE ================= */

@@ -192,6 +192,11 @@ ${ndGridCentieme(47)}
 <p class="example-title">Exemple : range les nombres 12,6 ; 126,4 ; 12,64 ; 12,46 dans l'ordre croissant.</p>
 <p style="margin:4px 0 4px;">On repère le plus petit, puis le plus petit des nombres qui restent, et ainsi de suite.</p>
 <p style="margin:4px 0 12px;">On obtient donc : 12,46 &lt; 12,6 &lt; 12,64 &lt; 126,4.</p>
+
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Les nombres décimaux tels que nous les écrivons (avec une virgule) sont une invention récente à l'échelle de l'histoire des mathématiques : c'est le savant flamand Simon Stevin qui, en 1585, en publie le premier exposé complet et accessible, dans un petit livre intitulé <i>La Thiende</i> (« Le Dixième »). Il y explique cette méthode aux <i>« astrologues, arpenteurs, tapissiers, tonneliers, maîtres de la monnaie et à tous marchands »</i>, pour qu'ils puissent calculer sans passer par les fractions. Certaines civilisations, comme les mathématiciens arabes et chinois, utilisaient déjà des idées proches bien avant lui, mais c'est Stevin qui a rendu cette écriture vraiment utilisable par tous en Europe.
+</div>
 `;
 
 document.getElementById('methode-demo-decimaux-6e').innerHTML = `
