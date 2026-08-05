@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.37</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.38</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -518,7 +518,7 @@
       <select id="corChapitre"></select>
       <input type="text" id="corExoNum" placeholder="N° exercice (ex. 4 p.23)" style="width:150px;">
       <input type="date" id="corDate" style="width:150px;">
-      <button class="btn secondary" onclick="toggleProjection()" id="btnProjection">🖥️ Mode projection</button>
+      <button class="btn secondary" onclick="toggleProjection()" id="btnProjection">🖥️ Ouvrir la fenêtre de projection</button>
     </div>
     <div class="tool-row">
       <input type="text" id="corTitre" placeholder="Titre de l'exercice (ex. Construire un symétrique)" style="flex:1;min-width:280px;">
@@ -1458,11 +1458,55 @@ function renderCorrectionPreview(){
   let html = raw.trim() ? renderMathText(raw) : '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>';
   if(pendingFigureSVG) html += `<div class="nb-figure-row">${pendingFigureSVG}</div>`;
   document.getElementById('correctionPreview').innerHTML = html;
+  updateProjectionWindow(html);
+}
+/* Fenêtre de projection : une vraie fenêtre de navigateur séparée (pas juste un agrandissement
+   dans la page), à faire glisser sur un second écran / vidéoprojecteur, et librement
+   redimensionnable -- pour ne projeter aux élèves que la correction, jamais l'outil de saisie. */
+let ceProjWin = null;
+function updateProjectionWindow(html){
+  if(!ceProjWin || ceProjWin.closed) return;
+  const el = ceProjWin.document.getElementById('projContent');
+  if(el) el.innerHTML = html;
 }
 function toggleProjection(){
-  const preview=document.getElementById('correctionPreview');
-  preview.classList.toggle('projection');
-  document.getElementById('btnProjection').textContent = preview.classList.contains('projection') ? '↩︎ Quitter le mode projection' : '🖥️ Mode projection';
+  const btn = document.getElementById('btnProjection');
+  if(ceProjWin && !ceProjWin.closed){
+    ceProjWin.close();
+    ceProjWin = null;
+    btn.textContent = '🖥️ Ouvrir la fenêtre de projection';
+    return;
+  }
+  ceProjWin = window.open('', 'atelierMathsProjection', 'width=1100,height=720,resizable=yes');
+  if(!ceProjWin){ alert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site."); return; }
+  ceProjWin.document.open();
+  ceProjWin.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+    <title>Correction -- projection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <style>
+      html,body{margin:0;padding:0;background:#FFFFFF;height:100%;}
+      body{display:flex;align-items:center;justify-content:center;padding:5vw;box-sizing:border-box;}
+      #projContent{
+        font-family:'Space Grotesk',Arial,sans-serif;color:#20242E;
+        font-size:clamp(1.6rem, 4.2vw, 3.4rem);line-height:1.7;font-weight:600;
+        max-width:100%;
+      }
+      #projContent .hint{color:#9aa0a8;font-weight:400;}
+      #projContent b{color:#0C5BA0;}
+      .katex{font-size:1.05em;}
+    </style>
+  </head><body><div id="projContent"></div></body></html>`);
+  ceProjWin.document.close();
+  const current = document.getElementById('correctionPreview').innerHTML;
+  updateProjectionWindow(current);
+  btn.textContent = '✖️ Fermer la fenêtre de projection';
+  const watcher = setInterval(()=>{
+    if(!ceProjWin || ceProjWin.closed){
+      clearInterval(watcher);
+      ceProjWin = null;
+      btn.textContent = '🖥️ Ouvrir la fenêtre de projection';
+    }
+  }, 800);
 }
 function wrapSelection(before, after){
   const ta = document.getElementById('correctionInput');
@@ -2376,6 +2420,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.38', items:[
+    "Outil de correction -- le mode projection ouvre désormais une vraie fenêtre de navigateur séparée (plutôt qu'un simple agrandissement dans la page) : à faire glisser sur un second écran ou un vidéoprojecteur, librement redimensionnable, et synchronisée en direct pendant la saisie. Seule la correction y est affichée, jamais l'outil de saisie -- idéal pour ne projeter que le contenu aux élèves.",
+  ]},
   { version:'2026-08-04.37', items:[
     "Outil de correction -- le signe de multiplication (ex. 3*x) passe maintenant par le même rendu KaTeX que le reste des maths de l'outil, au lieu d'un simple caractère × en police normale qui pouvait se confondre avec la lettre x (notamment devant une inconnue, comme dans 3*x).",
   ]},
