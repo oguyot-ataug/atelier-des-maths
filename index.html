@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-28">
+<link rel="stylesheet" href="styles.css?v=20260804-29">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.28</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.29</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -2337,6 +2337,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.29', items:[
+    "Fix -- 6e Fractions : les fractions LaTeX (1/2, 1/7) de l'encart « Un peu d'histoire » s'affichaient en texte brut au lieu d'être rendues, car ce nouveau conteneur n'était pas inclus dans l'appel de rendu des formules. Corrigé.",
+  ]},
   { version:'2026-08-04.28', items:[
     "Les touches d'histoire ont désormais leur propre onglet « 📜 Un peu d'histoire » dans les pages de chapitre (à côté de Cours, Méthode, Exercices, Quiz), plutôt que d'être mêlées au Cours. Les chapitres sans anecdote pour l'instant affichent un message d'attente à la place.",
   ]},
@@ -3802,26 +3805,26 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-28"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-28"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-28"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-28"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-28"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-28"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-28"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-28"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-28"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-28"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-28"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-28"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-28"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-28"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-28"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-28"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-28"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-28"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-28"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-28"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-28"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-29"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-29"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-29"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-29"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-29"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-29"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-29"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-29"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-29"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-29"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-29"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-29"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-29"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-29"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-29"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-29"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-29"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-29"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-29"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-29"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-29"></script>
 </body>
 </html>
