@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.39</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.40</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1446,14 +1446,15 @@ function renderMathText(raw){
     return katexSpan(`${base}^{${e}}`);
   });
   // 6) astérisque isolé restant (hors fractions/racines/exposants déjà traités ci-dessus,
-  //    et hors ** de gras déjà consommé) : c'est une multiplication. On dessine un symbole ×
-  //    en SVG, aux extrémités arrondies -- indépendant de toute police, il ne peut donc jamais
-  //    se confondre avec la lettre x (notamment devant 3*x), même si KaTeX n'est pas chargé.
-  text = text.replace(/\*/g, MULT_SIGN_SVG);
+  //    et hors ** de gras déjà consommé) : c'est une multiplication, simple signe ×.
+  text = text.replace(/\*/g, '×');
+  // 7) lettres isolées utilisées comme variables (x, y, z, n, k, t...) : rendues via KaTeX pour
+  //    une police italique arrondie, cohérente avec le chapitre Calcul littéral, plutôt que la
+  //    police du texte courant.
+  text = text.replace(/\b([xyznkt])\b/g, (m,letter)=>katexSpan(letter));
   text = text.replace(/\n/g,'<br>');
   return text;
 }
-const MULT_SIGN_SVG = '<svg width="0.62em" height="0.62em" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-0.04em;margin:0 0.1em;"><path d="M5 5 L19 19 M19 5 L5 19" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" fill="none"/></svg>';
 function renderCorrectionPreview(){
   const raw = document.getElementById('correctionInput').value;
   let html = raw.trim() ? renderMathText(raw) : '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>';
@@ -1471,8 +1472,8 @@ function corHeaderHTML(){
   const dateFmt = date ? new Date(date+'T00:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'}) : '';
   const parts = [exo, titre].filter(Boolean).join(' — ');
   return `<div class="cor-header">
-    ${parts ? `<div class="cor-header-title">${escapeHtml(parts)}</div>` : ''}
     ${dateFmt ? `<div class="cor-header-date">${escapeHtml(dateFmt)}</div>` : ''}
+    ${parts ? `<div class="cor-header-title">${escapeHtml(parts)}</div>` : ''}
   </div>`;
 }
 /* Fenêtre de projection : une vraie fenêtre de navigateur séparée (pas juste un agrandissement
@@ -2440,6 +2441,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.40', items:[
+    "Outil de correction -- ajustements suite retour : le signe de multiplication revient à un simple × (ce n'était pas lui le problème) ; ce sont les lettres-variables isolées (x, y, z, n, k, t) qui passent maintenant par KaTeX, pour une police italique arrondie cohérente avec le chapitre Calcul littéral. La date apparaît désormais avant la référence d'exercice dans l'en-tête.",
+  ]},
   { version:'2026-08-04.39', items:[
     "Outil de correction -- trois corrections : (1) le signe de multiplication est désormais un symbole SVG dédié aux extrémités arrondies, indépendant de toute police ou bibliothèque, nettement distinct de la lettre x (ex. 3×x) ; (2) la fenêtre de projection écrit désormais depuis le coin haut-gauche au lieu d'être centrée ; (3) le titre, la référence d'exercice et la date renseignés par le professeur s'affichent désormais aussi pour les élèves, en en-tête de l'aperçu et de la fenêtre de projection.",
   ]},
