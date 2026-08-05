@@ -120,7 +120,9 @@ document.getElementById('cours-demo-relatifs').innerHTML = `
       <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
         ⚠️ Piège classique : un nombre négatif de grande valeur absolue reste un <b>petit</b> nombre. On voit souvent l'erreur −10 &gt; −3 (en ne comparant que les chiffres 10 et 3) — c'est l'inverse : −10 &lt; −3.
       </div>
+`;
 
+document.getElementById('histoire-demo-relatifs').innerHTML = `
 <div class="history-box">
   <div class="history-title">📜 Un peu d'histoire</div>
   Les nombres négatifs sont utilisés bien avant d'être vraiment acceptés par les mathématiciens ! Dès environ 200 av. J.-C., en Chine, on utilisait des baguettes de calcul rouges pour les nombres positifs et noires pour les négatifs, notamment pour tenir des comptes commerciaux. Vers 628, en Inde, le mathématicien Brahmagupta est le premier à poser clairement des règles de calcul avec des nombres négatifs (addition, soustraction...). En Europe, en revanche, il faudra attendre le 17e siècle, voire le 19e siècle pour certains savants, avant que les nombres négatifs soient pleinement acceptés comme des nombres à part entière.
@@ -269,7 +271,7 @@ function initPlaneDemo(){
 /* ---- clé API partagée (quiz IA + interprétation de figures) ---- */
 
 
-DEMO_REGISTRY['Nombres relatifs'] = { cours:'cours-demo-relatifs', methode:'methode-demo-relatifs', exos:'exos-demo-relatifs',
+DEMO_REGISTRY['Nombres relatifs'] = { cours:'cours-demo-relatifs', methode:'methode-demo-relatifs', exos:'exos-demo-relatifs', histoire:'histoire-demo-relatifs',
   init:()=>{ initRelDemo(); initPlaneDemo(); renderStaticMath(document.getElementById('cours-demo-relatifs')); injectCourseAddButtons(document.getElementById('cours-demo-relatifs')); } };
 
 DEMO_QUIZZES['Nombres relatifs'] = [

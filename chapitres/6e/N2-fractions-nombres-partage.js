@@ -52,7 +52,9 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
   On simplifie : <span class="tex">\\dfrac{3}{12} = \\dfrac{1}{4}</span>, puis on écrit cette fraction avec pour dénominateur 100 : <span class="tex">\\dfrac{1}{4} = \\dfrac{25}{100}</span>.<br>
   La proportion est donc égale à <span class="tex">\\dfrac{25}{100}</span> : le pourcentage de boules vertes dans ce sac est de <b>25 %</b>.
 </p>
+`;
 
+document.getElementById('histoire-demo-fractions-partage').innerHTML = `
 <div class="history-box">
   <div class="history-title">📜 Un peu d'histoire</div>
   Les fractions comptent parmi les plus vieilles notions des mathématiques : on en trouve la trace il y a environ 3 600 ans, dans le papyrus de Rhind, un texte égyptien conservé au British Museum. Mais les Égyptiens ne les écrivaient pas comme nous : ils n'utilisaient (presque) que des fractions de numérateur 1 (comme <span class="tex">\\dfrac{1}{2}</span> ou <span class="tex">\\dfrac{1}{7}</span>), et exprimaient toutes les autres comme des sommes de fractions de ce type. Il faudra attendre les mathématiciens indiens, plus de mille ans plus tard, pour voir apparaître une écriture des fractions plus proche de la nôtre, avec un numérateur et un dénominateur.
@@ -134,7 +136,7 @@ const FP_METHODE_STEPS = [
 ];
 const fpMethodeDemo = makeStepDemo(FP_METHODE_STEPS, 'fp-methodeDisplay');
 
-DEMO_REGISTRY['Fractions : nombres et partage'] = { cours:'cours-demo-fractions-partage', methode:'methode-demo-fractions-partage', exos:'exos-demo-fractions-partage',
+DEMO_REGISTRY['Fractions : nombres et partage'] = { cours:'cours-demo-fractions-partage', methode:'methode-demo-fractions-partage', exos:'exos-demo-fractions-partage', histoire:'histoire-demo-fractions-partage',
   init:()=>{ fpMethodeDemo.reset(); fpEquivReset(); renderStaticMath(document.getElementById('cours-demo-fractions-partage')); renderStaticMath(document.getElementById('exos-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('methode-demo-fractions-partage')); } };
 
 DEMO_QUIZZES['Fractions : nombres et partage'] = [

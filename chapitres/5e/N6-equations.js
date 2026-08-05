@@ -70,7 +70,9 @@ document.getElementById('cours-demo-equations-5e').innerHTML = `
     <button class="btn secondary" onclick="eqAxDemo.reset()">Recommencer</button>
   </div>
 </div>
+`;
 
+document.getElementById('histoire-demo-equations-5e').innerHTML = `
 <div class="history-box">
   <div class="history-title">📜 Un peu d'histoire</div>
   L'idée de « garder l'équilibre » en effectuant la même opération des deux côtés d'une équation (comme sur une balance) porte un nom très ancien : <i>al-muqabala</i>, qui signifie « la mise en balance » en arabe. Elle vient du même livre, écrit vers 820 à Bagdad par Al-Khwârizmî, qui a donné son autre nom à l'algèbre (<i>al-jabr</i>). Dans son ouvrage, Al-Khwârizmî explique comment résoudre des équations en « équilibrant » les deux membres, exactement comme la méthode de la balance que tu utilises dans ce chapitre !
@@ -515,7 +517,7 @@ document.getElementById('exos-demo-equations-5e').innerHTML = `
 `;
 
 DEMO_REGISTRY['Équations'] = {
-  cours:'cours-demo-equations-5e', methode:'methode-demo-equations-5e', exos:'exos-demo-equations-5e',
+  cours:'cours-demo-equations-5e', methode:'methode-demo-equations-5e', exos:'exos-demo-equations-5e', histoire:'histoire-demo-equations-5e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-equations-5e'));
     renderStaticMath(document.getElementById('exos-demo-equations-5e'));

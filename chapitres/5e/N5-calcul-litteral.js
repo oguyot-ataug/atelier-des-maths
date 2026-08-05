@@ -151,7 +151,9 @@ document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
     <button class="btn secondary" onclick="clFactDemo.reset()">Recommencer</button>
   </div>
 </div>
+`;
 
+document.getElementById('histoire-demo-calcul-litteral-5e').innerHTML = `
 <div class="history-box">
   <div class="history-title">📜 Un peu d'histoire</div>
   Le mot <b>« algèbre »</b> vient de l'arabe <i>al-jabr</i>, qui signifie à peu près « la remise en place » ou « la réduction ». Il provient du titre d'un livre écrit vers 820 à Bagdad par le mathématicien perse Al-Khwârizmî, dans un centre de recherche appelé la Maison de la Sagesse. Ce livre est le premier à présenter une méthode générale pour manipuler des expressions contenant des inconnues, sans forcément les relier à une figure géométrique précise. Le mot <b>« algorithme »</b>, que l'on utilise beaucoup aujourd'hui en informatique, vient d'ailleurs directement de son nom !
@@ -317,7 +319,7 @@ document.getElementById('exos-demo-calcul-litteral-5e').innerHTML = `
 `;
 
 DEMO_REGISTRY['Calcul littéral'] = {
-  cours:'cours-demo-calcul-litteral-5e', methode:'methode-demo-calcul-litteral-5e', exos:'exos-demo-calcul-litteral-5e',
+  cours:'cours-demo-calcul-litteral-5e', methode:'methode-demo-calcul-litteral-5e', exos:'exos-demo-calcul-litteral-5e', histoire:'histoire-demo-calcul-litteral-5e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-calcul-litteral-5e'));
     renderStaticMath(document.getElementById('exos-demo-calcul-litteral-5e'));
