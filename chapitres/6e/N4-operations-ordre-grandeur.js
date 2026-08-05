@@ -405,6 +405,46 @@ document.getElementById('methode-demo-operations-ordre-grandeur-6e').innerHTML =
   </ul>
 </div>
 
+<p class="example-title" style="margin-top:22px;">Troncature, arrondi par défaut, arrondi par excès</p>
+<div class="def-box">
+  <b>Troncature</b> : on supprime tous les chiffres après le rang demandé, sans regarder le chiffre suivant.<br>
+  <b>Arrondi par défaut</b> : la valeur, à ce rang, la plus proche du nombre tout en restant <b>inférieure ou égale</b>.<br>
+  <b>Arrondi par excès</b> : la valeur, à ce rang, la plus proche du nombre tout en restant <b>supérieure ou égale</b>.
+</div>
+<p style="margin:12px 0 8px;">Pour un nombre positif, la troncature et l'arrondi par défaut donnent toujours la même valeur. L'arrondi "classique" (au plus proche), lui, correspond tantôt à l'arrondi par défaut, tantôt à l'arrondi par excès, selon le chiffre suivant.</p>
+<p style="margin:0 0 8px;"><b>Exemple</b> : pour le nombre 8,6427 :</p>
+<table style="border-collapse:collapse;width:100%;font-size:.88rem;margin:0 0 16px;">
+  <tr>
+    <th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Rang</th>
+    <th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Troncature</th>
+    <th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Arrondi par défaut</th>
+    <th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Arrondi par excès</th>
+    <th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Arrondi (au plus proche)</th>
+  </tr>
+  <tr>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">à l'unité</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">9</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;font-weight:700;color:var(--accent-orange);">9</td>
+  </tr>
+  <tr>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">au dixième</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8,6</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8,6</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8,7</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;font-weight:700;color:var(--accent-orange);">8,6</td>
+  </tr>
+  <tr>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">au centième</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8,64</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8,64</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8,65</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;font-weight:700;color:var(--accent-orange);">8,64</td>
+  </tr>
+</table>
+<p class="hint" style="margin:0 0 14px;">À l'unité, le chiffre suivant (6) est 5 ou plus : l'arrondi au plus proche correspond à l'arrondi par excès (9). Au dixième et au centième, le chiffre suivant (4 puis 2) est inférieur à 5 : l'arrondi au plus proche correspond à l'arrondi par défaut.</p>
+
 <p style="margin:12px 0 8px;"><b>Exemple 1</b> : arrondis 27,342 au dixième.</p>
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
