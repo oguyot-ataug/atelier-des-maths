@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.36</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.37</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1446,8 +1446,10 @@ function renderMathText(raw){
     return katexSpan(`${base}^{${e}}`);
   });
   // 6) astérisque isolé restant (hors fractions/racines/exposants déjà traités ci-dessus,
-  //    et hors ** de gras déjà consommé) : c'est une multiplication, affichée avec le vrai signe ×.
-  text = text.replace(/\*/g, '×');
+  //    et hors ** de gras déjà consommé) : c'est une multiplication. On la fait passer par
+  //    KaTeX (comme le reste des maths de la correction) plutôt qu'un simple caractère × en
+  //    police normale, qui se confond facilement avec la lettre x (notamment devant 3*x).
+  text = text.replace(/\*/g, ()=>katexSpan('\\times'));
   text = text.replace(/\n/g,'<br>');
   return text;
 }
@@ -2374,6 +2376,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.37', items:[
+    "Outil de correction -- le signe de multiplication (ex. 3*x) passe maintenant par le même rendu KaTeX que le reste des maths de l'outil, au lieu d'un simple caractère × en police normale qui pouvait se confondre avec la lettre x (notamment devant une inconnue, comme dans 3*x).",
+  ]},
   { version:'2026-08-04.36', items:[
     "Fix -- Outil de correction (projection) : un astérisque * tapé pour une multiplication en dehors d'une fraction, d'une racine ou d'un exposant restait affiché tel quel au lieu d'être converti en signe ×. Corrigé (testé sur multiplication seule, dans une fraction, et après du texte en gras).",
   ]},
