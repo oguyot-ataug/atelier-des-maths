@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.44</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.45</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1415,6 +1415,11 @@ function katexSpan(expr){
 function mathVarSpan(letter){
   return `<i style="font-family:'Cambria Math','STIX Two Text',Georgia,serif;font-style:italic;font-weight:400;">${letter}</i>`;
 }
+/* Même police que mathVarSpan mais droite (non italique) : pour un chiffre juste à côté d'une
+   variable (ex. le "5" de "5x"), afin qu'il ne reste pas en gras hérité du contexte environnant. */
+function mathRomanSpan(digits){
+  return `<span style="font-family:'Cambria Math','STIX Two Text',Georgia,serif;font-style:normal;font-weight:400;">${digits}</span>`;
+}
 /* Rend en LaTeX (via KaTeX) tout élément statique du cours marqué class="tex",
    son contenu texte étant la source LaTeX à afficher (ex. \frac{3}{4}).
    Réutilisable pour n'importe quel chapitre. */
@@ -1469,7 +1474,7 @@ function renderMathText(raw){
   //    standard). Les occurrences déjà à l'intérieur d'une fraction/racine/exposant sont
   //    protégées (étape ci-dessus) et donc hors d'atteinte : KaTeX les italicise déjà tout seul.
   text = text.replace(/\b(\d+(?:[.,]\d+)?)?([xyznktA-Z])\b/g, (m,digits,letter)=>{
-    const prefix = digits ? digits.replace(',','.') : '';
+    const prefix = digits ? mathRomanSpan(digits.replace(',','.')) : '';
     return `${prefix}${mathVarSpan(letter)}`;
   });
   text = text.replace(/\n/g,'<br>');
@@ -1531,7 +1536,7 @@ function toggleProjection(){
       #projHeader .cor-header-date{font-size:clamp(.85rem, 1.4vw, 1.1rem);color:#5B6472;margin-top:.2em;text-transform:capitalize;}
       #projContent{
         font-family:'Space Grotesk',Arial,sans-serif;color:#20242E;
-        font-size:clamp(1.6rem, 4.2vw, 3.4rem);line-height:1.7;font-weight:600;
+        font-size:clamp(1.6rem, 4.2vw, 3.4rem);line-height:1.7;font-weight:400;
         max-width:100%;text-align:left;
       }
       #projContent .hint{color:#9aa0a8;font-weight:400;}
@@ -2463,6 +2468,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.45', items:[
+    "Fix -- Outil de correction : la fenêtre de projection mettait tout le texte en gras par défaut (pour la lisibilité à distance), y compris les calculs et expressions -- ce n'était pas voulu. Retiré : plus rien n'est en gras sauf choix explicite (**texte**). Le chiffre juste avant une variable (ex. le 4 de \"4x\") passe désormais aussi par la police mathématique, en poids normal, pour ne plus hériter du gras ambiant.",
+  ]},
   { version:'2026-08-04.44', items:[
     "Fix -- Outil de correction : la lettre nommant une expression (ex. \"A = ...\") apparaissait grasse et épaisse dans la fenêtre de projection, en décalage avec la police plus fine des maths juste à côté. Cause : la fenêtre de projection met tout le texte en gras (font-weight:600) pour la lisibilité à distance, et cette lettre restait en texte normal au lieu de passer par la police mathématique. Les lettres majuscules isolées (A, B, E...) passent désormais par la même police italique arrondie que les variables, avec un poids de police normal explicite.",
   ]},
