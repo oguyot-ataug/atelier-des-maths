@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.34</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.35</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -707,9 +707,13 @@
     <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">Du <input type="date" id="supFilterFrom" onchange="renderSupervisionFiltered()"></label>
     <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">au <input type="date" id="supFilterTo" onchange="renderSupervisionFiltered()"></label>
     <button class="btn secondary" onclick="resetSupervisionFilters()">Réinitialiser</button>
-    <button class="btn secondary" onclick="renderSupervision()">🔄 Actualiser</button>
+    <button class="btn secondary" onclick="renderSupervision(); renderSupervisionCeb();">🔄 Actualiser</button>
   </div>
   <div id="supervisionContent" class="hint">Choisissez une classe dans le menu compte pour voir ses résultats.</div>
+
+  <h2 style="margin:30px 0 4px;">🎲 Le compte est bon</h2>
+  <p style="color:var(--ink-soft);max-width:70ch;margin:0 0 10px;">Tentatives et taux de réussite de la classe active, par mode (illimité / chronométré).</p>
+  <div id="supervisionCebContent" class="hint">Choisissez une classe dans le menu compte pour voir ses résultats.</div>
 </section>
 
 <section class="view" id="view-mesresultats">
@@ -894,7 +898,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     }
     if(nav==='supervision'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
-      showView('view-supervision'); setActiveTopnav('supervision'); renderSupervision();
+      showView('view-supervision'); setActiveTopnav('supervision'); renderSupervision(); renderSupervisionCeb();
     }
     if(nav==='mesresultats'){
       if(currentUserRole!=='eleve'){ toggleAccountMenu(); return; }
@@ -2367,6 +2371,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.35', items:[
+    "Supervision -- ajout d'une section « 🎲 Le compte est bon » : pour chaque élève de la classe active, le taux de réussite en mode illimité et en mode chronométré, ainsi que les 5 dernières tentatives (exact ou à combien près, mode, date).",
+  ]},
   { version:'2026-08-04.34', items:[
     "Le compte est bon -- les tentatives des élèves sont désormais enregistrées (nouvelle table Supabase ceb_results, mêmes règles de visibilité que les Automatismes : l'élève, son professeur, ou un administrateur). Un encart « Tes statistiques » affiche le nombre de tentatives et le taux de réussite, séparément en mode illimité et en mode chronométré, visible sur l'écran de réglages et après chaque partie.",
   ]},
@@ -2867,7 +2874,7 @@ async function applyClassSelection(){
   }
   if(document.getElementById('cahierList')) renderCahier();
   if(document.getElementById('cahierEleveContent')) renderCahierEleve();
-  if(document.getElementById('view-supervision').classList.contains('active')) renderSupervision();
+  if(document.getElementById('view-supervision').classList.contains('active')){ renderSupervision(); renderSupervisionCeb(); }
   updateCourseAddButtonsState();
 }
 let supervisionData = [];
@@ -2947,6 +2954,51 @@ function renderSupervisionFiltered(){
     return `<div class="tool-shell" style="margin-bottom:14px;">
       <strong style="font-family:'Space Grotesk',sans-serif;">${escapeHtml(name)}</strong>
       <div style="margin-top:8px;">${rows}</div>
+    </div>`;
+  }).join('');
+}
+
+async function renderSupervisionCeb(){
+  const el = document.getElementById('supervisionCebContent');
+  if(!el) return;
+  if(!currentClassId){ el.innerHTML = 'Choisissez une classe dans le menu compte pour voir ses résultats.'; return; }
+  el.innerHTML = 'Chargement…';
+  const { data, error } = await sb.from('ceb_results')
+    .select('target,result_value,gap,success,timed,timer_duration,time_used_ms,expression,created_at,profiles(nom,email)')
+    .eq('class_id', currentClassId)
+    .order('created_at', {ascending:false});
+  if(error){ el.innerHTML = "Erreur : "+error.message; return; }
+  if(!data || !data.length){ el.innerHTML = "Aucun résultat du compte est bon pour cette classe pour le moment."; return; }
+  const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
+  const byStudent = {};
+  data.forEach(r=>{ const name=nameOf(r); byStudent[name] = byStudent[name] || []; byStudent[name].push(r); });
+  el.innerHTML = Object.keys(byStudent).sort().map(name=>{
+    const results = byStudent[name];
+    const forMode = timed => results.filter(r=>r.timed===timed);
+    const statLine = (label, rows) => {
+      if(!rows.length) return '';
+      const succ = rows.filter(r=>r.success).length;
+      const pct = Math.round(100*succ/rows.length);
+      return `<div style="display:flex;justify-content:space-between;gap:12px;padding:3px 0;">
+        <span>${label}</span>
+        <span style="font-weight:700;color:${pct>=70?'#1F6B3A':pct>=40?'#8A4210':'#9E1F5E'};">${succ}/${rows.length} réussies (${pct}%)</span>
+      </div>`;
+    };
+    const recentRows = results.slice(0,5).map(r=>{
+      const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+      return `<div style="display:flex;justify-content:space-between;gap:12px;padding:2px 0;font-size:.82rem;color:var(--ink-soft);">
+        <span>${r.success ? '🎯 exact' : `à ${r.gap} près`} (cible ${r.target})</span>
+        <span>${r.timed ? '⏱ chrono' : 'illimité'}</span>
+        <span>${date}</span>
+      </div>`;
+    }).join('');
+    return `<div class="tool-shell" style="margin-bottom:14px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;">${escapeHtml(name)}</strong>
+      <div style="margin-top:8px;">
+        ${statLine('Illimité', forMode(false))}
+        ${statLine('Chronométré', forMode(true))}
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px dashed rgba(28,43,57,.12);">${recentRows}</div>
     </div>`;
   }).join('');
 }
