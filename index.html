@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.49</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.50</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1554,9 +1554,8 @@ function renderMathText(raw){
 function renderCorrectionPreview(){
   const raw = document.getElementById('correctionInput').value;
   let html = raw.trim() ? renderMathText(raw) : '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>';
-  if(pendingFigureSVG) html += `<div class="nb-figure-row">${pendingFigureSVG}</div>`;
-  document.getElementById('correctionPreview').innerHTML = corHeaderHTML() + html;
-  updateProjectionWindow(html);
+  document.getElementById('correctionPreview').innerHTML = corHeaderHTML() + html + pendingBlocksHTML(true);
+  updateProjectionWindow(html + pendingBlocksHTML(false));
 }
 /* En-tête (titre de l'exercice, n° d'exercice, date) : rempli par le professeur dans le
    formulaire, il doit être visible des élèves au même titre que la correction elle-même. */
@@ -1640,7 +1639,44 @@ function applyColor(color){ wrapSelection('{{'+color+'|','}}'); }
 
 /* ---- mini outil de figure géométrique ---- */
 let figState = {points:[], shapes:[], mode:'point', selected:[], refShape:null, nextLabel:0};
-let pendingFigureSVG = null;
+/* Contenu joint à la correction (figures, tableaux, divisions, axes...) : un TABLEAU de blocs
+   indépendants plutôt qu'une seule chaîne accumulée, pour que chacun puisse être modifié ou
+   supprimé séparément. editFn (facultatif) est le nom d'une fonction qui rouvre l'outil
+   correspondant, pré-rempli avec les données d'origine (data), pour "modifier" un bloc : on
+   supprime alors l'ancien bloc et on rouvre le panneau, prêt à être réinséré une fois ajusté. */
+let pendingBlocks = [];
+let pendingBlockNextId = 1;
+function addPendingBlock(type, html, data, editFn){
+  pendingBlocks.push({id: pendingBlockNextId++, type, html, data, editFn});
+  renderCorrectionPreview();
+}
+function removeBlock(id){
+  pendingBlocks = pendingBlocks.filter(b=>b.id!==id);
+  renderCorrectionPreview();
+}
+function editBlock(id){
+  const b = pendingBlocks.find(x=>x.id===id);
+  if(!b || !b.editFn) return;
+  pendingBlocks = pendingBlocks.filter(x=>x.id!==id);
+  window[b.editFn](b.data);
+  renderCorrectionPreview();
+}
+/* withControls=true : version affichée au professeur, avec les boutons ✏️/✕ (jamais montrée
+   aux élèves). withControls=false : version "propre", envoyée à la fenêtre de projection et
+   enregistrée dans le cahier. */
+function pendingBlocksHTML(withControls){
+  if(!pendingBlocks.length) return '';
+  return pendingBlocks.map(b=>{
+    if(!withControls) return `<div class="nb-figure-row">${b.html}</div>`;
+    return `<div class="nb-figure-row" style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px 10px;margin:8px 0;">
+      <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;">
+        ${b.editFn ? `<button type="button" onclick="editBlock(${b.id})" title="Modifier ce bloc" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✏️</button>` : ''}
+        <button type="button" onclick="removeBlock(${b.id})" title="Supprimer ce bloc" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✕</button>
+      </div>
+      ${b.html}
+    </div>`;
+  }).join('');
+}
 let figDragPoint = null;
 const SCALE_PX_PER_CM = 20;
 
@@ -1694,10 +1730,20 @@ function insertTableau(){
     html += '</tr>';
   });
   html += '</table>';
-  pendingFigureSVG = (pendingFigureSVG||'') + html;
-  document.getElementById('figureStatus').innerHTML = '✓ Contenu joint — <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
+  addPendingBlock('tableau', html, {cols, rows, grid}, 'reopenTableau');
   closeTableauTool();
-  renderCorrectionPreview();
+}
+function reopenTableau(data){
+  openTableauTool();
+  document.getElementById('tabCols').value = data.cols;
+  document.getElementById('tabRows').value = data.rows;
+  buildTableauGrid();
+  setTimeout(()=>{
+    document.querySelectorAll('#tableauGrid input').forEach(inp=>{
+      const v = data.grid[parseInt(inp.dataset.r)]?.[parseInt(inp.dataset.c)];
+      if(v!==undefined) inp.value = v;
+    });
+  }, 0);
 }
 
 /* ---- mini outil : insérer une division posée (calculée automatiquement) ---- */
@@ -1820,18 +1866,24 @@ function insertDivisionPosee(){
   if(!res){ document.getElementById('divisionPreview').innerHTML = divisionPoseeHTML(null); return; }
   const stepByStep = document.getElementById('divStepByStep').checked;
   const html = stepByStep ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res);
-  pendingFigureSVG = (pendingFigureSVG||'') + html;
-  document.getElementById('figureStatus').innerHTML = '✓ Contenu joint : <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
+  addPendingBlock('divisionPosee', html, {a,b,stepByStep}, 'reopenDivisionPosee');
   closeDivisionTool();
-  renderCorrectionPreview();
+}
+function reopenDivisionPosee(data){
+  openDivisionTool();
+  document.getElementById('divDividende').value = data.a;
+  document.getElementById('divDiviseur').value = data.b;
+  document.getElementById('divStepByStep').checked = data.stepByStep;
+  previewDivisionPosee();
 }
 /* ============================================================
    Nouveaux ajouts pour l'outil de correction : division décimale,
    axe gradué, repère, disque fractionné, rectangle fractionné.
    Même convention que les ajouts existants : un panneau, un aperçu,
-   un bouton "Insérer" qui complète pendingFigureSVG -- donc ces
-   ajouts apparaissent automatiquement aussi dans la fenêtre de
-   projection (renderCorrectionPreview transmet pendingFigureSVG à
+   un bouton "Insérer" qui ajoute un bloc indépendant à pendingBlocks
+   -- donc ces ajouts apparaissent automatiquement aussi dans la
+   fenêtre de projection, et peuvent être modifiés/supprimés un par
+   un (renderCorrectionPreview transmet pendingBlocksHTML(false) à
    updateProjectionWindow).
    ============================================================ */
 
@@ -1861,7 +1913,7 @@ function computeDivisionDecimale(dividend, divisor, maxDec){
     // commence à afficher une étape qu'une fois le premier chiffre du quotient obtenu, ou
     // arrivé au dernier chiffre de la partie entière.
     if(started || qDigit>0 || idx>=digits.length-1){
-      steps.push({before: current, qDigit, sub, after});
+      steps.push({before: current, qDigit, sub, after, col: idx});
       started = true;
       quotient += String(qDigit);
     }
@@ -1881,13 +1933,21 @@ function computeDivisionDecimale(dividend, divisor, maxDec){
 }
 function divisionDecimaleHTML(res, maxDec){
   if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le dividende et le diviseur doivent être des entiers positifs, le diviseur non nul.</p>';
-  const detailLines = res.steps.map(s=>`${s.before} ÷ ${res.divisor} : ${res.divisor} × ${s.qDigit} = ${s.sub} ; reste ${s.after}`);
+  const dividendStr = String(res.dividend);
+  const totalCols = Math.max(dividendStr.length, ...res.steps.map(s=>s.col+1));
+  const rows = [{cells: dpAlignedCells(dividendStr, dividendStr.length-1, totalCols), bold:true}];
+  res.steps.forEach((s,i)=>{
+    rows.push({cells: dpAlignedCells(String(s.sub), s.col, totalCols), sign:true, underline:true, endCol:s.col});
+    const next = res.steps[i+1];
+    if(next) rows.push({cells: dpAlignedCells(String(next.before), next.col, totalCols)});
+    else rows.push({cells: dpAlignedCells(String(s.after), s.col, totalCols)});
+  });
+  const table = dpRenderDivisionTable(rows, res.quotient + (res.repeating?'…':''), res.divisor);
   const precisionMots = {1:'dixième',2:'centième',3:'millième'};
   const tag = res.exact ? 'valeur exacte' : `valeur approchée${precisionMots[maxDec] && !res.repeating ? ' au '+precisionMots[maxDec] : ''}`;
   const repeatNote = res.repeating ? `<p class="hint" style="margin:6px 0 0;color:var(--accent-orange);">Le reste ${res.steps[res.steps.length-1].after} revient à l'identique : le motif se répète indéfiniment, la division ne se termine jamais.</p>` : '';
-  return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;font-family:'JetBrains Mono',monospace;">
-    <p style="margin:0 0 8px;font-size:1.15rem;font-weight:700;">${res.dividend} ÷ ${res.divisor} ${res.exact?'=':'≈'} ${res.quotient}${res.repeating?'…':''}</p>
-    ${detailLines.map(l=>`<p class="hint" style="margin:2px 0;">${l}</p>`).join('')}
+  return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
+    ${table}
     ${repeatNote}
     <p class="hint" style="margin:6px 0 0;font-style:italic;">${tag}${(!res.exact && !res.repeating) ? ' (arrêtée à '+maxDec+' décimales)' : ''}</p>
   </div>`;
@@ -1911,9 +1971,15 @@ function insertDivisionDecimale(){
   const maxDec = parseInt(document.getElementById('divDecMax').value)||4;
   const res = computeDivisionDecimale(a,b,maxDec);
   if(!res) return;
-  pendingFigureSVG = (pendingFigureSVG||'') + divisionDecimaleHTML(res, maxDec);
-  document.getElementById('figureStatus').innerHTML = '✓ Contenu joint : <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
+  addPendingBlock('divisionDec', divisionDecimaleHTML(res, maxDec), {a,b,maxDec}, 'reopenDivisionDec');
   closeDivisionDecTool();
+}
+function reopenDivisionDec(data){
+  openDivisionDecTool();
+  document.getElementById('divDecDividende').value = data.a;
+  document.getElementById('divDecDiviseur').value = data.b;
+  document.getElementById('divDecMax').value = data.maxDec;
+  previewDivisionDecimale();
   renderCorrectionPreview();
 }
 
@@ -1983,11 +2049,18 @@ function closeAxeTool(){ document.getElementById('axePanel').style.display='none
 function insertAxe(){
   const min=parseFloat(document.getElementById('axeMin').value), max=parseFloat(document.getElementById('axeMax').value), step=parseFloat(document.getElementById('axeStep').value)||1;
   if(!(max>min&&step>0)) return;
-  const points = parseNamedPoints1D(document.getElementById('axePoints').value);
-  pendingFigureSVG = (pendingFigureSVG||'') + buildAxeSvg(min,max,step,points);
-  document.getElementById('figureStatus').innerHTML = '✓ Contenu joint : <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
+  const pointsRaw = document.getElementById('axePoints').value;
+  const points = parseNamedPoints1D(pointsRaw);
+  addPendingBlock('axe', buildAxeSvg(min,max,step,points), {min,max,step,pointsRaw}, 'reopenAxe');
   closeAxeTool();
-  renderCorrectionPreview();
+}
+function reopenAxe(data){
+  openAxeTool();
+  document.getElementById('axeMin').value = data.min;
+  document.getElementById('axeMax').value = data.max;
+  document.getElementById('axeStep').value = data.step;
+  document.getElementById('axePoints').value = data.pointsRaw;
+  previewAxe();
 }
 
 /* ---- Repère (2D) ---- */
@@ -2037,11 +2110,19 @@ function insertRepere(){
   const xMin=parseFloat(document.getElementById('repXMin').value), xMax=parseFloat(document.getElementById('repXMax').value);
   const yMin=parseFloat(document.getElementById('repYMin').value), yMax=parseFloat(document.getElementById('repYMax').value);
   if(!(xMax>xMin&&yMax>yMin)) return;
-  const points = parseNamedPoints2D(document.getElementById('repPoints').value);
-  pendingFigureSVG = (pendingFigureSVG||'') + buildRepereSvg(xMin,xMax,yMin,yMax,points);
-  document.getElementById('figureStatus').innerHTML = '✓ Contenu joint : <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
+  const pointsRaw = document.getElementById('repPoints').value;
+  const points = parseNamedPoints2D(pointsRaw);
+  addPendingBlock('repere', buildRepereSvg(xMin,xMax,yMin,yMax,points), {xMin,xMax,yMin,yMax,pointsRaw}, 'reopenRepere');
   closeRepereTool();
-  renderCorrectionPreview();
+}
+function reopenRepere(data){
+  openRepereTool();
+  document.getElementById('repXMin').value = data.xMin;
+  document.getElementById('repXMax').value = data.xMax;
+  document.getElementById('repYMin').value = data.yMin;
+  document.getElementById('repYMax').value = data.yMax;
+  document.getElementById('repPoints').value = data.pointsRaw;
+  previewRepere();
 }
 
 /* ---- Disque fractionné ---- */
@@ -2067,10 +2148,14 @@ function closeDisqueTool(){ document.getElementById('disquePanel').style.display
 function insertDisque(){
   const num=parseInt(document.getElementById('disqueNum').value), den=parseInt(document.getElementById('disqueDen').value);
   if(!(den>0&&num>=0)) return;
-  pendingFigureSVG = (pendingFigureSVG||'') + buildDisqueSvg(Math.min(num,den),den);
-  document.getElementById('figureStatus').innerHTML = '✓ Contenu joint : <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
+  addPendingBlock('disque', buildDisqueSvg(Math.min(num,den),den), {num,den}, 'reopenDisque');
   closeDisqueTool();
-  renderCorrectionPreview();
+}
+function reopenDisque(data){
+  openDisqueTool();
+  document.getElementById('disqueNum').value = data.num;
+  document.getElementById('disqueDen').value = data.den;
+  previewDisque();
 }
 
 /* ---- Rectangle fractionné ---- */
@@ -2101,10 +2186,15 @@ function insertRectFrac(){
   const num=parseInt(document.getElementById('rectFracNum').value), den=parseInt(document.getElementById('rectFracDen').value);
   const vert = document.getElementById('rectFracVert').checked;
   if(!(den>0&&num>=0)) return;
-  pendingFigureSVG = (pendingFigureSVG||'') + buildRectFracSvg(Math.min(num,den),den,vert);
-  document.getElementById('figureStatus').innerHTML = '✓ Contenu joint : <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">tout retirer</a>';
+  addPendingBlock('rectFrac', buildRectFracSvg(Math.min(num,den),den,vert), {num,den,vert}, 'reopenRectFrac');
   closeRectFracTool();
-  renderCorrectionPreview();
+}
+function reopenRectFrac(data){
+  openRectFracTool();
+  document.getElementById('rectFracNum').value = data.num;
+  document.getElementById('rectFracDen').value = data.den;
+  document.getElementById('rectFracVert').checked = data.vert;
+  previewRectFrac();
 }
 
 function resetFigureState(){
@@ -2655,12 +2745,18 @@ function applyAIFigure(json){
 }
 function validateFigure(){
   const svg=document.getElementById('figureSvg');
-  pendingFigureSVG = (pendingFigureSVG||'') + `<svg viewBox="0 0 500 320" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;border:1px solid rgba(28,43,57,.12);border-radius:8px;">${svg.innerHTML}</svg>`;
-  document.getElementById('figureStatus').innerHTML = '✓ Figure prête — <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">retirer</a>';
+  const html = `<svg viewBox="0 0 500 320" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;border:1px solid rgba(28,43,57,.12);border-radius:8px;">${svg.innerHTML}</svg>`;
+  const snapshot = JSON.parse(JSON.stringify({points:figState.points, shapes:figState.shapes}));
+  addPendingBlock('figure', html, snapshot, 'reopenFigure');
   closeFigureTool();
-  renderCorrectionPreview();
 }
-function removePendingFigure(){ pendingFigureSVG=null; document.getElementById('figureStatus').textContent=''; renderCorrectionPreview(); }
+function reopenFigure(data){
+  openFigureTool();
+  figState.points = JSON.parse(JSON.stringify(data.points));
+  figState.shapes = JSON.parse(JSON.stringify(data.shapes));
+  figState.nextLabel = figState.points.length;
+  renderFigureSvg();
+}
 (function initFigureDrag(){
   const attach = ()=>{
     const svg = document.getElementById('figureSvg');
@@ -2818,6 +2914,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.50', items:[
+    "Outil de correction -- deux améliorations majeures : (1) la division décimale est maintenant posée en colonnes (dividende/diviseur/quotient), comme la division entière, plutôt qu'une liste de lignes de texte ; (2) chaque bloc ajouté (figure, tableau, division, axe, repère, disque, rectangle) est désormais indépendant, avec ses propres boutons ✏️ modifier et ✕ supprimer -- visibles uniquement côté professeur, jamais dans la fenêtre de projection.",
+  ]},
   { version:'2026-08-04.49', items:[
     "Outil de correction -- fix division décimale : le calcul répétait la même ligne à l'identique pour un quotient non terminé (ex. 10÷3), au lieu de détecter le cycle infini ; corrigé, avec un message clair (\"le motif se répète indéfiniment\"). La première ligne inutile (chiffre seul insuffisant) est aussi retirée. Axe gradué et repère : nouvelle syntaxe des points avec parenthèses et virgule décimale -- A(2,5) sur l'axe (fractions possibles, ex. A(3/4), qui subdivise automatiquement la graduation), A(3,5;-2) dans le repère (x et y séparés par point-virgule).",
   ]},
@@ -3929,7 +4028,7 @@ async function addToCahier(){
     titre: document.getElementById('corTitre').value.trim(),
     date: document.getElementById('corDate').value || todayISO(),
     raw: raw,
-    figure: pendingFigureSVG,
+    figure: pendingBlocksHTML(false),
   };
   let oldServerId = null;
   if(editingIndex!==null){
@@ -3961,8 +4060,7 @@ function editCahierEntry(i){
   document.getElementById('corTitre').value = e.titre||'';
   document.getElementById('corDate').value = e.date||todayISO();
   document.getElementById('correctionInput').value = e.raw;
-  pendingFigureSVG = e.figure || null;
-  document.getElementById('figureStatus').innerHTML = pendingFigureSVG ? '✓ Contenu joint : <a href="#" onclick="removePendingFigure();return false;" style="color:var(--accent-orange);">retirer</a>' : '';
+  pendingBlocks = e.figure ? [{id: pendingBlockNextId++, type:'legacy', html: e.figure, data:null, editFn:null}] : [];
   renderCorrectionPreview();
   editingIndex = i;
   document.getElementById('btnAddCahier').textContent = '💾 Enregistrer la modification';
@@ -3980,7 +4078,7 @@ function clearCorrectionInput(){
   document.getElementById('correctionInput').value='';
   document.getElementById('corExoNum').value='';
   document.getElementById('corTitre').value='';
-  removePendingFigure();
+  pendingBlocks = [];
   renderCorrectionPreview();
 }
 async function removeCahierEntry(i){
