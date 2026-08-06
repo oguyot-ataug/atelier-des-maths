@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.48</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.49</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -591,7 +591,7 @@
         <label class="hint" style="margin:0;">Min : <input type="number" id="axeMin" value="-5" style="width:70px;"></label>
         <label class="hint" style="margin:0;">Max : <input type="number" id="axeMax" value="5" style="width:70px;"></label>
         <label class="hint" style="margin:0;">Pas : <input type="number" id="axeStep" value="1" style="width:70px;"></label>
-        <input type="text" id="axePoints" placeholder="Points (ex. A=2,3 ; B=-1,5)" style="flex:1;min-width:200px;">
+        <input type="text" id="axePoints" placeholder="Points (ex. A(2,5) B(3/4))" style="flex:1;min-width:200px;">
         <button type="button" class="btn secondary" onclick="previewAxe()">Aperçu</button>
       </div>
       <div id="axePreview"></div>
@@ -605,7 +605,7 @@
       <div class="tool-row" style="margin-bottom:10px;">
         <label class="hint" style="margin:0;">X min/max : <input type="number" id="repXMin" value="-5" style="width:60px;"> / <input type="number" id="repXMax" value="5" style="width:60px;"></label>
         <label class="hint" style="margin:0;">Y min/max : <input type="number" id="repYMin" value="-5" style="width:60px;"> / <input type="number" id="repYMax" value="5" style="width:60px;"></label>
-        <input type="text" id="repPoints" placeholder="Points (ex. A(2,3) ; B(-1,4))" style="flex:1;min-width:200px;">
+        <input type="text" id="repPoints" placeholder="Points (ex. A(3,5;-2) B(-1;4))" style="flex:1;min-width:200px;">
         <button type="button" class="btn secondary" onclick="previewRepere()">Aperçu</button>
       </div>
       <div id="reperePreview"></div>
@@ -1838,11 +1838,12 @@ function insertDivisionPosee(){
 /* ---- Division décimale (poursuite après la virgule) ---- */
 function computeDivisionDecimale(dividend, divisor, maxDec){
   if(!Number.isInteger(dividend) || !Number.isInteger(divisor) || divisor===0 || dividend<0 || divisor<0) return null;
-  let current = 0, quotient = '', commaCol = null;
+  let current = 0, quotient = '', commaCol = null, started = false, repeating = false;
   const steps = [];
   let idx = 0;
   const digits = String(dividend).split('').map(Number);
   let decCount = 0, exact = false;
+  const seenRemainders = new Set();
   while(true){
     let bringDown;
     if(idx < digits.length){ bringDown = digits[idx]; }
@@ -1855,25 +1856,40 @@ function computeDivisionDecimale(dividend, divisor, maxDec){
     current = current*10 + bringDown;
     const qDigit = Math.floor(current/divisor);
     const sub = qDigit*divisor;
-    steps.push({before: current, qDigit, sub, after: current-sub});
-    if(qDigit>0 || quotient.replace(',','').length>0 || idx>=digits.length-1) quotient += String(qDigit);
-    current = current - sub;
+    const after = current - sub;
+    // on ignore les tout premiers chiffres insuffisants seuls (ex. le "1" de "10÷3") : on ne
+    // commence à afficher une étape qu'une fois le premier chiffre du quotient obtenu, ou
+    // arrivé au dernier chiffre de la partie entière.
+    if(started || qDigit>0 || idx>=digits.length-1){
+      steps.push({before: current, qDigit, sub, after});
+      started = true;
+      quotient += String(qDigit);
+    }
+    current = after;
     idx++;
     if(current===0 && idx>=digits.length){ exact=true; break; }
-    if(idx - digits.length > 30) break; // garde-fou
+    if(commaCol!==null && idx>digits.length){
+      // dans la partie décimale : si ce reste est déjà apparu, le motif se répète à
+      // l'identique indéfiniment -- inutile de continuer à dérouler les mêmes lignes.
+      if(seenRemainders.has(current)){ repeating = true; break; }
+      seenRemainders.add(current);
+    }
+    if(idx - digits.length > 60) break; // garde-fou
   }
   quotient = quotient.replace(/^0+(\d)/, '$1') || '0';
-  return {dividend, divisor, quotient, exact, steps, decCount};
+  return {dividend, divisor, quotient, exact, steps, decCount, repeating};
 }
 function divisionDecimaleHTML(res, maxDec){
   if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le dividende et le diviseur doivent être des entiers positifs, le diviseur non nul.</p>';
   const detailLines = res.steps.map(s=>`${s.before} ÷ ${res.divisor} : ${res.divisor} × ${s.qDigit} = ${s.sub} ; reste ${s.after}`);
   const precisionMots = {1:'dixième',2:'centième',3:'millième'};
-  const tag = res.exact ? 'valeur exacte' : `valeur approchée${precisionMots[maxDec] ? ' au '+precisionMots[maxDec] : ''}`;
+  const tag = res.exact ? 'valeur exacte' : `valeur approchée${precisionMots[maxDec] && !res.repeating ? ' au '+precisionMots[maxDec] : ''}`;
+  const repeatNote = res.repeating ? `<p class="hint" style="margin:6px 0 0;color:var(--accent-orange);">Le reste ${res.steps[res.steps.length-1].after} revient à l'identique : le motif se répète indéfiniment, la division ne se termine jamais.</p>` : '';
   return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;font-family:'JetBrains Mono',monospace;">
-    <p style="margin:0 0 8px;font-size:1.15rem;font-weight:700;">${res.dividend} ÷ ${res.divisor} ${res.exact?'=':'≈'} ${res.quotient}</p>
+    <p style="margin:0 0 8px;font-size:1.15rem;font-weight:700;">${res.dividend} ÷ ${res.divisor} ${res.exact?'=':'≈'} ${res.quotient}${res.repeating?'…':''}</p>
     ${detailLines.map(l=>`<p class="hint" style="margin:2px 0;">${l}</p>`).join('')}
-    <p class="hint" style="margin:6px 0 0;font-style:italic;">${tag}${res.exact?'' : ' (le calcul ne se termine pas)'}</p>
+    ${repeatNote}
+    <p class="hint" style="margin:6px 0 0;font-style:italic;">${tag}${(!res.exact && !res.repeating) ? ' (arrêtée à '+maxDec+' décimales)' : ''}</p>
   </div>`;
 }
 function previewDivisionDecimale(){
@@ -1902,13 +1918,24 @@ function insertDivisionDecimale(){
 }
 
 /* ---- Axe gradué ---- */
+/* Valeur d'une coordonnée : nombre décimal (virgule) ou fraction (a/b). On garde le
+   dénominateur de la fraction pour pouvoir subdiviser l'axe en conséquence. */
+function parseCoordValue(str){
+  str = (str||'').trim();
+  const fm = str.match(/^(-?\d+)\s*\/\s*(\d+)$/);
+  if(fm){ const den=parseInt(fm[2],10); return {value: parseInt(fm[1],10)/den, den}; }
+  return {value: parseFloat(str.replace(',','.')), den: null};
+}
+/* Repère les points au format "A(3,5)" ou "A(3/4)" n'importe où dans le texte (peu importe
+   ce qui sépare plusieurs points : espace, virgule, point-virgule...). */
 function parseNamedPoints1D(raw){
   if(!raw||!raw.trim()) return [];
-  return raw.split(';').map(s=>s.trim()).filter(Boolean).map(s=>{
-    const m = s.match(/^([A-Za-z]+)\s*=\s*(-?[\d.,]+)/);
-    if(!m) return null;
-    return {label:m[1], value:parseFloat(m[2].replace(',','.'))};
-  }).filter(Boolean);
+  const out = [];
+  for(const m of raw.matchAll(/([A-Za-z]+)\s*\(\s*([^()]+?)\s*\)/g)){
+    const {value, den} = parseCoordValue(m[2]);
+    if(!isNaN(value)) out.push({label:m[1], value, den});
+  }
+  return out;
 }
 function buildAxeSvg(min,max,step,points){
   const W=560,H=110,padX=30,y=55;
@@ -1920,6 +1947,18 @@ function buildAxeSvg(min,max,step,points){
     const isZero = Math.abs(v)<1e-9;
     ticks += `<line x1="${x}" y1="${y-7}" x2="${x}" y2="${y+7}" stroke="#1C1B2E" stroke-width="${isZero?2:1.3}"/>
       <text x="${x}" y="${y+24}" font-size="13" text-anchor="middle" font-family="JetBrains Mono, monospace">${Number(v.toFixed(6))}</text>`;
+  }
+  // Subdivision de chaque unité selon la plus grande fraction demandée par un point
+  // (ex. un point en x/4 fait apparaître un petit trait à chaque quart d'unité).
+  const dens = (points||[]).map(p=>p.den).filter(Boolean);
+  if(dens.length){
+    const subDiv = Math.max(...dens);
+    let minorTicks = '';
+    for(let v=Math.ceil(min*subDiv)/subDiv; v<=max+1e-9; v+=1/subDiv){
+      if(Math.abs(v % step) < 1e-6 || Math.abs((v%step)-step) < 1e-6) continue; // déjà une grande graduation
+      minorTicks += `<line x1="${xOf(v)}" y1="${y-4}" x2="${xOf(v)}" y2="${y+4}" stroke="#1C1B2E" stroke-width="1"/>`;
+    }
+    ticks += minorTicks;
   }
   let pts='';
   (points||[]).forEach(p=>{
@@ -1952,13 +1991,19 @@ function insertAxe(){
 }
 
 /* ---- Repère (2D) ---- */
+/* Repère les points au format "A(3,5;-2)" : x et y séparés par ";", chacun pouvant utiliser
+   la virgule décimale (ex. 3,5) ou une fraction (ex. 3/4). */
 function parseNamedPoints2D(raw){
   if(!raw||!raw.trim()) return [];
-  return raw.split(';').map(s=>s.trim()).filter(Boolean).map(s=>{
-    const m = s.match(/^([A-Za-z]+)\s*\(\s*(-?[\d.,]+)\s*,\s*(-?[\d.,]+)\s*\)/);
-    if(!m) return null;
-    return {label:m[1], x:parseFloat(m[2].replace(',','.')), y:parseFloat(m[3].replace(',','.'))};
-  }).filter(Boolean);
+  const out = [];
+  for(const m of raw.matchAll(/([A-Za-z]+)\s*\(\s*([^()]+?)\s*\)/g)){
+    const parts = m[2].split(';');
+    if(parts.length<2) continue;
+    const cx = parseCoordValue(parts[0]), cy = parseCoordValue(parts[1]);
+    if(isNaN(cx.value)||isNaN(cy.value)) continue;
+    out.push({label:m[1], x:cx.value, y:cy.value});
+  }
+  return out;
 }
 function buildRepereSvg(xMin,xMax,yMin,yMax,points){
   const W=420,H=420,pad=26;
@@ -2773,6 +2818,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.49', items:[
+    "Outil de correction -- fix division décimale : le calcul répétait la même ligne à l'identique pour un quotient non terminé (ex. 10÷3), au lieu de détecter le cycle infini ; corrigé, avec un message clair (\"le motif se répète indéfiniment\"). La première ligne inutile (chiffre seul insuffisant) est aussi retirée. Axe gradué et repère : nouvelle syntaxe des points avec parenthèses et virgule décimale -- A(2,5) sur l'axe (fractions possibles, ex. A(3/4), qui subdivise automatiquement la graduation), A(3,5;-2) dans le repère (x et y séparés par point-virgule).",
+  ]},
   { version:'2026-08-04.48', items:[
     "Outil de correction -- 5 nouveaux ajouts, avec les mêmes garanties que les existants (générés automatiquement, transmis à la fenêtre de projection) : division décimale (poursuite après la virgule, exacte ou approchée), axe gradué (avec points nommés), repère orthonormé (avec points nommés), disque fractionné et rectangle fractionné (horizontal ou vertical). Fix au passage : la fenêtre de projection, à l'ouverture, ignorait le contenu joint (figures/tableaux/divisions) s'il n'y avait pas de texte tapé -- corrigé.",
   ]},
