@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-59">
+<link rel="stylesheet" href="styles.css?v=20260804-60">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.59</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.60</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -786,6 +786,7 @@
           <option value="5e">5e</option>
         </select>
       </label>
+      <label class="hint" style="margin:0;">Classe(s) : <input type="text" id="evalClasses" placeholder="ex. 6e A, 6e B" style="width:140px;margin-left:4px;"></label>
       <label class="hint" style="margin:0;">Date prévue : <input type="date" id="evalDate" style="margin-left:4px;"></label>
       <label class="hint" style="margin:0;">Durée (min) : <input type="number" id="evalDuree" value="55" min="5" style="width:70px;margin-left:4px;"></label>
       <label class="hint" style="margin:0;">Nombre d'exercices : <input type="number" id="evalNbExo" value="4" min="1" max="10" style="width:55px;margin-left:4px;"></label>
@@ -1653,6 +1654,7 @@ function renderCorrectionPreview(){
   const previewHtml = rendered || '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>';
   document.getElementById('correctionPreview').innerHTML = corHeaderHTML() + previewHtml + pendingBlocksHTML(true,'global');
   updateProjectionWindow(rendered + pendingBlocksHTML(false,'global'));
+  attachResizeObservers();
 }
 /* En-tête (titre de l'exercice, n° d'exercice, date) : rempli par le professeur dans le
    formulaire, il doit être visible des élèves au même titre que la correction elle-même. */
@@ -1775,14 +1777,15 @@ function editBlock(id, ctx){
    aux élèves). withControls=false : version "propre", envoyée à la fenêtre de projection,
    enregistrée dans le cahier, ou imprimée dans la feuille d'évaluation. */
 function singleBlockHTML(b, ctx, withControls, draggable){
-  if(!withControls) return `<div class="nb-figure-row">${b.html}</div>`;
-  const dragAttrs = draggable ? `draggable="true" ondragstart="evalDragStart(event,${b.id})" style="cursor:grab;"` : '';
-  return `<div class="nb-figure-row" ${dragAttrs} style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px 10px;margin:8px 0;">
-    <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;">
+  const sizeStyle = (b.width?`width:${b.width}px;`:'') + (b.height?`height:${b.height}px;`:'');
+  if(!withControls) return `<div class="nb-figure-row"${sizeStyle?` style="${sizeStyle}overflow:hidden;"`:''}>${b.html}</div>`;
+  const dragAttrs = draggable ? `draggable="true" ondragstart="evalDragStart(event,${b.id})"` : '';
+  return `<div class="nb-figure-row" ${dragAttrs} style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px 10px;margin:8px 0;${draggable?'cursor:grab;':''}">
+    <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;z-index:2;">
       ${b.editFn ? `<button type="button" onclick="editBlock(${b.id},'${ctx}')" title="Modifier ce bloc" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✏️</button>` : ''}
       <button type="button" onclick="removeBlock(${b.id},'${ctx}')" title="Supprimer ce bloc" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✕</button>
     </div>
-    ${b.html}
+    <div class="resizable-block" data-block-id="${b.id}" data-ctx="${ctx}" style="resize:both;overflow:hidden;display:block;max-width:100%;min-width:80px;min-height:50px;${sizeStyle||'width:260px;'}">${b.html}</div>
   </div>`;
 }
 function pendingBlocksHTML(withControls, ctx){
@@ -1817,6 +1820,24 @@ function blocksColumnsHTML(ctx, nCols, withControls){
 }
 /* Barre des 7 outils, réutilisable pour l'outil de correction ou pour un exercice d'évaluation
    -- chaque bouton fixe le contexte visé juste avant d'ouvrir le panneau de l'outil. */
+/* Mémorise la taille choisie par le professeur quand il redimensionne un bloc (poignée native
+   du navigateur, coin bas-droit), pour que cette taille soit conservée dans l'export/la
+   projection -- sinon un redimensionnement ne survivrait pas au prochain rendu. */
+function attachResizeObservers(){
+  if(!window.ResizeObserver) return;
+  document.querySelectorAll('.resizable-block').forEach(el=>{
+    if(el.dataset.observed) return;
+    el.dataset.observed = '1';
+    let first = true;
+    new ResizeObserver(entries=>{
+      if(first){ first=false; return; } // ignore la mesure initiale (pas un vrai redimensionnement)
+      const id = parseInt(el.dataset.blockId), ctx = el.dataset.ctx;
+      const arr = blocksStores[ctx]||[];
+      const b = arr.find(x=>x.id===id);
+      if(b){ b.width = Math.round(entries[0].contentRect.width); b.height = Math.round(entries[0].contentRect.height); }
+    }).observe(el);
+  });
+}
 function toolButtonsHTML(ctx){
   const set = `setToolContext('${ctx}');`;
   return `
@@ -2326,7 +2347,7 @@ function singleDisqueSvg(filled, den){
     const large = (2*Math.PI/den)>Math.PI ? 1:0;
     parts += `<path d="M${cx},${cy} L${x0},${y0} A${r},${r} 0 ${large} 1 ${x1},${y1} Z" fill="${i<filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
   }
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:150px;display:block;">${parts}</svg>`;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">${parts}</svg>`;
 }
 /* Si le numérateur dépasse le dénominateur (fraction impropre, ex. 5/4), il faut plusieurs
    disques : autant de disques complets que nécessaire, le dernier ne montrant que le reste. */
@@ -2376,7 +2397,7 @@ function singleRectFracSvg(filled, den, vertical){
       parts += `<rect x="0" y="${i*h}" width="${W}" height="${h}" fill="${i<filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
     }
   }
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:180px;display:block;">${parts}</svg>`;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">${parts}</svg>`;
 }
 /* Comme pour les disques : un numérateur supérieur au dénominateur (fraction impropre) a
    besoin de plusieurs rectangles, le dernier ne montrant que le reste. */
@@ -3133,6 +3154,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.60', items:[
+    "Créer une évaluation -- nombre de colonnes libre (jusqu'à 8, au lieu de 3 fixes). Les blocs insérés (figures, disques...) sont désormais redimensionnables à la souris (poignée en bas à droite), taille conservée dans l'aperçu et l'export. Nouvel en-tête de la feuille d'évaluation : classe(s) en haut à gauche, date en haut à droite, titre « Évaluation de Mathématiques » centré, puis NOM/Prénom, puis un cadre libre de 3 cm.",
+  ]},
   { version:'2026-08-04.59', items:[
     "Créer une évaluation -- 4 améliorations : (1) chapitres et question de cours n'apparaissent que si on active « Laisser l'IA proposer des exercices » ; (2) chaque exercice a maintenant un titre et un barème, avec un total calculé automatiquement ; (3) possibilité d'organiser un exercice en 2 ou 3 colonnes, avec glisser-déposer pour placer une figure/un axe/un disque à côté du texte ; (4) bouton « Aperçu de l'évaluation » ouvrant la feuille complète en fenêtre modale.",
   ]},
@@ -4435,14 +4459,13 @@ function renderEvalExercicesList(){
       <div class="eval-blocks-preview" style="margin-top:8px;">${blocksColumnsHTML(ctx, nCols, true)}</div>
       <div class="tool-row" style="margin-top:10px;align-items:center;">
         <span class="hint" style="margin:0;">Mise en page :</span>
-        <button type="button" class="btn secondary" onclick="setEvalCols(${ex.id},1)" style="${nCols===1?'font-weight:700;':''}">▭ 1 colonne</button>
-        <button type="button" class="btn secondary" onclick="setEvalCols(${ex.id},2)" style="${nCols===2?'font-weight:700;':''}">▥ 2 colonnes</button>
-        <button type="button" class="btn secondary" onclick="setEvalCols(${ex.id},3)" style="${nCols===3?'font-weight:700;':''}">▦ 3 colonnes</button>
+        <label class="hint" style="margin:0;">Nombre de colonnes : <input type="number" min="1" max="8" value="${nCols}" onchange="setEvalCols(${ex.id}, parseInt(this.value)||1)" style="width:55px;margin-left:4px;"></label>
         ${nCols>1 ? '<span class="hint" style="margin:0;">Fais glisser un bloc pour changer sa colonne.</span>' : ''}
       </div>
       <div class="tool-row" style="margin-top:6px;">${toolButtonsHTML(ctx)}</div>
     </div>
   `;}).join('');
+  attachResizeObservers();
 }
 function setEvalCols(id, n){
   const ex = evaluationExercises.find(e=>e.id===id);
@@ -4478,15 +4501,22 @@ function clearEvaluation(){
 }
 function buildEvaluationContentHTML(){
   const niveau = document.getElementById('evalNiveau').value;
+  const classes = document.getElementById('evalClasses').value.trim();
   const date = document.getElementById('evalDate').value;
   const duree = document.getElementById('evalDuree').value;
   const dateFmt = date ? new Date(date+'T00:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) : '';
   const total = evalBaremeTotal();
   return `
-    <div style="display:flex;justify-content:space-between;border-bottom:2px solid #1C1B2E;padding-bottom:10px;margin-bottom:24px;">
-      <div><strong style="font-size:1.15rem;">Évaluation — ${niveau}</strong>${dateFmt ? '<br>'+dateFmt : ''}</div>
-      <div style="text-align:right;">Durée : ${duree} min${total>0 ? ' · Barème : '+total+' pt(s)' : ''}<br>Nom : ______________________</div>
+    <div style="display:flex;justify-content:space-between;font-size:.95rem;">
+      <div>${escapeHtml(classes || niveau)}</div>
+      <div>${dateFmt}</div>
     </div>
+    <div style="height:2.4em;"></div>
+    <p style="text-align:center;font-weight:700;font-size:1.3rem;margin:0;">Évaluation de Mathématiques</p>
+    <p style="text-align:center;font-size:.85rem;color:#5B6472;margin:4px 0 0;">${duree ? 'Durée : '+duree+' min' : ''}${total>0 ? ' · Barème : '+total+' pt(s)' : ''}</p>
+    <div style="height:2.4em;"></div>
+    <p style="margin:0;">NOM : .................................................... Prénom : ....................................................</p>
+    <div style="height:3cm;border-top:1px solid #1C1B2E;border-bottom:1px solid #1C1B2E;margin:16px 0 24px;"></div>
     ${evaluationExercises.map((ex,i)=>`
       <div style="margin-bottom:26px;">
         <p style="font-weight:700;margin:0 0 8px;display:flex;justify-content:space-between;">
@@ -4932,27 +4962,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-59"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-59"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-59"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-59"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-59"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-59"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-59"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-59"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-59"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-59"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-59"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-59"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-59"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-59"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-59"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-59"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-59"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-59"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-59"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-59"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-59"></script>
-<script src="compte-est-bon.js?v=20260804-59"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-60"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-60"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-60"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-60"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-60"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-60"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-60"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-60"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-60"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-60"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-60"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-60"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-60"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-60"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-60"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-60"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-60"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-60"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-60"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-60"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-60"></script>
+<script src="compte-est-bon.js?v=20260804-60"></script>
 </body>
 </html>
