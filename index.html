@@ -17,15 +17,26 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.54</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.55</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
     <button data-nav="niveau" data-lvl="6e">6e</button>
     <button data-nav="niveau" data-lvl="5e">5e</button>
-    <button data-nav="cm">Automatismes</button>
-    <button data-nav="compte">Le compte est bon</button>
-    <button data-nav="correction" id="navCorrection" style="display:none;">Outil prof</button>
+    <div class="nav-dropdown" id="navDropdownEntrainer">
+      <button class="nav-dropdown-trigger" onclick="toggleNavDropdown('navDropdownEntrainer')">S'entraîner</button>
+      <div class="nav-dropdown-menu">
+        <button data-nav="cm">Automatismes</button>
+        <button data-nav="compte">Le compte est bon</button>
+      </div>
+    </div>
+    <div class="nav-dropdown" id="navCorrection" style="display:none;">
+      <button class="nav-dropdown-trigger" onclick="toggleNavDropdown('navCorrection')">Outils prof</button>
+      <div class="nav-dropdown-menu">
+        <button data-nav="correction">Outil de correction (cahier)</button>
+        <button data-nav="evaluation">Créer une évaluation</button>
+      </div>
+    </div>
     <button data-nav="cahier" id="navCahier" style="display:none;">Cahier élève</button>
     <button data-nav="supervision" id="navSupervision" style="display:none;">Supervision</button>
     <button data-nav="mesresultats" id="navMesResultats" style="display:none;">Mes résultats</button>
@@ -738,6 +749,44 @@
   </div>
 </section>
 
+<!-- ================= CRÉER UNE ÉVALUATION ================= -->
+<section class="view" id="view-evaluation">
+  <span class="back-btn" data-nav="home">← Accueil</span>
+  <h1 style="margin:6px 0 4px;">Créer une évaluation</h1>
+  <p style="color:var(--ink-soft);max-width:70ch;">Décrivez le cadre de l'évaluation, laissez l'IA proposer des exercices variés (ou rédigez-les vous-même), puis générez la feuille à distribuer aux élèves.</p>
+
+  <div class="tool-shell">
+    <div class="tool-row" style="margin-bottom:10px;">
+      <label class="hint" style="margin:0;">Niveau :
+        <select id="evalNiveau" onchange="renderEvalChapPicker()" style="margin-left:4px;">
+          <option value="6e">6e</option>
+          <option value="5e">5e</option>
+        </select>
+      </label>
+      <label class="hint" style="margin:0;">Date prévue : <input type="date" id="evalDate" style="margin-left:4px;"></label>
+      <label class="hint" style="margin:0;">Durée (min) : <input type="number" id="evalDuree" value="55" min="5" style="width:70px;margin-left:4px;"></label>
+      <label class="hint" style="margin:0;">Nombre d'exercices : <input type="number" id="evalNbExo" value="4" min="1" max="10" style="width:55px;margin-left:4px;"></label>
+    </div>
+    <div class="tool-row" style="margin-bottom:10px;">
+      <label class="hint" style="margin:0;"><input type="checkbox" id="evalQuestionCours"> Inclure une question de cours (restituer une définition/propriété, sans calcul)</label>
+    </div>
+    <p class="hint" style="margin:0 0 6px;">Chapitres concernés :</p>
+    <div id="evalChapPicker" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;"></div>
+    <div class="figure-toolbar">
+      <button class="btn orange" onclick="generateEvaluationAI()" id="btnEvalAI">🤖 Générer les exercices avec l'IA</button>
+      <button class="btn secondary" onclick="addManualExercise()">+ Ajouter un exercice vierge</button>
+    </div>
+    <p class="hint" id="evalAIStatus" style="margin:8px 0 0;"></p>
+  </div>
+
+  <div id="evalExercicesList"></div>
+
+  <div class="tool-row" style="margin-top:10px;">
+    <button class="btn orange" onclick="exportEvaluationPDF()">📄 Générer la feuille d'évaluation (PDF)</button>
+    <button class="btn secondary" onclick="clearEvaluation()">Tout effacer</button>
+  </div>
+</section>
+
 <!-- ================= CAHIER ÉLÈVE ================= -->
 <section class="view" id="view-cahier-eleve">
   <span class="back-btn" data-nav="home">← Accueil</span>
@@ -954,6 +1003,7 @@ function showView(id){
 }
 document.querySelectorAll('[data-nav]').forEach(el=>{
   el.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-dropdown.open').forEach(d=>d.classList.remove('open'));
     const nav = el.getAttribute('data-nav');
     if(nav==='home'){ showView('view-home'); setActiveTopnav(null); }
     if(nav==='niveau'){ currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
@@ -962,6 +1012,10 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     if(nav==='correction'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-correction'); setActiveTopnav('correction');
+    }
+    if(nav==='evaluation'){
+      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      showView('view-evaluation'); setActiveTopnav('evaluation'); if(typeof initEvaluationView==='function') initEvaluationView();
     }
     if(nav==='cahier'){
       if(!currentUser){ toggleAccountMenu(); return; }
@@ -996,6 +1050,7 @@ function setActiveTopnav(key){
   else if(key==='cm') document.querySelector('.nav-links button[data-nav="cm"]').classList.add('active');
   else if(key==='compte') document.querySelector('.nav-links button[data-nav="compte"]').classList.add('active');
   else if(key==='correction') document.querySelector('.nav-links button[data-nav="correction"]').classList.add('active');
+  else if(key==='evaluation') document.querySelector('.nav-links button[data-nav="evaluation"]').classList.add('active');
   else if(key==='cahier') document.querySelector('.nav-links button[data-nav="cahier"]').classList.add('active');
   else if(key==='admin') document.querySelector('.nav-links button[data-nav="admin"]').classList.add('active');
   else if(key==='supervision') document.querySelector('.nav-links button[data-nav="supervision"]').classList.add('active');
@@ -1004,6 +1059,17 @@ function setActiveTopnav(key){
 }
 document.getElementById('chap-back').addEventListener('click',()=>{
   showView('view-niveau'); setActiveTopnav(currentLevel);
+});
+/* Menus déroulants de la navigation (S'entraîner, Outils prof) : un clic ouvre/ferme, un clic
+   ailleurs referme. Sur mobile, ils restent toujours dépliés (voir styles.css). */
+function toggleNavDropdown(id){
+  const el = document.getElementById(id);
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.nav-dropdown.open').forEach(d=>d.classList.remove('open'));
+  if(!wasOpen) el.classList.add('open');
+}
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.nav-dropdown')) document.querySelectorAll('.nav-dropdown.open').forEach(d=>d.classList.remove('open'));
 });
 
 /* ======================= NIVEAU RENDER ======================= */
@@ -2958,6 +3024,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.55', items:[
+    "Réorganisation du menu -- « Automatismes » et « Le compte est bon » sont regroupés sous S'entraîner ; « Outil prof » devient Outils prof, avec Outil de correction (cahier) et une toute nouvelle Créer une évaluation. Cette dernière (première version) : cadrage de l'évaluation (niveau, chapitres, date, durée, nombre d'exercices, question de cours optionnelle), génération des énoncés par IA ou ajout manuel, aperçu avec la même mise en forme automatique que l'outil de correction, export en PDF prêt à distribuer. Les ajouts (figures, tableaux, divisions...) et la mise en page multi-colonnes par exercice suivront dans une prochaine session.",
+  ]},
   { version:'2026-08-04.54', items:[
     "Outil de correction -- le repère affiche maintenant de vraies flèches au bout des deux axes, et le point origine est étiqueté « O ».",
   ]},
@@ -4137,6 +4206,137 @@ function clearCorrectionInput(){
   pendingBlocks = [];
   renderCorrectionPreview();
 }
+
+/* ============================================================
+   CRÉER UNE ÉVALUATION
+   -----------------------------------------------------------
+   Première version : cadrage (niveau, chapitres, durée, nombre
+   d'exercices, question de cours), génération des ÉNONCÉS par IA
+   (réutilise callClaude, déjà utilisé pour l'interprétation de
+   figures), et export PDF de la feuille à distribuer aux élèves.
+   Les énoncés profitent de la même mise en forme automatique que
+   l'outil de correction (renderMathText : fractions, exposants,
+   variables...). Les ajouts (figure/tableau/division/repère...) et
+   la mise en page multi-colonnes par exercice ne sont pas encore
+   câblés ici : à construire dans une prochaine session.
+   ============================================================ */
+let evaluationExercises = [];
+let evalNextExoId = 1;
+
+function initEvaluationView(){
+  renderEvalChapPicker();
+  renderEvalExercicesList();
+}
+function renderEvalChapPicker(){
+  const niveau = document.getElementById('evalNiveau').value;
+  const list = niveau==='6e' ? CH6 : CH5;
+  const box = document.getElementById('evalChapPicker');
+  const seen = new Set();
+  box.innerHTML = list.filter(c=>{ if(seen.has(c.t)) return false; seen.add(c.t); return true; }).map(c=>`
+    <label style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,43,57,.04);padding:5px 10px;border-radius:20px;font-size:.85rem;cursor:pointer;">
+      <input type="checkbox" class="evalChapCheck" value="${escapeHtml(c.t)}"> ${escapeHtml(c.code)} — ${escapeHtml(c.t)}
+    </label>
+  `).join('');
+}
+function getSelectedEvalChapitres(){
+  return Array.from(document.querySelectorAll('.evalChapCheck:checked')).map(el=>el.value);
+}
+function evaluationPrompt(niveau, chapitres, nbExo, duree, questionCours){
+  return `Tu es un professeur de mathématiques qui prépare une évaluation pour une classe de ${niveau}.
+Chapitres concernés : ${chapitres.join(', ')}.
+Durée prévue : ${duree} minutes. Rédige exactement ${nbExo} énoncés d'exercices${questionCours ? ', le PREMIER étant une question de cours (restituer une définition, une propriété ou une méthode vue en classe, sans aucun calcul)' : ''}, variés et progressifs (du plus simple au plus complexe), correspondant aux chapitres indiqués, adaptés au niveau ${niveau}.
+
+Conventions d'écriture à respecter strictement :
+- Jamais de tiret cadratin "—".
+- Les fractions s'écrivent avec une simple barre oblique (ex. 3/4), jamais en LaTeX ni avec \\dfrac.
+- Les divisions s'écrivent avec ":" et non "÷".
+- N'inclus pas la correction, seulement l'énoncé destiné aux élèves.
+
+Réponds UNIQUEMENT par un tableau JSON de chaînes de caractères, un élément par exercice, sans aucun texte ni balise autour. Exemple strict de format : ["Énoncé du premier exercice...", "Énoncé du second exercice..."]`;
+}
+async function generateEvaluationAI(){
+  const statusEl = document.getElementById('evalAIStatus');
+  const niveau = document.getElementById('evalNiveau').value;
+  const chapitres = getSelectedEvalChapitres();
+  const nbExo = parseInt(document.getElementById('evalNbExo').value)||4;
+  const duree = parseInt(document.getElementById('evalDuree').value)||55;
+  const questionCours = document.getElementById('evalQuestionCours').checked;
+  if(!chapitres.length){ statusEl.textContent = "Sélectionnez au moins un chapitre."; return; }
+  if(!currentUser){ statusEl.textContent = "Connectez-vous pour utiliser la génération par IA."; return; }
+  statusEl.textContent = "Génération en cours…";
+  document.getElementById('btnEvalAI').disabled = true;
+  try{
+    const raw = await callClaude(evaluationPrompt(niveau, chapitres, nbExo, duree, questionCours), 2200, {feature:'evaluation', niveau});
+    const match = raw.match(/\[[\s\S]*\]/);
+    if(!match) throw new Error('no-json');
+    const list = JSON.parse(match[0]);
+    list.forEach(text => evaluationExercises.push({id: evalNextExoId++, text: String(text)}));
+    renderEvalExercicesList();
+    statusEl.textContent = `${list.length} exercice(s) généré(s) par l'IA — à relire et ajuster avant impression.`;
+  }catch(err){
+    statusEl.textContent = err.message==='no-session' ? "Connectez-vous pour utiliser la génération par IA." : "Échec de la génération (réseau, ou réponse inattendue). Réessayez, ou ajoutez un exercice manuellement.";
+  }
+  document.getElementById('btnEvalAI').disabled = false;
+}
+function renderEvalExercicesList(){
+  const box = document.getElementById('evalExercicesList');
+  if(!box) return;
+  if(!evaluationExercises.length){ box.innerHTML = ''; return; }
+  box.innerHTML = evaluationExercises.map((ex,i)=>`
+    <div class="tool-shell" style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <strong style="font-family:'Space Grotesk',sans-serif;">Exercice ${i+1}</strong>
+        <button type="button" onclick="removeEvalExercice(${ex.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕ Supprimer</button>
+      </div>
+      <textarea oninput="updateEvalExerciceText(${ex.id}, this.value)" rows="4" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;">${escapeHtml(ex.text)}</textarea>
+      <div class="correction-preview" style="margin-top:8px;">${ex.text.trim() ? renderMathText(ex.text) : ''}</div>
+    </div>
+  `).join('');
+}
+function updateEvalExerciceText(id, text){
+  const ex = evaluationExercises.find(e=>e.id===id);
+  if(ex) ex.text = text;
+  const idx = evaluationExercises.findIndex(e=>e.id===id);
+  const preview = document.querySelectorAll('#evalExercicesList .correction-preview')[idx];
+  if(preview) preview.innerHTML = text.trim() ? renderMathText(text) : '';
+}
+function removeEvalExercice(id){
+  evaluationExercises = evaluationExercises.filter(e=>e.id!==id);
+  renderEvalExercicesList();
+}
+function addManualExercise(){
+  evaluationExercises.push({id: evalNextExoId++, text: ''});
+  renderEvalExercicesList();
+}
+function clearEvaluation(){
+  if(evaluationExercises.length && !confirm('Effacer tous les exercices de cette évaluation ?')) return;
+  evaluationExercises = [];
+  renderEvalExercicesList();
+}
+function exportEvaluationPDF(){
+  if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant de générer le PDF."); return; }
+  const niveau = document.getElementById('evalNiveau').value;
+  const date = document.getElementById('evalDate').value;
+  const duree = document.getElementById('evalDuree').value;
+  const dateFmt = date ? new Date(date+'T00:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) : '';
+  const container = document.createElement('div');
+  container.style.cssText = 'font-family:Inter,sans-serif;padding:10px;color:#20242E;font-size:1rem;line-height:1.7;';
+  container.innerHTML = `
+    <div style="display:flex;justify-content:space-between;border-bottom:2px solid #1C1B2E;padding-bottom:10px;margin-bottom:24px;">
+      <div><strong style="font-size:1.15rem;">Évaluation — ${niveau}</strong>${dateFmt ? '<br>'+dateFmt : ''}</div>
+      <div style="text-align:right;">Durée : ${duree} min<br>Nom : ______________________</div>
+    </div>
+    ${evaluationExercises.map((ex,i)=>`
+      <div style="margin-bottom:26px;">
+        <p style="font-weight:700;margin:0 0 8px;">Exercice ${i+1}</p>
+        <div>${renderMathText(ex.text)}</div>
+      </div>
+    `).join('')}
+  `;
+  html2pdf().set({margin:10, filename:'evaluation-'+niveau+'.pdf', html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+    .from(container).save();
+}
+
 async function removeCahierEntry(i){
   if(editingIndex===i) cancelEditCahier();
   const entry = cahier[i];
