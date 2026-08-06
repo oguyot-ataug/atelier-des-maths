@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.52</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.53</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1782,11 +1782,11 @@ function dpAlignedCells(str, endCol, N){
 function dpRenderDivisionTable(rows, quotient, divisor, commaCol){
   const cellStyle = 'width:22px;text-align:center;padding:2px 0;';
   const rowsHtml = rows.map(r=>{
-    const signTd = `<td style="width:16px;text-align:center;${r.underline?'border-bottom:1.5px solid var(--ink);':''}">${r.sign?'−':''}</td>`;
+    const signTd = `<td style="width:16px;text-align:center;${r.underline?'border-bottom:1.5px solid #1C1B2E;':''}">${r.sign?'−':''}</td>`;
     const tds = r.cells.map((c,ci)=>{
       let style = cellStyle;
       if(r.bold) style += 'font-weight:700;';
-      if(r.underline && (r.endCol===undefined || ci<=r.endCol)) style += 'border-bottom:1.5px solid var(--ink);';
+      if(r.underline && (r.endCol===undefined || ci<=r.endCol)) style += 'border-bottom:1.5px solid #1C1B2E;';
       if(commaCol!==undefined && ci===commaCol) style += 'border-right:1px dashed rgba(28,43,57,.45);';
       return `<td style="${style}">${c}</td>`;
     }).join('');
@@ -1794,9 +1794,9 @@ function dpRenderDivisionTable(rows, quotient, divisor, commaCol){
   }).join('');
   return `<div style="display:flex;gap:18px;align-items:stretch;font-family:'JetBrains Mono',monospace;font-size:1.05rem;">
     <table style="border-collapse:collapse;">${rowsHtml}</table>
-    <div style="border-left:1.5px solid var(--ink);padding-left:14px;line-height:1.9;">
+    <div style="border-left:1.5px solid #1C1B2E;padding-left:14px;line-height:1.9;">
       <div>${divisor}</div>
-      <div style="border-top:1.5px solid var(--ink);">${quotient||'&nbsp;'}</div>
+      <div style="border-top:1.5px solid #1C1B2E;">${quotient||'&nbsp;'}</div>
     </div>
   </div>`;
 }
@@ -1954,14 +1954,8 @@ function divisionDecimaleHTML(res, maxDec){
   });
   const commaColIdx = res.givenCommaPos!==null && res.givenCommaPos!==undefined ? res.givenCommaPos-1 : undefined;
   const table = dpRenderDivisionTable(rows, res.quotient + (res.repeating?'…':''), res.divisor, commaColIdx);
-  const precisionMots = {1:'dixième',2:'centième',3:'millième'};
-  const tag = res.exact ? 'valeur exacte' : `valeur approchée${precisionMots[maxDec] && !res.repeating ? ' au '+precisionMots[maxDec] : ''}`;
-  const repeatNote = res.repeating ? `<p class="hint" style="margin:6px 0 0;color:var(--accent-orange);">Le reste ${res.steps[res.steps.length-1].after} revient à l'identique : le motif se répète indéfiniment, la division ne se termine jamais.</p>` : '';
   return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
-    <p class="hint" style="margin:0 0 8px;">${res.dividend} ÷ ${res.divisor}</p>
     ${table}
-    ${repeatNote}
-    <p class="hint" style="margin:6px 0 0;font-style:italic;">${tag}${(!res.exact && !res.repeating) ? ' (arrêtée à '+maxDec+' décimales)' : ''}</p>
   </div>`;
 }
 function previewDivisionDecimale(){
@@ -2000,6 +1994,13 @@ function reopenDivisionDec(data){
    dénominateur de la fraction pour pouvoir subdiviser l'axe en conséquence. */
 function parseCoordValue(str){
   str = (str||'').trim();
+  // nombre mixte : entier + fraction, ex. "1+1/4" (= 1,25)
+  const mixed = str.match(/^(-?\d+)\s*\+\s*(\d+)\s*\/\s*(\d+)$/);
+  if(mixed){
+    const whole = parseInt(mixed[1],10), n = parseInt(mixed[2],10), den = parseInt(mixed[3],10);
+    const sign = whole<0 ? -1 : 1;
+    return {value: whole + sign*(n/den), den};
+  }
   const fm = str.match(/^(-?\d+)\s*\/\s*(\d+)$/);
   if(fm){ const den=parseInt(fm[2],10); return {value: parseInt(fm[1],10)/den, den}; }
   return {value: parseFloat(str.replace(',','.')), den: null};
@@ -2950,6 +2951,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.53', items:[
+    "Outil de correction -- 3 corrections : (1) les barres verticales/horizontales de la division posée n'apparaissaient pas dans la fenêtre de projection (variable CSS var(--ink) indisponible dans ce document séparé) -- remplacée par une couleur directe ; (2) la division décimale n'affiche plus de texte avant/après (ni rappel du calcul, ni \"valeur exacte\"), juste le tableau posé ; (3) les axes acceptent maintenant les nombres mixtes du type A(1+1/4).",
+  ]},
   { version:'2026-08-04.52', items:[
     "Outil de correction -- 4 corrections : (1) la barre verticale de la division posée descend maintenant sur toute la hauteur (elle s'arrêtait avant au niveau du diviseur), et le marqueur de virgule est beaucoup plus fin ; (2) l'axe gradué subdivise maintenant selon le PPCM des dénominateurs demandés (ex. 1/4 et 7/6 → douzièmes), au lieu du plus grand dénominateur seul ; (3) le texte d'aide de l'aperçu (\"L'aperçu de la correction...\") n'apparaît plus dans la fenêtre de projection ; (4) disque et rectangle fractionnés affichent plusieurs formes quand le numérateur dépasse le dénominateur (ex. 5/4 → un disque plein + un quart).",
   ]},
