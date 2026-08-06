@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.53</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.54</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -2103,14 +2103,21 @@ function buildRepereSvg(xMin,xMax,yMin,yMax,points){
   let grid='';
   for(let v=Math.ceil(xMin); v<=xMax; v++) grid += `<line x1="${X(v)}" y1="${pad}" x2="${X(v)}" y2="${H-pad}" stroke="rgba(28,43,57,.12)" stroke-width="1"/>`;
   for(let v=Math.ceil(yMin); v<=yMax; v++) grid += `<line x1="${pad}" y1="${Y(v)}" x2="${W-pad}" y2="${Y(v)}" stroke="rgba(28,43,57,.12)" stroke-width="1"/>`;
-  const axes = `<line x1="${pad}" y1="${Y(0)}" x2="${W-pad}" y2="${Y(0)}" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="${X(0)}" y1="${H-pad}" x2="${X(0)}" y2="${pad}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+  const showOrigin = xMin<=0 && xMax>=0 && yMin<=0 && yMax>=0;
+  const axes = `<line x1="${pad-10}" y1="${Y(0)}" x2="${W-pad+10}" y2="${Y(0)}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#repAxeArrowX)"/>
+    <line x1="${X(0)}" y1="${H-pad+10}" x2="${X(0)}" y2="${pad-10}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#repAxeArrowY)"/>`;
+  const originLabel = showOrigin ? `<text x="${X(0)-12}" y="${Y(0)+18}" font-size="15" font-weight="700" font-family="Space Grotesk, sans-serif">O</text>` : '';
   let pts='';
   (points||[]).forEach(p=>{
     pts += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="4.5" fill="#FF8208"/>
       <text x="${X(p.x)+8}" y="${Y(p.y)-8}" font-size="14" font-weight="700" fill="#FF8208" font-family="Space Grotesk, sans-serif">${p.label}</text>`;
   });
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:340px;display:block;margin:6px auto;background:#fff;">${grid}${axes}${pts}
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:340px;display:block;margin:6px auto;background:#fff;">
+    <defs>
+      <marker id="repAxeArrowX" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
+      <marker id="repAxeArrowY" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
+    </defs>
+    ${grid}${axes}${originLabel}${pts}
     <text x="${X(1)}" y="${Y(0)+16}" font-size="12" font-family="JetBrains Mono, monospace">1</text>
     <text x="${X(0)-14}" y="${Y(1)+4}" font-size="12" font-family="JetBrains Mono, monospace">1</text>
   </svg>`;
@@ -2951,6 +2958,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.54', items:[
+    "Outil de correction -- le repère affiche maintenant de vraies flèches au bout des deux axes, et le point origine est étiqueté « O ».",
+  ]},
   { version:'2026-08-04.53', items:[
     "Outil de correction -- 3 corrections : (1) les barres verticales/horizontales de la division posée n'apparaissaient pas dans la fenêtre de projection (variable CSS var(--ink) indisponible dans ce document séparé) -- remplacée par une couleur directe ; (2) la division décimale n'affiche plus de texte avant/après (ni rappel du calcul, ni \"valeur exacte\"), juste le tableau posé ; (3) les axes acceptent maintenant les nombres mixtes du type A(1+1/4).",
   ]},
