@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-61">
+<link rel="stylesheet" href="styles.css?v=20260804-62">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.61</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.62</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1842,6 +1842,30 @@ function attachResizeObservers(){
       if(b){ b.width = Math.round(entries[0].contentRect.width); b.height = Math.round(entries[0].contentRect.height); }
     }).observe(el);
   });
+  syncDiskSizes();
+}
+/* Harmonise le diamètre de tous les disques d'un même exercice (ou de l'outil de correction) sur
+   le plus petit d'entre eux, pour un rendu visuellement cohérent quand plusieurs blocs disque
+   coexistent (ex. un disque seul à côté d'une fraction impropre qui en affiche deux plus petits). */
+function syncDiskSizes(){
+  const contexts = new Set(Object.values(blocksStores).flat().filter(b=>b.type==='disque').map(b=>b.ctx));
+  contexts.forEach(ctx=>{
+    const diskBlocks = (blocksStores[ctx]||[]).filter(b=>b.type==='disque');
+    if(diskBlocks.length<2) return;
+    let minDiam = Infinity;
+    diskBlocks.forEach(b=>{
+      const wrap = document.querySelector(`.resizable-block[data-block-id="${b.id}"]`);
+      if(!wrap) return;
+      const svg = wrap.querySelector('svg');
+      if(svg){ const w = svg.getBoundingClientRect().width; if(w>0) minDiam = Math.min(minDiam, w); }
+    });
+    if(minDiam===Infinity) return;
+    diskBlocks.forEach(b=>{
+      const wrap = document.querySelector(`.resizable-block[data-block-id="${b.id}"]`);
+      if(!wrap) return;
+      wrap.querySelectorAll(':scope > div > div').forEach(discWrap=>{ discWrap.style.maxWidth = Math.round(minDiam)+'px'; });
+    });
+  });
 }
 function toolButtonsHTML(ctx){
   const set = `setToolContext('${ctx}');`;
@@ -3167,6 +3191,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.62', items:[
+    "Fix -- le PDF d'évaluation affichait l'en-tête écrasé vers le centre de la page et les exercices n'apparaissaient pas du tout : la technique de dissimulation (position:fixed) limitait la mesure du contenu à la hauteur de la fenêtre visible. Remplacée par position:absolute, qui mesure la hauteur réelle et complète du contenu. Les disques d'un même exercice s'harmonisent maintenant automatiquement sur le plus petit diamètre nécessaire, pour un rendu cohérent quand plusieurs blocs disque coexistent.",
+  ]},
   { version:'2026-08-04.61', items:[
     "Fix -- le PDF d'évaluation restait blanc : la combinaison précédente (rendu foreignObject + astuce de dissimulation par hauteur nulle) empêchait tout rendu. Corrigé : dissimulation par décalage hors-écran, et chaque figure SVG est désormais convertie en image avant capture (plus fiable). Disque et rectangle fractionnés : nouvelle case pour afficher ou masquer la fraction en légende, et leur taille est maintenant plafonnée (ils ne s'étirent plus sur toute la largeur disponible), en s'adaptant à l'espace choisi pour les fractions à plusieurs formes. Aperçu de l'évaluation : renommé, proportions identiques au PDF (largeur 700px), et repères visuels de saut de page.",
   ]},
@@ -4591,7 +4618,7 @@ async function exportEvaluationPDF(){
   // élément masqué par height:0 est mesuré comme vide par le rendu foreignObject, d'où la page
   // blanche rencontrée précédemment.
   const clip = document.createElement('div');
-  clip.style.cssText = 'position:fixed;top:0;left:-99999px;';
+  clip.style.cssText = 'position:absolute;top:0;left:-99999px;';
   const wrapper = document.createElement('div');
   wrapper.style.cssText = 'width:700px;font-family:Inter,sans-serif;padding:10px;color:#20242E;font-size:1rem;line-height:1.7;background:#fff;';
   wrapper.innerHTML = buildEvaluationContentHTML();
@@ -5037,27 +5064,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-61"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-61"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-61"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-61"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-61"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-61"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-61"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-61"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-61"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-61"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-61"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-61"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-61"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-61"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-61"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-61"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-61"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-61"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-61"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-61"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-61"></script>
-<script src="compte-est-bon.js?v=20260804-61"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-62"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-62"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-62"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-62"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-62"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-62"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-62"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-62"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-62"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-62"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-62"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-62"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-62"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-62"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-62"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-62"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-62"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-62"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-62"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-62"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-62"></script>
+<script src="compte-est-bon.js?v=20260804-62"></script>
 </body>
 </html>
