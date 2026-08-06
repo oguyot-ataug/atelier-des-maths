@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.51</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.52</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1553,9 +1553,10 @@ function renderMathText(raw){
 }
 function renderCorrectionPreview(){
   const raw = document.getElementById('correctionInput').value;
-  let html = raw.trim() ? renderMathText(raw) : '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>';
-  document.getElementById('correctionPreview').innerHTML = corHeaderHTML() + html + pendingBlocksHTML(true);
-  updateProjectionWindow(html + pendingBlocksHTML(false));
+  const rendered = raw.trim() ? renderMathText(raw) : '';
+  const previewHtml = rendered || '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>';
+  document.getElementById('correctionPreview').innerHTML = corHeaderHTML() + previewHtml + pendingBlocksHTML(true);
+  updateProjectionWindow(rendered + pendingBlocksHTML(false));
 }
 /* En-tête (titre de l'exercice, n° d'exercice, date) : rempli par le professeur dans le
    formulaire, il doit être visible des élèves au même titre que la correction elle-même. */
@@ -1786,12 +1787,12 @@ function dpRenderDivisionTable(rows, quotient, divisor, commaCol){
       let style = cellStyle;
       if(r.bold) style += 'font-weight:700;';
       if(r.underline && (r.endCol===undefined || ci<=r.endCol)) style += 'border-bottom:1.5px solid var(--ink);';
-      if(commaCol!==undefined && ci===commaCol) style += 'border-right:2px dashed var(--ink);';
+      if(commaCol!==undefined && ci===commaCol) style += 'border-right:1px dashed rgba(28,43,57,.45);';
       return `<td style="${style}">${c}</td>`;
     }).join('');
     return `<tr>${signTd}${tds}</tr>`;
   }).join('');
-  return `<div style="display:flex;gap:18px;align-items:flex-start;font-family:'JetBrains Mono',monospace;font-size:1.05rem;">
+  return `<div style="display:flex;gap:18px;align-items:stretch;font-family:'JetBrains Mono',monospace;font-size:1.05rem;">
     <table style="border-collapse:collapse;">${rowsHtml}</table>
     <div style="border-left:1.5px solid var(--ink);padding-left:14px;line-height:1.9;">
       <div>${divisor}</div>
@@ -2025,17 +2026,21 @@ function buildAxeSvg(min,max,step,points){
     ticks += `<line x1="${x}" y1="${y-7}" x2="${x}" y2="${y+7}" stroke="#1C1B2E" stroke-width="${isZero?2:1.3}"/>
       <text x="${x}" y="${y+24}" font-size="13" text-anchor="middle" font-family="JetBrains Mono, monospace">${Number(v.toFixed(6))}</text>`;
   }
-  // Subdivision de chaque unité selon la plus grande fraction demandée par un point
-  // (ex. un point en x/4 fait apparaître un petit trait à chaque quart d'unité).
+  // Subdivision de chaque unité selon le PPCM des dénominateurs demandés (ex. 1/4 et 7/6
+  // donnent un PPCM de 12 : chaque unité est coupée en douzièmes, ce qui convient aux deux).
   const dens = (points||[]).map(p=>p.den).filter(Boolean);
   if(dens.length){
-    const subDiv = Math.max(...dens);
+    const gcd = (a,b) => b===0 ? a : gcd(b, a%b);
+    const lcm = (a,b) => a*b/gcd(a,b);
+    const subDiv = dens.reduce((acc,d)=>lcm(acc,d), 1);
+    if(subDiv<=60){
     let minorTicks = '';
     for(let v=Math.ceil(min*subDiv)/subDiv; v<=max+1e-9; v+=1/subDiv){
       if(Math.abs(v % step) < 1e-6 || Math.abs((v%step)-step) < 1e-6) continue; // déjà une grande graduation
       minorTicks += `<line x1="${xOf(v)}" y1="${y-4}" x2="${xOf(v)}" y2="${y+4}" stroke="#1C1B2E" stroke-width="1"/>`;
     }
     ticks += minorTicks;
+    }
   }
   let pts='';
   (points||[]).forEach(p=>{
@@ -2137,29 +2142,39 @@ function reopenRepere(data){
 }
 
 /* ---- Disque fractionné ---- */
-function buildDisqueSvg(num,den){
+function singleDisqueSvg(filled, den){
   const W=220,H=220,cx=110,cy=110,r=90;
   let parts='';
   for(let i=0;i<den;i++){
     const a0 = -Math.PI/2 + i*2*Math.PI/den, a1 = -Math.PI/2 + (i+1)*2*Math.PI/den;
     const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0), x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
     const large = (2*Math.PI/den)>Math.PI ? 1:0;
-    const filled = i<num;
-    parts += `<path d="M${cx},${cy} L${x0},${y0} A${r},${r} 0 ${large} 1 ${x1},${y1} Z" fill="${filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+    parts += `<path d="M${cx},${cy} L${x0},${y0} A${r},${r} 0 ${large} 1 ${x1},${y1} Z" fill="${i<filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
   }
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:220px;display:block;margin:6px auto;">${parts}</svg>
-    <p class="hint" style="text-align:center;margin:0;">${num}/${den}</p>`;
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:150px;display:block;">${parts}</svg>`;
+}
+/* Si le numérateur dépasse le dénominateur (fraction impropre, ex. 5/4), il faut plusieurs
+   disques : autant de disques complets que nécessaire, le dernier ne montrant que le reste. */
+function buildDisqueSvg(num,den){
+  const nShapes = Math.max(1, Math.ceil(num/den));
+  let discs = '';
+  for(let i=0;i<nShapes;i++){
+    const filled = Math.max(0, Math.min(den, num - i*den));
+    discs += singleDisqueSvg(filled, den);
+  }
+  return `<div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">${discs}</div>
+    <p class="hint" style="text-align:center;margin:4px 0 0;">${num}/${den}</p>`;
 }
 function previewDisque(){
   const num=parseInt(document.getElementById('disqueNum').value), den=parseInt(document.getElementById('disqueDen').value);
-  document.getElementById('disquePreview').innerHTML = (den>0&&num>=0) ? buildDisqueSvg(Math.min(num,den),den) : '';
+  document.getElementById('disquePreview').innerHTML = (den>0&&num>=0) ? buildDisqueSvg(num,den) : '';
 }
 function openDisqueTool(){ document.getElementById('disquePanel').style.display='block'; document.getElementById('disquePreview').innerHTML=''; document.getElementById('disquePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeDisqueTool(){ document.getElementById('disquePanel').style.display='none'; }
 function insertDisque(){
   const num=parseInt(document.getElementById('disqueNum').value), den=parseInt(document.getElementById('disqueDen').value);
   if(!(den>0&&num>=0)) return;
-  addPendingBlock('disque', buildDisqueSvg(Math.min(num,den),den), {num,den}, 'reopenDisque');
+  addPendingBlock('disque', buildDisqueSvg(num,den), {num,den}, 'reopenDisque');
   closeDisqueTool();
 }
 function reopenDisque(data){
@@ -2170,26 +2185,36 @@ function reopenDisque(data){
 }
 
 /* ---- Rectangle fractionné ---- */
-function buildRectFracSvg(num,den,vertical){
-  const W=260,H=120;
+function singleRectFracSvg(filled, den, vertical){
+  const W=180,H=90;
   let parts='';
   for(let i=0;i<den;i++){
-    const filled = i<num;
     if(vertical){
       const w = W/den;
-      parts += `<rect x="${i*w}" y="0" width="${w}" height="${H}" fill="${filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+      parts += `<rect x="${i*w}" y="0" width="${w}" height="${H}" fill="${i<filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
     } else {
       const h = H/den;
-      parts += `<rect x="0" y="${i*h}" width="${W}" height="${h}" fill="${filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+      parts += `<rect x="0" y="${i*h}" width="${W}" height="${h}" fill="${i<filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
     }
   }
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:260px;display:block;margin:6px auto;">${parts}</svg>
-    <p class="hint" style="text-align:center;margin:0;">${num}/${den}</p>`;
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:180px;display:block;">${parts}</svg>`;
+}
+/* Comme pour les disques : un numérateur supérieur au dénominateur (fraction impropre) a
+   besoin de plusieurs rectangles, le dernier ne montrant que le reste. */
+function buildRectFracSvg(num,den,vertical){
+  const nShapes = Math.max(1, Math.ceil(num/den));
+  let rects = '';
+  for(let i=0;i<nShapes;i++){
+    const filled = Math.max(0, Math.min(den, num - i*den));
+    rects += singleRectFracSvg(filled, den, vertical);
+  }
+  return `<div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">${rects}</div>
+    <p class="hint" style="text-align:center;margin:4px 0 0;">${num}/${den}</p>`;
 }
 function previewRectFrac(){
   const num=parseInt(document.getElementById('rectFracNum').value), den=parseInt(document.getElementById('rectFracDen').value);
   const vert = document.getElementById('rectFracVert').checked;
-  document.getElementById('rectFracPreview').innerHTML = (den>0&&num>=0) ? buildRectFracSvg(Math.min(num,den),den,vert) : '';
+  document.getElementById('rectFracPreview').innerHTML = (den>0&&num>=0) ? buildRectFracSvg(num,den,vert) : '';
 }
 function openRectFracTool(){ document.getElementById('rectFracPanel').style.display='block'; document.getElementById('rectFracPreview').innerHTML=''; document.getElementById('rectFracPanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeRectFracTool(){ document.getElementById('rectFracPanel').style.display='none'; }
@@ -2197,7 +2222,7 @@ function insertRectFrac(){
   const num=parseInt(document.getElementById('rectFracNum').value), den=parseInt(document.getElementById('rectFracDen').value);
   const vert = document.getElementById('rectFracVert').checked;
   if(!(den>0&&num>=0)) return;
-  addPendingBlock('rectFrac', buildRectFracSvg(Math.min(num,den),den,vert), {num,den,vert}, 'reopenRectFrac');
+  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert), {num,den,vert}, 'reopenRectFrac');
   closeRectFracTool();
 }
 function reopenRectFrac(data){
@@ -2925,6 +2950,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.52', items:[
+    "Outil de correction -- 4 corrections : (1) la barre verticale de la division posée descend maintenant sur toute la hauteur (elle s'arrêtait avant au niveau du diviseur), et le marqueur de virgule est beaucoup plus fin ; (2) l'axe gradué subdivise maintenant selon le PPCM des dénominateurs demandés (ex. 1/4 et 7/6 → douzièmes), au lieu du plus grand dénominateur seul ; (3) le texte d'aide de l'aperçu (\"L'aperçu de la correction...\") n'apparaît plus dans la fenêtre de projection ; (4) disque et rectangle fractionnés affichent plusieurs formes quand le numérateur dépasse le dénominateur (ex. 5/4 → un disque plein + un quart).",
+  ]},
   { version:'2026-08-04.51', items:[
     "Fix -- Outil de correction, division décimale : le dividende n'acceptait pas la virgule décimale (champ number, qui la rejette silencieusement, et le calcul lui-même n'acceptait qu'un entier). Corrigé : un dividende comme 10,5 est maintenant accepté, avec la virgule marquée visuellement dans la division posée par un trait pointillé entre les colonnes concernées.",
   ]},
