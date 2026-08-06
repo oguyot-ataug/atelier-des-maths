@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-57">
+<link rel="stylesheet" href="styles.css?v=20260804-58">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.57</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.58</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1551,7 +1551,7 @@ async function exportCoursPDF(){
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
   hint.textContent='Génération du PDF en cours…';
-  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
     .from(wrapper).save()
     .then(()=>{ clip.remove(); hint.textContent='PDF téléchargé ✓'; setTimeout(()=>hint.textContent='',4000); })
     .catch(()=>{ clip.remove(); hint.textContent="Échec de la génération dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer à la place."; });
@@ -3091,6 +3091,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.58', items:[
+    "Tentative de fix -- PDF (évaluation, cahier, cours) toujours blanc malgré les dimensions explicites sur les SVG : la bibliothèque de capture (html2canvas) a un support limité des SVG en mode par défaut. Activé le rendu par foreignObject (plus fidèle pour ce type de contenu) sur les 3 exports PDF. À confirmer par un nouveau test -- si le problème persiste, la piste suivante sera de convertir les figures en image avant capture.",
+  ]},
   { version:'2026-08-04.57', items:[
     "Fix -- l'axe gradué (et les autres figures SVG) n'apparaissaient pas dans le PDF : ajout de dimensions explicites (width/height), en plus du viewBox, pour une capture fiable. Axe gradué : nouveau champ « Partager chaque unité en » pour paramétrer la subdivision d'un axe VIERGE (sans point), utile pour que les élèves y placent eux-mêmes des fractions. Disque et rectangle fractionnés : nouvelle case « Laisser vierge » -- affiche la forme entièrement blanche avec la consigne (\"Colorie 5/6\"), pour que l'élève colorie lui-même au lieu d'avoir la réponse déjà coloriée.",
   ]},
@@ -4421,7 +4424,7 @@ function exportEvaluationPDF(){
   `;
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
-  html2pdf().set({margin:10, filename:'evaluation-'+niveau+'.pdf', html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+  html2pdf().set({margin:10, filename:'evaluation-'+niveau+'.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
     .from(wrapper).save()
     .then(()=>clip.remove())
     .catch(()=>{ clip.remove(); alert("La génération du PDF a échoué dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer la page à la place."); });
@@ -4588,7 +4591,7 @@ function exportCahierAsPDF(){
   wrapper.innerHTML = `<h1 style="font-family:'Space Grotesk',sans-serif;">Cahier de corrections</h1>` + buildCahierNotebookHTML();
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
-  html2pdf().set({margin:10, filename:'cahier-de-corrections.pdf', html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+  html2pdf().set({margin:10, filename:'cahier-de-corrections.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
     .from(wrapper).save()
     .then(()=>clip.remove())
     .catch(()=>{ clip.remove(); alert("La génération du PDF a échoué dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer la page à la place."); });
@@ -4835,27 +4838,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-57"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-57"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-57"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-57"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-57"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-57"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-57"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-57"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-57"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-57"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-57"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-57"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-57"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-57"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-57"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-57"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-57"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-57"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-57"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-57"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-57"></script>
-<script src="compte-est-bon.js?v=20260804-57"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-58"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-58"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-58"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-58"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-58"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-58"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-58"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-58"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-58"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-58"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-58"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-58"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-58"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-58"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-58"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-58"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-58"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-58"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-58"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-58"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-58"></script>
+<script src="compte-est-bon.js?v=20260804-58"></script>
 </body>
 </html>
