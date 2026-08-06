@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-60">
+<link rel="stylesheet" href="styles.css?v=20260804-61">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.60</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.61</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -142,12 +142,15 @@
      que soit la vue active -- sinon, ouverts depuis une evaluation, ils restaient caches
      derriere le display:none de la section Outil de correction. -->
 <div id="evalPreviewModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEvalPreview();">
-  <div class="modal-card" style="max-width:760px;max-height:88vh;overflow:auto;">
+  <div class="modal-card" style="max-width:760px;max-height:88vh;overflow:auto;background:#EDEFF2;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Aperçu de l'évaluation</strong>
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Évaluation</strong>
       <button class="modal-close" onclick="closeEvalPreview()">✕</button>
     </div>
-    <div id="evalPreviewContent" style="font-family:Inter,sans-serif;color:#20242E;line-height:1.7;"></div>
+    <div style="position:relative;width:700px;max-width:100%;margin:0 auto;">
+      <div id="evalPreviewContent" style="font-family:Inter,sans-serif;color:#20242E;line-height:1.7;width:700px;padding:10px;box-sizing:border-box;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12);position:relative;"></div>
+      <div id="evalPreviewPageMarks" style="position:absolute;top:0;left:0;width:700px;pointer-events:none;"></div>
+    </div>
   </div>
 </div>
 <div id="toolsModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeAllToolPanels();">
@@ -229,6 +232,7 @@
         <label class="hint" style="margin:0;">Parts colorées : <input type="number" id="disqueNum" value="3" min="0" style="width:60px;"></label>
         <label class="hint" style="margin:0;">Parts totales : <input type="number" id="disqueDen" value="4" min="1" style="width:60px;"></label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="disqueVierge"> Laisser vierge (à colorier par l'élève)</label>
+        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueShowCaption" checked> Écrire la fraction en dessous</label>
         <button type="button" class="btn secondary" onclick="previewDisque()">Aperçu</button>
       </div>
       <div id="disquePreview"></div>
@@ -244,6 +248,7 @@
         <label class="hint" style="margin:0;">Parts totales : <input type="number" id="rectFracDen" value="4" min="1" style="width:60px;"></label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracVert"> Bandes verticales (au lieu d'horizontales)</label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracVierge"> Laisser vierge (à colorier par l'élève)</label>
+        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracShowCaption" checked> Écrire la fraction en dessous</label>
         <button type="button" class="btn secondary" onclick="previewRectFrac()">Aperçu</button>
       </div>
       <div id="rectFracPreview"></div>
@@ -1568,7 +1573,7 @@ async function exportCoursPDF(){
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
   hint.textContent='Génération du PDF en cours…';
-  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:2, useCORS:true, }, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
     .from(wrapper).save()
     .then(()=>{ clip.remove(); hint.textContent='PDF téléchargé ✓'; setTimeout(()=>hint.textContent='',4000); })
     .catch(()=>{ clip.remove(); hint.textContent="Échec de la génération dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer à la place."; });
@@ -2351,29 +2356,33 @@ function singleDisqueSvg(filled, den){
 }
 /* Si le numérateur dépasse le dénominateur (fraction impropre, ex. 5/4), il faut plusieurs
    disques : autant de disques complets que nécessaire, le dernier ne montrant que le reste. */
-function buildDisqueSvg(num,den,vierge){
+function buildDisqueSvg(num,den,vierge,showCaption){
   const nShapes = Math.max(1, Math.ceil(num/den));
   let discs = '';
   for(let i=0;i<nShapes;i++){
     const filled = vierge ? 0 : Math.max(0, Math.min(den, num - i*den));
-    discs += singleDisqueSvg(filled, den);
+    // chaque disque est plafonné à 150px : seul, il ne s'étire pas sur toute la largeur
+    // disponible ; à plusieurs (fraction impropre), ils se partagent la largeur en rétrécissant.
+    discs += `<div style="flex:1 1 0;max-width:150px;min-width:50px;">${singleDisqueSvg(filled, den)}</div>`;
   }
   const caption = vierge ? `Colorie ${num}/${den} du disque` : `${num}/${den}`;
-  return `<div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">${discs}</div>
-    <p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>`;
+  return `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:${nShapes*150+((nShapes-1)*10)}px;margin:0 auto;">${discs}</div>
+    ${showCaption!==false ? `<p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>` : ''}`;
 }
 function previewDisque(){
   const num=parseInt(document.getElementById('disqueNum').value), den=parseInt(document.getElementById('disqueDen').value);
   const vierge = document.getElementById('disqueVierge').checked;
-  document.getElementById('disquePreview').innerHTML = (den>0&&num>=0) ? buildDisqueSvg(num,den,vierge) : '';
+  const showCaption = document.getElementById('disqueShowCaption').checked;
+  document.getElementById('disquePreview').innerHTML = (den>0&&num>=0) ? buildDisqueSvg(num,den,vierge,showCaption) : '';
 }
 function openDisqueTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('disquePanel').style.display='block'; document.getElementById('disquePreview').innerHTML=''; document.getElementById('disquePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeDisqueTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('disquePanel').style.display='none'; }
 function insertDisque(){
   const num=parseInt(document.getElementById('disqueNum').value), den=parseInt(document.getElementById('disqueDen').value);
   const vierge = document.getElementById('disqueVierge').checked;
+  const showCaption = document.getElementById('disqueShowCaption').checked;
   if(!(den>0&&num>=0)) return;
-  addPendingBlock('disque', buildDisqueSvg(num,den,vierge), {num,den,vierge}, 'reopenDisque');
+  addPendingBlock('disque', buildDisqueSvg(num,den,vierge,showCaption), {num,den,vierge,showCaption}, 'reopenDisque');
   closeDisqueTool();
 }
 function reopenDisque(data){
@@ -2381,6 +2390,7 @@ function reopenDisque(data){
   document.getElementById('disqueNum').value = data.num;
   document.getElementById('disqueDen').value = data.den;
   document.getElementById('disqueVierge').checked = !!data.vierge;
+  document.getElementById('disqueShowCaption').checked = data.showCaption!==false;
   previewDisque();
 }
 
@@ -2401,22 +2411,23 @@ function singleRectFracSvg(filled, den, vertical){
 }
 /* Comme pour les disques : un numérateur supérieur au dénominateur (fraction impropre) a
    besoin de plusieurs rectangles, le dernier ne montrant que le reste. */
-function buildRectFracSvg(num,den,vertical,vierge){
+function buildRectFracSvg(num,den,vertical,vierge,showCaption){
   const nShapes = Math.max(1, Math.ceil(num/den));
   let rects = '';
   for(let i=0;i<nShapes;i++){
     const filled = vierge ? 0 : Math.max(0, Math.min(den, num - i*den));
-    rects += singleRectFracSvg(filled, den, vertical);
+    rects += `<div style="flex:1 1 0;max-width:180px;min-width:60px;">${singleRectFracSvg(filled, den, vertical)}</div>`;
   }
   const caption = vierge ? `Colorie ${num}/${den} du rectangle` : `${num}/${den}`;
-  return `<div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">${rects}</div>
-    <p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>`;
+  return `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:${nShapes*180+((nShapes-1)*10)}px;margin:0 auto;">${rects}</div>
+    ${showCaption!==false ? `<p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>` : ''}`;
 }
 function previewRectFrac(){
   const num=parseInt(document.getElementById('rectFracNum').value), den=parseInt(document.getElementById('rectFracDen').value);
   const vert = document.getElementById('rectFracVert').checked;
   const vierge = document.getElementById('rectFracVierge').checked;
-  document.getElementById('rectFracPreview').innerHTML = (den>0&&num>=0) ? buildRectFracSvg(num,den,vert,vierge) : '';
+  const showCaption = document.getElementById('rectFracShowCaption').checked;
+  document.getElementById('rectFracPreview').innerHTML = (den>0&&num>=0) ? buildRectFracSvg(num,den,vert,vierge,showCaption) : '';
 }
 function openRectFracTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('rectFracPanel').style.display='block'; document.getElementById('rectFracPreview').innerHTML=''; document.getElementById('rectFracPanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeRectFracTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('rectFracPanel').style.display='none'; }
@@ -2424,8 +2435,9 @@ function insertRectFrac(){
   const num=parseInt(document.getElementById('rectFracNum').value), den=parseInt(document.getElementById('rectFracDen').value);
   const vert = document.getElementById('rectFracVert').checked;
   const vierge = document.getElementById('rectFracVierge').checked;
+  const showCaption = document.getElementById('rectFracShowCaption').checked;
   if(!(den>0&&num>=0)) return;
-  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert,vierge), {num,den,vert,vierge}, 'reopenRectFrac');
+  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert,vierge,showCaption), {num,den,vert,vierge,showCaption}, 'reopenRectFrac');
   closeRectFracTool();
 }
 function reopenRectFrac(data){
@@ -2434,6 +2446,7 @@ function reopenRectFrac(data){
   document.getElementById('rectFracDen').value = data.den;
   document.getElementById('rectFracVert').checked = data.vert;
   document.getElementById('rectFracVierge').checked = !!data.vierge;
+  document.getElementById('rectFracShowCaption').checked = data.showCaption!==false;
   previewRectFrac();
 }
 
@@ -3154,6 +3167,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.61', items:[
+    "Fix -- le PDF d'évaluation restait blanc : la combinaison précédente (rendu foreignObject + astuce de dissimulation par hauteur nulle) empêchait tout rendu. Corrigé : dissimulation par décalage hors-écran, et chaque figure SVG est désormais convertie en image avant capture (plus fiable). Disque et rectangle fractionnés : nouvelle case pour afficher ou masquer la fraction en légende, et leur taille est maintenant plafonnée (ils ne s'étirent plus sur toute la largeur disponible), en s'adaptant à l'espace choisi pour les fractions à plusieurs formes. Aperçu de l'évaluation : renommé, proportions identiques au PDF (largeur 700px), et repères visuels de saut de page.",
+  ]},
   { version:'2026-08-04.60', items:[
     "Créer une évaluation -- nombre de colonnes libre (jusqu'à 8, au lieu de 3 fixes). Les blocs insérés (figures, disques...) sont désormais redimensionnables à la souris (poignée en bas à droite), taille conservée dans l'aperçu et l'export. Nouvel en-tête de la feuille d'évaluation : classe(s) en haut à gauche, date en haut à droite, titre « Évaluation de Mathématiques » centré, puis NOM/Prénom, puis un cadre libre de 3 cm.",
   ]},
@@ -4529,20 +4545,60 @@ function buildEvaluationContentHTML(){
     `).join('')}
   `;
 }
-function exportEvaluationPDF(){
+/* Convertit un <svg> en image PNG (data URL) : html2canvas a un support natif des SVG très
+   limité (page blanche ou figures manquantes selon les cas) ; une image bitmap classique se
+   capture toujours correctement. */
+function svgToPngDataUrl(svgEl, scale){
+  return new Promise((resolve)=>{
+    try{
+      const rect = svgEl.getBoundingClientRect();
+      const w = Math.max(1, Math.round(rect.width || svgEl.viewBox.baseVal.width || 200));
+      const h = Math.max(1, Math.round(rect.height || svgEl.viewBox.baseVal.height || 200));
+      const xml = new XMLSerializer().serializeToString(svgEl);
+      const svg64 = btoa(unescape(encodeURIComponent(xml)));
+      const img = new Image();
+      img.onload = ()=>{
+        const canvas = document.createElement('canvas');
+        canvas.width = w*scale; canvas.height = h*scale;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fff'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve({dataUrl: canvas.toDataURL('image/png'), w, h});
+      };
+      img.onerror = ()=>resolve(null);
+      img.src = 'data:image/svg+xml;base64,' + svg64;
+    }catch(e){ resolve(null); }
+  });
+}
+/* Remplace tous les <svg> d'un conteneur par l'image bitmap équivalente. */
+async function replaceSvgsWithImages(container){
+  const svgs = Array.from(container.querySelectorAll('svg'));
+  for(const svg of svgs){
+    const res = await svgToPngDataUrl(svg, 2);
+    if(!res) continue;
+    const img = document.createElement('img');
+    img.src = res.dataUrl;
+    img.style.cssText = svg.getAttribute('style') || '';
+    img.width = res.w; img.height = res.h;
+    svg.replaceWith(img);
+  }
+}
+async function exportEvaluationPDF(){
   if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant de générer le PDF."); return; }
   if(typeof html2pdf==='undefined'){ alert("La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?) — utilisez Ctrl/Cmd+P pour imprimer à la place."); return; }
-  // Important (voir exportCahierAsPDF) : le conteneur doit être ajouté au DOM pour que
-  // html2canvas puisse le mesurer et le capturer -- un élément jamais inséré ne fait l'objet
-  // d'aucun rendu, d'où la page blanche.
+  // Important (voir exportCahierAsPDF) : le conteneur doit être ajouté au DOM, VISIBLE (juste
+  // déporté hors de l'écran) pour que html2canvas puisse le mesurer et le capturer -- un
+  // élément masqué par height:0 est mesuré comme vide par le rendu foreignObject, d'où la page
+  // blanche rencontrée précédemment.
   const clip = document.createElement('div');
-  clip.style.cssText = 'height:0;overflow:hidden;';
+  clip.style.cssText = 'position:fixed;top:0;left:-99999px;';
   const wrapper = document.createElement('div');
-  wrapper.style.cssText = 'width:700px;font-family:Inter,sans-serif;padding:10px;color:#20242E;font-size:1rem;line-height:1.7;';
+  wrapper.style.cssText = 'width:700px;font-family:Inter,sans-serif;padding:10px;color:#20242E;font-size:1rem;line-height:1.7;background:#fff;';
   wrapper.innerHTML = buildEvaluationContentHTML();
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
-  html2pdf().set({margin:10, filename:'evaluation-'+document.getElementById('evalNiveau').value+'.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+  await replaceSvgsWithImages(wrapper);
+  html2pdf().set({margin:10, filename:'evaluation-'+document.getElementById('evalNiveau').value+'.pdf', html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
     .from(wrapper).save()
     .then(()=>clip.remove())
     .catch(()=>{ clip.remove(); alert("La génération du PDF a échoué dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer la page à la place."); });
@@ -4550,8 +4606,27 @@ function exportEvaluationPDF(){
 
 function openEvalPreview(){
   if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant l'aperçu."); return; }
-  document.getElementById('evalPreviewContent').innerHTML = buildEvaluationContentHTML();
+  const content = document.getElementById('evalPreviewContent');
+  content.innerHTML = buildEvaluationContentHTML();
   document.getElementById('evalPreviewModalOverlay').style.display='flex';
+  // Repères de saut de page : la largeur de ce conteneur (700px) correspond à la largeur
+  // utile du PDF (A4, marges de 10mm de chaque côté) -- on peut donc déduire la hauteur d'une
+  // page dans les mêmes proportions et matérialiser où les pages se coupent réellement.
+  requestAnimationFrame(()=>{
+    const pxPerMm = 700/190; // largeur utile A4 (210mm - 2x10mm de marge) mise à l'échelle sur 700px
+    const pageHeightPx = 277*pxPerMm; // hauteur utile A4 (297mm - 2x10mm de marge)
+    const totalHeight = content.scrollHeight;
+    const marks = document.getElementById('evalPreviewPageMarks');
+    let html = '';
+    const nPages = Math.max(1, Math.ceil(totalHeight/pageHeightPx));
+    for(let p=1; p<nPages; p++){
+      const y = p*pageHeightPx;
+      html += `<div style="position:absolute;top:${y}px;left:0;width:100%;border-top:2px dashed #E35D3A;"></div>
+        <div style="position:absolute;top:${y+4}px;left:0;background:#E35D3A;color:#fff;font-size:.7rem;padding:1px 6px;border-radius:0 4px 4px 0;font-family:'Space Grotesk',sans-serif;">Page ${p+1} →</div>`;
+    }
+    marks.innerHTML = html;
+    marks.style.height = totalHeight+'px';
+  });
 }
 function closeEvalPreview(){ document.getElementById('evalPreviewModalOverlay').style.display='none'; }
 async function removeCahierEntry(i){
@@ -4715,7 +4790,7 @@ function exportCahierAsPDF(){
   wrapper.innerHTML = `<h1 style="font-family:'Space Grotesk',sans-serif;">Cahier de corrections</h1>` + buildCahierNotebookHTML();
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
-  html2pdf().set({margin:10, filename:'cahier-de-corrections.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+  html2pdf().set({margin:10, filename:'cahier-de-corrections.pdf', html2canvas:{scale:2, useCORS:true, }, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
     .from(wrapper).save()
     .then(()=>clip.remove())
     .catch(()=>{ clip.remove(); alert("La génération du PDF a échoué dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer la page à la place."); });
@@ -4962,27 +5037,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-60"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-60"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-60"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-60"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-60"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-60"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-60"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-60"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-60"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-60"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-60"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-60"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-60"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-60"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-60"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-60"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-60"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-60"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-60"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-60"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-60"></script>
-<script src="compte-est-bon.js?v=20260804-60"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-61"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-61"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-61"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-61"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-61"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-61"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-61"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-61"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-61"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-61"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-61"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-61"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-61"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-61"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-61"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-61"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-61"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-61"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-61"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-61"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-61"></script>
+<script src="compte-est-bon.js?v=20260804-61"></script>
 </body>
 </html>
