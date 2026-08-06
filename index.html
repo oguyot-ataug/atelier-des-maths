@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-56">
+<link rel="stylesheet" href="styles.css?v=20260804-57">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.56</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.57</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -189,9 +189,11 @@
         <label class="hint" style="margin:0;">Min : <input type="number" id="axeMin" value="-5" style="width:70px;"></label>
         <label class="hint" style="margin:0;">Max : <input type="number" id="axeMax" value="5" style="width:70px;"></label>
         <label class="hint" style="margin:0;">Pas : <input type="number" id="axeStep" value="1" style="width:70px;"></label>
+        <label class="hint" style="margin:0;">Partager chaque unité en : <input type="number" id="axeSubDiv" value="1" min="1" style="width:60px;"></label>
         <input type="text" id="axePoints" placeholder="Points (ex. A(2,5) B(3/4))" style="flex:1;min-width:200px;">
         <button type="button" class="btn secondary" onclick="previewAxe()">Aperçu</button>
       </div>
+      <p class="hint" style="margin:-6px 0 10px;">Utile pour un axe vierge (sans point) où les élèves doivent placer eux-mêmes des fractions : par exemple, partager en 4 fait apparaître un trait à chaque quart d'unité.</p>
       <div id="axePreview"></div>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="insertAxe()">Insérer l'axe</button>
@@ -217,6 +219,7 @@
       <div class="tool-row" style="margin-bottom:10px;">
         <label class="hint" style="margin:0;">Parts colorées : <input type="number" id="disqueNum" value="3" min="0" style="width:60px;"></label>
         <label class="hint" style="margin:0;">Parts totales : <input type="number" id="disqueDen" value="4" min="1" style="width:60px;"></label>
+        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueVierge"> Laisser vierge (à colorier par l'élève)</label>
         <button type="button" class="btn secondary" onclick="previewDisque()">Aperçu</button>
       </div>
       <div id="disquePreview"></div>
@@ -231,6 +234,7 @@
         <label class="hint" style="margin:0;">Parts colorées : <input type="number" id="rectFracNum" value="3" min="0" style="width:60px;"></label>
         <label class="hint" style="margin:0;">Parts totales : <input type="number" id="rectFracDen" value="4" min="1" style="width:60px;"></label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracVert"> Bandes verticales (au lieu d'horizontales)</label>
+        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracVierge"> Laisser vierge (à colorier par l'élève)</label>
         <button type="button" class="btn secondary" onclick="previewRectFrac()">Aperçu</button>
       </div>
       <div id="rectFracPreview"></div>
@@ -2131,7 +2135,7 @@ function parseNamedPoints1D(raw){
   }
   return out;
 }
-function buildAxeSvg(min,max,step,points){
+function buildAxeSvg(min,max,step,points,manualSubDiv){
   const W=560,H=110,padX=30,y=55;
   const scale = (W-2*padX)/(max-min);
   const xOf = v => padX + (v-min)*scale;
@@ -2143,8 +2147,11 @@ function buildAxeSvg(min,max,step,points){
       <text x="${x}" y="${y+24}" font-size="13" text-anchor="middle" font-family="JetBrains Mono, monospace">${Number(v.toFixed(6))}</text>`;
   }
   // Subdivision de chaque unité selon le PPCM des dénominateurs demandés (ex. 1/4 et 7/6
-  // donnent un PPCM de 12 : chaque unité est coupée en douzièmes, ce qui convient aux deux).
+  // donnent un PPCM de 12 : chaque unité est coupée en douzièmes, ce qui convient aux deux) et/ou
+  // le partage manuel choisi (utile pour un axe VIERGE, sans point, où les élèves placeront
+  // eux-mêmes des fractions -- ex. partager en 4 sans aucun point donné).
   const dens = (points||[]).map(p=>p.den).filter(Boolean);
+  if(manualSubDiv>1) dens.push(manualSubDiv);
   if(dens.length){
     const gcd = (a,b) => b===0 ? a : gcd(b, a%b);
     const lcm = (a,b) => a*b/gcd(a,b);
@@ -2165,7 +2172,7 @@ function buildAxeSvg(min,max,step,points){
     pts += `<circle cx="${x}" cy="${y}" r="4.5" fill="#FF8208"/>
       <text x="${x}" y="${y-14}" font-size="14" font-weight="700" text-anchor="middle" fill="#FF8208" font-family="Space Grotesk, sans-serif">${p.label}</text>`;
   });
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:560px;display:block;margin:6px auto;background:#fff;">
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:560px;display:block;margin:6px auto;background:#fff;">
     <line x1="${padX-10}" y1="${y}" x2="${W-padX+10}" y2="${y}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#axeArrow)"/>
     <defs><marker id="axeArrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker></defs>
     ${ticks}${pts}
@@ -2173,17 +2180,19 @@ function buildAxeSvg(min,max,step,points){
 }
 function previewAxe(){
   const min=parseFloat(document.getElementById('axeMin').value), max=parseFloat(document.getElementById('axeMax').value), step=parseFloat(document.getElementById('axeStep').value)||1;
+  const subDiv=parseInt(document.getElementById('axeSubDiv').value)||1;
   const points = parseNamedPoints1D(document.getElementById('axePoints').value);
-  document.getElementById('axePreview').innerHTML = (max>min&&step>0) ? buildAxeSvg(min,max,step,points) : '<p class="hint" style="color:var(--accent-orange);">Le maximum doit être supérieur au minimum, le pas positif.</p>';
+  document.getElementById('axePreview').innerHTML = (max>min&&step>0) ? buildAxeSvg(min,max,step,points,subDiv) : '<p class="hint" style="color:var(--accent-orange);">Le maximum doit être supérieur au minimum, le pas positif.</p>';
 }
 function openAxeTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('axePanel').style.display='block'; document.getElementById('axePreview').innerHTML=''; document.getElementById('axePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeAxeTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('axePanel').style.display='none'; }
 function insertAxe(){
   const min=parseFloat(document.getElementById('axeMin').value), max=parseFloat(document.getElementById('axeMax').value), step=parseFloat(document.getElementById('axeStep').value)||1;
   if(!(max>min&&step>0)) return;
+  const subDiv=parseInt(document.getElementById('axeSubDiv').value)||1;
   const pointsRaw = document.getElementById('axePoints').value;
   const points = parseNamedPoints1D(pointsRaw);
-  addPendingBlock('axe', buildAxeSvg(min,max,step,points), {min,max,step,pointsRaw}, 'reopenAxe');
+  addPendingBlock('axe', buildAxeSvg(min,max,step,points,subDiv), {min,max,step,subDiv,pointsRaw}, 'reopenAxe');
   closeAxeTool();
 }
 function reopenAxe(data){
@@ -2191,6 +2200,7 @@ function reopenAxe(data){
   document.getElementById('axeMin').value = data.min;
   document.getElementById('axeMax').value = data.max;
   document.getElementById('axeStep').value = data.step;
+  document.getElementById('axeSubDiv').value = data.subDiv||1;
   document.getElementById('axePoints').value = data.pointsRaw;
   previewAxe();
 }
@@ -2227,7 +2237,7 @@ function buildRepereSvg(xMin,xMax,yMin,yMax,points){
     pts += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="4.5" fill="#FF8208"/>
       <text x="${X(p.x)+8}" y="${Y(p.y)-8}" font-size="14" font-weight="700" fill="#FF8208" font-family="Space Grotesk, sans-serif">${p.label}</text>`;
   });
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:340px;display:block;margin:6px auto;background:#fff;">
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:340px;display:block;margin:6px auto;background:#fff;">
     <defs>
       <marker id="repAxeArrowX" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
       <marker id="repAxeArrowY" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
@@ -2274,36 +2284,40 @@ function singleDisqueSvg(filled, den){
     const large = (2*Math.PI/den)>Math.PI ? 1:0;
     parts += `<path d="M${cx},${cy} L${x0},${y0} A${r},${r} 0 ${large} 1 ${x1},${y1} Z" fill="${i<filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
   }
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:150px;display:block;">${parts}</svg>`;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:150px;display:block;">${parts}</svg>`;
 }
 /* Si le numérateur dépasse le dénominateur (fraction impropre, ex. 5/4), il faut plusieurs
    disques : autant de disques complets que nécessaire, le dernier ne montrant que le reste. */
-function buildDisqueSvg(num,den){
+function buildDisqueSvg(num,den,vierge){
   const nShapes = Math.max(1, Math.ceil(num/den));
   let discs = '';
   for(let i=0;i<nShapes;i++){
-    const filled = Math.max(0, Math.min(den, num - i*den));
+    const filled = vierge ? 0 : Math.max(0, Math.min(den, num - i*den));
     discs += singleDisqueSvg(filled, den);
   }
+  const caption = vierge ? `Colorie ${num}/${den} du disque` : `${num}/${den}`;
   return `<div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">${discs}</div>
-    <p class="hint" style="text-align:center;margin:4px 0 0;">${num}/${den}</p>`;
+    <p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>`;
 }
 function previewDisque(){
   const num=parseInt(document.getElementById('disqueNum').value), den=parseInt(document.getElementById('disqueDen').value);
-  document.getElementById('disquePreview').innerHTML = (den>0&&num>=0) ? buildDisqueSvg(num,den) : '';
+  const vierge = document.getElementById('disqueVierge').checked;
+  document.getElementById('disquePreview').innerHTML = (den>0&&num>=0) ? buildDisqueSvg(num,den,vierge) : '';
 }
 function openDisqueTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('disquePanel').style.display='block'; document.getElementById('disquePreview').innerHTML=''; document.getElementById('disquePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeDisqueTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('disquePanel').style.display='none'; }
 function insertDisque(){
   const num=parseInt(document.getElementById('disqueNum').value), den=parseInt(document.getElementById('disqueDen').value);
+  const vierge = document.getElementById('disqueVierge').checked;
   if(!(den>0&&num>=0)) return;
-  addPendingBlock('disque', buildDisqueSvg(num,den), {num,den}, 'reopenDisque');
+  addPendingBlock('disque', buildDisqueSvg(num,den,vierge), {num,den,vierge}, 'reopenDisque');
   closeDisqueTool();
 }
 function reopenDisque(data){
   openDisqueTool();
   document.getElementById('disqueNum').value = data.num;
   document.getElementById('disqueDen').value = data.den;
+  document.getElementById('disqueVierge').checked = !!data.vierge;
   previewDisque();
 }
 
@@ -2320,32 +2334,35 @@ function singleRectFracSvg(filled, den, vertical){
       parts += `<rect x="0" y="${i*h}" width="${W}" height="${h}" fill="${i<filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
     }
   }
-  return `<svg viewBox="0 0 ${W} ${H}" style="width:180px;display:block;">${parts}</svg>`;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:180px;display:block;">${parts}</svg>`;
 }
 /* Comme pour les disques : un numérateur supérieur au dénominateur (fraction impropre) a
    besoin de plusieurs rectangles, le dernier ne montrant que le reste. */
-function buildRectFracSvg(num,den,vertical){
+function buildRectFracSvg(num,den,vertical,vierge){
   const nShapes = Math.max(1, Math.ceil(num/den));
   let rects = '';
   for(let i=0;i<nShapes;i++){
-    const filled = Math.max(0, Math.min(den, num - i*den));
+    const filled = vierge ? 0 : Math.max(0, Math.min(den, num - i*den));
     rects += singleRectFracSvg(filled, den, vertical);
   }
+  const caption = vierge ? `Colorie ${num}/${den} du rectangle` : `${num}/${den}`;
   return `<div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">${rects}</div>
-    <p class="hint" style="text-align:center;margin:4px 0 0;">${num}/${den}</p>`;
+    <p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>`;
 }
 function previewRectFrac(){
   const num=parseInt(document.getElementById('rectFracNum').value), den=parseInt(document.getElementById('rectFracDen').value);
   const vert = document.getElementById('rectFracVert').checked;
-  document.getElementById('rectFracPreview').innerHTML = (den>0&&num>=0) ? buildRectFracSvg(num,den,vert) : '';
+  const vierge = document.getElementById('rectFracVierge').checked;
+  document.getElementById('rectFracPreview').innerHTML = (den>0&&num>=0) ? buildRectFracSvg(num,den,vert,vierge) : '';
 }
 function openRectFracTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('rectFracPanel').style.display='block'; document.getElementById('rectFracPreview').innerHTML=''; document.getElementById('rectFracPanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeRectFracTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('rectFracPanel').style.display='none'; }
 function insertRectFrac(){
   const num=parseInt(document.getElementById('rectFracNum').value), den=parseInt(document.getElementById('rectFracDen').value);
   const vert = document.getElementById('rectFracVert').checked;
+  const vierge = document.getElementById('rectFracVierge').checked;
   if(!(den>0&&num>=0)) return;
-  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert), {num,den,vert}, 'reopenRectFrac');
+  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert,vierge), {num,den,vert,vierge}, 'reopenRectFrac');
   closeRectFracTool();
 }
 function reopenRectFrac(data){
@@ -2353,6 +2370,7 @@ function reopenRectFrac(data){
   document.getElementById('rectFracNum').value = data.num;
   document.getElementById('rectFracDen').value = data.den;
   document.getElementById('rectFracVert').checked = data.vert;
+  document.getElementById('rectFracVierge').checked = !!data.vierge;
   previewRectFrac();
 }
 
@@ -3073,6 +3091,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.57', items:[
+    "Fix -- l'axe gradué (et les autres figures SVG) n'apparaissaient pas dans le PDF : ajout de dimensions explicites (width/height), en plus du viewBox, pour une capture fiable. Axe gradué : nouveau champ « Partager chaque unité en » pour paramétrer la subdivision d'un axe VIERGE (sans point), utile pour que les élèves y placent eux-mêmes des fractions. Disque et rectangle fractionnés : nouvelle case « Laisser vierge » -- affiche la forme entièrement blanche avec la consigne (\"Colorie 5/6\"), pour que l'élève colorie lui-même au lieu d'avoir la réponse déjà coloriée.",
+  ]},
   { version:'2026-08-04.56', items:[
     "Créer une évaluation -- fix : le PDF restait blanc (le conteneur n'était jamais ajouté à la page, nécessaire pour la capture). Corrigé avec la même méthode éprouvée que le cahier de corrections. Chaque exercice dispose désormais des 7 mêmes outils que l'outil de correction (figure, tableau, division posée, division décimale, axe gradué, repère, disque et rectangle fractionnés), avec leurs propres boutons modifier/supprimer -- ces outils sont maintenant partagés entre les deux pages plutôt que propres à l'outil de correction.",
   ]},
@@ -4814,27 +4835,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-56"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-56"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-56"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-56"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-56"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-56"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-56"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-56"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-56"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-56"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-56"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-56"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-56"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-56"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-56"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-56"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-56"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-56"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-56"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-56"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-56"></script>
-<script src="compte-est-bon.js?v=20260804-56"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-57"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-57"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-57"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-57"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-57"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-57"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-57"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-57"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-57"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-57"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-57"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-57"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-57"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-57"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-57"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-57"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-57"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-57"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-57"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-57"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-57"></script>
+<script src="compte-est-bon.js?v=20260804-57"></script>
 </body>
 </html>
