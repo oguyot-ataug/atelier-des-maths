@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.46</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.47</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1412,17 +1412,6 @@ function katexSpan(expr){
    Calcul littéral, sans dépendre du chargement de KaTeX (contrairement à katexSpan, qui peut
    dupliquer visuellement le texte si sa feuille de style ne charge pas -- overkill pour une
    simple lettre isolée). */
-function mathVarSpan(letter){
-  return `<i style="font-style:italic;font-weight:400;">${letter}</i>`;
-}
-/* Même logique que mathVarSpan mais droite (non italique) : pour un chiffre juste à côté d'une
-   variable (ex. le "4" de "4x"), afin qu'il ne reste pas en gras hérité du contexte environnant.
-   On ne change pas de police (juste le style/poids) : une police de secours aux métriques
-   différentes de la police du contexte décale la ligne de base et fait paraître le chiffre
-   "trop bas" -- en gardant la police héritée, l'alignement reste garanti identique. */
-function mathRomanSpan(digits){
-  return `<span style="font-style:normal;font-weight:400;">${digits}</span>`;
-}
 /* Rend en LaTeX (via KaTeX) tout élément statique du cours marqué class="tex",
    son contenu texte étant la source LaTeX à afficher (ex. \frac{3}{4}).
    Réutilisable pour n'importe quel chapitre. */
@@ -1474,11 +1463,13 @@ function renderMathText(raw){
   // 7) variable (x, y, z, n, k, t...) ou lettre majuscule isolée (A, B, E... utilisée pour nommer
   //    une expression ou un point, comme partout ailleurs sur le site), isolée ou précédée d'un
   //    coefficient collé (5x, 12y, 2,5x... = multiplication implicite, notation mathématique
-  //    standard). Les occurrences déjà à l'intérieur d'une fraction/racine/exposant sont
-  //    protégées (étape ci-dessus) et donc hors d'atteinte : KaTeX les italicise déjà tout seul.
+  //    standard). Rendu par le MÊME moteur KaTeX que les fractions (protégé de la même façon),
+  //    pour garantir exactement la même police, taille et graisse partout -- mélanger KaTeX pour
+  //    les fractions et une simple police italique pour le reste donnait des tailles/styles
+  //    incohérents d'une ligne à l'autre.
   text = text.replace(/\b(\d+(?:[.,]\d+)?)?([xyznktA-Z])\b/g, (m,digits,letter)=>{
-    const prefix = digits ? mathRomanSpan(digits.replace(',','.')) : '';
-    return `${prefix}${mathVarSpan(letter)}`;
+    const expr = digits ? `${digits.replace(',','.')}${letter}` : letter;
+    return protect(katexSpan(expr));
   });
   text = text.replace(/\n/g,'<br>');
   // on restitue les blocs protégés
@@ -2471,6 +2462,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.47', items:[
+    "Fix -- Outil de correction : la lettre-variable n'était pas assez arrondie et le chiffre juste devant paraissait trop grand -- mélanger KaTeX (fractions) et une police italique maison (variables) donnait des tailles incohérentes. Les variables et coefficients passent maintenant par le même moteur KaTeX que les fractions (protégé de la même façon contre toute interférence), garantissant partout la même police, taille et graisse.",
+  ]},
   { version:'2026-08-04.46', items:[
     "Fix -- Outil de correction : le chiffre devant une variable (ex. le 4 de \"4x\") apparaissait trop bas, décalé par rapport à la lettre. Cause : la police de secours (Cambria Math/Georgia) a des métriques différentes de la police du reste du texte, ce qui décale la ligne de base. Corrigé en gardant la police héritée du contexte (juste italique pour les variables), garantissant un alignement identique.",
   ]},
