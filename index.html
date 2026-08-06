@@ -17,7 +17,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.50</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.51</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -574,7 +574,7 @@
     <div id="divisionDecPanel" class="figure-wrap" style="display:none;">
       <p class="hint" style="margin:0 0 10px;">Division d'un nombre entier par un nombre entier, poursuivie après la virgule (valeur exacte ou approchée).</p>
       <div class="tool-row" style="margin-bottom:10px;">
-        <input type="number" id="divDecDividende" placeholder="Dividende (ex. 57)" style="width:160px;">
+        <input type="text" inputmode="decimal" id="divDecDividende" placeholder="Dividende (ex. 10,5)" style="width:160px;">
         <input type="number" id="divDecDiviseur" placeholder="Diviseur (ex. 8)" style="width:160px;">
         <label class="hint" style="margin:0;">Décimales max : <input type="number" id="divDecMax" value="4" min="1" max="8" style="width:55px;"></label>
         <button type="button" class="btn secondary" onclick="previewDivisionDecimale()">Calculer</button>
@@ -1778,7 +1778,7 @@ function dpAlignedCells(str, endCol, N){
   }
   return cells;
 }
-function dpRenderDivisionTable(rows, quotient, divisor){
+function dpRenderDivisionTable(rows, quotient, divisor, commaCol){
   const cellStyle = 'width:22px;text-align:center;padding:2px 0;';
   const rowsHtml = rows.map(r=>{
     const signTd = `<td style="width:16px;text-align:center;${r.underline?'border-bottom:1.5px solid var(--ink);':''}">${r.sign?'−':''}</td>`;
@@ -1786,6 +1786,7 @@ function dpRenderDivisionTable(rows, quotient, divisor){
       let style = cellStyle;
       if(r.bold) style += 'font-weight:700;';
       if(r.underline && (r.endCol===undefined || ci<=r.endCol)) style += 'border-bottom:1.5px solid var(--ink);';
+      if(commaCol!==undefined && ci===commaCol) style += 'border-right:2px dashed var(--ink);';
       return `<td style="${style}">${c}</td>`;
     }).join('');
     return `<tr>${signTd}${tds}</tr>`;
@@ -1888,18 +1889,25 @@ function reopenDivisionPosee(data){
    ============================================================ */
 
 /* ---- Division décimale (poursuite après la virgule) ---- */
-function computeDivisionDecimale(dividend, divisor, maxDec){
-  if(!Number.isInteger(dividend) || !Number.isInteger(divisor) || divisor===0 || dividend<0 || divisor<0) return null;
+function computeDivisionDecimale(dividendRaw, divisor, maxDec){
+  const cleanStr = String(dividendRaw).trim().replace(',', '.');
+  if(!/^\d+(\.\d+)?$/.test(cleanStr)) return null;
+  if(!Number.isInteger(divisor) || divisor<=0) return null;
+  const [intPart, decPart=''] = cleanStr.split('.');
+  const digits = (intPart + decPart).split('').map(Number);
+  const givenCommaPos = decPart.length>0 ? intPart.length : null; // index dans "digits" où la virgule DONNÉE se situe
+  const dividendValue = parseFloat(cleanStr);
   let current = 0, quotient = '', commaCol = null, started = false, repeating = false;
   const steps = [];
   let idx = 0;
-  const digits = String(dividend).split('').map(Number);
   let decCount = 0, exact = false;
   const seenRemainders = new Set();
   while(true){
     let bringDown;
-    if(idx < digits.length){ bringDown = digits[idx]; }
-    else{
+    if(idx < digits.length){
+      bringDown = digits[idx];
+      if(givenCommaPos!==null && idx===givenCommaPos && commaCol===null){ commaCol = idx; quotient += ','; }
+    } else{
       if(decCount>=maxDec) break;
       bringDown = 0;
       decCount++;
@@ -1911,7 +1919,7 @@ function computeDivisionDecimale(dividend, divisor, maxDec){
     const after = current - sub;
     // on ignore les tout premiers chiffres insuffisants seuls (ex. le "1" de "10÷3") : on ne
     // commence à afficher une étape qu'une fois le premier chiffre du quotient obtenu, ou
-    // arrivé au dernier chiffre de la partie entière.
+    // arrivé au dernier chiffre de la partie entière DONNÉE (avant une éventuelle virgule).
     if(started || qDigit>0 || idx>=digits.length-1){
       steps.push({before: current, qDigit, sub, after, col: idx});
       started = true;
@@ -1921,39 +1929,42 @@ function computeDivisionDecimale(dividend, divisor, maxDec){
     idx++;
     if(current===0 && idx>=digits.length){ exact=true; break; }
     if(commaCol!==null && idx>digits.length){
-      // dans la partie décimale : si ce reste est déjà apparu, le motif se répète à
-      // l'identique indéfiniment -- inutile de continuer à dérouler les mêmes lignes.
+      // dans la partie décimale ajoutée (zéros) : si ce reste est déjà apparu, le motif se
+      // répète à l'identique indéfiniment -- inutile de continuer à dérouler les mêmes lignes.
       if(seenRemainders.has(current)){ repeating = true; break; }
       seenRemainders.add(current);
     }
     if(idx - digits.length > 60) break; // garde-fou
   }
   quotient = quotient.replace(/^0+(\d)/, '$1') || '0';
-  return {dividend, divisor, quotient, exact, steps, decCount, repeating};
+  const dividendDisplay = cleanStr.replace('.', ',');
+  return {dividend: dividendDisplay, dividendValue, divisor, quotient, exact, steps, decCount, repeating, digits, givenCommaPos};
 }
 function divisionDecimaleHTML(res, maxDec){
-  if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le dividende et le diviseur doivent être des entiers positifs, le diviseur non nul.</p>';
-  const dividendStr = String(res.dividend);
-  const totalCols = Math.max(dividendStr.length, ...res.steps.map(s=>s.col+1));
-  const rows = [{cells: dpAlignedCells(dividendStr, dividendStr.length-1, totalCols), bold:true}];
+  if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le dividende doit être un nombre décimal ou entier positif, le diviseur un entier positif.</p>';
+  const dividendDigitsStr = res.digits.join('');
+  const totalCols = Math.max(dividendDigitsStr.length, ...res.steps.map(s=>s.col+1));
+  const rows = [{cells: dpAlignedCells(dividendDigitsStr, dividendDigitsStr.length-1, totalCols), bold:true}];
   res.steps.forEach((s,i)=>{
     rows.push({cells: dpAlignedCells(String(s.sub), s.col, totalCols), sign:true, underline:true, endCol:s.col});
     const next = res.steps[i+1];
     if(next) rows.push({cells: dpAlignedCells(String(next.before), next.col, totalCols)});
     else rows.push({cells: dpAlignedCells(String(s.after), s.col, totalCols)});
   });
-  const table = dpRenderDivisionTable(rows, res.quotient + (res.repeating?'…':''), res.divisor);
+  const commaColIdx = res.givenCommaPos!==null && res.givenCommaPos!==undefined ? res.givenCommaPos-1 : undefined;
+  const table = dpRenderDivisionTable(rows, res.quotient + (res.repeating?'…':''), res.divisor, commaColIdx);
   const precisionMots = {1:'dixième',2:'centième',3:'millième'};
   const tag = res.exact ? 'valeur exacte' : `valeur approchée${precisionMots[maxDec] && !res.repeating ? ' au '+precisionMots[maxDec] : ''}`;
   const repeatNote = res.repeating ? `<p class="hint" style="margin:6px 0 0;color:var(--accent-orange);">Le reste ${res.steps[res.steps.length-1].after} revient à l'identique : le motif se répète indéfiniment, la division ne se termine jamais.</p>` : '';
   return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
+    <p class="hint" style="margin:0 0 8px;">${res.dividend} ÷ ${res.divisor}</p>
     ${table}
     ${repeatNote}
     <p class="hint" style="margin:6px 0 0;font-style:italic;">${tag}${(!res.exact && !res.repeating) ? ' (arrêtée à '+maxDec+' décimales)' : ''}</p>
   </div>`;
 }
 function previewDivisionDecimale(){
-  const a = parseInt(document.getElementById('divDecDividende').value);
+  const a = document.getElementById('divDecDividende').value;
   const b = parseInt(document.getElementById('divDecDiviseur').value);
   const maxDec = parseInt(document.getElementById('divDecMax').value)||4;
   const res = computeDivisionDecimale(a,b,maxDec);
@@ -1966,7 +1977,7 @@ function openDivisionDecTool(){
 }
 function closeDivisionDecTool(){ document.getElementById('divisionDecPanel').style.display='none'; }
 function insertDivisionDecimale(){
-  const a = parseInt(document.getElementById('divDecDividende').value);
+  const a = document.getElementById('divDecDividende').value;
   const b = parseInt(document.getElementById('divDecDiviseur').value);
   const maxDec = parseInt(document.getElementById('divDecMax').value)||4;
   const res = computeDivisionDecimale(a,b,maxDec);
@@ -2914,6 +2925,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.51', items:[
+    "Fix -- Outil de correction, division décimale : le dividende n'acceptait pas la virgule décimale (champ number, qui la rejette silencieusement, et le calcul lui-même n'acceptait qu'un entier). Corrigé : un dividende comme 10,5 est maintenant accepté, avec la virgule marquée visuellement dans la division posée par un trait pointillé entre les colonnes concernées.",
+  ]},
   { version:'2026-08-04.50', items:[
     "Outil de correction -- deux améliorations majeures : (1) la division décimale est maintenant posée en colonnes (dividende/diviseur/quotient), comme la division entière, plutôt qu'une liste de lignes de texte ; (2) chaque bloc ajouté (figure, tableau, division, axe, repère, disque, rectangle) est désormais indépendant, avec ses propres boutons ✏️ modifier et ✕ supprimer -- visibles uniquement côté professeur, jamais dans la fenêtre de projection.",
   ]},
