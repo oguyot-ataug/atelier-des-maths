@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-58">
+<link rel="stylesheet" href="styles.css?v=20260804-59">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.58</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.59</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -141,6 +141,15 @@
      evaluation. Places ici (hors de toute section .view) pour rester visibles quelle
      que soit la vue active -- sinon, ouverts depuis une evaluation, ils restaient caches
      derriere le display:none de la section Outil de correction. -->
+<div id="evalPreviewModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEvalPreview();">
+  <div class="modal-card" style="max-width:760px;max-height:88vh;overflow:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Aperçu de l'évaluation</strong>
+      <button class="modal-close" onclick="closeEvalPreview()">✕</button>
+    </div>
+    <div id="evalPreviewContent" style="font-family:Inter,sans-serif;color:#20242E;line-height:1.7;"></div>
+  </div>
+</div>
 <div id="toolsModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeAllToolPanels();">
   <div class="modal-card" style="max-width:900px;max-height:88vh;overflow:auto;">
     <div id="tableauPanel" class="figure-wrap" style="display:none;">
@@ -782,17 +791,24 @@
       <label class="hint" style="margin:0;">Nombre d'exercices : <input type="number" id="evalNbExo" value="4" min="1" max="10" style="width:55px;margin-left:4px;"></label>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
-      <label class="hint" style="margin:0;"><input type="checkbox" id="evalQuestionCours"> Inclure une question de cours (restituer une définition/propriété, sans calcul)</label>
-    </div>
-    <p class="hint" style="margin:0 0 6px;">Chapitres concernés :</p>
-    <div id="evalChapPicker" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;"></div>
-    <div class="figure-toolbar">
-      <button class="btn orange" onclick="generateEvaluationAI()" id="btnEvalAI">🤖 Générer les exercices avec l'IA</button>
+      <label class="hint" style="margin:0;"><input type="checkbox" id="evalUseAI" onchange="toggleEvalAIOptions()"> 🤖 Laisser l'IA proposer des exercices</label>
       <button class="btn secondary" onclick="addManualExercise()">+ Ajouter un exercice vierge</button>
+      <button class="btn secondary" onclick="openEvalPreview()">👁️ Aperçu de l'évaluation</button>
     </div>
-    <p class="hint" id="evalAIStatus" style="margin:8px 0 0;"></p>
+    <div id="evalAIOptions" style="display:none;">
+      <div class="tool-row" style="margin-bottom:10px;">
+        <label class="hint" style="margin:0;"><input type="checkbox" id="evalQuestionCours"> Inclure une question de cours (restituer une définition/propriété, sans calcul)</label>
+      </div>
+      <p class="hint" style="margin:0 0 6px;">Chapitres concernés :</p>
+      <div id="evalChapPicker" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;"></div>
+      <div class="figure-toolbar">
+        <button class="btn orange" onclick="generateEvaluationAI()" id="btnEvalAI">🤖 Générer les exercices avec l'IA</button>
+      </div>
+      <p class="hint" id="evalAIStatus" style="margin:8px 0 0;"></p>
+    </div>
   </div>
 
+  <p class="hint" id="evalBaremeTotal" style="margin:14px 0 0;font-weight:700;"></p>
   <div id="evalExercicesList"></div>
 
   <div class="tool-row" style="margin-top:10px;">
@@ -1737,7 +1753,7 @@ function renderBlocksContext(ctx){
 }
 function addPendingBlock(type, html, data, editFn){
   const ctx = currentBlocksContext;
-  (blocksStores[ctx] || (blocksStores[ctx]=[])).push({id: pendingBlockNextId++, type, html, data, editFn, ctx});
+  (blocksStores[ctx] || (blocksStores[ctx]=[])).push({id: pendingBlockNextId++, type, html, data, editFn, ctx, col:0});
   renderBlocksContext(ctx);
 }
 function removeBlock(id, ctx){
@@ -1758,20 +1774,46 @@ function editBlock(id, ctx){
 /* withControls=true : version affichée au professeur, avec les boutons ✏️/✕ (jamais montrée
    aux élèves). withControls=false : version "propre", envoyée à la fenêtre de projection,
    enregistrée dans le cahier, ou imprimée dans la feuille d'évaluation. */
+function singleBlockHTML(b, ctx, withControls, draggable){
+  if(!withControls) return `<div class="nb-figure-row">${b.html}</div>`;
+  const dragAttrs = draggable ? `draggable="true" ondragstart="evalDragStart(event,${b.id})" style="cursor:grab;"` : '';
+  return `<div class="nb-figure-row" ${dragAttrs} style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px 10px;margin:8px 0;">
+    <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;">
+      ${b.editFn ? `<button type="button" onclick="editBlock(${b.id},'${ctx}')" title="Modifier ce bloc" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✏️</button>` : ''}
+      <button type="button" onclick="removeBlock(${b.id},'${ctx}')" title="Supprimer ce bloc" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✕</button>
+    </div>
+    ${b.html}
+  </div>`;
+}
 function pendingBlocksHTML(withControls, ctx){
   ctx = ctx || 'global';
   const arr = blocksStores[ctx]||[];
   if(!arr.length) return '';
-  return arr.map(b=>{
-    if(!withControls) return `<div class="nb-figure-row">${b.html}</div>`;
-    return `<div class="nb-figure-row" style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px 10px;margin:8px 0;">
-      <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;">
-        ${b.editFn ? `<button type="button" onclick="editBlock(${b.id},'${ctx}')" title="Modifier ce bloc" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✏️</button>` : ''}
-        <button type="button" onclick="removeBlock(${b.id},'${ctx}')" title="Supprimer ce bloc" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✕</button>
-      </div>
-      ${b.html}
-    </div>`;
+  return arr.map(b=>singleBlockHTML(b, ctx, withControls, false)).join('');
+}
+/* Rendu en colonnes (glisser-déposer) : utilisé pour structurer un exercice d'évaluation en
+   2 ou 3 colonnes (ex. une figure à gauche, l'énoncé à droite). nCols<=1 revient au rendu
+   simple habituel. */
+let evalDragBlockId = null;
+function evalDragStart(e, id){ evalDragBlockId = id; e.dataTransfer.setData('text/plain', String(id)); }
+function evalDropInColumn(e, ctx, colIndex){
+  e.preventDefault();
+  const arr = blocksStores[ctx]||[];
+  const b = arr.find(x=>x.id===evalDragBlockId);
+  if(b){ b.col = colIndex; renderEvalExercicesList(); }
+  evalDragBlockId = null;
+}
+function blocksColumnsHTML(ctx, nCols, withControls){
+  const arr = blocksStores[ctx]||[];
+  if(!nCols || nCols<=1) return withControls ? pendingBlocksHTML(true, ctx) : pendingBlocksHTML(false, ctx);
+  const cols = Array.from({length:nCols}, ()=>[]);
+  arr.forEach(b=>{ const c = Math.min(b.col||0, nCols-1); cols[c].push(b); });
+  const colsHtml = cols.map((blocksInCol, ci)=>{
+    const inner = blocksInCol.map(b=>singleBlockHTML(b, ctx, withControls, true)).join('');
+    const dropAttrs = withControls ? `ondragover="event.preventDefault()" ondrop="evalDropInColumn(event,'${ctx}',${ci})"` : '';
+    return `<div class="eval-col" ${dropAttrs} style="flex:1;min-width:0;min-height:${withControls?'50px':'0'};${withControls?'border:1px dashed rgba(28,43,57,.15);border-radius:8px;padding:6px;':''}">${inner}</div>`;
   }).join('');
+  return `<div style="display:flex;gap:10px;align-items:flex-start;">${colsHtml}</div>`;
 }
 /* Barre des 7 outils, réutilisable pour l'outil de correction ou pour un exercice d'évaluation
    -- chaque bouton fixe le contexte visé juste avant d'ouvrir le panneau de l'outil. */
@@ -3091,6 +3133,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.59', items:[
+    "Créer une évaluation -- 4 améliorations : (1) chapitres et question de cours n'apparaissent que si on active « Laisser l'IA proposer des exercices » ; (2) chaque exercice a maintenant un titre et un barème, avec un total calculé automatiquement ; (3) possibilité d'organiser un exercice en 2 ou 3 colonnes, avec glisser-déposer pour placer une figure/un axe/un disque à côté du texte ; (4) bouton « Aperçu de l'évaluation » ouvrant la feuille complète en fenêtre modale.",
+  ]},
   { version:'2026-08-04.58', items:[
     "Tentative de fix -- PDF (évaluation, cahier, cours) toujours blanc malgré les dimensions explicites sur les SVG : la bibliothèque de capture (html2canvas) a un support limité des SVG en mode par défaut. Activé le rendu par foreignObject (plus fidèle pour ce type de contenu) sur les 3 exports PDF. À confirmer par un nouveau test -- si le problème persiste, la piste suivante sera de convertir les figures en image avant capture.",
   ]},
@@ -4346,7 +4391,7 @@ async function generateEvaluationAI(){
     const match = raw.match(/\[[\s\S]*\]/);
     if(!match) throw new Error('no-json');
     const list = JSON.parse(match[0]);
-    list.forEach(text => evaluationExercises.push({id: evalNextExoId++, text: String(text)}));
+    list.forEach(text => evaluationExercises.push({id: evalNextExoId++, text: String(text), title:'', bareme:null, nCols:1}));
     renderEvalExercicesList();
     statusEl.textContent = `${list.length} exercice(s) généré(s) par l'IA — à relire et ajuster avant impression.`;
   }catch(err){
@@ -4354,24 +4399,60 @@ async function generateEvaluationAI(){
   }
   document.getElementById('btnEvalAI').disabled = false;
 }
+function toggleEvalAIOptions(){
+  const on = document.getElementById('evalUseAI').checked;
+  document.getElementById('evalAIOptions').style.display = on ? 'block' : 'none';
+}
+function evalBaremeTotal(){
+  return evaluationExercises.reduce((sum,ex)=>sum + (parseFloat(ex.bareme)||0), 0);
+}
+function updateEvalBaremeTotalDisplay(){
+  const el = document.getElementById('evalBaremeTotal');
+  if(!el) return;
+  const total = evalBaremeTotal();
+  el.textContent = evaluationExercises.length ? `Barème total : ${total} point${total>1?'s':''}` : '';
+}
 function renderEvalExercicesList(){
   const box = document.getElementById('evalExercicesList');
   if(!box) return;
+  updateEvalBaremeTotalDisplay();
   if(!evaluationExercises.length){ box.innerHTML = ''; return; }
   box.innerHTML = evaluationExercises.map((ex,i)=>{
     const ctx = 'ex-'+ex.id;
+    const nCols = ex.nCols||1;
     return `
     <div class="tool-shell" style="margin-bottom:14px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exercice ${i+1}</strong>
         <button type="button" onclick="removeEvalExercice(${ex.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕ Supprimer l'exercice</button>
       </div>
+      <div class="tool-row" style="margin-bottom:8px;">
+        <input type="text" placeholder="Titre de l'exercice (facultatif)" value="${escapeHtml(ex.title||'')}" oninput="updateEvalExerciceField(${ex.id},'title',this.value)" style="flex:1;min-width:200px;padding:7px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);">
+        <label class="hint" style="margin:0;">Barème : <input type="number" min="0" step="0.5" value="${ex.bareme!=null?ex.bareme:''}" oninput="updateEvalExerciceField(${ex.id},'bareme',this.value)" style="width:60px;margin-left:4px;"> pt(s)</label>
+      </div>
       <textarea oninput="updateEvalExerciceText(${ex.id}, this.value)" rows="4" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;">${escapeHtml(ex.text)}</textarea>
       <div class="correction-preview eval-text-preview" style="margin-top:8px;">${ex.text.trim() ? renderMathText(ex.text) : ''}</div>
-      <div class="eval-blocks-preview">${pendingBlocksHTML(true, ctx)}</div>
-      <div class="tool-row" style="margin-top:10px;">${toolButtonsHTML(ctx)}</div>
+      <div class="eval-blocks-preview" style="margin-top:8px;">${blocksColumnsHTML(ctx, nCols, true)}</div>
+      <div class="tool-row" style="margin-top:10px;align-items:center;">
+        <span class="hint" style="margin:0;">Mise en page :</span>
+        <button type="button" class="btn secondary" onclick="setEvalCols(${ex.id},1)" style="${nCols===1?'font-weight:700;':''}">▭ 1 colonne</button>
+        <button type="button" class="btn secondary" onclick="setEvalCols(${ex.id},2)" style="${nCols===2?'font-weight:700;':''}">▥ 2 colonnes</button>
+        <button type="button" class="btn secondary" onclick="setEvalCols(${ex.id},3)" style="${nCols===3?'font-weight:700;':''}">▦ 3 colonnes</button>
+        ${nCols>1 ? '<span class="hint" style="margin:0;">Fais glisser un bloc pour changer sa colonne.</span>' : ''}
+      </div>
+      <div class="tool-row" style="margin-top:6px;">${toolButtonsHTML(ctx)}</div>
     </div>
   `;}).join('');
+}
+function setEvalCols(id, n){
+  const ex = evaluationExercises.find(e=>e.id===id);
+  if(ex) ex.nCols = n;
+  renderEvalExercicesList();
+}
+function updateEvalExerciceField(id, field, value){
+  const ex = evaluationExercises.find(e=>e.id===id);
+  if(ex) ex[field] = value;
+  if(field==='bareme') updateEvalBaremeTotalDisplay();
 }
 function updateEvalExerciceText(id, text){
   const ex = evaluationExercises.find(e=>e.id===id);
@@ -4386,7 +4467,7 @@ function removeEvalExercice(id){
   renderEvalExercicesList();
 }
 function addManualExercise(){
-  evaluationExercises.push({id: evalNextExoId++, text: ''});
+  evaluationExercises.push({id: evalNextExoId++, text: '', title:'', bareme:null, nCols:1});
   renderEvalExercicesList();
 }
 function clearEvaluation(){
@@ -4395,13 +4476,32 @@ function clearEvaluation(){
   evaluationExercises = [];
   renderEvalExercicesList();
 }
-function exportEvaluationPDF(){
-  if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant de générer le PDF."); return; }
-  if(typeof html2pdf==='undefined'){ alert("La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?) — utilisez Ctrl/Cmd+P pour imprimer à la place."); return; }
+function buildEvaluationContentHTML(){
   const niveau = document.getElementById('evalNiveau').value;
   const date = document.getElementById('evalDate').value;
   const duree = document.getElementById('evalDuree').value;
   const dateFmt = date ? new Date(date+'T00:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) : '';
+  const total = evalBaremeTotal();
+  return `
+    <div style="display:flex;justify-content:space-between;border-bottom:2px solid #1C1B2E;padding-bottom:10px;margin-bottom:24px;">
+      <div><strong style="font-size:1.15rem;">Évaluation — ${niveau}</strong>${dateFmt ? '<br>'+dateFmt : ''}</div>
+      <div style="text-align:right;">Durée : ${duree} min${total>0 ? ' · Barème : '+total+' pt(s)' : ''}<br>Nom : ______________________</div>
+    </div>
+    ${evaluationExercises.map((ex,i)=>`
+      <div style="margin-bottom:26px;">
+        <p style="font-weight:700;margin:0 0 8px;display:flex;justify-content:space-between;">
+          <span>Exercice ${i+1}${ex.title ? ' — '+escapeHtml(ex.title) : ''}</span>
+          ${ex.bareme ? `<span>${ex.bareme} pt(s)</span>` : ''}
+        </p>
+        <div>${renderMathText(ex.text)}</div>
+        ${blocksColumnsHTML('ex-'+ex.id, ex.nCols||1, false)}
+      </div>
+    `).join('')}
+  `;
+}
+function exportEvaluationPDF(){
+  if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant de générer le PDF."); return; }
+  if(typeof html2pdf==='undefined'){ alert("La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?) — utilisez Ctrl/Cmd+P pour imprimer à la place."); return; }
   // Important (voir exportCahierAsPDF) : le conteneur doit être ajouté au DOM pour que
   // html2canvas puisse le mesurer et le capturer -- un élément jamais inséré ne fait l'objet
   // d'aucun rendu, d'où la page blanche.
@@ -4409,27 +4509,21 @@ function exportEvaluationPDF(){
   clip.style.cssText = 'height:0;overflow:hidden;';
   const wrapper = document.createElement('div');
   wrapper.style.cssText = 'width:700px;font-family:Inter,sans-serif;padding:10px;color:#20242E;font-size:1rem;line-height:1.7;';
-  wrapper.innerHTML = `
-    <div style="display:flex;justify-content:space-between;border-bottom:2px solid #1C1B2E;padding-bottom:10px;margin-bottom:24px;">
-      <div><strong style="font-size:1.15rem;">Évaluation — ${niveau}</strong>${dateFmt ? '<br>'+dateFmt : ''}</div>
-      <div style="text-align:right;">Durée : ${duree} min<br>Nom : ______________________</div>
-    </div>
-    ${evaluationExercises.map((ex,i)=>`
-      <div style="margin-bottom:26px;">
-        <p style="font-weight:700;margin:0 0 8px;">Exercice ${i+1}</p>
-        <div>${renderMathText(ex.text)}</div>
-        ${pendingBlocksHTML(false, 'ex-'+ex.id)}
-      </div>
-    `).join('')}
-  `;
+  wrapper.innerHTML = buildEvaluationContentHTML();
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
-  html2pdf().set({margin:10, filename:'evaluation-'+niveau+'.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+  html2pdf().set({margin:10, filename:'evaluation-'+document.getElementById('evalNiveau').value+'.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
     .from(wrapper).save()
     .then(()=>clip.remove())
     .catch(()=>{ clip.remove(); alert("La génération du PDF a échoué dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer la page à la place."); });
 }
 
+function openEvalPreview(){
+  if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant l'aperçu."); return; }
+  document.getElementById('evalPreviewContent').innerHTML = buildEvaluationContentHTML();
+  document.getElementById('evalPreviewModalOverlay').style.display='flex';
+}
+function closeEvalPreview(){ document.getElementById('evalPreviewModalOverlay').style.display='none'; }
 async function removeCahierEntry(i){
   if(editingIndex===i) cancelEditCahier();
   const entry = cahier[i];
@@ -4838,27 +4932,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-58"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-58"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-58"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-58"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-58"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-58"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-58"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-58"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-58"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-58"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-58"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-58"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-58"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-58"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-58"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-58"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-58"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-58"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-58"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-58"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-58"></script>
-<script src="compte-est-bon.js?v=20260804-58"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-59"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-59"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-59"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-59"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-59"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-59"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-59"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-59"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-59"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-59"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-59"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-59"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-59"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-59"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-59"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-59"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-59"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-59"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-59"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-59"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-59"></script>
+<script src="compte-est-bon.js?v=20260804-59"></script>
 </body>
 </html>
