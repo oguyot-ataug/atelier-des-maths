@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-72">
+<link rel="stylesheet" href="styles.css?v=20260804-73">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.72</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.73</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -3399,6 +3399,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.73', items:[
+    "Créer une évaluation -- retour au téléchargement PDF direct (comme le reste du site), abandon de la fenêtre d'impression séparée qui semblait geler le reste de la page chez certains utilisateurs. Combine les corrections apprises entre-temps : conteneur en position:absolute (mesure de hauteur fiable), figures SVG converties en images avant capture (html2canvas gère mal les SVG natifs), et synchronisation des disques effectuée dans le même document (plus simple et fiable qu'une fenêtre séparée).",
+  ]},
   { version:'2026-08-04.72', items:[
     "Tentative supplémentaire -- disques désynchronisés en impression : certains navigateurs figent le rendu dès l'appel à print(), potentiellement avant que le style qu'on vient de modifier (taille des disques) n'ait été repeint à l'écran. Ajout d'un double requestAnimationFrame pour garantir un cycle de rendu complet avant d'imprimer.",
   ]},
@@ -5041,42 +5044,29 @@ async function replaceSvgsWithImages(container){
     svg.replaceWith(img);
   }
 }
-function exportEvaluationPDF(){
+async function exportEvaluationPDF(){
   if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant de générer le PDF."); return; }
-  // La capture d'écran (html2canvas) s'est montrée peu fiable avec ce contenu (figures SVG,
-  // mise en page). On utilise à la place l'impression native du navigateur, dans une fenêtre
-  // dédiée : l'utilisateur choisit "Enregistrer au format PDF" comme destination -- le rendu
-  // est alors celui du navigateur lui-même, fiable à 100% quel que soit le contenu.
-  const w = window.open('', '_blank', 'width=900,height:700');
-  if(!w){ alert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site, ou utilisez Ctrl/Cmd+P."); return; }
-  w.document.open();
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
-    <title>Évaluation</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-    <style>
-      @page{ size:A4; margin:15mm; }
-      body{ font-family:Inter,Arial,sans-serif; color:#20242E; font-size:12.5pt; line-height:1.7; margin:0; }
-      .nb-figure-row{ margin:6px 0; }
-      svg{ max-width:100%; }
-      .katex{ font-size:1.18em; }
-    </style>
-  </head><body>${buildEvaluationContentHTML()}</body></html>`);
-  w.document.close();
-  w.onload = () => {
-    // Petit délai de sécurité : laisse le temps à la mise en page de se stabiliser
-    // complètement (polices, styles) avant de mesurer les disques et d'imprimer.
-    setTimeout(()=>{
-      syncDiskSizes(w.document);
-      // Certains navigateurs figent le rendu dès l'appel à print(), avant que les styles
-      // qu'on vient de modifier (taille des disques) n'aient été réellement repeints à
-      // l'écran -- un double requestAnimationFrame garantit qu'un cycle de rendu complet a
-      // eu lieu entre-temps.
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        w.focus();
-        w.print();
-      }));
-    }, 200);
-  };
+  if(typeof html2pdf==='undefined'){ alert("La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?) — utilisez Ctrl/Cmd+P pour imprimer à la place."); return; }
+  // Comme pour le cahier de corrections : le conteneur doit être ajouté au DOM, dans le flux
+  // normal du document (position:absolute, PAS fixed -- fixed limitait la mesure à la hauteur
+  // de la fenêtre visible), pour que html2canvas puisse mesurer sa hauteur réelle et le capturer.
+  const clip = document.createElement('div');
+  clip.style.cssText = 'position:absolute;top:0;left:-99999px;';
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'width:700px;font-family:Inter,sans-serif;padding:10px;color:#20242E;font-size:12.5pt;line-height:1.7;background:#fff;';
+  wrapper.innerHTML = buildEvaluationContentHTML();
+  clip.appendChild(wrapper);
+  document.body.appendChild(clip);
+  // Synchronise les tailles de disques directement dans ce document (plus simple et fiable
+  // qu'une fenêtre séparée : pas de risque de timing entre fenêtres).
+  syncDiskSizes(wrapper);
+  // html2canvas gère mal les <svg> nativement (pages blanches ou figures manquantes selon les
+  // cas) : chaque figure est convertie en image bitmap avant capture, bien plus fiable.
+  await replaceSvgsWithImages(wrapper);
+  html2pdf().set({margin:10, filename:'evaluation-'+document.getElementById('evalNiveau').value+'.pdf', html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+    .from(wrapper).save()
+    .then(()=>clip.remove())
+    .catch(()=>{ clip.remove(); alert("La génération du PDF a échoué dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer la page à la place."); });
 }
 
 function openEvalPreview(){
@@ -5516,27 +5506,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-72"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-72"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-72"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-72"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-72"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-72"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-72"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-72"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-72"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-72"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-72"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-72"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-72"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-72"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-72"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-72"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-72"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-72"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-72"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-72"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-72"></script>
-<script src="compte-est-bon.js?v=20260804-72"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-73"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-73"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-73"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-73"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-73"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-73"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-73"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-73"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-73"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-73"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-73"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-73"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-73"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-73"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-73"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-73"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-73"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-73"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-73"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-73"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-73"></script>
+<script src="compte-est-bon.js?v=20260804-73"></script>
 </body>
 </html>
