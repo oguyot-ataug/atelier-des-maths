@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-68">
+<link rel="stylesheet" href="styles.css?v=20260804-69">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.68</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.69</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -166,7 +166,7 @@
       <button class="modal-close" onclick="closeEvalPreview()">✕</button>
     </div>
     <div style="position:relative;width:700px;max-width:100%;margin:0 auto;">
-      <div id="evalPreviewContent" style="font-family:Inter,sans-serif;color:#20242E;line-height:1.7;width:700px;padding:10px;box-sizing:border-box;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12);position:relative;"></div>
+      <div id="evalPreviewContent" style="font-family:Inter,sans-serif;color:#20242E;line-height:1.7;font-size:12.5pt;width:700px;padding:10px;box-sizing:border-box;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12);position:relative;"></div>
       <div id="evalPreviewPageMarks" style="position:absolute;top:0;left:0;width:700px;pointer-events:none;"></div>
     </div>
   </div>
@@ -2141,9 +2141,9 @@ function dpRenderDivisionTable(rows, quotient, divisor, commaCol){
   }).join('');
   return `<div style="display:flex;gap:18px;align-items:stretch;font-family:'JetBrains Mono',monospace;font-size:1.05rem;">
     <table style="border-collapse:collapse;">${rowsHtml}</table>
-    <div style="border-left:1.5px solid #1C1B2E;padding-left:14px;line-height:1.9;">
-      <div>${divisor}</div>
-      <div style="border-top:1.5px solid #1C1B2E;">${quotient||'&nbsp;'}</div>
+    <div style="border-left:1.5px solid #1C1B2E;line-height:1.9;">
+      <div style="padding-left:14px;">${divisor}</div>
+      <div style="border-top:1.5px solid #1C1B2E;padding-left:14px;">${quotient||'&nbsp;'}</div>
     </div>
   </div>`;
 }
@@ -2155,16 +2155,17 @@ function divisionPoseeHTML(res, vierge){
   let lastEndCol = -1;
   res.steps.forEach((s,i)=>{
     if(s.sub>0){
-      rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:true, underline:true, endCol:i});
+      rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:!vierge, underline:!vierge, endCol:i});
       rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
       lastEndCol = i;
     }
   });
   if(lastEndCol < N-1) rows.push({cells: dpAlignedCells(vierge?'':String(res.remainder), N-1, N)});
   // En mode vierge : le dividende ET le diviseur restent visibles (l'élève doit les connaître
-  // pour démarrer) ; seuls le quotient et le détail des étapes sont masqués. Le nombre de
-  // lignes/traits reste calculé sur la vraie division : la hauteur de la barre verticale
-  // anticipe donc correctement le nombre d'étapes à venir.
+  // pour démarrer) ; le quotient, le détail des étapes, ET toute préparation (signe moins,
+  // trait de soustraction) sont masqués -- l'espace reste entièrement vierge. Le nombre de
+  // lignes reste calculé sur la vraie division : la hauteur totale anticipe donc correctement
+  // le nombre d'étapes à venir, sans donner d'indice sur leur déroulé.
   const table = dpRenderDivisionTable(rows, vierge?'':res.quotient, res.divisor);
   if(vierge) return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">${table}</div>`;
   return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">${table}</div>
@@ -2303,14 +2304,15 @@ function divisionDecimaleHTML(res, maxDec, vierge){
   const totalCols = Math.max(dividendDigitsStr.length, ...res.steps.map(s=>s.col+1));
   const rows = [{cells: dpAlignedCells(dividendDigitsStr, dividendDigitsStr.length-1, totalCols), bold:true}];
   res.steps.forEach((s,i)=>{
-    rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), s.col, totalCols), sign:true, underline:true, endCol:s.col});
+    rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), s.col, totalCols), sign:!vierge, underline:!vierge, endCol:s.col});
     const next = res.steps[i+1];
     if(next) rows.push({cells: dpAlignedCells(vierge?'':String(next.before), next.col, totalCols)});
     else rows.push({cells: dpAlignedCells(vierge?'':String(s.after), s.col, totalCols)});
   });
-  const commaColIdx = res.givenCommaPos!==null && res.givenCommaPos!==undefined ? res.givenCommaPos-1 : undefined;
-  // En mode vierge : dividende et diviseur restent visibles, seuls le quotient et le détail des
-  // étapes sont masqués -- la barre garde la hauteur calculée sur la vraie division.
+  const commaColIdx = vierge ? undefined : (res.givenCommaPos!==null && res.givenCommaPos!==undefined ? res.givenCommaPos-1 : undefined);
+  // En mode vierge : dividende et diviseur restent visibles ; quotient, détail des étapes, ET
+  // toute préparation (signe moins, trait de soustraction, marqueur de virgule) sont masqués --
+  // l'espace reste entièrement vierge. La hauteur reste calculée sur la vraie division.
   const table = dpRenderDivisionTable(rows, vierge?'':(res.quotient + (res.repeating?'…':'')), res.divisor, commaColIdx);
   return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
     ${table}
@@ -3397,6 +3399,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.69', items:[
+    "Fix -- fractions trop petites (à l'écran et en PDF) : taille augmentée, et surtout la fenêtre d'impression n'avait pas la même correction de taille que le reste du site (c'était la vraie cause de la différence de mise en page entre aperçu et PDF) -- harmonisé. Division vierge : ne montre plus du tout le signe moins ni les traits de soustraction (juste l'espace anticipé, sans aucun indice). La barre horizontale sous le diviseur touche maintenant la barre verticale.",
+  ]},
   { version:'2026-08-04.68', items:[
     "Fix critique -- le partage d'évaluation échouait (\"column reference id is ambiguous\") : corrigé côté base de données. Nouvelle modale complète d'édition d'un professeur (Administration) : nom, prénom, identifiant, mot de passe (masqué, réinitialisable), UAI, et classes rattachées à l'établissement (à cocher). Réponses à compléter (disque/rectangle) : vraie barre de fraction visuelle au lieu d'un simple « / ». Nouvel outil « ✏️ Texte » : permet d'écrire du texte/maths avec la même mise en forme automatique que l'énoncé principal, y compris dans les colonnes d'un exercice.",
   ]},
@@ -5041,9 +5046,10 @@ function exportEvaluationPDF(){
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
     <style>
       @page{ size:A4; margin:15mm; }
-      body{ font-family:Inter,Arial,sans-serif; color:#20242E; font-size:11pt; line-height:1.6; margin:0; }
+      body{ font-family:Inter,Arial,sans-serif; color:#20242E; font-size:12.5pt; line-height:1.7; margin:0; }
       .nb-figure-row{ margin:6px 0; }
       svg{ max-width:100%; }
+      .katex{ font-size:1.18em; }
     </style>
   </head><body>${buildEvaluationContentHTML()}</body></html>`);
   w.document.close();
@@ -5492,27 +5498,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-68"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-68"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-68"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-68"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-68"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-68"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-68"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-68"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-68"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-68"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-68"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-68"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-68"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-68"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-68"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-68"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-68"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-68"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-68"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-68"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-68"></script>
-<script src="compte-est-bon.js?v=20260804-68"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-69"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-69"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-69"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-69"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-69"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-69"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-69"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-69"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-69"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-69"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-69"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-69"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-69"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-69"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-69"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-69"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-69"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-69"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-69"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-69"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-69"></script>
+<script src="compte-est-bon.js?v=20260804-69"></script>
 </body>
 </html>

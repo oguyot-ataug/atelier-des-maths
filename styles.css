@@ -510,7 +510,7 @@ footer a:hover{color:var(--accent);}
    taille nominale égale, la police mathématique de KaTeX paraît visuellement
    plus petite que le texte courant (métriques de police différentes) : on
    compense donc par un léger surplus. */
-.katex { font-size: 1.08em; }
+.katex { font-size: 1.18em; }
 
 /* ---------- modale signalement de bug ---------- */
 .bug-tab{background:none;border:none;padding:8px 4px;margin-right:14px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.9rem;color:var(--ink-soft);cursor:pointer;border-bottom:2px solid transparent;}
