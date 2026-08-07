@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-73">
+<link rel="stylesheet" href="styles.css?v=20260804-74">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.73</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.74</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -877,6 +877,17 @@
       <label class="hint" style="margin:0;">Date prévue : <input type="date" id="evalDate" style="margin-left:4px;"></label>
       <label class="hint" style="margin:0;">Durée (min) : <input type="number" id="evalDuree" value="55" min="5" style="width:70px;margin-left:4px;"></label>
       <label class="hint" style="margin:0;">Nombre d'exercices : <input type="number" id="evalNbExo" value="4" min="1" max="10" style="width:55px;margin-left:4px;"></label>
+      <label class="hint" style="margin:0;">Type :
+        <select id="evalType" style="margin-left:4px;" onchange="document.getElementById('evalTypeCustom').style.display = this.value==='__custom' ? 'inline-block' : 'none';">
+          <option value="Évaluation">Évaluation</option>
+          <option value="Interrogation">Interrogation</option>
+          <option value="Devoir Maison">Devoir Maison</option>
+          <option value="Devoir Surveillé">Devoir Surveillé</option>
+          <option value="Bac Blanc">Bac Blanc</option>
+          <option value="__custom">Autre (à préciser)…</option>
+        </select>
+        <input type="text" id="evalTypeCustom" placeholder="Titre libre" style="display:none;width:140px;margin-left:4px;">
+      </label>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
       <label class="hint" style="margin:0;"><input type="checkbox" id="evalUseAI" onchange="toggleEvalAIOptions()"> 🤖 Laisser l'IA proposer des exercices</label>
@@ -906,7 +917,7 @@
   <div id="evalExercicesList"></div>
 
   <div class="tool-row" style="margin-top:10px;">
-    <button class="btn orange" onclick="exportEvaluationPDF()">📄 Générer la feuille d'évaluation (PDF)</button>
+    <button class="btn orange" onclick="exportEvaluationPDF()">🖨️ Imprimer / Enregistrer en PDF</button>
     <button class="btn secondary" onclick="clearEvaluation()">Tout effacer</button>
   </div>
 </section>
@@ -3399,6 +3410,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.74', items:[
+    "Créer une évaluation -- fix PDF blanc : retour à l'impression native (le téléchargement direct produisait une page blanche de façon répétée, malgré plusieurs correctifs). Bouton renommé « Imprimer / Enregistrer en PDF » pour que le fonctionnement soit clair. Nouveau champ « Type » pour personnaliser le titre de la feuille (Évaluation, Interrogation, Devoir Maison, Devoir Surveillé, Bac Blanc, ou titre libre), mémorisé avec l'évaluation sauvegardée.",
+  ]},
   { version:'2026-08-04.73', items:[
     "Créer une évaluation -- retour au téléchargement PDF direct (comme le reste du site), abandon de la fenêtre d'impression séparée qui semblait geler le reste de la page chez certains utilisateurs. Combine les corrections apprises entre-temps : conteneur en position:absolute (mesure de hauteur fiable), figures SVG converties en images avant capture (html2canvas gère mal les SVG natifs), et synchronisation des disques effectuée dans le même document (plus simple et fiable qu'une fenêtre séparée).",
   ]},
@@ -4744,7 +4758,7 @@ async function saveEvaluation(){
     classes: document.getElementById('evalClasses').value,
     eval_date: document.getElementById('evalDate').value || null,
     duree: parseInt(document.getElementById('evalDuree').value) || null,
-    data: { evaluationExercises, blocksStores: relevantBlocks },
+    data: { evaluationExercises, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value },
   };
   const statusEl = document.getElementById('evalSaveStatus');
   statusEl.textContent = "Sauvegarde en cours…";
@@ -4793,6 +4807,11 @@ async function loadEvaluation(id){
   document.getElementById('evalClasses').value = data.classes || '';
   document.getElementById('evalDate').value = data.eval_date || '';
   document.getElementById('evalDuree').value = data.duree || 55;
+  const savedType = (data.data && data.data.evalType) || 'Évaluation';
+  const typeSelect = document.getElementById('evalType');
+  typeSelect.value = Array.from(typeSelect.options).some(o=>o.value===savedType) ? savedType : '__custom';
+  document.getElementById('evalTypeCustom').value = (data.data && data.data.evalTypeCustom) || (typeSelect.value==='__custom' ? savedType : '');
+  document.getElementById('evalTypeCustom').style.display = typeSelect.value==='__custom' ? 'inline-block' : 'none';
   evaluationExercises = (data.data && data.data.evaluationExercises) || [];
   Object.assign(blocksStores, (data.data && data.data.blocksStores) || {});
   evalNextExoId = Math.max(1, ...evaluationExercises.map(e=>e.id+1), evalNextExoId);
@@ -4983,13 +5002,15 @@ function buildEvaluationContentHTML(){
   const duree = document.getElementById('evalDuree').value;
   const dateFmt = date ? new Date(date+'T00:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) : '';
   const total = evalBaremeTotal();
+  const typeSel = document.getElementById('evalType').value;
+  const title = (typeSel==='__custom' ? document.getElementById('evalTypeCustom').value.trim() : typeSel) || 'Évaluation';
   return `
     <div style="display:flex;justify-content:space-between;font-size:.95rem;">
       <div>${escapeHtml(classes || niveau)}</div>
       <div>${dateFmt}</div>
     </div>
     <div style="height:2.4em;"></div>
-    <p style="text-align:center;font-weight:700;font-size:1.3rem;margin:0;">Évaluation de Mathématiques</p>
+    <p style="text-align:center;font-weight:700;font-size:1.3rem;margin:0;">${escapeHtml(title)} de Mathématiques</p>
     <p style="text-align:center;font-size:.85rem;color:#5B6472;margin:4px 0 0;">${duree ? 'Durée : '+duree+' min' : ''}${total>0 ? ' · Barème : '+total+' pt(s)' : ''}</p>
     <div style="height:2.4em;"></div>
     <p style="margin:0;">NOM : .................................................... Prénom : ....................................................</p>
@@ -5044,29 +5065,43 @@ async function replaceSvgsWithImages(container){
     svg.replaceWith(img);
   }
 }
-async function exportEvaluationPDF(){
+function exportEvaluationPDF(){
   if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant de générer le PDF."); return; }
-  if(typeof html2pdf==='undefined'){ alert("La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?) — utilisez Ctrl/Cmd+P pour imprimer à la place."); return; }
-  // Comme pour le cahier de corrections : le conteneur doit être ajouté au DOM, dans le flux
-  // normal du document (position:absolute, PAS fixed -- fixed limitait la mesure à la hauteur
-  // de la fenêtre visible), pour que html2canvas puisse mesurer sa hauteur réelle et le capturer.
-  const clip = document.createElement('div');
-  clip.style.cssText = 'position:absolute;top:0;left:-99999px;';
-  const wrapper = document.createElement('div');
-  wrapper.style.cssText = 'width:700px;font-family:Inter,sans-serif;padding:10px;color:#20242E;font-size:12.5pt;line-height:1.7;background:#fff;';
-  wrapper.innerHTML = buildEvaluationContentHTML();
-  clip.appendChild(wrapper);
-  document.body.appendChild(clip);
-  // Synchronise les tailles de disques directement dans ce document (plus simple et fiable
-  // qu'une fenêtre séparée : pas de risque de timing entre fenêtres).
-  syncDiskSizes(wrapper);
-  // html2canvas gère mal les <svg> nativement (pages blanches ou figures manquantes selon les
-  // cas) : chaque figure est convertie en image bitmap avant capture, bien plus fiable.
-  await replaceSvgsWithImages(wrapper);
-  html2pdf().set({margin:10, filename:'evaluation-'+document.getElementById('evalNiveau').value+'.pdf', html2canvas:{scale:2, useCORS:true}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
-    .from(wrapper).save()
-    .then(()=>clip.remove())
-    .catch(()=>{ clip.remove(); alert("La génération du PDF a échoué dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer la page à la place."); });
+  // La capture d'écran (html2canvas) reproduit une page blanche de façon récurrente avec ce
+  // contenu, malgré plusieurs correctifs essayés. L'impression native du navigateur, elle,
+  // donne un rendu fidèle et fiable : l'utilisateur choisit "Enregistrer au format PDF" comme
+  // destination dans la boîte d'impression (celle-ci bloque l'onglet tant qu'elle est ouverte
+  // -- comportement normal du navigateur, pas un bug).
+  const w = window.open('', '_blank', 'width=900,height:700');
+  if(!w){ alert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site, ou utilisez Ctrl/Cmd+P."); return; }
+  w.document.open();
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+    <title>Évaluation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <style>
+      @page{ size:A4; margin:15mm; }
+      body{ font-family:Inter,Arial,sans-serif; color:#20242E; font-size:12.5pt; line-height:1.7; margin:0; }
+      .nb-figure-row{ margin:6px 0; }
+      svg{ max-width:100%; }
+      .katex{ font-size:1.18em; }
+    </style>
+  </head><body>${buildEvaluationContentHTML()}</body></html>`);
+  w.document.close();
+  w.onload = () => {
+    // Petit délai de sécurité : laisse le temps à la mise en page de se stabiliser
+    // complètement (polices, styles) avant de mesurer les disques et d'imprimer.
+    setTimeout(()=>{
+      syncDiskSizes(w.document);
+      // Certains navigateurs figent le rendu dès l'appel à print(), avant que les styles
+      // qu'on vient de modifier (taille des disques) n'aient été réellement repeints à
+      // l'écran -- un double requestAnimationFrame garantit qu'un cycle de rendu complet a
+      // eu lieu entre-temps.
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        w.focus();
+        w.print();
+      }));
+    }, 200);
+  };
 }
 
 function openEvalPreview(){
@@ -5506,27 +5541,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-73"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-73"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-73"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-73"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-73"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-73"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-73"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-73"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-73"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-73"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-73"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-73"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-73"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-73"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-73"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-73"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-73"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-73"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-73"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-73"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-73"></script>
-<script src="compte-est-bon.js?v=20260804-73"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-74"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-74"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-74"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-74"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-74"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-74"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-74"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-74"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-74"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-74"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-74"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-74"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-74"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-74"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-74"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-74"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-74"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-74"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-74"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-74"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-74"></script>
+<script src="compte-est-bon.js?v=20260804-74"></script>
 </body>
 </html>
