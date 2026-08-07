@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-76">
+<link rel="stylesheet" href="styles.css?v=20260804-77">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.76</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.77</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1934,13 +1934,12 @@ function evalDropInRowCol(e, ctx, rowIndex, colIndex){
    puis 2 colonnes en dessous). rows est un tableau [nColsLigne1, nColsLigne2, ...]. */
 function blocksRowsHTML(ctx, rows, withControls){
   const arr = blocksStores[ctx]||[];
-  if(rows.length===1 && rows[0]<=1) return withControls ? pendingBlocksHTML(true, ctx) : pendingBlocksHTML(false, ctx);
   return rows.map((nCols,rowIdx)=>{
     const rowBlocks = arr.filter(b=>(b.row||0)===rowIdx);
     if(nCols<=1){
       const inner = rowBlocks.map(b=>singleBlockHTML(b, ctx, withControls, true)).join('');
       const dropAttrs = withControls ? `ondragover="event.preventDefault()" ondrop="evalDropInRowCol(event,'${ctx}',${rowIdx},0)"` : '';
-      return `<div ${dropAttrs} style="${withControls?'min-height:40px;border:1px dashed rgba(28,43,57,.1);border-radius:8px;padding:4px;margin-bottom:6px;':'margin-bottom:6px;'}">${inner}</div>`;
+      return `<div ${dropAttrs} style="${withControls?'min-height:40px;border:1px dashed rgba(28,43,57,.15);border-radius:8px;padding:6px;margin-bottom:6px;':'margin-bottom:6px;'}">${inner}</div>`;
     }
     const cols = Array.from({length:nCols}, ()=>[]);
     rowBlocks.forEach(b=>{ const c = Math.min(b.col||0, nCols-1); cols[c].push(b); });
@@ -3422,6 +3421,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.77', items:[
+    "Créer une évaluation -- retrait de la zone de saisie principale de chaque exercice (devenue redondante avec l'outil Texte) : il n'y a désormais plus qu'une seule façon d'ajouter du contenu, via les blocs. La première ligne (par défaut, 1 colonne) affiche maintenant son encart en pointillés comme les autres, pour qu'on voie où déposer/ajouter du contenu dès le départ. Les anciennes évaluations sauvegardées et les énoncés générés par IA sont automatiquement convertis en bloc texte, rien n'est perdu.",
+  ]},
   { version:'2026-08-04.76', items:[
     "Fix -- délai avant que les menus ne répondent au chargement de la page : la bibliothèque PDF (html2pdf, assez lourde) se chargeait de façon bloquante avant que le reste de la page ne devienne utilisable, alors qu'elle n'est nécessaire qu'au moment où on clique sur un bouton d'export -- jamais avant. Chargement différé (defer), sans risque puisqu'une vérification de disponibilité existait déjà avant chaque utilisation.",
   ]},
@@ -4834,6 +4836,15 @@ async function loadEvaluation(id){
   Object.assign(blocksStores, (data.data && data.data.blocksStores) || {});
   evalNextExoId = Math.max(1, ...evaluationExercises.map(e=>e.id+1), evalNextExoId);
   pendingBlockNextId = Math.max(pendingBlockNextId, ...Object.values(blocksStores).flat().map(b=>b.id+1));
+  // Migration : les évaluations sauvegardées avant la fusion du texte principal avec le
+  // système de blocs stockaient l'énoncé à part (ex.text). On le convertit en bloc texte
+  // (une seule fois) pour ne rien perdre, puis on vide le champ devenu obsolète.
+  evaluationExercises.forEach(ex=>{
+    if(ex.text && ex.text.trim()){
+      pushTextBlockForExercise(ex.id, ex.text);
+      ex.text = '';
+    }
+  });
   renderEvalChapPicker();
   renderEvalExercicesList();
   closeEvalListModal();
@@ -4909,6 +4920,15 @@ Conventions d'écriture à respecter strictement :
 
 Réponds UNIQUEMENT par un tableau JSON de chaînes de caractères, un élément par exercice, sans aucun texte ni balise autour. Exemple strict de format : ["Énoncé du premier exercice...", "Énoncé du second exercice..."]`;
 }
+/* Convertit un texte en bloc "texte" (ligne 0, colonne 0) pour un exercice donné : réutilisé
+   par la génération IA (qui produit directement un énoncé) et par la migration des anciennes
+   évaluations sauvegardées (qui stockaient l'énoncé à part, avant la fusion avec les blocs). */
+function pushTextBlockForExercise(exId, text){
+  if(!text || !text.trim()) return;
+  const ctx = 'ex-'+exId;
+  const html = `<div style="padding:4px 0;">${renderMathText(text)}</div>`;
+  (blocksStores[ctx] || (blocksStores[ctx]=[])).push({id: pendingBlockNextId++, type:'texte', html, data:{text}, editFn:'reopenTextBlock', ctx, col:0, row:0});
+}
 async function generateEvaluationAI(){
   const statusEl = document.getElementById('evalAIStatus');
   const niveau = document.getElementById('evalNiveau').value;
@@ -4925,7 +4945,11 @@ async function generateEvaluationAI(){
     const match = raw.match(/\[[\s\S]*\]/);
     if(!match) throw new Error('no-json');
     const list = JSON.parse(match[0]);
-    list.forEach(text => evaluationExercises.push({id: evalNextExoId++, text: String(text), title:'', bareme:null, rows:[1]}));
+    list.forEach(text => {
+      const id = evalNextExoId++;
+      evaluationExercises.push({id, text:'', title:'', bareme:null, rows:[1]});
+      pushTextBlockForExercise(id, String(text));
+    });
     renderEvalExercicesList();
     statusEl.textContent = `${list.length} exercice(s) généré(s) par l'IA — à relire et ajuster avant impression.`;
   }catch(err){
@@ -4969,9 +4993,7 @@ function renderEvalExercicesList(){
         <input type="text" placeholder="Titre de l'exercice (facultatif)" value="${escapeHtml(ex.title||'')}" oninput="updateEvalExerciceField(${ex.id},'title',this.value)" style="flex:1;min-width:200px;padding:7px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);">
         <label class="hint" style="margin:0;">Barème : <input type="number" min="0" step="0.5" value="${ex.bareme!=null?ex.bareme:''}" oninput="updateEvalExerciceField(${ex.id},'bareme',this.value)" style="width:60px;margin-left:4px;"> pt(s)</label>
       </div>
-      <textarea oninput="updateEvalExerciceText(${ex.id}, this.value)" rows="4" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;">${escapeHtml(ex.text)}</textarea>
-      ${ex.text.trim() ? `<div class="correction-preview eval-text-preview" style="margin-top:8px;">${renderMathText(ex.text)}</div>` : '<div class="eval-text-preview" style="display:none;"></div>'}
-      <div class="eval-blocks-preview" style="margin-top:8px;">${blocksRowsHTML(ctx, ensureExRows(ex), true)}</div>
+      <div class="eval-blocks-preview" style="margin-top:4px;">${blocksRowsHTML(ctx, ensureExRows(ex), true)}</div>
       <div class="tool-row" style="margin-top:10px;align-items:center;flex-wrap:wrap;">
         <span class="hint" style="margin:0;">Mise en page :</span>
         ${ex.rows.map((nc,rowIdx)=>`
@@ -5084,7 +5106,6 @@ function buildEvaluationContentHTML(){
           <span>Exercice ${i+1}${ex.title ? ' — '+escapeHtml(ex.title) : ''}</span>
           ${ex.bareme ? `<span>${ex.bareme} pt(s)</span>` : ''}
         </p>
-        <div>${renderMathText(ex.text)}</div>
         ${blocksRowsHTML('ex-'+ex.id, ensureExRows(ex), false)}
       </div>
     `).join('')}
@@ -5611,27 +5632,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-76"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-76"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-76"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-76"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-76"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-76"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-76"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-76"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-76"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-76"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-76"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-76"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-76"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-76"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-76"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-76"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-76"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-76"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-76"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-76"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-76"></script>
-<script src="compte-est-bon.js?v=20260804-76"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-77"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-77"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-77"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-77"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-77"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-77"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-77"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-77"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-77"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-77"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-77"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-77"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-77"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-77"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-77"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-77"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-77"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-77"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-77"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-77"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-77"></script>
+<script src="compte-est-bon.js?v=20260804-77"></script>
 </body>
 </html>
