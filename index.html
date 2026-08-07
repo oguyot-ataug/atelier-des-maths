@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-77">
+<link rel="stylesheet" href="styles.css?v=20260804-78">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.77</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.78</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -3421,6 +3421,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.78', items:[
+    "Créer une évaluation -- nouveau bouton « ✓ Valider » par exercice : bascule vers une vue épurée montrant uniquement le résultat final (tel qu'il sera imprimé), sans aucun des outils/menus d'édition. Deux boutons restent disponibles sur cette vue : ✏️ Éditer (pour revenir à l'édition complète) et ✕ Supprimer.",
+  ]},
   { version:'2026-08-04.77', items:[
     "Créer une évaluation -- retrait de la zone de saisie principale de chaque exercice (devenue redondante avec l'outil Texte) : il n'y a désormais plus qu'une seule façon d'ajouter du contenu, via les blocs. La première ligne (par défaut, 1 colonne) affiche maintenant son encart en pointillés comme les autres, pour qu'on voie où déposer/ajouter du contenu dès le départ. Les anciennes évaluations sauvegardées et les énoncés générés par IA sont automatiquement convertis en bloc texte, rien n'est perdu.",
   ]},
@@ -4979,6 +4982,24 @@ function renderEvalExercicesList(){
     const ctx = 'ex-'+ex.id;
     ensureExRows(ex);
     const hasDisks = (blocksStores[ctx]||[]).some(b=>b.type==='disque');
+    if(ex.validated){
+      // Vue compacte : uniquement le résultat final tel qu'il sera imprimé, sans aucun des
+      // outils/menus d'édition -- pour une lecture d'ensemble agréable une fois l'exercice
+      // terminé. Modifier ou supprimer restent possibles via les deux boutons.
+      return `
+      <div class="tool-shell" style="margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+          <strong style="font-family:'Space Grotesk',sans-serif;">Exercice ${i+1}${ex.title?' — '+escapeHtml(ex.title):''}</strong>
+          <span style="display:flex;gap:6px;align-items:center;">
+            ${ex.bareme ? `<span class="hint" style="margin:0;">${ex.bareme} pt(s)</span>` : ''}
+            <button type="button" onclick="editEvalExercice(${ex.id})" title="Modifier" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:4px 10px;cursor:pointer;">✏️ Éditer</button>
+            <button type="button" onclick="removeEvalExercice(${ex.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:4px 10px;cursor:pointer;">✕ Supprimer</button>
+          </span>
+        </div>
+        <div>${blocksRowsHTML(ctx, ex.rows, false)}</div>
+      </div>
+    `;
+    }
     return `
     <div class="tool-shell" style="margin-bottom:14px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
@@ -4986,6 +5007,7 @@ function renderEvalExercicesList(){
         <span style="display:flex;gap:6px;align-items:center;">
           <button type="button" onclick="moveEvalExercice(${ex.id},-1)" ${i===0?'disabled style="opacity:.35;"':''} title="Monter" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↑</button>
           <button type="button" onclick="moveEvalExercice(${ex.id},1)" ${i===evaluationExercises.length-1?'disabled style="opacity:.35;"':''} title="Descendre" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↓</button>
+          <button type="button" onclick="validateEvalExercice(${ex.id})" title="Aperçu final, sans les outils" style="border:none;background:rgba(35,140,90,.12);color:#1F7A4D;border-radius:6px;padding:3px 9px;cursor:pointer;">✓ Valider</button>
           <button type="button" onclick="removeEvalExercice(${ex.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕ Supprimer l'exercice</button>
         </span>
       </div>
@@ -5066,6 +5088,16 @@ function moveEvalExercice(id, dir){
   if(idx<0 || newIdx<0 || newIdx>=evaluationExercises.length) return;
   const [ex] = evaluationExercises.splice(idx,1);
   evaluationExercises.splice(newIdx,0,ex);
+  renderEvalExercicesList();
+}
+function validateEvalExercice(id){
+  const ex = evaluationExercises.find(e=>e.id===id);
+  if(ex) ex.validated = true;
+  renderEvalExercicesList();
+}
+function editEvalExercice(id){
+  const ex = evaluationExercises.find(e=>e.id===id);
+  if(ex) ex.validated = false;
   renderEvalExercicesList();
 }
 function addManualExercise(){
@@ -5632,27 +5664,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-77"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-77"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-77"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-77"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-77"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-77"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-77"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-77"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-77"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-77"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-77"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-77"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-77"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-77"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-77"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-77"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-77"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-77"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-77"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-77"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-77"></script>
-<script src="compte-est-bon.js?v=20260804-77"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-78"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-78"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-78"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-78"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-78"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-78"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-78"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-78"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-78"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-78"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-78"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-78"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-78"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-78"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-78"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-78"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-78"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-78"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-78"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-78"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-78"></script>
+<script src="compte-est-bon.js?v=20260804-78"></script>
 </body>
 </html>
