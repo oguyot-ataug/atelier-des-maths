@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-65">
+<link rel="stylesheet" href="styles.css?v=20260804-66">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.65</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.66</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1796,10 +1796,25 @@ function editBlock(id, ctx){
 /* withControls=true : version affichée au professeur, avec les boutons ✏️/✕ (jamais montrée
    aux élèves). withControls=false : version "propre", envoyée à la fenêtre de projection,
    enregistrée dans le cahier, ou imprimée dans la feuille d'évaluation. */
+/* Retrouve l'exercice d'évaluation correspondant à un contexte de blocs ("ex-<id>"), pour
+   pouvoir appliquer son réglage manuel de taille de disques. Renvoie null pour les autres
+   contextes (ex. l'outil de correction, contexte "global", qui n'a pas cette notion). */
+function getExerciseByCtx(ctx){
+  const m = /^ex-(\d+)$/.exec(ctx||'');
+  if(!m) return null;
+  return evaluationExercises.find(e=>e.id===parseInt(m[1]))||null;
+}
 function singleBlockHTML(b, ctx, withControls, draggable){
   const sizeStyle = (b.width?`width:${b.width}px;`:'') + (b.height?`height:${b.height}px;`:'');
+  let html = b.html;
+  if(b.type==='disque'){
+    // Réglage manuel (toujours prioritaire, fiable dans tous les contextes y compris la
+    // fenêtre d'impression) : s'il est défini, on l'applique directement dans le HTML.
+    const ex = getExerciseByCtx(ctx);
+    if(ex && ex.diskSize) html = html.split('max-width:150px').join(`max-width:${ex.diskSize}px`);
+  }
   if(!withControls){
-    return `<div class="nb-figure-row disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}"${sizeStyle?` style="${sizeStyle}overflow:hidden;"`:''}>${b.html}</div>`;
+    return `<div class="nb-figure-row disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}"${sizeStyle?` style="${sizeStyle}overflow:hidden;"`:''}>${html}</div>`;
   }
   const dragAttrs = draggable ? `draggable="true" ondragstart="evalDragStart(event,${b.id})"` : '';
   return `<div class="nb-figure-row" ${dragAttrs} style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px 10px;margin:8px 0;${draggable?'cursor:grab;':''}">
@@ -1807,7 +1822,7 @@ function singleBlockHTML(b, ctx, withControls, draggable){
       ${b.editFn ? `<button type="button" onclick="editBlock(${b.id},'${ctx}')" title="Modifier ce bloc" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✏️</button>` : ''}
       <button type="button" onclick="removeBlock(${b.id},'${ctx}')" title="Supprimer ce bloc" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✕</button>
     </div>
-    <div class="resizable-block disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}" style="resize:both;overflow:hidden;display:block;max-width:100%;min-width:80px;min-height:50px;${sizeStyle||'width:260px;'}">${b.html}</div>
+    <div class="resizable-block disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}" style="resize:both;overflow:hidden;display:block;max-width:100%;min-width:80px;min-height:50px;${sizeStyle||'width:260px;'}">${html}</div>
   </div>`;
 }
 function pendingBlocksHTML(withControls, ctx){
@@ -1863,16 +1878,15 @@ function attachResizeObservers(){
 }
 /* Harmonise le diamètre de tous les disques d'un même exercice (ou de l'outil de correction) sur
    le plus petit d'entre eux, pour un rendu visuellement cohérent quand plusieurs blocs disque
-   coexistent (ex. un disque seul à côté d'une fraction impropre qui en affiche deux plus petits). */
+   coexistent. Mesure réelle dans le DOM fourni (root) -- peut être la page d'édition, l'aperçu,
+   ou même le document d'une fenêtre d'impression séparée : on y a accès directement depuis ce
+   script (même origine), pas besoin que cette fenêtre exécute quoi que ce soit elle-même. */
 function syncDiskSizes(root){
   if(!root) return;
   const contexts = new Set(Object.values(blocksStores).flat().filter(b=>b.type==='disque').map(b=>b.ctx));
   contexts.forEach(ctx=>{
     const diskBlocks = (blocksStores[ctx]||[]).filter(b=>b.type==='disque');
     if(diskBlocks.length<2) return;
-    // Mesure réelle dans le DOM fourni (root peut être la page d'édition, l'aperçu, ou même le
-    // document d'une fenêtre d'impression séparée -- on y a accès directement depuis ce script,
-    // pas besoin que cette fenêtre exécute quoi que ce soit elle-même).
     let minDiam = Infinity;
     diskBlocks.forEach(b=>{
       const wrap = root.querySelector(`.disk-sync-target[data-block-id="${b.id}"]`);
@@ -3213,6 +3227,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.66', items:[
+    "Fix critique -- la synchronisation des disques ne fonctionnait plus du tout : du code de mes tentatives précédentes s'était mélangé par erreur, supprimant silencieusement la fonction responsable (aucun message d'erreur visible sur le site, seulement en console). Entièrement réparé et re-testé. Ajout d'un réglage manuel « 🥧 Taille des disques » par exercice (visible dès qu'il y a au moins un disque) : plus fiable que la synchronisation automatique, il s'applique directement dans tous les contextes (édition, aperçu, PDF).",
+  ]},
   { version:'2026-08-04.65', items:[
     "Fix -- les disques n'étaient toujours pas de la même taille dans le PDF : ma tentative précédente prédisait une taille à l'avance (calcul supposant une largeur fixe), qui ne correspondait pas à la largeur réelle des colonnes dans ce contexte. Corrigé en mesurant directement, depuis le script principal, le rendu réel de la fenêtre d'impression elle-même (accessible sans qu'elle ait besoin d'exécuter quoi que ce soit) -- fiable quel que soit le nombre de colonnes choisi.",
   ]},
@@ -4602,6 +4619,7 @@ function renderEvalExercicesList(){
   box.innerHTML = evaluationExercises.map((ex,i)=>{
     const ctx = 'ex-'+ex.id;
     const nCols = ex.nCols||1;
+    const hasDisks = (blocksStores[ctx]||[]).some(b=>b.type==='disque');
     return `
     <div class="tool-shell" style="margin-bottom:14px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
@@ -4619,6 +4637,7 @@ function renderEvalExercicesList(){
         <span class="hint" style="margin:0;">Mise en page :</span>
         <label class="hint" style="margin:0;">Nombre de colonnes : <input type="number" min="1" max="8" value="${nCols}" onchange="setEvalCols(${ex.id}, parseInt(this.value)||1)" style="width:55px;margin-left:4px;"></label>
         ${nCols>1 ? '<span class="hint" style="margin:0;">Fais glisser un bloc pour changer sa colonne.</span>' : ''}
+        ${hasDisks ? `<label class="hint" style="margin:0;">🥧 Taille des disques : <input type="number" min="30" max="300" step="10" value="${ex.diskSize||150}" onchange="updateEvalExerciceField(${ex.id},'diskSize',parseInt(this.value)||150); renderEvalExercicesList();" style="width:60px;margin-left:4px;"> px (même taille pour tous les disques de cet exercice)</label>` : ''}
       </div>
       <div class="tool-row" style="margin-top:6px;">${toolButtonsHTML(ctx)}</div>
     </div>
@@ -5192,27 +5211,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-65"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-65"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-65"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-65"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-65"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-65"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-65"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-65"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-65"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-65"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-65"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-65"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-65"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-65"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-65"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-65"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-65"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-65"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-65"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-65"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-65"></script>
-<script src="compte-est-bon.js?v=20260804-65"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-66"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-66"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-66"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-66"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-66"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-66"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-66"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-66"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-66"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-66"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-66"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-66"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-66"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-66"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-66"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-66"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-66"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-66"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-66"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-66"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-66"></script>
+<script src="compte-est-bon.js?v=20260804-66"></script>
 </body>
 </html>
