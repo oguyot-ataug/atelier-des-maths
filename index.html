@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-67">
+<link rel="stylesheet" href="styles.css?v=20260804-68">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.67</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.68</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -173,6 +173,15 @@
 </div>
 <div id="toolsModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeAllToolPanels();">
   <div class="modal-card" style="max-width:900px;max-height:88vh;overflow:auto;">
+    <div id="textBlockPanel" class="figure-wrap" style="display:none;">
+      <p class="hint" style="margin:0 0 10px;">Texte libre avec la même mise en forme automatique que l'énoncé principal (fractions, exposants, racines, **gras**, {{couleur|texte}}...).</p>
+      <textarea id="textBlockInput" oninput="previewTextBlock()" rows="4" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;" placeholder="Ex. Calcule 3/4 + 1/2 et donne le résultat sous forme irréductible."></textarea>
+      <div id="textBlockPreview" style="margin-top:8px;"></div>
+      <div class="figure-toolbar" style="margin-top:10px;">
+        <button type="button" class="btn" onclick="insertTextBlock()">Insérer le texte</button>
+        <button type="button" class="btn secondary" onclick="closeTextBlockTool()">Fermer sans insérer</button>
+      </div>
+    </div>
     <div id="tableauPanel" class="figure-wrap" style="display:none;">
       <div class="tool-row" style="margin-bottom:10px;">
         <label class="hint" style="margin:0;">Colonnes : <input type="number" id="tabCols" value="3" min="1" max="8" style="width:60px;"></label>
@@ -357,6 +366,42 @@
 </div>
 
 
+<div id="editProfModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEditProfModal();">
+  <div class="modal-card" style="max-width:520px;max-height:86vh;overflow:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.15rem;">🛠️ Modifier le compte</strong>
+      <button class="modal-close" onclick="closeEditProfModal()">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <label class="hint" style="margin:0;">Nom
+        <input type="text" id="editProfNom" style="width:100%;margin-top:4px;padding:8px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;">
+      </label>
+      <label class="hint" style="margin:0;">Prénom
+        <input type="text" id="editProfPrenom" style="width:100%;margin-top:4px;padding:8px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;">
+      </label>
+    </div>
+    <div style="background:rgba(28,43,57,.03);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Identifiant : <b id="editProfIdentifiantDisplay" style="font-family:'JetBrains Mono',monospace;"></b></span>
+        <button class="btn secondary" style="font-size:.78rem;padding:4px 10px;" onclick="adminChangeIdentifiantPrompt(editProfTargetId, editProfTargetName)">✏️ Modifier</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+        <span>Mot de passe : <b style="letter-spacing:2px;">••••••••</b></span>
+        <button class="btn secondary" style="font-size:.78rem;padding:4px 10px;" onclick="adminResetPasswordPrompt(editProfTargetId, editProfTargetName)">🔑 Réinitialiser</button>
+      </div>
+    </div>
+    <label class="hint" style="margin:0;display:block;margin-bottom:14px;">UAI de l'établissement
+      <input type="text" id="editProfUai" placeholder="ex. 0751234A" style="width:100%;margin-top:4px;padding:8px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;">
+    </label>
+    <p class="hint" style="margin:0 0 6px;">Classes rattachées (établissement) :</p>
+    <div id="editProfClassesList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;max-height:160px;overflow:auto;"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;">
+      <span class="hint" id="editProfStatus" style="margin:auto 8px auto 0;"></span>
+      <button class="btn secondary" onclick="closeEditProfModal()">Annuler</button>
+      <button class="btn" onclick="saveEditProfModal()">Enregistrer</button>
+    </div>
+  </div>
+</div>
 <div id="resetPasswordModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeResetPasswordModal();">
   <div class="modal-card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
@@ -766,6 +811,7 @@
     <div class="correction-preview" id="correctionPreview"></div>
 
     <div class="tool-row" style="margin-top:14px;">
+      <button type="button" class="btn secondary" onclick="setToolContext('global');openTextBlockTool()">✏️ Texte</button>
       <button type="button" class="btn secondary" onclick="setToolContext('global');openFigureTool()">🔺 Ajouter une figure géométrique</button>
       <button type="button" class="btn secondary" onclick="setToolContext('global');openTableauTool()">▦ Insérer un tableau</button>
       <button type="button" class="btn secondary" onclick="setToolContext('global');openDivisionTool()">➗ Insérer une division posée</button>
@@ -1931,9 +1977,35 @@ function syncDiskSizes(root){
     });
   });
 }
+/* ---- Texte libre (même mise en forme que l'énoncé principal) ---- */
+function previewTextBlock(){
+  const val = document.getElementById('textBlockInput').value;
+  document.getElementById('textBlockPreview').innerHTML = val.trim() ? renderMathText(val) : '';
+}
+function openTextBlockTool(){
+  document.getElementById('toolsModalOverlay').style.display='flex';
+  document.getElementById('textBlockPanel').style.display='block';
+  document.getElementById('textBlockInput').value = '';
+  document.getElementById('textBlockPreview').innerHTML = '';
+  document.getElementById('textBlockPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeTextBlockTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('textBlockPanel').style.display='none'; }
+function insertTextBlock(){
+  const text = document.getElementById('textBlockInput').value;
+  if(!text.trim()) return;
+  const html = `<div style="padding:4px 0;">${renderMathText(text)}</div>`;
+  addPendingBlock('texte', html, {text}, 'reopenTextBlock');
+  closeTextBlockTool();
+}
+function reopenTextBlock(data){
+  openTextBlockTool();
+  document.getElementById('textBlockInput').value = data.text;
+  previewTextBlock();
+}
 function toolButtonsHTML(ctx){
   const set = `setToolContext('${ctx}');`;
   return `
+    <button type="button" class="btn secondary" onclick="${set}openTextBlockTool()">✏️ Texte</button>
     <button type="button" class="btn secondary" onclick="${set}openFigureTool()">🔺 Figure géométrique</button>
     <button type="button" class="btn secondary" onclick="${set}openTableauTool()">▦ Tableau</button>
     <button type="button" class="btn secondary" onclick="${set}openDivisionTool()">➗ Division posée</button>
@@ -2484,12 +2556,21 @@ function singleDisqueSvg(filled, den){
 /* Si le numérateur dépasse le dénominateur (fraction impropre, ex. 5/4), il faut plusieurs
    disques : autant de disques complets que nécessaire, le dernier ne montrant que le reste. */
 /* Ligne de réponse à compléter, sous la forme demandée (l'élève écrit lui-même les nombres). */
+/* Une "case" de fraction à compléter, avec une vraie barre horizontale (comme une fraction
+   habituelle), pas un simple "/". */
+function fractionBlankHTML(){
+  return `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;line-height:1.3;">
+    <span>....</span>
+    <span style="display:block;width:100%;border-top:1.5px solid #20242E;"></span>
+    <span>....</span>
+  </span>`;
+}
 function fractionAnswerHTML(reponseSimple, reponseMixte){
   if(!reponseSimple && !reponseMixte) return '';
   const parts = [];
-  if(reponseSimple) parts.push('..../....');
-  if(reponseMixte) parts.push('.... + ..../....');
-  return `<p style="text-align:center;margin:8px 0 0;font-family:'JetBrains Mono',monospace;font-size:1.05rem;">${parts.join('&nbsp;&nbsp;&nbsp;ou&nbsp;&nbsp;&nbsp;')}</p>`;
+  if(reponseSimple) parts.push(fractionBlankHTML());
+  if(reponseMixte) parts.push(`.... + ${fractionBlankHTML()}`);
+  return `<p style="text-align:center;margin:8px 0 0;font-size:1.05rem;">${parts.join('&nbsp;&nbsp;&nbsp;ou&nbsp;&nbsp;&nbsp;')}</p>`;
 }
 function buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte){
   const nShapes = Math.max(1, Math.ceil(num/den));
@@ -3316,6 +3397,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.68', items:[
+    "Fix critique -- le partage d'évaluation échouait (\"column reference id is ambiguous\") : corrigé côté base de données. Nouvelle modale complète d'édition d'un professeur (Administration) : nom, prénom, identifiant, mot de passe (masqué, réinitialisable), UAI, et classes rattachées à l'établissement (à cocher). Réponses à compléter (disque/rectangle) : vraie barre de fraction visuelle au lieu d'un simple « / ». Nouvel outil « ✏️ Texte » : permet d'écrire du texte/maths avec la même mise en forme automatique que l'énoncé principal, y compris dans les colonnes d'un exercice.",
+  ]},
   { version:'2026-08-04.67', items:[
     "Créer une évaluation -- gros lot : (1) UAI de l'établissement renseignable à la création d'un compte prof (admin) ; (2) partage d'une évaluation avec liste des collègues de la même UAI (avec indication de qui est déjà partagé), plutôt qu'un simple e-mail à taper ; (3) le titre du dernier enregistrement est proposé par défaut à la sauvegarde suivante ; (4) disque et rectangle fractionnés : ligne de réponse à compléter en dessous (forme simple .../.... ou avec partie entière ... + .../....) ; (5) division posée (entière et décimale) : option pour n'afficher que dividende et diviseur, avec la hauteur de la barre correctement anticipée sur le nombre d'étapes réel ; (6) axe gradué et repère : choix entre « lire » (points déjà placés) et « placer » (points à tracer par l'élève, consigne donnée séparément). Tentative de fix supplémentaire sur la synchronisation des disques en impression (léger délai de sécurité avant mesure).",
   ]},
@@ -4152,6 +4236,70 @@ async function adminCreateAccount(){
   }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
 }
 let resetPasswordTargetUserId = null;
+let editProfTargetId = null, editProfTargetName = '';
+async function openEditProfModal(id){
+  editProfTargetId = id;
+  document.getElementById('editProfModalOverlay').style.display='flex';
+  document.getElementById('editProfStatus').textContent = '';
+  document.getElementById('editProfClassesList').innerHTML = 'Chargement…';
+  const { data: prof, error } = await sb.from('profiles').select('*').eq('id', id).single();
+  if(error){ document.getElementById('editProfStatus').textContent = 'Erreur : '+error.message; return; }
+  editProfTargetName = (prof.nom||prof.email||'').replace(/'/g,"\\'");
+  document.getElementById('editProfNom').value = prof.nom||'';
+  document.getElementById('editProfPrenom').value = prof.prenom||'';
+  document.getElementById('editProfUai').value = prof.uai||'';
+  const loginIdentifiant = prof.email ? (prof.email.endsWith('@mathcollege.local') ? prof.email.slice(0, -('@mathcollege.local'.length)) : prof.email) : '(inconnu)';
+  document.getElementById('editProfIdentifiantDisplay').textContent = loginIdentifiant;
+  await renderEditProfClasses(prof);
+}
+/* Classes "de l'établissement" : celles enseignées par au moins un collègue partageant le même
+   UAI que ce prof (à défaut d'UAI renseigné, on affiche toutes les classes). Coche celles déjà
+   liées à CE prof précisément. */
+async function renderEditProfClasses(prof){
+  const box = document.getElementById('editProfClassesList');
+  const { data: allClasses } = await sb.from('classes').select('id,nom,niveau').order('nom');
+  const { data: myLinks } = await sb.from('class_teachers').select('class_id').eq('teacher_id', prof.id);
+  const myClassIds = new Set((myLinks||[]).map(l=>l.class_id));
+  let relevantClassIds = null; // null = pas de filtre (toutes les classes)
+  if(prof.uai){
+    const { data: colleagues } = await sb.from('profiles').select('id').eq('uai', prof.uai).in('role',['prof','admin']);
+    const colleagueIds = (colleagues||[]).map(c=>c.id);
+    if(colleagueIds.length){
+      const { data: links } = await sb.from('class_teachers').select('class_id').in('teacher_id', colleagueIds);
+      relevantClassIds = new Set((links||[]).map(l=>l.class_id));
+      myClassIds.forEach(id=>relevantClassIds.add(id)); // garder aussi ses classes actuelles, même si isolées
+    }
+  }
+  const classes = relevantClassIds ? (allClasses||[]).filter(c=>relevantClassIds.has(c.id)) : (allClasses||[]);
+  if(!classes.length){ box.innerHTML = '<span class="hint">Aucune classe trouvée.</span>'; return; }
+  box.innerHTML = classes.map(c=>`
+    <label style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,43,57,.04);padding:5px 10px;border-radius:20px;font-size:.85rem;cursor:pointer;">
+      <input type="checkbox" class="editProfClassCheck" value="${c.id}" ${myClassIds.has(c.id)?'checked':''}> ${escapeHtml(c.nom)} (${escapeHtml(c.niveau)})
+    </label>
+  `).join('');
+}
+function closeEditProfModal(){ document.getElementById('editProfModalOverlay').style.display='none'; }
+async function saveEditProfModal(){
+  const status = document.getElementById('editProfStatus');
+  status.textContent = 'Enregistrement…';
+  const nom = document.getElementById('editProfNom').value.trim();
+  const prenom = document.getElementById('editProfPrenom').value.trim();
+  const uai = document.getElementById('editProfUai').value.trim();
+  const { error } = await sb.from('profiles').update({nom, prenom, uai: uai||null}).eq('id', editProfTargetId);
+  if(error){ status.textContent = 'Erreur : '+error.message; return; }
+  // Classes cochées/décochées : on aligne class_teachers sur l'état actuel des cases.
+  const checked = new Set(Array.from(document.querySelectorAll('.editProfClassCheck:checked')).map(el=>el.value));
+  const all = Array.from(document.querySelectorAll('.editProfClassCheck')).map(el=>el.value);
+  const { data: myLinks } = await sb.from('class_teachers').select('class_id').eq('teacher_id', editProfTargetId);
+  const current = new Set((myLinks||[]).map(l=>l.class_id));
+  const toAdd = all.filter(id=>checked.has(id) && !current.has(id));
+  const toRemove = all.filter(id=>!checked.has(id) && current.has(id));
+  if(toAdd.length) await sb.from('class_teachers').insert(toAdd.map(class_id=>({class_id, teacher_id: editProfTargetId})));
+  if(toRemove.length) await sb.from('class_teachers').delete().eq('teacher_id', editProfTargetId).in('class_id', toRemove);
+  status.textContent = '✓ Enregistré';
+  await adminRefreshListings();
+  setTimeout(closeEditProfModal, 600);
+}
 function adminResetPasswordPrompt(userId, name){
   resetPasswordTargetUserId = userId;
   document.getElementById('resetPasswordModalName').textContent = 'Compte : '+name;
@@ -4283,9 +4431,11 @@ async function adminRefreshListings(){
     const rowHTML = p => {
       const label = escapeHtml(p.nom||'(sans nom)') + ' — <b>identifiant :</b> ' + escapeHtml(loginIdentifiant(p.email)) + (p.role==='admin'?' [admin]':'');
       const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
+      const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')">🛠️ Modifier</button>` : '';
       return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(28,43,57,.06);">
         <span>${label}</span>
         <span style="display:flex;gap:6px;flex:none;">
+          ${editBtn}
           <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeIdentifiantPrompt('${p.id}','${safeName}')">✏️ Identifiant</button>
           <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminResetPasswordPrompt('${p.id}','${safeName}')">🔑 Réinitialiser</button>
           <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="adminDeleteUser('${p.id}', this)">🗑️ Supprimer</button>
@@ -5342,27 +5492,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-67"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-67"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-67"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-67"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-67"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-67"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-67"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-67"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-67"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-67"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-67"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-67"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-67"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-67"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-67"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-67"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-67"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-67"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-67"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-67"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-67"></script>
-<script src="compte-est-bon.js?v=20260804-67"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-68"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-68"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-68"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-68"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-68"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-68"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-68"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-68"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-68"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-68"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-68"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-68"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-68"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-68"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-68"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-68"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-68"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-68"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-68"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-68"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-68"></script>
+<script src="compte-est-bon.js?v=20260804-68"></script>
 </body>
 </html>
