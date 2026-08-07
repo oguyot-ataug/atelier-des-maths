@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-63">
+<link rel="stylesheet" href="styles.css?v=20260804-64">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.63</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.64</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1798,7 +1798,11 @@ function editBlock(id, ctx){
    enregistrée dans le cahier, ou imprimée dans la feuille d'évaluation. */
 function singleBlockHTML(b, ctx, withControls, draggable){
   const sizeStyle = (b.width?`width:${b.width}px;`:'') + (b.height?`height:${b.height}px;`:'');
-  if(!withControls) return `<div class="nb-figure-row disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}"${sizeStyle?` style="${sizeStyle}overflow:hidden;"`:''}>${b.html}</div>`;
+  if(!withControls){
+    let html = b.html;
+    if(b.type==='disque' && b.syncedDiameter) html = html.replace(/max-width:150px/g, `max-width:${b.syncedDiameter}px`);
+    return `<div class="nb-figure-row disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}"${sizeStyle?` style="${sizeStyle}overflow:hidden;"`:''}>${html}</div>`;
+  }
   const dragAttrs = draggable ? `draggable="true" ondragstart="evalDragStart(event,${b.id})"` : '';
   return `<div class="nb-figure-row" ${dragAttrs} style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px 10px;margin:8px 0;${draggable?'cursor:grab;':''}">
     <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;z-index:2;">
@@ -1876,10 +1880,14 @@ function syncDiskSizes(root){
       if(svg){ const w = svg.getBoundingClientRect().width; if(w>0) minDiam = Math.min(minDiam, w); }
     });
     if(minDiam===Infinity) return;
+    minDiam = Math.round(minDiam);
     diskBlocks.forEach(b=>{
+      b.syncedDiameter = minDiam; // mémorisé sur le bloc lui-même : réutilisable même hors DOM
+      // (ex. génération du HTML statique pour la fenêtre d'impression, qui ne peut pas
+      // exécuter ce script pour mesurer et ajuster le rendu après coup).
       const wrap = root.querySelector(`.disk-sync-target[data-block-id="${b.id}"]`);
       if(!wrap) return;
-      wrap.querySelectorAll(':scope > div > div').forEach(discWrap=>{ discWrap.style.maxWidth = Math.round(minDiam)+'px'; });
+      wrap.querySelectorAll(':scope > div > div').forEach(discWrap=>{ discWrap.style.maxWidth = minDiam+'px'; });
     });
   });
 }
@@ -3207,6 +3215,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.64', items:[
+    "Fix -- les disques n'avaient pas la même taille dans la fenêtre d'impression (PDF) : la synchronisation ajustait le DOM en direct, mais cette fenêtre est une page neuve qui ne peut pas exécuter ce script. Le diamètre synchronisé est désormais mémorisé et intégré directement dans le HTML généré, quel que soit le contexte (édition, aperçu, impression).",
+  ]},
   { version:'2026-08-04.63', items:[
     "Créer une évaluation -- refonte du PDF : abandon de la capture d'écran (peu fiable avec ce contenu) au profit de l'impression native du navigateur dans une fenêtre dédiée (choisir « Enregistrer en PDF » comme imprimante). La synchronisation de la taille des disques s'applique désormais aussi dans l'aperçu, pas seulement pendant l'édition. Nouveau : sauvegarde de l'évaluation (bouton 💾), liste « Mes évaluations » pour la retrouver, et partage avec un collègue par e-mail (accès en lecture/écriture partagé).",
   ]},
@@ -4717,6 +4728,7 @@ async function replaceSvgsWithImages(container){
 }
 function exportEvaluationPDF(){
   if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant de générer le PDF."); return; }
+  syncDiskSizes(document.getElementById('evalExercicesList'));
   // La capture d'écran (html2canvas) s'est montrée peu fiable avec ce contenu (figures SVG,
   // mise en page). On utilise à la place l'impression native du navigateur, dans une fenêtre
   // dédiée : l'utilisateur choisit "Enregistrer au format PDF" comme destination -- le rendu
@@ -5172,27 +5184,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-63"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-63"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-63"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-63"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-63"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-63"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-63"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-63"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-63"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-63"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-63"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-63"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-63"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-63"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-63"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-63"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-63"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-63"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-63"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-63"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-63"></script>
-<script src="compte-est-bon.js?v=20260804-63"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-64"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-64"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-64"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-64"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-64"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-64"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-64"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-64"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-64"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-64"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-64"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-64"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-64"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-64"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-64"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-64"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-64"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-64"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-64"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-64"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-64"></script>
+<script src="compte-est-bon.js?v=20260804-64"></script>
 </body>
 </html>
