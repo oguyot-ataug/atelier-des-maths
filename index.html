@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-66">
+<link rel="stylesheet" href="styles.css?v=20260804-67">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.66</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.67</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -141,6 +141,15 @@
      evaluation. Places ici (hors de toute section .view) pour rester visibles quelle
      que soit la vue active -- sinon, ouverts depuis une evaluation, ils restaient caches
      derriere le display:none de la section Outil de correction. -->
+<div id="evalShareModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEvalShareModal();">
+  <div class="modal-card" style="max-width:480px;max-height:80vh;overflow:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Partager avec un collègue</strong>
+      <button class="modal-close" onclick="closeEvalShareModal()">✕</button>
+    </div>
+    <div id="evalShareContent"></div>
+  </div>
+</div>
 <div id="evalListModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEvalListModal();">
   <div class="modal-card" style="max-width:560px;max-height:80vh;overflow:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
@@ -185,6 +194,7 @@
       </div>
       <div id="divisionPreview"></div>
       <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="divStepByStep"> Insérer le détail étape par étape (plutôt que le résultat final seul)</label>
+      <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" id="divVierge"> N'afficher que le dividende et le diviseur (à compléter par l'élève -- la hauteur de la barre est calculée pour laisser la place aux étapes)</label>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="insertDivisionPosee()">Insérer la division posée</button>
         <button type="button" class="btn secondary" onclick="closeDivisionTool()">Fermer sans insérer</button>
@@ -199,6 +209,7 @@
         <button type="button" class="btn secondary" onclick="previewDivisionDecimale()">Calculer</button>
       </div>
       <div id="divisionDecPreview"></div>
+      <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="divDecVierge"> N'afficher que le dividende et le diviseur (à compléter par l'élève -- la hauteur de la barre est calculée pour laisser la place aux étapes)</label>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="insertDivisionDecimale()">Insérer la division</button>
         <button type="button" class="btn secondary" onclick="closeDivisionDecTool()">Fermer sans insérer</button>
@@ -212,6 +223,12 @@
         <label class="hint" style="margin:0;">Pas : <input type="number" id="axeStep" value="1" style="width:70px;"></label>
         <label class="hint" style="margin:0;">Partager chaque unité en : <input type="number" id="axeSubDiv" value="1" min="1" style="width:60px;"></label>
         <input type="text" id="axePoints" placeholder="Points (ex. A(2,5) B(3/4))" style="flex:1;min-width:200px;">
+        <label class="hint" style="margin:0;">Compétence :
+          <select id="axeMode">
+            <option value="lecture">Lire les abscisses (points déjà placés)</option>
+            <option value="placer">Placer les points (à tracer par l'élève)</option>
+          </select>
+        </label>
         <button type="button" class="btn secondary" onclick="previewAxe()">Aperçu</button>
       </div>
       <p class="hint" style="margin:-6px 0 10px;">Utile pour un axe vierge (sans point) où les élèves doivent placer eux-mêmes des fractions : par exemple, partager en 4 fait apparaître un trait à chaque quart d'unité.</p>
@@ -227,6 +244,12 @@
         <label class="hint" style="margin:0;">X min/max : <input type="number" id="repXMin" value="-5" style="width:60px;"> / <input type="number" id="repXMax" value="5" style="width:60px;"></label>
         <label class="hint" style="margin:0;">Y min/max : <input type="number" id="repYMin" value="-5" style="width:60px;"> / <input type="number" id="repYMax" value="5" style="width:60px;"></label>
         <input type="text" id="repPoints" placeholder="Points (ex. A(3,5;-2) B(-1;4))" style="flex:1;min-width:200px;">
+        <label class="hint" style="margin:0;">Compétence :
+          <select id="repMode">
+            <option value="lecture">Lire les coordonnées (points déjà placés)</option>
+            <option value="placer">Placer les points (à tracer par l'élève)</option>
+          </select>
+        </label>
         <button type="button" class="btn secondary" onclick="previewRepere()">Aperçu</button>
       </div>
       <div id="reperePreview"></div>
@@ -242,6 +265,8 @@
         <label class="hint" style="margin:0;">Parts totales : <input type="number" id="disqueDen" value="4" min="1" style="width:60px;"></label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="disqueVierge"> Laisser vierge (à colorier par l'élève)</label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="disqueShowCaption" checked> Écrire la fraction en dessous</label>
+        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueReponseSimple"> Réponse à compléter (.../....)</label>
+        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueReponseMixte"> Réponse avec partie entière (... + .../....)</label>
         <button type="button" class="btn secondary" onclick="previewDisque()">Aperçu</button>
       </div>
       <div id="disquePreview"></div>
@@ -258,6 +283,8 @@
         <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracVert"> Bandes verticales (au lieu d'horizontales)</label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracVierge"> Laisser vierge (à colorier par l'élève)</label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracShowCaption" checked> Écrire la fraction en dessous</label>
+        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracReponseSimple"> Réponse à compléter (.../....)</label>
+        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracReponseMixte"> Réponse avec partie entière (... + .../....)</label>
         <button type="button" class="btn secondary" onclick="previewRectFrac()">Aperçu</button>
       </div>
       <div id="rectFracPreview"></div>
@@ -916,6 +943,7 @@
       <input type="text" id="adminNewEmail" placeholder="identifiant (ou e-mail)" style="min-width:200px;">
       <input type="password" id="adminNewPassword" placeholder="Mot de passe" style="width:150px;">
       <input type="text" id="adminNewNom" placeholder="Nom (affichage)" style="width:160px;">
+      <input type="text" id="adminNewUai" placeholder="UAI établissement (ex. 0751234A)" style="width:170px;">
       <select id="adminNewRole"><option value="prof">Professeur</option><option value="eleve">Élève</option><option value="admin">Administrateur</option></select>
       <button class="btn" onclick="adminCreateAccount()">Créer le compte</button>
     </div>
@@ -2047,7 +2075,7 @@ function dpRenderDivisionTable(rows, quotient, divisor, commaCol){
     </div>
   </div>`;
 }
-function divisionPoseeHTML(res){
+function divisionPoseeHTML(res, vierge){
   if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le dividende et le diviseur doivent être des entiers, et le diviseur non nul.</p>';
   const dividendStr = String(res.dividend);
   const N = dividendStr.length;
@@ -2055,13 +2083,19 @@ function divisionPoseeHTML(res){
   let lastEndCol = -1;
   res.steps.forEach((s,i)=>{
     if(s.sub>0){
-      rows.push({cells: dpAlignedCells(String(s.sub), i, N), sign:true, underline:true, endCol:i});
-      rows.push({cells: dpAlignedCells(String(s.value-s.sub), i, N)});
+      rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:true, underline:true, endCol:i});
+      rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
       lastEndCol = i;
     }
   });
-  if(lastEndCol < N-1) rows.push({cells: dpAlignedCells(String(res.remainder), N-1, N)});
-  return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">${dpRenderDivisionTable(rows, res.quotient, res.divisor)}</div>
+  if(lastEndCol < N-1) rows.push({cells: dpAlignedCells(vierge?'':String(res.remainder), N-1, N)});
+  // En mode vierge : le dividende ET le diviseur restent visibles (l'élève doit les connaître
+  // pour démarrer) ; seuls le quotient et le détail des étapes sont masqués. Le nombre de
+  // lignes/traits reste calculé sur la vraie division : la hauteur de la barre verticale
+  // anticipe donc correctement le nombre d'étapes à venir.
+  const table = dpRenderDivisionTable(rows, vierge?'':res.quotient, res.divisor);
+  if(vierge) return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">${table}</div>`;
+  return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">${table}</div>
   <p class="hint" style="margin:0;">${res.dividend} = (${res.divisor} × ${res.quotient}) + ${res.remainder}</p>`;
 }
 function buildDivisionStages(res){
@@ -2100,7 +2134,8 @@ function previewDivisionPosee(){
   const res = computeDivisionPosee(a,b);
   if(!res){ document.getElementById('divisionPreview').innerHTML = divisionPoseeHTML(null); return; }
   const stepByStep = document.getElementById('divStepByStep').checked;
-  document.getElementById('divisionPreview').innerHTML = stepByStep ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res);
+  const vierge = document.getElementById('divVierge').checked;
+  document.getElementById('divisionPreview').innerHTML = (stepByStep && !vierge) ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res, vierge);
 }
 function openDivisionTool(){document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('divisionPanel').style.display='block';
@@ -2114,14 +2149,16 @@ function insertDivisionPosee(){
   const res = computeDivisionPosee(a,b);
   if(!res){ document.getElementById('divisionPreview').innerHTML = divisionPoseeHTML(null); return; }
   const stepByStep = document.getElementById('divStepByStep').checked;
-  const html = stepByStep ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res);
-  addPendingBlock('divisionPosee', html, {a,b,stepByStep}, 'reopenDivisionPosee');
+  const vierge = document.getElementById('divVierge').checked;
+  const html = (stepByStep && !vierge) ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res, vierge);
+  addPendingBlock('divisionPosee', html, {a,b,stepByStep,vierge}, 'reopenDivisionPosee');
   closeDivisionTool();
 }
 function reopenDivisionPosee(data){
   openDivisionTool();
   document.getElementById('divDividende').value = data.a;
   document.getElementById('divDiviseur').value = data.b;
+  document.getElementById('divVierge').checked = !!data.vierge;
   document.getElementById('divStepByStep').checked = data.stepByStep;
   previewDivisionPosee();
 }
@@ -2188,19 +2225,21 @@ function computeDivisionDecimale(dividendRaw, divisor, maxDec){
   const dividendDisplay = cleanStr.replace('.', ',');
   return {dividend: dividendDisplay, dividendValue, divisor, quotient, exact, steps, decCount, repeating, digits, givenCommaPos};
 }
-function divisionDecimaleHTML(res, maxDec){
+function divisionDecimaleHTML(res, maxDec, vierge){
   if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le dividende doit être un nombre décimal ou entier positif, le diviseur un entier positif.</p>';
   const dividendDigitsStr = res.digits.join('');
   const totalCols = Math.max(dividendDigitsStr.length, ...res.steps.map(s=>s.col+1));
   const rows = [{cells: dpAlignedCells(dividendDigitsStr, dividendDigitsStr.length-1, totalCols), bold:true}];
   res.steps.forEach((s,i)=>{
-    rows.push({cells: dpAlignedCells(String(s.sub), s.col, totalCols), sign:true, underline:true, endCol:s.col});
+    rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), s.col, totalCols), sign:true, underline:true, endCol:s.col});
     const next = res.steps[i+1];
-    if(next) rows.push({cells: dpAlignedCells(String(next.before), next.col, totalCols)});
-    else rows.push({cells: dpAlignedCells(String(s.after), s.col, totalCols)});
+    if(next) rows.push({cells: dpAlignedCells(vierge?'':String(next.before), next.col, totalCols)});
+    else rows.push({cells: dpAlignedCells(vierge?'':String(s.after), s.col, totalCols)});
   });
   const commaColIdx = res.givenCommaPos!==null && res.givenCommaPos!==undefined ? res.givenCommaPos-1 : undefined;
-  const table = dpRenderDivisionTable(rows, res.quotient + (res.repeating?'…':''), res.divisor, commaColIdx);
+  // En mode vierge : dividende et diviseur restent visibles, seuls le quotient et le détail des
+  // étapes sont masqués -- la barre garde la hauteur calculée sur la vraie division.
+  const table = dpRenderDivisionTable(rows, vierge?'':(res.quotient + (res.repeating?'…':'')), res.divisor, commaColIdx);
   return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
     ${table}
   </div>`;
@@ -2209,8 +2248,9 @@ function previewDivisionDecimale(){
   const a = document.getElementById('divDecDividende').value;
   const b = parseInt(document.getElementById('divDecDiviseur').value);
   const maxDec = parseInt(document.getElementById('divDecMax').value)||4;
+  const vierge = document.getElementById('divDecVierge').checked;
   const res = computeDivisionDecimale(a,b,maxDec);
-  document.getElementById('divisionDecPreview').innerHTML = divisionDecimaleHTML(res, maxDec);
+  document.getElementById('divisionDecPreview').innerHTML = divisionDecimaleHTML(res, maxDec, vierge);
 }
 function openDivisionDecTool(){document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('divisionDecPanel').style.display='block';
@@ -2222,9 +2262,10 @@ function insertDivisionDecimale(){
   const a = document.getElementById('divDecDividende').value;
   const b = parseInt(document.getElementById('divDecDiviseur').value);
   const maxDec = parseInt(document.getElementById('divDecMax').value)||4;
+  const vierge = document.getElementById('divDecVierge').checked;
   const res = computeDivisionDecimale(a,b,maxDec);
   if(!res) return;
-  addPendingBlock('divisionDec', divisionDecimaleHTML(res, maxDec), {a,b,maxDec}, 'reopenDivisionDec');
+  addPendingBlock('divisionDec', divisionDecimaleHTML(res, maxDec, vierge), {a,b,maxDec,vierge}, 'reopenDivisionDec');
   closeDivisionDecTool();
 }
 function reopenDivisionDec(data){
@@ -2232,6 +2273,7 @@ function reopenDivisionDec(data){
   document.getElementById('divDecDividende').value = data.a;
   document.getElementById('divDecDiviseur').value = data.b;
   document.getElementById('divDecMax').value = data.maxDec;
+  document.getElementById('divDecVierge').checked = !!data.vierge;
   previewDivisionDecimale();
   renderCorrectionPreview();
 }
@@ -2263,7 +2305,7 @@ function parseNamedPoints1D(raw){
   }
   return out;
 }
-function buildAxeSvg(min,max,step,points,manualSubDiv){
+function buildAxeSvg(min,max,step,points,manualSubDiv,mode){
   const W=560,H=110,padX=30,y=55;
   const scale = (W-2*padX)/(max-min);
   const xOf = v => padX + (v-min)*scale;
@@ -2294,23 +2336,34 @@ function buildAxeSvg(min,max,step,points,manualSubDiv){
     }
   }
   let pts='';
-  (points||[]).forEach(p=>{
-    if(p.value<min||p.value>max) return;
-    const x = xOf(p.value);
-    pts += `<circle cx="${x}" cy="${y}" r="4.5" fill="#FF8208"/>
-      <text x="${x}" y="${y-14}" font-size="14" font-weight="700" text-anchor="middle" fill="#FF8208" font-family="Space Grotesk, sans-serif">${p.label}</text>`;
-  });
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:560px;display:block;margin:6px auto;background:#fff;">
+  // Mode "placer" : compétence = placer soi-même les points -- on ne les dessine pas, une
+  // consigne les liste à part (voir plus bas). Mode "lecture" (par défaut) : les points sont
+  // déjà placés, à l'élève de lire/écrire leur abscisse.
+  if(mode!=='placer'){
+    (points||[]).forEach(p=>{
+      if(p.value<min||p.value>max) return;
+      const x = xOf(p.value);
+      pts += `<circle cx="${x}" cy="${y}" r="4.5" fill="#FF8208"/>
+        <text x="${x}" y="${y-14}" font-size="14" font-weight="700" text-anchor="middle" fill="#FF8208" font-family="Space Grotesk, sans-serif">${p.label}</text>`;
+    });
+  }
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:560px;display:block;margin:6px auto;background:#fff;">
     <line x1="${padX-10}" y1="${y}" x2="${W-padX+10}" y2="${y}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#axeArrow)"/>
     <defs><marker id="axeArrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker></defs>
     ${ticks}${pts}
   </svg>`;
+  if(mode==='placer' && points && points.length){
+    const liste = points.map(p=>`${p.label}(${Number(p.value.toFixed(6))})`).join(' ; ');
+    return svg + `<p class="hint" style="text-align:center;margin:4px 0 0;">Place les points ${liste}</p>`;
+  }
+  return svg;
 }
 function previewAxe(){
   const min=parseFloat(document.getElementById('axeMin').value), max=parseFloat(document.getElementById('axeMax').value), step=parseFloat(document.getElementById('axeStep').value)||1;
   const subDiv=parseInt(document.getElementById('axeSubDiv').value)||1;
+  const mode = document.getElementById('axeMode').value;
   const points = parseNamedPoints1D(document.getElementById('axePoints').value);
-  document.getElementById('axePreview').innerHTML = (max>min&&step>0) ? buildAxeSvg(min,max,step,points,subDiv) : '<p class="hint" style="color:var(--accent-orange);">Le maximum doit être supérieur au minimum, le pas positif.</p>';
+  document.getElementById('axePreview').innerHTML = (max>min&&step>0) ? buildAxeSvg(min,max,step,points,subDiv,mode) : '<p class="hint" style="color:var(--accent-orange);">Le maximum doit être supérieur au minimum, le pas positif.</p>';
 }
 function openAxeTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('axePanel').style.display='block'; document.getElementById('axePreview').innerHTML=''; document.getElementById('axePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeAxeTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('axePanel').style.display='none'; }
@@ -2318,9 +2371,10 @@ function insertAxe(){
   const min=parseFloat(document.getElementById('axeMin').value), max=parseFloat(document.getElementById('axeMax').value), step=parseFloat(document.getElementById('axeStep').value)||1;
   if(!(max>min&&step>0)) return;
   const subDiv=parseInt(document.getElementById('axeSubDiv').value)||1;
+  const mode = document.getElementById('axeMode').value;
   const pointsRaw = document.getElementById('axePoints').value;
   const points = parseNamedPoints1D(pointsRaw);
-  addPendingBlock('axe', buildAxeSvg(min,max,step,points,subDiv), {min,max,step,subDiv,pointsRaw}, 'reopenAxe');
+  addPendingBlock('axe', buildAxeSvg(min,max,step,points,subDiv,mode), {min,max,step,subDiv,mode,pointsRaw}, 'reopenAxe');
   closeAxeTool();
 }
 function reopenAxe(data){
@@ -2329,6 +2383,7 @@ function reopenAxe(data){
   document.getElementById('axeMax').value = data.max;
   document.getElementById('axeStep').value = data.step;
   document.getElementById('axeSubDiv').value = data.subDiv||1;
+  document.getElementById('axeMode').value = data.mode||'lecture';
   document.getElementById('axePoints').value = data.pointsRaw;
   previewAxe();
 }
@@ -2348,7 +2403,7 @@ function parseNamedPoints2D(raw){
   }
   return out;
 }
-function buildRepereSvg(xMin,xMax,yMin,yMax,points){
+function buildRepereSvg(xMin,xMax,yMin,yMax,points,mode){
   const W=420,H=420,pad=26;
   const sx = (W-2*pad)/(xMax-xMin), sy=(H-2*pad)/(yMax-yMin);
   const X = v => pad + (v-xMin)*sx;
@@ -2361,11 +2416,15 @@ function buildRepereSvg(xMin,xMax,yMin,yMax,points){
     <line x1="${X(0)}" y1="${H-pad+10}" x2="${X(0)}" y2="${pad-10}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#repAxeArrowY)"/>`;
   const originLabel = showOrigin ? `<text x="${X(0)-12}" y="${Y(0)+18}" font-size="15" font-weight="700" font-family="Space Grotesk, sans-serif">O</text>` : '';
   let pts='';
-  (points||[]).forEach(p=>{
-    pts += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="4.5" fill="#FF8208"/>
-      <text x="${X(p.x)+8}" y="${Y(p.y)-8}" font-size="14" font-weight="700" fill="#FF8208" font-family="Space Grotesk, sans-serif">${p.label}</text>`;
-  });
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:340px;display:block;margin:6px auto;background:#fff;">
+  // Mode "placer" : les points ne sont pas dessinés (une consigne les liste à part) -- l'élève
+  // doit les placer lui-même. Mode "lecture" (par défaut) : déjà placés, à lire/écrire.
+  if(mode!=='placer'){
+    (points||[]).forEach(p=>{
+      pts += `<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="4.5" fill="#FF8208"/>
+        <text x="${X(p.x)+8}" y="${Y(p.y)-8}" font-size="14" font-weight="700" fill="#FF8208" font-family="Space Grotesk, sans-serif">${p.label}</text>`;
+    });
+  }
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:340px;display:block;margin:6px auto;background:#fff;">
     <defs>
       <marker id="repAxeArrowX" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
       <marker id="repAxeArrowY" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
@@ -2374,12 +2433,18 @@ function buildRepereSvg(xMin,xMax,yMin,yMax,points){
     <text x="${X(1)}" y="${Y(0)+16}" font-size="12" font-family="JetBrains Mono, monospace">1</text>
     <text x="${X(0)-14}" y="${Y(1)+4}" font-size="12" font-family="JetBrains Mono, monospace">1</text>
   </svg>`;
+  if(mode==='placer' && points && points.length){
+    const liste = points.map(p=>`${p.label}(${Number(p.x.toFixed(6))} ; ${Number(p.y.toFixed(6))})`).join(' ; ');
+    return svg + `<p class="hint" style="text-align:center;margin:4px 0 0;">Place les points ${liste}</p>`;
+  }
+  return svg;
 }
 function previewRepere(){
   const xMin=parseFloat(document.getElementById('repXMin').value), xMax=parseFloat(document.getElementById('repXMax').value);
   const yMin=parseFloat(document.getElementById('repYMin').value), yMax=parseFloat(document.getElementById('repYMax').value);
+  const mode = document.getElementById('repMode').value;
   const points = parseNamedPoints2D(document.getElementById('repPoints').value);
-  document.getElementById('reperePreview').innerHTML = (xMax>xMin&&yMax>yMin) ? buildRepereSvg(xMin,xMax,yMin,yMax,points) : '<p class="hint" style="color:var(--accent-orange);">Les maximums doivent être supérieurs aux minimums.</p>';
+  document.getElementById('reperePreview').innerHTML = (xMax>xMin&&yMax>yMin) ? buildRepereSvg(xMin,xMax,yMin,yMax,points,mode) : '<p class="hint" style="color:var(--accent-orange);">Les maximums doivent être supérieurs aux minimums.</p>';
 }
 function openRepereTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('reperePanel').style.display='block'; document.getElementById('reperePreview').innerHTML=''; document.getElementById('reperePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeRepereTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('reperePanel').style.display='none'; }
@@ -2387,9 +2452,10 @@ function insertRepere(){
   const xMin=parseFloat(document.getElementById('repXMin').value), xMax=parseFloat(document.getElementById('repXMax').value);
   const yMin=parseFloat(document.getElementById('repYMin').value), yMax=parseFloat(document.getElementById('repYMax').value);
   if(!(xMax>xMin&&yMax>yMin)) return;
+  const mode = document.getElementById('repMode').value;
   const pointsRaw = document.getElementById('repPoints').value;
   const points = parseNamedPoints2D(pointsRaw);
-  addPendingBlock('repere', buildRepereSvg(xMin,xMax,yMin,yMax,points), {xMin,xMax,yMin,yMax,pointsRaw}, 'reopenRepere');
+  addPendingBlock('repere', buildRepereSvg(xMin,xMax,yMin,yMax,points,mode), {xMin,xMax,yMin,yMax,mode,pointsRaw}, 'reopenRepere');
   closeRepereTool();
 }
 function reopenRepere(data){
@@ -2398,6 +2464,7 @@ function reopenRepere(data){
   document.getElementById('repXMax').value = data.xMax;
   document.getElementById('repYMin').value = data.yMin;
   document.getElementById('repYMax').value = data.yMax;
+  document.getElementById('repMode').value = data.mode||'lecture';
   document.getElementById('repPoints').value = data.pointsRaw;
   previewRepere();
 }
@@ -2416,7 +2483,15 @@ function singleDisqueSvg(filled, den){
 }
 /* Si le numérateur dépasse le dénominateur (fraction impropre, ex. 5/4), il faut plusieurs
    disques : autant de disques complets que nécessaire, le dernier ne montrant que le reste. */
-function buildDisqueSvg(num,den,vierge,showCaption){
+/* Ligne de réponse à compléter, sous la forme demandée (l'élève écrit lui-même les nombres). */
+function fractionAnswerHTML(reponseSimple, reponseMixte){
+  if(!reponseSimple && !reponseMixte) return '';
+  const parts = [];
+  if(reponseSimple) parts.push('..../....');
+  if(reponseMixte) parts.push('.... + ..../....');
+  return `<p style="text-align:center;margin:8px 0 0;font-family:'JetBrains Mono',monospace;font-size:1.05rem;">${parts.join('&nbsp;&nbsp;&nbsp;ou&nbsp;&nbsp;&nbsp;')}</p>`;
+}
+function buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte){
   const nShapes = Math.max(1, Math.ceil(num/den));
   let discs = '';
   for(let i=0;i<nShapes;i++){
@@ -2427,13 +2502,16 @@ function buildDisqueSvg(num,den,vierge,showCaption){
   }
   const caption = vierge ? `Colorie ${num}/${den} du disque` : `${num}/${den}`;
   return `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:${nShapes*150+((nShapes-1)*10)}px;margin:0 auto;">${discs}</div>
-    ${showCaption!==false ? `<p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>` : ''}`;
+    ${showCaption!==false ? `<p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>` : ''}
+    ${fractionAnswerHTML(reponseSimple, reponseMixte)}`;
 }
 function previewDisque(){
   const num=parseInt(document.getElementById('disqueNum').value), den=parseInt(document.getElementById('disqueDen').value);
   const vierge = document.getElementById('disqueVierge').checked;
   const showCaption = document.getElementById('disqueShowCaption').checked;
-  document.getElementById('disquePreview').innerHTML = (den>0&&num>=0) ? buildDisqueSvg(num,den,vierge,showCaption) : '';
+  const reponseSimple = document.getElementById('disqueReponseSimple').checked;
+  const reponseMixte = document.getElementById('disqueReponseMixte').checked;
+  document.getElementById('disquePreview').innerHTML = (den>0&&num>=0) ? buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte) : '';
 }
 function openDisqueTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('disquePanel').style.display='block'; document.getElementById('disquePreview').innerHTML=''; document.getElementById('disquePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeDisqueTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('disquePanel').style.display='none'; }
@@ -2441,8 +2519,10 @@ function insertDisque(){
   const num=parseInt(document.getElementById('disqueNum').value), den=parseInt(document.getElementById('disqueDen').value);
   const vierge = document.getElementById('disqueVierge').checked;
   const showCaption = document.getElementById('disqueShowCaption').checked;
+  const reponseSimple = document.getElementById('disqueReponseSimple').checked;
+  const reponseMixte = document.getElementById('disqueReponseMixte').checked;
   if(!(den>0&&num>=0)) return;
-  addPendingBlock('disque', buildDisqueSvg(num,den,vierge,showCaption), {num,den,vierge,showCaption}, 'reopenDisque');
+  addPendingBlock('disque', buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte), {num,den,vierge,showCaption,reponseSimple,reponseMixte}, 'reopenDisque');
   closeDisqueTool();
 }
 function reopenDisque(data){
@@ -2451,6 +2531,8 @@ function reopenDisque(data){
   document.getElementById('disqueDen').value = data.den;
   document.getElementById('disqueVierge').checked = !!data.vierge;
   document.getElementById('disqueShowCaption').checked = data.showCaption!==false;
+  document.getElementById('disqueReponseSimple').checked = !!data.reponseSimple;
+  document.getElementById('disqueReponseMixte').checked = !!data.reponseMixte;
   previewDisque();
 }
 
@@ -2471,7 +2553,7 @@ function singleRectFracSvg(filled, den, vertical){
 }
 /* Comme pour les disques : un numérateur supérieur au dénominateur (fraction impropre) a
    besoin de plusieurs rectangles, le dernier ne montrant que le reste. */
-function buildRectFracSvg(num,den,vertical,vierge,showCaption){
+function buildRectFracSvg(num,den,vertical,vierge,showCaption,reponseSimple,reponseMixte){
   const nShapes = Math.max(1, Math.ceil(num/den));
   let rects = '';
   for(let i=0;i<nShapes;i++){
@@ -2480,14 +2562,17 @@ function buildRectFracSvg(num,den,vertical,vierge,showCaption){
   }
   const caption = vierge ? `Colorie ${num}/${den} du rectangle` : `${num}/${den}`;
   return `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:${nShapes*180+((nShapes-1)*10)}px;margin:0 auto;">${rects}</div>
-    ${showCaption!==false ? `<p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>` : ''}`;
+    ${showCaption!==false ? `<p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>` : ''}
+    ${fractionAnswerHTML(reponseSimple, reponseMixte)}`;
 }
 function previewRectFrac(){
   const num=parseInt(document.getElementById('rectFracNum').value), den=parseInt(document.getElementById('rectFracDen').value);
   const vert = document.getElementById('rectFracVert').checked;
   const vierge = document.getElementById('rectFracVierge').checked;
   const showCaption = document.getElementById('rectFracShowCaption').checked;
-  document.getElementById('rectFracPreview').innerHTML = (den>0&&num>=0) ? buildRectFracSvg(num,den,vert,vierge,showCaption) : '';
+  const reponseSimple = document.getElementById('rectFracReponseSimple').checked;
+  const reponseMixte = document.getElementById('rectFracReponseMixte').checked;
+  document.getElementById('rectFracPreview').innerHTML = (den>0&&num>=0) ? buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte) : '';
 }
 function openRectFracTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('rectFracPanel').style.display='block'; document.getElementById('rectFracPreview').innerHTML=''; document.getElementById('rectFracPanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeRectFracTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('rectFracPanel').style.display='none'; }
@@ -2496,8 +2581,10 @@ function insertRectFrac(){
   const vert = document.getElementById('rectFracVert').checked;
   const vierge = document.getElementById('rectFracVierge').checked;
   const showCaption = document.getElementById('rectFracShowCaption').checked;
+  const reponseSimple = document.getElementById('rectFracReponseSimple').checked;
+  const reponseMixte = document.getElementById('rectFracReponseMixte').checked;
   if(!(den>0&&num>=0)) return;
-  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert,vierge,showCaption), {num,den,vert,vierge,showCaption}, 'reopenRectFrac');
+  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte), {num,den,vert,vierge,showCaption,reponseSimple,reponseMixte}, 'reopenRectFrac');
   closeRectFracTool();
 }
 function reopenRectFrac(data){
@@ -2507,6 +2594,8 @@ function reopenRectFrac(data){
   document.getElementById('rectFracVert').checked = data.vert;
   document.getElementById('rectFracVierge').checked = !!data.vierge;
   document.getElementById('rectFracShowCaption').checked = data.showCaption!==false;
+  document.getElementById('rectFracReponseSimple').checked = !!data.reponseSimple;
+  document.getElementById('rectFracReponseMixte').checked = !!data.reponseMixte;
   previewRectFrac();
 }
 
@@ -3227,6 +3316,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.67', items:[
+    "Créer une évaluation -- gros lot : (1) UAI de l'établissement renseignable à la création d'un compte prof (admin) ; (2) partage d'une évaluation avec liste des collègues de la même UAI (avec indication de qui est déjà partagé), plutôt qu'un simple e-mail à taper ; (3) le titre du dernier enregistrement est proposé par défaut à la sauvegarde suivante ; (4) disque et rectangle fractionnés : ligne de réponse à compléter en dessous (forme simple .../.... ou avec partie entière ... + .../....) ; (5) division posée (entière et décimale) : option pour n'afficher que dividende et diviseur, avec la hauteur de la barre correctement anticipée sur le nombre d'étapes réel ; (6) axe gradué et repère : choix entre « lire » (points déjà placés) et « placer » (points à tracer par l'élève, consigne donnée séparément). Tentative de fix supplémentaire sur la synchronisation des disques en impression (léger délai de sécurité avant mesure).",
+  ]},
   { version:'2026-08-04.66', items:[
     "Fix critique -- la synchronisation des disques ne fonctionnait plus du tout : du code de mes tentatives précédentes s'était mélangé par erreur, supprimant silencieusement la fonction responsable (aucun message d'erreur visible sur le site, seulement en console). Entièrement réparé et re-testé. Ajout d'un réglage manuel « 🥧 Taille des disques » par exercice (visible dès qu'il y a au moins un disque) : plus fiable que la synchronisation automatique, il s'applique directement dans tous les contextes (édition, aperçu, PDF).",
   ]},
@@ -4033,6 +4125,7 @@ async function adminCreateAccount(){
   const identifiant = document.getElementById('adminNewEmail').value.trim();
   const password = document.getElementById('adminNewPassword').value;
   const nom = document.getElementById('adminNewNom').value.trim();
+  const uai = document.getElementById('adminNewUai').value.trim();
   const role = document.getElementById('adminNewRole').value;
   const status = document.getElementById('adminAccountStatus');
   if(!identifiant || !password){ status.textContent = 'Identifiant et mot de passe requis.'; return; }
@@ -4047,8 +4140,14 @@ async function adminCreateAccount(){
     });
     const data = await res.json();
     if(data.error){ status.textContent = "Erreur : "+data.error; return; }
+    if(uai){
+      // L'UAI n'est pas géré par la fonction de création de compte : on le renseigne à part,
+      // juste après, en retrouvant le profil fraîchement créé par son e-mail.
+      const { data: prof } = await sb.from('profiles').select('id').eq('email', email).single();
+      if(prof) await sb.from('profiles').update({uai}).eq('id', prof.id);
+    }
     status.textContent = '✓ Compte créé ('+role+').';
-    document.getElementById('adminNewEmail').value=''; document.getElementById('adminNewPassword').value=''; document.getElementById('adminNewNom').value='';
+    document.getElementById('adminNewEmail').value=''; document.getElementById('adminNewPassword').value=''; document.getElementById('adminNewNom').value=''; document.getElementById('adminNewUai').value='';
     await adminRefreshDropdowns();
   }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
 }
@@ -4462,12 +4561,14 @@ let currentEvaluationId = null;
 /* Sauvegarde/chargement/partage : réutilise le compte prof déjà connecté (currentUser, sb).
    Une évaluation sauvegardée peut être rouverte par son propriétaire, ou par un collègue à qui
    elle a été explicitement partagée (table evaluations, RLS + collaborators côté serveur). */
+let lastEvaluationTitle = null;
 async function saveEvaluation(){
   if(!currentUser){ alert("Connectez-vous (en tant que professeur) pour sauvegarder cette évaluation."); return; }
   if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant de sauvegarder."); return; }
-  const defaultTitle = document.getElementById('evalClasses').value.trim() || ('Évaluation '+document.getElementById('evalNiveau').value);
+  const defaultTitle = lastEvaluationTitle || document.getElementById('evalClasses').value.trim() || ('Évaluation '+document.getElementById('evalNiveau').value);
   const title = prompt("Titre de cette évaluation (pour la retrouver dans « Mes évaluations ») :", defaultTitle);
   if(title===null) return;
+  lastEvaluationTitle = title || defaultTitle;
   const relevantBlocks = {};
   evaluationExercises.forEach(ex=>{ const k='ex-'+ex.id; if(blocksStores[k]) relevantBlocks[k]=blocksStores[k]; });
   const payload = {
@@ -4520,6 +4621,7 @@ async function loadEvaluation(id){
   const { data, error } = await sb.from('evaluations').select('*').eq('id', id).single();
   if(error){ alert("Échec du chargement : "+error.message); return; }
   currentEvaluationId = data.id;
+  lastEvaluationTitle = data.title || null;
   document.getElementById('evalNiveau').value = data.niveau || '6e';
   document.getElementById('evalClasses').value = data.classes || '';
   document.getElementById('evalDate').value = data.eval_date || '';
@@ -4535,11 +4637,40 @@ async function loadEvaluation(id){
 }
 async function shareEvaluation(){
   if(!currentEvaluationId){ alert("Sauvegardez d'abord cette évaluation (bouton 💾) avant de la partager."); return; }
-  const email = prompt("E-mail du compte professeur avec qui partager cette évaluation :");
-  if(!email || !email.trim()) return;
-  const { data, error } = await sb.rpc('evaluations_add_collaborator', {p_eval_id: currentEvaluationId, p_email: email.trim()});
-  if(error){ alert("Erreur : "+error.message); return; }
-  alert(data==='ok' ? "Partagé avec succès : votre collègue verra cette évaluation dans « Mes évaluations »." : data);
+  document.getElementById('evalShareModalOverlay').style.display='flex';
+  const box = document.getElementById('evalShareContent');
+  box.innerHTML = 'Chargement…';
+  const { data, error } = await sb.rpc('list_colleagues_same_uai', {p_eval_id: currentEvaluationId});
+  if(error){ box.innerHTML = "Erreur : "+error.message; return; }
+  let html = '';
+  if(!data || !data.length){
+    html += `<p class="hint" style="margin:0 0 14px;">Aucun collègue trouvé dans votre établissement (UAI non renseigné, ou personne d'autre enregistré avec le même UAI). Vous pouvez tout de même partager par e-mail ci-dessous.</p>`;
+  } else {
+    html += `<p class="hint" style="margin:0 0 10px;">Collègues de votre établissement :</p>`;
+    html += data.map(c=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(28,43,57,.08);">
+        <span>${escapeHtml(c.nom||c.email||'')}</span>
+        ${c.already_shared ? '<span class="hint">✓ déjà partagé</span>' : `<button class="btn secondary" onclick="shareEvaluationWith('${c.email}')">Partager</button>`}
+      </div>
+    `).join('');
+  }
+  html += `
+    <div class="tool-row" style="margin-top:16px;">
+      <input type="text" id="evalShareEmail" placeholder="ou e-mail d'un collègue" style="flex:1;min-width:180px;">
+      <button class="btn secondary" onclick="shareEvaluationWith(document.getElementById('evalShareEmail').value.trim())">Partager</button>
+    </div>
+    <p class="hint" id="evalShareStatus" style="margin:8px 0 0;"></p>
+  `;
+  box.innerHTML = html;
+}
+function closeEvalShareModal(){ document.getElementById('evalShareModalOverlay').style.display='none'; }
+async function shareEvaluationWith(email){
+  if(!email) return;
+  const statusEl = document.getElementById('evalShareStatus');
+  const { data, error } = await sb.rpc('evaluations_add_collaborator', {p_eval_id: currentEvaluationId, p_email: email});
+  if(error){ if(statusEl) statusEl.textContent = "Erreur : "+error.message; return; }
+  if(data==='ok') shareEvaluation(); // rafraîchit la liste (le collègue apparaît maintenant "déjà partagé")
+  else if(statusEl) statusEl.textContent = data;
 }
 let evalNextExoId = 1;
 
@@ -4767,13 +4898,13 @@ function exportEvaluationPDF(){
   </head><body>${buildEvaluationContentHTML()}</body></html>`);
   w.document.close();
   w.onload = () => {
-    // La largeur des colonnes dans cette fenêtre (page A4) diffère de celle de l'aperçu ou de
-    // l'édition : on mesure et harmonise donc le diamètre des disques ICI, directement dans le
-    // document de cette fenêtre -- accessible depuis ce script (même origine), sans qu'elle ait
-    // elle-même besoin d'exécuter quoi que ce soit.
-    syncDiskSizes(w.document);
-    w.focus();
-    w.print();
+    // Petit délai de sécurité : laisse le temps à la mise en page de se stabiliser
+    // complètement (polices, styles) avant de mesurer les disques et d'imprimer.
+    setTimeout(()=>{
+      syncDiskSizes(w.document);
+      w.focus();
+      w.print();
+    }, 200);
   };
 }
 
@@ -5211,27 +5342,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-66"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-66"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-66"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-66"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-66"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-66"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-66"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-66"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-66"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-66"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-66"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-66"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-66"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-66"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-66"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-66"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-66"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-66"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-66"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-66"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-66"></script>
-<script src="compte-est-bon.js?v=20260804-66"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-67"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-67"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-67"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-67"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-67"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-67"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-67"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-67"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-67"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-67"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-67"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-67"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-67"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-67"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-67"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-67"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-67"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-67"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-67"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-67"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-67"></script>
+<script src="compte-est-bon.js?v=20260804-67"></script>
 </body>
 </html>
