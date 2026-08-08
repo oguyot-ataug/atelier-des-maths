@@ -1041,16 +1041,28 @@ function reopenTextBlock(data){
   document.getElementById('textBlockInput').value = data.text;
   previewTextBlock();
 }
+/* Icônes en trait fin (SVG), sobres et monochromes -- plus adaptées à un contexte professionnel
+   que des émojis. Dupliquées telles quelles dans index.html pour la barre fixe de l'outil de
+   correction (markup statique, ne peut pas appeler cette fonction JS). */
+const TOOL_ICONS = {
+  texte: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`,
+  figure: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4 L21 20 L3 20 Z"/></svg>`,
+  tableau: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="17" height="17" rx="1"/><line x1="3.5" y1="9.5" x2="20.5" y2="9.5"/><line x1="3.5" y1="15.5" x2="20.5" y2="15.5"/><line x1="9.5" y1="3.5" x2="9.5" y2="20.5"/><line x1="15.5" y1="3.5" x2="15.5" y2="20.5"/></svg>`,
+  division: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/><circle cx="12" cy="6" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="1.3" fill="currentColor" stroke="none"/></svg>`,
+  axe: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="3"/><polyline points="1.5,7 4,3 6.5,7"/><line x1="3" y1="20" x2="21" y2="20"/><polyline points="17,17.5 21,20 17,22.5"/><circle cx="10" cy="13" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="8" r="1.3" fill="currentColor" stroke="none"/></svg>`,
+  fraction: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3 A9 9 0 0 1 12 21 Z" fill="currentColor" stroke="none"/><line x1="12" y1="3" x2="12" y2="21"/></svg>`,
+  cubes: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2 L21 7 L21 17 L12 22 L3 17 L3 7 Z"/><path d="M12 2 L12 12 L21 7 M12 12 L3 7 M12 12 L12 22"/></svg>`,
+};
 function toolButtonsHTML(ctx){
   const set = `setToolContext('${ctx}');`;
   return `
-    <button type="button" class="tool-icon-btn" title="Texte" onclick="${set}openTextBlockTool()">✏️</button>
-    <button type="button" class="tool-icon-btn" title="Figure géométrique" onclick="${set}openFigureTool()">🔺</button>
-    <button type="button" class="tool-icon-btn" title="Tableau" onclick="${set}openTableauTool()">▦</button>
-    <button type="button" class="tool-icon-btn" title="Division (euclidienne / décimale)" onclick="${set}openDivisionTool()">➗</button>
-    <button type="button" class="tool-icon-btn" title="Axe gradué / Repère" onclick="${set}openAxeTool()">📐</button>
-    <button type="button" class="tool-icon-btn" title="Fraction visuelle (disque / rectangle)" onclick="${set}openDisqueTool()">🥧</button>
-    <button type="button" class="tool-icon-btn" title="Cubes empilés" onclick="${set}openCubesTool()">🧊</button>
+    <button type="button" class="tool-icon-btn" title="Texte" onclick="${set}openTextBlockTool()">${TOOL_ICONS.texte}</button>
+    <button type="button" class="tool-icon-btn" title="Figure géométrique" onclick="${set}openFigureTool()">${TOOL_ICONS.figure}</button>
+    <button type="button" class="tool-icon-btn" title="Tableau" onclick="${set}openTableauTool()">${TOOL_ICONS.tableau}</button>
+    <button type="button" class="tool-icon-btn" title="Division (euclidienne / décimale)" onclick="${set}openDivisionTool()">${TOOL_ICONS.division}</button>
+    <button type="button" class="tool-icon-btn" title="Axe gradué / Repère" onclick="${set}openAxeTool()">${TOOL_ICONS.axe}</button>
+    <button type="button" class="tool-icon-btn" title="Fraction visuelle (disque / rectangle)" onclick="${set}openDisqueTool()">${TOOL_ICONS.fraction}</button>
+    <button type="button" class="tool-icon-btn" title="Cubes empilés" onclick="${set}openCubesTool()">${TOOL_ICONS.cubes}</button>
   `;
 }
 let figDragPoint = null;
@@ -2631,6 +2643,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.93', items:[
+    "Icônes de la barre d'outils remplacées par des tracés en trait fin, monochromes (crayon, triangle, grille, division, axes, demi-cercle, cube) -- plus sobres et professionnelles que les émojis précédents (notamment le 🥧 pour les fractions, jugé trop enfantin).",
+  ]},
   { version:'2026-08-04.92', items:[
     "Barre d'outils allégée (outil de correction et exercices d'évaluation) : 7 icônes compactes au lieu de 10 boutons avec texte. Les outils proches sont regroupés sous des onglets dans la même fenêtre : Division (Euclidienne / Décimale), Axe & Repère, Fraction visuelle (Disque / Rectangle) -- plus besoin de chercher parmi une longue liste, et l'ensemble prend beaucoup moins de place à l'écran.",
   ]},

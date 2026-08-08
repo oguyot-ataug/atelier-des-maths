@@ -310,8 +310,9 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
   border:1px solid rgba(28,43,57,.12); background:#fff; border-radius:10px;
   width:44px; height:44px; font-size:1.3rem; cursor:pointer; display:inline-flex;
   align-items:center; justify-content:center; transition:background .15s, border-color .15s;
+  color:var(--ink-soft);
 }
-.tool-icon-btn:hover{background:rgba(28,43,57,.05); border-color:rgba(28,43,57,.25);}
+.tool-icon-btn:hover{background:rgba(28,43,57,.05); border-color:rgba(28,43,57,.25); color:var(--ink);}
 
 .placeholder-box{
   border:1.5px dashed rgba(28,43,57,.25); border-radius:var(--radius); padding:34px; text-align:center;
