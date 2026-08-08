@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-80">
+<link rel="stylesheet" href="styles.css?v=20260804-81">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.80</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.81</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -3480,6 +3480,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.81', items:[
+    "Partage d'évaluation -- distinction éditeur (✏️, peut modifier) / lecteur (👁️, peut seulement consulter et imprimer), avec possibilité de retirer un partage. Le propriétaire reste seul habilité à supprimer l'évaluation, quel que soit le rôle des autres (déjà garanti côté base de données, vérifié). « Mes évaluations » indique maintenant le rôle sur les évaluations partagées.",
+  ]},
   { version:'2026-08-04.80', items:[
     "Créer une évaluation -- nouvelles modales propres (remplacent les alert/confirm/prompt natifs du navigateur, au rendu daté) pour toutes les boîtes de dialogue du module. Supervision déplacé dans le menu Outils prof. Vue compacte (après validation) : le bouton Supprimer a été retiré (accessible seulement en repassant par Éditer, pour éviter une suppression accidentelle), et les flèches ↑/↓ y sont désormais disponibles pour réordonner sans avoir à éditer. Exercice à plusieurs colonnes : 4 boutons par cellule permettent de choisir quels bords apparaissent (haut/droite/bas/gauche), un peu comme un éditeur de tableau -- appliqué dans l'aperçu et le PDF.",
   ]},
@@ -4870,15 +4873,16 @@ async function openEvalListModal(){
   document.getElementById('evalListModalOverlay').style.display='flex';
   const box = document.getElementById('evalListContent');
   box.innerHTML = 'Chargement…';
-  const { data, error } = await sb.from('evaluations').select('id,title,niveau,classes,eval_date,owner_id,updated_at').order('updated_at', {ascending:false});
+  const { data, error } = await sb.from('evaluations').select('id,title,niveau,classes,eval_date,owner_id,collaborators,viewers,updated_at').order('updated_at', {ascending:false});
   if(error){ box.innerHTML = "Erreur : "+error.message; return; }
   if(!data || !data.length){ box.innerHTML = "Aucune évaluation sauvegardée pour le moment."; return; }
   box.innerHTML = data.map(e=>{
     const isMine = e.owner_id===currentUser.id;
+    const shareTag = isMine ? '' : (e.collaborators||[]).includes(currentUser.id) ? '<span class="hint">(partagée — ✏️ éditeur)</span>' : '<span class="hint">(partagée — 👁️ lecteur)</span>';
     const dateFmt = e.eval_date ? new Date(e.eval_date+'T00:00:00').toLocaleDateString('fr-FR') : '';
     return `<div class="tool-shell" style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
       <div>
-        <strong>${escapeHtml(e.title||'Sans titre')}</strong> ${!isMine ? '<span class="hint">(partagée)</span>' : ''}<br>
+        <strong>${escapeHtml(e.title||'Sans titre')}</strong> ${shareTag}<br>
         <span class="hint">${escapeHtml(e.niveau||'')}${e.classes?' — '+escapeHtml(e.classes):''}${dateFmt?' · '+dateFmt:''}</span>
       </div>
       <button class="btn secondary" onclick="loadEvaluation('${e.id}')">Ouvrir</button>
@@ -4925,34 +4929,55 @@ async function shareEvaluation(){
   box.innerHTML = 'Chargement…';
   const { data, error } = await sb.rpc('list_colleagues_same_uai', {p_eval_id: currentEvaluationId});
   if(error){ box.innerHTML = "Erreur : "+error.message; return; }
+  const roleLabel = r => r==='editor' ? '✏️ Éditeur' : r==='reader' ? '👁️ Lecteur' : '';
   let html = '';
   if(!data || !data.length){
     html += `<p class="hint" style="margin:0 0 14px;">Aucun collègue trouvé dans votre établissement (UAI non renseigné, ou personne d'autre enregistré avec le même UAI). Vous pouvez tout de même partager par e-mail ci-dessous.</p>`;
   } else {
     html += `<p class="hint" style="margin:0 0 10px;">Collègues de votre établissement :</p>`;
     html += data.map(c=>`
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(28,43,57,.08);">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(28,43,57,.08);gap:8px;flex-wrap:wrap;">
         <span>${escapeHtml(c.nom||c.email||'')}</span>
-        ${c.already_shared ? '<span class="hint">✓ déjà partagé</span>' : `<button class="btn secondary" onclick="shareEvaluationWith('${c.email}')">Partager</button>`}
+        ${c.share_role ? `
+          <span style="display:flex;align-items:center;gap:6px;">
+            <span class="hint" style="margin:0;">${roleLabel(c.share_role)}</span>
+            <button class="btn secondary" style="font-size:.75rem;padding:3px 8px;" onclick="unshareEvaluationWith('${c.id}')">Retirer</button>
+          </span>
+        ` : `
+          <span style="display:flex;gap:6px;">
+            <button class="btn secondary" style="font-size:.8rem;" onclick="shareEvaluationWith('${c.email}','reader')">👁️ Lecteur</button>
+            <button class="btn secondary" style="font-size:.8rem;" onclick="shareEvaluationWith('${c.email}','editor')">✏️ Éditeur</button>
+          </span>
+        `}
       </div>
     `).join('');
   }
   html += `
-    <div class="tool-row" style="margin-top:16px;">
-      <input type="text" id="evalShareEmail" placeholder="ou e-mail d'un collègue" style="flex:1;min-width:180px;">
-      <button class="btn secondary" onclick="shareEvaluationWith(document.getElementById('evalShareEmail').value.trim())">Partager</button>
+    <p class="hint" style="margin:16px 0 6px;">Ou par e-mail :</p>
+    <div class="tool-row" style="margin-bottom:0;">
+      <input type="text" id="evalShareEmail" placeholder="e-mail d'un collègue" style="flex:1;min-width:180px;">
+      <button class="btn secondary" onclick="shareEvaluationWith(document.getElementById('evalShareEmail').value.trim(),'reader')">👁️ Lecteur</button>
+      <button class="btn secondary" onclick="shareEvaluationWith(document.getElementById('evalShareEmail').value.trim(),'editor')">✏️ Éditeur</button>
     </div>
+    <p class="hint" style="margin:8px 0 0;">👁️ Lecteur : peut consulter et imprimer. ✏️ Éditeur : peut aussi modifier. Vous restez seul·e propriétaire (personne d'autre ne peut supprimer l'évaluation).</p>
     <p class="hint" id="evalShareStatus" style="margin:8px 0 0;"></p>
   `;
   box.innerHTML = html;
 }
 function closeEvalShareModal(){ document.getElementById('evalShareModalOverlay').style.display='none'; }
-async function shareEvaluationWith(email){
+async function shareEvaluationWith(email, role){
   if(!email) return;
   const statusEl = document.getElementById('evalShareStatus');
-  const { data, error } = await sb.rpc('evaluations_add_collaborator', {p_eval_id: currentEvaluationId, p_email: email});
+  const { data, error } = await sb.rpc('evaluations_add_collaborator', {p_eval_id: currentEvaluationId, p_email: email, p_role: role||'editor'});
   if(error){ if(statusEl) statusEl.textContent = "Erreur : "+error.message; return; }
-  if(data==='ok') shareEvaluation(); // rafraîchit la liste (le collègue apparaît maintenant "déjà partagé")
+  if(data==='ok') shareEvaluation(); // rafraîchit la liste (le collègue apparaît maintenant avec son rôle)
+  else if(statusEl) statusEl.textContent = data;
+}
+async function unshareEvaluationWith(userId){
+  const { data, error } = await sb.rpc('evaluations_remove_collaborator', {p_eval_id: currentEvaluationId, p_user_id: userId});
+  const statusEl = document.getElementById('evalShareStatus');
+  if(error){ if(statusEl) statusEl.textContent = "Erreur : "+error.message; return; }
+  if(data==='ok') shareEvaluation();
   else if(statusEl) statusEl.textContent = data;
 }
 let evalNextExoId = 1;
@@ -5736,27 +5761,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-80"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-80"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-80"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-80"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-80"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-80"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-80"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-80"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-80"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-80"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-80"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-80"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-80"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-80"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-80"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-80"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-80"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-80"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-80"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-80"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-80"></script>
-<script src="compte-est-bon.js?v=20260804-80"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-81"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-81"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-81"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-81"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-81"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-81"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-81"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-81"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-81"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-81"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-81"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-81"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-81"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-81"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-81"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-81"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-81"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-81"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-81"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-81"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-81"></script>
+<script src="compte-est-bon.js?v=20260804-81"></script>
 </body>
 </html>
