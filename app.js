@@ -697,9 +697,9 @@ function renderMathText(raw){
   // 2bis) écritures simplifiées pour somme, limite, intégrale -- ex. somme(n,1,10,n) ; lim(x,0,f(x)) ;
   // integrale(0,1,f(x),x). Traitées avant les fractions pour éviter toute confusion avec leurs
   // arguments (ex. le "x/2" dans integrale(0,1,x/2,x)).
-  text = text.replace(/somme\(([^,()]+),([^,()]+),([^,()]+),((?:[^()]|\([^()]*\))+)\)/g, (m,v,from,to,expr)=>protect(katexSpan(`\\displaystyle\\sum_{${v}=${cleanExpr(from)}}^{${cleanExpr(to)}} ${cleanExpr(expr)}`)));
-  text = text.replace(/lim\(([^,()]+),([^,()]+),((?:[^()]|\([^()]*\))+)\)/g, (m,v,to,expr)=>protect(katexSpan(`\\displaystyle\\lim_{${v} \\to ${cleanExpr(to)}} ${cleanExpr(expr)}`)));
-  text = text.replace(/integrale\(([^,()]+),([^,()]+),((?:[^()]|\([^()]*\))+),([^,()]+)\)/g, (m,from,to,expr,v)=>protect(katexSpan(`\\displaystyle\\int_{${cleanExpr(from)}}^{${cleanExpr(to)}} ${cleanExpr(expr)} \\, d${v}`)));
+  text = text.replace(/somme\(([^,()]+),([^,()]+),([^,()]+),((?:[^()]|\((?:[^()]|\([^()]*\))*\))+)\)/g, (m,v,from,to,expr)=>protect(katexSpan(`\\displaystyle\\sum_{${v}=${cleanExpr(from)}}^{${cleanExpr(to)}} ${cleanExpr(expr)}`)));
+  text = text.replace(/lim\(([^,()]+),([^,()]+),((?:[^()]|\((?:[^()]|\([^()]*\))*\))+)\)/g, (m,v,to,expr)=>protect(katexSpan(`\\displaystyle\\lim_{${v} \\to ${cleanExpr(to)}} ${cleanExpr(expr)}`)));
+  text = text.replace(/integrale\(([^,()]+),([^,()]+),((?:[^()]|\((?:[^()]|\([^()]*\))*\))+),([^,()]+)\)/g, (m,from,to,expr,v)=>protect(katexSpan(`\\displaystyle\\int_{${cleanExpr(from)}}^{${cleanExpr(to)}} ${cleanExpr(expr)} \\, d${v}`)));
   // 3) fractions with a parenthesised expression on one or both sides: (2*2)/(3*2), (2+1)/4, 3/(1+2)
   text = text.replace(/\(([^()]+)\)\/\(([^()]+)\)/g, (m,a,b)=>protect(katexSpan(`\\dfrac{${cleanExpr(a)}}{${cleanExpr(b)}}`)));
   text = text.replace(/\(([^()]+)\)\/(\d+(?:[.,]\d+)?)/g, (m,a,b)=>protect(katexSpan(`\\dfrac{${cleanExpr(a)}}{${b.replace(',','.')}}`)));
@@ -2798,6 +2798,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.99', items:[
+    "Fix -- somme/lim/intégrale n'interprétaient qu'un seul niveau de parenthèses imbriquées dans l'expression, ce qui bloquait des écritures comme lim(x,0,(f(x+h)-f(x))/x) (taux d'accroissement). Étendu à deux niveaux. Boutons Σ/lim/∫ de l'outil Texte simplifiés pour n'afficher que le symbole, sans texte superflu.",
+  ]},
   { version:'2026-08-04.98', items:[
     "Fix -- dans lim(x,0,f(x)), le « x→0 » s'affiche maintenant bien en dessous de « lim » (comme pour Σ et ∫), au lieu d'à côté.",
   ]},
