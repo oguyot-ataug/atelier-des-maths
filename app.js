@@ -1669,16 +1669,18 @@ function reopenDisque(data){
 }
 
 /* ---- Rectangle fractionné ---- */
-function singleRectFracSvg(filled, den, vertical){
+function singleRectFracSvg(filledSet, den, vertical, interactive){
   const W=180,H=90;
   let parts='';
   for(let i=0;i<den;i++){
+    const filled = filledSet.has(i);
+    const click = interactive ? ` onclick="toggleRectFracCell(${i})" style="cursor:pointer;"` : '';
     if(vertical){
       const w = W/den;
-      parts += `<rect x="${i*w}" y="0" width="${w}" height="${H}" fill="${i<filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+      parts += `<rect x="${i*w}" y="0" width="${w}" height="${H}" fill="${filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"${click}/>`;
     } else {
       const h = H/den;
-      parts += `<rect x="0" y="${i*h}" width="${W}" height="${h}" fill="${i<filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+      parts += `<rect x="0" y="${i*h}" width="${W}" height="${h}" fill="${filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"${click}/>`;
     }
   }
   return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">${parts}</svg>`;
@@ -1687,40 +1689,66 @@ function singleRectFracSvg(filled, den, vertical){
    partage à sens unique pour un dénominateur composé (ex. 1/6 vu comme une grille 2×3), en
    montrant clairement les deux facteurs du dénominateur. Remplissage case par case, de gauche
    à droite puis de haut en bas, comme la lecture. */
-function singleRectGridSvg(filled, nRows, nCols){
+function singleRectGridSvg(filledSet, nRows, nCols, interactive){
   const W=180,H=90;
   const cw = W/nCols, ch = H/nRows;
   let parts='';
   for(let r=0;r<nRows;r++){
     for(let c=0;c<nCols;c++){
       const idx = r*nCols+c;
-      parts += `<rect x="${c*cw}" y="${r*ch}" width="${cw}" height="${ch}" fill="${idx<filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+      const filled = filledSet.has(idx);
+      const click = interactive ? ` onclick="toggleRectFracCell(${idx})" style="cursor:pointer;"` : '';
+      parts += `<rect x="${c*cw}" y="${r*ch}" width="${cw}" height="${ch}" fill="${filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"${click}/>`;
     }
   }
   return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">${parts}</svg>`;
 }
 /* Comme pour les disques : un numérateur supérieur au dénominateur (fraction impropre) a
    besoin de plusieurs rectangles, le dernier ne montrant que le reste. */
-function buildRectFracSvg(num,den,vertical,vierge,showCaption,reponseSimple,reponseMixte,gridRows,gridCols){
+function buildRectFracSvg(num,den,vertical,vierge,showCaption,reponseSimple,reponseMixte,gridRows,gridCols,customSet,interactive){
   const isGrid = gridRows>1 && gridCols>1;
   const effectiveDen = isGrid ? gridRows*gridCols : den;
   const nShapes = Math.max(1, Math.ceil(num/effectiveDen));
   let rects = '';
   for(let i=0;i<nShapes;i++){
-    const filled = vierge ? 0 : Math.max(0, Math.min(effectiveDen, num - i*effectiveDen));
-    const svg = isGrid ? singleRectGridSvg(filled, gridRows, gridCols) : singleRectFracSvg(filled, den, vertical);
+    // Le dessin interactif (clic pour colorier/décolorier une case précise) n'a de sens que
+    // pour une fraction propre, dessinée en une seule forme -- au-delà, on revient au
+    // remplissage séquentiel habituel (moins fréquent en pratique pour ce type d'exercice).
+    let filledSet;
+    if(customSet && nShapes===1 && !vierge){
+      filledSet = customSet;
+    } else {
+      const filled = vierge ? 0 : Math.max(0, Math.min(effectiveDen, num - i*effectiveDen));
+      filledSet = new Set(Array.from({length:filled}, (_,k)=>k));
+    }
+    const svg = isGrid ? singleRectGridSvg(filledSet, gridRows, gridCols, interactive && nShapes===1) : singleRectFracSvg(filledSet, den, vertical, interactive && nShapes===1);
     rects += `<div style="flex:1 1 0;max-width:180px;min-width:60px;">${svg}</div>`;
   }
-  const caption = vierge ? `Colorie ${num}/${effectiveDen} du rectangle` : `${num}/${effectiveDen}`;
+  const displayNum = (customSet && nShapes===1 && !vierge) ? customSet.size : num;
+  const caption = vierge ? `Colorie ${num}/${effectiveDen} du rectangle` : `${displayNum}/${effectiveDen}`;
   return `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:${nShapes*180+((nShapes-1)*10)}px;margin:0 auto;">${rects}</div>
     ${showCaption!==false ? `<p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>` : ''}
     ${fractionAnswerHTML(reponseSimple, reponseMixte)}`;
+}
+/* Motif de cases colorées choisi à la main par clic (indices), pour l'outil rectangle en cours
+   de construction. Retombe sur un remplissage séquentiel simple dès qu'on retape un nombre
+   dans "Parts colorées", ou qu'on change le découpage (dénominateur, lignes/colonnes, sens). */
+let rectFracCustomSet = new Set([0,1,2]);
+function syncRectFracCustomSetFromNum(){
+  const num = parseInt(document.getElementById('rectFracNum').value)||0;
+  rectFracCustomSet = new Set(Array.from({length:num}, (_,k)=>k));
+}
+function toggleRectFracCell(idx){
+  if(rectFracCustomSet.has(idx)) rectFracCustomSet.delete(idx); else rectFracCustomSet.add(idx);
+  document.getElementById('rectFracNum').value = rectFracCustomSet.size;
+  previewRectFrac();
 }
 function toggleRectFracGrid(){
   const on = document.getElementById('rectFracGrid').checked;
   document.getElementById('rectFracGridRow').style.display = on ? 'inline' : 'none';
   document.getElementById('rectFracDenRow').style.display = on ? 'none' : 'inline';
   document.getElementById('rectFracVert').closest('label').style.display = on ? 'none' : 'inline-flex';
+  syncRectFracCustomSetFromNum();
 }
 function previewRectFrac(){
   const num=parseInt(document.getElementById('rectFracNum').value), den=parseInt(document.getElementById('rectFracDen').value);
@@ -1732,7 +1760,7 @@ function previewRectFrac(){
   const isGrid = document.getElementById('rectFracGrid').checked;
   const rows = isGrid ? parseInt(document.getElementById('rectFracRows').value)||2 : null;
   const cols = isGrid ? parseInt(document.getElementById('rectFracCols').value)||2 : null;
-  document.getElementById('rectFracPreview').innerHTML = (isGrid || (den>0&&num>=0)) ? buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols) : '';
+  document.getElementById('rectFracPreview').innerHTML = (isGrid || (den>0&&num>=0)) ? buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols,rectFracCustomSet,true) : '';
 }
 function openRectFracTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('rectFracPanel').style.display='block'; document.getElementById('rectFracPreview').innerHTML=''; document.getElementById('rectFracPanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeRectFracTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('rectFracPanel').style.display='none'; }
@@ -1747,7 +1775,8 @@ function insertRectFrac(){
   const rows = isGrid ? parseInt(document.getElementById('rectFracRows').value)||2 : null;
   const cols = isGrid ? parseInt(document.getElementById('rectFracCols').value)||2 : null;
   if(!isGrid && !(den>0&&num>=0)) return;
-  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols), {num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols}, 'reopenRectFrac');
+  const customArr = Array.from(rectFracCustomSet);
+  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols,rectFracCustomSet,false), {num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols,customArr}, 'reopenRectFrac');
   closeRectFracTool();
 }
 function reopenRectFrac(data){
@@ -1763,6 +1792,7 @@ function reopenRectFrac(data){
   if(data.rows) document.getElementById('rectFracRows').value = data.rows;
   if(data.cols) document.getElementById('rectFracCols').value = data.cols;
   toggleRectFracGrid();
+  rectFracCustomSet = new Set(data.customArr && data.customArr.length ? data.customArr : Array.from({length:data.num||0}, (_,k)=>k));
   previewRectFrac();
 }
 
@@ -2487,6 +2517,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.89', items:[
+    "Rectangle fractionné (évaluation) -- l'aperçu devient cliquable : on choisit directement les cases à colorier (bandes ou grille), au lieu de taper un nombre qui colorie toujours les premières dans l'ordre. Le nombre de parts colorées se met à jour automatiquement, et le motif précis choisi est conservé dans le rendu final (aperçu, PDF). Disponible pour les fractions propres en une seule forme ; les fractions impropres (plusieurs rectangles) gardent le remplissage séquentiel habituel.",
+  ]},
   { version:'2026-08-04.88', items:[
     "Rectangle fractionné (évaluation) -- même traitement que les disques : synchronisation automatique de la taille entre plusieurs rectangles d'un même exercice, et réglage manuel de taille dédié (« ▭ Taille des rectangles »). Nouveau : partage en grille (lignes × colonnes à la fois), pédagogiquement plus parlant qu'un partage à sens unique pour un dénominateur composé -- ex. 4/6 vu comme une grille 2×3, montrant clairement les deux facteurs du dénominateur.",
   ]},
