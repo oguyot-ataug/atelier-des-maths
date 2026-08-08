@@ -698,7 +698,7 @@ function renderMathText(raw){
   // integrale(0,1,f(x),x). Traitées avant les fractions pour éviter toute confusion avec leurs
   // arguments (ex. le "x/2" dans integrale(0,1,x/2,x)).
   text = text.replace(/somme\(([^,()]+),([^,()]+),([^,()]+),((?:[^()]|\([^()]*\))+)\)/g, (m,v,from,to,expr)=>protect(katexSpan(`\\displaystyle\\sum_{${v}=${cleanExpr(from)}}^{${cleanExpr(to)}} ${cleanExpr(expr)}`)));
-  text = text.replace(/lim\(([^,()]+),([^,()]+),((?:[^()]|\([^()]*\))+)\)/g, (m,v,to,expr)=>protect(katexSpan(`\\lim_{${v} \\to ${cleanExpr(to)}} ${cleanExpr(expr)}`)));
+  text = text.replace(/lim\(([^,()]+),([^,()]+),((?:[^()]|\([^()]*\))+)\)/g, (m,v,to,expr)=>protect(katexSpan(`\\displaystyle\\lim_{${v} \\to ${cleanExpr(to)}} ${cleanExpr(expr)}`)));
   text = text.replace(/integrale\(([^,()]+),([^,()]+),((?:[^()]|\([^()]*\))+),([^,()]+)\)/g, (m,from,to,expr,v)=>protect(katexSpan(`\\displaystyle\\int_{${cleanExpr(from)}}^{${cleanExpr(to)}} ${cleanExpr(expr)} \\, d${v}`)));
   // 3) fractions with a parenthesised expression on one or both sides: (2*2)/(3*2), (2+1)/4, 3/(1+2)
   text = text.replace(/\(([^()]+)\)\/\(([^()]+)\)/g, (m,a,b)=>protect(katexSpan(`\\dfrac{${cleanExpr(a)}}{${cleanExpr(b)}}`)));
@@ -2798,6 +2798,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.98', items:[
+    "Fix -- dans lim(x,0,f(x)), le « x→0 » s'affiche maintenant bien en dessous de « lim » (comme pour Σ et ∫), au lieu d'à côté.",
+  ]},
   { version:'2026-08-04.97', items:[
     "Fix -- le plafonnement des courbes (fix précédent) créait des lignes plates disgracieuses en haut/bas du cadre, plus moche que le débordement d'origine. Remplacé par un arrêt net et naturel du tracé dès qu'il sort de la zone visible (comme sur une calculatrice graphique), avec davantage de points calculés pour un arrêt précis au plus près du bord.",
   ]},
