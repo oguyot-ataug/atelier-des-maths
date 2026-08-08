@@ -878,6 +878,10 @@ function singleBlockHTML(b, ctx, withControls, draggable){
     const ex = getExerciseByCtx(ctx);
     if(ex && ex.diskSize) html = html.split('max-width:150px').join(`max-width:${ex.diskSize}px`);
   }
+  if(b.type==='rectFrac'){
+    const ex = getExerciseByCtx(ctx);
+    if(ex && ex.rectSize) html = html.split('max-width:180px').join(`max-width:${ex.rectSize}px`);
+  }
   if(!withControls){
     return `<div class="nb-figure-row disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}"${sizeStyle?` style="${sizeStyle}overflow:hidden;"`:''}>${html}</div>`;
   }
@@ -979,23 +983,25 @@ function attachResizeObservers(){
    script (même origine), pas besoin que cette fenêtre exécute quoi que ce soit elle-même. */
 function syncDiskSizes(root){
   if(!root) return;
-  const contexts = new Set(Object.values(blocksStores).flat().filter(b=>b.type==='disque').map(b=>b.ctx));
-  contexts.forEach(ctx=>{
-    const diskBlocks = (blocksStores[ctx]||[]).filter(b=>b.type==='disque');
-    if(diskBlocks.length<2) return;
-    let minDiam = Infinity;
-    diskBlocks.forEach(b=>{
-      const wrap = root.querySelector(`.disk-sync-target[data-block-id="${b.id}"]`);
-      if(!wrap) return;
-      const svg = wrap.querySelector('svg');
-      if(svg){ const w = svg.getBoundingClientRect().width; if(w>0) minDiam = Math.min(minDiam, w); }
-    });
-    if(minDiam===Infinity) return;
-    minDiam = Math.round(minDiam);
-    diskBlocks.forEach(b=>{
-      const wrap = root.querySelector(`.disk-sync-target[data-block-id="${b.id}"]`);
-      if(!wrap) return;
-      wrap.querySelectorAll(':scope > div > div').forEach(d=>{ d.style.maxWidth = minDiam+'px'; });
+  ['disque','rectFrac'].forEach(type=>{
+    const contexts = new Set(Object.values(blocksStores).flat().filter(b=>b.type===type).map(b=>b.ctx));
+    contexts.forEach(ctx=>{
+      const shapeBlocks = (blocksStores[ctx]||[]).filter(b=>b.type===type);
+      if(shapeBlocks.length<2) return;
+      let minDiam = Infinity;
+      shapeBlocks.forEach(b=>{
+        const wrap = root.querySelector(`.disk-sync-target[data-block-id="${b.id}"]`);
+        if(!wrap) return;
+        const svg = wrap.querySelector('svg');
+        if(svg){ const w = svg.getBoundingClientRect().width; if(w>0) minDiam = Math.min(minDiam, w); }
+      });
+      if(minDiam===Infinity) return;
+      minDiam = Math.round(minDiam);
+      shapeBlocks.forEach(b=>{
+        const wrap = root.querySelector(`.disk-sync-target[data-block-id="${b.id}"]`);
+        if(!wrap) return;
+        wrap.querySelectorAll(':scope > div > div').forEach(d=>{ d.style.maxWidth = minDiam+'px'; });
+      });
     });
   });
 }
@@ -1677,19 +1683,44 @@ function singleRectFracSvg(filled, den, vertical){
   }
   return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">${parts}</svg>`;
 }
+/* Partage en grille (lignes × colonnes à la fois) : pédagogiquement plus parlant qu'un simple
+   partage à sens unique pour un dénominateur composé (ex. 1/6 vu comme une grille 2×3), en
+   montrant clairement les deux facteurs du dénominateur. Remplissage case par case, de gauche
+   à droite puis de haut en bas, comme la lecture. */
+function singleRectGridSvg(filled, nRows, nCols){
+  const W=180,H=90;
+  const cw = W/nCols, ch = H/nRows;
+  let parts='';
+  for(let r=0;r<nRows;r++){
+    for(let c=0;c<nCols;c++){
+      const idx = r*nCols+c;
+      parts += `<rect x="${c*cw}" y="${r*ch}" width="${cw}" height="${ch}" fill="${idx<filled?'#FF8208':'#fff'}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+    }
+  }
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">${parts}</svg>`;
+}
 /* Comme pour les disques : un numérateur supérieur au dénominateur (fraction impropre) a
    besoin de plusieurs rectangles, le dernier ne montrant que le reste. */
-function buildRectFracSvg(num,den,vertical,vierge,showCaption,reponseSimple,reponseMixte){
-  const nShapes = Math.max(1, Math.ceil(num/den));
+function buildRectFracSvg(num,den,vertical,vierge,showCaption,reponseSimple,reponseMixte,gridRows,gridCols){
+  const isGrid = gridRows>1 && gridCols>1;
+  const effectiveDen = isGrid ? gridRows*gridCols : den;
+  const nShapes = Math.max(1, Math.ceil(num/effectiveDen));
   let rects = '';
   for(let i=0;i<nShapes;i++){
-    const filled = vierge ? 0 : Math.max(0, Math.min(den, num - i*den));
-    rects += `<div style="flex:1 1 0;max-width:180px;min-width:60px;">${singleRectFracSvg(filled, den, vertical)}</div>`;
+    const filled = vierge ? 0 : Math.max(0, Math.min(effectiveDen, num - i*effectiveDen));
+    const svg = isGrid ? singleRectGridSvg(filled, gridRows, gridCols) : singleRectFracSvg(filled, den, vertical);
+    rects += `<div style="flex:1 1 0;max-width:180px;min-width:60px;">${svg}</div>`;
   }
-  const caption = vierge ? `Colorie ${num}/${den} du rectangle` : `${num}/${den}`;
+  const caption = vierge ? `Colorie ${num}/${effectiveDen} du rectangle` : `${num}/${effectiveDen}`;
   return `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:${nShapes*180+((nShapes-1)*10)}px;margin:0 auto;">${rects}</div>
     ${showCaption!==false ? `<p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>` : ''}
     ${fractionAnswerHTML(reponseSimple, reponseMixte)}`;
+}
+function toggleRectFracGrid(){
+  const on = document.getElementById('rectFracGrid').checked;
+  document.getElementById('rectFracGridRow').style.display = on ? 'inline' : 'none';
+  document.getElementById('rectFracDenRow').style.display = on ? 'none' : 'inline';
+  document.getElementById('rectFracVert').closest('label').style.display = on ? 'none' : 'inline-flex';
 }
 function previewRectFrac(){
   const num=parseInt(document.getElementById('rectFracNum').value), den=parseInt(document.getElementById('rectFracDen').value);
@@ -1698,7 +1729,10 @@ function previewRectFrac(){
   const showCaption = document.getElementById('rectFracShowCaption').checked;
   const reponseSimple = document.getElementById('rectFracReponseSimple').checked;
   const reponseMixte = document.getElementById('rectFracReponseMixte').checked;
-  document.getElementById('rectFracPreview').innerHTML = (den>0&&num>=0) ? buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte) : '';
+  const isGrid = document.getElementById('rectFracGrid').checked;
+  const rows = isGrid ? parseInt(document.getElementById('rectFracRows').value)||2 : null;
+  const cols = isGrid ? parseInt(document.getElementById('rectFracCols').value)||2 : null;
+  document.getElementById('rectFracPreview').innerHTML = (isGrid || (den>0&&num>=0)) ? buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols) : '';
 }
 function openRectFracTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('rectFracPanel').style.display='block'; document.getElementById('rectFracPreview').innerHTML=''; document.getElementById('rectFracPanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeRectFracTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('rectFracPanel').style.display='none'; }
@@ -1709,8 +1743,11 @@ function insertRectFrac(){
   const showCaption = document.getElementById('rectFracShowCaption').checked;
   const reponseSimple = document.getElementById('rectFracReponseSimple').checked;
   const reponseMixte = document.getElementById('rectFracReponseMixte').checked;
-  if(!(den>0&&num>=0)) return;
-  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte), {num,den,vert,vierge,showCaption,reponseSimple,reponseMixte}, 'reopenRectFrac');
+  const isGrid = document.getElementById('rectFracGrid').checked;
+  const rows = isGrid ? parseInt(document.getElementById('rectFracRows').value)||2 : null;
+  const cols = isGrid ? parseInt(document.getElementById('rectFracCols').value)||2 : null;
+  if(!isGrid && !(den>0&&num>=0)) return;
+  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols), {num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols}, 'reopenRectFrac');
   closeRectFracTool();
 }
 function reopenRectFrac(data){
@@ -1722,6 +1759,10 @@ function reopenRectFrac(data){
   document.getElementById('rectFracShowCaption').checked = data.showCaption!==false;
   document.getElementById('rectFracReponseSimple').checked = !!data.reponseSimple;
   document.getElementById('rectFracReponseMixte').checked = !!data.reponseMixte;
+  document.getElementById('rectFracGrid').checked = !!(data.rows && data.cols);
+  if(data.rows) document.getElementById('rectFracRows').value = data.rows;
+  if(data.cols) document.getElementById('rectFracCols').value = data.cols;
+  toggleRectFracGrid();
   previewRectFrac();
 }
 
@@ -2446,6 +2487,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.88', items:[
+    "Rectangle fractionné (évaluation) -- même traitement que les disques : synchronisation automatique de la taille entre plusieurs rectangles d'un même exercice, et réglage manuel de taille dédié (« ▭ Taille des rectangles »). Nouveau : partage en grille (lignes × colonnes à la fois), pédagogiquement plus parlant qu'un partage à sens unique pour un dénominateur composé -- ex. 4/6 vu comme une grille 2×3, montrant clairement les deux facteurs du dénominateur.",
+  ]},
   { version:'2026-08-04.87', items:[
     "Nouveau bouton « 💡 Suggérer une amélioration pour ce module » directement dans chaque chapitre (Cours, Méthode, Exercices, Quiz, Histoire), visible pour les profs et admin. Réutilise le système de signalement existant, en pré-remplissant automatiquement le niveau, le chapitre et le module concernés -- plus besoin de les ressaisir à la main. Les suggestions apparaissent avec un badge distinct des bugs dans la liste de suivi (Administration).",
   ]},
@@ -4077,6 +4121,7 @@ function renderEvalExercicesList(){
     const ctx = 'ex-'+ex.id;
     ensureExRows(ex);
     const hasDisks = (blocksStores[ctx]||[]).some(b=>b.type==='disque');
+    const hasRects = (blocksStores[ctx]||[]).some(b=>b.type==='rectFrac');
     if(ex.validated){
       // Vue compacte : uniquement le résultat final tel qu'il sera imprimé, sans aucun des
       // outils/menus d'édition -- pour une lecture d'ensemble agréable une fois l'exercice
@@ -4124,6 +4169,7 @@ function renderEvalExercicesList(){
         `).join('')}
         <button type="button" class="btn secondary" onclick="addEvalRow(${ex.id})" style="font-size:.78rem;padding:4px 10px;">+ Nouvelle ligne</button>
         ${hasDisks ? `<label class="hint" style="margin:0;">🥧 Taille des disques : <input type="number" min="30" max="300" step="10" value="${ex.diskSize||150}" onchange="updateEvalExerciceField(${ex.id},'diskSize',parseInt(this.value)||150); renderEvalExercicesList();" style="width:60px;margin-left:4px;"> px</label>` : ''}
+        ${hasRects ? `<label class="hint" style="margin:0;">▭ Taille des rectangles : <input type="number" min="30" max="350" step="10" value="${ex.rectSize||180}" onchange="updateEvalExerciceField(${ex.id},'rectSize',parseInt(this.value)||180); renderEvalExercicesList();" style="width:60px;margin-left:4px;"> px</label>` : ''}
       </div>
       <p class="hint" style="margin:4px 0 0;">Fais glisser un bloc pour changer sa ligne/colonne (utilise les outils ci-dessous pour en ajouter, y compris du texte).</p>
       <div class="tool-row" style="margin-top:6px;">${toolButtonsHTML(ctx)}</div>
