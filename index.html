@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-79">
+<link rel="stylesheet" href="styles.css?v=20260804-80">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.79</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.80</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -35,10 +35,10 @@
       <div class="nav-dropdown-menu">
         <button data-nav="correction">Outil de correction (cahier)</button>
         <button data-nav="evaluation">Créer une évaluation</button>
+        <button data-nav="supervision" id="navSupervision">Supervision</button>
       </div>
     </div>
     <button data-nav="cahier" id="navCahier" style="display:none;">Cahier élève</button>
-    <button data-nav="supervision" id="navSupervision" style="display:none;">Supervision</button>
     <button data-nav="mesresultats" id="navMesResultats" style="display:none;">Mes résultats</button>
     <button data-nav="admin" id="navAdmin" style="display:none;">Administration</button>
   </div>
@@ -148,6 +148,13 @@
       <button class="modal-close" onclick="closeEvalShareModal()">✕</button>
     </div>
     <div id="evalShareContent"></div>
+  </div>
+</div>
+<div id="niceModalOverlay" class="modal-overlay" style="display:none;">
+  <div class="modal-card" style="max-width:420px;">
+    <p id="niceModalMessage" style="margin:0 0 18px;white-space:pre-line;"></p>
+    <input type="text" id="niceModalInput" style="display:none;width:100%;margin:-8px 0 18px;padding:8px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;">
+    <div id="niceModalButtons" style="display:flex;justify-content:flex-end;gap:8px;"></div>
   </div>
 </div>
 <div id="evalListModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEvalListModal();">
@@ -1704,6 +1711,39 @@ function cleanExpr(s){
   return s.replace(/\*/g, '\\times ');
 }
 function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+/* Modales "propres" (alerte, confirmation, saisie), pour remplacer les alert()/confirm()/
+   prompt() natifs du navigateur -- ceux-ci ont un rendu très daté et ne s'intègrent pas au
+   reste du site. Chacune renvoie une Promise, à utiliser avec await. */
+function niceModal({message, showInput, inputValue, buttons}){
+  return new Promise(resolve=>{
+    const overlay = document.getElementById('niceModalOverlay');
+    document.getElementById('niceModalMessage').textContent = message;
+    const input = document.getElementById('niceModalInput');
+    input.style.display = showInput ? 'block' : 'none';
+    input.value = inputValue||'';
+    const btnBox = document.getElementById('niceModalButtons');
+    btnBox.innerHTML = '';
+    const close = (val)=>{ overlay.style.display='none'; resolve(val); };
+    buttons.forEach(b=>{
+      const btn = document.createElement('button');
+      btn.className = 'btn'+(b.secondary?' secondary':'');
+      btn.textContent = b.label;
+      btn.onclick = ()=> close(showInput && b.value===true ? input.value : b.value);
+      btnBox.appendChild(btn);
+    });
+    overlay.style.display = 'flex';
+    if(showInput){ input.focus(); input.select(); input.onkeydown = (e)=>{ if(e.key==='Enter') close(input.value); }; }
+  });
+}
+function niceAlert(message){
+  return niceModal({message, buttons:[{label:'OK', value:true}]});
+}
+function niceConfirm(message){
+  return niceModal({message, buttons:[{label:'Annuler', value:false, secondary:true},{label:'Confirmer', value:true}]});
+}
+function nicePrompt(message, defaultValue){
+  return niceModal({message, showInput:true, inputValue:defaultValue, buttons:[{label:'Annuler', value:null, secondary:true},{label:'OK', value:true}]});
+}
 function renderMathText(raw){
   let text = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   // Chaque bloc déjà rendu par KaTeX (fraction, racine, exposant, $...$) est mis de côté
@@ -1930,9 +1970,20 @@ function evalDropInRowCol(e, ctx, rowIndex, colIndex){
   if(b){ b.row = rowIndex; b.col = colIndex; renderEvalExercicesList(); }
   evalDragBlockId = null;
 }
+/* Bascule une bordure (haut/droite/bas/gauche) d'une cellule (ligne-colonne) d'un exercice --
+   un peu comme un éditeur de tableau où l'on choisit quels bords de cellule apparaissent. */
+function toggleCellBorder(ctx, cellKey, side){
+  const ex = getExerciseByCtx(ctx);
+  if(!ex) return;
+  if(!ex.cellBorders) ex.cellBorders = {};
+  if(!ex.cellBorders[cellKey]) ex.cellBorders[cellKey] = {};
+  ex.cellBorders[cellKey][side] = !ex.cellBorders[cellKey][side];
+  renderEvalExercicesList();
+}
 /* Rendu en lignes indépendantes, chacune avec son propre nombre de colonnes (ex. 3 colonnes
    puis 2 colonnes en dessous). rows est un tableau [nColsLigne1, nColsLigne2, ...]. */
-function blocksRowsHTML(ctx, rows, withControls){
+function blocksRowsHTML(ctx, rows, withControls, cellBorders){
+  cellBorders = cellBorders || {};
   const arr = blocksStores[ctx]||[];
   return rows.map((nCols,rowIdx)=>{
     const rowBlocks = arr.filter(b=>(b.row||0)===rowIdx);
@@ -1945,8 +1996,19 @@ function blocksRowsHTML(ctx, rows, withControls){
     rowBlocks.forEach(b=>{ const c = Math.min(b.col||0, nCols-1); cols[c].push(b); });
     const colsHtml = cols.map((blocksInCol, ci)=>{
       const inner = blocksInCol.map(b=>singleBlockHTML(b, ctx, withControls, true)).join('');
-      const dropAttrs = withControls ? `ondragover="event.preventDefault()" ondrop="evalDropInRowCol(event,'${ctx}',${rowIdx},${ci})"` : '';
-      return `<div class="eval-col" ${dropAttrs} style="flex:1;min-width:0;min-height:${withControls?'50px':'0'};${withControls?'border:1px dashed rgba(28,43,57,.15);border-radius:8px;padding:6px;':''}">${inner}</div>`;
+      const key = rowIdx+'-'+ci;
+      const cb = cellBorders[key] || {};
+      // En édition : le pointillé reste l'indicateur de zone de dépôt, quel que soit le
+      // réglage choisi. Dans la version propre (aperçu/export) : les vraies bordures choisies
+      // s'appliquent, en trait plein.
+      if(!withControls){
+        const realBorder = (cb.right?'border-right:1.3px solid #1C1B2E;':'') + (cb.bottom?'border-bottom:1.3px solid #1C1B2E;':'') + (cb.left?'border-left:1.3px solid #1C1B2E;':'') + (cb.top?'border-top:1.3px solid #1C1B2E;':'');
+        return `<div class="eval-col" style="flex:1;min-width:0;padding:${realBorder?'6px':'0'};${realBorder}">${inner}</div>`;
+      }
+      const dropAttrs = `ondragover="event.preventDefault()" ondrop="evalDropInRowCol(event,'${ctx}',${rowIdx},${ci})"`;
+      const mk = (side,icon,title) => `<button type="button" onclick="toggleCellBorder('${ctx}','${key}','${side}')" title="${title}" style="font-size:.62rem;line-height:1;border:1px solid ${cb[side]?'#0D5BA3':'rgba(28,43,57,.25)'};background:${cb[side]?'#0D5BA3':'#fff'};color:${cb[side]?'#fff':'#666'};border-radius:3px;padding:2px 4px;cursor:pointer;">${icon}</button>`;
+      const borderBtns = `<div style="position:absolute;bottom:3px;right:3px;display:flex;gap:2px;z-index:2;">${mk('top','▔','Bordure haute')}${mk('right','▕','Bordure droite')}${mk('bottom','▁','Bordure basse')}${mk('left','▏','Bordure gauche')}</div>`;
+      return `<div class="eval-col" ${dropAttrs} style="position:relative;flex:1;min-width:0;min-height:50px;border:1px dashed rgba(28,43,57,.15);border-radius:8px;padding:6px;">${inner}${borderBtns}</div>`;
     }).join('');
     return `<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:6px;">${colsHtml}</div>`;
   }).join('');
@@ -3348,7 +3410,6 @@ async function refreshAuthUI(){
   const loggedOutEl = document.getElementById('accountLoggedOut'), loggedInEl = document.getElementById('accountLoggedIn');
   const navAdmin = document.getElementById('navAdmin');
   const navCorrection = document.getElementById('navCorrection'), navCahier = document.getElementById('navCahier');
-  const navSupervision = document.getElementById('navSupervision');
   const navMesResultats = document.getElementById('navMesResultats');
 
   if(session){
@@ -3364,7 +3425,6 @@ async function refreshAuthUI(){
     const isStaff = currentUserRole==='admin' || currentUserRole==='prof';
     if(navCorrection) navCorrection.style.display = isStaff ? 'inline-block' : 'none';
     if(navCahier) navCahier.style.display = 'inline-block'; // accessible à tous les comptes connectés (prof, admin, élève)
-    if(navSupervision) navSupervision.style.display = isStaff ? 'inline-block' : 'none';
     if(navMesResultats) navMesResultats.style.display = currentUserRole==='eleve' ? 'inline-block' : 'none';
     if(navAdmin) navAdmin.style.display = currentUserRole==='admin' ? 'inline-block' : 'none';
     const btnReportBug = document.getElementById('btnReportBug');
@@ -3383,7 +3443,6 @@ async function refreshAuthUI(){
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
     if(navCorrection) navCorrection.style.display='none';
     if(navCahier) navCahier.style.display='none';
-    if(navSupervision) navSupervision.style.display='none';
     if(navMesResultats) navMesResultats.style.display='none';
     if(navAdmin) navAdmin.style.display='none';
     const btnReportBugOut = document.getElementById('btnReportBug');
@@ -3421,6 +3480,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.80', items:[
+    "Créer une évaluation -- nouvelles modales propres (remplacent les alert/confirm/prompt natifs du navigateur, au rendu daté) pour toutes les boîtes de dialogue du module. Supervision déplacé dans le menu Outils prof. Vue compacte (après validation) : le bouton Supprimer a été retiré (accessible seulement en repassant par Éditer, pour éviter une suppression accidentelle), et les flèches ↑/↓ y sont désormais disponibles pour réordonner sans avoir à éditer. Exercice à plusieurs colonnes : 4 boutons par cellule permettent de choisir quels bords apparaissent (haut/droite/bas/gauche), un peu comme un éditeur de tableau -- appliqué dans l'aperçu et le PDF.",
+  ]},
   { version:'2026-08-04.79', items:[
     "Créer une évaluation -- le champ « Nombre d'exercices » n'apparaît plus que si « Laisser l'IA proposer des exercices » est coché (inutile sinon). Le bouton Imprimer avertit désormais si la classe et/ou la date n'ont pas été renseignées, avec possibilité de continuer quand même.",
   ]},
@@ -4770,10 +4832,10 @@ let currentEvaluationId = null;
    elle a été explicitement partagée (table evaluations, RLS + collaborators côté serveur). */
 let lastEvaluationTitle = null;
 async function saveEvaluation(){
-  if(!currentUser){ alert("Connectez-vous (en tant que professeur) pour sauvegarder cette évaluation."); return; }
-  if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant de sauvegarder."); return; }
+  if(!currentUser){ await niceAlert("Connectez-vous (en tant que professeur) pour sauvegarder cette évaluation."); return; }
+  if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant de sauvegarder."); return; }
   const defaultTitle = lastEvaluationTitle || document.getElementById('evalClasses').value.trim() || ('Évaluation '+document.getElementById('evalNiveau').value);
-  const title = prompt("Titre de cette évaluation (pour la retrouver dans « Mes évaluations ») :", defaultTitle);
+  const title = await nicePrompt("Titre de cette évaluation (pour la retrouver dans « Mes évaluations ») :", defaultTitle);
   if(title===null) return;
   lastEvaluationTitle = title || defaultTitle;
   const relevantBlocks = {};
@@ -4800,11 +4862,11 @@ async function saveEvaluation(){
     statusEl.textContent = "✓ Sauvegardé";
   }catch(e){
     statusEl.textContent = '';
-    alert("Échec de la sauvegarde : "+(e.message||'erreur inconnue'));
+    await niceAlert("Échec de la sauvegarde : "+(e.message||'erreur inconnue'));
   }
 }
 async function openEvalListModal(){
-  if(!currentUser){ alert("Connectez-vous pour voir vos évaluations sauvegardées."); return; }
+  if(!currentUser){ await niceAlert("Connectez-vous pour voir vos évaluations sauvegardées."); return; }
   document.getElementById('evalListModalOverlay').style.display='flex';
   const box = document.getElementById('evalListContent');
   box.innerHTML = 'Chargement…';
@@ -4826,7 +4888,7 @@ async function openEvalListModal(){
 function closeEvalListModal(){ document.getElementById('evalListModalOverlay').style.display='none'; }
 async function loadEvaluation(id){
   const { data, error } = await sb.from('evaluations').select('*').eq('id', id).single();
-  if(error){ alert("Échec du chargement : "+error.message); return; }
+  if(error){ await niceAlert("Échec du chargement : "+error.message); return; }
   currentEvaluationId = data.id;
   lastEvaluationTitle = data.title || null;
   document.getElementById('evalNiveau').value = data.niveau || '6e';
@@ -4857,7 +4919,7 @@ async function loadEvaluation(id){
   document.getElementById('evalSaveStatus').textContent = "✓ Évaluation chargée";
 }
 async function shareEvaluation(){
-  if(!currentEvaluationId){ alert("Sauvegardez d'abord cette évaluation (bouton 💾) avant de la partager."); return; }
+  if(!currentEvaluationId){ await niceAlert("Sauvegardez d'abord cette évaluation (bouton 💾) avant de la partager."); return; }
   document.getElementById('evalShareModalOverlay').style.display='flex';
   const box = document.getElementById('evalShareContent');
   box.innerHTML = 'Chargement…';
@@ -4988,18 +5050,20 @@ function renderEvalExercicesList(){
     if(ex.validated){
       // Vue compacte : uniquement le résultat final tel qu'il sera imprimé, sans aucun des
       // outils/menus d'édition -- pour une lecture d'ensemble agréable une fois l'exercice
-      // terminé. Modifier ou supprimer restent possibles via les deux boutons.
+      // terminé. On peut réorganiser l'ordre directement ici ; modifier ou supprimer se fait
+      // en repassant par l'édition (bouton ✏️), pour éviter une suppression accidentelle.
       return `
       <div class="tool-shell" style="margin-bottom:14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
           <strong style="font-family:'Space Grotesk',sans-serif;">Exercice ${i+1}${ex.title?' — '+escapeHtml(ex.title):''}</strong>
           <span style="display:flex;gap:6px;align-items:center;">
             ${ex.bareme ? `<span class="hint" style="margin:0;">${ex.bareme} pt(s)</span>` : ''}
-            <button type="button" onclick="editEvalExercice(${ex.id})" title="Modifier" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:4px 10px;cursor:pointer;">✏️ Éditer</button>
-            <button type="button" onclick="removeEvalExercice(${ex.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:4px 10px;cursor:pointer;">✕ Supprimer</button>
+            <button type="button" onclick="moveEvalExercice(${ex.id},-1)" ${i===0?'disabled style="opacity:.35;"':''} title="Monter" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↑</button>
+            <button type="button" onclick="moveEvalExercice(${ex.id},1)" ${i===evaluationExercises.length-1?'disabled style="opacity:.35;"':''} title="Descendre" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↓</button>
+            <button type="button" onclick="editEvalExercice(${ex.id})" title="Modifier ou supprimer" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:4px 10px;cursor:pointer;">✏️ Éditer</button>
           </span>
         </div>
-        <div>${blocksRowsHTML(ctx, ex.rows, false)}</div>
+        <div>${blocksRowsHTML(ctx, ex.rows, false, ex.cellBorders)}</div>
       </div>
     `;
     }
@@ -5018,7 +5082,7 @@ function renderEvalExercicesList(){
         <input type="text" placeholder="Titre de l'exercice (facultatif)" value="${escapeHtml(ex.title||'')}" oninput="updateEvalExerciceField(${ex.id},'title',this.value)" style="flex:1;min-width:200px;padding:7px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);">
         <label class="hint" style="margin:0;">Barème : <input type="number" min="0" step="0.5" value="${ex.bareme!=null?ex.bareme:''}" oninput="updateEvalExerciceField(${ex.id},'bareme',this.value)" style="width:60px;margin-left:4px;"> pt(s)</label>
       </div>
-      <div class="eval-blocks-preview" style="margin-top:4px;">${blocksRowsHTML(ctx, ensureExRows(ex), true)}</div>
+      <div class="eval-blocks-preview" style="margin-top:4px;">${blocksRowsHTML(ctx, ensureExRows(ex), true, ex.cellBorders)}</div>
       <div class="tool-row" style="margin-top:10px;align-items:center;flex-wrap:wrap;">
         <span class="hint" style="margin:0;">Mise en page :</span>
         ${ex.rows.map((nc,rowIdx)=>`
@@ -5080,7 +5144,8 @@ function updateEvalExerciceText(id, text){
   const preview = document.querySelectorAll('#evalExercicesList .correction-preview')[idx];
   if(preview) preview.innerHTML = text.trim() ? renderMathText(text) : '';
 }
-function removeEvalExercice(id){
+async function removeEvalExercice(id){
+  if(!(await niceConfirm('Supprimer définitivement cet exercice ?'))) return;
   evaluationExercises = evaluationExercises.filter(e=>e.id!==id);
   delete blocksStores['ex-'+id];
   renderEvalExercicesList();
@@ -5107,8 +5172,8 @@ function addManualExercise(){
   evaluationExercises.push({id: evalNextExoId++, text: '', title:'', bareme:null, rows:[1]});
   renderEvalExercicesList();
 }
-function clearEvaluation(){
-  if(evaluationExercises.length && !confirm('Effacer tous les exercices de cette évaluation ?')) return;
+async function clearEvaluation(){
+  if(evaluationExercises.length && !(await niceConfirm('Effacer tous les exercices de cette évaluation ?'))) return;
   evaluationExercises.forEach(ex=>delete blocksStores['ex-'+ex.id]);
   evaluationExercises = [];
   currentEvaluationId = null;
@@ -5141,7 +5206,7 @@ function buildEvaluationContentHTML(){
           <span>Exercice ${i+1}${ex.title ? ' — '+escapeHtml(ex.title) : ''}</span>
           ${ex.bareme ? `<span>${ex.bareme} pt(s)</span>` : ''}
         </p>
-        ${blocksRowsHTML('ex-'+ex.id, ensureExRows(ex), false)}
+        ${blocksRowsHTML('ex-'+ex.id, ensureExRows(ex), false, ex.cellBorders)}
       </div>
     `).join('')}
   `;
@@ -5184,19 +5249,19 @@ async function replaceSvgsWithImages(container){
     svg.replaceWith(img);
   }
 }
-function exportEvaluationPDF(){
-  if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant de générer le PDF."); return; }
+async function exportEvaluationPDF(){
+  if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant de générer le PDF."); return; }
   const missing = [];
   if(!document.getElementById('evalClasses').value.trim()) missing.push('la classe');
   if(!document.getElementById('evalDate').value) missing.push('la date');
-  if(missing.length && !confirm(`Tu n'as pas renseigné ${missing.join(' ni ')}. Générer quand même la feuille d'évaluation ?`)) return;
+  if(missing.length && !(await niceConfirm(`Tu n'as pas renseigné ${missing.join(' ni ')}. Générer quand même la feuille d'évaluation ?`))) return;
   // La capture d'écran (html2canvas) reproduit une page blanche de façon récurrente avec ce
   // contenu, malgré plusieurs correctifs essayés. L'impression native du navigateur, elle,
   // donne un rendu fidèle et fiable : l'utilisateur choisit "Enregistrer au format PDF" comme
   // destination dans la boîte d'impression (celle-ci bloque l'onglet tant qu'elle est ouverte
   // -- comportement normal du navigateur, pas un bug).
   const w = window.open('', '_blank', 'width=900,height:700');
-  if(!w){ alert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site, ou utilisez Ctrl/Cmd+P."); return; }
+  if(!w){ await niceAlert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site, ou utilisez Ctrl/Cmd+P."); return; }
   w.document.open();
   w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
     <title>Évaluation</title>
@@ -5234,8 +5299,8 @@ function exportEvaluationPDF(){
   };
 }
 
-function openEvalPreview(){
-  if(!evaluationExercises.length){ alert("Ajoutez au moins un exercice avant l'aperçu."); return; }
+async function openEvalPreview(){
+  if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant l'aperçu."); return; }
   const content = document.getElementById('evalPreviewContent');
   content.innerHTML = buildEvaluationContentHTML();
   document.getElementById('evalPreviewModalOverlay').style.display='flex';
@@ -5671,27 +5736,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-79"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-79"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-79"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-79"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-79"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-79"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-79"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-79"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-79"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-79"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-79"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-79"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-79"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-79"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-79"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-79"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-79"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-79"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-79"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-79"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-79"></script>
-<script src="compte-est-bon.js?v=20260804-79"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-80"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-80"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-80"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-80"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-80"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-80"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-80"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-80"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-80"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-80"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-80"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-80"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-80"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-80"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-80"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-80"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-80"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-80"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-80"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-80"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-80"></script>
+<script src="compte-est-bon.js?v=20260804-80"></script>
 </body>
 </html>
