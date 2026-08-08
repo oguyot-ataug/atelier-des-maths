@@ -10,14 +10,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=20260804-83">
+<link rel="stylesheet" href="styles.css?v=20260804-84">
 </head>
 <body>
 
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.83</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.84</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -1715,7 +1715,12 @@ function renderStaticMath(container){
   });
 }
 function cleanExpr(s){
-  return s.replace(/\*/g, '\\times ');
+  s = s.replace(/\*/g, '\\times ');
+  // Convertit aussi une fraction simple (nombre et/ou lettre) à l'intérieur de l'expression,
+  // ex. le "1/x" dans lim(x,0,1/x) -- sinon elle resterait en texte brut "1/x" au lieu d'une
+  // vraie fraction, une fois passée à KaTeX (qui ne la réinterprète pas après coup).
+  s = s.replace(/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)/g, (m,a,b)=>`\\dfrac{${a}}{${b}}`);
+  return s;
 }
 function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 /* Modales "propres" (alerte, confirmation, saisie), pour remplacer les alert()/confirm()/
@@ -1773,9 +1778,9 @@ function renderMathText(raw){
   // 2bis) écritures simplifiées pour somme, limite, intégrale -- ex. somme(n,1,10,n) ; lim(x,0,f(x)) ;
   // integrale(0,1,f(x),x). Traitées avant les fractions pour éviter toute confusion avec leurs
   // arguments (ex. le "x/2" dans integrale(0,1,x/2,x)).
-  text = text.replace(/somme\(([^,()]+),([^,()]+),([^,()]+),((?:[^()]|\([^()]*\))+)\)/g, (m,v,from,to,expr)=>protect(katexSpan(`\\sum_{${v}=${cleanExpr(from)}}^{${cleanExpr(to)}} ${cleanExpr(expr)}`)));
+  text = text.replace(/somme\(([^,()]+),([^,()]+),([^,()]+),((?:[^()]|\([^()]*\))+)\)/g, (m,v,from,to,expr)=>protect(katexSpan(`\\displaystyle\\sum_{${v}=${cleanExpr(from)}}^{${cleanExpr(to)}} ${cleanExpr(expr)}`)));
   text = text.replace(/lim\(([^,()]+),([^,()]+),((?:[^()]|\([^()]*\))+)\)/g, (m,v,to,expr)=>protect(katexSpan(`\\lim_{${v} \\to ${cleanExpr(to)}} ${cleanExpr(expr)}`)));
-  text = text.replace(/integrale\(([^,()]+),([^,()]+),((?:[^()]|\([^()]*\))+),([^,()]+)\)/g, (m,from,to,expr,v)=>protect(katexSpan(`\\int_{${cleanExpr(from)}}^{${cleanExpr(to)}} ${cleanExpr(expr)} \\, d${v}`)));
+  text = text.replace(/integrale\(([^,()]+),([^,()]+),((?:[^()]|\([^()]*\))+),([^,()]+)\)/g, (m,from,to,expr,v)=>protect(katexSpan(`\\displaystyle\\int_{${cleanExpr(from)}}^{${cleanExpr(to)}} ${cleanExpr(expr)} \\, d${v}`)));
   // 3) fractions with a parenthesised expression on one or both sides: (2*2)/(3*2), (2+1)/4, 3/(1+2)
   text = text.replace(/\(([^()]+)\)\/\(([^()]+)\)/g, (m,a,b)=>protect(katexSpan(`\\dfrac{${cleanExpr(a)}}{${cleanExpr(b)}}`)));
   text = text.replace(/\(([^()]+)\)\/(\d+(?:[.,]\d+)?)/g, (m,a,b)=>protect(katexSpan(`\\dfrac{${cleanExpr(a)}}{${b.replace(',','.')}}`)));
@@ -3515,6 +3520,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.84', items:[
+    "Fix -- les fractions à l'intérieur d'une somme/limite/intégrale (ex. le 1/x dans lim(x,0,1/x)) n'étaient pas reconnues, elles restaient en texte brut : corrigé (bénéficie aussi à sqrt(2/3)). Somme et intégrale : les bornes se placent maintenant au-dessus/en-dessous du symbole (style manuel), au lieu d'un style condensé mal positionné.",
+  ]},
   { version:'2026-08-04.83', items:[
     "Fix -- les fractions dans les consignes d'axe/repère (ex. « Place les points A(2/5) ») s'affichent maintenant en vraie écriture LaTeX, pas en texte brut. Nouvelles écritures simplifiées dans l'outil Texte : somme(n,1,10,n), lim(x,0,f(x)), integrale(0,1,f(x),x) se mettent en forme automatiquement (comme les fractions a/b), avec 3 boutons Σ/lim/∫ qui insèrent un modèle prêt à compléter.",
   ]},
@@ -5802,27 +5810,27 @@ document.getElementById('tdDate').value = todayISO();
 /* ======================= init ======================= */
 renderNiveau('6e');
 </script>
-<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-83"></script>
-<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-83"></script>
-<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-83"></script>
-<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-83"></script>
-<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-83"></script>
-<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-83"></script>
-<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-83"></script>
-<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-83"></script>
-<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-83"></script>
-<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-83"></script>
-<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-83"></script>
-<script src="chapitres/5e/N4-fractions.js?v=20260804-83"></script>
-<script src="chapitres/5e/N1-divisibilite.js?v=20260804-83"></script>
-<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-83"></script>
-<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-83"></script>
-<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-83"></script>
-<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-83"></script>
-<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-83"></script>
-<script src="chapitres/5e/N6-equations.js?v=20260804-83"></script>
-<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-83"></script>
-<script src="calcul-mental/calcul-mental.js?v=20260804-83"></script>
-<script src="compte-est-bon.js?v=20260804-83"></script>
+<script src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-84"></script>
+<script src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-84"></script>
+<script src="chapitres/5e/N3-operations-relatifs.js?v=20260804-84"></script>
+<script src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-84"></script>
+<script src="chapitres/6e/N1-nombres-entiers.js?v=20260804-84"></script>
+<script src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-84"></script>
+<script src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-84"></script>
+<script src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-84"></script>
+<script src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-84"></script>
+<script src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-84"></script>
+<script src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-84"></script>
+<script src="chapitres/5e/N4-fractions.js?v=20260804-84"></script>
+<script src="chapitres/5e/N1-divisibilite.js?v=20260804-84"></script>
+<script src="chapitres/5e/G3-droites-remarquables.js?v=20260804-84"></script>
+<script src="chapitres/5e/G4-parallelogrammes.js?v=20260804-84"></script>
+<script src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-84"></script>
+<script src="chapitres/5e/P1-proportionnalite.js?v=20260804-84"></script>
+<script src="chapitres/5e/N5-calcul-litteral.js?v=20260804-84"></script>
+<script src="chapitres/5e/N6-equations.js?v=20260804-84"></script>
+<script src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-84"></script>
+<script src="calcul-mental/calcul-mental.js?v=20260804-84"></script>
+<script src="compte-est-bon.js?v=20260804-84"></script>
 </body>
 </html>
