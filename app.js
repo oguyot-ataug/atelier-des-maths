@@ -1632,7 +1632,8 @@ function buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte){
     // disponible ; à plusieurs (fraction impropre), ils se partagent la largeur en rétrécissant.
     discs += `<div style="flex:1 1 0;max-width:150px;min-width:50px;">${singleDisqueSvg(filled, den)}</div>`;
   }
-  const caption = vierge ? `Colorie ${num}/${den} du disque` : `${num}/${den}`;
+  const fracKatex = katexSpan(`\\dfrac{${num}}{${den}}`);
+  const caption = vierge ? `Colorie ${fracKatex} du disque` : fracKatex;
   return `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:${nShapes*150+((nShapes-1)*10)}px;margin:0 auto;">${discs}</div>
     ${showCaption!==false ? `<p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>` : ''}
     ${fractionAnswerHTML(reponseSimple, reponseMixte)}`;
@@ -1725,7 +1726,8 @@ function buildRectFracSvg(num,den,vertical,vierge,showCaption,reponseSimple,repo
     rects += `<div style="flex:1 1 0;max-width:180px;min-width:60px;">${svg}</div>`;
   }
   const displayNum = (customSet && nShapes===1 && !vierge) ? customSet.size : num;
-  const caption = vierge ? `Colorie ${num}/${effectiveDen} du rectangle` : `${displayNum}/${effectiveDen}`;
+  const fracKatex = katexSpan(`\\dfrac{${displayNum}}{${effectiveDen}}`);
+  const caption = vierge ? `Colorie ${katexSpan(`\\dfrac{${num}}{${effectiveDen}}`)} du rectangle` : fracKatex;
   return `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:${nShapes*180+((nShapes-1)*10)}px;margin:0 auto;">${rects}</div>
     ${showCaption!==false ? `<p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>` : ''}
     ${fractionAnswerHTML(reponseSimple, reponseMixte)}`;
@@ -2517,6 +2519,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.90', items:[
+    "Fix -- la légende sous les disques et rectangles fractionnés (ex. « 3/4 ») était en texte brut au lieu d'une vraie fraction LaTeX. Corrigé pour les deux, y compris le message « Colorie X/Y » en mode vierge.",
+  ]},
   { version:'2026-08-04.89', items:[
     "Rectangle fractionné (évaluation) -- l'aperçu devient cliquable : on choisit directement les cases à colorier (bandes ou grille), au lieu de taper un nombre qui colorie toujours les premières dans l'ordre. Le nombre de parts colorées se met à jour automatiquement, et le motif précis choisi est conservé dans le rendu final (aperçu, PDF). Disponible pour les fractions propres en une seule forme ; les fractions impropres (plusieurs rectangles) gardent le remplissage séquentiel habituel.",
   ]},
