@@ -2331,6 +2331,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
+let isStaffGlobal = false;
 let currentUserRole = null; // 'admin' | 'prof' | 'eleve' | null
 let currentClassId = null;
 
@@ -2382,12 +2383,15 @@ async function refreshAuthUI(){
       currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='eleve' ? 'Élève' : '';
 
     const isStaff = currentUserRole==='admin' || currentUserRole==='prof';
+    isStaffGlobal = isStaff;
     if(navCorrection) navCorrection.style.display = isStaff ? 'inline-block' : 'none';
     if(navCahier) navCahier.style.display = 'inline-block'; // accessible à tous les comptes connectés (prof, admin, élève)
     if(navMesResultats) navMesResultats.style.display = currentUserRole==='eleve' ? 'inline-block' : 'none';
     if(navAdmin) navAdmin.style.display = currentUserRole==='admin' ? 'inline-block' : 'none';
     const btnReportBug = document.getElementById('btnReportBug');
     if(btnReportBug) btnReportBug.style.display = isStaff ? 'block' : 'none';
+    const chapSuggestRow = document.getElementById('chapSuggestRow');
+    if(chapSuggestRow) chapSuggestRow.style.display = isStaff ? 'block' : 'none';
     const classRow = document.getElementById('accountClassRow');
     if(classRow) classRow.style.display = isStaff ? 'block' : 'none'; // un élève ne choisit pas sa classe, elle lui est assignée
     const btnGenerateQuiz = document.getElementById('btnGenerateQuiz'), quizLoginHint = document.getElementById('quizLoginHint');
@@ -2400,12 +2404,15 @@ async function refreshAuthUI(){
   } else {
     currentUser = null; currentUserRole = null; currentClassId = null;
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
+    isStaffGlobal = false;
     if(navCorrection) navCorrection.style.display='none';
     if(navCahier) navCahier.style.display='none';
     if(navMesResultats) navMesResultats.style.display='none';
     if(navAdmin) navAdmin.style.display='none';
     const btnReportBugOut = document.getElementById('btnReportBug');
     if(btnReportBugOut) btnReportBugOut.style.display='none';
+    const chapSuggestRowOut = document.getElementById('chapSuggestRow');
+    if(chapSuggestRowOut) chapSuggestRowOut.style.display='none';
     const btnGenerateQuiz = document.getElementById('btnGenerateQuiz'), quizLoginHint = document.getElementById('quizLoginHint');
     if(btnGenerateQuiz) btnGenerateQuiz.style.display='none';
     if(quizLoginHint) quizLoginHint.style.display='inline';
@@ -2439,6 +2446,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.87', items:[
+    "Nouveau bouton « 💡 Suggérer une amélioration pour ce module » directement dans chaque chapitre (Cours, Méthode, Exercices, Quiz, Histoire), visible pour les profs et admin. Réutilise le système de signalement existant, en pré-remplissant automatiquement le niveau, le chapitre et le module concernés -- plus besoin de les ressaisir à la main. Les suggestions apparaissent avec un badge distinct des bugs dans la liste de suivi (Administration).",
+  ]},
   { version:'2026-08-04.86', items:[
     "Fix majeur -- délai au chargement de la page (menu inaccessible) : le très gros script du site était écrit directement dans la page, ce qui obligeait KaTeX et Supabase à se charger de façon bloquante avant que quoi que ce soit d'autre (y compris le menu) ne puisse s'afficher. Le script a été extrait dans un fichier séparé (app.js), ce qui permet enfin de tout charger en parallèle sans bloquer l'affichage. Gain mesuré : le menu devient utilisable environ 2 fois plus vite. Tout le site a été retesté en profondeur (outils, chapitres, évaluation, PDF, administration) pour s'assurer qu'aucun comportement n'a changé.",
   ]},
@@ -3022,11 +3032,29 @@ function switchBugModalTab(tab){
   document.getElementById('bugModalLog').style.display = tab==='log' ? 'block' : 'none';
   if(tab==='log') renderChangelog();
 }
-function openBugReportModal(){
+let bugReportTypeOverride = 'bug';
+function openBugReportModal(prefill){
   document.getElementById('bugReportModalOverlay').style.display='flex';
   document.getElementById('bugReportMessage').value='';
   document.getElementById('bugReportStatus').textContent='';
+  bugReportTypeOverride = (prefill && prefill.reportType) || 'bug';
+  const titleEl = document.querySelector('#bugReportModalOverlay strong');
+  if(titleEl) titleEl.textContent = bugReportTypeOverride==='suggestion' ? '💡 Suggérer une amélioration' : 'Signaler un bug / une amélioration';
+  if(prefill && prefill.section){
+    document.getElementById('bugReportSection').value = prefill.section;
+    document.getElementById('bugReportSection').dispatchEvent(new Event('change'));
+  }
+  if(prefill && prefill.chapitre) document.getElementById('bugReportChapter').value = prefill.chapitre;
   switchBugModalTab('form');
+}
+/* Ouvre le même formulaire, pré-rempli avec le module de chapitre actuellement affiché --
+   évite au professeur de ressaisir le contexte à la main. */
+function openSuggestionModal(){
+  const activeTab = document.querySelector('.tab-btn.active');
+  const moduleLabel = activeTab ? activeTab.textContent.trim() : '';
+  const section = currentLevel==='5e' ? '5e — Chapitres' : '6e — Chapitres';
+  const chapitre = (currentChapterTitle||'') + (moduleLabel ? ' — '+moduleLabel : '');
+  openBugReportModal({section, chapitre, reportType:'suggestion'});
 }
 function closeBugReportModal(){
   document.getElementById('bugReportModalOverlay').style.display='none';
@@ -3047,11 +3075,13 @@ async function submitBugReport(){
     section,
     chapitre: chapitre || null,
     message,
+    report_type: bugReportTypeOverride,
     build_version: document.getElementById('buildTag') ? document.getElementById('buildTag').textContent.replace('build ','') : null,
   });
   if(error){ status.textContent = "Échec de l'envoi : " + error.message; return; }
-  status.textContent = 'Signalement envoyé, merci !';
+  status.textContent = bugReportTypeOverride==='suggestion' ? 'Suggestion envoyée, merci !' : 'Signalement envoyé, merci !';
   document.getElementById('bugReportMessage').value='';
+  bugReportTypeOverride = 'bug';
   setTimeout(()=>{ if(document.getElementById('bugReportModalOverlay').style.display!=='none') closeBugReportModal(); }, 1200);
 }
 function renderClassModalList(){
@@ -3593,7 +3623,7 @@ async function adminRefreshBugReports(){
   if(!el) return;
   el.textContent = 'Chargement…';
   const { data, error } = await sb.from('bug_reports')
-    .select('id,created_at,section,chapitre,message,build_version,status,profiles(nom,email)')
+    .select('id,created_at,section,chapitre,message,build_version,status,report_type,profiles(nom,email)')
     .order('created_at', {ascending:false})
     .limit(300);
   if(error){ el.textContent = "Erreur : "+error.message; return; }
@@ -3603,9 +3633,10 @@ async function adminRefreshBugReports(){
     const name = (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Utilisateur inconnu';
     const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
     const statusColor = r.status==='résolu' ? 'var(--accent-green, #1F6B3A)' : r.status==='en cours' ? 'var(--accent-orange)' : 'var(--accent)';
+    const typeTag = r.report_type==='suggestion' ? '<span style="background:#FFF4E5;color:#B26A00;border-radius:4px;padding:1px 7px;font-size:.75rem;font-weight:600;margin-right:6px;">💡 Suggestion</span>' : '<span style="background:#FDEAEA;color:#B23A3A;border-radius:4px;padding:1px 7px;font-size:.75rem;font-weight:600;margin-right:6px;">🐞 Bug</span>';
     return `<div class="bug-report-row" style="border:1px solid rgba(28,43,57,.12);border-radius:8px;padding:10px 12px;margin-bottom:10px;">
       <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
-        <span><b>${escapeHtml(r.section)}</b>${r.chapitre?' — '+escapeHtml(r.chapitre):''}</span>
+        <span>${typeTag}<b>${escapeHtml(r.section)}</b>${r.chapitre?' — '+escapeHtml(r.chapitre):''}</span>
         <span style="color:var(--ink-soft);font-size:.85rem;">${escapeHtml(name)} · ${date}${r.build_version?' · build '+escapeHtml(r.build_version):''}</span>
       </div>
       <div style="margin:6px 0;white-space:pre-wrap;">${escapeHtml(r.message)}</div>
