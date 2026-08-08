@@ -635,10 +635,12 @@ function renderStaticMath(container){
 }
 function cleanExpr(s){
   s = s.replace(/\*/g, '\\times ');
-  // Convertit aussi une fraction simple (nombre et/ou lettre) à l'intérieur de l'expression,
-  // ex. le "1/x" dans lim(x,0,1/x) -- sinon elle resterait en texte brut "1/x" au lieu d'une
-  // vraie fraction, une fois passée à KaTeX (qui ne la réinterprète pas après coup).
-  s = s.replace(/([a-zA-Z0-9]+)\/([a-zA-Z0-9]+)/g, (m,a,b)=>`\\dfrac{${a}}{${b}}`);
+  // Convertit aussi une fraction simple à l'intérieur de l'expression -- nombre/lettre, ou un
+  // appel de fonction d'un côté ou des deux (ex. le "1/x" de lim(x,0,1/x), ou "f(x)/x") -- sinon
+  // elle resterait en texte brut avec un simple "/" au lieu d'une vraie fraction, une fois
+  // passée à KaTeX (qui ne la réinterprète pas après coup).
+  const terme = '[a-zA-Z0-9]+(?:\\([^()]*\\))?';
+  s = s.replace(new RegExp(`(${terme})/(${terme})`, 'g'), (m,a,b)=>`\\dfrac{${a}}{${b}}`);
   return s;
 }
 function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -2798,6 +2800,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.100', items:[
+    "Fix -- dans lim(x,0,f(x)/x), le \"f(x)/x\" restait affiché avec un simple slash au lieu d'une vraie fraction (la reconnaissance ne gérait que lettres/chiffres, pas un appel de fonction comme f(x)). Étendu pour reconnaître aussi ce cas, des deux côtés de la fraction.",
+  ]},
   { version:'2026-08-04.99', items:[
     "Fix -- somme/lim/intégrale n'interprétaient qu'un seul niveau de parenthèses imbriquées dans l'expression, ce qui bloquait des écritures comme lim(x,0,(f(x+h)-f(x))/x) (taux d'accroissement). Étendu à deux niveaux. Boutons Σ/lim/∫ de l'outil Texte simplifiés pour n'afficher que le symbole, sans texte superflu.",
   ]},
