@@ -1796,18 +1796,17 @@ function graphSvg(xMin,xMax,yMin,yMax,curves){
       curvesHtml += `<circle cx="${X(x1)}" cy="${Y(y1)}" r="3.2" fill="${color}"/><circle cx="${X(x2)}" cy="${Y(y2)}" r="3.2" fill="${color}"/>`;
     } else if(c.type==='fonction'){
       let d='', started=false;
-      const steps = 240, margeY = (yMax-yMin)*0.5;
-      const clampX = px => Math.max(0, Math.min(W, px));
-      const clampY = py => Math.max(0, Math.min(H, py));
+      // 400 points (au lieu de 240) pour que le tracé s'arrête net, au plus près du bord réel,
+      // sans le forcer à plat (aucune tolérance de dépassement : dès qu'un point calculé sort
+      // de la zone visible, le tracé s'interrompt à cet endroit précis -- comportement naturel
+      // d'une calculatrice graphique, plutôt qu'un plafonnement qui créait des lignes plates
+      // disgracieuses en haut/bas du cadre).
+      const steps = 400;
       for(let k=0;k<=steps;k++){
         const xv = xMin + (xMax-xMin)*k/steps;
         const yv = evalFunctionExpr(c.expr, xv);
-        if(isNaN(yv) || yv<yMin-margeY || yv>yMax+margeY){ started=false; continue; }
-        // On plafonne les coordonnées projetées aux bords du cadre (et pas seulement la valeur
-        // d'origine) : une fonction très pentue peut sortir largement de la zone visible entre
-        // deux points calculés, même en filtrant sur la valeur -- plafonner garantit qu'aucun
-        // point du tracé ne dépasse jamais visuellement, quel que soit le rendu du navigateur.
-        d += (started?'L':'M')+clampX(X(xv)).toFixed(1)+','+clampY(Y(yv)).toFixed(1)+' ';
+        if(isNaN(yv) || yv<yMin || yv>yMax){ started=false; continue; }
+        d += (started?'L':'M')+X(xv).toFixed(1)+','+Y(yv).toFixed(1)+' ';
         started = true;
       }
       curvesHtml += `<path d="${d}" fill="none" stroke="${color}" stroke-width="2.2"/>`;
@@ -2799,6 +2798,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.97', items:[
+    "Fix -- le plafonnement des courbes (fix précédent) créait des lignes plates disgracieuses en haut/bas du cadre, plus moche que le débordement d'origine. Remplacé par un arrêt net et naturel du tracé dès qu'il sort de la zone visible (comme sur une calculatrice graphique), avec davantage de points calculés pour un arrêt précis au plus près du bord.",
+  ]},
   { version:'2026-08-04.96', items:[
     "Fix définitif -- la courbe débordait toujours du cadre dans le module évaluation (le clip-path seul ne suffisait pas de façon fiable une fois le bloc redimensionné). Correction en deux temps : le SVG garde maintenant ses proportions correctement (height:auto, manquant) et chaque point du tracé est directement plafonné aux limites du cadre -- une fonction très pentue s'aplatit proprement en haut/bas au lieu de dépasser, quelle que soit la taille du bloc.",
   ]},
