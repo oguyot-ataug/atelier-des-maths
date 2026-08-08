@@ -1052,6 +1052,7 @@ function toolButtonsHTML(ctx){
     <button type="button" class="btn secondary" onclick="${set}openRepereTool()">✛ Repère</button>
     <button type="button" class="btn secondary" onclick="${set}openDisqueTool()">🥧 Disque fractionné</button>
     <button type="button" class="btn secondary" onclick="${set}openRectFracTool()">▭ Rectangle fractionné</button>
+    <button type="button" class="btn secondary" onclick="${set}openCubesTool()">🧊 Cubes empilés</button>
   `;
 }
 let figDragPoint = null;
@@ -1706,6 +1707,45 @@ function singleRectGridSvg(filledSet, nRows, nCols, interactive){
 }
 /* Comme pour les disques : un numérateur supérieur au dénominateur (fraction impropre) a
    besoin de plusieurs rectangles, le dernier ne montrant que le reste. */
+/* ---- Cubes empilés (perspective cavalière) ---- */
+/* Perspective cavalière classique : la face avant est un vrai carré (pas de déformation), et
+   la profondeur (z) part en oblique à 45° avec un coefficient de réduction de 0,5 -- exactement
+   la convention utilisée dans les manuels français. Un cube occupe une case entière de la
+   grille (x=droite, y=hauteur, z=profondeur), coordonnées entières. */
+function cubeStackSvg(cubes, selectedIdx, interactive){
+  const S = 46, k = 0.5, theta = Math.PI/4;
+  const dx = Math.cos(theta)*k*S, dy = Math.sin(theta)*k*S;
+  const proj = (x,y,z) => ({ sx: x*S + z*dx, sy: -y*S - z*dy });
+  // tri peintre : les cubes les plus au fond (z grand) sont dessinés en premier, les plus
+  // proches en dernier, pour qu'ils recouvrent correctement ceux derrière eux.
+  const order = cubes.map((c,i)=>i).sort((ia,ib)=>{
+    const a=cubes[ia], b=cubes[ib];
+    return (b.z-a.z) || (a.y-b.y) || (a.x-b.x);
+  });
+  const pts = arr => arr.map(p=>`${p.sx.toFixed(1)},${p.sy.toFixed(1)}`).join(' ');
+  let shapes = '';
+  let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+  order.forEach(i=>{
+    const c = cubes[i];
+    const isSel = interactive && i===selectedIdx;
+    const p000=proj(c.x,c.y,c.z), p100=proj(c.x+1,c.y,c.z), p010=proj(c.x,c.y+1,c.z), p110=proj(c.x+1,c.y+1,c.z);
+    const p001=proj(c.x,c.y,c.z+1), p101=proj(c.x+1,c.y,c.z+1), p011=proj(c.x,c.y+1,c.z+1), p111=proj(c.x+1,c.y+1,c.z+1);
+    [p000,p100,p010,p110,p001,p101,p011,p111].forEach(p=>{ minX=Math.min(minX,p.sx); maxX=Math.max(maxX,p.sx); minY=Math.min(minY,p.sy); maxY=Math.max(maxY,p.sy); });
+    const stroke = isSel ? '#0D5BA3' : '#1C1B2E';
+    const sw = isSel ? 2.6 : 1.4;
+    const click = interactive ? ` onclick="selectCube(${i})" style="cursor:pointer;"` : '';
+    shapes += `<polygon points="${pts([p000,p100,p110,p010])}" fill="#FFB067" stroke="${stroke}" stroke-width="${sw}"${click}/>`;
+    shapes += `<polygon points="${pts([p010,p110,p111,p011])}" fill="#FFDCAE" stroke="${stroke}" stroke-width="${sw}"${click}/>`;
+    shapes += `<polygon points="${pts([p100,p101,p111,p110])}" fill="#E07C1E" stroke="${stroke}" stroke-width="${sw}"${click}/>`;
+  });
+  const pad = 12;
+  const W = (maxX-minX)+pad*2, H = (maxY-minY)+pad*2;
+  const offX = pad-minX, offY = pad-minY;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:340px;height:auto;display:block;margin:6px auto;">
+    <g transform="translate(${offX},${offY})">${shapes}</g>
+  </svg>`;
+}
+
 function buildRectFracSvg(num,den,vertical,vierge,showCaption,reponseSimple,reponseMixte,gridRows,gridCols,customSet,interactive){
   const isGrid = gridRows>1 && gridCols>1;
   const effectiveDen = isGrid ? gridRows*gridCols : den;
@@ -1796,6 +1836,61 @@ function reopenRectFrac(data){
   toggleRectFracGrid();
   rectFracCustomSet = new Set(data.customArr && data.customArr.length ? data.customArr : Array.from({length:data.num||0}, (_,k)=>k));
   previewRectFrac();
+}
+
+
+/* ---- Outil Cubes empilés (perspective cavalière) ---- */
+let cubesState = [{x:0,y:0,z:0},{x:1,y:0,z:0}];
+let cubesSelected = 0;
+function openCubesTool(){
+  document.getElementById('toolsModalOverlay').style.display='flex';
+  document.getElementById('cubesPanel').style.display='block';
+  cubesState = [{x:0,y:0,z:0},{x:1,y:0,z:0}];
+  cubesSelected = 0;
+  previewCubes();
+  document.getElementById('cubesPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeCubesTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('cubesPanel').style.display='none'; }
+function previewCubes(){
+  document.getElementById('cubesPreview').innerHTML = cubeStackSvg(cubesState, cubesSelected, true);
+}
+function selectCube(i){ cubesSelected = i; previewCubes(); }
+function addCube(){
+  // Place le nouveau cube juste à côté du cube sélectionné (case vide la plus proche), pour
+  // qu'il apparaisse toujours visible plutôt que superposé à un autre.
+  const base = cubesState[cubesSelected] || {x:0,y:0,z:0};
+  const candidates = [{x:base.x+1,y:base.y,z:base.z},{x:base.x-1,y:base.y,z:base.z},{x:base.x,y:base.y,z:base.z+1},{x:base.x,y:base.y+1,z:base.z}];
+  const occupied = c => cubesState.some(k=>k.x===c.x&&k.y===c.y&&k.z===c.z);
+  const spot = candidates.find(c=>!occupied(c)) || {x:base.x, y:base.y+cubesState.length, z:base.z};
+  cubesState.push(spot);
+  cubesSelected = cubesState.length-1;
+  previewCubes();
+}
+function removeCube(){
+  if(cubesState.length<=1) return; // toujours au moins un cube
+  cubesState.splice(cubesSelected,1);
+  cubesSelected = Math.max(0, cubesSelected-1);
+  previewCubes();
+}
+function moveCube(dx,dy,dz){
+  if(!cubesState[cubesSelected]) return;
+  const c = cubesState[cubesSelected];
+  const next = {x:c.x+dx, y:c.y+dy, z:c.z+dz};
+  if(next.y<0) return; // ne descend pas sous le sol
+  if(cubesState.some((k,i)=>i!==cubesSelected && k.x===next.x && k.y===next.y && k.z===next.z)) return; // case déjà occupée
+  cubesState[cubesSelected] = next;
+  previewCubes();
+}
+function insertCubeStack(){
+  const html = cubeStackSvg(cubesState, cubesSelected, false);
+  addPendingBlock('cubes', html, {cubes: JSON.parse(JSON.stringify(cubesState))}, 'reopenCubes');
+  closeCubesTool();
+}
+function reopenCubes(data){
+  openCubesTool();
+  cubesState = JSON.parse(JSON.stringify(data.cubes||[{x:0,y:0,z:0},{x:1,y:0,z:0}]));
+  cubesSelected = 0;
+  previewCubes();
 }
 
 function resetFigureState(){
@@ -2519,6 +2614,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.91', items:[
+    "Nouvel outil « 🧊 Cubes empilés » (perspective cavalière) : deux cubes placés par défaut, clic pour sélectionner un cube puis flèches pour le déplacer (gauche/droite, haut/bas, avant/arrière), boutons pour en ajouter ou en retirer. Occlusion gérée automatiquement (un cube devant en cache correctement un derrière). Disponible dans l'outil de correction et dans les exercices d'évaluation, comme les autres figures.",
+  ]},
   { version:'2026-08-04.90', items:[
     "Fix -- la légende sous les disques et rectangles fractionnés (ex. « 3/4 ») était en texte brut au lieu d'une vraie fraction LaTeX. Corrigé pour les deux, y compris le message « Colorie X/Y » en mode vierge.",
   ]},
