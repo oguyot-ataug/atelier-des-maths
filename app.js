@@ -1021,6 +1021,7 @@ function previewTextBlock(){
   document.getElementById('textBlockPreview').innerHTML = val.trim() ? renderMathText(val) : '';
 }
 function openTextBlockTool(){
+  hideAllToolContent();
   document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('textBlockPanel').style.display='block';
   document.getElementById('textBlockInput').value = '';
@@ -1043,16 +1044,13 @@ function reopenTextBlock(data){
 function toolButtonsHTML(ctx){
   const set = `setToolContext('${ctx}');`;
   return `
-    <button type="button" class="btn secondary" onclick="${set}openTextBlockTool()">✏️ Texte</button>
-    <button type="button" class="btn secondary" onclick="${set}openFigureTool()">🔺 Figure géométrique</button>
-    <button type="button" class="btn secondary" onclick="${set}openTableauTool()">▦ Tableau</button>
-    <button type="button" class="btn secondary" onclick="${set}openDivisionTool()">➗ Division posée</button>
-    <button type="button" class="btn secondary" onclick="${set}openDivisionDecTool()">➗ Division décimale</button>
-    <button type="button" class="btn secondary" onclick="${set}openAxeTool()">📏 Axe gradué</button>
-    <button type="button" class="btn secondary" onclick="${set}openRepereTool()">✛ Repère</button>
-    <button type="button" class="btn secondary" onclick="${set}openDisqueTool()">🥧 Disque fractionné</button>
-    <button type="button" class="btn secondary" onclick="${set}openRectFracTool()">▭ Rectangle fractionné</button>
-    <button type="button" class="btn secondary" onclick="${set}openCubesTool()">🧊 Cubes empilés</button>
+    <button type="button" class="tool-icon-btn" title="Texte" onclick="${set}openTextBlockTool()">✏️</button>
+    <button type="button" class="tool-icon-btn" title="Figure géométrique" onclick="${set}openFigureTool()">🔺</button>
+    <button type="button" class="tool-icon-btn" title="Tableau" onclick="${set}openTableauTool()">▦</button>
+    <button type="button" class="tool-icon-btn" title="Division (euclidienne / décimale)" onclick="${set}openDivisionTool()">➗</button>
+    <button type="button" class="tool-icon-btn" title="Axe gradué / Repère" onclick="${set}openAxeTool()">📐</button>
+    <button type="button" class="tool-icon-btn" title="Fraction visuelle (disque / rectangle)" onclick="${set}openDisqueTool()">🥧</button>
+    <button type="button" class="tool-icon-btn" title="Cubes empilés" onclick="${set}openCubesTool()">🧊</button>
   `;
 }
 let figDragPoint = null;
@@ -1060,14 +1058,32 @@ const SCALE_PX_PER_CM = 20;
 
 /* Ferme tous les panneaux d'outils et la modale qui les enveloppe (clic en dehors de la modale,
    ou changement de contexte). */
+/* Masque tout le contenu des outils (panneaux seuls et groupes à onglets), sans fermer la
+   modale elle-même -- appelé au début de chaque fonction d'ouverture d'outil, pour qu'un seul
+   outil (ou groupe) soit jamais visible à la fois. */
+function hideAllToolContent(){
+  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.style.display='none';
+  });
+}
+/* Bascule entre deux outils regroupés sous les mêmes onglets (division euclidienne/décimale,
+   axe/repère, disque/rectangle) : affiche le groupe demandé, met en évidence l'onglet actif. */
+function activateToolTab(wrapId, activeTabId, inactiveTabId){
+  hideAllToolContent();
+  document.getElementById(wrapId).style.display='block';
+  const activeTab = document.getElementById(activeTabId), inactiveTab = document.getElementById(inactiveTabId);
+  if(activeTab) activeTab.classList.add('active');
+  if(inactiveTab) inactiveTab.classList.remove('active');
+}
 function closeAllToolPanels(){
-  ['figurePanel','tableauPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel'].forEach(id=>{
+  ['figurePanel','tableauPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
   document.getElementById('toolsModalOverlay').style.display='none';
 }
-function openFigureTool(){document.getElementById('toolsModalOverlay').style.display='flex';
+function openFigureTool(){hideAllToolContent(); document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('figurePanel').style.display='block';
   resetFigureState();
   setFigureMode('point');
@@ -1076,7 +1092,7 @@ function openFigureTool(){document.getElementById('toolsModalOverlay').style.dis
 function closeFigureTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('figurePanel').style.display='none'; }
 
 /* ---- mini outil : insérer un tableau ---- */
-function openTableauTool(){document.getElementById('toolsModalOverlay').style.display='flex';
+function openTableauTool(){hideAllToolContent(); document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('tableauPanel').style.display='block';
   buildTableauGrid();
   document.getElementById('tableauPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
@@ -1249,7 +1265,7 @@ function previewDivisionPosee(){
   const vierge = document.getElementById('divVierge').checked;
   document.getElementById('divisionPreview').innerHTML = (stepByStep && !vierge) ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res, vierge);
 }
-function openDivisionTool(){document.getElementById('toolsModalOverlay').style.display='flex';
+function openDivisionTool(){activateToolTab('divisionGroupWrap','divTabEucl','divTabDec'); document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('divisionPanel').style.display='block';
   document.getElementById('divisionPreview').innerHTML = '';
   document.getElementById('divisionPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
@@ -1365,7 +1381,7 @@ function previewDivisionDecimale(){
   const res = computeDivisionDecimale(a,b,maxDec);
   document.getElementById('divisionDecPreview').innerHTML = divisionDecimaleHTML(res, maxDec, vierge);
 }
-function openDivisionDecTool(){document.getElementById('toolsModalOverlay').style.display='flex';
+function openDivisionDecTool(){activateToolTab('divisionGroupWrap','divTabDec','divTabEucl'); document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('divisionDecPanel').style.display='block';
   document.getElementById('divisionDecPreview').innerHTML = '';
   document.getElementById('divisionDecPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
@@ -1489,7 +1505,7 @@ function previewAxe(){
   const points = parseNamedPoints1D(document.getElementById('axePoints').value);
   document.getElementById('axePreview').innerHTML = (max>min&&step>0) ? buildAxeSvg(min,max,step,points,subDiv,mode) : '<p class="hint" style="color:var(--accent-orange);">Le maximum doit être supérieur au minimum, le pas positif.</p>';
 }
-function openAxeTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('axePanel').style.display='block'; document.getElementById('axePreview').innerHTML=''; document.getElementById('axePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
+function openAxeTool(){activateToolTab('axeGroupWrap','axeTabAxe','axeTabRep'); document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('axePanel').style.display='block'; document.getElementById('axePreview').innerHTML=''; document.getElementById('axePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeAxeTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('axePanel').style.display='none'; }
 function insertAxe(){
   const min=parseFloat(document.getElementById('axeMin').value), max=parseFloat(document.getElementById('axeMax').value), step=parseFloat(document.getElementById('axeStep').value)||1;
@@ -1570,7 +1586,7 @@ function previewRepere(){
   const points = parseNamedPoints2D(document.getElementById('repPoints').value);
   document.getElementById('reperePreview').innerHTML = (xMax>xMin&&yMax>yMin) ? buildRepereSvg(xMin,xMax,yMin,yMax,points,mode) : '<p class="hint" style="color:var(--accent-orange);">Les maximums doivent être supérieurs aux minimums.</p>';
 }
-function openRepereTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('reperePanel').style.display='block'; document.getElementById('reperePreview').innerHTML=''; document.getElementById('reperePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
+function openRepereTool(){activateToolTab('axeGroupWrap','axeTabRep','axeTabAxe'); document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('reperePanel').style.display='block'; document.getElementById('reperePreview').innerHTML=''; document.getElementById('reperePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeRepereTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('reperePanel').style.display='none'; }
 function insertRepere(){
   const xMin=parseFloat(document.getElementById('repXMin').value), xMax=parseFloat(document.getElementById('repXMax').value);
@@ -1647,7 +1663,7 @@ function previewDisque(){
   const reponseMixte = document.getElementById('disqueReponseMixte').checked;
   document.getElementById('disquePreview').innerHTML = (den>0&&num>=0) ? buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte) : '';
 }
-function openDisqueTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('disquePanel').style.display='block'; document.getElementById('disquePreview').innerHTML=''; document.getElementById('disquePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
+function openDisqueTool(){activateToolTab('shapeGroupWrap','shapeTabDisque','shapeTabRect'); document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('disquePanel').style.display='block'; document.getElementById('disquePreview').innerHTML=''; document.getElementById('disquePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeDisqueTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('disquePanel').style.display='none'; }
 function insertDisque(){
   const num=parseInt(document.getElementById('disqueNum').value), den=parseInt(document.getElementById('disqueDen').value);
@@ -1804,7 +1820,7 @@ function previewRectFrac(){
   const cols = isGrid ? parseInt(document.getElementById('rectFracCols').value)||2 : null;
   document.getElementById('rectFracPreview').innerHTML = (isGrid || (den>0&&num>=0)) ? buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols,rectFracCustomSet,true) : '';
 }
-function openRectFracTool(){document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('rectFracPanel').style.display='block'; document.getElementById('rectFracPreview').innerHTML=''; document.getElementById('rectFracPanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
+function openRectFracTool(){activateToolTab('shapeGroupWrap','shapeTabRect','shapeTabDisque'); document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('rectFracPanel').style.display='block'; document.getElementById('rectFracPreview').innerHTML=''; document.getElementById('rectFracPanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeRectFracTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('rectFracPanel').style.display='none'; }
 function insertRectFrac(){
   const num=parseInt(document.getElementById('rectFracNum').value), den=parseInt(document.getElementById('rectFracDen').value);
@@ -1843,6 +1859,7 @@ function reopenRectFrac(data){
 let cubesState = [{x:0,y:0,z:0},{x:1,y:0,z:0}];
 let cubesSelected = 0;
 function openCubesTool(){
+  hideAllToolContent();
   document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('cubesPanel').style.display='block';
   cubesState = [{x:0,y:0,z:0},{x:1,y:0,z:0}];
@@ -2614,6 +2631,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.92', items:[
+    "Barre d'outils allégée (outil de correction et exercices d'évaluation) : 7 icônes compactes au lieu de 10 boutons avec texte. Les outils proches sont regroupés sous des onglets dans la même fenêtre : Division (Euclidienne / Décimale), Axe & Repère, Fraction visuelle (Disque / Rectangle) -- plus besoin de chercher parmi une longue liste, et l'ensemble prend beaucoup moins de place à l'écran.",
+  ]},
   { version:'2026-08-04.91', items:[
     "Nouvel outil « 🧊 Cubes empilés » (perspective cavalière) : deux cubes placés par défaut, clic pour sélectionner un cube puis flèches pour le déplacer (gauche/droite, haut/bas, avant/arrière), boutons pour en ajouter ou en retirer. Occlusion gérée automatiquement (un cube devant en cache correctement un derrière). Disponible dans l'outil de correction et dans les exercices d'évaluation, comme les autres figures.",
   ]},
