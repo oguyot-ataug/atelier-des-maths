@@ -1768,8 +1768,10 @@ function evalFunctionExpr(expr, x){
   }catch(e){ return NaN; }
 }
 const GRAPH_COLORS = ['#0D5BA3','#D93025','#1F7A4D','#B26A00','#7B3FA0','#1C8C9C'];
+let graphSvgIdCounter = 1;
 function graphSvg(xMin,xMax,yMin,yMax,curves){
   const W=420,H=340,pad=30;
+  const clipId = 'gClip'+(graphSvgIdCounter++);
   const sx = (W-2*pad)/(xMax-xMin), sy=(H-2*pad)/(yMax-yMin);
   const X = v => pad + (v-xMin)*sx;
   const Y = v => H-pad-(v-yMin)*sy;
@@ -1794,7 +1796,7 @@ function graphSvg(xMin,xMax,yMin,yMax,curves){
       curvesHtml += `<circle cx="${X(x1)}" cy="${Y(y1)}" r="3.2" fill="${color}"/><circle cx="${X(x2)}" cy="${Y(y2)}" r="3.2" fill="${color}"/>`;
     } else if(c.type==='fonction'){
       let d='', started=false;
-      const steps = 240, margeY = (yMax-yMin)*2;
+      const steps = 240, margeY = (yMax-yMin)*0.5;
       for(let k=0;k<=steps;k++){
         const xv = xMin + (xMax-xMin)*k/steps;
         const yv = evalFunctionExpr(c.expr, xv);
@@ -1809,8 +1811,11 @@ function graphSvg(xMin,xMax,yMin,yMax,curves){
     <defs>
       <marker id="gAxeArrowX" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
       <marker id="gAxeArrowY" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
+      <clipPath id="${clipId}"><rect x="0" y="0" width="${W}" height="${H}"/></clipPath>
     </defs>
-    ${grid}${axes}${originLabel}${curvesHtml}
+    <g clip-path="url(#${clipId})">
+      ${grid}${axes}${originLabel}${curvesHtml}
+    </g>
   </svg>`;
 }
 
@@ -2788,6 +2793,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.95', items:[
+    "Fix -- l'outil Graphique laissait une courbe déborder visuellement du cadre (ex. une parabole assez raide). Ajout d'un découpage (clip-path) : plus rien ne peut jamais dépasser visuellement des bords du graphique, quelle que soit la fonction tracée.",
+  ]},
   { version:'2026-08-04.94', items:[
     "Nouvel outil « Graphique » : trace une ou plusieurs courbes sur le même repère, au choix par deux points (droite, prolongée automatiquement sur toute la largeur) ou par l'expression d'une fonction (ex. x^2-3, 2x+1, sqrt(x)), avec les mêmes conventions d'écriture que le reste du site. Chaque courbe a sa propre couleur, axes et bornes paramétrables. Disponible dans l'outil de correction et les exercices d'évaluation, comme les autres figures.",
   ]},
