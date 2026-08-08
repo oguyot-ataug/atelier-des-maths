@@ -870,7 +870,7 @@ function getExerciseByCtx(ctx){
 }
 function singleBlockHTML(b, ctx, withControls, draggable){
   const sizeStyle = (b.width?`width:${b.width}px;`:'') + (b.height?`height:${b.height}px;`:'');
-  const defaultWidth = b.type==='axe' ? 500 : b.type==='repere' ? 340 : 260;
+  const defaultWidth = b.type==='axe' ? 500 : b.type==='repere' ? 340 : b.type==='graph' ? 420 : 260;
   let html = b.html;
   if(b.type==='disque'){
     // Réglage manuel (toujours prioritaire, fiable dans tous les contextes y compris la
@@ -1797,17 +1797,23 @@ function graphSvg(xMin,xMax,yMin,yMax,curves){
     } else if(c.type==='fonction'){
       let d='', started=false;
       const steps = 240, margeY = (yMax-yMin)*0.5;
+      const clampX = px => Math.max(0, Math.min(W, px));
+      const clampY = py => Math.max(0, Math.min(H, py));
       for(let k=0;k<=steps;k++){
         const xv = xMin + (xMax-xMin)*k/steps;
         const yv = evalFunctionExpr(c.expr, xv);
         if(isNaN(yv) || yv<yMin-margeY || yv>yMax+margeY){ started=false; continue; }
-        d += (started?'L':'M')+X(xv).toFixed(1)+','+Y(yv).toFixed(1)+' ';
+        // On plafonne les coordonnées projetées aux bords du cadre (et pas seulement la valeur
+        // d'origine) : une fonction très pentue peut sortir largement de la zone visible entre
+        // deux points calculés, même en filtrant sur la valeur -- plafonner garantit qu'aucun
+        // point du tracé ne dépasse jamais visuellement, quel que soit le rendu du navigateur.
+        d += (started?'L':'M')+clampX(X(xv)).toFixed(1)+','+clampY(Y(yv)).toFixed(1)+' ';
         started = true;
       }
       curvesHtml += `<path d="${d}" fill="none" stroke="${color}" stroke-width="2.2"/>`;
     }
   });
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;">
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:420px;height:auto;display:block;margin:6px auto;background:#fff;">
     <defs>
       <marker id="gAxeArrowX" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
       <marker id="gAxeArrowY" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
@@ -2793,6 +2799,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.96', items:[
+    "Fix définitif -- la courbe débordait toujours du cadre dans le module évaluation (le clip-path seul ne suffisait pas de façon fiable une fois le bloc redimensionné). Correction en deux temps : le SVG garde maintenant ses proportions correctement (height:auto, manquant) et chaque point du tracé est directement plafonné aux limites du cadre -- une fonction très pentue s'aplatit proprement en haut/bas au lieu de dépasser, quelle que soit la taille du bloc.",
+  ]},
   { version:'2026-08-04.95', items:[
     "Fix -- l'outil Graphique laissait une courbe déborder visuellement du cadre (ex. une parabole assez raide). Ajout d'un découpage (clip-path) : plus rien ne peut jamais dépasser visuellement des bords du graphique, quelle que soit la fonction tracée.",
   ]},
