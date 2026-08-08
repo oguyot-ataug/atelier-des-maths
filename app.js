@@ -1052,6 +1052,7 @@ const TOOL_ICONS = {
   axe: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="3"/><polyline points="1.5,7 4,3 6.5,7"/><line x1="3" y1="20" x2="21" y2="20"/><polyline points="17,17.5 21,20 17,22.5"/><circle cx="10" cy="13" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="8" r="1.3" fill="currentColor" stroke="none"/></svg>`,
   fraction: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3 A9 9 0 0 1 12 21 Z" fill="currentColor" stroke="none"/><line x1="12" y1="3" x2="12" y2="21"/></svg>`,
   cubes: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2 L21 7 L21 17 L12 22 L3 17 L3 7 Z"/><path d="M12 2 L12 12 L21 7 M12 12 L3 7 M12 12 L12 22"/></svg>`,
+  graph: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21 L3 3"/><path d="M3 21 L21 21"/><path d="M4 15 Q9 4 13 13 T21 6"/></svg>`,
 };
 function toolButtonsHTML(ctx){
   const set = `setToolContext('${ctx}');`;
@@ -1063,6 +1064,7 @@ function toolButtonsHTML(ctx){
     <button type="button" class="tool-icon-btn" title="Axe gradué / Repère" onclick="${set}openAxeTool()">${TOOL_ICONS.axe}</button>
     <button type="button" class="tool-icon-btn" title="Fraction visuelle (disque / rectangle)" onclick="${set}openDisqueTool()">${TOOL_ICONS.fraction}</button>
     <button type="button" class="tool-icon-btn" title="Cubes empilés" onclick="${set}openCubesTool()">${TOOL_ICONS.cubes}</button>
+    <button type="button" class="tool-icon-btn" title="Graphique (droites / fonctions)" onclick="${set}openGraphTool()">${TOOL_ICONS.graph}</button>
   `;
 }
 let figDragPoint = null;
@@ -1074,7 +1076,7 @@ const SCALE_PX_PER_CM = 20;
    modale elle-même -- appelé au début de chaque fonction d'ouverture d'outil, pour qu'un seul
    outil (ou groupe) soit jamais visible à la fois. */
 function hideAllToolContent(){
-  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -1089,7 +1091,7 @@ function activateToolTab(wrapId, activeTabId, inactiveTabId){
   if(inactiveTab) inactiveTab.classList.remove('active');
 }
 function closeAllToolPanels(){
-  ['figurePanel','tableauPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -1740,6 +1742,78 @@ function singleRectGridSvg(filledSet, nRows, nCols, interactive){
    la profondeur (z) part en oblique à 45° avec un coefficient de réduction de 0,5 -- exactement
    la convention utilisée dans les manuels français. Un cube occupe une case entière de la
    grille (x=droite, y=hauteur, z=profondeur), coordonnées entières. */
+/* ---- Graphique (droites et fonctions, plusieurs courbes superposées) ---- */
+/* Évalue une expression de fonction en x (ex. "2x-1", "x^2-3", "sqrt(x)"), avec les mêmes
+   commodités d'écriture que le reste du site (multiplication implicite, ^ pour la puissance).
+   Retourne NaN si l'expression est invalide ou non définie en ce point (sécurisé : pas d'accès
+   au DOM ni à autre chose que Math, uniquement utilisé pour tracer une courbe). */
+function evalFunctionExpr(expr, x){
+  try{
+    let js = expr
+      .replace(/\^/g, '**')
+      .replace(/sqrt\(/g, 'Math.sqrt(')
+      .replace(/\bsin\(/g, 'Math.sin(')
+      .replace(/\bcos\(/g, 'Math.cos(')
+      .replace(/\btan\(/g, 'Math.tan(')
+      .replace(/\babs\(/g, 'Math.abs(')
+      .replace(/\bpi\b/gi, 'Math.PI')
+      .replace(/(\d)\s*x/g, '$1*x')
+      .replace(/(\d)\s*\(/g, '$1*(')
+      .replace(/\)\s*\(/g, ')*(')
+      .replace(/x\s*\(/g, 'x*(');
+    if(!/^[0-9x+\-*/.,()\sA-Za-z]*$/.test(js)) return NaN; // caractères inattendus : on refuse
+    const f = new Function('x', 'with(Math){ return ('+js+'); }');
+    const v = f(x);
+    return (typeof v==='number' && isFinite(v)) ? v : NaN;
+  }catch(e){ return NaN; }
+}
+const GRAPH_COLORS = ['#0D5BA3','#D93025','#1F7A4D','#B26A00','#7B3FA0','#1C8C9C'];
+function graphSvg(xMin,xMax,yMin,yMax,curves){
+  const W=420,H=340,pad=30;
+  const sx = (W-2*pad)/(xMax-xMin), sy=(H-2*pad)/(yMax-yMin);
+  const X = v => pad + (v-xMin)*sx;
+  const Y = v => H-pad-(v-yMin)*sy;
+  let grid='';
+  for(let v=Math.ceil(xMin); v<=xMax; v++) grid += `<line x1="${X(v)}" y1="${pad}" x2="${X(v)}" y2="${H-pad}" stroke="rgba(28,43,57,.1)" stroke-width="1"/>`;
+  for(let v=Math.ceil(yMin); v<=yMax; v++) grid += `<line x1="${pad}" y1="${Y(v)}" x2="${W-pad}" y2="${Y(v)}" stroke="rgba(28,43,57,.1)" stroke-width="1"/>`;
+  const showOrigin = xMin<=0 && xMax>=0 && yMin<=0 && yMax>=0;
+  const axes = `<line x1="${pad-10}" y1="${Y(0)}" x2="${W-pad+10}" y2="${Y(0)}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#gAxeArrowX)"/>
+    <line x1="${X(0)}" y1="${H-pad+10}" x2="${X(0)}" y2="${pad-10}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#gAxeArrowY)"/>`;
+  const originLabel = showOrigin ? `<text x="${X(0)-12}" y="${Y(0)+18}" font-size="13" font-weight="700" font-family="Space Grotesk, sans-serif">O</text>` : '';
+  let curvesHtml = '';
+  curves.forEach((c,i)=>{
+    const color = c.color || GRAPH_COLORS[i%GRAPH_COLORS.length];
+    if(c.type==='droite'){
+      const {x1,y1,x2,y2} = c;
+      if(x2===x1){
+        curvesHtml += `<line x1="${X(x1)}" y1="${pad}" x2="${X(x1)}" y2="${H-pad}" stroke="${color}" stroke-width="2.2"/>`;
+      } else {
+        const m = (y2-y1)/(x2-x1), b = y1-m*x1;
+        curvesHtml += `<line x1="${X(xMin)}" y1="${Y(m*xMin+b)}" x2="${X(xMax)}" y2="${Y(m*xMax+b)}" stroke="${color}" stroke-width="2.2"/>`;
+      }
+      curvesHtml += `<circle cx="${X(x1)}" cy="${Y(y1)}" r="3.2" fill="${color}"/><circle cx="${X(x2)}" cy="${Y(y2)}" r="3.2" fill="${color}"/>`;
+    } else if(c.type==='fonction'){
+      let d='', started=false;
+      const steps = 240, margeY = (yMax-yMin)*2;
+      for(let k=0;k<=steps;k++){
+        const xv = xMin + (xMax-xMin)*k/steps;
+        const yv = evalFunctionExpr(c.expr, xv);
+        if(isNaN(yv) || yv<yMin-margeY || yv>yMax+margeY){ started=false; continue; }
+        d += (started?'L':'M')+X(xv).toFixed(1)+','+Y(yv).toFixed(1)+' ';
+        started = true;
+      }
+      curvesHtml += `<path d="${d}" fill="none" stroke="${color}" stroke-width="2.2"/>`;
+    }
+  });
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;">
+    <defs>
+      <marker id="gAxeArrowX" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
+      <marker id="gAxeArrowY" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
+    </defs>
+    ${grid}${axes}${originLabel}${curvesHtml}
+  </svg>`;
+}
+
 function cubeStackSvg(cubes, selectedIdx, interactive){
   const S = 46, k = 0.5, theta = Math.PI/4;
   const dx = Math.cos(theta)*k*S, dy = Math.sin(theta)*k*S;
@@ -1920,6 +1994,77 @@ function reopenCubes(data){
   cubesState = JSON.parse(JSON.stringify(data.cubes||[{x:0,y:0,z:0},{x:1,y:0,z:0}]));
   cubesSelected = 0;
   previewCubes();
+}
+
+/* ---- Outil Graphique (droites et fonctions) ---- */
+let graphCurves = [];
+let graphNextId = 1;
+function openGraphTool(){
+  hideAllToolContent();
+  document.getElementById('toolsModalOverlay').style.display='flex';
+  document.getElementById('graphPanel').style.display='block';
+  graphCurves = [{id:graphNextId++, type:'fonction', expr:'x^2-3'}];
+  renderGraphCurvesList();
+  document.getElementById('graphPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeGraphTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('graphPanel').style.display='none'; }
+function addGraphCurve(type){
+  graphCurves.push(type==='droite' ? {id:graphNextId++, type:'droite', x1:0,y1:0,x2:1,y2:1} : {id:graphNextId++, type:'fonction', expr:'x'});
+  renderGraphCurvesList();
+}
+function removeGraphCurve(id){
+  graphCurves = graphCurves.filter(c=>c.id!==id);
+  renderGraphCurvesList();
+}
+function updateGraphCurve(id, field, value){
+  const c = graphCurves.find(c=>c.id===id);
+  if(c) c[field] = (field==='expr') ? value : parseFloat(value);
+  previewGraph();
+}
+function renderGraphCurvesList(){
+  const box = document.getElementById('graphCurvesList');
+  box.innerHTML = graphCurves.map((c,i)=>{
+    const color = GRAPH_COLORS[i%GRAPH_COLORS.length];
+    const swatch = `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${color};margin-right:6px;"></span>`;
+    if(c.type==='droite'){
+      return `<div class="tool-row" style="margin-bottom:6px;align-items:center;">
+        ${swatch}<span class="hint" style="margin:0;">Droite :</span>
+        <label class="hint" style="margin:0;">A(<input type="number" value="${c.x1}" oninput="updateGraphCurve(${c.id},'x1',this.value)" style="width:50px;"> ;
+        <input type="number" value="${c.y1}" oninput="updateGraphCurve(${c.id},'y1',this.value)" style="width:50px;">)</label>
+        <label class="hint" style="margin:0;">B(<input type="number" value="${c.x2}" oninput="updateGraphCurve(${c.id},'x2',this.value)" style="width:50px;"> ;
+        <input type="number" value="${c.y2}" oninput="updateGraphCurve(${c.id},'y2',this.value)" style="width:50px;">)</label>
+        <button type="button" onclick="removeGraphCurve(${c.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
+      </div>`;
+    }
+    return `<div class="tool-row" style="margin-bottom:6px;align-items:center;">
+      ${swatch}<span class="hint" style="margin:0;">f(x) =</span>
+      <input type="text" value="${escapeHtml(c.expr)}" oninput="updateGraphCurve(${c.id},'expr',this.value)" style="width:160px;">
+      <button type="button" onclick="removeGraphCurve(${c.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
+    </div>`;
+  }).join('');
+  previewGraph();
+}
+function previewGraph(){
+  const xMin=parseFloat(document.getElementById('graphXMin').value), xMax=parseFloat(document.getElementById('graphXMax').value);
+  const yMin=parseFloat(document.getElementById('graphYMin').value), yMax=parseFloat(document.getElementById('graphYMax').value);
+  document.getElementById('graphPreview').innerHTML = (xMax>xMin && yMax>yMin) ? graphSvg(xMin,xMax,yMin,yMax,graphCurves) : '<p class="hint" style="color:var(--accent-orange);">Les maximums doivent être supérieurs aux minimums.</p>';
+}
+function insertGraph(){
+  const xMin=parseFloat(document.getElementById('graphXMin').value), xMax=parseFloat(document.getElementById('graphXMax').value);
+  const yMin=parseFloat(document.getElementById('graphYMin').value), yMax=parseFloat(document.getElementById('graphYMax').value);
+  if(!(xMax>xMin && yMax>yMin) || !graphCurves.length) return;
+  addPendingBlock('graph', graphSvg(xMin,xMax,yMin,yMax,graphCurves), {xMin,xMax,yMin,yMax,curves:JSON.parse(JSON.stringify(graphCurves))}, 'reopenGraph');
+  closeGraphTool();
+}
+function reopenGraph(data){
+  openGraphTool();
+  document.getElementById('graphXMin').value = data.xMin;
+  document.getElementById('graphXMax').value = data.xMax;
+  document.getElementById('graphYMin').value = data.yMin;
+  document.getElementById('graphYMax').value = data.yMax;
+  graphCurves = JSON.parse(JSON.stringify(data.curves||[]));
+  graphNextId = Math.max(1, ...graphCurves.map(c=>c.id+1));
+  renderGraphCurvesList();
 }
 
 function resetFigureState(){
@@ -2643,6 +2788,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.94', items:[
+    "Nouvel outil « Graphique » : trace une ou plusieurs courbes sur le même repère, au choix par deux points (droite, prolongée automatiquement sur toute la largeur) ou par l'expression d'une fonction (ex. x^2-3, 2x+1, sqrt(x)), avec les mêmes conventions d'écriture que le reste du site. Chaque courbe a sa propre couleur, axes et bornes paramétrables. Disponible dans l'outil de correction et les exercices d'évaluation, comme les autres figures.",
+  ]},
   { version:'2026-08-04.93', items:[
     "Icônes de la barre d'outils remplacées par des tracés en trait fin, monochromes (crayon, triangle, grille, division, axes, demi-cercle, cube) -- plus sobres et professionnelles que les émojis précédents (notamment le 🥧 pour les fractions, jugé trop enfantin).",
   ]},
