@@ -3730,6 +3730,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.119', items:[
+    "Ajout de balises anti-cache sur la page elle-même, pour limiter le risque qu'un navigateur garde en mémoire une ancienne version bloquée (le cas typique : ça fonctionne en navigation privée mais pas en navigation normale -- signe d'une version mise en cache). En cas de blocage malgré tout, un rechargement forcé (Ctrl+Maj+R ou Cmd+Maj+R) résout le problème.",
+  ]},
   { version:'2026-08-04.118', items:[
     "Fix important -- si Supabase ne parvenait pas à charger (coupure réseau, CDN bloqué côté établissement...), tout le reste du script s'arrêtait net, y compris l'affichage des chapitres et le menu, qui devenaient inutilisables. Ajout d'un filet de sécurité : dans ce cas, le site continue de fonctionner en mode dégradé (chapitres, menu et outils accessibles normalement), seules les fonctionnalités liées aux comptes (connexion, sauvegarde, partage) restent indisponibles le temps que la connexion revienne.",
   ]},
