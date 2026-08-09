@@ -3031,6 +3031,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.108', items:[
+    "Fix -- les champs X min/max et Y min/max de l'outil Graphique ne mettaient pas à jour l'aperçu automatiquement (gestionnaire manquant, ajouté lors de la session précédente). Corrigé.",
+  ]},
   { version:'2026-08-04.107', items:[
     "Outil Graphique -- trois améliorations : graduations chiffrées sur les deux axes (valeurs entières) ; mode « axe des x en radians » pour les fonctions trigonométriques, avec graduations en π/2, π, 3π/2... au lieu de décimaux ; bouton « 🔍 Cadrage auto » qui ajuste automatiquement les bornes X/Y pour bien cadrer les courbes tracées (d'après les valeurs réellement atteintes par les fonctions, et les points des droites).",
   ]},
