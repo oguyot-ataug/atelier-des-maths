@@ -1984,6 +1984,50 @@ function pieChartSvg(data){
 }
 /* Diagrammes en barres, en bâtons et histogrammes partagent le même squelette (axes, graduations
    Y, étiquettes X) ; seule la largeur/l'espacement des barres change selon le mode. */
+/* Histogramme : contrairement à un diagramme en barres classique, la LARGEUR de chaque
+   rectangle doit respecter la largeur réelle de l'intervalle (les classes ne font pas
+   forcément toutes la même largeur -- tailles, poids, âges...). Deux conventions possibles :
+   - « à l'américaine » (useDensity=false) : la hauteur vaut l'effectif directement.
+   - « à la française » (useDensity=true) : c'est l'AIRE du rectangle qui vaut l'effectif,
+     donc hauteur = effectif ÷ largeur de la classe (densité) -- la convention rigoureuse dès
+     que les classes n'ont pas toutes la même largeur. */
+function histogramSvg(data, useDensity){
+  const W=420,H=300,padL=45,padB=36,padT=14,padR=14;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const classes = data.filter(d=>d.classMin!=null && d.classMax!=null && d.classMax>d.classMin);
+  if(!classes.length) return '<p class="hint">Renseigne au moins une classe valide (borne supérieure > borne inférieure).</p>';
+  const xMin = Math.min(...classes.map(d=>d.classMin));
+  const xMax = Math.max(...classes.map(d=>d.classMax));
+  const X = v => padL + (xMax>xMin ? (v-xMin)/(xMax-xMin) : 0)*plotW;
+  const heights = classes.map(d=>{
+    const w = d.classMax-d.classMin;
+    return useDensity ? (d.value||0)/w : (d.value||0);
+  });
+  const maxH = Math.max(...heights, 1e-9);
+  const yStep = niceStep(maxH);
+  const yTop = Math.ceil(maxH/yStep)*yStep || yStep;
+  let grid='', yLabels='', bars='';
+  for(let v=0; v<=yTop+1e-9; v+=yStep){
+    const y = padT+plotH-(v/yTop)*plotH;
+    grid += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W-padR}" y2="${y.toFixed(1)}" stroke="rgba(28,43,57,.1)"/>`;
+    yLabels += `<text x="${padL-6}" y="${(y+4).toFixed(1)}" font-size="11" text-anchor="end" font-family="JetBrains Mono, monospace">${frDecimal(Math.round(v*1000)/1000)}</text>`;
+  }
+  classes.forEach((d,i)=>{
+    const color = d.color || GRAPH_COLORS[i%GRAPH_COLORS.length];
+    const x1 = X(d.classMin), x2 = X(d.classMax);
+    const bh = (heights[i]/yTop)*plotH;
+    const y = padT+plotH-bh;
+    bars += `<rect x="${x1.toFixed(1)}" y="${y.toFixed(1)}" width="${(x2-x1).toFixed(1)}" height="${bh.toFixed(1)}" fill="${color}" stroke="#fff" stroke-width="1"/>`;
+  });
+  const boundaries = [...new Set(classes.flatMap(d=>[d.classMin,d.classMax]))].sort((a,b)=>a-b);
+  const xLabels = boundaries.map(v=>`<text x="${X(v).toFixed(1)}" y="${(padT+plotH+16).toFixed(1)}" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">${frDecimal(v)}</text>`).join('');
+  const axes = `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+plotH}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${padL}" y1="${padT+plotH}" x2="${W-padR}" y2="${padT+plotH}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+  const axisNote = `<text x="${W-padR}" y="${padT-2}" font-size="9" text-anchor="end" fill="#666" font-family="JetBrains Mono, monospace">${useDensity?'densité (aire = effectif)':'hauteur = effectif'}</text>`;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;">
+    ${grid}${axes}${bars}${yLabels}${xLabels}${axisNote}
+  </svg>`;
+}
 function barLikeChartSvg(data, mode){
   const W=420,H=300,padL=42,padB=36,padT=14,padR=14;
   const plotW=W-padL-padR, plotH=H-padT-padB;
@@ -2448,6 +2492,7 @@ function updateStatsRow(id, field, value){
 }
 function renderStatsRows(){
   const isHisto = document.getElementById('statsType').value==='histogramme';
+  document.getElementById('statsHistoOptions').style.display = isHisto ? 'block' : 'none';
   if(isHisto && statsData.some(r=>r.classMin==null)){
     // Premier passage en histogramme : propose des classes contiguës par défaut (largeur 10),
     // que le professeur peut ensuite ajuster librement (tailles, poids, âges...).
@@ -2485,7 +2530,9 @@ function updateStatsClass(id, field, value){
 }
 function buildStatsSvg(){
   const type = document.getElementById('statsType').value;
-  return type==='camembert' ? pieChartSvg(statsData) : barLikeChartSvg(statsData, type);
+  if(type==='camembert') return pieChartSvg(statsData);
+  if(type==='histogramme') return histogramSvg(statsData, document.getElementById('statsHistoDensity').checked);
+  return barLikeChartSvg(statsData, type);
 }
 function previewStats(){
   document.getElementById('statsPreview').innerHTML = statsData.length ? buildStatsSvg() : '';
@@ -2493,12 +2540,14 @@ function previewStats(){
 function insertStats(){
   if(!statsData.length) return;
   const type = document.getElementById('statsType').value;
-  addPendingBlock('stats', buildStatsSvg(), {type, rows:JSON.parse(JSON.stringify(statsData))}, 'reopenStats');
+  const histoDensity = document.getElementById('statsHistoDensity').checked;
+  addPendingBlock('stats', buildStatsSvg(), {type, histoDensity, rows:JSON.parse(JSON.stringify(statsData))}, 'reopenStats');
   closeStatsTool();
 }
 function reopenStats(data){
   openStatsTool();
   document.getElementById('statsType').value = data.type||'camembert';
+  document.getElementById('statsHistoDensity').checked = !!data.histoDensity;
   statsData = JSON.parse(JSON.stringify(data.rows||[]));
   statsNextId = Math.max(1, ...statsData.map(r=>r.id+1));
   renderStatsRows();
@@ -3225,6 +3274,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.113', items:[
+    "Histogramme -- fix statistique important : la largeur des barres respecte maintenant la largeur réelle de chaque classe (axe numérique gradué aux bornes), au lieu d'une largeur uniforme. Deux conventions disponibles : « hauteur = effectif » (à l'américaine) ou « aire = effectif » via une case à cocher « densité », la convention rigoureuse dès que les classes n'ont pas toutes la même largeur (à la française).",
+  ]},
   { version:'2026-08-04.112', items:[
     "Histogramme -- les classes se saisissent maintenant avec deux champs numériques (« de... à... »), adaptés aux données chiffrées comme les tailles, poids ou âges, plutôt qu'un texte libre à formater à la main. Le libellé (ex. « [150;160[ ») se génère automatiquement, et les classes s'enchaînent proprement quand on en ajoute une nouvelle.",
   ]},
