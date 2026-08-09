@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-<link rel="stylesheet" href="styles.css?v=20260804-102">
+<link rel="stylesheet" href="styles.css?v=20260804-103">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -19,7 +19,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.102</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.103</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -185,10 +185,7 @@
     <div id="textBlockPanel" class="figure-wrap" style="display:none;">
       <p class="hint" style="margin:0 0 10px;">Texte libre avec la même mise en forme automatique que l'énoncé principal (fractions, exposants, racines, **gras**, {{couleur|texte}}...).</p>
       <div class="tool-row" style="margin:0 0 8px;">
-        <span class="hint" style="margin:0;">Insérer un modèle à compléter :</span>
-        <button type="button" class="btn secondary" onclick="insertMathTemplate('$\\sum_{n=1}^{10} n$')" title="Somme">Σ</button>
-        <button type="button" class="btn secondary" onclick="insertMathTemplate('$\\lim_{x \\to 0} f(x)$')" title="Limite">lim</button>
-        <button type="button" class="btn secondary" onclick="insertMathTemplate('$\\int_{0}^{1} f(x)\\,dx$')" title="Intégrale">∫</button>
+        <button type="button" class="btn secondary" onclick="openFormulaBuilder()">🧮 Éditeur de formule (Σ, lim, ∫, fraction, puissance, racine...)</button>
       </div>
       <textarea id="textBlockInput" oninput="previewTextBlock()" rows="4" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;" placeholder="Ex. Calcule 3/4 + 1/2 et donne le résultat sous forme irréductible."></textarea>
       <div id="textBlockPreview" style="margin-top:8px;"></div>
@@ -196,6 +193,29 @@
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="insertTextBlock()">Insérer le texte</button>
         <button type="button" class="btn secondary" onclick="closeTextBlockTool()">Fermer sans insérer</button>
+      </div>
+    </div>
+    <div id="formulaBuilderOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeFormulaBuilder();">
+      <div class="modal-card" style="max-width:600px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">🧮 Éditeur de formule</strong>
+          <button class="modal-close" onclick="closeFormulaBuilder()">✕</button>
+        </div>
+        <p class="hint" style="margin:0 0 10px;">Clique dans une case puis choisis un symbole : il vient se placer à cet endroit précis. Chaque case peut à son tour contenir une nouvelle structure (imbrication libre).</p>
+        <div class="tool-row" style="margin-bottom:12px;">
+          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('frac')" title="Fraction">▭/▭</button>
+          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('pow')" title="Puissance">x²</button>
+          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('sqrt')" title="Racine carrée">√</button>
+          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('sum')" title="Somme">Σ</button>
+          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('int')" title="Intégrale">∫</button>
+          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('lim')" title="Limite">lim</button>
+        </div>
+        <div id="formulaBuilderCanvas" style="border:1px solid rgba(28,43,57,.2);border-radius:8px;padding:16px;min-height:60px;font-size:1.1rem;background:#fff;line-height:2.2;"></div>
+        <p class="hint" style="margin:8px 0 0;">Le ✕ à côté d'une structure la retire. Une case restée vide est simplement ignorée à l'insertion.</p>
+        <div class="figure-toolbar" style="margin-top:14px;">
+          <button type="button" class="btn" onclick="fbInsertFinal()">Insérer cette formule</button>
+          <button type="button" class="btn secondary" onclick="closeFormulaBuilder()">Annuler</button>
+        </div>
       </div>
     </div>
     <div id="tableauPanel" class="figure-wrap" style="display:none;">
@@ -1148,28 +1168,28 @@ mmartin	Motdepasse2"></textarea>
 
 <footer>Une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a> · L'Atelier des Maths · Programme B.O. 2026</footer>
 
-<script defer src="app.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-102"></script>
-<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260804-102"></script>
-<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-102"></script>
-<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-102"></script>
-<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-102"></script>
-<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-102"></script>
-<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-102"></script>
-<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/N4-fractions.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/N1-divisibilite.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/N6-equations.js?v=20260804-102"></script>
-<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-102"></script>
-<script defer src="calcul-mental/calcul-mental.js?v=20260804-102"></script>
-<script defer src="compte-est-bon.js?v=20260804-102"></script>
+<script defer src="app.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-103"></script>
+<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260804-103"></script>
+<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-103"></script>
+<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-103"></script>
+<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-103"></script>
+<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-103"></script>
+<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-103"></script>
+<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/N4-fractions.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/N1-divisibilite.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/N6-equations.js?v=20260804-103"></script>
+<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-103"></script>
+<script defer src="calcul-mental/calcul-mental.js?v=20260804-103"></script>
+<script defer src="compte-est-bon.js?v=20260804-103"></script>
 </body>
 </html>
