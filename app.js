@@ -976,7 +976,7 @@ function evalDropInRowCol(e, ctx, rowIndex, colIndex){
   e.preventDefault();
   const arr = blocksStores[ctx]||[];
   const b = arr.find(x=>x.id===evalDragBlockId);
-  if(b){ b.row = rowIndex; b.col = colIndex; renderEvalExercicesList(); }
+  if(b){ b.row = rowIndex; b.col = colIndex; ctx==='global' ? renderCorrectionPreview() : renderEvalExercicesList(); }
   evalDragBlockId = null;
 }
 /* Bascule une bordure (haut/droite/bas/gauche) d'une cellule (ligne-colonne) d'un exercice --
@@ -3821,6 +3821,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.127', items:[
+    "Outil de correction -- fix important : le glisser-déposer entre colonnes mettait bien à jour la donnée, mais l'affichage ne se rafraîchissait jamais (appelait toujours la fonction du module Évaluation), donnant l'impression que rien ne se passait. Corrigé. La zone de texte libre est maintenant masquée par défaut (accessible via « + Zone de texte libre » si besoin), puisqu'elle peut de toute façon se recréer avec l'outil Texte.",
+  ]},
   { version:'2026-08-04.126', items:[
     "Outil de correction -- la zone de texte libre sous le titre peut désormais être retirée (bouton ✕), comme dans le module Évaluation qui n'en a pas et va directement aux blocs ; réversible via « + Zone de texte libre ». Les zones en pointillés (blocs en cours d'édition) passent en fond blanc, plus lisibles que le fond crème hérité de la page.",
   ]},
