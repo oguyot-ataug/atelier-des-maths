@@ -734,12 +734,61 @@ function renderMathText(raw){
   text = text.replace(/\u0000(\d+)\u0000/g, (m,i)=>protectedBlocks[+i]);
   return text;
 }
+/* Mise en page de l'outil de correction : mêmes lignes/colonnes glissables-déposables que dans
+   le module évaluation (contexte 'global'), avec un bouton Valider qui cache la barre d'outils
+   et les pointillés d'édition une fois la correction terminée -- pour un écran plus lisible en
+   cours, sans perdre la possibilité de revenir éditer. */
+let corRows = [1];
+let corValidated = false;
+function corSetRowCols(rowIdx, n){
+  corRows[rowIdx] = Math.max(1, Math.min(6, parseInt(n)||1));
+  renderCorrectionPreview();
+}
+function corAddRow(){
+  corRows.push(1);
+  renderCorrectionPreview();
+}
+function corRemoveRow(rowIdx){
+  if(corRows.length<=1) return;
+  // Les blocs de la ligne retirée rejoignent la ligne précédente, pour ne pas les perdre.
+  (blocksStores['global']||[]).forEach(b=>{
+    const r = b.row||0;
+    if(r===rowIdx) b.row = Math.max(0, rowIdx-1);
+    else if(r>rowIdx) b.row = r-1;
+  });
+  corRows.splice(rowIdx,1);
+  renderCorrectionPreview();
+}
+function corToggleValidated(){
+  corValidated = !corValidated;
+  const btn = document.getElementById('btnCorValidate');
+  btn.textContent = corValidated ? '✏️ Éditer' : '✓ Valider';
+  btn.style.background = corValidated ? 'rgba(31,58,92,.08)' : 'rgba(35,140,90,.12)';
+  btn.style.color = corValidated ? '#1F3A5C' : '#1F7A4D';
+  document.getElementById('corLayoutRow').style.display = corValidated ? 'none' : 'flex';
+  document.getElementById('corToolsRow').style.display = corValidated ? 'none' : 'flex';
+  // le bouton Valider/Éditer lui-même doit rester visible même caché des deux rangées ci-dessus
+  if(corValidated){
+    document.getElementById('correctionPreview').insertAdjacentElement('afterend', btn);
+  } else {
+    document.getElementById('corLayoutRow').appendChild(btn);
+  }
+  renderCorrectionPreview();
+}
+function corRenderRowsControls(){
+  document.getElementById('corRowsControls').innerHTML = corRows.map((n,i)=>`
+    <span class="hint" style="margin:0 4px 0 8px;">L${i+1} : <input type="number" value="${n}" min="1" max="6" onchange="corSetRowCols(${i},this.value)" style="width:40px;"></span>
+    ${corRows.length>1 ? `<button type="button" onclick="corRemoveRow(${i})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:5px;padding:2px 6px;cursor:pointer;font-size:.75rem;">✕</button>` : ''}
+  `).join('');
+}
 function renderCorrectionPreview(){
   const raw = document.getElementById('correctionInput').value;
   const rendered = raw.trim() ? renderMathText(raw) : '';
   const previewHtml = rendered || '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>';
-  document.getElementById('correctionPreview').innerHTML = corHeaderHTML() + previewHtml + pendingBlocksHTML(true,'global');
-  updateProjectionWindow(rendered + pendingBlocksHTML(false,'global'));
+  const cleanBlocks = blocksRowsHTML('global', corRows, false);
+  document.getElementById('correctionPreview').innerHTML = corHeaderHTML() + previewHtml + (corValidated ? cleanBlocks : blocksRowsHTML('global', corRows, true));
+  updateProjectionWindow(rendered + cleanBlocks);
+  corRenderRowsControls();
   attachResizeObservers();
 }
 /* En-tête (titre de l'exercice, n° d'exercice, date) : rempli par le professeur dans le
@@ -3758,6 +3807,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.125', items:[
+    "Outil de correction -- reprend maintenant le même système de mise en page que le module Évaluation : lignes/colonnes personnalisables, glisser-déposer des blocs entre elles, bouton « Valider » qui masque la barre d'outils et les pointillés d'édition pour un écran plus lisible en cours. L'ajout au cahier et la fenêtre de projection conservent bien cette mise en page. Fix au passage : « Effacer le brouillon » ne vidait pas réellement les blocs insérés (variable orpheline depuis un ancien refactor) -- corrigé.",
+  ]},
   { version:'2026-08-04.124', items:[
     "Sac/urne -- fix du chevauchement : la dispersion aléatoire acceptait la « moins mauvaise » position même si elle touchait une autre boule, faute de mieux après 40 essais. Corrigé en réduisant le rayon jusqu'à obtenir un arrangement garanti sans aucun chevauchement -- vérifié numériquement (pas seulement visuellement) sur plusieurs cas, jusqu'à 35 boules.",
   ]},
@@ -5188,7 +5240,7 @@ async function addToCahier(){
     titre: document.getElementById('corTitre').value.trim(),
     date: document.getElementById('corDate').value || todayISO(),
     raw: raw,
-    figure: pendingBlocksHTML(false),
+    figure: blocksRowsHTML('global', corRows, false),
   };
   let oldServerId = null;
   if(editingIndex!==null){
@@ -5238,7 +5290,9 @@ function clearCorrectionInput(){
   document.getElementById('correctionInput').value='';
   document.getElementById('corExoNum').value='';
   document.getElementById('corTitre').value='';
-  pendingBlocks = [];
+  blocksStores['global'] = [];
+  corRows = [1];
+  if(corValidated) corToggleValidated();
   renderCorrectionPreview();
 }
 
