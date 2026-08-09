@@ -1223,6 +1223,9 @@ const TOOL_ICONS = {
   cubes: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2 L21 7 L21 17 L12 22 L3 17 L3 7 Z"/><path d="M12 2 L12 12 L21 7 M12 12 L3 7 M12 12 L12 22"/></svg>`,
   graph: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21 L3 3"/><path d="M3 21 L21 21"/><path d="M4 15 Q9 4 13 13 T21 6"/></svg>`,
   stats: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><rect x="5" y="13" width="4" height="8" fill="currentColor" stroke="none"/><rect x="11" y="8" width="4" height="13" fill="currentColor" stroke="none"/><rect x="17" y="3" width="4" height="18" fill="currentColor" stroke="none"/></svg>`,
+  urn: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4 L4 20 Q4 22 6 22 L18 22 Q20 22 20 20 L18 4"/><circle cx="9" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="14" cy="15" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="9" r="1.6" fill="currentColor" stroke="none"/></svg>`,
+  cards: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="4" width="11" height="16" rx="1.5"/><path d="M9.5 8 L11 11 L9.5 14 L8 11 Z" fill="currentColor" stroke="none"/></svg>`,
+  tree: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="4" cy="12" r="1.8" fill="currentColor" stroke="none"/><line x1="5.5" y1="12" x2="14" y2="6"/><line x1="5.5" y1="12" x2="14" y2="18"/><circle cx="15" cy="6" r="1.8" fill="currentColor" stroke="none"/><circle cx="15" cy="18" r="1.8" fill="currentColor" stroke="none"/><line x1="16.5" y1="6" x2="21" y2="4"/><line x1="16.5" y1="6" x2="21" y2="8"/><line x1="16.5" y1="18" x2="21" y2="16"/><line x1="16.5" y1="18" x2="21" y2="20"/></svg>`,
 };
 function toolButtonsHTML(ctx){
   const set = `setToolContext('${ctx}');`;
@@ -1236,6 +1239,9 @@ function toolButtonsHTML(ctx){
     <button type="button" class="tool-icon-btn" title="Cubes empilés" onclick="${set}openCubesTool()">${TOOL_ICONS.cubes}</button>
     <button type="button" class="tool-icon-btn" title="Graphique (droites / fonctions)" onclick="${set}openGraphTool()">${TOOL_ICONS.graph}</button>
     <button type="button" class="tool-icon-btn" title="Diagramme statistique" onclick="${set}openStatsTool()">${TOOL_ICONS.stats}</button>
+    <button type="button" class="tool-icon-btn" title="Sac / urne de boules" onclick="${set}openUrnTool()">${TOOL_ICONS.urn}</button>
+    <button type="button" class="tool-icon-btn" title="Cartes à jouer" onclick="${set}openCardsTool()">${TOOL_ICONS.cards}</button>
+    <button type="button" class="tool-icon-btn" title="Arbre de probabilité" onclick="${set}openTreeTool()">${TOOL_ICONS.tree}</button>
   `;
 }
 let figDragPoint = null;
@@ -1247,7 +1253,7 @@ const SCALE_PX_PER_CM = 20;
    modale elle-même -- appelé au début de chaque fonction d'ouverture d'outil, pour qu'un seul
    outil (ou groupe) soit jamais visible à la fois. */
 function hideAllToolContent(){
-  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','statsPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','statsPanel','urnPanel','cardsPanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -1262,7 +1268,7 @@ function activateToolTab(wrapId, activeTabId, inactiveTabId){
   if(inactiveTab) inactiveTab.classList.remove('active');
 }
 function closeAllToolPanels(){
-  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','statsPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','statsPanel','urnPanel','cardsPanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -1991,6 +1997,91 @@ function pieChartSvg(data){
    - « à la française » (useDensity=true) : c'est l'AIRE du rectangle qui vaut l'effectif,
      donc hauteur = effectif ÷ largeur de la classe (densité) -- la convention rigoureuse dès
      que les classes n'ont pas toutes la même largeur. */
+/* ---- Probabilités : sac/urne, cartes, arbre ---- */
+function urnSvg(data, shape){
+  const W=260,H=270,cx0=40,cy0=55,cw=180,ch=170;
+  const clipId = 'urnClip'+(graphSvgIdCounter++);
+  let balls = [];
+  data.forEach(d=>{ for(let i=0;i<(d.count||0);i++) balls.push(d.color); });
+  // Mélange déterministe (même rendu à chaque régénération), pour un aspect plus naturel qu'un
+  // simple regroupement par couleur.
+  balls = balls.map((c,i)=>({c,k:(i*2654435761)>>>0})).sort((a,b)=>(a.k%97)-(b.k%97)).map(o=>o.c);
+  const n = balls.length || 1;
+  const cols = Math.max(1, Math.round(Math.sqrt(n*cw/ch)));
+  const r = Math.min(cw/cols/2-2, 16);
+  let ballsHtml = '';
+  balls.forEach((color,i)=>{
+    const col = i%cols, row = Math.floor(i/cols);
+    const bcx = cx0 + (col+0.5)*(cw/cols);
+    const bcy = cy0+ch-8-row*(r*2+4)-r;
+    ballsHtml += `<circle cx="${bcx.toFixed(1)}" cy="${bcy.toFixed(1)}" r="${r.toFixed(1)}" fill="${color}" stroke="#1C1B2E" stroke-width="1.2"/>`;
+  });
+  const outline = shape==='sac'
+    ? `<path d="M${cx0+18},${cy0} Q${cx0-14},${cy0+ch*0.55} ${cx0+18},${cy0+ch} L${cx0+cw-18},${cy0+ch} Q${cx0+cw+14},${cy0+ch*0.55} ${cx0+cw-18},${cy0} Z" fill="none" stroke="#1C1B2E" stroke-width="2.2"/>
+       <path d="M${cx0+14},${cy0-4} Q${cx0+cw/2},${cy0-14} ${cx0+cw-14},${cy0-4}" fill="none" stroke="#1C1B2E" stroke-width="2.2"/>`
+    : `<path d="M${cx0},${cy0} L${cx0+12},${cy0+ch} Q${cx0+cw/2},${cy0+ch+16} ${cx0+cw-12},${cy0+ch} L${cx0+cw},${cy0} Z" fill="none" stroke="#1C1B2E" stroke-width="2.2"/>
+       <ellipse cx="${cx0+cw/2}" cy="${cy0}" rx="${cw/2}" ry="9" fill="none" stroke="#1C1B2E" stroke-width="2.2"/>`;
+  const legend = data.filter(d=>d.count>0).map(d=>`<span style="display:inline-flex;align-items:center;gap:5px;margin:2px 10px 2px 0;"><span style="width:11px;height:11px;border-radius:50%;background:${d.color};display:inline-block;flex:none;"></span><span style="font-size:.85rem;">${escapeHtml(d.label||'')} : ${d.count}</span></span>`).join('');
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:260px;display:block;margin:6px auto;">
+    <defs><clipPath id="${clipId}"><path d="${shape==='sac'?`M${cx0+16},${cy0-4} Q${cx0-16},${cy0+ch*0.55} ${cx0+16},${cy0+ch+2} L${cx0+cw-16},${cy0+ch+2} Q${cx0+cw+16},${cy0+ch*0.55} ${cx0+cw-16},${cy0-4} Z`:`M${cx0-2},${cy0} L${cx0+12},${cy0+ch} Q${cx0+cw/2},${cy0+ch+16} ${cx0+cw-12},${cy0+ch} L${cx0+cw+2},${cy0} Z`}"/></clipPath></defs>
+    <g clip-path="url(#${clipId})">${ballsHtml}</g>
+    ${outline}
+  </svg>
+  <div style="display:flex;flex-wrap:wrap;justify-content:center;margin-top:4px;">${legend}</div>`;
+}
+const SUIT_SYMBOLS = {pique:'♠',coeur:'♥',carreau:'♦',trefle:'♣'};
+const SUIT_COLORS = {pique:'#1C1B2E',coeur:'#D93025',carreau:'#D93025',trefle:'#1C1B2E'};
+function cardsSvg(cards){
+  if(!cards.length) return '<p class="hint">Sélectionne au moins une carte.</p>';
+  const cw=50,ch=70,gap=7;
+  const perRow = Math.min(cards.length, 8);
+  const rows = Math.ceil(cards.length/perRow);
+  const W = perRow*(cw+gap)-gap+16, H = rows*(ch+gap)-gap+16;
+  let html='';
+  cards.forEach((c,i)=>{
+    const col=i%perRow, row=Math.floor(i/perRow);
+    const x=8+col*(cw+gap), y=8+row*(ch+gap);
+    const color = SUIT_COLORS[c.suit], symbol = SUIT_SYMBOLS[c.suit];
+    html += `<rect x="${x}" y="${y}" width="${cw}" height="${ch}" rx="6" fill="#fff" stroke="#1C1B2E" stroke-width="1.4"/>
+      <text x="${x+6}" y="${y+18}" font-size="14" font-weight="700" fill="${color}" font-family="Space Grotesk, sans-serif">${c.rank}</text>
+      <text x="${x+6}" y="${y+34}" font-size="16" fill="${color}">${symbol}</text>
+      <text x="${x+cw-6}" y="${y+ch-8}" font-size="14" font-weight="700" fill="${color}" text-anchor="end" font-family="Space Grotesk, sans-serif" transform="rotate(180 ${x+cw-6} ${y+ch-8})">${c.rank}</text>`;
+  });
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;display:block;margin:6px auto;">${html}</svg>`;
+}
+/* Arbre de probabilité : calcule d'abord la position verticale de chaque noeud (les feuilles se
+   répartissent également, un noeud parent se centre sur ses enfants), puis relie chaque parent
+   à ses enfants par un trait, avec l'événement et sa probabilité comme étiquettes. */
+function treeLayout(node, yTop, yBottom){
+  if(!node.children || !node.children.length) return {node, y:(yTop+yBottom)/2, children:[]};
+  const n = node.children.length, slot=(yBottom-yTop)/n;
+  const kids = node.children.map((c,i)=>treeLayout(c, yTop+i*slot, yTop+(i+1)*slot));
+  return {node, y:kids.reduce((s,k)=>s+k.y,0)/kids.length, children:kids};
+}
+function treeSvg(root){
+  const maxDepth = (n,d)=>!n.children||!n.children.length ? d : Math.max(...n.children.map(c=>maxDepth(c,d+1)));
+  const depth = maxDepth(root,0) || 1;
+  const dx = 130, padL=70, padTB=24;
+  const nLeaves = (n)=>!n.children||!n.children.length?1:n.children.reduce((s,c)=>s+nLeaves(c),0);
+  const H = Math.max(nLeaves(root)*46, 80)+padTB*2;
+  const W = padL + depth*dx + 90;
+  const layout = treeLayout(root, padTB, H-padTB);
+  let lines='', labels='', nodes='';
+  function walk(l, x, isRoot){
+    nodes += `<circle cx="${x}" cy="${l.y.toFixed(1)}" r="4" fill="#1C1B2E"/>`;
+    if(isRoot && l.node.label) labels += `<text x="${x-6}" y="${(l.y-9).toFixed(1)}" font-size="12" text-anchor="end" font-family="Space Grotesk, sans-serif" font-weight="700">${escapeHtml(l.node.label)}</text>`;
+    l.children.forEach(child=>{
+      const x2 = x+dx;
+      lines += `<line x1="${x}" y1="${l.y.toFixed(1)}" x2="${x2}" y2="${child.y.toFixed(1)}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+      const midx=(x+x2)/2, midy=(l.y+child.y)/2;
+      if(child.node.proba) labels += `<text x="${midx.toFixed(1)}" y="${(midy-6).toFixed(1)}" font-size="12" text-anchor="middle" fill="#0D5BA3" font-family="JetBrains Mono, monospace">${escapeHtml(child.node.proba)}</text>`;
+      labels += `<text x="${(x2+6).toFixed(1)}" y="${(child.y-9).toFixed(1)}" font-size="12" text-anchor="start" font-family="Space Grotesk, sans-serif">${escapeHtml(child.node.label||'')}</text>`;
+      walk(child, x2, false);
+    });
+  }
+  walk(layout, padL, true);
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;display:block;margin:6px auto;">${lines}${nodes}${labels}</svg>`;
+}
 function histogramSvg(data, useDensity){
   const W=420,H=300,padL=45,padB=36,padT=14,padR=14;
   const plotW=W-padL-padR, plotH=H-padT-padB;
@@ -2551,6 +2642,206 @@ function reopenStats(data){
   statsData = JSON.parse(JSON.stringify(data.rows||[]));
   statsNextId = Math.max(1, ...statsData.map(r=>r.id+1));
   renderStatsRows();
+}
+
+/* ---- Outil Sac / urne de boules ---- */
+const URN_COLORS = [{name:'Rouge',hex:'#D93025'},{name:'Bleu',hex:'#0D5BA3'},{name:'Vert',hex:'#1F7A4D'},{name:'Jaune',hex:'#E8B93A'},{name:'Noir',hex:'#1C1B2E'},{name:'Orange',hex:'#E35D3A'},{name:'Violet',hex:'#7B3FA0'},{name:'Blanc',hex:'#F5F0E8'}];
+let urnData = [];
+let urnNextId = 1;
+function openUrnTool(){
+  hideAllToolContent();
+  document.getElementById('toolsModalOverlay').style.display='flex';
+  document.getElementById('urnPanel').style.display='block';
+  document.getElementById('urnShape').value = 'sac';
+  urnData = [
+    {id:urnNextId++, colorIdx:0, count:5},
+    {id:urnNextId++, colorIdx:1, count:3},
+  ];
+  renderUrnRows();
+  document.getElementById('urnPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeUrnTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('urnPanel').style.display='none'; }
+function addUrnRow(){
+  urnData.push({id:urnNextId++, colorIdx:urnData.length%URN_COLORS.length, count:1});
+  renderUrnRows();
+}
+function removeUrnRow(id){
+  urnData = urnData.filter(r=>r.id!==id);
+  renderUrnRows();
+}
+function updateUrnRow(id, field, value){
+  const r = urnData.find(r=>r.id===id);
+  if(r) r[field] = field==='count' ? (parseInt(value)||0) : parseInt(value);
+  previewUrn();
+}
+function renderUrnRows(){
+  const box = document.getElementById('urnRowsList');
+  box.innerHTML = urnData.map(r=>{
+    const options = URN_COLORS.map((c,i)=>`<option value="${i}" ${i===r.colorIdx?'selected':''}>${c.name}</option>`).join('');
+    return `<div class="tool-row" style="margin-bottom:6px;align-items:center;">
+      <select onchange="updateUrnRow(${r.id},'colorIdx',this.value)">${options}</select>
+      <label class="hint" style="margin:0;">nombre : <input type="number" value="${r.count}" min="0" oninput="updateUrnRow(${r.id},'count',this.value)" style="width:55px;"></label>
+      <button type="button" onclick="removeUrnRow(${r.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
+    </div>`;
+  }).join('');
+  previewUrn();
+}
+function urnDataForSvg(){
+  return urnData.map(r=>({color:URN_COLORS[r.colorIdx].hex, label:URN_COLORS[r.colorIdx].name, count:r.count}));
+}
+function previewUrn(){
+  document.getElementById('urnPreview').innerHTML = urnDataForSvg().some(d=>d.count>0) ? urnSvg(urnDataForSvg(), document.getElementById('urnShape').value) : '<p class="hint">Ajoute au moins une boule.</p>';
+}
+function insertUrn(){
+  if(!urnDataForSvg().some(d=>d.count>0)) return;
+  const shape = document.getElementById('urnShape').value;
+  addPendingBlock('urn', urnSvg(urnDataForSvg(), shape), {shape, rows:JSON.parse(JSON.stringify(urnData))}, 'reopenUrn');
+  closeUrnTool();
+}
+function reopenUrn(data){
+  openUrnTool();
+  document.getElementById('urnShape').value = data.shape||'sac';
+  urnData = JSON.parse(JSON.stringify(data.rows||[]));
+  urnNextId = Math.max(1, ...urnData.map(r=>r.id+1));
+  renderUrnRows();
+}
+
+/* ---- Outil Cartes à jouer ---- */
+const RANKS_32 = ['7','8','9','10','V','D','R','A'];
+const RANKS_52 = ['2','3','4','5','6','7','8','9','10','V','D','R','A'];
+const SUITS_ORDER = ['pique','coeur','carreau','trefle'];
+let cardsSelected = new Set();
+function openCardsTool(){
+  hideAllToolContent();
+  document.getElementById('toolsModalOverlay').style.display='flex';
+  document.getElementById('cardsPanel').style.display='block';
+  document.getElementById('cardsDeckType').value = '52';
+  cardsSelected = new Set();
+  renderCardsGrid();
+  document.getElementById('cardsPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeCardsTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('cardsPanel').style.display='none'; }
+function cardKey(rank,suit){ return rank+'-'+suit; }
+function toggleCard(rank,suit){
+  const k = cardKey(rank,suit);
+  if(cardsSelected.has(k)) cardsSelected.delete(k); else cardsSelected.add(k);
+  renderCardsGrid();
+}
+function setCardsPreset(preset){
+  const ranks = document.getElementById('cardsDeckType').value==='32' ? RANKS_32 : RANKS_52;
+  cardsSelected = new Set();
+  if(preset==='all'){ ranks.forEach(r=>SUITS_ORDER.forEach(s=>cardsSelected.add(cardKey(r,s)))); }
+  else if(preset==='aces'){ SUITS_ORDER.forEach(s=>cardsSelected.add(cardKey('A',s))); }
+  else if(preset==='figures'){ ['V','D','R'].forEach(r=>SUITS_ORDER.forEach(s=>cardsSelected.add(cardKey(r,s)))); }
+  renderCardsGrid();
+}
+function renderCardsGrid(){
+  const ranks = document.getElementById('cardsDeckType').value==='32' ? RANKS_32 : RANKS_52;
+  let html = '<table style="border-collapse:collapse;"><tr><td></td>' + ranks.map(r=>`<td style="text-align:center;font-size:.8rem;padding:2px 4px;">${r}</td>`).join('') + '</tr>';
+  SUITS_ORDER.forEach(s=>{
+    html += `<tr><td style="padding:2px 6px;font-size:1.1rem;color:${SUIT_COLORS[s]};">${SUIT_SYMBOLS[s]}</td>`;
+    ranks.forEach(r=>{
+      const on = cardsSelected.has(cardKey(r,s));
+      html += `<td style="padding:1px;"><button type="button" onclick="toggleCard('${r}','${s}')" style="width:26px;height:26px;border-radius:5px;border:1px solid rgba(28,43,57,.25);background:${on?'#0D5BA3':'#fff'};color:${on?'#fff':'#333'};cursor:pointer;font-size:.75rem;">${on?'✓':''}</button></td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</table>';
+  document.getElementById('cardsGrid').innerHTML = html;
+  previewCards();
+}
+function selectedCardsArr(){
+  return [...cardsSelected].map(k=>{ const [rank,suit]=k.split('-'); return {rank,suit}; });
+}
+function previewCards(){
+  document.getElementById('cardsPreview').innerHTML = cardsSelected.size ? cardsSvg(selectedCardsArr()) : '';
+}
+function insertCards(){
+  if(!cardsSelected.size) return;
+  addPendingBlock('cards', cardsSvg(selectedCardsArr()), {selected:[...cardsSelected], deck:document.getElementById('cardsDeckType').value}, 'reopenCards');
+  closeCardsTool();
+}
+function reopenCards(data){
+  openCardsTool();
+  document.getElementById('cardsDeckType').value = data.deck||'52';
+  cardsSelected = new Set(data.selected||[]);
+  renderCardsGrid();
+}
+
+/* ---- Outil Arbre de probabilité ---- */
+let treeRoot = null;
+function openTreeTool(){
+  hideAllToolContent();
+  document.getElementById('toolsModalOverlay').style.display='flex';
+  document.getElementById('treePanel').style.display='block';
+  treeRoot = {label:'', children:[]};
+  renderTreeEditor();
+  document.getElementById('treePanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeTreeTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('treePanel').style.display='none'; }
+function treeGetNode(path){
+  let n = treeRoot;
+  for(const i of path) n = n.children[i];
+  return n;
+}
+function treeAddBranch(pathStr){
+  const path = pathStr==='' ? [] : pathStr.split('|').map(Number);
+  const n = treeGetNode(path);
+  if(!n.children) n.children = [];
+  n.children.push({label:'', proba:'', children:[]});
+  renderTreeEditor();
+}
+function treeRemoveBranch(parentPathStr, idx){
+  const parentPath = parentPathStr==='' ? [] : parentPathStr.split('|').map(Number);
+  const parent = treeGetNode(parentPath);
+  parent.children.splice(idx,1);
+  renderTreeEditor();
+}
+function treeUpdateNode(pathStr, field, value){
+  const path = pathStr.split('|').map(Number);
+  treeGetNode(path)[field] = value;
+  previewTree();
+}
+/* Éditeur texte du parcours de l'arbre (une ligne par nœud, indentée selon la profondeur) --
+   plus simple à manipuler qu'un rendu graphique interactif complexe, tout en autorisant une
+   construction branche par branche, à n'importe quelle profondeur. */
+function renderTreeEditor(){
+  let html = '';
+  function walk(node, path, depth){
+    const pathStr = path.join('|');
+    const indent = depth*22;
+    if(depth>0){
+      html += `<div class="tool-row" style="margin:4px 0;margin-left:${indent}px;align-items:center;">
+        <span class="hint" style="margin:0;">↳</span>
+        <input type="text" value="${escapeHtml(node.label)}" placeholder="événement" oninput="treeUpdateNode('${pathStr}','label',this.value)" style="width:100px;">
+        <input type="text" value="${escapeHtml(node.proba)}" placeholder="proba (ex. 2/5)" oninput="treeUpdateNode('${pathStr}','proba',this.value)" style="width:90px;">
+        <button type="button" onclick="treeAddBranch('${pathStr}')" style="border:none;background:rgba(28,43,57,.08);border-radius:6px;padding:3px 8px;cursor:pointer;">+ branche</button>
+        <button type="button" onclick="treeRemoveBranch('${path.slice(0,-1).join('|')}',${path[path.length-1]})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
+      </div>`;
+    } else {
+      html += `<div class="tool-row" style="margin:4px 0;align-items:center;">
+        <span class="hint" style="margin:0;">Départ :</span>
+        <button type="button" onclick="treeAddBranch('')" style="border:none;background:rgba(28,43,57,.08);border-radius:6px;padding:3px 8px;cursor:pointer;">+ branche</button>
+      </div>`;
+    }
+    (node.children||[]).forEach((c,i)=>walk(c, [...path,i], depth+1));
+  }
+  walk(treeRoot, [], 0);
+  document.getElementById('treeCanvas').innerHTML = html;
+  previewTree();
+}
+function previewTree(){
+  document.getElementById('treePreview').innerHTML = (treeRoot.children&&treeRoot.children.length) ? treeSvg(treeRoot) : '<p class="hint">Ajoute au moins une branche.</p>';
+}
+function insertTree(){
+  if(!treeRoot.children || !treeRoot.children.length) return;
+  addPendingBlock('tree', treeSvg(treeRoot), {root:JSON.parse(JSON.stringify(treeRoot))}, 'reopenTree');
+  closeTreeTool();
+}
+function reopenTree(data){
+  openTreeTool();
+  treeRoot = JSON.parse(JSON.stringify(data.root||{label:'',children:[]}));
+  renderTreeEditor();
 }
 
 function resetFigureState(){
@@ -3274,6 +3565,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.114', items:[
+    "Trois nouveaux outils pour les probabilités : « Sac / urne de boules » (couleurs et effectifs personnalisables, boules mélangées visuellement) ; « Cartes à jouer » (sélection libre dans un jeu de 32 ou 52 cartes, avec des raccourcis Tout/Aucune/Les as/Les figures) ; « Arbre de probabilité » construit branche par branche (clic sur + pour ajouter un événement et sa probabilité à n'importe quel nœud, imbrication libre). Disponibles dans l'outil de correction et les exercices d'évaluation, comme les autres figures.",
+  ]},
   { version:'2026-08-04.113', items:[
     "Histogramme -- fix statistique important : la largeur des barres respecte maintenant la largeur réelle de chaque classe (axe numérique gradué aux bornes), au lieu d'une largeur uniforme. Deux conventions disponibles : « hauteur = effectif » (à l'américaine) ou « aire = effectif » via une case à cocher « densité », la convention rigoureuse dès que les classes n'ont pas toutes la même largeur (à la française).",
   ]},

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-<link rel="stylesheet" href="styles.css?v=20260804-113">
+<link rel="stylesheet" href="styles.css?v=20260804-114">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -19,7 +19,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.113</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.114</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -433,6 +433,56 @@
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="insertStats()">Insérer le diagramme</button>
         <button type="button" class="btn secondary" onclick="closeStatsTool()">Fermer sans insérer</button>
+      </div>
+    </div>
+    <div id="urnPanel" class="figure-wrap" style="display:none;">
+      <p class="hint" style="margin:0 0 10px;">Sac ou urne contenant des boules de différentes couleurs.</p>
+      <div class="tool-row" style="margin-bottom:10px;">
+        <label class="hint" style="margin:0;">Forme :
+          <select id="urnShape" onchange="previewUrn()">
+            <option value="sac">Sac</option>
+            <option value="urne">Urne</option>
+          </select>
+        </label>
+      </div>
+      <div id="urnRowsList"></div>
+      <div class="tool-row" style="margin-bottom:10px;">
+        <button type="button" class="btn secondary" onclick="addUrnRow()">+ Ajouter une couleur</button>
+      </div>
+      <div id="urnPreview"></div>
+      <div class="figure-toolbar" style="margin-top:10px;">
+        <button type="button" class="btn" onclick="insertUrn()">Insérer</button>
+        <button type="button" class="btn secondary" onclick="closeUrnTool()">Fermer sans insérer</button>
+      </div>
+    </div>
+    <div id="cardsPanel" class="figure-wrap" style="display:none;">
+      <p class="hint" style="margin:0 0 10px;">Sélectionne les cartes à afficher (jeu de 32 ou 52 cartes).</p>
+      <div class="tool-row" style="margin-bottom:10px;">
+        <label class="hint" style="margin:0;">Jeu :
+          <select id="cardsDeckType" onchange="renderCardsGrid()">
+            <option value="52">52 cartes</option>
+            <option value="32">32 cartes</option>
+          </select>
+        </label>
+        <button type="button" class="btn secondary" onclick="setCardsPreset('all')">Tout le jeu</button>
+        <button type="button" class="btn secondary" onclick="setCardsPreset('none')">Aucune</button>
+        <button type="button" class="btn secondary" onclick="setCardsPreset('aces')">Les as</button>
+        <button type="button" class="btn secondary" onclick="setCardsPreset('figures')">Les figures</button>
+      </div>
+      <div id="cardsGrid" style="overflow-x:auto;"></div>
+      <div id="cardsPreview" style="margin-top:10px;"></div>
+      <div class="figure-toolbar" style="margin-top:10px;">
+        <button type="button" class="btn" onclick="insertCards()">Insérer</button>
+        <button type="button" class="btn secondary" onclick="closeCardsTool()">Fermer sans insérer</button>
+      </div>
+    </div>
+    <div id="treePanel" class="figure-wrap" style="display:none;">
+      <p class="hint" style="margin:0 0 10px;">Arbre de probabilité : clique sur « + » à côté d'un nœud pour lui ajouter une branche (événement + probabilité), branche par branche.</p>
+      <div id="treeCanvas" style="border:1px solid rgba(28,43,57,.15);border-radius:8px;padding:10px;overflow-x:auto;"></div>
+      <div id="treePreview" style="margin-top:10px;"></div>
+      <div class="figure-toolbar" style="margin-top:10px;">
+        <button type="button" class="btn" onclick="insertTree()">Insérer l'arbre</button>
+        <button type="button" class="btn secondary" onclick="closeTreeTool()">Fermer sans insérer</button>
       </div>
     </div>
     <div id="figurePanel" class="figure-wrap" style="display:none;">
@@ -956,6 +1006,9 @@
       <button type="button" class="tool-icon-btn" title="Cubes empilés" onclick="setToolContext('global');openCubesTool()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2 L21 7 L21 17 L12 22 L3 17 L3 7 Z"/><path d="M12 2 L12 12 L21 7 M12 12 L3 7 M12 12 L12 22"/></svg></button>
       <button type="button" class="tool-icon-btn" title="Graphique (droites / fonctions)" onclick="setToolContext('global');openGraphTool()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21 L3 3"/><path d="M3 21 L21 21"/><path d="M4 15 Q9 4 13 13 T21 6"/></svg></button>
       <button type="button" class="tool-icon-btn" title="Diagramme statistique (camembert / barres / bâtons / histogramme)" onclick="setToolContext('global');openStatsTool()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><rect x="5" y="13" width="4" height="8" fill="currentColor" stroke="none"/><rect x="11" y="8" width="4" height="13" fill="currentColor" stroke="none"/><rect x="17" y="3" width="4" height="18" fill="currentColor" stroke="none"/></svg></button>
+      <button type="button" class="tool-icon-btn" title="Sac / urne de boules" onclick="setToolContext('global');openUrnTool()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4 L4 20 Q4 22 6 22 L18 22 Q20 22 20 20 L18 4"/><circle cx="9" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="14" cy="15" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="9" r="1.6" fill="currentColor" stroke="none"/></svg></button>
+      <button type="button" class="tool-icon-btn" title="Cartes à jouer" onclick="setToolContext('global');openCardsTool()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="4" width="11" height="16" rx="1.5"/><path d="M9.5 8 L11 11 L9.5 14 L8 11 Z" fill="currentColor" stroke="none"/></svg></button>
+      <button type="button" class="tool-icon-btn" title="Arbre de probabilité" onclick="setToolContext('global');openTreeTool()"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="4" cy="12" r="1.8" fill="currentColor" stroke="none"/><line x1="5.5" y1="12" x2="14" y2="6"/><line x1="5.5" y1="12" x2="14" y2="18"/><circle cx="15" cy="6" r="1.8" fill="currentColor" stroke="none"/><circle cx="15" cy="18" r="1.8" fill="currentColor" stroke="none"/><line x1="16.5" y1="6" x2="21" y2="4"/><line x1="16.5" y1="6" x2="21" y2="8"/><line x1="16.5" y1="18" x2="21" y2="16"/><line x1="16.5" y1="18" x2="21" y2="20"/></svg></button>
       <span class="hint" id="figureStatus" style="margin:0;"></span>
     </div>
 
@@ -1200,28 +1253,28 @@ mmartin	Motdepasse2"></textarea>
 
 <footer>Une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a> · L'Atelier des Maths · Programme B.O. 2026</footer>
 
-<script defer src="app.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-113"></script>
-<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260804-113"></script>
-<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-113"></script>
-<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-113"></script>
-<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-113"></script>
-<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-113"></script>
-<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-113"></script>
-<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/N4-fractions.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/N1-divisibilite.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/N6-equations.js?v=20260804-113"></script>
-<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-113"></script>
-<script defer src="calcul-mental/calcul-mental.js?v=20260804-113"></script>
-<script defer src="compte-est-bon.js?v=20260804-113"></script>
+<script defer src="app.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-114"></script>
+<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260804-114"></script>
+<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-114"></script>
+<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-114"></script>
+<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-114"></script>
+<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-114"></script>
+<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-114"></script>
+<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/N4-fractions.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/N1-divisibilite.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/N6-equations.js?v=20260804-114"></script>
+<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-114"></script>
+<script defer src="calcul-mental/calcul-mental.js?v=20260804-114"></script>
+<script defer src="compte-est-bon.js?v=20260804-114"></script>
 </body>
 </html>
