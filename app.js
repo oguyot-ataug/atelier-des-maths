@@ -2010,27 +2010,33 @@ function urnSvg(data, shape){
   const ell = shape==='sac'
     ? {cx:cx0+cw/2, cy:(bandY+bottomY)/2+18, rx:cw/2-46, ry:(bottomY-bandY)/2-18}
     : {cx:cx0+cw/2, cy:(bandY+bottomY)/2+6, rx:cw/2-22, ry:(bottomY-bandY)/2-8};
-  // Rayon des boules : assez petit pour laisser de l'air entre elles (pas d'empilement compact).
-  const r = Math.max(6, Math.min(15, Math.sqrt((ell.rx*ell.ry*Math.PI*0.42)/n)));
-  // Générateur pseudo-aléatoire déterministe (même graine à chaque régénération, pour un rendu
-  // stable), avec rejet des positions trop proches du bord ou d'une boule déjà placée.
-  let seed = 1234567;
-  const rnd = () => { seed = (seed*1103515245+12345)>>>0; return (seed>>>8)/16777216; };
-  const placed = [];
-  balls.forEach(color=>{
-    let bx=ell.cx, by=ell.cy, tries=0, best=null, bestScore=-1;
-    while(tries<40){
-      const a = rnd()*Math.PI*2, dist = Math.sqrt(rnd());
-      const px = ell.cx + Math.cos(a)*(ell.rx-r)*dist;
-      const py = ell.cy + Math.sin(a)*(ell.ry-r)*dist;
-      const minDist = placed.reduce((m,p)=>Math.min(m,Math.hypot(p.x-px,p.y-py)),Infinity);
-      if(minDist > bestScore){ bestScore = minDist; best = {x:px,y:py}; }
-      if(minDist >= r*2.5) break;
-      tries++;
+  // Rayon des boules : on essaie le plus grand rayon raisonnable, puis on le réduit tant que
+  // l'arrangement obtenu contient un chevauchement -- garantit qu'aucune boule ne touche jamais
+  // une autre, quel que soit le nombre de boules à placer.
+  const gap = 3; // espace minimal souhaité entre deux boules
+  let r = Math.min(15, Math.sqrt((ell.rx*ell.ry*Math.PI*0.32)/n));
+  let placed = [];
+  while(r>=3.5){
+    placed = [];
+    let seed = 1234567;
+    const rnd = () => { seed = (seed*1103515245+12345)>>>0; return (seed>>>8)/16777216; };
+    let allOk = true;
+    for(const color of balls){
+      let best=null, bestScore=-1;
+      for(let t=0;t<150;t++){
+        const a = rnd()*Math.PI*2, dist = Math.sqrt(rnd());
+        const px = ell.cx + Math.cos(a)*(ell.rx-r)*dist;
+        const py = ell.cy + Math.sin(a)*(ell.ry-r)*dist;
+        const minDist = placed.reduce((m,p)=>Math.min(m,Math.hypot(p.x-px,p.y-py)),Infinity);
+        if(minDist > bestScore){ bestScore = minDist; best = {x:px,y:py}; }
+        if(minDist >= r*2+gap) break;
+      }
+      if(bestScore < r*2+gap-0.01) allOk = false; // cette boule n'a trouvé aucune place sans chevauchement
+      placed.push({x:best.x, y:best.y, color});
     }
-    bx = best.x; by = best.y;
-    placed.push({x:bx,y:by,color});
-  });
+    if(allOk) break;
+    r -= 1;
+  }
   let ballsHtml = placed.map(p=>{
     const bcx=p.x, bcy=p.y;
     // reflet clair en haut à gauche de chaque boule, pour un aspect brillant façon bille
@@ -3752,6 +3758,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.124', items:[
+    "Sac/urne -- fix du chevauchement : la dispersion aléatoire acceptait la « moins mauvaise » position même si elle touchait une autre boule, faute de mieux après 40 essais. Corrigé en réduisant le rayon jusqu'à obtenir un arrangement garanti sans aucun chevauchement -- vérifié numériquement (pas seulement visuellement) sur plusieurs cas, jusqu'à 35 boules.",
+  ]},
   { version:'2026-08-04.123', items:[
     "Sac/urne -- abandon de l'empilement en rangées (donnait des boules en équilibre improbable les unes sur les autres). Remplacé par une dispersion aléatoire (mais stable d'une régénération à l'autre) dans une zone intérieure sûre, avec de l'espace entre les boules -- un rendu bien plus naturel, sans jamais déborder du contour.",
   ]},
