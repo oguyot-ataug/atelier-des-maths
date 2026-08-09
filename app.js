@@ -2058,24 +2058,41 @@ function treeLayout(node, yTop, yBottom){
   const kids = node.children.map((c,i)=>treeLayout(c, yTop+i*slot, yTop+(i+1)*slot));
   return {node, y:kids.reduce((s,k)=>s+k.y,0)/kids.length, children:kids};
 }
+/* Insère du texte "riche" (LaTeX entre $...$, ou texte simple) dans le SVG via foreignObject --
+   nécessaire pour écrire correctement des notations comme $\overline{A}$ ou $P(B \mid A)$,
+   impossible avec un simple <text> SVG. */
+function svgRichText(x, y, text, opts){
+  opts = opts||{};
+  const w = opts.width||100, h = opts.height||22;
+  let ox = x;
+  const align = opts.anchor==='end' ? 'right' : opts.anchor==='middle' ? 'center' : 'left';
+  if(opts.anchor==='middle') ox = x-w/2; else if(opts.anchor==='end') ox = x-w;
+  return `<foreignObject x="${ox.toFixed(1)}" y="${(y-h+5).toFixed(1)}" width="${w}" height="${h}" style="overflow:visible;">
+    <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:12px;text-align:${align};color:${opts.color||'#1C1B2E'};font-weight:${opts.bold?700:400};font-family:'Space Grotesk',sans-serif;white-space:nowrap;line-height:1.3;">${renderMathText(text||'')}</div>
+  </foreignObject>`;
+}
 function treeSvg(root){
   const maxDepth = (n,d)=>!n.children||!n.children.length ? d : Math.max(...n.children.map(c=>maxDepth(c,d+1)));
   const depth = maxDepth(root,0) || 1;
-  const dx = 130, padL=70, padTB=24;
+  const dx = 140, padL=70, padTB=24;
   const nLeaves = (n)=>!n.children||!n.children.length?1:n.children.reduce((s,c)=>s+nLeaves(c),0);
-  const H = Math.max(nLeaves(root)*46, 80)+padTB*2;
-  const W = padL + depth*dx + 90;
+  const H = Math.max(nLeaves(root)*50, 80)+padTB*2;
+  const W = padL + depth*dx + 140;
   const layout = treeLayout(root, padTB, H-padTB);
   let lines='', labels='', nodes='';
   function walk(l, x, isRoot){
     nodes += `<circle cx="${x}" cy="${l.y.toFixed(1)}" r="4" fill="#1C1B2E"/>`;
-    if(isRoot && l.node.label) labels += `<text x="${x-6}" y="${(l.y-9).toFixed(1)}" font-size="12" text-anchor="end" font-family="Space Grotesk, sans-serif" font-weight="700">${escapeHtml(l.node.label)}</text>`;
+    if(isRoot && l.node.label) labels += svgRichText(x-8, l.y-9, l.node.label, {anchor:'end', bold:true});
+    const isLeaf = !l.children.length;
+    if(isLeaf && !isRoot && l.node.note) labels += svgRichText(x+16, l.y+5, l.node.note, {anchor:'start', width:120, color:'#1F7A4D'});
     l.children.forEach(child=>{
       const x2 = x+dx;
       lines += `<line x1="${x}" y1="${l.y.toFixed(1)}" x2="${x2}" y2="${child.y.toFixed(1)}" stroke="#1C1B2E" stroke-width="1.6"/>`;
       const midx=(x+x2)/2, midy=(l.y+child.y)/2;
-      if(child.node.proba) labels += `<text x="${midx.toFixed(1)}" y="${(midy-6).toFixed(1)}" font-size="12" text-anchor="middle" fill="#0D5BA3" font-family="JetBrains Mono, monospace">${escapeHtml(child.node.proba)}</text>`;
-      labels += `<text x="${(x2+6).toFixed(1)}" y="${(child.y-9).toFixed(1)}" font-size="12" text-anchor="start" font-family="Space Grotesk, sans-serif">${escapeHtml(child.node.label||'')}</text>`;
+      const goingUp = child.y < l.y - 1;
+      const probaY = goingUp ? midy-6 : midy+20;
+      if(child.node.proba) labels += svgRichText(midx, probaY, child.node.proba, {anchor:'middle', width:80, color:'#0D5BA3'});
+      labels += svgRichText(x2+8, child.y-9, child.node.label||'', {anchor:'start', width:100, bold:true});
       walk(child, x2, false);
     });
   }
@@ -2810,11 +2827,14 @@ function renderTreeEditor(){
   function walk(node, path, depth){
     const pathStr = path.join('|');
     const indent = depth*22;
+    const isLeaf = !(node.children && node.children.length);
     if(depth>0){
+      const noteField = isLeaf ? `<input type="text" value="${escapeHtml(node.note||'')}" placeholder="note (résultat, calcul...)" oninput="treeUpdateNode('${pathStr}','note',this.value)" style="width:130px;">` : '';
       html += `<div class="tool-row" style="margin:4px 0;margin-left:${indent}px;align-items:center;">
         <span class="hint" style="margin:0;">↳</span>
         <input type="text" value="${escapeHtml(node.label)}" placeholder="événement" oninput="treeUpdateNode('${pathStr}','label',this.value)" style="width:100px;">
         <input type="text" value="${escapeHtml(node.proba)}" placeholder="proba (ex. 2/5)" oninput="treeUpdateNode('${pathStr}','proba',this.value)" style="width:90px;">
+        ${noteField}
         <button type="button" onclick="treeAddBranch('${pathStr}')" style="border:none;background:rgba(28,43,57,.08);border-radius:6px;padding:3px 8px;cursor:pointer;">+ branche</button>
         <button type="button" onclick="treeRemoveBranch('${path.slice(0,-1).join('|')}',${path[path.length-1]})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
       </div>`;
@@ -2827,6 +2847,7 @@ function renderTreeEditor(){
     (node.children||[]).forEach((c,i)=>walk(c, [...path,i], depth+1));
   }
   walk(treeRoot, [], 0);
+  html += `<p class="hint" style="margin:8px 0 0;">Astuce : événement, probabilité et note acceptent du LaTeX entre <code>$...$</code> -- ex. <code>$\\overline{A}$</code> pour A barre, <code>$P(B \\mid A)$</code> pour une probabilité conditionnelle, <code>$P(A \\cap B)$</code> pour une intersection.</p>`;
   document.getElementById('treeCanvas').innerHTML = html;
   previewTree();
 }
@@ -3565,6 +3586,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.115', items:[
+    "Arbre de probabilité -- événement, probabilité et note s'écrivent maintenant en vrai LaTeX (comme partout ailleurs sur le site, entre $...$ pour du LaTeX complexe, ou en texte simple). La probabilité se positionne au-dessus de la branche si elle monte, en dessous si elle descend. Nouveau champ « note » pour les feuilles (résultat, calcul final...).",
+  ]},
   { version:'2026-08-04.114', items:[
     "Trois nouveaux outils pour les probabilités : « Sac / urne de boules » (couleurs et effectifs personnalisables, boules mélangées visuellement) ; « Cartes à jouer » (sélection libre dans un jeu de 32 ou 52 cartes, avec des raccourcis Tout/Aucune/Les as/Les figures) ; « Arbre de probabilité » construit branche par branche (clic sur + pour ajouter un événement et sa probabilité à n'importe quel nœud, imbrication libre). Disponibles dans l'outil de correction et les exercices d'évaluation, comme les autres figures.",
   ]},
