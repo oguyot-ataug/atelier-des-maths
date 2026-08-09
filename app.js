@@ -3586,7 +3586,33 @@ function fmtDateFR(iso){
    sécurité est appliquée côté serveur (Supabase Row Level Security), pas seulement ici. */
 const SUPABASE_URL = 'https://rngzubhnypmistjsumpz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZ3p1YmhueXBtaXN0anN1bXB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MTExNjEsImV4cCI6MjEwMDM4NzE2MX0.V56LFlb1ITWPmoO-DwLw3coeS7epY9NM5K2Waj03pac';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* Bouchon utilisé si la bibliothèque Supabase n'a pas pu charger (coupure réseau, CDN
+   bloqué...) : toute méthode chaînée (from().select().eq()...) renvoie ce même bouchon, et
+   l'attendre (await) donne une erreur explicite plutôt que de planter -- sans ce filet, une
+   simple coupure réseau ponctuelle empêchait TOUT le reste du site de s'initialiser (page
+   d'accueil vide, menu qui ne répondait plus), un script arrêté en cours de route ne continuant
+   jamais jusqu'aux lignes suivantes. */
+function makeOfflineSupabaseStub(){
+  const resolveVal = {data:null, error:{message:"Connexion au service indisponible (réseau)."}};
+  const stub = new Proxy(function(){}, {
+    get(target, prop){
+      if(prop==='then') return (resolve)=>resolve(resolveVal);
+      if(prop==='catch' || prop==='finally') return ()=>stub;
+      return stub; // renvoie le proxy lui-même (pas une nouvelle fonction isolée), pour un
+                   // chaînage illimité quelle que soit la combinaison d'accès/appels
+                   // (sb.auth.onAuthStateChange(...), sb.from(...).select(...).eq(...)...).
+    },
+    apply(){ return stub; },
+  });
+  return stub;
+}
+let sb;
+try{
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}catch(e){
+  console.error("Supabase n'a pas pu s'initialiser (probablement un problème réseau) -- le site continue de fonctionner en mode dégradé (chapitres et outils accessibles, comptes/sauvegarde indisponibles) :", e);
+  sb = makeOfflineSupabaseStub();
+}
 
 let currentUser = null;
 let isStaffGlobal = false;
@@ -3704,6 +3730,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.118', items:[
+    "Fix important -- si Supabase ne parvenait pas à charger (coupure réseau, CDN bloqué côté établissement...), tout le reste du script s'arrêtait net, y compris l'affichage des chapitres et le menu, qui devenaient inutilisables. Ajout d'un filet de sécurité : dans ce cas, le site continue de fonctionner en mode dégradé (chapitres, menu et outils accessibles normalement), seules les fonctionnalités liées aux comptes (connexion, sauvegarde, partage) restent indisponibles le temps que la connexion revienne.",
+  ]},
   { version:'2026-08-04.117', items:[
     "Sac/urne redessiné pour se rapprocher d'un vrai dessin illustré (haut ondulé façon tissu resserré, bande nouée marron, bas arrondi, boules avec reflet brillant). Les 4 outils de probabilités (Sac/urne, Cartes, Dés, Arbre) sont désormais regroupés sous une seule icône à onglets, comme pour Division ou Fraction visuelle. Nouvel outil Dés : un ou plusieurs dés, nombre de faces au choix (d4 à d20), valeur affichée et couleur personnalisables -- pastilles classiques pour un d6, nombre affiché pour les autres.",
   ]},
