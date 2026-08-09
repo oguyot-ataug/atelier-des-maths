@@ -2007,8 +2007,8 @@ function urnSvg(data, shape){
   // marge nettement plus généreuse pour le sac (silhouette très arrondie) que pour l'urne
   // (côtés plus droits), pour qu'aucune boule ne soit jamais coupée par le tracé.
   const safe = shape==='sac'
-    ? {x0:cx0+50, x1:cx0+cw-50, y0:bandY+58, y1:bottomY-40}
-    : {x0:cx0+24, x1:cx0+cw-24, y0:bandY+14, y1:bottomY-16};
+    ? {x0:cx0+38, x1:cx0+cw-38, y0:bandY+58, y1:bottomY+6}
+    : {x0:cx0+24, x1:cx0+cw-24, y0:bandY+14, y1:bottomY};
   const safeW = safe.x1-safe.x0, safeH = safe.y1-safe.y0;
   // Rayon des boules : le plus grand qui permette à toutes de tenir dans la zone de sécurité,
   // rangées tassées (facteur 0.87, empilement compact façon boules qui se touchent).
@@ -3748,6 +3748,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.121', items:[
+    "Sac/urne -- les boules flottaient encore, marge basse trop prudente. Cause précise : le contour du sac plonge légèrement plus bas que sa référence verticale au centre, ce qui faussait le calcul. Corrigé et revérifié avec plusieurs cas (2 boules, jeu de référence, 22 boules) : le fond est maintenant vraiment touché, sans aucune découpe.",
+  ]},
   { version:'2026-08-04.120', items:[
     "Sac/urne -- fix du calage des boules : certaines étaient coupées par le contour incurvé (grille ne tenant pas compte du rétrécissement du sac). Recalculé avec une zone de sécurité bien à l'intérieur du tracé : les boules sont désormais toujours entières, se touchent (empilement tassé), et reposent au fond du récipient au lieu de flotter au milieu.",
   ]},
