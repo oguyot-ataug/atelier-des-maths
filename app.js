@@ -2448,17 +2448,39 @@ function updateStatsRow(id, field, value){
 }
 function renderStatsRows(){
   const isHisto = document.getElementById('statsType').value==='histogramme';
+  if(isHisto && statsData.some(r=>r.classMin==null)){
+    // Premier passage en histogramme : propose des classes contiguës par défaut (largeur 10),
+    // que le professeur peut ensuite ajuster librement (tailles, poids, âges...).
+    let start = 0;
+    statsData.forEach(r=>{
+      if(r.classMin==null){ r.classMin = start; r.classMax = start+10; r.label = `[${r.classMin};${r.classMax}[`; }
+      start = r.classMax;
+    });
+  }
   const box = document.getElementById('statsRowsList');
   box.innerHTML = statsData.map((r,i)=>{
     const color = GRAPH_COLORS[i%GRAPH_COLORS.length];
     const swatch = `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${color};margin-right:6px;"></span>`;
+    const labelField = isHisto
+      ? `<label class="hint" style="margin:0;">de <input type="number" value="${r.classMin??''}" placeholder="ex. 150" oninput="updateStatsClass(${r.id},'classMin',this.value)" style="width:60px;"> à <input type="number" value="${r.classMax??''}" placeholder="ex. 160" oninput="updateStatsClass(${r.id},'classMax',this.value)" style="width:60px;"> (tailles, poids, âges...)</label>`
+      : `<input type="text" value="${escapeHtml(r.label)}" placeholder="catégorie" oninput="updateStatsRow(${r.id},'label',this.value)" style="width:110px;">`;
     return `<div class="tool-row" style="margin-bottom:6px;align-items:center;">
       ${swatch}
-      <input type="text" value="${escapeHtml(r.label)}" placeholder="${isHisto?'ex. [0;10[':'catégorie'}" oninput="updateStatsRow(${r.id},'label',this.value)" style="width:110px;">
+      ${labelField}
       <label class="hint" style="margin:0;">effectif : <input type="number" value="${r.value}" min="0" oninput="updateStatsRow(${r.id},'value',this.value)" style="width:60px;"></label>
       <button type="button" onclick="removeStatsRow(${r.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
     </div>`;
   }).join('');
+  previewStats();
+}
+/* Met à jour une borne de classe (histogramme) et régénère automatiquement le libellé affiché
+   (ex. "[150;160[") -- évite d'avoir à ressaisir l'intervalle à la main, et garantit une
+   écriture cohérente d'une classe à l'autre. */
+function updateStatsClass(id, field, value){
+  const r = statsData.find(r=>r.id===id);
+  if(!r) return;
+  r[field] = value===''? null : parseFloat(value);
+  r.label = (r.classMin!=null && r.classMax!=null) ? `[${frDecimal(r.classMin)};${frDecimal(r.classMax)}[` : '';
   previewStats();
 }
 function buildStatsSvg(){
@@ -3203,6 +3225,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.112', items:[
+    "Histogramme -- les classes se saisissent maintenant avec deux champs numériques (« de... à... »), adaptés aux données chiffrées comme les tailles, poids ou âges, plutôt qu'un texte libre à formater à la main. Le libellé (ex. « [150;160[ ») se génère automatiquement, et les classes s'enchaînent proprement quand on en ajoute une nouvelle.",
+  ]},
   { version:'2026-08-04.111', items:[
     "Nouvel outil « Diagramme statistique » : camembert (avec pourcentages et légende), diagramme en barres, diagramme en bâtons, et histogramme (barres jointives, pour des classes/intervalles) -- à partir d'une simple liste de catégories et de leurs effectifs. Graduations Y choisies automatiquement (pas rond, ex. tous les 2 ou tous les 5). Disponible dans l'outil de correction et les exercices d'évaluation, comme les autres figures.",
   ]},
