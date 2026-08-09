@@ -1940,8 +1940,9 @@ function evalFunctionExpr(expr, x){
 }
 const GRAPH_COLORS = ['#0D5BA3','#D93025','#1F7A4D','#B26A00','#7B3FA0','#1C8C9C'];
 let graphSvgIdCounter = 1;
-function graphSvg(xMin,xMax,yMin,yMax,curves,xUnitPi,labelStep){
-  labelStep = labelStep && labelStep>=1 ? Math.round(labelStep) : 1;
+function graphSvg(xMin,xMax,yMin,yMax,curves,xUnitPi,labelStepX,labelStepY){
+  labelStepX = labelStepX && labelStepX>=1 ? Math.round(labelStepX) : 1;
+  labelStepY = labelStepY && labelStepY>=1 ? Math.round(labelStepY) : 1;
   const W=420,H=340,pad=30;
   const clipId = 'gClip'+(graphSvgIdCounter++);
   const sx = (W-2*pad)/(xMax-xMin), sy=(H-2*pad)/(yMax-yMin);
@@ -1952,13 +1953,24 @@ function graphSvg(xMin,xMax,yMin,yMax,curves,xUnitPi,labelStep){
   const yAxisX = X(Math.max(xMin, Math.min(xMax, 0)));
   /* Réécrit une valeur en fraction de π (π/2, π, 3π/2...) pour l'axe des x en mode radians --
      pédagogiquement indispensable pour les fonctions trigonométriques. */
-  function piLabel(v){
+  /* Écrit une valeur en fraction de π (π/2, π, 3π/2...) pour l'axe des x en mode radians --
+     pédagogiquement indispensable pour les fonctions trigonométriques. Les demis sont dessinés
+     comme une vraie fraction empilée (numérateur / barre / dénominateur), pas un texte plat
+     "π/2", pour rester fidèle à l'écriture mathématique habituelle. */
+  function piLabelSvg(v, cx, cy){
     const n = Math.round(v/(Math.PI/2));
-    if(n===0) return '0';
+    if(n===0) return `<text x="${cx}" y="${cy}" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace">0</text>`;
     const sign = n<0 ? '-' : '';
     const a = Math.abs(n);
-    if(a%2===0){ const k=a/2; return sign+(k===1?'π':k+'π'); }
-    return sign+(a===1?'π/2':a+'π/2');
+    if(a%2===0){
+      const k=a/2;
+      const label = sign+(k===1?'π':k+'π');
+      return `<text x="${cx}" y="${cy}" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace">${label}</text>`;
+    }
+    const numText = sign+(a===1?'π':a+'π');
+    return `<text x="${cx}" y="${cy-8}" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">${numText}</text>
+      <line x1="${cx-9}" y1="${cy-3}" x2="${cx+9}" y2="${cy-3}" stroke="#1C1B2E" stroke-width="1"/>
+      <text x="${cx}" y="${cy+8}" font-size="10" text-anchor="middle" font-family="JetBrains Mono, monospace">2</text>`;
   }
   let grid='', xLabels='', yLabels='';
   const xStep = xUnitPi ? Math.PI/2 : 1;
@@ -1967,14 +1979,13 @@ function graphSvg(xMin,xMax,yMin,yMax,curves,xUnitPi,labelStep){
   for(let v=xStart; v<=xMax+1e-9; v+=xStep, xi++){
     const rv = Math.round(v*1000)/1000;
     grid += `<line x1="${X(rv)}" y1="${pad}" x2="${X(rv)}" y2="${H-pad}" stroke="rgba(28,43,57,.1)" stroke-width="1"/>`;
-    if(Math.abs(rv)>1e-6 && xi%labelStep===0){
-      const label = xUnitPi ? piLabel(rv) : frDecimal(rv);
-      xLabels += `<text x="${X(rv)}" y="${xAxisY+15}" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace">${label}</text>`;
+    if(Math.abs(rv)>1e-6 && xi%labelStepX===0){
+      xLabels += xUnitPi ? piLabelSvg(rv, X(rv), xAxisY+16) : `<text x="${X(rv)}" y="${xAxisY+15}" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace">${frDecimal(rv)}</text>`;
     }
   }
   for(let v=Math.ceil(yMin); v<=yMax; v++){
     grid += `<line x1="${pad}" y1="${Y(v)}" x2="${W-pad}" y2="${Y(v)}" stroke="rgba(28,43,57,.1)" stroke-width="1"/>`;
-    if(v!==0 && v%labelStep===0) yLabels += `<text x="${yAxisX-6}" y="${Y(v)+4}" font-size="11" text-anchor="end" font-family="JetBrains Mono, monospace">${frDecimal(v)}</text>`;
+    if(v!==0 && v%labelStepY===0) yLabels += `<text x="${yAxisX-6}" y="${Y(v)+4}" font-size="11" text-anchor="end" font-family="JetBrains Mono, monospace">${frDecimal(v)}</text>`;
   }
   const axes = `<line x1="${pad-10}" y1="${xAxisY}" x2="${W-pad+10}" y2="${xAxisY}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#gAxeArrowX)"/>
     <line x1="${yAxisX}" y1="${H-pad+10}" x2="${yAxisX}" y2="${pad-10}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#gAxeArrowY)"/>`;
@@ -2213,7 +2224,8 @@ function openGraphTool(){
   document.getElementById('graphXPi').checked = false;
   document.getElementById('graphXMin').value = -5;
   document.getElementById('graphXMax').value = 5;
-  document.getElementById('graphLabelStep').value = 1;
+  document.getElementById('graphLabelStepX').value = 1;
+  document.getElementById('graphLabelStepY').value = 1;
   graphCurves = [{id:graphNextId++, type:'fonction', expr:'x^2-3'}];
   renderGraphCurvesList();
   document.getElementById('graphPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -2257,20 +2269,22 @@ function renderGraphCurvesList(){
 }
 function previewGraph(){
   const xPi = document.getElementById('graphXPi').checked;
-  const labelStep = parseInt(document.getElementById('graphLabelStep').value)||1;
+  const labelStepX = parseInt(document.getElementById('graphLabelStepX').value)||1;
+  const labelStepY = parseInt(document.getElementById('graphLabelStepY').value)||1;
   let xMin=parseFloat(document.getElementById('graphXMin').value), xMax=parseFloat(document.getElementById('graphXMax').value);
   const yMin=parseFloat(document.getElementById('graphYMin').value), yMax=parseFloat(document.getElementById('graphYMax').value);
   if(xPi){ xMin*=Math.PI; xMax*=Math.PI; }
-  document.getElementById('graphPreview').innerHTML = (xMax>xMin && yMax>yMin) ? graphSvg(xMin,xMax,yMin,yMax,graphCurves,xPi,labelStep) : '<p class="hint" style="color:var(--accent-orange);">Les maximums doivent être supérieurs aux minimums.</p>';
+  document.getElementById('graphPreview').innerHTML = (xMax>xMin && yMax>yMin) ? graphSvg(xMin,xMax,yMin,yMax,graphCurves,xPi,labelStepX,labelStepY) : '<p class="hint" style="color:var(--accent-orange);">Les maximums doivent être supérieurs aux minimums.</p>';
 }
 function insertGraph(){
   const xPi = document.getElementById('graphXPi').checked;
-  const labelStep = parseInt(document.getElementById('graphLabelStep').value)||1;
+  const labelStepX = parseInt(document.getElementById('graphLabelStepX').value)||1;
+  const labelStepY = parseInt(document.getElementById('graphLabelStepY').value)||1;
   let xMin=parseFloat(document.getElementById('graphXMin').value), xMax=parseFloat(document.getElementById('graphXMax').value);
   const yMin=parseFloat(document.getElementById('graphYMin').value), yMax=parseFloat(document.getElementById('graphYMax').value);
   if(xPi){ xMin*=Math.PI; xMax*=Math.PI; }
   if(!(xMax>xMin && yMax>yMin) || !graphCurves.length) return;
-  addPendingBlock('graph', graphSvg(xMin,xMax,yMin,yMax,graphCurves,xPi,labelStep), {xMin,xMax,yMin,yMax,xPi,labelStep,curves:JSON.parse(JSON.stringify(graphCurves))}, 'reopenGraph');
+  addPendingBlock('graph', graphSvg(xMin,xMax,yMin,yMax,graphCurves,xPi,labelStepX,labelStepY), {xMin,xMax,yMin,yMax,xPi,labelStepX,labelStepY,curves:JSON.parse(JSON.stringify(graphCurves))}, 'reopenGraph');
   closeGraphTool();
 }
 function reopenGraph(data){
@@ -2280,7 +2294,8 @@ function reopenGraph(data){
   document.getElementById('graphXMax').value = data.xPi ? data.xMax/Math.PI : data.xMax;
   document.getElementById('graphYMin').value = data.yMin;
   document.getElementById('graphYMax').value = data.yMax;
-  document.getElementById('graphLabelStep').value = data.labelStep||1;
+  document.getElementById('graphLabelStepX').value = data.labelStepX||1;
+  document.getElementById('graphLabelStepY').value = data.labelStepY||1;
   graphCurves = JSON.parse(JSON.stringify(data.curves||[]));
   graphNextId = Math.max(1, ...graphCurves.map(c=>c.id+1));
   renderGraphCurvesList();
@@ -3039,6 +3054,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.110', items:[
+    "Outil Graphique -- l'espacement des nombres affichés se règle maintenant séparément pour X et pour Y. En mode radians, π/2 et 3π/2 s'affichent comme de vraies fractions empilées (numérateur, barre, dénominateur), plus fidèles à l'écriture mathématique habituelle qu'un texte plat « π/2 ».",
+  ]},
   { version:'2026-08-04.109', items:[
     "Outil Graphique -- nouveau champ « Afficher un nombre tous les : » pour espacer les graduations numérotées (les traits de grille restent tous visibles, seuls les nombres s'espacent) -- utile sur une plage étendue où ils se chevauchaient. Ajout des fonctions ln (logarithme népérien) et exp dans les expressions, ex. ln(x), exp(x).",
   ]},
