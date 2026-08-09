@@ -1022,29 +1022,31 @@ function insertMathTemplate(template){
 }
 
 /* ---- Éditeur de formule pas à pas -------------------------------------------------------
-   Une formule est une structure ARBORESCENTE (pas du texte à analyser après coup) : la racine
-   est une liste de "cases" mises bout à bout (texte libre et/ou structures) ; chaque structure
-   (fraction, somme, limite, intégrale, racine, puissance) a des emplacements internes qui sont
-   eux-mêmes soit du texte libre, soit une nouvelle structure imbriquée -- sans limite de
-   profondeur. La conversion en LaTeX final parcourt cet arbre directement : plus besoin de
-   deviner où sont les parenthèses dans du texte brut, la structure EST l'interface. */
+   Une formule est une structure ARBORESCENTE (pas du texte à analyser après coup). Les
+   emplacements "principaux" (racine de la formule, numérateur, dénominateur, expression d'une
+   somme/limite/intégrale, contenu d'une racine carrée) sont des SÉQUENCES : plusieurs cases
+   mises bout à bout (texte libre et/ou structures imbriquées), pour pouvoir écrire par exemple
+   "3x + [fraction]" dans une même case. Les emplacements "secondaires" (bornes d'une somme,
+   variable d'une limite, exposant) restent une case unique, cas d'usage bien plus rare pour un
+   mélange texte+structure. La conversion en LaTeX final parcourt cet arbre directement -- plus
+   besoin de deviner où sont les parenthèses dans du texte brut, la structure EST l'interface. */
 function fbNewLeaf(v){ return {type:'leaf', value:v||''}; }
-function fbNewRoot(){ return {type:'root', items:[fbNewLeaf('')]}; }
+function fbNewSeq(v){ return {type:'seq', items:[fbNewLeaf(v||'')]}; }
 function fbNewStruct(kind){
-  if(kind==='frac') return {type:'frac', num:fbNewLeaf(), den:fbNewLeaf()};
-  if(kind==='pow') return {type:'pow', base:fbNewLeaf(), exp:fbNewLeaf()};
-  if(kind==='sqrt') return {type:'sqrt', expr:fbNewLeaf()};
-  if(kind==='sum') return {type:'sum', from:fbNewLeaf('1'), to:fbNewLeaf('n'), expr:fbNewLeaf()};
-  if(kind==='int') return {type:'int', from:fbNewLeaf('0'), to:fbNewLeaf('1'), expr:fbNewLeaf(), dvar:fbNewLeaf('x')};
-  if(kind==='lim') return {type:'lim', dvar:fbNewLeaf('x'), to:fbNewLeaf('0'), expr:fbNewLeaf()};
+  if(kind==='frac') return {type:'frac', num:fbNewSeq(), den:fbNewSeq()};
+  if(kind==='pow') return {type:'pow', base:fbNewSeq(), exp:fbNewLeaf()};
+  if(kind==='sqrt') return {type:'sqrt', expr:fbNewSeq()};
+  if(kind==='sum') return {type:'sum', from:fbNewLeaf('1'), to:fbNewLeaf('n'), expr:fbNewSeq()};
+  if(kind==='int') return {type:'int', from:fbNewLeaf('0'), to:fbNewLeaf('1'), expr:fbNewSeq(), dvar:fbNewLeaf('x')};
+  if(kind==='lim') return {type:'lim', dvar:fbNewLeaf('x'), to:fbNewLeaf('0'), expr:fbNewSeq()};
   return fbNewLeaf();
 }
-let fbRoot = null;
+let fbRoot = null; // la racine est elle-même une séquence
 let fbFocusedPath = null; // chemin (tableau de clés) vers la dernière case texte cliquée
 function fbPathToStr(path){ return path.join('|'); }
 function fbStrToPath(str){ return str==='' ? [] : str.split('|').map(s=>/^\d+$/.test(s)?parseInt(s):s); }
 function openFormulaBuilder(){
-  fbRoot = fbNewRoot();
+  fbRoot = fbNewSeq();
   fbFocusedPath = null;
   document.getElementById('formulaBuilderOverlay').style.display='flex';
   fbRender();
@@ -1056,6 +1058,7 @@ function fbGetNode(path){
   return node;
 }
 function fbSetNode(path, value){
+  if(path.length===0){ fbRoot = value; return; }
   let node = fbRoot;
   for(let i=0;i<path.length-1;i++) node = node[path[i]];
   node[path[path.length-1]] = value;
@@ -1073,17 +1076,18 @@ function fbInsertAtFocus(kind){
   fbFocusedPath = null;
   fbRender();
 }
-function fbAddRootItem(){
-  fbRoot.items.push(fbNewLeaf(''));
+function fbAddToSeq(seqPathStr){
+  fbGetNode(fbStrToPath(seqPathStr)).items.push(fbNewLeaf(''));
   fbRender();
 }
-function fbRemoveRootItem(idx){
-  if(fbRoot.items.length<=1) fbRoot.items[0] = fbNewLeaf('');
-  else fbRoot.items.splice(idx,1);
+function fbRemoveSeqItem(seqPathStr, idx){
+  const seq = fbGetNode(fbStrToPath(seqPathStr));
+  if(seq.items.length<=1) seq.items[0] = fbNewLeaf('');
+  else seq.items.splice(idx,1);
   fbRender();
 }
-/* Une structure imbriquée (pas à la racine) se retire simplement en redevenant une case de
-   texte libre vide, à son emplacement exact. */
+/* Une structure dans un emplacement "case unique" (borne, variable, exposant) se retire en
+   redevenant simplement une case de texte libre vide, à son emplacement exact. */
 function fbClearNode(pathStr){
   fbSetNode(fbStrToPath(pathStr), fbNewLeaf(''));
   fbRender();
@@ -1092,38 +1096,45 @@ function fbUpdateLeaf(pathStr, value){
   fbGetNode(fbStrToPath(pathStr)).value = value; // pas de re-rendu : on garde le focus/curseur
 }
 function fbRender(){
-  const html = fbRoot.items.map((item,i)=>fbRenderSlot(item, ['items',i], i)).join('');
-  document.getElementById('formulaBuilderCanvas').innerHTML = html
-    + `<button type="button" onclick="fbAddRootItem()" title="Ajouter une case" style="border:none;background:rgba(28,43,57,.08);border-radius:6px;width:26px;height:26px;font-size:.9rem;cursor:pointer;vertical-align:middle;">+</button>`;
+  document.getElementById('formulaBuilderCanvas').innerHTML = fbRenderSeq(fbRoot, []);
 }
 function fbLeafInput(node, path){
   const pathStr = fbPathToStr(path);
   const w = Math.max(30, node.value.length*9+18);
   return `<input type="text" value="${escapeHtml(node.value)}" oninput="fbUpdateLeaf(this.dataset.path, this.value); this.style.width=Math.max(30,this.value.length*9+18)+'px';" onfocus="fbFocusedPath = fbStrToPath(this.dataset.path)" data-path="${pathStr}" style="width:${w}px;border:1.5px solid rgba(28,43,57,.3);border-radius:6px;padding:5px 7px;font-family:'JetBrains Mono',monospace;font-size:1rem;text-align:center;vertical-align:middle;">`;
 }
-/* Une case (racine ou emplacement interne d'une structure) : soit une simple entrée de texte,
-   soit une structure imbriquée -- rendue dans un cadre clair pour bien la distinguer de ce qui
-   l'entoure, avec un bouton pour la retirer (redevient une case de texte libre vide). */
-function fbRenderSlot(node, path, rootIdx){
+/* Une SÉQUENCE (racine, numérateur, dénominateur, expression...) : plusieurs cases bout à bout,
+   avec un petit "+" à la fin pour en ajouter une nouvelle (texte, qu'on peut ensuite transformer
+   en structure en cliquant dedans puis sur un symbole). */
+function fbRenderSeq(seq, path){
+  const inner = seq.items.map((item,i)=>fbRenderSeqItem(item,[...path,'items',i],path,i)).join('');
+  return `<span style="display:inline-flex;align-items:center;gap:2px;">${inner}<button type="button" onclick="fbAddToSeq('${fbPathToStr(path)}')" title="Ajouter une case ici" style="border:none;background:rgba(28,43,57,.08);border-radius:5px;width:20px;height:20px;font-size:.75rem;cursor:pointer;vertical-align:middle;">+</button></span>`;
+}
+function fbRenderSeqItem(node, path, seqPath, idx){
   if(node.type==='leaf') return fbLeafInput(node, path);
-  const pathStr = fbPathToStr(path);
-  const removeAction = rootIdx!==undefined ? `fbRemoveRootItem(${rootIdx})` : `fbClearNode('${pathStr}')`;
-  const removeBtn = `<button type="button" onclick="${removeAction}" title="Retirer cette structure" style="border:none;background:#FDEAEA;color:#D93025;border-radius:5px;width:20px;height:20px;font-size:.7rem;cursor:pointer;vertical-align:middle;margin-left:2px;">✕</button>`;
+  const removeBtn = `<button type="button" onclick="fbRemoveSeqItem('${fbPathToStr(seqPath)}',${idx})" title="Retirer cette structure" style="border:none;background:#FDEAEA;color:#D93025;border-radius:5px;width:20px;height:20px;font-size:.7rem;cursor:pointer;vertical-align:middle;margin-left:2px;">✕</button>`;
+  return `<span style="display:inline-flex;align-items:center;background:rgba(13,91,163,.05);border:1px solid rgba(13,91,163,.18);border-radius:8px;padding:6px 8px;margin:0 3px;vertical-align:middle;">${fbRenderStruct(node,path)}</span>${removeBtn}`;
+}
+/* Une case UNIQUE (borne, variable, exposant) : soit une simple entrée de texte, soit une
+   structure imbriquée -- rendue dans le même style de cadre que dans une séquence. */
+function fbRenderSlot(node, path){
+  if(node.type==='leaf') return fbLeafInput(node, path);
+  const removeBtn = `<button type="button" onclick="fbClearNode('${fbPathToStr(path)}')" title="Retirer cette structure" style="border:none;background:#FDEAEA;color:#D93025;border-radius:5px;width:20px;height:20px;font-size:.7rem;cursor:pointer;vertical-align:middle;margin-left:2px;">✕</button>`;
   return `<span style="display:inline-flex;align-items:center;background:rgba(13,91,163,.05);border:1px solid rgba(13,91,163,.18);border-radius:8px;padding:6px 8px;margin:0 3px;vertical-align:middle;">${fbRenderStruct(node,path)}</span>${removeBtn}`;
 }
 function fbRenderStruct(node, path){
   if(node.type==='frac'){
     return `<span style="display:inline-flex;flex-direction:column;align-items:center;">
-      <span>${fbRenderSlot(node.num,[...path,'num'])}</span>
+      <span>${fbRenderSeq(node.num,[...path,'num'])}</span>
       <span style="border-top:2px solid #1C1B2E;width:100%;height:0;margin:3px 0;"></span>
-      <span>${fbRenderSlot(node.den,[...path,'den'])}</span>
+      <span>${fbRenderSeq(node.den,[...path,'den'])}</span>
     </span>`;
   }
   if(node.type==='pow'){
-    return `<span style="display:inline-flex;align-items:flex-start;">${fbRenderSlot(node.base,[...path,'base'])}<span style="margin-left:2px;transform:scale(.8) translateY(-6px);transform-origin:bottom left;">${fbRenderSlot(node.exp,[...path,'exp'])}</span></span>`;
+    return `<span style="display:inline-flex;align-items:flex-start;">${fbRenderSeq(node.base,[...path,'base'])}<span style="margin-left:2px;transform:scale(.8) translateY(-6px);transform-origin:bottom left;">${fbRenderSlot(node.exp,[...path,'exp'])}</span></span>`;
   }
   if(node.type==='sqrt'){
-    return `<span style="display:inline-flex;align-items:center;">√<span style="border-top:2px solid #1C1B2E;padding:0 4px;margin-left:2px;">${fbRenderSlot(node.expr,[...path,'expr'])}</span></span>`;
+    return `<span style="display:inline-flex;align-items:center;">√<span style="border-top:2px solid #1C1B2E;padding:0 4px;margin-left:2px;">${fbRenderSeq(node.expr,[...path,'expr'])}</span></span>`;
   }
   if(node.type==='sum' || node.type==='int'){
     const symbol = node.type==='sum' ? 'Σ' : '∫';
@@ -1135,7 +1146,7 @@ function fbRenderStruct(node, path){
         <span title="${labelBas}">${fbRenderSlot(node.from,[...path,'from'])}</span>
       </span>`;
     const tail = node.type==='int' ? `<span style="margin-left:4px;">d${fbRenderSlot(node.dvar,[...path,'dvar'])}</span>` : '';
-    return `<span style="display:inline-flex;align-items:center;gap:5px;">${bounds}<span>${fbRenderSlot(node.expr,[...path,'expr'])}</span>${tail}</span>`;
+    return `<span style="display:inline-flex;align-items:center;gap:5px;">${bounds}<span>${fbRenderSeq(node.expr,[...path,'expr'])}</span>${tail}</span>`;
   }
   if(node.type==='lim'){
     return `<span style="display:inline-flex;align-items:center;gap:5px;">
@@ -1143,7 +1154,7 @@ function fbRenderStruct(node, path){
         <span>lim</span>
         <span style="display:inline-flex;align-items:center;gap:2px;font-size:.8rem;">${fbRenderSlot(node.dvar,[...path,'dvar'])}→${fbRenderSlot(node.to,[...path,'to'])}</span>
       </span>
-      <span>${fbRenderSlot(node.expr,[...path,'expr'])}</span>
+      <span>${fbRenderSeq(node.expr,[...path,'expr'])}</span>
     </span>`;
   }
   return '';
@@ -1151,7 +1162,7 @@ function fbRenderStruct(node, path){
 /* Parcourt l'arbre pour produire le LaTeX final -- aucune analyse de texte, la structure
    garantit un résultat correct quelle que soit la complexité ou l'imbrication. */
 function fbToLatex(node){
-  if(node.type==='root') return node.items.map(fbToLatex).join('');
+  if(node.type==='seq') return node.items.map(fbToLatex).join('');
   if(node.type==='leaf') return node.value;
   if(node.type==='frac') return `\\dfrac{${fbToLatex(node.num)}}{${fbToLatex(node.den)}}`;
   if(node.type==='pow') return `{${fbToLatex(node.base)}}^{${fbToLatex(node.exp)}}`;
@@ -1166,6 +1177,7 @@ function fbInsertFinal(){
   if(latex) insertMathTemplate('$'+latex+'$');
   closeFormulaBuilder();
 }
+
 
 
 function previewTextBlock(){
@@ -2950,6 +2962,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.105', items:[
+    "Éditeur de formule -- il était impossible d'écrire un mélange texte+structure dans une même case (ex. lim(3x + 1/x) : « 3x+ » puis une fraction). Les cases principales (expression d'une somme/limite/intégrale, numérateur, dénominateur, contenu d'une racine) acceptent maintenant plusieurs éléments à la suite, via un petit « + » ; les bornes/variables/exposants restent une case unique, plus rarement composées.",
+  ]},
   { version:'2026-08-04.104', items:[
     "Fix + refonte de l'éditeur de formule -- le bouton ✕ ne fonctionnait pas du tout (bug de chemin dans l'arbre, corrigé) et l'affichage était confus (trop de boutons + dispersés, cases vides sans explication). Simplifié : chaque emplacement est maintenant une case unique (texte ou structure imbriquée), chaque structure apparaît dans un encadré clair pour bien la distinguer, et les cases vides superflues ont disparu.",
   ]},
