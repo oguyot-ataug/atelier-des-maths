@@ -1034,7 +1034,8 @@ function fbNewLeaf(v){ return {type:'leaf', value:v||''}; }
 function fbNewSeq(v){ return {type:'seq', items:[fbNewLeaf(v||'')]}; }
 function fbNewStruct(kind){
   if(kind==='frac') return {type:'frac', num:fbNewSeq(), den:fbNewSeq()};
-  if(kind==='pow') return {type:'pow', base:fbNewSeq(), exp:fbNewLeaf()};
+  if(kind==='pow') return {type:'pow', base:fbNewLeaf(), exp:fbNewLeaf()};
+  if(kind==='sub') return {type:'sub', base:fbNewLeaf(), sub:fbNewLeaf()};
   if(kind==='sqrt') return {type:'sqrt', expr:fbNewSeq()};
   if(kind==='sum') return {type:'sum', from:fbNewLeaf('1'), to:fbNewLeaf('n'), expr:fbNewSeq()};
   if(kind==='int') return {type:'int', from:fbNewLeaf('0'), to:fbNewLeaf('1'), expr:fbNewSeq(), dvar:fbNewLeaf('x')};
@@ -1131,7 +1132,10 @@ function fbRenderStruct(node, path){
     </span>`;
   }
   if(node.type==='pow'){
-    return `<span style="display:inline-flex;align-items:flex-start;">${fbRenderSeq(node.base,[...path,'base'])}<span style="margin-left:2px;transform:scale(.8) translateY(-6px);transform-origin:bottom left;">${fbRenderSlot(node.exp,[...path,'exp'])}</span></span>`;
+    return `<span style="position:relative;display:inline-block;padding-right:32px;">${fbRenderSlot(node.base,[...path,'base'])}<span style="position:absolute;top:-10px;right:0;font-size:.72rem;">${fbRenderSlot(node.exp,[...path,'exp'])}</span></span>`;
+  }
+  if(node.type==='sub'){
+    return `<span style="position:relative;display:inline-block;padding-right:32px;">${fbRenderSlot(node.base,[...path,'base'])}<span style="position:absolute;bottom:-10px;right:0;font-size:.72rem;">${fbRenderSlot(node.sub,[...path,'sub'])}</span></span>`;
   }
   if(node.type==='sqrt'){
     return `<span style="display:inline-flex;align-items:center;">√<span style="border-top:2px solid #1C1B2E;padding:0 4px;margin-left:2px;">${fbRenderSeq(node.expr,[...path,'expr'])}</span></span>`;
@@ -1166,6 +1170,7 @@ function fbToLatex(node){
   if(node.type==='leaf') return node.value;
   if(node.type==='frac') return `\\dfrac{${fbToLatex(node.num)}}{${fbToLatex(node.den)}}`;
   if(node.type==='pow') return `{${fbToLatex(node.base)}}^{${fbToLatex(node.exp)}}`;
+  if(node.type==='sub') return `{${fbToLatex(node.base)}}_{${fbToLatex(node.sub)}}`;
   if(node.type==='sqrt') return `\\sqrt{${fbToLatex(node.expr)}}`;
   if(node.type==='sum') return `\\displaystyle\\sum_{${fbToLatex(node.from)}}^{${fbToLatex(node.to)}} ${fbToLatex(node.expr)}`;
   if(node.type==='int') return `\\displaystyle\\int_{${fbToLatex(node.from)}}^{${fbToLatex(node.to)}} ${fbToLatex(node.expr)} \\, d${fbToLatex(node.dvar)}`;
@@ -2962,6 +2967,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.106', items:[
+    "Éditeur de formule -- fix de la puissance : un « + » parasite apparaissait entre la base et l'exposant (base était resté une séquence complète par erreur), et l'exposant chevauchait la base. Corrigé : base simple, exposant correctement positionné en haut à droite, sans chevauchement. Nouvelle structure Indice (x₂), positionnée en bas à droite, pour les suites (uₙ) et notations indexées.",
+  ]},
   { version:'2026-08-04.105', items:[
     "Éditeur de formule -- il était impossible d'écrire un mélange texte+structure dans une même case (ex. lim(3x + 1/x) : « 3x+ » puis une fraction). Les cases principales (expression d'une somme/limite/intégrale, numérateur, dénominateur, contenu d'une racine) acceptent maintenant plusieurs éléments à la suite, via un petit « + » ; les bornes/variables/exposants restent une case unique, plus rarement composées.",
   ]},
