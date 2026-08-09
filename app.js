@@ -696,12 +696,6 @@ function renderMathText(raw){
   text = text.replace(/\$([^$]+)\$/g, (m,expr)=>protect(katexSpan(expr)));
   // 2) sqrt(...) -- processed before fractions so "sqrt(2)/3" isn't mistaken for a fraction
   text = text.replace(/sqrt\(([^()]+)\)/g, (m,inner)=>protect(katexSpan(`\\sqrt{${cleanExpr(inner)}}`)));
-  // 2bis) écritures simplifiées pour somme, limite, intégrale -- ex. somme(n,1,10,n) ; lim(x,0,f(x)) ;
-  // integrale(0,1,f(x),x). Traitées avant les fractions pour éviter toute confusion avec leurs
-  // arguments (ex. le "x/2" dans integrale(0,1,x/2,x)).
-  text = text.replace(/somme\(([^,()]+),([^,()]+),([^,()]+),((?:[^()]|\((?:[^()]|\([^()]*\))*\))+)\)/g, (m,v,from,to,expr)=>protect(katexSpan(`\\displaystyle\\sum_{${v}=${cleanExpr(from)}}^{${cleanExpr(to)}} ${cleanExpr(expr)}`)));
-  text = text.replace(/lim\(([^,()]+),([^,()]+),((?:[^()]|\((?:[^()]|\([^()]*\))*\))+)\)/g, (m,v,to,expr)=>protect(katexSpan(`\\displaystyle\\lim_{${v} \\to ${cleanExpr(to)}} ${cleanExpr(expr)}`)));
-  text = text.replace(/integrale\(([^,()]+),([^,()]+),((?:[^()]|\((?:[^()]|\([^()]*\))*\))+),([^,()]+)\)/g, (m,from,to,expr,v)=>protect(katexSpan(`\\displaystyle\\int_{${cleanExpr(from)}}^{${cleanExpr(to)}} ${cleanExpr(expr)} \\, d${v}`)));
   // 3) fractions with a parenthesised expression on one or both sides: (2*2)/(3*2), (2+1)/4, 3/(1+2)
   text = text.replace(/\(([^()]+)\)\/\(([^()]+)\)/g, (m,a,b)=>protect(katexSpan(`\\dfrac{${cleanExpr(a)}}{${cleanExpr(b)}}`)));
   text = text.replace(/\(([^()]+)\)\/(\d+(?:[.,]\d+)?)/g, (m,a,b)=>protect(katexSpan(`\\dfrac{${cleanExpr(a)}}{${b.replace(',','.')}}`)));
@@ -2800,6 +2794,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.101', items:[
+    "Changement d'approche pour Σ/lim/∫ -- la syntaxe simplifiée (somme(...), lim(...), integrale(...)) analysée par expressions régulières ne pouvait pas gérer une imbrication arbitraire (parenthèses dans parenthèses), quel que soit le nombre de correctifs. Les 3 boutons insèrent maintenant du LaTeX réel directement (entre $...$), modifiable librement : n'importe quelle complexité (fractions imbriquées, plusieurs fonctions...) fonctionne de façon fiable, puisque c'est KaTeX lui-même (un vrai analyseur) qui l'interprète, plus une approximation par regex.",
+  ]},
   { version:'2026-08-04.100', items:[
     "Fix -- dans lim(x,0,f(x)/x), le \"f(x)/x\" restait affiché avec un simple slash au lieu d'une vraie fraction (la reconnaissance ne gérait que lettres/chiffres, pas un appel de fonction comme f(x)). Étendu pour reconnaître aussi ce cas, des deux côtés de la fraction.",
   ]},
