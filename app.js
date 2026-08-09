@@ -2003,14 +2003,32 @@ function urnSvg(data, shape){
   // simple regroupement par couleur.
   balls = balls.map((c,i)=>({c,k:(i*2654435761)>>>0})).sort((a,b)=>(a.k%97)-(b.k%97)).map(o=>o.c);
   const n = balls.length || 1;
-  const bodyH = bottomY-bandY-10;
-  const cols = Math.max(1, Math.round(Math.sqrt(n*cw/bodyH)));
-  const r = Math.min(cw/cols/2-3, 17);
+  // Zone de sécurité (rectangle) où placer les boules sans jamais toucher le contour incurvé --
+  // marge nettement plus généreuse pour le sac (silhouette très arrondie) que pour l'urne
+  // (côtés plus droits), pour qu'aucune boule ne soit jamais coupée par le tracé.
+  const safe = shape==='sac'
+    ? {x0:cx0+50, x1:cx0+cw-50, y0:bandY+58, y1:bottomY-40}
+    : {x0:cx0+24, x1:cx0+cw-24, y0:bandY+14, y1:bottomY-16};
+  const safeW = safe.x1-safe.x0, safeH = safe.y1-safe.y0;
+  // Rayon des boules : le plus grand qui permette à toutes de tenir dans la zone de sécurité,
+  // rangées tassées (facteur 0.87, empilement compact façon boules qui se touchent).
+  let r = 17;
+  while(r>4){
+    const cols = Math.max(1, Math.floor(safeW/(2*r)));
+    const rows = Math.ceil(n/cols);
+    const neededH = r*2 + Math.max(0,rows-1)*(r*1.74);
+    if(neededH<=safeH) break;
+    r -= 0.5;
+  }
+  const cols = Math.max(1, Math.floor(safeW/(2*r)));
   let ballsHtml = '';
   balls.forEach((color,i)=>{
-    const col = i%cols, row = Math.floor(i/cols);
-    const bcx = cx0 + (col+0.5)*(cw/cols);
-    const bcy = bottomY-14-row*(r*2+4)-r;
+    const row = Math.floor(i/cols), col = i%cols;
+    const rowBalls = Math.min(cols, n-row*cols);
+    const rowW = rowBalls*2*r;
+    const rowStartX = safe.x0 + (safeW-rowW)/2; // chaque rangée centrée horizontalement
+    const bcx = rowStartX + col*2*r + r;
+    const bcy = safe.y1 - r - row*(r*1.74);
     // reflet clair en haut à gauche de chaque boule, pour un aspect brillant façon bille
     ballsHtml += `<circle cx="${bcx.toFixed(1)}" cy="${bcy.toFixed(1)}" r="${r.toFixed(1)}" fill="${color}" stroke="#1C1B2E" stroke-width="1.4"/>
       <ellipse cx="${(bcx-r*0.32).toFixed(1)}" cy="${(bcy-r*0.32).toFixed(1)}" rx="${(r*0.34).toFixed(1)}" ry="${(r*0.22).toFixed(1)}" fill="#fff" opacity="0.6" transform="rotate(-35 ${(bcx-r*0.32).toFixed(1)} ${(bcy-r*0.32).toFixed(1)})"/>`;
@@ -3730,6 +3748,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.120', items:[
+    "Sac/urne -- fix du calage des boules : certaines étaient coupées par le contour incurvé (grille ne tenant pas compte du rétrécissement du sac). Recalculé avec une zone de sécurité bien à l'intérieur du tracé : les boules sont désormais toujours entières, se touchent (empilement tassé), et reposent au fond du récipient au lieu de flotter au milieu.",
+  ]},
   { version:'2026-08-04.119', items:[
     "Ajout de balises anti-cache sur la page elle-même, pour limiter le risque qu'un navigateur garde en mémoire une ancienne version bloquée (le cas typique : ça fonctionne en navigation privée mais pas en navigation normale -- signe d'une version mise en cache). En cas de blocage malgré tout, un rechargement forcé (Ctrl+Maj+R ou Cmd+Maj+R) résout le problème.",
   ]},
