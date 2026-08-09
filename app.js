@@ -2090,9 +2090,13 @@ function treeSvg(root){
       lines += `<line x1="${x}" y1="${l.y.toFixed(1)}" x2="${x2}" y2="${child.y.toFixed(1)}" stroke="#1C1B2E" stroke-width="1.6"/>`;
       const midx=(x+x2)/2, midy=(l.y+child.y)/2;
       const goingUp = child.y < l.y - 1;
-      const probaY = goingUp ? midy-6 : midy+20;
-      if(child.node.proba) labels += svgRichText(midx, probaY, child.node.proba, {anchor:'middle', width:80, color:'#0D5BA3'});
-      labels += svgRichText(x2+8, child.y-9, child.node.label||'', {anchor:'start', width:100, bold:true});
+      // Dégagement plus généreux côté montant : une fraction \dfrac (numérateur + barre +
+      // dénominateur) est nettement plus haute qu'une simple ligne de texte, le dénominateur
+      // était coupé par le trait faute de marge suffisante.
+      const probaY = goingUp ? midy-16 : midy+26;
+      if(child.node.proba) labels += svgRichText(midx, probaY, child.node.proba, {anchor:'middle', width:80, color:'#0D5BA3', height:30});
+      const labelY = goingUp ? child.y-9 : child.y+22;
+      labels += svgRichText(x2+8, labelY, child.node.label||'', {anchor:'start', width:100, bold:true});
       walk(child, x2, false);
     });
   }
@@ -3586,6 +3590,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.116', items:[
+    "Arbre de probabilité -- fix positionnement : la fraction d'une branche montante avait son dénominateur coupé par le trait, dégagement augmenté. Les événements (noms de branche) se placent maintenant au-dessus du point pour une branche montante, en dessous pour une branche descendante (au lieu de toujours au-dessus).",
+  ]},
   { version:'2026-08-04.115', items:[
     "Arbre de probabilité -- événement, probabilité et note s'écrivent maintenant en vrai LaTeX (comme partout ailleurs sur le site, entre $...$ pour du LaTeX complexe, ou en texte simple). La probabilité se positionne au-dessus de la branche si elle monte, en dessous si elle descend. Nouveau champ « note » pour les feuilles (résultat, calcul final...).",
   ]},
