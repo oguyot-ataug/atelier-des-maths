@@ -1938,18 +1938,42 @@ function evalFunctionExpr(expr, x){
 }
 const GRAPH_COLORS = ['#0D5BA3','#D93025','#1F7A4D','#B26A00','#7B3FA0','#1C8C9C'];
 let graphSvgIdCounter = 1;
-function graphSvg(xMin,xMax,yMin,yMax,curves){
+function graphSvg(xMin,xMax,yMin,yMax,curves,xUnitPi){
   const W=420,H=340,pad=30;
   const clipId = 'gClip'+(graphSvgIdCounter++);
   const sx = (W-2*pad)/(xMax-xMin), sy=(H-2*pad)/(yMax-yMin);
   const X = v => pad + (v-xMin)*sx;
   const Y = v => H-pad-(v-yMin)*sy;
-  let grid='';
-  for(let v=Math.ceil(xMin); v<=xMax; v++) grid += `<line x1="${X(v)}" y1="${pad}" x2="${X(v)}" y2="${H-pad}" stroke="rgba(28,43,57,.1)" stroke-width="1"/>`;
-  for(let v=Math.ceil(yMin); v<=yMax; v++) grid += `<line x1="${pad}" y1="${Y(v)}" x2="${W-pad}" y2="${Y(v)}" stroke="rgba(28,43,57,.1)" stroke-width="1"/>`;
   const showOrigin = xMin<=0 && xMax>=0 && yMin<=0 && yMax>=0;
-  const axes = `<line x1="${pad-10}" y1="${Y(0)}" x2="${W-pad+10}" y2="${Y(0)}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#gAxeArrowX)"/>
-    <line x1="${X(0)}" y1="${H-pad+10}" x2="${X(0)}" y2="${pad-10}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#gAxeArrowY)"/>`;
+  const xAxisY = Y(Math.max(yMin, Math.min(yMax, 0))); // position de l'axe des x (clampée si 0 hors champ)
+  const yAxisX = X(Math.max(xMin, Math.min(xMax, 0)));
+  /* Réécrit une valeur en fraction de π (π/2, π, 3π/2...) pour l'axe des x en mode radians --
+     pédagogiquement indispensable pour les fonctions trigonométriques. */
+  function piLabel(v){
+    const n = Math.round(v/(Math.PI/2));
+    if(n===0) return '0';
+    const sign = n<0 ? '-' : '';
+    const a = Math.abs(n);
+    if(a%2===0){ const k=a/2; return sign+(k===1?'π':k+'π'); }
+    return sign+(a===1?'π/2':a+'π/2');
+  }
+  let grid='', xLabels='', yLabels='';
+  const xStep = xUnitPi ? Math.PI/2 : 1;
+  const xStart = xUnitPi ? Math.ceil(xMin/xStep)*xStep : Math.ceil(xMin);
+  for(let v=xStart; v<=xMax+1e-9; v+=xStep){
+    const rv = Math.round(v*1000)/1000;
+    grid += `<line x1="${X(rv)}" y1="${pad}" x2="${X(rv)}" y2="${H-pad}" stroke="rgba(28,43,57,.1)" stroke-width="1"/>`;
+    if(Math.abs(rv)>1e-6){
+      const label = xUnitPi ? piLabel(rv) : frDecimal(rv);
+      xLabels += `<text x="${X(rv)}" y="${xAxisY+15}" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace">${label}</text>`;
+    }
+  }
+  for(let v=Math.ceil(yMin); v<=yMax; v++){
+    grid += `<line x1="${pad}" y1="${Y(v)}" x2="${W-pad}" y2="${Y(v)}" stroke="rgba(28,43,57,.1)" stroke-width="1"/>`;
+    if(v!==0) yLabels += `<text x="${yAxisX-6}" y="${Y(v)+4}" font-size="11" text-anchor="end" font-family="JetBrains Mono, monospace">${frDecimal(v)}</text>`;
+  }
+  const axes = `<line x1="${pad-10}" y1="${xAxisY}" x2="${W-pad+10}" y2="${xAxisY}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#gAxeArrowX)"/>
+    <line x1="${yAxisX}" y1="${H-pad+10}" x2="${yAxisX}" y2="${pad-10}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#gAxeArrowY)"/>`;
   const originLabel = showOrigin ? `<text x="${X(0)-12}" y="${Y(0)+18}" font-size="13" font-weight="700" font-family="Space Grotesk, sans-serif">O</text>` : '';
   let curvesHtml = '';
   curves.forEach((c,i)=>{
@@ -1988,7 +2012,7 @@ function graphSvg(xMin,xMax,yMin,yMax,curves){
       <clipPath id="${clipId}"><rect x="0" y="0" width="${W}" height="${H}"/></clipPath>
     </defs>
     <g clip-path="url(#${clipId})">
-      ${grid}${axes}${originLabel}${curvesHtml}
+      ${grid}${axes}${originLabel}${xLabels}${yLabels}${curvesHtml}
     </g>
   </svg>`;
 }
@@ -2182,6 +2206,9 @@ function openGraphTool(){
   hideAllToolContent();
   document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('graphPanel').style.display='block';
+  document.getElementById('graphXPi').checked = false;
+  document.getElementById('graphXMin').value = -5;
+  document.getElementById('graphXMax').value = 5;
   graphCurves = [{id:graphNextId++, type:'fonction', expr:'x^2-3'}];
   renderGraphCurvesList();
   document.getElementById('graphPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -2224,26 +2251,63 @@ function renderGraphCurvesList(){
   previewGraph();
 }
 function previewGraph(){
-  const xMin=parseFloat(document.getElementById('graphXMin').value), xMax=parseFloat(document.getElementById('graphXMax').value);
+  const xPi = document.getElementById('graphXPi').checked;
+  let xMin=parseFloat(document.getElementById('graphXMin').value), xMax=parseFloat(document.getElementById('graphXMax').value);
   const yMin=parseFloat(document.getElementById('graphYMin').value), yMax=parseFloat(document.getElementById('graphYMax').value);
-  document.getElementById('graphPreview').innerHTML = (xMax>xMin && yMax>yMin) ? graphSvg(xMin,xMax,yMin,yMax,graphCurves) : '<p class="hint" style="color:var(--accent-orange);">Les maximums doivent être supérieurs aux minimums.</p>';
+  if(xPi){ xMin*=Math.PI; xMax*=Math.PI; }
+  document.getElementById('graphPreview').innerHTML = (xMax>xMin && yMax>yMin) ? graphSvg(xMin,xMax,yMin,yMax,graphCurves,xPi) : '<p class="hint" style="color:var(--accent-orange);">Les maximums doivent être supérieurs aux minimums.</p>';
 }
 function insertGraph(){
-  const xMin=parseFloat(document.getElementById('graphXMin').value), xMax=parseFloat(document.getElementById('graphXMax').value);
+  const xPi = document.getElementById('graphXPi').checked;
+  let xMin=parseFloat(document.getElementById('graphXMin').value), xMax=parseFloat(document.getElementById('graphXMax').value);
   const yMin=parseFloat(document.getElementById('graphYMin').value), yMax=parseFloat(document.getElementById('graphYMax').value);
+  if(xPi){ xMin*=Math.PI; xMax*=Math.PI; }
   if(!(xMax>xMin && yMax>yMin) || !graphCurves.length) return;
-  addPendingBlock('graph', graphSvg(xMin,xMax,yMin,yMax,graphCurves), {xMin,xMax,yMin,yMax,curves:JSON.parse(JSON.stringify(graphCurves))}, 'reopenGraph');
+  addPendingBlock('graph', graphSvg(xMin,xMax,yMin,yMax,graphCurves,xPi), {xMin,xMax,yMin,yMax,xPi,curves:JSON.parse(JSON.stringify(graphCurves))}, 'reopenGraph');
   closeGraphTool();
 }
 function reopenGraph(data){
   openGraphTool();
-  document.getElementById('graphXMin').value = data.xMin;
-  document.getElementById('graphXMax').value = data.xMax;
+  document.getElementById('graphXPi').checked = !!data.xPi;
+  document.getElementById('graphXMin').value = data.xPi ? data.xMin/Math.PI : data.xMin;
+  document.getElementById('graphXMax').value = data.xPi ? data.xMax/Math.PI : data.xMax;
   document.getElementById('graphYMin').value = data.yMin;
   document.getElementById('graphYMax').value = data.yMax;
   graphCurves = JSON.parse(JSON.stringify(data.curves||[]));
   graphNextId = Math.max(1, ...graphCurves.map(c=>c.id+1));
   renderGraphCurvesList();
+}
+/* Ajuste automatiquement les bornes pour bien cadrer les courbes tracées : Y d'après les
+   valeurs réellement atteintes (échantillonnage des fonctions, points des droites), X d'après
+   les points des droites s'il y en a (les fonctions n'ont pas de « bonne » plage naturelle). */
+function autoFitGraph(){
+  const xPi = document.getElementById('graphXPi').checked;
+  let xMin=parseFloat(document.getElementById('graphXMin').value), xMax=parseFloat(document.getElementById('graphXMax').value);
+  if(xPi){ xMin*=Math.PI; xMax*=Math.PI; }
+  if(!(xMax>xMin) || !graphCurves.length) return;
+  let yValues = [], xValues = [];
+  graphCurves.forEach(c=>{
+    if(c.type==='droite'){ xValues.push(c.x1,c.x2); yValues.push(c.y1,c.y2); }
+    else if(c.type==='fonction'){
+      for(let k=0;k<=150;k++){
+        const xv = xMin + (xMax-xMin)*k/150;
+        const yv = evalFunctionExpr(c.expr, xv);
+        if(!isNaN(yv) && isFinite(yv)) yValues.push(yv);
+      }
+    }
+  });
+  if(!yValues.length) return;
+  let yLo = Math.min(...yValues), yHi = Math.max(...yValues);
+  const yPad = (yHi-yLo)*0.15 || 1;
+  document.getElementById('graphYMin').value = Math.floor(yLo-yPad);
+  document.getElementById('graphYMax').value = Math.ceil(yHi+yPad);
+  if(xValues.length){
+    let xLo = Math.min(...xValues), xHi = Math.max(...xValues);
+    const xPad = (xHi-xLo)*0.15 || 1;
+    document.getElementById('graphXMin').value = Math.floor((xLo-xPad)/(xPi?Math.PI:1));
+    document.getElementById('graphXMax').value = Math.ceil((xHi+xPad)/(xPi?Math.PI:1));
+  }
+  previewGraph();
 }
 
 function resetFigureState(){
@@ -2967,6 +3031,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.107', items:[
+    "Outil Graphique -- trois améliorations : graduations chiffrées sur les deux axes (valeurs entières) ; mode « axe des x en radians » pour les fonctions trigonométriques, avec graduations en π/2, π, 3π/2... au lieu de décimaux ; bouton « 🔍 Cadrage auto » qui ajuste automatiquement les bornes X/Y pour bien cadrer les courbes tracées (d'après les valeurs réellement atteintes par les fonctions, et les points des droites).",
+  ]},
   { version:'2026-08-04.106', items:[
     "Éditeur de formule -- fix de la puissance : un « + » parasite apparaissait entre la base et l'exposant (base était resté une séquence complète par erreur), et l'exposant chevauchait la base. Corrigé : base simple, exposant correctement positionné en haut à droite, sans chevauchement. Nouvelle structure Indice (x₂), positionnée en bas à droite, pour les suites (uₙ) et notations indexées.",
   ]},
