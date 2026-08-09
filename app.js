@@ -2003,46 +2003,40 @@ function urnSvg(data, shape){
   // simple regroupement par couleur.
   balls = balls.map((c,i)=>({c,k:(i*2654435761)>>>0})).sort((a,b)=>(a.k%97)-(b.k%97)).map(o=>o.c);
   const n = balls.length || 1;
-  // Zone de sécurité (rectangle) où placer les boules sans jamais toucher le contour incurvé --
-  // marge plus généreuse pour le sac (silhouette très arrondie) que pour l'urne (côtés plus
-  // droits). Pour le sac, le contour se resserre aussi latéralement près du fond (ce n'est pas
-  // un simple rectangle) : les rangées les plus basses utilisent donc volontairement moins de
-  // colonnes que les rangées plus hautes, pour ne jamais déborder sur les côtés à cet endroit.
-  const safe = shape==='sac'
-    ? {x0:cx0+38, x1:cx0+cw-38, y0:bandY+58, y1:bottomY+6}
-    : {x0:cx0+24, x1:cx0+cw-24, y0:bandY+14, y1:bottomY};
-  const safeW = safe.x1-safe.x0, safeH = safe.y1-safe.y0;
-  const rowCapacity = (rowFromBottom, colsMax) => shape==='sac'
-    ? Math.max(1, colsMax - (rowFromBottom===0 ? 2 : rowFromBottom===1 ? 1 : 0))
-    : colsMax;
-  // Rayon des boules : le plus grand qui permette à toutes de tenir dans la zone de sécurité en
-  // respectant les capacités par rangée ci-dessus, rangées tassées (facteur 0.87, empilement
-  // compact façon boules qui se touchent).
-  let r = 17, cols = 1;
-  while(r>4){
-    cols = Math.max(1, Math.floor(safeW/(2*r)));
-    let remaining = n, rowIdx = 0, rowsNeeded = 0;
-    while(remaining>0){ remaining -= rowCapacity(rowIdx, cols); rowIdx++; rowsNeeded++; }
-    const neededH = r*2 + Math.max(0,rowsNeeded-1)*(r*1.74);
-    if(neededH<=safeH) break;
-    r -= 0.5;
-  }
-  const rowsArr = [];
-  { let idx=0, rowIdx=0;
-    while(idx<balls.length){ const cap=rowCapacity(rowIdx,cols); rowsArr.push(balls.slice(idx,idx+cap)); idx+=cap; rowIdx++; }
-  }
-  let ballsHtml = '';
-  rowsArr.forEach((rowColors, row)=>{
-    const rowW = rowColors.length*2*r;
-    const rowStartX = safe.x0 + (safeW-rowW)/2; // chaque rangée centrée horizontalement
-    rowColors.forEach((color,col)=>{
-      const bcx = rowStartX + col*2*r + r;
-      const bcy = safe.y1 - r - row*(r*1.74);
-      // reflet clair en haut à gauche de chaque boule, pour un aspect brillant façon bille
-      ballsHtml += `<circle cx="${bcx.toFixed(1)}" cy="${bcy.toFixed(1)}" r="${r.toFixed(1)}" fill="${color}" stroke="#1C1B2E" stroke-width="1.4"/>
-        <ellipse cx="${(bcx-r*0.32).toFixed(1)}" cy="${(bcy-r*0.32).toFixed(1)}" rx="${(r*0.34).toFixed(1)}" ry="${(r*0.22).toFixed(1)}" fill="#fff" opacity="0.6" transform="rotate(-35 ${(bcx-r*0.32).toFixed(1)} ${(bcy-r*0.32).toFixed(1)})"/>`;
-    });
+  // Zone intérieure (ellipse) où disperser librement les boules -- centre et rayons choisis
+  // avec une marge confortable par rapport au contour réel, quelle que soit sa courbure. Plus
+  // simple et plus naturel qu'un empilement en rangées (qui donnait des boules "posées en
+  // équilibre" les unes sur les autres, peu réaliste).
+  const ell = shape==='sac'
+    ? {cx:cx0+cw/2, cy:(bandY+bottomY)/2+18, rx:cw/2-46, ry:(bottomY-bandY)/2-18}
+    : {cx:cx0+cw/2, cy:(bandY+bottomY)/2+6, rx:cw/2-22, ry:(bottomY-bandY)/2-8};
+  // Rayon des boules : assez petit pour laisser de l'air entre elles (pas d'empilement compact).
+  const r = Math.max(6, Math.min(15, Math.sqrt((ell.rx*ell.ry*Math.PI*0.42)/n)));
+  // Générateur pseudo-aléatoire déterministe (même graine à chaque régénération, pour un rendu
+  // stable), avec rejet des positions trop proches du bord ou d'une boule déjà placée.
+  let seed = 1234567;
+  const rnd = () => { seed = (seed*1103515245+12345)>>>0; return (seed>>>8)/16777216; };
+  const placed = [];
+  balls.forEach(color=>{
+    let bx=ell.cx, by=ell.cy, tries=0, best=null, bestScore=-1;
+    while(tries<40){
+      const a = rnd()*Math.PI*2, dist = Math.sqrt(rnd());
+      const px = ell.cx + Math.cos(a)*(ell.rx-r)*dist;
+      const py = ell.cy + Math.sin(a)*(ell.ry-r)*dist;
+      const minDist = placed.reduce((m,p)=>Math.min(m,Math.hypot(p.x-px,p.y-py)),Infinity);
+      if(minDist > bestScore){ bestScore = minDist; best = {x:px,y:py}; }
+      if(minDist >= r*2.5) break;
+      tries++;
+    }
+    bx = best.x; by = best.y;
+    placed.push({x:bx,y:by,color});
   });
+  let ballsHtml = placed.map(p=>{
+    const bcx=p.x, bcy=p.y;
+    // reflet clair en haut à gauche de chaque boule, pour un aspect brillant façon bille
+    return `<circle cx="${bcx.toFixed(1)}" cy="${bcy.toFixed(1)}" r="${r.toFixed(1)}" fill="${p.color}" stroke="#1C1B2E" stroke-width="1.4"/>
+      <ellipse cx="${(bcx-r*0.32).toFixed(1)}" cy="${(bcy-r*0.32).toFixed(1)}" rx="${(r*0.34).toFixed(1)}" ry="${(r*0.22).toFixed(1)}" fill="#fff" opacity="0.6" transform="rotate(-35 ${(bcx-r*0.32).toFixed(1)} ${(bcy-r*0.32).toFixed(1)})"/>`;
+  }).join('');
   let outline, clipPath;
   if(shape==='sac'){
     // sommet ondulé (tissu resserré) : une série de petites bosses entre les deux épaules
@@ -3758,6 +3752,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.123', items:[
+    "Sac/urne -- abandon de l'empilement en rangées (donnait des boules en équilibre improbable les unes sur les autres). Remplacé par une dispersion aléatoire (mais stable d'une régénération à l'autre) dans une zone intérieure sûre, avec de l'espace entre les boules -- un rendu bien plus naturel, sans jamais déborder du contour.",
+  ]},
   { version:'2026-08-04.122', items:[
     "Sac -- fix définitif du calage des boules : une marge globale unique ne pouvait pas satisfaire à la fois « toucher le fond » et « ne pas déborder sur les côtés », car le sac se resserre latéralement près du fond (pas un simple rectangle). Remplacé par des rangées à largeur variable, plus étroites près du fond et pleines plus haut -- donne un vrai empilement en losange, naturel, testé de 1 à 22 boules sans aucun débordement.",
   ]},
