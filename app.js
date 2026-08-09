@@ -1920,10 +1920,12 @@ function evalFunctionExpr(expr, x){
   try{
     let js = expr
       .replace(/\^/g, '**')
-      .replace(/sqrt\(/g, 'Math.sqrt(')
+      .replace(/\bsqrt\(/g, 'Math.sqrt(')
       .replace(/\bsin\(/g, 'Math.sin(')
       .replace(/\bcos\(/g, 'Math.cos(')
       .replace(/\btan\(/g, 'Math.tan(')
+      .replace(/\bexp\(/g, 'Math.exp(')
+      .replace(/\bln\(/g, 'Math.log(')
       .replace(/\babs\(/g, 'Math.abs(')
       .replace(/\bpi\b/gi, 'Math.PI')
       .replace(/(\d)\s*x/g, '$1*x')
@@ -1938,7 +1940,8 @@ function evalFunctionExpr(expr, x){
 }
 const GRAPH_COLORS = ['#0D5BA3','#D93025','#1F7A4D','#B26A00','#7B3FA0','#1C8C9C'];
 let graphSvgIdCounter = 1;
-function graphSvg(xMin,xMax,yMin,yMax,curves,xUnitPi){
+function graphSvg(xMin,xMax,yMin,yMax,curves,xUnitPi,labelStep){
+  labelStep = labelStep && labelStep>=1 ? Math.round(labelStep) : 1;
   const W=420,H=340,pad=30;
   const clipId = 'gClip'+(graphSvgIdCounter++);
   const sx = (W-2*pad)/(xMax-xMin), sy=(H-2*pad)/(yMax-yMin);
@@ -1960,17 +1963,18 @@ function graphSvg(xMin,xMax,yMin,yMax,curves,xUnitPi){
   let grid='', xLabels='', yLabels='';
   const xStep = xUnitPi ? Math.PI/2 : 1;
   const xStart = xUnitPi ? Math.ceil(xMin/xStep)*xStep : Math.ceil(xMin);
-  for(let v=xStart; v<=xMax+1e-9; v+=xStep){
+  let xi = Math.round(xStart/xStep);
+  for(let v=xStart; v<=xMax+1e-9; v+=xStep, xi++){
     const rv = Math.round(v*1000)/1000;
     grid += `<line x1="${X(rv)}" y1="${pad}" x2="${X(rv)}" y2="${H-pad}" stroke="rgba(28,43,57,.1)" stroke-width="1"/>`;
-    if(Math.abs(rv)>1e-6){
+    if(Math.abs(rv)>1e-6 && xi%labelStep===0){
       const label = xUnitPi ? piLabel(rv) : frDecimal(rv);
       xLabels += `<text x="${X(rv)}" y="${xAxisY+15}" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace">${label}</text>`;
     }
   }
   for(let v=Math.ceil(yMin); v<=yMax; v++){
     grid += `<line x1="${pad}" y1="${Y(v)}" x2="${W-pad}" y2="${Y(v)}" stroke="rgba(28,43,57,.1)" stroke-width="1"/>`;
-    if(v!==0) yLabels += `<text x="${yAxisX-6}" y="${Y(v)+4}" font-size="11" text-anchor="end" font-family="JetBrains Mono, monospace">${frDecimal(v)}</text>`;
+    if(v!==0 && v%labelStep===0) yLabels += `<text x="${yAxisX-6}" y="${Y(v)+4}" font-size="11" text-anchor="end" font-family="JetBrains Mono, monospace">${frDecimal(v)}</text>`;
   }
   const axes = `<line x1="${pad-10}" y1="${xAxisY}" x2="${W-pad+10}" y2="${xAxisY}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#gAxeArrowX)"/>
     <line x1="${yAxisX}" y1="${H-pad+10}" x2="${yAxisX}" y2="${pad-10}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#gAxeArrowY)"/>`;
@@ -2209,6 +2213,7 @@ function openGraphTool(){
   document.getElementById('graphXPi').checked = false;
   document.getElementById('graphXMin').value = -5;
   document.getElementById('graphXMax').value = 5;
+  document.getElementById('graphLabelStep').value = 1;
   graphCurves = [{id:graphNextId++, type:'fonction', expr:'x^2-3'}];
   renderGraphCurvesList();
   document.getElementById('graphPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -2252,18 +2257,20 @@ function renderGraphCurvesList(){
 }
 function previewGraph(){
   const xPi = document.getElementById('graphXPi').checked;
+  const labelStep = parseInt(document.getElementById('graphLabelStep').value)||1;
   let xMin=parseFloat(document.getElementById('graphXMin').value), xMax=parseFloat(document.getElementById('graphXMax').value);
   const yMin=parseFloat(document.getElementById('graphYMin').value), yMax=parseFloat(document.getElementById('graphYMax').value);
   if(xPi){ xMin*=Math.PI; xMax*=Math.PI; }
-  document.getElementById('graphPreview').innerHTML = (xMax>xMin && yMax>yMin) ? graphSvg(xMin,xMax,yMin,yMax,graphCurves,xPi) : '<p class="hint" style="color:var(--accent-orange);">Les maximums doivent être supérieurs aux minimums.</p>';
+  document.getElementById('graphPreview').innerHTML = (xMax>xMin && yMax>yMin) ? graphSvg(xMin,xMax,yMin,yMax,graphCurves,xPi,labelStep) : '<p class="hint" style="color:var(--accent-orange);">Les maximums doivent être supérieurs aux minimums.</p>';
 }
 function insertGraph(){
   const xPi = document.getElementById('graphXPi').checked;
+  const labelStep = parseInt(document.getElementById('graphLabelStep').value)||1;
   let xMin=parseFloat(document.getElementById('graphXMin').value), xMax=parseFloat(document.getElementById('graphXMax').value);
   const yMin=parseFloat(document.getElementById('graphYMin').value), yMax=parseFloat(document.getElementById('graphYMax').value);
   if(xPi){ xMin*=Math.PI; xMax*=Math.PI; }
   if(!(xMax>xMin && yMax>yMin) || !graphCurves.length) return;
-  addPendingBlock('graph', graphSvg(xMin,xMax,yMin,yMax,graphCurves,xPi), {xMin,xMax,yMin,yMax,xPi,curves:JSON.parse(JSON.stringify(graphCurves))}, 'reopenGraph');
+  addPendingBlock('graph', graphSvg(xMin,xMax,yMin,yMax,graphCurves,xPi,labelStep), {xMin,xMax,yMin,yMax,xPi,labelStep,curves:JSON.parse(JSON.stringify(graphCurves))}, 'reopenGraph');
   closeGraphTool();
 }
 function reopenGraph(data){
@@ -2273,6 +2280,7 @@ function reopenGraph(data){
   document.getElementById('graphXMax').value = data.xPi ? data.xMax/Math.PI : data.xMax;
   document.getElementById('graphYMin').value = data.yMin;
   document.getElementById('graphYMax').value = data.yMax;
+  document.getElementById('graphLabelStep').value = data.labelStep||1;
   graphCurves = JSON.parse(JSON.stringify(data.curves||[]));
   graphNextId = Math.max(1, ...graphCurves.map(c=>c.id+1));
   renderGraphCurvesList();
@@ -3031,6 +3039,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.109', items:[
+    "Outil Graphique -- nouveau champ « Afficher un nombre tous les : » pour espacer les graduations numérotées (les traits de grille restent tous visibles, seuls les nombres s'espacent) -- utile sur une plage étendue où ils se chevauchaient. Ajout des fonctions ln (logarithme népérien) et exp dans les expressions, ex. ln(x), exp(x).",
+  ]},
   { version:'2026-08-04.108', items:[
     "Fix -- les champs X min/max et Y min/max de l'outil Graphique ne mettaient pas à jour l'aperçu automatiquement (gestionnaire manquant, ajouté lors de la session précédente). Corrigé.",
   ]},
