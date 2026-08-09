@@ -700,8 +700,16 @@ function renderMathText(raw){
   text = text.replace(/\(([^()]+)\)\/\(([^()]+)\)/g, (m,a,b)=>protect(katexSpan(`\\dfrac{${cleanExpr(a)}}{${cleanExpr(b)}}`)));
   text = text.replace(/\(([^()]+)\)\/(\d+(?:[.,]\d+)?)/g, (m,a,b)=>protect(katexSpan(`\\dfrac{${cleanExpr(a)}}{${b.replace(',','.')}}`)));
   text = text.replace(/(\d+(?:[.,]\d+)?)\/\(([^()]+)\)/g, (m,a,b)=>protect(katexSpan(`\\dfrac{${a.replace(',','.')}}{${cleanExpr(b)}}`)));
-  // 4) plain fractions a/b (integers or decimals)
+  // 4) plain fractions a/b (integers or decimals) -- traité avant la règle avec appel de
+  // fonction ci-dessous, pour qu'un nombre décimal (ex. 3.5/4) soit capturé en entier d'abord,
+  // plutôt que de laisser cette dernière n'en voler qu'un morceau (ex. juste "5/4").
   text = text.replace(/(\d+(?:[.,]\d+)?)\/(\d+(?:[.,]\d+)?)/g, (m,a,b)=>protect(katexSpan(`\\dfrac{${a.replace(',','.')}}{${b.replace(',','.')}}`)));
+  // 4bis) fractions avec un appel de fonction d'un côté ou des deux (ex. f(x+3)/x, x/g(x)) --
+  // même logique que cleanExpr, appliquée ici au texte libre (pas seulement à l'intérieur de sqrt()).
+  {
+    const terme = '[a-zA-Z][a-zA-Z0-9]*\\([^()]*\\)|[a-zA-Z0-9]+';
+    text = text.replace(new RegExp(`(${terme})\\/(${terme})`, 'g'), (m,a,b)=>protect(katexSpan(`\\dfrac{${a}}{${b}}`)));
+  }
   // 5) exponents  base^exp  (exp = digits or {...})
   text = text.replace(/([A-Za-z0-9\)\]])\^(-?\d+(?:[.,]\d+)?|\{[^}]+\})/g, (m,base,exp)=>{
     const e = exp.startsWith('{') ? exp.slice(1,-1) : exp;
@@ -2794,6 +2802,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.102', items:[
+    "Fix -- f(x+3)/x (et toute fraction avec un appel de fonction d'un côté) n'était pas reconnue en dehors de sqrt(). Ajouté au texte libre général, en réordonnant pour ne pas casser les fractions décimales (3.5/4 restait coupé en deux avant ce correctif).",
+  ]},
   { version:'2026-08-04.101', items:[
     "Changement d'approche pour Σ/lim/∫ -- la syntaxe simplifiée (somme(...), lim(...), integrale(...)) analysée par expressions régulières ne pouvait pas gérer une imbrication arbitraire (parenthèses dans parenthèses), quel que soit le nombre de correctifs. Les 3 boutons insèrent maintenant du LaTeX réel directement (entre $...$), modifiable librement : n'importe quelle complexité (fractions imbriquées, plusieurs fonctions...) fonctionne de façon fiable, puisque c'est KaTeX lui-même (un vrai analyseur) qui l'interprète, plus une approximation par regex.",
   ]},
