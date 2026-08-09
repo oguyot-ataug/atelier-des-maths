@@ -740,6 +740,19 @@ function renderMathText(raw){
    cours, sans perdre la possibilité de revenir éditer. */
 let corRows = [1];
 let corValidated = false;
+/* Comme dans le module Évaluation (qui n'a pas de grand rectangle de saisie sous le titre --
+   juste les blocs), la zone de texte libre peut être retirée pour ne garder que les blocs
+   insérés. Réversible via le bouton "+ Zone de texte libre" qui réapparaît à sa place. */
+function corRemoveTextarea(){
+  document.getElementById('correctionInputWrap').style.display = 'none';
+  document.getElementById('btnCorAddTextarea').style.display = 'inline-flex';
+  renderCorrectionPreview();
+}
+function corAddTextarea(){
+  document.getElementById('correctionInputWrap').style.display = 'block';
+  document.getElementById('btnCorAddTextarea').style.display = 'none';
+  renderCorrectionPreview();
+}
 function corSetRowCols(rowIdx, n){
   corRows[rowIdx] = Math.max(1, Math.min(6, parseInt(n)||1));
   renderCorrectionPreview();
@@ -782,9 +795,10 @@ function corRenderRowsControls(){
   `).join('');
 }
 function renderCorrectionPreview(){
-  const raw = document.getElementById('correctionInput').value;
+  const textareaVisible = document.getElementById('correctionInputWrap').style.display !== 'none';
+  const raw = textareaVisible ? document.getElementById('correctionInput').value : '';
   const rendered = raw.trim() ? renderMathText(raw) : '';
-  const previewHtml = rendered || '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>';
+  const previewHtml = rendered || (textareaVisible ? '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>' : '');
   const cleanBlocks = blocksRowsHTML('global', corRows, false);
   document.getElementById('correctionPreview').innerHTML = corHeaderHTML() + previewHtml + (corValidated ? cleanBlocks : blocksRowsHTML('global', corRows, true));
   updateProjectionWindow(rendered + cleanBlocks);
@@ -939,7 +953,7 @@ function singleBlockHTML(b, ctx, withControls, draggable){
     return `<div class="nb-figure-row disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}"${sizeStyle?` style="${sizeStyle}overflow:hidden;"`:''}>${html}</div>`;
   }
   const dragAttrs = draggable ? `draggable="true" ondragstart="evalDragStart(event,${b.id})"` : '';
-  return `<div class="nb-figure-row" ${dragAttrs} style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px 10px;margin:8px 0;${draggable?'cursor:grab;':''}">
+  return `<div class="nb-figure-row" ${dragAttrs} style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px 10px;margin:8px 0;background:#fff;${draggable?'cursor:grab;':''}">
     <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;z-index:2;">
       ${b.editFn ? `<button type="button" onclick="editBlock(${b.id},'${ctx}')" title="Modifier ce bloc" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✏️</button>` : ''}
       <button type="button" onclick="removeBlock(${b.id},'${ctx}')" title="Supprimer ce bloc" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✕</button>
@@ -985,7 +999,7 @@ function blocksRowsHTML(ctx, rows, withControls, cellBorders){
     if(nCols<=1){
       const inner = rowBlocks.map(b=>singleBlockHTML(b, ctx, withControls, true)).join('');
       const dropAttrs = withControls ? `ondragover="event.preventDefault()" ondrop="evalDropInRowCol(event,'${ctx}',${rowIdx},0)"` : '';
-      return `<div ${dropAttrs} style="${withControls?'min-height:40px;border:1px dashed rgba(28,43,57,.15);border-radius:8px;padding:6px;margin-bottom:6px;':'margin-bottom:6px;'}">${inner}</div>`;
+      return `<div ${dropAttrs} style="${withControls?'min-height:40px;border:1px dashed rgba(28,43,57,.15);border-radius:8px;padding:6px;margin-bottom:6px;background:#fff;':'margin-bottom:6px;'}">${inner}</div>`;
     }
     const cols = Array.from({length:nCols}, ()=>[]);
     rowBlocks.forEach(b=>{ const c = Math.min(b.col||0, nCols-1); cols[c].push(b); });
@@ -1003,7 +1017,7 @@ function blocksRowsHTML(ctx, rows, withControls, cellBorders){
       const dropAttrs = `ondragover="event.preventDefault()" ondrop="evalDropInRowCol(event,'${ctx}',${rowIdx},${ci})"`;
       const mk = (side,icon,title) => `<button type="button" onclick="toggleCellBorder('${ctx}','${key}','${side}')" title="${title}" style="font-size:.62rem;line-height:1;border:1px solid ${cb[side]?'#0D5BA3':'rgba(28,43,57,.25)'};background:${cb[side]?'#0D5BA3':'#fff'};color:${cb[side]?'#fff':'#666'};border-radius:3px;padding:2px 4px;cursor:pointer;">${icon}</button>`;
       const borderBtns = `<div style="position:absolute;bottom:3px;right:3px;display:flex;gap:2px;z-index:2;">${mk('top','▔','Bordure haute')}${mk('right','▕','Bordure droite')}${mk('bottom','▁','Bordure basse')}${mk('left','▏','Bordure gauche')}</div>`;
-      return `<div class="eval-col" ${dropAttrs} style="position:relative;flex:1;min-width:0;min-height:50px;border:1px dashed rgba(28,43,57,.15);border-radius:8px;padding:6px;">${inner}${borderBtns}</div>`;
+      return `<div class="eval-col" ${dropAttrs} style="position:relative;flex:1;min-width:0;min-height:50px;border:1px dashed rgba(28,43,57,.15);border-radius:8px;padding:6px;background:#fff;">${inner}${borderBtns}</div>`;
     }).join('');
     return `<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:6px;">${colsHtml}</div>`;
   }).join('');
@@ -3807,6 +3821,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.126', items:[
+    "Outil de correction -- la zone de texte libre sous le titre peut désormais être retirée (bouton ✕), comme dans le module Évaluation qui n'en a pas et va directement aux blocs ; réversible via « + Zone de texte libre ». Les zones en pointillés (blocs en cours d'édition) passent en fond blanc, plus lisibles que le fond crème hérité de la page.",
+  ]},
   { version:'2026-08-04.125', items:[
     "Outil de correction -- reprend maintenant le même système de mise en page que le module Évaluation : lignes/colonnes personnalisables, glisser-déposer des blocs entre elles, bouton « Valider » qui masque la barre d'outils et les pointillés d'édition pour un écran plus lisible en cours. L'ajout au cahier et la fenêtre de projection conservent bien cette mise en page. Fix au passage : « Effacer le brouillon » ne vidait pas réellement les blocs insérés (variable orpheline depuis un ancien refactor) -- corrigé.",
   ]},
@@ -5231,8 +5248,10 @@ let editingIndex = null;
 function sortCahierInPlace(){ cahier.sort((a,b)=> (a.date||'').localeCompare(b.date||'')); }
 
 async function addToCahier(){
-  const raw = document.getElementById('correctionInput').value.trim();
-  if(!raw){ return; }
+  const textareaVisible = document.getElementById('correctionInputWrap').style.display !== 'none';
+  const raw = textareaVisible ? document.getElementById('correctionInput').value.trim() : '';
+  const figureHtml = blocksRowsHTML('global', corRows, false);
+  if(!raw && !(blocksStores['global']||[]).length) return; // rien à sauvegarder
   const entry = {
     niveau: document.getElementById('corNiveau').value,
     chapitre: document.getElementById('corChapitre').value,
@@ -5240,7 +5259,7 @@ async function addToCahier(){
     titre: document.getElementById('corTitre').value.trim(),
     date: document.getElementById('corDate').value || todayISO(),
     raw: raw,
-    figure: blocksRowsHTML('global', corRows, false),
+    figure: figureHtml,
   };
   let oldServerId = null;
   if(editingIndex!==null){
