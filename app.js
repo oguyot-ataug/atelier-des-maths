@@ -1224,8 +1224,6 @@ const TOOL_ICONS = {
   graph: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21 L3 3"/><path d="M3 21 L21 21"/><path d="M4 15 Q9 4 13 13 T21 6"/></svg>`,
   stats: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><rect x="5" y="13" width="4" height="8" fill="currentColor" stroke="none"/><rect x="11" y="8" width="4" height="13" fill="currentColor" stroke="none"/><rect x="17" y="3" width="4" height="18" fill="currentColor" stroke="none"/></svg>`,
   urn: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4 L4 20 Q4 22 6 22 L18 22 Q20 22 20 20 L18 4"/><circle cx="9" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="14" cy="15" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="9" r="1.6" fill="currentColor" stroke="none"/></svg>`,
-  cards: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="4" width="11" height="16" rx="1.5"/><path d="M9.5 8 L11 11 L9.5 14 L8 11 Z" fill="currentColor" stroke="none"/></svg>`,
-  tree: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="4" cy="12" r="1.8" fill="currentColor" stroke="none"/><line x1="5.5" y1="12" x2="14" y2="6"/><line x1="5.5" y1="12" x2="14" y2="18"/><circle cx="15" cy="6" r="1.8" fill="currentColor" stroke="none"/><circle cx="15" cy="18" r="1.8" fill="currentColor" stroke="none"/><line x1="16.5" y1="6" x2="21" y2="4"/><line x1="16.5" y1="6" x2="21" y2="8"/><line x1="16.5" y1="18" x2="21" y2="16"/><line x1="16.5" y1="18" x2="21" y2="20"/></svg>`,
 };
 function toolButtonsHTML(ctx){
   const set = `setToolContext('${ctx}');`;
@@ -1239,9 +1237,7 @@ function toolButtonsHTML(ctx){
     <button type="button" class="tool-icon-btn" title="Cubes empilés" onclick="${set}openCubesTool()">${TOOL_ICONS.cubes}</button>
     <button type="button" class="tool-icon-btn" title="Graphique (droites / fonctions)" onclick="${set}openGraphTool()">${TOOL_ICONS.graph}</button>
     <button type="button" class="tool-icon-btn" title="Diagramme statistique" onclick="${set}openStatsTool()">${TOOL_ICONS.stats}</button>
-    <button type="button" class="tool-icon-btn" title="Sac / urne de boules" onclick="${set}openUrnTool()">${TOOL_ICONS.urn}</button>
-    <button type="button" class="tool-icon-btn" title="Cartes à jouer" onclick="${set}openCardsTool()">${TOOL_ICONS.cards}</button>
-    <button type="button" class="tool-icon-btn" title="Arbre de probabilité" onclick="${set}openTreeTool()">${TOOL_ICONS.tree}</button>
+    <button type="button" class="tool-icon-btn" title="Probabilités (sac/urne, cartes, dés, arbre)" onclick="${set}openUrnTool()">${TOOL_ICONS.urn}</button>
   `;
 }
 let figDragPoint = null;
@@ -1253,7 +1249,7 @@ const SCALE_PX_PER_CM = 20;
    modale elle-même -- appelé au début de chaque fonction d'ouverture d'outil, pour qu'un seul
    outil (ou groupe) soit jamais visible à la fois. */
 function hideAllToolContent(){
-  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','statsPanel','urnPanel','cardsPanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -1268,7 +1264,7 @@ function activateToolTab(wrapId, activeTabId, inactiveTabId){
   if(inactiveTab) inactiveTab.classList.remove('active');
 }
 function closeAllToolPanels(){
-  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','statsPanel','urnPanel','cardsPanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -1999,7 +1995,7 @@ function pieChartSvg(data){
      que les classes n'ont pas toutes la même largeur. */
 /* ---- Probabilités : sac/urne, cartes, arbre ---- */
 function urnSvg(data, shape){
-  const W=260,H=270,cx0=40,cy0=55,cw=180,ch=170;
+  const W=260,H=280,cx0=35,bandY=78,cw=190,bottomY=255;
   const clipId = 'urnClip'+(graphSvgIdCounter++);
   let balls = [];
   data.forEach(d=>{ for(let i=0;i<(d.count||0);i++) balls.push(d.color); });
@@ -2007,23 +2003,40 @@ function urnSvg(data, shape){
   // simple regroupement par couleur.
   balls = balls.map((c,i)=>({c,k:(i*2654435761)>>>0})).sort((a,b)=>(a.k%97)-(b.k%97)).map(o=>o.c);
   const n = balls.length || 1;
-  const cols = Math.max(1, Math.round(Math.sqrt(n*cw/ch)));
-  const r = Math.min(cw/cols/2-2, 16);
+  const bodyH = bottomY-bandY-10;
+  const cols = Math.max(1, Math.round(Math.sqrt(n*cw/bodyH)));
+  const r = Math.min(cw/cols/2-3, 17);
   let ballsHtml = '';
   balls.forEach((color,i)=>{
     const col = i%cols, row = Math.floor(i/cols);
     const bcx = cx0 + (col+0.5)*(cw/cols);
-    const bcy = cy0+ch-8-row*(r*2+4)-r;
-    ballsHtml += `<circle cx="${bcx.toFixed(1)}" cy="${bcy.toFixed(1)}" r="${r.toFixed(1)}" fill="${color}" stroke="#1C1B2E" stroke-width="1.2"/>`;
+    const bcy = bottomY-14-row*(r*2+4)-r;
+    // reflet clair en haut à gauche de chaque boule, pour un aspect brillant façon bille
+    ballsHtml += `<circle cx="${bcx.toFixed(1)}" cy="${bcy.toFixed(1)}" r="${r.toFixed(1)}" fill="${color}" stroke="#1C1B2E" stroke-width="1.4"/>
+      <ellipse cx="${(bcx-r*0.32).toFixed(1)}" cy="${(bcy-r*0.32).toFixed(1)}" rx="${(r*0.34).toFixed(1)}" ry="${(r*0.22).toFixed(1)}" fill="#fff" opacity="0.6" transform="rotate(-35 ${(bcx-r*0.32).toFixed(1)} ${(bcy-r*0.32).toFixed(1)})"/>`;
   });
-  const outline = shape==='sac'
-    ? `<path d="M${cx0+18},${cy0} Q${cx0-14},${cy0+ch*0.55} ${cx0+18},${cy0+ch} L${cx0+cw-18},${cy0+ch} Q${cx0+cw+14},${cy0+ch*0.55} ${cx0+cw-18},${cy0} Z" fill="none" stroke="#1C1B2E" stroke-width="2.2"/>
-       <path d="M${cx0+14},${cy0-4} Q${cx0+cw/2},${cy0-14} ${cx0+cw-14},${cy0-4}" fill="none" stroke="#1C1B2E" stroke-width="2.2"/>`
-    : `<path d="M${cx0},${cy0} L${cx0+12},${cy0+ch} Q${cx0+cw/2},${cy0+ch+16} ${cx0+cw-12},${cy0+ch} L${cx0+cw},${cy0} Z" fill="none" stroke="#1C1B2E" stroke-width="2.2"/>
-       <ellipse cx="${cx0+cw/2}" cy="${cy0}" rx="${cw/2}" ry="9" fill="none" stroke="#1C1B2E" stroke-width="2.2"/>`;
+  let outline, clipPath;
+  if(shape==='sac'){
+    // sommet ondulé (tissu resserré) : une série de petites bosses entre les deux épaules
+    const nBumps=4, bumpW=(cw-30)/nBumps, topL=cx0+15, topR=cx0+cw-15;
+    let scallop = `M${topL},${bandY-6}`;
+    for(let i=0;i<nBumps;i++){
+      const xm = topL+i*bumpW+bumpW/2, xe = topL+(i+1)*bumpW;
+      const bump = i%2===0 ? -16 : -22;
+      scallop += ` Q${xm},${bandY+bump} ${xe},${bandY-6}`;
+    }
+    outline = `<path d="M${cx0+22},${bandY+14} Q${cx0-18},${(bandY+bottomY)/2} ${cx0+cw*0.28},${bottomY} Q${cx0+cw*0.5},${bottomY+14} ${cx0+cw*0.72},${bottomY} Q${cx0+cw+18},${(bandY+bottomY)/2} ${cx0+cw-22},${bandY+14} Z" fill="none" stroke="#1C1B2E" stroke-width="2.2"/>
+      <path d="${scallop}" fill="none" stroke="#1C1B2E" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M${cx0+18},${bandY-2} L${cx0+22},${bandY+22} L${cx0+cw-22},${bandY+22} L${cx0+cw-18},${bandY-2} Z" fill="#C9975A" stroke="#1C1B2E" stroke-width="2"/>`;
+    clipPath = `M${cx0+18},${bandY+18} Q${cx0-20},${(bandY+bottomY)/2} ${cx0+cw*0.28},${bottomY+4} Q${cx0+cw*0.5},${bottomY+18} ${cx0+cw*0.72},${bottomY+4} Q${cx0+cw+20},${(bandY+bottomY)/2} ${cx0+cw-18},${bandY+18} Z`;
+  } else {
+    outline = `<path d="M${cx0+8},${bandY} L${cx0+18},${bottomY} Q${cx0+cw/2},${bottomY+14} ${cx0+cw-18},${bottomY} L${cx0+cw-8},${bandY} Z" fill="none" stroke="#1C1B2E" stroke-width="2.2"/>
+      <ellipse cx="${cx0+cw/2}" cy="${bandY}" rx="${cw/2-8}" ry="9" fill="none" stroke="#1C1B2E" stroke-width="2.2"/>`;
+    clipPath = `M${cx0+6},${bandY} L${cx0+18},${bottomY+2} Q${cx0+cw/2},${bottomY+16} ${cx0+cw-18},${bottomY+2} L${cx0+cw-6},${bandY} Z`;
+  }
   const legend = data.filter(d=>d.count>0).map(d=>`<span style="display:inline-flex;align-items:center;gap:5px;margin:2px 10px 2px 0;"><span style="width:11px;height:11px;border-radius:50%;background:${d.color};display:inline-block;flex:none;"></span><span style="font-size:.85rem;">${escapeHtml(d.label||'')} : ${d.count}</span></span>`).join('');
   return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:260px;display:block;margin:6px auto;">
-    <defs><clipPath id="${clipId}"><path d="${shape==='sac'?`M${cx0+16},${cy0-4} Q${cx0-16},${cy0+ch*0.55} ${cx0+16},${cy0+ch+2} L${cx0+cw-16},${cy0+ch+2} Q${cx0+cw+16},${cy0+ch*0.55} ${cx0+cw-16},${cy0-4} Z`:`M${cx0-2},${cy0} L${cx0+12},${cy0+ch} Q${cx0+cw/2},${cy0+ch+16} ${cx0+cw-12},${cy0+ch} L${cx0+cw+2},${cy0} Z`}"/></clipPath></defs>
+    <defs><clipPath id="${clipId}"><path d="${clipPath}"/></clipPath></defs>
     <g clip-path="url(#${clipId})">${ballsHtml}</g>
     ${outline}
   </svg>
@@ -2031,6 +2044,38 @@ function urnSvg(data, shape){
 }
 const SUIT_SYMBOLS = {pique:'♠',coeur:'♥',carreau:'♦',trefle:'♣'};
 const SUIT_COLORS = {pique:'#1C1B2E',coeur:'#D93025',carreau:'#D93025',trefle:'#1C1B2E'};
+/* Dés : pour un dé à 6 faces, pastilles classiques (comme un vrai dé) ; pour les autres
+   nombres de faces (4, 8, 10, 12, 20...), le nombre est simplement écrit au centre, une vraie
+   forme polyédrique étant hors de portée d'un rendu SVG simple. */
+function dicePipsHTML(v, x, y, size, pipColor){
+  const positions = {
+    1:[[.5,.5]], 2:[[.27,.27],[.73,.73]], 3:[[.27,.27],[.5,.5],[.73,.73]],
+    4:[[.27,.27],[.73,.27],[.27,.73],[.73,.73]],
+    5:[[.27,.27],[.73,.27],[.5,.5],[.27,.73],[.73,.73]],
+    6:[[.27,.24],[.73,.24],[.27,.5],[.73,.5],[.27,.76],[.73,.76]],
+  };
+  return (positions[v]||[]).map(([px,py])=>`<circle cx="${(x+px*size).toFixed(1)}" cy="${(y+py*size).toFixed(1)}" r="${(size*0.09).toFixed(1)}" fill="${pipColor}"/>`).join('');
+}
+function diceSvg(dice){
+  if(!dice.length) return '<p class="hint">Ajoute au moins un dé.</p>';
+  const size=64, gap=14;
+  const W = dice.length*(size+gap)-gap+16, H = size+24;
+  let html='';
+  dice.forEach((d,i)=>{
+    const x=8+i*(size+gap), y=8;
+    const bg = d.color||'#fff';
+    const isDark = bg==='#1C1B2E' || bg==='#0D5BA3' || bg==='#D93025' || bg==='#1F7A4D' || bg==='#7B3FA0';
+    const fg = isDark ? '#fff' : '#1C1B2E';
+    html += `<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="9" fill="${bg}" stroke="#1C1B2E" stroke-width="2"/>`;
+    if(d.faces===6 && d.value>=1 && d.value<=6){
+      html += dicePipsHTML(d.value, x, y, size, fg);
+    } else {
+      html += `<text x="${x+size/2}" y="${y+size/2+8}" font-size="24" text-anchor="middle" font-weight="700" font-family="Space Grotesk, sans-serif" fill="${fg}">${d.value}</text>`;
+    }
+    html += `<text x="${x+size/2}" y="${y+size+16}" font-size="10" text-anchor="middle" fill="#666" font-family="JetBrains Mono, monospace">d${d.faces}</text>`;
+  });
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;display:block;margin:6px auto;">${html}</svg>`;
+}
 function cardsSvg(cards){
   if(!cards.length) return '<p class="hint">Sélectionne au moins une carte.</p>';
   const cw=50,ch=70,gap=7;
@@ -2669,19 +2714,29 @@ function reopenStats(data){
 const URN_COLORS = [{name:'Rouge',hex:'#D93025'},{name:'Bleu',hex:'#0D5BA3'},{name:'Vert',hex:'#1F7A4D'},{name:'Jaune',hex:'#E8B93A'},{name:'Noir',hex:'#1C1B2E'},{name:'Orange',hex:'#E35D3A'},{name:'Violet',hex:'#7B3FA0'},{name:'Blanc',hex:'#F5F0E8'}];
 let urnData = [];
 let urnNextId = 1;
-function openUrnTool(){
+/* Bascule entre les 4 outils de probabilités regroupés sous les mêmes onglets (sac/urne,
+   cartes, dés, arbre) : affiche le panneau demandé, masque les 3 autres. */
+const PROBA_TABS = [{panel:'urnPanel',tab:'probaTabUrn'},{panel:'cardsPanel',tab:'probaTabCards'},{panel:'dicePanel',tab:'probaTabDice'},{panel:'treePanel',tab:'probaTabTree'}];
+function activateProbaTab(panelId){
   hideAllToolContent();
   document.getElementById('toolsModalOverlay').style.display='flex';
-  document.getElementById('urnPanel').style.display='block';
+  document.getElementById('probaGroupWrap').style.display='block';
+  PROBA_TABS.forEach(t=>{
+    document.getElementById(t.panel).style.display = (t.panel===panelId) ? 'block' : 'none';
+    document.getElementById(t.tab).classList.toggle('active', t.panel===panelId);
+  });
+}
+function openUrnTool(){
+  activateProbaTab('urnPanel');
   document.getElementById('urnShape').value = 'sac';
   urnData = [
     {id:urnNextId++, colorIdx:0, count:5},
     {id:urnNextId++, colorIdx:1, count:3},
   ];
   renderUrnRows();
-  document.getElementById('urnPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+  document.getElementById('probaGroupWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-function closeUrnTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('urnPanel').style.display='none'; }
+function closeUrnTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('probaGroupWrap').style.display='none'; }
 function addUrnRow(){
   urnData.push({id:urnNextId++, colorIdx:urnData.length%URN_COLORS.length, count:1});
   renderUrnRows();
@@ -2733,15 +2788,13 @@ const RANKS_52 = ['2','3','4','5','6','7','8','9','10','V','D','R','A'];
 const SUITS_ORDER = ['pique','coeur','carreau','trefle'];
 let cardsSelected = new Set();
 function openCardsTool(){
-  hideAllToolContent();
-  document.getElementById('toolsModalOverlay').style.display='flex';
-  document.getElementById('cardsPanel').style.display='block';
+  activateProbaTab('cardsPanel');
   document.getElementById('cardsDeckType').value = '52';
   cardsSelected = new Set();
   renderCardsGrid();
-  document.getElementById('cardsPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+  document.getElementById('probaGroupWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-function closeCardsTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('cardsPanel').style.display='none'; }
+function closeCardsTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('probaGroupWrap').style.display='none'; }
 function cardKey(rank,suit){ return rank+'-'+suit; }
 function toggleCard(rank,suit){
   const k = cardKey(rank,suit);
@@ -2789,17 +2842,78 @@ function reopenCards(data){
   renderCardsGrid();
 }
 
+/* ---- Outil Dés ---- */
+const DICE_FACES_OPTIONS = [4,6,8,10,12,20];
+const DICE_COLORS = [{name:'Blanc',hex:'#fff'},{name:'Rouge',hex:'#D93025'},{name:'Bleu',hex:'#0D5BA3'},{name:'Vert',hex:'#1F7A4D'},{name:'Violet',hex:'#7B3FA0'},{name:'Noir',hex:'#1C1B2E'}];
+let diceData = [];
+let diceNextId = 1;
+function openDiceTool(){
+  activateProbaTab('dicePanel');
+  diceData = [
+    {id:diceNextId++, faces:6, value:4, colorIdx:0},
+    {id:diceNextId++, faces:6, value:2, colorIdx:0},
+  ];
+  renderDiceRows();
+  document.getElementById('probaGroupWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeDiceTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('probaGroupWrap').style.display='none'; }
+function addDiceRow(){
+  diceData.push({id:diceNextId++, faces:6, value:1, colorIdx:0});
+  renderDiceRows();
+}
+function removeDiceRow(id){
+  diceData = diceData.filter(r=>r.id!==id);
+  renderDiceRows();
+}
+function updateDiceRow(id, field, value){
+  const r = diceData.find(r=>r.id===id);
+  if(!r) return;
+  if(field==='faces'){ r.faces = parseInt(value); if(r.value>r.faces) r.value=r.faces; }
+  else if(field==='value') r.value = Math.max(1, Math.min(r.faces, parseInt(value)||1));
+  else if(field==='colorIdx') r.colorIdx = parseInt(value);
+  renderDiceRows();
+}
+function renderDiceRows(){
+  const box = document.getElementById('diceRowsList');
+  box.innerHTML = diceData.map(r=>{
+    const facesOptions = DICE_FACES_OPTIONS.map(f=>`<option value="${f}" ${f===r.faces?'selected':''}>d${f}</option>`).join('');
+    const colorOptions = DICE_COLORS.map((c,i)=>`<option value="${i}" ${i===r.colorIdx?'selected':''}>${c.name}</option>`).join('');
+    return `<div class="tool-row" style="margin-bottom:6px;align-items:center;">
+      <select onchange="updateDiceRow(${r.id},'faces',this.value)">${facesOptions}</select>
+      <label class="hint" style="margin:0;">valeur : <input type="number" value="${r.value}" min="1" max="${r.faces}" oninput="updateDiceRow(${r.id},'value',this.value)" style="width:50px;"></label>
+      <select onchange="updateDiceRow(${r.id},'colorIdx',this.value)">${colorOptions}</select>
+      <button type="button" onclick="removeDiceRow(${r.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
+    </div>`;
+  }).join('');
+  previewDice();
+}
+function diceDataForSvg(){
+  return diceData.map(r=>({faces:r.faces, value:r.value, color:DICE_COLORS[r.colorIdx].hex}));
+}
+function previewDice(){
+  document.getElementById('dicePreview').innerHTML = diceSvg(diceDataForSvg());
+}
+function insertDice(){
+  if(!diceData.length) return;
+  addPendingBlock('dice', diceSvg(diceDataForSvg()), {rows:JSON.parse(JSON.stringify(diceData))}, 'reopenDice');
+  closeDiceTool();
+}
+function reopenDice(data){
+  openDiceTool();
+  diceData = JSON.parse(JSON.stringify(data.rows||[]));
+  diceNextId = Math.max(1, ...diceData.map(r=>r.id+1));
+  renderDiceRows();
+}
+
 /* ---- Outil Arbre de probabilité ---- */
 let treeRoot = null;
 function openTreeTool(){
-  hideAllToolContent();
-  document.getElementById('toolsModalOverlay').style.display='flex';
-  document.getElementById('treePanel').style.display='block';
+  activateProbaTab('treePanel');
   treeRoot = {label:'', children:[]};
   renderTreeEditor();
-  document.getElementById('treePanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+  document.getElementById('probaGroupWrap').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-function closeTreeTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('treePanel').style.display='none'; }
+function closeTreeTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('probaGroupWrap').style.display='none'; }
 function treeGetNode(path){
   let n = treeRoot;
   for(const i of path) n = n.children[i];
@@ -3590,6 +3704,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.117', items:[
+    "Sac/urne redessiné pour se rapprocher d'un vrai dessin illustré (haut ondulé façon tissu resserré, bande nouée marron, bas arrondi, boules avec reflet brillant). Les 4 outils de probabilités (Sac/urne, Cartes, Dés, Arbre) sont désormais regroupés sous une seule icône à onglets, comme pour Division ou Fraction visuelle. Nouvel outil Dés : un ou plusieurs dés, nombre de faces au choix (d4 à d20), valeur affichée et couleur personnalisables -- pastilles classiques pour un d6, nombre affiché pour les autres.",
+  ]},
   { version:'2026-08-04.116', items:[
     "Arbre de probabilité -- fix positionnement : la fraction d'une branche montante avait son dénominateur coupé par le trait, dégagement augmenté. Les événements (noms de branche) se placent maintenant au-dessus du point pour une branche montante, en dessous pour une branche descendante (au lieu de toujours au-dessus).",
   ]},
