@@ -1222,6 +1222,7 @@ const TOOL_ICONS = {
   fraction: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3 A9 9 0 0 1 12 21 Z" fill="currentColor" stroke="none"/><line x1="12" y1="3" x2="12" y2="21"/></svg>`,
   cubes: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2 L21 7 L21 17 L12 22 L3 17 L3 7 Z"/><path d="M12 2 L12 12 L21 7 M12 12 L3 7 M12 12 L12 22"/></svg>`,
   graph: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21 L3 3"/><path d="M3 21 L21 21"/><path d="M4 15 Q9 4 13 13 T21 6"/></svg>`,
+  stats: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><rect x="5" y="13" width="4" height="8" fill="currentColor" stroke="none"/><rect x="11" y="8" width="4" height="13" fill="currentColor" stroke="none"/><rect x="17" y="3" width="4" height="18" fill="currentColor" stroke="none"/></svg>`,
 };
 function toolButtonsHTML(ctx){
   const set = `setToolContext('${ctx}');`;
@@ -1234,6 +1235,7 @@ function toolButtonsHTML(ctx){
     <button type="button" class="tool-icon-btn" title="Fraction visuelle (disque / rectangle)" onclick="${set}openDisqueTool()">${TOOL_ICONS.fraction}</button>
     <button type="button" class="tool-icon-btn" title="Cubes empilés" onclick="${set}openCubesTool()">${TOOL_ICONS.cubes}</button>
     <button type="button" class="tool-icon-btn" title="Graphique (droites / fonctions)" onclick="${set}openGraphTool()">${TOOL_ICONS.graph}</button>
+    <button type="button" class="tool-icon-btn" title="Diagramme statistique" onclick="${set}openStatsTool()">${TOOL_ICONS.stats}</button>
   `;
 }
 let figDragPoint = null;
@@ -1245,7 +1247,7 @@ const SCALE_PX_PER_CM = 20;
    modale elle-même -- appelé au début de chaque fonction d'ouverture d'outil, pour qu'un seul
    outil (ou groupe) soit jamais visible à la fois. */
 function hideAllToolContent(){
-  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','statsPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -1260,7 +1262,7 @@ function activateToolTab(wrapId, activeTabId, inactiveTabId){
   if(inactiveTab) inactiveTab.classList.remove('active');
 }
 function closeAllToolPanels(){
-  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','statsPanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -1940,6 +1942,87 @@ function evalFunctionExpr(expr, x){
 }
 const GRAPH_COLORS = ['#0D5BA3','#D93025','#1F7A4D','#B26A00','#7B3FA0','#1C8C9C'];
 let graphSvgIdCounter = 1;
+/* ---- Diagrammes statistiques (camembert, barres, bâtons, histogramme) ---- */
+/* Choisit un pas de graduation "rond" (1, 2, 5, 10, 20, 50...) proche de max/nDivisions --
+   évite des graduations disgracieuses comme "tous les 3,7". */
+function niceStep(maxV, target){
+  target = target || 6;
+  const raw = maxV/target;
+  const mag = Math.pow(10, Math.floor(Math.log10(raw||1)));
+  const norm = raw/mag;
+  const step = norm<1.5 ? 1 : norm<3.5 ? 2 : norm<7.5 ? 5 : 10;
+  return step*mag;
+}
+function pieChartSvg(data){
+  const W=300,H=300,cx=150,cy=150,r=115;
+  const total = data.reduce((s,d)=>s+(d.value||0),0) || 1;
+  let angle = -90, paths='', labels='';
+  data.forEach((d,i)=>{
+    const v = d.value||0;
+    const color = d.color || GRAPH_COLORS[i%GRAPH_COLORS.length];
+    const sweep = (v/total)*360;
+    if(sweep<=0){ return; }
+    const a1 = angle*Math.PI/180, a2 = (angle+sweep)*Math.PI/180;
+    const x1 = cx+r*Math.cos(a1), y1 = cy+r*Math.sin(a1);
+    const x2 = cx+r*Math.cos(a2), y2 = cy+r*Math.sin(a2);
+    const largeArc = sweep>180 ? 1 : 0;
+    paths += `<path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${largeArc} 1 ${x2.toFixed(1)},${y2.toFixed(1)} Z" fill="${color}" stroke="#fff" stroke-width="2"/>`;
+    const mid = (angle+sweep/2)*Math.PI/180;
+    const pct = Math.round(v/total*100);
+    if(pct>=5){
+      const lx = cx+(r*0.62)*Math.cos(mid), ly = cy+(r*0.62)*Math.sin(mid);
+      labels += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-size="13" fill="#fff" text-anchor="middle" font-weight="700" font-family="Space Grotesk, sans-serif">${pct}%</text>`;
+    }
+    angle += sweep;
+  });
+  const legend = data.map((d,i)=>{
+    const color = d.color || GRAPH_COLORS[i%GRAPH_COLORS.length];
+    return `<span style="display:inline-flex;align-items:center;gap:6px;margin:2px 12px 2px 0;"><span style="width:12px;height:12px;border-radius:3px;background:${color};display:inline-block;flex:none;"></span><span style="font-size:.85rem;">${escapeHtml(d.label||'')} (${d.value})</span></span>`;
+  }).join('');
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:300px;display:block;margin:6px auto;">${paths}${labels}</svg>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;margin-top:6px;">${legend}</div>`;
+}
+/* Diagrammes en barres, en bâtons et histogrammes partagent le même squelette (axes, graduations
+   Y, étiquettes X) ; seule la largeur/l'espacement des barres change selon le mode. */
+function barLikeChartSvg(data, mode){
+  const W=420,H=300,padL=42,padB=36,padT=14,padR=14;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const maxV = Math.max(...data.map(d=>d.value||0), 1);
+  const n = data.length || 1;
+  const yStep = niceStep(maxV);
+  const yTop = Math.ceil(maxV/yStep)*yStep;
+  let grid='', yLabels='';
+  for(let v=0; v<=yTop+1e-9; v+=yStep){
+    const y = padT+plotH-(v/yTop)*plotH;
+    grid += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W-padR}" y2="${y.toFixed(1)}" stroke="rgba(28,43,57,.1)"/>`;
+    yLabels += `<text x="${padL-6}" y="${(y+4).toFixed(1)}" font-size="11" text-anchor="end" font-family="JetBrains Mono, monospace">${frDecimal(Math.round(v*100)/100)}</text>`;
+  }
+  const slot = plotW/n;
+  // bâtons : trait fin + point ; histogramme : barres jointives ; barres : espacées
+  const barW = mode==='batons' ? 0 : mode==='histogramme' ? slot : slot*0.62;
+  let bars='', xLabels='';
+  data.forEach((d,i)=>{
+    const v = d.value||0;
+    const color = d.color || GRAPH_COLORS[i%GRAPH_COLORS.length];
+    const bh = (v/yTop)*plotH;
+    const xCenter = padL + i*slot + slot/2;
+    const y = padT+plotH-bh;
+    if(mode==='batons'){
+      bars += `<line x1="${xCenter.toFixed(1)}" y1="${(padT+plotH).toFixed(1)}" x2="${xCenter.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${color}" stroke-width="2.4"/>
+        <circle cx="${xCenter.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="${color}"/>`;
+    } else {
+      const x = xCenter - barW/2;
+      bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${bh.toFixed(1)}" fill="${color}" stroke="${mode==='histogramme'?'#fff':'none'}" stroke-width="${mode==='histogramme'?1:0}"/>`;
+    }
+    xLabels += `<text x="${xCenter.toFixed(1)}" y="${(padT+plotH+16).toFixed(1)}" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace">${escapeHtml(d.label||'')}</text>`;
+  });
+  const axes = `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+plotH}" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="${padL}" y1="${padT+plotH}" x2="${W-padR}" y2="${padT+plotH}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;">
+    ${grid}${axes}${bars}${yLabels}${xLabels}
+  </svg>`;
+}
+
 function graphSvg(xMin,xMax,yMin,yMax,curves,xUnitPi,labelStepX,labelStepY){
   labelStepX = labelStepX && labelStepX>=1 ? Math.round(labelStepX) : 1;
   labelStepY = labelStepY && labelStepY>=1 ? Math.round(labelStepY) : 1;
@@ -2331,6 +2414,72 @@ function autoFitGraph(){
     document.getElementById('graphXMax').value = Math.ceil((xHi+xPad)/(xPi?Math.PI:1));
   }
   previewGraph();
+}
+
+/* ---- Outil Diagramme statistique (camembert, barres, bâtons, histogramme) ---- */
+let statsData = [];
+let statsNextId = 1;
+function openStatsTool(){
+  hideAllToolContent();
+  document.getElementById('toolsModalOverlay').style.display='flex';
+  document.getElementById('statsPanel').style.display='block';
+  document.getElementById('statsType').value = 'camembert';
+  statsData = [
+    {id:statsNextId++, label:'Chat', value:8},
+    {id:statsNextId++, label:'Chien', value:12},
+    {id:statsNextId++, label:'Aucun', value:6},
+  ];
+  renderStatsRows();
+  document.getElementById('statsPanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeStatsTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('statsPanel').style.display='none'; }
+function addStatsRow(){
+  statsData.push({id:statsNextId++, label:'', value:1});
+  renderStatsRows();
+}
+function removeStatsRow(id){
+  statsData = statsData.filter(r=>r.id!==id);
+  renderStatsRows();
+}
+function updateStatsRow(id, field, value){
+  const r = statsData.find(r=>r.id===id);
+  if(r) r[field] = (field==='value') ? (parseFloat(value)||0) : value;
+  previewStats();
+}
+function renderStatsRows(){
+  const isHisto = document.getElementById('statsType').value==='histogramme';
+  const box = document.getElementById('statsRowsList');
+  box.innerHTML = statsData.map((r,i)=>{
+    const color = GRAPH_COLORS[i%GRAPH_COLORS.length];
+    const swatch = `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${color};margin-right:6px;"></span>`;
+    return `<div class="tool-row" style="margin-bottom:6px;align-items:center;">
+      ${swatch}
+      <input type="text" value="${escapeHtml(r.label)}" placeholder="${isHisto?'ex. [0;10[':'catégorie'}" oninput="updateStatsRow(${r.id},'label',this.value)" style="width:110px;">
+      <label class="hint" style="margin:0;">effectif : <input type="number" value="${r.value}" min="0" oninput="updateStatsRow(${r.id},'value',this.value)" style="width:60px;"></label>
+      <button type="button" onclick="removeStatsRow(${r.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
+    </div>`;
+  }).join('');
+  previewStats();
+}
+function buildStatsSvg(){
+  const type = document.getElementById('statsType').value;
+  return type==='camembert' ? pieChartSvg(statsData) : barLikeChartSvg(statsData, type);
+}
+function previewStats(){
+  document.getElementById('statsPreview').innerHTML = statsData.length ? buildStatsSvg() : '';
+}
+function insertStats(){
+  if(!statsData.length) return;
+  const type = document.getElementById('statsType').value;
+  addPendingBlock('stats', buildStatsSvg(), {type, rows:JSON.parse(JSON.stringify(statsData))}, 'reopenStats');
+  closeStatsTool();
+}
+function reopenStats(data){
+  openStatsTool();
+  document.getElementById('statsType').value = data.type||'camembert';
+  statsData = JSON.parse(JSON.stringify(data.rows||[]));
+  statsNextId = Math.max(1, ...statsData.map(r=>r.id+1));
+  renderStatsRows();
 }
 
 function resetFigureState(){
@@ -3054,6 +3203,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.111', items:[
+    "Nouvel outil « Diagramme statistique » : camembert (avec pourcentages et légende), diagramme en barres, diagramme en bâtons, et histogramme (barres jointives, pour des classes/intervalles) -- à partir d'une simple liste de catégories et de leurs effectifs. Graduations Y choisies automatiquement (pas rond, ex. tous les 2 ou tous les 5). Disponible dans l'outil de correction et les exercices d'évaluation, comme les autres figures.",
+  ]},
   { version:'2026-08-04.110', items:[
     "Outil Graphique -- l'espacement des nombres affichés se règle maintenant séparément pour X et pour Y. En mode radians, π/2 et 3π/2 s'affichent comme de vraies fractions empilées (numérateur, barre, dénominateur), plus fidèles à l'écriture mathématique habituelle qu'un texte plat « π/2 ».",
   ]},
