@@ -1520,28 +1520,30 @@ function divisionPoseeHTML(res, vierge, showDiff){
   const N = dividendStr.length;
   const rows = [{cells: dpAlignedCells(dividendStr, N-1, N), bold:true}];
   let lastEndCol = -1;
-  // Avec différences : la ligne "− X" (ce qu'on retranche) est affichée, suivie du reste de
-  // cette étape -- comportement inchangé, il fonctionnait déjà correctement. Sans différences :
-  // la toute première étape n'utilise que des chiffres bruts du dividende (déjà visibles dans
-  // l'en-tête, rien de nouveau à écrire) -- elle reste mentale. À partir de la deuxième étape,
-  // un vrai reste calculé se combine avec un chiffre abaissé : on écrit alors le nombre obtenu
-  // avant réduction, puis le reste.
-  let firstTrigger = true;
-  res.steps.forEach((s,i)=>{
-    if(s.sub>0){
-      if(showDiff){
+  if(showDiff){
+    res.steps.forEach((s,i)=>{
+      if(s.sub>0){
         rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:!vierge, underline:!vierge, endCol:i});
         rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
         lastEndCol = i;
-      } else {
+      }
+    });
+    if(lastEndCol < N-1) rows.push({cells: dpAlignedCells(vierge?'':String(res.remainder), N-1, N)});
+  } else {
+    // Sans différences : la toute première étape n'utilise que des chiffres bruts du dividende
+    // (déjà visibles dans l'en-tête) -- elle reste mentale. Pour les étapes suivantes, chaque
+    // "valeur" (ex. 117) contient déjà le reste précédent dans ses premiers chiffres (le "11"
+    // de 117) : pas besoin de l'écrire une seconde fois à part. Seul le tout dernier reste,
+    // qui n'est jamais repris dans une valeur suivante, s'écrit séparément à la fin.
+    let firstTrigger = true;
+    res.steps.forEach((s,i)=>{
+      if(s.sub>0){
         if(firstTrigger){ firstTrigger = false; return; }
         rows.push({cells: dpAlignedCells(vierge?'':String(s.value), i, N)});
-        rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
-        lastEndCol = i;
       }
-    }
-  });
-  if(lastEndCol < N-1) rows.push({cells: dpAlignedCells(vierge?'':String(res.remainder), N-1, N)});
+    });
+    rows.push({cells: dpAlignedCells(vierge?'':String(res.remainder), N-1, N)});
+  }
   // En mode vierge : le dividende ET le diviseur restent visibles (l'élève doit les connaître
   // pour démarrer) ; le quotient, le détail des étapes, ET toute préparation (signe moins,
   // trait de soustraction) sont masqués -- l'espace reste entièrement vierge. Le nombre de
@@ -3928,6 +3930,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.142', items:[
+    "Division sans différences -- un reste intermédiaire en trop s'affichait (ex. 1437÷12 montrait 23, 11, 117, 9 au lieu de 23, 117, 9). Chaque valeur (ex. 117) contient déjà le reste précédent dans ses premiers chiffres (le « 11 »), inutile de l'écrire une seconde fois à part. Seul le tout dernier reste, qui n'est repris nulle part ailleurs, s'écrit désormais séparément.",
+  ]},
   { version:'2026-08-04.141', items:[
     "Division sans différences -- la toute première étape (ex. « 42 », « 12 » pour 425÷15) traînait inutilement : elle n'utilise que des chiffres bruts du dividende, déjà visibles dans l'en-tête, donc n'apporte rien de nouveau à l'écrit. Elle reste désormais mentale ; l'écriture démarre à partir du premier vrai abaissement sur un reste calculé. Le mode « avec différences » n'a pas changé.",
   ]},
