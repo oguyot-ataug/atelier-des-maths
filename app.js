@@ -67,6 +67,14 @@ document.querySelectorAll('#navLinks button').forEach(b=>{
 
 /* ======================= ROUTER ======================= */
 function showView(id){
+  // Sécurité : si un outil (figure, texte, probabilités...) ou l'éditeur de formule était resté
+  // ouvert (overlay plein écran) au moment de changer de page via le menu, on le referme -- sans
+  // ça, l'overlay reste actif par-dessus la nouvelle page et bloque tous les clics, y compris sur
+  // le menu lui-même, sans qu'aucune erreur ne s'affiche (rien ne plante, l'overlay fait juste
+  // écran).
+  if(typeof closeAllToolPanels==='function') closeAllToolPanels();
+  const fbOverlay = document.getElementById('formulaBuilderOverlay');
+  if(fbOverlay) fbOverlay.style.display='none';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
@@ -3828,6 +3836,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.130', items:[
+    "Fix très probable du menu bloqué (sans erreur console) -- si un outil (figure, texte, probabilités, éditeur de formule...) restait ouvert et qu'on changeait de page via le menu sans le fermer d'abord, son overlay plein écran restait actif par-dessus la nouvelle page et interceptait tous les clics, y compris sur le menu, sans qu'aucune erreur ne s'affiche (rien ne plante, l'overlay fait juste écran). Changer de page ferme désormais systématiquement tout outil resté ouvert.",
+  ]},
   { version:'2026-08-04.129', items:[
     "Ajout d'un favicon (absent jusqu'ici, provoquait un 404 inoffensif mais visible dans la console à chaque chargement). Recherche en cours sur un éventuel 404 lié au blocage du menu -- si le problème persiste, toute information sur l'URL exacte en échec (visible dans la console développeur) aiderait à le cibler précisément.",
   ]},
