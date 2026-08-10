@@ -3864,6 +3864,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.134', items:[
+    "Cahier de corrections -- fix définitif de la page blanche au PDF : abandon de html2canvas (donnait une page blanche de façon récurrente avec ce contenu) au profit de l'impression native du navigateur, comme pour l'évaluation. Boutons renommés « 🖨️ Imprimer / Enregistrer en PDF ». Le bouton « Voir toutes les dates » redevient « 📅 Corrections du jour » une fois cliqué, pour basculer facilement entre les deux vues sans ressaisir la date.",
+  ]},
   { version:'2026-08-04.133', items:[
     "Cahier de correction (liste en bas de l'outil de correction) -- filtre par date ajouté, sur la date du jour par défaut, pour ne plus afficher toutes les corrections de l'année à chaque ouverture. Bouton « Voir toutes les dates » pour tout retrouver. Tentative de fix pour la page blanche au « Générer le cahier (PDF) » -- désactivation d'un mode de rendu connu pour mal fonctionner avec l'arbre de probabilité (SVG avec texte enrichi) ; à confirmer.",
   ]},
@@ -6001,9 +6004,22 @@ function showAllCorListDates(){
   document.getElementById('corListFilterDate').value = '';
   renderCahier();
 }
+/* Un seul bouton bidirectionnel : "Voir toutes les dates" <-> "Corrections du jour", plutôt que
+   de devoir resaisir la date manuellement pour revenir à la vue filtrée. */
+function toggleCorListDateFilter(){
+  if(corListFilterDate){
+    showAllCorListDates();
+  } else {
+    corListFilterDate = todayISO();
+    document.getElementById('corListFilterDate').value = corListFilterDate;
+    renderCahier();
+  }
+}
 function renderCahier(){
   const dateInput = document.getElementById('corListFilterDate');
   if(dateInput && !dateInput.value && corListFilterDate) dateInput.value = corListFilterDate;
+  const toggleBtn = document.getElementById('btnCorListDateToggle');
+  if(toggleBtn) toggleBtn.textContent = corListFilterDate ? 'Voir toutes les dates' : "📅 Corrections du jour";
   document.getElementById('cahierCount').textContent = cahier.length+' exercice(s)';
   const list=document.getElementById('cahierList');
   const status=document.getElementById('corListFilterStatus');
@@ -6111,21 +6127,39 @@ async function renderCahierEleve(){
   const book=document.getElementById('cahierEleveBook');
   requestAnimationFrame(()=>{ book.scrollTop = book.scrollHeight; });
 }
-function exportCahierAsPDF(){
-  if(!cahier.length){ alert('Le cahier est vide : ajoutez au moins une correction avant de générer le PDF.'); return; }
-  if(typeof html2pdf==='undefined'){ alert("La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?)."); return; }
-  // Important : voir la note dans exportCoursPDF — jamais de position fixed/absolute ici.
-  const clip = document.createElement('div');
-  clip.style.cssText='height:0;overflow:hidden;';
-  const wrapper=document.createElement('div');
-  wrapper.style.cssText='width:700px;background:#FEFDFB;padding:30px 30px 30px 60px;font-family:Inter,sans-serif;color:#1C1B2E;';
-  wrapper.innerHTML = `<h1 style="font-family:'Space Grotesk',sans-serif;">Cahier de corrections</h1>` + buildCahierNotebookHTML();
-  clip.appendChild(wrapper);
-  document.body.appendChild(clip);
-  html2pdf().set({margin:10, filename:'cahier-de-corrections.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:false}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
-    .from(wrapper).save()
-    .then(()=>clip.remove())
-    .catch(()=>{ clip.remove(); alert("La génération du PDF a échoué dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer la page à la place."); });
+async function exportCahierAsPDF(){
+  if(!cahier.length){ await niceAlert('Le cahier est vide : ajoutez au moins une correction avant de générer le PDF.'); return; }
+  // Même choix que pour l'évaluation : la capture d'écran (html2canvas) donne une page blanche
+  // de façon récurrente avec ce type de contenu (SVG notamment), malgré plusieurs correctifs
+  // essayés. L'impression native du navigateur est fiable -- choisir "Enregistrer au format PDF"
+  // comme destination dans la boîte d'impression (celle-ci bloque l'onglet tant qu'elle est
+  // ouverte -- comportement normal du navigateur, pas un bug).
+  const w = window.open('', '_blank', 'width=900,height=700');
+  if(!w){ await niceAlert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site, ou utilisez Ctrl/Cmd+P."); return; }
+  w.document.open();
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+    <title>Cahier de corrections</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <style>
+      @page{ size:A4; margin:15mm; }
+      body{ font-family:Inter,Arial,sans-serif; color:#20242E; font-size:12.5pt; line-height:1.7; margin:0; }
+      .print-page{ max-width:680px; margin:0 auto; }
+      .nb-figure-row{ margin:6px 0; }
+      svg{ max-width:100%; }
+      .katex{ font-size:1.18em; }
+      h1{ font-family:Arial,sans-serif; }
+    </style>
+  </head><body><div class="print-page"><h1>Cahier de corrections</h1>${buildCahierNotebookHTML()}</div></body></html>`);
+  w.document.close();
+  w.onload = () => {
+    setTimeout(()=>{
+      syncDiskSizes(w.document);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        w.focus();
+        w.print();
+      }));
+    }, 200);
+  };
 }
 function generateCahierPDF(){ exportCahierAsPDF(); }
 function downloadCahierElevePDF(){ exportCahierAsPDF(); }
