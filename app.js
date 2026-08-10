@@ -1517,11 +1517,12 @@ function dpRenderDivisionTable(rows, quotient, divisor, commaCol, vierge){
     }).join('');
     return `<tr>${signTd}${tds}</tr>`;
   }).join('');
+  const rowPad = vierge ? '11px' : '2px';
   return `<div style="display:flex;gap:18px;align-items:stretch;font-family:'JetBrains Mono',monospace;font-size:1.05rem;">
     <table style="border-collapse:collapse;">${rowsHtml}</table>
-    <div style="border-left:1.5px solid #1C1B2E;line-height:1.9;">
-      <div style="padding-left:14px;">${divisor}</div>
-      <div style="border-top:1.5px solid #1C1B2E;padding-left:14px;">${quotient||'&nbsp;'}</div>
+    <div style="border-left:1.5px solid #1C1B2E;">
+      <div style="padding:${rowPad} 0 ${rowPad} 14px;">${divisor}</div>
+      <div style="border-top:1.5px solid #1C1B2E;padding:6px 0 0 14px;">${quotient||'&nbsp;'}</div>
     </div>
   </div>`;
 }
@@ -3942,6 +3943,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.144', items:[
+    "Division posée -- le diviseur (à droite de la barre) était légèrement plus haut que le dividende, à cause d'un interlignage différent. Corrigé : les deux sont maintenant parfaitement alignés, dans tous les modes (normal, vierge, avec différences).",
+  ]},
   { version:'2026-08-04.143', items:[
     "Division à compléter -- le trait vertical n'était pas assez haut (lignes trop compactes pour écrire à la main). Hauteur des lignes augmentée en mode vierge.",
     "Zones/lignes à une seule colonne -- il n'était pas possible d'y ajouter une bordure ou un fond de couleur (ces réglages n'existaient que pour les lignes à plusieurs colonnes). Corrigé : même système disponible partout.",
