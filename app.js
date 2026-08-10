@@ -991,6 +991,7 @@ function evalDropInRowCol(e, ctx, rowIndex, colIndex){
 /* Bascule une bordure (haut/droite/bas/gauche) d'une cellule (ligne-colonne) d'un exercice --
    un peu comme un éditeur de tableau où l'on choisit quels bords de cellule apparaissent. */
 let corCellBorders = {};
+const CELL_BG_COLORS = {rouge:'#D93025', bleu:'#1F3A5C', vert:'#2C5A2E', orange:'#E35D3A'};
 function toggleCellBorder(ctx, cellKey, side){
   let borders;
   if(ctx==='global'){
@@ -1003,6 +1004,23 @@ function toggleCellBorder(ctx, cellKey, side){
   }
   if(!borders[cellKey]) borders[cellKey] = {};
   borders[cellKey][side] = !borders[cellKey][side];
+  ctx==='global' ? renderCorrectionPreview() : renderEvalExercicesList();
+}
+/* Fond coloré d'une zone/colonne -- même palette que {{couleur|texte}}, pour rester cohérent
+   avec le reste du site. Cliquer une couleur déjà choisie la retire (case à cocher, pas une
+   liste à choix unique imposé). */
+function setCellBg(ctx, cellKey, colorKey){
+  let borders;
+  if(ctx==='global'){
+    borders = corCellBorders;
+  } else {
+    const ex = getExerciseByCtx(ctx);
+    if(!ex) return;
+    if(!ex.cellBorders) ex.cellBorders = {};
+    borders = ex.cellBorders;
+  }
+  if(!borders[cellKey]) borders[cellKey] = {};
+  borders[cellKey].bg = (borders[cellKey].bg===colorKey) ? null : colorKey;
   ctx==='global' ? renderCorrectionPreview() : renderEvalExercicesList();
 }
 /* Rendu en lignes indépendantes, chacune avec son propre nombre de colonnes (ex. 3 colonnes
@@ -1028,12 +1046,16 @@ function blocksRowsHTML(ctx, rows, withControls, cellBorders){
       // s'appliquent, en trait plein.
       if(!withControls){
         const realBorder = (cb.right?'border-right:1.3px solid #1C1B2E;':'') + (cb.bottom?'border-bottom:1.3px solid #1C1B2E;':'') + (cb.left?'border-left:1.3px solid #1C1B2E;':'') + (cb.top?'border-top:1.3px solid #1C1B2E;':'');
-        return `<div class="eval-col" style="flex:1;min-width:0;padding:${realBorder?'6px':'0'};${realBorder}">${inner}</div>`;
+        const bgStyle = cb.bg ? `background-color:${CELL_BG_COLORS[cb.bg]}22;border-radius:6px;` : '';
+        return `<div class="eval-col" style="flex:1;min-width:0;padding:${(realBorder||bgStyle)?'6px':'0'};${realBorder}${bgStyle}">${inner}</div>`;
       }
       const dropAttrs = `ondragover="event.preventDefault()" ondrop="evalDropInRowCol(event,'${ctx}',${rowIdx},${ci})"`;
       const mk = (side,icon,title) => `<button type="button" onclick="toggleCellBorder('${ctx}','${key}','${side}')" title="${title}" style="font-size:.62rem;line-height:1;border:1px solid ${cb[side]?'#0D5BA3':'rgba(28,43,57,.25)'};background:${cb[side]?'#0D5BA3':'#fff'};color:${cb[side]?'#fff':'#666'};border-radius:3px;padding:2px 4px;cursor:pointer;">${icon}</button>`;
       const borderBtns = `<div style="position:absolute;bottom:3px;right:3px;display:flex;gap:2px;z-index:2;">${mk('top','▔','Bordure haute')}${mk('right','▕','Bordure droite')}${mk('bottom','▁','Bordure basse')}${mk('left','▏','Bordure gauche')}</div>`;
-      return `<div class="eval-col" ${dropAttrs} style="position:relative;flex:1;min-width:0;min-height:50px;border:1px dashed rgba(28,43,57,.15);border-radius:8px;padding:6px;background:#fff;">${inner}${borderBtns}</div>`;
+      const bgSwatches = Object.keys(CELL_BG_COLORS).map(k=>`<button type="button" onclick="setCellBg('${ctx}','${key}','${k}')" title="Fond ${k}" style="width:13px;height:13px;border-radius:50%;border:${cb.bg===k?'2px solid #1C1B2E':'1px solid rgba(28,43,57,.3)'};background:${CELL_BG_COLORS[k]};cursor:pointer;padding:0;"></button>`).join('');
+      const bgSwatchesBox = `<div style="position:absolute;bottom:3px;left:3px;display:flex;gap:3px;z-index:2;">${bgSwatches}</div>`;
+      const cellBgStyle = cb.bg ? `background-color:${CELL_BG_COLORS[cb.bg]}22;` : '';
+      return `<div class="eval-col" ${dropAttrs} style="position:relative;flex:1;min-width:0;min-height:50px;border:1px dashed rgba(28,43,57,.15);border-radius:8px;padding:6px;background:#fff;${cellBgStyle}">${inner}${borderBtns}${bgSwatchesBox}</div>`;
     }).join('');
     return `<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:6px;">${colsHtml}</div>`;
   }).join('');
@@ -1491,19 +1513,22 @@ function dpRenderDivisionTable(rows, quotient, divisor, commaCol){
     </div>
   </div>`;
 }
-function divisionPoseeHTML(res, vierge){
+function divisionPoseeHTML(res, vierge, showDiff){
+  if(showDiff===undefined) showDiff = true;
   if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le dividende et le diviseur doivent être des entiers, et le diviseur non nul.</p>';
   const dividendStr = String(res.dividend);
   const N = dividendStr.length;
   const rows = [{cells: dpAlignedCells(dividendStr, N-1, N), bold:true}];
   let lastEndCol = -1;
-  res.steps.forEach((s,i)=>{
-    if(s.sub>0){
-      rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:!vierge, underline:!vierge, endCol:i});
-      rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
-      lastEndCol = i;
-    }
-  });
+  if(showDiff){
+    res.steps.forEach((s,i)=>{
+      if(s.sub>0){
+        rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:!vierge, underline:!vierge, endCol:i});
+        rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
+        lastEndCol = i;
+      }
+    });
+  }
   if(lastEndCol < N-1) rows.push({cells: dpAlignedCells(vierge?'':String(res.remainder), N-1, N)});
   // En mode vierge : le dividende ET le diviseur restent visibles (l'élève doit les connaître
   // pour démarrer) ; le quotient, le détail des étapes, ET toute préparation (signe moins,
@@ -1511,8 +1536,8 @@ function divisionPoseeHTML(res, vierge){
   // lignes reste calculé sur la vraie division : la hauteur totale anticipe donc correctement
   // le nombre d'étapes à venir, sans donner d'indice sur leur déroulé.
   const table = dpRenderDivisionTable(rows, vierge?'':res.quotient, res.divisor);
-  if(vierge) return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">${table}</div>`;
-  return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">${table}</div>
+  if(vierge) return `<div style="margin:10px 0;padding:14px 0;">${table}</div>`;
+  return `<div style="margin:10px 0;padding:14px 0;">${table}</div>
   <p class="hint" style="margin:0;">${res.dividend} = (${res.divisor} × ${res.quotient}) + ${res.remainder}</p>`;
 }
 function buildDivisionStages(res){
@@ -1539,7 +1564,7 @@ function buildDivisionStages(res){
   return stages;
 }
 function divisionStagesHTML(stages, res){
-  const panels = stages.map((st,i)=>`<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
+  const panels = stages.map((st,i)=>`<div style="margin:10px 0;padding:14px 0;">
     ${dpRenderDivisionTable(st.rows, st.quotient, res.divisor)}
     <p class="hint" style="margin:8px 0 0;">${i+1}. ${st.caption}</p>
   </div>`).join('');
@@ -1552,7 +1577,8 @@ function previewDivisionPosee(){
   if(!res){ document.getElementById('divisionPreview').innerHTML = divisionPoseeHTML(null); return; }
   const stepByStep = document.getElementById('divStepByStep').checked;
   const vierge = document.getElementById('divVierge').checked;
-  document.getElementById('divisionPreview').innerHTML = (stepByStep && !vierge) ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res, vierge);
+  const showDiff = document.getElementById('divShowDiff').checked;
+  document.getElementById('divisionPreview').innerHTML = (stepByStep && !vierge) ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res, vierge, showDiff);
 }
 function openDivisionTool(){activateToolTab('divisionGroupWrap','divTabEucl','divTabDec'); document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('divisionPanel').style.display='block';
@@ -1567,8 +1593,9 @@ function insertDivisionPosee(){
   if(!res){ document.getElementById('divisionPreview').innerHTML = divisionPoseeHTML(null); return; }
   const stepByStep = document.getElementById('divStepByStep').checked;
   const vierge = document.getElementById('divVierge').checked;
-  const html = (stepByStep && !vierge) ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res, vierge);
-  addPendingBlock('divisionPosee', html, {a,b,stepByStep,vierge}, 'reopenDivisionPosee');
+  const showDiff = document.getElementById('divShowDiff').checked;
+  const html = (stepByStep && !vierge) ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res, vierge, showDiff);
+  addPendingBlock('divisionPosee', html, {a,b,stepByStep,vierge,showDiff}, 'reopenDivisionPosee');
   closeDivisionTool();
 }
 function reopenDivisionPosee(data){
@@ -1577,6 +1604,7 @@ function reopenDivisionPosee(data){
   document.getElementById('divDiviseur').value = data.b;
   document.getElementById('divVierge').checked = !!data.vierge;
   document.getElementById('divStepByStep').checked = data.stepByStep;
+  document.getElementById('divShowDiff').checked = data.showDiff!==false;
   previewDivisionPosee();
 }
 /* ============================================================
@@ -1658,7 +1686,7 @@ function divisionDecimaleHTML(res, maxDec, vierge){
   // toute préparation (signe moins, trait de soustraction, marqueur de virgule) sont masqués --
   // l'espace reste entièrement vierge. La hauteur reste calculée sur la vraie division.
   const table = dpRenderDivisionTable(rows, vierge?'':(res.quotient + (res.repeating?'…':'')), res.divisor, commaColIdx);
-  return `<div style="margin:10px 0;padding:14px;background:rgba(28,43,57,.03);border-radius:8px;">
+  return `<div style="margin:10px 0;padding:14px 0;">
     ${table}
   </div>`;
 }
@@ -3888,6 +3916,10 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.138', items:[
+    "Division posée -- nouvelle case à cocher « Afficher les différences » pour masquer le détail des soustractions intermédiaires (garde juste le dividende et le reste final). Fond gris retiré partout dans l'outil.",
+    "Outil de création (évaluation/correction) -- les zones/colonnes peuvent maintenant recevoir un fond de couleur (même palette que {{couleur|texte}} : rouge, bleu, vert, orange), en plus des bordures déjà disponibles. Pastilles cliquables en bas à gauche de chaque zone.",
+  ]},
   { version:'2026-08-04.137', items:[
     "Fix important -- un cours référencé dans une correction (bandeau titre, badges, encadrés colorés) s'imprimait en texte brut sans aucune mise en forme. Cause : ces éléments utilisent les classes CSS du site, jamais chargées dans les fenêtres d'impression/projection (seul KaTeX l'était). La feuille de style du site est désormais chargée dans les trois fenêtres concernées (projection, impression évaluation, impression cahier).",
   ]},
