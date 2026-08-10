@@ -3887,6 +3887,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.136', items:[
+    "Impression (cahier ET évaluation) -- les couleurs de fond et bordures disparaissaient à l'impression : réglage par défaut du navigateur pour économiser l'encre, désormais forcé à conserver l'apparence exacte de l'écran. Soulignement des références d'exercices légèrement décalé (n'était plus collé au texte).",
+  ]},
   { version:'2026-08-04.135', items:[
     "Cahier de corrections (impression/PDF) -- fix de la synchronisation des tailles de disques (elle s'appuyait sur les données de la session en cours, absentes pour d'anciennes corrections déjà enregistrées ; remplacée par une version autonome qui fonctionne toujours). Dates en gras, références d'exercices soulignées, titre « Cahier de corrections » retiré, chapitre affiché en pied de section aligné à droite (ex. « N1 · Opérations sur les nombres décimaux ») -- un vrai pied de page physique par feuille imprimée n'étant pas réalisable en HTML/CSS standard, ceci en est l'équivalent le plus proche.",
   ]},
@@ -5920,6 +5923,7 @@ async function exportEvaluationPDF(){
          de la fenêtre, ex. 900px) diffère de celle utilisée au moment d'imprimer (recalculée
          sur la largeur de la page A4) -- ce qui décale la synchronisation des disques, mesurée
          avant l'impression sur une largeur qui n'est plus la bonne une fois sur le papier. */
+      * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
       .print-page{ max-width:680px; margin:0 auto; }
       .nb-figure-row{ margin:6px 0; }
       svg{ max-width:100%; }
@@ -6180,8 +6184,9 @@ async function exportCahierAsPDF(){
       .nb-figure-row{ margin:6px 0; }
       svg{ max-width:100%; }
       .katex{ font-size:1.18em; }
+      * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
       .nb-date{ font-weight:700; }
-      .nb-ref{ text-decoration:underline; }
+      .nb-ref{ text-decoration:underline; text-underline-offset:3px; }
       .nb-page-footer{ text-align:right; font-style:italic; color:#666; font-size:.92em; margin:8px 0 16px; }
     </style>
   </head><body><div class="print-page">${buildCahierNotebookHTML()}</div></body></html>`);
