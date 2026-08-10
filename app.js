@@ -1032,8 +1032,20 @@ function blocksRowsHTML(ctx, rows, withControls, cellBorders){
     const rowBlocks = arr.filter(b=>(b.row||0)===rowIdx);
     if(nCols<=1){
       const inner = rowBlocks.map(b=>singleBlockHTML(b, ctx, withControls, true)).join('');
-      const dropAttrs = withControls ? `ondragover="event.preventDefault()" ondrop="evalDropInRowCol(event,'${ctx}',${rowIdx},0)"` : '';
-      return `<div ${dropAttrs} style="${withControls?'min-height:40px;border:1px dashed rgba(28,43,57,.15);border-radius:8px;padding:6px;margin-bottom:6px;background:#fff;':'margin-bottom:6px;'}">${inner}</div>`;
+      const key = rowIdx+'-0';
+      const cb = cellBorders[key] || {};
+      if(!withControls){
+        const realBorder = (cb.right?'border-right:1.3px solid #1C1B2E;':'') + (cb.bottom?'border-bottom:1.3px solid #1C1B2E;':'') + (cb.left?'border-left:1.3px solid #1C1B2E;':'') + (cb.top?'border-top:1.3px solid #1C1B2E;':'');
+        const bgStyle = cb.bg ? `background-color:${CELL_BG_COLORS[cb.bg]}22;border-radius:6px;` : '';
+        return `<div style="${(realBorder||bgStyle)?'padding:6px;':''}${realBorder}${bgStyle}margin-bottom:6px;">${inner}</div>`;
+      }
+      const dropAttrs = `ondragover="event.preventDefault()" ondrop="evalDropInRowCol(event,'${ctx}',${rowIdx},0)"`;
+      const mk = (side,icon,title) => `<button type="button" onclick="toggleCellBorder('${ctx}','${key}','${side}')" title="${title}" style="font-size:.62rem;line-height:1;border:1px solid ${cb[side]?'#0D5BA3':'rgba(28,43,57,.25)'};background:${cb[side]?'#0D5BA3':'#fff'};color:${cb[side]?'#fff':'#666'};border-radius:3px;padding:2px 4px;cursor:pointer;">${icon}</button>`;
+      const borderBtns = `<div style="position:absolute;bottom:3px;right:3px;display:flex;gap:2px;z-index:2;">${mk('top','▔','Bordure haute')}${mk('right','▕','Bordure droite')}${mk('bottom','▁','Bordure basse')}${mk('left','▏','Bordure gauche')}</div>`;
+      const bgSwatches = Object.keys(CELL_BG_COLORS).map(k=>`<button type="button" onclick="setCellBg('${ctx}','${key}','${k}')" title="Fond ${k}" style="width:13px;height:13px;border-radius:50%;border:${cb.bg===k?'2px solid #1C1B2E':'1px solid rgba(28,43,57,.3)'};background:${CELL_BG_COLORS[k]};cursor:pointer;padding:0;"></button>`).join('');
+      const bgSwatchesBox = `<div style="position:absolute;bottom:3px;left:3px;display:flex;gap:3px;z-index:2;">${bgSwatches}</div>`;
+      const cellBgStyle = cb.bg ? `background-color:${CELL_BG_COLORS[cb.bg]}22;` : '';
+      return `<div ${dropAttrs} style="position:relative;min-height:40px;border:1px dashed rgba(28,43,57,.15);border-radius:8px;padding:6px;margin-bottom:6px;background:#fff;${cellBgStyle}">${inner}${borderBtns}${bgSwatchesBox}</div>`;
     }
     const cols = Array.from({length:nCols}, ()=>[]);
     rowBlocks.forEach(b=>{ const c = Math.min(b.col||0, nCols-1); cols[c].push(b); });
@@ -1492,8 +1504,8 @@ function dpAlignedCells(str, endCol, N){
   }
   return cells;
 }
-function dpRenderDivisionTable(rows, quotient, divisor, commaCol){
-  const cellStyle = 'width:22px;text-align:center;padding:2px 0;';
+function dpRenderDivisionTable(rows, quotient, divisor, commaCol, vierge){
+  const cellStyle = `width:22px;text-align:center;padding:${vierge?'11px':'2px'} 0;`;
   const rowsHtml = rows.map(r=>{
     const signTd = `<td style="width:16px;text-align:center;${r.underline?'border-bottom:1.5px solid #1C1B2E;':''}">${r.sign?'−':''}</td>`;
     const tds = r.cells.map((c,ci)=>{
@@ -1549,7 +1561,7 @@ function divisionPoseeHTML(res, vierge, showDiff){
   // trait de soustraction) sont masqués -- l'espace reste entièrement vierge. Le nombre de
   // lignes reste calculé sur la vraie division : la hauteur totale anticipe donc correctement
   // le nombre d'étapes à venir, sans donner d'indice sur leur déroulé.
-  const table = dpRenderDivisionTable(rows, vierge?'':res.quotient, res.divisor);
+  const table = dpRenderDivisionTable(rows, vierge?'':res.quotient, res.divisor, undefined, vierge);
   if(vierge) return `<div style="margin:10px 0;padding:14px 0;">${table}</div>`;
   return `<div style="margin:10px 0;padding:14px 0;">${table}</div>
   <p class="hint" style="margin:0;">${res.dividend} = (${res.divisor} × ${res.quotient}) + ${res.remainder}</p>`;
@@ -1699,7 +1711,7 @@ function divisionDecimaleHTML(res, maxDec, vierge){
   // En mode vierge : dividende et diviseur restent visibles ; quotient, détail des étapes, ET
   // toute préparation (signe moins, trait de soustraction, marqueur de virgule) sont masqués --
   // l'espace reste entièrement vierge. La hauteur reste calculée sur la vraie division.
-  const table = dpRenderDivisionTable(rows, vierge?'':(res.quotient + (res.repeating?'…':'')), res.divisor, commaColIdx);
+  const table = dpRenderDivisionTable(rows, vierge?'':(res.quotient + (res.repeating?'…':'')), res.divisor, commaColIdx, vierge);
   return `<div style="margin:10px 0;padding:14px 0;">
     ${table}
   </div>`;
@@ -3930,6 +3942,10 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.143', items:[
+    "Division à compléter -- le trait vertical n'était pas assez haut (lignes trop compactes pour écrire à la main). Hauteur des lignes augmentée en mode vierge.",
+    "Zones/lignes à une seule colonne -- il n'était pas possible d'y ajouter une bordure ou un fond de couleur (ces réglages n'existaient que pour les lignes à plusieurs colonnes). Corrigé : même système disponible partout.",
+  ]},
   { version:'2026-08-04.142', items:[
     "Division sans différences -- un reste intermédiaire en trop s'affichait (ex. 1437÷12 montrait 23, 11, 117, 9 au lieu de 23, 117, 9). Chaque valeur (ex. 117) contient déjà le reste précédent dans ses premiers chiffres (le « 11 »), inutile de l'écrire une seconde fois à part. Seul le tout dernier reste, qui n'est repris nulle part ailleurs, s'écrit désormais séparément.",
   ]},
