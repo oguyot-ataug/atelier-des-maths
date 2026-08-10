@@ -852,6 +852,7 @@ function toggleProjection(){
   ceProjWin.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
     <title>Correction -- projection</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
     <style>
       html,body{margin:0;padding:0;background:#FFFFFF;height:100%;}
       body{padding:4vw 5vw;box-sizing:border-box;}
@@ -3887,6 +3888,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.137', items:[
+    "Fix important -- un cours référencé dans une correction (bandeau titre, badges, encadrés colorés) s'imprimait en texte brut sans aucune mise en forme. Cause : ces éléments utilisent les classes CSS du site, jamais chargées dans les fenêtres d'impression/projection (seul KaTeX l'était). La feuille de style du site est désormais chargée dans les trois fenêtres concernées (projection, impression évaluation, impression cahier).",
+  ]},
   { version:'2026-08-04.136', items:[
     "Impression (cahier ET évaluation) -- les couleurs de fond et bordures disparaissaient à l'impression : réglage par défaut du navigateur pour économiser l'encre, désormais forcé à conserver l'apparence exacte de l'écran. Soulignement des références d'exercices légèrement décalé (n'était plus collé au texte).",
   ]},
@@ -5914,6 +5918,7 @@ async function exportEvaluationPDF(){
   w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
     <title>Évaluation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
     <style>
       @page{ size:A4; margin:15mm; }
       body{ font-family:Inter,Arial,sans-serif; color:#20242E; font-size:12.5pt; line-height:1.7; margin:0; }
@@ -6177,6 +6182,7 @@ async function exportCahierAsPDF(){
   w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
     <title>Cahier de corrections</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
     <style>
       @page{ size:A4; margin:15mm; }
       body{ font-family:Inter,Arial,sans-serif; color:#20242E; font-size:12.5pt; line-height:1.7; margin:0; }
