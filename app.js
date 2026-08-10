@@ -3864,6 +3864,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.132', items:[
+    "Cahier de correction -- fix important : cliquer sur « Modifier » ne reprenait jamais les blocs construits (figures, tableaux...), seul le texte libre revenait. Cause : le cahier n'enregistrait que le rendu final (HTML aplati), pas la structure modifiable, et le chargement pointait vers une variable orpheline. Corrigé -- les nouvelles entrées enregistrent la structure complète (blocs, mise en page, bordures), entièrement modifiable en rouvrant. Les entrées déjà existantes restent visibles mais non détaillables bloc par bloc (elles n'avaient pas cette donnée).",
+  ]},
   { version:'2026-08-04.131', items:[
     "Outil de correction -- boutons cliquables pour choisir directement une classe sous « Classe active », sans passer par le menu compte. Le bouton « + Ajouter au cahier » est désormais désactivé (grisé) tant qu'aucune classe n'est sélectionnée, pour éviter toute confusion sur où part la correction.",
   ]},
@@ -5319,6 +5322,9 @@ async function addToCahier(){
     date: document.getElementById('corDate').value || todayISO(),
     raw: raw,
     figure: figureHtml,
+    blocksData: JSON.parse(JSON.stringify(blocksStores['global']||[])),
+    rows: JSON.parse(JSON.stringify(corRows)),
+    cellBorders: JSON.parse(JSON.stringify(corCellBorders)),
   };
   let oldServerId = null;
   if(editingIndex!==null){
@@ -5349,8 +5355,27 @@ function editCahierEntry(i){
   document.getElementById('corExoNum').value = e.exo==='—'?'':e.exo;
   document.getElementById('corTitre').value = e.titre||'';
   document.getElementById('corDate').value = e.date||todayISO();
-  document.getElementById('correctionInput').value = e.raw;
-  pendingBlocks = e.figure ? [{id: pendingBlockNextId++, type:'legacy', html: e.figure, data:null, editFn:null}] : [];
+  const hasText = !!(e.raw && e.raw.trim());
+  document.getElementById('correctionInput').value = e.raw||'';
+  document.getElementById('correctionInputWrap').style.display = hasText ? 'block' : 'none';
+  document.getElementById('btnCorAddTextarea').style.display = hasText ? 'none' : 'inline-flex';
+  if(e.blocksData){
+    // Entrée enregistrée avec la structure des blocs (depuis ce correctif) : tout redevient
+    // modifiable normalement (déplacer, éditer, supprimer bloc par bloc).
+    blocksStores['global'] = JSON.parse(JSON.stringify(e.blocksData));
+    corRows = e.rows ? JSON.parse(JSON.stringify(e.rows)) : [1];
+    corCellBorders = e.cellBorders ? JSON.parse(JSON.stringify(e.cellBorders)) : {};
+  } else if(e.figure){
+    // Ancienne entrée, enregistrée avant ce correctif : seul le rendu final avait été gardé,
+    // pas la structure -- affiché tel quel, mais non détaillable bloc par bloc.
+    blocksStores['global'] = [{id: pendingBlockNextId++, type:'legacy', html: e.figure, data:null, editFn:null, row:0, col:0}];
+    corRows = [1];
+    corCellBorders = {};
+  } else {
+    blocksStores['global'] = [];
+    corRows = [1];
+    corCellBorders = {};
+  }
   renderCorrectionPreview();
   editingIndex = i;
   document.getElementById('btnAddCahier').textContent = '💾 Enregistrer la modification';
