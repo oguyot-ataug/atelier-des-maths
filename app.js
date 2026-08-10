@@ -1087,6 +1087,29 @@ function syncDiskSizes(root){
     });
   });
 }
+/* Version autonome de la synchronisation des tailles de disques, pour le cahier de corrections
+   imprimé : contrairement à syncDiskSizes (qui s'appuie sur blocksStores, donc uniquement la
+   correction en cours d'édition), le cahier assemble plusieurs corrections déjà enregistrées
+   dont les données de blocs ne sont plus en mémoire au moment de l'impression -- on regroupe
+   donc directement par correction affichée dans le DOM (.cahier-print-entry), sans dépendre de
+   blocksStores. */
+function syncDiskSizesForPrint(root){
+  if(!root) return;
+  root.querySelectorAll('.cahier-print-entry').forEach(entryEl=>{
+    const wraps = entryEl.querySelectorAll('.disk-sync-target');
+    if(wraps.length<2) return;
+    let minDiam = Infinity;
+    wraps.forEach(wrap=>{
+      const svg = wrap.querySelector('svg');
+      if(svg){ const w = svg.getBoundingClientRect().width; if(w>0) minDiam = Math.min(minDiam, w); }
+    });
+    if(minDiam===Infinity) return;
+    minDiam = Math.round(minDiam);
+    wraps.forEach(wrap=>{
+      wrap.querySelectorAll(':scope > div > div').forEach(d=>{ d.style.maxWidth = minDiam+'px'; });
+    });
+  });
+}
 /* ---- Texte libre (même mise en forme que l'énoncé principal) ---- */
 /* Insère un modèle (ex. "somme(n,1,10,n)") à l'endroit du curseur dans la zone de texte, pour
    que le professeur n'ait plus qu'à remplacer les valeurs par défaut. */
@@ -3864,6 +3887,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.135', items:[
+    "Cahier de corrections (impression/PDF) -- fix de la synchronisation des tailles de disques (elle s'appuyait sur les données de la session en cours, absentes pour d'anciennes corrections déjà enregistrées ; remplacée par une version autonome qui fonctionne toujours). Dates en gras, références d'exercices soulignées, titre « Cahier de corrections » retiré, chapitre affiché en pied de section aligné à droite (ex. « N1 · Opérations sur les nombres décimaux ») -- un vrai pied de page physique par feuille imprimée n'étant pas réalisable en HTML/CSS standard, ceci en est l'équivalent le plus proche.",
+  ]},
   { version:'2026-08-04.134', items:[
     "Cahier de corrections -- fix définitif de la page blanche au PDF : abandon de html2canvas (donnait une page blanche de façon récurrente avec ce contenu) au profit de l'impression native du navigateur, comme pour l'évaluation. Boutons renommés « 🖨️ Imprimer / Enregistrer en PDF ». Le bouton « Voir toutes les dates » redevient « 📅 Corrections du jour » une fois cliqué, pour basculer facilement entre les deux vues sans ressaisir la date.",
   ]},
@@ -5971,26 +5997,33 @@ function clearCahier(btn){
 
 function entryRowsHTML(e, idx, editable){
   const refLabel = e.exo==='Cours' ? 'Cours' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo));
-  let html = `<div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}</div>`;
+  let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}</div>`;
   if(editable){
     html += `<button type="button" class="nb-remove-btn" onclick="removeCahierEntryFromNotebook(${idx}, this)" title="Retirer ce bloc du cahier">✕ Retirer</button>`;
   }
   html += `</div>`;
   html += `<div class="nb-body">${e.html!=null ? e.html : renderMathText(e.raw)}</div>`;
   if(e.figure) html += `<div class="nb-figure-row">${e.figure}</div>`;
+  html += `</div>`;
   return html;
 }
+/* Regroupe par date + chapitre. Le chapitre s'affiche en "pied" de chaque groupe (aligné à
+   droite), plutôt qu'en haut à côté de la date -- un vrai pied de PAGE physique n'est pas
+   possible en HTML/CSS standard pour du contenu qui varie (la coupure des pages n'est connue
+   qu'à l'impression), ceci en est l'équivalent le plus proche réalisable. */
 function groupedEntriesHTML(entries, renderItem){
-  let html=''; let lastKey=null;
+  let html=''; let lastKey=null; let currentChapitre='';
   entries.forEach((e,i)=>{
     const key = (e.date||'')+'|'+(e.chapitre||'');
     if(key!==lastKey){
-      if(lastKey!==null) html+='<hr class="nb-daysep">';
-      html+=`<div class="nb-date-row"><div class="nb-date">${fmtDateFR(e.date)}</div><div class="nb-chapitre">${escapeHtml(e.chapitre||'')}</div></div>`;
+      if(lastKey!==null){ html += `<div class="nb-page-footer">${escapeHtml(currentChapitre)}</div><hr class="nb-daysep">`; }
+      html+=`<div class="nb-date-row"><div class="nb-date">${fmtDateFR(e.date)}</div></div>`;
       lastKey=key;
+      currentChapitre = e.chapitre||'';
     }
     html+=renderItem(e,i);
   });
+  if(lastKey!==null) html += `<div class="nb-page-footer">${escapeHtml(currentChapitre)}</div>`;
   return html;
 }
 let corListFilterDate = todayISO(); // par défaut, la date du jour -- évite d'afficher toutes
@@ -6147,13 +6180,15 @@ async function exportCahierAsPDF(){
       .nb-figure-row{ margin:6px 0; }
       svg{ max-width:100%; }
       .katex{ font-size:1.18em; }
-      h1{ font-family:Arial,sans-serif; }
+      .nb-date{ font-weight:700; }
+      .nb-ref{ text-decoration:underline; }
+      .nb-page-footer{ text-align:right; font-style:italic; color:#666; font-size:.92em; margin:8px 0 16px; }
     </style>
-  </head><body><div class="print-page"><h1>Cahier de corrections</h1>${buildCahierNotebookHTML()}</div></body></html>`);
+  </head><body><div class="print-page">${buildCahierNotebookHTML()}</div></body></html>`);
   w.document.close();
   w.onload = () => {
     setTimeout(()=>{
-      syncDiskSizes(w.document);
+      syncDiskSizesForPrint(w.document);
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
         w.focus();
         w.print();
