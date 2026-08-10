@@ -3828,6 +3828,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.129', items:[
+    "Ajout d'un favicon (absent jusqu'ici, provoquait un 404 inoffensif mais visible dans la console à chaque chargement). Recherche en cours sur un éventuel 404 lié au blocage du menu -- si le problème persiste, toute information sur l'URL exacte en échec (visible dans la console développeur) aiderait à le cibler précisément.",
+  ]},
   { version:'2026-08-04.128', items:[
     "Outil de correction -- fix des boutons de bordure imprimée (▔▕▁▏) sur les zones/colonnes, qui ne faisaient rien (supposaient toujours un exercice du module Évaluation, inexistant ici). Stockage dédié ajouté, la bordure choisie s'applique bien désormais dans le rendu final (cahier, impression).",
   ]},
