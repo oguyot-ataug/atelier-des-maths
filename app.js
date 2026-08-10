@@ -614,7 +614,7 @@ async function exportCoursPDF(){
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
   hint.textContent='Génération du PDF en cours…';
-  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:2, useCORS:true, }, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:false}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
     .from(wrapper).save()
     .then(()=>{ clip.remove(); hint.textContent='PDF téléchargé ✓'; setTimeout(()=>hint.textContent='',4000); })
     .catch(()=>{ clip.remove(); hint.textContent="Échec de la génération dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer à la place."; });
@@ -3864,6 +3864,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.133', items:[
+    "Cahier de correction (liste en bas de l'outil de correction) -- filtre par date ajouté, sur la date du jour par défaut, pour ne plus afficher toutes les corrections de l'année à chaque ouverture. Bouton « Voir toutes les dates » pour tout retrouver. Tentative de fix pour la page blanche au « Générer le cahier (PDF) » -- désactivation d'un mode de rendu connu pour mal fonctionner avec l'arbre de probabilité (SVG avec texte enrichi) ; à confirmer.",
+  ]},
   { version:'2026-08-04.132', items:[
     "Cahier de correction -- fix important : cliquer sur « Modifier » ne reprenait jamais les blocs construits (figures, tableaux...), seul le texte libre revenait. Cause : le cahier n'enregistrait que le rendu final (HTML aplati), pas la structure modifiable, et le chargement pointait vers une variable orpheline. Corrigé -- les nouvelles entrées enregistrent la structure complète (blocs, mise en page, bordures), entièrement modifiable en rouvrant. Les entrées déjà existantes restent visibles mais non détaillables bloc par bloc (elles n'avaient pas cette donnée).",
   ]},
@@ -5987,17 +5990,34 @@ function groupedEntriesHTML(entries, renderItem){
   });
   return html;
 }
+let corListFilterDate = todayISO(); // par défaut, la date du jour -- évite d'afficher toutes
+                                     // les corrections de l'année à chaque ouverture.
+function applyCorListFilter(){
+  corListFilterDate = document.getElementById('corListFilterDate').value || null;
+  renderCahier();
+}
+function showAllCorListDates(){
+  corListFilterDate = null;
+  document.getElementById('corListFilterDate').value = '';
+  renderCahier();
+}
 function renderCahier(){
+  const dateInput = document.getElementById('corListFilterDate');
+  if(dateInput && !dateInput.value && corListFilterDate) dateInput.value = corListFilterDate;
   document.getElementById('cahierCount').textContent = cahier.length+' exercice(s)';
   const list=document.getElementById('cahierList');
-  if(!currentClassId){ list.innerHTML = '<div class="placeholder-box">Choisissez une classe ci-dessus pour voir et ajouter des corrections.</div>'; return; }
-  if(!cahier.length){ list.innerHTML = '<div class="placeholder-box">Le cahier est vide pour l\'instant — ajoutez une correction ci-dessus.</div>'; return; }
-  list.innerHTML = groupedEntriesHTML(cahier, (e,i)=>`
+  const status=document.getElementById('corListFilterStatus');
+  if(!currentClassId){ list.innerHTML = '<div class="placeholder-box">Choisissez une classe ci-dessus pour voir et ajouter des corrections.</div>'; if(status) status.textContent=''; return; }
+  if(!cahier.length){ list.innerHTML = '<div class="placeholder-box">Le cahier est vide pour l\'instant — ajoutez une correction ci-dessus.</div>'; if(status) status.textContent=''; return; }
+  const shown = corListFilterDate ? cahier.filter(e=>e.date===corListFilterDate) : cahier;
+  if(status) status.textContent = corListFilterDate ? `${shown.length} sur ${cahier.length} au total` : '';
+  if(!shown.length){ list.innerHTML = '<div class="placeholder-box">Aucune correction à cette date. <a href="#" onclick="showAllCorListDates();return false;">Voir toutes les dates</a>.</div>'; return; }
+  list.innerHTML = groupedEntriesHTML(shown, (e,i)=>`
     <div class="cahier-entry">
       <div style="flex:1;">${entryRowsHTML(e)}</div>
       <div style="display:flex;flex-direction:column;gap:6px;flex:none;">
-        <button class="remove" style="color:var(--accent);" onclick="editCahierEntry(${i})">Modifier</button>
-        <button class="remove" onclick="removeCahierEntry(${i})">Retirer</button>
+        <button class="remove" style="color:var(--accent);" onclick="editCahierEntry(${cahier.indexOf(e)})">Modifier</button>
+        <button class="remove" onclick="removeCahierEntry(${cahier.indexOf(e)})">Retirer</button>
       </div>
     </div>`);
 }
@@ -6102,7 +6122,7 @@ function exportCahierAsPDF(){
   wrapper.innerHTML = `<h1 style="font-family:'Space Grotesk',sans-serif;">Cahier de corrections</h1>` + buildCahierNotebookHTML();
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
-  html2pdf().set({margin:10, filename:'cahier-de-corrections.pdf', html2canvas:{scale:2, useCORS:true, }, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+  html2pdf().set({margin:10, filename:'cahier-de-corrections.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:false}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
     .from(wrapper).save()
     .then(()=>clip.remove())
     .catch(()=>{ clip.remove(); alert("La génération du PDF a échoué dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer la page à la place."); });
@@ -6344,6 +6364,7 @@ async function addTdReference(){
   }
 }
 document.getElementById('corDate').value = todayISO();
+document.getElementById('corListFilterDate').value = corListFilterDate;
 document.getElementById('tdDate').value = todayISO();
 
 /* ======================= init ======================= */
