@@ -1520,15 +1520,16 @@ function divisionPoseeHTML(res, vierge, showDiff){
   const N = dividendStr.length;
   const rows = [{cells: dpAlignedCells(dividendStr, N-1, N), bold:true}];
   let lastEndCol = -1;
-  if(showDiff){
-    res.steps.forEach((s,i)=>{
-      if(s.sub>0){
-        rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:!vierge, underline:!vierge, endCol:i});
-        rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
-        lastEndCol = i;
-      }
-    });
-  }
+  // Avec différences : la ligne "− X" (ce qu'on retranche) est affichée, suivie du reste de
+  // cette étape. Sans différences : la soustraction elle-même reste masquée, mais les restes
+  // successifs restent bien visibles à chaque étape (juste sans le détail de la soustraction).
+  res.steps.forEach((s,i)=>{
+    if(s.sub>0){
+      if(showDiff) rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:!vierge, underline:!vierge, endCol:i});
+      rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
+      lastEndCol = i;
+    }
+  });
   if(lastEndCol < N-1) rows.push({cells: dpAlignedCells(vierge?'':String(res.remainder), N-1, N)});
   // En mode vierge : le dividende ET le diviseur restent visibles (l'élève doit les connaître
   // pour démarrer) ; le quotient, le détail des étapes, ET toute préparation (signe moins,
@@ -1804,7 +1805,7 @@ function buildAxeSvg(min,max,step,points,manualSubDiv,mode){
         <text x="${x}" y="${y-14}" font-size="14" font-weight="700" text-anchor="middle" fill="#FF8208" font-family="Space Grotesk, sans-serif">${p.label}</text>`;
     });
   }
-  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:560px;display:block;margin:6px auto;background:#fff;">
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:560px;display:block;margin:6px auto;">
     <line x1="${padX-10}" y1="${y}" x2="${W-padX+10}" y2="${y}" stroke="#1C1B2E" stroke-width="1.6" marker-end="url(#axeArrow)"/>
     <defs><marker id="axeArrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker></defs>
     ${ticks}${pts}
@@ -1881,7 +1882,7 @@ function buildRepereSvg(xMin,xMax,yMin,yMax,points,mode){
         <text x="${X(p.x)+8}" y="${Y(p.y)-8}" font-size="14" font-weight="700" fill="#FF8208" font-family="Space Grotesk, sans-serif">${p.label}</text>`;
     });
   }
-  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:340px;display:block;margin:6px auto;background:#fff;">
+  const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:340px;display:block;margin:6px auto;">
     <defs>
       <marker id="repAxeArrowX" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
       <marker id="repAxeArrowY" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
@@ -2339,7 +2340,7 @@ function histogramSvg(data, useDensity){
   const axes = `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+plotH}" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="${padL}" y1="${padT+plotH}" x2="${W-padR}" y2="${padT+plotH}" stroke="#1C1B2E" stroke-width="1.6"/>`;
   const axisNote = `<text x="${W-padR}" y="${padT-2}" font-size="9" text-anchor="end" fill="#666" font-family="JetBrains Mono, monospace">${useDensity?'densité (aire = effectif)':'hauteur = effectif'}</text>`;
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;">
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:420px;display:block;margin:6px auto;">
     ${grid}${axes}${bars}${yLabels}${xLabels}${axisNote}
   </svg>`;
 }
@@ -2377,7 +2378,7 @@ function barLikeChartSvg(data, mode){
   });
   const axes = `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT+plotH}" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="${padL}" y1="${padT+plotH}" x2="${W-padR}" y2="${padT+plotH}" stroke="#1C1B2E" stroke-width="1.6"/>`;
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;">
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:420px;display:block;margin:6px auto;">
     ${grid}${axes}${bars}${yLabels}${xLabels}
   </svg>`;
 }
@@ -2462,7 +2463,7 @@ function graphSvg(xMin,xMax,yMin,yMax,curves,xUnitPi,labelStepX,labelStepY){
       curvesHtml += `<path d="${d}" fill="none" stroke="${color}" stroke-width="2.2"/>`;
     }
   });
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:420px;height:auto;display:block;margin:6px auto;background:#fff;">
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:420px;height:auto;display:block;margin:6px auto;">
     <defs>
       <marker id="gAxeArrowX" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
       <marker id="gAxeArrowY" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1C1B2E"/></marker>
@@ -3689,7 +3690,7 @@ function applyAIFigure(json){
 }
 function validateFigure(){
   const svg=document.getElementById('figureSvg');
-  const html = `<svg viewBox="0 0 500 320" style="width:100%;max-width:420px;display:block;margin:6px auto;background:#fff;border:1px solid rgba(28,43,57,.12);border-radius:8px;">${svg.innerHTML}</svg>`;
+  const html = `<svg viewBox="0 0 500 320" style="width:100%;max-width:420px;display:block;margin:6px auto;border:1px solid rgba(28,43,57,.12);border-radius:8px;">${svg.innerHTML}</svg>`;
   const snapshot = JSON.parse(JSON.stringify({points:figState.points, shapes:figState.shapes}));
   addPendingBlock('figure', html, snapshot, 'reopenFigure');
   closeFigureTool();
@@ -3916,6 +3917,10 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.139', items:[
+    "Division posée -- correction du sens de « Afficher les différences » : décochée, elle masque seulement le détail des soustractions, en gardant bien les restes successifs à chaque étape (et non plus juste le dividende et le résultat final).",
+    "Zones colorées -- la couleur ne s'étendait pas derrière certains contenus (graphique, axe, repère, diagramme statistique), qui imposaient leur propre fond blanc opaque. Corrigé : la couleur choisie s'applique désormais uniformément, y compris derrière ces éléments.",
+  ]},
   { version:'2026-08-04.138', items:[
     "Division posée -- nouvelle case à cocher « Afficher les différences » pour masquer le détail des soustractions intermédiaires (garde juste le dividende et le reste final). Fond gris retiré partout dans l'outil.",
     "Outil de création (évaluation/correction) -- les zones/colonnes peuvent maintenant recevoir un fond de couleur (même palette que {{couleur|texte}} : rouge, bleu, vert, orange), en plus des bordures déjà disponibles. Pastilles cliquables en bas à gauche de chaque zone.",
