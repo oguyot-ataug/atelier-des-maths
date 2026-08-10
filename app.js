@@ -3821,6 +3821,34 @@ function updateClassDisplays(name){
   if(studentClassStatus) studentClassStatus.textContent = name || 'aucune';
   const btn = document.getElementById('accountClassButton');
   if(btn) btn.textContent = name || '— Choisir une classe —';
+  renderCorClassQuickPicker();
+  updateAddCahierButtonState();
+}
+/* Boutons cliquables pour choisir directement une classe depuis l'outil de correction, sans
+   passer par le menu compte -- évite d'avoir à naviguer ailleurs juste pour ça. */
+function renderCorClassQuickPicker(){
+  const box = document.getElementById('corClassQuickPicker');
+  if(!box) return;
+  if(!accountClassesList.length){ box.innerHTML=''; return; }
+  box.innerHTML = accountClassesList.map(c=>`
+    <button type="button" onclick="selectClassFromModal('${c.id}')" style="border:1.5px solid ${c.id===currentClassId?'#0D5BA3':'rgba(28,43,57,.2)'};background:${c.id===currentClassId?'#0D5BA3':'#fff'};color:${c.id===currentClassId?'#fff':'#333'};border-radius:20px;padding:4px 12px;margin:2px 4px 2px 0;cursor:pointer;font-size:.85rem;">${c.id===currentClassId?'✓ ':''}${escapeHtml(c.label)}</button>
+  `).join('');
+}
+/* Le bouton d'ajout au cahier n'a de sens que si une classe est active (le cahier est propre à
+   chaque classe) -- désactivé et grisé tant qu'aucune n'est sélectionnée, pour éviter toute
+   confusion sur où part la correction. */
+function updateAddCahierButtonState(){
+  const btn = document.getElementById('btnAddCahier');
+  const hint = document.getElementById('corClassHint');
+  if(!btn) return;
+  const disabled = !currentClassId;
+  btn.disabled = disabled;
+  btn.style.opacity = disabled ? '.5' : '1';
+  btn.style.cursor = disabled ? 'not-allowed' : 'pointer';
+  btn.title = disabled ? 'Sélectionnez une classe ci-dessus avant d\'ajouter au cahier.' : '';
+  if(hint) hint.innerHTML = disabled
+    ? '⚠️ Sélectionnez une classe ci-dessus pour pouvoir ajouter des corrections au cahier.'
+    : 'Changez de classe depuis le menu <span style="font-weight:700;">👤 compte</span>, en haut à droite.';
 }
 let accountClassesList = [];
 function populateAccountClassList(classesList){
@@ -3836,6 +3864,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.131', items:[
+    "Outil de correction -- boutons cliquables pour choisir directement une classe sous « Classe active », sans passer par le menu compte. Le bouton « + Ajouter au cahier » est désormais désactivé (grisé) tant qu'aucune classe n'est sélectionnée, pour éviter toute confusion sur où part la correction.",
+  ]},
   { version:'2026-08-04.130', items:[
     "Fix très probable du menu bloqué (sans erreur console) -- si un outil (figure, texte, probabilités, éditeur de formule...) restait ouvert et qu'on changeait de page via le menu sans le fermer d'abord, son overlay plein écran restait actif par-dessus la nouvelle page et interceptait tous les clics, y compris sur le menu, sans qu'aucune erreur ne s'affiche (rien ne plante, l'overlay fait juste écran). Changer de page ferme désormais systématiquement tout outil resté ouvert.",
   ]},
@@ -5275,6 +5306,7 @@ let editingIndex = null;
 function sortCahierInPlace(){ cahier.sort((a,b)=> (a.date||'').localeCompare(b.date||'')); }
 
 async function addToCahier(){
+  if(!currentClassId){ niceAlert("Sélectionnez d'abord une classe active (boutons en haut de page)."); return; }
   const textareaVisible = document.getElementById('correctionInputWrap').style.display !== 'none';
   const raw = textareaVisible ? document.getElementById('correctionInput').value.trim() : '';
   const figureHtml = blocksRowsHTML('global', corRows, false, corCellBorders);
