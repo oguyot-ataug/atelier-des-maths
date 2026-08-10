@@ -1521,11 +1521,13 @@ function divisionPoseeHTML(res, vierge, showDiff){
   const rows = [{cells: dpAlignedCells(dividendStr, N-1, N), bold:true}];
   let lastEndCol = -1;
   // Avec différences : la ligne "− X" (ce qu'on retranche) est affichée, suivie du reste de
-  // cette étape. Sans différences : la soustraction elle-même reste masquée, mais les restes
-  // successifs restent bien visibles à chaque étape (juste sans le détail de la soustraction).
+  // cette étape. Sans différences : la soustraction n'est pas détaillée, mais on affiche quand
+  // même le nombre obtenu après avoir abaissé le chiffre suivant (avant réduction), sinon le
+  // passage d'un reste au suivant ne s'explique plus du tout.
   res.steps.forEach((s,i)=>{
     if(s.sub>0){
       if(showDiff) rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:!vierge, underline:!vierge, endCol:i});
+      else rows.push({cells: dpAlignedCells(vierge?'':String(s.value), i, N)});
       rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
       lastEndCol = i;
     }
@@ -3917,6 +3919,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.140', items:[
+    "Division posée -- sans les différences, on ne voyait que les restes isolés (ex. 1 puis 2) sans comprendre comment on y arrivait. Ajout du nombre obtenu après abaissement du chiffre suivant (ex. 85 puis 14) avant chaque reste, pour que la progression reste compréhensible.",
+  ]},
   { version:'2026-08-04.139', items:[
     "Division posée -- correction du sens de « Afficher les différences » : décochée, elle masque seulement le détail des soustractions, en gardant bien les restes successifs à chaque étape (et non plus juste le dividende et le résultat final).",
     "Zones colorées -- la couleur ne s'étendait pas derrière certains contenus (graphique, axe, repère, diagramme statistique), qui imposaient leur propre fond blanc opaque. Corrigé : la couleur choisie s'applique désormais uniformément, y compris derrière ces éléments.",
