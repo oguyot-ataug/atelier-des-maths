@@ -799,8 +799,8 @@ function renderCorrectionPreview(){
   const raw = textareaVisible ? document.getElementById('correctionInput').value : '';
   const rendered = raw.trim() ? renderMathText(raw) : '';
   const previewHtml = rendered || (textareaVisible ? '<span class="hint">L\'aperçu de la correction (mise en forme automatique) apparaît ici au fur et à mesure de la saisie.</span>' : '');
-  const cleanBlocks = blocksRowsHTML('global', corRows, false);
-  document.getElementById('correctionPreview').innerHTML = corHeaderHTML() + previewHtml + (corValidated ? cleanBlocks : blocksRowsHTML('global', corRows, true));
+  const cleanBlocks = blocksRowsHTML('global', corRows, false, corCellBorders);
+  document.getElementById('correctionPreview').innerHTML = corHeaderHTML() + previewHtml + (corValidated ? cleanBlocks : blocksRowsHTML('global', corRows, true, corCellBorders));
   updateProjectionWindow(rendered + cleanBlocks);
   corRenderRowsControls();
   attachResizeObservers();
@@ -981,13 +981,20 @@ function evalDropInRowCol(e, ctx, rowIndex, colIndex){
 }
 /* Bascule une bordure (haut/droite/bas/gauche) d'une cellule (ligne-colonne) d'un exercice --
    un peu comme un éditeur de tableau où l'on choisit quels bords de cellule apparaissent. */
+let corCellBorders = {};
 function toggleCellBorder(ctx, cellKey, side){
-  const ex = getExerciseByCtx(ctx);
-  if(!ex) return;
-  if(!ex.cellBorders) ex.cellBorders = {};
-  if(!ex.cellBorders[cellKey]) ex.cellBorders[cellKey] = {};
-  ex.cellBorders[cellKey][side] = !ex.cellBorders[cellKey][side];
-  renderEvalExercicesList();
+  let borders;
+  if(ctx==='global'){
+    borders = corCellBorders;
+  } else {
+    const ex = getExerciseByCtx(ctx);
+    if(!ex) return;
+    if(!ex.cellBorders) ex.cellBorders = {};
+    borders = ex.cellBorders;
+  }
+  if(!borders[cellKey]) borders[cellKey] = {};
+  borders[cellKey][side] = !borders[cellKey][side];
+  ctx==='global' ? renderCorrectionPreview() : renderEvalExercicesList();
 }
 /* Rendu en lignes indépendantes, chacune avec son propre nombre de colonnes (ex. 3 colonnes
    puis 2 colonnes en dessous). rows est un tableau [nColsLigne1, nColsLigne2, ...]. */
@@ -3821,6 +3828,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.128', items:[
+    "Outil de correction -- fix des boutons de bordure imprimée (▔▕▁▏) sur les zones/colonnes, qui ne faisaient rien (supposaient toujours un exercice du module Évaluation, inexistant ici). Stockage dédié ajouté, la bordure choisie s'applique bien désormais dans le rendu final (cahier, impression).",
+  ]},
   { version:'2026-08-04.127', items:[
     "Outil de correction -- fix important : le glisser-déposer entre colonnes mettait bien à jour la donnée, mais l'affichage ne se rafraîchissait jamais (appelait toujours la fonction du module Évaluation), donnant l'impression que rien ne se passait. Corrigé. La zone de texte libre est maintenant masquée par défaut (accessible via « + Zone de texte libre » si besoin), puisqu'elle peut de toute façon se recréer avec l'outil Texte.",
   ]},
@@ -5253,7 +5263,7 @@ function sortCahierInPlace(){ cahier.sort((a,b)=> (a.date||'').localeCompare(b.d
 async function addToCahier(){
   const textareaVisible = document.getElementById('correctionInputWrap').style.display !== 'none';
   const raw = textareaVisible ? document.getElementById('correctionInput').value.trim() : '';
-  const figureHtml = blocksRowsHTML('global', corRows, false);
+  const figureHtml = blocksRowsHTML('global', corRows, false, corCellBorders);
   if(!raw && !(blocksStores['global']||[]).length) return; // rien à sauvegarder
   const entry = {
     niveau: document.getElementById('corNiveau').value,
@@ -5314,6 +5324,7 @@ function clearCorrectionInput(){
   document.getElementById('corTitre').value='';
   blocksStores['global'] = [];
   corRows = [1];
+  corCellBorders = {};
   if(corValidated) corToggleValidated();
   renderCorrectionPreview();
 }
