@@ -1521,15 +1521,24 @@ function divisionPoseeHTML(res, vierge, showDiff){
   const rows = [{cells: dpAlignedCells(dividendStr, N-1, N), bold:true}];
   let lastEndCol = -1;
   // Avec différences : la ligne "− X" (ce qu'on retranche) est affichée, suivie du reste de
-  // cette étape. Sans différences : la soustraction n'est pas détaillée, mais on affiche quand
-  // même le nombre obtenu après avoir abaissé le chiffre suivant (avant réduction), sinon le
-  // passage d'un reste au suivant ne s'explique plus du tout.
+  // cette étape -- comportement inchangé, il fonctionnait déjà correctement. Sans différences :
+  // la toute première étape n'utilise que des chiffres bruts du dividende (déjà visibles dans
+  // l'en-tête, rien de nouveau à écrire) -- elle reste mentale. À partir de la deuxième étape,
+  // un vrai reste calculé se combine avec un chiffre abaissé : on écrit alors le nombre obtenu
+  // avant réduction, puis le reste.
+  let firstTrigger = true;
   res.steps.forEach((s,i)=>{
     if(s.sub>0){
-      if(showDiff) rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:!vierge, underline:!vierge, endCol:i});
-      else rows.push({cells: dpAlignedCells(vierge?'':String(s.value), i, N)});
-      rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
-      lastEndCol = i;
+      if(showDiff){
+        rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:!vierge, underline:!vierge, endCol:i});
+        rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
+        lastEndCol = i;
+      } else {
+        if(firstTrigger){ firstTrigger = false; return; }
+        rows.push({cells: dpAlignedCells(vierge?'':String(s.value), i, N)});
+        rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
+        lastEndCol = i;
+      }
     }
   });
   if(lastEndCol < N-1) rows.push({cells: dpAlignedCells(vierge?'':String(res.remainder), N-1, N)});
@@ -3919,6 +3928,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.141', items:[
+    "Division sans différences -- la toute première étape (ex. « 42 », « 12 » pour 425÷15) traînait inutilement : elle n'utilise que des chiffres bruts du dividende, déjà visibles dans l'en-tête, donc n'apporte rien de nouveau à l'écrit. Elle reste désormais mentale ; l'écriture démarre à partir du premier vrai abaissement sur un reste calculé. Le mode « avec différences » n'a pas changé.",
+  ]},
   { version:'2026-08-04.140', items:[
     "Division posée -- sans les différences, on ne voyait que les restes isolés (ex. 1 puis 2) sans comprendre comment on y arrivait. Ajout du nombre obtenu après abaissement du chiffre suivant (ex. 85 puis 14) avant chaque reste, pour que la progression reste compréhensible.",
   ]},
