@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.150', items:[
+    "Tableau interactif -- crayon agrandi avec un vrai manche long et bien séparé de la pointe (aucun chevauchement des deux zones tactiles, plus de risque de déclencher un tracé en voulant juste le déplacer). Fix de l'accrochage des règles : il se faisait côté opposé aux graduations -- corrigé, s'aimante désormais du bon côté. Rapporteur remplacé par la vraie image du cours 6e (Angles et rapporteur), avec son pivot précisément mesuré.",
+  ]},
   { version:'2026-08-04.149', items:[
     "Tableau interactif -- les seuils d'accrochage (crayon sur un bord, règle sur un point) étaient calibrés pour une souris précise, bien trop stricts pour un doigt sur petit écran. Nettement élargis (plus du double), et zones tactiles agrandies (pointe du crayon, points marqués). Vérifié avec une règle inclinée et une imprécision volontaire de 8 à 12px : l'accrochage reste parfait.",
   ]},
@@ -6568,16 +6571,16 @@ let tbDrag = null;  // interaction en cours (déplacement/rotation/tracé)
 let tbInitialized = false;
 
 function pencilSVG(id){
-  // pointe exactement à l'origine locale (0,0) : la position de l'outil EST la position de la
-  // pointe, pas besoin de décalage supplémentaire pour le tracé. Le corps (rôle "pencilBody")
-  // sert à déplacer le crayon SANS tracer ; seule la pointe (rôle "tip", cercle invisible plus
-  // large pour rester facile à attraper au doigt) déclenche le tracé.
+  // pointe exactement à l'origine locale (0,0). Le corps (manche, rôle "pencilBody") est
+  // maintenant long et bien séparé de la pointe (aucun chevauchement des deux zones tactiles),
+  // pour qu'on puisse le saisir au doigt sans risquer de déclencher un tracé par erreur.
   return `<g data-role="pencilBody" data-id="${id}">
-    <rect x="-6" y="-52" width="12" height="40" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.2"/>
-    <rect x="-6" y="-52" width="12" height="7" fill="#D93025" stroke="#1C1B2E" stroke-width="1.2"/>
-    <polygon points="-6,-12 6,-12 0,0" fill="#8a5a2b" stroke="#1C1B2E" stroke-width="1.2"/>
+    <rect x="-9" y="-95" width="18" height="14" fill="#D93025" stroke="#1C1B2E" stroke-width="1.4"/>
+    <rect x="-9" y="-81" width="18" height="46" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.4"/>
+    <polygon points="-9,-35 9,-35 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1.4"/>
+    <polygon points="-3,-10 3,-10 0,0" fill="#3a2b1f"/>
   </g>
-  <circle data-role="tip" data-id="${id}" cx="0" cy="0" r="20" fill="transparent" pointer-events="all"/>`;
+  <circle data-role="tip" data-id="${id}" cx="0" cy="0" r="18" fill="transparent" pointer-events="all"/>`;
 }
 function rulerSVG(graduated){
   let ticks='';
@@ -6592,20 +6595,27 @@ function rulerSVG(graduated){
 function equerreSVG(legX, legY){
   return `<polygon points="0,0 ${legX},0 0,${-legY}" fill="rgba(190,235,205,.55)" stroke="#1C1B2E" stroke-width="1.6"/>`;
 }
+// Même image et mêmes repères que le rapporteur du cours "Angles et rapporteur" (6e, G3) : le
+// pivot (là où convergent les graduations) n'est pas au centre de l'image, il a été mesuré
+// précisément par ajustement de cercle sur le bord de l'image -- voir chapitres/6e/G3-angles-rapporteur.js.
+const TB_PROT_RATIO = 900/483;
+const TB_PROT_BASELINE_RATIO = 0.9349;
+const TB_PROT_CENTER_X_RATIO = 0.4992;
+const TB_PROT_W = 260, TB_PROT_H = TB_PROT_W/TB_PROT_RATIO;
+const TB_PROT_PIVOT_X = TB_PROT_W*TB_PROT_CENTER_X_RATIO, TB_PROT_PIVOT_Y = TB_PROT_H*TB_PROT_BASELINE_RATIO;
 function protractorSVG(){
-  return `<path d="M -110,0 A 110,110 0 0,1 110,0 Z" fill="rgba(255,220,180,.5)" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="-110" y1="0" x2="110" y2="0" stroke="#1C1B2E" stroke-width="1.6"/>`;
+  return `<image href="assets/rapporteur-translucide.png" x="${-TB_PROT_PIVOT_X}" y="${-TB_PROT_PIVOT_Y}" width="${TB_PROT_W}" height="${TB_PROT_H}" style="pointer-events:none;" opacity="0.92"/>`;
 }
 /* Définition de chaque type d'outil : forme dessinée, et bords utilisables par le crayon pour
    s'aimanter (coordonnées locales, avant rotation/déplacement de l'outil). Le crayon lui-même
    n'a pas de bord (rien ne s'aimante sur lui). */
 const TB_DEFS = {
-  crayon:      { hw:50,  svg: pencilSVG,            edges: [] },
-  regle_grad:  { hw:158, svg: ()=>rulerSVG(true),   edges: [{x1:-140,y1:13,x2:140,y2:13}] },
-  regle_plane: { hw:158, svg: ()=>rulerSVG(false),  edges: [{x1:-140,y1:13,x2:140,y2:13}] },
+  crayon:      { hw:112, svg: pencilSVG,            edges: [] },
+  regle_grad:  { hw:158, svg: ()=>rulerSVG(true),   edges: [{x1:-140,y1:-13,x2:140,y2:-13}] },
+  regle_plane: { hw:158, svg: ()=>rulerSVG(false),  edges: [{x1:-140,y1:-13,x2:140,y2:-13}] },
   equerre:     { hw:170, svg: ()=>equerreSVG(140,110), edges: [{x1:0,y1:0,x2:140,y2:0},{x1:0,y1:0,x2:0,y2:-110}] },
   requerre:    { hw:190, svg: ()=>equerreSVG(180,80),  edges: [{x1:0,y1:0,x2:180,y2:0},{x1:0,y1:0,x2:0,y2:-80}] },
-  rapporteur:  { hw:130, svg: protractorSVG,        edges: [{x1:-110,y1:0,x2:110,y2:0}] },
+  rapporteur:  { hw:TB_PROT_W-TB_PROT_PIVOT_X+20, svg: protractorSVG, edges: [{x1:-TB_PROT_PIVOT_X+8,y1:0,x2:(TB_PROT_W-TB_PROT_PIVOT_X)-8,y2:0}] },
 };
 const TB_PALETTE = [
   {type:'crayon',      icon:'✏️', label:'Crayon'},
