@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.149', items:[
+    "Tableau interactif -- les seuils d'accrochage (crayon sur un bord, règle sur un point) étaient calibrés pour une souris précise, bien trop stricts pour un doigt sur petit écran. Nettement élargis (plus du double), et zones tactiles agrandies (pointe du crayon, points marqués). Vérifié avec une règle inclinée et une imprécision volontaire de 8 à 12px : l'accrochage reste parfait.",
+  ]},
   { version:'2026-08-04.148', items:[
     "Tableau interactif -- les règles/équerres/réquerres/rapporteurs s'aimantent désormais sur un point déjà posé quand on les déplace à proximité (leur bord se cale exactement dessus). Permet le geste naturel : poser un point, puis approcher une règle qui s'y accroche, puis tracer le long avec le crayon.",
   ]},
@@ -6574,7 +6577,7 @@ function pencilSVG(id){
     <rect x="-6" y="-52" width="12" height="7" fill="#D93025" stroke="#1C1B2E" stroke-width="1.2"/>
     <polygon points="-6,-12 6,-12 0,0" fill="#8a5a2b" stroke="#1C1B2E" stroke-width="1.2"/>
   </g>
-  <circle data-role="tip" data-id="${id}" cx="0" cy="0" r="14" fill="transparent" pointer-events="all"/>`;
+  <circle data-role="tip" data-id="${id}" cx="0" cy="0" r="20" fill="transparent" pointer-events="all"/>`;
 }
 function rulerSVG(graduated){
   let ticks='';
@@ -6663,7 +6666,7 @@ function tbProjectOntoSegment(p, ax, ay, bx, by, overhang){
    donné (à moins de 15px) ; si trouvé, renvoie le point aimanté sur ce bord, sinon le point tel
    quel (tracé libre). */
 function tbSnapToEdge(pt){
-  let best=null, bestDist=15;
+  let best=null, bestDist=32;
   tbTools.forEach(t=>{
     const def = TB_DEFS[t.type];
     if(!def || !def.edges || !def.edges.length) return;
@@ -6671,7 +6674,7 @@ function tbSnapToEdge(pt){
     def.edges.forEach(e=>{
       const ax = t.x + e.x1*cos - e.y1*sin, ay = t.y + e.x1*sin + e.y1*cos;
       const bx = t.x + e.x2*cos - e.y2*sin, by = t.y + e.x2*sin + e.y2*cos;
-      const proj = tbProjectOntoSegment(pt, ax, ay, bx, by, 18);
+      const proj = tbProjectOntoSegment(pt, ax, ay, bx, by, 26);
       if(proj && proj.dist < bestDist){ bestDist = proj.dist; best = {x:proj.x, y:proj.y}; }
     });
   });
@@ -6685,12 +6688,12 @@ function tbSnapToolToPoints(tool){
   const def = TB_DEFS[tool.type];
   if(!def || !def.edges || !def.edges.length || !tbPoints.length) return;
   const rad = tool.angle*Math.PI/180, cos=Math.cos(rad), sin=Math.sin(rad);
-  let bestOffset=null, bestDist=16;
+  let bestOffset=null, bestDist=32;
   def.edges.forEach(e=>{
     const ax = tool.x + e.x1*cos - e.y1*sin, ay = tool.y + e.x1*sin + e.y1*cos;
     const bx = tool.x + e.x2*cos - e.y2*sin, by = tool.y + e.x2*sin + e.y2*cos;
     tbPoints.forEach(p=>{
-      const proj = tbProjectOntoSegment({x:p.x,y:p.y}, ax, ay, bx, by, 20);
+      const proj = tbProjectOntoSegment({x:p.x,y:p.y}, ax, ay, bx, by, 26);
       if(proj && proj.dist < bestDist){ bestDist = proj.dist; bestOffset = {dx: p.x-proj.x, dy: p.y-proj.y}; }
     });
   });
@@ -6702,7 +6705,7 @@ function tbRender(){
   const pointsHtml = tbPoints.map(pt=>`<g data-role="point" data-id="${pt.id}" style="cursor:pointer;">
     <line x1="${pt.x-7}" y1="${pt.y-7}" x2="${pt.x+7}" y2="${pt.y+7}" stroke="#1C1B2E" stroke-width="2"/>
     <line x1="${pt.x-7}" y1="${pt.y+7}" x2="${pt.x+7}" y2="${pt.y-7}" stroke="#1C1B2E" stroke-width="2"/>
-    <circle cx="${pt.x}" cy="${pt.y}" r="14" fill="transparent" pointer-events="all"/>
+    <circle cx="${pt.x}" cy="${pt.y}" r="20" fill="transparent" pointer-events="all"/>
     <text x="${pt.x+11}" y="${pt.y-8}" font-size="16" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#1C1B2E">${escapeHtml(pt.label||'')}</text>
   </g>`).join('');
   const toolsHtml = tbTools.map(t=>{
