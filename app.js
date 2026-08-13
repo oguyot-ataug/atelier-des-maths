@@ -3943,6 +3943,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.145', items:[
+    "Page d'accueil -- nouvelle section « Pour les professeurs » (outil de correction, créer une évaluation, cahier de corrections, suivi des classes), pour rendre visible tout ce qui était jusqu'ici accessible seulement via le menu. Texte d'introduction mis à jour pour mentionner les deux publics.",
+  ]},
   { version:'2026-08-04.144', items:[
     "Division posée -- le diviseur (à droite de la barre) était légèrement plus haut que le dividende, à cause d'un interlignage différent. Corrigé : les deux sont maintenant parfaitement alignés, dans tous les modes (normal, vierge, avec différences).",
   ]},
