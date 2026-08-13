@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.147', items:[
+    "Tableau interactif -- fix important : le crayon traçait dès qu'on le déplaçait, impossible de le repositionner sans laisser un trait. Corrigé : attraper le corps du crayon le déplace sans tracer, seule la pointe trace. Un tap (sans glisser) sur la pointe pose un point marqué (croix + nom au choix, cliquable ensuite pour le renommer). Boutons de suppression agrandis avec une croix bien visible. Impossible désormais d'avoir deux fois le même outil sur le tableau.",
+  ]},
   { version:'2026-08-04.146', items:[
     "Nouveau (v1) : Tableau interactif (menu Outils prof), avec crayon, règles graduée/non graduée, équerre, réquerre, rapporteur et compas -- tous déplaçables et rotatifs. Le crayon trace librement, et s'aimante automatiquement le long du bord d'une règle/équerre/réquerre/rapporteur si on passe suffisamment près. Le compas trace un arc à rayon constant en faisant tourner sa pointe crayon autour de la pointe sèche. Prochaine étape : enregistrement pas à pas pour créer des tutoriels de construction.",
   ]},
@@ -6551,17 +6554,24 @@ document.getElementById('tdDate').value = todayISO();
    qu'on commence à la faire glisser, en traçant un arc.
    ============================================================ */
 let tbNextId = 1;
+let tbPoints = [];  // points nommés posés au tap du crayon {id, x, y, label}
+let tbPointNextId = 1;
 let tbTools = [];   // outils posés sur le tableau
 let tbInk = [];     // traits déjà tracés {color, points:[[x,y],...]}
 let tbDrag = null;  // interaction en cours (déplacement/rotation/tracé)
 let tbInitialized = false;
 
-function pencilSVG(){
+function pencilSVG(id){
   // pointe exactement à l'origine locale (0,0) : la position de l'outil EST la position de la
-  // pointe, pas besoin de décalage supplémentaire pour le tracé.
-  return `<rect x="-6" y="-52" width="12" height="40" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.2"/>
+  // pointe, pas besoin de décalage supplémentaire pour le tracé. Le corps (rôle "pencilBody")
+  // sert à déplacer le crayon SANS tracer ; seule la pointe (rôle "tip", cercle invisible plus
+  // large pour rester facile à attraper au doigt) déclenche le tracé.
+  return `<g data-role="pencilBody" data-id="${id}">
+    <rect x="-6" y="-52" width="12" height="40" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.2"/>
+    <rect x="-6" y="-52" width="12" height="7" fill="#D93025" stroke="#1C1B2E" stroke-width="1.2"/>
     <polygon points="-6,-12 6,-12 0,0" fill="#8a5a2b" stroke="#1C1B2E" stroke-width="1.2"/>
-    <rect x="-6" y="-52" width="12" height="7" fill="#D93025" stroke="#1C1B2E" stroke-width="1.2"/>`;
+  </g>
+  <circle data-role="tip" data-id="${id}" cx="0" cy="0" r="14" fill="transparent" pointer-events="all"/>`;
 }
 function rulerSVG(graduated){
   let ticks='';
@@ -6609,9 +6619,13 @@ function initTableauView(){
   tbInitialized = true;
 }
 function tbAddTool(type){
+  if(tbTools.some(t=>t.type===type)){
+    niceAlert("Cet outil est déjà sur le tableau -- retirez-le d'abord (croix rouge) pour en reposer un.");
+    return;
+  }
   const id = tbNextId++;
   if(type==='compas') tbTools.push({id, type, x:420, y:260, angle:-40, radius:90});
-  else tbTools.push({id, type, x:430+((id*17)%80), y:280+((id*23)%60), angle:0});
+  else tbTools.push({id, type, x:430, y:280, angle:0});
   tbRender();
 }
 function tbCurrentColor(){
@@ -6619,7 +6633,7 @@ function tbCurrentColor(){
   return el ? el.value : '#1C1B2E';
 }
 function tbClearInk(){ tbInk = []; tbRender(); }
-function tbClearAll(){ tbInk = []; tbTools = []; tbRender(); }
+function tbClearAll(){ tbInk = []; tbTools = []; tbPoints = []; tbRender(); }
 function tbSvgPoint(e){
   const svg = document.getElementById('tbSvg');
   const pt = svg.createSVGPoint();
@@ -6663,6 +6677,12 @@ function tbSnapToEdge(pt){
 function tbRender(){
   const W=900, H=560;
   const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
+  const pointsHtml = tbPoints.map(pt=>`<g data-role="point" data-id="${pt.id}" style="cursor:pointer;">
+    <line x1="${pt.x-7}" y1="${pt.y-7}" x2="${pt.x+7}" y2="${pt.y+7}" stroke="#1C1B2E" stroke-width="2"/>
+    <line x1="${pt.x-7}" y1="${pt.y+7}" x2="${pt.x+7}" y2="${pt.y-7}" stroke="#1C1B2E" stroke-width="2"/>
+    <circle cx="${pt.x}" cy="${pt.y}" r="14" fill="transparent" pointer-events="all"/>
+    <text x="${pt.x+11}" y="${pt.y-8}" font-size="16" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#1C1B2E">${escapeHtml(pt.label||'')}</text>
+  </g>`).join('');
   const toolsHtml = tbTools.map(t=>{
     if(t.type==='compas'){
       const rad = t.angle*Math.PI/180;
@@ -6674,22 +6694,37 @@ function tbRender(){
         <circle cx="${midX}" cy="${midY}" r="5" fill="#8a5a2b" stroke="#1C1B2E"/>
         <circle data-role="pivot" data-id="${t.id}" cx="${t.x.toFixed(1)}" cy="${t.y.toFixed(1)}" r="10" fill="rgba(28,43,57,.18)" stroke="#1C1B2E" stroke-width="1.4"/>
         <circle data-role="tip" data-id="${t.id}" cx="${tipX.toFixed(1)}" cy="${tipY.toFixed(1)}" r="10" fill="rgba(217,48,37,.3)" stroke="#D93025" stroke-width="1.4"/>
-        <circle data-role="remove" data-id="${t.id}" cx="${midX.toFixed(1)}" cy="${(midY-16).toFixed(1)}" r="8" fill="#D93025" stroke="#fff" stroke-width="1.2"/>
+        <g data-role="remove" data-id="${t.id}" style="cursor:pointer;">
+          <circle cx="${midX.toFixed(1)}" cy="${(midY-16).toFixed(1)}" r="12" fill="#D93025" stroke="#fff" stroke-width="1.6"/>
+          <text x="${midX.toFixed(1)}" y="${(midY-11).toFixed(1)}" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">✕</text>
+        </g>
       </g>`;
     }
     const def = TB_DEFS[t.type];
     const hx = def.hw;
     return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
-      <g data-role="body" data-id="${t.id}">${def.svg()}</g>
-      <circle data-role="rotate" data-id="${t.id}" cx="${hx}" cy="0" r="8" fill="#0D5BA3" stroke="#fff" stroke-width="1.4"/>
-      <circle data-role="remove" data-id="${t.id}" cx="${-hx}" cy="0" r="8" fill="#D93025" stroke="#fff" stroke-width="1.2"/>
+      <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>
+      <circle data-role="rotate" data-id="${t.id}" cx="${hx}" cy="0" r="11" fill="#0D5BA3" stroke="#fff" stroke-width="1.6"/>
+      <g data-role="remove" data-id="${t.id}" style="cursor:pointer;">
+        <circle cx="${-hx}" cy="0" r="12" fill="#D93025" stroke="#fff" stroke-width="1.6"/>
+        <text x="${-hx}" y="5" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">✕</text>
+      </g>
     </g>`;
   }).join('');
   document.getElementById('tbBoardWrap').innerHTML = `<svg id="tbSvg" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;touch-action:none;user-select:none;background:#fff;">
-    <g id="tbInkLayer">${inkHtml}</g>
+    <g id="tbInkLayer">${inkHtml}${pointsHtml}</g>
     <g id="tbToolsLayer">${toolsHtml}</g>
   </svg>`;
   tbAttachHandlers();
+}
+async function tbRenamePoint(id){
+  const point = tbPoints.find(p=>p.id===id);
+  if(!point) return;
+  const label = await nicePrompt('Nom du point -- laissez vide pour le retirer', point.label||'');
+  if(label===null) return;
+  const trimmed = (label||'').trim();
+  if(!trimmed){ tbPoints = tbPoints.filter(p=>p.id!==id); } else { point.label = trimmed; }
+  tbRender();
 }
 function tbAttachHandlers(){
   const svg = document.getElementById('tbSvg');
@@ -6701,24 +6736,30 @@ function tbAttachHandlers(){
     const id = parseInt(target.dataset.id);
     const pt = tbSvgPoint(e);
     if(role==='remove'){ tbTools = tbTools.filter(t=>t.id!==id); tbRender(); return; }
+    if(role==='point'){ tbRenamePoint(id); return; }
     const tool = tbTools.find(t=>t.id===id);
     if(!tool) return;
-    if(role==='body'){
-      if(tool.type==='crayon'){
-        const stroke = {color: tbCurrentColor(), points:[[tool.x,tool.y]]};
-        tbInk.push(stroke);
-        tbDrag = {mode:'pencil', id, stroke};
-      } else {
-        tbDrag = {mode:'move', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
-      }
+    if(role==='body' || role==='pencilBody'){
+      // Déplace l'outil SANS tracer -- pour le crayon, c'est le moyen de le repositionner
+      // ailleurs sans laisser de trait jusque-là (comme le lever de la feuille).
+      tbDrag = {mode:'move', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
     } else if(role==='rotate'){
       tbDrag = {mode:'rotate', id};
     } else if(role==='pivot'){
       tbDrag = {mode:'compassMove', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
     } else if(role==='tip'){
-      tbDrag = {mode:'compassTrace', id, stroke:{color: tbCurrentColor(), points:[]}};
-      tbInk.push(tbDrag.stroke);
-      tool._r0 = null;
+      if(tool.type==='compas'){
+        tbDrag = {mode:'compassTrace', id, stroke:{color: tbCurrentColor(), points:[]}};
+        tbInk.push(tbDrag.stroke);
+        tool._r0 = null;
+      } else if(tool.type==='crayon'){
+        // On ne sait pas encore si ce sera un tracé (glissé) ou un simple point (relâché sans
+        // avoir bougé) -- le trait est ajouté tout de suite mais retiré au relâché si rien n'a
+        // bougé, remplacé alors par un point nommé.
+        const stroke = {color: tbCurrentColor(), points:[[tool.x,tool.y]]};
+        tbInk.push(stroke);
+        tbDrag = {mode:'pencil', id, stroke, startX:pt.x, startY:pt.y, moved:false};
+      }
     }
     try{ svg.setPointerCapture(e.pointerId); }catch(err){}
     e.preventDefault();
@@ -6733,6 +6774,7 @@ function tbAttachHandlers(){
     } else if(tbDrag.mode==='rotate'){
       tool.angle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
     } else if(tbDrag.mode==='pencil'){
+      if(Math.hypot(pt.x-tbDrag.startX, pt.y-tbDrag.startY) > 5) tbDrag.moved = true;
       const snapped = tbSnapToEdge(pt);
       tool.x = snapped.x; tool.y = snapped.y;
       tbDrag.stroke.points.push([tool.x, tool.y]);
@@ -6749,7 +6791,22 @@ function tbAttachHandlers(){
     }
     tbRender();
   };
-  svg.onpointerup = ()=>{ tbDrag = null; };
+  svg.onpointerup = async ()=>{
+    if(tbDrag && tbDrag.mode==='pencil' && !tbDrag.moved){
+      // Tap sans glissement : on retire le trait (vide) commencé, et on pose un point nommé à
+      // la place, comme un vrai crayon qu'on pose sur la feuille pour marquer un point.
+      tbInk = tbInk.filter(s=>s!==tbDrag.stroke);
+      const tool = tbTools.find(t=>t.id===tbDrag.id);
+      tbDrag = null;
+      if(tool){
+        const label = await nicePrompt('Nom du point (ex. A) -- laissez vide pour aucun nom', '');
+        if(label!==null) tbPoints.push({id: tbPointNextId++, x: tool.x, y: tool.y, label: (label||'').trim()});
+        tbRender();
+      }
+      return;
+    }
+    tbDrag = null;
+  };
   svg.onpointerleave = ()=>{ tbDrag = null; };
 }
 
