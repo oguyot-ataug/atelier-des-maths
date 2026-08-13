@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.148', items:[
+    "Tableau interactif -- les règles/équerres/réquerres/rapporteurs s'aimantent désormais sur un point déjà posé quand on les déplace à proximité (leur bord se cale exactement dessus). Permet le geste naturel : poser un point, puis approcher une règle qui s'y accroche, puis tracer le long avec le crayon.",
+  ]},
   { version:'2026-08-04.147', items:[
     "Tableau interactif -- fix important : le crayon traçait dès qu'on le déplaçait, impossible de le repositionner sans laisser un trait. Corrigé : attraper le corps du crayon le déplace sans tracer, seule la pointe trace. Un tap (sans glisser) sur la pointe pose un point marqué (croix + nom au choix, cliquable ensuite pour le renommer). Boutons de suppression agrandis avec une croix bien visible. Impossible désormais d'avoir deux fois le même outil sur le tableau.",
   ]},
@@ -6674,6 +6677,25 @@ function tbSnapToEdge(pt){
   });
   return best || pt;
 }
+/* Aimante un outil-guide (règle, équerre, réquerre, rapporteur) sur un point déjà posé : si un
+   de ses bords passe à moins de 16px d'un point pendant qu'on le déplace, on décale légèrement
+   l'outil pour que ce bord passe exactement par ce point -- comme si on approchait vraiment une
+   règle d'un point tracé au crayon et qu'elle s'y calait. Modifie l'outil directement. */
+function tbSnapToolToPoints(tool){
+  const def = TB_DEFS[tool.type];
+  if(!def || !def.edges || !def.edges.length || !tbPoints.length) return;
+  const rad = tool.angle*Math.PI/180, cos=Math.cos(rad), sin=Math.sin(rad);
+  let bestOffset=null, bestDist=16;
+  def.edges.forEach(e=>{
+    const ax = tool.x + e.x1*cos - e.y1*sin, ay = tool.y + e.x1*sin + e.y1*cos;
+    const bx = tool.x + e.x2*cos - e.y2*sin, by = tool.y + e.x2*sin + e.y2*cos;
+    tbPoints.forEach(p=>{
+      const proj = tbProjectOntoSegment({x:p.x,y:p.y}, ax, ay, bx, by, 20);
+      if(proj && proj.dist < bestDist){ bestDist = proj.dist; bestOffset = {dx: p.x-proj.x, dy: p.y-proj.y}; }
+    });
+  });
+  if(bestOffset){ tool.x += bestOffset.dx; tool.y += bestOffset.dy; }
+}
 function tbRender(){
   const W=900, H=560;
   const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
@@ -6771,6 +6793,7 @@ function tbAttachHandlers(){
     const pt = tbSvgPoint(e);
     if(tbDrag.mode==='move'){
       tool.x = pt.x - tbDrag.offX; tool.y = pt.y - tbDrag.offY;
+      if(tool.type!=='crayon') tbSnapToolToPoints(tool);
     } else if(tbDrag.mode==='rotate'){
       tool.angle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
     } else if(tbDrag.mode==='pencil'){
