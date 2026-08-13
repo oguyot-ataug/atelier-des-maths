@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.151', items:[
+    "Tableau interactif -- nom des points : fenêtre de lettres majuscules cliquables (plus de clavier), celles déjà utilisées disparaissent de la liste. Rapporteur : crayon spécial qui tourne autour du pivot pour tracer un rayon à l'angle choisi. Nouveauté : dès que 2 points posés sont alignés sur le bord d'une règle/équerre, 3 boutons apparaissent pour tracer directement le segment [AB], la demi-droite [AB) ou la droite (AB) -- sans geste manuel, donc jamais de débordement ni d'arrêt trop court.",
+  ]},
   { version:'2026-08-04.150', items:[
     "Tableau interactif -- crayon agrandi avec un vrai manche long et bien séparé de la pointe (aucun chevauchement des deux zones tactiles, plus de risque de déclencher un tracé en voulant juste le déplacer). Fix de l'accrochage des règles : il se faisait côté opposé aux graduations -- corrigé, s'aimante désormais du bon côté. Rapporteur remplacé par la vraie image du cours 6e (Angles et rapporteur), avec son pivot précisément mesuré.",
   ]},
@@ -6709,6 +6712,36 @@ function tbSnapToolToPoints(tool){
   });
   if(bestOffset){ tool.x += bestOffset.dx; tool.y += bestOffset.dy; }
 }
+/* Points déjà posés qui se trouvent sur le bord "actif" d'un outil-guide (celui utilisé par le
+   crayon pour s'aimanter), triés le long du bord. Sert à proposer des actions directes
+   (segment/demi-droite/droite) une fois que 2 points ou plus sont alignés dessus -- bien plus
+   fiable qu'un tracé manuel pour ne jamais déborder de A ou B. */
+function tbPointsOnEdge(tool){
+  const def = TB_DEFS[tool.type];
+  if(!def || !def.edges || !def.edges.length || !tbPoints.length) return [];
+  const e = def.edges[0];
+  const rad = tool.angle*Math.PI/180, cos=Math.cos(rad), sin=Math.sin(rad);
+  const ax = tool.x + e.x1*cos - e.y1*sin, ay = tool.y + e.x1*sin + e.y1*cos;
+  const bx = tool.x + e.x2*cos - e.y2*sin, by = tool.y + e.x2*sin + e.y2*cos;
+  const dx=bx-ax, dy=by-ay, len2=dx*dx+dy*dy;
+  const found=[];
+  tbPoints.forEach(p=>{
+    const proj = tbProjectOntoSegment({x:p.x,y:p.y}, ax, ay, bx, by, 6);
+    if(proj && proj.dist < 12){ found.push({point:p, t: ((p.x-ax)*dx+(p.y-ay)*dy)/len2}); }
+  });
+  found.sort((a,b)=>a.t-b.t);
+  return found.map(f=>f.point);
+}
+/* Prolonge un rayon depuis "origin" dans la direction unitaire "dir" jusqu'au bord du tableau. */
+function tbExtendToBoardEdge(origin, dir, W, H){
+  let tMax = Infinity;
+  if(dir.x>1e-9) tMax = Math.min(tMax, (W-origin.x)/dir.x);
+  else if(dir.x<-1e-9) tMax = Math.min(tMax, (0-origin.x)/dir.x);
+  if(dir.y>1e-9) tMax = Math.min(tMax, (H-origin.y)/dir.y);
+  else if(dir.y<-1e-9) tMax = Math.min(tMax, (0-origin.y)/dir.y);
+  if(!isFinite(tMax) || tMax<0) tMax = 0;
+  return {x: origin.x+tMax*dir.x, y: origin.y+tMax*dir.y};
+}
 function tbRender(){
   const W=900, H=560;
   const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
@@ -6737,8 +6770,12 @@ function tbRender(){
     }
     const def = TB_DEFS[t.type];
     const hx = def.hw;
+    const protractorRay = t.type==='rapporteur' ? `<g data-role="protractorRay" data-id="${t.id}" style="cursor:grab;">
+      <circle cx="100" cy="0" r="9" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.6"/>
+      <circle cx="100" cy="0" r="20" fill="transparent"/>
+    </g>` : '';
     return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
-      <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>
+      <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>${protractorRay}
       <circle data-role="rotate" data-id="${t.id}" cx="${hx}" cy="0" r="11" fill="#0D5BA3" stroke="#fff" stroke-width="1.6"/>
       <g data-role="remove" data-id="${t.id}" style="cursor:pointer;">
         <circle cx="${-hx}" cy="0" r="12" fill="#D93025" stroke="#fff" stroke-width="1.6"/>
@@ -6746,19 +6783,63 @@ function tbRender(){
       </g>
     </g>`;
   }).join('');
+  // Pour chaque outil-guide (règle, équerre...) sur lequel au moins 2 points posés sont
+  // alignés : propose 3 boutons pour tracer directement segment/demi-droite/droite entre les
+  // deux points les plus extrêmes -- garantit de ne jamais déborder de A ou B (ou, à l'inverse,
+  // de prolonger exactement comme demandé), bien plus fiable qu'un geste manuel précis.
+  let segActionsHtml = '';
+  tbTools.forEach(t=>{
+    if(t.type==='crayon' || t.type==='compas') return;
+    const pts = tbPointsOnEdge(t);
+    if(pts.length<2) return;
+    const A = pts[0], B = pts[pts.length-1];
+    const midX=(A.x+B.x)/2, midY=(A.y+B.y)/2;
+    const mk=(dx,label,mode)=>`<g data-role="segAction" data-tool="${t.id}" data-a="${A.id}" data-b="${B.id}" data-mode="${mode}" transform="translate(${(midX+dx).toFixed(1)},${(midY+30).toFixed(1)})" style="cursor:pointer;">
+      <rect x="-27" y="-12" width="54" height="24" rx="5" fill="#0D5BA3" stroke="#fff" stroke-width="1.2"/>
+      <text x="0" y="5" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">${label}</text>
+    </g>`;
+    segActionsHtml += mk(-62,'[AB]','segment') + mk(0,'[AB)','demidroite') + mk(62,'(AB)','droite');
+  });
   document.getElementById('tbBoardWrap').innerHTML = `<svg id="tbSvg" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;touch-action:none;user-select:none;background:#fff;">
     <g id="tbInkLayer">${inkHtml}${pointsHtml}</g>
-    <g id="tbToolsLayer">${toolsHtml}</g>
+    <g id="tbToolsLayer">${toolsHtml}${segActionsHtml}</g>
   </svg>`;
   tbAttachHandlers();
+}
+/* Fenêtre de choix du nom d'un point : lettres majuscules en boutons, sans passer par le
+   clavier. Les lettres déjà utilisées par un autre point disparaissent de la liste (sauf celle
+   du point qu'on est en train de renommer, qui reste sélectionnable pour elle-même). */
+function tbOpenLetterPicker(currentLabel){
+  return new Promise(resolve=>{
+    const used = new Set(tbPoints.map(p=>p.label).filter(Boolean));
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(l=>!used.has(l) || l===currentLabel);
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.style.cssText = 'display:flex;z-index:200;';
+    overlay.innerHTML = `<div style="background:#fff;border-radius:12px;padding:22px;max-width:360px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.25);">
+      <h3 style="margin:0 0 14px;font-family:'Space Grotesk',sans-serif;">Nom du point</h3>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:16px;">
+        ${letters.map(l=>`<button type="button" data-letter="${l}" style="padding:10px 0;border-radius:7px;border:1.5px solid ${l===currentLabel?'#0D5BA3':'rgba(28,43,57,.2)'};background:${l===currentLabel?'#0D5BA3':'#fff'};color:${l===currentLabel?'#fff':'#1C1B2E'};font-weight:700;font-size:1.05rem;cursor:pointer;">${l}</button>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button type="button" data-letter="" style="padding:8px 16px;border-radius:7px;border:1px solid rgba(28,43,57,.2);background:#fff;cursor:pointer;">Aucun nom</button>
+        <button type="button" id="tbLetterCancel" style="padding:8px 16px;border-radius:7px;border:none;background:rgba(28,43,57,.08);cursor:pointer;">Annuler</button>
+      </div>
+    </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e=>{ if(e.target===overlay){ document.body.removeChild(overlay); resolve(null); } });
+    overlay.querySelectorAll('[data-letter]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{ document.body.removeChild(overlay); resolve(btn.dataset.letter); });
+    });
+    document.getElementById('tbLetterCancel').addEventListener('click', ()=>{ document.body.removeChild(overlay); resolve(null); });
+  });
 }
 async function tbRenamePoint(id){
   const point = tbPoints.find(p=>p.id===id);
   if(!point) return;
-  const label = await nicePrompt('Nom du point -- laissez vide pour le retirer', point.label||'');
+  const label = await tbOpenLetterPicker(point.label||'');
   if(label===null) return;
-  const trimmed = (label||'').trim();
-  if(!trimmed){ tbPoints = tbPoints.filter(p=>p.id!==id); } else { point.label = trimmed; }
+  if(!label){ tbPoints = tbPoints.filter(p=>p.id!==id); } else { point.label = label; }
   tbRender();
 }
 function tbAttachHandlers(){
@@ -6772,6 +6853,20 @@ function tbAttachHandlers(){
     const pt = tbSvgPoint(e);
     if(role==='remove'){ tbTools = tbTools.filter(t=>t.id!==id); tbRender(); return; }
     if(role==='point'){ tbRenamePoint(id); return; }
+    if(role==='segAction'){
+      const aId = parseInt(target.dataset.a), bId = parseInt(target.dataset.b), mode = target.dataset.mode;
+      const A = tbPoints.find(p=>p.id===aId), B = tbPoints.find(p=>p.id===bId);
+      if(A && B){
+        const dx=B.x-A.x, dy=B.y-A.y, len=Math.hypot(dx,dy)||1;
+        const ux=dx/len, uy=dy/len;
+        let p1={x:A.x,y:A.y}, p2={x:B.x,y:B.y};
+        if(mode==='demidroite'){ p2 = tbExtendToBoardEdge(A, {x:ux,y:uy}, 900, 560); }
+        else if(mode==='droite'){ p1 = tbExtendToBoardEdge(B, {x:-ux,y:-uy}, 900, 560); p2 = tbExtendToBoardEdge(A, {x:ux,y:uy}, 900, 560); }
+        tbInk.push({color: tbCurrentColor(), points:[[p1.x,p1.y],[p2.x,p2.y]]});
+        tbRender();
+      }
+      return;
+    }
     const tool = tbTools.find(t=>t.id===id);
     if(!tool) return;
     if(role==='body' || role==='pencilBody'){
@@ -6795,6 +6890,12 @@ function tbAttachHandlers(){
         tbInk.push(stroke);
         tbDrag = {mode:'pencil', id, stroke, startX:pt.x, startY:pt.y, moved:false};
       }
+    } else if(role==='protractorRay'){
+      // Trace un rayon depuis le pivot du rapporteur, qui suit le doigt/la souris -- comme si on
+      // posait un crayon sur la graduation choisie et qu'on le faisait tourner autour du pivot.
+      const stroke = {color: tbCurrentColor(), points:[[tool.x,tool.y],[pt.x,pt.y]]};
+      tbInk.push(stroke);
+      tbDrag = {mode:'protractorRay', id, stroke};
     }
     try{ svg.setPointerCapture(e.pointerId); }catch(err){}
     e.preventDefault();
@@ -6824,6 +6925,8 @@ function tbAttachHandlers(){
       const rad = tool.angle*Math.PI/180;
       const tipX = tool.x+tool.radius*Math.cos(rad), tipY = tool.y+tool.radius*Math.sin(rad);
       tbDrag.stroke.points.push([tipX, tipY]);
+    } else if(tbDrag.mode==='protractorRay'){
+      tbDrag.stroke.points[1] = [pt.x, pt.y];
     }
     tbRender();
   };
@@ -6835,8 +6938,8 @@ function tbAttachHandlers(){
       const tool = tbTools.find(t=>t.id===tbDrag.id);
       tbDrag = null;
       if(tool){
-        const label = await nicePrompt('Nom du point (ex. A) -- laissez vide pour aucun nom', '');
-        if(label!==null) tbPoints.push({id: tbPointNextId++, x: tool.x, y: tool.y, label: (label||'').trim()});
+        const label = await tbOpenLetterPicker('');
+        if(label!==null) tbPoints.push({id: tbPointNextId++, x: tool.x, y: tool.y, label});
         tbRender();
       }
       return;
