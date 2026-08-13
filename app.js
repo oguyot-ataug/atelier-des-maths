@@ -94,6 +94,10 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-evaluation'); setActiveTopnav('evaluation'); if(typeof initEvaluationView==='function') initEvaluationView();
     }
+    if(nav==='tableau'){
+      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      showView('view-tableau'); setActiveTopnav('tableau'); if(typeof initTableauView==='function') initTableauView();
+    }
     if(nav==='cahier'){
       if(!currentUser){ toggleAccountMenu(); return; }
       showView('view-cahier-eleve'); setActiveTopnav('cahier'); renderCahierEleve();
@@ -128,6 +132,7 @@ function setActiveTopnav(key){
   else if(key==='compte') document.querySelector('.nav-links button[data-nav="compte"]').classList.add('active');
   else if(key==='correction') document.querySelector('.nav-links button[data-nav="correction"]').classList.add('active');
   else if(key==='evaluation') document.querySelector('.nav-links button[data-nav="evaluation"]').classList.add('active');
+  else if(key==='tableau') document.querySelector('.nav-links button[data-nav="tableau"]').classList.add('active');
   else if(key==='cahier') document.querySelector('.nav-links button[data-nav="cahier"]').classList.add('active');
   else if(key==='admin') document.querySelector('.nav-links button[data-nav="admin"]').classList.add('active');
   else if(key==='supervision') document.querySelector('.nav-links button[data-nav="supervision"]').classList.add('active');
@@ -3943,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.146', items:[
+    "Nouveau (v1) : Tableau interactif (menu Outils prof), avec crayon, règles graduée/non graduée, équerre, réquerre, rapporteur et compas -- tous déplaçables et rotatifs. Le crayon trace librement, et s'aimante automatiquement le long du bord d'une règle/équerre/réquerre/rapporteur si on passe suffisamment près. Le compas trace un arc à rayon constant en faisant tourner sa pointe crayon autour de la pointe sèche. Prochaine étape : enregistrement pas à pas pour créer des tutoriels de construction.",
+  ]},
   { version:'2026-08-04.145', items:[
     "Page d'accueil -- nouvelle section « Pour les professeurs » (outil de correction, créer une évaluation, cahier de corrections, suivi des classes), pour rendre visible tout ce qui était jusqu'ici accessible seulement via le menu. Texte d'introduction mis à jour pour mentionner les deux publics.",
   ]},
@@ -6528,6 +6536,222 @@ async function addTdReference(){
 document.getElementById('corDate').value = todayISO();
 document.getElementById('corListFilterDate').value = corListFilterDate;
 document.getElementById('tdDate').value = todayISO();
+
+/* ============================================================
+   TABLEAU INTERACTIF (géométrie) -- v1
+   -----------------------------------------------------------
+   Chaque outil posé sur le tableau est un objet {id, type, x, y,
+   angle} (angle en degrés) dans le repère du grand SVG. Le crayon
+   trace un trait tant qu'on le fait glisser : s'il passe assez
+   près du bord d'une règle/équerre/réquerre/rapporteur ET dans le
+   bon sens, son tracé s'aimante sur ce bord (comme un vrai crayon
+   guidé) ; sinon il trace librement, à main levée. Le compas a un
+   fonctionnement à part : sa pointe sèche (pivot) se déplace
+   normalement, sa pointe crayon tourne autour à rayon fixé dès
+   qu'on commence à la faire glisser, en traçant un arc.
+   ============================================================ */
+let tbNextId = 1;
+let tbTools = [];   // outils posés sur le tableau
+let tbInk = [];     // traits déjà tracés {color, points:[[x,y],...]}
+let tbDrag = null;  // interaction en cours (déplacement/rotation/tracé)
+let tbInitialized = false;
+
+function pencilSVG(){
+  // pointe exactement à l'origine locale (0,0) : la position de l'outil EST la position de la
+  // pointe, pas besoin de décalage supplémentaire pour le tracé.
+  return `<rect x="-6" y="-52" width="12" height="40" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.2"/>
+    <polygon points="-6,-12 6,-12 0,0" fill="#8a5a2b" stroke="#1C1B2E" stroke-width="1.2"/>
+    <rect x="-6" y="-52" width="12" height="7" fill="#D93025" stroke="#1C1B2E" stroke-width="1.2"/>`;
+}
+function rulerSVG(graduated){
+  let ticks='';
+  if(graduated){
+    for(let x=-140;x<=140;x+=10){
+      const big = Math.round((x+140)/10)%5===0;
+      ticks += `<line x1="${x}" y1="-13" x2="${x}" y2="${big?-2:-7}" stroke="#1C1B2E" stroke-width="1"/>`;
+    }
+  }
+  return `<rect x="-140" y="-13" width="280" height="26" rx="3" fill="rgba(190,215,255,.55)" stroke="#1C1B2E" stroke-width="1.6"/>${ticks}`;
+}
+function equerreSVG(legX, legY){
+  return `<polygon points="0,0 ${legX},0 0,${-legY}" fill="rgba(190,235,205,.55)" stroke="#1C1B2E" stroke-width="1.6"/>`;
+}
+function protractorSVG(){
+  return `<path d="M -110,0 A 110,110 0 0,1 110,0 Z" fill="rgba(255,220,180,.5)" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="-110" y1="0" x2="110" y2="0" stroke="#1C1B2E" stroke-width="1.6"/>`;
+}
+/* Définition de chaque type d'outil : forme dessinée, et bords utilisables par le crayon pour
+   s'aimanter (coordonnées locales, avant rotation/déplacement de l'outil). Le crayon lui-même
+   n'a pas de bord (rien ne s'aimante sur lui). */
+const TB_DEFS = {
+  crayon:      { hw:50,  svg: pencilSVG,            edges: [] },
+  regle_grad:  { hw:158, svg: ()=>rulerSVG(true),   edges: [{x1:-140,y1:13,x2:140,y2:13}] },
+  regle_plane: { hw:158, svg: ()=>rulerSVG(false),  edges: [{x1:-140,y1:13,x2:140,y2:13}] },
+  equerre:     { hw:170, svg: ()=>equerreSVG(140,110), edges: [{x1:0,y1:0,x2:140,y2:0},{x1:0,y1:0,x2:0,y2:-110}] },
+  requerre:    { hw:190, svg: ()=>equerreSVG(180,80),  edges: [{x1:0,y1:0,x2:180,y2:0},{x1:0,y1:0,x2:0,y2:-80}] },
+  rapporteur:  { hw:130, svg: protractorSVG,        edges: [{x1:-110,y1:0,x2:110,y2:0}] },
+};
+const TB_PALETTE = [
+  {type:'crayon',      icon:'✏️', label:'Crayon'},
+  {type:'regle_grad',  icon:'📏', label:'Règle graduée'},
+  {type:'regle_plane', icon:'➖', label:'Règle non graduée'},
+  {type:'equerre',     icon:'📐', label:'Équerre'},
+  {type:'requerre',    icon:'🔻', label:'Réquerre'},
+  {type:'rapporteur',  icon:'◐', label:'Rapporteur'},
+  {type:'compas',      icon:'🧭', label:'Compas'},
+];
+function initTableauView(){
+  if(tbInitialized) return;
+  document.getElementById('tbToolPalette').innerHTML = TB_PALETTE.map(p=>`
+    <button type="button" onclick="tbAddTool('${p.type}')" title="${p.label}" style="width:56px;height:56px;border:1px solid rgba(28,43,57,.2);border-radius:8px;background:#fff;cursor:pointer;font-size:1.5rem;">${p.icon}</button>
+  `).join('');
+  tbRender();
+  tbInitialized = true;
+}
+function tbAddTool(type){
+  const id = tbNextId++;
+  if(type==='compas') tbTools.push({id, type, x:420, y:260, angle:-40, radius:90});
+  else tbTools.push({id, type, x:430+((id*17)%80), y:280+((id*23)%60), angle:0});
+  tbRender();
+}
+function tbCurrentColor(){
+  const el = document.getElementById('tbPencilColor');
+  return el ? el.value : '#1C1B2E';
+}
+function tbClearInk(){ tbInk = []; tbRender(); }
+function tbClearAll(){ tbInk = []; tbTools = []; tbRender(); }
+function tbSvgPoint(e){
+  const svg = document.getElementById('tbSvg');
+  const pt = svg.createSVGPoint();
+  pt.x = e.clientX; pt.y = e.clientY;
+  const ctm = svg.getScreenCTM();
+  if(!ctm) return {x:0,y:0};
+  const loc = pt.matrixTransform(ctm.inverse());
+  return {x:loc.x, y:loc.y};
+}
+/* Projette un point sur un segment, avec un léger débord toléré aux extrémités (un crayon peut
+   dépasser un peu le bout d'une règle sans perdre l'accroche). Renvoie le point projeté et la
+   distance, ou null si le segment est dégénéré. */
+function tbProjectOntoSegment(p, ax, ay, bx, by, overhang){
+  const dx=bx-ax, dy=by-ay;
+  const len = Math.hypot(dx,dy);
+  if(len<1e-6) return null;
+  let t = ((p.x-ax)*dx + (p.y-ay)*dy)/(len*len);
+  const tMin = -overhang/len, tMax = 1+overhang/len;
+  t = Math.max(tMin, Math.min(tMax, t));
+  const px = ax+t*dx, py = ay+t*dy;
+  return {x:px, y:py, dist: Math.hypot(p.x-px, p.y-py)};
+}
+/* Cherche, parmi tous les outils "guides" posés sur le tableau, le bord le plus proche du point
+   donné (à moins de 15px) ; si trouvé, renvoie le point aimanté sur ce bord, sinon le point tel
+   quel (tracé libre). */
+function tbSnapToEdge(pt){
+  let best=null, bestDist=15;
+  tbTools.forEach(t=>{
+    const def = TB_DEFS[t.type];
+    if(!def || !def.edges || !def.edges.length) return;
+    const rad = t.angle*Math.PI/180, cos=Math.cos(rad), sin=Math.sin(rad);
+    def.edges.forEach(e=>{
+      const ax = t.x + e.x1*cos - e.y1*sin, ay = t.y + e.x1*sin + e.y1*cos;
+      const bx = t.x + e.x2*cos - e.y2*sin, by = t.y + e.x2*sin + e.y2*cos;
+      const proj = tbProjectOntoSegment(pt, ax, ay, bx, by, 18);
+      if(proj && proj.dist < bestDist){ bestDist = proj.dist; best = {x:proj.x, y:proj.y}; }
+    });
+  });
+  return best || pt;
+}
+function tbRender(){
+  const W=900, H=560;
+  const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
+  const toolsHtml = tbTools.map(t=>{
+    if(t.type==='compas'){
+      const rad = t.angle*Math.PI/180;
+      const tipX = t.x+t.radius*Math.cos(rad), tipY = t.y+t.radius*Math.sin(rad);
+      const midX=(t.x+tipX)/2, midY=(t.y+tipY)/2-46;
+      return `<g>
+        <line x1="${t.x}" y1="${t.y}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="2.6"/>
+        <line x1="${tipX}" y1="${tipY}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="2.6"/>
+        <circle cx="${midX}" cy="${midY}" r="5" fill="#8a5a2b" stroke="#1C1B2E"/>
+        <circle data-role="pivot" data-id="${t.id}" cx="${t.x.toFixed(1)}" cy="${t.y.toFixed(1)}" r="10" fill="rgba(28,43,57,.18)" stroke="#1C1B2E" stroke-width="1.4"/>
+        <circle data-role="tip" data-id="${t.id}" cx="${tipX.toFixed(1)}" cy="${tipY.toFixed(1)}" r="10" fill="rgba(217,48,37,.3)" stroke="#D93025" stroke-width="1.4"/>
+        <circle data-role="remove" data-id="${t.id}" cx="${midX.toFixed(1)}" cy="${(midY-16).toFixed(1)}" r="8" fill="#D93025" stroke="#fff" stroke-width="1.2"/>
+      </g>`;
+    }
+    const def = TB_DEFS[t.type];
+    const hx = def.hw;
+    return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
+      <g data-role="body" data-id="${t.id}">${def.svg()}</g>
+      <circle data-role="rotate" data-id="${t.id}" cx="${hx}" cy="0" r="8" fill="#0D5BA3" stroke="#fff" stroke-width="1.4"/>
+      <circle data-role="remove" data-id="${t.id}" cx="${-hx}" cy="0" r="8" fill="#D93025" stroke="#fff" stroke-width="1.2"/>
+    </g>`;
+  }).join('');
+  document.getElementById('tbBoardWrap').innerHTML = `<svg id="tbSvg" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;touch-action:none;user-select:none;background:#fff;">
+    <g id="tbInkLayer">${inkHtml}</g>
+    <g id="tbToolsLayer">${toolsHtml}</g>
+  </svg>`;
+  tbAttachHandlers();
+}
+function tbAttachHandlers(){
+  const svg = document.getElementById('tbSvg');
+  svg.style.cursor = 'default';
+  svg.onpointerdown = (e)=>{
+    const target = e.target.closest('[data-role]');
+    if(!target) return;
+    const role = target.dataset.role;
+    const id = parseInt(target.dataset.id);
+    const pt = tbSvgPoint(e);
+    if(role==='remove'){ tbTools = tbTools.filter(t=>t.id!==id); tbRender(); return; }
+    const tool = tbTools.find(t=>t.id===id);
+    if(!tool) return;
+    if(role==='body'){
+      if(tool.type==='crayon'){
+        const stroke = {color: tbCurrentColor(), points:[[tool.x,tool.y]]};
+        tbInk.push(stroke);
+        tbDrag = {mode:'pencil', id, stroke};
+      } else {
+        tbDrag = {mode:'move', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
+      }
+    } else if(role==='rotate'){
+      tbDrag = {mode:'rotate', id};
+    } else if(role==='pivot'){
+      tbDrag = {mode:'compassMove', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
+    } else if(role==='tip'){
+      tbDrag = {mode:'compassTrace', id, stroke:{color: tbCurrentColor(), points:[]}};
+      tbInk.push(tbDrag.stroke);
+      tool._r0 = null;
+    }
+    try{ svg.setPointerCapture(e.pointerId); }catch(err){}
+    e.preventDefault();
+  };
+  svg.onpointermove = (e)=>{
+    if(!tbDrag) return;
+    const tool = tbTools.find(t=>t.id===tbDrag.id);
+    if(!tool){ tbDrag=null; return; }
+    const pt = tbSvgPoint(e);
+    if(tbDrag.mode==='move'){
+      tool.x = pt.x - tbDrag.offX; tool.y = pt.y - tbDrag.offY;
+    } else if(tbDrag.mode==='rotate'){
+      tool.angle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
+    } else if(tbDrag.mode==='pencil'){
+      const snapped = tbSnapToEdge(pt);
+      tool.x = snapped.x; tool.y = snapped.y;
+      tbDrag.stroke.points.push([tool.x, tool.y]);
+    } else if(tbDrag.mode==='compassMove'){
+      tool.x = pt.x - tbDrag.offX; tool.y = pt.y - tbDrag.offY;
+    } else if(tbDrag.mode==='compassTrace'){
+      const dx = pt.x-tool.x, dy = pt.y-tool.y;
+      if(!tool._r0) tool._r0 = Math.max(20, Math.hypot(dx,dy));
+      tool.radius = tool._r0;
+      tool.angle = Math.atan2(dy,dx)*180/Math.PI;
+      const rad = tool.angle*Math.PI/180;
+      const tipX = tool.x+tool.radius*Math.cos(rad), tipY = tool.y+tool.radius*Math.sin(rad);
+      tbDrag.stroke.points.push([tipX, tipY]);
+    }
+    tbRender();
+  };
+  svg.onpointerup = ()=>{ tbDrag = null; };
+  svg.onpointerleave = ()=>{ tbDrag = null; };
+}
 
 /* ======================= init ======================= */
 renderNiveau('6e');
