@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.156', items:[
+    "Tableau interactif -- fix important du rapporteur : le crayon ne bougeait jamais visuellement pendant le glissement (seul un petit repère en pointillés apparaissait ailleurs), donnant l'impression qu'il ne tournait pas. Corrigé, le crayon lui-même suit maintenant le geste. Compas : mine redessinée en simple pointe grise (plus de rectangle coloré ni de cercle), c'est désormais la branche qui porte la mine qui déplace tout l'ensemble (avec aimantage sur un point existant), le cœur règle l'écartement. Nouveau bouton « 📐 Trait de construction » qui bascule les tracés suivants en gris fin, sans modifier ceux déjà faits.",
+  ]},
   { version:'2026-08-04.155', items:[
     "Tableau interactif -- refonte du compas selon un geste plus naturel : le cœur (intersection des branches) déplace l'ensemble en le maintenant appuyé, la branche qui porte le crayon règle l'écartement sans rien tracer, la mine tourne ET trace, un double-clic sur le cœur verrouille le rayon (cadenas visible, charnière rouge). Fix important : les branches gardaient une longueur fixe désormais (elles semblaient s'allonger en écartant auparavant, un bug de géométrie). Rapporteur : le crayon rotatif se place maintenant à 90° par défaut, mine exactement sur le bord extérieur.",
   ]},
@@ -6578,6 +6581,7 @@ document.getElementById('tdDate').value = todayISO();
    qu'on commence à la faire glisser, en traçant un arc.
    ============================================================ */
 let tbNextId = 1;
+let tbConstructionMode = false; // trace en gris fin quand actif, sans changer les traits déjà faits
 let tbPoints = [];  // points nommés posés au tap du crayon {id, x, y, label}
 let tbPointNextId = 1;
 let tbTools = [];   // outils posés sur le tableau
@@ -6718,6 +6722,14 @@ function tbEraseNear(x, y, radius){
   tbPoints = tbPoints.filter(p => Math.hypot(p.x-x, p.y-y) >= radius);
   return before !== (tbInk.length + tbPoints.length);
 }
+function tbToggleConstruction(){
+  tbConstructionMode = !tbConstructionMode;
+  const btn = document.getElementById('btnTbConstruction');
+  if(btn){
+    btn.style.background = tbConstructionMode ? 'rgba(107,114,128,.25)' : '';
+    btn.style.borderColor = tbConstructionMode ? '#6B7280' : '';
+  }
+}
 function tbCurrentColor(){
   const el = document.getElementById('tbPencilColor');
   return el ? el.value : '#1C1B2E';
@@ -6847,16 +6859,25 @@ function tbExtendToBoardEdge(origin, dir, W, H){
 }
 function tbRender(){
   const W=900, H=560;
-  const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
+  const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.construction?'#9CA3AF':s.color}" stroke-width="${s.construction?'1.2':'2.4'}" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
   const pointsHtml = tbPoints.map(pt=>`<g data-role="point" data-id="${pt.id}" style="cursor:pointer;">
     <line x1="${pt.x-7}" y1="${pt.y-7}" x2="${pt.x+7}" y2="${pt.y+7}" stroke="#1C1B2E" stroke-width="2"/>
     <line x1="${pt.x-7}" y1="${pt.y+7}" x2="${pt.x+7}" y2="${pt.y-7}" stroke="#1C1B2E" stroke-width="2"/>
     <circle cx="${pt.x}" cy="${pt.y}" r="20" fill="transparent" pointer-events="all"/>
     <text x="${pt.x+11}" y="${pt.y-8}" font-size="16" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#1C1B2E">${escapeHtml(pt.label||'')}</text>
   </g>`).join('');
-  const protractorPreview = (tbDrag && tbDrag.mode==='protractorRay')
-    ? `<circle cx="${tbDrag.curX.toFixed(1)}" cy="${tbDrag.curY.toFixed(1)}" r="6" fill="none" stroke="#D93025" stroke-width="1.6" stroke-dasharray="3,2"/>`
-    : '';
+  let protractorPreview = '';
+  if(tbDrag && tbDrag.mode==='protractorRay'){
+    const ptool = tbTools.find(t=>t.id===tbDrag.id);
+    if(ptool){
+      const ang = Math.atan2(tbDrag.curY-ptool.y, tbDrag.curX-ptool.x)*180/Math.PI;
+      protractorPreview = `<g transform="translate(${tbDrag.curX.toFixed(1)},${tbDrag.curY.toFixed(1)}) rotate(${(ang+90).toFixed(1)})">
+        <rect x="-4.5" y="-23" width="9" height="9" fill="#D93025" stroke="#1C1B2E" stroke-width="1"/>
+        <rect x="-4.5" y="-14" width="9" height="10" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1"/>
+        <polygon points="-4.5,-4 4.5,-4 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1"/>
+      </g>`;
+    }
+  }
   const toolsHtml = tbTools.map(t=>{
     if(t.type==='compas'){
       const rad = t.angle*Math.PI/180;
@@ -6864,8 +6885,7 @@ function tbRender(){
       const distTotal = Math.hypot(tipX-t.x, tipY-t.y) || 1;
       const perpX = (tipY-t.y)/distTotal, perpY = -(tipX-t.x)/distTotal;
       // Longueur des branches FIXE (comme un vrai compas) : la charnière se rapproche de la
-      // base pivot-mine à mesure qu'on écarte, sans jamais rallonger les branches elles-mêmes
-      // (c'était le bug signalé : les branches "s'allongeaient" en écartant).
+      // base pivot-mine à mesure qu'on écarte, sans jamais rallonger les branches elles-mêmes.
       const half = distTotal/2;
       const hingeH = Math.sqrt(Math.max(TB_COMPASS_LEG*TB_COMPASS_LEG - half*half, 900));
       const midX=(t.x+tipX)/2 + perpX*hingeH, midY=(t.y+tipY)/2 + perpY*hingeH;
@@ -6874,10 +6894,10 @@ function tbRender(){
       const lockColor = t.locked ? '#D93025' : '#2EA8C9';
       return `<g>
         <line x1="${t.x}" y1="${t.y}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round"/>
-        <line x1="${tipX}" y1="${tipY}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round"/>
+        <line data-role="compassLeg" data-id="${t.id}" x1="${tipX}" y1="${tipY}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round" style="cursor:grab;"/>
+        <line data-role="compassLeg" data-id="${t.id}" x1="${tipX.toFixed(1)}" y1="${tipY.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="transparent" stroke-width="26" style="cursor:grab;"/>
         <g transform="translate(${tipX.toFixed(1)},${tipY.toFixed(1)}) rotate(${(tipAngle-90).toFixed(1)})">
-          <rect x="-4.5" y="-22" width="9" height="14" fill="#2EA8C9" stroke="#1C1B2E" stroke-width="1.1"/>
-          <polygon points="-4.5,-8 4.5,-8 0,0" fill="#1C1B2E" stroke="#1C1B2E" stroke-width="1.1"/>
+          <polygon points="0,-16 -4,0 4,0" fill="#6B7280" stroke="#1C1B2E" stroke-width="1.1"/>
         </g>
         <g transform="translate(${midX.toFixed(1)},${midY.toFixed(1)}) rotate(${hingeAngle.toFixed(1)})">
           <ellipse cx="0" cy="0" rx="12" ry="16" fill="${lockColor}" stroke="#1C1B2E" stroke-width="1.6"/>
@@ -6886,8 +6906,7 @@ function tbRender(){
           <circle cx="0" cy="-19" r="7" fill="${lockColor}" stroke="#1C1B2E" stroke-width="1.4"/>
         </g>
         ${t.locked ? `<text x="${t.x.toFixed(1)}" y="${(t.y-16).toFixed(1)}" font-size="15" text-anchor="middle">🔒</text>` : ''}
-        <line data-role="compassLeg" data-id="${t.id}" x1="${tipX.toFixed(1)}" y1="${tipY.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="transparent" stroke-width="28" style="cursor:${t.locked?'not-allowed':'ew-resize'};"/>
-        <circle data-role="pivot" data-id="${t.id}" cx="${t.x.toFixed(1)}" cy="${t.y.toFixed(1)}" r="13" fill="rgba(28,43,57,.18)" stroke="#1C1B2E" stroke-width="1.4"/>
+        <circle data-role="pivot" data-id="${t.id}" cx="${t.x.toFixed(1)}" cy="${t.y.toFixed(1)}" r="13" fill="rgba(28,43,57,.18)" stroke="#1C1B2E" stroke-width="1.4" style="cursor:${t.locked?'not-allowed':'ew-resize'};"/>
         <circle data-role="tip" data-id="${t.id}" cx="${tipX.toFixed(1)}" cy="${tipY.toFixed(1)}" r="17" fill="transparent"/>
       </g>`;
     }
@@ -6898,10 +6917,11 @@ function tbRender(){
     // l'angle choisi (pas de tracé automatique) -- c'est le professeur qui viendra ensuite
     // relier le sommet à ce repère à la règle, comme en vrai.
     const protR = TB_PROT_PIVOT_Y - 12;
+    const isDraggingThisRay = tbDrag && tbDrag.mode==='protractorRay' && tbDrag.id===t.id;
     const protractorRay = t.type==='rapporteur' ? `<g data-role="protractorRay" data-id="${t.id}" style="cursor:grab;" transform="translate(0,${(-protR).toFixed(1)})">
-      <rect x="-4.5" y="-23" width="9" height="9" fill="#D93025" stroke="#1C1B2E" stroke-width="1"/>
+      ${isDraggingThisRay ? '' : `<rect x="-4.5" y="-23" width="9" height="9" fill="#D93025" stroke="#1C1B2E" stroke-width="1"/>
       <rect x="-4.5" y="-14" width="9" height="10" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1"/>
-      <polygon points="-4.5,-4 4.5,-4 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1"/>
+      <polygon points="-4.5,-4 4.5,-4 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1"/>`}
       <circle cx="0" cy="0" r="22" fill="transparent"/>
     </g>` : '';
     return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
@@ -7010,8 +7030,8 @@ function tbAttachHandlers(){
     } else if(role==='pivot'){
       if(tool.type==='compas'){
         // Double-clic sur le cœur du compas (l'intersection des branches) : verrouille/déverrouille
-        // le rayon, pour ne plus risquer de le modifier par erreur en traçant. Signalé par un
-        // cadenas et un changement de couleur de la charnière.
+        // le rayon, pour ne plus risquer de le modifier par erreur. Signalé par un cadenas et un
+        // changement de couleur de la charnière.
         const now = Date.now();
         if(tool._lastPivotClick && now - tool._lastPivotClick < 400){
           tool.locked = !tool.locked;
@@ -7020,17 +7040,24 @@ function tbAttachHandlers(){
           return;
         }
         tool._lastPivotClick = now;
+        // Le cœur écarte/resserre les branches (ajuste le rayon) sans rien tracer -- inopérant
+        // si le compas est verrouillé.
+        if(!tool.locked) tbDrag = {mode:'compassAdjust', id};
+      } else {
+        tbDrag = {mode:'compassMove', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
       }
-      tbDrag = {mode:'compassMove', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
     } else if(role==='compassLeg'){
-      // Écarte ou resserre les branches (ajuste le rayon) en attrapant la branche qui porte le
-      // crayon -- sans rien tracer. Inopérant si le compas est verrouillé.
-      if(!tool.locked) tbDrag = {mode:'compassAdjust', id};
+      // La branche qui porte la mine déplace tout l'ensemble (pivot ET mine suivent
+      // ensemble, rayon et angle inchangés) -- la mine s'aimante sur un point déjà posé si on
+      // en approche, pour bien viser où reprendre un tracé.
+      const rad = tool.angle*Math.PI/180;
+      const curTipX = tool.x+tool.radius*Math.cos(rad), curTipY = tool.y+tool.radius*Math.sin(rad);
+      tbDrag = {mode:'compassMoveViaLeg', id, offX: pt.x-curTipX, offY: pt.y-curTipY};
     } else if(role==='tip'){
       if(tool.type==='compas'){
         // Attraper la mine et tourner trace vraiment l'arc/cercle -- le rayon reste fixe
         // (réglé via la branche, verrouillable au double-clic sur le cœur).
-        tbDrag = {mode:'compassTrace', id, stroke:{color: tbCurrentColor(), points:[]}};
+        tbDrag = {mode:'compassTrace', id, stroke:{color: tbCurrentColor(), construction: tbConstructionMode, points:[]}};
         tbInk.push(tbDrag.stroke);
       } else if(tool.type==='crayon'){
         // On ne sait pas encore si ce sera un tracé (glissé) ou un simple point (relâché sans
@@ -7040,7 +7067,7 @@ function tbAttachHandlers(){
         // premier point, pas seulement une fois qu'on a commencé à bouger.
         const startSnapped = tbSnapToEdge({x:tool.x, y:tool.y});
         tool.x = startSnapped.x; tool.y = startSnapped.y;
-        const stroke = {color: tbCurrentColor(), points:[[tool.x,tool.y]]};
+        const stroke = {color: tbCurrentColor(), construction: tbConstructionMode, points:[[tool.x,tool.y]]};
         tbInk.push(stroke);
         tbDrag = {mode:'pencil', id, stroke, startX:pt.x, startY:pt.y, moved:false};
       }
@@ -7096,10 +7123,18 @@ function tbAttachHandlers(){
       tbDrag.stroke.points.push([tool.x, tool.y]);
     } else if(tbDrag.mode==='compassMove'){
       tool.x = pt.x - tbDrag.offX; tool.y = pt.y - tbDrag.offY;
+    } else if(tbDrag.mode==='compassMoveViaLeg'){
+      // Déplace tout le compas en gardant rayon et angle inchangés -- la mine (nouvelle
+      // position de la pointe) s'aimante sur un point déjà posé si on en approche.
+      let newTipX = pt.x - tbDrag.offX, newTipY = pt.y - tbDrag.offY;
+      let bestDist = 22;
+      tbPoints.forEach(p=>{ const d=Math.hypot(p.x-newTipX,p.y-newTipY); if(d<bestDist){ bestDist=d; newTipX=p.x; newTipY=p.y; } });
+      const rad = tool.angle*Math.PI/180;
+      tool.x = newTipX - tool.radius*Math.cos(rad);
+      tool.y = newTipY - tool.radius*Math.sin(rad);
     } else if(tbDrag.mode==='compassAdjust'){
-      // Écarte/resserre les branches (attrapées par la branche qui porte le crayon) --
-      // s'aimante sur un point déjà posé si on en approche, pour bien viser où doit passer
-      // l'arc avant de tracer.
+      // Écarte/resserre les branches (via le cœur) sans rien tracer -- s'aimante sur un point
+      // déjà posé si on en approche, pour bien viser où doit passer l'arc avant de tracer.
       let target = pt, bestDist = 22;
       tbPoints.forEach(p=>{ const d=Math.hypot(p.x-pt.x,p.y-pt.y); if(d<bestDist){ bestDist=d; target={x:p.x,y:p.y}; } });
       const dx = target.x-tool.x, dy = target.y-tool.y;
