@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.153', items:[
+    "Tableau interactif -- règle : pivot déplacé exactement au bord côté graduation (plus au centre de la largeur). Rapporteur : fix d'un vrai bug qui empêchait tout déplacement (l'image bloquait les clics au lieu de les transmettre). Points et repères désormais déplaçables par glisser (tap = renommer, glissé = déplacer). Icônes rapporteur/compas/gomme remplacées par de vraies illustrations SVG, bien plus parlantes que les emojis précédents. Nouvel outil Gomme. Compas : nouvelle poignée pour écarter/resserrer les branches sans tracer, mine redessinée en forme de petit crayon.",
+  ]},
   { version:'2026-08-04.152', items:[
     "Tableau interactif -- refonte importante suite aux retours : plus de croix de suppression (l'icône de la palette sélectionne/désélectionne l'outil), poignée de rotation intégrée à l'outil lui-même (plus flottante à côté), règle agrandie qui pivote autour de son 0 avec graduations cm/mm numérotées, crayon redessiné plus élancé. Rapporteur : la poignée pose désormais un simple repère nommé (plus de tracé automatique) -- au professeur de relier ensuite à la règle. Boutons segment/demi-droite/droite : n'arment plus qu'une contrainte sur le crayon (le geste de tracé reste manuel, mais ne peut pas déborder), pour continuer à montrer le geste plutôt que de tracer à la place du professeur.",
   ]},
@@ -6596,17 +6599,17 @@ function rulerSVG(graduated){
     const cmStep = 22, nCm = Math.floor(L/cmStep);
     for(let cm=0; cm<=nCm; cm++){
       const xcm = cm*cmStep;
-      ticks += `<line x1="${xcm}" y1="${-W/2}" x2="${xcm}" y2="${-W/2+16}" stroke="#1C1B2E" stroke-width="1.3"/>
-        <text x="${xcm}" y="${-W/2+28}" font-size="10" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">${cm}</text>`;
+      ticks += `<line x1="${xcm}" y1="0" x2="${xcm}" y2="16" stroke="#1C1B2E" stroke-width="1.3"/>
+        <text x="${xcm}" y="28" font-size="10" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">${cm}</text>`;
       if(cm<nCm){
         for(let mm=1; mm<10; mm++){
           const x = xcm+mm*(cmStep/10);
-          ticks += `<line x1="${x.toFixed(1)}" y1="${-W/2}" x2="${x.toFixed(1)}" y2="${-W/2+(mm===5?11:6)}" stroke="#1C1B2E" stroke-width="0.8"/>`;
+          ticks += `<line x1="${x.toFixed(1)}" y1="0" x2="${x.toFixed(1)}" y2="${mm===5?11:6}" stroke="#1C1B2E" stroke-width="0.8"/>`;
         }
       }
     }
   }
-  return `<rect x="0" y="${-W/2}" width="${L}" height="${W}" rx="3" fill="rgba(190,215,255,.55)" stroke="#1C1B2E" stroke-width="1.6"/>${ticks}
+  return `<rect x="0" y="0" width="${L}" height="${W}" rx="3" fill="rgba(190,215,255,.55)" stroke="#1C1B2E" stroke-width="1.6"/>${ticks}
     <circle cx="0" cy="0" r="5" fill="#D93025" stroke="#1C1B2E" stroke-width="1"/>`;
 }
 function equerreSVG(legX, legY){
@@ -6621,7 +6624,8 @@ const TB_PROT_CENTER_X_RATIO = 0.4992;
 const TB_PROT_W = 260, TB_PROT_H = TB_PROT_W/TB_PROT_RATIO;
 const TB_PROT_PIVOT_X = TB_PROT_W*TB_PROT_CENTER_X_RATIO, TB_PROT_PIVOT_Y = TB_PROT_H*TB_PROT_BASELINE_RATIO;
 function protractorSVG(){
-  return `<image href="assets/rapporteur-translucide.png" x="${-TB_PROT_PIVOT_X}" y="${-TB_PROT_PIVOT_Y}" width="${TB_PROT_W}" height="${TB_PROT_H}" style="pointer-events:none;" opacity="0.92"/>`;
+  return `<image href="assets/rapporteur-translucide.png" x="${-TB_PROT_PIVOT_X}" y="${-TB_PROT_PIVOT_Y}" width="${TB_PROT_W}" height="${TB_PROT_H}" style="pointer-events:none;" opacity="0.92"/>
+    <rect x="${-TB_PROT_PIVOT_X}" y="${-TB_PROT_PIVOT_Y}" width="${TB_PROT_W}" height="${TB_PROT_H}" fill="transparent" pointer-events="all"/>`;
 }
 /* Définition de chaque type d'outil : forme dessinée, bords utilisables par le crayon pour
    s'aimanter (coordonnées locales, avant rotation/déplacement de l'outil), et position de la
@@ -6629,20 +6633,31 @@ function protractorSVG(){
    côté), pour qu'on tourne l'outil "par le bout" comme dans la réalité. */
 const TB_DEFS = {
   crayon:      { rotateHandle:{x:0,y:-100}, svg: pencilSVG,            edges: [] },
-  regle_grad:  { rotateHandle:{x:TB_RULER_L,y:0}, svg: ()=>rulerSVG(true),  edges: [{x1:6,y1:-TB_RULER_W/2,x2:TB_RULER_L-6,y2:-TB_RULER_W/2}] },
-  regle_plane: { rotateHandle:{x:TB_RULER_L,y:0}, svg: ()=>rulerSVG(false), edges: [{x1:6,y1:-TB_RULER_W/2,x2:TB_RULER_L-6,y2:-TB_RULER_W/2}] },
+  regle_grad:  { rotateHandle:{x:TB_RULER_L,y:0}, svg: ()=>rulerSVG(true),  edges: [{x1:6,y1:0,x2:TB_RULER_L-6,y2:0}] },
+  regle_plane: { rotateHandle:{x:TB_RULER_L,y:0}, svg: ()=>rulerSVG(false), edges: [{x1:6,y1:0,x2:TB_RULER_L-6,y2:0}] },
   equerre:     { rotateHandle:{x:140,y:0}, svg: ()=>equerreSVG(140,110), edges: [{x1:0,y1:0,x2:140,y2:0},{x1:0,y1:0,x2:0,y2:-110}] },
   requerre:    { rotateHandle:{x:180,y:0}, svg: ()=>equerreSVG(180,80),  edges: [{x1:0,y1:0,x2:180,y2:0},{x1:0,y1:0,x2:0,y2:-80}] },
   rapporteur:  { rotateHandle:{x:TB_PROT_W-TB_PROT_PIVOT_X,y:0}, svg: protractorSVG, edges: [{x1:-TB_PROT_PIVOT_X+8,y1:0,x2:(TB_PROT_W-TB_PROT_PIVOT_X)-8,y2:0}] },
+  gomme:       { rotateHandle:null, svg: gommeSVG, edges: [] },
 };
+function gommeSVG(id){
+  return `<g data-role="body" data-id="${id}">
+    <rect x="-24" y="-15" width="48" height="30" rx="6" fill="#F2A6C4" stroke="#1C1B2E" stroke-width="1.6"/>
+    <rect x="-24" y="-15" width="48" height="11" rx="4" fill="#fff" opacity="0.5"/>
+  </g>`;
+}
+const TB_ICON_PROTRACTOR = `<svg viewBox="0 0 24 24" width="26" height="26"><path d="M2 19 A10 10 0 0 1 22 19" fill="none" stroke="#1C1B2E" stroke-width="1.6"/><line x1="2" y1="19" x2="22" y2="19" stroke="#1C1B2E" stroke-width="1.6"/><line x1="12" y1="19" x2="12" y2="9.5" stroke="#1C1B2E" stroke-width="1"/><line x1="12" y1="19" x2="5.5" y2="12.5" stroke="#1C1B2E" stroke-width="1"/><line x1="12" y1="19" x2="18.5" y2="12.5" stroke="#1C1B2E" stroke-width="1"/></svg>`;
+const TB_ICON_COMPASS = `<svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="4.5" r="1.8" fill="#1C1B2E"/><line x1="12" y1="4.5" x2="5.5" y2="21" stroke="#1C1B2E" stroke-width="1.8"/><line x1="12" y1="4.5" x2="18.5" y2="21" stroke="#1C1B2E" stroke-width="1.8"/><circle cx="5.5" cy="21" r="1.4" fill="#D93025"/><rect x="16.5" y="17.5" width="4" height="4.5" rx="0.6" fill="#E8B93A" stroke="#1C1B2E" stroke-width="0.7" transform="rotate(18 18.5 19.5)"/></svg>`;
+const TB_ICON_ERASER = `<svg viewBox="0 0 24 24" width="26" height="26"><rect x="3" y="9" width="18" height="10" rx="2.5" fill="#F2A6C4" stroke="#1C1B2E" stroke-width="1.5" transform="rotate(-12 12 14)"/><rect x="3" y="9" width="18" height="4" rx="2" fill="#fff" opacity=".55" transform="rotate(-12 12 14)"/></svg>`;
 const TB_PALETTE = [
   {type:'crayon',      icon:'✏️', label:'Crayon'},
+  {type:'gomme',       icon:TB_ICON_ERASER, label:'Gomme'},
   {type:'regle_grad',  icon:'📏', label:'Règle graduée'},
   {type:'regle_plane', icon:'➖', label:'Règle non graduée'},
   {type:'equerre',     icon:'📐', label:'Équerre'},
   {type:'requerre',    icon:'🔻', label:'Réquerre'},
-  {type:'rapporteur',  icon:'◐', label:'Rapporteur'},
-  {type:'compas',      icon:'🧭', label:'Compas'},
+  {type:'rapporteur',  icon:TB_ICON_PROTRACTOR, label:'Rapporteur'},
+  {type:'compas',      icon:TB_ICON_COMPASS, label:'Compas'},
 ];
 function initTableauView(){
   if(tbInitialized) return;
@@ -6671,6 +6686,15 @@ function tbAddTool(type){
   else tbTools.push({id, type, x:430, y:280, angle:0});
   tbRenderPalette();
   tbRender();
+}
+/* Efface tout trait ou repère qui passe à moins de "radius" du point donné -- utilisé en
+   déplaçant la gomme sur le tableau. Retire le trait entier plutôt qu'un simple segment (plus
+   simple, et suffisant pour corriger une erreur de tracé). */
+function tbEraseNear(x, y, radius){
+  const before = tbInk.length + tbPoints.length;
+  tbInk = tbInk.filter(s => !s.points.some(p => Math.hypot(p[0]-x, p[1]-y) < radius));
+  tbPoints = tbPoints.filter(p => Math.hypot(p.x-x, p.y-y) >= radius);
+  return before !== (tbInk.length + tbPoints.length);
 }
 function tbCurrentColor(){
   const el = document.getElementById('tbPencilColor');
@@ -6804,13 +6828,26 @@ function tbRender(){
     if(t.type==='compas'){
       const rad = t.angle*Math.PI/180;
       const tipX = t.x+t.radius*Math.cos(rad), tipY = t.y+t.radius*Math.sin(rad);
-      const midX=(t.x+tipX)/2, midY=(t.y+tipY)/2-46;
+      // Décalage perpendiculaire (pas vertical fixe) : l'ouverture en "V" du compas reste
+      // cohérente quel que soit l'angle de rotation, au lieu de se resserrer bizarrement à
+      // certains angles.
+      const distTotal = Math.hypot(tipX-t.x, tipY-t.y) || 1;
+      const perpX = (tipY-t.y)/distTotal, perpY = -(tipX-t.x)/distTotal;
+      const midX=(t.x+tipX)/2 + perpX*44, midY=(t.y+tipY)/2 + perpY*44;
+      // La mine ressemble à un petit crayon (comme l'outil crayon), pour rester cohérent
+      // visuellement -- pointe exactement sur tipX/tipY.
+      const tipAngle = Math.atan2(tipY-midY, tipX-midX)*180/Math.PI;
       return `<g>
         <line x1="${t.x}" y1="${t.y}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="2.6"/>
         <line x1="${tipX}" y1="${tipY}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="2.6"/>
-        <circle cx="${midX}" cy="${midY}" r="5" fill="#8a5a2b" stroke="#1C1B2E"/>
+        <g transform="translate(${tipX.toFixed(1)},${tipY.toFixed(1)}) rotate(${(tipAngle-90).toFixed(1)})">
+          <rect x="-4.5" y="-22" width="9" height="14" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.1"/>
+          <polygon points="-4.5,-8 4.5,-8 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1.1"/>
+          <polygon points="-1.6,-2.5 1.6,-2.5 0,0" fill="#3a2b1f"/>
+        </g>
         <circle data-role="pivot" data-id="${t.id}" cx="${t.x.toFixed(1)}" cy="${t.y.toFixed(1)}" r="10" fill="rgba(28,43,57,.18)" stroke="#1C1B2E" stroke-width="1.4"/>
-        <circle data-role="tip" data-id="${t.id}" cx="${tipX.toFixed(1)}" cy="${tipY.toFixed(1)}" r="10" fill="rgba(217,48,37,.3)" stroke="#D93025" stroke-width="1.4"/>
+        <circle data-role="tip" data-id="${t.id}" cx="${tipX.toFixed(1)}" cy="${tipY.toFixed(1)}" r="14" fill="transparent"/>
+        <circle data-role="compassHinge" data-id="${t.id}" cx="${midX.toFixed(1)}" cy="${midY.toFixed(1)}" r="9" fill="#8a5a2b" stroke="#1C1B2E" stroke-width="1.2" style="cursor:ew-resize;"/>
       </g>`;
     }
     const def = TB_DEFS[t.type];
@@ -6824,7 +6861,7 @@ function tbRender(){
     </g>` : '';
     return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
       <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>${protractorRay}
-      <circle data-role="rotate" data-id="${t.id}" cx="${rh.x}" cy="${rh.y}" r="11" fill="#0D5BA3" stroke="#fff" stroke-width="1.6"/>
+      ${rh ? `<circle data-role="rotate" data-id="${t.id}" cx="${rh.x}" cy="${rh.y}" r="11" fill="#0D5BA3" stroke="#fff" stroke-width="1.6"/>` : ''}
     </g>`;
   }).join('');
   // Pour chaque outil-guide (règle, équerre...) sur lequel au moins 2 points posés sont
@@ -6900,7 +6937,13 @@ function tbAttachHandlers(){
     const role = target.dataset.role;
     const id = parseInt(target.dataset.id);
     const pt = tbSvgPoint(e);
-    if(role==='point'){ tbRenamePoint(id); return; }
+    if(role==='point'){
+      const point = tbPoints.find(p=>p.id===id);
+      if(point) tbDrag = {mode:'point', id, startX:pt.x, startY:pt.y, moved:false};
+      try{ svg.setPointerCapture(e.pointerId); }catch(err){}
+      e.preventDefault();
+      return;
+    }
     if(role==='segAction'){
       const toolId = parseInt(target.dataset.tool), aId = parseInt(target.dataset.a), bId = parseInt(target.dataset.b), mode = target.dataset.mode;
       const t = tbTools.find(x=>x.id===toolId);
@@ -6921,6 +6964,10 @@ function tbAttachHandlers(){
       tbDrag = {mode:'rotate', id};
     } else if(role==='pivot'){
       tbDrag = {mode:'compassMove', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
+    } else if(role==='compassHinge'){
+      // Écarte ou resserre les branches du compas (ajuste le rayon) sans rien tracer -- geste
+      // séparé du traçage d'arc, comme quand on règle son compas avant de s'en servir.
+      tbDrag = {mode:'compassAdjust', id};
     } else if(role==='tip'){
       if(tool.type==='compas'){
         tbDrag = {mode:'compassTrace', id, stroke:{color: tbCurrentColor(), points:[]}};
@@ -6950,12 +6997,21 @@ function tbAttachHandlers(){
   };
   svg.onpointermove = (e)=>{
     if(!tbDrag) return;
+    const pt = tbSvgPoint(e);
+    if(tbDrag.mode==='point'){
+      const point = tbPoints.find(p=>p.id===tbDrag.id);
+      if(!point){ tbDrag=null; return; }
+      if(Math.hypot(pt.x-tbDrag.startX, pt.y-tbDrag.startY) > 5) tbDrag.moved = true;
+      point.x = pt.x; point.y = pt.y;
+      tbRender();
+      return;
+    }
     const tool = tbTools.find(t=>t.id===tbDrag.id);
     if(!tool){ tbDrag=null; return; }
-    const pt = tbSvgPoint(e);
     if(tbDrag.mode==='move'){
       tool.x = pt.x - tbDrag.offX; tool.y = pt.y - tbDrag.offY;
-      if(tool.type!=='crayon') tbSnapToolToPoints(tool);
+      if(tool.type==='gomme'){ tbEraseNear(tool.x, tool.y, 26); }
+      else if(tool.type!=='crayon') tbSnapToolToPoints(tool);
     } else if(tbDrag.mode==='rotate'){
       tool.angle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
     } else if(tbDrag.mode==='pencil'){
@@ -6965,6 +7021,8 @@ function tbAttachHandlers(){
       tbDrag.stroke.points.push([tool.x, tool.y]);
     } else if(tbDrag.mode==='compassMove'){
       tool.x = pt.x - tbDrag.offX; tool.y = pt.y - tbDrag.offY;
+    } else if(tbDrag.mode==='compassAdjust'){
+      tool.radius = Math.max(20, Math.hypot(pt.x-tool.x, pt.y-tool.y));
     } else if(tbDrag.mode==='compassTrace'){
       const dx = pt.x-tool.x, dy = pt.y-tool.y;
       if(!tool._r0) tool._r0 = Math.max(20, Math.hypot(dx,dy));
@@ -6979,6 +7037,12 @@ function tbAttachHandlers(){
     tbRender();
   };
   svg.onpointerup = async ()=>{
+    if(tbDrag && tbDrag.mode==='point'){
+      const wasMoved = tbDrag.moved, id = tbDrag.id;
+      tbDrag = null;
+      if(!wasMoved) await tbRenamePoint(id);
+      return;
+    }
     if(tbDrag && tbDrag.mode==='pencil' && !tbDrag.moved){
       // Tap sans glissement : on retire le trait (vide) commencé, et on pose un point nommé à
       // la place, comme un vrai crayon qu'on pose sur la feuille pour marquer un point.
