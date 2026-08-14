@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.154', items:[
+    "Tableau interactif -- corrections majeures suite aux retours. Compas : nouveau bouton « 🎯 Vise / ✏️ Trace » (on peut enfin tourner pour viser sans tracer par erreur), la mine s'aimante sur un point existant en visant, arcs lissés par interpolation, redessiné dans l'esprit d'un vrai compas moderne (charnière ovale, pommeau arrondi, jambes épaisses). Rapporteur : agrandi, plus de nommage forcé pour poser un repère d'angle, le crayon qui tourne autour ressemble maintenant à un vrai petit crayon, le pivot s'aimante sur un point existant et la rotation s'aligne vers un second point. Gomme : effacement partiel (scinde le trait) au lieu de tout effacer. Règle non graduée retirée de la palette (redondante).",
+  ]},
   { version:'2026-08-04.153', items:[
     "Tableau interactif -- règle : pivot déplacé exactement au bord côté graduation (plus au centre de la largeur). Rapporteur : fix d'un vrai bug qui empêchait tout déplacement (l'image bloquait les clics au lieu de les transmettre). Points et repères désormais déplaçables par glisser (tap = renommer, glissé = déplacer). Icônes rapporteur/compas/gomme remplacées par de vraies illustrations SVG, bien plus parlantes que les emojis précédents. Nouvel outil Gomme. Compas : nouvelle poignée pour écarter/resserrer les branches sans tracer, mine redessinée en forme de petit crayon.",
   ]},
@@ -6621,7 +6624,7 @@ function equerreSVG(legX, legY){
 const TB_PROT_RATIO = 900/483;
 const TB_PROT_BASELINE_RATIO = 0.9349;
 const TB_PROT_CENTER_X_RATIO = 0.4992;
-const TB_PROT_W = 260, TB_PROT_H = TB_PROT_W/TB_PROT_RATIO;
+const TB_PROT_W = 380, TB_PROT_H = TB_PROT_W/TB_PROT_RATIO;
 const TB_PROT_PIVOT_X = TB_PROT_W*TB_PROT_CENTER_X_RATIO, TB_PROT_PIVOT_Y = TB_PROT_H*TB_PROT_BASELINE_RATIO;
 function protractorSVG(){
   return `<image href="assets/rapporteur-translucide.png" x="${-TB_PROT_PIVOT_X}" y="${-TB_PROT_PIVOT_Y}" width="${TB_PROT_W}" height="${TB_PROT_H}" style="pointer-events:none;" opacity="0.92"/>
@@ -6634,7 +6637,6 @@ function protractorSVG(){
 const TB_DEFS = {
   crayon:      { rotateHandle:{x:0,y:-100}, svg: pencilSVG,            edges: [] },
   regle_grad:  { rotateHandle:{x:TB_RULER_L,y:0}, svg: ()=>rulerSVG(true),  edges: [{x1:6,y1:0,x2:TB_RULER_L-6,y2:0}] },
-  regle_plane: { rotateHandle:{x:TB_RULER_L,y:0}, svg: ()=>rulerSVG(false), edges: [{x1:6,y1:0,x2:TB_RULER_L-6,y2:0}] },
   equerre:     { rotateHandle:{x:140,y:0}, svg: ()=>equerreSVG(140,110), edges: [{x1:0,y1:0,x2:140,y2:0},{x1:0,y1:0,x2:0,y2:-110}] },
   requerre:    { rotateHandle:{x:180,y:0}, svg: ()=>equerreSVG(180,80),  edges: [{x1:0,y1:0,x2:180,y2:0},{x1:0,y1:0,x2:0,y2:-80}] },
   rapporteur:  { rotateHandle:{x:TB_PROT_W-TB_PROT_PIVOT_X,y:0}, svg: protractorSVG, edges: [{x1:-TB_PROT_PIVOT_X+8,y1:0,x2:(TB_PROT_W-TB_PROT_PIVOT_X)-8,y2:0}] },
@@ -6653,7 +6655,6 @@ const TB_PALETTE = [
   {type:'crayon',      icon:'✏️', label:'Crayon'},
   {type:'gomme',       icon:TB_ICON_ERASER, label:'Gomme'},
   {type:'regle_grad',  icon:'📏', label:'Règle graduée'},
-  {type:'regle_plane', icon:'➖', label:'Règle non graduée'},
   {type:'equerre',     icon:'📐', label:'Équerre'},
   {type:'requerre',    icon:'🔻', label:'Réquerre'},
   {type:'rapporteur',  icon:TB_ICON_PROTRACTOR, label:'Rapporteur'},
@@ -6682,7 +6683,7 @@ function tbAddTool(type){
     return;
   }
   const id = tbNextId++;
-  if(type==='compas') tbTools.push({id, type, x:420, y:260, angle:-40, radius:90});
+  if(type==='compas') tbTools.push({id, type, x:420, y:260, angle:-40, radius:90, tracing:false});
   else tbTools.push({id, type, x:430, y:280, angle:0});
   tbRenderPalette();
   tbRender();
@@ -6690,9 +6691,25 @@ function tbAddTool(type){
 /* Efface tout trait ou repère qui passe à moins de "radius" du point donné -- utilisé en
    déplaçant la gomme sur le tableau. Retire le trait entier plutôt qu'un simple segment (plus
    simple, et suffisant pour corriger une erreur de tracé). */
+/* Efface uniquement la portion d'un trait qui passe à moins de "radius" du point donné --
+   scinde le trait en morceaux distincts de part et d'autre de la zone effacée, comme une vraie
+   gomme, plutôt que de supprimer tout le trait entier. */
 function tbEraseNear(x, y, radius){
+  const newInk = [];
+  tbInk.forEach(s=>{
+    let current = [];
+    s.points.forEach(p=>{
+      if(Math.hypot(p[0]-x, p[1]-y) < radius){
+        if(current.length>=2) newInk.push({color:s.color, points:current});
+        current = [];
+      } else {
+        current.push(p);
+      }
+    });
+    if(current.length>=2) newInk.push({color:s.color, points:current});
+  });
   const before = tbInk.length + tbPoints.length;
-  tbInk = tbInk.filter(s => !s.points.some(p => Math.hypot(p[0]-x, p[1]-y) < radius));
+  tbInk = newInk;
   tbPoints = tbPoints.filter(p => Math.hypot(p.x-x, p.y-y) >= radius);
   return before !== (tbInk.length + tbPoints.length);
 }
@@ -6767,6 +6784,17 @@ function tbApplyConstraint(tool, snapped, ax, ay, bx, by){
    de ses bords passe à moins de 16px d'un point pendant qu'on le déplace, on décale légèrement
    l'outil pour que ce bord passe exactement par ce point -- comme si on approchait vraiment une
    règle d'un point tracé au crayon et qu'elle s'y calait. Modifie l'outil directement. */
+/* Aimante spécifiquement le pivot (centre) du rapporteur sur un point déjà posé -- prioritaire
+   sur l'aimantage générique par bord, car c'est bien le pivot (le sommet de l'angle) qui doit
+   coïncider avec le point, pas n'importe quel endroit du bord gradué. */
+function tbSnapProtractorPivot(tool){
+  let best=null, bestDist=26;
+  tbPoints.forEach(p=>{
+    const d = Math.hypot(p.x-tool.x, p.y-tool.y);
+    if(d<bestDist){ bestDist=d; best=p; }
+  });
+  if(best){ tool.x = best.x; tool.y = best.y; }
+}
 function tbSnapToolToPoints(tool){
   const def = TB_DEFS[tool.type];
   if(!def || !def.edges || !def.edges.length || !tbPoints.length) return;
@@ -6834,30 +6862,43 @@ function tbRender(){
       const distTotal = Math.hypot(tipX-t.x, tipY-t.y) || 1;
       const perpX = (tipY-t.y)/distTotal, perpY = -(tipX-t.x)/distTotal;
       const midX=(t.x+tipX)/2 + perpX*44, midY=(t.y+tipY)/2 + perpY*44;
+      const knobX = midX + perpX*17, knobY = midY + perpY*17;
       // La mine ressemble à un petit crayon (comme l'outil crayon), pour rester cohérent
       // visuellement -- pointe exactement sur tipX/tipY.
       const tipAngle = Math.atan2(tipY-midY, tipX-midX)*180/Math.PI;
+      const hingeAngle = Math.atan2(perpY,perpX)*180/Math.PI+90;
       return `<g>
-        <line x1="${t.x}" y1="${t.y}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="2.6"/>
-        <line x1="${tipX}" y1="${tipY}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="2.6"/>
+        <line x1="${t.x}" y1="${t.y}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round"/>
+        <line x1="${tipX}" y1="${tipY}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round"/>
         <g transform="translate(${tipX.toFixed(1)},${tipY.toFixed(1)}) rotate(${(tipAngle-90).toFixed(1)})">
-          <rect x="-4.5" y="-22" width="9" height="14" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.1"/>
-          <polygon points="-4.5,-8 4.5,-8 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1.1"/>
-          <polygon points="-1.6,-2.5 1.6,-2.5 0,0" fill="#3a2b1f"/>
+          <rect x="-4.5" y="-22" width="9" height="14" fill="#2EA8C9" stroke="#1C1B2E" stroke-width="1.1"/>
+          <polygon points="-4.5,-8 4.5,-8 0,0" fill="#1C1B2E" stroke="#1C1B2E" stroke-width="1.1"/>
+        </g>
+        <g transform="translate(${midX.toFixed(1)},${midY.toFixed(1)}) rotate(${hingeAngle.toFixed(1)})">
+          <ellipse cx="0" cy="0" rx="12" ry="16" fill="#2EA8C9" stroke="#1C1B2E" stroke-width="1.6"/>
+          <circle cx="-4" cy="-4" r="1.7" fill="#1C1B2E"/>
+          <circle cx="4" cy="-4" r="1.7" fill="#1C1B2E"/>
+          <circle cx="0" cy="-19" r="7" fill="#2EA8C9" stroke="#1C1B2E" stroke-width="1.4"/>
         </g>
         <circle data-role="pivot" data-id="${t.id}" cx="${t.x.toFixed(1)}" cy="${t.y.toFixed(1)}" r="10" fill="rgba(28,43,57,.18)" stroke="#1C1B2E" stroke-width="1.4"/>
         <circle data-role="tip" data-id="${t.id}" cx="${tipX.toFixed(1)}" cy="${tipY.toFixed(1)}" r="14" fill="transparent"/>
-        <circle data-role="compassHinge" data-id="${t.id}" cx="${midX.toFixed(1)}" cy="${midY.toFixed(1)}" r="9" fill="#8a5a2b" stroke="#1C1B2E" stroke-width="1.2" style="cursor:ew-resize;"/>
+        <circle data-role="compassHinge" data-id="${t.id}" cx="${midX.toFixed(1)}" cy="${midY.toFixed(1)}" r="18" fill="transparent" style="cursor:ew-resize;"/>
+        <g data-role="compassMode" data-id="${t.id}" style="cursor:pointer;">
+          <rect x="${(t.x-46).toFixed(1)}" y="${(t.y+16).toFixed(1)}" width="92" height="24" rx="12" fill="${t.tracing?'#D93025':'#1F7A4D'}" stroke="#fff" stroke-width="1.4"/>
+          <text x="${t.x.toFixed(1)}" y="${(t.y+32).toFixed(1)}" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">${t.tracing?'✏️ Trace':'🎯 Vise'}</text>
+        </g>
       </g>`;
     }
     const def = TB_DEFS[t.type];
     const rh = def.rotateHandle;
-    // Rapporteur : une poignée tourne autour du pivot pour venir poser un simple repère (croix
-    // nommable) à l'angle choisi -- pas de tracé automatique, c'est le professeur qui viendra
-    // ensuite relier le sommet à ce repère à la règle, comme en vrai.
-    const protractorRay = t.type==='rapporteur' ? `<g data-role="protractorRay" data-id="${t.id}" style="cursor:grab;">
-      <circle cx="100" cy="0" r="9" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.6"/>
-      <circle cx="100" cy="0" r="22" fill="transparent"/>
+    // Rapporteur : un petit crayon tourne autour du pivot pour venir poser un simple repère à
+    // l'angle choisi (pas de tracé automatique) -- c'est le professeur qui viendra ensuite
+    // relier le sommet à ce repère à la règle, comme en vrai.
+    const protractorRay = t.type==='rapporteur' ? `<g data-role="protractorRay" data-id="${t.id}" style="cursor:grab;" transform="translate(100,0)">
+      <rect x="-4.5" y="-15" width="9" height="9" fill="#D93025" stroke="#1C1B2E" stroke-width="1"/>
+      <rect x="-4.5" y="-6" width="9" height="10" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1"/>
+      <polygon points="-4.5,4 4.5,4 0,13" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1"/>
+      <circle cx="0" cy="0" r="22" fill="transparent"/>
     </g>` : '';
     return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
       <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>${protractorRay}
@@ -6968,11 +7009,22 @@ function tbAttachHandlers(){
       // Écarte ou resserre les branches du compas (ajuste le rayon) sans rien tracer -- geste
       // séparé du traçage d'arc, comme quand on règle son compas avant de s'en servir.
       tbDrag = {mode:'compassAdjust', id};
+    } else if(role==='compassMode'){
+      // Bascule entre "viser" (par défaut : on positionne la mine sans rien tracer, pour viser
+      // un point précis) et "tracer" (la rotation trace vraiment l'arc/cercle).
+      tool.tracing = !tool.tracing;
+      tbRender();
+      return;
     } else if(role==='tip'){
       if(tool.type==='compas'){
-        tbDrag = {mode:'compassTrace', id, stroke:{color: tbCurrentColor(), points:[]}};
-        tbInk.push(tbDrag.stroke);
-        tool._r0 = null;
+        if(tool.tracing){
+          tbDrag = {mode:'compassTrace', id, stroke:{color: tbCurrentColor(), points:[]}};
+          tbInk.push(tbDrag.stroke);
+        } else {
+          // Mode "viser" : on repositionne juste la mine (elle peut s'aimanter sur un point
+          // déjà posé), sans laisser aucune trace.
+          tbDrag = {mode:'compassAim', id};
+        }
       } else if(tool.type==='crayon'){
         // On ne sait pas encore si ce sera un tracé (glissé) ou un simple point (relâché sans
         // avoir bougé) -- le trait est ajouté tout de suite mais retiré au relâché si rien n'a
@@ -7010,10 +7062,26 @@ function tbAttachHandlers(){
     if(!tool){ tbDrag=null; return; }
     if(tbDrag.mode==='move'){
       tool.x = pt.x - tbDrag.offX; tool.y = pt.y - tbDrag.offY;
-      if(tool.type==='gomme'){ tbEraseNear(tool.x, tool.y, 26); }
+      if(tool.type==='gomme'){ tbEraseNear(tool.x, tool.y, 18); }
+      else if(tool.type==='rapporteur'){ tbSnapProtractorPivot(tool); }
       else if(tool.type!=='crayon') tbSnapToolToPoints(tool);
     } else if(tbDrag.mode==='rotate'){
-      tool.angle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
+      let angle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
+      if(tool.type==='rapporteur'){
+        // Aligne le côté 0°-180° vers un point déjà posé si la direction visée passe tout
+        // près -- comme quand on tourne le rapporteur pour caler son bord sur un côté déjà
+        // tracé de l'angle.
+        let bestAngle=null, bestDiff=6;
+        tbPoints.forEach(p=>{
+          const d = Math.hypot(p.x-tool.x, p.y-tool.y);
+          if(d<12) return; // trop proche du pivot pour être le point visé
+          const a = Math.atan2(p.y-tool.y, p.x-tool.x)*180/Math.PI;
+          let diff = Math.abs(a-angle); if(diff>180) diff=360-diff;
+          if(diff<bestDiff){ bestDiff=diff; bestAngle=a; }
+        });
+        if(bestAngle!==null) angle = bestAngle;
+      }
+      tool.angle = angle;
     } else if(tbDrag.mode==='pencil'){
       if(Math.hypot(pt.x-tbDrag.startX, pt.y-tbDrag.startY) > 5) tbDrag.moved = true;
       const snapped = tbSnapToEdge(pt);
@@ -7023,14 +7091,28 @@ function tbAttachHandlers(){
       tool.x = pt.x - tbDrag.offX; tool.y = pt.y - tbDrag.offY;
     } else if(tbDrag.mode==='compassAdjust'){
       tool.radius = Math.max(20, Math.hypot(pt.x-tool.x, pt.y-tool.y));
-    } else if(tbDrag.mode==='compassTrace'){
-      const dx = pt.x-tool.x, dy = pt.y-tool.y;
-      if(!tool._r0) tool._r0 = Math.max(20, Math.hypot(dx,dy));
-      tool.radius = tool._r0;
+    } else if(tbDrag.mode==='compassAim'){
+      // Positionne la mine sans rien tracer -- s'aimante sur un point déjà posé si on en
+      // approche, pour viser précisément où démarrer un arc.
+      let target = pt, bestDist = 22;
+      tbPoints.forEach(p=>{ const d=Math.hypot(p.x-pt.x,p.y-pt.y); if(d<bestDist){ bestDist=d; target={x:p.x,y:p.y}; } });
+      const dx = target.x-tool.x, dy = target.y-tool.y;
+      tool.radius = Math.max(20, Math.hypot(dx,dy));
       tool.angle = Math.atan2(dy,dx)*180/Math.PI;
-      const rad = tool.angle*Math.PI/180;
-      const tipX = tool.x+tool.radius*Math.cos(rad), tipY = tool.y+tool.radius*Math.sin(rad);
-      tbDrag.stroke.points.push([tipX, tipY]);
+    } else if(tbDrag.mode==='compassTrace'){
+      // Rayon fixe (déjà réglé en mode viser ou par la poignée d'écartement) : seule la
+      // rotation compte. On interpole plusieurs points intermédiaires si le saut angulaire est
+      // grand, pour un arc lisse même quand la rotation va vite (évite les segments visibles).
+      const newAngle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
+      let delta = newAngle - tool.angle;
+      while(delta>180) delta-=360;
+      while(delta<-180) delta+=360;
+      const steps = Math.max(1, Math.ceil(Math.abs(delta)/4));
+      for(let i=1;i<=steps;i++){
+        const a = (tool.angle + delta*i/steps) * Math.PI/180;
+        tbDrag.stroke.points.push([tool.x+tool.radius*Math.cos(a), tool.y+tool.radius*Math.sin(a)]);
+      }
+      tool.angle = newAngle;
     } else if(tbDrag.mode==='protractorRay'){
       tbDrag.curX = pt.x; tbDrag.curY = pt.y;
     }
@@ -7059,8 +7141,7 @@ function tbAttachHandlers(){
     if(tbDrag && tbDrag.mode==='protractorRay'){
       const {curX, curY} = tbDrag;
       tbDrag = null;
-      const label = await tbOpenLetterPicker('');
-      if(label!==null) tbPoints.push({id: tbPointNextId++, x: curX, y: curY, label});
+      tbPoints.push({id: tbPointNextId++, x: curX, y: curY, label: ''});
       tbRender();
       return;
     }
