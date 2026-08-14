@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.152', items:[
+    "Tableau interactif -- refonte importante suite aux retours : plus de croix de suppression (l'icône de la palette sélectionne/désélectionne l'outil), poignée de rotation intégrée à l'outil lui-même (plus flottante à côté), règle agrandie qui pivote autour de son 0 avec graduations cm/mm numérotées, crayon redessiné plus élancé. Rapporteur : la poignée pose désormais un simple repère nommé (plus de tracé automatique) -- au professeur de relier ensuite à la règle. Boutons segment/demi-droite/droite : n'arment plus qu'une contrainte sur le crayon (le geste de tracé reste manuel, mais ne peut pas déborder), pour continuer à montrer le geste plutôt que de tracer à la place du professeur.",
+  ]},
   { version:'2026-08-04.151', items:[
     "Tableau interactif -- nom des points : fenêtre de lettres majuscules cliquables (plus de clavier), celles déjà utilisées disparaissent de la liste. Rapporteur : crayon spécial qui tourne autour du pivot pour tracer un rayon à l'angle choisi. Nouveauté : dès que 2 points posés sont alignés sur le bord d'une règle/équerre, 3 boutons apparaissent pour tracer directement le segment [AB], la demi-droite [AB) ou la droite (AB) -- sans geste manuel, donc jamais de débordement ni d'arrêt trop court.",
   ]},
@@ -6574,26 +6577,37 @@ let tbDrag = null;  // interaction en cours (déplacement/rotation/tracé)
 let tbInitialized = false;
 
 function pencilSVG(id){
-  // pointe exactement à l'origine locale (0,0). Le corps (manche, rôle "pencilBody") est
-  // maintenant long et bien séparé de la pointe (aucun chevauchement des deux zones tactiles),
-  // pour qu'on puisse le saisir au doigt sans risquer de déclencher un tracé par erreur.
+  // pointe exactement à l'origine locale (0,0). Le corps (manche, rôle "pencilBody") est long
+  // et étroit (proportions réalistes), bien séparé de la pointe (aucun chevauchement des deux
+  // zones tactiles).
   return `<g data-role="pencilBody" data-id="${id}">
-    <rect x="-9" y="-95" width="18" height="14" fill="#D93025" stroke="#1C1B2E" stroke-width="1.4"/>
-    <rect x="-9" y="-81" width="18" height="46" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.4"/>
-    <polygon points="-9,-35 9,-35 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1.4"/>
-    <polygon points="-3,-10 3,-10 0,0" fill="#3a2b1f"/>
+    <rect x="-7" y="-100" width="14" height="14" fill="#D93025" stroke="#1C1B2E" stroke-width="1.4"/>
+    <rect x="-7" y="-86" width="14" height="51" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.4"/>
+    <polygon points="-7,-35 7,-35 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1.4"/>
+    <polygon points="-2.5,-10 2.5,-10 0,0" fill="#3a2b1f"/>
   </g>
   <circle data-role="tip" data-id="${id}" cx="0" cy="0" r="18" fill="transparent" pointer-events="all"/>`;
 }
+const TB_RULER_L = 340, TB_RULER_W = 36;
 function rulerSVG(graduated){
+  const L=TB_RULER_L, W=TB_RULER_W;
   let ticks='';
   if(graduated){
-    for(let x=-140;x<=140;x+=10){
-      const big = Math.round((x+140)/10)%5===0;
-      ticks += `<line x1="${x}" y1="-13" x2="${x}" y2="${big?-2:-7}" stroke="#1C1B2E" stroke-width="1"/>`;
+    const cmStep = 22, nCm = Math.floor(L/cmStep);
+    for(let cm=0; cm<=nCm; cm++){
+      const xcm = cm*cmStep;
+      ticks += `<line x1="${xcm}" y1="${-W/2}" x2="${xcm}" y2="${-W/2+16}" stroke="#1C1B2E" stroke-width="1.3"/>
+        <text x="${xcm}" y="${-W/2+28}" font-size="10" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">${cm}</text>`;
+      if(cm<nCm){
+        for(let mm=1; mm<10; mm++){
+          const x = xcm+mm*(cmStep/10);
+          ticks += `<line x1="${x.toFixed(1)}" y1="${-W/2}" x2="${x.toFixed(1)}" y2="${-W/2+(mm===5?11:6)}" stroke="#1C1B2E" stroke-width="0.8"/>`;
+        }
+      }
     }
   }
-  return `<rect x="-140" y="-13" width="280" height="26" rx="3" fill="rgba(190,215,255,.55)" stroke="#1C1B2E" stroke-width="1.6"/>${ticks}`;
+  return `<rect x="0" y="${-W/2}" width="${L}" height="${W}" rx="3" fill="rgba(190,215,255,.55)" stroke="#1C1B2E" stroke-width="1.6"/>${ticks}
+    <circle cx="0" cy="0" r="5" fill="#D93025" stroke="#1C1B2E" stroke-width="1"/>`;
 }
 function equerreSVG(legX, legY){
   return `<polygon points="0,0 ${legX},0 0,${-legY}" fill="rgba(190,235,205,.55)" stroke="#1C1B2E" stroke-width="1.6"/>`;
@@ -6609,16 +6623,17 @@ const TB_PROT_PIVOT_X = TB_PROT_W*TB_PROT_CENTER_X_RATIO, TB_PROT_PIVOT_Y = TB_P
 function protractorSVG(){
   return `<image href="assets/rapporteur-translucide.png" x="${-TB_PROT_PIVOT_X}" y="${-TB_PROT_PIVOT_Y}" width="${TB_PROT_W}" height="${TB_PROT_H}" style="pointer-events:none;" opacity="0.92"/>`;
 }
-/* Définition de chaque type d'outil : forme dessinée, et bords utilisables par le crayon pour
-   s'aimanter (coordonnées locales, avant rotation/déplacement de l'outil). Le crayon lui-même
-   n'a pas de bord (rien ne s'aimante sur lui). */
+/* Définition de chaque type d'outil : forme dessinée, bords utilisables par le crayon pour
+   s'aimanter (coordonnées locales, avant rotation/déplacement de l'outil), et position de la
+   poignée de rotation -- toujours à l'extrémité naturelle de l'outil lui-même (pas flottante à
+   côté), pour qu'on tourne l'outil "par le bout" comme dans la réalité. */
 const TB_DEFS = {
-  crayon:      { hw:112, svg: pencilSVG,            edges: [] },
-  regle_grad:  { hw:158, svg: ()=>rulerSVG(true),   edges: [{x1:-140,y1:-13,x2:140,y2:-13}] },
-  regle_plane: { hw:158, svg: ()=>rulerSVG(false),  edges: [{x1:-140,y1:-13,x2:140,y2:-13}] },
-  equerre:     { hw:170, svg: ()=>equerreSVG(140,110), edges: [{x1:0,y1:0,x2:140,y2:0},{x1:0,y1:0,x2:0,y2:-110}] },
-  requerre:    { hw:190, svg: ()=>equerreSVG(180,80),  edges: [{x1:0,y1:0,x2:180,y2:0},{x1:0,y1:0,x2:0,y2:-80}] },
-  rapporteur:  { hw:TB_PROT_W-TB_PROT_PIVOT_X+20, svg: protractorSVG, edges: [{x1:-TB_PROT_PIVOT_X+8,y1:0,x2:(TB_PROT_W-TB_PROT_PIVOT_X)-8,y2:0}] },
+  crayon:      { rotateHandle:{x:0,y:-100}, svg: pencilSVG,            edges: [] },
+  regle_grad:  { rotateHandle:{x:TB_RULER_L,y:0}, svg: ()=>rulerSVG(true),  edges: [{x1:6,y1:-TB_RULER_W/2,x2:TB_RULER_L-6,y2:-TB_RULER_W/2}] },
+  regle_plane: { rotateHandle:{x:TB_RULER_L,y:0}, svg: ()=>rulerSVG(false), edges: [{x1:6,y1:-TB_RULER_W/2,x2:TB_RULER_L-6,y2:-TB_RULER_W/2}] },
+  equerre:     { rotateHandle:{x:140,y:0}, svg: ()=>equerreSVG(140,110), edges: [{x1:0,y1:0,x2:140,y2:0},{x1:0,y1:0,x2:0,y2:-110}] },
+  requerre:    { rotateHandle:{x:180,y:0}, svg: ()=>equerreSVG(180,80),  edges: [{x1:0,y1:0,x2:180,y2:0},{x1:0,y1:0,x2:0,y2:-80}] },
+  rapporteur:  { rotateHandle:{x:TB_PROT_W-TB_PROT_PIVOT_X,y:0}, svg: protractorSVG, edges: [{x1:-TB_PROT_PIVOT_X+8,y1:0,x2:(TB_PROT_W-TB_PROT_PIVOT_X)-8,y2:0}] },
 };
 const TB_PALETTE = [
   {type:'crayon',      icon:'✏️', label:'Crayon'},
@@ -6631,20 +6646,30 @@ const TB_PALETTE = [
 ];
 function initTableauView(){
   if(tbInitialized) return;
-  document.getElementById('tbToolPalette').innerHTML = TB_PALETTE.map(p=>`
-    <button type="button" onclick="tbAddTool('${p.type}')" title="${p.label}" style="width:56px;height:56px;border:1px solid rgba(28,43,57,.2);border-radius:8px;background:#fff;cursor:pointer;font-size:1.5rem;">${p.icon}</button>
-  `).join('');
+  tbRenderPalette();
   tbRender();
   tbInitialized = true;
 }
+/* Chaque icône de la palette bascule l'outil : un appui l'ajoute au tableau, un second l'en
+   retire -- plus besoin d'un bouton de suppression séparé sur le tableau lui-même. L'icône
+   reflète l'état (encadrée/colorée quand l'outil est posé). */
+function tbRenderPalette(){
+  document.getElementById('tbToolPalette').innerHTML = TB_PALETTE.map(p=>{
+    const active = tbTools.some(t=>t.type===p.type);
+    return `<button type="button" onclick="tbAddTool('${p.type}')" title="${p.label}" style="width:56px;height:56px;border:2px solid ${active?'#0D5BA3':'rgba(28,43,57,.2)'};border-radius:8px;background:${active?'rgba(13,91,163,.12)':'#fff'};cursor:pointer;font-size:1.5rem;">${p.icon}</button>`;
+  }).join('');
+}
 function tbAddTool(type){
   if(tbTools.some(t=>t.type===type)){
-    niceAlert("Cet outil est déjà sur le tableau -- retirez-le d'abord (croix rouge) pour en reposer un.");
+    tbTools = tbTools.filter(t=>t.type!==type);
+    tbRenderPalette();
+    tbRender();
     return;
   }
   const id = tbNextId++;
   if(type==='compas') tbTools.push({id, type, x:420, y:260, angle:-40, radius:90});
   else tbTools.push({id, type, x:430, y:280, angle:0});
+  tbRenderPalette();
   tbRender();
 }
 function tbCurrentColor(){
@@ -6652,7 +6677,7 @@ function tbCurrentColor(){
   return el ? el.value : '#1C1B2E';
 }
 function tbClearInk(){ tbInk = []; tbRender(); }
-function tbClearAll(){ tbInk = []; tbTools = []; tbPoints = []; tbRender(); }
+function tbClearAll(){ tbInk = []; tbTools = []; tbPoints = []; tbRenderPalette(); tbRender(); }
 function tbSvgPoint(e){
   const svg = document.getElementById('tbSvg');
   const pt = svg.createSVGPoint();
@@ -6679,7 +6704,7 @@ function tbProjectOntoSegment(p, ax, ay, bx, by, overhang){
    donné (à moins de 15px) ; si trouvé, renvoie le point aimanté sur ce bord, sinon le point tel
    quel (tracé libre). */
 function tbSnapToEdge(pt){
-  let best=null, bestDist=32;
+  let best=null, bestDist=32, bestTool=null, bestAX,bestAY,bestBX,bestBY;
   tbTools.forEach(t=>{
     const def = TB_DEFS[t.type];
     if(!def || !def.edges || !def.edges.length) return;
@@ -6688,10 +6713,31 @@ function tbSnapToEdge(pt){
       const ax = t.x + e.x1*cos - e.y1*sin, ay = t.y + e.x1*sin + e.y1*cos;
       const bx = t.x + e.x2*cos - e.y2*sin, by = t.y + e.x2*sin + e.y2*cos;
       const proj = tbProjectOntoSegment(pt, ax, ay, bx, by, 26);
-      if(proj && proj.dist < bestDist){ bestDist = proj.dist; best = {x:proj.x, y:proj.y}; }
+      if(proj && proj.dist < bestDist){ bestDist = proj.dist; best = {x:proj.x, y:proj.y}; bestTool=t; bestAX=ax; bestAY=ay; bestBX=bx; bestBY=by; }
     });
   });
+  if(best && bestTool && bestTool.activeConstraint){
+    best = tbApplyConstraint(bestTool, best, bestAX, bestAY, bestBX, bestBY);
+  }
   return best || pt;
+}
+/* Si l'outil sur lequel le crayon s'aimante a une contrainte armée (segment/demi-droite/droite,
+   posée via les boutons [AB]/[AB)/(AB)) : borne la position aimantée en conséquence, pour que
+   le geste du professeur ne puisse jamais déborder de A (et de B pour un segment), tout en
+   restant un vrai tracé à la main -- pas un tracé automatique. */
+function tbApplyConstraint(tool, snapped, ax, ay, bx, by){
+  const c = tool.activeConstraint;
+  const A = tbPoints.find(p=>p.id===c.aId), B = tbPoints.find(p=>p.id===c.bId);
+  if(!A || !B) return snapped;
+  const dx=bx-ax, dy=by-ay, len2=dx*dx+dy*dy || 1;
+  const tA = ((A.x-ax)*dx+(A.y-ay)*dy)/len2, tB = ((B.x-ax)*dx+(B.y-ay)*dy)/len2;
+  let t = ((snapped.x-ax)*dx+(snapped.y-ay)*dy)/len2;
+  if(c.mode==='segment'){
+    t = Math.max(Math.min(tA,tB), Math.min(Math.max(tA,tB), t));
+  } else if(c.mode==='demidroite'){
+    t = (tA<=tB) ? Math.max(tA, t) : Math.min(tA, t);
+  }
+  return {x: ax+t*dx, y: ay+t*dy};
 }
 /* Aimante un outil-guide (règle, équerre, réquerre, rapporteur) sur un point déjà posé : si un
    de ses bords passe à moins de 16px d'un point pendant qu'on le déplace, on décale légèrement
@@ -6751,6 +6797,9 @@ function tbRender(){
     <circle cx="${pt.x}" cy="${pt.y}" r="20" fill="transparent" pointer-events="all"/>
     <text x="${pt.x+11}" y="${pt.y-8}" font-size="16" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#1C1B2E">${escapeHtml(pt.label||'')}</text>
   </g>`).join('');
+  const protractorPreview = (tbDrag && tbDrag.mode==='protractorRay')
+    ? `<circle cx="${tbDrag.curX.toFixed(1)}" cy="${tbDrag.curY.toFixed(1)}" r="6" fill="none" stroke="#D93025" stroke-width="1.6" stroke-dasharray="3,2"/>`
+    : '';
   const toolsHtml = tbTools.map(t=>{
     if(t.type==='compas'){
       const rad = t.angle*Math.PI/180;
@@ -6762,31 +6811,27 @@ function tbRender(){
         <circle cx="${midX}" cy="${midY}" r="5" fill="#8a5a2b" stroke="#1C1B2E"/>
         <circle data-role="pivot" data-id="${t.id}" cx="${t.x.toFixed(1)}" cy="${t.y.toFixed(1)}" r="10" fill="rgba(28,43,57,.18)" stroke="#1C1B2E" stroke-width="1.4"/>
         <circle data-role="tip" data-id="${t.id}" cx="${tipX.toFixed(1)}" cy="${tipY.toFixed(1)}" r="10" fill="rgba(217,48,37,.3)" stroke="#D93025" stroke-width="1.4"/>
-        <g data-role="remove" data-id="${t.id}" style="cursor:pointer;">
-          <circle cx="${midX.toFixed(1)}" cy="${(midY-16).toFixed(1)}" r="12" fill="#D93025" stroke="#fff" stroke-width="1.6"/>
-          <text x="${midX.toFixed(1)}" y="${(midY-11).toFixed(1)}" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">✕</text>
-        </g>
       </g>`;
     }
     const def = TB_DEFS[t.type];
-    const hx = def.hw;
+    const rh = def.rotateHandle;
+    // Rapporteur : une poignée tourne autour du pivot pour venir poser un simple repère (croix
+    // nommable) à l'angle choisi -- pas de tracé automatique, c'est le professeur qui viendra
+    // ensuite relier le sommet à ce repère à la règle, comme en vrai.
     const protractorRay = t.type==='rapporteur' ? `<g data-role="protractorRay" data-id="${t.id}" style="cursor:grab;">
       <circle cx="100" cy="0" r="9" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.6"/>
-      <circle cx="100" cy="0" r="20" fill="transparent"/>
+      <circle cx="100" cy="0" r="22" fill="transparent"/>
     </g>` : '';
     return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
       <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>${protractorRay}
-      <circle data-role="rotate" data-id="${t.id}" cx="${hx}" cy="0" r="11" fill="#0D5BA3" stroke="#fff" stroke-width="1.6"/>
-      <g data-role="remove" data-id="${t.id}" style="cursor:pointer;">
-        <circle cx="${-hx}" cy="0" r="12" fill="#D93025" stroke="#fff" stroke-width="1.6"/>
-        <text x="${-hx}" y="5" font-size="13" text-anchor="middle" fill="#fff" font-weight="700">✕</text>
-      </g>
+      <circle data-role="rotate" data-id="${t.id}" cx="${rh.x}" cy="${rh.y}" r="11" fill="#0D5BA3" stroke="#fff" stroke-width="1.6"/>
     </g>`;
   }).join('');
   // Pour chaque outil-guide (règle, équerre...) sur lequel au moins 2 points posés sont
-  // alignés : propose 3 boutons pour tracer directement segment/demi-droite/droite entre les
-  // deux points les plus extrêmes -- garantit de ne jamais déborder de A ou B (ou, à l'inverse,
-  // de prolonger exactement comme demandé), bien plus fiable qu'un geste manuel précis.
+  // alignés : propose 3 boutons pour ARMER le crayon en mode segment/demi-droite/droite entre
+  // les deux points les plus extrêmes. Le tracé lui-même reste un vrai geste du professeur (on
+  // montre comment on trace) -- seul le résultat est contraint pour ne jamais déborder de A ou
+  // B (ou, à l'inverse, prolonger exactement comme demandé).
   let segActionsHtml = '';
   tbTools.forEach(t=>{
     if(t.type==='crayon' || t.type==='compas') return;
@@ -6794,14 +6839,18 @@ function tbRender(){
     if(pts.length<2) return;
     const A = pts[0], B = pts[pts.length-1];
     const midX=(A.x+B.x)/2, midY=(A.y+B.y)/2;
-    const mk=(dx,label,mode)=>`<g data-role="segAction" data-tool="${t.id}" data-a="${A.id}" data-b="${B.id}" data-mode="${mode}" transform="translate(${(midX+dx).toFixed(1)},${(midY+30).toFixed(1)})" style="cursor:pointer;">
-      <rect x="-27" y="-12" width="54" height="24" rx="5" fill="#0D5BA3" stroke="#fff" stroke-width="1.2"/>
-      <text x="0" y="5" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">${label}</text>
+    const active = t.activeConstraint;
+    const mk=(dx,label,mode)=>{
+      const on = active && active.mode===mode && active.aId===A.id && active.bId===B.id;
+      return `<g data-role="segAction" data-tool="${t.id}" data-a="${A.id}" data-b="${B.id}" data-mode="${mode}" transform="translate(${(midX+dx).toFixed(1)},${(midY+30).toFixed(1)})" style="cursor:pointer;">
+      <rect x="-27" y="-12" width="54" height="24" rx="5" fill="${on?'#1F7A4D':'#0D5BA3'}" stroke="#fff" stroke-width="1.2"/>
+      <text x="0" y="5" font-size="12" text-anchor="middle" fill="#fff" font-weight="700">${on?'✓ ':''}${label}</text>
     </g>`;
+    };
     segActionsHtml += mk(-62,'[AB]','segment') + mk(0,'[AB)','demidroite') + mk(62,'(AB)','droite');
   });
   document.getElementById('tbBoardWrap').innerHTML = `<svg id="tbSvg" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;touch-action:none;user-select:none;background:#fff;">
-    <g id="tbInkLayer">${inkHtml}${pointsHtml}</g>
+    <g id="tbInkLayer">${inkHtml}${pointsHtml}${protractorPreview}</g>
     <g id="tbToolsLayer">${toolsHtml}${segActionsHtml}</g>
   </svg>`;
   tbAttachHandlers();
@@ -6851,18 +6900,13 @@ function tbAttachHandlers(){
     const role = target.dataset.role;
     const id = parseInt(target.dataset.id);
     const pt = tbSvgPoint(e);
-    if(role==='remove'){ tbTools = tbTools.filter(t=>t.id!==id); tbRender(); return; }
     if(role==='point'){ tbRenamePoint(id); return; }
     if(role==='segAction'){
-      const aId = parseInt(target.dataset.a), bId = parseInt(target.dataset.b), mode = target.dataset.mode;
-      const A = tbPoints.find(p=>p.id===aId), B = tbPoints.find(p=>p.id===bId);
-      if(A && B){
-        const dx=B.x-A.x, dy=B.y-A.y, len=Math.hypot(dx,dy)||1;
-        const ux=dx/len, uy=dy/len;
-        let p1={x:A.x,y:A.y}, p2={x:B.x,y:B.y};
-        if(mode==='demidroite'){ p2 = tbExtendToBoardEdge(A, {x:ux,y:uy}, 900, 560); }
-        else if(mode==='droite'){ p1 = tbExtendToBoardEdge(B, {x:-ux,y:-uy}, 900, 560); p2 = tbExtendToBoardEdge(A, {x:ux,y:uy}, 900, 560); }
-        tbInk.push({color: tbCurrentColor(), points:[[p1.x,p1.y],[p2.x,p2.y]]});
+      const toolId = parseInt(target.dataset.tool), aId = parseInt(target.dataset.a), bId = parseInt(target.dataset.b), mode = target.dataset.mode;
+      const t = tbTools.find(x=>x.id===toolId);
+      if(t){
+        const same = t.activeConstraint && t.activeConstraint.mode===mode && t.activeConstraint.aId===aId && t.activeConstraint.bId===bId;
+        t.activeConstraint = same ? null : {aId, bId, mode};
         tbRender();
       }
       return;
@@ -6885,17 +6929,21 @@ function tbAttachHandlers(){
       } else if(tool.type==='crayon'){
         // On ne sait pas encore si ce sera un tracé (glissé) ou un simple point (relâché sans
         // avoir bougé) -- le trait est ajouté tout de suite mais retiré au relâché si rien n'a
-        // bougé, remplacé alors par un point nommé.
+        // bougé, remplacé alors par un point nommé. La position de départ passe elle aussi par
+        // l'aimantage (donc par une éventuelle contrainte armée), pour un tracé cohérent dès le
+        // premier point, pas seulement une fois qu'on a commencé à bouger.
+        const startSnapped = tbSnapToEdge({x:tool.x, y:tool.y});
+        tool.x = startSnapped.x; tool.y = startSnapped.y;
         const stroke = {color: tbCurrentColor(), points:[[tool.x,tool.y]]};
         tbInk.push(stroke);
         tbDrag = {mode:'pencil', id, stroke, startX:pt.x, startY:pt.y, moved:false};
       }
     } else if(role==='protractorRay'){
-      // Trace un rayon depuis le pivot du rapporteur, qui suit le doigt/la souris -- comme si on
-      // posait un crayon sur la graduation choisie et qu'on le faisait tourner autour du pivot.
-      const stroke = {color: tbCurrentColor(), points:[[tool.x,tool.y],[pt.x,pt.y]]};
-      tbInk.push(stroke);
-      tbDrag = {mode:'protractorRay', id, stroke};
+      // Fait tourner une poignée autour du pivot du rapporteur -- au relâché, elle pose un
+      // simple repère (comme le point d'un crayon qu'on aurait fait tourner), sans tracer de
+      // trait automatiquement. C'est ensuite au professeur de relier le pivot à ce repère à la
+      // règle, comme en vrai.
+      tbDrag = {mode:'protractorRay', id, curX: pt.x, curY: pt.y};
     }
     try{ svg.setPointerCapture(e.pointerId); }catch(err){}
     e.preventDefault();
@@ -6926,7 +6974,7 @@ function tbAttachHandlers(){
       const tipX = tool.x+tool.radius*Math.cos(rad), tipY = tool.y+tool.radius*Math.sin(rad);
       tbDrag.stroke.points.push([tipX, tipY]);
     } else if(tbDrag.mode==='protractorRay'){
-      tbDrag.stroke.points[1] = [pt.x, pt.y];
+      tbDrag.curX = pt.x; tbDrag.curY = pt.y;
     }
     tbRender();
   };
@@ -6942,6 +6990,14 @@ function tbAttachHandlers(){
         if(label!==null) tbPoints.push({id: tbPointNextId++, x: tool.x, y: tool.y, label});
         tbRender();
       }
+      return;
+    }
+    if(tbDrag && tbDrag.mode==='protractorRay'){
+      const {curX, curY} = tbDrag;
+      tbDrag = null;
+      const label = await tbOpenLetterPicker('');
+      if(label!==null) tbPoints.push({id: tbPointNextId++, x: curX, y: curY, label});
+      tbRender();
       return;
     }
     tbDrag = null;
