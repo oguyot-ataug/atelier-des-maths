@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.164', items:[
+    "Tableau interactif -- équerre/réquerre : sommets francs (plus d'arrondi), graduations intermédiaires (mm) ajoutées entre chaque cm, échelle désormais identique à celle de la règle (1cm = même largeur sur les deux outils), texte « Équerre » retiré de l'image.",
+  ]},
   { version:'2026-08-04.163', items:[
     "Tableau interactif -- équerre/réquerre : correction de l'orientation (le petit côté descendait vers le haut au lieu du bas -- inversé), l'évidement intérieur utilise désormais un vrai décalage perpendiculaire uniforme garantissant le parallélisme avec les côtés extérieurs, les graduations s'arrêtent avant de déborder de la forme près de la pointe, et la poignée de rotation est repositionnée sur la bande pleine (jamais dans le trou).",
   ]},
@@ -6687,27 +6690,34 @@ function tbInsetTriangle(pts, d){
 }
 function equerreSVG(legX, legY){
   // Angle droit en haut à gauche (origine) ; grand côté horizontal en haut ; PETIT côté
-  // vertical qui DESCEND (y positif) -- pas l'inverse.
+  // vertical qui DESCEND (y positif) -- pas l'inverse. Sommets francs (pas arrondis), comme une
+  // vraie équerre en plastique rigide.
   const outerPts = [[0,0],[legX,0],[0,legY]];
-  const outerPath = tbRoundedTrianglePath(outerPts, 9);
   const inset = 20;
   const holePts = tbInsetTriangle(outerPts, inset);
-  const holePath = tbRoundedTrianglePath(holePts, 13);
   let ticks = '';
-  const cmStep = 20, nCm = Math.floor(legX/cmStep);
-  for(let i=1;i<=nCm;i++){
-    const x = i*cmStep;
+  // Même échelle que la règle (22 unités/cm) pour rester raccord entre les deux outils.
+  const cmStep = 22, nCm = Math.floor(legX/cmStep);
+  for(let cm=1; cm<=nCm; cm++){
+    const x = cm*cmStep;
     // La hauteur disponible (jusqu'à l'hypoténuse) doit rester supérieure à la place prise par
     // la graduation, sinon elle déborderait hors de l'équerre près de la pointe.
     const availableH = legY*(1 - x/legX);
     if(availableH < 16) break;
     ticks += `<line x1="${x}" y1="0" x2="${x}" y2="7" stroke="#1C1B2E" stroke-width="0.8"/>
-      <text x="${x}" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">${i}</text>`;
+      <text x="${x}" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">${cm}</text>`;
+    // Graduations intermédiaires (mm), comme sur la règle.
+    for(let mm=1; mm<10; mm++){
+      const xm = x - cmStep + mm*(cmStep/10);
+      if(xm<=0) continue;
+      const availH2 = legY*(1 - xm/legX);
+      if(availH2 < 6) continue;
+      ticks += `<line x1="${xm.toFixed(1)}" y1="0" x2="${xm.toFixed(1)}" y2="${mm===5?5:3}" stroke="#1C1B2E" stroke-width="0.6"/>`;
+    }
   }
-  return `<path d="${outerPath}" fill="rgba(205,225,245,.4)" stroke="#1C1B2E" stroke-width="1.6"/>
-    <path d="${holePath}" fill="#fff" fill-opacity="0.85" stroke="#1C1B2E" stroke-width="1.1"/>
-    ${ticks}
-    <text x="8" y="${(legY*0.85).toFixed(1)}" font-size="6" fill="#1C1B2E" opacity="0.55" font-style="italic" transform="rotate(90 8 ${(legY*0.85).toFixed(1)})">Équerre</text>`;
+  return `<polygon points="${outerPts.map(p=>p.join(',')).join(' ')}" fill="rgba(205,225,245,.4)" stroke="#1C1B2E" stroke-width="1.6"/>
+    <polygon points="${holePts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="#fff" fill-opacity="0.85" stroke="#1C1B2E" stroke-width="1.1"/>
+    ${ticks}`;
 }
 // Même image et mêmes repères que le rapporteur du cours "Angles et rapporteur" (6e, G3) : le
 // pivot (là où convergent les graduations) n'est pas au centre de l'image, il a été mesuré
