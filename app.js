@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.163', items:[
+    "Tableau interactif -- équerre/réquerre : correction de l'orientation (le petit côté descendait vers le haut au lieu du bas -- inversé), l'évidement intérieur utilise désormais un vrai décalage perpendiculaire uniforme garantissant le parallélisme avec les côtés extérieurs, les graduations s'arrêtent avant de déborder de la forme près de la pointe, et la poignée de rotation est repositionnée sur la bande pleine (jamais dans le trou).",
+  ]},
   { version:'2026-08-04.162', items:[
     "Tableau interactif -- équerre entièrement redessinée pour reproduire fidèlement le modèle Staedtler (proportions étirées, coins arrondis via de vraies courbes, évidement triangulaire bien positionné). Poignées de rotation de la règle, l'équerre et la réquerre déplacées au cœur de l'outil (petites, discrètes, semi-transparentes) au lieu d'être posées sur les graduations.",
   ]},
@@ -6659,25 +6662,52 @@ function tbRoundedTrianglePath(pts, r){
   }
   return d+'Z';
 }
+/* Triangle intérieur dont chaque côté est PARALLÈLE au côté correspondant du triangle donné,
+   décalé vers l'intérieur d'une distance uniforme "d" (comme un vrai évidement d'équerre en
+   plastique, pas 3 points choisis à la main qui cassent le parallélisme). */
+function tbInsetTriangle(pts, d){
+  const cxg = (pts[0][0]+pts[1][0]+pts[2][0])/3, cyg = (pts[0][1]+pts[1][1]+pts[2][1])/3;
+  const lines = [];
+  for(let i=0;i<3;i++){
+    const p1=pts[i], p2=pts[(i+1)%3];
+    const dx=p2[0]-p1[0], dy=p2[1]-p1[1], len=Math.hypot(dx,dy)||1;
+    let nx=-dy/len, ny=dx/len;
+    const midx=(p1[0]+p2[0])/2, midy=(p1[1]+p2[1])/2;
+    if(nx*(cxg-midx)+ny*(cyg-midy) < 0){ nx=-nx; ny=-ny; }
+    lines.push({p:[p1[0]+nx*d, p1[1]+ny*d], dir:[dx,dy]});
+  }
+  const intersect = (l1,l2) => {
+    const [x1,y1]=l1.p, [dx1,dy1]=l1.dir, [x2,y2]=l2.p, [dx2,dy2]=l2.dir;
+    const denom = dx1*dy2 - dy1*dx2;
+    if(Math.abs(denom)<1e-9) return [x1,y1];
+    const t = ((x2-x1)*dy2 - (y2-y1)*dx2)/denom;
+    return [x1+dx1*t, y1+dy1*t];
+  };
+  return [intersect(lines[2],lines[0]), intersect(lines[0],lines[1]), intersect(lines[1],lines[2])];
+}
 function equerreSVG(legX, legY){
-  const marginTop = 24, marginLeft = 14;
-  const outerPath = tbRoundedTrianglePath([[0,0],[legX,0],[0,-legY]], 9);
-  const holePath = tbRoundedTrianglePath([
-    [marginLeft, -marginTop],
-    [legX*0.6, -marginTop],
-    [marginLeft, -legY+marginTop*0.6],
-  ], 15);
+  // Angle droit en haut à gauche (origine) ; grand côté horizontal en haut ; PETIT côté
+  // vertical qui DESCEND (y positif) -- pas l'inverse.
+  const outerPts = [[0,0],[legX,0],[0,legY]];
+  const outerPath = tbRoundedTrianglePath(outerPts, 9);
+  const inset = 20;
+  const holePts = tbInsetTriangle(outerPts, inset);
+  const holePath = tbRoundedTrianglePath(holePts, 13);
   let ticks = '';
-  const cmStep = 20, nCm = Math.floor((legX-8)/cmStep);
+  const cmStep = 20, nCm = Math.floor(legX/cmStep);
   for(let i=1;i<=nCm;i++){
     const x = i*cmStep;
-    ticks += `<line x1="${x}" y1="0" x2="${x}" y2="-7" stroke="#1C1B2E" stroke-width="0.8"/>
-      <text x="${x}" y="-12" font-size="6.5" text-anchor="middle" fill="#1C1B2E">${i}</text>`;
+    // La hauteur disponible (jusqu'à l'hypoténuse) doit rester supérieure à la place prise par
+    // la graduation, sinon elle déborderait hors de l'équerre près de la pointe.
+    const availableH = legY*(1 - x/legX);
+    if(availableH < 16) break;
+    ticks += `<line x1="${x}" y1="0" x2="${x}" y2="7" stroke="#1C1B2E" stroke-width="0.8"/>
+      <text x="${x}" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">${i}</text>`;
   }
   return `<path d="${outerPath}" fill="rgba(205,225,245,.4)" stroke="#1C1B2E" stroke-width="1.6"/>
     <path d="${holePath}" fill="#fff" fill-opacity="0.85" stroke="#1C1B2E" stroke-width="1.1"/>
     ${ticks}
-    <text x="${marginLeft+8}" y="-${marginTop+14}" font-size="6" fill="#1C1B2E" opacity="0.55" font-style="italic">Équerre</text>`;
+    <text x="8" y="${(legY*0.85).toFixed(1)}" font-size="6" fill="#1C1B2E" opacity="0.55" font-style="italic" transform="rotate(90 8 ${(legY*0.85).toFixed(1)})">Équerre</text>`;
 }
 // Même image et mêmes repères que le rapporteur du cours "Angles et rapporteur" (6e, G3) : le
 // pivot (là où convergent les graduations) n'est pas au centre de l'image, il a été mesuré
@@ -6701,8 +6731,8 @@ const TB_COMPASS_LEG = 200; // longueur fixe des branches (comme un vrai compas)
 const TB_DEFS = {
   crayon:      { rotateHandle:{x:0,y:-100}, svg: pencilSVG,            edges: [] },
   regle_grad:  { rotateHandle:{x:TB_RULER_L/2,y:TB_RULER_W-6,r:7,opacity:0.5}, svg: ()=>rulerSVG(true),  edges: [{x1:6,y1:0,x2:TB_RULER_L-6,y2:0}] },
-  equerre:     { rotateHandle:{x:110,y:-40,r:7,opacity:0.5}, svg: ()=>equerreSVG(340,115), edges: [{x1:0,y1:0,x2:340,y2:0},{x1:0,y1:0,x2:0,y2:-115}] },
-  requerre:    { rotateHandle:{x:58,y:-27,r:7,opacity:0.5}, svg: ()=>equerreSVG(180,80),  edges: [{x1:0,y1:0,x2:180,y2:0},{x1:0,y1:0,x2:0,y2:-80}] },
+  equerre:     { rotateHandle:{x:10,y:58,r:7,opacity:0.5}, svg: ()=>equerreSVG(340,115), edges: [{x1:0,y1:0,x2:340,y2:0},{x1:0,y1:0,x2:0,y2:115}] },
+  requerre:    { rotateHandle:{x:10,y:40,r:7,opacity:0.5}, svg: ()=>equerreSVG(180,80),  edges: [{x1:0,y1:0,x2:180,y2:0},{x1:0,y1:0,x2:0,y2:80}] },
   rapporteur:  { rotateHandle:{x:0,y:-24,r:7,opacity:0.55}, svg: protractorSVG, edges: [{x1:-TB_PROT_PIVOT_X+8,y1:0,x2:(TB_PROT_W-TB_PROT_PIVOT_X)-8,y2:0}] },
   gomme:       { rotateHandle:null, svg: gommeSVG, edges: [] },
 };
