@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.158', items:[
+    "Tableau interactif -- compas : sélecteur à 3 états (↔️ Ouvrir/écarter, 🔒 Fermé/tourner sans rien tracer ni écarter, ✏️ Crayon/tracer), un clic fait défiler les états. Rapporteur : poignée de rotation déplacée à l'intérieur, discrète, pour ne plus gêner la lecture des graduations près de 180°. Le crayon rotatif ne peut plus s'écarter du rapporteur (mine toujours exactement sur le bord). Le repère posé est désormais un simple petit trait dans l'axe de la graduation choisie, plus une croix.",
+  ]},
   { version:'2026-08-04.157', items:[
     "Tableau interactif -- compas repris avec le bon vocabulaire (pointe = ancrage fixe, mine = crayon qui trace) : plus de cercle sur la pointe, mine redessinée en vrai petit crayon, la branche de la pointe déplace tout l'ensemble (aimantage sur un point existant), la branche du crayon écarte/tourne librement sans tracer. Un clic sur l'icône 🔓/🔒 verrouille le rayon et fait basculer cette même branche en mode traçage (tourner dessine vraiment l'arc/cercle) ; un second clic déverrouille.",
   ]},
@@ -6651,7 +6654,7 @@ const TB_DEFS = {
   regle_grad:  { rotateHandle:{x:TB_RULER_L,y:0}, svg: ()=>rulerSVG(true),  edges: [{x1:6,y1:0,x2:TB_RULER_L-6,y2:0}] },
   equerre:     { rotateHandle:{x:140,y:0}, svg: ()=>equerreSVG(140,110), edges: [{x1:0,y1:0,x2:140,y2:0},{x1:0,y1:0,x2:0,y2:-110}] },
   requerre:    { rotateHandle:{x:180,y:0}, svg: ()=>equerreSVG(180,80),  edges: [{x1:0,y1:0,x2:180,y2:0},{x1:0,y1:0,x2:0,y2:-80}] },
-  rapporteur:  { rotateHandle:{x:TB_PROT_W-TB_PROT_PIVOT_X,y:0}, svg: protractorSVG, edges: [{x1:-TB_PROT_PIVOT_X+8,y1:0,x2:(TB_PROT_W-TB_PROT_PIVOT_X)-8,y2:0}] },
+  rapporteur:  { rotateHandle:{x:0,y:-24,r:7,opacity:0.55}, svg: protractorSVG, edges: [{x1:-TB_PROT_PIVOT_X+8,y1:0,x2:(TB_PROT_W-TB_PROT_PIVOT_X)-8,y2:0}] },
   gomme:       { rotateHandle:null, svg: gommeSVG, edges: [] },
 };
 function gommeSVG(id){
@@ -6695,7 +6698,7 @@ function tbAddTool(type){
     return;
   }
   const id = tbNextId++;
-  if(type==='compas') tbTools.push({id, type, x:420, y:260, angle:-40, radius:90, locked:false});
+  if(type==='compas') tbTools.push({id, type, x:420, y:260, angle:-40, radius:90, mode:'open'});
   else tbTools.push({id, type, x:430, y:280, angle:0});
   tbRenderPalette();
   tbRender();
@@ -6863,12 +6866,17 @@ function tbExtendToBoardEdge(origin, dir, W, H){
 function tbRender(){
   const W=900, H=560;
   const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.construction?'#9CA3AF':s.color}" stroke-width="${s.construction?'1.2':'2.4'}" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
-  const pointsHtml = tbPoints.map(pt=>`<g data-role="point" data-id="${pt.id}" style="cursor:pointer;">
-    <line x1="${pt.x-7}" y1="${pt.y-7}" x2="${pt.x+7}" y2="${pt.y+7}" stroke="#1C1B2E" stroke-width="2"/>
-    <line x1="${pt.x-7}" y1="${pt.y+7}" x2="${pt.x+7}" y2="${pt.y-7}" stroke="#1C1B2E" stroke-width="2"/>
+  const pointsHtml = tbPoints.map(pt=>{
+    const mark = pt.radial
+      ? `<line x1="${(pt.x-9*Math.cos(pt.angle)).toFixed(1)}" y1="${(pt.y-9*Math.sin(pt.angle)).toFixed(1)}" x2="${(pt.x+9*Math.cos(pt.angle)).toFixed(1)}" y2="${(pt.y+9*Math.sin(pt.angle)).toFixed(1)}" stroke="#1C1B2E" stroke-width="2.4"/>`
+      : `<line x1="${pt.x-7}" y1="${pt.y-7}" x2="${pt.x+7}" y2="${pt.y+7}" stroke="#1C1B2E" stroke-width="2"/>
+         <line x1="${pt.x-7}" y1="${pt.y+7}" x2="${pt.x+7}" y2="${pt.y-7}" stroke="#1C1B2E" stroke-width="2"/>`;
+    return `<g data-role="point" data-id="${pt.id}" style="cursor:pointer;">
+    ${mark}
     <circle cx="${pt.x}" cy="${pt.y}" r="20" fill="transparent" pointer-events="all"/>
     <text x="${pt.x+11}" y="${pt.y-8}" font-size="16" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#1C1B2E">${escapeHtml(pt.label||'')}</text>
-  </g>`).join('');
+  </g>`;
+  }).join('');
   let protractorPreview = '';
   if(tbDrag && tbDrag.mode==='protractorRay'){
     const ptool = tbTools.find(t=>t.id===tbDrag.id);
@@ -6895,13 +6903,23 @@ function tbRender(){
       const midX=(t.x+mineX)/2 + perpX*hingeH, midY=(t.y+mineY)/2 + perpY*hingeH;
       const mineAngle = Math.atan2(mineY-midY, mineX-midX)*180/Math.PI;
       const hingeAngle = Math.atan2(perpY,perpX)*180/Math.PI+90;
-      const lockColor = t.locked ? '#D93025' : '#2EA8C9';
+      // 3 états pour la branche du crayon : "open" (écarter librement), "closed" (tourner sans
+      // rien tracer, rayon bloqué -- pour repositionner sans laisser de trace), "draw" (tourner
+      // trace vraiment, rayon bloqué).
+      if(!t.mode) t.mode = 'open';
+      const modeInfo = {
+        open:   {color:'#2EA8C9', emoji:'↔️', label:'Ouvrir'},
+        closed: {color:'#D93025', emoji:'🔒', label:'Fermé'},
+        draw:   {color:'#1F7A4D', emoji:'✏️', label:'Crayon'},
+      }[t.mode];
+      const modeColor = modeInfo.color, modeEmoji = modeInfo.emoji, modeLabel = modeInfo.label;
+      const legCursor = t.mode==='open' ? 'ew-resize' : (t.mode==='draw' ? 'crosshair' : 'grab');
       const iconX = midX + perpX*32, iconY = midY + perpY*32;
       return `<g>
         <line data-role="compassAnchorLeg" data-id="${t.id}" x1="${t.x}" y1="${t.y}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round" style="cursor:grab;"/>
         <line data-role="compassAnchorLeg" data-id="${t.id}" x1="${t.x.toFixed(1)}" y1="${t.y.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="transparent" stroke-width="26" style="cursor:grab;"/>
-        <line data-role="compassPencilLeg" data-id="${t.id}" x1="${mineX}" y1="${mineY}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round" style="cursor:${t.locked?'crosshair':'ew-resize'};"/>
-        <line data-role="compassPencilLeg" data-id="${t.id}" x1="${mineX.toFixed(1)}" y1="${mineY.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="transparent" stroke-width="26" style="cursor:${t.locked?'crosshair':'ew-resize'};"/>
+        <line data-role="compassPencilLeg" data-id="${t.id}" x1="${mineX}" y1="${mineY}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round" style="cursor:${legCursor};"/>
+        <line data-role="compassPencilLeg" data-id="${t.id}" x1="${mineX.toFixed(1)}" y1="${mineY.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="transparent" stroke-width="26" style="cursor:${legCursor};"/>
         <g transform="translate(${mineX.toFixed(1)},${mineY.toFixed(1)}) rotate(${(mineAngle-90).toFixed(1)})">
           <rect x="-4.5" y="-22" width="9" height="8" fill="#D93025" stroke="#1C1B2E" stroke-width="1.1"/>
           <rect x="-4.5" y="-14" width="9" height="10" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.1"/>
@@ -6915,9 +6933,10 @@ function tbRender(){
           <circle cx="0" cy="-19" r="7" fill="#2EA8C9" stroke="#1C1B2E" stroke-width="1.4"/>
         </g>
         <g data-role="compassLockIcon" data-id="${t.id}" transform="translate(${iconX.toFixed(1)},${iconY.toFixed(1)})" style="cursor:pointer;">
-          <circle cx="0" cy="0" r="14" fill="${lockColor}" stroke="#fff" stroke-width="1.8"/>
-          <text x="0" y="5" font-size="14" text-anchor="middle">${t.locked?'🔒':'🔓'}</text>
+          <circle cx="0" cy="0" r="14" fill="${modeColor}" stroke="#fff" stroke-width="1.8"/>
+          <text x="0" y="5" font-size="13" text-anchor="middle">${modeEmoji}</text>
         </g>
+        <text x="${iconX.toFixed(1)}" y="${(iconY-20).toFixed(1)}" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="700">${modeLabel}</text>
       </g>`;
     }
     const def = TB_DEFS[t.type];
@@ -6936,7 +6955,7 @@ function tbRender(){
     </g>` : '';
     return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
       <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>${protractorRay}
-      ${rh ? `<circle data-role="rotate" data-id="${t.id}" cx="${rh.x}" cy="${rh.y}" r="11" fill="#0D5BA3" stroke="#fff" stroke-width="1.6"/>` : ''}
+      ${rh ? `<circle data-role="rotate" data-id="${t.id}" cx="${rh.x}" cy="${rh.y}" r="${rh.r||11}" fill="#0D5BA3" fill-opacity="${rh.opacity!==undefined?rh.opacity:1}" stroke="#fff" stroke-width="1.6"/>` : ''}
     </g>`;
   }).join('');
   // Pour chaque outil-guide (règle, équerre...) sur lequel au moins 2 points posés sont
@@ -7042,19 +7061,25 @@ function tbAttachHandlers(){
       // s'aimante sur un point déjà posé si on en approche.
       tbDrag = {mode:'compassMoveViaAnchorLeg', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
     } else if(role==='compassLockIcon'){
-      // Un clic bloque l'écartement (la mine ne peut plus changer de rayon) et permet de
-      // dessiner en tournant la branche du crayon ; un clic à nouveau déverrouille.
-      tool.locked = !tool.locked;
+      // Fait défiler les 3 états : "Ouvrir" (écarter) → "Fermé" (tourner sans rien tracer, pour
+      // repositionner) → "Crayon" (tourner trace vraiment) → et on reboucle.
+      const order = ['open','closed','draw'];
+      if(!tool.mode) tool.mode = 'open';
+      tool.mode = order[(order.indexOf(tool.mode)+1) % 3];
       tbRender();
       return;
     } else if(role==='compassPencilLeg'){
-      if(tool.locked){
-        // Rayon bloqué : tourner cette branche trace vraiment l'arc/cercle.
+      if(tool.mode==='draw'){
+        // Rayon bloqué, tourner cette branche trace vraiment l'arc/cercle.
         tbDrag = {mode:'compassTrace', id, stroke:{color: tbCurrentColor(), construction: tbConstructionMode, points:[]}};
         tbInk.push(tbDrag.stroke);
+      } else if(tool.mode==='closed'){
+        // Rayon bloqué, tourner cette branche repositionne SANS rien tracer et sans pouvoir
+        // écarter les branches -- pour amener le compas à l'angle de départ sans laisser de trace.
+        tbDrag = {mode:'compassRotateOnly', id};
       } else {
-        // Rayon libre : cette branche écarte/resserre le compas (ajuste rayon et angle) sans
-        // rien tracer -- s'aimante sur un point déjà posé si on en approche.
+        // "Ouvrir" : cette branche écarte/resserre le compas (ajuste rayon et angle) sans rien
+        // tracer -- s'aimante sur un point déjà posé si on en approche.
         tbDrag = {mode:'compassAdjust', id};
       }
     } else if(role==='tip'){
@@ -7128,14 +7153,18 @@ function tbAttachHandlers(){
       tbPoints.forEach(p=>{ const d=Math.hypot(p.x-newX,p.y-newY); if(d<bestDist){ bestDist=d; newX=p.x; newY=p.y; } });
       tool.x = newX; tool.y = newY;
     } else if(tbDrag.mode==='compassAdjust'){
-      // Écarte/resserre les branches (via la branche du crayon, rayon non verrouillé) sans
-      // rien tracer -- s'aimante sur un point déjà posé si on en approche, pour bien viser où
-      // doit passer l'arc avant de tracer.
+      // Écarte/resserre les branches (via la branche du crayon, mode "Ouvrir") sans rien
+      // tracer -- s'aimante sur un point déjà posé si on en approche, pour bien viser où doit
+      // passer l'arc avant de tracer.
       let target = pt, bestDist = 22;
       tbPoints.forEach(p=>{ const d=Math.hypot(p.x-pt.x,p.y-pt.y); if(d<bestDist){ bestDist=d; target={x:p.x,y:p.y}; } });
       const dx = target.x-tool.x, dy = target.y-tool.y;
       tool.radius = Math.max(20, Math.hypot(dx,dy));
       tool.angle = Math.atan2(dy,dx)*180/Math.PI;
+    } else if(tbDrag.mode==='compassRotateOnly'){
+      // Mode "Fermé" : tourne la branche du crayon SANS jamais toucher au rayon et sans rien
+      // tracer -- pour amener le compas à l'angle de départ sans laisser de trace.
+      tool.angle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
     } else if(tbDrag.mode==='compassTrace'){
       // Rayon fixe (déjà réglé en mode viser ou par la poignée d'écartement) : seule la
       // rotation compte. On interpole plusieurs points intermédiaires si le saut angulaire est
@@ -7151,7 +7180,15 @@ function tbAttachHandlers(){
       }
       tool.angle = newAngle;
     } else if(tbDrag.mode==='protractorRay'){
-      tbDrag.curX = pt.x; tbDrag.curY = pt.y;
+      // La mine ne doit jamais s'écarter du rapporteur : seul l'angle change, le rayon reste
+      // toujours exactement celui du bord extérieur.
+      const ptool = tbTools.find(t=>t.id===tbDrag.id);
+      if(ptool){
+        const protR = TB_PROT_PIVOT_Y - 12;
+        const ang = Math.atan2(pt.y-ptool.y, pt.x-ptool.x);
+        tbDrag.curX = ptool.x + protR*Math.cos(ang);
+        tbDrag.curY = ptool.y + protR*Math.sin(ang);
+      }
     }
     tbRender();
   };
@@ -7176,9 +7213,11 @@ function tbAttachHandlers(){
       return;
     }
     if(tbDrag && tbDrag.mode==='protractorRay'){
-      const {curX, curY} = tbDrag;
+      const {curX, curY, id: ptId} = tbDrag;
+      const ptool = tbTools.find(t=>t.id===ptId);
       tbDrag = null;
-      tbPoints.push({id: tbPointNextId++, x: curX, y: curY, label: ''});
+      const angle = ptool ? Math.atan2(curY-ptool.y, curX-ptool.x) : 0;
+      tbPoints.push({id: tbPointNextId++, x: curX, y: curY, label: '', radial: true, angle});
       tbRender();
       return;
     }
