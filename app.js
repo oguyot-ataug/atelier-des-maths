@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.161', items:[
+    "Tableau interactif -- règle : petite marge avant le 0 (comme une vraie règle), texte « Nom · Prénom » retiré. Équerre/réquerre : vrai bug trouvé, les graduations pointaient vers l'extérieur du triangle au lieu de l'intérieur (les numéros semblaient flotter hors de la forme) -- corrigé, avec un évidement triangulaire mieux ajusté et une bande pleine dédiée aux graduations, comme une vraie équerre.",
+  ]},
   { version:'2026-08-04.160', items:[
     "Tableau interactif -- compas : fix de la pointe (l'orientation était bien inversée, la partie fine était décalée au lieu d'être exactement au point d'ancrage -- corrigé, elle ressemble maintenant à une vraie aiguille). Nouvelle aide contextuelle sous le tableau, mise à jour selon l'outil manipulé (comment le déplacer, le faire tourner, tracer...). Règle et équerre/réquerre redessinées dans l'esprit d'une vraie règle Maped et d'une équerre Staedtler : transparence, coins arrondis, trou de suspension, évidement triangulaire creux.",
   ]},
@@ -6631,28 +6634,29 @@ function rulerSVG(graduated){
       }
     }
   }
-  return `<rect x="0" y="0" width="${L}" height="${W}" rx="6" fill="rgba(205,228,255,.35)" stroke="#1C1B2E" stroke-width="1.5"/>${ticks}
+  const leftMargin = 14;
+  return `<rect x="${-leftMargin}" y="0" width="${L+leftMargin}" height="${W}" rx="6" fill="rgba(205,228,255,.35)" stroke="#1C1B2E" stroke-width="1.5"/>${ticks}
     <circle cx="34" cy="${(W*0.68).toFixed(1)}" r="6" fill="#fff" fill-opacity="0.75" stroke="#1C1B2E" stroke-width="1"/>
-    <text x="${(L*0.6).toFixed(1)}" y="${(W*0.76).toFixed(1)}" font-size="8" fill="#4B5563" opacity="0.65" font-style="italic">Nom · Prénom</text>
     <circle cx="0" cy="0" r="5" fill="#D93025" stroke="#1C1B2E" stroke-width="1"/>`;
 }
 function equerreSVG(legX, legY){
-  // Évidement triangulaire creux, comme une vraie équerre (plus légère, plus lisible) : un
-  // triangle intérieur semblable, réduit vers le centre de gravité en laissant une marge
-  // uniforme sur les 3 côtés.
-  const cx = legX/3, cy = -legY/3;
-  const scale = 0.6;
-  const shrink = (px,py) => [(cx+(px-cx)*scale).toFixed(1), (cy+(py-cy)*scale).toFixed(1)];
-  const [ax,ay] = shrink(0,0), [bx,by] = shrink(legX,0), [cxp,cyp] = shrink(0,-legY);
+  // Reproduit le visuel d'une vraie équerre (bande pleine graduée en haut, évidement
+  // triangulaire creux en dessous, coins arrondis) : marge fixe sous le grand côté (pour loger
+  // les graduations) et à droite du petit côté, hypoténuse réduite proportionnellement.
+  const marginTop = 26, marginLeft = 16, shrink = 0.66;
+  const p1x = marginLeft, p1y = -marginTop;
+  const p2x = legX*shrink, p2y = -marginTop;
+  const p3x = marginLeft, p3y = -legY*shrink;
   let ticks = '';
   const step = 20, nTicks = Math.floor((legX-20)/step);
   for(let i=1;i<=nTicks;i++){
     const x = i*step;
-    ticks += `<line x1="${x}" y1="0" x2="${x}" y2="8" stroke="#1C1B2E" stroke-width="0.9"/>`;
-    if(i%2===0) ticks += `<text x="${x}" y="19" font-size="7.5" text-anchor="middle" fill="#1C1B2E">${Math.round(x/20)}</text>`;
+    // Les graduations doivent pointer VERS L'INTÉRIEUR du triangle (y négatif ici, pas positif).
+    ticks += `<line x1="${x}" y1="0" x2="${x}" y2="-7" stroke="#1C1B2E" stroke-width="0.9"/>`;
+    if(i%2===0) ticks += `<text x="${x}" y="-13" font-size="7.5" text-anchor="middle" fill="#1C1B2E">${Math.round(x/20)}</text>`;
   }
   return `<polygon points="0,0 ${legX},0 0,${-legY}" fill="rgba(200,230,250,.4)" stroke="#1C1B2E" stroke-width="1.6" stroke-linejoin="round"/>
-    <polygon points="${ax},${ay} ${bx},${by} ${cxp},${cyp}" fill="#fff" fill-opacity="0.8" stroke="#1C1B2E" stroke-width="1.1" stroke-linejoin="round"/>
+    <polygon points="${p1x.toFixed(1)},${p1y.toFixed(1)} ${p2x.toFixed(1)},${p2y.toFixed(1)} ${p3x.toFixed(1)},${p3y.toFixed(1)}" fill="#fff" fill-opacity="0.85" stroke="#1C1B2E" stroke-width="1.1" stroke-linejoin="round"/>
     ${ticks}`;
 }
 // Même image et mêmes repères que le rapporteur du cours "Angles et rapporteur" (6e, G3) : le
