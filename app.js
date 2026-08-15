@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.159', items:[
+    "Tableau interactif -- compas : pointe (ancrage) redessinée en petite forme grise et pointue, à l'image de la mine. Rapporteur : mine rapprochée du bord réel (marge réduite), sa position (angle) est désormais mémorisée d'un geste à l'autre au lieu de revenir toujours à 90°. Surtout : un simple glissé ne pose plus de repère automatiquement au relâché (juste un repositionnement) -- il faut un double-clic pour vraiment le poser, comme demandé.",
+  ]},
   { version:'2026-08-04.158', items:[
     "Tableau interactif -- compas : sélecteur à 3 états (↔️ Ouvrir/écarter, 🔒 Fermé/tourner sans rien tracer ni écarter, ✏️ Crayon/tracer), un clic fait défiler les états. Rapporteur : poignée de rotation déplacée à l'intérieur, discrète, pour ne plus gêner la lecture des graduations près de 180°. Le crayon rotatif ne peut plus s'écarter du rapporteur (mine toujours exactement sur le bord). Le repère posé est désormais un simple petit trait dans l'axe de la graduation choisie, plus une croix.",
   ]},
@@ -6639,6 +6642,7 @@ const TB_PROT_BASELINE_RATIO = 0.9349;
 const TB_PROT_CENTER_X_RATIO = 0.4992;
 const TB_PROT_W = 380, TB_PROT_H = TB_PROT_W/TB_PROT_RATIO;
 const TB_PROT_PIVOT_X = TB_PROT_W*TB_PROT_CENTER_X_RATIO, TB_PROT_PIVOT_Y = TB_PROT_H*TB_PROT_BASELINE_RATIO;
+const TB_PROT_RADIUS = TB_PROT_PIVOT_Y - 3; // rayon du bord extérieur, marge réduite au minimum
 function protractorSVG(){
   return `<image href="assets/rapporteur-translucide.png" x="${-TB_PROT_PIVOT_X}" y="${-TB_PROT_PIVOT_Y}" width="${TB_PROT_W}" height="${TB_PROT_H}" style="pointer-events:none;" opacity="0.92"/>
     <rect x="${-TB_PROT_PIVOT_X}" y="${-TB_PROT_PIVOT_Y}" width="${TB_PROT_W}" height="${TB_PROT_H}" fill="transparent" pointer-events="all"/>`;
@@ -6915,11 +6919,15 @@ function tbRender(){
       const modeColor = modeInfo.color, modeEmoji = modeInfo.emoji, modeLabel = modeInfo.label;
       const legCursor = t.mode==='open' ? 'ew-resize' : (t.mode==='draw' ? 'crosshair' : 'grab');
       const iconX = midX + perpX*32, iconY = midY + perpY*32;
+      const anchorAngle = Math.atan2(t.y-midY, t.x-midX)*180/Math.PI;
       return `<g>
         <line data-role="compassAnchorLeg" data-id="${t.id}" x1="${t.x}" y1="${t.y}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round" style="cursor:grab;"/>
         <line data-role="compassAnchorLeg" data-id="${t.id}" x1="${t.x.toFixed(1)}" y1="${t.y.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="transparent" stroke-width="26" style="cursor:grab;"/>
         <line data-role="compassPencilLeg" data-id="${t.id}" x1="${mineX}" y1="${mineY}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round" style="cursor:${legCursor};"/>
         <line data-role="compassPencilLeg" data-id="${t.id}" x1="${mineX.toFixed(1)}" y1="${mineY.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="transparent" stroke-width="26" style="cursor:${legCursor};"/>
+        <g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${(anchorAngle-90).toFixed(1)})">
+          <polygon points="0,-14 -3.5,4 3.5,4" fill="#6B7280" stroke="#1C1B2E" stroke-width="1"/>
+        </g>
         <g transform="translate(${mineX.toFixed(1)},${mineY.toFixed(1)}) rotate(${(mineAngle-90).toFixed(1)})">
           <rect x="-4.5" y="-22" width="9" height="8" fill="#D93025" stroke="#1C1B2E" stroke-width="1.1"/>
           <rect x="-4.5" y="-14" width="9" height="10" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.1"/>
@@ -6942,12 +6950,15 @@ function tbRender(){
     const def = TB_DEFS[t.type];
     const rh = def.rotateHandle;
     // Rapporteur : un petit crayon posé à 90° par défaut (mine exactement sur le bord
-    // extérieur), qu'on peut faire tourner autour du pivot pour venir poser un simple repère à
-    // l'angle choisi (pas de tracé automatique) -- c'est le professeur qui viendra ensuite
-    // relier le sommet à ce repère à la règle, comme en vrai.
-    const protR = TB_PROT_PIVOT_Y - 12;
+    // extérieur), qu'on peut faire tourner autour du pivot -- sa position (angle) est mémorisée
+    // d'un geste à l'autre, donc il reste où on l'a laissé plutôt que de revenir toujours à 90°.
+    // Un simple glissé ne fait que le repositionner (rien n'est posé) ; il faut un double-clic
+    // pour vraiment poser un repère à l'endroit visé.
+    if(t.rayAngle===undefined) t.rayAngle = -90;
+    const rayRad = t.rayAngle*Math.PI/180;
+    const rayLocalX = TB_PROT_RADIUS*Math.cos(rayRad), rayLocalY = TB_PROT_RADIUS*Math.sin(rayRad);
     const isDraggingThisRay = tbDrag && tbDrag.mode==='protractorRay' && tbDrag.id===t.id;
-    const protractorRay = t.type==='rapporteur' ? `<g data-role="protractorRay" data-id="${t.id}" style="cursor:grab;" transform="translate(0,${(-protR).toFixed(1)})">
+    const protractorRay = t.type==='rapporteur' ? `<g data-role="protractorRay" data-id="${t.id}" style="cursor:grab;" transform="translate(${rayLocalX.toFixed(1)},${rayLocalY.toFixed(1)}) rotate(${(t.rayAngle+90).toFixed(1)})">
       ${isDraggingThisRay ? '' : `<rect x="-4.5" y="-23" width="9" height="9" fill="#D93025" stroke="#1C1B2E" stroke-width="1"/>
       <rect x="-4.5" y="-14" width="9" height="10" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1"/>
       <polygon points="-4.5,-4 4.5,-4 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1"/>`}
@@ -7096,10 +7107,19 @@ function tbAttachHandlers(){
         tbDrag = {mode:'pencil', id, stroke, startX:pt.x, startY:pt.y, moved:false};
       }
     } else if(role==='protractorRay'){
-      // Fait tourner une poignée autour du pivot du rapporteur -- au relâché, elle pose un
-      // simple repère (comme le point d'un crayon qu'on aurait fait tourner), sans tracer de
-      // trait automatiquement. C'est ensuite au professeur de relier le pivot à ce repère à la
-      // règle, comme en vrai.
+      // Un simple glissé ne fait que repositionner le crayon (son angle est mémorisé) --
+      // rien n'est posé au relâché. Il faut un double-clic pour vraiment poser un repère à
+      // l'endroit visé, pour éviter de tracer par erreur en ajustant juste la position.
+      const now = Date.now();
+      if(tool._lastRayClick && now - tool._lastRayClick < 400){
+        tool._lastRayClick = 0;
+        const rayRad = tool.rayAngle*Math.PI/180;
+        const rx = tool.x + TB_PROT_RADIUS*Math.cos(rayRad), ry = tool.y + TB_PROT_RADIUS*Math.sin(rayRad);
+        tbPoints.push({id: tbPointNextId++, x: rx, y: ry, label:'', radial:true, angle: rayRad});
+        tbRender();
+        return;
+      }
+      tool._lastRayClick = now;
       tbDrag = {mode:'protractorRay', id, curX: pt.x, curY: pt.y};
     }
     try{ svg.setPointerCapture(e.pointerId); }catch(err){}
@@ -7181,13 +7201,14 @@ function tbAttachHandlers(){
       tool.angle = newAngle;
     } else if(tbDrag.mode==='protractorRay'){
       // La mine ne doit jamais s'écarter du rapporteur : seul l'angle change, le rayon reste
-      // toujours exactement celui du bord extérieur.
+      // toujours exactement celui du bord extérieur. L'angle est mémorisé sur l'outil (pas
+      // seulement dans le geste en cours), pour qu'il reste où on l'a laissé après le relâché.
       const ptool = tbTools.find(t=>t.id===tbDrag.id);
       if(ptool){
-        const protR = TB_PROT_PIVOT_Y - 12;
         const ang = Math.atan2(pt.y-ptool.y, pt.x-ptool.x);
-        tbDrag.curX = ptool.x + protR*Math.cos(ang);
-        tbDrag.curY = ptool.y + protR*Math.sin(ang);
+        ptool.rayAngle = ang*180/Math.PI;
+        tbDrag.curX = ptool.x + TB_PROT_RADIUS*Math.cos(ang);
+        tbDrag.curY = ptool.y + TB_PROT_RADIUS*Math.sin(ang);
       }
     }
     tbRender();
@@ -7213,11 +7234,9 @@ function tbAttachHandlers(){
       return;
     }
     if(tbDrag && tbDrag.mode==='protractorRay'){
-      const {curX, curY, id: ptId} = tbDrag;
-      const ptool = tbTools.find(t=>t.id===ptId);
+      // Un simple relâché ne pose plus rien : l'angle a déjà été mémorisé pendant le glissé
+      // (pointermove), il ne reste qu'à nettoyer l'état du geste.
       tbDrag = null;
-      const angle = ptool ? Math.atan2(curY-ptool.y, curX-ptool.x) : 0;
-      tbPoints.push({id: tbPointNextId++, x: curX, y: curY, label: '', radial: true, angle});
       tbRender();
       return;
     }
