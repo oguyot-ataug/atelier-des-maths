@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.170', items:[
+    "Tableau interactif -- coulissement : fix du déplacement de la règle qui pouvait vouloir glisser à angle droit (perpendiculairement à la bonne direction) quand c'était le petit côté de l'équerre qui servait de bord de contact. La direction de glissement est désormais figée dans le verrou lui-même au moment de l'activation, au lieu d'être recalculée depuis l'angle de base de l'autre outil.",
+  ]},
   { version:'2026-08-04.169', items:[
     "Tableau interactif -- coulissement : le vrai bug était dans le réalignement, pas la détection. Le calcul supposait toujours que c'était le grand côté de l'équerre qui touchait la règle, provoquant une rotation de 90° inattendue quand c'était en fait le petit côté (d'où l'impression de \"bord qui change\"). Corrigé : l'angle local du bord réellement détecté est maintenant pris en compte, l'équerre garde son orientation générale au lieu de sauter brutalement.",
   ]},
@@ -7286,8 +7289,13 @@ function tbAttachHandlers(){
             const perp = (sax-rax)*nrx + (say-ray)*nry;
             sq.x -= nrx*perp; sq.y -= nry*perp;
           }
-          sq.slideLock = {targetId: rulerId};
-          ru.slideLock = {targetId: squareId};
+          // La direction de glissement est figée ici (l'angle de la règle, qui ne prête à
+          // aucune ambiguïté) et mémorisée dans les DEUX verrous -- sinon, en déplaçant la
+          // règle, le code utilisait l'angle "de base" de l'équerre, correct seulement si son
+          // grand côté était le bord de contact ; avec le petit côté, ça donnait une direction
+          // à 90° de la bonne (bug signalé : la règle veut glisser dans le mauvais sens).
+          sq.slideLock = {targetId: rulerId, dirAngle: ru.angle};
+          ru.slideLock = {targetId: squareId, dirAngle: ru.angle};
         }
         tbRender();
       }
@@ -7375,11 +7383,13 @@ function tbAttachHandlers(){
     if(!tool){ tbDrag=null; return; }
     if(tbDrag.mode==='move'){
       if(tool.slideLock){
-        // Coulisse le long de la règle verrouillée : seul le déplacement DANS l'axe de la
-        // règle est retenu, ce qui garde l'équerre bien plaquée contre elle sans s'en éloigner.
-        const ruler = tbTools.find(t=>t.id===tool.slideLock.targetId);
-        if(ruler){
-          const rRad = ruler.angle*Math.PI/180, dirX = Math.cos(rRad), dirY = Math.sin(rRad);
+        // Coulisse le long de la direction figée au moment du verrouillage (mémorisée dans le
+        // verrou lui-même, pas recalculée via l'angle "de base" de l'autre outil -- sinon,
+        // pour l'équerre posée par son petit côté, cet angle de base ne correspond pas à la
+        // direction du bord de contact et fait glisser à 90° de la bonne direction).
+        const other = tbTools.find(t=>t.id===tool.slideLock.targetId);
+        if(other){
+          const rRad = tool.slideLock.dirAngle*Math.PI/180, dirX = Math.cos(rRad), dirY = Math.sin(rRad);
           const desiredX = pt.x - tbDrag.offX, desiredY = pt.y - tbDrag.offY;
           const along = (desiredX-tool.x)*dirX + (desiredY-tool.y)*dirY;
           tool.x += dirX*along; tool.y += dirY*along;
