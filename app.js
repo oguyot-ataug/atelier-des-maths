@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.171', items:[
+    "Tableau interactif -- coulissement : c'est maintenant l'outil qu'on N'A PAS en main qui vient se coller à celui qu'on tient (avant, c'était toujours l'équerre qui se collait à la règle, quel que soit l'outil manipulé). Si on vient de saisir la règle, l'équerre se réaligne sur elle ; si on vient de saisir l'équerre, c'est la règle qui se réaligne sur elle.",
+  ]},
   { version:'2026-08-04.170', items:[
     "Tableau interactif -- coulissement : fix du déplacement de la règle qui pouvait vouloir glisser à angle droit (perpendiculairement à la bonne direction) quand c'était le petit côté de l'équerre qui servait de bord de contact. La direction de glissement est désormais figée dans le verrou lui-même au moment de l'activation, au lieu d'être recalculée depuis l'angle de base de l'autre outil.",
   ]},
@@ -6624,6 +6627,9 @@ document.getElementById('tdDate').value = todayISO();
    ============================================================ */
 let tbNextId = 1;
 let tbConstructionMode = false; // trace en gris fin quand actif, sans changer les traits déjà faits
+let tbLastMovedToolId = null; // dernier outil qu'on a saisi pour le déplacer -- sert à savoir
+                               // lequel doit rester fixe quand on active le coulissement (c'est
+                               // l'AUTRE outil qui vient se coller à celui qu'on a en main).
 let tbPoints = [];  // points nommés posés au tap du crayon {id, x, y, label}
 let tbPointNextId = 1;
 let tbTools = [];   // outils posés sur le tableau
@@ -7011,6 +7017,22 @@ function tbFindSlideContact(){
   }
   return best;
 }
+/* Aligne l'angle et la position de "mover" pour que son bord local "edgeLocal" coïncide
+   exactement avec la droite donnée (position ET orientation) -- utilisé pour coller soit
+   l'équerre sur la règle, soit la règle sur l'équerre, selon celui qu'on a en main. */
+function tbAlignEdgeToLine(mover, edgeLocal, anchorAx, anchorAy, anchorBx, anchorBy){
+  const localEdgeAngle = Math.atan2(edgeLocal.y2-edgeLocal.y1, edgeLocal.x2-edgeLocal.x1) * 180/Math.PI;
+  const lineAngle = Math.atan2(anchorBy-anchorAy, anchorBx-anchorAx) * 180/Math.PI;
+  const targetA = lineAngle - localEdgeAngle, targetB = targetA + 180;
+  const normDiff = (a,b)=>{ let d=a-b; while(d>180) d-=360; while(d<-180) d+=360; return d; };
+  mover.angle = Math.abs(normDiff(mover.angle, targetA)) <= Math.abs(normDiff(mover.angle, targetB)) ? targetA : targetB;
+  const mRad = mover.angle*Math.PI/180, mCos=Math.cos(mRad), mSin=Math.sin(mRad);
+  const mx = mover.x+edgeLocal.x1*mCos-edgeLocal.y1*mSin, my = mover.y+edgeLocal.x1*mSin+edgeLocal.y1*mCos;
+  const rdx=anchorBx-anchorAx, rdy=anchorBy-anchorAy, rlen=Math.hypot(rdx,rdy)||1;
+  const nrx=rdy/rlen, nry=-rdx/rlen;
+  const perp = (mx-anchorAx)*nrx + (my-anchorAy)*nry;
+  mover.x -= nrx*perp; mover.y -= nry*perp;
+}
 function tbPointsOnEdge(tool){
   const def = TB_DEFS[tool.type];
   if(!def || !def.edges || !def.edges.length || !tbPoints.length) return [];
@@ -7264,36 +7286,33 @@ function tbAttachHandlers(){
         if(already){
           sq.slideLock = null; ru.slideLock = null;
         } else {
-          // Réaligne précisément l'équerre sur la règle avant de verrouiller : même si elle
-          // était posée à quelques degrés près, l'angle est corrigé exactement, et le petit
-          // écart perpendiculaire résiduel est annulé pour les remettre vraiment bord à bord.
+          // Réaligne précisément les deux outils avant de verrouiller (angle exact, écart
+          // perpendiculaire annulé) -- mais c'est l'outil qu'on N'A PAS en main qui se déplace
+          // pour venir se coller à celui qu'on tient : si on vient de saisir la règle, c'est
+          // l'équerre qui vient à elle ; si on vient de saisir l'équerre, c'est la règle qui
+          // vient à elle (et non plus toujours l'équerre, quel que soit l'outil manipulé).
           const contact = tbFindSlideContact();
           if(contact && contact.square.id===sq.id && contact.ruler.id===ru.id){
             const sDef = TB_DEFS[sq.type], se = sDef.edges[contact.edgeIdx];
-            // L'angle du bord réellement en contact, dans le repère local de l'équerre (0° pour
-            // le grand côté, 90° pour le petit côté) -- sans ça, aligner l'équerre supposait
-            // toujours que c'était le grand côté qui touchait, provoquant une rotation de 90°
-            // inattendue quand c'était en fait le petit côté (bug signalé : "il change de bord").
-            const localEdgeAngle = Math.atan2(se.y2-se.y1, se.x2-se.x1) * 180/Math.PI;
-            const targetA = ru.angle - localEdgeAngle, targetB = targetA + 180;
-            const normDiff = (a,b)=>{ let d=a-b; while(d>180) d-=360; while(d<-180) d+=360; return d; };
-            sq.angle = Math.abs(normDiff(sq.angle, targetA)) <= Math.abs(normDiff(sq.angle, targetB)) ? targetA : targetB;
-            const sRad = sq.angle*Math.PI/180, sCos=Math.cos(sRad), sSin=Math.sin(sRad);
-            const sax = sq.x+se.x1*sCos-se.y1*sSin, say = sq.y+se.x1*sSin+se.y1*sCos;
-            const rDef = TB_DEFS[ru.type], rRad = ru.angle*Math.PI/180, rCos=Math.cos(rRad), rSin=Math.sin(rRad);
-            const re = rDef.edges[0];
-            const rax = ru.x+re.x1*rCos-re.y1*rSin, ray = ru.y+re.x1*rSin+re.y1*rCos;
-            const rbx = ru.x+re.x2*rCos-re.y2*rSin, rby = ru.y+re.x2*rSin+re.y2*rCos;
-            const rdx=rbx-rax, rdy=rby-ray, rlen=Math.hypot(rdx,rdy)||1;
-            const nrx=rdy/rlen, nry=-rdx/rlen;
-            const perp = (sax-rax)*nrx + (say-ray)*nry;
-            sq.x -= nrx*perp; sq.y -= nry*perp;
+            const rDef = TB_DEFS[ru.type], re = rDef.edges[0];
+            if(tbLastMovedToolId === ru.id){
+              // La règle est tenue en main : l'équerre vient se coller à elle.
+              const rRad = ru.angle*Math.PI/180, rCos=Math.cos(rRad), rSin=Math.sin(rRad);
+              const rax = ru.x+re.x1*rCos-re.y1*rSin, ray = ru.y+re.x1*rSin+re.y1*rCos;
+              const rbx = ru.x+re.x2*rCos-re.y2*rSin, rby = ru.y+re.x2*rSin+re.y2*rCos;
+              tbAlignEdgeToLine(sq, se, rax, ray, rbx, rby);
+            } else {
+              // L'équerre est tenue en main (ou aucun geste préalable détecté) : la règle vient
+              // se coller à elle.
+              const sRad = sq.angle*Math.PI/180, sCos=Math.cos(sRad), sSin=Math.sin(sRad);
+              const sax = sq.x+se.x1*sCos-se.y1*sSin, say = sq.y+se.x1*sSin+se.y1*sCos;
+              const sbx = sq.x+se.x2*sCos-se.y2*sSin, sby = sq.y+se.x2*sSin+se.y2*sCos;
+              tbAlignEdgeToLine(ru, re, sax, say, sbx, sby);
+            }
           }
-          // La direction de glissement est figée ici (l'angle de la règle, qui ne prête à
-          // aucune ambiguïté) et mémorisée dans les DEUX verrous -- sinon, en déplaçant la
-          // règle, le code utilisait l'angle "de base" de l'équerre, correct seulement si son
-          // grand côté était le bord de contact ; avec le petit côté, ça donnait une direction
-          // à 90° de la bonne (bug signalé : la règle veut glisser dans le mauvais sens).
+          // La direction de glissement est figée ici (l'angle final -- désormais partagé -- de
+          // la règle) et mémorisée dans les DEUX verrous, pour que le glissement ultérieur de
+          // l'un ou l'autre outil utilise toujours la même direction, sans ambiguïté.
           sq.slideLock = {targetId: rulerId, dirAngle: ru.angle};
           ru.slideLock = {targetId: squareId, dirAngle: ru.angle};
         }
@@ -7307,6 +7326,7 @@ function tbAttachHandlers(){
     if(role==='body' || role==='pencilBody'){
       // Déplace l'outil SANS tracer -- pour le crayon, c'est le moyen de le repositionner
       // ailleurs sans laisser de trait jusque-là (comme le lever de la feuille).
+      tbLastMovedToolId = tool.id;
       tbDrag = {mode:'move', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
     } else if(role==='rotate'){
       tbDrag = {mode:'rotate', id};
