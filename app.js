@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.172', items:[
+    "Tableau interactif -- coulissement : sens corrigé, j'avais inversé la logique. C'est maintenant bien l'outil qu'on A EN MAIN qui se rapproche pour venir se coller à l'autre (qui reste fixe) -- et non plus l'inverse.",
+  ]},
   { version:'2026-08-04.171', items:[
     "Tableau interactif -- coulissement : c'est maintenant l'outil qu'on N'A PAS en main qui vient se coller à celui qu'on tient (avant, c'était toujours l'équerre qui se collait à la règle, quel que soit l'outil manipulé). Si on vient de saisir la règle, l'équerre se réaligne sur elle ; si on vient de saisir l'équerre, c'est la règle qui se réaligne sur elle.",
   ]},
@@ -7296,18 +7299,19 @@ function tbAttachHandlers(){
             const sDef = TB_DEFS[sq.type], se = sDef.edges[contact.edgeIdx];
             const rDef = TB_DEFS[ru.type], re = rDef.edges[0];
             if(tbLastMovedToolId === ru.id){
-              // La règle est tenue en main : l'équerre vient se coller à elle.
-              const rRad = ru.angle*Math.PI/180, rCos=Math.cos(rRad), rSin=Math.sin(rRad);
-              const rax = ru.x+re.x1*rCos-re.y1*rSin, ray = ru.y+re.x1*rSin+re.y1*rCos;
-              const rbx = ru.x+re.x2*rCos-re.y2*rSin, rby = ru.y+re.x2*rSin+re.y2*rCos;
-              tbAlignEdgeToLine(sq, se, rax, ray, rbx, rby);
-            } else {
-              // L'équerre est tenue en main (ou aucun geste préalable détecté) : la règle vient
-              // se coller à elle.
+              // La règle est tenue en main : c'est ELLE qui se rapproche pour venir se coller
+              // contre l'équerre (qui reste fixe).
               const sRad = sq.angle*Math.PI/180, sCos=Math.cos(sRad), sSin=Math.sin(sRad);
               const sax = sq.x+se.x1*sCos-se.y1*sSin, say = sq.y+se.x1*sSin+se.y1*sCos;
               const sbx = sq.x+se.x2*sCos-se.y2*sSin, sby = sq.y+se.x2*sSin+se.y2*sCos;
               tbAlignEdgeToLine(ru, re, sax, say, sbx, sby);
+            } else {
+              // L'équerre est tenue en main (ou aucun geste préalable détecté) : c'est ELLE qui
+              // se rapproche pour venir se coller contre la règle (qui reste fixe).
+              const rRad = ru.angle*Math.PI/180, rCos=Math.cos(rRad), rSin=Math.sin(rRad);
+              const rax = ru.x+re.x1*rCos-re.y1*rSin, ray = ru.y+re.x1*rSin+re.y1*rCos;
+              const rbx = ru.x+re.x2*rCos-re.y2*rSin, rby = ru.y+re.x2*rSin+re.y2*rCos;
+              tbAlignEdgeToLine(sq, se, rax, ray, rbx, rby);
             }
           }
           // La direction de glissement est figée ici (l'angle final -- désormais partagé -- de
