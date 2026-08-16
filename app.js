@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.174', items:[
+    "Tableau interactif -- pavage zoomable : boutons ➕/➖ pour agrandir ou réduire les carreaux/triangles (10 à 60 unités). Le crayon s'aimante désormais aussi sur les sommets du pavage actif (comme sur le bord d'une règle), pour tracer facilement le long du quadrillage même avec une visée imprécise.",
+  ]},
   { version:'2026-08-04.173', items:[
     "Tableau interactif -- nouveau sélecteur de fond : page blanche, petits carreaux, ou pavage de triangles équilatéraux. Le motif reste discret et ne gêne jamais la lecture des outils ni des tracés par-dessus.",
   ]},
@@ -6637,7 +6640,38 @@ let tbLastMovedToolId = null; // dernier outil qu'on a saisi pour le déplacer -
                                // lequel doit rester fixe quand on active le coulissement (c'est
                                // l'AUTRE outil qui vient se coller à celui qu'on a en main).
 let tbBackground = 'blank'; // 'blank' | 'squares' | 'triangles'
-function tbSetBackground(type){ tbBackground = type; tbRender(); }
+let tbGridSize = 20; // taille de base du pavage (côté du carreau ou du triangle), zoomable
+function tbSetBackground(type){
+  tbBackground = type;
+  const zoomBox = document.getElementById('tbGridZoomBox');
+  if(zoomBox) zoomBox.style.display = type==='blank' ? 'none' : 'inline-flex';
+  tbRender();
+}
+function tbZoomGrid(dir){
+  tbGridSize = Math.max(10, Math.min(60, tbGridSize + dir*4));
+  tbRender();
+}
+/* Sommet le plus proche du pavage actif (carreaux ou triangles), pour que le crayon puisse s'y
+   aimanter -- comme il le fait déjà sur le bord d'une règle. Renvoie null si aucun pavage actif
+   ou si rien d'assez proche. */
+function tbNearestGridVertex(pt){
+  if(tbBackground==='squares'){
+    const s = tbGridSize;
+    const gx = Math.round(pt.x/s)*s, gy = Math.round(pt.y/s)*s;
+    const d = Math.hypot(pt.x-gx, pt.y-gy);
+    return d<16 ? {x:gx, y:gy} : null;
+  }
+  if(tbBackground==='triangles'){
+    const s = tbGridSize, h = s*Math.sqrt(3)/2;
+    const row = Math.round(pt.y/h);
+    const xOffset = (Math.abs(row)%2)*s/2;
+    const col = Math.round((pt.x-xOffset)/s);
+    const gx = col*s+xOffset, gy = row*h;
+    const d = Math.hypot(pt.x-gx, pt.y-gy);
+    return d<16 ? {x:gx, y:gy} : null;
+  }
+  return null;
+}
 let tbPoints = [];  // points nommés posés au tap du crayon {id, x, y, label}
 let tbPointNextId = 1;
 let tbTools = [];   // outils posés sur le tableau
@@ -6921,6 +6955,13 @@ function tbSnapToEdge(pt){
   });
   if(best && bestTool && bestTool.activeConstraint){
     best = tbApplyConstraint(bestTool, best, bestAX, bestAY, bestBX, bestBY);
+  }
+  // Aimantage sur un sommet du pavage de fond (carreaux/triangles), s'il est plus proche que le
+  // meilleur bord de règle/équerre trouvé -- pour tracer facilement le long du quadrillage.
+  const vertex = tbNearestGridVertex(pt);
+  if(vertex){
+    const vDist = Math.hypot(pt.x-vertex.x, pt.y-vertex.y);
+    if(!best || vDist < Math.hypot(pt.x-best.x, pt.y-best.y)) best = vertex;
   }
   return best || pt;
 }
@@ -7218,12 +7259,13 @@ function tbRender(){
   }
   let bgDefs = '', bgRect = '';
   if(tbBackground==='squares'){
-    bgDefs = `<pattern id="tbPatSquares" width="20" height="20" patternUnits="userSpaceOnUse">
-      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#CBD5E1" stroke-width="0.7"/>
+    const s = tbGridSize;
+    bgDefs = `<pattern id="tbPatSquares" width="${s}" height="${s}" patternUnits="userSpaceOnUse">
+      <path d="M ${s} 0 L 0 0 0 ${s}" fill="none" stroke="#CBD5E1" stroke-width="0.7"/>
     </pattern>`;
     bgRect = `<rect width="${W}" height="${H}" fill="url(#tbPatSquares)"/>`;
   } else if(tbBackground==='triangles'){
-    const s=44, h=(s*Math.sqrt(3)/2).toFixed(2);
+    const s=tbGridSize, h=(s*Math.sqrt(3)/2).toFixed(2);
     bgDefs = `<pattern id="tbPatTri" width="${s}" height="${h}" patternUnits="userSpaceOnUse">
       <path d="M0,0 L${s},0 M0,0 L${s/2},${h} M${s},0 L${s/2},${h} M0,${h} L${s/2},0 M${s},${h} L${s/2},0" fill="none" stroke="#CBD5E1" stroke-width="0.7"/>
     </pattern>`;
