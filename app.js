@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.182', items:[
+    "Tableau interactif -- gomme placée en bas à gauche par défaut. Nouvelle case « 📌 Mémoriser position » : si cochée, masquer puis reprendre un outil (règle, équerre...) restaure sa dernière position et son angle exacts au lieu de revenir à la position par défaut. Icônes de la palette redessinées pour ressembler aux vrais outils (règle graduée, équerre bleutée, rapporteur jaune/vert), réquerre retirée de la palette (redondante).",
+  ]},
   { version:'2026-08-04.181', items:[
     "Tableau interactif -- compas : nouveau fix sur la pointe, le triangle gris s'amenuisant jusqu'à un point ne couvrait plus toute la largeur du trait noir tout au bout, laissant un liseré noir visible. Le trait est maintenant raccourci pour s'arrêter en retrait, la pointe grise seule représente l'extrémité.",
   ]},
@@ -6857,9 +6860,11 @@ function gommeSVG(id){
     <rect x="-24" y="-15" width="48" height="11" rx="4" fill="#fff" opacity="0.5"/>
   </g>`;
 }
-const TB_ICON_PROTRACTOR = `<svg viewBox="0 0 24 24" width="26" height="26"><path d="M2 19 A10 10 0 0 1 22 19" fill="none" stroke="#1C1B2E" stroke-width="1.6"/><line x1="2" y1="19" x2="22" y2="19" stroke="#1C1B2E" stroke-width="1.6"/><line x1="12" y1="19" x2="12" y2="9.5" stroke="#1C1B2E" stroke-width="1"/><line x1="12" y1="19" x2="5.5" y2="12.5" stroke="#1C1B2E" stroke-width="1"/><line x1="12" y1="19" x2="18.5" y2="12.5" stroke="#1C1B2E" stroke-width="1"/></svg>`;
+const TB_ICON_PROTRACTOR = `<svg viewBox="0 0 24 24" width="26" height="26"><path d="M2 18 A10 10 0 0 1 22 18 Z" fill="#FCE8A8" stroke="#1C1B2E" stroke-width="1.3"/><path d="M3.3 18 A8.7 8.7 0 0 1 20.7 18" fill="none" stroke="#8FCB9B" stroke-width="2.2"/><line x1="2" y1="18" x2="22" y2="18" stroke="#1C1B2E" stroke-width="1.3"/></svg>`;
 const TB_ICON_COMPASS = `<svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="4.5" r="1.8" fill="#1C1B2E"/><line x1="12" y1="4.5" x2="5.5" y2="21" stroke="#1C1B2E" stroke-width="1.8"/><line x1="12" y1="4.5" x2="18.5" y2="21" stroke="#1C1B2E" stroke-width="1.8"/><circle cx="5.5" cy="21" r="1.4" fill="#D93025"/><rect x="16.5" y="17.5" width="4" height="4.5" rx="0.6" fill="#E8B93A" stroke="#1C1B2E" stroke-width="0.7" transform="rotate(18 18.5 19.5)"/></svg>`;
 const TB_ICON_ERASER = `<svg viewBox="0 0 24 24" width="26" height="26"><rect x="3" y="9" width="18" height="10" rx="2.5" fill="#F2A6C4" stroke="#1C1B2E" stroke-width="1.5" transform="rotate(-12 12 14)"/><rect x="3" y="9" width="18" height="4" rx="2" fill="#fff" opacity=".55" transform="rotate(-12 12 14)"/></svg>`;
+const TB_ICON_RULER = `<svg viewBox="0 0 24 24" width="26" height="26"><rect x="2" y="8" width="20" height="7" rx="1.5" fill="#CDE4FF" stroke="#1C1B2E" stroke-width="1.3"/><line x1="5" y1="8" x2="5" y2="11.5" stroke="#1C1B2E" stroke-width="0.8"/><line x1="8" y1="8" x2="8" y2="10.3" stroke="#1C1B2E" stroke-width="0.6"/><line x1="11" y1="8" x2="11" y2="11.5" stroke="#1C1B2E" stroke-width="0.8"/><line x1="14" y1="8" x2="14" y2="10.3" stroke="#1C1B2E" stroke-width="0.6"/><line x1="17" y1="8" x2="17" y2="11.5" stroke="#1C1B2E" stroke-width="0.8"/></svg>`;
+const TB_ICON_EQUERRE = `<svg viewBox="0 0 24 24" width="26" height="26"><polygon points="3,4 21,4 3,19" fill="#CDE4FF" stroke="#1C1B2E" stroke-width="1.3" stroke-linejoin="round"/></svg>`;
 /* Aide contextuelle affichée sous le tableau, mise à jour à chaque fois qu'on commence à
    manipuler un outil -- reste affichée après le geste pour qu'on ait le temps de la lire. */
 const TB_HELP_TEXT = {
@@ -6880,9 +6885,8 @@ function tbSetHelp(type){
 const TB_PALETTE = [
   {type:'crayon',      icon:'✏️', label:'Crayon'},
   {type:'gomme',       icon:TB_ICON_ERASER, label:'Gomme'},
-  {type:'regle_grad',  icon:'📏', label:'Règle graduée'},
-  {type:'equerre',     icon:'📐', label:'Équerre'},
-  {type:'requerre',    icon:'🔻', label:'Réquerre'},
+  {type:'regle_grad',  icon:TB_ICON_RULER, label:'Règle graduée'},
+  {type:'equerre',     icon:TB_ICON_EQUERRE, label:'Équerre'},
   {type:'rapporteur',  icon:TB_ICON_PROTRACTOR, label:'Rapporteur'},
   {type:'compas',      icon:TB_ICON_COMPASS, label:'Compas'},
 ];
@@ -6917,16 +6921,29 @@ function tbRenderPalette(){
     return `<button type="button" onclick="tbAddTool('${p.type}')" title="${p.label}" style="width:56px;height:56px;border:2px solid ${active?'#0D5BA3':'rgba(28,43,57,.2)'};border-radius:8px;background:${active?'rgba(13,91,163,.12)':'#fff'};cursor:pointer;font-size:1.5rem;">${p.icon}</button>`;
   }).join('') + `<button type="button" onclick="tbAddTextZone()" title="Ajouter une zone de texte" style="width:56px;height:56px;border:1px solid rgba(28,43,57,.2);border-radius:8px;background:#fff;cursor:pointer;font-size:1.4rem;">🔤</button>`;
 }
+let tbRememberedToolState = {}; // dernière position/angle connue par type d'outil, pour la
+                                 // reprise si "Mémoriser position" est coché
 function tbAddTool(type){
   if(tbTools.some(t=>t.type===type)){
+    const removed = tbTools.find(t=>t.type===type);
+    tbRememberedToolState[type] = {x:removed.x, y:removed.y, angle:removed.angle, radius:removed.radius, mode:removed.mode};
     tbTools = tbTools.filter(t=>t.type!==type);
     tbRenderPalette();
     tbRender();
     return;
   }
   const id = tbNextId++;
-  if(type==='compas') tbTools.push({id, type, x:420, y:260, angle:-40, radius:90, mode:'open'});
-  else tbTools.push({id, type, x:430, y:280, angle:0});
+  const remember = document.getElementById('tbRememberPos') && document.getElementById('tbRememberPos').checked;
+  const saved = remember ? tbRememberedToolState[type] : null;
+  if(saved){
+    tbTools.push({id, type, x:saved.x, y:saved.y, angle:saved.angle, radius:saved.radius, mode:saved.mode});
+  } else if(type==='compas'){
+    tbTools.push({id, type, x:420, y:260, angle:-40, radius:90, mode:'open'});
+  } else if(type==='gomme'){
+    tbTools.push({id, type, x:60, y:500, angle:0});
+  } else {
+    tbTools.push({id, type, x:430, y:280, angle:0});
+  }
   if(TB_HELP_TEXT[type]) tbSetHelp(type);
   tbRenderPalette();
   tbRender();
