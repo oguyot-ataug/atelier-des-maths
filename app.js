@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.179', items:[
+    "Tableau interactif -- compas : même correctif que pour le crayon/l'équerre, attraper la branche du crayon ailleurs qu'exactement sur la mine ne fait plus sauter l'angle de quelques degrés (la pointe reste fixe, comme attendu). Sélecteur ouvrir/fermé/crayon : fait maintenant un aller-retour (ouvrir→fermé→crayon→fermé→ouvrir→...) au lieu de reboucler directement de crayon à ouvrir.",
+  ]},
   { version:'2026-08-04.178', items:[
     "Tableau interactif -- fix important : la rotation du crayon et de l'équerre sautait de ~90° dès qu'on attrapait le point bleu (la poignée n'étant pas dans l'axe 0° de l'outil, le calcul se décalait brutalement). Corrigé : l'angle local de la poignée est maintenant pris en compte, plus aucun saut. Seuil d'aimantage sur le pavage réduit (45→14) pour redonner la possibilité de poser un point au centre ou à mi-carreau, tout en gardant un accrochage précis sur les vrais sommets.",
   ]},
@@ -7474,22 +7477,32 @@ function tbAttachHandlers(){
       // s'aimante sur un point déjà posé si on en approche.
       tbDrag = {mode:'compassMoveViaAnchorLeg', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
     } else if(role==='compassLockIcon'){
-      // Fait défiler les 3 états : "Ouvrir" (écarter) → "Fermé" (tourner sans rien tracer, pour
-      // repositionner) → "Crayon" (tourner trace vraiment) → et on reboucle.
+      // Fait défiler les 3 états en aller-retour : "Ouvrir" → "Fermé" → "Crayon" → puis on
+      // repart dans l'autre sens (Crayon → Fermé → Ouvrir → Fermé → ...), pas une boucle qui
+      // reviendrait directement de "Crayon" à "Ouvrir".
       const order = ['open','closed','draw'];
       if(!tool.mode) tool.mode = 'open';
-      tool.mode = order[(order.indexOf(tool.mode)+1) % 3];
+      if(tool._cycleDir===undefined) tool._cycleDir = 1;
+      let idx = order.indexOf(tool.mode) + tool._cycleDir;
+      if(idx >= order.length){ idx = order.length-2; tool._cycleDir = -1; }
+      else if(idx < 0){ idx = 1; tool._cycleDir = 1; }
+      tool.mode = order[idx];
       tbRender();
       return;
     } else if(role==='compassPencilLeg'){
+      // On peut attraper n'importe où le long de la branche (pas forcément exactement sur la
+      // mine, qui est au bout) : sans corriger le décalage, l'angle "saute" de quelques degrés
+      // dès la saisie (bug signalé, comme pour le crayon/l'équerre).
+      const grabAngle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
+      const angleOffset = grabAngle - tool.angle;
       if(tool.mode==='draw'){
         // Rayon bloqué, tourner cette branche trace vraiment l'arc/cercle.
-        tbDrag = {mode:'compassTrace', id, stroke:{color: tbCurrentColor(), construction: tbConstructionMode, points:[]}};
+        tbDrag = {mode:'compassTrace', id, stroke:{color: tbCurrentColor(), construction: tbConstructionMode, points:[]}, angleOffset};
         tbInk.push(tbDrag.stroke);
       } else if(tool.mode==='closed'){
         // Rayon bloqué, tourner cette branche repositionne SANS rien tracer et sans pouvoir
         // écarter les branches -- pour amener le compas à l'angle de départ sans laisser de trace.
-        tbDrag = {mode:'compassRotateOnly', id};
+        tbDrag = {mode:'compassRotateOnly', id, angleOffset};
       } else {
         // "Ouvrir" : cette branche écarte/resserre le compas (ajuste rayon et angle) sans rien
         // tracer -- s'aimante sur un point déjà posé si on en approche.
@@ -7624,12 +7637,12 @@ function tbAttachHandlers(){
     } else if(tbDrag.mode==='compassRotateOnly'){
       // Mode "Fermé" : tourne la branche du crayon SANS jamais toucher au rayon et sans rien
       // tracer -- pour amener le compas à l'angle de départ sans laisser de trace.
-      tool.angle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
+      tool.angle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI - (tbDrag.angleOffset||0);
     } else if(tbDrag.mode==='compassTrace'){
       // Rayon fixe (déjà réglé en mode viser ou par la poignée d'écartement) : seule la
       // rotation compte. On interpole plusieurs points intermédiaires si le saut angulaire est
       // grand, pour un arc lisse même quand la rotation va vite (évite les segments visibles).
-      const newAngle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
+      const newAngle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI - (tbDrag.angleOffset||0);
       let delta = newAngle - tool.angle;
       while(delta>180) delta-=360;
       while(delta<-180) delta+=360;
