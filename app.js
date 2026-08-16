@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.181', items:[
+    "Tableau interactif -- compas : nouveau fix sur la pointe, le triangle gris s'amenuisant jusqu'à un point ne couvrait plus toute la largeur du trait noir tout au bout, laissant un liseré noir visible. Le trait est maintenant raccourci pour s'arrêter en retrait, la pointe grise seule représente l'extrémité.",
+  ]},
   { version:'2026-08-04.180', items:[
     "Tableau interactif -- compas : la branche du côté pointe dépassait légèrement de la pointe grise (bout de trait arrondi qui débordait). Corrigé, la branche s'arrête maintenant net exactement à la base de la pointe.",
   ]},
@@ -7227,8 +7230,13 @@ function tbRender(){
       const legCursor = t.mode==='open' ? 'ew-resize' : (t.mode==='draw' ? 'crosshair' : 'grab');
       const iconX = midX + perpX*32, iconY = midY + perpY*32;
       const anchorAngle = Math.atan2(t.y-midY, t.x-midX)*180/Math.PI;
+      const anchorRad = anchorAngle*Math.PI/180;
+      // Le trait NOIR visible s'arrête un peu avant la vraie pointe (12 unités en retrait) --
+      // le triangle gris s'amenuisant jusqu'à un point à cet endroit, il ne couvrirait plus
+      // toute la largeur du trait tout au bout, laissant du noir visible derrière le gris.
+      const anchorVisX = t.x - 12*Math.cos(anchorRad), anchorVisY = t.y - 12*Math.sin(anchorRad);
       return `<g>
-        <line data-role="compassAnchorLeg" data-id="${t.id}" x1="${t.x}" y1="${t.y}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="butt" style="cursor:grab;"/>
+        <line data-role="compassAnchorLeg" data-id="${t.id}" x1="${anchorVisX.toFixed(1)}" y1="${anchorVisY.toFixed(1)}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="butt" style="cursor:grab;"/>
         <line data-role="compassAnchorLeg" data-id="${t.id}" x1="${t.x.toFixed(1)}" y1="${t.y.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="transparent" stroke-width="26" style="cursor:grab;"/>
         <line data-role="compassPencilLeg" data-id="${t.id}" x1="${mineX}" y1="${mineY}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round" style="cursor:${legCursor};"/>
         <line data-role="compassPencilLeg" data-id="${t.id}" x1="${mineX.toFixed(1)}" y1="${mineY.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="transparent" stroke-width="26" style="cursor:${legCursor};"/>
