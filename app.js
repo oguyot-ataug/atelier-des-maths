@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.167', items:[
+    "Tableau interactif -- coulissement équerre/règle : fix du bouton de déverrouillage qui pouvait disparaître (un bouton de secours reste désormais toujours visible sur l'outil verrouillé, même si le contact en direct n'est plus détecté). Détection resserrée : un vrai chevauchement bord à bord est maintenant exigé (fini les faux positifs \"à proximité\" sans être vraiment l'un contre l'autre). Nouveau : à l'activation du verrou, l'équerre est réalignée automatiquement (angle exact, écart perpendiculaire annulé) même si elle était posée à quelques degrés de travers.",
+  ]},
   { version:'2026-08-04.166', items:[
     "Tableau interactif -- verrouillage de coulissement rendu bidirectionnel : on peut désormais faire glisser soit l'équerre le long de la règle, soit la règle le long de l'équerre (au choix), le verrou s'applique aux deux outils en même temps.",
   ]},
@@ -6968,24 +6971,24 @@ function tbFindSlideContact(){
     for(const sq of squares){
       const sDef = TB_DEFS[sq.type];
       const sRad = sq.angle*Math.PI/180, sCos=Math.cos(sRad), sSin=Math.sin(sRad);
-      for(const se of sDef.edges){
+      for(let edgeIdx=0; edgeIdx<sDef.edges.length; edgeIdx++){
+        const se = sDef.edges[edgeIdx];
         const sax = sq.x+se.x1*sCos-se.y1*sSin, say = sq.y+se.x1*sSin+se.y1*sCos;
         const sbx = sq.x+se.x2*sCos-se.y2*sSin, sby = sq.y+se.x2*sSin+se.y2*sCos;
         const sdx=sbx-sax, sdy=sby-say, slen=Math.hypot(sdx,sdy)||1;
         const cross = Math.abs(rdx*sdy - rdy*sdx)/(rlen*slen);
-        if(cross > 0.06) continue; // pas assez parallèle
-        // Distance perpendiculaire entre les deux droites (constante puisqu'elles sont parallèles).
+        // Tolère jusqu'à ~8° de travers (pour proposer l'aimantage même orienté "à quelques
+        // degrés près"), mais le chevauchement lui doit être réel -- pas juste "à proximité".
+        if(cross > 0.14) continue;
         const perpDist = Math.abs((sax-rax)*nrx + (say-ray)*nry);
-        if(perpDist > 12) continue;
-        // Les deux bords doivent réellement se chevaucher le long de la règle (avec un peu de
-        // débord toléré), sinon "parallèle et proche" ne veut encore rien dire en pratique.
+        if(perpDist > 14) continue;
         const st0 = (sax-rax)*udx + (say-ray)*udy, st1 = (sbx-rax)*udx + (sby-ray)*udy;
         const sMin=Math.min(st0,st1), sMax=Math.max(st0,st1);
         const overlapLo = Math.max(0, sMin), overlapHi = Math.min(rlen, sMax);
-        if(overlapHi < overlapLo - 40) continue;
+        if(overlapHi < overlapLo - 6) continue; // il faut un vrai chevauchement bord à bord
         const contactT = (Math.max(overlapLo,0)+Math.min(overlapHi,rlen))/2;
         const contactX = rax+udx*contactT, contactY = ray+udy*contactT;
-        return {ruler:r, square:sq, contactX, contactY};
+        return {ruler:r, square:sq, edgeIdx, contactX, contactY};
       }
     }
   }
@@ -7143,7 +7146,9 @@ function tbRender(){
     segActionsHtml += mk(-62,'[AB]','segment') + mk(0,'[AB)','demidroite') + mk(62,'(AB)','droite');
   });
   // Bouton pour verrouiller/déverrouiller le coulissement d'une équerre contre une règle,
-  // affiché uniquement quand elles se touchent (bords parallèles et proches).
+  // affiché quand elles se touchent (bords parallèles et proches). Si un verrou est déjà actif
+  // mais que le contact en direct n'est plus détecté (ex. après une rotation), un bouton de
+  // secours reste affiché sur l'outil verrouillé -- pour toujours pouvoir le déverrouiller.
   let slideLockHtml = '';
   const contact = tbFindSlideContact();
   if(contact){
@@ -7152,6 +7157,17 @@ function tbRender(){
       <rect x="-42" y="-12" width="84" height="24" rx="12" fill="${already?'#1F7A4D':'#0D5BA3'}" stroke="#fff" stroke-width="1.4"/>
       <text x="0" y="5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">${already?'✓ Verrouillé':'🔗 Coulisser'}</text>
     </g>`;
+  } else {
+    const lockedSquare = tbTools.find(t=>(t.type==='equerre'||t.type==='requerre') && t.slideLock);
+    if(lockedSquare){
+      const lockedRuler = tbTools.find(t=>t.id===lockedSquare.slideLock.targetId);
+      if(lockedRuler){
+        slideLockHtml = `<g data-role="slideLockBtn" data-square="${lockedSquare.id}" data-ruler="${lockedRuler.id}" transform="translate(${lockedSquare.x.toFixed(1)},${(lockedSquare.y-24).toFixed(1)})" style="cursor:pointer;">
+          <rect x="-42" y="-12" width="84" height="24" rx="12" fill="#1F7A4D" stroke="#fff" stroke-width="1.4"/>
+          <text x="0" y="5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">✓ Verrouillé</text>
+        </g>`;
+      }
+    }
   }
   document.getElementById('tbBoardWrap').innerHTML = `<svg id="tbSvg" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;touch-action:none;user-select:none;background:#fff;">
     <g id="tbInkLayer">${inkHtml}${pointsHtml}${protractorPreview}</g>
@@ -7228,8 +7244,32 @@ function tbAttachHandlers(){
         // Verrou bidirectionnel : que ce soit l'équerre ou la règle qu'on attrape ensuite pour
         // la déplacer, le glissement reste contraint le long de l'axe partagé.
         const already = sq.slideLock && sq.slideLock.targetId===rulerId;
-        sq.slideLock = already ? null : {targetId: rulerId};
-        ru.slideLock = already ? null : {targetId: squareId};
+        if(already){
+          sq.slideLock = null; ru.slideLock = null;
+        } else {
+          // Réaligne précisément l'équerre sur la règle avant de verrouiller : même si elle
+          // était posée à quelques degrés près, l'angle est corrigé exactement, et le petit
+          // écart perpendiculaire résiduel est annulé pour les remettre vraiment bord à bord.
+          const contact = tbFindSlideContact();
+          if(contact && contact.square.id===sq.id && contact.ruler.id===ru.id){
+            let diff = sq.angle - ru.angle;
+            while(diff>180) diff-=360; while(diff<-180) diff+=360;
+            sq.angle = Math.abs(diff)>90 ? ru.angle+180 : ru.angle;
+            const sDef = TB_DEFS[sq.type], se = sDef.edges[contact.edgeIdx];
+            const sRad = sq.angle*Math.PI/180, sCos=Math.cos(sRad), sSin=Math.sin(sRad);
+            const sax = sq.x+se.x1*sCos-se.y1*sSin, say = sq.y+se.x1*sSin+se.y1*sCos;
+            const rDef = TB_DEFS[ru.type], rRad = ru.angle*Math.PI/180, rCos=Math.cos(rRad), rSin=Math.sin(rRad);
+            const re = rDef.edges[0];
+            const rax = ru.x+re.x1*rCos-re.y1*rSin, ray = ru.y+re.x1*rSin+re.y1*rCos;
+            const rbx = ru.x+re.x2*rCos-re.y2*rSin, rby = ru.y+re.x2*rSin+re.y2*rCos;
+            const rdx=rbx-rax, rdy=rby-ray, rlen=Math.hypot(rdx,rdy)||1;
+            const nrx=rdy/rlen, nry=-rdx/rlen;
+            const perp = (sax-rax)*nrx + (say-ray)*nry;
+            sq.x -= nrx*perp; sq.y -= nry*perp;
+          }
+          sq.slideLock = {targetId: rulerId};
+          ru.slideLock = {targetId: squareId};
+        }
         tbRender();
       }
       return;
