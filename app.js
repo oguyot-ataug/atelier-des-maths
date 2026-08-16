@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.176', items:[
+    "Tableau interactif -- équerre : vrais angles 30°/60° cette fois (calculés par trigonométrie exacte, la proportion précédente était choisie à l'œil et donnait ~19°). Poignée de rotation replacée dans l'angle libre à 60°. Règle : poignée déplacée sous les graduations 14-15, discrète. Crayon : poignée de rotation réduite, plus discrète. Aimantage (règle et pavage) nettement renforcé, avec un anneau visuel qui pulse autour de la pointe pendant le tracé pour rendre l'effet magnétique flagrant.",
+  ]},
   { version:'2026-08-04.175', items:[
     "Tableau interactif -- aimantage sur le pavage nettement plus généreux (seuil quasi doublé), pour un effet magnétique vraiment visible. Un point posé sur un sommet reste maintenant lié à ce sommet (même ligne/colonne) quand on zoome le pavage, au lieu de rester figé à l'ancienne position en pixels. Nouveau : bouton 🔤 pour ajouter des zones de texte libres sur le tableau (déplaçables, modifiables au tap).",
   ]},
@@ -6676,7 +6679,7 @@ function tbNearestGridVertex(pt){
     const col = Math.round(pt.x/s), row = Math.round(pt.y/s);
     const gx = col*s, gy = row*s;
     const d = Math.hypot(pt.x-gx, pt.y-gy);
-    return d<28 ? {x:gx, y:gy, gridType:'squares', row, col} : null;
+    return d<45 ? {x:gx, y:gy, gridType:'squares', row, col} : null;
   }
   if(tbBackground==='triangles'){
     const s = tbGridSize, h = s*Math.sqrt(3)/2;
@@ -6685,7 +6688,7 @@ function tbNearestGridVertex(pt){
     const col = Math.round((pt.x-xOffset)/s);
     const gx = col*s+xOffset, gy = row*h;
     const d = Math.hypot(pt.x-gx, pt.y-gy);
-    return d<28 ? {x:gx, y:gy, gridType:'triangles', row, col} : null;
+    return d<45 ? {x:gx, y:gy, gridType:'triangles', row, col} : null;
   }
   return null;
 }
@@ -6821,10 +6824,14 @@ function protractorSVG(){
    côté), pour qu'on tourne l'outil "par le bout" comme dans la réalité. */
 const TB_COMPASS_LEG = 200; // longueur fixe des branches (comme un vrai compas) -- assez
                              // longue pour rester crédible même bien écarté.
+// Grande équerre à 30°/60° : angle exact via trigonométrie (avant, la proportion était choisie
+// à l'œil et ne donnait ni 30° ni 60° -- ici legY = legX·tan(30°) donne un angle de 30° pile au
+// sommet pointu (en haut à droite), et donc 60° à l'autre sommet aigu (en bas à gauche).
+const TB_EQUERRE_LEGX = 340, TB_EQUERRE_LEGY = TB_EQUERRE_LEGX * Math.tan(30*Math.PI/180);
 const TB_DEFS = {
-  crayon:      { rotateHandle:{x:0,y:-100}, svg: pencilSVG,            edges: [] },
-  regle_grad:  { rotateHandle:{x:TB_RULER_L/2,y:TB_RULER_W-6,r:7,opacity:0.5}, svg: ()=>rulerSVG(true),  edges: [{x1:6,y1:0,x2:TB_RULER_L-6,y2:0}] },
-  equerre:     { rotateHandle:{x:10,y:58,r:7,opacity:0.5}, svg: ()=>equerreSVG(340,115), edges: [{x1:0,y1:0,x2:340,y2:0},{x1:0,y1:0,x2:0,y2:115}] },
+  crayon:      { rotateHandle:{x:0,y:-100,r:6,opacity:0.4}, svg: pencilSVG,            edges: [] },
+  regle_grad:  { rotateHandle:{x:14.5*22,y:TB_RULER_W-6,r:7,opacity:0.5}, svg: ()=>rulerSVG(true),  edges: [{x1:6,y1:0,x2:TB_RULER_L-6,y2:0}] },
+  equerre:     { rotateHandle:{x:8,y:TB_EQUERRE_LEGY-10,r:7,opacity:0.5}, svg: ()=>equerreSVG(TB_EQUERRE_LEGX,TB_EQUERRE_LEGY), edges: [{x1:0,y1:0,x2:TB_EQUERRE_LEGX,y2:0},{x1:0,y1:0,x2:0,y2:TB_EQUERRE_LEGY}] },
   requerre:    { rotateHandle:{x:10,y:40,r:7,opacity:0.5}, svg: ()=>equerreSVG(180,80),  edges: [{x1:0,y1:0,x2:180,y2:0},{x1:0,y1:0,x2:0,y2:80}] },
   rapporteur:  { rotateHandle:{x:0,y:-24,r:7,opacity:0.55}, svg: protractorSVG, edges: [{x1:-TB_PROT_PIVOT_X+8,y1:0,x2:(TB_PROT_W-TB_PROT_PIVOT_X)-8,y2:0}] },
   gomme:       { rotateHandle:null, svg: gommeSVG, edges: [] },
@@ -6974,7 +6981,7 @@ function tbProjectOntoSegment(p, ax, ay, bx, by, overhang){
    donné (à moins de 15px) ; si trouvé, renvoie le point aimanté sur ce bord, sinon le point tel
    quel (tracé libre). */
 function tbSnapToEdge(pt){
-  let best=null, bestDist=32, bestTool=null, bestAX,bestAY,bestBX,bestBY;
+  let best=null, bestDist=45, bestTool=null, bestAX,bestAY,bestBX,bestBY;
   tbTools.forEach(t=>{
     const def = TB_DEFS[t.type];
     if(!def || !def.edges || !def.edges.length) return;
@@ -6982,7 +6989,7 @@ function tbSnapToEdge(pt){
     def.edges.forEach(e=>{
       const ax = t.x + e.x1*cos - e.y1*sin, ay = t.y + e.x1*sin + e.y1*cos;
       const bx = t.x + e.x2*cos - e.y2*sin, by = t.y + e.x2*sin + e.y2*cos;
-      const proj = tbProjectOntoSegment(pt, ax, ay, bx, by, 26);
+      const proj = tbProjectOntoSegment(pt, ax, ay, bx, by, 40);
       if(proj && proj.dist < bestDist){ bestDist = proj.dist; best = {x:proj.x, y:proj.y}; bestTool=t; bestAX=ax; bestAY=ay; bestBX=bx; bestBY=by; }
     });
   });
@@ -7162,6 +7169,11 @@ function tbRender(){
     <text x="${t.x}" y="${t.y}" font-size="${t.fontSize}" fill="#1C1B2E" font-family="'Space Grotesk',sans-serif">${escapeHtml(t.text)}</text>
   </g>`;
   }).join('');
+  let pencilSnapRing = '';
+  if(tbDrag && tbDrag.mode==='pencil'){
+    const pTool = tbTools.find(t=>t.id===tbDrag.id);
+    if(pTool) pencilSnapRing = `<circle cx="${pTool.x.toFixed(1)}" cy="${pTool.y.toFixed(1)}" r="10" fill="none" stroke="#E35D3A" stroke-width="2.4" opacity="0.85"><animate attributeName="r" values="7;13;7" dur="0.7s" repeatCount="indefinite"/></circle>`;
+  }
   let protractorPreview = '';
   if(tbDrag && tbDrag.mode==='protractorRay'){
     const ptool = tbTools.find(t=>t.id===tbDrag.id);
@@ -7314,7 +7326,7 @@ function tbRender(){
   document.getElementById('tbBoardWrap').innerHTML = `<svg id="tbSvg" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;touch-action:none;user-select:none;background:#fff;">
     <defs>${bgDefs}</defs>
     ${bgRect}
-    <g id="tbInkLayer">${inkHtml}${pointsHtml}${textsHtml}${protractorPreview}</g>
+    <g id="tbInkLayer">${inkHtml}${pointsHtml}${textsHtml}${protractorPreview}${pencilSnapRing}</g>
     <g id="tbToolsLayer">${toolsHtml}${segActionsHtml}${slideLockHtml}</g>
   </svg>`;
   tbAttachHandlers();
