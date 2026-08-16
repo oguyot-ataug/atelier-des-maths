@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.177', items:[
+    "Tableau interactif -- refonte de l'aimantage du crayon, en profondeur. Il se colle désormais tout seul au relâché près d'un bord de règle/équerre ou d'un sommet de pavage, même sans geste de tracé actif (juste le déplacer par le manche et le lâcher tout près suffit). Pendant un tracé, la pente du bord accroché au départ reste mémorisée tout le long du geste (jusqu'à 90 unités d'écart perpendiculaire tolérées), comme un vrai crayon qui ne décroche pas au moindre tremblement. Équerre : trou central réduit, plus proportionné.",
+  ]},
   { version:'2026-08-04.176', items:[
     "Tableau interactif -- équerre : vrais angles 30°/60° cette fois (calculés par trigonométrie exacte, la proportion précédente était choisie à l'œil et donnait ~19°). Poignée de rotation replacée dans l'angle libre à 60°. Règle : poignée déplacée sous les graduations 14-15, discrète. Crayon : poignée de rotation réduite, plus discrète. Aimantage (règle et pavage) nettement renforcé, avec un anneau visuel qui pulse autour de la pointe pendant le tracé pour rendre l'effet magnétique flagrant.",
   ]},
@@ -6779,7 +6782,7 @@ function equerreSVG(legX, legY){
   // vertical qui DESCEND (y positif) -- pas l'inverse. Sommets francs (pas arrondis), comme une
   // vraie équerre en plastique rigide.
   const outerPts = [[0,0],[legX,0],[0,legY]];
-  const inset = 20;
+  const inset = 34;
   const holePts = tbInsetTriangle(outerPts, inset);
   let ticks = '';
   // Même échelle que la règle (22 unités/cm) pour rester raccord entre les deux outils.
@@ -6980,7 +6983,8 @@ function tbProjectOntoSegment(p, ax, ay, bx, by, overhang){
 /* Cherche, parmi tous les outils "guides" posés sur le tableau, le bord le plus proche du point
    donné (à moins de 15px) ; si trouvé, renvoie le point aimanté sur ce bord, sinon le point tel
    quel (tracé libre). */
-function tbSnapToEdge(pt){
+function tbSnapToEdge(pt){ return tbSnapToEdgeDetailed(pt).point; }
+function tbSnapToEdgeDetailed(pt){
   let best=null, bestDist=45, bestTool=null, bestAX,bestAY,bestBX,bestBY;
   tbTools.forEach(t=>{
     const def = TB_DEFS[t.type];
@@ -6996,14 +7000,15 @@ function tbSnapToEdge(pt){
   if(best && bestTool && bestTool.activeConstraint){
     best = tbApplyConstraint(bestTool, best, bestAX, bestAY, bestBX, bestBY);
   }
+  let edgeLine = best ? {ax:bestAX, ay:bestAY, bx:bestBX, by:bestBY} : null;
   // Aimantage sur un sommet du pavage de fond (carreaux/triangles), s'il est plus proche que le
   // meilleur bord de règle/équerre trouvé -- pour tracer facilement le long du quadrillage.
   const vertex = tbNearestGridVertex(pt);
   if(vertex){
     const vDist = Math.hypot(pt.x-vertex.x, pt.y-vertex.y);
-    if(!best || vDist < Math.hypot(pt.x-best.x, pt.y-best.y)) best = vertex;
+    if(!best || vDist < Math.hypot(pt.x-best.x, pt.y-best.y)){ best = vertex; edgeLine = null; }
   }
-  return best || pt;
+  return {point: best || pt, edgeLine};
 }
 /* Si l'outil sur lequel le crayon s'aimante a une contrainte armée (segment/demi-droite/droite,
    posée via les boutons [AB]/[AB)/(AB)) : borne la position aimantée en conséquence, pour que
@@ -7488,11 +7493,14 @@ function tbAttachHandlers(){
         // bougé, remplacé alors par un point nommé. La position de départ passe elle aussi par
         // l'aimantage (donc par une éventuelle contrainte armée), pour un tracé cohérent dès le
         // premier point, pas seulement une fois qu'on a commencé à bouger.
-        const startSnapped = tbSnapToEdge({x:tool.x, y:tool.y});
-        tool.x = startSnapped.x; tool.y = startSnapped.y;
+        const startResult = tbSnapToEdgeDetailed({x:tool.x, y:tool.y});
+        tool.x = startResult.point.x; tool.y = startResult.point.y;
         const stroke = {color: tbCurrentColor(), construction: tbConstructionMode, points:[[tool.x,tool.y]]};
         tbInk.push(stroke);
-        tbDrag = {mode:'pencil', id, stroke, startX:pt.x, startY:pt.y, moved:false};
+        // Le bord détecté (s'il y en a un) est verrouillé pour tout le geste : la pente reste
+        // mémorisée même si le pointeur s'écarte un peu perpendiculairement, comme un vrai
+        // crayon posé contre une règle qui ne "décroche" pas au moindre tremblement.
+        tbDrag = {mode:'pencil', id, stroke, startX:pt.x, startY:pt.y, moved:false, lockedEdge: startResult.edgeLine};
       }
     } else if(role==='protractorRay'){
       // Un simple glissé ne fait que repositionner le crayon (son angle est mémorisé) --
@@ -7575,7 +7583,15 @@ function tbAttachHandlers(){
       tool.angle = angle;
     } else if(tbDrag.mode==='pencil'){
       if(Math.hypot(pt.x-tbDrag.startX, pt.y-tbDrag.startY) > 5) tbDrag.moved = true;
-      const snapped = tbSnapToEdge(pt);
+      let snapped;
+      if(tbDrag.lockedEdge){
+        const {ax,ay,bx,by} = tbDrag.lockedEdge;
+        const proj = tbProjectOntoSegment(pt, ax, ay, bx, by, 260);
+        if(proj && proj.dist < 90){ snapped = {x:proj.x, y:proj.y}; }
+        else { tbDrag.lockedEdge = null; snapped = tbSnapToEdge(pt); }
+      } else {
+        snapped = tbSnapToEdge(pt);
+      }
       tool.x = snapped.x; tool.y = snapped.y;
       tbDrag.stroke.points.push([tool.x, tool.y]);
     } else if(tbDrag.mode==='compassMoveViaAnchorLeg'){
@@ -7627,6 +7643,19 @@ function tbAttachHandlers(){
     tbRender();
   };
   svg.onpointerup = async ()=>{
+    if(tbDrag && tbDrag.mode==='move'){
+      // Si c'est le crayon qu'on vient de reposer (par le corps, pas la pointe), il se colle
+      // tout seul au bord ou au sommet de pavage le plus proche, s'il y en a un pas trop loin --
+      // pas besoin d'un vrai geste de tracé pour ça, un simple lâcher tout près suffit.
+      const tool = tbTools.find(t=>t.id===tbDrag.id);
+      tbDrag = null;
+      if(tool && tool.type==='crayon'){
+        const snapped = tbSnapToEdge({x:tool.x, y:tool.y});
+        tool.x = snapped.x; tool.y = snapped.y;
+        tbRender();
+      }
+      return;
+    }
     if(tbDrag && tbDrag.mode==='point'){
       const wasMoved = tbDrag.moved, id = tbDrag.id;
       tbDrag = null;
