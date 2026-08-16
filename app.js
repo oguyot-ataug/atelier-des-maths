@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.165', items:[
+    "Tableau interactif -- nouveau : quand une équerre/réquerre touche une règle (bord parallèle et proche, comme sur une photo envoyée), un bouton « 🔗 Coulisser » apparaît. Une fois activé, l'équerre ne peut plus se déplacer qu'en glissant le long de la règle -- impossible de s'en éloigner par erreur, exactement la technique classique pour tracer des parallèles. Un badge 🔗 indique l'état verrouillé, un second clic sur le bouton déverrouille.",
+  ]},
   { version:'2026-08-04.164', items:[
     "Tableau interactif -- équerre/réquerre : sommets francs (plus d'arrondi), graduations intermédiaires (mm) ajoutées entre chaque cm, échelle désormais identique à celle de la règle (1cm = même largeur sur les deux outils), texte « Équerre » retiré de l'image.",
   ]},
@@ -6944,6 +6947,47 @@ function tbSnapToolToPoints(tool){
    crayon pour s'aimanter), triés le long du bord. Sert à proposer des actions directes
    (segment/demi-droite/droite) une fois que 2 points ou plus sont alignés dessus -- bien plus
    fiable qu'un tracé manuel pour ne jamais déborder de A ou B. */
+/* Cherche une règle et une équerre/réquerre dont un bord est presque parallèle et tout proche
+   d'un bord de la règle (comme sur la photo : l'équerre posée contre la règle). Sert à proposer
+   le verrouillage "coulisser" -- l'équerre glisse alors le long de la règle sans s'en éloigner.
+   Retourne le bord touché de l'équerre (coordonnées locales) pour calculer le décalage exact. */
+function tbFindSlideContact(){
+  const rulers = tbTools.filter(t=>t.type==='regle_grad');
+  const squares = tbTools.filter(t=>t.type==='equerre'||t.type==='requerre');
+  for(const r of rulers){
+    const rDef = TB_DEFS[r.type];
+    const rRad = r.angle*Math.PI/180, rCos=Math.cos(rRad), rSin=Math.sin(rRad);
+    const re = rDef.edges[0];
+    const rax = r.x+re.x1*rCos-re.y1*rSin, ray = r.y+re.x1*rSin+re.y1*rCos;
+    const rbx = r.x+re.x2*rCos-re.y2*rSin, rby = r.y+re.x2*rSin+re.y2*rCos;
+    const rdx=rbx-rax, rdy=rby-ray, rlen=Math.hypot(rdx,rdy)||1;
+    const udx=rdx/rlen, udy=rdy/rlen, nrx=-udy, nry=udx;
+    for(const sq of squares){
+      const sDef = TB_DEFS[sq.type];
+      const sRad = sq.angle*Math.PI/180, sCos=Math.cos(sRad), sSin=Math.sin(sRad);
+      for(const se of sDef.edges){
+        const sax = sq.x+se.x1*sCos-se.y1*sSin, say = sq.y+se.x1*sSin+se.y1*sCos;
+        const sbx = sq.x+se.x2*sCos-se.y2*sSin, sby = sq.y+se.x2*sSin+se.y2*sCos;
+        const sdx=sbx-sax, sdy=sby-say, slen=Math.hypot(sdx,sdy)||1;
+        const cross = Math.abs(rdx*sdy - rdy*sdx)/(rlen*slen);
+        if(cross > 0.06) continue; // pas assez parallèle
+        // Distance perpendiculaire entre les deux droites (constante puisqu'elles sont parallèles).
+        const perpDist = Math.abs((sax-rax)*nrx + (say-ray)*nry);
+        if(perpDist > 12) continue;
+        // Les deux bords doivent réellement se chevaucher le long de la règle (avec un peu de
+        // débord toléré), sinon "parallèle et proche" ne veut encore rien dire en pratique.
+        const st0 = (sax-rax)*udx + (say-ray)*udy, st1 = (sbx-rax)*udx + (sby-ray)*udy;
+        const sMin=Math.min(st0,st1), sMax=Math.max(st0,st1);
+        const overlapLo = Math.max(0, sMin), overlapHi = Math.min(rlen, sMax);
+        if(overlapHi < overlapLo - 40) continue;
+        const contactT = (Math.max(overlapLo,0)+Math.min(overlapHi,rlen))/2;
+        const contactX = rax+udx*contactT, contactY = ray+udy*contactT;
+        return {ruler:r, square:sq, contactX, contactY};
+      }
+    }
+  }
+  return null;
+}
 function tbPointsOnEdge(tool){
   const def = TB_DEFS[tool.type];
   if(!def || !def.edges || !def.edges.length || !tbPoints.length) return [];
@@ -7069,6 +7113,7 @@ function tbRender(){
     </g>` : '';
     return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
       <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>${protractorRay}
+      ${t.slideLock ? `<g transform="rotate(${-t.angle.toFixed(1)})" style="pointer-events:none;"><circle cx="0" cy="0" r="9" fill="#1F7A4D" stroke="#fff" stroke-width="1.4"/><text x="0" y="4" font-size="10" text-anchor="middle">🔗</text></g>` : ''}
       ${rh ? `<circle data-role="rotate" data-id="${t.id}" cx="${rh.x}" cy="${rh.y}" r="${rh.r||11}" fill="#0D5BA3" fill-opacity="${rh.opacity!==undefined?rh.opacity:1}" stroke="#fff" stroke-width="1.6"/>` : ''}
     </g>`;
   }).join('');
@@ -7094,9 +7139,20 @@ function tbRender(){
     };
     segActionsHtml += mk(-62,'[AB]','segment') + mk(0,'[AB)','demidroite') + mk(62,'(AB)','droite');
   });
+  // Bouton pour verrouiller/déverrouiller le coulissement d'une équerre contre une règle,
+  // affiché uniquement quand elles se touchent (bords parallèles et proches).
+  let slideLockHtml = '';
+  const contact = tbFindSlideContact();
+  if(contact){
+    const already = contact.square.slideLock && contact.square.slideLock.targetId===contact.ruler.id;
+    slideLockHtml = `<g data-role="slideLockBtn" data-square="${contact.square.id}" data-ruler="${contact.ruler.id}" transform="translate(${contact.contactX.toFixed(1)},${(contact.contactY-16).toFixed(1)})" style="cursor:pointer;">
+      <rect x="-42" y="-12" width="84" height="24" rx="12" fill="${already?'#1F7A4D':'#0D5BA3'}" stroke="#fff" stroke-width="1.4"/>
+      <text x="0" y="5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">${already?'✓ Verrouillé':'🔗 Coulisser'}</text>
+    </g>`;
+  }
   document.getElementById('tbBoardWrap').innerHTML = `<svg id="tbSvg" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;touch-action:none;user-select:none;background:#fff;">
     <g id="tbInkLayer">${inkHtml}${pointsHtml}${protractorPreview}</g>
-    <g id="tbToolsLayer">${toolsHtml}${segActionsHtml}</g>
+    <g id="tbToolsLayer">${toolsHtml}${segActionsHtml}${slideLockHtml}</g>
   </svg>`;
   tbAttachHandlers();
 }
@@ -7158,6 +7214,16 @@ function tbAttachHandlers(){
       if(t){
         const same = t.activeConstraint && t.activeConstraint.mode===mode && t.activeConstraint.aId===aId && t.activeConstraint.bId===bId;
         t.activeConstraint = same ? null : {aId, bId, mode};
+        tbRender();
+      }
+      return;
+    }
+    if(role==='slideLockBtn'){
+      const squareId = parseInt(target.dataset.square), rulerId = parseInt(target.dataset.ruler);
+      const sq = tbTools.find(x=>x.id===squareId);
+      if(sq){
+        const already = sq.slideLock && sq.slideLock.targetId===rulerId;
+        sq.slideLock = already ? null : {targetId: rulerId};
         tbRender();
       }
       return;
@@ -7243,10 +7309,25 @@ function tbAttachHandlers(){
     const tool = tbTools.find(t=>t.id===tbDrag.id);
     if(!tool){ tbDrag=null; return; }
     if(tbDrag.mode==='move'){
-      tool.x = pt.x - tbDrag.offX; tool.y = pt.y - tbDrag.offY;
-      if(tool.type==='gomme'){ tbEraseNear(tool.x, tool.y, 18); }
-      else if(tool.type==='rapporteur'){ tbSnapProtractorPivot(tool); }
-      else if(tool.type!=='crayon') tbSnapToolToPoints(tool);
+      if(tool.slideLock){
+        // Coulisse le long de la règle verrouillée : seul le déplacement DANS l'axe de la
+        // règle est retenu, ce qui garde l'équerre bien plaquée contre elle sans s'en éloigner.
+        const ruler = tbTools.find(t=>t.id===tool.slideLock.targetId);
+        if(ruler){
+          const rRad = ruler.angle*Math.PI/180, dirX = Math.cos(rRad), dirY = Math.sin(rRad);
+          const desiredX = pt.x - tbDrag.offX, desiredY = pt.y - tbDrag.offY;
+          const along = (desiredX-tool.x)*dirX + (desiredY-tool.y)*dirY;
+          tool.x += dirX*along; tool.y += dirY*along;
+        } else {
+          tool.slideLock = null;
+          tool.x = pt.x - tbDrag.offX; tool.y = pt.y - tbDrag.offY;
+        }
+      } else {
+        tool.x = pt.x - tbDrag.offX; tool.y = pt.y - tbDrag.offY;
+        if(tool.type==='gomme'){ tbEraseNear(tool.x, tool.y, 18); }
+        else if(tool.type==='rapporteur'){ tbSnapProtractorPivot(tool); }
+        else if(tool.type!=='crayon') tbSnapToolToPoints(tool);
+      }
     } else if(tbDrag.mode==='rotate'){
       let angle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
       if(tool.type==='rapporteur'){
