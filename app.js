@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.180', items:[
+    "Tableau interactif -- compas : la branche du côté pointe dépassait légèrement de la pointe grise (bout de trait arrondi qui débordait). Corrigé, la branche s'arrête maintenant net exactement à la base de la pointe.",
+  ]},
   { version:'2026-08-04.179', items:[
     "Tableau interactif -- compas : même correctif que pour le crayon/l'équerre, attraper la branche du crayon ailleurs qu'exactement sur la mine ne fait plus sauter l'angle de quelques degrés (la pointe reste fixe, comme attendu). Sélecteur ouvrir/fermé/crayon : fait maintenant un aller-retour (ouvrir→fermé→crayon→fermé→ouvrir→...) au lieu de reboucler directement de crayon à ouvrir.",
   ]},
@@ -7225,7 +7228,7 @@ function tbRender(){
       const iconX = midX + perpX*32, iconY = midY + perpY*32;
       const anchorAngle = Math.atan2(t.y-midY, t.x-midX)*180/Math.PI;
       return `<g>
-        <line data-role="compassAnchorLeg" data-id="${t.id}" x1="${t.x}" y1="${t.y}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round" style="cursor:grab;"/>
+        <line data-role="compassAnchorLeg" data-id="${t.id}" x1="${t.x}" y1="${t.y}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="butt" style="cursor:grab;"/>
         <line data-role="compassAnchorLeg" data-id="${t.id}" x1="${t.x.toFixed(1)}" y1="${t.y.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="transparent" stroke-width="26" style="cursor:grab;"/>
         <line data-role="compassPencilLeg" data-id="${t.id}" x1="${mineX}" y1="${mineY}" x2="${midX}" y2="${midY}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round" style="cursor:${legCursor};"/>
         <line data-role="compassPencilLeg" data-id="${t.id}" x1="${mineX.toFixed(1)}" y1="${mineY.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="transparent" stroke-width="26" style="cursor:${legCursor};"/>
