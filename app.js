@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.169', items:[
+    "Tableau interactif -- coulissement : le vrai bug était dans le réalignement, pas la détection. Le calcul supposait toujours que c'était le grand côté de l'équerre qui touchait la règle, provoquant une rotation de 90° inattendue quand c'était en fait le petit côté (d'où l'impression de \"bord qui change\"). Corrigé : l'angle local du bord réellement détecté est maintenant pris en compte, l'équerre garde son orientation générale au lieu de sauter brutalement.",
+  ]},
   { version:'2026-08-04.168', items:[
     "Tableau interactif -- coulissement : vrai bug corrigé, cliquer sur « Coulisser » pouvait aligner l'équerre sur un autre bord que celui visuellement en contact avec la règle (la détection s'arrêtait au premier bord passant les seuils, pas forcément le bon). Elle évalue désormais tous les bords candidats et retient systématiquement le plus proche.",
   ]},
@@ -7263,10 +7266,15 @@ function tbAttachHandlers(){
           // écart perpendiculaire résiduel est annulé pour les remettre vraiment bord à bord.
           const contact = tbFindSlideContact();
           if(contact && contact.square.id===sq.id && contact.ruler.id===ru.id){
-            let diff = sq.angle - ru.angle;
-            while(diff>180) diff-=360; while(diff<-180) diff+=360;
-            sq.angle = Math.abs(diff)>90 ? ru.angle+180 : ru.angle;
             const sDef = TB_DEFS[sq.type], se = sDef.edges[contact.edgeIdx];
+            // L'angle du bord réellement en contact, dans le repère local de l'équerre (0° pour
+            // le grand côté, 90° pour le petit côté) -- sans ça, aligner l'équerre supposait
+            // toujours que c'était le grand côté qui touchait, provoquant une rotation de 90°
+            // inattendue quand c'était en fait le petit côté (bug signalé : "il change de bord").
+            const localEdgeAngle = Math.atan2(se.y2-se.y1, se.x2-se.x1) * 180/Math.PI;
+            const targetA = ru.angle - localEdgeAngle, targetB = targetA + 180;
+            const normDiff = (a,b)=>{ let d=a-b; while(d>180) d-=360; while(d<-180) d+=360; return d; };
+            sq.angle = Math.abs(normDiff(sq.angle, targetA)) <= Math.abs(normDiff(sq.angle, targetB)) ? targetA : targetB;
             const sRad = sq.angle*Math.PI/180, sCos=Math.cos(sRad), sSin=Math.sin(sRad);
             const sax = sq.x+se.x1*sCos-se.y1*sSin, say = sq.y+se.x1*sSin+se.y1*sCos;
             const rDef = TB_DEFS[ru.type], rRad = ru.angle*Math.PI/180, rCos=Math.cos(rRad), rSin=Math.sin(rRad);
