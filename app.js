@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.173', items:[
+    "Tableau interactif -- nouveau sélecteur de fond : page blanche, petits carreaux, ou pavage de triangles équilatéraux. Le motif reste discret et ne gêne jamais la lecture des outils ni des tracés par-dessus.",
+  ]},
   { version:'2026-08-04.172', items:[
     "Tableau interactif -- coulissement : sens corrigé, j'avais inversé la logique. C'est maintenant bien l'outil qu'on A EN MAIN qui se rapproche pour venir se coller à l'autre (qui reste fixe) -- et non plus l'inverse.",
   ]},
@@ -6633,6 +6636,8 @@ let tbConstructionMode = false; // trace en gris fin quand actif, sans changer l
 let tbLastMovedToolId = null; // dernier outil qu'on a saisi pour le déplacer -- sert à savoir
                                // lequel doit rester fixe quand on active le coulissement (c'est
                                // l'AUTRE outil qui vient se coller à celui qu'on a en main).
+let tbBackground = 'blank'; // 'blank' | 'squares' | 'triangles'
+function tbSetBackground(type){ tbBackground = type; tbRender(); }
 let tbPoints = [];  // points nommés posés au tap du crayon {id, x, y, label}
 let tbPointNextId = 1;
 let tbTools = [];   // outils posés sur le tableau
@@ -7211,7 +7216,22 @@ function tbRender(){
       }
     }
   }
+  let bgDefs = '', bgRect = '';
+  if(tbBackground==='squares'){
+    bgDefs = `<pattern id="tbPatSquares" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#CBD5E1" stroke-width="0.7"/>
+    </pattern>`;
+    bgRect = `<rect width="${W}" height="${H}" fill="url(#tbPatSquares)"/>`;
+  } else if(tbBackground==='triangles'){
+    const s=44, h=(s*Math.sqrt(3)/2).toFixed(2);
+    bgDefs = `<pattern id="tbPatTri" width="${s}" height="${h}" patternUnits="userSpaceOnUse">
+      <path d="M0,0 L${s},0 M0,0 L${s/2},${h} M${s},0 L${s/2},${h} M0,${h} L${s/2},0 M${s},${h} L${s/2},0" fill="none" stroke="#CBD5E1" stroke-width="0.7"/>
+    </pattern>`;
+    bgRect = `<rect width="${W}" height="${H}" fill="url(#tbPatTri)"/>`;
+  }
   document.getElementById('tbBoardWrap').innerHTML = `<svg id="tbSvg" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;touch-action:none;user-select:none;background:#fff;">
+    <defs>${bgDefs}</defs>
+    ${bgRect}
     <g id="tbInkLayer">${inkHtml}${pointsHtml}${protractorPreview}</g>
     <g id="tbToolsLayer">${toolsHtml}${segActionsHtml}${slideLockHtml}</g>
   </svg>`;
