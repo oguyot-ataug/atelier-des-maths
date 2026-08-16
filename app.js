@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.166', items:[
+    "Tableau interactif -- verrouillage de coulissement rendu bidirectionnel : on peut désormais faire glisser soit l'équerre le long de la règle, soit la règle le long de l'équerre (au choix), le verrou s'applique aux deux outils en même temps.",
+  ]},
   { version:'2026-08-04.165', items:[
     "Tableau interactif -- nouveau : quand une équerre/réquerre touche une règle (bord parallèle et proche, comme sur une photo envoyée), un bouton « 🔗 Coulisser » apparaît. Une fois activé, l'équerre ne peut plus se déplacer qu'en glissant le long de la règle -- impossible de s'en éloigner par erreur, exactement la technique classique pour tracer des parallèles. Un badge 🔗 indique l'état verrouillé, un second clic sur le bouton déverrouille.",
   ]},
@@ -7220,10 +7223,13 @@ function tbAttachHandlers(){
     }
     if(role==='slideLockBtn'){
       const squareId = parseInt(target.dataset.square), rulerId = parseInt(target.dataset.ruler);
-      const sq = tbTools.find(x=>x.id===squareId);
-      if(sq){
+      const sq = tbTools.find(x=>x.id===squareId), ru = tbTools.find(x=>x.id===rulerId);
+      if(sq && ru){
+        // Verrou bidirectionnel : que ce soit l'équerre ou la règle qu'on attrape ensuite pour
+        // la déplacer, le glissement reste contraint le long de l'axe partagé.
         const already = sq.slideLock && sq.slideLock.targetId===rulerId;
         sq.slideLock = already ? null : {targetId: rulerId};
+        ru.slideLock = already ? null : {targetId: squareId};
         tbRender();
       }
       return;
