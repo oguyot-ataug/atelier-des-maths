@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.168', items:[
+    "Tableau interactif -- coulissement : vrai bug corrigé, cliquer sur « Coulisser » pouvait aligner l'équerre sur un autre bord que celui visuellement en contact avec la règle (la détection s'arrêtait au premier bord passant les seuils, pas forcément le bon). Elle évalue désormais tous les bords candidats et retient systématiquement le plus proche.",
+  ]},
   { version:'2026-08-04.167', items:[
     "Tableau interactif -- coulissement équerre/règle : fix du bouton de déverrouillage qui pouvait disparaître (un bouton de secours reste désormais toujours visible sur l'outil verrouillé, même si le contact en direct n'est plus détecté). Détection resserrée : un vrai chevauchement bord à bord est maintenant exigé (fini les faux positifs \"à proximité\" sans être vraiment l'un contre l'autre). Nouveau : à l'activation du verrou, l'équerre est réalignée automatiquement (angle exact, écart perpendiculaire annulé) même si elle était posée à quelques degrés de travers.",
   ]},
@@ -6960,6 +6963,7 @@ function tbSnapToolToPoints(tool){
 function tbFindSlideContact(){
   const rulers = tbTools.filter(t=>t.type==='regle_grad');
   const squares = tbTools.filter(t=>t.type==='equerre'||t.type==='requerre');
+  let best = null, bestScore = Infinity;
   for(const r of rulers){
     const rDef = TB_DEFS[r.type];
     const rRad = r.angle*Math.PI/180, rCos=Math.cos(rRad), rSin=Math.sin(rRad);
@@ -6971,6 +6975,10 @@ function tbFindSlideContact(){
     for(const sq of squares){
       const sDef = TB_DEFS[sq.type];
       const sRad = sq.angle*Math.PI/180, sCos=Math.cos(sRad), sSin=Math.sin(sRad);
+      // On évalue TOUS les bords de l'équerre et on ne retient que le MEILLEUR (le plus
+      // proche/le plus parallèle), jamais le premier qui passe juste les seuils -- sinon un
+      // autre bord, moins bien aligné mais techniquement en dessous des seuils, pouvait être
+      // choisi par erreur (bug signalé : l'équerre changeait de bord de contact au clic).
       for(let edgeIdx=0; edgeIdx<sDef.edges.length; edgeIdx++){
         const se = sDef.edges[edgeIdx];
         const sax = sq.x+se.x1*sCos-se.y1*sSin, say = sq.y+se.x1*sSin+se.y1*sCos;
@@ -6986,13 +6994,16 @@ function tbFindSlideContact(){
         const sMin=Math.min(st0,st1), sMax=Math.max(st0,st1);
         const overlapLo = Math.max(0, sMin), overlapHi = Math.min(rlen, sMax);
         if(overlapHi < overlapLo - 6) continue; // il faut un vrai chevauchement bord à bord
+        const score = perpDist + cross*30; // la distance prime, l'angle départage les ex-æquo
+        if(score >= bestScore) continue;
         const contactT = (Math.max(overlapLo,0)+Math.min(overlapHi,rlen))/2;
         const contactX = rax+udx*contactT, contactY = ray+udy*contactT;
-        return {ruler:r, square:sq, edgeIdx, contactX, contactY};
+        bestScore = score;
+        best = {ruler:r, square:sq, edgeIdx, contactX, contactY};
       }
     }
   }
-  return null;
+  return best;
 }
 function tbPointsOnEdge(tool){
   const def = TB_DEFS[tool.type];
