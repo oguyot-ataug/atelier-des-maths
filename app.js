@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.178', items:[
+    "Tableau interactif -- fix important : la rotation du crayon et de l'équerre sautait de ~90° dès qu'on attrapait le point bleu (la poignée n'étant pas dans l'axe 0° de l'outil, le calcul se décalait brutalement). Corrigé : l'angle local de la poignée est maintenant pris en compte, plus aucun saut. Seuil d'aimantage sur le pavage réduit (45→14) pour redonner la possibilité de poser un point au centre ou à mi-carreau, tout en gardant un accrochage précis sur les vrais sommets.",
+  ]},
   { version:'2026-08-04.177', items:[
     "Tableau interactif -- refonte de l'aimantage du crayon, en profondeur. Il se colle désormais tout seul au relâché près d'un bord de règle/équerre ou d'un sommet de pavage, même sans geste de tracé actif (juste le déplacer par le manche et le lâcher tout près suffit). Pendant un tracé, la pente du bord accroché au départ reste mémorisée tout le long du geste (jusqu'à 90 unités d'écart perpendiculaire tolérées), comme un vrai crayon qui ne décroche pas au moindre tremblement. Équerre : trou central réduit, plus proportionné.",
   ]},
@@ -6682,7 +6685,7 @@ function tbNearestGridVertex(pt){
     const col = Math.round(pt.x/s), row = Math.round(pt.y/s);
     const gx = col*s, gy = row*s;
     const d = Math.hypot(pt.x-gx, pt.y-gy);
-    return d<45 ? {x:gx, y:gy, gridType:'squares', row, col} : null;
+    return d<14 ? {x:gx, y:gy, gridType:'squares', row, col} : null;
   }
   if(tbBackground==='triangles'){
     const s = tbGridSize, h = s*Math.sqrt(3)/2;
@@ -6691,7 +6694,7 @@ function tbNearestGridVertex(pt){
     const col = Math.round((pt.x-xOffset)/s);
     const gx = col*s+xOffset, gy = row*h;
     const d = Math.hypot(pt.x-gx, pt.y-gy);
-    return d<45 ? {x:gx, y:gy, gridType:'triangles', row, col} : null;
+    return d<14 ? {x:gx, y:gy, gridType:'triangles', row, col} : null;
   }
   return null;
 }
@@ -7459,7 +7462,13 @@ function tbAttachHandlers(){
       tbLastMovedToolId = tool.id;
       tbDrag = {mode:'move', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
     } else if(role==='rotate'){
-      tbDrag = {mode:'rotate', id};
+      // L'angle local où se trouve la poignée (elle n'est pas toujours dans l'axe 0°, par
+      // exemple tout en haut du crayon ou dans le coin de l'équerre) doit être soustrait du
+      // calcul, sinon l'outil "saute" instantanément à un angle décalé dès qu'on l'attrape
+      // (bug signalé : rotation de 90° au moindre contact avec le point bleu).
+      const rh = TB_DEFS[tool.type].rotateHandle;
+      const handleLocalAngle = Math.atan2(rh.y, rh.x)*180/Math.PI;
+      tbDrag = {mode:'rotate', id, handleLocalAngle};
     } else if(role==='compassAnchorLeg'){
       // La branche qui porte la pointe (l'ancrage fixe) déplace tout l'ensemble -- la pointe
       // s'aimante sur un point déjà posé si on en approche.
@@ -7565,20 +7574,22 @@ function tbAttachHandlers(){
         else if(tool.type!=='crayon') tbSnapToolToPoints(tool);
       }
     } else if(tbDrag.mode==='rotate'){
-      let angle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
+      const rawAngle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
+      const offset = tbDrag.handleLocalAngle || 0;
+      let angle = rawAngle - offset;
       if(tool.type==='rapporteur'){
-        // Aligne le côté 0°-180° vers un point déjà posé si la direction visée passe tout
-        // près -- comme quand on tourne le rapporteur pour caler son bord sur un côté déjà
-        // tracé de l'angle.
+        // Aligne le côté 0°-180° vers un point déjà posé si la direction visée (le vrai rayon
+        // vers le curseur) passe tout près -- comme quand on tourne le rapporteur pour caler
+        // son bord sur un côté déjà tracé de l'angle.
         let bestAngle=null, bestDiff=6;
         tbPoints.forEach(p=>{
           const d = Math.hypot(p.x-tool.x, p.y-tool.y);
           if(d<12) return; // trop proche du pivot pour être le point visé
           const a = Math.atan2(p.y-tool.y, p.x-tool.x)*180/Math.PI;
-          let diff = Math.abs(a-angle); if(diff>180) diff=360-diff;
+          let diff = Math.abs(a-rawAngle); if(diff>180) diff=360-diff;
           if(diff<bestDiff){ bestDiff=diff; bestAngle=a; }
         });
-        if(bestAngle!==null) angle = bestAngle;
+        if(bestAngle!==null) angle = bestAngle - offset;
       }
       tool.angle = angle;
     } else if(tbDrag.mode==='pencil'){
