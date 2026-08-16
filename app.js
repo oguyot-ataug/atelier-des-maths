@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.175', items:[
+    "Tableau interactif -- aimantage sur le pavage nettement plus généreux (seuil quasi doublé), pour un effet magnétique vraiment visible. Un point posé sur un sommet reste maintenant lié à ce sommet (même ligne/colonne) quand on zoome le pavage, au lieu de rester figé à l'ancienne position en pixels. Nouveau : bouton 🔤 pour ajouter des zones de texte libres sur le tableau (déplaçables, modifiables au tap).",
+  ]},
   { version:'2026-08-04.174', items:[
     "Tableau interactif -- pavage zoomable : boutons ➕/➖ pour agrandir ou réduire les carreaux/triangles (10 à 60 unités). Le crayon s'aimante désormais aussi sur les sommets du pavage actif (comme sur le bord d'une règle), pour tracer facilement le long du quadrillage même avec une visée imprécise.",
   ]},
@@ -6649,6 +6652,19 @@ function tbSetBackground(type){
 }
 function tbZoomGrid(dir){
   tbGridSize = Math.max(10, Math.min(60, tbGridSize + dir*4));
+  // Un point posé sur un sommet du pavage doit rester sur CE sommet (même ligne/colonne)
+  // après un zoom, pas rester figé à son ancienne position en pixels -- sinon il se retrouve
+  // décroché du quadrillage dès qu'on change l'échelle.
+  tbPoints.forEach(p=>{
+    if(!p.gridAnchor || p.gridAnchor.type!==tbBackground) return;
+    const s = tbGridSize;
+    if(p.gridAnchor.type==='squares'){
+      p.x = p.gridAnchor.col*s; p.y = p.gridAnchor.row*s;
+    } else if(p.gridAnchor.type==='triangles'){
+      const h = s*Math.sqrt(3)/2, xOffset = (Math.abs(p.gridAnchor.row)%2)*s/2;
+      p.x = p.gridAnchor.col*s+xOffset; p.y = p.gridAnchor.row*h;
+    }
+  });
   tbRender();
 }
 /* Sommet le plus proche du pavage actif (carreaux ou triangles), pour que le crayon puisse s'y
@@ -6657,9 +6673,10 @@ function tbZoomGrid(dir){
 function tbNearestGridVertex(pt){
   if(tbBackground==='squares'){
     const s = tbGridSize;
-    const gx = Math.round(pt.x/s)*s, gy = Math.round(pt.y/s)*s;
+    const col = Math.round(pt.x/s), row = Math.round(pt.y/s);
+    const gx = col*s, gy = row*s;
     const d = Math.hypot(pt.x-gx, pt.y-gy);
-    return d<16 ? {x:gx, y:gy} : null;
+    return d<28 ? {x:gx, y:gy, gridType:'squares', row, col} : null;
   }
   if(tbBackground==='triangles'){
     const s = tbGridSize, h = s*Math.sqrt(3)/2;
@@ -6668,7 +6685,7 @@ function tbNearestGridVertex(pt){
     const col = Math.round((pt.x-xOffset)/s);
     const gx = col*s+xOffset, gy = row*h;
     const d = Math.hypot(pt.x-gx, pt.y-gy);
-    return d<16 ? {x:gx, y:gy} : null;
+    return d<28 ? {x:gx, y:gy, gridType:'triangles', row, col} : null;
   }
   return null;
 }
@@ -6847,6 +6864,22 @@ const TB_PALETTE = [
   {type:'rapporteur',  icon:TB_ICON_PROTRACTOR, label:'Rapporteur'},
   {type:'compas',      icon:TB_ICON_COMPASS, label:'Compas'},
 ];
+let tbTexts = [];       // zones de texte libres posées sur le tableau {id, x, y, text, fontSize}
+let tbTextNextId = 1;
+async function tbAddTextZone(){
+  const text = await nicePrompt('Texte à afficher sur le tableau', '');
+  if(text===null || !text.trim()) return;
+  tbTexts.push({id: tbTextNextId++, x:450, y:280, text: text.trim(), fontSize:16});
+  tbRender();
+}
+async function tbEditTextZone(id){
+  const t = tbTexts.find(x=>x.id===id);
+  if(!t) return;
+  const text = await nicePrompt('Texte -- laissez vide pour le retirer', t.text);
+  if(text===null) return;
+  if(!text.trim()){ tbTexts = tbTexts.filter(x=>x.id!==id); } else { t.text = text.trim(); }
+  tbRender();
+}
 function initTableauView(){
   if(tbInitialized) return;
   tbRenderPalette();
@@ -6860,7 +6893,7 @@ function tbRenderPalette(){
   document.getElementById('tbToolPalette').innerHTML = TB_PALETTE.map(p=>{
     const active = tbTools.some(t=>t.type===p.type);
     return `<button type="button" onclick="tbAddTool('${p.type}')" title="${p.label}" style="width:56px;height:56px;border:2px solid ${active?'#0D5BA3':'rgba(28,43,57,.2)'};border-radius:8px;background:${active?'rgba(13,91,163,.12)':'#fff'};cursor:pointer;font-size:1.5rem;">${p.icon}</button>`;
-  }).join('');
+  }).join('') + `<button type="button" onclick="tbAddTextZone()" title="Ajouter une zone de texte" style="width:56px;height:56px;border:1px solid rgba(28,43,57,.2);border-radius:8px;background:#fff;cursor:pointer;font-size:1.4rem;">🔤</button>`;
 }
 function tbAddTool(type){
   if(tbTools.some(t=>t.type===type)){
@@ -6914,7 +6947,7 @@ function tbCurrentColor(){
   return el ? el.value : '#1C1B2E';
 }
 function tbClearInk(){ tbInk = []; tbRender(); }
-function tbClearAll(){ tbInk = []; tbTools = []; tbPoints = []; tbRenderPalette(); tbRender(); }
+function tbClearAll(){ tbInk = []; tbTools = []; tbPoints = []; tbTexts = []; tbRenderPalette(); tbRender(); }
 function tbSvgPoint(e){
   const svg = document.getElementById('tbSvg');
   const pt = svg.createSVGPoint();
@@ -7122,6 +7155,13 @@ function tbRender(){
     <text x="${pt.x+11}" y="${pt.y-8}" font-size="16" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#1C1B2E">${escapeHtml(pt.label||'')}</text>
   </g>`;
   }).join('');
+  const textsHtml = tbTexts.map(t=>{
+    const w = Math.max(30, t.text.length*t.fontSize*0.56+10);
+    return `<g data-role="textZone" data-id="${t.id}" style="cursor:move;">
+    <rect x="${(t.x-5).toFixed(1)}" y="${(t.y-t.fontSize-4).toFixed(1)}" width="${w.toFixed(1)}" height="${(t.fontSize+10).toFixed(1)}" fill="transparent" pointer-events="all"/>
+    <text x="${t.x}" y="${t.y}" font-size="${t.fontSize}" fill="#1C1B2E" font-family="'Space Grotesk',sans-serif">${escapeHtml(t.text)}</text>
+  </g>`;
+  }).join('');
   let protractorPreview = '';
   if(tbDrag && tbDrag.mode==='protractorRay'){
     const ptool = tbTools.find(t=>t.id===tbDrag.id);
@@ -7274,7 +7314,7 @@ function tbRender(){
   document.getElementById('tbBoardWrap').innerHTML = `<svg id="tbSvg" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;touch-action:none;user-select:none;background:#fff;">
     <defs>${bgDefs}</defs>
     ${bgRect}
-    <g id="tbInkLayer">${inkHtml}${pointsHtml}${protractorPreview}</g>
+    <g id="tbInkLayer">${inkHtml}${pointsHtml}${textsHtml}${protractorPreview}</g>
     <g id="tbToolsLayer">${toolsHtml}${segActionsHtml}${slideLockHtml}</g>
   </svg>`;
   tbAttachHandlers();
@@ -7327,6 +7367,13 @@ function tbAttachHandlers(){
     if(role==='point'){
       const point = tbPoints.find(p=>p.id===id);
       if(point) tbDrag = {mode:'point', id, startX:pt.x, startY:pt.y, moved:false};
+      try{ svg.setPointerCapture(e.pointerId); }catch(err){}
+      e.preventDefault();
+      return;
+    }
+    if(role==='textZone'){
+      const tz = tbTexts.find(x=>x.id===id);
+      if(tz) tbDrag = {mode:'textZone', id, startX:pt.x, startY:pt.y, moved:false};
       try{ svg.setPointerCapture(e.pointerId); }catch(err){}
       e.preventDefault();
       return;
@@ -7465,6 +7512,14 @@ function tbAttachHandlers(){
       tbRender();
       return;
     }
+    if(tbDrag.mode==='textZone'){
+      const tz = tbTexts.find(x=>x.id===tbDrag.id);
+      if(!tz){ tbDrag=null; return; }
+      if(Math.hypot(pt.x-tbDrag.startX, pt.y-tbDrag.startY) > 5) tbDrag.moved = true;
+      tz.x = pt.x; tz.y = pt.y;
+      tbRender();
+      return;
+    }
     const tool = tbTools.find(t=>t.id===tbDrag.id);
     if(!tool){ tbDrag=null; return; }
     if(tbDrag.mode==='move'){
@@ -7566,6 +7621,13 @@ function tbAttachHandlers(){
       if(!wasMoved) await tbRenamePoint(id);
       return;
     }
+    if(tbDrag && tbDrag.mode==='textZone'){
+      const wasMoved = tbDrag.moved, id = tbDrag.id;
+      tbDrag = null;
+      if(!wasMoved) await tbEditTextZone(id);
+      else tbRender();
+      return;
+    }
     if(tbDrag && tbDrag.mode==='pencil' && !tbDrag.moved){
       // Tap sans glissement : on retire le trait (vide) commencé, et on pose un point nommé à
       // la place, comme un vrai crayon qu'on pose sur la feuille pour marquer un point.
@@ -7574,7 +7636,11 @@ function tbAttachHandlers(){
       tbDrag = null;
       if(tool){
         const label = await tbOpenLetterPicker('');
-        if(label!==null) tbPoints.push({id: tbPointNextId++, x: tool.x, y: tool.y, label});
+        if(label!==null){
+          const anchor = tbNearestGridVertex({x:tool.x, y:tool.y});
+          const gridAnchor = (anchor && Math.hypot(anchor.x-tool.x, anchor.y-tool.y)<0.5) ? {type:anchor.gridType, row:anchor.row, col:anchor.col} : null;
+          tbPoints.push({id: tbPointNextId++, x: tool.x, y: tool.y, label, gridAnchor});
+        }
         tbRender();
       }
       return;
