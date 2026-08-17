@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.191', items:[
+    "Cours 6e G2 (Droites parallèles et perpendiculaires) -- les illustrations animées des trois constructions pas à pas (perpendiculaire, parallèle, médiatrice) utilisent désormais le même design d'équerre et de règle que le tableau interactif (évidement triangulaire, graduations), positionné par rotation/translation au lieu de recalculer des polygones bruts à chaque étape.",
+  ]},
   { version:'2026-08-04.190', items:[
     "Tableau interactif -- vrai bug corrigé : le trait de point (style « crayon ») était perpendiculaire à la mine au lieu d'être dans son prolongement (décalage de 90° dans le calcul). Nouveau 3e style « • Aucun » pour nommer une intersection ou un sommet sans ajouter de repère visuel superflu. Codages d'angle : la détection fonctionne désormais directement sur les extrémités des traits qui se rejoignent, sans exiger qu'un point nommé soit déjà posé au sommet -- bien plus fiable. Fix du trait qui \"interceptait\" l'arc dans les vignettes barrées (mauvais rayon).",
   ]},

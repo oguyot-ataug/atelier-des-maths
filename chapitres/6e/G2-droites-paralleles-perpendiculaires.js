@@ -66,11 +66,25 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <line id="dp-pm-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
     <circle id="dp-pm-M" r="5" fill="#E35D3A" data-marker="cross"/>
     <text id="dp-pm-labelM" font-style="italic" font-size="14">M</text>
-    <polygon id="dp-pm-equerre" fill="rgba(210,214,222,.6)" stroke="#4A4A55" stroke-width="1.8"/>
-    <circle id="dp-pm-equerre-hole" r="4" fill="var(--white)" stroke="#4A4A55" stroke-width="1.2"/>
+    <g id="dp-pm-equerre" style="display:none;">
+      <polygon points="0,0 85,0 0,49.1" fill="rgba(205,225,245,.55)" stroke="#4A4A55" stroke-width="1.6"/>
+      <polygon points="9,9 51.4,9 9,33.5" fill="var(--white)" stroke="#4A4A55" stroke-width="1"/>
+      <line x1="20" y1="0" x2="20" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
+      <line x1="40" y1="0" x2="40" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
+      <line x1="60" y1="0" x2="60" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
+    </g>
     <polygon id="dp-pm-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
     <polygon id="dp-pm-pencil-tip" fill="#3A2A1A" style="display:none;"/>
-    <polygon id="dp-pm-ruler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
+    <g id="dp-pm-ruler" style="display:none;">
+      <rect x="-110" y="-6.5" width="220" height="13" rx="2.5" fill="rgba(205,225,245,.55)" stroke="#1C1B2E" stroke-width="1"/>
+      <line x1="-90" y1="-6.5" x2="-90" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+      <line x1="-60" y1="-6.5" x2="-60" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+      <line x1="-30" y1="-6.5" x2="-30" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+      <line x1="0" y1="-6.5" x2="0" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+      <line x1="30" y1="-6.5" x2="30" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+      <line x1="60" y1="-6.5" x2="60" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+      <line x1="90" y1="-6.5" x2="90" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+    </g>
     <line id="dp-pm-lineDp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
     <path id="dp-pm-angleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3" style="display:none;"/>
     <text id="dp-pm-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C">(d)</text>
@@ -110,10 +124,21 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <line id="dp-pam-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
     <circle id="dp-pam-N" r="5" fill="#E35D3A" data-marker="cross"/>
     <text id="dp-pam-labelN" font-style="italic" font-size="14">N</text>
-    <polygon id="dp-pam-ruler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
-    <polygon id="dp-pam-ruler2" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
-    <polygon id="dp-pam-equerre" fill="rgba(210,214,222,.6)" stroke="#4A4A55" stroke-width="1.8"/>
-    <circle id="dp-pam-equerre-hole" r="4" fill="var(--white)" stroke="#4A4A55" stroke-width="1.2"/>
+    <g id="dp-pam-ruler" style="display:none;">
+      <rect x="-150" y="-6.5" width="300" height="13" rx="2.5" fill="rgba(205,225,245,.55)" stroke="#1C1B2E" stroke-width="1"/>
+      <line x1="-140" y1="-6.5" x2="-140" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="-110" y1="-6.5" x2="-110" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="-80" y1="-6.5" x2="-80" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="-50" y1="-6.5" x2="-50" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="-20" y1="-6.5" x2="-20" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="10" y1="-6.5" x2="10" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="40" y1="-6.5" x2="40" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="70" y1="-6.5" x2="70" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="100" y1="-6.5" x2="100" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="130" y1="-6.5" x2="130" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+    </g>
+    <g id="dp-pam-ruler2" style="display:none;">
+      <rect x="-150" y="-6.5" width="300" height="13" rx="2.5" fill="rgba(205,225,245,.55)" stroke="#1C1B2E" stroke-width="1"/>
+      <line x1="-140" y1="-6.5" x2="-140" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="-110" y1="-6.5" x2="-110" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="-80" y1="-6.5" x2="-80" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="-50" y1="-6.5" x2="-50" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="-20" y1="-6.5" x2="-20" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="10" y1="-6.5" x2="10" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="40" y1="-6.5" x2="40" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="70" y1="-6.5" x2="70" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="100" y1="-6.5" x2="100" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/><line x1="130" y1="-6.5" x2="130" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+    </g>
+    <g id="dp-pam-equerre" style="display:none;">
+      <polygon points="0,0 85,0 0,49.1" fill="rgba(205,225,245,.55)" stroke="#4A4A55" stroke-width="1.6"/>
+      <polygon points="9,9 51.4,9 9,33.5" fill="var(--white)" stroke="#4A4A55" stroke-width="1"/>
+      <line x1="20" y1="0" x2="20" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
+      <line x1="40" y1="0" x2="40" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
+      <line x1="60" y1="0" x2="60" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
+    </g>
     <polygon id="dp-pam-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
     <polygon id="dp-pam-pencil-tip" fill="#3A2A1A" style="display:none;"/>
     <line id="dp-pam-lineDpp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
@@ -198,9 +223,23 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <line id="dp-mm-tick1a" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
     <line id="dp-mm-tick1b" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
     <circle id="dp-mm-midpoint" r="3.5" fill="#1C1B2E" style="display:none;" data-marker="cross"/>
-    <polygon id="dp-mm-equerre" fill="rgba(210,214,222,.6)" stroke="#4A4A55" stroke-width="1.8" style="display:none;"/>
-    <circle id="dp-mm-equerre-hole" r="4" fill="var(--white)" stroke="#4A4A55" stroke-width="1.2" style="display:none;"/>
-    <polygon id="dp-mm-ruler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
+    <g id="dp-mm-equerre" style="display:none;">
+      <polygon points="0,0 85,0 0,49.1" fill="rgba(205,225,245,.55)" stroke="#4A4A55" stroke-width="1.6"/>
+      <polygon points="9,9 51.4,9 9,33.5" fill="var(--white)" stroke="#4A4A55" stroke-width="1"/>
+      <line x1="20" y1="0" x2="20" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
+      <line x1="40" y1="0" x2="40" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
+      <line x1="60" y1="0" x2="60" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
+    </g>
+    <g id="dp-mm-ruler" style="display:none;">
+      <rect x="-110" y="-6.5" width="220" height="13" rx="2.5" fill="rgba(205,225,245,.55)" stroke="#1C1B2E" stroke-width="1"/>
+      <line x1="-90" y1="-6.5" x2="-90" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+      <line x1="-60" y1="-6.5" x2="-60" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+      <line x1="-30" y1="-6.5" x2="-30" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+      <line x1="0" y1="-6.5" x2="0" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+      <line x1="30" y1="-6.5" x2="30" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+      <line x1="60" y1="-6.5" x2="60" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+      <line x1="90" y1="-6.5" x2="90" y2="-2.5" stroke="#1C1B2E" stroke-width="0.7"/>
+    </g>
     <polygon id="dp-mm-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
     <polygon id="dp-mm-pencil-tip" fill="#3A2A1A" style="display:none;"/>
     <line id="dp-mm-medLine" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
@@ -570,23 +609,21 @@ function dpRenderMedMethode(animate){
     tick1a.style.display='none'; tick1b.style.display='none'; midpoint.style.display='none';
   }
 
-  const equerre = document.getElementById('dp-mm-equerre'), hole = document.getElementById('dp-mm-equerre-hole');
+  const equerre = document.getElementById('dp-mm-equerre');
   if(s.phase==='equerre' || s.phase==='ruler'){
-    const c2 = {x:dpMmMid.x+dpMmDir.x*90, y:dpMmMid.y+dpMmDir.y*90};
-    const c3 = {x:dpMmMid.x+dpMmPerp.x*80, y:dpMmMid.y+dpMmPerp.y*80};
-    equerre.setAttribute('points', `${dpMmMid.x},${dpMmMid.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
+    const angDeg = Math.atan2(dpMmDir.y, dpMmDir.x)*180/Math.PI;
+    equerre.setAttribute('transform', `translate(${dpMmMid.x},${dpMmMid.y}) rotate(${angDeg.toFixed(2)})`);
     equerre.style.display='';
-    const holePos = {x:dpMmMid.x+dpMmDir.x*14+dpMmPerp.x*14, y:dpMmMid.y+dpMmDir.y*14+dpMmPerp.y*14};
-    dpSetPt(hole, holePos); hole.style.display='';
   } else {
-    equerre.style.display='none'; hole.style.display='none';
+    equerre.style.display='none';
   }
 
-  const rulerHalfWidth = 6.5, rulerLength = 220;
+  const rulerLength = 220;
   const ruler = document.getElementById('dp-mm-ruler');
   if(s.phase==='ruler' || s.phase==='removed' || s.phase==='traced'){
-    const rulerCenter = {x:dpMmMid.x-dpMmDir.x*rulerHalfWidth, y:dpMmMid.y-dpMmDir.y*rulerHalfWidth};
-    ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpMmPerp, dpMmDir, rulerLength, rulerHalfWidth*2));
+    const rulerCenter = {x:dpMmMid.x-dpMmDir.x*6.5, y:dpMmMid.y-dpMmDir.y*6.5};
+    const rAngDeg = Math.atan2(dpMmPerp.y, dpMmPerp.x)*180/Math.PI;
+    ruler.setAttribute('transform', `translate(${rulerCenter.x},${rulerCenter.y}) rotate(${rAngDeg.toFixed(2)})`);
     ruler.style.display='';
   } else {
     ruler.style.display='none';
@@ -655,28 +692,23 @@ function dpRenderPerpMethode(animate){
   dpSetTxt(document.getElementById('dp-pm-labelM'), DP_PM_M, 8, -10);
   dpSetTxt(document.getElementById('dp-pm-labelD'), {x:DP_PM_D2.x+dpPmDir.x*24+dpPmPerp.x*16, y:DP_PM_D2.y+dpPmDir.y*24+dpPmPerp.y*16}, 0, 0);
   const pos = {x:DP_PM_D1.x+dpPmDir.x*s.dist, y:DP_PM_D1.y+dpPmDir.y*s.dist};
-  const c2 = {x:pos.x+dpPmDir.x*90, y:pos.y+dpPmDir.y*90};
-  const c3 = {x:pos.x+dpPmPerp.x*(dpPmTouchDist+22), y:pos.y+dpPmPerp.y*(dpPmTouchDist+22)};
   const equerre = document.getElementById('dp-pm-equerre');
-  const hole = document.getElementById('dp-pm-equerre-hole');
   const lineDp = document.getElementById('dp-pm-lineDp'), angleMark = document.getElementById('dp-pm-angleMark'), ruler = document.getElementById('dp-pm-ruler');
   const pencil = document.getElementById('dp-pm-pencil'), pencilTip = document.getElementById('dp-pm-pencil-tip');
 
   if(s.phase==='removed' || s.phase==='traced' || s.phase==='clean'){
     equerre.style.display='none';
-    hole.style.display='none';
   } else {
-    equerre.setAttribute('points', `${pos.x},${pos.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
+    const angDeg = Math.atan2(dpPmDir.y, dpPmDir.x)*180/Math.PI;
+    equerre.setAttribute('transform', `translate(${pos.x},${pos.y}) rotate(${angDeg.toFixed(2)})`);
     equerre.style.display='';
-    const holePos = {x:pos.x+dpPmDir.x*14+dpPmPerp.x*14, y:pos.y+dpPmDir.y*14+dpPmPerp.y*14};
-    dpSetPt(hole, holePos);
-    hole.style.display='';
   }
 
-  const rulerHalfWidth = 6.5, rulerLength = 220;
-  const rulerCenter = {x:dpPmFoot.x-dpPmDir.x*rulerHalfWidth, y:dpPmFoot.y-dpPmDir.y*rulerHalfWidth};
+  const rulerLength = 220;
+  const rulerCenter = {x:dpPmFoot.x-dpPmDir.x*6.5, y:dpPmFoot.y-dpPmDir.y*6.5};
   if(s.phase==='ruler' || s.phase==='removed' || s.phase==='traced'){
-    ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPmPerp, dpPmDir, rulerLength, rulerHalfWidth*2));
+    const rAngDeg = Math.atan2(dpPmPerp.y, dpPmPerp.x)*180/Math.PI;
+    ruler.setAttribute('transform', `translate(${rulerCenter.x},${rulerCenter.y}) rotate(${rAngDeg.toFixed(2)})`);
     ruler.style.display='';
   } else {
     ruler.style.display='none';
@@ -749,34 +781,34 @@ function dpRenderParaMethode(animate){
   if(s.phase==='slide'){
     const rulerHalfWidth = 6;
     const rulerCenter = {x:DP_PAM_P1.x-dpPamDir.x*rulerHalfWidth, y:DP_PAM_P1.y-dpPamDir.y*rulerHalfWidth};
-    ruler.setAttribute('points', dpRulerPolygon(rulerCenter, dpPamPerp, dpPamDir, 300, rulerHalfWidth*2));
+    const rAng = Math.atan2(dpPamPerp.y, dpPamPerp.x)*180/Math.PI;
+    ruler.setAttribute('transform', `translate(${rulerCenter.x},${rulerCenter.y}) rotate(${rAng.toFixed(2)})`);
     ruler.style.display='';
   } else {
     ruler.style.display='none';
   }
 
   const corner = {x:DP_PAM_P1.x+dpPamPerp.x*dpPamSlideDist*s.frac, y:DP_PAM_P1.y+dpPamPerp.y*dpPamSlideDist*s.frac};
-  const c2 = {x:corner.x+dpPamDir.x*(dpPamTouchDist+22), y:corner.y+dpPamDir.y*(dpPamTouchDist+22)};
   const sign = (dpPamSlideDist>=0?1:-1);
-  const c3 = {x:corner.x+dpPamPerp.x*55*sign, y:corner.y+dpPamPerp.y*55*sign};
   const equerre = document.getElementById('dp-pam-equerre');
-  const hole = document.getElementById('dp-pam-equerre-hole');
   if(s.phase==='removed' || s.phase==='traced' || s.phase==='clean'){
     equerre.style.display='none';
-    hole.style.display='none';
   } else {
-    equerre.setAttribute('points', `${corner.x},${corner.y} ${c2.x},${c2.y} ${c3.x},${c3.y}`);
+    // Le petit côté de l'équerre doit pointer vers "perp*sign" (peut être des DEUX côtés de la
+    // ligne selon le sens du glissement) -- une simple rotation ne peut pas "retourner" la
+    // forme, d'où le miroir (scale verticale) quand sign est négatif.
+    const angDeg = Math.atan2(dpPamDir.y, dpPamDir.x)*180/Math.PI;
+    const scaleY = sign>=0 ? 1 : -1;
+    equerre.setAttribute('transform', `translate(${corner.x},${corner.y}) rotate(${angDeg.toFixed(2)}) scale(1,${scaleY})`);
     equerre.style.display='';
-    const holePos = {x:corner.x+dpPamDir.x*14+dpPamPerp.x*14*sign, y:corner.y+dpPamDir.y*14+dpPamPerp.y*14*sign};
-    dpSetPt(hole, holePos);
-    hole.style.display='';
   }
 
   const ruler2 = document.getElementById('dp-pam-ruler2');
-  const ruler2HalfWidth = 6.5, ruler2Length = 300;
-  const ruler2Center = {x:DP_PAM_N.x-dpPamPerp.x*ruler2HalfWidth*sign, y:DP_PAM_N.y-dpPamPerp.y*ruler2HalfWidth*sign};
+  const ruler2Length = 300;
+  const ruler2Center = {x:DP_PAM_N.x-dpPamPerp.x*6.5*sign, y:DP_PAM_N.y-dpPamPerp.y*6.5*sign};
   if(s.phase==='ruler2' || s.phase==='removed' || s.phase==='traced'){
-    ruler2.setAttribute('points', dpRulerPolygon(ruler2Center, dpPamDir, dpPamPerp, ruler2Length, ruler2HalfWidth*2));
+    const r2Ang = Math.atan2(dpPamDir.y, dpPamDir.x)*180/Math.PI;
+    ruler2.setAttribute('transform', `translate(${ruler2Center.x},${ruler2Center.y}) rotate(${r2Ang.toFixed(2)})`);
     ruler2.style.display='';
   } else {
     ruler2.style.display='none';
