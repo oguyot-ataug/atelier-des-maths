@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.188', items:[
+    "Tableau interactif -- codages : la mini-fenêtre affiche maintenant 9 vraies vignettes visuelles (1/2/3 traits, petit cercle, #, 1/2/3 arcs, angle droit) au lieu de simples boutons texte. Le point bleu du crayon (sélecteur tourner/écrire/coder) est aussi nettement agrandi (rayon 15 au lieu de 6, pleine opacité), pour être vraiment lisible.",
+  ]},
   { version:'2026-08-04.187', items:[
     "Tableau interactif -- refonte des codages : plus de détection automatique du sommet/des côtés (peu fiable). Le point bleu du crayon fait maintenant défiler 3 modes au tap (🔄 Tourner, ✏️ Écrire, 🏷️ Coder), comme sur le compas. En mode Coder, un tap ouvre une mini-fenêtre pour choisir Longueur / Angle / Angle droit (et le nombre de traits/arcs). Les traits de longueur sont désormais fins et orientés selon l'angle du crayon -- c'est le professeur qui \"dessine\" l'inclinaison en positionnant le crayon, plus un calcul automatique sur le trait.",
   ]},
@@ -6956,30 +6959,65 @@ const TB_PALETTE = [
 let tbTexts = [];       // zones de texte libres posées sur le tableau {id, x, y, text, fontSize}
 let tbCodages = [];     // codages de longueurs/angles égaux {id, kind:'tick'|'arc', x, y, segAngle|angle1/angle2, count}
 let tbCodageNextId = 1;
-/* Ouvre une mini-fenêtre pour choisir le type de codage à poser à l'endroit et dans
-   l'orientation du crayon -- plus de détection automatique du sommet/des côtés (peu fiable) :
-   c'est l'utilisateur qui vise et incline le crayon lui-même, comme à la main. */
+/* Vignettes SVG pour chaque type de codage, utilisées dans la mini-fenêtre de choix -- bien
+   plus parlant qu'un simple texte "Longueur"/"Angle". */
+function tbCodageThumb(kind, count){
+  const s = 44;
+  let inner = '';
+  if(kind==='tick'){
+    const spacing = 6;
+    for(let i=0;i<count;i++){
+      const off = (i-(count-1)/2)*spacing;
+      inner += `<line x1="${(22+off-6).toFixed(1)}" y1="30" x2="${(22+off+6).toFixed(1)}" y2="14" stroke="#1C1B2E" stroke-width="1.6"/>`;
+    }
+    inner = `<line x1="4" y1="22" x2="40" y2="22" stroke="#1C1B2E" stroke-width="1.4"/>` + inner;
+  } else if(kind==='circle'){
+    inner = `<line x1="4" y1="22" x2="40" y2="22" stroke="#1C1B2E" stroke-width="1.4"/><circle cx="22" cy="22" r="5.5" fill="none" stroke="#1C1B2E" stroke-width="1.6"/>`;
+  } else if(kind==='hash'){
+    inner = `<line x1="4" y1="22" x2="40" y2="22" stroke="#1C1B2E" stroke-width="1.4"/><text x="22" y="28" font-size="15" text-anchor="middle" font-weight="700" fill="#1C1B2E">#</text>`;
+  } else if(kind==='arc'){
+    for(let i=0;i<count;i++){
+      const r = 8+i*5;
+      inner += `<path d="M ${(22-r*0.85).toFixed(1)} ${(30-r*0.53).toFixed(1)} A ${r} ${r} 0 0 1 ${(22+r*0.85).toFixed(1)} ${(30-r*0.53).toFixed(1)}" fill="none" stroke="#1C1B2E" stroke-width="1.6"/>`;
+    }
+    inner += `<line x1="22" y1="30" x2="8" y2="12" stroke="#1C1B2E" stroke-width="1.2"/><line x1="22" y1="30" x2="36" y2="12" stroke="#1C1B2E" stroke-width="1.2"/>`;
+  } else if(kind==='right'){
+    inner = `<line x1="10" y1="34" x2="34" y2="34" stroke="#1C1B2E" stroke-width="1.2"/><line x1="10" y1="34" x2="10" y2="10" stroke="#1C1B2E" stroke-width="1.2"/><path d="M10,26 L18,26 L18,34" fill="none" stroke="#1C1B2E" stroke-width="1.4"/>`;
+  }
+  return `<svg viewBox="0 0 ${s} ${s}" width="${s}" height="${s}">${inner}</svg>`;
+}
 async function tbOpenCodageModal(){
-  const type = await niceModal({
-    message: 'Quel codage poser ?',
-    buttons: [
-      {label:'Longueur', value:'length', secondary:true},
-      {label:'Angle', value:'angle', secondary:true},
-      {label:'Angle droit', value:'right'},
-    ],
+  return new Promise(resolve=>{
+    const overlay = document.getElementById('niceModalOverlay');
+    document.getElementById('niceModalMessage').textContent = 'Quel codage poser ?';
+    document.getElementById('niceModalInput').style.display = 'none';
+    const btnBox = document.getElementById('niceModalButtons');
+    const options = [
+      {kind:'tick', count:1}, {kind:'tick', count:2}, {kind:'tick', count:3},
+      {kind:'circle', count:1}, {kind:'hash', count:1},
+      {kind:'arc', count:1}, {kind:'arc', count:2}, {kind:'arc', count:3},
+      {kind:'right', count:1},
+    ];
+    btnBox.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;justify-content:center;';
+    btnBox.innerHTML = '';
+    const close = (val)=>{ overlay.style.display='none'; btnBox.style.cssText='display:flex;justify-content:flex-end;gap:8px;'; resolve(val); };
+    options.forEach(opt=>{
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.style.cssText = 'border:1.5px solid rgba(28,43,57,.2);border-radius:10px;background:#fff;cursor:pointer;padding:4px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;';
+      btn.innerHTML = tbCodageThumb(opt.kind, opt.count);
+      btn.onclick = ()=> close(opt);
+      btnBox.appendChild(btn);
+    });
+    const cancelBtn = document.createElement('button');
+    cancelBtn.type = 'button';
+    cancelBtn.className = 'btn secondary';
+    cancelBtn.textContent = 'Annuler';
+    cancelBtn.style.cssText = 'width:100%;margin-top:4px;';
+    cancelBtn.onclick = ()=> close(null);
+    btnBox.appendChild(cancelBtn);
+    overlay.style.display = 'flex';
   });
-  if(!type) return null;
-  if(type==='right') return {type, count:1};
-  const count = await niceModal({
-    message: type==='length' ? 'Combien de traits ?' : 'Combien d\'arcs ?',
-    buttons: [
-      {label:'1', value:1, secondary:true},
-      {label:'2', value:2, secondary:true},
-      {label:'3', value:3},
-    ],
-  });
-  if(!count) return null;
-  return {type, count};
 }
 let tbTextNextId = 1;
 async function tbAddTextZone(){
@@ -7365,6 +7403,11 @@ function tbRender(){
         lines += `<line x1="${(cx-perpX*tickLen).toFixed(1)}" y1="${(cy-perpY*tickLen).toFixed(1)}" x2="${(cx+perpX*tickLen).toFixed(1)}" y2="${(cy+perpY*tickLen).toFixed(1)}" stroke="#1C1B2E" stroke-width="1.2"/>`;
       }
       return `<g data-role="codage" data-id="${c.id}" style="cursor:pointer;">${lines}<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="14" fill="transparent" pointer-events="all"/></g>`;
+    } else if(c.kind==='circle'){
+      const cx = c.x, cy = c.y;
+      return `<g data-role="codage" data-id="${c.id}" style="cursor:pointer;"><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="5.5" fill="none" stroke="#1C1B2E" stroke-width="1.4"/><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="14" fill="transparent" pointer-events="all"/></g>`;
+    } else if(c.kind==='hash'){
+      return `<g data-role="codage" data-id="${c.id}" style="cursor:pointer;" transform="translate(${c.x.toFixed(1)},${c.y.toFixed(1)}) rotate(${c.angle.toFixed(1)})"><text x="0" y="5" font-size="15" font-weight="700" text-anchor="middle" fill="#1C1B2E">#</text><circle cx="0" cy="0" r="14" fill="transparent" pointer-events="all"/></g>`;
     } else if(c.kind==='arc'){
       // Petit(s) arc(s) centré(s) sur l'angle du crayon (fenêtre fixe de 44°) -- plus de
       // détection automatique du sommet et des deux côtés (peu fiable) : le professeur vise
@@ -7491,8 +7534,8 @@ function tbRender(){
       <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>${protractorRay}
       ${t.slideLock ? `<g transform="rotate(${-t.angle.toFixed(1)})" style="pointer-events:none;"><circle cx="0" cy="0" r="9" fill="#1F7A4D" stroke="#fff" stroke-width="1.4"/><text x="0" y="4" font-size="10" text-anchor="middle">🔗</text></g>` : ''}
       ${rh && t.type==='crayon' ? `<g data-role="rotate" data-id="${t.id}" transform="translate(${rh.x},${rh.y})">
-          <circle cx="0" cy="0" r="${rh.r||11}" fill="${penModeColor}" stroke="#fff" stroke-width="1.6"/>
-          <text x="0" y="4" font-size="10" text-anchor="middle" transform="rotate(${-t.angle.toFixed(1)})">${penModeIcon}</text>
+          <circle cx="0" cy="0" r="15" fill="${penModeColor}" stroke="#fff" stroke-width="2"/>
+          <text x="0" y="6" font-size="16" text-anchor="middle" transform="rotate(${-t.angle.toFixed(1)})">${penModeIcon}</text>
         </g>` : (rh ? `<circle data-role="rotate" data-id="${t.id}" cx="${rh.x}" cy="${rh.y}" r="${rh.r||11}" fill="#0D5BA3" fill-opacity="${rh.opacity!==undefined?rh.opacity:1}" stroke="#fff" stroke-width="1.6"/>` : '')}
     </g>`;
   }).join('');
@@ -7963,8 +8006,7 @@ function tbAttachHandlers(){
       if(codTool){
         const choice = await tbOpenCodageModal();
         if(choice){
-          const kind = choice.type==='length' ? 'tick' : (choice.type==='angle' ? 'arc' : 'right');
-          tbCodages.push({id: tbCodageNextId++, kind, x:codTool.x, y:codTool.y, angle:codTool.angle, count:choice.count});
+          tbCodages.push({id: tbCodageNextId++, kind:choice.kind, x:codTool.x, y:codTool.y, angle:codTool.angle, count:choice.count});
           tbPushHistory();
         }
         tbRender();
