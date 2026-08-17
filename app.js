@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.193', items:[
+    "Cours 6e G2 -- refonte complète : les illustrations appellent désormais DIRECTEMENT les vraies fonctions equerreSVG() et rulerSVG() du tableau interactif (plus de reproduction approximative), avec toutes leurs graduations, numéros et détails. Repositionnement complet (mise à l'échelle dynamique, orientation, bord gradué toujours du côté équerre) pour cette géométrie réelle, vérifié étape par étape sur les trois méthodes (perpendiculaire, parallèle, médiatrice).",
+  ]},
   { version:'2026-08-04.192', items:[
     "Cours 6e G2 -- vrai bug corrigé (signalé par capture d'écran) : l'équerre restait de taille fixe et ne touchait jamais réellement le point visé (M ou N), et son petit côté pouvait pointer dans le mauvais sens selon le côté de la droite. Corrigée avec une mise à l'échelle dynamique (calculée d'après la vraie distance à atteindre, avec une petite marge) et une détection du bon sens à chaque étape des méthodes perpendiculaire et parallèle. Design de l'équerre aussi enrichi (graduations plus nombreuses) pour se rapprocher davantage du tableau interactif.",
   ]},
