@@ -68,10 +68,8 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <text id="dp-pm-labelM" font-style="italic" font-size="14">M</text>
     <g id="dp-pm-equerre" style="display:none;">
       <polygon points="0,0 85,0 0,49.1" fill="rgba(205,225,245,.55)" stroke="#4A4A55" stroke-width="1.6"/>
-      <polygon points="9,9 51.4,9 9,33.5" fill="var(--white)" stroke="#4A4A55" stroke-width="1"/>
-      <line x1="20" y1="0" x2="20" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
-      <line x1="40" y1="0" x2="40" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
-      <line x1="60" y1="0" x2="60" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
+      <polygon points="8.5,8.5 53.28,8.5 8.5,34.35" fill="var(--white)" stroke="#4A4A55" stroke-width="1"/>
+      <line x1="5.5" y1="0" x2="5.5" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="11.0" y1="0" x2="11.0" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="16.5" y1="0" x2="16.5" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="21.9" y1="0" x2="21.9" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="27.4" y1="0" x2="27.4" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="32.9" y1="0" x2="32.9" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="38.4" y1="0" x2="38.4" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="43.9" y1="0" x2="43.9" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="49.4" y1="0" x2="49.4" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="54.8" y1="0" x2="54.8" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="60.3" y1="0" x2="60.3" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="65.8" y1="0" x2="65.8" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="71.3" y1="0" x2="71.3" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/>
     </g>
     <polygon id="dp-pm-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
     <polygon id="dp-pm-pencil-tip" fill="#3A2A1A" style="display:none;"/>
@@ -134,10 +132,8 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     </g>
     <g id="dp-pam-equerre" style="display:none;">
       <polygon points="0,0 85,0 0,49.1" fill="rgba(205,225,245,.55)" stroke="#4A4A55" stroke-width="1.6"/>
-      <polygon points="9,9 51.4,9 9,33.5" fill="var(--white)" stroke="#4A4A55" stroke-width="1"/>
-      <line x1="20" y1="0" x2="20" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
-      <line x1="40" y1="0" x2="40" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
-      <line x1="60" y1="0" x2="60" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
+      <polygon points="8.5,8.5 53.28,8.5 8.5,34.35" fill="var(--white)" stroke="#4A4A55" stroke-width="1"/>
+      <line x1="5.5" y1="0" x2="5.5" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="11.0" y1="0" x2="11.0" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="16.5" y1="0" x2="16.5" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="21.9" y1="0" x2="21.9" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="27.4" y1="0" x2="27.4" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="32.9" y1="0" x2="32.9" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="38.4" y1="0" x2="38.4" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="43.9" y1="0" x2="43.9" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="49.4" y1="0" x2="49.4" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="54.8" y1="0" x2="54.8" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="60.3" y1="0" x2="60.3" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="65.8" y1="0" x2="65.8" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="71.3" y1="0" x2="71.3" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/>
     </g>
     <polygon id="dp-pam-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
     <polygon id="dp-pam-pencil-tip" fill="#3A2A1A" style="display:none;"/>
@@ -225,10 +221,8 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <circle id="dp-mm-midpoint" r="3.5" fill="#1C1B2E" style="display:none;" data-marker="cross"/>
     <g id="dp-mm-equerre" style="display:none;">
       <polygon points="0,0 85,0 0,49.1" fill="rgba(205,225,245,.55)" stroke="#4A4A55" stroke-width="1.6"/>
-      <polygon points="9,9 51.4,9 9,33.5" fill="var(--white)" stroke="#4A4A55" stroke-width="1"/>
-      <line x1="20" y1="0" x2="20" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
-      <line x1="40" y1="0" x2="40" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
-      <line x1="60" y1="0" x2="60" y2="6" stroke="#4A4A55" stroke-width="0.9"/>
+      <polygon points="8.5,8.5 53.28,8.5 8.5,34.35" fill="var(--white)" stroke="#4A4A55" stroke-width="1"/>
+      <line x1="5.5" y1="0" x2="5.5" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="11.0" y1="0" x2="11.0" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="16.5" y1="0" x2="16.5" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="21.9" y1="0" x2="21.9" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="27.4" y1="0" x2="27.4" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="32.9" y1="0" x2="32.9" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="38.4" y1="0" x2="38.4" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="43.9" y1="0" x2="43.9" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="49.4" y1="0" x2="49.4" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="54.8" y1="0" x2="54.8" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="60.3" y1="0" x2="60.3" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="65.8" y1="0" x2="65.8" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/><line x1="71.3" y1="0" x2="71.3" y2="2.2" stroke="#4A4A55" stroke-width="0.6"/>
     </g>
     <g id="dp-mm-ruler" style="display:none;">
       <rect x="-110" y="-6.5" width="220" height="13" rx="2.5" fill="rgba(205,225,245,.55)" stroke="#1C1B2E" stroke-width="1"/>
@@ -699,8 +693,19 @@ function dpRenderPerpMethode(animate){
   if(s.phase==='removed' || s.phase==='traced' || s.phase==='clean'){
     equerre.style.display='none';
   } else {
+    // Le petit côté de l'équerre (49.1 à l'échelle 1) doit toujours atteindre M avec un peu de
+    // marge, quelle que soit sa distance à la droite -- sinon l'équerre reste trop petite et ne
+    // "touche" jamais M (bug signalé, vérifiable en comparant à la note de l'étape).
     const angDeg = Math.atan2(dpPmDir.y, dpPmDir.x)*180/Math.PI;
-    equerre.setAttribute('transform', `translate(${pos.x},${pos.y}) rotate(${angDeg.toFixed(2)})`);
+    const eqScale = Math.max(1, (dpPmTouchDist+18)/49.1);
+    // dpPmPerp peut avoir été RETOURNÉ (pour toujours pointer côté M) par rapport à la
+    // perpendiculaire "par défaut" -- une simple rotation ne peut produire que cette dernière,
+    // d'où un miroir nécessaire si M se trouve de l'autre côté (bug : le petit côté pointait
+    // dans le mauvais sens, loin de M).
+    const defaultPerpX = -dpPmDir.y, defaultPerpY = dpPmDir.x;
+    const mirrored = (dpPmPerp.x*defaultPerpX + dpPmPerp.y*defaultPerpY) < 0;
+    const scaleY = mirrored ? -eqScale : eqScale;
+    equerre.setAttribute('transform', `translate(${pos.x},${pos.y}) rotate(${angDeg.toFixed(2)}) scale(${eqScale.toFixed(3)},${scaleY.toFixed(3)})`);
     equerre.style.display='';
   }
 
@@ -794,12 +799,15 @@ function dpRenderParaMethode(animate){
   if(s.phase==='removed' || s.phase==='traced' || s.phase==='clean'){
     equerre.style.display='none';
   } else {
-    // Le petit côté de l'équerre doit pointer vers "perp*sign" (peut être des DEUX côtés de la
-    // ligne selon le sens du glissement) -- une simple rotation ne peut pas "retourner" la
-    // forme, d'où le miroir (scale verticale) quand sign est négatif.
+    // Le grand côté de l'équerre (85 à l'échelle 1) doit toujours atteindre N avec un peu de
+    // marge -- sinon, comme pour la méthode perpendiculaire, l'équerre reste trop petite et ne
+    // touche jamais vraiment N. Le petit côté doit aussi pointer vers "perp*sign" (peut être des
+    // DEUX côtés de la ligne selon le sens du glissement) -- une simple rotation ne peut pas
+    // "retourner" la forme, d'où le miroir (scale verticale) quand sign est négatif.
     const angDeg = Math.atan2(dpPamDir.y, dpPamDir.x)*180/Math.PI;
-    const scaleY = sign>=0 ? 1 : -1;
-    equerre.setAttribute('transform', `translate(${corner.x},${corner.y}) rotate(${angDeg.toFixed(2)}) scale(1,${scaleY})`);
+    const eqScale = Math.max(1, (dpPamTouchDist+18)/85);
+    const scaleY = sign>=0 ? eqScale : -eqScale;
+    equerre.setAttribute('transform', `translate(${corner.x},${corner.y}) rotate(${angDeg.toFixed(2)}) scale(${eqScale.toFixed(3)},${scaleY.toFixed(3)})`);
     equerre.style.display='';
   }
 

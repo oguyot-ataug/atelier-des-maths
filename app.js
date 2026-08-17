@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.192', items:[
+    "Cours 6e G2 -- vrai bug corrigé (signalé par capture d'écran) : l'équerre restait de taille fixe et ne touchait jamais réellement le point visé (M ou N), et son petit côté pouvait pointer dans le mauvais sens selon le côté de la droite. Corrigée avec une mise à l'échelle dynamique (calculée d'après la vraie distance à atteindre, avec une petite marge) et une détection du bon sens à chaque étape des méthodes perpendiculaire et parallèle. Design de l'équerre aussi enrichi (graduations plus nombreuses) pour se rapprocher davantage du tableau interactif.",
+  ]},
   { version:'2026-08-04.191', items:[
     "Cours 6e G2 (Droites parallèles et perpendiculaires) -- les illustrations animées des trois constructions pas à pas (perpendiculaire, parallèle, médiatrice) utilisent désormais le même design d'équerre et de règle que le tableau interactif (évidement triangulaire, graduations), positionné par rotation/translation au lieu de recalculer des polygones bruts à chaque étape.",
   ]},
