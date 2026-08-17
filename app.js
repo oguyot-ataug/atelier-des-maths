@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.195', items:[
+    "Cours 6e G2 -- quatre corrections : (1) la règle chevauchait parfois l'équerre quand celle-ci basculait en miroir (côté M) -- la règle suit maintenant le même miroir ; (2) la perpendiculaire dépassait M de seulement 1-2 unités, invisible sous le point -- dépassement net de 35 unités désormais ; (3) échelle plancher augmentée (0,32 → 0,44) sur les trois méthodes pour des outils nettement plus grands et lisibles ; (4) la règle de mesure de la médiatrice (calibrée dynamiquement 0 à 10) reprend maintenant les mêmes couleurs et coins arrondis que le vrai design du tableau interactif.",
+  ]},
   { version:'2026-08-04.194', items:[
     "Cours 6e G2 -- vrais bugs corrigés (signalés par captures d'écran) : l'équerre et la règle calculaient chacune leur propre échelle indépendamment, donc ne correspondaient jamais en taille (la règle semblait trop petite et « décalée » par rapport à l'équerre). Une seule échelle partagée est maintenant utilisée pour les deux, garantissant qu'elles sont toujours cohérentes entre elles, comme du vrai matériel. Corrigé aussi pour la méthode parallèle : la première règle (rail de glissement) pouvait s'étendre dans le mauvais sens quand le glissement était négatif, laissant l'équerre sortir de sa portée visible.",
   ]},

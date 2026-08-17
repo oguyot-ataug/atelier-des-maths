@@ -200,7 +200,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <circle id="dp-mm-B" r="5" fill="#1C1B2E" data-marker="cross"/>
     <text id="dp-mm-labelA" font-style="italic" font-size="14">A</text>
     <text id="dp-mm-labelB" font-style="italic" font-size="14">B</text>
-    <polygon id="dp-mm-measureRuler" fill="rgba(28,43,57,.12)" stroke="#1C1B2E" stroke-width="1" style="display:none;"/>
+    <rect id="dp-mm-measureRuler" rx="6" fill="rgba(205,228,255,.35)" stroke="#1C1B2E" stroke-width="1.5" style="display:none;"/>
     <path id="dp-mm-measureTicks" stroke="#1C1B2E" stroke-width="1" fill="none" style="display:none;"/>
     <g id="dp-mm-measureLabels" style="display:none;"></g>
     <line id="dp-mm-tick1a" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
@@ -532,9 +532,13 @@ function dpRenderMedMethode(animate){
     const totalCm = 10; // règle qui dépasse la lecture, sans sortir du cadre visible
     const rulerLenPx = cmPx*totalCm;
     // La règle est posée EN DESSOUS du segment, son "0" pile au bord (sur A), et elle se poursuit après la lecture à 8.
-    const rulerMidAlong = {x:DP_MM_A.x+dpMmDir.x*(rulerLenPx/2), y:DP_MM_A.y+dpMmDir.y*(rulerLenPx/2)};
-    const measureCenter = {x:rulerMidAlong.x+dpMmPerp.x*(rulerW/2), y:rulerMidAlong.y+dpMmPerp.y*(rulerW/2)};
-    measureRuler.setAttribute('points', dpRulerPolygon(measureCenter, dpMmDir, dpMmPerp, rulerLenPx, rulerW));
+    const mAngDeg = Math.atan2(dpMmDir.y, dpMmDir.x)*180/Math.PI;
+    const leftMarginPx = cmPx*0.6;
+    measureRuler.setAttribute('transform', `translate(${DP_MM_A.x},${DP_MM_A.y}) rotate(${mAngDeg.toFixed(2)})`);
+    measureRuler.setAttribute('x', (-leftMarginPx).toFixed(1));
+    measureRuler.setAttribute('y', '0');
+    measureRuler.setAttribute('width', (rulerLenPx+leftMarginPx).toFixed(1));
+    measureRuler.setAttribute('height', rulerW);
     measureRuler.style.display='';
     // Graduations : 0 posé sur A, lecture à 8 cm sur B, la règle et ses graduations continuent au-delà.
     let ticksPath = '';
@@ -582,7 +586,7 @@ function dpRenderMedMethode(animate){
   }
 
   const equerre = document.getElementById('dp-mm-equerre');
-  const eqScale = 0.32;
+  const eqScale = 0.44;
   if(s.phase==='equerre' || s.phase==='ruler'){
     const angDeg = Math.atan2(dpMmDir.y, dpMmDir.x)*180/Math.PI;
     equerre.setAttribute('transform', `translate(${dpMmMid.x},${dpMmMid.y}) rotate(${angDeg.toFixed(2)}) scale(${eqScale})`);
@@ -593,7 +597,7 @@ function dpRenderMedMethode(animate){
 
   // La règle (vraie forme du tableau interactif) : bord gradué posé exactement sur la
   // perpendiculaire cherchée, corps s'étendant à l'opposé du côté de l'équerre.
-  const rulerScale = 0.32;
+  const rulerScale = 0.44;
   const ruler = document.getElementById('dp-mm-ruler');
   if(s.phase==='ruler' || s.phase==='removed' || s.phase==='traced'){
     const rAngDeg = Math.atan2(dpMmPerp.y, dpMmPerp.x)*180/Math.PI;
@@ -665,7 +669,7 @@ function dpRenderPerpMethode(animate){
   // Échelle UNIQUE partagée entre l'équerre et la règle -- avant, chacune calculait la sienne
   // séparément, ce qui les rendait de tailles incohérentes l'une par rapport à l'autre (bug
   // signalé : "les outils semblent trop petits", et la règle qui paraissait décalée).
-  const rulerScale = Math.max(0.32, (dpPmTouchDist+50)/TB_RULER_L, (dpPmTouchDist+18)/TB_EQUERRE_LEGY);
+  const rulerScale = Math.max(0.44, (dpPmTouchDist+50)/TB_RULER_L, (dpPmTouchDist+18)/TB_EQUERRE_LEGY);
   const dExt = dpExtend({x:(DP_PM_D1.x+DP_PM_D2.x)/2,y:(DP_PM_D1.y+DP_PM_D2.y)/2}, dpPmDir, 260);
   dpSetLine(document.getElementById('dp-pm-lineD'), dExt);
   dpSetPt(document.getElementById('dp-pm-M'), DP_PM_M);
@@ -676,6 +680,13 @@ function dpRenderPerpMethode(animate){
   const lineDp = document.getElementById('dp-pm-lineDp'), angleMark = document.getElementById('dp-pm-angleMark'), ruler = document.getElementById('dp-pm-ruler');
   const pencil = document.getElementById('dp-pm-pencil'), pencilTip = document.getElementById('dp-pm-pencil-tip');
 
+  // dpPmPerp peut avoir été RETOURNÉ (pour toujours pointer côté M) par rapport à la
+  // perpendiculaire "par défaut" -- ce retournement doit être répercuté à la fois sur l'équerre
+  // ET sur la règle, sinon l'une des deux se retrouve du mauvais côté et chevauche l'autre (bug
+  // signalé : la règle chevauchait l'équerre).
+  const defaultPerpX = -dpPmDir.y, defaultPerpY = dpPmDir.x;
+  const mirrored = (dpPmPerp.x*defaultPerpX + dpPmPerp.y*defaultPerpY) < 0;
+
   if(s.phase==='removed' || s.phase==='traced' || s.phase==='clean'){
     equerre.style.display='none';
   } else {
@@ -684,12 +695,6 @@ function dpRenderPerpMethode(animate){
     // petite et ne "touche" jamais M (bug signalé, vérifiable en comparant à la note de l'étape).
     const angDeg = Math.atan2(dpPmDir.y, dpPmDir.x)*180/Math.PI;
     const eqScale = rulerScale;
-    // dpPmPerp peut avoir été RETOURNÉ (pour toujours pointer côté M) par rapport à la
-    // perpendiculaire "par défaut" -- une simple rotation ne peut produire que cette dernière,
-    // d'où un miroir nécessaire si M se trouve de l'autre côté (bug : le petit côté pointait
-    // dans le mauvais sens, loin de M).
-    const defaultPerpX = -dpPmDir.y, defaultPerpY = dpPmDir.x;
-    const mirrored = (dpPmPerp.x*defaultPerpX + dpPmPerp.y*defaultPerpY) < 0;
     const scaleY = mirrored ? -eqScale : eqScale;
     equerre.setAttribute('transform', `translate(${pos.x},${pos.y}) rotate(${angDeg.toFixed(2)}) scale(${eqScale.toFixed(3)},${scaleY.toFixed(3)})`);
     equerre.style.display='';
@@ -700,12 +705,16 @@ function dpRenderPerpMethode(animate){
   // pour que cet axe corresponde à "perp" : le bord gradué se retrouve alors automatiquement
   // du côté de l'équerre (contre son petit côté), le corps de la règle s'étendant de l'autre
   // côté, sans jamais recouvrir l'équerre. Même échelle que l'équerre (calculée en haut de la
-  // fonction), pour qu'elles soient toujours cohérentes l'une avec l'autre.
+  // fonction), pour qu'elles soient toujours cohérentes l'une avec l'autre -- et le même miroir
+  // que l'équerre pour que le corps s'étende toujours du bon côté (loin d'elle).
   if(s.phase==='ruler' || s.phase==='removed' || s.phase==='traced'){
+    // Quand l'équerre est en miroir, la règle doit basculer du même côté pour ne jamais la
+    // chevaucher (bug signalé) -- tout en continuant à s'étendre correctement jusqu'à M.
     const rAngDeg = Math.atan2(dpPmPerp.y, dpPmPerp.x)*180/Math.PI;
     const backOffset = TB_RULER_L*rulerScale*0.22;
     const rStart = {x:dpPmFoot.x-dpPmPerp.x*backOffset, y:dpPmFoot.y-dpPmPerp.y*backOffset};
-    ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAngDeg.toFixed(2)}) scale(${rulerScale.toFixed(3)})`);
+    const rulerScaleY = mirrored ? -rulerScale : rulerScale;
+    ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAngDeg.toFixed(2)}) scale(${rulerScale.toFixed(3)},${rulerScaleY.toFixed(3)})`);
     ruler.style.display='';
   } else {
     ruler.style.display='none';
@@ -713,7 +722,9 @@ function dpRenderPerpMethode(animate){
 
   const labelDp = document.getElementById('dp-pm-labelDp');
   if(s.phase==='traced' || s.phase==='clean'){
-    const dpExt = dpExtend(dpPmFoot, dpPmPerp, TB_RULER_L*rulerScale/2);
+    // La perpendiculaire doit clairement DÉPASSER M, pas s'arrêter dessus (bug signalé : le
+    // dépassement précédent ne faisait que 1-2 unités, invisible sous le point M lui-même).
+    const dpExt = dpExtend(dpPmFoot, dpPmPerp, dpPmTouchDist+35);
     lineDp.style.display='';
     angleMark.setAttribute('d', dpRightAngleMark(dpPmFoot, {x:dpPmDir.x,y:dpPmDir.y}, {x:dpPmPerp.x,y:dpPmPerp.y}, 13));
     angleMark.style.display='';
@@ -770,7 +781,7 @@ function dpRenderParaMethode(animate){
   const s = DP_PAM_STEPS[dpPamIdx];
   // Échelle UNIQUE partagée entre l'équerre et les deux règles -- avant, chacune calculait la
   // sienne séparément, ce qui les rendait de tailles incohérentes entre elles.
-  const pamScale = Math.max(0.32, (Math.abs(dpPamSlideDist)+50)/TB_RULER_L, (dpPamTouchDist+18)/TB_EQUERRE_LEGX, 150/TB_RULER_L);
+  const pamScale = Math.max(0.44, (Math.abs(dpPamSlideDist)+50)/TB_RULER_L, (dpPamTouchDist+18)/TB_EQUERRE_LEGX, 150/TB_RULER_L);
   const dExt = dpExtend({x:(DP_PAM_P1.x+DP_PAM_P2.x)/2,y:(DP_PAM_P1.y+DP_PAM_P2.y)/2}, dpPamDir, 260);
   dpSetLine(document.getElementById('dp-pam-lineD'), dExt);
   dpSetPt(document.getElementById('dp-pam-N'), DP_PAM_N);
