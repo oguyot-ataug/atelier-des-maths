@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.196', items:[
+    "Cours 6e G2 -- vrai bug corrigé (signalé par captures d'écran) : les 3 règles utilisaient un miroir par échelle pour éviter le chevauchement avec l'équerre, ce qui inversait aussi le texte des graduations (numéros illisibles à l'envers). Remplacé par un choix de rotation à 180° selon les cas, qui garde exactement la même géométrie (même ligne, même côté sans chevauchement) mais ne touche jamais à l'orientation du texte -- numéros de graduation désormais toujours lisibles normalement, sur les trois méthodes.",
+  ]},
   { version:'2026-08-04.195', items:[
     "Cours 6e G2 -- quatre corrections : (1) la règle chevauchait parfois l'équerre quand celle-ci basculait en miroir (côté M) -- la règle suit maintenant le même miroir ; (2) la perpendiculaire dépassait M de seulement 1-2 unités, invisible sous le point -- dépassement net de 35 unités désormais ; (3) échelle plancher augmentée (0,32 → 0,44) sur les trois méthodes pour des outils nettement plus grands et lisibles ; (4) la règle de mesure de la médiatrice (calibrée dynamiquement 0 à 10) reprend maintenant les mêmes couleurs et coins arrondis que le vrai design du tableau interactif.",
   ]},

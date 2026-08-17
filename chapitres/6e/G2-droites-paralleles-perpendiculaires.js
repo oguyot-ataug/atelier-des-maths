@@ -709,12 +709,21 @@ function dpRenderPerpMethode(animate){
   // que l'équerre pour que le corps s'étende toujours du bon côté (loin d'elle).
   if(s.phase==='ruler' || s.phase==='removed' || s.phase==='traced'){
     // Quand l'équerre est en miroir, la règle doit basculer du même côté pour ne jamais la
-    // chevaucher (bug signalé) -- tout en continuant à s'étendre correctement jusqu'à M.
-    const rAngDeg = Math.atan2(dpPmPerp.y, dpPmPerp.x)*180/Math.PI;
-    const backOffset = TB_RULER_L*rulerScale*0.22;
-    const rStart = {x:dpPmFoot.x-dpPmPerp.x*backOffset, y:dpPmFoot.y-dpPmPerp.y*backOffset};
-    const rulerScaleY = mirrored ? -rulerScale : rulerScale;
-    ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAngDeg.toFixed(2)}) scale(${rulerScale.toFixed(3)},${rulerScaleY.toFixed(3)})`);
+    // chevaucher (bug signalé) -- SANS jamais inverser son texte (un miroir par échelle rendait
+    // les numéros illisibles à l'envers, second bug signalé). On choisit à la place la rotation
+    // OPPOSÉE (+180°) dans ce cas : la règle est alors posée en partant d'au-delà de M et
+    // "recule" jusqu'avant le pied -- même ligne, même côté correct, texte toujours lisible.
+    let rAngDeg, rStart;
+    if(!mirrored){
+      rAngDeg = Math.atan2(dpPmPerp.y, dpPmPerp.x)*180/Math.PI;
+      const backOffset = TB_RULER_L*rulerScale*0.22;
+      rStart = {x:dpPmFoot.x-dpPmPerp.x*backOffset, y:dpPmFoot.y-dpPmPerp.y*backOffset};
+    } else {
+      rAngDeg = Math.atan2(-dpPmPerp.y, -dpPmPerp.x)*180/Math.PI;
+      const aheadOffset = dpPmTouchDist+35;
+      rStart = {x:dpPmFoot.x+dpPmPerp.x*aheadOffset, y:dpPmFoot.y+dpPmPerp.y*aheadOffset};
+    }
+    ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAngDeg.toFixed(2)}) scale(${rulerScale.toFixed(3)})`);
     ruler.style.display='';
   } else {
     ruler.style.display='none';
@@ -790,15 +799,23 @@ function dpRenderParaMethode(animate){
 
   const ruler = document.getElementById('dp-pam-ruler');
   if(s.phase==='slide'){
-    const rAng = Math.atan2(dpPamPerp.y, dpPamPerp.x)*180/Math.PI;
     // La règle doit s'étendre du côté où l'équerre va RÉELLEMENT glisser (le signe de
     // dpPamSlideDist peut être négatif) -- avant, elle s'étendait toujours dans le même sens
     // fixe, donc l'équerre finissait souvent hors de sa portée visible (bug : "règle alignée
-    // au-dessus de l'équerre", la règle semblait déconnectée d'elle).
+    // au-dessus de l'équerre", la règle semblait déconnectée d'elle). On choisit la rotation
+    // (normale ou +180°) plutôt qu'un miroir par échelle, pour ne jamais inverser le texte des
+    // graduations (second bug signalé : "les outils sont en mode miroir").
     const travelDir = dpPamSlideDist>=0 ? 1 : -1;
     const backOffset = TB_RULER_L*pamScale*0.1;
-    const rStart = {x:DP_PAM_P1.x-dpPamPerp.x*travelDir*backOffset, y:DP_PAM_P1.y-dpPamPerp.y*travelDir*backOffset};
-    ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAng.toFixed(2)}) scale(${(pamScale*travelDir).toFixed(3)},${pamScale.toFixed(3)})`);
+    let rAng, rStart;
+    if(travelDir>=0){
+      rAng = Math.atan2(dpPamPerp.y, dpPamPerp.x)*180/Math.PI;
+      rStart = {x:DP_PAM_P1.x-dpPamPerp.x*backOffset, y:DP_PAM_P1.y-dpPamPerp.y*backOffset};
+    } else {
+      rAng = Math.atan2(-dpPamPerp.y, -dpPamPerp.x)*180/Math.PI;
+      rStart = {x:DP_PAM_P1.x+dpPamPerp.x*backOffset, y:DP_PAM_P1.y+dpPamPerp.y*backOffset};
+    }
+    ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAng.toFixed(2)}) scale(${pamScale.toFixed(3)})`);
     ruler.style.display='';
   } else {
     ruler.style.display='none';
@@ -825,13 +842,19 @@ function dpRenderParaMethode(animate){
   const ruler2 = document.getElementById('dp-pam-ruler2');
   const ruler2Scale = pamScale;
   if(s.phase==='ruler2' || s.phase==='removed' || s.phase==='traced'){
-    const r2Ang = Math.atan2(dpPamDir.y, dpPamDir.x)*180/Math.PI;
-    const backOffset2 = TB_RULER_L*ruler2Scale*0.45;
-    const r2Start = {x:DP_PAM_N.x-dpPamDir.x*backOffset2, y:DP_PAM_N.y-dpPamDir.y*backOffset2};
     // Le corps de cette règle doit s'étendre du côté OPPOSÉ à l'équerre (dont le corps est déjà
-    // du côté "perp*sign") -- miroir en conséquence.
-    const scaleY2 = sign>=0 ? -ruler2Scale : ruler2Scale;
-    ruler2.setAttribute('transform', `translate(${r2Start.x},${r2Start.y}) rotate(${r2Ang.toFixed(2)}) scale(${ruler2Scale.toFixed(3)},${scaleY2.toFixed(3)})`);
+    // du côté "perp*sign") -- on choisit la rotation opposée (+180°) plutôt qu'un miroir par
+    // échelle, pour ne jamais inverser le texte des graduations.
+    const backOffset2 = TB_RULER_L*ruler2Scale*0.45;
+    let r2Ang, r2Start;
+    if(sign>=0){
+      r2Ang = Math.atan2(-dpPamDir.y, -dpPamDir.x)*180/Math.PI;
+      r2Start = {x:DP_PAM_N.x+dpPamDir.x*backOffset2, y:DP_PAM_N.y+dpPamDir.y*backOffset2};
+    } else {
+      r2Ang = Math.atan2(dpPamDir.y, dpPamDir.x)*180/Math.PI;
+      r2Start = {x:DP_PAM_N.x-dpPamDir.x*backOffset2, y:DP_PAM_N.y-dpPamDir.y*backOffset2};
+    }
+    ruler2.setAttribute('transform', `translate(${r2Start.x},${r2Start.y}) rotate(${r2Ang.toFixed(2)}) scale(${ruler2Scale.toFixed(3)})`);
     ruler2.style.display='';
   } else {
     ruler2.style.display='none';
