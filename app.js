@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.183', items:[
+    "Tableau interactif -- nouveau : boutons ↶ Annuler / ↷ Rétablir, qui reviennent en arrière ou en avant dans toute la construction (traits, points, textes, outils ajoutés/déplacés). Nouveau panneau 🗂️ Historique listant chaque trait, point et texte créé avec sa propre poubelle pour le supprimer individuellement sans toucher au reste.",
+  ]},
   { version:'2026-08-04.182', items:[
     "Tableau interactif -- gomme placée en bas à gauche par défaut. Nouvelle case « 📌 Mémoriser position » : si cochée, masquer puis reprendre un outil (règle, équerre...) restaure sa dernière position et son angle exacts au lieu de revenir à la position par défaut. Icônes de la palette redessinées pour ressembler aux vrais outils (règle graduée, équerre bleutée, rapporteur jaune/vert), réquerre retirée de la palette (redondante).",
   ]},
@@ -6711,6 +6714,54 @@ function tbNearestGridVertex(pt){
   return null;
 }
 let tbPoints = [];  // points nommés posés au tap du crayon {id, x, y, label}
+/* Historique pour annuler/rétablir : une pile d'instantanés complets de l'état du tableau.
+   tbHistoryIndex pointe sur l'instantané ACTUELLEMENT affiché -- annuler recule d'un cran,
+   rétablir avance d'un cran. Toute nouvelle action après un "annuler" écrase le futur (comme
+   partout ailleurs : impossible de "rétablir" une branche qu'on vient d'abandonner). */
+let tbHistory = [];
+let tbHistoryIndex = -1;
+function tbSnapshot(){
+  return JSON.stringify({tools:tbTools, ink:tbInk, points:tbPoints, texts:tbTexts, bg:tbBackground, gridSize:tbGridSize});
+}
+function tbPushHistory(){
+  const snap = tbSnapshot();
+  if(tbHistoryIndex>=0 && tbHistory[tbHistoryIndex]===snap) return; // rien de vraiment changé
+  tbHistory = tbHistory.slice(0, tbHistoryIndex+1);
+  tbHistory.push(snap);
+  if(tbHistory.length>60) tbHistory.shift(); else tbHistoryIndex++;
+  tbUpdateHistoryButtons();
+  tbRenderHistoryPanel();
+}
+function tbRestoreSnapshot(snap){
+  const s = JSON.parse(snap);
+  tbTools = s.tools; tbInk = s.ink; tbPoints = s.points; tbTexts = s.texts;
+  tbBackground = s.bg; tbGridSize = s.gridSize;
+  tbDrag = null;
+  const bgSelect = document.getElementById('tbBgSelect');
+  if(bgSelect) bgSelect.value = tbBackground;
+  const zoomBox = document.getElementById('tbGridZoomBox');
+  if(zoomBox) zoomBox.style.display = tbBackground==='blank' ? 'none' : 'inline-flex';
+  tbRenderPalette();
+  tbRender();
+  tbRenderHistoryPanel();
+}
+function tbUndo(){
+  if(tbHistoryIndex<=0) return;
+  tbHistoryIndex--;
+  tbRestoreSnapshot(tbHistory[tbHistoryIndex]);
+  tbUpdateHistoryButtons();
+}
+function tbRedo(){
+  if(tbHistoryIndex>=tbHistory.length-1) return;
+  tbHistoryIndex++;
+  tbRestoreSnapshot(tbHistory[tbHistoryIndex]);
+  tbUpdateHistoryButtons();
+}
+function tbUpdateHistoryButtons(){
+  const u = document.getElementById('tbBtnUndo'), r = document.getElementById('tbBtnRedo');
+  if(u) u.disabled = tbHistoryIndex<=0;
+  if(r) r.disabled = tbHistoryIndex>=tbHistory.length-1;
+}
 let tbPointNextId = 1;
 let tbTools = [];   // outils posés sur le tableau
 let tbInk = [];     // traits déjà tracés {color, points:[[x,y],...]}
@@ -6897,6 +6948,7 @@ async function tbAddTextZone(){
   if(text===null || !text.trim()) return;
   tbTexts.push({id: tbTextNextId++, x:450, y:280, text: text.trim(), fontSize:16});
   tbRender();
+  tbPushHistory();
 }
 async function tbEditTextZone(id){
   const t = tbTexts.find(x=>x.id===id);
@@ -6905,11 +6957,13 @@ async function tbEditTextZone(id){
   if(text===null) return;
   if(!text.trim()){ tbTexts = tbTexts.filter(x=>x.id!==id); } else { t.text = text.trim(); }
   tbRender();
+  tbPushHistory();
 }
 function initTableauView(){
   if(tbInitialized) return;
   tbRenderPalette();
   tbRender();
+  tbPushHistory();
   tbInitialized = true;
 }
 /* Chaque icône de la palette bascule l'outil : un appui l'ajoute au tableau, un second l'en
@@ -6930,6 +6984,7 @@ function tbAddTool(type){
     tbTools = tbTools.filter(t=>t.type!==type);
     tbRenderPalette();
     tbRender();
+    tbPushHistory();
     return;
   }
   const id = tbNextId++;
@@ -6947,6 +7002,7 @@ function tbAddTool(type){
   if(TB_HELP_TEXT[type]) tbSetHelp(type);
   tbRenderPalette();
   tbRender();
+  tbPushHistory();
 }
 /* Efface tout trait ou repère qui passe à moins de "radius" du point donné -- utilisé en
    déplaçant la gomme sur le tableau. Retire le trait entier plutôt qu'un simple segment (plus
@@ -6986,7 +7042,50 @@ function tbCurrentColor(){
   return el ? el.value : '#1C1B2E';
 }
 function tbClearInk(){ tbInk = []; tbRender(); }
-function tbClearAll(){ tbInk = []; tbTools = []; tbPoints = []; tbTexts = []; tbRenderPalette(); tbRender(); }
+function tbClearAll(){ tbInk = []; tbTools = []; tbPoints = []; tbTexts = []; tbRenderPalette(); tbRender(); tbRenderHistoryPanel(); tbPushHistory(); }
+/* Panneau d'historique : liste chaque objet créé (trait, point, texte) avec sa propre poubelle
+   pour le supprimer individuellement, sans toucher au reste. */
+function tbRenderHistoryPanel(){
+  const panel = document.getElementById('tbHistoryPanel');
+  if(!panel || panel.style.display==='none') return;
+  let html = '';
+  tbInk.forEach((stroke, i)=>{
+    html += `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;border-bottom:1px solid rgba(28,43,57,.08);">
+      <span style="width:13px;height:13px;border-radius:3px;background:${stroke.color};flex:none;border:1px solid rgba(0,0,0,.15);"></span>
+      <span style="flex:1;font-size:.78rem;">Trait ${i+1}${stroke.construction?' (construction)':''}</span>
+      <button type="button" onclick="tbDeleteHistoryItem('ink',${i})" style="border:none;background:none;cursor:pointer;font-size:.95rem;" title="Supprimer ce trait">🗑</button>
+    </div>`;
+  });
+  tbPoints.forEach((p, i)=>{
+    html += `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;border-bottom:1px solid rgba(28,43,57,.08);">
+      <span style="flex:1;font-size:.78rem;">Point ${escapeHtml(p.label||'?')}</span>
+      <button type="button" onclick="tbDeleteHistoryItem('point',${i})" style="border:none;background:none;cursor:pointer;font-size:.95rem;" title="Supprimer ce point">🗑</button>
+    </div>`;
+  });
+  tbTexts.forEach((t, i)=>{
+    const preview = t.text.length>18 ? t.text.slice(0,18)+'…' : t.text;
+    html += `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;border-bottom:1px solid rgba(28,43,57,.08);">
+      <span style="flex:1;font-size:.78rem;">« ${escapeHtml(preview)} »</span>
+      <button type="button" onclick="tbDeleteHistoryItem('text',${i})" style="border:none;background:none;cursor:pointer;font-size:.95rem;" title="Supprimer ce texte">🗑</button>
+    </div>`;
+  });
+  panel.innerHTML = html || '<div style="padding:12px;font-size:.78rem;color:var(--ink-soft);">Rien pour l\'instant -- trace, pose un point ou ajoute du texte.</div>';
+}
+function tbDeleteHistoryItem(kind, idx){
+  if(kind==='ink') tbInk.splice(idx,1);
+  else if(kind==='point') tbPoints.splice(idx,1);
+  else if(kind==='text') tbTexts.splice(idx,1);
+  tbRender();
+  tbRenderHistoryPanel();
+  tbPushHistory();
+}
+function tbToggleHistoryPanel(){
+  const panel = document.getElementById('tbHistoryPanel');
+  if(!panel) return;
+  const showing = panel.style.display!=='none';
+  panel.style.display = showing ? 'none' : 'block';
+  if(!showing) tbRenderHistoryPanel();
+}
 function tbSvgPoint(e){
   const svg = document.getElementById('tbSvg');
   const pt = svg.createSVGPoint();
@@ -7695,6 +7794,10 @@ function tbAttachHandlers(){
     tbRender();
   };
   svg.onpointerup = async ()=>{
+    await tbPointerUpInner();
+    tbPushHistory();
+  };
+  async function tbPointerUpInner(){
     if(tbDrag && tbDrag.mode==='move'){
       // Si c'est le crayon qu'on vient de reposer (par le corps, pas la pointe), il se colle
       // tout seul au bord ou au sommet de pavage le plus proche, s'il y en a un pas trop loin --
@@ -7746,7 +7849,7 @@ function tbAttachHandlers(){
       return;
     }
     tbDrag = null;
-  };
+  }
   svg.onpointerleave = ()=>{ tbDrag = null; };
 }
 
