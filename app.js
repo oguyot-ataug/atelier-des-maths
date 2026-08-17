@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.194', items:[
+    "Cours 6e G2 -- vrais bugs corrigés (signalés par captures d'écran) : l'équerre et la règle calculaient chacune leur propre échelle indépendamment, donc ne correspondaient jamais en taille (la règle semblait trop petite et « décalée » par rapport à l'équerre). Une seule échelle partagée est maintenant utilisée pour les deux, garantissant qu'elles sont toujours cohérentes entre elles, comme du vrai matériel. Corrigé aussi pour la méthode parallèle : la première règle (rail de glissement) pouvait s'étendre dans le mauvais sens quand le glissement était négatif, laissant l'équerre sortir de sa portée visible.",
+  ]},
   { version:'2026-08-04.193', items:[
     "Cours 6e G2 -- refonte complète : les illustrations appellent désormais DIRECTEMENT les vraies fonctions equerreSVG() et rulerSVG() du tableau interactif (plus de reproduction approximative), avec toutes leurs graduations, numéros et détails. Repositionnement complet (mise à l'échelle dynamique, orientation, bord gradué toujours du côté équerre) pour cette géométrie réelle, vérifié étape par étape sur les trois méthodes (perpendiculaire, parallèle, médiatrice).",
   ]},

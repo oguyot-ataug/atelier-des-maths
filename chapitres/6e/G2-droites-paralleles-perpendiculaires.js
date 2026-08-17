@@ -662,6 +662,10 @@ let dpPmIdx = 0;
 function dpRenderPerpMethode(animate){
   dpAnimationToken++; // invalide toute animation en cours d'une étape précédente
   const s = DP_PM_STEPS[dpPmIdx];
+  // Échelle UNIQUE partagée entre l'équerre et la règle -- avant, chacune calculait la sienne
+  // séparément, ce qui les rendait de tailles incohérentes l'une par rapport à l'autre (bug
+  // signalé : "les outils semblent trop petits", et la règle qui paraissait décalée).
+  const rulerScale = Math.max(0.32, (dpPmTouchDist+50)/TB_RULER_L, (dpPmTouchDist+18)/TB_EQUERRE_LEGY);
   const dExt = dpExtend({x:(DP_PM_D1.x+DP_PM_D2.x)/2,y:(DP_PM_D1.y+DP_PM_D2.y)/2}, dpPmDir, 260);
   dpSetLine(document.getElementById('dp-pm-lineD'), dExt);
   dpSetPt(document.getElementById('dp-pm-M'), DP_PM_M);
@@ -679,7 +683,7 @@ function dpRenderPerpMethode(animate){
     // un peu de marge, quelle que soit sa distance à la droite -- sinon l'équerre reste trop
     // petite et ne "touche" jamais M (bug signalé, vérifiable en comparant à la note de l'étape).
     const angDeg = Math.atan2(dpPmDir.y, dpPmDir.x)*180/Math.PI;
-    const eqScale = Math.max(0.24, (dpPmTouchDist+18)/TB_EQUERRE_LEGY);
+    const eqScale = rulerScale;
     // dpPmPerp peut avoir été RETOURNÉ (pour toujours pointer côté M) par rapport à la
     // perpendiculaire "par défaut" -- une simple rotation ne peut produire que cette dernière,
     // d'où un miroir nécessaire si M se trouve de l'autre côté (bug : le petit côté pointait
@@ -695,9 +699,8 @@ function dpRenderPerpMethode(animate){
   // y=0 -- il suffit de la poser sur un point de la droite perpendiculaire recherchée, tournée
   // pour que cet axe corresponde à "perp" : le bord gradué se retrouve alors automatiquement
   // du côté de l'équerre (contre son petit côté), le corps de la règle s'étendant de l'autre
-  // côté, sans jamais recouvrir l'équerre. L'échelle est choisie pour que M reste toujours bien
-  // à l'intérieur de la partie visible, avec de la marge avant et après.
-  const rulerScale = Math.max(0.3, (dpPmTouchDist+50)/TB_RULER_L);
+  // côté, sans jamais recouvrir l'équerre. Même échelle que l'équerre (calculée en haut de la
+  // fonction), pour qu'elles soient toujours cohérentes l'une avec l'autre.
   if(s.phase==='ruler' || s.phase==='removed' || s.phase==='traced'){
     const rAngDeg = Math.atan2(dpPmPerp.y, dpPmPerp.x)*180/Math.PI;
     const backOffset = TB_RULER_L*rulerScale*0.22;
@@ -765,6 +768,9 @@ let dpPamIdx = 0;
 function dpRenderParaMethode(animate){
   dpAnimationToken++; // invalide toute animation en cours d'une étape précédente
   const s = DP_PAM_STEPS[dpPamIdx];
+  // Échelle UNIQUE partagée entre l'équerre et les deux règles -- avant, chacune calculait la
+  // sienne séparément, ce qui les rendait de tailles incohérentes entre elles.
+  const pamScale = Math.max(0.32, (Math.abs(dpPamSlideDist)+50)/TB_RULER_L, (dpPamTouchDist+18)/TB_EQUERRE_LEGX, 150/TB_RULER_L);
   const dExt = dpExtend({x:(DP_PAM_P1.x+DP_PAM_P2.x)/2,y:(DP_PAM_P1.y+DP_PAM_P2.y)/2}, dpPamDir, 260);
   dpSetLine(document.getElementById('dp-pam-lineD'), dExt);
   dpSetPt(document.getElementById('dp-pam-N'), DP_PAM_N);
@@ -772,12 +778,16 @@ function dpRenderParaMethode(animate){
   dpSetTxt(document.getElementById('dp-pam-labelD'), {x:DP_PAM_P2.x+dpPamDir.x*24+dpPamPerp.x*16, y:DP_PAM_P2.y+dpPamDir.y*24+dpPamPerp.y*16}, 0, 0);
 
   const ruler = document.getElementById('dp-pam-ruler');
-  const ruler1Scale = Math.max(0.28, (Math.abs(dpPamSlideDist)+50)/TB_RULER_L);
   if(s.phase==='slide'){
     const rAng = Math.atan2(dpPamPerp.y, dpPamPerp.x)*180/Math.PI;
-    const backOffset = TB_RULER_L*ruler1Scale*0.15;
-    const rStart = {x:DP_PAM_P1.x-dpPamPerp.x*backOffset, y:DP_PAM_P1.y-dpPamPerp.y*backOffset};
-    ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAng.toFixed(2)}) scale(${ruler1Scale.toFixed(3)})`);
+    // La règle doit s'étendre du côté où l'équerre va RÉELLEMENT glisser (le signe de
+    // dpPamSlideDist peut être négatif) -- avant, elle s'étendait toujours dans le même sens
+    // fixe, donc l'équerre finissait souvent hors de sa portée visible (bug : "règle alignée
+    // au-dessus de l'équerre", la règle semblait déconnectée d'elle).
+    const travelDir = dpPamSlideDist>=0 ? 1 : -1;
+    const backOffset = TB_RULER_L*pamScale*0.1;
+    const rStart = {x:DP_PAM_P1.x-dpPamPerp.x*travelDir*backOffset, y:DP_PAM_P1.y-dpPamPerp.y*travelDir*backOffset};
+    ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAng.toFixed(2)}) scale(${(pamScale*travelDir).toFixed(3)},${pamScale.toFixed(3)})`);
     ruler.style.display='';
   } else {
     ruler.style.display='none';
@@ -795,14 +805,14 @@ function dpRenderParaMethode(animate){
     // DEUX côtés de la ligne selon le sens du glissement) -- une simple rotation ne peut pas
     // "retourner" la forme, d'où le miroir (scale verticale) quand sign est négatif.
     const angDeg = Math.atan2(dpPamDir.y, dpPamDir.x)*180/Math.PI;
-    const eqScale = Math.max(0.24, (dpPamTouchDist+18)/TB_EQUERRE_LEGX);
+    const eqScale = pamScale;
     const scaleY = sign>=0 ? eqScale : -eqScale;
     equerre.setAttribute('transform', `translate(${corner.x},${corner.y}) rotate(${angDeg.toFixed(2)}) scale(${eqScale.toFixed(3)},${scaleY.toFixed(3)})`);
     equerre.style.display='';
   }
 
   const ruler2 = document.getElementById('dp-pam-ruler2');
-  const ruler2Scale = Math.max(0.3, 150/TB_RULER_L);
+  const ruler2Scale = pamScale;
   if(s.phase==='ruler2' || s.phase==='removed' || s.phase==='traced'){
     const r2Ang = Math.atan2(dpPamDir.y, dpPamDir.x)*180/Math.PI;
     const backOffset2 = TB_RULER_L*ruler2Scale*0.45;
