@@ -692,11 +692,14 @@ function dpRenderPerpMethode(animate){
   } else {
     // Le petit côté de l'équerre (TB_EQUERRE_LEGY à l'échelle 1) doit toujours atteindre M avec
     // un peu de marge, quelle que soit sa distance à la droite -- sinon l'équerre reste trop
-    // petite et ne "touche" jamais M (bug signalé, vérifiable en comparant à la note de l'étape).
-    const angDeg = Math.atan2(dpPmDir.y, dpPmDir.x)*180/Math.PI;
+    // petite et ne "touche" jamais M. Quand M est de l'autre côté, on tourne de 180° (en
+    // utilisant -dir plutôt que dir -- le grand côté reste sur la MÊME droite (d), une droite
+    // n'ayant pas de sens unique) plutôt que d'appliquer un miroir par échelle : ce dernier
+    // inversait toute la forme (pas seulement le texte), donnant cet aspect "à l'envers" signalé.
+    const dirUsed = mirrored ? {x:-dpPmDir.x, y:-dpPmDir.y} : dpPmDir;
+    const angDeg = Math.atan2(dirUsed.y, dirUsed.x)*180/Math.PI;
     const eqScale = rulerScale;
-    const scaleY = mirrored ? -eqScale : eqScale;
-    equerre.setAttribute('transform', `translate(${pos.x},${pos.y}) rotate(${angDeg.toFixed(2)}) scale(${eqScale.toFixed(3)},${scaleY.toFixed(3)})`);
+    equerre.setAttribute('transform', `translate(${pos.x},${pos.y}) rotate(${angDeg.toFixed(2)}) scale(${eqScale.toFixed(3)})`);
     equerre.style.display='';
   }
 
@@ -827,11 +830,12 @@ function dpRenderParaMethode(animate){
   if(s.phase==='removed' || s.phase==='traced' || s.phase==='clean'){
     equerre.style.display='none';
   } else {
-    // Le grand côté de l'équerre (85 à l'échelle 1) doit toujours atteindre N avec un peu de
+    // Le grand côté de l'équerre (à l'échelle 1) doit toujours atteindre N avec un peu de
     // marge -- sinon, comme pour la méthode perpendiculaire, l'équerre reste trop petite et ne
     // touche jamais vraiment N. Le petit côté doit aussi pointer vers "perp*sign" (peut être des
-    // DEUX côtés de la ligne selon le sens du glissement) -- une simple rotation ne peut pas
-    // "retourner" la forme, d'où le miroir (scale verticale) quand sign est négatif.
+    // DEUX côtés de la ligne selon le sens du glissement) -- le grand côté DOIT rester orienté
+    // vers dir (sinon l'équerre sort du cadre visible), donc seul un miroir vertical permet de
+    // retourner le petit côté sans changer le sens du grand.
     const angDeg = Math.atan2(dpPamDir.y, dpPamDir.x)*180/Math.PI;
     const eqScale = pamScale;
     const scaleY = sign>=0 ? eqScale : -eqScale;

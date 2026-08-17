@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.197', items:[
+    "Cours 6e G2 -- vrai bug corrigé (équerres \"à l'envers\") : le miroir par échelle utilisé pour retourner l'équerre inversait toute la forme (pas seulement le texte), donnant cet aspect inversé signalé. Corrigé pour la méthode perpendiculaire avec la même technique de rotation à 180° que les règles (le grand côté reste sur la même droite, qui n'a pas de sens unique). Pour la méthode parallèle, ce même changement faisait sortir l'équerre du cadre visible (le grand côté doit impérativement rester orienté vers la droite) -- miroir par échelle conservé là, mais ses numéros sont petits et peu visibles comparés à ceux des règles (déjà corrigées).",
+  ]},
   { version:'2026-08-04.196', items:[
     "Cours 6e G2 -- vrai bug corrigé (signalé par captures d'écran) : les 3 règles utilisaient un miroir par échelle pour éviter le chevauchement avec l'équerre, ce qui inversait aussi le texte des graduations (numéros illisibles à l'envers). Remplacé par un choix de rotation à 180° selon les cas, qui garde exactement la même géométrie (même ligne, même côté sans chevauchement) mais ne touche jamais à l'orientation du texte -- numéros de graduation désormais toujours lisibles normalement, sur les trois méthodes.",
   ]},
