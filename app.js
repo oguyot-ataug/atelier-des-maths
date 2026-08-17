@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.187', items:[
+    "Tableau interactif -- refonte des codages : plus de détection automatique du sommet/des côtés (peu fiable). Le point bleu du crayon fait maintenant défiler 3 modes au tap (🔄 Tourner, ✏️ Écrire, 🏷️ Coder), comme sur le compas. En mode Coder, un tap ouvre une mini-fenêtre pour choisir Longueur / Angle / Angle droit (et le nombre de traits/arcs). Les traits de longueur sont désormais fins et orientés selon l'angle du crayon -- c'est le professeur qui \"dessine\" l'inclinaison en positionnant le crayon, plus un calcul automatique sur le trait.",
+  ]},
   { version:'2026-08-04.186', items:[
     "Tableau interactif -- nouveau : codages de longueurs et d'angles égaux sur le crayon. Un petit sélecteur sur le crayon fait défiler 7 modes (✏️ dessiner normal, ／1/2/3 traits pour les longueurs, ⌒1/2/3 arcs pour les angles). En mode codage, taper près d'un trait pose des petits traits perpendiculaires ; taper près d'un sommet où au moins deux traits partent dans des directions différentes pose un arc -- la reconnaissance longueur/angle est automatique. Les codages apparaissent aussi dans le panneau Historique avec leur propre poubelle.",
   ]},
@@ -6953,46 +6956,30 @@ const TB_PALETTE = [
 let tbTexts = [];       // zones de texte libres posées sur le tableau {id, x, y, text, fontSize}
 let tbCodages = [];     // codages de longueurs/angles égaux {id, kind:'tick'|'arc', x, y, segAngle|angle1/angle2, count}
 let tbCodageNextId = 1;
-/* Cherche quoi coder à l'endroit visé : si on tape près d'un trait, un codage de LONGUEUR
-   (petits traits perpendiculaires) ; si on tape près d'un point où au moins deux traits partent
-   dans des directions différentes (un sommet d'angle), un codage d'ANGLE (petit arc) --
-   reconnaît automatiquement l'un ou l'autre, sans qu'il faille le préciser. */
-function tbFindCodageTarget(pt){
-  // On regarde D'ABORD si on est près d'un sommet où au moins 2 traits partent dans des
-  // directions différentes (un angle) -- sinon, près d'un sommet, la proximité avec l'un des
-  // deux traits qui s'y croisent l'emporterait toujours et on ne coderait jamais l'angle.
-  let bestVertex=null, bestVDist=24;
-  tbPoints.forEach(p=>{
-    const d = Math.hypot(pt.x-p.x, pt.y-p.y);
-    if(d<bestVDist){ bestVDist=d; bestVertex=p; }
+/* Ouvre une mini-fenêtre pour choisir le type de codage à poser à l'endroit et dans
+   l'orientation du crayon -- plus de détection automatique du sommet/des côtés (peu fiable) :
+   c'est l'utilisateur qui vise et incline le crayon lui-même, comme à la main. */
+async function tbOpenCodageModal(){
+  const type = await niceModal({
+    message: 'Quel codage poser ?',
+    buttons: [
+      {label:'Longueur', value:'length', secondary:true},
+      {label:'Angle', value:'angle', secondary:true},
+      {label:'Angle droit', value:'right'},
+    ],
   });
-  if(bestVertex){
-    const dirs = [];
-    tbInk.forEach(stroke=>{
-      const pts = stroke.points;
-      if(pts.length<2) return;
-      const d0 = Math.hypot(pts[0][0]-bestVertex.x, pts[0][1]-bestVertex.y);
-      const d1 = Math.hypot(pts[pts.length-1][0]-bestVertex.x, pts[pts.length-1][1]-bestVertex.y);
-      if(d0<22) dirs.push(Math.atan2(pts[1][1]-pts[0][1], pts[1][0]-pts[0][0])*180/Math.PI);
-      else if(d1<22) dirs.push(Math.atan2(pts[pts.length-2][1]-pts[pts.length-1][1], pts[pts.length-2][0]-pts[pts.length-1][0])*180/Math.PI);
-    });
-    if(dirs.length>=2) return {kind:'arc', x:bestVertex.x, y:bestVertex.y, angle1:dirs[0], angle2:dirs[1]};
-  }
-  // Pas de sommet d'angle pertinent tout près : on code une longueur sur le trait le plus proche.
-  let bestDist=22, bestX,bestY,bestSegAngle=null;
-  tbInk.forEach(stroke=>{
-    const pts = stroke.points;
-    for(let i=0;i<pts.length-1;i++){
-      const [ax,ay]=pts[i], [bx,by]=pts[i+1];
-      const proj = tbProjectOntoSegment(pt, ax, ay, bx, by, 0);
-      if(proj && proj.dist<bestDist){
-        bestDist = proj.dist; bestX=proj.x; bestY=proj.y;
-        bestSegAngle = Math.atan2(by-ay, bx-ax)*180/Math.PI;
-      }
-    }
+  if(!type) return null;
+  if(type==='right') return {type, count:1};
+  const count = await niceModal({
+    message: type==='length' ? 'Combien de traits ?' : 'Combien d\'arcs ?',
+    buttons: [
+      {label:'1', value:1, secondary:true},
+      {label:'2', value:2, secondary:true},
+      {label:'3', value:3},
+    ],
   });
-  if(bestSegAngle!==null) return {kind:'tick', x:bestX, y:bestY, segAngle:bestSegAngle};
-  return null;
+  if(!count) return null;
+  return {type, count};
 }
 let tbTextNextId = 1;
 async function tbAddTextZone(){
@@ -7364,31 +7351,44 @@ function tbRender(){
   </g>`;
   }).join('');
   const codagesHtml = tbCodages.map(c=>{
+    const rad = c.angle*Math.PI/180;
     if(c.kind==='tick'){
-      const rad = c.segAngle*Math.PI/180;
+      // Traits FINS, perpendiculaires à l'angle du crayon au moment de la pose -- c'est
+      // l'utilisateur qui, en inclinant le crayon pour qu'il suive le trait à coder, "dessine"
+      // lui-même l'inclinaison du codage, plutôt qu'un calcul automatique sur le trait.
       const perpX = -Math.sin(rad), perpY = Math.cos(rad), alongX = Math.cos(rad), alongY = Math.sin(rad);
       const spacing = 5, tickLen = 7;
       let lines = '';
       for(let i=0;i<c.count;i++){
         const off = (i-(c.count-1)/2)*spacing;
         const cx = c.x+alongX*off, cy = c.y+alongY*off;
-        lines += `<line x1="${(cx-perpX*tickLen).toFixed(1)}" y1="${(cy-perpY*tickLen).toFixed(1)}" x2="${(cx+perpX*tickLen).toFixed(1)}" y2="${(cy+perpY*tickLen).toFixed(1)}" stroke="#1C1B2E" stroke-width="2"/>`;
+        lines += `<line x1="${(cx-perpX*tickLen).toFixed(1)}" y1="${(cy-perpY*tickLen).toFixed(1)}" x2="${(cx+perpX*tickLen).toFixed(1)}" y2="${(cy+perpY*tickLen).toFixed(1)}" stroke="#1C1B2E" stroke-width="1.2"/>`;
       }
       return `<g data-role="codage" data-id="${c.id}" style="cursor:pointer;">${lines}<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="14" fill="transparent" pointer-events="all"/></g>`;
-    } else {
-      let diff = c.angle2-c.angle1;
-      while(diff>180) diff-=360;
-      while(diff<-180) diff+=360;
+    } else if(c.kind==='arc'){
+      // Petit(s) arc(s) centré(s) sur l'angle du crayon (fenêtre fixe de 44°) -- plus de
+      // détection automatique du sommet et des deux côtés (peu fiable) : le professeur vise
+      // lui-même le sommet et incline le crayon vers l'intérieur de l'angle à coder.
+      const half = 22*Math.PI/180;
       let arcs = '';
       for(let i=0;i<c.count;i++){
         const r = 13+i*5;
-        const r1 = c.angle1*Math.PI/180, r2 = (c.angle1+diff)*Math.PI/180;
-        const x1 = c.x+r*Math.cos(r1), y1 = c.y+r*Math.sin(r1);
-        const x2 = c.x+r*Math.cos(r2), y2 = c.y+r*Math.sin(r2);
-        const largeArc = Math.abs(diff)>180 ? 1 : 0, sweep = diff>0 ? 1 : 0;
-        arcs += `<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${r} ${r} 0 ${largeArc} ${sweep} ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="#1C1B2E" stroke-width="1.8"/>`;
+        const x1 = c.x+r*Math.cos(rad-half), y1 = c.y+r*Math.sin(rad-half);
+        const x2 = c.x+r*Math.cos(rad+half), y2 = c.y+r*Math.sin(rad+half);
+        arcs += `<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${r} ${r} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>`;
       }
       return `<g data-role="codage" data-id="${c.id}" style="cursor:pointer;">${arcs}<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="16" fill="transparent" pointer-events="all"/></g>`;
+    } else {
+      // Angle droit : le petit carré classique, un côté dans l'axe du crayon, l'autre
+      // perpendiculaire.
+      const s = 10;
+      const ax = c.x+s*Math.cos(rad), ay = c.y+s*Math.sin(rad);
+      const bx = c.x+s*Math.cos(rad)+s*Math.cos(rad+Math.PI/2), by = c.y+s*Math.sin(rad)+s*Math.sin(rad+Math.PI/2);
+      const cx2 = c.x+s*Math.cos(rad+Math.PI/2), cy2 = c.y+s*Math.sin(rad+Math.PI/2);
+      return `<g data-role="codage" data-id="${c.id}" style="cursor:pointer;">
+        <path d="M ${ax.toFixed(1)} ${ay.toFixed(1)} L ${bx.toFixed(1)} ${by.toFixed(1)} L ${cx2.toFixed(1)} ${cy2.toFixed(1)}" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>
+        <circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="16" fill="transparent" pointer-events="all"/>
+      </g>`;
     }
   }).join('');
   let pencilSnapRing = '';
@@ -7484,15 +7484,16 @@ function tbRender(){
       <polygon points="-4.5,-4 4.5,-4 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1"/>`}
       <circle cx="0" cy="0" r="22" fill="transparent"/>
     </g>` : '';
-    const codageIcon = (!t.codageMode || t.codageMode==='draw') ? '✏️' : (t.codageMode.replace('tick','／').replace('arc','⌒'));
-    const codageBadge = t.type==='crayon' ? `<g data-role="codageModeBtn" data-id="${t.id}" transform="rotate(${-t.angle.toFixed(1)}) translate(20,-14)" style="cursor:pointer;">
-      <circle cx="0" cy="0" r="11" fill="#fff" stroke="#1C1B2E" stroke-width="1.2"/>
-      <text x="0" y="4" font-size="10" text-anchor="middle">${codageIcon}</text>
-    </g>` : '';
+    const penMode = t.penMode || 'ecrire';
+    const penModeIcon = {tourner:'🔄', ecrire:'✏️', coder:'🏷️'}[penMode];
+    const penModeColor = {tourner:'#0D5BA3', ecrire:'#1F7A4D', coder:'#E35D3A'}[penMode];
     return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
-      <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>${protractorRay}${codageBadge}
+      <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>${protractorRay}
       ${t.slideLock ? `<g transform="rotate(${-t.angle.toFixed(1)})" style="pointer-events:none;"><circle cx="0" cy="0" r="9" fill="#1F7A4D" stroke="#fff" stroke-width="1.4"/><text x="0" y="4" font-size="10" text-anchor="middle">🔗</text></g>` : ''}
-      ${rh ? `<circle data-role="rotate" data-id="${t.id}" cx="${rh.x}" cy="${rh.y}" r="${rh.r||11}" fill="#0D5BA3" fill-opacity="${rh.opacity!==undefined?rh.opacity:1}" stroke="#fff" stroke-width="1.6"/>` : ''}
+      ${rh && t.type==='crayon' ? `<g data-role="rotate" data-id="${t.id}" transform="translate(${rh.x},${rh.y})">
+          <circle cx="0" cy="0" r="${rh.r||11}" fill="${penModeColor}" stroke="#fff" stroke-width="1.6"/>
+          <text x="0" y="4" font-size="10" text-anchor="middle" transform="rotate(${-t.angle.toFixed(1)})">${penModeIcon}</text>
+        </g>` : (rh ? `<circle data-role="rotate" data-id="${t.id}" cx="${rh.x}" cy="${rh.y}" r="${rh.r||11}" fill="#0D5BA3" fill-opacity="${rh.opacity!==undefined?rh.opacity:1}" stroke="#fff" stroke-width="1.6"/>` : '')}
     </g>`;
   }).join('');
   // Pour chaque outil-guide (règle, équerre...) sur lequel au moins 2 points posés sont
@@ -7622,22 +7623,6 @@ function tbAttachHandlers(){
       e.preventDefault();
       return;
     }
-    if(role==='codageModeBtn'){
-      const crayon = tbTools.find(t=>t.id===id);
-      if(crayon){
-        const modes = ['draw','tick1','tick2','tick3','arc1','arc2','arc3'];
-        const cur = crayon.codageMode || 'draw';
-        crayon.codageMode = modes[(modes.indexOf(cur)+1) % modes.length];
-        tbSetHelp('crayon');
-        const box = document.getElementById('tbHelpBox');
-        if(box && crayon.codageMode!=='draw'){
-          const label = crayon.codageMode.startsWith('tick') ? `codage de longueur (${crayon.codageMode.slice(-1)} trait${crayon.codageMode.slice(-1)>1?'s':''})` : `codage d'angle (${crayon.codageMode.slice(-1)} arc${crayon.codageMode.slice(-1)>1?'s':''})`;
-          box.innerHTML = `✏️ <b>Codage activé</b> — ${label}. Tapez près d'un trait pour coder une longueur, ou près d'un sommet d'angle pour coder un angle.`;
-        }
-        tbRender();
-      }
-      return;
-    }
     if(role==='codage'){
       // Un simple tap sur un codage existant ne fait rien de spécial pour l'instant -- il se
       // supprime via sa poubelle dans le panneau Historique.
@@ -7720,7 +7705,7 @@ function tbAttachHandlers(){
       // (bug signalé : rotation de 90° au moindre contact avec le point bleu).
       const rh = TB_DEFS[tool.type].rotateHandle;
       const handleLocalAngle = Math.atan2(rh.y, rh.x)*180/Math.PI;
-      tbDrag = {mode:'rotate', id, handleLocalAngle};
+      tbDrag = {mode:'rotate', id, handleLocalAngle, startX:pt.x, startY:pt.y, moved:false};
     } else if(role==='compassAnchorLeg'){
       // La branche qui porte la pointe (l'ancrage fixe) déplace tout l'ensemble -- la pointe
       // s'aimante sur un point déjà posé si on en approche.
@@ -7758,16 +7743,21 @@ function tbAttachHandlers(){
         tbDrag = {mode:'compassAdjust', id};
       }
     } else if(role==='tip'){
-      if(tool.type==='crayon' && tool.codageMode && tool.codageMode!=='draw'){
-        // Mode codage actif : un tap pose directement le codage (longueur ou angle, détecté
-        // automatiquement), sans tracer ni poser de point classique.
+      if(tool.type==='crayon' && (tool.penMode||'ecrire')==='tourner'){
+        // Mode "Tourner" : le crayon entier se déplace SANS tracer, comme si on le posait
+        // ailleurs, même en l'attrapant par la pointe.
+        tbDrag = {mode:'move', id, offX: pt.x-tool.x, offY: pt.y-tool.y};
+      } else if(tool.type==='crayon' && (tool.penMode||'ecrire')==='coder'){
+        // Mode "Coder" : un tap ouvre le choix du codage (longueur/angle/angle droit), posé à
+        // l'endroit et dans l'orientation actuels du crayon -- pas de tracé.
         tbDrag = {mode:'codagePlace', id, startX:pt.x, startY:pt.y};
       } else if(tool.type==='crayon'){
-        // On ne sait pas encore si ce sera un tracé (glissé) ou un simple point (relâché sans
-        // avoir bougé) -- le trait est ajouté tout de suite mais retiré au relâché si rien n'a
-        // bougé, remplacé alors par un point nommé. La position de départ passe elle aussi par
-        // l'aimantage (donc par une éventuelle contrainte armée), pour un tracé cohérent dès le
-        // premier point, pas seulement une fois qu'on a commencé à bouger.
+        // Mode "Écrire" (par défaut) : comportement normal du crayon. On ne sait pas encore si
+        // ce sera un tracé (glissé) ou un simple point (relâché sans avoir bougé) -- le trait
+        // est ajouté tout de suite mais retiré au relâché si rien n'a bougé, remplacé alors par
+        // un point nommé. La position de départ passe elle aussi par l'aimantage (donc par une
+        // éventuelle contrainte armée), pour un tracé cohérent dès le premier point, pas
+        // seulement une fois qu'on a commencé à bouger.
         const startResult = tbSnapToEdgeDetailed({x:tool.x, y:tool.y});
         tool.x = startResult.point.x; tool.y = startResult.point.y;
         const stroke = {color: tbCurrentColor(), construction: tbConstructionMode, points:[[tool.x,tool.y]]};
@@ -7849,6 +7839,7 @@ function tbAttachHandlers(){
         else if(tool.type!=='crayon') tbSnapToolToPoints(tool);
       }
     } else if(tbDrag.mode==='rotate'){
+      if(tbDrag.startX!==undefined && Math.hypot(pt.x-tbDrag.startX, pt.y-tbDrag.startY) > 5) tbDrag.moved = true;
       const rawAngle = Math.atan2(pt.y-tool.y, pt.x-tool.x)*180/Math.PI;
       const offset = tbDrag.handleLocalAngle || 0;
       let angle = rawAngle - offset;
@@ -7951,15 +7942,30 @@ function tbAttachHandlers(){
       }
       return;
     }
+    if(tbDrag && tbDrag.mode==='rotate' && !tbDrag.moved){
+      const rTool = tbTools.find(t=>t.id===tbDrag.id);
+      tbDrag = null;
+      if(rTool && rTool.type==='crayon'){
+        const modes = ['tourner','ecrire','coder'];
+        const cur = rTool.penMode || 'ecrire';
+        rTool.penMode = modes[(modes.indexOf(cur)+1) % modes.length];
+        const labels = {tourner:'🔄 Tourner — glissez le crayon entier pour le repositionner sans tracer.', ecrire:'✏️ Écrire — dessine normalement, comme avant.', coder:'🏷️ Coder — un tap ouvre le choix du codage (longueur, angle, angle droit).'};
+        tbSetHelp('crayon');
+        const box = document.getElementById('tbHelpBox');
+        if(box) box.innerHTML = labels[rTool.penMode];
+        tbRender();
+      }
+      return;
+    }
     if(tbDrag && tbDrag.mode==='codagePlace'){
       const codTool = tbTools.find(t=>t.id===tbDrag.id);
       tbDrag = null;
       if(codTool){
-        const target = tbFindCodageTarget({x:codTool.x, y:codTool.y});
-        if(target){
-          const count = parseInt(codTool.codageMode.slice(-1), 10) || 1;
-          if(target.kind==='tick') tbCodages.push({id: tbCodageNextId++, kind:'tick', x:target.x, y:target.y, segAngle:target.segAngle, count});
-          else tbCodages.push({id: tbCodageNextId++, kind:'arc', x:target.x, y:target.y, angle1:target.angle1, angle2:target.angle2, count});
+        const choice = await tbOpenCodageModal();
+        if(choice){
+          const kind = choice.type==='length' ? 'tick' : (choice.type==='angle' ? 'arc' : 'right');
+          tbCodages.push({id: tbCodageNextId++, kind, x:codTool.x, y:codTool.y, angle:codTool.angle, count:choice.count});
+          tbPushHistory();
         }
         tbRender();
         tbRenderHistoryPanel();
