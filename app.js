@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.184', items:[
+    "Tableau interactif -- le label d'un point (sa lettre) peut désormais se déplacer indépendamment, sans bouger le point lui-même : on l'attrape directement (poignée séparée de la croix) et on le repositionne librement autour du point.",
+  ]},
   { version:'2026-08-04.183', items:[
     "Tableau interactif -- nouveau : boutons ↶ Annuler / ↷ Rétablir, qui reviennent en arrière ou en avant dans toute la construction (traits, points, textes, outils ajoutés/déplacés). Nouveau panneau 🗂️ Historique listant chaque trait, point et texte créé avec sa propre poubelle pour le supprimer individuellement sans toucher au reste.",
   ]},
@@ -7289,10 +7292,15 @@ function tbRender(){
       ? `<line x1="${(pt.x-9*Math.cos(pt.angle)).toFixed(1)}" y1="${(pt.y-9*Math.sin(pt.angle)).toFixed(1)}" x2="${(pt.x+9*Math.cos(pt.angle)).toFixed(1)}" y2="${(pt.y+9*Math.sin(pt.angle)).toFixed(1)}" stroke="#1C1B2E" stroke-width="2.4"/>`
       : `<line x1="${pt.x-7}" y1="${pt.y-7}" x2="${pt.x+7}" y2="${pt.y+7}" stroke="#1C1B2E" stroke-width="2"/>
          <line x1="${pt.x-7}" y1="${pt.y+7}" x2="${pt.x+7}" y2="${pt.y-7}" stroke="#1C1B2E" stroke-width="2"/>`;
+    const ldx = pt.labelDx!==undefined ? pt.labelDx : 11, ldy = pt.labelDy!==undefined ? pt.labelDy : -8;
+    const lx = pt.x+ldx, ly = pt.y+ldy;
     return `<g data-role="point" data-id="${pt.id}" style="cursor:pointer;">
     ${mark}
     <circle cx="${pt.x}" cy="${pt.y}" r="20" fill="transparent" pointer-events="all"/>
-    <text x="${pt.x+11}" y="${pt.y-8}" font-size="16" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#1C1B2E">${escapeHtml(pt.label||'')}</text>
+  </g>
+  <g data-role="pointLabel" data-id="${pt.id}" style="cursor:move;">
+    <text x="${lx}" y="${ly}" font-size="16" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#1C1B2E">${escapeHtml(pt.label||'')}</text>
+    <rect x="${lx-4}" y="${ly-16}" width="24" height="22" fill="transparent" pointer-events="all"/>
   </g>`;
   }).join('');
   const textsHtml = tbTexts.map(t=>{
@@ -7521,6 +7529,13 @@ function tbAttachHandlers(){
       e.preventDefault();
       return;
     }
+    if(role==='pointLabel'){
+      const point = tbPoints.find(p=>p.id===id);
+      if(point) tbDrag = {mode:'pointLabel', id, offX: pt.x-point.x, offY: pt.y-point.y};
+      try{ svg.setPointerCapture(e.pointerId); }catch(err){}
+      e.preventDefault();
+      return;
+    }
     if(role==='textZone'){
       const tz = tbTexts.find(x=>x.id===id);
       if(tz) tbDrag = {mode:'textZone', id, startX:pt.x, startY:pt.y, moved:false};
@@ -7678,6 +7693,15 @@ function tbAttachHandlers(){
       if(!point){ tbDrag=null; return; }
       if(Math.hypot(pt.x-tbDrag.startX, pt.y-tbDrag.startY) > 5) tbDrag.moved = true;
       point.x = pt.x; point.y = pt.y;
+      tbRender();
+      return;
+    }
+    if(tbDrag.mode==='pointLabel'){
+      const point = tbPoints.find(p=>p.id===tbDrag.id);
+      if(!point){ tbDrag=null; return; }
+      // Le label se déplace SEUL, le point (ses coordonnées géométriques) ne bouge pas.
+      point.labelDx = pt.x - tbDrag.offX - point.x;
+      point.labelDy = pt.y - tbDrag.offY - point.y;
       tbRender();
       return;
     }
