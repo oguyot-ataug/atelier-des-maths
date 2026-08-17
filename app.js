@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.190', items:[
+    "Tableau interactif -- vrai bug corrigé : le trait de point (style « crayon ») était perpendiculaire à la mine au lieu d'être dans son prolongement (décalage de 90° dans le calcul). Nouveau 3e style « • Aucun » pour nommer une intersection ou un sommet sans ajouter de repère visuel superflu. Codages d'angle : la détection fonctionne désormais directement sur les extrémités des traits qui se rejoignent, sans exiger qu'un point nommé soit déjà posé au sommet -- bien plus fiable. Fix du trait qui \"interceptait\" l'arc dans les vignettes barrées (mauvais rayon).",
+  ]},
   { version:'2026-08-04.189', items:[
     "Tableau interactif -- placer un point propose maintenant le choix du style (✕ croix ou ／ trait dans le prolongement du crayon). Codages d'angle : vraie détection du sommet et des deux côtés réintroduite (arc juste, plus une fenêtre fixe approximative), avec repli automatique si aucun sommet n'est trouvé à proximité. Vignettes de la modale corrigées (l'arc débordait des côtés à cause d'un désaccord de géométrie entre les deux tracés) et 2 nouveaux types : arc barré une fois / deux fois, remplaçant l'ancien arc×3.",
   ]},
@@ -6996,13 +6999,16 @@ function tbCodageThumb(kind, count){
     if(count>2){
       // Barré : un arc simple + 1 ou 2 petites striures qui le traversent (count=3 -> 1
       // striure, count=4 -> 2 striures), pour distinguer un 3e ou 4e groupe d'angles égaux.
+      // La striure doit être exactement au MÊME rayon que l'arc simple tracé juste au-dessus
+      // (r=9), sinon elle apparaît décalée, comme un trait qui "intercepte" l'arc au lieu de
+      // le croiser proprement (bug signalé).
       const strikes = count-2;
-      const r = 12;
+      const r = 9;
       for(let k=0;k<strikes;k++){
-        const a = base + (k-(strikes-1)/2)*0.22;
+        const a = base + (k-(strikes-1)/2)*0.28;
         const mx=vx+r*Math.cos(a), my=vy+r*Math.sin(a);
         const dx=-Math.sin(a), dy=Math.cos(a);
-        inner += `<line x1="${(mx-dx*4.5).toFixed(1)}" y1="${(my-dy*4.5).toFixed(1)}" x2="${(mx+dx*4.5).toFixed(1)}" y2="${(my+dy*4.5).toFixed(1)}" stroke="#1C1B2E" stroke-width="1.4"/>`;
+        inner += `<line x1="${(mx-dx*4).toFixed(1)}" y1="${(my-dy*4).toFixed(1)}" x2="${(mx+dx*4).toFixed(1)}" y2="${(my+dy*4).toFixed(1)}" stroke="#1C1B2E" stroke-width="1.4"/>`;
       }
     }
   } else if(kind==='right'){
@@ -7015,25 +7021,27 @@ function tbCodageThumb(kind, count){
    directions -- pour un arc qui correspond réellement à l'angle, pas une fenêtre fixe autour du
    crayon (qui donnait un arc approximatif, pas toujours juste). */
 function tbDetectAngleVertex(pt){
-  let bestVertex=null, bestVDist=26;
-  tbPoints.forEach(p=>{
-    const d = Math.hypot(pt.x-p.x, pt.y-p.y);
-    if(d<bestVDist){ bestVDist=d; bestVertex=p; }
-  });
-  if(!bestVertex) return null;
-  const dirs = [];
+  // Rassemble toutes les extrémités (début ET fin) de tous les traits -- avec leur direction
+  // vers l'intérieur du trait -- puis cherche l'extrémité la plus proche du crayon, et enfin
+  // toutes les AUTRES extrémités qui se trouvent au même endroit qu'elle (même si aucun point
+  // nommé n'a été posé là) : c'est ça, "reconnaître l'angle", pas se baser sur un point existant.
+  const ends = [];
   tbInk.forEach(stroke=>{
     const pts = stroke.points;
     if(pts.length<2) return;
-    const d0 = Math.hypot(pts[0][0]-bestVertex.x, pts[0][1]-bestVertex.y);
-    const d1 = Math.hypot(pts[pts.length-1][0]-bestVertex.x, pts[pts.length-1][1]-bestVertex.y);
-    if(d0<24) dirs.push(Math.atan2(pts[1][1]-pts[0][1], pts[1][0]-pts[0][0]));
-    else if(d1<24) dirs.push(Math.atan2(pts[pts.length-2][1]-pts[pts.length-1][1], pts[pts.length-2][0]-pts[pts.length-1][0]));
+    ends.push({x:pts[0][0], y:pts[0][1], dir:Math.atan2(pts[1][1]-pts[0][1], pts[1][0]-pts[0][0])});
+    const n = pts.length;
+    ends.push({x:pts[n-1][0], y:pts[n-1][1], dir:Math.atan2(pts[n-2][1]-pts[n-1][1], pts[n-2][0]-pts[n-1][0])});
   });
+  let ref=null, bestD=28;
+  ends.forEach(e=>{ const d=Math.hypot(pt.x-e.x, pt.y-e.y); if(d<bestD){ bestD=d; ref=e; } });
+  if(!ref) return null;
+  const dirs = [];
+  ends.forEach(e=>{ if(Math.hypot(e.x-ref.x, e.y-ref.y)<16) dirs.push(e.dir); });
   if(dirs.length<2) return null;
   // Si plus de 2 traits partent de ce sommet, on retient les deux directions les plus proches
   // de l'angle actuel du crayon (celle que le professeur vise), pour coder le bon angle.
-  return {x:bestVertex.x, y:bestVertex.y, dirs};
+  return {x:ref.x, y:ref.y, dirs};
 }
 async function tbOpenCodageModal(){
   return new Promise(resolve=>{
@@ -7415,7 +7423,8 @@ function tbRender(){
   const W=900, H=560;
   const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.construction?'#9CA3AF':s.color}" stroke-width="${s.construction?'1.2':'2.4'}" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
   const pointsHtml = tbPoints.map(pt=>{
-    const mark = (pt.radial || pt.markStyle==='tick')
+    const mark = pt.markStyle==='none' ? ''
+      : (pt.radial || pt.markStyle==='tick')
       ? `<line x1="${(pt.x-9*Math.cos(pt.angle)).toFixed(1)}" y1="${(pt.y-9*Math.sin(pt.angle)).toFixed(1)}" x2="${(pt.x+9*Math.cos(pt.angle)).toFixed(1)}" y2="${(pt.y+9*Math.sin(pt.angle)).toFixed(1)}" stroke="#1C1B2E" stroke-width="2.4"/>`
       : `<line x1="${pt.x-7}" y1="${pt.y-7}" x2="${pt.x+7}" y2="${pt.y+7}" stroke="#1C1B2E" stroke-width="2"/>
          <line x1="${pt.x-7}" y1="${pt.y+7}" x2="${pt.x+7}" y2="${pt.y-7}" stroke="#1C1B2E" stroke-width="2"/>`;
@@ -7691,7 +7700,9 @@ function tbOpenLetterPicker(currentLabel, currentStyle){
       <div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px;">
         <button type="button" data-style="cross" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='cross'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='cross'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;">✕ Croix</button>
         <button type="button" data-style="tick" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='tick'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='tick'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;">／ Trait (crayon)</button>
+        <button type="button" data-style="none" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='none'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='none'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;">• Aucun</button>
       </div>
+      <p style="margin:0 0 12px;font-size:.75rem;color:#6b7280;">« Aucun » sert à nommer une intersection ou un sommet déjà visible sans ajouter de repère en plus.</p>
       <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:16px;">
         ${letters.map(l=>`<button type="button" data-letter="${l}" style="padding:10px 0;border-radius:7px;border:1.5px solid ${l===currentLabel?'#0D5BA3':'rgba(28,43,57,.2)'};background:${l===currentLabel?'#0D5BA3':'#fff'};color:${l===currentLabel?'#fff':'#1C1B2E'};font-weight:700;font-size:1.05rem;cursor:pointer;">${l}</button>`).join('')}
       </div>
@@ -8137,7 +8148,7 @@ function tbAttachHandlers(){
         if(result!==null){
           const anchor = tbNearestGridVertex({x:tool.x, y:tool.y});
           const gridAnchor = (anchor && Math.hypot(anchor.x-tool.x, anchor.y-tool.y)<0.5) ? {type:anchor.gridType, row:anchor.row, col:anchor.col} : null;
-          tbPoints.push({id: tbPointNextId++, x: tool.x, y: tool.y, label:result.label, markStyle:result.style, angle: tool.angle*Math.PI/180, gridAnchor});
+          tbPoints.push({id: tbPointNextId++, x: tool.x, y: tool.y, label:result.label, markStyle:result.style, angle: (tool.angle+90)*Math.PI/180, gridAnchor});
         }
         tbRender();
       }
