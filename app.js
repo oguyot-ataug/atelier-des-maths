@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.185', items:[
+    "Tableau interactif -- réorganisation de la barre d'outils. « Trait de construction » devient une case à cocher, à côté de « Crayon noir ». Les boutons Annuler/Rétablir n'affichent plus que les flèches (↶ ↷), suffisamment parlantes, ce qui libère de la place : le sélecteur de fond de page remonte sur la ligne du haut.",
+  ]},
   { version:'2026-08-04.184', items:[
     "Tableau interactif -- le label d'un point (sa lettre) peut désormais se déplacer indépendamment, sans bouger le point lui-même : on l'attrape directement (poignée séparée de la croix) et on le repositionne librement autour du point.",
   ]},
@@ -7033,12 +7036,8 @@ function tbEraseNear(x, y, radius){
   return before !== (tbInk.length + tbPoints.length);
 }
 function tbToggleConstruction(){
-  tbConstructionMode = !tbConstructionMode;
-  const btn = document.getElementById('btnTbConstruction');
-  if(btn){
-    btn.style.background = tbConstructionMode ? 'rgba(107,114,128,.25)' : '';
-    btn.style.borderColor = tbConstructionMode ? '#6B7280' : '';
-  }
+  const cb = document.getElementById('tbConstructionCheck');
+  tbConstructionMode = cb ? cb.checked : !tbConstructionMode;
 }
 function tbCurrentColor(){
   const el = document.getElementById('tbPencilColor');
