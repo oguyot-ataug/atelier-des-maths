@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.189', items:[
+    "Tableau interactif -- placer un point propose maintenant le choix du style (✕ croix ou ／ trait dans le prolongement du crayon). Codages d'angle : vraie détection du sommet et des deux côtés réintroduite (arc juste, plus une fenêtre fixe approximative), avec repli automatique si aucun sommet n'est trouvé à proximité. Vignettes de la modale corrigées (l'arc débordait des côtés à cause d'un désaccord de géométrie entre les deux tracés) et 2 nouveaux types : arc barré une fois / deux fois, remplaçant l'ancien arc×3.",
+  ]},
   { version:'2026-08-04.188', items:[
     "Tableau interactif -- codages : la mini-fenêtre affiche maintenant 9 vraies vignettes visuelles (1/2/3 traits, petit cercle, #, 1/2/3 arcs, angle droit) au lieu de simples boutons texte. Le point bleu du crayon (sélecteur tourner/écrire/coder) est aussi nettement agrandi (rayon 15 au lieu de 6, pleine opacité), pour être vraiment lisible.",
   ]},
@@ -6976,15 +6979,61 @@ function tbCodageThumb(kind, count){
   } else if(kind==='hash'){
     inner = `<line x1="4" y1="22" x2="40" y2="22" stroke="#1C1B2E" stroke-width="1.4"/><text x="22" y="28" font-size="15" text-anchor="middle" font-weight="700" fill="#1C1B2E">#</text>`;
   } else if(kind==='arc'){
-    for(let i=0;i<count;i++){
-      const r = 8+i*5;
-      inner += `<path d="M ${(22-r*0.85).toFixed(1)} ${(30-r*0.53).toFixed(1)} A ${r} ${r} 0 0 1 ${(22+r*0.85).toFixed(1)} ${(30-r*0.53).toFixed(1)}" fill="none" stroke="#1C1B2E" stroke-width="1.6"/>`;
+    // Géométrie cohérente : les deux côtés ET le ou les arcs partagent EXACTEMENT les mêmes
+    // angles depuis le sommet -- l'arc ne peut donc jamais déborder des côtés (avant, les
+    // deux tracés utilisaient des formules d'angle différentes, d'où le débordement signalé).
+    const vx=22, vy=33, sideLen=21, half=32*Math.PI/180, base=-90*Math.PI/180;
+    const a1=base-half, a2=base+half;
+    const s1x=vx+sideLen*Math.cos(a1), s1y=vy+sideLen*Math.sin(a1);
+    const s2x=vx+sideLen*Math.cos(a2), s2y=vy+sideLen*Math.sin(a2);
+    inner = `<line x1="${vx}" y1="${vy}" x2="${s1x.toFixed(1)}" y2="${s1y.toFixed(1)}" stroke="#1C1B2E" stroke-width="1.2"/><line x1="${vx}" y1="${vy}" x2="${s2x.toFixed(1)}" y2="${s2y.toFixed(1)}" stroke="#1C1B2E" stroke-width="1.2"/>`;
+    const arcCount = count<=2 ? count : 1;
+    for(let i=0;i<arcCount;i++){
+      const r = 9+i*6;
+      const x1=vx+r*Math.cos(a1), y1=vy+r*Math.sin(a1), x2=vx+r*Math.cos(a2), y2=vy+r*Math.sin(a2);
+      inner += `<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${r} ${r} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="#1C1B2E" stroke-width="1.4"/>`;
     }
-    inner += `<line x1="22" y1="30" x2="8" y2="12" stroke="#1C1B2E" stroke-width="1.2"/><line x1="22" y1="30" x2="36" y2="12" stroke="#1C1B2E" stroke-width="1.2"/>`;
+    if(count>2){
+      // Barré : un arc simple + 1 ou 2 petites striures qui le traversent (count=3 -> 1
+      // striure, count=4 -> 2 striures), pour distinguer un 3e ou 4e groupe d'angles égaux.
+      const strikes = count-2;
+      const r = 12;
+      for(let k=0;k<strikes;k++){
+        const a = base + (k-(strikes-1)/2)*0.22;
+        const mx=vx+r*Math.cos(a), my=vy+r*Math.sin(a);
+        const dx=-Math.sin(a), dy=Math.cos(a);
+        inner += `<line x1="${(mx-dx*4.5).toFixed(1)}" y1="${(my-dy*4.5).toFixed(1)}" x2="${(mx+dx*4.5).toFixed(1)}" y2="${(my+dy*4.5).toFixed(1)}" stroke="#1C1B2E" stroke-width="1.4"/>`;
+      }
+    }
   } else if(kind==='right'){
     inner = `<line x1="10" y1="34" x2="34" y2="34" stroke="#1C1B2E" stroke-width="1.2"/><line x1="10" y1="34" x2="10" y2="10" stroke="#1C1B2E" stroke-width="1.2"/><path d="M10,26 L18,26 L18,34" fill="none" stroke="#1C1B2E" stroke-width="1.4"/>`;
   }
   return `<svg viewBox="0 0 ${s} ${s}" width="${s}" height="${s}">${inner}</svg>`;
+}
+/* Cherche un vrai sommet d'angle près du point donné : un point posé où au moins 2 traits
+   partent dans des directions différentes. Si trouvé, renvoie le sommet et les deux vraies
+   directions -- pour un arc qui correspond réellement à l'angle, pas une fenêtre fixe autour du
+   crayon (qui donnait un arc approximatif, pas toujours juste). */
+function tbDetectAngleVertex(pt){
+  let bestVertex=null, bestVDist=26;
+  tbPoints.forEach(p=>{
+    const d = Math.hypot(pt.x-p.x, pt.y-p.y);
+    if(d<bestVDist){ bestVDist=d; bestVertex=p; }
+  });
+  if(!bestVertex) return null;
+  const dirs = [];
+  tbInk.forEach(stroke=>{
+    const pts = stroke.points;
+    if(pts.length<2) return;
+    const d0 = Math.hypot(pts[0][0]-bestVertex.x, pts[0][1]-bestVertex.y);
+    const d1 = Math.hypot(pts[pts.length-1][0]-bestVertex.x, pts[pts.length-1][1]-bestVertex.y);
+    if(d0<24) dirs.push(Math.atan2(pts[1][1]-pts[0][1], pts[1][0]-pts[0][0]));
+    else if(d1<24) dirs.push(Math.atan2(pts[pts.length-2][1]-pts[pts.length-1][1], pts[pts.length-2][0]-pts[pts.length-1][0]));
+  });
+  if(dirs.length<2) return null;
+  // Si plus de 2 traits partent de ce sommet, on retient les deux directions les plus proches
+  // de l'angle actuel du crayon (celle que le professeur vise), pour coder le bon angle.
+  return {x:bestVertex.x, y:bestVertex.y, dirs};
 }
 async function tbOpenCodageModal(){
   return new Promise(resolve=>{
@@ -6995,7 +7044,7 @@ async function tbOpenCodageModal(){
     const options = [
       {kind:'tick', count:1}, {kind:'tick', count:2}, {kind:'tick', count:3},
       {kind:'circle', count:1}, {kind:'hash', count:1},
-      {kind:'arc', count:1}, {kind:'arc', count:2}, {kind:'arc', count:3},
+      {kind:'arc', count:1}, {kind:'arc', count:2}, {kind:'arc', count:3}, {kind:'arc', count:4},
       {kind:'right', count:1},
     ];
     btnBox.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;justify-content:center;';
@@ -7366,7 +7415,7 @@ function tbRender(){
   const W=900, H=560;
   const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.construction?'#9CA3AF':s.color}" stroke-width="${s.construction?'1.2':'2.4'}" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
   const pointsHtml = tbPoints.map(pt=>{
-    const mark = pt.radial
+    const mark = (pt.radial || pt.markStyle==='tick')
       ? `<line x1="${(pt.x-9*Math.cos(pt.angle)).toFixed(1)}" y1="${(pt.y-9*Math.sin(pt.angle)).toFixed(1)}" x2="${(pt.x+9*Math.cos(pt.angle)).toFixed(1)}" y2="${(pt.y+9*Math.sin(pt.angle)).toFixed(1)}" stroke="#1C1B2E" stroke-width="2.4"/>`
       : `<line x1="${pt.x-7}" y1="${pt.y-7}" x2="${pt.x+7}" y2="${pt.y+7}" stroke="#1C1B2E" stroke-width="2"/>
          <line x1="${pt.x-7}" y1="${pt.y+7}" x2="${pt.x+7}" y2="${pt.y-7}" stroke="#1C1B2E" stroke-width="2"/>`;
@@ -7409,16 +7458,35 @@ function tbRender(){
     } else if(c.kind==='hash'){
       return `<g data-role="codage" data-id="${c.id}" style="cursor:pointer;" transform="translate(${c.x.toFixed(1)},${c.y.toFixed(1)}) rotate(${c.angle.toFixed(1)})"><text x="0" y="5" font-size="15" font-weight="700" text-anchor="middle" fill="#1C1B2E">#</text><circle cx="0" cy="0" r="14" fill="transparent" pointer-events="all"/></g>`;
     } else if(c.kind==='arc'){
-      // Petit(s) arc(s) centré(s) sur l'angle du crayon (fenêtre fixe de 44°) -- plus de
-      // détection automatique du sommet et des deux côtés (peu fiable) : le professeur vise
-      // lui-même le sommet et incline le crayon vers l'intérieur de l'angle à coder.
-      const half = 22*Math.PI/180;
+      // Si un vrai sommet/côtés a été détecté à la pose, on utilise l'angle RÉEL (angle1/angle2)
+      // -- sinon, on retombe sur une fenêtre fixe centrée sur l'angle du crayon.
+      let a1, a2;
+      if(c.angle1!==undefined){
+        a1 = c.angle1*Math.PI/180; a2 = c.angle2*Math.PI/180;
+        let diff = (a2-a1); while(diff>Math.PI) diff-=2*Math.PI; while(diff<-Math.PI) diff+=2*Math.PI;
+        a2 = a1+diff;
+      } else {
+        const half = 22*Math.PI/180;
+        a1 = rad-half; a2 = rad+half;
+      }
+      const arcCount = c.count<=2 ? c.count : 1;
       let arcs = '';
-      for(let i=0;i<c.count;i++){
-        const r = 13+i*5;
-        const x1 = c.x+r*Math.cos(rad-half), y1 = c.y+r*Math.sin(rad-half);
-        const x2 = c.x+r*Math.cos(rad+half), y2 = c.y+r*Math.sin(rad+half);
-        arcs += `<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${r} ${r} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>`;
+      for(let i=0;i<arcCount;i++){
+        const r = 13+i*6;
+        const x1 = c.x+r*Math.cos(a1), y1 = c.y+r*Math.sin(a1);
+        const x2 = c.x+r*Math.cos(a2), y2 = c.y+r*Math.sin(a2);
+        const largeArc = Math.abs(a2-a1)>Math.PI ? 1 : 0, sweep = (a2-a1)>0 ? 1 : 0;
+        arcs += `<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${r} ${r} 0 ${largeArc} ${sweep} ${x2.toFixed(1)} ${y2.toFixed(1)}" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>`;
+      }
+      if(c.count>2){
+        // Barré : un arc simple + 1 ou 2 petites striures qui le traversent.
+        const strikes = c.count-2, r = 13, mid = (a1+a2)/2;
+        for(let k=0;k<strikes;k++){
+          const a = mid + (k-(strikes-1)/2)*0.2;
+          const mx=c.x+r*Math.cos(a), my=c.y+r*Math.sin(a);
+          const dx=-Math.sin(a), dy=Math.cos(a);
+          arcs += `<line x1="${(mx-dx*4.5).toFixed(1)}" y1="${(my-dy*4.5).toFixed(1)}" x2="${(mx+dx*4.5).toFixed(1)}" y2="${(my+dy*4.5).toFixed(1)}" stroke="#1C1B2E" stroke-width="1.2"/>`;
+        }
       }
       return `<g data-role="codage" data-id="${c.id}" style="cursor:pointer;">${arcs}<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="16" fill="transparent" pointer-events="all"/></g>`;
     } else {
@@ -7610,15 +7678,20 @@ function tbRender(){
 /* Fenêtre de choix du nom d'un point : lettres majuscules en boutons, sans passer par le
    clavier. Les lettres déjà utilisées par un autre point disparaissent de la liste (sauf celle
    du point qu'on est en train de renommer, qui reste sélectionnable pour elle-même). */
-function tbOpenLetterPicker(currentLabel){
+function tbOpenLetterPicker(currentLabel, currentStyle){
   return new Promise(resolve=>{
     const used = new Set(tbPoints.map(p=>p.label).filter(Boolean));
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(l=>!used.has(l) || l===currentLabel);
+    let style = currentStyle || 'cross';
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.style.cssText = 'display:flex;z-index:200;';
     overlay.innerHTML = `<div style="background:#fff;border-radius:12px;padding:22px;max-width:360px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.25);">
-      <h3 style="margin:0 0 14px;font-family:'Space Grotesk',sans-serif;">Nom du point</h3>
+      <h3 style="margin:0 0 10px;font-family:'Space Grotesk',sans-serif;">Nom du point</h3>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px;">
+        <button type="button" data-style="cross" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='cross'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='cross'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;">✕ Croix</button>
+        <button type="button" data-style="tick" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='tick'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='tick'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;">／ Trait (crayon)</button>
+      </div>
       <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:16px;">
         ${letters.map(l=>`<button type="button" data-letter="${l}" style="padding:10px 0;border-radius:7px;border:1.5px solid ${l===currentLabel?'#0D5BA3':'rgba(28,43,57,.2)'};background:${l===currentLabel?'#0D5BA3':'#fff'};color:${l===currentLabel?'#fff':'#1C1B2E'};font-weight:700;font-size:1.05rem;cursor:pointer;">${l}</button>`).join('')}
       </div>
@@ -7629,8 +7702,18 @@ function tbOpenLetterPicker(currentLabel){
     </div>`;
     document.body.appendChild(overlay);
     overlay.addEventListener('click', e=>{ if(e.target===overlay){ document.body.removeChild(overlay); resolve(null); } });
+    overlay.querySelectorAll('[data-style]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        style = btn.dataset.style;
+        overlay.querySelectorAll('[data-style]').forEach(b=>{
+          const active = b.dataset.style===style;
+          b.style.borderColor = active ? '#0D5BA3' : 'rgba(28,43,57,.2)';
+          b.style.background = active ? 'rgba(13,91,163,.1)' : '#fff';
+        });
+      });
+    });
     overlay.querySelectorAll('[data-letter]').forEach(btn=>{
-      btn.addEventListener('click', ()=>{ document.body.removeChild(overlay); resolve(btn.dataset.letter); });
+      btn.addEventListener('click', ()=>{ document.body.removeChild(overlay); resolve({label:btn.dataset.letter, style}); });
     });
     document.getElementById('tbLetterCancel').addEventListener('click', ()=>{ document.body.removeChild(overlay); resolve(null); });
   });
@@ -7638,9 +7721,9 @@ function tbOpenLetterPicker(currentLabel){
 async function tbRenamePoint(id){
   const point = tbPoints.find(p=>p.id===id);
   if(!point) return;
-  const label = await tbOpenLetterPicker(point.label||'');
-  if(label===null) return;
-  if(!label){ tbPoints = tbPoints.filter(p=>p.id!==id); } else { point.label = label; }
+  const result = await tbOpenLetterPicker(point.label||'', point.markStyle||'cross');
+  if(result===null) return;
+  if(!result.label){ tbPoints = tbPoints.filter(p=>p.id!==id); } else { point.label = result.label; point.markStyle = result.style; }
   tbRender();
 }
 function tbAttachHandlers(){
@@ -8006,7 +8089,23 @@ function tbAttachHandlers(){
       if(codTool){
         const choice = await tbOpenCodageModal();
         if(choice){
-          tbCodages.push({id: tbCodageNextId++, kind:choice.kind, x:codTool.x, y:codTool.y, angle:codTool.angle, count:choice.count});
+          const codage = {id: tbCodageNextId++, kind:choice.kind, x:codTool.x, y:codTool.y, angle:codTool.angle, count:choice.count};
+          if(choice.kind==='arc'){
+            const detected = tbDetectAngleVertex({x:codTool.x, y:codTool.y});
+            if(detected){
+              // S'il y a plus de 2 traits à ce sommet, on retient les deux directions les plus
+              // proches de l'angle visé par le crayon.
+              const penRad = codTool.angle*Math.PI/180;
+              const sorted = detected.dirs.slice().sort((a,b)=>{
+                const da = Math.min(Math.abs(a-penRad), 2*Math.PI-Math.abs(a-penRad));
+                const db = Math.min(Math.abs(b-penRad), 2*Math.PI-Math.abs(b-penRad));
+                return da-db;
+              });
+              codage.x = detected.x; codage.y = detected.y;
+              codage.angle1 = sorted[0]*180/Math.PI; codage.angle2 = sorted[1]*180/Math.PI;
+            }
+          }
+          tbCodages.push(codage);
           tbPushHistory();
         }
         tbRender();
@@ -8034,11 +8133,11 @@ function tbAttachHandlers(){
       const tool = tbTools.find(t=>t.id===tbDrag.id);
       tbDrag = null;
       if(tool){
-        const label = await tbOpenLetterPicker('');
-        if(label!==null){
+        const result = await tbOpenLetterPicker('');
+        if(result!==null){
           const anchor = tbNearestGridVertex({x:tool.x, y:tool.y});
           const gridAnchor = (anchor && Math.hypot(anchor.x-tool.x, anchor.y-tool.y)<0.5) ? {type:anchor.gridType, row:anchor.row, col:anchor.col} : null;
-          tbPoints.push({id: tbPointNextId++, x: tool.x, y: tool.y, label, gridAnchor});
+          tbPoints.push({id: tbPointNextId++, x: tool.x, y: tool.y, label:result.label, markStyle:result.style, angle: tool.angle*Math.PI/180, gridAnchor});
         }
         tbRender();
       }
