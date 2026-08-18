@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.198', items:[
+    "Cours 6e G2 -- dernière pièce du puzzle sur l'équerre \"à l'envers\" (méthode parallèle) : son grand côté doit rester orienté vers la droite (sinon elle sort du cadre visible), donc le miroir par échelle restait nécessaire, mais inversait ses petits numéros de graduation. Corrigé en neutralisant l'inversion du texte spécifiquement (chaque numéro contre-tourné autour de son propre point d'ancrage), sans toucher au reste de la forme ni à sa position. Confirmé au zoom : numéros parfaitement lisibles.",
+  ]},
   { version:'2026-08-04.197', items:[
     "Cours 6e G2 -- vrai bug corrigé (équerres \"à l'envers\") : le miroir par échelle utilisé pour retourner l'équerre inversait toute la forme (pas seulement le texte), donnant cet aspect inversé signalé. Corrigé pour la méthode perpendiculaire avec la même technique de rotation à 180° que les règles (le grand côté reste sur la même droite, qui n'a pas de sens unique). Pour la méthode parallèle, ce même changement faisait sortir l'équerre du cadre visible (le grand côté doit impérativement rester orienté vers la droite) -- miroir par échelle conservé là, mais ses numéros sont petits et peu visibles comparés à ceux des règles (déjà corrigées).",
   ]},

@@ -327,6 +327,15 @@ document.getElementById('exos-demo-droites-paralleles').innerHTML = `
 
 /* ================= Géométrie : petits utilitaires locaux ================= */
 function dpDir(p1,p2){ const dx=p2.x-p1.x, dy=p2.y-p1.y; const len=Math.hypot(dx,dy)||1; return {x:dx/len,y:dy/len}; }
+// Quand un ancêtre applique un miroir vertical (scale y négatif, nécessaire pour retourner
+// l'équerre côté N sans faire sortir son grand côté du cadre visible), les <text> de la forme
+// se retrouvent inversés eux aussi. Cette fonction les enveloppe individuellement d'un
+// contre-miroir (autour de leur propre point d'ancrage), pour qu'ils restent lisibles alors que
+// le reste de la forme (traits, évidement) reste correctement retourné.
+function dpUnmirrorText(svg){
+  return svg.replace(/<text x="([-\d.]+)" y="([-\d.]+)"([^>]*)>([^<]*)<\/text>/g,
+    (m, x, y, attrs, content) => `<g transform="translate(${x},${y}) scale(1,-1) translate(${-x},${-y})"><text x="${x}" y="${y}"${attrs}>${content}</text></g>`);
+}
 function dpExtend(point, dir, len){ return { x1: point.x-dir.x*len, y1: point.y-dir.y*len, x2: point.x+dir.x*len, y2: point.y+dir.y*len }; }
 function dpIntersect(p1,dir1,p2,dir2){
   const denom = dir1.x*dir2.y - dir1.y*dir2.x;
@@ -840,6 +849,16 @@ function dpRenderParaMethode(animate){
     const eqScale = pamScale;
     const scaleY = sign>=0 ? eqScale : -eqScale;
     equerre.setAttribute('transform', `translate(${corner.x},${corner.y}) rotate(${angDeg.toFixed(2)}) scale(${eqScale.toFixed(3)},${scaleY.toFixed(3)})`);
+    // Le miroir vertical (nécessaire pour retourner le petit côté sans faire sortir le grand du
+    // cadre) inverse aussi les numéros de graduation -- on les redresse individuellement dans ce
+    // cas précis, sans toucher au reste de la forme (bug signalé : "équerres à l'envers").
+    if(sign<0 && !equerre.dataset.unmirrored){
+      equerre.innerHTML = dpUnmirrorText(equerreSVG(TB_EQUERRE_LEGX, TB_EQUERRE_LEGY));
+      equerre.dataset.unmirrored = '1';
+    } else if(sign>=0 && equerre.dataset.unmirrored){
+      equerre.innerHTML = equerreSVG(TB_EQUERRE_LEGX, TB_EQUERRE_LEGY);
+      equerre.dataset.unmirrored = '';
+    }
     equerre.style.display='';
   }
 
