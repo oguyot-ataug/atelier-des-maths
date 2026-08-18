@@ -788,7 +788,7 @@ function dpPerpMethodeNext(){ if(dpPmIdx<DP_PM_STEPS.length-1){ dpPmIdx++; dpRen
 function dpPerpMethodeReset(){ dpPmIdx=0; dpRenderPerpMethode(false); }
 
 /* ---- Construction pas à pas : parallèle à l'équerre ---- */
-const DP_PAM_P1={x:60,y:190}, DP_PAM_P2={x:300,y:110}, DP_PAM_N={x:150,y:50};
+const DP_PAM_P1={x:60,y:165}, DP_PAM_P2={x:300,y:85}, DP_PAM_N={x:216,y:223};
 const dpPamDir = dpDir(DP_PAM_P1, DP_PAM_P2);
 const dpPamPerp = {x:-dpPamDir.y, y:dpPamDir.x};
 const dpPamSlideDist = dpPamPerp.x*(DP_PAM_N.x-DP_PAM_P1.x) + dpPamPerp.y*(DP_PAM_N.y-DP_PAM_P1.y);

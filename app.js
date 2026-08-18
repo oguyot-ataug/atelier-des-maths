@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.201', items:[
+    "Cours 6e G2 -- méthode parallèle : suite à une suggestion pragmatique, N est repositionné sous la droite (d) plutôt qu'au-dessus (choix purement pédagogique, sans incidence sur la méthode enseignée). Vérifié numériquement que ce côté donne un glissement de sens positif, ce qui évite complètement le besoin d'un miroir sur l'équerre -- rotation simple, texte et forme jamais inversés, quelle que soit l'étape. Aucune autre modification : chevauchement et échelle restent ceux corrigés précédemment.",
+  ]},
   { version:'2026-08-04.200', items:[
     "Cours 6e G2 -- trois corrections. (1) Méthode perpendiculaire : le crayon commençait son tracé en dehors de la règle -- ajusté pour rester nettement à l'intérieur de sa portée. (2) Méthode parallèle : même bug de chevauchement que la première construction trouvé sur la règle-rail (rotation superflue faisant basculer son côté épais du mauvais côté) -- corrigé et vérifié numériquement, plus aucun chevauchement avec l'équerre. (3) L'aspect \"à l'envers\" de l'équerre de la méthode parallèle semble avoir été provoqué par ce même chevauchement chaotique -- à revérifier maintenant qu'il est résolu.",
   ]},
