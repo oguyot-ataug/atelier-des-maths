@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.199', items:[
+    "Cours 6e G2 -- vrai bug enfin trouvé et corrigé (méthode perpendiculaire) : la règle avait une logique de rotation \"retournée\" copiée de l'équerre, alors que dpPmPerp pointe déjà toujours vers M (réglé une fois pour toutes ailleurs dans le code) -- cette rotation inutile faisait basculer le côté épais de la règle du MAUVAIS côté, recouvrant l'équerre. Vérifié numériquement (calcul direct des coordonnées transformées : le point intérieur de l'équerre tombe désormais hors du rectangle de la règle) et visuellement au zoom : règle et équerre sont maintenant deux objets clairement séparés, sans aucun chevauchement.",
+  ]},
   { version:'2026-08-04.198', items:[
     "Cours 6e G2 -- dernière pièce du puzzle sur l'équerre \"à l'envers\" (méthode parallèle) : son grand côté doit rester orienté vers la droite (sinon elle sort du cadre visible), donc le miroir par échelle restait nécessaire, mais inversait ses petits numéros de graduation. Corrigé en neutralisant l'inversion du texte spécifiquement (chaque numéro contre-tourné autour de son propre point d'ancrage), sans toucher au reste de la forme ni à sa position. Confirmé au zoom : numéros parfaitement lisibles.",
   ]},

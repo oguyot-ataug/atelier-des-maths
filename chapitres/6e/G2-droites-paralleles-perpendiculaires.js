@@ -725,16 +725,16 @@ function dpRenderPerpMethode(animate){
     // les numéros illisibles à l'envers, second bug signalé). On choisit à la place la rotation
     // OPPOSÉE (+180°) dans ce cas : la règle est alors posée en partant d'au-delà de M et
     // "recule" jusqu'avant le pied -- même ligne, même côté correct, texte toujours lisible.
-    let rAngDeg, rStart;
-    if(!mirrored){
-      rAngDeg = Math.atan2(dpPmPerp.y, dpPmPerp.x)*180/Math.PI;
-      const backOffset = TB_RULER_L*rulerScale*0.22;
-      rStart = {x:dpPmFoot.x-dpPmPerp.x*backOffset, y:dpPmFoot.y-dpPmPerp.y*backOffset};
-    } else {
-      rAngDeg = Math.atan2(-dpPmPerp.y, -dpPmPerp.x)*180/Math.PI;
-      const aheadOffset = dpPmTouchDist+35;
-      rStart = {x:dpPmFoot.x+dpPmPerp.x*aheadOffset, y:dpPmFoot.y+dpPmPerp.y*aheadOffset};
-    }
+    // dpPmPerp pointe déjà toujours vers M (réglé une fois pour toutes dans les constantes du
+    // fichier) -- la règle n'a donc PAS besoin d'une logique liée au miroir de l'équerre : ce
+    // miroir ne concerne que l'orientation propre de l'équerre (une contrainte différente,
+    // sans rapport). Utiliser la même rotation "retournée" ici avait pour effet de faire
+    // basculer aussi le côté épais de la règle du MAUVAIS côté (vérifié numériquement : le
+    // point intérieur de l'équerre tombait alors DANS le rectangle de la règle) -- d'où le vrai
+    // chevauchement signalé.
+    const rAngDeg = Math.atan2(dpPmPerp.y, dpPmPerp.x)*180/Math.PI;
+    const backOffset = TB_RULER_L*rulerScale*0.22;
+    const rStart = {x:dpPmFoot.x-dpPmPerp.x*backOffset, y:dpPmFoot.y-dpPmPerp.y*backOffset};
     ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAngDeg.toFixed(2)}) scale(${rulerScale.toFixed(3)})`);
     ruler.style.display='';
   } else {
