@@ -842,19 +842,18 @@ function dpRenderParaMethode(animate){
   if(s.phase==='removed' || s.phase==='traced' || s.phase==='clean'){
     equerre.style.display='none';
   } else {
-    // Le grand côté de l'équerre (à l'échelle 1) doit toujours atteindre N avec un peu de
-    // marge -- sinon, comme pour la méthode perpendiculaire, l'équerre reste trop petite et ne
-    // touche jamais vraiment N. Le petit côté doit aussi pointer vers "perp*sign" (peut être des
-    // DEUX côtés de la ligne selon le sens du glissement) -- le grand côté DOIT rester orienté
-    // vers dir (sinon l'équerre sort du cadre visible), donc seul un miroir vertical permet de
-    // retourner le petit côté sans changer le sens du grand.
+    // Le grand côté de l'équerre doit TOUJOURS pointer vers +dir (jamais -dir) : c'est
+    // dans CETTE direction précise que sa longueur (pamScale, calculée via dpPamTouchDist)
+    // a été prévue pour atteindre N. Utiliser -dir cassait cette propriété géométrique
+    // fondamentale -- le sommet ne touchait plus du tout N (vérifié : sommet loin de N).
+    // Le petit côté doit pointer vers "perp*sign" -- seul un miroir vertical permet de le
+    // retourner sans changer le sens du grand côté.
     const angDeg = Math.atan2(dpPamDir.y, dpPamDir.x)*180/Math.PI;
     const eqScale = pamScale;
     const scaleY = sign>=0 ? eqScale : -eqScale;
     equerre.setAttribute('transform', `translate(${corner.x},${corner.y}) rotate(${angDeg.toFixed(2)}) scale(${eqScale.toFixed(3)},${scaleY.toFixed(3)})`);
-    // Le miroir vertical (nécessaire pour retourner le petit côté sans faire sortir le grand du
-    // cadre) inverse aussi les numéros de graduation -- on les redresse individuellement dans ce
-    // cas précis, sans toucher au reste de la forme (bug signalé : "équerres à l'envers").
+    // Le miroir vertical inverse aussi les numéros de graduation -- on les redresse
+    // individuellement dans ce cas précis, sans toucher au reste de la forme.
     if(sign<0 && !equerre.dataset.unmirrored){
       equerre.innerHTML = dpUnmirrorText(equerreSVG(TB_EQUERRE_LEGX, TB_EQUERRE_LEGY));
       equerre.dataset.unmirrored = '1';
