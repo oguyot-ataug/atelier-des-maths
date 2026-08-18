@@ -109,7 +109,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 
 <p class="example-title" style="margin-top:16px;">Construction à la règle et à l'équerre :</p>
 <div class="figure-wrap">
-  <svg id="dp-paraMethodeSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+  <svg id="dp-paraMethodeSvg" viewBox="0 0 400 430" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
     <line id="dp-pam-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
     <circle id="dp-pam-N" r="5" fill="#E35D3A" data-marker="cross"/>
     <text id="dp-pam-labelN" font-style="italic" font-size="14">N</text>

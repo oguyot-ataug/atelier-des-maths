@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.202', items:[
+    "Cours 6e G2 -- méthode parallèle : le cadre (viewBox) était resté à sa hauteur d'origine (240) alors que N, désormais placé sous (d), fait descendre la construction bien plus bas (mesuré jusqu'à y=401 lors du glissement, largement hors cadre). Hauteur du cadre augmentée à 430 pour contenir toute la construction avec une marge confortable, vérifié à chaque étape.",
+  ]},
   { version:'2026-08-04.201', items:[
     "Cours 6e G2 -- méthode parallèle : suite à une suggestion pragmatique, N est repositionné sous la droite (d) plutôt qu'au-dessus (choix purement pédagogique, sans incidence sur la méthode enseignée). Vérifié numériquement que ce côté donne un glissement de sens positif, ce qui évite complètement le besoin d'un miroir sur l'équerre -- rotation simple, texte et forme jamais inversés, quelle que soit l'étape. Aucune autre modification : chevauchement et échelle restent ceux corrigés précédemment.",
   ]},
