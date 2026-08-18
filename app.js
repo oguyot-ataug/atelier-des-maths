@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.200', items:[
+    "Cours 6e G2 -- trois corrections. (1) Méthode perpendiculaire : le crayon commençait son tracé en dehors de la règle -- ajusté pour rester nettement à l'intérieur de sa portée. (2) Méthode parallèle : même bug de chevauchement que la première construction trouvé sur la règle-rail (rotation superflue faisant basculer son côté épais du mauvais côté) -- corrigé et vérifié numériquement, plus aucun chevauchement avec l'équerre. (3) L'aspect \"à l'envers\" de l'équerre de la méthode parallèle semble avoir été provoqué par ce même chevauchement chaotique -- à revérifier maintenant qu'il est résolu.",
+  ]},
   { version:'2026-08-04.199', items:[
     "Cours 6e G2 -- vrai bug enfin trouvé et corrigé (méthode perpendiculaire) : la règle avait une logique de rotation \"retournée\" copiée de l'équerre, alors que dpPmPerp pointe déjà toujours vers M (réglé une fois pour toutes ailleurs dans le code) -- cette rotation inutile faisait basculer le côté épais de la règle du MAUVAIS côté, recouvrant l'équerre. Vérifié numériquement (calcul direct des coordonnées transformées : le point intérieur de l'équerre tombe désormais hors du rectangle de la règle) et visuellement au zoom : règle et équerre sont maintenant deux objets clairement séparés, sans aucun chevauchement.",
   ]},

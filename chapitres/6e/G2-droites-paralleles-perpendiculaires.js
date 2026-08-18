@@ -745,7 +745,15 @@ function dpRenderPerpMethode(animate){
   if(s.phase==='traced' || s.phase==='clean'){
     // La perpendiculaire doit clairement DÉPASSER M, pas s'arrêter dessus (bug signalé : le
     // dépassement précédent ne faisait que 1-2 unités, invisible sous le point M lui-même).
-    const dpExt = dpExtend(dpPmFoot, dpPmPerp, dpPmTouchDist+35);
+    // Le tracé ne doit pas non plus commencer EN DEHORS de la règle côté proche (bug signalé) --
+    // on reste nettement à l'intérieur de sa portée (la règle recule de TB_RULER_L*rulerScale*0.22
+    // avant le pied ; on s'arrête ici à 60% de cette distance, avec de la marge des deux côtés).
+    const nearLen = TB_RULER_L*rulerScale*0.22*0.6;
+    const farLen = dpPmTouchDist+35;
+    const dpExt = {
+      x1: dpPmFoot.x-dpPmPerp.x*nearLen, y1: dpPmFoot.y-dpPmPerp.y*nearLen,
+      x2: dpPmFoot.x+dpPmPerp.x*farLen, y2: dpPmFoot.y+dpPmPerp.y*farLen
+    };
     lineDp.style.display='';
     angleMark.setAttribute('d', dpRightAngleMark(dpPmFoot, {x:dpPmDir.x,y:dpPmDir.y}, {x:dpPmPerp.x,y:dpPmPerp.y}, 13));
     angleMark.style.display='';
@@ -811,22 +819,17 @@ function dpRenderParaMethode(animate){
 
   const ruler = document.getElementById('dp-pam-ruler');
   if(s.phase==='slide'){
-    // La règle doit s'étendre du côté où l'équerre va RÉELLEMENT glisser (le signe de
-    // dpPamSlideDist peut être négatif) -- avant, elle s'étendait toujours dans le même sens
-    // fixe, donc l'équerre finissait souvent hors de sa portée visible (bug : "règle alignée
-    // au-dessus de l'équerre", la règle semblait déconnectée d'elle). On choisit la rotation
-    // (normale ou +180°) plutôt qu'un miroir par échelle, pour ne jamais inverser le texte des
-    // graduations (second bug signalé : "les outils sont en mode miroir").
-    const travelDir = dpPamSlideDist>=0 ? 1 : -1;
+    // La règle doit couvrir toute la course du glissement (le signe de dpPamSlideDist peut
+    // être négatif) -- mais elle n'a PAS besoin de "retourner" sa rotation pour cela (même bug
+    // que la méthode perpendiculaire : cela faisait basculer son côté épais du MAUVAIS côté,
+    // recouvrant l'équerre). Une seule et même rotation suffit ; seul le point de départ change.
     const backOffset = TB_RULER_L*pamScale*0.1;
-    let rAng, rStart;
-    if(travelDir>=0){
-      rAng = Math.atan2(dpPamPerp.y, dpPamPerp.x)*180/Math.PI;
-      rStart = {x:DP_PAM_P1.x-dpPamPerp.x*backOffset, y:DP_PAM_P1.y-dpPamPerp.y*backOffset};
-    } else {
-      rAng = Math.atan2(-dpPamPerp.y, -dpPamPerp.x)*180/Math.PI;
-      rStart = {x:DP_PAM_P1.x+dpPamPerp.x*backOffset, y:DP_PAM_P1.y+dpPamPerp.y*backOffset};
-    }
+    const rAng = Math.atan2(dpPamPerp.y, dpPamPerp.x)*180/Math.PI;
+    // Le point de départ doit être au-delà du point le plus lointain atteint pendant le
+    // glissement (qui peut être dans le sens négatif) moins une petite marge -- pour que la
+    // règle, en s'étendant toujours dans le même sens (+perp), couvre toute la course.
+    const farPoint = Math.min(0, dpPamSlideDist);
+    const rStart = {x:DP_PAM_P1.x+dpPamPerp.x*(farPoint-backOffset), y:DP_PAM_P1.y+dpPamPerp.y*(farPoint-backOffset)};
     ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAng.toFixed(2)}) scale(${pamScale.toFixed(3)})`);
     ruler.style.display='';
   } else {
