@@ -689,8 +689,11 @@ mPencilTool.innerHTML = pencilSVG('m-pencil');
 // cohérents entre eux, plutôt qu'un facteur choisi indépendamment. Fonction réutilisable : le
 // crayon glisse le long de la règle pendant l'étape 1 (voir nextMethodStep), donc sa position
 // doit pouvoir être recalculée à chaque frame, pas seulement posée une fois au point final.
+// Le crayon n'est PAS aligné avec la règle (une main ne tient pas un crayon bien à plat, parallèle
+// au bord de la règle) -- inclinaison de M_PENCIL_TILT par rapport à la direction du tracé.
+const M_PENCIL_TILT = 55;
 function setMPencilAt(x,y){
-  mPencilTool.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(mRayAngleDeg-90).toFixed(1)}) scale(${mRulerScale.toFixed(3)})`);
+  mPencilTool.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(mRayAngleDeg-90+M_PENCIL_TILT).toFixed(1)}) scale(${mRulerScale.toFixed(3)})`);
 }
 setMPencilAt(mStep1End.x, mStep1End.y);
 
@@ -753,24 +756,37 @@ function nextMethodStep(){
     // même temps (ordre demandé explicitement).
     document.getElementById('mRulerTool').setAttribute('opacity','0');
     document.getElementById('mPencilTool').setAttribute('opacity','0');
-    document.getElementById('mArc').setAttribute('opacity','1');
     document.querySelector('.step-item[data-step="2"]').classList.add('done');
     document.getElementById('btnMethodNext').disabled=true;
     const start=performance.now(), dur=1600;
     function frame(now){
       const t=Math.min(1,(now-start)/dur);
       const angle = mAngleA + t*Math.PI;
-      const pts=[];
-      for(let a=mAngleA;a<=angle+1e-6;a+=Math.PI/60){ const p=pointOnCircle(a); pts.push(`${p.x},${p.y}`); }
-      document.getElementById('mArc').setAttribute('points', pts.join(' '));
+      // Le compas balaie visuellement tout le demi-tour (le geste physique), mais l'arc encré
+      // ne trace PAS tout ce trajet : juste un petit arc, révélé une fois le compas arrivé, qui
+      // vient croiser la demi-droite pour matérialiser A' -- pas le demi-cercle complet.
       placeCompass(angle);
       if(t<1) requestAnimationFrame(frame);
-      else document.getElementById('btnMethodNext').disabled=false;
+      else {
+        document.getElementById('mArc').setAttribute('points', mArcCrossingPoints());
+        document.getElementById('mArc').setAttribute('opacity','1');
+        document.getElementById('btnMethodNext').disabled=false;
+      }
     }
     requestAnimationFrame(frame);
   } else {
     mRenderStepInstant(methodStep);
   }
+}
+
+/* Petit arc de compas qui vient croiser la demi-droite en A' (pas le demi-cercle complet) --
+   partagé entre l'animation (nextMethodStep) et le rendu instantané (mRenderStepInstant). */
+const M_ARC_HALF_ANGLE = 20*Math.PI/180;
+function mArcCrossingPoints(){
+  const target = mAngleA+Math.PI;
+  const pts=[];
+  for(let a=target-M_ARC_HALF_ANGLE; a<=target+M_ARC_HALF_ANGLE+1e-6; a+=Math.PI/60){ const p=pointOnCircle(a); pts.push(`${p.x},${p.y}`); }
+  return pts.join(' ');
 }
 
 /* Rendu instantané (sans animation) de l'état final d'une étape donnée (0, 1, 2 ou 3) --
@@ -790,8 +806,7 @@ function mRenderStepInstant(step){
   const showArc = step>=2;
   document.getElementById('mArc').setAttribute('opacity', showArc?'1':'0');
   if(showArc){
-    const pts=[]; for(let a=mAngleA;a<=mAngleA+Math.PI+1e-6;a+=Math.PI/60){ const p=pointOnCircle(a); pts.push(`${p.x},${p.y}`); }
-    document.getElementById('mArc').setAttribute('points', pts.join(' '));
+    document.getElementById('mArc').setAttribute('points', mArcCrossingPoints());
     document.querySelector('.step-item[data-step="2"]').classList.add('done');
   } else {
     document.getElementById('mArc').setAttribute('points','');
