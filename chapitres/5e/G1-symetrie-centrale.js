@@ -662,16 +662,26 @@ document.getElementById('mCompass').innerHTML = compassSVG(mR, mLegLen);
 // le segment [A ; 2×(O-A)] déjà utilisé par mStep1 ci-dessous.
 const mStep1End = {x: mA.x + 2*(O.x-mA.x), y: mA.y + 2*(O.y-mA.y)};
 const mRayAngleDeg = Math.atan2(mStep1End.y-mA.y, mStep1End.x-mA.x)*180/Math.PI;
+const mRayLen = Math.hypot(mStep1End.x-mA.x, mStep1End.y-mA.y);
+// La règle (dessinée à l'échelle native du tableau interactif, bien plus grand que ce petit
+// viewBox 400×260) doit être mise à l'échelle pour couvrir tout le segment tracé avec de la
+// marge des deux côtés -- même technique que rulerScale en 6e G2 (calculée à partir de la
+// distance réelle à couvrir, pas choisie à l'œil, sous peine de règle trop petite pour
+// atteindre le bout du trait -- bug signalé).
+const mRulerScale = Math.max(0.44, (mRayLen+50)/TB_RULER_L);
+const mRulerBackOffset = 30*mRulerScale;
 const mRulerStart = {
-  x: mA.x - Math.cos(mRayAngleDeg*Math.PI/180)*26,
-  y: mA.y - Math.sin(mRayAngleDeg*Math.PI/180)*26
+  x: mA.x - Math.cos(mRayAngleDeg*Math.PI/180)*mRulerBackOffset,
+  y: mA.y - Math.sin(mRayAngleDeg*Math.PI/180)*mRulerBackOffset
 };
 const mRulerTool = document.getElementById('mRulerTool');
 mRulerTool.innerHTML = rulerSVG(true);
-mRulerTool.setAttribute('transform', `translate(${mRulerStart.x.toFixed(1)},${mRulerStart.y.toFixed(1)}) rotate(${mRayAngleDeg.toFixed(1)}) scale(0.62)`);
+mRulerTool.setAttribute('transform', `translate(${mRulerStart.x.toFixed(1)},${mRulerStart.y.toFixed(1)}) rotate(${mRayAngleDeg.toFixed(1)}) scale(${mRulerScale.toFixed(3)})`);
 const mPencilTool = document.getElementById('mPencilTool');
 mPencilTool.innerHTML = pencilSVG('m-pencil');
-mPencilTool.setAttribute('transform', `translate(${mStep1End.x.toFixed(1)},${mStep1End.y.toFixed(1)}) rotate(${(mRayAngleDeg-90).toFixed(1)}) scale(0.5)`);
+// Même échelle que la règle (comme eqScale=rulerScale en G2) pour que les deux outils restent
+// cohérents entre eux, plutôt qu'un facteur choisi indépendamment.
+mPencilTool.setAttribute('transform', `translate(${mStep1End.x.toFixed(1)},${mStep1End.y.toFixed(1)}) rotate(${(mRayAngleDeg-90).toFixed(1)}) scale(${mRulerScale.toFixed(3)})`);
 
 let methodStep=0;
 
