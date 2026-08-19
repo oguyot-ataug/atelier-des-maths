@@ -255,7 +255,7 @@ document.getElementById('methode-demo-symetrie').innerHTML = `
           <line id="mStep1" x1="120" y1="60" x2="120" y2="60" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
           <g id="mRulerTool" opacity="0"></g>
           <g id="mPencilTool" opacity="0"></g>
-          <polyline id="mArc" fill="none" stroke="#E35D3A" stroke-width="1.6" stroke-dasharray="4 4" opacity="0"/>
+          <polyline id="mArc" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
           <g id="mCompass" opacity="0"></g>
           <line id="mTickAprime" class="pt-tick" stroke="#E35D3A" stroke-width="2" opacity="0"/>
           <text id="mStep3t" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" opacity="0">A'</text>
@@ -804,8 +804,14 @@ function mRenderStepInstant(step){
   if(showAprime){
     const Aprime = pointOnCircle(mAngleA+Math.PI);
     setTick(document.getElementById('mTickAprime'), Aprime.x, Aprime.y, mAngleA);
-    document.getElementById('mStep3t').setAttribute('x', Aprime.x+10);
-    document.getElementById('mStep3t').setAttribute('y', Aprime.y+18);
+    // Sous la droite (perpendiculaire à [AO), côté y positif = vers le bas en SVG), pas dans son
+    // prolongement (l'ancien décalage fixe +10,+18 pointait quasiment dans la même direction que
+    // la demi-droite elle-même).
+    let perp = {x:-mDirAO.y, y:mDirAO.x};
+    if(perp.y<0) perp = {x:mDirAO.y, y:-mDirAO.x};
+    const labelOffset = 18;
+    document.getElementById('mStep3t').setAttribute('x', (Aprime.x+perp.x*labelOffset).toFixed(1));
+    document.getElementById('mStep3t').setAttribute('y', (Aprime.y+perp.y*labelOffset).toFixed(1));
     document.querySelector('.step-item[data-step="3"]').classList.add('done');
   }
   document.getElementById('btnMethodNext').disabled = (step===3);
