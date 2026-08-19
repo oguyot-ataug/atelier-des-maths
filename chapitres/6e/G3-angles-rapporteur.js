@@ -1288,7 +1288,7 @@ DEMO_REGISTRY['6e|Angles et rapporteur'] = {
   }
 };
 
-DEMO_QUIZZES['Angles et rapporteur'] = [
+DEMO_QUIZZES['6e|Angles et rapporteur'] = [
   {q:"Un angle de 90° est appelé...",
    opts:["Un angle plat","Un angle droit","Un angle nul"], correct:1},
   {q:"Un angle de 130° est un angle...",

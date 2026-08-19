@@ -532,7 +532,7 @@ DEMO_REGISTRY['5e|Équations'] = {
   }
 };
 
-DEMO_QUIZZES['Équations'] = [
+DEMO_QUIZZES['5e|Équations'] = [
   {q:"Une équation à une inconnue est...",
    opts:["Une égalité entre deux expressions littérales comportant la même lettre","Une addition de deux nombres","Un tableau de proportionnalité"], correct:0},
   {q:"Résoudre une équation, c'est...",

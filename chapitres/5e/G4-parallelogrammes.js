@@ -407,7 +407,7 @@ DEMO_REGISTRY['5e|Parallélogrammes'] = {
   }
 };
 
-DEMO_QUIZZES['Parallélogrammes'] = [
+DEMO_QUIZZES['5e|Parallélogrammes'] = [
   {q:"Un parallélogramme a-t-il forcément ses côtés opposés de même longueur ?",
    opts:["Oui, toujours","Non, jamais","Seulement si c'est un rectangle"], correct:0},
   {q:"Un quadrilatère dont les diagonales se coupent en leur milieu est-il forcément un parallélogramme ?",

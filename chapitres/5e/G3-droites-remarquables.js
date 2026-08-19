@@ -462,7 +462,7 @@ DEMO_REGISTRY['5e|Droites remarquables dans un triangle'] = {
   }
 };
 
-DEMO_QUIZZES['Droites remarquables dans un triangle'] = [
+DEMO_QUIZZES['5e|Droites remarquables dans un triangle'] = [
   {q:"La médiatrice d'un segment est...",
    opts:["La droite perpendiculaire à ce segment en son milieu","La droite qui passe par un sommet et le milieu du côté opposé","La droite qui partage un angle en deux angles égaux"], correct:0},
   {q:"Le point de concours des trois médiatrices d'un triangle est...",

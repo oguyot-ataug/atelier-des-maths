@@ -214,7 +214,7 @@ const fqMethodeDemo = makeStepDemo(FQ_METHODE_STEPS, 'fq-methodeDisplay');
 DEMO_REGISTRY['5e|Fractions'] = { cours:'cours-demo-fractions-5e', methode:'methode-demo-fractions-5e', exos:'exos-demo-fractions-5e', histoire:'histoire-demo-fractions-5e',
   init:()=>{ initCompareDemo(); fqDiviseDemo.reset(); fqMethodeDemo.reset(); renderStaticMath(document.getElementById('cours-demo-fractions-5e')); renderStaticMath(document.getElementById('exos-demo-fractions-5e')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-5e')); injectCourseAddButtons(document.getElementById('methode-demo-fractions-5e')); } };
 
-DEMO_QUIZZES['Fractions'] = [
+DEMO_QUIZZES['5e|Fractions'] = [
   {q:"3/7 = ?/21 : par quel nombre multiplie-t-on le numérateur 3 ?",
    opts:["Par 3","Par 7","Par 21"], correct:0},
   {q:"Pour comparer 5/6 et 7/9, quelle est la première étape ?",

@@ -245,6 +245,7 @@ document.querySelectorAll('.view-toggle button').forEach(b=>{
 /* ======================= CHAPITRE ======================= */
 const DEMO_REGISTRY = {};
 let currentChapterTitle = null;
+let currentChapterLevel = null;
 
 function openChapitre(c, tab, lvlOverride){
   const lvl = lvlOverride || currentLevel;
@@ -253,6 +254,7 @@ function openChapitre(c, tab, lvlOverride){
   chapView.classList.toggle('lvl-5e', lvl==='5e');
   const demo = DEMO_REGISTRY[lvl+'|'+c.t];
   currentChapterTitle = c.t;
+  currentChapterLevel = lvl;
   document.getElementById('chap-code-tag').textContent = c.code;
   document.getElementById('chap-code-tag').style.background = CATS[c.cat].bg;
   document.getElementById('chap-code-tag').style.color = CATS[c.cat].text;
@@ -518,7 +520,7 @@ function renderQuizHTML(bank, prefixHtml){
   area.innerHTML=html;
 }
 function generateDemoQuiz(){
-  const bank = DEMO_QUIZZES[currentChapterTitle] || DEMO_QUIZZES['Symétrie centrale'];
+  const bank = DEMO_QUIZZES[currentChapterLevel+'|'+currentChapterTitle] || DEMO_QUIZZES['5e|Symétrie centrale'];
   renderQuizHTML(bank, '<p class="hint">Démonstration avec des questions pré-écrites.</p>');
 }
 async function generateQuiz(){

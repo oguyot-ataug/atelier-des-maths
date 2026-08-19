@@ -1250,7 +1250,7 @@ function dpRegisterGeoDemos(){
 DEMO_REGISTRY['6e|Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles', histoire:'histoire-demo-droites-paralleles',
   init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethAnimReset(); dpRegisterGeoDemos(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); injectCourseAddButtons(document.getElementById('methode-demo-droites-paralleles')); } };
 
-DEMO_QUIZZES['Droites parallèles et perpendiculaires'] = [
+DEMO_QUIZZES['6e|Droites parallèles et perpendiculaires'] = [
   {q:"Que signifie (d) ⊥ (d') ?",
    opts:["(d) et (d') sont parallèles","(d) et (d') sont perpendiculaires","(d) et (d') sont confondues"], correct:1},
   {q:"Deux droites parallèles distinctes ont combien de points communs ?",

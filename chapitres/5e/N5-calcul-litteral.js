@@ -332,7 +332,7 @@ DEMO_REGISTRY['5e|Calcul littéral'] = {
   }
 };
 
-DEMO_QUIZZES['Calcul littéral'] = [
+DEMO_QUIZZES['5e|Calcul littéral'] = [
   {q:"Que désignent les lettres dans une expression littérale ?",
    opts:["Des nombres","Des unités","Rien de précis"], correct:0},
   {q:"Que vaut 2x² pour x = 3 ?",

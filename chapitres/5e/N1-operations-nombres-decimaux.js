@@ -174,7 +174,7 @@ function divisionPoseeReset(){ divisionPoseeIdx=0; renderDivisionPosee(); }
 DEMO_REGISTRY['5e|Opérations sur les nombres décimaux'] = { cours:'cours-demo-decimaux', methode:'methode-demo-decimaux', exos:'exos-demo-decimaux', histoire:'histoire-demo-decimaux',
   init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };
 
-DEMO_QUIZZES['Opérations sur les nombres décimaux'] = [
+DEMO_QUIZZES['5e|Opérations sur les nombres décimaux'] = [
   {q:"Que vaut 4 + 2 × 3 ?",
    opts:["18","10","9"], correct:1},
   {q:"Comment s'appelle le résultat d'une division ?",

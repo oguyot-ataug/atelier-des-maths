@@ -527,7 +527,7 @@ DEMO_REGISTRY['6e|Opérations et ordre de grandeur'] = {
   }
 };
 
-DEMO_QUIZZES['Opérations et ordre de grandeur'] = [
+DEMO_QUIZZES['6e|Opérations et ordre de grandeur'] = [
   {q:"Pour poser une addition de nombres décimaux, il faut...",
    opts:["Aligner les chiffres de droite","Aligner les virgules","Aligner les chiffres des unités seulement"], correct:1},
   {q:"64 × 0,01 = ...",

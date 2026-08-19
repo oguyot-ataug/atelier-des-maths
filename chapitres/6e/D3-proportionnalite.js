@@ -98,7 +98,7 @@ document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
 </div>
 
 <p class="example-title">Exemple : le plan de la chambre de Léa</p>
-<p style="margin:4px 0 8px;">Voici le plan de la chambre de Léa, dessiné à l'échelle <span class="tex">\\dfrac{1}{25}</span>. Quelle est la largeur réelle de la chambre, sachant qu'elle mesure 12 cm sur le plan ? Et quelle est la largeur réelle du lit, sachant qu'il mesure 6 cm sur le plan ?</p>
+<p style="margin:4px 0 8px;">Voici le plan de la chambre de Léa, dessiné à l'échelle <span class="tex">\\dfrac{1}{25}</span>. Quelle est la longueur réelle de la chambre, sachant qu'elle mesure 12 cm sur le plan ? Et quelle est la largeur réelle du lit, sachant qu'il mesure 6 cm sur le plan ?</p>
 
 <div class="figure-wrap" style="max-width:420px;margin:12px auto;">
   <svg viewBox="0 0 340 260" style="width:100%;display:block;">
@@ -121,12 +121,12 @@ document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
   </svg>
 </div>
 
-<p style="margin:4px 0 4px;">Pour déterminer la largeur réelle de la chambre...</p>
+<p style="margin:4px 0 4px;">Pour déterminer la longueur réelle de la chambre...</p>
 <ul class="example-list">
-  <li>① on mesure la largeur sur le plan : 12 cm</li>
+  <li>① on mesure la longueur sur le plan : 12 cm</li>
   <li>② l'échelle est <span class="tex">\\dfrac{1}{25}</span>, donc 1 cm sur le plan représente 25 cm en réalité, donc 12 cm représentent <span class="tex">12 \\times 25 = 300</span> cm</li>
 </ul>
-<p style="margin:4px 0 12px;">La largeur réelle de la chambre est donc <b>300 cm</b>, soit <b>3 m</b>.</p>
+<p style="margin:4px 0 12px;">La longueur réelle de la chambre est donc <b>300 cm</b>, soit <b>3 m</b>.</p>
 
 <p style="margin:4px 0 4px;">Pour déterminer la largeur réelle du lit...</p>
 <ul class="example-list">
@@ -155,9 +155,226 @@ document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
 `;
 
 document.getElementById('methode-demo-proportionnalite-6e').innerHTML = `
-<div class="sub-header"><span class="letter">M</span><h4>Méthode</h4></div>
-<p class="hint" style="margin:8px 0;">Cette partie est en cours de préparation, elle arrivera dans une prochaine mise à jour.</p>
+<p class="example-title" style="margin-top:0;">Grandeur et unité</p>
+<span class="def-badge">Définition</span>
+<div class="def-box">
+  Une <b>grandeur</b> est ce que l'on peut mesurer (une longueur, une durée, un prix, une masse, un volume, une aire...). Une <b>unité</b> permet d'exprimer la mesure d'une grandeur.
+</div>
+<p style="margin:10px 0 0;">Par exemple, une <b>température</b> est une grandeur, et elle peut s'exprimer dans l'unité <b>°C</b> (degré Celsius).</p>
+
+<p class="example-title">Jeu : associe chaque grandeur à son unité</p>
+<p class="hint interaction-hint" style="margin:0 0 10px;">Clique sur une grandeur, puis sur l'unité qui lui correspond.</p>
+<div class="pgame-board" id="pgame6-board"></div>
+<p class="hint" id="pgame6-status" style="margin:10px 0;"></p>
+<button class="btn secondary" onclick="pp6GameReset()">Recommencer</button>
+
+<p class="example-title" style="margin-top:26px;">Évolution d'une grandeur</p>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">
+  On connaît une valeur initiale de deux grandeurs A et B associées, ainsi qu'un objectif pour B. On veut faire évoluer A pour atteindre cet objectif.
+</div>
+
+<p style="margin:14px 0 10px;"><b>Exemple</b> : une voiture consomme <span style="color:var(--accent);font-weight:700;">5 L</span> pour parcourir <span style="color:var(--accent);font-weight:700;">100 km</span>. Quelle est sa consommation pour <span style="color:var(--accent-orange);font-weight:700;">250 km</span> ?</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le calcul.</p>
+  <div class="step-display" id="pp6EvolDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="pp6EvolDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="pp6EvolDemo.reset()">Recommencer</button>
+  </div>
+</div>
+
+<p class="example-title" style="margin-top:26px;">Autre méthode : l'association dans un tableau</p>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">Quand on connaît <b>deux paires</b> de valeurs associées, on peut parfois passer de l'une à l'autre par une opération simple, et appliquer cette même opération sur l'autre grandeur.</div>
+
+<p style="margin:14px 0 6px;"><b>Exemple</b> : on connaît les paires (5 ; 100) et (3 ; 60). On cherche la valeur de B associée à A = 8.</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le raisonnement.</p>
+  <div id="pp6lin1-wrap"></div>
+  <div class="step-list" id="pp6lin1-steps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>On considère A = 8. On veut trouver B.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On remarque que 8 = 5 + 3.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>On applique la même addition à B : 100 + 60 = 160.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="pp6lin1-next" onclick="pp6Lin1Next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="pp6Lin1Reset()">Recommencer</button>
+  </div>
+</div>
+
+<p style="margin:22px 0 6px;"><b>Autre exemple</b> : toujours avec (5 ; 100) et (3 ; 60), on cherche cette fois la valeur de A associée à B = 40.</p>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le raisonnement.</p>
+  <div id="pp6lin2-wrap"></div>
+  <div class="step-list" id="pp6lin2-steps">
+    <div class="step-item" data-step="0"><div class="step-num">1</div><div>On considère B = 40. On veut trouver A.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On remarque que 40 = 100 − 60.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>On applique la même soustraction à A : 5 − 3 = 2.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="pp6lin2-next" onclick="pp6Lin2Next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="pp6Lin2Reset()">Recommencer</button>
+  </div>
+</div>
 `;
+
+/* ================= MÉTHODE : mêmes démos que 5e P1-proportionnalite.js, identifiants pp6* pour
+   éviter toute collision (les deux conteneurs méthode-demo-proportionnalite-5e/6e coexistent
+   dans le DOM, un seul visible à la fois -- réutiliser les mêmes ids casserait getElementById,
+   qui ne renvoie que le premier élément trouvé, peu importe lequel des deux est affiché).
+   Contenu et exemples strictement identiques à la version 5e (même jeu grandeur/unité, mêmes
+   nombres pour l'évolution et les deux démos de linéarité) : demandé tel quel par Olivier. ================= */
+const PP6_PAIRS = [
+  ['Longueur','m'], ['Durée','s'], ['Masse','kg'], ['Prix','€'], ['Volume','L'], ['Aire','m²'],
+];
+let pp6GameSelectedCard = null;
+let pp6GameFound = 0;
+function pp6Shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+function pp6GameReset(){
+  pp6GameSelectedCard = null;
+  pp6GameFound = 0;
+  const gCol = pp6Shuffle(PP6_PAIRS.map(p=>p[0]));
+  const uCol = pp6Shuffle(PP6_PAIRS.map(p=>p[1]));
+  const board = document.getElementById('pgame6-board');
+  board.innerHTML = `
+    <div class="pgame-col">${gCol.map(g=>`<div class="pgame-card" data-role="g" data-val="${g}">${g}</div>`).join('')}</div>
+    <div class="pgame-col">${uCol.map(u=>`<div class="pgame-card" data-role="u" data-val="${u}">${u}</div>`).join('')}</div>
+  `;
+  board.querySelectorAll('.pgame-card').forEach(card=>card.addEventListener('click', ()=>pp6GameClick(card)));
+  document.getElementById('pgame6-status').textContent = `0 / ${PP6_PAIRS.length} paires trouvées.`;
+}
+function pp6GameClick(card){
+  if(card.classList.contains('matched')) return;
+  if(!pp6GameSelectedCard){
+    document.querySelectorAll('#pgame6-board .pgame-card').forEach(c=>c.classList.remove('selected'));
+    card.classList.add('selected');
+    pp6GameSelectedCard = card;
+    return;
+  }
+  if(pp6GameSelectedCard===card){ card.classList.remove('selected'); pp6GameSelectedCard=null; return; }
+  if(pp6GameSelectedCard.dataset.role===card.dataset.role){
+    document.querySelectorAll('#pgame6-board .pgame-card').forEach(c=>c.classList.remove('selected'));
+    card.classList.add('selected');
+    pp6GameSelectedCard = card;
+    return;
+  }
+  const gCard = pp6GameSelectedCard.dataset.role==='g' ? pp6GameSelectedCard : card;
+  const uCard = pp6GameSelectedCard.dataset.role==='u' ? pp6GameSelectedCard : card;
+  const pair = PP6_PAIRS.find(p=>p[0]===gCard.dataset.val);
+  if(pair && pair[1]===uCard.dataset.val){
+    gCard.classList.remove('selected'); gCard.classList.add('matched');
+    uCard.classList.add('matched');
+    pp6GameFound++;
+    document.getElementById('pgame6-status').textContent = `${pp6GameFound} / ${PP6_PAIRS.length} paires trouvées.` + (pp6GameFound===PP6_PAIRS.length ? ' Bravo, terminé !' : '');
+  } else {
+    gCard.classList.add('wrong'); uCard.classList.add('wrong');
+    setTimeout(()=>{ gCard.classList.remove('wrong','selected'); uCard.classList.remove('wrong'); }, 500);
+  }
+  pp6GameSelectedCard = null;
+}
+
+function pp6EvolFrac(strike){
+  const km = strike ? '<s>km</s>' : 'km';
+  return '<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 4px;font-size:.95rem;">'
+       +'<span style="border-bottom:1.5px solid #1C1B2E;padding:0 6px;"><span style="color:var(--accent-orange);font-weight:700;">250</span> '+km+'</span>'
+       +'<span style="padding:0 6px;"><span style="color:var(--accent);font-weight:700;">100</span> '+km+'</span>'
+       +'</span>';
+}
+const PP6_EVOL_STEPS = [
+  {expr:'On note C la consommation cherchée pour 250 km.',
+   note:"On cherche une consommation. Donc on va faire évoluer la consommation initiale (5 L)."},
+  {expr:'C = 5 L &times; ( ... / ... )',
+   note:"On pose l'écriture : la valeur initiale, multipliée par une fraction."},
+  {expr:'C = 5 L &times; '+pp6EvolFrac(false),
+   note:"La fraction représente l'évolution de la distance : au numérateur la valeur à atteindre, au dénominateur la donnée initiale."},
+  {expr:'C = 5 L &times; '+pp6EvolFrac(true),
+   note:"Les unités km sont les mêmes en haut et en bas : elles se simplifient."},
+  {expr:'C = 5 L &times; 2,5',
+   note:"On calcule le quotient : 250 : 100 = 2,5."},
+  {expr:'C = 12,5 L',
+   note:"On termine le calcul, sans oublier l'unité. La consommation pour 250 km est donc 12,5 L."},
+];
+const pp6EvolDemo = makeStepDemo(PP6_EVOL_STEPS, 'pp6EvolDisplay');
+
+function pp6ArrowHead(x,y,angleDeg,size,color){
+  size = size||6;
+  const a = angleDeg*Math.PI/180;
+  const b1 = {x:x-size*Math.cos(a-0.45), y:y-size*Math.sin(a-0.45)};
+  const b2 = {x:x-size*Math.cos(a+0.45), y:y-size*Math.sin(a+0.45)};
+  return `<polygon points="${x},${y} ${b1.x.toFixed(1)},${b1.y.toFixed(1)} ${b2.x.toFixed(1)},${b2.y.toFixed(1)}" fill="${color}"/>`;
+}
+function pp6LinArrowsAbove(c1,c2,c3,topY,label,color){
+  const apexY = topY-38;
+  return `<line x1="${c1}" y1="${topY}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
+    <line x1="${c2}" y1="${topY}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
+    <line x1="${c3}" y1="${apexY}" x2="${c3}" y2="${topY-2}" stroke="${color}" stroke-width="1.5"/>
+    ${pp6ArrowHead(c3, topY, 90, 6, color)}
+    <text x="${c3}" y="${apexY-6}" font-size="13" text-anchor="middle" fill="${color}" font-weight="700">${label}</text>`;
+}
+function pp6LinArrowsBelow(c1,c2,c3,bottomY,label,color){
+  const apexY = bottomY+38;
+  return `<line x1="${c1}" y1="${bottomY}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
+    <line x1="${c2}" y1="${bottomY}" x2="${c3}" y2="${apexY}" stroke="${color}" stroke-width="1.5"/>
+    <line x1="${c3}" y1="${apexY}" x2="${c3}" y2="${bottomY+2}" stroke="${color}" stroke-width="1.5"/>
+    ${pp6ArrowHead(c3, bottomY, -90, 6, color)}
+    <text x="${c3}" y="${apexY+15}" font-size="13" text-anchor="middle" fill="${color}" font-weight="700">${label}</text>`;
+}
+function pp6LinCell(x,y,val,highlight){
+  return `<rect x="${x-45}" y="${y-22}" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"/>
+    <text x="${x}" y="${y+5}" font-size="15" text-anchor="middle" fill="${highlight?'var(--accent-orange)':'#1C1B2E'}" font-weight="${highlight?'700':'400'}">${val}</text>`;
+}
+function pp6LinLabelCell(y, text){
+  const x0=10, w=140;
+  return `<rect x="${x0}" y="${y-22}" width="${w}" height="44" fill="rgba(31,58,92,.06)" stroke="#1C1B2E" stroke-width="1.3"/>
+    <text x="${x0+w/2}" y="${y+5}" font-size="13" text-anchor="middle" fill="#1C1B2E" font-weight="700">${text}</text>`;
+}
+function pp6LinBuildSvg(id, valsA, valsB, unknownIsA, labelA, labelB, showArrowsA, showArrowsB){
+  const c1=205,c2=305,c3=405, yA=84, yB=128;
+  let s = `<svg id="${id}" viewBox="0 0 465 224" style="width:100%;max-width:440px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">`;
+  s += pp6LinLabelCell(yA, 'Grandeur A');
+  s += pp6LinLabelCell(yB, 'Grandeur B');
+  s += pp6LinCell(c1,yA,valsA[0]) + pp6LinCell(c2,yA,valsA[1]) + pp6LinCell(c3,yA,valsA[2], unknownIsA);
+  s += pp6LinCell(c1,yB,valsB[0]) + pp6LinCell(c2,yB,valsB[1]) + pp6LinCell(c3,yB,valsB[2], !unknownIsA);
+  if(showArrowsA) s += pp6LinArrowsAbove(c1,c2,c3,yA-22,labelA,'#1F6B3A');
+  if(showArrowsB) s += pp6LinArrowsBelow(c1,c2,c3,yB+22,labelB,'#1F6B3A');
+  s += `</svg>`;
+  return s;
+}
+
+let pp6Lin1Step = 0;
+function pp6Lin1Render(step){
+  document.getElementById('pp6lin1-wrap').innerHTML = pp6LinBuildSvg('pp6lin1-svg', [5,3,8], [100,60, step>=2?160:'?'], false, '5 + 3', '100 + 60', step>=1, step>=2);
+  document.querySelectorAll('#pp6lin1-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=step));
+  document.getElementById('pp6lin1-next').textContent = step>=2 ? 'Terminé ✓' : 'Étape suivante →';
+  document.getElementById('pp6lin1-next').disabled = step>=2;
+}
+function pp6Lin1Next(){ if(pp6Lin1Step<2){ pp6Lin1Step++; pp6Lin1Render(pp6Lin1Step); } }
+function pp6Lin1Reset(){ pp6Lin1Step=0; pp6Lin1Render(0); }
+
+let pp6Lin2Step = 0;
+function pp6Lin2Render(step){
+  document.getElementById('pp6lin2-wrap').innerHTML = pp6LinBuildSvg('pp6lin2-svg', [5,3, step>=2?2:'?'], [100,60,40], true, '5 \u2212 3', '100 \u2212 60', step>=2, step>=1);
+  document.querySelectorAll('#pp6lin2-steps .step-item').forEach((el,i)=>el.classList.toggle('done', i<=step));
+  document.getElementById('pp6lin2-next').textContent = step>=2 ? 'Terminé ✓' : 'Étape suivante →';
+  document.getElementById('pp6lin2-next').disabled = step>=2;
+}
+function pp6Lin2Next(){ if(pp6Lin2Step<2){ pp6Lin2Step++; pp6Lin2Render(pp6Lin2Step); } }
+function pp6Lin2Reset(){ pp6Lin2Step=0; pp6Lin2Render(0); }
+const PP6LIN1_STEPS = [
+  {note:"On considère A = 8. On veut trouver la valeur de B qui lui correspond."},
+  {note:"On remarque que 8 = 5 + 3."},
+  {note:"On applique la même addition à B : 100 + 60 = 160."},
+];
+const PP6LIN2_STEPS = [
+  {note:"On considère B = 40. On veut trouver la valeur de A qui lui correspond."},
+  {note:"On remarque que 40 = 100 − 60."},
+  {note:"On applique la même soustraction à A : 5 − 3 = 2."},
+];
 
 document.getElementById('exos-demo-proportionnalite-6e').innerHTML = `
 <div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
@@ -172,5 +389,21 @@ DEMO_REGISTRY['6e|Proportionnalité'] = {
     renderStaticMath(document.getElementById('exos-demo-proportionnalite-6e'));
     injectCourseAddButtons(document.getElementById('cours-demo-proportionnalite-6e'));
     injectCourseAddButtons(document.getElementById('methode-demo-proportionnalite-6e'));
+    pp6GameReset();
+    pp6EvolDemo.reset();
+    pp6Lin1Reset(); pp6Lin2Reset();
+    registerGeoStepDemo('pp6lin1-svg', { steps:()=>PP6LIN1_STEPS, getIdx:()=>pp6Lin1Step, goto:(i)=>{ pp6Lin1Step=i; pp6Lin1Render(i); } });
+    registerGeoStepDemo('pp6lin2-svg', { steps:()=>PP6LIN2_STEPS, getIdx:()=>pp6Lin2Step, goto:(i)=>{ pp6Lin2Step=i; pp6Lin2Render(i); } });
   }
 };
+
+DEMO_QUIZZES['6e|Proportionnalité'] = [
+  {q:"Deux grandeurs sont proportionnelles quand...",
+   opts:["les valeurs de l'une s'obtiennent en multipliant celles de l'autre par un même nombre non nul","les valeurs de l'une sont toujours plus grandes que celles de l'autre","la somme des deux grandeurs est constante"], correct:0},
+  {q:"Dans un tableau de proportionnalité, les nombres de la seconde ligne s'obtiennent en multipliant ceux de la première ligne par...",
+   opts:["un nombre différent à chaque colonne","le coefficient de proportionnalité, toujours le même","100"], correct:1},
+  {q:"Sur un plan à l'échelle 1/25, une longueur de 4 cm représente en réalité...",
+   opts:["4 cm","25 cm","100 cm"], correct:2},
+  {q:"Sur une échelle a/b, que représente le dénominateur b ?",
+   opts:["Un nombre d'unités sur le plan","Le nombre de la même unité en réalité","Le nombre de mesures effectuées"], correct:1},
+];

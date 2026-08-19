@@ -864,7 +864,7 @@ function mGotoStep(i){ methodStep = i+1; mRenderStepInstant(methodStep); }
 DEMO_REGISTRY['5e|Symétrie centrale'] = { cours:'cours-demo-symetrie', methode:'methode-demo-symetrie', exos:'exos-demo-symetrie', histoire:'histoire-demo-symetrie',
   init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); registerGeoStepDemo('svgMethod', { steps:()=>M_STEPS, getIdx:()=>methodStep-1, goto:(i)=>mGotoStep(i) }); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); injectCourseAddButtons(document.getElementById('methode-demo-symetrie')); } };
 
-DEMO_QUIZZES['Symétrie centrale'] = [
+DEMO_QUIZZES['5e|Symétrie centrale'] = [
   {q:"O est le milieu de [AA']. Que peut-on dire de A' par rapport à A ?",
    opts:["A' est le symétrique de A par rapport à O","A' est le symétrique de A par rapport à une droite","A et A' sont confondus"], correct:0},
   {q:"La symétrie centrale de centre O correspond à :",

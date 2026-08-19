@@ -206,7 +206,7 @@ const neChiffreNombreDemo = makeStepDemo(NE_CHIFFRE_NOMBRE_STEPS, 'ne-chiffreNom
 DEMO_REGISTRY['6e|Nombres entiers'] = { cours:'cours-demo-nombres-entiers', methode:'methode-demo-nombres-entiers', exos:'exos-demo-nombres-entiers', histoire:'histoire-demo-nombres-entiers',
   init:()=>{ neDivisionPoseeReset(); neChiffreNombreDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-nombres-entiers')); injectCourseAddButtons(document.getElementById('methode-demo-nombres-entiers')); } };
 
-DEMO_QUIZZES['Nombres entiers'] = [
+DEMO_QUIZZES['6e|Nombres entiers'] = [
   {q:"Comment s'appelle le résultat d'une multiplication ?",
    opts:["La différence","Le produit","Le quotient"], correct:1},
   {q:"Dans la division euclidienne 823 = (14 × 58) + 11, comment s'appelle le nombre 11 ?",

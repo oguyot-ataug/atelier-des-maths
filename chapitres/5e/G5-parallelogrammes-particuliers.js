@@ -765,7 +765,7 @@ DEMO_REGISTRY['5e|Parallélogrammes particuliers'] = {
   }
 };
 
-DEMO_QUIZZES['Parallélogrammes particuliers'] = [
+DEMO_QUIZZES['5e|Parallélogrammes particuliers'] = [
   {q:"Un rectangle a-t-il forcément des diagonales de même longueur ?",
    opts:["Oui, toujours","Non, jamais","Seulement si c'est un carré"], correct:0},
   {q:"Un parallélogramme dont les diagonales sont perpendiculaires est un...",

@@ -117,7 +117,7 @@ DEMO_REGISTRY['5e|Divisibilité'] = {
   }
 };
 
-DEMO_QUIZZES['Divisibilité'] = [
+DEMO_QUIZZES['5e|Divisibilité'] = [
   {q:"36 est-il divisible par 9 ?",
    opts:["Oui (3+6=9, multiple de 9)","Non","On ne peut pas savoir sans poser la division"], correct:0},
 ];

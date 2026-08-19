@@ -139,7 +139,7 @@ const fpMethodeDemo = makeStepDemo(FP_METHODE_STEPS, 'fp-methodeDisplay');
 DEMO_REGISTRY['6e|Fractions : nombres et partage'] = { cours:'cours-demo-fractions-partage', methode:'methode-demo-fractions-partage', exos:'exos-demo-fractions-partage', histoire:'histoire-demo-fractions-partage',
   init:()=>{ fpMethodeDemo.reset(); fpEquivReset(); renderStaticMath(document.getElementById('cours-demo-fractions-partage')); renderStaticMath(document.getElementById('exos-demo-fractions-partage')); renderStaticMath(document.getElementById('histoire-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('methode-demo-fractions-partage')); } };
 
-DEMO_QUIZZES['Fractions : nombres et partage'] = [
+DEMO_QUIZZES['6e|Fractions : nombres et partage'] = [
   {q:"Comment se lit la fraction 5/8 ?",
    opts:["« Cinq divisé par huit »","« Huit divisé par cinq »","« Cinq fois huit »"], correct:0},
   {q:"La fraction 24/6 est...",

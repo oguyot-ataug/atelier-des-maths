@@ -311,7 +311,7 @@ DEMO_REGISTRY['6e|Nombres décimaux'] = {
   }
 };
 
-DEMO_QUIZZES['Nombres décimaux'] = [
+DEMO_QUIZZES['6e|Nombres décimaux'] = [
   {q:"Un dixième se note...",
    opts:["1/10","1/100","1/1000"], correct:0},
   {q:"Combien y a-t-il de centièmes dans une unité ?",

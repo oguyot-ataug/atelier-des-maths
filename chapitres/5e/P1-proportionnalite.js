@@ -422,7 +422,7 @@ DEMO_REGISTRY['5e|Proportionnalité'] = {
   }
 };
 
-DEMO_QUIZZES['Proportionnalité'] = [
+DEMO_QUIZZES['5e|Proportionnalité'] = [
   {q:"Dans un tableau de proportionnalité, que doit-on obtenir en divisant chaque nombre de la 2e ligne par le nombre correspondant de la 1re ligne ?",
    opts:["Toujours le même résultat","Des résultats différents à chaque fois","Toujours 1"], correct:0},
   {q:"Une situation de proportionnalité est représentée dans un repère par...",

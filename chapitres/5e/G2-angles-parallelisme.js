@@ -800,7 +800,7 @@ DEMO_REGISTRY['5e|Angles et parallélisme'] = {
   }
 };
 
-DEMO_QUIZZES['Angles et parallélisme'] = [
+DEMO_QUIZZES['5e|Angles et parallélisme'] = [
   {q:"Deux angles opposés par le sommet ont...",
    opts:["La même mesure","Des mesures supplémentaires","Toujours un côté commun"], correct:0},
   {q:"Deux angles adjacents ont nécessairement...",

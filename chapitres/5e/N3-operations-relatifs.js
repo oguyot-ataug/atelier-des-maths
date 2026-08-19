@@ -235,7 +235,7 @@ DEMO_REGISTRY['5e|Opérations sur les nombres relatifs'] = {
   }
 };
 
-DEMO_QUIZZES['Opérations sur les nombres relatifs'] = [
+DEMO_QUIZZES['5e|Opérations sur les nombres relatifs'] = [
   {q:"(−9) + (−4) est égal à...",
    opts:["−13","+13","−5"], correct:0},
   {q:"(+7) + (−15) est égal à...",

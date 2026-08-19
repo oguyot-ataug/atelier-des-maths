@@ -274,7 +274,7 @@ function initPlaneDemo(){
 DEMO_REGISTRY['5e|Nombres relatifs'] = { cours:'cours-demo-relatifs', methode:'methode-demo-relatifs', exos:'exos-demo-relatifs', histoire:'histoire-demo-relatifs',
   init:()=>{ initRelDemo(); initPlaneDemo(); renderStaticMath(document.getElementById('cours-demo-relatifs')); injectCourseAddButtons(document.getElementById('cours-demo-relatifs')); } };
 
-DEMO_QUIZZES['Nombres relatifs'] = [
+DEMO_QUIZZES['5e|Nombres relatifs'] = [
   {q:"Quelle est la valeur absolue de −8 ?",
    opts:["−8","8","0"], correct:1},
   {q:"Lequel de ces classements est correct ?",
