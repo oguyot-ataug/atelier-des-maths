@@ -758,15 +758,17 @@ function nextMethodStep(){
     document.getElementById('mPencilTool').setAttribute('opacity','0');
     document.querySelector('.step-item[data-step="2"]').classList.add('done');
     document.getElementById('btnMethodNext').disabled=true;
-    const target = mAngleA+Math.PI, arcStart = target-M_ARC_HALF_ANGLE;
-    const start=performance.now(), dur=1600;
+    const target = mAngleA+Math.PI, arcStart = target-M_ARC_HALF_ANGLE, sweepEnd = target+M_ARC_HALF_ANGLE;
+    // Balayage UNIQUE et continu de mAngleA jusqu'à sweepEnd (un peu au-delà de A', pas jusqu'à
+    // A' pile) : le compas trace VRAIMENT tout l'arc visible lui-même, sa mine continuant de
+    // tourner tant que l'arc grandit -- pas de phase où l'arc se complèterait tout seul,
+    // compas figé, comme "par magie". Durée mise à l'échelle pour garder la même vitesse
+    // angulaire que le demi-tour seul (1600ms pour π).
+    const totalSweep = sweepEnd-mAngleA;
+    const start=performance.now(), dur=1600*(totalSweep/Math.PI);
     function frame(now){
       const t=Math.min(1,(now-start)/dur);
-      const angle = mAngleA + t*Math.PI;
-      // Le compas balaie visuellement tout le demi-tour (le geste physique), mais l'arc encré
-      // ne trace pas tout ce trajet : seulement à partir du moment où le compas entre dans la
-      // petite fenêtre de croisement (arcStart), et il se dessine progressivement au fur et à
-      // mesure -- pas d'un coup.
+      const angle = mAngleA + t*totalSweep;
       if(angle>=arcStart){
         const pts=[]; for(let a=arcStart; a<=angle+1e-6; a+=Math.PI/60){ const p=pointOnCircle(a); pts.push(`${p.x},${p.y}`); }
         document.getElementById('mArc').setAttribute('points', pts.join(' '));
@@ -774,22 +776,8 @@ function nextMethodStep(){
       }
       placeCompass(angle);
       if(t<1){ requestAnimationFrame(frame); return; }
-      // Le compas s'arrête pile sur A' (contrainte géométrique) : à ce stade l'arc n'a grandi
-      // que d'un côté (arcStart jusqu'à target). Une courte phase complète l'autre moitié
-      // (target jusqu'à target+demi-angle), compas immobile, toujours de façon progressive, pour
-      // bien croiser la demi-droite des deux côtés -- puis seulement à la toute fin, le compas
-      // se retire (ne laissant que le petit arc et le repère A').
-      const settleStart=performance.now(), settleDur=350;
-      function settleFrame(now2){
-        const st = Math.min(1, (now2-settleStart)/settleDur);
-        const curEnd = target + M_ARC_HALF_ANGLE*st;
-        const pts=[]; for(let a=arcStart; a<=curEnd+1e-6; a+=Math.PI/60){ const p=pointOnCircle(a); pts.push(`${p.x},${p.y}`); }
-        document.getElementById('mArc').setAttribute('points', pts.join(' '));
-        if(st<1){ requestAnimationFrame(settleFrame); return; }
-        document.getElementById('mCompass').setAttribute('opacity','0');
-        document.getElementById('btnMethodNext').disabled=false;
-      }
-      requestAnimationFrame(settleFrame);
+      document.getElementById('mCompass').setAttribute('opacity','0');
+      document.getElementById('btnMethodNext').disabled=false;
     }
     requestAnimationFrame(frame);
   } else {
@@ -843,7 +831,7 @@ function mRenderStepInstant(step){
     // la demi-droite elle-même).
     let perp = {x:-mDirAO.y, y:mDirAO.x};
     if(perp.y<0) perp = {x:mDirAO.y, y:-mDirAO.x};
-    const labelOffset = 18;
+    const labelOffset = 28;
     document.getElementById('mStep3t').setAttribute('x', (Aprime.x+perp.x*labelOffset).toFixed(1));
     document.getElementById('mStep3t').setAttribute('y', (Aprime.y+perp.y*labelOffset).toFixed(1));
     document.querySelector('.step-item[data-step="3"]').classList.add('done');
