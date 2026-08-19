@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-<link rel="stylesheet" href="styles.css?v=20260804-204">
+<link rel="stylesheet" href="styles.css?v=20260819-205">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -27,7 +27,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-04.204</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.205</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -579,67 +579,8 @@
 </div>
 
 
-<div id="editProfModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEditProfModal();">
-  <div class="modal-card" style="max-width:520px;max-height:86vh;overflow:auto;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.15rem;">🛠️ Modifier le compte</strong>
-      <button class="modal-close" onclick="closeEditProfModal()">✕</button>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
-      <label class="hint" style="margin:0;">Nom
-        <input type="text" id="editProfNom" style="width:100%;margin-top:4px;padding:8px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;">
-      </label>
-      <label class="hint" style="margin:0;">Prénom
-        <input type="text" id="editProfPrenom" style="width:100%;margin-top:4px;padding:8px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;">
-      </label>
-    </div>
-    <div style="background:rgba(28,43,57,.03);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span>Identifiant : <b id="editProfIdentifiantDisplay" style="font-family:'JetBrains Mono',monospace;"></b></span>
-        <button class="btn secondary" style="font-size:.78rem;padding:4px 10px;" onclick="adminChangeIdentifiantPrompt(editProfTargetId, editProfTargetName)">✏️ Modifier</button>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
-        <span>Mot de passe : <b style="letter-spacing:2px;">••••••••</b></span>
-        <button class="btn secondary" style="font-size:.78rem;padding:4px 10px;" onclick="adminResetPasswordPrompt(editProfTargetId, editProfTargetName)">🔑 Réinitialiser</button>
-      </div>
-    </div>
-    <label class="hint" style="margin:0;display:block;margin-bottom:14px;">UAI de l'établissement
-      <input type="text" id="editProfUai" placeholder="ex. 0751234A" style="width:100%;margin-top:4px;padding:8px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;">
-    </label>
-    <p class="hint" style="margin:0 0 6px;">Classes rattachées (établissement) :</p>
-    <div id="editProfClassesList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;max-height:160px;overflow:auto;"></div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <span class="hint" id="editProfStatus" style="margin:auto 8px auto 0;"></span>
-      <button class="btn secondary" onclick="closeEditProfModal()">Annuler</button>
-      <button class="btn" onclick="saveEditProfModal()">Enregistrer</button>
-    </div>
-  </div>
-</div>
-<div id="resetPasswordModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeResetPasswordModal();">
-  <div class="modal-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Réinitialiser le mot de passe</strong>
-      <button class="modal-close" onclick="closeResetPasswordModal()">✕</button>
-    </div>
-    <p class="hint" id="resetPasswordModalName" style="margin:0 0 10px;"></p>
-    <input type="password" id="resetPasswordModalInput" placeholder="Nouveau mot de passe" style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);margin-bottom:10px;box-sizing:border-box;">
-    <button class="btn" style="width:100%;" onclick="adminConfirmResetPassword()">Réinitialiser</button>
-    <span class="hint" id="resetPasswordModalStatus" style="display:block;margin-top:8px;"></span>
-  </div>
-</div>
-
-<div id="changeIdentifiantModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeChangeIdentifiantModal();">
-  <div class="modal-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Modifier l'identifiant</strong>
-      <button class="modal-close" onclick="closeChangeIdentifiantModal()">✕</button>
-    </div>
-    <p class="hint" id="changeIdentifiantModalName" style="margin:0 0 10px;"></p>
-    <input type="text" id="changeIdentifiantModalInput" placeholder="Nouvel identifiant (ou e-mail)" style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);margin-bottom:10px;box-sizing:border-box;">
-    <button class="btn" style="width:100%;" onclick="adminConfirmChangeIdentifiant()">Modifier</button>
-    <span class="hint" id="changeIdentifiantModalStatus" style="display:block;margin-top:8px;"></span>
-  </div>
-</div>
+<!-- Modales de l'Administration (édition compte, reset mdp, changement identifiant) :
+     injectées dynamiquement par admin.js -->
 
 <main>
 
@@ -1279,103 +1220,36 @@
   <div id="mesResultatsContent" class="hint">Chargement…</div>
 </section>
 
-<section class="view" id="view-admin">
-  <span class="back-btn" data-nav="home">← Accueil</span>
-  <h1 style="margin:6px 0 4px;">🛠️ Administration</h1>
-  <p style="color:var(--ink-soft);max-width:70ch;">Créez les comptes profs/élèves, les classes, et associez-les entre eux.</p>
-
-  <div class="tool-shell" style="margin-bottom:20px;">
-    <p class="example-title" style="margin-bottom:6px;">Créer un compte</p>
-    <div class="tool-row">
-      <input type="text" id="adminNewEmail" placeholder="identifiant (ou e-mail)" style="min-width:200px;">
-      <input type="password" id="adminNewPassword" placeholder="Mot de passe" style="width:150px;">
-      <input type="text" id="adminNewNom" placeholder="Nom (affichage)" style="width:160px;">
-      <input type="text" id="adminNewUai" placeholder="UAI établissement (ex. 0751234A)" style="width:170px;">
-      <select id="adminNewRole"><option value="prof">Professeur</option><option value="eleve">Élève</option><option value="admin">Administrateur</option></select>
-      <button class="btn" onclick="adminCreateAccount()">Créer le compte</button>
-    </div>
-    <span class="hint" id="adminAccountStatus" style="margin:0;"></span>
-
-    <p class="example-title" style="margin:16px 0 6px;">Import en masse d'élèves</p>
-    <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, identifiant puis mot de passe séparés par une tabulation — un copier-coller direct depuis un tableur fonctionne).</p>
-    <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="jdupont	Motdepasse1
-mmartin	Motdepasse2"></textarea>
-    <div class="tool-row" style="margin-top:8px;">
-      <button class="btn" onclick="adminBulkCreateStudents()">Créer tous les comptes élèves</button>
-    </div>
-    <div class="hint" id="adminBulkStatus" style="margin:0;"></div>
-
-    <p class="example-title" style="margin:16px 0 6px;">Créer une classe</p>
-    <div class="tool-row">
-      <input type="text" id="adminNewClassNom" placeholder="Nom (ex. 5e-A)">
-      <select id="adminNewClassNiveau"><option value="6e">6e</option><option value="5e" selected>5e</option></select>
-      <button class="btn" onclick="adminCreateClass()">Créer la classe</button>
-    </div>
-    <span class="hint" id="adminClassStatus" style="margin:0;"></span>
-
-    <p class="example-title" style="margin:16px 0 6px;">Associer un professeur à une classe</p>
-    <div class="tool-row">
-      <select id="adminAssignTeacherSelect"></select>
-      <select id="adminAssignTeacherClassSelect"></select>
-      <button class="btn secondary" onclick="adminAssignTeacher()">Associer</button>
-    </div>
-    <span class="hint" id="adminAssignTeacherStatus" style="margin:0;"></span>
-
-    <p class="example-title" style="margin:16px 0 6px;">Associer un élève à une classe</p>
-    <div class="tool-row">
-      <select id="adminAssignStudentSelect"></select>
-      <select id="adminAssignStudentClassSelect"></select>
-      <button class="btn secondary" onclick="adminAssignStudent()">Associer</button>
-    </div>
-    <span class="hint" id="adminAssignStudentStatus" style="margin:0;"></span>
-  </div>
-
-  <div class="tool-shell">
-    <strong style="font-family:'Space Grotesk',sans-serif;">📋 Déjà enregistré</strong>
-    <button class="btn secondary" style="float:right;" onclick="adminRefreshListings()">🔄 Actualiser</button>
-    <button class="btn secondary" style="float:right;margin-right:8px;" onclick="adminSyncEmails()">🔧 Réparer les identifiants manquants</button>
-    <p class="hint" id="adminSyncEmailsStatus" style="clear:right;margin:0 0 6px;"></p>
-    <p class="example-title" style="margin:16px 0 6px;">Comptes</p>
-    <div id="adminAccountsListing" class="hint"></div>
-    <p class="example-title" style="margin:16px 0 6px;">Classes</p>
-    <div id="adminClassesListing" class="hint"></div>
-  </div>
-
-  <div class="tool-shell">
-    <strong style="font-family:'Space Grotesk',sans-serif;">🐞 Signalements (bugs / améliorations)</strong>
-    <button class="btn secondary" style="float:right;" onclick="adminRefreshBugReports()">🔄 Actualiser</button>
-    <p class="hint" style="margin:6px 0 14px;">Signalements envoyés par les profs depuis le menu de leur compte.</p>
-    <div id="adminBugReportsListing" class="hint">Chargement…</div>
-  </div>
-
-</section>
+<!-- Contenu injecté dynamiquement par admin.js (voir fin de fichier) -->
+<section class="view" id="view-admin"></section>
 
 </main>
 
 <footer>Une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a> · L'Atelier des Maths · Programme B.O. 2026</footer>
 
-<script defer src="app.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260804-204"></script>
-<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260804-204"></script>
-<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260804-204"></script>
-<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260804-204"></script>
-<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260804-204"></script>
-<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260804-204"></script>
-<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260804-204"></script>
-<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/N4-fractions.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/N1-divisibilite.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/N6-equations.js?v=20260804-204"></script>
-<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260804-204"></script>
-<script defer src="calcul-mental/calcul-mental.js?v=20260804-204"></script>
-<script defer src="compte-est-bon.js?v=20260804-204"></script>
+<script defer src="app.js?v=20260819-205"></script>
+<script defer src="admin.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-205"></script>
+<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-205"></script>
+<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-205"></script>
+<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-205"></script>
+<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-205"></script>
+<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-205"></script>
+<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-205"></script>
+<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/N4-fractions.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/N6-equations.js?v=20260819-205"></script>
+<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-205"></script>
+<script defer src="calcul-mental/calcul-mental.js?v=20260819-205"></script>
+<script defer src="compte-est-bon.js?v=20260819-205"></script>
 </body>
 </html>
