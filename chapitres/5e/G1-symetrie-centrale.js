@@ -758,20 +758,38 @@ function nextMethodStep(){
     document.getElementById('mPencilTool').setAttribute('opacity','0');
     document.querySelector('.step-item[data-step="2"]').classList.add('done');
     document.getElementById('btnMethodNext').disabled=true;
+    const target = mAngleA+Math.PI, arcStart = target-M_ARC_HALF_ANGLE;
     const start=performance.now(), dur=1600;
     function frame(now){
       const t=Math.min(1,(now-start)/dur);
       const angle = mAngleA + t*Math.PI;
       // Le compas balaie visuellement tout le demi-tour (le geste physique), mais l'arc encré
-      // ne trace PAS tout ce trajet : juste un petit arc, révélé une fois le compas arrivé, qui
-      // vient croiser la demi-droite pour matérialiser A' -- pas le demi-cercle complet.
-      placeCompass(angle);
-      if(t<1) requestAnimationFrame(frame);
-      else {
-        document.getElementById('mArc').setAttribute('points', mArcCrossingPoints());
+      // ne trace pas tout ce trajet : seulement à partir du moment où le compas entre dans la
+      // petite fenêtre de croisement (arcStart), et il se dessine progressivement au fur et à
+      // mesure -- pas d'un coup.
+      if(angle>=arcStart){
+        const pts=[]; for(let a=arcStart; a<=angle+1e-6; a+=Math.PI/60){ const p=pointOnCircle(a); pts.push(`${p.x},${p.y}`); }
+        document.getElementById('mArc').setAttribute('points', pts.join(' '));
         document.getElementById('mArc').setAttribute('opacity','1');
+      }
+      placeCompass(angle);
+      if(t<1){ requestAnimationFrame(frame); return; }
+      // Le compas s'arrête pile sur A' (contrainte géométrique) : à ce stade l'arc n'a grandi
+      // que d'un côté (arcStart jusqu'à target). Une courte phase complète l'autre moitié
+      // (target jusqu'à target+demi-angle), compas immobile, toujours de façon progressive, pour
+      // bien croiser la demi-droite des deux côtés -- puis seulement à la toute fin, le compas
+      // se retire (ne laissant que le petit arc et le repère A').
+      const settleStart=performance.now(), settleDur=350;
+      function settleFrame(now2){
+        const st = Math.min(1, (now2-settleStart)/settleDur);
+        const curEnd = target + M_ARC_HALF_ANGLE*st;
+        const pts=[]; for(let a=arcStart; a<=curEnd+1e-6; a+=Math.PI/60){ const p=pointOnCircle(a); pts.push(`${p.x},${p.y}`); }
+        document.getElementById('mArc').setAttribute('points', pts.join(' '));
+        if(st<1){ requestAnimationFrame(settleFrame); return; }
+        document.getElementById('mCompass').setAttribute('opacity','0');
         document.getElementById('btnMethodNext').disabled=false;
       }
+      requestAnimationFrame(settleFrame);
     }
     requestAnimationFrame(frame);
   } else {
@@ -780,7 +798,8 @@ function nextMethodStep(){
 }
 
 /* Petit arc de compas qui vient croiser la demi-droite en A' (pas le demi-cercle complet) --
-   partagé entre l'animation (nextMethodStep) et le rendu instantané (mRenderStepInstant). */
+   utilisé par le rendu instantané (mRenderStepInstant) ; l'animation (nextMethodStep) le
+   construit elle-même progressivement, voir plus haut. */
 const M_ARC_HALF_ANGLE = 20*Math.PI/180;
 function mArcCrossingPoints(){
   const target = mAngleA+Math.PI;
