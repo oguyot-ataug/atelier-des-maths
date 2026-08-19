@@ -14,8 +14,9 @@
    du §2 (Échelle) adaptés d'un support papier fourni par Olivier ;
    seul l'exemple de l'échelle a été changé (plan de chambre à la
    place d'une carte régionale, jugé plus parlant pour des 6e), avec
-   une explication explicite de ce que représentent les deux nombres
-   d'une échelle a cm ↔ b cm.
+   une explication explicite de la notation fractionnaire a/b d'une
+   échelle (numérateur = mesure sur le plan, dénominateur = mesure
+   réelle dans la même unité).
    ============================================================ */
 
 document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
@@ -93,11 +94,11 @@ document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
 <span class="def-badge">Définition</span>
 <div class="def-box">
   Une <b>échelle</b> permet de passer d'une mesure sur un <b>plan</b>, sur une <b>carte</b> ou sur une <b>image</b> à une mesure <b>réelle</b>.<br>
-  Une échelle s'écrit souvent sous la forme <b>a cm ↔ b cm</b> : le nombre <i>a</i> est une longueur mesurée sur le plan, et le nombre <i>b</i> est la longueur réelle qui lui correspond. Par exemple, une échelle de <b>4 cm ↔ 100 cm</b> signifie que <b>4 cm sur le plan représentent 100 cm</b> (soit 1 m) <b>dans la réalité</b>.
+  Une échelle s'écrit sous la forme d'une <b>fraction</b> <span class="tex">\\dfrac{a}{b}</span> : le <b>numérateur</b> <i>a</i> représente un nombre d'unités sur le plan, et le <b>dénominateur</b> <i>b</i> représente le nombre de la <b>même unité</b> en réalité. Par exemple, une échelle de <span class="tex">\\dfrac{1}{1000}</span> (on dit aussi « au 1/1000<sup>e</sup> ») signifie que <b>1 cm sur le plan représente 1 000 cm</b>, soit <b>10 m</b>, <b>en réalité</b>.
 </div>
 
 <p class="example-title">Exemple : le plan de la chambre de Léa</p>
-<p style="margin:4px 0 8px;">Voici le plan de la chambre de Léa, dessiné à l'échelle <b>4 cm ↔ 100 cm</b>. Quelle est la largeur réelle de la chambre, sachant qu'elle mesure 12 cm sur le plan ? Et quelle est la longueur réelle du lit, sachant qu'il mesure 6 cm sur le plan ?</p>
+<p style="margin:4px 0 8px;">Voici le plan de la chambre de Léa, dessiné à l'échelle <span class="tex">\\dfrac{1}{25}</span>. Quelle est la largeur réelle de la chambre, sachant qu'elle mesure 12 cm sur le plan ? Et quelle est la longueur réelle du lit, sachant qu'il mesure 6 cm sur le plan ?</p>
 
 <div class="figure-wrap" style="max-width:420px;margin:12px auto;">
   <svg viewBox="0 0 340 260" style="width:100%;display:block;">
@@ -115,10 +116,7 @@ document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
     <text x="85" y="16" text-anchor="middle" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">6 cm</text>
     <text x="85" y="105" text-anchor="middle" font-family="Inter" font-size="12" fill="#12253A">Lit</text>
     <g transform="translate(30,240)">
-      <line x1="0" y1="0" x2="40" y2="0" stroke="#1C1B2E" stroke-width="2"/>
-      <line x1="0" y1="-4" x2="0" y2="4" stroke="#1C1B2E" stroke-width="2"/>
-      <line x1="40" y1="-4" x2="40" y2="4" stroke="#1C1B2E" stroke-width="2"/>
-      <text x="46" y="4" font-family="JetBrains Mono" font-size="12" fill="#1C1B2E">4 cm ↔ 100 cm</text>
+      <text x="0" y="4" font-family="JetBrains Mono" font-size="12" fill="#1C1B2E">Échelle : 1/25</text>
     </g>
   </svg>
 </div>
@@ -126,14 +124,14 @@ document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
 <p style="margin:4px 0 4px;">Pour déterminer la largeur réelle de la chambre...</p>
 <ul class="example-list">
   <li>① on mesure la largeur sur le plan : 12 cm</li>
-  <li>② d'après l'échelle, on a : 4 cm ↔ 100 cm donc <b>12 cm ↔ 300 cm</b> (× 3)</li>
+  <li>② l'échelle est <span class="tex">\\dfrac{1}{25}</span>, donc 1 cm sur le plan représente 25 cm en réalité, donc 12 cm représentent <span class="tex">12 \\times 25 = 300</span> cm</li>
 </ul>
 <p style="margin:4px 0 12px;">La largeur réelle de la chambre est donc <b>300 cm</b>, soit <b>3 m</b>.</p>
 
 <p style="margin:4px 0 4px;">Pour déterminer la longueur réelle du lit...</p>
 <ul class="example-list">
   <li>① on mesure la longueur sur le plan : 6 cm</li>
-  <li>② on a : 4 cm ↔ 100 cm donc 1 cm ↔ 25 cm (÷ 4) donc <b>6 cm ↔ 150 cm</b> (× 6)</li>
+  <li>② l'échelle est <span class="tex">\\dfrac{1}{25}</span>, donc 6 cm représentent <span class="tex">6 \\times 25 = 150</span> cm</li>
 </ul>
 <p style="margin:4px 0 12px;">La longueur réelle du lit est donc <b>150 cm</b>, soit <b>1,5 m</b>.</p>
 
@@ -142,14 +140,12 @@ document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
   <table style="border-collapse:collapse;font-size:.92rem;">
     <tr>
       <td style="padding:6px 14px;background:rgba(31,58,92,.06);font-weight:600;border:1px solid rgba(28,43,57,.15);">Distance sur le plan (en cm)</td>
-      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">4</td>
       <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">1</td>
       <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">12</td>
       <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">6</td>
     </tr>
     <tr>
       <td style="padding:6px 14px;background:rgba(31,58,92,.06);font-weight:600;border:1px solid rgba(28,43,57,.15);">Distance réelle (en cm)</td>
-      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">100</td>
       <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">25</td>
       <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">300</td>
       <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">150</td>
