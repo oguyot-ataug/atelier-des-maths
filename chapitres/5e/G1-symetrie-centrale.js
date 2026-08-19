@@ -658,9 +658,15 @@ const mLegLen = 0.7*mR+30;                            // compass leg length (des
 document.getElementById('mCompass').innerHTML = compassSVG(mR, mLegLen);
 
 // Règle + crayon (même design que le tableau interactif) montrés le temps de l'étape 1, pour
-// illustrer le tracé de la demi-droite [AO) à la règle -- posés une seule fois eux aussi, sur
-// le segment [A ; 2×(O-A)] déjà utilisé par mStep1 ci-dessous.
-const mStep1End = {x: mA.x + 2*(O.x-mA.x), y: mA.y + 2*(O.y-mA.y)};
+// illustrer le tracé de la demi-droite [AO) à la règle.
+// A' (mAprime) est le reflet exact de A par rapport à O -- le but géométrique de la
+// construction -- mais la demi-droite tracée doit le DÉPASSER visiblement (une demi-droite n'a
+// pas de fin) : sinon l'arc du compas se contente de "toucher" le bout du trait au lieu de le
+// traverser clairement, et l'intersection qui matérialise A' ne se voit pas bien.
+const mAprime = {x: 2*O.x-mA.x, y: 2*O.y-mA.y};
+const mDirAO = {x:(O.x-mA.x)/mR, y:(O.y-mA.y)/mR};
+const mRayOvershoot = 40; // dépassement au-delà de A', dans la continuité de la demi-droite
+const mStep1End = {x: mAprime.x+mDirAO.x*mRayOvershoot, y: mAprime.y+mDirAO.y*mRayOvershoot};
 const mRayAngleDeg = Math.atan2(mStep1End.y-mA.y, mStep1End.x-mA.x)*180/Math.PI;
 const mRayLen = Math.hypot(mStep1End.x-mA.x, mStep1End.y-mA.y);
 // La règle (dessinée à l'échelle native du tableau interactif, bien plus grand que ce petit
@@ -742,7 +748,7 @@ function mRenderStepInstant(step){
   document.querySelectorAll('.step-item').forEach(s=>s.classList.remove('done'));
   document.getElementById('mStep1').setAttribute('opacity', step>=1?'1':'0');
   if(step>=1){
-    document.getElementById('mStep1').setAttribute('x2',280); document.getElementById('mStep1').setAttribute('y2',200);
+    document.getElementById('mStep1').setAttribute('x2',mStep1End.x.toFixed(1)); document.getElementById('mStep1').setAttribute('y2',mStep1End.y.toFixed(1));
     document.querySelector('.step-item[data-step="1"]').classList.add('done');
   }
   // Règle + crayon : uniquement pendant l'étape 1 elle-même (comme le compas n'apparaît que
