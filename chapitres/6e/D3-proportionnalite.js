@@ -98,7 +98,7 @@ document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
 </div>
 
 <p class="example-title">Exemple : le plan de la chambre de Léa</p>
-<p style="margin:4px 0 8px;">Voici le plan de la chambre de Léa, dessiné à l'échelle <span class="tex">\\dfrac{1}{25}</span>. Quelle est la largeur réelle de la chambre, sachant qu'elle mesure 12 cm sur le plan ? Et quelle est la longueur réelle du lit, sachant qu'il mesure 6 cm sur le plan ?</p>
+<p style="margin:4px 0 8px;">Voici le plan de la chambre de Léa, dessiné à l'échelle <span class="tex">\\dfrac{1}{25}</span>. Quelle est la largeur réelle de la chambre, sachant qu'elle mesure 12 cm sur le plan ? Et quelle est la largeur réelle du lit, sachant qu'il mesure 6 cm sur le plan ?</p>
 
 <div class="figure-wrap" style="max-width:420px;margin:12px auto;">
   <svg viewBox="0 0 340 260" style="width:100%;display:block;">
@@ -128,12 +128,12 @@ document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
 </ul>
 <p style="margin:4px 0 12px;">La largeur réelle de la chambre est donc <b>300 cm</b>, soit <b>3 m</b>.</p>
 
-<p style="margin:4px 0 4px;">Pour déterminer la longueur réelle du lit...</p>
+<p style="margin:4px 0 4px;">Pour déterminer la largeur réelle du lit...</p>
 <ul class="example-list">
-  <li>① on mesure la longueur sur le plan : 6 cm</li>
+  <li>① on mesure la largeur sur le plan : 6 cm</li>
   <li>② l'échelle est <span class="tex">\\dfrac{1}{25}</span>, donc 6 cm représentent <span class="tex">6 \\times 25 = 150</span> cm</li>
 </ul>
-<p style="margin:4px 0 12px;">La longueur réelle du lit est donc <b>150 cm</b>, soit <b>1,5 m</b>.</p>
+<p style="margin:4px 0 12px;">La largeur réelle du lit est donc <b>150 cm</b>, soit <b>1,5 m</b>.</p>
 
 <p style="margin:8px 0 6px;">On peut récapituler ceci dans un tableau :</p>
 <div style="overflow-x:auto;margin:10px 0 4px;">
