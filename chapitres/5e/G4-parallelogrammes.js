@@ -394,7 +394,7 @@ document.getElementById('exos-demo-parallelogrammes-5e').innerHTML = `
 </div>
 `;
 
-DEMO_REGISTRY['Parallélogrammes'] = {
+DEMO_REGISTRY['5e|Parallélogrammes'] = {
   cours:'cours-demo-parallelogrammes-5e', methode:'methode-demo-parallelogrammes-5e', exos:'exos-demo-parallelogrammes-5e', histoire:'histoire-demo-parallelogrammes-5e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-parallelogrammes-5e'));

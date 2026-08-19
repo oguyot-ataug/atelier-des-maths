@@ -515,7 +515,7 @@ document.getElementById('exos-demo-operations-ordre-grandeur-6e').innerHTML = `
 </div>
 `;
 
-DEMO_REGISTRY['Opérations et ordre de grandeur'] = {
+DEMO_REGISTRY['6e|Opérations et ordre de grandeur'] = {
   cours:'cours-demo-operations-ordre-grandeur-6e', methode:'methode-demo-operations-ordre-grandeur-6e', exos:'exos-demo-operations-ordre-grandeur-6e', histoire:'histoire-demo-operations-ordre-grandeur-6e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-operations-ordre-grandeur-6e'));

@@ -298,7 +298,7 @@ const ND_CHIFFRE_NOMBRE_STEPS = [
 ];
 const ndChiffreNombreDemo = makeStepDemo(ND_CHIFFRE_NOMBRE_STEPS, 'nd-chiffreNombreDisplay');
 
-DEMO_REGISTRY['Nombres décimaux'] = {
+DEMO_REGISTRY['6e|Nombres décimaux'] = {
   cours:'cours-demo-decimaux-6e', methode:'methode-demo-decimaux-6e', exos:'exos-demo-decimaux-6e', histoire:'histoire-demo-decimaux-6e',
   init:()=>{
     ndInitDemiDroiteDrag();

@@ -271,7 +271,7 @@ function initPlaneDemo(){
 /* ---- clé API partagée (quiz IA + interprétation de figures) ---- */
 
 
-DEMO_REGISTRY['Nombres relatifs'] = { cours:'cours-demo-relatifs', methode:'methode-demo-relatifs', exos:'exos-demo-relatifs', histoire:'histoire-demo-relatifs',
+DEMO_REGISTRY['5e|Nombres relatifs'] = { cours:'cours-demo-relatifs', methode:'methode-demo-relatifs', exos:'exos-demo-relatifs', histoire:'histoire-demo-relatifs',
   init:()=>{ initRelDemo(); initPlaneDemo(); renderStaticMath(document.getElementById('cours-demo-relatifs')); injectCourseAddButtons(document.getElementById('cours-demo-relatifs')); } };
 
 DEMO_QUIZZES['Nombres relatifs'] = [

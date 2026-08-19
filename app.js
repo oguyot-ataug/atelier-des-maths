@@ -158,10 +158,10 @@ document.addEventListener('click', (e)=>{
 function renderNiveau(lvl){
   document.getElementById('niveau-title').textContent = 'Progression de '+lvl;
   const data = lvl==='6e'?CH6:CH5;
-  renderTheme(data);
+  renderTheme(data, lvl);
   renderFrise(data, lvl);
 }
-function renderTheme(data){
+function renderTheme(data, lvl){
   const order=['N','G','D','P','M'];
   let html='';
   order.forEach(cat=>{
@@ -173,7 +173,7 @@ function renderTheme(data){
       </span>
       <div class="chap-grid">`;
     items.forEach(c=>{
-      const ready = !!DEMO_REGISTRY[c.t];
+      const ready = !!DEMO_REGISTRY[lvl+'|'+c.t];
       html += `<div class="chap-card ${ready?'ready':''}" style="border-left-color:${CATS[cat].text}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
         ${ready?'':'<span class="status">à venir</span>'}
         <div class="code">${c.code} · ch. ${c.n}</div>
@@ -251,7 +251,7 @@ function openChapitre(c, tab, lvlOverride){
   const chapView = document.getElementById('view-chapitre');
   chapView.classList.toggle('lvl-6e', lvl==='6e');
   chapView.classList.toggle('lvl-5e', lvl==='5e');
-  const demo = DEMO_REGISTRY[c.t];
+  const demo = DEMO_REGISTRY[lvl+'|'+c.t];
   currentChapterTitle = c.t;
   document.getElementById('chap-code-tag').textContent = c.code;
   document.getElementById('chap-code-tag').style.background = CATS[c.cat].bg;

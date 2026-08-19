@@ -389,7 +389,7 @@ function dcRenderMm(){
 function dcMmNext(){ if(dcMmIdx<DC_MM_STEPS.length-1) dcMmIdx++; dcRenderMm(); }
 function dcMmReset(){ dcMmIdx=0; dcRenderMm(); }
 
-DEMO_REGISTRY['Distance et cercles'] = { cours:'cours-demo-distance-cercles', methode:'methode-demo-distance-cercles', exos:'exos-demo-distance-cercles', histoire:'histoire-demo-distance-cercles',
+DEMO_REGISTRY['6e|Distance et cercles'] = { cours:'cours-demo-distance-cercles', methode:'methode-demo-distance-cercles', exos:'exos-demo-distance-cercles', histoire:'histoire-demo-distance-cercles',
   init:()=>{ initMilieuDemo(); initVocabDemo(); initDistDemo(); dcMmReset(); registerGeoStepDemo('dc-mm-svg', { steps:()=>DC_MM_STEPS, getIdx:()=>dcMmIdx, goto:(i)=>{ dcMmIdx=i; dcRenderMm(); } }); injectCourseAddButtons(document.getElementById('cours-demo-distance-cercles')); injectCourseAddButtons(document.getElementById('methode-demo-distance-cercles')); } };
 
 DEMO_QUIZZES['Distance et cercles'] = [

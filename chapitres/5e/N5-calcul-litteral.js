@@ -318,7 +318,7 @@ document.getElementById('exos-demo-calcul-litteral-5e').innerHTML = `
 </div>
 `;
 
-DEMO_REGISTRY['Calcul littéral'] = {
+DEMO_REGISTRY['5e|Calcul littéral'] = {
   cours:'cours-demo-calcul-litteral-5e', methode:'methode-demo-calcul-litteral-5e', exos:'exos-demo-calcul-litteral-5e', histoire:'histoire-demo-calcul-litteral-5e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-calcul-litteral-5e'));

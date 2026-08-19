@@ -406,7 +406,7 @@ document.getElementById('exos-demo-proportionnalite-5e').innerHTML = `
 </div>
 `;
 
-DEMO_REGISTRY['Proportionnalité'] = {
+DEMO_REGISTRY['5e|Proportionnalité'] = {
   cours:'cours-demo-proportionnalite-5e', methode:'methode-demo-proportionnalite-5e', exos:'exos-demo-proportionnalite-5e', histoire:'histoire-demo-proportionnalite-5e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-proportionnalite-5e'));

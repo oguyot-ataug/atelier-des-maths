@@ -516,7 +516,7 @@ document.getElementById('exos-demo-equations-5e').innerHTML = `
 </div>
 `;
 
-DEMO_REGISTRY['Équations'] = {
+DEMO_REGISTRY['5e|Équations'] = {
   cours:'cours-demo-equations-5e', methode:'methode-demo-equations-5e', exos:'exos-demo-equations-5e', histoire:'histoire-demo-equations-5e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-equations-5e'));

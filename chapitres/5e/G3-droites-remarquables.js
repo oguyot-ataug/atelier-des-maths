@@ -450,7 +450,7 @@ const DR_METHODE_ORTHO_STEPS = [
 ];
 const drMethodeOrthoDemo = makeStepDemo(DR_METHODE_ORTHO_STEPS, 'dr-methodeOrthoDisplay');
 
-DEMO_REGISTRY['Droites remarquables dans un triangle'] = {
+DEMO_REGISTRY['5e|Droites remarquables dans un triangle'] = {
   cours:'cours-demo-droites-remarquables-5e', methode:'methode-demo-droites-remarquables-5e', exos:'exos-demo-droites-remarquables-5e', histoire:'histoire-demo-droites-remarquables-5e',
   init:()=>{
     drMethodeRectDemo.reset();

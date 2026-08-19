@@ -745,7 +745,7 @@ document.getElementById('exos-demo-parallelogrammes-particuliers-5e').innerHTML 
 </div>
 `;
 
-DEMO_REGISTRY['Parallélogrammes particuliers'] = {
+DEMO_REGISTRY['5e|Parallélogrammes particuliers'] = {
   cours:'cours-demo-parallelogrammes-particuliers-5e', methode:'methode-demo-parallelogrammes-particuliers-5e', exos:'exos-demo-parallelogrammes-particuliers-5e', histoire:'histoire-demo-parallelogrammes-particuliers-5e',
   init:()=>{
     injectCourseAddButtons(document.getElementById('cours-demo-parallelogrammes-particuliers-5e'));

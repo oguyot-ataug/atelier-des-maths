@@ -861,7 +861,7 @@ function mGotoStep(i){ methodStep = i+1; mRenderStepInstant(methodStep); }
 /* ---- nombres relatifs : point + opposé sur droite graduée ---- */
 
 
-DEMO_REGISTRY['Symétrie centrale'] = { cours:'cours-demo-symetrie', methode:'methode-demo-symetrie', exos:'exos-demo-symetrie', histoire:'histoire-demo-symetrie',
+DEMO_REGISTRY['5e|Symétrie centrale'] = { cours:'cours-demo-symetrie', methode:'methode-demo-symetrie', exos:'exos-demo-symetrie', histoire:'histoire-demo-symetrie',
   init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); registerGeoStepDemo('svgMethod', { steps:()=>M_STEPS, getIdx:()=>methodStep-1, goto:(i)=>mGotoStep(i) }); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); injectCourseAddButtons(document.getElementById('methode-demo-symetrie')); } };
 
 DEMO_QUIZZES['Symétrie centrale'] = [

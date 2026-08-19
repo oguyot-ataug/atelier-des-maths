@@ -1235,7 +1235,7 @@ const AR_METHODE_ALIGNEMENT_STEPS = [
 const arMethodeAlignementDemo = makeStepDemo(AR_METHODE_ALIGNEMENT_STEPS, 'ar-methodeAlignementDisplay');
 
 let arDragInitialized = false;
-DEMO_REGISTRY['Angles et rapporteur'] = {
+DEMO_REGISTRY['6e|Angles et rapporteur'] = {
   cours:'cours-demo-angles-rapporteur-6e', methode:'methode-demo-angles-rapporteur-6e', exos:'exos-demo-angles-rapporteur-6e', histoire:'histoire-demo-angles-rapporteur-6e',
   init:()=>{
     arCheckPermisEligibility();

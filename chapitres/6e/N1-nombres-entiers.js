@@ -203,7 +203,7 @@ const NE_CHIFFRE_NOMBRE_STEPS = [
 ];
 const neChiffreNombreDemo = makeStepDemo(NE_CHIFFRE_NOMBRE_STEPS, 'ne-chiffreNombreDisplay');
 
-DEMO_REGISTRY['Nombres entiers'] = { cours:'cours-demo-nombres-entiers', methode:'methode-demo-nombres-entiers', exos:'exos-demo-nombres-entiers', histoire:'histoire-demo-nombres-entiers',
+DEMO_REGISTRY['6e|Nombres entiers'] = { cours:'cours-demo-nombres-entiers', methode:'methode-demo-nombres-entiers', exos:'exos-demo-nombres-entiers', histoire:'histoire-demo-nombres-entiers',
   init:()=>{ neDivisionPoseeReset(); neChiffreNombreDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-nombres-entiers')); injectCourseAddButtons(document.getElementById('methode-demo-nombres-entiers')); } };
 
 DEMO_QUIZZES['Nombres entiers'] = [

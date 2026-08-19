@@ -136,7 +136,7 @@ const FP_METHODE_STEPS = [
 ];
 const fpMethodeDemo = makeStepDemo(FP_METHODE_STEPS, 'fp-methodeDisplay');
 
-DEMO_REGISTRY['Fractions : nombres et partage'] = { cours:'cours-demo-fractions-partage', methode:'methode-demo-fractions-partage', exos:'exos-demo-fractions-partage', histoire:'histoire-demo-fractions-partage',
+DEMO_REGISTRY['6e|Fractions : nombres et partage'] = { cours:'cours-demo-fractions-partage', methode:'methode-demo-fractions-partage', exos:'exos-demo-fractions-partage', histoire:'histoire-demo-fractions-partage',
   init:()=>{ fpMethodeDemo.reset(); fpEquivReset(); renderStaticMath(document.getElementById('cours-demo-fractions-partage')); renderStaticMath(document.getElementById('exos-demo-fractions-partage')); renderStaticMath(document.getElementById('histoire-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('cours-demo-fractions-partage')); injectCourseAddButtons(document.getElementById('methode-demo-fractions-partage')); } };
 
 DEMO_QUIZZES['Fractions : nombres et partage'] = [

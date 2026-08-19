@@ -225,7 +225,7 @@ const OR_SOMME_STEPS = [
 ];
 const orSommeDemo = makeStepDemo(OR_SOMME_STEPS, 'or-sommeDisplay');
 
-DEMO_REGISTRY['Opérations sur les nombres relatifs'] = {
+DEMO_REGISTRY['5e|Opérations sur les nombres relatifs'] = {
   cours:'cours-demo-operations-relatifs-5e', methode:'methode-demo-operations-relatifs-5e', exos:'exos-demo-operations-relatifs-5e', histoire:'histoire-demo-operations-relatifs-5e',
   init:()=>{
     orResetJumpFigure();

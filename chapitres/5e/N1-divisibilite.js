@@ -109,7 +109,7 @@ const DV_DIVISEURS_STEPS = [
 
 const dvDiviseursDemo = makeStepDemo(DV_DIVISEURS_STEPS, 'dv-diviseursDisplay');
 
-DEMO_REGISTRY['Divisibilité'] = {
+DEMO_REGISTRY['5e|Divisibilité'] = {
   cours:'cours-demo-divisibilite-5e', methode:'methode-demo-divisibilite-5e', exos:'exos-demo-divisibilite-5e', histoire:'histoire-demo-divisibilite-5e',
   init:()=>{
     dvDiviseursDemo.reset();

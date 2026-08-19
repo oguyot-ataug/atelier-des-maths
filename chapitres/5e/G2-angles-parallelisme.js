@@ -782,7 +782,7 @@ const AP_METHODE_ALT_DIRECT_STEPS = [
 ];
 const apMethodeAltDirectDemo = makeStepDemo(AP_METHODE_ALT_DIRECT_STEPS, 'ap-methodeAltDirectDisplay');
 
-DEMO_REGISTRY['Angles et parallélisme'] = {
+DEMO_REGISTRY['5e|Angles et parallélisme'] = {
   cours:'cours-demo-angles-parallelisme-5e', methode:'methode-demo-angles-parallelisme-5e', exos:'exos-demo-angles-parallelisme-5e', histoire:'histoire-demo-angles-parallelisme-5e',
   init:()=>{
     apUpdateAltCorr();
