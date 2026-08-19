@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-<link rel="stylesheet" href="styles.css?v=20260819-206">
+<link rel="stylesheet" href="styles.css?v=20260819-207">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -27,7 +27,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.206</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.207</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -189,395 +189,7 @@
     </div>
   </div>
 </div>
-<div id="toolsModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeAllToolPanels();">
-  <div class="modal-card" style="max-width:900px;max-height:88vh;overflow:auto;">
-    <div id="textBlockPanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Texte libre avec la même mise en forme automatique que l'énoncé principal (fractions, exposants, racines, **gras**, {{couleur|texte}}...).</p>
-      <div class="tool-row" style="margin:0 0 8px;">
-        <button type="button" class="btn secondary" onclick="openFormulaBuilder()">🧮 Éditeur de formule (Σ, lim, ∫, fraction, puissance, racine...)</button>
-      </div>
-      <textarea id="textBlockInput" oninput="previewTextBlock()" rows="4" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;" placeholder="Ex. Calcule 3/4 + 1/2 et donne le résultat sous forme irréductible."></textarea>
-      <div id="textBlockPreview" style="margin-top:8px;"></div>
-      <p class="hint" style="margin:8px 0 0;">Astuce : les fractions <code>a/b</code> et <code>sqrt(x)</code> se mettent en forme automatiquement. Pour une somme, une limite ou une intégrale (boutons Σ/lim/∫ ci-dessus), du LaTeX est inséré directement entre <code>$...$</code> -- modifie-le librement, y compris pour des expressions complexes (fractions imbriquées, plusieurs fonctions...), ça reste toujours fiable.</p>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertTextBlock()">Insérer le texte</button>
-        <button type="button" class="btn secondary" onclick="closeTextBlockTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    <div id="formulaBuilderOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeFormulaBuilder();">
-      <div class="modal-card" style="max-width:600px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-          <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">🧮 Éditeur de formule</strong>
-          <button class="modal-close" onclick="closeFormulaBuilder()">✕</button>
-        </div>
-        <p class="hint" style="margin:0 0 10px;">Clique dans une case puis choisis un symbole : il vient se placer à cet endroit précis. Chaque case peut à son tour contenir une nouvelle structure (imbrication libre).</p>
-        <div class="tool-row" style="margin-bottom:12px;">
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('frac')" title="Fraction">▭/▭</button>
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('pow')" title="Puissance">x²</button>
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('sub')" title="Indice">x₂</button>
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('sqrt')" title="Racine carrée">√</button>
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('sum')" title="Somme">Σ</button>
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('int')" title="Intégrale">∫</button>
-          <button type="button" class="btn secondary" onclick="fbInsertAtFocus('lim')" title="Limite">lim</button>
-        </div>
-        <div id="formulaBuilderCanvas" style="border:1px solid rgba(28,43,57,.2);border-radius:8px;padding:16px;min-height:60px;font-size:1.1rem;background:#fff;line-height:2.2;"></div>
-        <p class="hint" style="margin:8px 0 0;">Le ✕ à côté d'une structure la retire. Une case restée vide est simplement ignorée à l'insertion.</p>
-        <div class="figure-toolbar" style="margin-top:14px;">
-          <button type="button" class="btn" onclick="fbInsertFinal()">Insérer cette formule</button>
-          <button type="button" class="btn secondary" onclick="closeFormulaBuilder()">Annuler</button>
-        </div>
-      </div>
-    </div>
-    <div id="tableauPanel" class="figure-wrap" style="display:none;">
-      <div class="tool-row" style="margin-bottom:10px;">
-        <label class="hint" style="margin:0;">Colonnes : <input type="number" id="tabCols" value="3" min="1" max="8" style="width:60px;"></label>
-        <label class="hint" style="margin:0;">Lignes : <input type="number" id="tabRows" value="3" min="1" max="12" style="width:60px;"></label>
-        <button type="button" class="btn secondary" onclick="buildTableauGrid()">Générer la grille</button>
-      </div>
-      <div id="tableauGrid" style="overflow-x:auto;"></div>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertTableau()">Insérer le tableau</button>
-        <button type="button" class="btn secondary" onclick="closeTableauTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    <div id="divisionGroupWrap" style="display:none;">
-    <div class="tool-group-tabs" style="display:flex;gap:6px;margin-bottom:10px;">
-      <button type="button" class="tool-tab-btn" id="divTabEucl" onclick="openDivisionTool()">Division euclidienne</button>
-      <button type="button" class="tool-tab-btn" id="divTabDec" onclick="openDivisionDecTool()">Division décimale</button>
-    </div>
-    <div id="divisionPanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Indiquez le dividende et le diviseur : la division posée est calculée et mise en forme automatiquement.</p>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <input type="number" id="divDividende" placeholder="Dividende (ex. 823)" style="width:160px;">
-        <input type="number" id="divDiviseur" placeholder="Diviseur (ex. 14)" style="width:160px;">
-        <button type="button" class="btn secondary" onclick="previewDivisionPosee()">Calculer</button>
-      </div>
-      <div id="divisionPreview"></div>
-      <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="divStepByStep"> Insérer le détail étape par étape (plutôt que le résultat final seul)</label>
-      <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" id="divShowDiff" checked onchange="previewDivisionPosee()"> Afficher les différences (détail des soustractions -- décochez pour ne garder que les restes successifs)</label>
-      <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" id="divVierge"> N'afficher que le dividende et le diviseur (à compléter par l'élève -- la hauteur de la barre est calculée pour laisser la place aux étapes)</label>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertDivisionPosee()">Insérer la division posée</button>
-        <button type="button" class="btn secondary" onclick="closeDivisionTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    <div id="divisionDecPanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Division d'un nombre entier par un nombre entier, poursuivie après la virgule (valeur exacte ou approchée).</p>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <input type="text" inputmode="decimal" id="divDecDividende" placeholder="Dividende (ex. 10,5)" style="width:160px;">
-        <input type="number" id="divDecDiviseur" placeholder="Diviseur (ex. 8)" style="width:160px;">
-        <label class="hint" style="margin:0;">Décimales max : <input type="number" id="divDecMax" value="4" min="1" max="8" style="width:55px;"></label>
-        <button type="button" class="btn secondary" onclick="previewDivisionDecimale()">Calculer</button>
-      </div>
-      <div id="divisionDecPreview"></div>
-      <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="divDecVierge"> N'afficher que le dividende et le diviseur (à compléter par l'élève -- la hauteur de la barre est calculée pour laisser la place aux étapes)</label>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertDivisionDecimale()">Insérer la division</button>
-        <button type="button" class="btn secondary" onclick="closeDivisionDecTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    </div>
-    <div id="axeGroupWrap" style="display:none;">
-    <div class="tool-group-tabs" style="display:flex;gap:6px;margin-bottom:10px;">
-      <button type="button" class="tool-tab-btn" id="axeTabAxe" onclick="openAxeTool()">Axe gradué</button>
-      <button type="button" class="tool-tab-btn" id="axeTabRep" onclick="openRepereTool()">Repère</button>
-    </div>
-    <div id="axePanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Axe gradué horizontal, avec un ou plusieurs points repérés (facultatif).</p>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <label class="hint" style="margin:0;">Min : <input type="number" id="axeMin" value="-5" style="width:70px;"></label>
-        <label class="hint" style="margin:0;">Max : <input type="number" id="axeMax" value="5" style="width:70px;"></label>
-        <label class="hint" style="margin:0;">Pas : <input type="number" id="axeStep" value="1" style="width:70px;"></label>
-        <label class="hint" style="margin:0;">Partager chaque unité en : <input type="number" id="axeSubDiv" value="1" min="1" style="width:60px;"></label>
-        <input type="text" id="axePoints" placeholder="Points (ex. A(2,5) B(3/4))" style="flex:1;min-width:200px;">
-        <label class="hint" style="margin:0;">Compétence :
-          <select id="axeMode">
-            <option value="lecture">Lire les abscisses (points déjà placés)</option>
-            <option value="placer">Placer les points (à tracer par l'élève)</option>
-          </select>
-        </label>
-        <button type="button" class="btn secondary" onclick="previewAxe()">Aperçu</button>
-      </div>
-      <p class="hint" style="margin:-6px 0 10px;">Utile pour un axe vierge (sans point) où les élèves doivent placer eux-mêmes des fractions : par exemple, partager en 4 fait apparaître un trait à chaque quart d'unité.</p>
-      <div id="axePreview"></div>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertAxe()">Insérer l'axe</button>
-        <button type="button" class="btn secondary" onclick="closeAxeTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    <div id="reperePanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Repère orthonormé (ou non), avec des points à placer (facultatif).</p>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <label class="hint" style="margin:0;">X min/max : <input type="number" id="repXMin" value="-5" style="width:60px;"> / <input type="number" id="repXMax" value="5" style="width:60px;"></label>
-        <label class="hint" style="margin:0;">Y min/max : <input type="number" id="repYMin" value="-5" style="width:60px;"> / <input type="number" id="repYMax" value="5" style="width:60px;"></label>
-        <input type="text" id="repPoints" placeholder="Points (ex. A(3,5;-2) B(-1;4))" style="flex:1;min-width:200px;">
-        <label class="hint" style="margin:0;">Compétence :
-          <select id="repMode">
-            <option value="lecture">Lire les coordonnées (points déjà placés)</option>
-            <option value="placer">Placer les points (à tracer par l'élève)</option>
-          </select>
-        </label>
-        <button type="button" class="btn secondary" onclick="previewRepere()">Aperçu</button>
-      </div>
-      <div id="reperePreview"></div>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertRepere()">Insérer le repère</button>
-        <button type="button" class="btn secondary" onclick="closeRepereTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    </div>
-    <div id="shapeGroupWrap" style="display:none;">
-    <div class="tool-group-tabs" style="display:flex;gap:6px;margin-bottom:10px;">
-      <button type="button" class="tool-tab-btn" id="shapeTabDisque" onclick="openDisqueTool()">Disque fractionné</button>
-      <button type="button" class="tool-tab-btn" id="shapeTabRect" onclick="openRectFracTool()">Rectangle fractionné</button>
-    </div>
-    <div id="disquePanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Disque partagé en parts égales, avec un nombre de parts colorées (la fraction représentée).</p>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <label class="hint" style="margin:0;">Parts colorées : <input type="number" id="disqueNum" value="3" min="0" style="width:60px;"></label>
-        <label class="hint" style="margin:0;">Parts totales : <input type="number" id="disqueDen" value="4" min="1" style="width:60px;"></label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueVierge"> Laisser vierge (à colorier par l'élève)</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueShowCaption" checked> Écrire la fraction en dessous</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueReponseSimple"> Réponse à compléter (.../....)</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueReponseMixte"> Réponse avec partie entière (... + .../....)</label>
-        <button type="button" class="btn secondary" onclick="previewDisque()">Aperçu</button>
-      </div>
-      <div id="disquePreview"></div>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertDisque()">Insérer le disque</button>
-        <button type="button" class="btn secondary" onclick="closeDisqueTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    <div id="rectFracPanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Rectangle partagé en bandes égales, avec un nombre de bandes colorées (la fraction représentée). Astuce : clique directement sur les cases de l'aperçu pour choisir précisément lesquelles colorier.</p>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <label class="hint" style="margin:0;">Parts colorées : <input type="number" id="rectFracNum" value="3" min="0" oninput="syncRectFracCustomSetFromNum(); previewRectFrac();" style="width:60px;"></label>
-        <label class="hint" style="margin:0;" id="rectFracDenRow">Parts totales : <input type="number" id="rectFracDen" value="4" min="1" oninput="syncRectFracCustomSetFromNum(); previewRectFrac();" style="width:60px;"></label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracVert" onchange="previewRectFrac()"> Bandes verticales (au lieu d'horizontales)</label>
-      </div>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracGrid" onchange="toggleRectFracGrid(); previewRectFrac();"> Partage en grille (lignes × colonnes à la fois -- utile pour un dénominateur composé, ex. 1/6 vu comme 2×3)</label>
-        <span id="rectFracGridRow" style="display:none;">
-          <label class="hint" style="margin:0;">Lignes : <input type="number" id="rectFracRows" value="2" min="2" max="8" oninput="syncRectFracCustomSetFromNum(); previewRectFrac();" style="width:50px;"></label>
-          <label class="hint" style="margin:0;">Colonnes : <input type="number" id="rectFracCols" value="3" min="2" max="8" oninput="syncRectFracCustomSetFromNum(); previewRectFrac();" style="width:50px;"></label>
-        </span>
-      </div>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracVierge" onchange="previewRectFrac()"> Laisser vierge (à colorier par l'élève)</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracShowCaption" checked> Écrire la fraction en dessous</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracReponseSimple"> Réponse à compléter (.../....)</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracReponseMixte"> Réponse avec partie entière (... + .../....)</label>
-        <button type="button" class="btn secondary" onclick="previewRectFrac()">Aperçu</button>
-      </div>
-      <div id="rectFracPreview"></div>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertRectFrac()">Insérer le rectangle</button>
-        <button type="button" class="btn secondary" onclick="closeRectFracTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    </div>
-    <div id="cubesPanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Clique sur un cube pour le sélectionner, puis utilise les flèches pour le déplacer. Perspective cavalière.</p>
-      <div id="cubesPreview" style="text-align:center;"></div>
-      <div class="tool-row" style="margin:10px 0;justify-content:center;">
-        <span class="hint" style="margin:0;">Déplacer le cube sélectionné :</span>
-        <button type="button" class="btn secondary" onclick="moveCube(-1,0,0)">◀ Gauche</button>
-        <button type="button" class="btn secondary" onclick="moveCube(1,0,0)">Droite ▶</button>
-        <button type="button" class="btn secondary" onclick="moveCube(0,1,0)">▲ Haut</button>
-        <button type="button" class="btn secondary" onclick="moveCube(0,-1,0)">▼ Bas</button>
-        <button type="button" class="btn secondary" onclick="moveCube(0,0,1)">⇖ Arrière</button>
-        <button type="button" class="btn secondary" onclick="moveCube(0,0,-1)">⇘ Avant</button>
-      </div>
-      <div class="tool-row" style="margin-bottom:10px;justify-content:center;">
-        <button type="button" class="btn secondary" onclick="addCube()">+ Ajouter un cube</button>
-        <button type="button" class="btn secondary" onclick="removeCube()">✕ Retirer le cube sélectionné</button>
-      </div>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertCubeStack()">Insérer la figure</button>
-        <button type="button" class="btn secondary" onclick="closeCubesTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    <div id="graphPanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Trace une ou plusieurs courbes (droite définie par deux points, ou fonction) sur le même repère.</p>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <label class="hint" style="margin:0;" id="graphXMinMaxLabel">X min/max : <input type="number" id="graphXMin" value="-5" step="any" oninput="previewGraph()" style="width:60px;"> / <input type="number" id="graphXMax" value="5" step="any" oninput="previewGraph()" style="width:60px;"></label>
-        <label class="hint" style="margin:0;">Y min/max : <input type="number" id="graphYMin" value="-5" oninput="previewGraph()" style="width:60px;"> / <input type="number" id="graphYMax" value="5" oninput="previewGraph()" style="width:60px;"></label>
-        <button type="button" class="btn secondary" onclick="autoFitGraph()" title="Ajuste automatiquement les bornes pour bien cadrer les courbes tracées">🔍 Cadrage auto</button>
-        <label class="hint" style="margin:0;" title="Utile quand les nombres se chevauchent sur un axe étendu">Nombre affiché tous les : X <input type="number" id="graphLabelStepX" value="1" min="1" step="1" oninput="previewGraph()" style="width:40px;"> · Y <input type="number" id="graphLabelStepY" value="1" min="1" step="1" oninput="previewGraph()" style="width:40px;"></label>
-      </div>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <label class="hint" style="margin:0;"><input type="checkbox" id="graphXPi" onchange="previewGraph()"> Axe des x en radians (multiples de π -- utile pour sin, cos, tan). Dans ce mode, X min/max ci-dessus s'exprime en nombre de π (ex. -2 → -2π).</label>
-      </div>
-      <div id="graphCurvesList"></div>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <button type="button" class="btn secondary" onclick="addGraphCurve('droite')">+ Droite (2 points)</button>
-        <button type="button" class="btn secondary" onclick="addGraphCurve('fonction')">+ Fonction</button>
-      </div>
-      <div id="graphPreview"></div>
-      <p class="hint" style="margin:6px 0 0;">Écriture d'une fonction : mêmes conventions que le reste du site -- <code>x^2-3</code>, <code>2x+1</code>, <code>sqrt(x)</code>, <code>1/x</code>.</p>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertGraph()">Insérer le graphique</button>
-        <button type="button" class="btn secondary" onclick="closeGraphTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    <div id="statsPanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Diagramme statistique à partir d'une liste de catégories (ou de classes pour l'histogramme) et de leurs effectifs.</p>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <label class="hint" style="margin:0;">Type :
-          <select id="statsType" onchange="renderStatsRows()">
-            <option value="camembert">Camembert</option>
-            <option value="barres">Diagramme en barres</option>
-            <option value="batons">Diagramme en bâtons</option>
-            <option value="histogramme">Histogramme</option>
-          </select>
-        </label>
-      </div>
-      <div id="statsHistoOptions" style="display:none;margin-bottom:10px;">
-        <label class="hint" style="margin:0;"><input type="checkbox" id="statsHistoDensity" onchange="previewStats()"> Convention « aire = effectif » (densité) -- à cocher dès que les classes n'ont pas toutes la même largeur ; sinon, hauteur = effectif directement.</label>
-      </div>
-      <div id="statsRowsList"></div>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <button type="button" class="btn secondary" onclick="addStatsRow()">+ Ajouter une ligne</button>
-      </div>
-      <div id="statsPreview"></div>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertStats()">Insérer le diagramme</button>
-        <button type="button" class="btn secondary" onclick="closeStatsTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    <div id="probaGroupWrap" style="display:none;">
-    <div class="tool-group-tabs" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
-      <button type="button" class="tool-tab-btn" id="probaTabUrn" onclick="openUrnTool()">Sac / urne</button>
-      <button type="button" class="tool-tab-btn" id="probaTabCards" onclick="openCardsTool()">Cartes</button>
-      <button type="button" class="tool-tab-btn" id="probaTabDice" onclick="openDiceTool()">Dés</button>
-      <button type="button" class="tool-tab-btn" id="probaTabTree" onclick="openTreeTool()">Arbre</button>
-    </div>
-    <div id="urnPanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Sac ou urne contenant des boules de différentes couleurs.</p>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <label class="hint" style="margin:0;">Forme :
-          <select id="urnShape" onchange="previewUrn()">
-            <option value="sac">Sac</option>
-            <option value="urne">Urne</option>
-          </select>
-        </label>
-      </div>
-      <div id="urnRowsList"></div>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <button type="button" class="btn secondary" onclick="addUrnRow()">+ Ajouter une couleur</button>
-      </div>
-      <div id="urnPreview"></div>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertUrn()">Insérer</button>
-        <button type="button" class="btn secondary" onclick="closeUrnTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    <div id="cardsPanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Sélectionne les cartes à afficher (jeu de 32 ou 52 cartes).</p>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <label class="hint" style="margin:0;">Jeu :
-          <select id="cardsDeckType" onchange="renderCardsGrid()">
-            <option value="52">52 cartes</option>
-            <option value="32">32 cartes</option>
-          </select>
-        </label>
-        <button type="button" class="btn secondary" onclick="setCardsPreset('all')">Tout le jeu</button>
-        <button type="button" class="btn secondary" onclick="setCardsPreset('none')">Aucune</button>
-        <button type="button" class="btn secondary" onclick="setCardsPreset('aces')">Les as</button>
-        <button type="button" class="btn secondary" onclick="setCardsPreset('figures')">Les figures</button>
-      </div>
-      <div id="cardsGrid" style="overflow-x:auto;"></div>
-      <div id="cardsPreview" style="margin-top:10px;"></div>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertCards()">Insérer</button>
-        <button type="button" class="btn secondary" onclick="closeCardsTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    <div id="dicePanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Un ou plusieurs dés, avec le nombre de faces et la valeur affichée de ton choix.</p>
-      <div id="diceRowsList"></div>
-      <div class="tool-row" style="margin-bottom:10px;">
-        <button type="button" class="btn secondary" onclick="addDiceRow()">+ Ajouter un dé</button>
-      </div>
-      <div id="dicePreview"></div>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertDice()">Insérer</button>
-        <button type="button" class="btn secondary" onclick="closeDiceTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    <div id="treePanel" class="figure-wrap" style="display:none;">
-      <p class="hint" style="margin:0 0 10px;">Arbre de probabilité : clique sur « + » à côté d'un nœud pour lui ajouter une branche (événement + probabilité), branche par branche.</p>
-      <div id="treeCanvas" style="border:1px solid rgba(28,43,57,.15);border-radius:8px;padding:10px;overflow-x:auto;"></div>
-      <div id="treePreview" style="margin-top:10px;"></div>
-      <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="insertTree()">Insérer l'arbre</button>
-        <button type="button" class="btn secondary" onclick="closeTreeTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-    </div>
-    <div id="figurePanel" class="figure-wrap" style="display:none;">
-      <div class="tool-row" style="margin-bottom:8px;">
-        <textarea id="enonceInput" rows="3" style="flex:1;min-width:260px;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);"
-          placeholder="Ex. : ABC triangle&#10;I milieu de [BC]&#10;cercle de centre A passant par B"></textarea>
-        <button type="button" class="btn secondary" onclick="buildFromEnonce()" style="align-self:flex-start;">📐 Construire à partir de l'énoncé</button>
-        <button type="button" class="btn orange" onclick="interpretEnonceWithAI()" style="align-self:flex-start;">🤖 Interpréter avec l'IA</button>
-      </div>
-      <p class="hint" style="margin:-4px 0 12px;">Phrases reconnues directement : <span class="hint-mono">ABC triangle</span> (rectangle/isocèle/équilatéral, ex. <span class="hint-mono">ABC triangle rectangle en A</span>) · <span class="hint-mono">ABCD carré/rectangle/losange/parallélogramme</span> · <span class="hint-mono">I milieu de [BC]</span> · <span class="hint-mono">cercle de centre A passant par B</span>. Pour tout le reste (ou un énoncé complet en français libre), utilisez « Interpréter avec l'IA » (nécessite une clé API, à renseigner dans l'onglet Quiz IA).</p>
-      <div class="figure-toolbar" style="margin-bottom:10px;">
-        <button type="button" class="btn secondary fig-mode" data-mode="point" onclick="setFigureMode('point')">● Point</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')">✥ Déplacer</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="segment" onclick="setFigureMode('segment')">— Segment</button>
-        <span style="display:inline-flex;align-items:center;gap:4px;">
-          <button type="button" class="btn secondary fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')">—cm Segment</button>
-          <input type="number" id="segLengthInput" value="5" min="0.5" step="0.5" style="width:56px;padding:6px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"> cm
-        </span>
-        <button type="button" class="btn secondary fig-mode" data-mode="droite" onclick="setFigureMode('droite')">⟷ Droite</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="cercle" onclick="setFigureMode('cercle')">○ Cercle</button>
-        <span style="display:inline-flex;align-items:center;gap:4px;">
-          <button type="button" class="btn secondary fig-mode" data-mode="cercle-rayon" onclick="setFigureMode('cercle-rayon')">○cm Cercle</button>
-          <input type="number" id="circleRadiusInput" value="3" min="0.5" step="0.5" style="width:56px;padding:6px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"> cm rayon
-        </span>
-        <button type="button" class="btn secondary fig-mode" data-mode="arc" onclick="setFigureMode('arc')">◡ Arc de cercle</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')">✱ Milieu</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="angle" onclick="setFigureMode('angle')">∠ Angle</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="perpendiculaire" onclick="setFigureMode('perpendiculaire')">⊥ Perpendiculaire</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="parallele" onclick="setFigureMode('parallele')">∥ Parallèle</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="mediatrice" onclick="setFigureMode('mediatrice')">⟂ Médiatrice</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="bissectrice" onclick="setFigureMode('bissectrice')">⟨ Bissectrice</button>
-        <button type="button" class="btn secondary" onclick="undoFigure()">↩︎ Annuler le dernier</button>
-        <button type="button" class="btn secondary" onclick="clearFigure()">Effacer tout</button>
-      </div>
-      <div class="tool-row" style="margin-top:0;margin-bottom:8px;">
-        <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">
-          <input type="checkbox" id="compassToggle"> Simuler un compas (pour Cercle et Arc de cercle)
-        </label>
-      </div>
-      <div class="tool-row" style="margin-top:0;margin-bottom:10px;background:rgba(227,93,58,.06);border-radius:8px;padding:10px 12px;">
-        <button type="button" class="btn secondary fig-mode" data-mode="code" onclick="setFigureMode('code')" style="background:var(--accent-orange);color:#fff;">✓ Coder</button>
-        <select id="codeType">
-          <option value="longueur">Longueurs égales</option>
-          <option value="angle-egal">Angles égaux</option>
-          <option value="angle-droit">Angle droit</option>
-        </select>
-        <select id="codeGroup" title="Le nombre de traits (ou d'arcs) marqués : deux segments avec le même nombre sont annoncés comme égaux entre eux, un troisième segment avec un nombre différent formera un 2e groupe d'égalité.">
-          <option value="1">1 trait / 1 arc</option>
-          <option value="2">2 traits / 2 arcs</option>
-          <option value="3">3 traits / 3 arcs</option>
-        </select>
-        <button type="button" class="btn secondary" onclick="clearAllCodes()">🧹 Retirer tous les codages</button>
-        <span class="hint" style="margin:0;">Deux segments (ou angles) codés avec le même nombre de traits/arcs sont annoncés comme égaux entre eux. Les segments/cercles de longueur donnée sont codés automatiquement (même longueur = même nombre de traits). Ce menu sert au codage manuel (ex. pour un côté commun, ou une figure fournie sans passer par « longueur donnée »).</span>
-      </div>
-      <svg id="figureSvg" viewBox="0 0 500 320" onclick="onFigureClick(event)"
-           style="width:100%;max-width:520px;display:block;margin:0 auto;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
-      <p class="hint" style="margin-top:8px;" id="figureHint">Cliquez pour placer un point.</p>
-      <div class="figure-toolbar">
-        <button type="button" class="btn" onclick="validateFigure()">✓ Valider et insérer la figure</button>
-        <button type="button" class="btn secondary" onclick="closeFigureTool()">Fermer sans insérer</button>
-      </div>
-    </div>
-  </div>
-</div>
-
+<!-- Modale des outils de figures (toolsModalOverlay) : injectée dynamiquement par outils-figures.js -->
 
 <!-- Modales de l'Administration (édition compte, reset mdp, changement identifiant) :
      injectées dynamiquement par admin.js -->
@@ -1185,7 +797,6 @@
   </div>
 </section>
 
-<!-- ================= ADMINISTRATION ================= -->
 <!-- ================= SUPERVISION (résultats automatismes) ================= -->
 <section class="view" id="view-supervision">
   <span class="back-btn" data-nav="home">← Accueil</span>
@@ -1227,29 +838,30 @@
 
 <footer>Une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a> · L'Atelier des Maths · Programme B.O. 2026</footer>
 
-<script defer src="app.js?v=20260819-206"></script>
-<script defer src="admin.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-206"></script>
-<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-206"></script>
-<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-206"></script>
-<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-206"></script>
-<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-206"></script>
-<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-206"></script>
-<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-206"></script>
-<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/N4-fractions.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/N6-equations.js?v=20260819-206"></script>
-<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-206"></script>
-<script defer src="calcul-mental/calcul-mental.js?v=20260819-206"></script>
-<script defer src="compte-est-bon.js?v=20260819-206"></script>
+<script defer src="app.js?v=20260819-207"></script>
+<script defer src="outils-figures.js?v=20260819-207"></script>
+<script defer src="admin.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-207"></script>
+<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-207"></script>
+<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-207"></script>
+<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-207"></script>
+<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-207"></script>
+<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-207"></script>
+<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-207"></script>
+<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/N4-fractions.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/N6-equations.js?v=20260819-207"></script>
+<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-207"></script>
+<script defer src="calcul-mental/calcul-mental.js?v=20260819-207"></script>
+<script defer src="compte-est-bon.js?v=20260819-207"></script>
 </body>
 </html>
