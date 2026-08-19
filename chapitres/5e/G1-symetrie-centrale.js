@@ -259,6 +259,8 @@ document.getElementById('methode-demo-symetrie').innerHTML = `
           <g id="mCompass" opacity="0"></g>
           <line id="mTickAprime" class="pt-tick" stroke="#E35D3A" stroke-width="2" opacity="0"/>
           <text id="mStep3t" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" opacity="0">A'</text>
+          <line id="mCodeAO" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+          <line id="mCodeOAprime" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
         </svg>
         <div class="step-list">
           <div class="step-item" data-step="1"><div class="step-num">1</div><div>Je trace la <b>demi-droite [AO)</b> à la règle, en la prolongeant largement au-delà de O.</div></div>
@@ -718,7 +720,7 @@ function placeCompass(angle){
 function resetMethod(){
   methodStep=0;
   document.querySelectorAll('.step-item').forEach(s=>s.classList.remove('done'));
-  ['mStep1','mRulerTool','mPencilTool','mArc','mCompass','mTickAprime','mStep3t'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  ['mStep1','mRulerTool','mPencilTool','mArc','mCompass','mTickAprime','mStep3t','mCodeAO','mCodeOAprime'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
   document.getElementById('mArc').setAttribute('points','');
   document.getElementById('btnMethodNext').disabled=false;
   document.getElementById('btnMethodNext').textContent='Étape suivante →';
@@ -823,17 +825,25 @@ function mRenderStepInstant(step){
   const showAprime = step>=3;
   document.getElementById('mTickAprime').setAttribute('opacity', showAprime?'1':'0');
   document.getElementById('mStep3t').setAttribute('opacity', showAprime?'1':'0');
+  document.getElementById('mCodeAO').setAttribute('opacity', showAprime?'1':'0');
+  document.getElementById('mCodeOAprime').setAttribute('opacity', showAprime?'1':'0');
   if(showAprime){
     const Aprime = pointOnCircle(mAngleA+Math.PI);
     setTick(document.getElementById('mTickAprime'), Aprime.x, Aprime.y, mAngleA);
     // Sous la droite (perpendiculaire à [AO), côté y positif = vers le bas en SVG), pas dans son
     // prolongement (l'ancien décalage fixe +10,+18 pointait quasiment dans la même direction que
-    // la demi-droite elle-même).
+    // la demi-droite elle-même) -- et un peu vers la droite en plus, pour ne pas empiéter sur la
+    // croix rouge de A' elle-même.
     let perp = {x:-mDirAO.y, y:mDirAO.x};
     if(perp.y<0) perp = {x:mDirAO.y, y:-mDirAO.x};
-    const labelOffset = 28;
-    document.getElementById('mStep3t').setAttribute('x', (Aprime.x+perp.x*labelOffset).toFixed(1));
+    const labelOffset = 28, labelRightNudge = 12;
+    document.getElementById('mStep3t').setAttribute('x', (Aprime.x+perp.x*labelOffset+labelRightNudge).toFixed(1));
     document.getElementById('mStep3t').setAttribute('y', (Aprime.y+perp.y*labelOffset).toFixed(1));
+    // Codage d'égalité de longueur OA = OA' : même convention (trait oblique au milieu du
+    // segment) déjà utilisée plus haut dans ce fichier pour la symétrie d'un segment.
+    const midAO = {x:(mA.x+O.x)/2, y:(mA.y+O.y)/2}, midOAprime = {x:(O.x+Aprime.x)/2, y:(O.y+Aprime.y)/2};
+    setSlantTick(document.getElementById('mCodeAO'), midAO.x, midAO.y, mAngleA);
+    setSlantTick(document.getElementById('mCodeOAprime'), midOAprime.x, midOAprime.y, mAngleA);
     document.querySelector('.step-item[data-step="3"]').classList.add('done');
   }
   document.getElementById('btnMethodNext').disabled = (step===3);
