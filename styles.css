@@ -324,10 +324,6 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .pt-tick{stroke-linecap:square;}
 .vertex-handle{fill:transparent;stroke:none;transition:.12s;}
 .vertex-handle:hover, .vertex-handle.dragging{fill:rgba(31,58,92,.14);stroke:#1F3A5C;stroke-width:1.2;}
-.compass-leg{stroke:#5B6B78;stroke-width:2;stroke-linecap:round;}
-.compass-hinge{fill:#5B6B78;}
-.compass-needle{fill:#1C1B2E;}
-.compass-pencil{fill:#E35D3A;}
 .redaction-note{
   background:rgba(227,93,58,.08);border:1px solid rgba(227,93,58,.25);
   border-radius:8px;padding:10px 14px;font-size:.82rem;line-height:1.6;color:#8A2E1C;margin-bottom:16px;

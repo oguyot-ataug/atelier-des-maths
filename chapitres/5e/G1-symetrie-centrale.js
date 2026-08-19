@@ -253,14 +253,10 @@ document.getElementById('methode-demo-symetrie').innerHTML = `
           <line id="mTickA" class="pt-tick" stroke="#1F3A5C" stroke-width="2"/>
           <text x="100" y="50" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">A</text>
           <line id="mStep1" x1="120" y1="60" x2="120" y2="60" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+          <g id="mRulerTool" opacity="0"></g>
+          <g id="mPencilTool" opacity="0"></g>
           <polyline id="mArc" fill="none" stroke="#E35D3A" stroke-width="1.6" stroke-dasharray="4 4" opacity="0"/>
-          <g id="mCompass" opacity="0">
-            <line id="mLegO" class="compass-leg"/>
-            <line id="mLegP" class="compass-leg"/>
-            <circle id="mHinge" class="compass-hinge" r="5"/>
-            <path id="mNeedle" class="compass-needle" d="M0,0 l-3,9 l6,0 z"/>
-            <circle id="mPencil" class="compass-pencil" r="4"/>
-          </g>
+          <g id="mCompass" opacity="0"></g>
           <line id="mTickAprime" class="pt-tick" stroke="#E35D3A" stroke-width="2" opacity="0"/>
           <text id="mStep3t" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" opacity="0">A'</text>
         </svg>
@@ -655,6 +651,28 @@ const mAngleA = Math.atan2(mA.y-O.y, mA.x-O.x);      // starting angle of OA
 
 const mLegLen = 0.7*mR+30;                            // compass leg length (design choice, > r/2)
 
+// Compas au design du tableau interactif (compassSVG, définie dans app.js) : forme fixe posée
+// une seule fois ici (le rayon mR ne change jamais pendant cette construction, seul l'angle
+// tourne), positionnée/orientée ensuite par un simple <g transform="translate(...) rotate(...)">
+// dans placeCompass() -- pas de logique par-branche à chaque frame comme avant.
+document.getElementById('mCompass').innerHTML = compassSVG(mR, mLegLen);
+
+// Règle + crayon (même design que le tableau interactif) montrés le temps de l'étape 1, pour
+// illustrer le tracé de la demi-droite [AO) à la règle -- posés une seule fois eux aussi, sur
+// le segment [A ; 2×(O-A)] déjà utilisé par mStep1 ci-dessous.
+const mStep1End = {x: mA.x + 2*(O.x-mA.x), y: mA.y + 2*(O.y-mA.y)};
+const mRayAngleDeg = Math.atan2(mStep1End.y-mA.y, mStep1End.x-mA.x)*180/Math.PI;
+const mRulerStart = {
+  x: mA.x - Math.cos(mRayAngleDeg*Math.PI/180)*26,
+  y: mA.y - Math.sin(mRayAngleDeg*Math.PI/180)*26
+};
+const mRulerTool = document.getElementById('mRulerTool');
+mRulerTool.innerHTML = rulerSVG(true);
+mRulerTool.setAttribute('transform', `translate(${mRulerStart.x.toFixed(1)},${mRulerStart.y.toFixed(1)}) rotate(${mRayAngleDeg.toFixed(1)}) scale(0.62)`);
+const mPencilTool = document.getElementById('mPencilTool');
+mPencilTool.innerHTML = pencilSVG('m-pencil');
+mPencilTool.setAttribute('transform', `translate(${mStep1End.x.toFixed(1)},${mStep1End.y.toFixed(1)}) rotate(${(mRayAngleDeg-90).toFixed(1)}) scale(0.5)`);
+
 let methodStep=0;
 
 
@@ -663,21 +681,12 @@ function pointOnCircle(angle){ return {x:O.x+mR*Math.cos(angle), y:O.y+mR*Math.s
 
 function placeCompass(angle){
   const P = pointOnCircle(angle);
-  const mid = {x:(O.x+P.x)/2, y:(O.y+P.y)/2};
-  const ux=(P.x-O.x)/mR, uy=(P.y-O.y)/mR;
-  let perp = {x:-uy, y:ux};
-  if(perp.y>0) perp={x:uy,y:-ux};                       // keep hinge pointing "up" on screen
-  const h = Math.sqrt(Math.max(0, mLegLen*mLegLen - (mR/2)*(mR/2)));
-  const H = {x:mid.x+perp.x*h, y:mid.y+perp.y*h};
-  const g=document.getElementById('mCompass');
+  const g = document.getElementById('mCompass');
+  // Repère local de compassSVG : pointe (ancrage) à l'origine, mine à (mR,0) -- il suffit donc
+  // de poser le groupe à O (l'ancrage réel de cette construction, voir note ci-dessus) et de le
+  // tourner de l'angle courant pour que la mine se retrouve exactement sur P.
+  g.setAttribute('transform', `translate(${O.x},${O.y}) rotate(${(angle*180/Math.PI).toFixed(2)})`);
   g.setAttribute('opacity','1');
-  document.getElementById('mLegO').setAttribute('x1',O.x); document.getElementById('mLegO').setAttribute('y1',O.y);
-  document.getElementById('mLegO').setAttribute('x2',H.x); document.getElementById('mLegO').setAttribute('y2',H.y);
-  document.getElementById('mLegP').setAttribute('x1',P.x); document.getElementById('mLegP').setAttribute('y1',P.y);
-  document.getElementById('mLegP').setAttribute('x2',H.x); document.getElementById('mLegP').setAttribute('y2',H.y);
-  document.getElementById('mHinge').setAttribute('cx',H.x); document.getElementById('mHinge').setAttribute('cy',H.y);
-  document.getElementById('mNeedle').setAttribute('transform',`translate(${O.x},${O.y})`);
-  document.getElementById('mPencil').setAttribute('cx',P.x); document.getElementById('mPencil').setAttribute('cy',P.y);
   return P;
 }
 
@@ -685,7 +694,7 @@ function placeCompass(angle){
 function resetMethod(){
   methodStep=0;
   document.querySelectorAll('.step-item').forEach(s=>s.classList.remove('done'));
-  ['mStep1','mArc','mCompass','mTickAprime','mStep3t'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  ['mStep1','mRulerTool','mPencilTool','mArc','mCompass','mTickAprime','mStep3t'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
   document.getElementById('mArc').setAttribute('points','');
   document.getElementById('btnMethodNext').disabled=false;
   document.getElementById('btnMethodNext').textContent='Étape suivante →';
@@ -726,6 +735,10 @@ function mRenderStepInstant(step){
     document.getElementById('mStep1').setAttribute('x2',280); document.getElementById('mStep1').setAttribute('y2',200);
     document.querySelector('.step-item[data-step="1"]').classList.add('done');
   }
+  // Règle + crayon : uniquement pendant l'étape 1 elle-même (comme le compas n'apparaît que
+  // pendant l'étape 2) -- une fois la demi-droite tracée, seul le trait noir permanent reste.
+  document.getElementById('mRulerTool').setAttribute('opacity', step===1?'1':'0');
+  document.getElementById('mPencilTool').setAttribute('opacity', step===1?'1':'0');
   const showArc = step>=2;
   document.getElementById('mArc').setAttribute('opacity', showArc?'1':'0');
   if(showArc){

@@ -3422,6 +3422,58 @@ function protractorSVG(){
    côté), pour qu'on tourne l'outil "par le bout" comme dans la réalité. */
 const TB_COMPASS_LEG = 200; // longueur fixe des branches (comme un vrai compas) -- assez
                              // longue pour rester crédible même bien écarté.
+// Un vrai compas ne peut pas s'ouvrir plus grand que ses deux branches mises bout à bout (angle
+// plat, charnière à hauteur nulle) : au-delà, il n'existe géométriquement aucune solution avec
+// des branches de longueur fixe. Rayon max = 2×LEG, avec une petite marge de sécurité pour que
+// la charnière garde toujours une hauteur (et donc un angle) bien définis, même tout en bout de
+// course.
+const TB_COMPASS_MAX_RADIUS = 2*TB_COMPASS_LEG - 10;
+/* Compas, dans le même esprit graphique que celui du tableau interactif (pointe grise
+   effilée, mine en forme de petit crayon, charnière ovale à rivets + pommeau) : repère
+   LOCAL, la pointe (ancrage fixe) est à l'origine (0,0), la mine (crayon qui trace) à
+   (radius,0) -- comme equerreSVG/rulerSVG, à positionner/orienter via un <g transform=
+   "translate(...) rotate(...)"> côté appelant.
+   legLen est la longueur (fixe) des branches : chaque figure choisit la valeur qui lui
+   donne les proportions les plus naturelles à SON échelle (le tableau interactif utilise
+   TB_COMPASS_LEG=200 ; une figure de cours à une autre échelle voudra souvent une valeur
+   différente -- ex. proportionnelle au rayon de la figure).
+   Un vrai compas ne peut pas s'ouvrir plus grand que ses deux branches mises bout à bout :
+   radius est donc bridé à 2×legLen (avec une petite marge de sécurité), au-delà duquel il
+   n'existe géométriquement aucune solution avec des branches de longueur fixe -- c'est
+   exactement le bug corrigé sur le tableau interactif (les branches semblaient s'allonger
+   indéfiniment en écartant au maximum). */
+function compassSVG(radius, legLen){
+  const leg = legLen || TB_COMPASS_LEG;
+  const r = Math.min(2*leg-10, Math.max(1, radius));
+  const half = r/2;
+  const hingeH = Math.sqrt(Math.max(leg*leg - half*half, 4));
+  const midX = half, midY = -hingeH;
+  const mineX = r, mineY = 0;
+  const mineAngle = Math.atan2(mineY-midY, mineX-midX)*180/Math.PI;
+  const anchorAngle = Math.atan2(0-midY, 0-midX)*180/Math.PI;
+  const anchorRad = anchorAngle*Math.PI/180;
+  // Le trait NOIR visible s'arrête un peu avant la vraie pointe (12 unités en retrait), comme
+  // sur le tableau interactif : le triangle gris s'amenuisant jusqu'à un point à cet endroit,
+  // il ne couvrirait plus toute la largeur du trait tout au bout sans ce retrait.
+  const anchorVisX = -12*Math.cos(anchorRad), anchorVisY = -12*Math.sin(anchorRad);
+  return `<line x1="${anchorVisX.toFixed(1)}" y1="${anchorVisY.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="butt"/>
+    <line x1="${mineX.toFixed(1)}" y1="${mineY.toFixed(1)}" x2="${midX.toFixed(1)}" y2="${midY.toFixed(1)}" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round"/>
+    <g transform="rotate(${(anchorAngle-90).toFixed(1)})">
+      <polygon points="0,0 -3.5,-18 3.5,-18" fill="#6B7280" stroke="#1C1B2E" stroke-width="1"/>
+    </g>
+    <g transform="translate(${mineX.toFixed(1)},${mineY.toFixed(1)}) rotate(${(mineAngle-90).toFixed(1)})">
+      <rect x="-4.5" y="-22" width="9" height="8" fill="#D93025" stroke="#1C1B2E" stroke-width="1.1"/>
+      <rect x="-4.5" y="-14" width="9" height="10" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.1"/>
+      <polygon points="-4.5,-4 4.5,-4 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1.1"/>
+      <polygon points="-1.6,-1.3 1.6,-1.3 0,0" fill="#3a2b1f"/>
+    </g>
+    <g transform="translate(${midX.toFixed(1)},${midY.toFixed(1)})">
+      <ellipse cx="0" cy="0" rx="12" ry="16" fill="#2EA8C9" stroke="#1C1B2E" stroke-width="1.6"/>
+      <circle cx="-4" cy="-4" r="1.7" fill="#1C1B2E"/>
+      <circle cx="4" cy="-4" r="1.7" fill="#1C1B2E"/>
+      <circle cx="0" cy="-19" r="7" fill="#2EA8C9" stroke="#1C1B2E" stroke-width="1.4"/>
+    </g>`;
+}
 // Grande équerre à 30°/60° : angle exact via trigonométrie (avant, la proportion était choisie
 // à l'œil et ne donnait ni 30° ni 60° -- ici legY = legX·tan(30°) donne un angle de 30° pile au
 // sommet pointu (en haut à droite), et donc 60° à l'autre sommet aigu (en bas à gauche).
@@ -4046,7 +4098,7 @@ function tbRender(){
       // Longueur des branches FIXE (comme un vrai compas) : la charnière se rapproche de la
       // base pointe-mine à mesure qu'on écarte, sans jamais rallonger les branches elles-mêmes.
       const half = distTotal/2;
-      const hingeH = Math.sqrt(Math.max(TB_COMPASS_LEG*TB_COMPASS_LEG - half*half, 900));
+      const hingeH = Math.sqrt(Math.max(TB_COMPASS_LEG*TB_COMPASS_LEG - half*half, 4));
       const midX=(t.x+mineX)/2 + perpX*hingeH, midY=(t.y+mineY)/2 + perpY*hingeH;
       const mineAngle = Math.atan2(mineY-midY, mineX-midX)*180/Math.PI;
       const hingeAngle = Math.atan2(perpY,perpX)*180/Math.PI+90;
@@ -4535,7 +4587,7 @@ function tbAttachHandlers(){
       let target = pt, bestDist = 22;
       tbPoints.forEach(p=>{ const d=Math.hypot(p.x-pt.x,p.y-pt.y); if(d<bestDist){ bestDist=d; target={x:p.x,y:p.y}; } });
       const dx = target.x-tool.x, dy = target.y-tool.y;
-      tool.radius = Math.max(20, Math.hypot(dx,dy));
+      tool.radius = Math.min(TB_COMPASS_MAX_RADIUS, Math.max(20, Math.hypot(dx,dy)));
       tool.angle = Math.atan2(dy,dx)*180/Math.PI;
     } else if(tbDrag.mode==='compassRotateOnly'){
       // Mode "Fermé" : tourne la branche du crayon SANS jamais toucher au rayon et sans rien
