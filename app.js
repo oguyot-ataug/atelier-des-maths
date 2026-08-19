@@ -3199,6 +3199,37 @@ let tbLastMovedToolId = null; // dernier outil qu'on a saisi pour le déplacer -
                                // l'AUTRE outil qui vient se coller à celui qu'on a en main).
 let tbBackground = 'blank'; // 'blank' | 'squares' | 'triangles'
 let tbGridSize = 20; // taille de base du pavage (côté du carreau ou du triangle), zoomable
+// Image de fond importée (photo, figure scannée...) pour travailler par-dessus (tracer, coder...).
+// tbBgImages est un tableau "append-only" : chaque image n'y est stockée qu'UNE fois, et les
+// instantanés d'historique (undo/redo) ne retiennent que le petit entier tbBgImageIdx -- jamais
+// la chaîne base64 elle-même, qui serait sinon dupliquée dans chacun des 60 instantanés possibles.
+let tbBgImages = [];
+let tbBgImageIdx = null;
+let tbBgImageOpacity = 1;
+function tbImportImage(file){
+  if(!file) return;
+  if(!file.type || !file.type.startsWith('image/')){ niceAlert("Ce fichier n'est pas une image."); return; }
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    tbBgImages.push(reader.result);
+    tbBgImageIdx = tbBgImages.length-1;
+    document.getElementById('tbBgImageOpacityBox').style.display = 'inline-flex';
+    tbPushHistory();
+    tbRender();
+  };
+  reader.onerror = ()=>{ niceAlert("Impossible de lire cette image."); };
+  reader.readAsDataURL(file);
+}
+function tbRemoveBgImage(){
+  tbBgImageIdx = null;
+  document.getElementById('tbBgImageOpacityBox').style.display = 'none';
+  tbPushHistory();
+  tbRender();
+}
+function tbSetBgImageOpacity(v){
+  tbBgImageOpacity = parseFloat(v);
+  tbRender();
+}
 function tbSetBackground(type){
   tbBackground = type;
   const zoomBox = document.getElementById('tbGridZoomBox');
@@ -3252,7 +3283,7 @@ let tbPoints = [];  // points nommés posés au tap du crayon {id, x, y, label}
 let tbHistory = [];
 let tbHistoryIndex = -1;
 function tbSnapshot(){
-  return JSON.stringify({tools:tbTools, ink:tbInk, points:tbPoints, texts:tbTexts, codages:tbCodages, bg:tbBackground, gridSize:tbGridSize});
+  return JSON.stringify({tools:tbTools, ink:tbInk, points:tbPoints, texts:tbTexts, codages:tbCodages, bg:tbBackground, gridSize:tbGridSize, bgImageIdx:tbBgImageIdx, bgImageOpacity:tbBgImageOpacity});
 }
 function tbPushHistory(){
   const snap = tbSnapshot();
@@ -3267,11 +3298,19 @@ function tbRestoreSnapshot(snap){
   const s = JSON.parse(snap);
   tbTools = s.tools; tbInk = s.ink; tbPoints = s.points; tbTexts = s.texts; tbCodages = s.codages || [];
   tbBackground = s.bg; tbGridSize = s.gridSize;
+  tbBgImageIdx = s.bgImageIdx!==undefined ? s.bgImageIdx : null;
+  tbBgImageOpacity = s.bgImageOpacity!==undefined ? s.bgImageOpacity : 1;
   tbDrag = null;
   const bgSelect = document.getElementById('tbBgSelect');
   if(bgSelect) bgSelect.value = tbBackground;
   const zoomBox = document.getElementById('tbGridZoomBox');
   if(zoomBox) zoomBox.style.display = tbBackground==='blank' ? 'none' : 'inline-flex';
+  const opacityBox = document.getElementById('tbBgImageOpacityBox');
+  if(opacityBox){
+    opacityBox.style.display = tbBgImageIdx!==null ? 'inline-flex' : 'none';
+    const slider = document.getElementById('tbBgImageOpacitySlider');
+    if(slider) slider.value = tbBgImageOpacity;
+  }
   tbRenderPalette();
   tbRender();
   tbRenderHistoryPanel();
@@ -4238,9 +4277,13 @@ function tbRender(){
     </pattern>`;
     bgRect = `<rect width="${W}" height="${H}" fill="url(#tbPatTri)"/>`;
   }
+  const bgImageHtml = tbBgImageIdx!==null && tbBgImages[tbBgImageIdx]
+    ? `<image href="${tbBgImages[tbBgImageIdx]}" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="xMidYMid meet" opacity="${tbBgImageOpacity}"/>`
+    : '';
   document.getElementById('tbBoardWrap').innerHTML = `<svg id="tbSvg" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;touch-action:none;user-select:none;background:#fff;">
     <defs>${bgDefs}</defs>
     ${bgRect}
+    ${bgImageHtml}
     <g id="tbInkLayer">${inkHtml}${pointsHtml}${textsHtml}${codagesHtml}${protractorPreview}${pencilSnapRing}</g>
     <g id="tbToolsLayer">${toolsHtml}${segActionsHtml}${slideLockHtml}</g>
   </svg>`;

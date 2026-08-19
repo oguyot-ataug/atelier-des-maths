@@ -40,6 +40,18 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="btn secondary" onclick="closeTextBlockTool()">Fermer sans insérer</button>
       </div>
     </div>
+    <div id="imagePanel" class="figure-wrap" style="display:none;">
+      <p class="hint" style="margin:0 0 10px;">Importer une image (photo, capture d'écran, figure scannée...) à insérer dans le contenu.</p>
+      <input type="file" id="imageImportInput" accept="image/*" style="display:none;" onchange="previewImportedImage(this.files[0])">
+      <div class="tool-row" style="margin:0 0 8px;">
+        <button type="button" class="btn secondary" onclick="document.getElementById('imageImportInput').click()">📷 Choisir une image</button>
+      </div>
+      <div id="imageImportPreview" style="margin-top:4px;"></div>
+      <div class="figure-toolbar" style="margin-top:10px;">
+        <button type="button" class="btn" id="imageImportInsertBtn" onclick="insertImageBlock()" disabled>Insérer l'image</button>
+        <button type="button" class="btn secondary" onclick="closeImageTool()">Fermer sans insérer</button>
+      </div>
+    </div>
     <div id="formulaBuilderOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeFormulaBuilder();">
       <div class="modal-card" style="max-width:600px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
@@ -615,11 +627,48 @@ function reopenTextBlock(data){
   document.getElementById('textBlockInput').value = data.text;
   previewTextBlock();
 }
+let imageImportDataUri = null;
+function previewImportedImage(file){
+  if(!file) return;
+  if(!file.type || !file.type.startsWith('image/')){ niceAlert("Ce fichier n'est pas une image."); return; }
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    imageImportDataUri = reader.result;
+    document.getElementById('imageImportPreview').innerHTML = `<img src="${imageImportDataUri}" style="max-width:100%;max-height:260px;display:block;margin:0 auto;border-radius:6px;border:1px solid rgba(28,43,57,.15);"/>`;
+    document.getElementById('imageImportInsertBtn').disabled = false;
+  };
+  reader.onerror = ()=>{ niceAlert("Impossible de lire cette image."); };
+  reader.readAsDataURL(file);
+}
+function openImageTool(){
+  hideAllToolContent();
+  document.getElementById('toolsModalOverlay').style.display='flex';
+  document.getElementById('imagePanel').style.display='block';
+  imageImportDataUri = null;
+  document.getElementById('imageImportPreview').innerHTML = '';
+  document.getElementById('imageImportInsertBtn').disabled = true;
+  document.getElementById('imageImportInput').value = '';
+  document.getElementById('imagePanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeImageTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('imagePanel').style.display='none'; }
+function insertImageBlock(){
+  if(!imageImportDataUri) return;
+  const html = `<div style="text-align:center;padding:6px 0;"><img src="${imageImportDataUri}" style="max-width:100%;max-height:400px;border-radius:6px;border:1px solid rgba(28,43,57,.15);" alt="Image importée"/></div>`;
+  addPendingBlock('image', html, {src:imageImportDataUri}, 'reopenImageBlock');
+  closeImageTool();
+}
+function reopenImageBlock(data){
+  openImageTool();
+  imageImportDataUri = data.src;
+  document.getElementById('imageImportPreview').innerHTML = `<img src="${data.src}" style="max-width:100%;max-height:260px;display:block;margin:0 auto;border-radius:6px;border:1px solid rgba(28,43,57,.15);"/>`;
+  document.getElementById('imageImportInsertBtn').disabled = false;
+}
 /* Icônes en trait fin (SVG), sobres et monochromes -- plus adaptées à un contexte professionnel
    que des émojis. Dupliquées telles quelles dans index.html pour la barre fixe de l'outil de
    correction (markup statique, ne peut pas appeler cette fonction JS). */
 const TOOL_ICONS = {
   texte: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>`,
+  image: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><circle cx="8.5" cy="9.5" r="1.5" fill="currentColor" stroke="none"/><path d="M21 16 L15 10 L6 19"/></svg>`,
   figure: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4 L21 20 L3 20 Z"/></svg>`,
   tableau: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="17" height="17" rx="1"/><line x1="3.5" y1="9.5" x2="20.5" y2="9.5"/><line x1="3.5" y1="15.5" x2="20.5" y2="15.5"/><line x1="9.5" y1="3.5" x2="9.5" y2="20.5"/><line x1="15.5" y1="3.5" x2="15.5" y2="20.5"/></svg>`,
   division: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/><circle cx="12" cy="6" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="1.3" fill="currentColor" stroke="none"/></svg>`,
@@ -634,6 +683,7 @@ function toolButtonsHTML(ctx){
   const set = `setToolContext('${ctx}');`;
   return `
     <button type="button" class="tool-icon-btn" title="Texte" onclick="${set}openTextBlockTool()">${TOOL_ICONS.texte}</button>
+    <button type="button" class="tool-icon-btn" title="Importer une image" onclick="${set}openImageTool()">${TOOL_ICONS.image}</button>
     <button type="button" class="tool-icon-btn" title="Figure géométrique" onclick="${set}openFigureTool()">${TOOL_ICONS.figure}</button>
     <button type="button" class="tool-icon-btn" title="Tableau" onclick="${set}openTableauTool()">${TOOL_ICONS.tableau}</button>
     <button type="button" class="tool-icon-btn" title="Division (euclidienne / décimale)" onclick="${set}openDivisionTool()">${TOOL_ICONS.division}</button>
@@ -654,7 +704,7 @@ const SCALE_PX_PER_CM = 20;
    modale elle-même -- appelé au début de chaque fonction d'ouverture d'outil, pour qu'un seul
    outil (ou groupe) soit jamais visible à la fois. */
 function hideAllToolContent(){
-  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','textBlockPanel','imagePanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -669,7 +719,7 @@ function activateToolTab(wrapId, activeTabId, inactiveTabId){
   if(inactiveTab) inactiveTab.classList.remove('active');
 }
 function closeAllToolPanels(){
-  ['figurePanel','tableauPanel','textBlockPanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','textBlockPanel','imagePanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
