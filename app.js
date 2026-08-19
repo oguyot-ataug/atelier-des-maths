@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.203', items:[
+    "Cours 6e G2 -- vraie cause trouvée pour \"le tracé ne se fait pas dans l'onglet méthode\" : cet onglet ne contenait en fait AUCUNE figure animée, juste un récapitulatif texte (donc rien ne pouvait se tracer). Ajout d'une vraie figure animée (équerre + règle, glissement, tracé du crayon) avant ce récapitulatif -- copie de la construction déjà validée dans l'onglet Cours, avec ses propres identifiants et son propre état, testée à toutes les étapes avec de vrais clics.",
+  ]},
   { version:'2026-08-04.202', items:[
     "Cours 6e G2 -- méthode parallèle : le cadre (viewBox) était resté à sa hauteur d'origine (240) alors que N, désormais placé sous (d), fait descendre la construction bien plus bas (mesuré jusqu'à y=401 lors du glissement, largement hors cadre). Hauteur du cadre augmentée à 430 pour contenir toute la construction avec une marge confortable, vérifié à chaque étape.",
   ]},
