@@ -12,71 +12,101 @@
 document.getElementById('view-admin').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;">🛠️ Administration</h1>
-  <p style="color:var(--ink-soft);max-width:70ch;">Créez les comptes profs/élèves, les classes, et associez-les entre eux.</p>
+  <p style="color:var(--ink-soft);max-width:70ch;">Gestion des comptes, des classes, et des signalements.</p>
 
-  <div class="tool-shell" style="margin-bottom:20px;">
-    <p class="example-title" style="margin-bottom:6px;">Créer un compte</p>
-    <div class="tool-row">
-      <input type="text" id="adminNewEmail" placeholder="identifiant (ou e-mail)" style="min-width:200px;">
-      <input type="password" id="adminNewPassword" placeholder="Mot de passe" style="width:150px;">
-      <input type="text" id="adminNewNom" placeholder="Nom (affichage)" style="width:160px;">
-      <input type="text" id="adminNewUai" placeholder="UAI établissement (ex. 0751234A)" style="width:170px;">
-      <select id="adminNewRole"><option value="prof">Professeur</option><option value="eleve">Élève</option><option value="admin">Administrateur</option></select>
-      <button class="btn" onclick="adminCreateAccount()">Créer le compte</button>
-    </div>
-    <span class="hint" id="adminAccountStatus" style="margin:0;"></span>
+  <div class="tabs" id="adminTabs">
+    <button class="tab-btn active" data-admin-tab="comptes">Comptes &amp; classes</button>
+    <button class="tab-btn" data-admin-tab="listing">📋 Déjà enregistré</button>
+    <button class="tab-btn" data-admin-tab="signalements">🐞 Signalements</button>
+  </div>
 
-    <p class="example-title" style="margin:16px 0 6px;">Import en masse d'élèves</p>
-    <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, identifiant puis mot de passe séparés par une tabulation — un copier-coller direct depuis un tableur fonctionne).</p>
-    <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="jdupont	Motdepasse1
+  <div class="tab-panel active" id="admin-panel-comptes">
+    <div class="tool-shell">
+      <p style="color:var(--ink-soft);max-width:70ch;margin:0 0 14px;">Créez les comptes profs/élèves, les classes, et associez-les entre eux.</p>
+      <p class="example-title" style="margin-bottom:6px;">Créer un compte</p>
+      <div class="tool-row">
+        <input type="text" id="adminNewEmail" placeholder="identifiant (ou e-mail)" style="min-width:200px;">
+        <input type="password" id="adminNewPassword" placeholder="Mot de passe" style="width:150px;">
+        <input type="text" id="adminNewNom" placeholder="Nom (affichage)" style="width:160px;">
+        <input type="text" id="adminNewUai" placeholder="UAI établissement (ex. 0751234A)" style="width:170px;">
+        <select id="adminNewRole"><option value="prof">Professeur</option><option value="eleve">Élève</option><option value="admin">Administrateur</option></select>
+        <button class="btn" onclick="adminCreateAccount()">Créer le compte</button>
+      </div>
+      <span class="hint" id="adminAccountStatus" style="margin:0;"></span>
+
+      <p class="example-title" style="margin:16px 0 6px;">Import en masse d'élèves</p>
+      <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, identifiant puis mot de passe séparés par une tabulation — un copier-coller direct depuis un tableur fonctionne).</p>
+      <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="jdupont	Motdepasse1
 mmartin	Motdepasse2"></textarea>
-    <div class="tool-row" style="margin-top:8px;">
-      <button class="btn" onclick="adminBulkCreateStudents()">Créer tous les comptes élèves</button>
-    </div>
-    <div class="hint" id="adminBulkStatus" style="margin:0;"></div>
+      <div class="tool-row" style="margin-top:8px;">
+        <button class="btn" onclick="adminBulkCreateStudents()">Créer tous les comptes élèves</button>
+      </div>
+      <div class="hint" id="adminBulkStatus" style="margin:0;"></div>
 
-    <p class="example-title" style="margin:16px 0 6px;">Créer une classe</p>
-    <div class="tool-row">
-      <input type="text" id="adminNewClassNom" placeholder="Nom (ex. 5e-A)">
-      <select id="adminNewClassNiveau"><option value="6e">6e</option><option value="5e" selected>5e</option></select>
-      <button class="btn" onclick="adminCreateClass()">Créer la classe</button>
-    </div>
-    <span class="hint" id="adminClassStatus" style="margin:0;"></span>
+      <p class="example-title" style="margin:16px 0 6px;">Créer une classe</p>
+      <div class="tool-row">
+        <input type="text" id="adminNewClassNom" placeholder="Nom (ex. 5e-A)">
+        <select id="adminNewClassNiveau"><option value="6e">6e</option><option value="5e" selected>5e</option></select>
+        <button class="btn" onclick="adminCreateClass()">Créer la classe</button>
+      </div>
+      <span class="hint" id="adminClassStatus" style="margin:0;"></span>
 
-    <p class="example-title" style="margin:16px 0 6px;">Associer un professeur à une classe</p>
-    <div class="tool-row">
-      <select id="adminAssignTeacherSelect"></select>
-      <select id="adminAssignTeacherClassSelect"></select>
-      <button class="btn secondary" onclick="adminAssignTeacher()">Associer</button>
-    </div>
-    <span class="hint" id="adminAssignTeacherStatus" style="margin:0;"></span>
+      <p class="example-title" style="margin:16px 0 6px;">Associer un professeur à une classe</p>
+      <div class="tool-row">
+        <select id="adminAssignTeacherSelect"></select>
+        <select id="adminAssignTeacherClassSelect"></select>
+        <button class="btn secondary" onclick="adminAssignTeacher()">Associer</button>
+      </div>
+      <span class="hint" id="adminAssignTeacherStatus" style="margin:0;"></span>
 
-    <p class="example-title" style="margin:16px 0 6px;">Associer un élève à une classe</p>
-    <div class="tool-row">
-      <select id="adminAssignStudentSelect"></select>
-      <select id="adminAssignStudentClassSelect"></select>
-      <button class="btn secondary" onclick="adminAssignStudent()">Associer</button>
+      <p class="example-title" style="margin:16px 0 6px;">Associer un élève à une classe</p>
+      <div class="tool-row">
+        <select id="adminAssignStudentSelect"></select>
+        <select id="adminAssignStudentClassSelect"></select>
+        <button class="btn secondary" onclick="adminAssignStudent()">Associer</button>
+      </div>
+      <span class="hint" id="adminAssignStudentStatus" style="margin:0;"></span>
     </div>
-    <span class="hint" id="adminAssignStudentStatus" style="margin:0;"></span>
   </div>
 
-  <div class="tool-shell">
-    <strong style="font-family:'Space Grotesk',sans-serif;">📋 Déjà enregistré</strong>
-    <button class="btn secondary" style="float:right;" onclick="adminRefreshListings()">🔄 Actualiser</button>
-    <button class="btn secondary" style="float:right;margin-right:8px;" onclick="adminSyncEmails()">🔧 Réparer les identifiants manquants</button>
-    <p class="hint" id="adminSyncEmailsStatus" style="clear:right;margin:0 0 6px;"></p>
-    <p class="example-title" style="margin:16px 0 6px;">Comptes</p>
-    <div id="adminAccountsListing" class="hint"></div>
-    <p class="example-title" style="margin:16px 0 6px;">Classes</p>
-    <div id="adminClassesListing" class="hint"></div>
+  <div class="tab-panel" id="admin-panel-listing">
+    <div class="tool-shell">
+      <button class="btn secondary" style="float:right;" onclick="adminRefreshListings()">🔄 Actualiser</button>
+      <button class="btn secondary" style="float:right;margin-right:8px;" onclick="adminSyncEmails()">🔧 Réparer les identifiants manquants</button>
+      <p class="hint" id="adminSyncEmailsStatus" style="clear:right;margin:0 0 6px;"></p>
+      <p class="example-title" style="margin:16px 0 6px;">Comptes</p>
+      <div id="adminAccountsListing" class="hint"></div>
+      <p class="example-title" style="margin:16px 0 6px;">Classes</p>
+      <div id="adminClassesListing" class="hint"></div>
+    </div>
   </div>
 
-  <div class="tool-shell">
-    <strong style="font-family:'Space Grotesk',sans-serif;">🐞 Signalements (bugs / améliorations)</strong>
-    <button class="btn secondary" style="float:right;" onclick="adminRefreshBugReports()">🔄 Actualiser</button>
-    <p class="hint" style="margin:6px 0 14px;">Signalements envoyés par les profs depuis le menu de leur compte.</p>
-    <div id="adminBugReportsListing" class="hint">Chargement…</div>
+  <div class="tab-panel" id="admin-panel-signalements">
+    <div class="tool-shell">
+      <button class="btn secondary" style="float:right;" onclick="adminRefreshBugReports()">🔄 Actualiser</button>
+      <p class="hint" style="margin:6px 0 14px;">Signalements envoyés par les profs depuis le menu de leur compte.</p>
+      <div id="adminBugReportsListing" class="hint">Chargement…</div>
+    </div>
   </div>`;
+
+/* Onglets de l'Administration : composant local et indépendant, avec ses
+   propres data-attributes (data-admin-tab) et son propre gestionnaire de
+   clic. Volontairement pas branché sur le mécanisme d'onglets des chapitres
+   (.tab-btn / data-tab géré par un unique addEventListener global dans
+   app.js, qui ne cible que les boutons présents au chargement initial et
+   suppose des ids "panel-<tab>") : réutiliser le même système ferait
+   dépendre l'admin d'un mécanisme couplé aux chapitres, pour un gain nul
+   puisque de toute façon les boutons injectés ici après coup n'auraient
+   pas hérité de ce gestionnaire. Seules les classes .tabs/.tab-btn/.tab-panel
+   sont réutilisées, pour le style visuel uniquement. */
+document.querySelectorAll('#adminTabs .tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#adminTabs .tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('#view-admin .tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('admin-panel-'+btn.dataset.adminTab).classList.add('active');
+  });
+});
 
 document.body.insertAdjacentHTML('beforeend', `
 <div id="editProfModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEditProfModal();">
@@ -358,7 +388,6 @@ async function adminRefreshDropdowns(){
   await adminRefreshListings();
 }
 async function adminRefreshListings(){
-  await adminRefreshAIUsage();
   await adminRefreshBugReports();
   const { data: profs } = await sb.from('profiles').select('id,nom,email,role').in('role',['prof','admin']).order('nom');
   const { data: eleves } = await sb.from('profiles').select('id,nom,email,role').eq('role','eleve').order('nom');
@@ -473,26 +502,6 @@ async function adminUpdateBugStatus(id, status){
     return;
   }
   await adminRefreshBugReports();
-}
-async function adminRefreshAIUsage(){
-  const el = document.getElementById('adminAIUsageListing');
-  if(!el) return;
-  const { data, error } = await sb.from('ai_usage_log')
-    .select('feature,chapitre,niveau,created_at,profiles(nom,email)')
-    .order('created_at', {ascending:false})
-    .limit(200);
-  if(error){ el.textContent = "Erreur : "+error.message; return; }
-  if(!data || !data.length){ el.textContent = "Aucune utilisation de l'IA enregistrée pour l'instant."; return; }
-  el.innerHTML = data.map(r=>{
-    const name = (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Utilisateur inconnu';
-    const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
-    const featureLabel = r.feature==='quiz' ? 'Quiz généré' : r.feature==='figure' ? 'Figure interprétée' : (r.feature||'—');
-    return `<div style="display:flex;justify-content:space-between;gap:12px;padding:3px 0;">
-      <span>${escapeHtml(name)}</span>
-      <span>${escapeHtml(featureLabel)}${r.chapitre?' — '+escapeHtml(r.chapitre):''}</span>
-      <span style="color:var(--ink-soft);">${date}</span>
-    </div>`;
-  }).join('');
 }
 async function adminBulkCreateStudents(){
   const raw = document.getElementById('adminBulkStudents').value;
