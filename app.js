@@ -3948,6 +3948,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-04.204', items:[
+    "Cours 6e G2 -- retiré le récapitulatif texte devenu redondant dans l'onglet Méthode, désormais remplacé par la vraie figure animée. Un seul bloc reste, directement suivi de la note de rédaction.",
+  ]},
   { version:'2026-08-04.203', items:[
     "Cours 6e G2 -- vraie cause trouvée pour \"le tracé ne se fait pas dans l'onglet méthode\" : cet onglet ne contenait en fait AUCUNE figure animée, juste un récapitulatif texte (donc rien ne pouvait se tracer). Ajout d'une vraie figure animée (équerre + règle, glissement, tracé du crayon) avant ce récapitulatif -- copie de la construction déjà validée dans l'onglet Cours, avec ses propres identifiants et son propre état, testée à toutes les étapes avec de vrais clics.",
   ]},

@@ -310,14 +310,6 @@ document.getElementById('methode-demo-droites-paralleles').innerHTML = `
     <button class="btn secondary" onclick="dpMethAnimReset()">Recommencer</button>
   </div>
 </div>
-<div class="figure-wrap">
-  <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
-  <div class="step-display" id="dp-methodeDisplay"></div>
-  <div class="figure-toolbar">
-    <button class="btn" onclick="dpMethodeDemo.next()">Étape suivante →</button>
-    <button class="btn secondary" onclick="dpMethodeDemo.reset()">Recommencer</button>
-  </div>
-</div>
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
   ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).
 </div>
@@ -1256,7 +1248,7 @@ function dpRegisterGeoDemos(){
   registerGeoStepDemo('dp-rqa-svg', { steps:()=>DP_RQA_STEPS, getIdx:()=>dpRqaIdx, goto:(i,animate)=>{ dpRqaIdx=i; dpRenderRqPara(animate); } });
 }
 DEMO_REGISTRY['Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles', histoire:'histoire-demo-droites-paralleles',
-  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethodeDemo.reset(); dpMethAnimReset(); dpRegisterGeoDemos(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); injectCourseAddButtons(document.getElementById('methode-demo-droites-paralleles')); } };
+  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethAnimReset(); dpRegisterGeoDemos(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); injectCourseAddButtons(document.getElementById('methode-demo-droites-paralleles')); } };
 
 DEMO_QUIZZES['Droites parallèles et perpendiculaires'] = [
   {q:"Que signifie (d) ⊥ (d') ?",
