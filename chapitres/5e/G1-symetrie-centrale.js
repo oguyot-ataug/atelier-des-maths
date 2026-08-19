@@ -686,8 +686,13 @@ mRulerTool.setAttribute('transform', `translate(${mRulerStart.x.toFixed(1)},${mR
 const mPencilTool = document.getElementById('mPencilTool');
 mPencilTool.innerHTML = pencilSVG('m-pencil');
 // Même échelle que la règle (comme eqScale=rulerScale en G2) pour que les deux outils restent
-// cohérents entre eux, plutôt qu'un facteur choisi indépendamment.
-mPencilTool.setAttribute('transform', `translate(${mStep1End.x.toFixed(1)},${mStep1End.y.toFixed(1)}) rotate(${(mRayAngleDeg-90).toFixed(1)}) scale(${mRulerScale.toFixed(3)})`);
+// cohérents entre eux, plutôt qu'un facteur choisi indépendamment. Fonction réutilisable : le
+// crayon glisse le long de la règle pendant l'étape 1 (voir nextMethodStep), donc sa position
+// doit pouvoir être recalculée à chaque frame, pas seulement posée une fois au point final.
+function setMPencilAt(x,y){
+  mPencilTool.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(mRayAngleDeg-90).toFixed(1)}) scale(${mRulerScale.toFixed(3)})`);
+}
+setMPencilAt(mStep1End.x, mStep1End.y);
 
 let methodStep=0;
 
@@ -720,7 +725,34 @@ function resetMethod(){
 
 function nextMethodStep(){
   methodStep++;
-  if(methodStep===2){
+  if(methodStep===1){
+    // La règle est posée d'un coup ("poser la règle") ; le crayon, lui, glisse lentement le
+    // long de la règle ("faire glisser le crayon lentement"), et le trait se dessine
+    // progressivement à mesure qu'il avance -- plutôt que le trait complet et le crayon
+    // n'apparaissant instantanément au point final, comme avant.
+    document.querySelector('.step-item[data-step="1"]').classList.add('done');
+    document.getElementById('btnMethodNext').disabled=true;
+    document.getElementById('mStep1').setAttribute('opacity','1');
+    document.getElementById('mStep1').setAttribute('x2',mA.x); document.getElementById('mStep1').setAttribute('y2',mA.y);
+    document.getElementById('mRulerTool').setAttribute('opacity','1');
+    document.getElementById('mPencilTool').setAttribute('opacity','1');
+    setMPencilAt(mA.x, mA.y);
+    const start=performance.now(), dur=1200;
+    function frame(now){
+      const t=Math.min(1,(now-start)/dur);
+      const curX = mA.x + (mStep1End.x-mA.x)*t, curY = mA.y + (mStep1End.y-mA.y)*t;
+      document.getElementById('mStep1').setAttribute('x2',curX.toFixed(1));
+      document.getElementById('mStep1').setAttribute('y2',curY.toFixed(1));
+      setMPencilAt(curX, curY);
+      if(t<1) requestAnimationFrame(frame);
+      else document.getElementById('btnMethodNext').disabled=false;
+    }
+    requestAnimationFrame(frame);
+  } else if(methodStep===2){
+    // Règle et crayon cachés D'ABORD, et SEULEMENT ENSUITE le compas se pose -- pas les deux en
+    // même temps (ordre demandé explicitement).
+    document.getElementById('mRulerTool').setAttribute('opacity','0');
+    document.getElementById('mPencilTool').setAttribute('opacity','0');
     document.getElementById('mArc').setAttribute('opacity','1');
     document.querySelector('.step-item[data-step="2"]').classList.add('done');
     document.getElementById('btnMethodNext').disabled=true;
