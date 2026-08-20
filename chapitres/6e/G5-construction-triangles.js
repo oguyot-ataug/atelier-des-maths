@@ -24,7 +24,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
 <p style="margin:4px 0 8px;"><b>Exemple</b> : construis un triangle ABC tel que AB = 6 cm, BC = 5 cm et AC = 4,5 cm.</p>
 
 <div class="figure-wrap">
-  <svg id="triASvg" viewBox="0 0 380 390" style="width:100%;max-width:420px;display:block;margin:14px auto;">
+  <svg id="triASvg" viewBox="0 0 240 380" style="width:100%;max-width:420px;display:block;margin:14px auto;">
     <g id="triAMeasureRuler" opacity="0"></g>
     <text id="triALabelA" x="42" y="298" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">A</text>
     <text id="triALabelB" x="188" y="298" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">B</text>
@@ -56,7 +56,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
 <p style="margin:4px 0 8px;"><b>Exemple</b> : construis un triangle DEF tel que DE = 6 cm, DF = 5 cm et <span class="tex">\\widehat{EDF} = 50°</span>.</p>
 
 <div class="figure-wrap">
-  <svg id="triBSvg" viewBox="0 0 400 350" style="width:100%;max-width:420px;display:block;margin:14px auto;">
+  <svg id="triBSvg" viewBox="0 140 250 170" style="width:100%;max-width:420px;display:block;margin:14px auto;">
     <text id="triBLabelD" x="60" y="310" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">D</text>
     <text id="triBLabelE" x="200" y="310" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">E</text>
     <line id="triBSegDE" x1="75" y1="290" x2="75" y2="290" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
@@ -363,7 +363,7 @@ triBSetPencilAt(triB_D.x, triB_D.y, 0);
 
 // Rapporteur posé à D, bord aligné sur [DE) (angle 0) -- prop visuelle positionnée par le calcul,
 // pas par decodage de l'image elle-même (voir note compassSVG plus haut sur le même principe).
-const TRI_B_PROT_SCALE = 0.32;
+const TRI_B_PROT_SCALE = 0.38;
 const triBProtractor = document.getElementById('triBProtractor');
 triBProtractor.innerHTML = protractorSVG();
 triBProtractor.setAttribute('transform', `translate(${triB_D.x},${triB_D.y}) rotate(0) scale(${TRI_B_PROT_SCALE})`);
