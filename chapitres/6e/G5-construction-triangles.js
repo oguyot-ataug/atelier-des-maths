@@ -26,9 +26,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
 <div class="figure-wrap">
   <svg id="triASvg" viewBox="0 0 300 390" style="width:100%;max-width:420px;display:block;margin:14px auto;">
     <g id="triAMeasureRuler" opacity="0"></g>
-    <line id="triATickA" class="pt-tick" stroke="#1F3A5C" stroke-width="2" opacity="0"/>
     <text id="triALabelA" x="42" y="298" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">A</text>
-    <line id="triATickB" class="pt-tick" stroke="#1F3A5C" stroke-width="2" opacity="0"/>
     <text id="triALabelB" x="188" y="298" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">B</text>
     <line id="triASegAB" x1="60" y1="280" x2="60" y2="280" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
     <g id="triARulerTool" opacity="0"></g>
@@ -39,7 +37,6 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <g id="triACompassA" opacity="0"></g>
     <line id="triASegAC" x1="60" y1="280" x2="60" y2="280" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
     <line id="triASegBC" x1="180" y1="280" x2="180" y2="280" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
-    <line id="triATickC" class="pt-tick" stroke="#E35D3A" stroke-width="2" opacity="0"/>
     <text id="triACLabel" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" opacity="0">C</text>
   </svg>
   <div class="step-list">
@@ -156,19 +153,30 @@ function triAAnimateCompassSweep(opts){
   requestAnimationFrame(frame);
 }
 
-/* Montre d'abord le compas posé SUR la règle pour prendre la mesure (pointe au 0, mine au bon
-   nombre de centimètres) -- une pause, pour bien montrer que l'écartement se prend en le
-   mesurant, pas un compas qui apparaît déjà ouvert par magie -- puis l'anime en le déplaçant,
-   toujours ouvert à la même mesure, jusqu'au point d'ancrage, avant d'enchaîner sur le balayage
-   (triAAnimateCompassSweep). */
+/* Montre d'abord le compas posé SUR la règle pour prendre la mesure : la pointe reste fixe au 0
+   tandis que la mine s'écarte progressivement jusqu'au bon nombre de centimètres -- pour bien
+   montrer que l'écartement se prend en le mesurant, pas un compas qui apparaît déjà ouvert par
+   magie -- puis l'anime en le déplaçant, toujours ouvert à la même mesure, jusqu'au point
+   d'ancrage, avant d'enchaîner sur le balayage (triAAnimateCompassSweep). */
 function triAMeasureThenSweep(opts){
-  const {compassId, arcId, anchor, radius, startAngleDeg, targetAngleDeg, dur, onDone} = opts;
+  const {compassId, arcId, anchor, radius, legLen, startAngleDeg, targetAngleDeg, dur, onDone} = opts;
   const compassEl = document.getElementById(compassId);
   triAMeasureRuler.setAttribute('opacity','1');
   compassEl.setAttribute('transform', `translate(${TRI_A_MEASURE_X0},${TRI_A_MEASURE_Y}) rotate(0)`);
   compassEl.setAttribute('opacity','1');
-  const holdDur = 750, moveDur = 550;
-  setTimeout(()=>{
+  const openDur = 700, moveDur = 550, startRadius = 6;
+  const openStart = performance.now();
+  function openFrame(now){
+    const t = Math.min(1, (now-openStart)/openDur);
+    const ease = t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+    const curRadius = startRadius + (radius-startRadius)*ease;
+    compassEl.innerHTML = compassSVG(curRadius, legLen);
+    if(t<1){ requestAnimationFrame(openFrame); return; }
+    compassEl.innerHTML = compassSVG(radius, legLen); // forme exacte au rayon cible pour la suite
+    startMove();
+  }
+  requestAnimationFrame(openFrame);
+  function startMove(){
     const moveStart = performance.now();
     const fromPos = {x:TRI_A_MEASURE_X0, y:TRI_A_MEASURE_Y};
     function frame(now){
@@ -183,30 +191,24 @@ function triAMeasureThenSweep(opts){
       triAAnimateCompassSweep({compassId, arcId, anchor, radius, startAngleDeg, targetAngleDeg, dur, onDone});
     }
     requestAnimationFrame(frame);
-  }, holdDur);
+  }
 }
 
 let triAStep = 0;
 function triAResetVisuals(){
-  ['triASegAB','triARulerTool','triAPencilTool','triAArcB','triACompassB','triAArcA','triACompassA','triASegAC','triASegBC','triATickC','triACLabel','triATickA','triALabelA','triATickB','triALabelB','triAMeasureRuler'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  ['triASegAB','triARulerTool','triAPencilTool','triAArcB','triACompassB','triAArcA','triACompassA','triASegAC','triASegBC','triACLabel','triALabelA','triALabelB','triAMeasureRuler'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
   document.getElementById('triAArcB').setAttribute('points','');
   document.getElementById('triAArcA').setAttribute('points','');
 }
-function triASetTick(id, pt, angleDeg){
-  const rad = angleDeg*Math.PI/180;
-  const el = document.getElementById(id);
-  el.setAttribute('x1', (pt.x-9*Math.cos(rad)).toFixed(1)); el.setAttribute('y1', (pt.y-9*Math.sin(rad)).toFixed(1));
-  el.setAttribute('x2', (pt.x+9*Math.cos(rad)).toFixed(1)); el.setAttribute('y2', (pt.y+9*Math.sin(rad)).toFixed(1));
-}
+
 function triARenderInstant(step){
   document.querySelectorAll('#triASvg + .step-list .step-item').forEach(s=>s.classList.remove('done'));
   triAResetVisuals();
   const doneUpTo = (n)=>{ for(let i=1;i<=n;i++){ const el=document.querySelector(`#cours-demo-construction-triangles .step-item[data-step="${i}"]`); if(el) el.classList.add('done'); } };
   if(step>=1){
-    // A et B n'existent qu'UNE FOIS le segment mesuré à la règle -- pas donnés d'avance.
-    triASetTick('triATickA', triA_A, 90); document.getElementById('triATickA').setAttribute('opacity','1');
+    // A et B n'existent qu'UNE FOIS le segment mesuré à la règle -- pas donnés d'avance. Pas de
+    // repère en croix : les sommets du triangle tracé suffisent à les marquer.
     document.getElementById('triALabelA').setAttribute('opacity','1');
-    triASetTick('triATickB', triA_B, 90); document.getElementById('triATickB').setAttribute('opacity','1');
     document.getElementById('triALabelB').setAttribute('opacity','1');
     document.getElementById('triASegAB').setAttribute('opacity','1');
     document.getElementById('triASegAB').setAttribute('x2', triA_B.x); document.getElementById('triASegAB').setAttribute('y2', triA_B.y);
@@ -222,8 +224,8 @@ function triARenderInstant(step){
     const arcStart = (triA_AngleA_target*Math.PI/180) - TRI_ARC_HALF_ANGLE;
     const pts=[]; for(let a=arcStart; a<=arcStart+2*TRI_ARC_HALF_ANGLE+1e-6; a+=Math.PI/60){ const p={x:triA_A.x+triA_AC_LEN*Math.cos(a), y:triA_A.y+triA_AC_LEN*Math.sin(a)}; pts.push(`${p.x.toFixed(1)},${p.y.toFixed(1)}`); }
     document.getElementById('triAArcA').setAttribute('points', pts.join(' '));
-    document.getElementById('triATickC').setAttribute('opacity','1');
-    triASetTick('triATickC', triA_C, 90);
+    // C est déjà repéré par le croisement des deux arcs : pas de second repère par-dessus, juste
+    // le label.
     document.getElementById('triACLabel').setAttribute('opacity','1');
     document.getElementById('triACLabel').setAttribute('x', (triA_C.x-4).toFixed(1));
     document.getElementById('triACLabel').setAttribute('y', (triA_C.y-12).toFixed(1));
@@ -236,7 +238,13 @@ function triARenderInstant(step){
   }
   doneUpTo(step);
 }
-function triAReset(){ triAStep=0; triARenderInstant(0); }
+function triAReset(){
+  triAStep=0;
+  triARenderInstant(0);
+  const btn = document.getElementById('btnTriANext');
+  btn.textContent = 'Étape suivante →';
+  btn.disabled = false;
+}
 function triANextStep(){
   triAStep++;
   const btn = document.getElementById('btnTriANext');
@@ -256,10 +264,9 @@ function triANextStep(){
       if(t<1){ requestAnimationFrame(frame); return; }
       document.getElementById('triARulerTool').setAttribute('opacity','0');
       document.getElementById('triAPencilTool').setAttribute('opacity','0');
-      // A et B apparaissent maintenant que le segment [AB] est tracé -- pas avant.
-      triASetTick('triATickA', triA_A, 90); document.getElementById('triATickA').setAttribute('opacity','1');
+      // A et B apparaissent maintenant que le segment [AB] est tracé -- pas avant. Pas de repère
+      // en croix : les sommets du triangle tracé suffisent à les marquer.
       document.getElementById('triALabelA').setAttribute('opacity','1');
-      triASetTick('triATickB', triA_B, 90); document.getElementById('triATickB').setAttribute('opacity','1');
       document.getElementById('triALabelB').setAttribute('opacity','1');
       document.querySelector("#cours-demo-construction-triangles .step-item[data-step=\"1\"]").classList.add('done');
       btn.disabled = false;
@@ -268,18 +275,18 @@ function triANextStep(){
   } else if(triAStep===2){
     btn.disabled = true;
     triAMeasureThenSweep({
-      compassId:'triACompassB', arcId:'triAArcB', anchor:triA_B, radius:triA_BC_LEN,
+      compassId:'triACompassB', arcId:'triAArcB', anchor:triA_B, radius:triA_BC_LEN, legLen:triA_LegLenB,
       startAngleDeg:180, targetAngleDeg:triA_AngleB_target, dur:1400,
       onDone:()=>{ document.querySelector('#cours-demo-construction-triangles .step-item[data-step="2"]').classList.add('done'); btn.disabled=false; }
     });
   } else if(triAStep===3){
     btn.disabled = true;
     triAMeasureThenSweep({
-      compassId:'triACompassA', arcId:'triAArcA', anchor:triA_A, radius:triA_AC_LEN,
+      compassId:'triACompassA', arcId:'triAArcA', anchor:triA_A, radius:triA_AC_LEN, legLen:triA_LegLenA,
       startAngleDeg:0, targetAngleDeg:triA_AngleA_target, dur:1400,
       onDone:()=>{
-        document.getElementById('triATickC').setAttribute('opacity','1');
-        triASetTick('triATickC', triA_C, 90);
+        // C est déjà repéré par le croisement des deux arcs : pas de second repère, juste le
+        // label.
         document.getElementById('triACLabel').setAttribute('opacity','1');
         document.getElementById('triACLabel').setAttribute('x', (triA_C.x-4).toFixed(1));
         document.getElementById('triACLabel').setAttribute('y', (triA_C.y-12).toFixed(1));
