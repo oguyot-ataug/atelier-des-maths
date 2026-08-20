@@ -735,7 +735,7 @@ function nextMethodStep(){
     // long de la règle ("faire glisser le crayon lentement"), et le trait se dessine
     // progressivement à mesure qu'il avance -- plutôt que le trait complet et le crayon
     // n'apparaissant instantanément au point final, comme avant.
-    document.querySelector('.step-item[data-step="1"]').classList.add('done');
+    document.querySelector('#methode-demo-symetrie .step-item[data-step="1"]').classList.add('done');
     document.getElementById('btnMethodNext').disabled=true;
     document.getElementById('mStep1').setAttribute('opacity','1');
     document.getElementById('mStep1').setAttribute('x2',mA.x); document.getElementById('mStep1').setAttribute('y2',mA.y);
@@ -758,7 +758,7 @@ function nextMethodStep(){
     // même temps (ordre demandé explicitement).
     document.getElementById('mRulerTool').setAttribute('opacity','0');
     document.getElementById('mPencilTool').setAttribute('opacity','0');
-    document.querySelector('.step-item[data-step="2"]').classList.add('done');
+    document.querySelector('#methode-demo-symetrie .step-item[data-step="2"]').classList.add('done');
     document.getElementById('btnMethodNext').disabled=true;
     const target = mAngleA+Math.PI, arcStart = target-M_ARC_HALF_ANGLE, sweepEnd = target+M_ARC_HALF_ANGLE;
     // Balayage UNIQUE et continu de mAngleA jusqu'à sweepEnd (un peu au-delà de A', pas jusqu'à
@@ -806,7 +806,7 @@ function mRenderStepInstant(step){
   document.getElementById('mStep1').setAttribute('opacity', step>=1?'1':'0');
   if(step>=1){
     document.getElementById('mStep1').setAttribute('x2',mStep1End.x.toFixed(1)); document.getElementById('mStep1').setAttribute('y2',mStep1End.y.toFixed(1));
-    document.querySelector('.step-item[data-step="1"]').classList.add('done');
+    document.querySelector('#methode-demo-symetrie .step-item[data-step="1"]').classList.add('done');
   }
   // Règle + crayon : uniquement pendant l'étape 1 elle-même (comme le compas n'apparaît que
   // pendant l'étape 2) -- une fois la demi-droite tracée, seul le trait noir permanent reste.
@@ -816,7 +816,7 @@ function mRenderStepInstant(step){
   document.getElementById('mArc').setAttribute('opacity', showArc?'1':'0');
   if(showArc){
     document.getElementById('mArc').setAttribute('points', mArcCrossingPoints());
-    document.querySelector('.step-item[data-step="2"]').classList.add('done');
+    document.querySelector('#methode-demo-symetrie .step-item[data-step="2"]').classList.add('done');
   } else {
     document.getElementById('mArc').setAttribute('points','');
   }
@@ -844,7 +844,7 @@ function mRenderStepInstant(step){
     const midAO = {x:(mA.x+O.x)/2, y:(mA.y+O.y)/2}, midOAprime = {x:(O.x+Aprime.x)/2, y:(O.y+Aprime.y)/2};
     setSlantTick(document.getElementById('mCodeAO'), midAO.x, midAO.y, mAngleA);
     setSlantTick(document.getElementById('mCodeOAprime'), midOAprime.x, midOAprime.y, mAngleA);
-    document.querySelector('.step-item[data-step="3"]').classList.add('done');
+    document.querySelector('#methode-demo-symetrie .step-item[data-step="3"]').classList.add('done');
   }
   document.getElementById('btnMethodNext').disabled = (step===3);
   document.getElementById('btnMethodNext').textContent = step===3?'Terminé ✓':'Étape suivante →';
