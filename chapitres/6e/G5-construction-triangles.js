@@ -66,6 +66,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <line id="triBRay" x1="95" y1="265" x2="95" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
     <line id="triBSegDF" x1="95" y1="265" x2="95" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
     <line id="triBSegEF" x1="220" y1="265" x2="220" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
+    <line id="triBTickF" class="pt-tick" stroke="#E35D3A" stroke-width="2" opacity="0"/>
     <text id="triBLabelF" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" opacity="0">F</text>
   </svg>
   <div class="step-list">
@@ -346,6 +347,17 @@ const triB_angleRad = -triB_ANGLE_DEG*Math.PI/180; // négatif = vers le haut en
 const triB_RAY_LEN = 130; // dépasse F, pour un tracé net (même convention que G1/A)
 const triB_rayEnd = {x: triB_D.x+triB_RAY_LEN*Math.cos(triB_angleRad), y: triB_D.y+triB_RAY_LEN*Math.sin(triB_angleRad)};
 const triB_F = {x: triB_D.x+triB_DF_LEN*Math.cos(triB_angleRad), y: triB_D.y+triB_DF_LEN*Math.sin(triB_angleRad)};
+// F est un point isolé sur une droite continue (pas l'extrémité d'un segment ni un croisement
+// d'arcs comme A/B/C en construction A) : contrairement à ceux-ci, il a besoin d'un petit repère
+// pour être visible précisément, perpendiculaire à la demi-droite [Dx).
+function triBSetTickF(){
+  const tickAngleRad = triB_angleRad + Math.PI/2;
+  const el = document.getElementById('triBTickF');
+  el.setAttribute('x1', (triB_F.x-9*Math.cos(tickAngleRad)).toFixed(1));
+  el.setAttribute('y1', (triB_F.y-9*Math.sin(tickAngleRad)).toFixed(1));
+  el.setAttribute('x2', (triB_F.x+9*Math.cos(tickAngleRad)).toFixed(1));
+  el.setAttribute('y2', (triB_F.y+9*Math.sin(tickAngleRad)).toFixed(1));
+}
 
 const triB_RulerScale = TRI_A_RULER_SCALE; // même échelle exacte que la construction A (20/22)
 const triBRulerTool = document.getElementById('triBRulerTool');
@@ -370,7 +382,7 @@ triBProtractor.setAttribute('transform', `translate(${triB_D.x},${triB_D.y}) rot
 
 let triBStep = 0;
 function triBResetVisuals(){
-  ['triBSegDE','triBRulerTool','triBPencilTool','triBProtractor','triBRay','triBSegDF','triBSegEF','triBLabelD','triBLabelE','triBLabelF'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  ['triBSegDE','triBRulerTool','triBPencilTool','triBProtractor','triBRay','triBSegDF','triBSegEF','triBLabelD','triBLabelE','triBLabelF','triBTickF'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
 }
 function triBRenderInstant(step){
   document.querySelectorAll('#triBSvg + .step-list .step-item').forEach(s=>s.classList.remove('done'));
@@ -389,6 +401,8 @@ function triBRenderInstant(step){
   if(step>=3){
     document.getElementById('triBSegDF').setAttribute('opacity','1');
     document.getElementById('triBSegDF').setAttribute('x2', triB_F.x.toFixed(1)); document.getElementById('triBSegDF').setAttribute('y2', triB_F.y.toFixed(1));
+    triBSetTickF();
+    document.getElementById('triBTickF').setAttribute('opacity','1');
     document.getElementById('triBLabelF').setAttribute('opacity','1');
     document.getElementById('triBLabelF').setAttribute('x', (triB_F.x-18).toFixed(1));
     document.getElementById('triBLabelF').setAttribute('y', (triB_F.y-4).toFixed(1));
@@ -470,7 +484,11 @@ function triBNextStep(){
       if(t<1){ requestAnimationFrame(frame); return; }
       document.getElementById('triBRulerTool').setAttribute('opacity','0');
       document.getElementById('triBPencilTool').setAttribute('opacity','0');
-      // F est déjà repéré par la mesure elle-même : pas de repère en croix, juste le label.
+      // F est un point isolé sur une droite continue (contrairement à A/B/C en construction A,
+      // déjà marqués par une extrémité de segment ou un croisement d'arcs) : un petit repère est
+      // nécessaire pour le voir précisément.
+      triBSetTickF();
+      document.getElementById('triBTickF').setAttribute('opacity','1');
       document.getElementById('triBLabelF').setAttribute('opacity','1');
       document.getElementById('triBLabelF').setAttribute('x', (triB_F.x-18).toFixed(1));
       document.getElementById('triBLabelF').setAttribute('y', (triB_F.y-4).toFixed(1));
