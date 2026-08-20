@@ -24,7 +24,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
 <p style="margin:4px 0 8px;"><b>Exemple</b> : construis un triangle ABC tel que AB = 6 cm, BC = 5 cm et AC = 4,5 cm.</p>
 
 <div class="figure-wrap">
-  <svg id="triASvg" viewBox="0 0 340 390" style="width:100%;max-width:420px;display:block;margin:14px auto;">
+  <svg id="triASvg" viewBox="0 0 380 390" style="width:100%;max-width:420px;display:block;margin:14px auto;">
     <g id="triAMeasureRuler" opacity="0"></g>
     <text id="triALabelA" x="42" y="298" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">A</text>
     <text id="triALabelB" x="188" y="298" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">B</text>
@@ -81,8 +81,19 @@ const triA_dx = (triA_AB_LEN*triA_AB_LEN + triA_AC_LEN*triA_AC_LEN - triA_BC_LEN
 const triA_dy = Math.sqrt(triA_AC_LEN*triA_AC_LEN - triA_dx*triA_dx);
 const triA_C = {x: triA_A.x+triA_dx, y: triA_A.y-triA_dy};
 
-const triA_RulerScale = Math.max(0.44, (triA_AB_LEN+50)/TB_RULER_L);
-const triA_RulerStart = {x: triA_A.x - 30*triA_RulerScale, y: triA_A.y};
+// rulerSVG a sa PROPRE graduation native (22 unités/cm, cmStep dans rulerSVG), différente de la
+// convention de ce chapitre (1 cm = 20 unités, cf. triA_AC_LEN etc.). Sans remise à l'échelle
+// exacte, les graduations imprimées ne correspondent pas au segment réellement tracé ni à
+// l'écartement du compas -- l'échelle doit être fixée précisément à 20/22, pas choisie "au jugé"
+// pour la taille visuelle (constante PARTAGÉE par la règle de l'étape 1 et celle de la zone de
+// mesure, pour être sûr qu'elles restent toujours cohérentes entre elles).
+const TRI_A_RULER_SCALE = 20/22;
+
+const triA_RulerScale = TRI_A_RULER_SCALE;
+// Le "0" imprimé de la règle doit tomber EXACTEMENT sur A (pas décalé en arrière) : rulerSVG a
+// déjà son propre petit manche cosmétique avant le 0 (-leftMargin, intégré), inutile d'en
+// rajouter un qui décale aussi la graduation elle-même hors de A.
+const triA_RulerStart = {x: triA_A.x, y: triA_A.y};
 const triARulerTool = document.getElementById('triARulerTool');
 triARulerTool.innerHTML = rulerSVG(true);
 triARulerTool.setAttribute('transform', `translate(${triA_RulerStart.x.toFixed(1)},${triA_RulerStart.y.toFixed(1)}) rotate(0) scale(${triA_RulerScale.toFixed(3)})`);
@@ -98,15 +109,9 @@ triASetPencilAt(triA_A.x, triA_A.y);
 // règle, sa pointe au 0 et sa mine au bon nombre de centimètres, pour bien montrer que
 // l'écartement se prend en le mesurant -- pas un compas qui apparaît déjà ouvert par magie.
 const TRI_A_MEASURE_Y = 105, TRI_A_MEASURE_X0 = 15;
-// La règle (rulerSVG) a sa PROPRE graduation native, 22 unités par cm (cmStep dans rulerSVG),
-// différente de la convention de ce chapitre (1 cm = 20 unités, cf. triA_AC_LEN etc.). Sans
-// remise à l'échelle exacte, les marques de la règle et l'écartement du compas ne coïncident pas
-// du tout -- l'échelle doit être choisie précisément pour que 1 cm sur la règle affichée
-// corresponde exactement à 20 unités, la même chose qu'un rayon de compas de "1 cm".
-const TRI_A_MEASURE_SCALE = 20/22;
 const triAMeasureRuler = document.getElementById('triAMeasureRuler');
 triAMeasureRuler.innerHTML = rulerSVG(true);
-triAMeasureRuler.setAttribute('transform', `translate(${TRI_A_MEASURE_X0},${TRI_A_MEASURE_Y}) rotate(0) scale(${TRI_A_MEASURE_SCALE})`);
+triAMeasureRuler.setAttribute('transform', `translate(${TRI_A_MEASURE_X0},${TRI_A_MEASURE_Y}) rotate(0) scale(${TRI_A_RULER_SCALE})`);
 
 // Compas B (rayon BC=5cm) : angle de base 180° (pointe vers A, longueur connue), balayage vers
 // l'angle cible (direction de C depuis B).
