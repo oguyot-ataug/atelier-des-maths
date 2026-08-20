@@ -56,16 +56,16 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
 <p style="margin:4px 0 8px;"><b>Exemple</b> : construis un triangle DEF tel que DE = 6 cm, DF = 5 cm et <span class="tex">\\widehat{EDF} = 50°</span>.</p>
 
 <div class="figure-wrap">
-  <svg id="triBSvg" viewBox="0 140 250 170" style="width:100%;max-width:420px;display:block;margin:14px auto;">
-    <text id="triBLabelD" x="60" y="310" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">D</text>
-    <text id="triBLabelE" x="200" y="310" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">E</text>
-    <line id="triBSegDE" x1="75" y1="290" x2="75" y2="290" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
+  <svg id="triBSvg" viewBox="0 135 265 175" style="width:100%;max-width:420px;display:block;margin:14px auto;">
+    <text id="triBLabelD" x="80" y="285" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">D</text>
+    <text id="triBLabelE" x="220" y="285" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">E</text>
+    <line id="triBSegDE" x1="95" y1="265" x2="95" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
     <g id="triBRulerTool" opacity="0"></g>
     <g id="triBPencilTool" opacity="0"></g>
     <g id="triBProtractor" opacity="0"></g>
-    <line id="triBRay" x1="75" y1="290" x2="75" y2="290" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
-    <line id="triBSegDF" x1="75" y1="290" x2="75" y2="290" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
-    <line id="triBSegEF" x1="200" y1="290" x2="200" y2="290" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
+    <line id="triBRay" x1="95" y1="265" x2="95" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
+    <line id="triBSegDF" x1="95" y1="265" x2="95" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
+    <line id="triBSegEF" x1="220" y1="265" x2="220" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
     <text id="triBLabelF" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" opacity="0">F</text>
   </svg>
   <div class="step-list">
@@ -337,8 +337,8 @@ function triANextStep(){
 }
 
 /* ---- Construction B : SAS (règle + rapporteur + règle), géométrie réelle ---- */
-const triB_D = {x:75, y:290};
-const triB_E = {x:195, y:290};
+const triB_D = {x:95, y:265};
+const triB_E = {x:215, y:265};
 const triB_DF_LEN = 100;      // 5 cm × 20 px/cm
 const triB_DE_LEN = 120;      // 6 cm × 20 px/cm
 const triB_ANGLE_DEG = 50;
@@ -363,7 +363,7 @@ triBSetPencilAt(triB_D.x, triB_D.y, 0);
 
 // Rapporteur posé à D, bord aligné sur [DE) (angle 0) -- prop visuelle positionnée par le calcul,
 // pas par decodage de l'image elle-même (voir note compassSVG plus haut sur le même principe).
-const TRI_B_PROT_SCALE = 0.38;
+const TRI_B_PROT_SCALE = 0.46;
 const triBProtractor = document.getElementById('triBProtractor');
 triBProtractor.innerHTML = protractorSVG();
 triBProtractor.setAttribute('transform', `translate(${triB_D.x},${triB_D.y}) rotate(0) scale(${TRI_B_PROT_SCALE})`);
@@ -418,7 +418,7 @@ function triBNextStep(){
     document.getElementById('triBPencilTool').setAttribute('opacity','1');
     triBSetRulerAt(triB_D, 0);
     triBSetPencilAt(triB_D.x, triB_D.y, 0);
-    const start = performance.now(), dur=1000;
+    const start = performance.now(), dur=1300;
     function frame(now){
       const t = Math.min(1,(now-start)/dur);
       const curX = triB_D.x + (triB_E.x-triB_D.x)*t;
@@ -438,19 +438,22 @@ function triBNextStep(){
     document.getElementById('triBProtractor').setAttribute('opacity','1');
     document.getElementById('triBRay').setAttribute('opacity','1');
     document.getElementById('triBRay').setAttribute('x2', triB_D.x); document.getElementById('triBRay').setAttribute('y2', triB_D.y);
-    const start = performance.now(), dur=1000;
+    const start = performance.now(), dur=1800;
     function frame(now){
       const t = Math.min(1,(now-start)/dur);
       const curX = triB_D.x + (triB_rayEnd.x-triB_D.x)*t, curY = triB_D.y + (triB_rayEnd.y-triB_D.y)*t;
       document.getElementById('triBRay').setAttribute('x2', curX.toFixed(1)); document.getElementById('triBRay').setAttribute('y2', curY.toFixed(1));
       if(t<1){ requestAnimationFrame(frame); return; }
-      document.getElementById('triBProtractor').setAttribute('opacity','0');
+      // Le rapporteur reste affiché (on a le temps de le lire) -- il ne disparaît qu'au moment de
+      // passer à l'étape suivante, pas automatiquement dès que le tracé est terminé.
       document.querySelector('#triBSvg + .step-list .step-item[data-step="2"]').classList.add('done');
       btn.disabled = false;
     }
     requestAnimationFrame(frame);
   } else if(triBStep===3){
     btn.disabled = true;
+    // Le rapporteur disparaît maintenant, au moment de passer à l'étape suivante -- pas avant.
+    document.getElementById('triBProtractor').setAttribute('opacity','0');
     document.getElementById('triBSegDF').setAttribute('opacity','1');
     document.getElementById('triBSegDF').setAttribute('x2', triB_D.x); document.getElementById('triBSegDF').setAttribute('y2', triB_D.y);
     document.getElementById('triBRulerTool').setAttribute('opacity','1');
@@ -458,7 +461,7 @@ function triBNextStep(){
     const angDeg = triB_ANGLE_DEG*-1;
     triBSetRulerAt(triB_D, angDeg);
     triBSetPencilAt(triB_D.x, triB_D.y, angDeg);
-    const start = performance.now(), dur=1000;
+    const start = performance.now(), dur=1300;
     function frame(now){
       const t = Math.min(1,(now-start)/dur);
       const curX = triB_D.x + (triB_F.x-triB_D.x)*t, curY = triB_D.y + (triB_F.y-triB_D.y)*t;
