@@ -53,7 +53,32 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
 </div>
 
 <p class="example-title" style="margin-top:26px;">B. Connaissant la longueur de deux côtés et la mesure de l'angle délimité par ces côtés</p>
-<p class="hint" style="margin:8px 0;">Cette construction est en cours de préparation, elle arrivera dans une prochaine mise à jour.</p>
+<p style="margin:4px 0 8px;"><b>Exemple</b> : construis un triangle DEF tel que DE = 6 cm, DF = 5 cm et <span class="tex">\\widehat{EDF} = 50°</span>.</p>
+
+<div class="figure-wrap">
+  <svg id="triBSvg" viewBox="0 0 400 350" style="width:100%;max-width:420px;display:block;margin:14px auto;">
+    <text id="triBLabelD" x="60" y="310" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">D</text>
+    <text id="triBLabelE" x="200" y="310" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" opacity="0">E</text>
+    <line id="triBSegDE" x1="75" y1="290" x2="75" y2="290" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
+    <g id="triBRulerTool" opacity="0"></g>
+    <g id="triBPencilTool" opacity="0"></g>
+    <g id="triBProtractor" opacity="0"></g>
+    <line id="triBRay" x1="75" y1="290" x2="75" y2="290" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
+    <line id="triBSegDF" x1="75" y1="290" x2="75" y2="290" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
+    <line id="triBSegEF" x1="200" y1="290" x2="200" y2="290" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
+    <text id="triBLabelF" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" opacity="0">F</text>
+  </svg>
+  <div class="step-list">
+    <div class="step-item" data-step="1"><div class="step-num">1</div><div>On trace un segment <b>[DE]</b> de longueur <b>6 cm</b> à la règle.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Au <b>rapporteur</b>, on trace une demi-droite <b>[Dx)</b> telle que <b>EDx = 50°</b>.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">3</div><div>Sur cette demi-droite, à la <b>règle</b>, on place le point <b>F</b> tel que <b>DF = 5 cm</b>.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">4</div><div>On trace <b>[EF]</b> pour compléter le triangle <b>DEF</b>.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="btnTriBNext" onclick="triBNextStep()">Étape suivante →</button>
+    <button class="btn secondary" onclick="triBReset()">Revoir depuis le début</button>
+  </div>
+</div>
 
 <p class="example-title" style="margin-top:26px;">C. Connaissant la longueur d'un côté et la mesure des angles adjacents à ce côté</p>
 <p class="hint" style="margin:8px 0;">Cette construction est en cours de préparation, elle arrivera dans une prochaine mise à jour.</p>
@@ -215,7 +240,7 @@ function triAResetVisuals(){
 function triARenderInstant(step){
   document.querySelectorAll('#triASvg + .step-list .step-item').forEach(s=>s.classList.remove('done'));
   triAResetVisuals();
-  const doneUpTo = (n)=>{ for(let i=1;i<=n;i++){ const el=document.querySelector(`#cours-demo-construction-triangles .step-item[data-step="${i}"]`); if(el) el.classList.add('done'); } };
+  const doneUpTo = (n)=>{ for(let i=1;i<=n;i++){ const el=document.querySelector(`#triASvg + .step-list .step-item[data-step="${i}"]`); if(el) el.classList.add('done'); } };
   if(step>=1){
     // A et B n'existent qu'UNE FOIS le segment mesuré à la règle -- pas donnés d'avance. Pas de
     // repère en croix : les sommets du triangle tracé suffisent à les marquer.
@@ -279,7 +304,7 @@ function triANextStep(){
       // en croix : les sommets du triangle tracé suffisent à les marquer.
       document.getElementById('triALabelA').setAttribute('opacity','1');
       document.getElementById('triALabelB').setAttribute('opacity','1');
-      document.querySelector("#cours-demo-construction-triangles .step-item[data-step=\"1\"]").classList.add('done');
+      document.querySelector("#triASvg + .step-list .step-item[data-step=\"1\"]").classList.add('done');
       btn.disabled = false;
     }
     requestAnimationFrame(frame);
@@ -288,7 +313,7 @@ function triANextStep(){
     triAMeasureThenSweep({
       compassId:'triACompassB', arcId:'triAArcB', anchor:triA_B, radius:triA_BC_LEN, legLen:triA_LegLenB,
       startAngleDeg:180, targetAngleDeg:triA_AngleB_target, dur:1400,
-      onDone:()=>{ document.querySelector('#cours-demo-construction-triangles .step-item[data-step="2"]').classList.add('done'); btn.disabled=false; }
+      onDone:()=>{ document.querySelector('#triASvg + .step-list .step-item[data-step="2"]').classList.add('done'); btn.disabled=false; }
     });
   } else if(triAStep===3){
     btn.disabled = true;
@@ -301,13 +326,158 @@ function triANextStep(){
         document.getElementById('triACLabel').setAttribute('opacity','1');
         document.getElementById('triACLabel').setAttribute('x', (triA_C.x-4).toFixed(1));
         document.getElementById('triACLabel').setAttribute('y', (triA_C.y-12).toFixed(1));
-        document.querySelector('#cours-demo-construction-triangles .step-item[data-step="3"]').classList.add('done');
+        document.querySelector('#triASvg + .step-list .step-item[data-step="3"]').classList.add('done');
         btn.disabled=false;
       }
     });
   } else {
     triARenderInstant(triAStep);
     if(triAStep>=4){ btn.textContent='Terminé ✓'; btn.disabled=true; }
+  }
+}
+
+/* ---- Construction B : SAS (règle + rapporteur + règle), géométrie réelle ---- */
+const triB_D = {x:75, y:290};
+const triB_E = {x:195, y:290};
+const triB_DF_LEN = 100;      // 5 cm × 20 px/cm
+const triB_DE_LEN = 120;      // 6 cm × 20 px/cm
+const triB_ANGLE_DEG = 50;
+const triB_angleRad = -triB_ANGLE_DEG*Math.PI/180; // négatif = vers le haut en SVG (y inversé)
+const triB_RAY_LEN = 130; // dépasse F, pour un tracé net (même convention que G1/A)
+const triB_rayEnd = {x: triB_D.x+triB_RAY_LEN*Math.cos(triB_angleRad), y: triB_D.y+triB_RAY_LEN*Math.sin(triB_angleRad)};
+const triB_F = {x: triB_D.x+triB_DF_LEN*Math.cos(triB_angleRad), y: triB_D.y+triB_DF_LEN*Math.sin(triB_angleRad)};
+
+const triB_RulerScale = TRI_A_RULER_SCALE; // même échelle exacte que la construction A (20/22)
+const triBRulerTool = document.getElementById('triBRulerTool');
+triBRulerTool.innerHTML = rulerSVG(true);
+const triBPencilTool = document.getElementById('triBPencilTool');
+triBPencilTool.innerHTML = pencilSVG('tri-b-pencil');
+function triBSetRulerAt(origin, angleDeg){
+  triBRulerTool.setAttribute('transform', `translate(${origin.x.toFixed(1)},${origin.y.toFixed(1)}) rotate(${angleDeg.toFixed(2)}) scale(${triB_RulerScale.toFixed(3)})`);
+}
+function triBSetPencilAt(x,y,angleDeg){
+  triBPencilTool.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(angleDeg-90+TRI_A_PENCIL_TILT).toFixed(1)}) scale(${triB_RulerScale.toFixed(3)})`);
+}
+triBSetRulerAt(triB_D, 0);
+triBSetPencilAt(triB_D.x, triB_D.y, 0);
+
+// Rapporteur posé à D, bord aligné sur [DE) (angle 0) -- prop visuelle positionnée par le calcul,
+// pas par decodage de l'image elle-même (voir note compassSVG plus haut sur le même principe).
+const TRI_B_PROT_SCALE = 0.32;
+const triBProtractor = document.getElementById('triBProtractor');
+triBProtractor.innerHTML = protractorSVG();
+triBProtractor.setAttribute('transform', `translate(${triB_D.x},${triB_D.y}) rotate(0) scale(${TRI_B_PROT_SCALE})`);
+
+let triBStep = 0;
+function triBResetVisuals(){
+  ['triBSegDE','triBRulerTool','triBPencilTool','triBProtractor','triBRay','triBSegDF','triBSegEF','triBLabelD','triBLabelE','triBLabelF'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+}
+function triBRenderInstant(step){
+  document.querySelectorAll('#triBSvg + .step-list .step-item').forEach(s=>s.classList.remove('done'));
+  triBResetVisuals();
+  const doneUpTo = (n)=>{ for(let i=1;i<=n;i++){ const el=document.querySelector(`#triBSvg + .step-list .step-item[data-step="${i}"]`); if(el) el.classList.add('done'); } };
+  if(step>=1){
+    document.getElementById('triBLabelD').setAttribute('opacity','1');
+    document.getElementById('triBLabelE').setAttribute('opacity','1');
+    document.getElementById('triBSegDE').setAttribute('opacity','1');
+    document.getElementById('triBSegDE').setAttribute('x2', triB_E.x); document.getElementById('triBSegDE').setAttribute('y2', triB_E.y);
+  }
+  if(step>=2){
+    document.getElementById('triBRay').setAttribute('opacity','1');
+    document.getElementById('triBRay').setAttribute('x2', triB_rayEnd.x.toFixed(1)); document.getElementById('triBRay').setAttribute('y2', triB_rayEnd.y.toFixed(1));
+  }
+  if(step>=3){
+    document.getElementById('triBSegDF').setAttribute('opacity','1');
+    document.getElementById('triBSegDF').setAttribute('x2', triB_F.x.toFixed(1)); document.getElementById('triBSegDF').setAttribute('y2', triB_F.y.toFixed(1));
+    document.getElementById('triBLabelF').setAttribute('opacity','1');
+    document.getElementById('triBLabelF').setAttribute('x', (triB_F.x-18).toFixed(1));
+    document.getElementById('triBLabelF').setAttribute('y', (triB_F.y-4).toFixed(1));
+  }
+  if(step>=4){
+    document.getElementById('triBSegEF').setAttribute('opacity','1');
+    document.getElementById('triBSegEF').setAttribute('x1', triB_E.x); document.getElementById('triBSegEF').setAttribute('y1', triB_E.y);
+    document.getElementById('triBSegEF').setAttribute('x2', triB_F.x.toFixed(1)); document.getElementById('triBSegEF').setAttribute('y2', triB_F.y.toFixed(1));
+  }
+  doneUpTo(step);
+}
+function triBReset(){
+  triBStep=0;
+  triBRenderInstant(0);
+  const btn = document.getElementById('btnTriBNext');
+  btn.textContent = 'Étape suivante →';
+  btn.disabled = false;
+}
+function triBNextStep(){
+  triBStep++;
+  const btn = document.getElementById('btnTriBNext');
+  if(triBStep===1){
+    btn.disabled = true;
+    document.getElementById('triBSegDE').setAttribute('opacity','1');
+    document.getElementById('triBSegDE').setAttribute('x2', triB_D.x); document.getElementById('triBSegDE').setAttribute('y2', triB_D.y);
+    document.getElementById('triBRulerTool').setAttribute('opacity','1');
+    document.getElementById('triBPencilTool').setAttribute('opacity','1');
+    triBSetRulerAt(triB_D, 0);
+    triBSetPencilAt(triB_D.x, triB_D.y, 0);
+    const start = performance.now(), dur=1000;
+    function frame(now){
+      const t = Math.min(1,(now-start)/dur);
+      const curX = triB_D.x + (triB_E.x-triB_D.x)*t;
+      document.getElementById('triBSegDE').setAttribute('x2', curX.toFixed(1));
+      triBSetPencilAt(curX, triB_D.y, 0);
+      if(t<1){ requestAnimationFrame(frame); return; }
+      document.getElementById('triBRulerTool').setAttribute('opacity','0');
+      document.getElementById('triBPencilTool').setAttribute('opacity','0');
+      document.getElementById('triBLabelD').setAttribute('opacity','1');
+      document.getElementById('triBLabelE').setAttribute('opacity','1');
+      document.querySelector('#triBSvg + .step-list .step-item[data-step="1"]').classList.add('done');
+      btn.disabled = false;
+    }
+    requestAnimationFrame(frame);
+  } else if(triBStep===2){
+    btn.disabled = true;
+    document.getElementById('triBProtractor').setAttribute('opacity','1');
+    document.getElementById('triBRay').setAttribute('opacity','1');
+    document.getElementById('triBRay').setAttribute('x2', triB_D.x); document.getElementById('triBRay').setAttribute('y2', triB_D.y);
+    const start = performance.now(), dur=1000;
+    function frame(now){
+      const t = Math.min(1,(now-start)/dur);
+      const curX = triB_D.x + (triB_rayEnd.x-triB_D.x)*t, curY = triB_D.y + (triB_rayEnd.y-triB_D.y)*t;
+      document.getElementById('triBRay').setAttribute('x2', curX.toFixed(1)); document.getElementById('triBRay').setAttribute('y2', curY.toFixed(1));
+      if(t<1){ requestAnimationFrame(frame); return; }
+      document.getElementById('triBProtractor').setAttribute('opacity','0');
+      document.querySelector('#triBSvg + .step-list .step-item[data-step="2"]').classList.add('done');
+      btn.disabled = false;
+    }
+    requestAnimationFrame(frame);
+  } else if(triBStep===3){
+    btn.disabled = true;
+    document.getElementById('triBSegDF').setAttribute('opacity','1');
+    document.getElementById('triBSegDF').setAttribute('x2', triB_D.x); document.getElementById('triBSegDF').setAttribute('y2', triB_D.y);
+    document.getElementById('triBRulerTool').setAttribute('opacity','1');
+    document.getElementById('triBPencilTool').setAttribute('opacity','1');
+    const angDeg = triB_ANGLE_DEG*-1;
+    triBSetRulerAt(triB_D, angDeg);
+    triBSetPencilAt(triB_D.x, triB_D.y, angDeg);
+    const start = performance.now(), dur=1000;
+    function frame(now){
+      const t = Math.min(1,(now-start)/dur);
+      const curX = triB_D.x + (triB_F.x-triB_D.x)*t, curY = triB_D.y + (triB_F.y-triB_D.y)*t;
+      document.getElementById('triBSegDF').setAttribute('x2', curX.toFixed(1)); document.getElementById('triBSegDF').setAttribute('y2', curY.toFixed(1));
+      triBSetPencilAt(curX, curY, angDeg);
+      if(t<1){ requestAnimationFrame(frame); return; }
+      document.getElementById('triBRulerTool').setAttribute('opacity','0');
+      document.getElementById('triBPencilTool').setAttribute('opacity','0');
+      // F est déjà repéré par la mesure elle-même : pas de repère en croix, juste le label.
+      document.getElementById('triBLabelF').setAttribute('opacity','1');
+      document.getElementById('triBLabelF').setAttribute('x', (triB_F.x-18).toFixed(1));
+      document.getElementById('triBLabelF').setAttribute('y', (triB_F.y-4).toFixed(1));
+      document.querySelector('#triBSvg + .step-list .step-item[data-step="3"]').classList.add('done');
+      btn.disabled = false;
+    }
+    requestAnimationFrame(frame);
+  } else {
+    triBRenderInstant(triBStep);
+    if(triBStep>=4){ btn.textContent='Terminé ✓'; btn.disabled=true; }
   }
 }
 
@@ -320,5 +490,6 @@ DEMO_REGISTRY['6e|Construction de triangles'] = {
     injectCourseAddButtons(document.getElementById('cours-demo-construction-triangles'));
     injectCourseAddButtons(document.getElementById('methode-demo-construction-triangles'));
     triAReset();
+    triBReset();
   }
 };
