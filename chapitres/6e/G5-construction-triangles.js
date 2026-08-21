@@ -63,7 +63,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <g id="triBRulerTool" opacity="0"></g>
     <g id="triBPencilTool" opacity="0"></g>
     <g id="triBProtractor" opacity="0"></g>
-    <circle id="triBMarkDot" r="3" fill="#1C1B2E" opacity="0"/>
+    <line id="triBMarkDot" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
     <line id="triBRay" x1="95" y1="265" x2="95" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
     <line id="triBSegDF" x1="95" y1="265" x2="95" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
     <line id="triBSegEF" x1="220" y1="265" x2="220" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
@@ -72,7 +72,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
   </svg>
   <div class="step-list">
     <div class="step-item" data-step="1"><div class="step-num">1</div><div>On trace un segment <b>[DE]</b> de longueur <b>6 cm</b> à la règle.</div></div>
-    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Au <b>rapporteur</b>, on place une marque au crayon telle que <b>EDx = 50°</b>.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Au <b>rapporteur</b>, on place une marque au crayon telle que <span class="tex">\\widehat{EDx} = 50°</span>.</div></div>
     <div class="step-item" data-step="3"><div class="step-num">3</div><div>À la <b>règle</b>, on trace la demi-droite <b>[Dx)</b> en passant par cette marque.</div></div>
     <div class="step-item" data-step="4"><div class="step-num">4</div><div>Sur cette demi-droite, à la <b>règle</b>, on place le point <b>F</b> tel que <b>DF = 5 cm</b>.</div></div>
     <div class="step-item" data-step="5"><div class="step-num">5</div><div>On trace <b>[EF]</b> pour compléter le triangle <b>DEF</b>.</div></div>
@@ -94,17 +94,17 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <g id="triCRulerTool" opacity="0"></g>
     <g id="triCPencilTool" opacity="0"></g>
     <g id="triCProtractor" opacity="0"></g>
-    <circle id="triCMarkDotG" r="3" fill="#1C1B2E" opacity="0"/>
+    <line id="triCMarkDotG" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
     <line id="triCRayG" x1="95" y1="265" x2="95" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
-    <circle id="triCMarkDotH" r="3" fill="#1C1B2E" opacity="0"/>
+    <line id="triCMarkDotH" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
     <line id="triCRayH" x1="215" y1="265" x2="215" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
     <text id="triCLabelI" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" opacity="0">I</text>
   </svg>
   <div class="step-list">
     <div class="step-item" data-step="1"><div class="step-num">1</div><div>On trace un segment <b>[GH]</b> de longueur <b>6 cm</b> à la règle.</div></div>
-    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Au <b>rapporteur</b>, on place une marque au crayon telle que <b>HGx = 50°</b>.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Au <b>rapporteur</b>, on place une marque au crayon telle que <span class="tex">\\widehat{HGx} = 50°</span>.</div></div>
     <div class="step-item" data-step="3"><div class="step-num">3</div><div>À la <b>règle</b>, on trace la demi-droite <b>[Gx)</b> en passant par cette marque.</div></div>
-    <div class="step-item" data-step="4"><div class="step-num">4</div><div>Au <b>rapporteur</b>, on place une marque au crayon telle que <b>GHy = 60°</b>, du même côté que <b>[Gx)</b>.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">4</div><div>Au <b>rapporteur</b>, on place une marque au crayon telle que <span class="tex">\\widehat{GHy} = 60°</span>, du même côté que <b>[Gx)</b>.</div></div>
     <div class="step-item" data-step="5"><div class="step-num">5</div><div>À la <b>règle</b>, on trace la demi-droite <b>[Hy)</b> en passant par cette marque.</div></div>
     <div class="step-item" data-step="6"><div class="step-num">6</div><div>Le point où les deux demi-droites se croisent est <b>I</b> : le triangle <b>GHI</b> est terminé.</div></div>
   </div>
@@ -144,6 +144,17 @@ const triA_C = {x: triA_A.x+triA_dx, y: triA_A.y-triA_dy};
 // pour la taille visuelle (constante PARTAGÉE par la règle de l'étape 1 et celle de la zone de
 // mesure, pour être sûr qu'elles restent toujours cohérentes entre elles).
 const TRI_A_RULER_SCALE = 20/22;
+// Repère au crayon : un trait FIN dans le prolongement de la graduation (pas un point), centré
+// sur la position de marque, orienté radialement (même angle que la demi-droite à venir).
+function setRadialMark(id, cx, cy, angleDeg, len){
+  len = len||14;
+  const rad = angleDeg*Math.PI/180;
+  const el = document.getElementById(id);
+  el.setAttribute('x1', (cx-len/2*Math.cos(rad)).toFixed(1));
+  el.setAttribute('y1', (cy-len/2*Math.sin(rad)).toFixed(1));
+  el.setAttribute('x2', (cx+len/2*Math.cos(rad)).toFixed(1));
+  el.setAttribute('y2', (cy+len/2*Math.sin(rad)).toFixed(1));
+}
 
 const triA_RulerScale = TRI_A_RULER_SCALE;
 // Le "0" imprimé de la règle doit tomber EXACTEMENT sur A (pas décalé en arrière) : rulerSVG a
@@ -429,8 +440,7 @@ function triBRenderInstant(step){
   }
   if(step>=2){
     const markPt = {x: triB_D.x+TRI_B_MARK_RADIUS*Math.cos(triB_angleRad), y: triB_D.y+TRI_B_MARK_RADIUS*Math.sin(triB_angleRad)};
-    document.getElementById('triBMarkDot').setAttribute('cx', markPt.x.toFixed(1));
-    document.getElementById('triBMarkDot').setAttribute('cy', markPt.y.toFixed(1));
+    setRadialMark('triBMarkDot', markPt.x, markPt.y, triB_ANGLE_DEG*-1);
     document.getElementById('triBMarkDot').setAttribute('opacity', step===2?'1':'0');
   }
   if(step>=3){
@@ -507,9 +517,9 @@ function triBNextStep(){
       const pos = markPencilAt(0 + (angDeg-0)*t);
       if(t<1){ requestAnimationFrame(sweepFrame); return; }
       // La marque se pose dans le prolongement de la graduation, juste à l'extérieur du demi-
-      // cercle du rapporteur -- pas un point choisi au hasard.
+      // cercle du rapporteur -- un trait fin orienté radialement, pas un point.
       const markDot = document.getElementById('triBMarkDot');
-      markDot.setAttribute('cx', pos.x.toFixed(1)); markDot.setAttribute('cy', pos.y.toFixed(1));
+      setRadialMark('triBMarkDot', pos.x, pos.y, angDeg);
       markDot.setAttribute('opacity','1');
       document.getElementById('triBPencilTool').setAttribute('opacity','0');
       // Le rapporteur ET la marque restent affichés : ils ne disparaissent qu'au clic sur
@@ -634,8 +644,7 @@ function triCRenderInstant(step){
   }
   if(step>=2){
     const markPt = {x: triC_G.x+TRI_C_MARK_RADIUS*Math.cos(triC_angleG_rad), y: triC_G.y+TRI_C_MARK_RADIUS*Math.sin(triC_angleG_rad)};
-    document.getElementById('triCMarkDotG').setAttribute('cx', markPt.x.toFixed(1));
-    document.getElementById('triCMarkDotG').setAttribute('cy', markPt.y.toFixed(1));
+    setRadialMark('triCMarkDotG', markPt.x, markPt.y, triC_ANGLE_G_DEG*-1);
     document.getElementById('triCMarkDotG').setAttribute('opacity', step===2?'1':'0');
   }
   if(step>=3){
@@ -644,8 +653,7 @@ function triCRenderInstant(step){
   }
   if(step>=4){
     const markPt = {x: triC_H.x+TRI_C_MARK_RADIUS*Math.cos(triC_angleH_rad), y: triC_H.y+TRI_C_MARK_RADIUS*Math.sin(triC_angleH_rad)};
-    document.getElementById('triCMarkDotH').setAttribute('cx', markPt.x.toFixed(1));
-    document.getElementById('triCMarkDotH').setAttribute('cy', markPt.y.toFixed(1));
+    setRadialMark('triCMarkDotH', markPt.x, markPt.y, triC_angleH_rad*180/Math.PI);
     document.getElementById('triCMarkDotH').setAttribute('opacity', step===4?'1':'0');
   }
   if(step>=5){
@@ -712,7 +720,7 @@ function triCNextStep(){
       const pos = markPencilAtG(0 + (angDegG-0)*t);
       if(t<1){ requestAnimationFrame(sweepFrame); return; }
       const markDotG = document.getElementById('triCMarkDotG');
-      markDotG.setAttribute('cx', pos.x.toFixed(1)); markDotG.setAttribute('cy', pos.y.toFixed(1));
+      setRadialMark('triCMarkDotG', pos.x, pos.y, angDegG);
       markDotG.setAttribute('opacity','1');
       document.getElementById('triCPencilTool').setAttribute('opacity','0');
       // Le rapporteur ET la marque restent affichés : ils ne disparaissent qu'au clic sur
@@ -748,10 +756,14 @@ function triCNextStep(){
     requestAnimationFrame(frame);
   } else if(triCStep===4){
     btn.disabled = true;
-    // Miroir horizontal (pas une rotation de 180°) : garde la "coupole" du rapporteur tournée
-    // vers le haut (où se trouve I), tout en pointant son axe 0° vers G. Une rotation de 180°
-    // ferait basculer la coupole vers le bas -- vérifié numériquement (voir commit).
-    triCProtractor.setAttribute('transform', `translate(${triC_H.x},${triC_H.y}) scale(${-TRI_C_PROT_SCALE},${TRI_C_PROT_SCALE})`);
+    // Posé exactement comme en G (pas de rotation, pas de miroir) : un vrai rapporteur imprime
+    // ses deux graduations (0→180 ET 180→0) précisément pour ce cas de figure, donc on ne le
+    // tourne ni ne le retourne jamais -- un miroir rendrait les chiffres illisibles (vérifié : le
+    // rapporteur en H apparaissait avec des chiffres en miroir), et une rotation de 180° ferait
+    // basculer sa "coupole" vers le bas (vérifié mathématiquement : aucune rotation pure ne peut
+    // à la fois aligner le 0° vers G et garder la coupole vers le haut). Le tracé lui-même reste
+    // calculé par trigonométrie, indépendamment de l'orientation de l'image.
+    triCProtractor.setAttribute('transform', `translate(${triC_H.x},${triC_H.y}) scale(${TRI_C_PROT_SCALE})`);
     document.getElementById('triCProtractor').setAttribute('opacity','1');
     const angDegH = triC_angleH_rad*180/Math.PI; // 240° (=180+60)
     const markRadius = TRI_C_MARK_RADIUS;
@@ -769,7 +781,7 @@ function triCNextStep(){
       const pos = markPencilAtH(180 + (angDegH-180)*t);
       if(t<1){ requestAnimationFrame(sweepFrame); return; }
       const markDotH = document.getElementById('triCMarkDotH');
-      markDotH.setAttribute('cx', pos.x.toFixed(1)); markDotH.setAttribute('cy', pos.y.toFixed(1));
+      setRadialMark('triCMarkDotH', pos.x, pos.y, angDegH);
       markDotH.setAttribute('opacity','1');
       document.getElementById('triCPencilTool').setAttribute('opacity','0');
       document.querySelector('#triCSvg + .step-list .step-item[data-step="4"]').classList.add('done');
