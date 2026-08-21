@@ -63,6 +63,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <g id="triBRulerTool" opacity="0"></g>
     <g id="triBPencilTool" opacity="0"></g>
     <g id="triBProtractor" opacity="0"></g>
+    <circle id="triBMarkDot" r="3" fill="#1C1B2E" opacity="0"/>
     <line id="triBRay" x1="95" y1="265" x2="95" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
     <line id="triBSegDF" x1="95" y1="265" x2="95" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
     <line id="triBSegEF" x1="220" y1="265" x2="220" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
@@ -92,9 +93,10 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <g id="triCRulerTool" opacity="0"></g>
     <g id="triCPencilTool" opacity="0"></g>
     <g id="triCProtractor" opacity="0"></g>
+    <circle id="triCMarkDotG" r="3" fill="#1C1B2E" opacity="0"/>
     <line id="triCRayG" x1="95" y1="265" x2="95" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
+    <circle id="triCMarkDotH" r="3" fill="#1C1B2E" opacity="0"/>
     <line id="triCRayH" x1="215" y1="265" x2="215" y2="265" stroke="#1C1B2E" stroke-width="1.8" opacity="0"/>
-    <line id="triCTickI" class="pt-tick" stroke="#E35D3A" stroke-width="2" opacity="0"/>
     <text id="triCLabelI" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" opacity="0">I</text>
   </svg>
   <div class="step-list">
@@ -407,7 +409,7 @@ triBProtractor.setAttribute('transform', `translate(${triB_D.x},${triB_D.y}) rot
 
 let triBStep = 0;
 function triBResetVisuals(){
-  ['triBSegDE','triBRulerTool','triBPencilTool','triBProtractor','triBRay','triBSegDF','triBSegEF','triBLabelD','triBLabelE','triBLabelF','triBTickF'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  ['triBSegDE','triBRulerTool','triBPencilTool','triBProtractor','triBMarkDot','triBRay','triBSegDF','triBSegEF','triBLabelD','triBLabelE','triBLabelF','triBTickF'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
 }
 function triBRenderInstant(step){
   document.querySelectorAll('#triBSvg + .step-list .step-item').forEach(s=>s.classList.remove('done'));
@@ -475,24 +477,44 @@ function triBNextStep(){
   } else if(triBStep===2){
     btn.disabled = true;
     document.getElementById('triBProtractor').setAttribute('opacity','1');
-    document.getElementById('triBRay').setAttribute('opacity','1');
-    document.getElementById('triBRay').setAttribute('x2', triB_D.x); document.getElementById('triBRay').setAttribute('y2', triB_D.y);
-    const start = performance.now(), dur=1800;
-    function frame(now){
-      const t = Math.min(1,(now-start)/dur);
-      const curX = triB_D.x + (triB_rayEnd.x-triB_D.x)*t, curY = triB_D.y + (triB_rayEnd.y-triB_D.y)*t;
-      document.getElementById('triBRay').setAttribute('x2', curX.toFixed(1)); document.getElementById('triBRay').setAttribute('y2', curY.toFixed(1));
-      if(t<1){ requestAnimationFrame(frame); return; }
-      // Le rapporteur reste affiché (on a le temps de le lire) -- il ne disparaît qu'au moment de
-      // passer à l'étape suivante, pas automatiquement dès que le tracé est terminé.
-      document.querySelector('#triBSvg + .step-list .step-item[data-step="2"]').classList.add('done');
-      btn.disabled = false;
-    }
-    requestAnimationFrame(frame);
+    // Étape 1 : on place juste une marque au crayon, au niveau de la mesure d'angle sur le
+    // rapporteur -- pas encore le tracé de la demi-droite.
+    const markRadius = 65;
+    const markPt = {x: triB_D.x+markRadius*Math.cos(triB_angleRad), y: triB_D.y+markRadius*Math.sin(triB_angleRad)};
+    const angDeg = triB_ANGLE_DEG*-1;
+    document.getElementById('triBPencilTool').setAttribute('opacity','1');
+    triBSetPencilAt(markPt.x, markPt.y, angDeg);
+    const markDot = document.getElementById('triBMarkDot');
+    markDot.setAttribute('cx', markPt.x.toFixed(1)); markDot.setAttribute('cy', markPt.y.toFixed(1));
+    setTimeout(()=>{
+      markDot.setAttribute('opacity','1');
+      document.getElementById('triBPencilTool').setAttribute('opacity','0');
+      // Étape 2 : le rapporteur s'efface, la règle vient tracer la demi-droite en passant par
+      // cette marque (pas un trait qui apparaîtrait directement à la bonne inclinaison).
+      document.getElementById('triBProtractor').setAttribute('opacity','0');
+      document.getElementById('triBRulerTool').setAttribute('opacity','1');
+      document.getElementById('triBPencilTool').setAttribute('opacity','1');
+      triBSetRulerAt(triB_D, angDeg);
+      triBSetPencilAt(triB_D.x, triB_D.y, angDeg);
+      document.getElementById('triBRay').setAttribute('opacity','1');
+      document.getElementById('triBRay').setAttribute('x2', triB_D.x); document.getElementById('triBRay').setAttribute('y2', triB_D.y);
+      const start = performance.now(), dur=1300;
+      function frame(now){
+        const t = Math.min(1,(now-start)/dur);
+        const curX = triB_D.x + (triB_rayEnd.x-triB_D.x)*t, curY = triB_D.y + (triB_rayEnd.y-triB_D.y)*t;
+        document.getElementById('triBRay').setAttribute('x2', curX.toFixed(1)); document.getElementById('triBRay').setAttribute('y2', curY.toFixed(1));
+        triBSetPencilAt(curX, curY, angDeg);
+        if(t<1){ requestAnimationFrame(frame); return; }
+        document.getElementById('triBRulerTool').setAttribute('opacity','0');
+        document.getElementById('triBPencilTool').setAttribute('opacity','0');
+        markDot.setAttribute('opacity','0');
+        document.querySelector('#triBSvg + .step-list .step-item[data-step="2"]').classList.add('done');
+        btn.disabled = false;
+      }
+      requestAnimationFrame(frame);
+    }, 900);
   } else if(triBStep===3){
     btn.disabled = true;
-    // Le rapporteur disparaît maintenant, au moment de passer à l'étape suivante -- pas avant.
-    document.getElementById('triBProtractor').setAttribute('opacity','0');
     document.getElementById('triBSegDF').setAttribute('opacity','1');
     document.getElementById('triBSegDF').setAttribute('x2', triB_D.x); document.getElementById('triBSegDF').setAttribute('y2', triB_D.y);
     document.getElementById('triBRulerTool').setAttribute('opacity','1');
@@ -564,21 +586,9 @@ const TRI_C_PROT_SCALE = 0.46; // même échelle que la construction B
 const triCProtractor = document.getElementById('triCProtractor');
 triCProtractor.innerHTML = protractorSVG();
 
-function triCSetTickI(){
-  // perpendiculaire à la bissectrice des deux demi-droites arrivant en I, pour un repère bien
-  // lisible quel que soit l'angle d'arrivée des deux côtés.
-  const midAngle = (triC_angleG_rad + Math.PI + triC_angleH_rad)/2;
-  const tickAngleRad = midAngle + Math.PI/2;
-  const el = document.getElementById('triCTickI');
-  el.setAttribute('x1', (triC_I.x-9*Math.cos(tickAngleRad)).toFixed(1));
-  el.setAttribute('y1', (triC_I.y-9*Math.sin(tickAngleRad)).toFixed(1));
-  el.setAttribute('x2', (triC_I.x+9*Math.cos(tickAngleRad)).toFixed(1));
-  el.setAttribute('y2', (triC_I.y+9*Math.sin(tickAngleRad)).toFixed(1));
-}
-
 let triCStep = 0;
 function triCResetVisuals(){
-  ['triCSegGH','triCRulerTool','triCPencilTool','triCProtractor','triCRayG','triCRayH','triCTickI','triCLabelG','triCLabelH','triCLabelI'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  ['triCSegGH','triCRulerTool','triCPencilTool','triCProtractor','triCMarkDotG','triCRayG','triCMarkDotH','triCRayH','triCLabelG','triCLabelH','triCLabelI'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
 }
 function triCRenderInstant(step){
   document.querySelectorAll('#triCSvg + .step-list .step-item').forEach(s=>s.classList.remove('done'));
@@ -599,8 +609,6 @@ function triCRenderInstant(step){
     document.getElementById('triCRayH').setAttribute('x2', triC_rayHEnd.x.toFixed(1)); document.getElementById('triCRayH').setAttribute('y2', triC_rayHEnd.y.toFixed(1));
   }
   if(step>=4){
-    triCSetTickI();
-    document.getElementById('triCTickI').setAttribute('opacity','1');
     document.getElementById('triCLabelI').setAttribute('opacity','1');
     document.getElementById('triCLabelI').setAttribute('x', (triC_I.x-4).toFixed(1));
     document.getElementById('triCLabelI').setAttribute('y', (triC_I.y-12).toFixed(1));
@@ -644,43 +652,84 @@ function triCNextStep(){
     btn.disabled = true;
     triCProtractor.setAttribute('transform', `translate(${triC_G.x},${triC_G.y}) rotate(0) scale(${TRI_C_PROT_SCALE})`);
     document.getElementById('triCProtractor').setAttribute('opacity','1');
-    document.getElementById('triCRayG').setAttribute('opacity','1');
-    document.getElementById('triCRayG').setAttribute('x2', triC_G.x); document.getElementById('triCRayG').setAttribute('y2', triC_G.y);
-    const start = performance.now(), dur=1800;
-    function frame(now){
-      const t = Math.min(1,(now-start)/dur);
-      const curX = triC_G.x + (triC_rayGEnd.x-triC_G.x)*t, curY = triC_G.y + (triC_rayGEnd.y-triC_G.y)*t;
-      document.getElementById('triCRayG').setAttribute('x2', curX.toFixed(1)); document.getElementById('triCRayG').setAttribute('y2', curY.toFixed(1));
-      if(t<1){ requestAnimationFrame(frame); return; }
-      // Le rapporteur reste affiché (comme en construction B) : il ne disparaît qu'au moment de
-      // passer à l'étape suivante, pas automatiquement dès que le tracé est terminé.
-      document.querySelector('#triCSvg + .step-list .step-item[data-step="2"]').classList.add('done');
-      btn.disabled = false;
-    }
-    requestAnimationFrame(frame);
+    // On place juste une marque au crayon, au niveau de la mesure d'angle -- pas encore le tracé
+    // de la demi-droite.
+    const markRadius = 65;
+    const markPt = {x: triC_G.x+markRadius*Math.cos(triC_angleG_rad), y: triC_G.y+markRadius*Math.sin(triC_angleG_rad)};
+    const angDegG = triC_ANGLE_G_DEG*-1;
+    document.getElementById('triCPencilTool').setAttribute('opacity','1');
+    triCSetPencilAt(markPt.x, markPt.y, angDegG);
+    const markDotG = document.getElementById('triCMarkDotG');
+    markDotG.setAttribute('cx', markPt.x.toFixed(1)); markDotG.setAttribute('cy', markPt.y.toFixed(1));
+    setTimeout(()=>{
+      markDotG.setAttribute('opacity','1');
+      document.getElementById('triCPencilTool').setAttribute('opacity','0');
+      // Le rapporteur s'efface, la règle vient tracer la demi-droite en passant par la marque.
+      document.getElementById('triCProtractor').setAttribute('opacity','0');
+      document.getElementById('triCRulerTool').setAttribute('opacity','1');
+      document.getElementById('triCPencilTool').setAttribute('opacity','1');
+      triCSetRulerAt(triC_G, angDegG);
+      triCSetPencilAt(triC_G.x, triC_G.y, angDegG);
+      document.getElementById('triCRayG').setAttribute('opacity','1');
+      document.getElementById('triCRayG').setAttribute('x2', triC_G.x); document.getElementById('triCRayG').setAttribute('y2', triC_G.y);
+      const start = performance.now(), dur=1300;
+      function frame(now){
+        const t = Math.min(1,(now-start)/dur);
+        const curX = triC_G.x + (triC_rayGEnd.x-triC_G.x)*t, curY = triC_G.y + (triC_rayGEnd.y-triC_G.y)*t;
+        document.getElementById('triCRayG').setAttribute('x2', curX.toFixed(1)); document.getElementById('triCRayG').setAttribute('y2', curY.toFixed(1));
+        triCSetPencilAt(curX, curY, angDegG);
+        if(t<1){ requestAnimationFrame(frame); return; }
+        document.getElementById('triCRulerTool').setAttribute('opacity','0');
+        document.getElementById('triCPencilTool').setAttribute('opacity','0');
+        markDotG.setAttribute('opacity','0');
+        document.querySelector('#triCSvg + .step-list .step-item[data-step="2"]').classList.add('done');
+        btn.disabled = false;
+      }
+      requestAnimationFrame(frame);
+    }, 900);
   } else if(triCStep===3){
     btn.disabled = true;
-    // Le rapporteur de l'étape 2 disparaît maintenant, au moment de passer à l'étape suivante.
-    triCProtractor.setAttribute('transform', `translate(${triC_H.x},${triC_H.y}) rotate(180) scale(${TRI_C_PROT_SCALE})`);
+    // Miroir horizontal (pas une rotation de 180°) : garde la "coupole" du rapporteur tournée
+    // vers le haut (où se trouve I), tout en pointant son axe 0° vers G. Une rotation de 180°
+    // ferait basculer la coupole vers le bas -- vérifié numériquement (voir commit).
+    triCProtractor.setAttribute('transform', `translate(${triC_H.x},${triC_H.y}) scale(${-TRI_C_PROT_SCALE},${TRI_C_PROT_SCALE})`);
     document.getElementById('triCProtractor').setAttribute('opacity','1');
-    document.getElementById('triCRayH').setAttribute('opacity','1');
-    document.getElementById('triCRayH').setAttribute('x2', triC_H.x); document.getElementById('triCRayH').setAttribute('y2', triC_H.y);
-    const start = performance.now(), dur=1800;
-    function frame(now){
-      const t = Math.min(1,(now-start)/dur);
-      const curX = triC_H.x + (triC_rayHEnd.x-triC_H.x)*t, curY = triC_H.y + (triC_rayHEnd.y-triC_H.y)*t;
-      document.getElementById('triCRayH').setAttribute('x2', curX.toFixed(1)); document.getElementById('triCRayH').setAttribute('y2', curY.toFixed(1));
-      if(t<1){ requestAnimationFrame(frame); return; }
-      document.querySelector('#triCSvg + .step-list .step-item[data-step="3"]').classList.add('done');
-      btn.disabled = false;
-    }
-    requestAnimationFrame(frame);
+    const markRadius = 65;
+    const markPt = {x: triC_H.x+markRadius*Math.cos(triC_angleH_rad), y: triC_H.y+markRadius*Math.sin(triC_angleH_rad)};
+    const angDegH = triC_angleH_rad*180/Math.PI;
+    document.getElementById('triCPencilTool').setAttribute('opacity','1');
+    triCSetPencilAt(markPt.x, markPt.y, angDegH);
+    const markDotH = document.getElementById('triCMarkDotH');
+    markDotH.setAttribute('cx', markPt.x.toFixed(1)); markDotH.setAttribute('cy', markPt.y.toFixed(1));
+    setTimeout(()=>{
+      markDotH.setAttribute('opacity','1');
+      document.getElementById('triCPencilTool').setAttribute('opacity','0');
+      document.getElementById('triCProtractor').setAttribute('opacity','0');
+      document.getElementById('triCRulerTool').setAttribute('opacity','1');
+      document.getElementById('triCPencilTool').setAttribute('opacity','1');
+      triCSetRulerAt(triC_H, angDegH);
+      triCSetPencilAt(triC_H.x, triC_H.y, angDegH);
+      document.getElementById('triCRayH').setAttribute('opacity','1');
+      document.getElementById('triCRayH').setAttribute('x2', triC_H.x); document.getElementById('triCRayH').setAttribute('y2', triC_H.y);
+      const start = performance.now(), dur=1300;
+      function frame(now){
+        const t = Math.min(1,(now-start)/dur);
+        const curX = triC_H.x + (triC_rayHEnd.x-triC_H.x)*t, curY = triC_H.y + (triC_rayHEnd.y-triC_H.y)*t;
+        document.getElementById('triCRayH').setAttribute('x2', curX.toFixed(1)); document.getElementById('triCRayH').setAttribute('y2', curY.toFixed(1));
+        triCSetPencilAt(curX, curY, angDegH);
+        if(t<1){ requestAnimationFrame(frame); return; }
+        document.getElementById('triCRulerTool').setAttribute('opacity','0');
+        document.getElementById('triCPencilTool').setAttribute('opacity','0');
+        markDotH.setAttribute('opacity','0');
+        document.querySelector('#triCSvg + .step-list .step-item[data-step="3"]').classList.add('done');
+        btn.disabled = false;
+      }
+      requestAnimationFrame(frame);
+    }, 900);
   } else if(triCStep===4){
     btn.disabled = true;
-    // Le second rapporteur disparaît en passant à l'étape finale.
-    document.getElementById('triCProtractor').setAttribute('opacity','0');
-    triCSetTickI();
-    document.getElementById('triCTickI').setAttribute('opacity','1');
+    // I est déjà repéré par le croisement des deux demi-droites : pas de repère supplémentaire,
+    // juste le label (comme C en construction A).
     document.getElementById('triCLabelI').setAttribute('opacity','1');
     document.getElementById('triCLabelI').setAttribute('x', (triC_I.x-4).toFixed(1));
     document.getElementById('triCLabelI').setAttribute('y', (triC_I.y-12).toFixed(1));
