@@ -605,6 +605,27 @@ const triC_dir2 = {x:Math.cos(triC_angleH_rad), y:Math.sin(triC_angleH_rad)};
 const triC_t = triC_GH_LEN / (triC_dir1.x - triC_dir1.y*triC_dir2.x/triC_dir2.y);
 const triC_I = {x: triC_G.x+triC_t*triC_dir1.x, y: triC_G.y+triC_t*triC_dir1.y};
 const triC_HI_LEN = Math.hypot(triC_I.x-triC_H.x, triC_I.y-triC_H.y);
+// Position du label I : les deux demi-droites se prolongent un peu au-delà de I (même convention
+// que le reste du chapitre), et un simple décalage fixe (-4,-12) tombait à seulement 2,5 unités
+// de la demi-droite issue de H -- quasiment collé dessus, d'où le label invisible/noyé signalé.
+// Position recherchée numériquement : direction et distance depuis I qui maximisent la distance
+// MINIMALE aux deux droites, pour un vrai dégagement.
+const triC_LabelI_Pos = (()=>{
+  let best=null;
+  for(let deg=0; deg<360; deg+=5){
+    const rad=deg*Math.PI/180;
+    const p={x:triC_I.x+22*Math.cos(rad), y:triC_I.y+22*Math.sin(rad)};
+    function distToLine(pt, origin, dirAngle){
+      const dx=Math.cos(dirAngle), dy=Math.sin(dirAngle);
+      const vx=pt.x-origin.x, vy=pt.y-origin.y;
+      return Math.abs(vx*dy - vy*dx);
+    }
+    const dG = distToLine(p, triC_G, triC_angleG_rad), dH = distToLine(p, triC_H, triC_angleH_rad);
+    const minD = Math.min(dG,dH);
+    if(!best || minD>best.minD) best = {p, minD};
+  }
+  return {x: best.p.x-4, y: best.p.y+5};
+})();
 const TRI_C_OVERSHOOT = 25; // les demi-droites dépassent un peu I, pour un tracé net (comme G1/A/B)
 const triC_rayGEnd = {x: triC_G.x+(triC_t+TRI_C_OVERSHOOT)*triC_dir1.x, y: triC_G.y+(triC_t+TRI_C_OVERSHOOT)*triC_dir1.y};
 const triC_rayHEnd = {x: triC_H.x+(triC_HI_LEN+TRI_C_OVERSHOOT)*triC_dir2.x, y: triC_H.y+(triC_HI_LEN+TRI_C_OVERSHOOT)*triC_dir2.y};
@@ -662,8 +683,8 @@ function triCRenderInstant(step){
   }
   if(step>=6){
     document.getElementById('triCLabelI').setAttribute('opacity','1');
-    document.getElementById('triCLabelI').setAttribute('x', (triC_I.x-4).toFixed(1));
-    document.getElementById('triCLabelI').setAttribute('y', (triC_I.y-12).toFixed(1));
+    document.getElementById('triCLabelI').setAttribute('x', triC_LabelI_Pos.x.toFixed(1));
+    document.getElementById('triCLabelI').setAttribute('y', triC_LabelI_Pos.y.toFixed(1));
   }
   doneUpTo(step);
 }
@@ -815,10 +836,12 @@ function triCNextStep(){
   } else if(triCStep===6){
     btn.disabled = true;
     // I est déjà repéré par le croisement des deux demi-droites : pas de repère supplémentaire,
-    // juste le label (comme C en construction A).
+    // juste le label (comme C en construction A). Position calculée pour rester dégagée des deux
+    // demi-droites (qui se prolongent un peu au-delà de I) -- un simple décalage fixe tombait
+    // presque collé sur l'une d'elles, rendant le label difficile à voir.
     document.getElementById('triCLabelI').setAttribute('opacity','1');
-    document.getElementById('triCLabelI').setAttribute('x', (triC_I.x-4).toFixed(1));
-    document.getElementById('triCLabelI').setAttribute('y', (triC_I.y-12).toFixed(1));
+    document.getElementById('triCLabelI').setAttribute('x', triC_LabelI_Pos.x.toFixed(1));
+    document.getElementById('triCLabelI').setAttribute('y', triC_LabelI_Pos.y.toFixed(1));
     document.querySelector('#triCSvg + .step-list .step-item[data-step="6"]').classList.add('done');
     btn.textContent = 'Terminé ✓';
     btn.disabled = true;
