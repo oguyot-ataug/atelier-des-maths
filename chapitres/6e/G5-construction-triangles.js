@@ -113,6 +113,130 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <button class="btn secondary" onclick="triCReset()">Revoir depuis le début</button>
   </div>
 </div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Triangles particuliers</h3></div>
+
+<p class="example-title" style="margin-top:0;">A. Triangle isocèle</p>
+<span class="def-badge">Définition</span>
+<div class="def-box">Un <b>triangle isocèle</b> est un triangle qui a deux côtés de même longueur.</div>
+<span class="def-badge">Vocabulaire</span>
+<div class="def-box">
+  <ul class="example-list" style="margin:0;">
+    <li>Le sommet commun aux côtés de même longueur est appelé le <b>sommet principal</b>.</li>
+    <li>Le côté opposé au sommet principal est appelé la <b>base</b>.</li>
+  </ul>
+</div>
+<p class="example-title">Exemple :</p>
+<div class="figure-wrap" style="max-width:280px;margin:12px auto;">
+  <svg viewBox="0 0 240 200" style="width:100%;display:block;">
+    <line x1="50" y1="170" x2="150" y2="30" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="190" y1="170" x2="150" y2="30" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="50" y1="170" x2="190" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="94.3" y1="95.9" x2="105.7" y2="104.1" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="163.3" y1="101.9" x2="176.7" y2="98.1" stroke="#1C1B2E" stroke-width="1.6"/>
+    <text x="34" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">A</text>
+    <text x="150" y="20" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">B</text>
+    <text x="196" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">C</text>
+  </svg>
+</div>
+<ul class="example-list">
+  <li>Le triangle ABC est <b>isocèle en B</b> donc les longueurs BA et BC sont égales.</li>
+  <li><b>B</b> est le <b>sommet principal</b> du triangle ABC ; <b>[AC]</b> est la <b>base</b> du triangle ABC.</li>
+</ul>
+
+<p class="example-title" style="margin-top:26px;">B. Triangle équilatéral</p>
+<span class="def-badge">Définition</span>
+<div class="def-box">Un <b>triangle équilatéral</b> est un triangle qui a ses trois côtés de même longueur.</div>
+<p class="example-title">Exemple :</p>
+<div class="figure-wrap" style="max-width:240px;margin:12px auto;">
+  <svg viewBox="0 0 220 200" style="width:100%;display:block;">
+    <line x1="40" y1="170" x2="180" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="180" y1="170" x2="110" y2="30" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="110" y1="30" x2="40" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="110.0" y1="163.0" x2="110.0" y2="177.0" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="138.7" y1="103.1" x2="151.3" y2="96.9" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="81.3" y1="103.1" x2="68.7" y2="96.9" stroke="#1C1B2E" stroke-width="1.6"/>
+    <text x="24" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">D</text>
+    <text x="186" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">E</text>
+    <text x="110" y="20" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">F</text>
+  </svg>
+</div>
+<p style="margin:4px 0 0;">Le triangle DEF est <b>équilatéral</b>.</p>
+
+<p class="example-title" style="margin-top:26px;">C. Triangle rectangle</p>
+<span class="def-badge">Définition</span>
+<div class="def-box">Un <b>triangle rectangle</b> est un triangle qui a un angle droit.</div>
+<span class="def-badge">Vocabulaire</span>
+<div class="def-box">Le côté opposé à l'angle droit est appelé <b>hypoténuse</b>.</div>
+<p class="example-title">Exemple :</p>
+<div class="figure-wrap" style="max-width:240px;margin:12px auto;">
+  <svg viewBox="0 0 220 200" style="width:100%;display:block;">
+    <line x1="50" y1="30" x2="50" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="50" y1="170" x2="190" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="50" y1="30" x2="190" y2="170" stroke="#E35D3A" stroke-width="1.8"/>
+    <rect x="50" y="152" width="18" height="18" fill="none" stroke="#1C1B2E" stroke-width="1.4"/>
+    <text x="34" y="24" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">K</text>
+    <text x="196" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">L</text>
+    <text x="34" y="188" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">M</text>
+  </svg>
+</div>
+<ul class="example-list">
+  <li>Le triangle KLM est <b>rectangle en M</b>.</li>
+  <li>L'<b>hypoténuse</b> est le segment <b>[KL]</b> : c'est le côté le plus long.</li>
+</ul>
+
+<div class="lesson-header"><span class="num">3</span><h3>Caractérisation angulaire des triangles particuliers</h3></div>
+
+<p class="example-title" style="margin-top:0;">A. Triangle isocèle</p>
+<span class="prop-badge">Propriété 1</span>
+<div class="def-box">Un triangle isocèle a <b>un axe de symétrie</b> qui est à la fois la <b>médiatrice de sa base</b> et la <b>bissectrice de son angle principal</b>.</div>
+<span class="prop-badge">Propriété 2</span>
+<div class="def-box">Dans un triangle isocèle, <b>les angles à la base ont la même mesure</b>.</div>
+<p class="example-title">Exemple :</p>
+<div class="figure-wrap" style="max-width:280px;margin:12px auto;">
+  <svg viewBox="0 0 240 200" style="width:100%;display:block;">
+    <line x1="150" y1="30" x2="120" y2="170" stroke="#9CA3AF" stroke-width="1.4" stroke-dasharray="4 4"/>
+    <line x1="50" y1="170" x2="150" y2="30" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="190" y1="170" x2="150" y2="30" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="50" y1="170" x2="190" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="94.3" y1="95.9" x2="105.7" y2="104.1" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="163.3" y1="101.9" x2="176.7" y2="98.1" stroke="#1C1B2E" stroke-width="1.6"/>
+    <rect x="112" y="162" width="16" height="8" fill="none" stroke="#9CA3AF" stroke-width="1.2"/>
+    <path d="M 74 170 A 24 24 0 0 1 82 152" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
+    <path d="M 166 170 A 24 24 0 0 0 158 152" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
+    <text x="150" y="20" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">B</text>
+    <text x="34" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">A</text>
+    <text x="196" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">C</text>
+  </svg>
+</div>
+<p style="margin:4px 0 0;">L'axe de symétrie (en pointillés) passe par <b>B</b> et par le milieu de <b>[AC]</b> : c'est la médiatrice de la base <b>[AC]</b> et la bissectrice de l'angle <span class="tex">\\widehat{ABC}</span>. Les angles en <b>A</b> et en <b>C</b> ont la même mesure.</p>
+
+<p class="example-title" style="margin-top:26px;">B. Triangle équilatéral</p>
+<span class="prop-badge">Propriété 1</span>
+<div class="def-box">Un triangle équilatéral a <b>trois axes de symétrie</b> qui sont à la fois les <b>médiatrices de ses côtés</b> et les <b>bissectrices de ses angles</b>.</div>
+<span class="prop-badge">Propriété 2</span>
+<div class="def-box">Dans un triangle équilatéral, <b>tous les angles ont la même mesure</b> (60°).</div>
+<p class="example-title">Exemple :</p>
+<div class="figure-wrap" style="max-width:240px;margin:12px auto;">
+  <svg viewBox="0 0 220 200" style="width:100%;display:block;">
+    <line x1="110" y1="30" x2="110" y2="170" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 4"/>
+    <line x1="40" y1="170" x2="145" y2="100" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 4"/>
+    <line x1="180" y1="170" x2="75" y2="100" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 4"/>
+    <line x1="40" y1="170" x2="180" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="180" y1="170" x2="110" y2="30" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="110" y1="30" x2="40" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="110.0" y1="163.0" x2="110.0" y2="177.0" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="138.7" y1="103.1" x2="151.3" y2="96.9" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="81.3" y1="103.1" x2="68.7" y2="96.9" stroke="#1C1B2E" stroke-width="1.6"/>
+    <path d="M 64 170 A 24 24 0 0 1 72 152" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
+    <path d="M 156 170 A 24 24 0 0 0 148 152" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
+    <path d="M 118 45 A 24 24 0 0 1 128 63" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
+    <text x="24" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">D</text>
+    <text x="186" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">E</text>
+    <text x="110" y="20" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">F</text>
+  </svg>
+</div>
+<p style="margin:4px 0 0;">Les trois axes de symétrie (en pointillés) se croisent en un même point. Les trois angles du triangle DEF mesurent chacun 60°.</p>
 `;
 
 document.getElementById('methode-demo-construction-triangles').innerHTML = `
