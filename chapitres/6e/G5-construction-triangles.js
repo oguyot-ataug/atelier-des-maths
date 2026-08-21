@@ -72,9 +72,10 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
   </svg>
   <div class="step-list">
     <div class="step-item" data-step="1"><div class="step-num">1</div><div>On trace un segment <b>[DE]</b> de longueur <b>6 cm</b> à la règle.</div></div>
-    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Au <b>rapporteur</b>, on trace une demi-droite <b>[Dx)</b> telle que <b>EDx = 50°</b>.</div></div>
-    <div class="step-item" data-step="3"><div class="step-num">3</div><div>Sur cette demi-droite, à la <b>règle</b>, on place le point <b>F</b> tel que <b>DF = 5 cm</b>.</div></div>
-    <div class="step-item" data-step="4"><div class="step-num">4</div><div>On trace <b>[EF]</b> pour compléter le triangle <b>DEF</b>.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Au <b>rapporteur</b>, on place une marque au crayon telle que <b>EDx = 50°</b>.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">3</div><div>À la <b>règle</b>, on trace la demi-droite <b>[Dx)</b> en passant par cette marque.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">4</div><div>Sur cette demi-droite, à la <b>règle</b>, on place le point <b>F</b> tel que <b>DF = 5 cm</b>.</div></div>
+    <div class="step-item" data-step="5"><div class="step-num">5</div><div>On trace <b>[EF]</b> pour compléter le triangle <b>DEF</b>.</div></div>
   </div>
   <div class="figure-toolbar">
     <button class="btn" id="btnTriBNext" onclick="triBNextStep()">Étape suivante →</button>
@@ -101,9 +102,11 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
   </svg>
   <div class="step-list">
     <div class="step-item" data-step="1"><div class="step-num">1</div><div>On trace un segment <b>[GH]</b> de longueur <b>6 cm</b> à la règle.</div></div>
-    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Au <b>rapporteur</b>, on trace une demi-droite <b>[Gx)</b> telle que <b>HGx = 50°</b>.</div></div>
-    <div class="step-item" data-step="3"><div class="step-num">3</div><div>Au <b>rapporteur</b>, on trace une demi-droite <b>[Hy)</b> telle que <b>GHy = 60°</b>, du même côté que <b>[Gx)</b>.</div></div>
-    <div class="step-item" data-step="4"><div class="step-num">4</div><div>Le point où les deux demi-droites se croisent est <b>I</b> : le triangle <b>GHI</b> est terminé.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Au <b>rapporteur</b>, on place une marque au crayon telle que <b>HGx = 50°</b>.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">3</div><div>À la <b>règle</b>, on trace la demi-droite <b>[Gx)</b> en passant par cette marque.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">4</div><div>Au <b>rapporteur</b>, on place une marque au crayon telle que <b>GHy = 60°</b>, du même côté que <b>[Gx)</b>.</div></div>
+    <div class="step-item" data-step="5"><div class="step-num">5</div><div>À la <b>règle</b>, on trace la demi-droite <b>[Hy)</b> en passant par cette marque.</div></div>
+    <div class="step-item" data-step="6"><div class="step-num">6</div><div>Le point où les deux demi-droites se croisent est <b>I</b> : le triangle <b>GHI</b> est terminé.</div></div>
   </div>
   <div class="figure-toolbar">
     <button class="btn" id="btnTriCNext" onclick="triCNextStep()">Étape suivante →</button>
@@ -405,7 +408,7 @@ triBSetPencilAt(triB_D.x, triB_D.y, 0);
 const TRI_B_PROT_SCALE = 0.46;
 // Rayon de la marque : un peu AU-DELÀ du bord du rapporteur (pas à l'intérieur), dans le
 // prolongement de la graduation -- TB_PROT_PIVOT_Y (app.js) est le rayon natif du rapporteur.
-const TRI_B_MARK_RADIUS = TB_PROT_PIVOT_Y*TRI_B_PROT_SCALE + 10;
+const TRI_B_MARK_RADIUS = TB_PROT_PIVOT_Y*TRI_B_PROT_SCALE + 4;
 const triBProtractor = document.getElementById('triBProtractor');
 triBProtractor.innerHTML = protractorSVG();
 triBProtractor.setAttribute('transform', `translate(${triB_D.x},${triB_D.y}) rotate(0) scale(${TRI_B_PROT_SCALE})`);
@@ -425,10 +428,16 @@ function triBRenderInstant(step){
     document.getElementById('triBSegDE').setAttribute('x2', triB_E.x); document.getElementById('triBSegDE').setAttribute('y2', triB_E.y);
   }
   if(step>=2){
+    const markPt = {x: triB_D.x+TRI_B_MARK_RADIUS*Math.cos(triB_angleRad), y: triB_D.y+TRI_B_MARK_RADIUS*Math.sin(triB_angleRad)};
+    document.getElementById('triBMarkDot').setAttribute('cx', markPt.x.toFixed(1));
+    document.getElementById('triBMarkDot').setAttribute('cy', markPt.y.toFixed(1));
+    document.getElementById('triBMarkDot').setAttribute('opacity', step===2?'1':'0');
+  }
+  if(step>=3){
     document.getElementById('triBRay').setAttribute('opacity','1');
     document.getElementById('triBRay').setAttribute('x2', triB_rayEnd.x.toFixed(1)); document.getElementById('triBRay').setAttribute('y2', triB_rayEnd.y.toFixed(1));
   }
-  if(step>=3){
+  if(step>=4){
     document.getElementById('triBSegDF').setAttribute('opacity','1');
     document.getElementById('triBSegDF').setAttribute('x2', triB_F.x.toFixed(1)); document.getElementById('triBSegDF').setAttribute('y2', triB_F.y.toFixed(1));
     triBSetTickF();
@@ -437,7 +446,7 @@ function triBRenderInstant(step){
     document.getElementById('triBLabelF').setAttribute('x', (triB_F.x-18).toFixed(1));
     document.getElementById('triBLabelF').setAttribute('y', (triB_F.y-4).toFixed(1));
   }
-  if(step>=4){
+  if(step>=5){
     document.getElementById('triBSegEF').setAttribute('opacity','1');
     document.getElementById('triBSegEF').setAttribute('x1', triB_E.x); document.getElementById('triBSegEF').setAttribute('y1', triB_E.y);
     document.getElementById('triBSegEF').setAttribute('x2', triB_F.x.toFixed(1)); document.getElementById('triBSegEF').setAttribute('y2', triB_F.y.toFixed(1));
@@ -462,7 +471,7 @@ function triBNextStep(){
     document.getElementById('triBPencilTool').setAttribute('opacity','1');
     triBSetRulerAt(triB_D, 0);
     triBSetPencilAt(triB_D.x, triB_D.y, 0);
-    const start = performance.now(), dur=1300;
+    const start = performance.now(), dur=1500;
     function frame(now){
       const t = Math.min(1,(now-start)/dur);
       const curX = triB_D.x + (triB_E.x-triB_D.x)*t;
@@ -492,11 +501,10 @@ function triBNextStep(){
     }
     document.getElementById('triBPencilTool').setAttribute('opacity','1');
     markPencilAt(0);
-    const sweepStart = performance.now(), sweepDur = 1200;
+    const sweepStart = performance.now(), sweepDur = 2000;
     function sweepFrame(now){
       const t = Math.min(1,(now-sweepStart)/sweepDur);
-      const curAngle = 0 + (angDeg-0)*t;
-      const pos = markPencilAt(curAngle);
+      const pos = markPencilAt(0 + (angDeg-0)*t);
       if(t<1){ requestAnimationFrame(sweepFrame); return; }
       // La marque se pose dans le prolongement de la graduation, juste à l'extérieur du demi-
       // cercle du rapporteur -- pas un point choisi au hasard.
@@ -504,32 +512,39 @@ function triBNextStep(){
       markDot.setAttribute('cx', pos.x.toFixed(1)); markDot.setAttribute('cy', pos.y.toFixed(1));
       markDot.setAttribute('opacity','1');
       document.getElementById('triBPencilTool').setAttribute('opacity','0');
-      // Le rapporteur s'efface, la règle vient tracer la demi-droite en passant par cette marque
-      // (pas un trait qui apparaîtrait directement à la bonne inclinaison).
-      document.getElementById('triBProtractor').setAttribute('opacity','0');
-      document.getElementById('triBRulerTool').setAttribute('opacity','1');
-      document.getElementById('triBPencilTool').setAttribute('opacity','1');
-      triBSetRulerAt(triB_D, angDeg);
-      triBSetPencilAt(triB_D.x, triB_D.y, angDeg);
-      document.getElementById('triBRay').setAttribute('opacity','1');
-      document.getElementById('triBRay').setAttribute('x2', triB_D.x); document.getElementById('triBRay').setAttribute('y2', triB_D.y);
-      const start = performance.now(), dur=1300;
-      function frame(now){
-        const t = Math.min(1,(now-start)/dur);
-        const curX = triB_D.x + (triB_rayEnd.x-triB_D.x)*t, curY = triB_D.y + (triB_rayEnd.y-triB_D.y)*t;
-        document.getElementById('triBRay').setAttribute('x2', curX.toFixed(1)); document.getElementById('triBRay').setAttribute('y2', curY.toFixed(1));
-        triBSetPencilAt(curX, curY, angDeg);
-        if(t<1){ requestAnimationFrame(frame); return; }
-        document.getElementById('triBRulerTool').setAttribute('opacity','0');
-        document.getElementById('triBPencilTool').setAttribute('opacity','0');
-        markDot.setAttribute('opacity','0');
-        document.querySelector('#triBSvg + .step-list .step-item[data-step="2"]').classList.add('done');
-        btn.disabled = false;
-      }
-      requestAnimationFrame(frame);
+      // Le rapporteur ET la marque restent affichés : ils ne disparaissent qu'au clic sur
+      // "Étape suivante", pas automatiquement dès que le crayon a fini de tourner.
+      document.querySelector('#triBSvg + .step-list .step-item[data-step="2"]').classList.add('done');
+      btn.disabled = false;
     }
     requestAnimationFrame(sweepFrame);
   } else if(triBStep===3){
+    btn.disabled = true;
+    // Le rapporteur (et la marque au crayon) disparaissent MAINTENANT, au moment de passer à
+    // cette étape -- pas avant.
+    document.getElementById('triBProtractor').setAttribute('opacity','0');
+    document.getElementById('triBMarkDot').setAttribute('opacity','0');
+    const angDeg = triB_ANGLE_DEG*-1;
+    document.getElementById('triBRulerTool').setAttribute('opacity','1');
+    document.getElementById('triBPencilTool').setAttribute('opacity','1');
+    triBSetRulerAt(triB_D, angDeg);
+    triBSetPencilAt(triB_D.x, triB_D.y, angDeg);
+    document.getElementById('triBRay').setAttribute('opacity','1');
+    document.getElementById('triBRay').setAttribute('x2', triB_D.x); document.getElementById('triBRay').setAttribute('y2', triB_D.y);
+    const start = performance.now(), dur=1500;
+    function frame(now){
+      const t = Math.min(1,(now-start)/dur);
+      const curX = triB_D.x + (triB_rayEnd.x-triB_D.x)*t, curY = triB_D.y + (triB_rayEnd.y-triB_D.y)*t;
+      document.getElementById('triBRay').setAttribute('x2', curX.toFixed(1)); document.getElementById('triBRay').setAttribute('y2', curY.toFixed(1));
+      triBSetPencilAt(curX, curY, angDeg);
+      if(t<1){ requestAnimationFrame(frame); return; }
+      document.getElementById('triBRulerTool').setAttribute('opacity','0');
+      document.getElementById('triBPencilTool').setAttribute('opacity','0');
+      document.querySelector('#triBSvg + .step-list .step-item[data-step="3"]').classList.add('done');
+      btn.disabled = false;
+    }
+    requestAnimationFrame(frame);
+  } else if(triBStep===4){
     btn.disabled = true;
     document.getElementById('triBSegDF').setAttribute('opacity','1');
     document.getElementById('triBSegDF').setAttribute('x2', triB_D.x); document.getElementById('triBSegDF').setAttribute('y2', triB_D.y);
@@ -538,7 +553,7 @@ function triBNextStep(){
     const angDeg = triB_ANGLE_DEG*-1;
     triBSetRulerAt(triB_D, angDeg);
     triBSetPencilAt(triB_D.x, triB_D.y, angDeg);
-    const start = performance.now(), dur=1300;
+    const start = performance.now(), dur=1500;
     function frame(now){
       const t = Math.min(1,(now-start)/dur);
       const curX = triB_D.x + (triB_F.x-triB_D.x)*t, curY = triB_D.y + (triB_F.y-triB_D.y)*t;
@@ -555,13 +570,13 @@ function triBNextStep(){
       document.getElementById('triBLabelF').setAttribute('opacity','1');
       document.getElementById('triBLabelF').setAttribute('x', (triB_F.x-18).toFixed(1));
       document.getElementById('triBLabelF').setAttribute('y', (triB_F.y-4).toFixed(1));
-      document.querySelector('#triBSvg + .step-list .step-item[data-step="3"]').classList.add('done');
+      document.querySelector('#triBSvg + .step-list .step-item[data-step="4"]').classList.add('done');
       btn.disabled = false;
     }
     requestAnimationFrame(frame);
   } else {
     triBRenderInstant(triBStep);
-    if(triBStep>=4){ btn.textContent='Terminé ✓'; btn.disabled=true; }
+    if(triBStep>=5){ btn.textContent='Terminé ✓'; btn.disabled=true; }
   }
 }
 
@@ -599,7 +614,7 @@ triCSetRulerAt(triC_G, 0);
 triCSetPencilAt(triC_G.x, triC_G.y, 0);
 
 const TRI_C_PROT_SCALE = 0.46; // même échelle que la construction B
-const TRI_C_MARK_RADIUS = TB_PROT_PIVOT_Y*TRI_C_PROT_SCALE + 10;
+const TRI_C_MARK_RADIUS = TB_PROT_PIVOT_Y*TRI_C_PROT_SCALE + 4;
 const triCProtractor = document.getElementById('triCProtractor');
 triCProtractor.innerHTML = protractorSVG();
 
@@ -618,14 +633,26 @@ function triCRenderInstant(step){
     document.getElementById('triCSegGH').setAttribute('x2', triC_H.x); document.getElementById('triCSegGH').setAttribute('y2', triC_H.y);
   }
   if(step>=2){
+    const markPt = {x: triC_G.x+TRI_C_MARK_RADIUS*Math.cos(triC_angleG_rad), y: triC_G.y+TRI_C_MARK_RADIUS*Math.sin(triC_angleG_rad)};
+    document.getElementById('triCMarkDotG').setAttribute('cx', markPt.x.toFixed(1));
+    document.getElementById('triCMarkDotG').setAttribute('cy', markPt.y.toFixed(1));
+    document.getElementById('triCMarkDotG').setAttribute('opacity', step===2?'1':'0');
+  }
+  if(step>=3){
     document.getElementById('triCRayG').setAttribute('opacity','1');
     document.getElementById('triCRayG').setAttribute('x2', triC_rayGEnd.x.toFixed(1)); document.getElementById('triCRayG').setAttribute('y2', triC_rayGEnd.y.toFixed(1));
   }
-  if(step>=3){
+  if(step>=4){
+    const markPt = {x: triC_H.x+TRI_C_MARK_RADIUS*Math.cos(triC_angleH_rad), y: triC_H.y+TRI_C_MARK_RADIUS*Math.sin(triC_angleH_rad)};
+    document.getElementById('triCMarkDotH').setAttribute('cx', markPt.x.toFixed(1));
+    document.getElementById('triCMarkDotH').setAttribute('cy', markPt.y.toFixed(1));
+    document.getElementById('triCMarkDotH').setAttribute('opacity', step===4?'1':'0');
+  }
+  if(step>=5){
     document.getElementById('triCRayH').setAttribute('opacity','1');
     document.getElementById('triCRayH').setAttribute('x2', triC_rayHEnd.x.toFixed(1)); document.getElementById('triCRayH').setAttribute('y2', triC_rayHEnd.y.toFixed(1));
   }
-  if(step>=4){
+  if(step>=6){
     document.getElementById('triCLabelI').setAttribute('opacity','1');
     document.getElementById('triCLabelI').setAttribute('x', (triC_I.x-4).toFixed(1));
     document.getElementById('triCLabelI').setAttribute('y', (triC_I.y-12).toFixed(1));
@@ -650,7 +677,7 @@ function triCNextStep(){
     document.getElementById('triCPencilTool').setAttribute('opacity','1');
     triCSetRulerAt(triC_G, 0);
     triCSetPencilAt(triC_G.x, triC_G.y, 0);
-    const start = performance.now(), dur=1300;
+    const start = performance.now(), dur=1500;
     function frame(now){
       const t = Math.min(1,(now-start)/dur);
       const curX = triC_G.x + (triC_H.x-triC_G.x)*t;
@@ -679,7 +706,7 @@ function triCNextStep(){
     }
     document.getElementById('triCPencilTool').setAttribute('opacity','1');
     markPencilAtG(0);
-    const sweepStart = performance.now(), sweepDur = 1200;
+    const sweepStart = performance.now(), sweepDur = 2000;
     function sweepFrame(now){
       const t = Math.min(1,(now-sweepStart)/sweepDur);
       const pos = markPencilAtG(0 + (angDegG-0)*t);
@@ -688,31 +715,38 @@ function triCNextStep(){
       markDotG.setAttribute('cx', pos.x.toFixed(1)); markDotG.setAttribute('cy', pos.y.toFixed(1));
       markDotG.setAttribute('opacity','1');
       document.getElementById('triCPencilTool').setAttribute('opacity','0');
-      // Le rapporteur s'efface, la règle vient tracer la demi-droite en passant par la marque.
-      document.getElementById('triCProtractor').setAttribute('opacity','0');
-      document.getElementById('triCRulerTool').setAttribute('opacity','1');
-      document.getElementById('triCPencilTool').setAttribute('opacity','1');
-      triCSetRulerAt(triC_G, angDegG);
-      triCSetPencilAt(triC_G.x, triC_G.y, angDegG);
-      document.getElementById('triCRayG').setAttribute('opacity','1');
-      document.getElementById('triCRayG').setAttribute('x2', triC_G.x); document.getElementById('triCRayG').setAttribute('y2', triC_G.y);
-      const start = performance.now(), dur=1300;
-      function frame(now){
-        const t = Math.min(1,(now-start)/dur);
-        const curX = triC_G.x + (triC_rayGEnd.x-triC_G.x)*t, curY = triC_G.y + (triC_rayGEnd.y-triC_G.y)*t;
-        document.getElementById('triCRayG').setAttribute('x2', curX.toFixed(1)); document.getElementById('triCRayG').setAttribute('y2', curY.toFixed(1));
-        triCSetPencilAt(curX, curY, angDegG);
-        if(t<1){ requestAnimationFrame(frame); return; }
-        document.getElementById('triCRulerTool').setAttribute('opacity','0');
-        document.getElementById('triCPencilTool').setAttribute('opacity','0');
-        markDotG.setAttribute('opacity','0');
-        document.querySelector('#triCSvg + .step-list .step-item[data-step="2"]').classList.add('done');
-        btn.disabled = false;
-      }
-      requestAnimationFrame(frame);
+      // Le rapporteur ET la marque restent affichés : ils ne disparaissent qu'au clic sur
+      // "Étape suivante", pas automatiquement.
+      document.querySelector('#triCSvg + .step-list .step-item[data-step="2"]').classList.add('done');
+      btn.disabled = false;
     }
     requestAnimationFrame(sweepFrame);
   } else if(triCStep===3){
+    btn.disabled = true;
+    // Le rapporteur (et la marque) disparaissent MAINTENANT, au moment de passer à cette étape.
+    document.getElementById('triCProtractor').setAttribute('opacity','0');
+    document.getElementById('triCMarkDotG').setAttribute('opacity','0');
+    const angDegG = triC_ANGLE_G_DEG*-1;
+    document.getElementById('triCRulerTool').setAttribute('opacity','1');
+    document.getElementById('triCPencilTool').setAttribute('opacity','1');
+    triCSetRulerAt(triC_G, angDegG);
+    triCSetPencilAt(triC_G.x, triC_G.y, angDegG);
+    document.getElementById('triCRayG').setAttribute('opacity','1');
+    document.getElementById('triCRayG').setAttribute('x2', triC_G.x); document.getElementById('triCRayG').setAttribute('y2', triC_G.y);
+    const start = performance.now(), dur=1500;
+    function frame(now){
+      const t = Math.min(1,(now-start)/dur);
+      const curX = triC_G.x + (triC_rayGEnd.x-triC_G.x)*t, curY = triC_G.y + (triC_rayGEnd.y-triC_G.y)*t;
+      document.getElementById('triCRayG').setAttribute('x2', curX.toFixed(1)); document.getElementById('triCRayG').setAttribute('y2', curY.toFixed(1));
+      triCSetPencilAt(curX, curY, angDegG);
+      if(t<1){ requestAnimationFrame(frame); return; }
+      document.getElementById('triCRulerTool').setAttribute('opacity','0');
+      document.getElementById('triCPencilTool').setAttribute('opacity','0');
+      document.querySelector('#triCSvg + .step-list .step-item[data-step="3"]').classList.add('done');
+      btn.disabled = false;
+    }
+    requestAnimationFrame(frame);
+  } else if(triCStep===4){
     btn.disabled = true;
     // Miroir horizontal (pas une rotation de 180°) : garde la "coupole" du rapporteur tournée
     // vers le haut (où se trouve I), tout en pointant son axe 0° vers G. Une rotation de 180°
@@ -729,7 +763,7 @@ function triCNextStep(){
     }
     document.getElementById('triCPencilTool').setAttribute('opacity','1');
     markPencilAtH(180); // 180° = aligné sur [HG), le "0" du rapporteur à cet endroit
-    const sweepStart = performance.now(), sweepDur = 1200;
+    const sweepStart = performance.now(), sweepDur = 2000;
     function sweepFrame(now){
       const t = Math.min(1,(now-sweepStart)/sweepDur);
       const pos = markPencilAtH(180 + (angDegH-180)*t);
@@ -738,42 +772,47 @@ function triCNextStep(){
       markDotH.setAttribute('cx', pos.x.toFixed(1)); markDotH.setAttribute('cy', pos.y.toFixed(1));
       markDotH.setAttribute('opacity','1');
       document.getElementById('triCPencilTool').setAttribute('opacity','0');
-      document.getElementById('triCProtractor').setAttribute('opacity','0');
-      document.getElementById('triCRulerTool').setAttribute('opacity','1');
-      document.getElementById('triCPencilTool').setAttribute('opacity','1');
-      triCSetRulerAt(triC_H, angDegH);
-      triCSetPencilAt(triC_H.x, triC_H.y, angDegH);
-      document.getElementById('triCRayH').setAttribute('opacity','1');
-      document.getElementById('triCRayH').setAttribute('x2', triC_H.x); document.getElementById('triCRayH').setAttribute('y2', triC_H.y);
-      const start = performance.now(), dur=1300;
-      function frame(now){
-        const t = Math.min(1,(now-start)/dur);
-        const curX = triC_H.x + (triC_rayHEnd.x-triC_H.x)*t, curY = triC_H.y + (triC_rayHEnd.y-triC_H.y)*t;
-        document.getElementById('triCRayH').setAttribute('x2', curX.toFixed(1)); document.getElementById('triCRayH').setAttribute('y2', curY.toFixed(1));
-        triCSetPencilAt(curX, curY, angDegH);
-        if(t<1){ requestAnimationFrame(frame); return; }
-        document.getElementById('triCRulerTool').setAttribute('opacity','0');
-        document.getElementById('triCPencilTool').setAttribute('opacity','0');
-        markDotH.setAttribute('opacity','0');
-        document.querySelector('#triCSvg + .step-list .step-item[data-step="3"]').classList.add('done');
-        btn.disabled = false;
-      }
-      requestAnimationFrame(frame);
+      document.querySelector('#triCSvg + .step-list .step-item[data-step="4"]').classList.add('done');
+      btn.disabled = false;
     }
     requestAnimationFrame(sweepFrame);
-  } else if(triCStep===4){
+  } else if(triCStep===5){
+    btn.disabled = true;
+    document.getElementById('triCProtractor').setAttribute('opacity','0');
+    document.getElementById('triCMarkDotH').setAttribute('opacity','0');
+    const angDegH = triC_angleH_rad*180/Math.PI;
+    document.getElementById('triCRulerTool').setAttribute('opacity','1');
+    document.getElementById('triCPencilTool').setAttribute('opacity','1');
+    triCSetRulerAt(triC_H, angDegH);
+    triCSetPencilAt(triC_H.x, triC_H.y, angDegH);
+    document.getElementById('triCRayH').setAttribute('opacity','1');
+    document.getElementById('triCRayH').setAttribute('x2', triC_H.x); document.getElementById('triCRayH').setAttribute('y2', triC_H.y);
+    const start = performance.now(), dur=1500;
+    function frame(now){
+      const t = Math.min(1,(now-start)/dur);
+      const curX = triC_H.x + (triC_rayHEnd.x-triC_H.x)*t, curY = triC_H.y + (triC_rayHEnd.y-triC_H.y)*t;
+      document.getElementById('triCRayH').setAttribute('x2', curX.toFixed(1)); document.getElementById('triCRayH').setAttribute('y2', curY.toFixed(1));
+      triCSetPencilAt(curX, curY, angDegH);
+      if(t<1){ requestAnimationFrame(frame); return; }
+      document.getElementById('triCRulerTool').setAttribute('opacity','0');
+      document.getElementById('triCPencilTool').setAttribute('opacity','0');
+      document.querySelector('#triCSvg + .step-list .step-item[data-step="5"]').classList.add('done');
+      btn.disabled = false;
+    }
+    requestAnimationFrame(frame);
+  } else if(triCStep===6){
     btn.disabled = true;
     // I est déjà repéré par le croisement des deux demi-droites : pas de repère supplémentaire,
     // juste le label (comme C en construction A).
     document.getElementById('triCLabelI').setAttribute('opacity','1');
     document.getElementById('triCLabelI').setAttribute('x', (triC_I.x-4).toFixed(1));
     document.getElementById('triCLabelI').setAttribute('y', (triC_I.y-12).toFixed(1));
-    document.querySelector('#triCSvg + .step-list .step-item[data-step="4"]').classList.add('done');
+    document.querySelector('#triCSvg + .step-list .step-item[data-step="6"]').classList.add('done');
     btn.textContent = 'Terminé ✓';
     btn.disabled = true;
   } else {
     triCRenderInstant(triCStep);
-    if(triCStep>=4){ btn.textContent='Terminé ✓'; btn.disabled=true; }
+    if(triCStep>=6){ btn.textContent='Terminé ✓'; btn.disabled=true; }
   }
 }
 
