@@ -403,6 +403,9 @@ triBSetPencilAt(triB_D.x, triB_D.y, 0);
 // Rapporteur posé à D, bord aligné sur [DE) (angle 0) -- prop visuelle positionnée par le calcul,
 // pas par decodage de l'image elle-même (voir note compassSVG plus haut sur le même principe).
 const TRI_B_PROT_SCALE = 0.46;
+// Rayon de la marque : un peu AU-DELÀ du bord du rapporteur (pas à l'intérieur), dans le
+// prolongement de la graduation -- TB_PROT_PIVOT_Y (app.js) est le rayon natif du rapporteur.
+const TRI_B_MARK_RADIUS = TB_PROT_PIVOT_Y*TRI_B_PROT_SCALE + 10;
 const triBProtractor = document.getElementById('triBProtractor');
 triBProtractor.innerHTML = protractorSVG();
 triBProtractor.setAttribute('transform', `translate(${triB_D.x},${triB_D.y}) rotate(0) scale(${TRI_B_PROT_SCALE})`);
@@ -477,20 +480,32 @@ function triBNextStep(){
   } else if(triBStep===2){
     btn.disabled = true;
     document.getElementById('triBProtractor').setAttribute('opacity','1');
-    // Étape 1 : on place juste une marque au crayon, au niveau de la mesure d'angle sur le
-    // rapporteur -- pas encore le tracé de la demi-droite.
-    const markRadius = 65;
-    const markPt = {x: triB_D.x+markRadius*Math.cos(triB_angleRad), y: triB_D.y+markRadius*Math.sin(triB_angleRad)};
     const angDeg = triB_ANGLE_DEG*-1;
+    // Le crayon tourne le long de l'arc EXTÉRIEUR du rapporteur (mine pointant vers le centre),
+    // de 0° jusqu'à la mesure d'angle -- pas un crayon qui apparaît déjà à la bonne place.
+    const markRadius = TRI_B_MARK_RADIUS;
+    function markPencilAt(aDeg){
+      const rad = aDeg*Math.PI/180;
+      const x = triB_D.x+markRadius*Math.cos(rad), y = triB_D.y+markRadius*Math.sin(rad);
+      triBPencilTool.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(aDeg+90).toFixed(1)}) scale(${triB_RulerScale.toFixed(3)})`);
+      return {x,y};
+    }
     document.getElementById('triBPencilTool').setAttribute('opacity','1');
-    triBSetPencilAt(markPt.x, markPt.y, angDeg);
-    const markDot = document.getElementById('triBMarkDot');
-    markDot.setAttribute('cx', markPt.x.toFixed(1)); markDot.setAttribute('cy', markPt.y.toFixed(1));
-    setTimeout(()=>{
+    markPencilAt(0);
+    const sweepStart = performance.now(), sweepDur = 1200;
+    function sweepFrame(now){
+      const t = Math.min(1,(now-sweepStart)/sweepDur);
+      const curAngle = 0 + (angDeg-0)*t;
+      const pos = markPencilAt(curAngle);
+      if(t<1){ requestAnimationFrame(sweepFrame); return; }
+      // La marque se pose dans le prolongement de la graduation, juste à l'extérieur du demi-
+      // cercle du rapporteur -- pas un point choisi au hasard.
+      const markDot = document.getElementById('triBMarkDot');
+      markDot.setAttribute('cx', pos.x.toFixed(1)); markDot.setAttribute('cy', pos.y.toFixed(1));
       markDot.setAttribute('opacity','1');
       document.getElementById('triBPencilTool').setAttribute('opacity','0');
-      // Étape 2 : le rapporteur s'efface, la règle vient tracer la demi-droite en passant par
-      // cette marque (pas un trait qui apparaîtrait directement à la bonne inclinaison).
+      // Le rapporteur s'efface, la règle vient tracer la demi-droite en passant par cette marque
+      // (pas un trait qui apparaîtrait directement à la bonne inclinaison).
       document.getElementById('triBProtractor').setAttribute('opacity','0');
       document.getElementById('triBRulerTool').setAttribute('opacity','1');
       document.getElementById('triBPencilTool').setAttribute('opacity','1');
@@ -512,7 +527,8 @@ function triBNextStep(){
         btn.disabled = false;
       }
       requestAnimationFrame(frame);
-    }, 900);
+    }
+    requestAnimationFrame(sweepFrame);
   } else if(triBStep===3){
     btn.disabled = true;
     document.getElementById('triBSegDF').setAttribute('opacity','1');
@@ -583,6 +599,7 @@ triCSetRulerAt(triC_G, 0);
 triCSetPencilAt(triC_G.x, triC_G.y, 0);
 
 const TRI_C_PROT_SCALE = 0.46; // même échelle que la construction B
+const TRI_C_MARK_RADIUS = TB_PROT_PIVOT_Y*TRI_C_PROT_SCALE + 10;
 const triCProtractor = document.getElementById('triCProtractor');
 triCProtractor.innerHTML = protractorSVG();
 
@@ -652,16 +669,23 @@ function triCNextStep(){
     btn.disabled = true;
     triCProtractor.setAttribute('transform', `translate(${triC_G.x},${triC_G.y}) rotate(0) scale(${TRI_C_PROT_SCALE})`);
     document.getElementById('triCProtractor').setAttribute('opacity','1');
-    // On place juste une marque au crayon, au niveau de la mesure d'angle -- pas encore le tracé
-    // de la demi-droite.
-    const markRadius = 65;
-    const markPt = {x: triC_G.x+markRadius*Math.cos(triC_angleG_rad), y: triC_G.y+markRadius*Math.sin(triC_angleG_rad)};
     const angDegG = triC_ANGLE_G_DEG*-1;
+    const markRadius = TRI_C_MARK_RADIUS;
+    function markPencilAtG(aDeg){
+      const rad = aDeg*Math.PI/180;
+      const x = triC_G.x+markRadius*Math.cos(rad), y = triC_G.y+markRadius*Math.sin(rad);
+      triCPencilTool.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(aDeg+90).toFixed(1)}) scale(${triC_RulerScale.toFixed(3)})`);
+      return {x,y};
+    }
     document.getElementById('triCPencilTool').setAttribute('opacity','1');
-    triCSetPencilAt(markPt.x, markPt.y, angDegG);
-    const markDotG = document.getElementById('triCMarkDotG');
-    markDotG.setAttribute('cx', markPt.x.toFixed(1)); markDotG.setAttribute('cy', markPt.y.toFixed(1));
-    setTimeout(()=>{
+    markPencilAtG(0);
+    const sweepStart = performance.now(), sweepDur = 1200;
+    function sweepFrame(now){
+      const t = Math.min(1,(now-sweepStart)/sweepDur);
+      const pos = markPencilAtG(0 + (angDegG-0)*t);
+      if(t<1){ requestAnimationFrame(sweepFrame); return; }
+      const markDotG = document.getElementById('triCMarkDotG');
+      markDotG.setAttribute('cx', pos.x.toFixed(1)); markDotG.setAttribute('cy', pos.y.toFixed(1));
       markDotG.setAttribute('opacity','1');
       document.getElementById('triCPencilTool').setAttribute('opacity','0');
       // Le rapporteur s'efface, la règle vient tracer la demi-droite en passant par la marque.
@@ -686,7 +710,8 @@ function triCNextStep(){
         btn.disabled = false;
       }
       requestAnimationFrame(frame);
-    }, 900);
+    }
+    requestAnimationFrame(sweepFrame);
   } else if(triCStep===3){
     btn.disabled = true;
     // Miroir horizontal (pas une rotation de 180°) : garde la "coupole" du rapporteur tournée
@@ -694,14 +719,23 @@ function triCNextStep(){
     // ferait basculer la coupole vers le bas -- vérifié numériquement (voir commit).
     triCProtractor.setAttribute('transform', `translate(${triC_H.x},${triC_H.y}) scale(${-TRI_C_PROT_SCALE},${TRI_C_PROT_SCALE})`);
     document.getElementById('triCProtractor').setAttribute('opacity','1');
-    const markRadius = 65;
-    const markPt = {x: triC_H.x+markRadius*Math.cos(triC_angleH_rad), y: triC_H.y+markRadius*Math.sin(triC_angleH_rad)};
-    const angDegH = triC_angleH_rad*180/Math.PI;
+    const angDegH = triC_angleH_rad*180/Math.PI; // 240° (=180+60)
+    const markRadius = TRI_C_MARK_RADIUS;
+    function markPencilAtH(aDeg){
+      const rad = aDeg*Math.PI/180;
+      const x = triC_H.x+markRadius*Math.cos(rad), y = triC_H.y+markRadius*Math.sin(rad);
+      triCPencilTool.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(aDeg+90).toFixed(1)}) scale(${triC_RulerScale.toFixed(3)})`);
+      return {x,y};
+    }
     document.getElementById('triCPencilTool').setAttribute('opacity','1');
-    triCSetPencilAt(markPt.x, markPt.y, angDegH);
-    const markDotH = document.getElementById('triCMarkDotH');
-    markDotH.setAttribute('cx', markPt.x.toFixed(1)); markDotH.setAttribute('cy', markPt.y.toFixed(1));
-    setTimeout(()=>{
+    markPencilAtH(180); // 180° = aligné sur [HG), le "0" du rapporteur à cet endroit
+    const sweepStart = performance.now(), sweepDur = 1200;
+    function sweepFrame(now){
+      const t = Math.min(1,(now-sweepStart)/sweepDur);
+      const pos = markPencilAtH(180 + (angDegH-180)*t);
+      if(t<1){ requestAnimationFrame(sweepFrame); return; }
+      const markDotH = document.getElementById('triCMarkDotH');
+      markDotH.setAttribute('cx', pos.x.toFixed(1)); markDotH.setAttribute('cy', pos.y.toFixed(1));
       markDotH.setAttribute('opacity','1');
       document.getElementById('triCPencilTool').setAttribute('opacity','0');
       document.getElementById('triCProtractor').setAttribute('opacity','0');
@@ -725,7 +759,8 @@ function triCNextStep(){
         btn.disabled = false;
       }
       requestAnimationFrame(frame);
-    }, 900);
+    }
+    requestAnimationFrame(sweepFrame);
   } else if(triCStep===4){
     btn.disabled = true;
     // I est déjà repéré par le croisement des deux demi-droites : pas de repère supplémentaire,
