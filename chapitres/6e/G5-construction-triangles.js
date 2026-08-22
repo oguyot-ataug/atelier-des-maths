@@ -60,7 +60,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <line x1="110" y1="48.8" x2="40" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
     <line x1="114.0" y1="164.2" x2="106.0" y2="175.8" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="142.0" y1="115.7" x2="148.0" y2="103.0" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="82.0" y1="108.8" x2="68.0" y2="110.0" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="78.0" y1="115.7" x2="72.0" y2="103.0" stroke="#1C1B2E" stroke-width="1.6"/>
     <text x="24" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">D</text>
     <text x="186" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">E</text>
     <text x="110" y="38" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">F</text>
