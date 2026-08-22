@@ -106,9 +106,9 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <line x1="60" y1="170" x2="180" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
     <line x1="83.6" y1="97.2" x2="96.4" y2="102.8" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="143.6" y1="102.8" x2="156.4" y2="97.2" stroke="#1C1B2E" stroke-width="1.6"/>
-    <rect x="112" y="162" width="16" height="8" fill="none" stroke="#9CA3AF" stroke-width="1.2"/>
-    <path d="M 84 170 A 24 24 0 0 1 92 152" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
-    <path d="M 156 170 A 24 24 0 0 0 148 152" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
+    <rect x="108" y="158" width="12" height="12" fill="none" stroke="#9CA3AF" stroke-width="1.2"/>
+    <path d="M 84.0 170.0 A 24 24 0 0 0 69.5 147.9" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
+    <path d="M 156.0 170.0 A 24 24 0 0 1 170.5 147.9" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
     <text x="120" y="20" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">B</text>
     <text x="44" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">A</text>
     <text x="186" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">C</text>
@@ -133,9 +133,9 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <line x1="110.0" y1="163.0" x2="110.0" y2="177.0" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="138.9" y1="112.9" x2="151.1" y2="105.9" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="81.1" y1="112.9" x2="68.9" y2="105.9" stroke="#1C1B2E" stroke-width="1.6"/>
-    <path d="M 64 170 A 24 24 0 0 1 72 152" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
-    <path d="M 156 170 A 24 24 0 0 0 148 152" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
-    <path d="M 118 63.8 A 24 24 0 0 1 128 81.8" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
+    <path d="M 64.0 170.0 A 24 24 0 0 0 52.0 149.2" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
+    <path d="M 156.0 170.0 A 24 24 0 0 1 168.0 149.2" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
+    <path d="M 98.0 69.5 A 24 24 0 0 0 122.0 69.5" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
     <text x="24" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">D</text>
     <text x="186" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">E</text>
     <text x="110" y="38" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">F</text>
