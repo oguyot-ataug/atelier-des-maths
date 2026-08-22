@@ -107,43 +107,41 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:10px 0;">
   <div class="figure-wrap" style="margin:0;">
     <p class="hint" style="text-align:center;margin:0 0 4px;">Symétrique d'une droite</p>
-    <svg viewBox="0 0 280 160" style="width:100%;display:block;">
+    <svg id="symF4Svg" viewBox="0 0 280 160" style="width:100%;display:block;">
       <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"/>
-      <line x1="60" y1="40" x2="110" y2="130" stroke="#1F3A5C" stroke-width="1.8"/>
-      <line id="symF4Right" x1="140" y1="40" x2="140" y2="130" stroke="#E35D3A" stroke-width="1.8" opacity="0"/>
+      <line id="symF4Left" x1="60" y1="40" x2="110" y2="130" stroke="#1F3A5C" stroke-width="1.8"/>
+      <line id="symF4Right" x1="220" y1="40" x2="170" y2="130" stroke="#E35D3A" stroke-width="1.8"/>
+      <circle id="symF4P1" cx="60" cy="40" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+      <circle id="symF4P2" cx="110" cy="130" r="7" fill="#1F3A5C" style="cursor:grab;"/>
     </svg>
-    <div class="figure-toolbar" style="justify-content:center;">
-      <button class="btn" id="btnSymF4Next" onclick="symF4NextStep()" style="font-size:.78rem;padding:6px 12px;">Voir le symétrique</button>
-    </div>
+    <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace les 2 points bleus.</p>
   </div>
   <div class="figure-wrap" style="margin:0;">
     <p class="hint" style="text-align:center;margin:0 0 4px;">Symétrique d'un segment</p>
-    <svg viewBox="0 0 280 160" style="width:100%;display:block;">
+    <svg id="symF5Svg" viewBox="0 0 280 160" style="width:100%;display:block;">
       <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"/>
-      <line x1="60" y1="50" x2="100" y2="110" stroke="#1F3A5C" stroke-width="1.8"/>
-      <line id="symF5Right" x1="140" y1="50" x2="140" y2="110" stroke="#E35D3A" stroke-width="1.8" opacity="0"/>
-      <text x="48" y="48" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">C</text>
-      <text x="104" y="118" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">D</text>
-      <text id="symF5CpLabel" x="224" y="48" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700" opacity="0">C'</text>
-      <text id="symF5DpLabel" x="160" y="118" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700" opacity="0">D'</text>
+      <line id="symF5Left" x1="60" y1="50" x2="100" y2="110" stroke="#1F3A5C" stroke-width="1.8"/>
+      <line id="symF5Right" x1="220" y1="50" x2="180" y2="110" stroke="#E35D3A" stroke-width="1.8"/>
+      <circle id="symF5C" cx="60" cy="50" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+      <circle id="symF5D" cx="100" cy="110" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+      <text id="symF5CLabel" x="48" y="44" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">C</text>
+      <text id="symF5DLabel" x="104" y="122" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">D</text>
+      <text id="symF5CpLabel" x="224" y="44" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">C'</text>
+      <text id="symF5DpLabel" x="160" y="122" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">D'</text>
     </svg>
-    <div class="figure-toolbar" style="justify-content:center;">
-      <button class="btn" id="btnSymF5Next" onclick="symF5NextStep()" style="font-size:.78rem;padding:6px 12px;">Voir le symétrique</button>
-    </div>
+    <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace les 2 points bleus.</p>
   </div>
   <div class="figure-wrap" style="margin:0;">
     <p class="hint" style="text-align:center;margin:0 0 4px;">Symétrique d'un cercle</p>
-    <svg viewBox="0 0 280 160" style="width:100%;display:block;">
+    <svg id="symF6Svg" viewBox="0 0 280 160" style="width:100%;display:block;">
       <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"/>
-      <line id="symF6Axis" x1="70" y1="80" x2="140" y2="80" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 3" opacity="0"/>
-      <circle cx="70" cy="80" r="35" fill="none" stroke="#1F3A5C" stroke-width="1.8"/>
-      <circle cx="70" cy="80" r="2.5" fill="#1F3A5C"/>
-      <circle id="symF6Right" cx="140" cy="80" r="0" fill="none" stroke="#E35D3A" stroke-width="1.8" opacity="0"/>
-      <circle id="symF6RightCenter" cx="140" cy="80" r="2.5" fill="#E35D3A" opacity="0"/>
+      <line id="symF6Axis" x1="70" y1="80" x2="210" y2="80" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <circle id="symF6Left" cx="70" cy="80" r="35" fill="none" stroke="#1F3A5C" stroke-width="1.8"/>
+      <circle id="symF6Right" cx="210" cy="80" r="35" fill="none" stroke="#E35D3A" stroke-width="1.8"/>
+      <circle id="symF6RightCenter" cx="210" cy="80" r="2.5" fill="#E35D3A"/>
+      <circle id="symF6LeftCenter" cx="70" cy="80" r="7" fill="#1F3A5C" style="cursor:grab;"/>
     </svg>
-    <div class="figure-toolbar" style="justify-content:center;">
-      <button class="btn" id="btnSymF6Next" onclick="symF6NextStep()" style="font-size:.78rem;padding:6px 12px;">Voir le symétrique</button>
-    </div>
+    <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace le centre bleu.</p>
   </div>
 </div>
 
@@ -192,20 +190,19 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
 
 <p class="example-title">Exemple :</p>
 <div class="figure-wrap" style="max-width:280px;margin:12px auto;">
-  <svg viewBox="0 0 250 190" style="width:100%;display:block;">
-    <line x1="60" y1="170" x2="230" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
-    <line x1="60" y1="170" x2="157.5" y2="30.7" stroke="#1C1B2E" stroke-width="1.8"/>
-    <line id="symF8Bis" x1="60" y1="170" x2="60" y2="170" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"/>
-    <path id="symF8Arc1" d="M 92.0 170.0 A 32 32 0 0 0 88.4 155.2" fill="none" stroke="#9CA3AF" stroke-width="1.3" opacity="0"/>
-    <path id="symF8Arc2" d="M 88.4 155.2 A 32 32 0 0 0 78.4 143.8" fill="none" stroke="#9CA3AF" stroke-width="1.3" opacity="0"/>
+  <svg id="symF8Svg" viewBox="0 0 250 190" style="width:100%;display:block;">
+    <line id="symF8RayX" x1="60" y1="170" x2="230" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line id="symF8RayY" x1="60" y1="170" x2="157.5" y2="30.7" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line id="symF8Bis" x1="60" y1="170" x2="197.5" y2="98.4" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"/>
+    <path id="symF8Arc1" d="M 92.0 170.0 A 32 32 0 0 0 88.4 155.2" fill="none" stroke="#9CA3AF" stroke-width="1.3"/>
+    <path id="symF8Arc2" d="M 88.4 155.2 A 32 32 0 0 0 78.4 143.8" fill="none" stroke="#9CA3AF" stroke-width="1.3"/>
+    <circle id="symF8X" cx="230" cy="170" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+    <circle id="symF8Y" cx="157.5" cy="30.7" r="7" fill="#1F3A5C" style="cursor:grab;"/>
     <text x="42" y="180" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">O</text>
-    <text x="234" y="176" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">x</text>
-    <text x="152" y="24" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">y</text>
+    <text id="symF8XLabel" x="234" y="176" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">x</text>
+    <text id="symF8YLabel" x="152" y="24" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">y</text>
   </svg>
-  <div class="figure-toolbar">
-    <button class="btn" id="btnSymF8Next" onclick="symF8NextStep()">Étape suivante →</button>
-    <button class="btn secondary" onclick="symF8Reset()">Revoir depuis le début</button>
-  </div>
+  <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace les points <b>x</b> et <b>y</b> (les points bleus).</p>
 </div>
 <p style="margin:4px 0 0;">La demi-droite (en pointillés), <b>bissectrice</b> de l'angle <span class="tex">\\widehat{xOy}</span>, le partage en deux angles de même mesure.</p>
 `;
@@ -333,80 +330,106 @@ function symF3Init(){
   handle.ontouchstart = start; svgEl.addEventListener('touchmove', move, {passive:false}); svgEl.addEventListener('touchend', end);
 }
 
-/* ================= Figures 4/5/6 : symétrique d'une droite/segment/cercle (dépliage) ================= */
-function symF4Reset(){
-  const line = document.getElementById('symF4Right');
-  line.setAttribute('opacity','0'); line.setAttribute('x1','140'); line.setAttribute('x2','140');
-  const btn = document.getElementById('btnSymF4Next');
-  btn.textContent = 'Voir le symétrique'; btn.disabled = false;
+/* ================= Figure 4 : symétrique d'une droite (2 points déplaçables) ================= */
+const symF4_axisX = 140;
+let symF4_P1 = {x:60,y:40}, symF4_P2 = {x:110,y:130};
+function symF4Update(){
+  const svgEl = document.getElementById('symF4Svg');
+  svgEl.querySelector('#symF4P1').setAttribute('cx', symF4_P1.x); svgEl.querySelector('#symF4P1').setAttribute('cy', symF4_P1.y);
+  svgEl.querySelector('#symF4P2').setAttribute('cx', symF4_P2.x); svgEl.querySelector('#symF4P2').setAttribute('cy', symF4_P2.y);
+  svgEl.querySelector('#symF4Left').setAttribute('x1', symF4_P1.x); svgEl.querySelector('#symF4Left').setAttribute('y1', symF4_P1.y);
+  svgEl.querySelector('#symF4Left').setAttribute('x2', symF4_P2.x); svgEl.querySelector('#symF4Left').setAttribute('y2', symF4_P2.y);
+  const P1p = {x:2*symF4_axisX-symF4_P1.x, y:symF4_P1.y}, P2p = {x:2*symF4_axisX-symF4_P2.x, y:symF4_P2.y};
+  svgEl.querySelector('#symF4Right').setAttribute('x1', P1p.x); svgEl.querySelector('#symF4Right').setAttribute('y1', P1p.y);
+  svgEl.querySelector('#symF4Right').setAttribute('x2', P2p.x); svgEl.querySelector('#symF4Right').setAttribute('y2', P2p.y);
 }
-function symF5Reset(){
-  const line = document.getElementById('symF5Right');
-  line.setAttribute('opacity','0'); line.setAttribute('x1','140'); line.setAttribute('x2','140');
-  document.getElementById('symF5CpLabel').setAttribute('opacity','0');
-  document.getElementById('symF5DpLabel').setAttribute('opacity','0');
-  const btn = document.getElementById('btnSymF5Next');
-  btn.textContent = 'Voir le symétrique'; btn.disabled = false;
-}
-function symF6Reset(){
-  const circle = document.getElementById('symF6Right'), centerDot = document.getElementById('symF6RightCenter'), axisLine = document.getElementById('symF6Axis');
-  circle.setAttribute('opacity','0'); circle.setAttribute('cx','140'); circle.setAttribute('r','0');
-  centerDot.setAttribute('opacity','0'); centerDot.setAttribute('cx','140');
-  axisLine.setAttribute('opacity','0'); axisLine.setAttribute('x2','140');
-  const btn = document.getElementById('btnSymF6Next');
-  btn.textContent = 'Voir le symétrique'; btn.disabled = false;
-}
-function symF4NextStep(){
-  const btn = document.getElementById('btnSymF4Next');
-  btn.disabled = true;
-  const line = document.getElementById('symF4Right');
-  line.setAttribute('opacity','1');
-  const axisX = 140, fx1=220, fy1=40, fx2=170, fy2=130;
-  const start = performance.now(), dur=1000;
-  function frame(now){
-    const t = Math.min(1,(now-start)/dur);
-    line.setAttribute('x1', (axisX+(fx1-axisX)*t).toFixed(1)); line.setAttribute('y1', fy1);
-    line.setAttribute('x2', (axisX+(fx2-axisX)*t).toFixed(1)); line.setAttribute('y2', fy2);
-    if(t<1){ requestAnimationFrame(frame); return; }
-    btn.textContent='Terminé ✓'; btn.disabled=true;
+let symF4_initialized = false;
+function symF4Init(){
+  symF4_P1 = {x:60,y:40}; symF4_P2 = {x:110,y:130};
+  symF4Update();
+  if(symF4_initialized) return;
+  symF4_initialized = true;
+  const svgEl = document.getElementById('symF4Svg');
+  function makeDraggable(handle, getPt, setPt){
+    let dragging = false;
+    const start = e=>{ dragging=true; e.preventDefault(); };
+    const move = e=>{ if(!dragging) return; const p=svgPointFromEvent(svgEl,e); setPt({x:Math.max(5,Math.min(135,p.x)), y:Math.max(5,Math.min(155,p.y))}); symF4Update(); };
+    const end = ()=>dragging=false;
+    handle.onmousedown=start; window.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+    handle.ontouchstart=start; svgEl.addEventListener('touchmove',move,{passive:false}); svgEl.addEventListener('touchend',end);
   }
-  requestAnimationFrame(frame);
+  makeDraggable(svgEl.querySelector('#symF4P1'), ()=>symF4_P1, p=>symF4_P1=p);
+  makeDraggable(svgEl.querySelector('#symF4P2'), ()=>symF4_P2, p=>symF4_P2=p);
 }
-function symF5NextStep(){
-  const btn = document.getElementById('btnSymF5Next');
-  btn.disabled = true;
-  const line = document.getElementById('symF5Right');
-  line.setAttribute('opacity','1');
-  const axisX = 140, fx1=220, fy1=50, fx2=180, fy2=110;
-  const start = performance.now(), dur=1000;
-  function frame(now){
-    const t = Math.min(1,(now-start)/dur);
-    line.setAttribute('x1', (axisX+(fx1-axisX)*t).toFixed(1)); line.setAttribute('y1', fy1);
-    line.setAttribute('x2', (axisX+(fx2-axisX)*t).toFixed(1)); line.setAttribute('y2', fy2);
-    if(t<1){ requestAnimationFrame(frame); return; }
-    document.getElementById('symF5CpLabel').setAttribute('opacity','1');
-    document.getElementById('symF5DpLabel').setAttribute('opacity','1');
-    btn.textContent='Terminé ✓'; btn.disabled=true;
-  }
-  requestAnimationFrame(frame);
+
+/* ================= Figure 5 : symétrique d'un segment (C, D déplaçables) ================= */
+const symF5_axisX = 140;
+let symF5_C = {x:60,y:50}, symF5_D = {x:100,y:110};
+function symF5Update(){
+  const svgEl = document.getElementById('symF5Svg');
+  const Cp = {x:2*symF5_axisX-symF5_C.x, y:symF5_C.y}, Dp = {x:2*symF5_axisX-symF5_D.x, y:symF5_D.y};
+  svgEl.querySelector('#symF5C').setAttribute('cx', symF5_C.x); svgEl.querySelector('#symF5C').setAttribute('cy', symF5_C.y);
+  svgEl.querySelector('#symF5D').setAttribute('cx', symF5_D.x); svgEl.querySelector('#symF5D').setAttribute('cy', symF5_D.y);
+  svgEl.querySelector('#symF5Left').setAttribute('x1', symF5_C.x); svgEl.querySelector('#symF5Left').setAttribute('y1', symF5_C.y);
+  svgEl.querySelector('#symF5Left').setAttribute('x2', symF5_D.x); svgEl.querySelector('#symF5Left').setAttribute('y2', symF5_D.y);
+  svgEl.querySelector('#symF5Right').setAttribute('x1', Cp.x); svgEl.querySelector('#symF5Right').setAttribute('y1', Cp.y);
+  svgEl.querySelector('#symF5Right').setAttribute('x2', Dp.x); svgEl.querySelector('#symF5Right').setAttribute('y2', Dp.y);
+  svgEl.querySelector('#symF5CLabel').setAttribute('x', symF5_C.x-12); svgEl.querySelector('#symF5CLabel').setAttribute('y', symF5_C.y-6);
+  svgEl.querySelector('#symF5DLabel').setAttribute('x', symF5_D.x+4); svgEl.querySelector('#symF5DLabel').setAttribute('y', symF5_D.y+12);
+  svgEl.querySelector('#symF5CpLabel').setAttribute('x', Cp.x+4); svgEl.querySelector('#symF5CpLabel').setAttribute('y', Cp.y-6);
+  svgEl.querySelector('#symF5DpLabel').setAttribute('x', Dp.x-20); svgEl.querySelector('#symF5DpLabel').setAttribute('y', Dp.y+12);
 }
-function symF6NextStep(){
-  const btn = document.getElementById('btnSymF6Next');
-  btn.disabled = true;
-  const circle = document.getElementById('symF6Right'), centerDot = document.getElementById('symF6RightCenter'), axisLine = document.getElementById('symF6Axis');
-  circle.setAttribute('opacity','1'); centerDot.setAttribute('opacity','1'); axisLine.setAttribute('opacity','1');
-  const axisX=140, fcx=210, fcy=80, fr=35;
-  const start = performance.now(), dur=1200;
-  function frame(now){
-    const t = Math.min(1,(now-start)/dur);
-    const cx = axisX+(fcx-axisX)*t, r = fr*t;
-    circle.setAttribute('cx', cx.toFixed(1)); circle.setAttribute('cy', fcy); circle.setAttribute('r', r.toFixed(1));
-    centerDot.setAttribute('cx', cx.toFixed(1)); centerDot.setAttribute('cy', fcy);
-    axisLine.setAttribute('x2', cx.toFixed(1));
-    if(t<1){ requestAnimationFrame(frame); return; }
-    btn.textContent='Terminé ✓'; btn.disabled=true;
+let symF5_initialized = false;
+function symF5Init(){
+  symF5_C = {x:60,y:50}; symF5_D = {x:100,y:110};
+  symF5Update();
+  if(symF5_initialized) return;
+  symF5_initialized = true;
+  const svgEl = document.getElementById('symF5Svg');
+  function makeDraggable(handle, getPt, setPt){
+    let dragging = false;
+    const start = e=>{ dragging=true; e.preventDefault(); };
+    const move = e=>{ if(!dragging) return; const p=svgPointFromEvent(svgEl,e); setPt({x:Math.max(5,Math.min(135,p.x)), y:Math.max(5,Math.min(155,p.y))}); symF5Update(); };
+    const end = ()=>dragging=false;
+    handle.onmousedown=start; window.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+    handle.ontouchstart=start; svgEl.addEventListener('touchmove',move,{passive:false}); svgEl.addEventListener('touchend',end);
   }
-  requestAnimationFrame(frame);
+  makeDraggable(svgEl.querySelector('#symF5C'), ()=>symF5_C, p=>symF5_C=p);
+  makeDraggable(svgEl.querySelector('#symF5D'), ()=>symF5_D, p=>symF5_D=p);
+}
+
+/* ================= Figure 6 : symétrique d'un cercle (centre déplaçable) ================= */
+const symF6_axisX = 140, symF6_R = 35;
+let symF6_Center = {x:70,y:80};
+function symF6Update(){
+  const svgEl = document.getElementById('symF6Svg');
+  const Cp = {x:2*symF6_axisX-symF6_Center.x, y:symF6_Center.y};
+  svgEl.querySelector('#symF6LeftCenter').setAttribute('cx', symF6_Center.x); svgEl.querySelector('#symF6LeftCenter').setAttribute('cy', symF6_Center.y);
+  svgEl.querySelector('#symF6Left').setAttribute('cx', symF6_Center.x); svgEl.querySelector('#symF6Left').setAttribute('cy', symF6_Center.y);
+  svgEl.querySelector('#symF6Right').setAttribute('cx', Cp.x); svgEl.querySelector('#symF6Right').setAttribute('cy', Cp.y);
+  svgEl.querySelector('#symF6RightCenter').setAttribute('cx', Cp.x); svgEl.querySelector('#symF6RightCenter').setAttribute('cy', Cp.y);
+  svgEl.querySelector('#symF6Axis').setAttribute('x1', symF6_Center.x); svgEl.querySelector('#symF6Axis').setAttribute('y1', symF6_Center.y);
+  svgEl.querySelector('#symF6Axis').setAttribute('x2', Cp.x); svgEl.querySelector('#symF6Axis').setAttribute('y2', Cp.y);
+}
+let symF6_initialized = false;
+function symF6Init(){
+  symF6_Center = {x:70,y:80};
+  symF6Update();
+  if(symF6_initialized) return;
+  symF6_initialized = true;
+  const svgEl = document.getElementById('symF6Svg');
+  const handle = svgEl.querySelector('#symF6LeftCenter');
+  let dragging = false;
+  const start = e=>{ dragging=true; e.preventDefault(); };
+  const move = e=>{
+    if(!dragging) return;
+    const p = svgPointFromEvent(svgEl,e);
+    symF6_Center = {x:Math.max(symF6_R+5,Math.min(symF6_axisX-symF6_R-5,p.x)), y:Math.max(symF6_R+5,Math.min(160-symF6_R-5,p.y))};
+    symF6Update();
+  };
+  const end = ()=>dragging=false;
+  handle.onmousedown=start; window.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+  handle.ontouchstart=start; svgEl.addEventListener('touchmove',move,{passive:false}); svgEl.addEventListener('touchend',end);
 }
 
 /* ================= Figure 7 : médiatrice (point P déplaçable librement) ================= */
@@ -457,35 +480,61 @@ function symF7Init(){
   handle.ontouchstart = start; svgEl.addEventListener('touchmove', move, {passive:false}); svgEl.addEventListener('touchend', end);
 }
 
-/* ================= Figure 8 : bissectrice (axe de symétrie d'un angle) ================= */
-function symF8Reset(){
-  const bis = document.getElementById('symF8Bis');
-  bis.setAttribute('x2','60'); bis.setAttribute('y2','170');
-  document.getElementById('symF8Arc1').setAttribute('opacity','0');
-  document.getElementById('symF8Arc2').setAttribute('opacity','0');
-  const btn = document.getElementById('btnSymF8Next');
-  btn.textContent = 'Étape suivante →'; btn.disabled = false;
+/* ================= Figure 8 : bissectrice (points x et y déplaçables) ================= */
+const symF8_O = {x:60,y:170};
+let symF8_X = {x:230,y:170}, symF8_Y = {x:157.5,y:30.7};
+function symF8Update(){
+  const svgEl = document.getElementById('symF8Svg');
+  svgEl.querySelector('#symF8X').setAttribute('cx', symF8_X.x); svgEl.querySelector('#symF8X').setAttribute('cy', symF8_X.y);
+  svgEl.querySelector('#symF8Y').setAttribute('cx', symF8_Y.x); svgEl.querySelector('#symF8Y').setAttribute('cy', symF8_Y.y);
+  svgEl.querySelector('#symF8RayX').setAttribute('x2', symF8_X.x); svgEl.querySelector('#symF8RayX').setAttribute('y2', symF8_X.y);
+  svgEl.querySelector('#symF8RayY').setAttribute('x2', symF8_Y.x); svgEl.querySelector('#symF8RayY').setAttribute('y2', symF8_Y.y);
+  svgEl.querySelector('#symF8XLabel').setAttribute('x', symF8_X.x+4); svgEl.querySelector('#symF8XLabel').setAttribute('y', symF8_X.y+6);
+  svgEl.querySelector('#symF8YLabel').setAttribute('x', symF8_Y.x-6); svgEl.querySelector('#symF8YLabel').setAttribute('y', symF8_Y.y-8);
+
+  const angleX = Math.atan2(symF8_X.y-symF8_O.y, symF8_X.x-symF8_O.x);
+  const angleY = Math.atan2(symF8_Y.y-symF8_O.y, symF8_Y.x-symF8_O.x);
+  let diff = angleY-angleX;
+  while(diff>Math.PI) diff-=2*Math.PI;
+  while(diff<-Math.PI) diff+=2*Math.PI;
+  const bisAngle = angleX+diff/2;
+  const bisLen = 140;
+  const bisEnd = {x:symF8_O.x+bisLen*Math.cos(bisAngle), y:symF8_O.y+bisLen*Math.sin(bisAngle)};
+  svgEl.querySelector('#symF8Bis').setAttribute('x2', bisEnd.x.toFixed(1)); svgEl.querySelector('#symF8Bis').setAttribute('y2', bisEnd.y.toFixed(1));
+
+  const r=32;
+  function arcPt(a){ return {x:symF8_O.x+r*Math.cos(a), y:symF8_O.y+r*Math.sin(a)}; }
+  const pX=arcPt(angleX), pBis=arcPt(bisAngle), pY=arcPt(angleY);
+  const sweep = diff>=0 ? 1 : 0;
+  svgEl.querySelector('#symF8Arc1').setAttribute('d', `M ${pX.x.toFixed(1)} ${pX.y.toFixed(1)} A ${r} ${r} 0 0 ${sweep} ${pBis.x.toFixed(1)} ${pBis.y.toFixed(1)}`);
+  svgEl.querySelector('#symF8Arc2').setAttribute('d', `M ${pBis.x.toFixed(1)} ${pBis.y.toFixed(1)} A ${r} ${r} 0 0 ${sweep} ${pY.x.toFixed(1)} ${pY.y.toFixed(1)}`);
 }
-function symF8NextStep(){
-  const btn = document.getElementById('btnSymF8Next');
-  btn.disabled = true;
-  const bis = document.getElementById('symF8Bis');
-  if(parseFloat(bis.getAttribute('x2')) < 197){
-    const O={x:60,y:170}, target={x:197.5,y:98.4};
-    const start = performance.now(), dur=900;
-    function frame(now){
-      const t = Math.min(1,(now-start)/dur);
-      bis.setAttribute('x2', (O.x+(target.x-O.x)*t).toFixed(1));
-      bis.setAttribute('y2', (O.y+(target.y-O.y)*t).toFixed(1));
-      if(t<1){ requestAnimationFrame(frame); return; }
-      btn.disabled = false;
-    }
-    requestAnimationFrame(frame);
-  } else {
-    document.getElementById('symF8Arc1').setAttribute('opacity','1');
-    document.getElementById('symF8Arc2').setAttribute('opacity','1');
-    btn.textContent='Terminé ✓'; btn.disabled=true;
+let symF8_initialized = false;
+function symF8Init(){
+  symF8_X = {x:230,y:170}; symF8_Y = {x:157.5,y:30.7};
+  symF8Update();
+  if(symF8_initialized) return;
+  symF8_initialized = true;
+  const svgEl = document.getElementById('symF8Svg');
+  function makeDraggable(handle, setPt){
+    let dragging = false;
+    const start = e=>{ dragging=true; e.preventDefault(); };
+    const move = e=>{
+      if(!dragging) return;
+      const p = svgPointFromEvent(svgEl,e);
+      // on garde le point à une distance raisonnable de O, pour que les rayons restent bien visibles
+      const dx=p.x-symF8_O.x, dy=p.y-symF8_O.y;
+      const dist = Math.max(60, Math.min(180, Math.hypot(dx,dy)));
+      const angle = Math.atan2(dy,dx);
+      setPt({x:symF8_O.x+dist*Math.cos(angle), y:symF8_O.y+dist*Math.sin(angle)});
+      symF8Update();
+    };
+    const end = ()=>dragging=false;
+    handle.onmousedown=start; window.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
+    handle.ontouchstart=start; svgEl.addEventListener('touchmove',move,{passive:false}); svgEl.addEventListener('touchend',end);
   }
+  makeDraggable(svgEl.querySelector('#symF8X'), p=>symF8_X=p);
+  makeDraggable(svgEl.querySelector('#symF8Y'), p=>symF8_Y=p);
 }
 
 DEMO_REGISTRY['6e|Symétrie axiale'] = {
@@ -496,6 +545,6 @@ DEMO_REGISTRY['6e|Symétrie axiale'] = {
     renderStaticMath(document.getElementById('exos-demo-symetrie-axiale-6e'));
     injectCourseAddButtons(document.getElementById('cours-demo-symetrie-axiale-6e'));
     injectCourseAddButtons(document.getElementById('methode-demo-symetrie-axiale-6e'));
-    symF1Reset(); symF2Init(); symF3Init(); symF4Reset(); symF5Reset(); symF6Reset(); symF7Init(); symF8Reset();
+    symF1Reset(); symF2Init(); symF3Init(); symF4Init(); symF5Init(); symF6Init(); symF7Init(); symF8Init();
   }
 };
