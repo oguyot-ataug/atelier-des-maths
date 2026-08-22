@@ -34,6 +34,7 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
 <span class="def-badge">Définition</span>
 <div class="def-box">Le <b>symétrique</b> d'un point M par rapport à une droite (d) est le point M' tel que <b>(d) soit la médiatrice</b> du segment [MM'] (c'est-à-dire tel que (d) soit perpendiculaire au segment [MM'] en son milieu).</div>
 <p class="example-title">Exemple : construis M', symétrique du point M par rapport à la droite (d).</p>
+<p class="hint" style="margin:0 0 8px;">Axe horizontal ou vertical :</p>
 <div class="figure-wrap" style="max-width:320px;margin:12px auto;">
   <svg viewBox="0 0 260 140" style="width:100%;display:block;">
     <defs>
@@ -51,12 +52,31 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
     <text x="145" y="16" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700">(d)</text>
   </svg>
 </div>
-<p style="margin:4px 0 0;">M et M' sont situés à la même distance de <b>(d)</b>, de part et d'autre, sur une perpendiculaire à <b>(d)</b>.</p>
+<p style="margin:4px 0 0;">M et M' sont situés à la même distance de <b>(d)</b>, de part et d'autre, sur une perpendiculaire à <b>(d)</b>. On compte le nombre de carreaux de M jusqu'à <b>(d)</b> (ici 3), et on reporte le même nombre de carreaux de l'autre côté de <b>(d)</b>.</p>
+
+<p class="hint" style="margin:16px 0 8px;">Axe en diagonale : la méthode est la même, mais on compte les carreaux <b>en escalier</b>, en suivant les côtés des carreaux (jamais en diagonale d'un seul trait).</p>
+<div class="figure-wrap" style="max-width:280px;margin:12px auto;">
+  <svg viewBox="0 0 200 180" style="width:100%;display:block;">
+    <rect x="0" y="0" width="200" height="180" fill="url(#gridSymAxiale)"/>
+    <line x1="10" y1="170" x2="190" y2="-10" stroke="#E35D3A" stroke-width="1.4"/>
+    <polyline points="60,60 70,60 70,70 80,70 80,80 90,80 90,90" fill="none" stroke="#9CA3AF" stroke-width="1.3" stroke-dasharray="3 3"/>
+    <polyline points="90,90 100,90 100,100 110,100 110,110 120,110 120,120" fill="none" stroke="#9CA3AF" stroke-width="1.3" stroke-dasharray="3 3"/>
+    <text x="62" y="57" font-family="JetBrains Mono" font-size="10" fill="#6B7280">1</text>
+    <text x="72" y="67" font-family="JetBrains Mono" font-size="10" fill="#6B7280">2</text>
+    <text x="82" y="77" font-family="JetBrains Mono" font-size="10" fill="#6B7280">3</text>
+    <text x="102" y="87" font-family="JetBrains Mono" font-size="10" fill="#6B7280">3</text>
+    <text x="112" y="97" font-family="JetBrains Mono" font-size="10" fill="#6B7280">2</text>
+    <text x="122" y="107" font-family="JetBrains Mono" font-size="10" fill="#6B7280">1</text>
+    <circle cx="60" cy="60" r="3" fill="#1F3A5C"/>
+    <circle cx="120" cy="120" r="3" fill="#1F3A5C"/>
+    <text x="46" y="56" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M</text>
+    <text x="126" y="128" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M'</text>
+    <text x="150" y="30" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700">(d)</text>
+  </svg>
+</div>
+<p style="margin:4px 0 0;">De M, on compte 3 carreaux en escalier (perpendiculairement à <b>(d)</b>) pour atteindre <b>(d)</b>, puis on reporte les 3 mêmes carreaux, toujours en escalier, de l'autre côté de <b>(d)</b> pour trouver <b>M'</b>.</p>
 <div class="def-box" style="margin-top:12px;">
-  <ul class="example-list" style="margin:0;">
-    <li>On peut également compter les carreaux en diagonale.</li>
-    <li>Si un point appartient à l'axe de symétrie, alors son symétrique est le point lui-même.</li>
-  </ul>
+  <p style="margin:0;">Si un point appartient à l'axe de symétrie, alors son symétrique est le point lui-même.</p>
 </div>
 
 <div class="lesson-header"><span class="num">3</span><h3>Propriétés de la symétrie axiale</h3></div>
