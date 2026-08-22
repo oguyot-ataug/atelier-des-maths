@@ -50,8 +50,11 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
     <rect x="0" y="0" width="260" height="140" fill="url(#gridSymAxiale)"/>
     <line x1="140" y1="0" x2="140" y2="140" stroke="#E35D3A" stroke-width="1.4"/>
     <line id="symF2Line" x1="80" y1="60" x2="200" y2="60" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 3"/>
-    <circle id="symF2Mp" cx="200" cy="60" r="3" fill="#1F3A5C"/>
-    <circle id="symF2M" cx="80" cy="60" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+    <line id="symF2MpCross1" stroke="#1F3A5C" stroke-width="1.6"/>
+    <line id="symF2MpCross2" stroke="#1F3A5C" stroke-width="1.6"/>
+    <line id="symF2MCross1" stroke="#1F3A5C" stroke-width="1.8"/>
+    <line id="symF2MCross2" stroke="#1F3A5C" stroke-width="1.8"/>
+    <circle id="symF2M" cx="80" cy="60" r="11" fill="transparent" style="cursor:grab;"/>
     <text id="symF2MLabel" x="58" y="52" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M</text>
     <text id="symF2MpLabel" x="204" y="52" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M'</text>
     <text x="145" y="16" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700">(d)</text>
@@ -70,8 +73,11 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
     <text id="symF3HCount" x="80" y="52" font-family="JetBrains Mono" font-size="11" fill="#6B7280"></text>
     <text id="symF3VCount" x="127" y="92" font-family="JetBrains Mono" font-size="11" fill="#6B7280"></text>
     <circle id="symF3H" cx="120" cy="60" r="2" fill="#9CA3AF"/>
-    <circle id="symF3Mp" cx="120" cy="120" r="3" fill="#1F3A5C"/>
-    <circle id="symF3M" cx="60" cy="60" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+    <line id="symF3MpCross1" stroke="#1F3A5C" stroke-width="1.6"/>
+    <line id="symF3MpCross2" stroke="#1F3A5C" stroke-width="1.6"/>
+    <line id="symF3MCross1" stroke="#1F3A5C" stroke-width="1.8"/>
+    <line id="symF3MCross2" stroke="#1F3A5C" stroke-width="1.8"/>
+    <circle id="symF3M" cx="60" cy="60" r="11" fill="transparent" style="cursor:grab;"/>
     <text id="symF3MLabel" x="38" y="52" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M</text>
     <text id="symF3MpLabel" x="126" y="128" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M'</text>
     <text x="150" y="30" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700">(d)</text>
@@ -111,8 +117,10 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
       <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"/>
       <line id="symF4Left" x1="60" y1="40" x2="110" y2="130" stroke="#1F3A5C" stroke-width="1.8"/>
       <line id="symF4Right" x1="220" y1="40" x2="170" y2="130" stroke="#E35D3A" stroke-width="1.8"/>
-      <circle id="symF4P1" cx="60" cy="40" r="7" fill="#1F3A5C" style="cursor:grab;"/>
-      <circle id="symF4P2" cx="110" cy="130" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+      <line id="symF4Tick1" stroke="#1F3A5C" stroke-width="1.8"/>
+      <line id="symF4Tick2" stroke="#1F3A5C" stroke-width="1.8"/>
+      <circle id="symF4P1" cx="60" cy="40" r="11" fill="transparent" style="cursor:grab;"/>
+      <circle id="symF4P2" cx="110" cy="130" r="11" fill="transparent" style="cursor:grab;"/>
     </svg>
     <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace les 2 points bleus.</p>
   </div>
@@ -122,8 +130,12 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
       <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"/>
       <line id="symF5Left" x1="60" y1="50" x2="100" y2="110" stroke="#1F3A5C" stroke-width="1.8"/>
       <line id="symF5Right" x1="220" y1="50" x2="180" y2="110" stroke="#E35D3A" stroke-width="1.8"/>
-      <circle id="symF5C" cx="60" cy="50" r="7" fill="#1F3A5C" style="cursor:grab;"/>
-      <circle id="symF5D" cx="100" cy="110" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+      <line id="symF5TickC" stroke="#1F3A5C" stroke-width="1.8"/>
+      <line id="symF5TickD" stroke="#1F3A5C" stroke-width="1.8"/>
+      <line id="symF5TickCp" stroke="#1F3A5C" stroke-width="1.8"/>
+      <line id="symF5TickDp" stroke="#1F3A5C" stroke-width="1.8"/>
+      <circle id="symF5C" cx="60" cy="50" r="11" fill="transparent" style="cursor:grab;"/>
+      <circle id="symF5D" cx="100" cy="110" r="11" fill="transparent" style="cursor:grab;"/>
       <text id="symF5CLabel" x="48" y="44" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">C</text>
       <text id="symF5DLabel" x="104" y="122" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">D</text>
       <text id="symF5CpLabel" x="224" y="44" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">C'</text>
@@ -138,8 +150,11 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
       <line id="symF6Axis" x1="70" y1="80" x2="210" y2="80" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 3"/>
       <circle id="symF6Left" cx="70" cy="80" r="35" fill="none" stroke="#1F3A5C" stroke-width="1.8"/>
       <circle id="symF6Right" cx="210" cy="80" r="35" fill="none" stroke="#E35D3A" stroke-width="1.8"/>
-      <circle id="symF6RightCenter" cx="210" cy="80" r="2.5" fill="#E35D3A"/>
-      <circle id="symF6LeftCenter" cx="70" cy="80" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+      <line id="symF6RightCross1" stroke="#E35D3A" stroke-width="1.4"/>
+      <line id="symF6RightCross2" stroke="#E35D3A" stroke-width="1.4"/>
+      <line id="symF6LeftCross1" stroke="#1F3A5C" stroke-width="1.6"/>
+      <line id="symF6LeftCross2" stroke="#1F3A5C" stroke-width="1.6"/>
+      <circle id="symF6LeftCenter" cx="70" cy="80" r="11" fill="transparent" style="cursor:grab;"/>
     </svg>
     <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace le centre bleu.</p>
   </div>
@@ -172,7 +187,9 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
     <line id="symF7PB" x1="190" y1="140" x2="120" y2="50" stroke="#1C1B2E" stroke-width="1.4"/>
     <line id="symF7TickA" x1="82.9" y1="88.3" x2="87.1" y2="101.7" stroke="#1C1B2E" stroke-width="1.6"/>
     <line id="symF7TickB" x1="157.1" y1="88.3" x2="152.9" y2="101.7" stroke="#1C1B2E" stroke-width="1.6"/>
-    <circle id="symF7P" cx="120" cy="50" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+    <line id="symF7PCross1" stroke="#1F3A5C" stroke-width="1.8"/>
+    <line id="symF7PCross2" stroke="#1F3A5C" stroke-width="1.8"/>
+    <circle id="symF7P" cx="120" cy="50" r="11" fill="transparent" style="cursor:grab;"/>
     <text x="38" y="150" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">A</text>
     <text x="196" y="150" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">B</text>
     <text id="symF7PLabel" x="126" y="46" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">P</text>
@@ -196,8 +213,10 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
     <line id="symF8Bis" x1="60" y1="170" x2="197.5" y2="98.4" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"/>
     <path id="symF8Arc1" d="M 92.0 170.0 A 32 32 0 0 0 88.4 155.2" fill="none" stroke="#9CA3AF" stroke-width="1.3"/>
     <path id="symF8Arc2" d="M 88.4 155.2 A 32 32 0 0 0 78.4 143.8" fill="none" stroke="#9CA3AF" stroke-width="1.3"/>
-    <circle id="symF8X" cx="230" cy="170" r="7" fill="#1F3A5C" style="cursor:grab;"/>
-    <circle id="symF8Y" cx="157.5" cy="30.7" r="7" fill="#1F3A5C" style="cursor:grab;"/>
+    <line id="symF8TickX" stroke="#1F3A5C" stroke-width="1.8"/>
+    <line id="symF8TickY" stroke="#1F3A5C" stroke-width="1.8"/>
+    <circle id="symF8X" cx="230" cy="170" r="11" fill="transparent" style="cursor:grab;"/>
+    <circle id="symF8Y" cx="157.5" cy="30.7" r="11" fill="transparent" style="cursor:grab;"/>
     <text x="42" y="180" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">O</text>
     <text id="symF8XLabel" x="234" y="176" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">x</text>
     <text id="symF8YLabel" x="152" y="24" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">y</text>
@@ -246,7 +265,8 @@ function symF2Update(){
   const svgEl = document.getElementById('symF2Svg');
   const Mp = {x: 2*symF2_axisX - symF2_M.x, y: symF2_M.y};
   svgEl.querySelector('#symF2M').setAttribute('cx', symF2_M.x); svgEl.querySelector('#symF2M').setAttribute('cy', symF2_M.y);
-  svgEl.querySelector('#symF2Mp').setAttribute('cx', Mp.x); svgEl.querySelector('#symF2Mp').setAttribute('cy', Mp.y);
+  setCross(svgEl.querySelector('#symF2MCross1'), svgEl.querySelector('#symF2MCross2'), symF2_M.x, symF2_M.y, 6);
+  setCross(svgEl.querySelector('#symF2MpCross1'), svgEl.querySelector('#symF2MpCross2'), Mp.x, Mp.y, 5);
   svgEl.querySelector('#symF2Line').setAttribute('x1', symF2_M.x); svgEl.querySelector('#symF2Line').setAttribute('y1', symF2_M.y);
   svgEl.querySelector('#symF2Line').setAttribute('x2', Mp.x); svgEl.querySelector('#symF2Line').setAttribute('y2', Mp.y);
   svgEl.querySelector('#symF2MLabel').setAttribute('x', symF2_M.x-22); svgEl.querySelector('#symF2MLabel').setAttribute('y', symF2_M.y<20?symF2_M.y+22:symF2_M.y-8);
@@ -293,7 +313,8 @@ function symF3Update(){
   const tH = (M.y-symF3_axisP1.y)/dy;
   const H = {x: symF3_axisP1.x+tH*dx, y: M.y};
   svgEl.querySelector('#symF3M').setAttribute('cx', M.x); svgEl.querySelector('#symF3M').setAttribute('cy', M.y);
-  svgEl.querySelector('#symF3Mp').setAttribute('cx', Mp.x.toFixed(1)); svgEl.querySelector('#symF3Mp').setAttribute('cy', Mp.y.toFixed(1));
+  setCross(svgEl.querySelector('#symF3MCross1'), svgEl.querySelector('#symF3MCross2'), M.x, M.y, 6);
+  setCross(svgEl.querySelector('#symF3MpCross1'), svgEl.querySelector('#symF3MpCross2'), Mp.x, Mp.y, 5);
   svgEl.querySelector('#symF3H').setAttribute('cx', H.x.toFixed(1)); svgEl.querySelector('#symF3H').setAttribute('cy', H.y.toFixed(1));
   svgEl.querySelector('#symF3LineH').setAttribute('x1', M.x); svgEl.querySelector('#symF3LineH').setAttribute('y1', M.y);
   svgEl.querySelector('#symF3LineH').setAttribute('x2', H.x.toFixed(1)); svgEl.querySelector('#symF3LineH').setAttribute('y2', H.y.toFixed(1));
@@ -337,11 +358,19 @@ function symF4Update(){
   const svgEl = document.getElementById('symF4Svg');
   svgEl.querySelector('#symF4P1').setAttribute('cx', symF4_P1.x); svgEl.querySelector('#symF4P1').setAttribute('cy', symF4_P1.y);
   svgEl.querySelector('#symF4P2').setAttribute('cx', symF4_P2.x); svgEl.querySelector('#symF4P2').setAttribute('cy', symF4_P2.y);
-  svgEl.querySelector('#symF4Left').setAttribute('x1', symF4_P1.x); svgEl.querySelector('#symF4Left').setAttribute('y1', symF4_P1.y);
-  svgEl.querySelector('#symF4Left').setAttribute('x2', symF4_P2.x); svgEl.querySelector('#symF4Left').setAttribute('y2', symF4_P2.y);
-  const P1p = {x:2*symF4_axisX-symF4_P1.x, y:symF4_P1.y}, P2p = {x:2*symF4_axisX-symF4_P2.x, y:symF4_P2.y};
-  svgEl.querySelector('#symF4Right').setAttribute('x1', P1p.x); svgEl.querySelector('#symF4Right').setAttribute('y1', P1p.y);
-  svgEl.querySelector('#symF4Right').setAttribute('x2', P2p.x); svgEl.querySelector('#symF4Right').setAttribute('y2', P2p.y);
+  const dx = symF4_P2.x-symF4_P1.x, dy = symF4_P2.y-symF4_P1.y;
+  const len = Math.max(1, Math.hypot(dx,dy));
+  const ux = dx/len, uy = dy/len, overshoot = 18;
+  const lineAngle = Math.atan2(dy,dx);
+  setTick(svgEl.querySelector('#symF4Tick1'), symF4_P1.x, symF4_P1.y, lineAngle, 16);
+  setTick(svgEl.querySelector('#symF4Tick2'), symF4_P2.x, symF4_P2.y, lineAngle, 16);
+  const start = {x:symF4_P1.x-ux*overshoot, y:symF4_P1.y-uy*overshoot};
+  const end = {x:symF4_P2.x+ux*overshoot, y:symF4_P2.y+uy*overshoot};
+  svgEl.querySelector('#symF4Left').setAttribute('x1', start.x.toFixed(1)); svgEl.querySelector('#symF4Left').setAttribute('y1', start.y.toFixed(1));
+  svgEl.querySelector('#symF4Left').setAttribute('x2', end.x.toFixed(1)); svgEl.querySelector('#symF4Left').setAttribute('y2', end.y.toFixed(1));
+  const startP = {x:2*symF4_axisX-start.x, y:start.y}, endP = {x:2*symF4_axisX-end.x, y:end.y};
+  svgEl.querySelector('#symF4Right').setAttribute('x1', startP.x.toFixed(1)); svgEl.querySelector('#symF4Right').setAttribute('y1', startP.y.toFixed(1));
+  svgEl.querySelector('#symF4Right').setAttribute('x2', endP.x.toFixed(1)); svgEl.querySelector('#symF4Right').setAttribute('y2', endP.y.toFixed(1));
 }
 let symF4_initialized = false;
 function symF4Init(){
@@ -353,7 +382,7 @@ function symF4Init(){
   function makeDraggable(handle, getPt, setPt){
     let dragging = false;
     const start = e=>{ dragging=true; e.preventDefault(); };
-    const move = e=>{ if(!dragging) return; const p=svgPointFromEvent(svgEl,e); setPt({x:Math.max(5,Math.min(135,p.x)), y:Math.max(5,Math.min(155,p.y))}); symF4Update(); };
+    const move = e=>{ if(!dragging) return; const p=svgPointFromEvent(svgEl,e); setPt({x:Math.max(5,Math.min(275,p.x)), y:Math.max(5,Math.min(155,p.y))}); symF4Update(); };
     const end = ()=>dragging=false;
     handle.onmousedown=start; window.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
     handle.ontouchstart=start; svgEl.addEventListener('touchmove',move,{passive:false}); svgEl.addEventListener('touchend',end);
@@ -370,6 +399,12 @@ function symF5Update(){
   const Cp = {x:2*symF5_axisX-symF5_C.x, y:symF5_C.y}, Dp = {x:2*symF5_axisX-symF5_D.x, y:symF5_D.y};
   svgEl.querySelector('#symF5C').setAttribute('cx', symF5_C.x); svgEl.querySelector('#symF5C').setAttribute('cy', symF5_C.y);
   svgEl.querySelector('#symF5D').setAttribute('cx', symF5_D.x); svgEl.querySelector('#symF5D').setAttribute('cy', symF5_D.y);
+  const angleLeft = Math.atan2(symF5_D.y-symF5_C.y, symF5_D.x-symF5_C.x);
+  const angleRight = Math.atan2(Dp.y-Cp.y, Dp.x-Cp.x);
+  setTick(svgEl.querySelector('#symF5TickC'), symF5_C.x, symF5_C.y, angleLeft, 14);
+  setTick(svgEl.querySelector('#symF5TickD'), symF5_D.x, symF5_D.y, angleLeft, 14);
+  setTick(svgEl.querySelector('#symF5TickCp'), Cp.x, Cp.y, angleRight, 14);
+  setTick(svgEl.querySelector('#symF5TickDp'), Dp.x, Dp.y, angleRight, 14);
   svgEl.querySelector('#symF5Left').setAttribute('x1', symF5_C.x); svgEl.querySelector('#symF5Left').setAttribute('y1', symF5_C.y);
   svgEl.querySelector('#symF5Left').setAttribute('x2', symF5_D.x); svgEl.querySelector('#symF5Left').setAttribute('y2', symF5_D.y);
   svgEl.querySelector('#symF5Right').setAttribute('x1', Cp.x); svgEl.querySelector('#symF5Right').setAttribute('y1', Cp.y);
@@ -389,7 +424,7 @@ function symF5Init(){
   function makeDraggable(handle, getPt, setPt){
     let dragging = false;
     const start = e=>{ dragging=true; e.preventDefault(); };
-    const move = e=>{ if(!dragging) return; const p=svgPointFromEvent(svgEl,e); setPt({x:Math.max(5,Math.min(135,p.x)), y:Math.max(5,Math.min(155,p.y))}); symF5Update(); };
+    const move = e=>{ if(!dragging) return; const p=svgPointFromEvent(svgEl,e); setPt({x:Math.max(5,Math.min(275,p.x)), y:Math.max(5,Math.min(155,p.y))}); symF5Update(); };
     const end = ()=>dragging=false;
     handle.onmousedown=start; window.addEventListener('mousemove',move); window.addEventListener('mouseup',end);
     handle.ontouchstart=start; svgEl.addEventListener('touchmove',move,{passive:false}); svgEl.addEventListener('touchend',end);
@@ -407,7 +442,8 @@ function symF6Update(){
   svgEl.querySelector('#symF6LeftCenter').setAttribute('cx', symF6_Center.x); svgEl.querySelector('#symF6LeftCenter').setAttribute('cy', symF6_Center.y);
   svgEl.querySelector('#symF6Left').setAttribute('cx', symF6_Center.x); svgEl.querySelector('#symF6Left').setAttribute('cy', symF6_Center.y);
   svgEl.querySelector('#symF6Right').setAttribute('cx', Cp.x); svgEl.querySelector('#symF6Right').setAttribute('cy', Cp.y);
-  svgEl.querySelector('#symF6RightCenter').setAttribute('cx', Cp.x); svgEl.querySelector('#symF6RightCenter').setAttribute('cy', Cp.y);
+  setCross(svgEl.querySelector('#symF6LeftCross1'), svgEl.querySelector('#symF6LeftCross2'), symF6_Center.x, symF6_Center.y, 6);
+  setCross(svgEl.querySelector('#symF6RightCross1'), svgEl.querySelector('#symF6RightCross2'), Cp.x, Cp.y, 5);
   svgEl.querySelector('#symF6Axis').setAttribute('x1', symF6_Center.x); svgEl.querySelector('#symF6Axis').setAttribute('y1', symF6_Center.y);
   svgEl.querySelector('#symF6Axis').setAttribute('x2', Cp.x); svgEl.querySelector('#symF6Axis').setAttribute('y2', Cp.y);
 }
@@ -424,7 +460,7 @@ function symF6Init(){
   const move = e=>{
     if(!dragging) return;
     const p = svgPointFromEvent(svgEl,e);
-    symF6_Center = {x:Math.max(symF6_R+5,Math.min(symF6_axisX-symF6_R-5,p.x)), y:Math.max(symF6_R+5,Math.min(160-symF6_R-5,p.y))};
+    symF6_Center = {x:Math.max(symF6_R+5,Math.min(280-symF6_R-5,p.x)), y:Math.max(symF6_R+5,Math.min(160-symF6_R-5,p.y))};
     symF6Update();
   };
   const end = ()=>dragging=false;
@@ -439,6 +475,7 @@ function symF7Update(){
   const svgEl = document.getElementById('symF7Svg');
   const P = symF7_P;
   svgEl.querySelector('#symF7P').setAttribute('cx', P.x); svgEl.querySelector('#symF7P').setAttribute('cy', P.y);
+  setCross(svgEl.querySelector('#symF7PCross1'), svgEl.querySelector('#symF7PCross2'), P.x, P.y, 6);
   svgEl.querySelector('#symF7PA').setAttribute('x2', P.x); svgEl.querySelector('#symF7PA').setAttribute('y2', P.y);
   svgEl.querySelector('#symF7PB').setAttribute('x2', P.x); svgEl.querySelector('#symF7PB').setAttribute('y2', P.y);
   svgEl.querySelector('#symF7PLabel').setAttribute('x', P.x+10); svgEl.querySelector('#symF7PLabel').setAttribute('y', P.y<20?P.y+18:P.y-8);
@@ -485,15 +522,20 @@ const symF8_O = {x:60,y:170};
 let symF8_X = {x:230,y:170}, symF8_Y = {x:157.5,y:30.7};
 function symF8Update(){
   const svgEl = document.getElementById('symF8Svg');
+  const angleX = Math.atan2(symF8_X.y-symF8_O.y, symF8_X.x-symF8_O.x);
+  const angleY = Math.atan2(symF8_Y.y-symF8_O.y, symF8_Y.x-symF8_O.x);
+  const overshoot = 18;
+  const rayXEnd = {x:symF8_X.x+overshoot*Math.cos(angleX), y:symF8_X.y+overshoot*Math.sin(angleX)};
+  const rayYEnd = {x:symF8_Y.x+overshoot*Math.cos(angleY), y:symF8_Y.y+overshoot*Math.sin(angleY)};
+  svgEl.querySelector('#symF8RayX').setAttribute('x2', rayXEnd.x.toFixed(1)); svgEl.querySelector('#symF8RayX').setAttribute('y2', rayXEnd.y.toFixed(1));
+  svgEl.querySelector('#symF8RayY').setAttribute('x2', rayYEnd.x.toFixed(1)); svgEl.querySelector('#symF8RayY').setAttribute('y2', rayYEnd.y.toFixed(1));
+  setTick(svgEl.querySelector('#symF8TickX'), symF8_X.x, symF8_X.y, angleX, 16);
+  setTick(svgEl.querySelector('#symF8TickY'), symF8_Y.x, symF8_Y.y, angleY, 16);
   svgEl.querySelector('#symF8X').setAttribute('cx', symF8_X.x); svgEl.querySelector('#symF8X').setAttribute('cy', symF8_X.y);
   svgEl.querySelector('#symF8Y').setAttribute('cx', symF8_Y.x); svgEl.querySelector('#symF8Y').setAttribute('cy', symF8_Y.y);
-  svgEl.querySelector('#symF8RayX').setAttribute('x2', symF8_X.x); svgEl.querySelector('#symF8RayX').setAttribute('y2', symF8_X.y);
-  svgEl.querySelector('#symF8RayY').setAttribute('x2', symF8_Y.x); svgEl.querySelector('#symF8RayY').setAttribute('y2', symF8_Y.y);
   svgEl.querySelector('#symF8XLabel').setAttribute('x', symF8_X.x+4); svgEl.querySelector('#symF8XLabel').setAttribute('y', symF8_X.y+6);
   svgEl.querySelector('#symF8YLabel').setAttribute('x', symF8_Y.x-6); svgEl.querySelector('#symF8YLabel').setAttribute('y', symF8_Y.y-8);
 
-  const angleX = Math.atan2(symF8_X.y-symF8_O.y, symF8_X.x-symF8_O.x);
-  const angleY = Math.atan2(symF8_Y.y-symF8_O.y, symF8_Y.x-symF8_O.x);
   let diff = angleY-angleX;
   while(diff>Math.PI) diff-=2*Math.PI;
   while(diff<-Math.PI) diff+=2*Math.PI;
