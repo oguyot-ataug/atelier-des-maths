@@ -38,7 +38,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <line x1="180" y1="170" x2="120" y2="30" stroke="#1C1B2E" stroke-width="1.8"/>
     <line x1="60" y1="170" x2="180" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
     <line x1="83.1" y1="101.4" x2="96.9" y2="98.6" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="146.3" y1="105.9" x2="153.7" y2="94.1" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="156.9" y1="101.4" x2="143.1" y2="98.6" stroke="#1C1B2E" stroke-width="1.6"/>
     <text x="44" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">A</text>
     <text x="120" y="20" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">B</text>
     <text x="186" y="180" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">C</text>
@@ -105,9 +105,9 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <line x1="180" y1="170" x2="120" y2="30" stroke="#1C1B2E" stroke-width="1.8"/>
     <line x1="60" y1="170" x2="180" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
     <line x1="83.1" y1="101.4" x2="96.9" y2="98.6" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="146.3" y1="105.9" x2="153.7" y2="94.1" stroke="#1C1B2E" stroke-width="1.6"/>
-    <circle cx="90.0" cy="170.0" r="2.4" fill="#1C1B2E"/>
-    <circle cx="150.0" cy="170.0" r="2.4" fill="#1C1B2E"/>
+    <line x1="156.9" y1="101.4" x2="143.1" y2="98.6" stroke="#1C1B2E" stroke-width="1.6"/>
+    <circle cx="90.0" cy="170.0" r="3.2" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>
+    <circle cx="150.0" cy="170.0" r="3.2" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>
     <path d="M 120.0 170.0 L 120.0 160.0 L 110.0 160.0 L 110.0 170.0" fill="none" stroke="#9CA3AF" stroke-width="1.1"/>
     <path d="M 84.0 170.0 A 24 24 0 0 0 69.5 147.9" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
     <path d="M 156.0 170.0 A 24 24 0 0 1 170.5 147.9" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
@@ -132,12 +132,12 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <line x1="40" y1="170" x2="180" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
     <line x1="180" y1="170" x2="110" y2="48.8" stroke="#1C1B2E" stroke-width="1.8"/>
     <line x1="110" y1="48.8" x2="40" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
-    <circle cx="75.0" cy="170.0" r="2.4" fill="#1C1B2E"/>
-    <circle cx="145.0" cy="170.0" r="2.4" fill="#1C1B2E"/>
-    <circle cx="162.5" cy="139.7" r="2.4" fill="#1C1B2E"/>
-    <circle cx="127.5" cy="79.1" r="2.4" fill="#1C1B2E"/>
-    <circle cx="92.5" cy="79.1" r="2.4" fill="#1C1B2E"/>
-    <circle cx="57.5" cy="139.7" r="2.4" fill="#1C1B2E"/>
+    <circle cx="75.0" cy="170.0" r="3.2" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>
+    <circle cx="145.0" cy="170.0" r="3.2" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>
+    <circle cx="162.5" cy="139.7" r="3.2" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>
+    <circle cx="127.5" cy="79.1" r="3.2" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>
+    <circle cx="92.5" cy="79.1" r="3.2" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>
+    <circle cx="57.5" cy="139.7" r="3.2" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>
     <path d="M 110.0 170.0 L 110.0 160.0 L 100.0 160.0 L 100.0 170.0" fill="none" stroke="#9CA3AF" stroke-width="1.1"/>
     <path d="M 145.0 109.4 L 136.3 114.4 L 141.3 123.0 L 150.0 118.0" fill="none" stroke="#9CA3AF" stroke-width="1.1"/>
     <path d="M 75.0 109.4 L 83.7 114.4 L 88.7 105.7 L 80.0 100.7" fill="none" stroke="#9CA3AF" stroke-width="1.1"/>
