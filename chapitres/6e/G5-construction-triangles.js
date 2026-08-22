@@ -106,7 +106,9 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <line x1="60" y1="170" x2="180" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
     <line x1="83.6" y1="97.2" x2="96.4" y2="102.8" stroke="#1C1B2E" stroke-width="1.6"/>
     <line x1="143.6" y1="102.8" x2="156.4" y2="97.2" stroke="#1C1B2E" stroke-width="1.6"/>
-    <rect x="108" y="158" width="12" height="12" fill="none" stroke="#9CA3AF" stroke-width="1.2"/>
+    <line x1="90.0" y1="165.0" x2="90.0" y2="175.0" stroke="#1C1B2E" stroke-width="1.2"/>
+    <line x1="150.0" y1="165.0" x2="150.0" y2="175.0" stroke="#1C1B2E" stroke-width="1.2"/>
+    <path d="M 120.0 170.0 L 120.0 160.0 L 110.0 160.0 L 110.0 170.0" fill="none" stroke="#9CA3AF" stroke-width="1.1"/>
     <path d="M 84.0 170.0 A 24 24 0 0 0 69.5 147.9" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
     <path d="M 156.0 170.0 A 24 24 0 0 1 170.5 147.9" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
     <text x="120" y="20" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">B</text>
@@ -130,9 +132,15 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
     <line x1="40" y1="170" x2="180" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
     <line x1="180" y1="170" x2="110" y2="48.8" stroke="#1C1B2E" stroke-width="1.8"/>
     <line x1="110" y1="48.8" x2="40" y2="170" stroke="#1C1B2E" stroke-width="1.8"/>
-    <line x1="110.0" y1="163.0" x2="110.0" y2="177.0" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="138.9" y1="112.9" x2="151.1" y2="105.9" stroke="#1C1B2E" stroke-width="1.6"/>
-    <line x1="81.1" y1="112.9" x2="68.9" y2="105.9" stroke="#1C1B2E" stroke-width="1.6"/>
+    <line x1="75.0" y1="165.0" x2="75.0" y2="175.0" stroke="#1C1B2E" stroke-width="1.2"/>
+    <line x1="145.0" y1="165.0" x2="145.0" y2="175.0" stroke="#1C1B2E" stroke-width="1.2"/>
+    <line x1="158.2" y1="142.2" x2="166.8" y2="137.2" stroke="#1C1B2E" stroke-width="1.2"/>
+    <line x1="123.2" y1="81.6" x2="131.8" y2="76.6" stroke="#1C1B2E" stroke-width="1.2"/>
+    <line x1="96.8" y1="81.6" x2="88.2" y2="76.6" stroke="#1C1B2E" stroke-width="1.2"/>
+    <line x1="61.8" y1="142.2" x2="53.2" y2="137.2" stroke="#1C1B2E" stroke-width="1.2"/>
+    <path d="M 110.0 170.0 L 110.0 160.0 L 100.0 160.0 L 100.0 170.0" fill="none" stroke="#9CA3AF" stroke-width="1.1"/>
+    <path d="M 145.0 109.4 L 136.3 114.4 L 141.3 123.0 L 150.0 118.0" fill="none" stroke="#9CA3AF" stroke-width="1.1"/>
+    <path d="M 75.0 109.4 L 83.7 114.4 L 88.7 105.7 L 80.0 100.7" fill="none" stroke="#9CA3AF" stroke-width="1.1"/>
     <path d="M 64.0 170.0 A 24 24 0 0 0 52.0 149.2" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
     <path d="M 156.0 170.0 A 24 24 0 0 1 168.0 149.2" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
     <path d="M 98.0 69.5 A 24 24 0 0 0 122.0 69.5" fill="none" stroke="#E35D3A" stroke-width="1.4"/>
