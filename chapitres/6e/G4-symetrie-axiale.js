@@ -183,8 +183,8 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
     <line x1="120" y1="20" x2="120" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"/>
     <line x1="50" y1="140" x2="190" y2="140" stroke="#1C1B2E" stroke-width="1.8"/>
     <path d="M 108 140 L 108 128 L 120 128 L 120 140" fill="none" stroke="#9CA3AF" stroke-width="1.1"/>
-    <line id="symF7PA" x1="120" y1="140" x2="120" y2="50" stroke="#1C1B2E" stroke-width="1.4"/>
-    <line id="symF7PB" x1="190" y1="140" x2="120" y2="50" stroke="#1C1B2E" stroke-width="1.4"/>
+    <line id="symF7PA" x1="50" y1="140" x2="120" y2="50" stroke="#1C1B2E" stroke-width="1"/>
+    <line id="symF7PB" x1="190" y1="140" x2="120" y2="50" stroke="#1C1B2E" stroke-width="1"/>
     <line id="symF7TickA" x1="82.9" y1="88.3" x2="87.1" y2="101.7" stroke="#1C1B2E" stroke-width="1.6"/>
     <line id="symF7TickB" x1="157.1" y1="88.3" x2="152.9" y2="101.7" stroke="#1C1B2E" stroke-width="1.6"/>
     <line id="symF7PCross1" stroke="#1F3A5C" stroke-width="1.8"/>
@@ -218,12 +218,12 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
     <circle id="symF8X" cx="230" cy="170" r="11" fill="transparent" style="cursor:grab;"/>
     <circle id="symF8Y" cx="157.5" cy="30.7" r="11" fill="transparent" style="cursor:grab;"/>
     <text x="42" y="180" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">O</text>
-    <text id="symF8XLabel" x="234" y="176" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">x</text>
-    <text id="symF8YLabel" x="152" y="24" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">y</text>
+    <text id="symF8XLabel" x="234" y="176" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">A</text>
+    <text id="symF8YLabel" x="152" y="24" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">B</text>
   </svg>
-  <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace les points <b>x</b> et <b>y</b> (les points bleus).</p>
+  <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace les points <b>A</b> et <b>B</b> (les points bleus).</p>
 </div>
-<p style="margin:4px 0 0;">La demi-droite (en pointillés), <b>bissectrice</b> de l'angle <span class="tex">\\widehat{xOy}</span>, le partage en deux angles de même mesure.</p>
+<p style="margin:4px 0 0;">La demi-droite (en pointillés), <b>bissectrice</b> de l'angle <span class="tex">\\widehat{AOB}</span>, le partage en deux angles de même mesure.</p>
 `;
 
 document.getElementById('methode-demo-symetrie-axiale-6e').innerHTML = `
@@ -476,7 +476,9 @@ function symF7Update(){
   const P = symF7_P;
   svgEl.querySelector('#symF7P').setAttribute('cx', P.x); svgEl.querySelector('#symF7P').setAttribute('cy', P.y);
   setCross(svgEl.querySelector('#symF7PCross1'), svgEl.querySelector('#symF7PCross2'), P.x, P.y, 6);
+  svgEl.querySelector('#symF7PA').setAttribute('x1', symF7_A.x); svgEl.querySelector('#symF7PA').setAttribute('y1', symF7_A.y);
   svgEl.querySelector('#symF7PA').setAttribute('x2', P.x); svgEl.querySelector('#symF7PA').setAttribute('y2', P.y);
+  svgEl.querySelector('#symF7PB').setAttribute('x1', symF7_B.x); svgEl.querySelector('#symF7PB').setAttribute('y1', symF7_B.y);
   svgEl.querySelector('#symF7PB').setAttribute('x2', P.x); svgEl.querySelector('#symF7PB').setAttribute('y2', P.y);
   svgEl.querySelector('#symF7PLabel').setAttribute('x', P.x+10); svgEl.querySelector('#symF7PLabel').setAttribute('y', P.y<20?P.y+18:P.y-8);
   const PA = Math.hypot(P.x-symF7_A.x, P.y-symF7_A.y), PB = Math.hypot(P.x-symF7_B.x, P.y-symF7_B.y);
@@ -486,8 +488,14 @@ function symF7Update(){
   if(onAxis){
     const angleA = Math.atan2(P.y-symF7_A.y, P.x-symF7_A.x), angleB = Math.atan2(P.y-symF7_B.y, P.x-symF7_B.x);
     const midA = {x:(symF7_A.x+P.x)/2, y:(symF7_A.y+P.y)/2}, midB = {x:(symF7_B.x+P.x)/2, y:(symF7_B.y+P.y)/2};
+    // A et B sont de part et d'autre de l'axe : le codage doit être en vrai reflet miroir (comme
+    // pour le triangle isocèle), donc un signe OPPOSÉ pour chaque côté -- setSlantTick n'ajoute
+    // qu'un décalage fixe (+65°), on calcule ici la version en miroir (-65°) pour B.
     setSlantTick(tickA, midA.x, midA.y, angleA, 14);
-    setSlantTick(tickB, midB.x, midB.y, angleB, 14);
+    const tiltB = angleB - 65*Math.PI/180;
+    const dxB = Math.cos(tiltB)*14/2, dyB = Math.sin(tiltB)*14/2;
+    tickB.setAttribute('x1', midB.x-dxB); tickB.setAttribute('y1', midB.y-dyB);
+    tickB.setAttribute('x2', midB.x+dxB); tickB.setAttribute('y2', midB.y+dyB);
   }
   const status = document.getElementById('symF7Status');
   if(onAxis){
