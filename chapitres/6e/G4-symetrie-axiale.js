@@ -309,7 +309,7 @@ document.getElementById('exos-demo-symetrie-axiale-6e').innerHTML = `
   </div>
   <h3 style="margin-top:18px;">Rédaction type : « Justifier qu'une demi-droite est une bissectrice »</h3>
   <div class="redaction-template">
-    La demi-droite <span class="fill">[Oz)</span> partage l'angle <span class="fill">\\widehat{xOy}</span> en deux angles de même mesure : <span class="fill">\\widehat{xOz} = \\widehat{zOy}</span>.<br>Donc <span class="fill">[Oz)</span> est la bissectrice de l'angle <span class="fill">\\widehat{xOy}</span>.
+    La demi-droite <span class="fill">[Oz)</span> partage l'angle <span class="fill tex">\\widehat{xOy}</span> en deux angles de même mesure : <span class="fill tex">\\widehat{xOz} = \\widehat{zOy}</span>.<br>Donc <span class="fill">[Oz)</span> est la bissectrice de l'angle <span class="fill tex">\\widehat{xOy}</span>.
   </div>
 </div>
 <div class="redaction-block">
