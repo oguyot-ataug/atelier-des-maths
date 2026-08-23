@@ -233,10 +233,10 @@ document.getElementById('methode-demo-symetrie-axiale-6e').innerHTML = `
   <svg id="bisSvg" viewBox="0 100 280 320" style="width:100%;display:block;">
     <line id="bisRay1" x1="70" y1="300" x2="220" y2="300" stroke="#1C1B2E" stroke-width="1.8"/>
     <line id="bisRay2" x1="70" y1="300" x2="156.0" y2="177.1" stroke="#1C1B2E" stroke-width="1.8"/>
-    <polyline id="bisArcO1" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
-    <polyline id="bisArcO2" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
-    <polyline id="bisArcP1" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
-    <polyline id="bisArcP2" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <polyline id="bisArcO1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="bisArcO2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="bisArcP1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="bisArcP2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
     <line id="bisRayFinal" x1="70" y1="300" x2="70" y2="300" stroke="#E35D3A" stroke-width="1.8" opacity="0"/>
     <path id="bisAngleArc1" fill="none" stroke="#9CA3AF" stroke-width="1.3" opacity="0"/>
     <path id="bisAngleArc2" fill="none" stroke="#9CA3AF" stroke-width="1.3" opacity="0"/>
@@ -267,13 +267,14 @@ document.getElementById('methode-demo-symetrie-axiale-6e').innerHTML = `
 <div class="figure-wrap" style="max-width:320px;margin:12px auto;">
   <svg id="medSvg" viewBox="0 190 250 220" style="width:100%;display:block;">
     <line id="medSegAB" x1="50" y1="300" x2="190" y2="300" stroke="#1C1B2E" stroke-width="1.8"/>
-    <polyline id="medArcA1" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
-    <polyline id="medArcA2" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
-    <polyline id="medArcB1" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
-    <polyline id="medArcB2" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <polyline id="medArcA1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="medArcA2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="medArcB1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="medArcB2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
     <line id="medLine" x1="120" y1="300" x2="120" y2="300" stroke="#E35D3A" stroke-width="1.8" opacity="0"/>
     <path id="medRightAngle" d="M 110 300 L 110 290 L 120 290 L 120 300" fill="none" stroke="#9CA3AF" stroke-width="1.1" opacity="0"/>
-    <circle id="medMidCircle" cx="120" cy="300" r="3.2" fill="none" stroke="#1C1B2E" stroke-width="1.2" opacity="0"/>
+    <line id="medTickIA" x1="89.0" y1="305.7" x2="81.0" y2="294.3" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <line id="medTickIB" x1="151.0" y1="305.7" x2="159.0" y2="294.3" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
     <circle id="medQ1Dot" cx="120" cy="371.4" r="2" fill="#1C1B2E" opacity="0"/>
     <circle id="medQ2Dot" cx="120" cy="228.6" r="2" fill="#1C1B2E" opacity="0"/>
     <g id="medCompass" transform="translate(50,300)" opacity="0"></g>
@@ -844,7 +845,7 @@ const MED_Q1 = {x:120,y:371.4}, MED_Q2 = {x:120,y:228.6};
 let medStep = 0;
 function medReset(){
   medStep = 0;
-  ['medArcA1','medArcA2','medArcB1','medArcB2','medLine','medMidCircle','medRightAngle','medQ1Dot','medQ2Dot','medCompass','medRulerTool','medPencilTool'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  ['medArcA1','medArcA2','medArcB1','medArcB2','medLine','medTickIA','medTickIB','medRightAngle','medQ1Dot','medQ2Dot','medCompass','medRulerTool','medPencilTool'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
   document.querySelectorAll('#medSvg + .step-list .step-item').forEach(el=>el.classList.remove('done'));
   const btn = document.getElementById('btnMedNext');
   btn.textContent = 'Étape suivante →'; btn.disabled = false;
@@ -903,7 +904,8 @@ function medNextStep(){
     }
     requestAnimationFrame(frame);
   } else if(medStep===4){
-    document.getElementById('medMidCircle').setAttribute('opacity','1');
+    document.getElementById('medTickIA').setAttribute('opacity','1');
+    document.getElementById('medTickIB').setAttribute('opacity','1');
     document.getElementById('medRightAngle').setAttribute('opacity','1');
     markDone(4); btn.textContent='Terminé ✓'; btn.disabled=true;
   }
