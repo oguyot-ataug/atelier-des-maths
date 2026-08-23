@@ -238,6 +238,10 @@ document.getElementById('methode-demo-symetrie-axiale-6e').innerHTML = `
     <polyline id="bisArcP1" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
     <polyline id="bisArcP2" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
     <line id="bisRayFinal" x1="70" y1="300" x2="70" y2="300" stroke="#E35D3A" stroke-width="1.8" opacity="0"/>
+    <path id="bisAngleArc1" fill="none" stroke="#9CA3AF" stroke-width="1.3" opacity="0"/>
+    <path id="bisAngleArc2" fill="none" stroke="#9CA3AF" stroke-width="1.3" opacity="0"/>
+    <line id="bisAngleTick1" stroke="#9CA3AF" stroke-width="1.3" opacity="0"/>
+    <line id="bisAngleTick2" stroke="#9CA3AF" stroke-width="1.3" opacity="0"/>
     <circle id="bisP1Dot" cx="160" cy="300" r="2" fill="#1C1B2E" opacity="0"/>
     <circle id="bisP2Dot" cx="121.6" cy="226.3" r="2" fill="#1C1B2E" opacity="0"/>
     <g id="bisCompass" transform="translate(70,300)" opacity="0"></g>
@@ -250,6 +254,7 @@ document.getElementById('methode-demo-symetrie-axiale-6e').innerHTML = `
     <div class="step-item" data-step="2"><div class="step-num">2</div><div>Piquer au sommet de l'angle et intercepter les deux côtés (deux petits arcs, sans les joindre).</div></div>
     <div class="step-item" data-step="3"><div class="step-num">3</div><div>Piquer sur chaque point d'intersection : construire deux arcs de cercle de même écartement, qui se coupent.</div></div>
     <div class="step-item" data-step="4"><div class="step-num">4</div><div>Finir à la règle et au crayon : tracer la demi-droite depuis le sommet, en passant par ce point.</div></div>
+    <div class="step-item" data-step="5"><div class="step-num">5</div><div>Coder les deux angles obtenus : ils sont égaux.</div></div>
   </div>
   <div class="figure-toolbar">
     <button class="btn" id="btnBisNext" onclick="bisNextStep()">Étape suivante →</button>
@@ -267,6 +272,8 @@ document.getElementById('methode-demo-symetrie-axiale-6e').innerHTML = `
     <polyline id="medArcB1" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
     <polyline id="medArcB2" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
     <line id="medLine" x1="120" y1="300" x2="120" y2="300" stroke="#E35D3A" stroke-width="1.8" opacity="0"/>
+    <path id="medRightAngle" d="M 110 300 L 110 290 L 120 290 L 120 300" fill="none" stroke="#9CA3AF" stroke-width="1.1" opacity="0"/>
+    <circle id="medMidCircle" cx="120" cy="300" r="3.2" fill="none" stroke="#1C1B2E" stroke-width="1.2" opacity="0"/>
     <circle id="medQ1Dot" cx="120" cy="371.4" r="2" fill="#1C1B2E" opacity="0"/>
     <circle id="medQ2Dot" cx="120" cy="228.6" r="2" fill="#1C1B2E" opacity="0"/>
     <g id="medCompass" transform="translate(50,300)" opacity="0"></g>
@@ -279,6 +286,7 @@ document.getElementById('methode-demo-symetrie-axiale-6e').innerHTML = `
     <div class="step-item" data-step="1"><div class="step-num">1</div><div>Piquer en A avec un écartement supérieur à la moitié de [AB] : tracer un arc de chaque côté de [AB].</div></div>
     <div class="step-item" data-step="2"><div class="step-num">2</div><div>Piquer en B avec le <b>même écartement</b> : tracer deux arcs qui recoupent les précédents.</div></div>
     <div class="step-item" data-step="3"><div class="step-num">3</div><div>Tracer, à la règle, la droite passant par les deux points d'intersection : c'est la médiatrice.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">4</div><div>Coder le milieu de [AB] et l'angle droit.</div></div>
   </div>
   <div class="figure-toolbar">
     <button class="btn" id="btnMedNext" onclick="medNextStep()">Étape suivante →</button>
@@ -750,7 +758,7 @@ const BIS_Q = {x:211.62,y:226.28};
 let bisStep = 0;
 function bisReset(){
   bisStep = 0;
-  ['bisArcO1','bisArcO2','bisArcP1','bisArcP2','bisRayFinal','bisP1Dot','bisP2Dot','bisCompass','bisRulerTool','bisPencilTool'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  ['bisArcO1','bisArcO2','bisArcP1','bisArcP2','bisRayFinal','bisAngleArc1','bisAngleArc2','bisAngleTick1','bisAngleTick2','bisP1Dot','bisP2Dot','bisCompass','bisRulerTool','bisPencilTool'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
   document.querySelectorAll('#bisSvg + .step-list .step-item').forEach(el=>el.classList.remove('done'));
   const btn = document.getElementById('btnBisNext');
   btn.textContent = 'Étape suivante →'; btn.disabled = false;
@@ -814,9 +822,18 @@ function bisNextStep(){
       if(t<1){ requestAnimationFrame(frame); return; }
       document.getElementById('bisRulerTool').setAttribute('opacity','0');
       document.getElementById('bisPencilTool').setAttribute('opacity','0');
-      markDone(4); btn.textContent='Terminé ✓'; btn.disabled=true;
+      markDone(4); btn.disabled=false;
     }
     requestAnimationFrame(frame);
+  } else if(bisStep===5){
+    document.getElementById('bisAngleArc1').setAttribute('d', 'M 98.0 300.0 A 28 28 0 0 0 94.8 287.1');
+    document.getElementById('bisAngleArc2').setAttribute('d', 'M 94.8 287.1 A 28 28 0 0 0 86.1 277.1');
+    document.getElementById('bisAngleTick1').setAttribute('x1','92.3'); document.getElementById('bisAngleTick1').setAttribute('y1','294.5');
+    document.getElementById('bisAngleTick1').setAttribute('x2','102.1'); document.getElementById('bisAngleTick1').setAttribute('y2','292.2');
+    document.getElementById('bisAngleTick2').setAttribute('x1','87.3'); document.getElementById('bisAngleTick2').setAttribute('y1','284.8');
+    document.getElementById('bisAngleTick2').setAttribute('x2','94.8'); document.getElementById('bisAngleTick2').setAttribute('y2','278.2');
+    ['bisAngleArc1','bisAngleArc2','bisAngleTick1','bisAngleTick2'].forEach(id=>document.getElementById(id).setAttribute('opacity','1'));
+    markDone(5); btn.textContent='Terminé ✓'; btn.disabled=true;
   }
 }
 
@@ -827,7 +844,7 @@ const MED_Q1 = {x:120,y:371.4}, MED_Q2 = {x:120,y:228.6};
 let medStep = 0;
 function medReset(){
   medStep = 0;
-  ['medArcA1','medArcA2','medArcB1','medArcB2','medLine','medQ1Dot','medQ2Dot','medCompass','medRulerTool','medPencilTool'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  ['medArcA1','medArcA2','medArcB1','medArcB2','medLine','medMidCircle','medRightAngle','medQ1Dot','medQ2Dot','medCompass','medRulerTool','medPencilTool'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
   document.querySelectorAll('#medSvg + .step-list .step-item').forEach(el=>el.classList.remove('done'));
   const btn = document.getElementById('btnMedNext');
   btn.textContent = 'Étape suivante →'; btn.disabled = false;
@@ -882,9 +899,13 @@ function medNextStep(){
       if(t<1){ requestAnimationFrame(frame); return; }
       document.getElementById('medRulerTool').setAttribute('opacity','0');
       document.getElementById('medPencilTool').setAttribute('opacity','0');
-      markDone(3); btn.textContent='Terminé ✓'; btn.disabled=true;
+      markDone(3); btn.disabled=false;
     }
     requestAnimationFrame(frame);
+  } else if(medStep===4){
+    document.getElementById('medMidCircle').setAttribute('opacity','1');
+    document.getElementById('medRightAngle').setAttribute('opacity','1');
+    markDone(4); btn.textContent='Terminé ✓'; btn.disabled=true;
   }
 }
 
