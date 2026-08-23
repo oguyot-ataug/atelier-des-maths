@@ -298,7 +298,50 @@ document.getElementById('methode-demo-symetrie-axiale-6e').innerHTML = `
 
 document.getElementById('exos-demo-symetrie-axiale-6e').innerHTML = `
 <div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
-<p class="hint" style="margin:8px 0;">Les exercices de ce chapitre sont en cours de préparation, ils arriveront dans une prochaine mise à jour.</p>
+<div class="redaction-block">
+  <h3>Rédaction type : « Justifier que deux points sont symétriques »</h3>
+  <div class="redaction-template">
+    <span class="fill">(d)</span> est la médiatrice du segment <span class="fill">[MM']</span>.<br>Donc <span class="fill">M'</span> est le symétrique du point <span class="fill">M</span> par rapport à la droite <span class="fill">(d)</span>.
+  </div>
+  <h3 style="margin-top:18px;">Rédaction type : « Justifier qu'un point appartient à la médiatrice »</h3>
+  <div class="redaction-template">
+    <span class="fill">PA = PB</span>.<br>Or, si un point est équidistant des extrémités d'un segment, alors il appartient à la médiatrice de ce segment.<br>Donc <span class="fill">P</span> appartient à la médiatrice de <span class="fill">[AB]</span>.
+  </div>
+  <h3 style="margin-top:18px;">Rédaction type : « Justifier qu'une demi-droite est une bissectrice »</h3>
+  <div class="redaction-template">
+    La demi-droite <span class="fill">[Oz)</span> partage l'angle <span class="fill">\\widehat{xOy}</span> en deux angles de même mesure : <span class="fill">\\widehat{xOz} = \\widehat{zOy}</span>.<br>Donc <span class="fill">[Oz)</span> est la bissectrice de l'angle <span class="fill">\\widehat{xOy}</span>.
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Trace une droite (d) et un point M n'appartenant pas à (d). Construis le symétrique M' de M par rapport à (d), à la règle et à l'équerre, en laissant apparents les traits de construction.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Trace un segment [AB] de 6 cm. Construis sa médiatrice au compas, en laissant apparents les deux couples d'arcs de cercle. Code le milieu et l'angle droit obtenus.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Trace un angle <span class="tex">\\widehat{xOy}</span> de 70°. Construis sa bissectrice au compas, en laissant apparents les traits de construction. Code les deux angles obtenus.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    ABC est un triangle isocèle en A. La droite (d) est la médiatrice de [BC] et passe par A. Explique pourquoi B et C sont symétriques par rapport à (d).
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    P est un point tel que PA = 5 cm et PB = 5 cm, où A et B sont les extrémités d'un segment. Explique pourquoi P appartient à la médiatrice de [AB].
+  </div>
+</div>
+`;
+
+document.getElementById('histoire-demo-symetrie-axiale-6e').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  La symétrie axiale est sans doute la plus ancienne notion de géométrie observée par l'être humain : on la retrouve dans la nature (le corps humain, les ailes d'un papillon, les feuilles de nombreuses plantes) bien avant toute étude mathématique. Les architectes de l'Antiquité l'utilisent systématiquement pour donner un sentiment d'équilibre à leurs monuments : les temples grecs, comme le Parthénon, sont conçus autour d'un axe de symétrie central, tout comme de nombreuses façades de cathédrales gothiques bien plus tard. Le mot « symétrie » vient d'ailleurs du grec <i>sun</i> (avec) et <i>metron</i> (mesure) : une figure symétrique est littéralement une figure de « même mesure » de part et d'autre de son axe. Euclide, dans ses <i>Éléments</i> (IIIe siècle avant J.-C.), utilise déjà des constructions à la règle et au compas qui reposent sur ces idées, sans disposer du vocabulaire moderne. Il faut attendre le XIXe siècle et le développement de la théorie des groupes, notamment les travaux du mathématicien allemand Felix Klein, pour que la symétrie soit formalisée comme une transformation géométrique à part entière, ouvrant la voie à son usage en cristallographie et en physique moderne.
+</div>
 `;
 
 /* ================= Figure 1 : vrai pliage le long de (d) (figures symétriques) =================
@@ -912,7 +955,7 @@ function medNextStep(){
 }
 
 DEMO_REGISTRY['6e|Symétrie axiale'] = {
-  cours:'cours-demo-symetrie-axiale-6e', methode:'methode-demo-symetrie-axiale-6e', exos:'exos-demo-symetrie-axiale-6e',
+  cours:'cours-demo-symetrie-axiale-6e', methode:'methode-demo-symetrie-axiale-6e', exos:'exos-demo-symetrie-axiale-6e', histoire:'histoire-demo-symetrie-axiale-6e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-symetrie-axiale-6e'));
     renderStaticMath(document.getElementById('methode-demo-symetrie-axiale-6e'));
