@@ -50,18 +50,8 @@ document.getElementById('cours-demo-probabilites').innerHTML = `
       <li>On tire une bille dans un sac contenant 3 billes rouges et 5 billes bleues, indiscernables au toucher. Chaque bille a autant de chance d'être tirée.<br>La probabilité de « <i>Tirer une bille rouge.</i> » est :<br><span class="tex">3</span> chances sur <span class="tex">8</span> ; ou <span class="tex">\\dfrac{3}{8}</span> ; ou <span class="tex">0{,}375</span> ; ou <span class="tex">37{,}5\\,\\%</span>.</li>
     </ul>
   </div>
-  <div class="figure-wrap" style="max-width:150px;margin:0;">
-    <svg viewBox="0 0 150 140" style="width:100%;display:block;">
-      <path d="M 20 60 Q 20 20 60 20 L 90 20 Q 130 20 130 60 L 130 100 Q 130 130 100 130 L 50 130 Q 20 130 20 100 Z" fill="#F5EFE3" stroke="#8A4210" stroke-width="2"/>
-      <circle cx="55" cy="55" r="9" fill="#E35D3A"/>
-      <circle cx="80" cy="48" r="9" fill="#2EA8C9"/>
-      <circle cx="100" cy="65" r="9" fill="#2EA8C9"/>
-      <circle cx="60" cy="80" r="9" fill="#2EA8C9"/>
-      <circle cx="90" cy="90" r="9" fill="#E35D3A"/>
-      <circle cx="45" cy="100" r="9" fill="#2EA8C9"/>
-      <circle cx="75" cy="105" r="9" fill="#2EA8C9"/>
-      <circle cx="105" cy="100" r="9" fill="#E35D3A"/>
-    </svg>
+  <div class="figure-wrap" style="max-width:200px;margin:0;">
+    ${urnSvg([{color:'#E35D3A', count:3, label:'Rouges'}, {color:'#2EA8C9', count:5, label:'Bleues'}], 'sac')}
   </div>
 </div>
 <ul class="example-list">
@@ -70,22 +60,89 @@ document.getElementById('cours-demo-probabilites').innerHTML = `
 `;
 
 document.getElementById('methode-demo-probabilites').innerHTML = `
-<div class="sub-header"><span class="letter">M</span><h4>Méthode</h4></div>
-<p class="hint" style="margin:8px 0;">Cette partie est en cours de préparation, elle arrivera dans une prochaine mise à jour.</p>
+<div class="sub-header"><span class="letter">M</span><h4>Calculer la probabilité d'un évènement</h4></div>
+<p class="hint" style="margin:8px 0;">On considère un sac contenant 4 billes rouges et 6 billes bleues, indiscernables au toucher. On tire une bille au hasard. Quelle est la probabilité de l'évènement « <i>Tirer une bille rouge</i> » ?</p>
+<div class="figure-wrap" style="max-width:200px;margin:12px auto;">
+  ${urnSvg([{color:'#E35D3A', count:4, label:'Rouges'}, {color:'#2EA8C9', count:6, label:'Bleues'}], 'sac')}
+</div>
+<div class="figure-wrap">
+  <p class="interaction-hint" style="margin-top:6px;">Cliquez sur « Étape suivante » pour dérouler la méthode.</p>
+  <div class="step-display" id="probaMethodeDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="probaMethodeDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="probaMethodeDemo.reset()">Recommencer</button>
+  </div>
+</div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;margin-top:20px;">
+  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).
+</div>
 `;
 
 document.getElementById('exos-demo-probabilites').innerHTML = `
 <div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
-<p class="hint" style="margin:8px 0;">Les exercices de ce chapitre sont en cours de préparation, ils arriveront dans une prochaine mise à jour.</p>
+<div class="redaction-block">
+  <h3>Rédaction type : « Calculer la probabilité d'un évènement »</h3>
+  <p style="margin:4px 0 10px;">Un sac contient 6 billes rouges et 4 billes vertes, indiscernables au toucher. On tire une bille au hasard.</p>
+  <div class="figure-wrap" style="max-width:200px;margin:0 auto 14px;">
+    ${urnSvg([{color:'#E35D3A', count:6, label:'Rouges'}, {color:'#2E7D5B', count:4, label:'Vertes'}], 'sac')}
+  </div>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">Le sac contient 10 billes en tout, ayant toutes autant de chances d'être tirées.</span><span class="we-comment">On compte le nombre total d'issues.</span></div>
+    <div class="we-row"><span class="we-expr">4 de ces billes sont vertes.</span><span class="we-comment">On compte le nombre d'issues favorables.</span></div>
+    <div class="we-row"><span class="we-expr">Donc la probabilité de « Tirer une bille verte » est <span class="tex">\\dfrac{4}{10} = 0{,}4</span>, soit <span class="tex">40\\,\\%</span>.</span><span class="we-comment">Conclusion.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    On lance un dé à jouer à huit faces numérotées de 1 à 8. Quelles sont les issues de cette expérience aléatoire ?
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    On lance le dé à huit faces de l'exercice 1. L'évènement « <i>Obtenir un multiple de 3.</i> » est-il certain, impossible, ou ni l'un ni l'autre ? Justifie.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Une roue est partagée en 8 secteurs identiques : 3 jaunes et 5 verts. On fait tourner la roue. Calcule la probabilité d'obtenir un secteur jaune.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    On lance le dé à huit faces de l'exercice 1. Calcule la probabilité de l'évènement « <i>Obtenir un multiple de 3.</i> ».
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Un sac contient des billes rouges et des billes bleues, indiscernables au toucher, 12 en tout. La probabilité de tirer une bille rouge est <span class="tex">\\dfrac{1}{4}</span>. Combien y a-t-il de billes rouges dans le sac ? Rédige ta réponse.
+  </div>
+</div>
 `;
 
+document.getElementById('histoire-demo-probabilites').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Les probabilités naissent officiellement d'une correspondance entre deux mathématiciens français, <b>Blaise Pascal</b> et <b>Pierre de Fermat</b>, en 1654. Un joueur, le chevalier de Méré, avait posé à Pascal une question restée sans réponse satisfaisante depuis des siècles : si une partie de dés ou de jeu de hasard est interrompue avant la fin, comment répartir équitablement les mises entre les joueurs, selon leurs chances respectives de gagner à ce moment-là ? En cherchant à résoudre ce « problème des partis », Pascal et Fermat posent, sans le savoir, les toutes premières bases mathématiques rigoureuses du calcul des chances. Il faudra ensuite près d'un siècle pour que ces idées, d'abord réservées aux jeux de hasard, trouvent des applications sérieuses : les compagnies d'assurance du XVIIIe siècle sont parmi les premières à utiliser les probabilités pour calculer le montant des primes, en s'appuyant sur les chances qu'un évènement (incendie, naufrage, décès) se produise.
+</div>
+`;
+
+/* ================= Méthode animée : calcul de probabilité pas-à-pas ================= */
+const PROBA_METHODE_STEPS = [
+  {expr:'Le sac contient <span class="tex">4+6=10</span> billes en tout.', note:"On compte le nombre total d'issues. Chaque bille a autant de chance d'être tirée."},
+  {expr:'4 de ces billes sont rouges.', note:"On compte le nombre d'issues favorables à l'évènement « Tirer une bille rouge »."},
+  {expr:'<span class="tex">P(\\text{rouge}) = \\dfrac{4}{10}</span>', note:"On divise le nombre d'issues favorables par le nombre total d'issues."},
+  {expr:'<span class="tex">P(\\text{rouge}) = 0{,}4</span>, soit <span class="tex">40\\,\\%</span>.', note:"On peut aussi exprimer ce résultat en pourcentage."},
+];
+const probaMethodeDemo = makeStepDemo(PROBA_METHODE_STEPS, 'probaMethodeDisplay');
+
 DEMO_REGISTRY['6e|Probabilités'] = {
-  cours:'cours-demo-probabilites', methode:'methode-demo-probabilites', exos:'exos-demo-probabilites',
+  cours:'cours-demo-probabilites', methode:'methode-demo-probabilites', exos:'exos-demo-probabilites', histoire:'histoire-demo-probabilites',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-probabilites'));
     renderStaticMath(document.getElementById('methode-demo-probabilites'));
     renderStaticMath(document.getElementById('exos-demo-probabilites'));
+    renderStaticMath(document.getElementById('histoire-demo-probabilites'));
     injectCourseAddButtons(document.getElementById('cours-demo-probabilites'));
     injectCourseAddButtons(document.getElementById('methode-demo-probabilites'));
+    probaMethodeDemo.reset();
   }
 };
+
