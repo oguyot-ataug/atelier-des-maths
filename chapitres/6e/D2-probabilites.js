@@ -82,14 +82,14 @@ document.getElementById('exos-demo-probabilites').innerHTML = `
 <div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Calculer la probabilité d'un évènement »</h3>
-  <p style="margin:4px 0 10px;">Un sac contient 6 billes rouges et 4 billes vertes, indiscernables au toucher. On tire une bille au hasard.</p>
-  <div class="figure-wrap" style="max-width:200px;margin:0 auto 14px;">
-    ${urnSvg([{color:'#E35D3A', count:6, label:'Rouges'}, {color:'#2E7D5B', count:4, label:'Vertes'}], 'sac')}
+  <p style="margin:4px 0 10px;">On tire une carte au hasard dans un jeu de 52 cartes. Les têtes de cœur sont le valet, la dame et le roi de cœur.</p>
+  <div class="figure-wrap" style="max-width:220px;margin:0 auto 14px;">
+    ${cardsSvg([{rank:'V',suit:'coeur'},{rank:'D',suit:'coeur'},{rank:'R',suit:'coeur'}])}
   </div>
   <div class="redaction-template">
-    <div class="we-row"><span class="we-expr">Le sac contient 10 billes en tout, ayant toutes autant de chances d'être tirées.</span><span class="we-comment">On compte le nombre total d'issues.</span></div>
-    <div class="we-row"><span class="we-expr">4 de ces billes sont vertes.</span><span class="we-comment">On compte le nombre d'issues favorables.</span></div>
-    <div class="we-row"><span class="we-expr">Donc la probabilité de « Tirer une bille verte » est <span class="tex">\\dfrac{4}{10} = 0{,}4</span>, soit <span class="tex">40\\,\\%</span>.</span><span class="we-comment">Conclusion.</span></div>
+    <div class="we-row"><span class="we-expr">Le jeu contient 52 cartes en tout, ayant toutes autant de chances d'être tirées.</span><span class="we-comment">On compte le nombre total d'issues.</span></div>
+    <div class="we-row"><span class="we-expr">3 de ces cartes sont des têtes de cœur (valet, dame, roi).</span><span class="we-comment">On compte le nombre d'issues favorables.</span></div>
+    <div class="we-row"><span class="we-expr">Donc la probabilité de « Tirer une tête de cœur » est <span class="tex">\\dfrac{3}{52} \\approx 0{,}058</span>, soit environ <span class="tex">5{,}8\\,\\%</span>.</span><span class="we-comment">Conclusion.</span></div>
   </div>
 </div>
 <div class="redaction-block">
