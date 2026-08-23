@@ -180,18 +180,18 @@ const FCA_COMPARE_STEPS = [
 const fcaCompareDemo = makeStepDemo(FCA_COMPARE_STEPS, 'fcaCompareDisplay');
 
 const FCA_ADD_STEPS = [
-  {expr:'<span class="tex">\\dfrac{7}{6} + \\dfrac{5}{8}</span>', note:"On souhaite additionner ces deux fractions de dénominateurs différents (6 et 8)."},
-  {expr:'On cherche un dénominateur commun : 24', note:"6 et 8 ne sont pas multiples l'un de l'autre ; leur plus petit commun multiple est 24 (6 × 4 = 24 et 8 × 3 = 24)."},
-  {expr:'<span class="tex">\\dfrac{7}{6} = \\dfrac{7 \\times 4}{6 \\times 4} = \\dfrac{28}{24}</span> et <span class="tex">\\dfrac{5}{8} = \\dfrac{5 \\times 3}{8 \\times 3} = \\dfrac{15}{24}</span>', note:"On réduit chaque fraction au dénominateur commun 24."},
-  {expr:'<span class="tex">\\dfrac{28}{24} + \\dfrac{15}{24} = \\dfrac{28+15}{24} = \\dfrac{43}{24}</span>', note:"On additionne les numérateurs, en gardant le dénominateur commun."},
+  {expr:'<span class="tex">B = \\dfrac{7}{6} + \\dfrac{5}{8}</span>', note:"On souhaite additionner ces deux fractions de dénominateurs différents (6 et 8)."},
+  {expr:'<span class="tex">B = \\dfrac{7 \\times 4}{6 \\times 4} + \\dfrac{5 \\times 3}{8 \\times 3}</span>', note:"6 et 8 ne sont pas multiples l'un de l'autre ; leur plus petit commun multiple est 24 (6 × 4 = 24 et 8 × 3 = 24). On réduit chaque fraction à ce dénominateur commun."},
+  {expr:'<span class="tex">B = \\dfrac{28}{24} + \\dfrac{15}{24}</span>', note:"On effectue les produits."},
+  {expr:'<span class="tex">B = \\dfrac{43}{24}</span>', note:"On additionne les numérateurs, en gardant le dénominateur commun."},
 ];
 const fcaAddDemo = makeStepDemo(FCA_ADD_STEPS, 'fcaAddDisplay');
 
 const FCA_SUB_STEPS = [
-  {expr:'<span class="tex">\\dfrac{9}{4} - \\dfrac{7}{10}</span>', note:"On souhaite soustraire ces deux fractions de dénominateurs différents (4 et 10)."},
-  {expr:'On cherche un dénominateur commun : 20', note:"4 et 10 ne sont pas multiples l'un de l'autre ; leur plus petit commun multiple est 20 (4 × 5 = 20 et 10 × 2 = 20)."},
-  {expr:'<span class="tex">\\dfrac{9}{4} = \\dfrac{9 \\times 5}{4 \\times 5} = \\dfrac{45}{20}</span> et <span class="tex">\\dfrac{7}{10} = \\dfrac{7 \\times 2}{10 \\times 2} = \\dfrac{14}{20}</span>', note:"On réduit chaque fraction au dénominateur commun 20."},
-  {expr:'<span class="tex">\\dfrac{45}{20} - \\dfrac{14}{20} = \\dfrac{45-14}{20} = \\dfrac{31}{20}</span>', note:"On soustrait les numérateurs, en gardant le dénominateur commun."},
+  {expr:'<span class="tex">A = \\dfrac{9}{4} - \\dfrac{7}{10}</span>', note:"On souhaite soustraire ces deux fractions de dénominateurs différents (4 et 10)."},
+  {expr:'<span class="tex">A = \\dfrac{9 \\times 5}{4 \\times 5} - \\dfrac{7 \\times 2}{10 \\times 2}</span>', note:"4 et 10 ne sont pas multiples l'un de l'autre ; leur plus petit commun multiple est 20 (4 × 5 = 20 et 10 × 2 = 20). On réduit chaque fraction à ce dénominateur commun."},
+  {expr:'<span class="tex">A = \\dfrac{45}{20} - \\dfrac{14}{20}</span>', note:"On effectue les produits."},
+  {expr:'<span class="tex">A = \\dfrac{31}{20}</span>', note:"On soustrait les numérateurs, en gardant le dénominateur commun."},
 ];
 const fcaSubDemo = makeStepDemo(FCA_SUB_STEPS, 'fcaSubDisplay');
 
