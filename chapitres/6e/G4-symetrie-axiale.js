@@ -725,12 +725,28 @@ function methodSweepDual(opts){
   requestAnimationFrame(frame);
 }
 
+function methodMoveKeepRadius(opts){
+  const {compassEl, fromAnchor, fromAngleDeg, toAnchor, toAngleDeg, radius, legLen, dur, onDone} = opts;
+  compassEl.innerHTML = compassSVG(radius, legLen);
+  const start = performance.now();
+  function frame(now){
+    const t = Math.min(1,(now-start)/dur);
+    const ease = t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+    const curX = fromAnchor.x+(toAnchor.x-fromAnchor.x)*ease, curY = fromAnchor.y+(toAnchor.y-fromAnchor.y)*ease;
+    const curAngle = fromAngleDeg+(toAngleDeg-fromAngleDeg)*ease;
+    compassEl.setAttribute('transform', `translate(${curX.toFixed(1)},${curY.toFixed(1)}) rotate(${curAngle.toFixed(2)})`);
+    compassEl.setAttribute('opacity','1');
+    if(t<1){ requestAnimationFrame(frame); return; }
+    if(onDone) onDone();
+  }
+  requestAnimationFrame(frame);
+}
+
 /* ================= Bissectrice au compas ================= */
 const BIS_O = {x:70,y:300};
-const BIS_RADIUS1 = 90, BIS_LEGLEN1 = 0.7*BIS_RADIUS1+30;
+const BIS_RADIUS = 90, BIS_LEGLEN = 0.7*BIS_RADIUS+30;
 const BIS_P1 = {x:160,y:300}, BIS_P2 = {x:121.6,y:226.3};
-const BIS_RADIUS2 = 110, BIS_LEGLEN2 = 0.7*BIS_RADIUS2+30;
-const BIS_Q = {x:231.15,y:216.11};
+const BIS_Q = {x:211.62,y:226.28};
 let bisStep = 0;
 function bisReset(){
   bisStep = 0;
@@ -753,26 +769,30 @@ function bisNextStep(){
   btn.disabled = true;
   const markDone = n=>document.querySelector(`#bisSvg + .step-list .step-item[data-step="${n}"]`).classList.add('done');
   if(bisStep===1){
-    methodOpenInPlace({compassEl:document.getElementById('bisCompass'), anchor:BIS_O, angleDeg:10, radius:BIS_RADIUS1, legLen:BIS_LEGLEN1, dur:700,
+    methodOpenInPlace({compassEl:document.getElementById('bisCompass'), anchor:BIS_O, angleDeg:10, radius:BIS_RADIUS, legLen:BIS_LEGLEN, dur:700,
       onDone:()=>{ markDone(1); btn.disabled=false; }});
   } else if(bisStep===2){
     methodSweepDual({compassEl:document.getElementById('bisCompass'), arc1El:document.getElementById('bisArcO1'), arc2El:document.getElementById('bisArcO2'),
-      anchor:BIS_O, radius:BIS_RADIUS1, legLen:BIS_LEGLEN1, sweepStartDeg:10, sweepEndDeg:-65, window1Deg:0, window2Deg:-55, halfWindowDeg:10, dur:1400,
+      anchor:BIS_O, radius:BIS_RADIUS, legLen:BIS_LEGLEN, sweepStartDeg:10, sweepEndDeg:-65, window1Deg:0, window2Deg:-55, halfWindowDeg:10, dur:1400,
       onDone:()=>{
         document.getElementById('bisP1Dot').setAttribute('opacity','1');
         document.getElementById('bisP2Dot').setAttribute('opacity','1');
         markDone(2); btn.disabled=false;
       }});
   } else if(bisStep===3){
-    methodOpenInPlace({compassEl:document.getElementById('bisCompass'), anchor:BIS_P1, angleDeg:180, radius:BIS_RADIUS2, legLen:BIS_LEGLEN2, dur:700,
+    // Même écartement du début à la fin : on déplace le compas (sans le refermer/rouvrir) de O
+    // vers P1, puis de P1 vers P2.
+    methodMoveKeepRadius({compassEl:document.getElementById('bisCompass'), fromAnchor:BIS_O, fromAngleDeg:-65, toAnchor:BIS_P1, toAngleDeg:180,
+      radius:BIS_RADIUS, legLen:BIS_LEGLEN, dur:700,
       onDone:()=>{
         methodSweepSingle({compassEl:document.getElementById('bisCompass'), arcEl:document.getElementById('bisArcP1'), anchor:BIS_P1,
-          radius:BIS_RADIUS2, legLen:BIS_LEGLEN2, startAngleDeg:180, targetAngleDeg:-49.70, dur:1300, halfWindowDeg:12,
+          radius:BIS_RADIUS, legLen:BIS_LEGLEN, startAngleDeg:180, targetAngleDeg:-55.00, dur:1300, halfWindowDeg:12,
           onDone:()=>{
-            methodOpenInPlace({compassEl:document.getElementById('bisCompass'), anchor:BIS_P2, angleDeg:125, radius:BIS_RADIUS2, legLen:BIS_LEGLEN2, dur:500,
+            methodMoveKeepRadius({compassEl:document.getElementById('bisCompass'), fromAnchor:BIS_P1, fromAngleDeg:-55.00, toAnchor:BIS_P2, toAngleDeg:125,
+              radius:BIS_RADIUS, legLen:BIS_LEGLEN, dur:500,
               onDone:()=>{
                 methodSweepSingle({compassEl:document.getElementById('bisCompass'), arcEl:document.getElementById('bisArcP2'), anchor:BIS_P2,
-                  radius:BIS_RADIUS2, legLen:BIS_LEGLEN2, startAngleDeg:125, targetAngleDeg:-5.30, dur:1300, halfWindowDeg:12,
+                  radius:BIS_RADIUS, legLen:BIS_LEGLEN, startAngleDeg:125, targetAngleDeg:0.00, dur:1300, halfWindowDeg:12,
                   onDone:()=>{ markDone(3); btn.disabled=false; }});
               }});
           }});
@@ -833,10 +853,10 @@ function medNextStep(){
           onDone:()=>{ markDone(1); btn.disabled=false; }});
       }});
   } else if(medStep===2){
-    methodOpenInPlace({compassEl:document.getElementById('medCompass'), anchor:MED_B, angleDeg:144.43, radius:MED_RADIUS, legLen:MED_LEGLEN, dur:700,
+    methodOpenInPlace({compassEl:document.getElementById('medCompass'), anchor:MED_B, angleDeg:124.43, radius:MED_RADIUS, legLen:MED_LEGLEN, dur:700,
       onDone:()=>{
         methodSweepDual({compassEl:document.getElementById('medCompass'), arc1El:document.getElementById('medArcB1'), arc2El:document.getElementById('medArcB2'),
-          anchor:MED_B, radius:MED_RADIUS, legLen:MED_LEGLEN, sweepStartDeg:144.43, sweepEndDeg:215.57, window1Deg:134.43, window2Deg:225.57, halfWindowDeg:10, dur:1400,
+          anchor:MED_B, radius:MED_RADIUS, legLen:MED_LEGLEN, sweepStartDeg:124.43, sweepEndDeg:235.57, window1Deg:134.43, window2Deg:225.57, halfWindowDeg:10, dur:1400,
           onDone:()=>{
             document.getElementById('medQ1Dot').setAttribute('opacity','1');
             document.getElementById('medQ2Dot').setAttribute('opacity','1');
