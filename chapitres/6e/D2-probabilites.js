@@ -89,7 +89,7 @@ document.getElementById('exos-demo-probabilites').innerHTML = `
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr">Le jeu contient 52 cartes en tout, ayant toutes autant de chances d'être tirées.</span><span class="we-comment">On compte le nombre total d'issues.</span></div>
     <div class="we-row"><span class="we-expr">3 de ces cartes sont des têtes de cœur (valet, dame, roi).</span><span class="we-comment">On compte le nombre d'issues favorables.</span></div>
-    <div class="we-row"><span class="we-expr">Donc la probabilité de « Tirer une tête de cœur » est <span class="tex">\\dfrac{3}{52} \\approx 0{,}058</span>, soit environ <span class="tex">5{,}8\\,\\%</span>.</span><span class="we-comment">Conclusion.</span></div>
+    <div class="we-row"><span class="we-expr">Donc la probabilité de « Tirer une tête de cœur » est <span class="tex">\\dfrac{3}{52}</span>.</span><span class="we-comment">Conclusion.</span></div>
   </div>
 </div>
 <div class="redaction-block">
