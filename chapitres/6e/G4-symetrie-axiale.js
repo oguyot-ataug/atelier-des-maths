@@ -227,8 +227,64 @@ document.getElementById('cours-demo-symetrie-axiale-6e').innerHTML = `
 `;
 
 document.getElementById('methode-demo-symetrie-axiale-6e').innerHTML = `
-<div class="sub-header"><span class="letter">M</span><h4>Constructions</h4></div>
-<p class="hint" style="margin:8px 0;">Cette partie (symétrique d'un point à l'équerre/à la règle/au compas, médiatrice et bissectrice à la règle et au compas) est en cours de préparation, elle arrivera dans une prochaine mise à jour.</p>
+<div class="sub-header"><span class="letter">M</span><h4>Bissectrice d'un angle au compas</h4></div>
+<p class="hint" style="margin:8px 0;">La construction à l'équerre et au rapporteur a déjà été vue dans le chapitre sur les angles. Voici la construction <b>au compas</b>.</p>
+<div class="figure-wrap" style="max-width:340px;margin:12px auto;">
+  <svg id="bisSvg" viewBox="0 100 280 320" style="width:100%;display:block;">
+    <line id="bisRay1" x1="70" y1="300" x2="220" y2="300" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line id="bisRay2" x1="70" y1="300" x2="156.0" y2="177.1" stroke="#1C1B2E" stroke-width="1.8"/>
+    <polyline id="bisArcO1" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <polyline id="bisArcO2" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <polyline id="bisArcP1" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <polyline id="bisArcP2" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <line id="bisRayFinal" x1="70" y1="300" x2="70" y2="300" stroke="#E35D3A" stroke-width="1.8" opacity="0"/>
+    <circle id="bisP1Dot" cx="160" cy="300" r="2" fill="#1C1B2E" opacity="0"/>
+    <circle id="bisP2Dot" cx="121.6" cy="226.3" r="2" fill="#1C1B2E" opacity="0"/>
+    <g id="bisCompass" transform="translate(70,300)" opacity="0"></g>
+    <g id="bisRulerTool" opacity="0"></g>
+    <g id="bisPencilTool" opacity="0"></g>
+    <text x="52" y="312" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">O</text>
+  </svg>
+  <div class="step-list">
+    <div class="step-item" data-step="1"><div class="step-num">1</div><div>Prendre un écartement au compas quelconque.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Piquer au sommet de l'angle et intercepter les deux côtés (deux petits arcs, sans les joindre).</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">3</div><div>Piquer sur chaque point d'intersection : construire deux arcs de cercle de même écartement, qui se coupent.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">4</div><div>Finir à la règle et au crayon : tracer la demi-droite depuis le sommet, en passant par ce point.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="btnBisNext" onclick="bisNextStep()">Étape suivante →</button>
+    <button class="btn secondary" onclick="bisReset()">Revoir depuis le début</button>
+  </div>
+</div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Médiatrice d'un segment au compas</h4></div>
+<p class="hint" style="margin:8px 0;">Une seconde méthode, avec le compas plutôt qu'à la règle et à l'équerre.</p>
+<div class="figure-wrap" style="max-width:320px;margin:12px auto;">
+  <svg id="medSvg" viewBox="0 190 250 220" style="width:100%;display:block;">
+    <line id="medSegAB" x1="50" y1="300" x2="190" y2="300" stroke="#1C1B2E" stroke-width="1.8"/>
+    <polyline id="medArcA1" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <polyline id="medArcA2" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <polyline id="medArcB1" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <polyline id="medArcB2" fill="none" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <line id="medLine" x1="120" y1="300" x2="120" y2="300" stroke="#E35D3A" stroke-width="1.8" opacity="0"/>
+    <circle id="medQ1Dot" cx="120" cy="371.4" r="2" fill="#1C1B2E" opacity="0"/>
+    <circle id="medQ2Dot" cx="120" cy="228.6" r="2" fill="#1C1B2E" opacity="0"/>
+    <g id="medCompass" transform="translate(50,300)" opacity="0"></g>
+    <g id="medRulerTool" opacity="0"></g>
+    <g id="medPencilTool" opacity="0"></g>
+    <text x="38" y="312" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">A</text>
+    <text x="196" y="312" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">B</text>
+  </svg>
+  <div class="step-list">
+    <div class="step-item" data-step="1"><div class="step-num">1</div><div>Piquer en A avec un écartement supérieur à la moitié de [AB] : tracer un arc de chaque côté de [AB].</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Piquer en B avec le <b>même écartement</b> : tracer deux arcs qui recoupent les précédents.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">3</div><div>Tracer, à la règle, la droite passant par les deux points d'intersection : c'est la médiatrice.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="btnMedNext" onclick="medNextStep()">Étape suivante →</button>
+    <button class="btn secondary" onclick="medReset()">Revoir depuis le début</button>
+  </div>
+</div>
 `;
 
 document.getElementById('exos-demo-symetrie-axiale-6e').innerHTML = `
@@ -587,6 +643,231 @@ function symF8Init(){
   makeDraggable(svgEl.querySelector('#symF8Y'), p=>symF8_Y=p);
 }
 
+/* ================= Constructions au compas : helpers génériques =================
+   Repris du même principe que G5 (fenêtre d'encre autour de la cible, balayage réel du
+   compas), avec deux variantes : une fenêtre unique (comme G5), et une double fenêtre
+   pour "intercepter sans joindre" (deux petits arcs distincts pendant UN même balayage
+   continu, avec un blanc entre les deux). */
+function methodOpenInPlace(opts){
+  const {compassEl, anchor, angleDeg, radius, legLen, dur, onDone} = opts;
+  const start = performance.now(), startRadius = 6;
+  function frame(now){
+    const t = Math.min(1,(now-start)/dur);
+    const ease = t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+    const curRadius = startRadius + (radius-startRadius)*ease;
+    compassEl.innerHTML = compassSVG(curRadius, legLen);
+    compassEl.setAttribute('transform', `translate(${anchor.x},${anchor.y}) rotate(${angleDeg})`);
+    compassEl.setAttribute('opacity','1');
+    if(t<1){ requestAnimationFrame(frame); return; }
+    compassEl.innerHTML = compassSVG(radius, legLen);
+    if(onDone) onDone();
+  }
+  requestAnimationFrame(frame);
+}
+function methodSweepSingle(opts){
+  const {compassEl, arcEl, anchor, radius, legLen, startAngleDeg, targetAngleDeg, dur, halfWindowDeg, onDone} = opts;
+  const startRad = startAngleDeg*Math.PI/180, targetRad = targetAngleDeg*Math.PI/180;
+  const sweepRad = targetRad-startRad;
+  const hw = (halfWindowDeg||10)*Math.PI/180*Math.sign(sweepRad||1);
+  const winStart = targetRad-hw, totalSweep = sweepRad+hw;
+  const start = performance.now();
+  function pointOnArc(a){ return {x:anchor.x+radius*Math.cos(a), y:anchor.y+radius*Math.sin(a)}; }
+  function frame(now){
+    const t = Math.min(1,(now-start)/dur);
+    const angle = startRad + t*totalSweep;
+    const entered = Math.sign(sweepRad||1)>0 ? angle>=winStart : angle<=winStart;
+    if(entered){
+      const pts=[]; const step=Math.PI/60*Math.sign(totalSweep||1);
+      for(let a=winStart; Math.sign(totalSweep||1)>0 ? a<=angle+1e-6 : a>=angle-1e-6; a+=step){
+        const p=pointOnArc(a); pts.push(`${p.x.toFixed(1)},${p.y.toFixed(1)}`);
+      }
+      arcEl.setAttribute('points', pts.join(' ')); arcEl.setAttribute('opacity','1');
+    }
+    compassEl.setAttribute('transform', `translate(${anchor.x},${anchor.y}) rotate(${(angle*180/Math.PI).toFixed(2)})`);
+    compassEl.setAttribute('opacity','1');
+    if(t<1){ requestAnimationFrame(frame); return; }
+    compassEl.setAttribute('opacity','0');
+    if(onDone) onDone();
+  }
+  requestAnimationFrame(frame);
+}
+function methodSweepDual(opts){
+  const {compassEl, arc1El, arc2El, anchor, radius, legLen, sweepStartDeg, sweepEndDeg, window1Deg, window2Deg, halfWindowDeg, dur, onDone} = opts;
+  const startRad = sweepStartDeg*Math.PI/180, endRad = sweepEndDeg*Math.PI/180;
+  const totalSweep = endRad-startRad, dir = Math.sign(totalSweep||1);
+  const hw = (halfWindowDeg||10)*Math.PI/180;
+  const w1 = window1Deg*Math.PI/180, w2 = window2Deg*Math.PI/180;
+  const start = performance.now();
+  function pointOnArc(a){ return {x:anchor.x+radius*Math.cos(a), y:anchor.y+radius*Math.sin(a)}; }
+  function updateWindow(arcEl, windowCenter, curAngle){
+    const winStart = windowCenter - hw*dir;
+    const entered = dir>0 ? curAngle>=winStart : curAngle<=winStart;
+    if(!entered) return;
+    const winEnd = windowCenter + hw*dir;
+    const clipped = dir>0 ? Math.min(curAngle,winEnd) : Math.max(curAngle,winEnd);
+    const pts=[]; const step=Math.PI/60*dir;
+    for(let a=winStart; dir>0 ? a<=clipped+1e-6 : a>=clipped-1e-6; a+=step){
+      const p=pointOnArc(a); pts.push(`${p.x.toFixed(1)},${p.y.toFixed(1)}`);
+    }
+    arcEl.setAttribute('points', pts.join(' ')); arcEl.setAttribute('opacity','1');
+  }
+  function frame(now){
+    const t = Math.min(1,(now-start)/dur);
+    const angle = startRad + t*totalSweep;
+    updateWindow(arc1El, w1, angle);
+    updateWindow(arc2El, w2, angle);
+    compassEl.setAttribute('transform', `translate(${anchor.x},${anchor.y}) rotate(${(angle*180/Math.PI).toFixed(2)})`);
+    compassEl.setAttribute('opacity','1');
+    if(t<1){ requestAnimationFrame(frame); return; }
+    compassEl.setAttribute('opacity','0');
+    if(onDone) onDone();
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ================= Bissectrice au compas ================= */
+const BIS_O = {x:70,y:300};
+const BIS_RADIUS1 = 90, BIS_LEGLEN1 = 0.7*BIS_RADIUS1+30;
+const BIS_P1 = {x:160,y:300}, BIS_P2 = {x:121.6,y:226.3};
+const BIS_RADIUS2 = 110, BIS_LEGLEN2 = 0.7*BIS_RADIUS2+30;
+const BIS_Q = {x:231.15,y:216.11};
+let bisStep = 0;
+function bisReset(){
+  bisStep = 0;
+  ['bisArcO1','bisArcO2','bisArcP1','bisArcP2','bisRayFinal','bisP1Dot','bisP2Dot','bisCompass','bisRulerTool','bisPencilTool'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  document.querySelectorAll('#bisSvg + .step-list .step-item').forEach(el=>el.classList.remove('done'));
+  const btn = document.getElementById('btnBisNext');
+  btn.textContent = 'Étape suivante →'; btn.disabled = false;
+}
+function bisSetRulerAt(origin, angleDeg){
+  document.getElementById('bisRulerTool').setAttribute('transform', `translate(${origin.x.toFixed(1)},${origin.y.toFixed(1)}) rotate(${angleDeg.toFixed(2)}) scale(0.62)`);
+}
+function bisSetPencilAt(x,y,angleDeg){
+  document.getElementById('bisPencilTool').setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(angleDeg-90+8).toFixed(1)}) scale(0.62)`);
+}
+document.getElementById('bisRulerTool').innerHTML = rulerSVG(false);
+document.getElementById('bisPencilTool').innerHTML = pencilSVG('bis-pencil');
+function bisNextStep(){
+  bisStep++;
+  const btn = document.getElementById('btnBisNext');
+  btn.disabled = true;
+  const markDone = n=>document.querySelector(`#bisSvg + .step-list .step-item[data-step="${n}"]`).classList.add('done');
+  if(bisStep===1){
+    methodOpenInPlace({compassEl:document.getElementById('bisCompass'), anchor:BIS_O, angleDeg:10, radius:BIS_RADIUS1, legLen:BIS_LEGLEN1, dur:700,
+      onDone:()=>{ markDone(1); btn.disabled=false; }});
+  } else if(bisStep===2){
+    methodSweepDual({compassEl:document.getElementById('bisCompass'), arc1El:document.getElementById('bisArcO1'), arc2El:document.getElementById('bisArcO2'),
+      anchor:BIS_O, radius:BIS_RADIUS1, legLen:BIS_LEGLEN1, sweepStartDeg:10, sweepEndDeg:-65, window1Deg:0, window2Deg:-55, halfWindowDeg:10, dur:1400,
+      onDone:()=>{
+        document.getElementById('bisP1Dot').setAttribute('opacity','1');
+        document.getElementById('bisP2Dot').setAttribute('opacity','1');
+        markDone(2); btn.disabled=false;
+      }});
+  } else if(bisStep===3){
+    methodOpenInPlace({compassEl:document.getElementById('bisCompass'), anchor:BIS_P1, angleDeg:180, radius:BIS_RADIUS2, legLen:BIS_LEGLEN2, dur:700,
+      onDone:()=>{
+        methodSweepSingle({compassEl:document.getElementById('bisCompass'), arcEl:document.getElementById('bisArcP1'), anchor:BIS_P1,
+          radius:BIS_RADIUS2, legLen:BIS_LEGLEN2, startAngleDeg:180, targetAngleDeg:-49.70, dur:1300, halfWindowDeg:12,
+          onDone:()=>{
+            methodOpenInPlace({compassEl:document.getElementById('bisCompass'), anchor:BIS_P2, angleDeg:125, radius:BIS_RADIUS2, legLen:BIS_LEGLEN2, dur:500,
+              onDone:()=>{
+                methodSweepSingle({compassEl:document.getElementById('bisCompass'), arcEl:document.getElementById('bisArcP2'), anchor:BIS_P2,
+                  radius:BIS_RADIUS2, legLen:BIS_LEGLEN2, startAngleDeg:125, targetAngleDeg:-5.30, dur:1300, halfWindowDeg:12,
+                  onDone:()=>{ markDone(3); btn.disabled=false; }});
+              }});
+          }});
+      }});
+  } else if(bisStep===4){
+    const angDeg = Math.atan2(BIS_Q.y-BIS_O.y, BIS_Q.x-BIS_O.x)*180/Math.PI;
+    document.getElementById('bisRulerTool').setAttribute('opacity','1');
+    document.getElementById('bisPencilTool').setAttribute('opacity','1');
+    bisSetRulerAt(BIS_O, angDeg); bisSetPencilAt(BIS_O.x, BIS_O.y, angDeg);
+    document.getElementById('bisRayFinal').setAttribute('opacity','1');
+    document.getElementById('bisRayFinal').setAttribute('x2', BIS_O.x); document.getElementById('bisRayFinal').setAttribute('y2', BIS_O.y);
+    const finalEnd = {x:BIS_O.x+(BIS_Q.x-BIS_O.x)*1.15, y:BIS_O.y+(BIS_Q.y-BIS_O.y)*1.15};
+    const start = performance.now(), dur=1300;
+    function frame(now){
+      const t = Math.min(1,(now-start)/dur);
+      const curX = BIS_O.x+(finalEnd.x-BIS_O.x)*t, curY = BIS_O.y+(finalEnd.y-BIS_O.y)*t;
+      document.getElementById('bisRayFinal').setAttribute('x2', curX.toFixed(1)); document.getElementById('bisRayFinal').setAttribute('y2', curY.toFixed(1));
+      bisSetPencilAt(curX, curY, angDeg);
+      if(t<1){ requestAnimationFrame(frame); return; }
+      document.getElementById('bisRulerTool').setAttribute('opacity','0');
+      document.getElementById('bisPencilTool').setAttribute('opacity','0');
+      markDone(4); btn.textContent='Terminé ✓'; btn.disabled=true;
+    }
+    requestAnimationFrame(frame);
+  }
+}
+
+/* ================= Médiatrice au compas ================= */
+const MED_A = {x:50,y:300}, MED_B = {x:190,y:300};
+const MED_RADIUS = 100, MED_LEGLEN = 0.7*MED_RADIUS+30;
+const MED_Q1 = {x:120,y:371.4}, MED_Q2 = {x:120,y:228.6};
+let medStep = 0;
+function medReset(){
+  medStep = 0;
+  ['medArcA1','medArcA2','medArcB1','medArcB2','medLine','medQ1Dot','medQ2Dot','medCompass','medRulerTool','medPencilTool'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  document.querySelectorAll('#medSvg + .step-list .step-item').forEach(el=>el.classList.remove('done'));
+  const btn = document.getElementById('btnMedNext');
+  btn.textContent = 'Étape suivante →'; btn.disabled = false;
+}
+function medSetRulerAt(origin, angleDeg){
+  document.getElementById('medRulerTool').setAttribute('transform', `translate(${origin.x.toFixed(1)},${origin.y.toFixed(1)}) rotate(${angleDeg.toFixed(2)}) scale(0.62)`);
+}
+function medSetPencilAt(x,y,angleDeg){
+  document.getElementById('medPencilTool').setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(angleDeg-90+8).toFixed(1)}) scale(0.62)`);
+}
+document.getElementById('medRulerTool').innerHTML = rulerSVG(false);
+document.getElementById('medPencilTool').innerHTML = pencilSVG('med-pencil');
+function medNextStep(){
+  medStep++;
+  const btn = document.getElementById('btnMedNext');
+  btn.disabled = true;
+  const markDone = n=>document.querySelector(`#medSvg + .step-list .step-item[data-step="${n}"]`).classList.add('done');
+  if(medStep===1){
+    methodOpenInPlace({compassEl:document.getElementById('medCompass'), anchor:MED_A, angleDeg:55.57, radius:MED_RADIUS, legLen:MED_LEGLEN, dur:700,
+      onDone:()=>{
+        methodSweepDual({compassEl:document.getElementById('medCompass'), arc1El:document.getElementById('medArcA1'), arc2El:document.getElementById('medArcA2'),
+          anchor:MED_A, radius:MED_RADIUS, legLen:MED_LEGLEN, sweepStartDeg:55.57, sweepEndDeg:-55.57, window1Deg:45.57, window2Deg:-45.57, halfWindowDeg:10, dur:1400,
+          onDone:()=>{ markDone(1); btn.disabled=false; }});
+      }});
+  } else if(medStep===2){
+    methodOpenInPlace({compassEl:document.getElementById('medCompass'), anchor:MED_B, angleDeg:144.43, radius:MED_RADIUS, legLen:MED_LEGLEN, dur:700,
+      onDone:()=>{
+        methodSweepDual({compassEl:document.getElementById('medCompass'), arc1El:document.getElementById('medArcB1'), arc2El:document.getElementById('medArcB2'),
+          anchor:MED_B, radius:MED_RADIUS, legLen:MED_LEGLEN, sweepStartDeg:144.43, sweepEndDeg:215.57, window1Deg:134.43, window2Deg:225.57, halfWindowDeg:10, dur:1400,
+          onDone:()=>{
+            document.getElementById('medQ1Dot').setAttribute('opacity','1');
+            document.getElementById('medQ2Dot').setAttribute('opacity','1');
+            markDone(2); btn.disabled=false;
+          }});
+      }});
+  } else if(medStep===3){
+    const angDeg = 90; // Q1Q2 est vertical
+    document.getElementById('medRulerTool').setAttribute('opacity','1');
+    document.getElementById('medPencilTool').setAttribute('opacity','1');
+    const overshoot = 14;
+    const drawStart = {x:MED_Q2.x, y:MED_Q2.y-overshoot}, drawEnd = {x:MED_Q1.x, y:MED_Q1.y+overshoot};
+    medSetRulerAt(drawStart, angDeg); medSetPencilAt(drawStart.x, drawStart.y, angDeg);
+    document.getElementById('medLine').setAttribute('opacity','1');
+    document.getElementById('medLine').setAttribute('x1', drawStart.x); document.getElementById('medLine').setAttribute('y1', drawStart.y);
+    document.getElementById('medLine').setAttribute('x2', drawStart.x); document.getElementById('medLine').setAttribute('y2', drawStart.y);
+    const start = performance.now(), dur=1300;
+    function frame(now){
+      const t = Math.min(1,(now-start)/dur);
+      const curY = drawStart.y+(drawEnd.y-drawStart.y)*t;
+      document.getElementById('medLine').setAttribute('x2', drawStart.x); document.getElementById('medLine').setAttribute('y2', curY.toFixed(1));
+      medSetPencilAt(drawStart.x, curY, angDeg);
+      if(t<1){ requestAnimationFrame(frame); return; }
+      document.getElementById('medRulerTool').setAttribute('opacity','0');
+      document.getElementById('medPencilTool').setAttribute('opacity','0');
+      markDone(3); btn.textContent='Terminé ✓'; btn.disabled=true;
+    }
+    requestAnimationFrame(frame);
+  }
+}
+
 DEMO_REGISTRY['6e|Symétrie axiale'] = {
   cours:'cours-demo-symetrie-axiale-6e', methode:'methode-demo-symetrie-axiale-6e', exos:'exos-demo-symetrie-axiale-6e',
   init:()=>{
@@ -596,5 +877,6 @@ DEMO_REGISTRY['6e|Symétrie axiale'] = {
     injectCourseAddButtons(document.getElementById('cours-demo-symetrie-axiale-6e'));
     injectCourseAddButtons(document.getElementById('methode-demo-symetrie-axiale-6e'));
     symF1Reset(); symF2Init(); symF3Init(); symF4Init(); symF5Init(); symF6Init(); symF7Init(); symF8Init();
+    bisReset(); medReset();
   }
 };
