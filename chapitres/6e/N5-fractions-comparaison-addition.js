@@ -88,22 +88,122 @@ document.getElementById('cours-demo-fractions-comp-add').innerHTML = `
 `;
 
 document.getElementById('methode-demo-fractions-comp-add').innerHTML = `
-<div class="sub-header"><span class="letter">M</span><h4>Méthode</h4></div>
-<p class="hint" style="margin:8px 0;">Cette partie est en cours de préparation, elle arrivera dans une prochaine mise à jour.</p>
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : comparer deux fractions de dénominateurs différents</h4></div>
+<div class="figure-wrap">
+  <p class="interaction-hint" style="margin-top:6px;">Cliquez sur « Étape suivante » pour dérouler la méthode.</p>
+  <div class="step-display" id="fcaCompareDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="fcaCompareDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="fcaCompareDemo.reset()">Recommencer</button>
+  </div>
+</div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Méthode : additionner deux fractions de dénominateurs différents</h4></div>
+<div class="figure-wrap">
+  <p class="interaction-hint" style="margin-top:6px;">Cliquez sur « Étape suivante » pour dérouler la méthode.</p>
+  <div class="step-display" id="fcaAddDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="fcaAddDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="fcaAddDemo.reset()">Recommencer</button>
+  </div>
+</div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Méthode : soustraire deux fractions de dénominateurs différents</h4></div>
+<div class="figure-wrap">
+  <p class="interaction-hint" style="margin-top:6px;">Cliquez sur « Étape suivante » pour dérouler la méthode.</p>
+  <div class="step-display" id="fcaSubDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="fcaSubDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="fcaSubDemo.reset()">Recommencer</button>
+  </div>
+</div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;margin-top:20px;">
+  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).
+</div>
 `;
 
 document.getElementById('exos-demo-fractions-comp-add').innerHTML = `
 <div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
-<p class="hint" style="margin:8px 0;">Les exercices de ce chapitre sont en cours de préparation, ils arriveront dans une prochaine mise à jour.</p>
+<div class="redaction-block">
+  <h3>Rédaction type : « Compare deux fractions de dénominateurs différents »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr"><span class="tex">\\dfrac{5}{6} = \\dfrac{5 \\times 2}{6 \\times 2} = \\dfrac{10}{12}</span> et <span class="tex">\\dfrac{3}{4} = \\dfrac{3 \\times 3}{4 \\times 3} = \\dfrac{9}{12}</span>.</span><span class="we-comment">On réduit au même dénominateur.</span></div>
+    <div class="we-row"><span class="we-expr">Or, 10 &gt; 9.</span><span class="we-comment">On compare les numérateurs.</span></div>
+    <div class="we-row"><span class="we-expr">Donc <span class="tex">\\dfrac{10}{12} > \\dfrac{9}{12}</span>, donc <span class="tex">\\dfrac{5}{6} > \\dfrac{3}{4}</span>.</span><span class="we-comment">Conclusion.</span></div>
+  </div>
+  <h3 style="margin-top:18px;">Rédaction type : « Additionne (ou soustrais) deux fractions de dénominateurs différents »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr"><span class="tex">\\dfrac{7}{6} = \\dfrac{7 \\times 4}{6 \\times 4} = \\dfrac{28}{24}</span> et <span class="tex">\\dfrac{5}{8} = \\dfrac{5 \\times 3}{8 \\times 3} = \\dfrac{15}{24}</span>.</span><span class="we-comment">On réduit au même dénominateur.</span></div>
+    <div class="we-row"><span class="we-expr"><span class="tex">\\dfrac{7}{6} + \\dfrac{5}{8} = \\dfrac{28}{24} + \\dfrac{15}{24} = \\dfrac{43}{24}</span></span><span class="we-comment">On additionne les numérateurs, en gardant le dénominateur commun.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Ordonne dans l'ordre croissant les fractions <span class="tex">\\dfrac{11}{9}</span>, <span class="tex">\\dfrac{4}{9}</span>, <span class="tex">\\dfrac{7}{9}</span> et <span class="tex">\\dfrac{2}{9}</span>.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Compare les fractions <span class="tex">\\dfrac{5}{3}</span> et <span class="tex">\\dfrac{13}{9}</span>. Rédige ta réponse.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Compare les fractions <span class="tex">\\dfrac{2}{5}</span> et <span class="tex">\\dfrac{5}{8}</span>. Rédige ta réponse.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Calcule <span class="tex">G = \\dfrac{5}{4} + \\dfrac{3}{8}</span> et <span class="tex">H = \\dfrac{11}{6} - \\dfrac{2}{3}</span>.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Calcule <span class="tex">K = \\dfrac{3}{4} + \\dfrac{2}{5}</span> et <span class="tex">L = \\dfrac{7}{6} - \\dfrac{3}{10}</span>. Rédige tes réponses.
+  </div>
+</div>
 `;
 
+document.getElementById('histoire-demo-fractions-comp-add').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  Les fractions figurent parmi les plus anciennes notions mathématiques connues : on en retrouve déjà des traces sur des papyrus égyptiens vieux de presque 4000 ans, comme le papyrus de Rhind. Les Égyptiens n'utilisaient cependant que des <b>fractions unitaires</b>, c'est-à-dire de numérateur 1 (comme <span class="tex">\\dfrac{1}{3}</span> ou <span class="tex">\\dfrac{1}{7}</span>) : pour écrire une fraction comme <span class="tex">\\dfrac{3}{4}</span>, ils devaient la décomposer en une somme de fractions unitaires distinctes, par exemple <span class="tex">\\dfrac{1}{2} + \\dfrac{1}{4}</span>. Les Babyloniens, de leur côté, utilisaient un système en base 60 particulièrement adapté aux calculs de fractions, dont on garde aujourd'hui la trace dans le découpage de l'heure en 60 minutes. La barre de fraction telle qu'on la connaît, séparant nettement numérateur et dénominateur, est attribuée au mathématicien arabe Al-Hassar au XIIe siècle ; c'est le mathématicien italien Fibonacci qui la fait connaître en Europe au siècle suivant, dans son <i>Liber Abaci</i>.
+</div>
+`;
+
+/* ================= Méthode animée : 3 démonstrations pas-à-pas (comparaison, addition, soustraction) ================= */
+const FCA_COMPARE_STEPS = [
+  {expr:'<span class="tex">\\dfrac{5}{6}</span> et <span class="tex">\\dfrac{3}{4}</span>', note:"On souhaite comparer ces deux fractions de dénominateurs différents (6 et 4)."},
+  {expr:'On cherche le plus petit dénominateur commun : 12', note:"6 et 4 ne sont pas multiples l'un de l'autre, mais leur plus petit commun multiple est 12 (6 × 2 = 12 et 4 × 3 = 12)."},
+  {expr:'<span class="tex">\\dfrac{5}{6} = \\dfrac{5 \\times 2}{6 \\times 2} = \\dfrac{10}{12}</span> et <span class="tex">\\dfrac{3}{4} = \\dfrac{3 \\times 3}{4 \\times 3} = \\dfrac{9}{12}</span>', note:"On réduit chaque fraction au dénominateur commun 12."},
+  {expr:'Or, 10 &gt; 9', note:"On compare les numérateurs."},
+  {expr:'Donc <span class="tex">\\dfrac{10}{12} > \\dfrac{9}{12}</span>, donc <span class="tex">\\dfrac{5}{6} > \\dfrac{3}{4}</span>', note:"Conclusion."},
+];
+const fcaCompareDemo = makeStepDemo(FCA_COMPARE_STEPS, 'fcaCompareDisplay');
+
+const FCA_ADD_STEPS = [
+  {expr:'<span class="tex">\\dfrac{7}{6} + \\dfrac{5}{8}</span>', note:"On souhaite additionner ces deux fractions de dénominateurs différents (6 et 8)."},
+  {expr:'On cherche un dénominateur commun : 24', note:"6 et 8 ne sont pas multiples l'un de l'autre ; leur plus petit commun multiple est 24 (6 × 4 = 24 et 8 × 3 = 24)."},
+  {expr:'<span class="tex">\\dfrac{7}{6} = \\dfrac{7 \\times 4}{6 \\times 4} = \\dfrac{28}{24}</span> et <span class="tex">\\dfrac{5}{8} = \\dfrac{5 \\times 3}{8 \\times 3} = \\dfrac{15}{24}</span>', note:"On réduit chaque fraction au dénominateur commun 24."},
+  {expr:'<span class="tex">\\dfrac{28}{24} + \\dfrac{15}{24} = \\dfrac{28+15}{24} = \\dfrac{43}{24}</span>', note:"On additionne les numérateurs, en gardant le dénominateur commun."},
+];
+const fcaAddDemo = makeStepDemo(FCA_ADD_STEPS, 'fcaAddDisplay');
+
+const FCA_SUB_STEPS = [
+  {expr:'<span class="tex">\\dfrac{9}{4} - \\dfrac{7}{10}</span>', note:"On souhaite soustraire ces deux fractions de dénominateurs différents (4 et 10)."},
+  {expr:'On cherche un dénominateur commun : 20', note:"4 et 10 ne sont pas multiples l'un de l'autre ; leur plus petit commun multiple est 20 (4 × 5 = 20 et 10 × 2 = 20)."},
+  {expr:'<span class="tex">\\dfrac{9}{4} = \\dfrac{9 \\times 5}{4 \\times 5} = \\dfrac{45}{20}</span> et <span class="tex">\\dfrac{7}{10} = \\dfrac{7 \\times 2}{10 \\times 2} = \\dfrac{14}{20}</span>', note:"On réduit chaque fraction au dénominateur commun 20."},
+  {expr:'<span class="tex">\\dfrac{45}{20} - \\dfrac{14}{20} = \\dfrac{45-14}{20} = \\dfrac{31}{20}</span>', note:"On soustrait les numérateurs, en gardant le dénominateur commun."},
+];
+const fcaSubDemo = makeStepDemo(FCA_SUB_STEPS, 'fcaSubDisplay');
+
 DEMO_REGISTRY['6e|Fractions : comparaison et addition'] = {
-  cours:'cours-demo-fractions-comp-add', methode:'methode-demo-fractions-comp-add', exos:'exos-demo-fractions-comp-add',
+  cours:'cours-demo-fractions-comp-add', methode:'methode-demo-fractions-comp-add', exos:'exos-demo-fractions-comp-add', histoire:'histoire-demo-fractions-comp-add',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-fractions-comp-add'));
     renderStaticMath(document.getElementById('methode-demo-fractions-comp-add'));
     renderStaticMath(document.getElementById('exos-demo-fractions-comp-add'));
+    renderStaticMath(document.getElementById('histoire-demo-fractions-comp-add'));
     injectCourseAddButtons(document.getElementById('cours-demo-fractions-comp-add'));
     injectCourseAddButtons(document.getElementById('methode-demo-fractions-comp-add'));
+    fcaCompareDemo.reset(); fcaAddDemo.reset(); fcaSubDemo.reset();
   }
 };
