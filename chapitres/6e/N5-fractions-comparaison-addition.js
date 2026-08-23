@@ -1,5 +1,5 @@
 /* ============================================================
-   CHAPITRE : Fractions : comparaison et addition (5e, N5)
+   CHAPITRE : Fractions : comparaison et addition (6e, N5)
    Ne traite volontairement PAS la multiplication (chapitre séparé,
    à venir). Cours complet (comparaison + addition/soustraction),
    méthode/exercices/histoire en placeholder pour une prochaine session.
@@ -97,7 +97,7 @@ document.getElementById('exos-demo-fractions-comp-add').innerHTML = `
 <p class="hint" style="margin:8px 0;">Les exercices de ce chapitre sont en cours de préparation, ils arriveront dans une prochaine mise à jour.</p>
 `;
 
-DEMO_REGISTRY['5e|Fractions : comparaison et addition'] = {
+DEMO_REGISTRY['6e|Fractions : comparaison et addition'] = {
   cours:'cours-demo-fractions-comp-add', methode:'methode-demo-fractions-comp-add', exos:'exos-demo-fractions-comp-add',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-fractions-comp-add'));
