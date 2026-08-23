@@ -201,8 +201,23 @@ document.getElementById('exos-demo-gestion-donnees').innerHTML = `
 <div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Interpréter un secteur d'un diagramme circulaire »</h3>
+  <p style="margin:4px 0 10px;">Un diagramme circulaire représente le sport pratiqué par les 25 élèves d'une classe.</p>
+  <div class="figure-wrap" style="max-width:220px;margin:0 auto 14px;">
+    <svg viewBox="0 0 220 220" style="width:100%;display:block;">
+      <path d="M 110 110 L 110.0 20.0 A 90 90 0 0 1 162.9 182.8 Z" fill="#2EA8C9" stroke="#fff" stroke-width="1.5"/>
+      <path d="M 110 110 L 162.9 182.8 A 90 90 0 0 1 40.7 167.4 Z" fill="#E35D3A" stroke="#fff" stroke-width="1.5"/>
+      <path d="M 110 110 L 40.7 167.4 A 90 90 0 0 1 24.4 82.2 Z" fill="#F8AF23" stroke="#fff" stroke-width="1.5"/>
+      <path d="M 110 110 L 24.4 82.2 A 90 90 0 0 1 110.0 20.0 Z" fill="#2E7D5B" stroke="#fff" stroke-width="1.5"/>
+      <text x="162.3" y="93.0" font-family="Space Grotesk" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">144°</text>
+    </svg>
+    <div style="display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:center;margin-top:8px;font-family:'Inter',sans-serif;font-size:.8rem;">
+      <span><span style="display:inline-block;width:10px;height:10px;background:#2EA8C9;border-radius:2px;margin-right:4px;"></span>Football</span>
+      <span><span style="display:inline-block;width:10px;height:10px;background:#E35D3A;border-radius:2px;margin-right:4px;"></span>Basket</span>
+      <span><span style="display:inline-block;width:10px;height:10px;background:#F8AF23;border-radius:2px;margin-right:4px;"></span>Natation</span>
+      <span><span style="display:inline-block;width:10px;height:10px;background:#2E7D5B;border-radius:2px;margin-right:4px;"></span>Autre</span>
+    </div>
+  </div>
   <div class="redaction-template">
-    <div class="we-row"><span class="we-expr">Un diagramme circulaire représente le sport pratiqué par les 25 élèves d'une classe.</span><span class="we-comment">Énoncé.</span></div>
     <div class="we-row"><span class="we-expr">Le secteur associé à Football mesure 144°.</span><span class="we-comment">On relève la mesure de l'angle.</span></div>
     <div class="we-row"><span class="we-expr">Or, 144° &lt; 180°.</span><span class="we-comment">On compare à 180° (un demi-tour).</span></div>
     <div class="we-row"><span class="we-expr">Donc moins de la moitié des élèves pratiquent le football.</span><span class="we-comment">Conclusion.</span></div>
