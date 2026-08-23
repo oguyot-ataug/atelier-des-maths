@@ -202,8 +202,9 @@ document.getElementById('exos-demo-gestion-donnees').innerHTML = `
 <div class="redaction-block">
   <h3>Rédaction type : « Interpréter un secteur d'un diagramme circulaire »</h3>
   <div class="redaction-template">
-    <div class="we-row"><span class="we-expr">Le secteur associé à Football mesure <span class="tex">144°</span>.</span><span class="we-comment">On relève la mesure de l'angle.</span></div>
-    <div class="we-row"><span class="we-expr">Or, <span class="tex">144° &lt; 180°</span>.</span><span class="we-comment">On compare à 180° (un demi-tour).</span></div>
+    <div class="we-row"><span class="we-expr">Un diagramme circulaire représente le sport pratiqué par les 25 élèves d'une classe.</span><span class="we-comment">Énoncé.</span></div>
+    <div class="we-row"><span class="we-expr">Le secteur associé à Football mesure 144°.</span><span class="we-comment">On relève la mesure de l'angle.</span></div>
+    <div class="we-row"><span class="we-expr">Or, 144° &lt; 180°.</span><span class="we-comment">On compare à 180° (un demi-tour).</span></div>
     <div class="we-row"><span class="we-expr">Donc moins de la moitié des élèves pratiquent le football.</span><span class="we-comment">Conclusion.</span></div>
   </div>
 </div>
