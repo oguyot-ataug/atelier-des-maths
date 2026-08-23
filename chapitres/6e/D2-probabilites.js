@@ -82,7 +82,7 @@ document.getElementById('exos-demo-probabilites').innerHTML = `
 <div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Calculer la probabilité d'un évènement »</h3>
-  <p style="margin:4px 0 10px;">On tire une carte au hasard dans un jeu de 52 cartes. Les têtes de cœur sont le valet, la dame et le roi de cœur.</p>
+  <p style="margin:4px 0 10px;">On tire une carte au hasard dans un jeu de 52 cartes. Les têtes de cœur sont le valet, la dame et le roi de cœur. <b>Quelle est la probabilité de tirer une tête de cœur ?</b></p>
   <div class="figure-wrap" style="max-width:220px;margin:0 auto 14px;">
     ${cardsSvg([{rank:'V',suit:'coeur'},{rank:'D',suit:'coeur'},{rank:'R',suit:'coeur'}])}
   </div>

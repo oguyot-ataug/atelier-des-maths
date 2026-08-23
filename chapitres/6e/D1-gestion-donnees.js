@@ -201,7 +201,7 @@ document.getElementById('exos-demo-gestion-donnees').innerHTML = `
 <div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Interpréter un secteur d'un diagramme circulaire »</h3>
-  <p style="margin:4px 0 10px;">Un diagramme circulaire représente le sport pratiqué par les 25 élèves d'une classe.</p>
+  <p style="margin:4px 0 10px;">Un diagramme circulaire représente le sport pratiqué par les 25 élèves d'une classe. <b>Peut-on dire que plus de la moitié des élèves pratiquent le football ?</b></p>
   <div class="figure-wrap" style="max-width:220px;margin:0 auto 14px;">
     <svg viewBox="0 0 220 220" style="width:100%;display:block;">
       <path d="M 110 110 L 110.0 20.0 A 90 90 0 0 1 162.9 182.8 Z" fill="#2EA8C9" stroke="#fff" stroke-width="1.5"/>

@@ -126,12 +126,14 @@ document.getElementById('exos-demo-fractions-comp-add').innerHTML = `
 <div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Compare deux fractions de dénominateurs différents »</h3>
+  <p style="margin:4px 0 10px;"><b>Compare les fractions <span class="tex">\\dfrac{5}{6}</span> et <span class="tex">\\dfrac{3}{4}</span>.</b></p>
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr"><span class="tex">\\dfrac{5}{6} = \\dfrac{5 \\times 2}{6 \\times 2} = \\dfrac{10}{12}</span> et <span class="tex">\\dfrac{3}{4} = \\dfrac{3 \\times 3}{4 \\times 3} = \\dfrac{9}{12}</span>.</span><span class="we-comment">On réduit au même dénominateur.</span></div>
     <div class="we-row"><span class="we-expr">Or, 10 &gt; 9.</span><span class="we-comment">On compare les numérateurs.</span></div>
     <div class="we-row"><span class="we-expr">Donc <span class="tex">\\dfrac{10}{12} > \\dfrac{9}{12}</span>, donc <span class="tex">\\dfrac{5}{6} > \\dfrac{3}{4}</span>.</span><span class="we-comment">Conclusion.</span></div>
   </div>
   <h3 style="margin-top:18px;">Rédaction type : « Additionne (ou soustrais) deux fractions de dénominateurs différents »</h3>
+  <p style="margin:4px 0 10px;"><b>Calcule <span class="tex">\\dfrac{7}{6} + \\dfrac{5}{8}</span>.</b></p>
   <div class="redaction-template">
     <div class="we-row"><span class="we-expr"><span class="tex">\\dfrac{7}{6} = \\dfrac{7 \\times 4}{6 \\times 4} = \\dfrac{28}{24}</span> et <span class="tex">\\dfrac{5}{8} = \\dfrac{5 \\times 3}{8 \\times 3} = \\dfrac{15}{24}</span>.</span><span class="we-comment">On réduit au même dénominateur.</span></div>
     <div class="we-row"><span class="we-expr"><span class="tex">\\dfrac{7}{6} + \\dfrac{5}{8} = \\dfrac{28}{24} + \\dfrac{15}{24} = \\dfrac{43}{24}</span></span><span class="we-comment">On additionne les numérateurs, en gardant le dénominateur commun.</span></div>
