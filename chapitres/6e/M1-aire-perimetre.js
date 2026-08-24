@@ -9,8 +9,9 @@
    §1 Périmètre et aire d'une figure : définitions générales, figure
    sur quadrillage (aire en carreaux, périmètre en unités de longueur
    du quadrillage) -- valeurs différentes du support papier.
-   §2 Périmètres de figures usuelles (rectangle/carré/cercle) +
-   exemple numérique (périmètre d'un cercle).
+   §2 Périmètres et longueurs de figures usuelles (rectangle/carré/
+   cercle, avec la distinction cercle=longueur / disque=périmètre) +
+   exemple numérique (longueur d'un cercle, formule avec r et avec D).
    §3 Aires de figures usuelles (rectangle/carré) + exemple numérique.
    §4 Unités d'aire : le m² et ses sous-multiples, tableau de
    conversions, deux exemples numériques (valeurs différentes du
@@ -18,7 +19,7 @@
 
    Toutes les valeurs numériques ci-dessous ont été calculées et
    vérifiées avant intégration (aire/périmètre de la figure sur
-   quadrillage, périmètre du cercle avec π exact vs valeur arrondie,
+   quadrillage, longueur du cercle avec π exact vs valeur arrondie,
    conversions d'unités d'aire).
 
    Méthode/exercices/histoire laissés en placeholder pour une
@@ -61,7 +62,9 @@ document.getElementById('cours-demo-aire-perimetre').innerHTML = `
 </ul>
 <p class="hint" style="margin:10px 0 0;">Remarque : l'aire d'une figure dépend de l'unité d'aire choisie. Il faut donc toujours préciser celle qui est utilisée.</p>
 
-<div class="lesson-header"><span class="num">2</span><h3>Périmètres de figures usuelles</h3></div>
+<div class="lesson-header"><span class="num">2</span><h3>Périmètres et longueurs de figures usuelles</h3></div>
+
+<div class="def-box" style="margin-bottom:14px;">Le <b>cercle</b> est une courbe (une ligne) : on parle de sa <b>longueur</b>. Le <b>disque</b> est la surface qu'il délimite : on parle de son <b>périmètre</b> (qui est la longueur du cercle qui le borde) et de son <b>aire</b>.</div>
 
 <div style="display:flex;gap:16px;flex-wrap:wrap;margin:12px 0;justify-content:center;">
   <div style="text-align:center;">
@@ -89,29 +92,32 @@ document.getElementById('cours-demo-aire-perimetre').innerHTML = `
     <p class="hint" style="margin:2px 0 0;">Périmètre <span class="tex">= 4 \\times c</span></p>
   </div>
   <div style="text-align:center;">
-    <svg viewBox="0 0 130 130" style="width:120px;display:block;">
+    <svg viewBox="0 0 130 140" style="width:120px;display:block;">
       <circle cx="65" cy="65" r="45" fill="none" stroke="#F8AF23" stroke-width="2"/>
+      <line x1="20" y1="65" x2="110" y2="65" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="3 3"/>
       <line x1="65" y1="65" x2="65" y2="20" stroke="#1C1B2E" stroke-width="1.4"/>
       <text x="70" y="46" font-family="Space Grotesk" font-size="13" fill="#1F3A5C">r</text>
+      <text x="60" y="128" font-family="Space Grotesk" font-size="13" fill="#6B7A8C">D</text>
       <circle cx="65" cy="65" r="2" fill="#1C1B2E"/>
     </svg>
-    <p class="hint" style="margin:2px 0 0;">Périmètre <span class="tex">= 2 \\times r \\times \\pi</span></p>
+    <p class="hint" style="margin:2px 0 0;">Longueur <span class="tex">= 2 \\times \\pi \\times r = \\pi \\times D</span></p>
   </div>
 </div>
 
 <p class="example-title">Exemple :</p>
-<p style="margin:4px 0 10px;">Quel est le périmètre d'un cercle de rayon 5 cm ?</p>
+<p style="margin:4px 0 10px;">Quelle est la longueur d'un cercle de rayon 5 cm ?</p>
 <div class="redaction-block">
   <div class="redaction-template">
-    <div class="we-row"><span class="we-expr">Périmètre <span class="tex">= 2 \\times r \\times \\pi</span></span><span class="we-comment">On écrit la formule.</span></div>
-    <div class="we-row"><span class="we-expr">Périmètre <span class="tex">= 2 \\times 5\\text{ cm} \\times \\pi</span></span><span class="we-comment">On remplace r par 5 cm.</span></div>
-    <div class="we-row"><span class="we-expr">Périmètre <span class="tex">= 10\\pi \\text{ cm}</span></span><span class="we-comment">On obtient la valeur exacte.</span></div>
-    <div class="we-row"><span class="we-expr">Périmètre <span class="tex">\\approx 31{,}42 \\text{ cm}</span></span><span class="we-comment">On utilise la touche π de la calculatrice, on obtient la valeur arrondie au centième.</span></div>
+    <div class="we-row"><span class="we-expr">Longueur <span class="tex">= 2 \\times \\pi \\times r</span></span><span class="we-comment">On écrit la formule.</span></div>
+    <div class="we-row"><span class="we-expr">Longueur <span class="tex">= 2 \\times \\pi \\times 5\\text{ cm}</span></span><span class="we-comment">On remplace r par 5 cm.</span></div>
+    <div class="we-row"><span class="we-expr">Longueur <span class="tex">= 10\\pi \\text{ cm}</span></span><span class="we-comment">On obtient la valeur exacte.</span></div>
+    <div class="we-row"><span class="we-expr">Longueur <span class="tex">\\approx 31{,}42 \\text{ cm}</span></span><span class="we-comment">On utilise la touche π de la calculatrice, on obtient la valeur arrondie au centième.</span></div>
   </div>
 </div>
-<p style="margin:4px 0 0;">Le périmètre d'un cercle de rayon 5 cm est <span class="tex">10\\pi</span> cm, soit environ <b>31,42 cm</b>.</p>
+<p style="margin:4px 0 0;">La longueur d'un cercle de rayon 5 cm est <span class="tex">10\\pi</span> cm, soit environ <b>31,42 cm</b>. On peut aussi la calculer avec le diamètre : <span class="tex">D = 2 \\times r = 10</span> cm, donc Longueur <span class="tex">= \\pi \\times D = \\pi \\times 10\\text{ cm} = 10\\pi</span> cm — on retrouve bien le même résultat.</p>
 
 <div class="lesson-header"><span class="num">3</span><h3>Aires de figures usuelles</h3></div>
+
 
 <div style="display:flex;gap:16px;flex-wrap:wrap;margin:12px 0;justify-content:center;">
   <div style="text-align:center;">
