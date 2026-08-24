@@ -342,12 +342,45 @@ function circNextStep(){
 }
 
 
+document.getElementById('histoire-demo-proprietes-triangles').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  <p style="margin:0 0 12px;">En 1792, en pleine Révolution française, les astronomes <b>Jean-Baptiste Delambre</b> et <b>Pierre Méchain</b> partent chacun de leur côté — l'un vers Dunkerque, l'autre vers Barcelone — pour une mission qui va durer sept ans : mesurer précisément la distance entre les deux villes, afin de définir une nouvelle unité universelle, le <b>mètre</b>. Le mètre est alors fixé comme la dix-millionième partie de la distance entre le pôle Nord et l'équateur, en passant par Paris.</p>
+  <p style="margin:0 0 12px;">Mais comment mesurer une distance de plus de 1000 km à la fin du XVIII<sup>e</sup> siècle, sans GPS ni satellite ? Impossible de tendre un ruban aussi long ! Delambre et Méchain utilisent la <b>triangulation</b> : ils repèrent des points élevés (clochers, collines, tours) tout le long du trajet, et forment ainsi une chaîne de triangles reliant Dunkerque à Barcelone.</p>
+  <div class="figure-wrap" style="max-width:260px;margin:4px auto 14px;">
+    <svg viewBox="0 0 200 320" style="width:100%;display:block;">
+      <line x1="100" y1="20" x2="60" y2="110" stroke="#1C1B2E" stroke-width="1.6"/>
+      <line x1="100" y1="20" x2="140" y2="110" stroke="#1C1B2E" stroke-width="1.6"/>
+      <line x1="60" y1="110" x2="140" y2="110" stroke="#E35D3A" stroke-width="2.2"/>
+      <line x1="60" y1="110" x2="60" y2="200" stroke="#1C1B2E" stroke-width="1.6"/>
+      <line x1="140" y1="110" x2="60" y2="200" stroke="#1C1B2E" stroke-width="1.6"/>
+      <line x1="140" y1="110" x2="100" y2="290" stroke="#1C1B2E" stroke-width="1.6"/>
+      <line x1="60" y1="200" x2="100" y2="290" stroke="#1C1B2E" stroke-width="1.6"/>
+      <path d="M 131.9 91.7 A 20 20 0 0 0 120.0 110.0" fill="none" stroke="#2EA8C9" stroke-width="2"/>
+      <text x="107" y="97" font-family="Space Grotesk" font-size="10" fill="#2EA8C9" font-weight="700">angle mesuré</text>
+      <circle cx="100" cy="20" r="3" fill="#1C1B2E"/>
+      <circle cx="60" cy="110" r="3" fill="#1C1B2E"/>
+      <circle cx="140" cy="110" r="3" fill="#1C1B2E"/>
+      <circle cx="60" cy="200" r="3" fill="#1C1B2E"/>
+      <circle cx="100" cy="290" r="3" fill="#1C1B2E"/>
+      <text x="104" y="14" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">Dunkerque</text>
+      <text x="4" y="102" font-family="Space Grotesk" font-size="11" fill="#1F3A5C" font-weight="700">Paris</text>
+      <text x="104" y="306" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">Barcelone</text>
+    </svg>
+    <p class="hint" style="text-align:center;margin:2px 0 0;">En orange : la seule distance mesurée directement (une courte <b>base</b>, sur un terrain plat). Tout le reste se calcule, triangle après triangle.</p>
+  </div>
+  <p style="margin:0 0 12px;">À chaque triangle, au lieu de mesurer des distances (très difficile sur le terrain), ils mesurent seulement des <b>angles</b>, avec un instrument de précision appelé cercle répétiteur. En ne connaissant qu'un seul côté du premier triangle (la base, mesurée directement) et tous les angles de la chaîne, ils calculent triangle après triangle la longueur de tous les autres côtés — exactement grâce à la propriété que vous venez d'étudier : <b>la somme des angles d'un triangle vaut toujours 180°</b>.</p>
+  <p style="margin:0;">Le voyage n'est pas de tout repos : Méchain manque plusieurs fois d'être arrêté comme espion (la France est en guerre), et reste obsédé jusqu'à sa mort par une petite erreur de mesure qu'il pense avoir commise. Le mètre, lui, est officiellement adopté en 1799 — et sert toujours de référence aujourd'hui, bien que redéfini depuis à partir de la vitesse de la lumière.</p>
+</div>
+`;
+
 DEMO_REGISTRY['6e|Propriétés des triangles'] = {
-  cours:'cours-demo-proprietes-triangles', methode:'methode-demo-proprietes-triangles', exos:'exos-demo-proprietes-triangles',
+  cours:'cours-demo-proprietes-triangles', methode:'methode-demo-proprietes-triangles', exos:'exos-demo-proprietes-triangles', histoire:'histoire-demo-proprietes-triangles',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-proprietes-triangles'));
     renderStaticMath(document.getElementById('methode-demo-proprietes-triangles'));
     renderStaticMath(document.getElementById('exos-demo-proprietes-triangles'));
+    renderStaticMath(document.getElementById('histoire-demo-proprietes-triangles'));
     injectCourseAddButtons(document.getElementById('cours-demo-proprietes-triangles'));
     injectCourseAddButtons(document.getElementById('methode-demo-proprietes-triangles'));
     circReset();
