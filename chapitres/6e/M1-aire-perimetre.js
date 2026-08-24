@@ -345,12 +345,40 @@ function convAireNextStep(){
 }
 
 
+document.getElementById('histoire-demo-aire-perimetre').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  <p style="margin:0 0 12px;">Avant la Révolution française, mesurer un terrain était un vrai casse-tête. L'unité la plus courante, l'<b>arpent</b>, changeait de valeur selon l'endroit : un arpent de Paris valait environ 34 ares, un « arpent commun » environ 42 ares, et un arpent « royal » (celui des eaux et forêts) environ 51 ares. Ailleurs en France, selon les provinces, un arpent pouvait valoir de 32 à 78 ares — plus du double d'un bout à l'autre du pays, sous le même nom ! Il existait aussi le <b>journal</b>, la surface qu'un homme pouvait labourer en une seule journée, qui variait elle aussi selon la qualité du sol.</p>
+  <div class="figure-wrap" style="max-width:340px;margin:4px auto 14px;">
+    <svg viewBox="0 0 340 150" style="width:100%;display:block;">
+      <rect x="10.0" y="87.4" width="52.6" height="52.6" fill="rgba(227,93,58,.22)" stroke="#E35D3A" stroke-width="1.6"/>
+      <rect x="76.6" y="81.5" width="58.5" height="58.5" fill="rgba(248,175,35,.22)" stroke="#F8AF23" stroke-width="1.6"/>
+      <rect x="149.1" y="75.7" width="64.3" height="64.3" fill="rgba(46,168,201,.22)" stroke="#2EA8C9" stroke-width="1.6"/>
+      <rect x="227.4" y="50.0" width="90.0" height="90.0" fill="none" stroke="#1C1B2E" stroke-width="2" stroke-dasharray="4 3"/>
+      <text x="36" y="147" font-family="Space Grotesk" font-size="11" fill="#1F3A5C" text-anchor="middle">Paris</text>
+      <text x="36" y="159" font-family="Space Grotesk" font-size="10" fill="#6B7A8C" text-anchor="middle">34 a</text>
+      <text x="106" y="147" font-family="Space Grotesk" font-size="11" fill="#1F3A5C" text-anchor="middle">commun</text>
+      <text x="106" y="159" font-family="Space Grotesk" font-size="10" fill="#6B7A8C" text-anchor="middle">42 a</text>
+      <text x="181" y="147" font-family="Space Grotesk" font-size="11" fill="#1F3A5C" text-anchor="middle">royal</text>
+      <text x="181" y="159" font-family="Space Grotesk" font-size="10" fill="#6B7A8C" text-anchor="middle">51 a</text>
+      <text x="272" y="147" font-family="Space Grotesk" font-size="11" fill="#1F3A5C" text-anchor="middle">1 hectare</text>
+      <text x="272" y="159" font-family="Space Grotesk" font-size="10" fill="#6B7A8C" text-anchor="middle">100 a</text>
+    </svg>
+    <p class="hint" style="text-align:center;margin:2px 0 0;">Carrés proportionnels à l'aire : « un arpent » ne représentait pas du tout la même surface partout.</p>
+  </div>
+  <p style="margin:0 0 12px;">Ce chaos posait de vrais problèmes : acheter, vendre ou faire payer l'impôt sur un terrain devenait injuste dès qu'on changeait de région, puisque le même mot ne représentait pas la même surface. C'est pour y mettre fin qu'en 1795, en même temps que le mètre (voir l'histoire du chapitre sur les triangles), les révolutionnaires créent l'<b>are</b> : une unité d'aire unique, valable partout en France, qui ne dépend d'aucune coutume locale. L'<b>hectare</b> (100 a) suit naturellement pour les grandes surfaces comme les fermes.</p>
+  <p style="margin:0;">Le changement n'a pourtant pas été immédiat : malgré la loi de 1795, les anciennes unités sont restées si ancrées dans les habitudes qu'il a fallu attendre une loi de 1837 pour rendre le système métrique <b>obligatoire</b> partout en France, à partir du 1er janvier 1840 — 45 ans plus tard ! Dans certaines campagnes, arpents et journaux ont continué à être utilisés dans les conversations bien après cette date.</p>
+  <p class="hint" style="margin:12px 0 0;">Pour aller plus loin : le problème inverse, transformer un cercle en carré de même aire (la « quadrature du cercle »), a occupé les mathématiciens pendant plus de 2000 ans, avant qu'on démontre en 1882 que c'est en réalité impossible avec une règle et un compas.</p>
+</div>
+`;
+
 DEMO_REGISTRY['6e|Aire et périmètre'] = {
-  cours:'cours-demo-aire-perimetre', methode:'methode-demo-aire-perimetre', exos:'exos-demo-aire-perimetre',
+  cours:'cours-demo-aire-perimetre', methode:'methode-demo-aire-perimetre', exos:'exos-demo-aire-perimetre', histoire:'histoire-demo-aire-perimetre',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-aire-perimetre'));
     renderStaticMath(document.getElementById('methode-demo-aire-perimetre'));
     renderStaticMath(document.getElementById('exos-demo-aire-perimetre'));
+    renderStaticMath(document.getElementById('histoire-demo-aire-perimetre'));
     injectCourseAddButtons(document.getElementById('cours-demo-aire-perimetre'));
     injectCourseAddButtons(document.getElementById('methode-demo-aire-perimetre'));
     convAireReset();
