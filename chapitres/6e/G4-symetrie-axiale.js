@@ -297,7 +297,6 @@ document.getElementById('methode-demo-symetrie-axiale-6e').innerHTML = `
 `;
 
 document.getElementById('exos-demo-symetrie-axiale-6e').innerHTML = `
-<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Justifier que deux points sont symétriques »</h3>
   <div class="redaction-template">

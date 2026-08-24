@@ -138,13 +138,9 @@ document.getElementById('methode-demo-nombres-entiers').innerHTML = `
     <button class="btn secondary" onclick="neChiffreNombreDemo.reset()">Recommencer</button>
   </div>
 </div>
-<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
-  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).
-</div>
 `;
 
 document.getElementById('exos-demo-nombres-entiers').innerHTML = `
-<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Décomposer un grand nombre »</h3>
   <div class="redaction-template">

@@ -489,7 +489,6 @@ document.getElementById('methode-demo-operations-ordre-grandeur-6e').innerHTML =
 
 /* ================= EXERCICES ================= */
 document.getElementById('exos-demo-operations-ordre-grandeur-6e').innerHTML = `
-<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
 <div class="redaction-block">
   <h3>Exercices</h3>
   <div class="exo-card">

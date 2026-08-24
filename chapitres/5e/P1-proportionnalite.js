@@ -363,7 +363,6 @@ document.getElementById('methode-demo-proportionnalite-5e').innerHTML = `
 
 /* ================= EXERCICES ================= */
 document.getElementById('exos-demo-proportionnalite-5e').innerHTML = `
-<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. La méthode est toujours la même, en trois temps : <b>ce que je sais</b> (les constats), puis <span style="color:var(--accent-orange);font-weight:700;">Or,</span> suivi de la propriété que l'on va utiliser, puis <span style="color:var(--accent);font-weight:700;">Donc</span>, suivi de la conclusion.</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Justifier qu'un tableau n'est pas un tableau de proportionnalité »</h3>
   <p style="margin:0 0 12px;"><b>Énoncé</b> : Voici un tableau de nombres. Justifie qu'il ne s'agit pas d'un tableau de proportionnalité.</p>

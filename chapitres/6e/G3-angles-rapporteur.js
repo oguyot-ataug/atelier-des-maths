@@ -1125,10 +1125,6 @@ document.getElementById('methode-demo-angles-rapporteur-6e').innerHTML = `
   <p class="hint" id="ar-construireStatus" style="text-align:center;margin-top:8px;"></p>
 </div>
 
-<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
-  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. La méthode est toujours la même, en trois temps : <b>ce que je sais</b> (les constats), puis <span style="color:var(--accent-orange);font-weight:700;">Or,</span> suivi de la propriété que l'on va utiliser, puis <span style="color:var(--accent);font-weight:700;">Donc</span>, suivi de la conclusion.
-</div>
-
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : calculer une mesure grâce aux angles opposés par le sommet</h4></div>
 <div class="figure-wrap">
   <p><b>Énoncé :</b> Les droites (RR') et (TT') se coupent en S. On sait que <span class="tex">\\widehat{RST} = 62°</span>. Calcule la mesure de l'angle <span class="tex">\\widehat{R'ST'}</span>.</p>
@@ -1188,7 +1184,6 @@ document.getElementById('methode-demo-angles-rapporteur-6e').innerHTML = `
 
 /* ================= EXOS ================= */
 document.getElementById('exos-demo-angles-rapporteur-6e').innerHTML = `
-<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Utiliser les angles opposés par le sommet »</h3>
   <div class="redaction-template">

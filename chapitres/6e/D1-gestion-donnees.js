@@ -192,13 +192,9 @@ document.getElementById('methode-demo-gestion-donnees').innerHTML = `
   <div class="step-item" data-step="4"><div class="step-num">4</div><div>Natation : <span class="tex">\\dfrac{4}{25} \\times 360 = 57{,}6°</span>. On trace le secteur correspondant.</div></div>
   <div class="step-item" data-step="5"><div class="step-num">5</div><div>Autre : <span class="tex">\\dfrac{5}{25} \\times 360 = 72°</span>. On trace le secteur correspondant, ce qui referme le cercle.</div></div>
 </div>
-<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;margin-top:20px;">
-  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).
-</div>
 `;
 
 document.getElementById('exos-demo-gestion-donnees').innerHTML = `
-<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Interpréter un secteur d'un diagramme circulaire »</h3>
   <p style="margin:4px 0 10px;">Un diagramme circulaire représente le sport pratiqué par les 25 élèves d'une classe. <b>Peut-on dire que plus de la moitié des élèves pratiquent le football ?</b></p>

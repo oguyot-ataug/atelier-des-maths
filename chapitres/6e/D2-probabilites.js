@@ -73,13 +73,9 @@ document.getElementById('methode-demo-probabilites').innerHTML = `
     <button class="btn secondary" onclick="probaMethodeDemo.reset()">Recommencer</button>
   </div>
 </div>
-<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;margin-top:20px;">
-  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).
-</div>
 `;
 
 document.getElementById('exos-demo-probabilites').innerHTML = `
-<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Calculer la probabilité d'un évènement »</h3>
   <p style="margin:4px 0 10px;">On tire une carte au hasard dans un jeu de 52 cartes. Les têtes de cœur sont le valet, la dame et le roi de cœur. <b>Quelle est la probabilité de tirer une tête de cœur ?</b></p>

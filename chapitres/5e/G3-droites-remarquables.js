@@ -356,10 +356,6 @@ document.getElementById('histoire-demo-droites-remarquables-5e').innerHTML = `
 
 /* ================= METHODE ================= */
 document.getElementById('methode-demo-droites-remarquables-5e').innerHTML = `
-<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
-  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. La méthode est toujours la même, en trois temps : <b>ce que je sais</b> (les constats), puis <span style="color:var(--accent-orange);font-weight:700;">Or,</span> suivi de la propriété que l'on va utiliser, puis <span style="color:var(--accent);font-weight:700;">Donc</span>, suivi de la conclusion.
-</div>
-
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : démontrer qu'un triangle est rectangle grâce au cercle circonscrit</h4></div>
 <div class="figure-wrap">
   <p class="interaction-hint" style="margin:6px 0;">Cliquez sur "Étape suivante" pour dérouler la méthode.</p>
@@ -396,7 +392,6 @@ document.getElementById('methode-demo-droites-remarquables-5e').innerHTML = `
 
 /* ================= EXOS ================= */
 document.getElementById('exos-demo-droites-remarquables-5e').innerHTML = `
-<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. La méthode est toujours la même, en trois temps : <b>ce que je sais</b> (les constats), puis <span style="color:var(--accent-orange);font-weight:700;">Or,</span> suivi de la propriété que l'on va utiliser, puis <span style="color:var(--accent);font-weight:700;">Donc</span>, suivi de la conclusion.</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Démontrer qu'un triangle est rectangle »</h3>
   <div class="redaction-template">

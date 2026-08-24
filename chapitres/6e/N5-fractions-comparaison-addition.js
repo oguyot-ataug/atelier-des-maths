@@ -117,13 +117,9 @@ document.getElementById('methode-demo-fractions-comp-add').innerHTML = `
     <button class="btn secondary" onclick="fcaSubDemo.reset()">Recommencer</button>
   </div>
 </div>
-<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;margin-top:20px;">
-  ⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).
-</div>
 `;
 
 document.getElementById('exos-demo-fractions-comp-add').innerHTML = `
-<div class="redaction-note">⚠️ En rédaction, on n'utilise jamais <b>car</b> ni <b>parce que</b>. On énonce d'abord ce que l'on sait, puis on conclut avec <b>donc</b> (ou <b>or … donc</b>).</div>
 <div class="redaction-block">
   <h3>Rédaction type : « Compare deux fractions de dénominateurs différents »</h3>
   <p style="margin:4px 0 10px;"><b>Compare les fractions <span class="tex">\\dfrac{5}{6}</span> et <span class="tex">\\dfrac{3}{4}</span>.</b></p>
