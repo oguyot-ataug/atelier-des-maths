@@ -224,13 +224,126 @@ document.getElementById('cours-demo-aire-perimetre').innerHTML = `
 `;
 
 document.getElementById('methode-demo-aire-perimetre').innerHTML = `
-<div class="sub-header"><span class="letter">M</span><h4>Méthode</h4></div>
-<p class="hint" style="margin:8px 0;">Cette partie est en cours de préparation, elle arrivera dans une prochaine mise à jour.</p>
+<div class="sub-header"><span class="letter">M</span><h4>Utiliser un tableau de conversion des aires</h4></div>
+
+<span class="prop-badge">Règle</span>
+<div class="def-box">
+  Pour les <b>terrains</b>, on utilise aussi deux unités d'aire particulières :
+  <ul class="example-list" style="margin:8px 0 0;">
+    <li>L'<b>are</b> (noté a) est une autre écriture du <b>dam²</b> : c'est l'aire d'un carré de 10 m de côté, soit <b>100 m²</b>.</li>
+    <li>L'<b>hectare</b> (noté ha) est une autre écriture du <b>hm²</b> : c'est l'aire d'un carré de 100 m de côté, soit <b>100 a</b>, soit <b>10 000 m²</b>.</li>
+  </ul>
+</div>
+
+<p class="hint" style="margin:10px 0;">Comme chaque unité d'aire vaut 100 fois la suivante, chaque colonne du tableau de conversion occupe <b>deux cases</b> (au lieu d'une seule pour les longueurs).</p>
+
+<div class="figure-wrap" style="max-width:520px;margin:12px auto;overflow-x:auto;">
+  <table id="convAireTable" style="border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.82rem;margin:0 auto;">
+    <thead>
+      <tr>
+        <th colspan="2" style="padding:6px 4px;border:1px solid rgba(28,43,57,.15);background:#EDEDED;font-family:'Space Grotesk',sans-serif;">km²</th>
+        <th colspan="2" style="padding:6px 4px;border:1px solid rgba(28,43,57,.15);background:rgba(248,175,35,.28);font-family:'Space Grotesk',sans-serif;" id="convAireHeadHa">hm²<br><span style="font-size:.72rem;font-weight:400;">(ha)</span></th>
+        <th colspan="2" style="padding:6px 4px;border:1px solid rgba(28,43,57,.15);background:rgba(46,168,201,.22);font-family:'Space Grotesk',sans-serif;" id="convAireHeadA">dam²<br><span style="font-size:.72rem;font-weight:400;">(a)</span></th>
+        <th colspan="2" style="padding:6px 4px;border:1px solid rgba(28,43,57,.15);background:#EDEDED;font-family:'Space Grotesk',sans-serif;">m²</th>
+        <th colspan="2" style="padding:6px 4px;border:1px solid rgba(28,43,57,.15);background:#EDEDED;font-family:'Space Grotesk',sans-serif;">dm²</th>
+        <th colspan="2" style="padding:6px 4px;border:1px solid rgba(28,43,57,.15);background:#EDEDED;font-family:'Space Grotesk',sans-serif;">cm²</th>
+        <th colspan="2" style="padding:6px 4px;border:1px solid rgba(28,43,57,.15);background:#EDEDED;font-family:'Space Grotesk',sans-serif;">mm²</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td id="cellkm2-1" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="cellkm2-2" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="cellha-1" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="cellha-2" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="cella-1" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="cella-2" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="cellm2-1" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="cellm2-2" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="celldm2-1" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="celldm2-2" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="cellcm2-1" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="cellcm2-2" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="cellmm2-1" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+        <td id="cellmm2-2" class="conv-cell" style="width:26px;height:30px;text-align:center;border:1px solid rgba(28,43,57,.15);"></td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="hint" style="text-align:center;margin:8px 0 0;" id="convAireResult"></p>
+</div>
+<div class="figure-wrap">
+  <div class="step-list" id="convAireSteps">
+    <div class="step-item" data-step="1"><div class="step-num">1</div><div>On veut convertir <b>3,25 ha</b>. On repère que <b>ha</b> correspond à la colonne <b>hm²</b> (surlignée), et <b>a</b> à la colonne <b>dam²</b> (surlignée).</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">2</div><div>La partie entière (3) s'écrit dans la case des <b>unités de la colonne ha</b>.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">3</div><div>La partie décimale (25) continue dans les deux cases de la colonne <b>a</b>, juste à droite.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">4</div><div>Pour lire le résultat <b>en a</b> : on lit tous les chiffres jusqu'à la colonne a incluse → <b>325 a</b>.</div></div>
+    <div class="step-item" data-step="5"><div class="step-num">5</div><div>Pour lire le résultat <b>en m²</b> : on lit tous les chiffres jusqu'à la colonne m² incluse → <b>32 500 m²</b>.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="btnConvAireNext" onclick="convAireNextStep()">Étape suivante →</button>
+    <button class="btn secondary" onclick="convAireReset()">Recommencer</button>
+  </div>
+</div>
 `;
 
 document.getElementById('exos-demo-aire-perimetre').innerHTML = `
 <p class="hint" style="margin:8px 0;">Les exercices de ce chapitre sont en cours de préparation, ils arriveront dans une prochaine mise à jour.</p>
 `;
+
+/* ================= Tableau de conversion des aires (are/hectare) =================
+   7 unités × 2 colonnes chacune (km² à mm²), car chaque unité d'aire vaut 100 fois la
+   suivante. Exemple choisi (3,25 ha) volontairement "propre" : aucun reste au-delà de
+   la colonne m² (325 a et 32 500 m² sont des valeurs exactes), pour ne pas alourdir la
+   démonstration avec des zéros jusqu'en mm². Valeurs vérifiées : 3,25 ha × 100 = 325 a ;
+   325 a × 100 = 32 500 m². */
+let convAireStep = 0;
+function convAireReset(){
+  convAireStep = 0;
+  ['km2-1','km2-2','ha-1','ha-2','a-1','a-2','m2-1','m2-2','dm2-1','dm2-2','cm2-1','cm2-2','mm2-1','mm2-2'].forEach(id=>{
+    const el = document.getElementById('cell'+id);
+    el.textContent = ''; el.style.background = ''; el.style.fontWeight = '400';
+  });
+  document.getElementById('convAireHeadHa').style.outline = '';
+  document.getElementById('convAireHeadA').style.outline = '';
+  document.getElementById('convAireResult').textContent = '';
+  document.querySelectorAll('#convAireSteps .step-item').forEach(el=>el.classList.remove('done'));
+  const btn = document.getElementById('btnConvAireNext');
+  btn.textContent = 'Étape suivante →'; btn.disabled = false;
+}
+function convAireNextStep(){
+  convAireStep++;
+  const btn = document.getElementById('btnConvAireNext');
+  const markDone = n=>document.querySelector(`#convAireSteps .step-item[data-step="${n}"]`).classList.add('done');
+  const setCell = (id, val, hi)=>{
+    const el = document.getElementById('cell'+id);
+    el.textContent = val;
+    if(hi){ el.style.background = hi; el.style.fontWeight = '700'; }
+  };
+  if(convAireStep===1){
+    document.getElementById('convAireHeadHa').style.outline = '2px solid #F8AF23';
+    document.getElementById('convAireHeadA').style.outline = '2px solid #2EA8C9';
+    markDone(1);
+  } else if(convAireStep===2){
+    setCell('ha-1', '0'); setCell('ha-2', '3', 'rgba(248,175,35,.35)');
+    markDone(2);
+  } else if(convAireStep===3){
+    setCell('a-1', '2', 'rgba(46,168,201,.28)'); setCell('a-2', '5', 'rgba(46,168,201,.28)');
+    markDone(3);
+  } else if(convAireStep===4){
+    document.getElementById('convAireResult').innerHTML = '<span class="tex">3{,}25 \\text{ ha} = 325 \\text{ a}</span>';
+    renderStaticMath(document.getElementById('convAireResult'));
+    markDone(4);
+  } else if(convAireStep===5){
+    setCell('m2-1', '0'); setCell('m2-2', '0');
+    document.getElementById('convAireResult').innerHTML = '<span class="tex">3{,}25 \\text{ ha} = 325 \\text{ a} = 32\\,500 \\text{ m}^2</span>';
+    renderStaticMath(document.getElementById('convAireResult'));
+    markDone(5);
+    btn.textContent = 'Terminé ✓'; btn.disabled = true;
+    return;
+  }
+  btn.disabled = false;
+}
+
 
 DEMO_REGISTRY['6e|Aire et périmètre'] = {
   cours:'cours-demo-aire-perimetre', methode:'methode-demo-aire-perimetre', exos:'exos-demo-aire-perimetre',
@@ -240,5 +353,6 @@ DEMO_REGISTRY['6e|Aire et périmètre'] = {
     renderStaticMath(document.getElementById('exos-demo-aire-perimetre'));
     injectCourseAddButtons(document.getElementById('cours-demo-aire-perimetre'));
     injectCourseAddButtons(document.getElementById('methode-demo-aire-perimetre'));
+    convAireReset();
   }
 };
