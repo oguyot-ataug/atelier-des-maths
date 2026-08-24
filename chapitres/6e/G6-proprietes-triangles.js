@@ -227,15 +227,19 @@ function circReset(){
   ['circArcA1','circArcA2','circArcB1','circArcB2','circArcB3','circArcB4','circArcC1','circArcC2',
    'circMedAB','circMedBC','circQ1Dot','circQ2Dot','circQ3Dot','circQ4Dot','circLabelO','circCircle',
    'circCompass','circRulerTool','circPencilTool'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  document.getElementById('circCircle').removeAttribute('transform');
   document.querySelectorAll('#circSvg + .step-list .step-item').forEach(el=>el.classList.remove('done'));
   const btn = document.getElementById('btnCircNext');
   btn.textContent = 'Étape suivante →'; btn.disabled = false;
 }
 function circSetRulerAt(origin, angleDeg){
-  document.getElementById('circRulerTool').setAttribute('transform', `translate(${origin.x.toFixed(1)},${origin.y.toFixed(1)}) rotate(${angleDeg.toFixed(2)}) scale(0.62)`);
+  // Échelle 0.85 (au lieu de 0.62 ailleurs) : les médiatrices tracées ici (jusqu'à ~266
+  // unités) sont plus longues que celles de G4, et dépassaient de la règle à 0.62
+  // (340*0.62 = 210.8 < 265.8). 340*0.85 = 289, marge suffisante.
+  document.getElementById('circRulerTool').setAttribute('transform', `translate(${origin.x.toFixed(1)},${origin.y.toFixed(1)}) rotate(${angleDeg.toFixed(2)}) scale(0.85)`);
 }
 function circSetPencilAt(x,y,angleDeg){
-  document.getElementById('circPencilTool').setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(angleDeg-90+8).toFixed(1)}) scale(0.62)`);
+  document.getElementById('circPencilTool').setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(angleDeg-90+8).toFixed(1)}) scale(0.85)`);
 }
 document.getElementById('circRulerTool').innerHTML = rulerSVG(false);
 document.getElementById('circPencilTool').innerHTML = pencilSVG('circ-pencil');
@@ -262,8 +266,17 @@ function circDrawLine(lineEl, from, to, angleDeg, dur, onDone){
 function circSweepFull(opts){
   // Trace le cercle final : le compas tourne une fois complète autour de O pendant que
   // le cercle apparaît progressivement (stroke-dashoffset), dans le même mouvement.
+  //
+  // Point important : le tracé implicite d'un <circle> en SVG démarre TOUJOURS à l'angle
+  // 0° (le point le plus à droite, cx+r,cy), quel que soit l'angle de départ du compas.
+  // Sans correction, le crayon (qui démarre à startAngleDeg, ex. 145.98°) et le début du
+  // tracé révélé (toujours à 0°) ne coïncident pas -- le cercle tracé n'est pas "raccord"
+  // avec le crayon. On corrige en appliquant une rotation CONSTANTE de startAngleDeg au
+  // <circle> lui-même, pour que son point de départ apparaisse exactement là où le
+  // compas commence à tourner.
   const {compassEl, circleEl, center, radius, legLen, startAngleDeg, dur, onDone} = opts;
   compassEl.innerHTML = compassSVG(radius, legLen);
+  circleEl.setAttribute('transform', `rotate(${startAngleDeg.toFixed(2)} ${center.x} ${center.y})`);
   circleEl.setAttribute('stroke-dasharray', CIRC_CIRCUM.toFixed(1));
   circleEl.setAttribute('stroke-dashoffset', CIRC_CIRCUM.toFixed(1));
   circleEl.setAttribute('opacity','1');
@@ -395,3 +408,16 @@ DEMO_REGISTRY['6e|Propriétés des triangles'] = {
     circReset();
   }
 };
+
+DEMO_QUIZZES['6e|Propriétés des triangles'] = [
+  {q:"Dans un triangle, la somme des mesures des angles est toujours égale à...",
+   opts:["90°","180°","360°"], correct:1},
+  {q:"Un triangle a des angles de 50° et 70°. Le troisième angle mesure...",
+   opts:["60°","70°","120°"], correct:0},
+  {q:"Le centre du cercle circonscrit à un triangle est le point où se coupent...",
+   opts:["les médianes","les médiatrices des côtés","les bissectrices"], correct:1},
+  {q:"Si O est le centre du cercle circonscrit au triangle ABC, alors...",
+   opts:["OA = OB = OC","OA + OB + OC = 180°","OA = AB"], correct:0},
+  {q:"Le cercle circonscrit à un triangle est le cercle qui...",
+   opts:["est inscrit dans le triangle","passe par les 3 sommets du triangle","a pour centre le centre de gravité"], correct:1}
+];
