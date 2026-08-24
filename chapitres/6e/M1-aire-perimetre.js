@@ -287,7 +287,45 @@ document.getElementById('methode-demo-aire-perimetre').innerHTML = `
 `;
 
 document.getElementById('exos-demo-aire-perimetre').innerHTML = `
-<p class="hint" style="margin:8px 0;">Les exercices de ce chapitre sont en cours de préparation, ils arriveront dans une prochaine mise à jour.</p>
+<div class="redaction-block">
+  <h3>Rédaction type : « Calculer le périmètre d'un rectangle »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">Périmètre <span class="tex">= 2 \\times (L + l)</span></span><span class="we-comment">On écrit la formule.</span></div>
+    <div class="we-row"><span class="we-expr">Périmètre <span class="tex">= 2 \\times (\\text{...} + \\text{...})</span></span><span class="we-comment">On remplace L et l par les valeurs données.</span></div>
+    <div class="we-row"><span class="we-expr">Périmètre <span class="tex">= \\text{...}</span></span><span class="we-comment">On calcule.</span></div>
+  </div>
+  <h3 style="margin-top:18px;">Rédaction type : « Convertir une aire »</h3>
+  <div class="redaction-template">
+    La mesure exprimée en <span class="fill">cm²</span> est cent fois plus <span class="fill">grande</span> que la mesure exprimée en <span class="fill">dm²</span>.<br>Donc <span class="fill">... dm² = ... cm²</span>.
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Calcule le périmètre d'un rectangle de longueur 8 cm et de largeur 5 cm.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Calcule le périmètre d'un carré de côté 6 cm.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Calcule la longueur d'un cercle de rayon 4 cm. Donne la valeur exacte, puis la valeur arrondie au centième.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Calcule l'aire d'un rectangle de longueur 9 cm et de largeur 3 cm, puis celle d'un carré de côté 6 cm.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Convertis 2,8 dm² en cm², puis 540 cm² en dm².
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 6</div>
+    Un champ mesure 4,5 ha. Convertis cette aire en ares (a), puis en m².
+  </div>
+</div>
 `;
 
 /* ================= Tableau de conversion des aires (are/hectare) =================
@@ -404,3 +442,16 @@ DEMO_REGISTRY['6e|Aire et périmètre'] = {
     convAireReset();
   }
 };
+
+DEMO_QUIZZES['6e|Aire et périmètre'] = [
+  {q:"Le périmètre d'un rectangle de longueur 6 cm et de largeur 4 cm est...",
+   opts:["10 cm","20 cm","24 cm"], correct:1},
+  {q:"La longueur d'un cercle de rayon 3 cm est...",
+   opts:["6π cm","3π cm","9π cm"], correct:0},
+  {q:"1 dm² est égal à...",
+   opts:["10 cm²","100 cm²","1000 cm²"], correct:1},
+  {q:"Un hectare (ha) correspond à...",
+   opts:["100 m²","100 a","10 a"], correct:1},
+  {q:"L'aire d'un carré de 7 cm de côté est...",
+   opts:["14 cm²","28 cm²","49 cm²"], correct:2}
+];
