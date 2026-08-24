@@ -119,13 +119,228 @@ document.getElementById('cours-demo-proprietes-triangles').innerHTML = `
 `;
 
 document.getElementById('methode-demo-proprietes-triangles').innerHTML = `
-<div class="sub-header"><span class="letter">M</span><h4>Méthode</h4></div>
-<p class="hint" style="margin:8px 0;">Cette partie (construction du cercle circonscrit à la règle et au compas) est en cours de préparation, elle arrivera dans une prochaine mise à jour.</p>
+<div class="sub-header"><span class="letter">M</span><h4>Construire le cercle circonscrit à un triangle, à la règle et au compas</h4></div>
+<p class="hint" style="margin:8px 0;">On construit les médiatrices de deux côtés du triangle ABC : leur point d'intersection O est le centre du cercle circonscrit.</p>
+<div class="figure-wrap" style="max-width:340px;margin:12px auto;">
+  <svg id="circSvg" viewBox="0 90 330 340" style="width:100%;display:block;">
+    <line x1="60" y1="300" x2="220" y2="300" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="220" y1="300" x2="150" y2="150" stroke="#1C1B2E" stroke-width="1.8"/>
+    <line x1="150" y1="150" x2="60" y2="300" stroke="#1C1B2E" stroke-width="1.8"/>
+    <polyline id="circArcA1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="circArcA2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="circArcB1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="circArcB2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="circArcB3" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="circArcB4" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="circArcC1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <polyline id="circArcC2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <line id="circMedAB" x1="140" y1="300" x2="140" y2="300" stroke="#E35D3A" stroke-width="1.8" opacity="0"/>
+    <line id="circMedBC" x1="185" y1="225" x2="185" y2="225" stroke="#2EA8C9" stroke-width="1.8" opacity="0"/>
+    <circle id="circQ1Dot" cx="140" cy="402.5" r="2" fill="#1C1B2E" opacity="0"/>
+    <circle id="circQ2Dot" cx="140" cy="197.5" r="2" fill="#1C1B2E" opacity="0"/>
+    <circle id="circQ3Dot" cx="287.3" cy="177.2" r="2" fill="#1C1B2E" opacity="0"/>
+    <circle id="circQ4Dot" cx="82.7" cy="272.8" r="2" fill="#1C1B2E" opacity="0"/>
+    <text id="circLabelO" x="146" y="242" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700" opacity="0">O</text>
+    <circle id="circCircle" cx="140" cy="246" r="96.52" fill="none" stroke="#0C5BA0" stroke-width="1.6" opacity="0"/>
+    <g id="circCompass" transform="translate(60,300)" opacity="0"></g>
+    <g id="circRulerTool" opacity="0"></g>
+    <g id="circPencilTool" opacity="0"></g>
+    <text x="46" y="316" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">A</text>
+    <text x="226" y="316" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">B</text>
+    <text x="146" y="140" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">C</text>
+  </svg>
+  <div class="step-list">
+    <div class="step-item" data-step="1"><div class="step-num">1</div><div>Piquer en A avec un écartement supérieur à la moitié de [AB] : tracer un arc de chaque côté de [AB].</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Piquer en B avec le <b>même écartement</b> : tracer deux arcs qui recoupent les précédents.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">3</div><div>Tracer, à la règle, la médiatrice de [AB] (droite passant par les deux points d'intersection).</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">4</div><div>Piquer en B avec un écartement supérieur à la moitié de [BC] : tracer un arc de chaque côté de [BC].</div></div>
+    <div class="step-item" data-step="5"><div class="step-num">5</div><div>Piquer en C avec le <b>même écartement</b> : tracer deux arcs qui recoupent les précédents.</div></div>
+    <div class="step-item" data-step="6"><div class="step-num">6</div><div>Tracer, à la règle, la médiatrice de [BC] : elle coupe la médiatrice de [AB] au point O.</div></div>
+    <div class="step-item" data-step="7"><div class="step-num">7</div><div>Piquer le compas en O avec un écartement égal à OA : tracer le cercle circonscrit au triangle ABC.</div></div>
+  </div>
+  <div class="figure-toolbar">
+    <button class="btn" id="btnCircNext" onclick="circNextStep()">Étape suivante →</button>
+    <button class="btn secondary" onclick="circReset()">Revoir depuis le début</button>
+  </div>
+</div>
 `;
 
 document.getElementById('exos-demo-proprietes-triangles').innerHTML = `
-<p class="hint" style="margin:8px 0;">Les exercices de ce chapitre sont en cours de préparation, ils arriveront dans une prochaine mise à jour.</p>
+<div class="redaction-block">
+  <h3>Rédaction type : « Calculer un angle manquant dans un triangle »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">La somme des mesures des angles d'un triangle est égale à 180°, donc :</span></div>
+    <div class="we-row"><span class="we-expr"><span class="fill tex">\\widehat{xyz}</span> + <span class="fill tex">\\widehat{yzx}</span> + <span class="fill tex">\\widehat{zxy}</span> = 180°</span></div>
+    <div class="we-row"><span class="we-expr">Donc <span class="fill tex">\\widehat{zxy}</span> = 180° − (<span class="fill">…</span> + <span class="fill">…</span>) = <span class="fill">…</span></span></div>
+  </div>
+  <h3 style="margin-top:18px;">Rédaction type : « Justifier qu'un point est le centre du cercle circonscrit »</h3>
+  <div class="redaction-template">
+    <span class="fill">O</span> appartient à la médiatrice de <span class="fill">[AB]</span> et à la médiatrice de <span class="fill">[BC]</span>.<br>Or les médiatrices des côtés d'un triangle sont concourantes en un point qui est le centre du cercle circonscrit à ce triangle.<br>Donc <span class="fill">O</span> est le centre du cercle circonscrit au triangle <span class="fill">ABC</span>.
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Dans un triangle MNP, <span class="tex">\\widehat{NMP} = 62°</span> et <span class="tex">\\widehat{MNP} = 74°</span>. Calcule la mesure de l'angle <span class="tex">\\widehat{MPN}</span>. Rédige ta réponse.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Un triangle a deux angles de même mesure 55°. Calcule la mesure du troisième angle.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Trace un triangle ABC tel que AB = 7 cm, BC = 6 cm et CA = 5 cm. Construis le cercle circonscrit à ce triangle, en laissant apparents tous les traits de construction (arcs de compas, médiatrices).
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Un point O vérifie OA = OB = OC pour un triangle ABC. Explique pourquoi O est le centre du cercle circonscrit à ce triangle.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Dans un triangle RST rectangle en S, on donne <span class="tex">\\widehat{RTS} = 35°</span>. Calcule la mesure de l'angle <span class="tex">\\widehat{SRT}</span>. Rédige ta réponse.
+  </div>
+</div>
 `;
+
+/* ================= Construction animée : cercle circonscrit au compas =================
+   Réutilise methodOpenInPlace/methodSweepDual (définies dans G4-symetrie-axiale.js,
+   chargé avant ce fichier -- voir l'ordre des <script> dans index.html) et
+   compassSVG/rulerSVG/pencilSVG (app.js), même principe que la médiatrice de G4,
+   appliqué à deux côtés du triangle pour obtenir le centre O du cercle circonscrit.
+
+   Toutes les coordonnées ci-dessous (arcs, angles d'ouverture/balayage du compas,
+   point O, rayon du cercle) ont été calculées et vérifiées numériquement :
+   OA = OB = OC = 96.52 (écart < 0.01 lors du test), O est bien aligné avec les deux
+   points d'intersection de chaque paire d'arcs (produit vectoriel nul, testé). */
+const CIRC_A = {x:60,y:300}, CIRC_B = {x:220,y:300}, CIRC_C = {x:150,y:150};
+const CIRC_R1 = 130, CIRC_LEG1 = 121;   // écartement pour la médiatrice de [AB] (> AB/2 = 80)
+const CIRC_R2 = 140, CIRC_LEG2 = 128;   // écartement pour la médiatrice de [BC] (> BC/2 ≈ 82.76)
+const CIRC_Q1 = {x:140,y:402.5}, CIRC_Q2 = {x:140,y:197.5};   // intersections des arcs de A et B
+const CIRC_Q3 = {x:287.3,y:177.2}, CIRC_Q4 = {x:82.7,y:272.8}; // intersections des arcs de B et C
+const CIRC_O = {x:140,y:246};
+const CIRC_R3 = 96.52, CIRC_LEG3 = 97.56;   // écartement OA pour le cercle final
+const CIRC_CIRCUM = 2*Math.PI*CIRC_R3;      // longueur du cercle (pour l'effet de tracé progressif)
+let circStep = 0;
+function circReset(){
+  circStep = 0;
+  ['circArcA1','circArcA2','circArcB1','circArcB2','circArcB3','circArcB4','circArcC1','circArcC2',
+   'circMedAB','circMedBC','circQ1Dot','circQ2Dot','circQ3Dot','circQ4Dot','circLabelO','circCircle',
+   'circCompass','circRulerTool','circPencilTool'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
+  document.querySelectorAll('#circSvg + .step-list .step-item').forEach(el=>el.classList.remove('done'));
+  const btn = document.getElementById('btnCircNext');
+  btn.textContent = 'Étape suivante →'; btn.disabled = false;
+}
+function circSetRulerAt(origin, angleDeg){
+  document.getElementById('circRulerTool').setAttribute('transform', `translate(${origin.x.toFixed(1)},${origin.y.toFixed(1)}) rotate(${angleDeg.toFixed(2)}) scale(0.62)`);
+}
+function circSetPencilAt(x,y,angleDeg){
+  document.getElementById('circPencilTool').setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(angleDeg-90+8).toFixed(1)}) scale(0.62)`);
+}
+document.getElementById('circRulerTool').innerHTML = rulerSVG(false);
+document.getElementById('circPencilTool').innerHTML = pencilSVG('circ-pencil');
+function circDrawLine(lineEl, from, to, angleDeg, dur, onDone){
+  document.getElementById('circRulerTool').setAttribute('opacity','1');
+  document.getElementById('circPencilTool').setAttribute('opacity','1');
+  circSetRulerAt(from, angleDeg); circSetPencilAt(from.x, from.y, angleDeg);
+  lineEl.setAttribute('opacity','1');
+  lineEl.setAttribute('x1', from.x); lineEl.setAttribute('y1', from.y);
+  lineEl.setAttribute('x2', from.x); lineEl.setAttribute('y2', from.y);
+  const start = performance.now();
+  function frame(now){
+    const t = Math.min(1,(now-start)/dur);
+    const curX = from.x+(to.x-from.x)*t, curY = from.y+(to.y-from.y)*t;
+    lineEl.setAttribute('x2', curX.toFixed(1)); lineEl.setAttribute('y2', curY.toFixed(1));
+    circSetPencilAt(curX, curY, angleDeg);
+    if(t<1){ requestAnimationFrame(frame); return; }
+    document.getElementById('circRulerTool').setAttribute('opacity','0');
+    document.getElementById('circPencilTool').setAttribute('opacity','0');
+    if(onDone) onDone();
+  }
+  requestAnimationFrame(frame);
+}
+function circSweepFull(opts){
+  // Trace le cercle final : le compas tourne une fois complète autour de O pendant que
+  // le cercle apparaît progressivement (stroke-dashoffset), dans le même mouvement.
+  const {compassEl, circleEl, center, radius, legLen, startAngleDeg, dur, onDone} = opts;
+  compassEl.innerHTML = compassSVG(radius, legLen);
+  circleEl.setAttribute('stroke-dasharray', CIRC_CIRCUM.toFixed(1));
+  circleEl.setAttribute('stroke-dashoffset', CIRC_CIRCUM.toFixed(1));
+  circleEl.setAttribute('opacity','1');
+  const start = performance.now();
+  function frame(now){
+    const t = Math.min(1,(now-start)/dur);
+    const angle = startAngleDeg + 360*t;
+    compassEl.setAttribute('transform', `translate(${center.x},${center.y}) rotate(${angle.toFixed(2)})`);
+    compassEl.setAttribute('opacity','1');
+    circleEl.setAttribute('stroke-dashoffset', (CIRC_CIRCUM*(1-t)).toFixed(1));
+    if(t<1){ requestAnimationFrame(frame); return; }
+    compassEl.setAttribute('opacity','0');
+    circleEl.removeAttribute('stroke-dasharray'); circleEl.removeAttribute('stroke-dashoffset');
+    if(onDone) onDone();
+  }
+  requestAnimationFrame(frame);
+}
+function circNextStep(){
+  circStep++;
+  const btn = document.getElementById('btnCircNext');
+  btn.disabled = true;
+  const markDone = n=>document.querySelector(`#circSvg + .step-list .step-item[data-step="${n}"]`).classList.add('done');
+  if(circStep===1){
+    methodOpenInPlace({compassEl:document.getElementById('circCompass'), anchor:CIRC_A, angleDeg:62.02, radius:CIRC_R1, legLen:CIRC_LEG1, dur:700,
+      onDone:()=>{
+        methodSweepDual({compassEl:document.getElementById('circCompass'), arc1El:document.getElementById('circArcA1'), arc2El:document.getElementById('circArcA2'),
+          anchor:CIRC_A, radius:CIRC_R1, legLen:CIRC_LEG1, sweepStartDeg:62.02, sweepEndDeg:-62.02, window1Deg:52.02, window2Deg:-52.02, halfWindowDeg:10, dur:1400,
+          onDone:()=>{ markDone(1); btn.disabled=false; }});
+      }});
+  } else if(circStep===2){
+    methodOpenInPlace({compassEl:document.getElementById('circCompass'), anchor:CIRC_B, angleDeg:117.98, radius:CIRC_R1, legLen:CIRC_LEG1, dur:700,
+      onDone:()=>{
+        methodSweepDual({compassEl:document.getElementById('circCompass'), arc1El:document.getElementById('circArcB1'), arc2El:document.getElementById('circArcB2'),
+          anchor:CIRC_B, radius:CIRC_R1, legLen:CIRC_LEG1, sweepStartDeg:117.98, sweepEndDeg:242.02, window1Deg:127.98, window2Deg:232.02, halfWindowDeg:10, dur:1400,
+          onDone:()=>{
+            document.getElementById('circQ1Dot').setAttribute('opacity','1');
+            document.getElementById('circQ2Dot').setAttribute('opacity','1');
+            markDone(2); btn.disabled=false;
+          }});
+      }});
+  } else if(circStep===3){
+    const overshoot = 14;
+    const from = {x:CIRC_Q2.x, y:CIRC_Q2.y-overshoot}, to = {x:CIRC_Q1.x, y:CIRC_Q1.y+overshoot};
+    circDrawLine(document.getElementById('circMedAB'), from, to, 90, 1300, ()=>{ markDone(3); btn.disabled=false; });
+  } else if(circStep===4){
+    methodOpenInPlace({compassEl:document.getElementById('circCompass'), anchor:CIRC_B, angleDeg:-51.26, radius:CIRC_R2, legLen:CIRC_LEG2, dur:700,
+      onDone:()=>{
+        methodSweepDual({compassEl:document.getElementById('circCompass'), arc1El:document.getElementById('circArcB3'), arc2El:document.getElementById('circArcB4'),
+          anchor:CIRC_B, radius:CIRC_R2, legLen:CIRC_LEG2, sweepStartDeg:-51.26, sweepEndDeg:-178.78, window1Deg:-61.26, window2Deg:-168.78, halfWindowDeg:10, dur:1400,
+          onDone:()=>{ markDone(4); btn.disabled=false; }});
+      }});
+  } else if(circStep===5){
+    methodOpenInPlace({compassEl:document.getElementById('circCompass'), anchor:CIRC_C, angleDeg:1.22, radius:CIRC_R2, legLen:CIRC_LEG2, dur:700,
+      onDone:()=>{
+        methodSweepDual({compassEl:document.getElementById('circCompass'), arc1El:document.getElementById('circArcC1'), arc2El:document.getElementById('circArcC2'),
+          anchor:CIRC_C, radius:CIRC_R2, legLen:CIRC_LEG2, sweepStartDeg:1.22, sweepEndDeg:128.74, window1Deg:11.22, window2Deg:118.74, halfWindowDeg:10, dur:1400,
+          onDone:()=>{
+            document.getElementById('circQ3Dot').setAttribute('opacity','1');
+            document.getElementById('circQ4Dot').setAttribute('opacity','1');
+            markDone(5); btn.disabled=false;
+          }});
+      }});
+  } else if(circStep===6){
+    const overshoot = 20, angleBC = -25.02;
+    const rad = angleBC*Math.PI/180, ux = Math.cos(rad), uy = Math.sin(rad);
+    const from = {x:CIRC_Q4.x-overshoot*ux, y:CIRC_Q4.y-overshoot*uy}, to = {x:CIRC_Q3.x+overshoot*ux, y:CIRC_Q3.y+overshoot*uy};
+    circDrawLine(document.getElementById('circMedBC'), from, to, angleBC, 1300, ()=>{
+      document.getElementById('circLabelO').setAttribute('opacity','1');
+      markDone(6); btn.disabled=false;
+    });
+  } else if(circStep===7){
+    circSweepFull({compassEl:document.getElementById('circCompass'), circleEl:document.getElementById('circCircle'),
+      center:CIRC_O, radius:CIRC_R3, legLen:CIRC_LEG3, startAngleDeg:145.98, dur:2200,
+      onDone:()=>{ markDone(7); btn.textContent='Terminé ✓'; btn.disabled=true; }});
+  }
+}
+
 
 DEMO_REGISTRY['6e|Propriétés des triangles'] = {
   cours:'cours-demo-proprietes-triangles', methode:'methode-demo-proprietes-triangles', exos:'exos-demo-proprietes-triangles',
@@ -135,5 +350,6 @@ DEMO_REGISTRY['6e|Propriétés des triangles'] = {
     renderStaticMath(document.getElementById('exos-demo-proprietes-triangles'));
     injectCourseAddButtons(document.getElementById('cours-demo-proprietes-triangles'));
     injectCourseAddButtons(document.getElementById('methode-demo-proprietes-triangles'));
+    circReset();
   }
 };
