@@ -123,33 +123,40 @@ document.getElementById('methode-demo-proprietes-triangles').innerHTML = `
 <p class="hint" style="margin:8px 0;">On construit les médiatrices de deux côtés du triangle ABC : leur point d'intersection O est le centre du cercle circonscrit.</p>
 <div class="figure-wrap" style="max-width:760px;margin:12px auto;">
   <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
-    <svg id="circSvg" viewBox="0 90 330 340" style="width:100%;max-width:360px;flex:1 1 320px;display:block;">
-      <line x1="60" y1="300" x2="220" y2="300" stroke="#1C1B2E" stroke-width="1.8"/>
-      <line x1="220" y1="300" x2="150" y2="150" stroke="#1C1B2E" stroke-width="1.8"/>
-      <line x1="150" y1="150" x2="60" y2="300" stroke="#1C1B2E" stroke-width="1.8"/>
-      <polyline id="circArcA1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
-      <polyline id="circArcA2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
-      <polyline id="circArcB1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
-      <polyline id="circArcB2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
-      <polyline id="circArcB3" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
-      <polyline id="circArcB4" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
-      <polyline id="circArcC1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
-      <polyline id="circArcC2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
-      <line id="circMedAB" x1="140" y1="300" x2="140" y2="300" stroke="#E35D3A" stroke-width="1.8" opacity="0"/>
-      <line id="circMedBC" x1="185" y1="225" x2="185" y2="225" stroke="#2EA8C9" stroke-width="1.8" opacity="0"/>
-      <circle id="circQ1Dot" cx="140" cy="402.5" r="2" fill="#1C1B2E" opacity="0"/>
-      <circle id="circQ2Dot" cx="140" cy="197.5" r="2" fill="#1C1B2E" opacity="0"/>
-      <circle id="circQ3Dot" cx="287.3" cy="177.2" r="2" fill="#1C1B2E" opacity="0"/>
-      <circle id="circQ4Dot" cx="82.7" cy="272.8" r="2" fill="#1C1B2E" opacity="0"/>
-      <text id="circLabelO" x="146" y="242" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700" opacity="0">O</text>
-      <circle id="circCircle" cx="140" cy="246" r="96.52" fill="none" stroke="#0C5BA0" stroke-width="1.6" opacity="0"/>
-      <g id="circCompass" transform="translate(60,300)" opacity="0"></g>
-      <g id="circRulerTool" opacity="0"></g>
-      <g id="circPencilTool" opacity="0"></g>
-      <text x="46" y="316" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">A</text>
-      <text x="226" y="316" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">B</text>
-      <text x="146" y="140" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">C</text>
-    </svg>
+    <div style="flex:1 1 320px;max-width:360px;">
+      <svg id="circSvg" viewBox="0 90 330 340" style="width:100%;display:block;">
+        <line x1="60" y1="300" x2="220" y2="300" stroke="#1C1B2E" stroke-width="1.8"/>
+        <line x1="220" y1="300" x2="150" y2="150" stroke="#1C1B2E" stroke-width="1.8"/>
+        <line x1="150" y1="150" x2="60" y2="300" stroke="#1C1B2E" stroke-width="1.8"/>
+        <polyline id="circArcA1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+        <polyline id="circArcA2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+        <polyline id="circArcB1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+        <polyline id="circArcB2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+        <polyline id="circArcB3" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+        <polyline id="circArcB4" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+        <polyline id="circArcC1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+        <polyline id="circArcC2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+        <line id="circMedAB" x1="140" y1="300" x2="140" y2="300" stroke="#E35D3A" stroke-width="1.8" opacity="0"/>
+        <line id="circMedBC" x1="185" y1="225" x2="185" y2="225" stroke="#2EA8C9" stroke-width="1.8" opacity="0"/>
+        <circle id="circQ1Dot" cx="140" cy="402.5" r="2" fill="#1C1B2E" opacity="0"/>
+        <circle id="circQ2Dot" cx="140" cy="197.5" r="2" fill="#1C1B2E" opacity="0"/>
+        <circle id="circQ3Dot" cx="287.3" cy="177.2" r="2" fill="#1C1B2E" opacity="0"/>
+        <circle id="circQ4Dot" cx="82.7" cy="272.8" r="2" fill="#1C1B2E" opacity="0"/>
+        <text id="circLabelO" x="146" y="242" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700" opacity="0">O</text>
+        <circle id="circCircle" cx="140" cy="246" r="96.52" fill="none" stroke="#0C5BA0" stroke-width="1.6" opacity="0"/>
+        <g id="circCompass" transform="translate(60,300)" opacity="0"></g>
+        <g id="circRulerTool" opacity="0"></g>
+        <g id="circPencilTool" opacity="0"></g>
+        <text x="46" y="316" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">A</text>
+        <text x="226" y="316" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">B</text>
+        <text x="146" y="140" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">C</text>
+      </svg>
+      <p class="hint" id="circCurrentStep" style="min-height:32px;margin:8px 0;">Clique sur « Étape suivante » pour commencer.</p>
+      <div class="figure-toolbar">
+        <button class="btn" id="btnCircNext" onclick="circNextStep()">Étape suivante →</button>
+        <button class="btn secondary" onclick="circReset()">Revoir depuis le début</button>
+      </div>
+    </div>
     <div style="flex:1 1 280px;min-width:260px;max-width:360px;">
       <div class="step-list">
         <div class="step-item" data-step="1"><div class="step-num">1</div><div>Piquer en A avec un écartement supérieur à la moitié de [AB] : tracer un arc de chaque côté de [AB].</div></div>
@@ -159,10 +166,6 @@ document.getElementById('methode-demo-proprietes-triangles').innerHTML = `
         <div class="step-item" data-step="5"><div class="step-num">5</div><div>Piquer en C avec le <b>même écartement</b> : tracer deux arcs qui recoupent les précédents.</div></div>
         <div class="step-item" data-step="6"><div class="step-num">6</div><div>Tracer, à la règle, la médiatrice de [BC] : elle coupe la médiatrice de [AB] au point O.</div></div>
         <div class="step-item" data-step="7"><div class="step-num">7</div><div>Piquer le compas en O avec un écartement égal à OA : tracer le cercle circonscrit au triangle ABC.</div></div>
-      </div>
-      <div class="figure-toolbar">
-        <button class="btn" id="btnCircNext" onclick="circNextStep()">Étape suivante →</button>
-        <button class="btn secondary" onclick="circReset()">Revoir depuis le début</button>
       </div>
     </div>
   </div>
@@ -226,6 +229,15 @@ const CIRC_O = {x:140,y:246};
 const CIRC_R3 = 96.52, CIRC_LEG3 = 97.56;   // écartement OA pour le cercle final
 const CIRC_CIRCUM = 2*Math.PI*CIRC_R3;      // longueur du cercle (pour l'effet de tracé progressif)
 let circStep = 0;
+const CIRC_STEP_TEXTS = [
+  "Piquer en A, tracer un arc de chaque côté de [AB].",
+  "Piquer en B (même écartement) : deux arcs recoupent les précédents.",
+  "Tracer la médiatrice de [AB] à la règle.",
+  "Piquer en B, tracer un arc de chaque côté de [BC].",
+  "Piquer en C (même écartement) : deux arcs recoupent les précédents.",
+  "Tracer la médiatrice de [BC] : elle coupe l'autre médiatrice en O.",
+  "Piquer le compas en O (écartement OA) : tracer le cercle."
+];
 function circReset(){
   circStep = 0;
   ['circArcA1','circArcA2','circArcB1','circArcB2','circArcB3','circArcB4','circArcC1','circArcC2',
@@ -233,6 +245,7 @@ function circReset(){
    'circCompass','circRulerTool','circPencilTool'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
   document.getElementById('circCircle').removeAttribute('transform');
   document.querySelectorAll('#methode-demo-proprietes-triangles .step-list .step-item').forEach(el=>el.classList.remove('done'));
+  document.getElementById('circCurrentStep').textContent = 'Clique sur « Étape suivante » pour commencer.';
   const btn = document.getElementById('btnCircNext');
   btn.textContent = 'Étape suivante →'; btn.disabled = false;
 }
@@ -302,6 +315,7 @@ function circNextStep(){
   circStep++;
   const btn = document.getElementById('btnCircNext');
   btn.disabled = true;
+  document.getElementById('circCurrentStep').innerHTML = `<b>Étape ${circStep}/7 —</b> ${CIRC_STEP_TEXTS[circStep-1]}`;
   const markDone = n=>document.querySelector(`#methode-demo-proprietes-triangles .step-list .step-item[data-step="${n}"]`).classList.add('done');
   if(circStep===1){
     methodOpenInPlace({compassEl:document.getElementById('circCompass'), anchor:CIRC_A, angleDeg:62.02, radius:CIRC_R1, legLen:CIRC_LEG1, dur:700,
