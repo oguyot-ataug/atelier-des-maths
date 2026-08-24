@@ -372,7 +372,14 @@ document.getElementById('histoire-demo-proprietes-triangles').innerHTML = `
   <p style="margin:0 0 12px;">À chaque triangle, au lieu de mesurer des distances (très difficile sur le terrain), ils mesurent seulement des <b>angles</b>, avec un instrument de précision appelé cercle répétiteur. En ne connaissant qu'un seul côté du premier triangle (la base, mesurée directement) et tous les angles de la chaîne, ils calculent triangle après triangle la longueur de tous les autres côtés — exactement grâce à la propriété que vous venez d'étudier : <b>la somme des angles d'un triangle vaut toujours 180°</b>.</p>
   <p style="margin:0 0 12px;">Un détail amusant : les clochers et collines choisis pour la triangulation ne sont jamais exactement alignés sur le méridien, la ligne imaginaire qu'on cherche à mesurer ! Impossible de trouver des points parfaitement alignés sur plus de 1000 km. Pour corriger cela, Delambre et Méchain mesurent en plus, à chaque bout du trajet, la hauteur du Soleil à midi : cela leur donne la position exacte de Dunkerque et de Barcelone sur le globe, et leur permet de calculer précisément quelle portion du méridien leur chaîne de triangles représente, même si le chemin suivi zigzague un peu autour de la ligne idéale.</p>
   <p style="margin:0 0 12px;">Le voyage n'est pas de tout repos : Méchain manque plusieurs fois d'être arrêté comme espion (la France est en guerre), et reste obsédé jusqu'à sa mort par une petite erreur de mesure qu'il pense avoir commise. Le mètre, lui, est officiellement adopté en 1799 — et sert toujours de référence aujourd'hui, bien que redéfini depuis à partir de la vitesse de la lumière.</p>
-  <p class="hint" style="margin:0;">Envie d'en savoir plus ? Le mathématicien <b>Denis Guedj</b> (auteur du <i>Théorème du Perroquet</i>) a raconté cette expédition sous forme de roman, <i>La Méridienne</i>.</p>
+  <p style="margin:18px 0 8px;font-weight:700;color:#1F3A5C;">Pour aller plus loin</p>
+  <div class="figure-wrap" style="max-width:480px;margin:0 auto 10px;">
+    <div style="position:relative;width:100%;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;">
+      <iframe src="https://www.youtube-nocookie.com/embed/PvlsXcOzNd0" title="Le mètre : son origine, son histoire, la mesure de la Méridienne et sa valeur actuelle" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <p class="hint" style="text-align:center;margin:6px 0 0;">Vidéo : <i>Le mètre : son origine, son histoire, la mesure de la Méridienne et sa valeur actuelle</i> — chaîne J't'explique</p>
+  </div>
+  <p class="hint" style="margin:0;">Envie de lire plutôt qu'écouter ? Le mathématicien <b>Denis Guedj</b> (auteur du <i>Théorème du Perroquet</i>) a raconté cette expédition sous forme de roman, <i>La Méridienne</i>.</p>
 </div>
 `;
 
