@@ -1257,13 +1257,23 @@ async function refreshAuthUI(){
 
   if(session){
     currentUser = session.user;
-    const { data: profile } = await sb.from('profiles').select('role,nom').eq('id', currentUser.id).single();
+    const { data: profile } = await sb.from('profiles').select('role,nom,prenom').eq('id', currentUser.id).single();
     currentUserRole = profile ? profile.role : null;
 
     loggedOutEl.style.display='none'; loggedInEl.style.display='block';
-    document.getElementById('accountNameDisplay').textContent = (profile && profile.nom) || currentUser.email;
+    const prenomTrim = profile && profile.prenom ? profile.prenom.trim() : '';
+    const nomTrim = profile && profile.nom ? profile.nom.trim() : '';
+    const fullName = [prenomTrim, nomTrim].filter(Boolean).join(' ');
+    document.getElementById('accountNameDisplay').textContent = fullName || currentUser.email;
     document.getElementById('accountRoleDisplay').textContent =
       currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='eleve' ? 'Élève' : '';
+
+    // Avatar : initiales (prénom + nom) si disponibles, sinon la première lettre de ce qu'on a,
+    // sinon on garde l'icône générique -- jamais de case vide dans le rond.
+    const avatarBtn = document.getElementById('accountAvatar');
+    const initials = [prenomTrim, nomTrim].filter(Boolean).map(s=>s[0]).join('').toUpperCase();
+    avatarBtn.textContent = initials || '👤';
+    avatarBtn.title = fullName ? `Mon compte — ${fullName}` : 'Mon compte';
 
     const isStaff = currentUserRole==='admin' || currentUserRole==='prof';
     isStaffGlobal = isStaff;
@@ -1288,6 +1298,8 @@ async function refreshAuthUI(){
     currentUser = null; currentUserRole = null; currentClassId = null;
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
     isStaffGlobal = false;
+    const avatarBtnOut = document.getElementById('accountAvatar');
+    if(avatarBtnOut){ avatarBtnOut.textContent = '👤'; avatarBtnOut.title = 'Mon compte'; }
     if(navCorrection) navCorrection.style.display='none';
     if(navCahier) navCahier.style.display='none';
     if(navMesResultats) navMesResultats.style.display='none';
