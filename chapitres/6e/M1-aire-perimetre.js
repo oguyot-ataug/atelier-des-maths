@@ -368,7 +368,27 @@ document.getElementById('histoire-demo-aire-perimetre').innerHTML = `
   </div>
   <p style="margin:0 0 12px;">Ce chaos posait de vrais problèmes : acheter, vendre ou faire payer l'impôt sur un terrain devenait injuste dès qu'on changeait de région, puisque le même mot ne représentait pas la même surface. C'est pour y mettre fin qu'en 1795, en même temps que le mètre (voir l'histoire du chapitre sur les triangles), les révolutionnaires créent l'<b>are</b> : une unité d'aire unique, valable partout en France, qui ne dépend d'aucune coutume locale. L'<b>hectare</b> (100 a) suit naturellement pour les grandes surfaces comme les fermes.</p>
   <p style="margin:0;">Le changement n'a pourtant pas été immédiat : malgré la loi de 1795, les anciennes unités sont restées si ancrées dans les habitudes qu'il a fallu attendre une loi de 1837 pour rendre le système métrique <b>obligatoire</b> partout en France, à partir du 1er janvier 1840 — 45 ans plus tard ! Dans certaines campagnes, arpents et journaux ont continué à être utilisés dans les conversations bien après cette date.</p>
-  <p class="hint" style="margin:12px 0 0;">Pour aller plus loin : le problème inverse, transformer un cercle en carré de même aire (la « quadrature du cercle »), a occupé les mathématiciens pendant plus de 2000 ans, avant qu'on démontre en 1882 que c'est en réalité impossible avec une règle et un compas.</p>
+
+  <p class="example-title" style="margin-top:20px;">La quadrature du cercle : un problème vieux de plus de deux mille ans</p>
+  <p style="margin:0 0 12px;">Il existe un problème inverse à celui du cercle : peut-on construire, seulement à la règle et au compas, un <b>carré ayant exactement la même aire qu'un cercle donné</b> ? Ce défi, appelé la <b>quadrature du cercle</b>, est très ancien : dès environ 1650 avant J.-C., un scribe égyptien propose déjà, dans un texte connu aujourd'hui sous le nom de papyrus Rhind, un carré censé avoir la même aire qu'un cercle donné — une approximation, pas une solution exacte.</p>
+  <p style="margin:0 0 12px;">Vers 430 avant J.-C., le philosophe grec Anaxagore aurait réfléchi à ce problème alors qu'il était emprisonné à Athènes. Peu après, le géomètre <b>Hippocrate de Chios</b> parvient à un résultat remarquable : il réussit à construire un carré ayant exactement la même aire que certaines figures en forme de croissant, appelées <b>lunules</b>, délimitées par des arcs de cercle. Sa méthode ne permet pas de « carrer » le cercle entier, mais elle donne longtemps espoir aux mathématiciens qu'une solution existe.</p>
+  <div class="figure-wrap" style="max-width:200px;margin:4px auto 14px;">
+    <svg viewBox="0 50 170 140" style="width:100%;display:block;">
+      <path d="M 60 80 A 42.43 42.43 0 0 1 120 140" fill="none" stroke="#0C5BA0" stroke-width="1.6"/>
+      <path d="M 60 140 A 30 30 0 0 1 60 80" fill="none" stroke="#E35D3A" stroke-width="1.6"/>
+      <path d="M 60 140 A 30 30 0 0 0 120 140" fill="none" stroke="#2EA8C9" stroke-width="1.6"/>
+      <line x1="60" y1="140" x2="60" y2="80" stroke="#1C1B2E" stroke-width="1.8"/>
+      <line x1="60" y1="140" x2="120" y2="140" stroke="#1C1B2E" stroke-width="1.8"/>
+      <line x1="60" y1="80" x2="120" y2="140" stroke="#1C1B2E" stroke-width="1.8"/>
+      <path d="M 60 128 L 72 128 L 72 140" fill="none" stroke="#9CA3AF" stroke-width="1.2"/>
+      <text x="44" y="76" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">A</text>
+      <text x="124" y="146" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">B</text>
+      <text x="44" y="150" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">C</text>
+    </svg>
+    <p class="hint" style="text-align:center;margin:2px 0 0;">La lunule d'Hippocrate : sur un triangle rectangle en C, l'aire des deux croissants (orange et bleu clair) est exactement égale à l'aire du triangle ABC.</p>
+  </div>
+  <p style="margin:0 0 12px;">Pendant plus de deux mille ans, d'innombrables mathématiciens et amateurs ont proposé des « solutions » à la quadrature du cercle — au point qu'en 1775, l'Académie des sciences de Paris, lassée de recevoir des preuves toujours fausses, décide de ne plus en examiner aucune.</p>
+  <p style="margin:0;">La réponse définitive n'arrive qu'en 1882 : le mathématicien allemand <b>Ferdinand von Lindemann</b> démontre que le nombre π est un nombre <b>transcendant</b> (il n'est solution d'aucune équation à coefficients entiers), ce qui prouve que la quadrature du cercle est en réalité <b>impossible</b> à réaliser à la règle et au compas. L'expression « chercher la quadrature du cercle » est restée dans le langage courant pour désigner une tâche impossible.</p>
 </div>
 `;
 
