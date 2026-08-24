@@ -251,7 +251,39 @@ document.getElementById('methode-demo-construction-triangles').innerHTML = `
 `;
 
 document.getElementById('exos-demo-construction-triangles').innerHTML = `
-<p class="hint" style="margin:8px 0;">Les exercices de ce chapitre sont en cours de préparation, ils arriveront dans une prochaine mise à jour.</p>
+<div class="redaction-block">
+  <h3>Rédaction type : « Justifier qu'un triangle est isocèle »</h3>
+  <div class="redaction-template">
+    <span class="fill">AB = AC</span>.<br>Or, un triangle qui a deux côtés de même longueur est isocèle.<br>Donc le triangle <span class="fill">ABC</span> est isocèle en <span class="fill">A</span>.
+  </div>
+  <h3 style="margin-top:18px;">Rédaction type : « Justifier qu'un triangle est équilatéral »</h3>
+  <div class="redaction-template">
+    <span class="fill">AB = BC = CA</span>.<br>Or, un triangle qui a ses trois côtés de même longueur est équilatéral.<br>Donc le triangle <span class="fill">ABC</span> est équilatéral.
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Construis un triangle ABC tel que AB = 5 cm, BC = 6 cm et CA = 7 cm, en laissant apparents les arcs de compas.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Construis un triangle DEF tel que DE = 6 cm, DF = 4 cm et <span class="tex">\\widehat{EDF} = 40°</span>, en laissant apparents les traits de construction.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Construis un triangle GHI tel que GH = 5 cm, <span class="tex">\\widehat{HGI} = 55°</span> et <span class="tex">\\widehat{GHI} = 65°</span>, en laissant apparents les traits de construction.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Un triangle a pour côtés 4 cm, 4 cm et 4 cm. Quelle est sa nature ? Justifie.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Un triangle MNP est tel que MN = MP = 6 cm et NP = 4 cm. Quelle est sa nature ? Justifie.
+  </div>
+</div>
 `;
 
 /* ---- Construction A : SSS (règle + compas x2), géométrie réelle ---- */
@@ -980,12 +1012,46 @@ function triCNextStep(){
   }
 }
 
+document.getElementById('histoire-demo-construction-triangles').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  <p style="margin:0 0 12px;">Dans l'Égypte antique, chaque année, la crue du Nil recouvre les champs et efface leurs limites. Il faut alors les retracer avec précision, et surtout reconstruire des angles droits bien nets pour délimiter les parcelles — un vrai problème sans équerre ni rapporteur ! Les arpenteurs égyptiens (qu'on surnomme parfois les <b>« tendeurs de corde »</b>) utilisent une astuce d'une simplicité redoutable : une corde à <b>13 nœuds régulièrement espacés</b>, formant 12 intervalles égaux.</p>
+  <p style="margin:0 0 12px;">En tendant cette corde entre trois piquets pour former un triangle de <b>3, 4 et 5 intervalles</b> de côté, ils obtiennent à coup sûr un <b>angle droit</b>, exactement entre le côté de 3 et celui de 4 — sans rien mesurer d'autre que des longueurs de corde !</p>
+  <div class="figure-wrap" style="max-width:220px;margin:4px auto 14px;">
+    <svg viewBox="0 0 180 260" style="width:100%;display:block;">
+      <line x1="40" y1="240" x2="130" y2="240" stroke="#1C1B2E" stroke-width="1.8"/>
+      <line x1="40" y1="240" x2="40" y2="120" stroke="#1C1B2E" stroke-width="1.8"/>
+      <line x1="130" y1="240" x2="40" y2="120" stroke="#E35D3A" stroke-width="1.8"/>
+      <path d="M 40 228 L 52 228 L 52 240" fill="none" stroke="#9CA3AF" stroke-width="1.3"/>
+      <circle cx="70.0" cy="240.0" r="3" fill="#1C1B2E"/>
+      <circle cx="100.0" cy="240.0" r="3" fill="#1C1B2E"/>
+      <circle cx="40.0" cy="210.0" r="3" fill="#1C1B2E"/>
+      <circle cx="40.0" cy="180.0" r="3" fill="#1C1B2E"/>
+      <circle cx="40.0" cy="150.0" r="3" fill="#1C1B2E"/>
+      <circle cx="112.0" cy="216.0" r="3" fill="#1C1B2E"/>
+      <circle cx="94.0" cy="192.0" r="3" fill="#1C1B2E"/>
+      <circle cx="76.0" cy="168.0" r="3" fill="#1C1B2E"/>
+      <circle cx="58.0" cy="144.0" r="3" fill="#1C1B2E"/>
+      <circle cx="40" cy="240" r="4" fill="#1C1B2E"/>
+      <circle cx="130" cy="240" r="4" fill="#1C1B2E"/>
+      <circle cx="40" cy="120" r="4" fill="#1C1B2E"/>
+      <text x="80" y="256" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">3</text>
+      <text x="14" y="184" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">4</text>
+      <text x="90" y="175" font-family="Space Grotesk" font-size="12" fill="#E35D3A" font-weight="700">5</text>
+    </svg>
+    <p class="hint" style="text-align:center;margin:2px 0 0;">Chaque point représente un nœud de la corde, régulièrement espacé. 3 + 4 + 5 = 12 intervalles égaux, refermés en boucle.</p>
+  </div>
+  <p style="margin:0;">Cette propriété du triangle 3-4-5 (aujourd'hui reliée au théorème de Pythagore, que vous verrez plus tard) illustre une idée essentielle de ce chapitre : connaître seulement les <b>trois longueurs</b> d'un triangle suffit à fixer complètement sa forme, y compris ses angles. C'est pour cette raison que les charpentes de toit, les pylônes électriques, les grues et la tour Eiffel sont construits à partir de triangles : contrairement à un carré, qui peut se déformer en losange sans que ses côtés changent de longueur, un triangle ne peut absolument pas se tordre une fois ses trois côtés fixés.</p>
+</div>
+`;
+
 DEMO_REGISTRY['6e|Construction de triangles'] = {
-  cours:'cours-demo-construction-triangles', methode:'methode-demo-construction-triangles', exos:'exos-demo-construction-triangles',
+  cours:'cours-demo-construction-triangles', methode:'methode-demo-construction-triangles', exos:'exos-demo-construction-triangles', histoire:'histoire-demo-construction-triangles',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-construction-triangles'));
     renderStaticMath(document.getElementById('methode-demo-construction-triangles'));
     renderStaticMath(document.getElementById('exos-demo-construction-triangles'));
+    renderStaticMath(document.getElementById('histoire-demo-construction-triangles'));
     injectCourseAddButtons(document.getElementById('cours-demo-construction-triangles'));
     injectCourseAddButtons(document.getElementById('methode-demo-construction-triangles'));
     triAReset();
