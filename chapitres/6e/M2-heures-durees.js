@@ -269,12 +269,42 @@ function m2SubNextStep(){
   if(s.final){ document.getElementById('btnM2SubNext').textContent = 'Terminé ✓'; document.getElementById('btnM2SubNext').disabled = true; }
 }
 
+document.getElementById('histoire-demo-heures-durees').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  <p style="margin:0 0 12px;">Pourquoi une année sur quatre a-t-elle 366 jours ? Le problème vient du Soleil : la Terre met environ <b>365,2422 jours</b> à faire le tour du Soleil -- pas un nombre entier de jours ! Un calendrier avec des années de 365 jours pile prendrait donc du retard sur les saisons, année après année.</p>
+  <p style="margin:0 0 12px;">En <b>46 avant J.-C.</b>, l'empereur romain <b>Jules César</b>, conseillé par l'astronome Sosigène d'Alexandrie, décide de corriger ce problème : il fixe l'année à 365 jours, avec un jour supplémentaire ajouté tous les 4 ans. C'est la naissance du calendrier <b>julien</b> et de l'année bissextile, avec une durée moyenne de 365,25 jours.</p>
+  <p style="margin:0 0 12px;">Mais 365,25 jours reste encore un peu trop long par rapport aux 365,2422 jours réels : un écart minuscule (0,0078 jour par an), mais qui s'accumule. Après 1500 ans, ce petit écart représentait déjà <b>10 jours</b> de décalage avec les saisons !</p>
+  <div class="figure-wrap" style="max-width:420px;margin:4px auto 14px;">
+    <svg viewBox="0 0 440 110" style="width:100%;display:block;">
+      <line x1="30" y1="55" x2="410" y2="55" stroke="#1C1B2E" stroke-width="1.6"/>
+      <circle cx="40" cy="55" r="4" fill="#E35D3A"/>
+      <circle cx="160" cy="55" r="4" fill="#F8AF23"/>
+      <circle cx="280" cy="55" r="4" fill="#2EA8C9"/>
+      <circle cx="400" cy="55" r="4" fill="#0C5BA0"/>
+      <text x="40" y="42" font-family="Space Grotesk" font-size="11" fill="#1F3A5C" font-weight="700" text-anchor="middle">−46</text>
+      <text x="40" y="76" font-family="Space Grotesk" font-size="9" fill="#6B7A8C" text-anchor="middle">Jules César</text>
+      <text x="160" y="42" font-family="Space Grotesk" font-size="11" fill="#1F3A5C" font-weight="700" text-anchor="middle">1582</text>
+      <text x="160" y="76" font-family="Space Grotesk" font-size="9" fill="#6B7A8C" text-anchor="middle">Grégoire XIII</text>
+      <text x="280" y="42" font-family="Space Grotesk" font-size="11" fill="#1F3A5C" font-weight="700" text-anchor="middle">1752</text>
+      <text x="280" y="76" font-family="Space Grotesk" font-size="9" fill="#6B7A8C" text-anchor="middle">Angleterre</text>
+      <text x="400" y="42" font-family="Space Grotesk" font-size="11" fill="#1F3A5C" font-weight="700" text-anchor="middle">1918</text>
+      <text x="400" y="76" font-family="Space Grotesk" font-size="9" fill="#6B7A8C" text-anchor="middle">Russie</text>
+    </svg>
+    <p class="hint" style="text-align:center;margin:2px 0 0;">Frise schématique (les écarts entre les dates ne sont pas à l'échelle).</p>
+  </div>
+  <p style="margin:0 0 12px;">En <b>1582</b>, le pape Grégoire XIII corrige le tir : on passe directement du 4 au 15 octobre 1582 (10 jours « effacés » du calendrier !), et on adopte une nouvelle règle, toujours utilisée aujourd'hui : une année est bissextile si elle est divisible par 4, <b>sauf</b> si elle est divisible par 100 -- sauf si elle est aussi divisible par 400. Ainsi, 2000 était bissextile, mais 1900 ne l'était pas. Cette règle donne une année moyenne de 365,2425 jours, si proche de la réalité qu'il faut attendre environ 3 000 ans pour accumuler un seul jour d'écart.</p>
+  <p style="margin:0;">Tous les pays n'ont pas adopté ce nouveau calendrier en même temps : la France en 1582, mais l'Angleterre seulement en <b>1752</b> (avec des émeutes, certains croyant qu'on leur volait 11 jours de vie !), et la Russie seulement en <b>1918</b>. C'est pour cette raison que la « révolution d'Octobre » russe, qui a eu lieu le 25 octobre 1917 selon leur calendrier de l'époque, correspond en réalité au <b>7 novembre</b> selon le calendrier que nous utilisons aujourd'hui.</p>
+</div>
+`;
+
 DEMO_REGISTRY['6e|Heures et durée'] = {
-  cours:'cours-demo-heures-durees', methode:'methode-demo-heures-durees', exos:'exos-demo-heures-durees',
+  cours:'cours-demo-heures-durees', methode:'methode-demo-heures-durees', exos:'exos-demo-heures-durees', histoire:'histoire-demo-heures-durees',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-heures-durees'));
     renderStaticMath(document.getElementById('methode-demo-heures-durees'));
     renderStaticMath(document.getElementById('exos-demo-heures-durees'));
+    renderStaticMath(document.getElementById('histoire-demo-heures-durees'));
     injectCourseAddButtons(document.getElementById('cours-demo-heures-durees'));
     injectCourseAddButtons(document.getElementById('methode-demo-heures-durees'));
     m2AddReset();
