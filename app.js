@@ -645,6 +645,7 @@ function renderStaticMath(container){
   if(!container) return;
   container.querySelectorAll('.tex').forEach(el=>{
     if(el.dataset.rendered) return;
+    el.dataset.texSource = el.textContent; // conserve la source brute (lecture vocale, voir toggleReadAloud)
     el.innerHTML = katexSpan(el.textContent);
     el.dataset.rendered = '1';
   });
@@ -3032,7 +3033,7 @@ function injectReadAloudButtons(container){
   if(!container || !('speechSynthesis' in window)) return;
   container.querySelectorAll('.def-box').forEach(box=>{
     if(box.querySelector('.read-aloud-btn')) return;
-    const text = box.textContent.trim();
+    const text = buildSpeechText(box).replace(/\s+/g, ' ').trim();
     if(!text) return;
     const btn=document.createElement('button');
     btn.type='button';
@@ -3043,6 +3044,62 @@ function injectReadAloudButtons(container){
     btn.onclick=(e)=>{ e.stopPropagation(); toggleReadAloud(btn, text); };
     box.appendChild(btn);
   });
+}
+/* Construit le texte à lire à voix haute en parcourant le DOM d'un bloc : le texte normal
+   est repris tel quel, mais chaque formule mathématique (.tex, une fois rendue par KaTeX)
+   est remplacée par sa source LaTeX brute (conservée dans data-tex-source par
+   renderStaticMath) convertie en français parlé via latexToSpeech -- lire directement le
+   HTML/MathML généré par KaTeX donne un résultat incompréhensible (fragments de glyphes,
+   numérateur et dénominateur d'une fraction lus à la suite sans "sur", etc.). */
+function buildSpeechText(node){
+  let out = '';
+  node.childNodes.forEach(child=>{
+    if(child.nodeType === Node.TEXT_NODE){
+      out += child.nodeValue;
+    } else if(child.nodeType === Node.ELEMENT_NODE){
+      if(child.classList && child.classList.contains('tex')){
+        const src = child.dataset.texSource;
+        out += ' ' + latexToSpeech(src !== undefined ? src : child.textContent) + ' ';
+      } else if(child.classList && child.classList.contains('read-aloud-btn')){
+        // le bouton lui-même (déjà présent lors d'un ré-appel) ne doit jamais être lu
+      } else {
+        out += buildSpeechText(child);
+      }
+    }
+  });
+  return out;
+}
+/* Convertit une source LaTeX (le sous-ensemble de commandes utilisé sur le site : \dfrac,
+   \times, \widehat, \text, \pi, \approx, exposants ^2/^3, virgule décimale {,}) en une
+   phrase française prononçable. Reste volontairement simple (regex, pas un vrai parseur
+   LaTeX) : le site n'utilise qu'un petit vocabulaire de commandes, toujours de la même
+   façon -- voir les usages réels relevés dans les .def-box de tous les chapitres avant
+   d'écrire cette fonction. */
+function latexToSpeech(tex){
+  let s = ' ' + tex + ' ';
+  // Fractions \dfrac{a}{b} -> "a sur b" ; en boucle pour gérer les fractions imbriquées,
+  // en traitant toujours la plus intérieure d'abord (sans accolades à l'intérieur).
+  const fracRe = /\\dfrac\{([^{}]*)\}\{([^{}]*)\}/;
+  let guard = 0;
+  while(fracRe.test(s) && guard < 20){ s = s.replace(fracRe, (m,a,b)=>` ${a} sur ${b} `); guard++; }
+  s = s.replace(/\\widehat\{([^{}]*)\}/g, ' angle $1 ');
+  s = s.replace(/\\text\{([^{}]*)\}/g, ' $1 ');
+  s = s.replace(/\^2/g, ' au carré ');
+  s = s.replace(/\^3/g, ' au cube ');
+  s = s.replace(/\{,\}/g, ',');
+  s = s.replace(/\\,/g, '');
+  s = s.replace(/\\times/g, ' fois ');
+  s = s.replace(/\\div/g, ' divisé par ');
+  s = s.replace(/\\approx/g, ' environ égal à ');
+  s = s.replace(/\\pi/g, ' pi ');
+  s = s.replace(/:/g, ' divisé par ');
+  // Nettoyage final : toute commande LaTeX non reconnue perd son backslash (reste lisible
+  // tel quel plutôt que de faire planter la synthèse vocale), puis on retire les accolades
+  // restantes et on normalise les espaces.
+  s = s.replace(/\\/g, '');
+  s = s.replace(/[{}]/g, '');
+  s = s.replace(/\s+/g, ' ').trim();
+  return s;
 }
 function toggleReadAloud(btn, text){
   // Un seul bloc lu à la fois : si on reclique sur le même bouton en cours de lecture, on
