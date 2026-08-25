@@ -171,8 +171,15 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
   display:inline-block;background:#8A4210;color:#fff;font-weight:700;font-size:.8rem;
   padding:5px 16px;border-radius:6px;margin-bottom:10px;font-family:'Space Grotesk',sans-serif;
 }
-.def-box{background:var(--cream-box);border-radius:8px;padding:14px 20px;margin:0 0 18px;}
+.def-box{background:var(--cream-box);border-radius:8px;padding:14px 20px;margin:0 0 18px;position:relative;}
 .def-box:last-child{margin-bottom:0;}
+.read-aloud-btn{
+  float:right;margin:0 0 6px 10px;border:none;background:rgba(28,43,57,.08);color:var(--ink);
+  border-radius:50%;width:28px;height:28px;font-size:.9rem;cursor:pointer;transition:.15s;
+  display:inline-flex;align-items:center;justify-content:center;line-height:1;
+}
+.read-aloud-btn:hover{background:rgba(28,43,57,.16);}
+.read-aloud-btn.reading{background:var(--accent);color:#fff;}
 .example-list{margin:0 0 20px;padding:0;list-style:none;}
 .example-list li{position:relative;padding-left:20px;margin-bottom:8px;line-height:1.6;}
 .example-list li::before{content:"▶";position:absolute;left:0;top:1px;color:var(--accent-orange);font-size:.7rem;}

@@ -577,6 +577,7 @@ async function exportCoursPDF(){
   const title = document.getElementById('chap-title').textContent || 'cours';
   const clone = content.cloneNode(true);
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
+  clone.querySelectorAll('.read-aloud-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
   clone.querySelectorAll('.interaction-hint').forEach(el=>el.remove());
   await expandStepDemosInClone(clone);
@@ -3019,6 +3020,44 @@ function injectCourseAddButtons(container){
     h.appendChild(btn);
   });
   updateCourseAddButtonsState();
+  injectReadAloudButtons(container);
+}
+/* Lecture à voix haute des définitions (accessibilité, même esprit que le sélecteur de
+   police OpenDyslexic). Branché sur le même point d'entrée que les boutons "+ Cahier"
+   (injectCourseAddButtons), donc actif automatiquement sur tous les chapitres existants
+   et futurs sans rien avoir à modifier par ailleurs. Utilise l'API Web Speech native du
+   navigateur (aucun service externe, gratuit, fonctionne hors-ligne) ; si le navigateur
+   ne la supporte pas, aucun bouton n'est ajouté (dégradation silencieuse). */
+function injectReadAloudButtons(container){
+  if(!container || !('speechSynthesis' in window)) return;
+  container.querySelectorAll('.def-box').forEach(box=>{
+    if(box.querySelector('.read-aloud-btn')) return;
+    const text = box.textContent.trim();
+    if(!text) return;
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='read-aloud-btn';
+    btn.title='Écouter cette définition';
+    btn.setAttribute('aria-label','Écouter cette définition');
+    btn.textContent='🔊';
+    btn.onclick=(e)=>{ e.stopPropagation(); toggleReadAloud(btn, text); };
+    box.appendChild(btn);
+  });
+}
+function toggleReadAloud(btn, text){
+  // Un seul bloc lu à la fois : si on reclique sur le même bouton en cours de lecture, on
+  // arrête ; sinon on coupe toute lecture en cours avant de démarrer la nouvelle.
+  const wasReading = btn.classList.contains('reading');
+  speechSynthesis.cancel();
+  document.querySelectorAll('.read-aloud-btn.reading').forEach(b=>{ b.classList.remove('reading'); b.textContent='🔊'; });
+  if(wasReading) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'fr-FR';
+  utter.onend = ()=>{ btn.classList.remove('reading'); btn.textContent='🔊'; };
+  utter.onerror = ()=>{ btn.classList.remove('reading'); btn.textContent='🔊'; };
+  btn.classList.add('reading');
+  btn.textContent='⏸';
+  speechSynthesis.speak(utter);
 }
 function updateCourseAddButtonsState(){
   const isStaff = currentUserRole==='prof' || currentUserRole==='admin';
@@ -3137,6 +3176,7 @@ async function addSectionToCahier(headerEl){
   const wrapper = document.createElement('div');
   const headerClone = headerEl.cloneNode(true);
   headerClone.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
+  headerClone.querySelectorAll('.read-aloud-btn').forEach(b=>b.remove());
   wrapper.appendChild(headerClone);
   let node = headerEl.nextElementSibling;
   while(node){
@@ -3148,6 +3188,7 @@ async function addSectionToCahier(headerEl){
     node = node.nextElementSibling;
   }
   wrapper.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
+  wrapper.querySelectorAll('.read-aloud-btn').forEach(b=>b.remove());
   wrapper.querySelectorAll('.figure-toolbar').forEach(b=>b.remove());
   wrapper.querySelectorAll('.interaction-hint').forEach(b=>b.remove());
   await expandStepDemosInClone(wrapper);
