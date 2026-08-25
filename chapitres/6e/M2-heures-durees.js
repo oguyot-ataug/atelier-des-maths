@@ -97,7 +97,7 @@ document.getElementById('cours-demo-heures-durees').innerHTML = `
 
 document.getElementById('methode-demo-heures-durees').innerHTML = `
 <div class="sub-header"><span class="letter">M</span><h4>Additionner ou soustraire des durées en les posant</h4></div>
-<p class="hint" style="margin:8px 0 16px;">On pose l'opération comme pour des nombres entiers, colonne par colonne (secondes, puis minutes, puis heures) -- mais avec une retenue (ou un emprunt) de <b>60</b> et non de 10.</p>
+<p class="hint" style="margin:8px 0 16px;">On pose l'opération comme pour des nombres entiers, colonne par colonne (secondes, puis minutes, puis heures) -- mais avec une retenue de <b>60</b> et non de 10.</p>
 
 <div style="display:flex;gap:28px;flex-wrap:wrap;">
 
@@ -106,15 +106,15 @@ document.getElementById('methode-demo-heures-durees').innerHTML = `
     <div class="figure-wrap" style="max-width:320px;margin:8px 0;">
       <table id="m2AddTable" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
         <thead>
-          <tr><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">h</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">min</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">s</th></tr>
-          <tr id="m2AddCarryRow"><td id="m2AddCarryH" style="height:16px;color:#E35D3A;font-size:.75rem;"></td><td id="m2AddCarryMin" style="height:16px;color:#E35D3A;font-size:.75rem;"></td><td></td></tr>
+          <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">h</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">min</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">s</th></tr>
+          <tr><td></td><td id="m2AddCarryH" style="height:16px;color:#E35D3A;font-size:.75rem;"></td><td id="m2AddCarryMin" style="height:16px;color:#E35D3A;font-size:.75rem;"></td><td></td></tr>
         </thead>
         <tbody>
-          <tr><td>2</td><td>47</td><td>38</td></tr>
-          <tr><td>+ 1</td><td>26</td><td>45</td></tr>
+          <tr><td></td><td>2</td><td>47</td><td>38</td></tr>
+          <tr><td>+</td><td>1</td><td>26</td><td>45</td></tr>
         </tbody>
         <tfoot>
-          <tr style="border-top:2px solid #1C1B2E;"><td id="m2AddResH" style="padding-top:6px;font-weight:700;"></td><td id="m2AddResMin" style="padding-top:6px;font-weight:700;"></td><td id="m2AddResS" style="padding-top:6px;font-weight:700;"></td></tr>
+          <tr style="border-top:2px solid #1C1B2E;"><td></td><td id="m2AddResH" style="padding-top:6px;font-weight:700;"></td><td id="m2AddResMin" style="padding-top:6px;font-weight:700;"></td><td id="m2AddResS" style="padding-top:6px;font-weight:700;"></td></tr>
         </tfoot>
       </table>
       <p class="hint" id="m2AddText" style="min-height:48px;margin:10px 0 0;">Clique sur « Étape suivante » pour commencer.</p>
@@ -130,18 +130,18 @@ document.getElementById('methode-demo-heures-durees').innerHTML = `
     <div class="figure-wrap" style="max-width:320px;margin:8px 0;">
       <table id="m2SubTable" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
         <thead>
-          <tr><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">h</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">min</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">s</th></tr>
-          <tr id="m2SubBorrowRow"><td id="m2SubBorrowH" style="height:16px;color:#2EA8C9;font-size:.75rem;"></td><td id="m2SubBorrowMin" style="height:16px;color:#2EA8C9;font-size:.75rem;"></td><td></td></tr>
+          <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">h</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">min</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">s</th></tr>
+          <tr><td></td><td></td><td id="m2SubPlus60Min" style="height:16px;color:#1E9E5A;font-size:.75rem;"></td><td id="m2SubPlus60S" style="height:16px;color:#1E9E5A;font-size:.75rem;"></td></tr>
         </thead>
         <tbody>
-          <tr><td>5</td><td>12</td><td>18</td></tr>
-          <tr><td>− 2</td><td>45</td><td>50</td></tr>
+          <tr><td></td><td>5</td><td>12</td><td>18</td></tr>
+          <tr><td>−</td><td>2<span id="m2SubCompH" style="color:#1E9E5A;font-weight:700;"></span></td><td>45<span id="m2SubCompMin" style="color:#1E9E5A;font-weight:700;"></span></td><td>50</td></tr>
         </tbody>
         <tfoot>
-          <tr style="border-top:2px solid #1C1B2E;"><td id="m2SubResH" style="padding-top:6px;font-weight:700;"></td><td id="m2SubResMin" style="padding-top:6px;font-weight:700;"></td><td id="m2SubResS" style="padding-top:6px;font-weight:700;"></td></tr>
+          <tr style="border-top:2px solid #1C1B2E;"><td></td><td id="m2SubResH" style="padding-top:6px;font-weight:700;"></td><td id="m2SubResMin" style="padding-top:6px;font-weight:700;"></td><td id="m2SubResS" style="padding-top:6px;font-weight:700;"></td></tr>
         </tfoot>
       </table>
-      <p class="hint" id="m2SubText" style="min-height:48px;margin:10px 0 0;">Clique sur « Étape suivante » pour commencer.</p>
+      <p class="hint" id="m2SubText" style="min-height:64px;margin:10px 0 0;">Clique sur « Étape suivante » pour commencer.</p>
       <div class="figure-toolbar">
         <button class="btn" id="btnM2SubNext" onclick="m2SubNextStep()">Étape suivante →</button>
         <button class="btn secondary" onclick="m2SubReset()">Recommencer</button>
@@ -186,19 +186,27 @@ function m2AddNextStep(){
   if(s.final){ document.getElementById('btnM2AddNext').textContent = 'Terminé ✓'; document.getElementById('btnM2AddNext').disabled = true; }
 }
 
-/* ================= Soustraction de durées posée (emprunt en base 60) =================
-   5h12min18s - 2h45min50s = 2h26min28s (vérifié : 8788 s au total, dans les deux sens). */
+/* ================= Soustraction de durées posée (méthode par compensation) =================
+   5h12min18s - 2h45min50s = 2h26min28s (vérifié : 8788 s au total, dans les deux sens,
+   et retrouvé par calcul direct de chaque étape de compensation ci-dessous).
+
+   Méthode par compensation (au lieu de l'emprunt classique) : quand une colonne du haut
+   est trop petite, on lui ajoute 60 (affiché en vert au-dessus de son chiffre) -- et pour
+   que la différence ne change pas, on ajoute 1 à la colonne suivante du bas (affiché en
+   vert, accolé à son chiffre). On ne touche jamais aux chiffres déjà écrits en haut. */
 const M2_SUB_STEPS = [
   {text:"On pose la soustraction colonne par colonne, en commençant par les secondes (à droite)."},
-  {resS:'28', borrowMin:'−1', text:"Secondes : 18 − 50 est impossible (18 < 50). On emprunte 1 min (= 60 s) à la colonne des minutes : 18 + 60 = 78 ; 78 − 50 = 28 s."},
-  {resMin:'26', borrowH:'−1', text:"Minutes : 12 − 1 (emprunté) = 11. Puis 11 − 45 est impossible. On emprunte 1 h (= 60 min) à la colonne des heures : 11 + 60 = 71 ; 71 − 45 = 26 min."},
-  {resH:'2', text:"Heures : 5 − 1 (emprunté) − 2 = 2 h."},
+  {resS:'28', plus60S:'+60', compMin:'+1',
+   text:"Secondes : 18 − 50 est impossible. On fait apparaître +60 au-dessus du 18 (en vert) : 18 + 60 = 78. Comme on a ajouté 60 s au premier terme, on ajoute 1 min au second terme pour compenser : 45 devient 45 + 1. 78 − 50 = 28 s."},
+  {resMin:'26', plus60Min:'+60', compH:'+1',
+   text:"Minutes : 12 − (45 + 1) = 12 − 46 est impossible. On fait apparaître +60 au-dessus du 12 (en vert) : 12 + 60 = 72. On ajoute donc 1 h au second terme pour compenser : 2 devient 2 + 1. 72 − 46 = 26 min."},
+  {resH:'2', text:"Heures : 5 − (2 + 1) = 5 − 3 = 2 h."},
   {final:true, text:"Résultat : 5 h 12 min 18 s − 2 h 45 min 50 s = 2 h 26 min 28 s."}
 ];
 let m2SubStep = 0;
 function m2SubReset(){
   m2SubStep = 0;
-  ['m2SubResH','m2SubResMin','m2SubResS','m2SubBorrowH','m2SubBorrowMin'].forEach(id=>document.getElementById(id).textContent='');
+  ['m2SubResH','m2SubResMin','m2SubResS','m2SubPlus60S','m2SubPlus60Min','m2SubCompMin','m2SubCompH'].forEach(id=>document.getElementById(id).textContent='');
   document.getElementById('m2SubText').textContent = 'Clique sur « Étape suivante » pour commencer.';
   const btn = document.getElementById('btnM2SubNext');
   btn.textContent = 'Étape suivante →'; btn.disabled = false;
@@ -210,8 +218,10 @@ function m2SubNextStep(){
   if(s.resS!==undefined) document.getElementById('m2SubResS').textContent = s.resS;
   if(s.resMin!==undefined) document.getElementById('m2SubResMin').textContent = s.resMin;
   if(s.resH!==undefined) document.getElementById('m2SubResH').textContent = s.resH;
-  if(s.borrowMin!==undefined) document.getElementById('m2SubBorrowMin').textContent = s.borrowMin;
-  if(s.borrowH!==undefined) document.getElementById('m2SubBorrowH').textContent = s.borrowH;
+  if(s.plus60S!==undefined) document.getElementById('m2SubPlus60S').textContent = s.plus60S;
+  if(s.plus60Min!==undefined) document.getElementById('m2SubPlus60Min').textContent = s.plus60Min;
+  if(s.compMin!==undefined) document.getElementById('m2SubCompMin').textContent = ' '+s.compMin;
+  if(s.compH!==undefined) document.getElementById('m2SubCompH').textContent = ' '+s.compH;
   document.getElementById('m2SubText').textContent = s.text;
   if(s.final){ document.getElementById('btnM2SubNext').textContent = 'Terminé ✓'; document.getElementById('btnM2SubNext').disabled = true; }
 }
