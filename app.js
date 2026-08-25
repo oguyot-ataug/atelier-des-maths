@@ -1218,6 +1218,26 @@ let isStaffGlobal = false;
 let currentUserRole = null; // 'admin' | 'prof' | 'eleve' | null
 let currentClassId = null;
 
+/* Police OpenDyslexic (accessibilité) : préférence personnelle, stockée en local sur cet
+   appareil (comme il ne s'agit que d'une préférence d'affichage et non d'une donnée de
+   compte, pas besoin de la synchroniser en base -- localStorage suffit et évite une
+   requête réseau à chaque chargement de page). */
+function toggleDyslexicFont(){
+  const active = document.body.classList.toggle('font-dyslexic');
+  try{ localStorage.setItem('dysFont', active ? '1' : '0'); }catch(e){}
+  const btn = document.getElementById('dysToggleBtn');
+  if(btn) btn.classList.toggle('active', active);
+}
+(function restoreDyslexicFontPref(){
+  let saved = null;
+  try{ saved = localStorage.getItem('dysFont'); }catch(e){}
+  if(saved === '1'){
+    document.body.classList.add('font-dyslexic');
+    const btn = document.getElementById('dysToggleBtn');
+    if(btn) btn.classList.add('active');
+  }
+})();
+
 function toggleAccountMenu(){
   const d = document.getElementById('accountDropdown');
   d.style.display = (d.style.display==='none'||!d.style.display) ? 'block' : 'none';
