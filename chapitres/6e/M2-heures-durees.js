@@ -158,7 +158,45 @@ document.getElementById('methode-demo-heures-durees').innerHTML = `
 `;
 
 document.getElementById('exos-demo-heures-durees').innerHTML = `
-<p class="hint" style="margin:8px 0;">Les exercices de ce chapitre sont en cours de préparation, ils arriveront dans une prochaine mise à jour.</p>
+<div class="redaction-block">
+  <h3>Rédaction type : « Convertir une durée en secondes »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr"><span class="fill">... h</span> <span class="tex">= \\text{...} \\times 3\\,600\\text{ s} = \\text{...}\\text{ s}</span></span></div>
+    <div class="we-row"><span class="we-expr"><span class="fill">... min</span> <span class="tex">= \\text{...} \\times 60\\text{ s} = \\text{...}\\text{ s}</span></span></div>
+    <div class="we-row"><span class="we-expr">On additionne les secondes obtenues (et celles déjà données) pour trouver la durée totale en secondes.</span></div>
+  </div>
+  <h3 style="margin-top:18px;">Rédaction type : « Convertir une écriture décimale en heures et minutes »</h3>
+  <div class="redaction-template">
+    <span class="fill">...,... h</span> = <span class="fill">...</span> h + <span class="fill">0,...</span> h. Or 1 h = 60 min, donc <span class="fill">0,...</span> h = <span class="fill">0,... × 60</span> min = <span class="fill">...</span> min.<br>Donc <span class="fill">...,... h</span> = <span class="fill">... h ... min</span>.
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Combien de secondes y a-t-il dans 1 h 15 min 42 s ?
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Combien d'heures, minutes et secondes y a-t-il dans 9 500 s ?
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Convertis 3 h 12 min en écriture décimale.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Convertis 4,6 h en heures et minutes.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Pose et calcule 3 h 35 min 50 s + 2 h 48 min 22 s.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 6</div>
+    Pose et calcule 6 h 10 min 5 s − 3 h 42 min 38 s.
+  </div>
+</div>
 `;
 
 /* ================= Addition de durées posée (retenue en base 60) =================
