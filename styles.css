@@ -326,6 +326,9 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .tl-item .titre{font-weight:600;font-size:.9rem;flex:1;}
 .tl-item .dates{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--ink-soft);white-space:nowrap;}
 .tl-item.tl-done{background:rgba(31,107,58,.05);border-color:rgba(31,107,58,.25);}
+.tl-content-badge{font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;flex:none;font-family:'Space Grotesk',sans-serif;}
+.tl-content-badge.ready{background:rgba(38,170,177,.15);color:var(--accent-teal);}
+.tl-content-badge.missing{background:rgba(28,43,57,.06);color:var(--ink-soft);}
 .tl-check{
   flex:none;width:20px;height:20px;border-radius:50%;background:#1F6B3A;color:#fff;
   display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;

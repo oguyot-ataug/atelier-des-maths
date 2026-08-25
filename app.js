@@ -214,11 +214,15 @@ function renderFrise(data, lvl){
   data.forEach((c,i)=>{
     const endDate = friseEndDate(c.d);
     const done = endDate && endDate < now;
+    // Indépendant de la progression calendaire ci-dessus : est-ce que le contenu du
+    // chapitre (cours/méthode/exercices) a déjà été créé sur le site, ou pas encore ?
+    const hasContent = !!DEMO_REGISTRY[lvl+'|'+c.t];
     html += `<div class="tl-item${done?' tl-done':''}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
       <span class="dot" style="background:${CATS[c.cat].text}"></span>
       <span class="titre">${c.t}</span>
+      <span class="tl-content-badge ${hasContent?'ready':'missing'}" title="${hasContent?'Contenu du site déjà créé':'Contenu du site pas encore créé'}">${hasContent?'🌐 En ligne':'✏️ À créer'}</span>
       <span class="dates">${c.code} · ${c.d}</span>
-      ${done?'<span class="tl-check" title="Chapitre déjà traité">✓</span>':''}
+      ${done?'<span class="tl-check" title="Chapitre déjà traité (date passée)">✓</span>':''}
     </div>`;
     const v = vac.find(v=>v.after===c.n);
     if(v) html += `<div class="tl-vac">${v.label}</div>`;
