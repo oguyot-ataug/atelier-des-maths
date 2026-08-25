@@ -202,7 +202,7 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .sub-header{display:flex;align-items:center;gap:10px;margin:24px 0 12px;}
 .sub-header:first-of-type{margin-top:4px;}
 .sub-header .letter{
-  width:26px;height:26px;border-radius:7px;background:var(--accent);color:#fff;flex:none;
+  width:26px;height:26px;border-radius:7px;background:var(--accent-orange);color:#fff;flex:none;
   display:flex;align-items:center;justify-content:center;font-weight:700;font-family:'Space Grotesk',sans-serif;font-size:.85rem;
 }
 .sub-header h4{margin:0;font-family:'Space Grotesk',sans-serif;font-size:1.02rem;font-weight:700;color:var(--ink);}
@@ -397,6 +397,7 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
 #view-chapitre.lvl-5e button.btn:not(.secondary):not(.orange){background:var(--accent);}
 #view-chapitre.lvl-5e .lesson-header{background:var(--accent);}
 #view-chapitre.lvl-5e .lesson-header .num{color:var(--accent);}
+#view-chapitre.lvl-5e .sub-header .letter{background:var(--accent);}
 
 .step-list{margin-top:14px;}
 .step-item{
