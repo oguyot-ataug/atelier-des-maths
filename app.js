@@ -1343,6 +1343,11 @@ async function submitProfSignup(){
     return;
   }
 
+  // Notification à contact@latelieraugmente.fr : volontairement non-bloquant -- si l'envoi
+  // échoue (ex. secret RESEND_API_KEY pas encore configuré côté Supabase), l'inscription
+  // elle-même reste enregistrée et valide, seule la notification est manquée.
+  try{ await sb.functions.invoke('notify-prof-signup', { body: { nom, prenom, email, uai } }); }catch(e){ /* silencieux, voir commentaire ci-dessus */ }
+
   status.textContent = "Inscription enregistrée ! Votre compte sera activé après vérification par l'administrateur, avec 15 jours d'essai gratuit à compter de l'activation.";
   document.getElementById('profSignupPrenom').value = '';
   document.getElementById('profSignupNom').value = '';
