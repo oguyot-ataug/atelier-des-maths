@@ -60,9 +60,9 @@ const OG_SUB_15 = [
 ];
 
 document.getElementById('cours-demo-operations-ordre-grandeur-6e').innerHTML = `
-<div class="lesson-header"><span class="num">1</span><h3>Addition et soustraction de nombres décimaux</h3></div>
+<div class="lesson-header"><span class="num">1</span><h3>Addition de nombres décimaux</h3></div>
 <span class="prop-badge">Règle</span>
-<div class="def-box">Pour poser et effectuer une <b>addition</b> ou une <b>soustraction</b> de nombres décimaux, on place les nombres les uns en dessous des autres, de sorte que les <b>virgules soient alignées verticalement</b>.</div>
+<div class="def-box">Pour poser et effectuer une <b>addition</b> de nombres décimaux, on place les nombres les uns en dessous des autres, de sorte que les <b>virgules soient alignées verticalement</b>.</div>
 
 <p style="margin:12px 0 8px;"><b>Exemples</b> :</p>
 <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
@@ -75,6 +75,10 @@ document.getElementById('cours-demo-operations-ordre-grandeur-6e').innerHTML = `
     <p class="hint" style="text-align:center;margin:2px 0;color:#9E1F5E;">Addition mal posée (virgules non alignées)</p>
   </div>
 </div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Soustraction de nombres décimaux</h3></div>
+<span class="prop-badge">Règle</span>
+<div class="def-box">Pour poser et effectuer une <b>soustraction</b> de nombres décimaux, on place les nombres les uns en dessous des autres, de sorte que les <b>virgules soient alignées verticalement</b>.</div>
 <p style="margin:14px 0 6px;">Pour poser la soustraction 15 − 6,3, on place les nombres correctement et on ajoute un zéro pour que les deux nombres aient le même nombre de chiffres dans leur partie décimale (en effet, 15 = 15,0).</p>
 ${ogAddBlock(OG_SUB_15)}
 `;
@@ -83,10 +87,56 @@ document.getElementById('histoire-demo-operations-ordre-grandeur-6e').innerHTML 
 <div class="history-box">
   <div class="history-title">📜 Un peu d'histoire</div>
   Estimer un ordre de grandeur, c'est un peu ce que le savant grec Archimède a fait vers 250 av. J.-C., dans un texte appelé <i>L'Arénaire</i> (« Celui qui compte les grains de sable »). À une époque où les Grecs ne savaient nommer que des nombres allant jusqu'à la « myriade » (10 000), Archimède invente un système pour écrire des nombres immensément plus grands, et calcule qu'il faudrait environ 10<sup>63</sup> grains de sable pour remplir tout l'Univers tel qu'on l'imaginait alors ! Cet exercice, à la fois amusant et sérieux, est l'un des tout premiers exemples connus de calcul d'ordre de grandeur.
+
+  <p class="example-title" style="margin-top:20px;">Des cailloux au boulier : additionner et soustraire avant les chiffres</p>
+  <p style="margin:0 0 12px;">Le mot « calcul » vient du latin <i>calculus</i>, qui signifie « petit caillou » : les Romains posaient de petits cailloux sur une table recouverte de sable (en grec, <i>abax</i>, d'où le mot « abaque ») pour compter et effectuer leurs opérations. Ils inventent ensuite l'<b>abaque à jetons</b>, une planche gravée de rainures dans lesquelles glissent des jetons, chaque rainure représentant un rang de la numération (unités, dizaines, centaines...). Cet outil reste utilisé en Europe jusqu'à la fin du XVIII<sup>e</sup> siècle, bien après l'apparition de nos chiffres actuels.</p>
+  <p style="margin:0 0 12px;">En Chine apparaît au XIII<sup>e</sup> siècle le <b>boulier</b> (<i>suanpan</i>), qui pousse l'idée encore plus loin : chaque tige verticale représente un rang (unités, dizaines, centaines...), et des boules coulissantes permettent de composer n'importe quel chiffre de 0 à 9 sur chaque tige. C'est une manière très concrète de voir ce qu'est une <b>base de numération</b> : la position d'une boule sur sa tige compte dix fois plus que la même position sur la tige juste à sa droite -- exactement le principe qu'on utilise en posant une addition ou une soustraction, en alignant bien les unités sous les unités, les dixièmes sous les dixièmes...</p>
+  <p style="margin:0;">Le boulier permet aussi de <i>voir</i> physiquement une retenue : quand une tige atteint 10 boules, on les échange contre une seule boule sur la tige suivante -- exactement le geste qu'on fait mentalement lorsqu'on pose une addition avec retenue, ou une soustraction avec la méthode par compensation.</p>
 </div>
 `;
 
 /* ================= METHODE ================= */
+/* ---- Soustraire des nombres décimaux par compensation (même méthode que la
+   soustraction de durées, chapitre "Heures et durée") : quand une colonne du
+   haut est trop petite, on lui ajoute 10 (affiché en vert au-dessus de son
+   chiffre), et pour ne pas changer la différence, on ajoute 1 à la colonne
+   suivante DU BAS (affiché en vert, accolé à son chiffre, sur une seconde
+   ligne pour ne pas décaler l'alignement des colonnes). On ne modifie jamais
+   les chiffres déjà écrits en haut.
+   Exemple : 8,30 − 2,56 = 5,74 (vérifié : centièmes 0+10-6=4, dixièmes
+   3+10-6=7, unités 8-3=5 -- et 8,30-2,56=5,74 directement). */
+const OG_SUB_STEPS = [
+  {text:"On pose la soustraction colonne par colonne, en commençant par les centièmes (à droite)."},
+  {resCent:'4', plus10Cent:'+10', compDix:'+1',
+   text:"Centièmes : 0 − 6 est impossible. On fait apparaître +10 au-dessus du 0 (en vert) : 0 + 10 = 10. Comme on a ajouté 10 centièmes au premier terme, on ajoute 1 dixième au second terme pour compenser : 5 devient 5 + 1. 10 − 6 = 4."},
+  {resDix:'7', plus10Dix:'+10', compUnite:'+1',
+   text:"Dixièmes : 3 − (5 + 1) = 3 − 6 est impossible. On fait apparaître +10 au-dessus du 3 (en vert) : 3 + 10 = 13. On ajoute donc 1 unité au second terme pour compenser : 2 devient 2 + 1. 13 − 6 = 7."},
+  {resUnite:'5', text:"Unités : 8 − (2 + 1) = 8 − 3 = 5."},
+  {final:true, text:"Résultat : 8,30 − 2,56 = 5,74."}
+];
+let ogSubStep = 0;
+function ogSubReset(){
+  ogSubStep = 0;
+  ['ogSubResUnite','ogSubResDix','ogSubResCent','ogSubPlus10Dix','ogSubPlus10Cent','ogSubCompDix','ogSubCompUnite'].forEach(id=>document.getElementById(id).textContent='');
+  document.getElementById('ogSubText').textContent = 'Clique sur « Étape suivante » pour commencer.';
+  const btn = document.getElementById('btnOgSubNext');
+  btn.textContent = 'Étape suivante →'; btn.disabled = false;
+}
+function ogSubNextStep(){
+  if(ogSubStep>=OG_SUB_STEPS.length-1) return;
+  ogSubStep++;
+  const s = OG_SUB_STEPS[ogSubStep];
+  if(s.resCent!==undefined) document.getElementById('ogSubResCent').textContent = s.resCent;
+  if(s.resDix!==undefined) document.getElementById('ogSubResDix').textContent = s.resDix;
+  if(s.resUnite!==undefined) document.getElementById('ogSubResUnite').textContent = s.resUnite;
+  if(s.plus10Cent!==undefined) document.getElementById('ogSubPlus10Cent').textContent = s.plus10Cent;
+  if(s.plus10Dix!==undefined) document.getElementById('ogSubPlus10Dix').textContent = s.plus10Dix;
+  if(s.compDix!==undefined) document.getElementById('ogSubCompDix').textContent = s.compDix;
+  if(s.compUnite!==undefined) document.getElementById('ogSubCompUnite').textContent = s.compUnite;
+  document.getElementById('ogSubText').textContent = s.text;
+  if(s.final){ document.getElementById('btnOgSubNext').textContent = 'Terminé ✓'; document.getElementById('btnOgSubNext').disabled = true; }
+}
+
 /* Tableau de valeurs de position : milliers…millièmes, avec une frontière fixe
    (la virgule) entre la colonne des unités et celle des dixièmes. On ne fait
    jamais bouger la virgule : ce sont les CHIFFRES qui changent de colonne.
@@ -162,7 +212,47 @@ function ogR2Next(){ if(ogR2Idx<OG_R2_STEPS.length-1) ogR2Idx++; ogRenderR2(); }
 function ogR2Reset(){ ogR2Idx=0; ogRenderR2(); }
 
 document.getElementById('methode-demo-operations-ordre-grandeur-6e').innerHTML = `
-<p class="example-title" style="margin-top:0;">Arrondir un nombre décimal</p>
+<p class="example-title" style="margin-top:0;">Soustraire des nombres décimaux (méthode par compensation)</p>
+<p style="margin:0 0 14px;">Même principe que pour soustraire des durées (voir le chapitre « Heures et durée ») : quand une colonne est trop petite pour soustraire, on lui ajoute 10 (au lieu de 60 pour les durées), et on compense en ajoutant 1 à la colonne suivante du second terme.</p>
+<p style="margin:0 0 8px;"><b>Exemple</b> : calcule 8,30 − 2,56.</p>
+<div class="figure-wrap" style="max-width:320px;margin:8px 0;">
+  <table id="ogSubTable" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
+    <thead>
+      <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">unités</th><th style="padding:4px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">dixièmes</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">centièmes</th></tr>
+      <tr>
+        <td style="vertical-align:top;"></td><td style="vertical-align:top;"></td><td style="vertical-align:top;"></td>
+        <td id="ogSubPlus10Dix" style="height:16px;color:#1E9E5A;font-size:.75rem;vertical-align:top;"></td>
+        <td id="ogSubPlus10Cent" style="height:16px;color:#1E9E5A;font-size:.75rem;vertical-align:top;"></td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;">8</td><td style="vertical-align:top;">,</td><td style="vertical-align:top;">3</td><td style="vertical-align:top;">0</td></tr>
+      <tr>
+        <td style="vertical-align:top;">−<div style="height:12px;"></div></td>
+        <td style="vertical-align:top;">2<div id="ogSubCompUnite" style="color:#1E9E5A;font-weight:700;font-size:.65rem;height:12px;line-height:12px;"></div></td>
+        <td style="vertical-align:top;">,<div style="height:12px;"></div></td>
+        <td style="vertical-align:top;">5<div id="ogSubCompDix" style="color:#1E9E5A;font-weight:700;font-size:.65rem;height:12px;line-height:12px;"></div></td>
+        <td style="vertical-align:top;">6<div style="height:12px;"></div></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr style="border-top:2px solid #1C1B2E;">
+        <td style="vertical-align:top;"></td>
+        <td id="ogSubResUnite" style="padding-top:6px;font-weight:700;vertical-align:top;"></td>
+        <td style="padding-top:6px;font-weight:700;vertical-align:top;">,</td>
+        <td id="ogSubResDix" style="padding-top:6px;font-weight:700;vertical-align:top;"></td>
+        <td id="ogSubResCent" style="padding-top:6px;font-weight:700;vertical-align:top;"></td>
+      </tr>
+    </tfoot>
+  </table>
+  <p class="hint" id="ogSubText" style="min-height:64px;margin:10px 0 0;">Clique sur « Étape suivante » pour commencer.</p>
+  <div class="figure-toolbar">
+    <button class="btn" id="btnOgSubNext" onclick="ogSubNextStep()">Étape suivante →</button>
+    <button class="btn secondary" onclick="ogSubReset()">Recommencer</button>
+  </div>
+</div>
+
+<p class="example-title" style="margin-top:26px;">Arrondir un nombre décimal</p>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Pour arrondir un nombre à un rang donné, on repère le chiffre de ce rang, puis on regarde le chiffre juste après.
   <ul style="margin:8px 0 0;padding-left:20px;line-height:1.8;">
@@ -274,7 +364,7 @@ DEMO_REGISTRY['6e|Opérations et ordre de grandeur'] = {
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-operations-ordre-grandeur-6e'));
     injectCourseAddButtons(document.getElementById('cours-demo-operations-ordre-grandeur-6e'));
-    ogR1Reset(); ogR2Reset();
+    ogSubReset(); ogR1Reset(); ogR2Reset();
     injectCourseAddButtons(document.getElementById('methode-demo-operations-ordre-grandeur-6e'));
   }
 };
