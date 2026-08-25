@@ -1274,6 +1274,83 @@ async function globalSignOut(){
   currentUser = null; currentUserRole = null; currentClassId = null;
   refreshAuthUI();
 }
+/* Inscription en libre-service pour les professeurs (accès réservé aux adresses
+   académiques @ac-...fr, UAI de l'établissement obligatoire). Le compte créé reste en
+   attente ("pending") jusqu'à validation manuelle par l'admin (voir la partie
+   Administration) -- la base de données empêche déjà, via RLS + trigger, qu'un compte
+   s'auto-approuve ou s'attribue un autre rôle que "prof". */
+const PROF_SIGNUP_EMAIL_RE = /^[^\s@]+@ac-[a-z-]+\.(fr|nc|pf|wf)$/i;
+const PROF_SIGNUP_UAI_RE = /^[0-9]{7}[A-Za-z]$/;
+function openProfSignupModal(){
+  document.getElementById('profSignupModalOverlay').style.display = 'flex';
+  document.getElementById('profSignupStatus').textContent = '';
+}
+function closeProfSignupModal(){
+  document.getElementById('profSignupModalOverlay').style.display = 'none';
+}
+async function submitProfSignup(){
+  const status = document.getElementById('profSignupStatus');
+  const btn = document.getElementById('btnProfSignupSubmit');
+  const prenom = document.getElementById('profSignupPrenom').value.trim();
+  const nom = document.getElementById('profSignupNom').value.trim();
+  const email = document.getElementById('profSignupEmail').value.trim();
+  const uai = document.getElementById('profSignupUai').value.trim().toUpperCase();
+  const password = document.getElementById('profSignupPassword').value;
+
+  if(!prenom || !nom || !email || !uai || !password){
+    status.textContent = 'Merci de remplir tous les champs.'; return;
+  }
+  if(!PROF_SIGNUP_EMAIL_RE.test(email)){
+    status.textContent = "L'inscription nécessite une adresse académique, de la forme ...@ac-nomacademie.fr.";
+    return;
+  }
+  if(!PROF_SIGNUP_UAI_RE.test(uai)){
+    status.textContent = 'Le code UAI doit comporter 7 chiffres suivis d\'une lettre (ex. 0541306B).';
+    return;
+  }
+  if(password.length < 8){
+    status.textContent = 'Le mot de passe doit comporter au moins 8 caractères.'; return;
+  }
+
+  btn.disabled = true;
+  status.textContent = 'Inscription en cours…';
+
+  const { data: signUpData, error: signUpError } = await sb.auth.signUp({ email, password });
+  if(signUpError){
+    status.textContent = 'Erreur : '+signUpError.message;
+    btn.disabled = false;
+    return;
+  }
+  const userId = signUpData.user && signUpData.user.id;
+  if(!userId){
+    status.textContent = "Compte créé, mais confirmation par e-mail requise avant de pouvoir continuer l'inscription. Vérifiez votre boîte académique.";
+    btn.disabled = false;
+    return;
+  }
+
+  // L'établissement doit exister dans notre référentiel (contrainte de clé étrangère sur
+  // profiles.uai) : on le crée avec un nom provisoire si inconnu, l'admin complètera le
+  // nom réel au moment de la validation.
+  await sb.from('etablissements').upsert({ uai, nom: 'À vérifier par l\'administrateur' }, { onConflict: 'uai', ignoreDuplicates: true });
+
+  const { error: profileError } = await sb.from('profiles').insert({
+    id: userId, role: 'prof', nom, prenom, email, uai,
+    signup_status: 'pending', subscription_status: 'trial',
+  });
+  if(profileError){
+    status.textContent = 'Erreur lors de la création du profil : '+profileError.message;
+    btn.disabled = false;
+    return;
+  }
+
+  status.textContent = "Inscription enregistrée ! Votre compte sera activé après vérification par l'administrateur, avec 15 jours d'essai gratuit à compter de l'activation.";
+  document.getElementById('profSignupPrenom').value = '';
+  document.getElementById('profSignupNom').value = '';
+  document.getElementById('profSignupEmail').value = '';
+  document.getElementById('profSignupUai').value = '';
+  document.getElementById('profSignupPassword').value = '';
+  btn.disabled = false;
+}
 async function refreshAuthUI(){
   const { data:{ session } } = await sb.auth.getSession();
   const loggedOutEl = document.getElementById('accountLoggedOut'), loggedInEl = document.getElementById('accountLoggedIn');
@@ -1283,7 +1360,7 @@ async function refreshAuthUI(){
 
   if(session){
     currentUser = session.user;
-    const { data: profile } = await sb.from('profiles').select('role,nom,prenom').eq('id', currentUser.id).single();
+    const { data: profile } = await sb.from('profiles').select('role,nom,prenom,signup_status,subscription_status,subscription_expires_at').eq('id', currentUser.id).single();
     currentUserRole = profile ? profile.role : null;
 
     loggedOutEl.style.display='none'; loggedInEl.style.display='block';
@@ -1291,8 +1368,22 @@ async function refreshAuthUI(){
     const nomTrim = profile && profile.nom ? profile.nom.trim() : '';
     const fullName = [prenomTrim, nomTrim].filter(Boolean).join(' ');
     document.getElementById('accountNameDisplay').textContent = fullName || currentUser.email;
-    document.getElementById('accountRoleDisplay').textContent =
-      currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='eleve' ? 'Élève' : '';
+
+    // Un compte prof en attente de validation, refusé, ou dont l'abonnement a expiré ne
+    // doit pas accéder aux fonctionnalités (mais reste connecté pour voir son statut).
+    const pendingOrRejected = profile && profile.role==='prof' && (profile.signup_status==='pending' || profile.signup_status==='rejected');
+    const subscriptionExpired = profile && profile.subscription_status==='expired';
+    const accessBlocked = pendingOrRejected || subscriptionExpired;
+    if(pendingOrRejected){
+      document.getElementById('accountRoleDisplay').innerHTML = profile.signup_status==='pending'
+        ? '⏳ Inscription en attente de validation par l\'administrateur.'
+        : '❌ Inscription refusée. Contactez contact@latelieraugmente.fr.';
+    } else if(subscriptionExpired){
+      document.getElementById('accountRoleDisplay').innerHTML = '⚠️ Abonnement expiré. Contactez contact@latelieraugmente.fr pour le renouveler.';
+    } else {
+      document.getElementById('accountRoleDisplay').textContent =
+        currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='eleve' ? 'Élève' : '';
+    }
 
     // Avatar : initiales (prénom + nom) si disponibles, sinon la première lettre de ce qu'on a,
     // sinon on garde l'icône générique -- jamais de case vide dans le rond.
@@ -1301,12 +1392,12 @@ async function refreshAuthUI(){
     avatarBtn.textContent = initials || '👤';
     avatarBtn.title = fullName ? `Mon compte — ${fullName}` : 'Mon compte';
 
-    const isStaff = currentUserRole==='admin' || currentUserRole==='prof';
+    const isStaff = !accessBlocked && (currentUserRole==='admin' || currentUserRole==='prof');
     isStaffGlobal = isStaff;
     if(navCorrection) navCorrection.style.display = isStaff ? 'inline-block' : 'none';
-    if(navCahier) navCahier.style.display = 'inline-block'; // accessible à tous les comptes connectés (prof, admin, élève)
-    if(navMesResultats) navMesResultats.style.display = currentUserRole==='eleve' ? 'inline-block' : 'none';
-    if(navAdmin) navAdmin.style.display = currentUserRole==='admin' ? 'inline-block' : 'none';
+    if(navCahier) navCahier.style.display = accessBlocked ? 'none' : 'inline-block'; // accessible à tous les comptes connectés (prof, admin, élève), sauf accès bloqué
+    if(navMesResultats) navMesResultats.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
+    if(navAdmin) navAdmin.style.display = (!accessBlocked && currentUserRole==='admin') ? 'inline-block' : 'none';
     const btnReportBug = document.getElementById('btnReportBug');
     if(btnReportBug) btnReportBug.style.display = isStaff ? 'block' : 'none';
     const chapSuggestRow = document.getElementById('chapSuggestRow');

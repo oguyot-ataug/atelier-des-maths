@@ -16,6 +16,7 @@ document.getElementById('view-admin').innerHTML = `
 
   <div class="tabs" id="adminTabs">
     <button class="tab-btn active" data-admin-tab="comptes">Comptes &amp; classes</button>
+    <button class="tab-btn" data-admin-tab="inscriptions">📝 Inscriptions</button>
     <button class="tab-btn" data-admin-tab="listing">📋 Déjà enregistré</button>
     <button class="tab-btn" data-admin-tab="signalements">🐞 Signalements</button>
   </div>
@@ -66,6 +67,14 @@ mmartin	Motdepasse2"></textarea>
         <button class="btn secondary" onclick="adminAssignStudent()">Associer</button>
       </div>
       <span class="hint" id="adminAssignStudentStatus" style="margin:0;"></span>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="admin-panel-inscriptions">
+    <div class="tool-shell">
+      <button class="btn secondary" style="float:right;" onclick="adminRefreshSignupRequests()">🔄 Actualiser</button>
+      <p class="hint" style="margin:6px 0 14px;clear:right;">Demandes d'inscription des professeurs (adresse académique + UAI vérifiés côté formulaire, à valider ici avant activation).</p>
+      <div id="adminSignupRequestsListing" class="hint">Chargement…</div>
     </div>
   </div>
 
@@ -389,6 +398,7 @@ async function adminRefreshDropdowns(){
 }
 async function adminRefreshListings(){
   await adminRefreshBugReports();
+  await adminRefreshSignupRequests();
   const { data: profs } = await sb.from('profiles').select('id,nom,email,role').in('role',['prof','admin']).order('nom');
   const { data: eleves } = await sb.from('profiles').select('id,nom,email,role').eq('role','eleve').order('nom');
   const accEl = document.getElementById('adminAccountsListing');
@@ -548,4 +558,57 @@ async function adminAssignStudent(){
   const { error } = await sb.from('class_students').insert({ student_id, class_id });
   status.textContent = error ? "Erreur : "+error.message : '✓ Associé.';
   if(!error) await adminRefreshListings();
+}
+
+/* Demandes d'inscription prof (signup_status='pending') : approuver démarre l'essai de
+   15 jours (trial_started_at + subscription_expires_at à +15 jours), rejeter bloque
+   l'accès sans supprimer le compte (l'utilisateur peut recontacter l'admin). */
+async function adminRefreshSignupRequests(){
+  const el = document.getElementById('adminSignupRequestsListing');
+  if(!el) return;
+  const { data: requests, error } = await sb.from('profiles')
+    .select('id,nom,prenom,email,uai,created_at,etablissements(nom)')
+    .eq('role','prof').eq('signup_status','pending')
+    .order('created_at',{ascending:true});
+  if(error){ el.textContent = 'Erreur : '+error.message; return; }
+  if(!requests || !requests.length){ el.innerHTML = '<div class="hint">Aucune demande en attente.</div>'; return; }
+  el.innerHTML = requests.map(r=>{
+    const safeName = escapeHtml([r.prenom,r.nom].filter(Boolean).join(' ')||r.email||'').replace(/'/g,"\\'");
+    const etabNom = r.etablissements ? r.etablissements.nom : null;
+    const dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR') : '';
+    return `<div style="padding:10px 0;border-bottom:1px solid rgba(28,43,57,.08);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;">
+        <div>
+          <b>${escapeHtml([r.prenom,r.nom].filter(Boolean).join(' ')||'(sans nom)')}</b>
+          <span style="color:var(--ink-soft);">— ${escapeHtml(r.email||'')}</span><br>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">UAI ${escapeHtml(r.uai||'?')}</span>
+          ${etabNom ? ' — '+escapeHtml(etabNom) : ' <span style="color:#a83c1f;">(établissement à vérifier)</span>'}
+          <span style="color:var(--ink-soft);font-size:.8rem;"> · demande du ${dateStr}</span>
+        </div>
+        <span style="display:flex;gap:6px;flex:none;">
+          <button class="btn" style="font-size:.78rem;padding:5px 10px;" onclick="adminApproveSignup('${r.id}','${safeName}')">✓ Approuver</button>
+          <button class="btn secondary" style="font-size:.78rem;padding:5px 10px;color:#a83c1f;" onclick="adminRejectSignup('${r.id}','${safeName}')">✕ Rejeter</button>
+        </span>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function adminApproveSignup(id, name){
+  if(!confirm(`Approuver l'inscription de ${name} ? L'essai gratuit de 15 jours démarre immédiatement.`)) return;
+  const now = new Date();
+  const trialEnd = new Date(now.getTime() + 15*24*60*60*1000);
+  const { error } = await sb.from('profiles').update({
+    signup_status: 'approved',
+    subscription_status: 'trial',
+    trial_started_at: now.toISOString(),
+    subscription_expires_at: trialEnd.toISOString(),
+  }).eq('id', id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  await adminRefreshSignupRequests();
+}
+async function adminRejectSignup(id, name){
+  if(!confirm(`Rejeter l'inscription de ${name} ?`)) return;
+  const { error } = await sb.from('profiles').update({ signup_status: 'rejected' }).eq('id', id);
+  if(error){ alert('Erreur : '+error.message); return; }
+  await adminRefreshSignupRequests();
 }
