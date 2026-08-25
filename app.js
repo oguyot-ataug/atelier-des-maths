@@ -1191,6 +1191,12 @@ function fmtDateFR(iso){
    sécurité est appliquée côté serveur (Supabase Row Level Security), pas seulement ici. */
 const SUPABASE_URL = 'https://rngzubhnypmistjsumpz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZ3p1YmhueXBtaXN0anN1bXB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MTExNjEsImV4cCI6MjEwMDM4NzE2MX0.V56LFlb1ITWPmoO-DwLw3coeS7epY9NM5K2Waj03pac';
+/* Clé PUBLIQUE Stripe (pk_live_...) : conçue pour être visible côté client, contrairement
+   à la clé secrète (sk_live_...) qui ne vit que dans les secrets Supabase, jamais ici.
+   Pas utilisée directement par le flux actuel (redirection vers Stripe Checkout hébergé,
+   créé côté serveur par l'Edge Function create-checkout-session) -- conservée pour une
+   éventuelle évolution future vers un formulaire de paiement intégré (Stripe Elements). */
+const STRIPE_PUBLIC_KEY = 'pk_live_51T17VO3TRQxnnzlopsTepUyvV9WPwz3FVJlYby6fucl0cEKiuxSUaTWzulE9GqLyUGbkcw0roYqSo8352WDfgxPC00LxQp6HAz';
 /* Bouchon utilisé si la bibliothèque Supabase n'a pas pu charger (coupure réseau, CDN
    bloqué...) : toute méthode chaînée (from().select().eq()...) renvoie ce même bouchon, et
    l'attendre (await) donne une erreur explicite plutôt que de planter -- sans ce filet, une
@@ -1356,6 +1362,29 @@ async function submitProfSignup(){
   document.getElementById('profSignupPassword').value = '';
   btn.disabled = false;
 }
+/* Démarre le paiement de l'abonnement annuel via Stripe Checkout : demande une session
+   à l'Edge Function create-checkout-session (qui connaît le prix et la clé secrète côté
+   serveur), puis redirige vers la page de paiement hébergée par Stripe. */
+async function startStripeCheckout(){
+  const status = document.getElementById('subscribeStatus');
+  const btn = document.getElementById('btnSubscribe');
+  btn.disabled = true;
+  status.textContent = 'Redirection vers le paiement…';
+  try{
+    const { data, error } = await sb.functions.invoke('create-checkout-session', {
+      body: { origin: window.location.origin }
+    });
+    if(error || !data || !data.url){
+      status.textContent = "Erreur : impossible de démarrer le paiement pour le moment. Réessayez plus tard ou contactez contact@latelieraugmente.fr.";
+      btn.disabled = false;
+      return;
+    }
+    window.location.href = data.url;
+  }catch(e){
+    status.textContent = 'Erreur : '+e.message;
+    btn.disabled = false;
+  }
+}
 async function refreshAuthUI(){
   const { data:{ session } } = await sb.auth.getSession();
   const loggedOutEl = document.getElementById('accountLoggedOut'), loggedInEl = document.getElementById('accountLoggedIn');
@@ -1409,6 +1438,14 @@ async function refreshAuthUI(){
     if(chapSuggestRow) chapSuggestRow.style.display = isStaff ? 'block' : 'none';
     const classRow = document.getElementById('accountClassRow');
     if(classRow) classRow.style.display = isStaff ? 'block' : 'none'; // un élève ne choisit pas sa classe, elle lui est assignée
+    // Bouton d'abonnement : uniquement pour les profs approuvés (pas admin, pas élève),
+    // en essai ou dont l'abonnement a expiré -- pas pour un abonnement déjà actif.
+    const btnSubscribe = document.getElementById('btnSubscribe');
+    if(btnSubscribe){
+      const showSubscribe = profile && profile.role==='prof' && profile.signup_status==='approved'
+        && (profile.subscription_status==='trial' || profile.subscription_status==='expired');
+      btnSubscribe.style.display = showSubscribe ? 'block' : 'none';
+    }
     const btnGenerateQuiz = document.getElementById('btnGenerateQuiz'), quizLoginHint = document.getElementById('quizLoginHint');
     if(btnGenerateQuiz) btnGenerateQuiz.style.display = 'inline-block';
     if(quizLoginHint) quizLoginHint.style.display = 'none';
