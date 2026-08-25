@@ -21,7 +21,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
 
 <div class="lesson-header"><span class="num">1</span><h3>Triangles particuliers</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Triangle isocèle</p>
+<div class="sub-header"><span class="letter">A</span><h4>Triangle isocèle</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Un <b>triangle isocèle</b> est un triangle qui a deux côtés de même longueur.</div>
 <span class="def-badge">Vocabulaire</span>
@@ -49,7 +49,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
   <li><b>B</b> est le <b>sommet principal</b> du triangle ABC ; <b>[AC]</b> est la <b>base</b> du triangle ABC.</li>
 </ul>
 
-<p class="example-title" style="margin-top:26px;">B. Triangle équilatéral</p>
+<div class="sub-header"><span class="letter">B</span><h4>Triangle équilatéral</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Un <b>triangle équilatéral</b> est un triangle qui a ses trois côtés de même longueur.</div>
 <p class="example-title">Exemple :</p>
@@ -68,7 +68,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
 </div>
 <p style="margin:4px 0 0;">Le triangle DEF est <b>équilatéral</b>.</p>
 
-<p class="example-title" style="margin-top:26px;">C. Triangle rectangle</p>
+<div class="sub-header"><span class="letter">C</span><h4>Triangle rectangle</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Un <b>triangle rectangle</b> est un triangle qui a un angle droit.</div>
 <span class="def-badge">Vocabulaire</span>
@@ -92,7 +92,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
 
 <div class="lesson-header"><span class="num">2</span><h3>Caractérisation angulaire des triangles particuliers</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Triangle isocèle</p>
+<div class="sub-header"><span class="letter">A</span><h4>Triangle isocèle</h4></div>
 <span class="prop-badge">Propriété 1</span>
 <div class="def-box">Un triangle isocèle a <b>un axe de symétrie</b> qui est à la fois la <b>médiatrice de sa base</b> et la <b>bissectrice de son angle principal</b>.</div>
 <span class="prop-badge">Propriété 2</span>
@@ -118,7 +118,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
 </div>
 <p style="margin:4px 0 0;">L'axe de symétrie (en pointillés) passe par <b>B</b> et par le milieu de <b>[AC]</b> : c'est la médiatrice de la base <b>[AC]</b> et la bissectrice de l'angle <span class="tex">\\widehat{ABC}</span>. Les angles en <b>A</b> et en <b>C</b> ont la même mesure.</p>
 
-<p class="example-title" style="margin-top:26px;">B. Triangle équilatéral</p>
+<div class="sub-header"><span class="letter">B</span><h4>Triangle équilatéral</h4></div>
 <span class="prop-badge">Propriété 1</span>
 <div class="def-box">Un triangle équilatéral a <b>trois axes de symétrie</b> qui sont à la fois les <b>médiatrices de ses côtés</b> et les <b>bissectrices de ses angles</b>.</div>
 <span class="prop-badge">Propriété 2</span>
@@ -155,7 +155,7 @@ document.getElementById('cours-demo-construction-triangles').innerHTML = `
 document.getElementById('methode-demo-construction-triangles').innerHTML = `
 <div class="sub-header"><span class="letter">M</span><h4>Construction de triangles quelconques</h4></div>
 
-<p class="example-title" style="margin-top:0;">A. Connaissant les longueurs de ses trois côtés</p>
+<div class="sub-header"><span class="letter">A</span><h4>Connaissant les longueurs de ses trois côtés</h4></div>
 <p style="margin:4px 0 8px;"><b>Exemple</b> : construis un triangle ABC tel que AB = 6 cm, BC = 5 cm et AC = 4,5 cm.</p>
 
 <div class="figure-wrap">
@@ -187,7 +187,7 @@ document.getElementById('methode-demo-construction-triangles').innerHTML = `
   </div>
 </div>
 
-<p class="example-title" style="margin-top:26px;">B. Connaissant la longueur de deux côtés et la mesure de l'angle délimité par ces côtés</p>
+<div class="sub-header"><span class="letter">B</span><h4>Connaissant la longueur de deux côtés et la mesure de l'angle délimité par ces côtés</h4></div>
 <p style="margin:4px 0 8px;"><b>Exemple</b> : construis un triangle DEF tel que DE = 6 cm, DF = 5 cm et <span class="tex">\\widehat{EDF} = 50°</span>.</p>
 
 <div class="figure-wrap">
@@ -218,7 +218,7 @@ document.getElementById('methode-demo-construction-triangles').innerHTML = `
   </div>
 </div>
 
-<p class="example-title" style="margin-top:26px;">C. Connaissant la longueur d'un côté et la mesure des angles adjacents à ce côté</p>
+<div class="sub-header"><span class="letter">C</span><h4>Connaissant la longueur d'un côté et la mesure des angles adjacents à ce côté</h4></div>
 <p style="margin:4px 0 8px;"><b>Exemple</b> : construis un triangle GHI tel que GH = 6 cm, <span class="tex">\\widehat{HGI} = 50°</span> et <span class="tex">\\widehat{GHI} = 60°</span>.</p>
 
 <div class="figure-wrap">

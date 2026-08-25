@@ -45,7 +45,7 @@ function ppChart(opts){
 document.getElementById('cours-demo-proportionnalite-5e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Tableau de proportionnalité</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Définition</p>
+<div class="sub-header"><span class="letter">A</span><h4>Définition</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Un tableau de nombres à deux lignes est un <b>tableau de proportionnalité</b> quand les nombres de la seconde ligne s'obtiennent en multipliant les nombres correspondants de la première ligne par un même nombre non nul, appelé <b>coefficient de proportionnalité</b>.</div>
 
@@ -69,7 +69,7 @@ document.getElementById('cours-demo-proportionnalite-5e').innerHTML = `
   </div>
 </div>
 
-<p class="example-title" style="margin-top:22px;">B. Compléter un tableau de proportionnalité</p>
+<div class="sub-header"><span class="letter">B</span><h4>Compléter un tableau de proportionnalité</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Dans un tableau de proportionnalité, on peut compléter la (les) valeur(s) manquante(s) en utilisant plusieurs méthodes : ① le retour à l'unité ; ② les propriétés de linéarité ; ③ le coefficient de proportionnalité.</div>
 

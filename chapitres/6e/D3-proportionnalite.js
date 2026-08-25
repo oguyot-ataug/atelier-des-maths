@@ -22,7 +22,7 @@
 document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Situations de proportionnalité</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Grandeurs proportionnelles</p>
+<div class="sub-header"><span class="letter">A</span><h4>Grandeurs proportionnelles</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">On dit que deux grandeurs sont <b>proportionnelles</b> quand les valeurs prises par l'une s'obtiennent en multipliant celles prises par l'autre par un même nombre non nul, appelé <b>coefficient de proportionnalité</b>.</div>
 
@@ -32,7 +32,7 @@ document.getElementById('cours-demo-proportionnalite-6e').innerHTML = `
 <p class="example-title">Contre-exemple : la chute d'un ballon</p>
 <p style="margin:4px 0 12px;">Voici la distance parcourue par un ballon en chute libre. En 1 seconde, il parcourt 5 m, donc le coefficient serait 5. En 2 secondes, il parcourt 20 m, donc le coefficient serait 10. Ces deux coefficients sont différents : la durée de chute et la distance parcourue <b>ne sont donc pas proportionnelles</b>.</p>
 
-<p class="example-title" style="margin-top:20px;">B. Tableau de proportionnalité</p>
+<div class="sub-header"><span class="letter">B</span><h4>Tableau de proportionnalité</h4></div>
 <span class="prop-badge">Règle 1</span>
 <div class="def-box">Dans un tableau de proportionnalité, les nombres de la seconde ligne s'obtiennent en multipliant les nombres correspondants de la première ligne par le <b>coefficient de proportionnalité</b>.</div>
 

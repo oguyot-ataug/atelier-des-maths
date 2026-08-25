@@ -518,7 +518,7 @@ registerGeoStepDemo('ap-tri-svg', { steps:()=>AP_TRI_STEPS, getIdx:()=>apTriIdx,
 document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Paires d'angles particuliers</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Angles opposés par le sommet</p>
+<div class="sub-header"><span class="letter">A</span><h4>Angles opposés par le sommet</h4></div>
 <span class="prop-badge">Définition</span>
 <div class="def-box">
   Deux angles sont <b>opposés par le sommet</b> lorsqu'ils ont un sommet commun et que leurs côtés sont dans le prolongement l'un de l'autre.
@@ -531,13 +531,13 @@ document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
 <p class="example-title">Exemple :</p>
 <p style="margin:4px 0 12px;">Sur la figure ci-dessus, si <span class="tex">\\widehat{MON} = 35°</span>, alors <span class="tex">\\widehat{M'ON'} = 35°</span> également. De plus, <span class="tex">\\widehat{MON'} = \\widehat{M'ON} = 145°</span>.</p>
 
-<p class="example-title" style="margin-top:20px;">B. Angles adjacents</p>
+<div class="sub-header"><span class="letter">B</span><h4>Angles adjacents</h4></div>
 <span class="prop-badge">Définition</span>
 <div class="def-box">Deux angles sont <b>adjacents</b> lorsqu'ils ont un sommet commun, un côté commun, et qu'ils sont situés de part et d'autre de ce côté commun.</div>
 <div class="figure-wrap">${apBuildAdjacentsSvg()}</div>
 <p style="margin:10px 0 12px;">Les angles <span class="tex">\\widehat{IOJ}</span> et <span class="tex">\\widehat{JOK}</span> ont pour sommet commun O, pour côté commun la demi-droite [OJ), et sont placés de part et d'autre de [OJ). Ils sont donc <b>adjacents</b>.</p>
 
-<p class="example-title" style="margin-top:20px;">C. Angles supplémentaires</p>
+<div class="sub-header"><span class="letter">C</span><h4>Angles supplémentaires</h4></div>
 <span class="prop-badge">Définition</span>
 <div class="def-box">Deux angles sont <b>supplémentaires</b> lorsque la somme de leurs mesures est égale à 180°.</div>
 <div class="figure-wrap">${apBuildSupplSvg()}</div>

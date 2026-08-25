@@ -4,20 +4,20 @@
    ============================================================ */
 document.getElementById('cours-demo-fractions-partage').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Écriture fractionnaire</h3></div>
-<p class="example-title" style="margin-top:0;">A. Quotient</p>
+<div class="sub-header"><span class="letter">A</span><h4>Quotient</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="tex">\\dfrac{a}{b}</span> est le résultat de la division de <i>a</i> par <i>b</i> : <span class="tex">\\dfrac{a}{b} = a : b</span>. Elle se lit « a divisé par b » ou « a sur b ».</div>
 <p class="example-title">Exemple : comment se lit la fraction <span class="tex">\\dfrac{3}{4}</span> ?</p>
 <p style="margin:4px 0 12px;">Elle se lit « trois quarts », ou « 3 divisé par 4 », ou « 3 sur 4 ».</p>
 
-<p class="example-title" style="margin-top:20px;">B. Nombre fraction</p>
+<div class="sub-header"><span class="letter">B</span><h4>Nombre fraction</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="tex">\\dfrac{a}{b}</span> est le nombre qui, multiplié par <i>b</i>, donne <i>a</i>. Elle vérifie donc : <span class="tex">\\dfrac{a}{b} \\times b = a</span> et <span class="tex">b \\times \\dfrac{a}{b} = a</span>. Dans le cas particulier où b = 1, on a : <span class="tex">\\dfrac{a}{1} = a</span>.</div>
 <p class="example-title">Exemple : complète les égalités … × 5 = 4 et … × 7 = 9.</p>
 <p style="margin:4px 0 4px;">La fraction <span class="tex">\\dfrac{4}{5}</span> est le nombre qui, multiplié par 5, donne 4, donc on peut écrire <span class="tex">\\dfrac{4}{5} \\times 5 = 4</span>.</p>
 <p style="margin:4px 0 12px;">La fraction <span class="tex">\\dfrac{9}{7}</span> est le nombre qui, multiplié par 7, donne 9, donc on peut écrire <span class="tex">\\dfrac{9}{7} \\times 7 = 9</span>.</p>
 
-<p class="example-title" style="margin-top:20px;">C. Écriture d'une fraction</p>
+<div class="sub-header"><span class="letter">C</span><h4>Écriture d'une fraction</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Pour tout entier <i>a</i> et tout entier <i>b</i> non nul, la fraction <span class="tex">\\dfrac{a}{b}</span> est <b>soit un nombre entier</b>, <b>soit un nombre décimal non entier</b>, <b>soit un nombre non décimal</b>.</div>
 <p class="example-title">Exemple : dans quel ensemble de nombres se trouve chacune des fractions <span class="tex">\\dfrac{48}{6}</span>, <span class="tex">\\dfrac{3}{4}</span> et <span class="tex">\\dfrac{1}{3}</span> ?</p>

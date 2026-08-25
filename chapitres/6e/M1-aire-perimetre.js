@@ -155,7 +155,7 @@ document.getElementById('cours-demo-aire-perimetre').innerHTML = `
 
 <div class="lesson-header"><span class="num">4</span><h3>Unités d'aire</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Le mètre carré et ses sous-multiples</p>
+<div class="sub-header"><span class="letter">A</span><h4>Le mètre carré et ses sous-multiples</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">L'unité d'aire usuelle est le <b>mètre carré</b> (noté m²), qui représente l'aire d'un carré d'un mètre de côté. On utilise aussi ses <b>sous-multiples</b> : dm², cm², mm².</div>
 <ul class="example-list">
@@ -191,7 +191,7 @@ document.getElementById('cours-demo-aire-perimetre').innerHTML = `
 </div>
 <p style="margin:0;">Dans 1 cm², il y a <b>100 mm²</b>.</p>
 
-<p class="example-title" style="margin-top:22px;">B. Conversions</p>
+<div class="sub-header"><span class="letter">B</span><h4>Conversions</h4></div>
 <table style="width:100%;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:.9rem;margin:10px 0;">
   <tbody>
     <tr>

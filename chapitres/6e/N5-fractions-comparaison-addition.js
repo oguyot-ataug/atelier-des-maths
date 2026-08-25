@@ -8,7 +8,7 @@
 document.getElementById('cours-demo-fractions-comp-add').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Comparaison de deux fractions</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Fractions de même dénominateur</p>
+<div class="sub-header"><span class="letter">A</span><h4>Fractions de même dénominateur</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Deux fractions de <b>même dénominateur</b> sont rangées dans le même ordre que leur numérateur.</div>
 <p class="example-title">Exemple :</p>
@@ -18,7 +18,7 @@ document.getElementById('cours-demo-fractions-comp-add').innerHTML = `
   <li>Comme <span class="tex">4 < 5 < 8 < 9</span>, on en déduit <span class="tex">\\dfrac{4}{7} < \\dfrac{5}{7} < \\dfrac{8}{7} < \\dfrac{9}{7}</span>.</li>
 </ul>
 
-<p class="example-title">B. Fractions de dénominateurs différents</p>
+<div class="sub-header"><span class="letter">B</span><h4>Fractions de dénominateurs différents</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Pour comparer deux fractions de <b>dénominateurs multiples l'un de l'autre</b>, on les réduit au même dénominateur (le plus grand des 2) puis on applique la règle du paragraphe précédent.</div>
 <p class="example-title">Exemple 1 :</p>
@@ -55,7 +55,7 @@ document.getElementById('cours-demo-fractions-comp-add').innerHTML = `
 
 <div class="lesson-header"><span class="num">2</span><h3>Addition et soustraction de fractions</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Fractions de même dénominateur</p>
+<div class="sub-header"><span class="letter">A</span><h4>Fractions de même dénominateur</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">
   <p style="margin:0 0 8px;">Pour additionner (ou soustraire) deux fractions de <b>même dénominateur</b>, il suffit d'additionner (ou de soustraire) les numérateurs, et de garder le dénominateur commun.</p>
@@ -67,7 +67,7 @@ document.getElementById('cours-demo-fractions-comp-add').innerHTML = `
   <li><span class="tex">B = \\dfrac{19}{8} - \\dfrac{5}{8} = \\dfrac{19-5}{8} = \\dfrac{14}{8}</span></li>
 </ul>
 
-<p class="example-title">B. Fractions de dénominateurs différents</p>
+<div class="sub-header"><span class="letter">B</span><h4>Fractions de dénominateurs différents</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Pour additionner (ou soustraire) deux fractions de <b>dénominateurs multiples l'un de l'autre</b>, on commence par les réduire au même dénominateur (le plus grand des 2) puis on applique la règle du paragraphe précédent.</div>
 <p class="example-title">Exemples 1 :</p>

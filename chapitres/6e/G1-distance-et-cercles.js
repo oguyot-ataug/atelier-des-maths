@@ -87,7 +87,7 @@ document.getElementById('cours-demo-distance-cercles').innerHTML = `
 <div class="def-box">Un <b>disque</b> est l'ensemble des points situés à une distance inférieure ou égale à un nombre donné (le <b>rayon</b>) d'un point donné (le <b>centre</b>).<br>Autrement dit, le disque de centre O et de rayon r est l'ensemble des points M tels que OM ≤ r.</div>
 
 <div class="lesson-header"><span class="num">4</span><h3>Distance à un point</h3></div>
-<p class="example-title" style="margin-top:0;">A. Cercle</p>
+<div class="sub-header"><span class="letter">A</span><h4>Cercle</h4></div>
 <span class="prop-badge">Propriétés</span>
 <div class="def-box">
   Si un point appartient au cercle de centre O et de rayon r, alors sa distance à O est égale à r.<br>
@@ -101,7 +101,7 @@ document.getElementById('cours-demo-distance-cercles').innerHTML = `
   <li>Un point B est tel que OB = 5 cm. Or, 5 cm est différent de 2 cm. Donc B n'appartient pas au cercle.</li>
 </ul>
 
-<p class="example-title">B. Disque</p>
+<div class="sub-header"><span class="letter">B</span><h4>Disque</h4></div>
 <span class="prop-badge">Propriétés</span>
 <div class="def-box">
   Si la distance d'un point à O est inférieure ou égale à r, alors ce point appartient au disque de centre O et de rayon r.<br>

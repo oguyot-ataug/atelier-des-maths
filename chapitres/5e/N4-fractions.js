@@ -4,7 +4,7 @@
    ============================================================ */
 document.getElementById('cours-demo-fractions-5e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Égalité de quotients</h3></div>
-<p class="example-title" style="margin-top:0;">A. Quotients égaux</p>
+<div class="sub-header"><span class="letter">A</span><h4>Quotients égaux</h4></div>
 <span class="prop-badge">Règles</span>
 <div class="def-box">
   Un quotient ne change pas de valeur quand on <b>multiplie</b> son numérateur et son dénominateur par un même nombre non nul.<br>
@@ -16,7 +16,7 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
   <li><span class="tex">\\dfrac{24}{18} = \\dfrac{24 : 6}{18 : 6} = \\dfrac{4}{3}</span></li>
 </ul>
 
-<p class="example-title" style="margin-top:20px;">B. Division par un nombre décimal</p>
+<div class="sub-header"><span class="letter">B</span><h4>Division par un nombre décimal</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">
   Pour diviser par un nombre décimal, on commence par écrire le quotient sous forme de fraction. On multiplie ensuite le numérateur et le dénominateur par 10, 100, 1 000… pour obtenir un dénominateur entier. On applique enfin la méthode de division d'un nombre décimal par un entier (vue en 6e).
@@ -34,7 +34,7 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 </div>
 
 <div class="lesson-header"><span class="num">2</span><h3>Comparaison de deux fractions</h3></div>
-<p class="example-title" style="margin-top:0;">A. Comparaison de fractions de même dénominateur</p>
+<div class="sub-header"><span class="letter">A</span><h4>Comparaison de fractions de même dénominateur</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Deux fractions de <b>même dénominateur</b> sont rangées dans le même ordre que leur numérateur.</div>
 <p class="example-title">Exemple : ordonne les fractions <span class="tex">\\dfrac{5}{8}</span>, <span class="tex">\\dfrac{9}{8}</span>, <span class="tex">\\dfrac{8}{8}</span>, <span class="tex">\\dfrac{4}{8}</span> dans l'ordre croissant.</p>
@@ -53,7 +53,7 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
   <p class="hint" id="fq-compareNote" style="text-align:center;margin-top:8px;"></p>
 </div>
 
-<p class="example-title" style="margin-top:20px;">B. Comparaison de fractions de dénominateurs différents</p>
+<div class="sub-header"><span class="letter">B</span><h4>Comparaison de fractions de dénominateurs différents</h4></div>
 <span class="prop-badge">Règle 1</span>
 <div class="def-box">Pour comparer deux fractions de <b>dénominateurs multiples</b> l'un de l'autre, on les réduit au même dénominateur (le plus grand des deux), puis on applique la règle du paragraphe précédent.</div>
 <p class="example-title">Exemple : compare les fractions <span class="tex">\\dfrac{7}{4}</span> et <span class="tex">\\dfrac{31}{20}</span>.</p>
@@ -73,7 +73,7 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 
 
 <div class="lesson-header"><span class="num">3</span><h3>Addition et soustraction de fractions</h3></div>
-<p class="example-title" style="margin-top:0;">A. Fractions de même dénominateur</p>
+<div class="sub-header"><span class="letter">A</span><h4>Fractions de même dénominateur</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Pour additionner (ou soustraire) deux fractions de <b>même dénominateur</b>, il suffit d'additionner (ou de soustraire) les numérateurs, et de garder le dénominateur commun. Pour tous nombres a, b et c où c est non nul : <span class="tex">\\dfrac{a}{c} + \\dfrac{b}{c} = \\dfrac{a+b}{c}</span> et <span class="tex">\\dfrac{a}{c} - \\dfrac{b}{c} = \\dfrac{a-b}{c}</span>.</div>
 <ul class="example-list">
@@ -81,7 +81,7 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
   <li><span class="tex">B = \\dfrac{19}{8} - \\dfrac{5}{8} = \\dfrac{19-5}{8} = \\dfrac{14}{8}</span></li>
 </ul>
 
-<p class="example-title" style="margin-top:20px;">B. Fractions de dénominateurs différents</p>
+<div class="sub-header"><span class="letter">B</span><h4>Fractions de dénominateurs différents</h4></div>
 <span class="prop-badge">Règle 1</span>
 <div class="def-box">Pour additionner (ou soustraire) deux fractions de <b>dénominateurs multiples</b> l'un de l'autre, on commence par les réduire au même dénominateur (le plus grand des deux), puis on applique la règle du paragraphe précédent.</div>
 <ul class="example-list">

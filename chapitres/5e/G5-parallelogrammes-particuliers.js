@@ -299,7 +299,7 @@ function pcBuildRectTwoSidesSvg(){
 document.getElementById('cours-demo-parallelogrammes-particuliers-5e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Le rectangle</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Définition et propriétés caractéristiques</p>
+<div class="sub-header"><span class="letter">A</span><h4>Définition et propriétés caractéristiques</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Un <b>rectangle</b> est un quadrilatère qui a ses quatre angles droits.</div>
 <span class="prop-badge">Propriété 1</span>
@@ -317,7 +317,7 @@ document.getElementById('cours-demo-parallelogrammes-particuliers-5e').innerHTML
 <div class="figure-wrap">${pcBuildRectDiagSvg()}</div>
 <p style="margin:10px 0 14px;">ABCD est un rectangle de centre O. Donc ses diagonales [AC] et [BD] se coupent en leur milieu O et ont la même longueur : OA = OB = OC = OD et AC = BD.</p>
 
-<p class="example-title" style="margin-top:22px;">B. Reconnaître un rectangle</p>
+<div class="sub-header"><span class="letter">B</span><h4>Reconnaître un rectangle</h4></div>
 <span class="prop-badge">Propriété 1</span>
 <div class="def-box">Si un quadrilatère possède <b>trois angles droits</b> alors c'est un <b>rectangle</b>.</div>
 <div class="figure-wrap">${pcBuildRectAnglesSvg(['A','B','C'])}</div>
@@ -339,7 +339,7 @@ document.getElementById('cours-demo-parallelogrammes-particuliers-5e').innerHTML
 
 <div class="lesson-header"><span class="num">2</span><h3>Le losange</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Définition et propriétés caractéristiques</p>
+<div class="sub-header"><span class="letter">A</span><h4>Définition et propriétés caractéristiques</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Un <b>losange</b> est un quadrilatère qui a ses quatre côtés de même longueur.</div>
 <span class="prop-badge">Propriété 1</span>
@@ -355,7 +355,7 @@ document.getElementById('cours-demo-parallelogrammes-particuliers-5e').innerHTML
 <div class="figure-wrap">${pcBuildLosDiagSvg()}</div>
 <p style="margin:10px 0 14px;">ABCD est un losange de centre O. Donc ses diagonales [AC] et [BD] se coupent en leur milieu O et sont perpendiculaires : OA = OC, OB = OD et (AC) ⊥ (BD).</p>
 
-<p class="example-title" style="margin-top:22px;">B. Reconnaître un losange</p>
+<div class="sub-header"><span class="letter">B</span><h4>Reconnaître un losange</h4></div>
 <span class="prop-badge">Propriété 1</span>
 <div class="def-box">Si un <b>parallélogramme</b> a <b>deux côtés consécutifs de même longueur</b> alors c'est un <b>losange</b>.</div>
 <div class="figure-wrap">${pcDynWidget('losSides')}<p class="hint interaction-hint" style="text-align:center;">Fais glisser le point D : quand AD devient égal à AB, la figure devient un losange.</p></div>

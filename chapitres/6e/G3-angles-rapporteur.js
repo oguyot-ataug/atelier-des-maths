@@ -976,7 +976,7 @@ async function arPermisFinish(){
 document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Notion d'angle</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Généralités</p>
+<div class="sub-header"><span class="letter">A</span><h4>Généralités</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Un <b>angle</b> est une portion du plan délimitée par deux demi-droites de même origine.</div>
 <div class="figure-wrap">${arBuildNotionSvg()}</div>
@@ -986,7 +986,7 @@ document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
   <li>La portion du plan coloriée est un angle <b>saillant</b>. La portion non coloriée est un angle <b>rentrant</b>.</li>
 </ul>
 
-<p class="example-title" style="margin-top:20px;">B. Nommer un angle</p>
+<div class="sub-header"><span class="letter">B</span><h4>Nommer un angle</h4></div>
 <div class="def-box">Un angle peut se nommer de différentes manières (le plus souvent avec trois lettres, celle du milieu étant toujours le sommet de l'angle) : par exemple <span class="tex">\\widehat{xOy}</span> ou <span class="tex">\\widehat{yOx}</span>.</div>
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : des angles de même mesure sont codés avec le même symbole (comme pour les longueurs).</div>
 
@@ -1054,7 +1054,7 @@ document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
 
 <div class="lesson-header"><span class="num">4</span><h3>Paire d'angles particuliers</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Angles opposés par le sommet</p>
+<div class="sub-header"><span class="letter">A</span><h4>Angles opposés par le sommet</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Deux angles <b>opposés par le sommet</b> sont deux angles qui ont un sommet commun et qui ont leurs côtés dans le prolongement l'un de l'autre.</div>
 <div class="figure-wrap">${arBuildOpposesSvg()}</div>
@@ -1063,13 +1063,13 @@ document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
 <div class="def-box">Deux angles <b>opposés par le sommet</b> sont de même mesure.</div>
 <p style="margin:6px 0 12px;">Dans la figure précédente, les angles <span class="tex">\\widehat{MON}</span> et <span class="tex">\\widehat{M'ON'}</span> sont de même mesure (50°), ainsi que les angles <span class="tex">\\widehat{MON'}</span> et <span class="tex">\\widehat{M'ON}</span> (130°).</p>
 
-<p class="example-title" style="margin-top:20px;">B. Angles adjacents</p>
+<div class="sub-header"><span class="letter">B</span><h4>Angles adjacents</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Deux angles <b>adjacents</b> sont deux angles qui ont un sommet commun, un côté commun, et qui sont situés de part et d'autre de ce côté commun.</div>
 <div class="figure-wrap">${arBuildAdjacentsSvg()}</div>
 <p style="margin:10px 0 12px;">Les angles <span class="tex">\\widehat{AOB}</span> et <span class="tex">\\widehat{BOC}</span> ont comme sommet commun le point O, comme côté commun la demi-droite [OB), et sont placés de part et d'autre de [OB) : ils sont donc <b>adjacents</b>.</p>
 
-<p class="example-title" style="margin-top:20px;">C. Angles supplémentaires</p>
+<div class="sub-header"><span class="letter">C</span><h4>Angles supplémentaires</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Deux angles <b>supplémentaires</b> sont deux angles dont la somme de leur mesure fait 180°.</div>
 <div class="figure-wrap">${arBuildSupplSvg()}</div>

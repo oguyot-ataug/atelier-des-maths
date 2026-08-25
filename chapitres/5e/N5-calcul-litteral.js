@@ -49,7 +49,7 @@ const clFactDemo = makeStepDemo(CL_FACT_STEPS, 'clFactDisplay');
 document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Expression littérale</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Généralités</p>
+<div class="sub-header"><span class="letter">A</span><h4>Généralités</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Une <b>expression littérale</b> est une expression qui contient une ou plusieurs lettres. Ces lettres désignent des nombres.</div>
 
@@ -65,7 +65,7 @@ document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
 <p style="margin:2px 0 10px;">L'expression <span class="tex">5 \\times (x - 2)</span> peut s'écrire plus simplement sous la forme : <span class="tex">5(x-2)</span>.</p>
 <p class="hint" style="margin:0 0 14px;">Remarque : on peut simplifier <span class="tex">1 \\times x</span> en <span class="tex">x</span>, et <span class="tex">0 \\times y</span> en <span class="tex">0</span>.</p>
 
-<p class="example-title" style="margin-top:22px;">B. Puissances</p>
+<div class="sub-header"><span class="letter">B</span><h4>Puissances</h4></div>
 <span class="def-badge">Définitions</span>
 <div class="def-box"><span class="tex">a</span> désigne un nombre. <span class="tex">a \\times a = a^2</span>, où <span class="tex">a^2</span> se lit « <span class="tex">a</span> au carré » ; et <span class="tex">a \\times a \\times a = a^3</span>, où <span class="tex">a^3</span> se lit « <span class="tex">a</span> au cube ».</div>
 
@@ -120,7 +120,7 @@ document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
 
 <div class="lesson-header"><span class="num">4</span><h3>Distributivité simple</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Développement</p>
+<div class="sub-header"><span class="letter">A</span><h4>Développement</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box"><b>Développer</b> une expression, c'est l'écrire sous la forme d'une somme algébrique.</div>
 <span class="prop-badge">Propriétés</span>
@@ -136,7 +136,7 @@ document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
   </div>
 </div>
 
-<p class="example-title" style="margin-top:22px;">B. Factorisation</p>
+<div class="sub-header"><span class="letter">B</span><h4>Factorisation</h4></div>
 <span class="def-badge">Définition</span>
 <div class="def-box"><b>Factoriser</b> une expression, c'est l'écrire sous la forme d'un produit.</div>
 <span class="prop-badge">Propriétés</span>

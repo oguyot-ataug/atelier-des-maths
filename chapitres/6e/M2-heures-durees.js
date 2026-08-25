@@ -71,14 +71,14 @@ document.getElementById('cours-demo-heures-durees').innerHTML = `
 
 <div class="lesson-header"><span class="num">3</span><h3>Écritures sexagésimale et décimale d'une durée</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Passage de l'écriture sexagésimale à l'écriture décimale</p>
+<div class="sub-header"><span class="letter">A</span><h4>Passage de l'écriture sexagésimale à l'écriture décimale</h4></div>
 <p style="margin:4px 0 10px;">Exemple : convertis 5 h 24 min en écriture décimale.</p>
 <ul class="example-list">
   <li>1 h = 60 min, donc <span class="tex">1\\text{ min} = \\dfrac{1}{60}\\text{ h}</span> et <span class="tex">24\\text{ min} = 24 \\times \\dfrac{1}{60}\\text{ h} = \\dfrac{24}{60}\\text{ h} = 0{,}4\\text{ h}</span></li>
   <li>donc 5 h 24 min = <b>5,4 h</b>.</li>
 </ul>
 
-<p class="example-title" style="margin-top:20px;">B. Passage de l'écriture décimale à l'écriture sexagésimale</p>
+<div class="sub-header"><span class="letter">B</span><h4>Passage de l'écriture décimale à l'écriture sexagésimale</h4></div>
 <p style="margin:4px 0 10px;">Exemple : convertis 2,85 h en heures et minutes.</p>
 <ul class="example-list">
   <li><span class="tex">2{,}85\\text{ h} = 2\\text{ h} + 0{,}85\\text{ h}</span>. Or 1 h = 60 min, donc <span class="tex">0{,}85\\text{ h} = 0{,}85 \\times 60\\text{ min} = 51\\text{ min}</span></li>

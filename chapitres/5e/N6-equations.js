@@ -43,7 +43,7 @@ document.getElementById('cours-demo-equations-5e').innerHTML = `
 <span class="prop-badge">Propriété 1</span>
 <div class="def-box">Une équation du premier degré a <b>une unique solution</b>.</div>
 
-<p class="example-title" style="margin-top:18px;">A. Équations du type <span class="tex">x + b = c</span></p>
+<div class="sub-header"><span class="letter">A</span><h4>Équations du type <span class="tex">x + b = c</span></h4></div>
 <span class="prop-badge">Propriété 2</span>
 <div class="def-box">On ne change pas une égalité quand on <b>additionne</b> ou <b>soustrait</b> un même nombre aux deux membres de l'égalité.</div>
 
@@ -57,7 +57,7 @@ document.getElementById('cours-demo-equations-5e').innerHTML = `
   </div>
 </div>
 
-<p class="example-title" style="margin-top:22px;">B. Équations du type <span class="tex">ax = c</span></p>
+<div class="sub-header"><span class="letter">B</span><h4>Équations du type <span class="tex">ax = c</span></h4></div>
 <span class="prop-badge">Propriété 3</span>
 <div class="def-box">On ne change pas une égalité quand on <b>multiplie</b> ou <b>divise</b> les deux membres de l'égalité par un même nombre non nul.</div>
 

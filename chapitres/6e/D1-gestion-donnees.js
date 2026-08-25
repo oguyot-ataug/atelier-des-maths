@@ -52,7 +52,7 @@ document.getElementById('cours-demo-gestion-donnees').innerHTML = `
 
 <div class="lesson-header"><span class="num">2</span><h3>Représentations graphiques et interprétations</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Diagramme en barres</p>
+<div class="sub-header"><span class="letter">A</span><h4>Diagramme en barres</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Dans un diagramme en barres, les <b>hauteurs des barres</b> sont <b>proportionnelles</b> aux quantités représentées.</div>
 <p class="example-title">Exemple :</p>
@@ -98,7 +98,7 @@ document.getElementById('cours-demo-gestion-donnees').innerHTML = `
   <li>On peut voir que la population en Asie est la plus importante des cinq continents.</li>
 </ul>
 
-<p class="example-title" style="margin-top:26px;">B. Diagramme circulaire</p>
+<div class="sub-header"><span class="letter">B</span><h4>Diagramme circulaire</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Dans un diagramme circulaire, les <b>mesures des angles</b> sont <b>proportionnelles</b> aux quantités représentées.</div>
 <p class="example-title">Exemple :</p>

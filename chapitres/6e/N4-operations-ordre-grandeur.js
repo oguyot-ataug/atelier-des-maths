@@ -156,7 +156,7 @@ ${ogAddBlock(OG_SUB_15)}
 </div>
 
 <div class="lesson-header"><span class="num">3</span><h3>Multiplication de deux nombres décimaux</h3></div>
-<p class="example-title" style="margin-top:0;">A. Multiplication par 0,1 ; 0,01 ; 0,001</p>
+<div class="sub-header"><span class="letter">A</span><h4>Multiplication par 0,1 ; 0,01 ; 0,001</h4></div>
 <div style="display:flex;flex-wrap:wrap;gap:24px;">
   <table style="border-collapse:collapse;font-size:.92rem;">
     <tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Multiplier par :</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">c'est diviser par :</th></tr>
@@ -172,7 +172,7 @@ ${ogAddBlock(OG_SUB_15)}
   </div>
 </div>
 
-<p class="example-title" style="margin-top:22px;">B. Multiplication de deux nombres décimaux</p>
+<div class="sub-header"><span class="letter">B</span><h4>Multiplication de deux nombres décimaux</h4></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Pour effectuer la multiplication de deux nombres décimaux,
   <ul style="margin:8px 0 0;padding-left:20px;line-height:1.8;">

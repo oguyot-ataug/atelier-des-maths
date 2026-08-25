@@ -282,19 +282,19 @@ function drBuildCentroidSvg(T, viewW, viewH){
 document.getElementById('cours-demo-droites-remarquables-5e').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Définitions</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Médiatrices</p>
+<div class="sub-header"><span class="letter">A</span><h4>Médiatrices</h4></div>
 <span class="prop-badge">Définition</span>
 <div class="def-box">La <b>médiatrice d'un segment</b> est la droite perpendiculaire à ce segment en son milieu.</div>
 <div class="figure-wrap">${drBuildMediatriceSvg()}</div>
 <p style="margin:10px 0 12px;">On a tracé la médiatrice du côté [BC] : elle passe par le milieu de [BC] et lui est perpendiculaire.</p>
 
-<p class="example-title" style="margin-top:20px;">B. Bissectrice</p>
+<div class="sub-header"><span class="letter">B</span><h4>Bissectrice</h4></div>
 <span class="prop-badge">Définition</span>
 <div class="def-box">La <b>bissectrice d'un angle</b> est la droite qui partage cet angle en deux angles adjacents de même mesure.</div>
 <div class="figure-wrap">${drBuildBissectriceSvg()}</div>
 <p style="margin:10px 0 12px;">On a tracé la bissectrice de l'angle <span class="tex">\\widehat{BAC}</span> : elle partage cet angle en deux angles adjacents de même mesure.</p>
 
-<p class="example-title" style="margin-top:20px;">C. Hauteurs</p>
+<div class="sub-header"><span class="letter">C</span><h4>Hauteurs</h4></div>
 <span class="prop-badge">Définition</span>
 <div class="def-box">Dans un triangle, une <b>hauteur</b> est une droite qui passe par un sommet et qui est perpendiculaire au côté opposé à ce sommet.</div>
 <div class="figure-wrap">${drBuildHauteurSvg()}</div>
@@ -304,7 +304,7 @@ document.getElementById('cours-demo-droites-remarquables-5e').innerHTML = `
   <li>la hauteur issue de C (en pointillés au-delà du triangle), qui est <span style="color:#E35D3A;font-weight:700;">extérieure</span> au triangle ABC.</li>
 </ul>
 
-<p class="example-title" style="margin-top:20px;">D. Médianes</p>
+<div class="sub-header"><span class="letter">D</span><h4>Médianes</h4></div>
 <span class="prop-badge">Définition</span>
 <div class="def-box">Dans un triangle, une <b>médiane</b> est une droite qui passe par un sommet et par le milieu du côté opposé à ce sommet.</div>
 <div class="figure-wrap">${drBuildMedianeSvg()}</div>
@@ -312,7 +312,7 @@ document.getElementById('cours-demo-droites-remarquables-5e').innerHTML = `
 
 <div class="lesson-header"><span class="num">2</span><h3>Concourance des droites remarquables dans un triangle</h3></div>
 
-<p class="example-title" style="margin-top:0;">A. Médiatrices</p>
+<div class="sub-header"><span class="letter">A</span><h4>Médiatrices</h4></div>
 <span class="prop-badge">Propriété</span>
 <div class="def-box">Les médiatrices des trois côtés d'un triangle sont <b>concourantes</b> en un point qui est le <b>centre du cercle circonscrit</b> à ce triangle.</div>
 <div style="display:flex;flex-wrap:wrap;gap:18px;justify-content:center;">
@@ -322,13 +322,13 @@ document.getElementById('cours-demo-droites-remarquables-5e').innerHTML = `
 <p style="margin:10px 0 4px;">Dans un triangle qui a tous ses angles aigus, le centre du cercle circonscrit se trouve à l'intérieur du triangle.</p>
 <p style="margin:4px 0 12px;">Dans un triangle qui a un de ses angles obtus, le centre du cercle circonscrit se trouve à l'extérieur du triangle.</p>
 
-<p class="example-title" style="margin-top:20px;">B. Médiatrices et triangle rectangle</p>
+<div class="sub-header"><span class="letter">B</span><h4>Médiatrices et triangle rectangle</h4></div>
 <span class="prop-badge">Propriété</span>
 <div class="def-box">Un triangle rectangle est inscrit dans un <b>cercle de diamètre son hypoténuse</b>.</div>
 <div class="figure-wrap">${drBuildRightTriangleCircumSvg()}</div>
 <p style="margin:10px 0 12px;">Le milieu O de l'hypoténuse [BC] est le centre du cercle circonscrit au triangle ABC, rectangle en A.</p>
 
-<p class="example-title" style="margin-top:20px;">C. Hauteurs</p>
+<div class="sub-header"><span class="letter">C</span><h4>Hauteurs</h4></div>
 <span class="prop-badge">Propriété</span>
 <div class="def-box">Les trois hauteurs d'un triangle sont <b>concourantes</b> en un point qui est <b>l'orthocentre</b> de ce triangle.</div>
 <div style="display:flex;flex-wrap:wrap;gap:18px;justify-content:center;">
@@ -338,7 +338,7 @@ document.getElementById('cours-demo-droites-remarquables-5e').innerHTML = `
 <p style="margin:10px 0 4px;">Dans un triangle qui a tous ses angles aigus, l'orthocentre se trouve à l'intérieur du triangle.</p>
 <p style="margin:4px 0 12px;">Dans un triangle qui a un de ses angles obtus, l'orthocentre se trouve à l'extérieur du triangle.</p>
 
-<p class="example-title" style="margin-top:20px;">D. Médianes</p>
+<div class="sub-header"><span class="letter">D</span><h4>Médianes</h4></div>
 <span class="prop-badge">Propriété</span>
 <div class="def-box">Les trois médianes d'un triangle sont <b>concourantes</b> en un point qui est le <b>centre de gravité</b> de ce triangle.</div>
 <div class="figure-wrap">${drBuildCentroidSvg(DR_T_DEF, 380, 230)}</div>
