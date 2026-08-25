@@ -314,8 +314,29 @@ document.getElementById('exos-demo-multiplication-division-6e').innerHTML = `
 </div>
 `;
 
+document.getElementById('histoire-demo-multiplication-division-6e').innerHTML = `
+<div class="history-box">
+  <div class="history-title">📜 Un peu d'histoire</div>
+  <p style="margin:0 0 12px;">Les Égyptiens de l'Antiquité multipliaient deux nombres sans jamais apprendre de table de multiplication : ils savaient seulement <b>doubler</b> un nombre et <b>additionner</b>. Cette méthode, dite « <b>multiplication égyptienne</b> » (ou parfois « multiplication russe », des paysans russes l'utilisant encore au XIX<sup>e</sup> siècle), consiste à doubler un des deux facteurs plusieurs fois de suite, puis à n'additionner que certains de ces doublements.</p>
+  <p style="margin:0 0 12px;"><b>Exemple</b> : calculer 13 × 24. On double 24 plusieurs fois de suite :</p>
+  <table style="border-collapse:collapse;width:100%;max-width:340px;margin:0 auto 12px;font-size:.9rem;">
+    <tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">×1</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">×2</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">×4</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">×8</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">×16</th></tr>
+    <tr>
+      <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;font-weight:700;color:#1F6B3A;background:rgba(31,107,58,.1);">24</td>
+      <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">48</td>
+      <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;font-weight:700;color:#1F6B3A;background:rgba(31,107,58,.1);">96</td>
+      <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;font-weight:700;color:#1F6B3A;background:rgba(31,107,58,.1);">192</td>
+      <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">384</td>
+    </tr>
+  </table>
+  <p style="margin:0 0 12px;">Comme 13 = 1 + 4 + 8, on additionne seulement les doublements correspondants (en vert) : 24 + 96 + 192 = 312. On retrouve bien 13 × 24 = 312, sans avoir eu besoin de connaître « 13 fois 24 » par cœur !</p>
+  <p style="margin:0;">Les symboles eux-mêmes sont beaucoup plus récents que les nombres : le signe × est introduit par le mathématicien anglais William Oughtred en 1631, et le signe ÷ par le mathématicien suisse Johann Rahn en 1659 -- bien après l'invention de notre écriture décimale.</p>
+  <p class="hint" style="margin:12px 0 0;">Clin d'œil : dans la bande dessinée <i>Astérix</i>, les noms des deux héros viennent eux aussi de symboles typographiques -- le grand-père de René Goscinny, l'un des créateurs, était imprimeur. <b>Astérix</b> vient de l'<b>astérisque</b> (*), ce petit symbole en forme d'étoile parfois utilisé pour la multiplication (notamment sur ordinateur). <b>Obélix</b> vient de l'<b>obèle</b>, l'ancêtre typographique du signe ÷ utilisé pour la division !</p>
+</div>
+`;
+
 DEMO_REGISTRY['6e|Multiplication et division'] = {
-  cours:'cours-demo-multiplication-division-6e', methode:'methode-demo-multiplication-division-6e', exos:'exos-demo-multiplication-division-6e',
+  cours:'cours-demo-multiplication-division-6e', methode:'methode-demo-multiplication-division-6e', exos:'exos-demo-multiplication-division-6e', histoire:'histoire-demo-multiplication-division-6e',
   init:()=>{
     renderStaticMath(document.getElementById('cours-demo-multiplication-division-6e'));
     injectCourseAddButtons(document.getElementById('cours-demo-multiplication-division-6e'));
