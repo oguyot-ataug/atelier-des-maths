@@ -358,8 +358,29 @@ function progDrop(e, i){
   if(progDragIdx===null || progDragIdx===i) return;
   const [moved] = progEditorItems.splice(progDragIdx, 1);
   progEditorItems.splice(i, 0, moved);
+  adjustProgressionDatesAfterMove(i);
   progDragIdx = null;
   renderProgressionList();
+}
+const MS_PER_DAY = 24*60*60*1000;
+/* Après un glisser-déposer, le chapitre déplacé garde sa position visuelle mais ses dates
+   d'origine n'ont plus de sens (il peut se retrouver avant un chapitre qui a lieu plus tôt
+   dans l'année, ou après un chapitre plus tardif) -- ce qui casse aussi le calcul
+   d'insertion des vacances, qui suppose des dates croissantes tout au long de la liste. On
+   recale automatiquement le chapitre déplacé juste après la fin de son nouveau
+   prédécesseur (ou juste avant le début de son nouveau successeur s'il est devenu le
+   premier de la liste), en conservant sa durée d'origine. */
+function adjustProgressionDatesAfterMove(idx){
+  const it = progEditorItems[idx];
+  const prev = progEditorItems[idx-1];
+  const next = progEditorItems[idx+1];
+  const duration = (it.dateDebut && it.dateFin) ? (it.dateFin.getTime()-it.dateDebut.getTime()) : (it.s||1)*7*MS_PER_DAY - MS_PER_DAY;
+  let newDebut;
+  if(prev && prev.dateFin) newDebut = new Date(prev.dateFin.getTime() + MS_PER_DAY);
+  else if(next && next.dateDebut) newDebut = new Date(next.dateDebut.getTime() - duration - MS_PER_DAY);
+  else return; // ni prédécesseur ni successeur avec une date connue : rien à recaler
+  it.dateDebut = newDebut;
+  it.dateFin = new Date(newDebut.getTime() + duration);
 }
 function progDragEnd(e){
   e.currentTarget.classList.remove('dragging');
