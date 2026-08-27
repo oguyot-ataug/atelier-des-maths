@@ -110,6 +110,10 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-supervision'); setActiveTopnav('supervision'); renderSupervision(); renderSupervisionCeb();
     }
+    if(nav==='progression'){
+      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      showView('view-progression'); setActiveTopnav('progression'); renderProgressionEditor();
+    }
     if(nav==='mesresultats'){
       if(currentUserRole!=='eleve'){ toggleAccountMenu(); return; }
       showView('view-mesresultats'); setActiveTopnav('mesresultats'); renderMesResultats();
@@ -136,6 +140,7 @@ function setActiveTopnav(key){
   else if(key==='cahier') document.querySelector('.nav-links button[data-nav="cahier"]').classList.add('active');
   else if(key==='admin') document.querySelector('.nav-links button[data-nav="admin"]').classList.add('active');
   else if(key==='supervision') document.querySelector('.nav-links button[data-nav="supervision"]').classList.add('active');
+  else if(key==='progression') document.querySelector('.nav-links button[data-nav="progression"]').classList.add('active');
   else if(key==='mesresultats') document.querySelector('.nav-links button[data-nav="mesresultats"]').classList.add('active');
   else document.querySelector('.nav-links button[data-nav="home"]').classList.add('active');
 }
@@ -172,6 +177,107 @@ function renderNiveau(lvl){
   const data = lvl==='6e'?CH6:CH5;
   renderTheme(data, lvl);
   renderFrise(data, lvl);
+  applyCustomProgressionIfAny(lvl);
+}
+/* Si le compte connecté (prof/admin, pas un visiteur restreint) a personnalisé sa
+   progression pour ce niveau, on ré-affiche la frise/grille avec son ordre et ses dates à
+   lui, à la place de la progression par défaut -- rendu en deux temps volontairement
+   (défaut d'abord, en synchrone, puis override asynchrone) pour ne jamais bloquer
+   l'affichage initial sur cette requête réseau. */
+async function applyCustomProgressionIfAny(lvl){
+  if(!currentUser || restrictedVisitor) return;
+  if(!(currentUserRole==='prof' || currentUserRole==='admin')) return;
+  const { data: rows, error } = await sb.from('progressions').select('*').eq('owner_id', currentUser.id).eq('niveau', lvl).order('ordre');
+  if(error || !rows || !rows.length) return;
+  const defaultData = lvl==='6e' ? CH6 : CH5;
+  const merged = rows.map(r=>{
+    const base = defaultData.find(c=>c.t===r.chapitre_titre);
+    if(!base) return null;
+    const dd = r.date_debut ? new Date(r.date_debut+'T00:00:00') : null;
+    const df = r.date_fin ? new Date(r.date_fin+'T00:00:00') : null;
+    return Object.assign({}, base, { d: (dd&&df) ? formatDateRangeFr(dd,df) : base.d });
+  }).filter(Boolean);
+  // Ajoute en fin de liste tout chapitre du programme par défaut absent de la progression
+  // personnalisée (ex. un chapitre ajouté au site depuis la dernière sauvegarde du prof).
+  defaultData.forEach(c=>{ if(!merged.some(m=>m.t===c.t)) merged.push(c); });
+  if(currentLevel===lvl){ renderTheme(merged, lvl); renderFrise(merged, lvl); }
+}
+/* ---- Éditeur de progression personnalisée ("Ma progression") ---- */
+let progEditorItems = [];
+async function renderProgressionEditor(){
+  const lvl = document.getElementById('progNiveauSelect').value;
+  const status = document.getElementById('progStatus');
+  status.textContent = 'Chargement…';
+  const defaultData = lvl==='6e' ? CH6 : CH5;
+  const { data: rows, error } = await sb.from('progressions').select('*').eq('owner_id', currentUser.id).eq('niveau', lvl).order('ordre');
+  if(error){ status.textContent = 'Erreur : '+error.message; return; }
+  if(rows && rows.length){
+    progEditorItems = rows.map(r=>{
+      const base = defaultData.find(c=>c.t===r.chapitre_titre) || {};
+      return {
+        titre: r.chapitre_titre, code: base.code||'', cat: base.cat||'N', p: base.p||'', s: base.s||1,
+        dateDebut: r.date_debut ? new Date(r.date_debut+'T00:00:00') : null,
+        dateFin: r.date_fin ? new Date(r.date_fin+'T00:00:00') : null,
+      };
+    });
+    defaultData.forEach(c=>{
+      if(!progEditorItems.some(it=>it.titre===c.t)){
+        progEditorItems.push({ titre:c.t, code:c.code, cat:c.cat, p:c.p, s:c.s, dateDebut: friseStartDate(c.d), dateFin: friseEndDate(c.d) });
+      }
+    });
+  } else {
+    progEditorItems = defaultData.map(c=>({ titre:c.t, code:c.code, cat:c.cat, p:c.p, s:c.s, dateDebut: friseStartDate(c.d), dateFin: friseEndDate(c.d) }));
+  }
+  status.textContent = '';
+  renderProgressionList();
+}
+function renderProgressionList(){
+  const box = document.getElementById('progressionList');
+  box.innerHTML = progEditorItems.map((it,i)=>{
+    const dd = it.dateDebut ? it.dateDebut.toISOString().slice(0,10) : '';
+    const df = it.dateFin ? it.dateFin.toISOString().slice(0,10) : '';
+    const catInfo = CATS[it.cat] || {text:'#999'};
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid rgba(28,43,57,.08);">
+      <span style="display:flex;flex-direction:column;gap:2px;">
+        <button class="btn secondary" style="padding:2px 8px;font-size:.75rem;" onclick="moveProgressionItem(${i},-1)" ${i===0?'disabled':''}>▲</button>
+        <button class="btn secondary" style="padding:2px 8px;font-size:.75rem;" onclick="moveProgressionItem(${i},1)" ${i===progEditorItems.length-1?'disabled':''}>▼</button>
+      </span>
+      <span style="width:10px;height:10px;border-radius:50%;flex:none;background:${catInfo.text}"></span>
+      <span style="flex:1;font-weight:600;font-size:.9rem;">${escapeHtml(it.titre)}</span>
+      <label class="hint" style="display:flex;align-items:center;gap:4px;margin:0;">Début <input type="date" value="${dd}" onchange="updateProgressionDate(${i},'debut',this.value)"></label>
+      <label class="hint" style="display:flex;align-items:center;gap:4px;margin:0;">Fin <input type="date" value="${df}" onchange="updateProgressionDate(${i},'fin',this.value)"></label>
+    </div>`;
+  }).join('');
+}
+function moveProgressionItem(i, dir){
+  const j = i+dir;
+  if(j<0 || j>=progEditorItems.length) return;
+  const tmp = progEditorItems[i]; progEditorItems[i] = progEditorItems[j]; progEditorItems[j] = tmp;
+  renderProgressionList();
+}
+function updateProgressionDate(i, which, value){
+  const d = value ? new Date(value+'T00:00:00') : null;
+  if(which==='debut') progEditorItems[i].dateDebut = d; else progEditorItems[i].dateFin = d;
+}
+async function saveProgression(){
+  const lvl = document.getElementById('progNiveauSelect').value;
+  const status = document.getElementById('progStatus');
+  status.textContent = 'Enregistrement…';
+  const rows = progEditorItems.map((it,i)=>({
+    owner_id: currentUser.id, niveau: lvl, chapitre_titre: it.titre, ordre: i,
+    date_debut: it.dateDebut ? it.dateDebut.toISOString().slice(0,10) : null,
+    date_fin: it.dateFin ? it.dateFin.toISOString().slice(0,10) : null,
+  }));
+  const { error } = await sb.from('progressions').upsert(rows, { onConflict: 'owner_id,niveau,chapitre_titre' });
+  status.textContent = error ? 'Erreur : '+error.message : '✓ Progression enregistrée.';
+}
+async function resetProgression(){
+  const lvl = document.getElementById('progNiveauSelect').value;
+  if(!confirm('Revenir à la progression par défaut pour le niveau '+lvl+' ? Vos réglages personnalisés seront supprimés.')) return;
+  const status = document.getElementById('progStatus');
+  const { error } = await sb.from('progressions').delete().eq('owner_id', currentUser.id).eq('niveau', lvl);
+  status.textContent = error ? 'Erreur : '+error.message : '✓ Progression réinitialisée.';
+  await renderProgressionEditor();
 }
 function renderTheme(data, lvl){
   const order=['N','G','D','P','M'];
@@ -220,6 +326,39 @@ function friseEndDate(dStr){
   if(monIdx===null) return null;
   const year = monIdx>=8 ? FRISE_YEAR_START : FRISE_YEAR_START+1;
   return new Date(year, monIdx, day, 23, 59, 59);
+}
+/* Symétrique de friseEndDate, pour le début de la période (utilisé par l'éditeur de
+   progression personnalisée -- voir renderProgressionEditor). Gère le cas où le premier
+   segment n'a pas de mois écrit (ex. "7-13 sept" : le "7" emprunte le mois du "13 sept"). */
+function friseStartDate(dStr){
+  if(!dStr || dStr==='POST') return null;
+  const parts = dStr.replace('→','-').split('-');
+  const first = parts[0].trim();
+  let m = first.match(/(\d+)\s*([a-zA-Zéû]+)?/);
+  if(!m) return null;
+  const day = parseInt(m[1],10);
+  let key = m[2] ? m[2].toLowerCase() : null;
+  if(!key && parts.length>1){
+    const last = parts[parts.length-1].trim();
+    const m2 = last.match(/(\d+)\s*([a-zA-Zéû]+)/);
+    if(m2) key = m2[2].toLowerCase();
+  }
+  if(!key) return null;
+  let monIdx = null;
+  for(const k in FR_MONTHS){ if(key.startsWith(k) || k.startsWith(key.slice(0,3))){ monIdx=FR_MONTHS[k]; break; } }
+  if(monIdx===null) return null;
+  const year = monIdx>=8 ? FRISE_YEAR_START : FRISE_YEAR_START+1;
+  return new Date(year, monIdx, day, 0, 0, 0);
+}
+const FR_MONTHS_REV = ['jan','fév','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'];
+/* Reconstruit une chaîne d'affichage française ("7-13 sept" ou "28 nov-4 déc" si les mois
+   diffèrent) à partir de deux dates -- l'inverse de friseStartDate/friseEndDate. */
+function formatDateRangeFr(debut, fin){
+  if(!debut || !fin) return '';
+  const sameMonth = debut.getMonth()===fin.getMonth();
+  const finStr = `${fin.getDate()} ${FR_MONTHS_REV[fin.getMonth()]}`;
+  if(sameMonth) return `${debut.getDate()}-${finStr}`;
+  return `${debut.getDate()} ${FR_MONTHS_REV[debut.getMonth()]}-${finStr}`;
 }
 function renderFrise(data, lvl){
   let html = '<div class="timeline">';
