@@ -1,0 +1,51 @@
+# Workflow de déploiement GitHub Pages personnalisé.
+#
+# Remplace le pipeline Pages par défaut (implicite, sans fichier de workflow),
+# qui est soumis à une limite souple de 10 builds par heure -- limite qui ne
+# s'applique PAS à un workflow personnalisé comme celui-ci (voir
+# https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits).
+# Le site étant statique (pas de compilation), ce workflow se contente
+# d'empaqueter le contenu du dépôt tel quel et de le déployer.
+name: Déploiement GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du dépôt
+        uses: actions/checkout@v4
+      - name: Configuration de Pages
+        uses: actions/configure-pages@v5
+      - name: Préparation du contenu à publier (exclut .git et .github)
+        run: |
+          mkdir _site
+          rsync -a --exclude='.git' --exclude='.github' --exclude='_site' ./ _site/
+      - name: Empaquetage du site (contenu statique, sans compilation)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Déploiement sur GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
