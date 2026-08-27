@@ -385,12 +385,36 @@ function adjustProgressionDatesAfterMove(idx){
   // -- sans ça, seul le chapitre déplacé était recalé, et ses nouveaux voisins suivants
   // (qui gardaient leurs propres dates d'origine) pouvaient se retrouver avec des dates
   // qui se chevauchent avec lui.
+  //
+  // Cascade CONSCIENTE des vacances : sans ça, en rendant tous les chapitres parfaitement
+  // contigus (aucun jour d'écart), on supprime aussi tous les "trous" dans lesquels une
+  // vacance pouvait s'insérer -- elles se retrouvaient alors toutes reléguées en fin de
+  // liste (voir buildProgressionDisplayList, qui repose sur ces trous). On détecte ici un
+  // vrai chevauchement d'intervalles (le chapitre peut commencer AVANT une vacance et
+  // déborder dedans, pas seulement démarrer pile pendant) et on décale alors tout le bloc
+  // [début, fin] du chapitre pour qu'il commence après la vacance -- en boucle, au cas
+  // (rare) où ce nouveau positionnement chevaucherait une autre vacance à la suite.
+  const vacances = getVacancesForZone(progUserZone);
   for(let i=idx; i<progEditorItems.length; i++){
     const it = progEditorItems[i];
     const duration = (it.dateDebut && it.dateFin) ? (it.dateFin.getTime()-it.dateDebut.getTime()) : (it.s||1)*7*MS_PER_DAY - MS_PER_DAY;
-    it.dateDebut = new Date(anchor.getTime());
-    it.dateFin = new Date(anchor.getTime() + duration);
-    anchor = new Date(it.dateFin.getTime() + MS_PER_DAY);
+    let debut = new Date(anchor.getTime());
+    let fin = new Date(debut.getTime() + duration);
+    let shifted = true;
+    while(shifted){
+      shifted = false;
+      for(const v of vacances){
+        const vStart = new Date(v.debut+'T00:00:00'), vEnd = new Date(v.fin+'T00:00:00');
+        if(debut <= vEnd && fin >= vStart){
+          debut = new Date(vEnd.getTime() + MS_PER_DAY);
+          fin = new Date(debut.getTime() + duration);
+          shifted = true;
+        }
+      }
+    }
+    it.dateDebut = debut;
+    it.dateFin = fin;
+    anchor = new Date(fin.getTime() + MS_PER_DAY);
   }
 }
 function progDragEnd(e){
