@@ -205,8 +205,19 @@ function renderNiveau(lvl){
    l'affichage initial sur cette requête réseau. */
 async function applyCustomProgressionIfAny(lvl){
   if(!currentUser || restrictedVisitor) return;
-  if(!(currentUserRole==='prof' || currentUserRole==='admin')) return;
-  const { data: rows, error } = await sb.from('progressions').select('*').eq('owner_id', currentUser.id).eq('niveau', lvl).order('ordre');
+  let ownerId = null;
+  if(currentUserRole==='prof' || currentUserRole==='admin'){
+    ownerId = currentUser.id;
+  } else if(currentUserRole==='eleve'){
+    // Un élève n'a pas sa propre progression : on cherche celle du prof de sa classe
+    // (première classe / premier prof trouvé si plusieurs -- cas rare de co-enseignement).
+    const { data: cs } = await sb.from('class_students').select('class_id').eq('student_id', currentUser.id).limit(1).maybeSingle();
+    if(!cs) return;
+    const { data: ct } = await sb.from('class_teachers').select('teacher_id').eq('class_id', cs.class_id).limit(1).maybeSingle();
+    if(!ct) return;
+    ownerId = ct.teacher_id;
+  } else return;
+  const { data: rows, error } = await sb.from('progressions').select('*').eq('owner_id', ownerId).eq('niveau', lvl).order('ordre');
   if(error || !rows || !rows.length) return;
   const defaultData = lvl==='6e' ? CH6 : CH5;
   const merged = rows.map(r=>{
