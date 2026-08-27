@@ -155,6 +155,18 @@ document.addEventListener('click', (e)=>{
 });
 
 /* ======================= NIVEAU RENDER ======================= */
+/* Chapitres accessibles sans compte (le premier de chaque domaine, par niveau) --
+   le reste du site est réservé aux comptes prof/élève validés. Identifiés par leur
+   TITRE (et non leur code, qui peut être partagé par deux chapitres -- ex. N4 en 6e,
+   scindé en deux chapitres distincts sous le même code curriculaire). */
+const FREE_CHAPTERS = {
+  '6e': ['Nombres entiers', 'Droites parallèles et perpendiculaires', 'Gestion de données', 'Aire et périmètre'],
+  '5e': ['Opérations sur les nombres décimaux', 'Symétrie centrale', 'Proportionnalité', 'Statistiques'],
+};
+/* true tant qu'on ne sait pas encore si l'utilisateur a un compte actif valide (restreint
+   par défaut, le temps que refreshAuthUI() détermine l'état réel de la session). */
+let restrictedVisitor = true;
+function isChapterFree(lvl, titre){ return (FREE_CHAPTERS[lvl]||[]).includes(titre); }
 function renderNiveau(lvl){
   document.getElementById('niveau-title').textContent = 'Progression de '+lvl;
   const data = lvl==='6e'?CH6:CH5;
@@ -174,8 +186,9 @@ function renderTheme(data, lvl){
       <div class="chap-grid">`;
     items.forEach(c=>{
       const ready = !!DEMO_REGISTRY[lvl+'|'+c.t];
-      html += `<div class="chap-card ${ready?'ready':''}" style="border-left-color:${CATS[cat].text}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
-        ${ready?'':'<span class="status">à venir</span>'}
+      const locked = restrictedVisitor && !isChapterFree(lvl, c.t);
+      html += `<div class="chap-card ${ready?'ready':''} ${locked?'locked':''}" style="border-left-color:${CATS[cat].text}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
+        ${locked?'<span class="status lock-status">🔒 réservé aux inscrits</span>':(ready?'':'<span class="status">à venir</span>')}
         <div class="code">${c.code} · ch. ${c.n}</div>
         <div class="titre">${c.t}</div>
         <div class="meta"><span>p. ${c.p}</span><span>${c.s} sem.</span></div>
@@ -187,6 +200,7 @@ function renderTheme(data, lvl){
   box.innerHTML=html;
   box.querySelectorAll('.chap-card').forEach(card=>{
     card.addEventListener('click',()=>{
+      if(card.classList.contains('locked')){ openProfSignupModal(); return; }
       openChapitre({code:card.dataset.code,cat:card.dataset.cat,t:card.dataset.t,p:card.dataset.p,s:card.dataset.s,d:card.dataset.d});
     });
   });
@@ -217,10 +231,11 @@ function renderFrise(data, lvl){
     // Indépendant de la progression calendaire ci-dessus : est-ce que le contenu du
     // chapitre (cours/méthode/exercices) a déjà été créé sur le site, ou pas encore ?
     const hasContent = !!DEMO_REGISTRY[lvl+'|'+c.t];
-    html += `<div class="tl-item${done?' tl-done':''}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
+    const locked = restrictedVisitor && !isChapterFree(lvl, c.t);
+    html += `<div class="tl-item${done?' tl-done':''}${locked?' locked':''}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
       <span class="dot" style="background:${CATS[c.cat].text}"></span>
       <span class="titre">${c.t}</span>
-      <span class="tl-content-badge ${hasContent?'ready':'missing'}" title="${hasContent?'Contenu du site déjà créé':'Contenu du site pas encore créé'}">${hasContent?'🌐 En ligne':'✏️ À créer'}</span>
+      ${locked?'<span class="tl-content-badge missing lock-status">🔒 réservé aux inscrits</span>':`<span class="tl-content-badge ${hasContent?'ready':'missing'}" title="${hasContent?'Contenu du site déjà créé':'Contenu du site pas encore créé'}">${hasContent?'🌐 En ligne':'✏️ À créer'}</span>`}
       <span class="dates">${c.code} · ${c.d}</span>
       ${done?'<span class="tl-check" title="Chapitre déjà traité (date passée)">✓</span>':''}
     </div>`;
@@ -232,6 +247,7 @@ function renderFrise(data, lvl){
   box.innerHTML=html;
   box.querySelectorAll('.tl-item').forEach(card=>{
     card.addEventListener('click',()=>{
+      if(card.classList.contains('locked')){ openProfSignupModal(); return; }
       openChapitre({code:card.dataset.code,cat:card.dataset.cat,t:card.dataset.t,p:card.dataset.p,s:card.dataset.s,d:card.dataset.d});
     });
   });
@@ -1453,6 +1469,12 @@ async function refreshAuthUI(){
     if(currentUserRole==='admin') await adminRefreshDropdowns();
     if(isStaff) await loadMyClasses();
     if(currentUserRole==='eleve') await loadMyStudentClasses();
+
+    // Restriction d'accès aux chapitres non gratuits : levée pour tout compte élève, et
+    // pour un compte prof/admin approuvé et à jour (essai ou abonnement actif).
+    const wasRestricted = restrictedVisitor;
+    restrictedVisitor = accessBlocked || !(currentUserRole==='eleve' || isStaff);
+    if(wasRestricted !== restrictedVisitor && currentLevel) renderNiveau(currentLevel);
   } else {
     currentUser = null; currentUserRole = null; currentClassId = null;
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
@@ -1470,6 +1492,10 @@ async function refreshAuthUI(){
     const btnGenerateQuiz = document.getElementById('btnGenerateQuiz'), quizLoginHint = document.getElementById('quizLoginHint');
     if(btnGenerateQuiz) btnGenerateQuiz.style.display='none';
     if(quizLoginHint) quizLoginHint.style.display='inline';
+
+    const wasRestrictedOut = restrictedVisitor;
+    restrictedVisitor = true;
+    if(!wasRestrictedOut && currentLevel) renderNiveau(currentLevel);
   }
   // reflète l'état de connexion sur les boutons "+ Cahier" déjà injectés dans les cours ouverts
   updateCourseAddButtonsState();
