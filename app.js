@@ -53,9 +53,28 @@ const CH5 = [
 ];
 
 const VACANCES = {
-  '6e':[{after:3,label:'Vacances de Toussaint · 17 oct → 1 nov'},{after:7,label:'Vacances de Noël · 20 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 7 mars'},{after:15,label:'Vacances de printemps · 17 avr → 2 mai'}],
-  '5e':[{after:3,label:'Vacances de Toussaint · 17 oct → 1 nov'},{after:6,label:'Vacances de Noël · 19 déc → 3 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 7 mars'},{after:14,label:'Vacances de printemps · 17 avr → 2 mai'}],
+  '6e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:15,label:'Vacances de printemps · 17 avr → 3 mai'}],
+  '5e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:6,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:14,label:'Vacances de printemps · 17 avr → 3 mai'}],
 };
+/* Dates officielles 2026-2027 (arrêté du 22 octobre 2025, Journal officiel) pour l'éditeur
+   de progression personnalisée ("Ma progression") : Toussaint et Noël sont communes aux
+   trois zones, hiver et printemps varient. Utilisées pour insérer des bandeaux "vacances"
+   entre les blocs de chapitres, positionnés dynamiquement selon les dates choisies par le
+   prof (et non plus un simple "après le chapitre n", qui perd son sens dès que l'ordre et
+   les dates sont librement modifiés). */
+const VACANCES_COMMUNES = [
+  {label:'Vacances de la Toussaint', debut:'2026-10-17', fin:'2026-11-02'},
+  {label:'Vacances de Noël', debut:'2026-12-19', fin:'2027-01-04'},
+];
+const VACANCES_ZONES = {
+  A:[{label:"Vacances d'hiver (zone A)", debut:'2027-02-13', fin:'2027-03-01'},{label:'Vacances de printemps (zone A)', debut:'2027-04-10', fin:'2027-04-26'}],
+  B:[{label:"Vacances d'hiver (zone B)", debut:'2027-02-20', fin:'2027-03-08'},{label:'Vacances de printemps (zone B)', debut:'2027-04-17', fin:'2027-05-03'}],
+  C:[{label:"Vacances d'hiver (zone C)", debut:'2027-02-06', fin:'2027-02-22'},{label:'Vacances de printemps (zone C)', debut:'2027-04-03', fin:'2027-04-19'}],
+};
+function getVacancesForZone(zone){
+  const list = VACANCES_COMMUNES.concat(VACANCES_ZONES[zone] || VACANCES_ZONES.B);
+  return list.slice().sort((a,b)=>new Date(a.debut)-new Date(b.debut));
+}
 
 let currentLevel='6e';
 function toggleMobileNav(){
@@ -195,7 +214,9 @@ async function applyCustomProgressionIfAny(lvl){
     if(!base) return null;
     const dd = r.date_debut ? new Date(r.date_debut+'T00:00:00') : null;
     const df = r.date_fin ? new Date(r.date_fin+'T00:00:00') : null;
-    return Object.assign({}, base, { d: (dd&&df) ? formatDateRangeFr(dd,df) : base.d });
+    // dispT (nom affiché) est distinct de t (jamais modifié : c'est la clé de recherche dans
+    // DEMO_REGISTRY, utilisée par openChapitre -- la renommer casserait l'ouverture du chapitre).
+    return Object.assign({}, base, { d: (dd&&df) ? formatDateRangeFr(dd,df) : base.d, dispT: r.nom_perso || base.t });
   }).filter(Boolean);
   // Ajoute en fin de liste tout chapitre du programme par défaut absent de la progression
   // personnalisée (ex. un chapitre ajouté au site depuis la dernière sauvegarde du prof).
@@ -204,60 +225,134 @@ async function applyCustomProgressionIfAny(lvl){
 }
 /* ---- Éditeur de progression personnalisée ("Ma progression") ---- */
 let progEditorItems = [];
+let progEditIdx = -1; // index de la carte actuellement en mode édition (-1 = aucune)
+let progUserZone = 'B';
 async function renderProgressionEditor(){
   const lvl = document.getElementById('progNiveauSelect').value;
   const status = document.getElementById('progStatus');
   status.textContent = 'Chargement…';
   const defaultData = lvl==='6e' ? CH6 : CH5;
+
+  const { data: profile } = await sb.from('profiles').select('zone_vacances').eq('id', currentUser.id).single();
+  progUserZone = (profile && profile.zone_vacances) || 'B';
+  document.getElementById('progZoneSelect').value = progUserZone;
+
   const { data: rows, error } = await sb.from('progressions').select('*').eq('owner_id', currentUser.id).eq('niveau', lvl).order('ordre');
   if(error){ status.textContent = 'Erreur : '+error.message; return; }
   if(rows && rows.length){
     progEditorItems = rows.map(r=>{
       const base = defaultData.find(c=>c.t===r.chapitre_titre) || {};
       return {
-        titre: r.chapitre_titre, code: base.code||'', cat: base.cat||'N', p: base.p||'', s: base.s||1,
+        titre: r.chapitre_titre, nomPerso: r.nom_perso||'', code: base.code||'', cat: base.cat||'N', p: base.p||'', s: base.s||1,
         dateDebut: r.date_debut ? new Date(r.date_debut+'T00:00:00') : null,
         dateFin: r.date_fin ? new Date(r.date_fin+'T00:00:00') : null,
       };
     });
     defaultData.forEach(c=>{
       if(!progEditorItems.some(it=>it.titre===c.t)){
-        progEditorItems.push({ titre:c.t, code:c.code, cat:c.cat, p:c.p, s:c.s, dateDebut: friseStartDate(c.d), dateFin: friseEndDate(c.d) });
+        progEditorItems.push({ titre:c.t, nomPerso:'', code:c.code, cat:c.cat, p:c.p, s:c.s, dateDebut: friseStartDate(c.d), dateFin: friseEndDate(c.d) });
       }
     });
   } else {
-    progEditorItems = defaultData.map(c=>({ titre:c.t, code:c.code, cat:c.cat, p:c.p, s:c.s, dateDebut: friseStartDate(c.d), dateFin: friseEndDate(c.d) }));
+    progEditorItems = defaultData.map(c=>({ titre:c.t, nomPerso:'', code:c.code, cat:c.cat, p:c.p, s:c.s, dateDebut: friseStartDate(c.d), dateFin: friseEndDate(c.d) }));
   }
+  progEditIdx = -1;
   status.textContent = '';
   renderProgressionList();
 }
+async function onZoneChange(){
+  progUserZone = document.getElementById('progZoneSelect').value;
+  await sb.from('profiles').update({ zone_vacances: progUserZone }).eq('id', currentUser.id);
+  renderProgressionList();
+}
+/* Insère les bandeaux de vacances entre les cartes, à la position chronologique qui leur
+   correspond -- pas "après le chapitre n" (qui perd son sens dès que l'ordre/les dates
+   sont librement modifiés), mais en comparant réellement les dates. */
+function buildProgressionDisplayList(){
+  const vacances = getVacancesForZone(progUserZone);
+  const out = [];
+  let vIdx = 0;
+  progEditorItems.forEach((it,i)=>{
+    out.push({ type:'chapitre', item:it, index:i });
+    while(vIdx < vacances.length){
+      const v = vacances[vIdx];
+      const vStart = new Date(v.debut+'T00:00:00');
+      const nextStart = progEditorItems[i+1] ? progEditorItems[i+1].dateDebut : null;
+      const afterThis = !it.dateFin || vStart >= it.dateFin;
+      const beforeNext = !nextStart || vStart <= nextStart;
+      if(afterThis && beforeNext){ out.push({ type:'vacances', vac:v }); vIdx++; } else break;
+    }
+  });
+  while(vIdx < vacances.length){ out.push({ type:'vacances', vac:vacances[vIdx] }); vIdx++; }
+  return out;
+}
 function renderProgressionList(){
   const box = document.getElementById('progressionList');
-  box.innerHTML = progEditorItems.map((it,i)=>{
+  const display = buildProgressionDisplayList();
+  box.innerHTML = display.map(entry=>{
+    if(entry.type==='vacances'){
+      const v = entry.vac;
+      const dd = new Date(v.debut+'T00:00:00'), df = new Date(v.fin+'T00:00:00');
+      return `<div class="prog-vac-banner">🏖 ${escapeHtml(v.label)} · ${formatDateRangeFr(dd,df)}</div>`;
+    }
+    const i = entry.index, it = entry.item;
     const dd = it.dateDebut ? it.dateDebut.toISOString().slice(0,10) : '';
     const df = it.dateFin ? it.dateFin.toISOString().slice(0,10) : '';
     const catInfo = CATS[it.cat] || {text:'#999'};
-    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid rgba(28,43,57,.08);">
-      <span style="display:flex;flex-direction:column;gap:2px;">
-        <button class="btn secondary" style="padding:2px 8px;font-size:.75rem;" onclick="moveProgressionItem(${i},-1)" ${i===0?'disabled':''}>▲</button>
-        <button class="btn secondary" style="padding:2px 8px;font-size:.75rem;" onclick="moveProgressionItem(${i},1)" ${i===progEditorItems.length-1?'disabled':''}>▼</button>
-      </span>
-      <span style="width:10px;height:10px;border-radius:50%;flex:none;background:${catInfo.text}"></span>
-      <span style="flex:1;font-weight:600;font-size:.9rem;">${escapeHtml(it.titre)}</span>
-      <label class="hint" style="display:flex;align-items:center;gap:4px;margin:0;">Début <input type="date" value="${dd}" onchange="updateProgressionDate(${i},'debut',this.value)"></label>
-      <label class="hint" style="display:flex;align-items:center;gap:4px;margin:0;">Fin <input type="date" value="${df}" onchange="updateProgressionDate(${i},'fin',this.value)"></label>
+    const displayName = it.nomPerso || it.titre;
+    if(progEditIdx===i){
+      return `<div class="prog-card" style="border-left-color:${catInfo.text};cursor:default;">
+        <div class="prog-card-edit">
+          <input type="text" id="progEditNom" value="${escapeHtml(displayName)}" placeholder="${escapeHtml(it.titre)}">
+          <div class="prog-edit-dates">
+            <label class="hint" style="display:flex;align-items:center;gap:4px;margin:0;">Début <input type="date" id="progEditDebut" value="${dd}"></label>
+            <label class="hint" style="display:flex;align-items:center;gap:4px;margin:0;">Fin <input type="date" id="progEditFin" value="${df}"></label>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn" style="font-size:.8rem;padding:6px 12px;" onclick="confirmEditProgressionItem(${i})">✓ OK</button>
+            <button class="btn secondary" style="font-size:.8rem;padding:6px 12px;" onclick="progEditIdx=-1; renderProgressionList();">Annuler</button>
+          </div>
+        </div>
+      </div>`;
+    }
+    return `<div class="prog-card" style="border-left-color:${catInfo.text}" draggable="true"
+        ondragstart="progDragStart(event,${i})" ondragover="progDragOver(event,${i})" ondrop="progDrop(event,${i})" ondragend="progDragEnd(event)">
+      <span class="drag-handle">⠿</span>
+      <div class="prog-main">
+        <div class="prog-titre ${it.nomPerso?'perso':''}">${escapeHtml(displayName)}</div>
+        ${it.nomPerso?`<div class="prog-titre-orig">${escapeHtml(it.titre)}</div>`:''}
+        <div class="prog-dates">${dd?formatDateRangeFr(it.dateDebut,it.dateFin):'dates non définies'}</div>
+      </div>
+      <button class="prog-edit-btn" title="Modifier le nom et les dates" onclick="progEditIdx=${i}; renderProgressionList();">✏️</button>
     </div>`;
   }).join('');
 }
-function moveProgressionItem(i, dir){
-  const j = i+dir;
-  if(j<0 || j>=progEditorItems.length) return;
-  const tmp = progEditorItems[i]; progEditorItems[i] = progEditorItems[j]; progEditorItems[j] = tmp;
+function confirmEditProgressionItem(i){
+  const nom = document.getElementById('progEditNom').value.trim();
+  const dd = document.getElementById('progEditDebut').value;
+  const df = document.getElementById('progEditFin').value;
+  progEditorItems[i].nomPerso = (nom && nom!==progEditorItems[i].titre) ? nom : '';
+  progEditorItems[i].dateDebut = dd ? new Date(dd+'T00:00:00') : null;
+  progEditorItems[i].dateFin = df ? new Date(df+'T00:00:00') : null;
+  progEditIdx = -1;
   renderProgressionList();
 }
-function updateProgressionDate(i, which, value){
-  const d = value ? new Date(value+'T00:00:00') : null;
-  if(which==='debut') progEditorItems[i].dateDebut = d; else progEditorItems[i].dateFin = d;
+/* Glisser-déposer natif (HTML5) pour réordonner les cartes. */
+let progDragIdx = null;
+function progDragStart(e, i){ progDragIdx = i; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; }
+function progDragOver(e, i){ e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function progDrop(e, i){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if(progDragIdx===null || progDragIdx===i) return;
+  const [moved] = progEditorItems.splice(progDragIdx, 1);
+  progEditorItems.splice(i, 0, moved);
+  progDragIdx = null;
+  renderProgressionList();
+}
+function progDragEnd(e){
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.prog-card.drag-over').forEach(el=>el.classList.remove('drag-over'));
 }
 async function saveProgression(){
   const lvl = document.getElementById('progNiveauSelect').value;
@@ -265,6 +360,7 @@ async function saveProgression(){
   status.textContent = 'Enregistrement…';
   const rows = progEditorItems.map((it,i)=>({
     owner_id: currentUser.id, niveau: lvl, chapitre_titre: it.titre, ordre: i,
+    nom_perso: it.nomPerso || null,
     date_debut: it.dateDebut ? it.dateDebut.toISOString().slice(0,10) : null,
     date_fin: it.dateFin ? it.dateFin.toISOString().slice(0,10) : null,
   }));
@@ -296,7 +392,7 @@ function renderTheme(data, lvl){
       html += `<div class="chap-card ${ready?'ready':''} ${locked?'locked':''}" style="border-left-color:${CATS[cat].text}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
         ${locked?'<span class="status lock-status">🔒 réservé aux inscrits</span>':(ready?'':'<span class="status">à venir</span>')}
         <div class="code">${c.code} · ch. ${c.n}</div>
-        <div class="titre">${c.t}</div>
+        <div class="titre">${c.dispT||c.t}</div>
         <div class="meta"><span>p. ${c.p}</span><span>${c.s} sem.</span></div>
       </div>`;
     });
@@ -373,7 +469,7 @@ function renderFrise(data, lvl){
     const locked = restrictedVisitor && !isChapterFree(lvl, c.t);
     html += `<div class="tl-item${done?' tl-done':''}${locked?' locked':''}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
       <span class="dot" style="background:${CATS[c.cat].text}"></span>
-      <span class="titre">${c.t}</span>
+      <span class="titre">${c.dispT||c.t}</span>
       ${locked?'<span class="tl-content-badge missing lock-status">🔒 réservé aux inscrits</span>':`<span class="tl-content-badge ${hasContent?'ready':'missing'}" title="${hasContent?'Contenu du site déjà créé':'Contenu du site pas encore créé'}">${hasContent?'🌐 En ligne':'✏️ À créer'}</span>`}
       <span class="dates">${c.code} · ${c.d}</span>
       ${done?'<span class="tl-check" title="Chapitre déjà traité (date passée)">✓</span>':''}
