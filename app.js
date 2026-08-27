@@ -371,16 +371,27 @@ const MS_PER_DAY = 24*60*60*1000;
    prédécesseur (ou juste avant le début de son nouveau successeur s'il est devenu le
    premier de la liste), en conservant sa durée d'origine. */
 function adjustProgressionDatesAfterMove(idx){
-  const it = progEditorItems[idx];
+  // Point d'ancrage : le lendemain de la fin du nouveau prédécesseur -- ou, s'il n'y en a
+  // pas (le chapitre devient le premier de la liste), sa propre date de début déjà connue,
+  // ou à défaut la rentrée (1er septembre).
   const prev = progEditorItems[idx-1];
-  const next = progEditorItems[idx+1];
-  const duration = (it.dateDebut && it.dateFin) ? (it.dateFin.getTime()-it.dateDebut.getTime()) : (it.s||1)*7*MS_PER_DAY - MS_PER_DAY;
-  let newDebut;
-  if(prev && prev.dateFin) newDebut = new Date(prev.dateFin.getTime() + MS_PER_DAY);
-  else if(next && next.dateDebut) newDebut = new Date(next.dateDebut.getTime() - duration - MS_PER_DAY);
-  else return; // ni prédécesseur ni successeur avec une date connue : rien à recaler
-  it.dateDebut = newDebut;
-  it.dateFin = new Date(newDebut.getTime() + duration);
+  let anchor;
+  if(prev && prev.dateFin) anchor = new Date(prev.dateFin.getTime() + MS_PER_DAY);
+  else if(progEditorItems[idx].dateDebut) anchor = new Date(progEditorItems[idx].dateDebut.getTime());
+  else anchor = new Date(FRISE_YEAR_START, 8, 1);
+
+  // Recalage EN CASCADE : le chapitre déplacé, puis tous ceux qui le suivent désormais,
+  // redémarrent chacun juste après la fin du précédent, en conservant leur durée d'origine
+  // -- sans ça, seul le chapitre déplacé était recalé, et ses nouveaux voisins suivants
+  // (qui gardaient leurs propres dates d'origine) pouvaient se retrouver avec des dates
+  // qui se chevauchent avec lui.
+  for(let i=idx; i<progEditorItems.length; i++){
+    const it = progEditorItems[i];
+    const duration = (it.dateDebut && it.dateFin) ? (it.dateFin.getTime()-it.dateDebut.getTime()) : (it.s||1)*7*MS_PER_DAY - MS_PER_DAY;
+    it.dateDebut = new Date(anchor.getTime());
+    it.dateFin = new Date(anchor.getTime() + duration);
+    anchor = new Date(it.dateFin.getTime() + MS_PER_DAY);
+  }
 }
 function progDragEnd(e){
   e.currentTarget.classList.remove('dragging');
