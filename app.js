@@ -1316,7 +1316,7 @@ function singleBlockHTML(b, ctx, withControls, draggable){
   // glisser-déposer). En isolant l'attribut draggable sur une petite poignée dédiée, le reste
   // du bloc reste utilisable normalement (sélection, édition), et glisser depuis la poignée
   // fonctionne de façon fiable.
-  const dragHandle = draggable ? `<span draggable="true" ondragstart="evalDragStart(event,${b.id})" title="Glisser pour déplacer ce bloc" style="position:absolute;top:6px;left:6px;cursor:grab;font-size:1rem;color:var(--ink-soft);z-index:2;user-select:none;">⠿</span>` : '';
+  const dragHandle = draggable ? `<span draggable="true" ondragstart="evalDragStart(event,${b.id})" ondragend="evalDragEnd(event)" title="Glisser pour déplacer ce bloc" style="position:absolute;top:6px;left:6px;cursor:grab;font-size:1rem;color:var(--ink-soft);z-index:2;user-select:none;">⠿</span>` : '';
   const widthStyle = sizeStyle || (defaultWidth ? `width:${defaultWidth}px;` : 'width:100%;');
   return `<div class="nb-figure-row" style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px ${draggable?'26px':'10px'};margin:8px 0;background:#fff;">
     ${dragHandle}
@@ -1337,7 +1337,21 @@ function pendingBlocksHTML(withControls, ctx){
    2 ou 3 colonnes (ex. une figure à gauche, l'énoncé à droite). nCols<=1 revient au rendu
    simple habituel. */
 let evalDragBlockId = null;
-function evalDragStart(e, id){ evalDragBlockId = id; e.dataTransfer.setData('text/plain', String(id)); }
+function evalDragStart(e, id){
+  evalDragBlockId = id; e.dataTransfer.setData('text/plain', String(id));
+  // Sans ça, le navigateur utilise par défaut l'élément qui porte draggable="true" comme
+  // aperçu de déplacement -- ici la petite poignée ⠿ elle-même (isolée du reste du bloc
+  // pour ne pas entrer en conflit avec la sélection de texte, voir singleBlockHTML), ce qui
+  // donnait l'impression que rien ne se soulevait visuellement pendant le glisser. On
+  // indique explicitement d'utiliser le bloc entier (.nb-figure-row) comme aperçu.
+  const blockEl = e.target.closest('.nb-figure-row');
+  if(blockEl && e.dataTransfer.setDragImage) e.dataTransfer.setDragImage(blockEl, 20, 20);
+  if(blockEl) blockEl.style.opacity = '.4'; // le bloc d'origine s'estompe pendant le glisser
+}
+function evalDragEnd(e){
+  const blockEl = e.target.closest('.nb-figure-row');
+  if(blockEl) blockEl.style.opacity = '';
+}
 function evalDropInRowCol(e, ctx, rowIndex, colIndex){
   e.preventDefault();
   const arr = blocksStores[ctx]||[];
