@@ -352,9 +352,9 @@ async function adminDeleteUser(userId, btn){
       body: JSON.stringify({ action:'delete', userId }),
     });
     const data = await res.json();
-    if(data.error){ alert("Erreur : "+data.error); btn.disabled=false; return; }
+    if(data.error){ await niceAlert("Erreur : "+data.error); btn.disabled=false; return; }
     await adminRefreshDropdowns();
-  }catch(err){ alert('Erreur réseau : '+err.message); btn.disabled=false; }
+  }catch(err){ await niceAlert('Erreur réseau : '+err.message); btn.disabled=false; }
 }
 async function adminSyncEmails(){
   const status = document.getElementById('adminSyncEmailsStatus');
@@ -461,7 +461,7 @@ async function adminDemarrerPermisSession(classId){
   const { error } = await sb.from('permis_rapporteur_sessions').insert({
     code, classe_id: classId, prof_id: currentUser ? currentUser.id : null,
   });
-  if(error){ alert("Échec : "+error.message); return; }
+  if(error){ await niceAlert("Échec : "+error.message); return; }
   await adminRefreshDropdowns();
 }
 async function adminCloturerPermisSession(sessionId){
@@ -502,12 +502,12 @@ async function adminRefreshBugReports(){
 async function adminUpdateBugStatus(id, status){
   const { data, error } = await sb.from('bug_reports').update({status}).eq('id', id).select();
   if(error){
-    alert("Échec de l'enregistrement du statut : "+error.message);
+    await niceAlert("Échec de l'enregistrement du statut : "+error.message);
     await adminRefreshBugReports();
     return;
   }
   if(!data || !data.length){
-    alert("Le statut n'a pas été enregistré (0 ligne modifiée en base). C'est très probablement une policy Supabase (RLS) qui bloque la mise à jour pour ce compte -- il faudra vérifier la policy UPDATE de la table bug_reports.");
+    await niceAlert("Le statut n'a pas été enregistré (0 ligne modifiée en base). C'est très probablement une policy Supabase (RLS) qui bloque la mise à jour pour ce compte -- il faudra vérifier la policy UPDATE de la table bug_reports.");
     await adminRefreshBugReports();
     return;
   }
@@ -594,7 +594,7 @@ async function adminRefreshSignupRequests(){
   }).join('');
 }
 async function adminApproveSignup(id, name){
-  if(!confirm(`Approuver l'inscription de ${name} ? L'essai gratuit de 15 jours démarre immédiatement.`)) return;
+  if(!(await niceConfirm(`Approuver l'inscription de ${name} ? L'essai gratuit de 15 jours démarre immédiatement.`))) return;
   const now = new Date();
   const trialEnd = new Date(now.getTime() + 15*24*60*60*1000);
   const { error } = await sb.from('profiles').update({
@@ -603,12 +603,12 @@ async function adminApproveSignup(id, name){
     trial_started_at: now.toISOString(),
     subscription_expires_at: trialEnd.toISOString(),
   }).eq('id', id);
-  if(error){ alert('Erreur : '+error.message); return; }
+  if(error){ await niceAlert('Erreur : '+error.message); return; }
   await adminRefreshSignupRequests();
 }
 async function adminRejectSignup(id, name){
-  if(!confirm(`Rejeter l'inscription de ${name} ?`)) return;
+  if(!(await niceConfirm(`Rejeter l'inscription de ${name} ?`))) return;
   const { error } = await sb.from('profiles').update({ signup_status: 'rejected' }).eq('id', id);
-  if(error){ alert('Erreur : '+error.message); return; }
+  if(error){ await niceAlert('Erreur : '+error.message); return; }
   await adminRefreshSignupRequests();
 }

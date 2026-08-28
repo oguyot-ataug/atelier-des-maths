@@ -436,7 +436,7 @@ async function saveProgression(){
 }
 async function resetProgression(){
   const lvl = document.getElementById('progNiveauSelect').value;
-  if(!confirm('Revenir à la progression par défaut pour le niveau '+lvl+' ? Vos réglages personnalisés seront supprimés.')) return;
+  if(!(await niceConfirm('Revenir à la progression par défaut pour le niveau '+lvl+' ? Vos réglages personnalisés seront supprimés.'))) return;
   const status = document.getElementById('progStatus');
   const { error } = await sb.from('progressions').delete().eq('owner_id', currentUser.id).eq('niveau', lvl);
   status.textContent = error ? 'Erreur : '+error.message : '✓ Progression réinitialisée.';
@@ -1169,7 +1169,7 @@ function updateProjectionWindow(html){
   const el = ceProjWin.document.getElementById('projContent');
   if(el) el.innerHTML = html;
 }
-function toggleProjection(){
+async function toggleProjection(){
   const btn = document.getElementById('btnProjection');
   if(ceProjWin && !ceProjWin.closed){
     ceProjWin.close();
@@ -1178,7 +1178,7 @@ function toggleProjection(){
     return;
   }
   ceProjWin = window.open('', 'atelierMathsProjection', 'width=1100,height=720,resizable=yes');
-  if(!ceProjWin){ alert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site."); return; }
+  if(!ceProjWin){ await niceAlert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site."); return; }
   ceProjWin.document.open();
   ceProjWin.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
     <title>Correction -- projection</title>
@@ -3212,7 +3212,7 @@ async function addToCahier(){
     if(oldServerId) await syncRemoveEntry(oldServerId);
     const res = await syncAddEntry(entry);
     if(res.ok){ entry.id = res.id; saveCahier(); renderCahier(); }
-    else if(!res.offline){ alert("⚠️ Enregistré localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez l'adresse du script et le code secret dans la configuration de synchronisation."); }
+    else if(!res.offline){ await niceAlert("⚠️ Enregistré localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez l'adresse du script et le code secret dans la configuration de synchronisation."); }
   }
 }
 function editCahierEntry(i){
@@ -3275,7 +3275,7 @@ async function removeCahierEntry(i){
   const entry = cahier[i];
   if(isSyncEnabled() && entry && entry.id){
     const res = await syncRemoveEntry(entry.id);
-    if(!res.ok){ alert("Échec de la suppression sur le serveur : "+(res.error||'erreur inconnue')); return; }
+    if(!res.ok){ await niceAlert("Échec de la suppression sur le serveur : "+(res.error||'erreur inconnue')); return; }
   }
   cahier.splice(i,1); saveCahier(); renderCahier();
 }
@@ -3424,7 +3424,7 @@ async function removeCahierEntryFromNotebook(i, btn){
   if(isSyncEnabled() && entry && entry.id){
     const res = await syncRemoveEntry(entry.id);
     if(!res.ok){
-      alert(res.error==='unauthorized'
+      await niceAlert(res.error==='unauthorized'
         ? "Seul le professeur peut retirer un élément de ce cahier partagé (code secret requis, configuré dans l'outil prof)."
         : "Échec de la suppression sur le serveur : "+(res.error||'erreur inconnue'));
       return;
@@ -3497,8 +3497,8 @@ async function exportCahierAsPDF(){
 }
 function generateCahierPDF(){ exportCahierAsPDF(); }
 function downloadCahierElevePDF(){ exportCahierAsPDF(); }
-function exportCahierDataFile(){
-  if(!cahier.length){ alert('Le cahier est vide : rien à exporter pour le moment.'); return; }
+async function exportCahierDataFile(){
+  if(!cahier.length){ await niceAlert('Le cahier est vide : rien à exporter pour le moment.'); return; }
   const blob = new Blob([JSON.stringify(cahier, null, 2)], {type:'application/json'});
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
@@ -3792,7 +3792,7 @@ async function addSectionToCahier(headerEl){
   if(isSyncEnabled()){
     const res = await syncAddEntry(entry);
     if(res.ok){ entry.id = res.id; saveCahier(); }
-    else if(!res.offline){ alert("⚠️ Ajouté localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez la configuration de synchronisation (adresse + code secret) dans l'outil prof."); }
+    else if(!res.offline){ await niceAlert("⚠️ Ajouté localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez la configuration de synchronisation (adresse + code secret) dans l'outil prof."); }
   }
 }
 
