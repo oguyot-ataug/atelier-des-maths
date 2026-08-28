@@ -24,7 +24,7 @@ document.getElementById('cours-demo-relatifs').innerHTML = `
 
       <div class="lesson-header"><span class="num">2</span><h3>Repérage sur une droite</h3></div>
       <span class="def-badge">Définition 1</span>
-      <div class="def-box">On dit qu'une droite est <b>graduée</b> lorsqu'on y a choisi un point de départ — appelé <b>origine</b> et noté O — ainsi qu'une longueur de référence appelée l'<b>unité</b>.</div>
+      <div class="def-box">On dit qu'une droite est <b>graduée</b> lorsqu'on y a choisi un point de départ (appelé <b>origine</b> et noté O) ainsi qu'une longueur de référence appelée l'<b>unité</b>.</div>
       <span class="def-badge">Définition 2</span>
       <div class="def-box">Sur une droite graduée, chaque point occupe une position que l'on traduit par un nombre relatif : c'est son <b>abscisse</b>.</div>
 
@@ -60,7 +60,7 @@ document.getElementById('cours-demo-relatifs').innerHTML = `
       <p class="example-title">Exemple :</p>
       <ul class="example-list"><li>+2,5 et −2,5 sont deux nombres opposés.</li></ul>
       <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
-        Remarque : un nombre et son opposé occupent des positions <b>symétriques par rapport à l'origine</b> sur une droite graduée — on retrouve ici l'idée de symétrie centrale, avec 0 comme centre.
+        Remarque : un nombre et son opposé occupent des positions <b>symétriques par rapport à l'origine</b> sur une droite graduée, on retrouve ici l'idée de symétrie centrale, avec 0 comme centre.
       </div>
 
       <div class="lesson-header"><span class="num">3</span><h3>Repérage dans le plan</h3></div>
@@ -118,7 +118,7 @@ document.getElementById('cours-demo-relatifs').innerHTML = `
       </ul>
 
       <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
-        <span class=gicon>warning</span> Piège classique : un nombre négatif de grande valeur absolue reste un <b>petit</b> nombre. On voit souvent l'erreur −10 &gt; −3 (en ne comparant que les chiffres 10 et 3) — c'est l'inverse : −10 &lt; −3.
+        <span class=gicon>warning</span> Piège classique : un nombre négatif de grande valeur absolue reste un <b>petit</b> nombre. On voit souvent l'erreur −10 &gt; −3 (en ne comparant que les chiffres 10 et 3), c'est l'inverse : −10 &lt; −3.
       </div>
 `;
 

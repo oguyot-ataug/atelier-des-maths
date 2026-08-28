@@ -1015,8 +1015,8 @@ function triCNextStep(){
 document.getElementById('histoire-demo-construction-triangles').innerHTML = `
 <div class="history-box">
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
-  <p style="margin:0 0 12px;">Dans l'Égypte antique, chaque année, la crue du Nil recouvre les champs et efface leurs limites. Il faut alors les retracer avec précision, et surtout reconstruire des angles droits bien nets pour délimiter les parcelles — un vrai problème sans équerre ni rapporteur ! Les arpenteurs égyptiens (qu'on surnomme parfois les <b>« tendeurs de corde »</b>) utilisent une astuce d'une simplicité redoutable : une corde à <b>13 nœuds régulièrement espacés</b>, formant 12 intervalles égaux.</p>
-  <p style="margin:0 0 12px;">En tendant cette corde entre trois piquets pour former un triangle de <b>3, 4 et 5 intervalles</b> de côté, ils obtiennent à coup sûr un <b>angle droit</b>, exactement entre le côté de 3 et celui de 4 — sans rien mesurer d'autre que des longueurs de corde !</p>
+  <p style="margin:0 0 12px;">Dans l'Égypte antique, chaque année, la crue du Nil recouvre les champs et efface leurs limites. Il faut alors les retracer avec précision, et surtout reconstruire des angles droits bien nets pour délimiter les parcelles (un vrai problème sans équerre ni rapporteur !) Les arpenteurs égyptiens (qu'on surnomme parfois les <b>« tendeurs de corde »</b>) utilisent une astuce d'une simplicité redoutable : une corde à <b>13 nœuds régulièrement espacés</b>, formant 12 intervalles égaux.</p>
+  <p style="margin:0 0 12px;">En tendant cette corde entre trois piquets pour former un triangle de <b>3, 4 et 5 intervalles</b> de côté, ils obtiennent à coup sûr un <b>angle droit</b>, exactement entre le côté de 3 et celui de 4, sans rien mesurer d'autre que des longueurs de corde !</p>
   <div class="figure-wrap" style="max-width:220px;margin:4px auto 14px;">
     <svg viewBox="0 0 180 260" style="width:100%;display:block;">
       <line x1="40" y1="240" x2="130" y2="240" stroke="#1C1B2E" stroke-width="1.8"/>

@@ -92,7 +92,7 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
 document.getElementById('histoire-demo-decimaux').innerHTML = `
 <div class="history-box">
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
-  Avant l'invention de l'écriture décimale par Simon Stevin en 1585, poser une addition ou une multiplication avec des parties non entières était bien plus compliqué : il fallait passer par des fractions, avec des dénominateurs différents à mettre au même niveau à chaque étape. Dans son livre <i>La Thiende</i>, Stevin montre justement comment additionner, soustraire, multiplier et diviser des nombres décimaux presque aussi facilement que des nombres entiers — c'est précisément ce gain de simplicité qui a permis à cette écriture de s'imposer aussi vite chez les commerçants et les savants de son époque.
+  Avant l'invention de l'écriture décimale par Simon Stevin en 1585, poser une addition ou une multiplication avec des parties non entières était bien plus compliqué : il fallait passer par des fractions, avec des dénominateurs différents à mettre au même niveau à chaque étape. Dans son livre <i>La Thiende</i>, Stevin montre justement comment additionner, soustraire, multiplier et diviser des nombres décimaux presque aussi facilement que des nombres entiers, c'est précisément ce gain de simplicité qui a permis à cette écriture de s'imposer aussi vite chez les commerçants et les savants de son époque.
 </div>
 `;
 document.getElementById('methode-demo-decimaux').innerHTML = `

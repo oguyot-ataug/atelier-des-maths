@@ -847,7 +847,7 @@ function generateDemoQuiz(){
 }
 async function generateQuiz(){
   const area = document.getElementById('quizArea');
-  if(!currentUser){ area.innerHTML = '<p class="hint">Connectez-vous pour générer un quiz par IA — ou essayez la démo pré-écrite ci-dessous.</p>'; return; }
+  if(!currentUser){ area.innerHTML = '<p class="hint">Connectez-vous pour générer un quiz par IA (ou essayez la démo pré-écrite ci-dessous).</p>'; return; }
   const content = getVisibleCoursContent();
   const courseText = (content.innerText || content.textContent || '').trim();
   if(!courseText){ area.innerHTML = '<p class="hint">Aucun contenu de cours disponible pour ce chapitre.</p>'; return; }
@@ -894,7 +894,7 @@ function getVisibleCoursContent(){
 }
 async function exportCoursPDF(){
   const hint=document.getElementById('exportHint');
-  if(typeof html2pdf==='undefined'){ hint.textContent="La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?) — utilisez Ctrl/Cmd+P pour imprimer à la place."; return; }
+  if(typeof html2pdf==='undefined'){ hint.textContent="La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?), utilisez Ctrl/Cmd+P pour imprimer à la place."; return; }
   const content = getVisibleCoursContent();
   const title = document.getElementById('chap-title').textContent || 'cours';
   const clone = content.cloneNode(true);
@@ -947,7 +947,7 @@ async function exportCoursPDF(){
   html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:false}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
     .from(wrapper).save()
     .then(()=>{ clip.remove(); hint.textContent='PDF téléchargé ✓'; setTimeout(()=>hint.textContent='',4000); })
-    .catch(()=>{ clip.remove(); hint.textContent="Échec de la génération dans ce navigateur — essayez Ctrl/Cmd+P pour imprimer à la place."; });
+    .catch(()=>{ clip.remove(); hint.textContent="Échec de la génération dans ce navigateur, essayez Ctrl/Cmd+P pour imprimer à la place."; });
 }
 
 
@@ -1152,7 +1152,7 @@ function corHeaderHTML(){
   const date = document.getElementById('corDate')?.value || '';
   if(!titre && !exo && !date) return '';
   const dateFmt = date ? new Date(date+'T00:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'}) : '';
-  const parts = [exo, titre].filter(Boolean).join(' — ');
+  const parts = [exo, titre].filter(Boolean).join(' · ');
   return `<div class="cor-header">
     ${dateFmt ? `<div class="cor-header-date">${escapeHtml(dateFmt)}</div>` : ''}
     ${parts ? `<div class="cor-header-title">${escapeHtml(parts)}</div>` : ''}
@@ -1799,7 +1799,7 @@ async function refreshAuthUI(){
     const avatarBtn = document.getElementById('accountAvatar');
     const initials = [prenomTrim, nomTrim].filter(Boolean).map(s=>s[0]).join('').toUpperCase();
     avatarBtn.innerHTML = initials || '<span class=gicon>person</span>';
-    avatarBtn.title = fullName ? `Mon compte — ${fullName}` : 'Mon compte';
+    avatarBtn.title = fullName ? `Mon compte · ${fullName}` : 'Mon compte';
 
     const isStaff = !accessBlocked && (currentUserRole==='admin' || currentUserRole==='prof');
     isStaffGlobal = isStaff;
@@ -1869,7 +1869,7 @@ function updateClassDisplays(name){
   const studentClassStatus = document.getElementById('studentClassStatus');
   if(studentClassStatus) studentClassStatus.textContent = name || 'aucune';
   const btn = document.getElementById('accountClassButton');
-  if(btn) btn.textContent = name || '— Choisir une classe —';
+  if(btn) btn.textContent = name || 'Choisir une classe...';
   renderCorClassQuickPicker();
   updateAddCahierButtonState();
 }
@@ -2873,8 +2873,8 @@ function openBugReportModal(prefill){
 function openSuggestionModal(){
   const activeTab = document.querySelector('.tab-btn.active');
   const moduleLabel = activeTab ? activeTab.textContent.trim() : '';
-  const section = currentLevel==='5e' ? '5e — Chapitres' : '6e — Chapitres';
-  const chapitre = (currentChapterTitle||'') + (moduleLabel ? ' — '+moduleLabel : '');
+  const section = currentLevel==='5e' ? '5e · Chapitres' : '6e · Chapitres';
+  const chapitre = (currentChapterTitle||'') + (moduleLabel ? ' · '+moduleLabel : '');
   openBugReportModal({section, chapitre, reportType:'suggestion'});
 }
 function closeBugReportModal(){
@@ -2882,7 +2882,7 @@ function closeBugReportModal(){
 }
 document.getElementById('bugReportSection') && document.getElementById('bugReportSection').addEventListener('change', (e)=>{
   const row = document.getElementById('bugReportChapterRow');
-  row.style.display = (e.target.value==='6e — Chapitres' || e.target.value==='5e — Chapitres') ? 'block' : 'none';
+  row.style.display = (e.target.value==='6e · Chapitres' || e.target.value==='5e · Chapitres') ? 'block' : 'none';
 });
 async function submitBugReport(){
   const section = document.getElementById('bugReportSection').value;
@@ -2967,7 +2967,7 @@ async function renderSupervision(){
 function populateSupervisionFilters(){
   const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
   const eleves = Array.from(new Set(supervisionData.map(nameOf))).sort();
-  const exercices = Array.from(new Set(supervisionData.map(r=>r.sequence_label||'—'))).sort();
+  const exercices = Array.from(new Set(supervisionData.map(r=>r.sequence_label||'-'))).sort();
   const selEleve = document.getElementById('supFilterEleve'), selExo = document.getElementById('supFilterExercice');
   if(selEleve){
     const prev = selEleve.value;
@@ -2996,7 +2996,7 @@ function renderSupervisionFiltered(){
 
   const filtered = supervisionData.filter(r=>{
     if(eleveFilter && nameOf(r)!==eleveFilter) return false;
-    if(exoFilter && (r.sequence_label||'—')!==exoFilter) return false;
+    if(exoFilter && (r.sequence_label||'-')!==exoFilter) return false;
     const d = (r.created_at||'').slice(0,10);
     if(fromFilter && d<fromFilter) return false;
     if(toFilter && d>toFilter) return false;
@@ -3017,9 +3017,9 @@ function renderSupervisionFiltered(){
       const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
       const perfect = r.score===r.total;
       return `<div style="display:flex;justify-content:space-between;gap:12px;padding:3px 0;">
-        <span>${escapeHtml(r.sequence_label||'—')}</span>
+        <span>${escapeHtml(r.sequence_label||'-')}</span>
         <span style="font-weight:700;color:${pct>=70?'#1F6B3A':pct>=40?'#8A4210':'#9E1F5E'};">${r.score}/${r.total}</span>
-        <span style="color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.82rem;">${perfect && r.duration_ms!=null ? formatDuration(r.duration_ms) : '—'}</span>
+        <span style="color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.82rem;">${perfect && r.duration_ms!=null ? formatDuration(r.duration_ms) : '-'}</span>
         <span style="color:var(--ink-soft);">${date}</span>
       </div>`;
     }).join('');
@@ -3089,7 +3089,7 @@ async function renderMesResultats(){
   const selExo = document.getElementById('mesResFilterExercice');
   if(selExo){
     const prev = selExo.value;
-    const exercices = Array.from(new Set(mesResultatsData.map(r=>r.sequence_label||'—'))).sort();
+    const exercices = Array.from(new Set(mesResultatsData.map(r=>r.sequence_label||'-'))).sort();
     selExo.innerHTML = '<option value="">Tous les exercices</option>' + exercices.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
     if(exercices.includes(prev)) selExo.value = prev;
   }
@@ -3107,7 +3107,7 @@ function renderMesResultatsFiltered(){
   const fromFilter = document.getElementById('mesResFilterFrom').value;
   const toFilter = document.getElementById('mesResFilterTo').value;
   const filtered = mesResultatsData.filter(r=>{
-    if(exoFilter && (r.sequence_label||'—')!==exoFilter) return false;
+    if(exoFilter && (r.sequence_label||'-')!==exoFilter) return false;
     const d = (r.created_at||'').slice(0,10);
     if(fromFilter && d<fromFilter) return false;
     if(toFilter && d>toFilter) return false;
@@ -3121,9 +3121,9 @@ function renderMesResultatsFiltered(){
     const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
     const perfect = r.score===r.total;
     return `<div style="display:flex;justify-content:space-between;gap:12px;padding:4px 0;">
-      <span>${escapeHtml(r.sequence_label||'—')}</span>
+      <span>${escapeHtml(r.sequence_label||'-')}</span>
       <span style="font-weight:700;color:${pct>=70?'#1F6B3A':pct>=40?'#8A4210':'#9E1F5E'};">${r.score}/${r.total}</span>
-      <span style="color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.82rem;">${perfect && r.duration_ms!=null ? formatDuration(r.duration_ms) : '—'}</span>
+      <span style="color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.82rem;">${perfect && r.duration_ms!=null ? formatDuration(r.duration_ms) : '-'}</span>
       <span style="color:var(--ink-soft);">${date}</span>
     </div>`;
   }).join('');
@@ -3185,7 +3185,7 @@ async function addToCahier(){
   const entry = {
     niveau: document.getElementById('corNiveau').value,
     chapitre: document.getElementById('corChapitre').value,
-    exo: document.getElementById('corExoNum').value || '—',
+    exo: document.getElementById('corExoNum').value || '-',
     titre: document.getElementById('corTitre').value.trim(),
     date: document.getElementById('corDate').value || todayISO(),
     raw: raw,
@@ -3220,7 +3220,7 @@ function editCahierEntry(i){
   document.getElementById('corNiveau').value = e.niveau;
   fillCorChapitres();
   document.getElementById('corChapitre').value = e.chapitre;
-  document.getElementById('corExoNum').value = e.exo==='—'?'':e.exo;
+  document.getElementById('corExoNum').value = e.exo==='-'?'':e.exo;
   document.getElementById('corTitre').value = e.titre||'';
   document.getElementById('corDate').value = e.date||todayISO();
   const hasText = !!(e.raw && e.raw.trim());
@@ -3354,7 +3354,7 @@ function renderCahier(){
   const list=document.getElementById('cahierList');
   const status=document.getElementById('corListFilterStatus');
   if(!currentClassId){ list.innerHTML = '<div class="placeholder-box">Choisissez une classe ci-dessus pour voir et ajouter des corrections.</div>'; if(status) status.textContent=''; return; }
-  if(!cahier.length){ list.innerHTML = '<div class="placeholder-box">Le cahier est vide pour l\'instant — ajoutez une correction ci-dessus.</div>'; if(status) status.textContent=''; return; }
+  if(!cahier.length){ list.innerHTML = '<div class="placeholder-box">Le cahier est vide pour l\'instant, ajoutez une correction ci-dessus.</div>'; if(status) status.textContent=''; return; }
   const shown = corListFilterDate ? cahier.filter(e=>e.date===corListFilterDate) : cahier;
   if(status) status.textContent = corListFilterDate ? `${shown.length} sur ${cahier.length} au total` : '';
   if(!shown.length){ list.innerHTML = '<div class="placeholder-box">Aucune correction à cette date. <a href="#" onclick="showAllCorListDates();return false;">Voir toutes les dates</a>.</div>'; return; }
@@ -3450,7 +3450,7 @@ async function renderCahierEleve(){
       saveCahier();
       populateCahierChapitreFilter();
     } else {
-      warning = '<p class="hint"><span class=gicon>warning</span> Impossible de joindre le cahier partagé — affichage de la dernière copie connue sur cet appareil.</p>';
+      warning = '<p class="hint"><span class=gicon>warning</span> Impossible de joindre le cahier partagé, affichage de la dernière copie connue sur cet appareil.</p>';
     }
   }
   document.getElementById('cahierEleveContent').innerHTML = warning + buildCahierNotebookHTML(currentUserRole==='prof' || currentUserRole==='admin');
@@ -3505,7 +3505,7 @@ async function exportCahierDataFile(){
   link.download = 'cahier-mathcollege.json';
   document.body.appendChild(link); link.click(); link.remove();
   const status=document.getElementById('cahierImportStatus');
-  status.textContent = '✓ Fichier téléchargé — partagez-le (ENT, e-mail, clé USB...) pour que d\'autres l\'importent sur leur propre appareil.';
+  status.textContent = '✓ Fichier téléchargé, partagez-le (ENT, e-mail, clé USB...) pour que d\'autres l\'importent sur leur propre appareil.';
   setTimeout(()=>status.textContent='', 8000);
 }
 function importCahierDataFile(file){
@@ -4193,13 +4193,13 @@ const TB_ICON_EQUERRE = `<svg viewBox="0 0 24 24" width="26" height="26"><polygo
 /* Aide contextuelle affichée sous le tableau, mise à jour à chaque fois qu'on commence à
    manipuler un outil -- reste affichée après le geste pour qu'on ait le temps de la lire. */
 const TB_HELP_TEXT = {
-  crayon: "<span class=gicon>edit</span> <b>Crayon</b> — le manche le déplace sans rien tracer ; la pointe trace en la faisant glisser, ou pose un point nommé si on tape dessus sans bouger.",
-  gomme: "🧽 <b>Gomme</b> — faites-la glisser sur un trait pour effacer localement (le reste du trait est conservé).",
-  regle_grad: "📏 <b>Règle graduée</b> — le corps la déplace, l'extrémité la fait tourner (elle pivote autour du 0). Le crayon s'aimante sur son bord gradué.",
-  equerre: "<span class=gicon>straighten</span> <b>Équerre</b> — le corps la déplace, le bout de l'angle droit la fait tourner. Le crayon s'aimante sur ses côtés.",
-  requerre: "🔻 <b>Réquerre</b> — même manipulation que l'équerre.",
-  rapporteur: "◐ <b>Rapporteur</b> — le corps le déplace ; le petit crayon tourne autour du pivot (un double-clic pose un repère à l'angle visé, un simple glissé ne fait que le repositionner).",
-  compas: "🧭 <b>Compas</b> — la branche de la pointe déplace tout l'ensemble ; la branche du crayon écarte, tourne sans tracer, ou trace vraiment selon l'icône (cliquez dessus pour changer de mode).",
+  crayon: "<span class=gicon>edit</span> <b>Crayon</b>, le manche le déplace sans rien tracer ; la pointe trace en la faisant glisser, ou pose un point nommé si on tape dessus sans bouger.",
+  gomme: "🧽 <b>Gomme</b>, faites-la glisser sur un trait pour effacer localement (le reste du trait est conservé).",
+  regle_grad: "📏 <b>Règle graduée</b>, le corps la déplace, l'extrémité la fait tourner (elle pivote autour du 0). Le crayon s'aimante sur son bord gradué.",
+  equerre: "<span class=gicon>straighten</span> <b>Équerre</b>, le corps la déplace, le bout de l'angle droit la fait tourner. Le crayon s'aimante sur ses côtés.",
+  requerre: "🔻 <b>Réquerre</b>, même manipulation que l'équerre.",
+  rapporteur: "◐ <b>Rapporteur</b>, le corps le déplace ; le petit crayon tourne autour du pivot (un double-clic pose un repère à l'angle visé, un simple glissé ne fait que le repositionner).",
+  compas: "🧭 <b>Compas</b>, la branche de la pointe déplace tout l'ensemble ; la branche du crayon écarte, tourne sans tracer, ou trace vraiment selon l'icône (cliquez dessus pour changer de mode).",
 };
 let tbHelpType = null;
 function tbSetHelp(type){
@@ -5343,7 +5343,7 @@ function tbAttachHandlers(){
         const modes = ['tourner','ecrire','coder'];
         const cur = rTool.penMode || 'ecrire';
         rTool.penMode = modes[(modes.indexOf(cur)+1) % modes.length];
-        const labels = {tourner:'<span class=gicon>refresh</span> Tourner — glissez le crayon entier pour le repositionner sans tracer.', ecrire:'<span class=gicon>edit</span> Écrire — dessine normalement, comme avant.', coder:'<span class=gicon>label</span> Coder — un tap ouvre le choix du codage (longueur, angle, angle droit).'};
+        const labels = {tourner:'<span class=gicon>refresh</span> Tourner, glissez le crayon entier pour le repositionner sans tracer.', ecrire:'<span class=gicon>edit</span> Écrire, dessine normalement, comme avant.', coder:'<span class=gicon>label</span> Coder, un tap ouvre le choix du codage (longueur, angle, angle droit).'};
         tbSetHelp('crayon');
         const box = document.getElementById('tbHelpBox');
         if(box) box.innerHTML = labels[rTool.penMode];

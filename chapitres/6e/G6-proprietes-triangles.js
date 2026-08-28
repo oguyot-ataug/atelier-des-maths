@@ -315,7 +315,7 @@ function circNextStep(){
   circStep++;
   const btn = document.getElementById('btnCircNext');
   btn.disabled = true;
-  document.getElementById('circCurrentStep').innerHTML = `<b>Étape ${circStep}/7 —</b> ${CIRC_STEP_TEXTS[circStep-1]}`;
+  document.getElementById('circCurrentStep').innerHTML = `<b>Étape ${circStep}/7 :</b> ${CIRC_STEP_TEXTS[circStep-1]}`;
   const markDone = n=>document.querySelector(`#methode-demo-proprietes-triangles .step-list .step-item[data-step="${n}"]`).classList.add('done');
   if(circStep===1){
     methodOpenInPlace({compassEl:document.getElementById('circCompass'), anchor:CIRC_A, angleDeg:62.02, radius:CIRC_R1, legLen:CIRC_LEG1, dur:700,
@@ -376,7 +376,7 @@ function circNextStep(){
 document.getElementById('histoire-demo-proprietes-triangles').innerHTML = `
 <div class="history-box">
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
-  <p style="margin:0 0 12px;">En 1792, en pleine Révolution française, les astronomes <b>Jean-Baptiste Delambre</b> et <b>Pierre Méchain</b> partent chacun de leur côté — l'un vers Dunkerque, l'autre vers Barcelone — pour une mission qui va durer sept ans : mesurer précisément la distance entre les deux villes, afin de définir une nouvelle unité universelle, le <b>mètre</b>. Le mètre est alors fixé comme la dix-millionième partie de la distance entre le pôle Nord et l'équateur, en passant par Paris.</p>
+  <p style="margin:0 0 12px;">En 1792, en pleine Révolution française, les astronomes <b>Jean-Baptiste Delambre</b> et <b>Pierre Méchain</b> partent chacun de leur côté (l'un vers Dunkerque, l'autre vers Barcelone) pour une mission qui va durer sept ans : mesurer précisément la distance entre les deux villes, afin de définir une nouvelle unité universelle, le <b>mètre</b>. Le mètre est alors fixé comme la dix-millionième partie de la distance entre le pôle Nord et l'équateur, en passant par Paris.</p>
   <p style="margin:0 0 12px;">Mais comment mesurer une distance de plus de 1000 km à la fin du XVIII<sup>e</sup> siècle, sans GPS ni satellite ? Impossible de tendre un ruban aussi long ! Delambre et Méchain utilisent la <b>triangulation</b> : ils repèrent des points élevés (clochers, collines, tours) tout le long du trajet, et forment ainsi une chaîne de triangles reliant Dunkerque à Barcelone.</p>
   <div class="figure-wrap" style="max-width:260px;margin:4px auto 14px;">
     <svg viewBox="0 0 200 320" style="width:100%;display:block;">
@@ -400,15 +400,15 @@ document.getElementById('histoire-demo-proprietes-triangles').innerHTML = `
     </svg>
     <p class="hint" style="text-align:center;margin:2px 0 0;">En orange : la seule distance mesurée directement (une courte <b>base</b>, sur un terrain plat). Tout le reste se calcule, triangle après triangle.</p>
   </div>
-  <p style="margin:0 0 12px;">À chaque triangle, au lieu de mesurer des distances (très difficile sur le terrain), ils mesurent seulement des <b>angles</b>, avec un instrument de précision appelé cercle répétiteur. En ne connaissant qu'un seul côté du premier triangle (la base, mesurée directement) et tous les angles de la chaîne, ils calculent triangle après triangle la longueur de tous les autres côtés — exactement grâce à la propriété que vous venez d'étudier : <b>la somme des angles d'un triangle vaut toujours 180°</b>.</p>
+  <p style="margin:0 0 12px;">À chaque triangle, au lieu de mesurer des distances (très difficile sur le terrain), ils mesurent seulement des <b>angles</b>, avec un instrument de précision appelé cercle répétiteur. En ne connaissant qu'un seul côté du premier triangle (la base, mesurée directement) et tous les angles de la chaîne, ils calculent triangle après triangle la longueur de tous les autres côtés, exactement grâce à la propriété que vous venez d'étudier : <b>la somme des angles d'un triangle vaut toujours 180°</b>.</p>
   <p style="margin:0 0 12px;">Un détail amusant : les clochers et collines choisis pour la triangulation ne sont jamais exactement alignés sur le méridien, la ligne imaginaire qu'on cherche à mesurer ! Impossible de trouver des points parfaitement alignés sur plus de 1000 km. Pour corriger cela, Delambre et Méchain mesurent en plus, à chaque bout du trajet, la hauteur du Soleil à midi : cela leur donne la position exacte de Dunkerque et de Barcelone sur le globe, et leur permet de calculer précisément quelle portion du méridien leur chaîne de triangles représente, même si le chemin suivi zigzague un peu autour de la ligne idéale.</p>
-  <p style="margin:0 0 12px;">Le voyage n'est pas de tout repos : Méchain manque plusieurs fois d'être arrêté comme espion (la France est en guerre), et reste obsédé jusqu'à sa mort par une petite erreur de mesure qu'il pense avoir commise. Le mètre, lui, est officiellement adopté en 1799 — et sert toujours de référence aujourd'hui, bien que redéfini depuis à partir de la vitesse de la lumière.</p>
+  <p style="margin:0 0 12px;">Le voyage n'est pas de tout repos : Méchain manque plusieurs fois d'être arrêté comme espion (la France est en guerre), et reste obsédé jusqu'à sa mort par une petite erreur de mesure qu'il pense avoir commise. Le mètre, lui, est officiellement adopté en 1799, et sert toujours de référence aujourd'hui, bien que redéfini depuis à partir de la vitesse de la lumière.</p>
   <p style="margin:18px 0 8px;font-weight:700;color:#1F3A5C;">Pour aller plus loin</p>
   <div class="figure-wrap" style="max-width:480px;margin:0 auto 10px;">
     <div style="position:relative;width:100%;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;">
       <iframe src="https://www.youtube-nocookie.com/embed/PvlsXcOzNd0" title="Le mètre : son origine, son histoire, la mesure de la Méridienne et sa valeur actuelle" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
     </div>
-    <p class="hint" style="text-align:center;margin:6px 0 0;">Vidéo : <i>Le mètre : son origine, son histoire, la mesure de la Méridienne et sa valeur actuelle</i> — chaîne J't'explique</p>
+    <p class="hint" style="text-align:center;margin:6px 0 0;">Vidéo : <i>Le mètre : son origine, son histoire, la mesure de la Méridienne et sa valeur actuelle</i> (chaîne J't'explique)</p>
   </div>
   <p class="hint" style="margin:0;">Envie de lire plutôt qu'écouter ? Le mathématicien <b>Denis Guedj</b> (auteur du <i>Théorème du Perroquet</i>) a raconté cette expédition sous forme de roman, <i>La Méridienne</i>.</p>
 </div>

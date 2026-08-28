@@ -1169,7 +1169,7 @@ document.getElementById('methode-demo-angles-rapporteur-6e').innerHTML = `
       <p class="hint" id="ar-permisCodeStatus" style="text-align:center;margin-top:8px;"></p>
     </div>
     <div id="ar-permisExam" style="display:none;">
-      <p style="text-align:center;margin:0 0 8px;"><b id="ar-permisProgress">Question 1/20</b> — <span id="ar-permisType"></span></p>
+      <p style="text-align:center;margin:0 0 8px;"><b id="ar-permisProgress">Question 1/20</b> · <span id="ar-permisType"></span></p>
       <div id="ar-permisSceneWrap"></div>
       <div class="figure-toolbar" style="justify-content:center;" id="ar-permisToolbar"></div>
       <p class="hint" id="ar-permisStatus" style="text-align:center;margin-top:8px;"></p>

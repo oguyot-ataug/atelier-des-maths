@@ -12,7 +12,7 @@ document.getElementById('cours-demo-nombres-entiers').innerHTML = `
   </ul>
 </div>
 <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
-  À retenir : les chiffres sont l'<b>alphabet</b> des nombres — de même que des lettres s'assemblent pour former des mots, des chiffres s'assemblent pour former des nombres.
+  À retenir : les chiffres sont l'<b>alphabet</b> des nombres (de même que des lettres s'assemblent pour former des mots, des chiffres s'assemblent pour former des nombres).
 </div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Pour pouvoir lire facilement un grand nombre entier, on regroupe ses chiffres par <b>tranches de trois</b>, en partant de la droite.</div>
@@ -165,7 +165,7 @@ document.getElementById('histoire-demo-nombres-entiers').innerHTML = `
 document.getElementById('methode-demo-nombres-entiers').innerHTML = `
 <div class="sub-header"><span class="letter">M</span><h4>Ne pas confondre « chiffre des... » et « nombre de... »</h4></div>
 <div class="figure-wrap">
-  <p class="hint" style="margin-top:6px;">Sur le nombre 2 384 907 156 déjà étudié en cours — cliquez sur "Étape suivante".</p>
+  <p class="hint" style="margin-top:6px;">Sur le nombre 2 384 907 156 déjà étudié en cours, cliquez sur "Étape suivante".</p>
   <div class="step-display" id="ne-chiffreNombreDisplay"></div>
   <div class="figure-toolbar">
     <button class="btn" onclick="neChiffreNombreDemo.next()">Étape suivante →</button>
@@ -228,7 +228,7 @@ function neDivisionPoseeReset(){ neDivisionPoseeIdx=0; neRenderDivisionPosee(); 
 const NE_CHIFFRE_NOMBRE_STEPS = [
   {expr:'2 384 907 156', note:'On reprend le nombre étudié en cours.'},
   {expr:'Chiffre des centaines de mille = 9', note:"C'est uniquement le symbole qui se trouve à cette position précise."},
-  {expr:'Nombre de centaines de mille = 23 849', note:"C'est le nombre total de paquets complets de 100 000 que l'on peut former avec ce nombre entier — on lit alors tous les chiffres situés à gauche de cette position, elle comprise."},
+  {expr:'Nombre de centaines de mille = 23 849', note:"C'est le nombre total de paquets complets de 100 000 que l'on peut former avec ce nombre entier (on lit alors tous les chiffres situés à gauche de cette position, elle comprise)."},
   {expr:'23 849 × 100 000 = 2 384 900 000', note:'Vérification : 2 384 907 156 = 2 384 900 000 + 7 156. Il y a bien 23 849 centaines de mille complètes dans ce nombre.'},
 ];
 const neChiffreNombreDemo = makeStepDemo(NE_CHIFFRE_NOMBRE_STEPS, 'ne-chiffreNombreDisplay');

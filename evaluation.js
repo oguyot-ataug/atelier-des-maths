@@ -178,12 +178,12 @@ async function openEvalListModal(){
   if(!data || !data.length){ box.innerHTML = "Aucune évaluation sauvegardée pour le moment."; return; }
   box.innerHTML = data.map(e=>{
     const isMine = e.owner_id===currentUser.id;
-    const shareTag = isMine ? '' : (e.collaborators||[]).includes(currentUser.id) ? '<span class="hint">(partagée — <span class=gicon>edit</span> éditeur)</span>' : '<span class="hint">(partagée — <span class=gicon>visibility</span> lecteur)</span>';
+    const shareTag = isMine ? '' : (e.collaborators||[]).includes(currentUser.id) ? '<span class="hint">(partagée · <span class=gicon>edit</span> éditeur)</span>' : '<span class="hint">(partagée · <span class=gicon>visibility</span> lecteur)</span>';
     const dateFmt = e.eval_date ? new Date(e.eval_date+'T00:00:00').toLocaleDateString('fr-FR') : '';
     return `<div class="tool-shell" style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
       <div>
         <strong>${escapeHtml(e.title||'Sans titre')}</strong> ${shareTag}<br>
-        <span class="hint">${escapeHtml(e.niveau||'')}${e.classes?' — '+escapeHtml(e.classes):''}${dateFmt?' · '+dateFmt:''}</span>
+        <span class="hint">${escapeHtml(e.niveau||'')}${e.classes?' · '+escapeHtml(e.classes):''}${dateFmt?' · '+dateFmt:''}</span>
       </div>
       <button class="btn secondary" onclick="loadEvaluation('${e.id}')">Ouvrir</button>
     </div>`;
@@ -293,7 +293,7 @@ function renderEvalChapPicker(){
   const seen = new Set();
   box.innerHTML = list.filter(c=>{ if(seen.has(c.t)) return false; seen.add(c.t); return true; }).map(c=>`
     <label style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,43,57,.04);padding:5px 10px;border-radius:20px;font-size:.85rem;cursor:pointer;">
-      <input type="checkbox" class="evalChapCheck" value="${escapeHtml(c.t)}"> ${escapeHtml(c.code)} — ${escapeHtml(c.t)}
+      <input type="checkbox" class="evalChapCheck" value="${escapeHtml(c.t)}"> ${escapeHtml(c.code)} · ${escapeHtml(c.t)}
     </label>
   `).join('');
 }
@@ -344,7 +344,7 @@ async function generateEvaluationAI(){
       pushTextBlockForExercise(id, String(text));
     });
     renderEvalExercicesList();
-    statusEl.textContent = `${list.length} exercice(s) généré(s) par l'IA — à relire et ajuster avant impression.`;
+    statusEl.textContent = `${list.length} exercice(s) généré(s) par l'IA, à relire et ajuster avant impression.`;
   }catch(err){
     statusEl.textContent = err.message==='no-session' ? "Connectez-vous pour utiliser la génération par IA." : "Échec de la génération (réseau, ou réponse inattendue). Réessayez, ou ajoutez un exercice manuellement.";
   }
@@ -381,7 +381,7 @@ function renderEvalExercicesList(){
       return `
       <div class="tool-shell" style="margin-bottom:14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-          <strong style="font-family:'Space Grotesk',sans-serif;">Exercice ${i+1}${ex.title?' — '+escapeHtml(ex.title):''}</strong>
+          <strong style="font-family:'Space Grotesk',sans-serif;">Exercice ${i+1}${ex.title?' · '+escapeHtml(ex.title):''}</strong>
           <span style="display:flex;gap:6px;align-items:center;">
             ${ex.bareme ? `<span class="hint" style="margin:0;">${ex.bareme} pt(s)</span>` : ''}
             <button type="button" onclick="moveEvalExercice(${ex.id},-1)" ${i===0?'disabled style="opacity:.35;"':''} title="Monter" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↑</button>
@@ -530,7 +530,7 @@ function buildEvaluationContentHTML(){
     ${evaluationExercises.map((ex,i)=>`
       <div style="margin-bottom:26px;">
         <p style="font-weight:700;margin:0 0 8px;display:flex;justify-content:space-between;">
-          <span>Exercice ${i+1}${ex.title ? ' — '+escapeHtml(ex.title) : ''}</span>
+          <span>Exercice ${i+1}${ex.title ? ' · '+escapeHtml(ex.title) : ''}</span>
           ${ex.bareme ? `<span>${ex.bareme} pt(s)</span>` : ''}
         </p>
         ${blocksRowsHTML('ex-'+ex.id, ensureExRows(ex), false, ex.cellBorders)}

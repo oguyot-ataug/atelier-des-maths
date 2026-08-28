@@ -177,7 +177,7 @@ document.getElementById('cours-demo-parallelogrammes-5e').innerHTML = `
 document.getElementById('histoire-demo-parallelogrammes-5e').innerHTML = `
 <div class="history-box">
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
-  Les propriétés des parallélogrammes figurent déjà, démontrées, dans <i>Les Éléments</i> d'Euclide, vers 300 av. J.-C. — notamment dans son premier livre, consacré aux triangles et aux quadrilatères. Les Grecs s'intéressaient beaucoup à ces figures car elles servaient à comparer des aires : une méthode qu'ils appelaient l'« application des aires » permettait de transformer n'importe quelle figure en un parallélogramme de même aire, une façon très ingénieuse de « mesurer » les surfaces sans les nombres décimaux que nous utilisons aujourd'hui.
+  Les propriétés des parallélogrammes figurent déjà, démontrées, dans <i>Les Éléments</i> d'Euclide, vers 300 av. J.-C. (notamment dans son premier livre, consacré aux triangles et aux quadrilatères). Les Grecs s'intéressaient beaucoup à ces figures car elles servaient à comparer des aires : une méthode qu'ils appelaient l'« application des aires » permettait de transformer n'importe quelle figure en un parallélogramme de même aire, une façon très ingénieuse de « mesurer » les surfaces sans les nombres décimaux que nous utilisons aujourd'hui.
 </div>
 `;
 

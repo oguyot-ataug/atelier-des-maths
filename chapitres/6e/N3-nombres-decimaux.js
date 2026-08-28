@@ -288,7 +288,7 @@ const ndDecomposerDemo = makeStepDemo(ND_DECOMPOSER_STEPS, 'nd-decomposerDisplay
 const ND_CHIFFRE_NOMBRE_STEPS = [
   {expr:'84,153', note:"On reprend un nombre décimal."},
   {expr:'Chiffre des dixièmes = 1', note:"C'est uniquement le symbole qui se trouve à cette position précise."},
-  {expr:'Nombre de dixièmes = 841', note:"C'est le nombre total de dixièmes complets contenus dans 84,153 — on lit tous les chiffres situés à gauche de cette position, elle comprise."},
+  {expr:'Nombre de dixièmes = 841', note:"C'est le nombre total de dixièmes complets contenus dans 84,153 (on lit tous les chiffres situés à gauche de cette position, elle comprise)."},
   {expr:'Vérification : 841 × 0,1 = 84,1', note:"84,153 = 84,1 + 0,053. Il y a bien 841 dixièmes complets dans 84,153 (il reste 0,053)."},
   {expr:'Chiffre des centièmes = 5 &nbsp;·&nbsp; Nombre de centièmes = 8 415', note:"Même distinction, une position plus loin : 8 415 × 0,01 = 84,15, et 84,153 = 84,15 + 0,003."},
 ];

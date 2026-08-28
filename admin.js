@@ -36,7 +36,7 @@ document.getElementById('view-admin').innerHTML = `
       <span class="hint" id="adminAccountStatus" style="margin:0;"></span>
 
       <p class="example-title" style="margin:16px 0 6px;">Import en masse d'élèves</p>
-      <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, identifiant puis mot de passe séparés par une tabulation — un copier-coller direct depuis un tableur fonctionne).</p>
+      <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, identifiant puis mot de passe séparés par une tabulation, un copier-coller direct depuis un tableur fonctionne).</p>
       <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="jdupont	Motdepasse1
 mmartin	Motdepasse2"></textarea>
       <div class="tool-row" style="margin-top:8px;">
@@ -388,7 +388,7 @@ async function adminRefreshDropdowns(){
   const fillSelect = (id, items, label)=>{
     const el = document.getElementById(id);
     if(!el) return;
-    el.innerHTML = `<option value="">— ${label} —</option>` + items.map(it=>`<option value="${it.id}">${it.label}</option>`).join('');
+    el.innerHTML = `<option value="">${label}...</option>` + items.map(it=>`<option value="${it.id}">${it.label}</option>`).join('');
   };
   fillSelect('adminAssignTeacherSelect', (profs||[]).map(p=>({id:p.id, label:escapeHtml(p.nom||p.id)+(p.role==='admin'?' (admin)':'')})), 'Choisir un prof');
   fillSelect('adminAssignStudentSelect', (eleves||[]).map(p=>({id:p.id, label:escapeHtml(p.nom||p.id)})), 'Choisir un élève');
@@ -405,7 +405,7 @@ async function adminRefreshListings(){
   if(accEl){
     const loginIdentifiant = email => email ? (email.endsWith('@mathcollege.local') ? email.slice(0, -('@mathcollege.local'.length)) : email) : '(inconnu)';
     const rowHTML = p => {
-      const label = escapeHtml(p.nom||'(sans nom)') + ' — <b>identifiant :</b> ' + escapeHtml(loginIdentifiant(p.email)) + (p.role==='admin'?' [admin]':'');
+      const label = escapeHtml(p.nom||'(sans nom)') + ' · <b>identifiant :</b> ' + escapeHtml(loginIdentifiant(p.email)) + (p.role==='admin'?' [admin]':'');
       const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
       const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span> Modifier</button>` : '';
       return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(28,43,57,.06);">
@@ -486,7 +486,7 @@ async function adminRefreshBugReports(){
     const typeTag = r.report_type==='suggestion' ? '<span style="background:#FFF4E5;color:#B26A00;border-radius:4px;padding:1px 7px;font-size:.75rem;font-weight:600;margin-right:6px;"><span class=gicon>lightbulb</span> Suggestion</span>' : '<span style="background:#FDEAEA;color:#B23A3A;border-radius:4px;padding:1px 7px;font-size:.75rem;font-weight:600;margin-right:6px;"><span class=gicon>bug_report</span> Bug</span>';
     return `<div class="bug-report-row" style="border:1px solid rgba(28,43,57,.12);border-radius:8px;padding:10px 12px;margin-bottom:10px;">
       <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
-        <span>${typeTag}<b>${escapeHtml(r.section)}</b>${r.chapitre?' — '+escapeHtml(r.chapitre):''}</span>
+        <span>${typeTag}<b>${escapeHtml(r.section)}</b>${r.chapitre?' · '+escapeHtml(r.chapitre):''}</span>
         <span style="color:var(--ink-soft);font-size:.85rem;">${escapeHtml(name)} · ${date}${r.build_version?' · build '+escapeHtml(r.build_version):''}</span>
       </div>
       <div style="margin:6px 0;white-space:pre-wrap;">${escapeHtml(r.message)}</div>
@@ -580,9 +580,9 @@ async function adminRefreshSignupRequests(){
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;">
         <div>
           <b>${escapeHtml([r.prenom,r.nom].filter(Boolean).join(' ')||'(sans nom)')}</b>
-          <span style="color:var(--ink-soft);">— ${escapeHtml(r.email||'')}</span><br>
+          <span style="color:var(--ink-soft);">${escapeHtml(r.email||'')}</span><br>
           <span style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">UAI ${escapeHtml(r.uai||'?')}</span>
-          ${etabNom ? ' — '+escapeHtml(etabNom) : ' <span style="color:#a83c1f;">(établissement à vérifier)</span>'}
+          ${etabNom ? ' · '+escapeHtml(etabNom) : ' <span style="color:#a83c1f;">(établissement à vérifier)</span>'}
           <span style="color:var(--ink-soft);font-size:.8rem;"> · demande du ${dateStr}</span>
         </div>
         <span style="display:flex;gap:6px;flex:none;">

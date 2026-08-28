@@ -374,9 +374,9 @@ document.body.insertAdjacentHTML('beforeend', `
       <div class="figure-toolbar" style="margin-bottom:10px;">
         <button type="button" class="btn secondary fig-mode" data-mode="point" onclick="setFigureMode('point')">● Point</button>
         <button type="button" class="btn secondary fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')">✥ Déplacer</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="segment" onclick="setFigureMode('segment')">— Segment</button>
+        <button type="button" class="btn secondary fig-mode" data-mode="segment" onclick="setFigureMode('segment')"><span class=gicon>horizontal_rule</span> Segment</button>
         <span style="display:inline-flex;align-items:center;gap:4px;">
-          <button type="button" class="btn secondary fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')">—cm Segment</button>
+          <button type="button" class="btn secondary fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')"><span class=gicon>horizontal_rule</span>cm Segment</button>
           <input type="number" id="segLengthInput" value="5" min="0.5" step="0.5" style="width:56px;padding:6px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"> cm
         </span>
         <button type="button" class="btn secondary fig-mode" data-mode="droite" onclick="setFigureMode('droite')">⟷ Droite</button>
@@ -2640,7 +2640,7 @@ function handleLengthSegmentClick(x,y){
   figState.selected = [];
   const raw = document.getElementById('segLengthInput').value;
   const cm = parseFloat(String(raw).replace(',','.'));
-  if(!isFinite(cm) || cm<=0){ document.getElementById('figureHint').textContent = 'Longueur invalide — vérifiez le champ "cm" à côté du bouton Segment.'; renderFigureSvg(); return; }
+  if(!isFinite(cm) || cm<=0){ document.getElementById('figureHint').textContent = 'Longueur invalide, vérifiez le champ "cm" à côté du bouton Segment.'; renderFigureSvg(); return; }
   const px = cm*SCALE_PX_PER_CM;
   const end = {label:nextPointLabel(), x:start.x+dx/len*px, y:start.y+dy/len*px};
   figState.points.push(end);
@@ -2652,7 +2652,7 @@ function handleRadiusCircleClick(x,y){
   if(!center){ center = {label:nextPointLabel(), x, y}; figState.points.push(center); }
   const raw = document.getElementById('circleRadiusInput').value;
   const cm = parseFloat(String(raw).replace(',','.'));
-  if(!isFinite(cm) || cm<=0){ document.getElementById('figureHint').textContent = 'Rayon invalide — vérifiez le champ "cm" à côté du bouton Cercle.'; return; }
+  if(!isFinite(cm) || cm<=0){ document.getElementById('figureHint').textContent = 'Rayon invalide, vérifiez le champ "cm" à côté du bouton Cercle.'; return; }
   const px = cm*SCALE_PX_PER_CM;
   const withCompass = document.getElementById('compassToggle') && document.getElementById('compassToggle').checked;
   // radius stocké comme nombre fixe (pas un point) : le cercle garde sa taille exacte
@@ -2983,7 +2983,7 @@ function buildFromEnonce(){
   const hint = document.getElementById('figureHint');
   hint.textContent = unresolved.length
     ? `Construit, mais non reconnu : « ${unresolved.join(' / ')} ». Ajustez à la main, ou essayez « Interpréter avec l'IA ».`
-    : 'Construction faite — ajustez à la main si besoin, ou validez.';
+    : 'Construction faite, ajustez à la main si besoin, ou validez.';
 }
 function figurePrompt(text){
   return `Tu convertis un énoncé de géométrie de collège (6e/5e) en une figure décrite en JSON strict, rien d'autre autour (pas de \`\`\`, pas de texte).
@@ -3005,7 +3005,7 @@ async function interpretEnonceWithAI(){
     if(!match) throw new Error('no-json');
     const json = JSON.parse(match[0]);
     applyAIFigure(json);
-    hint.textContent = "Figure interprétée par l'IA — vérifiez et ajustez si besoin, ou validez.";
+    hint.textContent = "Figure interprétée par l'IA, vérifiez et ajustez si besoin, ou validez.";
   }catch(err){
     if(err.message==='no-session') hint.textContent = "Connectez-vous pour utiliser l'interprétation par IA.";
     else hint.textContent = "Échec de l'interprétation IA (réseau, ou réponse inattendue). Réessayez, ou construisez à la main.";

@@ -279,7 +279,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 document.getElementById('histoire-demo-droites-paralleles').innerHTML = `
 <div class="history-box">
   <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
-  Comment être sûr que deux droites ne se croiseront jamais, même si on les prolonge indéfiniment ? Cette question a longtemps préoccupé les mathématiciens. Vers 300 av. J.-C., Euclide pose comme règle de base (un « postulat », qu'on admet sans démonstration) une phrase compliquée sur les droites parallèles, dans son livre <i>Les Éléments</i>. Pendant plus de 2 000 ans, de nombreux mathématiciens ont essayé de démontrer que cette règle n'était pas vraiment nécessaire, sans jamais y parvenir — jusqu'à ce qu'on découvre, au 19e siècle, qu'elle décrit bien une propriété propre à notre géométrie « plate », et qu'il existe d'autres géométries où elle ne s'applique pas !
+  Comment être sûr que deux droites ne se croiseront jamais, même si on les prolonge indéfiniment ? Cette question a longtemps préoccupé les mathématiciens. Vers 300 av. J.-C., Euclide pose comme règle de base (un « postulat », qu'on admet sans démonstration) une phrase compliquée sur les droites parallèles, dans son livre <i>Les Éléments</i>. Pendant plus de 2 000 ans, de nombreux mathématiciens ont essayé de démontrer que cette règle n'était pas vraiment nécessaire, sans jamais y parvenir, jusqu'à ce qu'on découvre, au 19e siècle, qu'elle décrit bien une propriété propre à notre géométrie « plate », et qu'il existe d'autres géométries où elle ne s'applique pas !
 </div>
 `;
 
@@ -1155,7 +1155,7 @@ const DP_RQA_STEPS = [
   {stage:2, dist: 30, phase:'slide', note:"On pose maintenant la réquerre perpendiculairement à (Δ), on la fait glisser vers A."},
   {stage:2, dist: dpRqaStage2CenterDist, phase:'slide', note:"On fait glisser jusqu'à ce qu'un bord du rectangle passe par A (déjà sur (Δ))."},
   {stage:2, dist: dpRqaStage2CenterDist, phase:'traced', note:"On trace (d') le long de ce bord, perpendiculaire à (Δ) passant par A, et on code l'angle droit."},
-  {stage:2, dist: dpRqaStage2CenterDist, phase:'clean', note:"(d') est parallèle à (d) — vérifiable avec les graduations latérales de la réquerre."},
+  {stage:2, dist: dpRqaStage2CenterDist, phase:'clean', note:"(d') est parallèle à (d), vérifiable avec les graduations latérales de la réquerre."},
 ];
 let dpRqaIdx = 0;
 function dpRenderRqPara(animate){

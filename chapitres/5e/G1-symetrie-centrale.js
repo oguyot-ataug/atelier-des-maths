@@ -59,7 +59,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
         <p class="hint" style="margin:6px 0 0;">Les petits traits sur [OA] et [OA'] indiquent qu'ils sont codés de <b>même longueur</b> : c'est ce qui prouve que O est le milieu de [AA'].</p>
       </div>
       <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
-        Remarque : le symétrique de O par rapport à lui-même est O — c'est le seul point que la symétrie centrale laisse à sa place (on dit qu'il est <b>invariant</b>).
+        Remarque : le symétrique de O par rapport à lui-même est O, c'est le seul point que la symétrie centrale laisse à sa place (on dit qu'il est <b>invariant</b>).
       </div>
 
       <div class="lesson-header"><span class="num">2</span><h3>Propriétés de la symétrie centrale</h3></div>
@@ -201,7 +201,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
 
       <div class="lesson-header"><span class="num">3</span><h3>Centre de symétrie</h3></div>
       <span class="def-badge">Définition</span>
-      <div class="def-box">On dit qu'un point O est le <b>centre de symétrie</b> d'une figure lorsque cette figure est sa propre image par la symétrie centrale de centre O — autrement dit, elle se superpose à elle-même après un demi-tour autour de O.</div>
+      <div class="def-box">On dit qu'un point O est le <b>centre de symétrie</b> d'une figure lorsque cette figure est sa propre image par la symétrie centrale de centre O (autrement dit, elle se superpose à elle-même après un demi-tour autour de O).</div>
 
       <div class="figure-wrap">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exemple 1</strong>
@@ -230,7 +230,7 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
       <p class="example-title">Autres exemples :</p>
       <ul class="example-list">
         <li>Un parallélogramme WXYZ a pour centre de symétrie le point d'intersection O de ses diagonales [WY] et [XZ].</li>
-        <li>Un triangle quelconque n'a pas de centre de symétrie. Un triangle équilatéral, lui, possède trois axes de symétrie — mais toujours aucun centre de symétrie.</li>
+        <li>Un triangle quelconque n'a pas de centre de symétrie. Un triangle équilatéral, lui, possède trois axes de symétrie, mais toujours aucun centre de symétrie.</li>
       </ul>
 
       <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
