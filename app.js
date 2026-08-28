@@ -1114,7 +1114,7 @@ function corRemoveRow(rowIdx){
 function corToggleValidated(){
   corValidated = !corValidated;
   const btn = document.getElementById('btnCorValidate');
-  btn.textContent = corValidated ? '<span class=gicon>edit</span> Éditer' : '✓ Valider';
+  btn.innerHTML = corValidated ? '<span class=gicon>edit</span> Éditer' : '✓ Valider';
   btn.style.background = corValidated ? 'rgba(31,58,92,.08)' : 'rgba(35,140,90,.12)';
   btn.style.color = corValidated ? '#1F3A5C' : '#1F7A4D';
   document.getElementById('corLayoutRow').style.display = corValidated ? 'none' : 'flex';
@@ -1174,7 +1174,7 @@ async function toggleProjection(){
   if(ceProjWin && !ceProjWin.closed){
     ceProjWin.close();
     ceProjWin = null;
-    btn.textContent = '<span class=gicon>desktop_windows</span> Ouvrir la fenêtre de projection';
+    btn.innerHTML = '<span class=gicon>desktop_windows</span> Ouvrir la fenêtre de projection';
     return;
   }
   ceProjWin = window.open('', 'atelierMathsProjection', 'width=1100,height=720,resizable=yes');
@@ -1202,12 +1202,12 @@ async function toggleProjection(){
   </head><body><div id="projHeader"></div><div id="projContent"></div></body></html>`);
   ceProjWin.document.close();
   renderCorrectionPreview();
-  btn.textContent = '<span class=gicon>close</span> Fermer la fenêtre de projection';
+  btn.innerHTML = '<span class=gicon>close</span> Fermer la fenêtre de projection';
   const watcher = setInterval(()=>{
     if(!ceProjWin || ceProjWin.closed){
       clearInterval(watcher);
       ceProjWin = null;
-      btn.textContent = '<span class=gicon>desktop_windows</span> Ouvrir la fenêtre de projection';
+      btn.innerHTML = '<span class=gicon>desktop_windows</span> Ouvrir la fenêtre de projection';
     }
   }, 800);
 }
@@ -1798,7 +1798,7 @@ async function refreshAuthUI(){
     // sinon on garde l'icône générique -- jamais de case vide dans le rond.
     const avatarBtn = document.getElementById('accountAvatar');
     const initials = [prenomTrim, nomTrim].filter(Boolean).map(s=>s[0]).join('').toUpperCase();
-    avatarBtn.textContent = initials || '<span class=gicon>person</span>';
+    avatarBtn.innerHTML = initials || '<span class=gicon>person</span>';
     avatarBtn.title = fullName ? `Mon compte — ${fullName}` : 'Mon compte';
 
     const isStaff = !accessBlocked && (currentUserRole==='admin' || currentUserRole==='prof');
@@ -1839,7 +1839,7 @@ async function refreshAuthUI(){
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
     isStaffGlobal = false;
     const avatarBtnOut = document.getElementById('accountAvatar');
-    if(avatarBtnOut){ avatarBtnOut.textContent = '<span class=gicon>person</span>'; avatarBtnOut.title = 'Mon compte'; }
+    if(avatarBtnOut){ avatarBtnOut.innerHTML = '<span class=gicon>person</span>'; avatarBtnOut.title = 'Mon compte'; }
     if(navCorrection) navCorrection.style.display='none';
     if(navCahier) navCahier.style.display='none';
     if(navMesResultats) navMesResultats.style.display='none';
@@ -2860,7 +2860,7 @@ function openBugReportModal(prefill){
   document.getElementById('bugReportStatus').textContent='';
   bugReportTypeOverride = (prefill && prefill.reportType) || 'bug';
   const titleEl = document.querySelector('#bugReportModalOverlay strong');
-  if(titleEl) titleEl.textContent = bugReportTypeOverride==='suggestion' ? '<span class=gicon>lightbulb</span> Suggérer une amélioration' : 'Signaler un bug / une amélioration';
+  if(titleEl) titleEl.innerHTML = bugReportTypeOverride==='suggestion' ? '<span class=gicon>lightbulb</span> Suggérer une amélioration' : 'Signaler un bug / une amélioration';
   if(prefill && prefill.section){
     document.getElementById('bugReportSection').value = prefill.section;
     document.getElementById('bugReportSection').dispatchEvent(new Event('change'));
@@ -3246,7 +3246,7 @@ function editCahierEntry(i){
   }
   renderCorrectionPreview();
   editingIndex = i;
-  document.getElementById('btnAddCahier').textContent = '<span class=gicon>save</span> Enregistrer la modification';
+  document.getElementById('btnAddCahier').innerHTML = '<span class=gicon>save</span> Enregistrer la modification';
   document.getElementById('btnCancelEdit').style.display = 'inline-block';
   document.getElementById('correctionForm').scrollIntoView({behavior:'smooth', block:'start'});
   document.getElementById('correctionInput').focus();
@@ -3349,7 +3349,7 @@ function renderCahier(){
   const dateInput = document.getElementById('corListFilterDate');
   if(dateInput && !dateInput.value && corListFilterDate) dateInput.value = corListFilterDate;
   const toggleBtn = document.getElementById('btnCorListDateToggle');
-  if(toggleBtn) toggleBtn.textContent = corListFilterDate ? 'Voir toutes les dates' : "<span class=gicon>calendar_month</span> Corrections du jour";
+  if(toggleBtn) toggleBtn.innerHTML = corListFilterDate ? 'Voir toutes les dates' : "<span class=gicon>calendar_month</span> Corrections du jour";
   document.getElementById('cahierCount').textContent = cahier.length+' exercice(s)';
   const list=document.getElementById('cahierList');
   const status=document.getElementById('corListFilterStatus');
@@ -3562,7 +3562,7 @@ function injectReadAloudButtons(container){
     btn.className='read-aloud-btn';
     btn.title='Écouter cette définition';
     btn.setAttribute('aria-label','Écouter cette définition');
-    btn.textContent='<span class=gicon>volume_up</span>';
+    btn.innerHTML='<span class=gicon>volume_up</span>';
     btn.onclick=(e)=>{ e.stopPropagation(); toggleReadAloud(btn, text); };
     box.appendChild(btn);
   });
@@ -3628,12 +3628,12 @@ function toggleReadAloud(btn, text){
   // arrête ; sinon on coupe toute lecture en cours avant de démarrer la nouvelle.
   const wasReading = btn.classList.contains('reading');
   speechSynthesis.cancel();
-  document.querySelectorAll('.read-aloud-btn.reading').forEach(b=>{ b.classList.remove('reading'); b.textContent='<span class=gicon>volume_up</span>'; });
+  document.querySelectorAll('.read-aloud-btn.reading').forEach(b=>{ b.classList.remove('reading'); b.innerHTML='<span class=gicon>volume_up</span>'; });
   if(wasReading) return;
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'fr-FR';
-  utter.onend = ()=>{ btn.classList.remove('reading'); btn.textContent='<span class=gicon>volume_up</span>'; };
-  utter.onerror = ()=>{ btn.classList.remove('reading'); btn.textContent='<span class=gicon>volume_up</span>'; };
+  utter.onend = ()=>{ btn.classList.remove('reading'); btn.innerHTML='<span class=gicon>volume_up</span>'; };
+  utter.onerror = ()=>{ btn.classList.remove('reading'); btn.innerHTML='<span class=gicon>volume_up</span>'; };
   btn.classList.add('reading');
   btn.textContent='⏸';
   speechSynthesis.speak(utter);
@@ -3824,7 +3824,7 @@ async function addTdReference(){
   if(isSyncEnabled()){
     const res = await syncAddEntry(entry);
     if(res.ok){ entry.id = res.id; saveCahier(); renderCahier(); }
-    else if(!res.offline){ status.textContent = "<span class=gicon>warning</span> Enregistré localement, échec de synchronisation : "+(res.error||'erreur inconnue'); }
+    else if(!res.offline){ status.innerHTML = "<span class=gicon>warning</span> Enregistré localement, échec de synchronisation : "+(res.error||'erreur inconnue'); }
   }
 }
 document.getElementById('corDate').value = todayISO();

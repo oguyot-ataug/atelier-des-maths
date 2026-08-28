@@ -330,8 +330,8 @@ function arCheckLire(){
   const val = parseFloat(document.getElementById('ar-lireInput').value);
   const status = document.getElementById('ar-lireStatus');
   if(isNaN(val)){ status.textContent = 'Indique ta lecture en degrés.'; return; }
-  if(Math.abs(val-arLireSpread)<=2){ status.textContent = `<span class=gicon>check_circle</span> Bravo, l'angle mesure bien ${arLireSpread}°.`; status.style.color = '#1F6B3A'; }
-  else { status.textContent = `<span class=gicon>cancel</span> Pas tout à fait : l'angle mesure ${arLireSpread}°. Place bien le centre du rapporteur sur le sommet et son 0° sur un côté avant de lire l'autre côté.`; status.style.color = '#E35D3A'; }
+  if(Math.abs(val-arLireSpread)<=2){ status.innerHTML = `<span class=gicon>check_circle</span> Bravo, l'angle mesure bien ${arLireSpread}°.`; status.style.color = '#1F6B3A'; }
+  else { status.innerHTML = `<span class=gicon>cancel</span> Pas tout à fait : l'angle mesure ${arLireSpread}°. Place bien le centre du rapporteur sur le sommet et son 0° sur un côté avant de lire l'autre côté.`; status.style.color = '#E35D3A'; }
 }
 
 /* --- Widget 2 : construire un angle donné, avec un crayon qui marque le trait-repère
@@ -486,7 +486,7 @@ function arCheckConstruire(){
   const status = document.getElementById('ar-construireStatus');
   if(!arConstruireValide){ status.textContent = "Marque d'abord le trait-repère au crayon, puis clique sur \"Valider le trait-repère\"."; status.style.color = '#E35D3A'; return; }
   const current = Math.round(arConstruireSpread());
-  if(Math.abs(current-arConstruireTarget)<=2){ status.textContent = `<span class=gicon>check_circle</span> Bravo, ton angle mesure environ ${current}°, c'est le bon angle !`; status.style.color = '#1F6B3A'; }
+  if(Math.abs(current-arConstruireTarget)<=2){ status.innerHTML = `<span class=gicon>check_circle</span> Bravo, ton angle mesure environ ${current}°, c'est le bon angle !`; status.style.color = '#1F6B3A'; }
   else { status.textContent = `Ton angle mesure pour l'instant environ ${current}°. Repositionne le crayon et revalide pour obtenir ${arConstruireTarget}°.`; status.style.color = '#E35D3A'; }
 }
 /* Glisser le crayon le long de l'arc, en degrés entiers, dans le repère LOCAL du rapporteur
@@ -948,7 +948,7 @@ function arPermisValidateAnswer(){
   arPermisAnswered = true;
   if(correct) arPermisScore++;
   const status = document.getElementById('ar-permisStatus');
-  status.textContent = correct ? '<span class=gicon>check_circle</span> Correct !' : `<span class=gicon>cancel</span> Incorrect (la bonne mesure était ${arPermisValue}°).`;
+  status.innerHTML = correct ? '<span class=gicon>check_circle</span> Correct !' : `<span class=gicon>cancel</span> Incorrect (la bonne mesure était ${arPermisValue}°).`;
   status.style.color = correct ? '#1F6B3A' : '#E35D3A';
   setTimeout(()=>{
     arPermisIndex++;
