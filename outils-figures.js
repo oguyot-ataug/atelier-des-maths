@@ -697,6 +697,16 @@ function toolButtonsHTML(ctx){
 }
 let figDragPoint = null;
 const SCALE_PX_PER_CM = 20;
+/* La barre d'outils de l'outil de correction (#corToolsRow) réutilise exactement les mêmes
+   boutons que ceux d'un exercice d'évaluation (toolButtonsHTML), plutôt qu'une liste
+   recopiée à la main dans index.html -- une telle duplication avait fini par diverger
+   silencieusement (le bouton "Importer une image" manquait uniquement côté correction). */
+(function initCorToolsRow(){
+  const box = document.getElementById('corToolsRow');
+  if(!box) return;
+  const statusSpan = document.getElementById('figureStatus');
+  box.innerHTML = toolButtonsHTML('global') + (statusSpan ? statusSpan.outerHTML : '<span class="hint" id="figureStatus" style="margin:0;"></span>');
+})();
 
 /* Ferme tous les panneaux d'outils et la modale qui les enveloppe (clic en dehors de la modale,
    ou changement de contexte). */
