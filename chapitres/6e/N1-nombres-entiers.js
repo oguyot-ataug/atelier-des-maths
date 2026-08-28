@@ -119,6 +119,40 @@ document.getElementById('cours-demo-nombres-entiers').innerHTML = `
 <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
   Remarque : à la fin, on retrouve l'égalité <b>823 = (14 × 58) + 11</b>, avec 11 &lt; 14.
 </div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Multiples et diviseurs d'un nombre entier</h3></div>
+<div class="sub-header"><span class="letter">A</span><h4>Multiples et diviseurs d'un nombre entier</h4></div>
+<span class="def-badge">Définitions</span>
+<div class="def-box">Soient <i>a</i> et <i>b</i> deux nombres entiers.
+  <ul style="margin:8px 0 0;padding-left:20px;line-height:1.8;">
+    <li><i>a</i> est un <b>multiple</b> de <i>b</i> si <i>a</i> est le produit de <i>b</i> par un nombre entier.</li>
+    <li><i>b</i> est alors un <b>diviseur</b> de <i>a</i>.</li>
+  </ul>
+</div>
+<p class="example-title">Exemple : soit l'égalité 1 904 = 56 × 34. Fais une phrase avec les mots « multiple » et « diviseur ».</p>
+<ul class="example-list">
+  <li>1 904 est un <b>multiple</b> de 56. (Et de 34 aussi !)</li>
+  <li>56 est un <b>diviseur</b> de 1 904. On dit aussi « 1 904 est <b>divisible</b> par 56 » ou « 56 <b>divise</b> 1 904 ».</li>
+</ul>
+
+<div class="sub-header"><span class="letter">B</span><h4>Critères de divisibilité</h4></div>
+<span class="prop-badge">Règles</span>
+<div class="def-box">
+  <ul style="margin:0;padding-left:20px;line-height:1.8;">
+    <li>Un nombre entier est <b>divisible par 2</b> (pair) si son chiffre des unités est 0, 2, 4, 6 ou 8.</li>
+    <li>Un nombre entier est <b>divisible par 5</b> si son chiffre des unités est 0 ou 5.</li>
+    <li>Un nombre entier est <b>divisible par 10</b> si son chiffre des unités est 0.</li>
+  </ul>
+</div>
+<p class="example-title">Exemple 1 : on considère le nombre 47 236. Est-il divisible par 2 et par 5 ?</p>
+<ul class="example-list">
+  <li>Son chiffre des unités est 6 donc 47 236 est <b>divisible par 2</b>.</li>
+  <li>Son chiffre des unités n'est ni 0 ni 5 donc 47 236 n'est <b>pas divisible par 5</b>.</li>
+</ul>
+<p class="example-title">Exemple 2 : on considère le nombre 15 480. Est-il divisible par 2, par 5 et par 10 ?</p>
+<ul class="example-list">
+  <li>Son chiffre des unités est 0 donc 15 480 est <b>divisible par 2</b>, <b>par 5</b> et <b>par 10</b> en même temps !</li>
+</ul>
 `;
 
 document.getElementById('histoire-demo-nombres-entiers').innerHTML = `
