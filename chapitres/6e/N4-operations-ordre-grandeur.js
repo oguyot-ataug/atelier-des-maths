@@ -85,7 +85,7 @@ ${ogAddBlock(OG_SUB_15)}
 
 document.getElementById('histoire-demo-operations-ordre-grandeur-6e').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Estimer un ordre de grandeur, c'est un peu ce que le savant grec Archimède a fait vers 250 av. J.-C., dans un texte appelé <i>L'Arénaire</i> (« Celui qui compte les grains de sable »). À une époque où les Grecs ne savaient nommer que des nombres allant jusqu'à la « myriade » (10 000), Archimède invente un système pour écrire des nombres immensément plus grands, et calcule qu'il faudrait environ 10<sup>63</sup> grains de sable pour remplir tout l'Univers tel qu'on l'imaginait alors ! Cet exercice, à la fois amusant et sérieux, est l'un des tout premiers exemples connus de calcul d'ordre de grandeur.
 
   <p class="example-title" style="margin-top:20px;">Des cailloux au boulier : additionner et soustraire avant les chiffres</p>

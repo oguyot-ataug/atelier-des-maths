@@ -155,7 +155,7 @@ document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
 
 document.getElementById('histoire-demo-calcul-litteral-5e').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Le mot <b>« algèbre »</b> vient de l'arabe <i>al-jabr</i>, qui signifie à peu près « la remise en place » ou « la réduction ». Il provient du titre d'un livre écrit vers 820 à Bagdad par le mathématicien perse Al-Khwârizmî, dans un centre de recherche appelé la Maison de la Sagesse. Ce livre est le premier à présenter une méthode générale pour manipuler des expressions contenant des inconnues, sans forcément les relier à une figure géométrique précise. Le mot <b>« algorithme »</b>, que l'on utilise beaucoup aujourd'hui en informatique, vient d'ailleurs directement de son nom !
 </div>
 `;

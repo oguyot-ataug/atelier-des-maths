@@ -118,13 +118,13 @@ document.getElementById('cours-demo-relatifs').innerHTML = `
       </ul>
 
       <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
-        ⚠️ Piège classique : un nombre négatif de grande valeur absolue reste un <b>petit</b> nombre. On voit souvent l'erreur −10 &gt; −3 (en ne comparant que les chiffres 10 et 3) — c'est l'inverse : −10 &lt; −3.
+        <span class=gicon>warning</span> Piège classique : un nombre négatif de grande valeur absolue reste un <b>petit</b> nombre. On voit souvent l'erreur −10 &gt; −3 (en ne comparant que les chiffres 10 et 3) — c'est l'inverse : −10 &lt; −3.
       </div>
 `;
 
 document.getElementById('histoire-demo-relatifs').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Les nombres négatifs sont utilisés bien avant d'être vraiment acceptés par les mathématiciens ! Dès environ 200 av. J.-C., en Chine, on utilisait des baguettes de calcul rouges pour les nombres positifs et noires pour les négatifs, notamment pour tenir des comptes commerciaux. Vers 628, en Inde, le mathématicien Brahmagupta est le premier à poser clairement des règles de calcul avec des nombres négatifs (addition, soustraction...). En Europe, en revanche, il faudra attendre le 17e siècle, voire le 19e siècle pour certains savants, avant que les nombres négatifs soient pleinement acceptés comme des nombres à part entière.
 </div>
 `;

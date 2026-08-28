@@ -162,7 +162,7 @@ document.getElementById('exos-demo-fractions-comp-add').innerHTML = `
 
 document.getElementById('histoire-demo-fractions-comp-add').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Réduire deux fractions au même dénominateur pour les comparer ou les additionner n'a rien d'évident : c'est en Chine, dans <i>Les Neuf Chapitres sur l'art mathématique</i> (un ouvrage compilé autour du I<sup>er</sup> siècle), qu'on trouve la première méthode connue, écrite noir sur blanc, pour réduire deux fractions au même dénominateur avant de les additionner ou de les comparer. Les mathématiciens chinois avaient déjà compris qu'il suffisait de multiplier chaque fraction par le dénominateur de l'autre, exactement la méthode utilisée dans ce chapitre pour des dénominateurs quelconques. Les Babyloniens, environ mille ans plus tôt, utilisaient de leur côté un système de calcul en base 60 (et non en base 10), particulièrement pratique pour les fractions puisque 60 possède énormément de diviseurs : on en garde aujourd'hui la trace dans le découpage de l'heure en 60 minutes. Quant à la barre de fraction telle qu'on l'écrit aujourd'hui, séparant nettement numérateur et dénominateur, elle est attribuée au mathématicien arabe Al-Hassar au XIIe siècle ; c'est le mathématicien italien Fibonacci qui la fait connaître en Europe au siècle suivant, dans son <i>Liber Abaci</i>.
 </div>
 `;

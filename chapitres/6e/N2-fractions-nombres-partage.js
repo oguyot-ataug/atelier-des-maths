@@ -56,7 +56,7 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
 
 document.getElementById('histoire-demo-fractions-partage').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Les fractions comptent parmi les plus vieilles notions des mathématiques : on en trouve la trace il y a environ 3 600 ans, dans le papyrus de Rhind, un texte égyptien conservé au British Museum. Mais les Égyptiens ne les écrivaient pas comme nous : ils n'utilisaient (presque) que des fractions de numérateur 1 (comme <span class="tex">\\dfrac{1}{2}</span> ou <span class="tex">\\dfrac{1}{7}</span>), et exprimaient toutes les autres comme des sommes de fractions de ce type. Il faudra attendre les mathématiciens indiens, plus de mille ans plus tard, pour voir apparaître une écriture des fractions plus proche de la nôtre, avec un numérateur et un dénominateur.
 </div>
 `;

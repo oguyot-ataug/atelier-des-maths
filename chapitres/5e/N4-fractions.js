@@ -98,7 +98,7 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 
 document.getElementById('histoire-demo-fractions-5e').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   La petite barre horizontale qui sépare le numérateur du dénominateur, aujourd'hui si naturelle, n'a pas toujours existé. Elle apparaît vers 1200 sous la plume du mathématicien arabe Al-Hassar, puis c'est l'Italien Fibonacci (Léonard de Pise) qui la fait connaître en Europe, dans son célèbre <i>Liber Abaci</i> (« Livre du calcul »), publié en 1202. Avant cette invention, on écrivait souvent le numérateur juste au-dessus du dénominateur, sans aucun trait pour les séparer clairement — ce qui pouvait facilement prêter à confusion !
 </div>
 `;

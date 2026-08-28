@@ -271,7 +271,7 @@ function m2SubNextStep(){
 
 document.getElementById('histoire-demo-heures-durees').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   <p style="margin:0 0 12px;">Pourquoi une année sur quatre a-t-elle 366 jours ? Le problème vient du Soleil : la Terre met environ <b>365,2422 jours</b> à faire le tour du Soleil -- pas un nombre entier de jours ! Un calendrier avec des années de 365 jours pile prendrait donc du retard sur les saisons, année après année.</p>
   <p style="margin:0 0 12px;">En <b>46 avant J.-C.</b>, l'empereur romain <b>Jules César</b>, conseillé par l'astronome Sosigène d'Alexandrie, décide de corriger ce problème : il fixe l'année à 365 jours, avec un jour supplémentaire ajouté tous les 4 ans. C'est la naissance du calendrier <b>julien</b> et de l'année bissextile, avec une durée moyenne de 365,25 jours.</p>
   <p style="margin:0 0 12px;">Mais 365,25 jours reste encore un peu trop long par rapport aux 365,2422 jours réels : un écart minuscule (0,0078 jour par an), mais qui s'accumule. Après 1500 ans, ce petit écart représentait déjà <b>10 jours</b> de décalage avec les saisons !</p>

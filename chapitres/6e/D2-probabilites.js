@@ -115,7 +115,7 @@ document.getElementById('exos-demo-probabilites').innerHTML = `
 
 document.getElementById('histoire-demo-probabilites').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Les probabilités naissent officiellement d'une correspondance entre deux mathématiciens français, <b>Blaise Pascal</b> et <b>Pierre de Fermat</b>, en 1654. Un joueur, le chevalier de Méré, avait posé à Pascal une question restée sans réponse satisfaisante depuis des siècles : si une partie de dés ou de jeu de hasard est interrompue avant la fin, comment répartir équitablement les mises entre les joueurs, selon leurs chances respectives de gagner à ce moment-là ? En cherchant à résoudre ce « problème des partis », Pascal et Fermat posent, sans le savoir, les toutes premières bases mathématiques rigoureuses du calcul des chances. Il faudra ensuite près d'un siècle pour que ces idées, d'abord réservées aux jeux de hasard, trouvent des applications sérieuses : les compagnies d'assurance du XVIIIe siècle sont parmi les premières à utiliser les probabilités pour calculer le montant des primes, en s'appuyant sur les chances qu'un évènement (incendie, naufrage, décès) se produise.
 </div>
 `;

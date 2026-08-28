@@ -316,7 +316,7 @@ document.getElementById('exos-demo-multiplication-division-6e').innerHTML = `
 
 document.getElementById('histoire-demo-multiplication-division-6e').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   <p style="margin:0 0 12px;">Les Égyptiens de l'Antiquité multipliaient deux nombres sans jamais apprendre de table de multiplication : ils savaient seulement <b>doubler</b> un nombre et <b>additionner</b>. Cette méthode, dite « <b>multiplication égyptienne</b> » (ou parfois « multiplication russe », des paysans russes l'utilisant encore au XIX<sup>e</sup> siècle), consiste à doubler un des deux facteurs plusieurs fois de suite, puis à n'additionner que certains de ces doublements.</p>
   <p style="margin:0 0 12px;"><b>Exemple</b> : calculer 13 × 24. On double 24 plusieurs fois de suite :</p>
   <table style="border-collapse:collapse;width:100%;max-width:340px;margin:0 auto 12px;font-size:.9rem;">

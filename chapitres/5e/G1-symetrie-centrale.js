@@ -234,13 +234,13 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
       </ul>
 
       <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
-        ⚠️ Piège classique : ne pas confondre la <b>symétrie centrale</b> (demi-tour autour d'un point, la figure « tourne ») avec la <b>symétrie axiale</b> (retournement autour d'une droite, la figure est « retournée comme dans un miroir »). Un bon réflexe : si l'énoncé donne un point, c'est une symétrie centrale ; s'il donne une droite, c'est une symétrie axiale.
+        <span class=gicon>warning</span> Piège classique : ne pas confondre la <b>symétrie centrale</b> (demi-tour autour d'un point, la figure « tourne ») avec la <b>symétrie axiale</b> (retournement autour d'une droite, la figure est « retournée comme dans un miroir »). Un bon réflexe : si l'énoncé donne un point, c'est une symétrie centrale ; s'il donne une droite, c'est une symétrie axiale.
       </div>
 `;
 
 document.getElementById('histoire-demo-symetrie').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Contrairement à beaucoup d'autres notions de ce cours, la symétrie n'a pas vraiment d'inventeur : elle est utilisée depuis la Préhistoire, bien avant d'être étudiée mathématiquement. On retrouve des motifs symétriques (par rotation, comme la symétrie centrale, ou par réflexion) dans des ornements vieux de plusieurs dizaines de milliers d'années, sur toutes les civilisations. Ce sont les mathématiciens grecs, notamment autour d'Euclide, qui commencent à étudier ces transformations de façon rigoureuse, en s'intéressant en particulier aux propriétés des figures régulières.
 </div>
 `;

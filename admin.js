@@ -11,14 +11,14 @@
 
 document.getElementById('view-admin').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
-  <h1 style="margin:6px 0 4px;">🛠️ Administration</h1>
+  <h1 style="margin:6px 0 4px;"><span class=gicon>build</span> Administration</h1>
   <p style="color:var(--ink-soft);max-width:70ch;">Gestion des comptes, des classes, et des signalements.</p>
 
   <div class="tabs" id="adminTabs">
     <button class="tab-btn active" data-admin-tab="comptes">Comptes &amp; classes</button>
-    <button class="tab-btn" data-admin-tab="inscriptions">📝 Inscriptions</button>
-    <button class="tab-btn" data-admin-tab="listing">📋 Déjà enregistré</button>
-    <button class="tab-btn" data-admin-tab="signalements">🐞 Signalements</button>
+    <button class="tab-btn" data-admin-tab="inscriptions"><span class=gicon>edit_note</span> Inscriptions</button>
+    <button class="tab-btn" data-admin-tab="listing"><span class=gicon>assignment</span> Déjà enregistré</button>
+    <button class="tab-btn" data-admin-tab="signalements"><span class=gicon>bug_report</span> Signalements</button>
   </div>
 
   <div class="tab-panel active" id="admin-panel-comptes">
@@ -72,7 +72,7 @@ mmartin	Motdepasse2"></textarea>
 
   <div class="tab-panel" id="admin-panel-inscriptions">
     <div class="tool-shell">
-      <button class="btn secondary" style="float:right;" onclick="adminRefreshSignupRequests()">🔄 Actualiser</button>
+      <button class="btn secondary" style="float:right;" onclick="adminRefreshSignupRequests()"><span class=gicon>refresh</span> Actualiser</button>
       <p class="hint" style="margin:6px 0 14px;clear:right;">Demandes d'inscription des professeurs (adresse académique + UAI vérifiés côté formulaire, à valider ici avant activation).</p>
       <div id="adminSignupRequestsListing" class="hint">Chargement…</div>
     </div>
@@ -80,7 +80,7 @@ mmartin	Motdepasse2"></textarea>
 
   <div class="tab-panel" id="admin-panel-listing">
     <div class="tool-shell">
-      <button class="btn secondary" style="float:right;" onclick="adminRefreshListings()">🔄 Actualiser</button>
+      <button class="btn secondary" style="float:right;" onclick="adminRefreshListings()"><span class=gicon>refresh</span> Actualiser</button>
       <button class="btn secondary" style="float:right;margin-right:8px;" onclick="adminSyncEmails()">🔧 Réparer les identifiants manquants</button>
       <p class="hint" id="adminSyncEmailsStatus" style="clear:right;margin:0 0 6px;"></p>
       <p class="example-title" style="margin:16px 0 6px;">Comptes</p>
@@ -92,7 +92,7 @@ mmartin	Motdepasse2"></textarea>
 
   <div class="tab-panel" id="admin-panel-signalements">
     <div class="tool-shell">
-      <button class="btn secondary" style="float:right;" onclick="adminRefreshBugReports()">🔄 Actualiser</button>
+      <button class="btn secondary" style="float:right;" onclick="adminRefreshBugReports()"><span class=gicon>refresh</span> Actualiser</button>
       <p class="hint" style="margin:6px 0 14px;">Signalements envoyés par les profs depuis le menu de leur compte.</p>
       <div id="adminBugReportsListing" class="hint">Chargement…</div>
     </div>
@@ -121,8 +121,8 @@ document.body.insertAdjacentHTML('beforeend', `
 <div id="editProfModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEditProfModal();">
   <div class="modal-card" style="max-width:520px;max-height:86vh;overflow:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.15rem;">🛠️ Modifier le compte</strong>
-      <button class="modal-close" onclick="closeEditProfModal()">✕</button>
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.15rem;"><span class=gicon>build</span> Modifier le compte</strong>
+      <button class="modal-close" onclick="closeEditProfModal()"><span class=gicon>close</span></button>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
       <label class="hint" style="margin:0;">Nom
@@ -135,11 +135,11 @@ document.body.insertAdjacentHTML('beforeend', `
     <div style="background:rgba(28,43,57,.03);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <span>Identifiant : <b id="editProfIdentifiantDisplay" style="font-family:'JetBrains Mono',monospace;"></b></span>
-        <button class="btn secondary" style="font-size:.78rem;padding:4px 10px;" onclick="adminChangeIdentifiantPrompt(editProfTargetId, editProfTargetName)">✏️ Modifier</button>
+        <button class="btn secondary" style="font-size:.78rem;padding:4px 10px;" onclick="adminChangeIdentifiantPrompt(editProfTargetId, editProfTargetName)"><span class=gicon>edit</span> Modifier</button>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
         <span>Mot de passe : <b style="letter-spacing:2px;">••••••••</b></span>
-        <button class="btn secondary" style="font-size:.78rem;padding:4px 10px;" onclick="adminResetPasswordPrompt(editProfTargetId, editProfTargetName)">🔑 Réinitialiser</button>
+        <button class="btn secondary" style="font-size:.78rem;padding:4px 10px;" onclick="adminResetPasswordPrompt(editProfTargetId, editProfTargetName)"><span class=gicon>key</span> Réinitialiser</button>
       </div>
     </div>
     <label class="hint" style="margin:0;display:block;margin-bottom:14px;">UAI de l'établissement
@@ -158,7 +158,7 @@ document.body.insertAdjacentHTML('beforeend', `
   <div class="modal-card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Réinitialiser le mot de passe</strong>
-      <button class="modal-close" onclick="closeResetPasswordModal()">✕</button>
+      <button class="modal-close" onclick="closeResetPasswordModal()"><span class=gicon>close</span></button>
     </div>
     <p class="hint" id="resetPasswordModalName" style="margin:0 0 10px;"></p>
     <input type="password" id="resetPasswordModalInput" placeholder="Nouveau mot de passe" style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);margin-bottom:10px;box-sizing:border-box;">
@@ -171,7 +171,7 @@ document.body.insertAdjacentHTML('beforeend', `
   <div class="modal-card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Modifier l'identifiant</strong>
-      <button class="modal-close" onclick="closeChangeIdentifiantModal()">✕</button>
+      <button class="modal-close" onclick="closeChangeIdentifiantModal()"><span class=gicon>close</span></button>
     </div>
     <p class="hint" id="changeIdentifiantModalName" style="margin:0 0 10px;"></p>
     <input type="text" id="changeIdentifiantModalInput" placeholder="Nouvel identifiant (ou e-mail)" style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);margin-bottom:10px;box-sizing:border-box;">
@@ -407,14 +407,14 @@ async function adminRefreshListings(){
     const rowHTML = p => {
       const label = escapeHtml(p.nom||'(sans nom)') + ' — <b>identifiant :</b> ' + escapeHtml(loginIdentifiant(p.email)) + (p.role==='admin'?' [admin]':'');
       const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
-      const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')">🛠️ Modifier</button>` : '';
+      const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span> Modifier</button>` : '';
       return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(28,43,57,.06);">
         <span>${label}</span>
         <span style="display:flex;gap:6px;flex:none;">
           ${editBtn}
-          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeIdentifiantPrompt('${p.id}','${safeName}')">✏️ Identifiant</button>
-          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminResetPasswordPrompt('${p.id}','${safeName}')">🔑 Réinitialiser</button>
-          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="adminDeleteUser('${p.id}', this)">🗑️ Supprimer</button>
+          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeIdentifiantPrompt('${p.id}','${safeName}')"><span class=gicon>edit</span> Identifiant</button>
+          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminResetPasswordPrompt('${p.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser</button>
+          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="adminDeleteUser('${p.id}', this)"><span class=gicon>delete</span> Supprimer</button>
         </span>
       </div>`;
     };
@@ -443,7 +443,7 @@ async function adminRefreshListings(){
         Profs : ${profsHere.map(escapeHtml).join(', ')||'aucun'}<br>
         Élèves (${elevesHere.length}) : ${elevesHere.map(escapeHtml).join(', ')||'aucun'}
         <div style="margin-top:6px;padding:8px;background:rgba(31,58,92,.05);border-radius:6px;">
-          <b style="font-size:.85rem;">🎓 Permis Rapporteur</b>
+          <b style="font-size:.85rem;"><span class=gicon>school</span> Permis Rapporteur</b>
           <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="adminDemarrerPermisSession('${c.id}')">+ Nouvelle session</button>
           ${sessionsHtml}
         </div></div>`;
@@ -483,7 +483,7 @@ async function adminRefreshBugReports(){
     const name = (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Utilisateur inconnu';
     const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
     const statusColor = r.status==='résolu' ? 'var(--accent-green, #1F6B3A)' : r.status==='en cours' ? 'var(--accent-orange)' : 'var(--accent)';
-    const typeTag = r.report_type==='suggestion' ? '<span style="background:#FFF4E5;color:#B26A00;border-radius:4px;padding:1px 7px;font-size:.75rem;font-weight:600;margin-right:6px;">💡 Suggestion</span>' : '<span style="background:#FDEAEA;color:#B23A3A;border-radius:4px;padding:1px 7px;font-size:.75rem;font-weight:600;margin-right:6px;">🐞 Bug</span>';
+    const typeTag = r.report_type==='suggestion' ? '<span style="background:#FFF4E5;color:#B26A00;border-radius:4px;padding:1px 7px;font-size:.75rem;font-weight:600;margin-right:6px;"><span class=gicon>lightbulb</span> Suggestion</span>' : '<span style="background:#FDEAEA;color:#B23A3A;border-radius:4px;padding:1px 7px;font-size:.75rem;font-weight:600;margin-right:6px;"><span class=gicon>bug_report</span> Bug</span>';
     return `<div class="bug-report-row" style="border:1px solid rgba(28,43,57,.12);border-radius:8px;padding:10px 12px;margin-bottom:10px;">
       <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
         <span>${typeTag}<b>${escapeHtml(r.section)}</b>${r.chapitre?' — '+escapeHtml(r.chapitre):''}</span>
@@ -537,7 +537,7 @@ async function adminBulkCreateStudents(){
       else ok++;
     }catch(err){ fail++; errors.push(`${identifiant} : erreur réseau`); }
   }
-  status.innerHTML = `✓ ${ok} compte(s) créé(s)` + (fail?`, ⚠️ ${fail} échec(s) :<br>`+errors.map(escapeHtml).join('<br>') : '.');
+  status.innerHTML = `✓ ${ok} compte(s) créé(s)` + (fail?`, <span class=gicon>warning</span> ${fail} échec(s) :<br>`+errors.map(escapeHtml).join('<br>') : '.');
   if(ok) document.getElementById('adminBulkStudents').value='';
   await adminRefreshDropdowns();
 }
@@ -587,7 +587,7 @@ async function adminRefreshSignupRequests(){
         </div>
         <span style="display:flex;gap:6px;flex:none;">
           <button class="btn" style="font-size:.78rem;padding:5px 10px;" onclick="adminApproveSignup('${r.id}','${safeName}')">✓ Approuver</button>
-          <button class="btn secondary" style="font-size:.78rem;padding:5px 10px;color:#a83c1f;" onclick="adminRejectSignup('${r.id}','${safeName}')">✕ Rejeter</button>
+          <button class="btn secondary" style="font-size:.78rem;padding:5px 10px;color:#a83c1f;" onclick="adminRejectSignup('${r.id}','${safeName}')"><span class=gicon>close</span> Rejeter</button>
         </span>
       </div>
     </div>`;

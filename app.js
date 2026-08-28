@@ -334,7 +334,7 @@ function renderProgressionList(){
         ${it.nomPerso?`<div class="prog-titre-orig">${escapeHtml(it.titre)}</div>`:''}
         <div class="prog-dates">${dd?formatDateRangeFr(it.dateDebut,it.dateFin):'dates non définies'}</div>
       </div>
-      <button class="prog-edit-btn" title="Modifier le nom et les dates" onclick="progEditIdx=${i}; renderProgressionList();">✏️</button>
+      <button class="prog-edit-btn" title="Modifier le nom et les dates" onclick="progEditIdx=${i}; renderProgressionList();"><span class=gicon>edit</span></button>
     </div>`;
   }).join('');
 }
@@ -457,7 +457,7 @@ function renderTheme(data, lvl){
       const ready = !!DEMO_REGISTRY[lvl+'|'+c.t];
       const locked = restrictedVisitor && !isChapterFree(lvl, c.t);
       html += `<div class="chap-card ${ready?'ready':''} ${locked?'locked':''}" style="border-left-color:${CATS[cat].text}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
-        ${locked?'<span class="status lock-status">🔒 réservé aux inscrits</span>':(ready?'':'<span class="status">à venir</span>')}
+        ${locked?'<span class="status lock-status"><span class=gicon>lock</span> réservé aux inscrits</span>':(ready?'':'<span class="status">à venir</span>')}
         <div class="code">${c.code} · ch. ${c.n}</div>
         <div class="titre">${c.dispT||c.t}</div>
         <div class="meta"><span>p. ${c.p}</span><span>${c.s} sem.</span></div>
@@ -537,7 +537,7 @@ function renderFrise(data, lvl){
     html += `<div class="tl-item${done?' tl-done':''}${locked?' locked':''}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
       <span class="dot" style="background:${CATS[c.cat].text}"></span>
       <span class="titre">${c.dispT||c.t}</span>
-      ${locked?'<span class="tl-content-badge missing lock-status">🔒 réservé aux inscrits</span>':`<span class="tl-content-badge ${hasContent?'ready':'missing'}" title="${hasContent?'Contenu du site déjà créé':'Contenu du site pas encore créé'}">${hasContent?'🌐 En ligne':'✏️ À créer'}</span>`}
+      ${locked?'<span class="tl-content-badge missing lock-status"><span class=gicon>lock</span> réservé aux inscrits</span>':`<span class="tl-content-badge ${hasContent?'ready':'missing'}" title="${hasContent?'Contenu du site déjà créé':'Contenu du site pas encore créé'}">${hasContent?'<span class=gicon>public</span> En ligne':'<span class=gicon>edit</span> À créer'}</span>`}
       <span class="dates">${c.code} · ${c.d}</span>
       ${done?'<span class="tl-check" title="Chapitre déjà traité (date passée)">✓</span>':''}
     </div>`;
@@ -867,7 +867,7 @@ Le champ "correct" est l'index (0, 1 ou 2) de la bonne réponse dans "opts".`;
     if(!Array.isArray(quiz) || !quiz.length) throw new Error('empty');
     renderQuizHTML(quiz, '<p class="hint">✓ Quiz généré par IA à partir de ce cours.</p>');
   }catch(err){
-    area.innerHTML = '<p class="hint">⚠️ Échec de la génération'+(err.message==='no-session'?' (connectez-vous)':'')+'. Réessayez, ou utilisez la démo pré-écrite ci-dessous.</p>';
+    area.innerHTML = '<p class="hint"><span class=gicon>warning</span> Échec de la génération'+(err.message==='no-session'?' (connectez-vous)':'')+'. Réessayez, ou utilisez la démo pré-écrite ci-dessous.</p>';
   }
 }
 function answerQuiz(btn,qi,oi){
@@ -1114,7 +1114,7 @@ function corRemoveRow(rowIdx){
 function corToggleValidated(){
   corValidated = !corValidated;
   const btn = document.getElementById('btnCorValidate');
-  btn.textContent = corValidated ? '✏️ Éditer' : '✓ Valider';
+  btn.textContent = corValidated ? '<span class=gicon>edit</span> Éditer' : '✓ Valider';
   btn.style.background = corValidated ? 'rgba(31,58,92,.08)' : 'rgba(35,140,90,.12)';
   btn.style.color = corValidated ? '#1F3A5C' : '#1F7A4D';
   document.getElementById('corLayoutRow').style.display = corValidated ? 'none' : 'flex';
@@ -1130,7 +1130,7 @@ function corToggleValidated(){
 function corRenderRowsControls(){
   document.getElementById('corRowsControls').innerHTML = corRows.map((n,i)=>`
     <span class="hint" style="margin:0 4px 0 8px;">L${i+1} : <input type="number" value="${n}" min="1" max="6" onchange="corSetRowCols(${i},this.value)" style="width:40px;"></span>
-    ${corRows.length>1 ? `<button type="button" onclick="corRemoveRow(${i})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:5px;padding:2px 6px;cursor:pointer;font-size:.75rem;">✕</button>` : ''}
+    ${corRows.length>1 ? `<button type="button" onclick="corRemoveRow(${i})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:5px;padding:2px 6px;cursor:pointer;font-size:.75rem;"><span class=gicon>close</span></button>` : ''}
   `).join('');
 }
 function renderCorrectionPreview(){
@@ -1174,7 +1174,7 @@ async function toggleProjection(){
   if(ceProjWin && !ceProjWin.closed){
     ceProjWin.close();
     ceProjWin = null;
-    btn.textContent = '🖥️ Ouvrir la fenêtre de projection';
+    btn.textContent = '<span class=gicon>desktop_windows</span> Ouvrir la fenêtre de projection';
     return;
   }
   ceProjWin = window.open('', 'atelierMathsProjection', 'width=1100,height=720,resizable=yes');
@@ -1202,12 +1202,12 @@ async function toggleProjection(){
   </head><body><div id="projHeader"></div><div id="projContent"></div></body></html>`);
   ceProjWin.document.close();
   renderCorrectionPreview();
-  btn.textContent = '✖️ Fermer la fenêtre de projection';
+  btn.textContent = '<span class=gicon>close</span> Fermer la fenêtre de projection';
   const watcher = setInterval(()=>{
     if(!ceProjWin || ceProjWin.closed){
       clearInterval(watcher);
       ceProjWin = null;
-      btn.textContent = '🖥️ Ouvrir la fenêtre de projection';
+      btn.textContent = '<span class=gicon>desktop_windows</span> Ouvrir la fenêtre de projection';
     }
   }, 800);
 }
@@ -1277,7 +1277,7 @@ function editBlock(id, ctx){
   window[b.editFn](b.data);
   renderBlocksContext(ctx);
 }
-/* withControls=true : version affichée au professeur, avec les boutons ✏️/✕ (jamais montrée
+/* withControls=true : version affichée au professeur, avec les boutons <span class=gicon>edit</span>/<span class=gicon>close</span> (jamais montrée
    aux élèves). withControls=false : version "propre", envoyée à la fenêtre de projection,
    enregistrée dans le cahier, ou imprimée dans la feuille d'évaluation. */
 /* Retrouve l'exercice d'évaluation correspondant à un contexte de blocs ("ex-<id>"), pour
@@ -1321,8 +1321,8 @@ function singleBlockHTML(b, ctx, withControls, draggable){
   return `<div class="nb-figure-row" style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px ${draggable?'26px':'10px'};margin:8px 0;background:#fff;">
     ${dragHandle}
     <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;z-index:2;">
-      ${b.editFn ? `<button type="button" onclick="editBlock(${b.id},'${ctx}')" title="Modifier ce bloc" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✏️</button>` : ''}
-      <button type="button" onclick="removeBlock(${b.id},'${ctx}')" title="Supprimer ce bloc" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✕</button>
+      ${b.editFn ? `<button type="button" onclick="editBlock(${b.id},'${ctx}')" title="Modifier ce bloc" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;"><span class=gicon>edit</span></button>` : ''}
+      <button type="button" onclick="removeBlock(${b.id},'${ctx}')" title="Supprimer ce bloc" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;"><span class=gicon>close</span></button>
     </div>
     <div class="resizable-block disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}" style="resize:both;overflow:hidden;display:block;max-width:100%;min-width:80px;min-height:50px;${widthStyle}">${html}</div>
   </div>`;
@@ -1424,7 +1424,7 @@ function blocksRowsHTML(ctx, rows, withControls, cellBorders){
       const dropAttrs = `ondragover="event.preventDefault()" ondrop="evalDropInRowCol(event,'${ctx}',${rowIdx},0)"`;
       const isTarget = blockTargetCtx===ctx && blockTargetRow===rowIdx && blockTargetCol===0;
       const targetBorder = isTarget ? 'border:2px solid var(--accent);' : 'border:1px dashed rgba(28,43,57,.15);';
-      const targetTag = isTarget ? `<span style="position:absolute;top:3px;right:3px;font-size:.62rem;font-weight:700;color:var(--accent);background:rgba(12,91,160,.1);border-radius:8px;padding:1px 6px;z-index:2;">📍 destination</span>` : '';
+      const targetTag = isTarget ? `<span style="position:absolute;top:3px;right:3px;font-size:.62rem;font-weight:700;color:var(--accent);background:rgba(12,91,160,.1);border-radius:8px;padding:1px 6px;z-index:2;"><span class=gicon>location_on</span> destination</span>` : '';
       const mk = (side,icon,title) => `<button type="button" onclick="toggleCellBorder('${ctx}','${key}','${side}')" title="${title}" style="font-size:.62rem;line-height:1;border:1px solid ${cb[side]?'#0D5BA3':'rgba(28,43,57,.25)'};background:${cb[side]?'#0D5BA3':'#fff'};color:${cb[side]?'#fff':'#666'};border-radius:3px;padding:2px 4px;cursor:pointer;">${icon}</button>`;
       const borderBtns = `<div style="position:absolute;bottom:3px;right:3px;display:flex;gap:2px;z-index:2;">${mk('top','▔','Bordure haute')}${mk('right','▕','Bordure droite')}${mk('bottom','▁','Bordure basse')}${mk('left','▏','Bordure gauche')}</div>`;
       const bgSwatches = Object.keys(CELL_BG_COLORS).map(k=>`<button type="button" onclick="setCellBg('${ctx}','${key}','${k}')" title="Fond ${k}" style="width:13px;height:13px;border-radius:50%;border:${cb.bg===k?'2px solid #1C1B2E':'1px solid rgba(28,43,57,.3)'};background:${CELL_BG_COLORS[k]};cursor:pointer;padding:0;"></button>`).join('');
@@ -1449,7 +1449,7 @@ function blocksRowsHTML(ctx, rows, withControls, cellBorders){
       const dropAttrs = `ondragover="event.preventDefault()" ondrop="evalDropInRowCol(event,'${ctx}',${rowIdx},${ci})"`;
       const isTarget = blockTargetCtx===ctx && blockTargetRow===rowIdx && blockTargetCol===ci;
       const targetBorder = isTarget ? 'border:2px solid var(--accent);' : 'border:1px dashed rgba(28,43,57,.15);';
-      const targetTag = isTarget ? `<span style="position:absolute;top:3px;right:3px;font-size:.6rem;font-weight:700;color:var(--accent);background:rgba(12,91,160,.1);border-radius:8px;padding:1px 5px;z-index:2;">📍</span>` : '';
+      const targetTag = isTarget ? `<span style="position:absolute;top:3px;right:3px;font-size:.6rem;font-weight:700;color:var(--accent);background:rgba(12,91,160,.1);border-radius:8px;padding:1px 5px;z-index:2;"><span class=gicon>location_on</span></span>` : '';
       const mk = (side,icon,title) => `<button type="button" onclick="toggleCellBorder('${ctx}','${key}','${side}')" title="${title}" style="font-size:.62rem;line-height:1;border:1px solid ${cb[side]?'#0D5BA3':'rgba(28,43,57,.25)'};background:${cb[side]?'#0D5BA3':'#fff'};color:${cb[side]?'#fff':'#666'};border-radius:3px;padding:2px 4px;cursor:pointer;">${icon}</button>`;
       const borderBtns = `<div style="position:absolute;bottom:3px;right:3px;display:flex;gap:2px;z-index:2;">${mk('top','▔','Bordure haute')}${mk('right','▕','Bordure droite')}${mk('bottom','▁','Bordure basse')}${mk('left','▏','Bordure gauche')}</div>`;
       const bgSwatches = Object.keys(CELL_BG_COLORS).map(k=>`<button type="button" onclick="setCellBg('${ctx}','${key}','${k}')" title="Fond ${k}" style="width:13px;height:13px;border-radius:50%;border:${cb.bg===k?'2px solid #1C1B2E':'1px solid rgba(28,43,57,.3)'};background:${CELL_BG_COLORS[k]};cursor:pointer;padding:0;"></button>`).join('');
@@ -1785,10 +1785,10 @@ async function refreshAuthUI(){
     const accessBlocked = pendingOrRejected || subscriptionExpired;
     if(pendingOrRejected){
       document.getElementById('accountRoleDisplay').innerHTML = profile.signup_status==='pending'
-        ? '⏳ Inscription en attente de validation par l\'administrateur.'
-        : '❌ Inscription refusée. Contactez contact@latelieraugmente.fr.';
+        ? '<span class=gicon>hourglass_top</span> Inscription en attente de validation par l\'administrateur.'
+        : '<span class=gicon>cancel</span> Inscription refusée. Contactez contact@latelieraugmente.fr.';
     } else if(subscriptionExpired){
-      document.getElementById('accountRoleDisplay').innerHTML = '⚠️ Abonnement expiré. Contactez contact@latelieraugmente.fr pour le renouveler.';
+      document.getElementById('accountRoleDisplay').innerHTML = '<span class=gicon>warning</span> Abonnement expiré. Contactez contact@latelieraugmente.fr pour le renouveler.';
     } else {
       document.getElementById('accountRoleDisplay').textContent =
         currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='eleve' ? 'Élève' : '';
@@ -1798,7 +1798,7 @@ async function refreshAuthUI(){
     // sinon on garde l'icône générique -- jamais de case vide dans le rond.
     const avatarBtn = document.getElementById('accountAvatar');
     const initials = [prenomTrim, nomTrim].filter(Boolean).map(s=>s[0]).join('').toUpperCase();
-    avatarBtn.textContent = initials || '👤';
+    avatarBtn.textContent = initials || '<span class=gicon>person</span>';
     avatarBtn.title = fullName ? `Mon compte — ${fullName}` : 'Mon compte';
 
     const isStaff = !accessBlocked && (currentUserRole==='admin' || currentUserRole==='prof');
@@ -1839,7 +1839,7 @@ async function refreshAuthUI(){
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
     isStaffGlobal = false;
     const avatarBtnOut = document.getElementById('accountAvatar');
-    if(avatarBtnOut){ avatarBtnOut.textContent = '👤'; avatarBtnOut.title = 'Mon compte'; }
+    if(avatarBtnOut){ avatarBtnOut.textContent = '<span class=gicon>person</span>'; avatarBtnOut.title = 'Mon compte'; }
     if(navCorrection) navCorrection.style.display='none';
     if(navCahier) navCahier.style.display='none';
     if(navMesResultats) navMesResultats.style.display='none';
@@ -1896,8 +1896,8 @@ function updateAddCahierButtonState(){
   btn.style.cursor = disabled ? 'not-allowed' : 'pointer';
   btn.title = disabled ? 'Sélectionnez une classe ci-dessus avant d\'ajouter au cahier.' : '';
   if(hint) hint.innerHTML = disabled
-    ? '⚠️ Sélectionnez une classe ci-dessus pour pouvoir ajouter des corrections au cahier.'
-    : 'Changez de classe depuis le menu <span style="font-weight:700;">👤 compte</span>, en haut à droite.';
+    ? '<span class=gicon>warning</span> Sélectionnez une classe ci-dessus pour pouvoir ajouter des corrections au cahier.'
+    : 'Changez de classe depuis le menu <span style="font-weight:700;"><span class=gicon>person</span> compte</span>, en haut à droite.';
 }
 let accountClassesList = [];
 function populateAccountClassList(classesList){
@@ -1959,16 +1959,16 @@ const CHANGELOG_DATA = [
     "Tableau interactif -- vrai bug corrigé : le trait de point (style « crayon ») était perpendiculaire à la mine au lieu d'être dans son prolongement (décalage de 90° dans le calcul). Nouveau 3e style « • Aucun » pour nommer une intersection ou un sommet sans ajouter de repère visuel superflu. Codages d'angle : la détection fonctionne désormais directement sur les extrémités des traits qui se rejoignent, sans exiger qu'un point nommé soit déjà posé au sommet -- bien plus fiable. Fix du trait qui \"interceptait\" l'arc dans les vignettes barrées (mauvais rayon).",
   ]},
   { version:'2026-08-04.189', items:[
-    "Tableau interactif -- placer un point propose maintenant le choix du style (✕ croix ou ／ trait dans le prolongement du crayon). Codages d'angle : vraie détection du sommet et des deux côtés réintroduite (arc juste, plus une fenêtre fixe approximative), avec repli automatique si aucun sommet n'est trouvé à proximité. Vignettes de la modale corrigées (l'arc débordait des côtés à cause d'un désaccord de géométrie entre les deux tracés) et 2 nouveaux types : arc barré une fois / deux fois, remplaçant l'ancien arc×3.",
+    "Tableau interactif -- placer un point propose maintenant le choix du style (<span class=gicon>close</span> croix ou ／ trait dans le prolongement du crayon). Codages d'angle : vraie détection du sommet et des deux côtés réintroduite (arc juste, plus une fenêtre fixe approximative), avec repli automatique si aucun sommet n'est trouvé à proximité. Vignettes de la modale corrigées (l'arc débordait des côtés à cause d'un désaccord de géométrie entre les deux tracés) et 2 nouveaux types : arc barré une fois / deux fois, remplaçant l'ancien arc×3.",
   ]},
   { version:'2026-08-04.188', items:[
     "Tableau interactif -- codages : la mini-fenêtre affiche maintenant 9 vraies vignettes visuelles (1/2/3 traits, petit cercle, #, 1/2/3 arcs, angle droit) au lieu de simples boutons texte. Le point bleu du crayon (sélecteur tourner/écrire/coder) est aussi nettement agrandi (rayon 15 au lieu de 6, pleine opacité), pour être vraiment lisible.",
   ]},
   { version:'2026-08-04.187', items:[
-    "Tableau interactif -- refonte des codages : plus de détection automatique du sommet/des côtés (peu fiable). Le point bleu du crayon fait maintenant défiler 3 modes au tap (🔄 Tourner, ✏️ Écrire, 🏷️ Coder), comme sur le compas. En mode Coder, un tap ouvre une mini-fenêtre pour choisir Longueur / Angle / Angle droit (et le nombre de traits/arcs). Les traits de longueur sont désormais fins et orientés selon l'angle du crayon -- c'est le professeur qui \"dessine\" l'inclinaison en positionnant le crayon, plus un calcul automatique sur le trait.",
+    "Tableau interactif -- refonte des codages : plus de détection automatique du sommet/des côtés (peu fiable). Le point bleu du crayon fait maintenant défiler 3 modes au tap (<span class=gicon>refresh</span> Tourner, <span class=gicon>edit</span> Écrire, <span class=gicon>label</span> Coder), comme sur le compas. En mode Coder, un tap ouvre une mini-fenêtre pour choisir Longueur / Angle / Angle droit (et le nombre de traits/arcs). Les traits de longueur sont désormais fins et orientés selon l'angle du crayon -- c'est le professeur qui \"dessine\" l'inclinaison en positionnant le crayon, plus un calcul automatique sur le trait.",
   ]},
   { version:'2026-08-04.186', items:[
-    "Tableau interactif -- nouveau : codages de longueurs et d'angles égaux sur le crayon. Un petit sélecteur sur le crayon fait défiler 7 modes (✏️ dessiner normal, ／1/2/3 traits pour les longueurs, ⌒1/2/3 arcs pour les angles). En mode codage, taper près d'un trait pose des petits traits perpendiculaires ; taper près d'un sommet où au moins deux traits partent dans des directions différentes pose un arc -- la reconnaissance longueur/angle est automatique. Les codages apparaissent aussi dans le panneau Historique avec leur propre poubelle.",
+    "Tableau interactif -- nouveau : codages de longueurs et d'angles égaux sur le crayon. Un petit sélecteur sur le crayon fait défiler 7 modes (<span class=gicon>edit</span> dessiner normal, ／1/2/3 traits pour les longueurs, ⌒1/2/3 arcs pour les angles). En mode codage, taper près d'un trait pose des petits traits perpendiculaires ; taper près d'un sommet où au moins deux traits partent dans des directions différentes pose un arc -- la reconnaissance longueur/angle est automatique. Les codages apparaissent aussi dans le panneau Historique avec leur propre poubelle.",
   ]},
   { version:'2026-08-04.185', items:[
     "Tableau interactif -- réorganisation de la barre d'outils. « Trait de construction » devient une case à cocher, à côté de « Crayon noir ». Les boutons Annuler/Rétablir n'affichent plus que les flèches (↶ ↷), suffisamment parlantes, ce qui libère de la place : le sélecteur de fond de page remonte sur la ligne du haut.",
@@ -1977,10 +1977,10 @@ const CHANGELOG_DATA = [
     "Tableau interactif -- le label d'un point (sa lettre) peut désormais se déplacer indépendamment, sans bouger le point lui-même : on l'attrape directement (poignée séparée de la croix) et on le repositionne librement autour du point.",
   ]},
   { version:'2026-08-04.183', items:[
-    "Tableau interactif -- nouveau : boutons ↶ Annuler / ↷ Rétablir, qui reviennent en arrière ou en avant dans toute la construction (traits, points, textes, outils ajoutés/déplacés). Nouveau panneau 🗂️ Historique listant chaque trait, point et texte créé avec sa propre poubelle pour le supprimer individuellement sans toucher au reste.",
+    "Tableau interactif -- nouveau : boutons ↶ Annuler / ↷ Rétablir, qui reviennent en arrière ou en avant dans toute la construction (traits, points, textes, outils ajoutés/déplacés). Nouveau panneau <span class=gicon>folder</span> Historique listant chaque trait, point et texte créé avec sa propre poubelle pour le supprimer individuellement sans toucher au reste.",
   ]},
   { version:'2026-08-04.182', items:[
-    "Tableau interactif -- gomme placée en bas à gauche par défaut. Nouvelle case « 📌 Mémoriser position » : si cochée, masquer puis reprendre un outil (règle, équerre...) restaure sa dernière position et son angle exacts au lieu de revenir à la position par défaut. Icônes de la palette redessinées pour ressembler aux vrais outils (règle graduée, équerre bleutée, rapporteur jaune/vert), réquerre retirée de la palette (redondante).",
+    "Tableau interactif -- gomme placée en bas à gauche par défaut. Nouvelle case « <span class=gicon>push_pin</span> Mémoriser position » : si cochée, masquer puis reprendre un outil (règle, équerre...) restaure sa dernière position et son angle exacts au lieu de revenir à la position par défaut. Icônes de la palette redessinées pour ressembler aux vrais outils (règle graduée, équerre bleutée, rapporteur jaune/vert), réquerre retirée de la palette (redondante).",
   ]},
   { version:'2026-08-04.181', items:[
     "Tableau interactif -- compas : nouveau fix sur la pointe, le triangle gris s'amenuisant jusqu'à un point ne couvrait plus toute la largeur du trait noir tout au bout, laissant un liseré noir visible. Le trait est maintenant raccourci pour s'arrêter en retrait, la pointe grise seule représente l'extrémité.",
@@ -2001,7 +2001,7 @@ const CHANGELOG_DATA = [
     "Tableau interactif -- équerre : vrais angles 30°/60° cette fois (calculés par trigonométrie exacte, la proportion précédente était choisie à l'œil et donnait ~19°). Poignée de rotation replacée dans l'angle libre à 60°. Règle : poignée déplacée sous les graduations 14-15, discrète. Crayon : poignée de rotation réduite, plus discrète. Aimantage (règle et pavage) nettement renforcé, avec un anneau visuel qui pulse autour de la pointe pendant le tracé pour rendre l'effet magnétique flagrant.",
   ]},
   { version:'2026-08-04.175', items:[
-    "Tableau interactif -- aimantage sur le pavage nettement plus généreux (seuil quasi doublé), pour un effet magnétique vraiment visible. Un point posé sur un sommet reste maintenant lié à ce sommet (même ligne/colonne) quand on zoome le pavage, au lieu de rester figé à l'ancienne position en pixels. Nouveau : bouton 🔤 pour ajouter des zones de texte libres sur le tableau (déplaçables, modifiables au tap).",
+    "Tableau interactif -- aimantage sur le pavage nettement plus généreux (seuil quasi doublé), pour un effet magnétique vraiment visible. Un point posé sur un sommet reste maintenant lié à ce sommet (même ligne/colonne) quand on zoome le pavage, au lieu de rester figé à l'ancienne position en pixels. Nouveau : bouton <span class=gicon>text_fields</span> pour ajouter des zones de texte libres sur le tableau (déplaçables, modifiables au tap).",
   ]},
   { version:'2026-08-04.174', items:[
     "Tableau interactif -- pavage zoomable : boutons ➕/➖ pour agrandir ou réduire les carreaux/triangles (10 à 60 unités). Le crayon s'aimante désormais aussi sur les sommets du pavage actif (comme sur le bord d'une règle), pour tracer facilement le long du quadrillage même avec une visée imprécise.",
@@ -2031,7 +2031,7 @@ const CHANGELOG_DATA = [
     "Tableau interactif -- verrouillage de coulissement rendu bidirectionnel : on peut désormais faire glisser soit l'équerre le long de la règle, soit la règle le long de l'équerre (au choix), le verrou s'applique aux deux outils en même temps.",
   ]},
   { version:'2026-08-04.165', items:[
-    "Tableau interactif -- nouveau : quand une équerre/réquerre touche une règle (bord parallèle et proche, comme sur une photo envoyée), un bouton « 🔗 Coulisser » apparaît. Une fois activé, l'équerre ne peut plus se déplacer qu'en glissant le long de la règle -- impossible de s'en éloigner par erreur, exactement la technique classique pour tracer des parallèles. Un badge 🔗 indique l'état verrouillé, un second clic sur le bouton déverrouille.",
+    "Tableau interactif -- nouveau : quand une équerre/réquerre touche une règle (bord parallèle et proche, comme sur une photo envoyée), un bouton « <span class=gicon>link</span> Coulisser » apparaît. Une fois activé, l'équerre ne peut plus se déplacer qu'en glissant le long de la règle -- impossible de s'en éloigner par erreur, exactement la technique classique pour tracer des parallèles. Un badge <span class=gicon>link</span> indique l'état verrouillé, un second clic sur le bouton déverrouille.",
   ]},
   { version:'2026-08-04.164', items:[
     "Tableau interactif -- équerre/réquerre : sommets francs (plus d'arrondi), graduations intermédiaires (mm) ajoutées entre chaque cm, échelle désormais identique à celle de la règle (1cm = même largeur sur les deux outils), texte « Équerre » retiré de l'image.",
@@ -2052,19 +2052,19 @@ const CHANGELOG_DATA = [
     "Tableau interactif -- compas : pointe (ancrage) redessinée en petite forme grise et pointue, à l'image de la mine. Rapporteur : mine rapprochée du bord réel (marge réduite), sa position (angle) est désormais mémorisée d'un geste à l'autre au lieu de revenir toujours à 90°. Surtout : un simple glissé ne pose plus de repère automatiquement au relâché (juste un repositionnement) -- il faut un double-clic pour vraiment le poser, comme demandé.",
   ]},
   { version:'2026-08-04.158', items:[
-    "Tableau interactif -- compas : sélecteur à 3 états (↔️ Ouvrir/écarter, 🔒 Fermé/tourner sans rien tracer ni écarter, ✏️ Crayon/tracer), un clic fait défiler les états. Rapporteur : poignée de rotation déplacée à l'intérieur, discrète, pour ne plus gêner la lecture des graduations près de 180°. Le crayon rotatif ne peut plus s'écarter du rapporteur (mine toujours exactement sur le bord). Le repère posé est désormais un simple petit trait dans l'axe de la graduation choisie, plus une croix.",
+    "Tableau interactif -- compas : sélecteur à 3 états (↔️ Ouvrir/écarter, <span class=gicon>lock</span> Fermé/tourner sans rien tracer ni écarter, <span class=gicon>edit</span> Crayon/tracer), un clic fait défiler les états. Rapporteur : poignée de rotation déplacée à l'intérieur, discrète, pour ne plus gêner la lecture des graduations près de 180°. Le crayon rotatif ne peut plus s'écarter du rapporteur (mine toujours exactement sur le bord). Le repère posé est désormais un simple petit trait dans l'axe de la graduation choisie, plus une croix.",
   ]},
   { version:'2026-08-04.157', items:[
-    "Tableau interactif -- compas repris avec le bon vocabulaire (pointe = ancrage fixe, mine = crayon qui trace) : plus de cercle sur la pointe, mine redessinée en vrai petit crayon, la branche de la pointe déplace tout l'ensemble (aimantage sur un point existant), la branche du crayon écarte/tourne librement sans tracer. Un clic sur l'icône 🔓/🔒 verrouille le rayon et fait basculer cette même branche en mode traçage (tourner dessine vraiment l'arc/cercle) ; un second clic déverrouille.",
+    "Tableau interactif -- compas repris avec le bon vocabulaire (pointe = ancrage fixe, mine = crayon qui trace) : plus de cercle sur la pointe, mine redessinée en vrai petit crayon, la branche de la pointe déplace tout l'ensemble (aimantage sur un point existant), la branche du crayon écarte/tourne librement sans tracer. Un clic sur l'icône 🔓/<span class=gicon>lock</span> verrouille le rayon et fait basculer cette même branche en mode traçage (tourner dessine vraiment l'arc/cercle) ; un second clic déverrouille.",
   ]},
   { version:'2026-08-04.156', items:[
-    "Tableau interactif -- fix important du rapporteur : le crayon ne bougeait jamais visuellement pendant le glissement (seul un petit repère en pointillés apparaissait ailleurs), donnant l'impression qu'il ne tournait pas. Corrigé, le crayon lui-même suit maintenant le geste. Compas : mine redessinée en simple pointe grise (plus de rectangle coloré ni de cercle), c'est désormais la branche qui porte la mine qui déplace tout l'ensemble (avec aimantage sur un point existant), le cœur règle l'écartement. Nouveau bouton « 📐 Trait de construction » qui bascule les tracés suivants en gris fin, sans modifier ceux déjà faits.",
+    "Tableau interactif -- fix important du rapporteur : le crayon ne bougeait jamais visuellement pendant le glissement (seul un petit repère en pointillés apparaissait ailleurs), donnant l'impression qu'il ne tournait pas. Corrigé, le crayon lui-même suit maintenant le geste. Compas : mine redessinée en simple pointe grise (plus de rectangle coloré ni de cercle), c'est désormais la branche qui porte la mine qui déplace tout l'ensemble (avec aimantage sur un point existant), le cœur règle l'écartement. Nouveau bouton « <span class=gicon>straighten</span> Trait de construction » qui bascule les tracés suivants en gris fin, sans modifier ceux déjà faits.",
   ]},
   { version:'2026-08-04.155', items:[
     "Tableau interactif -- refonte du compas selon un geste plus naturel : le cœur (intersection des branches) déplace l'ensemble en le maintenant appuyé, la branche qui porte le crayon règle l'écartement sans rien tracer, la mine tourne ET trace, un double-clic sur le cœur verrouille le rayon (cadenas visible, charnière rouge). Fix important : les branches gardaient une longueur fixe désormais (elles semblaient s'allonger en écartant auparavant, un bug de géométrie). Rapporteur : le crayon rotatif se place maintenant à 90° par défaut, mine exactement sur le bord extérieur.",
   ]},
   { version:'2026-08-04.154', items:[
-    "Tableau interactif -- corrections majeures suite aux retours. Compas : nouveau bouton « 🎯 Vise / ✏️ Trace » (on peut enfin tourner pour viser sans tracer par erreur), la mine s'aimante sur un point existant en visant, arcs lissés par interpolation, redessiné dans l'esprit d'un vrai compas moderne (charnière ovale, pommeau arrondi, jambes épaisses). Rapporteur : agrandi, plus de nommage forcé pour poser un repère d'angle, le crayon qui tourne autour ressemble maintenant à un vrai petit crayon, le pivot s'aimante sur un point existant et la rotation s'aligne vers un second point. Gomme : effacement partiel (scinde le trait) au lieu de tout effacer. Règle non graduée retirée de la palette (redondante).",
+    "Tableau interactif -- corrections majeures suite aux retours. Compas : nouveau bouton « <span class=gicon>my_location</span> Vise / <span class=gicon>edit</span> Trace » (on peut enfin tourner pour viser sans tracer par erreur), la mine s'aimante sur un point existant en visant, arcs lissés par interpolation, redessiné dans l'esprit d'un vrai compas moderne (charnière ovale, pommeau arrondi, jambes épaisses). Rapporteur : agrandi, plus de nommage forcé pour poser un repère d'angle, le crayon qui tourne autour ressemble maintenant à un vrai petit crayon, le pivot s'aimante sur un point existant et la rotation s'aligne vers un second point. Gomme : effacement partiel (scinde le trait) au lieu de tout effacer. Règle non graduée retirée de la palette (redondante).",
   ]},
   { version:'2026-08-04.153', items:[
     "Tableau interactif -- règle : pivot déplacé exactement au bord côté graduation (plus au centre de la largeur). Rapporteur : fix d'un vrai bug qui empêchait tout déplacement (l'image bloquait les clics au lieu de les transmettre). Points et repères désormais déplaçables par glisser (tap = renommer, glissé = déplacer). Icônes rapporteur/compas/gomme remplacées par de vraies illustrations SVG, bien plus parlantes que les emojis précédents. Nouvel outil Gomme. Compas : nouvelle poignée pour écarter/resserrer les branches sans tracer, mine redessinée en forme de petit crayon.",
@@ -2127,7 +2127,7 @@ const CHANGELOG_DATA = [
     "Cahier de corrections (impression/PDF) -- fix de la synchronisation des tailles de disques (elle s'appuyait sur les données de la session en cours, absentes pour d'anciennes corrections déjà enregistrées ; remplacée par une version autonome qui fonctionne toujours). Dates en gras, références d'exercices soulignées, titre « Cahier de corrections » retiré, chapitre affiché en pied de section aligné à droite (ex. « N1 · Opérations sur les nombres décimaux ») -- un vrai pied de page physique par feuille imprimée n'étant pas réalisable en HTML/CSS standard, ceci en est l'équivalent le plus proche.",
   ]},
   { version:'2026-08-04.134', items:[
-    "Cahier de corrections -- fix définitif de la page blanche au PDF : abandon de html2canvas (donnait une page blanche de façon récurrente avec ce contenu) au profit de l'impression native du navigateur, comme pour l'évaluation. Boutons renommés « 🖨️ Imprimer / Enregistrer en PDF ». Le bouton « Voir toutes les dates » redevient « 📅 Corrections du jour » une fois cliqué, pour basculer facilement entre les deux vues sans ressaisir la date.",
+    "Cahier de corrections -- fix définitif de la page blanche au PDF : abandon de html2canvas (donnait une page blanche de façon récurrente avec ce contenu) au profit de l'impression native du navigateur, comme pour l'évaluation. Boutons renommés « <span class=gicon>print</span> Imprimer / Enregistrer en PDF ». Le bouton « Voir toutes les dates » redevient « <span class=gicon>calendar_month</span> Corrections du jour » une fois cliqué, pour basculer facilement entre les deux vues sans ressaisir la date.",
   ]},
   { version:'2026-08-04.133', items:[
     "Cahier de correction (liste en bas de l'outil de correction) -- filtre par date ajouté, sur la date du jour par défaut, pour ne plus afficher toutes les corrections de l'année à chaque ouverture. Bouton « Voir toutes les dates » pour tout retrouver. Tentative de fix pour la page blanche au « Générer le cahier (PDF) » -- désactivation d'un mode de rendu connu pour mal fonctionner avec l'arbre de probabilité (SVG avec texte enrichi) ; à confirmer.",
@@ -2151,7 +2151,7 @@ const CHANGELOG_DATA = [
     "Outil de correction -- fix important : le glisser-déposer entre colonnes mettait bien à jour la donnée, mais l'affichage ne se rafraîchissait jamais (appelait toujours la fonction du module Évaluation), donnant l'impression que rien ne se passait. Corrigé. La zone de texte libre est maintenant masquée par défaut (accessible via « + Zone de texte libre » si besoin), puisqu'elle peut de toute façon se recréer avec l'outil Texte.",
   ]},
   { version:'2026-08-04.126', items:[
-    "Outil de correction -- la zone de texte libre sous le titre peut désormais être retirée (bouton ✕), comme dans le module Évaluation qui n'en a pas et va directement aux blocs ; réversible via « + Zone de texte libre ». Les zones en pointillés (blocs en cours d'édition) passent en fond blanc, plus lisibles que le fond crème hérité de la page.",
+    "Outil de correction -- la zone de texte libre sous le titre peut désormais être retirée (bouton <span class=gicon>close</span>), comme dans le module Évaluation qui n'en a pas et va directement aux blocs ; réversible via « + Zone de texte libre ». Les zones en pointillés (blocs en cours d'édition) passent en fond blanc, plus lisibles que le fond crème hérité de la page.",
   ]},
   { version:'2026-08-04.125', items:[
     "Outil de correction -- reprend maintenant le même système de mise en page que le module Évaluation : lignes/colonnes personnalisables, glisser-déposer des blocs entre elles, bouton « Valider » qui masque la barre d'outils et les pointillés d'édition pour un écran plus lisible en cours. L'ajout au cahier et la fenêtre de projection conservent bien cette mise en page. Fix au passage : « Effacer le brouillon » ne vidait pas réellement les blocs insérés (variable orpheline depuis un ancien refactor) -- corrigé.",
@@ -2208,7 +2208,7 @@ const CHANGELOG_DATA = [
     "Fix -- les champs X min/max et Y min/max de l'outil Graphique ne mettaient pas à jour l'aperçu automatiquement (gestionnaire manquant, ajouté lors de la session précédente). Corrigé.",
   ]},
   { version:'2026-08-04.107', items:[
-    "Outil Graphique -- trois améliorations : graduations chiffrées sur les deux axes (valeurs entières) ; mode « axe des x en radians » pour les fonctions trigonométriques, avec graduations en π/2, π, 3π/2... au lieu de décimaux ; bouton « 🔍 Cadrage auto » qui ajuste automatiquement les bornes X/Y pour bien cadrer les courbes tracées (d'après les valeurs réellement atteintes par les fonctions, et les points des droites).",
+    "Outil Graphique -- trois améliorations : graduations chiffrées sur les deux axes (valeurs entières) ; mode « axe des x en radians » pour les fonctions trigonométriques, avec graduations en π/2, π, 3π/2... au lieu de décimaux ; bouton « <span class=gicon>search</span> Cadrage auto » qui ajuste automatiquement les bornes X/Y pour bien cadrer les courbes tracées (d'après les valeurs réellement atteintes par les fonctions, et les points des droites).",
   ]},
   { version:'2026-08-04.106', items:[
     "Éditeur de formule -- fix de la puissance : un « + » parasite apparaissait entre la base et l'exposant (base était resté une séquence complète par erreur), et l'exposant chevauchait la base. Corrigé : base simple, exposant correctement positionné en haut à droite, sans chevauchement. Nouvelle structure Indice (x₂), positionnée en bas à droite, pour les suites (uₙ) et notations indexées.",
@@ -2217,10 +2217,10 @@ const CHANGELOG_DATA = [
     "Éditeur de formule -- il était impossible d'écrire un mélange texte+structure dans une même case (ex. lim(3x + 1/x) : « 3x+ » puis une fraction). Les cases principales (expression d'une somme/limite/intégrale, numérateur, dénominateur, contenu d'une racine) acceptent maintenant plusieurs éléments à la suite, via un petit « + » ; les bornes/variables/exposants restent une case unique, plus rarement composées.",
   ]},
   { version:'2026-08-04.104', items:[
-    "Fix + refonte de l'éditeur de formule -- le bouton ✕ ne fonctionnait pas du tout (bug de chemin dans l'arbre, corrigé) et l'affichage était confus (trop de boutons + dispersés, cases vides sans explication). Simplifié : chaque emplacement est maintenant une case unique (texte ou structure imbriquée), chaque structure apparaît dans un encadré clair pour bien la distinguer, et les cases vides superflues ont disparu.",
+    "Fix + refonte de l'éditeur de formule -- le bouton <span class=gicon>close</span> ne fonctionnait pas du tout (bug de chemin dans l'arbre, corrigé) et l'affichage était confus (trop de boutons + dispersés, cases vides sans explication). Simplifié : chaque emplacement est maintenant une case unique (texte ou structure imbriquée), chaque structure apparaît dans un encadré clair pour bien la distinguer, et les cases vides superflues ont disparu.",
   ]},
   { version:'2026-08-04.103', items:[
-    "Nouveau : Éditeur de formule pas à pas (bouton 🧮 dans l'outil Texte), en remplacement des raccourcis texte Σ/lim/∫ qui butaient sans cesse sur les imbrications complexes. Cliquer sur Fraction, Puissance, Racine, Somme, Intégrale ou Limite fait apparaître une structure à cases vides ; cliquer dans une case puis choisir un symbole y imbrique une nouvelle structure, sans limite de profondeur (ex. une fraction dans le dénominateur d'une autre fraction, comme pour le taux d'accroissement). Comme c'est une vraie structure (et non plus du texte à analyser après coup), le résultat est fiable quelle que soit la complexité.",
+    "Nouveau : Éditeur de formule pas à pas (bouton <span class=gicon>calculate</span> dans l'outil Texte), en remplacement des raccourcis texte Σ/lim/∫ qui butaient sans cesse sur les imbrications complexes. Cliquer sur Fraction, Puissance, Racine, Somme, Intégrale ou Limite fait apparaître une structure à cases vides ; cliquer dans une case puis choisir un symbole y imbrique une nouvelle structure, sans limite de profondeur (ex. une fraction dans le dénominateur d'une autre fraction, comme pour le taux d'accroissement). Comme c'est une vraie structure (et non plus du texte à analyser après coup), le résultat est fiable quelle que soit la complexité.",
   ]},
   { version:'2026-08-04.102', items:[
     "Fix -- f(x+3)/x (et toute fraction avec un appel de fonction d'un côté) n'était pas reconnue en dehors de sqrt(). Ajouté au texte libre général, en réordonnant pour ne pas casser les fractions décimales (3.5/4 restait coupé en deux avant ce correctif).",
@@ -2250,7 +2250,7 @@ const CHANGELOG_DATA = [
     "Nouvel outil « Graphique » : trace une ou plusieurs courbes sur le même repère, au choix par deux points (droite, prolongée automatiquement sur toute la largeur) ou par l'expression d'une fonction (ex. x^2-3, 2x+1, sqrt(x)), avec les mêmes conventions d'écriture que le reste du site. Chaque courbe a sa propre couleur, axes et bornes paramétrables. Disponible dans l'outil de correction et les exercices d'évaluation, comme les autres figures.",
   ]},
   { version:'2026-08-04.93', items:[
-    "Icônes de la barre d'outils remplacées par des tracés en trait fin, monochromes (crayon, triangle, grille, division, axes, demi-cercle, cube) -- plus sobres et professionnelles que les émojis précédents (notamment le 🥧 pour les fractions, jugé trop enfantin).",
+    "Icônes de la barre d'outils remplacées par des tracés en trait fin, monochromes (crayon, triangle, grille, division, axes, demi-cercle, cube) -- plus sobres et professionnelles que les émojis précédents (notamment le <span class=gicon>pie_chart</span> pour les fractions, jugé trop enfantin).",
   ]},
   { version:'2026-08-04.92', items:[
     "Barre d'outils allégée (outil de correction et exercices d'évaluation) : 7 icônes compactes au lieu de 10 boutons avec texte. Les outils proches sont regroupés sous des onglets dans la même fenêtre : Division (Euclidienne / Décimale), Axe & Repère, Fraction visuelle (Disque / Rectangle) -- plus besoin de chercher parmi une longue liste, et l'ensemble prend beaucoup moins de place à l'écran.",
@@ -2268,7 +2268,7 @@ const CHANGELOG_DATA = [
     "Rectangle fractionné (évaluation) -- même traitement que les disques : synchronisation automatique de la taille entre plusieurs rectangles d'un même exercice, et réglage manuel de taille dédié (« ▭ Taille des rectangles »). Nouveau : partage en grille (lignes × colonnes à la fois), pédagogiquement plus parlant qu'un partage à sens unique pour un dénominateur composé -- ex. 4/6 vu comme une grille 2×3, montrant clairement les deux facteurs du dénominateur.",
   ]},
   { version:'2026-08-04.87', items:[
-    "Nouveau bouton « 💡 Suggérer une amélioration pour ce module » directement dans chaque chapitre (Cours, Méthode, Exercices, Quiz, Histoire), visible pour les profs et admin. Réutilise le système de signalement existant, en pré-remplissant automatiquement le niveau, le chapitre et le module concernés -- plus besoin de les ressaisir à la main. Les suggestions apparaissent avec un badge distinct des bugs dans la liste de suivi (Administration).",
+    "Nouveau bouton « <span class=gicon>lightbulb</span> Suggérer une amélioration pour ce module » directement dans chaque chapitre (Cours, Méthode, Exercices, Quiz, Histoire), visible pour les profs et admin. Réutilise le système de signalement existant, en pré-remplissant automatiquement le niveau, le chapitre et le module concernés -- plus besoin de les ressaisir à la main. Les suggestions apparaissent avec un badge distinct des bugs dans la liste de suivi (Administration).",
   ]},
   { version:'2026-08-04.86', items:[
     "Fix majeur -- délai au chargement de la page (menu inaccessible) : le très gros script du site était écrit directement dans la page, ce qui obligeait KaTeX et Supabase à se charger de façon bloquante avant que quoi que ce soit d'autre (y compris le menu) ne puisse s'afficher. Le script a été extrait dans un fichier séparé (app.js), ce qui permet enfin de tout charger en parallèle sans bloquer l'affichage. Gain mesuré : le menu devient utilisable environ 2 fois plus vite. Tout le site a été retesté en profondeur (outils, chapitres, évaluation, PDF, administration) pour s'assurer qu'aucun comportement n'a changé.",
@@ -2286,7 +2286,7 @@ const CHANGELOG_DATA = [
     "Axes et repères -- les graduations et les consignes utilisent maintenant la virgule décimale française (plus de point). Un point donné sous forme fractionnaire (ex. A(2/5)) est réécrit sous cette même forme dans la consigne « Place les points... », plus jamais converti en décimal. Taille par défaut adaptée à leur forme naturellement plus large (n'apparaissent plus minuscules pendant l'édition, avant validation).",
   ]},
   { version:'2026-08-04.81', items:[
-    "Partage d'évaluation -- distinction éditeur (✏️, peut modifier) / lecteur (👁️, peut seulement consulter et imprimer), avec possibilité de retirer un partage. Le propriétaire reste seul habilité à supprimer l'évaluation, quel que soit le rôle des autres (déjà garanti côté base de données, vérifié). « Mes évaluations » indique maintenant le rôle sur les évaluations partagées.",
+    "Partage d'évaluation -- distinction éditeur (<span class=gicon>edit</span>, peut modifier) / lecteur (<span class=gicon>visibility</span>, peut seulement consulter et imprimer), avec possibilité de retirer un partage. Le propriétaire reste seul habilité à supprimer l'évaluation, quel que soit le rôle des autres (déjà garanti côté base de données, vérifié). « Mes évaluations » indique maintenant le rôle sur les évaluations partagées.",
   ]},
   { version:'2026-08-04.80', items:[
     "Créer une évaluation -- nouvelles modales propres (remplacent les alert/confirm/prompt natifs du navigateur, au rendu daté) pour toutes les boîtes de dialogue du module. Supervision déplacé dans le menu Outils prof. Vue compacte (après validation) : le bouton Supprimer a été retiré (accessible seulement en repassant par Éditer, pour éviter une suppression accidentelle), et les flèches ↑/↓ y sont désormais disponibles pour réordonner sans avoir à éditer. Exercice à plusieurs colonnes : 4 boutons par cellule permettent de choisir quels bords apparaissent (haut/droite/bas/gauche), un peu comme un éditeur de tableau -- appliqué dans l'aperçu et le PDF.",
@@ -2295,7 +2295,7 @@ const CHANGELOG_DATA = [
     "Créer une évaluation -- le champ « Nombre d'exercices » n'apparaît plus que si « Laisser l'IA proposer des exercices » est coché (inutile sinon). Le bouton Imprimer avertit désormais si la classe et/ou la date n'ont pas été renseignées, avec possibilité de continuer quand même.",
   ]},
   { version:'2026-08-04.78', items:[
-    "Créer une évaluation -- nouveau bouton « ✓ Valider » par exercice : bascule vers une vue épurée montrant uniquement le résultat final (tel qu'il sera imprimé), sans aucun des outils/menus d'édition. Deux boutons restent disponibles sur cette vue : ✏️ Éditer (pour revenir à l'édition complète) et ✕ Supprimer.",
+    "Créer une évaluation -- nouveau bouton « ✓ Valider » par exercice : bascule vers une vue épurée montrant uniquement le résultat final (tel qu'il sera imprimé), sans aucun des outils/menus d'édition. Deux boutons restent disponibles sur cette vue : <span class=gicon>edit</span> Éditer (pour revenir à l'édition complète) et <span class=gicon>close</span> Supprimer.",
   ]},
   { version:'2026-08-04.77', items:[
     "Créer une évaluation -- retrait de la zone de saisie principale de chaque exercice (devenue redondante avec l'outil Texte) : il n'y a désormais plus qu'une seule façon d'ajouter du contenu, via les blocs. La première ligne (par défaut, 1 colonne) affiche maintenant son encart en pointillés comme les autres, pour qu'on voie où déposer/ajouter du contenu dès le départ. Les anciennes évaluations sauvegardées et les énoncés générés par IA sont automatiquement convertis en bloc texte, rien n'est perdu.",
@@ -2325,13 +2325,13 @@ const CHANGELOG_DATA = [
     "Fix -- fractions trop petites (à l'écran et en PDF) : taille augmentée, et surtout la fenêtre d'impression n'avait pas la même correction de taille que le reste du site (c'était la vraie cause de la différence de mise en page entre aperçu et PDF) -- harmonisé. Division vierge : ne montre plus du tout le signe moins ni les traits de soustraction (juste l'espace anticipé, sans aucun indice). La barre horizontale sous le diviseur touche maintenant la barre verticale.",
   ]},
   { version:'2026-08-04.68', items:[
-    "Fix critique -- le partage d'évaluation échouait (\"column reference id is ambiguous\") : corrigé côté base de données. Nouvelle modale complète d'édition d'un professeur (Administration) : nom, prénom, identifiant, mot de passe (masqué, réinitialisable), UAI, et classes rattachées à l'établissement (à cocher). Réponses à compléter (disque/rectangle) : vraie barre de fraction visuelle au lieu d'un simple « / ». Nouvel outil « ✏️ Texte » : permet d'écrire du texte/maths avec la même mise en forme automatique que l'énoncé principal, y compris dans les colonnes d'un exercice.",
+    "Fix critique -- le partage d'évaluation échouait (\"column reference id is ambiguous\") : corrigé côté base de données. Nouvelle modale complète d'édition d'un professeur (Administration) : nom, prénom, identifiant, mot de passe (masqué, réinitialisable), UAI, et classes rattachées à l'établissement (à cocher). Réponses à compléter (disque/rectangle) : vraie barre de fraction visuelle au lieu d'un simple « / ». Nouvel outil « <span class=gicon>edit</span> Texte » : permet d'écrire du texte/maths avec la même mise en forme automatique que l'énoncé principal, y compris dans les colonnes d'un exercice.",
   ]},
   { version:'2026-08-04.67', items:[
     "Créer une évaluation -- gros lot : (1) UAI de l'établissement renseignable à la création d'un compte prof (admin) ; (2) partage d'une évaluation avec liste des collègues de la même UAI (avec indication de qui est déjà partagé), plutôt qu'un simple e-mail à taper ; (3) le titre du dernier enregistrement est proposé par défaut à la sauvegarde suivante ; (4) disque et rectangle fractionnés : ligne de réponse à compléter en dessous (forme simple .../.... ou avec partie entière ... + .../....) ; (5) division posée (entière et décimale) : option pour n'afficher que dividende et diviseur, avec la hauteur de la barre correctement anticipée sur le nombre d'étapes réel ; (6) axe gradué et repère : choix entre « lire » (points déjà placés) et « placer » (points à tracer par l'élève, consigne donnée séparément). Tentative de fix supplémentaire sur la synchronisation des disques en impression (léger délai de sécurité avant mesure).",
   ]},
   { version:'2026-08-04.66', items:[
-    "Fix critique -- la synchronisation des disques ne fonctionnait plus du tout : du code de mes tentatives précédentes s'était mélangé par erreur, supprimant silencieusement la fonction responsable (aucun message d'erreur visible sur le site, seulement en console). Entièrement réparé et re-testé. Ajout d'un réglage manuel « 🥧 Taille des disques » par exercice (visible dès qu'il y a au moins un disque) : plus fiable que la synchronisation automatique, il s'applique directement dans tous les contextes (édition, aperçu, PDF).",
+    "Fix critique -- la synchronisation des disques ne fonctionnait plus du tout : du code de mes tentatives précédentes s'était mélangé par erreur, supprimant silencieusement la fonction responsable (aucun message d'erreur visible sur le site, seulement en console). Entièrement réparé et re-testé. Ajout d'un réglage manuel « <span class=gicon>pie_chart</span> Taille des disques » par exercice (visible dès qu'il y a au moins un disque) : plus fiable que la synchronisation automatique, il s'applique directement dans tous les contextes (édition, aperçu, PDF).",
   ]},
   { version:'2026-08-04.65', items:[
     "Fix -- les disques n'étaient toujours pas de la même taille dans le PDF : ma tentative précédente prédisait une taille à l'avance (calcul supposant une largeur fixe), qui ne correspondait pas à la largeur réelle des colonnes dans ce contexte. Corrigé en mesurant directement, depuis le script principal, le rendu réel de la fenêtre d'impression elle-même (accessible sans qu'elle ait besoin d'exécuter quoi que ce soit) -- fiable quel que soit le nombre de colonnes choisi.",
@@ -2340,7 +2340,7 @@ const CHANGELOG_DATA = [
     "Fix -- les disques n'avaient pas la même taille dans la fenêtre d'impression (PDF) : la synchronisation ajustait le DOM en direct, mais cette fenêtre est une page neuve qui ne peut pas exécuter ce script. Le diamètre synchronisé est désormais mémorisé et intégré directement dans le HTML généré, quel que soit le contexte (édition, aperçu, impression).",
   ]},
   { version:'2026-08-04.63', items:[
-    "Créer une évaluation -- refonte du PDF : abandon de la capture d'écran (peu fiable avec ce contenu) au profit de l'impression native du navigateur dans une fenêtre dédiée (choisir « Enregistrer en PDF » comme imprimante). La synchronisation de la taille des disques s'applique désormais aussi dans l'aperçu, pas seulement pendant l'édition. Nouveau : sauvegarde de l'évaluation (bouton 💾), liste « Mes évaluations » pour la retrouver, et partage avec un collègue par e-mail (accès en lecture/écriture partagé).",
+    "Créer une évaluation -- refonte du PDF : abandon de la capture d'écran (peu fiable avec ce contenu) au profit de l'impression native du navigateur dans une fenêtre dédiée (choisir « Enregistrer en PDF » comme imprimante). La synchronisation de la taille des disques s'applique désormais aussi dans l'aperçu, pas seulement pendant l'édition. Nouveau : sauvegarde de l'évaluation (bouton <span class=gicon>save</span>), liste « Mes évaluations » pour la retrouver, et partage avec un collègue par e-mail (accès en lecture/écriture partagé).",
   ]},
   { version:'2026-08-04.62', items:[
     "Fix -- le PDF d'évaluation affichait l'en-tête écrasé vers le centre de la page et les exercices n'apparaissaient pas du tout : la technique de dissimulation (position:fixed) limitait la mesure du contenu à la hauteur de la fenêtre visible. Remplacée par position:absolute, qui mesure la hauteur réelle et complète du contenu. Les disques d'un même exercice s'harmonisent maintenant automatiquement sur le plus petit diamètre nécessaire, pour un rendu cohérent quand plusieurs blocs disque coexistent.",
@@ -2379,7 +2379,7 @@ const CHANGELOG_DATA = [
     "Fix -- Outil de correction, division décimale : le dividende n'acceptait pas la virgule décimale (champ number, qui la rejette silencieusement, et le calcul lui-même n'acceptait qu'un entier). Corrigé : un dividende comme 10,5 est maintenant accepté, avec la virgule marquée visuellement dans la division posée par un trait pointillé entre les colonnes concernées.",
   ]},
   { version:'2026-08-04.50', items:[
-    "Outil de correction -- deux améliorations majeures : (1) la division décimale est maintenant posée en colonnes (dividende/diviseur/quotient), comme la division entière, plutôt qu'une liste de lignes de texte ; (2) chaque bloc ajouté (figure, tableau, division, axe, repère, disque, rectangle) est désormais indépendant, avec ses propres boutons ✏️ modifier et ✕ supprimer -- visibles uniquement côté professeur, jamais dans la fenêtre de projection.",
+    "Outil de correction -- deux améliorations majeures : (1) la division décimale est maintenant posée en colonnes (dividende/diviseur/quotient), comme la division entière, plutôt qu'une liste de lignes de texte ; (2) chaque bloc ajouté (figure, tableau, division, axe, repère, disque, rectangle) est désormais indépendant, avec ses propres boutons <span class=gicon>edit</span> modifier et <span class=gicon>close</span> supprimer -- visibles uniquement côté professeur, jamais dans la fenêtre de projection.",
   ]},
   { version:'2026-08-04.49', items:[
     "Outil de correction -- fix division décimale : le calcul répétait la même ligne à l'identique pour un quotient non terminé (ex. 10÷3), au lieu de détecter le cycle infini ; corrigé, avec un message clair (\"le motif se répète indéfiniment\"). La première ligne inutile (chiffre seul insuffisant) est aussi retirée. Axe gradué et repère : nouvelle syntaxe des points avec parenthèses et virgule décimale -- A(2,5) sur l'axe (fractions possibles, ex. A(3/4), qui subdivise automatiquement la graduation), A(3,5;-2) dans le repère (x et y séparés par point-virgule).",
@@ -2424,7 +2424,7 @@ const CHANGELOG_DATA = [
     "Fix -- Outil de correction (projection) : un astérisque * tapé pour une multiplication en dehors d'une fraction, d'une racine ou d'un exposant restait affiché tel quel au lieu d'être converti en signe ×. Corrigé (testé sur multiplication seule, dans une fraction, et après du texte en gras).",
   ]},
   { version:'2026-08-04.35', items:[
-    "Supervision -- ajout d'une section « 🎲 Le compte est bon » : pour chaque élève de la classe active, le taux de réussite en mode illimité et en mode chronométré, ainsi que les 5 dernières tentatives (exact ou à combien près, mode, date).",
+    "Supervision -- ajout d'une section « <span class=gicon>casino</span> Le compte est bon » : pour chaque élève de la classe active, le taux de réussite en mode illimité et en mode chronométré, ainsi que les 5 dernières tentatives (exact ou à combien près, mode, date).",
   ]},
   { version:'2026-08-04.34', items:[
     "Le compte est bon -- les tentatives des élèves sont désormais enregistrées (nouvelle table Supabase ceb_results, mêmes règles de visibilité que les Automatismes : l'élève, son professeur, ou un administrateur). Un encart « Tes statistiques » affiche le nombre de tentatives et le taux de réussite, séparément en mode illimité et en mode chronométré, visible sur l'écran de réglages et après chaque partie.",
@@ -2445,7 +2445,7 @@ const CHANGELOG_DATA = [
     "Fix -- 6e Fractions : les fractions LaTeX (1/2, 1/7) de l'encart « Un peu d'histoire » s'affichaient en texte brut au lieu d'être rendues, car ce nouveau conteneur n'était pas inclus dans l'appel de rendu des formules. Corrigé.",
   ]},
   { version:'2026-08-04.28', items:[
-    "Les touches d'histoire ont désormais leur propre onglet « 📜 Un peu d'histoire » dans les pages de chapitre (à côté de Cours, Méthode, Exercices, Quiz), plutôt que d'être mêlées au Cours. Les chapitres sans anecdote pour l'instant affichent un message d'attente à la place.",
+    "Les touches d'histoire ont désormais leur propre onglet « <span class=gicon>history_edu</span> Un peu d'histoire » dans les pages de chapitre (à côté de Cours, Méthode, Exercices, Quiz), plutôt que d'être mêlées au Cours. Les chapitres sans anecdote pour l'instant affichent un message d'attente à la place.",
   ]},
   { version:'2026-08-04.27', items:[
     "Nouveau : encart « Un peu d'histoire » (courte anecdote historique vérifiée par recherche, pas de mémoire) ajouté à 9 chapitres -- 6e : Fractions (Égypte), Nombres décimaux (Simon Stevin), Distance et cercles (Euclide), Angles et rapporteur (Babyloniens, Blundeville) ; 5e : Divisibilité (Ératosthène), Nombres relatifs (Chine, Brahmagupta), Calcul littéral et Équations (Al-Khwârizmî), Proportionnalité (Thalès). Les autres chapitres suivront dans une prochaine session.",
@@ -2679,7 +2679,7 @@ const CHANGELOG_DATA = [
     "Outil prof (éditeur de correction) : le contenu joint (figure, tableau, division posée) était bien enregistré (« ✓ Contenu joint ») mais n'apparaissait jamais dans l'aperçu ni en mode projection, qui ne se basaient que sur le texte saisi. L'aperçu inclut maintenant ce contenu, et se rafraîchit immédiatement après chaque insertion, retrait, ou ouverture d'une correction existante pour modification.",
   ]},
   { version:'2026-07-31.9', items:[
-    "Automatismes : les trois records sous chaque vignette tiennent maintenant sur une seule ligne, avec une icône par catégorie (👤 moi, 🏫 classe, 🏛️ établissement -- renommé depuis « interclasse », plus clair).",
+    "Automatismes : les trois records sous chaque vignette tiennent maintenant sur une seule ligne, avec une icône par catégorie (<span class=gicon>person</span> moi, <span class=gicon>school</span> classe, 🏛️ établissement -- renommé depuis « interclasse », plus clair).",
   ]},
   { version:'2026-07-31.8', items:[
     "Automatismes : le chronomètre défile maintenant visiblement pendant l'exercice (mis à jour toutes les 100 ms), et se fige au moment de la correction.",
@@ -2860,7 +2860,7 @@ function openBugReportModal(prefill){
   document.getElementById('bugReportStatus').textContent='';
   bugReportTypeOverride = (prefill && prefill.reportType) || 'bug';
   const titleEl = document.querySelector('#bugReportModalOverlay strong');
-  if(titleEl) titleEl.textContent = bugReportTypeOverride==='suggestion' ? '💡 Suggérer une amélioration' : 'Signaler un bug / une amélioration';
+  if(titleEl) titleEl.textContent = bugReportTypeOverride==='suggestion' ? '<span class=gicon>lightbulb</span> Suggérer une amélioration' : 'Signaler un bug / une amélioration';
   if(prefill && prefill.section){
     document.getElementById('bugReportSection').value = prefill.section;
     document.getElementById('bugReportSection').dispatchEvent(new Event('change'));
@@ -3059,7 +3059,7 @@ async function renderSupervisionCeb(){
     const recentRows = results.slice(0,5).map(r=>{
       const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
       return `<div style="display:flex;justify-content:space-between;gap:12px;padding:2px 0;font-size:.82rem;color:var(--ink-soft);">
-        <span>${r.success ? '🎯 exact' : `à ${r.gap} près`} (cible ${r.target})</span>
+        <span>${r.success ? '<span class=gicon>my_location</span> exact' : `à ${r.gap} près`} (cible ${r.target})</span>
         <span>${r.timed ? '⏱ chrono' : 'illimité'}</span>
         <span>${date}</span>
       </div>`;
@@ -3212,7 +3212,7 @@ async function addToCahier(){
     if(oldServerId) await syncRemoveEntry(oldServerId);
     const res = await syncAddEntry(entry);
     if(res.ok){ entry.id = res.id; saveCahier(); renderCahier(); }
-    else if(!res.offline){ await niceAlert("⚠️ Enregistré localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez l'adresse du script et le code secret dans la configuration de synchronisation."); }
+    else if(!res.offline){ await niceAlert("<span class=gicon>warning</span> Enregistré localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez l'adresse du script et le code secret dans la configuration de synchronisation."); }
   }
 }
 function editCahierEntry(i){
@@ -3246,7 +3246,7 @@ function editCahierEntry(i){
   }
   renderCorrectionPreview();
   editingIndex = i;
-  document.getElementById('btnAddCahier').textContent = '💾 Enregistrer la modification';
+  document.getElementById('btnAddCahier').textContent = '<span class=gicon>save</span> Enregistrer la modification';
   document.getElementById('btnCancelEdit').style.display = 'inline-block';
   document.getElementById('correctionForm').scrollIntoView({behavior:'smooth', block:'start'});
   document.getElementById('correctionInput').focus();
@@ -3296,7 +3296,7 @@ function entryRowsHTML(e, idx, editable){
   const refLabel = e.exo==='Cours' ? 'Cours' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo));
   let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}</div>`;
   if(editable){
-    html += `<button type="button" class="nb-remove-btn" onclick="removeCahierEntryFromNotebook(${idx}, this)" title="Retirer ce bloc du cahier">✕ Retirer</button>`;
+    html += `<button type="button" class="nb-remove-btn" onclick="removeCahierEntryFromNotebook(${idx}, this)" title="Retirer ce bloc du cahier"><span class=gicon>close</span> Retirer</button>`;
   }
   html += `</div>`;
   html += `<div class="nb-body">${e.html!=null ? e.html : renderMathText(e.raw)}</div>`;
@@ -3349,7 +3349,7 @@ function renderCahier(){
   const dateInput = document.getElementById('corListFilterDate');
   if(dateInput && !dateInput.value && corListFilterDate) dateInput.value = corListFilterDate;
   const toggleBtn = document.getElementById('btnCorListDateToggle');
-  if(toggleBtn) toggleBtn.textContent = corListFilterDate ? 'Voir toutes les dates' : "📅 Corrections du jour";
+  if(toggleBtn) toggleBtn.textContent = corListFilterDate ? 'Voir toutes les dates' : "<span class=gicon>calendar_month</span> Corrections du jour";
   document.getElementById('cahierCount').textContent = cahier.length+' exercice(s)';
   const list=document.getElementById('cahierList');
   const status=document.getElementById('corListFilterStatus');
@@ -3450,7 +3450,7 @@ async function renderCahierEleve(){
       saveCahier();
       populateCahierChapitreFilter();
     } else {
-      warning = '<p class="hint">⚠️ Impossible de joindre le cahier partagé — affichage de la dernière copie connue sur cet appareil.</p>';
+      warning = '<p class="hint"><span class=gicon>warning</span> Impossible de joindre le cahier partagé — affichage de la dernière copie connue sur cet appareil.</p>';
     }
   }
   document.getElementById('cahierEleveContent').innerHTML = warning + buildCahierNotebookHTML(currentUserRole==='prof' || currentUserRole==='admin');
@@ -3562,7 +3562,7 @@ function injectReadAloudButtons(container){
     btn.className='read-aloud-btn';
     btn.title='Écouter cette définition';
     btn.setAttribute('aria-label','Écouter cette définition');
-    btn.textContent='🔊';
+    btn.textContent='<span class=gicon>volume_up</span>';
     btn.onclick=(e)=>{ e.stopPropagation(); toggleReadAloud(btn, text); };
     box.appendChild(btn);
   });
@@ -3628,12 +3628,12 @@ function toggleReadAloud(btn, text){
   // arrête ; sinon on coupe toute lecture en cours avant de démarrer la nouvelle.
   const wasReading = btn.classList.contains('reading');
   speechSynthesis.cancel();
-  document.querySelectorAll('.read-aloud-btn.reading').forEach(b=>{ b.classList.remove('reading'); b.textContent='🔊'; });
+  document.querySelectorAll('.read-aloud-btn.reading').forEach(b=>{ b.classList.remove('reading'); b.textContent='<span class=gicon>volume_up</span>'; });
   if(wasReading) return;
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = 'fr-FR';
-  utter.onend = ()=>{ btn.classList.remove('reading'); btn.textContent='🔊'; };
-  utter.onerror = ()=>{ btn.classList.remove('reading'); btn.textContent='🔊'; };
+  utter.onend = ()=>{ btn.classList.remove('reading'); btn.textContent='<span class=gicon>volume_up</span>'; };
+  utter.onerror = ()=>{ btn.classList.remove('reading'); btn.textContent='<span class=gicon>volume_up</span>'; };
   btn.classList.add('reading');
   btn.textContent='⏸';
   speechSynthesis.speak(utter);
@@ -3792,7 +3792,7 @@ async function addSectionToCahier(headerEl){
   if(isSyncEnabled()){
     const res = await syncAddEntry(entry);
     if(res.ok){ entry.id = res.id; saveCahier(); }
-    else if(!res.offline){ await niceAlert("⚠️ Ajouté localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez la configuration de synchronisation (adresse + code secret) dans l'outil prof."); }
+    else if(!res.offline){ await niceAlert("<span class=gicon>warning</span> Ajouté localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez la configuration de synchronisation (adresse + code secret) dans l'outil prof."); }
   }
 }
 
@@ -3824,7 +3824,7 @@ async function addTdReference(){
   if(isSyncEnabled()){
     const res = await syncAddEntry(entry);
     if(res.ok){ entry.id = res.id; saveCahier(); renderCahier(); }
-    else if(!res.offline){ status.textContent = "⚠️ Enregistré localement, échec de synchronisation : "+(res.error||'erreur inconnue'); }
+    else if(!res.offline){ status.textContent = "<span class=gicon>warning</span> Enregistré localement, échec de synchronisation : "+(res.error||'erreur inconnue'); }
   }
 }
 document.getElementById('corDate').value = todayISO();
@@ -4193,10 +4193,10 @@ const TB_ICON_EQUERRE = `<svg viewBox="0 0 24 24" width="26" height="26"><polygo
 /* Aide contextuelle affichée sous le tableau, mise à jour à chaque fois qu'on commence à
    manipuler un outil -- reste affichée après le geste pour qu'on ait le temps de la lire. */
 const TB_HELP_TEXT = {
-  crayon: "✏️ <b>Crayon</b> — le manche le déplace sans rien tracer ; la pointe trace en la faisant glisser, ou pose un point nommé si on tape dessus sans bouger.",
+  crayon: "<span class=gicon>edit</span> <b>Crayon</b> — le manche le déplace sans rien tracer ; la pointe trace en la faisant glisser, ou pose un point nommé si on tape dessus sans bouger.",
   gomme: "🧽 <b>Gomme</b> — faites-la glisser sur un trait pour effacer localement (le reste du trait est conservé).",
   regle_grad: "📏 <b>Règle graduée</b> — le corps la déplace, l'extrémité la fait tourner (elle pivote autour du 0). Le crayon s'aimante sur son bord gradué.",
-  equerre: "📐 <b>Équerre</b> — le corps la déplace, le bout de l'angle droit la fait tourner. Le crayon s'aimante sur ses côtés.",
+  equerre: "<span class=gicon>straighten</span> <b>Équerre</b> — le corps la déplace, le bout de l'angle droit la fait tourner. Le crayon s'aimante sur ses côtés.",
   requerre: "🔻 <b>Réquerre</b> — même manipulation que l'équerre.",
   rapporteur: "◐ <b>Rapporteur</b> — le corps le déplace ; le petit crayon tourne autour du pivot (un double-clic pose un repère à l'angle visé, un simple glissé ne fait que le repositionner).",
   compas: "🧭 <b>Compas</b> — la branche de la pointe déplace tout l'ensemble ; la branche du crayon écarte, tourne sans tracer, ou trace vraiment selon l'icône (cliquez dessus pour changer de mode).",
@@ -4208,7 +4208,7 @@ function tbSetHelp(type){
   if(box) box.innerHTML = TB_HELP_TEXT[type] || '';
 }
 const TB_PALETTE = [
-  {type:'crayon',      icon:'✏️', label:'Crayon'},
+  {type:'crayon',      icon:'<span class=gicon>edit</span>', label:'Crayon'},
   {type:'gomme',       icon:TB_ICON_ERASER, label:'Gomme'},
   {type:'regle_grad',  icon:TB_ICON_RULER, label:'Règle graduée'},
   {type:'equerre',     icon:TB_ICON_EQUERRE, label:'Équerre'},
@@ -4360,7 +4360,7 @@ function tbRenderPalette(){
   document.getElementById('tbToolPalette').innerHTML = TB_PALETTE.map(p=>{
     const active = tbTools.some(t=>t.type===p.type);
     return `<button type="button" onclick="tbAddTool('${p.type}')" title="${p.label}" style="width:56px;height:56px;border:2px solid ${active?'#0D5BA3':'rgba(28,43,57,.2)'};border-radius:8px;background:${active?'rgba(13,91,163,.12)':'#fff'};cursor:pointer;font-size:1.5rem;">${p.icon}</button>`;
-  }).join('') + `<button type="button" onclick="tbAddTextZone()" title="Ajouter une zone de texte" style="width:56px;height:56px;border:1px solid rgba(28,43,57,.2);border-radius:8px;background:#fff;cursor:pointer;font-size:1.4rem;">🔤</button>`;
+  }).join('') + `<button type="button" onclick="tbAddTextZone()" title="Ajouter une zone de texte" style="width:56px;height:56px;border:1px solid rgba(28,43,57,.2);border-radius:8px;background:#fff;cursor:pointer;font-size:1.4rem;"><span class=gicon>text_fields</span></button>`;
 }
 let tbRememberedToolState = {}; // dernière position/angle connue par type d'outil, pour la
                                  // reprise si "Mémoriser position" est coché
@@ -4436,27 +4436,27 @@ function tbRenderHistoryPanel(){
     html += `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;border-bottom:1px solid rgba(28,43,57,.08);">
       <span style="width:13px;height:13px;border-radius:3px;background:${stroke.color};flex:none;border:1px solid rgba(0,0,0,.15);"></span>
       <span style="flex:1;font-size:.78rem;">Trait ${i+1}${stroke.construction?' (construction)':''}</span>
-      <button type="button" onclick="tbDeleteHistoryItem('ink',${i})" style="border:none;background:none;cursor:pointer;font-size:.95rem;" title="Supprimer ce trait">🗑</button>
+      <button type="button" onclick="tbDeleteHistoryItem('ink',${i})" style="border:none;background:none;cursor:pointer;font-size:.95rem;" title="Supprimer ce trait"><span class=gicon>delete</span></button>
     </div>`;
   });
   tbPoints.forEach((p, i)=>{
     html += `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;border-bottom:1px solid rgba(28,43,57,.08);">
       <span style="flex:1;font-size:.78rem;">Point ${escapeHtml(p.label||'?')}</span>
-      <button type="button" onclick="tbDeleteHistoryItem('point',${i})" style="border:none;background:none;cursor:pointer;font-size:.95rem;" title="Supprimer ce point">🗑</button>
+      <button type="button" onclick="tbDeleteHistoryItem('point',${i})" style="border:none;background:none;cursor:pointer;font-size:.95rem;" title="Supprimer ce point"><span class=gicon>delete</span></button>
     </div>`;
   });
   tbTexts.forEach((t, i)=>{
     const preview = t.text.length>18 ? t.text.slice(0,18)+'…' : t.text;
     html += `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;border-bottom:1px solid rgba(28,43,57,.08);">
       <span style="flex:1;font-size:.78rem;">« ${escapeHtml(preview)} »</span>
-      <button type="button" onclick="tbDeleteHistoryItem('text',${i})" style="border:none;background:none;cursor:pointer;font-size:.95rem;" title="Supprimer ce texte">🗑</button>
+      <button type="button" onclick="tbDeleteHistoryItem('text',${i})" style="border:none;background:none;cursor:pointer;font-size:.95rem;" title="Supprimer ce texte"><span class=gicon>delete</span></button>
     </div>`;
   });
   tbCodages.forEach((c, i)=>{
     const label = c.kind==='tick' ? `Codage longueur (${c.count})` : `Codage angle (${c.count})`;
     html += `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;border-bottom:1px solid rgba(28,43,57,.08);">
       <span style="flex:1;font-size:.78rem;">${label}</span>
-      <button type="button" onclick="tbDeleteHistoryItem('codage',${i})" style="border:none;background:none;cursor:pointer;font-size:.95rem;" title="Supprimer ce codage">🗑</button>
+      <button type="button" onclick="tbDeleteHistoryItem('codage',${i})" style="border:none;background:none;cursor:pointer;font-size:.95rem;" title="Supprimer ce codage"><span class=gicon>delete</span></button>
     </div>`;
   });
   panel.innerHTML = html || '<div style="padding:12px;font-size:.78rem;color:var(--ink-soft);">Rien pour l\'instant -- trace, pose un point ou ajoute du texte.</div>';
@@ -4801,8 +4801,8 @@ function tbRender(){
       if(!t.mode) t.mode = 'open';
       const modeInfo = {
         open:   {color:'#2EA8C9', emoji:'↔️', label:'Ouvrir'},
-        closed: {color:'#D93025', emoji:'🔒', label:'Fermé'},
-        draw:   {color:'#1F7A4D', emoji:'✏️', label:'Crayon'},
+        closed: {color:'#D93025', emoji:'<span class=gicon>lock</span>', label:'Fermé'},
+        draw:   {color:'#1F7A4D', emoji:'<span class=gicon>edit</span>', label:'Crayon'},
       }[t.mode];
       const modeColor = modeInfo.color, modeEmoji = modeInfo.emoji, modeLabel = modeInfo.label;
       const legCursor = t.mode==='open' ? 'ew-resize' : (t.mode==='draw' ? 'crosshair' : 'grab');
@@ -4858,11 +4858,11 @@ function tbRender(){
       <circle cx="0" cy="0" r="22" fill="transparent"/>
     </g>` : '';
     const penMode = t.penMode || 'ecrire';
-    const penModeIcon = {tourner:'🔄', ecrire:'✏️', coder:'🏷️'}[penMode];
+    const penModeIcon = {tourner:'<span class=gicon>refresh</span>', ecrire:'<span class=gicon>edit</span>', coder:'<span class=gicon>label</span>'}[penMode];
     const penModeColor = {tourner:'#0D5BA3', ecrire:'#1F7A4D', coder:'#E35D3A'}[penMode];
     return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
       <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>${protractorRay}
-      ${t.slideLock ? `<g transform="rotate(${-t.angle.toFixed(1)})" style="pointer-events:none;"><circle cx="0" cy="0" r="9" fill="#1F7A4D" stroke="#fff" stroke-width="1.4"/><text x="0" y="4" font-size="10" text-anchor="middle">🔗</text></g>` : ''}
+      ${t.slideLock ? `<g transform="rotate(${-t.angle.toFixed(1)})" style="pointer-events:none;"><circle cx="0" cy="0" r="9" fill="#1F7A4D" stroke="#fff" stroke-width="1.4"/><text x="0" y="4" font-size="10" text-anchor="middle"><span class=gicon>link</span></text></g>` : ''}
       ${rh && t.type==='crayon' ? `<g data-role="rotate" data-id="${t.id}" transform="translate(${rh.x},${rh.y})">
           <circle cx="0" cy="0" r="15" fill="${penModeColor}" stroke="#fff" stroke-width="2"/>
           <text x="0" y="6" font-size="16" text-anchor="middle" transform="rotate(${-t.angle.toFixed(1)})">${penModeIcon}</text>
@@ -4901,7 +4901,7 @@ function tbRender(){
     const already = contact.square.slideLock && contact.square.slideLock.targetId===contact.ruler.id;
     slideLockHtml = `<g data-role="slideLockBtn" data-square="${contact.square.id}" data-ruler="${contact.ruler.id}" transform="translate(${contact.contactX.toFixed(1)},${(contact.contactY-16).toFixed(1)})" style="cursor:pointer;">
       <rect x="-42" y="-12" width="84" height="24" rx="12" fill="${already?'#1F7A4D':'#0D5BA3'}" stroke="#fff" stroke-width="1.4"/>
-      <text x="0" y="5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">${already?'✓ Verrouillé':'🔗 Coulisser'}</text>
+      <text x="0" y="5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">${already?'✓ Verrouillé':'<span class=gicon>link</span> Coulisser'}</text>
     </g>`;
   } else {
     const lockedSquare = tbTools.find(t=>(t.type==='equerre'||t.type==='requerre') && t.slideLock);
@@ -4955,7 +4955,7 @@ function tbOpenLetterPicker(currentLabel, currentStyle){
     overlay.innerHTML = `<div style="background:#fff;border-radius:12px;padding:22px;max-width:360px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.25);">
       <h3 style="margin:0 0 10px;font-family:'Space Grotesk',sans-serif;">Nom du point</h3>
       <div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px;">
-        <button type="button" data-style="cross" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='cross'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='cross'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;">✕ Croix</button>
+        <button type="button" data-style="cross" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='cross'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='cross'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;"><span class=gicon>close</span> Croix</button>
         <button type="button" data-style="tick" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='tick'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='tick'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;">／ Trait (crayon)</button>
         <button type="button" data-style="none" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='none'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='none'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;">• Aucun</button>
       </div>
@@ -5343,7 +5343,7 @@ function tbAttachHandlers(){
         const modes = ['tourner','ecrire','coder'];
         const cur = rTool.penMode || 'ecrire';
         rTool.penMode = modes[(modes.indexOf(cur)+1) % modes.length];
-        const labels = {tourner:'🔄 Tourner — glissez le crayon entier pour le repositionner sans tracer.', ecrire:'✏️ Écrire — dessine normalement, comme avant.', coder:'🏷️ Coder — un tap ouvre le choix du codage (longueur, angle, angle droit).'};
+        const labels = {tourner:'<span class=gicon>refresh</span> Tourner — glissez le crayon entier pour le repositionner sans tracer.', ecrire:'<span class=gicon>edit</span> Écrire — dessine normalement, comme avant.', coder:'<span class=gicon>label</span> Coder — un tap ouvre le choix du codage (longueur, angle, angle droit).'};
         tbSetHelp('crayon');
         const box = document.getElementById('tbHelpBox');
         if(box) box.innerHTML = labels[rTool.penMode];

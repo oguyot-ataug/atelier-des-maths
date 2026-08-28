@@ -135,7 +135,7 @@ document.getElementById('cours-demo-distance-cercles').innerHTML = `
 
 document.getElementById('histoire-demo-distance-cercles').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Le compas et la règle sont les deux seuls instruments que les mathématiciens grecs de l'Antiquité s'autorisaient pour leurs constructions géométriques. Vers 300 av. J.-C., à Alexandrie (en Égypte), le mathématicien grec Euclide rassemble dans son livre <i>Les Éléments</i> toutes les connaissances de géométrie de son époque, en les démontrant à partir de règles très simples. Ce livre restera la référence absolue pour apprendre la géométrie pendant plus de 2 000 ans, jusqu'au 19e siècle !
 </div>
 `;

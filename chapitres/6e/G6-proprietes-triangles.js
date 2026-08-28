@@ -375,7 +375,7 @@ function circNextStep(){
 
 document.getElementById('histoire-demo-proprietes-triangles').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   <p style="margin:0 0 12px;">En 1792, en pleine Révolution française, les astronomes <b>Jean-Baptiste Delambre</b> et <b>Pierre Méchain</b> partent chacun de leur côté — l'un vers Dunkerque, l'autre vers Barcelone — pour une mission qui va durer sept ans : mesurer précisément la distance entre les deux villes, afin de définir une nouvelle unité universelle, le <b>mètre</b>. Le mètre est alors fixé comme la dix-millionième partie de la distance entre le pôle Nord et l'équateur, en passant par Paris.</p>
   <p style="margin:0 0 12px;">Mais comment mesurer une distance de plus de 1000 km à la fin du XVIII<sup>e</sup> siècle, sans GPS ni satellite ? Impossible de tendre un ruban aussi long ! Delambre et Méchain utilisent la <b>triangulation</b> : ils repèrent des points élevés (clochers, collines, tours) tout le long du trajet, et forment ainsi une chaîne de triangles reliant Dunkerque à Barcelone.</p>
   <div class="figure-wrap" style="max-width:260px;margin:4px auto 14px;">

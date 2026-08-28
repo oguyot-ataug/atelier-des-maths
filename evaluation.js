@@ -50,14 +50,14 @@ document.getElementById('view-evaluation').innerHTML = `
       </label>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
-      <label class="hint" style="margin:0;"><input type="checkbox" id="evalUseAI" onchange="toggleEvalAIOptions()"> 🤖 Laisser l'IA proposer des exercices</label>
+      <label class="hint" style="margin:0;"><input type="checkbox" id="evalUseAI" onchange="toggleEvalAIOptions()"> <span class=gicon>smart_toy</span> Laisser l'IA proposer des exercices</label>
       <button class="btn secondary" onclick="addManualExercise()">+ Ajouter un exercice vierge</button>
-      <button class="btn secondary" onclick="openEvalPreview()">👁️ Aperçu de l'évaluation</button>
+      <button class="btn secondary" onclick="openEvalPreview()"><span class=gicon>visibility</span> Aperçu de l'évaluation</button>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
-      <button class="btn" onclick="saveEvaluation()">💾 Sauvegarder</button>
+      <button class="btn" onclick="saveEvaluation()"><span class=gicon>save</span> Sauvegarder</button>
       <button class="btn secondary" onclick="openEvalListModal()">📂 Mes évaluations</button>
-      <button class="btn secondary" onclick="shareEvaluation()">🔗 Partager avec un collègue</button>
+      <button class="btn secondary" onclick="shareEvaluation()"><span class=gicon>link</span> Partager avec un collègue</button>
       <span class="hint" id="evalSaveStatus" style="margin:0;"></span>
     </div>
     <div id="evalAIOptions" style="display:none;">
@@ -68,7 +68,7 @@ document.getElementById('view-evaluation').innerHTML = `
       <p class="hint" style="margin:0 0 6px;">Chapitres concernés :</p>
       <div id="evalChapPicker" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;"></div>
       <div class="figure-toolbar">
-        <button class="btn orange" onclick="generateEvaluationAI()" id="btnEvalAI">🤖 Générer les exercices avec l'IA</button>
+        <button class="btn orange" onclick="generateEvaluationAI()" id="btnEvalAI"><span class=gicon>smart_toy</span> Générer les exercices avec l'IA</button>
       </div>
       <p class="hint" id="evalAIStatus" style="margin:8px 0 0;"></p>
     </div>
@@ -78,7 +78,7 @@ document.getElementById('view-evaluation').innerHTML = `
   <div id="evalExercicesList"></div>
 
   <div class="tool-row" style="margin-top:10px;">
-    <button class="btn orange" onclick="exportEvaluationPDF()">🖨️ Imprimer / Enregistrer en PDF</button>
+    <button class="btn orange" onclick="exportEvaluationPDF()"><span class=gicon>print</span> Imprimer / Enregistrer en PDF</button>
     <button class="btn secondary" onclick="clearEvaluation()">Tout effacer</button>
   </div>`;
 
@@ -87,7 +87,7 @@ document.body.insertAdjacentHTML('beforeend', `
   <div class="modal-card" style="max-width:480px;max-height:80vh;overflow:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Partager avec un collègue</strong>
-      <button class="modal-close" onclick="closeEvalShareModal()">✕</button>
+      <button class="modal-close" onclick="closeEvalShareModal()"><span class=gicon>close</span></button>
     </div>
     <div id="evalShareContent"></div>
   </div>
@@ -96,7 +96,7 @@ document.body.insertAdjacentHTML('beforeend', `
   <div class="modal-card" style="max-width:560px;max-height:80vh;overflow:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Mes évaluations</strong>
-      <button class="modal-close" onclick="closeEvalListModal()">✕</button>
+      <button class="modal-close" onclick="closeEvalListModal()"><span class=gicon>close</span></button>
     </div>
     <div id="evalListContent"></div>
   </div>
@@ -105,7 +105,7 @@ document.body.insertAdjacentHTML('beforeend', `
   <div class="modal-card" style="max-width:760px;max-height:88vh;overflow:auto;background:#EDEFF2;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Évaluation</strong>
-      <button class="modal-close" onclick="closeEvalPreview()">✕</button>
+      <button class="modal-close" onclick="closeEvalPreview()"><span class=gicon>close</span></button>
     </div>
     <div style="position:relative;width:700px;max-width:100%;margin:0 auto;">
       <div id="evalPreviewContent" style="font-family:Inter,sans-serif;color:#20242E;line-height:1.7;font-size:12.5pt;width:700px;padding:10px;box-sizing:border-box;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12);position:relative;"></div>
@@ -178,7 +178,7 @@ async function openEvalListModal(){
   if(!data || !data.length){ box.innerHTML = "Aucune évaluation sauvegardée pour le moment."; return; }
   box.innerHTML = data.map(e=>{
     const isMine = e.owner_id===currentUser.id;
-    const shareTag = isMine ? '' : (e.collaborators||[]).includes(currentUser.id) ? '<span class="hint">(partagée — ✏️ éditeur)</span>' : '<span class="hint">(partagée — 👁️ lecteur)</span>';
+    const shareTag = isMine ? '' : (e.collaborators||[]).includes(currentUser.id) ? '<span class="hint">(partagée — <span class=gicon>edit</span> éditeur)</span>' : '<span class="hint">(partagée — <span class=gicon>visibility</span> lecteur)</span>';
     const dateFmt = e.eval_date ? new Date(e.eval_date+'T00:00:00').toLocaleDateString('fr-FR') : '';
     return `<div class="tool-shell" style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
       <div>
@@ -223,13 +223,13 @@ async function loadEvaluation(id){
   document.getElementById('evalSaveStatus').textContent = "✓ Évaluation chargée";
 }
 async function shareEvaluation(){
-  if(!currentEvaluationId){ await niceAlert("Sauvegardez d'abord cette évaluation (bouton 💾) avant de la partager."); return; }
+  if(!currentEvaluationId){ await niceAlert("Sauvegardez d'abord cette évaluation (bouton <span class=gicon>save</span>) avant de la partager."); return; }
   document.getElementById('evalShareModalOverlay').style.display='flex';
   const box = document.getElementById('evalShareContent');
   box.innerHTML = 'Chargement…';
   const { data, error } = await sb.rpc('list_colleagues_same_uai', {p_eval_id: currentEvaluationId});
   if(error){ box.innerHTML = "Erreur : "+error.message; return; }
-  const roleLabel = r => r==='editor' ? '✏️ Éditeur' : r==='reader' ? '👁️ Lecteur' : '';
+  const roleLabel = r => r==='editor' ? '<span class=gicon>edit</span> Éditeur' : r==='reader' ? '<span class=gicon>visibility</span> Lecteur' : '';
   let html = '';
   if(!data || !data.length){
     html += `<p class="hint" style="margin:0 0 14px;">Aucun collègue trouvé dans votre établissement (UAI non renseigné, ou personne d'autre enregistré avec le même UAI). Vous pouvez tout de même partager par e-mail ci-dessous.</p>`;
@@ -245,8 +245,8 @@ async function shareEvaluation(){
           </span>
         ` : `
           <span style="display:flex;gap:6px;">
-            <button class="btn secondary" style="font-size:.8rem;" onclick="shareEvaluationWith('${c.email}','reader')">👁️ Lecteur</button>
-            <button class="btn secondary" style="font-size:.8rem;" onclick="shareEvaluationWith('${c.email}','editor')">✏️ Éditeur</button>
+            <button class="btn secondary" style="font-size:.8rem;" onclick="shareEvaluationWith('${c.email}','reader')"><span class=gicon>visibility</span> Lecteur</button>
+            <button class="btn secondary" style="font-size:.8rem;" onclick="shareEvaluationWith('${c.email}','editor')"><span class=gicon>edit</span> Éditeur</button>
           </span>
         `}
       </div>
@@ -256,10 +256,10 @@ async function shareEvaluation(){
     <p class="hint" style="margin:16px 0 6px;">Ou par e-mail :</p>
     <div class="tool-row" style="margin-bottom:0;">
       <input type="text" id="evalShareEmail" placeholder="e-mail d'un collègue" style="flex:1;min-width:180px;">
-      <button class="btn secondary" onclick="shareEvaluationWith(document.getElementById('evalShareEmail').value.trim(),'reader')">👁️ Lecteur</button>
-      <button class="btn secondary" onclick="shareEvaluationWith(document.getElementById('evalShareEmail').value.trim(),'editor')">✏️ Éditeur</button>
+      <button class="btn secondary" onclick="shareEvaluationWith(document.getElementById('evalShareEmail').value.trim(),'reader')"><span class=gicon>visibility</span> Lecteur</button>
+      <button class="btn secondary" onclick="shareEvaluationWith(document.getElementById('evalShareEmail').value.trim(),'editor')"><span class=gicon>edit</span> Éditeur</button>
     </div>
-    <p class="hint" style="margin:8px 0 0;">👁️ Lecteur : peut consulter et imprimer. ✏️ Éditeur : peut aussi modifier. Vous restez seul·e propriétaire (personne d'autre ne peut supprimer l'évaluation).</p>
+    <p class="hint" style="margin:8px 0 0;"><span class=gicon>visibility</span> Lecteur : peut consulter et imprimer. <span class=gicon>edit</span> Éditeur : peut aussi modifier. Vous restez seul·e propriétaire (personne d'autre ne peut supprimer l'évaluation).</p>
     <p class="hint" id="evalShareStatus" style="margin:8px 0 0;"></p>
   `;
   box.innerHTML = html;
@@ -377,7 +377,7 @@ function renderEvalExercicesList(){
       // Vue compacte : uniquement le résultat final tel qu'il sera imprimé, sans aucun des
       // outils/menus d'édition -- pour une lecture d'ensemble agréable une fois l'exercice
       // terminé. On peut réorganiser l'ordre directement ici ; modifier ou supprimer se fait
-      // en repassant par l'édition (bouton ✏️), pour éviter une suppression accidentelle.
+      // en repassant par l'édition (bouton <span class=gicon>edit</span>), pour éviter une suppression accidentelle.
       return `
       <div class="tool-shell" style="margin-bottom:14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
@@ -386,7 +386,7 @@ function renderEvalExercicesList(){
             ${ex.bareme ? `<span class="hint" style="margin:0;">${ex.bareme} pt(s)</span>` : ''}
             <button type="button" onclick="moveEvalExercice(${ex.id},-1)" ${i===0?'disabled style="opacity:.35;"':''} title="Monter" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↑</button>
             <button type="button" onclick="moveEvalExercice(${ex.id},1)" ${i===evaluationExercises.length-1?'disabled style="opacity:.35;"':''} title="Descendre" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↓</button>
-            <button type="button" onclick="editEvalExercice(${ex.id})" title="Modifier ou supprimer" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:4px 10px;cursor:pointer;">✏️ Éditer</button>
+            <button type="button" onclick="editEvalExercice(${ex.id})" title="Modifier ou supprimer" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:4px 10px;cursor:pointer;"><span class=gicon>edit</span> Éditer</button>
           </span>
         </div>
         <div>${blocksRowsHTML(ctx, ex.rows, false, ex.cellBorders)}</div>
@@ -401,7 +401,7 @@ function renderEvalExercicesList(){
           <button type="button" onclick="moveEvalExercice(${ex.id},-1)" ${i===0?'disabled style="opacity:.35;"':''} title="Monter" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↑</button>
           <button type="button" onclick="moveEvalExercice(${ex.id},1)" ${i===evaluationExercises.length-1?'disabled style="opacity:.35;"':''} title="Descendre" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↓</button>
           <button type="button" onclick="validateEvalExercice(${ex.id})" title="Aperçu final, sans les outils" style="border:none;background:rgba(35,140,90,.12);color:#1F7A4D;border-radius:6px;padding:3px 9px;cursor:pointer;">✓ Valider</button>
-          <button type="button" onclick="removeEvalExercice(${ex.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕ Supprimer l'exercice</button>
+          <button type="button" onclick="removeEvalExercice(${ex.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;"><span class=gicon>close</span> Supprimer l'exercice</button>
         </span>
       </div>
       <div class="tool-row" style="margin-bottom:8px;">
@@ -415,11 +415,11 @@ function renderEvalExercicesList(){
           <span style="display:inline-flex;align-items:center;gap:4px;background:rgba(28,43,57,.04);padding:3px 8px 3px 10px;border-radius:14px;">
             <span class="hint" style="margin:0;">L${rowIdx+1} :</span>
             <input type="number" min="1" max="6" value="${nc}" onchange="setEvalRowCols(${ex.id},${rowIdx},parseInt(this.value)||1)" style="width:38px;">
-            ${ex.rows.length>1 ? `<button type="button" onclick="removeEvalRow(${ex.id},${rowIdx})" title="Retirer cette ligne" style="border:none;background:none;cursor:pointer;color:#D93025;font-size:.9rem;">✕</button>` : ''}
+            ${ex.rows.length>1 ? `<button type="button" onclick="removeEvalRow(${ex.id},${rowIdx})" title="Retirer cette ligne" style="border:none;background:none;cursor:pointer;color:#D93025;font-size:.9rem;"><span class=gicon>close</span></button>` : ''}
           </span>
         `).join('')}
         <button type="button" class="btn secondary" onclick="addEvalRow(${ex.id})" style="font-size:.78rem;padding:4px 10px;">+ Nouvelle ligne</button>
-        ${hasDisks ? `<label class="hint" style="margin:0;">🥧 Taille des disques : <input type="number" min="30" max="300" step="10" value="${ex.diskSize||150}" onchange="updateEvalExerciceField(${ex.id},'diskSize',parseInt(this.value)||150); renderEvalExercicesList();" style="width:60px;margin-left:4px;"> px</label>` : ''}
+        ${hasDisks ? `<label class="hint" style="margin:0;"><span class=gicon>pie_chart</span> Taille des disques : <input type="number" min="30" max="300" step="10" value="${ex.diskSize||150}" onchange="updateEvalExerciceField(${ex.id},'diskSize',parseInt(this.value)||150); renderEvalExercicesList();" style="width:60px;margin-left:4px;"> px</label>` : ''}
         ${hasRects ? `<label class="hint" style="margin:0;">▭ Taille des rectangles : <input type="number" min="30" max="350" step="10" value="${ex.rectSize||180}" onchange="updateEvalExerciceField(${ex.id},'rectSize',parseInt(this.value)||180); renderEvalExercicesList();" style="width:60px;margin-left:4px;"> px</label>` : ''}
       </div>
       <p class="hint" style="margin:4px 0 0;">Fais glisser un bloc pour changer sa ligne/colonne (utilise les outils ci-dessous pour en ajouter, y compris du texte).</p>

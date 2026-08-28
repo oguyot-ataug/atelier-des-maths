@@ -330,8 +330,8 @@ function arCheckLire(){
   const val = parseFloat(document.getElementById('ar-lireInput').value);
   const status = document.getElementById('ar-lireStatus');
   if(isNaN(val)){ status.textContent = 'Indique ta lecture en degrés.'; return; }
-  if(Math.abs(val-arLireSpread)<=2){ status.textContent = `✅ Bravo, l'angle mesure bien ${arLireSpread}°.`; status.style.color = '#1F6B3A'; }
-  else { status.textContent = `❌ Pas tout à fait : l'angle mesure ${arLireSpread}°. Place bien le centre du rapporteur sur le sommet et son 0° sur un côté avant de lire l'autre côté.`; status.style.color = '#E35D3A'; }
+  if(Math.abs(val-arLireSpread)<=2){ status.textContent = `<span class=gicon>check_circle</span> Bravo, l'angle mesure bien ${arLireSpread}°.`; status.style.color = '#1F6B3A'; }
+  else { status.textContent = `<span class=gicon>cancel</span> Pas tout à fait : l'angle mesure ${arLireSpread}°. Place bien le centre du rapporteur sur le sommet et son 0° sur un côté avant de lire l'autre côté.`; status.style.color = '#E35D3A'; }
 }
 
 /* --- Widget 2 : construire un angle donné, avec un crayon qui marque le trait-repère
@@ -486,7 +486,7 @@ function arCheckConstruire(){
   const status = document.getElementById('ar-construireStatus');
   if(!arConstruireValide){ status.textContent = "Marque d'abord le trait-repère au crayon, puis clique sur \"Valider le trait-repère\"."; status.style.color = '#E35D3A'; return; }
   const current = Math.round(arConstruireSpread());
-  if(Math.abs(current-arConstruireTarget)<=2){ status.textContent = `✅ Bravo, ton angle mesure environ ${current}°, c'est le bon angle !`; status.style.color = '#1F6B3A'; }
+  if(Math.abs(current-arConstruireTarget)<=2){ status.textContent = `<span class=gicon>check_circle</span> Bravo, ton angle mesure environ ${current}°, c'est le bon angle !`; status.style.color = '#1F6B3A'; }
   else { status.textContent = `Ton angle mesure pour l'instant environ ${current}°. Repositionne le crayon et revalide pour obtenir ${arConstruireTarget}°.`; status.style.color = '#E35D3A'; }
 }
 /* Glisser le crayon le long de l'arc, en degrés entiers, dans le repère LOCAL du rapporteur
@@ -948,7 +948,7 @@ function arPermisValidateAnswer(){
   arPermisAnswered = true;
   if(correct) arPermisScore++;
   const status = document.getElementById('ar-permisStatus');
-  status.textContent = correct ? '✅ Correct !' : `❌ Incorrect (la bonne mesure était ${arPermisValue}°).`;
+  status.textContent = correct ? '<span class=gicon>check_circle</span> Correct !' : `<span class=gicon>cancel</span> Incorrect (la bonne mesure était ${arPermisValue}°).`;
   status.style.color = correct ? '#1F6B3A' : '#E35D3A';
   setTimeout(()=>{
     arPermisIndex++;
@@ -1093,7 +1093,7 @@ document.getElementById('cours-demo-angles-rapporteur-6e').innerHTML = `
 
 document.getElementById('histoire-demo-angles-rapporteur-6e').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Pourquoi un cercle complet mesure-t-il 360° et pas 100°, comme le reste de nos unités ? La réponse vient des astronomes babyloniens, en Mésopotamie, il y a environ 3 500 ans : ils comptaient en base 60 (au lieu de notre base 10), et 360 est un nombre qui se divise très facilement par beaucoup d'autres (2, 3, 4, 5, 6, 8, 9, 10, 12...), en plus d'être proche du nombre de jours dans une année. Le rapporteur lui-même, tel qu'on le connaît, est un instrument bien plus récent : le premier outil vraiment dédié à tracer et mesurer des angles est décrit en 1589 par l'Anglais Thomas Blundeville, dans un ouvrage destiné à la navigation en mer.
 </div>
 `;
@@ -1114,7 +1114,7 @@ document.getElementById('methode-demo-angles-rapporteur-6e').innerHTML = `
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : entraîne-toi à construire un angle donné</h4></div>
 <div class="figure-wrap">
-  <p class="interaction-hint" style="margin:0 0 8px;">Place le centre du rapporteur sur le sommet (effet d'aimant) et fais-le pivoter pour aligner le 0° sur le côté bleu. Déplace ensuite le crayon ✏️ le long de l'arc, degré par degré, jusqu'à la graduation demandée, puis valide : le côté se trace tout seul.</p>
+  <p class="interaction-hint" style="margin:0 0 8px;">Place le centre du rapporteur sur le sommet (effet d'aimant) et fais-le pivoter pour aligner le 0° sur le côté bleu. Déplace ensuite le crayon <span class=gicon>edit</span> le long de l'arc, degré par degré, jusqu'à la graduation demandée, puis valide : le côté se trace tout seul.</p>
   <p style="text-align:center;margin:0 0 8px;">Angle à construire : <b id="ar-construireCible">100°</b></p>
   ${arBuildConstruireScene()}
   <div class="figure-toolbar" style="justify-content:center;">
@@ -1150,14 +1150,14 @@ document.getElementById('methode-demo-angles-rapporteur-6e').innerHTML = `
 </div>
 
 <div id="ar-permisStaffNote" style="display:none;">
-  <div class="sub-header"><span class="letter">🎓</span><h4>Permis Rapporteur</h4></div>
+  <div class="sub-header"><span class="letter"><span class=gicon>school</span></span><h4>Permis Rapporteur</h4></div>
   <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
     Le <b>Permis Rapporteur</b> est un examen noté sur 20 (10 lectures + 10 constructions) réservé aux élèves. Il n'apparaît ici que pour un élève <b>connecté</b> dont la classe a été <b>activée</b> par un professeur (case à cocher dans Administration → Gestion des classes → « Permis Rapporteur activé pour cette classe »). En tant que prof/admin, tu ne le vois donc pas ici : c'est normal.
   </div>
 </div>
 
 <div id="ar-permisSection" style="display:none;">
-  <div class="sub-header"><span class="letter">🎓</span><h4>Permis Rapporteur</h4></div>
+  <div class="sub-header"><span class="letter"><span class=gicon>school</span></span><h4>Permis Rapporteur</h4></div>
   <div class="figure-wrap">
     <div id="ar-permisIntro">
       <p>Une fois entraîné·e avec les méthodes ci-dessus, passe le <b>Permis Rapporteur</b> : 10 lectures de mesures et 10 constructions d'angles, noté sur 20.</p>

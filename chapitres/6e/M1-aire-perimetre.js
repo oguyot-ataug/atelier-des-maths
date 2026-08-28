@@ -385,7 +385,7 @@ function convAireNextStep(){
 
 document.getElementById('histoire-demo-aire-perimetre').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   <p style="margin:0 0 12px;">Avant la Révolution française, mesurer un terrain était un vrai casse-tête. L'unité la plus courante, l'<b>arpent</b>, changeait de valeur selon l'endroit : un arpent de Paris valait environ 34 ares, un « arpent commun » environ 42 ares, et un arpent « royal » (celui des eaux et forêts) environ 51 ares. Ailleurs en France, selon les provinces, un arpent pouvait valoir de 32 à 78 ares — plus du double d'un bout à l'autre du pays, sous le même nom ! Il existait aussi le <b>journal</b>, la surface qu'un homme pouvait labourer en une seule journée, qui variait elle aussi selon la qualité du sol.</p>
   <div class="figure-wrap" style="max-width:340px;margin:4px auto 14px;">
     <svg viewBox="0 0 340 150" style="width:100%;display:block;">

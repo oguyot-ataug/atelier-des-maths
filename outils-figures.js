@@ -30,7 +30,7 @@ document.body.insertAdjacentHTML('beforeend', `
     <div id="textBlockPanel" class="figure-wrap" style="display:none;">
       <p class="hint" style="margin:0 0 10px;">Texte libre avec la même mise en forme automatique que l'énoncé principal (fractions, exposants, racines, **gras**, {{couleur|texte}}...).</p>
       <div class="tool-row" style="margin:0 0 8px;">
-        <button type="button" class="btn secondary" onclick="openFormulaBuilder()">🧮 Éditeur de formule (Σ, lim, ∫, fraction, puissance, racine...)</button>
+        <button type="button" class="btn secondary" onclick="openFormulaBuilder()"><span class=gicon>calculate</span> Éditeur de formule (Σ, lim, ∫, fraction, puissance, racine...)</button>
       </div>
       <textarea id="textBlockInput" oninput="previewTextBlock()" rows="4" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.9rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;" placeholder="Ex. Calcule 3/4 + 1/2 et donne le résultat sous forme irréductible."></textarea>
       <div id="textBlockPreview" style="margin-top:8px;"></div>
@@ -44,7 +44,7 @@ document.body.insertAdjacentHTML('beforeend', `
       <p class="hint" style="margin:0 0 10px;">Importer une image (photo, capture d'écran, figure scannée...) à insérer dans le contenu.</p>
       <input type="file" id="imageImportInput" accept="image/*" style="display:none;" onchange="previewImportedImage(this.files[0])">
       <div class="tool-row" style="margin:0 0 8px;">
-        <button type="button" class="btn secondary" onclick="document.getElementById('imageImportInput').click()">📷 Choisir une image</button>
+        <button type="button" class="btn secondary" onclick="document.getElementById('imageImportInput').click()"><span class=gicon>photo_camera</span> Choisir une image</button>
       </div>
       <div id="imageImportPreview" style="margin-top:4px;"></div>
       <div class="figure-toolbar" style="margin-top:10px;">
@@ -55,8 +55,8 @@ document.body.insertAdjacentHTML('beforeend', `
     <div id="formulaBuilderOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeFormulaBuilder();">
       <div class="modal-card" style="max-width:600px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-          <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">🧮 Éditeur de formule</strong>
-          <button class="modal-close" onclick="closeFormulaBuilder()">✕</button>
+          <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;"><span class=gicon>calculate</span> Éditeur de formule</strong>
+          <button class="modal-close" onclick="closeFormulaBuilder()"><span class=gicon>close</span></button>
         </div>
         <p class="hint" style="margin:0 0 10px;">Clique dans une case puis choisis un symbole : il vient se placer à cet endroit précis. Chaque case peut à son tour contenir une nouvelle structure (imbrication libre).</p>
         <div class="tool-row" style="margin-bottom:12px;">
@@ -69,7 +69,7 @@ document.body.insertAdjacentHTML('beforeend', `
           <button type="button" class="btn secondary" onclick="fbInsertAtFocus('lim')" title="Limite">lim</button>
         </div>
         <div id="formulaBuilderCanvas" style="border:1px solid rgba(28,43,57,.2);border-radius:8px;padding:16px;min-height:60px;font-size:1.1rem;background:#fff;line-height:2.2;"></div>
-        <p class="hint" style="margin:8px 0 0;">Le ✕ à côté d'une structure la retire. Une case restée vide est simplement ignorée à l'insertion.</p>
+        <p class="hint" style="margin:8px 0 0;">Le <span class=gicon>close</span> à côté d'une structure la retire. Une case restée vide est simplement ignorée à l'insertion.</p>
         <div class="figure-toolbar" style="margin-top:14px;">
           <button type="button" class="btn" onclick="fbInsertFinal()">Insérer cette formule</button>
           <button type="button" class="btn secondary" onclick="closeFormulaBuilder()">Annuler</button>
@@ -238,7 +238,7 @@ document.body.insertAdjacentHTML('beforeend', `
       </div>
       <div class="tool-row" style="margin-bottom:10px;justify-content:center;">
         <button type="button" class="btn secondary" onclick="addCube()">+ Ajouter un cube</button>
-        <button type="button" class="btn secondary" onclick="removeCube()">✕ Retirer le cube sélectionné</button>
+        <button type="button" class="btn secondary" onclick="removeCube()"><span class=gicon>close</span> Retirer le cube sélectionné</button>
       </div>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="insertCubeStack()">Insérer la figure</button>
@@ -250,7 +250,7 @@ document.body.insertAdjacentHTML('beforeend', `
       <div class="tool-row" style="margin-bottom:10px;">
         <label class="hint" style="margin:0;" id="graphXMinMaxLabel">X min/max : <input type="number" id="graphXMin" value="-5" step="any" oninput="previewGraph()" style="width:60px;"> / <input type="number" id="graphXMax" value="5" step="any" oninput="previewGraph()" style="width:60px;"></label>
         <label class="hint" style="margin:0;">Y min/max : <input type="number" id="graphYMin" value="-5" oninput="previewGraph()" style="width:60px;"> / <input type="number" id="graphYMax" value="5" oninput="previewGraph()" style="width:60px;"></label>
-        <button type="button" class="btn secondary" onclick="autoFitGraph()" title="Ajuste automatiquement les bornes pour bien cadrer les courbes tracées">🔍 Cadrage auto</button>
+        <button type="button" class="btn secondary" onclick="autoFitGraph()" title="Ajuste automatiquement les bornes pour bien cadrer les courbes tracées"><span class=gicon>search</span> Cadrage auto</button>
         <label class="hint" style="margin:0;" title="Utile quand les nombres se chevauchent sur un axe étendu">Nombre affiché tous les : X <input type="number" id="graphLabelStepX" value="1" min="1" step="1" oninput="previewGraph()" style="width:40px;"> · Y <input type="number" id="graphLabelStepY" value="1" min="1" step="1" oninput="previewGraph()" style="width:40px;"></label>
       </div>
       <div class="tool-row" style="margin-bottom:10px;">
@@ -367,8 +367,8 @@ document.body.insertAdjacentHTML('beforeend', `
       <div class="tool-row" style="margin-bottom:8px;">
         <textarea id="enonceInput" rows="3" style="flex:1;min-width:260px;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);"
           placeholder="Ex. : ABC triangle&#10;I milieu de [BC]&#10;cercle de centre A passant par B"></textarea>
-        <button type="button" class="btn secondary" onclick="buildFromEnonce()" style="align-self:flex-start;">📐 Construire à partir de l'énoncé</button>
-        <button type="button" class="btn orange" onclick="interpretEnonceWithAI()" style="align-self:flex-start;">🤖 Interpréter avec l'IA</button>
+        <button type="button" class="btn secondary" onclick="buildFromEnonce()" style="align-self:flex-start;"><span class=gicon>straighten</span> Construire à partir de l'énoncé</button>
+        <button type="button" class="btn orange" onclick="interpretEnonceWithAI()" style="align-self:flex-start;"><span class=gicon>smart_toy</span> Interpréter avec l'IA</button>
       </div>
       <p class="hint" style="margin:-4px 0 12px;">Phrases reconnues directement : <span class="hint-mono">ABC triangle</span> (rectangle/isocèle/équilatéral, ex. <span class="hint-mono">ABC triangle rectangle en A</span>) · <span class="hint-mono">ABCD carré/rectangle/losange/parallélogramme</span> · <span class="hint-mono">I milieu de [BC]</span> · <span class="hint-mono">cercle de centre A passant par B</span>. Pour tout le reste (ou un énoncé complet en français libre), utilisez « Interpréter avec l'IA » (nécessite une clé API, à renseigner dans l'onglet Quiz IA).</p>
       <div class="figure-toolbar" style="margin-bottom:10px;">
@@ -412,7 +412,7 @@ document.body.insertAdjacentHTML('beforeend', `
           <option value="2">2 traits / 2 arcs</option>
           <option value="3">3 traits / 3 arcs</option>
         </select>
-        <button type="button" class="btn secondary" onclick="clearAllCodes()">🧹 Retirer tous les codages</button>
+        <button type="button" class="btn secondary" onclick="clearAllCodes()"><span class=gicon>cleaning_services</span> Retirer tous les codages</button>
         <span class="hint" style="margin:0;">Deux segments (ou angles) codés avec le même nombre de traits/arcs sont annoncés comme égaux entre eux. Les segments/cercles de longueur donnée sont codés automatiquement (même longueur = même nombre de traits). Ce menu sert au codage manuel (ex. pour un côté commun, ou une figure fournie sans passer par « longueur donnée »).</span>
       </div>
       <svg id="figureSvg" viewBox="0 0 500 320" onclick="onFigureClick(event)"
@@ -530,14 +530,14 @@ function fbRenderSeq(seq, path){
 }
 function fbRenderSeqItem(node, path, seqPath, idx){
   if(node.type==='leaf') return fbLeafInput(node, path);
-  const removeBtn = `<button type="button" onclick="fbRemoveSeqItem('${fbPathToStr(seqPath)}',${idx})" title="Retirer cette structure" style="border:none;background:#FDEAEA;color:#D93025;border-radius:5px;width:20px;height:20px;font-size:.7rem;cursor:pointer;vertical-align:middle;margin-left:2px;">✕</button>`;
+  const removeBtn = `<button type="button" onclick="fbRemoveSeqItem('${fbPathToStr(seqPath)}',${idx})" title="Retirer cette structure" style="border:none;background:#FDEAEA;color:#D93025;border-radius:5px;width:20px;height:20px;font-size:.7rem;cursor:pointer;vertical-align:middle;margin-left:2px;"><span class=gicon>close</span></button>`;
   return `<span style="display:inline-flex;align-items:center;background:rgba(13,91,163,.05);border:1px solid rgba(13,91,163,.18);border-radius:8px;padding:6px 8px;margin:0 3px;vertical-align:middle;">${fbRenderStruct(node,path)}</span>${removeBtn}`;
 }
 /* Une case UNIQUE (borne, variable, exposant) : soit une simple entrée de texte, soit une
    structure imbriquée -- rendue dans le même style de cadre que dans une séquence. */
 function fbRenderSlot(node, path){
   if(node.type==='leaf') return fbLeafInput(node, path);
-  const removeBtn = `<button type="button" onclick="fbClearNode('${fbPathToStr(path)}')" title="Retirer cette structure" style="border:none;background:#FDEAEA;color:#D93025;border-radius:5px;width:20px;height:20px;font-size:.7rem;cursor:pointer;vertical-align:middle;margin-left:2px;">✕</button>`;
+  const removeBtn = `<button type="button" onclick="fbClearNode('${fbPathToStr(path)}')" title="Retirer cette structure" style="border:none;background:#FDEAEA;color:#D93025;border-radius:5px;width:20px;height:20px;font-size:.7rem;cursor:pointer;vertical-align:middle;margin-left:2px;"><span class=gicon>close</span></button>`;
   return `<span style="display:inline-flex;align-items:center;background:rgba(13,91,163,.05);border:1px solid rgba(13,91,163,.18);border-radius:8px;padding:6px 8px;margin:0 3px;vertical-align:middle;">${fbRenderStruct(node,path)}</span>${removeBtn}`;
 }
 function fbRenderStruct(node, path){
@@ -2044,13 +2044,13 @@ function renderGraphCurvesList(){
         <input type="number" value="${c.y1}" oninput="updateGraphCurve(${c.id},'y1',this.value)" style="width:50px;">)</label>
         <label class="hint" style="margin:0;">B(<input type="number" value="${c.x2}" oninput="updateGraphCurve(${c.id},'x2',this.value)" style="width:50px;"> ;
         <input type="number" value="${c.y2}" oninput="updateGraphCurve(${c.id},'y2',this.value)" style="width:50px;">)</label>
-        <button type="button" onclick="removeGraphCurve(${c.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
+        <button type="button" onclick="removeGraphCurve(${c.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;"><span class=gicon>close</span></button>
       </div>`;
     }
     return `<div class="tool-row" style="margin-bottom:6px;align-items:center;">
       ${swatch}<span class="hint" style="margin:0;">f(x) =</span>
       <input type="text" value="${escapeHtml(c.expr)}" oninput="updateGraphCurve(${c.id},'expr',this.value)" style="width:160px;">
-      <button type="button" onclick="removeGraphCurve(${c.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
+      <button type="button" onclick="removeGraphCurve(${c.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;"><span class=gicon>close</span></button>
     </div>`;
   }).join('');
   previewGraph();
@@ -2174,7 +2174,7 @@ function renderStatsRows(){
       ${swatch}
       ${labelField}
       <label class="hint" style="margin:0;">effectif : <input type="number" value="${r.value}" min="0" oninput="updateStatsRow(${r.id},'value',this.value)" style="width:60px;"></label>
-      <button type="button" onclick="removeStatsRow(${r.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
+      <button type="button" onclick="removeStatsRow(${r.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;"><span class=gicon>close</span></button>
     </div>`;
   }).join('');
   previewStats();
@@ -2261,7 +2261,7 @@ function renderUrnRows(){
     return `<div class="tool-row" style="margin-bottom:6px;align-items:center;">
       <select onchange="updateUrnRow(${r.id},'colorIdx',this.value)">${options}</select>
       <label class="hint" style="margin:0;">nombre : <input type="number" value="${r.count}" min="0" oninput="updateUrnRow(${r.id},'count',this.value)" style="width:55px;"></label>
-      <button type="button" onclick="removeUrnRow(${r.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
+      <button type="button" onclick="removeUrnRow(${r.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;"><span class=gicon>close</span></button>
     </div>`;
   }).join('');
   previewUrn();
@@ -2386,7 +2386,7 @@ function renderDiceRows(){
       <select onchange="updateDiceRow(${r.id},'faces',this.value)">${facesOptions}</select>
       <label class="hint" style="margin:0;">valeur : <input type="number" value="${r.value}" min="1" max="${r.faces}" oninput="updateDiceRow(${r.id},'value',this.value)" style="width:50px;"></label>
       <select onchange="updateDiceRow(${r.id},'colorIdx',this.value)">${colorOptions}</select>
-      <button type="button" onclick="removeDiceRow(${r.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
+      <button type="button" onclick="removeDiceRow(${r.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;"><span class=gicon>close</span></button>
     </div>`;
   }).join('');
   previewDice();
@@ -2458,7 +2458,7 @@ function renderTreeEditor(){
         <input type="text" value="${escapeHtml(node.proba)}" placeholder="proba (ex. 2/5)" oninput="treeUpdateNode('${pathStr}','proba',this.value)" style="width:90px;">
         ${noteField}
         <button type="button" onclick="treeAddBranch('${pathStr}')" style="border:none;background:rgba(28,43,57,.08);border-radius:6px;padding:3px 8px;cursor:pointer;">+ branche</button>
-        <button type="button" onclick="treeRemoveBranch('${path.slice(0,-1).join('|')}',${path[path.length-1]})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;">✕</button>
+        <button type="button" onclick="treeRemoveBranch('${path.slice(0,-1).join('|')}',${path[path.length-1]})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;"><span class=gicon>close</span></button>
       </div>`;
     } else {
       html += `<div class="tool-row" style="margin:4px 0;align-items:center;">

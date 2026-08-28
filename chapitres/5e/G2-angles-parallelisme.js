@@ -603,7 +603,7 @@ document.getElementById('cours-demo-angles-parallelisme-5e').innerHTML = `
 
 document.getElementById('histoire-demo-angles-parallelisme-5e').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   La propriété des angles alternes-internes égaux quand deux droites parallèles sont coupées par une sécante repose sur une règle qu'Euclide avait posée sans démonstration vers 300 av. J.-C. Pendant plus de 2 000 ans, des générations entières de mathématiciens ont cherché, sans succès, à démontrer cette règle à partir des autres. Ce n'est qu'au 19e siècle que Gauss, Bolyai et Lobatchevski découvrent, chacun de leur côté, qu'on peut construire des géométries parfaitement cohérentes où cette règle ne s'applique pas (par exemple à la surface d'une sphère) : c'est la naissance des géométries dites « non euclidiennes ».
 </div>
 `;

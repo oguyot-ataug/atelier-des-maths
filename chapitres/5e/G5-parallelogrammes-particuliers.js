@@ -390,7 +390,7 @@ document.getElementById('cours-demo-parallelogrammes-particuliers-5e').innerHTML
 
 document.getElementById('histoire-demo-parallelogrammes-particuliers-5e').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Bien avant qu'on démontre leurs propriétés, les rectangles et les carrés étaient déjà utilisés en pratique : en Égypte antique, des arpenteurs surnommés les « tendeurs de corde » utilisaient une corde à 12 nœuds régulièrement espacés pour tracer des angles droits sur le terrain, en formant un triangle de côtés 3, 4 et 5 nœuds (aujourd'hui on dirait un « triangle 3-4-5 »). Cette technique très simple leur permettait de construire des rectangles bien droits pour délimiter des champs ou poser les fondations de monuments, sans le moindre instrument de mesure d'angle.
 </div>
 `;

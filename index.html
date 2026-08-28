@@ -15,9 +15,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-<link rel="stylesheet" href="styles.css?v=20260819-325">
+<link rel="stylesheet" href="styles.css?v=20260819-326">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -27,7 +27,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.325</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.326</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -46,7 +46,7 @@
         <button data-nav="correction">Outil de correction (cahier)</button>
         <button data-nav="evaluation">Créer une évaluation</button>
         <button data-nav="tableau">Tableau interactif (géométrie)</button>
-        <button data-nav="progression">📅 Ma progression</button>
+        <button data-nav="progression"><span class="gicon">calendar_month</span> Ma progression</button>
         <button data-nav="supervision" id="navSupervision">Supervision</button>
       </div>
     </div>
@@ -60,7 +60,7 @@
   <div class="account-menu">
     <span class="hint" id="activeClassBadge" style="margin-right:8px;font-weight:700;color:var(--accent);"></span>
     <button class="account-avatar" id="dysToggleBtn" onclick="toggleDyslexicFont()" title="Police adaptée pour la dyslexie (OpenDyslexic)" style="font-family:'Space Grotesk',sans-serif;font-weight:700;margin-right:6px;">Aa</button>
-    <button class="account-avatar" id="accountAvatar" onclick="toggleAccountMenu()" title="Mon compte">👤</button>
+    <button class="account-avatar" id="accountAvatar" onclick="toggleAccountMenu()" title="Mon compte"><span class="gicon">person</span></button>
     <div class="account-dropdown" id="accountDropdown" style="display:none;">
       <div id="accountLoggedOut">
         <strong style="font-family:'Space Grotesk',sans-serif;font-size:.9rem;">Connexion</strong>
@@ -73,13 +73,13 @@
       <div id="accountLoggedIn" style="display:none;">
         <div id="accountNameDisplay" style="font-weight:700;font-family:'Space Grotesk',sans-serif;"></div>
         <div id="accountRoleDisplay" class="hint" style="margin:2px 0 10px;"></div>
-        <button class="btn" onclick="startStripeCheckout()" style="width:100%;margin-bottom:10px;display:none;" id="btnSubscribe">💳 S'abonner (16,90 €/an)</button>
+        <button class="btn" onclick="startStripeCheckout()" style="width:100%;margin-bottom:10px;display:none;" id="btnSubscribe"><span class="gicon">credit_card</span> S'abonner (16,90 €/an)</button>
         <span class="hint" id="subscribeStatus" style="display:block;margin:-4px 0 8px;"></span>
         <div id="accountClassRow" style="margin-bottom:10px;">
           <label class="hint" style="display:block;margin:0 0 4px;">Classe active :</label>
           <button class="btn secondary" onclick="openClassModal()" style="width:100%;text-align:left;" id="accountClassButton">— Choisir une classe —</button>
         </div>
-        <button class="btn secondary" onclick="openBugReportModal()" style="width:100%;margin-bottom:8px;display:none;" id="btnReportBug">🐞 Signaler un bug / une amélioration</button>
+        <button class="btn secondary" onclick="openBugReportModal()" style="width:100%;margin-bottom:8px;display:none;" id="btnReportBug"><span class="gicon">bug_report</span> Signaler un bug / une amélioration</button>
         <button class="btn secondary" onclick="globalSignOut()" style="width:100%;">Se déconnecter</button>
       </div>
     </div>
@@ -90,7 +90,7 @@
   <div class="modal-card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Choisir une classe</strong>
-      <button class="modal-close" onclick="closeClassModal()">✕</button>
+      <button class="modal-close" onclick="closeClassModal()"><span class="gicon">close</span></button>
     </div>
     <div id="classModalList"></div>
   </div>
@@ -100,7 +100,7 @@
   <div class="modal-card" style="max-width:480px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Inscription professeur</strong>
-      <button class="modal-close" onclick="closeProfSignupModal()">✕</button>
+      <button class="modal-close" onclick="closeProfSignupModal()"><span class="gicon">close</span></button>
     </div>
     <p class="hint" style="margin:0 0 14px;">L'inscription est réservée aux enseignants disposant d'une adresse académique (<code>@ac-...fr</code>). Après vérification par l'administrateur, vous bénéficiez de <b>15 jours d'essai gratuit</b>, puis d'un abonnement annuel.</p>
     <label class="hint" style="display:block;margin:0 0 4px;">Prénom</label>
@@ -122,7 +122,7 @@
   <div class="modal-card" style="max-width:560px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Signaler un bug / une amélioration</strong>
-      <button class="modal-close" onclick="closeBugReportModal()">✕</button>
+      <button class="modal-close" onclick="closeBugReportModal()"><span class="gicon">close</span></button>
     </div>
     <div class="bug-tabs" style="display:flex;gap:8px;margin-bottom:14px;border-bottom:1px solid rgba(28,43,57,.12);">
       <button type="button" class="bug-tab active" id="bugTabForm" onclick="switchBugModalTab('form')">Signaler</button>
@@ -168,7 +168,7 @@
   <div class="modal-card" style="max-width:640px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
       <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;" id="cmModalTitle"></strong>
-      <button class="modal-close" onclick="closeCMModal()">✕</button>
+      <button class="modal-close" onclick="closeCMModal()"><span class="gicon">close</span></button>
     </div>
     <div id="cmWorkspace"></div>
   </div>
@@ -222,47 +222,47 @@
     </div>
   </div>
 
-  <div class="section-title"><h2>👩‍🎓 Pour les élèves, dans chaque chapitre</h2></div>
+  <div class="section-title"><h2><span class="gicon">person</span>‍<span class="gicon">school</span> Pour les élèves, dans chaque chapitre</h2></div>
   <div class="mini-links">
     <div class="mini-link" data-nav="chapitre" data-demo="1">
-      <div class="t">📐 Cours &amp; figures dynamiques</div>
+      <div class="t"><span class="gicon">straighten</span> Cours &amp; figures dynamiques</div>
       <div class="d">Points déplaçables, mesures qui se recalculent en direct.</div>
     </div>
     <div class="mini-link" data-nav="chapitre" data-demo="1" data-tab="methode">
-      <div class="t">✏️ Constructions animées</div>
+      <div class="t"><span class="gicon">edit</span> Constructions animées</div>
       <div class="d">Compas et règle, étape par étape, à revoir autant que voulu.</div>
     </div>
     <div class="mini-link" data-nav="chapitre" data-demo="1" data-tab="exercices">
-      <div class="t">🖊️ Méthodes de rédaction</div>
+      <div class="t"><span class="gicon">edit</span> Méthodes de rédaction</div>
       <div class="d">Des phrases-modèles pour rédiger comme en classe.</div>
     </div>
     <div class="mini-link" data-nav="chapitre" data-demo="1" data-tab="quiz">
-      <div class="t">🤖 Quiz générés par IA</div>
+      <div class="t"><span class="gicon">smart_toy</span> Quiz générés par IA</div>
       <div class="d">Des questions nouvelles à chaque essai (avec votre clé API).</div>
     </div>
   </div>
 
-  <div class="section-title"><h2>🧑‍🏫 Pour les professeurs</h2></div>
+  <div class="section-title"><h2><span class="gicon">person</span>‍<span class="gicon">school</span> Pour les professeurs</h2></div>
   <div class="mini-links">
     <div class="mini-link" data-nav="correction">
-      <div class="t">🖥️ Outil de correction</div>
+      <div class="t"><span class="gicon">desktop_windows</span> Outil de correction</div>
       <div class="d">Rédigez au clavier, projetez en direct, insérez figures/graphiques/probabilités, imprimez en un clic.</div>
     </div>
     <div class="mini-link" data-nav="evaluation">
-      <div class="t">📝 Créer une évaluation</div>
+      <div class="t"><span class="gicon">edit_note</span> Créer une évaluation</div>
       <div class="d">Rédaction manuelle ou assistée par IA, mise en page en colonnes, impression fidèle à l'écran.</div>
     </div>
     <div class="mini-link" data-nav="correction">
-      <div class="t">📘 Cahier de corrections</div>
+      <div class="t"><span class="gicon">menu_book</span> Cahier de corrections</div>
       <div class="d">Chaque correction archivée par classe et par date, à imprimer ou consulter en ligne.</div>
     </div>
     <div class="mini-link" data-nav="supervision">
-      <div class="t">📊 Suivi des classes</div>
+      <div class="t"><span class="gicon">bar_chart</span> Suivi des classes</div>
       <div class="d">Progression des automatismes et résultats des élèves, classe par classe.</div>
     </div>
   </div>
 
-  <div class="section-title"><h2>🔢 Automatismes</h2></div>
+  <div class="section-title"><h2><span class="gicon">pin</span> Automatismes</h2></div>
   <div class="plain-card" style="padding:24px 28px;">
     <p style="margin:0 0 14px;color:var(--ink-soft);">112 séquences du cahier, générées et corrigées automatiquement, pour s'entraîner au calcul mental chaque semaine.</p>
     <div class="figure-toolbar">
@@ -270,7 +270,7 @@
     </div>
   </div>
 
-  <div class="section-title"><h2>🎲 Le compte est bon</h2></div>
+  <div class="section-title"><h2><span class="gicon">casino</span> Le compte est bon</h2></div>
   <div class="plain-card" style="padding:24px 28px;">
     <p style="margin:0 0 14px;color:var(--ink-soft);">Comme dans l'émission : un tirage de 6 nombres, un compte à atteindre avec +, −, × et ÷, et toujours une solution exacte possible. Idéal pour muscler le calcul mental.</p>
     <div class="figure-toolbar">
@@ -278,7 +278,7 @@
     </div>
   </div>
 
-  <div class="section-title"><h2>🗓️ Frise de progression</h2></div>
+  <div class="section-title"><h2><span class="gicon">calendar_month</span> Frise de progression</h2></div>
   <div class="plain-card" style="padding:24px 28px;">
     <p style="margin:0 0 14px;color:var(--ink-soft);">Chaque chapitre situé dans l'année, semaine par semaine, avec les vacances scolaires -- pour les niveaux 6e et 5e.</p>
     <div class="figure-toolbar">
@@ -320,16 +320,16 @@
     <button class="tab-btn" data-tab="methode">Méthode animée</button>
     <button class="tab-btn" data-tab="exercices">Exercices &amp; rédaction</button>
     <button class="tab-btn" data-tab="quiz">Quiz IA</button>
-    <button class="tab-btn" data-tab="histoire">📜 Un peu d'histoire</button>
+    <button class="tab-btn" data-tab="histoire"><span class="gicon">history_edu</span> Un peu d'histoire</button>
   </div>
   <div id="chapSuggestRow" style="display:none;margin:8px 0 18px;">
-    <button class="btn secondary" style="font-size:.82rem;" onclick="openSuggestionModal()">💡 Suggérer une amélioration pour ce module</button>
+    <button class="btn secondary" style="font-size:.82rem;" onclick="openSuggestionModal()"><span class="gicon">lightbulb</span> Suggérer une amélioration pour ce module</button>
   </div>
 
   <!-- COURS -->
   <div class="tab-panel active" id="panel-cours">
     <div class="figure-toolbar" style="margin-bottom:18px;">
-      <button class="btn secondary" onclick="exportCoursPDF()">📄 Exporter en PDF</button>
+      <button class="btn secondary" onclick="exportCoursPDF()"><span class="gicon">description</span> Exporter en PDF</button>
       <span class="hint" id="exportHint" style="margin:0;"></span>
     </div>
     <div id="cours-demo-symetrie" style="display:none;">
@@ -576,7 +576,7 @@
         Chaque quiz est généré à la demande à partir du cours de ce chapitre — donc jamais deux fois le même.
       </p>
       <div class="api-row">
-        <button class="btn orange" id="btnGenerateQuiz" onclick="generateQuiz()" style="display:none;">🎲 Générer un quiz</button>
+        <button class="btn orange" id="btnGenerateQuiz" onclick="generateQuiz()" style="display:none;"><span class="gicon">casino</span> Générer un quiz</button>
         <span class="hint" id="quizLoginHint" style="margin:0;">Connectez-vous pour générer un quiz par IA.</span>
         <button class="btn secondary" onclick="generateDemoQuiz()">Questions pré-écrites (démo)</button>
       </div>
@@ -649,9 +649,9 @@
   <p style="color:var(--ink-soft);max-width:70ch;">Rédigez la correction d'un exercice au clavier pendant le cours : les fractions (<span class="hint-mono">2/3</span>), puissances (<span class="hint-mono">x^2</span>) et racines (<span class="hint-mono">sqrt(2)</span>) se mettent en forme automatiquement. Pour une formule plus complexe, entourez-la de <span class="hint-mono">$...$</span> en LaTeX. Ajoutez chaque exercice corrigé au cahier, puis générez le cahier complet pour vos élèves.</p>
 
   <div class="tool-shell" style="margin-bottom:20px;background:rgba(31,58,92,.05);border:1px solid rgba(31,58,92,.15);">
-    <strong style="font-family:'Space Grotesk',sans-serif;">📋 Classe active : <span id="classStatus" style="color:var(--accent-orange);">aucune</span></strong>
+    <strong style="font-family:'Space Grotesk',sans-serif;"><span class="gicon">assignment</span> Classe active : <span id="classStatus" style="color:var(--accent-orange);">aucune</span></strong>
     <div id="corClassQuickPicker" style="margin-top:8px;"></div>
-    <p class="hint" style="margin:6px 0 0;" id="corClassHint">Changez de classe depuis le menu <span style="font-weight:700;">👤 compte</span>, en haut à droite.</p>
+    <p class="hint" style="margin:6px 0 0;" id="corClassHint">Changez de classe depuis le menu <span style="font-weight:700;"><span class="gicon">person</span> compte</span>, en haut à droite.</p>
   </div>
 
   <div class="tool-shell" id="correctionForm">
@@ -663,7 +663,7 @@
       <select id="corChapitre"></select>
       <input type="text" id="corExoNum" placeholder="N° exercice (ex. 4 p.23)" style="width:150px;" oninput="renderCorrectionPreview()">
       <input type="date" id="corDate" style="width:150px;" oninput="renderCorrectionPreview()">
-      <button class="btn secondary" onclick="toggleProjection()" id="btnProjection">🖥️ Ouvrir la fenêtre de projection</button>
+      <button class="btn secondary" onclick="toggleProjection()" id="btnProjection"><span class="gicon">desktop_windows</span> Ouvrir la fenêtre de projection</button>
     </div>
     <div class="tool-row">
       <input type="text" id="corTitre" placeholder="Titre de l'exercice (ex. Construire un symétrique)" style="flex:1;min-width:280px;" oninput="renderCorrectionPreview()">
@@ -677,7 +677,7 @@
       <span class="hint" style="margin:0;">sélectionnez du texte puis cliquez, ou tapez directement <span class="hint-mono">**gras**</span> / <span class="hint-mono">{{rouge|texte}}</span></span>
     </div>
     <div id="correctionInputWrap" style="position:relative;display:none;">
-      <button type="button" onclick="corRemoveTextarea()" title="Retirer cette zone de texte libre (garde uniquement les blocs insérés, comme dans Évaluation)" style="position:absolute;top:6px;right:6px;z-index:2;border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;width:22px;height:22px;cursor:pointer;font-size:.8rem;">✕</button>
+      <button type="button" onclick="corRemoveTextarea()" title="Retirer cette zone de texte libre (garde uniquement les blocs insérés, comme dans Évaluation)" style="position:absolute;top:6px;right:6px;z-index:2;border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;width:22px;height:22px;cursor:pointer;font-size:.8rem;"><span class="gicon">close</span></button>
       <textarea id="correctionInput" placeholder="Ex. : On calcule 2/3 + 1/6. Le dénominateur commun est 6, donc 2/3 = 4/6. Donc 4/6 + 1/6 = 5/6." oninput="renderCorrectionPreview()"></textarea>
     </div>
     <button type="button" id="btnCorAddTextarea" onclick="corAddTextarea()" class="btn secondary" style="margin-top:8px;font-size:.8rem;">+ Zone de texte libre</button>
@@ -707,12 +707,12 @@
     <div class="tool-row" style="margin-top:14px;margin-bottom:0;">
       <button class="btn" onclick="addToCahier()" id="btnAddCahier" disabled style="opacity:.5;cursor:not-allowed;">+ Ajouter au cahier de corrections</button>
       <button class="btn secondary" onclick="clearCorrectionInput()">Effacer le brouillon</button>
-      <button class="btn secondary" onclick="cancelEditCahier()" id="btnCancelEdit" style="display:none;">✕ Annuler la modification</button>
+      <button class="btn secondary" onclick="cancelEditCahier()" id="btnCancelEdit" style="display:none;"><span class="gicon">close</span> Annuler la modification</button>
     </div>
   </div>
 
   <div class="tool-shell" id="tdRefForm" style="background:rgba(45,106,79,.05);border:1px solid rgba(45,106,79,.15);">
-    <strong style="font-family:'Space Grotesk',sans-serif;">📎 Référencer des exercices de TD</strong>
+    <strong style="font-family:'Space Grotesk',sans-serif;"><span class="gicon">attach_file</span> Référencer des exercices de TD</strong>
     <p class="hint" style="margin:6px 0 10px;">Pour noter simplement qu'une série d'exercices a été travaillée (par exemple faits directement sur le cahier d'exercices papier, faute de place), sans avoir à en recopier la correction.</p>
     <div class="tool-row">
       <select id="tdNiveau" onchange="fillTdChapitres()">
@@ -740,7 +740,7 @@
   </div>
   <div id="cahierList"></div>
   <div class="tool-row cahier-list-actions">
-    <button class="btn orange" onclick="generateCahierPDF()">🖨️ Imprimer / Enregistrer en PDF</button>
+    <button class="btn orange" onclick="generateCahierPDF()"><span class="gicon">print</span> Imprimer / Enregistrer en PDF</button>
     <button class="btn secondary" onclick="clearCahier()">Vider le cahier</button>
   </div>
 </section>
@@ -758,30 +758,30 @@
     <div id="tbToolPalette" style="display:flex;flex-direction:column;flex-wrap:wrap;gap:8px;width:64px;flex:none;"></div>
     <div style="flex:1;min-width:280px;">
       <div class="tool-row" style="margin-bottom:8px;">
-        <button type="button" class="btn secondary" onclick="tbClearInk()">🧹 Effacer les tracés</button>
+        <button type="button" class="btn secondary" onclick="tbClearInk()"><span class="gicon">cleaning_services</span> Effacer les tracés</button>
         <button type="button" class="btn secondary" id="tbBtnUndo" onclick="tbUndo()" title="Annuler" disabled>↶</button>
         <button type="button" class="btn secondary" id="tbBtnRedo" onclick="tbRedo()" title="Rétablir" disabled>↷</button>
-        <button type="button" class="btn secondary" onclick="tbToggleHistoryPanel()">🗂️ Historique</button>
+        <button type="button" class="btn secondary" onclick="tbToggleHistoryPanel()"><span class="gicon">folder</span> Historique</button>
         <button type="button" class="btn secondary" onclick="tbClearAll()">↺ Tout réinitialiser</button>
         <select id="tbBgSelect" onchange="tbSetBackground(this.value)" class="btn secondary" style="cursor:pointer;">
           <option value="blank">⬜ Page blanche</option>
           <option value="squares">▦ Petits carreaux</option>
-          <option value="triangles">🔺 Triangles</option>
+          <option value="triangles"><span class="gicon">straighten</span> Triangles</option>
         </select>
         <span id="tbGridZoomBox" style="display:none;align-items:center;gap:2px;">
           <button type="button" class="btn secondary" onclick="tbZoomGrid(-1)" title="Pavage plus petit" style="padding:8px 12px;">➖</button>
           <button type="button" class="btn secondary" onclick="tbZoomGrid(1)" title="Pavage plus grand" style="padding:8px 12px;">➕</button>
         </span>
         <input type="file" id="tbImageImportInput" accept="image/*" style="display:none;" onchange="tbImportImage(this.files[0]); this.value='';">
-        <button type="button" class="btn secondary" onclick="document.getElementById('tbImageImportInput').click()" title="Importer une image pour travailler par-dessus">📷 Image</button>
+        <button type="button" class="btn secondary" onclick="document.getElementById('tbImageImportInput').click()" title="Importer une image pour travailler par-dessus"><span class="gicon">photo_camera</span> Image</button>
         <span id="tbBgImageOpacityBox" style="display:none;align-items:center;gap:5px;">
           <label class="hint" style="margin:0;">Opacité <input type="range" id="tbBgImageOpacitySlider" min="0.2" max="1" step="0.05" value="1" oninput="tbSetBgImageOpacity(this.value)" onchange="tbPushHistory()" style="vertical-align:middle;"></label>
-          <button type="button" class="btn secondary" onclick="tbRemoveBgImage()" title="Retirer l'image">✕</button>
+          <button type="button" class="btn secondary" onclick="tbRemoveBgImage()" title="Retirer l'image"><span class="gicon">close</span></button>
         </span>
       </div>
       <div class="tool-row" style="margin-bottom:8px;">
-        <label class="hint" style="margin:0;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="tbRememberPos"> 📌 Mémoriser position</label>
-        <label class="hint" style="margin:0;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="tbConstructionCheck" onchange="tbToggleConstruction()"> 📐 Trait de construction</label>
+        <label class="hint" style="margin:0;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="tbRememberPos"> <span class="gicon">push_pin</span> Mémoriser position</label>
+        <label class="hint" style="margin:0;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="tbConstructionCheck" onchange="tbToggleConstruction()"> <span class="gicon">straighten</span> Trait de construction</label>
         <label class="hint" style="margin:0;display:flex;align-items:center;gap:5px;"><input type="checkbox" id="tbColorPencil" checked> Crayon noir <input type="color" id="tbPencilColor" value="#1C1B2E" style="width:26px;height:22px;padding:0;border:none;vertical-align:middle;"></label>
       </div>
       <div id="tbBoardWrap" style="border:1.5px solid rgba(28,43,57,.18);border-radius:10px;overflow:hidden;background:#fff;touch-action:none;"></div>
@@ -797,16 +797,16 @@
   <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:10px;">
     <h1 style="margin:6px 0 4px;">Cahier de corrections</h1>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn secondary" onclick="renderCahierEleve()">🔄 Actualiser</button>
-      <button class="btn secondary" onclick="downloadCahierElevePDF()">🖨️ Imprimer / Enregistrer en PDF</button>
-      <button class="btn secondary" onclick="exportCahierDataFile()">📤 Exporter le cahier (fichier)</button>
-      <button class="btn secondary" onclick="document.getElementById('cahierImportInput').click()">📥 Importer un cahier</button>
+      <button class="btn secondary" onclick="renderCahierEleve()"><span class="gicon">refresh</span> Actualiser</button>
+      <button class="btn secondary" onclick="downloadCahierElevePDF()"><span class="gicon">print</span> Imprimer / Enregistrer en PDF</button>
+      <button class="btn secondary" onclick="exportCahierDataFile()"><span class="gicon">upload</span> Exporter le cahier (fichier)</button>
+      <button class="btn secondary" onclick="document.getElementById('cahierImportInput').click()"><span class="gicon">download</span> Importer un cahier</button>
       <input type="file" id="cahierImportInput" accept=".json" style="display:none;" onchange="importCahierDataFile(this.files[0])">
     </div>
   </div>
   <p style="color:var(--ink-soft);max-width:60ch;">Toutes les corrections de l'année, dans l'ordre. Le cahier s'ouvre directement sur la dernière page.</p>
   <div class="tool-row" style="margin:0 0 14px;">
-    <span class="hint" style="margin:0;">Classe active : <b id="studentClassStatus" style="color:var(--accent-orange);">aucune</b> — changez de classe depuis le menu 👤 compte, en haut à droite.</span>
+    <span class="hint" style="margin:0;">Classe active : <b id="studentClassStatus" style="color:var(--accent-orange);">aucune</b> — changez de classe depuis le menu <span class="gicon">person</span> compte, en haut à droite.</span>
   </div>
   <p class="hint" id="cahierImportStatus" style="margin:-4px 0 6px;"></p>
   <div class="tool-row" style="margin:0 0 14px;">
@@ -826,7 +826,7 @@
 <!-- ================= SUPERVISION (résultats automatismes) ================= -->
 <section class="view" id="view-supervision">
   <span class="back-btn" data-nav="home">← Accueil</span>
-  <h1 style="margin:6px 0 4px;">📊 Supervision</h1>
+  <h1 style="margin:6px 0 4px;"><span class="gicon">bar_chart</span> Supervision</h1>
   <p style="color:var(--ink-soft);max-width:70ch;">Résultats d'automatismes de la classe active (visible en haut, à côté de votre compte).</p>
   <div class="tool-row" style="margin:10px 0;">
     <select id="supFilterEleve" onchange="renderSupervisionFiltered()"><option value="">Tous les élèves</option></select>
@@ -834,18 +834,18 @@
     <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">Du <input type="date" id="supFilterFrom" onchange="renderSupervisionFiltered()"></label>
     <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">au <input type="date" id="supFilterTo" onchange="renderSupervisionFiltered()"></label>
     <button class="btn secondary" onclick="resetSupervisionFilters()">Réinitialiser</button>
-    <button class="btn secondary" onclick="renderSupervision(); renderSupervisionCeb();">🔄 Actualiser</button>
+    <button class="btn secondary" onclick="renderSupervision(); renderSupervisionCeb();"><span class="gicon">refresh</span> Actualiser</button>
   </div>
   <div id="supervisionContent" class="hint">Choisissez une classe dans le menu compte pour voir ses résultats.</div>
 
-  <h2 style="margin:30px 0 4px;">🎲 Le compte est bon</h2>
+  <h2 style="margin:30px 0 4px;"><span class="gicon">casino</span> Le compte est bon</h2>
   <p style="color:var(--ink-soft);max-width:70ch;margin:0 0 10px;">Tentatives et taux de réussite de la classe active, par mode (illimité / chronométré).</p>
   <div id="supervisionCebContent" class="hint">Choisissez une classe dans le menu compte pour voir ses résultats.</div>
 </section>
 
 <section class="view" id="view-progression">
   <span class="back-btn" data-nav="home">← Accueil</span>
-  <h1 style="margin:6px 0 4px;">📅 Ma progression</h1>
+  <h1 style="margin:6px 0 4px;"><span class="gicon">calendar_month</span> Ma progression</h1>
   <p style="color:var(--ink-soft);max-width:70ch;">Réordonnez librement les chapitres et ajustez leurs dates (vos vacances, votre rythme) : cette progression n'est visible que par vous, elle remplace celle par défaut uniquement sur votre propre affichage.</p>
   <div class="tool-row" style="margin:10px 0;">
     <select id="progNiveauSelect" onchange="renderProgressionEditor()">
@@ -859,7 +859,7 @@
         <option value="C">C (Paris, Créteil, Versailles, Montpellier, Toulouse)</option>
       </select>
     </label>
-    <button class="btn" onclick="saveProgression()">💾 Enregistrer</button>
+    <button class="btn" onclick="saveProgression()"><span class="gicon">save</span> Enregistrer</button>
     <button class="btn secondary" onclick="resetProgression()">↩️ Revenir à la progression par défaut</button>
   </div>
   <span class="hint" id="progStatus" style="display:block;margin:0 0 10px;"></span>
@@ -868,14 +868,14 @@
 
 <section class="view" id="view-mesresultats">
   <span class="back-btn" data-nav="home">← Accueil</span>
-  <h1 style="margin:6px 0 4px;">📊 Mes résultats</h1>
+  <h1 style="margin:6px 0 4px;"><span class="gicon">bar_chart</span> Mes résultats</h1>
   <p style="color:var(--ink-soft);max-width:70ch;">L'historique de vos exercices d'automatismes.</p>
   <div class="tool-row" style="margin:10px 0;">
     <select id="mesResFilterExercice" onchange="renderMesResultatsFiltered()"><option value="">Tous les exercices</option></select>
     <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">Du <input type="date" id="mesResFilterFrom" onchange="renderMesResultatsFiltered()"></label>
     <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">au <input type="date" id="mesResFilterTo" onchange="renderMesResultatsFiltered()"></label>
     <button class="btn secondary" onclick="resetMesResultatsFilters()">Réinitialiser</button>
-    <button class="btn secondary" onclick="renderMesResultats()">🔄 Actualiser</button>
+    <button class="btn secondary" onclick="renderMesResultats()"><span class="gicon">refresh</span> Actualiser</button>
   </div>
   <div id="mesResultatsContent" class="hint">Chargement…</div>
 </section>
@@ -888,42 +888,42 @@
 <footer>Une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a> · L'Atelier des Maths · Programme B.O. 2026</footer>
 
 <script src="https://js.stripe.com/v3/"></script>
-<script defer src="app.js?v=20260819-325"></script>
-<script defer src="outils-figures.js?v=20260819-325"></script>
-<script defer src="evaluation.js?v=20260819-325"></script>
-<script defer src="admin.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/N4-multiplication-division.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/D3-proportionnalite.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/G5-construction-triangles.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/G4-symetrie-axiale.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/N5-fractions-comparaison-addition.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/D1-gestion-donnees.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/D2-probabilites.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/M1-aire-perimetre.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/M2-heures-durees.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/G6-proprietes-triangles.js?v=20260819-325"></script>
-<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/N4-fractions.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/N6-equations.js?v=20260819-325"></script>
-<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-325"></script>
-<script defer src="calcul-mental/calcul-mental.js?v=20260819-325"></script>
-<script defer src="compte-est-bon.js?v=20260819-325"></script>
-<script defer src="router.js?v=20260819-325"></script>
+<script defer src="app.js?v=20260819-326"></script>
+<script defer src="outils-figures.js?v=20260819-326"></script>
+<script defer src="evaluation.js?v=20260819-326"></script>
+<script defer src="admin.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/N4-multiplication-division.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/D3-proportionnalite.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/G5-construction-triangles.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/G4-symetrie-axiale.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/N5-fractions-comparaison-addition.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/D1-gestion-donnees.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/D2-probabilites.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/M1-aire-perimetre.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/M2-heures-durees.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/G6-proprietes-triangles.js?v=20260819-326"></script>
+<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/N4-fractions.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/N6-equations.js?v=20260819-326"></script>
+<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-326"></script>
+<script defer src="calcul-mental/calcul-mental.js?v=20260819-326"></script>
+<script defer src="compte-est-bon.js?v=20260819-326"></script>
+<script defer src="router.js?v=20260819-326"></script>
 </body>
 </html>

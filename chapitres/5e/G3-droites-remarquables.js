@@ -349,7 +349,7 @@ document.getElementById('dr-ortho-obtus-wrap').innerHTML = drBuildOrthocenterSvg
 
 document.getElementById('histoire-demo-droites-remarquables-5e').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Les quatre droites remarquables d'un triangle (médiatrices, bissectrices, hauteurs, médianes) et leurs points de concours étaient déjà connus des mathématiciens grecs de l'Antiquité. Mais il faudra attendre 1765 pour qu'une découverte surprenante soit faite : le mathématicien suisse Leonhard Euler démontre que, dans un même triangle, le centre de gravité, l'orthocentre et le centre du cercle circonscrit sont toujours alignés sur une même droite, aujourd'hui appelée la <b>droite d'Euler</b>. Un lien inattendu entre des points qu'on pensait indépendants !
 </div>
 `;

@@ -196,7 +196,7 @@ ${ndGridCentieme(47)}
 
 document.getElementById('histoire-demo-decimaux-6e').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Les nombres décimaux tels que nous les écrivons (avec une virgule) sont une invention récente à l'échelle de l'histoire des mathématiques : c'est le savant flamand Simon Stevin qui, en 1585, en publie le premier exposé complet et accessible, dans un petit livre intitulé <i>La Thiende</i> (« Le Dixième »). Il y explique cette méthode aux <i>« astrologues, arpenteurs, tapissiers, tonneliers, maîtres de la monnaie et à tous marchands »</i>, pour qu'ils puissent calculer sans passer par les fractions. Certaines civilisations, comme les mathématiciens arabes et chinois, utilisaient déjà des idées proches bien avant lui, mais c'est Stevin qui a rendu cette écriture vraiment utilisable par tous en Europe.
 </div>
 `;

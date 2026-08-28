@@ -278,7 +278,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 
 document.getElementById('histoire-demo-droites-paralleles').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Comment être sûr que deux droites ne se croiseront jamais, même si on les prolonge indéfiniment ? Cette question a longtemps préoccupé les mathématiciens. Vers 300 av. J.-C., Euclide pose comme règle de base (un « postulat », qu'on admet sans démonstration) une phrase compliquée sur les droites parallèles, dans son livre <i>Les Éléments</i>. Pendant plus de 2 000 ans, de nombreux mathématiciens ont essayé de démontrer que cette règle n'était pas vraiment nécessaire, sans jamais y parvenir — jusqu'à ce qu'on découvre, au 19e siècle, qu'elle décrit bien une propriété propre à notre géométrie « plate », et qu'il existe d'autres géométries où elle ne s'applique pas !
 </div>
 `;

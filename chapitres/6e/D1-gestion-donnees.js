@@ -246,7 +246,7 @@ document.getElementById('exos-demo-gestion-donnees').innerHTML = `
 
 document.getElementById('histoire-demo-gestion-donnees').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Représenter des données par des dessins plutôt que par des nombres bruts est une invention étonnamment récente : c'est l'ingénieur et économiste écossais <b>William Playfair</b> qui, à la toute fin du XVIIIe siècle, invente à peu près seul le diagramme en barres et le diagramme circulaire, dans son <i>Commercial and Political Atlas</i> (1786) puis dans son <i>Statistical Breviary</i> (1801), pour représenter les échanges commerciaux entre pays. Playfair défendait l'idée qu'un bon graphique permet de comprendre en quelques secondes ce que des pages entières de tableaux de chiffres mettraient de longues minutes à faire comprendre. Ses idées mettront pourtant du temps à s'imposer : c'est seulement plus d'un demi-siècle plus tard que l'infirmière britannique <b>Florence Nightingale</b> popularise ce type de représentation, avec un diagramme circulaire de sa création (le « diagramme en rose ») pour convaincre l'armée britannique que la plupart des soldats mouraient de maladies évitables plutôt que de blessures de guerre, contribuant ainsi à une réforme complète des hôpitaux militaires.
 </div>
 `;

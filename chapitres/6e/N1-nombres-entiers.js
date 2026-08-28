@@ -157,7 +157,7 @@ document.getElementById('cours-demo-nombres-entiers').innerHTML = `
 
 document.getElementById('histoire-demo-nombres-entiers').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Compter est sans doute l'une des toutes premières activités mathématiques de l'humanité. L'os de Lebombo, découvert en Afrique australe et vieux d'environ 35 000 ans, porte 29 encoches gravées, probablement pour suivre le cycle de la Lune : c'est l'un des plus anciens objets connus liés au comptage. Beaucoup plus tard, vers 3400 av. J.-C., les Sumériens, en Mésopotamie, inventent l'une des premières écritures des nombres, en gravant des symboles dans des tablettes d'argile pour tenir les comptes de leurs récoltes et de leurs troupeaux.
 </div>
 `;

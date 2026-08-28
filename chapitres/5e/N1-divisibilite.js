@@ -53,7 +53,7 @@ document.getElementById('cours-demo-divisibilite-5e').innerHTML = `
 
 document.getElementById('histoire-demo-divisibilite-5e').innerHTML = `
 <div class="history-box">
-  <div class="history-title">📜 Un peu d'histoire</div>
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire</div>
   Vers 240 av. J.-C., le savant grec Ératosthène, alors bibliothécaire en chef de la grande bibliothèque d'Alexandrie, invente une méthode simple pour trouver tous les nombres premiers (les nombres qui n'ont que deux diviseurs) jusqu'à un nombre donné : on écrit tous les nombres, puis on raye petit à petit tous les multiples de 2, puis de 3, puis de 5... Cette méthode, appelée le <b>crible d'Ératosthène</b>, est toujours utilisée aujourd'hui, y compris en informatique. Ératosthène est aussi resté célèbre pour avoir calculé, avec une remarquable précision pour l'époque, la circonférence de la Terre !
 </div>
 `;
