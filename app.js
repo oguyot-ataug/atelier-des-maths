@@ -1290,7 +1290,12 @@ function getExerciseByCtx(ctx){
 }
 function singleBlockHTML(b, ctx, withControls, draggable){
   const sizeStyle = (b.width?`width:${b.width}px;`:'') + (b.height?`height:${b.height}px;`:'');
-  const defaultWidth = b.type==='axe' ? 500 : b.type==='repere' ? 340 : b.type==='graph' ? 420 : 260;
+  // Les figures/diagrammes ont un gabarit fixe raisonnable par défaut (les étirer sur toute
+  // la largeur de la page les déformerait). Le texte, en revanche, doit par défaut occuper
+  // toute la largeur disponible de sa zone -- comme n'importe quel paragraphe -- sinon il se
+  // retrouve coupé à 260px de large (un tiers de page environ) tant qu'on ne le redimensionne
+  // pas manuellement avec la poignée.
+  const defaultWidth = b.type==='axe' ? 500 : b.type==='repere' ? 340 : b.type==='graph' ? 420 : b.type==='texte' ? null : 260;
   let html = b.html;
   if(b.type==='disque'){
     // Réglage manuel (toujours prioritaire, fiable dans tous les contextes y compris la
@@ -1305,13 +1310,21 @@ function singleBlockHTML(b, ctx, withControls, draggable){
   if(!withControls){
     return `<div class="nb-figure-row disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}"${sizeStyle?` style="${sizeStyle}overflow:hidden;"`:''}>${html}</div>`;
   }
-  const dragAttrs = draggable ? `draggable="true" ondragstart="evalDragStart(event,${b.id})"` : '';
-  return `<div class="nb-figure-row" ${dragAttrs} style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px 10px;margin:8px 0;background:#fff;${draggable?'cursor:grab;':''}">
+  // Poignée de glisser DÉDIÉE (plutôt que le bloc entier "draggable") : un texte contient du
+  // contenu sélectionnable, et rendre tout le bloc "draggable" entrait en conflit avec la
+  // sélection de texte à la souris (le navigateur hésite entre démarrer une sélection ou un
+  // glisser-déposer). En isolant l'attribut draggable sur une petite poignée dédiée, le reste
+  // du bloc reste utilisable normalement (sélection, édition), et glisser depuis la poignée
+  // fonctionne de façon fiable.
+  const dragHandle = draggable ? `<span draggable="true" ondragstart="evalDragStart(event,${b.id})" title="Glisser pour déplacer ce bloc" style="position:absolute;top:6px;left:6px;cursor:grab;font-size:1rem;color:var(--ink-soft);z-index:2;user-select:none;">⠿</span>` : '';
+  const widthStyle = sizeStyle || (defaultWidth ? `width:${defaultWidth}px;` : 'width:100%;');
+  return `<div class="nb-figure-row" style="position:relative;border:1px dashed rgba(28,43,57,.18);border-radius:8px;padding:10px 34px 10px ${draggable?'26px':'10px'};margin:8px 0;background:#fff;">
+    ${dragHandle}
     <div style="position:absolute;top:6px;right:6px;display:flex;gap:4px;z-index:2;">
       ${b.editFn ? `<button type="button" onclick="editBlock(${b.id},'${ctx}')" title="Modifier ce bloc" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✏️</button>` : ''}
       <button type="button" onclick="removeBlock(${b.id},'${ctx}')" title="Supprimer ce bloc" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.85rem;">✕</button>
     </div>
-    <div class="resizable-block disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}" style="resize:both;overflow:hidden;display:block;max-width:100%;min-width:80px;min-height:50px;${sizeStyle||'width:'+defaultWidth+'px;'}">${html}</div>
+    <div class="resizable-block disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}" style="resize:both;overflow:hidden;display:block;max-width:100%;min-width:80px;min-height:50px;${widthStyle}">${html}</div>
   </div>`;
 }
 function pendingBlocksHTML(withControls, ctx){
