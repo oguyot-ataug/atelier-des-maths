@@ -2635,16 +2635,20 @@ function findNearbyShape(x,y){
   // un point tout proche). Les cercles étaient aussi absents de cette détection manuelle
   // (seuls segment/droite étaient reconnus), rendant impossible le codage manuel d'un cercle.
   const thresh = 18;
-  return figState.shapes.find(s=>{
-    if(s.type==='segment') return distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
-    if(s.type==='droite') return distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
-    if(s.type==='cercle'){
+  let best = null, bestLen = Infinity;
+  figState.shapes.forEach(s=>{
+    let match = false;
+    if(s.type==='segment') match = distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    else if(s.type==='droite') match = distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    else if(s.type==='cercle'){
       const r = circleRadius(s);
-      if(r==null) return false;
-      return Math.abs(Math.hypot(x-s.p1.x, y-s.p1.y) - r) < thresh;
+      match = r!=null && Math.abs(Math.hypot(x-s.p1.x, y-s.p1.y) - r) < thresh;
     }
-    return false;
+    if(!match) return;
+    const len = (s.p1 && s.p2) ? Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y) : Infinity;
+    if(len < bestLen){ bestLen = len; best = s; }
   });
+  return best;
 }
 /* Pour le codage d'angle (3 clics sur des POINTS précis) : un clic loin de tout point mais
    proche d'un segment/droite/rayon déjà tracé se rabat sur l'extrémité de cette forme la
@@ -2781,6 +2785,20 @@ function onFigureMouseMove(evt){
   renderFigureSvg();
 }
 function onFigureMouseUp(){ figDragPoint = null; }
+/* Crée le milieu de [a,b] : le point lui-même, ET les deux moitiés comme de VRAIS segments
+   (a-milieu, milieu-b) -- sans ça, le codage (qui détecte un clic via findNearbyShape) ne
+   reconnaît aucune forme à coder sur ces moitiés, seul le segment d'origine [a,b] existe
+   comme forme (signalé : "il ne reconnaît pas les parties à coder pour le milieu"). Ces deux
+   segments se superposent exactement au segment d'origine (même droite), donc leur ajout ne
+   change rien visuellement -- seule la possibilité de les coder individuellement change. */
+function createMidpoint(a, b){
+  const mid = {label:nextPointLabel(), x:(a.x+b.x)/2, y:(a.y+b.y)/2, def:{type:'milieu', a, b}};
+  figState.points.push(mid);
+  figState.shapes.push({type:'segment', p1:a, p2:mid});
+  figState.shapes.push({type:'segment', p1:mid, p2:b});
+  figState.selected = [];
+  renderFigureSvg();
+}
 function onFigureClick(evt){
   if(figState.mode==='deplacer') return; // géré par mousedown/mousemove
   const svg=document.getElementById('figureSvg');
@@ -2795,6 +2813,14 @@ function onFigureClick(evt){
   if(figState.mode==='cercle-rayon'){ handleRadiusCircleClick(x,y); return; }
   if(figState.mode==='perpendiculaire' || figState.mode==='parallele' || figState.mode==='mediatrice'){ handleLineToolClick(x,y); return; }
   if(figState.mode==='code'){ handleCodeClick(x,y); return; }
+  if(figState.mode==='milieu'){
+    // Un clic direct sur le segment (pas seulement ses 2 extrémités) sélectionne les deux
+    // points d'un coup -- plus rapide que d'avoir à cliquer précisément chaque extrémité.
+    if(!figState.selected.length){
+      const shape = findNearbyShape(x,y);
+      if(shape && shape.type==='segment'){ createMidpoint(shape.p1, shape.p2); return; }
+    }
+  }
 
   const near = findNearbyPoint(x,y);
   if(!near || figState.selected.includes(near)) return;
@@ -2805,7 +2831,8 @@ function onFigureClick(evt){
     const withCompass = document.getElementById('compassToggle') && document.getElementById('compassToggle').checked;
     if(figState.mode==='milieu'){
       const [a,b] = figState.selected;
-      figState.points.push({label:nextPointLabel(), x:(a.x+b.x)/2, y:(a.y+b.y)/2, def:{type:'milieu', a, b}});
+      createMidpoint(a, b);
+      return;
     } else if(figState.mode==='angle' || figState.mode==='bissectrice'){
       const [p1,vertex,p2] = figState.selected; // le sommet est le 2e point cliqué
       figState.shapes.push({type:figState.mode, vertex, p1, p2});
@@ -2989,11 +3016,23 @@ function renderFigureSvg(){
       html += renderRightAngleCode(s.vertex,s.p1,s.p2);
     }
   });
+  /* Un point qui est l'extrémité d'un segment (tracé directement, ou implicite via un
+     milieu -- voir plus bas) se dessine en petit trait perpendiculaire au segment, comme en
+     vrai géométrie (la croix est réservée aux points "libres", qui n'appartiennent à aucun
+     segment). */
+  function findSegmentAt(pt){ return figState.shapes.find(s=>s.type==='segment' && (s.p1===pt || s.p2===pt)); }
   figState.points.forEach(p=>{
     const sel = figState.selected.includes(p);
     const c = sel?'#E35D3A':(p.def?'#7A8A98':'#1C1B2E');
-    html+=`<line x1="${p.x-6}" y1="${p.y-6}" x2="${p.x+6}" y2="${p.y+6}" stroke="${c}" stroke-width="2"/>`;
-    html+=`<line x1="${p.x-6}" y1="${p.y+6}" x2="${p.x+6}" y2="${p.y-6}" stroke="${c}" stroke-width="2"/>`;
+    const seg = findSegmentAt(p);
+    if(seg){
+      const dx=seg.p2.x-seg.p1.x, dy=seg.p2.y-seg.p1.y, len=Math.hypot(dx,dy)||1;
+      const nx=-dy/len, ny=dx/len;
+      html+=`<line x1="${(p.x-nx*7).toFixed(1)}" y1="${(p.y-ny*7).toFixed(1)}" x2="${(p.x+nx*7).toFixed(1)}" y2="${(p.y+ny*7).toFixed(1)}" stroke="${c}" stroke-width="2"/>`;
+    } else {
+      html+=`<line x1="${p.x-6}" y1="${p.y-6}" x2="${p.x+6}" y2="${p.y+6}" stroke="${c}" stroke-width="2"/>`;
+      html+=`<line x1="${p.x-6}" y1="${p.y+6}" x2="${p.x+6}" y2="${p.y-6}" stroke="${c}" stroke-width="2"/>`;
+    }
     html+=`<text x="${p.x+9}" y="${p.y-9}" font-family="Space Grotesk" font-size="14" font-weight="700" fill="${p.def?'#7A8A98':'#1C1B2E'}">${p.label}</text>`;
   });
   svg.innerHTML = html;
