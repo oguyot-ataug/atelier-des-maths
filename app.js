@@ -1300,7 +1300,14 @@ function singleBlockHTML(b, ctx, withControls, draggable){
   // toute la largeur disponible de sa zone -- comme n'importe quel paragraphe -- sinon il se
   // retrouve coupé à 260px de large (un tiers de page environ) tant qu'on ne le redimensionne
   // pas manuellement avec la poignée.
-  const defaultWidth = b.type==='axe' ? 500 : b.type==='repere' ? 340 : b.type==='graph' ? 420 : b.type==='texte' ? null : 260;
+  // Le type 'figure' (construction géométrique) a sa PROPRE largeur par défaut, calibrée
+  // exactement sur l'échelle réelle de la page imprimée (680px = 180mm de zone imprimable A4,
+  // voir evaluation.js) et sur la convention interne de l'outil (SCALE_PX_PER_CM=20, viewBox
+  // 500 unités de large) : 500 x (37.778 px/cm réel / 20 unités/cm outil) ≈ 944px. Sans ce
+  // calibrage précis, le type 'figure' serait tombé dans le générique 260px (comme les
+  // petites figures ci-dessous), et un segment déclaré "5cm" se serait imprimé à environ
+  // 1,38cm réels seulement -- pas du tout la longueur annoncée à l'élève.
+  const defaultWidth = b.type==='axe' ? 500 : b.type==='repere' ? 340 : b.type==='graph' ? 420 : b.type==='figure' ? 944 : b.type==='texte' ? null : 260;
   let html = b.html;
   if(b.type==='disque'){
     // Réglage manuel (toujours prioritaire, fiable dans tous les contextes y compris la
@@ -1313,7 +1320,14 @@ function singleBlockHTML(b, ctx, withControls, draggable){
     if(ex && ex.rectSize) html = html.split('max-width:180px').join(`max-width:${ex.rectSize}px`);
   }
   if(!withControls){
-    return `<div class="nb-figure-row disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}"${sizeStyle?` style="${sizeStyle}overflow:hidden;"`:''}>${html}</div>`;
+    // Repli SPÉCIFIQUEMENT pour le type 'figure' (construction géométrique) : sans lui, un
+    // bloc jamais redimensionné manuellement n'obtenait AUCUNE largeur du tout à
+    // l'impression/dans le PDF -- le calibrage de defaultWidth (voir plus haut) n'aurait eu
+    // aucun effet sur le résultat imprimé réel, seulement sur l'aperçu dans l'éditeur. Les
+    // autres types de blocs gardent leur comportement d'impression inchangé (pas de risque
+    // de régression sur ce qui fonctionne déjà).
+    const printWidthStyle = sizeStyle || (b.type==='figure' ? `width:${defaultWidth}px;` : '');
+    return `<div class="nb-figure-row disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}"${printWidthStyle?` style="${printWidthStyle}overflow:hidden;"`:''}>${html}</div>`;
   }
   // Poignée de glisser DÉDIÉE (plutôt que le bloc entier "draggable") : un texte contient du
   // contenu sélectionnable, et rendre tout le bloc "draggable" entrait en conflit avec la

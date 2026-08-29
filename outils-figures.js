@@ -424,7 +424,9 @@ document.body.insertAdjacentHTML('beforeend', `
           </div>
 
           <button type="button" class="fig-icon-btn fig-mode" data-mode="arc" onclick="setFigureMode('arc')" title="Arc de cercle">◡</button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')" title="Milieu (cliquez le segment, ou ses 2 extrémités)">✱</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')" title="Milieu (cliquez le segment, ou ses 2 extrémités)">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.8"/><circle cx="3" cy="12" r="1.8" fill="currentColor"/><circle cx="21" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          </button>
 
           <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('remarquables')" title="Droites remarquables &amp; angles">⊥</button>
           <div id="figGroupRemarquables" class="fig-group-sub">
@@ -2789,7 +2791,7 @@ function handleLengthSegmentClick(x,y){
   const px = cm*SCALE_PX_PER_CM;
   const end = {label:nextPointLabel(), x:start.x+dx/len*px, y:start.y+dy/len*px};
   figState.points.push(end);
-  figState.shapes.push({type:'segment', p1:start, p2:end, lengthLabel:cm+' cm', codeGroup:lengthGroupFor(cm)});
+  figState.shapes.push({type:'segment', p1:start, p2:end, lengthLabel:cm+' cm', lengthCm:cm, codeGroup:lengthGroupFor(cm)});
   renderFigureSvg();
 }
 function handleRadiusCircleClick(x,y){
@@ -2826,8 +2828,22 @@ function onFigureMouseMove(evt){
   if(!figDragPoint) return;
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
-  figDragPoint.x = Math.max(10,Math.min(490,x));
-  figDragPoint.y = Math.max(10,Math.min(310,y));
+  let nx = Math.max(10,Math.min(490,x)), ny = Math.max(10,Math.min(310,y));
+  // Si ce point est l'extrémité d'un segment construit avec une LONGUEUR DONNÉE ("Segment
+  // cm"), le déplacer ne doit jamais changer cette longueur -- la position désirée est
+  // projetée sur le cercle de rayon fixe (la longueur d'origine, en cm) autour de l'AUTRE
+  // extrémité, ce qui revient à tourner ce point autour d'elle plutôt que de le laisser
+  // s'éloigner ou se rapprocher librement.
+  const constrainedSeg = figState.shapes.find(s=>s.type==='segment' && s.lengthCm && (s.p1===figDragPoint || s.p2===figDragPoint));
+  if(constrainedSeg){
+    const other = constrainedSeg.p1===figDragPoint ? constrainedSeg.p2 : constrainedSeg.p1;
+    const fixedLen = constrainedSeg.lengthCm * SCALE_PX_PER_CM;
+    const dx = nx-other.x, dy = ny-other.y, d = Math.hypot(dx,dy)||1;
+    nx = other.x + dx/d*fixedLen;
+    ny = other.y + dy/d*fixedLen;
+  }
+  figDragPoint.x = nx;
+  figDragPoint.y = ny;
   recomputeDependents();
   renderFigureSvg();
 }
@@ -3093,8 +3109,8 @@ function renderFigureSvg(){
     const c = sel?'#E35D3A':(p.def?'#7A8A98':'#1C1B2E');
     const linked = findLineShapesAt(p);
     if(linked.length===0){
-      html+=`<line x1="${p.x-6}" y1="${p.y-6}" x2="${p.x+6}" y2="${p.y+6}" stroke="${c}" stroke-width="2"/>`;
-      html+=`<line x1="${p.x-6}" y1="${p.y+6}" x2="${p.x+6}" y2="${p.y-6}" stroke="${c}" stroke-width="2"/>`;
+      html+=`<line x1="${p.x-4}" y1="${p.y-4}" x2="${p.x+4}" y2="${p.y+4}" stroke="${c}" stroke-width="1.6"/>`;
+      html+=`<line x1="${p.x-4}" y1="${p.y+4}" x2="${p.x+4}" y2="${p.y-4}" stroke="${c}" stroke-width="1.6"/>`;
     } else if(linked.length===1){
       const s = linked[0];
       // Le vecteur directeur dépend du type : segment/droite/demi-droite -> p2-p1 ; angle/
@@ -3104,7 +3120,7 @@ function renderFigureSvg(){
       const ref1 = s.p1||s.vertex, ref2 = s.p2||s.p1;
       const dx=ref2.x-ref1.x, dy=ref2.y-ref1.y, len=Math.hypot(dx,dy)||1;
       const nx=-dy/len, ny=dx/len;
-      html+=`<line x1="${(p.x-nx*7).toFixed(1)}" y1="${(p.y-ny*7).toFixed(1)}" x2="${(p.x+nx*7).toFixed(1)}" y2="${(p.y+ny*7).toFixed(1)}" stroke="${c}" stroke-width="2"/>`;
+      html+=`<line x1="${(p.x-nx*5).toFixed(1)}" y1="${(p.y-ny*5).toFixed(1)}" x2="${(p.x+nx*5).toFixed(1)}" y2="${(p.y+ny*5).toFixed(1)}" stroke="${c}" stroke-width="1.6"/>`;
     }
     html+=`<text x="${p.x+9}" y="${p.y-9}" font-family="Space Grotesk" font-size="14" font-weight="700" fill="${p.def?'#7A8A98':'#1C1B2E'}">${p.label}</text>`;
   });
@@ -3241,7 +3257,13 @@ function applyAIFigure(json){
 }
 function validateFigure(){
   const svg=document.getElementById('figureSvg');
-  const html = `<svg viewBox="0 0 500 320" style="width:100%;max-width:420px;display:block;margin:6px auto;border:1px solid rgba(28,43,57,.12);border-radius:8px;">${svg.innerHTML}</svg>`;
+  // Pas de max-width ici : le SVG remplit 100% de son conteneur (.resizable-block), dont la
+  // largeur par défaut est calibrée précisément en app.js (singleBlockHTML, defaultWidth)
+  // pour que les longueurs déclarées dans cet outil correspondent à de vrais centimètres une
+  // fois imprimées -- un max-width codé en dur ici primerait sur cette largeur et annulerait
+  // le calibrage (c'était le cas avant : 420px fixe, sans lien avec l'échelle réelle de la
+  // page imprimée).
+  const html = `<svg viewBox="0 0 500 320" style="width:100%;display:block;margin:6px auto;border:1px solid rgba(28,43,57,.12);border-radius:8px;">${svg.innerHTML}</svg>`;
   const snapshot = JSON.parse(JSON.stringify({points:figState.points, shapes:figState.shapes}));
   addPendingBlock('figure', html, snapshot, 'reopenFigure');
   closeFigureTool();
