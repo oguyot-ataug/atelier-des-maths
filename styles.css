@@ -645,3 +645,21 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
 #tbFullscreenWrap:fullscreen #tbSvg, #tbFullscreenWrap:-webkit-full-screen #tbSvg{
   width:auto;max-width:100%;max-height:calc(100vh - 230px);
 }
+
+/* ---------- Outil de figure : barre latérale à icônes ---------- */
+.fig-icon-btn{
+  width:44px;height:44px;flex:none;border:2px solid rgba(28,43,57,.18);border-radius:8px;
+  background:#fff;cursor:pointer;font-size:1.15rem;display:flex;align-items:center;justify-content:center;
+  padding:0;line-height:1;
+}
+.fig-icon-btn.active{border-color:#0D5BA3;background:rgba(13,91,163,.12);}
+.fig-icon-btn:hover{border-color:rgba(28,43,57,.35);}
+.fig-group-btn{position:relative;}
+.fig-group-btn::after{
+  content:'▾';position:absolute;bottom:-1px;right:1px;font-size:.55rem;color:var(--ink-soft);
+}
+.fig-group-sub{
+  display:none;flex-direction:column;gap:4px;padding:4px 0 4px 8px;margin-left:6px;
+  border-left:2px solid rgba(28,43,57,.15);
+}
+.fig-group-sub.open{display:flex;}

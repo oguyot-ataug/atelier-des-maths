@@ -387,73 +387,89 @@ document.body.insertAdjacentHTML('beforeend', `
     </div>
     <div id="figurePanel" class="figure-wrap" style="display:none;">
       <div class="tool-row" style="margin-bottom:8px;">
-        <textarea id="enonceInput" rows="3" style="flex:1;min-width:260px;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);"
+        <textarea id="enonceInput" rows="2" style="flex:1;min-width:260px;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);"
           placeholder="Ex. : ABC triangle&#10;I milieu de [BC]&#10;cercle de centre A passant par B"></textarea>
         <button type="button" class="btn secondary" onclick="buildFromEnonce()" style="align-self:flex-start;"><span class=gicon>straighten</span> Construire à partir de l'énoncé</button>
         <button type="button" class="btn orange" onclick="interpretEnonceWithAI()" style="align-self:flex-start;"><span class=gicon>smart_toy</span> Interpréter avec l'IA</button>
       </div>
-      <p class="hint" style="margin:-4px 0 12px;">Phrases reconnues directement : <span class="hint-mono">ABC triangle</span> (rectangle/isocèle/équilatéral, ex. <span class="hint-mono">ABC triangle rectangle en A</span>) · <span class="hint-mono">ABCD carré/rectangle/losange/parallélogramme</span> · <span class="hint-mono">I milieu de [BC]</span> · <span class="hint-mono">cercle de centre A passant par B</span>. Pour tout le reste (ou un énoncé complet en français libre), utilisez « Interpréter avec l'IA » (nécessite une clé API, à renseigner dans l'onglet Quiz IA).</p>
-      <div style="margin-bottom:8px;">
-        <div style="font-size:.72rem;font-weight:700;color:var(--ink-soft);margin:0 0 4px 2px;">TRACÉ DE BASE</div>
-        <div class="figure-toolbar" style="margin-bottom:6px;">
-          <button type="button" class="btn secondary fig-mode" data-mode="point" onclick="setFigureMode('point')">● Point</button>
-          <button type="button" class="btn secondary fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')">✥ Déplacer</button>
-          <button type="button" class="btn secondary fig-mode" data-mode="segment" onclick="setFigureMode('segment')"><span class=gicon>horizontal_rule</span> Segment</button>
-          <span style="display:inline-flex;align-items:center;gap:4px;">
-            <button type="button" class="btn secondary fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')"><span class=gicon>horizontal_rule</span>cm Segment</button>
-            <input type="number" id="segLengthInput" value="5" min="0.5" step="0.5" style="width:56px;padding:6px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"> cm
-          </span>
-          <button type="button" class="btn secondary fig-mode" data-mode="droite" onclick="setFigureMode('droite')">⟷ Droite</button>
-          <button type="button" class="btn secondary fig-mode" data-mode="demi-droite" onclick="setFigureMode('demi-droite')">⟶ Demi-droite</button>
-          <button type="button" class="btn secondary fig-mode" data-mode="cercle" onclick="setFigureMode('cercle')">○ Cercle</button>
-          <span style="display:inline-flex;align-items:center;gap:4px;">
-            <button type="button" class="btn secondary fig-mode" data-mode="cercle-rayon" onclick="setFigureMode('cercle-rayon')">○cm Cercle</button>
-            <input type="number" id="circleRadiusInput" value="3" min="0.5" step="0.5" style="width:56px;padding:6px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"> cm rayon
-          </span>
-          <button type="button" class="btn secondary fig-mode" data-mode="arc" onclick="setFigureMode('arc')">◡ Arc de cercle</button>
-          <button type="button" class="btn secondary fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')">✱ Milieu</button>
-          <label class="hint" style="display:flex;align-items:center;gap:5px;margin:0 0 0 6px;">
-            <input type="checkbox" id="compassToggle"> Simuler un compas (Cercle/Arc)
-          </label>
+      <p class="hint" style="margin:-4px 0 10px;">Phrases reconnues directement : <span class="hint-mono">ABC triangle</span> (rectangle/isocèle/équilatéral, ex. <span class="hint-mono">ABC triangle rectangle en A</span>) · <span class="hint-mono">ABCD carré/rectangle/losange/parallélogramme</span> · <span class="hint-mono">I milieu de [BC]</span> · <span class="hint-mono">cercle de centre A passant par B</span>. Pour tout le reste (ou un énoncé complet en français libre), utilisez « Interpréter avec l'IA » (nécessite une clé API, à renseigner dans l'onglet Quiz IA).</p>
+      <div style="display:flex;gap:12px;align-items:stretch;">
+        <!-- Barre latérale à icônes : la figure et les outils restent visibles en même temps,
+             plus besoin de faire défiler pour voir l'un ou l'autre. Les outils proches
+             (segment/droite/demi-droite ; cercle libre/cm ; droites remarquables & angles)
+             sont regroupés sous une seule icône avec sous-menu (▾), plutôt que 16 boutons à
+             plat. -->
+        <div style="display:flex;flex-direction:column;gap:4px;flex:none;overflow-y:auto;max-height:75vh;padding-right:2px;">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="point" onclick="setFigureMode('point')" title="Point">●</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')" title="Déplacer un point">✥</button>
+
+          <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('lignes')" title="Segment / Droite / Demi-droite">⟋</button>
+          <div id="figGroupLignes" class="fig-group-sub">
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="segment" onclick="setFigureMode('segment')" title="Segment"><span class=gicon>horizontal_rule</span></button>
+            <span style="display:flex;align-items:center;gap:2px;">
+              <button type="button" class="fig-icon-btn fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')" title="Segment de longueur donnée (cm)" style="font-size:.62rem;"><span class=gicon style="font-size:.9rem;">horizontal_rule</span>cm</button>
+              <input type="number" id="segLengthInput" value="5" min="0.5" step="0.5" title="Longueur en cm" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
+            </span>
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="droite" onclick="setFigureMode('droite')" title="Droite">⟷</button>
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="demi-droite" onclick="setFigureMode('demi-droite')" title="Demi-droite">⟶</button>
+          </div>
+
+          <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('cercles')" title="Cercle">○</button>
+          <div id="figGroupCercles" class="fig-group-sub">
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle" onclick="setFigureMode('cercle')" title="Cercle (centre + point)">○</button>
+            <span style="display:flex;align-items:center;gap:2px;">
+              <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle-rayon" onclick="setFigureMode('cercle-rayon')" title="Cercle de rayon donné (cm)" style="font-size:.62rem;">○cm</button>
+              <input type="number" id="circleRadiusInput" value="3" min="0.5" step="0.5" title="Rayon en cm" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
+            </span>
+          </div>
+
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="arc" onclick="setFigureMode('arc')" title="Arc de cercle">◡</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')" title="Milieu (cliquez le segment, ou ses 2 extrémités)">✱</button>
+
+          <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('remarquables')" title="Droites remarquables &amp; angles">⊥</button>
+          <div id="figGroupRemarquables" class="fig-group-sub">
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="angle" onclick="setFigureMode('angle')" title="Angle">∠</button>
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="perpendiculaire" onclick="setFigureMode('perpendiculaire')" title="Perpendiculaire">⊥</button>
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="parallele" onclick="setFigureMode('parallele')" title="Parallèle">∥</button>
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="mediatrice" onclick="setFigureMode('mediatrice')" title="Médiatrice">⟂</button>
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="bissectrice" onclick="setFigureMode('bissectrice')" title="Bissectrice">⟨</button>
+          </div>
+
+          <div style="height:1px;background:rgba(28,43,57,.15);margin:4px 0;"></div>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="code" onclick="setFigureMode('code')" title="Coder (longueurs/angles égaux, angle droit)" style="border-color:var(--accent-orange);color:var(--accent-orange);">✓</button>
+          <div style="height:1px;background:rgba(28,43,57,.15);margin:4px 0;"></div>
+          <button type="button" class="fig-icon-btn" onclick="undoFigure()" title="Annuler le dernier">↩︎</button>
+          <button type="button" class="fig-icon-btn" onclick="clearFigure()" title="Effacer tout"><span class=gicon>cleaning_services</span></button>
+        </div>
+        <!-- Zone principale : réglages contextuels (compas, codage) au-dessus, puis le
+             canevas -- toujours visible à côté de la barre latérale, jamais en dessous. -->
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+          <div class="tool-row" style="margin:0 0 6px;">
+            <label class="hint" style="display:flex;align-items:center;gap:5px;margin:0;">
+              <input type="checkbox" id="compassToggle"> Simuler un compas (Cercle/Arc)
+            </label>
+          </div>
+          <div class="tool-row" style="margin:0 0 8px;background:rgba(227,93,58,.06);border-radius:8px;padding:8px 10px;">
+            <span style="font-size:.72rem;font-weight:700;color:var(--accent-orange);width:100%;margin:0 0 2px;">CODAGE</span>
+            <select id="codeType">
+              <option value="longueur">Longueurs égales</option>
+              <option value="angle-egal">Angles égaux</option>
+              <option value="angle-droit">Angle droit</option>
+            </select>
+            <select id="codeGroup" title="Le nombre de traits (ou d'arcs) marqués : deux segments avec le même nombre sont annoncés comme égaux entre eux, un troisième segment avec un nombre différent formera un 2e groupe d'égalité.">
+              <option value="1">1 trait / 1 arc</option>
+              <option value="2">2 traits / 2 arcs</option>
+              <option value="3">3 traits / 3 arcs</option>
+            </select>
+            <button type="button" class="btn secondary" onclick="clearAllCodes()"><span class=gicon>cleaning_services</span> Retirer tous les codages</button>
+            <span class="hint" style="margin:0;">Deux segments (ou angles) codés avec le même nombre de traits/arcs sont annoncés comme égaux entre eux. Les segments/cercles de longueur donnée sont codés automatiquement (même longueur = même nombre de traits). Ce menu sert au codage manuel (ex. pour un côté commun, ou une figure fournie sans passer par « longueur donnée »).</span>
+          </div>
+          <svg id="figureSvg" viewBox="0 0 500 320" onclick="onFigureClick(event)"
+               style="width:100%;flex:1;min-height:400px;display:block;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
+          <p class="hint" style="margin-top:8px;" id="figureHint">Cliquez pour placer un point.</p>
         </div>
       </div>
-      <div style="margin-bottom:8px;">
-        <div style="font-size:.72rem;font-weight:700;color:var(--ink-soft);margin:0 0 4px 2px;">DROITES REMARQUABLES &amp; ANGLES</div>
-        <div class="figure-toolbar" style="margin-bottom:6px;">
-          <button type="button" class="btn secondary fig-mode" data-mode="angle" onclick="setFigureMode('angle')">∠ Angle</button>
-          <button type="button" class="btn secondary fig-mode" data-mode="perpendiculaire" onclick="setFigureMode('perpendiculaire')">⊥ Perpendiculaire</button>
-          <button type="button" class="btn secondary fig-mode" data-mode="parallele" onclick="setFigureMode('parallele')">∥ Parallèle</button>
-          <button type="button" class="btn secondary fig-mode" data-mode="mediatrice" onclick="setFigureMode('mediatrice')">⟂ Médiatrice</button>
-          <button type="button" class="btn secondary fig-mode" data-mode="bissectrice" onclick="setFigureMode('bissectrice')">⟨ Bissectrice</button>
-        </div>
-      </div>
-      <div style="margin-bottom:8px;">
-        <div style="font-size:.72rem;font-weight:700;color:var(--ink-soft);margin:0 0 4px 2px;">ACTIONS</div>
-        <div class="figure-toolbar" style="margin-bottom:6px;">
-          <button type="button" class="btn secondary" onclick="undoFigure()">↩︎ Annuler le dernier</button>
-          <button type="button" class="btn secondary" onclick="clearFigure()">Effacer tout</button>
-        </div>
-      </div>
-      <div class="tool-row" style="margin-top:0;margin-bottom:10px;background:rgba(227,93,58,.06);border-radius:8px;padding:10px 12px;">
-        <span style="font-size:.72rem;font-weight:700;color:var(--accent-orange);width:100%;margin:0 0 2px;">CODAGE</span>
-        <button type="button" class="btn secondary fig-mode" data-mode="code" onclick="setFigureMode('code')" style="background:var(--accent-orange);color:#fff;">✓ Coder</button>
-        <select id="codeType">
-          <option value="longueur">Longueurs égales</option>
-          <option value="angle-egal">Angles égaux</option>
-          <option value="angle-droit">Angle droit</option>
-        </select>
-        <select id="codeGroup" title="Le nombre de traits (ou d'arcs) marqués : deux segments avec le même nombre sont annoncés comme égaux entre eux, un troisième segment avec un nombre différent formera un 2e groupe d'égalité.">
-          <option value="1">1 trait / 1 arc</option>
-          <option value="2">2 traits / 2 arcs</option>
-          <option value="3">3 traits / 3 arcs</option>
-        </select>
-        <button type="button" class="btn secondary" onclick="clearAllCodes()"><span class=gicon>cleaning_services</span> Retirer tous les codages</button>
-        <span class="hint" style="margin:0;">Deux segments (ou angles) codés avec le même nombre de traits/arcs sont annoncés comme égaux entre eux. Les segments/cercles de longueur donnée sont codés automatiquement (même longueur = même nombre de traits). Ce menu sert au codage manuel (ex. pour un côté commun, ou une figure fournie sans passer par « longueur donnée »).</span>
-      </div>
-      <svg id="figureSvg" viewBox="0 0 500 320" onclick="onFigureClick(event)"
-           style="width:100%;max-width:900px;display:block;margin:0 auto;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
-      <p class="hint" style="margin-top:8px;" id="figureHint">Cliquez pour placer un point.</p>
-      <div class="figure-toolbar">
+      <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="validateFigure()">✓ Valider et insérer la figure</button>
         <button type="button" class="btn secondary" onclick="closeFigureTool()">Fermer sans insérer</button>
       </div>
@@ -2572,15 +2588,35 @@ function undoFigure(){
   else if(figState.points.length) figState.points.pop();
   renderFigureSvg();
 }
+/* Ouvre/ferme un sous-menu de la barre latérale (segment/droite/demi-droite ; cercle libre/cm ;
+   droites remarquables & angles) -- en accordéon, un seul groupe ouvert à la fois, pour ne
+   pas allonger indéfiniment la barre si plusieurs groupes restaient ouverts en même temps. */
+function toggleFigGroup(name){
+  const id = 'figGroup'+name.charAt(0).toUpperCase()+name.slice(1);
+  const el = document.getElementById(id);
+  if(!el) return;
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.fig-group-sub.open').forEach(g=>g.classList.remove('open'));
+  if(!wasOpen) el.classList.add('open');
+}
 function setFigureMode(mode){
   figState.mode = mode; figState.selected = []; figState.refShape = null;
   document.querySelectorAll('.fig-mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+  const groupOf = {segment:'Lignes','segment-longueur':'Lignes',droite:'Lignes','demi-droite':'Lignes',
+    cercle:'Cercles','cercle-rayon':'Cercles',
+    angle:'Remarquables',perpendiculaire:'Remarquables',parallele:'Remarquables',mediatrice:'Remarquables',bissectrice:'Remarquables'};
+  if(groupOf[mode]){
+    document.querySelectorAll('.fig-group-sub.open').forEach(g=>g.classList.remove('open'));
+    const el = document.getElementById('figGroup'+groupOf[mode]);
+    if(el) el.classList.add('open');
+  }
   const hints = {
     point:'Cliquez pour placer un point.',
     deplacer:'Faites glisser un point existant pour le déplacer (les points construits, comme un milieu, suivent automatiquement).',
     segment:'Cliquez deux points existants pour tracer le segment qui les relie.',
     'segment-longueur':'Cliquez le point de départ, puis un point donnant la direction : la longueur exacte (en cm) vous sera demandée.',
     droite:'Cliquez deux points existants pour tracer la droite qui les relie.',
+    'demi-droite':'Cliquez le point d\'origine du rayon, puis un second point donnant sa direction.',
     cercle:'Cliquez le centre, puis un point du cercle.',
     'cercle-rayon':'Cliquez le centre : le rayon exact (en cm) vous sera demandé.',
     arc:'Cliquez le centre, puis le point de départ de l\'arc, puis un point donnant la direction d\'arrivée.',
