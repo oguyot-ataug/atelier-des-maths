@@ -989,6 +989,11 @@ function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 function niceModal({message, showInput, inputValue, buttons}){
   return new Promise(resolve=>{
     const overlay = document.getElementById('niceModalOverlay');
+    // Voir le commentaire équivalent dans tbOpenLetterPicker : en plein écran, seuls les
+    // descendants de l'élément mis en plein écran restent visibles par-dessus son
+    // arrière-plan -- on relocalise donc la modale (position:fixed, donc son affichage ne
+    // dépend pas de son parent réel dans le DOM) dans cet élément le temps de l'afficher.
+    (document.fullscreenElement || document.body).appendChild(overlay);
     document.getElementById('niceModalMessage').textContent = message;
     const input = document.getElementById('niceModalInput');
     input.style.display = showInput ? 'block' : 'none';
@@ -4822,8 +4827,8 @@ function tbRender(){
       if(!t.mode) t.mode = 'open';
       const modeInfo = {
         open:   {color:'#2EA8C9', emoji:'↔️', label:'Ouvrir'},
-        closed: {color:'#D93025', emoji:'<span class=gicon>lock</span>', label:'Fermé'},
-        draw:   {color:'#1F7A4D', emoji:'<span class=gicon>edit</span>', label:'Crayon'},
+        closed: {color:'#D93025', emoji:'lock', label:'Fermé'},
+        draw:   {color:'#1F7A4D', emoji:'edit', label:'Crayon'},
       }[t.mode];
       const modeColor = modeInfo.color, modeEmoji = modeInfo.emoji, modeLabel = modeInfo.label;
       const legCursor = t.mode==='open' ? 'ew-resize' : (t.mode==='draw' ? 'crosshair' : 'grab');
@@ -4856,7 +4861,7 @@ function tbRender(){
         </g>
         <g data-role="compassLockIcon" data-id="${t.id}" transform="translate(${iconX.toFixed(1)},${iconY.toFixed(1)})" style="cursor:pointer;">
           <circle cx="0" cy="0" r="14" fill="${modeColor}" stroke="#fff" stroke-width="1.8"/>
-          <text x="0" y="5" font-size="13" text-anchor="middle">${modeEmoji}</text>
+          <text x="0" y="5" font-size="13" text-anchor="middle" font-family="'Material Symbols Outlined','sans-serif'">${modeEmoji}</text>
         </g>
         <text x="${iconX.toFixed(1)}" y="${(iconY-20).toFixed(1)}" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="700">${modeLabel}</text>
       </g>`;
@@ -4879,14 +4884,14 @@ function tbRender(){
       <circle cx="0" cy="0" r="22" fill="transparent"/>
     </g>` : '';
     const penMode = t.penMode || 'ecrire';
-    const penModeIcon = {tourner:'<span class=gicon>refresh</span>', ecrire:'<span class=gicon>edit</span>', coder:'<span class=gicon>label</span>'}[penMode];
+    const penModeIcon = {tourner:'refresh', ecrire:'edit', coder:'label'}[penMode];
     const penModeColor = {tourner:'#0D5BA3', ecrire:'#1F7A4D', coder:'#E35D3A'}[penMode];
     return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
       <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>${protractorRay}
-      ${t.slideLock ? `<g transform="rotate(${-t.angle.toFixed(1)})" style="pointer-events:none;"><circle cx="0" cy="0" r="9" fill="#1F7A4D" stroke="#fff" stroke-width="1.4"/><text x="0" y="4" font-size="10" text-anchor="middle"><span class=gicon>link</span></text></g>` : ''}
+      ${t.slideLock ? `<g transform="rotate(${-t.angle.toFixed(1)})" style="pointer-events:none;"><circle cx="0" cy="0" r="9" fill="#1F7A4D" stroke="#fff" stroke-width="1.4"/><text x="0" y="4" font-size="10" text-anchor="middle" font-family="'Material Symbols Outlined'">link</text></g>` : ''}
       ${rh && t.type==='crayon' ? `<g data-role="rotate" data-id="${t.id}" transform="translate(${rh.x},${rh.y})">
           <circle cx="0" cy="0" r="15" fill="${penModeColor}" stroke="#fff" stroke-width="2"/>
-          <text x="0" y="6" font-size="16" text-anchor="middle" transform="rotate(${-t.angle.toFixed(1)})">${penModeIcon}</text>
+          <text x="0" y="6" font-size="16" text-anchor="middle" transform="rotate(${-t.angle.toFixed(1)})" font-family="'Material Symbols Outlined'">${penModeIcon}</text>
         </g>` : (rh ? `<circle data-role="rotate" data-id="${t.id}" cx="${rh.x}" cy="${rh.y}" r="${rh.r||11}" fill="#0D5BA3" fill-opacity="${rh.opacity!==undefined?rh.opacity:1}" stroke="#fff" stroke-width="1.6"/>` : '')}
     </g>`;
   }).join('');
@@ -4922,7 +4927,7 @@ function tbRender(){
     const already = contact.square.slideLock && contact.square.slideLock.targetId===contact.ruler.id;
     slideLockHtml = `<g data-role="slideLockBtn" data-square="${contact.square.id}" data-ruler="${contact.ruler.id}" transform="translate(${contact.contactX.toFixed(1)},${(contact.contactY-16).toFixed(1)})" style="cursor:pointer;">
       <rect x="-42" y="-12" width="84" height="24" rx="12" fill="${already?'#1F7A4D':'#0D5BA3'}" stroke="#fff" stroke-width="1.4"/>
-      <text x="0" y="5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">${already?'✓ Verrouillé':'<span class=gicon>link</span> Coulisser'}</text>
+      <text x="0" y="5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">${already?'✓ Verrouillé':'<tspan font-family="\'Material Symbols Outlined\'">link</tspan> Coulisser'}</text>
     </g>`;
   } else {
     const lockedSquare = tbTools.find(t=>(t.type==='equerre'||t.type==='requerre') && t.slideLock);
@@ -4989,8 +4994,13 @@ function tbOpenLetterPicker(currentLabel, currentStyle){
         <button type="button" id="tbLetterCancel" style="padding:8px 16px;border-radius:7px;border:none;background:rgba(28,43,57,.08);cursor:pointer;">Annuler</button>
       </div>
     </div>`;
-    document.body.appendChild(overlay);
-    overlay.addEventListener('click', e=>{ if(e.target===overlay){ document.body.removeChild(overlay); resolve(null); } });
+    // Le plein écran (Fullscreen API) crée un "top layer" : seuls les descendants de
+    // l'élément mis en plein écran restent visibles par-dessus son arrière-plan. Une modale
+    // ajoutée telle quelle à document.body resterait donc invisible (masquée derrière),
+    // sans aucune erreur -- d'où l'impression que "ça ne marche pas". On l'ajoute plutôt
+    // dans l'élément en plein écran s'il y en a un.
+    (document.fullscreenElement || document.body).appendChild(overlay);
+    overlay.addEventListener('click', e=>{ if(e.target===overlay){ overlay.remove(); resolve(null); } });
     overlay.querySelectorAll('[data-style]').forEach(btn=>{
       btn.addEventListener('click', ()=>{
         style = btn.dataset.style;
@@ -5002,9 +5012,9 @@ function tbOpenLetterPicker(currentLabel, currentStyle){
       });
     });
     overlay.querySelectorAll('[data-letter]').forEach(btn=>{
-      btn.addEventListener('click', ()=>{ document.body.removeChild(overlay); resolve({label:btn.dataset.letter, style}); });
+      btn.addEventListener('click', ()=>{ overlay.remove(); resolve({label:btn.dataset.letter, style}); });
     });
-    document.getElementById('tbLetterCancel').addEventListener('click', ()=>{ document.body.removeChild(overlay); resolve(null); });
+    document.getElementById('tbLetterCancel').addEventListener('click', ()=>{ overlay.remove(); resolve(null); });
   });
 }
 async function tbRenamePoint(id){
