@@ -4771,8 +4771,12 @@ function tbFindRequerreInkContact(edgeIdx){
   return best;
 }
 function tbFindSlideContact(){
-  const rulers = tbTools.filter(t=>t.type==='regle_grad');
-  const squares = tbTools.filter(t=>t.type==='equerre'||t.type==='requerre');
+  // La réquerre (requerre2) est ajoutée aux deux listes : son bord principal fonctionne
+  // comme une règle (une équerre, ou une autre réquerre, peut glisser contre lui), et elle
+  // peut elle-même glisser contre une règle classique -- exactement comme demandé
+  // ("la réquerre contre la règle ou le contraire et/ou l'équerre").
+  const rulers = tbTools.filter(t=>t.type==='regle_grad'||t.type==='requerre2');
+  const squares = tbTools.filter(t=>t.type==='equerre'||t.type==='requerre'||t.type==='requerre2');
   let best = null, bestScore = Infinity;
   for(const r of rulers){
     const rDef = TB_DEFS[r.type];
@@ -4783,6 +4787,7 @@ function tbFindSlideContact(){
     const rdx=rbx-rax, rdy=rby-ray, rlen=Math.hypot(rdx,rdy)||1;
     const udx=rdx/rlen, udy=rdy/rlen, nrx=-udy, nry=udx;
     for(const sq of squares){
+      if(sq.id===r.id) continue; // une réquerre (présente dans les deux listes) ne peut pas s'accrocher à elle-même
       const sDef = TB_DEFS[sq.type];
       const sRad = sq.angle*Math.PI/180, sCos=Math.cos(sRad), sSin=Math.sin(sRad);
       // On évalue TOUS les bords de l'équerre et on ne retient que le MEILLEUR (le plus
