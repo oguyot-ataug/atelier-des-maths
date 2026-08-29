@@ -186,6 +186,7 @@ document.body.insertAdjacentHTML('beforeend', `
         <label class="hint" style="margin:0;">Parts totales : <input type="number" id="disqueDen" value="4" min="1" style="width:60px;"></label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="disqueVierge"> Laisser vierge (à colorier par l'élève)</label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="disqueShowCaption" checked> Écrire la fraction en dessous</label>
+        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueShowMixte"> Avec partie entière (ex. 7/3 = 2 + 1/3)</label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="disqueReponseSimple"> Réponse à compléter (.../....)</label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="disqueReponseMixte"> Réponse avec partie entière (... + .../....)</label>
         <button type="button" class="btn secondary" onclick="previewDisque()">Aperçu</button>
@@ -213,6 +214,7 @@ document.body.insertAdjacentHTML('beforeend', `
       <div class="tool-row" style="margin-bottom:10px;">
         <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracVierge" onchange="previewRectFrac()"> Laisser vierge (à colorier par l'élève)</label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracShowCaption" checked> Écrire la fraction en dessous</label>
+        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracShowMixte"> Avec partie entière (ex. 7/3 = 2 + 1/3)</label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracReponseSimple"> Réponse à compléter (.../....)</label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracReponseMixte"> Réponse avec partie entière (... + .../....)</label>
         <button type="button" class="btn secondary" onclick="previewRectFrac()">Aperçu</button>
@@ -1306,6 +1308,18 @@ function fractionBlankHTML(){
     <span>....</span>
   </span>`;
 }
+/* Légende avec partie entière RÉELLEMENT CALCULÉE (ex. "7/3 = 2 + 1/3"), distincte de
+   fractionAnswerHTML (qui produit un exercice à trous ".... + .../...." pour l'élève). Ne
+   s'applique que si la fraction est bien impropre (num > den) et que showMixte est coché ;
+   si num est un multiple exact de den, la partie fractionnaire est nulle, donc on affiche
+   juste l'entier plutôt que "... + 0/...", qui n'aurait pas de sens. */
+function buildFractionCaptionWithMixte(fracKatex, num, den, showMixte){
+  if(!showMixte || num<=den) return fracKatex;
+  const whole = Math.floor(num/den), rem = num - whole*den;
+  if(rem===0) return `${fracKatex} = ${whole}`;
+  const mixteKatex = katexSpan(`${whole} + \\dfrac{${rem}}{${den}}`);
+  return `${fracKatex} = ${mixteKatex}`;
+}
 function fractionAnswerHTML(reponseSimple, reponseMixte){
   if(!reponseSimple && !reponseMixte) return '';
   const parts = [];
@@ -1313,7 +1327,7 @@ function fractionAnswerHTML(reponseSimple, reponseMixte){
   if(reponseMixte) parts.push(`.... + ${fractionBlankHTML()}`);
   return `<p style="text-align:center;margin:8px 0 0;font-size:1.05rem;">${parts.join('&nbsp;&nbsp;&nbsp;ou&nbsp;&nbsp;&nbsp;')}</p>`;
 }
-function buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte){
+function buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte,showMixte){
   const nShapes = Math.max(1, Math.ceil(num/den));
   let discs = '';
   for(let i=0;i<nShapes;i++){
@@ -1323,7 +1337,7 @@ function buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte){
     discs += `<div style="flex:1 1 0;max-width:150px;min-width:50px;">${singleDisqueSvg(filled, den)}</div>`;
   }
   const fracKatex = katexSpan(`\\dfrac{${num}}{${den}}`);
-  const caption = vierge ? `Colorie ${fracKatex} du disque` : fracKatex;
+  const caption = vierge ? `Colorie ${fracKatex} du disque` : buildFractionCaptionWithMixte(fracKatex, num, den, showMixte);
   return `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:${nShapes*150+((nShapes-1)*10)}px;margin:0 auto;">${discs}</div>
     ${showCaption!==false ? `<p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>` : ''}
     ${fractionAnswerHTML(reponseSimple, reponseMixte)}`;
@@ -1332,9 +1346,10 @@ function previewDisque(){
   const num=parseInt(document.getElementById('disqueNum').value), den=parseInt(document.getElementById('disqueDen').value);
   const vierge = document.getElementById('disqueVierge').checked;
   const showCaption = document.getElementById('disqueShowCaption').checked;
+  const showMixte = document.getElementById('disqueShowMixte').checked;
   const reponseSimple = document.getElementById('disqueReponseSimple').checked;
   const reponseMixte = document.getElementById('disqueReponseMixte').checked;
-  document.getElementById('disquePreview').innerHTML = (den>0&&num>=0) ? buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte) : '';
+  document.getElementById('disquePreview').innerHTML = (den>0&&num>=0) ? buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte,showMixte) : '';
 }
 function openDisqueTool(){activateToolTab('shapeGroupWrap','shapeTabDisque','shapeTabRect'); document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('disquePanel').style.display='block'; document.getElementById('disquePreview').innerHTML=''; document.getElementById('disquePanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeDisqueTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('disquePanel').style.display='none'; }
@@ -1342,10 +1357,11 @@ function insertDisque(){
   const num=parseInt(document.getElementById('disqueNum').value), den=parseInt(document.getElementById('disqueDen').value);
   const vierge = document.getElementById('disqueVierge').checked;
   const showCaption = document.getElementById('disqueShowCaption').checked;
+  const showMixte = document.getElementById('disqueShowMixte').checked;
   const reponseSimple = document.getElementById('disqueReponseSimple').checked;
   const reponseMixte = document.getElementById('disqueReponseMixte').checked;
   if(!(den>0&&num>=0)) return;
-  addPendingBlock('disque', buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte), {num,den,vierge,showCaption,reponseSimple,reponseMixte}, 'reopenDisque');
+  addPendingBlock('disque', buildDisqueSvg(num,den,vierge,showCaption,reponseSimple,reponseMixte,showMixte), {num,den,vierge,showCaption,reponseSimple,reponseMixte,showMixte}, 'reopenDisque');
   closeDisqueTool();
 }
 function reopenDisque(data){
@@ -1354,6 +1370,7 @@ function reopenDisque(data){
   document.getElementById('disqueDen').value = data.den;
   document.getElementById('disqueVierge').checked = !!data.vierge;
   document.getElementById('disqueShowCaption').checked = data.showCaption!==false;
+  document.getElementById('disqueShowMixte').checked = !!data.showMixte;
   document.getElementById('disqueReponseSimple').checked = !!data.reponseSimple;
   document.getElementById('disqueReponseMixte').checked = !!data.reponseMixte;
   previewDisque();
@@ -1864,7 +1881,7 @@ function cubeStackSvg(cubes, selectedIdx, interactive){
   </svg>`;
 }
 
-function buildRectFracSvg(num,den,vertical,vierge,showCaption,reponseSimple,reponseMixte,gridRows,gridCols,customSet,interactive){
+function buildRectFracSvg(num,den,vertical,vierge,showCaption,reponseSimple,reponseMixte,gridRows,gridCols,customSet,interactive,showMixte){
   const isGrid = gridRows>1 && gridCols>1;
   const effectiveDen = isGrid ? gridRows*gridCols : den;
   const nShapes = Math.max(1, Math.ceil(num/effectiveDen));
@@ -1885,7 +1902,7 @@ function buildRectFracSvg(num,den,vertical,vierge,showCaption,reponseSimple,repo
   }
   const displayNum = (customSet && nShapes===1 && !vierge) ? customSet.size : num;
   const fracKatex = katexSpan(`\\dfrac{${displayNum}}{${effectiveDen}}`);
-  const caption = vierge ? `Colorie ${katexSpan(`\\dfrac{${num}}{${effectiveDen}}`)} du rectangle` : fracKatex;
+  const caption = vierge ? `Colorie ${katexSpan(`\\dfrac{${num}}{${effectiveDen}}`)} du rectangle` : buildFractionCaptionWithMixte(fracKatex, displayNum, effectiveDen, showMixte);
   return `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:${nShapes*180+((nShapes-1)*10)}px;margin:0 auto;">${rects}</div>
     ${showCaption!==false ? `<p class="hint" style="text-align:center;margin:4px 0 0;">${caption}</p>` : ''}
     ${fractionAnswerHTML(reponseSimple, reponseMixte)}`;
@@ -1915,12 +1932,13 @@ function previewRectFrac(){
   const vert = document.getElementById('rectFracVert').checked;
   const vierge = document.getElementById('rectFracVierge').checked;
   const showCaption = document.getElementById('rectFracShowCaption').checked;
+  const showMixte = document.getElementById('rectFracShowMixte').checked;
   const reponseSimple = document.getElementById('rectFracReponseSimple').checked;
   const reponseMixte = document.getElementById('rectFracReponseMixte').checked;
   const isGrid = document.getElementById('rectFracGrid').checked;
   const rows = isGrid ? parseInt(document.getElementById('rectFracRows').value)||2 : null;
   const cols = isGrid ? parseInt(document.getElementById('rectFracCols').value)||2 : null;
-  document.getElementById('rectFracPreview').innerHTML = (isGrid || (den>0&&num>=0)) ? buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols,rectFracCustomSet,true) : '';
+  document.getElementById('rectFracPreview').innerHTML = (isGrid || (den>0&&num>=0)) ? buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols,rectFracCustomSet,true,showMixte) : '';
 }
 function openRectFracTool(){activateToolTab('shapeGroupWrap','shapeTabRect','shapeTabDisque'); document.getElementById('toolsModalOverlay').style.display='flex'; document.getElementById('rectFracPanel').style.display='block'; document.getElementById('rectFracPreview').innerHTML=''; document.getElementById('rectFracPanel').scrollIntoView({behavior:'smooth',block:'nearest'}); }
 function closeRectFracTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('rectFracPanel').style.display='none'; }
@@ -1929,6 +1947,7 @@ function insertRectFrac(){
   const vert = document.getElementById('rectFracVert').checked;
   const vierge = document.getElementById('rectFracVierge').checked;
   const showCaption = document.getElementById('rectFracShowCaption').checked;
+  const showMixte = document.getElementById('rectFracShowMixte').checked;
   const reponseSimple = document.getElementById('rectFracReponseSimple').checked;
   const reponseMixte = document.getElementById('rectFracReponseMixte').checked;
   const isGrid = document.getElementById('rectFracGrid').checked;
@@ -1936,7 +1955,7 @@ function insertRectFrac(){
   const cols = isGrid ? parseInt(document.getElementById('rectFracCols').value)||2 : null;
   if(!isGrid && !(den>0&&num>=0)) return;
   const customArr = Array.from(rectFracCustomSet);
-  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols,rectFracCustomSet,false), {num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols,customArr}, 'reopenRectFrac');
+  addPendingBlock('rectFrac', buildRectFracSvg(num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols,rectFracCustomSet,false,showMixte), {num,den,vert,vierge,showCaption,reponseSimple,reponseMixte,rows,cols,customArr,showMixte}, 'reopenRectFrac');
   closeRectFracTool();
 }
 function reopenRectFrac(data){
@@ -1946,6 +1965,7 @@ function reopenRectFrac(data){
   document.getElementById('rectFracVert').checked = data.vert;
   document.getElementById('rectFracVierge').checked = !!data.vierge;
   document.getElementById('rectFracShowCaption').checked = data.showCaption!==false;
+  document.getElementById('rectFracShowMixte').checked = !!data.showMixte;
   document.getElementById('rectFracReponseSimple').checked = !!data.reponseSimple;
   document.getElementById('rectFracReponseMixte').checked = !!data.reponseMixte;
   document.getElementById('rectFracGrid').checked = !!(data.rows && data.cols);
