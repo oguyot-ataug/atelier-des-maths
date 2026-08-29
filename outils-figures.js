@@ -437,6 +437,24 @@ document.body.insertAdjacentHTML('beforeend', `
             <button type="button" class="fig-icon-btn fig-mode" data-mode="bissectrice" onclick="setFigureMode('bissectrice')" title="Bissectrice">⟨</button>
           </div>
 
+          <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('polygones')" title="Triangle / Polygone / Polygone régulier">
+            <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 21,20 3,20" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          </button>
+          <div id="figGroupPolygones" class="fig-group-sub">
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="triangle" onclick="setFigureMode('triangle')" title="Triangle (3 points existants)">
+              <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 21,20 3,20" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+            </button>
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone" onclick="setFigureMode('polygone')" title="Polygone (nombre de sommets libre, refermer sur le 1er point)">
+              <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 20,9 17,20 7,20 4,9" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+            </button>
+            <span style="display:flex;align-items:center;gap:2px;">
+              <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone-regulier" onclick="setFigureMode('polygone-regulier')" title="Polygone régulier (centre puis 1 sommet)">
+                <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,2 20.6,7.5 20.6,16.5 12,22 3.4,16.5 3.4,7.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+              </button>
+              <input type="number" id="polygonSidesInput" value="5" min="3" step="1" title="Nombre de côtés" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
+            </span>
+          </div>
+
           <div style="height:1px;background:rgba(28,43,57,.15);margin:4px 0;"></div>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="code" onclick="setFigureMode('code')" title="Coder (longueurs/angles égaux, angle droit)" style="border-color:var(--accent-orange);color:var(--accent-orange);">✓</button>
           <div style="height:1px;background:rgba(28,43,57,.15);margin:4px 0;"></div>
@@ -2603,10 +2621,12 @@ function toggleFigGroup(name){
 }
 function setFigureMode(mode){
   figState.mode = mode; figState.selected = []; figState.refShape = null;
+  if(mode!=='polygone') figPolygonPts = [];
   document.querySelectorAll('.fig-mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
   const groupOf = {segment:'Lignes','segment-longueur':'Lignes',droite:'Lignes','demi-droite':'Lignes',
     cercle:'Cercles','cercle-rayon':'Cercles',
-    angle:'Remarquables',perpendiculaire:'Remarquables',parallele:'Remarquables',mediatrice:'Remarquables',bissectrice:'Remarquables'};
+    angle:'Remarquables',perpendiculaire:'Remarquables',parallele:'Remarquables',mediatrice:'Remarquables',bissectrice:'Remarquables',
+    triangle:'Polygones',polygone:'Polygones','polygone-regulier':'Polygones'};
   if(groupOf[mode]){
     document.querySelectorAll('.fig-group-sub.open').forEach(g=>g.classList.remove('open'));
     const el = document.getElementById('figGroup'+groupOf[mode]);
@@ -2629,6 +2649,9 @@ function setFigureMode(mode){
     mediatrice:'Cliquez directement sur un segment existant (ou ses deux extrémités) pour tracer sa médiatrice.',
     bissectrice:'Cliquez un point sur le premier côté, puis le sommet de l\'angle, puis un point sur le second côté.',
     code:'Choisissez le type de codage ci-dessus, puis cliquez sur le segment ou l\'angle concerné.',
+    triangle:'Cliquez 3 points existants pour tracer le triangle qui les relie.',
+    polygone:'Cliquez les sommets un par un (points existants). Recliquez le tout premier point (une fois au moins 3 posés) pour refermer le polygone.',
+    'polygone-regulier':'Cliquez le centre, puis un premier sommet (fixe le rayon et l\'orientation) -- le nombre de côtés se règle dans le champ à côté.',
   };
   document.getElementById('figureHint').textContent = hints[mode] || '';
   renderFigureSvg();
@@ -2851,18 +2874,33 @@ function onFigureMouseMove(evt){
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
   let nx = Math.max(10,Math.min(490,x)), ny = Math.max(10,Math.min(310,y));
-  // Si ce point est l'extrémité d'un segment construit avec une LONGUEUR DONNÉE ("Segment
-  // cm"), le déplacer ne doit jamais changer cette longueur -- la position désirée est
-  // projetée sur le cercle de rayon fixe (la longueur d'origine, en cm) autour de l'AUTRE
-  // extrémité, ce qui revient à tourner ce point autour d'elle plutôt que de le laisser
-  // s'éloigner ou se rapprocher librement.
-  const constrainedSeg = figState.shapes.find(s=>s.type==='segment' && s.lengthCm && (s.p1===figDragPoint || s.p2===figDragPoint));
-  if(constrainedSeg){
-    const other = constrainedSeg.p1===figDragPoint ? constrainedSeg.p2 : constrainedSeg.p1;
-    const fixedLen = constrainedSeg.lengthCm * SCALE_PX_PER_CM;
-    const dx = nx-other.x, dy = ny-other.y, d = Math.hypot(dx,dy)||1;
-    nx = other.x + dx/d*fixedLen;
-    ny = other.y + dy/d*fixedLen;
+  // Un point créé comme extrémité d'un "Segment cm" (p2) est TOUJOURS le point DÉPENDANT :
+  // le déplacer ne doit jamais changer la longueur déclarée, il tourne donc autour de son
+  // ancre (p1) au rayon fixe.
+  const asDependent = figState.shapes.find(s=>s.type==='segment' && s.lengthCm && s.p2===figDragPoint);
+  if(asDependent){
+    const anchor = asDependent.p1;
+    const fixedLen = asDependent.lengthCm * SCALE_PX_PER_CM;
+    const dx = nx-anchor.x, dy = ny-anchor.y, d = Math.hypot(dx,dy)||1;
+    figDragPoint.x = anchor.x + dx/d*fixedLen;
+    figDragPoint.y = anchor.y + dy/d*fixedLen;
+    recomputeDependents();
+    renderFigureSvg();
+    return;
+  }
+  // Sinon, si ce point sert lui-même d'ANCRE (p1) à un ou plusieurs segments à longueur fixe
+  // (ex. A, origine commune de [AB] et [AC]), il se déplace LIBREMENT -- et tous ses
+  // dépendants (B, C...) le SUIVENT en conservant leur longueur ET leur angle par rapport à
+  // lui : tout le bloc rigide se déplace ensemble, sans se déformer (signalé : "les segments
+  // changent de longueur alors que tout le bloc devrait se déplacer sans changer l'angle").
+  const dependentSegs = figState.shapes.filter(s=>s.type==='segment' && s.lengthCm && s.p1===figDragPoint);
+  if(dependentSegs.length){
+    const deltaX = nx-figDragPoint.x, deltaY = ny-figDragPoint.y;
+    figDragPoint.x = nx; figDragPoint.y = ny;
+    dependentSegs.forEach(s=>{ s.p2.x += deltaX; s.p2.y += deltaY; });
+    recomputeDependents();
+    renderFigureSvg();
+    return;
   }
   figDragPoint.x = nx;
   figDragPoint.y = ny;
@@ -2904,6 +2942,55 @@ function createMidpoint(a, b){
   figState.selected = [];
   renderFigureSvg();
 }
+/* Polygone à nombre de côtés VARIABLE : chaque clic sur un point existant l'ajoute au
+   polygone en construction (figState.polygonPts) ; recliquer sur le tout premier point
+   (une fois au moins 3 points posés) referme le polygone -- crée un segment entre chaque
+   paire consécutive, plus un dernier qui revient au point de départ. */
+let figPolygonPts = [];
+function handlePolygoneClick(x,y){
+  const pt = findNearbyPoint(x,y);
+  if(!pt) return;
+  if(figPolygonPts.length>=3 && pt===figPolygonPts[0]){
+    for(let i=0;i<figPolygonPts.length;i++){
+      const a=figPolygonPts[i], b=figPolygonPts[(i+1)%figPolygonPts.length];
+      figState.shapes.push({type:'segment', p1:a, p2:b});
+    }
+    figPolygonPts = [];
+    renderFigureSvg();
+    return;
+  }
+  if(!figPolygonPts.includes(pt)){ figPolygonPts.push(pt); renderFigureSvg(); }
+}
+/* Polygone RÉGULIER : 1er clic = centre, 2e clic = un premier sommet (fixe le rayon ET
+   l'orientation de départ). Le nombre de côtés vient du champ dédié (polygonSidesInput) --
+   les N-1 sommets restants sont calculés par répartition angulaire égale autour du centre,
+   puis reliés en un polygone fermé. */
+function handlePolygoneRegulierClick(x,y){
+  if(!figState.selected.length){
+    const pt = findNearbyPoint(x,y);
+    if(pt){ figState.selected.push(pt); renderFigureSvg(); }
+    return;
+  }
+  const center = figState.selected[0];
+  const firstVertex = findNearbyPoint(x,y);
+  if(!firstVertex || firstVertex===center) return;
+  figState.selected = [];
+  const raw = document.getElementById('polygonSidesInput').value;
+  const n = parseInt(raw, 10);
+  if(!isFinite(n) || n<3){ document.getElementById('figureHint').textContent = 'Nombre de côtés invalide (au moins 3).'; renderFigureSvg(); return; }
+  const radius = Math.hypot(firstVertex.x-center.x, firstVertex.y-center.y);
+  const startAngle = Math.atan2(firstVertex.y-center.y, firstVertex.x-center.x);
+  const vertices = [firstVertex];
+  for(let k=1;k<n;k++){
+    const a = startAngle + k*2*Math.PI/n;
+    vertices.push({label:nextPointLabel(), x:center.x+radius*Math.cos(a), y:center.y+radius*Math.sin(a)});
+  }
+  vertices.slice(1).forEach(v=>figState.points.push(v));
+  for(let i=0;i<n;i++){
+    figState.shapes.push({type:'segment', p1:vertices[i], p2:vertices[(i+1)%n]});
+  }
+  renderFigureSvg();
+}
 function onFigureClick(evt){
   if(figState.mode==='deplacer') return; // géré par mousedown/mousemove
   const svg=document.getElementById('figureSvg');
@@ -2918,6 +3005,8 @@ function onFigureClick(evt){
   if(figState.mode==='cercle-rayon'){ handleRadiusCircleClick(x,y); return; }
   if(figState.mode==='perpendiculaire' || figState.mode==='parallele' || figState.mode==='mediatrice'){ handleLineToolClick(x,y); return; }
   if(figState.mode==='code'){ handleCodeClick(x,y); return; }
+  if(figState.mode==='polygone'){ handlePolygoneClick(x,y); return; }
+  if(figState.mode==='polygone-regulier'){ handlePolygoneRegulierClick(x,y); return; }
   if(figState.mode==='milieu'){
     // Un clic direct sur le segment (pas seulement ses 2 extrémités) sélectionne les deux
     // points d'un coup -- plus rapide que d'avoir à cliquer précisément chaque extrémité.
@@ -2930,7 +3019,7 @@ function onFigureClick(evt){
   const near = findNearbyPoint(x,y);
   if(!near || figState.selected.includes(near)) return;
   figState.selected.push(near);
-  const neededMap = {angle:3, bissectrice:3, arc:3};
+  const neededMap = {angle:3, bissectrice:3, arc:3, triangle:3};
   const needed = neededMap[figState.mode] || 2;
   if(figState.selected.length===needed){
     const withCompass = document.getElementById('compassToggle') && document.getElementById('compassToggle').checked;
@@ -2938,6 +3027,9 @@ function onFigureClick(evt){
       const [a,b] = figState.selected;
       createMidpoint(a, b);
       return;
+    } else if(figState.mode==='triangle'){
+      const [p1,p2,p3] = figState.selected;
+      figState.shapes.push({type:'segment', p1, p2}, {type:'segment', p1:p2, p2:p3}, {type:'segment', p1:p3, p2:p1});
     } else if(figState.mode==='angle' || figState.mode==='bissectrice'){
       const [p1,vertex,p2] = figState.selected; // le sommet est le 2e point cliqué
       figState.shapes.push({type:figState.mode, vertex, p1, p2});
