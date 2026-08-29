@@ -633,5 +633,15 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
 
 /* ---------- Tableau interactif en plein écran ---------- */
 #tbFullscreenWrap:fullscreen, #tbFullscreenWrap:-webkit-full-screen{
-  background:var(--paper);padding:20px;overflow:auto;align-content:flex-start;
+  background:var(--paper);padding:14px;box-sizing:border-box;
+  width:100vw;height:100vh;overflow:auto;align-content:flex-start;
+}
+/* Le SVG du tableau n'a qu'une largeur fixée (width="100%", pas de hauteur), sa hauteur
+   suit automatiquement le ratio de son viewBox. Sans cette limite, en plein écran (bien
+   plus large que la mise en page normale, qui contraignait déjà sa largeur), il grossissait
+   démesurément en hauteur -- débordement de l'écran, et outils disproportionnés/difficiles
+   à manipuler. On borne ici sa hauteur, en laissant sa largeur s'ajuster automatiquement
+   (width:auto) pour conserver le ratio. */
+#tbFullscreenWrap:fullscreen #tbSvg, #tbFullscreenWrap:-webkit-full-screen #tbSvg{
+  width:auto;max-width:100%;max-height:calc(100vh - 230px);
 }
