@@ -3093,33 +3093,48 @@ function renderFigureSvg(){
   });
   /* Marqueur d'un point selon le nombre d'objets (segment/droite/demi-droite comme
      extrémité, angle/bissectrice comme sommet) auxquels il appartient :
-     - 0 objet  : point "libre", marqué d'une croix.
-     - 1 objet  : extrémité simple, marquée d'un petit trait perpendiculaire à l'objet.
-     - 2+ objets (ou sommet d'angle) : rien du tout -- le point existe déjà visuellement là
-       où les objets se croisent/rejoignent (un sommet de triangle, une intersection...),
-       une croix ou un trait supplémentaire ferait double emploi et surchargerait la figure. */
+     - 0 objet : point "libre", marqué d'une croix.
+     - 1 objet, ou 2+ objets tous ALIGNÉS (même droite, comme un milieu qui sépare un
+       segment en deux) : petit trait perpendiculaire -- sans lui, rien ne montre la
+       position du point sur une ligne droite.
+     - 2+ objets qui ne sont PAS tous alignés (un vrai coin, ex. un sommet de triangle) :
+       rien du tout -- le coin lui-même montre déjà où est le point, un marqueur en plus
+       ferait double emploi et surchargerait la figure. */
   function findLineShapesAt(pt){
     return figState.shapes.filter(s=>
       (['segment','droite','demi-droite'].includes(s.type) && (s.p1===pt || s.p2===pt)) ||
       (['angle','bissectrice'].includes(s.type) && (s.vertex===pt || s.p1===pt || s.p2===pt))
     );
   }
+  function shapeDirAt(s, pt){
+    const ref1 = s.p1||s.vertex, ref2 = s.p2||s.p1;
+    // La direction s'éloigne toujours DU point pt (peu importe qu'il soit stocké comme p1
+    // ou p2 de la forme), pour que deux moitiés collinéaires d'un même segment (ex. les deux
+    // côtés d'un milieu) soient bien reconnues comme alignées même si leurs points de
+    // référence sont "inversés" l'un par rapport à l'autre.
+    const from = (ref1===pt) ? ref2 : ref1;
+    const dx=from.x-pt.x, dy=from.y-pt.y, len=Math.hypot(dx,dy)||1;
+    return {x:dx/len, y:dy/len};
+  }
   figState.points.forEach(p=>{
     const sel = figState.selected.includes(p);
     const c = sel?'#E35D3A':(p.def?'#7A8A98':'#1C1B2E');
     const linked = findLineShapesAt(p);
+    let allAligned = linked.length>=1;
+    if(linked.length>=2){
+      const dir0 = shapeDirAt(linked[0], p);
+      allAligned = linked.every(s=>{
+        const d = shapeDirAt(s, p);
+        const cross = Math.abs(dir0.x*d.y - dir0.y*d.x); // ~0 si colinéaire (même droite, quel que soit le sens)
+        return cross < 0.02;
+      });
+    }
     if(linked.length===0){
       html+=`<line x1="${p.x-4}" y1="${p.y-4}" x2="${p.x+4}" y2="${p.y+4}" stroke="${c}" stroke-width="1.6"/>`;
       html+=`<line x1="${p.x-4}" y1="${p.y+4}" x2="${p.x+4}" y2="${p.y-4}" stroke="${c}" stroke-width="1.6"/>`;
-    } else if(linked.length===1){
-      const s = linked[0];
-      // Le vecteur directeur dépend du type : segment/droite/demi-droite -> p2-p1 ; angle/
-      // bissectrice n'ont pas vraiment de "direction unique" au sommet (deux côtés), donc un
-      // point marqué seul comme "vertex" (cas rare, sans les côtés eux-mêmes tracés en
-      // segments) utilise la direction vers p1 par défaut.
-      const ref1 = s.p1||s.vertex, ref2 = s.p2||s.p1;
-      const dx=ref2.x-ref1.x, dy=ref2.y-ref1.y, len=Math.hypot(dx,dy)||1;
-      const nx=-dy/len, ny=dx/len;
+    } else if(allAligned){
+      const dir = shapeDirAt(linked[0], p);
+      const nx=-dir.y, ny=dir.x;
       html+=`<line x1="${(p.x-nx*5).toFixed(1)}" y1="${(p.y-ny*5).toFixed(1)}" x2="${(p.x+nx*5).toFixed(1)}" y2="${(p.y+ny*5).toFixed(1)}" stroke="${c}" stroke-width="1.6"/>`;
     }
     html+=`<text x="${p.x+9}" y="${p.y-9}" font-family="Space Grotesk" font-size="14" font-weight="700" fill="${p.def?'#7A8A98':'#1C1B2E'}">${p.label}</text>`;
