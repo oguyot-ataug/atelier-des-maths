@@ -404,6 +404,7 @@ document.body.insertAdjacentHTML('beforeend', `
             <input type="number" id="segLengthInput" value="5" min="0.5" step="0.5" style="width:56px;padding:6px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"> cm
           </span>
           <button type="button" class="btn secondary fig-mode" data-mode="droite" onclick="setFigureMode('droite')">⟷ Droite</button>
+          <button type="button" class="btn secondary fig-mode" data-mode="demi-droite" onclick="setFigureMode('demi-droite')">⟶ Demi-droite</button>
           <button type="button" class="btn secondary fig-mode" data-mode="cercle" onclick="setFigureMode('cercle')">○ Cercle</button>
           <span style="display:inline-flex;align-items:center;gap:4px;">
             <button type="button" class="btn secondary fig-mode" data-mode="cercle-rayon" onclick="setFigureMode('cercle-rayon')">○cm Cercle</button>
@@ -2617,6 +2618,15 @@ function distToSegment(px,py,ax,ay,bx,by){
   t = Math.max(0, Math.min(1,t));
   return Math.hypot(px-(ax+t*dx), py-(ay+t*dy));
 }
+/* Comme distToSegment, mais clampée seulement du côté de l'origine (a) : le rayon d'une
+   demi-droite continue à l'infini au-delà de b, jamais avant a. */
+function distToRay(px,py,ax,ay,bx,by){
+  const dx=bx-ax, dy=by-ay;
+  const len2 = dx*dx+dy*dy || 1;
+  let t = ((px-ax)*dx+(py-ay)*dy)/len2;
+  t = Math.max(0, t);
+  return Math.hypot(px-(ax+t*dx), py-(ay+t*dy));
+}
 function distToLine(px,py,ax,ay,bx,by){
   const dx=bx-ax, dy=by-ay;
   const len=Math.hypot(dx,dy)||1;
@@ -2640,6 +2650,7 @@ function findNearbyShape(x,y){
     let match = false;
     if(s.type==='segment') match = distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     else if(s.type==='droite') match = distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    else if(s.type==='demi-droite') match = distToRay(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     else if(s.type==='cercle'){
       const r = circleRadius(s);
       match = r!=null && Math.abs(Math.hypot(x-s.p1.x, y-s.p1.y) - r) < thresh;
@@ -2794,6 +2805,13 @@ function onFigureMouseUp(){ figDragPoint = null; }
 function createMidpoint(a, b){
   const mid = {label:nextPointLabel(), x:(a.x+b.x)/2, y:(a.y+b.y)/2, def:{type:'milieu', a, b}};
   figState.points.push(mid);
+  // Retire un éventuel segment/droite/demi-droite existant EXACTEMENT entre a et b (dans un
+  // sens ou l'autre) : remplacé par ses deux moitiés, pas ajouté en plus.
+  const originalIdx = figState.shapes.findIndex(s=>
+    ['segment','droite','demi-droite'].includes(s.type) &&
+    ((s.p1===a && s.p2===b) || (s.p1===b && s.p2===a))
+  );
+  if(originalIdx !== -1) figState.shapes.splice(originalIdx, 1);
   figState.shapes.push({type:'segment', p1:a, p2:mid});
   figState.shapes.push({type:'segment', p1:mid, p2:b});
   figState.selected = [];
@@ -2818,7 +2836,7 @@ function onFigureClick(evt){
     // points d'un coup -- plus rapide que d'avoir à cliquer précisément chaque extrémité.
     if(!figState.selected.length){
       const shape = findNearbyShape(x,y);
-      if(shape && shape.type==='segment'){ createMidpoint(shape.p1, shape.p2); return; }
+      if(shape && (shape.type==='segment' || shape.type==='droite' || shape.type==='demi-droite')){ createMidpoint(shape.p1, shape.p2); return; }
     }
   }
 
@@ -2969,6 +2987,11 @@ function renderFigureSvg(){
     } else if(s.type==='droite'){
       const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y; const len=Math.hypot(dx,dy)||1; const ext=400;
       html+=`<line x1="${s.p1.x-dx/len*ext}" y1="${s.p1.y-dy/len*ext}" x2="${s.p2.x+dx/len*ext}" y2="${s.p2.y+dy/len*ext}" stroke="#1C1B2E" stroke-width="1.6"/>`;
+    } else if(s.type==='demi-droite'){
+      // Part exactement de p1 (l'origine du rayon, aucune extension de ce côté) et va loin
+      // au-delà de p2, dans cette même direction.
+      const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y; const len=Math.hypot(dx,dy)||1; const ext=400;
+      html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x+dx/len*ext}" y2="${s.p2.y+dy/len*ext}" stroke="#1C1B2E" stroke-width="1.6"/>`;
     } else if(s.type==='cercle'){
       const hasFixedRadius = s.radius!=null;
       const r = hasFixedRadius ? s.radius : Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y);
@@ -3016,22 +3039,36 @@ function renderFigureSvg(){
       html += renderRightAngleCode(s.vertex,s.p1,s.p2);
     }
   });
-  /* Un point qui est l'extrémité d'un segment (tracé directement, ou implicite via un
-     milieu -- voir plus bas) se dessine en petit trait perpendiculaire au segment, comme en
-     vrai géométrie (la croix est réservée aux points "libres", qui n'appartiennent à aucun
-     segment). */
-  function findSegmentAt(pt){ return figState.shapes.find(s=>s.type==='segment' && (s.p1===pt || s.p2===pt)); }
+  /* Marqueur d'un point selon le nombre d'objets (segment/droite/demi-droite comme
+     extrémité, angle/bissectrice comme sommet) auxquels il appartient :
+     - 0 objet  : point "libre", marqué d'une croix.
+     - 1 objet  : extrémité simple, marquée d'un petit trait perpendiculaire à l'objet.
+     - 2+ objets (ou sommet d'angle) : rien du tout -- le point existe déjà visuellement là
+       où les objets se croisent/rejoignent (un sommet de triangle, une intersection...),
+       une croix ou un trait supplémentaire ferait double emploi et surchargerait la figure. */
+  function findLineShapesAt(pt){
+    return figState.shapes.filter(s=>
+      (['segment','droite','demi-droite'].includes(s.type) && (s.p1===pt || s.p2===pt)) ||
+      (['angle','bissectrice'].includes(s.type) && (s.vertex===pt || s.p1===pt || s.p2===pt))
+    );
+  }
   figState.points.forEach(p=>{
     const sel = figState.selected.includes(p);
     const c = sel?'#E35D3A':(p.def?'#7A8A98':'#1C1B2E');
-    const seg = findSegmentAt(p);
-    if(seg){
-      const dx=seg.p2.x-seg.p1.x, dy=seg.p2.y-seg.p1.y, len=Math.hypot(dx,dy)||1;
-      const nx=-dy/len, ny=dx/len;
-      html+=`<line x1="${(p.x-nx*7).toFixed(1)}" y1="${(p.y-ny*7).toFixed(1)}" x2="${(p.x+nx*7).toFixed(1)}" y2="${(p.y+ny*7).toFixed(1)}" stroke="${c}" stroke-width="2"/>`;
-    } else {
+    const linked = findLineShapesAt(p);
+    if(linked.length===0){
       html+=`<line x1="${p.x-6}" y1="${p.y-6}" x2="${p.x+6}" y2="${p.y+6}" stroke="${c}" stroke-width="2"/>`;
       html+=`<line x1="${p.x-6}" y1="${p.y+6}" x2="${p.x+6}" y2="${p.y-6}" stroke="${c}" stroke-width="2"/>`;
+    } else if(linked.length===1){
+      const s = linked[0];
+      // Le vecteur directeur dépend du type : segment/droite/demi-droite -> p2-p1 ; angle/
+      // bissectrice n'ont pas vraiment de "direction unique" au sommet (deux côtés), donc un
+      // point marqué seul comme "vertex" (cas rare, sans les côtés eux-mêmes tracés en
+      // segments) utilise la direction vers p1 par défaut.
+      const ref1 = s.p1||s.vertex, ref2 = s.p2||s.p1;
+      const dx=ref2.x-ref1.x, dy=ref2.y-ref1.y, len=Math.hypot(dx,dy)||1;
+      const nx=-dy/len, ny=dx/len;
+      html+=`<line x1="${(p.x-nx*7).toFixed(1)}" y1="${(p.y-ny*7).toFixed(1)}" x2="${(p.x+nx*7).toFixed(1)}" y2="${(p.y+ny*7).toFixed(1)}" stroke="${c}" stroke-width="2"/>`;
     }
     html+=`<text x="${p.x+9}" y="${p.y-9}" font-family="Space Grotesk" font-size="14" font-weight="700" fill="${p.def?'#7A8A98':'#1C1B2E'}">${p.label}</text>`;
   });
