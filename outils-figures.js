@@ -185,10 +185,20 @@ document.body.insertAdjacentHTML('beforeend', `
         <label class="hint" style="margin:0;">Parts colorées : <input type="number" id="disqueNum" value="3" min="0" style="width:60px;"></label>
         <label class="hint" style="margin:0;">Parts totales : <input type="number" id="disqueDen" value="4" min="1" style="width:60px;"></label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="disqueVierge"> Laisser vierge (à colorier par l'élève)</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueShowCaption" checked> Écrire la fraction en dessous</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueShowMixte"> Avec partie entière (ex. 7/3 = 2 + 1/3)</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueReponseSimple"> Réponse à compléter (.../....)</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="disqueReponseMixte"> Réponse avec partie entière (... + .../....)</label>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+        <div style="border:1px solid rgba(31,122,77,.3);border-radius:8px;padding:8px 12px;background:rgba(31,122,77,.06);">
+          <div style="font-size:.72rem;font-weight:700;color:#1F7A4D;margin-bottom:4px;"><span class="gicon">check_circle</span> Réponse affichée (correction)</div>
+          <label class="hint" style="display:block;margin:0 0 2px;"><input type="checkbox" id="disqueShowCaption" checked> Écrire la fraction en dessous</label>
+          <label class="hint" style="display:block;margin:0;"><input type="checkbox" id="disqueShowMixte"> Avec partie entière (ex. 7/3 = 2 + 1/3)</label>
+        </div>
+        <div style="border:1px solid rgba(13,91,163,.3);border-radius:8px;padding:8px 12px;background:rgba(13,91,163,.06);">
+          <div style="font-size:.72rem;font-weight:700;color:#0D5BA3;margin-bottom:4px;"><span class="gicon">edit_note</span> Exercice à trous (pour l'élève)</div>
+          <label class="hint" style="display:block;margin:0 0 2px;"><input type="checkbox" id="disqueReponseSimple"> Réponse à compléter (.../....)</label>
+          <label class="hint" style="display:block;margin:0;"><input type="checkbox" id="disqueReponseMixte"> Réponse avec partie entière (... + .../....)</label>
+        </div>
+      </div>
+      <div class="tool-row" style="margin-bottom:10px;">
         <button type="button" class="btn secondary" onclick="previewDisque()">Aperçu</button>
       </div>
       <div id="disquePreview"></div>
@@ -213,10 +223,20 @@ document.body.insertAdjacentHTML('beforeend', `
       </div>
       <div class="tool-row" style="margin-bottom:10px;">
         <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracVierge" onchange="previewRectFrac()"> Laisser vierge (à colorier par l'élève)</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracShowCaption" checked> Écrire la fraction en dessous</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracShowMixte"> Avec partie entière (ex. 7/3 = 2 + 1/3)</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracReponseSimple"> Réponse à compléter (.../....)</label>
-        <label class="hint" style="margin:0;"><input type="checkbox" id="rectFracReponseMixte"> Réponse avec partie entière (... + .../....)</label>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+        <div style="border:1px solid rgba(31,122,77,.3);border-radius:8px;padding:8px 12px;background:rgba(31,122,77,.06);">
+          <div style="font-size:.72rem;font-weight:700;color:#1F7A4D;margin-bottom:4px;"><span class="gicon">check_circle</span> Réponse affichée (correction)</div>
+          <label class="hint" style="display:block;margin:0 0 2px;"><input type="checkbox" id="rectFracShowCaption" checked> Écrire la fraction en dessous</label>
+          <label class="hint" style="display:block;margin:0;"><input type="checkbox" id="rectFracShowMixte"> Avec partie entière (ex. 7/3 = 2 + 1/3)</label>
+        </div>
+        <div style="border:1px solid rgba(13,91,163,.3);border-radius:8px;padding:8px 12px;background:rgba(13,91,163,.06);">
+          <div style="font-size:.72rem;font-weight:700;color:#0D5BA3;margin-bottom:4px;"><span class="gicon">edit_note</span> Exercice à trous (pour l'élève)</div>
+          <label class="hint" style="display:block;margin:0 0 2px;"><input type="checkbox" id="rectFracReponseSimple"> Réponse à compléter (.../....)</label>
+          <label class="hint" style="display:block;margin:0;"><input type="checkbox" id="rectFracReponseMixte"> Réponse avec partie entière (... + .../....)</label>
+        </div>
+      </div>
+      <div class="tool-row" style="margin-bottom:10px;">
         <button type="button" class="btn secondary" onclick="previewRectFrac()">Aperçu</button>
       </div>
       <div id="rectFracPreview"></div>
