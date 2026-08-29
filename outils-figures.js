@@ -26,7 +26,7 @@
 
 document.body.insertAdjacentHTML('beforeend', `
 <div id="toolsModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeAllToolPanels();">
-  <div class="modal-card" style="max-width:900px;max-height:88vh;overflow:auto;">
+  <div class="modal-card" style="max-width:97vw;width:97vw;max-height:95vh;overflow:auto;">
     <div id="textBlockPanel" class="figure-wrap" style="display:none;">
       <p class="hint" style="margin:0 0 10px;">Texte libre avec la même mise en forme automatique que l'énoncé principal (fractions, exposants, racines, **gras**, {{couleur|texte}}...).</p>
       <div class="tool-row" style="margin:0 0 8px;">
@@ -451,7 +451,7 @@ document.body.insertAdjacentHTML('beforeend', `
         <span class="hint" style="margin:0;">Deux segments (ou angles) codés avec le même nombre de traits/arcs sont annoncés comme égaux entre eux. Les segments/cercles de longueur donnée sont codés automatiquement (même longueur = même nombre de traits). Ce menu sert au codage manuel (ex. pour un côté commun, ou une figure fournie sans passer par « longueur donnée »).</span>
       </div>
       <svg id="figureSvg" viewBox="0 0 500 320" onclick="onFigureClick(event)"
-           style="width:100%;max-width:520px;display:block;margin:0 auto;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
+           style="width:100%;max-width:900px;display:block;margin:0 auto;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
       <p class="hint" style="margin-top:8px;" id="figureHint">Cliquez pour placer un point.</p>
       <div class="figure-toolbar">
         <button type="button" class="btn" onclick="validateFigure()">✓ Valider et insérer la figure</button>
