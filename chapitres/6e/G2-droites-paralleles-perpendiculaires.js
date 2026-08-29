@@ -1074,7 +1074,7 @@ const dpRqpFoot = dpIntersect(DP_RQP_D1, dpRqpDir, DP_RQP_M, dpRqpPerp);
 if(dpRqpPerp.x*(DP_RQP_M.x-dpRqpFoot.x)+dpRqpPerp.y*(DP_RQP_M.y-dpRqpFoot.y) < 0){ dpRqpPerp = {x:-dpRqpPerp.x, y:-dpRqpPerp.y}; }
 const dpRqpFootDist = Math.hypot(dpRqpFoot.x-DP_RQP_D1.x, dpRqpFoot.y-DP_RQP_D1.y);
 const dpRqpTouchDist = Math.hypot(DP_RQP_M.x-dpRqpFoot.x, DP_RQP_M.y-dpRqpFoot.y);
-const DP_RQ_TOOL_LEN = 280, DP_RQ_TOOL_W = 34;
+const DP_RQ_TOOL_LEN = 280, DP_RQ_TOOL_W = 64; // ratio proche de la vraie réquerre (469x138, ~3.4) plutôt qu'une fine règle
 // Le trait fin (repère 0) reste toujours sur (d) ; c'est un BORD du rectangle (décalé d'une demi-largeur) qui doit atteindre M.
 const dpRqpCenterDist = dpRqpFootDist - DP_RQ_TOOL_W/2;
 const DP_RQP_STEPS = [
