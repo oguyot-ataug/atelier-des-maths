@@ -5213,7 +5213,11 @@ function tbAttachHandlers(){
             const [ax,ay] = stroke.points[0], [bx,by] = stroke.points[stroke.points.length-1];
             tbAlignEdgeToLine(req, te, ax, ay, bx, by);
           }
-          req.slideLock = {targetStrokeId: strokeId, dirAngle: req.angle};
+          // dirAngle doit être l'orientation du TRAVERSANT (qui coïncide avec la droite du
+          // trait une fois aligné), pas celle du bord principal : ce dernier est à 0° en
+          // coordonnées locales, le traversant à +90° -- confondre les deux fait glisser
+          // perpendiculairement à la droite au lieu de le long d'elle.
+          req.slideLock = {targetStrokeId: strokeId, dirAngle: req.angle + 90};
         }
         tbRender();
       }
