@@ -4050,7 +4050,18 @@ function requerre2SVG(){
   return `<image href="assets/requerre-translucide.png" x="0" y="0" width="${TB_REQ2_L}" height="${TB_REQ2_W}" style="pointer-events:none;" opacity="0.95"/>
     <rect x="0" y="0" width="${TB_REQ2_L}" height="${TB_REQ2_W}" fill="transparent" pointer-events="all"/>`;
 }
-const TB_ICON_REQUERRE2 = `<svg viewBox="0 0 24 24" width="26" height="26"><rect x="2" y="9" width="20" height="7" rx="1.3" fill="#FCE29A" stroke="#1C1B2E" stroke-width="1.3"/><line x1="12" y1="6" x2="12" y2="19" stroke="#1C1B2E" stroke-width="1.6"/></svg>`;
+const TB_ICON_REQUERRE2 = `<svg viewBox="0 0 24 24" width="26" height="26">
+  <rect x="1.5" y="8" width="21" height="9" rx="1.2" fill="#FCE29A" stroke="#1C1B2E" stroke-width="1.2"/>
+  <line x1="3.5" y1="8" x2="3.5" y2="10.5" stroke="#1C1B2E" stroke-width="0.6"/>
+  <line x1="6" y1="8" x2="6" y2="10.5" stroke="#1C1B2E" stroke-width="0.6"/>
+  <line x1="8.5" y1="8" x2="8.5" y2="10.5" stroke="#1C1B2E" stroke-width="0.6"/>
+  <line x1="15.5" y1="8" x2="15.5" y2="10.5" stroke="#1C1B2E" stroke-width="0.6"/>
+  <line x1="18" y1="8" x2="18" y2="10.5" stroke="#1C1B2E" stroke-width="0.6"/>
+  <line x1="20.5" y1="8" x2="20.5" y2="10.5" stroke="#1C1B2E" stroke-width="0.6"/>
+  <line x1="12" y1="4.5" x2="12" y2="20.5" stroke="#1C1B2E" stroke-width="1.8"/>
+  <rect x="10.6" y="8.6" width="1.4" height="1.4" fill="none" stroke="#1C1B2E" stroke-width="0.6"/>
+  <rect x="12" y="15" width="1.4" height="1.4" fill="none" stroke="#1C1B2E" stroke-width="0.6"/>
+</svg>`;
 /* Chemin d'un triangle aux coins arrondis (rayon r), donné par ses 3 sommets -- utilisé pour
    l'équerre/réquerre, dont le contour ET l'évidement doivent avoir des angles adoucis comme une
    vraie équerre en plastique, pas des angles vifs. */
@@ -4214,8 +4225,18 @@ const TB_DEFS = {
                  // marge transparente de 5px avant que le bord visible ne commence réellement
                  // (mesuré précisément sur l'image source, 5px x 0.4 d'échelle = 2px) -- sans
                  // ce calage, le crayon traçait légèrement décalé vers l'extérieur du bord
-                 // réellement visible.
-                 edges: [{x1:6,y1:2,x2:TB_REQ2_L-6,y2:2}, {x1:TB_REQ2_L/2,y1:-9,x2:TB_REQ2_L/2,y2:TB_REQ2_W+9}] },
+                 // réellement visible. Bord du bas calé de la même façon (mesuré à y=332 sur
+                 // l'image source, soit 132.8 à l'échelle 0.4, arrondi à 132).
+                 // edges[3] (la ligne centrale, perpendiculaire au traversant) sert à une
+                 // mécanique différente : elle ne sert pas à tracer, mais à s'aligner sur une
+                 // droite déjà tracée puis coulisser PERPENDICULAIREMENT à elle (pas le long
+                 // d'elle comme le traversant) -- pour tracer une parallèle à distance réglable.
+                 edges: [
+                   {x1:6,y1:2,x2:TB_REQ2_L-6,y2:2},
+                   {x1:TB_REQ2_L/2,y1:-9,x2:TB_REQ2_L/2,y2:TB_REQ2_W+9},
+                   {x1:6,y1:132,x2:TB_REQ2_L-6,y2:132},
+                   {x1:6,y1:TB_REQ2_W/2,x2:TB_REQ2_L-6,y2:TB_REQ2_W/2},
+                 ] },
   rapporteur:  { rotateHandle:{x:0,y:-24,r:7,opacity:0.55}, svg: protractorSVG, edges: [{x1:-TB_PROT_PIVOT_X+8,y1:0,x2:(TB_PROT_W-TB_PROT_PIVOT_X)-8,y2:0}] },
   gomme:       { rotateHandle:null, svg: gommeSVG, edges: [] },
 };
@@ -4238,7 +4259,7 @@ const TB_HELP_TEXT = {
   regle_grad: "📏 <b>Règle graduée</b>, le corps la déplace, l'extrémité la fait tourner (elle pivote autour du 0). Le crayon s'aimante sur son bord gradué.",
   equerre: "<span class=gicon>straighten</span> <b>Équerre</b>, le corps la déplace, le bout de l'angle droit la fait tourner. Le crayon s'aimante sur ses côtés.",
   requerre: "🔻 <b>Réquerre</b>, même manipulation que l'équerre.",
-  requerre2: "<b>Réquerre</b>, une règle graduée avec un « traversant » (trait perpendiculaire au milieu). Approchez-la d'un trait déjà tracé pour faire apparaître un bouton <span class=gicon>link</span> qui aimante le traversant dessus ; coulissez ensuite le long de ce trait jusqu'à ce que le bord principal passe par le point voulu, puis tracez avec le crayon le long de ce bord (comme avec la règle).",
+  requerre2: "<b>Réquerre</b>, une règle graduée avec un « traversant » (trait perpendiculaire au milieu, pour une perpendiculaire) et une ligne centrale (parallèle au bord principal, pour une parallèle). Approchez l'un des deux d'un trait déjà tracé pour faire apparaître un bouton <span class=gicon>link</span> qui l'aimante dessus, puis coulissez -- le long du trait pour le traversant, perpendiculairement pour la ligne centrale -- jusqu'à la position voulue, et tracez avec le crayon le long du bord principal ou du bord opposé (comme avec la règle).",
   rapporteur: "◐ <b>Rapporteur</b>, le corps le déplace ; le petit crayon tourne autour du pivot (un double-clic pose un repère à l'angle visé, un simple glissé ne fait que le repositionner).",
   compas: "🧭 <b>Compas</b>, la branche de la pointe déplace tout l'ensemble ; la branche du crayon écarte, tourne sans tracer, ou trace vraiment selon l'icône (cliquez dessus pour changer de mode).",
 };
@@ -4653,12 +4674,19 @@ function tbSnapToolToPoints(tool){
    mais sur un trait DÉJÀ TRACÉ au crayon (tbInk). On approxime la droite du trait par ses
    deux points extrêmes (premier et dernier) -- suffisant pour un trait de construction, qui
    est déjà sensé être droit. */
-function tbFindRequerreInkContact(){
+/* Même principe que tbFindSlideContact, mais pour la nouvelle réquerre : un de ses bords
+   internes (traversant, edges[1] ; ou ligne centrale, edges[3]) doit s'aimanter non pas sur
+   un autre outil, mais sur un trait DÉJÀ TRACÉ au crayon (tbInk). On approxime la droite du
+   trait par ses deux points extrêmes (premier et dernier) -- suffisant pour un trait de
+   construction, qui est déjà sensé être droit. Généralisé sur l'index du bord (edgeIdx) pour
+   servir aux deux mécaniques (traversant = coulisser LE LONG de la droite ; ligne centrale =
+   coulisser PERPENDICULAIREMENT, pour tracer une parallèle) sans dupliquer cette fonction. */
+function tbFindRequerreInkContact(edgeIdx){
   const reqs = tbTools.filter(t=>t.type==='requerre2');
   let best=null, bestScore=Infinity;
   for(const req of reqs){
     const def = TB_DEFS[req.type];
-    const te = def.edges[1]; // le traversant, en coordonnées locales
+    const te = def.edges[edgeIdx];
     const rad = req.angle*Math.PI/180, cos=Math.cos(rad), sin=Math.sin(rad);
     const tax = req.x+te.x1*cos-te.y1*sin, tay = req.y+te.x1*sin+te.y1*cos;
     const tbx = req.x+te.x2*cos-te.y2*sin, tby = req.y+te.x2*sin+te.y2*cos;
@@ -4681,7 +4709,7 @@ function tbFindRequerreInkContact(){
       if(score >= bestScore) continue;
       const contactT = (Math.max(overlapLo,0)+Math.min(overlapHi,tlen))/2;
       bestScore = score;
-      best = {tool:req, strokeId:s.id, contactX: tax+tux*contactT, contactY: tay+tuy*contactT};
+      best = {tool:req, strokeId:s.id, edgeIdx, contactX: tax+tux*contactT, contactY: tay+tuy*contactT};
     }
   }
   return best;
@@ -5016,25 +5044,30 @@ function tbRender(){
       }
     }
   }
-  // Même principe pour la nouvelle réquerre : bouton affiché quand son traversant touche un
-  // trait déjà tracé, ou bouton de secours si déjà verrouillée mais plus en contact direct.
+  // Même principe pour la nouvelle réquerre : bouton affiché quand un de ses bords internes
+  // touche un trait déjà tracé -- le traversant (edgeIdx=1, pour construire une
+  // perpendiculaire, coulisse LE LONG de la droite) ou la ligne centrale (edgeIdx=3, pour
+  // construire une parallèle, coulisse PERPENDICULAIREMENT à la droite). Les deux boutons
+  // peuvent coexister si les deux bords se trouvent près d'un trait en même temps.
   let reqSlideLockHtml = '';
-  const reqContact = tbFindRequerreInkContact();
-  if(reqContact){
-    const already = reqContact.tool.slideLock && reqContact.tool.slideLock.targetStrokeId===reqContact.strokeId;
-    reqSlideLockHtml = `<g data-role="requerreSlideLockBtn" data-tool="${reqContact.tool.id}" data-stroke="${reqContact.strokeId}" transform="translate(${reqContact.contactX.toFixed(1)},${(reqContact.contactY-16).toFixed(1)})" style="cursor:pointer;">
-      <rect x="-42" y="-12" width="84" height="24" rx="12" fill="${already?'#1F7A4D':'#0D5BA3'}" stroke="#fff" stroke-width="1.4"/>
-      <text x="0" y="5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">${already?'✓ Verrouillé':'<tspan font-family="\'Material Symbols Outlined\'">link</tspan> Coulisser'}</text>
-    </g>`;
-  } else {
-    const lockedReq = tbTools.find(t=>t.type==='requerre2' && t.slideLock && t.slideLock.targetStrokeId!==undefined);
-    if(lockedReq){
-      reqSlideLockHtml = `<g data-role="requerreSlideLockBtn" data-tool="${lockedReq.id}" data-stroke="${lockedReq.slideLock.targetStrokeId}" transform="translate(${lockedReq.x.toFixed(1)},${(lockedReq.y-24).toFixed(1)})" style="cursor:pointer;">
-        <rect x="-42" y="-12" width="84" height="24" rx="12" fill="#1F7A4D" stroke="#fff" stroke-width="1.4"/>
-        <text x="0" y="5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">✓ Verrouillé</text>
+  [{edgeIdx:1, label:'Coulisser'}, {edgeIdx:3, label:'Parallèle'}].forEach(({edgeIdx, label})=>{
+    const reqContact = tbFindRequerreInkContact(edgeIdx);
+    if(reqContact){
+      const already = reqContact.tool.slideLock && reqContact.tool.slideLock.targetStrokeId===reqContact.strokeId && reqContact.tool.slideLock.edgeIdx===edgeIdx;
+      reqSlideLockHtml += `<g data-role="requerreSlideLockBtn" data-tool="${reqContact.tool.id}" data-stroke="${reqContact.strokeId}" data-edge="${edgeIdx}" transform="translate(${reqContact.contactX.toFixed(1)},${(reqContact.contactY-16).toFixed(1)})" style="cursor:pointer;">
+        <rect x="-42" y="-12" width="84" height="24" rx="12" fill="${already?'#1F7A4D':'#0D5BA3'}" stroke="#fff" stroke-width="1.4"/>
+        <text x="0" y="5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">${already?'✓ Verrouillé':`<tspan font-family="'Material Symbols Outlined'">link</tspan> ${label}`}</text>
       </g>`;
+    } else {
+      const lockedReq = tbTools.find(t=>t.type==='requerre2' && t.slideLock && t.slideLock.targetStrokeId!==undefined && t.slideLock.edgeIdx===edgeIdx);
+      if(lockedReq){
+        reqSlideLockHtml += `<g data-role="requerreSlideLockBtn" data-tool="${lockedReq.id}" data-stroke="${lockedReq.slideLock.targetStrokeId}" data-edge="${edgeIdx}" transform="translate(${lockedReq.x.toFixed(1)},${(lockedReq.y-24).toFixed(1)})" style="cursor:pointer;">
+          <rect x="-42" y="-12" width="84" height="24" rx="12" fill="#1F7A4D" stroke="#fff" stroke-width="1.4"/>
+          <text x="0" y="5" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">✓ Verrouillé</text>
+        </g>`;
+      }
     }
-  }
+  });
   let bgDefs = '', bgRect = '';
   if(tbBackground==='squares'){
     const s = tbGridSize;
@@ -5212,24 +5245,26 @@ function tbAttachHandlers(){
     if(role==='requerreSlideLockBtn'){
       // Verrou à SENS UNIQUE (contrairement à celui entre équerre et règle) : un trait déjà
       // tracé ne bouge jamais, donc seule la réquerre a besoin d'un slideLock.
-      const toolId = parseInt(target.dataset.tool), strokeId = parseInt(target.dataset.stroke);
+      const toolId = parseInt(target.dataset.tool), strokeId = parseInt(target.dataset.stroke), edgeIdx = parseInt(target.dataset.edge);
       const req = tbTools.find(x=>x.id===toolId);
       if(req){
-        const already = req.slideLock && req.slideLock.targetStrokeId===strokeId;
+        const already = req.slideLock && req.slideLock.targetStrokeId===strokeId && req.slideLock.edgeIdx===edgeIdx;
         if(already){
           req.slideLock = null;
         } else {
           const stroke = tbInk.find(s=>s.id===strokeId);
           if(stroke && stroke.points.length>=2){
-            const def = TB_DEFS[req.type], te = def.edges[1];
+            const def = TB_DEFS[req.type], te = def.edges[edgeIdx];
             const [ax,ay] = stroke.points[0], [bx,by] = stroke.points[stroke.points.length-1];
             tbAlignEdgeToLine(req, te, ax, ay, bx, by);
           }
-          // dirAngle doit être l'orientation du TRAVERSANT (qui coïncide avec la droite du
-          // trait une fois aligné), pas celle du bord principal : ce dernier est à 0° en
-          // coordonnées locales, le traversant à +90° -- confondre les deux fait glisser
-          // perpendiculairement à la droite au lieu de le long d'elle.
-          req.slideLock = {targetStrokeId: strokeId, dirAngle: req.angle + 90};
+          // dirAngle reste toujours "angle + 90" quel que soit le bord aligné : le traversant
+          // (perpendiculaire au bord principal) fait coïncider angle+90 avec la droite du
+          // trait -- on glisse donc LE LONG d'elle ; la ligne centrale (parallèle au bord
+          // principal) fait coïncider angle directement avec la droite -- angle+90 glisse
+          // alors PERPENDICULAIREMENT à elle, exactement ce qu'il faut pour tracer une
+          // parallèle à distance réglable.
+          req.slideLock = {targetStrokeId: strokeId, edgeIdx, dirAngle: req.angle + 90};
         }
         tbRender();
       }
