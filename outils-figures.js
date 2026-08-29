@@ -393,36 +393,48 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="btn orange" onclick="interpretEnonceWithAI()" style="align-self:flex-start;"><span class=gicon>smart_toy</span> Interpréter avec l'IA</button>
       </div>
       <p class="hint" style="margin:-4px 0 12px;">Phrases reconnues directement : <span class="hint-mono">ABC triangle</span> (rectangle/isocèle/équilatéral, ex. <span class="hint-mono">ABC triangle rectangle en A</span>) · <span class="hint-mono">ABCD carré/rectangle/losange/parallélogramme</span> · <span class="hint-mono">I milieu de [BC]</span> · <span class="hint-mono">cercle de centre A passant par B</span>. Pour tout le reste (ou un énoncé complet en français libre), utilisez « Interpréter avec l'IA » (nécessite une clé API, à renseigner dans l'onglet Quiz IA).</p>
-      <div class="figure-toolbar" style="margin-bottom:10px;">
-        <button type="button" class="btn secondary fig-mode" data-mode="point" onclick="setFigureMode('point')">● Point</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')">✥ Déplacer</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="segment" onclick="setFigureMode('segment')"><span class=gicon>horizontal_rule</span> Segment</button>
-        <span style="display:inline-flex;align-items:center;gap:4px;">
-          <button type="button" class="btn secondary fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')"><span class=gicon>horizontal_rule</span>cm Segment</button>
-          <input type="number" id="segLengthInput" value="5" min="0.5" step="0.5" style="width:56px;padding:6px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"> cm
-        </span>
-        <button type="button" class="btn secondary fig-mode" data-mode="droite" onclick="setFigureMode('droite')">⟷ Droite</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="cercle" onclick="setFigureMode('cercle')">○ Cercle</button>
-        <span style="display:inline-flex;align-items:center;gap:4px;">
-          <button type="button" class="btn secondary fig-mode" data-mode="cercle-rayon" onclick="setFigureMode('cercle-rayon')">○cm Cercle</button>
-          <input type="number" id="circleRadiusInput" value="3" min="0.5" step="0.5" style="width:56px;padding:6px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"> cm rayon
-        </span>
-        <button type="button" class="btn secondary fig-mode" data-mode="arc" onclick="setFigureMode('arc')">◡ Arc de cercle</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')">✱ Milieu</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="angle" onclick="setFigureMode('angle')">∠ Angle</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="perpendiculaire" onclick="setFigureMode('perpendiculaire')">⊥ Perpendiculaire</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="parallele" onclick="setFigureMode('parallele')">∥ Parallèle</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="mediatrice" onclick="setFigureMode('mediatrice')">⟂ Médiatrice</button>
-        <button type="button" class="btn secondary fig-mode" data-mode="bissectrice" onclick="setFigureMode('bissectrice')">⟨ Bissectrice</button>
-        <button type="button" class="btn secondary" onclick="undoFigure()">↩︎ Annuler le dernier</button>
-        <button type="button" class="btn secondary" onclick="clearFigure()">Effacer tout</button>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:.72rem;font-weight:700;color:var(--ink-soft);margin:0 0 4px 2px;">TRACÉ DE BASE</div>
+        <div class="figure-toolbar" style="margin-bottom:6px;">
+          <button type="button" class="btn secondary fig-mode" data-mode="point" onclick="setFigureMode('point')">● Point</button>
+          <button type="button" class="btn secondary fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')">✥ Déplacer</button>
+          <button type="button" class="btn secondary fig-mode" data-mode="segment" onclick="setFigureMode('segment')"><span class=gicon>horizontal_rule</span> Segment</button>
+          <span style="display:inline-flex;align-items:center;gap:4px;">
+            <button type="button" class="btn secondary fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')"><span class=gicon>horizontal_rule</span>cm Segment</button>
+            <input type="number" id="segLengthInput" value="5" min="0.5" step="0.5" style="width:56px;padding:6px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"> cm
+          </span>
+          <button type="button" class="btn secondary fig-mode" data-mode="droite" onclick="setFigureMode('droite')">⟷ Droite</button>
+          <button type="button" class="btn secondary fig-mode" data-mode="cercle" onclick="setFigureMode('cercle')">○ Cercle</button>
+          <span style="display:inline-flex;align-items:center;gap:4px;">
+            <button type="button" class="btn secondary fig-mode" data-mode="cercle-rayon" onclick="setFigureMode('cercle-rayon')">○cm Cercle</button>
+            <input type="number" id="circleRadiusInput" value="3" min="0.5" step="0.5" style="width:56px;padding:6px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"> cm rayon
+          </span>
+          <button type="button" class="btn secondary fig-mode" data-mode="arc" onclick="setFigureMode('arc')">◡ Arc de cercle</button>
+          <button type="button" class="btn secondary fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')">✱ Milieu</button>
+          <label class="hint" style="display:flex;align-items:center;gap:5px;margin:0 0 0 6px;">
+            <input type="checkbox" id="compassToggle"> Simuler un compas (Cercle/Arc)
+          </label>
+        </div>
       </div>
-      <div class="tool-row" style="margin-top:0;margin-bottom:8px;">
-        <label class="hint" style="display:flex;align-items:center;gap:6px;margin:0;">
-          <input type="checkbox" id="compassToggle"> Simuler un compas (pour Cercle et Arc de cercle)
-        </label>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:.72rem;font-weight:700;color:var(--ink-soft);margin:0 0 4px 2px;">DROITES REMARQUABLES &amp; ANGLES</div>
+        <div class="figure-toolbar" style="margin-bottom:6px;">
+          <button type="button" class="btn secondary fig-mode" data-mode="angle" onclick="setFigureMode('angle')">∠ Angle</button>
+          <button type="button" class="btn secondary fig-mode" data-mode="perpendiculaire" onclick="setFigureMode('perpendiculaire')">⊥ Perpendiculaire</button>
+          <button type="button" class="btn secondary fig-mode" data-mode="parallele" onclick="setFigureMode('parallele')">∥ Parallèle</button>
+          <button type="button" class="btn secondary fig-mode" data-mode="mediatrice" onclick="setFigureMode('mediatrice')">⟂ Médiatrice</button>
+          <button type="button" class="btn secondary fig-mode" data-mode="bissectrice" onclick="setFigureMode('bissectrice')">⟨ Bissectrice</button>
+        </div>
+      </div>
+      <div style="margin-bottom:8px;">
+        <div style="font-size:.72rem;font-weight:700;color:var(--ink-soft);margin:0 0 4px 2px;">ACTIONS</div>
+        <div class="figure-toolbar" style="margin-bottom:6px;">
+          <button type="button" class="btn secondary" onclick="undoFigure()">↩︎ Annuler le dernier</button>
+          <button type="button" class="btn secondary" onclick="clearFigure()">Effacer tout</button>
+        </div>
       </div>
       <div class="tool-row" style="margin-top:0;margin-bottom:10px;background:rgba(227,93,58,.06);border-radius:8px;padding:10px 12px;">
+        <span style="font-size:.72rem;font-weight:700;color:var(--accent-orange);width:100%;margin:0 0 2px;">CODAGE</span>
         <button type="button" class="btn secondary fig-mode" data-mode="code" onclick="setFigureMode('code')" style="background:var(--accent-orange);color:#fff;">✓ Coder</button>
         <select id="codeType">
           <option value="longueur">Longueurs égales</option>
@@ -2595,7 +2607,7 @@ function svgCoordsFromEvent(svg, evt){
   return pt.matrixTransform(svg.getScreenCTM().inverse());
 }
 function findNearbyPoint(x,y){
-  const thresh = 16;
+  const thresh = 18; // légèrement augmenté (16->18) : plus tolérant, cohérent avec les formes
   return figState.points.find(p=>Math.hypot(p.x-x,p.y-y)<thresh);
 }
 function distToSegment(px,py,ax,ay,bx,by){
@@ -2610,13 +2622,45 @@ function distToLine(px,py,ax,ay,bx,by){
   const len=Math.hypot(dx,dy)||1;
   return Math.abs((px-ax)*dy-(py-ay)*dx)/len;
 }
+/* Rayon d'un cercle, quelle que soit sa forme de stockage (radius numérique posé via "Cercle
+   cm", ou p2 = un point sur le cercle posé via le mode "Cercle" à main levée). */
+function circleRadius(s){
+  if(s.radius !== undefined) return s.radius;
+  if(s.p2) return Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y);
+  return null;
+}
 function findNearbyShape(x,y){
-  const thresh = 10;
+  // Seuil harmonisé avec findNearbyPoint (auparavant 10, sensiblement plus strict que les
+  // points à 16 -- incohérence qui faisait rater le clic plus souvent sur une forme que sur
+  // un point tout proche). Les cercles étaient aussi absents de cette détection manuelle
+  // (seuls segment/droite étaient reconnus), rendant impossible le codage manuel d'un cercle.
+  const thresh = 18;
   return figState.shapes.find(s=>{
     if(s.type==='segment') return distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     if(s.type==='droite') return distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    if(s.type==='cercle'){
+      const r = circleRadius(s);
+      if(r==null) return false;
+      return Math.abs(Math.hypot(x-s.p1.x, y-s.p1.y) - r) < thresh;
+    }
     return false;
   });
+}
+/* Pour le codage d'angle (3 clics sur des POINTS précis) : un clic loin de tout point mais
+   proche d'un segment/droite/rayon déjà tracé se rabat sur l'extrémité de cette forme la
+   plus proche du clic, plutôt que d'échouer silencieusement -- cliquer n'importe où le long
+   d'un rayon suffit alors à désigner son point (signalé : "les clics ne sont pas détectés
+   comme prévu"), sans obliger à viser précisément une extrémité, parfois minuscule ou
+   entourée d'autres traits. */
+function findPointOrNearestOnShape(x,y){
+  const pt = findNearbyPoint(x,y);
+  if(pt) return pt;
+  const shape = findNearbyShape(x,y);
+  if(shape && shape.p1 && shape.p2){
+    const d1 = Math.hypot(shape.p1.x-x, shape.p1.y-y), d2 = Math.hypot(shape.p2.x-x, shape.p2.y-y);
+    return d1<=d2 ? shape.p1 : shape.p2;
+  }
+  return null;
 }
 function handleLineToolClick(x,y){
   if(!figState.refShape){
@@ -2666,7 +2710,7 @@ function handleCodeClick(x,y){
     return;
   }
   // angle-egal / angle-droit : 3 clics, sommet = 2e clic
-  const pt = findNearbyPoint(x,y);
+  const pt = findPointOrNearestOnShape(x,y);
   if(!pt || figState.selected.includes(pt)) return;
   figState.selected.push(pt);
   if(figState.selected.length===3){
