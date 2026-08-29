@@ -1078,8 +1078,14 @@ if(dpRqpPerp.x*(DP_RQP_M.x-dpRqpFoot.x)+dpRqpPerp.y*(DP_RQP_M.y-dpRqpFoot.y) < 0
 const dpRqpFootDist = Math.hypot(dpRqpFoot.x-DP_RQP_D1.x, dpRqpFoot.y-DP_RQP_D1.y);
 const dpRqpTouchDist = Math.hypot(DP_RQP_M.x-dpRqpFoot.x, DP_RQP_M.y-dpRqpFoot.y);
 const DP_RQ_TOOL_LEN = 280, DP_RQ_TOOL_W = 82; // vraie proportion de l'image (469x138 -> ratio 3.4)
+// La photo a une petite marge transparente avant que le bord ne soit RÉELLEMENT visible
+// (mesuré sur l'image source : haut=4, bord bas visible=133, hauteur totale=138). Utiliser
+// DP_RQ_TOOL_W/2 (la moitié de la largeur TOTALE de l'image) comme distance centre->bord
+// place donc le tracé légèrement AU-DELÀ du bord visible, dans la marge transparente --
+// d'où le décalage signalé. La bonne distance centre->bord VISIBLE est plus petite.
+const DP_RQ_TOOL_VISIBLE_HALFW = (133-4)/138 * DP_RQ_TOOL_W / 2;
 // Le trait fin (repère 0) reste toujours sur (d) ; c'est un BORD du rectangle (décalé d'une demi-largeur) qui doit atteindre M.
-const dpRqpCenterDist = dpRqpFootDist - DP_RQ_TOOL_W/2;
+const dpRqpCenterDist = dpRqpFootDist - DP_RQ_TOOL_VISIBLE_HALFW;
 const DP_RQP_STEPS = [
   {dist: 50, phase:'slide', note:"On pose la réquerre perpendiculairement à (d) : le trait fin qui traverse sa largeur reste sur (d)."},
   {dist: dpRqpCenterDist, phase:'slide', note:"On fait glisser la réquerre le long de (d) jusqu'à ce qu'un bord du rectangle passe par M."},
@@ -1104,7 +1110,7 @@ function dpRenderRqPerp(animate){
     tool.setAttribute('width', DP_RQ_TOOL_LEN); tool.setAttribute('height', DP_RQ_TOOL_W);
     tool.setAttribute('transform', dpRulerImageTransform(pos, dpRqpPerp, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
     tool.style.display='';
-    dpSetLine(centerMark, dpExtend(pos, dpRqpDir, DP_RQ_TOOL_W/2));
+    dpSetLine(centerMark, dpExtend(pos, dpRqpDir, DP_RQ_TOOL_VISIBLE_HALFW));
     centerMark.style.display='';
   }
 
@@ -1149,8 +1155,8 @@ const dpRqaFoot1Dist = Math.hypot(dpRqaFoot1.x-DP_RQA_D1.x, dpRqaFoot1.y-DP_RQA_
 const dpRqaStage2Dist = 120;
 const dpRqaStage2Start = {x:DP_RQA_A.x-dpRqaPerp.x*dpRqaStage2Dist, y:DP_RQA_A.y-dpRqaPerp.y*dpRqaStage2Dist};
 // Le trait fin reste sur la ligne de référence ; c'est un bord du rectangle (décalé d'une demi-largeur) qui doit atteindre le point visé.
-const dpRqaStage1CenterDist = dpRqaFoot1Dist - DP_RQ_TOOL_W/2;
-const dpRqaStage2CenterDist = dpRqaStage2Dist - DP_RQ_TOOL_W/2;
+const dpRqaStage1CenterDist = dpRqaFoot1Dist - DP_RQ_TOOL_VISIBLE_HALFW;
+const dpRqaStage2CenterDist = dpRqaStage2Dist - DP_RQ_TOOL_VISIBLE_HALFW;
 const DP_RQA_STEPS = [
   {stage:1, dist: 40, phase:'slide', note:"Première perpendiculaire (Δ) : réquerre posée perpendiculairement à (d), on la fait glisser vers A."},
   {stage:1, dist: dpRqaStage1CenterDist, phase:'slide', note:"On fait glisser jusqu'à ce qu'un bord du rectangle passe par A."},
@@ -1182,7 +1188,7 @@ function dpRenderRqPara(animate){
     tool.setAttribute('width', DP_RQ_TOOL_LEN); tool.setAttribute('height', DP_RQ_TOOL_W);
     tool.setAttribute('transform', dpRulerImageTransform(pos, toolDir, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
     tool.style.display='';
-    dpSetLine(centerMark, dpExtend(pos, toolPerp, DP_RQ_TOOL_W/2));
+    dpSetLine(centerMark, dpExtend(pos, toolPerp, DP_RQ_TOOL_VISIBLE_HALFW));
     centerMark.style.display='';
   }
 
