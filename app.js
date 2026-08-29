@@ -4353,6 +4353,27 @@ function initTableauView(){
   tbPushHistory();
   tbInitialized = true;
 }
+/* Plein écran du tableau interactif (palette + tableau + historique), pour une meilleure
+   visibilité -- notamment utile en vidéoprojection. Écoute aussi fullscreenchange (pas
+   seulement le clic sur le bouton) pour remettre le bouton à jour si l'utilisateur sort du
+   plein écran via Échap plutôt qu'en recliquant dessus. */
+function tbToggleFullscreen(){
+  const el = document.getElementById('tbFullscreenWrap');
+  if(!el) return;
+  if(!document.fullscreenElement){
+    (el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen).call(el);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen).call(document);
+  }
+}
+document.addEventListener('fullscreenchange', ()=>{
+  const btn = document.getElementById('tbBtnFullscreen');
+  if(!btn) return;
+  const isFs = !!document.fullscreenElement;
+  btn.innerHTML = isFs
+    ? '<span class="gicon">fullscreen_exit</span> Quitter le plein écran'
+    : '<span class="gicon">fullscreen</span> Plein écran';
+});
 /* Chaque icône de la palette bascule l'outil : un appui l'ajoute au tableau, un second l'en
    retire -- plus besoin d'un bouton de suppression séparé sur le tableau lui-même. L'icône
    reflète l'état (encadrée/colorée quand l'outil est posé). */
