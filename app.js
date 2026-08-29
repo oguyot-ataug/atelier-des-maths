@@ -4050,18 +4050,7 @@ function requerre2SVG(){
   return `<image href="assets/requerre-translucide.png" x="0" y="0" width="${TB_REQ2_L}" height="${TB_REQ2_W}" style="pointer-events:none;" opacity="0.95"/>
     <rect x="0" y="0" width="${TB_REQ2_L}" height="${TB_REQ2_W}" fill="transparent" pointer-events="all"/>`;
 }
-const TB_ICON_REQUERRE2 = `<svg viewBox="0 0 24 24" width="26" height="26">
-  <rect x="1.5" y="8" width="21" height="9" rx="1.2" fill="#FCE29A" stroke="#1C1B2E" stroke-width="1.2"/>
-  <line x1="3.5" y1="8" x2="3.5" y2="10.5" stroke="#1C1B2E" stroke-width="0.6"/>
-  <line x1="6" y1="8" x2="6" y2="10.5" stroke="#1C1B2E" stroke-width="0.6"/>
-  <line x1="8.5" y1="8" x2="8.5" y2="10.5" stroke="#1C1B2E" stroke-width="0.6"/>
-  <line x1="15.5" y1="8" x2="15.5" y2="10.5" stroke="#1C1B2E" stroke-width="0.6"/>
-  <line x1="18" y1="8" x2="18" y2="10.5" stroke="#1C1B2E" stroke-width="0.6"/>
-  <line x1="20.5" y1="8" x2="20.5" y2="10.5" stroke="#1C1B2E" stroke-width="0.6"/>
-  <line x1="12" y1="4.5" x2="12" y2="20.5" stroke="#1C1B2E" stroke-width="1.8"/>
-  <rect x="10.6" y="8.6" width="1.4" height="1.4" fill="none" stroke="#1C1B2E" stroke-width="0.6"/>
-  <rect x="12" y="15" width="1.4" height="1.4" fill="none" stroke="#1C1B2E" stroke-width="0.6"/>
-</svg>`;
+const TB_ICON_REQUERRE2 = `<img src="assets/requerre-translucide.png" alt="Réquerre" style="width:42px;height:auto;display:block;margin:0 auto;">`;
 /* Chemin d'un triangle aux coins arrondis (rayon r), donné par ses 3 sommets -- utilisé pour
    l'équerre/réquerre, dont le contour ET l'évidement doivent avoir des angles adoucis comme une
    vraie équerre en plastique, pas des angles vifs. */
@@ -4510,6 +4499,62 @@ function tbCurrentColor(){
 }
 function tbClearInk(){ tbInk = []; tbRender(); }
 function tbClearAll(){ tbInk = []; tbTools = []; tbPoints = []; tbTexts = []; tbCodages = []; tbRenderPalette(); tbRender(); tbRenderHistoryPanel(); tbPushHistory(); }
+/* Enregistre le contenu du tableau en image PNG. #tbInkLayer (traits, points, textes,
+   codages) et #tbToolsLayer (outils posés, boutons d'action) sont deux groupes SVG déjà
+   bien séparés (voir tbRender) -- sans outils, on clone le SVG et on retire simplement
+   #tbToolsLayer avant l'export, sans toucher au reste. */
+async function tbExportImage(withTools){
+  const svg = document.getElementById('tbSvg');
+  if(!svg){ await niceAlert("Le tableau n'est pas encore prêt."); return; }
+  const clone = svg.cloneNode(true);
+  if(!withTools){
+    const toolsLayer = clone.querySelector('#tbToolsLayer');
+    if(toolsLayer) toolsLayer.remove();
+  }
+  const W = 900, H = 560; // mêmes dimensions que le viewBox défini dans tbRender()
+  clone.setAttribute('width', W);
+  clone.setAttribute('height', H);
+  clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+
+  const svgString = new XMLSerializer().serializeToString(clone);
+  const svgBlob = new Blob([svgString], {type:'image/svg+xml;charset=utf-8'});
+  const url = URL.createObjectURL(svgBlob);
+
+  const img = new Image();
+  img.onload = () => {
+    const scale = 2; // meilleure résolution à l'export qu'un simple 1:1
+    const canvas = document.createElement('canvas');
+    canvas.width = W*scale; canvas.height = H*scale;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0, W, H);
+    URL.revokeObjectURL(url);
+    canvas.toBlob(blob => {
+      const link = document.createElement('a');
+      link.download = `tableau-interactif${withTools ? '' : '-sans-outils'}.png`;
+      link.href = URL.createObjectURL(blob);
+      link.click();
+    });
+  };
+  img.onerror = async () => {
+    URL.revokeObjectURL(url);
+    await niceAlert("Échec de l'enregistrement de l'image. Réessayez, ou utilisez une capture d'écran.");
+  };
+  img.src = url;
+}
+async function tbExportImageChoice(){
+  const choice = await niceModal({
+    message: "Enregistrer le tableau en image :",
+    buttons: [
+      {label:'Annuler', value:null, secondary:true},
+      {label:'Sans les outils', value:'without', secondary:true},
+      {label:'Avec les outils', value:'with'},
+    ],
+  });
+  if(choice) tbExportImage(choice==='with');
+}
 /* Panneau d'historique : liste chaque objet créé (trait, point, texte) avec sa propre poubelle
    pour le supprimer individuellement, sans toucher au reste. */
 function tbRenderHistoryPanel(){
