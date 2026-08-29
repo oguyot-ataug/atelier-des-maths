@@ -2963,12 +2963,12 @@ function renderLengthCode(p1,p2,group,color){
   const tilt = segAngle + 65*Math.PI/180;
   const tx=Math.cos(tilt), ty=Math.sin(tilt);
   const mid={x:(p1.x+p2.x)/2, y:(p1.y+p2.y)/2};
-  const spacing=8, offsetStart=-((group-1)*spacing)/2;
+  const spacing=6, offsetStart=-((group-1)*spacing)/2;
   let html='';
   for(let i=0;i<group;i++){
     const off=offsetStart+i*spacing;
     const cx=mid.x+ux*off, cy=mid.y+uy*off;
-    html+=`<line x1="${cx-tx*8}" y1="${cy-ty*8}" x2="${cx+tx*8}" y2="${cy+ty*8}" stroke="${color}" stroke-width="1.5"/>`;
+    html+=`<line x1="${cx-tx*5.5}" y1="${cy-ty*5.5}" x2="${cx+tx*5.5}" y2="${cy+ty*5.5}" stroke="${color}" stroke-width="1.1"/>`;
   }
   return html;
 }
@@ -2976,18 +2976,18 @@ function renderAngleCode(vertex,p1,p2,group,color){
   color = color || CODE_GROUP_COLORS[group] || '#E35D3A';
   let html='';
   for(let i=0;i<group;i++){
-    const {points} = angleArcPoints(vertex,p1,p2,20+i*7);
-    html+=`<polyline points="${points}" fill="none" stroke="${color}" stroke-width="2"/>`;
+    const {points} = angleArcPoints(vertex,p1,p2,13+i*5);
+    html+=`<polyline points="${points}" fill="none" stroke="${color}" stroke-width="1.3"/>`;
   }
   return html;
 }
 function renderRightAngleCode(vertex,p1,p2){
   const a1=Math.atan2(p1.y-vertex.y,p1.x-vertex.x), a2=Math.atan2(p2.y-vertex.y,p2.x-vertex.x);
-  const size=15;
+  const size=10;
   const c1={x:vertex.x+size*Math.cos(a1), y:vertex.y+size*Math.sin(a1)};
   const c2={x:vertex.x+size*Math.cos(a2), y:vertex.y+size*Math.sin(a2)};
   const c3={x:c1.x+c2.x-vertex.x, y:c1.y+c2.y-vertex.y};
-  return `<polyline points="${c1.x},${c1.y} ${c3.x},${c3.y} ${c2.x},${c2.y}" fill="none" stroke="#E35D3A" stroke-width="2"/>`;
+  return `<polyline points="${c1.x},${c1.y} ${c3.x},${c3.y} ${c2.x},${c2.y}" fill="none" stroke="#E35D3A" stroke-width="1.3"/>`;
 }
 /* Codage d'un côté par SYMBOLE (pas seulement par couleur) : 1 trait, 2 traits, petit cercle,
    ou # -- quatre conventions différentes qu'on peut cycler pour ne jamais confondre deux côtés,
@@ -2997,8 +2997,8 @@ function renderSideCode(p1,p2,styleIdx,color){
   const mid={x:(p1.x+p2.x)/2, y:(p1.y+p2.y)/2};
   if(style===0) return renderLengthCode(p1,p2,1,color);
   if(style===1) return renderLengthCode(p1,p2,2,color);
-  if(style===2) return `<circle cx="${mid.x}" cy="${mid.y}" r="5.5" fill="none" stroke="${color}" stroke-width="1.6"/>`;
-  return `<text x="${mid.x}" y="${mid.y+5}" font-family="JetBrains Mono" font-size="16" font-weight="700" fill="${color}" text-anchor="middle">#</text>`;
+  if(style===2) return `<circle cx="${mid.x}" cy="${mid.y}" r="4" fill="none" stroke="${color}" stroke-width="1.1"/>`;
+  return `<text x="${mid.x}" y="${mid.y+4}" font-family="JetBrains Mono" font-size="12" font-weight="700" fill="${color}" text-anchor="middle">#</text>`;
 }
 /* Les angles utilisent un vocabulaire de symboles totalement différent de celui des côtés
    (carré / losange au lieu de cercle / #) : un même symbole ne peut donc jamais désigner
@@ -3015,10 +3015,10 @@ function renderVertexCode(vertex,p1,p2,styleIdx,color){
     let a2=Math.atan2(p2.y-vertex.y,p2.x-vertex.x);
     let delta=a2-a1; while(delta>Math.PI) delta-=2*Math.PI; while(delta<-Math.PI) delta+=2*Math.PI;
     const bis=a1+delta/2;
-    const rInner=20, rOuter=arcCount===1?20:27;
-    const x1=vertex.x+(rInner-7)*Math.cos(bis), y1=vertex.y+(rInner-7)*Math.sin(bis);
-    const x2=vertex.x+(rOuter+7)*Math.cos(bis), y2=vertex.y+(rOuter+7)*Math.sin(bis);
-    html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="1.6"/>`;
+    const rInner=13, rOuter=arcCount===1?13:18;
+    const x1=vertex.x+(rInner-5)*Math.cos(bis), y1=vertex.y+(rInner-5)*Math.sin(bis);
+    const x2=vertex.x+(rOuter+5)*Math.cos(bis), y2=vertex.y+(rOuter+5)*Math.sin(bis);
+    html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="1.1"/>`;
   }
   return html;
 }
