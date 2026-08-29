@@ -4199,11 +4199,23 @@ function compassSVG(radius, legLen){
 const TB_EQUERRE_LEGX = 340, TB_EQUERRE_LEGY = TB_EQUERRE_LEGX * Math.tan(30*Math.PI/180);
 const TB_DEFS = {
   crayon:      { rotateHandle:{x:0,y:-100,r:6,opacity:0.4}, svg: pencilSVG,            edges: [] },
-  regle_grad:  { rotateHandle:{x:14.5*22,y:TB_RULER_W-6,r:7,opacity:0.5}, svg: ()=>rulerSVG(true),  edges: [{x1:6,y1:0,x2:TB_RULER_L-6,y2:0}] },
-  equerre:     { rotateHandle:{x:8,y:TB_EQUERRE_LEGY-10,r:7,opacity:0.5}, svg: ()=>equerreSVG(TB_EQUERRE_LEGX,TB_EQUERRE_LEGY), edges: [{x1:0,y1:0,x2:TB_EQUERRE_LEGX,y2:0},{x1:0,y1:0,x2:0,y2:TB_EQUERRE_LEGY}] },
+  regle_grad:  { rotateHandle:{x:14.5*22,y:TB_RULER_W-6,r:7,opacity:0.5}, svg: ()=>rulerSVG(true),
+                 // Les DEUX longs côtés de la règle servent de bord de tracé (avant, seul le
+                 // haut était utilisable) -- une vraie règle se pose indifféremment sur l'un
+                 // ou l'autre bord.
+                 edges: [{x1:6,y1:0,x2:TB_RULER_L-6,y2:0}, {x1:6,y1:TB_RULER_W,x2:TB_RULER_L-6,y2:TB_RULER_W}] },
+  equerre:     { rotateHandle:{x:8,y:TB_EQUERRE_LEGY-10,r:7,opacity:0.5}, svg: ()=>equerreSVG(TB_EQUERRE_LEGX,TB_EQUERRE_LEGY),
+                 // Les 3 côtés du triangle servent de bord de tracé (avant, seuls les deux
+                 // côtés de l'angle droit étaient utilisables, pas l'hypoténuse).
+                 edges: [{x1:0,y1:0,x2:TB_EQUERRE_LEGX,y2:0},{x1:0,y1:0,x2:0,y2:TB_EQUERRE_LEGY},{x1:TB_EQUERRE_LEGX,y1:0,x2:0,y2:TB_EQUERRE_LEGY}] },
   requerre:    { rotateHandle:{x:10,y:40,r:7,opacity:0.5}, svg: ()=>equerreSVG(180,80),  edges: [{x1:0,y1:0,x2:180,y2:0},{x1:0,y1:0,x2:0,y2:80}] },
   requerre2:   { rotateHandle:{x:TB_REQ2_L-20,y:TB_REQ2_W-6,r:7,opacity:0.5}, svg: requerre2SVG,
-                 edges: [{x1:6,y1:0,x2:TB_REQ2_L-6,y2:0}, {x1:TB_REQ2_L/2,y1:-9,x2:TB_REQ2_L/2,y2:TB_REQ2_W+9}] },
+                 // Le bord principal est calé à y=2 (pas y=0) : la photo recadrée a une petite
+                 // marge transparente de 5px avant que le bord visible ne commence réellement
+                 // (mesuré précisément sur l'image source, 5px x 0.4 d'échelle = 2px) -- sans
+                 // ce calage, le crayon traçait légèrement décalé vers l'extérieur du bord
+                 // réellement visible.
+                 edges: [{x1:6,y1:2,x2:TB_REQ2_L-6,y2:2}, {x1:TB_REQ2_L/2,y1:-9,x2:TB_REQ2_L/2,y2:TB_REQ2_W+9}] },
   rapporteur:  { rotateHandle:{x:0,y:-24,r:7,opacity:0.55}, svg: protractorSVG, edges: [{x1:-TB_PROT_PIVOT_X+8,y1:0,x2:(TB_PROT_W-TB_PROT_PIVOT_X)-8,y2:0}] },
   gomme:       { rotateHandle:null, svg: gommeSVG, edges: [] },
 };
