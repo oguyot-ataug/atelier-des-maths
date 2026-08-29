@@ -1160,8 +1160,17 @@ const dpRqaStage2CenterDist = dpRqaStage2Dist - DP_RQ_TOOL_VISIBLE_HALFW;
 // Position du CENTRE de l'outil une fois posé (pas le point cible A) : le tracé doit être
 // centré ici, pas sur A -- A n'est que le point du bord que l'outil touche, qui peut être
 // loin du centre de l'outil le long de sa longueur (signalé : le tracé dépassait l'outil).
-const dpRqaStage1SettledPos = {x:DP_RQA_D1.x+dpRqaDir.x*dpRqaStage1CenterDist, y:DP_RQA_D1.y+dpRqaDir.y*dpRqaStage1CenterDist};
-const dpRqaStage2SettledPos = {x:dpRqaStage2Start.x+dpRqaPerp.x*dpRqaStage2CenterDist, y:dpRqaStage2Start.y+dpRqaPerp.y*dpRqaStage2CenterDist};
+const dpRqaStage1SettledCenter = {x:DP_RQA_D1.x+dpRqaDir.x*dpRqaStage1CenterDist, y:DP_RQA_D1.y+dpRqaDir.y*dpRqaStage1CenterDist};
+const dpRqaStage2SettledCenter = {x:dpRqaStage2Start.x+dpRqaPerp.x*dpRqaStage2CenterDist, y:dpRqaStage2Start.y+dpRqaPerp.y*dpRqaStage2CenterDist};
+// Le point d'ancrage du tracé doit être sur le BORD que le crayon suit (décalé du centre de
+// l'outil par VISIBLE_HALFW le long de l'axe LARGEUR), et non le centre lui-même -- sinon le
+// tracé traverse l'outil en son milieu au lieu de longer son bord (bug signalé : "le trait
+// s'est tracé à travers la réquerre... au lieu du bord"). Axe largeur = dpRqaDir à l'étape 1
+// (le corps de l'outil est perpendiculaire à (d)), dpRqaPerp à l'étape 2 (perpendiculaire à
+// (Δ)) -- vérifié par calcul que A tombe bien sur centre + VISIBLE_HALFW*axeLargeur dans les
+// deux cas, avec ce signe précis.
+const dpRqaStage1EdgeAnchor = {x:dpRqaStage1SettledCenter.x+dpRqaDir.x*DP_RQ_TOOL_VISIBLE_HALFW, y:dpRqaStage1SettledCenter.y+dpRqaDir.y*DP_RQ_TOOL_VISIBLE_HALFW};
+const dpRqaStage2EdgeAnchor = {x:dpRqaStage2SettledCenter.x+dpRqaPerp.x*DP_RQ_TOOL_VISIBLE_HALFW, y:dpRqaStage2SettledCenter.y+dpRqaPerp.y*DP_RQ_TOOL_VISIBLE_HALFW};
 const DP_RQA_STEPS = [
   {stage:1, dist: 40, phase:'slide', note:"Première perpendiculaire (Δ) : réquerre posée perpendiculairement à (d), on la fait glisser vers A."},
   {stage:1, dist: dpRqaStage1CenterDist, phase:'slide', note:"On fait glisser jusqu'à ce qu'un bord du rectangle passe par A."},
@@ -1202,7 +1211,7 @@ function dpRenderRqPara(animate){
   const pencil = document.getElementById('dp-rqa-pencil'), pencilTip = document.getElementById('dp-rqa-pencil-tip');
 
   const deltaVisible = (s.stage===1 && (s.phase==='traced'||s.phase==='clean')) || s.stage===2;
-  const deltaExt = dpExtend(dpRqaStage1SettledPos, dpRqaPerp, DP_RQ_TOOL_LEN/2);
+  const deltaExt = dpExtend(dpRqaStage1EdgeAnchor, dpRqaPerp, DP_RQ_TOOL_LEN/2);
   if(deltaVisible){
     angleMark1.setAttribute('d', dpRightAngleMark(dpRqaFoot1, {x:dpRqaDir.x,y:dpRqaDir.y}, {x:dpRqaPerp.x,y:dpRqaPerp.y}, 13));
     angleMark1.style.display=''; labelDelta.style.display='';
@@ -1213,7 +1222,7 @@ function dpRenderRqPara(animate){
   }
 
   const dpVisible = s.stage===2 && (s.phase==='traced'||s.phase==='clean');
-  const dpExt = dpExtend(dpRqaStage2SettledPos, dpRqaDir, DP_RQ_TOOL_LEN/2);
+  const dpExt = dpExtend(dpRqaStage2EdgeAnchor, dpRqaDir, DP_RQ_TOOL_LEN/2);
   if(dpVisible){
     angleMark2.setAttribute('d', dpRightAngleMark(DP_RQA_A, {x:dpRqaPerp.x,y:dpRqaPerp.y}, {x:dpRqaDir.x,y:dpRqaDir.y}, 13));
     angleMark2.style.display=''; labelDp.style.display='';
