@@ -235,7 +235,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <circle id="dp-rqp-M" r="5" fill="#E35D3A" data-marker="cross"/>
     <text id="dp-rqp-labelM" font-style="italic" font-size="14">M</text>
     <text id="dp-rqp-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C">(d)</text>
-    <polygon id="dp-rqp-tool" fill="rgba(230,214,110,.55)" stroke="#8A7A20" stroke-width="1.6"/>
+    <image id="dp-rqp-tool" href="assets/requerre-translucide.png" style="opacity:0.92;"/>
     <line id="dp-rqp-centerMark" stroke="#1C1B2E" stroke-width="2"/>
     <polygon id="dp-rqp-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
     <polygon id="dp-rqp-pencil-tip" fill="#3A2A1A" style="display:none;"/>
@@ -257,7 +257,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <circle id="dp-rqa-A" r="5" fill="#E35D3A" data-marker="cross"/>
     <text id="dp-rqa-labelA" font-style="italic" font-size="14">A</text>
     <text id="dp-rqa-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C">(d)</text>
-    <polygon id="dp-rqa-tool" fill="rgba(230,214,110,.55)" stroke="#8A7A20" stroke-width="1.6"/>
+    <image id="dp-rqa-tool" href="assets/requerre-translucide.png" style="opacity:0.92;"/>
     <line id="dp-rqa-centerMark" stroke="#1C1B2E" stroke-width="2"/>
     <polygon id="dp-rqa-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
     <polygon id="dp-rqa-pencil-tip" fill="#3A2A1A" style="display:none;"/>
@@ -362,13 +362,16 @@ function dpRightAngleMark(corner, dir1, dir2, size){
   const s3={x:corner.x+dir2.x*size, y:corner.y+dir2.y*size};
   return `M ${s1.x} ${s1.y} L ${s2.x} ${s2.y} L ${s3.x} ${s3.y}`;
 }
-function dpRulerPolygon(center, dir, perpToDir, length, width){
-  const half=length/2, halfW=width/2;
-  const c1={x:center.x-dir.x*half+perpToDir.x*halfW, y:center.y-dir.y*half+perpToDir.y*halfW};
-  const c2={x:center.x+dir.x*half+perpToDir.x*halfW, y:center.y+dir.y*half+perpToDir.y*halfW};
-  const c3={x:center.x+dir.x*half-perpToDir.x*halfW, y:center.y+dir.y*half-perpToDir.y*halfW};
-  const c4={x:center.x-dir.x*half-perpToDir.x*halfW, y:center.y-dir.y*half-perpToDir.y*halfW};
-  return `${c1.x},${c1.y} ${c2.x},${c2.y} ${c3.x},${c3.y} ${c4.x},${c4.y}`;
+/* Positionne/oriente l'<image> de la vraie réquerre (au lieu d'un polygone dessiné) : l'image
+   a son origine locale en haut à gauche (convention SVG standard), donc on centre d'abord sur
+   (0,0), on tourne, puis on translate au point voulu -- l'ordre des transform SVG s'applique
+   de DROITE à GAUCHE, d'où translate(center) rotate(angle) translate(-l/2,-w/2) : la dernière
+   transform listée (recentrage) s'applique EN PREMIER. "dir" est l'axe de la LONGUEUR de
+   l'outil (peut être dpRqpDir ou dpRqpPerp selon la construction en cours -- voir les appels),
+   pas nécessairement la direction de (d) elle-même. */
+function dpRulerImageTransform(center, dir, length, width){
+  const angle = Math.atan2(dir.y, dir.x) * 180/Math.PI;
+  return `translate(${center.x.toFixed(2)},${center.y.toFixed(2)}) rotate(${angle.toFixed(2)}) translate(${(-length/2).toFixed(2)},${(-width/2).toFixed(2)})`;
 }
 /* Crayon (corps + mine) positionné en bout de tracé, orienté selon la direction du trait. */
 function dpPencilPolygons(tipPoint, dir, perpDir){
@@ -1074,7 +1077,7 @@ const dpRqpFoot = dpIntersect(DP_RQP_D1, dpRqpDir, DP_RQP_M, dpRqpPerp);
 if(dpRqpPerp.x*(DP_RQP_M.x-dpRqpFoot.x)+dpRqpPerp.y*(DP_RQP_M.y-dpRqpFoot.y) < 0){ dpRqpPerp = {x:-dpRqpPerp.x, y:-dpRqpPerp.y}; }
 const dpRqpFootDist = Math.hypot(dpRqpFoot.x-DP_RQP_D1.x, dpRqpFoot.y-DP_RQP_D1.y);
 const dpRqpTouchDist = Math.hypot(DP_RQP_M.x-dpRqpFoot.x, DP_RQP_M.y-dpRqpFoot.y);
-const DP_RQ_TOOL_LEN = 280, DP_RQ_TOOL_W = 64; // ratio proche de la vraie réquerre (469x138, ~3.4) plutôt qu'une fine règle
+const DP_RQ_TOOL_LEN = 280, DP_RQ_TOOL_W = 82; // vraie proportion de l'image (469x138 -> ratio 3.4)
 // Le trait fin (repère 0) reste toujours sur (d) ; c'est un BORD du rectangle (décalé d'une demi-largeur) qui doit atteindre M.
 const dpRqpCenterDist = dpRqpFootDist - DP_RQ_TOOL_W/2;
 const DP_RQP_STEPS = [
@@ -1098,7 +1101,8 @@ function dpRenderRqPerp(animate){
   if(s.phase==='clean'){
     tool.style.display='none'; centerMark.style.display='none';
   } else {
-    tool.setAttribute('points', dpRulerPolygon(pos, dpRqpPerp, dpRqpDir, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
+    tool.setAttribute('width', DP_RQ_TOOL_LEN); tool.setAttribute('height', DP_RQ_TOOL_W);
+    tool.setAttribute('transform', dpRulerImageTransform(pos, dpRqpPerp, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
     tool.style.display='';
     dpSetLine(centerMark, dpExtend(pos, dpRqpDir, DP_RQ_TOOL_W/2));
     centerMark.style.display='';
@@ -1175,7 +1179,8 @@ function dpRenderRqPara(animate){
   if(s.phase==='clean'){
     tool.style.display='none'; centerMark.style.display='none';
   } else {
-    tool.setAttribute('points', dpRulerPolygon(pos, toolDir, toolPerp, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
+    tool.setAttribute('width', DP_RQ_TOOL_LEN); tool.setAttribute('height', DP_RQ_TOOL_W);
+    tool.setAttribute('transform', dpRulerImageTransform(pos, toolDir, DP_RQ_TOOL_LEN, DP_RQ_TOOL_W));
     tool.style.display='';
     dpSetLine(centerMark, dpExtend(pos, toolPerp, DP_RQ_TOOL_W/2));
     centerMark.style.display='';
