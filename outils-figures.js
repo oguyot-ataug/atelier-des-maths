@@ -2817,14 +2817,36 @@ function recomputeDependents(){
     }
   });
 }
+let figDragLabel = null;
+/* Un clic est considéré comme visant le LABEL d'un point (pas le point lui-même) si sa
+   distance au texte du label est plus proche que sa distance au point -- le label étant
+   petit et décalé, ce test simple (distance au centre approximatif du texte) suffit sans
+   avoir besoin de connaître la vraie boîte englobante du texte SVG. */
+function findNearbyLabel(x,y){
+  const thresh = 14;
+  return figState.points.find(p=>{
+    const lx = p.x+(p.labelDx??9), ly = p.y+(p.labelDy??-9);
+    return Math.hypot(lx-x, ly-y) < thresh;
+  });
+}
 function onFigureMouseDown(evt){
   if(figState.mode!=='deplacer') return;
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
+  const lbl = findNearbyLabel(x,y);
+  if(lbl){ figDragLabel = lbl; evt.preventDefault(); return; }
   const p = findNearbyPoint(x,y);
   if(p && !p.def){ figDragPoint = p; evt.preventDefault(); }
 }
 function onFigureMouseMove(evt){
+  if(figDragLabel){
+    const svg=document.getElementById('figureSvg');
+    const {x,y} = svgCoordsFromEvent(svg,evt);
+    figDragLabel.labelDx = Math.max(-40, Math.min(40, x-figDragLabel.x));
+    figDragLabel.labelDy = Math.max(-40, Math.min(40, y-figDragLabel.y));
+    renderFigureSvg();
+    return;
+  }
   if(!figDragPoint) return;
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
@@ -2847,7 +2869,20 @@ function onFigureMouseMove(evt){
   recomputeDependents();
   renderFigureSvg();
 }
-function onFigureMouseUp(){ figDragPoint = null; }
+function onFigureMouseUp(){ figDragPoint = null; figDragLabel = null; }
+/* Double-clic sur un point (ou directement son label) pour le renommer -- fonctionne quel
+   que soit le mode d'outil actif (pas seulement "Déplacer"), puisque renommer un point ne
+   modifie aucune construction, juste son étiquette. */
+async function onFigureDblClick(evt){
+  if(figState.mode!=='deplacer') return;
+  const svg=document.getElementById('figureSvg');
+  const {x,y} = svgCoordsFromEvent(svg,evt);
+  const p = findNearbyLabel(x,y) || findNearbyPoint(x,y);
+  if(!p) return;
+  const newLabel = await nicePrompt('Nouveau nom du point :', p.label);
+  if(newLabel && newLabel.trim()) p.label = newLabel.trim();
+  renderFigureSvg();
+}
 /* Crée le milieu de [a,b] : le point lui-même, ET les deux moitiés comme de VRAIS segments
    (a-milieu, milieu-b) -- sans ça, le codage (qui détecte un clic via findNearbyShape) ne
    reconnaît aucune forme à coder sur ces moitiés, seul le segment d'origine [a,b] existe
@@ -3137,7 +3172,7 @@ function renderFigureSvg(){
       const nx=-dir.y, ny=dir.x;
       html+=`<line x1="${(p.x-nx*5).toFixed(1)}" y1="${(p.y-ny*5).toFixed(1)}" x2="${(p.x+nx*5).toFixed(1)}" y2="${(p.y+ny*5).toFixed(1)}" stroke="${c}" stroke-width="1.6"/>`;
     }
-    html+=`<text x="${p.x+9}" y="${p.y-9}" font-family="Space Grotesk" font-size="14" font-weight="700" fill="${p.def?'#7A8A98':'#1C1B2E'}">${p.label}</text>`;
+    html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="14" font-weight="700" fill="${p.def?'#7A8A98':'#1C1B2E'}">${p.label}</text>`;
   });
   svg.innerHTML = html;
 }
@@ -3295,6 +3330,7 @@ function reopenFigure(data){
     const svg = document.getElementById('figureSvg');
     if(!svg) return;
     svg.addEventListener('mousedown', onFigureMouseDown);
+    svg.addEventListener('dblclick', onFigureDblClick);
     window.addEventListener('mousemove', onFigureMouseMove);
     window.addEventListener('mouseup', onFigureMouseUp);
     svg.addEventListener('touchstart', onFigureMouseDown, {passive:false});
