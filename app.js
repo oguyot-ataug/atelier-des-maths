@@ -4038,7 +4038,7 @@ function rulerSVG(graduated){
    cette droite (voir tbFindRequerreInkContact), puis on coulisse le long d'elle jusqu'à ce
    que le bord principal passe par le point voulu -- le crayon trace alors le long de ce
    bord, exactement comme avec une règle simple (même mécanique de bord/aimantage). */
-const TB_REQ2_L = 442, TB_REQ2_W = 198;
+const TB_REQ2_L = 469, TB_REQ2_W = 138;
 /* Comme pour protractorSVG : une vraie photo de l'outil (fond détouré en transparence,
    assets/requerre-translucide.png), plutôt qu'un dessin approximatif. Origine (0,0) en haut
    à gauche de l'image (échelle 0.4 : 1105x337px -> 442x135). Le traversant (repéré très
@@ -4210,23 +4210,32 @@ const TB_DEFS = {
                  edges: [{x1:0,y1:0,x2:TB_EQUERRE_LEGX,y2:0},{x1:0,y1:0,x2:0,y2:TB_EQUERRE_LEGY},{x1:TB_EQUERRE_LEGX,y1:0,x2:0,y2:TB_EQUERRE_LEGY}] },
   requerre:    { rotateHandle:{x:10,y:40,r:7,opacity:0.5}, svg: ()=>equerreSVG(180,80),  edges: [{x1:0,y1:0,x2:180,y2:0},{x1:0,y1:0,x2:0,y2:80}] },
   requerre2:   { rotateHandle:{x:TB_REQ2_L-20,y:TB_REQ2_W-6,r:7,opacity:0.5}, svg: requerre2SVG,
-                 // Nouvelle photo (haute résolution, A. Moissard/ALEPH-maths.fr), dimensions
-                 // et repères mesurés précisément sur l'image source (794x355px, échelle
-                 // 0.557 -> 442x198) : bord du haut à y=75 (135px source), bord du bas à
-                 // y=193 (346px source), ligne centrale à y=134 (241px source, quasi
-                 // exactement le milieu réel 197.6/2=98.8+75=173.8... non, vérifié : 134 est
-                 // la ligne interne détectée la plus proche du centre géométrique du corps
-                 // de la règle), traversant à x=224 (402px source, quasi exactement le milieu
-                 // de la longueur).
+                 // Échelle calée EXACTEMENT sur 22px/cm (celle de la règle normale, TB_RULER_L),
+                 // confirmé par une mesure directe et sans ambiguïté : distance entre le "0"
+                 // (repéré par la colonne la plus sombre de l'image, x=382 dans la photo
+                 // recadrée) et le bord droit correspondant à "+10" (x=742) = 360px pour 10cm
+                 // sur la photo source, à redimensionner par 22/36 pour retomber sur 220px
+                 // (=10x22) une fois à l'échelle -- vérifié après coup : exactement 220.00px.
+                 // (Un premier calcul, basé sur un simple comptage de graduations, avait cru
+                 // à tort mesurer 18px/cm alors qu'il s'agissait de demi-centimètres, d'où un
+                 // premier correctif erroné x2 trop grand, corrigé ici.)
+                 // Un recadrage initial trop large avait aussi été corrigé au passage (des
+                 // pixels isolés/parasites dans le détourage avaient élargi la boîte englobante
+                 // bien au-delà du corps réel de la règle -- recadrage refait en ne gardant que
+                 // le plus grand composant connexe du détourage).
+                 // Repères (mesurés sur la photo recadrée, facteur 22/36 appliqué) : bord du
+                 // haut y=4 (6px source), bord du bas y=133 (218px source), traversant x=233
+                 // (382px source, quasi le milieu), ligne centrale y=69 (113px source, quasi
+                 // exactement le centre géométrique).
                  // edges[3] (la ligne centrale, perpendiculaire au traversant) sert à une
                  // mécanique différente : elle ne sert pas à tracer, mais à s'aligner sur une
                  // droite déjà tracée puis coulisser PERPENDICULAIREMENT à elle (pas le long
                  // d'elle comme le traversant) -- pour tracer une parallèle à distance réglable.
                  edges: [
-                   {x1:6,y1:75,x2:TB_REQ2_L-6,y2:75},
-                   {x1:224,y1:66,x2:224,y2:202},
-                   {x1:6,y1:193,x2:TB_REQ2_L-6,y2:193},
-                   {x1:6,y1:134,x2:TB_REQ2_L-6,y2:134},
+                   {x1:6,y1:4,x2:TB_REQ2_L-6,y2:4},
+                   {x1:233,y1:-6,x2:233,y2:144},
+                   {x1:6,y1:133,x2:TB_REQ2_L-6,y2:133},
+                   {x1:6,y1:69,x2:TB_REQ2_L-6,y2:69},
                  ] },
   rapporteur:  { rotateHandle:{x:0,y:-24,r:7,opacity:0.55}, svg: protractorSVG, edges: [{x1:-TB_PROT_PIVOT_X+8,y1:0,x2:(TB_PROT_W-TB_PROT_PIVOT_X)-8,y2:0}] },
   gomme:       { rotateHandle:null, svg: gommeSVG, edges: [] },
