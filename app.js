@@ -4038,22 +4038,17 @@ function rulerSVG(graduated){
    cette droite (voir tbFindRequerreInkContact), puis on coulisse le long d'elle jusqu'à ce
    que le bord principal passe par le point voulu -- le crayon trace alors le long de ce
    bord, exactement comme avec une règle simple (même mécanique de bord/aimantage). */
-const TB_REQ2_L = 440, TB_REQ2_W = 60;
+const TB_REQ2_L = 442, TB_REQ2_W = 135;
+/* Comme pour protractorSVG : une vraie photo de l'outil (fond détouré en transparence,
+   assets/requerre-translucide.png), plutôt qu'un dessin approximatif. Origine (0,0) en haut
+   à gauche de l'image (échelle 0.4 : 1105x337px -> 442x135). Le traversant (repéré très
+   précisément dans l'image : colonne la plus sombre, x=554px soit 50,1% de la largeur --
+   quasi exactement le milieu, cohérent avec la conception symétrique de l'outil) sert de
+   repère d'aimantage sur un trait tracé ; le bord du haut (y=0) sert de bord de tracé au
+   crayon, comme une règle classique. */
 function requerre2SVG(){
-  const L=TB_REQ2_L, W=TB_REQ2_W, mid=L/2;
-  const cmStep = 22, nCm = Math.floor(L/cmStep);
-  let ticks = '';
-  for(let cm=0; cm<=nCm; cm++){
-    const xcm = cm*cmStep;
-    ticks += `<line x1="${xcm}" y1="0" x2="${xcm}" y2="12" stroke="#1C1B2E" stroke-width="1"/>
-      <text x="${xcm}" y="23" font-size="8" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">${cm}</text>`;
-  }
-  const leftMargin = 10;
-  return `<rect x="${-leftMargin}" y="0" width="${L+leftMargin}" height="${W}" rx="5" fill="rgba(248,175,35,.20)" stroke="#1C1B2E" stroke-width="1.5"/>${ticks}
-    <line x1="${mid}" y1="-9" x2="${mid}" y2="${W+9}" stroke="#1C1B2E" stroke-width="2.6"/>
-    <rect x="${mid-7}" y="1" width="6" height="6" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>
-    <rect x="${mid+1}" y="${W-7}" width="6" height="6" fill="none" stroke="#1C1B2E" stroke-width="1.2"/>
-    <circle cx="0" cy="0" r="5" fill="#D93025" stroke="#1C1B2E" stroke-width="1"/>`;
+  return `<image href="assets/requerre-translucide.png" x="0" y="0" width="${TB_REQ2_L}" height="${TB_REQ2_W}" style="pointer-events:none;" opacity="0.95"/>
+    <rect x="0" y="0" width="${TB_REQ2_L}" height="${TB_REQ2_W}" fill="transparent" pointer-events="all"/>`;
 }
 const TB_ICON_REQUERRE2 = `<svg viewBox="0 0 24 24" width="26" height="26"><rect x="2" y="9" width="20" height="7" rx="1.3" fill="#FCE29A" stroke="#1C1B2E" stroke-width="1.3"/><line x1="12" y1="6" x2="12" y2="19" stroke="#1C1B2E" stroke-width="1.6"/></svg>`;
 /* Chemin d'un triangle aux coins arrondis (rayon r), donné par ses 3 sommets -- utilisé pour
