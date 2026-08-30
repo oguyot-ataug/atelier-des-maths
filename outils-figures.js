@@ -2892,6 +2892,15 @@ function circleRadius(s){
 /* Intersection de deux droites INFINIES portées par s1(p1,p2) et s2(p1,p2) -- fonctionne
    quel que soit le type réel (segment/droite/demi-droite), puisque seule la direction
    compte ici, pas les bornes. Renvoie null si parallèles (pas d'intersection unique). */
+/* Borne le paramètre t selon le type d'objet : un segment est BORNÉ des deux côtés (t dans
+   [0,1]), une demi-droite ne l'est que d'un côté (t >= 0, l'origine), une droite ne l'est pas
+   du tout (s'étend à l'infini des deux côtés). Sans ce bornage, un point posé sur un segment
+   pouvait être glissé au-delà de ses extrémités A et B (signalé). */
+function clampTForShapeType(t, shapeType){
+  if(shapeType==='segment') return Math.max(0, Math.min(1, t));
+  if(shapeType==='demi-droite') return Math.max(0, t);
+  return t;
+}
 function intersectLines(s1, s2){
   const d1x=s1.p2.x-s1.p1.x, d1y=s1.p2.y-s1.p1.y;
   const d2x=s2.p2.x-s2.p1.x, d2y=s2.p2.y-s2.p1.y;
@@ -3335,7 +3344,7 @@ function onFigureMouseMove(evt){
   if(figDragPoint.def && figDragPoint.def.type==='point-sur-droite'){
     const {shape} = figDragPoint.def;
     const dx=shape.p2.x-shape.p1.x, dy=shape.p2.y-shape.p1.y, len2=dx*dx+dy*dy||1;
-    const t = ((nx-shape.p1.x)*dx+(ny-shape.p1.y)*dy)/len2;
+    const t = clampTForShapeType(((nx-shape.p1.x)*dx+(ny-shape.p1.y)*dy)/len2, shape.type);
     figDragPoint.def.t = t;
     figDragPoint.x = shape.p1.x+t*dx; figDragPoint.y = shape.p1.y+t*dy;
     recomputeDependents();
@@ -3564,7 +3573,7 @@ function onFigureClick(evt){
     const shape = findNearbyShape(x,y);
     if(shape && ['segment','droite','demi-droite'].includes(shape.type)){
       const dx=shape.p2.x-shape.p1.x, dy=shape.p2.y-shape.p1.y, len2=dx*dx+dy*dy||1;
-      const t = ((x-shape.p1.x)*dx+(y-shape.p1.y)*dy)/len2;
+      const t = clampTForShapeType(((x-shape.p1.x)*dx+(y-shape.p1.y)*dy)/len2, shape.type);
       figState.points.push({label:nextPointLabel(), x:shape.p1.x+t*dx, y:shape.p1.y+t*dy, def:{type:'point-sur-droite', shape, t}, dependsOn:[shape.p1, shape.p2, shape]});
       renderFigureSvg();
       return;
