@@ -2644,8 +2644,8 @@ function reopenTree(data){
 }
 
 function resetFigureState(){
+  pushFigHistory();
   figState = {points:[], shapes:[], mode:(figState&&figState.mode)||'point', selected:[], refShape:null, nextLabel:0, lengthGroups:{}};
-  figRedoStack = [];
   renderFigureSvg();
 }
 function clearFigure(){ resetFigureState(); }
@@ -2720,17 +2720,57 @@ function figMeasureModal({title, unit, defaultValue, withDirection, initialShowV
     };
   });
 }
-let figRedoStack = [];
+/* Clone profond de l'état de la figure, en préservant les références PARTAGÉES : un point
+   référencé par plusieurs formes (ou par def/dependsOn d'un autre point) reste le MÊME objet
+   cloné partout, pas une copie séparée à chaque endroit -- indispensable pour que le clone
+   se comporte identiquement à l'original (recomputeDependents, cascade de suppression...). */
+function cloneFigState(state){
+  const pointMap = new Map();
+  const newPoints = state.points.map(p=>{ const c={...p}; pointMap.set(p,c); return c; });
+  const shapeMap = new Map();
+  const newShapes = state.shapes.map(s=>{
+    const c={...s};
+    ['p1','p2','vertex','center'].forEach(k=>{ if(c[k] && pointMap.has(c[k])) c[k]=pointMap.get(c[k]); });
+    shapeMap.set(s,c);
+    return c;
+  });
+  newPoints.forEach(p=>{
+    if(p.def){
+      const nd={...p.def};
+      Object.keys(nd).forEach(k=>{ if(pointMap.has(nd[k])) nd[k]=pointMap.get(nd[k]); else if(shapeMap.has(nd[k])) nd[k]=shapeMap.get(nd[k]); });
+      p.def=nd;
+    }
+    if(p.dependsOn) p.dependsOn = p.dependsOn.map(dep=>pointMap.get(dep)||shapeMap.get(dep)||dep);
+  });
+  return {
+    points:newPoints, shapes:newShapes, mode:state.mode, selected:[],
+    nextLabel:state.nextLabel, lengthGroups:{...(state.lengthGroups||{})}, angleGroups:{...(state.angleGroups||{})}
+  };
+}
+let figUndoStack = []; // clichés de l'état pris juste AVANT chaque modification
+let figRedoStack = [];  // états qu'on peut "refaire" après avoir annulé
+/* À appeler juste AVANT toute modification de figState.points/shapes (création, suppression,
+   édition d'une mesure) -- capture l'état PRÉ-changement, pour que "annuler" puisse y
+   revenir. Toute nouvelle action invalide la pile "refaire" (comportement standard). */
+function pushFigHistory(){
+  figUndoStack.push(cloneFigState(figState));
+  figRedoStack = [];
+  if(figUndoStack.length > 60) figUndoStack.shift();
+}
 function undoFigure(){
-  if(figState.shapes.length){ figRedoStack.push({kind:'shape', item:figState.shapes.pop()}); }
-  else if(figState.points.length){ figRedoStack.push({kind:'point', item:figState.points.pop()}); }
+  if(!figUndoStack.length) return;
+  figRedoStack.push(cloneFigState(figState)); // garde l'état actuel pour pouvoir y revenir avec "refaire"
+  const restored = figUndoStack.pop();
+  figState.points = restored.points; figState.shapes = restored.shapes; figState.selected = [];
+  figState.lengthGroups = restored.lengthGroups; figState.angleGroups = restored.angleGroups;
   renderFigureSvg();
 }
 function redoFigure(){
   if(!figRedoStack.length) return;
-  const {kind, item} = figRedoStack.pop();
-  if(kind==='shape') figState.shapes.push(item);
-  else figState.points.push(item);
+  figUndoStack.push(cloneFigState(figState)); // garde l'état actuel pour pouvoir re-annuler ensuite
+  const restored = figRedoStack.pop();
+  figState.points = restored.points; figState.shapes = restored.shapes; figState.selected = [];
+  figState.lengthGroups = restored.lengthGroups; figState.angleGroups = restored.angleGroups;
   renderFigureSvg();
 }
 /* Ouvre/ferme un sous-menu de la barre latérale (segment/droite/demi-droite ; cercle libre/cm ;
@@ -2848,6 +2888,32 @@ function circleRadius(s){
   if(s.radius !== undefined) return s.radius;
   if(s.p2) return Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y);
   return null;
+}
+/* Intersection de deux droites INFINIES portées par s1(p1,p2) et s2(p1,p2) -- fonctionne
+   quel que soit le type réel (segment/droite/demi-droite), puisque seule la direction
+   compte ici, pas les bornes. Renvoie null si parallèles (pas d'intersection unique). */
+function intersectLines(s1, s2){
+  const d1x=s1.p2.x-s1.p1.x, d1y=s1.p2.y-s1.p1.y;
+  const d2x=s2.p2.x-s2.p1.x, d2y=s2.p2.y-s2.p1.y;
+  const denom = d1x*d2y - d1y*d2x;
+  if(Math.abs(denom) < 1e-9) return null; // parallèles
+  const t = ((s2.p1.x-s1.p1.x)*d2y - (s2.p1.y-s1.p1.y)*d2x) / denom;
+  return {x: s1.p1.x+t*d1x, y: s1.p1.y+t*d1y};
+}
+/* Détecte si DEUX objets-lignes différents (segment/droite/demi-droite) passent tous les
+   deux près du clic -- pour reconnaître une intersection plutôt qu'un simple point sur un
+   seul objet. Seuil un peu plus large que findNearbyShape (le clic vise le croisement, pas
+   forcément pile sur chaque trait). */
+function findTwoNearbyLineShapes(x,y){
+  const thresh = 16;
+  const candidates = figState.shapes.filter(s=>{
+    if(!['segment','droite','demi-droite'].includes(s.type)) return false;
+    if(s.type==='segment') return distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    if(s.type==='droite') return distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    return distToRay(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+  });
+  if(candidates.length < 2) return null;
+  return [candidates[0], candidates[1]];
 }
 function findNearbyShape(x,y){
   // Seuil harmonisé avec findNearbyPoint (auparavant 10, sensiblement plus strict que les
@@ -3009,6 +3075,18 @@ function recomputeDependents(){
     } else if(p.def.type==='translation'){
       const {vecP1, vecP2, m} = p.def;
       p.x = m.x+(vecP2.x-vecP1.x); p.y = m.y+(vecP2.y-vecP1.y);
+    } else if(p.def.type==='point-sur-droite'){
+      const {shape, t} = p.def;
+      p.x = shape.p1.x+t*(shape.p2.x-shape.p1.x); p.y = shape.p1.y+t*(shape.p2.y-shape.p1.y);
+    } else if(p.def.type==='point-sur-cercle'){
+      const {shape, offset} = p.def;
+      const r = circleRadius(shape);
+      const refAngle = shape.radius!=null ? (shape.angle||0) : Math.atan2(shape.p2.y-shape.p1.y, shape.p2.x-shape.p1.x);
+      const a = refAngle+offset;
+      p.x = shape.p1.x+r*Math.cos(a); p.y = shape.p1.y+r*Math.sin(a);
+    } else if(p.def.type==='intersection'){
+      const inter = intersectLines(p.def.s1, p.def.s2);
+      if(inter){ p.x = inter.x; p.y = inter.y; }
     }
   });
 }
@@ -3102,6 +3180,7 @@ function figStyleModal(shape){
    retirées aussi, et tout point construit devenu inutile (plus référencé par rien) est
    nettoyé, sans jamais toucher un point "libre" posé intentionnellement. */
 function deleteObjectWithDependents(target){
+  pushFigHistory();
   const isShape = figState.shapes.includes(target);
   if(isShape){
     const refPoints = [target.p1, target.p2, target.vertex, target.center].filter(Boolean);
@@ -3161,6 +3240,7 @@ async function editShapeMeasure(shape, measure){
     if(!result) return;
     const cm = result.value;
     if(!isFinite(cm) || cm<=0) return;
+    pushFigHistory();
     const dx=shape.p2.x-shape.p1.x, dy=shape.p2.y-shape.p1.y, len=Math.hypot(dx,dy)||1;
     const px = cm*SCALE_PX_PER_CM;
     shape.p2.x = shape.p1.x + dx/len*px;
@@ -3175,6 +3255,7 @@ async function editShapeMeasure(shape, measure){
     if(!result) return;
     const cm = result.value;
     if(!isFinite(cm) || cm<=0) return;
+    pushFigHistory();
     shape.radius = cm*SCALE_PX_PER_CM;
     shape.radiusCm = cm;
     if(result.showValue) shape.radiusLabel = cm+' cm'; else delete shape.radiusLabel;
@@ -3190,6 +3271,7 @@ async function editShapeMeasure(shape, measure){
     const vertex = shape.p1; // p1 est toujours le sommet pour un segment créé par angle-mesure
     const refPoint = angleShapeBefore ? angleShapeBefore.p1 : null;
     if(!refPoint) return; // pas assez d'info pour recalculer (aucune forme auxiliaire trouvée)
+    pushFigHistory();
     const direction = result.direction || shape.angleDirection || 'horaire';
     const baseAngle = Math.atan2(refPoint.y-vertex.y, refPoint.x-vertex.x);
     const sign = direction==='trigo' ? -1 : 1;
@@ -3439,11 +3521,40 @@ async function handleAngleMesureClick(x,y){
 }
 function onFigureClick(evt){
   if(figState.mode==='deplacer') return; // géré par mousedown/mousemove
-  figRedoStack = [];
+  pushFigHistory();
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
   if(figState.mode==='point'){
     if(findNearbyPoint(x,y)) return;
+    const twoShapes = findTwoNearbyLineShapes(x,y);
+    if(twoShapes){
+      const [s1,s2] = twoShapes;
+      const inter = intersectLines(s1,s2);
+      if(inter){
+        figState.points.push({label:nextPointLabel(), x:inter.x, y:inter.y, def:{type:'intersection', s1, s2}, dependsOn:[s1,s2]});
+        renderFigureSvg();
+        return;
+      }
+    }
+    const shape = findNearbyShape(x,y);
+    if(shape && ['segment','droite','demi-droite'].includes(shape.type)){
+      const dx=shape.p2.x-shape.p1.x, dy=shape.p2.y-shape.p1.y, len2=dx*dx+dy*dy||1;
+      const t = ((x-shape.p1.x)*dx+(y-shape.p1.y)*dy)/len2;
+      figState.points.push({label:nextPointLabel(), x:shape.p1.x+t*dx, y:shape.p1.y+t*dy, def:{type:'point-sur-droite', shape, t}, dependsOn:[shape.p1, shape.p2, shape]});
+      renderFigureSvg();
+      return;
+    }
+    if(shape && shape.type==='cercle'){
+      const r = circleRadius(shape);
+      const refAngle = shape.radius!=null ? (shape.angle||0) : Math.atan2(shape.p2.y-shape.p1.y, shape.p2.x-shape.p1.x);
+      const clickAngle = Math.atan2(y-shape.p1.y, x-shape.p1.x);
+      const offset = clickAngle - refAngle;
+      const deps = [shape.p1, shape].filter(Boolean);
+      if(shape.p2) deps.push(shape.p2);
+      figState.points.push({label:nextPointLabel(), x:shape.p1.x+r*Math.cos(clickAngle), y:shape.p1.y+r*Math.sin(clickAngle), def:{type:'point-sur-cercle', shape, offset}, dependsOn:deps});
+      renderFigureSvg();
+      return;
+    }
     figState.points.push({label:nextPointLabel(), x, y});
     renderFigureSvg();
     return;
