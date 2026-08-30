@@ -3306,10 +3306,21 @@ function onFigureMouseDown(evt){
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
   const lbl = findNearbyLabel(x,y);
-  if(lbl){ figDragLabel = lbl; svg.style.cursor='grabbing'; evt.preventDefault(); return; }
   const p = findNearbyPoint(x,y);
   const isMovableDependent = p && p.def && (p.def.type==='point-sur-droite' || p.def.type==='point-sur-cercle');
-  if(p && (!p.def || isMovableDependent)){ figDragPoint = p; svg.style.cursor='grabbing'; evt.preventDefault(); return; }
+  const pDraggable = p && (!p.def || isMovableDependent);
+  if(lbl && pDraggable){
+    // Les deux sont à portée du clic : on privilégie celui dont on est le plus PROCHE, avec
+    // une légère préférence pour le point en cas d'égalité -- déplacer le point est le geste
+    // le plus fréquent (signalé : le label "gagnait" systématiquement, même quand on visait
+    // clairement le point).
+    const distToLabel = Math.hypot((lbl.x+(lbl.labelDx??9))-x, (lbl.y+(lbl.labelDy??-9))-y);
+    const distToPoint = Math.hypot(p.x-x, p.y-y);
+    if(distToPoint <= distToLabel+4){ figDragPoint = p; svg.style.cursor='grabbing'; evt.preventDefault(); return; }
+    figDragLabel = lbl; svg.style.cursor='grabbing'; evt.preventDefault(); return;
+  }
+  if(lbl){ figDragLabel = lbl; svg.style.cursor='grabbing'; evt.preventDefault(); return; }
+  if(pDraggable){ figDragPoint = p; svg.style.cursor='grabbing'; evt.preventDefault(); return; }
   // Ni un point, ni un label : un clic sur une forme (segment/droite/demi-droite/cercle/arc)
   // ouvre l'éditeur de style, plutôt que de ne rien faire.
   const shape = findNearbyShape(x,y);
