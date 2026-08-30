@@ -422,14 +422,14 @@ document.body.insertAdjacentHTML('beforeend', `
 
         <div class="fig-group-wrap">
         <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('cercles')" title="Cercle">
-          <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="3" r="1.6" fill="currentColor"/></svg>
+          <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="2" r="1.6" fill="currentColor"/></svg>
         </button>
         <div id="figGroupCercles" class="fig-group-sub">
           <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle" onclick="setFigureMode('cercle')" title="Cercle (centre + un point sur le cercle)">
-            <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.3"/><line x1="12" y1="12" x2="12" y2="3" stroke="currentColor" stroke-width="1.1"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="3" r="1.6" fill="currentColor"/></svg>
+            <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="12" y1="12" x2="12" y2="2" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="2" r="1.6" fill="currentColor"/></svg>
           </button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle-rayon" onclick="setFigureMode('cercle-rayon')" title="Cercle de rayon donné (une fenêtre demande le rayon)">
-            <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="18" r="8" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="16" y="8" font-size="7" font-family="JetBrains Mono" fill="currentColor" text-anchor="middle">cm</text><line x1="12" y1="18" x2="20" y2="18" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="18" r="1.6" fill="currentColor"/></svg>
+            <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="10" cy="14" r="8" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="18" y="6" font-size="7" font-family="JetBrains Mono" fill="currentColor" text-anchor="middle">cm</text><line x1="10" y1="14" x2="18" y2="14" stroke="currentColor" stroke-width="1.2"/><circle cx="10" cy="14" r="1.6" fill="currentColor"/></svg>
           </button>
         </div>
         </div>
@@ -2824,8 +2824,11 @@ function findNearbyShape(x,y){
       match = r!=null && Math.abs(Math.hypot(x-s.p1.x, y-s.p1.y) - r) < thresh;
     }
     if(!match) return;
-    const len = (s.p1 && s.p2) ? Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y) : Infinity;
-    if(len < bestLen){ bestLen = len; best = s; }
+    // "Longueur" utilisée pour départager plusieurs formes qui se chevauchent (préfère la
+    // plus spécifique) : le rayon pour un cercle (pas Infinity, qui empêchait TOUJOURS sa
+    // sélection même seul candidat -- Infinity < Infinity est toujours faux).
+    const len = (s.p1 && s.p2) ? Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y) : (s.type==='cercle' ? circleRadius(s) : Infinity);
+    if(best===null || len < bestLen){ bestLen = len; best = s; }
   });
   return best;
 }
@@ -2973,15 +2976,20 @@ function figStyleModal(shape){
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.style.zIndex = '400';
-    const styles = [{v:'fin',l:'Fin'},{v:'epais',l:'Épais'},{v:'pointille',l:'Pointillé'}];
+    const widths = [{v:'fin',l:'Fin'},{v:'epais',l:'Épais'}];
+    const patterns = [{v:'plein',l:'Plein'},{v:'pointille',l:'Pointillé'}];
     const colors = [{v:'#1C1B2E',l:'Noir'},{v:'#7A8A98',l:'Gris'},{v:'#D93025',l:'Rouge'},{v:'#0D5BA3',l:'Bleu'},{v:'#1F7A4D',l:'Vert'},{v:'#E35D3A',l:'Orange'}];
-    const curStyle = shape.strokeStyle || 'fin';
+    const curWidth = shape.strokeWidth || 'fin';
+    const curPattern = shape.strokePattern || 'plein';
     const curColor = shape.strokeColor || '#1C1B2E';
     overlay.innerHTML = `
       <div class="modal-card" style="max-width:320px;">
         <p style="font-weight:700;margin:0 0 12px;">Style du trait</p>
+        <div class="tool-row" style="margin-bottom:10px;">
+          ${widths.map(w=>`<label class="hint" style="margin:0;"><input type="radio" name="figStyleWidth" value="${w.v}" ${curWidth===w.v?'checked':''}> ${w.l}</label>`).join('')}
+        </div>
         <div class="tool-row" style="margin-bottom:14px;">
-          ${styles.map(s=>`<label class="hint" style="margin:0;"><input type="radio" name="figStyleWidth" value="${s.v}" ${curStyle===s.v?'checked':''}> ${s.l}</label>`).join('')}
+          ${patterns.map(p=>`<label class="hint" style="margin:0;"><input type="radio" name="figStylePattern" value="${p.v}" ${curPattern===p.v?'checked':''}> ${p.l}</label>`).join('')}
         </div>
         <div class="tool-row" style="margin-bottom:18px;flex-wrap:wrap;gap:10px;">
           ${colors.map(c=>`<label style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;margin:0;">
@@ -2999,9 +3007,10 @@ function figStyleModal(shape){
     overlay.querySelector('#figStyleCancel').onclick = ()=>close(null);
     overlay.addEventListener('click', e=>{ if(e.target===overlay) close(null); });
     overlay.querySelector('#figStyleOk').onclick = ()=>{
-      const strokeStyle = overlay.querySelector('input[name="figStyleWidth"]:checked').value;
+      const strokeWidth = overlay.querySelector('input[name="figStyleWidth"]:checked').value;
+      const strokePattern = overlay.querySelector('input[name="figStylePattern"]:checked').value;
       const strokeColor = overlay.querySelector('input[name="figStyleColor"]:checked').value;
-      close({strokeStyle, strokeColor});
+      close({strokeWidth, strokePattern, strokeColor});
     };
   });
 }
@@ -3019,7 +3028,7 @@ function onFigureMouseDown(evt){
   if(shape){
     evt.preventDefault();
     figStyleModal(shape).then(result=>{
-      if(result){ shape.strokeStyle = result.strokeStyle; shape.strokeColor = result.strokeColor; renderFigureSvg(); }
+      if(result){ shape.strokeWidth = result.strokeWidth; shape.strokePattern = result.strokePattern; shape.strokeColor = result.strokeColor; renderFigureSvg(); }
     });
   }
 }
@@ -3360,11 +3369,10 @@ function renderVertexCode(vertex,p1,p2,styleIdx,color){
 /* Attributs de trait (couleur, épaisseur, pointillé) d'une forme, en tenant compte du style
    choisi via l'éditeur de style (mode Déplacer) -- retombe sur la couleur/épaisseur par
    défaut de son type si aucun style personnalisé n'a été choisi. */
-function shapeStrokeAttrs(s, defaultColor, defaultWidth){
-  const width = defaultWidth || 1.6;
+function shapeStrokeAttrs(s, defaultColor){
   const color = s.strokeColor || defaultColor;
-  const sw = s.strokeStyle==='epais' ? width+1.8 : width;
-  const dash = s.strokeStyle==='pointille' ? ' stroke-dasharray="5,4"' : '';
+  const sw = s.strokeWidth==='epais' ? 1.8 : 1.1;
+  const dash = s.strokePattern==='pointille' ? ' stroke-dasharray="5,4"' : '';
   return `stroke="${color}" stroke-width="${sw}"${dash}`;
 }
 function renderFigureSvg(){
@@ -3375,7 +3383,7 @@ function renderFigureSvg(){
   }
   figState.shapes.forEach(s=>{
     if(s.type==='segment'){
-      html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x}" y2="${s.p2.y}" ${shapeStrokeAttrs(s,'#1C1B2E',1.8)}/>`;
+      html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x}" y2="${s.p2.y}" ${shapeStrokeAttrs(s,'#1C1B2E')}/>`;
       if(s.lengthLabel){
         const mx=(s.p1.x+s.p2.x)/2, my=(s.p1.y+s.p2.y)/2;
         html+=`<text x="${mx}" y="${my-9}" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">${s.lengthLabel}</text>`;
@@ -3383,17 +3391,17 @@ function renderFigureSvg(){
       if(s.codeGroup) html += renderLengthCode(s.p1, s.p2, s.codeGroup);
     } else if(s.type==='droite'){
       const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y; const len=Math.hypot(dx,dy)||1; const ext=400;
-      html+=`<line x1="${s.p1.x-dx/len*ext}" y1="${s.p1.y-dy/len*ext}" x2="${s.p2.x+dx/len*ext}" y2="${s.p2.y+dy/len*ext}" ${shapeStrokeAttrs(s,'#1C1B2E',1.6)}/>`;
+      html+=`<line x1="${s.p1.x-dx/len*ext}" y1="${s.p1.y-dy/len*ext}" x2="${s.p2.x+dx/len*ext}" y2="${s.p2.y+dy/len*ext}" ${shapeStrokeAttrs(s,'#1C1B2E')}/>`;
     } else if(s.type==='demi-droite'){
       // Part exactement de p1 (l'origine du rayon, aucune extension de ce côté) et va loin
       // au-delà de p2, dans cette même direction.
       const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y; const len=Math.hypot(dx,dy)||1; const ext=400;
-      html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x+dx/len*ext}" y2="${s.p2.y+dy/len*ext}" ${shapeStrokeAttrs(s,'#1C1B2E',1.6)}/>`;
+      html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x+dx/len*ext}" y2="${s.p2.y+dy/len*ext}" ${shapeStrokeAttrs(s,'#1C1B2E')}/>`;
     } else if(s.type==='cercle'){
       const hasFixedRadius = s.radius!=null;
       const r = hasFixedRadius ? s.radius : Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y);
       const refPoint = hasFixedRadius ? {x:s.p1.x+r*Math.cos(s.angle||0), y:s.p1.y+r*Math.sin(s.angle||0)} : s.p2;
-      html+=`<circle cx="${s.p1.x}" cy="${s.p1.y}" r="${r}" fill="none" ${shapeStrokeAttrs(s,'#1F3A5C',1.6)}/>`;
+      html+=`<circle cx="${s.p1.x}" cy="${s.p1.y}" r="${r}" fill="none" ${shapeStrokeAttrs(s,'#1F3A5C')}/>`;
       if(s.compass) html += compassGraphic(s.p1, refPoint);
       if(s.radiusLabel) html+=`<text x="${s.p1.x+(refPoint.x-s.p1.x)/2}" y="${s.p1.y+(refPoint.y-s.p1.y)/2-8}" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">${s.radiusLabel}</text>`;
       if(s.codeGroup){
@@ -3406,7 +3414,7 @@ function renderFigureSvg(){
     } else if(s.type==='arc'){
       const r=Math.hypot(s.p1.x-s.center.x, s.p1.y-s.center.y);
       const {points} = angleArcPoints(s.center, s.p1, s.p2, r);
-      html+=`<polyline points="${points}" fill="none" ${shapeStrokeAttrs(s,'#1F3A5C',1.6)}/>`;
+      html+=`<polyline points="${points}" fill="none" ${shapeStrokeAttrs(s,'#1F3A5C')}/>`;
       if(s.compass) html += compassGraphic(s.center, s.p1);
     } else if(s.type==='angle' || s.type==='bissectrice'){
       const r=26;
@@ -3482,8 +3490,13 @@ function renderFigureSvg(){
   }
   figState.points.forEach(p=>{
     const sel = figState.selected.includes(p);
-    const c = sel?'#E35D3A':(p.def?'#7A8A98':'#1C1B2E');
     const linked = findLineShapesAt(p);
+    // Si le point est lié à une forme dont la couleur a été personnalisée (via l'éditeur de
+    // style), son marqueur ET son label reprennent cette couleur -- changer la couleur d'un
+    // segment doit aussi changer la couleur de ses extrémités, pas seulement le trait.
+    const styledShape = linked.find(s=>s.strokeColor);
+    const baseColor = styledShape ? styledShape.strokeColor : (p.def?'#7A8A98':'#1C1B2E');
+    const c = sel?'#E35D3A':baseColor;
     let allAligned = linked.length>=1;
     if(linked.length>=2){
       const dir0 = shapeDirAt(linked[0], p);
@@ -3501,7 +3514,7 @@ function renderFigureSvg(){
       const nx=-dir.y, ny=dir.x;
       html+=`<line x1="${(p.x-nx*5).toFixed(1)}" y1="${(p.y-ny*5).toFixed(1)}" x2="${(p.x+nx*5).toFixed(1)}" y2="${(p.y+ny*5).toFixed(1)}" stroke="${c}" stroke-width="1.6"/>`;
     }
-    html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="14" font-weight="700" fill="${p.def?'#7A8A98':'#1C1B2E'}">${p.label}</text>`;
+    html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="14" font-weight="700" fill="${sel?'#E35D3A':baseColor}">${p.label}</text>`;
   });
   svg.innerHTML = html;
 }
