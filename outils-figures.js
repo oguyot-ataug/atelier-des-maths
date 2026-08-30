@@ -410,10 +410,7 @@ document.body.insertAdjacentHTML('beforeend', `
           <button type="button" class="fig-icon-btn fig-mode" data-mode="segment" onclick="setFigureMode('segment')" title="Segment (2 extrémités marquées)">
             <svg viewBox="0 0 24 24" width="20" height="20"><line x1="4" y1="16" x2="20" y2="8" stroke="currentColor" stroke-width="1.6"/><circle cx="4" cy="16" r="2" fill="currentColor"/><circle cx="20" cy="8" r="2" fill="currentColor"/></svg>
           </button>
-          <span style="display:flex;align-items:center;gap:2px;">
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')" title="Segment de longueur donnée (cm)" style="font-size:.62rem;"><span class=gicon style="font-size:.9rem;">horizontal_rule</span>cm</button>
-            <input type="number" id="segLengthInput" value="5" min="0.5" step="0.5" title="Longueur en cm" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
-          </span>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')" title="Segment de longueur donnée (une fenêtre demande la longueur)" style="font-size:.62rem;"><span class=gicon style="font-size:.9rem;">horizontal_rule</span>cm</button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="droite" onclick="setFigureMode('droite')" title="Droite (2 points de référence, se prolonge des deux côtés)">
             <svg viewBox="0 0 24 24" width="20" height="20"><line x1="1" y1="19" x2="23" y2="5" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="15" r="1.8" fill="currentColor"/><circle cx="17" cy="9" r="1.8" fill="currentColor"/></svg>
           </button>
@@ -2635,6 +2632,63 @@ function lengthGroupFor(cm){
   if(!figState.lengthGroups[key]) figState.lengthGroups[key] = Object.keys(figState.lengthGroups).length+1;
   return figState.lengthGroups[key];
 }
+/* Miroir de lengthGroupFor, mais pour les angles -- carte SÉPARÉE (figState.angleGroups),
+   pour que le compteur de groupes d'angles n'interfère jamais avec celui des longueurs (un
+   "codage à 1 trait" pour une longueur et un "codage à 1 arc" pour un angle ne doivent pas
+   être confondus). Deux angles de mesures DIFFÉRENTES obtiennent toujours des groupes
+   différents, garantissant des codages visuellement distincts entre eux. */
+function angleGroupFor(deg){
+  if(!figState.angleGroups) figState.angleGroups = {};
+  const key = (+deg).toFixed(2);
+  if(!figState.angleGroups[key]) figState.angleGroups[key] = Object.keys(figState.angleGroups).length+1;
+  return figState.angleGroups[key];
+}
+/* Modale personnalisée (pas niceModal, partagée par tout le site et pas adaptée à afficher
+   plusieurs champs à la fois) : demande la valeur (longueur ou angle), éventuellement le
+   sens (pour un angle), et si la valeur/le codage doivent être affichés sur la figure -- le
+   tout en un seul écran plutôt que plusieurs fenêtres successives. Renvoie null si annulé. */
+function figMeasureModal({title, unit, defaultValue, withDirection}){
+  return new Promise(resolve=>{
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.style.zIndex = '400';
+    overlay.innerHTML = `
+      <div class="modal-card" style="max-width:340px;">
+        <p style="font-weight:700;margin:0 0 12px;">${title}</p>
+        <div class="tool-row" style="margin-bottom:12px;align-items:center;">
+          <input type="number" id="figMeasureInput" value="${defaultValue}" step="0.5" style="width:80px;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:1rem;">
+          <span>${unit}</span>
+        </div>
+        ${withDirection ? `
+        <div class="tool-row" style="margin-bottom:12px;">
+          <label class="hint" style="margin:0;"><input type="radio" name="figMeasureDir" value="horaire" checked> Horaire ↻</label>
+          <label class="hint" style="margin:0;"><input type="radio" name="figMeasureDir" value="trigo"> Trigonométrique ↺</label>
+        </div>` : ''}
+        <div class="tool-row" style="margin-bottom:16px;">
+          <label class="hint" style="margin:0;"><input type="checkbox" id="figMeasureShowValue" checked> Afficher la valeur</label>
+          <label class="hint" style="margin:0;"><input type="checkbox" id="figMeasureShowCode"> Afficher le codage</label>
+        </div>
+        <div class="figure-toolbar" style="margin:0;">
+          <button type="button" class="btn secondary" id="figMeasureCancel">Annuler</button>
+          <button type="button" class="btn" id="figMeasureOk">OK</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const input = overlay.querySelector('#figMeasureInput');
+    setTimeout(()=>{ input.focus(); input.select(); }, 0);
+    function close(result){ overlay.remove(); resolve(result); }
+    overlay.querySelector('#figMeasureCancel').onclick = ()=>close(null);
+    overlay.addEventListener('click', e=>{ if(e.target===overlay) close(null); });
+    input.onkeydown = e=>{ if(e.key==='Enter') overlay.querySelector('#figMeasureOk').click(); };
+    overlay.querySelector('#figMeasureOk').onclick = ()=>{
+      const value = parseFloat(String(input.value).replace(',','.'));
+      const direction = withDirection ? overlay.querySelector('input[name="figMeasureDir"]:checked').value : null;
+      const showValue = overlay.querySelector('#figMeasureShowValue').checked;
+      const showCode = overlay.querySelector('#figMeasureShowCode').checked;
+      close({value, direction, showValue, showCode});
+    };
+  });
+}
 let figRedoStack = [];
 function undoFigure(){
   if(figState.shapes.length){ figRedoStack.push({kind:'shape', item:figState.shapes.pop()}); }
@@ -2850,18 +2904,23 @@ function handleCodeClick(x,y){
 async function handleLengthSegmentClick(x,y){
   let start = findNearbyPoint(x,y);
   if(!start){ start = {label:nextPointLabel(), x, y}; figState.points.push(start); renderFigureSvg(); }
-  const raw = await nicePrompt('Longueur du segment (en cm) :', document.getElementById('segLengthInput').value || '5');
-  if(raw===null) return; // annulé
-  const cm = parseFloat(String(raw).replace(',','.'));
+  const result = await figMeasureModal({title:'Longueur du segment', unit:'cm', defaultValue:5});
+  if(!result) return; // annulé
+  const cm = result.value;
   if(!isFinite(cm) || cm<=0){ document.getElementById('figureHint').textContent = 'Longueur invalide.'; renderFigureSvg(); return; }
-  document.getElementById('segLengthInput').value = cm;
   const px = cm*SCALE_PX_PER_CM;
   // Direction par défaut horizontale (vers la droite) -- ajustable ensuite en glissant le
   // second point autour du premier (mode Déplacer), qui tourne à rayon fixe sans jamais
   // changer la longueur déclarée, grâce à la contrainte déjà en place.
   const end = {label:nextPointLabel(), x:start.x+px, y:start.y};
   figState.points.push(end);
-  figState.shapes.push({type:'segment', p1:start, p2:end, lengthLabel:cm+' cm', lengthCm:cm, codeGroup:lengthGroupFor(cm)});
+  const shape = {type:'segment', p1:start, p2:end};
+  if(result.showValue) shape.lengthLabel = cm+' cm';
+  if(result.showCode) shape.codeGroup = lengthGroupFor(cm);
+  // lengthCm reste TOUJOURS mémorisé (indépendamment de l'affichage), car il sert à la
+  // contrainte de déplacement (B tourne autour de A sans changer de longueur).
+  shape.lengthCm = cm;
+  figState.shapes.push(shape);
   renderFigureSvg();
 }
 function handleRadiusCircleClick(x,y){
@@ -3055,20 +3114,14 @@ async function handleAngleMesureClick(x,y){
   if(vertex===refPoint) return;
   figState.selected = [];
   renderFigureSvg();
-  const angleRaw = await nicePrompt('Mesure de l\'angle (en degrés) :', '60');
-  if(angleRaw===null) return;
-  const angleDeg = parseFloat(String(angleRaw).replace(',','.'));
+  const result = await figMeasureModal({title:'Mesure de l\'angle (depuis le premier côté)', unit:'degrés', defaultValue:60, withDirection:true});
+  if(!result) return;
+  const angleDeg = result.value;
   if(!isFinite(angleDeg) || angleDeg<=0 || angleDeg>=360){ document.getElementById('figureHint').textContent = 'Mesure invalide (entre 0 et 360°).'; return; }
-  const sens = await niceModal({message:'Sens de l\'angle (depuis le premier côté) :', buttons:[
-    {label:'Annuler', value:null, secondary:true},
-    {label:'Horaire ↻', value:'horaire', secondary:true},
-    {label:'Trigonométrique ↺', value:'trigo'},
-  ]});
-  if(!sens) return;
   const baseAngle = Math.atan2(refPoint.y-vertex.y, refPoint.x-vertex.x);
   // En coordonnées écran (y vers le bas), ajouter à l'angle tourne visuellement dans le sens
   // horaire ; soustraire tourne dans le sens trigonométrique (antihoraire), comme en maths.
-  const sign = sens==='trigo' ? -1 : 1;
+  const sign = result.direction==='trigo' ? -1 : 1;
   const newAngle = baseAngle + sign*angleDeg*Math.PI/180;
   const dist = Math.max(40, Math.hypot(refPoint.x-vertex.x, refPoint.y-vertex.y));
   const newPoint = {label:nextPointLabel(), x:vertex.x+dist*Math.cos(newAngle), y:vertex.y+dist*Math.sin(newAngle)};
@@ -3079,6 +3132,8 @@ async function handleAngleMesureClick(x,y){
   const firstSideExists = figState.shapes.some(s=>s.type==='segment' && ((s.p1===vertex&&s.p2===refPoint)||(s.p1===refPoint&&s.p2===vertex)));
   if(!firstSideExists) figState.shapes.push({type:'segment', p1:vertex, p2:refPoint});
   figState.shapes.push({type:'segment', p1:vertex, p2:newPoint});
+  if(result.showValue) figState.shapes.push({type:'angle-value', vertex, p1:refPoint, p2:newPoint, deg:angleDeg});
+  if(result.showCode) figState.shapes.push({type:'code-angle', vertex, p1:refPoint, p2:newPoint, group:angleGroupFor(angleDeg)});
   renderFigureSvg();
 }
 function onFigureClick(evt){
@@ -3313,6 +3368,16 @@ function renderFigureSvg(){
       html += renderAngleCode(s.vertex,s.p1,s.p2,s.group||1);
     } else if(s.type==='code-droit'){
       html += renderRightAngleCode(s.vertex,s.p1,s.p2);
+    } else if(s.type==='angle-value'){
+      // Texte de la mesure de l'angle, placé le long de sa bissectrice (indépendant du
+      // codage, qui est un type de forme séparé -- les deux peuvent coexister ou non).
+      const a1 = Math.atan2(s.p1.y-s.vertex.y, s.p1.x-s.vertex.x);
+      let a2 = Math.atan2(s.p2.y-s.vertex.y, s.p2.x-s.vertex.x);
+      let delta = a2-a1; while(delta>Math.PI) delta-=2*Math.PI; while(delta<-Math.PI) delta+=2*Math.PI;
+      const bis = a1+delta/2;
+      const r = 30;
+      const lx = s.vertex.x+r*Math.cos(bis), ly = s.vertex.y+r*Math.sin(bis);
+      html += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">${s.deg}°</text>`;
     }
   });
   /* Marqueur d'un point selon le nombre d'objets (segment/droite/demi-droite comme
@@ -3331,12 +3396,15 @@ function renderFigureSvg(){
     );
   }
   function shapeDirAt(s, pt){
-    const ref1 = s.p1||s.vertex, ref2 = s.p2||s.p1;
-    // La direction s'éloigne toujours DU point pt (peu importe qu'il soit stocké comme p1
-    // ou p2 de la forme), pour que deux moitiés collinéaires d'un même segment (ex. les deux
-    // côtés d'un milieu) soient bien reconnues comme alignées même si leurs points de
-    // référence sont "inversés" l'un par rapport à l'autre.
-    const from = (ref1===pt) ? ref2 : ref1;
+    let from;
+    if(s.vertex){
+      // Angle/bissectrice : p1 et p2 ne sont reliés au sommet QUE par le sommet lui-même --
+      // il n'existe aucune droite p1<->p2 directe. La seule direction réelle depuis p1 ou p2
+      // est donc vers le sommet, jamais vers l'autre point.
+      from = (s.vertex===pt) ? s.p1 : s.vertex; // repli arbitraire si pt est le sommet lui-même (il a de toute façon 2 côtés, donc pas de direction unique -- geste sans incidence ici)
+    } else {
+      from = (s.p1===pt) ? s.p2 : s.p1;
+    }
     const dx=from.x-pt.x, dy=from.y-pt.y, len=Math.hypot(dx,dy)||1;
     return {x:dx/len, y:dy/len};
   }
