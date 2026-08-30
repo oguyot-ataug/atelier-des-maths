@@ -2980,7 +2980,7 @@ async function handleRadiusCircleClick(x,y){
   const withCompass = document.getElementById('compassToggle') && document.getElementById('compassToggle').checked;
   // radius stocké comme nombre fixe (pas un point) : le cercle garde sa taille exacte
   // même si on déplace ensuite le centre.
-  const shape = {type:'cercle', p1:center, radius:px, angle:0, compass:withCompass};
+  const shape = {type:'cercle', p1:center, radius:px, radiusCm:cm, angle:0, compass:withCompass};
   if(result.showValue) shape.radiusLabel = cm+' cm';
   if(result.showCode) shape.codeGroup = lengthGroupFor(cm);
   figState.shapes.push(shape);
@@ -3011,6 +3011,14 @@ function findNearbyLabel(x,y){
 /* Modale d'édition du style d'une forme (mode Déplacer, clic sur un segment/droite/demi-
    droite/cercle/arc) : style de trait (épais/fin/pointillé) et couleur. Même principe que
    figMeasureModal (modale personnalisée, propre à cet outil). */
+/* Détecte si une forme porte une mesure modifiable après coup (longueur donnée, rayon donné,
+   angle donné) -- renvoie {type, value, unit} ou null si rien à modifier. */
+function findEditableMeasure(shape){
+  if(shape.type==='segment' && shape.lengthCm) return {type:'length', value:shape.lengthCm, unit:'cm'};
+  if(shape.type==='cercle' && shape.radiusCm) return {type:'radius', value:shape.radiusCm, unit:'cm'};
+  if(shape.type==='segment' && shape.angleDeg!=null) return {type:'angle', value:shape.angleDeg, unit:'degrés'};
+  return null;
+}
 function figStyleModal(shape){
   return new Promise(resolve=>{
     const overlay = document.createElement('div');
@@ -3022,6 +3030,8 @@ function figStyleModal(shape){
     const curWidth = shape.strokeWidth || 'fin';
     const curPattern = shape.strokePattern || 'plein';
     const curColor = shape.strokeColor || '#1C1B2E';
+    const measure = findEditableMeasure(shape);
+    const measureLabels = {length:'Modifier la longueur', radius:'Modifier le rayon', angle:'Modifier l\'angle'};
     overlay.innerHTML = `
       <div class="modal-card" style="max-width:320px;">
         <p style="font-weight:700;margin:0 0 12px;">Style du trait</p>
@@ -3037,22 +3047,113 @@ function figStyleModal(shape){
             <span style="width:22px;height:22px;border-radius:50%;background:${c.v};border:1px solid rgba(0,0,0,.15);display:block;" title="${c.l}"></span>
           </label>`).join('')}
         </div>
+        ${measure ? `<div class="tool-row" style="margin-bottom:10px;"><button type="button" class="btn secondary" id="figStyleEditMeasure" style="width:100%;">${measureLabels[measure.type]} (${measure.value} ${measure.unit})</button></div>` : ''}
+        <div class="tool-row" style="margin-bottom:14px;">
+          <button type="button" class="btn secondary" id="figStyleDelete" style="width:100%;color:#D93025;border-color:#D93025;"><span class=gicon>delete</span> Supprimer (et ses dépendances)</button>
+        </div>
         <div class="figure-toolbar" style="margin:0;">
           <button type="button" class="btn secondary" id="figStyleCancel">Annuler</button>
-          <button type="button" class="btn" id="figStyleOk">Appliquer</button>
+          <button type="button" class="btn" id="figStyleOk">Appliquer le style</button>
         </div>
       </div>`;
     document.body.appendChild(overlay);
     function close(result){ overlay.remove(); resolve(result); }
     overlay.querySelector('#figStyleCancel').onclick = ()=>close(null);
     overlay.addEventListener('click', e=>{ if(e.target===overlay) close(null); });
+    overlay.querySelector('#figStyleDelete').onclick = ()=>close({action:'delete'});
+    if(measure) overlay.querySelector('#figStyleEditMeasure').onclick = ()=>close({action:'edit-measure', measure});
     overlay.querySelector('#figStyleOk').onclick = ()=>{
       const strokeWidth = overlay.querySelector('input[name="figStyleWidth"]:checked').value;
       const strokePattern = overlay.querySelector('input[name="figStylePattern"]:checked').value;
       const strokeColor = overlay.querySelector('input[name="figStyleColor"]:checked').value;
-      close({strokeWidth, strokePattern, strokeColor});
+      close({action:'style', strokeWidth, strokePattern, strokeColor});
     };
   });
+}
+/* Supprime une forme ET ses dépendances : les formes auxiliaires directement liées (codage,
+   valeur affichée) qui référencent exactement les mêmes points deviennent orphelines et sont
+   retirées aussi, puis un nettoyage récursif retire tout point de construction (milieu) qui
+   n'est plus utilisé par rien, et toute forme qui référencerait un point ainsi supprimé. Les
+   points "libres" posés intentionnellement par l'utilisateur ne sont eux jamais retirés
+   automatiquement, même orphelins (pourraient être réutilisés ailleurs). */
+function deleteShapeWithDependents(shape){
+  const refPoints = [shape.p1, shape.p2, shape.vertex, shape.center].filter(Boolean);
+  figState.shapes = figState.shapes.filter(s=>{
+    if(s===shape) return false;
+    if(['angle-value','code-angle','code-droit'].includes(s.type)){
+      const sPoints = [s.p1, s.p2, s.vertex].filter(Boolean);
+      if(sPoints.length && sPoints.every(p=>refPoints.includes(p))) return false;
+    }
+    return true;
+  });
+  let changed = true;
+  while(changed){
+    changed = false;
+    figState.points = figState.points.filter(p=>{
+      const stillUsed = figState.shapes.some(s2=>s2.p1===p||s2.p2===p||s2.vertex===p||s2.center===p);
+      const isMilieu = p.def && p.def.type==='milieu';
+      if(!stillUsed && isMilieu){ changed=true; return false; }
+      return true;
+    });
+    const before = figState.shapes.length;
+    figState.shapes = figState.shapes.filter(s=>{
+      const pts = [s.p1,s.p2,s.vertex,s.center].filter(Boolean);
+      return pts.every(pt=>figState.points.includes(pt));
+    });
+    if(figState.shapes.length !== before) changed = true;
+  }
+  figState.selected = [];
+  renderFigureSvg();
+}
+/* Modifie une mesure déjà donnée (longueur d'un segment, rayon d'un cercle, ou angle d'une
+   construction d'angle) -- rouvre figMeasureModal pré-rempli avec la valeur actuelle, puis
+   recalcule la position du point concerné pour respecter la nouvelle valeur (même direction/
+   sens, juste la mesure qui change). */
+async function editShapeMeasure(shape, measure){
+  if(measure.type==='length'){
+    const result = await figMeasureModal({title:'Longueur du segment', unit:'cm', defaultValue:measure.value});
+    if(!result) return;
+    const cm = result.value;
+    if(!isFinite(cm) || cm<=0) return;
+    const dx=shape.p2.x-shape.p1.x, dy=shape.p2.y-shape.p1.y, len=Math.hypot(dx,dy)||1;
+    const px = cm*SCALE_PX_PER_CM;
+    shape.p2.x = shape.p1.x + dx/len*px;
+    shape.p2.y = shape.p1.y + dy/len*px;
+    shape.lengthCm = cm;
+    if(shape.lengthLabel) shape.lengthLabel = cm+' cm';
+    if(shape.codeGroup) shape.codeGroup = lengthGroupFor(cm);
+    recomputeDependents();
+  } else if(measure.type==='radius'){
+    const result = await figMeasureModal({title:'Rayon du cercle', unit:'cm', defaultValue:measure.value});
+    if(!result) return;
+    const cm = result.value;
+    if(!isFinite(cm) || cm<=0) return;
+    shape.radius = cm*SCALE_PX_PER_CM;
+    shape.radiusCm = cm;
+    if(shape.radiusLabel) shape.radiusLabel = cm+' cm';
+    if(shape.codeGroup) shape.codeGroup = lengthGroupFor(cm);
+  } else if(measure.type==='angle'){
+    const result = await figMeasureModal({title:'Mesure de l\'angle', unit:'degrés', defaultValue:measure.value, withDirection:true});
+    if(!result) return;
+    const angleDeg = result.value;
+    if(!isFinite(angleDeg) || angleDeg<=0 || angleDeg>=360) return;
+    const vertex = shape.p1; // p1 est toujours le sommet pour un segment créé par angle-mesure
+    const angleShape = figState.shapes.find(s=>(s.type==='angle-value'||s.type==='code-angle') && s.vertex===vertex && s.p2===shape.p2);
+    const refPoint = angleShape ? angleShape.p1 : null;
+    if(!refPoint) return; // pas assez d'info pour recalculer (aucune forme auxiliaire trouvée)
+    const direction = result.direction || shape.angleDirection || 'horaire';
+    const baseAngle = Math.atan2(refPoint.y-vertex.y, refPoint.x-vertex.x);
+    const sign = direction==='trigo' ? -1 : 1;
+    const newAngle = baseAngle + sign*angleDeg*Math.PI/180;
+    const dist = Math.hypot(shape.p2.x-vertex.x, shape.p2.y-vertex.y);
+    shape.p2.x = vertex.x + dist*Math.cos(newAngle);
+    shape.p2.y = vertex.y + dist*Math.sin(newAngle);
+    shape.angleDeg = angleDeg;
+    shape.angleDirection = direction;
+    if(angleShape) angleShape.deg = angleDeg;
+    recomputeDependents();
+  }
+  renderFigureSvg();
 }
 function onFigureMouseDown(evt){
   if(figState.mode!=='deplacer') return;
@@ -3068,7 +3169,13 @@ function onFigureMouseDown(evt){
   if(shape){
     evt.preventDefault();
     figStyleModal(shape).then(result=>{
-      if(result){ shape.strokeWidth = result.strokeWidth; shape.strokePattern = result.strokePattern; shape.strokeColor = result.strokeColor; renderFigureSvg(); }
+      if(!result) return;
+      if(result.action==='delete') deleteShapeWithDependents(shape);
+      else if(result.action==='edit-measure') editShapeMeasure(shape, result.measure);
+      else if(result.action==='style'){
+        shape.strokeWidth = result.strokeWidth; shape.strokePattern = result.strokePattern; shape.strokeColor = result.strokeColor;
+        renderFigureSvg();
+      }
     });
   }
 }
@@ -3236,7 +3343,10 @@ async function handleAngleMesureClick(x,y){
   // l'angle ne montrerait sinon qu'un seul côté.
   const firstSideExists = figState.shapes.some(s=>s.type==='segment' && ((s.p1===vertex&&s.p2===refPoint)||(s.p1===refPoint&&s.p2===vertex)));
   if(!firstSideExists) figState.shapes.push({type:'segment', p1:vertex, p2:refPoint});
-  figState.shapes.push({type:'segment', p1:vertex, p2:newPoint});
+  // angleDeg/angleDirection restent mémorisés sur ce segment, INDÉPENDAMMENT de l'affichage
+  // valeur/codage choisi -- permet de modifier l'angle plus tard même si ni l'un ni l'autre
+  // n'a été affiché au départ.
+  figState.shapes.push({type:'segment', p1:vertex, p2:newPoint, angleDeg, angleDirection:result.direction});
   if(result.showValue) figState.shapes.push({type:'angle-value', vertex, p1:refPoint, p2:newPoint, deg:angleDeg});
   if(result.showCode) figState.shapes.push({type:'code-angle', vertex, p1:refPoint, p2:newPoint, group:angleGroupFor(angleDeg)});
   renderFigureSvg();
