@@ -3143,14 +3143,19 @@ function areCollinear(s1, s2){
    reconnaît [AI] ou [IB] car ça superpose [AB]"). */
 function findCollinearGroup(x,y){
   const thresh = 18;
-  const candidates = figState.shapes.filter(s=>{
+  const nearby = figState.shapes.filter(s=>{
     if(!['segment','droite','demi-droite'].includes(s.type)) return false;
     if(s.type==='segment') return distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     if(s.type==='droite') return distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     return distToRay(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
   });
-  if(candidates.length<2) return candidates;
-  return candidates.filter(s=>areCollinear(candidates[0], s));
+  if(!nearby.length) return [];
+  // Une fois UN candidat trouvé près du clic, cherche TOUS les autres segments colinéaires
+  // avec lui dans toute la figure -- pas seulement ceux physiquement proches du point cliqué
+  // -- car l'ambiguïté ([AI] vs [IB] vs [AB] reconstitué) existe sur TOUTE la longueur de la
+  // droite reconstituée, pas seulement près du point de jonction I.
+  const ref = nearby[0];
+  return figState.shapes.filter(s=>['segment','droite','demi-droite'].includes(s.type) && areCollinear(ref, s));
 }
 /* Reconstruit l'étendue COMPLÈTE d'origine à partir de plusieurs segments colinéaires
    chevauchants (ex. [AI] et [IB] -> [AB]) : les 2 points les plus éloignés parmi tous ceux
@@ -4161,13 +4166,17 @@ function renderFigureSvg(){
       let dx=s.refB.x-s.refA.x, dy=s.refB.y-s.refA.y;
       if(s.type==='perpendiculaire'){ const t=dx; dx=-dy; dy=t; }
       const len=Math.hypot(dx,dy)||1; const ext=400;
-      const color = s.type==='perpendiculaire' ? '#2C5A2E' : '#1F3A5C';
-      html+=`<line x1="${s.through.x-dx/len*ext}" y1="${s.through.y-dy/len*ext}" x2="${s.through.x+dx/len*ext}" y2="${s.through.y+dy/len*ext}" stroke="${color}" stroke-width="1.6"/>`;
+      const defaultColor = s.type==='perpendiculaire' ? '#2C5A2E' : '#1F3A5C';
+      html+=`<line x1="${s.through.x-dx/len*ext}" y1="${s.through.y-dy/len*ext}" x2="${s.through.x+dx/len*ext}" y2="${s.through.y+dy/len*ext}" ${shapeStrokeAttrs(s,defaultColor)}/>`;
     } else if(s.type==='mediatrice'){
       const mid={x:(s.p1.x+s.p2.x)/2, y:(s.p1.y+s.p2.y)/2};
       const dx=-(s.p2.y-s.p1.y), dy=(s.p2.x-s.p1.x);
       const len=Math.hypot(dx,dy)||1; const ext=400;
-      html+=`<line x1="${mid.x-dx/len*ext}" y1="${mid.y-dy/len*ext}" x2="${mid.x+dx/len*ext}" y2="${mid.y+dy/len*ext}" stroke="#2C5A2E" stroke-width="1.6" stroke-dasharray="6 4"/>`;
+      // Pointillé par convention TANT QU'aucun choix explicite n'a été fait via la modale de
+      // style -- un choix "Plein" est désormais bien respecté (signalé : "je n'ai pas réussi
+      // à changer malgré la fenêtre modale").
+      const attrs = s.strokePattern ? shapeStrokeAttrs(s,'#2C5A2E') : `${shapeStrokeAttrs(s,'#2C5A2E')} stroke-dasharray="6 4"`;
+      html+=`<line x1="${mid.x-dx/len*ext}" y1="${mid.y-dy/len*ext}" x2="${mid.x+dx/len*ext}" y2="${mid.y+dy/len*ext}" ${attrs}/>`;
     } else if(s.type==='mesure-distance'){
       const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y, len=Math.hypot(dx,dy)||1;
       const angleDeg = Math.atan2(dy,dx)*180/Math.PI;
@@ -4243,9 +4252,13 @@ function renderFigureSvg(){
       // Un point d'intersection n'a besoin d'aucun marqueur -- le croisement des deux objets
       // le repère déjà visuellement, un marqueur en plus ferait double emploi.
     } else if(p.def && p.def.type==='point-sur-droite'){
-      // Trait perpendiculaire à l'objet sur lequel le point est posé.
+      // Trait perpendiculaire à l'objet sur lequel le point est posé -- lineShapeEndpoints
+      // donne la VRAIE direction de l'objet (pour une médiatrice, shape.p1/p2 sont les points
+      // du segment ORIGINAL, pas de la médiatrice ; les utiliser directement donnait à tort
+      // un trait parallèle à la médiatrice au lieu de perpendiculaire).
       const {shape} = p.def;
-      const dx=shape.p2.x-shape.p1.x, dy=shape.p2.y-shape.p1.y, len=Math.hypot(dx,dy)||1;
+      const {p1:lp1,p2:lp2} = lineShapeEndpoints(shape);
+      const dx=lp2.x-lp1.x, dy=lp2.y-lp1.y, len=Math.hypot(dx,dy)||1;
       const nx=-dy/len, ny=dx/len;
       html+=`<line x1="${(p.x-nx*5).toFixed(1)}" y1="${(p.y-ny*5).toFixed(1)}" x2="${(p.x+nx*5).toFixed(1)}" y2="${(p.y+ny*5).toFixed(1)}" stroke="${c}" stroke-width="1.6"/>`;
     } else if(p.def && p.def.type==='point-sur-cercle'){
