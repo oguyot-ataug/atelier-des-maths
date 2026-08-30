@@ -2676,7 +2676,9 @@ function angleGroupFor(deg){
    plusieurs champs à la fois) : demande la valeur (longueur ou angle), éventuellement le
    sens (pour un angle), et si la valeur/le codage doivent être affichés sur la figure -- le
    tout en un seul écran plutôt que plusieurs fenêtres successives. Renvoie null si annulé. */
-function figMeasureModal({title, unit, defaultValue, withDirection}){
+function figMeasureModal({title, unit, defaultValue, withDirection, initialShowValue, initialShowCode}){
+  const showValueChecked = initialShowValue===undefined ? true : initialShowValue;
+  const showCodeChecked = !!initialShowCode;
   return new Promise(resolve=>{
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
@@ -2694,8 +2696,8 @@ function figMeasureModal({title, unit, defaultValue, withDirection}){
           <label class="hint" style="margin:0;"><input type="radio" name="figMeasureDir" value="trigo"> Trigonométrique ↺</label>
         </div>` : ''}
         <div class="tool-row" style="margin-bottom:16px;">
-          <label class="hint" style="margin:0;"><input type="checkbox" id="figMeasureShowValue" checked> Afficher la valeur</label>
-          <label class="hint" style="margin:0;"><input type="checkbox" id="figMeasureShowCode"> Afficher le codage</label>
+          <label class="hint" style="margin:0;"><input type="checkbox" id="figMeasureShowValue" ${showValueChecked?'checked':''}> Afficher la valeur</label>
+          <label class="hint" style="margin:0;"><input type="checkbox" id="figMeasureShowCode" ${showCodeChecked?'checked':''}> Afficher le codage</label>
         </div>
         <div class="figure-toolbar" style="margin:0;">
           <button type="button" class="btn secondary" id="figMeasureCancel">Annuler</button>
@@ -3090,19 +3092,48 @@ function figStyleModal(shape){
    n'est plus utilisé par rien, et toute forme qui référencerait un point ainsi supprimé. Les
    points "libres" posés intentionnellement par l'utilisateur ne sont eux jamais retirés
    automatiquement, même orphelins (pourraient être réutilisés ailleurs). */
-function deleteShapeWithDependents(shape){
-  const refPoints = [shape.p1, shape.p2, shape.vertex, shape.center].filter(Boolean);
-  figState.shapes = figState.shapes.filter(s=>{
-    if(s===shape) return false;
-    if(['angle-value','code-angle','code-droit'].includes(s.type)){
-      const sPoints = [s.p1, s.p2, s.vertex].filter(Boolean);
-      if(sPoints.length && sPoints.every(p=>refPoints.includes(p))) return false;
-    }
-    return true;
-  });
+/* Supprime un point OU une forme, ET toutes ses dépendances -- via un dictionnaire de
+   dépendances (dependsOn, posé sur chaque point construit : milieu, symétrie, translation),
+   plutôt qu'une détection au cas par cas. Un point qui dépend (directement ou indirectement)
+   de la cible, ou de tout objet déjà supprimé en cascade, est retiré à son tour -- que la
+   cible soit un point (ex. un point utilisé pour une translation) ou une forme (ex. le
+   vecteur lui-même, signalé : "j'édite et je supprime le vecteur mais D ne s'efface pas").
+   Les formes auxiliaires (codage/valeur) directement liées à une forme supprimée sont
+   retirées aussi, et tout point construit devenu inutile (plus référencé par rien) est
+   nettoyé, sans jamais toucher un point "libre" posé intentionnellement. */
+function deleteObjectWithDependents(target){
+  const isShape = figState.shapes.includes(target);
+  if(isShape){
+    const refPoints = [target.p1, target.p2, target.vertex, target.center].filter(Boolean);
+    figState.shapes = figState.shapes.filter(s=>{
+      if(s===target) return false;
+      if(['angle-value','code-angle','code-droit'].includes(s.type)){
+        const sPoints = [s.p1, s.p2, s.vertex].filter(Boolean);
+        if(sPoints.length && sPoints.every(p=>refPoints.includes(p))) return false;
+      }
+      return true;
+    });
+  } else {
+    figState.points = figState.points.filter(p=>p!==target);
+  }
+  const removed = new Set([target]);
   let changed = true;
   while(changed){
     changed = false;
+    figState.points = figState.points.filter(p=>{
+      if(p.dependsOn && p.dependsOn.some(dep=>removed.has(dep))){ removed.add(p); changed=true; return false; }
+      return true;
+    });
+  }
+  changed = true;
+  while(changed){
+    changed = false;
+    // Un milieu devenu inutile -- plus référencé par aucune forme restante -- est nettoyé
+    // aussi (spécifique au milieu : il a par nature des segments qui le référencent, donc
+    // "plus référencé" est un signal fiable qu'il ne sert plus à rien. Les transformations
+    // n'ont typiquement AUCUNE forme les référençant même quand tout va bien -- ce test ne
+    // leur est donc PAS appliqué, sous peine de les supprimer à chaque suppression, quel que
+    // soit l'objet visé).
     figState.points = figState.points.filter(p=>{
       const stillUsed = figState.shapes.some(s2=>s2.p1===p||s2.p2===p||s2.vertex===p||s2.center===p);
       const isMilieu = p.def && p.def.type==='milieu';
@@ -3125,7 +3156,8 @@ function deleteShapeWithDependents(shape){
    sens, juste la mesure qui change). */
 async function editShapeMeasure(shape, measure){
   if(measure.type==='length'){
-    const result = await figMeasureModal({title:'Longueur du segment', unit:'cm', defaultValue:measure.value});
+    const result = await figMeasureModal({title:'Longueur du segment', unit:'cm', defaultValue:measure.value,
+      initialShowValue:!!shape.lengthLabel, initialShowCode:!!shape.codeGroup});
     if(!result) return;
     const cm = result.value;
     if(!isFinite(cm) || cm<=0) return;
@@ -3134,26 +3166,29 @@ async function editShapeMeasure(shape, measure){
     shape.p2.x = shape.p1.x + dx/len*px;
     shape.p2.y = shape.p1.y + dy/len*px;
     shape.lengthCm = cm;
-    if(shape.lengthLabel) shape.lengthLabel = cm+' cm';
-    if(shape.codeGroup) shape.codeGroup = lengthGroupFor(cm);
+    if(result.showValue) shape.lengthLabel = cm+' cm'; else delete shape.lengthLabel;
+    if(result.showCode) shape.codeGroup = lengthGroupFor(cm); else delete shape.codeGroup;
     recomputeDependents();
   } else if(measure.type==='radius'){
-    const result = await figMeasureModal({title:'Rayon du cercle', unit:'cm', defaultValue:measure.value});
+    const result = await figMeasureModal({title:'Rayon du cercle', unit:'cm', defaultValue:measure.value,
+      initialShowValue:!!shape.radiusLabel, initialShowCode:!!shape.codeGroup});
     if(!result) return;
     const cm = result.value;
     if(!isFinite(cm) || cm<=0) return;
     shape.radius = cm*SCALE_PX_PER_CM;
     shape.radiusCm = cm;
-    if(shape.radiusLabel) shape.radiusLabel = cm+' cm';
-    if(shape.codeGroup) shape.codeGroup = lengthGroupFor(cm);
+    if(result.showValue) shape.radiusLabel = cm+' cm'; else delete shape.radiusLabel;
+    if(result.showCode) shape.codeGroup = lengthGroupFor(cm); else delete shape.codeGroup;
   } else if(measure.type==='angle'){
-    const result = await figMeasureModal({title:'Mesure de l\'angle', unit:'degrés', defaultValue:measure.value, withDirection:true});
+    const angleShapeBefore = figState.shapes.find(s=>(s.type==='angle-value'||s.type==='code-angle') && s.vertex===shape.p1 && s.p2===shape.p2);
+    const result = await figMeasureModal({title:'Mesure de l\'angle', unit:'degrés', defaultValue:measure.value, withDirection:true,
+      initialShowValue: figState.shapes.some(s=>s.type==='angle-value' && s.vertex===shape.p1 && s.p2===shape.p2),
+      initialShowCode: figState.shapes.some(s=>s.type==='code-angle' && s.vertex===shape.p1 && s.p2===shape.p2)});
     if(!result) return;
     const angleDeg = result.value;
     if(!isFinite(angleDeg) || angleDeg<=0 || angleDeg>=360) return;
     const vertex = shape.p1; // p1 est toujours le sommet pour un segment créé par angle-mesure
-    const angleShape = figState.shapes.find(s=>(s.type==='angle-value'||s.type==='code-angle') && s.vertex===vertex && s.p2===shape.p2);
-    const refPoint = angleShape ? angleShape.p1 : null;
+    const refPoint = angleShapeBefore ? angleShapeBefore.p1 : null;
     if(!refPoint) return; // pas assez d'info pour recalculer (aucune forme auxiliaire trouvée)
     const direction = result.direction || shape.angleDirection || 'horaire';
     const baseAngle = Math.atan2(refPoint.y-vertex.y, refPoint.x-vertex.x);
@@ -3164,7 +3199,12 @@ async function editShapeMeasure(shape, measure){
     shape.p2.y = vertex.y + dist*Math.sin(newAngle);
     shape.angleDeg = angleDeg;
     shape.angleDirection = direction;
-    if(angleShape) angleShape.deg = angleDeg;
+    // Retire puis recrée les formes auxiliaires (valeur/codage) selon les nouveaux choix,
+    // au lieu de simplement mettre à jour l'existante -- permet d'ajouter ou de retirer
+    // l'affichage, pas seulement de changer sa valeur.
+    figState.shapes = figState.shapes.filter(s=>!((s.type==='angle-value'||s.type==='code-angle') && s.vertex===vertex && s.p2===shape.p2));
+    if(result.showValue) figState.shapes.push({type:'angle-value', vertex, p1:refPoint, p2:shape.p2, deg:angleDeg});
+    if(result.showCode) figState.shapes.push({type:'code-angle', vertex, p1:refPoint, p2:shape.p2, group:angleGroupFor(angleDeg)});
     recomputeDependents();
   }
   renderFigureSvg();
@@ -3184,7 +3224,7 @@ function onFigureMouseDown(evt){
     evt.preventDefault();
     figStyleModal(shape).then(result=>{
       if(!result) return;
-      if(result.action==='delete') deleteShapeWithDependents(shape);
+      if(result.action==='delete') deleteObjectWithDependents(shape);
       else if(result.action==='edit-measure') editShapeMeasure(shape, result.measure);
       else if(result.action==='style'){
         shape.strokeWidth = result.strokeWidth; shape.strokePattern = result.strokePattern; shape.strokeColor = result.strokeColor;
@@ -3243,15 +3283,47 @@ function onFigureMouseUp(){ figDragPoint = null; figDragLabel = null; }
 /* Double-clic sur un point (ou directement son label) pour le renommer -- fonctionne quel
    que soit le mode d'outil actif (pas seulement "Déplacer"), puisque renommer un point ne
    modifie aucune construction, juste son étiquette. */
+function figPointActionsModal(point){
+  return new Promise(resolve=>{
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.style.zIndex = '400';
+    overlay.innerHTML = `
+      <div class="modal-card" style="max-width:300px;">
+        <p style="font-weight:700;margin:0 0 14px;">Point ${point.label}</p>
+        <div class="tool-row" style="margin-bottom:10px;">
+          <button type="button" class="btn secondary" id="figPointRename" style="width:100%;"><span class=gicon>edit</span> Renommer</button>
+        </div>
+        <div class="tool-row" style="margin-bottom:14px;">
+          <button type="button" class="btn secondary" id="figPointDelete" style="width:100%;color:#D93025;border-color:#D93025;"><span class=gicon>delete</span> Supprimer (et ses dépendances)</button>
+        </div>
+        <div class="figure-toolbar" style="margin:0;">
+          <button type="button" class="btn secondary" id="figPointCancel" style="width:100%;">Annuler</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    function close(result){ overlay.remove(); resolve(result); }
+    overlay.querySelector('#figPointCancel').onclick = ()=>close(null);
+    overlay.addEventListener('click', e=>{ if(e.target===overlay) close(null); });
+    overlay.querySelector('#figPointRename').onclick = ()=>close({action:'rename'});
+    overlay.querySelector('#figPointDelete').onclick = ()=>close({action:'delete'});
+  });
+}
 async function onFigureDblClick(evt){
   if(figState.mode!=='deplacer') return;
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
   const p = findNearbyLabel(x,y) || findNearbyPoint(x,y);
   if(!p) return;
-  const newLabel = await nicePrompt('Nouveau nom du point :', p.label);
-  if(newLabel && newLabel.trim()) p.label = newLabel.trim();
-  renderFigureSvg();
+  const result = await figPointActionsModal(p);
+  if(!result) return;
+  if(result.action==='delete'){
+    deleteObjectWithDependents(p);
+  } else if(result.action==='rename'){
+    const newLabel = await nicePrompt('Nouveau nom du point :', p.label);
+    if(newLabel && newLabel.trim()) p.label = newLabel.trim();
+    renderFigureSvg();
+  }
 }
 /* Crée le milieu de [a,b] : le point lui-même, ET les deux moitiés comme de VRAIS segments
    (a-milieu, milieu-b) -- sans ça, le codage (qui détecte un clic via findNearbyShape) ne
@@ -3260,7 +3332,7 @@ async function onFigureDblClick(evt){
    segments se superposent exactement au segment d'origine (même droite), donc leur ajout ne
    change rien visuellement -- seule la possibilité de les coder individuellement change. */
 function createMidpoint(a, b){
-  const mid = {label:nextPointLabel(), x:(a.x+b.x)/2, y:(a.y+b.y)/2, def:{type:'milieu', a, b}};
+  const mid = {label:nextPointLabel(), x:(a.x+b.x)/2, y:(a.y+b.y)/2, def:{type:'milieu', a, b}, dependsOn:[a, b]};
   figState.points.push(mid);
   // Retire un éventuel segment/droite/demi-droite existant EXACTEMENT entre a et b (dans un
   // sens ou l'autre) : remplacé par ses deux moitiés, pas ajouté en plus.
@@ -3394,9 +3466,10 @@ function onFigureClick(evt){
   if(figState.mode==='translation' && !figState.selected.length){
     // Un clic direct sur un vecteur déjà tracé sélectionne ses deux points (origine +
     // extrémité) d'un coup -- plus simple que de cliquer 2 points séparés (signalé : "cliquer
-    // uniquement sur le vecteur serait plus simple").
+    // uniquement sur le vecteur serait plus simple"). Le vecteur lui-même est mémorisé (pas
+    // seulement ses 2 points) pour que le supprimer entraîne bien ses translatés en cascade.
     const shape = findNearbyShape(x,y);
-    if(shape && shape.type==='vecteur'){ figState.selected.push(shape.p1, shape.p2); renderFigureSvg(); return; }
+    if(shape && shape.type==='vecteur'){ figState.selectedVectorShape = shape; figState.selected.push(shape.p1, shape.p2); renderFigureSvg(); return; }
   }
 
   const canCreatePoint = ['segment','droite','demi-droite'].includes(figState.mode);
@@ -3423,13 +3496,20 @@ function onFigureClick(evt){
       const dx=axisP2.x-axisP1.x, dy=axisP2.y-axisP1.y, len2=dx*dx+dy*dy||1;
       const t = ((m.x-axisP1.x)*dx+(m.y-axisP1.y)*dy)/len2;
       const projX = axisP1.x+t*dx, projY = axisP1.y+t*dy;
-      figState.points.push({label:nextPointLabel(), x:2*projX-m.x, y:2*projY-m.y, def:{type:'symetrie-axiale', axisP1, axisP2, m}});
+      figState.points.push({label:nextPointLabel(), x:2*projX-m.x, y:2*projY-m.y, def:{type:'symetrie-axiale', axisP1, axisP2, m}, dependsOn:[axisP1, axisP2, m]});
     } else if(figState.mode==='symetrie-centrale'){
       const [center, m] = figState.selected;
-      figState.points.push({label:nextPointLabel(), x:2*center.x-m.x, y:2*center.y-m.y, def:{type:'symetrie-centrale', center, m}});
+      figState.points.push({label:nextPointLabel(), x:2*center.x-m.x, y:2*center.y-m.y, def:{type:'symetrie-centrale', center, m}, dependsOn:[center, m]});
     } else if(figState.mode==='translation'){
       const [vecP1, vecP2, m] = figState.selected;
-      figState.points.push({label:nextPointLabel(), x:m.x+(vecP2.x-vecP1.x), y:m.y+(vecP2.y-vecP1.y), def:{type:'translation', vecP1, vecP2, m}});
+      // Si un vecteur EXISTANT a servi (via le raccourci de clic direct), il est lui-même
+      // inclus dans les dépendances -- le supprimer fait donc disparaître son translaté en
+      // cascade, même si les points vecP1/vecP2 restent (signalé : "j'édite et je supprime le
+      // vecteur mais D ne s'efface pas").
+      const dependsOn = [vecP1, vecP2, m];
+      if(figState.selectedVectorShape) dependsOn.push(figState.selectedVectorShape);
+      figState.selectedVectorShape = null;
+      figState.points.push({label:nextPointLabel(), x:m.x+(vecP2.x-vecP1.x), y:m.y+(vecP2.y-vecP1.y), def:{type:'translation', vecP1, vecP2, m}, dependsOn});
     } else if(figState.mode==='angle' || figState.mode==='bissectrice'){
       const [p1,vertex,p2] = figState.selected; // le sommet est le 2e point cliqué
       figState.shapes.push({type:figState.mode, vertex, p1, p2});
