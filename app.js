@@ -1644,6 +1644,38 @@ function toggleDyslexicFont(){
   }
 })();
 
+let changePasswordMandatory = false;
+/* Ouvre la modale de changement de mot de passe -- soit librement (accessible à tout moment
+   depuis le menu du compte), soit de façon OBLIGATOIRE (première connexion, ou après une
+   réinitialisation par un administrateur), auquel cas elle ne peut pas être fermée sans
+   changer effectivement le mot de passe. */
+function openChangePasswordModal(mandatory){
+  changePasswordMandatory = !!mandatory;
+  document.getElementById('changePasswordModalOverlay').style.display = 'flex';
+  document.getElementById('changePasswordMandatoryHint').style.display = mandatory ? 'block' : 'none';
+  document.getElementById('changePasswordCloseBtn').style.display = mandatory ? 'none' : 'inline-flex';
+  document.getElementById('changePasswordNew').value = '';
+  document.getElementById('changePasswordConfirm').value = '';
+  document.getElementById('changePasswordStatus').textContent = '';
+}
+function closeChangePasswordModal(){
+  if(changePasswordMandatory) return; // pas de fermeture possible tant qu'obligatoire
+  document.getElementById('changePasswordModalOverlay').style.display = 'none';
+}
+async function submitChangePassword(){
+  const status = document.getElementById('changePasswordStatus');
+  const pass1 = document.getElementById('changePasswordNew').value;
+  const pass2 = document.getElementById('changePasswordConfirm').value;
+  if(!pass1 || pass1.length<6){ status.textContent = 'Le mot de passe doit contenir au moins 6 caractères.'; return; }
+  if(pass1 !== pass2){ status.textContent = 'Les deux mots de passe ne correspondent pas.'; return; }
+  status.textContent = 'Enregistrement…';
+  const { error } = await sb.auth.updateUser({ password: pass1 });
+  if(error){ status.textContent = 'Erreur : '+error.message; return; }
+  if(currentUser) await sb.from('profiles').update({ must_change_password: false }).eq('id', currentUser.id);
+  status.textContent = 'Mot de passe changé avec succès.';
+  changePasswordMandatory = false;
+  setTimeout(()=>{ document.getElementById('changePasswordModalOverlay').style.display = 'none'; }, 900);
+}
 function toggleAccountMenu(){
   const d = document.getElementById('accountDropdown');
   d.style.display = (d.style.display==='none'||!d.style.display) ? 'block' : 'none';
@@ -1788,7 +1820,7 @@ async function refreshAuthUI(){
 
   if(session){
     currentUser = session.user;
-    const { data: profile } = await sb.from('profiles').select('role,nom,prenom,signup_status,subscription_status,subscription_expires_at').eq('id', currentUser.id).single();
+    const { data: profile } = await sb.from('profiles').select('role,nom,prenom,signup_status,subscription_status,subscription_expires_at,must_change_password').eq('id', currentUser.id).single();
     currentUserRole = profile ? profile.role : null;
 
     loggedOutEl.style.display='none'; loggedInEl.style.display='block';
@@ -1847,6 +1879,11 @@ async function refreshAuthUI(){
     if(currentUserRole==='admin') await adminRefreshDropdowns();
     if(isStaff) await loadMyClasses();
     if(currentUserRole==='eleve') await loadMyStudentClasses();
+
+    // Première connexion (ou tout compte créé/réinitialisé par un administrateur) : la
+    // modale de changement de mot de passe s'ouvre automatiquement, sans possibilité de
+    // l'ignorer, tant que le mot de passe n'a pas été changé.
+    if(profile && profile.must_change_password) openChangePasswordModal(true);
 
     // Restriction d'accès aux chapitres non gratuits : levée pour tout compte élève, et
     // pour un compte prof/admin approuvé et à jour (essai ou abonnement actif).

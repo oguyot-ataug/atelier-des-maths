@@ -178,6 +178,25 @@ document.body.insertAdjacentHTML('beforeend', `
     <button class="btn" style="width:100%;" onclick="adminConfirmChangeIdentifiant()">Modifier</button>
     <span class="hint" id="changeIdentifiantModalStatus" style="display:block;margin-top:8px;"></span>
   </div>
+</div>
+
+<div id="changeCategoryModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeChangeCategoryModal();">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Modifier la catégorie</strong>
+      <button class="modal-close" onclick="closeChangeCategoryModal()"><span class=gicon>close</span></button>
+    </div>
+    <p class="hint" id="changeCategoryModalName" style="margin:0 0 10px;"></p>
+    <select id="changeCategoryModalSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);margin-bottom:10px;">
+      <option value="trial">Essai (15 jours)</option>
+      <option value="active">Actif -- inscrit sur l'année (sans frais)</option>
+      <option value="expired">Expiré</option>
+    </select>
+    <p class="hint" style="margin:0 0 4px;">Date d'échéance (facultative -- 1 an à partir d'aujourd'hui si laissée vide pour "Actif") :</p>
+    <input type="date" id="changeCategoryModalDate" style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);margin-bottom:10px;box-sizing:border-box;">
+    <button class="btn" style="width:100%;" onclick="adminConfirmChangeCategory()">Enregistrer</button>
+    <span class="hint" id="changeCategoryModalMsg" style="display:block;margin-top:8px;"></span>
+  </div>
 </div>`);
 
 /* ================= PANNEAU ADMINISTRATEUR ================= */
@@ -315,6 +334,40 @@ function adminChangeIdentifiantPrompt(userId, name){
 function closeChangeIdentifiantModal(){
   document.getElementById('changeIdentifiantModalOverlay').style.display='none';
 }
+let changeCategoryTargetUserId = null;
+/* Permet à l'administrateur de changer la catégorie d'abonnement d'un prof (essai / actif /
+   expiré) directement, sans passer par Stripe -- donc sans frais (signalé : "permettre à
+   l'administrateur de le changer de catégorie sans frais"). */
+async function adminChangeCategoryPrompt(userId, name){
+  changeCategoryTargetUserId = userId;
+  document.getElementById('changeCategoryModalName').textContent = 'Compte : '+name;
+  document.getElementById('changeCategoryModalMsg').textContent = '';
+  const { data: prof } = await sb.from('profiles').select('subscription_status,subscription_expires_at').eq('id', userId).single();
+  document.getElementById('changeCategoryModalSelect').value = (prof && prof.subscription_status) || 'trial';
+  document.getElementById('changeCategoryModalDate').value = (prof && prof.subscription_expires_at) ? prof.subscription_expires_at.slice(0,10) : '';
+  document.getElementById('changeCategoryModalOverlay').style.display='flex';
+}
+function closeChangeCategoryModal(){
+  document.getElementById('changeCategoryModalOverlay').style.display='none';
+}
+async function adminConfirmChangeCategory(){
+  const status = document.getElementById('changeCategoryModalMsg');
+  const newStatus = document.getElementById('changeCategoryModalSelect').value;
+  let dateStr = document.getElementById('changeCategoryModalDate').value;
+  if(!dateStr && newStatus==='active'){
+    const oneYear = new Date(); oneYear.setFullYear(oneYear.getFullYear()+1);
+    dateStr = oneYear.toISOString().slice(0,10);
+  }
+  status.textContent = 'Enregistrement…';
+  const { error } = await sb.from('profiles').update({
+    subscription_status: newStatus,
+    subscription_expires_at: dateStr ? new Date(dateStr).toISOString() : null,
+  }).eq('id', changeCategoryTargetUserId);
+  if(error){ status.textContent = 'Erreur : '+error.message; return; }
+  status.textContent = '✓ Catégorie mise à jour.';
+  await adminRefreshListings();
+  setTimeout(closeChangeCategoryModal, 900);
+}
 async function adminConfirmChangeIdentifiant(){
   const raw = document.getElementById('changeIdentifiantModalInput').value.trim();
   const status = document.getElementById('changeIdentifiantModalStatus');
@@ -399,19 +452,33 @@ async function adminRefreshDropdowns(){
 async function adminRefreshListings(){
   await adminRefreshBugReports();
   await adminRefreshSignupRequests();
-  const { data: profs } = await sb.from('profiles').select('id,nom,email,role').in('role',['prof','admin']).order('nom');
+  const { data: profs } = await sb.from('profiles').select('id,nom,email,role,subscription_status,subscription_expires_at').in('role',['prof','admin']).order('nom');
   const { data: eleves } = await sb.from('profiles').select('id,nom,email,role').eq('role','eleve').order('nom');
   const accEl = document.getElementById('adminAccountsListing');
   if(accEl){
     const loginIdentifiant = email => email ? (email.endsWith('@mathcollege.local') ? email.slice(0, -('@mathcollege.local'.length)) : email) : '(inconnu)';
+    // Badge de catégorie d'abonnement (essai / actif / expiré), avec la date d'échéance --
+    // "Comment je vois en tant qu'administrateur si un enseignant est en période d'essai ou
+    // s'il est inscrit sur l'année ?"
+    const subscriptionBadge = p => {
+      if(p.role==='admin' || !p.subscription_status) return '';
+      const dateStr = p.subscription_expires_at ? new Date(p.subscription_expires_at).toLocaleDateString('fr-FR') : '';
+      const labels = {trial:'Essai', active:'Actif (année)', expired:'Expiré'};
+      const colors = {trial:'#B8860B', active:'#1F7A4D', expired:'#a83c1f'};
+      const label = labels[p.subscription_status] || p.subscription_status;
+      const color = colors[p.subscription_status] || 'var(--ink-soft)';
+      return ` <span style="color:${color};font-weight:700;">[${label}${dateStr?' jusqu\'au '+dateStr:''}]</span>`;
+    };
     const rowHTML = p => {
-      const label = escapeHtml(p.nom||'(sans nom)') + ' · <b>identifiant :</b> ' + escapeHtml(loginIdentifiant(p.email)) + (p.role==='admin'?' [admin]':'');
+      const label = escapeHtml(p.nom||'(sans nom)') + ' · <b>identifiant :</b> ' + escapeHtml(loginIdentifiant(p.email)) + (p.role==='admin'?' [admin]':'') + subscriptionBadge(p);
       const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
       const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span> Modifier</button>` : '';
+      const categoryBtn = p.role==='prof' ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeCategoryPrompt('${p.id}','${safeName}')"><span class=gicon>workspace_premium</span> Catégorie</button>` : '';
       return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(28,43,57,.06);">
         <span>${label}</span>
         <span style="display:flex;gap:6px;flex:none;">
           ${editBtn}
+          ${categoryBtn}
           <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeIdentifiantPrompt('${p.id}','${safeName}')"><span class=gicon>edit</span> Identifiant</button>
           <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminResetPasswordPrompt('${p.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser</button>
           <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="adminDeleteUser('${p.id}', this)"><span class=gicon>delete</span> Supprimer</button>
