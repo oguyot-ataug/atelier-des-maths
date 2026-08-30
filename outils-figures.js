@@ -402,17 +402,28 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="fig-icon-btn fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')" title="Déplacer un point">✥</button>
         <button type="button" class="fig-icon-btn fig-mode" data-mode="point" onclick="setFigureMode('point')" title="Point">●</button>
 
-        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('lignes')" title="Segment / Droite / Demi-droite">⟋</button>
+        <div class="fig-group-wrap">
+        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('lignes')" title="Segment / Droite / Demi-droite">
+          <svg viewBox="0 0 24 24" width="20" height="20"><line x1="4" y1="16" x2="20" y2="8" stroke="currentColor" stroke-width="1.6"/><circle cx="4" cy="16" r="2" fill="currentColor"/><circle cx="20" cy="8" r="2" fill="currentColor"/></svg>
+        </button>
         <div id="figGroupLignes" class="fig-group-sub">
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="segment" onclick="setFigureMode('segment')" title="Segment"><span class=gicon>horizontal_rule</span></button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="segment" onclick="setFigureMode('segment')" title="Segment (2 extrémités marquées)">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="4" y1="16" x2="20" y2="8" stroke="currentColor" stroke-width="1.6"/><circle cx="4" cy="16" r="2" fill="currentColor"/><circle cx="20" cy="8" r="2" fill="currentColor"/></svg>
+          </button>
           <span style="display:flex;align-items:center;gap:2px;">
             <button type="button" class="fig-icon-btn fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')" title="Segment de longueur donnée (cm)" style="font-size:.62rem;"><span class=gicon style="font-size:.9rem;">horizontal_rule</span>cm</button>
             <input type="number" id="segLengthInput" value="5" min="0.5" step="0.5" title="Longueur en cm" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
           </span>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="droite" onclick="setFigureMode('droite')" title="Droite">⟷</button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="demi-droite" onclick="setFigureMode('demi-droite')" title="Demi-droite">⟶</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="droite" onclick="setFigureMode('droite')" title="Droite (2 points de référence, se prolonge des deux côtés)">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="1" y1="19" x2="23" y2="5" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="15" r="1.8" fill="currentColor"/><circle cx="17" cy="9" r="1.8" fill="currentColor"/></svg>
+          </button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="demi-droite" onclick="setFigureMode('demi-droite')" title="Demi-droite (origine + 1 point, se prolonge d'un seul côté)">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="5" y1="19" x2="23" y2="5" stroke="currentColor" stroke-width="1.6"/><circle cx="5" cy="19" r="2" fill="currentColor"/><circle cx="14" cy="12" r="1.8" fill="currentColor"/></svg>
+          </button>
+        </div>
         </div>
 
+        <div class="fig-group-wrap">
         <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('cercles')" title="Cercle">○</button>
         <div id="figGroupCercles" class="fig-group-sub">
           <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle" onclick="setFigureMode('cercle')" title="Cercle (centre + point)">○</button>
@@ -421,12 +432,14 @@ document.body.insertAdjacentHTML('beforeend', `
             <input type="number" id="circleRadiusInput" value="3" min="0.5" step="0.5" title="Rayon en cm" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
           </span>
         </div>
+        </div>
 
         <button type="button" class="fig-icon-btn fig-mode" data-mode="arc" onclick="setFigureMode('arc')" title="Arc de cercle">◡</button>
         <button type="button" class="fig-icon-btn fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')" title="Milieu (cliquez le segment, ou ses 2 extrémités)">
           <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.8"/><circle cx="3" cy="12" r="1.8" fill="currentColor"/><circle cx="21" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
         </button>
 
+        <div class="fig-group-wrap">
         <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('remarquables')" title="Droites remarquables &amp; angles">⊥</button>
         <div id="figGroupRemarquables" class="fig-group-sub">
           <button type="button" class="fig-icon-btn fig-mode" data-mode="angle" onclick="setFigureMode('angle')" title="Angle">∠</button>
@@ -435,7 +448,9 @@ document.body.insertAdjacentHTML('beforeend', `
           <button type="button" class="fig-icon-btn fig-mode" data-mode="mediatrice" onclick="setFigureMode('mediatrice')" title="Médiatrice">⟂</button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="bissectrice" onclick="setFigureMode('bissectrice')" title="Bissectrice">⟨</button>
         </div>
+        </div>
 
+        <div class="fig-group-wrap">
         <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('polygones')" title="Triangle / Polygone / Polygone régulier">
           <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 21,20 3,20" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
         </button>
@@ -453,11 +468,13 @@ document.body.insertAdjacentHTML('beforeend', `
             <input type="number" id="polygonSidesInput" value="5" min="3" step="1" title="Nombre de côtés" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
           </span>
         </div>
+        </div>
 
         <div style="width:1px;align-self:stretch;background:rgba(28,43,57,.15);margin:0 2px;"></div>
         <button type="button" class="fig-icon-btn fig-mode" data-mode="code" onclick="setFigureMode('code')" title="Coder (longueurs/angles égaux, angle droit)" style="border-color:var(--accent-orange);color:var(--accent-orange);">✓</button>
         <div style="width:1px;align-self:stretch;background:rgba(28,43,57,.15);margin:0 2px;"></div>
         <button type="button" class="fig-icon-btn" onclick="undoFigure()" title="Annuler le dernier">↩︎</button>
+        <button type="button" class="fig-icon-btn" onclick="redoFigure()" title="Rétablir">↪︎</button>
         <button type="button" class="fig-icon-btn" onclick="clearFigure()" title="Effacer tout"><span class=gicon>cleaning_services</span></button>
       </div>
       <div style="display:flex;gap:12px;align-items:stretch;">
@@ -2593,6 +2610,7 @@ function reopenTree(data){
 
 function resetFigureState(){
   figState = {points:[], shapes:[], mode:(figState&&figState.mode)||'point', selected:[], refShape:null, nextLabel:0, lengthGroups:{}};
+  figRedoStack = [];
   renderFigureSvg();
 }
 function clearFigure(){ resetFigureState(); }
@@ -2608,9 +2626,17 @@ function lengthGroupFor(cm){
   if(!figState.lengthGroups[key]) figState.lengthGroups[key] = Object.keys(figState.lengthGroups).length+1;
   return figState.lengthGroups[key];
 }
+let figRedoStack = [];
 function undoFigure(){
-  if(figState.shapes.length) figState.shapes.pop();
-  else if(figState.points.length) figState.points.pop();
+  if(figState.shapes.length){ figRedoStack.push({kind:'shape', item:figState.shapes.pop()}); }
+  else if(figState.points.length){ figRedoStack.push({kind:'point', item:figState.points.pop()}); }
+  renderFigureSvg();
+}
+function redoFigure(){
+  if(!figRedoStack.length) return;
+  const {kind, item} = figRedoStack.pop();
+  if(kind==='shape') figState.shapes.push(item);
+  else figState.points.push(item);
   renderFigureSvg();
 }
 /* Ouvre/ferme un sous-menu de la barre latérale (segment/droite/demi-droite ; cercle libre/cm ;
@@ -3007,6 +3033,7 @@ function handlePolygoneRegulierClick(x,y){
 }
 function onFigureClick(evt){
   if(figState.mode==='deplacer') return; // géré par mousedown/mousemove
+  figRedoStack = [];
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
   if(figState.mode==='point'){
@@ -3030,7 +3057,12 @@ function onFigureClick(evt){
     }
   }
 
-  const near = findNearbyPoint(x,y);
+  const canCreatePoint = ['segment','droite','demi-droite'].includes(figState.mode);
+  let near = findNearbyPoint(x,y);
+  if(!near && canCreatePoint){
+    near = {label:nextPointLabel(), x, y};
+    figState.points.push(near);
+  }
   if(!near || figState.selected.includes(near)) return;
   figState.selected.push(near);
   const neededMap = {angle:3, bissectrice:3, arc:3, triangle:3};
