@@ -3149,13 +3149,15 @@ function findCollinearGroup(x,y){
     if(s.type==='droite') return distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     return distToRay(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
   });
-  if(!nearby.length) return [];
-  // Une fois UN candidat trouvé près du clic, cherche TOUS les autres segments colinéaires
-  // avec lui dans toute la figure -- pas seulement ceux physiquement proches du point cliqué
-  // -- car l'ambiguïté ([AI] vs [IB] vs [AB] reconstitué) existe sur TOUTE la longueur de la
-  // droite reconstituée, pas seulement près du point de jonction I.
-  const ref = nearby[0];
-  return figState.shapes.filter(s=>['segment','droite','demi-droite'].includes(s.type) && areCollinear(ref, s));
+  if(!nearby.length) return null;
+  // Le segment réellement cliqué, PLUS toute sa famille colinéaire dans la figure (pour
+  // proposer l'étendue complète reconstituée) -- mais SANS lister chaque morceau
+  // intermédiaire comme choix séparé : cliquer dans [AC] ne doit proposer que [AC] et [AB],
+  // jamais [CB] (qu'on ne vise pas du tout).
+  const clicked = nearby[0];
+  const family = figState.shapes.filter(s=>['segment','droite','demi-droite'].includes(s.type) && areCollinear(clicked, s));
+  if(family.length<2) return null; // pas d'ambiguïté : un seul segment sur cette droite
+  return {clicked, family};
 }
 /* Reconstruit l'étendue COMPLÈTE d'origine à partir de plusieurs segments colinéaires
    chevauchants (ex. [AI] et [IB] -> [AB]) : les 2 points les plus éloignés parmi tous ceux
@@ -3173,19 +3175,17 @@ function reconstructFullExtent(segs){
 /* Modale de choix quand plusieurs segments colinéaires se chevauchent au clic -- propose
    chacun individuellement, plus une reconstruction de l'étendue complète si tous sont des
    segments (bornés, donc reconstructibles). */
-function figShapeChoiceModal(candidates){
+function figShapeChoiceModal(clicked, family){
   return new Promise(resolve=>{
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.style.zIndex = '400';
-    const allSegments = candidates.every(s=>s.type==='segment');
-    let optionsHtml = candidates.map((s,i)=>{
-      const label = s.type==='segment' ? `[${s.p1.label}${s.p2.label}]` : `${s.type} (${s.p1.label}${s.p2.label})`;
-      return `<button type="button" class="btn secondary" data-idx="${i}" style="width:100%;margin-bottom:6px;">${label}</button>`;
-    }).join('');
-    if(allSegments && candidates.length>1){
-      const full = reconstructFullExtent(candidates);
-      optionsHtml += `<button type="button" class="btn" data-idx="full" style="width:100%;margin-bottom:6px;">[${full.p1.label}${full.p2.label}] (étendue complète)</button>`;
+    const clickedLabel = clicked.type==='segment' ? `[${clicked.p1.label}${clicked.p2.label}]` : `${clicked.type} (${clicked.p1.label}${clicked.p2.label})`;
+    let optionsHtml = `<button type="button" class="btn secondary" data-choice="clicked" style="width:100%;margin-bottom:6px;">${clickedLabel}</button>`;
+    const allSegments = family.every(s=>s.type==='segment');
+    if(allSegments){
+      const full = reconstructFullExtent(family);
+      optionsHtml += `<button type="button" class="btn" data-choice="full" style="width:100%;margin-bottom:6px;">[${full.p1.label}${full.p2.label}] (étendue complète)</button>`;
     }
     overlay.innerHTML = `
       <div class="modal-card" style="max-width:320px;">
@@ -3198,10 +3198,10 @@ function figShapeChoiceModal(candidates){
     function close(result){ overlay.remove(); resolve(result); }
     overlay.querySelector('#figChoiceCancel').onclick = ()=>close(null);
     overlay.addEventListener('click', e=>{ if(e.target===overlay) close(null); });
-    overlay.querySelectorAll('button[data-idx]').forEach(btn=>{
+    overlay.querySelectorAll('button[data-choice]').forEach(btn=>{
       btn.onclick = ()=>{
-        if(btn.dataset.idx==='full'){ close(reconstructFullExtent(candidates)); }
-        else close({p1:candidates[+btn.dataset.idx].p1, p2:candidates[+btn.dataset.idx].p2});
+        if(btn.dataset.choice==='full'){ close(reconstructFullExtent(family)); }
+        else close({p1:clicked.p1, p2:clicked.p2});
       };
     });
   });
@@ -3209,8 +3209,8 @@ function figShapeChoiceModal(candidates){
 async function handleLineToolClick(x,y){
   if(!figState.refShape){
     const group = findCollinearGroup(x,y);
-    if(group.length>1){
-      const choice = await figShapeChoiceModal(group);
+    if(group){
+      const choice = await figShapeChoiceModal(group.clicked, group.family);
       if(!choice) return;
       if(figState.mode==='mediatrice'){ figState.shapes.push({type:'mediatrice', p1:choice.p1, p2:choice.p2}); renderFigureSvg(); return; }
       figState.refShape = choice; renderFigureSvg(); return;
@@ -4172,11 +4172,7 @@ function renderFigureSvg(){
       const mid={x:(s.p1.x+s.p2.x)/2, y:(s.p1.y+s.p2.y)/2};
       const dx=-(s.p2.y-s.p1.y), dy=(s.p2.x-s.p1.x);
       const len=Math.hypot(dx,dy)||1; const ext=400;
-      // Pointillé par convention TANT QU'aucun choix explicite n'a été fait via la modale de
-      // style -- un choix "Plein" est désormais bien respecté (signalé : "je n'ai pas réussi
-      // à changer malgré la fenêtre modale").
-      const attrs = s.strokePattern ? shapeStrokeAttrs(s,'#2C5A2E') : `${shapeStrokeAttrs(s,'#2C5A2E')} stroke-dasharray="6 4"`;
-      html+=`<line x1="${mid.x-dx/len*ext}" y1="${mid.y-dy/len*ext}" x2="${mid.x+dx/len*ext}" y2="${mid.y+dy/len*ext}" ${attrs}/>`;
+      html+=`<line x1="${mid.x-dx/len*ext}" y1="${mid.y-dy/len*ext}" x2="${mid.x+dx/len*ext}" y2="${mid.y+dy/len*ext}" ${shapeStrokeAttrs(s,'#2C5A2E')}/>`;
     } else if(s.type==='mesure-distance'){
       const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y, len=Math.hypot(dx,dy)||1;
       const angleDeg = Math.atan2(dy,dx)*180/Math.PI;
