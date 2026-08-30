@@ -2839,7 +2839,7 @@ function setFigureMode(mode){
     'polygone-regulier':'Cliquez le centre, puis un premier sommet (fixe le rayon et l\'orientation) -- le nombre de côtés se règle dans le champ à côté.',
     'angle-mesure':'Cliquez un point sur le premier côté, puis le sommet -- une fenêtre demande ensuite la mesure (en degrés) et le sens (horaire ou trigonométrique).',
     vecteur:'Cliquez deux points existants : l\'origine, puis l\'extrémité (avec la flèche).',
-    'symetrie-axiale':'Cliquez deux points de l\'axe de symétrie, puis le point à transformer.',
+    'symetrie-axiale':'Cliquez directement sur l\'axe de symétrie (droite, demi-droite, segment ou côté de polygone), puis le point à transformer.',
     'symetrie-centrale':'Cliquez le centre de symétrie, puis le point à transformer.',
     translation:'Cliquez les deux points qui définissent le vecteur de translation, puis le point à déplacer.',
   };
@@ -3643,6 +3643,13 @@ function onFigureClick(evt){
     const shape = findNearbyShape(x,y);
     if(shape && shape.type==='vecteur'){ figState.selectedVectorShape = shape; figState.selected.push(shape.p1, shape.p2); renderFigureSvg(); return; }
   }
+  if(figState.mode==='symetrie-axiale' && !figState.selected.length){
+    // Un clic direct sur un axe déjà tracé (droite, demi-droite, ou segment -- un côté de
+    // polygone est déjà un simple segment, donc couvert ici aussi) sélectionne ses deux
+    // points d'un coup, plutôt que de cliquer 2 points séparés pour définir l'axe.
+    const shape = findNearbyShape(x,y);
+    if(shape && ['droite','demi-droite','segment'].includes(shape.type)){ figState.selectedAxisShape = shape; figState.selected.push(shape.p1, shape.p2); renderFigureSvg(); return; }
+  }
 
   const canCreatePoint = ['segment','droite','demi-droite'].includes(figState.mode);
   let near = findNearbyPoint(x,y);
@@ -3668,7 +3675,10 @@ function onFigureClick(evt){
       const dx=axisP2.x-axisP1.x, dy=axisP2.y-axisP1.y, len2=dx*dx+dy*dy||1;
       const t = ((m.x-axisP1.x)*dx+(m.y-axisP1.y)*dy)/len2;
       const projX = axisP1.x+t*dx, projY = axisP1.y+t*dy;
-      figState.points.push({label:nextPointLabel(), x:2*projX-m.x, y:2*projY-m.y, def:{type:'symetrie-axiale', axisP1, axisP2, m}, dependsOn:[axisP1, axisP2, m]});
+      const dependsOn = [axisP1, axisP2, m];
+      if(figState.selectedAxisShape) dependsOn.push(figState.selectedAxisShape);
+      figState.selectedAxisShape = null;
+      figState.points.push({label:nextPointLabel(), x:2*projX-m.x, y:2*projY-m.y, def:{type:'symetrie-axiale', axisP1, axisP2, m}, dependsOn});
     } else if(figState.mode==='symetrie-centrale'){
       const [center, m] = figState.selected;
       figState.points.push({label:nextPointLabel(), x:2*center.x-m.x, y:2*center.y-m.y, def:{type:'symetrie-centrale', center, m}, dependsOn:[center, m]});
