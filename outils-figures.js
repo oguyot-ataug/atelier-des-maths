@@ -3298,7 +3298,8 @@ function onFigureMouseDown(evt){
   const lbl = findNearbyLabel(x,y);
   if(lbl){ figDragLabel = lbl; evt.preventDefault(); return; }
   const p = findNearbyPoint(x,y);
-  if(p && !p.def){ figDragPoint = p; evt.preventDefault(); return; }
+  const isMovableDependent = p && p.def && (p.def.type==='point-sur-droite' || p.def.type==='point-sur-cercle');
+  if(p && (!p.def || isMovableDependent)){ figDragPoint = p; evt.preventDefault(); return; }
   // Ni un point, ni un label : un clic sur une forme (segment/droite/demi-droite/cercle/arc)
   // ouvre l'éditeur de style, plutôt que de ne rien faire.
   const shape = findNearbyShape(x,y);
@@ -3328,6 +3329,30 @@ function onFigureMouseMove(evt){
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
   let nx = Math.max(10,Math.min(490,x)), ny = Math.max(10,Math.min(310,y));
+  // Un point posé SUR un objet (segment/droite/demi-droite/cercle) reste contraint à cet
+  // objet en le déplaçant : on recalcule son paramètre (t le long de la droite, ou l'angle
+  // sur le cercle) d'après la projection de la souris, plutôt qu'un déplacement libre.
+  if(figDragPoint.def && figDragPoint.def.type==='point-sur-droite'){
+    const {shape} = figDragPoint.def;
+    const dx=shape.p2.x-shape.p1.x, dy=shape.p2.y-shape.p1.y, len2=dx*dx+dy*dy||1;
+    const t = ((nx-shape.p1.x)*dx+(ny-shape.p1.y)*dy)/len2;
+    figDragPoint.def.t = t;
+    figDragPoint.x = shape.p1.x+t*dx; figDragPoint.y = shape.p1.y+t*dy;
+    recomputeDependents();
+    renderFigureSvg();
+    return;
+  }
+  if(figDragPoint.def && figDragPoint.def.type==='point-sur-cercle'){
+    const {shape} = figDragPoint.def;
+    const r = circleRadius(shape);
+    const refAngle = shape.radius!=null ? (shape.angle||0) : Math.atan2(shape.p2.y-shape.p1.y, shape.p2.x-shape.p1.x);
+    const clickAngle = Math.atan2(ny-shape.p1.y, nx-shape.p1.x);
+    figDragPoint.def.offset = clickAngle - refAngle;
+    figDragPoint.x = shape.p1.x+r*Math.cos(clickAngle); figDragPoint.y = shape.p1.y+r*Math.sin(clickAngle);
+    recomputeDependents();
+    renderFigureSvg();
+    return;
+  }
   // Un point créé comme extrémité d'un "Segment cm" (p2) est TOUJOURS le point DÉPENDANT :
   // le déplacer ne doit jamais changer la longueur déclarée, il tourne donc autour de son
   // ancre (p1) au rayon fixe.
@@ -3877,8 +3902,30 @@ function renderFigureSvg(){
     // style), son marqueur ET son label reprennent cette couleur -- changer la couleur d'un
     // segment doit aussi changer la couleur de ses extrémités, pas seulement le trait.
     const styledShape = linked.find(s=>s.strokeColor);
-    const baseColor = styledShape ? styledShape.strokeColor : (p.def?'#7A8A98':'#1C1B2E');
+    // Gris = point dépendant qu'on NE PEUT PAS déplacer directement (milieu, transformations,
+    // intersection) ; vert = point dépendant mais AMOVIBLE le long de son objet (point sur
+    // segment/droite/demi-droite/cercle).
+    const isMovableDependent = p.def && (p.def.type==='point-sur-droite' || p.def.type==='point-sur-cercle');
+    const defaultColor = isMovableDependent ? '#1F7A4D' : (p.def ? '#7A8A98' : '#1C1B2E');
+    const baseColor = styledShape ? styledShape.strokeColor : defaultColor;
     const c = sel?'#E35D3A':baseColor;
+    if(p.def && p.def.type==='intersection'){
+      // Un point d'intersection n'a besoin d'aucun marqueur -- le croisement des deux objets
+      // le repère déjà visuellement, un marqueur en plus ferait double emploi.
+    } else if(p.def && p.def.type==='point-sur-droite'){
+      // Trait perpendiculaire à l'objet sur lequel le point est posé.
+      const {shape} = p.def;
+      const dx=shape.p2.x-shape.p1.x, dy=shape.p2.y-shape.p1.y, len=Math.hypot(dx,dy)||1;
+      const nx=-dy/len, ny=dx/len;
+      html+=`<line x1="${(p.x-nx*5).toFixed(1)}" y1="${(p.y-ny*5).toFixed(1)}" x2="${(p.x+nx*5).toFixed(1)}" y2="${(p.y+ny*5).toFixed(1)}" stroke="${c}" stroke-width="1.6"/>`;
+    } else if(p.def && p.def.type==='point-sur-cercle'){
+      // Trait perpendiculaire à la TANGENTE du cercle en ce point -- donc le long du rayon
+      // (direction centre -> point).
+      const {shape} = p.def;
+      const dx=p.x-shape.p1.x, dy=p.y-shape.p1.y, len=Math.hypot(dx,dy)||1;
+      const nx=dx/len, ny=dy/len;
+      html+=`<line x1="${(p.x-nx*5).toFixed(1)}" y1="${(p.y-ny*5).toFixed(1)}" x2="${(p.x+nx*5).toFixed(1)}" y2="${(p.y+ny*5).toFixed(1)}" stroke="${c}" stroke-width="1.6"/>`;
+    } else {
     let allAligned = linked.length>=1;
     if(linked.length>=2){
       const dir0 = shapeDirAt(linked[0], p);
@@ -3898,6 +3945,7 @@ function renderFigureSvg(){
       const dir = shapeDirAt(linked[0], p);
       const nx=-dir.y, ny=dir.x;
       html+=`<line x1="${(p.x-nx*5).toFixed(1)}" y1="${(p.y-ny*5).toFixed(1)}" x2="${(p.x+nx*5).toFixed(1)}" y2="${(p.y+ny*5).toFixed(1)}" stroke="${c}" stroke-width="1.6"/>`;
+    }
     }
     html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="14" font-weight="700" fill="${sel?'#E35D3A':baseColor}">${p.label}</text>`;
   });
