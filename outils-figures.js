@@ -429,7 +429,7 @@ document.body.insertAdjacentHTML('beforeend', `
             <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.3"/><line x1="12" y1="12" x2="12" y2="3" stroke="currentColor" stroke-width="1.1"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="3" r="1.6" fill="currentColor"/></svg>
           </button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle-rayon" onclick="setFigureMode('cercle-rayon')" title="Cercle de rayon donné (une fenêtre demande le rayon)">
-            <svg viewBox="0 0 24 24" width="20" height="20"><text x="14" y="8" font-size="7" font-family="JetBrains Mono" fill="currentColor" text-anchor="middle">cm</text><line x1="4" y1="18" x2="20" y2="18" stroke="currentColor" stroke-width="1.3"/><circle cx="4" cy="18" r="1.8" fill="currentColor"/></svg>
+            <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="18" r="8" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="16" y="8" font-size="7" font-family="JetBrains Mono" fill="currentColor" text-anchor="middle">cm</text><line x1="12" y1="18" x2="20" y2="18" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="18" r="1.6" fill="currentColor"/></svg>
           </button>
         </div>
         </div>
@@ -3396,7 +3396,13 @@ function renderFigureSvg(){
       html+=`<circle cx="${s.p1.x}" cy="${s.p1.y}" r="${r}" fill="none" ${shapeStrokeAttrs(s,'#1F3A5C',1.6)}/>`;
       if(s.compass) html += compassGraphic(s.p1, refPoint);
       if(s.radiusLabel) html+=`<text x="${s.p1.x+(refPoint.x-s.p1.x)/2}" y="${s.p1.y+(refPoint.y-s.p1.y)/2-8}" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">${s.radiusLabel}</text>`;
-      if(s.codeGroup) html += renderLengthCode(s.p1, refPoint, s.codeGroup);
+      if(s.codeGroup){
+        // Le codage (traits perpendiculaires) se rapporte au rayon -- sans tracer ce rayon
+        // lui-même, les traits apparaîtraient flottants, sans aucune ligne visible reliant le
+        // centre au bord du cercle.
+        html += `<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${refPoint.x}" y2="${refPoint.y}" stroke="#5C5A78" stroke-width="1"/>`;
+        html += renderLengthCode(s.p1, refPoint, s.codeGroup);
+      }
     } else if(s.type==='arc'){
       const r=Math.hypot(s.p1.x-s.center.x, s.p1.y-s.center.y);
       const {points} = angleArcPoints(s.center, s.p1, s.p2, r);
