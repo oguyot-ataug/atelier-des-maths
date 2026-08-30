@@ -506,7 +506,7 @@ document.body.insertAdjacentHTML('beforeend', `
         </div>
 
         <div style="width:1px;align-self:stretch;background:rgba(28,43,57,.15);margin:0 2px;"></div>
-        <button type="button" class="fig-icon-btn fig-mode" data-mode="code" onclick="setFigureMode('code')" title="Coder (longueurs/angles égaux, angle droit)" style="border-color:var(--accent-orange);color:var(--accent-orange);">✓</button>
+        <button type="button" class="fig-icon-btn" onclick="openCodageManager()" title="Coder (longueurs/angles égaux, angle droit) -- ouvre la liste des objets" style="border-color:var(--accent-orange);color:var(--accent-orange);">✓</button>
         <div style="width:1px;align-self:stretch;background:rgba(28,43,57,.15);margin:0 2px;"></div>
         <button type="button" class="fig-icon-btn" onclick="undoFigure()" title="Annuler le dernier">↩︎</button>
         <button type="button" class="fig-icon-btn" onclick="redoFigure()" title="Rétablir">↪︎</button>
@@ -525,21 +525,6 @@ document.body.insertAdjacentHTML('beforeend', `
             </button>
             <input type="checkbox" id="compassToggle" style="display:none;">
             <span class="hint" style="margin:0;">Compas (Cercle/Arc)</span>
-          </div>
-          <div id="codageControlsRow" class="tool-row" style="display:none;margin:0 0 8px;background:rgba(227,93,58,.06);border-radius:8px;padding:8px 10px;">
-            <span style="font-size:.72rem;font-weight:700;color:var(--accent-orange);width:100%;margin:0 0 2px;">CODAGE</span>
-            <select id="codeType">
-              <option value="longueur">Longueurs égales</option>
-              <option value="angle-egal">Angles égaux</option>
-              <option value="angle-droit">Angle droit</option>
-            </select>
-            <select id="codeGroup" title="Le nombre de traits (ou d'arcs) marqués : deux segments avec le même nombre sont annoncés comme égaux entre eux, un troisième segment avec un nombre différent formera un 2e groupe d'égalité.">
-              <option value="1">1 trait / 1 arc</option>
-              <option value="2">2 traits / 2 arcs</option>
-              <option value="3">3 traits / 3 arcs</option>
-            </select>
-            <button type="button" class="btn secondary" onclick="clearAllCodes()"><span class=gicon>cleaning_services</span> Retirer tous les codages</button>
-            <span class="hint" style="margin:0;">Deux segments (ou angles) codés avec le même nombre de traits/arcs sont annoncés comme égaux entre eux. Les segments/cercles de longueur donnée sont codés automatiquement (même longueur = même nombre de traits). Ce menu sert au codage manuel (ex. pour un côté commun, ou une figure fournie sans passer par « longueur donnée »).</span>
           </div>
           <svg id="figureSvg" viewBox="0 0 500 320" onclick="onFigureClick(event)"
                style="width:100%;flex:1;min-height:400px;display:block;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
@@ -2650,10 +2635,79 @@ function resetFigureState(){
 }
 function clearFigure(){ resetFigureState(); }
 function clearAllCodes(){
+  pushFigHistory();
   figState.shapes = figState.shapes.filter(s=>!['code-longueur','code-angle','code-droit'].includes(s.type));
   figState.shapes.forEach(s=>{ if(s.codeGroup) delete s.codeGroup; });
   figState.lengthGroups = {};
   renderFigureSvg();
+}
+/* Fenêtre unique listant TOUS les segments et angles présents dans la figure, avec un choix
+   de codage pour chacun (au lieu de l'ancien système : choisir un type+groupe puis cliquer
+   sur le canevas, jugé peu pratique). */
+function openCodageManager(){
+  const segments = figState.shapes.filter(s=>s.type==='segment');
+  const angles = figState.shapes.filter(s=>s.type==='angle');
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.style.zIndex = '400';
+  const groupOptions = (current, kind)=>{
+    const labels = kind==='segment' ? ['1 trait','2 traits','3 traits','4 traits'] : ['1 arc','2 arcs','3 arcs','4 arcs'];
+    let html = `<option value="">Aucun codage</option>`;
+    if(kind==='angle') html += `<option value="droit" ${current==='droit'?'selected':''}>Angle droit</option>`;
+    labels.forEach((l,i)=>{ const v=i+1; html += `<option value="${v}" ${current===v?'selected':''}>${l}</option>`; });
+    return html;
+  };
+  const segRows = segments.map((s,i)=>`
+    <div class="tool-row" style="margin:0 0 6px;align-items:center;">
+      <span style="width:70px;font-family:'JetBrains Mono',monospace;">[${s.p1.label}${s.p2.label}]</span>
+      <select data-kind="segment" data-idx="${i}">${groupOptions(s.codeGroup||'','segment')}</select>
+    </div>`).join('');
+  const angleRows = angles.map((s,i)=>{
+    const existingDroit = figState.shapes.find(x=>x.type==='code-droit' && x.vertex===s.vertex && ((x.p1===s.p1&&x.p2===s.p2)||(x.p1===s.p2&&x.p2===s.p1)));
+    const existingEgal = figState.shapes.find(x=>x.type==='code-angle' && x.vertex===s.vertex && ((x.p1===s.p1&&x.p2===s.p2)||(x.p1===s.p2&&x.p2===s.p1)));
+    const current = existingDroit ? 'droit' : (existingEgal ? existingEgal.group : '');
+    return `
+    <div class="tool-row" style="margin:0 0 6px;align-items:center;">
+      <span style="width:70px;font-family:'JetBrains Mono',monospace;">∠${s.p1.label}${s.vertex.label}${s.p2.label}</span>
+      <select data-kind="angle" data-idx="${i}">${groupOptions(current,'angle')}</select>
+    </div>`;
+  }).join('');
+  overlay.innerHTML = `
+    <div class="modal-card" style="max-width:420px;max-height:80vh;overflow-y:auto;">
+      <p style="font-weight:700;margin:0 0 12px;">Coder la figure</p>
+      ${segments.length ? `<p class="hint" style="margin:0 0 6px;font-weight:700;">Segments</p>${segRows}` : ''}
+      ${angles.length ? `<p class="hint" style="margin:14px 0 6px;font-weight:700;">Angles</p>${angleRows}` : ''}
+      ${(!segments.length && !angles.length) ? `<p class="hint">Aucun segment ni angle dans la figure pour l'instant.</p>` : ''}
+      <p class="hint" style="margin:14px 0 0;">Deux objets codés avec le même nombre de traits/arcs sont annoncés comme égaux entre eux.</p>
+      <div class="figure-toolbar" style="margin-top:14px;">
+        <button type="button" class="btn secondary" id="codageMgrClearAll"><span class=gicon>cleaning_services</span> Tout retirer</button>
+        <button type="button" class="btn secondary" id="codageMgrCancel">Annuler</button>
+        <button type="button" class="btn" id="codageMgrOk">Appliquer</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  function close(){ overlay.remove(); }
+  overlay.querySelector('#codageMgrCancel').onclick = close;
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) close(); });
+  overlay.querySelector('#codageMgrClearAll').onclick = ()=>{ clearAllCodes(); close(); };
+  overlay.querySelector('#codageMgrOk').onclick = ()=>{
+    pushFigHistory();
+    overlay.querySelectorAll('select[data-kind="segment"]').forEach(sel=>{
+      const s = segments[+sel.dataset.idx];
+      const v = sel.value;
+      if(v) s.codeGroup = +v; else delete s.codeGroup;
+    });
+    overlay.querySelectorAll('select[data-kind="angle"]').forEach(sel=>{
+      const s = angles[+sel.dataset.idx];
+      // Retire l'éventuel codage existant pour cet angle avant d'appliquer le nouveau choix.
+      figState.shapes = figState.shapes.filter(x=>!(['code-droit','code-angle'].includes(x.type) && x.vertex===s.vertex && ((x.p1===s.p1&&x.p2===s.p2)||(x.p1===s.p2&&x.p2===s.p1))));
+      const v = sel.value;
+      if(v==='droit') figState.shapes.push({type:'code-droit', vertex:s.vertex, p1:s.p1, p2:s.p2});
+      else if(v) figState.shapes.push({type:'code-angle', vertex:s.vertex, p1:s.p1, p2:s.p2, group:+v});
+    });
+    renderFigureSvg();
+    close();
+  };
 }
 function lengthGroupFor(cm){
   if(!figState.lengthGroups) figState.lengthGroups = {};
@@ -2816,7 +2870,6 @@ function setFigureMode(mode){
   if(mode!=='polygone') figPolygonPts = [];
   document.querySelectorAll('.fig-mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
   document.querySelectorAll('.fig-group-sub.open').forEach(g=>g.classList.remove('open'));
-  document.getElementById('codageControlsRow').style.display = (mode==='code') ? 'flex' : 'none';
   const hints = {
     point:'Cliquez pour placer un point.',
     deplacer:'Faites glisser un point existant pour le déplacer (les points construits, comme un milieu, suivent automatiquement).',
@@ -2991,38 +3044,6 @@ function handleLineToolClick(x,y){
   if(!through) return;
   figState.shapes.push({type:figState.mode, refA:figState.refShape.p1, refB:figState.refShape.p2, through});
   figState.refShape = null;
-  renderFigureSvg();
-}
-function currentCodeType(){ const el=document.getElementById('codeType'); return el?el.value:'longueur'; }
-function currentCodeGroup(){ const el=document.getElementById('codeGroup'); return el?+el.value:1; }
-function handleCodeClick(x,y){
-  const type = currentCodeType();
-  if(type==='longueur'){
-    if(!figState.selected.length){
-      const shape = findNearbyShape(x,y);
-      if(shape){ figState.shapes.push({type:'code-longueur', p1:shape.p1, p2:shape.p2, group:currentCodeGroup()}); renderFigureSvg(); return; }
-      const pt = findNearbyPoint(x,y);
-      if(pt){ figState.selected.push(pt); renderFigureSvg(); }
-      return;
-    }
-    const pt = findNearbyPoint(x,y);
-    if(pt && pt!==figState.selected[0]){
-      figState.shapes.push({type:'code-longueur', p1:figState.selected[0], p2:pt, group:currentCodeGroup()});
-      figState.selected=[];
-      renderFigureSvg();
-    }
-    return;
-  }
-  // angle-egal / angle-droit : 3 clics, sommet = 2e clic
-  const pt = findPointOrNearestOnShape(x,y);
-  if(!pt || figState.selected.includes(pt)) return;
-  figState.selected.push(pt);
-  if(figState.selected.length===3){
-    const [p1,vertex,p2] = figState.selected;
-    if(type==='angle-egal') figState.shapes.push({type:'code-angle', vertex, p1, p2, group:currentCodeGroup()});
-    else figState.shapes.push({type:'code-droit', vertex, p1, p2});
-    figState.selected=[];
-  }
   renderFigureSvg();
 }
 async function handleLengthSegmentClick(x,y){
@@ -3623,7 +3644,6 @@ function onFigureClick(evt){
   if(figState.mode==='segment-longueur'){ handleLengthSegmentClick(x,y); return; }
   if(figState.mode==='cercle-rayon'){ handleRadiusCircleClick(x,y); return; }
   if(figState.mode==='perpendiculaire' || figState.mode==='parallele' || figState.mode==='mediatrice'){ handleLineToolClick(x,y); return; }
-  if(figState.mode==='code'){ handleCodeClick(x,y); return; }
   if(figState.mode==='polygone'){ handlePolygoneClick(x,y); return; }
   if(figState.mode==='polygone-regulier'){ handlePolygoneRegulierClick(x,y); return; }
   if(figState.mode==='angle-mesure'){ handleAngleMesureClick(x,y); return; }
