@@ -2987,12 +2987,26 @@ async function handleRadiusCircleClick(x,y){
   renderFigureSvg();
 }
 function recomputeDependents(){
-  // les points construits (ex. un milieu) se recalculent à partir des points dont ils dépendent,
-  // donc si on déplace un point d'origine, tout ce qui en découle suit automatiquement.
+  // les points construits (ex. un milieu, ou l'image d'une transformation) se recalculent à
+  // partir des points dont ils dépendent, donc si on déplace un point d'origine, tout ce qui
+  // en découle suit automatiquement.
   figState.points.forEach(p=>{
-    if(p.def && p.def.type==='milieu'){
+    if(!p.def) return;
+    if(p.def.type==='milieu'){
       p.x = (p.def.a.x + p.def.b.x)/2;
       p.y = (p.def.a.y + p.def.b.y)/2;
+    } else if(p.def.type==='symetrie-axiale'){
+      const {axisP1, axisP2, m} = p.def;
+      const dx=axisP2.x-axisP1.x, dy=axisP2.y-axisP1.y, len2=dx*dx+dy*dy||1;
+      const t = ((m.x-axisP1.x)*dx+(m.y-axisP1.y)*dy)/len2;
+      const projX = axisP1.x+t*dx, projY = axisP1.y+t*dy;
+      p.x = 2*projX-m.x; p.y = 2*projY-m.y;
+    } else if(p.def.type==='symetrie-centrale'){
+      const {center, m} = p.def;
+      p.x = 2*center.x-m.x; p.y = 2*center.y-m.y;
+    } else if(p.def.type==='translation'){
+      const {vecP1, vecP2, m} = p.def;
+      p.x = m.x+(vecP2.x-vecP1.x); p.y = m.y+(vecP2.y-vecP1.y);
     }
   });
 }
@@ -3377,6 +3391,13 @@ function onFigureClick(evt){
       if(shape && (shape.type==='segment' || shape.type==='droite' || shape.type==='demi-droite')){ createMidpoint(shape.p1, shape.p2); return; }
     }
   }
+  if(figState.mode==='translation' && !figState.selected.length){
+    // Un clic direct sur un vecteur déjà tracé sélectionne ses deux points (origine +
+    // extrémité) d'un coup -- plus simple que de cliquer 2 points séparés (signalé : "cliquer
+    // uniquement sur le vecteur serait plus simple").
+    const shape = findNearbyShape(x,y);
+    if(shape && shape.type==='vecteur'){ figState.selected.push(shape.p1, shape.p2); renderFigureSvg(); return; }
+  }
 
   const canCreatePoint = ['segment','droite','demi-droite'].includes(figState.mode);
   let near = findNearbyPoint(x,y);
@@ -3402,13 +3423,13 @@ function onFigureClick(evt){
       const dx=axisP2.x-axisP1.x, dy=axisP2.y-axisP1.y, len2=dx*dx+dy*dy||1;
       const t = ((m.x-axisP1.x)*dx+(m.y-axisP1.y)*dy)/len2;
       const projX = axisP1.x+t*dx, projY = axisP1.y+t*dy;
-      figState.points.push({label:nextPointLabel(), x:2*projX-m.x, y:2*projY-m.y});
+      figState.points.push({label:nextPointLabel(), x:2*projX-m.x, y:2*projY-m.y, def:{type:'symetrie-axiale', axisP1, axisP2, m}});
     } else if(figState.mode==='symetrie-centrale'){
       const [center, m] = figState.selected;
-      figState.points.push({label:nextPointLabel(), x:2*center.x-m.x, y:2*center.y-m.y});
+      figState.points.push({label:nextPointLabel(), x:2*center.x-m.x, y:2*center.y-m.y, def:{type:'symetrie-centrale', center, m}});
     } else if(figState.mode==='translation'){
       const [vecP1, vecP2, m] = figState.selected;
-      figState.points.push({label:nextPointLabel(), x:m.x+(vecP2.x-vecP1.x), y:m.y+(vecP2.y-vecP1.y)});
+      figState.points.push({label:nextPointLabel(), x:m.x+(vecP2.x-vecP1.x), y:m.y+(vecP2.y-vecP1.y), def:{type:'translation', vecP1, vecP2, m}});
     } else if(figState.mode==='angle' || figState.mode==='bissectrice'){
       const [p1,vertex,p2] = figState.selected; // le sommet est le 2e point cliqué
       figState.shapes.push({type:figState.mode, vertex, p1, p2});
@@ -3679,6 +3700,9 @@ function renderFigureSvg(){
     if(linked.length===0){
       html+=`<line x1="${p.x-4}" y1="${p.y-4}" x2="${p.x+4}" y2="${p.y+4}" stroke="${c}" stroke-width="1.6"/>`;
       html+=`<line x1="${p.x-4}" y1="${p.y+4}" x2="${p.x+4}" y2="${p.y-4}" stroke="${c}" stroke-width="1.6"/>`;
+    } else if(linked.length===1 && linked[0].type==='vecteur' && linked[0].p2===p){
+      // Pointe d'un vecteur : la flèche montre déjà où est ce point, un trait en plus ferait
+      // double emploi (signalé : "la flèche remplace le point, ne pas faire les deux").
     } else if(allAligned){
       const dir = shapeDirAt(linked[0], p);
       const nx=-dir.y, ny=dir.x;
