@@ -386,13 +386,13 @@ document.body.insertAdjacentHTML('beforeend', `
     </div>
     </div>
     <div id="figurePanel" class="figure-wrap" style="display:none;">
-      <div class="tool-row" style="margin-bottom:8px;">
+      <div class="tool-row" style="margin-bottom:8px;" id="figEnonceIaRow">
         <textarea id="enonceInput" rows="2" style="flex:1;min-width:260px;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);"
           placeholder="Ex. : ABC triangle&#10;I milieu de [BC]&#10;cercle de centre A passant par B"></textarea>
         <button type="button" class="btn secondary" onclick="buildFromEnonce()" style="align-self:flex-start;"><span class=gicon>straighten</span> Construire à partir de l'énoncé</button>
         <button type="button" class="btn orange" onclick="interpretEnonceWithAI()" style="align-self:flex-start;"><span class=gicon>smart_toy</span> Interpréter avec l'IA</button>
       </div>
-      <p class="hint" style="margin:-4px 0 10px;">Phrases reconnues directement : <span class="hint-mono">ABC triangle</span> (rectangle/isocèle/équilatéral, ex. <span class="hint-mono">ABC triangle rectangle en A</span>) · <span class="hint-mono">ABCD carré/rectangle/losange/parallélogramme</span> · <span class="hint-mono">I milieu de [BC]</span> · <span class="hint-mono">cercle de centre A passant par B</span>. Pour tout le reste (ou un énoncé complet en français libre), utilisez « Interpréter avec l'IA » (nécessite une clé API, à renseigner dans l'onglet Quiz IA).</p>
+      <p class="hint" style="margin:-4px 0 10px;" id="figEnonceIaHint">Phrases reconnues directement : <span class="hint-mono">ABC triangle</span> (rectangle/isocèle/équilatéral, ex. <span class="hint-mono">ABC triangle rectangle en A</span>) · <span class="hint-mono">ABCD carré/rectangle/losange/parallélogramme</span> · <span class="hint-mono">I milieu de [BC]</span> · <span class="hint-mono">cercle de centre A passant par B</span>. Pour tout le reste (ou un énoncé complet en français libre), utilisez « Interpréter avec l'IA » (nécessite une clé API, à renseigner dans l'onglet Quiz IA).</p>
       <!-- Barre d'outils HORIZONTALE au-dessus du canevas (pas latérale) : la figure et les
            outils restent visibles en même temps, sans faire défiler. Déplacer en premier. Les
            outils proches (segment/droite/demi-droite ; cercle libre/cm ; droites remarquables
@@ -874,6 +874,13 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
   if(validateBtn) validateBtn.style.display = 'inline-flex';
   if(submitBtn) submitBtn.style.display = 'none';
   if(loadBtn) loadBtn.style.display = 'none';
+  // Construction automatique/IA : visible par défaut (usage prof -- correction, évaluation),
+  // masquée explicitement pour les contextes élève (bac à sable, devoir), qui doivent
+  // construire la figure eux-mêmes plutôt que de la faire générer.
+  const enonceRow = document.getElementById('figEnonceIaRow');
+  const enonceHint = document.getElementById('figEnonceIaHint');
+  if(enonceRow) enonceRow.style.display = 'flex';
+  if(enonceHint) enonceHint.style.display = 'block';
   document.getElementById('figurePanel').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 function closeFigureTool(){

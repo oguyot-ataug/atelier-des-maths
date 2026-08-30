@@ -100,6 +100,11 @@ async function openDevoirSubmissions(devoirId){
   const { data: eleves } = await sb.from('class_students').select('profiles(id,nom)').eq('class_id', devoir.class_id);
   const { data: rendus } = await sb.from('devoirs_rendus').select('*').eq('devoir_id', devoirId);
   const rendusByStudent = new Map((rendus||[]).map(r=>[r.student_id, r]));
+  // Cache en mémoire (par id élève) : embarquer le JSON directement dans l'attribut HTML
+  // onclick cassait l'attribut (les guillemets du JSON entraient en conflit avec ceux de
+  // l'attribut, signalé : "je n'arrive pas à ouvrir la figure de l'élève").
+  window._devoirFiguresCache = window._devoirFiguresCache || {};
+  (rendus||[]).forEach(r=>{ if(r.type==='figure') window._devoirFiguresCache[r.student_id] = r.figure_data; });
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.style.zIndex = '300';
@@ -108,7 +113,7 @@ async function openDevoirSubmissions(devoirId){
     const rendu = rendusByStudent.get(eleve.id);
     let content;
     if(!rendu) content = '<span class="hint">Pas encore rendu.</span>';
-    else if(rendu.type==='figure') content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="previewDevoirFigure(${JSON.stringify(JSON.stringify(rendu.figure_data))})"><span class=gicon>visibility</span> Voir la figure</button>`;
+    else if(rendu.type==='figure') content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="previewDevoirFigure('${eleve.id}')"><span class=gicon>visibility</span> Voir la figure</button>`;
     else content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="downloadDevoirFile('${rendu.fichier_path}')"><span class=gicon>download</span> Télécharger le fichier</button>`;
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
@@ -145,8 +150,9 @@ async function downloadDevoirFile(path){
   window.open(data.signedUrl, '_blank');
 }
 /* Affiche la figure rendue par l'élève en lecture seule, dans l'outil figure lui-même. */
-function previewDevoirFigure(figureJsonStr){
-  const data = JSON.parse(JSON.parse(figureJsonStr));
+function previewDevoirFigure(studentId){
+  const data = (window._devoirFiguresCache||{})[studentId];
+  if(!data) return;
   openFigureTool();
   figState.points = JSON.parse(JSON.stringify(data.points||[]));
   figState.shapes = JSON.parse(JSON.stringify(data.shapes||[]));
@@ -219,6 +225,11 @@ function startDevoirFigure(devoirId){
   if(validateBtn) validateBtn.style.display = 'none';
   if(submitBtn) submitBtn.style.display = 'inline-flex';
   if(loadBtn) loadBtn.style.display = 'inline-flex';
+  // Construction automatique/IA masquée : l'élève doit construire la figure lui-même.
+  const enonceRow = document.getElementById('figEnonceIaRow');
+  const enonceHint = document.getElementById('figEnonceIaHint');
+  if(enonceRow) enonceRow.style.display = 'none';
+  if(enonceHint) enonceHint.style.display = 'none';
 }
 /* Recharge le dernier rendu (figure) de l'élève pour CE devoir, pour reprendre un travail
    déjà commencé plutôt que de repartir de zéro. */

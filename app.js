@@ -108,7 +108,15 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     if(nav==='figure-sandbox'){
       // Bac à sable géométrie : accessible à tous (élèves compris), sans lien avec un
       // exercice précis -- ouvre directement l'outil figure, déjà chargé globalement.
-      if(typeof openFigureTool==='function') openFigureTool();
+      if(typeof openFigureTool==='function'){
+        openFigureTool();
+        // Construction automatique/IA masquée : c'est un espace d'entraînement, l'élève doit
+        // construire la figure lui-même.
+        const enonceRow = document.getElementById('figEnonceIaRow');
+        const enonceHint = document.getElementById('figEnonceIaHint');
+        if(enonceRow) enonceRow.style.display = 'none';
+        if(enonceHint) enonceHint.style.display = 'none';
+      }
     }
     if(nav==='correction'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
