@@ -2970,7 +2970,7 @@ function setFigureMode(mode){
     'polygone-regulier':'Cliquez le centre, puis un premier sommet (fixe le rayon et l\'orientation) -- le nombre de côtés se règle dans le champ à côté.',
     'angle-mesure':'Cliquez un point sur le premier côté, puis le sommet -- une fenêtre demande ensuite la mesure (en degrés) et le sens (horaire ou trigonométrique).',
     vecteur:'Cliquez deux points existants : l\'origine, puis l\'extrémité (avec la flèche).',
-    'mesure-distance':'Cliquez directement un segment existant, ou deux points -- la distance affichée peut ensuite être déplacée (mode Déplacer), en restant toujours parallèle au segment.',
+    'mesure-distance':'Cliquez directement un segment existant, ou deux points (un point puis une droite/segment/demi-droite donne la distance perpendiculaire) -- la distance affichée peut ensuite être déplacée (mode Déplacer), en restant toujours parallèle.',
     'symetrie-axiale':'Cliquez directement sur l\'axe de symétrie (droite, demi-droite, segment ou côté de polygone), puis le point à transformer.',
     'symetrie-centrale':'Cliquez le centre de symétrie, puis le point à transformer.',
     translation:'Cliquez les deux points qui définissent le vecteur de translation, puis le point à déplacer.',
@@ -3340,19 +3340,27 @@ function findNearbyLabel(x,y){
    composante PERPENDICULAIRE (s'éloigne du trait) -- l'orientation du texte, elle, reste
    TOUJOURS parallèle au segment quel que soit ce décalage (signalé : "son écriture est
    parallèle au segment"). */
-function measureLabelPos(s){
-  const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y, len=Math.hypot(dx,dy)||1;
+function measureLabelPos(s, p1, p2){
+  p1 = p1 || s.p1; p2 = p2 || s.p2;
+  const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.hypot(dx,dy)||1;
   const ux=dx/len, uy=dy/len, nx=-uy, ny=ux;
-  const midX=(s.p1.x+s.p2.x)/2, midY=(s.p1.y+s.p2.y)/2;
+  const midX=(p1.x+p2.x)/2, midY=(p1.y+p2.y)/2;
   const along = s.labelAlong ?? 0, perp = s.labelOffset ?? 18;
   return {x:midX+ux*along+nx*perp, y:midY+uy*along+ny*perp};
 }
 function findNearbyMeasureLabel(x,y){
   const thresh = 16;
   return figState.shapes.find(s=>{
-    if(s.type!=='mesure-distance') return false;
-    const {x:lx,y:ly} = measureLabelPos(s);
-    return Math.hypot(lx-x, ly-y) < thresh;
+    if(s.type==='mesure-distance'){
+      const {x:lx,y:ly} = measureLabelPos(s);
+      return Math.hypot(lx-x, ly-y) < thresh;
+    }
+    if(s.type==='mesure-distance-ligne'){
+      const foot = closestPointOnLine(s.point, s.refP1, s.refP2, s.refType);
+      const {x:lx,y:ly} = measureLabelPos(s, s.point, foot);
+      return Math.hypot(lx-x, ly-y) < thresh;
+    }
+    return false;
   });
 }
 /* Modale d'édition du style d'une forme (mode Déplacer, clic sur un segment/droite/demi-
@@ -3474,7 +3482,7 @@ function deleteObjectWithDependents(target){
     });
     const before = figState.shapes.length;
     figState.shapes = figState.shapes.filter(s=>{
-      const pts = [s.p1,s.p2,s.vertex,s.center].filter(Boolean);
+      const pts = [s.p1,s.p2,s.vertex,s.center,s.point,s.refP1,s.refP2].filter(Boolean);
       return pts.every(pt=>figState.points.includes(pt));
     });
     if(figState.shapes.length !== before) changed = true;
@@ -3587,9 +3595,11 @@ function onFigureMouseMove(evt){
     const svg=document.getElementById('figureSvg');
     const {x,y} = svgCoordsFromEvent(svg,evt);
     const s = figDragMeasure;
-    const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y, len=Math.hypot(dx,dy)||1;
+    const p1 = s.type==='mesure-distance-ligne' ? s.point : s.p1;
+    const p2 = s.type==='mesure-distance-ligne' ? closestPointOnLine(s.point, s.refP1, s.refP2, s.refType) : s.p2;
+    const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.hypot(dx,dy)||1;
     const ux=dx/len, uy=dy/len, nx=-uy, ny=ux;
-    const midX=(s.p1.x+s.p2.x)/2, midY=(s.p1.y+s.p2.y)/2;
+    const midX=(p1.x+p2.x)/2, midY=(p1.y+p2.y)/2;
     const relX=x-midX, relY=y-midY;
     s.labelAlong = Math.max(-len/2-20, Math.min(len/2+20, relX*ux+relY*uy));
     s.labelOffset = Math.max(-80, Math.min(80, relX*nx+relY*ny));
@@ -3740,6 +3750,23 @@ function createDistanceMeasure(a, b){
   figState.shapes.push({type:'mesure-distance', p1:a, p2:b, labelOffset:18});
   renderFigureSvg();
 }
+/* Point le plus proche de "point" sur la droite/segment/demi-droite portée par refP1/refP2 --
+   pour un segment ou une demi-droite (bornés), le point le plus proche peut être une
+   extrémité si la projection tombe en dehors ; pour une droite (non bornée), c'est toujours
+   la projection perpendiculaire. Réutilise clampTForShapeType (même convention que pour un
+   point posé sur l'objet). */
+function closestPointOnLine(point, refP1, refP2, refType){
+  const dx=refP2.x-refP1.x, dy=refP2.y-refP1.y, len2=dx*dx+dy*dy||1;
+  const t = clampTForShapeType(((point.x-refP1.x)*dx+(point.y-refP1.y)*dy)/len2, refType);
+  return {x:refP1.x+t*dx, y:refP1.y+t*dy};
+}
+/* Mesure de distance d'un POINT à une droite/segment/demi-droite : trace le segment
+   perpendiculaire (ou vers l'extrémité la plus proche si hors bornes) et affiche sa longueur,
+   recalculée à chaque rendu -- suit donc si le point ou la droite bouge. */
+function createDistancePointToLine(point, refP1, refP2, refType){
+  figState.shapes.push({type:'mesure-distance-ligne', point, refP1, refP2, refType, labelOffset:18});
+  renderFigureSvg();
+}
 function createMidpoint(a, b){
   const mid = {label:nextPointLabel(), x:(a.x+b.x)/2, y:(a.y+b.y)/2, def:{type:'milieu', a, b}, dependsOn:[a, b]};
   figState.points.push(mid);
@@ -3846,7 +3873,7 @@ async function handleAngleMesureClick(x,y){
   if(result.showCode) figState.shapes.push({type:'code-angle', vertex, p1:refPoint, p2:newPoint, group:angleGroupFor(angleDeg)});
   renderFigureSvg();
 }
-function onFigureClick(evt){
+async function onFigureClick(evt){
   if(figState.mode==='deplacer') return; // géré par mousedown/mousemove
   pushFigHistory();
   const svg=document.getElementById('figureSvg');
@@ -3904,9 +3931,41 @@ function onFigureClick(evt){
     }
   }
   if(figState.mode==='mesure-distance' && !figState.selected.length){
+    const group = findCollinearGroup(x,y);
+    if(group){
+      const choice = await figShapeChoiceModal(group.clicked, group.family);
+      if(choice) createDistanceMeasure(choice.p1, choice.p2);
+      return;
+    }
     const shape = findNearbyShape(x,y);
     if(shape && ['segment','droite','demi-droite','vecteur'].includes(shape.type)){
       createDistanceMeasure(shape.p1, shape.p2);
+      return;
+    }
+    const pt = findNearbyPoint(x,y);
+    if(pt){ figState.selected.push(pt); renderFigureSvg(); return; }
+  }
+  if(figState.mode==='mesure-distance' && figState.selected.length===1){
+    // 2e clic : soit un autre point (distance point-point, comme avant), soit directement
+    // une droite/segment/demi-droite (nouvelle mesure point-droite : distance perpendiculaire
+    // ou au point le plus proche selon que l'objet est borné ou non).
+    const group = findCollinearGroup(x,y);
+    if(group){
+      const choice = await figShapeChoiceModal(group.clicked, group.family);
+      if(choice) createDistancePointToLine(figState.selected[0], choice.p1, choice.p2, group.clicked.type);
+      figState.selected = [];
+      return;
+    }
+    const shape = findNearbyShape(x,y);
+    if(shape && ['segment','droite','demi-droite'].includes(shape.type)){
+      createDistancePointToLine(figState.selected[0], shape.p1, shape.p2, shape.type);
+      figState.selected = [];
+      return;
+    }
+    const pt2 = findNearbyPoint(x,y);
+    if(pt2 && pt2!==figState.selected[0]){
+      createDistanceMeasure(figState.selected[0], pt2);
+      figState.selected = [];
       return;
     }
   }
@@ -4183,6 +4242,19 @@ function renderFigureSvg(){
       let textAngle = angleDeg;
       if(textAngle>90 || textAngle<-90) textAngle += 180;
       html += `<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x}" y2="${s.p2.y}" ${shapeStrokeAttrs(s,'#8A2F52')} stroke-dasharray="4,3"/>`;
+      html += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="JetBrains Mono" font-size="12" fill="${s.strokeColor||'#8A2F52'}" text-anchor="middle" transform="rotate(${textAngle.toFixed(1)} ${lx.toFixed(1)} ${ly.toFixed(1)})">${cm} cm</text>`;
+    } else if(s.type==='mesure-distance-ligne'){
+      // Pied de la perpendiculaire (ou point le plus proche si segment/demi-droite borné)
+      // recalculé à CHAQUE rendu -- suit donc si le point ou la droite bouge.
+      const foot = closestPointOnLine(s.point, s.refP1, s.refP2, s.refType);
+      const dx=foot.x-s.point.x, dy=foot.y-s.point.y, len=Math.hypot(dx,dy)||1;
+      const angleDeg = Math.atan2(dy,dx)*180/Math.PI;
+      const {x:lx,y:ly} = measureLabelPos(s, s.point, foot);
+      const cmVal = len/SCALE_PX_PER_CM;
+      const cm = (Math.round(cmVal*100)/100).toString().replace(/\.?0+$/,'')||'0';
+      let textAngle = angleDeg;
+      if(textAngle>90 || textAngle<-90) textAngle += 180;
+      html += `<line x1="${s.point.x}" y1="${s.point.y}" x2="${foot.x}" y2="${foot.y}" ${shapeStrokeAttrs(s,'#8A2F52')} stroke-dasharray="4,3"/>`;
       html += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="JetBrains Mono" font-size="12" fill="${s.strokeColor||'#8A2F52'}" text-anchor="middle" transform="rotate(${textAngle.toFixed(1)} ${lx.toFixed(1)} ${ly.toFixed(1)})">${cm} cm</text>`;
     } else if(s.type==='code-longueur'){
       html += renderLengthCode(s.p1,s.p2,s.group||1);
