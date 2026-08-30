@@ -449,11 +449,14 @@ document.body.insertAdjacentHTML('beforeend', `
 
         <div class="fig-group-wrap">
         <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryAngles" data-mode="angle" onclick="setFigureMode(this.dataset.mode)" title="Angle (dernier outil choisi dans ce groupe)">∠</button>
-        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('angles')" title="Angle / Angle de mesure donnée">▾</button>
+        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('angles')" title="Angle / Angle de mesure donnée / Bissectrice">▾</button>
         <div id="figGroupAngles" class="fig-group-sub">
           <button type="button" class="fig-icon-btn fig-mode" data-mode="angle" onclick="selectFigSubTool('angles', this)" title="Angle (marque la mesure d'un angle existant)">∠</button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="angle-mesure" onclick="selectFigSubTool('angles', this)" title="Construire un angle de mesure donnée">
             <svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 20 L20 20 M4 20 L18 6" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M13 20 A5 5 0 0 0 10.7 15.3" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+          </button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="bissectrice" onclick="selectFigSubTool('angles', this)" title="Bissectrice (partage un angle en 2 parts égales)">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="4" y1="20" x2="21" y2="20" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="20" x2="14" y2="4" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="20" x2="18" y2="12" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/></svg>
           </button>
         </div>
         </div>
@@ -462,7 +465,7 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryRemarquables" data-mode="perpendiculaire" onclick="setFigureMode(this.dataset.mode)" title="Perpendiculaire (dernier outil choisi dans ce groupe)">
           <svg viewBox="0 0 24 24" width="20" height="20"><line x1="2" y1="17" x2="22" y2="17" stroke="currentColor" stroke-width="1.4"/><line x1="16" y1="6" x2="16" y2="22" stroke="currentColor" stroke-width="1.4"/><rect x="13" y="14" width="3" height="3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
         </button>
-        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('remarquables')" title="Perpendiculaire / Parallèle / Médiatrice / Bissectrice">▾</button>
+        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('remarquables')" title="Perpendiculaire / Parallèle / Médiatrice">▾</button>
         <div id="figGroupRemarquables" class="fig-group-sub">
           <button type="button" class="fig-icon-btn fig-mode" data-mode="perpendiculaire" onclick="selectFigSubTool('remarquables', this)" title="Perpendiculaire">
             <svg viewBox="0 0 24 24" width="20" height="20"><line x1="2" y1="17" x2="22" y2="17" stroke="currentColor" stroke-width="1.4"/><line x1="16" y1="6" x2="16" y2="22" stroke="currentColor" stroke-width="1.4"/><rect x="13" y="14" width="3" height="3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
@@ -471,7 +474,6 @@ document.body.insertAdjacentHTML('beforeend', `
           <button type="button" class="fig-icon-btn fig-mode" data-mode="mediatrice" onclick="selectFigSubTool('remarquables', this)" title="Médiatrice">
             <svg viewBox="0 0 24 24" width="20" height="20"><line x1="2" y1="17" x2="22" y2="17" stroke="currentColor" stroke-width="1.4"/><line x1="12" y1="6" x2="12" y2="22" stroke="currentColor" stroke-width="1.4"/><line x1="6" y1="20" x2="8" y2="14" stroke="currentColor" stroke-width="1.1"/><line x1="16" y1="14" x2="18" y2="20" stroke="currentColor" stroke-width="1.1"/></svg>
           </button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="bissectrice" onclick="selectFigSubTool('remarquables', this)" title="Bissectrice">⟨</button>
         </div>
         </div>
 
@@ -2660,6 +2662,9 @@ function openCodageManager(){
   // (signalé : "il faut reconnaître les objets perpendiculaires") -- proposées séparément,
   // avec une simple case à cocher (pas de choix de groupe, juste "marquer" ou non).
   const perps = figState.shapes.filter(s=>s.type==='perpendiculaire' || s.type==='mediatrice');
+  // Une bissectrice sépare DÉFINITIONNELLEMENT l'angle en 2 parts égales -- même principe
+  // que perpendiculaire/angle droit et milieu/longueurs égales ci-dessus.
+  const bissectrices = figState.shapes.filter(s=>s.type==='bissectrice');
   // Un point milieu implique DÉFINITIONNELLEMENT que ses deux moitiés sont de longueur
   // égale -- même principe que perpendiculaire/angle droit ci-dessus (signalé : "il
   // reconnaît l'angle droit mais plus le milieu").
@@ -2715,6 +2720,13 @@ function openCodageManager(){
       <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><input type="checkbox" data-kind="milieu" data-idx="${i}" ${already?'checked':''}> [${m.a.label}${m.point.label}] et [${m.point.label}${m.b.label}] égales (milieu ${m.point.label})</label>
     </div>`;
   }).join('');
+  const bissectriceRows = bissectrices.map((s,i)=>{
+    const existing = figState.shapes.find(x=>x.type==='code-angle' && x.sourceShape===s);
+    return `
+    <div class="tool-row" style="margin:0 0 6px;align-items:center;">
+      <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><input type="checkbox" data-kind="bissectrice" data-idx="${i}" ${existing?'checked':''}> Bissectrice de ∠${s.p1.label}${s.vertex.label}${s.p2.label} (2 angles égaux)</label>
+    </div>`;
+  }).join('');
   overlay.innerHTML = `
     <div class="modal-card" style="max-width:420px;max-height:80vh;overflow-y:auto;">
       <p style="font-weight:700;margin:0 0 12px;">Coder la figure</p>
@@ -2722,7 +2734,8 @@ function openCodageManager(){
       ${angles.length ? `<p class="hint" style="margin:14px 0 6px;font-weight:700;">Angles</p>${angleRows}` : ''}
       ${perps.length ? `<p class="hint" style="margin:14px 0 6px;font-weight:700;">Angles droits (perpendicularités)</p>${perpRows}` : ''}
       ${milieux.length ? `<p class="hint" style="margin:14px 0 6px;font-weight:700;">Longueurs égales (milieux)</p>${milieuRows}` : ''}
-      ${(!segments.length && !angles.length && !perps.length && !milieux.length) ? `<p class="hint">Aucun segment ni angle dans la figure pour l'instant.</p>` : ''}
+      ${bissectrices.length ? `<p class="hint" style="margin:14px 0 6px;font-weight:700;">Angles égaux (bissectrices)</p>${bissectriceRows}` : ''}
+      ${(!segments.length && !angles.length && !perps.length && !milieux.length && !bissectrices.length) ? `<p class="hint">Aucun segment ni angle dans la figure pour l'instant.</p>` : ''}
       <p class="hint" style="margin:14px 0 0;">Deux objets codés avec le même nombre de traits/arcs sont annoncés comme égaux entre eux.</p>
       <div class="figure-toolbar" style="margin-top:14px;">
         <button type="button" class="btn secondary" id="codageMgrClearAll"><span class=gicon>cleaning_services</span> Tout retirer</button>
@@ -2781,6 +2794,21 @@ function openCodageManager(){
         // évite de retirer un codage manuel indépendant que l'utilisateur aurait choisi.
         delete m.halfA.codeGroup;
         delete m.halfB.codeGroup;
+      }
+    });
+    overlay.querySelectorAll('input[data-kind="bissectrice"]').forEach(cb=>{
+      const s = bissectrices[+cb.dataset.idx];
+      figState.shapes = figState.shapes.filter(x=>!(x.type==='code-angle' && x.sourceShape===s));
+      if(cb.checked){
+        const a1=Math.atan2(s.p1.y-s.vertex.y, s.p1.x-s.vertex.x);
+        let a2=Math.atan2(s.p2.y-s.vertex.y, s.p2.x-s.vertex.x);
+        let delta=a2-a1; while(delta>Math.PI) delta-=2*Math.PI; while(delta<-Math.PI) delta+=2*Math.PI;
+        const bisA=a1+delta/2, dist=60;
+        const bisPoint = {x:s.vertex.x+dist*Math.cos(bisA), y:s.vertex.y+dist*Math.sin(bisA)};
+        const existingGroups = figState.shapes.filter(x=>x.type==='code-angle').map(x=>x.group);
+        const group = existingGroups.length ? Math.max(...existingGroups)+1 : 1;
+        figState.shapes.push({type:'code-angle', vertex:s.vertex, p1:s.p1, p2:bisPoint, group, sourceShape:s});
+        figState.shapes.push({type:'code-angle', vertex:s.vertex, p1:bisPoint, p2:s.p2, group, sourceShape:s});
       }
     });
     renderFigureSvg();
@@ -3086,6 +3114,10 @@ function findNearbyShape(x,y){
   figState.shapes.forEach(s=>{
     let match = false;
     if(s.type==='segment' || s.type==='vecteur' || s.type==='mesure-distance') match = distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    else if(s.type==='mesure-distance-ligne'){
+      const foot = closestPointOnLine(s.point, s.refP1, s.refP2, s.refType);
+      match = distToSegment(x,y,s.point.x,s.point.y,foot.x,foot.y) < thresh;
+    }
     else if(s.type==='droite') match = distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     else if(s.type==='demi-droite') match = distToRay(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     else if(['mediatrice','perpendiculaire','parallele'].includes(s.type)){
@@ -3102,6 +3134,7 @@ function findNearbyShape(x,y){
     // sélection même seul candidat -- Infinity < Infinity est toujours faux).
     let len;
     if(s.p1 && s.p2) len = Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y);
+    else if(s.type==='mesure-distance-ligne') len = Math.hypot(s.refP2.x-s.refP1.x, s.refP2.y-s.refP1.y);
     else if(s.type==='cercle') len = circleRadius(s);
     else if(['perpendiculaire','parallele'].includes(s.type)) len = 500; // droite infinie : longueur arbitraire mais FINIE (Infinity empêcherait toute sélection, même seule candidate)
     else len = Infinity;
