@@ -2812,6 +2812,7 @@ function selectFigSubTool(name, btnEl){
 }
 function setFigureMode(mode){
   figState.mode = mode; figState.selected = []; figState.refShape = null;
+  if(mode!=='deplacer'){ const svg=document.getElementById('figureSvg'); if(svg) svg.style.cursor='crosshair'; }
   if(mode!=='polygone') figPolygonPts = [];
   document.querySelectorAll('.fig-mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
   document.querySelectorAll('.fig-group-sub.open').forEach(g=>g.classList.remove('open'));
@@ -3305,10 +3306,10 @@ function onFigureMouseDown(evt){
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
   const lbl = findNearbyLabel(x,y);
-  if(lbl){ figDragLabel = lbl; evt.preventDefault(); return; }
+  if(lbl){ figDragLabel = lbl; svg.style.cursor='grabbing'; evt.preventDefault(); return; }
   const p = findNearbyPoint(x,y);
   const isMovableDependent = p && p.def && (p.def.type==='point-sur-droite' || p.def.type==='point-sur-cercle');
-  if(p && (!p.def || isMovableDependent)){ figDragPoint = p; evt.preventDefault(); return; }
+  if(p && (!p.def || isMovableDependent)){ figDragPoint = p; svg.style.cursor='grabbing'; evt.preventDefault(); return; }
   // Ni un point, ni un label : un clic sur une forme (segment/droite/demi-droite/cercle/arc)
   // ouvre l'éditeur de style, plutôt que de ne rien faire.
   const shape = findNearbyShape(x,y);
@@ -3334,7 +3335,18 @@ function onFigureMouseMove(evt){
     renderFigureSvg();
     return;
   }
-  if(!figDragPoint) return;
+  if(!figDragPoint){
+    // Pas de glissement en cours : retour visuel avant de cliquer -- le curseur devient une
+    // main dès qu'on survole quelque chose de déplaçable (point, label) ou stylable/
+    // supprimable (une forme), en mode Déplacer uniquement.
+    const svg=document.getElementById('figureSvg');
+    if(figState.mode==='deplacer'){
+      const {x,y} = svgCoordsFromEvent(svg,evt);
+      const hoverable = findNearbyLabel(x,y) || findNearbyPoint(x,y) || findNearbyShape(x,y);
+      svg.style.cursor = hoverable ? 'grab' : 'default';
+    }
+    return;
+  }
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
   let nx = Math.max(10,Math.min(490,x)), ny = Math.max(10,Math.min(310,y));
@@ -3395,7 +3407,11 @@ function onFigureMouseMove(evt){
   recomputeDependents();
   renderFigureSvg();
 }
-function onFigureMouseUp(){ figDragPoint = null; figDragLabel = null; }
+function onFigureMouseUp(){
+  figDragPoint = null; figDragLabel = null;
+  const svg=document.getElementById('figureSvg');
+  if(svg && figState.mode==='deplacer') svg.style.cursor='grab';
+}
 /* Double-clic sur un point (ou directement son label) pour le renommer -- fonctionne quel
    que soit le mode d'outil actif (pas seulement "Déplacer"), puisque renommer un point ne
    modifie aucune construction, juste son étiquette. */
