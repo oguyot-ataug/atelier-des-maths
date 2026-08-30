@@ -456,12 +456,18 @@ document.body.insertAdjacentHTML('beforeend', `
         </div>
 
         <div class="fig-group-wrap">
-        <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryRemarquables" data-mode="perpendiculaire" onclick="setFigureMode(this.dataset.mode)" title="Perpendiculaire (dernier outil choisi dans ce groupe)">⊥</button>
+        <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryRemarquables" data-mode="perpendiculaire" onclick="setFigureMode(this.dataset.mode)" title="Perpendiculaire (dernier outil choisi dans ce groupe)">
+          <svg viewBox="0 0 24 24" width="20" height="20"><line x1="2" y1="17" x2="22" y2="17" stroke="currentColor" stroke-width="1.4"/><line x1="16" y1="6" x2="16" y2="22" stroke="currentColor" stroke-width="1.4"/><rect x="13" y="14" width="3" height="3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+        </button>
         <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('remarquables')" title="Perpendiculaire / Parallèle / Médiatrice / Bissectrice">▾</button>
         <div id="figGroupRemarquables" class="fig-group-sub">
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="perpendiculaire" onclick="selectFigSubTool('remarquables', this)" title="Perpendiculaire">⊥</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="perpendiculaire" onclick="selectFigSubTool('remarquables', this)" title="Perpendiculaire">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="2" y1="17" x2="22" y2="17" stroke="currentColor" stroke-width="1.4"/><line x1="16" y1="6" x2="16" y2="22" stroke="currentColor" stroke-width="1.4"/><rect x="13" y="14" width="3" height="3" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+          </button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="parallele" onclick="selectFigSubTool('remarquables', this)" title="Parallèle">∥</button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="mediatrice" onclick="selectFigSubTool('remarquables', this)" title="Médiatrice">⟂</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="mediatrice" onclick="selectFigSubTool('remarquables', this)" title="Médiatrice">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="2" y1="17" x2="22" y2="17" stroke="currentColor" stroke-width="1.4"/><line x1="12" y1="6" x2="12" y2="22" stroke="currentColor" stroke-width="1.4"/><line x1="6" y1="20" x2="8" y2="14" stroke="currentColor" stroke-width="1.1"/><line x1="16" y1="14" x2="18" y2="20" stroke="currentColor" stroke-width="1.1"/></svg>
+          </button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="bissectrice" onclick="selectFigSubTool('remarquables', this)" title="Bissectrice">⟨</button>
         </div>
         </div>
@@ -2647,6 +2653,10 @@ function clearAllCodes(){
 function openCodageManager(){
   const segments = figState.shapes.filter(s=>s.type==='segment');
   const angles = figState.shapes.filter(s=>s.type==='angle');
+  // Les constructions perpendiculaire/médiatrice sont DÉFINITIONNELLEMENT des angles droits
+  // (signalé : "il faut reconnaître les objets perpendiculaires") -- proposées séparément,
+  // avec une simple case à cocher (pas de choix de groupe, juste "marquer" ou non).
+  const perps = figState.shapes.filter(s=>s.type==='perpendiculaire' || s.type==='mediatrice');
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.style.zIndex = '400';
@@ -2672,12 +2682,21 @@ function openCodageManager(){
       <select data-kind="angle" data-idx="${i}">${groupOptions(current,'angle')}</select>
     </div>`;
   }).join('');
+  const perpRows = perps.map((s,i)=>{
+    const existing = figState.shapes.find(x=>x.type==='code-droit' && x.sourceShape===s);
+    const desc = s.type==='mediatrice' ? `Médiatrice de [${s.p1.label}${s.p2.label}]` : `Perpendiculaire à [${s.refA.label}${s.refB.label}] en ${s.through.label}`;
+    return `
+    <div class="tool-row" style="margin:0 0 6px;align-items:center;">
+      <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><input type="checkbox" data-kind="perp" data-idx="${i}" ${existing?'checked':''}> ${desc}</label>
+    </div>`;
+  }).join('');
   overlay.innerHTML = `
     <div class="modal-card" style="max-width:420px;max-height:80vh;overflow-y:auto;">
       <p style="font-weight:700;margin:0 0 12px;">Coder la figure</p>
       ${segments.length ? `<p class="hint" style="margin:0 0 6px;font-weight:700;">Segments</p>${segRows}` : ''}
       ${angles.length ? `<p class="hint" style="margin:14px 0 6px;font-weight:700;">Angles</p>${angleRows}` : ''}
-      ${(!segments.length && !angles.length) ? `<p class="hint">Aucun segment ni angle dans la figure pour l'instant.</p>` : ''}
+      ${perps.length ? `<p class="hint" style="margin:14px 0 6px;font-weight:700;">Angles droits (perpendicularités)</p>${perpRows}` : ''}
+      ${(!segments.length && !angles.length && !perps.length) ? `<p class="hint">Aucun segment ni angle dans la figure pour l'instant.</p>` : ''}
       <p class="hint" style="margin:14px 0 0;">Deux objets codés avec le même nombre de traits/arcs sont annoncés comme égaux entre eux.</p>
       <div class="figure-toolbar" style="margin-top:14px;">
         <button type="button" class="btn secondary" id="codageMgrClearAll"><span class=gicon>cleaning_services</span> Tout retirer</button>
@@ -2704,6 +2723,23 @@ function openCodageManager(){
       const v = sel.value;
       if(v==='droit') figState.shapes.push({type:'code-droit', vertex:s.vertex, p1:s.p1, p2:s.p2});
       else if(v) figState.shapes.push({type:'code-angle', vertex:s.vertex, p1:s.p1, p2:s.p2, group:+v});
+    });
+    overlay.querySelectorAll('input[data-kind="perp"]').forEach(cb=>{
+      const s = perps[+cb.dataset.idx];
+      figState.shapes = figState.shapes.filter(x=>!(x.type==='code-droit' && x.sourceShape===s));
+      if(cb.checked){
+        let vertex, p1, p2;
+        if(s.type==='mediatrice'){
+          vertex = {x:(s.p1.x+s.p2.x)/2, y:(s.p1.y+s.p2.y)/2};
+          p1 = s.p1;
+          p2 = {x:vertex.x-(s.p2.y-s.p1.y), y:vertex.y+(s.p2.x-s.p1.x)};
+        } else {
+          vertex = s.through;
+          p1 = {x:vertex.x+(s.refB.x-s.refA.x), y:vertex.y+(s.refB.y-s.refA.y)};
+          p2 = {x:vertex.x-(s.refB.y-s.refA.y), y:vertex.y+(s.refB.x-s.refA.x)};
+        }
+        figState.shapes.push({type:'code-droit', vertex, p1, p2, sourceShape:s});
+      }
     });
     renderFigureSvg();
     close();
@@ -3022,7 +3058,13 @@ function findPointOrNearestOnShape(x,y){
 function handleLineToolClick(x,y){
   if(!figState.refShape){
     const shape = findNearbyShape(x,y);
-    if(shape){ figState.refShape = {p1:shape.p1, p2:shape.p2}; renderFigureSvg(); return; }
+    if(shape){
+      // La médiatrice ne dépend que du segment lui-même (pas d'un point "par lequel elle
+      // passe" à préciser en plus, contrairement à perpendiculaire/parallèle) -- un clic
+      // suffit donc, pas besoin d'un second (signalé : "on est obligé de cliquer 2 fois").
+      if(figState.mode==='mediatrice'){ figState.shapes.push({type:'mediatrice', p1:shape.p1, p2:shape.p2}); renderFigureSvg(); return; }
+      figState.refShape = {p1:shape.p1, p2:shape.p2}; renderFigureSvg(); return;
+    }
     const pt = findNearbyPoint(x,y);
     if(pt){
       if(!figState.selected.length){ figState.selected.push(pt); renderFigureSvg(); return; }
