@@ -421,6 +421,9 @@ document.body.insertAdjacentHTML('beforeend', `
           <button type="button" class="fig-icon-btn fig-mode" data-mode="vecteur" onclick="selectFigSubTool('lignes', this)" title="Vecteur (origine + extrémité, avec une flèche)">
             <svg viewBox="0 0 24 24" width="20" height="20"><line x1="4" y1="19" x2="19" y2="6" stroke="currentColor" stroke-width="1.2"/><path d="M12.5 6.5 L19 6 L18 12.5" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><circle cx="4" cy="19" r="1.8" fill="currentColor"/></svg>
           </button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="mesure-distance" onclick="selectFigSubTool('lignes', this)" title="Mesure de distance (2 points, ou un segment existant)">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="17" x2="21" y2="17" stroke="currentColor" stroke-width="1.1"/><circle cx="3" cy="17" r="1.8" fill="currentColor"/><circle cx="21" cy="17" r="1.8" fill="currentColor"/><text x="12" y="10" font-size="7" font-family="JetBrains Mono" fill="currentColor" text-anchor="middle">cm</text></svg>
+          </button>
         </div>
         </div>
 
@@ -2967,6 +2970,7 @@ function setFigureMode(mode){
     'polygone-regulier':'Cliquez le centre, puis un premier sommet (fixe le rayon et l\'orientation) -- le nombre de côtés se règle dans le champ à côté.',
     'angle-mesure':'Cliquez un point sur le premier côté, puis le sommet -- une fenêtre demande ensuite la mesure (en degrés) et le sens (horaire ou trigonométrique).',
     vecteur:'Cliquez deux points existants : l\'origine, puis l\'extrémité (avec la flèche).',
+    'mesure-distance':'Cliquez directement un segment existant, ou deux points -- la distance affichée peut ensuite être déplacée (mode Déplacer), en restant toujours parallèle au segment.',
     'symetrie-axiale':'Cliquez directement sur l\'axe de symétrie (droite, demi-droite, segment ou côté de polygone), puis le point à transformer.',
     'symetrie-centrale':'Cliquez le centre de symétrie, puis le point à transformer.',
     translation:'Cliquez les deux points qui définissent le vecteur de translation, puis le point à déplacer.',
@@ -3053,6 +3057,25 @@ function findTwoNearbyLineShapes(x,y){
   if(candidates.length < 2) return null;
   return [candidates[0], candidates[1]];
 }
+/* Calcule 2 points représentatifs (définissant la direction ET la position) pour N'IMPORTE
+   QUEL type de droite -- segment/droite/demi-droite/vecteur ont déjà p1/p2 directement,
+   mais médiatrice (p1/p2 = les 2 extrémités du segment original, PAS de la médiatrice
+   elle-même) et perpendiculaire/parallèle (refA/refB/through) ont une structure différente.
+   Permet de traiter tous ces types UNIFORMÉMENT (détection de clic, point posé dessus,
+   intersection) -- signalé : "la médiatrice n'est pas reconnue comme un vrai objet". */
+function lineShapeEndpoints(s){
+  if(s.type==='mediatrice'){
+    const mid = {x:(s.p1.x+s.p2.x)/2, y:(s.p1.y+s.p2.y)/2};
+    return {p1:mid, p2:{x:mid.x-(s.p2.y-s.p1.y), y:mid.y+(s.p2.x-s.p1.x)}};
+  }
+  if(s.type==='perpendiculaire'){
+    return {p1:s.through, p2:{x:s.through.x-(s.refB.y-s.refA.y), y:s.through.y+(s.refB.x-s.refA.x)}};
+  }
+  if(s.type==='parallele'){
+    return {p1:s.through, p2:{x:s.through.x+(s.refB.x-s.refA.x), y:s.through.y+(s.refB.y-s.refA.y)}};
+  }
+  return {p1:s.p1, p2:s.p2};
+}
 function findNearbyShape(x,y){
   // Seuil harmonisé avec findNearbyPoint (auparavant 10, sensiblement plus strict que les
   // points à 16 -- incohérence qui faisait rater le clic plus souvent sur une forme que sur
@@ -3062,9 +3085,13 @@ function findNearbyShape(x,y){
   let best = null, bestLen = Infinity;
   figState.shapes.forEach(s=>{
     let match = false;
-    if(s.type==='segment' || s.type==='vecteur') match = distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    if(s.type==='segment' || s.type==='vecteur' || s.type==='mesure-distance') match = distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     else if(s.type==='droite') match = distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     else if(s.type==='demi-droite') match = distToRay(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    else if(['mediatrice','perpendiculaire','parallele'].includes(s.type)){
+      const {p1,p2} = lineShapeEndpoints(s);
+      match = distToLine(x,y,p1.x,p1.y,p2.x,p2.y) < thresh;
+    }
     else if(s.type==='cercle'){
       const r = circleRadius(s);
       match = r!=null && Math.abs(Math.hypot(x-s.p1.x, y-s.p1.y) - r) < thresh;
@@ -3073,7 +3100,11 @@ function findNearbyShape(x,y){
     // "Longueur" utilisée pour départager plusieurs formes qui se chevauchent (préfère la
     // plus spécifique) : le rayon pour un cercle (pas Infinity, qui empêchait TOUJOURS sa
     // sélection même seul candidat -- Infinity < Infinity est toujours faux).
-    const len = (s.p1 && s.p2) ? Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y) : (s.type==='cercle' ? circleRadius(s) : Infinity);
+    let len;
+    if(s.p1 && s.p2) len = Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y);
+    else if(s.type==='cercle') len = circleRadius(s);
+    else if(['perpendiculaire','parallele'].includes(s.type)) len = 500; // droite infinie : longueur arbitraire mais FINIE (Infinity empêcherait toute sélection, même seule candidate)
+    else len = Infinity;
     if(best===null || len < bestLen){ bestLen = len; best = s; }
   });
   return best;
@@ -3094,8 +3125,91 @@ function findPointOrNearestOnShape(x,y){
   }
   return null;
 }
-function handleLineToolClick(x,y){
+/* Vérifie si 2 segments/droites/demi-droites partagent la MÊME droite porteuse (colinéaires
+   ET alignés, pas seulement parallèles) -- pour détecter le cas où un segment original a été
+   coupé en plusieurs morceaux (ex. par un milieu), qui se chevauchent tous au même endroit. */
+function areCollinear(s1, s2){
+  const d1x=s1.p2.x-s1.p1.x, d1y=s1.p2.y-s1.p1.y;
+  const d2x=s2.p2.x-s2.p1.x, d2y=s2.p2.y-s2.p1.y;
+  const len1=Math.hypot(d1x,d1y)||1, len2=Math.hypot(d2x,d2y)||1;
+  const cross = Math.abs(d1x*d2y-d1y*d2x)/(len1*len2);
+  if(cross > 0.02) return false;
+  const crossPoint = Math.abs((s2.p1.x-s1.p1.x)*d1y-(s2.p1.y-s1.p1.y)*d1x)/len1;
+  return crossPoint < 3;
+}
+/* Trouve tous les segments/droites/demi-droites qui passent près du clic ET sont colinéaires
+   entre eux (même droite porteuse) -- s'il y en a plusieurs, l'ambiguïté doit être résolue
+   par un choix explicite plutôt qu'en prenant arbitrairement le plus proche (signalé : "il
+   reconnaît [AI] ou [IB] car ça superpose [AB]"). */
+function findCollinearGroup(x,y){
+  const thresh = 18;
+  const candidates = figState.shapes.filter(s=>{
+    if(!['segment','droite','demi-droite'].includes(s.type)) return false;
+    if(s.type==='segment') return distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    if(s.type==='droite') return distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    return distToRay(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+  });
+  if(candidates.length<2) return candidates;
+  return candidates.filter(s=>areCollinear(candidates[0], s));
+}
+/* Reconstruit l'étendue COMPLÈTE d'origine à partir de plusieurs segments colinéaires
+   chevauchants (ex. [AI] et [IB] -> [AB]) : les 2 points les plus éloignés parmi tous ceux
+   référencés forment les extrémités du segment complet. */
+function reconstructFullExtent(segs){
+  const pts = [];
+  segs.forEach(s=>{ pts.push(s.p1, s.p2); });
+  let maxDist=-1, extremes=[pts[0], pts[0]];
+  for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+    const d = Math.hypot(pts[i].x-pts[j].x, pts[i].y-pts[j].y);
+    if(d>maxDist){ maxDist=d; extremes=[pts[i],pts[j]]; }
+  }
+  return {p1:extremes[0], p2:extremes[1]};
+}
+/* Modale de choix quand plusieurs segments colinéaires se chevauchent au clic -- propose
+   chacun individuellement, plus une reconstruction de l'étendue complète si tous sont des
+   segments (bornés, donc reconstructibles). */
+function figShapeChoiceModal(candidates){
+  return new Promise(resolve=>{
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.style.zIndex = '400';
+    const allSegments = candidates.every(s=>s.type==='segment');
+    let optionsHtml = candidates.map((s,i)=>{
+      const label = s.type==='segment' ? `[${s.p1.label}${s.p2.label}]` : `${s.type} (${s.p1.label}${s.p2.label})`;
+      return `<button type="button" class="btn secondary" data-idx="${i}" style="width:100%;margin-bottom:6px;">${label}</button>`;
+    }).join('');
+    if(allSegments && candidates.length>1){
+      const full = reconstructFullExtent(candidates);
+      optionsHtml += `<button type="button" class="btn" data-idx="full" style="width:100%;margin-bottom:6px;">[${full.p1.label}${full.p2.label}] (étendue complète)</button>`;
+    }
+    overlay.innerHTML = `
+      <div class="modal-card" style="max-width:320px;">
+        <p style="font-weight:700;margin:0 0 12px;">Plusieurs segments se chevauchent ici</p>
+        <p class="hint" style="margin:0 0 12px;">Lequel voulez-vous utiliser comme référence ?</p>
+        ${optionsHtml}
+        <button type="button" class="btn secondary" id="figChoiceCancel" style="width:100%;">Annuler</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    function close(result){ overlay.remove(); resolve(result); }
+    overlay.querySelector('#figChoiceCancel').onclick = ()=>close(null);
+    overlay.addEventListener('click', e=>{ if(e.target===overlay) close(null); });
+    overlay.querySelectorAll('button[data-idx]').forEach(btn=>{
+      btn.onclick = ()=>{
+        if(btn.dataset.idx==='full'){ close(reconstructFullExtent(candidates)); }
+        else close({p1:candidates[+btn.dataset.idx].p1, p2:candidates[+btn.dataset.idx].p2});
+      };
+    });
+  });
+}
+async function handleLineToolClick(x,y){
   if(!figState.refShape){
+    const group = findCollinearGroup(x,y);
+    if(group.length>1){
+      const choice = await figShapeChoiceModal(group);
+      if(!choice) return;
+      if(figState.mode==='mediatrice'){ figState.shapes.push({type:'mediatrice', p1:choice.p1, p2:choice.p2}); renderFigureSvg(); return; }
+      figState.refShape = choice; renderFigureSvg(); return;
+    }
     const shape = findNearbyShape(x,y);
     if(shape){
       // La médiatrice ne dépend que du segment lui-même (pas d'un point "par lequel elle
@@ -3189,7 +3303,8 @@ function recomputeDependents(){
       p.x = m.x+(vecP2.x-vecP1.x); p.y = m.y+(vecP2.y-vecP1.y);
     } else if(p.def.type==='point-sur-droite'){
       const {shape, t} = p.def;
-      p.x = shape.p1.x+t*(shape.p2.x-shape.p1.x); p.y = shape.p1.y+t*(shape.p2.y-shape.p1.y);
+      const {p1,p2} = lineShapeEndpoints(shape);
+      p.x = p1.x+t*(p2.x-p1.x); p.y = p1.y+t*(p2.y-p1.y);
     } else if(p.def.type==='point-sur-cercle'){
       const {shape, offset} = p.def;
       const r = circleRadius(shape);
@@ -3203,6 +3318,7 @@ function recomputeDependents(){
   });
 }
 let figDragLabel = null;
+let figDragMeasure = null;
 /* Un clic est considéré comme visant le LABEL d'un point (pas le point lui-même) si sa
    distance au texte du label est plus proche que sa distance au point -- le label étant
    petit et décalé, ce test simple (distance au centre approximatif du texte) suffit sans
@@ -3211,6 +3327,26 @@ function findNearbyLabel(x,y){
   const thresh = 14;
   return figState.points.find(p=>{
     const lx = p.x+(p.labelDx??9), ly = p.y+(p.labelDy??-9);
+    return Math.hypot(lx-x, ly-y) < thresh;
+  });
+}
+/* Position actuelle du label d'une mesure de distance : décalage 2D depuis le milieu du
+   segment -- une composante LE LONG du segment (glisse d'un bout à l'autre) et une
+   composante PERPENDICULAIRE (s'éloigne du trait) -- l'orientation du texte, elle, reste
+   TOUJOURS parallèle au segment quel que soit ce décalage (signalé : "son écriture est
+   parallèle au segment"). */
+function measureLabelPos(s){
+  const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y, len=Math.hypot(dx,dy)||1;
+  const ux=dx/len, uy=dy/len, nx=-uy, ny=ux;
+  const midX=(s.p1.x+s.p2.x)/2, midY=(s.p1.y+s.p2.y)/2;
+  const along = s.labelAlong ?? 0, perp = s.labelOffset ?? 18;
+  return {x:midX+ux*along+nx*perp, y:midY+uy*along+ny*perp};
+}
+function findNearbyMeasureLabel(x,y){
+  const thresh = 16;
+  return figState.shapes.find(s=>{
+    if(s.type!=='mesure-distance') return false;
+    const {x:lx,y:ly} = measureLabelPos(s);
     return Math.hypot(lx-x, ly-y) < thresh;
   });
 }
@@ -3407,6 +3543,8 @@ function onFigureMouseDown(evt){
   if(figState.mode!=='deplacer') return;
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
+  const measureShape = findNearbyMeasureLabel(x,y);
+  if(measureShape){ figDragMeasure = measureShape; svg.style.cursor='grabbing'; evt.preventDefault(); return; }
   const lbl = findNearbyLabel(x,y);
   const p = findNearbyPoint(x,y);
   const isMovableDependent = p && p.def && (p.def.type==='point-sur-droite' || p.def.type==='point-sur-cercle');
@@ -3440,6 +3578,19 @@ function onFigureMouseDown(evt){
   }
 }
 function onFigureMouseMove(evt){
+  if(figDragMeasure){
+    const svg=document.getElementById('figureSvg');
+    const {x,y} = svgCoordsFromEvent(svg,evt);
+    const s = figDragMeasure;
+    const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y, len=Math.hypot(dx,dy)||1;
+    const ux=dx/len, uy=dy/len, nx=-uy, ny=ux;
+    const midX=(s.p1.x+s.p2.x)/2, midY=(s.p1.y+s.p2.y)/2;
+    const relX=x-midX, relY=y-midY;
+    s.labelAlong = Math.max(-len/2-20, Math.min(len/2+20, relX*ux+relY*uy));
+    s.labelOffset = Math.max(-80, Math.min(80, relX*nx+relY*ny));
+    renderFigureSvg();
+    return;
+  }
   if(figDragLabel){
     const svg=document.getElementById('figureSvg');
     const {x,y} = svgCoordsFromEvent(svg,evt);
@@ -3455,7 +3606,7 @@ function onFigureMouseMove(evt){
     const svg=document.getElementById('figureSvg');
     if(figState.mode==='deplacer'){
       const {x,y} = svgCoordsFromEvent(svg,evt);
-      const hoverable = findNearbyLabel(x,y) || findNearbyPoint(x,y) || findNearbyShape(x,y);
+      const hoverable = findNearbyMeasureLabel(x,y) || findNearbyLabel(x,y) || findNearbyPoint(x,y) || findNearbyShape(x,y);
       svg.style.cursor = hoverable ? 'grab' : 'default';
     }
     return;
@@ -3468,10 +3619,11 @@ function onFigureMouseMove(evt){
   // sur le cercle) d'après la projection de la souris, plutôt qu'un déplacement libre.
   if(figDragPoint.def && figDragPoint.def.type==='point-sur-droite'){
     const {shape} = figDragPoint.def;
-    const dx=shape.p2.x-shape.p1.x, dy=shape.p2.y-shape.p1.y, len2=dx*dx+dy*dy||1;
-    const t = clampTForShapeType(((nx-shape.p1.x)*dx+(ny-shape.p1.y)*dy)/len2, shape.type);
+    const {p1,p2} = lineShapeEndpoints(shape);
+    const dx=p2.x-p1.x, dy=p2.y-p1.y, len2=dx*dx+dy*dy||1;
+    const t = clampTForShapeType(((nx-p1.x)*dx+(ny-p1.y)*dy)/len2, shape.type);
     figDragPoint.def.t = t;
-    figDragPoint.x = shape.p1.x+t*dx; figDragPoint.y = shape.p1.y+t*dy;
+    figDragPoint.x = p1.x+t*dx; figDragPoint.y = p1.y+t*dy;
     recomputeDependents();
     renderFigureSvg();
     return;
@@ -3521,7 +3673,7 @@ function onFigureMouseMove(evt){
   renderFigureSvg();
 }
 function onFigureMouseUp(){
-  figDragPoint = null; figDragLabel = null;
+  figDragPoint = null; figDragLabel = null; figDragMeasure = null;
   const svg=document.getElementById('figureSvg');
   if(svg && figState.mode==='deplacer') svg.style.cursor='grab';
 }
@@ -3576,6 +3728,13 @@ async function onFigureDblClick(evt){
    comme forme (signalé : "il ne reconnaît pas les parties à coder pour le milieu"). Ces deux
    segments se superposent exactement au segment d'origine (même droite), donc leur ajout ne
    change rien visuellement -- seule la possibilité de les coder individuellement change. */
+/* Crée une mesure de distance entre 2 points (existants ou une extrémité de segment) : la
+   valeur affichée reste PARALLÈLE au segment quel que soit son orientation, et peut être
+   déplacée (décalage perpendiculaire réglable), sans jamais changer d'orientation. */
+function createDistanceMeasure(a, b){
+  figState.shapes.push({type:'mesure-distance', p1:a, p2:b, labelOffset:18});
+  renderFigureSvg();
+}
 function createMidpoint(a, b){
   const mid = {label:nextPointLabel(), x:(a.x+b.x)/2, y:(a.y+b.y)/2, def:{type:'milieu', a, b}, dependsOn:[a, b]};
   figState.points.push(mid);
@@ -3700,10 +3859,13 @@ function onFigureClick(evt){
       }
     }
     const shape = findNearbyShape(x,y);
-    if(shape && ['segment','droite','demi-droite'].includes(shape.type)){
-      const dx=shape.p2.x-shape.p1.x, dy=shape.p2.y-shape.p1.y, len2=dx*dx+dy*dy||1;
-      const t = clampTForShapeType(((x-shape.p1.x)*dx+(y-shape.p1.y)*dy)/len2, shape.type);
-      figState.points.push({label:nextPointLabel(), x:shape.p1.x+t*dx, y:shape.p1.y+t*dy, def:{type:'point-sur-droite', shape, t}, dependsOn:[shape.p1, shape.p2, shape]});
+    if(shape && ['segment','droite','demi-droite','mediatrice','perpendiculaire','parallele'].includes(shape.type)){
+      const {p1,p2} = lineShapeEndpoints(shape);
+      const dx=p2.x-p1.x, dy=p2.y-p1.y, len2=dx*dx+dy*dy||1;
+      const t = clampTForShapeType(((x-p1.x)*dx+(y-p1.y)*dy)/len2, shape.type);
+      const hasRealPoints = ['segment','droite','demi-droite'].includes(shape.type);
+      const dependsOn = hasRealPoints ? [shape.p1, shape.p2, shape] : [shape];
+      figState.points.push({label:nextPointLabel(), x:p1.x+t*dx, y:p1.y+t*dy, def:{type:'point-sur-droite', shape, t}, dependsOn});
       renderFigureSvg();
       return;
     }
@@ -3734,6 +3896,13 @@ function onFigureClick(evt){
     if(!figState.selected.length){
       const shape = findNearbyShape(x,y);
       if(shape && (shape.type==='segment' || shape.type==='droite' || shape.type==='demi-droite')){ createMidpoint(shape.p1, shape.p2); return; }
+    }
+  }
+  if(figState.mode==='mesure-distance' && !figState.selected.length){
+    const shape = findNearbyShape(x,y);
+    if(shape && ['segment','droite','demi-droite','vecteur'].includes(shape.type)){
+      createDistanceMeasure(shape.p1, shape.p2);
+      return;
     }
   }
   if(figState.mode==='translation' && !figState.selected.length){
@@ -3802,6 +3971,9 @@ function onFigureClick(evt){
     } else if(figState.mode==='cercle'){
       const [a,b] = figState.selected;
       figState.shapes.push({type:'cercle', p1:a, p2:b, compass:withCompass});
+    } else if(figState.mode==='mesure-distance'){
+      const [a,b] = figState.selected;
+      figState.shapes.push({type:'mesure-distance', p1:a, p2:b, labelOffset:18});
     } else {
       const [a,b] = figState.selected;
       figState.shapes.push({type:figState.mode, p1:a, p2:b});
@@ -3996,6 +4168,17 @@ function renderFigureSvg(){
       const dx=-(s.p2.y-s.p1.y), dy=(s.p2.x-s.p1.x);
       const len=Math.hypot(dx,dy)||1; const ext=400;
       html+=`<line x1="${mid.x-dx/len*ext}" y1="${mid.y-dy/len*ext}" x2="${mid.x+dx/len*ext}" y2="${mid.y+dy/len*ext}" stroke="#2C5A2E" stroke-width="1.6" stroke-dasharray="6 4"/>`;
+    } else if(s.type==='mesure-distance'){
+      const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y, len=Math.hypot(dx,dy)||1;
+      const angleDeg = Math.atan2(dy,dx)*180/Math.PI;
+      const {x:lx,y:ly} = measureLabelPos(s);
+      const cmVal = len/SCALE_PX_PER_CM;
+      const cm = (Math.round(cmVal*100)/100).toString().replace(/\.?0+$/,'')||'0';
+      // Garde le texte "à l'endroit" (jamais retourné à l'envers) tout en restant parallèle.
+      let textAngle = angleDeg;
+      if(textAngle>90 || textAngle<-90) textAngle += 180;
+      html += `<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x}" y2="${s.p2.y}" ${shapeStrokeAttrs(s,'#8A2F52')} stroke-dasharray="4,3"/>`;
+      html += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="JetBrains Mono" font-size="12" fill="${s.strokeColor||'#8A2F52'}" text-anchor="middle" transform="rotate(${textAngle.toFixed(1)} ${lx.toFixed(1)} ${ly.toFixed(1)})">${cm} cm</text>`;
     } else if(s.type==='code-longueur'){
       html += renderLengthCode(s.p1,s.p2,s.group||1);
     } else if(s.type==='code-angle'){
