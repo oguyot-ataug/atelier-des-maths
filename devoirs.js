@@ -210,8 +210,28 @@ async function submitDevoirFile(devoirId){
 function startDevoirFigure(devoirId){
   currentDevoirSubmission = { devoirId };
   openFigureTool();
-  const btn = document.getElementById('figSubmitDevoirBtn');
-  if(btn) btn.style.display = 'inline-flex';
+  // "Valider et insérer la figure" n'a pas de sens dans ce contexte (rien à insérer dans un
+  // cahier) -- remplacé par "Rendre le devoir" + "Charger mon dernier rendu" (pour reprendre
+  // un travail déjà commencé).
+  const validateBtn = document.getElementById('figValidateBtn');
+  const submitBtn = document.getElementById('figSubmitDevoirBtn');
+  const loadBtn = document.getElementById('figLoadDevoirBtn');
+  if(validateBtn) validateBtn.style.display = 'none';
+  if(submitBtn) submitBtn.style.display = 'inline-flex';
+  if(loadBtn) loadBtn.style.display = 'inline-flex';
+}
+/* Recharge le dernier rendu (figure) de l'élève pour CE devoir, pour reprendre un travail
+   déjà commencé plutôt que de repartir de zéro. */
+async function loadMyDevoirFigure(){
+  if(!currentDevoirSubmission) return;
+  const { data: rendu, error } = await sb.from('devoirs_rendus').select('type,figure_data')
+    .eq('devoir_id', currentDevoirSubmission.devoirId).eq('student_id', currentUser.id).maybeSingle();
+  if(error){ await niceAlert('Erreur : '+error.message); return; }
+  if(!rendu || rendu.type!=='figure' || !rendu.figure_data){ await niceAlert('Aucun rendu (figure) précédent trouvé pour ce devoir.'); return; }
+  figState.points = JSON.parse(JSON.stringify(rendu.figure_data.points||[]));
+  figState.shapes = JSON.parse(JSON.stringify(rendu.figure_data.shapes||[]));
+  figState.nextLabel = figState.points.length;
+  renderFigureSvg();
 }
 async function submitCurrentFigureAsDevoir(){
   if(!currentDevoirSubmission) return;

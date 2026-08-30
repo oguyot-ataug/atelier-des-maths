@@ -386,7 +386,6 @@ document.body.insertAdjacentHTML('beforeend', `
     </div>
     </div>
     <div id="figurePanel" class="figure-wrap" style="display:none;">
-      <button type="button" class="btn" id="figSubmitDevoirBtn" onclick="submitCurrentFigureAsDevoir()" style="display:none;margin-bottom:8px;"><span class=gicon>send</span> Rendre ce devoir</button>
       <div class="tool-row" style="margin-bottom:8px;">
         <textarea id="enonceInput" rows="2" style="flex:1;min-width:260px;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);"
           placeholder="Ex. : ABC triangle&#10;I milieu de [BC]&#10;cercle de centre A passant par B"></textarea>
@@ -544,7 +543,9 @@ document.body.insertAdjacentHTML('beforeend', `
         </div>
       </div>
       <div class="figure-toolbar" style="margin-top:10px;">
-        <button type="button" class="btn" onclick="validateFigure()">✓ Valider et insérer la figure</button>
+        <button type="button" class="btn" id="figValidateBtn" onclick="validateFigure()">✓ Valider et insérer la figure</button>
+        <button type="button" class="btn" id="figSubmitDevoirBtn" onclick="submitCurrentFigureAsDevoir()" style="display:none;"><span class=gicon>send</span> Enregistrer / Rendre le devoir</button>
+        <button type="button" class="btn secondary" id="figLoadDevoirBtn" onclick="loadMyDevoirFigure()" style="display:none;"><span class=gicon>folder_open</span> Charger mon dernier rendu</button>
         <button type="button" class="btn secondary" onclick="closeFigureTool()">Fermer sans insérer</button>
       </div>
     </div>
@@ -864,10 +865,15 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
   document.getElementById('figurePanel').style.display='block';
   resetFigureState();
   setFigureMode('point');
-  // Caché par défaut (contexte "libre" : bac à sable, correction, évaluation) -- seul
-  // startDevoirFigure (devoirs.js) l'affiche explicitement, APRÈS cet appel.
+  // Par défaut (contexte "libre" : bac à sable, correction, évaluation) : "Valider et
+  // insérer" est visible, les boutons propres au devoir sont cachés -- seul
+  // startDevoirFigure (devoirs.js) inverse cet état, APRÈS cet appel.
+  const validateBtn = document.getElementById('figValidateBtn');
   const submitBtn = document.getElementById('figSubmitDevoirBtn');
+  const loadBtn = document.getElementById('figLoadDevoirBtn');
+  if(validateBtn) validateBtn.style.display = 'inline-flex';
   if(submitBtn) submitBtn.style.display = 'none';
+  if(loadBtn) loadBtn.style.display = 'none';
   document.getElementById('figurePanel').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 function closeFigureTool(){
