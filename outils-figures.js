@@ -4269,21 +4269,20 @@ function renderFigureSvg(){
       const {points} = angleArcPoints(s.center, s.p1, s.p2, r);
       html+=`<polyline points="${points}" fill="none" ${shapeStrokeAttrs(s,'#1F3A5C')}/>`;
       if(s.compass) html += compassGraphic(s.center, s.p1);
-    } else if(s.type==='angle' || s.type==='bissectrice'){
+    } else if(s.type==='angle'){
       const r=26;
       const {points,mid}=angleArcPoints(s.vertex,s.p1,s.p2,r);
-      const color = s.type==='angle' ? '#E35D3A' : '#8A2F52';
-      html+=`<polyline points="${points}" fill="none" stroke="${color}" stroke-width="1.8"/>`;
-      if(s.type==='angle'){
-        const lx=s.vertex.x+(r+14)*Math.cos(mid), ly=s.vertex.y+(r+14)*Math.sin(mid);
-        html+=`<text x="${lx}" y="${ly}" font-family="JetBrains Mono" font-size="12" fill="${color}" text-anchor="middle">${angleDegrees(s.vertex,s.p1,s.p2)}°</text>`;
-      } else {
-        const a1=Math.atan2(s.p1.y-s.vertex.y, s.p1.x-s.vertex.x);
-        let a2=Math.atan2(s.p2.y-s.vertex.y, s.p2.x-s.vertex.x);
-        let delta=a2-a1; while(delta>Math.PI) delta-=2*Math.PI; while(delta<-Math.PI) delta+=2*Math.PI;
-        const bisA=a1+delta/2, len=260;
-        html+=`<line x1="${s.vertex.x}" y1="${s.vertex.y}" x2="${s.vertex.x+len*Math.cos(bisA)}" y2="${s.vertex.y+len*Math.sin(bisA)}" stroke="${color}" stroke-width="1.6" stroke-dasharray="2 3"/>`;
-      }
+      html+=`<polyline points="${points}" fill="none" stroke="#E35D3A" stroke-width="1.8"/>`;
+      const lx=s.vertex.x+(r+14)*Math.cos(mid), ly=s.vertex.y+(r+14)*Math.sin(mid);
+      html+=`<text x="${lx}" y="${ly}" font-family="JetBrains Mono" font-size="12" fill="#E35D3A" text-anchor="middle">${angleDegrees(s.vertex,s.p1,s.p2)}°</text>`;
+    } else if(s.type==='bissectrice'){
+      // Pas d'arc automatique ici -- le codage (2 angles égaux) se fait séparément via la
+      // fenêtre de codage, qui ferait double emploi avec un arc tracé d'office à la création.
+      const a1=Math.atan2(s.p1.y-s.vertex.y, s.p1.x-s.vertex.x);
+      let a2=Math.atan2(s.p2.y-s.vertex.y, s.p2.x-s.vertex.x);
+      let delta=a2-a1; while(delta>Math.PI) delta-=2*Math.PI; while(delta<-Math.PI) delta+=2*Math.PI;
+      const bisA=a1+delta/2, len=260;
+      html+=`<line x1="${s.vertex.x}" y1="${s.vertex.y}" x2="${s.vertex.x+len*Math.cos(bisA)}" y2="${s.vertex.y+len*Math.sin(bisA)}" ${shapeStrokeAttrs(s,'#8A2F52')} stroke-dasharray="2 3"/>`;
     } else if(s.type==='perpendiculaire' || s.type==='parallele'){
       let dx=s.refB.x-s.refA.x, dy=s.refB.y-s.refA.y;
       if(s.type==='perpendiculaire'){ const t=dx; dx=-dy; dy=t; }
