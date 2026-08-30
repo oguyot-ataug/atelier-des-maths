@@ -454,6 +454,10 @@ async function adminRefreshListings(){
   await adminRefreshSignupRequests();
   const { data: profs } = await sb.from('profiles').select('id,nom,email,role,subscription_status,subscription_expires_at').in('role',['prof','admin']).order('nom');
   const { data: eleves } = await sb.from('profiles').select('id,nom,email,role').eq('role','eleve').order('nom');
+  // Date de dernière connexion (auth.users, normalement inaccessible via RLS classique) --
+  // exposée uniquement à un admin via une fonction SECURITY DEFINER dédiée.
+  const { data: lastSignIns } = await sb.rpc('get_last_sign_in_times');
+  const lastSignInMap = new Map((lastSignIns||[]).map(r=>[r.id, r.last_sign_in_at]));
   const accEl = document.getElementById('adminAccountsListing');
   if(accEl){
     const loginIdentifiant = email => email ? (email.endsWith('@mathcollege.local') ? email.slice(0, -('@mathcollege.local'.length)) : email) : '(inconnu)';
@@ -469,8 +473,16 @@ async function adminRefreshListings(){
       const color = colors[p.subscription_status] || 'var(--ink-soft)';
       return ` <span style="color:${color};font-weight:700;">[${label}${dateStr?' jusqu\'au '+dateStr:''}]</span>`;
     };
+    // "Actif" ne dit rien sur la connexion (c'est un statut de facturation, pas d'activité) --
+    // affichée séparément, pour profs ET élèves.
+    const lastLoginBadge = p => {
+      const t = lastSignInMap.get(p.id);
+      if(!t) return ' <span class="hint">(jamais connecté)</span>';
+      const d = new Date(t);
+      return ` <span class="hint">(connecté le ${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})})</span>`;
+    };
     const rowHTML = p => {
-      const label = escapeHtml(p.nom||'(sans nom)') + ' · <b>identifiant :</b> ' + escapeHtml(loginIdentifiant(p.email)) + (p.role==='admin'?' [admin]':'') + subscriptionBadge(p);
+      const label = escapeHtml(p.nom||'(sans nom)') + ' · <b>identifiant :</b> ' + escapeHtml(loginIdentifiant(p.email)) + (p.role==='admin'?' [admin]':'') + subscriptionBadge(p) + lastLoginBadge(p);
       const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
       const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span> Modifier</button>` : '';
       const categoryBtn = p.role==='prof' ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeCategoryPrompt('${p.id}','${safeName}')"><span class=gicon>workspace_premium</span> Catégorie</button>` : '';
