@@ -403,32 +403,37 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="fig-icon-btn fig-mode" data-mode="point" onclick="setFigureMode('point')" title="Point">●</button>
 
         <div class="fig-group-wrap">
-        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('lignes')" title="Segment / Droite / Demi-droite">
+        <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryLignes" data-mode="segment" onclick="setFigureMode(this.dataset.mode)" title="Segment (dernier outil choisi dans ce groupe)">
           <svg viewBox="0 0 24 24" width="20" height="20"><line x1="4" y1="16" x2="20" y2="8" stroke="currentColor" stroke-width="1.2"/><circle cx="4" cy="16" r="2" fill="currentColor"/><circle cx="20" cy="8" r="2" fill="currentColor"/></svg>
         </button>
+        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('lignes')" title="Segment / Droite / Demi-droite / Vecteur">▾</button>
         <div id="figGroupLignes" class="fig-group-sub">
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="segment" onclick="setFigureMode('segment')" title="Segment (2 extrémités marquées)">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="segment" onclick="selectFigSubTool('lignes', this)" title="Segment (2 extrémités marquées)">
             <svg viewBox="0 0 24 24" width="20" height="20"><line x1="4" y1="16" x2="20" y2="8" stroke="currentColor" stroke-width="1.2"/><circle cx="4" cy="16" r="2" fill="currentColor"/><circle cx="20" cy="8" r="2" fill="currentColor"/></svg>
           </button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')" title="Segment de longueur donnée (une fenêtre demande la longueur)" style="font-size:.62rem;"><span class=gicon style="font-size:.9rem;">horizontal_rule</span>cm</button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="droite" onclick="setFigureMode('droite')" title="Droite (2 points de référence, se prolonge des deux côtés)">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="segment-longueur" onclick="selectFigSubTool('lignes', this)" title="Segment de longueur donnée (une fenêtre demande la longueur)" style="font-size:.62rem;"><span class=gicon style="font-size:.9rem;">horizontal_rule</span>cm</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="droite" onclick="selectFigSubTool('lignes', this)" title="Droite (2 points de référence, se prolonge des deux côtés)">
             <svg viewBox="0 0 24 24" width="20" height="20"><line x1="1" y1="19" x2="23" y2="5" stroke="currentColor" stroke-width="1.2"/><circle cx="7" cy="15" r="1.8" fill="currentColor"/><circle cx="17" cy="9" r="1.8" fill="currentColor"/></svg>
           </button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="demi-droite" onclick="setFigureMode('demi-droite')" title="Demi-droite (origine + 1 point, se prolonge d'un seul côté)">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="demi-droite" onclick="selectFigSubTool('lignes', this)" title="Demi-droite (origine + 1 point, se prolonge d'un seul côté)">
             <svg viewBox="0 0 24 24" width="20" height="20"><line x1="5" y1="19" x2="23" y2="5" stroke="currentColor" stroke-width="1.2"/><circle cx="5" cy="19" r="2" fill="currentColor"/><circle cx="14" cy="12" r="1.8" fill="currentColor"/></svg>
+          </button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="vecteur" onclick="selectFigSubTool('lignes', this)" title="Vecteur (origine + extrémité, avec une flèche)">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="4" y1="19" x2="19" y2="6" stroke="currentColor" stroke-width="1.2"/><path d="M12.5 6.5 L19 6 L18 12.5" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><circle cx="4" cy="19" r="1.8" fill="currentColor"/></svg>
           </button>
         </div>
         </div>
 
         <div class="fig-group-wrap">
-        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('cercles')" title="Cercle">
-          <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="2" r="1.6" fill="currentColor"/></svg>
+        <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryCercles" data-mode="cercle" onclick="setFigureMode(this.dataset.mode)" title="Cercle (dernier outil choisi dans ce groupe)">
+          <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="12" y1="12" x2="12" y2="2" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="2" r="1.6" fill="currentColor"/></svg>
         </button>
+        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('cercles')" title="Cercle (centre+point) / Cercle (rayon donné)">▾</button>
         <div id="figGroupCercles" class="fig-group-sub">
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle" onclick="setFigureMode('cercle')" title="Cercle (centre + un point sur le cercle)">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle" onclick="selectFigSubTool('cercles', this)" title="Cercle (centre + un point sur le cercle)">
             <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="12" y1="12" x2="12" y2="2" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="2" r="1.6" fill="currentColor"/></svg>
           </button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle-rayon" onclick="setFigureMode('cercle-rayon')" title="Cercle de rayon donné (une fenêtre demande le rayon)">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle-rayon" onclick="selectFigSubTool('cercles', this)" title="Cercle de rayon donné (une fenêtre demande le rayon)">
             <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="10" cy="14" r="8" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="18" y="6" font-size="7" font-family="JetBrains Mono" fill="currentColor" text-anchor="middle">cm</text><line x1="10" y1="14" x2="18" y2="14" stroke="currentColor" stroke-width="1.2"/><circle cx="10" cy="14" r="1.6" fill="currentColor"/></svg>
           </button>
         </div>
@@ -440,42 +445,63 @@ document.body.insertAdjacentHTML('beforeend', `
         </button>
 
         <div class="fig-group-wrap">
-        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('angles')" title="Angle">∠</button>
+        <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryAngles" data-mode="angle" onclick="setFigureMode(this.dataset.mode)" title="Angle (dernier outil choisi dans ce groupe)">∠</button>
+        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('angles')" title="Angle / Angle de mesure donnée">▾</button>
         <div id="figGroupAngles" class="fig-group-sub">
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="angle" onclick="setFigureMode('angle')" title="Angle (marque la mesure d'un angle existant)">∠</button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="angle-mesure" onclick="setFigureMode('angle-mesure')" title="Construire un angle de mesure donnée">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="angle" onclick="selectFigSubTool('angles', this)" title="Angle (marque la mesure d'un angle existant)">∠</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="angle-mesure" onclick="selectFigSubTool('angles', this)" title="Construire un angle de mesure donnée">
             <svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 20 L20 20 M4 20 L18 6" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M13 20 A5 5 0 0 0 10.7 15.3" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
           </button>
         </div>
         </div>
 
         <div class="fig-group-wrap">
-        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('remarquables')" title="Droites remarquables">⊥</button>
+        <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryRemarquables" data-mode="perpendiculaire" onclick="setFigureMode(this.dataset.mode)" title="Perpendiculaire (dernier outil choisi dans ce groupe)">⊥</button>
+        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('remarquables')" title="Perpendiculaire / Parallèle / Médiatrice / Bissectrice">▾</button>
         <div id="figGroupRemarquables" class="fig-group-sub">
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="perpendiculaire" onclick="setFigureMode('perpendiculaire')" title="Perpendiculaire">⊥</button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="parallele" onclick="setFigureMode('parallele')" title="Parallèle">∥</button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="mediatrice" onclick="setFigureMode('mediatrice')" title="Médiatrice">⟂</button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="bissectrice" onclick="setFigureMode('bissectrice')" title="Bissectrice">⟨</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="perpendiculaire" onclick="selectFigSubTool('remarquables', this)" title="Perpendiculaire">⊥</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="parallele" onclick="selectFigSubTool('remarquables', this)" title="Parallèle">∥</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="mediatrice" onclick="selectFigSubTool('remarquables', this)" title="Médiatrice">⟂</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="bissectrice" onclick="selectFigSubTool('remarquables', this)" title="Bissectrice">⟨</button>
         </div>
         </div>
 
         <div class="fig-group-wrap">
-        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('polygones')" title="Triangle / Polygone / Polygone régulier">
+        <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryPolygones" data-mode="triangle" onclick="setFigureMode(this.dataset.mode)" title="Triangle (dernier outil choisi dans ce groupe)">
           <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 21,20 3,20" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
         </button>
+        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('polygones')" title="Triangle / Polygone / Polygone régulier">▾</button>
         <div id="figGroupPolygones" class="fig-group-sub">
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="triangle" onclick="setFigureMode('triangle')" title="Triangle (3 points existants)">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="triangle" onclick="selectFigSubTool('polygones', this)" title="Triangle (3 points existants)">
             <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 21,20 3,20" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
           </button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone" onclick="setFigureMode('polygone')" title="Polygone (nombre de sommets libre, refermer sur le 1er point)">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone" onclick="selectFigSubTool('polygones', this)" title="Polygone (nombre de sommets libre, refermer sur le 1er point)">
             <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 20,9 17,20 7,20 4,9" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
           </button>
           <span style="display:flex;align-items:center;gap:2px;">
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone-regulier" onclick="setFigureMode('polygone-regulier')" title="Polygone régulier (centre puis 1 sommet)">
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone-regulier" onclick="selectFigSubTool('polygones', this)" title="Polygone régulier (centre puis 1 sommet)">
               <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,2 20.6,7.5 20.6,16.5 12,22 3.4,16.5 3.4,7.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
             </button>
             <input type="number" id="polygonSidesInput" value="5" min="3" step="1" title="Nombre de côtés" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
           </span>
+        </div>
+        </div>
+
+        <div class="fig-group-wrap">
+        <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryTransformations" data-mode="symetrie-axiale" onclick="setFigureMode(this.dataset.mode)" title="Symétrie axiale (dernier outil choisi dans ce groupe)">
+          <svg viewBox="0 0 24 24" width="20" height="20"><line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3,2"/><circle cx="6" cy="8" r="1.8" fill="currentColor"/><circle cx="18" cy="8" r="1.8" fill="currentColor"/></svg>
+        </button>
+        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('transformations')" title="Symétrie axiale / Symétrie centrale / Translation">▾</button>
+        <div id="figGroupTransformations" class="fig-group-sub">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="symetrie-axiale" onclick="selectFigSubTool('transformations', this)" title="Symétrie axiale (2 points sur l'axe, puis le point à transformer)">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3,2"/><circle cx="6" cy="8" r="1.8" fill="currentColor"/><circle cx="18" cy="8" r="1.8" fill="currentColor"/></svg>
+          </button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="symetrie-centrale" onclick="selectFigSubTool('transformations', this)" title="Symétrie centrale (le centre, puis le point à transformer)">
+            <svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="5" cy="19" r="1.8" fill="currentColor"/><circle cx="19" cy="5" r="1.8" fill="currentColor"/><line x1="5" y1="19" x2="19" y2="5" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/></svg>
+          </button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="translation" onclick="selectFigSubTool('transformations', this)" title="Translation (2 points définissant le vecteur, puis le point à déplacer)">
+            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="14" x2="14" y2="3" stroke="currentColor" stroke-width="1.2"/><path d="M8.5 3 L14 3 L14 8.5" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linejoin="round"/><circle cx="10" cy="21" r="1.8" fill="currentColor"/></svg>
+          </button>
         </div>
         </div>
 
@@ -2724,19 +2750,29 @@ function toggleFigGroup(name){
   document.querySelectorAll('.fig-group-sub.open').forEach(g=>g.classList.remove('open'));
   if(!wasOpen) el.classList.add('open');
 }
+/* Choix d'un outil DANS un sous-menu : applique le mode, clone l'icône choisie sur le bouton
+   principal du groupe (qui devient donc directement cliquable pour ce même outil la
+   prochaine fois, sans repasser par le sous-menu), et referme le sous-menu -- pour ne pas
+   avoir à le rouvrir à chaque fois qu'on reprend le même outil. */
+function selectFigSubTool(name, btnEl){
+  const mode = btnEl.dataset.mode;
+  setFigureMode(mode);
+  const primaryId = 'figPrimary'+name.charAt(0).toUpperCase()+name.slice(1);
+  const primary = document.getElementById(primaryId);
+  if(primary){
+    primary.innerHTML = btnEl.innerHTML;
+    primary.dataset.mode = mode;
+    primary.classList.add('active');
+  }
+  const subId = 'figGroup'+name.charAt(0).toUpperCase()+name.slice(1);
+  const sub = document.getElementById(subId);
+  if(sub) sub.classList.remove('open');
+}
 function setFigureMode(mode){
   figState.mode = mode; figState.selected = []; figState.refShape = null;
   if(mode!=='polygone') figPolygonPts = [];
   document.querySelectorAll('.fig-mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
-  const groupOf = {segment:'Lignes','segment-longueur':'Lignes',droite:'Lignes','demi-droite':'Lignes',
-    cercle:'Cercles','cercle-rayon':'Cercles',
-    angle:'Angles','angle-mesure':'Angles',perpendiculaire:'Remarquables',parallele:'Remarquables',mediatrice:'Remarquables',bissectrice:'Remarquables',
-    triangle:'Polygones',polygone:'Polygones','polygone-regulier':'Polygones'};
-  if(groupOf[mode]){
-    document.querySelectorAll('.fig-group-sub.open').forEach(g=>g.classList.remove('open'));
-    const el = document.getElementById('figGroup'+groupOf[mode]);
-    if(el) el.classList.add('open');
-  }
+  document.querySelectorAll('.fig-group-sub.open').forEach(g=>g.classList.remove('open'));
   document.getElementById('codageControlsRow').style.display = (mode==='code') ? 'flex' : 'none';
   const hints = {
     point:'Cliquez pour placer un point.',
@@ -2759,6 +2795,10 @@ function setFigureMode(mode){
     polygone:'Cliquez les sommets un par un (points existants). Recliquez le tout premier point (une fois au moins 3 posés) pour refermer le polygone.',
     'polygone-regulier':'Cliquez le centre, puis un premier sommet (fixe le rayon et l\'orientation) -- le nombre de côtés se règle dans le champ à côté.',
     'angle-mesure':'Cliquez un point sur le premier côté, puis le sommet -- une fenêtre demande ensuite la mesure (en degrés) et le sens (horaire ou trigonométrique).',
+    vecteur:'Cliquez deux points existants : l\'origine, puis l\'extrémité (avec la flèche).',
+    'symetrie-axiale':'Cliquez deux points de l\'axe de symétrie, puis le point à transformer.',
+    'symetrie-centrale':'Cliquez le centre de symétrie, puis le point à transformer.',
+    translation:'Cliquez les deux points qui définissent le vecteur de translation, puis le point à déplacer.',
   };
   document.getElementById('figureHint').textContent = hints[mode] || '';
   renderFigureSvg();
@@ -2816,7 +2856,7 @@ function findNearbyShape(x,y){
   let best = null, bestLen = Infinity;
   figState.shapes.forEach(s=>{
     let match = false;
-    if(s.type==='segment') match = distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
+    if(s.type==='segment' || s.type==='vecteur') match = distToSegment(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     else if(s.type==='droite') match = distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     else if(s.type==='demi-droite') match = distToRay(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     else if(s.type==='cercle'){
@@ -3236,7 +3276,7 @@ function onFigureClick(evt){
   }
   if(!near || figState.selected.includes(near)) return;
   figState.selected.push(near);
-  const neededMap = {angle:3, bissectrice:3, arc:3, triangle:3};
+  const neededMap = {angle:3, bissectrice:3, arc:3, triangle:3, 'symetrie-axiale':3, translation:3};
   const needed = neededMap[figState.mode] || 2;
   if(figState.selected.length===needed){
     const withCompass = document.getElementById('compassToggle') && document.getElementById('compassToggle').checked;
@@ -3247,6 +3287,18 @@ function onFigureClick(evt){
     } else if(figState.mode==='triangle'){
       const [p1,p2,p3] = figState.selected;
       figState.shapes.push({type:'segment', p1, p2}, {type:'segment', p1:p2, p2:p3}, {type:'segment', p1:p3, p2:p1});
+    } else if(figState.mode==='symetrie-axiale'){
+      const [axisP1, axisP2, m] = figState.selected;
+      const dx=axisP2.x-axisP1.x, dy=axisP2.y-axisP1.y, len2=dx*dx+dy*dy||1;
+      const t = ((m.x-axisP1.x)*dx+(m.y-axisP1.y)*dy)/len2;
+      const projX = axisP1.x+t*dx, projY = axisP1.y+t*dy;
+      figState.points.push({label:nextPointLabel(), x:2*projX-m.x, y:2*projY-m.y});
+    } else if(figState.mode==='symetrie-centrale'){
+      const [center, m] = figState.selected;
+      figState.points.push({label:nextPointLabel(), x:2*center.x-m.x, y:2*center.y-m.y});
+    } else if(figState.mode==='translation'){
+      const [vecP1, vecP2, m] = figState.selected;
+      figState.points.push({label:nextPointLabel(), x:m.x+(vecP2.x-vecP1.x), y:m.y+(vecP2.y-vecP1.y)});
     } else if(figState.mode==='angle' || figState.mode==='bissectrice'){
       const [p1,vertex,p2] = figState.selected; // le sommet est le 2e point cliqué
       figState.shapes.push({type:figState.mode, vertex, p1, p2});
@@ -3389,6 +3441,14 @@ function renderFigureSvg(){
         html+=`<text x="${mx}" y="${my-9}" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">${s.lengthLabel}</text>`;
       }
       if(s.codeGroup) html += renderLengthCode(s.p1, s.p2, s.codeGroup);
+    } else if(s.type==='vecteur'){
+      const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y, len=Math.hypot(dx,dy)||1;
+      const ux=dx/len, uy=dy/len, nx=-uy, ny=ux, headLen=9, headW=4;
+      const bx=s.p2.x-ux*headLen, by=s.p2.y-uy*headLen;
+      html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${bx}" y2="${by}" ${shapeStrokeAttrs(s,'#1C1B2E')}/>`;
+      const attrs = shapeStrokeAttrs(s,'#1C1B2E');
+      const col = (attrs.match(/stroke="([^"]+)"/)||[])[1] || '#1C1B2E';
+      html+=`<polygon points="${s.p2.x},${s.p2.y} ${(bx+nx*headW).toFixed(1)},${(by+ny*headW).toFixed(1)} ${(bx-nx*headW).toFixed(1)},${(by-ny*headW).toFixed(1)}" fill="${col}"/>`;
     } else if(s.type==='droite'){
       const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y; const len=Math.hypot(dx,dy)||1; const ext=400;
       html+=`<line x1="${s.p1.x-dx/len*ext}" y1="${s.p1.y-dy/len*ext}" x2="${s.p2.x+dx/len*ext}" y2="${s.p2.y+dy/len*ext}" ${shapeStrokeAttrs(s,'#1C1B2E')}/>`;
@@ -3471,7 +3531,7 @@ function renderFigureSvg(){
        ferait double emploi et surchargerait la figure. */
   function findLineShapesAt(pt){
     return figState.shapes.filter(s=>
-      (['segment','droite','demi-droite'].includes(s.type) && (s.p1===pt || s.p2===pt)) ||
+      (['segment','droite','demi-droite','vecteur'].includes(s.type) && (s.p1===pt || s.p2===pt)) ||
       (['angle','bissectrice'].includes(s.type) && (s.vertex===pt || s.p1===pt || s.p2===pt))
     );
   }

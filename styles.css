@@ -655,10 +655,13 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
 .fig-icon-btn.active{border-color:#0D5BA3;background:rgba(13,91,163,.12);}
 .fig-icon-btn:hover{border-color:rgba(28,43,57,.35);}
 .fig-group-wrap{position:relative;display:inline-block;}
-.fig-group-btn{position:relative;}
-.fig-group-btn::after{
-  content:'▾';position:absolute;bottom:-1px;right:1px;font-size:.55rem;color:var(--ink-soft);
+.fig-group-corner{
+  position:absolute;bottom:-4px;right:-4px;width:15px;height:15px;border-radius:50%;
+  border:1px solid rgba(28,43,57,.3);background:#fff;font-size:.5rem;line-height:1;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;
+  color:var(--ink-soft);z-index:5;
 }
+.fig-group-corner:hover{border-color:rgba(28,43,57,.55);background:rgba(28,43,57,.06);}
 .fig-group-sub{
   display:none;flex-direction:column;gap:4px;padding:6px;
   position:absolute;top:calc(100% + 4px);left:0;z-index:30;
