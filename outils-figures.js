@@ -440,9 +440,18 @@ document.body.insertAdjacentHTML('beforeend', `
         </button>
 
         <div class="fig-group-wrap">
-        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('remarquables')" title="Droites remarquables &amp; angles">⊥</button>
+        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('angles')" title="Angle">∠</button>
+        <div id="figGroupAngles" class="fig-group-sub">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="angle" onclick="setFigureMode('angle')" title="Angle (marque la mesure d'un angle existant)">∠</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="angle-mesure" onclick="setFigureMode('angle-mesure')" title="Construire un angle de mesure donnée">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 20 L20 20 M4 20 L18 6" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M13 20 A5 5 0 0 0 10.7 15.3" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+          </button>
+        </div>
+        </div>
+
+        <div class="fig-group-wrap">
+        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('remarquables')" title="Droites remarquables">⊥</button>
         <div id="figGroupRemarquables" class="fig-group-sub">
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="angle" onclick="setFigureMode('angle')" title="Angle">∠</button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="perpendiculaire" onclick="setFigureMode('perpendiculaire')" title="Perpendiculaire">⊥</button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="parallele" onclick="setFigureMode('parallele')" title="Parallèle">∥</button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="mediatrice" onclick="setFigureMode('mediatrice')" title="Médiatrice">⟂</button>
@@ -2664,7 +2673,7 @@ function setFigureMode(mode){
   document.querySelectorAll('.fig-mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
   const groupOf = {segment:'Lignes','segment-longueur':'Lignes',droite:'Lignes','demi-droite':'Lignes',
     cercle:'Cercles','cercle-rayon':'Cercles',
-    angle:'Remarquables',perpendiculaire:'Remarquables',parallele:'Remarquables',mediatrice:'Remarquables',bissectrice:'Remarquables',
+    angle:'Angles','angle-mesure':'Angles',perpendiculaire:'Remarquables',parallele:'Remarquables',mediatrice:'Remarquables',bissectrice:'Remarquables',
     triangle:'Polygones',polygone:'Polygones','polygone-regulier':'Polygones'};
   if(groupOf[mode]){
     document.querySelectorAll('.fig-group-sub.open').forEach(g=>g.classList.remove('open'));
@@ -2692,6 +2701,7 @@ function setFigureMode(mode){
     triangle:'Cliquez 3 points existants pour tracer le triangle qui les relie.',
     polygone:'Cliquez les sommets un par un (points existants). Recliquez le tout premier point (une fois au moins 3 posés) pour refermer le polygone.',
     'polygone-regulier':'Cliquez le centre, puis un premier sommet (fixe le rayon et l\'orientation) -- le nombre de côtés se règle dans le champ à côté.',
+    'angle-mesure':'Cliquez un point sur le premier côté, puis le sommet -- une fenêtre demande ensuite la mesure (en degrés) et le sens (horaire ou trigonométrique).',
   };
   document.getElementById('figureHint').textContent = hints[mode] || '';
   renderFigureSvg();
@@ -2837,22 +2847,19 @@ function handleCodeClick(x,y){
   }
   renderFigureSvg();
 }
-function handleLengthSegmentClick(x,y){
-  if(!figState.selected.length){
-    let pt = findNearbyPoint(x,y);
-    if(!pt){ pt = {label:nextPointLabel(), x, y}; figState.points.push(pt); }
-    figState.selected.push(pt);
-    renderFigureSvg();
-    return;
-  }
-  const start = figState.selected[0];
-  const dx=x-start.x, dy=y-start.y; const len=Math.hypot(dx,dy)||1;
-  figState.selected = [];
-  const raw = document.getElementById('segLengthInput').value;
+async function handleLengthSegmentClick(x,y){
+  let start = findNearbyPoint(x,y);
+  if(!start){ start = {label:nextPointLabel(), x, y}; figState.points.push(start); renderFigureSvg(); }
+  const raw = await nicePrompt('Longueur du segment (en cm) :', document.getElementById('segLengthInput').value || '5');
+  if(raw===null) return; // annulé
   const cm = parseFloat(String(raw).replace(',','.'));
-  if(!isFinite(cm) || cm<=0){ document.getElementById('figureHint').textContent = 'Longueur invalide, vérifiez le champ "cm" à côté du bouton Segment.'; renderFigureSvg(); return; }
+  if(!isFinite(cm) || cm<=0){ document.getElementById('figureHint').textContent = 'Longueur invalide.'; renderFigureSvg(); return; }
+  document.getElementById('segLengthInput').value = cm;
   const px = cm*SCALE_PX_PER_CM;
-  const end = {label:nextPointLabel(), x:start.x+dx/len*px, y:start.y+dy/len*px};
+  // Direction par défaut horizontale (vers la droite) -- ajustable ensuite en glissant le
+  // second point autour du premier (mode Déplacer), qui tourne à rayon fixe sans jamais
+  // changer la longueur déclarée, grâce à la contrainte déjà en place.
+  const end = {label:nextPointLabel(), x:start.x+px, y:start.y};
   figState.points.push(end);
   figState.shapes.push({type:'segment', p1:start, p2:end, lengthLabel:cm+' cm', lengthCm:cm, codeGroup:lengthGroupFor(cm)});
   renderFigureSvg();
@@ -3031,6 +3038,49 @@ function handlePolygoneRegulierClick(x,y){
   }
   renderFigureSvg();
 }
+/* Angle de MESURE donnée : 1er clic = un point sur le premier côté, 2e clic = le sommet --
+   puis une modale demande la mesure (en degrés) et le sens (horaire ou trigonométrique). Le
+   second côté est un nouveau point, placé à la distance choisie (arbitraire, la même que la
+   distance sommet<->point du 1er côté, pour un rendu visuel cohérent) selon l'angle calculé. */
+async function handleAngleMesureClick(x,y){
+  if(!figState.selected.length){
+    let pt = findNearbyPoint(x,y);
+    if(!pt){ pt = {label:nextPointLabel(), x, y}; figState.points.push(pt); renderFigureSvg(); }
+    figState.selected.push(pt);
+    return;
+  }
+  const refPoint = figState.selected[0];
+  let vertex = findNearbyPoint(x,y);
+  if(!vertex){ vertex = {label:nextPointLabel(), x, y}; figState.points.push(vertex); }
+  if(vertex===refPoint) return;
+  figState.selected = [];
+  renderFigureSvg();
+  const angleRaw = await nicePrompt('Mesure de l\'angle (en degrés) :', '60');
+  if(angleRaw===null) return;
+  const angleDeg = parseFloat(String(angleRaw).replace(',','.'));
+  if(!isFinite(angleDeg) || angleDeg<=0 || angleDeg>=360){ document.getElementById('figureHint').textContent = 'Mesure invalide (entre 0 et 360°).'; return; }
+  const sens = await niceModal({message:'Sens de l\'angle (depuis le premier côté) :', buttons:[
+    {label:'Annuler', value:null, secondary:true},
+    {label:'Horaire ↻', value:'horaire', secondary:true},
+    {label:'Trigonométrique ↺', value:'trigo'},
+  ]});
+  if(!sens) return;
+  const baseAngle = Math.atan2(refPoint.y-vertex.y, refPoint.x-vertex.x);
+  // En coordonnées écran (y vers le bas), ajouter à l'angle tourne visuellement dans le sens
+  // horaire ; soustraire tourne dans le sens trigonométrique (antihoraire), comme en maths.
+  const sign = sens==='trigo' ? -1 : 1;
+  const newAngle = baseAngle + sign*angleDeg*Math.PI/180;
+  const dist = Math.max(40, Math.hypot(refPoint.x-vertex.x, refPoint.y-vertex.y));
+  const newPoint = {label:nextPointLabel(), x:vertex.x+dist*Math.cos(newAngle), y:vertex.y+dist*Math.sin(newAngle)};
+  figState.points.push(newPoint);
+  // S'assure que le 1er côté (sommet<->référence) existe visuellement : s'il n'y avait pas
+  // déjà de segment entre ces deux points (ex. refPoint venait d'être créé à la volée),
+  // l'angle ne montrerait sinon qu'un seul côté.
+  const firstSideExists = figState.shapes.some(s=>s.type==='segment' && ((s.p1===vertex&&s.p2===refPoint)||(s.p1===refPoint&&s.p2===vertex)));
+  if(!firstSideExists) figState.shapes.push({type:'segment', p1:vertex, p2:refPoint});
+  figState.shapes.push({type:'segment', p1:vertex, p2:newPoint});
+  renderFigureSvg();
+}
 function onFigureClick(evt){
   if(figState.mode==='deplacer') return; // géré par mousedown/mousemove
   figRedoStack = [];
@@ -3048,6 +3098,7 @@ function onFigureClick(evt){
   if(figState.mode==='code'){ handleCodeClick(x,y); return; }
   if(figState.mode==='polygone'){ handlePolygoneClick(x,y); return; }
   if(figState.mode==='polygone-regulier'){ handlePolygoneRegulierClick(x,y); return; }
+  if(figState.mode==='angle-mesure'){ handleAngleMesureClick(x,y); return; }
   if(figState.mode==='milieu'){
     // Un clic direct sur le segment (pas seulement ses 2 extrémités) sélectionne les deux
     // points d'un coup -- plus rapide que d'avoir à cliquer précisément chaque extrémité.
