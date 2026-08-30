@@ -4282,7 +4282,7 @@ function renderFigureSvg(){
       let a2=Math.atan2(s.p2.y-s.vertex.y, s.p2.x-s.vertex.x);
       let delta=a2-a1; while(delta>Math.PI) delta-=2*Math.PI; while(delta<-Math.PI) delta+=2*Math.PI;
       const bisA=a1+delta/2, len=260;
-      html+=`<line x1="${s.vertex.x}" y1="${s.vertex.y}" x2="${s.vertex.x+len*Math.cos(bisA)}" y2="${s.vertex.y+len*Math.sin(bisA)}" ${shapeStrokeAttrs(s,'#8A2F52')} stroke-dasharray="2 3"/>`;
+      html+=`<line x1="${s.vertex.x}" y1="${s.vertex.y}" x2="${s.vertex.x+len*Math.cos(bisA)}" y2="${s.vertex.y+len*Math.sin(bisA)}" ${shapeStrokeAttrs(s,'#8A2F52')}/>`;
     } else if(s.type==='perpendiculaire' || s.type==='parallele'){
       let dx=s.refB.x-s.refA.x, dy=s.refB.y-s.refA.y;
       if(s.type==='perpendiculaire'){ const t=dx; dx=-dy; dy=t; }
