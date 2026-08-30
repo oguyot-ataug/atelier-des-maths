@@ -3758,6 +3758,21 @@ async function onFigureDblClick(evt){
   if(figState.mode!=='deplacer') return;
   const svg=document.getElementById('figureSvg');
   const {x,y} = svgCoordsFromEvent(svg,evt);
+  // Double-clic sur le label (ou le trait) d'une mesure de distance : ouvre la modale de
+  // style/suppression -- le clic simple sur le label déclenche toujours le glissement,
+  // jamais cette modale, ce qui rendait la suppression difficile (signalé : "je ne peux pas
+  // éditer les distances et les supprimer").
+  const measureShape = findNearbyMeasureLabel(x,y) || findNearbyShape(x,y);
+  if(measureShape && ['mesure-distance','mesure-distance-ligne'].includes(measureShape.type)){
+    const result = await figStyleModal(measureShape);
+    if(!result) return;
+    if(result.action==='delete') deleteObjectWithDependents(measureShape);
+    else if(result.action==='style'){
+      measureShape.strokeWidth = result.strokeWidth; measureShape.strokePattern = result.strokePattern; measureShape.strokeColor = result.strokeColor;
+      renderFigureSvg();
+    }
+    return;
+  }
   const p = findNearbyLabel(x,y) || findNearbyPoint(x,y);
   if(!p) return;
   const result = await figPointActionsModal(p);
@@ -4133,10 +4148,18 @@ function renderLengthCode(p1,p2,group,color){
 }
 function renderAngleCode(vertex,p1,p2,group,color){
   color = color || CODE_GROUP_COLORS[group] || '#E35D3A';
-  let html='';
+  const r = 20;
+  const {points, mid} = angleArcPoints(vertex,p1,p2,r);
+  let html = `<polyline points="${points}" fill="none" stroke="${color}" stroke-width="1.3"/>`;
+  // Traits perpendiculaires à l'arc (radiaux), espacés angulairement autour de son milieu --
+  // UN seul arc, avec le nombre de traits qui indique le groupe (convention standard,
+  // signalé : "il faut les coder avec arc de cercle et trait dessus").
+  const angSpacing = 0.13, offsetStart = -((group-1)*angSpacing)/2;
   for(let i=0;i<group;i++){
-    const {points} = angleArcPoints(vertex,p1,p2,13+i*5);
-    html+=`<polyline points="${points}" fill="none" stroke="${color}" stroke-width="1.3"/>`;
+    const a = mid+offsetStart+i*angSpacing;
+    const cx=vertex.x+r*Math.cos(a), cy=vertex.y+r*Math.sin(a);
+    const nx=Math.cos(a), ny=Math.sin(a);
+    html+=`<line x1="${(cx-nx*4).toFixed(1)}" y1="${(cy-ny*4).toFixed(1)}" x2="${(cx+nx*4).toFixed(1)}" y2="${(cy+ny*4).toFixed(1)}" stroke="${color}" stroke-width="1.1"/>`;
   }
   return html;
 }
