@@ -393,76 +393,76 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="btn orange" onclick="interpretEnonceWithAI()" style="align-self:flex-start;"><span class=gicon>smart_toy</span> Interpréter avec l'IA</button>
       </div>
       <p class="hint" style="margin:-4px 0 10px;">Phrases reconnues directement : <span class="hint-mono">ABC triangle</span> (rectangle/isocèle/équilatéral, ex. <span class="hint-mono">ABC triangle rectangle en A</span>) · <span class="hint-mono">ABCD carré/rectangle/losange/parallélogramme</span> · <span class="hint-mono">I milieu de [BC]</span> · <span class="hint-mono">cercle de centre A passant par B</span>. Pour tout le reste (ou un énoncé complet en français libre), utilisez « Interpréter avec l'IA » (nécessite une clé API, à renseigner dans l'onglet Quiz IA).</p>
-      <div style="display:flex;gap:12px;align-items:stretch;">
-        <!-- Barre latérale à icônes : la figure et les outils restent visibles en même temps,
-             plus besoin de faire défiler pour voir l'un ou l'autre. Les outils proches
-             (segment/droite/demi-droite ; cercle libre/cm ; droites remarquables & angles)
-             sont regroupés sous une seule icône avec sous-menu (▾), plutôt que 16 boutons à
-             plat. -->
-        <div style="display:flex;flex-direction:column;gap:4px;flex:none;overflow-y:auto;max-height:75vh;padding-right:2px;">
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="point" onclick="setFigureMode('point')" title="Point">●</button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')" title="Déplacer un point">✥</button>
+      <!-- Barre d'outils HORIZONTALE au-dessus du canevas (pas latérale) : la figure et les
+           outils restent visibles en même temps, sans faire défiler. Déplacer en premier. Les
+           outils proches (segment/droite/demi-droite ; cercle libre/cm ; droites remarquables
+           & angles ; triangle/polygone/polygone régulier) restent regroupés sous une seule
+           icône avec sous-menu (▾), plutôt que 16+ boutons à plat. -->
+      <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start;margin-bottom:8px;">
+        <button type="button" class="fig-icon-btn fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')" title="Déplacer un point">✥</button>
+        <button type="button" class="fig-icon-btn fig-mode" data-mode="point" onclick="setFigureMode('point')" title="Point">●</button>
 
-          <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('lignes')" title="Segment / Droite / Demi-droite">⟋</button>
-          <div id="figGroupLignes" class="fig-group-sub">
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="segment" onclick="setFigureMode('segment')" title="Segment"><span class=gicon>horizontal_rule</span></button>
-            <span style="display:flex;align-items:center;gap:2px;">
-              <button type="button" class="fig-icon-btn fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')" title="Segment de longueur donnée (cm)" style="font-size:.62rem;"><span class=gicon style="font-size:.9rem;">horizontal_rule</span>cm</button>
-              <input type="number" id="segLengthInput" value="5" min="0.5" step="0.5" title="Longueur en cm" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
-            </span>
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="droite" onclick="setFigureMode('droite')" title="Droite">⟷</button>
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="demi-droite" onclick="setFigureMode('demi-droite')" title="Demi-droite">⟶</button>
-          </div>
+        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('lignes')" title="Segment / Droite / Demi-droite">⟋</button>
+        <div id="figGroupLignes" class="fig-group-sub">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="segment" onclick="setFigureMode('segment')" title="Segment"><span class=gicon>horizontal_rule</span></button>
+          <span style="display:flex;align-items:center;gap:2px;">
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="segment-longueur" onclick="setFigureMode('segment-longueur')" title="Segment de longueur donnée (cm)" style="font-size:.62rem;"><span class=gicon style="font-size:.9rem;">horizontal_rule</span>cm</button>
+            <input type="number" id="segLengthInput" value="5" min="0.5" step="0.5" title="Longueur en cm" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
+          </span>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="droite" onclick="setFigureMode('droite')" title="Droite">⟷</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="demi-droite" onclick="setFigureMode('demi-droite')" title="Demi-droite">⟶</button>
+        </div>
 
-          <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('cercles')" title="Cercle">○</button>
-          <div id="figGroupCercles" class="fig-group-sub">
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle" onclick="setFigureMode('cercle')" title="Cercle (centre + point)">○</button>
-            <span style="display:flex;align-items:center;gap:2px;">
-              <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle-rayon" onclick="setFigureMode('cercle-rayon')" title="Cercle de rayon donné (cm)" style="font-size:.62rem;">○cm</button>
-              <input type="number" id="circleRadiusInput" value="3" min="0.5" step="0.5" title="Rayon en cm" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
-            </span>
-          </div>
+        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('cercles')" title="Cercle">○</button>
+        <div id="figGroupCercles" class="fig-group-sub">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle" onclick="setFigureMode('cercle')" title="Cercle (centre + point)">○</button>
+          <span style="display:flex;align-items:center;gap:2px;">
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle-rayon" onclick="setFigureMode('cercle-rayon')" title="Cercle de rayon donné (cm)" style="font-size:.62rem;">○cm</button>
+            <input type="number" id="circleRadiusInput" value="3" min="0.5" step="0.5" title="Rayon en cm" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
+          </span>
+        </div>
 
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="arc" onclick="setFigureMode('arc')" title="Arc de cercle">◡</button>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')" title="Milieu (cliquez le segment, ou ses 2 extrémités)">
-            <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.8"/><circle cx="3" cy="12" r="1.8" fill="currentColor"/><circle cx="21" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
-          </button>
+        <button type="button" class="fig-icon-btn fig-mode" data-mode="arc" onclick="setFigureMode('arc')" title="Arc de cercle">◡</button>
+        <button type="button" class="fig-icon-btn fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')" title="Milieu (cliquez le segment, ou ses 2 extrémités)">
+          <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.8"/><circle cx="3" cy="12" r="1.8" fill="currentColor"/><circle cx="21" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        </button>
 
-          <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('remarquables')" title="Droites remarquables &amp; angles">⊥</button>
-          <div id="figGroupRemarquables" class="fig-group-sub">
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="angle" onclick="setFigureMode('angle')" title="Angle">∠</button>
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="perpendiculaire" onclick="setFigureMode('perpendiculaire')" title="Perpendiculaire">⊥</button>
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="parallele" onclick="setFigureMode('parallele')" title="Parallèle">∥</button>
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="mediatrice" onclick="setFigureMode('mediatrice')" title="Médiatrice">⟂</button>
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="bissectrice" onclick="setFigureMode('bissectrice')" title="Bissectrice">⟨</button>
-          </div>
+        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('remarquables')" title="Droites remarquables &amp; angles">⊥</button>
+        <div id="figGroupRemarquables" class="fig-group-sub">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="angle" onclick="setFigureMode('angle')" title="Angle">∠</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="perpendiculaire" onclick="setFigureMode('perpendiculaire')" title="Perpendiculaire">⊥</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="parallele" onclick="setFigureMode('parallele')" title="Parallèle">∥</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="mediatrice" onclick="setFigureMode('mediatrice')" title="Médiatrice">⟂</button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="bissectrice" onclick="setFigureMode('bissectrice')" title="Bissectrice">⟨</button>
+        </div>
 
-          <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('polygones')" title="Triangle / Polygone / Polygone régulier">
+        <button type="button" class="fig-icon-btn fig-group-btn" onclick="toggleFigGroup('polygones')" title="Triangle / Polygone / Polygone régulier">
+          <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 21,20 3,20" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        </button>
+        <div id="figGroupPolygones" class="fig-group-sub">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="triangle" onclick="setFigureMode('triangle')" title="Triangle (3 points existants)">
             <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 21,20 3,20" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
           </button>
-          <div id="figGroupPolygones" class="fig-group-sub">
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="triangle" onclick="setFigureMode('triangle')" title="Triangle (3 points existants)">
-              <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 21,20 3,20" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone" onclick="setFigureMode('polygone')" title="Polygone (nombre de sommets libre, refermer sur le 1er point)">
+            <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 20,9 17,20 7,20 4,9" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          </button>
+          <span style="display:flex;align-items:center;gap:2px;">
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone-regulier" onclick="setFigureMode('polygone-regulier')" title="Polygone régulier (centre puis 1 sommet)">
+              <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,2 20.6,7.5 20.6,16.5 12,22 3.4,16.5 3.4,7.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
             </button>
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone" onclick="setFigureMode('polygone')" title="Polygone (nombre de sommets libre, refermer sur le 1er point)">
-              <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 20,9 17,20 7,20 4,9" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
-            </button>
-            <span style="display:flex;align-items:center;gap:2px;">
-              <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone-regulier" onclick="setFigureMode('polygone-regulier')" title="Polygone régulier (centre puis 1 sommet)">
-                <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,2 20.6,7.5 20.6,16.5 12,22 3.4,16.5 3.4,7.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-              </button>
-              <input type="number" id="polygonSidesInput" value="5" min="3" step="1" title="Nombre de côtés" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
-            </span>
-          </div>
-
-          <div style="height:1px;background:rgba(28,43,57,.15);margin:4px 0;"></div>
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="code" onclick="setFigureMode('code')" title="Coder (longueurs/angles égaux, angle droit)" style="border-color:var(--accent-orange);color:var(--accent-orange);">✓</button>
-          <div style="height:1px;background:rgba(28,43,57,.15);margin:4px 0;"></div>
-          <button type="button" class="fig-icon-btn" onclick="undoFigure()" title="Annuler le dernier">↩︎</button>
-          <button type="button" class="fig-icon-btn" onclick="clearFigure()" title="Effacer tout"><span class=gicon>cleaning_services</span></button>
+            <input type="number" id="polygonSidesInput" value="5" min="3" step="1" title="Nombre de côtés" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
+          </span>
         </div>
+
+        <div style="width:1px;align-self:stretch;background:rgba(28,43,57,.15);margin:0 2px;"></div>
+        <button type="button" class="fig-icon-btn fig-mode" data-mode="code" onclick="setFigureMode('code')" title="Coder (longueurs/angles égaux, angle droit)" style="border-color:var(--accent-orange);color:var(--accent-orange);">✓</button>
+        <div style="width:1px;align-self:stretch;background:rgba(28,43,57,.15);margin:0 2px;"></div>
+        <button type="button" class="fig-icon-btn" onclick="undoFigure()" title="Annuler le dernier">↩︎</button>
+        <button type="button" class="fig-icon-btn" onclick="clearFigure()" title="Effacer tout"><span class=gicon>cleaning_services</span></button>
+      </div>
+      <div style="display:flex;gap:12px;align-items:stretch;">
         <!-- Zone principale : réglages contextuels (compas, codage) au-dessus, puis le
-             canevas -- toujours visible à côté de la barre latérale, jamais en dessous.
+             canevas -- toujours visible sous la barre d'outils, jamais caché derrière elle.
              Le compas est une icône à bascule (pas une case+texte sur toute une ligne), et le
              bloc codage ne s'affiche que lorsque le mode "Coder" est actif, pour ne pas
              prendre de place le reste du temps. -->
