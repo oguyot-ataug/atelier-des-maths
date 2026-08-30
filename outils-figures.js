@@ -3102,6 +3102,13 @@ function lineShapeEndpoints(s){
   if(s.type==='parallele'){
     return {p1:s.through, p2:{x:s.through.x+(s.refB.x-s.refA.x), y:s.through.y+(s.refB.y-s.refA.y)}};
   }
+  if(s.type==='bissectrice'){
+    const a1=Math.atan2(s.p1.y-s.vertex.y, s.p1.x-s.vertex.x);
+    let a2=Math.atan2(s.p2.y-s.vertex.y, s.p2.x-s.vertex.x);
+    let delta=a2-a1; while(delta>Math.PI) delta-=2*Math.PI; while(delta<-Math.PI) delta+=2*Math.PI;
+    const bisA=a1+delta/2;
+    return {p1:s.vertex, p2:{x:s.vertex.x+Math.cos(bisA), y:s.vertex.y+Math.sin(bisA)}};
+  }
   return {p1:s.p1, p2:s.p2};
 }
 function findNearbyShape(x,y){
@@ -3120,7 +3127,7 @@ function findNearbyShape(x,y){
     }
     else if(s.type==='droite') match = distToLine(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
     else if(s.type==='demi-droite') match = distToRay(x,y,s.p1.x,s.p1.y,s.p2.x,s.p2.y) < thresh;
-    else if(['mediatrice','perpendiculaire','parallele'].includes(s.type)){
+    else if(['mediatrice','perpendiculaire','parallele','bissectrice'].includes(s.type)){
       const {p1,p2} = lineShapeEndpoints(s);
       match = distToLine(x,y,p1.x,p1.y,p2.x,p2.y) < thresh;
     }
@@ -3939,7 +3946,7 @@ async function onFigureClick(evt){
       }
     }
     const shape = findNearbyShape(x,y);
-    if(shape && ['segment','droite','demi-droite','mediatrice','perpendiculaire','parallele'].includes(shape.type)){
+    if(shape && ['segment','droite','demi-droite','mediatrice','perpendiculaire','parallele','bissectrice'].includes(shape.type)){
       const {p1,p2} = lineShapeEndpoints(shape);
       const dx=p2.x-p1.x, dy=p2.y-p1.y, len2=dx*dx+dy*dy||1;
       const t = clampTForShapeType(((x-p1.x)*dx+(y-p1.y)*dy)/len2, shape.type);
