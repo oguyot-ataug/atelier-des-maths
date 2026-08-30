@@ -462,14 +462,19 @@ document.body.insertAdjacentHTML('beforeend', `
           <button type="button" class="fig-icon-btn" onclick="clearFigure()" title="Effacer tout"><span class=gicon>cleaning_services</span></button>
         </div>
         <!-- Zone principale : réglages contextuels (compas, codage) au-dessus, puis le
-             canevas -- toujours visible à côté de la barre latérale, jamais en dessous. -->
+             canevas -- toujours visible à côté de la barre latérale, jamais en dessous.
+             Le compas est une icône à bascule (pas une case+texte sur toute une ligne), et le
+             bloc codage ne s'affiche que lorsque le mode "Coder" est actif, pour ne pas
+             prendre de place le reste du temps. -->
         <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
-          <div class="tool-row" style="margin:0 0 6px;">
-            <label class="hint" style="display:flex;align-items:center;gap:5px;margin:0;">
-              <input type="checkbox" id="compassToggle"> Simuler un compas (Cercle/Arc)
-            </label>
+          <div class="tool-row" style="margin:0 0 6px;align-items:center;">
+            <button type="button" id="compassToggleBtn" class="fig-icon-btn" style="width:32px;height:32px;font-size:.95rem;" onclick="toggleCompassMode()" title="Simuler un compas (pour Cercle/Arc)">
+              <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 3 L6 20 M12 3 L18 20" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/><circle cx="12" cy="3" r="1.6" fill="currentColor"/></svg>
+            </button>
+            <input type="checkbox" id="compassToggle" style="display:none;">
+            <span class="hint" style="margin:0;">Compas (Cercle/Arc)</span>
           </div>
-          <div class="tool-row" style="margin:0 0 8px;background:rgba(227,93,58,.06);border-radius:8px;padding:8px 10px;">
+          <div id="codageControlsRow" class="tool-row" style="display:none;margin:0 0 8px;background:rgba(227,93,58,.06);border-radius:8px;padding:8px 10px;">
             <span style="font-size:.72rem;font-weight:700;color:var(--accent-orange);width:100%;margin:0 0 2px;">CODAGE</span>
             <select id="codeType">
               <option value="longueur">Longueurs égales</option>
@@ -2611,6 +2616,14 @@ function undoFigure(){
 /* Ouvre/ferme un sous-menu de la barre latérale (segment/droite/demi-droite ; cercle libre/cm ;
    droites remarquables & angles) -- en accordéon, un seul groupe ouvert à la fois, pour ne
    pas allonger indéfiniment la barre si plusieurs groupes restaient ouverts en même temps. */
+/* Icône à bascule pour le compas : synchronisée avec la case à cocher cachée (compassToggle),
+   que le reste du code (handleRadiusCircleClick, etc.) continue de lire tel quel -- rien
+   d'autre à changer côté logique, seul l'habillage visuel change. */
+function toggleCompassMode(){
+  const cb = document.getElementById('compassToggle');
+  cb.checked = !cb.checked;
+  document.getElementById('compassToggleBtn').classList.toggle('active', cb.checked);
+}
 function toggleFigGroup(name){
   const id = 'figGroup'+name.charAt(0).toUpperCase()+name.slice(1);
   const el = document.getElementById(id);
@@ -2632,6 +2645,7 @@ function setFigureMode(mode){
     const el = document.getElementById('figGroup'+groupOf[mode]);
     if(el) el.classList.add('open');
   }
+  document.getElementById('codageControlsRow').style.display = (mode==='code') ? 'flex' : 'none';
   const hints = {
     point:'Cliquez pour placer un point.',
     deplacer:'Faites glisser un point existant pour le déplacer (les points construits, comme un milieu, suivent automatiquement).',
