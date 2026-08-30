@@ -2657,6 +2657,21 @@ function openCodageManager(){
   // (signalé : "il faut reconnaître les objets perpendiculaires") -- proposées séparément,
   // avec une simple case à cocher (pas de choix de groupe, juste "marquer" ou non).
   const perps = figState.shapes.filter(s=>s.type==='perpendiculaire' || s.type==='mediatrice');
+  // Un point milieu implique DÉFINITIONNELLEMENT que ses deux moitiés sont de longueur
+  // égale -- même principe que perpendiculaire/angle droit ci-dessus (signalé : "il
+  // reconnaît l'angle droit mais plus le milieu").
+  const milieux = figState.points.filter(p=>{
+    if(!p.def || p.def.type!=='milieu') return false;
+    const {a,b} = p.def;
+    const halfA = segments.find(s=>(s.p1===a&&s.p2===p)||(s.p1===p&&s.p2===a));
+    const halfB = segments.find(s=>(s.p1===b&&s.p2===p)||(s.p1===p&&s.p2===b));
+    return halfA && halfB;
+  }).map(p=>{
+    const {a,b} = p.def;
+    const halfA = segments.find(s=>(s.p1===a&&s.p2===p)||(s.p1===p&&s.p2===a));
+    const halfB = segments.find(s=>(s.p1===b&&s.p2===p)||(s.p1===p&&s.p2===b));
+    return {point:p, a, b, halfA, halfB};
+  });
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.style.zIndex = '400';
@@ -2690,13 +2705,21 @@ function openCodageManager(){
       <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><input type="checkbox" data-kind="perp" data-idx="${i}" ${existing?'checked':''}> ${desc}</label>
     </div>`;
   }).join('');
+  const milieuRows = milieux.map((m,i)=>{
+    const already = m.halfA.codeGroup && m.halfA.codeGroup===m.halfB.codeGroup;
+    return `
+    <div class="tool-row" style="margin:0 0 6px;align-items:center;">
+      <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><input type="checkbox" data-kind="milieu" data-idx="${i}" ${already?'checked':''}> [${m.a.label}${m.point.label}] et [${m.point.label}${m.b.label}] égales (milieu ${m.point.label})</label>
+    </div>`;
+  }).join('');
   overlay.innerHTML = `
     <div class="modal-card" style="max-width:420px;max-height:80vh;overflow-y:auto;">
       <p style="font-weight:700;margin:0 0 12px;">Coder la figure</p>
       ${segments.length ? `<p class="hint" style="margin:0 0 6px;font-weight:700;">Segments</p>${segRows}` : ''}
       ${angles.length ? `<p class="hint" style="margin:14px 0 6px;font-weight:700;">Angles</p>${angleRows}` : ''}
       ${perps.length ? `<p class="hint" style="margin:14px 0 6px;font-weight:700;">Angles droits (perpendicularités)</p>${perpRows}` : ''}
-      ${(!segments.length && !angles.length && !perps.length) ? `<p class="hint">Aucun segment ni angle dans la figure pour l'instant.</p>` : ''}
+      ${milieux.length ? `<p class="hint" style="margin:14px 0 6px;font-weight:700;">Longueurs égales (milieux)</p>${milieuRows}` : ''}
+      ${(!segments.length && !angles.length && !perps.length && !milieux.length) ? `<p class="hint">Aucun segment ni angle dans la figure pour l'instant.</p>` : ''}
       <p class="hint" style="margin:14px 0 0;">Deux objets codés avec le même nombre de traits/arcs sont annoncés comme égaux entre eux.</p>
       <div class="figure-toolbar" style="margin-top:14px;">
         <button type="button" class="btn secondary" id="codageMgrClearAll"><span class=gicon>cleaning_services</span> Tout retirer</button>
@@ -2739,6 +2762,22 @@ function openCodageManager(){
           p2 = {x:vertex.x-(s.refB.y-s.refA.y), y:vertex.y+(s.refB.x-s.refA.x)};
         }
         figState.shapes.push({type:'code-droit', vertex, p1, p2, sourceShape:s});
+      }
+    });
+    overlay.querySelectorAll('input[data-kind="milieu"]').forEach(cb=>{
+      const m = milieux[+cb.dataset.idx];
+      if(cb.checked){
+        // Réutilise un groupe déjà présent sur l'une des deux moitiés, sinon en crée un
+        // nouveau (le suivant après le plus grand déjà utilisé dans la figure).
+        const existingGroups = figState.shapes.filter(s=>s.codeGroup).map(s=>s.codeGroup);
+        const group = m.halfA.codeGroup || m.halfB.codeGroup || (existingGroups.length ? Math.max(...existingGroups)+1 : 1);
+        m.halfA.codeGroup = group;
+        m.halfB.codeGroup = group;
+      } else if(m.halfA.codeGroup && m.halfA.codeGroup===m.halfB.codeGroup){
+        // Ne décoche que si les deux moitiés étaient effectivement dans le même groupe --
+        // évite de retirer un codage manuel indépendant que l'utilisateur aurait choisi.
+        delete m.halfA.codeGroup;
+        delete m.halfB.codeGroup;
       }
     });
     renderFigureSvg();
