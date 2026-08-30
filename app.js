@@ -105,6 +105,11 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     if(nav==='niveau'){ currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
     if(nav==='cm'){ showView('view-cm'); setActiveTopnav('cm'); if(typeof refreshCMProgress==='function') refreshCMProgress(); if(typeof refreshCMRecords==='function') refreshCMRecords(); }
     if(nav==='compte'){ showView('view-compte'); setActiveTopnav('compte'); if(typeof cebInit==='function') cebInit(); }
+    if(nav==='figure-sandbox'){
+      // Bac à sable géométrie : accessible à tous (élèves compris), sans lien avec un
+      // exercice précis -- ouvre directement l'outil figure, déjà chargé globalement.
+      if(typeof openFigureTool==='function') openFigureTool();
+    }
     if(nav==='correction'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-correction'); setActiveTopnav('correction');
@@ -132,6 +137,14 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     if(nav==='progression'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-progression'); setActiveTopnav('progression'); renderProgressionEditor();
+    }
+    if(nav==='devoirsprof'){
+      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      showView('view-devoirs-prof'); setActiveTopnav('devoirsprof'); if(typeof renderDevoirsProf==='function') renderDevoirsProf();
+    }
+    if(nav==='mesdevoirs'){
+      if(currentUserRole!=='eleve'){ toggleAccountMenu(); return; }
+      showView('view-devoirs-eleve'); setActiveTopnav('mesdevoirs'); if(typeof renderDevoirsEleve==='function') renderDevoirsEleve();
     }
     if(nav==='mesresultats'){
       if(currentUserRole!=='eleve'){ toggleAccountMenu(); return; }
@@ -1817,6 +1830,7 @@ async function refreshAuthUI(){
   const navAdmin = document.getElementById('navAdmin');
   const navCorrection = document.getElementById('navCorrection'), navCahier = document.getElementById('navCahier');
   const navMesResultats = document.getElementById('navMesResultats');
+  const navMesDevoirs = document.getElementById('navMesDevoirs');
 
   if(session){
     currentUser = session.user;
@@ -1857,6 +1871,7 @@ async function refreshAuthUI(){
     if(navCorrection) navCorrection.style.display = isStaff ? 'inline-block' : 'none';
     if(navCahier) navCahier.style.display = accessBlocked ? 'none' : 'inline-block'; // accessible à tous les comptes connectés (prof, admin, élève), sauf accès bloqué
     if(navMesResultats) navMesResultats.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
+    if(navMesDevoirs) navMesDevoirs.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
     if(navAdmin) navAdmin.style.display = (!accessBlocked && currentUserRole==='admin') ? 'inline-block' : 'none';
     const btnReportBug = document.getElementById('btnReportBug');
     if(btnReportBug) btnReportBug.style.display = isStaff ? 'block' : 'none';
@@ -1899,6 +1914,7 @@ async function refreshAuthUI(){
     if(navCorrection) navCorrection.style.display='none';
     if(navCahier) navCahier.style.display='none';
     if(navMesResultats) navMesResultats.style.display='none';
+    if(navMesDevoirs) navMesDevoirs.style.display='none';
     if(navAdmin) navAdmin.style.display='none';
     const btnReportBugOut = document.getElementById('btnReportBug');
     if(btnReportBugOut) btnReportBugOut.style.display='none';

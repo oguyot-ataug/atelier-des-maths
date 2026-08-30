@@ -386,6 +386,7 @@ document.body.insertAdjacentHTML('beforeend', `
     </div>
     </div>
     <div id="figurePanel" class="figure-wrap" style="display:none;">
+      <button type="button" class="btn" id="figSubmitDevoirBtn" onclick="submitCurrentFigureAsDevoir()" style="display:none;margin-bottom:8px;"><span class=gicon>send</span> Rendre ce devoir</button>
       <div class="tool-row" style="margin-bottom:8px;">
         <textarea id="enonceInput" rows="2" style="flex:1;min-width:260px;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);"
           placeholder="Ex. : ABC triangle&#10;I milieu de [BC]&#10;cercle de centre A passant par B"></textarea>
@@ -863,9 +864,16 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
   document.getElementById('figurePanel').style.display='block';
   resetFigureState();
   setFigureMode('point');
+  // Caché par défaut (contexte "libre" : bac à sable, correction, évaluation) -- seul
+  // startDevoirFigure (devoirs.js) l'affiche explicitement, APRÈS cet appel.
+  const submitBtn = document.getElementById('figSubmitDevoirBtn');
+  if(submitBtn) submitBtn.style.display = 'none';
   document.getElementById('figurePanel').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
-function closeFigureTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('figurePanel').style.display='none'; }
+function closeFigureTool(){
+  document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('figurePanel').style.display='none';
+  if(typeof currentDevoirSubmission!=='undefined') currentDevoirSubmission = null;
+}
 
 /* ---- mini outil : insérer un tableau ---- */
 function openTableauTool(){hideAllToolContent(); document.getElementById('toolsModalOverlay').style.display='flex';
