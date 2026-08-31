@@ -385,7 +385,7 @@ document.body.insertAdjacentHTML('beforeend', `
       </div>
     </div>
     </div>
-    <div id="figurePanel" class="figure-wrap" style="display:none;max-height:88vh;max-width:960px;margin-left:auto;margin-right:auto;overflow-y:auto;padding:12px;">
+    <div id="figurePanel" class="figure-wrap" style="display:none;max-height:88vh;max-width:1100px;margin-left:auto;margin-right:auto;overflow-y:auto;padding:12px;">
       <div class="tool-row" style="margin-bottom:8px;" id="figEnonceIaRow">
         <textarea id="enonceInput" rows="2" style="flex:1;min-width:260px;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);"
           placeholder="Ex. : ABC triangle&#10;I milieu de [BC]&#10;cercle de centre A passant par B"></textarea>
@@ -538,7 +538,7 @@ document.body.insertAdjacentHTML('beforeend', `
             <span class="hint" style="margin:0;">Compas (Cercle/Arc)</span>
           </div>
           <svg id="figureSvg" viewBox="0 0 500 320" onclick="onFigureClick(event)"
-               style="width:100%;aspect-ratio:500/320;display:block;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
+               style="width:min(90vw, 1000px, calc(62vh * 1.5625));aspect-ratio:500/320;display:block;margin:0 auto;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
           <p class="hint" style="margin-top:8px;" id="figureHint">Cliquez pour placer un point.</p>
         </div>
       </div>
