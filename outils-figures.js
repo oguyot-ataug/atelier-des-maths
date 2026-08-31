@@ -4589,8 +4589,11 @@ function validateFigure(){
 }
 function reopenFigure(data){
   openFigureTool();
-  figState.points = JSON.parse(JSON.stringify(data.points));
-  figState.shapes = JSON.parse(JSON.stringify(data.shapes));
+  // cloneFigState préserve les références partagées entre points et formes (voir
+  // previewDevoirFigure, devoirs.js, pour le détail du problème que ça évite).
+  const cloned = cloneFigState({points:data.points, shapes:data.shapes});
+  figState.points = cloned.points;
+  figState.shapes = cloned.shapes;
   figState.nextLabel = figState.points.length;
   renderFigureSvg();
 }

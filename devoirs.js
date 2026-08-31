@@ -154,9 +154,18 @@ function previewDevoirFigure(studentId){
   const data = (window._devoirFiguresCache||{})[studentId];
   if(!data) return;
   openFigureTool();
-  figState.points = JSON.parse(JSON.stringify(data.points||[]));
-  figState.shapes = JSON.parse(JSON.stringify(data.shapes||[]));
+  // cloneFigState préserve les références PARTAGÉES entre points et formes (un point utilisé
+  // par plusieurs segments reste le MÊME objet partout) -- un simple double JSON.parse/
+  // stringify séparé sur points et shapes les aurait cassées, rendant la figure "statique"
+  // (signalé : "les points ne sont plus associés aux traits, la figure n'est plus dynamique").
+  const cloned = cloneFigState({points:data.points||[], shapes:data.shapes||[]});
+  figState.points = cloned.points;
+  figState.shapes = cloned.shapes;
   figState.nextLabel = figState.points.length;
+  // "Valider et insérer la figure" n'a pas de sens ici : c'est un APERÇU en lecture du
+  // travail de l'élève, rien à insérer nulle part.
+  const validateBtn = document.getElementById('figValidateBtn');
+  if(validateBtn) validateBtn.style.display = 'none';
   renderFigureSvg();
 }
 
