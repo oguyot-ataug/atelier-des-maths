@@ -614,6 +614,9 @@ function openChapitre(c, tab, lvlOverride){
   document.getElementById('chap-code-tag').style.color = CATS[c.cat].text;
   document.getElementById('chap-title').textContent = c.t;
   document.getElementById('chap-meta').textContent = `pages ${c.p} · ${c.s} semaine(s) · ${c.d}`;
+  // En-tête visible UNIQUEMENT à l'impression (voir @media print, styles.css) -- signalé :
+  // "en haut de page à gauche : Chapitre 1... puis N1 - Nombres décimaux."
+  document.getElementById('printChapHeader').innerHTML = `Chapitre ${c.n}<br>${escapeHtml(c.code)} - ${escapeHtml(c.t)}`;
 
   const allIds = new Set();
   Object.values(DEMO_REGISTRY).forEach(d=>{ allIds.add(d.cours); allIds.add(d.methode); allIds.add(d.exos); if(d.histoire) allIds.add(d.histoire); });

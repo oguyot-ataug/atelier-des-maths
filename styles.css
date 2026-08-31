@@ -510,6 +510,20 @@ footer a:hover{color:var(--accent);}
   body{background:#fff;}
   .figure-wrap, .redaction-block{box-shadow:none;border:1px solid #ccc;break-inside:avoid;}
   .cahier-entry{break-inside:avoid;border:none;padding:0 0 18px;}
+  /* En-tête "Chapitre N / code - titre" en haut à gauche de CHAQUE page imprimée --
+     position:fixed est répété par le navigateur sur chaque page, contrairement à un élément
+     normal (signalé : "en haut de page à gauche, Chapitre 1... puis N1 - Nombres décimaux"). */
+  #printChapHeader{
+    display:block !important; position:fixed; top:0; left:0; text-align:left;
+    font-family:'Space Grotesk',sans-serif; font-size:9pt; line-height:1.35; color:#555;
+  }
+  #view-chapitre{ margin-top:34px; } /* évite que le contenu chevauche l'en-tête fixe */
+  /* Pagination "page / total" en bas de chaque page -- @page/marges CSS (prise en charge
+     correcte par Chrome), signalé : "en bas de page, la pagination 1/4 par exemple". */
+  @page{
+    margin:20mm 15mm 15mm 15mm;
+    @bottom-center{ content: counter(page) " / " counter(pages); font-size:9pt; color:#555; }
+  }
 }
 
 /* ---------- outil prof : correction projetée ---------- */

@@ -83,6 +83,8 @@ document.body.insertAdjacentHTML('beforeend', `
       <button type="button" class="tool-tab-btn" id="tabTabLongueur" onclick="openConversionTool('longueur')">Unités (longueur)</button>
       <button type="button" class="tool-tab-btn" id="tabTabAire" onclick="openConversionTool('aire')">Aires</button>
       <button type="button" class="tool-tab-btn" id="tabTabVolume" onclick="openConversionTool('volume')">Volumes</button>
+      <button type="button" class="tool-tab-btn" id="tabTabMasse" onclick="openConversionTool('masse')">Masses</button>
+      <button type="button" class="tool-tab-btn" id="tabTabCapacite" onclick="openConversionTool('capacite')">Capacités</button>
     </div>
     <div id="tableauPanel" class="figure-wrap" style="display:none;">
       <div class="tool-row" style="margin-bottom:10px;">
@@ -998,8 +1000,14 @@ const CONVERSION_DEFS = {
   longueur: {subCols:1, units:[
     {sym:'km', exp:3},{sym:'hm', exp:2},{sym:'dam', exp:1},{sym:'m', exp:0},{sym:'dm', exp:-1},{sym:'cm', exp:-2},{sym:'mm', exp:-3},
   ]},
+  masse: {subCols:1, units:[
+    {sym:'kg', exp:3},{sym:'hg', exp:2},{sym:'dag', exp:1},{sym:'g', exp:0},{sym:'dg', exp:-1},{sym:'cg', exp:-2},{sym:'mg', exp:-3},
+  ]},
+  capacite: {subCols:1, units:[
+    {sym:'kL', exp:3},{sym:'hL', exp:2},{sym:'daL', exp:1},{sym:'L', exp:0},{sym:'dL', exp:-1},{sym:'cL', exp:-2},{sym:'mL', exp:-3},
+  ]},
   aire: {subCols:2, units:[
-    {sym:'km²', exp:6},{sym:'hm²', exp:4},{sym:'dam²', exp:2},{sym:'m²', exp:0},{sym:'dm²', exp:-2},{sym:'cm²', exp:-4},{sym:'mm²', exp:-6},
+    {sym:'km²', exp:6},{sym:'hm²', exp:4, agri:'ha'},{sym:'dam²', exp:2, agri:'a'},{sym:'m²', exp:0, agri:'ca'},{sym:'dm²', exp:-2},{sym:'cm²', exp:-4},{sym:'mm²', exp:-6},
   ]},
   volume: {subCols:3, units:[
     {sym:'km³', exp:9},{sym:'hm³', exp:6},{sym:'dam³', exp:3},{sym:'m³', exp:0},{sym:'dm³', exp:-3},{sym:'cm³', exp:-6},{sym:'mm³', exp:-9},
@@ -1033,7 +1041,7 @@ function populateConvUnitSelect(mode){
   select.innerHTML = def.units.map((u,i)=>`<option value="${i}" ${u.exp===0?'selected':''}>${u.sym}</option>`).join('');
 }
 function openConversionTool(mode){
-  const tabIds = {nombres:'tabTabNombres', longueur:'tabTabLongueur', aire:'tabTabAire', volume:'tabTabVolume'};
+  const tabIds = {nombres:'tabTabNombres', longueur:'tabTabLongueur', aire:'tabTabAire', volume:'tabTabVolume', masse:'tabTabMasse', capacite:'tabTabCapacite'};
   activateToolTab('tableauGroupWrap', tabIds[mode], Object.values(tabIds).filter(id=>id!==tabIds[mode]).concat('tabTabLibre'));
   document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('tableauPanel').style.display='none';
@@ -1042,8 +1050,10 @@ function openConversionTool(mode){
   const hints = {
     nombres: 'Tableau de numération (avec ou sans décimales). CM/DM/UM = centaines/dizaines/unités de mille, C/D/U = centaines/dizaines/unités simples, d/c/m = dixièmes/centièmes/millièmes.',
     longueur: 'Tableau de conversion des unités de longueur (1 colonne par unité).',
-    aire: 'Tableau de conversion des unités d\'aire (2 colonnes par unité : 1 unité² = 100 fois l\'unité² suivante).',
+    aire: 'Tableau de conversion des unités d\'aire (2 colonnes par unité : 1 unité² = 100 fois l\'unité² suivante). Équivalents agricoles (ha/a/ca) indiqués sous hm²/dam²/m².',
     volume: 'Tableau de conversion des unités de volume (3 colonnes par unité : 1 unité³ = 1000 fois l\'unité³ suivante).',
+    masse: 'Tableau de conversion des unités de masse (1 colonne par unité).',
+    capacite: 'Tableau de conversion des unités de capacité/contenance (1 colonne par unité).',
   };
   document.getElementById('conversionHint').textContent = hints[mode];
   populateConvUnitSelect(mode);
@@ -1065,7 +1075,7 @@ function buildConversionGrid(){
   // 1re ligne d'en-tête : symbole de l'unité (fusionné sur ses sous-colonnes).
   html += '<tr>';
   def.units.forEach(u=>{
-    html += `<th colspan="${def.subCols}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);font-size:.82rem;">${u.sym}</th>`;
+    html += `<th colspan="${def.subCols}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);font-size:.82rem;">${u.sym}${u.agri?`<br><span style="font-weight:400;font-size:.75rem;color:var(--ink-soft);">(${u.agri})</span>`:''}</th>`;
   });
   html += '</tr>';
   // 2e ligne : une case par chiffre (puissance de 10 précise).
@@ -1091,7 +1101,7 @@ function insertConversionGrid(){
   let html = '<table style="border-collapse:collapse;width:auto;margin:8px 0;font-size:.9rem;text-align:center;">';
   html += '<tr>';
   def.units.forEach(u=>{
-    html += `<th colspan="${def.subCols}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);">${u.sym}</th>`;
+    html += `<th colspan="${def.subCols}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);">${u.sym}${u.agri?`<br><span style="font-weight:400;font-size:.8em;color:#5C5A78;">(${u.agri})</span>`:''}</th>`;
   });
   html += '</tr><tr>';
   def.units.forEach(u=>{
