@@ -4488,11 +4488,19 @@ function renderFigureSvg(){
   function findLineShapesAt(pt){
     return figState.shapes.filter(s=>
       (['segment','droite','demi-droite','vecteur'].includes(s.type) && (s.p1===pt || s.p2===pt)) ||
-      (['angle','bissectrice'].includes(s.type) && (s.vertex===pt || s.p1===pt || s.p2===pt))
+      (['angle','bissectrice'].includes(s.type) && (s.vertex===pt || s.p1===pt || s.p2===pt)) ||
+      (['perpendiculaire','parallele'].includes(s.type) && s.through===pt)
     );
   }
   function shapeDirAt(s, pt){
     let from;
+    if(['perpendiculaire','parallele'].includes(s.type)){
+      // p1/p2/vertex n'existent pas pour ce type -- la direction réelle vient de
+      // lineShapeEndpoints (même logique que pour un point posé dessus).
+      const {p1:lp1,p2:lp2} = lineShapeEndpoints(s);
+      const dx=lp2.x-lp1.x, dy=lp2.y-lp1.y, len=Math.hypot(dx,dy)||1;
+      return {x:dx/len, y:dy/len};
+    }
     if(s.vertex){
       // Angle/bissectrice : p1 et p2 ne sont reliés au sommet QUE par le sommet lui-même --
       // il n'existe aucune droite p1<->p2 directe. La seule direction réelle depuis p1 ou p2
