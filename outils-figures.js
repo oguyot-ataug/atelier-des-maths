@@ -2911,12 +2911,14 @@ function figMeasureModal({title, unit, defaultValue, withDirection, initialShowV
    base de données), en préservant les références partagées via des identifiants -- un simple
    JSON.stringify({points, shapes}) NE préserve JAMAIS ces références (chaque forme qui
    référence un point le dupliquerait en une copie déconnectée à chaque occurrence). */
+const FIG_POINT_REF_KEYS = ['p1','p2','vertex','center','refA','refB','through','point','refP1','refP2'];
 function serializeFigState(state){
   const pointIndex = new Map();
   const points = (state.points||[]).map((p,i)=>{ pointIndex.set(p,i); return {...p}; });
   const shapes = (state.shapes||[]).map(s=>{
     const clone = {...s};
-    ['p1','p2','vertex','center'].forEach(k=>{
+    delete clone.sourceShape; // référence à une AUTRE forme (pas un point) -- retirée, pas reconstructible fidèlement après un aller-retour JSON, sert seulement de repère éphémère en session
+    FIG_POINT_REF_KEYS.forEach(k=>{
       if(clone[k] && pointIndex.has(clone[k])) clone[k] = {__ptref:pointIndex.get(clone[k])};
     });
     return clone;
@@ -2931,7 +2933,7 @@ function deserializeFigState(data){
   const points = (data.points||[]).map(p=>({...p}));
   const shapes = (data.shapes||[]).map(s=>{
     const clone = {...s};
-    ['p1','p2','vertex','center'].forEach(k=>{
+    FIG_POINT_REF_KEYS.forEach(k=>{
       if(clone[k] && clone[k].__ptref!==undefined) clone[k] = points[clone[k].__ptref];
     });
     return clone;
