@@ -3455,6 +3455,12 @@ function recomputeDependents(){
     } else if(p.def.type==='intersection'){
       const inter = intersectLines(p.def.s1, p.def.s2);
       if(inter){ p.x = inter.x; p.y = inter.y; }
+    } else if(p.def.type==='polygone-regulier-vertex'){
+      const {center, firstVertex, index, n} = p.def;
+      const radius = Math.hypot(firstVertex.x-center.x, firstVertex.y-center.y);
+      const startAngle = Math.atan2(firstVertex.y-center.y, firstVertex.x-center.x);
+      const a = startAngle + index*2*Math.PI/n;
+      p.x = center.x+radius*Math.cos(a); p.y = center.y+radius*Math.sin(a);
     }
   });
 }
@@ -3841,6 +3847,18 @@ function onFigureMouseMove(evt){
     renderFigureSvg();
     return;
   }
+  // Même principe pour le centre d'un polygone régulier : le 1er sommet (qui fixe rayon ET
+  // orientation) doit translater avec lui, sinon déplacer le centre DÉFORME le polygone au
+  // lieu de le translater intact (signalé : "le polygone ne se déplace pas avec le point A").
+  const regularPolyFirstVertex = figState.points.find(p=>p.def && p.def.type==='polygone-regulier-vertex' && p.def.center===figDragPoint && p.def.firstVertex!==figDragPoint) ?.def.firstVertex;
+  if(regularPolyFirstVertex){
+    const deltaX = nx-figDragPoint.x, deltaY = ny-figDragPoint.y;
+    figDragPoint.x = nx; figDragPoint.y = ny;
+    regularPolyFirstVertex.x += deltaX; regularPolyFirstVertex.y += deltaY;
+    recomputeDependents();
+    renderFigureSvg();
+    return;
+  }
   figDragPoint.x = nx;
   figDragPoint.y = ny;
   recomputeDependents();
@@ -3997,7 +4015,11 @@ function handlePolygoneRegulierClick(x,y){
   const vertices = [firstVertex];
   for(let k=1;k<n;k++){
     const a = startAngle + k*2*Math.PI/n;
-    vertices.push({label:nextPointLabel(), x:center.x+radius*Math.cos(a), y:center.y+radius*Math.sin(a)});
+    vertices.push({
+      label:nextPointLabel(), x:center.x+radius*Math.cos(a), y:center.y+radius*Math.sin(a),
+      def:{type:'polygone-regulier-vertex', center, firstVertex, index:k, n},
+      dependsOn:[center, firstVertex],
+    });
   }
   vertices.slice(1).forEach(v=>figState.points.push(v));
   for(let i=0;i<n;i++){
