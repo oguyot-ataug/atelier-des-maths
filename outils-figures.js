@@ -538,7 +538,7 @@ document.body.insertAdjacentHTML('beforeend', `
             <span class="hint" style="margin:0;">Compas (Cercle/Arc)</span>
           </div>
           <svg id="figureSvg" viewBox="0 0 500 320" onclick="onFigureClick(event)"
-               style="width:100%;flex:1;min-height:min(190px, 28vh);display:block;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
+               style="width:100%;height:min(190px, 28vh);display:block;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
           <p class="hint" style="margin-top:8px;" id="figureHint">Cliquez pour placer un point.</p>
         </div>
       </div>
