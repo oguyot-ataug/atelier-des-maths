@@ -546,7 +546,7 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="btn" id="figValidateBtn" onclick="validateFigure()">✓ Valider et insérer la figure</button>
         <button type="button" class="btn" id="figSubmitDevoirBtn" onclick="submitCurrentFigureAsDevoir()" style="display:none;"><span class=gicon>send</span> Enregistrer / Rendre le devoir</button>
         <button type="button" class="btn secondary" id="figLoadDevoirBtn" onclick="loadMyDevoirFigure()" style="display:none;"><span class=gicon>folder_open</span> Charger mon dernier rendu</button>
-        <button type="button" class="btn secondary" onclick="closeFigureTool()">Fermer sans insérer</button>
+        <button type="button" class="btn secondary" id="figCloseBtn" onclick="closeFigureTool()">Fermer sans insérer</button>
       </div>
     </div>
   </div>
@@ -881,6 +881,8 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
   const enonceHint = document.getElementById('figEnonceIaHint');
   if(enonceRow) enonceRow.style.display = 'flex';
   if(enonceHint) enonceHint.style.display = 'block';
+  const closeBtn = document.getElementById('figCloseBtn');
+  if(closeBtn) closeBtn.textContent = 'Fermer sans insérer';
   document.getElementById('figurePanel').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 function closeFigureTool(){
@@ -2905,6 +2907,37 @@ function figMeasureModal({title, unit, defaultValue, withDirection, initialShowV
    référencé par plusieurs formes (ou par def/dependsOn d'un autre point) reste le MÊME objet
    cloné partout, pas une copie séparée à chaque endroit -- indispensable pour que le clone
    se comporte identiquement à l'original (recomputeDependents, cascade de suppression...). */
+/* Sérialise une figure en JSON PUR (donc adapté à un aller-retour complet, ex. sauvegarde en
+   base de données), en préservant les références partagées via des identifiants -- un simple
+   JSON.stringify({points, shapes}) NE préserve JAMAIS ces références (chaque forme qui
+   référence un point le dupliquerait en une copie déconnectée à chaque occurrence). */
+function serializeFigState(state){
+  const pointIndex = new Map();
+  const points = (state.points||[]).map((p,i)=>{ pointIndex.set(p,i); return {...p}; });
+  const shapes = (state.shapes||[]).map(s=>{
+    const clone = {...s};
+    ['p1','p2','vertex','center'].forEach(k=>{
+      if(clone[k] && pointIndex.has(clone[k])) clone[k] = {__ptref:pointIndex.get(clone[k])};
+    });
+    return clone;
+  });
+  return JSON.parse(JSON.stringify({points, shapes}));
+}
+/* Reconstruit une figure à partir de son JSON sérialisé (voir serializeFigState) -- résout
+   les références par identifiant en vrais objets JS partagés, rendant la figure de nouveau
+   pleinement dynamique (déplacer un point déplace bien toutes les formes qui s'appuient
+   dessus). */
+function deserializeFigState(data){
+  const points = (data.points||[]).map(p=>({...p}));
+  const shapes = (data.shapes||[]).map(s=>{
+    const clone = {...s};
+    ['p1','p2','vertex','center'].forEach(k=>{
+      if(clone[k] && clone[k].__ptref!==undefined) clone[k] = points[clone[k].__ptref];
+    });
+    return clone;
+  });
+  return {points, shapes};
+}
 function cloneFigState(state){
   const pointMap = new Map();
   const newPoints = state.points.map(p=>{ const c={...p}; pointMap.set(p,c); return c; });
@@ -4583,17 +4616,19 @@ function validateFigure(){
   // le calibrage (c'était le cas avant : 420px fixe, sans lien avec l'échelle réelle de la
   // page imprimée).
   const html = `<svg viewBox="0 0 500 320" style="width:100%;display:block;margin:6px auto;border:1px solid rgba(28,43,57,.12);border-radius:8px;">${svg.innerHTML}</svg>`;
-  const snapshot = JSON.parse(JSON.stringify({points:figState.points, shapes:figState.shapes}));
+  const snapshot = serializeFigState(figState);
   addPendingBlock('figure', html, snapshot, 'reopenFigure');
   closeFigureTool();
 }
 function reopenFigure(data){
   openFigureTool();
-  // cloneFigState préserve les références partagées entre points et formes (voir
-  // previewDevoirFigure, devoirs.js, pour le détail du problème que ça évite).
-  const cloned = cloneFigState({points:data.points, shapes:data.shapes});
-  figState.points = cloned.points;
-  figState.shapes = cloned.shapes;
+  // deserializeFigState résout les identifiants de référence utilisés par serializeFigState
+  // au moment de la sauvegarde -- indispensable pour les données venant réellement de la
+  // base (contrairement à cloneFigState, qui suppose des références DÉJÀ partagées en
+  // mémoire, jamais le cas après un aller-retour JSON complet).
+  const restored = deserializeFigState(data);
+  figState.points = restored.points;
+  figState.shapes = restored.shapes;
   figState.nextLabel = figState.points.length;
   renderFigureSvg();
 }

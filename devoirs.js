@@ -74,7 +74,7 @@ async function refreshDevoirsProfListing(){
   // Nombre de rendus / nombre d'élèves de la classe, pour chaque devoir.
   const rows = await Promise.all(devoirsList.map(async d=>{
     const { count: totalEleves } = await sb.from('class_students').select('*',{count:'exact',head:true}).eq('class_id', d.class_id);
-    const { count: nbRendus } = await sb.from('devoirs_rendus').select('*',{count:'exact',head:true}).eq('devoir_id', d.id);
+    const { count: nbRendus } = await sb.from('devoirs_rendus').select('*',{count:'exact',head:true}).eq('devoir_id', d.id).eq('est_rendu', true);
     const dateStr = d.date_limite ? new Date(d.date_limite).toLocaleDateString('fr-FR') : '';
     return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <span><b>${escapeHtml(d.titre)}</b> · ${escapeHtml(d.classes ? d.classes.nom+' ('+d.classes.niveau+')' : '')}${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${totalEleves||0} rendu(s)</span>
@@ -111,10 +111,13 @@ async function openDevoirSubmissions(devoirId){
   const rows = (eleves||[]).map(row=>{
     const eleve = row.profiles; if(!eleve) return '';
     const rendu = rendusByStudent.get(eleve.id);
-    let content;
+    let content, brouillonTag = '';
     if(!rendu) content = '<span class="hint">Pas encore rendu.</span>';
-    else if(rendu.type==='figure') content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="previewDevoirFigure('${eleve.id}')"><span class=gicon>visibility</span> Voir la figure</button>`;
-    else content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="downloadDevoirFile('${rendu.fichier_path}')"><span class=gicon>download</span> Télécharger le fichier</button>`;
+    else {
+      if(!rendu.est_rendu) brouillonTag = ' <span style="color:#8A6D1F;font-weight:700;">(brouillon, pas encore rendu)</span>';
+      if(rendu.type==='figure') content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="previewDevoirFigure('${eleve.id}')"><span class=gicon>visibility</span> Voir la figure</button>${brouillonTag}`;
+      else content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="downloadDevoirFile('${rendu.fichier_path}')"><span class=gicon>download</span> Télécharger le fichier</button>${brouillonTag}`;
+    }
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
         <span><b>${escapeHtml(eleve.nom||'(sans nom)')}</b></span>
@@ -154,11 +157,11 @@ function previewDevoirFigure(studentId){
   const data = (window._devoirFiguresCache||{})[studentId];
   if(!data) return;
   openFigureTool();
-  // cloneFigState préserve les références PARTAGÉES entre points et formes (un point utilisé
-  // par plusieurs segments reste le MÊME objet partout) -- un simple double JSON.parse/
-  // stringify séparé sur points et shapes les aurait cassées, rendant la figure "statique"
-  // (signalé : "les points ne sont plus associés aux traits, la figure n'est plus dynamique").
-  const cloned = cloneFigState({points:data.points||[], shapes:data.shapes||[]});
+  // deserializeFigState résout les identifiants de référence (voir serializeFigState,
+  // outils-figures.js) -- cloneFigState seule ne suffit pas ici : elle suppose des
+  // références DÉJÀ partagées en mémoire, alors que les données venant de la base ont
+  // toujours transité par un JSON.stringify/parse qui les a converties en identifiants.
+  const cloned = deserializeFigState(data);
   figState.points = cloned.points;
   figState.shapes = cloned.shapes;
   figState.nextLabel = figState.points.length;
@@ -166,6 +169,8 @@ function previewDevoirFigure(studentId){
   // travail de l'élève, rien à insérer nulle part.
   const validateBtn = document.getElementById('figValidateBtn');
   if(validateBtn) validateBtn.style.display = 'none';
+  const closeBtn = document.getElementById('figCloseBtn');
+  if(closeBtn) closeBtn.textContent = 'Fermer';
   renderFigureSvg();
 }
 
@@ -186,9 +191,11 @@ async function renderDevoirsEleve(){
   el.innerHTML = devoirsList.map(d=>{
     const rendu = renduByDevoir.get(d.id);
     const dateStr = d.date_limite ? new Date(d.date_limite).toLocaleDateString('fr-FR') : '';
-    const statusBadge = rendu
+    const statusBadge = rendu && rendu.est_rendu
       ? `<span style="color:#1F7A4D;font-weight:700;">[Rendu${rendu.note!=null ? ' -- note : '+rendu.note+'/20' : ''}]</span>`
-      : `<span style="color:#B8860B;font-weight:700;">[À rendre]</span>`;
+      : rendu
+        ? `<span style="color:#8A6D1F;font-weight:700;">[Brouillon enregistré -- pas encore rendu]</span>`
+        : `<span style="color:#B8860B;font-weight:700;">[À rendre]</span>`;
     return `<div class="tool-shell" style="margin-top:10px;">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
         <span><b>${escapeHtml(d.titre)}</b>${dateStr?' · limite : '+dateStr:''} ${statusBadge}</span>
@@ -217,7 +224,12 @@ async function submitDevoirFile(devoirId){
     devoir_id: devoirId, student_id: currentUser.id, type:'fichier', fichier_path: path, submitted_at: new Date().toISOString(),
   }, { onConflict: 'devoir_id,student_id' });
   if(error){ status.textContent = 'Erreur : '+error.message; return; }
-  status.textContent = '✓ Fichier rendu.';
+  status.textContent = '✓ Fichier enregistré.';
+  const veutRendre = await niceConfirm('Voulez-vous rendre votre devoir ?');
+  if(!veutRendre) return; // reste en brouillon (fichier enregistré, mais pas encore rendu)
+  const { error: err2 } = await sb.from('devoirs_rendus').update({ est_rendu: true }).eq('devoir_id', devoirId).eq('student_id', currentUser.id);
+  if(err2){ status.textContent = 'Erreur : '+err2.message; return; }
+  status.textContent = '✓ Devoir rendu.';
   await renderDevoirsEleve();
 }
 /* Ouvre l'outil figure en mode "rendu de devoir" : un bouton "Rendre ce devoir" apparaît dans
@@ -248,21 +260,29 @@ async function loadMyDevoirFigure(){
     .eq('devoir_id', currentDevoirSubmission.devoirId).eq('student_id', currentUser.id).maybeSingle();
   if(error){ await niceAlert('Erreur : '+error.message); return; }
   if(!rendu || rendu.type!=='figure' || !rendu.figure_data){ await niceAlert('Aucun rendu (figure) précédent trouvé pour ce devoir.'); return; }
-  figState.points = JSON.parse(JSON.stringify(rendu.figure_data.points||[]));
-  figState.shapes = JSON.parse(JSON.stringify(rendu.figure_data.shapes||[]));
+  const restored = deserializeFigState(rendu.figure_data);
+  figState.points = restored.points;
+  figState.shapes = restored.shapes;
   figState.nextLabel = figState.points.length;
   renderFigureSvg();
 }
 async function submitCurrentFigureAsDevoir(){
   if(!currentDevoirSubmission) return;
   const { devoirId } = currentDevoirSubmission;
-  const snapshot = JSON.parse(JSON.stringify({points:figState.points, shapes:figState.shapes}));
+  const snapshot = serializeFigState(figState);
   const { error } = await sb.from('devoirs_rendus').upsert({
     devoir_id: devoirId, student_id: currentUser.id, type:'figure', figure_data: snapshot, submitted_at: new Date().toISOString(),
   }, { onConflict: 'devoir_id,student_id' });
   if(error){ await niceAlert('Erreur : '+error.message); return; }
+  await niceAlert('Figure enregistrée.');
+  // Enregistrer d'abord (brouillon, encore modifiable), PUIS demande explicitement si
+  // l'élève veut rendre définitivement -- ne ferme/ne quitte l'outil que dans ce cas.
+  const veutRendre = await niceConfirm('Voulez-vous rendre votre devoir ?');
+  if(!veutRendre) return; // reste en brouillon, l'outil reste ouvert pour continuer à travailler
+  const { error: err2 } = await sb.from('devoirs_rendus').update({ est_rendu: true }).eq('devoir_id', devoirId).eq('student_id', currentUser.id);
+  if(err2){ await niceAlert('Erreur : '+err2.message); return; }
   currentDevoirSubmission = null;
   closeFigureTool();
-  await niceAlert('Figure rendue avec succès.');
+  await niceAlert('Devoir rendu avec succès.');
   await renderDevoirsEleve();
 }
