@@ -116,6 +116,17 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
         const enonceHint = document.getElementById('figEnonceIaHint');
         if(enonceRow) enonceRow.style.display = 'none';
         if(enonceHint) enonceHint.style.display = 'none';
+        // "Valider et insérer" n'a pas de sens ici (rien à insérer nulle part) -- remplacé par
+        // la sauvegarde nommée (signalé : "permettre de donner un nom à l'enregistrement pour
+        // le reprendre ultérieurement").
+        const validateBtn = document.getElementById('figValidateBtn');
+        const saveSandboxBtn = document.getElementById('figSaveSandboxBtn');
+        const loadSandboxBtn = document.getElementById('figLoadSandboxBtn');
+        if(validateBtn) validateBtn.style.display = 'none';
+        if(currentUser){
+          if(saveSandboxBtn) saveSandboxBtn.style.display = 'inline-flex';
+          if(loadSandboxBtn) loadSandboxBtn.style.display = 'inline-flex';
+        }
       }
     }
     if(nav==='correction'){

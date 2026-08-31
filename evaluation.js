@@ -185,9 +185,21 @@ async function openEvalListModal(){
         <strong>${escapeHtml(e.title||'Sans titre')}</strong> ${shareTag}<br>
         <span class="hint">${escapeHtml(e.niveau||'')}${e.classes?' · '+escapeHtml(e.classes):''}${dateFmt?' · '+dateFmt:''}</span>
       </div>
-      <button class="btn secondary" onclick="loadEvaluation('${e.id}')">Ouvrir</button>
+      <span style="display:flex;gap:6px;flex:none;">
+        <button class="btn secondary" onclick="loadEvaluation('${e.id}')">Ouvrir</button>
+        ${isMine ? `<button class="btn secondary" style="color:#a83c1f;" onclick="deleteEvaluationPrompt('${e.id}','${escapeHtml(e.title||'Sans titre').replace(/'/g,"\\'")}')"><span class=gicon>delete</span></button>` : ''}
+      </span>
     </div>`;
   }).join('');
+}
+/* Suppression réservée au propriétaire (signalé : "permettre au propriétaire de supprimer
+   une évaluation") -- vérifié aussi côté serveur (RLS) par owner_id=auth.uid(), ce contrôle
+   côté client n'est qu'un confort d'affichage (le bouton n'apparaît que pour lui). */
+async function deleteEvaluationPrompt(id, title){
+  if(!(await niceConfirm(`Supprimer définitivement l'évaluation "${title}" ?`))) return;
+  const { error } = await sb.from('evaluations').delete().eq('id', id);
+  if(error){ await niceAlert("Erreur : "+error.message); return; }
+  await openEvalListModal();
 }
 function closeEvalListModal(){ document.getElementById('evalListModalOverlay').style.display='none'; }
 async function loadEvaluation(id){

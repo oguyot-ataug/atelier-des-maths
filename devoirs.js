@@ -286,3 +286,71 @@ async function submitCurrentFigureAsDevoir(){
   await niceAlert('Devoir rendu avec succès.');
   await renderDevoirsEleve();
 }
+
+/* ================= BAC À SABLE : sauvegarde nommée ================= */
+/* Enregistre la figure courante sous un nom choisi -- permet de la reprendre ultérieurement
+   (signalé : "permettre de donner un nom à l'enregistrement pour le reprendre
+   ultérieurement"). Si le nom existe déjà pour cet utilisateur, propose de l'écraser plutôt
+   que de créer un doublon. */
+async function saveSandboxFigurePrompt(){
+  const nom = await nicePrompt('Nom de cette figure :', '');
+  if(!nom || !nom.trim()) return;
+  const nomTrim = nom.trim();
+  const { data: existing } = await sb.from('figures_sauvegardees').select('id').eq('user_id', currentUser.id).eq('nom', nomTrim).maybeSingle();
+  if(existing){
+    if(!(await niceConfirm(`Une figure nommée "${nomTrim}" existe déjà. La remplacer ?`))) return;
+  }
+  const snapshot = serializeFigState(figState);
+  const payload = { user_id: currentUser.id, nom: nomTrim, figure_data: snapshot, updated_at: new Date().toISOString() };
+  const { error } = existing
+    ? await sb.from('figures_sauvegardees').update(payload).eq('id', existing.id)
+    : await sb.from('figures_sauvegardees').insert(payload);
+  if(error){ await niceAlert('Erreur : '+error.message); return; }
+  await niceAlert(`Figure "${nomTrim}" enregistrée.`);
+}
+/* Fenêtre listant les figures déjà enregistrées par l'utilisateur, avec ouverture ou
+   suppression. */
+async function openSandboxFiguresModal(){
+  const { data, error } = await sb.from('figures_sauvegardees').select('id,nom,updated_at').eq('user_id', currentUser.id).order('updated_at', {ascending:false});
+  if(error){ await niceAlert('Erreur : '+error.message); return; }
+  document.querySelectorAll('.modal-overlay[data-kind="sandbox-figures"]').forEach(o=>o.remove());
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.dataset.kind = 'sandbox-figures';
+  overlay.style.zIndex = '300';
+  const rows = (data||[]).map(f=>{
+    const dateStr = new Date(f.updated_at).toLocaleDateString('fr-FR');
+    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.06);">
+      <span>${escapeHtml(f.nom)} <span class="hint">(${dateStr})</span></span>
+      <span style="display:flex;gap:6px;flex:none;">
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="loadSandboxFigure('${f.id}')">Ouvrir</button>
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="deleteSandboxFigure('${f.id}')"><span class=gicon>delete</span></button>
+      </span>
+    </div>`;
+  }).join('');
+  overlay.innerHTML = `
+    <div class="modal-card" style="max-width:420px;max-height:80vh;overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Mes figures enregistrées</strong>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()"><span class=gicon>close</span></button>
+      </div>
+      ${rows || '<p class="hint">Aucune figure enregistrée pour l\'instant.</p>'}
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
+}
+async function loadSandboxFigure(id){
+  const { data, error } = await sb.from('figures_sauvegardees').select('figure_data').eq('id', id).single();
+  if(error){ await niceAlert('Erreur : '+error.message); return; }
+  const restored = deserializeFigState(data.figure_data);
+  figState.points = restored.points;
+  figState.shapes = restored.shapes;
+  figState.nextLabel = figState.points.length;
+  renderFigureSvg();
+  document.querySelectorAll('.modal-overlay[data-kind="sandbox-figures"]').forEach(o=>o.remove());
+}
+async function deleteSandboxFigure(id){
+  if(!(await niceConfirm('Supprimer définitivement cette figure enregistrée ?'))) return;
+  await sb.from('figures_sauvegardees').delete().eq('id', id);
+  await openSandboxFiguresModal();
+}
