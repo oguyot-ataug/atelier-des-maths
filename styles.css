@@ -72,6 +72,9 @@ body.font-dyslexic h1, body.font-dyslexic h2, body.font-dyslexic h3, body.font-d
 body.font-dyslexic .tex, body.font-dyslexic .katex, body.font-dyslexic .katex *{
   font-family:initial !important;
 }
+body.font-dyslexic .gicon{
+  font-family:'Material Symbols Outlined' !important;
+}
 
 body{
   background:radial-gradient(circle at 15% 0%, #FFFEFC 0%, var(--paper) 55%);

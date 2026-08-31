@@ -960,12 +960,29 @@ function advanceAllStepDemosToEnd(container){
 // l'événement beforeprint n'attend JAMAIS la résolution d'une promesse avant de continuer,
 // une version asynchrone risquerait de ne pas avoir fini avant la capture réelle.
 window.addEventListener('beforeprint', ()=>{ advanceAllStepDemosToEnd(document.body); });
+async function advanceAllStepDemosToEndAsync(container){
+  const buttons = Array.from(container.querySelectorAll('button')).filter(b=>b.textContent.trim().startsWith('Étape suivante'));
+  for(const btn of buttons){
+    for(let i=0;i<40;i++){
+      const wrap = btn.closest('.figure-wrap');
+      const before = wrap ? wrap.innerHTML : null;
+      btn.click();
+      const after = wrap ? wrap.innerHTML : null;
+      if(before===after) break; // plus aucun changement -- dernière étape déjà atteinte
+    }
+    await new Promise(r=>setTimeout(r,0)); // laisse le navigateur respirer entre chaque démo, évite l'alerte "page ne répond pas"
+  }
+}
 async function exportCoursPDF(){
   const hint=document.getElementById('exportHint');
+  // Feedback IMMÉDIAT au clic, avant tout travail lourd -- signalé : "on n'a pas d'indication
+  // au départ de l'appui sur le bouton, on ne sait pas si ça travaille ou pas".
+  hint.textContent='Préparation du PDF…';
+  await new Promise(r=>setTimeout(r,0)); // laisse le navigateur peindre ce message avant de continuer
   if(typeof html2pdf==='undefined'){ hint.textContent="La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?), utilisez Ctrl/Cmd+P pour imprimer à la place."; return; }
   const content = getVisibleCoursContent();
   const title = document.getElementById('chap-title').textContent || 'cours';
-  advanceAllStepDemosToEnd(content);
+  await advanceAllStepDemosToEndAsync(content);
   const clone = content.cloneNode(true);
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.read-aloud-btn').forEach(el=>el.remove());

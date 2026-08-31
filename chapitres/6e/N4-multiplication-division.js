@@ -141,7 +141,7 @@ document.getElementById('cours-demo-multiplication-division-6e').innerHTML = `
 <p style="margin:12px 0 8px;"><b>Exemple 1</b> : effectue la division de 57 par 8.</p>
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler la division posée.</p>
-  <div style="display:flex;justify-content:center;align-items:flex-start;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.25rem;padding:20px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);">
+  <div style="display:flex;justify-content:center;align-items:stretch;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.25rem;padding:20px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);">
     <div style="text-align:right;padding-left:30px;padding-right:40px;">
       <div class="dp-tag" style="color:var(--accent);">dividende</div>
       <div id="og-dpLeft" style="line-height:2;min-width:140px;margin-left:auto;"></div>
@@ -149,7 +149,7 @@ document.getElementById('cours-demo-multiplication-division-6e').innerHTML = `
     </div>
     <div style="border-left:2px solid #1C1B2E;padding-left:16px;">
       <div class="dp-tag" style="color:var(--accent-orange);">diviseur</div>
-      <div style="line-height:2;"><span style="display:inline-block;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;">8</span></div>
+      <div style="line-height:2;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;">8</div>
       <div style="display:flex;align-items:baseline;gap:8px;line-height:2;margin-top:6px;">
         <div id="og-dpQuotient" style="font-weight:700;"></div>
         <span class="dp-tag" style="color:#1F6B3A;white-space:nowrap;">← quotient</span>
