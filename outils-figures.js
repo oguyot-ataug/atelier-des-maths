@@ -490,7 +490,7 @@ document.body.insertAdjacentHTML('beforeend', `
             <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 20,9 17,20 7,20 4,9" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
           </button>
           <span style="display:flex;align-items:center;gap:2px;">
-            <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone-regulier" onclick="selectFigSubTool('polygones', this)" title="Polygone régulier (centre puis 1 sommet)">
+            <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone-regulier" onclick="selectFigSubTool('polygones', this)" title="Polygone régulier (2 points = un côté)">
               <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,2 20.6,7.5 20.6,16.5 12,22 3.4,16.5 3.4,7.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
             </button>
             <input type="number" id="polygonSidesInput" value="5" min="3" step="1" title="Nombre de côtés" style="width:38px;padding:4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-size:.75rem;">
@@ -3091,7 +3091,7 @@ function setFigureMode(mode){
     code:'Choisissez le type de codage ci-dessus, puis cliquez sur le segment ou l\'angle concerné.',
     triangle:'Cliquez 3 points existants pour tracer le triangle qui les relie.',
     polygone:'Cliquez les sommets un par un (points existants). Recliquez le tout premier point (une fois au moins 3 posés) pour refermer le polygone.',
-    'polygone-regulier':'Cliquez le centre, puis un premier sommet (fixe le rayon et l\'orientation) -- le nombre de côtés se règle dans le champ à côté.',
+    'polygone-regulier':'Cliquez 2 points existants : ils seront les 2 extrémités d\'un côté (fixe la longueur et l\'orientation) -- le nombre de côtés se règle dans le champ à côté.',
     'angle-mesure':'Cliquez un point sur le premier côté, puis le sommet -- une fenêtre demande ensuite la mesure (en degrés) et le sens (horaire ou trigonométrique).',
     vecteur:'Cliquez deux points existants : l\'origine, puis l\'extrémité (avec la flèche).',
     'mesure-distance':'Cliquez directement un segment existant, ou deux points (un point puis une droite/segment/demi-droite donne la distance perpendiculaire) -- la distance affichée peut ensuite être déplacée (mode Déplacer), en restant toujours parallèle.',
@@ -3455,12 +3455,10 @@ function recomputeDependents(){
     } else if(p.def.type==='intersection'){
       const inter = intersectLines(p.def.s1, p.def.s2);
       if(inter){ p.x = inter.x; p.y = inter.y; }
-    } else if(p.def.type==='polygone-regulier-vertex'){
-      const {center, firstVertex, index, n} = p.def;
-      const radius = Math.hypot(firstVertex.x-center.x, firstVertex.y-center.y);
-      const startAngle = Math.atan2(firstVertex.y-center.y, firstVertex.x-center.x);
-      const a = startAngle + index*2*Math.PI/n;
-      p.x = center.x+radius*Math.cos(a); p.y = center.y+radius*Math.sin(a);
+    } else if(p.def.type==='polygone-regulier-cote-vertex'){
+      const {p1, p2, index, n} = p.def;
+      const pos = polygoneRegulierVertexPos(p1, p2, index, n);
+      p.x = pos.x; p.y = pos.y;
     }
   });
 }
@@ -3847,18 +3845,6 @@ function onFigureMouseMove(evt){
     renderFigureSvg();
     return;
   }
-  // Même principe pour le centre d'un polygone régulier : le 1er sommet (qui fixe rayon ET
-  // orientation) doit translater avec lui, sinon déplacer le centre DÉFORME le polygone au
-  // lieu de le translater intact (signalé : "le polygone ne se déplace pas avec le point A").
-  const regularPolyFirstVertex = figState.points.find(p=>p.def && p.def.type==='polygone-regulier-vertex' && p.def.center===figDragPoint && p.def.firstVertex!==figDragPoint) ?.def.firstVertex;
-  if(regularPolyFirstVertex){
-    const deltaX = nx-figDragPoint.x, deltaY = ny-figDragPoint.y;
-    figDragPoint.x = nx; figDragPoint.y = ny;
-    regularPolyFirstVertex.x += deltaX; regularPolyFirstVertex.y += deltaY;
-    recomputeDependents();
-    renderFigureSvg();
-    return;
-  }
   figDragPoint.x = nx;
   figDragPoint.y = ny;
   recomputeDependents();
@@ -4003,29 +3989,42 @@ function handlePolygoneRegulierClick(x,y){
     if(pt){ figState.selected.push(pt); renderFigureSvg(); }
     return;
   }
-  const center = figState.selected[0];
-  const firstVertex = findNearbyPoint(x,y);
-  if(!firstVertex || firstVertex===center) return;
+  const p1 = figState.selected[0];
+  const p2 = findNearbyPoint(x,y);
+  if(!p2 || p2===p1) return;
   figState.selected = [];
   const raw = document.getElementById('polygonSidesInput').value;
   const n = parseInt(raw, 10);
   if(!isFinite(n) || n<3){ document.getElementById('figureHint').textContent = 'Nombre de côtés invalide (au moins 3).'; renderFigureSvg(); return; }
-  const radius = Math.hypot(firstVertex.x-center.x, firstVertex.y-center.y);
-  const startAngle = Math.atan2(firstVertex.y-center.y, firstVertex.x-center.x);
-  const vertices = [firstVertex];
-  for(let k=1;k<n;k++){
-    const a = startAngle + k*2*Math.PI/n;
+  const vertices = [p1, p2];
+  for(let k=2;k<n;k++){
+    const pos = polygoneRegulierVertexPos(p1, p2, k, n);
     vertices.push({
-      label:nextPointLabel(), x:center.x+radius*Math.cos(a), y:center.y+radius*Math.sin(a),
-      def:{type:'polygone-regulier-vertex', center, firstVertex, index:k, n},
-      dependsOn:[center, firstVertex],
+      label:nextPointLabel(), x:pos.x, y:pos.y,
+      def:{type:'polygone-regulier-cote-vertex', p1, p2, index:k, n},
+      dependsOn:[p1, p2],
     });
   }
-  vertices.slice(1).forEach(v=>figState.points.push(v));
+  vertices.slice(2).forEach(v=>figState.points.push(v));
   for(let i=0;i<n;i++){
     figState.shapes.push({type:'segment', p1:vertices[i], p2:vertices[(i+1)%n]});
   }
   renderFigureSvg();
+}
+/* Position du sommet d'indice k (k>=2) d'un polygone régulier construit à partir du CÔTÉ
+   [p1,p2] (pas d'un centre) -- formule FERMÉE (somme des pas de rotation successifs depuis
+   p1), ne dépendant que de p1/p2/k/n, jamais des autres sommets déjà calculés : indispensable
+   pour un recalcul dynamique fiable, quel que soit l'ordre d'évaluation des points. */
+function polygoneRegulierVertexPos(p1, p2, k, n){
+  const sideLen = Math.hypot(p2.x-p1.x, p2.y-p1.y);
+  const dir0 = Math.atan2(p2.y-p1.y, p2.x-p1.x);
+  const delta = 2*Math.PI/n;
+  let x=p1.x, y=p1.y;
+  for(let i=0;i<k;i++){
+    const a = dir0+i*delta;
+    x += sideLen*Math.cos(a); y += sideLen*Math.sin(a);
+  }
+  return {x,y};
 }
 /* Angle de MESURE donnée : 1er clic = un point sur le premier côté, 2e clic = le sommet --
    puis une modale demande la mesure (en degrés) et le sens (horaire ou trigonométrique). Le
