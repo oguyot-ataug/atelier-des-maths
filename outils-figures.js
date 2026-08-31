@@ -2911,34 +2911,67 @@ function figMeasureModal({title, unit, defaultValue, withDirection, initialShowV
    base de données), en préservant les références partagées via des identifiants -- un simple
    JSON.stringify({points, shapes}) NE préserve JAMAIS ces références (chaque forme qui
    référence un point le dupliquerait en une copie déconnectée à chaque occurrence). */
-const FIG_POINT_REF_KEYS = ['p1','p2','vertex','center','refA','refB','through','point','refP1','refP2'];
+/* Sérialise une figure en JSON PUR (donc adapté à un aller-retour complet, ex. sauvegarde en
+   base de données), en préservant TOUTES les références partagées -- pas seulement p1/p2/
+   vertex/center sur les FORMES, mais aussi les références portées par les POINTS eux-mêmes
+   (def.a/b pour un milieu, def.shape pour un point posé sur un objet, dependsOn...) : une
+   liste de noms de propriétés s'est révélée incomplète à deux reprises (d'abord
+   perpendiculaire avec refA/refB/through, puis milieu/transformations avec def/dependsOn) --
+   remplacée par une détection GÉNÉRALE, récursive, qui repère n'importe quelle référence à un
+   point ou une forme existante, à n'importe quel niveau de profondeur et sous n'importe quel
+   nom de propriété. */
 function serializeFigState(state){
   const pointIndex = new Map();
-  const points = (state.points||[]).map((p,i)=>{ pointIndex.set(p,i); return {...p}; });
+  (state.points||[]).forEach((p,i)=>pointIndex.set(p,i));
+  const shapeIndex = new Map();
+  (state.shapes||[]).forEach((s,i)=>shapeIndex.set(s,i));
+  function replaceRefs(val, seen){
+    if(val===null || typeof val!=='object') return val;
+    if(pointIndex.has(val)) return {__ptref:pointIndex.get(val)};
+    if(shapeIndex.has(val)) return {__shref:shapeIndex.get(val)};
+    if(seen.has(val)) return null; // cycle improbable, sécurité
+    seen = new Set(seen); seen.add(val);
+    if(Array.isArray(val)) return val.map(v=>replaceRefs(v, seen));
+    const out = {};
+    for(const k in val) out[k] = replaceRefs(val[k], seen);
+    return out;
+  }
+  const points = (state.points||[]).map(p=>{
+    const out = {};
+    for(const k in p) out[k] = replaceRefs(p[k], new Set());
+    return out;
+  });
   const shapes = (state.shapes||[]).map(s=>{
-    const clone = {...s};
-    delete clone.sourceShape; // référence à une AUTRE forme (pas un point) -- retirée, pas reconstructible fidèlement après un aller-retour JSON, sert seulement de repère éphémère en session
-    FIG_POINT_REF_KEYS.forEach(k=>{
-      if(clone[k] && pointIndex.has(clone[k])) clone[k] = {__ptref:pointIndex.get(clone[k])};
-    });
-    return clone;
+    const out = {};
+    for(const k in s){
+      if(k==='sourceShape') continue; // référence à une autre forme, éphémère (repère de session pour la fenêtre de codage), pas essentielle à la géométrie -- retirée plutôt que sérialisée à tort
+      out[k] = replaceRefs(s[k], new Set());
+    }
+    return out;
   });
   return JSON.parse(JSON.stringify({points, shapes}));
 }
 /* Reconstruit une figure à partir de son JSON sérialisé (voir serializeFigState) -- résout
    les références par identifiant en vrais objets JS partagés, rendant la figure de nouveau
-   pleinement dynamique (déplacer un point déplace bien toutes les formes qui s'appuient
-   dessus). */
+   pleinement dynamique (déplacer un point déplace bien toutes les formes -- ou tous les
+   autres points dépendants -- qui s'appuient dessus). Les points ET les formes "bruts" sont
+   créés d'abord (une seule fois), puis leurs champs sont résolus EN PLACE : toute référence
+   pointe donc bien vers l'objet FINAL, quel que soit l'ordre de résolution. */
 function deserializeFigState(data){
-  const points = (data.points||[]).map(p=>({...p}));
-  const shapes = (data.shapes||[]).map(s=>{
-    const clone = {...s};
-    FIG_POINT_REF_KEYS.forEach(k=>{
-      if(clone[k] && clone[k].__ptref!==undefined) clone[k] = points[clone[k].__ptref];
-    });
-    return clone;
-  });
-  return {points, shapes};
+  const rawPoints = (data.points||[]).map(p=>({...p}));
+  const rawShapes = (data.shapes||[]).map(s=>({...s}));
+  function resolveRefs(val){
+    if(val===null || typeof val!=='object') return val;
+    if(val.__ptref!==undefined) return rawPoints[val.__ptref];
+    if(val.__shref!==undefined) return rawShapes[val.__shref];
+    if(Array.isArray(val)) return val.map(resolveRefs);
+    const out = {};
+    for(const k in val) out[k] = resolveRefs(val[k]);
+    return out;
+  }
+  rawPoints.forEach(p=>{ for(const k in p) p[k] = resolveRefs(p[k]); });
+  rawShapes.forEach(s=>{ for(const k in s) s[k] = resolveRefs(s[k]); });
+  return {points: rawPoints, shapes: rawShapes};
 }
 function cloneFigState(state){
   const pointMap = new Map();
