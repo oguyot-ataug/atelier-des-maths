@@ -149,7 +149,7 @@ document.getElementById('cours-demo-multiplication-division-6e').innerHTML = `
     </div>
     <div style="border-left:2px solid #1C1B2E;padding-left:16px;">
       <div class="dp-tag" style="color:var(--accent-orange);">diviseur</div>
-      <div style="line-height:2;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;">8</div>
+      <div style="line-height:2;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;margin-left:-16px;padding-left:16px;">8</div>
       <div style="display:flex;align-items:baseline;gap:8px;line-height:2;margin-top:6px;">
         <div id="og-dpQuotient" style="font-weight:700;"></div>
         <span class="dp-tag" style="color:#1F6B3A;white-space:nowrap;">← quotient</span>
