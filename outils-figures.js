@@ -537,7 +537,7 @@ document.body.insertAdjacentHTML('beforeend', `
             <input type="checkbox" id="compassToggle" style="display:none;">
             <span class="hint" style="margin:0;">Compas (Cercle/Arc)</span>
           </div>
-          <svg id="figureSvg" viewBox="0 0 500 320" onclick="onFigureClick(event)"
+          <svg id="figureSvg" viewBox="0 0 500 320" onclick="onFigureClick(event)" onwheel="onFigureWheel(event)"
                style="width:min(90vw, 1000px, calc(62vh * 1.5625));aspect-ratio:500/320;display:block;margin:0 auto;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
           <p class="hint" style="margin-top:8px;" id="figureHint">Cliquez pour placer un point.</p>
         </div>
@@ -866,6 +866,7 @@ function closeAllToolPanels(){
 function openFigureTool(){hideAllToolContent(); document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('figurePanel').style.display='block';
   resetFigureState();
+  resetFigViewBox();
   setFigureMode('point');
   // Par défaut (contexte "libre" : bac à sable, correction, évaluation) : "Valider et
   // insérer" est visible, les boutons propres au devoir sont cachés -- seul
@@ -3459,6 +3460,29 @@ function recomputeDependents(){
 }
 let figDragLabel = null;
 let figDragMeasure = null;
+/* Zoom à la molette (signalé : "permettre de zoomer/dézoomer avec la molette de la souris").
+   figViewBox suit le viewBox SVG courant (indépendant de figState, réinitialisé à chaque
+   ouverture de l'outil comme le reste). getScreenCTM().inverse() (utilisée par
+   svgCoordsFromEvent) reste correcte quel que soit le viewBox courant -- aucune autre partie
+   du code (clics, glissements...) n'a besoin d'être adaptée. */
+let figViewBox = {x:0, y:0, w:500, h:320};
+function resetFigViewBox(){
+  figViewBox = {x:0, y:0, w:500, h:320};
+  const svg = document.getElementById('figureSvg');
+  if(svg) svg.setAttribute('viewBox', '0 0 500 320');
+}
+function onFigureWheel(evt){
+  evt.preventDefault();
+  const svg = document.getElementById('figureSvg');
+  const {x:mx, y:my} = svgCoordsFromEvent(svg, evt);
+  const factor = evt.deltaY < 0 ? 0.9 : 1.1; // molette vers le haut = zoom avant (rétrécit le viewBox)
+  const newW = Math.max(120, Math.min(1600, figViewBox.w*factor));
+  const newH = newW*(320/500); // garde toujours le ratio d'aspect d'origine (500:320)
+  // Zoom centré sur le curseur : le point sous la souris reste au même endroit à l'écran.
+  const relX = (mx-figViewBox.x)/figViewBox.w, relY = (my-figViewBox.y)/figViewBox.h;
+  figViewBox = {x:mx-relX*newW, y:my-relY*newH, w:newW, h:newH};
+  svg.setAttribute('viewBox', `${figViewBox.x} ${figViewBox.y} ${figViewBox.w} ${figViewBox.h}`);
+}
 /* Un clic est considéré comme visant le LABEL d'un point (pas le point lui-même) si sa
    distance au texte du label est plus proche que sa distance au point -- le label étant
    petit et décalé, ce test simple (distance au centre approximatif du texte) suffit sans
