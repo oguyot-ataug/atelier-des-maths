@@ -4,6 +4,29 @@
    ============================================================ */
 document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 <div class="lesson-header"><span class="num">1</span><h3>Vocabulaire de base</h3></div>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">On désigne un point par une lettre <b>capitale</b> : A, B, C, D, ... , M, N, ...</div>
+<p style="font-weight:700;margin:0 0 8px;">Exemples</p>
+<div style="overflow-x:auto;">
+<table style="border-collapse:collapse;width:100%;font-size:.92rem;margin:0 0 18px;text-align:center;">
+  <tr>
+    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><circle cx="35" cy="25" r="2.2"/><text x="42" y="20" font-size="14" font-style="italic">A</text></svg></td>
+    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="30" y1="20" x2="40" y2="30" stroke="#1C1B2E" stroke-width="1.3"/><line x1="40" y1="20" x2="30" y2="30" stroke="#1C1B2E" stroke-width="1.3"/><text x="44" y="20" font-size="14" font-style="italic">B</text></svg></td>
+    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="20" y1="12" x2="20" y2="38" stroke="#1C1B2E" stroke-width="1.6"/><text x="10" y="22" font-size="14" font-style="italic">F</text></svg></td>
+    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="15" y1="35" x2="55" y2="15" stroke="#1C1B2E" stroke-width="1.6"/><line x1="30" y1="10" x2="40" y2="30" stroke="#1C1B2E" stroke-width="1.3"/><text x="32" y="10" font-size="14" font-style="italic">E</text></svg></td>
+    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="10" y1="30" x2="35" y2="15" stroke="#1C1B2E" stroke-width="1.6"/><line x1="35" y1="15" x2="60" y2="30" stroke="#1C1B2E" stroke-width="1.6"/><text x="30" y="10" font-size="14" font-style="italic">C</text></svg></td>
+    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="10" y1="25" x2="60" y2="25" stroke="#1C1B2E" stroke-width="1.6"/><line x1="30" y1="20" x2="40" y2="30" stroke="#1C1B2E" stroke-width="1.3"/><line x1="40" y1="20" x2="30" y2="30" stroke="#1C1B2E" stroke-width="1.3"/><text x="38" y="14" font-size="14" font-style="italic">N</text></svg></td>
+  </tr>
+  <tr>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">point libre</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">point libre (variante)</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">point sur une droite</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">point sur une droite</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">sommet d'un angle</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">intersection</td>
+  </tr>
+</table>
+</div>
 <div style="overflow-x:auto;">
 <table style="border-collapse:collapse;width:100%;font-size:.92rem;margin:10px 0 18px;">
   <tr>
