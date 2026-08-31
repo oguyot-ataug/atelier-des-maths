@@ -76,6 +76,14 @@ document.body.insertAdjacentHTML('beforeend', `
         </div>
       </div>
     </div>
+    <div id="tableauGroupWrap" style="display:none;">
+    <div class="tool-group-tabs" style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+      <button type="button" class="tool-tab-btn" id="tabTabLibre" onclick="openTableauTool()">Tableau libre</button>
+      <button type="button" class="tool-tab-btn" id="tabTabNombres" onclick="openConversionTool('nombres')">Nombres</button>
+      <button type="button" class="tool-tab-btn" id="tabTabLongueur" onclick="openConversionTool('longueur')">Unités (longueur)</button>
+      <button type="button" class="tool-tab-btn" id="tabTabAire" onclick="openConversionTool('aire')">Aires</button>
+      <button type="button" class="tool-tab-btn" id="tabTabVolume" onclick="openConversionTool('volume')">Volumes</button>
+    </div>
     <div id="tableauPanel" class="figure-wrap" style="display:none;">
       <div class="tool-row" style="margin-bottom:10px;">
         <label class="hint" style="margin:0;">Colonnes : <input type="number" id="tabCols" value="3" min="1" max="8" style="width:60px;"></label>
@@ -87,6 +95,21 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="btn" onclick="insertTableau()">Insérer le tableau</button>
         <button type="button" class="btn secondary" onclick="closeTableauTool()">Fermer sans insérer</button>
       </div>
+    </div>
+    <div id="conversionPanel" class="figure-wrap" style="display:none;">
+      <p class="hint" style="margin:0 0 10px;" id="conversionHint"></p>
+      <div class="tool-row" style="margin-bottom:10px;">
+        <input type="text" inputmode="decimal" id="convValue" placeholder="Nombre (ex. 345,678)" style="width:160px;">
+        <label class="hint" style="margin:0;">Unité de saisie : <select id="convUnitSelect"></select></label>
+        <button type="button" class="btn secondary" onclick="buildConversionGrid()">Générer la grille</button>
+      </div>
+      <label class="hint" style="display:block;margin:0 0 10px;"><input type="checkbox" id="convVierge"> Grille vide (à compléter par l'élève, sans les chiffres)</label>
+      <div id="conversionGrid" style="overflow-x:auto;"></div>
+      <div class="figure-toolbar" style="margin-top:10px;">
+        <button type="button" class="btn" onclick="insertConversionGrid()">Insérer le tableau</button>
+        <button type="button" class="btn secondary" onclick="closeConversionTool()">Fermer sans insérer</button>
+      </div>
+    </div>
     </div>
     <div id="divisionGroupWrap" style="display:none;">
     <div class="tool-group-tabs" style="display:flex;gap:6px;margin-bottom:10px;">
@@ -842,7 +865,7 @@ const SCALE_PX_PER_CM = 20;
    modale elle-même -- appelé au début de chaque fonction d'ouverture d'outil, pour qu'un seul
    outil (ou groupe) soit jamais visible à la fois. */
 function hideAllToolContent(){
-  ['figurePanel','tableauPanel','textBlockPanel','imagePanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','conversionPanel','tableauGroupWrap','textBlockPanel','imagePanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -852,12 +875,16 @@ function hideAllToolContent(){
 function activateToolTab(wrapId, activeTabId, inactiveTabId){
   hideAllToolContent();
   document.getElementById(wrapId).style.display='block';
-  const activeTab = document.getElementById(activeTabId), inactiveTab = document.getElementById(inactiveTabId);
+  const activeTab = document.getElementById(activeTabId);
   if(activeTab) activeTab.classList.add('active');
-  if(inactiveTab) inactiveTab.classList.remove('active');
+  const inactiveIds = Array.isArray(inactiveTabId) ? inactiveTabId : [inactiveTabId];
+  inactiveIds.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.classList.remove('active');
+  });
 }
 function closeAllToolPanels(){
-  ['figurePanel','tableauPanel','textBlockPanel','imagePanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','conversionPanel','tableauGroupWrap','textBlockPanel','imagePanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -898,8 +925,10 @@ function closeFigureTool(){
 }
 
 /* ---- mini outil : insérer un tableau ---- */
-function openTableauTool(){hideAllToolContent(); document.getElementById('toolsModalOverlay').style.display='flex';
+function openTableauTool(){activateToolTab('tableauGroupWrap','tabTabLibre',['tabTabNombres','tabTabLongueur','tabTabAire','tabTabVolume']);
+  document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('tableauPanel').style.display='block';
+  document.getElementById('conversionPanel').style.display='none';
   buildTableauGrid();
   document.getElementById('tableauPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
@@ -950,6 +979,138 @@ function reopenTableau(data){
   setTimeout(()=>{
     document.querySelectorAll('#tableauGrid input').forEach(inp=>{
       const v = data.grid[parseInt(inp.dataset.r)]?.[parseInt(inp.dataset.c)];
+      if(v!==undefined) inp.value = v;
+    });
+  }, 0);
+}
+
+/* ---- Tableaux de conversion (nombres / longueur / aire / volume) ----
+   Chaque unité porte un "exp" (puissance de 10 par rapport à l'unité de référence : le mètre
+   pour longueur/aire/volume, l'unité "simple" pour les nombres) et un nombre de sous-colonnes
+   (1 pour longueur/nombres, 2 pour aire -- 1 unité² = 100 unité² suivante -- 3 pour volume --
+   1 unité³ = 1000 unité³ suivante). Une unité d'exposant E avec S sous-colonnes couvre les
+   puissances [E, E-1, ..., E-S+1]. */
+const CONVERSION_DEFS = {
+  nombres: {subCols:1, decimalAfter:0, units:[
+    {sym:'CM', exp:5},{sym:'DM', exp:4},{sym:'UM', exp:3},{sym:'C', exp:2},{sym:'D', exp:1},{sym:'U', exp:0},
+    {sym:'d', exp:-1},{sym:'c', exp:-2},{sym:'m', exp:-3},
+  ]},
+  longueur: {subCols:1, units:[
+    {sym:'km', exp:3},{sym:'hm', exp:2},{sym:'dam', exp:1},{sym:'m', exp:0},{sym:'dm', exp:-1},{sym:'cm', exp:-2},{sym:'mm', exp:-3},
+  ]},
+  aire: {subCols:2, units:[
+    {sym:'km²', exp:6},{sym:'hm²', exp:4},{sym:'dam²', exp:2},{sym:'m²', exp:0},{sym:'dm²', exp:-2},{sym:'cm²', exp:-4},{sym:'mm²', exp:-6},
+  ]},
+  volume: {subCols:3, units:[
+    {sym:'km³', exp:9},{sym:'hm³', exp:6},{sym:'dam³', exp:3},{sym:'m³', exp:0},{sym:'dm³', exp:-3},{sym:'cm³', exp:-6},{sym:'mm³', exp:-9},
+  ]},
+};
+/* Place chaque chiffre d'une valeur saisie (ex. "345,678") dans une correspondance
+   puissance-de-10 -> chiffre, en tenant compte de l'unité choisie -- via chaîne de
+   caractères (jamais de division flottante), pour rester exact quel que soit le nombre de
+   chiffres. */
+function digitsByPower(valueStr, unitExp){
+  valueStr = (valueStr||'').trim().replace(',', '.').replace(/^-/,'');
+  if(!valueStr) return {};
+  const [intPart, decPart=''] = valueStr.split('.');
+  const intDigits = (intPart||'0').replace(/^0+(?=\d)/,'');
+  const map = {};
+  // Chiffres de la partie entière : le DERNIER chiffre est à la puissance unitExp, chaque
+  // chiffre vers la gauche monte d'une puissance.
+  for(let i=0;i<intDigits.length;i++){
+    const power = unitExp + (intDigits.length-1-i);
+    map[power] = intDigits[i];
+  }
+  // Chiffres de la partie décimale : chaque chiffre vers la droite descend d'une puissance.
+  for(let i=0;i<decPart.length;i++){
+    map[unitExp-1-i] = decPart[i];
+  }
+  return map;
+}
+function populateConvUnitSelect(mode){
+  const def = CONVERSION_DEFS[mode];
+  const select = document.getElementById('convUnitSelect');
+  select.innerHTML = def.units.map((u,i)=>`<option value="${i}" ${u.exp===0?'selected':''}>${u.sym}</option>`).join('');
+}
+function openConversionTool(mode){
+  const tabIds = {nombres:'tabTabNombres', longueur:'tabTabLongueur', aire:'tabTabAire', volume:'tabTabVolume'};
+  activateToolTab('tableauGroupWrap', tabIds[mode], Object.values(tabIds).filter(id=>id!==tabIds[mode]).concat('tabTabLibre'));
+  document.getElementById('toolsModalOverlay').style.display='flex';
+  document.getElementById('tableauPanel').style.display='none';
+  document.getElementById('conversionPanel').style.display='block';
+  document.getElementById('conversionPanel').dataset.mode = mode;
+  const hints = {
+    nombres: 'Tableau de numération (avec ou sans décimales). CM/DM/UM = centaines/dizaines/unités de mille, C/D/U = centaines/dizaines/unités simples, d/c/m = dixièmes/centièmes/millièmes.',
+    longueur: 'Tableau de conversion des unités de longueur (1 colonne par unité).',
+    aire: 'Tableau de conversion des unités d\'aire (2 colonnes par unité : 1 unité² = 100 fois l\'unité² suivante).',
+    volume: 'Tableau de conversion des unités de volume (3 colonnes par unité : 1 unité³ = 1000 fois l\'unité³ suivante).',
+  };
+  document.getElementById('conversionHint').textContent = hints[mode];
+  populateConvUnitSelect(mode);
+  document.getElementById('convValue').value = '';
+  document.getElementById('convVierge').checked = false;
+  buildConversionGrid();
+  document.getElementById('conversionPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function closeConversionTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('conversionPanel').style.display='none'; }
+function buildConversionGrid(){
+  const mode = document.getElementById('conversionPanel').dataset.mode || 'longueur';
+  const def = CONVERSION_DEFS[mode];
+  const unitIdx = parseInt(document.getElementById('convUnitSelect').value, 10) || 0;
+  const chosenUnit = def.units[unitIdx];
+  const vierge = document.getElementById('convVierge').checked;
+  const digitMap = vierge ? {} : digitsByPower(document.getElementById('convValue').value, chosenUnit.exp);
+
+  let html = '<table style="border-collapse:collapse;text-align:center;">';
+  // 1re ligne d'en-tête : symbole de l'unité (fusionné sur ses sous-colonnes).
+  html += '<tr>';
+  def.units.forEach(u=>{
+    html += `<th colspan="${def.subCols}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);font-size:.82rem;">${u.sym}</th>`;
+  });
+  html += '</tr>';
+  // 2e ligne : une case par chiffre (puissance de 10 précise).
+  html += '<tr>';
+  def.units.forEach(u=>{
+    for(let s=0;s<def.subCols;s++){
+      const power = u.exp - s;
+      const digit = digitMap[power] || '';
+      const isDecimalStart = mode==='nombres' && power===-1 && s===0;
+      html += `${isDecimalStart ? '<td style="border:none;padding:0;width:6px;font-weight:700;">,</td>' : ''}<td style="padding:4px;border:1px solid rgba(28,43,57,.18);width:26px;">
+        <input type="text" maxlength="1" data-power="${power}" value="${digit}" style="width:22px;padding:4px 0;border:none;text-align:center;">
+      </td>`;
+    }
+  });
+  html += '</tr></table>';
+  document.getElementById('conversionGrid').innerHTML = html;
+}
+function insertConversionGrid(){
+  const mode = document.getElementById('conversionPanel').dataset.mode || 'longueur';
+  const def = CONVERSION_DEFS[mode];
+  const values = {};
+  document.querySelectorAll('#conversionGrid input').forEach(inp=>{ values[inp.dataset.power] = inp.value.trim(); });
+  let html = '<table style="border-collapse:collapse;width:auto;margin:8px 0;font-size:.9rem;text-align:center;">';
+  html += '<tr>';
+  def.units.forEach(u=>{
+    html += `<th colspan="${def.subCols}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);">${u.sym}</th>`;
+  });
+  html += '</tr><tr>';
+  def.units.forEach(u=>{
+    for(let s=0;s<def.subCols;s++){
+      const power = u.exp - s;
+      const isDecimalStart = mode==='nombres' && power===-1 && s===0;
+      if(isDecimalStart) html += '<td style="border:none;padding:0;font-weight:700;">,</td>';
+      html += `<td style="padding:6px 8px;border:1px solid rgba(28,43,57,.18);">${escapeHtml(values[power]||'')}</td>`;
+    }
+  });
+  html += '</tr></table>';
+  addPendingBlock('conversion', html, {mode, values}, 'reopenConversionGrid');
+  closeConversionTool();
+}
+function reopenConversionGrid(data){
+  openConversionTool(data.mode);
+  setTimeout(()=>{
+    document.querySelectorAll('#conversionGrid input').forEach(inp=>{
+      const v = data.values[inp.dataset.power];
       if(v!==undefined) inp.value = v;
     });
   }, 0);
