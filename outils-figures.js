@@ -4238,34 +4238,34 @@ function renderLengthCode(p1,p2,group,color){
   for(let i=0;i<group;i++){
     const off=offsetStart+i*spacing;
     const cx=mid.x+ux*off, cy=mid.y+uy*off;
-    html+=`<line x1="${cx-tx*5.5}" y1="${cy-ty*5.5}" x2="${cx+tx*5.5}" y2="${cy+ty*5.5}" stroke="${color}" stroke-width="1.1"/>`;
+    html+=`<line x1="${cx-tx*4}" y1="${cy-ty*4}" x2="${cx+tx*4}" y2="${cy+ty*4}" stroke="${color}" stroke-width="0.9"/>`;
   }
   return html;
 }
 function renderAngleCode(vertex,p1,p2,group,color){
   color = color || CODE_GROUP_COLORS[group] || '#E35D3A';
-  const r = 20;
+  const r = 16;
   const {points, mid} = angleArcPoints(vertex,p1,p2,r);
-  let html = `<polyline points="${points}" fill="none" stroke="${color}" stroke-width="1.3"/>`;
+  let html = `<polyline points="${points}" fill="none" stroke="${color}" stroke-width="1"/>`;
   // Traits perpendiculaires à l'arc (radiaux), espacés angulairement autour de son milieu --
   // UN seul arc, avec le nombre de traits qui indique le groupe (convention standard,
   // signalé : "il faut les coder avec arc de cercle et trait dessus").
-  const angSpacing = 0.13, offsetStart = -((group-1)*angSpacing)/2;
+  const angSpacing = 0.15, offsetStart = -((group-1)*angSpacing)/2;
   for(let i=0;i<group;i++){
     const a = mid+offsetStart+i*angSpacing;
     const cx=vertex.x+r*Math.cos(a), cy=vertex.y+r*Math.sin(a);
     const nx=Math.cos(a), ny=Math.sin(a);
-    html+=`<line x1="${(cx-nx*4).toFixed(1)}" y1="${(cy-ny*4).toFixed(1)}" x2="${(cx+nx*4).toFixed(1)}" y2="${(cy+ny*4).toFixed(1)}" stroke="${color}" stroke-width="1.1"/>`;
+    html+=`<line x1="${(cx-nx*3).toFixed(1)}" y1="${(cy-ny*3).toFixed(1)}" x2="${(cx+nx*3).toFixed(1)}" y2="${(cy+ny*3).toFixed(1)}" stroke="${color}" stroke-width="0.9"/>`;
   }
   return html;
 }
 function renderRightAngleCode(vertex,p1,p2){
   const a1=Math.atan2(p1.y-vertex.y,p1.x-vertex.x), a2=Math.atan2(p2.y-vertex.y,p2.x-vertex.x);
-  const size=10;
+  const size=8;
   const c1={x:vertex.x+size*Math.cos(a1), y:vertex.y+size*Math.sin(a1)};
   const c2={x:vertex.x+size*Math.cos(a2), y:vertex.y+size*Math.sin(a2)};
   const c3={x:c1.x+c2.x-vertex.x, y:c1.y+c2.y-vertex.y};
-  return `<polyline points="${c1.x},${c1.y} ${c3.x},${c3.y} ${c2.x},${c2.y}" fill="none" stroke="#E35D3A" stroke-width="1.3"/>`;
+  return `<polyline points="${c1.x},${c1.y} ${c3.x},${c3.y} ${c2.x},${c2.y}" fill="none" stroke="#E35D3A" stroke-width="1"/>`;
 }
 /* Codage d'un côté par SYMBOLE (pas seulement par couleur) : 1 trait, 2 traits, petit cercle,
    ou # -- quatre conventions différentes qu'on peut cycler pour ne jamais confondre deux côtés,
@@ -4305,7 +4305,7 @@ function renderVertexCode(vertex,p1,p2,styleIdx,color){
    défaut de son type si aucun style personnalisé n'a été choisi. */
 function shapeStrokeAttrs(s, defaultColor){
   const color = s.strokeColor || defaultColor;
-  const sw = s.strokeWidth==='epais' ? 1.8 : 1.1;
+  const sw = s.strokeWidth==='epais' ? 1.5 : 0.9;
   const dash = s.strokePattern==='pointille' ? ' stroke-dasharray="5,4"' : '';
   return `stroke="${color}" stroke-width="${sw}"${dash}`;
 }
@@ -4320,12 +4320,12 @@ function renderFigureSvg(){
       html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x}" y2="${s.p2.y}" ${shapeStrokeAttrs(s,'#1C1B2E')}/>`;
       if(s.lengthLabel){
         const mx=(s.p1.x+s.p2.x)/2, my=(s.p1.y+s.p2.y)/2;
-        html+=`<text x="${mx}" y="${my-9}" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">${s.lengthLabel}</text>`;
+        html+=`<text x="${mx}" y="${my-9}" font-family="JetBrains Mono" font-size="10" fill="#5C5A78" text-anchor="middle">${s.lengthLabel}</text>`;
       }
       if(s.codeGroup) html += renderLengthCode(s.p1, s.p2, s.codeGroup);
     } else if(s.type==='vecteur'){
       const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y, len=Math.hypot(dx,dy)||1;
-      const ux=dx/len, uy=dy/len, nx=-uy, ny=ux, headLen=9, headW=4;
+      const ux=dx/len, uy=dy/len, nx=-uy, ny=ux, headLen=7, headW=3;
       const bx=s.p2.x-ux*headLen, by=s.p2.y-uy*headLen;
       html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${bx}" y2="${by}" ${shapeStrokeAttrs(s,'#1C1B2E')}/>`;
       const attrs = shapeStrokeAttrs(s,'#1C1B2E');
@@ -4345,7 +4345,7 @@ function renderFigureSvg(){
       const refPoint = hasFixedRadius ? {x:s.p1.x+r*Math.cos(s.angle||0), y:s.p1.y+r*Math.sin(s.angle||0)} : s.p2;
       html+=`<circle cx="${s.p1.x}" cy="${s.p1.y}" r="${r}" fill="none" ${shapeStrokeAttrs(s,'#1F3A5C')}/>`;
       if(s.compass) html += compassGraphic(s.p1, refPoint);
-      if(s.radiusLabel) html+=`<text x="${s.p1.x+(refPoint.x-s.p1.x)/2}" y="${s.p1.y+(refPoint.y-s.p1.y)/2-8}" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">${s.radiusLabel}</text>`;
+      if(s.radiusLabel) html+=`<text x="${s.p1.x+(refPoint.x-s.p1.x)/2}" y="${s.p1.y+(refPoint.y-s.p1.y)/2-8}" font-family="JetBrains Mono" font-size="10" fill="#5C5A78" text-anchor="middle">${s.radiusLabel}</text>`;
       if(s.codeGroup){
         // Le codage (traits perpendiculaires) se rapporte au rayon -- sans tracer ce rayon
         // lui-même, les traits apparaîtraient flottants, sans aucune ligne visible reliant le
@@ -4363,7 +4363,7 @@ function renderFigureSvg(){
       const {points,mid}=angleArcPoints(s.vertex,s.p1,s.p2,r);
       html+=`<polyline points="${points}" fill="none" stroke="#E35D3A" stroke-width="1.8"/>`;
       const lx=s.vertex.x+(r+14)*Math.cos(mid), ly=s.vertex.y+(r+14)*Math.sin(mid);
-      html+=`<text x="${lx}" y="${ly}" font-family="JetBrains Mono" font-size="12" fill="#E35D3A" text-anchor="middle">${angleDegrees(s.vertex,s.p1,s.p2)}°</text>`;
+      html+=`<text x="${lx}" y="${ly}" font-family="JetBrains Mono" font-size="10" fill="#E35D3A" text-anchor="middle">${angleDegrees(s.vertex,s.p1,s.p2)}°</text>`;
     } else if(s.type==='bissectrice'){
       // Pas d'arc automatique ici -- le codage (2 angles égaux) se fait séparément via la
       // fenêtre de codage, qui ferait double emploi avec un arc tracé d'office à la création.
@@ -4393,7 +4393,7 @@ function renderFigureSvg(){
       let textAngle = angleDeg;
       if(textAngle>90 || textAngle<-90) textAngle += 180;
       html += `<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x}" y2="${s.p2.y}" ${shapeStrokeAttrs(s,'#8A2F52')} stroke-dasharray="4,3"/>`;
-      html += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="JetBrains Mono" font-size="12" fill="${s.strokeColor||'#8A2F52'}" text-anchor="middle" transform="rotate(${textAngle.toFixed(1)} ${lx.toFixed(1)} ${ly.toFixed(1)})">${cm} cm</text>`;
+      html += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="JetBrains Mono" font-size="10" fill="${s.strokeColor||'#8A2F52'}" text-anchor="middle" transform="rotate(${textAngle.toFixed(1)} ${lx.toFixed(1)} ${ly.toFixed(1)})">${cm} cm</text>`;
     } else if(s.type==='mesure-distance-ligne'){
       // Pied de la perpendiculaire (ou point le plus proche si segment/demi-droite borné)
       // recalculé à CHAQUE rendu -- suit donc si le point ou la droite bouge.
@@ -4406,7 +4406,7 @@ function renderFigureSvg(){
       let textAngle = angleDeg;
       if(textAngle>90 || textAngle<-90) textAngle += 180;
       html += `<line x1="${s.point.x}" y1="${s.point.y}" x2="${foot.x}" y2="${foot.y}" ${shapeStrokeAttrs(s,'#8A2F52')} stroke-dasharray="4,3"/>`;
-      html += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="JetBrains Mono" font-size="12" fill="${s.strokeColor||'#8A2F52'}" text-anchor="middle" transform="rotate(${textAngle.toFixed(1)} ${lx.toFixed(1)} ${ly.toFixed(1)})">${cm} cm</text>`;
+      html += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="JetBrains Mono" font-size="10" fill="${s.strokeColor||'#8A2F52'}" text-anchor="middle" transform="rotate(${textAngle.toFixed(1)} ${lx.toFixed(1)} ${ly.toFixed(1)})">${cm} cm</text>`;
     } else if(s.type==='code-longueur'){
       html += renderLengthCode(s.p1,s.p2,s.group||1);
     } else if(s.type==='code-angle'){
@@ -4422,7 +4422,7 @@ function renderFigureSvg(){
       const bis = a1+delta/2;
       const r = 30;
       const lx = s.vertex.x+r*Math.cos(bis), ly = s.vertex.y+r*Math.sin(bis);
-      html += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">${s.deg}°</text>`;
+      html += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-family="JetBrains Mono" font-size="10" fill="#5C5A78" text-anchor="middle">${s.deg}°</text>`;
     }
   });
   /* Marqueur d'un point selon le nombre d'objets (segment/droite/demi-droite comme
@@ -4479,14 +4479,14 @@ function renderFigureSvg(){
       const {p1:lp1,p2:lp2} = lineShapeEndpoints(shape);
       const dx=lp2.x-lp1.x, dy=lp2.y-lp1.y, len=Math.hypot(dx,dy)||1;
       const nx=-dy/len, ny=dx/len;
-      html+=`<line x1="${(p.x-nx*5).toFixed(1)}" y1="${(p.y-ny*5).toFixed(1)}" x2="${(p.x+nx*5).toFixed(1)}" y2="${(p.y+ny*5).toFixed(1)}" stroke="${c}" stroke-width="1.6"/>`;
+      html+=`<line x1="${(p.x-nx*3.5).toFixed(1)}" y1="${(p.y-ny*3.5).toFixed(1)}" x2="${(p.x+nx*3.5).toFixed(1)}" y2="${(p.y+ny*3.5).toFixed(1)}" stroke="${c}" stroke-width="1.2"/>`;
     } else if(p.def && p.def.type==='point-sur-cercle'){
       // Trait perpendiculaire à la TANGENTE du cercle en ce point -- donc le long du rayon
       // (direction centre -> point).
       const {shape} = p.def;
       const dx=p.x-shape.p1.x, dy=p.y-shape.p1.y, len=Math.hypot(dx,dy)||1;
       const nx=dx/len, ny=dy/len;
-      html+=`<line x1="${(p.x-nx*5).toFixed(1)}" y1="${(p.y-ny*5).toFixed(1)}" x2="${(p.x+nx*5).toFixed(1)}" y2="${(p.y+ny*5).toFixed(1)}" stroke="${c}" stroke-width="1.6"/>`;
+      html+=`<line x1="${(p.x-nx*3.5).toFixed(1)}" y1="${(p.y-ny*3.5).toFixed(1)}" x2="${(p.x+nx*3.5).toFixed(1)}" y2="${(p.y+ny*3.5).toFixed(1)}" stroke="${c}" stroke-width="1.2"/>`;
     } else {
     let allAligned = linked.length>=1;
     if(linked.length>=2){
@@ -4498,18 +4498,18 @@ function renderFigureSvg(){
       });
     }
     if(linked.length===0){
-      html+=`<line x1="${p.x-4}" y1="${p.y-4}" x2="${p.x+4}" y2="${p.y+4}" stroke="${c}" stroke-width="1.6"/>`;
-      html+=`<line x1="${p.x-4}" y1="${p.y+4}" x2="${p.x+4}" y2="${p.y-4}" stroke="${c}" stroke-width="1.6"/>`;
+      html+=`<line x1="${p.x-3}" y1="${p.y-3}" x2="${p.x+3}" y2="${p.y+3}" stroke="${c}" stroke-width="1.2"/>`;
+      html+=`<line x1="${p.x-3}" y1="${p.y+3}" x2="${p.x+3}" y2="${p.y-3}" stroke="${c}" stroke-width="1.2"/>`;
     } else if(linked.length===1 && linked[0].type==='vecteur' && linked[0].p2===p){
       // Pointe d'un vecteur : la flèche montre déjà où est ce point, un trait en plus ferait
       // double emploi (signalé : "la flèche remplace le point, ne pas faire les deux").
     } else if(allAligned){
       const dir = shapeDirAt(linked[0], p);
       const nx=-dir.y, ny=dir.x;
-      html+=`<line x1="${(p.x-nx*5).toFixed(1)}" y1="${(p.y-ny*5).toFixed(1)}" x2="${(p.x+nx*5).toFixed(1)}" y2="${(p.y+ny*5).toFixed(1)}" stroke="${c}" stroke-width="1.6"/>`;
+      html+=`<line x1="${(p.x-nx*3.5).toFixed(1)}" y1="${(p.y-ny*3.5).toFixed(1)}" x2="${(p.x+nx*3.5).toFixed(1)}" y2="${(p.y+ny*3.5).toFixed(1)}" stroke="${c}" stroke-width="1.2"/>`;
     }
     }
-    html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="14" font-weight="700" fill="${sel?'#E35D3A':baseColor}">${p.label}</text>`;
+    html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="11" font-weight="700" fill="${sel?'#E35D3A':baseColor}">${p.label}</text>`;
   });
   svg.innerHTML = html;
 }
