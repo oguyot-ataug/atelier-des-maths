@@ -974,6 +974,10 @@ async function exportCoursPDF(){
   // styles.css), ce qui fait ressortir les formules -- fréquentes dans les exemples --
   // nettement plus grosses que le texte environnant une fois exportées.
   clone.querySelectorAll('.katex').forEach(el=>{ el.style.fontSize='1em'; });
+  // Réduction spécifique au PDF : .we-expr (les exemples en police à chasse fixe, ex. "A =
+  // 28 + 45 + 72 + 15") a font-size:1.05rem sur le site -- nettement plus large que le texte
+  // environnant une fois exporté (signalé : "les exemples... sont écrits trop gros").
+  clone.querySelectorAll('.we-expr').forEach(el=>{ el.style.fontSize='0.85em'; });
   clone.querySelectorAll('.interaction-hint').forEach(el=>el.remove());
   await expandStepDemosInClone(clone);
   // Empêche un saut de page de couper une formule en deux (ce qui provoque un chevauchement visuel).
