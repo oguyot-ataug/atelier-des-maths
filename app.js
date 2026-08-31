@@ -937,6 +937,10 @@ async function exportCoursPDF(){
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.read-aloud-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
+  // Réduction spécifique au PDF : .katex a font-size:1.18em globalement sur le site (voir
+  // styles.css), ce qui fait ressortir les formules -- fréquentes dans les exemples --
+  // nettement plus grosses que le texte environnant une fois exportées.
+  clone.querySelectorAll('.katex').forEach(el=>{ el.style.fontSize='1em'; });
   clone.querySelectorAll('.interaction-hint').forEach(el=>el.remove());
   await expandStepDemosInClone(clone);
   // Empêche un saut de page de couper une formule en deux (ce qui provoque un chevauchement visuel).
@@ -993,7 +997,7 @@ async function exportCoursPDF(){
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
   hint.textContent='Génération du PDF en cours…';
-  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:false}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
+  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:false}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
     .from(wrapper).toPdf().get('pdf').then(pdf=>{
       // Pagination "page / total" -- html2pdf ne le fait pas nativement, on la tamponne
       // nous-mêmes via l'API jsPDF sous-jacente, une fois toutes les pages générées.
