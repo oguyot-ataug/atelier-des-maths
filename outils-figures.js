@@ -385,7 +385,7 @@ document.body.insertAdjacentHTML('beforeend', `
       </div>
     </div>
     </div>
-    <div id="figurePanel" class="figure-wrap" style="display:none;max-height:88vh;max-width:600px;margin-left:auto;margin-right:auto;overflow-y:auto;padding:12px;">
+    <div id="figurePanel" class="figure-wrap" style="display:none;max-height:88vh;max-width:960px;margin-left:auto;margin-right:auto;overflow-y:auto;padding:12px;">
       <div class="tool-row" style="margin-bottom:8px;" id="figEnonceIaRow">
         <textarea id="enonceInput" rows="2" style="flex:1;min-width:260px;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);"
           placeholder="Ex. : ABC triangle&#10;I milieu de [BC]&#10;cercle de centre A passant par B"></textarea>
