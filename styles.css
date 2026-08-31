@@ -510,12 +510,19 @@ footer a:hover{color:var(--accent);}
   body{background:#fff;}
   .figure-wrap, .redaction-block{box-shadow:none;border:1px solid #ccc;break-inside:avoid;}
   .cahier-entry{break-inside:avoid;border:none;padding:0 0 18px;}
-  /* En-tête "Chapitre N / code - titre" en haut à gauche de CHAQUE page imprimée --
-     position:fixed est répété par le navigateur sur chaque page, contrairement à un élément
-     normal (signalé : "en haut de page à gauche, Chapitre 1... puis N1 - Nombres décimaux"). */
+  /* "Chapitre N" en haut à gauche de CHAQUE page imprimée -- position:fixed est répété par
+     le navigateur sur chaque page, contrairement à un élément normal. */
   #printChapHeader{
     display:block !important; position:fixed; top:0; left:0; text-align:left;
     font-family:'Space Grotesk',sans-serif; font-size:9pt; line-height:1.35; color:#555;
+  }
+  /* Le titre normal est remplacé par "CODE - TITRE" en majuscules, en gros (signalé :
+     "écrire en gros N1 - NOMBRES ENTIERS comme titre et supprimer N1 Nombres entiers en
+     dessous de Chapitre 1"). */
+  #chap-title{ display:none !important; }
+  #printChapBigTitle{
+    display:block !important; font-family:'Space Grotesk',sans-serif; font-size:22pt;
+    font-weight:700; margin:0 0 6px;
   }
   #view-chapitre{ margin-top:34px; } /* évite que le contenu chevauche l'en-tête fixe */
   /* Pagination "page / total" en bas de chaque page -- @page/marges CSS (prise en charge

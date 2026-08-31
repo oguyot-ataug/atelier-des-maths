@@ -1245,7 +1245,7 @@ function buildDivisionStages(res){
   return stages;
 }
 function divisionStagesHTML(stages, res){
-  const panels = stages.map((st,i)=>`<div style="margin:10px 0;padding:14px 0;">
+  const panels = stages.map((st,i)=>`<div style="margin:10px 0;padding:14px 0;page-break-inside:avoid;break-inside:avoid;">
     ${dpRenderDivisionTable(st.rows, st.quotient, res.divisor)}
     <p class="hint" style="margin:8px 0 0;">${i+1}. ${st.caption}</p>
   </div>`).join('');

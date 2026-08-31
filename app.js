@@ -616,7 +616,8 @@ function openChapitre(c, tab, lvlOverride){
   document.getElementById('chap-meta').textContent = `pages ${c.p} · ${c.s} semaine(s) · ${c.d}`;
   // En-tête visible UNIQUEMENT à l'impression (voir @media print, styles.css) -- signalé :
   // "en haut de page à gauche : Chapitre 1... puis N1 - Nombres décimaux."
-  document.getElementById('printChapHeader').innerHTML = `Chapitre ${c.n}<br>${escapeHtml(c.code)} - ${escapeHtml(c.t)}`;
+  document.getElementById('printChapHeader').innerHTML = `Chapitre ${c.n}`;
+  document.getElementById('printChapBigTitle').textContent = `${c.code} - ${c.t}`.toUpperCase();
 
   const allIds = new Set();
   Object.values(DEMO_REGISTRY).forEach(d=>{ allIds.add(d.cours); allIds.add(d.methode); allIds.add(d.exos); if(d.histoire) allIds.add(d.histoire); });
@@ -979,13 +980,16 @@ async function exportCoursPDF(){
   // globale". html2canvas/html2pdf ignore le CSS d'impression du site (@media print), donc
   // toute mise en forme spécifique au PDF doit être faite ici, directement sur ce wrapper.
   wrapper.style.cssText='width:700px;background:#fff;padding:20px;font-family:Inter,sans-serif;color:#1C1B2E;font-size:12px;line-height:1.5;';
-  // En-tête "Chapitre N" + "code - titre", comme pour l'impression native (signalé : "ni
-  // chapitre... ni pagination").
+  // "Chapitre N" (petit) + "CODE - TITRE" en majuscules (grand titre), comme pour
+  // l'impression native (signalé : "ni chapitre... ni pagination", puis "écrire en gros N1 -
+  // NOMBRES ENTIERS comme titre et supprimer N1 Nombres entiers en dessous de Chapitre 1").
   const chapNumEl = document.getElementById('printChapHeader');
+  const bigTitleEl = document.getElementById('printChapBigTitle');
   const headerHtml = chapNumEl && chapNumEl.innerHTML
-    ? `<div style="font-family:'Space Grotesk',sans-serif;font-size:10px;color:#666;margin-bottom:10px;line-height:1.4;">${chapNumEl.innerHTML}</div>`
+    ? `<div style="font-family:'Space Grotesk',sans-serif;font-size:10px;color:#666;margin-bottom:6px;line-height:1.4;">${chapNumEl.innerHTML}</div>`
     : '';
-  wrapper.innerHTML = headerHtml + `<h1 style="font-family:'Space Grotesk',sans-serif;font-size:20px;">${title}</h1>` + clone.innerHTML;
+  const bigTitle = (bigTitleEl && bigTitleEl.textContent) || title;
+  wrapper.innerHTML = headerHtml + `<h1 style="font-family:'Space Grotesk',sans-serif;font-size:20px;">${escapeHtml(bigTitle)}</h1>` + clone.innerHTML;
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
   hint.textContent='Génération du PDF en cours…';
@@ -1382,7 +1386,11 @@ function singleBlockHTML(b, ctx, withControls, draggable){
     // autres types de blocs gardent leur comportement d'impression inchangé (pas de risque
     // de régression sur ce qui fonctionne déjà).
     const printWidthStyle = sizeStyle || (b.type==='figure' ? `width:${defaultWidth}px;` : '');
-    return `<div class="nb-figure-row disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}"${printWidthStyle?` style="${printWidthStyle}overflow:hidden;"`:''}>${html}</div>`;
+    // divisionPosee (mode étape par étape) peut être bien plus haut qu'un bloc "figure"
+    // typique -- overflow:hidden risquerait de couper les dernières étapes si le conteneur
+    // se trouvait contraint en hauteur par ailleurs.
+    const overflowStyle = b.type==='divisionPosee' ? '' : 'overflow:hidden;';
+    return `<div class="nb-figure-row disk-sync-target" data-block-id="${b.id}" data-ctx="${ctx}" data-type="${b.type}"${(printWidthStyle||overflowStyle)?` style="${printWidthStyle}${overflowStyle}"`:''}>${html}</div>`;
   }
   // Poignée de glisser DÉDIÉE (plutôt que le bloc entier "draggable") : un texte contient du
   // contenu sélectionnable, et rendre tout le bloc "draggable" entrait en conflit avec la
