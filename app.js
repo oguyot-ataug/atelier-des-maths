@@ -616,7 +616,11 @@ function openChapitre(c, tab, lvlOverride){
   document.getElementById('chap-meta').textContent = `pages ${c.p} · ${c.s} semaine(s) · ${c.d}`;
   // En-tête visible UNIQUEMENT à l'impression (voir @media print, styles.css) -- signalé :
   // "en haut de page à gauche : Chapitre 1... puis N1 - Nombres décimaux."
-  document.getElementById('printChapHeader').innerHTML = `Chapitre ${c.n}`;
+  // c.n n'est pas toujours transmis par l'appelant (ex. carte cliquée, reconstruite depuis
+  // son dataset qui ne l'inclut pas) -- recherché par code dans la liste de chapitres du bon
+  // niveau si absent (signalé : "Chapitre undefined" à l'impression).
+  const chapNum = c.n ?? (lvl==='5e' ? CH5 : CH6).find(x=>x.code===c.code)?.n;
+  document.getElementById('printChapHeader').innerHTML = `Chapitre ${chapNum ?? ''}`;
   document.getElementById('printChapBigTitle').textContent = `${c.code} - ${c.t}`.toUpperCase();
 
   const allIds = new Set();
@@ -928,11 +932,40 @@ function getVisibleCoursContent(){
   }
   return panel;
 }
+/* Clique réellement (comme le ferait un utilisateur) sur chaque bouton "Étape suivante"
+   trouvé, plusieurs fois de suite, jusqu'à ce que le contenu de sa démo ne change plus --
+   déroule ainsi n'importe quelle démonstration par étapes jusqu'à sa fin, AVANT capture PDF,
+   sans avoir besoin de connaître les noms internes des fonctions/variables propres à chaque
+   chapitre (schéma répété dans une trentaine de chapitres, signalé : "on n'a que la première
+   étape... afficher la dernière étape pour voir la division dans son entièreté"). Agit sur la
+   page RÉELLE (avant clonage), donc le contenu cloné juste après reflète déjà la fin de
+   chaque démo.
+   Effet de bord assumé : les démos affichées à l'écran sautent aussi à leur dernière étape
+   après un export PDF (l'utilisateur peut cliquer "Recommencer" pour les réinitialiser). */
+function advanceAllStepDemosToEnd(container){
+  const buttons = Array.from(container.querySelectorAll('button')).filter(b=>b.textContent.trim().startsWith('Étape suivante'));
+  for(const btn of buttons){
+    for(let i=0;i<40;i++){
+      const wrap = btn.closest('.figure-wrap');
+      const before = wrap ? wrap.innerHTML : null;
+      btn.click();
+      const after = wrap ? wrap.innerHTML : null;
+      if(before===after) break; // plus aucun changement -- dernière étape déjà atteinte
+    }
+  }
+}
+// Même mécanisme pour l'impression native (Ctrl/Cmd+P), pas seulement le bouton "Télécharger
+// en PDF" -- déroule les démos de la vue actuellement affichée avant que le navigateur ne
+// capture la page pour l'impression. IMPORTANT : reste synchrone (pas d'await/setTimeout) --
+// l'événement beforeprint n'attend JAMAIS la résolution d'une promesse avant de continuer,
+// une version asynchrone risquerait de ne pas avoir fini avant la capture réelle.
+window.addEventListener('beforeprint', ()=>{ advanceAllStepDemosToEnd(document.body); });
 async function exportCoursPDF(){
   const hint=document.getElementById('exportHint');
   if(typeof html2pdf==='undefined'){ hint.textContent="La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?), utilisez Ctrl/Cmd+P pour imprimer à la place."; return; }
   const content = getVisibleCoursContent();
   const title = document.getElementById('chap-title').textContent || 'cours';
+  advanceAllStepDemosToEnd(content);
   const clone = content.cloneNode(true);
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.read-aloud-btn').forEach(el=>el.remove());
