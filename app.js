@@ -974,13 +974,33 @@ async function exportCoursPDF(){
   const clip = document.createElement('div');
   clip.style.cssText='height:0;overflow:hidden;';
   const wrapper = document.createElement('div');
-  wrapper.style.cssText='width:700px;background:#fff;padding:20px;font-family:Inter,sans-serif;color:#1C1B2E;';
-  wrapper.innerHTML = `<h1 style="font-family:'Space Grotesk',sans-serif;">${title}</h1>` + clone.innerHTML;
+  // Taille d'écriture réduite (14px -> 12px, cascade sur tout le contenu) -- signalé : "la
+  // génération PDF donne une structure trop grosse, on peut réduire la taille d'écriture
+  // globale". html2canvas/html2pdf ignore le CSS d'impression du site (@media print), donc
+  // toute mise en forme spécifique au PDF doit être faite ici, directement sur ce wrapper.
+  wrapper.style.cssText='width:700px;background:#fff;padding:20px;font-family:Inter,sans-serif;color:#1C1B2E;font-size:12px;line-height:1.5;';
+  // En-tête "Chapitre N" + "code - titre", comme pour l'impression native (signalé : "ni
+  // chapitre... ni pagination").
+  const chapNumEl = document.getElementById('printChapHeader');
+  const headerHtml = chapNumEl && chapNumEl.innerHTML
+    ? `<div style="font-family:'Space Grotesk',sans-serif;font-size:10px;color:#666;margin-bottom:10px;line-height:1.4;">${chapNumEl.innerHTML}</div>`
+    : '';
+  wrapper.innerHTML = headerHtml + `<h1 style="font-family:'Space Grotesk',sans-serif;font-size:20px;">${title}</h1>` + clone.innerHTML;
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
   hint.textContent='Génération du PDF en cours…';
   html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:false}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css','avoid-all']}})
-    .from(wrapper).save()
+    .from(wrapper).toPdf().get('pdf').then(pdf=>{
+      // Pagination "page / total" -- html2pdf ne le fait pas nativement, on la tamponne
+      // nous-mêmes via l'API jsPDF sous-jacente, une fois toutes les pages générées.
+      const total = pdf.internal.getNumberOfPages();
+      for(let i=1;i<=total;i++){
+        pdf.setPage(i);
+        pdf.setFontSize(9);
+        pdf.setTextColor(120);
+        pdf.text(`${i} / ${total}`, pdf.internal.pageSize.getWidth()/2, pdf.internal.pageSize.getHeight()-6, {align:'center'});
+      }
+    }).save()
     .then(()=>{ clip.remove(); hint.textContent='PDF téléchargé ✓'; setTimeout(()=>hint.textContent='',4000); })
     .catch(()=>{ clip.remove(); hint.textContent="Échec de la génération dans ce navigateur, essayez Ctrl/Cmd+P pour imprimer à la place."; });
 }
