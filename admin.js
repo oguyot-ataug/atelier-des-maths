@@ -36,9 +36,9 @@ document.getElementById('view-admin').innerHTML = `
       <span class="hint" id="adminAccountStatus" style="margin:0;"></span>
 
       <p class="example-title" style="margin:16px 0 6px;">Import en masse d'élèves</p>
-      <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, identifiant puis mot de passe séparés par une tabulation, un copier-coller direct depuis un tableur fonctionne).</p>
-      <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="jdupont	Motdepasse1
-mmartin	Motdepasse2"></textarea>
+      <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, 3 colonnes séparées par une tabulation : Nom Prénom, identifiant, mot de passe -- un copier-coller direct depuis un tableur fonctionne).</p>
+      <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="DUPONT Jean	jdupont	Motdepasse1
+MARTIN Marie	mmartin	Motdepasse2"></textarea>
       <div class="tool-row" style="margin-top:8px;">
         <button class="btn" onclick="adminBulkCreateStudents()">Créer tous les comptes élèves</button>
       </div>
@@ -596,25 +596,25 @@ async function adminBulkCreateStudents(){
   const raw = document.getElementById('adminBulkStudents').value;
   const status = document.getElementById('adminBulkStatus');
   const lines = raw.split('\n').map(l=>l.trim()).filter(Boolean);
-  if(!lines.length){ status.textContent = 'Collez au moins une ligne (identifiant, tabulation, mot de passe).'; return; }
+  if(!lines.length){ status.textContent = 'Collez au moins une ligne (Nom Prénom, tabulation, identifiant, tabulation, mot de passe).'; return; }
   const { data:{ session } } = await sb.auth.getSession();
   let ok=0, fail=0; const errors=[];
   for(let i=0;i<lines.length;i++){
     status.textContent = `Création en cours… (${i+1}/${lines.length})`;
     const parts = lines[i].split('\t').map(s=>s.trim()).filter(s=>s!=='');
-    if(parts.length<2){ fail++; errors.push(`Ligne ${i+1} : format invalide (identifiant [tabulation] mot de passe attendus)`); continue; }
-    const [identifiant, password] = parts;
+    if(parts.length<3){ fail++; errors.push(`Ligne ${i+1} : format invalide (Nom Prénom, identifiant et mot de passe attendus, séparés par des tabulations)`); continue; }
+    const [nom, identifiant, password] = parts;
     const email = toAuthEmail(identifiant);
     try{
       const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
         method:'POST',
         headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
-        body: JSON.stringify({ email, password, role:'eleve', nom: identifiant }),
+        body: JSON.stringify({ email, password, role:'eleve', nom }),
       });
       const data = await res.json();
-      if(data.error){ fail++; errors.push(`${identifiant} : ${data.error}`); }
+      if(data.error){ fail++; errors.push(`${nom} (${identifiant}) : ${data.error}`); }
       else ok++;
-    }catch(err){ fail++; errors.push(`${identifiant} : erreur réseau`); }
+    }catch(err){ fail++; errors.push(`${nom} (${identifiant}) : erreur réseau`); }
   }
   status.innerHTML = `✓ ${ok} compte(s) créé(s)` + (fail?`, <span class=gicon>warning</span> ${fail} échec(s) :<br>`+errors.map(escapeHtml).join('<br>') : '.');
   if(ok) document.getElementById('adminBulkStudents').value='';
