@@ -993,9 +993,11 @@ function reopenTableau(data){
    1 unité³ = 1000 unité³ suivante). Une unité d'exposant E avec S sous-colonnes couvre les
    puissances [E, E-1, ..., E-S+1]. */
 const CONVERSION_DEFS = {
-  nombres: {subCols:1, decimalAfter:0, units:[
-    {sym:'CM', exp:5},{sym:'DM', exp:4},{sym:'UM', exp:3},{sym:'C', exp:2},{sym:'D', exp:1},{sym:'U', exp:0},
-    {sym:'d', exp:-1},{sym:'c', exp:-2},{sym:'m', exp:-3},
+  nombres: {isGrouped:true, groups:[
+    {label:'Millions', units:[{sym:'C', exp:8},{sym:'D', exp:7},{sym:'U', exp:6}]},
+    {label:'Mille', units:[{sym:'C', exp:5},{sym:'D', exp:4},{sym:'U', exp:3}]},
+    {label:'Simples', units:[{sym:'C', exp:2},{sym:'D', exp:1},{sym:'U', exp:0}]},
+    {label:'', units:[{sym:'d', exp:-1},{sym:'c', exp:-2},{sym:'m', exp:-3}]},
   ]},
   longueur: {subCols:1, units:[
     {sym:'km', exp:3},{sym:'hm', exp:2},{sym:'dam', exp:1},{sym:'m', exp:0},{sym:'dm', exp:-1},{sym:'cm', exp:-2},{sym:'mm', exp:-3},
@@ -1035,10 +1037,17 @@ function digitsByPower(valueStr, unitExp){
   }
   return map;
 }
+/* Aplatit def.units (structure à plat) ou def.groups[].units (structure groupée, nombres
+   uniquement) en une seule liste [{sym,exp}], avec l'index correspondant à la valeur
+   utilisée dans le menu déroulant -- évite de dupliquer la logique de parcours partout. */
+function flatConvUnits(def){
+  return def.isGrouped ? def.groups.flatMap(g=>g.units.map(u=>({...u, label:g.label}))) : def.units;
+}
 function populateConvUnitSelect(mode){
   const def = CONVERSION_DEFS[mode];
   const select = document.getElementById('convUnitSelect');
-  select.innerHTML = def.units.map((u,i)=>`<option value="${i}" ${u.exp===0?'selected':''}>${u.sym}</option>`).join('');
+  const flat = flatConvUnits(def);
+  select.innerHTML = flat.map((u,i)=>`<option value="${i}" ${u.exp===0?'selected':''}>${u.sym}${u.label?' ('+u.label+')':''}</option>`).join('');
 }
 function openConversionTool(mode){
   const tabIds = {nombres:'tabTabNombres', longueur:'tabTabLongueur', aire:'tabTabAire', volume:'tabTabVolume', masse:'tabTabMasse', capacite:'tabTabCapacite'};
@@ -1048,7 +1057,7 @@ function openConversionTool(mode){
   document.getElementById('conversionPanel').style.display='block';
   document.getElementById('conversionPanel').dataset.mode = mode;
   const hints = {
-    nombres: 'Tableau de numération (avec ou sans décimales). CM/DM/UM = centaines/dizaines/unités de mille, C/D/U = centaines/dizaines/unités simples, d/c/m = dixièmes/centièmes/millièmes.',
+    nombres: 'Tableau de numération (avec ou sans décimales), organisé par classes (Millions, Mille, Simples). Dans chaque classe : C/D/U = centaines/dizaines/unités. Après la virgule : d/c/m = dixièmes/centièmes/millièmes.',
     longueur: 'Tableau de conversion des unités de longueur (1 colonne par unité).',
     aire: 'Tableau de conversion des unités d\'aire (2 colonnes par unité : 1 unité² = 100 fois l\'unité² suivante). Équivalents agricoles (ha/a/ca) indiqués sous hm²/dam²/m².',
     volume: 'Tableau de conversion des unités de volume (3 colonnes par unité : 1 unité³ = 1000 fois l\'unité³ suivante).',
@@ -1066,31 +1075,55 @@ function closeConversionTool(){ document.getElementById('toolsModalOverlay').sty
 function buildConversionGrid(){
   const mode = document.getElementById('conversionPanel').dataset.mode || 'longueur';
   const def = CONVERSION_DEFS[mode];
+  const flat = flatConvUnits(def);
   const unitIdx = parseInt(document.getElementById('convUnitSelect').value, 10) || 0;
-  const chosenUnit = def.units[unitIdx];
+  const chosenUnit = flat[unitIdx];
   const vierge = document.getElementById('convVierge').checked;
   const digitMap = vierge ? {} : digitsByPower(document.getElementById('convValue').value, chosenUnit.exp);
 
   let html = '<table style="border-collapse:collapse;text-align:center;">';
-  // 1re ligne d'en-tête : symbole de l'unité (fusionné sur ses sous-colonnes).
-  html += '<tr>';
-  def.units.forEach(u=>{
-    html += `<th colspan="${def.subCols}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);font-size:.82rem;">${u.sym}${u.agri?`<br><span style="font-weight:400;font-size:.75rem;color:var(--ink-soft);">(${u.agri})</span>`:''}</th>`;
-  });
-  html += '</tr>';
-  // 2e ligne : une case par chiffre (puissance de 10 précise).
-  html += '<tr>';
-  def.units.forEach(u=>{
-    for(let s=0;s<def.subCols;s++){
-      const power = u.exp - s;
-      const digit = digitMap[power] || '';
-      const isDecimalStart = mode==='nombres' && power===-1 && s===0;
+  if(def.isGrouped){
+    // "Nombres" : 3 lignes d'en-tête (groupe fusionné sur 3 colonnes / C-D-U / chiffre) --
+    // signalé : "ne pas écrire CM, DM, UM... mais ajouter une ligne au-dessus : millions,
+    // mille".
+    html += '<tr>';
+    def.groups.forEach(g=>{
+      html += `<th colspan="${g.units.length}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.1);font-size:.8rem;">${g.label}</th>`;
+    });
+    html += '</tr><tr>';
+    def.groups.forEach(g=>g.units.forEach(u=>{
+      html += `<th style="padding:4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);font-size:.82rem;">${u.sym}</th>`;
+    }));
+    html += '</tr><tr>';
+    def.groups.forEach(g=>g.units.forEach(u=>{
+      const digit = digitMap[u.exp] || '';
+      const isDecimalStart = u.exp===-1;
       html += `${isDecimalStart ? '<td style="border:none;padding:0;width:6px;font-weight:700;">,</td>' : ''}<td style="padding:4px;border:1px solid rgba(28,43,57,.18);width:26px;">
-        <input type="text" maxlength="1" data-power="${power}" value="${digit}" style="width:22px;padding:4px 0;border:none;text-align:center;">
+        <input type="text" maxlength="1" data-power="${u.exp}" value="${digit}" style="width:22px;padding:4px 0;border:none;text-align:center;">
       </td>`;
-    }
-  });
-  html += '</tr></table>';
+    }));
+    html += '</tr>';
+  } else {
+    // 1re ligne d'en-tête : symbole de l'unité (fusionné sur ses sous-colonnes).
+    html += '<tr>';
+    def.units.forEach(u=>{
+      html += `<th colspan="${def.subCols}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);font-size:.82rem;">${u.sym}${u.agri?`<br><span style="font-weight:400;font-size:.75rem;color:var(--ink-soft);">(${u.agri})</span>`:''}</th>`;
+    });
+    html += '</tr>';
+    // 2e ligne : une case par chiffre (puissance de 10 précise).
+    html += '<tr>';
+    def.units.forEach(u=>{
+      for(let s=0;s<def.subCols;s++){
+        const power = u.exp + (def.subCols-1-s);
+        const digit = digitMap[power] || '';
+        html += `<td style="padding:4px;border:1px solid rgba(28,43,57,.18);width:26px;">
+          <input type="text" maxlength="1" data-power="${power}" value="${digit}" style="width:22px;padding:4px 0;border:none;text-align:center;">
+        </td>`;
+      }
+    });
+    html += '</tr>';
+  }
+  html += '</table>';
   document.getElementById('conversionGrid').innerHTML = html;
 }
 function insertConversionGrid(){
@@ -1099,20 +1132,37 @@ function insertConversionGrid(){
   const values = {};
   document.querySelectorAll('#conversionGrid input').forEach(inp=>{ values[inp.dataset.power] = inp.value.trim(); });
   let html = '<table style="border-collapse:collapse;width:auto;margin:8px 0;font-size:.9rem;text-align:center;">';
-  html += '<tr>';
-  def.units.forEach(u=>{
-    html += `<th colspan="${def.subCols}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);">${u.sym}${u.agri?`<br><span style="font-weight:400;font-size:.8em;color:#5C5A78;">(${u.agri})</span>`:''}</th>`;
-  });
-  html += '</tr><tr>';
-  def.units.forEach(u=>{
-    for(let s=0;s<def.subCols;s++){
-      const power = u.exp - s;
-      const isDecimalStart = mode==='nombres' && power===-1 && s===0;
+  if(def.isGrouped){
+    html += '<tr>';
+    def.groups.forEach(g=>{
+      html += `<th colspan="${g.units.length}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.1);">${g.label}</th>`;
+    });
+    html += '</tr><tr>';
+    def.groups.forEach(g=>g.units.forEach(u=>{
+      html += `<th style="padding:4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);">${u.sym}</th>`;
+    }));
+    html += '</tr><tr>';
+    def.groups.forEach(g=>g.units.forEach(u=>{
+      const isDecimalStart = u.exp===-1;
       if(isDecimalStart) html += '<td style="border:none;padding:0;font-weight:700;">,</td>';
-      html += `<td style="padding:6px 8px;border:1px solid rgba(28,43,57,.18);">${escapeHtml(values[power]||'')}</td>`;
-    }
-  });
-  html += '</tr></table>';
+      html += `<td style="padding:6px 8px;border:1px solid rgba(28,43,57,.18);">${escapeHtml(values[u.exp]||'')}</td>`;
+    }));
+    html += '</tr>';
+  } else {
+    html += '<tr>';
+    def.units.forEach(u=>{
+      html += `<th colspan="${def.subCols}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);">${u.sym}${u.agri?`<br><span style="font-weight:400;font-size:.8em;color:#5C5A78;">(${u.agri})</span>`:''}</th>`;
+    });
+    html += '</tr><tr>';
+    def.units.forEach(u=>{
+      for(let s=0;s<def.subCols;s++){
+        const power = u.exp + (def.subCols-1-s);
+        html += `<td style="padding:6px 8px;border:1px solid rgba(28,43,57,.18);">${escapeHtml(values[power]||'')}</td>`;
+      }
+    });
+    html += '</tr>';
+  }
+  html += '</table>';
   addPendingBlock('conversion', html, {mode, values}, 'reopenConversionGrid');
   closeConversionTool();
 }
