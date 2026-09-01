@@ -996,7 +996,7 @@ const CONVERSION_DEFS = {
   nombres: {isGrouped:true, groups:[
     {label:'Millions', units:[{sym:'C', exp:8},{sym:'D', exp:7},{sym:'U', exp:6}]},
     {label:'Mille', units:[{sym:'C', exp:5},{sym:'D', exp:4},{sym:'U', exp:3}]},
-    {label:'Simples', units:[{sym:'C', exp:2},{sym:'D', exp:1},{sym:'U', exp:0}]},
+    {label:'Unité', units:[{sym:'C', exp:2},{sym:'D', exp:1},{sym:'U', exp:0}]},
     {label:'', units:[{sym:'d', exp:-1},{sym:'c', exp:-2},{sym:'m', exp:-3}]},
   ]},
   longueur: {subCols:1, units:[
@@ -1057,7 +1057,7 @@ function openConversionTool(mode){
   document.getElementById('conversionPanel').style.display='block';
   document.getElementById('conversionPanel').dataset.mode = mode;
   const hints = {
-    nombres: 'Tableau de numération (avec ou sans décimales), organisé par classes (Millions, Mille, Simples). Dans chaque classe : C/D/U = centaines/dizaines/unités. Après la virgule : d/c/m = dixièmes/centièmes/millièmes.',
+    nombres: 'Tableau de numération (avec ou sans décimales), organisé par classes (Millions, Mille, Unité). Dans chaque classe : C/D/U = centaines/dizaines/unités. Après la virgule : d/c/m = dixièmes/centièmes/millièmes.',
     longueur: 'Tableau de conversion des unités de longueur (1 colonne par unité).',
     aire: 'Tableau de conversion des unités d\'aire (2 colonnes par unité : 1 unité² = 100 fois l\'unité² suivante). Équivalents agricoles (ha/a/ca) indiqués sous hm²/dam²/m².',
     volume: 'Tableau de conversion des unités de volume (3 colonnes par unité : 1 unité³ = 1000 fois l\'unité³ suivante).',
