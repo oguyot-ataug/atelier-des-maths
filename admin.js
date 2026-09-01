@@ -48,8 +48,10 @@ MARTIN Marie	mmartin	Motdepasse2	0123456A	6eA"></textarea>
       <div class="tool-row">
         <input type="text" id="adminNewClassNom" placeholder="Nom (ex. 5e-A)">
         <select id="adminNewClassNiveau"><option value="6e">6e</option><option value="5e" selected>5e</option></select>
+        <input type="text" id="adminNewClassUai" placeholder="UAI de l'établissement">
         <button class="btn" onclick="adminCreateClass()">Créer la classe</button>
       </div>
+      <p class="hint" style="margin:2px 0 0;">Une classe doit être rattachée à un établissement (UAI) -- créé automatiquement s'il n'existe pas encore.</p>
       <span class="hint" id="adminClassStatus" style="margin:0;"></span>
 
       <p class="example-title" style="margin:16px 0 6px;">Associer un professeur à une classe</p>
@@ -428,11 +430,19 @@ async function adminSyncEmails(){
 async function adminCreateClass(){
   const nom = document.getElementById('adminNewClassNom').value.trim();
   const niveau = document.getElementById('adminNewClassNiveau').value;
+  const uai = document.getElementById('adminNewClassUai').value.trim();
   const status = document.getElementById('adminClassStatus');
   if(!nom){ status.textContent = 'Le nom est requis.'; return; }
-  const { error } = await sb.from('classes').insert({ nom, niveau });
+  if(!uai){ status.textContent = "L'UAI de l'établissement est requis (une classe doit être rattachée à un établissement)."; return; }
+  // L'établissement doit exister AVANT la classe (classes.uai référence etablissements.uai).
+  const { data: existingEtab } = await sb.from('etablissements').select('uai').eq('uai', uai).maybeSingle();
+  if(!existingEtab){
+    const { error: etabErr } = await sb.from('etablissements').insert({ uai, nom: 'Établissement '+uai });
+    if(etabErr){ status.textContent = "Erreur (établissement) : "+etabErr.message; return; }
+  }
+  const { error } = await sb.from('classes').insert({ nom, niveau, uai });
   status.textContent = error ? "Erreur : "+error.message : '✓ Classe créée.';
-  if(!error){ document.getElementById('adminNewClassNom').value=''; await adminRefreshDropdowns(); await loadMyClasses(); }
+  if(!error){ document.getElementById('adminNewClassNom').value=''; document.getElementById('adminNewClassUai').value=''; await adminRefreshDropdowns(); await loadMyClasses(); }
 }
 async function adminRefreshDropdowns(){
   const { data: profs } = await sb.from('profiles').select('id,nom,role').in('role',['prof','admin']);
@@ -599,10 +609,11 @@ async function adminBulkCreateStudents(){
   if(!lines.length){ status.textContent = 'Collez au moins une ligne (Nom Prénom, identifiant, mot de passe, UAI, classe).'; return; }
   const { data:{ session } } = await sb.auth.getSession();
   let ok=0, fail=0; const errors=[];
-  const classCache = {}; // évite de rechercher/créer la même classe à chaque ligne
+  const classCache = {}; // clé "uai|nom" -- évite de rechercher/créer la même classe à chaque ligne, distingue 2 classes de même nom dans des établissements différents
+  const etabCache = new Set(); // UAI déjà vérifiés/créés dans etablissements cette session
   for(let i=0;i<lines.length;i++){
     status.textContent = `Création en cours… (${i+1}/${lines.length})`;
-    const parts = lines[i].split('\t').map(s=>s.trim()).filter(s=>s!=='');
+    const parts = lines[i].split('\t').map(s=>s.trim());
     if(parts.length<3){ fail++; errors.push(`Ligne ${i+1} : format invalide (au moins Nom Prénom, identifiant et mot de passe attendus, séparés par des tabulations)`); continue; }
     const [nom, identifiant, password, uai, classeNom] = parts;
     const email = toAuthEmail(identifiant);
@@ -622,23 +633,39 @@ async function adminBulkCreateStudents(){
       if(!prof) continue; // ne devrait pas arriver (le compte vient d'être créé avec succès), sécurité
       // UAI : simple champ texte sur le profil, pas besoin de recherche/création.
       if(uai) await sb.from('profiles').update({uai}).eq('id', prof.id);
-      // Classe : cherche par nom, la crée si absente (niveau déduit du préfixe "6e"/"5e").
-      if(classeNom){
-        if(!(classeNom in classCache)){
-          const { data: existing } = await sb.from('classes').select('id').eq('nom', classeNom).maybeSingle();
-          if(existing) classCache[classeNom] = existing.id;
+      // Une classe doit être rattachée à un établissement (signalé : "les classes doivent
+      // être rattachées à un UAI. Dans un UAI, on trouve les profs et les classes puis les
+      // élèves"). Sans UAI fourni sur cette ligne, on ne peut pas créer/rattacher la classe
+      // correctement -- on l'ignore plutôt que de créer une classe "orpheline".
+      if(classeNom && uai){
+        // L'établissement doit exister AVANT la classe (classes.uai référence
+        // etablissements.uai) -- créé automatiquement s'il est absent.
+        if(!etabCache.has(uai)){
+          const { data: existingEtab } = await sb.from('etablissements').select('uai').eq('uai', uai).maybeSingle();
+          if(!existingEtab){
+            const { error: etabErr } = await sb.from('etablissements').insert({ uai, nom: 'Établissement '+uai });
+            if(etabErr){ errors.push(`Établissement "${uai}" : ${etabErr.message}`); }
+          }
+          etabCache.add(uai);
+        }
+        const cacheKey = uai+'|'+classeNom;
+        if(!(cacheKey in classCache)){
+          const { data: existing } = await sb.from('classes').select('id').eq('nom', classeNom).eq('uai', uai).maybeSingle();
+          if(existing) classCache[cacheKey] = existing.id;
           else {
             const niveau = classeNom.startsWith('5e') ? '5e' : '6e';
-            const { data: created, error: createErr } = await sb.from('classes').insert({ nom: classeNom, niveau }).select('id').single();
-            if(createErr){ errors.push(`Classe "${classeNom}" : ${createErr.message}`); classCache[classeNom] = null; }
-            else classCache[classeNom] = created.id;
+            const { data: created, error: createErr } = await sb.from('classes').insert({ nom: classeNom, niveau, uai }).select('id').single();
+            if(createErr){ errors.push(`Classe "${classeNom}" (${uai}) : ${createErr.message}`); classCache[cacheKey] = null; }
+            else classCache[cacheKey] = created.id;
           }
         }
-        if(classCache[classeNom]) await sb.from('class_students').insert({ student_id: prof.id, class_id: classCache[classeNom] });
+        if(classCache[cacheKey]) await sb.from('class_students').insert({ student_id: prof.id, class_id: classCache[cacheKey] });
+      } else if(classeNom && !uai){
+        errors.push(`${nom} : classe "${classeNom}" ignorée (UAI manquant sur cette ligne -- une classe doit être rattachée à un établissement)`);
       }
     }catch(err){ fail++; errors.push(`${nom} (${identifiant}) : erreur réseau`); }
   }
-  status.innerHTML = `✓ ${ok} compte(s) créé(s)` + (fail?`, <span class=gicon>warning</span> ${fail} échec(s) :<br>`+errors.map(escapeHtml).join('<br>') : '.');
+  status.innerHTML = `✓ ${ok} compte(s) créé(s)` + (errors.length?`, <span class=gicon>warning</span> ${fail?fail+' échec(s)':'avertissement(s)'} :<br>`+errors.map(escapeHtml).join('<br>') : '.');
   if(ok) document.getElementById('adminBulkStudents').value='';
   await adminRefreshDropdowns();
   await adminRefreshListings();
