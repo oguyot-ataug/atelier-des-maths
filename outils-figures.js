@@ -103,9 +103,11 @@ document.body.insertAdjacentHTML('beforeend', `
       <div class="tool-row" style="margin-bottom:10px;">
         <input type="text" inputmode="decimal" id="convValue" placeholder="Nombre (ex. 345,678)" style="width:160px;">
         <label class="hint" style="margin:0;">Unité de saisie : <select id="convUnitSelect"></select></label>
+        <label class="hint" style="margin:0;">Lignes : <input type="number" id="convRows" value="1" min="1" max="10" style="width:50px;"></label>
         <button type="button" class="btn secondary" onclick="buildConversionGrid()">Générer la grille</button>
       </div>
       <label class="hint" style="display:block;margin:0 0 10px;"><input type="checkbox" id="convVierge"> Grille vide (à compléter par l'élève, sans les chiffres)</label>
+      <label class="hint" style="display:none;margin:0 0 10px;" id="convDecimalsRow"><input type="checkbox" id="convShowDecimals" checked> Afficher la partie décimale (décocher si on travaille uniquement sur les nombres entiers)</label>
       <div id="conversionGrid" style="overflow-x:auto;"></div>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="insertConversionGrid()">Insérer le tableau</button>
@@ -1068,6 +1070,10 @@ function openConversionTool(mode){
   populateConvUnitSelect(mode);
   document.getElementById('convValue').value = '';
   document.getElementById('convVierge').checked = false;
+  document.getElementById('convRows').value = 1;
+  const decimalsRow = document.getElementById('convDecimalsRow');
+  decimalsRow.style.display = (mode==='nombres') ? 'block' : 'none';
+  document.getElementById('convShowDecimals').checked = true;
   buildConversionGrid();
   document.getElementById('conversionPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
@@ -1079,7 +1085,12 @@ function buildConversionGrid(){
   const unitIdx = parseInt(document.getElementById('convUnitSelect').value, 10) || 0;
   const chosenUnit = flat[unitIdx];
   const vierge = document.getElementById('convVierge').checked;
-  const digitMap = vierge ? {} : digitsByPower(document.getElementById('convValue').value, chosenUnit.exp);
+  const nRows = Math.max(1, Math.min(10, parseInt(document.getElementById('convRows').value,10) || 1));
+  const showDecimals = mode!=='nombres' || document.getElementById('convShowDecimals').checked;
+  const digitMapRow0 = vierge ? {} : digitsByPower(document.getElementById('convValue').value, chosenUnit.exp);
+  // Masque le groupe décimal si décoché -- signalé : "si je travaille dans un premier temps
+  // sur les nombres entiers ce n'est pas nécessaire".
+  const groups = def.isGrouped ? (showDecimals ? def.groups : def.groups.filter(g=>!g.units.some(u=>u.exp<0))) : null;
 
   let html = '<table style="border-collapse:collapse;text-align:center;">';
   if(def.isGrouped){
@@ -1087,22 +1098,30 @@ function buildConversionGrid(){
     // signalé : "ne pas écrire CM, DM, UM... mais ajouter une ligne au-dessus : millions,
     // mille".
     html += '<tr>';
-    def.groups.forEach(g=>{
-      html += `<th colspan="${g.units.length}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.1);font-size:.8rem;">${g.label}</th>`;
+    groups.forEach(g=>{
+      const hasDecimalBefore = g.units.some(u=>u.exp===-1);
+      html += `${hasDecimalBefore ? '<th style="border:none;padding:0;width:6px;"></th>' : ''}<th colspan="${g.units.length}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.1);font-size:.8rem;">${g.label}</th>`;
     });
     html += '</tr><tr>';
-    def.groups.forEach(g=>g.units.forEach(u=>{
-      html += `<th style="padding:4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);font-size:.82rem;">${u.sym}</th>`;
-    }));
-    html += '</tr><tr>';
-    def.groups.forEach(g=>g.units.forEach(u=>{
-      const digit = digitMap[u.exp] || '';
-      const isDecimalStart = u.exp===-1;
-      html += `${isDecimalStart ? '<td style="border:none;padding:0;width:6px;font-weight:700;">,</td>' : ''}<td style="padding:4px;border:1px solid rgba(28,43,57,.18);width:26px;">
-        <input type="text" maxlength="1" data-power="${u.exp}" value="${digit}" style="width:22px;padding:4px 0;border:none;text-align:center;">
-      </td>`;
+    groups.forEach(g=>g.units.forEach(u=>{
+      html += `${u.exp===-1 ? '<th style="border:none;padding:0;width:6px;"></th>' : ''}<th style="padding:4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);font-size:.82rem;">${u.sym}</th>`;
     }));
     html += '</tr>';
+    // Une ligne de saisie par ligne demandée -- la 1re utilise la valeur saisie (sauf grille
+    // vierge), les suivantes restent vides (signalé : "demander combien de lignes on veut
+    // voir apparaître").
+    for(let r=0;r<nRows;r++){
+      const digitMap = r===0 ? digitMapRow0 : {};
+      html += '<tr>';
+      groups.forEach(g=>g.units.forEach(u=>{
+        const digit = digitMap[u.exp] || '';
+        const isDecimalStart = u.exp===-1;
+        html += `${isDecimalStart ? '<td style="border:none;padding:0;width:6px;font-weight:700;">,</td>' : ''}<td style="padding:4px;border:1px solid rgba(28,43,57,.18);width:26px;">
+          <input type="text" maxlength="1" data-row="${r}" data-power="${u.exp}" value="${digit}" style="width:22px;padding:4px 0;border:none;text-align:center;">
+        </td>`;
+      }));
+      html += '</tr>';
+    }
   } else {
     // 1re ligne d'en-tête : symbole de l'unité (fusionné sur ses sous-colonnes).
     html += '<tr>';
@@ -1110,18 +1129,21 @@ function buildConversionGrid(){
       html += `<th colspan="${def.subCols}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);font-size:.82rem;">${u.sym}${u.agri?`<br><span style="font-weight:400;font-size:.75rem;color:var(--ink-soft);">(${u.agri})</span>`:''}</th>`;
     });
     html += '</tr>';
-    // 2e ligne : une case par chiffre (puissance de 10 précise).
-    html += '<tr>';
-    def.units.forEach(u=>{
-      for(let s=0;s<def.subCols;s++){
-        const power = u.exp + (def.subCols-1-s);
-        const digit = digitMap[power] || '';
-        html += `<td style="padding:4px;border:1px solid rgba(28,43,57,.18);width:26px;">
-          <input type="text" maxlength="1" data-power="${power}" value="${digit}" style="width:22px;padding:4px 0;border:none;text-align:center;">
-        </td>`;
-      }
-    });
-    html += '</tr>';
+    // Une ligne de saisie par ligne demandée.
+    for(let r=0;r<nRows;r++){
+      const digitMap = r===0 ? digitMapRow0 : {};
+      html += '<tr>';
+      def.units.forEach(u=>{
+        for(let s=0;s<def.subCols;s++){
+          const power = u.exp + (def.subCols-1-s);
+          const digit = digitMap[power] || '';
+          html += `<td style="padding:4px;border:1px solid rgba(28,43,57,.18);width:26px;">
+            <input type="text" maxlength="1" data-row="${r}" data-power="${power}" value="${digit}" style="width:22px;padding:4px 0;border:none;text-align:center;">
+          </td>`;
+        }
+      });
+      html += '</tr>';
+    }
   }
   html += '</table>';
   document.getElementById('conversionGrid').innerHTML = html;
@@ -1129,38 +1151,53 @@ function buildConversionGrid(){
 function insertConversionGrid(){
   const mode = document.getElementById('conversionPanel').dataset.mode || 'longueur';
   const def = CONVERSION_DEFS[mode];
-  const values = {};
-  document.querySelectorAll('#conversionGrid input').forEach(inp=>{ values[inp.dataset.power] = inp.value.trim(); });
+  const allInputs = [...document.querySelectorAll('#conversionGrid input')];
+  const nRows = Math.max(...allInputs.map(inp=>parseInt(inp.dataset.row,10)||0)) + 1;
+  const values = []; // values[row][power] = texte saisi
+  for(let r=0;r<nRows;r++) values.push({});
+  allInputs.forEach(inp=>{ values[parseInt(inp.dataset.row,10)||0][inp.dataset.power] = inp.value.trim(); });
+  // Le groupe décimal est déjà absent de la grille actuelle s'il a été décoché -- pas besoin
+  // de relire la case, la grille construite fait foi.
+  const hasDecimalGroup = allInputs.some(inp=>parseInt(inp.dataset.power,10)<0);
+  const groups = def.isGrouped ? (hasDecimalGroup ? def.groups : def.groups.filter(g=>!g.units.some(u=>u.exp<0))) : null;
+
   let html = '<table style="border-collapse:collapse;width:auto;margin:8px 0;font-size:.9rem;text-align:center;">';
   if(def.isGrouped){
     html += '<tr>';
-    def.groups.forEach(g=>{
-      html += `<th colspan="${g.units.length}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.1);">${g.label}</th>`;
+    groups.forEach(g=>{
+      const hasDecimalBefore = g.units.some(u=>u.exp===-1);
+      html += `${hasDecimalBefore ? '<th style="border:none;padding:0;width:6px;"></th>' : ''}<th colspan="${g.units.length}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.1);">${g.label}</th>`;
     });
     html += '</tr><tr>';
-    def.groups.forEach(g=>g.units.forEach(u=>{
-      html += `<th style="padding:4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);">${u.sym}</th>`;
-    }));
-    html += '</tr><tr>';
-    def.groups.forEach(g=>g.units.forEach(u=>{
-      const isDecimalStart = u.exp===-1;
-      if(isDecimalStart) html += '<td style="border:none;padding:0;font-weight:700;">,</td>';
-      html += `<td style="padding:6px 8px;border:1px solid rgba(28,43,57,.18);">${escapeHtml(values[u.exp]||'')}</td>`;
+    groups.forEach(g=>g.units.forEach(u=>{
+      html += `${u.exp===-1 ? '<th style="border:none;padding:0;width:6px;"></th>' : ''}<th style="padding:4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);">${u.sym}</th>`;
     }));
     html += '</tr>';
+    for(let r=0;r<nRows;r++){
+      html += '<tr>';
+      groups.forEach(g=>g.units.forEach(u=>{
+        const isDecimalStart = u.exp===-1;
+        if(isDecimalStart) html += '<td style="border:none;padding:0;font-weight:700;">,</td>';
+        html += `<td style="padding:6px 8px;border:1px solid rgba(28,43,57,.18);">${escapeHtml(values[r][u.exp]||'')}</td>`;
+      }));
+      html += '</tr>';
+    }
   } else {
     html += '<tr>';
     def.units.forEach(u=>{
       html += `<th colspan="${def.subCols}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);">${u.sym}${u.agri?`<br><span style="font-weight:400;font-size:.8em;color:#5C5A78;">(${u.agri})</span>`:''}</th>`;
     });
-    html += '</tr><tr>';
-    def.units.forEach(u=>{
-      for(let s=0;s<def.subCols;s++){
-        const power = u.exp + (def.subCols-1-s);
-        html += `<td style="padding:6px 8px;border:1px solid rgba(28,43,57,.18);">${escapeHtml(values[power]||'')}</td>`;
-      }
-    });
     html += '</tr>';
+    for(let r=0;r<nRows;r++){
+      html += '<tr>';
+      def.units.forEach(u=>{
+        for(let s=0;s<def.subCols;s++){
+          const power = u.exp + (def.subCols-1-s);
+          html += `<td style="padding:6px 8px;border:1px solid rgba(28,43,57,.18);">${escapeHtml(values[r][power]||'')}</td>`;
+        }
+      });
+      html += '</tr>';
+    }
   }
   html += '</table>';
   addPendingBlock('conversion', html, {mode, values}, 'reopenConversionGrid');
@@ -1169,8 +1206,17 @@ function insertConversionGrid(){
 function reopenConversionGrid(data){
   openConversionTool(data.mode);
   setTimeout(()=>{
+    const nRows = Array.isArray(data.values) ? data.values.length : 1;
+    document.getElementById('convRows').value = nRows;
+    // Devine si les décimales étaient affichées d'après les données sauvegardées (présence
+    // d'une puissance négative dans au moins une ligne).
+    const hadDecimals = Array.isArray(data.values) && data.values.some(row=>Object.keys(row).some(p=>parseInt(p,10)<0));
+    const decimalsCheckbox = document.getElementById('convShowDecimals');
+    if(decimalsCheckbox) decimalsCheckbox.checked = hadDecimals;
+    buildConversionGrid();
     document.querySelectorAll('#conversionGrid input').forEach(inp=>{
-      const v = data.values[inp.dataset.power];
+      const row = Array.isArray(data.values) ? data.values[parseInt(inp.dataset.row,10)||0] : data.values;
+      const v = row ? row[inp.dataset.power] : undefined;
       if(v!==undefined) inp.value = v;
     });
   }, 0);
