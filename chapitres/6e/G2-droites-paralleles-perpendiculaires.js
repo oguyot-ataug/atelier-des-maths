@@ -43,9 +43,19 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="5" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"/><circle cx="35" cy="25" r="2.2"/><circle cx="105" cy="25" r="2.2"/><text x="31" y="14" font-size="13" font-style="italic">E</text><text x="101" y="14" font-size="13" font-style="italic">F</text></svg></td>
   </tr>
   <tr>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">(xy)</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Se lit « droite (xy) ». C'est la droite désignée uniquement par sa <b>direction</b>, sans faire référence à un point particulier. Les lettres <i>x</i> et <i>y</i> (minuscules) représentent les deux directions opposées de la droite, qui s'étend à l'infini de chaque côté.</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="5" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"/><text x="8" y="18" font-size="13" font-style="italic">x</text><text x="122" y="18" font-size="13" font-style="italic">y</text></svg></td>
+  </tr>
+  <tr>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">[EF)</td>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Se lit « demi-droite [EF) ». C'est la demi-droite d'origine E qui passe par F, prolongée au-delà de F seulement.</td>
     <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="25" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"/><line x1="25" y1="18" x2="25" y2="32" stroke="#1C1B2E" stroke-width="1.6"/><circle cx="95" cy="25" r="2.2"/><text x="21" y="14" font-size="13" font-style="italic">E</text><text x="91" y="14" font-size="13" font-style="italic">F</text></svg></td>
+  </tr>
+  <tr>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">[Ox)</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Se lit « demi-droite [Ox) ». C'est la demi-droite d'<b>origine O</b> (un point précis, en majuscule) qui s'étend à l'infini dans la <b>direction</b> <i>x</i> (en minuscule, sans autre point de référence).</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="25" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"/><line x1="25" y1="18" x2="25" y2="32" stroke="#1C1B2E" stroke-width="1.6"/><text x="19" y="14" font-size="13" font-style="italic">O</text><text x="122" y="18" font-size="13" font-style="italic">x</text></svg></td>
   </tr>
   <tr>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">G ∈ (d)<br>H ∉ (d)</td>
