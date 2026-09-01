@@ -653,7 +653,7 @@ async function adminBulkCreateStudents(){
           const { data: existing } = await sb.from('classes').select('id').eq('nom', classeNom).eq('uai', uai).maybeSingle();
           if(existing) classCache[cacheKey] = existing.id;
           else {
-            const niveau = classeNom.startsWith('5e') ? '5e' : '6e';
+            const niveau = /^5/.test(classeNom) ? '5e' : '6e';
             const { data: created, error: createErr } = await sb.from('classes').insert({ nom: classeNom, niveau, uai }).select('id').single();
             if(createErr){ errors.push(`Classe "${classeNom}" (${uai}) : ${createErr.message}`); classCache[cacheKey] = null; }
             else classCache[cacheKey] = created.id;
