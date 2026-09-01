@@ -444,6 +444,28 @@ async function adminCreateClass(){
   status.textContent = error ? "Erreur : "+error.message : '✓ Classe créée.';
   if(!error){ document.getElementById('adminNewClassNom').value=''; document.getElementById('adminNewClassUai').value=''; await adminRefreshDropdowns(); await loadMyClasses(); }
 }
+async function adminUpdateClassNiveauUai(classId){
+  const niveau = document.getElementById('classNiveau_'+classId).value;
+  const uai = document.getElementById('classUai_'+classId).value.trim();
+  const status = document.getElementById('classSaveStatus_'+classId);
+  if(uai){
+    // L'établissement doit exister AVANT la classe (classes.uai référence etablissements.uai).
+    const { data: existingEtab } = await sb.from('etablissements').select('uai').eq('uai', uai).maybeSingle();
+    if(!existingEtab){
+      const { error: etabErr } = await sb.from('etablissements').insert({ uai, nom: 'Établissement '+uai });
+      if(etabErr){ status.textContent = "Erreur (établissement) : "+etabErr.message; return; }
+    }
+  }
+  const { error } = await sb.from('classes').update({ niveau, uai: uai||null }).eq('id', classId);
+  status.textContent = error ? "Erreur : "+error.message : '✓ Enregistré';
+  if(!error) setTimeout(()=>{ status.textContent=''; }, 2500);
+}
+async function adminRemoveTeacherFromClass(teacherId, classId){
+  if(!(await niceConfirm('Retirer ce professeur de cette classe ?'))) return;
+  const { error } = await sb.from('class_teachers').delete().eq('teacher_id', teacherId).eq('class_id', classId);
+  if(error){ alert("Erreur : "+error.message); return; }
+  await adminRefreshListings();
+}
 async function adminRefreshDropdowns(){
   const { data: profs } = await sb.from('profiles').select('id,nom,role').in('role',['prof','admin']);
   const { data: eleves } = await sb.from('profiles').select('id,nom').eq('role','eleve');
@@ -511,16 +533,22 @@ async function adminRefreshListings(){
       `<b>Profs/admins (${(profs||[]).length})</b>` + ((profs||[]).length ? (profs||[]).map(rowHTML).join('') : '<div class="hint">aucun</div>') +
       `<div style="margin-top:12px;"><b>Élèves (${(eleves||[]).length})</b></div>` + ((eleves||[]).length ? (eleves||[]).map(rowHTML).join('') : '<div class="hint">aucun</div>');
   }
-  const { data: classesList } = await sb.from('classes').select('id,nom,niveau').order('nom');
-  const { data: classTeachers } = await sb.from('class_teachers').select('class_id, profiles(nom,email)');
+  const { data: classesList } = await sb.from('classes').select('id,nom,niveau,uai').order('nom');
+  const { data: classTeachers } = await sb.from('class_teachers').select('class_id, teacher_id, profiles(nom,email)');
   const { data: classStudents } = await sb.from('class_students').select('class_id, profiles(nom,email)');
   const { data: permisSessionsList } = await sb.from('permis_rapporteur_sessions').select('id,code,classe_id,cloturee,created_at').order('created_at',{ascending:false});
   const classesEl = document.getElementById('adminClassesListing');
   if(classesEl){
     if(!classesList || !classesList.length){ classesEl.textContent = 'Aucune classe créée pour l\'instant.'; return; }
     classesEl.innerHTML = classesList.map(c=>{
-      const profsHere = (classTeachers||[]).filter(r=>r.class_id===c.id).map(r=>r.profiles && (r.profiles.nom||r.profiles.email)).filter(Boolean);
+      const profsHere = (classTeachers||[]).filter(r=>r.class_id===c.id);
       const elevesHere = (classStudents||[]).filter(r=>r.class_id===c.id).map(r=>r.profiles && (r.profiles.nom||r.profiles.email)).filter(Boolean);
+      const profsHtml = profsHere.length ? profsHere.map(r=>{
+        const label = escapeHtml((r.profiles && (r.profiles.nom||r.profiles.email))||'?');
+        return `<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(31,58,92,.06);border-radius:12px;padding:2px 4px 2px 10px;margin:2px 4px 2px 0;">${label}
+          <button type="button" onclick="adminRemoveTeacherFromClass('${r.teacher_id}','${c.id}')" title="Retirer ce prof de la classe" style="border:none;background:none;cursor:pointer;color:#a83c1f;font-size:.9rem;line-height:1;padding:2px;">✕</button>
+        </span>`;
+      }).join('') : '<span class="hint" style="margin:0;">aucun</span>';
       const sessionsHere = (permisSessionsList||[]).filter(s=>s.classe_id===c.id);
       const sessionsHtml = sessionsHere.length ? sessionsHere.map(s=>`
         <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
@@ -528,8 +556,14 @@ async function adminRefreshListings(){
           <span class="hint" style="margin:0;">${s.cloturee?'clôturée':'active'}</span>
           ${s.cloturee?'':`<button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="adminCloturerPermisSession('${s.id}')">Clôturer</button>`}
         </div>`).join('') : '<p class="hint" style="margin:4px 0 0;">Aucune session pour l\'instant.</p>';
-      return `<div style="margin-bottom:14px;"><b>${escapeHtml(c.nom)}</b> (${escapeHtml(c.niveau)})<br>
-        Profs : ${profsHere.map(escapeHtml).join(', ')||'aucun'}<br>
+      return `<div style="margin-bottom:14px;padding:10px;border:1px solid rgba(28,43,57,.12);border-radius:8px;"><b>${escapeHtml(c.nom)}</b><br>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;">
+          <label class="hint" style="margin:0;">Niveau : <select id="classNiveau_${c.id}"><option value="6e" ${c.niveau==='6e'?'selected':''}>6e</option><option value="5e" ${c.niveau==='5e'?'selected':''}>5e</option></select></label>
+          <label class="hint" style="margin:0;">UAI : <input type="text" id="classUai_${c.id}" value="${escapeHtml(c.uai||'')}" style="width:110px;"></label>
+          <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="adminUpdateClassNiveauUai('${c.id}')">Enregistrer</button>
+          <span class="hint" id="classSaveStatus_${c.id}" style="margin:0;"></span>
+        </div>
+        Profs : ${profsHtml}<br>
         Élèves (${elevesHere.length}) : ${elevesHere.map(escapeHtml).join(', ')||'aucun'}
         <div style="margin-top:6px;padding:8px;background:rgba(31,58,92,.05);border-radius:6px;">
           <b style="font-size:.85rem;"><span class=gicon>school</span> Permis Rapporteur</b>
