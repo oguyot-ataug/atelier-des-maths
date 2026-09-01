@@ -36,9 +36,9 @@ document.getElementById('view-admin').innerHTML = `
       <span class="hint" id="adminAccountStatus" style="margin:0;"></span>
 
       <p class="example-title" style="margin:16px 0 6px;">Import en masse d'élèves</p>
-      <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, 3 colonnes séparées par une tabulation : Nom Prénom, identifiant, mot de passe -- un copier-coller direct depuis un tableur fonctionne).</p>
-      <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="DUPONT Jean	jdupont	Motdepasse1
-MARTIN Marie	mmartin	Motdepasse2"></textarea>
+      <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, 5 colonnes séparées par une tabulation : Nom Prénom, identifiant, mot de passe, UAI, classe -- un copier-coller direct depuis un tableur fonctionne). La classe est créée automatiquement si elle n'existe pas encore (niveau déduit du préfixe "6e"/"5e" du nom).</p>
+      <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="DUPONT Jean	jdupont	Motdepasse1	0123456A	6eA
+MARTIN Marie	mmartin	Motdepasse2	0123456A	6eA"></textarea>
       <div class="tool-row" style="margin-top:8px;">
         <button class="btn" onclick="adminBulkCreateStudents()">Créer tous les comptes élèves</button>
       </div>
@@ -596,14 +596,15 @@ async function adminBulkCreateStudents(){
   const raw = document.getElementById('adminBulkStudents').value;
   const status = document.getElementById('adminBulkStatus');
   const lines = raw.split('\n').map(l=>l.trim()).filter(Boolean);
-  if(!lines.length){ status.textContent = 'Collez au moins une ligne (Nom Prénom, tabulation, identifiant, tabulation, mot de passe).'; return; }
+  if(!lines.length){ status.textContent = 'Collez au moins une ligne (Nom Prénom, identifiant, mot de passe, UAI, classe).'; return; }
   const { data:{ session } } = await sb.auth.getSession();
   let ok=0, fail=0; const errors=[];
+  const classCache = {}; // évite de rechercher/créer la même classe à chaque ligne
   for(let i=0;i<lines.length;i++){
     status.textContent = `Création en cours… (${i+1}/${lines.length})`;
     const parts = lines[i].split('\t').map(s=>s.trim()).filter(s=>s!=='');
-    if(parts.length<3){ fail++; errors.push(`Ligne ${i+1} : format invalide (Nom Prénom, identifiant et mot de passe attendus, séparés par des tabulations)`); continue; }
-    const [nom, identifiant, password] = parts;
+    if(parts.length<3){ fail++; errors.push(`Ligne ${i+1} : format invalide (au moins Nom Prénom, identifiant et mot de passe attendus, séparés par des tabulations)`); continue; }
+    const [nom, identifiant, password, uai, classeNom] = parts;
     const email = toAuthEmail(identifiant);
     try{
       const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
@@ -612,13 +613,35 @@ async function adminBulkCreateStudents(){
         body: JSON.stringify({ email, password, role:'eleve', nom }),
       });
       const data = await res.json();
-      if(data.error){ fail++; errors.push(`${nom} (${identifiant}) : ${data.error}`); }
-      else ok++;
+      if(data.error){ fail++; errors.push(`${nom} (${identifiant}) : ${data.error}`); continue; }
+      ok++;
+      // La fonction serveur ne renvoie pas d'id exploitable directement (même constat que
+      // pour la création à l'unité, adminCreateAccount) -- retrouve le profil fraîchement
+      // créé par son e-mail.
+      const { data: prof } = await sb.from('profiles').select('id').eq('email', email).single();
+      if(!prof) continue; // ne devrait pas arriver (le compte vient d'être créé avec succès), sécurité
+      // UAI : simple champ texte sur le profil, pas besoin de recherche/création.
+      if(uai) await sb.from('profiles').update({uai}).eq('id', prof.id);
+      // Classe : cherche par nom, la crée si absente (niveau déduit du préfixe "6e"/"5e").
+      if(classeNom){
+        if(!(classeNom in classCache)){
+          const { data: existing } = await sb.from('classes').select('id').eq('nom', classeNom).maybeSingle();
+          if(existing) classCache[classeNom] = existing.id;
+          else {
+            const niveau = classeNom.startsWith('5e') ? '5e' : '6e';
+            const { data: created, error: createErr } = await sb.from('classes').insert({ nom: classeNom, niveau }).select('id').single();
+            if(createErr){ errors.push(`Classe "${classeNom}" : ${createErr.message}`); classCache[classeNom] = null; }
+            else classCache[classeNom] = created.id;
+          }
+        }
+        if(classCache[classeNom]) await sb.from('class_students').insert({ student_id: prof.id, class_id: classCache[classeNom] });
+      }
     }catch(err){ fail++; errors.push(`${nom} (${identifiant}) : erreur réseau`); }
   }
   status.innerHTML = `✓ ${ok} compte(s) créé(s)` + (fail?`, <span class=gicon>warning</span> ${fail} échec(s) :<br>`+errors.map(escapeHtml).join('<br>') : '.');
   if(ok) document.getElementById('adminBulkStudents').value='';
   await adminRefreshDropdowns();
+  await adminRefreshListings();
 }
 async function adminAssignTeacher(){
   const teacher_id = document.getElementById('adminAssignTeacherSelect').value;
