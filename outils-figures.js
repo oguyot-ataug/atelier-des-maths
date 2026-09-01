@@ -95,7 +95,7 @@ document.body.insertAdjacentHTML('beforeend', `
       <div id="tableauGrid" style="overflow-x:auto;"></div>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="insertTableau()">Insérer le tableau</button>
-        <button type="button" class="btn secondary" onclick="closeTableauTool()">Fermer sans insérer</button>
+        <button type="button" class="btn secondary" id="tabCloseBtn" onclick="closeTableauTool()">Fermer sans insérer</button>
       </div>
     </div>
     <div id="conversionPanel" class="figure-wrap" style="display:none;">
@@ -111,7 +111,7 @@ document.body.insertAdjacentHTML('beforeend', `
       <div id="conversionGrid" style="overflow-x:auto;"></div>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="insertConversionGrid()">Insérer le tableau</button>
-        <button type="button" class="btn secondary" onclick="closeConversionTool()">Fermer sans insérer</button>
+        <button type="button" class="btn secondary" id="convCloseBtn" onclick="closeConversionTool()">Fermer sans insérer</button>
       </div>
     </div>
     </div>
@@ -919,8 +919,7 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
   const enonceHint = document.getElementById('figEnonceIaHint');
   if(enonceRow) enonceRow.style.display = 'flex';
   if(enonceHint) enonceHint.style.display = 'block';
-  const closeBtn = document.getElementById('figCloseBtn');
-  if(closeBtn) closeBtn.textContent = 'Fermer sans insérer';
+  updateCloseButtonForEdit('figCloseBtn', closeFigureTool, confirmAndCloseFigureTool);
   document.getElementById('figurePanel').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 function closeFigureTool(){
@@ -945,12 +944,16 @@ function openTableauTool(){activateToolTab('tableauGroupWrap','tabTabLibre',['ta
   document.getElementById('tableauPanel').style.display='block';
   document.getElementById('conversionPanel').style.display='none';
   buildTableauGrid();
+  updateCloseButtonForEdit('tabCloseBtn', hideTableauPanel, closeTableauTool);
   document.getElementById('tableauPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function hideTableauPanel(){
+  document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('tableauPanel').style.display='none';
 }
 async function closeTableauTool(){
   const hasContent = [...document.querySelectorAll('#tableauGrid input')].some(i=>i.value.trim());
   if(hasContent && !(await niceConfirm('Fermer sans insérer ? Le contenu saisi sera perdu.'))) return;
-  document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('tableauPanel').style.display='none';
+  hideTableauPanel();
 }
 function buildTableauGrid(){
   const cols = Math.max(1, Math.min(8, parseInt(document.getElementById('tabCols').value)||3));
@@ -1089,13 +1092,30 @@ function openConversionTool(mode){
   const decimalsRow = document.getElementById('convDecimalsRow');
   decimalsRow.style.display = (mode==='nombres') ? 'block' : 'none';
   document.getElementById('convShowDecimals').checked = true;
+  updateCloseButtonForEdit('convCloseBtn', hideConversionPanel, closeConversionTool);
   buildConversionGrid();
   document.getElementById('conversionPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+/* Bascule un bouton "Fermer"/"Annuler" selon le contexte (édition d'un bloc déjà existant ou
+   création). En édition : "Annuler", ferme directement sans confirmation ni rien effacer (le
+   bloc d'origine n'a jamais été retiré -- voir editBlock/addPendingBlock, app.js). Sinon :
+   comportement inchangé ("Fermer sans insérer" + confirmation si du contenu serait perdu).
+   Signalé : "je propose qu'en mode édition, ce bouton se transforme en Annuler et que ça
+   n'efface pas le contenu". */
+function updateCloseButtonForEdit(btnId, simpleCloseFn, confirmedCloseFn){
+  const btn = document.getElementById(btnId);
+  if(!btn) return;
+  const isEditing = typeof editingBlock!=='undefined' && editingBlock;
+  btn.textContent = isEditing ? 'Annuler' : 'Fermer sans insérer';
+  btn.onclick = isEditing ? ()=>{ cancelBlockEdit(); simpleCloseFn(); } : confirmedCloseFn;
+}
+function hideConversionPanel(){
+  document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('conversionPanel').style.display='none';
 }
 async function closeConversionTool(){
   const hasContent = [...document.querySelectorAll('#conversionGrid input')].some(i=>i.value.trim());
   if(hasContent && !(await niceConfirm('Fermer sans insérer ? Le contenu saisi sera perdu.'))) return;
-  document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('conversionPanel').style.display='none';
+  hideConversionPanel();
 }
 function buildConversionGrid(){
   const mode = document.getElementById('conversionPanel').dataset.mode || 'longueur';
@@ -1111,7 +1131,7 @@ function buildConversionGrid(){
   // sur les nombres entiers ce n'est pas nécessaire".
   const groups = def.isGrouped ? (showDecimals ? def.groups : def.groups.filter(g=>!g.units.some(u=>u.exp<0))) : null;
 
-  let html = '<table style="border-collapse:collapse;text-align:center;">';
+  let html = '<table style="border-collapse:collapse;text-align:center;width:100%;">';
   if(def.isGrouped){
     // "Nombres" : 3 lignes d'en-tête (groupe fusionné sur 3 colonnes / C-D-U / chiffre) --
     // signalé : "ne pas écrire CM, DM, UM... mais ajouter une ligne au-dessus : millions,
@@ -1135,8 +1155,8 @@ function buildConversionGrid(){
       groups.forEach(g=>g.units.forEach(u=>{
         const digit = digitMap[u.exp] || '';
         const isDecimalStart = u.exp===-1;
-        html += `${isDecimalStart ? '<td style="border:none;padding:0;width:6px;font-weight:700;">,</td>' : ''}<td style="padding:4px;border:1px solid rgba(28,43,57,.18);width:26px;">
-          <input type="text" maxlength="1" data-row="${r}" data-power="${u.exp}" value="${digit}" style="width:22px;padding:4px 0;border:none;text-align:center;">
+        html += `${isDecimalStart ? '<td style="border:none;padding:0;width:1%;font-weight:700;font-size:1.1rem;">,</td>' : ''}<td style="padding:14px 4px;border:1px solid rgba(28,43,57,.18);">
+          <input type="text" maxlength="1" data-row="${r}" data-power="${u.exp}" value="${digit}" style="width:100%;padding:6px 0;border:none;text-align:center;font-size:1.1rem;">
         </td>`;
       }));
       html += '</tr>';
@@ -1156,8 +1176,8 @@ function buildConversionGrid(){
         for(let s=0;s<def.subCols;s++){
           const power = u.exp + (def.subCols-1-s);
           const digit = digitMap[power] || '';
-          html += `<td style="padding:4px;border:1px solid rgba(28,43,57,.18);width:26px;">
-            <input type="text" maxlength="1" data-row="${r}" data-power="${power}" value="${digit}" style="width:22px;padding:4px 0;border:none;text-align:center;">
+          html += `<td style="padding:14px 4px;border:1px solid rgba(28,43,57,.18);">
+            <input type="text" maxlength="1" data-row="${r}" data-power="${power}" value="${digit}" style="width:100%;padding:6px 0;border:none;text-align:center;font-size:1.1rem;">
           </td>`;
         }
       });
@@ -1180,24 +1200,24 @@ function insertConversionGrid(){
   const hasDecimalGroup = allInputs.some(inp=>parseInt(inp.dataset.power,10)<0);
   const groups = def.isGrouped ? (hasDecimalGroup ? def.groups : def.groups.filter(g=>!g.units.some(u=>u.exp<0))) : null;
 
-  let html = '<table style="border-collapse:collapse;width:auto;margin:8px 0;font-size:.9rem;text-align:center;">';
+  let html = '<table style="border-collapse:collapse;width:100%;margin:8px 0;font-size:.9rem;text-align:center;">';
   if(def.isGrouped){
     html += '<tr>';
     groups.forEach(g=>{
       const hasDecimalBefore = g.units.some(u=>u.exp===-1);
-      html += `${hasDecimalBefore ? '<th style="border:none;padding:0;width:6px;"></th>' : ''}<th colspan="${g.units.length}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.1);">${g.label}</th>`;
+      html += `${hasDecimalBefore ? '<th style="border:none;padding:0;width:1%;"></th>' : ''}<th colspan="${g.units.length}" style="padding:6px 4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.1);">${g.label}</th>`;
     });
     html += '</tr><tr>';
     groups.forEach(g=>g.units.forEach(u=>{
-      html += `${u.exp===-1 ? '<th style="border:none;padding:0;width:6px;"></th>' : ''}<th style="padding:4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);">${u.sym}</th>`;
+      html += `${u.exp===-1 ? '<th style="border:none;padding:0;width:1%;"></th>' : ''}<th style="padding:4px;border:1px solid rgba(28,43,57,.18);background:rgba(31,58,92,.06);">${u.sym}</th>`;
     }));
     html += '</tr>';
     for(let r=0;r<nRows;r++){
       html += '<tr>';
       groups.forEach(g=>g.units.forEach(u=>{
         const isDecimalStart = u.exp===-1;
-        if(isDecimalStart) html += '<td style="border:none;padding:0;font-weight:700;">,</td>';
-        html += `<td style="padding:6px 8px;border:1px solid rgba(28,43,57,.18);">${escapeHtml(values[r][u.exp]||'')}</td>`;
+        if(isDecimalStart) html += '<td style="border:none;padding:0;font-weight:700;font-size:1.1rem;">,</td>';
+        html += `<td style="padding:14px 8px;border:1px solid rgba(28,43,57,.18);font-size:1.1rem;">${escapeHtml(values[r][u.exp]||'')}</td>`;
       }));
       html += '</tr>';
     }
@@ -1212,7 +1232,7 @@ function insertConversionGrid(){
       def.units.forEach(u=>{
         for(let s=0;s<def.subCols;s++){
           const power = u.exp + (def.subCols-1-s);
-          html += `<td style="padding:6px 8px;border:1px solid rgba(28,43,57,.18);">${escapeHtml(values[r][power]||'')}</td>`;
+          html += `<td style="padding:14px 8px;border:1px solid rgba(28,43,57,.18);font-size:1.1rem;">${escapeHtml(values[r][power]||'')}</td>`;
         }
       });
       html += '</tr>';

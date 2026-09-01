@@ -1374,16 +1374,33 @@ function selectBlockTarget(ctx, row, col){
   blockTargetCtx = ctx; blockTargetRow = row; blockTargetCol = col;
   renderBlocksContext(ctx);
 }
+let editingBlock = null; // {id, ctx} du bloc actuellement en cours d'édition, s'il y en a un
 function addPendingBlock(type, html, data, editFn){
   const ctx = currentBlocksContext;
   const ex = getExerciseByCtx(ctx);
-  const lastRow = (ex && ex.rows && ex.rows.length) ? ex.rows.length-1 : 0;
-  const useTarget = blockTargetCtx===ctx;
-  const row = useTarget ? blockTargetRow : lastRow;
-  const col = useTarget ? blockTargetCol : 0;
+  let row, col;
+  if(editingBlock && editingBlock.ctx===ctx){
+    // Remplace le bloc édité : retire l'ANCIEN seulement maintenant (à la réinsertion
+    // effective, jamais avant), en gardant sa position d'origine.
+    const oldBlock = (blocksStores[ctx]||[]).find(b=>b.id===editingBlock.id);
+    row = oldBlock ? oldBlock.row : ((ex && ex.rows && ex.rows.length) ? ex.rows.length-1 : 0);
+    col = oldBlock ? oldBlock.col : 0;
+    blocksStores[ctx] = (blocksStores[ctx]||[]).filter(b=>b.id!==editingBlock.id);
+    editingBlock = null;
+  } else {
+    const lastRow = (ex && ex.rows && ex.rows.length) ? ex.rows.length-1 : 0;
+    const useTarget = blockTargetCtx===ctx;
+    row = useTarget ? blockTargetRow : lastRow;
+    col = useTarget ? blockTargetCol : 0;
+  }
   (blocksStores[ctx] || (blocksStores[ctx]=[])).push({id: pendingBlockNextId++, type, html, data, editFn, ctx, col, row});
   renderBlocksContext(ctx);
 }
+/* Annule une édition en cours SANS toucher au bloc d'origine (qui n'a jamais été retiré) --
+   utilisée par le bouton "Annuler" (à la place de "Fermer sans insérer" quand on édite un
+   bloc déjà existant). Signalé : "je propose qu'en mode édition, ce bouton se transforme en
+   Annuler et que ça n'efface pas le contenu". */
+function cancelBlockEdit(){ editingBlock = null; }
 function removeBlock(id, ctx){
   ctx = ctx || currentBlocksContext;
   blocksStores[ctx] = (blocksStores[ctx]||[]).filter(b=>b.id!==id);
@@ -1394,10 +1411,9 @@ function editBlock(id, ctx){
   const arr = blocksStores[ctx]||[];
   const b = arr.find(x=>x.id===id);
   if(!b || !b.editFn) return;
-  blocksStores[ctx] = arr.filter(x=>x.id!==id);
+  editingBlock = {id, ctx};
   currentBlocksContext = ctx;
   window[b.editFn](b.data);
-  renderBlocksContext(ctx);
 }
 /* withControls=true : version affichée au professeur, avec les boutons <span class=gicon>edit</span>/<span class=gicon>close</span> (jamais montrée
    aux élèves). withControls=false : version "propre", envoyée à la fenêtre de projection,
