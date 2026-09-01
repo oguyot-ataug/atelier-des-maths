@@ -575,7 +575,7 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="btn secondary" id="figLoadDevoirBtn" onclick="loadMyDevoirFigure()" style="display:none;"><span class=gicon>folder_open</span> Charger mon dernier rendu</button>
         <button type="button" class="btn" id="figSaveSandboxBtn" onclick="saveSandboxFigurePrompt()" style="display:none;"><span class=gicon>save</span> Enregistrer sous un nom</button>
         <button type="button" class="btn secondary" id="figLoadSandboxBtn" onclick="openSandboxFiguresModal()" style="display:none;"><span class=gicon>folder_open</span> Mes figures enregistrées</button>
-        <button type="button" class="btn secondary" id="figCloseBtn" onclick="closeFigureTool()">Fermer sans insérer</button>
+        <button type="button" class="btn secondary" id="figCloseBtn" onclick="confirmAndCloseFigureTool()">Fermer sans insérer</button>
       </div>
     </div>
   </div>
@@ -927,6 +927,17 @@ function closeFigureTool(){
   document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('figurePanel').style.display='none';
   if(typeof currentDevoirSubmission!=='undefined') currentDevoirSubmission = null;
 }
+/* Utilisée uniquement par le bouton "Fermer sans insérer" -- demande confirmation seulement
+   si au moins un point a été tracé (signalé : "le bouton Fermer sans insérer est dangereux
+   car il efface ce qu'on avait fait"). Ne remplace PAS closeFigureTool elle-même, qui reste
+   appelée sans confirmation après une sauvegarde déjà réussie (validateFigure, rendu d'un
+   devoir...), où il n'y a rien à perdre. */
+async function confirmAndCloseFigureTool(){
+  const closeBtn = document.getElementById('figCloseBtn');
+  const isPreview = closeBtn && closeBtn.textContent === 'Fermer'; // aperçu en lecture seule (previewDevoirFigure) -- rien à perdre
+  if(!isPreview && figState.points.length && !(await niceConfirm('Fermer sans insérer ? La figure sera perdue.'))) return;
+  closeFigureTool();
+}
 
 /* ---- mini outil : insérer un tableau ---- */
 function openTableauTool(){activateToolTab('tableauGroupWrap','tabTabLibre',['tabTabNombres','tabTabLongueur','tabTabAire','tabTabVolume']);
@@ -936,7 +947,11 @@ function openTableauTool(){activateToolTab('tableauGroupWrap','tabTabLibre',['ta
   buildTableauGrid();
   document.getElementById('tableauPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
-function closeTableauTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('tableauPanel').style.display='none'; }
+async function closeTableauTool(){
+  const hasContent = [...document.querySelectorAll('#tableauGrid input')].some(i=>i.value.trim());
+  if(hasContent && !(await niceConfirm('Fermer sans insérer ? Le contenu saisi sera perdu.'))) return;
+  document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('tableauPanel').style.display='none';
+}
 function buildTableauGrid(){
   const cols = Math.max(1, Math.min(8, parseInt(document.getElementById('tabCols').value)||3));
   const rows = Math.max(1, Math.min(12, parseInt(document.getElementById('tabRows').value)||3));
@@ -1077,7 +1092,11 @@ function openConversionTool(mode){
   buildConversionGrid();
   document.getElementById('conversionPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
-function closeConversionTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('conversionPanel').style.display='none'; }
+async function closeConversionTool(){
+  const hasContent = [...document.querySelectorAll('#conversionGrid input')].some(i=>i.value.trim());
+  if(hasContent && !(await niceConfirm('Fermer sans insérer ? Le contenu saisi sera perdu.'))) return;
+  document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('conversionPanel').style.display='none';
+}
 function buildConversionGrid(){
   const mode = document.getElementById('conversionPanel').dataset.mode || 'longueur';
   const def = CONVERSION_DEFS[mode];
