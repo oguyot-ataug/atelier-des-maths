@@ -1085,13 +1085,17 @@ async function exportCoursPDF(){
   wrapper.innerHTML = headerHtml + `<h1 style="font-family:'Space Grotesk',sans-serif;font-size:20px;">${escapeHtml(bigTitle)}</h1>` + clone.innerHTML;
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
-  // html2canvas peut mal respecter la cascade CSS (variables var(--...) mal résolues, ou une
-  // règle de classe qui l'emporte à tort sur un style en ligne) -- applique explicitement la
-  // valeur CALCULÉE (qui reflète déjà la cascade correctement résolue par le navigateur) avec
-  // !important, pour garantir qu'elle gagne quoi qu'il arrive lors du rendu par html2canvas.
-  // Signalé : "les couleurs ne correspondent pas à ce qu'on a choisi... ça reste orange !"
-  // (persistant même après une 1re tentative qui se contentait de ne pas écraser une valeur
-  // déjà fixée en ligne -- insuffisant si html2canvas ignore de toute façon cette priorité).
+  // Le thème de couleur (bleu en 5e, orange en 6e) est défini par des règles CSS SCOPÉES à
+  // #view-chapitre.lvl-5e / .lvl-6e (ex. .lesson-header) -- le wrapper, détaché de ce
+  // conteneur, ne matchait JAMAIS ces règles et retombait silencieusement sur les couleurs
+  // par défaut (orange, celles de 6e). Signalé : "le fond des paragraphes doit être en bleu
+  // car c'est notre thème en classe de 5e. Mais là il est généré en orange." Fix : porte
+  // temporairement le MÊME id + la MÊME classe de niveau que le vrai conteneur, juste le
+  // temps de la résolution des couleurs, pour que les mêmes règles scopées s'appliquent bien.
+  const realChapView = document.getElementById('view-chapitre');
+  const wrapperHadId = wrapper.id;
+  wrapper.id = 'view-chapitre';
+  if(realChapView) wrapper.className = realChapView.className;
   wrapper.querySelectorAll('*').forEach(el=>{
     const cs = window.getComputedStyle(el);
     el.style.setProperty('color', cs.color, 'important');
@@ -1101,6 +1105,7 @@ async function exportCoursPDF(){
     el.style.setProperty('border-bottom-color', cs.borderBottomColor, 'important');
     el.style.setProperty('border-left-color', cs.borderLeftColor, 'important');
   });
+  wrapper.id = wrapperHadId; // retiré aussitôt -- évite tout id dupliqué durable dans le document
   hint.textContent='Génération du PDF en cours…';
   html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:1.5, useCORS:true, foreignObjectRendering:false, windowHeight:wrapper.scrollHeight}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
     .from(wrapper).toPdf().get('pdf').then(pdf=>{
