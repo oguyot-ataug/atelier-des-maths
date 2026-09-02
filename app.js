@@ -1085,6 +1085,19 @@ async function exportCoursPDF(){
   wrapper.innerHTML = headerHtml + `<h1 style="font-family:'Space Grotesk',sans-serif;font-size:20px;">${escapeHtml(bigTitle)}</h1>` + clone.innerHTML;
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
+  // html2canvas résout mal les variables CSS (var(--accent-orange) etc., utilisées 148 fois
+  // dans le site) -- remplace explicitement chaque couleur par sa valeur CALCULÉE, pour que
+  // le PDF respecte fidèlement les couleurs du site (signalé : "les couleurs ne
+  // correspondent pas à ce qu'on a choisi").
+  wrapper.querySelectorAll('*').forEach(el=>{
+    const cs = window.getComputedStyle(el);
+    el.style.color = cs.color;
+    el.style.backgroundColor = cs.backgroundColor;
+    el.style.borderTopColor = cs.borderTopColor;
+    el.style.borderRightColor = cs.borderRightColor;
+    el.style.borderBottomColor = cs.borderBottomColor;
+    el.style.borderLeftColor = cs.borderLeftColor;
+  });
   hint.textContent='Génération du PDF en cours…';
   html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:1.5, useCORS:true, foreignObjectRendering:false, windowHeight:wrapper.scrollHeight}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
     .from(wrapper).toPdf().get('pdf').then(pdf=>{
