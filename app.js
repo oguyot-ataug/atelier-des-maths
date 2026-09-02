@@ -3145,8 +3145,90 @@ async function applyClassSelection(){
   if(document.getElementById('view-supervision').classList.contains('active')){ renderSupervision(); renderSupervisionCeb(); }
   updateCourseAddButtonsState();
 }
+async function renderTeacherStudentsListing(){
+  const el = document.getElementById('teacherStudentsListing');
+  if(!el) return;
+  if(!currentClassId){ el.innerHTML = 'Choisissez une classe dans le menu compte pour voir ses élèves.'; return; }
+  el.innerHTML = 'Chargement…';
+  const { data, error } = await sb.from('class_students').select('profiles(id,nom,email)').eq('class_id', currentClassId);
+  if(error){ el.innerHTML = "Erreur : "+error.message; return; }
+  const students = (data||[]).map(r=>r.profiles).filter(Boolean).sort((a,b)=>(a.nom||'').localeCompare(b.nom||''));
+  if(!students.length){ el.innerHTML = 'Aucun élève dans cette classe pour l\'instant.'; return; }
+  el.innerHTML = students.map(s=>{
+    const label = escapeHtml(s.nom || s.email || '?');
+    const safeName = label.replace(/'/g, "\\'");
+    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.08);">
+      <span>${label}</span>
+      <span style="display:flex;gap:6px;flex:none;">
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherChangeIdentifiantPrompt('${s.id}','${safeName}')"><span class=gicon>edit</span> Identifiant</button>
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherResetPasswordPrompt('${s.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser</button>
+      </span>
+    </div>`;
+  }).join('');
+}
+let teacherResetPasswordTargetId = null;
+function teacherResetPasswordPrompt(userId, name){
+  teacherResetPasswordTargetId = userId;
+  document.getElementById('teacherResetPasswordModalName').textContent = 'Élève : '+name;
+  document.getElementById('teacherResetPasswordModalInput').value = '';
+  document.getElementById('teacherResetPasswordModalStatus').textContent = '';
+  document.getElementById('teacherResetPasswordModalOverlay').style.display='flex';
+}
+function closeTeacherResetPasswordModal(){
+  document.getElementById('teacherResetPasswordModalOverlay').style.display='none';
+}
+async function teacherConfirmResetPassword(){
+  const newPassword = document.getElementById('teacherResetPasswordModalInput').value;
+  const status = document.getElementById('teacherResetPasswordModalStatus');
+  if(!newPassword || newPassword.length<6){ status.textContent = 'Mot de passe trop court (6 caractères minimum).'; return; }
+  status.textContent = 'En cours…';
+  const { data:{ session } } = await sb.auth.getSession();
+  try{
+    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+      body: JSON.stringify({ action:'reset-password', userId: teacherResetPasswordTargetId, newPassword }),
+    });
+    const data = await res.json();
+    if(data.error){ status.textContent = "Erreur : "+data.error; return; }
+    status.textContent = '✓ Mot de passe réinitialisé.';
+    setTimeout(closeTeacherResetPasswordModal, 1200);
+  }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
+}
+let teacherChangeIdentifiantTargetId = null;
+function teacherChangeIdentifiantPrompt(userId, name){
+  teacherChangeIdentifiantTargetId = userId;
+  document.getElementById('teacherChangeIdentifiantModalName').textContent = 'Élève : '+name;
+  document.getElementById('teacherChangeIdentifiantModalInput').value = '';
+  document.getElementById('teacherChangeIdentifiantModalStatus').textContent = '';
+  document.getElementById('teacherChangeIdentifiantModalOverlay').style.display='flex';
+}
+function closeTeacherChangeIdentifiantModal(){
+  document.getElementById('teacherChangeIdentifiantModalOverlay').style.display='none';
+}
+async function teacherConfirmChangeIdentifiant(){
+  const raw = document.getElementById('teacherChangeIdentifiantModalInput').value.trim();
+  const status = document.getElementById('teacherChangeIdentifiantModalStatus');
+  if(!raw){ status.textContent = 'Entrez un identifiant.'; return; }
+  const newEmail = toAuthEmail(raw);
+  status.textContent = 'En cours…';
+  const { data:{ session } } = await sb.auth.getSession();
+  try{
+    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+      body: JSON.stringify({ action:'update-email', userId: teacherChangeIdentifiantTargetId, newEmail }),
+    });
+    const data = await res.json();
+    if(data.error){ status.textContent = "Erreur : "+data.error; return; }
+    status.textContent = '✓ Identifiant modifié.';
+    await renderTeacherStudentsListing();
+    setTimeout(closeTeacherChangeIdentifiantModal, 1200);
+  }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
+}
 let supervisionData = [];
 async function renderSupervision(){
+  renderTeacherStudentsListing();
   const el = document.getElementById('supervisionContent');
   if(!el) return;
   if(!currentClassId){ el.innerHTML = 'Choisissez une classe dans le menu compte pour voir ses résultats.'; return; }

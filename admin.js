@@ -86,6 +86,23 @@ MARTIN Marie	mmartin	Motdepasse2	0123456A	6eA"></textarea>
       <button class="btn secondary" style="float:right;margin-right:8px;" onclick="adminSyncEmails()">🔧 Réparer les identifiants manquants</button>
       <p class="hint" id="adminSyncEmailsStatus" style="clear:right;margin:0 0 6px;"></p>
       <p class="example-title" style="margin:16px 0 6px;">Comptes</p>
+      <div class="tool-row" style="margin-bottom:8px;flex-wrap:wrap;">
+        <input type="text" id="adminAccFilterSearch" placeholder="Rechercher (nom, identifiant)" style="width:200px;" oninput="adminRenderAccountsListing()">
+        <select id="adminAccFilterRole" onchange="adminRenderAccountsListing()">
+          <option value="">Tous les rôles</option>
+          <option value="prof">Profs</option>
+          <option value="admin">Admins</option>
+          <option value="eleve">Élèves</option>
+        </select>
+        <select id="adminAccFilterClasse" onchange="adminRenderAccountsListing()"><option value="">Toutes les classes</option></select>
+        <select id="adminAccFilterUai" onchange="adminRenderAccountsListing()"><option value="">Tous les établissements</option></select>
+        <button class="btn secondary" onclick="adminResetAccountsFilters()">Réinitialiser les filtres</button>
+      </div>
+      <div class="tool-row" style="margin-bottom:8px;align-items:center;">
+        <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="adminAccSelectAll" onchange="adminToggleSelectAllAccounts(this.checked)"> Tout sélectionner (visibles)</label>
+        <button class="btn secondary" style="color:#a83c1f;" onclick="adminDeleteSelectedAccounts()"><span class=gicon>delete</span> Supprimer la sélection</button>
+        <span class="hint" id="adminAccBulkStatus" style="margin:0;"></span>
+      </div>
       <div id="adminAccountsListing" class="hint"></div>
       <p class="example-title" style="margin:16px 0 6px;">Classes</p>
       <div id="adminClassesListing" class="hint"></div>
@@ -466,6 +483,112 @@ async function adminRemoveTeacherFromClass(teacherId, classId){
   if(error){ alert("Erreur : "+error.message); return; }
   await adminRefreshListings();
 }
+function adminResetAccountsFilters(){
+  document.getElementById('adminAccFilterSearch').value = '';
+  document.getElementById('adminAccFilterRole').value = '';
+  document.getElementById('adminAccFilterClasse').value = '';
+  document.getElementById('adminAccFilterUai').value = '';
+  adminRenderAccountsListing();
+}
+function adminRenderAccountsListing(){
+  const accEl = document.getElementById('adminAccountsListing');
+  if(!accEl) return;
+  const { profs, eleves, lastLoginMap, classesList, classTeachers, classStudents } = adminAccountsCache;
+  // Construit, pour chaque profil, la liste de ses classes (via class_teachers pour un
+  // prof, class_students pour un élève) et des UAI correspondants -- nécessaire pour filtrer
+  // par classe/établissement, qui ne sont pas des colonnes directes de profiles.
+  const classById = new Map(classesList.map(c=>[c.id, c]));
+  const teacherClassIds = new Map(); // teacher_id -> [class_id...]
+  classTeachers.forEach(r=>{ if(!teacherClassIds.has(r.teacher_id)) teacherClassIds.set(r.teacher_id, []); teacherClassIds.get(r.teacher_id).push(r.class_id); });
+  const studentClassIds = new Map(); // student_id -> [class_id...]
+  classStudents.forEach(r=>{ if(!studentClassIds.has(r.student_id)) studentClassIds.set(r.student_id, []); studentClassIds.get(r.student_id).push(r.class_id); });
+  const classIdsOf = p => p.role==='eleve' ? (studentClassIds.get(p.id)||[]) : (teacherClassIds.get(p.id)||[]);
+  const uaisOf = p => Array.from(new Set(classIdsOf(p).map(cid=>classById.get(cid)).filter(Boolean).map(c=>c.uai).filter(Boolean)));
+
+  const search = (document.getElementById('adminAccFilterSearch').value||'').toLowerCase().trim();
+  const roleFilter = document.getElementById('adminAccFilterRole').value;
+  const classeFilter = document.getElementById('adminAccFilterClasse').value;
+  const uaiFilter = document.getElementById('adminAccFilterUai').value;
+  const loginIdentifiant = email => email ? (email.endsWith('@mathcollege.local') ? email.slice(0, -('@mathcollege.local'.length)) : email) : '(inconnu)';
+  const matches = p => {
+    if(roleFilter && p.role!==roleFilter) return false;
+    if(classeFilter && !classIdsOf(p).includes(classeFilter)) return false;
+    if(uaiFilter && !uaisOf(p).includes(uaiFilter)) return false;
+    if(search){
+      const hay = ((p.nom||'')+' '+loginIdentifiant(p.email)).toLowerCase();
+      if(!hay.includes(search)) return false;
+    }
+    return true;
+  };
+  const filteredProfs = profs.filter(matches);
+  const filteredEleves = eleves.filter(matches);
+
+  // Badge de catégorie d'abonnement (essai / actif / expiré), avec la date d'échéance --
+  // "Comment je vois en tant qu'administrateur si un enseignant est en période d'essai ou
+  // s'il est inscrit sur l'année ?"
+  const subscriptionBadge = p => {
+    if(p.role==='admin' || !p.subscription_status) return '';
+    const dateStr = p.subscription_expires_at ? new Date(p.subscription_expires_at).toLocaleDateString('fr-FR') : '';
+    const labels = {trial:'Essai', active:'Actif (année)', expired:'Expiré'};
+    const colors = {trial:'#B8860B', active:'#1F7A4D', expired:'#a83c1f'};
+    const label = labels[p.subscription_status] || p.subscription_status;
+    const color = colors[p.subscription_status] || 'var(--ink-soft)';
+    return ` <span style="color:${color};font-weight:700;">[${label}${dateStr?' jusqu\'au '+dateStr:''}]</span>`;
+  };
+  // "Actif" ne dit rien sur la connexion (c'est un statut de facturation, pas d'activité) --
+  // affichée séparément, pour profs ET élèves.
+  const lastLoginBadge = p => {
+    const t = lastLoginMap.get(p.id);
+    if(!t) return ' <span class="hint">(jamais connecté)</span>';
+    const d = new Date(t);
+    return ` <span class="hint">(connecté le ${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})})</span>`;
+  };
+  const rowHTML = p => {
+    const label = escapeHtml(p.nom||'(sans nom)') + ' · <b>identifiant :</b> ' + escapeHtml(loginIdentifiant(p.email)) + (p.role==='admin'?' [admin]':'') + subscriptionBadge(p) + lastLoginBadge(p);
+    const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
+    const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span> Modifier</button>` : '';
+    const categoryBtn = p.role==='prof' ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeCategoryPrompt('${p.id}','${safeName}')"><span class=gicon>workspace_premium</span> Catégorie</button>` : '';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(28,43,57,.06);">
+      <span style="display:flex;align-items:center;gap:8px;"><input type="checkbox" class="adminAccCheckbox" value="${p.id}">${label}</span>
+      <span style="display:flex;gap:6px;flex:none;">
+        ${editBtn}
+        ${categoryBtn}
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeIdentifiantPrompt('${p.id}','${safeName}')"><span class=gicon>edit</span> Identifiant</button>
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminResetPasswordPrompt('${p.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser</button>
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="adminDeleteUser('${p.id}', this)"><span class=gicon>delete</span> Supprimer</button>
+      </span>
+    </div>`;
+  };
+  accEl.innerHTML =
+    `<b>Profs/admins (${filteredProfs.length}${filteredProfs.length!==profs.length?'/'+profs.length:''})</b>` + (filteredProfs.length ? filteredProfs.map(rowHTML).join('') : '<div class="hint">aucun</div>') +
+    `<div style="margin-top:12px;"><b>Élèves (${filteredEleves.length}${filteredEleves.length!==eleves.length?'/'+eleves.length:''})</b></div>` + (filteredEleves.length ? filteredEleves.map(rowHTML).join('') : '<div class="hint">aucun</div>');
+  document.getElementById('adminAccSelectAll').checked = false;
+}
+function adminToggleSelectAllAccounts(checked){
+  document.querySelectorAll('.adminAccCheckbox').forEach(cb=>{ cb.checked = checked; });
+}
+async function adminDeleteSelectedAccounts(){
+  const ids = [...document.querySelectorAll('.adminAccCheckbox:checked')].map(cb=>cb.value);
+  const status = document.getElementById('adminAccBulkStatus');
+  if(!ids.length){ status.textContent = 'Sélectionnez au moins un compte.'; return; }
+  if(!(await niceConfirm(`Supprimer définitivement ${ids.length} compte(s) sélectionné(s) ? Cette action est irréversible.`))) return;
+  const { data:{ session } } = await sb.auth.getSession();
+  let ok=0, fail=0;
+  for(let i=0;i<ids.length;i++){
+    status.textContent = `Suppression en cours… (${i+1}/${ids.length})`;
+    try{
+      const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+        body: JSON.stringify({ action:'delete', userId: ids[i] }),
+      });
+      const data = await res.json();
+      if(data.error) fail++; else ok++;
+    }catch(err){ fail++; }
+  }
+  status.textContent = `✓ ${ok} compte(s) supprimé(s)` + (fail?`, ${fail} échec(s).`:'.');
+  await adminRefreshListings();
+}
 async function adminRefreshDropdowns(){
   const { data: profs } = await sb.from('profiles').select('id,nom,role').in('role',['prof','admin']);
   const { data: eleves } = await sb.from('profiles').select('id,nom').eq('role','eleve');
@@ -481,6 +604,7 @@ async function adminRefreshDropdowns(){
   fillSelect('adminAssignStudentClassSelect', (classesList||[]).map(c=>({id:c.id, label:escapeHtml(c.nom)+' ('+escapeHtml(c.niveau)+')'})), 'Choisir une classe');
   await adminRefreshListings();
 }
+let adminAccountsCache = { profs:[], eleves:[], lastLoginMap:new Map(), classesList:[], classTeachers:[], classStudents:[], etablissements:[] };
 async function adminRefreshListings(){
   await adminRefreshBugReports();
   await adminRefreshSignupRequests();
@@ -489,53 +613,31 @@ async function adminRefreshListings(){
   // Date de dernière connexion (auth.users, normalement inaccessible via RLS classique) --
   // exposée uniquement à un admin via une fonction SECURITY DEFINER dédiée.
   const { data: lastSignIns } = await sb.rpc('get_last_sign_in_times');
-  const lastSignInMap = new Map((lastSignIns||[]).map(r=>[r.id, r.last_sign_in_at]));
-  const accEl = document.getElementById('adminAccountsListing');
-  if(accEl){
-    const loginIdentifiant = email => email ? (email.endsWith('@mathcollege.local') ? email.slice(0, -('@mathcollege.local'.length)) : email) : '(inconnu)';
-    // Badge de catégorie d'abonnement (essai / actif / expiré), avec la date d'échéance --
-    // "Comment je vois en tant qu'administrateur si un enseignant est en période d'essai ou
-    // s'il est inscrit sur l'année ?"
-    const subscriptionBadge = p => {
-      if(p.role==='admin' || !p.subscription_status) return '';
-      const dateStr = p.subscription_expires_at ? new Date(p.subscription_expires_at).toLocaleDateString('fr-FR') : '';
-      const labels = {trial:'Essai', active:'Actif (année)', expired:'Expiré'};
-      const colors = {trial:'#B8860B', active:'#1F7A4D', expired:'#a83c1f'};
-      const label = labels[p.subscription_status] || p.subscription_status;
-      const color = colors[p.subscription_status] || 'var(--ink-soft)';
-      return ` <span style="color:${color};font-weight:700;">[${label}${dateStr?' jusqu\'au '+dateStr:''}]</span>`;
-    };
-    // "Actif" ne dit rien sur la connexion (c'est un statut de facturation, pas d'activité) --
-    // affichée séparément, pour profs ET élèves.
-    const lastLoginBadge = p => {
-      const t = lastSignInMap.get(p.id);
-      if(!t) return ' <span class="hint">(jamais connecté)</span>';
-      const d = new Date(t);
-      return ` <span class="hint">(connecté le ${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})})</span>`;
-    };
-    const rowHTML = p => {
-      const label = escapeHtml(p.nom||'(sans nom)') + ' · <b>identifiant :</b> ' + escapeHtml(loginIdentifiant(p.email)) + (p.role==='admin'?' [admin]':'') + subscriptionBadge(p) + lastLoginBadge(p);
-      const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
-      const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span> Modifier</button>` : '';
-      const categoryBtn = p.role==='prof' ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeCategoryPrompt('${p.id}','${safeName}')"><span class=gicon>workspace_premium</span> Catégorie</button>` : '';
-      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(28,43,57,.06);">
-        <span>${label}</span>
-        <span style="display:flex;gap:6px;flex:none;">
-          ${editBtn}
-          ${categoryBtn}
-          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeIdentifiantPrompt('${p.id}','${safeName}')"><span class=gicon>edit</span> Identifiant</button>
-          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminResetPasswordPrompt('${p.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser</button>
-          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="adminDeleteUser('${p.id}', this)"><span class=gicon>delete</span> Supprimer</button>
-        </span>
-      </div>`;
-    };
-    accEl.innerHTML =
-      `<b>Profs/admins (${(profs||[]).length})</b>` + ((profs||[]).length ? (profs||[]).map(rowHTML).join('') : '<div class="hint">aucun</div>') +
-      `<div style="margin-top:12px;"><b>Élèves (${(eleves||[]).length})</b></div>` + ((eleves||[]).length ? (eleves||[]).map(rowHTML).join('') : '<div class="hint">aucun</div>');
-  }
   const { data: classesList } = await sb.from('classes').select('id,nom,niveau,uai').order('nom');
   const { data: classTeachers } = await sb.from('class_teachers').select('class_id, teacher_id, profiles(nom,email)');
-  const { data: classStudents } = await sb.from('class_students').select('class_id, profiles(nom,email)');
+  const { data: classStudents } = await sb.from('class_students').select('class_id, student_id, profiles(nom,email)');
+  const { data: etablissements } = await sb.from('etablissements').select('uai,nom').order('nom');
+  adminAccountsCache = {
+    profs: profs||[], eleves: eleves||[],
+    lastLoginMap: new Map((lastSignIns||[]).map(r=>[r.id, r.last_sign_in_at])),
+    classesList: classesList||[], classTeachers: classTeachers||[], classStudents: classStudents||[],
+    etablissements: etablissements||[],
+  };
+  // Menus déroulants de filtre (classe / établissement) -- signalé : "on doit faire des
+  // sélections par profs, élèves, classe, établissement".
+  const classeSelect = document.getElementById('adminAccFilterClasse');
+  if(classeSelect){
+    const prev = classeSelect.value;
+    classeSelect.innerHTML = '<option value="">Toutes les classes</option>' + adminAccountsCache.classesList.map(c=>`<option value="${c.id}">${escapeHtml(c.nom)} (${escapeHtml(c.niveau)})</option>`).join('');
+    if(adminAccountsCache.classesList.some(c=>c.id===prev)) classeSelect.value = prev;
+  }
+  const uaiSelect = document.getElementById('adminAccFilterUai');
+  if(uaiSelect){
+    const prev = uaiSelect.value;
+    uaiSelect.innerHTML = '<option value="">Tous les établissements</option>' + adminAccountsCache.etablissements.map(e=>`<option value="${escapeHtml(e.uai)}">${escapeHtml(e.nom)} (${escapeHtml(e.uai)})</option>`).join('');
+    if(adminAccountsCache.etablissements.some(e=>e.uai===prev)) uaiSelect.value = prev;
+  }
+  adminRenderAccountsListing();
   const { data: permisSessionsList } = await sb.from('permis_rapporteur_sessions').select('id,code,classe_id,cloturee,created_at').order('created_at',{ascending:false});
   const classesEl = document.getElementById('adminClassesListing');
   if(classesEl){
