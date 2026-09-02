@@ -1086,17 +1086,20 @@ async function exportCoursPDF(){
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
   // html2canvas résout mal les variables CSS (var(--accent-orange) etc., utilisées 148 fois
-  // dans le site) -- remplace explicitement chaque couleur par sa valeur CALCULÉE, pour que
-  // le PDF respecte fidèlement les couleurs du site (signalé : "les couleurs ne
-  // correspondent pas à ce qu'on a choisi").
+  // dans le site) -- remplace la couleur par sa valeur CALCULÉE, mais SEULEMENT si aucune
+  // couleur n'était déjà fixée explicitement en style inline (dans ce cas elle est déjà une
+  // vraie valeur, pas une variable à résoudre -- l'écraser risquerait de casser un
+  // remplacement volontaire, ex. .redaction-note qui a un bleu en ligne remplaçant l'orange
+  // par défaut de sa classe). Signalé : "les couleurs ne correspondent pas à ce qu'on a
+  // choisi... c'est le cas en 6e mais pas en 5e" -- la 1re version écrasait sans discernement.
   wrapper.querySelectorAll('*').forEach(el=>{
     const cs = window.getComputedStyle(el);
-    el.style.color = cs.color;
-    el.style.backgroundColor = cs.backgroundColor;
-    el.style.borderTopColor = cs.borderTopColor;
-    el.style.borderRightColor = cs.borderRightColor;
-    el.style.borderBottomColor = cs.borderBottomColor;
-    el.style.borderLeftColor = cs.borderLeftColor;
+    if(!el.style.color) el.style.color = cs.color;
+    if(!el.style.backgroundColor) el.style.backgroundColor = cs.backgroundColor;
+    if(!el.style.borderTopColor) el.style.borderTopColor = cs.borderTopColor;
+    if(!el.style.borderRightColor) el.style.borderRightColor = cs.borderRightColor;
+    if(!el.style.borderBottomColor) el.style.borderBottomColor = cs.borderBottomColor;
+    if(!el.style.borderLeftColor) el.style.borderLeftColor = cs.borderLeftColor;
   });
   hint.textContent='Génération du PDF en cours…';
   html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:1.5, useCORS:true, foreignObjectRendering:false, windowHeight:wrapper.scrollHeight}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
