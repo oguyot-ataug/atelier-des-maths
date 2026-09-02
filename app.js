@@ -997,13 +997,19 @@ function blankOutSelectedBoxes(clone){
   const hideProp = document.getElementById('exportHideProprietes')?.checked;
   const hideRegle = document.getElementById('exportHideRegles')?.checked;
   if(!hideDef && !hideProp && !hideRegle) return;
+  // Lignes fines en pointillés (façon papier réglé) à la place du contenu masqué, pour
+  // guider l'écriture manuscrite de l'élève -- 4 lignes, hauteur proche de l'espace laissé
+  // avant (3 <br>).
+  const writingLines = Array.from({length:4}).map(()=>
+    '<div style="border-bottom:1px dotted #999;height:22px;margin-bottom:6px;"></div>'
+  ).join('');
   clone.querySelectorAll('.def-badge, .prop-badge').forEach(badge=>{
     const label = badge.textContent.trim();
     const shouldHide = (label==='Définitions' && hideDef) || (label==='Propriétés' && hideProp) || (label.startsWith('Règle') && hideRegle);
     if(!shouldHide) return;
     const box = badge.nextElementSibling;
     if(box && box.classList.contains('def-box')){
-      box.innerHTML = '<br><br><br>'; // espace laissé pour l'écriture manuscrite
+      box.innerHTML = writingLines;
     }
   });
 }
