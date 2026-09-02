@@ -1086,7 +1086,7 @@ async function exportCoursPDF(){
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
   hint.textContent='Génération du PDF en cours…';
-  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:2, useCORS:true, foreignObjectRendering:false}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
+  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:1.5, useCORS:true, foreignObjectRendering:false, windowHeight:wrapper.scrollHeight}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
     .from(wrapper).toPdf().get('pdf').then(pdf=>{
       // Pagination "page / total" -- html2pdf ne le fait pas nativement, on la tamponne
       // nous-mêmes via l'API jsPDF sous-jacente, une fois toutes les pages générées.
