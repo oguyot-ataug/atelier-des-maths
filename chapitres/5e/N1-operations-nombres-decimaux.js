@@ -96,6 +96,15 @@ document.getElementById('histoire-demo-decimaux').innerHTML = `
 </div>
 `;
 document.getElementById('methode-demo-decimaux').innerHTML = `
+      <div class="sub-header"><span class="letter">M</span><h4>Méthode : calculer avec des priorités et des parenthèses imbriquées</h4></div>
+      <div class="figure-wrap">
+        <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler le calcul dans le bon ordre.</p>
+        <div class="step-display" id="od-imbriqueesDisplay"></div>
+        <div class="figure-toolbar">
+          <button class="btn" onclick="odImbriqueesDemo.next()">Étape suivante →</button>
+          <button class="btn secondary" onclick="odImbriqueesDemo.reset()">Recommencer</button>
+        </div>
+      </div>
       `;
 document.getElementById('exos-demo-decimaux').innerHTML = `
       <div class="redaction-block">
@@ -167,8 +176,20 @@ function divisionPoseeNext(){ if(divisionPoseeIdx<DIVISION_POSEE_STEPS.length-1)
 
 function divisionPoseeReset(){ divisionPoseeIdx=0; renderDivisionPosee(); }
 
+/* ---- Méthode : calcul avec priorités ET parenthèses imbriquées combinées ---- */
+const OD_IMBRIQUEES_STEPS = [
+  {expr:'F = 3 × [(8 − 2) + 4 × (5 − 3)] − 10', note:"On repère les parenthèses les plus intérieures : (8 − 2) et (5 − 3)."},
+  {expr:'F = 3 × [6 + 4 × (5 − 3)] − 10', note:"On calcule la 1re parenthèse la plus intérieure : 8 − 2 = 6."},
+  {expr:'F = 3 × [6 + 4 × 2] − 10', note:"On calcule la 2e parenthèse la plus intérieure : 5 − 3 = 2."},
+  {expr:'F = 3 × [6 + 8] − 10', note:"À l'intérieur du crochet, la multiplication est prioritaire sur l'addition : 4 × 2 = 8."},
+  {expr:'F = 3 × 14 − 10', note:"On termine le calcul entre crochets : 6 + 8 = 14. Le crochet est résolu."},
+  {expr:'F = 42 − 10', note:"La multiplication est prioritaire sur la soustraction : 3 × 14 = 42."},
+  {expr:'F = 32', note:"Il ne reste que la soustraction : résultat final."},
+];
+const odImbriqueesDemo = makeStepDemo(OD_IMBRIQUEES_STEPS, 'od-imbriqueesDisplay');
+
 DEMO_REGISTRY['5e|Opérations sur les nombres décimaux'] = { cours:'cours-demo-decimaux', methode:'methode-demo-decimaux', exos:'exos-demo-decimaux', histoire:'histoire-demo-decimaux',
-  init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };
+  init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); odImbriqueesDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };
 
 DEMO_QUIZZES['5e|Opérations sur les nombres décimaux'] = [
   {q:"Que vaut 4 + 2 × 3 ?",
