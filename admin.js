@@ -36,9 +36,9 @@ document.getElementById('view-admin').innerHTML = `
       <span class="hint" id="adminAccountStatus" style="margin:0;"></span>
 
       <p class="example-title" style="margin:16px 0 6px;">Import en masse d'élèves</p>
-      <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, 5 colonnes séparées par une tabulation : Nom Prénom, identifiant, mot de passe, UAI, classe -- un copier-coller direct depuis un tableur fonctionne). La classe est créée automatiquement si elle n'existe pas encore (niveau déduit du préfixe "6e"/"5e" du nom).</p>
-      <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="DUPONT Jean	jdupont	Motdepasse1	0123456A	6eA
-MARTIN Marie	mmartin	Motdepasse2	0123456A	6eA"></textarea>
+      <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, 5 colonnes séparées par une tabulation : Nom Prénom, identifiant, mot de passe, UAI, classe -- un copier-coller direct depuis un tableur fonctionne). <b>Laissez la colonne "mot de passe" vide</b> pour recevoir à la place un lien d'invitation personnel : l'élève choisit alors lui-même son mot de passe en cliquant dessus. La classe est créée automatiquement si elle n'existe pas encore (niveau déduit du préfixe "6e"/"5e" du nom).</p>
+      <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="DUPONT Jean	jdupont		0123456A	6eA
+MARTIN Marie	mmartin		0123456A	6eA"></textarea>
       <div class="tool-row" style="margin-top:8px;">
         <button class="btn" onclick="adminBulkCreateStudents()">Créer tous les comptes élèves</button>
       </div>
@@ -186,6 +186,19 @@ document.body.insertAdjacentHTML('beforeend', `
   </div>
 </div>
 
+<div id="inviteLinkModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeInviteLinkModal();">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Lien d'invitation</strong>
+      <button class="modal-close" onclick="closeInviteLinkModal()"><span class=gicon>close</span></button>
+    </div>
+    <p class="hint" id="inviteLinkModalName" style="margin:0 0 10px;"></p>
+    <input type="text" id="inviteLinkModalInput" readonly style="width:100%;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);margin-bottom:10px;box-sizing:border-box;font-family:'JetBrains Mono',monospace;font-size:.82rem;" onclick="this.select()">
+    <button class="btn" style="width:100%;" onclick="adminCopyInviteLink()">Copier le lien</button>
+    <span class="hint" id="inviteLinkModalStatus" style="display:block;margin-top:8px;"></span>
+  </div>
+</div>
+
 <div id="changeIdentifiantModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeChangeIdentifiantModal();">
   <div class="modal-card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
@@ -323,6 +336,38 @@ function adminResetPasswordPrompt(userId, name){
 }
 function closeResetPasswordModal(){
   document.getElementById('resetPasswordModalOverlay').style.display='none';
+}
+function closeInviteLinkModal(){
+  document.getElementById('inviteLinkModalOverlay').style.display='none';
+}
+async function adminGenerateInviteLink(userId, name){
+  const status = document.getElementById('adminAccBulkStatus');
+  status.textContent = 'Génération du lien en cours…';
+  const { data:{ session } } = await sb.auth.getSession();
+  try{
+    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+      body: JSON.stringify({ action:'create-invitation', userId }),
+    });
+    const data = await res.json();
+    status.textContent = '';
+    if(data.error){ alert("Erreur : "+data.error); return; }
+    const url = location.origin+location.pathname+'?invite='+data.token;
+    document.getElementById('inviteLinkModalName').textContent = 'Compte : '+name;
+    document.getElementById('inviteLinkModalInput').value = url;
+    document.getElementById('inviteLinkModalStatus').textContent = '';
+    document.getElementById('inviteLinkModalOverlay').style.display='flex';
+  }catch(err){ status.textContent = ''; alert('Erreur réseau.'); }
+}
+function adminCopyInviteLink(){
+  const input = document.getElementById('inviteLinkModalInput');
+  input.select();
+  navigator.clipboard.writeText(input.value).then(()=>{
+    document.getElementById('inviteLinkModalStatus').textContent = '✓ Lien copié.';
+  }).catch(()=>{
+    document.getElementById('inviteLinkModalStatus').textContent = 'Sélectionné -- copiez avec Ctrl/Cmd+C.';
+  });
 }
 async function adminConfirmResetPassword(){
   const newPassword = document.getElementById('resetPasswordModalInput').value;
@@ -548,11 +593,15 @@ function adminRenderAccountsListing(){
     const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
     const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span> Modifier</button>` : '';
     const categoryBtn = p.role==='prof' ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeCategoryPrompt('${p.id}','${safeName}')"><span class=gicon>workspace_premium</span> Catégorie</button>` : '';
+    // N'a de sens que pour un compte qui n'a pas encore changé son mot de passe initial --
+    // au-delà, l'élève a déjà défini le sien, un lien d'invitation n'y changerait rien.
+    const inviteBtn = (p.role==='eleve' && p.must_change_password) ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminGenerateInviteLink('${p.id}','${safeName}')"><span class=gicon>link</span> Générer un lien</button>` : '';
     return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <span style="display:flex;align-items:center;gap:8px;"><input type="checkbox" class="adminAccCheckbox" value="${p.id}">${label}</span>
       <span style="display:flex;gap:6px;flex:none;">
         ${editBtn}
         ${categoryBtn}
+        ${inviteBtn}
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeIdentifiantPrompt('${p.id}','${safeName}')"><span class=gicon>edit</span> Identifiant</button>
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminResetPasswordPrompt('${p.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser</button>
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="adminDeleteUser('${p.id}', this)"><span class=gicon>delete</span> Supprimer</button>
@@ -609,7 +658,7 @@ async function adminRefreshListings(){
   await adminRefreshBugReports();
   await adminRefreshSignupRequests();
   const { data: profs } = await sb.from('profiles').select('id,nom,email,role,subscription_status,subscription_expires_at').in('role',['prof','admin']).order('nom');
-  const { data: eleves } = await sb.from('profiles').select('id,nom,email,role').eq('role','eleve').order('nom');
+  const { data: eleves } = await sb.from('profiles').select('id,nom,email,role,must_change_password').eq('role','eleve').order('nom');
   // Date de dernière connexion (auth.users, normalement inaccessible via RLS classique) --
   // exposée uniquement à un admin via une fonction SECURITY DEFINER dédiée.
   const { data: lastSignIns } = await sb.rpc('get_last_sign_in_times');
@@ -742,26 +791,27 @@ async function adminBulkCreateStudents(){
   const raw = document.getElementById('adminBulkStudents').value;
   const status = document.getElementById('adminBulkStatus');
   const lines = raw.split('\n').map(l=>l.trim()).filter(Boolean);
-  if(!lines.length){ status.textContent = 'Collez au moins une ligne (Nom Prénom, identifiant, mot de passe, UAI, classe).'; return; }
+  if(!lines.length){ status.textContent = 'Collez au moins une ligne (Nom Prénom, identifiant, [mot de passe facultatif], UAI, classe).'; return; }
   const { data:{ session } } = await sb.auth.getSession();
-  let ok=0, fail=0; const errors=[];
+  let ok=0, fail=0; const errors=[]; const invites=[]; // {nom, url} -- pour le tableau récapitulatif
   const classCache = {}; // clé "uai|nom" -- évite de rechercher/créer la même classe à chaque ligne, distingue 2 classes de même nom dans des établissements différents
   const etabCache = new Set(); // UAI déjà vérifiés/créés dans etablissements cette session
   for(let i=0;i<lines.length;i++){
     status.textContent = `Création en cours… (${i+1}/${lines.length})`;
     const parts = lines[i].split('\t').map(s=>s.trim());
-    if(parts.length<3){ fail++; errors.push(`Ligne ${i+1} : format invalide (au moins Nom Prénom, identifiant et mot de passe attendus, séparés par des tabulations)`); continue; }
+    if(parts.length<2){ fail++; errors.push(`Ligne ${i+1} : format invalide (au moins Nom Prénom et identifiant attendus, séparés par des tabulations)`); continue; }
     const [nom, identifiant, password, uai, classeNom] = parts;
     const email = toAuthEmail(identifiant);
     try{
       const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
         method:'POST',
         headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
-        body: JSON.stringify({ email, password, role:'eleve', nom }),
+        body: JSON.stringify({ email, password: password||undefined, role:'eleve', nom }),
       });
       const data = await res.json();
       if(data.error){ fail++; errors.push(`${nom} (${identifiant}) : ${data.error}`); continue; }
       ok++;
+      if(data.inviteToken) invites.push({ nom, url: location.origin+location.pathname+'?invite='+data.inviteToken });
       // La fonction serveur ne renvoie pas d'id exploitable directement (même constat que
       // pour la création à l'unité, adminCreateAccount) -- retrouve le profil fraîchement
       // créé par son e-mail.
@@ -801,7 +851,14 @@ async function adminBulkCreateStudents(){
       }
     }catch(err){ fail++; errors.push(`${nom} (${identifiant}) : erreur réseau`); }
   }
-  status.innerHTML = `✓ ${ok} compte(s) créé(s)` + (errors.length?`, <span class=gicon>warning</span> ${fail?fail+' échec(s)':'avertissement(s)'} :<br>`+errors.map(escapeHtml).join('<br>') : '.');
+  let html = `✓ ${ok} compte(s) créé(s)` + (errors.length?`, <span class=gicon>warning</span> ${fail?fail+' échec(s)':'avertissement(s)'} :<br>`+errors.map(escapeHtml).join('<br>') : '.');
+  if(invites.length){
+    html += `<div style="margin-top:10px;"><b>Liens d'invitation à distribuer aux élèves</b> (chacun choisit son propre mot de passe en cliquant dessus) :</div>
+      <table style="border-collapse:collapse;width:100%;margin-top:6px;font-size:.85rem;">
+        ${invites.map(i=>`<tr><td style="padding:4px 8px;border:1px solid rgba(28,43,57,.15);">${escapeHtml(i.nom)}</td><td style="padding:4px 8px;border:1px solid rgba(28,43,57,.15);"><a href="${i.url}" target="_blank">${i.url}</a></td></tr>`).join('')}
+      </table>`;
+  }
+  status.innerHTML = html;
   if(ok) document.getElementById('adminBulkStudents').value='';
   await adminRefreshDropdowns();
   await adminRefreshListings();
