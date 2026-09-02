@@ -98,7 +98,8 @@ function showView(id){
   document.getElementById(id).classList.add('active');
 }
 document.querySelectorAll('[data-nav]').forEach(el=>{
-  el.addEventListener('click',()=>{
+  el.addEventListener('click',(e)=>{
+    if(el.tagName==='A' && el.getAttribute('href')==='#') e.preventDefault();
     document.querySelectorAll('.nav-dropdown.open').forEach(d=>d.classList.remove('open'));
     const nav = el.getAttribute('data-nav');
     if(nav==='home'){ showView('view-home'); setActiveTopnav(null); }
