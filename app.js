@@ -1085,21 +1085,21 @@ async function exportCoursPDF(){
   wrapper.innerHTML = headerHtml + `<h1 style="font-family:'Space Grotesk',sans-serif;font-size:20px;">${escapeHtml(bigTitle)}</h1>` + clone.innerHTML;
   clip.appendChild(wrapper);
   document.body.appendChild(clip);
-  // html2canvas résout mal les variables CSS (var(--accent-orange) etc., utilisées 148 fois
-  // dans le site) -- remplace la couleur par sa valeur CALCULÉE, mais SEULEMENT si aucune
-  // couleur n'était déjà fixée explicitement en style inline (dans ce cas elle est déjà une
-  // vraie valeur, pas une variable à résoudre -- l'écraser risquerait de casser un
-  // remplacement volontaire, ex. .redaction-note qui a un bleu en ligne remplaçant l'orange
-  // par défaut de sa classe). Signalé : "les couleurs ne correspondent pas à ce qu'on a
-  // choisi... c'est le cas en 6e mais pas en 5e" -- la 1re version écrasait sans discernement.
+  // html2canvas peut mal respecter la cascade CSS (variables var(--...) mal résolues, ou une
+  // règle de classe qui l'emporte à tort sur un style en ligne) -- applique explicitement la
+  // valeur CALCULÉE (qui reflète déjà la cascade correctement résolue par le navigateur) avec
+  // !important, pour garantir qu'elle gagne quoi qu'il arrive lors du rendu par html2canvas.
+  // Signalé : "les couleurs ne correspondent pas à ce qu'on a choisi... ça reste orange !"
+  // (persistant même après une 1re tentative qui se contentait de ne pas écraser une valeur
+  // déjà fixée en ligne -- insuffisant si html2canvas ignore de toute façon cette priorité).
   wrapper.querySelectorAll('*').forEach(el=>{
     const cs = window.getComputedStyle(el);
-    if(!el.style.color) el.style.color = cs.color;
-    if(!el.style.backgroundColor) el.style.backgroundColor = cs.backgroundColor;
-    if(!el.style.borderTopColor) el.style.borderTopColor = cs.borderTopColor;
-    if(!el.style.borderRightColor) el.style.borderRightColor = cs.borderRightColor;
-    if(!el.style.borderBottomColor) el.style.borderBottomColor = cs.borderBottomColor;
-    if(!el.style.borderLeftColor) el.style.borderLeftColor = cs.borderLeftColor;
+    el.style.setProperty('color', cs.color, 'important');
+    el.style.setProperty('background-color', cs.backgroundColor, 'important');
+    el.style.setProperty('border-top-color', cs.borderTopColor, 'important');
+    el.style.setProperty('border-right-color', cs.borderRightColor, 'important');
+    el.style.setProperty('border-bottom-color', cs.borderBottomColor, 'important');
+    el.style.setProperty('border-left-color', cs.borderLeftColor, 'important');
   });
   hint.textContent='Génération du PDF en cours…';
   html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:1.5, useCORS:true, foreignObjectRendering:false, windowHeight:wrapper.scrollHeight}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
