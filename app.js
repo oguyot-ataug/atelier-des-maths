@@ -973,6 +973,40 @@ async function advanceAllStepDemosToEndAsync(container){
     await new Promise(r=>setTimeout(r,0)); // laisse le navigateur respirer entre chaque démo, évite l'alerte "page ne répond pas"
   }
 }
+// Option de masquage réservée aux profs/admins (signalé : "en mode connecté prof... une
+// option pour éditer les pdf en demandant quel contenu on veut masquer") -- les élèves n'ont
+// pas d'usage de cette option, export direct pour eux sans passer par la modale.
+function openExportPdfOptions(){
+  if(!isStaffGlobal){ exportCoursPDF(); return; }
+  document.getElementById('exportHideDefinitions').checked = false;
+  document.getElementById('exportHideProprietes').checked = false;
+  document.getElementById('exportHideRegles').checked = false;
+  document.getElementById('exportPdfOptionsOverlay').style.display='flex';
+}
+function closeExportPdfOptions(){
+  document.getElementById('exportPdfOptionsOverlay').style.display='none';
+}
+/* Vide le contenu de chaque encadré définition/propriété/règle sélectionné pour être masqué,
+   sans retirer l'encadré lui-même (qui reste visible, avec son étiquette) -- laisse de la
+   place pour l'écriture manuscrite. Structure ciblée : <span class="def-badge|prop-badge">
+   LIBELLÉ</span> suivi directement d'un <div class="def-box">contenu</div> -- la catégorie
+   (Définitions/Propriétés/Règle(s)) se lit uniquement dans le TEXTE du badge, pas dans une
+   classe CSS dédiée (prop-badge sert à la fois pour "Propriétés" ET "Règle"/"Règles"). */
+function blankOutSelectedBoxes(clone){
+  const hideDef = document.getElementById('exportHideDefinitions')?.checked;
+  const hideProp = document.getElementById('exportHideProprietes')?.checked;
+  const hideRegle = document.getElementById('exportHideRegles')?.checked;
+  if(!hideDef && !hideProp && !hideRegle) return;
+  clone.querySelectorAll('.def-badge, .prop-badge').forEach(badge=>{
+    const label = badge.textContent.trim();
+    const shouldHide = (label==='Définitions' && hideDef) || (label==='Propriétés' && hideProp) || (label.startsWith('Règle') && hideRegle);
+    if(!shouldHide) return;
+    const box = badge.nextElementSibling;
+    if(box && box.classList.contains('def-box')){
+      box.innerHTML = '<br><br><br>'; // espace laissé pour l'écriture manuscrite
+    }
+  });
+}
 async function exportCoursPDF(){
   const hint=document.getElementById('exportHint');
   // Feedback IMMÉDIAT au clic, avant tout travail lourd -- signalé : "on n'a pas d'indication
@@ -984,6 +1018,7 @@ async function exportCoursPDF(){
   const title = document.getElementById('chap-title').textContent || 'cours';
   await advanceAllStepDemosToEndAsync(content);
   const clone = content.cloneNode(true);
+  blankOutSelectedBoxes(clone);
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.read-aloud-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
