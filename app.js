@@ -129,6 +129,8 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
         }
       }
     }
+    if(nav==='mentions-legales'){ showView('view-mentions-legales'); setActiveTopnav(null); }
+    if(nav==='confidentialite'){ showView('view-confidentialite'); setActiveTopnav(null); }
     if(nav==='correction'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-correction'); setActiveTopnav('correction');
