@@ -1010,6 +1010,12 @@ function blankOutSelectedBoxes(clone){
     const box = badge.nextElementSibling;
     if(box && box.classList.contains('def-box')){
       box.innerHTML = writingLines;
+      // Marge basse forcée explicitement (18px, la même que .def-box en CSS) -- garantit
+      // l'espacement avec le paragraphe suivant, indépendamment d'un éventuel effet de perte
+      // de marge dû au regroupement en bloc insécable (glueWithNextSibling, plus bas dans
+      // cette même fonction d'export) qui enveloppe ensuite cet encadré dans un nouveau
+      // conteneur. Signalé : "le paragraphe 2 est collé (ou chevauche)".
+      box.style.marginBottom = '18px';
     }
   });
 }
