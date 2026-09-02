@@ -1101,7 +1101,14 @@ async function exportCoursPDF(){
   const realChapView = document.getElementById('view-chapitre');
   const wrapperHadId = wrapper.id;
   wrapper.id = 'view-chapitre';
-  if(realChapView) wrapper.className = realChapView.className;
+  if(realChapView){
+    // Copie UNIQUEMENT la classe de niveau (lvl-5e/lvl-6e) -- copier toute la className
+    // ramenait aussi la classe "view", porteuse d'une animation d'apparition en fondu
+    // (opacity:0 -> 1 sur 0,35s), capturée en pleine animation par html2canvas et donnant un
+    // rendu "voilé" (signalé : "ça paraît tout pâle, comme voilé").
+    wrapper.className = (realChapView.classList.contains('lvl-5e') ? 'lvl-5e' : '')
+      + (realChapView.classList.contains('lvl-6e') ? ' lvl-6e' : '');
+  }
   wrapper.querySelectorAll('*').forEach(el=>{
     const cs = window.getComputedStyle(el);
     el.style.setProperty('color', cs.color, 'important');
