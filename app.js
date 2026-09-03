@@ -2184,6 +2184,12 @@ let accountClassesList = [];
 function populateAccountClassList(classesList){
   accountClassesList = classesList.map(c=>({id:c.id, label:`${c.nom} (${c.niveau})`}));
 }
+function populateSupervisionClassSelect(){
+  const sel = document.getElementById('supervisionClassSelect');
+  if(!sel) return;
+  if(!accountClassesList.length){ sel.innerHTML = '<option value="">Aucune classe</option>'; return; }
+  sel.innerHTML = accountClassesList.map(c=>`<option value="${c.id}" ${c.id===currentClassId?'selected':''}>${escapeHtml(c.label)}</option>`).join('');
+}
 function openClassModal(){
   renderClassModalList();
   document.getElementById('classModalOverlay').style.display='flex';
@@ -3219,6 +3225,7 @@ async function applyClassSelection(){
   const found = accountClassesList.find(c=>c.id===currentClassId);
   const className = found ? found.label : null;
   updateClassDisplays(className);
+  populateSupervisionClassSelect();
   if(currentClassId){
     const remote = await syncFetchAll();
     if(remote){ cahier = remote; saveCahier(); }
@@ -3233,7 +3240,7 @@ async function applyClassSelection(){
 async function renderTeacherStudentsListing(){
   const el = document.getElementById('teacherStudentsListing');
   if(!el) return;
-  if(!currentClassId){ el.innerHTML = 'Choisissez une classe dans le menu compte pour voir ses élèves.'; return; }
+  if(!currentClassId){ el.innerHTML = 'Choisissez une classe pour voir ses élèves.'; return; }
   el.innerHTML = 'Chargement…';
   const { data, error } = await sb.from('class_students').select('profiles(id,nom,email)').eq('class_id', currentClassId);
   if(error){ el.innerHTML = "Erreur : "+error.message; return; }
@@ -3244,25 +3251,30 @@ async function renderTeacherStudentsListing(){
   // question qu'un prof voie la connexion des élèves d'un autre prof).
   const { data: signIns } = await sb.rpc('get_my_students_last_sign_in');
   const lastSignInMap = new Map((signIns||[]).map(r=>[r.id, r.last_sign_in_at]));
+  const loginIdentifiant = email => email ? (email.endsWith('@mathcollege.local') ? email.slice(0, -('@mathcollege.local'.length)) : email) : '(inconnu)';
   // Le site n'a pas de suivi de présence en temps réel -- une connexion très récente (moins de
   // 15 min) sert d'approximation raisonnable pour "probablement en ligne actuellement".
+  // 3 états visuellement distincts, demandé : "juste du texte ne permet pas de voir qui s'est
+  // déjà connecté... il faut y mettre des couleurs ou des icônes clairs" -- jamais connecté
+  // (rond gris), déjà connecté au moins une fois mais pas actuellement (coche bleue), en
+  // ligne actuellement (rond vert).
   const ONLINE_THRESHOLD_MS = 15*60*1000;
   const connexionBadge = studentId => {
     const t = lastSignInMap.get(studentId);
-    if(!t) return '<span class="hint">Jamais connecté</span>';
+    if(!t) return '<span style="color:#8a8f98;font-weight:600;">⚪ Jamais connecté</span>';
     const d = new Date(t);
     const isRecent = (Date.now()-d.getTime()) < ONLINE_THRESHOLD_MS;
     if(isRecent) return '<span style="color:#1F7A4D;font-weight:700;">🟢 En ligne</span>';
-    return `<span class="hint">Connecté le ${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span>`;
+    return `<span style="color:#0C5BA0;font-weight:600;">🔵 Déjà connecté</span> <span class="hint">(${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})})</span>`;
   };
   el.innerHTML = students.map(s=>{
-    const label = escapeHtml(s.nom || s.email || '?');
+    const label = escapeHtml(s.nom || '?');
     const safeName = label.replace(/'/g, "\\'");
-    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.08);">
-      <span>${label} · ${connexionBadge(s.id)}</span>
+    const identifiant = escapeHtml(loginIdentifiant(s.email));
+    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.08);flex-wrap:wrap;">
+      <span>${label} · <span class="hint" style="font-family:'JetBrains Mono',monospace;">${identifiant}</span> · ${connexionBadge(s.id)}</span>
       <span style="display:flex;gap:6px;flex:none;">
-        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherChangeIdentifiantPrompt('${s.id}','${safeName}')"><span class=gicon>edit</span> Identifiant</button>
-        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherResetPasswordPrompt('${s.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser</button>
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherResetPasswordPrompt('${s.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser le mot de passe</button>
       </span>
     </div>`;
   }).join('');
@@ -3294,37 +3306,6 @@ async function teacherConfirmResetPassword(){
     if(data.error){ status.textContent = "Erreur : "+data.error; return; }
     status.textContent = '✓ Mot de passe réinitialisé.';
     setTimeout(closeTeacherResetPasswordModal, 1200);
-  }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
-}
-let teacherChangeIdentifiantTargetId = null;
-function teacherChangeIdentifiantPrompt(userId, name){
-  teacherChangeIdentifiantTargetId = userId;
-  document.getElementById('teacherChangeIdentifiantModalName').textContent = 'Élève : '+name;
-  document.getElementById('teacherChangeIdentifiantModalInput').value = '';
-  document.getElementById('teacherChangeIdentifiantModalStatus').textContent = '';
-  document.getElementById('teacherChangeIdentifiantModalOverlay').style.display='flex';
-}
-function closeTeacherChangeIdentifiantModal(){
-  document.getElementById('teacherChangeIdentifiantModalOverlay').style.display='none';
-}
-async function teacherConfirmChangeIdentifiant(){
-  const raw = document.getElementById('teacherChangeIdentifiantModalInput').value.trim();
-  const status = document.getElementById('teacherChangeIdentifiantModalStatus');
-  if(!raw){ status.textContent = 'Entrez un identifiant.'; return; }
-  const newEmail = toAuthEmail(raw);
-  status.textContent = 'En cours…';
-  const { data:{ session } } = await sb.auth.getSession();
-  try{
-    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
-      body: JSON.stringify({ action:'update-email', userId: teacherChangeIdentifiantTargetId, newEmail }),
-    });
-    const data = await res.json();
-    if(data.error){ status.textContent = "Erreur : "+data.error; return; }
-    status.textContent = '✓ Identifiant modifié.';
-    await renderTeacherStudentsListing();
-    setTimeout(closeTeacherChangeIdentifiantModal, 1200);
   }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
 }
 let supervisionData = [];
