@@ -1128,6 +1128,13 @@ async function exportCoursPDF(){
     el.style.setProperty('border-left-color', cs.borderLeftColor, 'important');
   });
   wrapper.id = wrapperHadId; // retiré aussitôt -- évite tout id dupliqué durable dans le document
+  // Attend que TOUTES les polices personnalisées (Space Grotesk, JetBrains Mono, Inter) soient
+  // réellement chargées et appliquées avant de mesurer quoi que ce soit -- sans ça,
+  // wrapper.scrollHeight peut être mesuré avec des polices de repli (tailles différentes),
+  // qui se substituent ensuite en cours de capture par html2canvas, causant un calcul de
+  // pagination incohérent d'une fois sur l'autre selon la vitesse de connexion. Signalé :
+  // "ce n'est pas stable" -- symptôme caractéristique d'une dépendance au timing réseau.
+  if(document.fonts && document.fonts.ready) await document.fonts.ready;
   hint.textContent='Génération du PDF en cours…';
   html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:1.5, useCORS:true, foreignObjectRendering:false, windowHeight:wrapper.scrollHeight}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
     .from(wrapper).toPdf().get('pdf').then(pdf=>{
