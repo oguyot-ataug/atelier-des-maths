@@ -4136,6 +4136,34 @@ async function addSectionToCahier(headerEl){
   await expandStepDemosInClone(wrapper);
   wrapper.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id')); // évite tout doublon d'id avec la figure d'origine
 
+  // Fige la couleur du thème (bleu 5e / orange 6e) en valeurs CALCULÉES explicites avant la
+  // sauvegarde -- sans ça, ce HTML sauvegardé perd son contexte #view-chapitre.lvl-5e/.lvl-6e
+  // une fois réaffiché plus tard (dans "Mon cahier"), et retombe sur la couleur par défaut
+  // (orange, celle de 6e), quel que soit le niveau réel du chapitre d'origine.
+  const clip2 = document.createElement('div');
+  clip2.style.cssText = 'height:0;overflow:hidden;';
+  const realChapView2 = document.getElementById('view-chapitre');
+  const wrapperHadId2 = wrapper.id;
+  wrapper.id = 'view-chapitre';
+  if(realChapView2){
+    wrapper.className = (realChapView2.classList.contains('lvl-5e') ? 'lvl-5e' : '')
+      + (realChapView2.classList.contains('lvl-6e') ? ' lvl-6e' : '');
+  }
+  clip2.appendChild(wrapper);
+  document.body.appendChild(clip2);
+  wrapper.querySelectorAll('*').forEach(el=>{
+    const cs = window.getComputedStyle(el);
+    el.style.setProperty('color', cs.color, 'important');
+    el.style.setProperty('background-color', cs.backgroundColor, 'important');
+    el.style.setProperty('border-top-color', cs.borderTopColor, 'important');
+    el.style.setProperty('border-right-color', cs.borderRightColor, 'important');
+    el.style.setProperty('border-bottom-color', cs.borderBottomColor, 'important');
+    el.style.setProperty('border-left-color', cs.borderLeftColor, 'important');
+  });
+  wrapper.id = wrapperHadId2;
+  wrapper.className = '';
+  clip2.remove();
+
   const niveauSel = document.getElementById('corNiveau');
   const entry = {
     niveau: niveauSel ? niveauSel.value : '5e',
