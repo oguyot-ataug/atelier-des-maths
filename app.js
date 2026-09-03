@@ -154,7 +154,8 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     }
     if(nav==='supervision'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
-      showView('view-supervision'); setActiveTopnav('supervision'); renderSupervision(); renderSupervisionCeb();
+      showView('view-supervision'); setActiveTopnav('supervision');
+      loadMyClasses();
     }
     if(nav==='progression'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
@@ -3237,6 +3238,7 @@ async function applyClassSelection(){
   if(document.getElementById('view-supervision').classList.contains('active')){ renderSupervision(); renderSupervisionCeb(); }
   updateCourseAddButtonsState();
 }
+let teacherStudentsCache = []; // {id, nom, identifiant, statutKey, badgeHtml} -- pour filtrer sans re-requêter
 async function renderTeacherStudentsListing(){
   const el = document.getElementById('teacherStudentsListing');
   if(!el) return;
@@ -3245,7 +3247,7 @@ async function renderTeacherStudentsListing(){
   const { data, error } = await sb.from('class_students').select('profiles(id,nom,email)').eq('class_id', currentClassId);
   if(error){ el.innerHTML = "Erreur : "+error.message; return; }
   const students = (data||[]).map(r=>r.profiles).filter(Boolean).sort((a,b)=>(a.nom||'').localeCompare(b.nom||''));
-  if(!students.length){ el.innerHTML = 'Aucun élève dans cette classe pour l\'instant.'; return; }
+  if(!students.length){ el.innerHTML = 'Aucun élève dans cette classe pour l\'instant.'; teacherStudentsCache=[]; return; }
   // Dernière connexion (auth.users, normalement inaccessible via RLS classique) -- exposée à
   // un prof uniquement pour SES PROPRES élèves via une fonction dédiée SECURITY DEFINER (pas
   // question qu'un prof voie la connexion des élèves d'un autre prof).
@@ -3257,27 +3259,53 @@ async function renderTeacherStudentsListing(){
   // 3 états visuellement distincts, demandé : "juste du texte ne permet pas de voir qui s'est
   // déjà connecté... il faut y mettre des couleurs ou des icônes clairs" -- jamais connecté
   // (rond gris), déjà connecté au moins une fois mais pas actuellement (coche bleue), en
-  // ligne actuellement (rond vert).
+  // ligne actuellement (rond vert). statutKey sert au filtre.
   const ONLINE_THRESHOLD_MS = 15*60*1000;
-  const connexionBadge = studentId => {
+  const connexionInfo = studentId => {
     const t = lastSignInMap.get(studentId);
-    if(!t) return '<span style="color:#8a8f98;font-weight:600;">⚪ Jamais connecté</span>';
+    if(!t) return { key:'jamais', badge:'<span style="color:#8a8f98;font-weight:600;">⚪ Jamais connecté</span>' };
     const d = new Date(t);
     const isRecent = (Date.now()-d.getTime()) < ONLINE_THRESHOLD_MS;
-    if(isRecent) return '<span style="color:#1F7A4D;font-weight:700;">🟢 En ligne</span>';
-    return `<span style="color:#0C5BA0;font-weight:600;">🔵 Déjà connecté</span> <span class="hint">(${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})})</span>`;
+    if(isRecent) return { key:'enligne', badge:'<span style="color:#1F7A4D;font-weight:700;">🟢 En ligne</span>' };
+    return { key:'deja', badge:`<span style="color:#0C5BA0;font-weight:600;">🔵 Déjà connecté</span> <span class="hint">(${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})})</span>` };
   };
-  el.innerHTML = students.map(s=>{
-    const label = escapeHtml(s.nom || '?');
+  teacherStudentsCache = students.map(s=>{
+    const info = connexionInfo(s.id);
+    return { id:s.id, nom: s.nom||'?', identifiant: loginIdentifiant(s.email), statutKey: info.key, badgeHtml: info.badge };
+  });
+  renderTeacherStudentsFiltered();
+}
+// Identifiant masqué par défaut (bouton "Voir l'identifiant" pour le révéler au clic) --
+// demandé : "mettre un bouton Voir l'identifiant plutôt que de l'afficher". Filtre par statut
+// de connexion -- demandé : "permettre un filtre sur le statut".
+function renderTeacherStudentsFiltered(){
+  const el = document.getElementById('teacherStudentsListing');
+  if(!el) return;
+  const filterSel = document.getElementById('teacherStudentsStatutFilter');
+  const filter = filterSel ? filterSel.value : '';
+  const filtered = filter ? teacherStudentsCache.filter(s=>s.statutKey===filter) : teacherStudentsCache;
+  if(!filtered.length){ el.innerHTML = 'Aucun élève ne correspond à ce filtre.'; return; }
+  el.innerHTML = filtered.map(s=>{
+    const label = escapeHtml(s.nom);
     const safeName = label.replace(/'/g, "\\'");
-    const identifiant = escapeHtml(loginIdentifiant(s.email));
+    const idfEscaped = escapeHtml(s.identifiant).replace(/'/g, "\\'");
     return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.08);flex-wrap:wrap;">
-      <span>${label} · <span class="hint" style="font-family:'JetBrains Mono',monospace;">${identifiant}</span> · ${connexionBadge(s.id)}</span>
+      <span>${label} · <span class="teacher-id-reveal" data-idf="${idfEscaped}" style="cursor:pointer;color:var(--accent);text-decoration:underline;font-size:.85rem;" onclick="toggleTeacherIdentifiantReveal(this)">Voir l'identifiant</span> · ${s.badgeHtml}</span>
       <span style="display:flex;gap:6px;flex:none;">
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherResetPasswordPrompt('${s.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser le mot de passe</button>
       </span>
     </div>`;
   }).join('');
+}
+function toggleTeacherIdentifiantReveal(el){
+  if(el.classList.contains('revealed')){
+    el.textContent = "Voir l'identifiant";
+    el.classList.remove('revealed');
+  } else {
+    el.textContent = el.dataset.idf;
+    el.classList.add('revealed');
+    el.style.fontFamily = "'JetBrains Mono',monospace";
+  }
 }
 let teacherResetPasswordTargetId = null;
 function teacherResetPasswordPrompt(userId, name){
