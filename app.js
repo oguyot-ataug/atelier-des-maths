@@ -3292,29 +3292,21 @@ function renderTeacherStudentsFiltered(){
     const safeName = label.replace(/'/g, "\\'");
     const idfEscaped = escapeHtml(s.identifiant).replace(/'/g, "\\'");
     return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.08);flex-wrap:wrap;">
-      <span>${label} · <span class="teacher-id-reveal" data-idf="${idfEscaped}" style="font-size:.85rem;"></span> · ${s.badgeHtml}</span>
+      <span>${label} · ${s.badgeHtml}</span>
       <span style="display:flex;gap:6px;flex:none;">
-        <button class="btn secondary teacher-id-reveal-btn" style="font-size:.72rem;padding:4px 8px;" onclick="toggleTeacherIdentifiantReveal(this)"><span class=gicon>visibility</span> Voir l'identifiant</button>
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherShowIdentifiant('${safeName}','${idfEscaped}')"><span class=gicon>visibility</span> Voir l'identifiant</button>
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherResetPasswordPrompt('${s.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser le mot de passe</button>
       </span>
     </div>`;
   }).join('');
 }
-function toggleTeacherIdentifiantReveal(btn){
-  const row = btn.closest('div');
-  const span = row ? row.querySelector('.teacher-id-reveal') : null;
-  if(!span) return;
-  if(span.classList.contains('revealed')){
-    span.textContent = '';
-    span.classList.remove('revealed');
-    btn.innerHTML = '<span class=gicon>visibility</span> Voir l\'identifiant';
-  } else {
-    span.textContent = span.dataset.idf;
-    span.classList.add('revealed');
-    span.style.fontFamily = "'JetBrains Mono',monospace";
-    span.style.fontWeight = '600';
-    btn.innerHTML = '<span class=gicon>visibility_off</span> Masquer l\'identifiant';
-  }
+function teacherShowIdentifiant(name, identifiant){
+  document.getElementById('teacherShowIdentifiantModalName').textContent = 'Élève : '+name;
+  document.getElementById('teacherShowIdentifiantModalValue').textContent = identifiant;
+  document.getElementById('teacherShowIdentifiantModalOverlay').style.display = 'flex';
+}
+function closeTeacherShowIdentifiantModal(){
+  document.getElementById('teacherShowIdentifiantModalOverlay').style.display = 'none';
 }
 let teacherResetPasswordTargetId = null;
 function teacherResetPasswordPrompt(userId, name){
