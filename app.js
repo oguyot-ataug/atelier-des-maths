@@ -1018,7 +1018,7 @@ function blankOutSelectedBoxes(clone){
       // de marge dû au regroupement en bloc insécable (glueWithNextSibling, plus bas dans
       // cette même fonction d'export) qui enveloppe ensuite cet encadré dans un nouveau
       // conteneur. Signalé : "le paragraphe 2 est collé (ou chevauche)".
-      box.style.marginBottom = '18px';
+      box.style.marginBottom = '10px';
     }
   });
 }
