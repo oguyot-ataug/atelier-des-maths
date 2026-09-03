@@ -101,8 +101,10 @@ MARTIN Marie	mmartin		0123456A	6eA"></textarea>
       <div class="tool-row" style="margin-bottom:8px;align-items:center;">
         <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="adminAccSelectAll" onchange="adminToggleSelectAllAccounts(this.checked)"> Tout sélectionner (visibles)</label>
         <button class="btn secondary" style="color:#a83c1f;" onclick="adminDeleteSelectedAccounts()"><span class=gicon>delete</span> Supprimer la sélection</button>
+        <button class="btn secondary" onclick="adminGenerateAllInviteLinks()"><span class=gicon>link</span> Générer tous les liens d'invitation</button>
         <span class="hint" id="adminAccBulkStatus" style="margin:0;"></span>
       </div>
+      <div id="adminInviteLinksTable" class="hint" style="margin-bottom:14px;"></div>
       <div id="adminAccountsListing" class="hint"></div>
       <p class="example-title" style="margin:16px 0 6px;">Classes</p>
       <div id="adminClassesListing" class="hint"></div>
@@ -359,6 +361,57 @@ async function adminGenerateInviteLink(userId, name){
     document.getElementById('inviteLinkModalStatus').textContent = '';
     document.getElementById('inviteLinkModalOverlay').style.display='flex';
   }catch(err){ status.textContent = ''; alert('Erreur réseau.'); }
+}
+async function adminGenerateAllInviteLinks(){
+  const status = document.getElementById('adminAccBulkStatus');
+  const targets = (adminAccountsCache.eleves||[]).filter(p=>p.must_change_password);
+  if(!targets.length){ status.textContent = 'Aucun élève en attente (tous ont déjà changé leur mot de passe).'; return; }
+  if(!(await niceConfirm(`Générer un lien d'invitation pour ${targets.length} élève(s) n'ayant pas encore changé leur mot de passe ?`))) return;
+  const { data:{ session } } = await sb.auth.getSession();
+  // Correspondance élève -> classe, à partir de ce qui est déjà en mémoire (pas de nouvelle
+  // requête) -- même logique que adminRenderAccountsListing.
+  const classById = new Map((adminAccountsCache.classesList||[]).map(c=>[c.id, c]));
+  const studentClassId = new Map();
+  (adminAccountsCache.classStudents||[]).forEach(r=>{ if(!studentClassId.has(r.student_id)) studentClassId.set(r.student_id, r.class_id); });
+  const loginIdentifiant = email => email ? (email.endsWith('@mathcollege.local') ? email.slice(0, -('@mathcollege.local'.length)) : email) : '(inconnu)';
+
+  const results = []; // {classe, nom, identifiant, url}
+  let ok=0, fail=0;
+  for(let i=0;i<targets.length;i++){
+    const p = targets[i];
+    status.textContent = `Génération en cours… (${i+1}/${targets.length})`;
+    try{
+      const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+        body: JSON.stringify({ action:'create-invitation', userId:p.id }),
+      });
+      const data = await res.json();
+      if(data.error){ fail++; continue; }
+      ok++;
+      const cls = classById.get(studentClassId.get(p.id));
+      results.push({ classe: cls ? cls.nom : 'Sans classe', nom: p.nom||'(sans nom)', identifiant: loginIdentifiant(p.email), url: location.origin+location.pathname+'?invite='+data.token });
+    }catch(err){ fail++; }
+  }
+  status.innerHTML = `✓ ${ok} lien(s) généré(s)` + (fail?`, ${fail} échec(s).`:'.');
+
+  // Tri par classe puis par nom, regroupé avec un en-tête de classe par section.
+  results.sort((a,b)=> a.classe.localeCompare(b.classe) || a.nom.localeCompare(b.nom));
+  const tableEl = document.getElementById('adminInviteLinksTable');
+  if(!results.length){ tableEl.innerHTML=''; return; }
+  let html = '<b>Liens d\'invitation générés (triés par classe)</b>';
+  let currentClasse = null;
+  results.forEach(r=>{
+    if(r.classe!==currentClasse){
+      if(currentClasse!==null) html += '</table>'; // ferme le tableau de la classe précédente avant d'en ouvrir un nouveau
+      currentClasse = r.classe;
+      html += `<div style="margin:10px 0 4px;font-weight:700;">${escapeHtml(currentClasse)}</div>`;
+      html += '<table style="border-collapse:collapse;width:100%;font-size:.85rem;margin-bottom:4px;"><tr><th style="text-align:left;padding:4px 8px;border:1px solid rgba(28,43,57,.15);background:rgba(31,58,92,.06);">Nom</th><th style="text-align:left;padding:4px 8px;border:1px solid rgba(28,43,57,.15);background:rgba(31,58,92,.06);">Identifiant</th><th style="text-align:left;padding:4px 8px;border:1px solid rgba(28,43,57,.15);background:rgba(31,58,92,.06);">Lien</th></tr>';
+    }
+    html += `<tr><td style="padding:4px 8px;border:1px solid rgba(28,43,57,.15);">${escapeHtml(r.nom)}</td><td style="padding:4px 8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">${escapeHtml(r.identifiant)}</td><td style="padding:4px 8px;border:1px solid rgba(28,43,57,.15);"><a href="${r.url}" target="_blank">${r.url}</a></td></tr>`;
+  });
+  html += '</table>'; // ferme la table du dernier groupe
+  tableEl.innerHTML = html;
 }
 function adminCopyInviteLink(){
   const input = document.getElementById('inviteLinkModalInput');
