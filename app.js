@@ -3239,11 +3239,27 @@ async function renderTeacherStudentsListing(){
   if(error){ el.innerHTML = "Erreur : "+error.message; return; }
   const students = (data||[]).map(r=>r.profiles).filter(Boolean).sort((a,b)=>(a.nom||'').localeCompare(b.nom||''));
   if(!students.length){ el.innerHTML = 'Aucun élève dans cette classe pour l\'instant.'; return; }
+  // Dernière connexion (auth.users, normalement inaccessible via RLS classique) -- exposée à
+  // un prof uniquement pour SES PROPRES élèves via une fonction dédiée SECURITY DEFINER (pas
+  // question qu'un prof voie la connexion des élèves d'un autre prof).
+  const { data: signIns } = await sb.rpc('get_my_students_last_sign_in');
+  const lastSignInMap = new Map((signIns||[]).map(r=>[r.id, r.last_sign_in_at]));
+  // Le site n'a pas de suivi de présence en temps réel -- une connexion très récente (moins de
+  // 15 min) sert d'approximation raisonnable pour "probablement en ligne actuellement".
+  const ONLINE_THRESHOLD_MS = 15*60*1000;
+  const connexionBadge = studentId => {
+    const t = lastSignInMap.get(studentId);
+    if(!t) return '<span class="hint">Jamais connecté</span>';
+    const d = new Date(t);
+    const isRecent = (Date.now()-d.getTime()) < ONLINE_THRESHOLD_MS;
+    if(isRecent) return '<span style="color:#1F7A4D;font-weight:700;">🟢 En ligne</span>';
+    return `<span class="hint">Connecté le ${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span>`;
+  };
   el.innerHTML = students.map(s=>{
     const label = escapeHtml(s.nom || s.email || '?');
     const safeName = label.replace(/'/g, "\\'");
     return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.08);">
-      <span>${label}</span>
+      <span>${label} · ${connexionBadge(s.id)}</span>
       <span style="display:flex;gap:6px;flex:none;">
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherChangeIdentifiantPrompt('${s.id}','${safeName}')"><span class=gicon>edit</span> Identifiant</button>
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherResetPasswordPrompt('${s.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser</button>
@@ -3312,6 +3328,14 @@ async function teacherConfirmChangeIdentifiant(){
   }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
 }
 let supervisionData = [];
+document.querySelectorAll('.sup-tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.sup-tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.sup-tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('suppanel-'+btn.dataset.suptab).classList.add('active');
+  });
+});
 async function renderSupervision(){
   renderTeacherStudentsListing();
   const el = document.getElementById('supervisionContent');
