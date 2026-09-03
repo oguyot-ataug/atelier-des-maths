@@ -102,6 +102,7 @@ MARTIN Marie	mmartin		0123456A	6eA"></textarea>
         <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="adminAccSelectAll" onchange="adminToggleSelectAllAccounts(this.checked)"> Tout sélectionner (visibles)</label>
         <button class="btn secondary" style="color:#a83c1f;" onclick="adminDeleteSelectedAccounts()"><span class=gicon>delete</span> Supprimer la sélection</button>
         <button class="btn secondary" onclick="adminGenerateAllInviteLinks()"><span class=gicon>link</span> Générer tous les liens d'invitation</button>
+        <button class="btn secondary" onclick="adminShowExistingInviteLinks()"><span class=gicon>refresh</span> Réafficher les liens déjà générés</button>
         <span class="hint" id="adminAccBulkStatus" style="margin:0;"></span>
       </div>
       <div id="adminInviteLinksTable" class="hint" style="margin-bottom:14px;"></div>
@@ -394,12 +395,42 @@ async function adminGenerateAllInviteLinks(){
     }catch(err){ fail++; }
   }
   status.innerHTML = `✓ ${ok} lien(s) généré(s)` + (fail?`, ${fail} échec(s).`:'.');
+  renderInviteLinksTable(results, 'Liens d\'invitation générés (triés par classe)');
+}
+/* Recharge et affiche les liens d'invitation DÉJÀ générés (non utilisés, non expirés) depuis
+   la base -- signalé : "pourquoi les liens déjà créés n'apparaissent plus quand je
+   rafraîchis la page ?" (le tableau n'était jusqu'ici qu'en mémoire, jamais recalculé). */
+async function adminShowExistingInviteLinks(){
+  const status = document.getElementById('adminAccBulkStatus');
+  status.textContent = 'Chargement des liens existants…';
+  const { data: invitations, error } = await sb.from('invitations')
+    .select('token, user_id, expires_at')
+    .is('used_at', null)
+    .gt('expires_at', new Date().toISOString());
+  status.textContent = '';
+  if(error){ alert("Erreur : "+error.message); return; }
+  if(!invitations || !invitations.length){ status.textContent = 'Aucun lien en attente actuellement.'; document.getElementById('adminInviteLinksTable').innerHTML=''; return; }
 
-  // Tri par classe puis par nom, regroupé avec un en-tête de classe par section.
+  const eleveById = new Map((adminAccountsCache.eleves||[]).map(p=>[p.id, p]));
+  const classById = new Map((adminAccountsCache.classesList||[]).map(c=>[c.id, c]));
+  const studentClassId = new Map();
+  (adminAccountsCache.classStudents||[]).forEach(r=>{ if(!studentClassId.has(r.student_id)) studentClassId.set(r.student_id, r.class_id); });
+  const loginIdentifiant = email => email ? (email.endsWith('@mathcollege.local') ? email.slice(0, -('@mathcollege.local'.length)) : email) : '(inconnu)';
+
+  const results = invitations.map(inv=>{
+    const p = eleveById.get(inv.user_id);
+    const cls = classById.get(studentClassId.get(inv.user_id));
+    return { classe: cls ? cls.nom : 'Sans classe', nom: p ? (p.nom||'(sans nom)') : '(élève introuvable)', identifiant: p ? loginIdentifiant(p.email) : '?', url: location.origin+location.pathname+'?invite='+inv.token };
+  });
+  renderInviteLinksTable(results, `Liens d'invitation en attente (${results.length}, triés par classe)`);
+}
+/* Rendu commun du tableau des liens d'invitation, regroupés par classe -- réutilisé par la
+   génération en masse et le rechargement depuis la base. */
+function renderInviteLinksTable(results, titre){
   results.sort((a,b)=> a.classe.localeCompare(b.classe) || a.nom.localeCompare(b.nom));
   const tableEl = document.getElementById('adminInviteLinksTable');
   if(!results.length){ tableEl.innerHTML=''; return; }
-  let html = '<b>Liens d\'invitation générés (triés par classe)</b>';
+  let html = `<b>${escapeHtml(titre)}</b>`;
   let currentClasse = null;
   results.forEach(r=>{
     if(r.classe!==currentClasse){
@@ -740,6 +771,7 @@ async function adminRefreshListings(){
     if(adminAccountsCache.etablissements.some(e=>e.uai===prev)) uaiSelect.value = prev;
   }
   adminRenderAccountsListing();
+  adminShowExistingInviteLinks();
   const { data: permisSessionsList } = await sb.from('permis_rapporteur_sessions').select('id,code,classe_id,cloturee,created_at').order('created_at',{ascending:false});
   const classesEl = document.getElementById('adminClassesListing');
   if(classesEl){
