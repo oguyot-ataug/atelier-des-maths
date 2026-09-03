@@ -3218,7 +3218,9 @@ async function loadMyClasses(){
   }
   classesList.sort((a,b)=>a.nom.localeCompare(b.nom));
   populateAccountClassList(classesList);
-  if(!accountClassesList.some(c=>c.id===currentClassId)) currentClassId = null;
+  if(!accountClassesList.some(c=>c.id===currentClassId)){
+    currentClassId = accountClassesList[0] ? accountClassesList[0].id : null;
+  }
   await applyClassSelection();
   if(error) console.error(error);
 }
@@ -3290,21 +3292,28 @@ function renderTeacherStudentsFiltered(){
     const safeName = label.replace(/'/g, "\\'");
     const idfEscaped = escapeHtml(s.identifiant).replace(/'/g, "\\'");
     return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.08);flex-wrap:wrap;">
-      <span>${label} · <span class="teacher-id-reveal" data-idf="${idfEscaped}" style="cursor:pointer;color:var(--accent);text-decoration:underline;font-size:.85rem;" onclick="toggleTeacherIdentifiantReveal(this)">Voir l'identifiant</span> · ${s.badgeHtml}</span>
+      <span>${label} · <span class="teacher-id-reveal" data-idf="${idfEscaped}" style="font-size:.85rem;"></span> · ${s.badgeHtml}</span>
       <span style="display:flex;gap:6px;flex:none;">
+        <button class="btn secondary teacher-id-reveal-btn" style="font-size:.72rem;padding:4px 8px;" onclick="toggleTeacherIdentifiantReveal(this)"><span class=gicon>visibility</span> Voir l'identifiant</button>
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherResetPasswordPrompt('${s.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser le mot de passe</button>
       </span>
     </div>`;
   }).join('');
 }
-function toggleTeacherIdentifiantReveal(el){
-  if(el.classList.contains('revealed')){
-    el.textContent = "Voir l'identifiant";
-    el.classList.remove('revealed');
+function toggleTeacherIdentifiantReveal(btn){
+  const row = btn.closest('div');
+  const span = row ? row.querySelector('.teacher-id-reveal') : null;
+  if(!span) return;
+  if(span.classList.contains('revealed')){
+    span.textContent = '';
+    span.classList.remove('revealed');
+    btn.innerHTML = '<span class=gicon>visibility</span> Voir l\'identifiant';
   } else {
-    el.textContent = el.dataset.idf;
-    el.classList.add('revealed');
-    el.style.fontFamily = "'JetBrains Mono',monospace";
+    span.textContent = span.dataset.idf;
+    span.classList.add('revealed');
+    span.style.fontFamily = "'JetBrains Mono',monospace";
+    span.style.fontWeight = '600';
+    btn.innerHTML = '<span class=gicon>visibility_off</span> Masquer l\'identifiant';
   }
 }
 let teacherResetPasswordTargetId = null;
