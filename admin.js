@@ -356,7 +356,7 @@ async function adminGenerateInviteLink(userId, name){
     const data = await res.json();
     status.textContent = '';
     if(data.error){ alert("Erreur : "+data.error); return; }
-    const url = location.origin+location.pathname+'?invite='+data.token;
+    const url = location.origin+'/invitation.html?invite='+data.token;
     document.getElementById('inviteLinkModalName').textContent = 'Compte : '+name;
     document.getElementById('inviteLinkModalInput').value = url;
     document.getElementById('inviteLinkModalStatus').textContent = '';
@@ -391,7 +391,7 @@ async function adminGenerateAllInviteLinks(){
       if(data.error){ fail++; continue; }
       ok++;
       const cls = classById.get(studentClassId.get(p.id));
-      results.push({ classe: cls ? cls.nom : 'Sans classe', nom: p.nom||'(sans nom)', identifiant: loginIdentifiant(p.email), url: location.origin+location.pathname+'?invite='+data.token });
+      results.push({ classe: cls ? cls.nom : 'Sans classe', nom: p.nom||'(sans nom)', identifiant: loginIdentifiant(p.email), url: location.origin+'/invitation.html?invite='+data.token });
     }catch(err){ fail++; }
   }
   status.innerHTML = `✓ ${ok} lien(s) généré(s)` + (fail?`, ${fail} échec(s).`:'.');
@@ -420,7 +420,7 @@ async function adminShowExistingInviteLinks(){
   const results = invitations.map(inv=>{
     const p = eleveById.get(inv.user_id);
     const cls = classById.get(studentClassId.get(inv.user_id));
-    return { classe: cls ? cls.nom : 'Sans classe', nom: p ? (p.nom||'(sans nom)') : '(élève introuvable)', identifiant: p ? loginIdentifiant(p.email) : '?', url: location.origin+location.pathname+'?invite='+inv.token };
+    return { classe: cls ? cls.nom : 'Sans classe', nom: p ? (p.nom||'(sans nom)') : '(élève introuvable)', identifiant: p ? loginIdentifiant(p.email) : '?', url: location.origin+'/invitation.html?invite='+inv.token };
   });
   renderInviteLinksTable(results, `Liens d'invitation en attente (${results.length}, triés par classe)`);
 }
@@ -896,7 +896,7 @@ async function adminBulkCreateStudents(){
       const data = await res.json();
       if(data.error){ fail++; errors.push(`${nom} (${identifiant}) : ${data.error}`); continue; }
       ok++;
-      if(data.inviteToken) invites.push({ nom, url: location.origin+location.pathname+'?invite='+data.inviteToken });
+      if(data.inviteToken) invites.push({ nom, url: location.origin+'/invitation.html?invite='+data.inviteToken });
       // La fonction serveur ne renvoie pas d'id exploitable directement (même constat que
       // pour la création à l'unité, adminCreateAccount) -- retrouve le profil fraîchement
       // créé par son e-mail.

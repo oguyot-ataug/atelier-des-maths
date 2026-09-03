@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activation de votre compte — L'Atelier des Maths</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  :root{ --accent:#0C5BA0; --paper:#FDF9F6; --ink:#20242E; --ink-soft:#5B6472; --white:#FFFFFF; --radius:10px; }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:var(--paper); font-family:'Inter',sans-serif; color:var(--ink); padding:20px;
+  }
+  .card{
+    background:var(--white); border-radius:14px; box-shadow:0 24px 64px rgba(0,0,0,.12);
+    padding:36px 30px; max-width:420px; width:100%;
+  }
+  h1{ font-family:'Space Grotesk',sans-serif; font-size:1.4rem; margin:0 0 6px; }
+  p.hint{ color:var(--ink-soft); font-size:.9rem; margin:0 0 20px; }
+  label{ display:block; font-size:.85rem; color:var(--ink-soft); margin:0 0 4px; }
+  input[type=password]{
+    width:100%; padding:10px; border-radius:6px; border:1px solid rgba(28,43,57,.2);
+    margin-bottom:14px; box-sizing:border-box; font-size:1rem;
+  }
+  button{
+    width:100%; padding:11px; border-radius:8px; border:none; background:var(--accent);
+    color:#fff; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.95rem;
+    cursor:pointer;
+  }
+  button:hover{ filter:brightness(1.08); }
+  button:disabled{ opacity:.6; cursor:not-allowed; }
+  #status{ margin-top:14px; font-size:.85rem; color:var(--ink-soft); }
+  #status.error{ color:#a83c1f; }
+  #status.success{ color:#1F7A4D; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1 id="title">Bienvenue !</h1>
+    <p class="hint" id="subtitle">Vérification de votre lien…</p>
+    <div id="formZone" style="display:none;">
+      <label for="pw1">Choisissez votre mot de passe</label>
+      <input type="password" id="pw1" placeholder="Au moins 6 caractères">
+      <label for="pw2">Confirmez-le</label>
+      <input type="password" id="pw2" placeholder="Retapez le même mot de passe">
+      <button id="submitBtn">Valider et se connecter</button>
+    </div>
+    <p id="status"></p>
+  </div>
+
+<script>
+const SUPABASE_URL = 'https://rngzubhnypmistjsumpz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZ3p1YmhueXBtaXN0anN1bXB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MTExNjEsImV4cCI6MjEwMDM4NzE2MX0.V56LFlb1ITWPmoO-DwLw3coeS7epY9NM5K2Waj03pac';
+
+const titleEl = document.getElementById('title');
+const subtitleEl = document.getElementById('subtitle');
+const formZone = document.getElementById('formZone');
+const statusEl = document.getElementById('status');
+const pw1 = document.getElementById('pw1');
+const pw2 = document.getElementById('pw2');
+const submitBtn = document.getElementById('submitBtn');
+
+const token = new URLSearchParams(location.search).get('invite');
+
+function setStatus(msg, kind){
+  statusEl.textContent = msg;
+  statusEl.className = kind || '';
+}
+
+async function init(){
+  if(!token){
+    titleEl.textContent = 'Lien manquant';
+    subtitleEl.textContent = "Cette page nécessite un lien d'invitation complet -- vérifiez que vous avez bien copié l'adresse entière.";
+    return;
+  }
+  try{
+    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+SUPABASE_ANON_KEY },
+      body: JSON.stringify({ action:'check-invitation', token }),
+    });
+    const data = await res.json();
+    if(data.error){
+      titleEl.textContent = 'Lien invalide';
+      subtitleEl.textContent = data.error;
+      return;
+    }
+    titleEl.textContent = data.nom ? `Bienvenue, ${data.nom} !` : 'Bienvenue !';
+    subtitleEl.textContent = 'Choisissez votre mot de passe pour activer votre compte.';
+    formZone.style.display = 'block';
+  }catch(err){
+    titleEl.textContent = 'Erreur';
+    subtitleEl.textContent = 'Impossible de vérifier ce lien pour le moment (problème réseau ?).';
+  }
+}
+
+submitBtn.addEventListener('click', async ()=>{
+  const p1 = pw1.value, p2 = pw2.value;
+  if(p1.length<6){ setStatus('Mot de passe trop court (6 caractères minimum).', 'error'); return; }
+  if(p1!==p2){ setStatus('Les deux mots de passe ne correspondent pas.', 'error'); return; }
+  submitBtn.disabled = true;
+  setStatus('Activation en cours…');
+  try{
+    const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+SUPABASE_ANON_KEY },
+      body: JSON.stringify({ action:'consume-invitation', token, newPassword: p1 }),
+    });
+    const data = await res.json();
+    if(data.error){ setStatus('Erreur : '+data.error, 'error'); submitBtn.disabled = false; return; }
+    setStatus('Compte activé ! Connexion en cours…', 'success');
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { error } = await sb.auth.signInWithPassword({ email: data.email, password: p1 });
+    if(error){
+      setStatus('Mot de passe enregistré, mais la connexion automatique a échoué. Rendez-vous sur le site pour vous connecter manuellement.', 'error');
+      submitBtn.disabled = false;
+      return;
+    }
+    setStatus('Connecté ! Redirection…', 'success');
+    setTimeout(()=>{ location.href = 'index.html'; }, 800);
+  }catch(err){
+    setStatus('Erreur réseau, réessayez.', 'error');
+    submitBtn.disabled = false;
+  }
+});
+
+init();
+</script>
+</body>
+</html>
