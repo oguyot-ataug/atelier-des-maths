@@ -6040,6 +6040,12 @@ async function checkForInvitationLink(){
   if(!token) return false;
   invitationToken = token;
   showView('view-invitation');
+  // Une session déjà active (ex. l'admin/prof qui teste son propre lien depuis un navigateur
+  // où il est déjà connecté) peut interférer avec le flux d'activation, qui concerne un
+  // AUTRE compte -- déconnexion préventive avant de vérifier le jeton, pour repartir sur une
+  // base propre.
+  const { data:{ session:existingSession } } = await sb.auth.getSession();
+  if(existingSession) await sb.auth.signOut();
   const titleEl = document.getElementById('invitationTitle');
   const subtitleEl = document.getElementById('invitationSubtitle');
   const statusEl = document.getElementById('invitationStatus');
