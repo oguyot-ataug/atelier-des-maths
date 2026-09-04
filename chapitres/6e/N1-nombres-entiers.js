@@ -200,10 +200,20 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Écris en toutes lettres le nombre 3 052 189, puis décompose-le.
+    <button type="button" class="exo-correction-toggle" data-target="ne-correction-1" onclick="toggleExoCorrection(this)"><span class="gicon">expand_more</span> <span class="exo-correction-label">Voir la correction</span></button>
+    <div class="exo-correction" id="ne-correction-1">
+      <p style="margin:0 0 8px;">3 052 189 s'écrit : <b>trois-millions-cinquante-deux-mille-cent-quatre-vingt-neuf</b>.</p>
+      <p style="margin:0;">Il se décompose ainsi :<br>3 052 189 = (3×1 000 000) + (0×100 000) + (5×10 000) + (2×1 000) + (1×100) + (8×10) + (9×1)</p>
+    </div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Pose la division euclidienne de 946 par 15, puis vérifie ton résultat avec l'égalité dividende = (diviseur × quotient) + reste.
+    <button type="button" class="exo-correction-toggle" data-target="ne-correction-2" onclick="toggleExoCorrection(this)"><span class="gicon">expand_more</span> <span class="exo-correction-label">Voir la correction</span></button>
+    <div class="exo-correction" id="ne-correction-2">
+      <p style="margin:0 0 8px;">946 = (15 × 63) + 1, avec 1 &lt; 15.</p>
+      <p style="margin:0;">Vérification : 15 × 63 + 1 = 945 + 1 = <b>946</b>. ✓</p>
+    </div>
   </div>
 </div>
 `;

@@ -4050,6 +4050,17 @@ function injectReadAloudButtons(container){
    peut être trop petit pour être lu au fond de la salle. Même point d'entrée que les autres
    boutons auto-injectés (injectCourseAddButtons), donc actif automatiquement sur tous les
    chapitres existants et futurs sans rien avoir à modifier par ailleurs. */
+/* Bascule générique pour une correction dépliante au sein d'un .exo-card -- demandé : "dans la
+   partie exercices, on pourrait avoir la correction en dépliant le contenu du bloc de
+   l'exercice". Réutilisable sur tous les chapitres : chaque bouton porte juste un
+   data-target pointant vers l'id de son bloc de correction. */
+function toggleExoCorrection(btn){
+  const target = document.getElementById(btn.dataset.target);
+  if(!target) return;
+  const isOpen = target.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  btn.querySelector('.exo-correction-label').textContent = isOpen ? 'Masquer la correction' : 'Voir la correction';
+}
 function injectZoomButtons(container){
   if(!container) return;
   container.querySelectorAll('.def-box').forEach(box=>{

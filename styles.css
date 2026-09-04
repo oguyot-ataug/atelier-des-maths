@@ -479,6 +479,18 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
 .redaction-template .fill{color:var(--accent-orange);font-weight:600;}
 .exo-card{border:1px solid rgba(28,43,57,.1);border-radius:8px;padding:16px;margin-top:12px;}
 .exo-card .num{font-family:'JetBrains Mono',monospace;color:var(--ink-soft);font-size:.78rem;}
+.exo-correction-toggle{
+  display:inline-flex;align-items:center;gap:4px;margin-top:12px;border:none;background:none;
+  color:var(--accent);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.85rem;
+  cursor:pointer;padding:0;
+}
+.exo-correction-toggle .gicon{transition:transform .2s;}
+.exo-correction-toggle.open .gicon{transform:rotate(180deg);}
+.exo-correction{
+  display:none;margin-top:10px;padding:12px 14px;background:var(--cream-box);border-radius:8px;
+  border-left:3px solid var(--accent);
+}
+.exo-correction.open{display:block;animation:fadein .25s ease;}
 
 .quiz-shell{background:var(--white);border:1px solid rgba(28,43,57,.1);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);}
 .api-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0;}
