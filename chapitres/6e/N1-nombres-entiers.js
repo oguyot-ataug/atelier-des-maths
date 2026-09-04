@@ -172,6 +172,19 @@ document.getElementById('methode-demo-nombres-entiers').innerHTML = `
     <button class="btn secondary" onclick="neChiffreNombreDemo.reset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header"><span class="letter">M</span><h4>S'entraîner avec la monnaie imaginaire "€uclide"</h4></div>
+<div class="figure-wrap">
+  <p class="hint" style="margin-top:6px;">Il existe des billets de 1, 10, 100, 1 000, 10 000 €uclide, etc. Répondez sans utiliser de billets d'une valeur supérieure à celle demandée : c'est exactement la notion de "nombre de dizaines / centaines / milliers".</p>
+  <p class="hint" id="ne-euclideCounter" style="font-weight:700;margin:10px 0 4px;"></p>
+  <p id="ne-euclideQuestion" style="font-size:1.15rem;margin:0 0 14px;"></p>
+  <div class="tool-row" style="margin-bottom:8px;">
+    <input type="number" id="ne-euclideInput" placeholder="Nombre de billets" style="width:180px;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);">
+    <button class="btn" onclick="neCheckEuclideAnswer()">Vérifier</button>
+    <button class="btn secondary" onclick="neNextEuclideQuestion()">Question suivante →</button>
+  </div>
+  <p id="ne-euclideStatus"></p>
+</div>
 `;
 
 document.getElementById('exos-demo-nombres-entiers').innerHTML = `
@@ -224,17 +237,87 @@ function neRenderDivisionPosee(){
 function neDivisionPoseeNext(){ if(neDivisionPoseeIdx<NE_DIVISION_POSEE_STEPS.length-1) neDivisionPoseeIdx++; neRenderDivisionPosee(); }
 function neDivisionPoseeReset(){ neDivisionPoseeIdx=0; neRenderDivisionPosee(); }
 
-/* ---- Méthode : chiffre des... vs nombre de... ---- */
+/* ---- Méthode : chiffre des... vs nombre de... (représentation visuelle) ----
+   Signalé : "elle n'est pas assez visuelle. Il faudrait mettre en couleur le chiffre concerné
+   et surligner le nombre concerné." neDigitStrip affiche les 10 chiffres de 2 384 907 156,
+   regroupés par classe (milliards | millions | mille | unités), avec 3 états possibles pour
+   chaque chiffre : neutre (avant toute mise en évidence), le CHIFFRE concerné en orange plein,
+   ou faisant partie du NOMBRE concerné (surligné en bleu, souligné) -- les chiffres à droite du
+   nombre concerné (non inclus) restent grisés, pour bien montrer qu'on ne les prend pas en
+   compte. highlightIdx est l'indice (0 = chiffre le plus à gauche, 9 = le plus à droite). */
+const NE_DIGITS = ['2','3','8','4','9','0','7','1','5','6'];
+const NE_DIGIT_GROUPS = [[0],[1,2,3],[4,5,6],[7,8,9]]; // milliards | millions | mille | unités
+function neDigitStrip(highlightIdx){
+  let html = '<div style="display:flex;gap:16px;justify-content:center;font-family:\'Space Grotesk\',sans-serif;font-size:1.9rem;font-weight:700;margin:14px 0;">';
+  NE_DIGIT_GROUPS.forEach(group=>{
+    html += '<div style="display:flex;">';
+    group.forEach(i=>{
+      let style = 'padding:4px 7px;border-radius:6px;transition:.2s;';
+      if(highlightIdx==null){
+        style += 'color:var(--ink);';
+      } else if(i===highlightIdx){
+        style += 'background:var(--accent-orange);color:#fff;';
+      } else if(i<highlightIdx){
+        style += 'background:rgba(12,91,160,.15);color:var(--accent);border-bottom:3px solid var(--accent);';
+      } else {
+        style += 'color:var(--ink-soft);opacity:.4;';
+      }
+      html += `<span style="${style}">${NE_DIGITS[i]}</span>`;
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
 const NE_CHIFFRE_NOMBRE_STEPS = [
-  {expr:'2 384 907 156', note:'On reprend le nombre étudié en cours.'},
-  {expr:'Chiffre des centaines de mille = 9', note:"C'est uniquement le symbole qui se trouve à cette position précise."},
-  {expr:'Nombre de centaines de mille = 23 849', note:"C'est le nombre total de paquets complets de 100 000 que l'on peut former avec ce nombre entier (on lit alors tous les chiffres situés à gauche de cette position, elle comprise)."},
+  {expr:neDigitStrip(null), note:'On reprend le nombre étudié en cours : 2 384 907 156.'},
+  {expr:neDigitStrip(4), note:"Le chiffre des centaines de mille est 9 (en orange) : c'est uniquement le symbole qui se trouve à cette position précise."},
+  {expr:neDigitStrip(4)+'<div style="text-align:center;font-family:\'Space Grotesk\',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent);">= 23 849</div>', note:"Le nombre de centaines de mille est 23 849 (en bleu souligné) : ce sont TOUS les chiffres à gauche de cette position, elle comprise -- les chiffres grisés à droite ne comptent pas."},
   {expr:'23 849 × 100 000 = 2 384 900 000', note:'Vérification : 2 384 907 156 = 2 384 900 000 + 7 156. Il y a bien 23 849 centaines de mille complètes dans ce nombre.'},
 ];
 const neChiffreNombreDemo = makeStepDemo(NE_CHIFFRE_NOMBRE_STEPS, 'ne-chiffreNombreDisplay');
 
+/* ---- Exercice interactif : la monnaie "Euclide" (nombre de dizaines/centaines/milliers) ----
+   Signalé : "quelque chose qui fonctionne bien... on imagine une monnaie, par exemple
+   Euclide. On a des billets de 1, 10, 100 Euclide etc. Combien faut-il de billets de 10
+   sachant que je n'ai plus de billets de 100 pour faire 347 ? Et plusieurs questions du même
+   type." Chaque question demande le NOMBRE de billets d'une certaine valeur nécessaires,
+   SANS utiliser de billets de valeur supérieure -- exactement le concept de "nombre de
+   dizaines/centaines/milliers", rendu concret. Vérifié arithmétiquement (347÷10=34 etc.)
+   avant intégration. */
+const NE_EUCLIDE_QUESTIONS = [
+  {nombre:347, denom:10, denomSup:100, reponse:34},
+  {nombre:5289, denom:100, denomSup:1000, reponse:52},
+  {nombre:1256, denom:10, denomSup:100, reponse:125},
+  {nombre:47832, denom:1000, denomSup:10000, reponse:47},
+  {nombre:903, denom:100, denomSup:1000, reponse:9},
+];
+let neEuclideIdx = 0;
+function neFormatNombre(n){ return n.toLocaleString('fr-FR').replace(/\u202f/g,' '); }
+function neRenderEuclideQuestion(){
+  const q = NE_EUCLIDE_QUESTIONS[neEuclideIdx];
+  document.getElementById('ne-euclideQuestion').innerHTML =
+    `Combien faut-il de billets de <b>${neFormatNombre(q.denom)} €uclide</b>, sachant qu'il n'y a plus de billets de <b>${neFormatNombre(q.denomSup)} €uclide</b>, pour faire <b>${neFormatNombre(q.nombre)}</b> €uclide ?`;
+  document.getElementById('ne-euclideInput').value = '';
+  document.getElementById('ne-euclideStatus').innerHTML = '';
+  document.getElementById('ne-euclideCounter').textContent = `Question ${neEuclideIdx+1} / ${NE_EUCLIDE_QUESTIONS.length}`;
+}
+function neCheckEuclideAnswer(){
+  const q = NE_EUCLIDE_QUESTIONS[neEuclideIdx];
+  const val = parseInt(document.getElementById('ne-euclideInput').value, 10);
+  const statusEl = document.getElementById('ne-euclideStatus');
+  if(isNaN(val)){ statusEl.innerHTML = '<span style="color:var(--ink-soft);">Entrez un nombre.</span>'; return; }
+  if(val===q.reponse){
+    statusEl.innerHTML = `<span style="color:#1F7A4D;font-weight:700;">✓ Bravo ! Il faut bien ${q.reponse} billets de ${neFormatNombre(q.denom)} : c'est le nombre de ${q.denom===10?'dizaines':(q.denom===100?'centaines':'milliers')} de ${neFormatNombre(q.nombre)}.</span>`;
+  } else {
+    statusEl.innerHTML = `<span style="color:#a83c1f;font-weight:700;">✗ Pas tout à fait. Réponse : ${q.reponse} billets (${q.reponse} × ${neFormatNombre(q.denom)} = ${neFormatNombre(q.reponse*q.denom)}, il resterait ${neFormatNombre(q.nombre-q.reponse*q.denom)} €uclide en petites pièces).</span>`;
+  }
+}
+function neNextEuclideQuestion(){ neEuclideIdx = (neEuclideIdx+1) % NE_EUCLIDE_QUESTIONS.length; neRenderEuclideQuestion(); }
+function neResetEuclideQuestions(){ neEuclideIdx = 0; neRenderEuclideQuestion(); }
+
 DEMO_REGISTRY['6e|Nombres entiers'] = { cours:'cours-demo-nombres-entiers', methode:'methode-demo-nombres-entiers', exos:'exos-demo-nombres-entiers', histoire:'histoire-demo-nombres-entiers',
-  init:()=>{ neDivisionPoseeReset(); neChiffreNombreDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-nombres-entiers')); injectCourseAddButtons(document.getElementById('methode-demo-nombres-entiers')); } };
+  init:()=>{ neDivisionPoseeReset(); neChiffreNombreDemo.reset(); neResetEuclideQuestions(); injectCourseAddButtons(document.getElementById('cours-demo-nombres-entiers')); injectCourseAddButtons(document.getElementById('methode-demo-nombres-entiers')); } };
 
 DEMO_QUIZZES['6e|Nombres entiers'] = [
   {q:"Comment s'appelle le résultat d'une multiplication ?",
