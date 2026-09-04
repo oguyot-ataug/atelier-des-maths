@@ -240,9 +240,9 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
           <div class="dp-tag" style="color:var(--accent);">dividende</div>
           <div style="text-align:right;line-height:2;min-width:70px;">
             <div>&nbsp;&nbsp;946</div>
-            <div>−&nbsp;90&nbsp;</div>
+            <div><span class="dp-sub-inner">−&nbsp;90&nbsp;</span></div>
             <div>&nbsp;&nbsp;&nbsp;46</div>
-            <div>−&nbsp;45</div>
+            <div><span class="dp-sub-inner">−&nbsp;45</span></div>
             <div>&nbsp;&nbsp;&nbsp;&nbsp;1</div>
           </div>
           <div class="dp-tag" style="color:#9E1F5E;">↑ reste</div>
