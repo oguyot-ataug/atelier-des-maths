@@ -39,10 +39,10 @@ document.getElementById('cours-demo-nombres-entiers').innerHTML = `
     <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">C</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">D</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">U</th>
   </tr>
   <tr>
-    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">2</td>
-    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">3</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">8</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">4</td>
-    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">9</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">0</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">7</td>
-    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">1</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">5</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">6</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">2</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">3</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">8</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">4</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">9</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">0</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">7</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">1</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">5</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">6</td>
   </tr>
 </table>
 </div>

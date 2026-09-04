@@ -3531,7 +3531,7 @@ function renderMesResultatsFiltered(){
 function isSyncEnabled(){ return !!currentClassId; }
 async function syncFetchAll(){
   if(!currentClassId) return null;
-  const { data, error } = await sb.from('cahier_entries').select('*').eq('class_id', currentClassId).order('date');
+  const { data, error } = await sb.from('cahier_entries').select('*').eq('class_id', currentClassId).order('ordre', {ascending:true, nullsFirst:false}).order('date');
   if(error){ console.error('sync fetch failed', error); return null; }
   return data;
 }
@@ -3544,6 +3544,15 @@ async function syncAddEntry(entry){
 async function syncRemoveEntry(id){
   if(!id) return {ok:false, offline:true};
   const { error } = await sb.from('cahier_entries').delete().eq('id', id);
+  if(error) return {ok:false, error: error.message};
+  return {ok:true};
+}
+// Persiste un nouvel ordre manuel pour une entrée -- demandé : "permettre au prof de modifier
+// l'ordre des exercices corrigés". Silencieux en cas d'échec (l'ordre reste correct
+// localement/dans cette session ; une resynchronisation ultérieure le retentera).
+async function syncUpdateEntryOrdre(id, ordre){
+  if(!id) return {ok:false, offline:true};
+  const { error } = await sb.from('cahier_entries').update({ordre}).eq('id', id);
   if(error) return {ok:false, error: error.message};
   return {ok:true};
 }
@@ -3571,7 +3580,17 @@ function saveCahier(){
 }
 let cahier = loadCahier();
 let editingIndex = null;
-function sortCahierInPlace(){ cahier.sort((a,b)=> (a.date||'').localeCompare(b.date||'')); }
+function sortCahierInPlace(){
+  // Trie par "ordre" manuel s'il est défini (undefined/null placés en dernier, via Infinity),
+  // avec la date en repli/départage -- rétrocompatible : tant qu'aucun ordre n'a jamais été
+  // fixé, le tri reste identique à avant (chronologique).
+  cahier.sort((a,b)=>{
+    const oa = (a.ordre==null) ? Infinity : a.ordre;
+    const ob = (b.ordre==null) ? Infinity : b.ordre;
+    if(oa!==ob) return oa-ob;
+    return (a.date||'').localeCompare(b.date||'');
+  });
+}
 
 async function addToCahier(){
   if(!currentClassId){ niceAlert("Sélectionnez d'abord une classe active (boutons en haut de page)."); return; }
@@ -3693,13 +3712,42 @@ function entryRowsHTML(e, idx, editable){
   const refLabel = e.exo==='Cours' ? 'Cours' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo));
   let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}</div>`;
   if(editable){
-    html += `<button type="button" class="nb-remove-btn" onclick="removeCahierEntryFromNotebook(${idx}, this)" title="Retirer ce bloc du cahier"><span class=gicon>close</span> Retirer</button>`;
+    html += `<span style="display:flex;gap:4px;">
+      <button type="button" class="nb-remove-btn" onclick="moveCahierEntry(${idx},-1)" title="Monter" ${idx<=0?'disabled':''}><span class=gicon>arrow_upward</span></button>
+      <button type="button" class="nb-remove-btn" onclick="moveCahierEntry(${idx},1)" title="Descendre" ${idx>=cahier.length-1?'disabled':''}><span class=gicon>arrow_downward</span></button>
+      <button type="button" class="nb-remove-btn" onclick="removeCahierEntryFromNotebook(${idx}, this)" title="Retirer ce bloc du cahier"><span class=gicon>close</span> Retirer</button>
+    </span>`;
   }
   html += `</div>`;
   html += `<div class="nb-body">${e.html!=null ? e.html : renderMathText(e.raw)}</div>`;
   if(e.figure) html += `<div class="nb-figure-row">${e.figure}</div>`;
   html += `</div>`;
   return html;
+}
+// Déplace une entrée du cahier vers le haut (-1) ou le bas (+1) -- demandé : "permettre au
+// prof de modifier l'ordre des exercices corrigés". Fixe un ordre manuel explicite sur TOUTES
+// les entrées dès le premier déplacement (nécessaire tant qu'elles n'en ont pas encore un --
+// rétrocompatibilité, voir sortCahierInPlace), pour que le nouvel ordre reste stable même
+// après une resynchronisation ultérieure.
+async function moveCahierEntry(idx, direction){
+  const otherIdx = idx+direction;
+  if(otherIdx<0 || otherIdx>=cahier.length) return;
+  // Backfill : si AUCUNE entrée n'a encore d'ordre explicite, fixe l'ordre actuel (déjà trié
+  // par date à ce stade) comme point de départ, pour toutes les entrées d'un coup.
+  if(cahier.every(e=>e.ordre==null)){
+    cahier.forEach((e,i)=>{ e.ordre = i; });
+  }
+  const tmp = cahier[idx].ordre;
+  cahier[idx].ordre = cahier[otherIdx].ordre;
+  cahier[otherIdx].ordre = tmp;
+  [cahier[idx], cahier[otherIdx]] = [cahier[otherIdx], cahier[idx]];
+  saveCahier();
+  if(isSyncEnabled()){
+    if(cahier[idx].id) syncUpdateEntryOrdre(cahier[idx].id, cahier[idx].ordre);
+    if(cahier[otherIdx].id) syncUpdateEntryOrdre(cahier[otherIdx].id, cahier[otherIdx].ordre);
+  }
+  renderCahierEleve();
+  if(document.getElementById('cahierList')) renderCahier();
 }
 /* Regroupe par date + chapitre. Le chapitre s'affiche en "pied" de chaque groupe (aligné à
    droite), plutôt qu'en haut à côté de la date -- un vrai pied de PAGE physique n'est pas
