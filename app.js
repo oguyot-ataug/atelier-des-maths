@@ -4021,6 +4021,7 @@ function injectCourseAddButtons(container){
   });
   updateCourseAddButtonsState();
   injectReadAloudButtons(container);
+  injectZoomButtons(container);
 }
 /* Lecture à voix haute des définitions (accessibilité, même esprit que le sélecteur de
    police OpenDyslexic). Branché sur le même point d'entrée que les boutons "+ Cahier"
@@ -4044,6 +4045,39 @@ function injectReadAloudButtons(container){
     box.appendChild(btn);
   });
 }
+/* Bouton loupe : affiche le contenu d'un encadré (définition, règle, propriété) en plein
+   écran, en très grande taille -- pensé pour la vidéoprojection en classe, où le texte normal
+   peut être trop petit pour être lu au fond de la salle. Même point d'entrée que les autres
+   boutons auto-injectés (injectCourseAddButtons), donc actif automatiquement sur tous les
+   chapitres existants et futurs sans rien avoir à modifier par ailleurs. */
+function injectZoomButtons(container){
+  if(!container) return;
+  container.querySelectorAll('.def-box').forEach(box=>{
+    if(box.querySelector('.zoom-btn')) return;
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='zoom-btn';
+    btn.title='Afficher en plein écran';
+    btn.setAttribute('aria-label','Afficher en plein écran');
+    btn.innerHTML='<span class=gicon>zoom_in</span>';
+    btn.onclick=(e)=>{ e.stopPropagation(); openZoomBox(box); };
+    box.appendChild(btn);
+  });
+}
+function openZoomBox(box){
+  const clone = box.cloneNode(true);
+  clone.querySelectorAll('.zoom-btn, .read-aloud-btn').forEach(b=>b.remove());
+  const contentEl = document.getElementById('zoomBoxContent');
+  contentEl.innerHTML = clone.innerHTML;
+  renderStaticMath(contentEl); // les formules KaTeX du clone doivent être rendues à nouveau
+  document.getElementById('zoomBoxOverlay').style.display = 'flex';
+}
+function closeZoomBox(){
+  document.getElementById('zoomBoxOverlay').style.display = 'none';
+}
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='Escape' && document.getElementById('zoomBoxOverlay').style.display==='flex') closeZoomBox();
+});
 /* Construit le texte à lire à voix haute en parcourant le DOM d'un bloc : le texte normal
    est repris tel quel, mais chaque formule mathématique (.tex, une fois rendue par KaTeX)
    est remplacée par sa source LaTeX brute (conservée dans data-tex-source par
