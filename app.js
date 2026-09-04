@@ -3582,13 +3582,18 @@ let cahier = loadCahier();
 let editingIndex = null;
 function sortCahierInPlace(){
   // Trie par "ordre" manuel s'il est défini (undefined/null placés en dernier, via Infinity),
-  // avec la date en repli/départage -- rétrocompatible : tant qu'aucun ordre n'a jamais été
-  // fixé, le tri reste identique à avant (chronologique).
+  // avec la date puis le chapitre en repli/départage -- rétrocompatible : tant qu'aucun ordre
+  // n'a jamais été fixé, le tri reste identique à avant (chronologique). Le chapitre en 2e
+  // critère garantit que les entrées d'une même date restent bien groupées par chapitre,
+  // cohérent avec le regroupement visuel (groupedEntriesHTML) -- évite un même en-tête de
+  // date dédoublé si des chapitres différents étaient mélangés au sein d'un même jour.
   cahier.sort((a,b)=>{
     const oa = (a.ordre==null) ? Infinity : a.ordre;
     const ob = (b.ordre==null) ? Infinity : b.ordre;
     if(oa!==ob) return oa-ob;
-    return (a.date||'').localeCompare(b.date||'');
+    const dateCmp = (a.date||'').localeCompare(b.date||'');
+    if(dateCmp!==0) return dateCmp;
+    return (a.chapitre||'').localeCompare(b.chapitre||'');
   });
 }
 
@@ -3712,9 +3717,17 @@ function entryRowsHTML(e, idx, editable){
   const refLabel = e.exo==='Cours' ? 'Cours' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo));
   let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}</div>`;
   if(editable){
+    // Le déplacement ne peut se faire QU'À L'INTÉRIEUR du même groupe (même date + même
+    // chapitre) -- au-delà, ça mélangerait des exercices de jours différents et casserait le
+    // regroupement affiché par date. Signalé : "ça les met dans des ordres incompréhensibles".
+    const prev = cahier[idx-1];
+    const next = cahier[idx+1];
+    const sameGroup = (a,b) => a && b && (a.date||'')===(b.date||'') && (a.chapitre||'')===(b.chapitre||'');
+    const canUp = sameGroup(e, prev);
+    const canDown = sameGroup(e, next);
     html += `<span style="display:flex;gap:4px;">
-      <button type="button" class="nb-remove-btn" onclick="moveCahierEntry(${idx},-1)" title="Monter" ${idx<=0?'disabled':''}><span class=gicon>arrow_upward</span></button>
-      <button type="button" class="nb-remove-btn" onclick="moveCahierEntry(${idx},1)" title="Descendre" ${idx>=cahier.length-1?'disabled':''}><span class=gicon>arrow_downward</span></button>
+      <button type="button" class="nb-remove-btn" onclick="moveCahierEntry(${idx},-1)" title="Monter (dans le même jour)" ${canUp?'':'disabled'}><span class=gicon>arrow_upward</span></button>
+      <button type="button" class="nb-remove-btn" onclick="moveCahierEntry(${idx},1)" title="Descendre (dans le même jour)" ${canDown?'':'disabled'}><span class=gicon>arrow_downward</span></button>
       <button type="button" class="nb-remove-btn" onclick="removeCahierEntryFromNotebook(${idx}, this)" title="Retirer ce bloc du cahier"><span class=gicon>close</span> Retirer</button>
     </span>`;
   }
@@ -3732,6 +3745,11 @@ function entryRowsHTML(e, idx, editable){
 async function moveCahierEntry(idx, direction){
   const otherIdx = idx+direction;
   if(otherIdx<0 || otherIdx>=cahier.length) return;
+  // Défense en profondeur (déjà vérifié à l'affichage du bouton, voir entryRowsHTML) :
+  // n'échange jamais 2 entrées de groupes différents (même date + même chapitre requis) --
+  // sinon le regroupement par date affiché se retrouve cassé.
+  const a = cahier[idx], b = cahier[otherIdx];
+  if((a.date||'')!==(b.date||'') || (a.chapitre||'')!==(b.chapitre||'')) return;
   // Backfill : si AUCUNE entrée n'a encore d'ordre explicite, fixe l'ordre actuel (déjà trié
   // par date à ce stade) comme point de départ, pour toutes les entrées d'un coup.
   if(cahier.every(e=>e.ordre==null)){
