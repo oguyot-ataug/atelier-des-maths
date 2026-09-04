@@ -3760,12 +3760,19 @@ async function moveCahierEntry(idx, direction){
   cahier[otherIdx].ordre = tmp;
   [cahier[idx], cahier[otherIdx]] = [cahier[otherIdx], cahier[idx]];
   saveCahier();
-  if(isSyncEnabled()){
-    if(cahier[idx].id) syncUpdateEntryOrdre(cahier[idx].id, cahier[idx].ordre);
-    if(cahier[otherIdx].id) syncUpdateEntryOrdre(cahier[otherIdx].id, cahier[otherIdx].ordre);
-  }
-  renderCahierEleve();
+  // Réaffiche IMMÉDIATEMENT depuis le tableau local (déjà à jour, pas besoin de resynchroniser
+  // depuis le serveur) -- corrige "à chaque fois la page se recharge et tout se mélange", qui
+  // venait d'une re-synchronisation (renderCahierEleve) écrasant ce changement local par
+  // d'anciennes données avant que la sauvegarde serveur n'ait eu le temps de se terminer.
+  renderCahierEleveLocal();
   if(document.getElementById('cahierList')) renderCahier();
+  if(isSyncEnabled()){
+    // Sauvegarde serveur désormais ATTENDUE (jamais "tirée et oubliée") -- garantit qu'elle
+    // est bien terminée avant toute resynchronisation future (ex. prochaine ouverture du
+    // cahier), qui renverrait sinon encore l'ancien ordre.
+    if(cahier[idx].id) await syncUpdateEntryOrdre(cahier[idx].id, cahier[idx].ordre);
+    if(cahier[otherIdx].id) await syncUpdateEntryOrdre(cahier[otherIdx].id, cahier[otherIdx].ordre);
+  }
 }
 /* Regroupe par date + chapitre. Le chapitre s'affiche en "pied" de chaque groupe (aligné à
    droite), plutôt qu'en haut à côté de la date -- un vrai pied de PAGE physique n'est pas
@@ -3916,7 +3923,14 @@ async function renderCahierEleve(){
       warning = '<p class="hint"><span class=gicon>warning</span> Impossible de joindre le cahier partagé, affichage de la dernière copie connue sur cet appareil.</p>';
     }
   }
-  document.getElementById('cahierEleveContent').innerHTML = warning + buildCahierNotebookHTML(currentUserRole==='prof' || currentUserRole==='admin');
+  renderCahierEleveLocal(warning);
+}
+/* Réaffiche le cahier depuis le tableau LOCAL déjà en mémoire, SANS re-synchroniser depuis le
+   serveur -- utilisée après une action qui a déjà mis à jour ce tableau localement (ex.
+   réorganisation), pour éviter qu'une re-synchronisation immédiate n'écrase ce changement par
+   d'anciennes données si la sauvegarde serveur n'a pas encore eu le temps de se terminer. */
+function renderCahierEleveLocal(warning){
+  document.getElementById('cahierEleveContent').innerHTML = (warning||'') + buildCahierNotebookHTML(currentUserRole==='prof' || currentUserRole==='admin');
   const book=document.getElementById('cahierEleveBook');
   requestAnimationFrame(()=>{ book.scrollTop = book.scrollHeight; });
 }
