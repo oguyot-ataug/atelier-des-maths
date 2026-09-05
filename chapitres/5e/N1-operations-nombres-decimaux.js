@@ -227,58 +227,13 @@ document.getElementById('exos-demo-decimaux').innerHTML = `
       </div>
 
       <div class="redaction-block">
-        <h3>Exercice libre : choisis tes propres nombres</h3>
-        <p class="hint" style="margin:0 0 12px;">Complète chaque phrase avec les nombres de ton choix : l'expression et son résultat s'affichent au fur et à mesure.</p>
-        <div class="exo-card" id="od-libre-somme" style="padding-bottom:16px;">
-          <div class="num">La somme de ... et ...</div>
-          <div class="tool-row" style="margin:8px 0;">
-            <span>La somme de</span>
-            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('somme')">
-            <span>et</span>
-            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('somme')">
-          </div>
-          <p id="od-libre-somme-result" class="hint" style="margin:0;font-weight:700;"></p>
-        </div>
-        <div class="exo-card" id="od-libre-difference" style="padding-bottom:16px;">
-          <div class="num">La différence de ... et ...</div>
-          <div class="tool-row" style="margin:8px 0;">
-            <span>La différence de</span>
-            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('difference')">
-            <span>et</span>
-            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('difference')">
-          </div>
-          <p id="od-libre-difference-result" class="hint" style="margin:0;font-weight:700;"></p>
-        </div>
-        <div class="exo-card" id="od-libre-produit" style="padding-bottom:16px;">
-          <div class="num">Le produit de ... par ...</div>
-          <div class="tool-row" style="margin:8px 0;">
-            <span>Le produit de</span>
-            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('produit')">
-            <span>par</span>
-            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('produit')">
-          </div>
-          <p id="od-libre-produit-result" class="hint" style="margin:0;font-weight:700;"></p>
-        </div>
-        <div class="exo-card" id="od-libre-quotient" style="padding-bottom:16px;">
-          <div class="num">Le quotient de ... par ...</div>
-          <div class="tool-row" style="margin:8px 0;">
-            <span>Le quotient de</span>
-            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('quotient')">
-            <span>par</span>
-            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('quotient')">
-          </div>
-          <p id="od-libre-quotient-result" class="hint" style="margin:0;font-weight:700;"></p>
-        </div>
-      </div>
-
-      <div class="redaction-block">
         <h3>Construis ton expression par glisser-déposer</h3>
-        <p class="hint" style="margin:0 0 12px;">Glissez un bloc dans la zone ci-dessous. À l'intérieur, glissez un autre bloc ou tapez directement un nombre -- de façon récursive.</p>
+        <p class="hint" style="margin:0 0 12px;">Cliquez un bloc ci-dessous, puis cliquez l'emplacement où le placer. À l'intérieur, cliquez un autre bloc ou tapez directement un nombre -- de façon récursive.</p>
         <div class="tool-row" style="margin-bottom:14px;gap:10px;">
-          <span class="od-tree-chip" draggable="true" ondragstart="odTreeDragStart(event,'somme')">La somme de ... et ...</span>
-          <span class="od-tree-chip" draggable="true" ondragstart="odTreeDragStart(event,'difference')">La différence de ... et ...</span>
-          <span class="od-tree-chip" draggable="true" ondragstart="odTreeDragStart(event,'produit')">Le produit de ... par ...</span>
-          <span class="od-tree-chip" draggable="true" ondragstart="odTreeDragStart(event,'quotient')">Le quotient de ... par ...</span>
+          <span class="od-tree-chip" onclick="odTreeSelectChip(this,'somme')">La somme de ... et ...</span>
+          <span class="od-tree-chip" onclick="odTreeSelectChip(this,'difference')">La différence de ... et ...</span>
+          <span class="od-tree-chip" onclick="odTreeSelectChip(this,'produit')">Le produit de ... par ...</span>
+          <span class="od-tree-chip" onclick="odTreeSelectChip(this,'quotient')">Le quotient de ... par ...</span>
         </div>
         <div id="od-tree1-zone" class="od-tree-zone"></div>
         <p id="od-tree1-phrase" style="margin:14px 0 4px;font-size:1.05rem;"></p>
@@ -407,26 +362,6 @@ const OD_PHRASE_B_STEPS = [
 ];
 const odPhraseBDemo = makeSingleStepDemo(OD_PHRASE_B_STEPS, 'od-phraseBDisplay');
 
-// Exercice libre : l'élève choisit ses propres nombres pour chacune des 4 opérations,
-// l'expression et son résultat s'affichent en direct. Arrondi à 4 décimales (sans zéros
-// inutiles) pour éviter les artefacts d'arrondi flottant (ex. 0,1 + 0,2).
-function odLibreRound(n){
-  return Math.round(n*10000)/10000;
-}
-function odLibreUpdate(type){
-  const card = document.getElementById('od-libre-'+type);
-  const inputs = card.querySelectorAll('.od-libre-input');
-  const a = parseFloat(inputs[0].value);
-  const b = parseFloat(inputs[1].value);
-  const resultEl = document.getElementById('od-libre-'+type+'-result');
-  if(isNaN(a) || isNaN(b)){ resultEl.textContent = ''; return; }
-  const symbols = {somme:'+', difference:'−', produit:'×', quotient:'÷'};
-  if(type==='quotient' && b===0){ resultEl.textContent = 'Division par zéro impossible.'; return; }
-  const ops = {somme:(x,y)=>x+y, difference:(x,y)=>x-y, produit:(x,y)=>x*y, quotient:(x,y)=>x/y};
-  const result = odLibreRound(ops[type](a,b));
-  resultEl.textContent = `= ${a} ${symbols[type]} ${b} = ${result}`;
-}
-
 /* ================= Constructeur d'expression par glisser-déposer =================
    Demandé : "le but est de déplacer des blocs par copier glisser. Au départ j'ai une zone
    vide, je glisse la somme de... Dans la zone, on voit alors écrit La somme de suivi d'un
@@ -516,21 +451,33 @@ function odTreeClearNode(containerId, path){
   odTreeSetNode(containerId, path, {type:'empty'});
   odTreeRender(containerId);
 }
-function odTreeDragStart(e, op){ e.dataTransfer.setData('text/od-op', op); }
-function odTreeAllowDrop(e){ e.preventDefault(); }
-function odTreeDrop(e, containerId, pathStr){
-  e.preventDefault();
-  const op = e.dataTransfer.getData('text/od-op');
-  if(!op) return;
-  odTreeDropOp(containerId, pathStr?pathStr.split(','):[], op);
+// Sélection par CLIC plutôt que glisser-déposer natif (ondragstart/ondrop) -- le
+// glisser-déposer HTML natif est peu fiable (ne fonctionne pas du tout sur tablette
+// tactile, et est fragile même à la souris selon les navigateurs). On clique un bloc pour
+// le sélectionner, puis on clique l'emplacement où le placer.
+let odTreeSelectedOp = null;
+let odTreeSelectedChipEl = null;
+function odTreeSelectChip(el, op){
+  if(odTreeSelectedChipEl) odTreeSelectedChipEl.classList.remove('od-tree-chip-selected');
+  if(odTreeSelectedOp===op){ odTreeSelectedOp=null; odTreeSelectedChipEl=null; return; } // reclique : désélectionne
+  odTreeSelectedOp = op;
+  odTreeSelectedChipEl = el;
+  el.classList.add('od-tree-chip-selected');
+}
+function odTreeSlotClick(containerId, pathStr){
+  if(!odTreeSelectedOp) return; // aucun bloc sélectionné : le clic sur un emplacement ne fait rien
+  odTreeDropOp(containerId, pathStr?pathStr.split(','):[], odTreeSelectedOp);
+  if(odTreeSelectedChipEl) odTreeSelectedChipEl.classList.remove('od-tree-chip-selected');
+  odTreeSelectedOp = null;
+  odTreeSelectedChipEl = null;
 }
 // Construit le HTML récursif d'un nœud (et de ses slots enfants s'il s'agit d'une opération).
 function odTreeNodeHTML(containerId, path, node){
   const pathStr = path.join(',');
   if(node.type==='empty'){
-    return `<span class="od-tree-slot" ondragover="odTreeAllowDrop(event)" ondrop="odTreeDrop(event,'${containerId}','${pathStr}')">
-      <input type="number" placeholder="nombre" class="od-tree-input" style="width:70px;" onchange="odTreeSetNumber('${containerId}',[${path.map(p=>`'${p}'`).join(',')}],this.value)">
-      <span class="hint" style="font-size:.75rem;"> ou glissez un bloc ici</span>
+    return `<span class="od-tree-slot" onclick="odTreeSlotClick('${containerId}','${pathStr}')">
+      <input type="number" placeholder="nombre" class="od-tree-input" onclick="event.stopPropagation()" onchange="odTreeSetNumber('${containerId}',[${path.map(p=>`'${p}'`).join(',')}],this.value)">
+      <span class="hint" style="font-size:.75rem;"> ou cliquez ici après avoir choisi un bloc</span>
     </span>`;
   }
   if(node.type==='number'){
@@ -555,7 +502,7 @@ function odTreeRender(containerId){
   const exprEl = document.getElementById(containerId+'-expr');
   if(!zoneEl) return;
   if(root.type==='empty'){
-    zoneEl.innerHTML = `<span class="od-tree-slot od-tree-slot-root" ondragover="odTreeAllowDrop(event)" ondrop="odTreeDrop(event,'${containerId}','')">Glissez un bloc ici (Somme, Différence, Produit ou Quotient)</span>`;
+    zoneEl.innerHTML = `<span class="od-tree-slot od-tree-slot-root" onclick="odTreeSlotClick('${containerId}','')">Cliquez un bloc ci-dessus (Somme, Différence, Produit ou Quotient), puis cliquez ici pour le placer</span>`;
   } else {
     zoneEl.innerHTML = odTreeNodeHTML(containerId, [], root);
   }

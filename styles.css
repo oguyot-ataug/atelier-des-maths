@@ -493,16 +493,19 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
 .od-tree-chip{
   border:2px dashed var(--accent);background:rgba(12,91,160,.06);color:var(--accent);
   border-radius:8px;padding:8px 14px;font-family:'Space Grotesk',sans-serif;font-weight:600;
-  font-size:.85rem;cursor:grab;user-select:none;
+  font-size:.85rem;cursor:pointer;user-select:none;transition:.15s;
 }
-.od-tree-chip:active{cursor:grabbing;}
+.od-tree-chip:hover{background:rgba(12,91,160,.12);}
+.od-tree-chip-selected{
+  border-style:solid;background:var(--accent);color:#fff;box-shadow:0 0 0 3px rgba(12,91,160,.25);
+}
 .od-tree-zone{
   min-height:60px;border:2px dashed rgba(28,43,57,.2);border-radius:8px;padding:16px;
   display:flex;align-items:center;flex-wrap:wrap;gap:8px;background:var(--white);
 }
 .od-tree-slot{
   display:inline-flex;align-items:center;gap:6px;border:1.5px dashed rgba(28,43,57,.25);
-  border-radius:6px;padding:4px 8px;background:#F2F3F5;
+  border-radius:6px;padding:4px 8px;background:#F2F3F5;cursor:pointer;
 }
 .od-tree-slot-root{color:var(--ink-soft);font-size:.9rem;padding:10px 16px;}
 .od-tree-slot.od-tree-filled{
