@@ -50,6 +50,10 @@
       <input type="password" id="pw2" placeholder="Retapez le même mot de passe">
       <button id="submitBtn">Valider et se connecter</button>
     </div>
+    <div id="alreadyUsedZone" style="display:none;">
+      <p style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;text-align:center;background:var(--paper);border-radius:8px;padding:14px;margin:0 0 16px;" id="identifiantValue"></p>
+      <a href="index.html" style="display:block;text-align:center;width:100%;padding:11px;border-radius:8px;background:var(--accent);color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.95rem;text-decoration:none;box-sizing:border-box;">Aller à la page de connexion</a>
+    </div>
     <p id="status"></p>
   </div>
 
@@ -60,6 +64,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const titleEl = document.getElementById('title');
 const subtitleEl = document.getElementById('subtitle');
 const formZone = document.getElementById('formZone');
+const alreadyUsedZone = document.getElementById('alreadyUsedZone');
+const identifiantValue = document.getElementById('identifiantValue');
 const statusEl = document.getElementById('status');
 const pw1 = document.getElementById('pw1');
 const pw2 = document.getElementById('pw2');
@@ -85,6 +91,13 @@ async function init(){
       body: JSON.stringify({ action:'check-invitation', token }),
     });
     const data = await res.json();
+    if(data.alreadyUsed){
+      titleEl.textContent = data.nom ? `${data.nom}, vous avez déjà activé votre compte !` : 'Compte déjà activé !';
+      subtitleEl.textContent = 'Votre identifiant de connexion est :';
+      identifiantValue.textContent = data.identifiant;
+      alreadyUsedZone.style.display = 'block';
+      return;
+    }
     if(data.error){
       titleEl.textContent = 'Lien invalide';
       subtitleEl.textContent = data.error;
