@@ -200,7 +200,7 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Écris en toutes lettres le nombre 3 052 189, puis décompose-le.
-    <button type="button" class="exo-correction-toggle" data-target="ne-correction-1" onclick="toggleExoCorrection(this)"><span class="gicon">expand_more</span> <span class="exo-correction-label">Voir la correction</span></button>
+    <button type="button" class="exo-correction-toggle" data-target="ne-correction-1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="ne-correction-1">
       <p style="margin:0 0 8px;">3 052 189 s'écrit : <b>trois-millions-cinquante-deux-mille-cent-quatre-vingt-neuf</b>.</p>
       <p style="margin:0;">Il se décompose ainsi :<br>3 052 189 = (3×1 000 000) + (0×100 000) + (5×10 000) + (2×1 000) + (1×100) + (8×10) + (9×1)</p>
@@ -209,7 +209,7 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Dans le nombre 4 671 528, donne le chiffre des dizaines de mille, puis le nombre de dizaines de mille.
-    <button type="button" class="exo-correction-toggle" data-target="ne-correction-2" onclick="toggleExoCorrection(this)"><span class="gicon">expand_more</span> <span class="exo-correction-label">Voir la correction</span></button>
+    <button type="button" class="exo-correction-toggle" data-target="ne-correction-2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="ne-correction-2">
       <p style="margin:0;">Le chiffre des dizaines de mille est <b>7</b>.<br>Le nombre de dizaines de mille est <b>467</b> (tous les chiffres à gauche de cette position, elle comprise : 4, 6 et 7).</p>
     </div>
@@ -217,7 +217,7 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     Dans le nombre 8 209 456, donne le chiffre des centaines de mille, puis le nombre de centaines de mille.
-    <button type="button" class="exo-correction-toggle" data-target="ne-correction-3" onclick="toggleExoCorrection(this)"><span class="gicon">expand_more</span> <span class="exo-correction-label">Voir la correction</span></button>
+    <button type="button" class="exo-correction-toggle" data-target="ne-correction-3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="ne-correction-3">
       <p style="margin:0;">Le chiffre des centaines de mille est <b>2</b>.<br>Le nombre de centaines de mille est <b>82</b> (8 et 2, les chiffres à gauche de cette position, elle comprise).</p>
     </div>
@@ -225,7 +225,7 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 4</div>
     Attention au piège ! Dans le nombre 5 038 700, donne le chiffre des centaines de mille, puis le nombre de centaines de mille.
-    <button type="button" class="exo-correction-toggle" data-target="ne-correction-4" onclick="toggleExoCorrection(this)"><span class="gicon">expand_more</span> <span class="exo-correction-label">Voir la correction</span></button>
+    <button type="button" class="exo-correction-toggle" data-target="ne-correction-4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="ne-correction-4">
       <p style="margin:0;">Le chiffre des centaines de mille est <b>0</b> : c'est bien un chiffre valide, ce n'est pas une erreur !<br>Le nombre de centaines de mille est <b>50</b> (5 et 0, les chiffres à gauche de cette position, elle comprise) -- il ne faut pas confondre avec le chiffre lui-même (0).</p>
     </div>
@@ -233,7 +233,7 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 5</div>
     Pose la division euclidienne de 946 par 15, puis vérifie ton résultat avec l'égalité dividende = (diviseur × quotient) + reste.
-    <button type="button" class="exo-correction-toggle" data-target="ne-correction-5" onclick="toggleExoCorrection(this)"><span class="gicon">expand_more</span> <span class="exo-correction-label">Voir la correction</span></button>
+    <button type="button" class="exo-correction-toggle" data-target="ne-correction-5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="ne-correction-5">
       <div style="display:flex;justify-content:center;align-items:stretch;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.15rem;padding:16px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);margin-bottom:10px;">
         <div style="text-align:right;padding-right:16px;">

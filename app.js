@@ -4059,7 +4059,9 @@ function toggleExoCorrection(btn){
   if(!target) return;
   const isOpen = target.classList.toggle('open');
   btn.classList.toggle('open', isOpen);
-  btn.querySelector('.exo-correction-label').textContent = isOpen ? 'Masquer la correction' : 'Voir la correction';
+  const label = isOpen ? 'Masquer la correction' : 'Voir la correction';
+  btn.title = label;
+  btn.setAttribute('aria-label', label);
 }
 function injectZoomButtons(container){
   if(!container) return;
