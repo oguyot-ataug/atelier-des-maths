@@ -31,11 +31,10 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
         </div>
       </div>
 
-      <p class="example-title">Remarques :</p>
-      <ul class="example-list">
-        <li>Dans une suite d'opérations ne comportant plus que des additions (ou plus que des multiplications), on peut <b>changer l'ordre des termes</b> (ou des facteurs).</li>
-        <li>Dans une suite d'opérations ne comportant plus que des additions et des soustractions, ou plus que des multiplications et des divisions, on effectue les opérations <b>de gauche à droite</b>.</li>
-      </ul>
+      <span class="prop-badge">Règle</span>
+      <div class="def-box">Dans une suite d'opérations ne comportant plus que des additions (ou plus que des multiplications), on peut <b>changer l'ordre des termes</b> (ou des facteurs).</div>
+      <span class="prop-badge">Règle</span>
+      <div class="def-box">Dans une suite d'opérations ne comportant plus que des additions et des soustractions, ou plus que des multiplications et des divisions, on effectue les opérations <b>de gauche à droite</b>.</div>
 
       <div class="sub-header"><span class="letter">B</span><h4>Avec des parenthèses</h4></div>
       <span class="prop-badge">Règle</span>

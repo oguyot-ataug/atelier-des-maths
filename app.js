@@ -841,6 +841,7 @@ function makeStepDemo(steps, displayId){
     }).join('');
     el.innerHTML = `<div class="step-column">${lines}</div><div class="step-note">${steps[idx].note}</div>`;
     renderStaticMath(el);
+    syncZoomBoxIfShowing(el);
   }
   return {
     next(){ if(idx<steps.length-1) idx++; render(); },
@@ -861,6 +862,7 @@ function makeSingleStepDemo(steps, displayId){
     el._stepDemoSteps = steps;
     el.innerHTML = `<div class="step-column"><div>${steps[idx].expr}</div></div><div class="step-note">${steps[idx].note}</div>`;
     renderStaticMath(el);
+    syncZoomBoxIfShowing(el);
   }
   return {
     next(){ if(idx<steps.length-1) idx++; render(); },
@@ -4122,13 +4124,25 @@ function injectZoomButtons(container){
     card.appendChild(btn);
   });
 }
+// Boîte actuellement affichée en plein écran (permet de la resynchroniser après un clic sur
+// "Étape suivante"/"Recommencer", DONT LES BOUTONS RESTENT FONCTIONNELS dans le zoom --
+// signalé : "les agrandissements avec étape suivante, ne montrent pas le bouton étape
+// suivante"). Ces boutons appellent les mêmes fonctions globales qui mettent à jour
+// l'affichage ORIGINAL (caché derrière le zoom) ; refreshZoomBoxContent reclone alors ce
+// contenu fraîchement mis à jour dans la fenêtre plein écran.
+let zoomedBox = null;
 function openZoomBox(box){
-  const clone = box.cloneNode(true);
-  clone.querySelectorAll('.zoom-btn, .read-aloud-btn, .figure-toolbar').forEach(b=>b.remove());
-  // La correction reste FONCTIONNELLE dans le zoom (demandé : "permettre de voir la
-  // correction en gros plan si on appuie sur la flèche") -- mais ses identifiants sont
-  // re-préfixés pour ne pas entrer en conflit avec l'original resté dans la page (sinon le
-  // bouton, avec le MÊME id, agirait sur l'original caché plutôt que sur la copie affichée).
+  zoomedBox = box;
+  refreshZoomBoxContent();
+}
+function refreshZoomBoxContent(){
+  if(!zoomedBox) return;
+  const clone = zoomedBox.cloneNode(true);
+  clone.querySelectorAll('.zoom-btn, .read-aloud-btn').forEach(b=>b.remove());
+  // La correction ET les boutons d'étape restent FONCTIONNELS dans le zoom -- mais leurs
+  // identifiants sont re-préfixés pour ne pas entrer en conflit avec l'original resté dans
+  // la page (sinon un bouton avec le MÊME id agirait sur l'original caché plutôt que sur la
+  // copie affichée).
   clone.querySelectorAll('[id]').forEach(el=>{
     const newId = 'zoom-'+el.id;
     clone.querySelectorAll(`[data-target="${el.id}"]`).forEach(btn=>btn.setAttribute('data-target', newId));
@@ -4139,7 +4153,14 @@ function openZoomBox(box){
   renderStaticMath(contentEl); // les formules KaTeX du clone doivent être rendues à nouveau
   document.getElementById('zoomBoxOverlay').style.display = 'flex';
 }
+// Appelée après CHAQUE rendu d'une démo par étapes (makeStepDemo/makeSingleStepDemo) : si la
+// boîte actuellement zoomée contient cet affichage, on resynchronise le zoom avec le nouvel
+// état -- sinon rien ne se passe (cas normal, aucun zoom ouvert sur cet élément).
+function syncZoomBoxIfShowing(displayEl){
+  if(zoomedBox && zoomedBox.contains(displayEl)) refreshZoomBoxContent();
+}
 function closeZoomBox(){
+  zoomedBox = null;
   document.getElementById('zoomBoxOverlay').style.display = 'none';
 }
 document.addEventListener('keydown', (e)=>{
