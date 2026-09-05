@@ -2227,6 +2227,96 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.485', items:[
+    "Méthode \"traduire une phrase en calcul\" : nouveau constructeur d'expression interactif (clic-pour-placer, récursif) permettant de composer somme/différence/produit/quotient bloc par bloc, avec grammaire française correcte (du/de la) et affichage en parallèle de la phrase et de l'expression mathématique -- sans calcul, juste l'écriture. Déplacé en tête de l'onglet Méthodes.",
+  ]},
+  { version:'2026-08-19.469', items:[
+    "Loupe (zoom plein écran) généralisée à tous les types de blocs du site (définitions, règles, remarques, méthodes, blocs à étape, exercices) -- les boutons d'action (Étape suivante, correction) restent fonctionnels et le contenu affiché se resynchronise automatiquement après chaque clic.",
+    "Correction dépliante générique dans les exercices (icône discrète, pas de texte), réutilisable sur tous les chapitres -- nouveaux exercices corrigés ajoutés (N1 6e et 5e), méthode \"chiffre des / nombre de\" rendue visuelle (couleurs) avec exercice interactif \"monnaie Euclide\".",
+  ]},
+  { version:'2026-08-19.460', items:[
+    "Supervision (côté prof) refondue : onglets Comptes/Résultats séparés, statut de connexion des élèves (en ligne/déjà connecté/jamais connecté), sélecteur de classe intégré, identifiant en consultation seule.",
+    "Liens d'invitation personnels : les élèves choisissent eux-mêmes leur mot de passe via un lien à usage unique, qui n'est plus jamais communiqué en clair par le professeur.",
+  ]},
+  { version:'2026-08-19.444', items:[
+    "Ajout des mentions légales et de la politique de confidentialité (RGPD/CNIL), avec confirmation de l'hébergement en Irlande/UE.",
+  ]},
+  { version:'2026-08-19.440', items:[
+    "Export PDF des cours : option de masquage du contenu (définitions/propriétés/règles, remplacées par des pointillés) pour des cours à compléter en classe -- fix racine du thème de couleur par niveau (bleu 5e/orange 6e) qui ne s'appliquait jamais au PDF.",
+  ]},
+  { version:'2026-08-19.429', items:[
+    "Administration : import en masse d'élèves (Nom Prénom + identifiant + mot de passe), classes rattachées à un établissement (UAI), gestion complète (niveau, retrait de profs).",
+  ]},
+  { version:'2026-08-19.421', items:[
+    "Nouveaux tableaux de conversion (nombres par classes, longueurs, aires, volumes, masses/capacités) disponibles dans les outils Correction et Évaluation, avec en-tête et pagination soignés à l'impression des cours.",
+  ]},
+  { version:'2026-08-19.395', items:[
+    "Bac à sable de géométrie pour les élèves (même outil de figure que les profs) + nouveau système de devoirs complet (devoirs.js), avec sérialisation robuste des figures (préserve les références entre objets après sauvegarde).",
+  ]},
+  { version:'2026-08-19.392', items:[
+    "Outil de figure géométrique : refonte complète en barre latérale à icônes -- système de dépendances entre objets (un point transformé suit sa source), codage centralisé (perpendicularité, milieux, médiatrice, bissectrice reconnus automatiquement), nouveaux outils (vecteurs, transformations, polygones réguliers, points d'intersection).",
+  ]},
+  { version:'2026-08-19.339', items:[
+    "Nouvel outil du tableau interactif : la réquerre (règle + traversant), avec vraie photo du modèle de référence, intégrée aussi dans les figures animées du cours G2 (droites parallèles/perpendiculaires).",
+  ]},
+  { version:'2026-08-19.326', items:[
+    "Remplacement de tous les alert()/confirm() natifs par des modales propres au design du site, et des émojis-icônes par de vraies icônes Material Symbols (Google).",
+  ]},
+  { version:'2026-08-19.317', items:[
+    "Progression personnalisée par professeur : chaque prof peut réorganiser librement l'ordre et les dates des chapitres (glisser-déposer, zones de vacances), visible ensuite par ses élèves.",
+  ]},
+  { version:'2026-08-19.312', items:[
+    "Domaine personnalisé maths.latelieraugmente.fr, inscription des professeurs en libre-service avec essai de 15 jours, validation admin, notification email, et intégration Stripe pour l'abonnement annuel.",
+  ]},
+  { version:'2026-08-19.306', items:[
+    "Scission du chapitre 6e \"Opérations, ordre de grandeur\" en deux chapitres distincts, harmonisation des badges de couleur A/B/C par niveau (orange 6e, bleu 5e).",
+  ]},
+  { version:'2026-08-19.300', items:[
+    "Accessibilité : sélecteur de police adaptée aux troubles dys (OpenDyslexic), et lecture à voix haute des définitions (avec conversion du LaTeX en français parlé plutôt que lu tel quel).",
+  ]},
+  { version:'2026-08-19.297', items:[
+    "Nouveaux chapitres 6e : M1 (Aire et périmètre, avec tableau de conversion animé) et M2 (Heures et durées, avec méthode de soustraction par compensation).",
+  ]},
+  { version:'2026-08-19.291', items:[
+    "Nouveau chapitre 6e G6 : Propriétés des triangles (cours complet, méthode du cercle circonscrit au compas, histoire de la méridienne de Delambre et Méchain).",
+  ]},
+  { version:'2026-08-19.270', items:[
+    "Nouveaux chapitres : 5e N5 (Fractions -- comparaison et addition, finalement classé en 6e), 6e D1 (Gestion de données), 6e D2 (Probabilités).",
+  ]},
+  { version:'2026-08-19.250', items:[
+    "Nouveau chapitre 6e G4 : Symétrie axiale, cours complet avec 8 figures dynamiques (points déplaçables, glisser-déposer), méthodes de construction de la bissectrice et de la médiatrice au compas.",
+  ]},
+  { version:'2026-08-19.230', items:[
+    "Nouveau chapitre 6e G5 : Construction de triangles, avec 3 méthodes animées (connaissant les 3 côtés, deux côtés et l'angle compris, un côté et deux angles) et les triangles particuliers.",
+  ]},
+  { version:'2026-08-19.210', items:[
+    "Extraction du code en fichiers séparés pour plus de clarté (admin.js, outils-figures.js, evaluation.js) + nouveau chapitre 6e G1 : Symétrie centrale (cours avec figure animée).",
+  ]},
+  { version:'2026-08-04.203', items:[
+    "Cours 6e G2 (droites parallèles/perpendiculaires) : les figures animées des méthodes de construction reprennent fidèlement le design réel du tableau interactif (équerre, règle), avec vérification numérique systématique des échelles et alignements.",
+  ]},
+  { version:'2026-08-04.198', items:[
+    "Nouveau Tableau interactif : outil complet de géométrie à main levée pour la classe -- règle, équerre, rapporteur, compas avec aimantage, tracé au crayon, codages de longueurs/angles, systèmes de fond (pavages zoomables), annuler/rétablir. Développé sur environ deux semaines, avec de nombreuses itérations sur le réalisme des gestes (déplacer/tourner/tracer) et la précision de l'accrochage.",
+  ]},
+  { version:'2026-08-04.117', items:[
+    "Nouveaux outils avancés pour la Correction/Évaluation : rectangle fractionné interactif, cubes empilés en perspective, traceur de courbes (fonctions et droites), diagramme statistique (camembert/barres/histogramme), outils de probabilités (sac/urne, cartes, arbre de probabilité), et éditeur de formule mathématique pas à pas (structure arborescente, imbrication illimitée).",
+  ]},
+  { version:'2026-08-04.86', items:[
+    "Nouveau module Créer une évaluation : mise en page en colonnes glissables, génération IA des énoncés, export PDF, partage entre collègues d'un même établissement -- avec de nombreuses itérations pour fiabiliser l'export PDF (rendu des figures, disques synchronisés, mise en page multi-pages).",
+    "Amélioration des performances : extraction du script principal (app.js) et chargement différé de toutes les bibliothèques -- le menu devient utilisable environ deux fois plus vite au chargement.",
+  ]},
+  { version:'2026-08-04.55', items:[
+    "Outil de correction : rendu des signes mathématiques (multiplication, variables, lettres) via KaTeX pour une police cohérente, nouveau mode projection en fenêtre séparée synchronisée en direct, et 5 nouveaux types de blocs (axe gradué, repère, division décimale posée, disque/rectangle fractionnés).",
+  ]},
+  { version:'2026-08-04.36', items:[
+    "Nouveau module Le compte est bon : tirages garantis réalisables, mode chronométré optionnel, enregistrement des tentatives des élèves et statistiques de réussite visibles en Supervision.",
+  ]},
+  { version:'2026-08-04.30', items:[
+    "Nouvel onglet \"Un peu d'histoire\" ajouté à l'ensemble des 20 chapitres 6e/5e (contexte historique de chaque notion, vérifié par recherche).",
+  ]},
+  { version:'2026-08-04.24', items:[
+    "6e N4 : divisions et opérations posées reconstruites en grille à colonnes de position fixes (fini le désalignement selon la police), nouvelles méthodes animées sur le repérage du chiffre des unités.",
+  ]},
   { version:'2026-08-04.204', items:[
     "Cours 6e G2 -- retiré le récapitulatif texte devenu redondant dans l'onglet Méthode, désormais remplacé par la vraie figure animée. Un seul bloc reste, directement suivi de la note de rédaction.",
   ]},
