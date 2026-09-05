@@ -649,6 +649,10 @@ function openChapitre(c, tab, lvlOverride){
 
   document.getElementById('quizArea').innerHTML='';
   if(demo) demo.init();
+  // Loupe plein écran sur les exercices -- jusqu'ici, injectCourseAddButtons (qui l'injecte)
+  // n'était appelée que sur les conteneurs cours/méthode par chaque chapitre, jamais sur les
+  // exercices. Fix universel ici, au lieu de modifier chaque fichier de chapitre un par un.
+  if(demo) injectZoomButtons(document.getElementById(demo.exos));
   showView('view-chapitre');
 }
 document.querySelectorAll('.tab-btn').forEach(btn=>{
@@ -4113,7 +4117,16 @@ function injectZoomButtons(container){
 }
 function openZoomBox(box){
   const clone = box.cloneNode(true);
-  clone.querySelectorAll('.zoom-btn, .read-aloud-btn, .exo-correction-toggle, .exo-correction').forEach(b=>b.remove());
+  clone.querySelectorAll('.zoom-btn, .read-aloud-btn').forEach(b=>b.remove());
+  // La correction reste FONCTIONNELLE dans le zoom (demandé : "permettre de voir la
+  // correction en gros plan si on appuie sur la flèche") -- mais ses identifiants sont
+  // re-préfixés pour ne pas entrer en conflit avec l'original resté dans la page (sinon le
+  // bouton, avec le MÊME id, agirait sur l'original caché plutôt que sur la copie affichée).
+  clone.querySelectorAll('[id]').forEach(el=>{
+    const newId = 'zoom-'+el.id;
+    clone.querySelectorAll(`[data-target="${el.id}"]`).forEach(btn=>btn.setAttribute('data-target', newId));
+    el.id = newId;
+  });
   const contentEl = document.getElementById('zoomBoxContent');
   contentEl.innerHTML = clone.innerHTML;
   renderStaticMath(contentEl); // les formules KaTeX du clone doivent être rendues à nouveau
