@@ -213,30 +213,43 @@ const OD_IMBRIQUEES_STEPS = [
 const odImbriqueesDemo = makeStepDemo(OD_IMBRIQUEES_STEPS, 'od-imbriqueesDisplay');
 
 /* ---- Méthode : traduire une phrase en calcul (produit/somme/différence/quotient) ----
-   Signalé : "j'aimerais une méthode animée sur le thème : c'est le produit de... par...
-   c'est la somme de... et... Puis c'est la somme du produit de 3 par 4 et du quotient de 8
-   par 2... Ou le produit de la différence de 17 et 5 par 8." Les 2 exemples combinés
-   suivent la même démarche : repérer d'abord l'opération EXTÉRIEURE (celle qui porte sur
-   "... et ..." ou "... par ..." au niveau le plus haut de la phrase), traduire ensuite
-   chaque partie séparément, puis combiner. Réponses vérifiées par calcul (16 et 96) avant
-   rédaction. */
+   Signalé : "je veux juste faire écrire l'expression. On peut repérer l'expression... le
+   tout est une somme donc j'écris sous la forme ...+... Ensuite je complète petit à petit.
+   Quand je repère somme je cherche le et correspondant, je les mets en couleur." Démarche
+   en 3 temps : (1) on repère l'opération EXTÉRIEURE et on écrit directement le SQUELETTE
+   (... + ... ou ... × ...) ; (2) on repère le mot-lien correspondant (le "et" d'une somme,
+   le "par" d'un produit) et on met en couleur les 2 parties qu'il sépare (orange = 1er
+   terme, bleu = 2e terme) ; (3) on complète le squelette petit à petit, une couleur à la
+   fois. Réponses vérifiées par calcul (16 et 96) avant rédaction. */
+const OD_COLOR1 = 'color:var(--accent-orange);font-weight:700;';
+const OD_COLOR2 = 'color:var(--accent);font-weight:700;';
+const OD_MARK1 = 'background:rgba(255,130,8,.18);'+OD_COLOR1+'border-radius:4px;padding:1px 5px;';
+const OD_MARK2 = 'background:rgba(12,91,160,.15);'+OD_COLOR2+'border-radius:4px;padding:1px 5px;';
+const OD_SKELETON = txt => `<div style="margin-top:12px;font-size:1.3rem;">${txt}</div>`;
 const OD_PHRASE_A_STEPS = [
-  {expr:'« la <b>somme</b> du produit de 3 par 4 et du quotient de 8 par 2 »', note:"On repère d'abord l'opération EXTÉRIEURE, celle qui porte sur l'ensemble de la phrase : « la somme de ... et de ... »."},
-  {expr:'somme( <b>produit de 3 par 4</b> , quotient de 8 par 2 )', note:"La 1re partie de la somme est « le produit de 3 par 4 »."},
-  {expr:'somme( 3 × 4 , <b>quotient de 8 par 2</b> )', note:"On traduit cette 1re partie : produit de 3 par 4, c'est 3 × 4. La 2e partie est « le quotient de 8 par 2 »."},
-  {expr:'somme( 3 × 4 , 8 ÷ 2 )', note:"On traduit la 2e partie : quotient de 8 par 2, c'est 8 ÷ 2."},
-  {expr:'F = (3 × 4) + (8 ÷ 2)', note:"On combine : une somme, c'est a + b. On retrouve bien la phrase complète traduite en calcul."},
-  {expr:'F = 12 + 4', note:"On calcule chaque partie : 3 × 4 = 12 et 8 ÷ 2 = 4."},
+  {expr:`la <b style="color:#1F6B3A;">somme</b> du produit de 3 par 4 et du quotient de 8 par 2${OD_SKELETON('… + …')}`,
+   note:"Le tout est une somme : j'écris directement le squelette … + … , que je vais compléter petit à petit."},
+  {expr:`la somme du <span style="${OD_MARK1}">produit de 3 par 4</span> <b style="text-decoration:underline;">et</b> du <span style="${OD_MARK2}">quotient de 8 par 2</span>`+
+    OD_SKELETON(`<span style="${OD_COLOR1}">(produit de 3 par 4)</span> + <span style="${OD_COLOR2}">(quotient de 8 par 2)</span>`),
+   note:"Je repère le « et » qui correspond au « + » : je mets en orange la 1re partie de la somme, en bleu la 2e."},
+  {expr:`<span style="${OD_COLOR1}">3 × 4</span> + <span style="${OD_COLOR2}">(quotient de 8 par 2)</span>`,
+   note:"Je complète la partie orange : produit de 3 par 4, c'est 3 × 4."},
+  {expr:`3 × 4 + <span style="${OD_COLOR2}">8 ÷ 2</span>`,
+   note:"Je complète la partie bleue : quotient de 8 par 2, c'est 8 ÷ 2. L'expression est maintenant complète."},
+  {expr:'F = 12 + 4', note:"Je calcule chaque partie : 3 × 4 = 12 et 8 ÷ 2 = 4."},
   {expr:'F = 16', note:"Résultat final : 12 + 4 = 16."},
 ];
 const odPhraseADemo = makeStepDemo(OD_PHRASE_A_STEPS, 'od-phraseADisplay');
 
 const OD_PHRASE_B_STEPS = [
-  {expr:'« le <b>produit</b> de la différence de 17 et 5 par 8 »', note:"On repère d'abord l'opération EXTÉRIEURE : « le produit de ... par ... » -- structure différente de l'exemple précédent."},
-  {expr:'produit( <b>différence de 17 et 5</b> , 8 )', note:"Le 1er facteur du produit est « la différence de 17 et 5 »."},
-  {expr:'produit( 17 − 5 , 8 )', note:"On traduit ce 1er facteur : différence de 17 et 5, c'est 17 − 5. Le 2e facteur est directement le nombre 8."},
-  {expr:'F = (17 − 5) × 8', note:"On combine : un produit, c'est a × b. La parenthèse est nécessaire pour bien montrer que 17 − 5 est calculé AVANT la multiplication."},
-  {expr:'F = 12 × 8', note:"On calcule d'abord la parenthèse : 17 − 5 = 12."},
+  {expr:`le <b style="color:#1F6B3A;">produit</b> de la différence de 17 et 5 par 8${OD_SKELETON('… × …')}`,
+   note:"Le tout est un produit : j'écris directement le squelette … × … -- structure différente de l'exemple précédent."},
+  {expr:`le produit de <span style="${OD_MARK1}">la différence de 17 et 5</span> <b style="text-decoration:underline;">par</b> <span style="${OD_MARK2}">8</span>`+
+    OD_SKELETON(`<span style="${OD_COLOR1}">(différence de 17 et 5)</span> × <span style="${OD_COLOR2}">8</span>`),
+   note:"Je repère le « par » qui correspond au « × » (attention, le « et » de « différence de 17 et 5 » appartient à une AUTRE partie de la phrase, pas à celui-ci) : orange = 1er facteur, bleu = 2e facteur."},
+  {expr:`F = <span style="${OD_COLOR1}">(17 − 5)</span> × <span style="${OD_COLOR2}">8</span>`,
+   note:"Je complète la partie orange : différence de 17 et 5, c'est 17 − 5. La parenthèse est nécessaire car ce résultat va être multiplié. La partie bleue était déjà un nombre : rien à compléter."},
+  {expr:'F = 12 × 8', note:"Je calcule la parenthèse : 17 − 5 = 12."},
   {expr:'F = 96', note:"Résultat final : 12 × 8 = 96."},
 ];
 const odPhraseBDemo = makeStepDemo(OD_PHRASE_B_STEPS, 'od-phraseBDisplay');
