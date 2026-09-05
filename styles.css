@@ -478,6 +478,7 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
 }
 .redaction-template .fill{color:var(--accent-orange);font-weight:600;}
 .exo-card{border:1px solid rgba(28,43,57,.1);border-radius:8px;padding:16px;margin-top:12px;position:relative;padding-bottom:34px;}
+.exo-card:has(.zoom-btn){padding-right:46px;}
 .exo-card .num{font-family:'JetBrains Mono',monospace;color:var(--ink-soft);font-size:.78rem;}
 .exo-correction-toggle{
   position:absolute;bottom:6px;right:8px;border:none;background:none;

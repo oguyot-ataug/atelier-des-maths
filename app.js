@@ -4096,10 +4096,24 @@ function injectZoomButtons(container){
     btn.onclick=(e)=>{ e.stopPropagation(); openZoomBox(box); };
     box.appendChild(btn);
   });
+  // Idem pour les exercices -- positionné en HAUT à droite (le bouton de correction occupe
+  // déjà le bas à droite). La correction elle-même est exclue du zoom (voir openZoomBox),
+  // pour ne pas risquer de révéler la réponse en projection.
+  container.querySelectorAll('.exo-card').forEach(card=>{
+    if(card.querySelector('.zoom-btn')) return;
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='zoom-btn';
+    btn.title='Afficher en plein écran';
+    btn.setAttribute('aria-label','Afficher en plein écran');
+    btn.innerHTML='<span class=gicon>zoom_in</span>';
+    btn.onclick=(e)=>{ e.stopPropagation(); openZoomBox(card); };
+    card.appendChild(btn);
+  });
 }
 function openZoomBox(box){
   const clone = box.cloneNode(true);
-  clone.querySelectorAll('.zoom-btn, .read-aloud-btn').forEach(b=>b.remove());
+  clone.querySelectorAll('.zoom-btn, .read-aloud-btn, .exo-correction-toggle, .exo-correction').forEach(b=>b.remove());
   const contentEl = document.getElementById('zoomBoxContent');
   contentEl.innerHTML = clone.innerHTML;
   renderStaticMath(contentEl); // les formules KaTeX du clone doivent être rendues à nouveau

@@ -410,11 +410,25 @@ function odTreeFullPhrase(node){
 }
 // Expression mathématique correspondante (parenthèses autour de tout enfant qui est
 // lui-même une opération, pour la clarté).
+// Priorité opératoire : produit/quotient (2) sur somme/différence (1). Une parenthèse n'est
+// nécessaire que si son absence changerait le résultat -- jamais autour d'un enfant de
+// priorité STRICTEMENT supérieure (il se calculerait de toute façon en premier), et pour un
+// enfant de MÊME priorité, seulement à droite d'une opération non commutative (différence,
+// quotient), où l'ordre de calcul compte.
+const OD_PRIORITY = {somme:1, difference:1, produit:2, quotient:2};
+function odNeedsParens(parentOp, childNode, isRightChild){
+  if(childNode.type!=='op') return false;
+  const parentPri = OD_PRIORITY[parentOp], childPri = OD_PRIORITY[childNode.op];
+  if(childPri>parentPri) return false;
+  if(childPri<parentPri) return true;
+  if(!isRightChild) return false;
+  return parentOp==='difference' || parentOp==='quotient';
+}
 function odTreeExpression(node){
   if(node.type==='empty') return '…';
   if(node.type==='number') return String(node.value);
-  const wrap = (child) => child.type==='op' ? '('+odTreeExpression(child)+')' : odTreeExpression(child);
-  return wrap(node.a)+' '+OD_OP_SYMBOL[node.op]+' '+wrap(node.b);
+  const wrap = (child, isRight) => odNeedsParens(node.op, child, isRight) ? '('+odTreeExpression(child)+')' : odTreeExpression(child);
+  return wrap(node.a,false)+' '+OD_OP_SYMBOL[node.op]+' '+wrap(node.b,true);
 }
 
 // État : un arbre par instance de constructeur (permet plusieurs constructeurs sur la même
