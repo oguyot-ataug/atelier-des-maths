@@ -521,6 +521,7 @@ function odTreeRender(containerId){
   }
   phraseEl.textContent = root.type==='empty' ? '' : (odTreeFullPhrase(root).charAt(0).toUpperCase()+odTreeFullPhrase(root).slice(1));
   exprEl.textContent = root.type==='empty' ? '' : ('= '+odTreeExpression(root));
+  syncZoomBoxIfShowing(zoneEl);
 }
 
 DEMO_REGISTRY['5e|Opérations sur les nombres décimaux'] = { cours:'cours-demo-decimaux', methode:'methode-demo-decimaux', exos:'exos-demo-decimaux', histoire:'histoire-demo-decimaux',

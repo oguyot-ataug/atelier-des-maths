@@ -221,6 +221,12 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 #zoomBoxOverlay .zoom-content .we-expr{font-size:1.5rem;}
 #zoomBoxOverlay .zoom-content .redaction-template{font-size:1.2rem;}
 #zoomBoxOverlay .zoom-content .exo-correction-toggle{position:static;display:inline-flex;margin-top:16px;opacity:.8;}
+#zoomBoxOverlay .zoom-content .step-display{font-size:1.7rem;padding:20px;}
+#zoomBoxOverlay .zoom-content .step-display .step-note{font-size:1.15rem;}
+#zoomBoxOverlay .zoom-content .od-tree-slot-root{font-size:1.3rem;}
+#zoomBoxOverlay .zoom-content .od-tree-input{font-size:1.3rem;}
+#zoomBoxOverlay .zoom-content .od-tree-op-label{font-size:1.2rem;}
+#zoomBoxOverlay .zoom-content .od-tree-chip{font-size:1.2rem;}
 #zoomBoxOverlay .zoom-close{
   position:fixed;top:24px;right:28px;border:none;background:rgba(255,255,255,.12);color:#fff;
   border-radius:50%;width:48px;height:48px;font-size:1.5rem;cursor:pointer;display:flex;
