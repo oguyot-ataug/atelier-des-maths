@@ -4089,20 +4089,27 @@ function toggleExoCorrection(btn){
 }
 function injectZoomButtons(container){
   if(!container) return;
-  container.querySelectorAll('.def-box').forEach(box=>{
-    if(box.querySelector('.zoom-btn')) return;
-    const btn=document.createElement('button');
-    btn.type='button';
-    btn.className='zoom-btn';
-    btn.title='Afficher en plein écran';
-    btn.setAttribute('aria-label','Afficher en plein écran');
-    btn.innerHTML='<span class=gicon>zoom_in</span>';
-    btn.onclick=(e)=>{ e.stopPropagation(); openZoomBox(box); };
-    box.appendChild(btn);
-  });
+  // Utilitaire partagé : injecte un bouton loupe sur chaque élément matché par le sélecteur,
+  // sauf s'il en a déjà un.
+  const addZoomTo = (selector) => {
+    container.querySelectorAll(selector).forEach(el=>{
+      if(el.querySelector(':scope > .zoom-btn')) return;
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='zoom-btn';
+      btn.title='Afficher en plein écran';
+      btn.setAttribute('aria-label','Afficher en plein écran');
+      btn.innerHTML='<span class=gicon>zoom_in</span>';
+      btn.onclick=(e)=>{ e.stopPropagation(); openZoomBox(el); };
+      el.appendChild(btn);
+    });
+  };
+  addZoomTo('.def-box');
+  addZoomTo('.redaction-note'); // remarques
+  addZoomTo('.figure-wrap'); // méthodes et blocs à étape (démos interactives, figures...)
   // Idem pour les exercices -- positionné en HAUT à droite (le bouton de correction occupe
-  // déjà le bas à droite). La correction elle-même est exclue du zoom (voir openZoomBox),
-  // pour ne pas risquer de révéler la réponse en projection.
+  // déjà le bas à droite). La correction elle-même reste fonctionnelle dans le zoom (voir
+  // openZoomBox), la flèche y fonctionne pour la révéler en gros plan.
   container.querySelectorAll('.exo-card').forEach(card=>{
     if(card.querySelector('.zoom-btn')) return;
     const btn=document.createElement('button');
@@ -4117,7 +4124,7 @@ function injectZoomButtons(container){
 }
 function openZoomBox(box){
   const clone = box.cloneNode(true);
-  clone.querySelectorAll('.zoom-btn, .read-aloud-btn').forEach(b=>b.remove());
+  clone.querySelectorAll('.zoom-btn, .read-aloud-btn, .figure-toolbar').forEach(b=>b.remove());
   // La correction reste FONCTIONNELLE dans le zoom (demandé : "permettre de voir la
   // correction en gros plan si on appuie sur la flèche") -- mais ses identifiants sont
   // re-préfixés pour ne pas entrer en conflit avec l'original resté dans la page (sinon le

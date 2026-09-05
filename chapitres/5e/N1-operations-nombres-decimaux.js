@@ -111,16 +111,6 @@ document.getElementById('methode-demo-decimaux').innerHTML = `
         <button type="button" class="btn secondary" style="margin-top:10px;" onclick="odTreeInit('od-tree1')">Recommencer</button>
       </div>
 
-      <div class="sub-header"><span class="letter">M</span><h4>Méthode : calculer avec des priorités et des parenthèses imbriquées</h4></div>
-      <div class="figure-wrap">
-        <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler le calcul dans le bon ordre.</p>
-        <div class="step-display" id="od-imbriqueesDisplay"></div>
-        <div class="figure-toolbar">
-          <button class="btn" onclick="odImbriqueesDemo.next()">Étape suivante →</button>
-          <button class="btn secondary" onclick="odImbriqueesDemo.reset()">Recommencer</button>
-        </div>
-      </div>
-
       <div class="sub-header"><span class="letter">M</span><h4>Méthode : traduire une phrase en calcul ("C'est le produit de... par...")</h4></div>
       <div class="def-box" style="margin-bottom:16px;">
         <b>Le produit</b> de a par b, c'est a × b.<br>
@@ -142,6 +132,16 @@ document.getElementById('methode-demo-decimaux').innerHTML = `
         <div class="figure-toolbar">
           <button class="btn" onclick="odPhraseBDemo.next()">Étape suivante →</button>
           <button class="btn secondary" onclick="odPhraseBDemo.reset()">Recommencer</button>
+        </div>
+      </div>
+
+      <div class="sub-header"><span class="letter">M</span><h4>Méthode : calculer avec des priorités et des parenthèses imbriquées</h4></div>
+      <div class="figure-wrap">
+        <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler le calcul dans le bon ordre.</p>
+        <div class="step-display" id="od-imbriqueesDisplay"></div>
+        <div class="figure-toolbar">
+          <button class="btn" onclick="odImbriqueesDemo.next()">Étape suivante →</button>
+          <button class="btn secondary" onclick="odImbriqueesDemo.reset()">Recommencer</button>
         </div>
       </div>
       `;
