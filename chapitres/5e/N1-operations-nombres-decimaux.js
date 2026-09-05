@@ -96,6 +96,21 @@ document.getElementById('histoire-demo-decimaux').innerHTML = `
 </div>
 `;
 document.getElementById('methode-demo-decimaux').innerHTML = `
+      <div class="sub-header"><span class="letter">M</span><h4>Construis ton expression par glisser-déposer</h4></div>
+      <div class="figure-wrap">
+        <p class="hint interaction-hint" style="margin-top:6px;">Cliquez un bloc ci-dessous, puis cliquez l'emplacement où le placer. À l'intérieur, cliquez un autre bloc ou tapez directement un nombre -- de façon récursive.</p>
+        <div class="tool-row" style="margin-bottom:14px;gap:10px;">
+          <span class="od-tree-chip" onclick="odTreeSelectChip(this,'somme')">La somme de ... et ...</span>
+          <span class="od-tree-chip" onclick="odTreeSelectChip(this,'difference')">La différence de ... et ...</span>
+          <span class="od-tree-chip" onclick="odTreeSelectChip(this,'produit')">Le produit de ... par ...</span>
+          <span class="od-tree-chip" onclick="odTreeSelectChip(this,'quotient')">Le quotient de ... par ...</span>
+        </div>
+        <div id="od-tree1-zone" class="od-tree-zone"></div>
+        <p id="od-tree1-phrase" style="margin:14px 0 4px;font-size:1.05rem;"></p>
+        <p id="od-tree1-expr" style="margin:0;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);"></p>
+        <button type="button" class="btn secondary" style="margin-top:10px;" onclick="odTreeInit('od-tree1')">Recommencer</button>
+      </div>
+
       <div class="sub-header"><span class="letter">M</span><h4>Méthode : calculer avec des priorités et des parenthèses imbriquées</h4></div>
       <div class="figure-wrap">
         <p class="hint interaction-hint" style="margin-top:6px;">Cliquez sur "Étape suivante" pour dérouler le calcul dans le bon ordre.</p>
@@ -224,21 +239,6 @@ document.getElementById('exos-demo-decimaux').innerHTML = `
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="redaction-block">
-        <h3>Construis ton expression par glisser-déposer</h3>
-        <p class="hint" style="margin:0 0 12px;">Cliquez un bloc ci-dessous, puis cliquez l'emplacement où le placer. À l'intérieur, cliquez un autre bloc ou tapez directement un nombre -- de façon récursive.</p>
-        <div class="tool-row" style="margin-bottom:14px;gap:10px;">
-          <span class="od-tree-chip" onclick="odTreeSelectChip(this,'somme')">La somme de ... et ...</span>
-          <span class="od-tree-chip" onclick="odTreeSelectChip(this,'difference')">La différence de ... et ...</span>
-          <span class="od-tree-chip" onclick="odTreeSelectChip(this,'produit')">Le produit de ... par ...</span>
-          <span class="od-tree-chip" onclick="odTreeSelectChip(this,'quotient')">Le quotient de ... par ...</span>
-        </div>
-        <div id="od-tree1-zone" class="od-tree-zone"></div>
-        <p id="od-tree1-phrase" style="margin:14px 0 4px;font-size:1.05rem;"></p>
-        <p id="od-tree1-expr" style="margin:0;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);"></p>
-        <button type="button" class="btn secondary" style="margin-top:10px;" onclick="odTreeInit('od-tree1')">Recommencer</button>
       </div>
 `;
 
