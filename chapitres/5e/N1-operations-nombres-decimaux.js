@@ -145,6 +145,77 @@ document.getElementById('exos-demo-decimaux').innerHTML = `
         <div class="exo-card">
           <div class="num">Exercice 1</div>
           Calcule en respectant les priorités opératoires : 6 + 3 × (9 − 5).
+          <button type="button" class="exo-correction-toggle" data-target="od-correction-1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+          <div class="exo-correction" id="od-correction-1">
+            <p style="margin:0 0 6px;">6 + 3 × (9 − 5) = 6 + 3 × 4 (on calcule d'abord la parenthèse : 9 − 5 = 4)</p>
+            <p style="margin:0 0 6px;">= 6 + 12 (la multiplication est prioritaire : 3 × 4 = 12)</p>
+            <p style="margin:0;">= <b>18</b> (il ne reste que l'addition).</p>
+          </div>
+        </div>
+        <div class="exo-card">
+          <div class="num">Exercice 2</div>
+          Calcule en respectant les priorités opératoires (attention, pas de parenthèses ici) : A = 5,4 + 3 × 2,5 − 1,6.
+          <button type="button" class="exo-correction-toggle" data-target="od-correction-2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+          <div class="exo-correction" id="od-correction-2">
+            <p style="margin:0 0 6px;">A = 5,4 + <b>3 × 2,5</b> − 1,6 (la multiplication est prioritaire : 3 × 2,5 = 7,5)</p>
+            <p style="margin:0 0 6px;">A = 5,4 + 7,5 − 1,6</p>
+            <p style="margin:0 0 6px;">A = <b>12,9</b> − 1,6 (il ne reste que des additions/soustractions : on calcule de gauche à droite, 5,4 + 7,5 = 12,9)</p>
+            <p style="margin:0;">A = <b>11,3</b> (résultat final).</p>
+          </div>
+        </div>
+        <div class="exo-card">
+          <div class="num">Exercice 3</div>
+          Calcule : C = 20 − [(12 − 4) × 1,5 + 3].
+          <button type="button" class="exo-correction-toggle" data-target="od-correction-3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+          <div class="exo-correction" id="od-correction-3">
+            <p style="margin:0 0 6px;">C = 20 − [<b>(12 − 4)</b> × 1,5 + 3] (on calcule la parenthèse la plus intérieure : 12 − 4 = 8)</p>
+            <p style="margin:0 0 6px;">C = 20 − [<b>8 × 1,5</b> + 3] (à l'intérieur du crochet, la multiplication est prioritaire : 8 × 1,5 = 12)</p>
+            <p style="margin:0 0 6px;">C = 20 − [<b>12 + 3</b>] (on termine le calcul entre crochets : 12 + 3 = 15)</p>
+            <p style="margin:0 0 6px;">C = 20 − 15</p>
+            <p style="margin:0;">C = <b>5</b> (résultat final).</p>
+          </div>
+        </div>
+        <div class="exo-card">
+          <div class="num">Exercice 4</div>
+          Pose la division euclidienne de 537 par 23, puis vérifie ton résultat avec l'égalité dividende = (diviseur × quotient) + reste.
+          <button type="button" class="exo-correction-toggle" data-target="od-correction-4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+          <div class="exo-correction" id="od-correction-4">
+            <div style="display:flex;justify-content:center;align-items:stretch;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.15rem;padding:16px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);margin-bottom:10px;">
+              <div style="text-align:right;padding-right:16px;">
+                <div class="dp-tag" style="color:var(--accent);">dividende</div>
+                <div style="text-align:right;line-height:2;min-width:70px;">
+                  <div>&nbsp;&nbsp;537</div>
+                  <div><span class="dp-sub-inner">−&nbsp;46&nbsp;</span></div>
+                  <div>&nbsp;&nbsp;&nbsp;77</div>
+                  <div><span class="dp-sub-inner">−&nbsp;69</span></div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;8</div>
+                </div>
+                <div class="dp-tag" style="color:#9E1F5E;">↑ reste</div>
+              </div>
+              <div style="border-left:2px solid #1C1B2E;padding-left:16px;">
+                <div class="dp-tag" style="color:var(--accent-orange);">diviseur</div>
+                <div style="line-height:2;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;margin-left:-16px;padding-left:16px;">23</div>
+                <div style="display:flex;align-items:baseline;gap:8px;line-height:2;margin-top:6px;">
+                  <div style="font-weight:700;">23</div>
+                  <span class="dp-tag" style="color:#1F6B3A;white-space:nowrap;">← quotient</span>
+                </div>
+              </div>
+            </div>
+            <p style="margin:0 0 8px;">537 = (23 × 23) + 8, avec 8 &lt; 23.</p>
+            <p style="margin:0;">Vérification : 23 × 23 + 8 = 529 + 8 = <b>537</b>. ✓</p>
+          </div>
+        </div>
+        <div class="exo-card">
+          <div class="num">Exercice 5</div>
+          Traduis en une expression numérique, puis calcule sa valeur : « le quotient de la somme de 15 et 9 par 4 ».
+          <button type="button" class="exo-correction-toggle" data-target="od-correction-5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+          <div class="exo-correction" id="od-correction-5">
+            <p style="margin:0 0 6px;">L'opération extérieure est un <b>quotient</b> (mot-lien « par ») : à gauche, « la somme de 15 et 9 » ; à droite, directement 4.</p>
+            <p style="margin:0 0 6px;">On traduit la partie gauche : somme de 15 et 9, c'est 15 + 9.</p>
+            <p style="margin:0 0 6px;">Expression : F = (15 + 9) ÷ 4</p>
+            <p style="margin:0 0 6px;">F = 24 ÷ 4 (on calcule d'abord la parenthèse : 15 + 9 = 24)</p>
+            <p style="margin:0;">F = <b>6</b> (résultat final).</p>
+          </div>
         </div>
       </div>
 `;
