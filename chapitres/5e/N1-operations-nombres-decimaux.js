@@ -270,6 +270,21 @@ document.getElementById('exos-demo-decimaux').innerHTML = `
           <p id="od-libre-quotient-result" class="hint" style="margin:0;font-weight:700;"></p>
         </div>
       </div>
+
+      <div class="redaction-block">
+        <h3>Construis ton expression par glisser-déposer</h3>
+        <p class="hint" style="margin:0 0 12px;">Glissez un bloc dans la zone ci-dessous. À l'intérieur, glissez un autre bloc ou tapez directement un nombre -- de façon récursive.</p>
+        <div class="tool-row" style="margin-bottom:14px;gap:10px;">
+          <span class="od-tree-chip" draggable="true" ondragstart="odTreeDragStart(event,'somme')">La somme de ... et ...</span>
+          <span class="od-tree-chip" draggable="true" ondragstart="odTreeDragStart(event,'difference')">La différence de ... et ...</span>
+          <span class="od-tree-chip" draggable="true" ondragstart="odTreeDragStart(event,'produit')">Le produit de ... par ...</span>
+          <span class="od-tree-chip" draggable="true" ondragstart="odTreeDragStart(event,'quotient')">Le quotient de ... par ...</span>
+        </div>
+        <div id="od-tree1-zone" class="od-tree-zone"></div>
+        <p id="od-tree1-phrase" style="margin:14px 0 4px;font-size:1.05rem;"></p>
+        <p id="od-tree1-expr" style="margin:0;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);"></p>
+        <button type="button" class="btn secondary" style="margin-top:10px;" onclick="odTreeInit('od-tree1')">Recommencer</button>
+      </div>
 `;
 
 const ENCHAINEMENT_STEPS = [
@@ -412,8 +427,144 @@ function odLibreUpdate(type){
   resultEl.textContent = `= ${a} ${symbols[type]} ${b} = ${result}`;
 }
 
+/* ================= Constructeur d'expression par glisser-déposer =================
+   Demandé : "le but est de déplacer des blocs par copier glisser. Au départ j'ai une zone
+   vide, je glisse la somme de... Dans la zone, on voit alors écrit La somme de suivi d'un
+   bloc à remplir suivi de ET suivi d'un nouveau bloc à remplir. Je peux alors glisser par
+   exemple le produit de... par... dans la première zone ou pouvoir écrire directement un
+   nombre. De manière récursive... En parallèle, je vois une expression qui se construit."
+   Remarque grammaticale prise en compte : "somme de" devient "somme DU" devant un mot
+   masculin (produit, quotient), reste "de LA" devant un mot féminin (différence), jamais de
+   contraction avec "par" (par le / par la restent tels quels).
+
+   Structure de données : un arbre de nœuds, chacun soit {type:'empty'}, {type:'number',
+   value}, ou {type:'op', op, a, b} (a et b sont eux-mêmes des nœuds, récursivement). */
+const OD_OP_INFO = {
+  somme:      {article:'la', noun:'somme',      connectorB:'et'},
+  difference: {article:'la', noun:'différence', connectorB:'et'},
+  produit:    {article:'le', noun:'produit',     connectorB:'par'},
+  quotient:   {article:'le', noun:'quotient',    connectorB:'par'},
+};
+const OD_OP_SYMBOL = {somme:'+', difference:'−', produit:'×', quotient:'÷'};
+
+// Introduit un nœud enfant par une préposition ('de' ou 'par'), avec contraction de "de"
+// selon le genre du mot qui suit (de+le=du, de+la=de la) -- "par" ne se contracte jamais.
+function odTreeIntroduce(preposition, node){
+  if(node.type==='empty') return preposition+' …';
+  if(node.type==='number') return preposition+' '+node.value;
+  const info = OD_OP_INFO[node.op];
+  if(preposition==='de'){
+    const article = info.article==='le' ? 'du' : 'de la';
+    return article+' '+info.noun+' '+odTreeChildrenPhrase(node);
+  }
+  return preposition+' '+info.article+' '+info.noun+' '+odTreeChildrenPhrase(node);
+}
+// Phrase des 2 enfants d'un nœud opération (sans l'article+nom de CE nœud, déjà posé par
+// l'appelant) -- ex. pour somme(A,B) : "de A et de B" (contractés selon le cas).
+function odTreeChildrenPhrase(node){
+  const info = OD_OP_INFO[node.op];
+  const aPart = odTreeIntroduce('de', node.a);
+  const bPart = info.connectorB==='et' ? odTreeIntroduce('de', node.b) : odTreeIntroduce('par', node.b);
+  return info.connectorB==='et' ? (aPart+' et '+bPart) : (aPart+' '+bPart);
+}
+function odTreeFullPhrase(node){
+  if(node.type==='empty') return '…';
+  if(node.type==='number') return String(node.value);
+  const info = OD_OP_INFO[node.op];
+  return info.article+' '+info.noun+' '+odTreeChildrenPhrase(node);
+}
+// Expression mathématique correspondante (parenthèses autour de tout enfant qui est
+// lui-même une opération, pour la clarté).
+function odTreeExpression(node){
+  if(node.type==='empty') return '…';
+  if(node.type==='number') return String(node.value);
+  const wrap = (child) => child.type==='op' ? '('+odTreeExpression(child)+')' : odTreeExpression(child);
+  return wrap(node.a)+' '+OD_OP_SYMBOL[node.op]+' '+wrap(node.b);
+}
+
+// État : un arbre par instance de constructeur (permet plusieurs constructeurs sur la même
+// page, identifiés par un id de conteneur).
+const odTreeState = {};
+function odTreeInit(containerId){
+  odTreeState[containerId] = {type:'empty'};
+  odTreeRender(containerId);
+}
+// Renvoie le nœud à un chemin donné (tableau de 'a'/'b') depuis la racine.
+function odTreeGetNode(containerId, path){
+  let node = odTreeState[containerId];
+  for(const step of path) node = node[step];
+  return node;
+}
+function odTreeSetNode(containerId, path, newNode){
+  if(!path.length){ odTreeState[containerId] = newNode; return; }
+  let node = odTreeState[containerId];
+  for(let i=0;i<path.length-1;i++) node = node[path[i]];
+  node[path[path.length-1]] = newNode;
+}
+function odTreeDropOp(containerId, path, op){
+  odTreeSetNode(containerId, path, {type:'op', op, a:{type:'empty'}, b:{type:'empty'}});
+  odTreeRender(containerId);
+}
+function odTreeSetNumber(containerId, path, value){
+  if(value===''){ odTreeSetNode(containerId, path, {type:'empty'}); odTreeRender(containerId); return; }
+  const n = parseFloat(value);
+  if(isNaN(n)) return;
+  odTreeSetNode(containerId, path, {type:'number', value:n});
+  odTreeRender(containerId);
+}
+function odTreeClearNode(containerId, path){
+  odTreeSetNode(containerId, path, {type:'empty'});
+  odTreeRender(containerId);
+}
+function odTreeDragStart(e, op){ e.dataTransfer.setData('text/od-op', op); }
+function odTreeAllowDrop(e){ e.preventDefault(); }
+function odTreeDrop(e, containerId, pathStr){
+  e.preventDefault();
+  const op = e.dataTransfer.getData('text/od-op');
+  if(!op) return;
+  odTreeDropOp(containerId, pathStr?pathStr.split(','):[], op);
+}
+// Construit le HTML récursif d'un nœud (et de ses slots enfants s'il s'agit d'une opération).
+function odTreeNodeHTML(containerId, path, node){
+  const pathStr = path.join(',');
+  if(node.type==='empty'){
+    return `<span class="od-tree-slot" ondragover="odTreeAllowDrop(event)" ondrop="odTreeDrop(event,'${containerId}','${pathStr}')">
+      <input type="number" placeholder="nombre" class="od-tree-input" style="width:70px;" onchange="odTreeSetNumber('${containerId}',[${path.map(p=>`'${p}'`).join(',')}],this.value)">
+      <span class="hint" style="font-size:.75rem;"> ou glissez un bloc ici</span>
+    </span>`;
+  }
+  if(node.type==='number'){
+    return `<span class="od-tree-slot od-tree-filled">${node.value} <button type="button" class="od-tree-clear" onclick="odTreeClearNode('${containerId}',[${path.map(p=>`'${p}'`).join(',')}])" title="Effacer"><span class="gicon">close</span></button></span>`;
+  }
+  const info = OD_OP_INFO[node.op];
+  const aHTML = odTreeNodeHTML(containerId, path.concat('a'), node.a);
+  const bHTML = odTreeNodeHTML(containerId, path.concat('b'), node.b);
+  const connector = info.connectorB==='et' ? 'et' : 'par';
+  return `<span class="od-tree-op-card">
+    <span class="od-tree-op-label">${info.article==='le'?'Le':'La'} ${info.noun} de</span>
+    ${aHTML}
+    <span class="od-tree-op-label">${connector}</span>
+    ${bHTML}
+    <button type="button" class="od-tree-clear" onclick="odTreeClearNode('${containerId}',[${path.map(p=>`'${p}'`).join(',')}])" title="Retirer ce bloc"><span class="gicon">close</span></button>
+  </span>`;
+}
+function odTreeRender(containerId){
+  const root = odTreeState[containerId];
+  const zoneEl = document.getElementById(containerId+'-zone');
+  const phraseEl = document.getElementById(containerId+'-phrase');
+  const exprEl = document.getElementById(containerId+'-expr');
+  if(!zoneEl) return;
+  if(root.type==='empty'){
+    zoneEl.innerHTML = `<span class="od-tree-slot od-tree-slot-root" ondragover="odTreeAllowDrop(event)" ondrop="odTreeDrop(event,'${containerId}','')">Glissez un bloc ici (Somme, Différence, Produit ou Quotient)</span>`;
+  } else {
+    zoneEl.innerHTML = odTreeNodeHTML(containerId, [], root);
+  }
+  phraseEl.textContent = root.type==='empty' ? '' : (odTreeFullPhrase(root).charAt(0).toUpperCase()+odTreeFullPhrase(root).slice(1));
+  exprEl.textContent = root.type==='empty' ? '' : ('= '+odTreeExpression(root));
+}
+
 DEMO_REGISTRY['5e|Opérations sur les nombres décimaux'] = { cours:'cours-demo-decimaux', methode:'methode-demo-decimaux', exos:'exos-demo-decimaux', histoire:'histoire-demo-decimaux',
-  init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); odImbriqueesDemo.reset(); odPhraseADemo.reset(); odPhraseBDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };
+  init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); odImbriqueesDemo.reset(); odPhraseADemo.reset(); odPhraseBDemo.reset(); odTreeInit('od-tree1'); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };
 
 DEMO_QUIZZES['5e|Opérations sur les nombres décimaux'] = [
   {q:"Que vaut 4 + 2 × 3 ?",
