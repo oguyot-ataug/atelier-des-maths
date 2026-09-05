@@ -251,10 +251,8 @@ const OD_PHRASE_A_STEPS = [
     OD_SKEL(`3 × 4 + <span style="${OD_BLUE}">8</span> ÷ <span style="${OD_ORANGE}">2</span>`),
    note:"Je souligne 8 en bleu, 2 en orange -- et je complète le squelette."},
   {expr:'F = 3 × 4 + 8 ÷ 2', note:"8 et 2 sont déjà des nombres : l'expression est maintenant complète !"},
-  {expr:'F = 12 + 4', note:"Je calcule chaque partie : 3 × 4 = 12 et 8 ÷ 2 = 4."},
-  {expr:'F = 16', note:"Résultat final : 12 + 4 = 16."},
 ];
-const odPhraseADemo = makeStepDemo(OD_PHRASE_A_STEPS, 'od-phraseADisplay');
+const odPhraseADemo = makeSingleStepDemo(OD_PHRASE_A_STEPS, 'od-phraseADisplay');
 
 const OD_PHRASE_B_STEPS = [
   {expr:`le <b style="${OD_GREEN}">produit</b> de la différence de 17 et 5 <b style="${OD_GREEN}">par</b> 8`,
@@ -268,10 +266,8 @@ const OD_PHRASE_B_STEPS = [
     OD_SKEL(`(<span style="${OD_BLUE}">17</span> − <span style="${OD_ORANGE}">5</span>) × 8`),
    note:"Je souligne 17 en bleu, 5 en orange -- et je les place dans le squelette. La parenthèse est nécessaire car ce résultat va ensuite être multiplié."},
   {expr:'F = (17 − 5) × 8', note:"17 et 5 sont déjà des nombres : l'expression est maintenant complète !"},
-  {expr:'F = 12 × 8', note:"Je calcule la parenthèse : 17 − 5 = 12."},
-  {expr:'F = 96', note:"Résultat final : 12 × 8 = 96."},
 ];
-const odPhraseBDemo = makeStepDemo(OD_PHRASE_B_STEPS, 'od-phraseBDisplay');
+const odPhraseBDemo = makeSingleStepDemo(OD_PHRASE_B_STEPS, 'od-phraseBDisplay');
 
 DEMO_REGISTRY['5e|Opérations sur les nombres décimaux'] = { cours:'cours-demo-decimaux', methode:'methode-demo-decimaux', exos:'exos-demo-decimaux', histoire:'histoire-demo-decimaux',
   init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); odImbriqueesDemo.reset(); odPhraseADemo.reset(); odPhraseBDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };

@@ -844,6 +844,26 @@ function makeStepDemo(steps, displayId){
     render,
   };
 }
+/* Variante SANS empilement : n'affiche que l'étape courante (qui remplace la précédente),
+   jamais l'historique complet -- demandé : "sans écrire des lignes et des lignes. Il y a une
+   seule expression qui se remplit petit à petit". Utile pour une démo où l'expression ELLE-
+   MÊME évolue visuellement d'une étape à l'autre (ex. un squelette qui se complète), plutôt
+   qu'un calcul qui se déroule pas à pas (où voir chaque ligne précédente a du sens). */
+function makeSingleStepDemo(steps, displayId){
+  let idx = 0;
+  function render(){
+    const el = document.getElementById(displayId);
+    if(!el) return;
+    el._stepDemoSteps = steps;
+    el.innerHTML = `<div class="step-column"><div>${steps[idx].expr}</div></div><div class="step-note">${steps[idx].note}</div>`;
+    renderStaticMath(el);
+  }
+  return {
+    next(){ if(idx<steps.length-1) idx++; render(); },
+    reset(){ idx=0; render(); },
+    render,
+  };
+}
 function rotateAroundPoint(p, center, angleDeg){
   const a = angleDeg*Math.PI/180;
   const dx=p.x-center.x, dy=p.y-center.y;
