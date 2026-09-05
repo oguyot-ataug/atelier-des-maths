@@ -105,6 +105,30 @@ document.getElementById('methode-demo-decimaux').innerHTML = `
           <button class="btn secondary" onclick="odImbriqueesDemo.reset()">Recommencer</button>
         </div>
       </div>
+
+      <div class="sub-header"><span class="letter">M</span><h4>Méthode : traduire une phrase en calcul ("C'est le produit de... par...")</h4></div>
+      <div class="def-box" style="margin-bottom:16px;">
+        <b>Le produit</b> de a par b, c'est a × b.<br>
+        <b>La somme</b> de a et b, c'est a + b.<br>
+        <b>La différence</b> de a et b, c'est a − b.<br>
+        <b>Le quotient</b> de a par b, c'est a ÷ b.
+      </div>
+      <div class="figure-wrap">
+        <p class="hint interaction-hint" style="margin-top:6px;">Phrase à traduire : "C'est la somme du produit de 3 par 4 et du quotient de 8 par 2." Cliquez sur "Étape suivante".</p>
+        <div class="step-display" id="od-phraseADisplay"></div>
+        <div class="figure-toolbar">
+          <button class="btn" onclick="odPhraseADemo.next()">Étape suivante →</button>
+          <button class="btn secondary" onclick="odPhraseADemo.reset()">Recommencer</button>
+        </div>
+      </div>
+      <div class="figure-wrap">
+        <p class="hint interaction-hint" style="margin-top:6px;">Autre phrase, structure différente : "Le produit de la différence de 17 et 5 par 8." Cliquez sur "Étape suivante".</p>
+        <div class="step-display" id="od-phraseBDisplay"></div>
+        <div class="figure-toolbar">
+          <button class="btn" onclick="odPhraseBDemo.next()">Étape suivante →</button>
+          <button class="btn secondary" onclick="odPhraseBDemo.reset()">Recommencer</button>
+        </div>
+      </div>
       `;
 document.getElementById('exos-demo-decimaux').innerHTML = `
       <div class="redaction-block">
@@ -178,18 +202,47 @@ function divisionPoseeReset(){ divisionPoseeIdx=0; renderDivisionPosee(); }
 
 /* ---- Méthode : calcul avec priorités ET parenthèses imbriquées combinées ---- */
 const OD_IMBRIQUEES_STEPS = [
-  {expr:'F = 3 × [(8 − 2) + 4 × (5 − 3)] − 10', note:"On repère les parenthèses les plus intérieures : (8 − 2) et (5 − 3)."},
-  {expr:'F = 3 × [6 + 4 × (5 − 3)] − 10', note:"On calcule la 1re parenthèse la plus intérieure : 8 − 2 = 6."},
-  {expr:'F = 3 × [6 + 4 × 2] − 10', note:"On calcule la 2e parenthèse la plus intérieure : 5 − 3 = 2."},
-  {expr:'F = 3 × [6 + 8] − 10', note:"À l'intérieur du crochet, la multiplication est prioritaire sur l'addition : 4 × 2 = 8."},
-  {expr:'F = 3 × 14 − 10', note:"On termine le calcul entre crochets : 6 + 8 = 14. Le crochet est résolu."},
-  {expr:'F = 42 − 10', note:"La multiplication est prioritaire sur la soustraction : 3 × 14 = 42."},
-  {expr:'F = 32', note:"Il ne reste que la soustraction : résultat final."},
+  {expr:'F = 3 × [(8 − 2) × 4 + (5 − 3)] − 10', note:"On repère les parenthèses les plus intérieures : (8 − 2) et (5 − 3)."},
+  {expr:'F = 3 × [6 × 4 + (5 − 3)] − 10', note:"On calcule la 1re parenthèse la plus intérieure : 8 − 2 = 6."},
+  {expr:'F = 3 × [6 × 4 + 2] − 10', note:"On calcule la 2e parenthèse la plus intérieure : 5 − 3 = 2."},
+  {expr:'F = 3 × [24 + 2] − 10', note:"À l'intérieur du crochet, la multiplication est prioritaire sur l'addition : 6 × 4 = 24. Sans la parenthèse (8 − 2), on aurait dû calculer 8 − 2 × 4 = 8 − 8 = 0 : un résultat totalement différent !"},
+  {expr:'F = 3 × 26 − 10', note:"On termine le calcul entre crochets : 24 + 2 = 26. Le crochet est résolu."},
+  {expr:'F = 78 − 10', note:"La multiplication est prioritaire sur la soustraction : 3 × 26 = 78."},
+  {expr:'F = 68', note:"Il ne reste que la soustraction : résultat final."},
 ];
 const odImbriqueesDemo = makeStepDemo(OD_IMBRIQUEES_STEPS, 'od-imbriqueesDisplay');
 
+/* ---- Méthode : traduire une phrase en calcul (produit/somme/différence/quotient) ----
+   Signalé : "j'aimerais une méthode animée sur le thème : c'est le produit de... par...
+   c'est la somme de... et... Puis c'est la somme du produit de 3 par 4 et du quotient de 8
+   par 2... Ou le produit de la différence de 17 et 5 par 8." Les 2 exemples combinés
+   suivent la même démarche : repérer d'abord l'opération EXTÉRIEURE (celle qui porte sur
+   "... et ..." ou "... par ..." au niveau le plus haut de la phrase), traduire ensuite
+   chaque partie séparément, puis combiner. Réponses vérifiées par calcul (16 et 96) avant
+   rédaction. */
+const OD_PHRASE_A_STEPS = [
+  {expr:'« la <b>somme</b> du produit de 3 par 4 et du quotient de 8 par 2 »', note:"On repère d'abord l'opération EXTÉRIEURE, celle qui porte sur l'ensemble de la phrase : « la somme de ... et de ... »."},
+  {expr:'somme( <b>produit de 3 par 4</b> , quotient de 8 par 2 )', note:"La 1re partie de la somme est « le produit de 3 par 4 »."},
+  {expr:'somme( 3 × 4 , <b>quotient de 8 par 2</b> )', note:"On traduit cette 1re partie : produit de 3 par 4, c'est 3 × 4. La 2e partie est « le quotient de 8 par 2 »."},
+  {expr:'somme( 3 × 4 , 8 ÷ 2 )', note:"On traduit la 2e partie : quotient de 8 par 2, c'est 8 ÷ 2."},
+  {expr:'F = (3 × 4) + (8 ÷ 2)', note:"On combine : une somme, c'est a + b. On retrouve bien la phrase complète traduite en calcul."},
+  {expr:'F = 12 + 4', note:"On calcule chaque partie : 3 × 4 = 12 et 8 ÷ 2 = 4."},
+  {expr:'F = 16', note:"Résultat final : 12 + 4 = 16."},
+];
+const odPhraseADemo = makeStepDemo(OD_PHRASE_A_STEPS, 'od-phraseADisplay');
+
+const OD_PHRASE_B_STEPS = [
+  {expr:'« le <b>produit</b> de la différence de 17 et 5 par 8 »', note:"On repère d'abord l'opération EXTÉRIEURE : « le produit de ... par ... » -- structure différente de l'exemple précédent."},
+  {expr:'produit( <b>différence de 17 et 5</b> , 8 )', note:"Le 1er facteur du produit est « la différence de 17 et 5 »."},
+  {expr:'produit( 17 − 5 , 8 )', note:"On traduit ce 1er facteur : différence de 17 et 5, c'est 17 − 5. Le 2e facteur est directement le nombre 8."},
+  {expr:'F = (17 − 5) × 8', note:"On combine : un produit, c'est a × b. La parenthèse est nécessaire pour bien montrer que 17 − 5 est calculé AVANT la multiplication."},
+  {expr:'F = 12 × 8', note:"On calcule d'abord la parenthèse : 17 − 5 = 12."},
+  {expr:'F = 96', note:"Résultat final : 12 × 8 = 96."},
+];
+const odPhraseBDemo = makeStepDemo(OD_PHRASE_B_STEPS, 'od-phraseBDisplay');
+
 DEMO_REGISTRY['5e|Opérations sur les nombres décimaux'] = { cours:'cours-demo-decimaux', methode:'methode-demo-decimaux', exos:'exos-demo-decimaux', histoire:'histoire-demo-decimaux',
-  init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); odImbriqueesDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };
+  init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); odImbriqueesDemo.reset(); odPhraseADemo.reset(); odPhraseBDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };
 
 DEMO_QUIZZES['5e|Opérations sur les nombres décimaux'] = [
   {q:"Que vaut 4 + 2 × 3 ?",
