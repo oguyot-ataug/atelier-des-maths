@@ -487,7 +487,7 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
 .exo-correction-toggle .gicon{font-size:1.3rem;display:block;transition:transform .2s;}
 .exo-correction-toggle.open .gicon{transform:rotate(180deg);}
 .exo-correction{
-  display:none;margin-top:14px;padding:14px;background:var(--cream-box);border-radius:8px;
+  display:none;margin-top:14px;padding:14px;background:#F2F3F5;border-radius:8px;
 }
 .exo-correction.open{display:block;animation:fadein .25s ease;}
 

@@ -225,6 +225,51 @@ document.getElementById('exos-demo-decimaux').innerHTML = `
           </div>
         </div>
       </div>
+
+      <div class="redaction-block">
+        <h3>Exercice libre : choisis tes propres nombres</h3>
+        <p class="hint" style="margin:0 0 12px;">Complète chaque phrase avec les nombres de ton choix : l'expression et son résultat s'affichent au fur et à mesure.</p>
+        <div class="exo-card" id="od-libre-somme" style="padding-bottom:16px;">
+          <div class="num">La somme de ... et ...</div>
+          <div class="tool-row" style="margin:8px 0;">
+            <span>La somme de</span>
+            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('somme')">
+            <span>et</span>
+            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('somme')">
+          </div>
+          <p id="od-libre-somme-result" class="hint" style="margin:0;font-weight:700;"></p>
+        </div>
+        <div class="exo-card" id="od-libre-difference" style="padding-bottom:16px;">
+          <div class="num">La différence de ... et ...</div>
+          <div class="tool-row" style="margin:8px 0;">
+            <span>La différence de</span>
+            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('difference')">
+            <span>et</span>
+            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('difference')">
+          </div>
+          <p id="od-libre-difference-result" class="hint" style="margin:0;font-weight:700;"></p>
+        </div>
+        <div class="exo-card" id="od-libre-produit" style="padding-bottom:16px;">
+          <div class="num">Le produit de ... par ...</div>
+          <div class="tool-row" style="margin:8px 0;">
+            <span>Le produit de</span>
+            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('produit')">
+            <span>par</span>
+            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('produit')">
+          </div>
+          <p id="od-libre-produit-result" class="hint" style="margin:0;font-weight:700;"></p>
+        </div>
+        <div class="exo-card" id="od-libre-quotient" style="padding-bottom:16px;">
+          <div class="num">Le quotient de ... par ...</div>
+          <div class="tool-row" style="margin:8px 0;">
+            <span>Le quotient de</span>
+            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('quotient')">
+            <span>par</span>
+            <input type="number" class="od-libre-input" style="width:80px;" oninput="odLibreUpdate('quotient')">
+          </div>
+          <p id="od-libre-quotient-result" class="hint" style="margin:0;font-weight:700;"></p>
+        </div>
+      </div>
 `;
 
 const ENCHAINEMENT_STEPS = [
@@ -346,6 +391,26 @@ const OD_PHRASE_B_STEPS = [
   {expr:'F = (17 − 5) × 8', note:"17 et 5 sont déjà des nombres : l'expression est maintenant complète !"},
 ];
 const odPhraseBDemo = makeSingleStepDemo(OD_PHRASE_B_STEPS, 'od-phraseBDisplay');
+
+// Exercice libre : l'élève choisit ses propres nombres pour chacune des 4 opérations,
+// l'expression et son résultat s'affichent en direct. Arrondi à 4 décimales (sans zéros
+// inutiles) pour éviter les artefacts d'arrondi flottant (ex. 0,1 + 0,2).
+function odLibreRound(n){
+  return Math.round(n*10000)/10000;
+}
+function odLibreUpdate(type){
+  const card = document.getElementById('od-libre-'+type);
+  const inputs = card.querySelectorAll('.od-libre-input');
+  const a = parseFloat(inputs[0].value);
+  const b = parseFloat(inputs[1].value);
+  const resultEl = document.getElementById('od-libre-'+type+'-result');
+  if(isNaN(a) || isNaN(b)){ resultEl.textContent = ''; return; }
+  const symbols = {somme:'+', difference:'−', produit:'×', quotient:'÷'};
+  if(type==='quotient' && b===0){ resultEl.textContent = 'Division par zéro impossible.'; return; }
+  const ops = {somme:(x,y)=>x+y, difference:(x,y)=>x-y, produit:(x,y)=>x*y, quotient:(x,y)=>x/y};
+  const result = odLibreRound(ops[type](a,b));
+  resultEl.textContent = `= ${a} ${symbols[type]} ${b} = ${result}`;
+}
 
 DEMO_REGISTRY['5e|Opérations sur les nombres décimaux'] = { cours:'cours-demo-decimaux', methode:'methode-demo-decimaux', exos:'exos-demo-decimaux', histoire:'histoire-demo-decimaux',
   init:()=>{ enchainementDemo.reset(); parenthesesDemo.reset(); divisionPoseeReset(); odImbriqueesDemo.reset(); odPhraseADemo.reset(); odPhraseBDemo.reset(); injectCourseAddButtons(document.getElementById('cours-demo-decimaux')); injectCourseAddButtons(document.getElementById('methode-demo-decimaux')); } };
