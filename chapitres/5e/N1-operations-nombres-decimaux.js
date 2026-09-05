@@ -213,42 +213,61 @@ const OD_IMBRIQUEES_STEPS = [
 const odImbriqueesDemo = makeStepDemo(OD_IMBRIQUEES_STEPS, 'od-imbriqueesDisplay');
 
 /* ---- Méthode : traduire une phrase en calcul (produit/somme/différence/quotient) ----
-   Signalé : "je veux juste faire écrire l'expression. On peut repérer l'expression... le
-   tout est une somme donc j'écris sous la forme ...+... Ensuite je complète petit à petit.
-   Quand je repère somme je cherche le et correspondant, je les mets en couleur." Démarche
-   en 3 temps : (1) on repère l'opération EXTÉRIEURE et on écrit directement le SQUELETTE
-   (... + ... ou ... × ...) ; (2) on repère le mot-lien correspondant (le "et" d'une somme,
-   le "par" d'un produit) et on met en couleur les 2 parties qu'il sépare (orange = 1er
-   terme, bleu = 2e terme) ; (3) on complète le squelette petit à petit, une couleur à la
-   fois. Réponses vérifiées par calcul (16 et 96) avant rédaction. */
-const OD_COLOR1 = 'color:var(--accent-orange);font-weight:700;';
-const OD_COLOR2 = 'color:var(--accent);font-weight:700;';
-const OD_MARK1 = 'background:rgba(255,130,8,.18);'+OD_COLOR1+'border-radius:4px;padding:1px 5px;';
-const OD_MARK2 = 'background:rgba(12,91,160,.15);'+OD_COLOR2+'border-radius:4px;padding:1px 5px;';
-const OD_SKELETON = txt => `<div style="margin-top:12px;font-size:1.3rem;">${txt}</div>`;
+   Signalé : "si tu mets somme en vert, tu mets aussi et en vert directement. Sur la phrase de
+   départ, tu soulignes en bleu ce qui est à gauche du et puis en orange à droite. Les
+   pointillés ont ces couleurs pour bien montrer où tout se place. Ensuite on s'intéresse à la
+   partie bleue et on redécompose de la même façon mais toujours sur le rendu final qui se
+   construit petit à petit." Codage couleur : VERT = le mot-clé de l'opération ET son
+   mot-lien correspondant (et/par), toujours ensemble ; BLEU = ce qui est à GAUCHE du
+   mot-lien ; ORANGE = ce qui est à DROITE -- ces mêmes couleurs se retrouvent aussitôt dans
+   le squelette (les "…" à compléter). Une fois une partie identifiée, on zoome dessus et on
+   lui applique la MÊME démarche récursivement (réutilisant bleu/orange localement), en
+   modifiant petit à petit le même rendu final déjà affiché -- jamais en le remplaçant.
+   Réponses vérifiées par calcul (16 et 96) avant rédaction. */
+const OD_GREEN = 'color:#1F6B3A;font-weight:700;';
+const OD_BLUE = 'color:var(--accent);font-weight:700;';
+const OD_ORANGE = 'color:var(--accent-orange);font-weight:700;';
+const OD_U_BLUE = 'text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;';
+const OD_U_ORANGE = 'text-decoration:underline;text-decoration-color:var(--accent-orange);text-decoration-thickness:2px;';
+const OD_SKEL = txt => `<div style="margin-top:14px;font-size:1.3rem;">${txt}</div>`;
+
 const OD_PHRASE_A_STEPS = [
-  {expr:`la <b style="color:#1F6B3A;">somme</b> du produit de 3 par 4 et du quotient de 8 par 2${OD_SKELETON('… + …')}`,
-   note:"Le tout est une somme : j'écris directement le squelette … + … , que je vais compléter petit à petit."},
-  {expr:`la somme du <span style="${OD_MARK1}">produit de 3 par 4</span> <b style="text-decoration:underline;">et</b> du <span style="${OD_MARK2}">quotient de 8 par 2</span>`+
-    OD_SKELETON(`<span style="${OD_COLOR1}">(produit de 3 par 4)</span> + <span style="${OD_COLOR2}">(quotient de 8 par 2)</span>`),
-   note:"Je repère le « et » qui correspond au « + » : je mets en orange la 1re partie de la somme, en bleu la 2e."},
-  {expr:`<span style="${OD_COLOR1}">3 × 4</span> + <span style="${OD_COLOR2}">(quotient de 8 par 2)</span>`,
-   note:"Je complète la partie orange : produit de 3 par 4, c'est 3 × 4."},
-  {expr:`3 × 4 + <span style="${OD_COLOR2}">8 ÷ 2</span>`,
-   note:"Je complète la partie bleue : quotient de 8 par 2, c'est 8 ÷ 2. L'expression est maintenant complète."},
+  {expr:`la <b style="${OD_GREEN}">somme</b> du produit de 3 par 4 <b style="${OD_GREEN}">et</b> du quotient de 8 par 2`,
+   note:"Je repère l'opération : une SOMME. Le mot-lien qui lui correspond est « et » : je mets les deux en vert ensemble."},
+  {expr:`la <b style="${OD_GREEN}">somme</b> du <span style="${OD_BLUE}${OD_U_BLUE}">produit de 3 par 4</span> <b style="${OD_GREEN}">et</b> du <span style="${OD_ORANGE}${OD_U_ORANGE}">quotient de 8 par 2</span>`+
+    OD_SKEL(`<span style="${OD_BLUE}">…</span> + <span style="${OD_ORANGE}">…</span>`),
+   note:"Je souligne en bleu ce qui est à gauche du « et », en orange ce qui est à droite -- et je place ces mêmes couleurs dans les pointillés du squelette, pour montrer où chaque partie ira."},
+  {expr:`le <b style="${OD_GREEN}">produit</b> de 3 <b style="${OD_GREEN}">par</b> 4`+
+    OD_SKEL(`<span style="${OD_BLUE}">…</span> + <span style="${OD_ORANGE}">…</span>`),
+   note:"Je m'intéresse maintenant à la partie bleue : « produit de 3 par 4 ». C'est un produit, de mot-lien « par » : même démarche, je les mets en vert."},
+  {expr:`le produit de <span style="${OD_BLUE}${OD_U_BLUE}">3</span> <b style="${OD_GREEN}">par</b> <span style="${OD_ORANGE}${OD_U_ORANGE}">4</span>`+
+    OD_SKEL(`<span style="${OD_BLUE}">3</span> × <span style="${OD_ORANGE}">4</span> + <span style="${OD_ORANGE}">…</span>`),
+   note:"Je souligne 3 en bleu, 4 en orange -- et je les place directement dans le squelette, à l'endroit de la partie bleue de tout à l'heure."},
+  {expr:OD_SKEL('3 × 4 + <span style="'+OD_ORANGE+'">…</span>'),
+   note:"3 et 4 sont déjà des nombres : rien à décomposer de plus, cette partie est terminée (elle redevient neutre)."},
+  {expr:`le <b style="${OD_GREEN}">quotient</b> de 8 <b style="${OD_GREEN}">par</b> 2`+OD_SKEL('3 × 4 + <span style="'+OD_ORANGE+'">…</span>'),
+   note:"Je m'intéresse maintenant à la partie orange : « quotient de 8 par 2 ». C'est un quotient, de mot-lien « par »."},
+  {expr:`le quotient de <span style="${OD_BLUE}${OD_U_BLUE}">8</span> <b style="${OD_GREEN}">par</b> <span style="${OD_ORANGE}${OD_U_ORANGE}">2</span>`+
+    OD_SKEL(`3 × 4 + <span style="${OD_BLUE}">8</span> ÷ <span style="${OD_ORANGE}">2</span>`),
+   note:"Je souligne 8 en bleu, 2 en orange -- et je complète le squelette."},
+  {expr:'F = 3 × 4 + 8 ÷ 2', note:"8 et 2 sont déjà des nombres : l'expression est maintenant complète !"},
   {expr:'F = 12 + 4', note:"Je calcule chaque partie : 3 × 4 = 12 et 8 ÷ 2 = 4."},
   {expr:'F = 16', note:"Résultat final : 12 + 4 = 16."},
 ];
 const odPhraseADemo = makeStepDemo(OD_PHRASE_A_STEPS, 'od-phraseADisplay');
 
 const OD_PHRASE_B_STEPS = [
-  {expr:`le <b style="color:#1F6B3A;">produit</b> de la différence de 17 et 5 par 8${OD_SKELETON('… × …')}`,
-   note:"Le tout est un produit : j'écris directement le squelette … × … -- structure différente de l'exemple précédent."},
-  {expr:`le produit de <span style="${OD_MARK1}">la différence de 17 et 5</span> <b style="text-decoration:underline;">par</b> <span style="${OD_MARK2}">8</span>`+
-    OD_SKELETON(`<span style="${OD_COLOR1}">(différence de 17 et 5)</span> × <span style="${OD_COLOR2}">8</span>`),
-   note:"Je repère le « par » qui correspond au « × » (attention, le « et » de « différence de 17 et 5 » appartient à une AUTRE partie de la phrase, pas à celui-ci) : orange = 1er facteur, bleu = 2e facteur."},
-  {expr:`F = <span style="${OD_COLOR1}">(17 − 5)</span> × <span style="${OD_COLOR2}">8</span>`,
-   note:"Je complète la partie orange : différence de 17 et 5, c'est 17 − 5. La parenthèse est nécessaire car ce résultat va être multiplié. La partie bleue était déjà un nombre : rien à compléter."},
+  {expr:`le <b style="${OD_GREEN}">produit</b> de la différence de 17 et 5 <b style="${OD_GREEN}">par</b> 8`,
+   note:"Je repère l'opération : un PRODUIT. Le mot-lien qui lui correspond est « par » -- attention, ne pas confondre avec le « et » de « différence de 17 et 5 », qui appartient à une autre partie. Je mets « produit » et « par » en vert ensemble."},
+  {expr:`le <b style="${OD_GREEN}">produit</b> de <span style="${OD_BLUE}${OD_U_BLUE}">la différence de 17 et 5</span> <b style="${OD_GREEN}">par</b> <span style="${OD_ORANGE}${OD_U_ORANGE}">8</span>`+
+    OD_SKEL(`<span style="${OD_BLUE}">…</span> × <span style="${OD_ORANGE}">8</span>`),
+   note:"Je souligne en bleu ce qui est à gauche du « par », en orange ce qui est à droite -- ici, la partie orange est déjà un nombre (8), je la place directement dans le squelette."},
+  {expr:`la <b style="${OD_GREEN}">différence</b> de 17 <b style="${OD_GREEN}">et</b> 5`+OD_SKEL(`<span style="${OD_BLUE}">…</span> × 8`),
+   note:"Je m'intéresse maintenant à la partie bleue : « différence de 17 et 5 ». C'est une différence, de mot-lien « et » (celui-ci, à l'intérieur de cette partie)."},
+  {expr:`la différence de <span style="${OD_BLUE}${OD_U_BLUE}">17</span> <b style="${OD_GREEN}">et</b> <span style="${OD_ORANGE}${OD_U_ORANGE}">5</span>`+
+    OD_SKEL(`(<span style="${OD_BLUE}">17</span> − <span style="${OD_ORANGE}">5</span>) × 8`),
+   note:"Je souligne 17 en bleu, 5 en orange -- et je les place dans le squelette. La parenthèse est nécessaire car ce résultat va ensuite être multiplié."},
+  {expr:'F = (17 − 5) × 8', note:"17 et 5 sont déjà des nombres : l'expression est maintenant complète !"},
   {expr:'F = 12 × 8', note:"Je calcule la parenthèse : 17 − 5 = 12."},
   {expr:'F = 96', note:"Résultat final : 12 × 8 = 96."},
 ];
