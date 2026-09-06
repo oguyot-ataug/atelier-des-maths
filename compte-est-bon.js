@@ -214,7 +214,7 @@ function cebRenderSetup(){
    demandé : "paramétrable avec un disque à tourner entre 0 et 300 secondes". 0° = tout en
    haut, sens horaire. Arrondi à 5 secondes près (sélection plus confortable qu'à la seconde
    près). Fonctionne à la souris comme au tactile (pointerdown/move/up unifiés). */
-const CEB_DIAL_MAX = 300;
+const CEB_DIAL_MAX = 360;
 function cebDialValueToXY(value, radius, cx, cy){
   const angle = (value/CEB_DIAL_MAX)*2*Math.PI - Math.PI/2;
   return { x: cx+radius*Math.cos(angle), y: cy+radius*Math.sin(angle) };
@@ -239,12 +239,13 @@ function cebRenderTimerDial(container){
   container.innerHTML = `
     <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
       <svg id="cebDialSvg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="touch-action:none;cursor:pointer;">
-        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(28,43,57,.12)" stroke-width="10"/>
-        ${val>0 ? `<path d="M ${arcStart.x} ${arcStart.y} A ${r} ${r} 0 ${largeArc} 1 ${arcEnd.x} ${arcEnd.y}" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round"/>` : ''}
-        <circle cx="${handle.x}" cy="${handle.y}" r="11" fill="var(--accent)" stroke="#fff" stroke-width="3"/>
+        <circle cx="${cx}" cy="${cy}" r="${size/2}" fill="transparent"/>
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(28,43,57,.12)" stroke-width="6"/>
+        ${val>0 ? `<path d="M ${arcStart.x} ${arcStart.y} A ${r} ${r} 0 ${largeArc} 1 ${arcEnd.x} ${arcEnd.y}" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"/>` : ''}
+        <circle cx="${handle.x}" cy="${handle.y}" r="7" fill="var(--accent)" stroke="#fff" stroke-width="2"/>
         <text x="${cx}" y="${cy+7}" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="22" fill="var(--ink)">${m}:${String(s).padStart(2,'0')}</text>
       </svg>
-      <p class="hint" style="margin:0;max-width:180px;">Faites glisser le point autour du disque pour régler la durée (jusqu'à 5 min).</p>
+      <p class="hint" style="margin:0;max-width:180px;">Faites glisser le point autour du disque pour régler la durée (jusqu'à 6 min).</p>
     </div>
   `;
   const svg = document.getElementById('cebDialSvg');
