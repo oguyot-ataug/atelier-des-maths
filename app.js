@@ -3924,6 +3924,55 @@ function groupedEntriesHTML(entries, renderItem){
   if(lastKey!==null) html += `<div class="nb-page-footer">${escapeHtml(currentChapitre)}</div>`;
   return html;
 }
+/* Variante SANS l'en-tête de date répété (utilisée à l'intérieur d'une section d'accordéon,
+   où la date est déjà affichée une fois dans l'en-tête cliquable) -- regroupe seulement par
+   chapitre au sein d'une même date. */
+function groupedByChapitreHTML(entries, renderItem){
+  let html=''; let lastChapitre=null;
+  entries.forEach((e,i)=>{
+    const chap = e.chapitre||'';
+    if(chap!==lastChapitre){
+      if(lastChapitre!==null) html += `<div class="nb-page-footer">${escapeHtml(lastChapitre)}</div><hr class="nb-daysep">`;
+      lastChapitre = chap;
+    }
+    html+=renderItem(e,i);
+  });
+  if(lastChapitre!==null) html += `<div class="nb-page-footer">${escapeHtml(lastChapitre)}</div>`;
+  return html;
+}
+/* Regroupe les entrées en blocs accordéon PAR DATE -- demandé : "faire des blocs accordéon par
+   date" (alternative à un simple agrandissement de la hauteur, plus utile à mesure que le
+   cahier se remplit sur toute une année). Section la plus récente ouverte par défaut, les
+   autres repliées. */
+function groupedEntriesAccordionHTML(entries, renderItem){
+  const dateGroups = [];
+  entries.forEach(e=>{
+    const d = e.date||'';
+    let grp = dateGroups.find(g=>g.date===d);
+    if(!grp){ grp = {date:d, entries:[]}; dateGroups.push(grp); }
+    grp.entries.push(e);
+  });
+  const mostRecentIdx = dateGroups.length-1;
+  return dateGroups.map((grp, idx)=>{
+    const isOpen = idx===mostRecentIdx;
+    const accId = 'nbacc-'+idx;
+    const inner = groupedByChapitreHTML(grp.entries, renderItem);
+    return `<div class="nb-accordion-section">
+      <button type="button" class="nb-accordion-header" onclick="toggleNbAccordion('${accId}')">
+        <span class="gicon nb-accordion-chevron${isOpen?' open':''}">expand_more</span>
+        <span>${fmtDateFR(grp.date)}</span>
+        <span class="nb-accordion-count">${grp.entries.length} bloc${grp.entries.length>1?'s':''}</span>
+      </button>
+      <div class="nb-accordion-body${isOpen?' open':''}" id="${accId}">${inner}</div>
+    </div>`;
+  }).join('');
+}
+function toggleNbAccordion(id){
+  const body = document.getElementById(id);
+  const isOpen = body.classList.toggle('open');
+  const chevron = body.previousElementSibling.querySelector('.nb-accordion-chevron');
+  chevron.classList.toggle('open', isOpen);
+}
 let corListFilterDate = todayISO(); // par défaut, la date du jour -- évite d'afficher toutes
                                      // les corrections de l'année à chaque ouverture.
 function applyCorListFilter(){
@@ -4008,7 +4057,7 @@ function buildCahierNotebookHTML(editable){
   }
   if(!cahier.length) return '<p class="hint">Le cahier est vide pour l\'instant.</p>';
   if(!list.length) return '<p class="hint">Aucune correction dans cette période.</p>';
-  return groupedEntriesHTML(list, (e)=>entryRowsHTML(e, cahier.indexOf(e), editable));
+  return groupedEntriesAccordionHTML(list, (e)=>entryRowsHTML(e, cahier.indexOf(e), editable));
 }
 async function removeCahierEntryFromNotebook(i, btn){
   if(btn && btn.dataset.armed!=='1'){
