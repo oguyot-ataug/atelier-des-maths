@@ -488,7 +488,7 @@ function cebShowSolution(){
   const exactTag = cebState.solution.value===cebState.target ? '' : ` (le plus proche possible : ${cebState.solution.value})`;
   box.innerHTML = `
     <p class="hint" style="margin:14px 0 4px;">Exemple de solution${exactTag} :</p>
-    <p style="margin:0;font-size:1.05rem;"><span class="tex">${cebState.solution.expr} = ${cebState.solution.value}</span></p>
+    <p style="margin:0;font-size:1.05rem;color:#fff;"><span class="tex">${cebState.solution.expr} = ${cebState.solution.value}</span></p>
   `;
   if(window.renderStaticMath) renderStaticMath(box);
 }
