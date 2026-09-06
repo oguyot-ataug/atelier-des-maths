@@ -304,7 +304,7 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .ceb-game #cebHint, .ceb-game .hint{color:rgba(255,255,255,.85) !important;}
 .ceb-game #cebStepsBox{background:rgba(255,255,255,.08);border-radius:12px;padding:14px 18px;}
 .ceb-game #cebStepsBox .hint{color:rgba(255,255,255,.7) !important;}
-.ceb-game #cebStepsBox li{color:#fff;}
+.ceb-game #cebStepsBox li, .ceb-game #cebStepsBox > div > div{color:#fff;}
 .ceb-game button.btn.secondary{background:rgba(255,255,255,.16);color:#fff;}
 .ceb-game button.btn.secondary:hover{background:rgba(255,255,255,.26);}
 .ceb-game button.btn.secondary:disabled{opacity:.35;}
