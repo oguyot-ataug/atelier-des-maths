@@ -118,10 +118,24 @@ MARTIN Marie	mmartin		0123456A	6eA"></textarea>
 
   <div class="tab-panel" id="admin-panel-listing">
     <div class="tool-shell">
+      <div class="nb-accordion-section" style="margin-bottom:16px;">
+        <button type="button" class="nb-accordion-header" style="--acc-color:#5B2F9E;--acc-bg:rgba(91,47,158,.05);" onclick="toggleNbAccordion('accOutilsAvances')">
+          <span class="gicon nb-accordion-chevron">expand_more</span>
+          <span class="gicon">build</span><span>Outils avancés</span>
+        </button>
+        <div class="nb-accordion-body" id="accOutilsAvances">
+          <div class="tool-row" style="margin-bottom:8px;">
+            <button class="btn secondary" onclick="adminSyncEmails()">🔧 Réparer les identifiants manquants</button>
+            <button class="btn secondary" onclick="adminGenerateAllInviteLinks()"><span class=gicon>link</span> Générer tous les liens d'invitation</button>
+            <button class="btn secondary" onclick="adminShowExistingInviteLinks()"><span class=gicon>refresh</span> Réafficher les liens déjà générés</button>
+          </div>
+          <p class="hint" id="adminSyncEmailsStatus" style="margin:0 0 6px;"></p>
+          <span class="hint" id="adminAccBulkStatus" style="margin:0;"></span>
+          <div id="adminInviteLinksTable" class="hint" style="margin-top:8px;"></div>
+        </div>
+      </div>
       <button class="btn secondary" style="float:right;" onclick="adminRefreshListings()"><span class=gicon>refresh</span> Actualiser</button>
-      <button class="btn secondary" style="float:right;margin-right:8px;" onclick="adminSyncEmails()">🔧 Réparer les identifiants manquants</button>
-      <p class="hint" id="adminSyncEmailsStatus" style="clear:right;margin:0 0 6px;"></p>
-      <p class="example-title" style="margin:16px 0 6px;">Comptes</p>
+      <p class="example-title" style="margin:16px 0 6px;color:#0C5BA0;">Comptes</p>
       <div class="tool-row" style="margin-bottom:8px;flex-wrap:wrap;">
         <input type="text" id="adminAccFilterSearch" placeholder="Rechercher (nom, identifiant)" style="width:200px;" oninput="adminRenderAccountsListing()">
         <select id="adminAccFilterRole" onchange="adminRenderAccountsListing()">
@@ -137,13 +151,9 @@ MARTIN Marie	mmartin		0123456A	6eA"></textarea>
       <div class="tool-row" style="margin-bottom:8px;align-items:center;">
         <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><input type="checkbox" id="adminAccSelectAll" onchange="adminToggleSelectAllAccounts(this.checked)"> Tout sélectionner (visibles)</label>
         <button class="btn secondary" style="color:#a83c1f;" onclick="adminDeleteSelectedAccounts()"><span class=gicon>delete</span> Supprimer la sélection</button>
-        <button class="btn secondary" onclick="adminGenerateAllInviteLinks()"><span class=gicon>link</span> Générer tous les liens d'invitation</button>
-        <button class="btn secondary" onclick="adminShowExistingInviteLinks()"><span class=gicon>refresh</span> Réafficher les liens déjà générés</button>
-        <span class="hint" id="adminAccBulkStatus" style="margin:0;"></span>
       </div>
-      <div id="adminInviteLinksTable" class="hint" style="margin-bottom:14px;"></div>
       <div id="adminAccountsListing" class="hint"></div>
-      <p class="example-title" style="margin:16px 0 6px;">Classes</p>
+      <p class="example-title" style="margin:16px 0 6px;color:#26AAB1;">Classes</p>
       <div id="adminClassesListing" class="hint"></div>
     </div>
   </div>
@@ -726,11 +736,20 @@ function adminRenderAccountsListing(){
       </td>
     </tr>`;
   };
-  const tableHTML = (title, list, total) => `
-    <p class="example-title" style="margin:16px 0 6px;">${title} (${list.length}${list.length!==total?'/'+total:''})</p>
-    ${list.length ? `<table class="sup-table"><thead><tr><th></th><th>Nom</th><th>Identifiant</th><th>Statut</th><th>Dernière connexion</th><th style="text-align:right;">Actions</th></tr></thead><tbody>${list.map(rowHTML).join('')}</tbody></table>` : '<div class="hint">aucun</div>'}
+  const accordionTableHTML = (id, color, icon, title, list, total) => `
+    <div class="nb-accordion-section">
+      <button type="button" class="nb-accordion-header" style="--acc-color:${color};--acc-bg:${color}0D;" onclick="toggleNbAccordion('${id}')">
+        <span class="gicon nb-accordion-chevron open">expand_more</span>
+        <span class="gicon">${icon}</span><span>${title}</span>
+        <span class="nb-accordion-count">${list.length}${list.length!==total?'/'+total:''}</span>
+      </button>
+      <div class="nb-accordion-body open" id="${id}">
+        ${list.length ? `<table class="sup-table"><thead><tr><th></th><th>Nom</th><th>Identifiant</th><th>Statut</th><th>Dernière connexion</th><th style="text-align:right;">Actions</th></tr></thead><tbody>${list.map(rowHTML).join('')}</tbody></table>` : '<div class="hint">aucun</div>'}
+      </div>
+    </div>
   `;
-  accEl.innerHTML = tableHTML('Profs/admins', filteredProfs, profs.length) + tableHTML('Élèves', filteredEleves, eleves.length);
+  accEl.innerHTML = accordionTableHTML('accComptesProfs', '#0C5BA0', 'school', 'Profs/admins', filteredProfs, profs.length)
+    + accordionTableHTML('accComptesEleves', '#FF8208', 'group', 'Élèves', filteredEleves, eleves.length);
   document.getElementById('adminAccSelectAll').checked = false;
 }
 function adminToggleSelectAllAccounts(checked){
@@ -812,7 +831,7 @@ async function adminRefreshListings(){
   const classesEl = document.getElementById('adminClassesListing');
   if(classesEl){
     if(!classesList || !classesList.length){ classesEl.textContent = 'Aucune classe créée pour l\'instant.'; return; }
-    classesEl.innerHTML = classesList.map(c=>{
+    classesEl.innerHTML = classesList.map((c,idx)=>{
       const profsHere = (classTeachers||[]).filter(r=>r.class_id===c.id);
       const elevesHere = (classStudents||[]).filter(r=>r.class_id===c.id).map(r=>r.profiles && (r.profiles.nom||r.profiles.email)).filter(Boolean);
       const profsHtml = profsHere.length ? profsHere.map(r=>{
@@ -828,20 +847,30 @@ async function adminRefreshListings(){
           <span class="hint" style="margin:0;">${s.cloturee?'clôturée':'active'}</span>
           ${s.cloturee?'':`<button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="adminCloturerPermisSession('${s.id}')">Clôturer</button>`}
         </div>`).join('') : '<p class="hint" style="margin:4px 0 0;">Aucune session pour l\'instant.</p>';
-      return `<div style="margin-bottom:14px;padding:10px;border:1px solid rgba(28,43,57,.12);border-radius:8px;"><b>${escapeHtml(c.nom)}</b><br>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;">
-          <label class="hint" style="margin:0;">Niveau : <select id="classNiveau_${c.id}"><option value="6e" ${c.niveau==='6e'?'selected':''}>6e</option><option value="5e" ${c.niveau==='5e'?'selected':''}>5e</option></select></label>
-          <label class="hint" style="margin:0;">UAI : <input type="text" id="classUai_${c.id}" value="${escapeHtml(c.uai||'')}" style="width:110px;"></label>
-          <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="adminUpdateClassNiveauUai('${c.id}')">Enregistrer</button>
-          <span class="hint" id="classSaveStatus_${c.id}" style="margin:0;"></span>
+      const color = c.niveau==='6e' ? '#FF8208' : '#0C5BA0';
+      const accId = 'accClasse'+idx;
+      return `<div class="nb-accordion-section">
+        <button type="button" class="nb-accordion-header" style="--acc-color:${color};--acc-bg:${color}0D;" onclick="toggleNbAccordion('${accId}')">
+          <span class="gicon nb-accordion-chevron">expand_more</span>
+          <span class="gicon">school</span><span>${escapeHtml(c.nom)}</span>
+          <span class="nb-accordion-count">${c.niveau} · ${elevesHere.length} élève${elevesHere.length>1?'s':''}</span>
+        </button>
+        <div class="nb-accordion-body" id="${accId}">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;">
+            <label class="hint" style="margin:0;">Niveau : <select id="classNiveau_${c.id}"><option value="6e" ${c.niveau==='6e'?'selected':''}>6e</option><option value="5e" ${c.niveau==='5e'?'selected':''}>5e</option></select></label>
+            <label class="hint" style="margin:0;">UAI : <input type="text" id="classUai_${c.id}" value="${escapeHtml(c.uai||'')}" style="width:110px;"></label>
+            <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="adminUpdateClassNiveauUai('${c.id}')">Enregistrer</button>
+            <span class="hint" id="classSaveStatus_${c.id}" style="margin:0;"></span>
+          </div>
+          Profs : ${profsHtml}<br>
+          Élèves (${elevesHere.length}) : ${elevesHere.map(escapeHtml).join(', ')||'aucun'}
+          <div style="margin-top:6px;padding:8px;background:rgba(31,58,92,.05);border-radius:6px;">
+            <b style="font-size:.85rem;"><span class=gicon>school</span> Permis Rapporteur</b>
+            <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="adminDemarrerPermisSession('${c.id}')">+ Nouvelle session</button>
+            ${sessionsHtml}
+          </div>
         </div>
-        Profs : ${profsHtml}<br>
-        Élèves (${elevesHere.length}) : ${elevesHere.map(escapeHtml).join(', ')||'aucun'}
-        <div style="margin-top:6px;padding:8px;background:rgba(31,58,92,.05);border-radius:6px;">
-          <b style="font-size:.85rem;"><span class=gicon>school</span> Permis Rapporteur</b>
-          <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="adminDemarrerPermisSession('${c.id}')">+ Nouvelle session</button>
-          ${sessionsHtml}
-        </div></div>`;
+      </div>`;
     }).join('');
   }
 }
