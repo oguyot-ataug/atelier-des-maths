@@ -304,6 +304,11 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .ceb-game #cebStepsBox{background:rgba(255,255,255,.08);border-radius:12px;padding:14px 18px;}
 .ceb-game #cebStepsBox .hint{color:rgba(255,255,255,.7) !important;}
 .ceb-game #cebStepsBox li{color:#fff;}
+.ceb-game button.btn.secondary{background:rgba(255,255,255,.16);color:#fff;}
+.ceb-game button.btn.secondary:hover{background:rgba(255,255,255,.26);}
+.ceb-game button.btn.secondary:disabled{opacity:.35;}
+.ceb-game button.btn:not(.secondary){background:#fff;color:var(--accent);}
+.ceb-game button.btn:not(.secondary):hover{background:#fff;filter:brightness(.96);}
 .ceb-fullscreen-btn{
   position:absolute;top:14px;right:14px;border:none;background:rgba(28,43,57,.08);color:var(--ink);
   border-radius:50%;width:34px;height:34px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
@@ -312,8 +317,20 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .ceb-fullscreen-btn:hover{background:rgba(28,43,57,.16);}
 .ceb-game .ceb-fullscreen-btn{background:rgba(255,255,255,.15);color:#fff;}
 .ceb-game .ceb-fullscreen-btn:hover{background:rgba(255,255,255,.28);}
+.ceb-result-banner{
+  background:rgba(255,255,255,.1);border-radius:14px;padding:16px 20px;margin-top:4px;
+  border:1px solid rgba(255,255,255,.2);
+}
+.ceb-tile-frozen{cursor:default !important;}
+.ceb-tile-frozen:hover{transform:none !important;box-shadow:0 3px 0 rgba(28,43,57,.15),0 4px 10px rgba(28,43,57,.08) !important;}
 #cebRoot:fullscreen{background:var(--paper);display:flex;align-items:center;justify-content:center;padding:40px;}
-#cebRoot:fullscreen .ceb-game{max-width:900px;width:100%;}
+#cebRoot:fullscreen .ceb-game{max-width:1300px;width:100%;padding:50px 40px;}
+#cebRoot:fullscreen .ceb-target-badge div:last-child{font-size:4.5rem !important;}
+#cebRoot:fullscreen .ceb-tile{min-width:100px;height:100px;font-size:2.2rem;border-radius:20px;}
+#cebRoot:fullscreen .ceb-op-btn{width:84px;height:84px;font-size:2.2rem;}
+#cebRoot:fullscreen #cebTimer{font-size:2rem !important;}
+#cebRoot:fullscreen .ceb-game .hint{font-size:1.15rem;}
+#cebRoot:fullscreen .ceb-game button.btn{font-size:1.15rem;padding:14px 24px;}
 
 /* ---------- home ---------- */
 .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;margin-bottom:56px;}

@@ -358,9 +358,15 @@ async function cebFinish(){
   if(cebState.finished) return;
   cebState.finished = true;
   clearInterval(cebState.timerId);
-  const active = cebActiveTiles();
-  let best = active[0];
-  active.forEach(t=>{ if(Math.abs(t.value-cebState.target) < Math.abs(best.value-cebState.target)) best = t; });
+  let best = null;
+  // Aucune opération effectuée : traité comme une absence de réponse, jamais comme si
+  // l'élève avait "choisi" un des nombres tirés au hasard simplement parce qu'il restait
+  // disponible et se trouvait être le plus proche du compte.
+  if(cebState.steps.length > 0){
+    const active = cebActiveTiles();
+    best = active[0];
+    active.forEach(t=>{ if(Math.abs(t.value-cebState.target) < Math.abs(best.value-cebState.target)) best = t; });
+  }
   await cebSaveAttempt(best);
   cebRenderResult(best);
 }
@@ -422,29 +428,52 @@ function cebRenderResult(best){
   // Signalé : "quand on valide un compte pour lequel on n'a rien trouvé, ça écrit 75 = 75 ou
   // 100 = 100. C'est très étrange."
   const noOperationDone = best && best.expr === String(best.value);
+  // Garde le même fond/style que l'écran de jeu (continuité visuelle), avec le compte à
+  // atteindre et les tuiles restantes toujours visibles au-dessus -- le message de résultat
+  // s'affiche EN DESSOUS, plutôt qu'un changement brutal vers une petite carte déconnectée.
+  // Signalé : "je préfère que cette fenêtre s'affiche en dessous."
   root.innerHTML = `
-  <div class="plain-card" style="padding:24px 28px;max-width:640px;position:relative;">
-    <button class="ceb-fullscreen-btn" onclick="cebToggleFullscreen()" title="Plein écran" aria-label="Plein écran"><span class="gicon">fullscreen</span></button>
-    <p style="margin:0 0 4px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;">
-      ${exact ? '🎯 Compte exact !' : best ? `À ${gap} près (ta réponse : ${best.value}, le compte était ${cebState.target})` : "Tu n'as pas formé de nombre."}
-    </p>
+  <div class="ceb-game">
+    <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:18px;position:relative;">
+      <button class="ceb-fullscreen-btn" onclick="cebToggleFullscreen()" title="Plein écran" aria-label="Plein écran"><span class="gicon">fullscreen</span></button>
+      <div class="ceb-target-badge">
+        <div class="dp-tag" style="color:#fff;opacity:.85;">compte à atteindre</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:2.6rem;color:#fff;">${cebState.target}</div>
+      </div>
+    </div>
+    <div id="cebTiles" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:18px;"></div>
     <div id="cebStepsBox" style="margin:14px 0;"></div>
-    ${best && !noOperationDone ? `
-    <p class="hint" style="margin:8px 0 4px;">Ton calcul, écrit en une seule expression :</p>
-    <p style="margin:0 0 16px;font-size:1.05rem;"><span class="tex">${best.expr} = ${best.value}</span></p>
-    ` : ''}
-    ${best && noOperationDone ? `
-    <p class="hint" style="margin:8px 0 16px;">Le nombre <b>${best.value}</b>, tiré au départ, correspondait déjà exactement au compte -- sans avoir besoin d'aucune opération !</p>
-    ` : ''}
-    <div class="figure-toolbar">
+    <div class="ceb-result-banner">
+      <p style="margin:0 0 4px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.15rem;color:#fff;">
+        ${exact ? '🎯 Compte exact !' : best ? `À ${gap} près (ta réponse : ${best.value}, le compte était ${cebState.target})` : "Tu n'as pas formé de nombre."}
+      </p>
+      ${best && !noOperationDone ? `
+      <p class="hint" style="margin:8px 0 4px;">Ton calcul, écrit en une seule expression :</p>
+      <p style="margin:0;font-size:1.05rem;color:#fff;"><span class="tex">${best.expr} = ${best.value}</span></p>
+      ` : ''}
+      ${best && noOperationDone ? `
+      <p class="hint" style="margin:8px 0 0;">Le nombre <b style="color:#fff;">${best.value}</b>, tiré au départ, correspondait déjà exactement au compte -- sans avoir besoin d'aucune opération !</p>
+      ` : ''}
+    </div>
+    <div class="figure-toolbar" style="justify-content:center;margin-top:16px;">
       <button class="btn secondary" onclick="cebShowSolution()">Voir une solution</button>
       <button class="btn" onclick="cebStartGame()">Compte suivant →</button>
       <button class="btn secondary" onclick="cebRenderSetup()"><span class="gicon">settings</span> Paramètres</button>
     </div>
     <div id="cebSolutionBox"></div>
-    <div id="cebStatsBox" style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(28,43,57,.1);"></div>
+    <div id="cebStatsBox" style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.15);"></div>
   </div>
   `;
+  // Réaffiche les tuiles telles qu'elles étaient à la fin de la partie (non cliquables : la
+  // partie est terminée), pour garder le contexte visuel de ce qui a été fait.
+  const tilesBox = document.getElementById('cebTiles');
+  cebState.tiles.forEach(t=>{
+    const b = document.createElement('span');
+    b.className = 'ceb-tile ceb-tile-frozen' + (t.used ? '' : (best && t.id===best.id ? ' ceb-tile-selected' : ''));
+    b.style.opacity = t.used ? '.35' : '1';
+    b.textContent = t.value;
+    tilesBox.appendChild(b);
+  });
   cebRenderSteps();
   cebRefreshStats();
   if(window.renderStaticMath) renderStaticMath(root);
