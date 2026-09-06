@@ -156,7 +156,6 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 
 /* ---------- notebook (plain, no ruled lines) ---------- */
-.notebook-scroll{max-height:72vh;overflow-y:auto;scroll-behavior:smooth;}
 .plain-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(28,43,57,.08);}
 #cahierEleveContent{padding:26px 30px;}
 .nb-date-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:22px 0 10px;flex-wrap:wrap;}
