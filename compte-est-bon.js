@@ -349,9 +349,9 @@ function cebRenderSteps(){
   if(cebState.steps.length===0){ box.innerHTML=''; return; }
   box.innerHTML = `
     <p class="hint" style="margin:0 0 6px;text-align:center;">Étapes effectuées :</p>
-    <ol style="margin:0;padding-left:22px;line-height:1.9;">
-      ${cebState.steps.map(s=>`<li style="font-family:'JetBrains Mono',monospace;">${s}</li>`).join('')}
-    </ol>
+    <div style="margin:0;line-height:1.9;text-align:center;">
+      ${cebState.steps.map(s=>`<div style="font-family:'JetBrains Mono',monospace;">${s}</div>`).join('')}
+    </div>
   `;
 }
 
