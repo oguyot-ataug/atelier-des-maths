@@ -332,6 +332,21 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 #cebRoot:fullscreen .ceb-game .hint{font-size:1.15rem;}
 #cebRoot:fullscreen .ceb-game button.btn{font-size:1.15rem;padding:14px 24px;}
 
+/* Optimisation smartphone -- demandé : "optimiser l'affichage sur smartphone". Tuiles,
+   opérateurs et badge réduits pour tenir sur un écran étroit sans déborder ni se chevaucher. */
+@media (max-width:480px){
+  .ceb-game{padding:18px 10px;border-radius:14px;}
+  .ceb-tile{min-width:48px;height:48px;font-size:1.05rem;border-radius:10px;padding:0 6px;}
+  .ceb-op-btn{width:44px;height:44px;font-size:1.15rem;}
+  .ceb-target-badge{padding:6px 16px;}
+  .ceb-target-badge div:last-child{font-size:1.9rem !important;}
+  .ceb-fullscreen-btn{width:28px;height:28px;top:8px;right:8px;}
+  .ceb-fullscreen-btn .gicon{font-size:1rem;}
+  #cebTimer{font-size:1.05rem !important;}
+  .ceb-setup.plain-card{padding:16px 14px;max-width:100%;}
+  .ceb-result-banner{padding:12px 14px;}
+}
+
 /* ---------- home ---------- */
 .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;margin-bottom:56px;}
 .hero h1{font-size:2.6rem;line-height:1.08;margin:0 0 14px;}

@@ -304,9 +304,9 @@ function cebRenderGame(){
   const root = document.getElementById('cebRoot');
   root.innerHTML = `
   <div class="ceb-game">
+    ${cebState.timerOn ? `<div id="cebTimer" style="text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.3rem;color:#fff;margin-bottom:10px;"></div>` : ''}
     <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:18px;position:relative;">
       <button class="ceb-fullscreen-btn" onclick="cebToggleFullscreen()" title="Plein écran" aria-label="Plein écran"><span class="gicon">fullscreen</span></button>
-      ${cebState.timerOn ? `<div id="cebTimer" style="position:absolute;top:14px;left:14px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.3rem;color:#fff;"></div>` : ''}
       <div class="ceb-target-badge">
         <div class="dp-tag" style="color:#fff;opacity:.85;">compte à atteindre</div>
         <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:2.6rem;color:#fff;">${cebState.target}</div>
@@ -403,7 +403,10 @@ function cebPickTile(id){
   document.getElementById('cebHint').textContent = '';
   cebRenderTiles(); cebRenderOps(); cebRenderSteps();
   const activeVals = cebActiveTiles().map(t=>t.value);
-  if(activeVals.includes(cebState.target)) document.getElementById('cebHint').textContent = "🎯 Ce nombre est le compte exact ! Tu peux valider.";
+  if(activeVals.includes(cebState.target)){
+    cebFinish();
+    return;
+  }
 }
 
 function cebUndo(){
@@ -530,13 +533,14 @@ function cebRenderResult(best){
     <div id="cebStatsBox" style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.15);"></div>
   </div>
   `;
-  // Réaffiche les tuiles telles qu'elles étaient à la fin de la partie (non cliquables : la
-  // partie est terminée), pour garder le contexte visuel de ce qui a été fait.
+  // Réaffiche uniquement les tuiles ENCORE DISPONIBLES en fin de partie (pas tout
+  // l'historique : une tuile combinée plus tôt et déjà réutilisée dans une combinaison
+  // ultérieure ne doit plus réapparaître) -- signalé : "toutes ces nouvelles plaques qui
+  // s'affichent quand on valide".
   const tilesBox = document.getElementById('cebTiles');
-  cebState.tiles.forEach(t=>{
+  cebActiveTiles().forEach(t=>{
     const b = document.createElement('span');
-    b.className = 'ceb-tile ceb-tile-frozen' + (t.used ? '' : (best && t.id===best.id ? ' ceb-tile-selected' : ''));
-    b.style.opacity = t.used ? '.35' : '1';
+    b.className = 'ceb-tile ceb-tile-frozen' + (best && t.id===best.id ? ' ceb-tile-selected' : '');
     b.textContent = t.value;
     tilesBox.appendChild(b);
   });
