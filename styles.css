@@ -612,16 +612,31 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
 
 /* ---------- automatismes ---------- */
 .cm-picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:22px;}
-.cm-chip{
-  background:var(--white);border:1px solid rgba(28,43,57,.12);border-radius:8px;padding:10px 12px;
-  cursor:pointer;font-size:.83rem;transition:.15s;position:relative;
+.cm-group-header{
+  grid-column:1/-1;display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;
+  font-weight:700;font-size:.95rem;margin:16px 0 2px;
 }
-.cm-chip:hover{border-color:var(--accent);}
-.cm-chip.active{background:var(--accent);color:#fff;}
-.cm-chip .seq{font-family:'JetBrains Mono',monospace;font-size:.7rem;opacity:.7;}
-.cm-chip-badge{position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;}
+.cm-group-header:first-child{margin-top:0;}
+.cm-group-symbol{
+  display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;
+  color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;flex:none;
+}
+.cm-chip{
+  background:linear-gradient(160deg,var(--white),var(--cm-accent-bg,rgba(28,43,57,.03)));
+  border:1px solid rgba(28,43,57,.1);border-left:4px solid var(--cm-accent,rgba(28,43,57,.15));
+  border-radius:10px;padding:11px 13px;cursor:pointer;font-size:.83rem;font-weight:600;
+  transition:transform .12s ease, box-shadow .12s ease;position:relative;
+  box-shadow:0 1px 3px rgba(28,43,57,.06);
+}
+.cm-chip:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(28,43,57,.14);}
+.cm-chip.active{background:var(--cm-accent,var(--accent));color:#fff;}
+.cm-chip .seq{font-family:'JetBrains Mono',monospace;font-size:.68rem;opacity:.6;font-weight:400;margin-top:2px;}
+.cm-chip-badge{
+  position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;
+}
 .cm-chip-badge.cm-badge-done{background:#C77D1E;}
-.cm-chip-badge.cm-badge-perfect{background:#1F6B3A;}
+.cm-chip-badge.cm-badge-perfect{background:#1F7A4D;}
 .cm-chip-records{margin-top:8px;padding-top:6px;border-top:1px dashed rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:8px;}
 .cm-timer{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--accent);}
 .pgame-board{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:380px;margin:0 auto;}

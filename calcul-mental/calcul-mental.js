@@ -154,9 +154,9 @@ function applyCMBadges(){
     const id = chip.dataset.id;
     chip.querySelectorAll('.cm-chip-badge').forEach(b=>b.remove());
     if(cmPerfected.has(id)){
-      chip.insertAdjacentHTML('beforeend', '<span class="cm-chip-badge cm-badge-perfect" title="Sans-faute déjà obtenu"></span>');
+      chip.insertAdjacentHTML('beforeend', '<span class="cm-chip-badge cm-badge-perfect" title="Sans-faute déjà obtenu"><span class="gicon" style="font-size:.85rem;">check</span></span>');
     } else if(cmAttempted.has(id)){
-      chip.insertAdjacentHTML('beforeend', '<span class="cm-chip-badge cm-badge-done" title="Déjà tenté"></span>');
+      chip.insertAdjacentHTML('beforeend', '<span class="cm-chip-badge cm-badge-done" title="Déjà tenté"><span class="gicon" style="font-size:.85rem;">refresh</span></span>');
     }
   });
   const legend = document.getElementById('cmLegend');
@@ -190,10 +190,34 @@ function applyCMChipRecords(){
   });
 }
 
+// Regroupement des séquences par thème (plages de numéros), pour l'affichage -- demandé :
+// "rendre la page des automatismes un peu plus sexy... tous ces blocs austères, ce n'est pas
+// engageant". Chaque groupe a sa couleur et son symbole distinctifs.
+const CM_GROUPS = [
+  {min:1, max:21, title:'Additions et soustractions', symbol:'+', color:'#FF8208', bg:'rgba(255,130,8,.08)'},
+  {min:22, max:39, title:'Tables et multiplications', symbol:'×', color:'#0C5BA0', bg:'rgba(12,91,160,.08)'},
+  {min:42, max:52, title:'Divisions', symbol:'÷', color:'#26AAB1', bg:'rgba(38,170,177,.08)'},
+  {min:64, max:69, title:'Pourcentages et écritures', symbol:'%', color:'#5B2F9E', bg:'rgba(91,47,158,.08)'},
+  {min:74, max:112, title:'Calcul avec les décimaux', symbol:'0,1', color:'#9E1F5E', bg:'rgba(158,31,94,.08)'},
+];
+function cmGroupFor(seq){ return CM_GROUPS.find(g=>seq>=g.min && seq<=g.max) || CM_GROUPS[CM_GROUPS.length-1]; }
+
 function renderCMPicker(){
   const box=document.getElementById('cmPicker');
-  box.innerHTML = CM_SEQUENCES.slice().sort((a,b)=>a.seq-b.seq).map(s=>`<div class="cm-chip" data-id="${s.id}"><div>${s.label}</div><div class="seq">séquence ${s.seq}</div></div>`).join('')
-    + `<div class="cm-chip" style="opacity:.5;cursor:default;"><div>+ 24 autres séquences</div><div class="seq">nécessitent une UI dédiée</div></div>`;
+  const sorted = CM_SEQUENCES.slice().sort((a,b)=>a.seq-b.seq);
+  let html = '';
+  let currentGroup = null;
+  sorted.forEach(s=>{
+    const g = cmGroupFor(s.seq);
+    if(g!==currentGroup){
+      currentGroup = g;
+      html += `<div class="cm-group-header" style="color:${g.color};"><span class="cm-group-symbol" style="background:${g.color};">${g.symbol}</span>${g.title}</div>`;
+    }
+    html += `<div class="cm-chip" data-id="${s.id}" style="--cm-accent:${g.color};--cm-accent-bg:${g.bg};"><div>${s.label}</div><div class="seq">séquence ${s.seq}</div></div>`;
+  });
+  html += `<div class="cm-group-header" style="color:var(--ink-soft);"><span class="cm-group-symbol" style="background:var(--ink-soft);">+24</span>À venir</div>`;
+  html += `<div class="cm-chip" style="opacity:.5;cursor:default;"><div>+ 24 autres séquences</div><div class="seq">nécessitent une UI dédiée</div></div>`;
+  box.innerHTML = html;
   box.querySelectorAll('.cm-chip[data-id]').forEach(chip=>{
     chip.addEventListener('click',()=>{
       runCM(chip.dataset.id);
