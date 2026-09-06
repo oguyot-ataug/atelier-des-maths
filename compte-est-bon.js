@@ -149,11 +149,24 @@ function cebInit(){
   document.getElementById('cebRoot').dataset.built = '1';
   cebRenderSetup();
 }
+// Plein écran natif du navigateur sur #cebRoot -- contrairement au mécanisme de "loupe"
+// (zoom-clone) utilisé ailleurs sur le site pour du contenu statique, un outil pleinement
+// interactif comme celui-ci (timer, tuiles cliquables) reste directement fonctionnel en
+// plein écran natif, sans synchronisation à gérer.
+function cebToggleFullscreen(){
+  const el = document.getElementById('cebRoot');
+  if(!document.fullscreenElement){
+    (el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen).call(el);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen).call(document);
+  }
+}
 
 function cebRenderSetup(){
   const root = document.getElementById('cebRoot');
   root.innerHTML = `
-  <div class="ceb-setup plain-card" style="padding:24px 28px;max-width:560px;">
+  <div class="ceb-setup plain-card" style="padding:24px 28px;max-width:560px;position:relative;">
+    <button class="ceb-fullscreen-btn" onclick="cebToggleFullscreen()" title="Plein écran" aria-label="Plein écran"><span class="gicon">fullscreen</span></button>
     <p style="margin:0 0 14px;font-weight:700;font-family:'Space Grotesk',sans-serif;">Réglages du tirage</p>
     <p class="hint" style="margin:0 0 6px;">Nombre de "grands nombres" (25, 50, 75, 100) parmi les 6 tirés :</p>
     <div class="figure-toolbar" id="cebNLargePicker" style="margin-bottom:16px;"></div>
@@ -225,10 +238,11 @@ function cebRenderGame(){
   const root = document.getElementById('cebRoot');
   root.innerHTML = `
   <div class="ceb-game">
-    <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:18px;">
-      <div style="text-align:center;">
-        <div class="dp-tag" style="color:var(--accent-orange);">compte à atteindre</div>
-        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:2.4rem;">${cebState.target}</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:18px;position:relative;">
+      <button class="ceb-fullscreen-btn" onclick="cebToggleFullscreen()" title="Plein écran" aria-label="Plein écran"><span class="gicon">fullscreen</span></button>
+      <div class="ceb-target-badge">
+        <div class="dp-tag" style="color:#fff;opacity:.85;">compte à atteindre</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:2.6rem;color:#fff;">${cebState.target}</div>
       </div>
       ${cebState.timerOn ? `<div id="cebTimer" style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.3rem;"></div>` : ''}
     </div>
@@ -281,6 +295,7 @@ function cebRenderOps(){
   CEB_OPS.forEach(op=>{
     const b = document.createElement('button');
     b.className = 'ceb-op-btn' + (cebSelectedOp===op.sym ? ' ceb-op-selected' : '');
+    b.dataset.op = op.sym;
     b.textContent = op.label;
     b.disabled = cebSelectedTileId===null;
     b.onclick = ()=>{ cebSelectedOp = op.sym; cebRenderOps(); document.getElementById('cebHint').textContent = 'Choisis le second nombre.'; };
@@ -402,19 +417,29 @@ function cebRenderResult(best){
   const root = document.getElementById('cebRoot');
   const gap = best ? Math.abs(best.value - cebState.target) : null;
   const exact = gap===0;
+  // Si l'élève n'a fait AUCUNE opération, "best" est juste un des nombres tirés au départ --
+  // s'il correspond par coïncidence au compte, afficher "75 = 75" est une tautologie confuse.
+  // Signalé : "quand on valide un compte pour lequel on n'a rien trouvé, ça écrit 75 = 75 ou
+  // 100 = 100. C'est très étrange."
+  const noOperationDone = best && best.expr === String(best.value);
   root.innerHTML = `
-  <div class="plain-card" style="padding:24px 28px;max-width:640px;">
+  <div class="plain-card" style="padding:24px 28px;max-width:640px;position:relative;">
+    <button class="ceb-fullscreen-btn" onclick="cebToggleFullscreen()" title="Plein écran" aria-label="Plein écran"><span class="gicon">fullscreen</span></button>
     <p style="margin:0 0 4px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;">
       ${exact ? '🎯 Compte exact !' : best ? `À ${gap} près (ta réponse : ${best.value}, le compte était ${cebState.target})` : "Tu n'as pas formé de nombre."}
     </p>
     <div id="cebStepsBox" style="margin:14px 0;"></div>
-    ${best ? `
+    ${best && !noOperationDone ? `
     <p class="hint" style="margin:8px 0 4px;">Ton calcul, écrit en une seule expression :</p>
     <p style="margin:0 0 16px;font-size:1.05rem;"><span class="tex">${best.expr} = ${best.value}</span></p>
     ` : ''}
+    ${best && noOperationDone ? `
+    <p class="hint" style="margin:8px 0 16px;">Le nombre <b>${best.value}</b>, tiré au départ, correspondait déjà exactement au compte -- sans avoir besoin d'aucune opération !</p>
+    ` : ''}
     <div class="figure-toolbar">
       <button class="btn secondary" onclick="cebShowSolution()">Voir une solution</button>
-      <button class="btn" onclick="cebRenderSetup()">Nouveau tirage →</button>
+      <button class="btn" onclick="cebStartGame()">Compte suivant →</button>
+      <button class="btn secondary" onclick="cebRenderSetup()"><span class="gicon">settings</span> Paramètres</button>
     </div>
     <div id="cebSolutionBox"></div>
     <div id="cebStatsBox" style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(28,43,57,.1);"></div>
