@@ -171,7 +171,8 @@ function cebRenderSetup(){
     <p class="hint" style="margin:0 0 6px;">Nombre de "grands nombres" (25, 50, 75, 100) parmi les 6 tirés :</p>
     <div class="figure-toolbar" id="cebNLargePicker" style="margin-bottom:16px;"></div>
     <p class="hint" style="margin:0 0 6px;">Chronomètre :</p>
-    <div class="figure-toolbar" id="cebTimerPicker" style="margin-bottom:20px;"></div>
+    <div class="figure-toolbar" id="cebTimerPicker" style="margin-bottom:12px;"></div>
+    <div id="cebTimerDialBox" style="margin-bottom:20px;"></div>
     <button class="btn" onclick="cebStartGame()">Nouveau tirage →</button>
     <div id="cebStatsBox" style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(28,43,57,.1);"></div>
   </div>
@@ -186,17 +187,81 @@ function cebRenderSetup(){
     nlBox.appendChild(b);
   }
   const tBox = document.getElementById('cebTimerPicker');
-  const opts = [{on:false,label:'Illimité'},{on:true,dur:30,label:'30 s'},{on:true,dur:60,label:'1 min'},{on:true,dur:90,label:'1 min 30'}];
+  const opts = [{on:false,label:'Illimité'},{on:true,dur:45,label:'45 s'},{on:true,dur:60,label:'1 min'},{on:true,dur:90,label:'1 min 30'}];
   opts.forEach(o=>{
     const b = document.createElement('button');
     b.className = 'btn secondary';
     b.textContent = o.label;
-    const active = o.on===cebSettings.timerOn && (!o.on || o.dur===cebSettings.timerDuration);
+    const active = o.on===cebSettings.timerOn && !cebSettings.timerCustom && (!o.on || o.dur===cebSettings.timerDuration);
     b.style.opacity = active ? '1' : '.55';
-    b.onclick = ()=>{ cebSettings.timerOn=o.on; if(o.on) cebSettings.timerDuration=o.dur; cebRenderSetup(); };
+    b.onclick = ()=>{ cebSettings.timerOn=o.on; cebSettings.timerCustom=false; if(o.on) cebSettings.timerDuration=o.dur; cebRenderSetup(); };
     tBox.appendChild(b);
   });
+  const customBtn = document.createElement('button');
+  customBtn.className = 'btn secondary';
+  customBtn.textContent = 'Personnalisé';
+  customBtn.style.opacity = cebSettings.timerCustom ? '1' : '.55';
+  customBtn.onclick = ()=>{ cebSettings.timerOn=true; cebSettings.timerCustom=true; if(!cebSettings.timerDuration) cebSettings.timerDuration=60; cebRenderSetup(); };
+  tBox.appendChild(customBtn);
+  if(cebSettings.timerCustom){
+    const dialBox = document.getElementById('cebTimerDialBox');
+    cebRenderTimerDial(dialBox);
+  }
   cebRefreshStats();
+}
+
+/* Disque paramétrable du chrono (0 à 300 secondes = 5 minutes), pour le mode "Personnalisé" --
+   demandé : "paramétrable avec un disque à tourner entre 0 et 300 secondes". 0° = tout en
+   haut, sens horaire. Arrondi à 5 secondes près (sélection plus confortable qu'à la seconde
+   près). Fonctionne à la souris comme au tactile (pointerdown/move/up unifiés). */
+const CEB_DIAL_MAX = 300;
+function cebDialValueToXY(value, radius, cx, cy){
+  const angle = (value/CEB_DIAL_MAX)*2*Math.PI - Math.PI/2;
+  return { x: cx+radius*Math.cos(angle), y: cy+radius*Math.sin(angle) };
+}
+function cebDialXYToValue(x, y, cx, cy){
+  let angle = Math.atan2(y-cy, x-cx) + Math.PI/2;
+  if(angle<0) angle += 2*Math.PI;
+  let value = Math.round((angle/(2*Math.PI))*CEB_DIAL_MAX/5)*5;
+  if(value>=CEB_DIAL_MAX) value = 0; // pleine boucle = revient à 0 (comme une minuterie physique)
+  return value;
+}
+function cebRenderTimerDial(container){
+  const size=150, cx=75, cy=75, r=58;
+  const val = cebSettings.timerDuration || 60;
+  const handle = cebDialValueToXY(val, r, cx, cy);
+  const angleFrac = val/CEB_DIAL_MAX;
+  // Grand arc SVG (arc>180°) dès que la valeur dépasse la moitié du disque (150s).
+  const largeArc = angleFrac>0.5 ? 1 : 0;
+  const arcEnd = cebDialValueToXY(val, r, cx, cy);
+  const arcStart = cebDialValueToXY(0, r, cx, cy);
+  const m = Math.floor(val/60), s = val%60;
+  container.innerHTML = `
+    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+      <svg id="cebDialSvg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="touch-action:none;cursor:pointer;">
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(28,43,57,.12)" stroke-width="10"/>
+        ${val>0 ? `<path d="M ${arcStart.x} ${arcStart.y} A ${r} ${r} 0 ${largeArc} 1 ${arcEnd.x} ${arcEnd.y}" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round"/>` : ''}
+        <circle cx="${handle.x}" cy="${handle.y}" r="11" fill="var(--accent)" stroke="#fff" stroke-width="3"/>
+        <text x="${cx}" y="${cy+7}" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="22" fill="var(--ink)">${m}:${String(s).padStart(2,'0')}</text>
+      </svg>
+      <p class="hint" style="margin:0;max-width:180px;">Faites glisser le point autour du disque pour régler la durée (jusqu'à 5 min).</p>
+    </div>
+  `;
+  const svg = document.getElementById('cebDialSvg');
+  let dragging = false;
+  function updateFromEvent(e){
+    const rect = svg.getBoundingClientRect();
+    const scaleX = size/rect.width, scaleY = size/rect.height;
+    const x = (e.clientX-rect.left)*scaleX, y = (e.clientY-rect.top)*scaleY;
+    const newVal = cebDialXYToValue(x, y, cx, cy);
+    if(newVal !== cebSettings.timerDuration){
+      cebSettings.timerDuration = newVal;
+      cebRenderTimerDial(container);
+    }
+  }
+  svg.onpointerdown = (e)=>{ dragging=true; svg.setPointerCapture(e.pointerId); updateFromEvent(e); };
+  svg.onpointermove = (e)=>{ if(dragging) updateFromEvent(e); };
+  svg.onpointerup = ()=>{ dragging=false; };
 }
 
 function cebStartGame(){
@@ -229,7 +294,7 @@ function cebUpdateTimerDisplay(){
   if(!el) return;
   const m = Math.floor(cebState.timeLeft/60), s = cebState.timeLeft%60;
   el.textContent = `⏱ ${m}:${String(s).padStart(2,'0')}`;
-  el.style.color = cebState.timeLeft<=10 ? '#9E1F5E' : 'var(--ink)';
+  el.style.color = cebState.timeLeft<=10 ? '#FF6B6B' : '#fff';
 }
 
 function cebActiveTiles(){ return cebState.tiles.filter(t=>!t.used); }
@@ -240,11 +305,11 @@ function cebRenderGame(){
   <div class="ceb-game">
     <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:18px;position:relative;">
       <button class="ceb-fullscreen-btn" onclick="cebToggleFullscreen()" title="Plein écran" aria-label="Plein écran"><span class="gicon">fullscreen</span></button>
+      ${cebState.timerOn ? `<div id="cebTimer" style="position:absolute;top:14px;left:14px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.3rem;color:#fff;"></div>` : ''}
       <div class="ceb-target-badge">
         <div class="dp-tag" style="color:#fff;opacity:.85;">compte à atteindre</div>
         <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:2.6rem;color:#fff;">${cebState.target}</div>
       </div>
-      ${cebState.timerOn ? `<div id="cebTimer" style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.3rem;"></div>` : ''}
     </div>
     <div id="cebTiles" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:18px;"></div>
     <div id="cebOps" style="display:flex;gap:10px;justify-content:center;margin-bottom:14px;"></div>
