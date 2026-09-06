@@ -700,6 +700,23 @@ footer a:hover{color:var(--accent);}
 
 /* ---------- outil prof : correction projetée ---------- */
 .tool-shell{background:var(--white);border:1px solid rgba(28,43,57,.1);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:20px;}
+/* Tableaux de Supervision (comptes, résultats) -- colonnes alignées quelle que soit la
+   longueur du texte, contrairement aux lignes en flex/space-between précédentes.
+   Demandé : "utilisé un tableau avec filtre et coloré. Pour au moins avoir l'alignement des
+   statuts... même chose dans la page résultat, ce n'est pas très propre". */
+.sup-table{width:100%;border-collapse:collapse;font-size:.85rem;}
+.sup-table th{
+  text-align:left;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.72rem;
+  text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);padding:8px 10px;
+  border-bottom:2px solid rgba(28,43,57,.1);
+}
+.sup-table td{padding:9px 10px;border-bottom:1px solid rgba(28,43,57,.07);}
+.sup-table tr:last-child td{border-bottom:none;}
+.sup-table tbody tr:hover{background:rgba(12,91,160,.03);}
+.sup-score-pill{
+  display:inline-block;padding:2px 10px;border-radius:20px;font-weight:700;font-size:.8rem;
+  font-family:'Space Grotesk',sans-serif;
+}
 .tool-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
 .tool-row select, .tool-row input[type=text]{
   padding:9px 12px;border-radius:8px;border:1px solid rgba(28,43,57,.2);font-family:'Inter',sans-serif;font-size:.88rem;

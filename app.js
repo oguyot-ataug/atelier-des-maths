@@ -3403,18 +3403,25 @@ function renderTeacherStudentsFiltered(){
   const filter = filterSel ? filterSel.value : '';
   const filtered = filter ? teacherStudentsCache.filter(s=>s.statutKey===filter) : teacherStudentsCache;
   if(!filtered.length){ el.innerHTML = 'Aucun élève ne correspond à ce filtre.'; return; }
-  el.innerHTML = filtered.map(s=>{
-    const label = escapeHtml(s.nom);
-    const safeName = label.replace(/'/g, "\\'");
-    const idfEscaped = escapeHtml(s.identifiant).replace(/'/g, "\\'");
-    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.08);flex-wrap:wrap;">
-      <span>${label} · ${s.badgeHtml}</span>
-      <span style="display:flex;gap:6px;flex:none;">
-        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherShowIdentifiant('${safeName}','${idfEscaped}')"><span class=gicon>visibility</span> Voir l'identifiant</button>
-        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherResetPasswordPrompt('${s.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser le mot de passe</button>
-      </span>
-    </div>`;
-  }).join('');
+  const statutRowBg = {enligne:'rgba(31,122,77,.05)', deja:'rgba(12,91,160,.04)', jamais:'rgba(28,43,57,.02)'};
+  el.innerHTML = `<table class="sup-table">
+    <thead><tr><th>Élève</th><th>Statut</th><th style="text-align:right;">Actions</th></tr></thead>
+    <tbody>
+    ${filtered.map(s=>{
+      const label = escapeHtml(s.nom);
+      const safeName = label.replace(/'/g, "\\'");
+      const idfEscaped = escapeHtml(s.identifiant).replace(/'/g, "\\'");
+      return `<tr style="background:${statutRowBg[s.statutKey]||''};">
+        <td style="font-weight:600;">${label}</td>
+        <td>${s.badgeHtml}</td>
+        <td style="text-align:right;">
+          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherShowIdentifiant('${safeName}','${idfEscaped}')"><span class=gicon>visibility</span> Identifiant</button>
+          <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="teacherResetPasswordPrompt('${s.id}','${safeName}')"><span class=gicon>key</span> Mot de passe</button>
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>`;
 }
 function teacherShowIdentifiant(name, identifiant){
   document.getElementById('teacherShowIdentifiantModalName').textContent = 'Élève : '+name;
@@ -3529,16 +3536,20 @@ function renderSupervisionFiltered(){
       const pct = Math.round(100*r.score/r.total);
       const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
       const perfect = r.score===r.total;
-      return `<div style="display:flex;justify-content:space-between;gap:12px;padding:3px 0;">
-        <span>${escapeHtml(r.sequence_label||'-')}</span>
-        <span style="font-weight:700;color:${pct>=70?'#1F6B3A':pct>=40?'#8A4210':'#9E1F5E'};">${r.score}/${r.total}</span>
-        <span style="color:var(--ink-soft);font-family:'JetBrains Mono',monospace;font-size:.82rem;">${perfect && r.duration_ms!=null ? formatDuration(r.duration_ms) : '-'}</span>
-        <span style="color:var(--ink-soft);">${date}</span>
-      </div>`;
+      const color = pct>=70?'#1F7A4D':pct>=40?'#C77D1E':'#9E1F5E';
+      return `<tr>
+        <td>${escapeHtml(r.sequence_label||'-')}</td>
+        <td style="text-align:center;"><span class="sup-score-pill" style="background:${color}1A;color:${color};">${r.score}/${r.total}</span></td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--ink-soft);">${perfect && r.duration_ms!=null ? formatDuration(r.duration_ms) : '-'}</td>
+        <td style="text-align:right;color:var(--ink-soft);white-space:nowrap;">${date}</td>
+      </tr>`;
     }).join('');
-    return `<div class="tool-shell" style="margin-bottom:14px;">
+    return `<div class="tool-shell" style="margin-bottom:14px;padding:14px 16px;">
       <strong style="font-family:'Space Grotesk',sans-serif;">${escapeHtml(name)}</strong>
-      <div style="margin-top:8px;">${rows}</div>
+      <table class="sup-table" style="margin-top:8px;">
+        <thead><tr><th>Exercice</th><th style="text-align:center;">Score</th><th style="text-align:right;">Temps</th><th style="text-align:right;">Date</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
     </div>`;
   }).join('');
 }
@@ -3564,26 +3575,30 @@ async function renderSupervisionCeb(){
       if(!rows.length) return '';
       const succ = rows.filter(r=>r.success).length;
       const pct = Math.round(100*succ/rows.length);
-      return `<div style="display:flex;justify-content:space-between;gap:12px;padding:3px 0;">
-        <span>${label}</span>
-        <span style="font-weight:700;color:${pct>=70?'#1F6B3A':pct>=40?'#8A4210':'#9E1F5E'};">${succ}/${rows.length} réussies (${pct}%)</span>
+      const color = pct>=70?'#1F7A4D':pct>=40?'#C77D1E':'#9E1F5E';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:5px 0;">
+        <span style="font-weight:600;">${label}</span>
+        <span class="sup-score-pill" style="background:${color}1A;color:${color};">${succ}/${rows.length} réussies (${pct}%)</span>
       </div>`;
     };
     const recentRows = results.slice(0,5).map(r=>{
       const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
-      return `<div style="display:flex;justify-content:space-between;gap:12px;padding:2px 0;font-size:.82rem;color:var(--ink-soft);">
-        <span>${r.success ? '<span class=gicon>my_location</span> exact' : `à ${r.gap} près`} (cible ${r.target})</span>
-        <span>${r.timed ? '⏱ chrono' : 'illimité'}</span>
-        <span>${date}</span>
-      </div>`;
+      return `<tr>
+        <td>${r.success ? '<span class=gicon style="color:#1F7A4D;">my_location</span> exact' : `à ${r.gap} près`} (cible ${r.target})</td>
+        <td style="text-align:center;color:var(--ink-soft);">${r.timed ? '⏱ chrono' : 'illimité'}</td>
+        <td style="text-align:right;color:var(--ink-soft);white-space:nowrap;">${date}</td>
+      </tr>`;
     }).join('');
-    return `<div class="tool-shell" style="margin-bottom:14px;">
+    return `<div class="tool-shell" style="margin-bottom:14px;padding:14px 16px;">
       <strong style="font-family:'Space Grotesk',sans-serif;">${escapeHtml(name)}</strong>
-      <div style="margin-top:8px;">
+      <div style="margin-top:6px;">
         ${statLine('Illimité', forMode(false))}
         ${statLine('Chronométré', forMode(true))}
       </div>
-      <div style="margin-top:8px;padding-top:8px;border-top:1px dashed rgba(28,43,57,.12);">${recentRows}</div>
+      <table class="sup-table" style="margin-top:10px;">
+        <thead><tr><th>Résultat</th><th style="text-align:center;">Mode</th><th style="text-align:right;">Date</th></tr></thead>
+        <tbody>${recentRows}</tbody>
+      </table>
     </div>`;
   }).join('');
 }
