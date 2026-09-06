@@ -166,10 +166,10 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .nb-accordion-section{border:1px solid rgba(28,43,57,.1);border-radius:10px;margin-bottom:10px;overflow:hidden;}
 .nb-accordion-header{
   width:100%;display:flex;align-items:center;gap:10px;padding:12px 16px;border:none;cursor:pointer;
-  background:rgba(255,130,8,.05);font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;
-  color:var(--accent-orange);text-align:left;
+  background:var(--acc-bg,rgba(255,130,8,.05));font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;
+  color:var(--acc-color,var(--accent-orange));text-align:left;
 }
-.nb-accordion-header:hover{background:rgba(255,130,8,.1);}
+.nb-accordion-header:hover{filter:brightness(.97);}
 .nb-accordion-chevron{transition:transform .2s ease;font-size:1.1rem;}
 .nb-accordion-chevron.open{transform:rotate(180deg);}
 .nb-accordion-count{margin-left:auto;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.72rem;color:var(--ink-soft);}

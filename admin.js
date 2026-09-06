@@ -24,51 +24,87 @@ document.getElementById('view-admin').innerHTML = `
   <div class="tab-panel active" id="admin-panel-comptes">
     <div class="tool-shell">
       <p style="color:var(--ink-soft);max-width:70ch;margin:0 0 14px;">Créez les comptes profs/élèves, les classes, et associez-les entre eux.</p>
-      <p class="example-title" style="margin-bottom:6px;">Créer un compte</p>
-      <div class="tool-row">
-        <input type="text" id="adminNewEmail" placeholder="identifiant (ou e-mail)" style="min-width:200px;">
-        <input type="password" id="adminNewPassword" placeholder="Mot de passe" style="width:150px;">
-        <input type="text" id="adminNewNom" placeholder="Nom (affichage)" style="width:160px;">
-        <input type="text" id="adminNewUai" placeholder="UAI établissement (ex. 0751234A)" style="width:170px;">
-        <select id="adminNewRole"><option value="prof">Professeur</option><option value="eleve">Élève</option><option value="admin">Administrateur</option></select>
-        <button class="btn" onclick="adminCreateAccount()">Créer le compte</button>
-      </div>
-      <span class="hint" id="adminAccountStatus" style="margin:0;"></span>
 
-      <p class="example-title" style="margin:16px 0 6px;">Import en masse d'élèves</p>
-      <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, 5 colonnes séparées par une tabulation : Nom Prénom, identifiant, mot de passe, UAI, classe -- un copier-coller direct depuis un tableur fonctionne). <b>Laissez la colonne "mot de passe" vide</b> pour recevoir à la place un lien d'invitation personnel : l'élève choisit alors lui-même son mot de passe en cliquant dessus. La classe est créée automatiquement si elle n'existe pas encore (niveau déduit du préfixe "6e"/"5e" du nom).</p>
-      <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="DUPONT Jean	jdupont		0123456A	6eA
+      <div class="nb-accordion-section">
+        <button type="button" class="nb-accordion-header" style="--acc-color:#0C5BA0;--acc-bg:rgba(12,91,160,.05);" onclick="toggleNbAccordion('accCreerCompte')">
+          <span class="gicon nb-accordion-chevron open">expand_more</span>
+          <span class="gicon">person_add</span><span>Créer un compte</span>
+        </button>
+        <div class="nb-accordion-body open" id="accCreerCompte">
+          <div class="tool-row">
+            <input type="text" id="adminNewEmail" placeholder="identifiant (ou e-mail)" style="min-width:200px;">
+            <input type="password" id="adminNewPassword" placeholder="Mot de passe" style="width:150px;">
+            <input type="text" id="adminNewNom" placeholder="Nom (affichage)" style="width:160px;">
+            <input type="text" id="adminNewUai" placeholder="UAI établissement (ex. 0751234A)" style="width:170px;">
+            <select id="adminNewRole"><option value="prof">Professeur</option><option value="eleve">Élève</option><option value="admin">Administrateur</option></select>
+            <button class="btn" onclick="adminCreateAccount()">Créer le compte</button>
+          </div>
+          <span class="hint" id="adminAccountStatus" style="margin:0;"></span>
+        </div>
+      </div>
+
+      <div class="nb-accordion-section">
+        <button type="button" class="nb-accordion-header" style="--acc-color:#FF8208;--acc-bg:rgba(255,130,8,.05);" onclick="toggleNbAccordion('accImportMasse')">
+          <span class="gicon nb-accordion-chevron">expand_more</span>
+          <span class="gicon">group_add</span><span>Import en masse d'élèves</span>
+        </button>
+        <div class="nb-accordion-body" id="accImportMasse">
+          <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, 5 colonnes séparées par une tabulation : Nom Prénom, identifiant, mot de passe, UAI, classe -- un copier-coller direct depuis un tableur fonctionne). <b>Laissez la colonne "mot de passe" vide</b> pour recevoir à la place un lien d'invitation personnel : l'élève choisit alors lui-même son mot de passe en cliquant dessus. La classe est créée automatiquement si elle n'existe pas encore (niveau déduit du préfixe "6e"/"5e" du nom).</p>
+          <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="DUPONT Jean	jdupont		0123456A	6eA
 MARTIN Marie	mmartin		0123456A	6eA"></textarea>
-      <div class="tool-row" style="margin-top:8px;">
-        <button class="btn" onclick="adminBulkCreateStudents()">Créer tous les comptes élèves</button>
+          <div class="tool-row" style="margin-top:8px;">
+            <button class="btn" onclick="adminBulkCreateStudents()">Créer tous les comptes élèves</button>
+          </div>
+          <div class="hint" id="adminBulkStatus" style="margin:0;"></div>
+        </div>
       </div>
-      <div class="hint" id="adminBulkStatus" style="margin:0;"></div>
 
-      <p class="example-title" style="margin:16px 0 6px;">Créer une classe</p>
-      <div class="tool-row">
-        <input type="text" id="adminNewClassNom" placeholder="Nom (ex. 5e-A)">
-        <select id="adminNewClassNiveau"><option value="6e">6e</option><option value="5e" selected>5e</option></select>
-        <input type="text" id="adminNewClassUai" placeholder="UAI de l'établissement">
-        <button class="btn" onclick="adminCreateClass()">Créer la classe</button>
+      <div class="nb-accordion-section">
+        <button type="button" class="nb-accordion-header" style="--acc-color:#26AAB1;--acc-bg:rgba(38,170,177,.05);" onclick="toggleNbAccordion('accCreerClasse')">
+          <span class="gicon nb-accordion-chevron">expand_more</span>
+          <span class="gicon">school</span><span>Créer une classe</span>
+        </button>
+        <div class="nb-accordion-body" id="accCreerClasse">
+          <div class="tool-row">
+            <input type="text" id="adminNewClassNom" placeholder="Nom (ex. 5e-A)">
+            <select id="adminNewClassNiveau"><option value="6e">6e</option><option value="5e" selected>5e</option></select>
+            <input type="text" id="adminNewClassUai" placeholder="UAI de l'établissement">
+            <button class="btn" onclick="adminCreateClass()">Créer la classe</button>
+          </div>
+          <p class="hint" style="margin:2px 0 0;">Une classe doit être rattachée à un établissement (UAI) -- créé automatiquement s'il n'existe pas encore.</p>
+          <span class="hint" id="adminClassStatus" style="margin:0;"></span>
+        </div>
       </div>
-      <p class="hint" style="margin:2px 0 0;">Une classe doit être rattachée à un établissement (UAI) -- créé automatiquement s'il n'existe pas encore.</p>
-      <span class="hint" id="adminClassStatus" style="margin:0;"></span>
 
-      <p class="example-title" style="margin:16px 0 6px;">Associer un professeur à une classe</p>
-      <div class="tool-row">
-        <select id="adminAssignTeacherSelect"></select>
-        <select id="adminAssignTeacherClassSelect"></select>
-        <button class="btn secondary" onclick="adminAssignTeacher()">Associer</button>
+      <div class="nb-accordion-section">
+        <button type="button" class="nb-accordion-header" style="--acc-color:#5B2F9E;--acc-bg:rgba(91,47,158,.05);" onclick="toggleNbAccordion('accAssignTeacher')">
+          <span class="gicon nb-accordion-chevron">expand_more</span>
+          <span class="gicon">link</span><span>Associer un professeur à une classe</span>
+        </button>
+        <div class="nb-accordion-body" id="accAssignTeacher">
+          <div class="tool-row">
+            <select id="adminAssignTeacherSelect"></select>
+            <select id="adminAssignTeacherClassSelect"></select>
+            <button class="btn secondary" onclick="adminAssignTeacher()">Associer</button>
+          </div>
+          <span class="hint" id="adminAssignTeacherStatus" style="margin:0;"></span>
+        </div>
       </div>
-      <span class="hint" id="adminAssignTeacherStatus" style="margin:0;"></span>
 
-      <p class="example-title" style="margin:16px 0 6px;">Associer un élève à une classe</p>
-      <div class="tool-row">
-        <select id="adminAssignStudentSelect"></select>
-        <select id="adminAssignStudentClassSelect"></select>
-        <button class="btn secondary" onclick="adminAssignStudent()">Associer</button>
+      <div class="nb-accordion-section">
+        <button type="button" class="nb-accordion-header" style="--acc-color:#9E1F5E;--acc-bg:rgba(158,31,94,.05);" onclick="toggleNbAccordion('accAssignStudent')">
+          <span class="gicon nb-accordion-chevron">expand_more</span>
+          <span class="gicon">link</span><span>Associer un élève à une classe</span>
+        </button>
+        <div class="nb-accordion-body" id="accAssignStudent">
+          <div class="tool-row">
+            <select id="adminAssignStudentSelect"></select>
+            <select id="adminAssignStudentClassSelect"></select>
+            <button class="btn secondary" onclick="adminAssignStudent()">Associer</button>
+          </div>
+          <span class="hint" id="adminAssignStudentStatus" style="margin:0;"></span>
+        </div>
       </div>
-      <span class="hint" id="adminAssignStudentStatus" style="margin:0;"></span>
     </div>
   </div>
 
@@ -430,18 +466,18 @@ function renderInviteLinksTable(results, titre){
   results.sort((a,b)=> a.classe.localeCompare(b.classe) || a.nom.localeCompare(b.nom));
   const tableEl = document.getElementById('adminInviteLinksTable');
   if(!results.length){ tableEl.innerHTML=''; return; }
-  let html = `<b>${escapeHtml(titre)}</b>`;
+  let html = `<p class="example-title" style="margin:10px 0 6px;">${escapeHtml(titre)}</p>`;
   let currentClasse = null;
   results.forEach(r=>{
     if(r.classe!==currentClasse){
-      if(currentClasse!==null) html += '</table>'; // ferme le tableau de la classe précédente avant d'en ouvrir un nouveau
+      if(currentClasse!==null) html += '</tbody></table>';
       currentClasse = r.classe;
       html += `<div style="margin:10px 0 4px;font-weight:700;">${escapeHtml(currentClasse)}</div>`;
-      html += '<table style="border-collapse:collapse;width:100%;font-size:.85rem;margin-bottom:4px;"><tr><th style="text-align:left;padding:4px 8px;border:1px solid rgba(28,43,57,.15);background:rgba(31,58,92,.06);">Nom</th><th style="text-align:left;padding:4px 8px;border:1px solid rgba(28,43,57,.15);background:rgba(31,58,92,.06);">Identifiant</th><th style="text-align:left;padding:4px 8px;border:1px solid rgba(28,43,57,.15);background:rgba(31,58,92,.06);">Lien</th></tr>';
+      html += '<table class="sup-table"><thead><tr><th>Nom</th><th>Identifiant</th><th>Lien</th></tr></thead><tbody>';
     }
-    html += `<tr><td style="padding:4px 8px;border:1px solid rgba(28,43,57,.15);">${escapeHtml(r.nom)}</td><td style="padding:4px 8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">${escapeHtml(r.identifiant)}</td><td style="padding:4px 8px;border:1px solid rgba(28,43,57,.15);"><a href="${r.url}" target="_blank">${r.url}</a></td></tr>`;
+    html += `<tr><td>${escapeHtml(r.nom)}</td><td style="font-family:'JetBrains Mono',monospace;">${escapeHtml(r.identifiant)}</td><td><a href="${r.url}" target="_blank">${r.url}</a></td></tr>`;
   });
-  html += '</table>'; // ferme la table du dernier groupe
+  html += '</tbody></table>';
   tableEl.innerHTML = html;
 }
 function adminCopyInviteLink(){
@@ -662,39 +698,39 @@ function adminRenderAccountsListing(){
     const colors = {trial:'#B8860B', active:'#1F7A4D', expired:'#a83c1f'};
     const label = labels[p.subscription_status] || p.subscription_status;
     const color = colors[p.subscription_status] || 'var(--ink-soft)';
-    return ` <span style="color:${color};font-weight:700;">[${label}${dateStr?' jusqu\'au '+dateStr:''}]</span>`;
+    return `<span class="sup-score-pill" style="background:${color}1A;color:${color};">${label}${dateStr?' · '+dateStr:''}</span>`;
   };
-  // "Actif" ne dit rien sur la connexion (c'est un statut de facturation, pas d'activité) --
-  // affichée séparément, pour profs ET élèves.
-  const lastLoginBadge = p => {
+  const lastLoginCell = p => {
     const t = lastLoginMap.get(p.id);
-    if(!t) return ' <span class="hint">(jamais connecté)</span>';
+    if(!t) return '<span class="hint">jamais connecté</span>';
     const d = new Date(t);
-    return ` <span class="hint">(connecté le ${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})})</span>`;
+    return `<span class="hint">${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span>`;
   };
   const rowHTML = p => {
-    const label = escapeHtml(p.nom||'(sans nom)') + ' · <b>identifiant :</b> ' + escapeHtml(loginIdentifiant(p.email)) + (p.role==='admin'?' [admin]':'') + subscriptionBadge(p) + lastLoginBadge(p);
     const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
-    const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span> Modifier</button>` : '';
-    const categoryBtn = p.role==='prof' ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeCategoryPrompt('${p.id}','${safeName}')"><span class=gicon>workspace_premium</span> Catégorie</button>` : '';
-    // N'a de sens que pour un compte qui n'a pas encore changé son mot de passe initial --
-    // au-delà, l'élève a déjà défini le sien, un lien d'invitation n'y changerait rien.
-    const inviteBtn = (p.role==='eleve' && p.must_change_password) ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminGenerateInviteLink('${p.id}','${safeName}')"><span class=gicon>link</span> Générer un lien</button>` : '';
-    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid rgba(28,43,57,.06);">
-      <span style="display:flex;align-items:center;gap:8px;"><input type="checkbox" class="adminAccCheckbox" value="${p.id}">${label}</span>
-      <span style="display:flex;gap:6px;flex:none;">
-        ${editBtn}
-        ${categoryBtn}
-        ${inviteBtn}
-        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeIdentifiantPrompt('${p.id}','${safeName}')"><span class=gicon>edit</span> Identifiant</button>
-        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminResetPasswordPrompt('${p.id}','${safeName}')"><span class=gicon>key</span> Réinitialiser</button>
-        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="adminDeleteUser('${p.id}', this)"><span class=gicon>delete</span> Supprimer</button>
-      </span>
-    </div>`;
+    const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span></button>` : '';
+    const categoryBtn = p.role==='prof' ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeCategoryPrompt('${p.id}','${safeName}')"><span class=gicon>workspace_premium</span></button>` : '';
+    const inviteBtn = (p.role==='eleve' && p.must_change_password) ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminGenerateInviteLink('${p.id}','${safeName}')"><span class=gicon>link</span></button>` : '';
+    const rowBg = !lastLoginMap.get(p.id) ? 'background:rgba(28,43,57,.02);' : '';
+    return `<tr style="${rowBg}">
+      <td style="width:24px;"><input type="checkbox" class="adminAccCheckbox" value="${p.id}"></td>
+      <td style="font-weight:600;">${escapeHtml(p.nom||'(sans nom)')}${p.role==='admin'?' <span class="hint">[admin]</span>':''}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">${escapeHtml(loginIdentifiant(p.email))}</td>
+      <td>${subscriptionBadge(p)}</td>
+      <td>${lastLoginCell(p)}</td>
+      <td style="text-align:right;white-space:nowrap;">
+        ${editBtn}${categoryBtn}${inviteBtn}
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeIdentifiantPrompt('${p.id}','${safeName}')"><span class=gicon>edit</span></button>
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminResetPasswordPrompt('${p.id}','${safeName}')"><span class=gicon>key</span></button>
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="adminDeleteUser('${p.id}', this)"><span class=gicon>delete</span></button>
+      </td>
+    </tr>`;
   };
-  accEl.innerHTML =
-    `<b>Profs/admins (${filteredProfs.length}${filteredProfs.length!==profs.length?'/'+profs.length:''})</b>` + (filteredProfs.length ? filteredProfs.map(rowHTML).join('') : '<div class="hint">aucun</div>') +
-    `<div style="margin-top:12px;"><b>Élèves (${filteredEleves.length}${filteredEleves.length!==eleves.length?'/'+eleves.length:''})</b></div>` + (filteredEleves.length ? filteredEleves.map(rowHTML).join('') : '<div class="hint">aucun</div>');
+  const tableHTML = (title, list, total) => `
+    <p class="example-title" style="margin:16px 0 6px;">${title} (${list.length}${list.length!==total?'/'+total:''})</p>
+    ${list.length ? `<table class="sup-table"><thead><tr><th></th><th>Nom</th><th>Identifiant</th><th>Statut</th><th>Dernière connexion</th><th style="text-align:right;">Actions</th></tr></thead><tbody>${list.map(rowHTML).join('')}</tbody></table>` : '<div class="hint">aucun</div>'}
+  `;
+  accEl.innerHTML = tableHTML('Profs/admins', filteredProfs, profs.length) + tableHTML('Élèves', filteredEleves, eleves.length);
   document.getElementById('adminAccSelectAll').checked = false;
 }
 function adminToggleSelectAllAccounts(checked){
@@ -838,23 +874,29 @@ async function adminRefreshBugReports(){
   if(error){ el.textContent = "Erreur : "+error.message; return; }
   if(!data || !data.length){ el.textContent = "Aucun signalement pour l'instant."; return; }
   const STATUS_OPTIONS = ['nouveau','en cours','résolu'];
-  el.innerHTML = data.map(r=>{
+  const STATUS_COLORS = {'nouveau':'#0C5BA0', 'en cours':'#C77D1E', 'résolu':'#1F7A4D'};
+  el.innerHTML = data.map((r,idx)=>{
     const name = (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Utilisateur inconnu';
     const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
-    const statusColor = r.status==='résolu' ? 'var(--accent-green, #1F6B3A)' : r.status==='en cours' ? 'var(--accent-orange)' : 'var(--accent)';
+    const statusColor = STATUS_COLORS[r.status] || 'var(--ink-soft)';
     const typeTag = r.report_type==='suggestion' ? '<span style="background:#FFF4E5;color:#B26A00;border-radius:4px;padding:1px 7px;font-size:.75rem;font-weight:600;margin-right:6px;"><span class=gicon>lightbulb</span> Suggestion</span>' : '<span style="background:#FDEAEA;color:#B23A3A;border-radius:4px;padding:1px 7px;font-size:.75rem;font-weight:600;margin-right:6px;"><span class=gicon>bug_report</span> Bug</span>';
-    return `<div class="bug-report-row" style="border:1px solid rgba(28,43,57,.12);border-radius:8px;padding:10px 12px;margin-bottom:10px;">
-      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
-        <span>${typeTag}<b>${escapeHtml(r.section)}</b>${r.chapitre?' · '+escapeHtml(r.chapitre):''}</span>
-        <span style="color:var(--ink-soft);font-size:.85rem;">${escapeHtml(name)} · ${date}${r.build_version?' · build '+escapeHtml(r.build_version):''}</span>
+    const accId = 'accBug'+idx;
+    return `<div class="nb-accordion-section">
+      <button type="button" class="nb-accordion-header" style="--acc-color:${statusColor};--acc-bg:${statusColor}0D;" onclick="toggleNbAccordion('${accId}')">
+        <span class="gicon nb-accordion-chevron">expand_more</span>
+        ${typeTag}<span>${escapeHtml(r.section)}${r.chapitre?' · '+escapeHtml(r.chapitre):''}</span>
+        <span class="nb-accordion-count">${escapeHtml(name)} · ${date}</span>
+      </button>
+      <div class="nb-accordion-body" id="${accId}">
+        <div style="margin:6px 0;white-space:pre-wrap;">${escapeHtml(r.message)}</div>
+        ${r.build_version ? `<p class="hint" style="margin:0 0 8px;">build ${escapeHtml(r.build_version)}</p>` : ''}
+        <label class="hint" style="display:inline-flex;align-items:center;gap:6px;">
+          Statut :
+          <select onchange="adminUpdateBugStatus('${r.id}', this.value)" style="color:${statusColor};font-weight:600;">
+            ${STATUS_OPTIONS.map(s=>`<option value="${s}" ${s===r.status?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </label>
       </div>
-      <div style="margin:6px 0;white-space:pre-wrap;">${escapeHtml(r.message)}</div>
-      <label class="hint" style="display:inline-flex;align-items:center;gap:6px;">
-        Statut :
-        <select onchange="adminUpdateBugStatus('${r.id}', this.value)" style="color:${statusColor};font-weight:600;">
-          ${STATUS_OPTIONS.map(s=>`<option value="${s}" ${s===r.status?'selected':''}>${s}</option>`).join('')}
-        </select>
-      </label>
     </div>`;
   }).join('');
 }
@@ -939,8 +981,9 @@ async function adminBulkCreateStudents(){
   let html = `✓ ${ok} compte(s) créé(s)` + (errors.length?`, <span class=gicon>warning</span> ${fail?fail+' échec(s)':'avertissement(s)'} :<br>`+errors.map(escapeHtml).join('<br>') : '.');
   if(invites.length){
     html += `<div style="margin-top:10px;"><b>Liens d'invitation à distribuer aux élèves</b> (chacun choisit son propre mot de passe en cliquant dessus) :</div>
-      <table style="border-collapse:collapse;width:100%;margin-top:6px;font-size:.85rem;">
-        ${invites.map(i=>`<tr><td style="padding:4px 8px;border:1px solid rgba(28,43,57,.15);">${escapeHtml(i.nom)}</td><td style="padding:4px 8px;border:1px solid rgba(28,43,57,.15);"><a href="${i.url}" target="_blank">${i.url}</a></td></tr>`).join('')}
+      <table class="sup-table" style="margin-top:6px;">
+        <thead><tr><th>Nom</th><th>Lien</th></tr></thead>
+        <tbody>${invites.map(i=>`<tr><td>${escapeHtml(i.nom)}</td><td><a href="${i.url}" target="_blank">${i.url}</a></td></tr>`).join('')}</tbody>
       </table>`;
   }
   status.innerHTML = html;
@@ -979,26 +1022,28 @@ async function adminRefreshSignupRequests(){
     .order('created_at',{ascending:true});
   if(error){ el.textContent = 'Erreur : '+error.message; return; }
   if(!requests || !requests.length){ el.innerHTML = '<div class="hint">Aucune demande en attente.</div>'; return; }
-  el.innerHTML = requests.map(r=>{
-    const safeName = escapeHtml([r.prenom,r.nom].filter(Boolean).join(' ')||r.email||'').replace(/'/g,"\\'");
-    const etabNom = r.etablissements ? r.etablissements.nom : null;
-    const dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR') : '';
-    return `<div style="padding:10px 0;border-bottom:1px solid rgba(28,43,57,.08);">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;">
-        <div>
-          <b>${escapeHtml([r.prenom,r.nom].filter(Boolean).join(' ')||'(sans nom)')}</b>
-          <span style="color:var(--ink-soft);">${escapeHtml(r.email||'')}</span><br>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">UAI ${escapeHtml(r.uai||'?')}</span>
-          ${etabNom ? ' · '+escapeHtml(etabNom) : ' <span style="color:#a83c1f;">(établissement à vérifier)</span>'}
-          <span style="color:var(--ink-soft);font-size:.8rem;"> · demande du ${dateStr}</span>
-        </div>
-        <span style="display:flex;gap:6px;flex:none;">
+  el.innerHTML = `<table class="sup-table">
+    <thead><tr><th>Nom</th><th>Email</th><th>Établissement</th><th>Date</th><th style="text-align:right;">Actions</th></tr></thead>
+    <tbody>
+    ${requests.map(r=>{
+      const safeName = escapeHtml([r.prenom,r.nom].filter(Boolean).join(' ')||r.email||'').replace(/'/g,"\\'");
+      const etabNom = r.etablissements ? r.etablissements.nom : null;
+      const dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString('fr-FR') : '';
+      return `<tr>
+        <td style="font-weight:600;">${escapeHtml([r.prenom,r.nom].filter(Boolean).join(' ')||'(sans nom)')}</td>
+        <td style="color:var(--ink-soft);">${escapeHtml(r.email||'')}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">
+          UAI ${escapeHtml(r.uai||'?')}${etabNom ? ' · '+escapeHtml(etabNom) : ' <span style="color:#a83c1f;">(à vérifier)</span>'}
+        </td>
+        <td style="color:var(--ink-soft);white-space:nowrap;">${dateStr}</td>
+        <td style="text-align:right;white-space:nowrap;">
           <button class="btn" style="font-size:.78rem;padding:5px 10px;" onclick="adminApproveSignup('${r.id}','${safeName}')">✓ Approuver</button>
           <button class="btn secondary" style="font-size:.78rem;padding:5px 10px;color:#a83c1f;" onclick="adminRejectSignup('${r.id}','${safeName}')"><span class=gicon>close</span> Rejeter</button>
-        </span>
-      </div>
-    </div>`;
-  }).join('');
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>`;
 }
 async function adminApproveSignup(id, name){
   if(!(await niceConfirm(`Approuver l'inscription de ${name} ? L'essai gratuit de 15 jours démarre immédiatement.`))) return;
