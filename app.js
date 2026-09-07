@@ -1687,7 +1687,7 @@ function blocksRowsHTML(ctx, rows, withControls, cellBorders){
       if(!withControls){
         const realBorder = (cb.right?'border-right:1.3px solid #1C1B2E;':'') + (cb.bottom?'border-bottom:1.3px solid #1C1B2E;':'') + (cb.left?'border-left:1.3px solid #1C1B2E;':'') + (cb.top?'border-top:1.3px solid #1C1B2E;':'');
         const bgStyle = cb.bg ? `background-color:${CELL_BG_COLORS[cb.bg]}22;border-radius:6px;` : '';
-        return `<div style="${(realBorder||bgStyle)?'padding:6px;':''}${realBorder}${bgStyle}margin-bottom:6px;">${inner}</div>`;
+        return `<div style="${(realBorder||bgStyle)?'padding:6px;':''}${realBorder}${bgStyle}margin-bottom:2px;">${inner}</div>`;
       }
       const dropAttrs = `ondragover="event.preventDefault()" ondrop="evalDropInRowCol(event,'${ctx}',${rowIdx},0)"`;
       const isTarget = blockTargetCtx===ctx && blockTargetRow===rowIdx && blockTargetCol===0;
@@ -2227,6 +2227,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.509', items:[
+    "Créateur d'évaluation : écart réduit entre deux lignes/blocs successifs d'un même exercice (le padding interne d'un bloc texte s'ajoutait à la marge entre lignes, créant un saut visuel).",
+  ]},
   { version:'2026-08-19.508', items:[
     "Créateur d'évaluation : taille de police réduite (12,5pt -> 11,5pt), et nouveau réglage d'interligne (Compact/Normal/Aéré) au lieu d'une valeur fixe -- sauvegardé avec chaque évaluation, appliqué à l'aperçu comme au PDF final.",
   ]},

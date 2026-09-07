@@ -339,7 +339,7 @@ Réponds UNIQUEMENT par un tableau JSON de chaînes de caractères, un élément
 function pushTextBlockForExercise(exId, text){
   if(!text || !text.trim()) return;
   const ctx = 'ex-'+exId;
-  const html = `<div style="padding:4px 0;">${renderMathText(text)}</div>`;
+  const html = `<div style="padding:0;">${renderMathText(text)}</div>`;
   (blocksStores[ctx] || (blocksStores[ctx]=[])).push({id: pendingBlockNextId++, type:'texte', html, data:{text}, editFn:'reopenTextBlock', ctx, col:0, row:0});
 }
 async function generateEvaluationAI(){
