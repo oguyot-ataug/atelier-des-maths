@@ -391,11 +391,11 @@ function renderEvalExercicesList(){
       // terminé. On peut réorganiser l'ordre directement ici ; modifier ou supprimer se fait
       // en repassant par l'édition (bouton <span class=gicon>edit</span>), pour éviter une suppression accidentelle.
       return `
-      <div class="tool-shell" style="margin-bottom:14px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-          <strong style="font-family:'Space Grotesk',sans-serif;">Exercice ${i+1}${ex.title?' · '+escapeHtml(ex.title):''}</strong>
+      <div class="tool-shell" style="margin-bottom:8px;">
+        <div style="display:grid;grid-template-columns:1fr 90px auto;align-items:center;margin-bottom:10px;gap:8px;">
+          <strong style="font-family:'Space Grotesk',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Exercice ${i+1}${ex.title?' · '+escapeHtml(ex.title):''}</strong>
+          <span class="hint" style="margin:0;text-align:right;">${ex.bareme ? ex.bareme+' pt(s)' : ''}</span>
           <span style="display:flex;gap:6px;align-items:center;">
-            ${ex.bareme ? `<span class="hint" style="margin:0;">${ex.bareme} pt(s)</span>` : ''}
             <button type="button" onclick="moveEvalExercice(${ex.id},-1)" ${i===0?'disabled style="opacity:.35;"':''} title="Monter" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↑</button>
             <button type="button" onclick="moveEvalExercice(${ex.id},1)" ${i===evaluationExercises.length-1?'disabled style="opacity:.35;"':''} title="Descendre" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↓</button>
             <button type="button" onclick="editEvalExercice(${ex.id})" title="Modifier ou supprimer" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:4px 10px;cursor:pointer;"><span class=gicon>edit</span> Éditer</button>
@@ -406,7 +406,7 @@ function renderEvalExercicesList(){
     `;
     }
     return `
-    <div class="tool-shell" style="margin-bottom:14px;">
+    <div class="tool-shell" style="margin-bottom:8px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
         <strong style="font-family:'Space Grotesk',sans-serif;">Exercice ${i+1}</strong>
         <span style="display:flex;gap:6px;align-items:center;">
@@ -541,9 +541,9 @@ function buildEvaluationContentHTML(){
     <div style="height:3cm;border-top:1px solid #1C1B2E;border-bottom:1px solid #1C1B2E;margin:16px 0 24px;"></div>
     ${evaluationExercises.map((ex,i)=>`
       <div style="margin-bottom:26px;">
-        <p style="font-weight:700;margin:0 0 8px;display:flex;justify-content:space-between;">
+        <p style="font-weight:700;margin:0 0 8px;display:grid;grid-template-columns:1fr 70px;gap:8px;">
           <span>Exercice ${i+1}${ex.title ? ' · '+escapeHtml(ex.title) : ''}</span>
-          ${ex.bareme ? `<span>${ex.bareme} pt(s)</span>` : ''}
+          <span style="text-align:right;">${ex.bareme ? ex.bareme+' pt(s)' : ''}</span>
         </p>
         ${blocksRowsHTML('ex-'+ex.id, ensureExRows(ex), false, ex.cellBorders)}
       </div>
