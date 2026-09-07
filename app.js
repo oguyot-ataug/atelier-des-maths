@@ -2227,6 +2227,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.508', items:[
+    "Créateur d'évaluation : taille de police réduite (12,5pt -> 11,5pt), et nouveau réglage d'interligne (Compact/Normal/Aéré) au lieu d'une valeur fixe -- sauvegardé avec chaque évaluation, appliqué à l'aperçu comme au PDF final.",
+  ]},
   { version:'2026-08-19.507', items:[
     "Créateur d'évaluation : écart légèrement réduit entre le titre/barème d'un exercice et son contenu, sur les 3 vues (édition, aperçu, PDF).",
   ]},

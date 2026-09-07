@@ -37,6 +37,13 @@ document.getElementById('view-evaluation').innerHTML = `
       <label class="hint" style="margin:0;">Classe(s) : <input type="text" id="evalClasses" placeholder="ex. 6e A, 6e B" style="width:140px;margin-left:4px;"></label>
       <label class="hint" style="margin:0;">Date prévue : <input type="date" id="evalDate" style="margin-left:4px;"></label>
       <label class="hint" style="margin:0;">Durée (min) : <input type="number" id="evalDuree" value="55" min="5" style="width:70px;margin-left:4px;"></label>
+      <label class="hint" style="margin:0;">Interligne :
+        <select id="evalLineHeight" style="margin-left:4px;">
+          <option value="1.35">Compact</option>
+          <option value="1.5" selected>Normal</option>
+          <option value="1.7">Aéré</option>
+        </select>
+      </label>
       <label class="hint" style="margin:0;">Type :
         <select id="evalType" style="margin-left:4px;" onchange="document.getElementById('evalTypeCustom').style.display = this.value==='__custom' ? 'inline-block' : 'none';">
           <option value="Évaluation">Évaluation</option>
@@ -108,7 +115,7 @@ document.body.insertAdjacentHTML('beforeend', `
       <button class="modal-close" onclick="closeEvalPreview()"><span class=gicon>close</span></button>
     </div>
     <div style="position:relative;width:700px;max-width:100%;margin:0 auto;">
-      <div id="evalPreviewContent" style="font-family:Inter,sans-serif;color:#20242E;line-height:1.7;font-size:12.5pt;width:700px;padding:10px;box-sizing:border-box;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12);position:relative;"></div>
+      <div id="evalPreviewContent" style="font-family:Inter,sans-serif;color:#20242E;font-size:11.5pt;width:700px;padding:10px;box-sizing:border-box;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.12);position:relative;"></div>
       <div id="evalPreviewPageMarks" style="position:absolute;top:0;left:0;width:700px;pointer-events:none;"></div>
     </div>
   </div>
@@ -149,7 +156,7 @@ async function saveEvaluation(){
     classes: document.getElementById('evalClasses').value,
     eval_date: document.getElementById('evalDate').value || null,
     duree: parseInt(document.getElementById('evalDuree').value) || null,
-    data: { evaluationExercises, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value },
+    data: { evaluationExercises, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalLineHeight: document.getElementById('evalLineHeight').value },
   };
   const statusEl = document.getElementById('evalSaveStatus');
   statusEl.textContent = "Sauvegarde en cours…";
@@ -211,6 +218,7 @@ async function loadEvaluation(id){
   document.getElementById('evalClasses').value = data.classes || '';
   document.getElementById('evalDate').value = data.eval_date || '';
   document.getElementById('evalDuree').value = data.duree || 55;
+  document.getElementById('evalLineHeight').value = (data.data && data.data.evalLineHeight) || '1.5';
   const savedType = (data.data && data.data.evalType) || 'Évaluation';
   const typeSelect = document.getElementById('evalType');
   typeSelect.value = Array.from(typeSelect.options).some(o=>o.value===savedType) ? savedType : '__custom';
@@ -608,7 +616,7 @@ async function exportEvaluationPDF(){
     <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
     <style>
       @page{ size:A4; margin:15mm; }
-      body{ font-family:Inter,Arial,sans-serif; color:#20242E; font-size:12.5pt; line-height:1.7; margin:0; }
+      body{ font-family:Inter,Arial,sans-serif; color:#20242E; font-size:11.5pt; line-height:${document.getElementById('evalLineHeight').value}; margin:0; }
       /* Important : contraint le contenu à la largeur EXACTE de la zone imprimable A4
          (210mm - 2×15mm de marge = 180mm ≈ 680px), quelle que soit la largeur réelle de
          cette fenêtre à l'écran. Sans ça, la mise en page à l'écran (calculée sur la largeur
@@ -643,6 +651,7 @@ async function exportEvaluationPDF(){
 async function openEvalPreview(){
   if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant l'aperçu."); return; }
   const content = document.getElementById('evalPreviewContent');
+  content.style.lineHeight = document.getElementById('evalLineHeight').value;
   content.innerHTML = buildEvaluationContentHTML();
   document.getElementById('evalPreviewModalOverlay').style.display='flex';
   // Repères de saut de page : la largeur de ce conteneur (700px) correspond à la largeur
