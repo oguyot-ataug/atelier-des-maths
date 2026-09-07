@@ -2227,6 +2227,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.510', items:[
+    "Créateur d'évaluation : vraie cause enfin trouvée de l'écart persistant entre deux lignes -- une règle CSS embarquée spécifiquement dans la fenêtre du PDF exporté (indépendante du fichier de styles principal déjà corrigé) ajoutait encore 6px en haut et en bas de chaque bloc. Retirée.",
+  ]},
   { version:'2026-08-19.509', items:[
     "Créateur d'évaluation : écart réduit entre deux lignes/blocs successifs d'un même exercice (le padding interne d'un bloc texte s'ajoutait à la marge entre lignes, créant un saut visuel).",
   ]},

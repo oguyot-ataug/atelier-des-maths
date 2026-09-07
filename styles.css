@@ -185,7 +185,7 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .nb-remove-btn:hover{background:rgba(211,90,60,.16);}
 .nb-body{font-size:1rem;line-height:1.9;margin-bottom:20px;}
 .nb-body b{color:var(--ink);}
-.nb-figure-row{padding:6px 0;}
+.nb-figure-row{padding:0;}
 
 /* ---------- mise en page façon manuel (sections numérotées, Définition/Règles) ---------- */
 .lesson-header{

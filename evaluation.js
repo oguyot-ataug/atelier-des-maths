@@ -625,7 +625,7 @@ async function exportEvaluationPDF(){
          avant l'impression sur une largeur qui n'est plus la bonne une fois sur le papier. */
       * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
       .print-page{ max-width:680px; margin:0 auto; }
-      .nb-figure-row{ margin:6px 0; }
+      .nb-figure-row{ margin:0; }
       svg{ max-width:100%; }
       .katex{ font-size:1.18em; }
     </style>
