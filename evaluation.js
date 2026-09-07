@@ -540,7 +540,7 @@ function buildEvaluationContentHTML(){
     <p style="margin:0;">NOM : .................................................... Prénom : ....................................................</p>
     <div style="height:3cm;border-top:1px solid #1C1B2E;border-bottom:1px solid #1C1B2E;margin:16px 0 24px;"></div>
     ${evaluationExercises.map((ex,i)=>`
-      <div style="margin-bottom:26px;">
+      <div style="margin-bottom:8px;">
         <p style="font-weight:700;margin:0 0 8px;display:grid;grid-template-columns:1fr 70px;gap:8px;">
           <span>Exercice ${i+1}${ex.title ? ' · '+escapeHtml(ex.title) : ''}</span>
           <span style="text-align:right;">${ex.bareme ? ex.bareme+' pts' : ''}</span>
