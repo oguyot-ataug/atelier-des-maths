@@ -2227,6 +2227,27 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.503', items:[
+    "Créateur d'évaluation : écart réduit entre les exercices, et le barème de chaque exercice s'aligne désormais parfaitement à droite (grille à colonnes fixes), quelle que soit la longueur du titre -- corrigé à la fois dans l'aperçu et dans le PDF final.",
+  ]},
+  { version:'2026-08-19.502', items:[
+    "Administration : refonte visuelle complète -- listes de comptes et de résultats en vrais tableaux alignés et colorés (statut d'abonnement en pastille), formulaires de création (compte, classe, import en masse, associations) et signalements regroupés en accordéons colorés, classes également en accordéon selon leur niveau.",
+  ]},
+  { version:'2026-08-19.500', items:[
+    "Cahier élève : affichage en blocs accordéon par date (la plus récente ouverte par défaut) au lieu d'un simple défilement, pour mieux s'y retrouver à mesure que l'année se remplit.",
+  ]},
+  { version:'2026-08-19.498', items:[
+    "Supervision : les listes de comptes et de résultats (automatismes, le compte est bon) passent en vrais tableaux alignés, avec les scores en pastilles colorées selon la réussite.",
+  ]},
+  { version:'2026-08-19.497', items:[
+    "Automatismes : les 88 séquences existantes sont regroupées par thème (additions/soustractions, tables et multiplications, divisions, pourcentages, calcul décimal), chacune avec sa couleur et son symbole, et un badge de progression bien plus visible.",
+  ]},
+  { version:'2026-08-19.494', items:[
+    "Le compte est bon : refonte visuelle complète (fond dégradé, tuiles et opérateurs colorés), plein écran natif du navigateur, chrono personnalisable via un disque à tourner (jusqu'à 6 minutes), validation automatique dès que le compte exact est trouvé, et correction de plusieurs bugs d'affichage (tuiles fantômes après une chaîne de calculs, score attribué à tort sans qu'aucune opération n'ait été faite, éléments mal centrés ou peu lisibles sur le nouveau fond).",
+  ]},
+  { version:'2026-08-19.488', items:[
+    "Lien d'invitation élève déjà utilisé : affiche désormais un écran utile (identifiant de connexion + bouton direct vers la page de connexion) au lieu d'un simple message d'erreur sans suite.",
+  ]},
   { version:'2026-08-19.485', items:[
     "Méthode \"traduire une phrase en calcul\" : nouveau constructeur d'expression interactif (clic-pour-placer, récursif) permettant de composer somme/différence/produit/quotient bloc par bloc, avec grammaire française correcte (du/de la) et affichage en parallèle de la phrase et de l'expression mathématique -- sans calcul, juste l'écriture. Déplacé en tête de l'onglet Méthodes.",
   ]},
