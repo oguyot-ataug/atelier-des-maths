@@ -394,7 +394,7 @@ function renderEvalExercicesList(){
       <div class="tool-shell" style="margin-bottom:8px;">
         <div style="display:grid;grid-template-columns:1fr 90px auto;align-items:center;margin-bottom:10px;gap:8px;">
           <strong style="font-family:'Space Grotesk',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Exercice ${i+1}${ex.title?' · '+escapeHtml(ex.title):''}</strong>
-          <span class="hint" style="margin:0;text-align:right;">${ex.bareme ? ex.bareme+' pt(s)' : ''}</span>
+          <span class="hint" style="margin:0;text-align:right;">${ex.bareme ? ex.bareme+' pts' : ''}</span>
           <span style="display:flex;gap:6px;align-items:center;">
             <button type="button" onclick="moveEvalExercice(${ex.id},-1)" ${i===0?'disabled style="opacity:.35;"':''} title="Monter" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↑</button>
             <button type="button" onclick="moveEvalExercice(${ex.id},1)" ${i===evaluationExercises.length-1?'disabled style="opacity:.35;"':''} title="Descendre" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↓</button>
@@ -418,7 +418,7 @@ function renderEvalExercicesList(){
       </div>
       <div class="tool-row" style="margin-bottom:8px;">
         <input type="text" placeholder="Titre de l'exercice (facultatif)" value="${escapeHtml(ex.title||'')}" oninput="updateEvalExerciceField(${ex.id},'title',this.value)" style="flex:1;min-width:200px;padding:7px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);">
-        <label class="hint" style="margin:0;">Barème : <input type="number" min="0" step="0.5" value="${ex.bareme!=null?ex.bareme:''}" oninput="updateEvalExerciceField(${ex.id},'bareme',this.value)" style="width:60px;margin-left:4px;"> pt(s)</label>
+        <label class="hint" style="margin:0;">Barème : <input type="number" min="0" step="0.5" value="${ex.bareme!=null?ex.bareme:''}" oninput="updateEvalExerciceField(${ex.id},'bareme',this.value)" style="width:60px;margin-left:4px;"> pts</label>
       </div>
       <div class="eval-blocks-preview" style="margin-top:4px;">${blocksRowsHTML(ctx, ensureExRows(ex), true, ex.cellBorders)}</div>
       <div class="tool-row" style="margin-top:10px;align-items:center;flex-wrap:wrap;">
@@ -535,7 +535,7 @@ function buildEvaluationContentHTML(){
     </div>
     <div style="height:2.4em;"></div>
     <p style="text-align:center;font-weight:700;font-size:1.3rem;margin:0;">${escapeHtml(title)} de Mathématiques</p>
-    <p style="text-align:center;font-size:.85rem;color:#5B6472;margin:4px 0 0;">${duree ? 'Durée : '+duree+' min' : ''}${total>0 ? ' · Barème : '+total+' pt(s)' : ''}</p>
+    <p style="text-align:center;font-size:.85rem;color:#5B6472;margin:4px 0 0;">${duree ? 'Durée : '+duree+' min' : ''}${total>0 ? ' · Barème : '+total+' pts' : ''}</p>
     <div style="height:2.4em;"></div>
     <p style="margin:0;">NOM : .................................................... Prénom : ....................................................</p>
     <div style="height:3cm;border-top:1px solid #1C1B2E;border-bottom:1px solid #1C1B2E;margin:16px 0 24px;"></div>
@@ -543,7 +543,7 @@ function buildEvaluationContentHTML(){
       <div style="margin-bottom:26px;">
         <p style="font-weight:700;margin:0 0 8px;display:grid;grid-template-columns:1fr 70px;gap:8px;">
           <span>Exercice ${i+1}${ex.title ? ' · '+escapeHtml(ex.title) : ''}</span>
-          <span style="text-align:right;">${ex.bareme ? ex.bareme+' pt(s)' : ''}</span>
+          <span style="text-align:right;">${ex.bareme ? ex.bareme+' pts' : ''}</span>
         </p>
         ${blocksRowsHTML('ex-'+ex.id, ensureExRows(ex), false, ex.cellBorders)}
       </div>

@@ -2227,6 +2227,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.505', items:[
+    "Créateur d'évaluation : \"pt(s)\" remplacé par \"pts\" pour l'affichage du barème, plus naturel à lire.",
+  ]},
   { version:'2026-08-19.503', items:[
     "Créateur d'évaluation : écart réduit entre les exercices, et le barème de chaque exercice s'aligne désormais parfaitement à droite (grille à colonnes fixes), quelle que soit la longueur du titre -- corrigé à la fois dans l'aperçu et dans le PDF final.",
   ]},
