@@ -2227,6 +2227,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.507', items:[
+    "Créateur d'évaluation : écart légèrement réduit entre le titre/barème d'un exercice et son contenu, sur les 3 vues (édition, aperçu, PDF).",
+  ]},
   { version:'2026-08-19.506', items:[
     "Créateur d'évaluation : fix racine -- le précédent réglage de l'écart entre exercices n'avait été appliqué qu'à l'éditeur, jamais à la vue imprimée/PDF (qui utilisait un espacement totalement différent, jamais touché). Les deux vues sont désormais parfaitement cohérentes, écart réduit dans le PDF aussi.",
   ]},
