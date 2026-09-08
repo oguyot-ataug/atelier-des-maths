@@ -87,6 +87,11 @@ const CHCM1 = [
  {n:22,code:'D4',cat:'D',t:'Initiation à la pensée informatique',s:1,p:'158-160',d:'7-13 juin'},
 ];
 
+// Correspondance niveau -> programme -- remplace la ternaire "lvl==='6e'?CH6:CH5" codée en
+// dur, pour rester extensible à mesure que de nouveaux niveaux sont ajoutés (cm1 aujourd'hui,
+// cm2/4e/3e plus tard).
+const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, 'cm1': CHCM1 };
+
 const VACANCES = {
   '6e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:15,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '5e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:6,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:14,label:'Vacances de printemps · 17 avr → 3 mai'}],
@@ -223,6 +228,7 @@ function setActiveTopnav(key){
   document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));
   if(key==='6e') document.querySelector('.nav-links button[data-lvl="6e"]').classList.add('active');
   else if(key==='5e') document.querySelector('.nav-links button[data-lvl="5e"]').classList.add('active');
+  else if(key==='cm1') document.querySelector('.nav-links button[data-lvl="cm1"]').classList.add('active');
   else if(key==='cm') document.querySelector('.nav-links button[data-nav="cm"]').classList.add('active');
   else if(key==='compte') document.querySelector('.nav-links button[data-nav="compte"]').classList.add('active');
   else if(key==='correction') document.querySelector('.nav-links button[data-nav="correction"]').classList.add('active');
@@ -265,7 +271,7 @@ let restrictedVisitor = true;
 function isChapterFree(lvl, titre){ return (FREE_CHAPTERS[lvl]||[]).includes(titre); }
 function renderNiveau(lvl){
   document.getElementById('niveau-title').textContent = 'Progression de '+lvl;
-  const data = lvl==='6e'?CH6:CH5;
+  const data = CHAPITRES_BY_LEVEL[lvl] || CH6;
   renderTheme(data, lvl);
   renderFrise(data, lvl);
   applyCustomProgressionIfAny(lvl);
@@ -291,7 +297,7 @@ async function applyCustomProgressionIfAny(lvl){
   } else return;
   const { data: rows, error } = await sb.from('progressions').select('*').eq('owner_id', ownerId).eq('niveau', lvl).order('ordre');
   if(error || !rows || !rows.length) return;
-  const defaultData = lvl==='6e' ? CH6 : CH5;
+  const defaultData = CHAPITRES_BY_LEVEL[lvl] || CH6;
   const merged = rows.map(r=>{
     const base = defaultData.find(c=>c.t===r.chapitre_titre);
     if(!base) return null;
@@ -314,7 +320,7 @@ async function renderProgressionEditor(){
   const lvl = document.getElementById('progNiveauSelect').value;
   const status = document.getElementById('progStatus');
   status.textContent = 'Chargement…';
-  const defaultData = lvl==='6e' ? CH6 : CH5;
+  const defaultData = CHAPITRES_BY_LEVEL[lvl] || CH6;
 
   const { data: profile } = await sb.from('profiles').select('zone_vacances').eq('id', currentUser.id).single();
   progUserZone = (profile && profile.zone_vacances) || 'B';
@@ -644,7 +650,7 @@ let currentChapterLevel = null;
 function openChapitre(c, tab, lvlOverride){
   const lvl = lvlOverride || currentLevel;
   const chapView = document.getElementById('view-chapitre');
-  chapView.classList.toggle('lvl-6e', lvl==='6e');
+  chapView.classList.toggle('lvl-6e', lvl==='6e' || lvl==='cm1');
   chapView.classList.toggle('lvl-5e', lvl==='5e');
   const demo = DEMO_REGISTRY[lvl+'|'+c.t];
   currentChapterTitle = c.t;
@@ -659,7 +665,7 @@ function openChapitre(c, tab, lvlOverride){
   // c.n n'est pas toujours transmis par l'appelant (ex. carte cliquée, reconstruite depuis
   // son dataset qui ne l'inclut pas) -- recherché par code dans la liste de chapitres du bon
   // niveau si absent (signalé : "Chapitre undefined" à l'impression).
-  const chapNum = c.n ?? (lvl==='5e' ? CH5 : CH6).find(x=>x.code===c.code)?.n;
+  const chapNum = c.n ?? (CHAPITRES_BY_LEVEL[lvl] || CH6).find(x=>x.code===c.code)?.n;
   document.getElementById('printChapHeader').innerHTML = `Chapitre ${chapNum ?? ''}`;
   document.getElementById('printChapBigTitle').textContent = `${c.code} - ${c.t}`.toUpperCase();
 
@@ -2263,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.512', items:[
+    "Nouveau menu \"Cycle 3\" regroupant CM1 (progression consultable), CM2 (à venir, désactivé) et 6e -- 5e reste seul (Cycle 4). La frise du CM1 affiche déjà ses 22 chapitres avec le badge \"À créer\", puisqu'aucun contenu n'existe encore pour ce niveau.",
+  ]},
   { version:'2026-08-19.511', items:[
     "Progression CM1 générée (22 chapitres, à partir du sommaire iParcours Maths CM1), même format et même calendrier scolaire que 6e/5e -- première brique en vue de l'extension aux niveaux CM1/CM2 annoncée. Pas encore de cours ni d'interface associée.",
   ]},
