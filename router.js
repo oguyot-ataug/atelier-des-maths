@@ -121,10 +121,10 @@ function routerRestoreFromHash(){
     if(parts.length===0){
       showView('view-home'); setActiveTopnav(null);
     } else if(parts[0]==='niveau'){
-      const lvl = parts[1]==='5e' ? '5e' : '6e';
+      const lvl = CHAPITRES_BY_LEVEL[parts[1]] ? parts[1] : '6e';
       currentLevel = lvl; renderNiveau(lvl); showView('view-niveau'); setActiveTopnav(lvl);
     } else if(parts[0]==='chapitre'){
-      const lvl = parts[1]==='5e' ? '5e' : '6e';
+      const lvl = CHAPITRES_BY_LEVEL[parts[1]] ? parts[1] : '6e';
       const nMatch = (parts[2]||'').match(/^(\d+)/);
       const n = nMatch ? parseInt(nMatch[1],10) : null;
       const c = n!==null ? chapterByNiveauAndN(lvl, n) : null;

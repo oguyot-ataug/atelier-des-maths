@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.515', items:[
+    "Fix : cliquer sur \"cm1\" dans le fil d'Ariane, ou rafraîchir la page sur un chapitre CM1, retombait à tort sur la progression ou le 1er chapitre de 6e. L'analyse de l'URL ne reconnaissait que \"5e\" explicitement, jamais \"cm1\".",
+  ]},
   { version:'2026-08-19.514', items:[
     "CM1 : chapitre N1 (Nombres entiers) complété -- 2 méthodes animées (lire un grand nombre, comparer deux nombres), 5 exercices corrigés, et un \"Un peu d'histoire\" sur les différentes façons d'écrire les nombres (Égypte, Rome, Inde), langage adapté à un élève de CM1.",
     "Fix (site entier, pas seulement CM1) : le fil d'Ariane affichait le nom brut de l'icône (ex. \"history_edu Un peu d'histoire\") au lieu de l'icône elle-même, sur l'onglet \"Un peu d'histoire\" de tous les chapitres.",
