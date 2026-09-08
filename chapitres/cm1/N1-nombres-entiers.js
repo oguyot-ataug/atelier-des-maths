@@ -208,5 +208,14 @@ const CM1NE_COMPARER_STEPS = [
 ];
 const cm1neComparerDemo = makeStepDemo(CM1NE_COMPARER_STEPS, 'cm1ne-comparerDisplay');
 
+DEMO_QUIZZES['cm1|Nombres entiers'] = [
+  {q:"Comment écrit-on en chiffres quatre-cent-douze-mille-sept-cent-trois ?",
+   opts:["412 703","4 127 03","400 12 703"], correct:0},
+  {q:"Dans le nombre 724 916, quel est le chiffre des centaines ?",
+   opts:["7","9","6"], correct:1},
+  {q:"Pour comparer deux nombres entiers, que doit-on regarder en premier ?",
+   opts:["Le tout premier chiffre à gauche","Le nombre de chiffres","La couleur de l'écriture"], correct:1},
+];
+
 DEMO_REGISTRY['cm1|Nombres entiers'] = { cours:'cours-demo-cm1-nombres-entiers', methode:'methode-demo-cm1-nombres-entiers', exos:'exos-demo-cm1-nombres-entiers', histoire:'histoire-demo-cm1-nombres-entiers',
   init:()=>{ cm1neLireDemo.reset(); cm1neComparerDemo.reset(); } };

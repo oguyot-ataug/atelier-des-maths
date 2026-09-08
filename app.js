@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.522', items:[
+    "Fix (CM1) : le quiz pré-écrit des 2 chapitres existants (Nombres entiers, Droites parallèles/perpendiculaires) retombait sur le quiz d'un chapitre 5e totalement différent (Symétrie centrale), faute de quiz spécifique enregistré. Chaque chapitre a désormais son propre quiz de 3 questions.",
+  ]},
   { version:'2026-08-19.521', items:[
     "CM1 (droites parallèles/perpendiculaires) : l'aide animée utilise désormais des droites inclinées (22°, ni horizontales ni verticales) plutôt qu'un cas particulier trop simple -- démonstration plus rigoureuse, l'équerre doit vraiment pivoter. Ajout de \"Un peu d'histoire\" sur la corde à 13 nœuds des arpenteurs égyptiens.",
   ]},

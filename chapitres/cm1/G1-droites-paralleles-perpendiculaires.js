@@ -179,5 +179,14 @@ document.getElementById('histoire-demo-cm1-droites-paralleles').innerHTML = `
 </div>
 `;
 
+DEMO_QUIZZES['cm1|Droites parallèles et perpendiculaires'] = [
+  {q:"Que forment deux droites perpendiculaires en se coupant ?",
+   opts:["Quatre angles droits","Deux droites parallèles","Un seul point sans angle"], correct:0},
+  {q:"Quel outil utilise-t-on pour vérifier que deux droites sont perpendiculaires ?",
+   opts:["Une règle seule","Une équerre","Un compas"], correct:1},
+  {q:"Que peut-on dire de deux droites parallèles ?",
+   opts:["Elles se coupent toujours une fois","Elles ne se coupent jamais","Elles forment un angle droit"], correct:1},
+];
+
 DEMO_REGISTRY['cm1|Droites parallèles et perpendiculaires'] = { cours:'cours-demo-cm1-droites-paralleles', methode:'methode-demo-cm1-droites-paralleles', exos:'exos-demo-cm1-droites-paralleles', histoire:'histoire-demo-cm1-droites-paralleles',
   init:()=>{ cm1dpPerpOuiDemo.reset(); cm1dpPerpNonDemo.reset(); } };
