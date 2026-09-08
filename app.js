@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.518', items:[
+    "Fix : l'aide animée CM1 sur les droites perpendiculaires utilisait une équerre dessinée à la main, sans rotation -- trompeuse dans le cas \"non perpendiculaire\" (elle ne suivait même pas la première droite). Reconstruite avec le vrai equerreSVG déjà utilisé en 6e, coordonnées revérifiées.",
+  ]},
   { version:'2026-08-19.517', items:[
     "CM1 : nouveau chapitre G1 (Droites parallèles et perpendiculaires) -- cours (vocabulaire, vérification à l'équerre) et une aide animée montrant comment l'équerre s'ajuste parfaitement à l'intersection quand deux droites sont perpendiculaires (avec un second exemple montrant le décalage quand ce n'est pas le cas).",
   ]},
