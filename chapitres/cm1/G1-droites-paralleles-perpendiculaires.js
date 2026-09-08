@@ -99,73 +99,85 @@ document.getElementById('exos-demo-cm1-droites-paralleles').innerHTML = `
    décalage intérieur de equerreSVG (34px) est FIXE, calibré pour la taille utilisée en 6e
    (legX=340, ~10%) -- une équerre trop petite ici (legX=100 essayé au départ) rendait ce même
    décalage proportionnellement énorme (~34%), donnant l'impression de deux équerres
-   superposées au lieu d'une seule équerre nette. Agrandi à legX=200 (~17%, cohérent) et le
-   canevas proportionnellement ; toutes les coordonnées revérifiées à la main (voir calculs
-   en commentaire ci-dessous). */
+   superposées au lieu d'une seule équerre nette. Agrandi à legX=200 (~17%, cohérent).
+   Droites INCLINÉES (ni horizontales ni verticales, angle de 22°) plutôt qu'un cas
+   horizontal/vertical trop particulier -- démonstration plus rigoureuse (l'équerre doit
+   vraiment pivoter, pas juste se poser telle quelle). Toutes les coordonnées calculées et
+   vérifiées par script Python avant intégration (produit scalaire des vecteurs directeurs nul
+   pour le cas perpendiculaire, extrémités de l'équerre exactement sur les droites). */
 const CM1DP_EQ_LEGX = 200, CM1DP_EQ_LEGY = CM1DP_EQ_LEGX * Math.tan(30*Math.PI/180);
 function cm1dpEquerre(x, y, angleDeg, opacity){
   return `<g transform="translate(${x},${y}) rotate(${angleDeg})" opacity="${opacity}">${equerreSVG(CM1DP_EQ_LEGX, CM1DP_EQ_LEGY)}</g>`;
 }
-// Cas 1 : droite horizontale (verte) et droite verticale (bleue), qui se coupent en (250,190) --
-// deux droites l'une horizontale et l'autre verticale sont perpendiculaires par définition.
-// L'équerre, posée SANS rotation (son 1er côté déjà horizontal), a son 1er côté qui suit
-// exactement la droite verte (jusqu'à x=450, bien à l'intérieur des bornes 60-470 de la
-// droite), et son 2e côté qui suit exactement la droite bleue (jusqu'à y=305, à l'intérieur
-// des bornes 40-340).
+// Cas 1 : droite verte inclinée à 22°, droite bleue inclinée à 22+90=112° -- deux droites dont
+// les directions sont perpendiculaires (produit scalaire des vecteurs = 0, vérifié), se coupant
+// en (250,190). L'équerre, tournée de 22° (son 1er côté suit alors la droite verte), a son 2e
+// côté qui suit exactement la droite bleue -- calculé et vérifié : les deux extrémités tombent
+// pile sur les droites, à l'intérieur de leurs bornes affichées.
 const CM1DP_PERP_OUI_STEPS = [
   {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
-    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="250" y1="40" x2="250" y2="340" stroke="#0C5BA0" stroke-width="3"/>
+    <line x1="55.3" y1="111.3" x2="444.7" y2="268.7" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="306.2" y1="50.9" x2="193.8" y2="329.1" stroke="#0C5BA0" stroke-width="3"/>
   </svg>`, note:'On veut savoir si la droite verte et la droite bleue sont perpendiculaires.'},
   {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
-    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="250" y1="40" x2="250" y2="340" stroke="#0C5BA0" stroke-width="3"/>
-    ${cm1dpEquerre(310,250,0,0.4)}
+    <line x1="55.3" y1="111.3" x2="444.7" y2="268.7" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="306.2" y1="50.9" x2="193.8" y2="329.1" stroke="#0C5BA0" stroke-width="3"/>
+    ${cm1dpEquerre(310,160,22,0.4)}
   </svg>`, note:"On approche l'équerre de leur point de croisement."},
   {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
-    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="250" y1="40" x2="250" y2="340" stroke="#0C5BA0" stroke-width="3"/>
-    ${cm1dpEquerre(250,190,0,0.5)}
-  </svg>`, note:"On pose le 1er côté de l'équerre bien le long de la droite verte : le 2e côté suit alors exactement la droite bleue !"},
+    <line x1="55.3" y1="111.3" x2="444.7" y2="268.7" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="306.2" y1="50.9" x2="193.8" y2="329.1" stroke="#0C5BA0" stroke-width="3"/>
+    ${cm1dpEquerre(250,190,22,0.5)}
+  </svg>`, note:"On tourne l'équerre pour poser son 1er côté bien le long de la droite verte : le 2e côté suit alors exactement la droite bleue !"},
   {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
-    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="250" y1="40" x2="250" y2="340" stroke="#0C5BA0" stroke-width="3"/>
-    ${cm1dpEquerre(250,190,0,0.5)}
-    <rect x="250" y="190" width="22" height="22" fill="none" stroke="#B8860B" stroke-width="3"/>
-    <text x="365" y="110" font-size="46" fill="#1F7A4D" font-weight="700">✓</text>
+    <line x1="55.3" y1="111.3" x2="444.7" y2="268.7" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="306.2" y1="50.9" x2="193.8" y2="329.1" stroke="#0C5BA0" stroke-width="3"/>
+    ${cm1dpEquerre(250,190,22,0.5)}
+    <polygon points="250,190 264.8,196.0 258.8,210.8 244.0,204.8" fill="none" stroke="#B8860B" stroke-width="3"/>
+    <text x="365" y="140" font-size="46" fill="#1F7A4D" font-weight="700">✓</text>
   </svg>`, note:'Les deux droites sont donc perpendiculaires !'},
 ];
 const cm1dpPerpOuiDemo = makeSingleStepDemo(CM1DP_PERP_OUI_STEPS, 'cm1dp-perpOuiDisplay');
 
-// Cas 2 : droite verte TOUJOURS horizontale (même 1er côté d'équerre, posé sans rotation),
-// mais droite bleue clairement PAS verticale cette fois (inclinée, de (205,340) à (295,40) --
-// passe bien par le même point de croisement (250,190), vérifié par calcul direct). Le 2e côté
-// de l'équerre (toujours vertical) ne suit alors PAS la droite bleue : à la hauteur où il
-// s'arrête (y=305), la droite bleue est à x=215 -- un écart réel de 35px, pas juste suggéré.
+// Cas 2 : droite verte TOUJOURS inclinée à 22° (même 1er côté d'équerre que le cas 1, tournée
+// de 22°), mais droite bleue à 22+70=92°... non -- à 22+70° (PAS 22+90°) cette fois : clairement
+// pas perpendiculaire (produit scalaire = 0,34, vérifié), mais assez proche de 90° pour être un
+// vrai piège pédagogique plutôt qu'un écart grossier. Le 2e côté de l'équerre (tournée de 22°,
+// donc à 22+90°) ne suit alors PAS la droite bleue (à 22+70°) : écart réel de 40px calculé à
+// l'extrémité du petit côté, pas juste suggéré par le texte.
 const CM1DP_PERP_NON_STEPS = [
   {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
-    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="205" y1="340" x2="295" y2="40" stroke="#0C5BA0" stroke-width="3"/>
+    <line x1="55.3" y1="111.3" x2="444.7" y2="268.7" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="255.2" y1="40.1" x2="244.8" y2="339.9" stroke="#0C5BA0" stroke-width="3"/>
   </svg>`, note:'On veut savoir si la droite verte et la droite bleue sont perpendiculaires.'},
   {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
-    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="205" y1="340" x2="295" y2="40" stroke="#0C5BA0" stroke-width="3"/>
-    ${cm1dpEquerre(250,190,0,0.5)}
-  </svg>`, note:"On pose le 1er côté de l'équerre le long de la droite verte, comme avant."},
+    <line x1="55.3" y1="111.3" x2="444.7" y2="268.7" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="255.2" y1="40.1" x2="244.8" y2="339.9" stroke="#0C5BA0" stroke-width="3"/>
+    ${cm1dpEquerre(250,190,22,0.5)}
+  </svg>`, note:"On tourne l'équerre pour poser son 1er côté le long de la droite verte, comme avant."},
   {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
-    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="205" y1="340" x2="295" y2="40" stroke="#0C5BA0" stroke-width="3"/>
-    ${cm1dpEquerre(250,190,0,0.5)}
-    <path d="M 250,250 L 232,250" stroke="#9E1F5E" stroke-width="3" stroke-dasharray="4,3"/>
-    <text x="150" y="270" font-size="30" fill="#9E1F5E" font-weight="700">✗</text>
+    <line x1="55.3" y1="111.3" x2="444.7" y2="268.7" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="255.2" y1="40.1" x2="244.8" y2="339.9" stroke="#0C5BA0" stroke-width="3"/>
+    ${cm1dpEquerre(250,190,22,0.5)}
+    <path d="M 224,254.2 L 247.6,259.2" stroke="#9E1F5E" stroke-width="3" stroke-dasharray="4,3"/>
+    <text x="160" y="230" font-size="30" fill="#9E1F5E" font-weight="700">✗</text>
   </svg>`, note:"Cette fois, le 2e côté de l'équerre ne suit pas la droite bleue : il reste un écart (en pointillés)."},
   {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
-    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="205" y1="340" x2="295" y2="40" stroke="#0C5BA0" stroke-width="3"/>
-    <text x="330" y="100" font-size="40" fill="#9E1F5E" font-weight="700">✗</text>
+    <line x1="55.3" y1="111.3" x2="444.7" y2="268.7" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="255.2" y1="40.1" x2="244.8" y2="339.9" stroke="#0C5BA0" stroke-width="3"/>
+    <text x="300" y="100" font-size="40" fill="#9E1F5E" font-weight="700">✗</text>
   </svg>`, note:"Les deux droites ne sont donc pas perpendiculaires."},
 ];
 const cm1dpPerpNonDemo = makeSingleStepDemo(CM1DP_PERP_NON_STEPS, 'cm1dp-perpNonDisplay');
 
-DEMO_REGISTRY['cm1|Droites parallèles et perpendiculaires'] = { cours:'cours-demo-cm1-droites-paralleles', methode:'methode-demo-cm1-droites-paralleles', exos:'exos-demo-cm1-droites-paralleles',
+document.getElementById('histoire-demo-cm1-droites-paralleles').innerHTML = `
+<div class="history-box">
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire : la corde à 13 nœuds</div>
+  Bien avant l'invention de l'équerre, comment faisait-on pour tracer un angle droit bien précis ? Il y a environ 4 000 ans, en Égypte ancienne, des arpenteurs appelés « tendeurs de corde » utilisaient une astuce étonnante : une corde avec 12 espaces égaux entre 13 nœuds.<br><br>
+  En tendant cette corde pour former un triangle avec 3 espaces d'un côté, 4 espaces d'un deuxième côté et 5 espaces du troisième, ils obtenaient <b>à chaque fois</b> un triangle avec un angle parfaitement droit, entre le côté de 3 et le côté de 4 ! Pas besoin d'équerre : juste une corde et trois piquets.<br><br>
+  Cette technique servait à re-tracer les limites des champs après les crues du Nil (le fleuve inondait les terres chaque année et effaçait les repères), mais aussi à construire les pyramides bien d'équerre. Aujourd'hui encore, les maçons utilisent parfois cette même astuce du triangle 3-4-5 pour vérifier qu'un mur forme bien un angle droit !
+</div>
+`;
+
+DEMO_REGISTRY['cm1|Droites parallèles et perpendiculaires'] = { cours:'cours-demo-cm1-droites-paralleles', methode:'methode-demo-cm1-droites-paralleles', exos:'exos-demo-cm1-droites-paralleles', histoire:'histoire-demo-cm1-droites-paralleles',
   init:()=>{ cm1dpPerpOuiDemo.reset(); cm1dpPerpNonDemo.reset(); } };

@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.521', items:[
+    "CM1 (droites parallèles/perpendiculaires) : l'aide animée utilise désormais des droites inclinées (22°, ni horizontales ni verticales) plutôt qu'un cas particulier trop simple -- démonstration plus rigoureuse, l'équerre doit vraiment pivoter. Ajout de \"Un peu d'histoire\" sur la corde à 13 nœuds des arpenteurs égyptiens.",
+  ]},
   { version:'2026-08-19.520', items:[
     "Le menu \"Cycle 3\" est retiré, 6e redevient un bouton isolé comme avant -- le CM1 (encore en aperçu) est désormais accessible via un lien discret \"CM1 (aperçu)\" en pied de page plutôt que dans la navigation principale.",
   ]},
