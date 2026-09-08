@@ -228,7 +228,7 @@ function setActiveTopnav(key){
   document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));
   if(key==='6e') document.querySelector('.nav-links button[data-lvl="6e"]').classList.add('active');
   else if(key==='5e') document.querySelector('.nav-links button[data-lvl="5e"]').classList.add('active');
-  else if(key==='cm1') document.querySelector('.nav-links button[data-lvl="cm1"]').classList.add('active');
+  else if(key==='cm1') document.querySelector('.nav-links button[data-lvl="cm1"]')?.classList.add('active');
   else if(key==='cm') document.querySelector('.nav-links button[data-nav="cm"]').classList.add('active');
   else if(key==='compte') document.querySelector('.nav-links button[data-nav="compte"]').classList.add('active');
   else if(key==='correction') document.querySelector('.nav-links button[data-nav="correction"]').classList.add('active');
@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.520', items:[
+    "Le menu \"Cycle 3\" est retiré, 6e redevient un bouton isolé comme avant -- le CM1 (encore en aperçu) est désormais accessible via un lien discret \"CM1 (aperçu)\" en pied de page plutôt que dans la navigation principale.",
+  ]},
   { version:'2026-08-19.519', items:[
     "Fix (CM1, chapitre droites parallèles/perpendiculaires) : l'illustration du cours affichait des droites qui n'étaient en réalité pas perpendiculaires (produit scalaire non nul, vérifié et corrigé), et l'équerre de l'aide animée était trop petite pour le décalage intérieur fixe de equerreSVG, donnant l'impression de deux équerres superposées. Coordonnées entièrement revérifiées, équerre agrandie à une échelle cohérente.",
   ]},
