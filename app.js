@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.519', items:[
+    "Fix (CM1, chapitre droites parallèles/perpendiculaires) : l'illustration du cours affichait des droites qui n'étaient en réalité pas perpendiculaires (produit scalaire non nul, vérifié et corrigé), et l'équerre de l'aide animée était trop petite pour le décalage intérieur fixe de equerreSVG, donnant l'impression de deux équerres superposées. Coordonnées entièrement revérifiées, équerre agrandie à une échelle cohérente.",
+  ]},
   { version:'2026-08-19.518', items:[
     "Fix : l'aide animée CM1 sur les droites perpendiculaires utilisait une équerre dessinée à la main, sans rotation -- trompeuse dans le cas \"non perpendiculaire\" (elle ne suivait même pas la première droite). Reconstruite avec le vrai equerreSVG déjà utilisé en 6e, coordonnées revérifiées.",
   ]},

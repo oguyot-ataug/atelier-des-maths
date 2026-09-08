@@ -14,9 +14,9 @@ document.getElementById('cours-demo-cm1-droites-paralleles').innerHTML = `
   <tr>
     <td style="padding:10px;border:1px solid rgba(28,43,57,.15);">
       <svg viewBox="0 0 160 120" style="width:100%;max-width:220px;">
-        <line x1="20" y1="95" x2="140" y2="25" stroke="#1F7A4D" stroke-width="3"/>
-        <line x1="30" y1="20" x2="120" y2="100" stroke="#1F7A4D" stroke-width="3"/>
-        <rect x="72" y="52" width="14" height="14" fill="none" stroke="#B8860B" stroke-width="2" transform="rotate(-32 79 59)"/>
+        <line x1="32" y1="92" x2="128" y2="28" stroke="#1F7A4D" stroke-width="3"/>
+        <line x1="48" y1="12" x2="112" y2="108" stroke="#1F7A4D" stroke-width="3"/>
+        <polygon points="80,60 91.65,52.23 99.41,63.88 87.77,71.65" fill="none" stroke="#B8860B" stroke-width="2"/>
       </svg>
       <p class="hint" style="margin:4px 0 0;">Les droites vertes <b>sont perpendiculaires</b>.</p>
     </td>
@@ -95,70 +95,74 @@ document.getElementById('exos-demo-cm1-droites-paralleles').innerHTML = `
 /* Aide animée "perpendiculaire ou non", avec un vrai diagramme SVG qui évolue à chaque étape
    (makeSingleStepDemo : l'étape courante remplace la précédente, comme pour une figure qui se
    complète -- pas un empilement de lignes de texte). Réutilise equerreSVG (proportions réelles
-   d'une équerre 30-60-90, déjà utilisée et validée pour le chapitre équivalent en 6e) plutôt
-   qu'un triangle dessiné à la main -- une équerre approximative pouvait donner l'impression
-   fausse de "coller" à une droite alors que le premier essai n'avait AUCUNE rotation : dans le
-   cas "non perpendiculaire", elle ne suivait même pas correctement la première droite. */
-const CM1DP_EQ_LEGX = 100, CM1DP_EQ_LEGY = CM1DP_EQ_LEGX * Math.tan(30*Math.PI/180);
+   d'une équerre 30-60-90, déjà utilisée et validée pour le chapitre équivalent en 6e). Le
+   décalage intérieur de equerreSVG (34px) est FIXE, calibré pour la taille utilisée en 6e
+   (legX=340, ~10%) -- une équerre trop petite ici (legX=100 essayé au départ) rendait ce même
+   décalage proportionnellement énorme (~34%), donnant l'impression de deux équerres
+   superposées au lieu d'une seule équerre nette. Agrandi à legX=200 (~17%, cohérent) et le
+   canevas proportionnellement ; toutes les coordonnées revérifiées à la main (voir calculs
+   en commentaire ci-dessous). */
+const CM1DP_EQ_LEGX = 200, CM1DP_EQ_LEGY = CM1DP_EQ_LEGX * Math.tan(30*Math.PI/180);
 function cm1dpEquerre(x, y, angleDeg, opacity){
   return `<g transform="translate(${x},${y}) rotate(${angleDeg})" opacity="${opacity}">${equerreSVG(CM1DP_EQ_LEGX, CM1DP_EQ_LEGY)}</g>`;
 }
-// Cas 1 : droite horizontale (verte) et droite verticale (bleue), qui se coupent en (150,120) --
-// deux droites l'une horizontale et l'autre verticale sont perpendiculaires par définition
-// (angle de 90° entre elles). L'équerre, posée SANS rotation (son 1er côté déjà horizontal),
-// a son 1er côté qui suit exactement la droite verte, et son 2e côté (vertical) qui suit
-// exactement la droite bleue.
+// Cas 1 : droite horizontale (verte) et droite verticale (bleue), qui se coupent en (250,190) --
+// deux droites l'une horizontale et l'autre verticale sont perpendiculaires par définition.
+// L'équerre, posée SANS rotation (son 1er côté déjà horizontal), a son 1er côté qui suit
+// exactement la droite verte (jusqu'à x=450, bien à l'intérieur des bornes 60-470 de la
+// droite), et son 2e côté qui suit exactement la droite bleue (jusqu'à y=305, à l'intérieur
+// des bornes 40-340).
 const CM1DP_PERP_OUI_STEPS = [
-  {expr:`<svg viewBox="0 0 300 220" style="width:100%;max-width:320px;">
-    <line x1="30" y1="120" x2="270" y2="120" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="150" y1="20" x2="150" y2="220" stroke="#0C5BA0" stroke-width="3"/>
+  {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
+    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="250" y1="40" x2="250" y2="340" stroke="#0C5BA0" stroke-width="3"/>
   </svg>`, note:'On veut savoir si la droite verte et la droite bleue sont perpendiculaires.'},
-  {expr:`<svg viewBox="0 0 300 220" style="width:100%;max-width:320px;">
-    <line x1="30" y1="120" x2="270" y2="120" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="150" y1="20" x2="150" y2="220" stroke="#0C5BA0" stroke-width="3"/>
-    ${cm1dpEquerre(190,150,0,0.4)}
+  {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
+    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="250" y1="40" x2="250" y2="340" stroke="#0C5BA0" stroke-width="3"/>
+    ${cm1dpEquerre(310,250,0,0.4)}
   </svg>`, note:"On approche l'équerre de leur point de croisement."},
-  {expr:`<svg viewBox="0 0 300 220" style="width:100%;max-width:320px;">
-    <line x1="30" y1="120" x2="270" y2="120" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="150" y1="20" x2="150" y2="220" stroke="#0C5BA0" stroke-width="3"/>
-    ${cm1dpEquerre(150,120,0,0.5)}
+  {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
+    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="250" y1="40" x2="250" y2="340" stroke="#0C5BA0" stroke-width="3"/>
+    ${cm1dpEquerre(250,190,0,0.5)}
   </svg>`, note:"On pose le 1er côté de l'équerre bien le long de la droite verte : le 2e côté suit alors exactement la droite bleue !"},
-  {expr:`<svg viewBox="0 0 300 220" style="width:100%;max-width:320px;">
-    <line x1="30" y1="120" x2="270" y2="120" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="150" y1="20" x2="150" y2="220" stroke="#0C5BA0" stroke-width="3"/>
-    ${cm1dpEquerre(150,120,0,0.5)}
-    <rect x="150" y="120" width="16" height="16" fill="none" stroke="#B8860B" stroke-width="2.5"/>
-    <text x="225" y="60" font-size="34" fill="#1F7A4D" font-weight="700">✓</text>
+  {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
+    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="250" y1="40" x2="250" y2="340" stroke="#0C5BA0" stroke-width="3"/>
+    ${cm1dpEquerre(250,190,0,0.5)}
+    <rect x="250" y="190" width="22" height="22" fill="none" stroke="#B8860B" stroke-width="3"/>
+    <text x="365" y="110" font-size="46" fill="#1F7A4D" font-weight="700">✓</text>
   </svg>`, note:'Les deux droites sont donc perpendiculaires !'},
 ];
 const cm1dpPerpOuiDemo = makeSingleStepDemo(CM1DP_PERP_OUI_STEPS, 'cm1dp-perpOuiDisplay');
 
-// Cas 2 : droite verte TOUJOURS horizontale (même 1er côté d'équerre que le cas 1, posé sans
-// rotation), mais droite bleue clairement PAS verticale cette fois (inclinée, de (110,220) à
-// (190,20) -- ces deux droites se coupent bien au même point (150,120), calcul vérifié). Le
-// 2e côté de l'équerre (toujours vertical puisqu'aucune rotation) ne suit alors PAS la droite
-// bleue : l'écart entre les deux est bien réel et visible, pas juste suggéré par du texte.
+// Cas 2 : droite verte TOUJOURS horizontale (même 1er côté d'équerre, posé sans rotation),
+// mais droite bleue clairement PAS verticale cette fois (inclinée, de (205,340) à (295,40) --
+// passe bien par le même point de croisement (250,190), vérifié par calcul direct). Le 2e côté
+// de l'équerre (toujours vertical) ne suit alors PAS la droite bleue : à la hauteur où il
+// s'arrête (y=305), la droite bleue est à x=215 -- un écart réel de 35px, pas juste suggéré.
 const CM1DP_PERP_NON_STEPS = [
-  {expr:`<svg viewBox="0 0 300 220" style="width:100%;max-width:320px;">
-    <line x1="30" y1="120" x2="270" y2="120" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="110" y1="220" x2="190" y2="20" stroke="#0C5BA0" stroke-width="3"/>
+  {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
+    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="205" y1="340" x2="295" y2="40" stroke="#0C5BA0" stroke-width="3"/>
   </svg>`, note:'On veut savoir si la droite verte et la droite bleue sont perpendiculaires.'},
-  {expr:`<svg viewBox="0 0 300 220" style="width:100%;max-width:320px;">
-    <line x1="30" y1="120" x2="270" y2="120" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="110" y1="220" x2="190" y2="20" stroke="#0C5BA0" stroke-width="3"/>
-    ${cm1dpEquerre(150,120,0,0.5)}
+  {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
+    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="205" y1="340" x2="295" y2="40" stroke="#0C5BA0" stroke-width="3"/>
+    ${cm1dpEquerre(250,190,0,0.5)}
   </svg>`, note:"On pose le 1er côté de l'équerre le long de la droite verte, comme avant."},
-  {expr:`<svg viewBox="0 0 300 220" style="width:100%;max-width:320px;">
-    <line x1="30" y1="120" x2="270" y2="120" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="110" y1="220" x2="190" y2="20" stroke="#0C5BA0" stroke-width="3"/>
-    ${cm1dpEquerre(150,120,0,0.5)}
-    <path d="M 150,150 L 138,150" stroke="#9E1F5E" stroke-width="2.5" stroke-dasharray="3,2"/>
-    <text x="95" y="165" font-size="22" fill="#9E1F5E" font-weight="700">✗</text>
-  </svg>`, note:"Cette fois, le 2e côté de l'équerre ne suit pas la droite bleue : il reste un petit écart (en pointillés)."},
-  {expr:`<svg viewBox="0 0 300 220" style="width:100%;max-width:320px;">
-    <line x1="30" y1="120" x2="270" y2="120" stroke="#1F7A4D" stroke-width="3"/>
-    <line x1="110" y1="220" x2="190" y2="20" stroke="#0C5BA0" stroke-width="3"/>
-    <text x="185" y="55" font-size="30" fill="#9E1F5E" font-weight="700">✗</text>
+  {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
+    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="205" y1="340" x2="295" y2="40" stroke="#0C5BA0" stroke-width="3"/>
+    ${cm1dpEquerre(250,190,0,0.5)}
+    <path d="M 250,250 L 232,250" stroke="#9E1F5E" stroke-width="3" stroke-dasharray="4,3"/>
+    <text x="150" y="270" font-size="30" fill="#9E1F5E" font-weight="700">✗</text>
+  </svg>`, note:"Cette fois, le 2e côté de l'équerre ne suit pas la droite bleue : il reste un écart (en pointillés)."},
+  {expr:`<svg viewBox="0 0 500 380" style="width:100%;max-width:340px;">
+    <line x1="60" y1="190" x2="470" y2="190" stroke="#1F7A4D" stroke-width="3"/>
+    <line x1="205" y1="340" x2="295" y2="40" stroke="#0C5BA0" stroke-width="3"/>
+    <text x="330" y="100" font-size="40" fill="#9E1F5E" font-weight="700">✗</text>
   </svg>`, note:"Les deux droites ne sont donc pas perpendiculaires."},
 ];
 const cm1dpPerpNonDemo = makeSingleStepDemo(CM1DP_PERP_NON_STEPS, 'cm1dp-perpNonDisplay');
