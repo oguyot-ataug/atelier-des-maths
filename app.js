@@ -56,33 +56,33 @@ const CH5 = [
    (pages et numéros de séquence de calcul mental repris tels quels du document). Poids en
    semaines (s) proportionnés au nombre de séquences par chapitre. Mêmes fenêtres de vacances
    que 6e/5e (calendrier officiel déjà utilisé par l'app, voir VACANCES_COMMUNES). Chapitres
-   listés par catégorie dans le document (Nombres et calculs / Grandeurs et mesures /
-   Géométrie / Gestion de données) réordonnés ici en une seule progression annuelle, dans un
-   ordre pédagogique classique (numération d'abord, géométrie/mesures en alternance,
-   proportionnalité/probabilités en fin d'année) -- comme pour CH6/CH5. Non encore reliée à
-   l'interface (aucun contenu de cours CM1 n'existe pour l'instant) : sert de base pour une
-   future implémentation. */
+   réordonnés pour ALTERNER les grandes rubriques (jamais deux catégories identiques
+   consécutives), même principe que CH6 -- signalé : "il faut s'inspirer de celle de 6e pour
+   alterner les grandes rubriques" (la 1ère version, groupée par rubrique comme dans le
+   document, ne le faisait pas : N1 à N6 se suivaient sans aucune coupure). Non encore reliée
+   à l'interface pour la plupart des chapitres (seul N1 a un vrai contenu de cours pour
+   l'instant) : sert de base pour une future implémentation. */
 const CHCM1 = [
  {n:1,code:'N1',cat:'N',t:'Nombres entiers',s:2,p:'4-15',d:'7-20 sept'},
- {n:2,code:'N2',cat:'N',t:'Opérations sur les nombres entiers',s:2,p:'16-25',d:'21 sept-4 oct'},
- {n:3,code:'N3',cat:'N',t:'Fractions',s:1,p:'26-33',d:'5-11 oct'},
- {n:4,code:'N4',cat:'N',t:'Fractions (comparaison et opérations)',s:2,p:'34-43',d:'2-15 nov'},
- {n:5,code:'N5',cat:'N',t:'Nombres décimaux',s:2,p:'44-53',d:'16-29 nov'},
- {n:6,code:'N6',cat:'N',t:'Opérations sur les nombres décimaux',s:1,p:'54-60',d:'30 nov-6 déc'},
- {n:7,code:'M1',cat:'M',t:'Longueurs, masses, contenances',s:1,p:'90-93',d:'7-13 déc'},
- {n:8,code:'N7',cat:'N',t:'Procédures de calcul mental',s:1,p:'61-69',d:'4-10 jan'},
- {n:9,code:'G1',cat:'G',t:'Droites parallèles et perpendiculaires',s:1,p:'116-121',d:'11-17 jan'},
- {n:10,code:'G2',cat:'G',t:'Construction de figures',s:2,p:'122-133',d:'18-31 jan'},
- {n:11,code:'M2',cat:'M',t:'Périmètres',s:1,p:'94-99',d:'1-7 fév'},
- {n:12,code:'N9',cat:'N',t:'Algèbre',s:1,p:'84-89',d:'8-14 fév'},
- {n:13,code:'N8',cat:'N',t:'Résolution de problèmes',s:2,p:'70-83',d:'8-21 mars'},
- {n:14,code:'M3',cat:'M',t:'Aires',s:1,p:'100-105',d:'22-28 mars'},
- {n:15,code:'M4',cat:'M',t:'Angles',s:1,p:'106-109',d:'29 mars-4 avr'},
- {n:16,code:'G3',cat:'G',t:'Symétrie axiale',s:1,p:'134-137',d:'5-11 avr'},
- {n:17,code:'D1',cat:'D',t:'Organisation et gestion de données',s:1,p:'146-149',d:'3-9 mai'},
- {n:18,code:'D2',cat:'D',t:'Probabilités',s:1,p:'150-153',d:'10-16 mai'},
- {n:19,code:'D3',cat:'D',t:'Proportionnalité',s:1,p:'154-157',d:'17-23 mai'},
- {n:20,code:'G4',cat:'G',t:'Solides',s:1,p:'138-145',d:'24-30 mai'},
+ {n:2,code:'G1',cat:'G',t:'Droites parallèles et perpendiculaires',s:1,p:'116-121',d:'21-27 sept'},
+ {n:3,code:'N2',cat:'N',t:'Opérations sur les nombres entiers',s:2,p:'16-25',d:'28 sept-11 oct'},
+ {n:4,code:'G2',cat:'G',t:'Construction de figures',s:2,p:'122-133',d:'2-15 nov'},
+ {n:5,code:'N3',cat:'N',t:'Fractions',s:1,p:'26-33',d:'16-22 nov'},
+ {n:6,code:'M1',cat:'M',t:'Longueurs, masses, contenances',s:1,p:'90-93',d:'23-29 nov'},
+ {n:7,code:'N4',cat:'N',t:'Fractions (comparaison et opérations)',s:2,p:'34-43',d:'30 nov-13 déc'},
+ {n:8,code:'G3',cat:'G',t:'Symétrie axiale',s:1,p:'134-137',d:'4-10 jan'},
+ {n:9,code:'N5',cat:'N',t:'Nombres décimaux',s:2,p:'44-53',d:'11-24 jan'},
+ {n:10,code:'M2',cat:'M',t:'Périmètres',s:1,p:'94-99',d:'25-31 jan'},
+ {n:11,code:'N6',cat:'N',t:'Opérations sur les nombres décimaux',s:1,p:'54-60',d:'1-7 fév'},
+ {n:12,code:'D1',cat:'D',t:'Organisation et gestion de données',s:1,p:'146-149',d:'8-14 fév'},
+ {n:13,code:'N7',cat:'N',t:'Procédures de calcul mental',s:1,p:'61-69',d:'8-14 mars'},
+ {n:14,code:'G4',cat:'G',t:'Solides',s:1,p:'138-145',d:'15-21 mars'},
+ {n:15,code:'N8',cat:'N',t:'Résolution de problèmes',s:2,p:'70-83',d:'22 mars-4 avr'},
+ {n:16,code:'M3',cat:'M',t:'Aires',s:1,p:'100-105',d:'5-11 avr'},
+ {n:17,code:'D2',cat:'D',t:'Probabilités',s:1,p:'150-153',d:'3-9 mai'},
+ {n:18,code:'N9',cat:'N',t:'Algèbre',s:1,p:'84-89',d:'10-16 mai'},
+ {n:19,code:'M4',cat:'M',t:'Angles',s:1,p:'106-109',d:'17-23 mai'},
+ {n:20,code:'D3',cat:'D',t:'Proportionnalité',s:1,p:'154-157',d:'24-30 mai'},
  {n:21,code:'M5',cat:'M',t:'Heures et durées',s:1,p:'110-115',d:'31 mai-6 juin'},
  {n:22,code:'D4',cat:'D',t:'Initiation à la pensée informatique',s:1,p:'158-160',d:'7-13 juin'},
 ];
@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.516', items:[
+    "CM1 : progression réorganisée pour alterner les grandes rubriques (Nombres, Géométrie, Mesures, Données), même principe que la 6e -- la 1ère version regroupait les chapitres par thème (6 chapitres de Nombres d'affilée), sans jamais alterner.",
+  ]},
   { version:'2026-08-19.515', items:[
     "Fix : cliquer sur \"cm1\" dans le fil d'Ariane, ou rafraîchir la page sur un chapitre CM1, retombait à tort sur la progression ou le 1er chapitre de 6e. L'analyse de l'URL ne reconnaissait que \"5e\" explicitement, jamais \"cm1\".",
   ]},
