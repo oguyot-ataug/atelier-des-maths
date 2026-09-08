@@ -107,18 +107,106 @@ document.getElementById('cours-demo-cm1-nombres-entiers').innerHTML = `
 `;
 
 document.getElementById('methode-demo-cm1-nombres-entiers').innerHTML = `
-<div class="placeholder-box">
-  <strong>Méthodes en construction</strong>
-  Les méthodes animées de ce chapitre (pas à pas, comme pour les autres niveaux) arrivent dans une prochaine session.
+<div class="sub-header"><span class="letter">M</span><h4>Comment lire un grand nombre ?</h4></div>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:6px;">Clique sur « Étape suivante » pour découvrir comment lire 517 328, petit bout par petit bout.</p>
+  <div class="step-display" id="cm1ne-lireDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="cm1neLireDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="cm1neLireDemo.reset()">Recommencer</button>
+  </div>
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Comment comparer deux nombres ?</h4></div>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:6px;">Entre 68 450 et 68 540, lequel est le plus grand ? Clique sur « Étape suivante » pour le découvrir.</p>
+  <div class="step-display" id="cm1ne-comparerDisplay"></div>
+  <div class="figure-toolbar">
+    <button class="btn" onclick="cm1neComparerDemo.next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="cm1neComparerDemo.reset()">Recommencer</button>
+  </div>
 </div>
 `;
 
 document.getElementById('exos-demo-cm1-nombres-entiers').innerHTML = `
-<div class="placeholder-box">
-  <strong>Exercices en construction</strong>
-  Les exercices corrigés de ce chapitre arrivent dans une prochaine session.
+<div class="redaction-block">
+  <h3>Rédaction type : « Décomposer un nombre »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">306 254</span><span class="we-comment">Je repère les deux tranches : 306 et 254.</span></div>
+    <div class="we-row"><span class="we-expr">= 300 000 + 6 000 + 200 + 50 + 4</span><span class="we-comment">Je décompose selon la valeur de chaque chiffre.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Écris en chiffres le nombre : quatre-cent-douze-mille-sept-cent-trois.
+    <button type="button" class="exo-correction-toggle" data-target="cm1ne-correction-1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="cm1ne-correction-1">
+      <p style="margin:0;">quatre-cent-douze-mille-sept-cent-trois s'écrit : <b>412 703</b>.</p>
+    </div>
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Décompose le nombre 583 940 (comme dans l'exemple du cours).
+    <button type="button" class="exo-correction-toggle" data-target="cm1ne-correction-2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="cm1ne-correction-2">
+      <p style="margin:0;">583 940 = 500 000 + 80 000 + 3 000 + 900 + 40</p>
+    </div>
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Dans le nombre 271 806 : quel est le chiffre des centaines ? Quel est le nombre de centaines ?
+    <button type="button" class="exo-correction-toggle" data-target="cm1ne-correction-3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="cm1ne-correction-3">
+      <p style="margin:0;">Le chiffre des centaines est <b>8</b>.<br>Le nombre de centaines est <b>2 718</b> (on efface les 2 derniers chiffres, 0 et 6).</p>
+    </div>
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Range dans l'ordre décroissant : 90 415 &nbsp;·&nbsp; 9 999 &nbsp;·&nbsp; 90 145 &nbsp;·&nbsp; 104 200
+    <button type="button" class="exo-correction-toggle" data-target="cm1ne-correction-4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="cm1ne-correction-4">
+      <p style="margin:0;">104 200 &gt; 90 415 &gt; 90 145 &gt; 9 999</p>
+    </div>
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Attention au piège ! Compare 74 500 et 8 900 en expliquant ta méthode.
+    <button type="button" class="exo-correction-toggle" data-target="cm1ne-correction-5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="cm1ne-correction-5">
+      <p style="margin:0;">74 500 a 5 chiffres, 8 900 en a seulement 4 : 74 500 est donc bien le plus grand, même si 8 900 « commence » par un chiffre plus grand (8 &gt; 7). On ne compare jamais le premier chiffre avant d'avoir vérifié que les deux nombres ont bien le même nombre de chiffres !<br><b>74 500 &gt; 8 900</b></p>
+    </div>
+  </div>
 </div>
 `;
 
-DEMO_REGISTRY['cm1|Nombres entiers'] = { cours:'cours-demo-cm1-nombres-entiers', methode:'methode-demo-cm1-nombres-entiers', exos:'exos-demo-cm1-nombres-entiers',
-  init:()=>{} };
+document.getElementById('histoire-demo-cm1-nombres-entiers').innerHTML = `
+<div class="history-box">
+  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire : comment écrivait-on les nombres avant ?</div>
+  On n'a pas toujours écrit les nombres comme aujourd'hui ! Il y a environ 5 000 ans, en Égypte ancienne, on dessinait un petit rond pour 1, un fer à cheval pour 10, une corde enroulée pour 100... Pour écrire un nombre, il fallait dessiner chaque symbole autant de fois que nécessaire : pour écrire 23, on dessinait 2 fers à cheval et 3 petits ronds. Ça marchait, mais pour de très grands nombres, il fallait dessiner énormément de symboles !<br><br>
+  Plus tard, les Romains ont inventé leurs propres symboles : I pour 1, V pour 5, X pour 10, L pour 50, C pour 100... Tu as sans doute déjà vu ces lettres sur une horloge, ou pour écrire le nom d'un roi (Louis XIV, par exemple). Mais ce système restait compliqué : pour écrire 1 998, il fallait écrire MCMXCVIII !<br><br>
+  Notre façon d'écrire les nombres aujourd'hui vient de l'Inde, il y a plus de 1 500 ans, puis a voyagé jusqu'en Europe grâce aux savants arabes -- c'est pour ça qu'on parle de « chiffres arabes ». Son astuce géniale : la <b>position</b> de chaque chiffre indique sa valeur (unités, dizaines, centaines...). Avec seulement 10 symboles (0 à 9), on peut écrire n'importe quel nombre, aussi grand soit-il, sans jamais avoir besoin d'en inventer de nouveaux !
+</div>
+`;
+
+/* Méthodes animées, langage volontairement simple (public CM1). */
+const CM1NE_LIRE_STEPS = [
+  {expr:'517328', note:"On sépare le nombre en tranches de 3 chiffres, en partant de la droite."},
+  {expr:'517 328', note:'On obtient deux tranches : 517 et 328.'},
+  {expr:'<span class="hl">517</span> 328', note:'La tranche de gauche, c\'est la classe des mille : on dit « cinq-cent-dix-sept mille ».'},
+  {expr:'517 <span class="hl">328</span>', note:'La tranche de droite, c\'est la classe des unités : on dit « trois-cent-vingt-huit ».'},
+  {expr:'517 328', note:'On lit le nombre en entier : cinq-cent-dix-sept-mille-trois-cent-vingt-huit.'},
+];
+const cm1neLireDemo = makeStepDemo(CM1NE_LIRE_STEPS, 'cm1ne-lireDisplay');
+
+const CM1NE_COMPARER_STEPS = [
+  {expr:'68 450   et   68 540', note:'On compte le nombre de chiffres de chaque nombre : 5 chiffres chacun. On continue.'},
+  {expr:'<span class="hl">68</span> 450   et   <span class="hl">68</span> 540', note:'Les deux premiers chiffres sont identiques (6 et 8). On continue à comparer, chiffre par chiffre, vers la droite.'},
+  {expr:'68 <span class="hl">4</span>50   et   68 <span class="hl">5</span>40', note:'Le chiffre suivant est différent : 4 et 5. Comme 4 est plus petit que 5, on peut déjà conclure.'},
+  {expr:'68 450 < 68 540', note:'Donc 68 450 est plus petit que 68 540 !'},
+];
+const cm1neComparerDemo = makeStepDemo(CM1NE_COMPARER_STEPS, 'cm1ne-comparerDisplay');
+
+DEMO_REGISTRY['cm1|Nombres entiers'] = { cours:'cours-demo-cm1-nombres-entiers', methode:'methode-demo-cm1-nombres-entiers', exos:'exos-demo-cm1-nombres-entiers', histoire:'histoire-demo-cm1-nombres-entiers',
+  init:()=>{ cm1neLireDemo.reset(); cm1neComparerDemo.reset(); } };

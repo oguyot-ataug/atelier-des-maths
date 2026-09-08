@@ -38,7 +38,7 @@ function routerSlugify(s){
     .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 }
 function chapterByNiveauAndN(niveau, n){
-  const arr = niveau==='6e' ? CH6 : CH5;
+  const arr = CHAPITRES_BY_LEVEL[niveau] || CH6;
   return arr.find(c=>c.n===n) || null;
 }
 
@@ -52,7 +52,7 @@ function routerComputeRoute(){
   if(id==='view-niveau') return '#/niveau/'+currentLevel;
   if(id==='view-chapitre'){
     const lvl = currentChapterLevel || currentLevel;
-    const arr = lvl==='6e' ? CH6 : CH5;
+    const arr = CHAPITRES_BY_LEVEL[lvl] || CH6;
     const c = arr.find(x=>x.t===currentChapterTitle);
     const tabBtn = document.querySelector('.tab-btn.active');
     const tab = tabBtn ? tabBtn.dataset.tab : 'cours';
@@ -89,7 +89,11 @@ function routerUpdateBreadcrumb(){
     parts.push({label:lvl, route:'#/niveau/'+lvl});
     parts.push({label:currentChapterTitle||'', route:null});
     const tabBtn = document.querySelector('.tab-btn.active');
-    if(tabBtn) parts.push({label:tabBtn.textContent.trim(), route:null});
+    if(tabBtn){
+      const clone = tabBtn.cloneNode(true);
+      clone.querySelectorAll('.gicon').forEach(i=>i.remove());
+      parts.push({label:clone.textContent.trim(), route:null});
+    }
   } else if(id==='view-home'){
     // "Accueil" seul suffit, pas de second segment
   } else if(ROUTE_SIMPLE[id]){

@@ -1848,14 +1848,14 @@ function syncDiskSizesForPrint(root){
    figure géométrique libre...) : voir outils-figures.js ---- */
 function fillCorChapitres(){
   const niveau = document.getElementById('corNiveau').value;
-  const data = niveau==='6e'?CH6:CH5;
+  const data = CHAPITRES_BY_LEVEL[niveau] || CH6;
   const sel=document.getElementById('corChapitre');
   sel.innerHTML = data.map(c=>`<option value="${c.code} · ${c.t}">${c.code} (${c.t})</option>`).join('');
 }
 fillCorChapitres();
 function fillTdChapitres(){
   const niveau = document.getElementById('tdNiveau').value;
-  const data = niveau==='6e'?CH6:CH5;
+  const data = CHAPITRES_BY_LEVEL[niveau] || CH6;
   const sel=document.getElementById('tdChapitre');
   sel.innerHTML = data.map(c=>`<option value="${c.code} · ${c.t}">${c.code} (${c.t})</option>`).join('');
 }
@@ -2269,6 +2269,10 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.514', items:[
+    "CM1 : chapitre N1 (Nombres entiers) complété -- 2 méthodes animées (lire un grand nombre, comparer deux nombres), 5 exercices corrigés, et un \"Un peu d'histoire\" sur les différentes façons d'écrire les nombres (Égypte, Rome, Inde), langage adapté à un élève de CM1.",
+    "Fix (site entier, pas seulement CM1) : le fil d'Ariane affichait le nom brut de l'icône (ex. \"history_edu Un peu d'histoire\") au lieu de l'icône elle-même, sur l'onglet \"Un peu d'histoire\" de tous les chapitres.",
+  ]},
   { version:'2026-08-19.513', items:[
     "CM1 : premier cours réel (N1 Nombres entiers) -- lecture/écriture, tableau de numération, décomposition, chiffre des/nombre de, comparaison et rangement des nombres jusqu'à 999 999. Inspiré du programme officiel, exemples originaux.",
   ]},
