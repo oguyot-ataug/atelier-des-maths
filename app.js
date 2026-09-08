@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.513', items:[
+    "CM1 : premier cours réel (N1 Nombres entiers) -- lecture/écriture, tableau de numération, décomposition, chiffre des/nombre de, comparaison et rangement des nombres jusqu'à 999 999. Inspiré du programme officiel, exemples originaux.",
+  ]},
   { version:'2026-08-19.512', items:[
     "Nouveau menu \"Cycle 3\" regroupant CM1 (progression consultable), CM2 (à venir, désactivé) et 6e -- 5e reste seul (Cycle 4). La frise du CM1 affiche déjà ses 22 chapitres avec le badge \"À créer\", puisqu'aucun contenu n'existe encore pour ce niveau.",
   ]},
