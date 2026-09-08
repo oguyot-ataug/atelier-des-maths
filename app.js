@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.517', items:[
+    "CM1 : nouveau chapitre G1 (Droites parallèles et perpendiculaires) -- cours (vocabulaire, vérification à l'équerre) et une aide animée montrant comment l'équerre s'ajuste parfaitement à l'intersection quand deux droites sont perpendiculaires (avec un second exemple montrant le décalage quand ce n'est pas le cas).",
+  ]},
   { version:'2026-08-19.516', items:[
     "CM1 : progression réorganisée pour alterner les grandes rubriques (Nombres, Géométrie, Mesures, Données), même principe que la 6e -- la 1ère version regroupait les chapitres par thème (6 chapitres de Nombres d'affilée), sans jamais alterner.",
   ]},
