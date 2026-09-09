@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.527', items:[
+    "Fix : impossible d'éditer une correction d'une date jamais consultée dans l'outil de correction (ex. \"le 3 septembre\") -- le filtre par date ne re-chargeait jamais du serveur, restant sur ce qui était déjà en mémoire (seulement aujourd'hui, depuis le passage au chargement paresseux). Change de date re-fetch désormais bien la bonne journée.",
+  ]},
   { version:'2026-08-19.526', items:[
     "Fix : modifier une correction du cahier l'envoyait en fin de liste au lieu de rester à sa place. Cause : l'édition supprimait puis réinsérait l'entrée (nouvelle ligne en base), perdant la position implicite des entrées sans ordre manuel explicite. Remplacé par une vraie mise à jour, qui conserve l'identité et la position de la ligne.",
   ]},
@@ -4237,24 +4240,41 @@ async function expandCahierDay(accId, date){
 }
 let corListFilterDate = todayISO(); // par défaut, la date du jour -- évite d'afficher toutes
                                      // les corrections de l'année à chaque ouverture.
-function applyCorListFilter(){
+// Changer de date filtrée doit re-fetcher du serveur (pas juste filtrer `cahier`, qui ne
+// contient par défaut que les entrées déjà consultées -- voir le chargement paresseux du
+// cahier élève) -- sinon une date jamais chargée affiche à tort "cahier vide", empêchant
+// toute édition. Signalé : "je n'arrive pas à éditer le 3 septembre en 5B".
+async function applyCorListFilter(){
   corListFilterDate = document.getElementById('corListFilterDate').value || null;
+  if(corListFilterDate && isSyncEnabled()){
+    document.getElementById('cahierList').innerHTML = '<p class="hint">Chargement…</p>';
+    const entries = await fetchCahierEntriesForDate(corListFilterDate);
+    if(entries){
+      const existingIds = new Set(cahier.map(e=>e.id));
+      entries.forEach(e=>{ if(!existingIds.has(e.id)) cahier.push(e); });
+      saveCahier();
+    }
+  }
   renderCahier();
 }
-function showAllCorListDates(){
+async function showAllCorListDates(){
   corListFilterDate = null;
   document.getElementById('corListFilterDate').value = '';
+  if(isSyncEnabled()){
+    document.getElementById('cahierList').innerHTML = '<p class="hint">Chargement de tout l\'historique…</p>';
+    const remote = await syncFetchAll();
+    if(remote){ cahier = remote; saveCahier(); }
+  }
   renderCahier();
 }
 /* Un seul bouton bidirectionnel : "Voir toutes les dates" <-> "Corrections du jour", plutôt que
    de devoir resaisir la date manuellement pour revenir à la vue filtrée. */
-function toggleCorListDateFilter(){
+async function toggleCorListDateFilter(){
   if(corListFilterDate){
-    showAllCorListDates();
+    await showAllCorListDates();
   } else {
-    corListFilterDate = todayISO();
-    document.getElementById('corListFilterDate').value = corListFilterDate;
-    renderCahier();
+    document.getElementById('corListFilterDate').value = todayISO();
+    await applyCorListFilter();
   }
 }
 function renderCahier(){
