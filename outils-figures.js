@@ -783,38 +783,65 @@ function reopenTextBlock(data){
   previewTextBlock();
 }
 let imageImportDataUri = null;
+let imageImportFile = null; // fichier brut, uploadé vers Storage seulement à l'insertion effective
 function previewImportedImage(file){
   if(!file) return;
   if(!file.type || !file.type.startsWith('image/')){ niceAlert("Ce fichier n'est pas une image."); return; }
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    imageImportDataUri = reader.result;
-    document.getElementById('imageImportPreview').innerHTML = `<img src="${imageImportDataUri}" style="max-width:100%;max-height:260px;display:block;margin:0 auto;border-radius:6px;border:1px solid rgba(28,43,57,.15);"/>`;
-    document.getElementById('imageImportInsertBtn').disabled = false;
-  };
-  reader.onerror = ()=>{ niceAlert("Impossible de lire cette image."); };
-  reader.readAsDataURL(file);
+  imageImportFile = file;
+  imageImportDataUri = null; // sera défini par reopenImageBlock() si on rouvre une image déjà insérée (URL Storage), pas ici
+  const blobUrl = URL.createObjectURL(file);
+  document.getElementById('imageImportPreview').innerHTML = `<img src="${blobUrl}" style="max-width:100%;max-height:260px;display:block;margin:0 auto;border-radius:6px;border:1px solid rgba(28,43,57,.15);"/>`;
+  document.getElementById('imageImportInsertBtn').disabled = false;
 }
 function openImageTool(){
   hideAllToolContent();
   document.getElementById('toolsModalOverlay').style.display='flex';
   document.getElementById('imagePanel').style.display='block';
   imageImportDataUri = null;
+  imageImportFile = null;
   document.getElementById('imageImportPreview').innerHTML = '';
   document.getElementById('imageImportInsertBtn').disabled = true;
   document.getElementById('imageImportInput').value = '';
   document.getElementById('imagePanel').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function closeImageTool(){ document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('imagePanel').style.display='none'; }
-function insertImageBlock(){
-  if(!imageImportDataUri) return;
-  const html = `<div style="text-align:center;padding:6px 0;"><img src="${imageImportDataUri}" style="max-width:100%;max-height:400px;border-radius:6px;border:1px solid rgba(28,43,57,.15);" alt="Image importée"/></div>`;
-  addPendingBlock('image', html, {src:imageImportDataUri}, 'reopenImageBlock');
-  closeImageTool();
+async function insertImageBlock(){
+  // Cas 1 : on rouvre un bloc déjà inséré (reopenImageBlock a déjà fixé imageImportDataUri sur
+  // son URL Storage) sans changer de fichier -- rien à uploader, on réutilise l'URL telle quelle.
+  if(imageImportDataUri && !imageImportFile){
+    const html = `<div style="text-align:center;padding:6px 0;"><img src="${imageImportDataUri}" style="max-width:100%;max-height:400px;border-radius:6px;border:1px solid rgba(28,43,57,.15);" alt="Image importée"/></div>`;
+    addPendingBlock('image', html, {src:imageImportDataUri}, 'reopenImageBlock');
+    closeImageTool();
+    return;
+  }
+  if(!imageImportFile) return;
+  const btn = document.getElementById('imageImportInsertBtn');
+  btn.disabled = true;
+  const prevLabel = btn.textContent;
+  btn.textContent = 'Envoi en cours…';
+  try{
+    const ext = (imageImportFile.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
+    const path = `${currentUser?.id || 'anon'}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const { error: upErr } = await sb.storage.from('cahier-images').upload(path, imageImportFile, { cacheControl:'31536000', upsert:false });
+    if(upErr) throw upErr;
+    const { data: pub } = sb.storage.from('cahier-images').getPublicUrl(path);
+    const url = pub.publicUrl;
+    const html = `<div style="text-align:center;padding:6px 0;"><img src="${url}" style="max-width:100%;max-height:400px;border-radius:6px;border:1px solid rgba(28,43,57,.15);" alt="Image importée"/></div>`;
+    addPendingBlock('image', html, {src:url}, 'reopenImageBlock');
+    closeImageTool();
+  }catch(e){
+    console.error('upload image cahier', e);
+    await niceAlert("Échec de l'envoi de l'image (connexion ?). Réessayez.");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = prevLabel;
+    imageImportFile = null;
+  }
 }
 function reopenImageBlock(data){
   openImageTool();
   imageImportDataUri = data.src;
+  imageImportFile = null;
   document.getElementById('imageImportPreview').innerHTML = `<img src="${data.src}" style="max-width:100%;max-height:260px;display:block;margin:0 auto;border-radius:6px;border:1px solid rgba(28,43,57,.15);"/>`;
   document.getElementById('imageImportInsertBtn').disabled = false;
 }

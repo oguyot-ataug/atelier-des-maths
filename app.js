@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.524', items:[
+    "Outil de correction : les images insérées dans le cahier sont désormais uploadées vers Supabase Storage (bucket dédié) au lieu d'être encodées en base64 directement dans la base -- corrige la fuite à la source pour toute nouvelle image (certaines pesaient jusqu'à 1,9 Mo par correction).",
+  ]},
   { version:'2026-08-19.523', items:[
     "Cahier : par défaut, seuls les 45 derniers jours sont chargés (au lieu de l'année entière à chaque ouverture) -- nouveau bouton \"Afficher tout l'historique\" pour tout recharger quand besoin. Les filtres de date déclenchent désormais un vrai rechargement serveur borné, plutôt qu'un simple filtrage visuel après coup.",
   ]},
