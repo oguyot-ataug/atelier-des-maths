@@ -2271,6 +2271,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.530', items:[
+    "Cahier : nouveau sélecteur de date sur chaque entrée (Cours ou exercice), à côté des flèches de réordonnancement -- permet de corriger la date d'une entrée déjà posée sans passer par \"Modifier\" (qui reconstruit le contenu et n'est pas adapté à un Cours).",
+  ]},
   { version:'2026-08-19.529', items:[
     "Fix : les flèches de réordonnancement n'apparaissaient pas dans l'outil de correction (seulement dans le cahier). Fix : un Cours ne pouvait jamais être déplacé par rapport à un exercice du même jour -- son champ \"chapitre\" utilisait un format différent (titre seul au lieu de \"CODE · Titre\"), qui ne correspondait jamais à celui des exercices.",
   ]},
@@ -4080,7 +4083,8 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
     const sameGroup = (a,b) => a && b && (a.date||'')===(b.date||'') && (a.chapitre||'')===(b.chapitre||'');
     const canUp = sameGroup(e, prev);
     const canDown = sameGroup(e, next);
-    html += `<span style="display:flex;gap:4px;">
+    html += `<span style="display:flex;gap:4px;align-items:center;">
+      <input type="date" value="${e.date||''}" onchange="changeCahierEntryDate(${idx}, this.value)" title="Changer la date de cette entrée (Cours ou exercice), sans toucher à son contenu" style="font-size:.75rem;padding:2px 4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"/>
       <button type="button" class="nb-remove-btn" onclick="moveCahierEntry(${idx},-1)" title="Monter (dans le même jour)" ${canUp?'':'disabled'}><span class=gicon>arrow_upward</span></button>
       <button type="button" class="nb-remove-btn" onclick="moveCahierEntry(${idx},1)" title="Descendre (dans le même jour)" ${canDown?'':'disabled'}><span class=gicon>arrow_downward</span></button>
       ${showRemoveBtn ? `<button type="button" class="nb-remove-btn" onclick="removeCahierEntryFromNotebook(${idx}, this)" title="Retirer ce bloc du cahier"><span class=gicon>close</span> Retirer</button>` : ''}
@@ -4091,6 +4095,48 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
   if(e.figure) html += `<div class="nb-figure-row">${e.figure}</div>`;
   html += `</div>`;
   return html;
+}
+// Change UNIQUEMENT la date d'une entrée (Cours ou exercice), sans toucher à son contenu --
+// volontairement séparée de editCahierEntry/addToCahier (qui reconstruisent le contenu depuis
+// les blocs de correction, risqué pour un Cours qui n'a pas cette structure). Demandé :
+// "permettre de modifier la date pour le cours et les exercices déjà posés".
+async function changeCahierEntryDate(idx, newDate){
+  const e = cahier[idx];
+  if(!e || !newDate || e.date===newDate) return;
+  const oldDate = e.date;
+  e.date = newDate;
+  sortCahierInPlace();
+  saveCahier();
+  renderCahier();
+  if(document.getElementById('cahierEleveContent')) renderCahierEleveLocal();
+  if(isSyncEnabled() && e.id){
+    const res = await syncUpdateEntry(e.id, {date:newDate});
+    if(res.ok){
+      // Maintient le squelette de l'accordéon paresseux à jour SANS tout recharger (perdrait
+      // les autres jours déjà dépliés) : décrémente/retire l'ancienne date, ajoute/incrémente
+      // la nouvelle -- et considère cette dernière comme "chargée" puisqu'on a déjà son
+      // contenu. Fait seulement ici, après confirmation du succès, pour ne jamais laisser le
+      // squelette dans un état incohérent si la synchronisation échoue et que la date est
+      // annulée localement (voir plus bas).
+      if(cahierDatesList && cahierDatesList.length){
+        const oldGrp = cahierDatesList.find(g=>g.date===oldDate);
+        if(oldGrp){ oldGrp.count--; if(oldGrp.count<=0) cahierDatesList = cahierDatesList.filter(g=>g.date!==oldDate); }
+        const newGrp = cahierDatesList.find(g=>g.date===newDate);
+        if(newGrp) newGrp.count++; else cahierDatesList.push({date:newDate, count:1});
+        cahierDatesList.sort((a,b)=>a.date.localeCompare(b.date));
+        if(cahierLoadedDates) cahierLoadedDates.add(newDate);
+        if(document.getElementById('cahierEleveContent')) renderCahierEleveLocal();
+      }
+    } else if(!res.offline){
+      e.date = oldDate; // annule localement si la synchronisation a échoué, pour ne pas
+                         // laisser croire que le changement a été enregistré
+      sortCahierInPlace();
+      saveCahier();
+      renderCahier();
+      if(document.getElementById('cahierEleveContent')) renderCahierEleveLocal();
+      await niceAlert("<span class=gicon>warning</span> Échec de la synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". La date n'a pas été changée.");
+    }
+  }
 }
 // Déplace une entrée du cahier vers le haut (-1) ou le bas (+1) -- demandé : "permettre au
 // prof de modifier l'ordre des exercices corrigés". Fixe un ordre manuel explicite sur TOUTES
