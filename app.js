@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.525', items:[
+    "Cahier : chargement vraiment à la demande, jour par jour -- fini la fenêtre de N jours (même 7 jours restait trop lourd). Le contenu d'un jour n'est récupéré qu'au moment où on le déplie dans l'accordéon, et reste en mémoire une fois chargé (pas de re-chargement en repliant/dépliant). \"Afficher tout l'historique\" reste disponible, réservé aux profs/admins.",
+  ]},
   { version:'2026-08-19.524', items:[
     "Outil de correction : les images insérées dans le cahier sont désormais uploadées vers Supabase Storage (bucket dédié) au lieu d'être encodées en base64 directement dans la base -- corrige la fuite à la source pour toute nouvelle image (certaines pesaient jusqu'à 1,9 Mo par correction).",
   ]},
@@ -3470,8 +3473,12 @@ async function applyClassSelection(){
   updateClassDisplays(className);
   populateSupervisionClassSelect();
   if(currentClassId){
-    const remote = await syncFetchAll(cahierFilterFrom, cahierFilterTo);
-    if(remote){ cahier = remote; saveCahier(); }
+    // Population initiale légère (juste aujourd'hui) -- suffisant pour la liste prof par
+    // défaut (corListFilterDate=aujourd'hui) ; renderCahierEleve() affine ensuite avec son
+    // propre chargement paresseux par jour pour la vue accordéon.
+    const remote = await fetchCahierEntriesForDate(todayISO());
+    cahier = remote || [];
+    saveCahier();
   } else {
     cahier = [];
   }
@@ -3784,30 +3791,45 @@ function renderMesResultatsFiltered(){
 }
 
 function isSyncEnabled(){ return !!currentClassId; }
-// Fenêtre par défaut du cahier : les FILTRAGE_JOURS derniers jours seulement, pas l'année
-// entière -- sinon le volume chargé à chaque ouverture grandit sans arrêt à mesure que
-// l'année avance (signalé : "par défaut, le cahier montre l'intégralité de l'année. Donc ça
-// va empirer"). L'accordéon n'ouvre de toute façon que la date la plus récente par défaut :
-// 45 jours laisse largement de quoi naviguer les semaines passées sans tout recharger.
-const CAHIER_FENETRE_JOURS_DEFAUT = 45;
-let cahierShowAll = false; // passe à true via "Afficher tout l'historique"
-function cahierDateDefautDepuis(){
-  const d = new Date();
-  d.setDate(d.getDate() - CAHIER_FENETRE_JOURS_DEFAUT);
-  return d.toISOString().slice(0,10);
+// "Afficher tout l'historique" : réservé profs/admins -- demandé : "Afficher tout
+// l'historique, réservé aux professeurs."
+let cahierShowAll = false;
+// Chargement PARESSEUX, jour par jour, au dépli de l'accordéon -- demandé : "vu qu'on déplie
+// les jours (accordéon) pour voir le contenu, pourquoi ne pas faire la recherche en base quand
+// on souhaite déplier un jour précis ?" Remplace l'approche précédente par fenêtre de N jours
+// (signalée trop lourde même à 7 jours) : le volume transféré correspond désormais exactement
+// à ce que l'utilisateur consulte réellement, quel que soit le nombre d'entrées de l'année.
+let cahierDatesList = [];           // [{date, count}] -- squelette léger de l'accordéon
+let cahierLoadedDates = new Set();  // dates dont le contenu complet est déjà dans `cahier`
+let cahierEditableMode = false;     // mémorisé pour le rendu différé d'un jour déplié
+const CAHIER_COLS_LEGERES = 'id,class_id,niveau,chapitre,exo,titre,date,raw,html,figure,created_at,ordre';
+// Ne récupère que les dates (avec un compte d'entrées par jour) -- construit le squelette de
+// l'accordéon sans charger aucun contenu. Quasi gratuit même sur une année entière (juste des
+// chaînes de date, aucune colonne lourde).
+async function fetchCahierDatesList(){
+  if(!currentClassId) return [];
+  const { data, error } = await sb.from('cahier_entries').select('date').eq('class_id', currentClassId);
+  if(error){ console.error('fetch dates list failed', error); return []; }
+  const counts = new Map();
+  data.forEach(r=>{ const d=r.date||''; counts.set(d, (counts.get(d)||0)+1); });
+  return Array.from(counts.entries()).map(([date,count])=>({date,count})).sort((a,b)=>a.date.localeCompare(b.date));
 }
-// Ne récupère QUE ce qui sert à l'affichage en lecture (entryRowsHTML n'utilise jamais
-// blocksData/rows/cellBorders, voir editCahierEntry pour leur seul usage réel). Ces 3 colonnes
-// peuvent peser jusqu'à ~2 Mo par entrée dès qu'une image y a été insérée (encodée en base64,
-// faute de mieux pour l'instant) -- les exclure ici réduit très fortement le volume transféré
-// à chaque ouverture du cahier, pour un usage (lecture) bien plus fréquent que l'édition.
-// fromDate/toDate : bornent la requête côté SERVEUR (pas juste un filtrage visuel après coup) --
-// si omises et que cahierShowAll est faux, se limite par défaut aux 45 derniers jours.
+// Récupère le contenu complet (colonnes légères, jamais blocksData/rows/cellBorders -- voir
+// fetchCahierEntryEditData plus bas) d'UN SEUL jour. Appelée au dépli d'une section de
+// l'accordéon, ou pour la vue prof filtrée sur une date précise.
+async function fetchCahierEntriesForDate(date){
+  if(!currentClassId) return null;
+  const { data, error } = await sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', currentClassId).eq('date', date).order('ordre', {ascending:true, nullsFirst:false});
+  if(error){ console.error('fetch entries for date failed', error); return null; }
+  return data;
+}
+// Chargement complet (toutes les dates, tout le contenu léger) -- réservé à "Afficher tout
+// l'historique" (profs/admins) et au filtrage explicite par période (Du/Au), qui bornent alors
+// la requête via fromDate/toDate plutôt que de tout charger sans distinction.
 async function syncFetchAll(fromDate, toDate){
   if(!currentClassId) return null;
-  let q = sb.from('cahier_entries').select('id,class_id,niveau,chapitre,exo,titre,date,raw,html,figure,created_at,ordre').eq('class_id', currentClassId);
-  const effectiveFrom = fromDate || (cahierShowAll ? null : cahierDateDefautDepuis());
-  if(effectiveFrom) q = q.gte('date', effectiveFrom);
+  let q = sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', currentClassId);
+  if(fromDate) q = q.gte('date', fromDate);
   if(toDate) q = q.lte('date', toDate);
   const { data, error } = await q.order('ordre', {ascending:true, nullsFirst:false}).order('date');
   if(error){ console.error('sync fetch failed', error); return null; }
@@ -4134,6 +4156,59 @@ function toggleNbAccordion(id){
   const chevron = body.previousElementSibling.querySelector('.nb-accordion-chevron');
   chevron.classList.toggle('open', isOpen);
 }
+// Variante PARESSEUSE de l'accordéon (mode par défaut du cahier) : construit le squelette à
+// partir de cahierDatesList (juste des dates + comptes, léger) plutôt que d'entrées déjà
+// chargées -- le contenu réel d'un jour n'est récupéré qu'à son dépli, voir expandCahierDay.
+function lazyGroupedEntriesAccordionHTML(editable){
+  cahierEditableMode = editable;
+  const mostRecentIdx = cahierDatesList.length-1;
+  return cahierDatesList.map((grp, idx)=>{
+    const isOpen = idx===mostRecentIdx;
+    const accId = 'nbacc-'+idx;
+    const loaded = cahierLoadedDates.has(grp.date);
+    const inner = loaded
+      ? groupedByChapitreHTML(cahier.filter(e=>e.date===grp.date), (e)=>entryRowsHTML(e, cahier.indexOf(e), editable))
+      : (isOpen ? '<p class="hint" style="padding:8px;">Chargement…</p>' : '');
+    return `<div class="nb-accordion-section">
+      <button type="button" class="nb-accordion-header" onclick="expandCahierDay('${accId}','${grp.date}')">
+        <span class="gicon nb-accordion-chevron${isOpen?' open':''}">expand_more</span>
+        <span>${fmtDateFR(grp.date)}</span>
+        <span class="nb-accordion-count">${grp.count} bloc${grp.count>1?'s':''}</span>
+      </button>
+      <div class="nb-accordion-body${isOpen?' open':''}" id="${accId}">${inner}</div>
+    </div>`;
+  }).join('');
+}
+// Dépli/repli d'un jour de l'accordéon paresseux : si son contenu n'a encore jamais été
+// chargé, va le chercher en base (une seule requête, un seul jour) avant de l'afficher ; les
+// dépliages suivants du même jour réutilisent ce qui est déjà en mémoire, sans re-requêter.
+async function expandCahierDay(accId, date){
+  const body = document.getElementById(accId);
+  const chevron = body.previousElementSibling.querySelector('.nb-accordion-chevron');
+  if(body.classList.contains('open')){
+    body.classList.remove('open');
+    chevron.classList.remove('open');
+    return;
+  }
+  body.classList.add('open');
+  chevron.classList.add('open');
+  if(!cahierLoadedDates.has(date)){
+    body.innerHTML = '<p class="hint" style="padding:8px;">Chargement…</p>';
+    const entries = await fetchCahierEntriesForDate(date);
+    if(entries){
+      const existingIds = new Set(cahier.map(e=>e.id));
+      entries.forEach(e=>{ if(!existingIds.has(e.id)) cahier.push(e); });
+      cahierLoadedDates.add(date);
+      saveCahier();
+    } else {
+      body.innerHTML = '<p class="hint" style="padding:8px;"><span class=gicon>warning</span> Échec du chargement, réessayez.</p>';
+      body.classList.remove('open');
+      chevron.classList.remove('open');
+      return;
+    }
+  }
+  body.innerHTML = groupedByChapitreHTML(cahier.filter(e=>e.date===date), (e)=>entryRowsHTML(e, cahier.indexOf(e), cahierEditableMode));
+}
 let corListFilterDate = todayISO(); // par défaut, la date du jour -- évite d'afficher toutes
                                      // les corrections de l'année à chaque ouverture.
 function applyCorListFilter(){
@@ -4210,27 +4285,32 @@ function clearCahierFilter(){
   const sel = document.getElementById('cahierFilterChapitre'); if(sel) sel.value = '';
   renderCahierEleve();
 }
-// Bouton "Afficher tout l'historique" -- par défaut, syncFetchAll se limite aux 45 derniers
-// jours (voir CAHIER_FENETRE_JOURS_DEFAUT) pour ne pas recharger une année entière à chaque
-// ouverture. Ce bouton permet de charger explicitement tout l'historique quand on en a besoin
-// (ex. retrouver une correction ancienne), sans que ce soit le comportement par défaut.
+// Bouton "Afficher tout l'historique", réservé profs/admins -- par défaut, le cahier charge
+// paresseusement jour par jour au dépli de l'accordéon (voir lazyGroupedEntriesAccordionHTML).
+// Ce bouton permet de charger explicitement tout l'historique en une fois quand on en a besoin
+// (ex. retrouver une correction ancienne sans naviguer jour par jour).
 function toggleCahierShowAll(){
+  if(currentUserRole!=='prof' && currentUserRole!=='admin') return; // réservé profs/admins
   cahierShowAll = !cahierShowAll;
   const btn = document.getElementById('btnCahierShowAll');
-  if(btn) btn.textContent = cahierShowAll ? `Revenir aux ${CAHIER_FENETRE_JOURS_DEFAUT} derniers jours` : "Afficher tout l'historique";
+  if(btn) btn.textContent = cahierShowAll ? "Revenir au chargement par jour" : "Afficher tout l'historique";
   renderCahierEleve();
 }
 function buildCahierNotebookHTML(editable){
-  const list = filteredCahier();
   const status = document.getElementById('cahierFilterStatus');
+  const filtreActif = cahierFilterFrom||cahierFilterTo||cahierFilterChapitre;
+  if(!filtreActif && !cahierShowAll){
+    // Mode paresseux (par défaut) : cahierDatesList est la source de vérité pour "y a-t-il des
+    // entrées ?", pas `cahier` (qui ne contient que les jours déjà dépliés).
+    if(status) status.textContent = '';
+    if(!cahierDatesList.length) return '<p class="hint">Le cahier est vide pour l\'instant.</p>';
+    return lazyGroupedEntriesAccordionHTML(editable);
+  }
+  // Mode complet (filtre explicite ou "Afficher tout l'historique") : `cahier` contient déjà
+  // tout, chargé par syncFetchAll() en amont.
+  const list = filteredCahier();
   if(status){
-    if(cahierFilterFrom||cahierFilterTo||cahierFilterChapitre){
-      status.textContent = `${list.length} résultat(s) sur ${cahier.length}`;
-    } else if(!cahierShowAll){
-      status.textContent = `${CAHIER_FENETRE_JOURS_DEFAUT} derniers jours affichés (${cahier.length} correction(s)) -- utilisez "Afficher tout l'historique" pour remonter plus loin.`;
-    } else {
-      status.textContent = '';
-    }
+    status.textContent = filtreActif ? `${list.length} résultat(s) sur ${cahier.length}` : '';
   }
   if(!cahier.length) return '<p class="hint">Le cahier est vide pour l\'instant.</p>';
   if(!list.length) return '<p class="hint">Aucune correction dans cette période.</p>';
@@ -4264,6 +4344,8 @@ async function removeCahierEntryFromNotebook(i, btn){
 }
 async function renderCahierEleve(){
   populateCahierChapitreFilter();
+  const btnShowAll = document.getElementById('btnCahierShowAll');
+  if(btnShowAll) btnShowAll.style.display = (currentUserRole==='prof'||currentUserRole==='admin') ? '' : 'none';
   if(!currentClassId){
     document.getElementById('cahierEleveContent').innerHTML = '<p class="hint">Choisissez une classe ci-dessus pour voir son cahier.</p>';
     return;
@@ -4271,13 +4353,30 @@ async function renderCahierEleve(){
   let warning = '';
   if(isSyncEnabled()){
     document.getElementById('cahierEleveContent').innerHTML = '<p class="hint">Chargement depuis le cahier partagé…</p>';
-    const remote = await syncFetchAll(cahierFilterFrom, cahierFilterTo);
-    if(remote){
-      cahier = remote;
+    const filtreActif = cahierFilterFrom||cahierFilterTo||cahierFilterChapitre;
+    if(!filtreActif && !cahierShowAll){
+      // Mode paresseux (par défaut) : juste le squelette des dates, puis le contenu du jour le
+      // plus récent seulement -- les autres jours se chargent à leur dépli (expandCahierDay).
+      cahierDatesList = await fetchCahierDatesList();
+      cahier = [];
+      cahierLoadedDates = new Set();
+      if(cahierDatesList.length){
+        const plusRecent = cahierDatesList[cahierDatesList.length-1].date;
+        const entries = await fetchCahierEntriesForDate(plusRecent);
+        if(entries){ cahier = entries; cahierLoadedDates.add(plusRecent); }
+        else warning = '<p class="hint"><span class=gicon>warning</span> Impossible de joindre le cahier partagé, affichage de la dernière copie connue sur cet appareil.</p>';
+      }
       saveCahier();
       populateCahierChapitreFilter();
     } else {
-      warning = '<p class="hint"><span class=gicon>warning</span> Impossible de joindre le cahier partagé, affichage de la dernière copie connue sur cet appareil.</p>';
+      const remote = await syncFetchAll(cahierFilterFrom, cahierFilterTo);
+      if(remote){
+        cahier = remote;
+        saveCahier();
+        populateCahierChapitreFilter();
+      } else {
+        warning = '<p class="hint"><span class=gicon>warning</span> Impossible de joindre le cahier partagé, affichage de la dernière copie connue sur cet appareil.</p>';
+      }
     }
   }
   renderCahierEleveLocal(warning);
