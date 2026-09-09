@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.528', items:[
+    "Fix : deux exercices d'un même jour/chapitre pouvaient s'afficher dans le mauvais ordre dans l'outil de correction (ex. \"exercices 1 et 2 inversés\"), sans ordre manuel fixé. Ajout d'un critère de tri déterministe (date de création) partout où ça manquait -- requêtes serveur et tri local.",
+  ]},
   { version:'2026-08-19.527', items:[
     "Fix : impossible d'éditer une correction d'une date jamais consultée dans l'outil de correction (ex. \"le 3 septembre\") -- le filtre par date ne re-chargeait jamais du serveur, restant sur ce qui était déjà en mémoire (seulement aujourd'hui, depuis le passage au chargement paresseux). Change de date re-fetch désormais bien la bonne journée.",
   ]},
@@ -3484,6 +3487,7 @@ async function applyClassSelection(){
     // propre chargement paresseux par jour pour la vue accordéon.
     const remote = await fetchCahierEntriesForDate(todayISO());
     cahier = remote || [];
+    sortCahierInPlace();
     saveCahier();
   } else {
     cahier = [];
@@ -3825,7 +3829,7 @@ async function fetchCahierDatesList(){
 // l'accordéon, ou pour la vue prof filtrée sur une date précise.
 async function fetchCahierEntriesForDate(date){
   if(!currentClassId) return null;
-  const { data, error } = await sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', currentClassId).eq('date', date).order('ordre', {ascending:true, nullsFirst:false});
+  const { data, error } = await sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', currentClassId).eq('date', date).order('ordre', {ascending:true, nullsFirst:false}).order('created_at', {ascending:true});
   if(error){ console.error('fetch entries for date failed', error); return null; }
   return data;
 }
@@ -3837,7 +3841,7 @@ async function syncFetchAll(fromDate, toDate){
   let q = sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', currentClassId);
   if(fromDate) q = q.gte('date', fromDate);
   if(toDate) q = q.lte('date', toDate);
-  const { data, error } = await q.order('ordre', {ascending:true, nullsFirst:false}).order('date');
+  const { data, error } = await q.order('ordre', {ascending:true, nullsFirst:false}).order('date').order('created_at', {ascending:true});
   if(error){ console.error('sync fetch failed', error); return null; }
   return data;
 }
@@ -3920,7 +3924,9 @@ function sortCahierInPlace(){
     if(oa!==ob) return oa-ob;
     const dateCmp = (a.date||'').localeCompare(b.date||'');
     if(dateCmp!==0) return dateCmp;
-    return (a.chapitre||'').localeCompare(b.chapitre||'');
+    const chapCmp = (a.chapitre||'').localeCompare(b.chapitre||'');
+    if(chapCmp!==0) return chapCmp;
+    return (a.created_at||'').localeCompare(b.created_at||'');
   });
 }
 
@@ -4227,6 +4233,9 @@ async function expandCahierDay(accId, date){
     if(entries){
       const existingIds = new Set(cahier.map(e=>e.id));
       entries.forEach(e=>{ if(!existingIds.has(e.id)) cahier.push(e); });
+      sortCahierInPlace(); // l'ordre du tableau ne doit jamais dépendre de l'ordre de
+                            // CHARGEMENT (par jour ici) -- voir le commentaire similaire dans
+                            // applyCorListFilter
       cahierLoadedDates.add(date);
       saveCahier();
     } else {
@@ -4252,6 +4261,12 @@ async function applyCorListFilter(){
     if(entries){
       const existingIds = new Set(cahier.map(e=>e.id));
       entries.forEach(e=>{ if(!existingIds.has(e.id)) cahier.push(e); });
+      sortCahierInPlace(); // l'ordre affiché (groupedEntriesHTML) suit l'ordre du tableau
+                            // `cahier` tel quel, sans re-trier -- indispensable ici, sinon il
+                            // ne reflète que l'ordre d'ARRIVÉE des différents chargements
+                            // (aujourd'hui, puis cette date...), pas l'ordre logique attendu.
+                            // Signalé : "les exercices 1 et 2 [...] inversé[s] dans l'outil de
+                            // correction."
       saveCahier();
     }
   }
@@ -4409,7 +4424,7 @@ async function renderCahierEleve(){
       if(cahierDatesList.length){
         const plusRecent = cahierDatesList[cahierDatesList.length-1].date;
         const entries = await fetchCahierEntriesForDate(plusRecent);
-        if(entries){ cahier = entries; cahierLoadedDates.add(plusRecent); }
+        if(entries){ cahier = entries; sortCahierInPlace(); cahierLoadedDates.add(plusRecent); }
         else warning = '<p class="hint"><span class=gicon>warning</span> Impossible de joindre le cahier partagé, affichage de la dernière copie connue sur cet appareil.</p>';
       }
       saveCahier();
