@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.523', items:[
+    "Cahier : par défaut, seuls les 45 derniers jours sont chargés (au lieu de l'année entière à chaque ouverture) -- nouveau bouton \"Afficher tout l'historique\" pour tout recharger quand besoin. Les filtres de date déclenchent désormais un vrai rechargement serveur borné, plutôt qu'un simple filtrage visuel après coup.",
+  ]},
   { version:'2026-08-19.522', items:[
     "Fix (CM1) : le quiz pré-écrit des 2 chapitres existants (Nombres entiers, Droites parallèles/perpendiculaires) retombait sur le quiz d'un chapitre 5e totalement différent (Symétrie centrale), faute de quiz spécifique enregistré. Chaque chapitre a désormais son propre quiz de 3 questions.",
   ]},
@@ -3464,7 +3467,7 @@ async function applyClassSelection(){
   updateClassDisplays(className);
   populateSupervisionClassSelect();
   if(currentClassId){
-    const remote = await syncFetchAll();
+    const remote = await syncFetchAll(cahierFilterFrom, cahierFilterTo);
     if(remote){ cahier = remote; saveCahier(); }
   } else {
     cahier = [];
@@ -3778,10 +3781,40 @@ function renderMesResultatsFiltered(){
 }
 
 function isSyncEnabled(){ return !!currentClassId; }
-async function syncFetchAll(){
+// Fenêtre par défaut du cahier : les FILTRAGE_JOURS derniers jours seulement, pas l'année
+// entière -- sinon le volume chargé à chaque ouverture grandit sans arrêt à mesure que
+// l'année avance (signalé : "par défaut, le cahier montre l'intégralité de l'année. Donc ça
+// va empirer"). L'accordéon n'ouvre de toute façon que la date la plus récente par défaut :
+// 45 jours laisse largement de quoi naviguer les semaines passées sans tout recharger.
+const CAHIER_FENETRE_JOURS_DEFAUT = 45;
+let cahierShowAll = false; // passe à true via "Afficher tout l'historique"
+function cahierDateDefautDepuis(){
+  const d = new Date();
+  d.setDate(d.getDate() - CAHIER_FENETRE_JOURS_DEFAUT);
+  return d.toISOString().slice(0,10);
+}
+// Ne récupère QUE ce qui sert à l'affichage en lecture (entryRowsHTML n'utilise jamais
+// blocksData/rows/cellBorders, voir editCahierEntry pour leur seul usage réel). Ces 3 colonnes
+// peuvent peser jusqu'à ~2 Mo par entrée dès qu'une image y a été insérée (encodée en base64,
+// faute de mieux pour l'instant) -- les exclure ici réduit très fortement le volume transféré
+// à chaque ouverture du cahier, pour un usage (lecture) bien plus fréquent que l'édition.
+// fromDate/toDate : bornent la requête côté SERVEUR (pas juste un filtrage visuel après coup) --
+// si omises et que cahierShowAll est faux, se limite par défaut aux 45 derniers jours.
+async function syncFetchAll(fromDate, toDate){
   if(!currentClassId) return null;
-  const { data, error } = await sb.from('cahier_entries').select('*').eq('class_id', currentClassId).order('ordre', {ascending:true, nullsFirst:false}).order('date');
+  let q = sb.from('cahier_entries').select('id,class_id,niveau,chapitre,exo,titre,date,raw,html,figure,created_at,ordre').eq('class_id', currentClassId);
+  const effectiveFrom = fromDate || (cahierShowAll ? null : cahierDateDefautDepuis());
+  if(effectiveFrom) q = q.gte('date', effectiveFrom);
+  if(toDate) q = q.lte('date', toDate);
+  const { data, error } = await q.order('ordre', {ascending:true, nullsFirst:false}).order('date');
   if(error){ console.error('sync fetch failed', error); return null; }
+  return data;
+}
+// Récupère à la demande les colonnes lourdes d'UNE seule entrée (édition/réouverture d'un
+// bloc), non chargées par syncFetchAll() -- voir son commentaire.
+async function fetchCahierEntryEditData(id){
+  const { data, error } = await sb.from('cahier_entries').select('blocksData,rows,cellBorders').eq('id', id).single();
+  if(error){ console.error('fetch entry edit data failed', error); return null; }
   return data;
 }
 async function syncAddEntry(entry){
@@ -3885,7 +3918,7 @@ async function addToCahier(){
     else if(!res.offline){ await niceAlert("<span class=gicon>warning</span> Enregistré localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez l'adresse du script et le code secret dans la configuration de synchronisation."); }
   }
 }
-function editCahierEntry(i){
+async function editCahierEntry(i){
   const e = cahier[i];
   document.getElementById('corNiveau').value = e.niveau;
   fillCorChapitres();
@@ -3897,6 +3930,13 @@ function editCahierEntry(i){
   document.getElementById('correctionInput').value = e.raw||'';
   document.getElementById('correctionInputWrap').style.display = hasText ? 'block' : 'none';
   document.getElementById('btnCorAddTextarea').style.display = hasText ? 'none' : 'inline-flex';
+  // blocksData/rows/cellBorders ne sont plus chargés par le fetch principal (voir
+  // syncFetchAll) : on les récupère ici à la demande, uniquement à ce moment précis où ils
+  // deviennent réellement utiles (modification effective de l'entrée).
+  if(e.id && e.blocksData===undefined && isSyncEnabled()){
+    const full = await fetchCahierEntryEditData(e.id);
+    if(full){ e.blocksData = full.blocksData; e.rows = full.rows; e.cellBorders = full.cellBorders; }
+  }
   if(e.blocksData){
     // Entrée enregistrée avec la structure des blocs (depuis ce correctif) : tout redevient
     // modifiable normalement (déplacer, éditer, supprimer bloc par bloc).
@@ -4167,11 +4207,27 @@ function clearCahierFilter(){
   const sel = document.getElementById('cahierFilterChapitre'); if(sel) sel.value = '';
   renderCahierEleve();
 }
+// Bouton "Afficher tout l'historique" -- par défaut, syncFetchAll se limite aux 45 derniers
+// jours (voir CAHIER_FENETRE_JOURS_DEFAUT) pour ne pas recharger une année entière à chaque
+// ouverture. Ce bouton permet de charger explicitement tout l'historique quand on en a besoin
+// (ex. retrouver une correction ancienne), sans que ce soit le comportement par défaut.
+function toggleCahierShowAll(){
+  cahierShowAll = !cahierShowAll;
+  const btn = document.getElementById('btnCahierShowAll');
+  if(btn) btn.textContent = cahierShowAll ? `Revenir aux ${CAHIER_FENETRE_JOURS_DEFAUT} derniers jours` : "Afficher tout l'historique";
+  renderCahierEleve();
+}
 function buildCahierNotebookHTML(editable){
   const list = filteredCahier();
   const status = document.getElementById('cahierFilterStatus');
   if(status){
-    status.textContent = (cahierFilterFrom||cahierFilterTo||cahierFilterChapitre) ? `${list.length} résultat(s) sur ${cahier.length}` : '';
+    if(cahierFilterFrom||cahierFilterTo||cahierFilterChapitre){
+      status.textContent = `${list.length} résultat(s) sur ${cahier.length}`;
+    } else if(!cahierShowAll){
+      status.textContent = `${CAHIER_FENETRE_JOURS_DEFAUT} derniers jours affichés (${cahier.length} correction(s)) -- utilisez "Afficher tout l'historique" pour remonter plus loin.`;
+    } else {
+      status.textContent = '';
+    }
   }
   if(!cahier.length) return '<p class="hint">Le cahier est vide pour l\'instant.</p>';
   if(!list.length) return '<p class="hint">Aucune correction dans cette période.</p>';
@@ -4212,7 +4268,7 @@ async function renderCahierEleve(){
   let warning = '';
   if(isSyncEnabled()){
     document.getElementById('cahierEleveContent').innerHTML = '<p class="hint">Chargement depuis le cahier partagé…</p>';
-    const remote = await syncFetchAll();
+    const remote = await syncFetchAll(cahierFilterFrom, cahierFilterTo);
     if(remote){
       cahier = remote;
       saveCahier();
