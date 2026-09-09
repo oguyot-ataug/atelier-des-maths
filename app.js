@@ -645,6 +645,7 @@ document.querySelectorAll('.view-toggle button').forEach(b=>{
 /* ======================= CHAPITRE ======================= */
 const DEMO_REGISTRY = {};
 let currentChapterTitle = null;
+let currentChapterCode = null;
 let currentChapterLevel = null;
 
 function openChapitre(c, tab, lvlOverride){
@@ -654,6 +655,7 @@ function openChapitre(c, tab, lvlOverride){
   chapView.classList.toggle('lvl-5e', lvl==='5e');
   const demo = DEMO_REGISTRY[lvl+'|'+c.t];
   currentChapterTitle = c.t;
+  currentChapterCode = c.code;
   currentChapterLevel = lvl;
   document.getElementById('chap-code-tag').textContent = c.code;
   document.getElementById('chap-code-tag').style.background = CATS[c.cat].bg;
@@ -2269,6 +2271,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.529', items:[
+    "Fix : les flèches de réordonnancement n'apparaissaient pas dans l'outil de correction (seulement dans le cahier). Fix : un Cours ne pouvait jamais être déplacé par rapport à un exercice du même jour -- son champ \"chapitre\" utilisait un format différent (titre seul au lieu de \"CODE · Titre\"), qui ne correspondait jamais à celui des exercices.",
+  ]},
   { version:'2026-08-19.528', items:[
     "Fix : deux exercices d'un même jour/chapitre pouvaient s'afficher dans le mauvais ordre dans l'outil de correction (ex. \"exercices 1 et 2 inversés\"), sans ordre manuel fixé. Ajout d'un critère de tri déterministe (date de création) partout où ça manquait -- requêtes serveur et tri local.",
   ]},
@@ -4062,7 +4067,8 @@ function clearCahier(btn){
   cahier=[]; editingIndex=null; saveCahier(); renderCahier();
 }
 
-function entryRowsHTML(e, idx, editable){
+function entryRowsHTML(e, idx, editable, showRemoveBtn){
+  if(showRemoveBtn===undefined) showRemoveBtn = true; // rétrocompatible (accordéon élève)
   const refLabel = e.exo==='Cours' ? 'Cours' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo));
   let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}</div>`;
   if(editable){
@@ -4077,7 +4083,7 @@ function entryRowsHTML(e, idx, editable){
     html += `<span style="display:flex;gap:4px;">
       <button type="button" class="nb-remove-btn" onclick="moveCahierEntry(${idx},-1)" title="Monter (dans le même jour)" ${canUp?'':'disabled'}><span class=gicon>arrow_upward</span></button>
       <button type="button" class="nb-remove-btn" onclick="moveCahierEntry(${idx},1)" title="Descendre (dans le même jour)" ${canDown?'':'disabled'}><span class=gicon>arrow_downward</span></button>
-      <button type="button" class="nb-remove-btn" onclick="removeCahierEntryFromNotebook(${idx}, this)" title="Retirer ce bloc du cahier"><span class=gicon>close</span> Retirer</button>
+      ${showRemoveBtn ? `<button type="button" class="nb-remove-btn" onclick="removeCahierEntryFromNotebook(${idx}, this)" title="Retirer ce bloc du cahier"><span class=gicon>close</span> Retirer</button>` : ''}
     </span>`;
   }
   html += `</div>`;
@@ -4307,7 +4313,7 @@ function renderCahier(){
   if(!shown.length){ list.innerHTML = '<div class="placeholder-box">Aucune correction à cette date. <a href="#" onclick="showAllCorListDates();return false;">Voir toutes les dates</a>.</div>'; return; }
   list.innerHTML = groupedEntriesHTML(shown, (e,i)=>`
     <div class="cahier-entry">
-      <div style="flex:1;">${entryRowsHTML(e)}</div>
+      <div style="flex:1;">${entryRowsHTML(e, cahier.indexOf(e), true, false)}</div>
       <div style="display:flex;flex-direction:column;gap:6px;flex:none;">
         <button class="remove" style="color:var(--accent);" onclick="editCahierEntry(${cahier.indexOf(e)})">Modifier</button>
         <button class="remove" onclick="removeCahierEntry(${cahier.indexOf(e)})">Retirer</button>
@@ -4894,7 +4900,7 @@ async function addSectionToCahier(headerEl){
   const niveauSel = document.getElementById('corNiveau');
   const entry = {
     niveau: niveauSel ? niveauSel.value : '5e',
-    chapitre: currentChapterTitle || '',
+    chapitre: currentChapterCode ? `${currentChapterCode} · ${currentChapterTitle}` : (currentChapterTitle || ''),
     exo: 'Cours',
     titre: titre,
     date: todayISO(),
