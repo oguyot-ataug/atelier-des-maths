@@ -2269,6 +2269,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.526', items:[
+    "Fix : modifier une correction du cahier l'envoyait en fin de liste au lieu de rester à sa place. Cause : l'édition supprimait puis réinsérait l'entrée (nouvelle ligne en base), perdant la position implicite des entrées sans ordre manuel explicite. Remplacé par une vraie mise à jour, qui conserve l'identité et la position de la ligne.",
+  ]},
   { version:'2026-08-19.525', items:[
     "Cahier : chargement vraiment à la demande, jour par jour -- fini la fenêtre de N jours (même 7 jours restait trop lourd). Le contenu d'un jour n'est récupéré qu'au moment où on le déplie dans l'accordéon, et reste en mémoire une fois chargé (pas de re-chargement en repliant/dépliant). \"Afficher tout l'historique\" reste disponible, réservé aux profs/admins.",
   ]},
@@ -3848,6 +3851,20 @@ async function syncAddEntry(entry){
   if(error) return {ok:false, error: error.message.includes('row-level security') ? "vous n'êtes pas assigné à cette classe." : error.message};
   return {ok:true, id:data.id};
 }
+// Vraie mise à jour (UPDATE), plutôt que le motif supprimer+réinsérer utilisé jusqu'ici pour
+// une modification -- ce dernier créait une NOUVELLE ligne à chaque édition, perdant la
+// position implicite en base des entrées n'ayant jamais eu d'ordre manuel explicite (celles
+// où ordre reste NULL, triées alors par un critère d'égalité non garanti -- en pratique,
+// l'ordre d'insertion). Résultat : toute entrée éditée finissait en fin de liste. Signalé :
+// "quand on modifie un exercice, il se met en queue d'exercices et ne reste pas à sa place."
+async function syncUpdateEntry(id, entry){
+  if(!id) return {ok:false, offline:true};
+  const { id: _omit, ...payload } = entry; // id déjà ciblé via .eq ci-dessous, inutile (et
+                                            // redondant) de le renvoyer dans le contenu
+  const { error } = await sb.from('cahier_entries').update(payload).eq('id', id);
+  if(error) return {ok:false, error: error.message.includes('row-level security') ? "vous n'êtes pas assigné à cette classe." : error.message};
+  return {ok:true, id};
+}
 async function syncRemoveEntry(id){
   if(!id) return {ok:false, offline:true};
   const { error } = await sb.from('cahier_entries').delete().eq('id', id);
@@ -3925,6 +3942,10 @@ async function addToCahier(){
   let oldServerId = null;
   if(editingIndex!==null){
     oldServerId = cahier[editingIndex].id || null;
+    entry.ordre = cahier[editingIndex].ordre; // reporte l'ordre manuel existant, sinon perdu à
+                                               // chaque modification (l'entrée retombait tout en
+                                               // bas -- sortCahierInPlace place les entrées sans
+                                               // ordre en dernier)
     cahier[editingIndex] = entry;
     editingIndex = null;
     document.getElementById('btnAddCahier').textContent = '+ Ajouter au cahier de corrections';
@@ -3937,10 +3958,15 @@ async function addToCahier(){
   renderCahier();
   clearCorrectionInput();
   if(isSyncEnabled()){
-    if(oldServerId) await syncRemoveEntry(oldServerId);
-    const res = await syncAddEntry(entry);
-    if(res.ok){ entry.id = res.id; saveCahier(); renderCahier(); }
-    else if(!res.offline){ await niceAlert("<span class=gicon>warning</span> Enregistré localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez l'adresse du script et le code secret dans la configuration de synchronisation."); }
+    if(oldServerId){
+      entry.id = oldServerId;
+      const res = await syncUpdateEntry(oldServerId, entry);
+      if(!res.ok && !res.offline){ await niceAlert("<span class=gicon>warning</span> Enregistré localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez l'adresse du script et le code secret dans la configuration de synchronisation."); }
+    } else {
+      const res = await syncAddEntry(entry);
+      if(res.ok){ entry.id = res.id; saveCahier(); renderCahier(); }
+      else if(!res.offline){ await niceAlert("<span class=gicon>warning</span> Enregistré localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez l'adresse du script et le code secret dans la configuration de synchronisation."); }
+    }
   }
 }
 async function editCahierEntry(i){
