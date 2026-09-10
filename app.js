@@ -2271,6 +2271,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.533', items:[
+    "Fix export PDF du cahier complet : seul le jour le plus récent affichait son contenu à l'impression (les autres jours, repliés dans l'accordéon, n'affichaient qu'un bandeau vide) -- tous les jours affichent désormais bien leur contenu. Fix balise viewport manquante (texte minuscule sur mobile).",
+  ]},
   { version:'2026-08-19.532', items:[
     "Fix export PDF du cahier : la référence/titre d'un exercice pouvait se retrouver en bas de page avec son contenu sur la page suivante -- chaque exercice reste désormais groupé sur une même page. Ajout d'un bouton \"Imprimer / Enregistrer en PDF\" visible sur la page générée, pour un déclenchement fiable sur mobile (où l'impression automatique ne s'ouvrait pas).",
   ]},
@@ -4524,7 +4527,7 @@ async function exportCahierAsPDF(){
   const w = window.open('', '_blank', 'width=900,height=700');
   if(!w){ await niceAlert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site, ou utilisez Ctrl/Cmd+P."); return; }
   w.document.open();
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cahier de corrections</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
     <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
@@ -4540,8 +4543,10 @@ async function exportCahierAsPDF(){
       .nb-ref{ text-decoration:underline; text-underline-offset:3px; }
       .nb-page-footer{ text-align:right; font-style:italic; color:#666; font-size:.92em; margin:8px 0 16px; }
       .cahier-print-entry{ page-break-inside:avoid; break-inside:avoid; }
+      .nb-accordion-body{ max-height:none !important; overflow:visible !important; padding:14px 20px 18px !important; }
+      .nb-accordion-chevron, .nb-pdf-day-btn{ display:none !important; }
       .print-trigger-btn{
-        position:sticky; top:10px; z-index:10; display:block; margin:0 auto 16px; padding:10px 18px;
+        position:static; display:block; margin:0 auto 16px; padding:10px 18px;
         background:#0C5BA0; color:#fff; border:none; border-radius:24px; font-family:Inter,Arial,sans-serif;
         font-size:14px; font-weight:600; cursor:pointer;
       }
@@ -4583,7 +4588,7 @@ async function exportCahierDayAsPDF(date){
   const w = window.open('', '_blank', 'width=900,height=700');
   if(!w){ await niceAlert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site, ou utilisez Ctrl/Cmd+P."); return; }
   w.document.open();
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cahier de corrections -- ${fmtDateFR(date)}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
     <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
@@ -4599,7 +4604,7 @@ async function exportCahierDayAsPDF(date){
       .nb-ref{ text-decoration:underline; text-underline-offset:3px; }
       .cahier-print-entry{ page-break-inside:avoid; break-inside:avoid; }
       .print-trigger-btn{
-        position:sticky; top:10px; z-index:10; display:block; margin:0 auto 16px; padding:10px 18px;
+        position:static; display:block; margin:0 auto 16px; padding:10px 18px;
         background:#0C5BA0; color:#fff; border:none; border-radius:24px; font-family:Inter,Arial,sans-serif;
         font-size:14px; font-weight:600; cursor:pointer;
       }
