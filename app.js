@@ -2271,6 +2271,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.534', items:[
+    "Cahier : le compte de blocs par jour affiche désormais \"(6)\" plutôt que \"6 blocs\", plus discret.",
+  ]},
   { version:'2026-08-19.533', items:[
     "Fix export PDF du cahier complet : seul le jour le plus récent affichait son contenu à l'impression (les autres jours, repliés dans l'accordéon, n'affichaient qu'un bandeau vide) -- tous les jours affichent désormais bien leur contenu. Fix balise viewport manquante (texte minuscule sur mobile).",
   ]},
@@ -4243,7 +4246,7 @@ function groupedEntriesAccordionHTML(entries, renderItem){
       <div class="nb-accordion-header" role="button" tabindex="0" onclick="toggleNbAccordion('${accId}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleNbAccordion('${accId}');}">
         <span class="gicon nb-accordion-chevron${isOpen?' open':''}">expand_more</span>
         <span>${fmtDateFR(grp.date)}</span>
-        <span class="nb-accordion-count">${grp.entries.length} bloc${grp.entries.length>1?'s':''}</span>
+        <span class="nb-accordion-count">(${grp.entries.length})</span>
         <button type="button" class="nb-pdf-day-btn" onclick="event.stopPropagation(); exportCahierDayAsPDF('${grp.date}')" title="Générer un PDF de ce jour"><span class=gicon>picture_as_pdf</span></button>
       </div>
       <div class="nb-accordion-body${isOpen?' open':''}" id="${accId}">${inner}</div>
@@ -4273,7 +4276,7 @@ function lazyGroupedEntriesAccordionHTML(editable){
       <div class="nb-accordion-header" role="button" tabindex="0" onclick="expandCahierDay('${accId}','${grp.date}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();expandCahierDay('${accId}','${grp.date}');}">
         <span class="gicon nb-accordion-chevron${isOpen?' open':''}">expand_more</span>
         <span>${fmtDateFR(grp.date)}</span>
-        <span class="nb-accordion-count">${grp.count} bloc${grp.count>1?'s':''}</span>
+        <span class="nb-accordion-count">(${grp.count})</span>
         <button type="button" class="nb-pdf-day-btn" onclick="event.stopPropagation(); exportCahierDayAsPDF('${grp.date}')" title="Générer un PDF de ce jour"><span class=gicon>picture_as_pdf</span></button>
       </div>
       <div class="nb-accordion-body${isOpen?' open':''}" id="${accId}">${inner}</div>
