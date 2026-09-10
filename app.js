@@ -1307,6 +1307,7 @@ function renderMathText(raw){
   // 0) mini mise en forme : **gras** et {{couleur|texte}}
   const COLOR_MAP={rouge:'#D93025',bleu:'#1F3A5C',vert:'#2C5A2E',orange:'#E35D3A'};
   text = text.replace(/\*\*([^*]+)\*\*/g, (m,inner)=>`<b>${inner}</b>`);
+  text = text.replace(/__([^_]+)__/g, (m,inner)=>`<u>${inner}</u>`);
   text = text.replace(/\{\{(rouge|bleu|vert|orange)\|([^}]+)\}\}/g, (m,c,inner)=>`<span style="color:${COLOR_MAP[c]}">${inner}</span>`);
 
   // 1) explicit LaTeX between $...$
@@ -1347,6 +1348,13 @@ function renderMathText(raw){
     return protect(katexSpan(expr));
   });
   text = text.replace(/\n/g,'<br>');
+  // Préserve les tabulations et espaces multiples intentionnels (indentation, alignement) --
+  // sans cette conversion, le HTML les collabore en un seul espace. Un espace isolé entre deux
+  // mots reste un espace normal (le texte continue de faire un retour à la ligne naturel) ;
+  // seules les TABULATIONS et les RÉPÉTITIONS de 2 espaces ou plus (clairement intentionnelles)
+  // sont converties en espaces insécables pour être visuellement conservées.
+  text = text.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;');
+  text = text.replace(/ {2,}/g, (m)=>'&nbsp;'.repeat(m.length));
   // on restitue les blocs protégés
   text = text.replace(/\u0000(\d+)\u0000/g, (m,i)=>protectedBlocks[+i]);
   return text;
@@ -2271,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.535', items:[
+    "Outils de correction/évaluation : nouvelle syntaxe __texte__ pour souligner, symétrique de **texte** pour le gras. Les tabulations et espaces multiples intentionnels (indentation, alignement) sont désormais préservés à l'affichage, au lieu d'être collabés en un seul espace.",
+  ]},
   { version:'2026-08-19.534', items:[
     "Cahier : le compte de blocs par jour affiche désormais \"(6)\" plutôt que \"6 blocs\", plus discret.",
   ]},
