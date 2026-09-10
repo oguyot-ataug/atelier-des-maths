@@ -2271,6 +2271,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.532', items:[
+    "Fix export PDF du cahier : la référence/titre d'un exercice pouvait se retrouver en bas de page avec son contenu sur la page suivante -- chaque exercice reste désormais groupé sur une même page. Ajout d'un bouton \"Imprimer / Enregistrer en PDF\" visible sur la page générée, pour un déclenchement fiable sur mobile (où l'impression automatique ne s'ouvrait pas).",
+  ]},
   { version:'2026-08-19.531', items:[
     "Cahier : le sélecteur de date devient une icône calendrier qui ouvre le sélecteur natif au clic, plus discrète que l'ancien champ de date. Nouvelle icône PDF sur chaque jour de l'accordéon, pour générer un PDF du contenu de ce jour précis plutôt que tout le cahier.",
   ]},
@@ -4536,8 +4539,17 @@ async function exportCahierAsPDF(){
       .nb-date{ font-weight:700; }
       .nb-ref{ text-decoration:underline; text-underline-offset:3px; }
       .nb-page-footer{ text-align:right; font-style:italic; color:#666; font-size:.92em; margin:8px 0 16px; }
+      .cahier-print-entry{ page-break-inside:avoid; break-inside:avoid; }
+      .print-trigger-btn{
+        position:sticky; top:10px; z-index:10; display:block; margin:0 auto 16px; padding:10px 18px;
+        background:#0C5BA0; color:#fff; border:none; border-radius:24px; font-family:Inter,Arial,sans-serif;
+        font-size:14px; font-weight:600; cursor:pointer;
+      }
+      @media print{ .print-trigger-btn{ display:none; } }
     </style>
-  </head><body><div class="print-page">${buildCahierNotebookHTML()}</div></body></html>`);
+  </head><body>
+    <button type="button" class="print-trigger-btn" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>
+    <div class="print-page">${buildCahierNotebookHTML()}</div></body></html>`);
   w.document.close();
   w.onload = () => {
     setTimeout(()=>{
@@ -4585,8 +4597,17 @@ async function exportCahierDayAsPDF(date){
       * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
       .nb-date{ font-weight:700; }
       .nb-ref{ text-decoration:underline; text-underline-offset:3px; }
+      .cahier-print-entry{ page-break-inside:avoid; break-inside:avoid; }
+      .print-trigger-btn{
+        position:sticky; top:10px; z-index:10; display:block; margin:0 auto 16px; padding:10px 18px;
+        background:#0C5BA0; color:#fff; border:none; border-radius:24px; font-family:Inter,Arial,sans-serif;
+        font-size:14px; font-weight:600; cursor:pointer;
+      }
+      @media print{ .print-trigger-btn{ display:none; } }
     </style>
-  </head><body><div class="print-page"><h2 class="nb-date">${fmtDateFR(date)}</h2>${groupedByChapitreHTML(dayEntries, (e)=>entryRowsHTML(e))}</div></body></html>`);
+  </head><body>
+    <button type="button" class="print-trigger-btn" onclick="window.print()">🖨️ Imprimer / Enregistrer en PDF</button>
+    <div class="print-page"><h2 class="nb-date">${fmtDateFR(date)}</h2>${groupedByChapitreHTML(dayEntries, (e)=>entryRowsHTML(e))}</div></body></html>`);
   w.document.close();
   w.onload = () => {
     setTimeout(()=>{
