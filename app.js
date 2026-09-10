@@ -2271,6 +2271,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.531', items:[
+    "Cahier : le sélecteur de date devient une icône calendrier qui ouvre le sélecteur natif au clic, plus discrète que l'ancien champ de date. Nouvelle icône PDF sur chaque jour de l'accordéon, pour générer un PDF du contenu de ce jour précis plutôt que tout le cahier.",
+  ]},
   { version:'2026-08-19.530', items:[
     "Cahier : nouveau sélecteur de date sur chaque entrée (Cours ou exercice), à côté des flèches de réordonnancement -- permet de corriger la date d'une entrée déjà posée sans passer par \"Modifier\" (qui reconstruit le contenu et n'est pas adapté à un Cours).",
   ]},
@@ -4084,7 +4087,10 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
     const canUp = sameGroup(e, prev);
     const canDown = sameGroup(e, next);
     html += `<span style="display:flex;gap:4px;align-items:center;">
-      <input type="date" value="${e.date||''}" onchange="changeCahierEntryDate(${idx}, this.value)" title="Changer la date de cette entrée (Cours ou exercice), sans toucher à son contenu" style="font-size:.75rem;padding:2px 4px;border-radius:6px;border:1px solid rgba(28,43,57,.2);"/>
+      <span class="nb-date-picker" title="Changer la date de cette entrée (${fmtDateFR(e.date)}) -- sans toucher à son contenu">
+        <span class=gicon onclick="this.nextElementSibling.showPicker()">calendar_month</span>
+        <input type="date" value="${e.date||''}" onchange="changeCahierEntryDate(${idx}, this.value)"/>
+      </span>
       <button type="button" class="nb-remove-btn" onclick="moveCahierEntry(${idx},-1)" title="Monter (dans le même jour)" ${canUp?'':'disabled'}><span class=gicon>arrow_upward</span></button>
       <button type="button" class="nb-remove-btn" onclick="moveCahierEntry(${idx},1)" title="Descendre (dans le même jour)" ${canDown?'':'disabled'}><span class=gicon>arrow_downward</span></button>
       ${showRemoveBtn ? `<button type="button" class="nb-remove-btn" onclick="removeCahierEntryFromNotebook(${idx}, this)" title="Retirer ce bloc du cahier"><span class=gicon>close</span> Retirer</button>` : ''}
@@ -4228,11 +4234,12 @@ function groupedEntriesAccordionHTML(entries, renderItem){
     const accId = 'nbacc-'+idx;
     const inner = groupedByChapitreHTML(grp.entries, renderItem);
     return `<div class="nb-accordion-section">
-      <button type="button" class="nb-accordion-header" onclick="toggleNbAccordion('${accId}')">
+      <div class="nb-accordion-header" role="button" tabindex="0" onclick="toggleNbAccordion('${accId}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleNbAccordion('${accId}');}">
         <span class="gicon nb-accordion-chevron${isOpen?' open':''}">expand_more</span>
         <span>${fmtDateFR(grp.date)}</span>
         <span class="nb-accordion-count">${grp.entries.length} bloc${grp.entries.length>1?'s':''}</span>
-      </button>
+        <button type="button" class="nb-pdf-day-btn" onclick="event.stopPropagation(); exportCahierDayAsPDF('${grp.date}')" title="Générer un PDF de ce jour"><span class=gicon>picture_as_pdf</span></button>
+      </div>
       <div class="nb-accordion-body${isOpen?' open':''}" id="${accId}">${inner}</div>
     </div>`;
   }).join('');
@@ -4257,11 +4264,12 @@ function lazyGroupedEntriesAccordionHTML(editable){
       ? groupedByChapitreHTML(cahier.filter(e=>e.date===grp.date), (e)=>entryRowsHTML(e, cahier.indexOf(e), editable))
       : (isOpen ? '<p class="hint" style="padding:8px;">Chargement…</p>' : '');
     return `<div class="nb-accordion-section">
-      <button type="button" class="nb-accordion-header" onclick="expandCahierDay('${accId}','${grp.date}')">
+      <div class="nb-accordion-header" role="button" tabindex="0" onclick="expandCahierDay('${accId}','${grp.date}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();expandCahierDay('${accId}','${grp.date}');}">
         <span class="gicon nb-accordion-chevron${isOpen?' open':''}">expand_more</span>
         <span>${fmtDateFR(grp.date)}</span>
         <span class="nb-accordion-count">${grp.count} bloc${grp.count>1?'s':''}</span>
-      </button>
+        <button type="button" class="nb-pdf-day-btn" onclick="event.stopPropagation(); exportCahierDayAsPDF('${grp.date}')" title="Générer un PDF de ce jour"><span class=gicon>picture_as_pdf</span></button>
+      </div>
       <div class="nb-accordion-body${isOpen?' open':''}" id="${accId}">${inner}</div>
     </div>`;
   }).join('');
@@ -4543,6 +4551,53 @@ async function exportCahierAsPDF(){
 }
 function generateCahierPDF(){ exportCahierAsPDF(); }
 function downloadCahierElevePDF(){ exportCahierAsPDF(); }
+// Export PDF d'UN SEUL jour (pas tout le cahier) -- demandé : "un icone pdf qui permet de
+// générer en pdf le contenu du jour". Réutilise le même gabarit d'impression que
+// exportCahierAsPDF(). S'assure d'abord que le contenu de ce jour est bien chargé (le
+// chargement paresseux ne charge par défaut que le jour le plus récent).
+async function exportCahierDayAsPDF(date){
+  if(isSyncEnabled() && !cahierLoadedDates.has(date)){
+    const entries = await fetchCahierEntriesForDate(date);
+    if(entries){
+      const existingIds = new Set(cahier.map(e=>e.id));
+      entries.forEach(e=>{ if(!existingIds.has(e.id)) cahier.push(e); });
+      sortCahierInPlace();
+      cahierLoadedDates.add(date);
+      saveCahier();
+    }
+  }
+  const dayEntries = cahier.filter(e=>e.date===date);
+  if(!dayEntries.length){ await niceAlert("Aucune correction ce jour-là."); return; }
+  const w = window.open('', '_blank', 'width=900,height=700');
+  if(!w){ await niceAlert("La fenêtre n'a pas pu s'ouvrir : autorisez les pop-up pour ce site, ou utilisez Ctrl/Cmd+P."); return; }
+  w.document.open();
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+    <title>Cahier de corrections -- ${fmtDateFR(date)}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <link rel="stylesheet" href="${document.querySelector('link[href*="styles.css"]').href}">
+    <style>
+      @page{ size:A4; margin:15mm; }
+      body{ font-family:Inter,Arial,sans-serif; color:#20242E; font-size:12.5pt; line-height:1.7; margin:0; }
+      .print-page{ max-width:680px; margin:0 auto; }
+      .nb-figure-row{ margin:6px 0; }
+      svg{ max-width:100%; }
+      .katex{ font-size:1.18em; }
+      * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
+      .nb-date{ font-weight:700; }
+      .nb-ref{ text-decoration:underline; text-underline-offset:3px; }
+    </style>
+  </head><body><div class="print-page"><h2 class="nb-date">${fmtDateFR(date)}</h2>${groupedByChapitreHTML(dayEntries, (e)=>entryRowsHTML(e))}</div></body></html>`);
+  w.document.close();
+  w.onload = () => {
+    setTimeout(()=>{
+      syncDiskSizesForPrint(w.document);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        w.focus();
+        w.print();
+      }));
+    }, 200);
+  };
+}
 async function exportCahierDataFile(){
   if(!cahier.length){ await niceAlert('Le cahier est vide : rien à exporter pour le moment.'); return; }
   const blob = new Blob([JSON.stringify(cahier, null, 2)], {type:'application/json'});
