@@ -33,7 +33,7 @@ document.getElementById('view-admin').innerHTML = `
         <div class="nb-accordion-body open" id="accCreerCompte">
           <div class="tool-row">
             <input type="text" id="adminNewEmail" placeholder="identifiant (ou e-mail)" style="min-width:200px;">
-            <input type="password" id="adminNewPassword" placeholder="Mot de passe" style="width:150px;">
+            <input type="password" id="adminNewPassword" placeholder="Mot de passe (facultatif -- vide = lien d'invitation)" style="width:230px;">
             <input type="text" id="adminNewNom" placeholder="Nom (affichage)" style="width:160px;">
             <input type="text" id="adminNewUai" placeholder="UAI établissement (ex. 0751234A)" style="width:170px;">
             <select id="adminNewRole"><option value="prof">Professeur</option><option value="eleve">Élève</option><option value="admin">Administrateur</option></select>
@@ -288,7 +288,7 @@ async function adminCreateAccount(){
   const uai = document.getElementById('adminNewUai').value.trim();
   const role = document.getElementById('adminNewRole').value;
   const status = document.getElementById('adminAccountStatus');
-  if(!identifiant || !password){ status.textContent = 'Identifiant et mot de passe requis.'; return; }
+  if(!identifiant){ status.textContent = 'Identifiant requis.'; return; }
   const email = toAuthEmail(identifiant);
   status.textContent = 'Création en cours…';
   const { data:{ session } } = await sb.auth.getSession();
@@ -296,7 +296,7 @@ async function adminCreateAccount(){
     const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
       method:'POST',
       headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
-      body: JSON.stringify({ email, password, role, nom: nom || identifiant }),
+      body: JSON.stringify({ email, password: password||undefined, role, nom: nom || identifiant }),
     });
     const data = await res.json();
     if(data.error){ status.textContent = "Erreur : "+data.error; return; }
@@ -306,7 +306,12 @@ async function adminCreateAccount(){
       const { data: prof } = await sb.from('profiles').select('id').eq('email', email).single();
       if(prof) await sb.from('profiles').update({uai}).eq('id', prof.id);
     }
-    status.textContent = '✓ Compte créé ('+role+').';
+    if(data.inviteToken){
+      const url = location.origin+'/invitation.html?invite='+data.inviteToken;
+      status.innerHTML = `✓ Compte créé (${role}). <b>Lien d'invitation</b> (la personne choisit son propre mot de passe en cliquant dessus) : <a href="${url}" target="_blank">${url}</a>`;
+    } else {
+      status.textContent = '✓ Compte créé ('+role+').';
+    }
     document.getElementById('adminNewEmail').value=''; document.getElementById('adminNewPassword').value=''; document.getElementById('adminNewNom').value=''; document.getElementById('adminNewUai').value='';
     await adminRefreshDropdowns();
   }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }

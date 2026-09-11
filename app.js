@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.536', items:[
+    "Admin : le mot de passe redevient facultatif dans \"Créer un compte\" -- laissez-le vide pour générer un lien d'invitation (la personne choisit alors son propre mot de passe), pour tout rôle y compris prof. La fonction serveur le supportait déjà ; il manquait juste le code côté interface.",
+  ]},
   { version:'2026-08-19.535', items:[
     "Outils de correction/évaluation : nouvelle syntaxe __texte__ pour souligner, symétrique de **texte** pour le gras. Les tabulations et espaces multiples intentionnels (indentation, alignement) sont désormais préservés à l'affichage, au lieu d'être collabés en un seul espace.",
   ]},
