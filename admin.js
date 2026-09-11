@@ -35,6 +35,7 @@ document.getElementById('view-admin').innerHTML = `
             <input type="text" id="adminNewEmail" placeholder="identifiant (ou e-mail)" style="min-width:200px;">
             <input type="password" id="adminNewPassword" placeholder="Mot de passe (facultatif -- vide = lien d'invitation)" style="width:230px;">
             <input type="text" id="adminNewNom" placeholder="Nom (affichage)" style="width:160px;">
+            <input type="text" id="adminNewPrenom" placeholder="Prénom" style="width:130px;">
             <input type="text" id="adminNewUai" placeholder="UAI établissement (ex. 0751234A)" style="width:170px;">
             <select id="adminNewRole"><option value="prof">Professeur</option><option value="eleve">Élève</option><option value="admin">Administrateur</option></select>
             <button class="btn" onclick="adminCreateAccount()">Créer le compte</button>
@@ -285,6 +286,7 @@ async function adminCreateAccount(){
   const identifiant = document.getElementById('adminNewEmail').value.trim();
   const password = document.getElementById('adminNewPassword').value;
   const nom = document.getElementById('adminNewNom').value.trim();
+  const prenom = document.getElementById('adminNewPrenom').value.trim();
   const uai = document.getElementById('adminNewUai').value.trim();
   const role = document.getElementById('adminNewRole').value;
   const status = document.getElementById('adminAccountStatus');
@@ -300,20 +302,32 @@ async function adminCreateAccount(){
     });
     const data = await res.json();
     if(data.error){ status.textContent = "Erreur : "+data.error; return; }
-    if(uai){
-      // L'UAI n'est pas géré par la fonction de création de compte : on le renseigne à part,
-      // juste après, en retrouvant le profil fraîchement créé par son e-mail.
+    if(uai || prenom){
+      // L'UAI et le prénom ne sont pas gérés par la fonction de création de compte : on les
+      // renseigne à part, juste après, en retrouvant le profil fraîchement créé par son e-mail.
       const { data: prof } = await sb.from('profiles').select('id').eq('email', email).single();
-      if(prof) await sb.from('profiles').update({uai}).eq('id', prof.id);
+      if(prof){
+        const patch = {};
+        if(uai) patch.uai = uai;
+        if(prenom) patch.prenom = prenom;
+        await sb.from('profiles').update(patch).eq('id', prof.id);
+      }
     }
     if(data.inviteToken){
       const url = location.origin+'/invitation.html?invite='+data.inviteToken;
-      status.innerHTML = `✓ Compte créé (${role}). <b>Lien d'invitation</b> (la personne choisit son propre mot de passe en cliquant dessus) : <a href="${url}" target="_blank">${url}</a>`;
+      status.innerHTML = `✓ Compte créé (${role}). <b>Lien d'invitation</b> (la personne choisit son propre mot de passe en cliquant dessus) :
+        <a href="${url}" target="_blank">${url}</a>
+        <button type="button" class="btn secondary" style="padding:2px 10px;font-size:.78rem;margin-left:6px;" onclick="navigator.clipboard.writeText('${url}').then(()=>{this.textContent='✓ Copié';setTimeout(()=>this.textContent='Copier',1500);})">Copier</button>`;
     } else {
       status.textContent = '✓ Compte créé ('+role+').';
     }
-    document.getElementById('adminNewEmail').value=''; document.getElementById('adminNewPassword').value=''; document.getElementById('adminNewNom').value=''; document.getElementById('adminNewUai').value='';
+    document.getElementById('adminNewEmail').value=''; document.getElementById('adminNewPassword').value=''; document.getElementById('adminNewNom').value=''; document.getElementById('adminNewPrenom').value=''; document.getElementById('adminNewUai').value='';
     await adminRefreshDropdowns();
+    // Le compte tout juste créé n'a encore aucune classe/UAI associé (à moins d'en avoir
+    // renseigné un ci-dessus) -- si un filtre classe/établissement était déjà actif d'une
+    // action précédente, il masquait ce nouveau compte dans "Déjà enregistré" alors qu'il
+    // existait bien en base. Réinitialisé ici pour garantir sa visibilité immédiate.
+    adminResetAccountsFilters();
   }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
 }
 let resetPasswordTargetUserId = null;

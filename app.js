@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.537', items:[
+    "Admin, \"Créer un compte\" : ajout d'un champ Prénom (séparé du Nom), d'un bouton \"Copier\" à côté du lien d'invitation généré, et réinitialisation automatique des filtres classe/établissement après création -- un filtre actif masquait sinon le nouveau compte (sans classe assignée) dans \"Déjà enregistré\", même s'il existait bien en base.",
+  ]},
   { version:'2026-08-19.536', items:[
     "Admin : le mot de passe redevient facultatif dans \"Créer un compte\" -- laissez-le vide pour générer un lien d'invitation (la personne choisit alors son propre mot de passe), pour tout rôle y compris prof. La fonction serveur le supportait déjà ; il manquait juste le code côté interface.",
   ]},
