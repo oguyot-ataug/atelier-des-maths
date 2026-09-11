@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.538', items:[
+    "Fix : l'icône \"lien\" (voir/générer le lien d'invitation) dans \"Déjà enregistré\" n'apparaissait que pour les élèves, jamais pour les profs/admins invités par lien -- s'affiche désormais pour tout rôle n'ayant pas encore choisi son mot de passe.",
+  ]},
   { version:'2026-08-19.537', items:[
     "Admin, \"Créer un compte\" : ajout d'un champ Prénom (séparé du Nom), d'un bouton \"Copier\" à côté du lien d'invitation généré, et réinitialisation automatique des filtres classe/établissement après création -- un filtre actif masquait sinon le nouveau compte (sans classe assignée) dans \"Déjà enregistré\", même s'il existait bien en base.",
   ]},

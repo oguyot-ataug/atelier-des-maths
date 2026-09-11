@@ -739,7 +739,7 @@ function adminRenderAccountsListing(){
     const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
     const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span></button>` : '';
     const categoryBtn = p.role==='prof' ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeCategoryPrompt('${p.id}','${safeName}')"><span class=gicon>workspace_premium</span></button>` : '';
-    const inviteBtn = (p.role==='eleve' && p.must_change_password) ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminGenerateInviteLink('${p.id}','${safeName}')"><span class=gicon>link</span></button>` : '';
+    const inviteBtn = p.must_change_password ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminGenerateInviteLink('${p.id}','${safeName}')"><span class=gicon>link</span></button>` : '';
     const rowBg = !lastLoginMap.get(p.id) ? 'background:rgba(28,43,57,.02);' : '';
     return `<tr style="${rowBg}">
       <td style="width:24px;"><input type="checkbox" class="adminAccCheckbox" value="${p.id}"></td>
@@ -815,7 +815,7 @@ let adminAccountsCache = { profs:[], eleves:[], lastLoginMap:new Map(), classesL
 async function adminRefreshListings(){
   await adminRefreshBugReports();
   await adminRefreshSignupRequests();
-  const { data: profs } = await sb.from('profiles').select('id,nom,email,role,subscription_status,subscription_expires_at').in('role',['prof','admin']).order('nom');
+  const { data: profs } = await sb.from('profiles').select('id,nom,email,role,subscription_status,subscription_expires_at,must_change_password').in('role',['prof','admin']).order('nom');
   const { data: eleves } = await sb.from('profiles').select('id,nom,email,role,must_change_password').eq('role','eleve').order('nom');
   // Date de dernière connexion (auth.users, normalement inaccessible via RLS classique) --
   // exposée uniquement à un admin via une fonction SECURITY DEFINER dédiée.
