@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.539', items:[
+    "Fix critique : modifier une correction du cahier pouvait écraser une AUTRE correction si le tableau avait été retrié entre le clic sur \"Modifier\" et celui sur \"Enregistrer\" (l'entrée en édition était repérée par sa position dans le tableau, pas par son identité). Repérée désormais par son identifiant stable, jamais affecté par un retri.",
+  ]},
   { version:'2026-08-19.538', items:[
     "Fix : l'icône \"lien\" (voir/générer le lien d'invitation) dans \"Déjà enregistré\" n'apparaissait que pour les élèves, jamais pour les profs/admins invités par lien -- s'affiche désormais pour tout rôle n'ayant pas encore choisi son mot de passe.",
   ]},
@@ -3950,7 +3953,9 @@ function saveCahier(){
   try{ localStorage.setItem('mathcollege_cahier', JSON.stringify(cahier)); }catch(e){ /* stockage indisponible dans ce contexte */ }
 }
 let cahier = loadCahier();
-let editingIndex = null;
+let editingEntryId = null; // id STABLE (pas un index de tableau -- un index capturé au clic
+                            // sur "Modifier" peut devenir invalide si `cahier` est retrié avant
+                            // le clic sur "Enregistrer", menant à écraser la MAUVAISE entrée)
 function sortCahierInPlace(){
   // Trie par "ordre" manuel s'il est défini (undefined/null placés en dernier, via Infinity),
   // avec la date puis le chapitre en repli/départage -- rétrocompatible : tant qu'aucun ordre
@@ -3989,14 +3994,22 @@ async function addToCahier(){
     cellBorders: JSON.parse(JSON.stringify(corCellBorders)),
   };
   let oldServerId = null;
-  if(editingIndex!==null){
-    oldServerId = cahier[editingIndex].id || null;
-    entry.ordre = cahier[editingIndex].ordre; // reporte l'ordre manuel existant, sinon perdu à
-                                               // chaque modification (l'entrée retombait tout en
-                                               // bas -- sortCahierInPlace place les entrées sans
-                                               // ordre en dernier)
-    cahier[editingIndex] = entry;
-    editingIndex = null;
+  if(editingEntryId!==null){
+    // Recherche fraîche de la position ACTUELLE de l'entrée éditée, par son id stable -- ne
+    // JAMAIS faire confiance à un index capturé plus tôt (voir commentaire sur editingEntryId).
+    const idx = cahier.findIndex(e=>e.id===editingEntryId);
+    if(idx!==-1){
+      oldServerId = cahier[idx].id || null;
+      entry.ordre = cahier[idx].ordre; // reporte l'ordre manuel existant, sinon perdu à chaque
+                                        // modification (l'entrée retombait tout en bas --
+                                        // sortCahierInPlace place les entrées sans ordre en dernier)
+      cahier[idx] = entry;
+    } else {
+      // L'entrée éditée a disparu du tableau local entre-temps (rare -- ex. rechargement) :
+      // on traite ça comme un ajout classique plutôt que de risquer d'écraser une autre entrée.
+      cahier.push(entry);
+    }
+    editingEntryId = null;
     document.getElementById('btnAddCahier').textContent = '+ Ajouter au cahier de corrections';
     document.getElementById('btnCancelEdit').style.display = 'none';
   } else {
@@ -4055,14 +4068,14 @@ async function editCahierEntry(i){
     corCellBorders = {};
   }
   renderCorrectionPreview();
-  editingIndex = i;
+  editingEntryId = e.id;
   document.getElementById('btnAddCahier').innerHTML = '<span class=gicon>save</span> Enregistrer la modification';
   document.getElementById('btnCancelEdit').style.display = 'inline-block';
   document.getElementById('correctionForm').scrollIntoView({behavior:'smooth', block:'start'});
   document.getElementById('correctionInput').focus();
 }
 function cancelEditCahier(){
-  editingIndex = null;
+  editingEntryId = null;
   document.getElementById('btnAddCahier').textContent = '+ Ajouter au cahier de corrections';
   document.getElementById('btnCancelEdit').style.display = 'none';
   clearCorrectionInput();
@@ -4081,8 +4094,8 @@ function clearCorrectionInput(){
 /* ================= CRÉER UNE ÉVALUATION : voir evaluation.js ================= */
 
 async function removeCahierEntry(i){
-  if(editingIndex===i) cancelEditCahier();
   const entry = cahier[i];
+  if(entry && editingEntryId===entry.id) cancelEditCahier();
   if(isSyncEnabled() && entry && entry.id){
     const res = await syncRemoveEntry(entry.id);
     if(!res.ok){ await niceAlert("Échec de la suppression sur le serveur : "+(res.error||'erreur inconnue')); return; }
@@ -4099,7 +4112,7 @@ function clearCahier(btn){
     setTimeout(()=>{ if(btn.isConnected){ btn.dataset.armed=''; btn.textContent=original; btn.style.background=''; } }, 2500);
     return;
   }
-  cahier=[]; editingIndex=null; saveCahier(); renderCahier();
+  cahier=[]; editingEntryId=null; saveCahier(); renderCahier();
 }
 
 function entryRowsHTML(e, idx, editable, showRemoveBtn){
