@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.543', items:[
+    "Fix : \"Corrections des collègues\" affichait parfois des exercices d'un autre niveau (ex. du 6e en consultant une classe de 5e) -- le filtre se basait sur le niveau ressaisi à chaque correction (sujet à erreur) plutôt que sur le vrai niveau de la classe.",
+  ]},
   { version:'2026-08-19.542', items:[
     "\"Corrections des collègues\" n'affiche désormais plus les entrées de Cours, seulement les exercices (le filtre par niveau et chapitre était déjà en place).",
   ]},
