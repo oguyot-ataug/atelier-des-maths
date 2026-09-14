@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.541', items:[
+    "Mutualisation entre profs : remplacée par une liste parcourable (\"Voir les corrections des collègues\") plutôt qu'une suggestion automatique par correspondance exacte -- celle-ci s'est révélée peu fiable (les références d'exercice ne sont jamais notées de façon identique d'un prof à l'autre, ni même toujours par un seul et même prof).",
+  ]},
   { version:'2026-08-19.540', items:[
     "Nouveau : mutualisation des corrections entre profs d'un même établissement. En saisissant le niveau/chapitre/N° d'exercice dans l'outil de correction, si un collègue de votre établissement a déjà corrigé le même exercice, une suggestion apparaît avec son nom, sa classe et la date -- un bouton permet de réutiliser directement son contenu.",
   ]},
@@ -3978,37 +3981,49 @@ function sortCahierInPlace(){
   });
 }
 
-// Mutualisation entre profs d'un même établissement (UAI) : vérifie si un collègue a déjà
-// corrigé ce même exercice (niveau+chapitre+exo), et propose de réutiliser son contenu plutôt
-// que de le ressaisir. Ne fonctionne bien que si les références d'exercice sont nommées de
-// façon cohérente entre collègues (comparaison exacte, pas floue).
-let lastSharedCorrectionCheck = null; // évite de re-vérifier inutilement la même combinaison
-let sharedCorrectionMatch = null;
-async function checkSharedCorrection(){
-  const banner = document.getElementById('sharedCorrectionBanner');
-  if(!isSyncEnabled() || !currentClassId){ banner.innerHTML = ''; return; }
+// Mutualisation entre profs d'un même établissement (UAI) : liste, À LA DEMANDE (bouton), tout
+// ce qu'un collègue a déjà corrigé sur le niveau+chapitre en cours -- remplace une première
+// version par correspondance EXACTE sur la référence d'exercice, qui s'est révélée peu fiable
+// en pratique (signalé : "j'ai essayé sans succès" -- confirmé aussi sur des données réelles :
+// même un seul et même prof note ses références de façon incohérente d'une entrée à l'autre,
+// ex. "TD 7 page 7" / "TD ex 7 page 7" / "TD exercice 1 page 7"). Une liste à parcourir
+// visuellement n'a plus ce problème.
+let sharedCorrectionsList = [];
+async function openSharedCorrectionsModal(){
+  const overlay = document.getElementById('sharedCorrectionsModalOverlay');
+  const body = document.getElementById('sharedCorrectionsModalBody');
+  if(!isSyncEnabled() || !currentClassId){ await niceAlert("Sélectionnez d'abord une classe active."); return; }
   const niveau = document.getElementById('corNiveau').value;
   const chapitre = document.getElementById('corChapitre').value;
-  const exo = document.getElementById('corExoNum').value.trim();
-  if(!chapitre || !exo){ banner.innerHTML = ''; return; }
-  const key = currentClassId+'|'+niveau+'|'+chapitre+'|'+exo;
-  if(key === lastSharedCorrectionCheck) return; // déjà vérifié pour cette combinaison
-  lastSharedCorrectionCheck = key;
-  const { data, error } = await sb.rpc('find_shared_correction', {
-    p_class_id: currentClassId, p_niveau: niveau, p_chapitre: chapitre, p_exo: exo,
+  if(!chapitre){ await niceAlert("Choisissez d'abord un chapitre."); return; }
+  overlay.style.display = 'flex';
+  body.innerHTML = '<p class="hint">Chargement…</p>';
+  const { data, error } = await sb.rpc('list_shared_corrections', {
+    p_class_id: currentClassId, p_niveau: niveau, p_chapitre: chapitre,
   });
-  if(error || !data || !data.length){ banner.innerHTML = ''; sharedCorrectionMatch = null; return; }
-  sharedCorrectionMatch = data[0];
-  const dateStr = sharedCorrectionMatch.entry_date ? new Date(sharedCorrectionMatch.entry_date).toLocaleDateString('fr-FR') : '';
-  banner.innerHTML = `<div class="redaction-note" style="background:rgba(31,122,77,.08);border-color:rgba(31,122,77,.3);color:#1F7A4D;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-    <span class=gicon>group</span>
-    <span><b>${escapeHtml(sharedCorrectionMatch.prof_nom||'Un collègue')}</b> a déjà corrigé cet exercice (${escapeHtml(sharedCorrectionMatch.classe_nom||'')}, ${dateStr}).</span>
-    <button type="button" class="btn secondary" style="padding:4px 10px;font-size:.78rem;" onclick="reuseSharedCorrection()">Réutiliser ce contenu</button>
-  </div>`;
+  if(error){ body.innerHTML = '<p class="hint">Erreur : '+escapeHtml(error.message)+'</p>'; return; }
+  sharedCorrectionsList = data||[];
+  if(!sharedCorrectionsList.length){ body.innerHTML = '<p class="hint">Aucune correction d\'un collègue trouvée pour ce chapitre, dans votre établissement.</p>'; return; }
+  body.innerHTML = sharedCorrectionsList.map((m,i)=>{
+    const dateStr = m.entry_date ? new Date(m.entry_date).toLocaleDateString('fr-FR') : '';
+    const refLabel = m.exo==='Cours' ? 'Cours' : (m.exo==='TD' ? 'TD' : ('Exercice '+m.exo));
+    return `<div style="border:1px solid rgba(28,43,57,.12);border-radius:10px;padding:10px 14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div>
+        <div style="font-weight:600;">${escapeHtml(refLabel)}${m.titre?' : '+escapeHtml(m.titre):''}</div>
+        <div class="hint" style="margin:2px 0 0;"><span class=gicon style="font-size:.9em;vertical-align:-2px;">group</span> ${escapeHtml(m.prof_nom||'Collègue')} · ${escapeHtml(m.classe_nom||'')} · ${dateStr}</div>
+      </div>
+      <button type="button" class="btn secondary" style="padding:4px 10px;font-size:.78rem;flex:none;" onclick="reuseSharedCorrectionEntry(${i})">Réutiliser</button>
+    </div>`;
+  }).join('');
 }
-function reuseSharedCorrection(){
-  const match = sharedCorrectionMatch;
+function closeSharedCorrectionsModal(){
+  document.getElementById('sharedCorrectionsModalOverlay').style.display = 'none';
+}
+function reuseSharedCorrectionEntry(i){
+  const match = sharedCorrectionsList[i];
   if(!match) return;
+  document.getElementById('corExoNum').value = match.exo==='-'?'':match.exo;
+  document.getElementById('corTitre').value = match.titre||'';
   const hasText = !!(match.raw && match.raw.trim());
   document.getElementById('correctionInput').value = match.raw||'';
   document.getElementById('correctionInputWrap').style.display = hasText ? 'block' : 'none';
@@ -4022,7 +4037,7 @@ function reuseSharedCorrection(){
     corRows = [1]; corCellBorders = {};
   }
   renderCorrectionPreview();
-  document.getElementById('sharedCorrectionBanner').innerHTML = `<p class="hint">✓ Contenu réutilisé -- vous pouvez l'adapter avant d'enregistrer.</p>`;
+  closeSharedCorrectionsModal();
 }
 async function addToCahier(){
   if(!currentClassId){ niceAlert("Sélectionnez d'abord une classe active (boutons en haut de page)."); return; }
@@ -4137,10 +4152,6 @@ function clearCorrectionInput(){
   corRows = [1];
   corCellBorders = {};
   if(corValidated) corToggleValidated();
-  const banner = document.getElementById('sharedCorrectionBanner');
-  if(banner) banner.innerHTML = '';
-  lastSharedCorrectionCheck = null;
-  sharedCorrectionMatch = null;
   renderCorrectionPreview();
 }
 
