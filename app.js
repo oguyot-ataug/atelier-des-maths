@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.540', items:[
+    "Nouveau : mutualisation des corrections entre profs d'un même établissement. En saisissant le niveau/chapitre/N° d'exercice dans l'outil de correction, si un collègue de votre établissement a déjà corrigé le même exercice, une suggestion apparaît avec son nom, sa classe et la date -- un bouton permet de réutiliser directement son contenu.",
+  ]},
   { version:'2026-08-19.539', items:[
     "Fix critique : modifier une correction du cahier pouvait écraser une AUTRE correction si le tableau avait été retrié entre le clic sur \"Modifier\" et celui sur \"Enregistrer\" (l'entrée en édition était repérée par sa position dans le tableau, pas par son identité). Repérée désormais par son identifiant stable, jamais affecté par un retri.",
   ]},
@@ -3975,6 +3978,52 @@ function sortCahierInPlace(){
   });
 }
 
+// Mutualisation entre profs d'un même établissement (UAI) : vérifie si un collègue a déjà
+// corrigé ce même exercice (niveau+chapitre+exo), et propose de réutiliser son contenu plutôt
+// que de le ressaisir. Ne fonctionne bien que si les références d'exercice sont nommées de
+// façon cohérente entre collègues (comparaison exacte, pas floue).
+let lastSharedCorrectionCheck = null; // évite de re-vérifier inutilement la même combinaison
+let sharedCorrectionMatch = null;
+async function checkSharedCorrection(){
+  const banner = document.getElementById('sharedCorrectionBanner');
+  if(!isSyncEnabled() || !currentClassId){ banner.innerHTML = ''; return; }
+  const niveau = document.getElementById('corNiveau').value;
+  const chapitre = document.getElementById('corChapitre').value;
+  const exo = document.getElementById('corExoNum').value.trim();
+  if(!chapitre || !exo){ banner.innerHTML = ''; return; }
+  const key = currentClassId+'|'+niveau+'|'+chapitre+'|'+exo;
+  if(key === lastSharedCorrectionCheck) return; // déjà vérifié pour cette combinaison
+  lastSharedCorrectionCheck = key;
+  const { data, error } = await sb.rpc('find_shared_correction', {
+    p_class_id: currentClassId, p_niveau: niveau, p_chapitre: chapitre, p_exo: exo,
+  });
+  if(error || !data || !data.length){ banner.innerHTML = ''; sharedCorrectionMatch = null; return; }
+  sharedCorrectionMatch = data[0];
+  const dateStr = sharedCorrectionMatch.entry_date ? new Date(sharedCorrectionMatch.entry_date).toLocaleDateString('fr-FR') : '';
+  banner.innerHTML = `<div class="redaction-note" style="background:rgba(31,122,77,.08);border-color:rgba(31,122,77,.3);color:#1F7A4D;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span class=gicon>group</span>
+    <span><b>${escapeHtml(sharedCorrectionMatch.prof_nom||'Un collègue')}</b> a déjà corrigé cet exercice (${escapeHtml(sharedCorrectionMatch.classe_nom||'')}, ${dateStr}).</span>
+    <button type="button" class="btn secondary" style="padding:4px 10px;font-size:.78rem;" onclick="reuseSharedCorrection()">Réutiliser ce contenu</button>
+  </div>`;
+}
+function reuseSharedCorrection(){
+  const match = sharedCorrectionMatch;
+  if(!match) return;
+  const hasText = !!(match.raw && match.raw.trim());
+  document.getElementById('correctionInput').value = match.raw||'';
+  document.getElementById('correctionInputWrap').style.display = hasText ? 'block' : 'none';
+  document.getElementById('btnCorAddTextarea').style.display = hasText ? 'none' : 'inline-flex';
+  if(match.blocksData){
+    blocksStores['global'] = JSON.parse(JSON.stringify(match.blocksData));
+    corRows = match.rows ? JSON.parse(JSON.stringify(match.rows)) : [1];
+    corCellBorders = match.cellBorders ? JSON.parse(JSON.stringify(match.cellBorders)) : {};
+  } else if(match.figure){
+    blocksStores['global'] = [{id: pendingBlockNextId++, type:'legacy', html: match.figure, data:null, editFn:null, row:0, col:0}];
+    corRows = [1]; corCellBorders = {};
+  }
+  renderCorrectionPreview();
+  document.getElementById('sharedCorrectionBanner').innerHTML = `<p class="hint">✓ Contenu réutilisé -- vous pouvez l'adapter avant d'enregistrer.</p>`;
+}
 async function addToCahier(){
   if(!currentClassId){ niceAlert("Sélectionnez d'abord une classe active (boutons en haut de page)."); return; }
   const textareaVisible = document.getElementById('correctionInputWrap').style.display !== 'none';
@@ -4088,6 +4137,10 @@ function clearCorrectionInput(){
   corRows = [1];
   corCellBorders = {};
   if(corValidated) corToggleValidated();
+  const banner = document.getElementById('sharedCorrectionBanner');
+  if(banner) banner.innerHTML = '';
+  lastSharedCorrectionCheck = null;
+  sharedCorrectionMatch = null;
   renderCorrectionPreview();
 }
 
