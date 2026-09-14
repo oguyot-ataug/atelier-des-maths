@@ -156,22 +156,73 @@ function scheduleEvalAutoSave(){
   clearTimeout(evalAutoSaveTimer);
   evalAutoSaveTimer = setTimeout(autoSaveEvaluation, 1500);
 }
-function buildEvalPayload(){
-  const relevantBlocks = {};
-  evaluationExercises.forEach(ex=>{ const k='ex-'+ex.id; if(blocksStores[k]) relevantBlocks[k]=blocksStores[k]; });
+function buildEvalPayload(exercisesOverride, blocksOverride){
+  const exos = exercisesOverride || evaluationExercises;
+  let relevantBlocks;
+  if(blocksOverride){
+    relevantBlocks = blocksOverride;
+  } else {
+    relevantBlocks = {};
+    exos.forEach(ex=>{ const k='ex-'+ex.id; if(blocksStores[k]) relevantBlocks[k]=blocksStores[k]; });
+  }
   return {
     title: lastEvaluationTitle || document.getElementById('evalClasses').value.trim() || ('Évaluation '+document.getElementById('evalNiveau').value),
     niveau: document.getElementById('evalNiveau').value,
     classes: document.getElementById('evalClasses').value,
     eval_date: document.getElementById('evalDate').value || null,
     duree: parseInt(document.getElementById('evalDuree').value) || null,
-    data: { evaluationExercises, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalLineHeight: document.getElementById('evalLineHeight').value },
+    data: { evaluationExercises: exos, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalLineHeight: document.getElementById('evalLineHeight').value },
   };
+}
+// Suivi du dernier état connu du serveur, exercice par exercice -- permet de savoir, à la
+// prochaine sauvegarde, LESQUELS on a réellement modifié soi-même (comparaison de snapshot),
+// pour ne remplacer QUE ceux-là et respecter la version serveur pour les autres.
+let evalLastSyncedExercises = {}; // id -> snapshot JSON de l'exercice tel que connu du serveur
+function snapshotExercise(ex){
+  return JSON.stringify({ ...ex, __blocks: blocksStores['ex-'+ex.id] || null });
+}
+function updateSyncedSnapshot(){
+  evalLastSyncedExercises = {};
+  evaluationExercises.forEach(ex=>{ evalLastSyncedExercises[ex.id] = snapshotExercise(ex); });
+}
+// Fusionne l'état LOCAL avec ce qui vient d'être lu côté serveur (juste avant d'écraser) :
+// ne remplace que les exercices réellement modifiés localement depuis la dernière synchro
+// connue (evalLastSyncedExercises), respecte la version serveur pour les autres -- partagée
+// entre la sauvegarde automatique et "Sauvegarder / renommer", pour que les deux se comportent
+// de la même façon vis-à-vis d'un collègue qui aurait modifié un AUTRE exercice entre-temps.
+function computeMergedExercises(serverData){
+  const serverExercises = (serverData && serverData.evaluationExercises) || [];
+  const serverBlocks = (serverData && serverData.blocksStores) || {};
+  const localIds = new Set(evaluationExercises.map(e=>e.id));
+  const mergedExercises = [];
+  const mergedBlocks = {};
+  evaluationExercises.forEach(localEx=>{
+    const serverEx = serverExercises.find(e=>e.id===localEx.id);
+    const unchangedSinceSync = evalLastSyncedExercises[localEx.id] === snapshotExercise(localEx);
+    if(unchangedSinceSync && serverEx){
+      // Pas touché par nous depuis la dernière synchro : on respecte la version serveur
+      // (peut avoir été modifiée par un collègue entre-temps, sur CET exercice précis).
+      mergedExercises.push(serverEx);
+      if(serverBlocks['ex-'+localEx.id]) mergedBlocks['ex-'+localEx.id] = serverBlocks['ex-'+localEx.id];
+    } else {
+      // Modifié par nous (ou nouvel exercice pas encore connu du serveur) : notre version l'emporte.
+      mergedExercises.push(localEx);
+      if(blocksStores['ex-'+localEx.id]) mergedBlocks['ex-'+localEx.id] = blocksStores['ex-'+localEx.id];
+    }
+  });
+  // Un exercice ajouté par un collègue entre-temps (absent localement, présent côté serveur,
+  // et qu'on n'a jamais connu jusqu'ici -- donc pas nous-même supprimé) est repris.
+  serverExercises.forEach(serverEx=>{
+    if(!localIds.has(serverEx.id) && !(serverEx.id in evalLastSyncedExercises)){
+      mergedExercises.push(serverEx);
+      if(serverBlocks['ex-'+serverEx.id]) mergedBlocks['ex-'+serverEx.id] = serverBlocks['ex-'+serverEx.id];
+    }
+  });
+  return { mergedExercises, mergedBlocks };
 }
 async function autoSaveEvaluation(){
   if(!currentUser || !evaluationExercises.length) return;
   const statusEl = document.getElementById('evalSaveStatus');
-  const payload = buildEvalPayload();
   statusEl.textContent = 'Sauvegarde…';
   try{
     if(currentEvaluationId){
@@ -179,15 +230,24 @@ async function autoSaveEvaluation(){
       // base (previous_data), pas juste en mémoire, pour rester disponible après un
       // rechargement de page ou pour un collègue qui rouvrirait l'évaluation ailleurs.
       const { data: current } = await sb.from('evaluations').select('data').eq('id', currentEvaluationId).single();
+      const { mergedExercises, mergedBlocks } = computeMergedExercises(current && current.data);
+      const payload = buildEvalPayload(mergedExercises, mergedBlocks);
       const { error } = await sb.from('evaluations').update({...payload, previous_data: current?current.data:null, updated_by: currentUser.id, updated_at: new Date().toISOString()}).eq('id', currentEvaluationId);
       if(error) throw error;
+      // Reprend localement le résultat fusionné (au cas où la version d'un collègue a été
+      // conservée pour un exercice qu'on n'avait pas touché), pour que l'affichage reflète
+      // fidèlement ce qui vient d'être enregistré.
+      evaluationExercises = mergedExercises;
+      Object.assign(blocksStores, mergedBlocks);
     } else {
+      const payload = buildEvalPayload();
       const { data, error } = await sb.from('evaluations').insert({...payload, owner_id: currentUser.id, updated_by: currentUser.id}).select().single();
       if(error) throw error;
       currentEvaluationId = data.id;
       subscribeEvalRealtime(data.id);
       lastEvaluationTitle = payload.title;
     }
+    updateSyncedSnapshot();
     statusEl.textContent = '✓ Enregistré automatiquement';
     document.getElementById('btnEvalUndo').style.display = 'inline-flex';
   }catch(e){
@@ -215,19 +275,25 @@ async function saveEvaluation(){
   const title = await nicePrompt("Titre de cette évaluation (pour la retrouver dans « Mes évaluations ») :", defaultTitle);
   if(title===null) return;
   lastEvaluationTitle = title || defaultTitle;
-  const payload = buildEvalPayload();
   const statusEl = document.getElementById('evalSaveStatus');
   statusEl.textContent = "Sauvegarde en cours…";
   try{
     if(currentEvaluationId){
+      const { data: current } = await sb.from('evaluations').select('data').eq('id', currentEvaluationId).single();
+      const { mergedExercises, mergedBlocks } = computeMergedExercises(current && current.data);
+      const payload = buildEvalPayload(mergedExercises, mergedBlocks);
       const { error } = await sb.from('evaluations').update({...payload, updated_by: currentUser.id, updated_at: new Date().toISOString()}).eq('id', currentEvaluationId);
       if(error) throw error;
+      evaluationExercises = mergedExercises;
+      Object.assign(blocksStores, mergedBlocks);
     } else {
+      const payload = buildEvalPayload();
       const { data, error } = await sb.from('evaluations').insert({...payload, owner_id: currentUser.id, updated_by: currentUser.id}).select().single();
       if(error) throw error;
       currentEvaluationId = data.id;
       subscribeEvalRealtime(data.id);
     }
+    updateSyncedSnapshot();
     statusEl.textContent = "✓ Sauvegardé";
   }catch(e){
     statusEl.textContent = '';
@@ -329,6 +395,7 @@ async function loadEvaluation(id){
       ex.text = '';
     }
   });
+  updateSyncedSnapshot();
   document.getElementById('btnEvalUndo').style.display = data.previous_data ? 'inline-flex' : 'none';
   renderEvalChapPicker();
   renderEvalExercicesList();
@@ -618,6 +685,7 @@ async function clearEvaluation(){
   if(evaluationExercises.length && !(await niceConfirm('Effacer tous les exercices de cette évaluation ?'))) return;
   evaluationExercises.forEach(ex=>delete blocksStores['ex-'+ex.id]);
   evaluationExercises = [];
+  evalLastSyncedExercises = {};
   currentEvaluationId = null;
   unsubscribeEvalRealtime();
   document.getElementById('evalSaveStatus').textContent = '';

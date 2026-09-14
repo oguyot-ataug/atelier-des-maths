@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.545', items:[
+    "Évaluations partagées : la sauvegarde fusionne désormais exercice par exercice -- si un collègue modifie un exercice pendant que vous en modifiez un autre, les deux modifications sont conservées au lieu que la dernière sauvegarde écrase l'autre. Le risque se limite maintenant au cas où vous modifiez tous les deux exactement le même exercice en même temps.",
+  ]},
   { version:'2026-08-19.544', items:[
     "Évaluations : sauvegarde automatique à chaque modification (plus besoin de cliquer \"Sauvegarder\"), avec un bouton \"Annuler la dernière modification\" qui revient à la version précédente (conservée en base, donc récupérable même après un rechargement de page). Une évaluation partagée avec un collègue affiche désormais une notification dès qu'il enregistre une modification, pour ne jamais écraser son travail sans le savoir.",
   ]},
