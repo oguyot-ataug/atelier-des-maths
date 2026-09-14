@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.544', items:[
+    "Évaluations : sauvegarde automatique à chaque modification (plus besoin de cliquer \"Sauvegarder\"), avec un bouton \"Annuler la dernière modification\" qui revient à la version précédente (conservée en base, donc récupérable même après un rechargement de page). Une évaluation partagée avec un collègue affiche désormais une notification dès qu'il enregistre une modification, pour ne jamais écraser son travail sans le savoir.",
+  ]},
   { version:'2026-08-19.543', items:[
     "Fix : \"Corrections des collègues\" affichait parfois des exercices d'un autre niveau (ex. du 6e en consultant une classe de 5e) -- le filtre se basait sur le niveau ressaisi à chaque correction (sujet à erreur) plutôt que sur le vrai niveau de la classe.",
   ]},

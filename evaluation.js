@@ -29,23 +29,23 @@ document.getElementById('view-evaluation').innerHTML = `
   <div class="tool-shell">
     <div class="tool-row" style="margin-bottom:10px;">
       <label class="hint" style="margin:0;">Niveau :
-        <select id="evalNiveau" onchange="renderEvalChapPicker()" style="margin-left:4px;">
+        <select id="evalNiveau" onchange="renderEvalChapPicker(); scheduleEvalAutoSave();" style="margin-left:4px;">
           <option value="6e">6e</option>
           <option value="5e">5e</option>
         </select>
       </label>
-      <label class="hint" style="margin:0;">Classe(s) : <input type="text" id="evalClasses" placeholder="ex. 6e A, 6e B" style="width:140px;margin-left:4px;"></label>
-      <label class="hint" style="margin:0;">Date prévue : <input type="date" id="evalDate" style="margin-left:4px;"></label>
-      <label class="hint" style="margin:0;">Durée (min) : <input type="number" id="evalDuree" value="55" min="5" style="width:70px;margin-left:4px;"></label>
+      <label class="hint" style="margin:0;">Classe(s) : <input type="text" id="evalClasses" placeholder="ex. 6e A, 6e B" style="width:140px;margin-left:4px;" oninput="scheduleEvalAutoSave()"></label>
+      <label class="hint" style="margin:0;">Date prévue : <input type="date" id="evalDate" style="margin-left:4px;" onchange="scheduleEvalAutoSave()"></label>
+      <label class="hint" style="margin:0;">Durée (min) : <input type="number" id="evalDuree" value="55" min="5" style="width:70px;margin-left:4px;" oninput="scheduleEvalAutoSave()"></label>
       <label class="hint" style="margin:0;">Interligne :
-        <select id="evalLineHeight" style="margin-left:4px;">
+        <select id="evalLineHeight" style="margin-left:4px;" onchange="scheduleEvalAutoSave()">
           <option value="1.35">Compact</option>
           <option value="1.5" selected>Normal</option>
           <option value="1.7">Aéré</option>
         </select>
       </label>
       <label class="hint" style="margin:0;">Type :
-        <select id="evalType" style="margin-left:4px;" onchange="document.getElementById('evalTypeCustom').style.display = this.value==='__custom' ? 'inline-block' : 'none';">
+        <select id="evalType" style="margin-left:4px;" onchange="document.getElementById('evalTypeCustom').style.display = this.value==='__custom' ? 'inline-block' : 'none'; scheduleEvalAutoSave();">
           <option value="Évaluation">Évaluation</option>
           <option value="Interrogation">Interrogation</option>
           <option value="Devoir Maison">Devoir Maison</option>
@@ -53,7 +53,7 @@ document.getElementById('view-evaluation').innerHTML = `
           <option value="Bac Blanc">Bac Blanc</option>
           <option value="__custom">Autre (à préciser)…</option>
         </select>
-        <input type="text" id="evalTypeCustom" placeholder="Titre libre" style="display:none;width:140px;margin-left:4px;">
+        <input type="text" id="evalTypeCustom" placeholder="Titre libre" style="display:none;width:140px;margin-left:4px;" oninput="scheduleEvalAutoSave()">
       </label>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
@@ -62,11 +62,13 @@ document.getElementById('view-evaluation').innerHTML = `
       <button class="btn secondary" onclick="openEvalPreview()"><span class=gicon>visibility</span> Aperçu de l'évaluation</button>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
-      <button class="btn" onclick="saveEvaluation()"><span class=gicon>save</span> Sauvegarder</button>
+      <button class="btn" onclick="saveEvaluation()"><span class=gicon>save</span> Sauvegarder / renommer</button>
       <button class="btn secondary" onclick="openEvalListModal()">📂 Mes évaluations</button>
       <button class="btn secondary" onclick="shareEvaluation()"><span class=gicon>link</span> Partager avec un collègue</button>
+      <button class="btn secondary" id="btnEvalUndo" onclick="undoEvaluation()" style="display:none;"><span class=gicon>undo</span> Annuler la dernière modification</button>
       <span class="hint" id="evalSaveStatus" style="margin:0;"></span>
     </div>
+    <div id="evalCollabBanner"></div>
     <div id="evalAIOptions" style="display:none;">
       <div class="tool-row" style="margin-bottom:10px;">
         <label class="hint" style="margin:0;">Nombre d'exercices : <input type="number" id="evalNbExo" value="4" min="1" max="10" style="width:55px;margin-left:4px;"></label>
@@ -141,6 +143,71 @@ let currentEvaluationId = null;
    Une évaluation sauvegardée peut être rouverte par son propriétaire, ou par un collègue à qui
    elle a été explicitement partagée (table evaluations, RLS + collaborators côté serveur). */
 let lastEvaluationTitle = null;
+// Sauvegarde automatique (débouncée) à chaque modification -- demandé : "à chaque
+// modification, ça enregistre directement". Le bouton "Sauvegarder / renommer" reste
+// disponible séparément pour (re)choisir explicitement un titre ; l'auto-save réutilise le
+// titre déjà en place sans jamais interrompre par un prompt.
+let evalAutoSaveTimer = null;
+let evalSuppressAutoSave = false; // vrai pendant un chargement programmatique (loadEvaluation),
+                                   // pour ne jamais déclencher une sauvegarde juste après avoir
+                                   // chargé -- ce n'est pas une vraie modification de l'utilisateur
+function scheduleEvalAutoSave(){
+  if(!currentUser || evalSuppressAutoSave) return; // pas connecté, ou chargement en cours : rien à sauvegarder automatiquement
+  clearTimeout(evalAutoSaveTimer);
+  evalAutoSaveTimer = setTimeout(autoSaveEvaluation, 1500);
+}
+function buildEvalPayload(){
+  const relevantBlocks = {};
+  evaluationExercises.forEach(ex=>{ const k='ex-'+ex.id; if(blocksStores[k]) relevantBlocks[k]=blocksStores[k]; });
+  return {
+    title: lastEvaluationTitle || document.getElementById('evalClasses').value.trim() || ('Évaluation '+document.getElementById('evalNiveau').value),
+    niveau: document.getElementById('evalNiveau').value,
+    classes: document.getElementById('evalClasses').value,
+    eval_date: document.getElementById('evalDate').value || null,
+    duree: parseInt(document.getElementById('evalDuree').value) || null,
+    data: { evaluationExercises, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalLineHeight: document.getElementById('evalLineHeight').value },
+  };
+}
+async function autoSaveEvaluation(){
+  if(!currentUser || !evaluationExercises.length) return;
+  const statusEl = document.getElementById('evalSaveStatus');
+  const payload = buildEvalPayload();
+  statusEl.textContent = 'Sauvegarde…';
+  try{
+    if(currentEvaluationId){
+      // Récupère la donnée ACTUELLE avant de l'écraser, pour alimenter "Annuler" -- stockée en
+      // base (previous_data), pas juste en mémoire, pour rester disponible après un
+      // rechargement de page ou pour un collègue qui rouvrirait l'évaluation ailleurs.
+      const { data: current } = await sb.from('evaluations').select('data').eq('id', currentEvaluationId).single();
+      const { error } = await sb.from('evaluations').update({...payload, previous_data: current?current.data:null, updated_by: currentUser.id, updated_at: new Date().toISOString()}).eq('id', currentEvaluationId);
+      if(error) throw error;
+    } else {
+      const { data, error } = await sb.from('evaluations').insert({...payload, owner_id: currentUser.id, updated_by: currentUser.id}).select().single();
+      if(error) throw error;
+      currentEvaluationId = data.id;
+      subscribeEvalRealtime(data.id);
+      lastEvaluationTitle = payload.title;
+    }
+    statusEl.textContent = '✓ Enregistré automatiquement';
+    document.getElementById('btnEvalUndo').style.display = 'inline-flex';
+  }catch(e){
+    statusEl.textContent = "Échec de l'enregistrement automatique : "+(e.message||'erreur inconnue');
+  }
+}
+// Revient à la version précédente (stockée en base lors du dernier enregistrement
+// automatique) -- demandé : "un bouton annuler qui revient à la version précédente". Échange
+// data et previous_data plutôt que d'écraser simplement : un second clic sur "Annuler" annule
+// donc l'annulation elle-même, sans perte.
+async function undoEvaluation(){
+  if(!currentEvaluationId) return;
+  const statusEl = document.getElementById('evalSaveStatus');
+  const { data: row, error: fetchErr } = await sb.from('evaluations').select('data,previous_data').eq('id', currentEvaluationId).single();
+  if(fetchErr || !row || !row.previous_data){ await niceAlert("Aucune version précédente disponible."); return; }
+  const { error } = await sb.from('evaluations').update({ data: row.previous_data, previous_data: row.data, updated_at: new Date().toISOString() }).eq('id', currentEvaluationId);
+  if(error){ await niceAlert("Échec de l'annulation : "+error.message); return; }
+  statusEl.textContent = '✓ Version précédente restaurée';
+  await loadEvaluation(currentEvaluationId);
+}
 async function saveEvaluation(){
   if(!currentUser){ await niceAlert("Connectez-vous (en tant que professeur) pour sauvegarder cette évaluation."); return; }
   if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant de sauvegarder."); return; }
@@ -148,26 +215,18 @@ async function saveEvaluation(){
   const title = await nicePrompt("Titre de cette évaluation (pour la retrouver dans « Mes évaluations ») :", defaultTitle);
   if(title===null) return;
   lastEvaluationTitle = title || defaultTitle;
-  const relevantBlocks = {};
-  evaluationExercises.forEach(ex=>{ const k='ex-'+ex.id; if(blocksStores[k]) relevantBlocks[k]=blocksStores[k]; });
-  const payload = {
-    title: title || defaultTitle,
-    niveau: document.getElementById('evalNiveau').value,
-    classes: document.getElementById('evalClasses').value,
-    eval_date: document.getElementById('evalDate').value || null,
-    duree: parseInt(document.getElementById('evalDuree').value) || null,
-    data: { evaluationExercises, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalLineHeight: document.getElementById('evalLineHeight').value },
-  };
+  const payload = buildEvalPayload();
   const statusEl = document.getElementById('evalSaveStatus');
   statusEl.textContent = "Sauvegarde en cours…";
   try{
     if(currentEvaluationId){
-      const { error } = await sb.from('evaluations').update({...payload, updated_at: new Date().toISOString()}).eq('id', currentEvaluationId);
+      const { error } = await sb.from('evaluations').update({...payload, updated_by: currentUser.id, updated_at: new Date().toISOString()}).eq('id', currentEvaluationId);
       if(error) throw error;
     } else {
-      const { data, error } = await sb.from('evaluations').insert({...payload, owner_id: currentUser.id}).select().single();
+      const { data, error } = await sb.from('evaluations').insert({...payload, owner_id: currentUser.id, updated_by: currentUser.id}).select().single();
       if(error) throw error;
       currentEvaluationId = data.id;
+      subscribeEvalRealtime(data.id);
     }
     statusEl.textContent = "✓ Sauvegardé";
   }catch(e){
@@ -209,10 +268,43 @@ async function deleteEvaluationPrompt(id, title){
   await openEvalListModal();
 }
 function closeEvalListModal(){ document.getElementById('evalListModalOverlay').style.display='none'; }
+// Synchronisation quasi temps réel entre collègues éditant la même évaluation -- demandé :
+// "on ne peut pas travailler ensemble sur l'interrogation en même temps ?". Pas d'édition
+// simultanée caractère par caractère (nécessiterait une fusion des frappes en direct, un
+// chantier bien plus lourd) : dès qu'un collègue sauvegarde (automatiquement ou manuellement),
+// une notification apparaît pour recharger et voir ses modifications -- évite qu'une
+// sauvegarde écrase silencieusement le travail de l'autre.
+let evalRealtimeChannel = null;
+function unsubscribeEvalRealtime(){
+  if(evalRealtimeChannel){ sb.removeChannel(evalRealtimeChannel); evalRealtimeChannel = null; }
+}
+function subscribeEvalRealtime(evalId){
+  unsubscribeEvalRealtime();
+  evalRealtimeChannel = sb.channel('eval-'+evalId)
+    .on('postgres_changes', { event:'UPDATE', schema:'public', table:'evaluations', filter:'id=eq.'+evalId }, async (payload)=>{
+      if(!payload.new || payload.new.updated_by===currentUser.id) return; // notre propre sauvegarde
+      let nom = 'Un collègue';
+      if(payload.new.updated_by){
+        const { data: p } = await sb.from('profiles').select('nom').eq('id', payload.new.updated_by).single();
+        if(p && p.nom) nom = p.nom;
+      }
+      const banner = document.getElementById('evalCollabBanner');
+      if(banner) banner.innerHTML = `<div class="redaction-note" style="background:rgba(255,130,8,.1);border-color:rgba(255,130,8,.35);color:#8A5A00;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span class=gicon>bolt</span>
+        <span><b>${escapeHtml(nom)}</b> vient de modifier cette évaluation.</span>
+        <button type="button" class="btn secondary" style="padding:4px 10px;font-size:.78rem;" onclick="loadEvaluation('${evalId}')">Recharger pour voir ses modifications</button>
+      </div>`;
+    })
+    .subscribe();
+}
 async function loadEvaluation(id){
   const { data, error } = await sb.from('evaluations').select('*').eq('id', id).single();
   if(error){ await niceAlert("Échec du chargement : "+error.message); return; }
+  evalSuppressAutoSave = true;
   currentEvaluationId = data.id;
+  subscribeEvalRealtime(data.id);
+  const collabBanner = document.getElementById('evalCollabBanner');
+  if(collabBanner) collabBanner.innerHTML = '';
   lastEvaluationTitle = data.title || null;
   document.getElementById('evalNiveau').value = data.niveau || '6e';
   document.getElementById('evalClasses').value = data.classes || '';
@@ -237,8 +329,10 @@ async function loadEvaluation(id){
       ex.text = '';
     }
   });
+  document.getElementById('btnEvalUndo').style.display = data.previous_data ? 'inline-flex' : 'none';
   renderEvalChapPicker();
   renderEvalExercicesList();
+  evalSuppressAutoSave = false;
   closeEvalListModal();
   document.getElementById('evalSaveStatus').textContent = "✓ Évaluation chargée";
 }
@@ -447,6 +541,7 @@ function renderEvalExercicesList(){
     </div>
   `;}).join('');
   attachResizeObservers();
+  scheduleEvalAutoSave();
 }
 /* Migre l'ancien réglage (ex.nCols, une seule ligne) vers le nouveau système multi-lignes
    (ex.rows, un nombre de colonnes par ligne) si besoin, et renvoie toujours ex.rows. */
@@ -524,7 +619,11 @@ async function clearEvaluation(){
   evaluationExercises.forEach(ex=>delete blocksStores['ex-'+ex.id]);
   evaluationExercises = [];
   currentEvaluationId = null;
+  unsubscribeEvalRealtime();
   document.getElementById('evalSaveStatus').textContent = '';
+  document.getElementById('btnEvalUndo').style.display = 'none';
+  const collabBanner = document.getElementById('evalCollabBanner');
+  if(collabBanner) collabBanner.innerHTML = '';
   renderEvalExercicesList();
 }
 function buildEvaluationContentHTML(){
