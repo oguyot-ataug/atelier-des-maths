@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.542', items:[
+    "\"Corrections des collègues\" n'affiche désormais plus les entrées de Cours, seulement les exercices (le filtre par niveau et chapitre était déjà en place).",
+  ]},
   { version:'2026-08-19.541', items:[
     "Mutualisation entre profs : remplacée par une liste parcourable (\"Voir les corrections des collègues\") plutôt qu'une suggestion automatique par correspondance exacte -- celle-ci s'est révélée peu fiable (les références d'exercice ne sont jamais notées de façon identique d'un prof à l'autre, ni même toujours par un seul et même prof).",
   ]},
