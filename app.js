@@ -1343,7 +1343,14 @@ function renderMathText(raw){
   //    pour garantir exactement la même police, taille et graisse partout -- mélanger KaTeX pour
   //    les fractions et une simple police italique pour le reste donnait des tailles/styles
   //    incohérents d'une ligne à l'autre.
-  text = text.replace(/\b(\d+(?:[.,]\d+)?)?([xyznktA-Z])\b/g, (m,digits,letter)=>{
+  text = text.replace(/\b(\d+(?:[.,]\d+)?)?([xyznktA-Z])\b/g, (m,digits,letter,offset,str)=>{
+    // Exclut deux tournures françaises courantes, non des variables mathématiques :
+    // - le "t" euphonique entouré de tirets ("coupe-t-il", "y a-t-il", "mange-t-elle"...)
+    // - le "y" du pronom dans "il y" ("il y a", "il y en a"...)
+    if(!digits){
+      if(letter==='t' && str[offset-1]==='-' && str[offset+1]==='-') return m;
+      if(letter==='y' && str.slice(Math.max(0,offset-3), offset)==='il ') return m;
+    }
     const expr = digits ? `${digits.replace(',','.')}${letter}` : letter;
     return protect(katexSpan(expr));
   });
@@ -2279,6 +2286,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.549', items:[
+    "Fix : le \"y\" de \"il y a\" et le \"t\" euphonique (\"coupe-t-il\", \"mange-t-elle\"...) n'étaient plus reconnus comme du texte français, mais mis en italique comme une variable mathématique isolée.",
+  ]},
   { version:'2026-08-19.548', items:[
     "Évaluations : vrai fix de l'accord \"1 pt\" (la comparaison ne fonctionnait pas car le barème est stocké comme texte, pas comme nombre) -- affecte aussi l'étiquette du champ de saisie, mise à jour en direct désormais. Le saut de page explicite apparaît maintenant bien dans l'aperçu, combiné aux repères automatiques de pagination.",
   ]},
