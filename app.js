@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.548', items:[
+    "Évaluations : vrai fix de l'accord \"1 pt\" (la comparaison ne fonctionnait pas car le barème est stocké comme texte, pas comme nombre) -- affecte aussi l'étiquette du champ de saisie, mise à jour en direct désormais. Le saut de page explicite apparaît maintenant bien dans l'aperçu, combiné aux repères automatiques de pagination.",
+  ]},
   { version:'2026-08-19.547', items:[
     "Évaluations : espacement augmenté entre deux exercices à l'impression, plus aéré.",
   ]},

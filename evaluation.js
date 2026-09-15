@@ -160,7 +160,7 @@ function scheduleEvalAutoSave(){
   clearTimeout(evalAutoSaveTimer);
   evalAutoSaveTimer = setTimeout(autoSaveEvaluation, 1500);
 }
-function formatPts(n){ return n + (n===1 ? ' pt' : ' pts'); }
+function formatPts(n){ n = Number(n); return n + (n===1 ? ' pt' : ' pts'); }
 function buildEvalPayload(exercisesOverride, blocksOverride){
   const exos = exercisesOverride || evaluationExercises;
   let relevantBlocks;
@@ -597,7 +597,7 @@ function renderEvalExercicesList(){
       </div>
       <div class="tool-row" style="margin-bottom:5px;">
         <input type="text" placeholder="Titre de l'exercice (facultatif)" value="${escapeHtml(ex.title||'')}" oninput="updateEvalExerciceField(${ex.id},'title',this.value)" style="flex:1;min-width:200px;padding:7px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);">
-        <label class="hint" style="margin:0;">Barème : <input type="number" min="0" step="0.5" value="${ex.bareme!=null?ex.bareme:''}" oninput="updateEvalExerciceField(${ex.id},'bareme',this.value)" style="width:60px;margin-left:4px;"> pts</label>
+        <label class="hint" style="margin:0;">Barème : <input type="number" min="0" step="0.5" value="${ex.bareme!=null?ex.bareme:''}" oninput="updateEvalExerciceField(${ex.id},'bareme',this.value)" style="width:60px;margin-left:4px;"> <span id="baremeSuffixe-${ex.id}">${Number(ex.bareme)===1?'pt':'pts'}</span></label>
       </div>
       <div class="eval-blocks-preview" style="margin-top:2px;">${blocksRowsHTML(ctx, ensureExRows(ex), true, ex.cellBorders)}</div>
       <div class="tool-row" style="margin-top:10px;align-items:center;flex-wrap:wrap;">
@@ -655,7 +655,11 @@ function removeEvalRow(id, rowIdx){
 function updateEvalExerciceField(id, field, value){
   const ex = evaluationExercises.find(e=>e.id===id);
   if(ex) ex[field] = value;
-  if(field==='bareme') updateEvalBaremeTotalDisplay();
+  if(field==='bareme'){
+    updateEvalBaremeTotalDisplay();
+    const suffixe = document.getElementById('baremeSuffixe-'+id);
+    if(suffixe) suffixe.textContent = (parseFloat(value)===1) ? 'pt' : 'pts';
+  }
 }
 function updateEvalExerciceText(id, text){
   const ex = evaluationExercises.find(e=>e.id===id);
@@ -734,7 +738,7 @@ function buildEvaluationContentHTML(){
     <div style="height:3cm;border-top:1px solid #1C1B2E;border-bottom:1px solid #1C1B2E;margin:16px 0 24px;"></div>
     ${document.getElementById('evalConsignes').value.trim() ? `<div style="margin:0 0 16px;padding:10px 14px;border:1px solid #1C1B2E;border-radius:6px;">${renderMathText(document.getElementById('evalConsignes').value)}</div>` : ''}
     ${evaluationExercises.map((ex,i)=>`
-      <div style="margin-bottom:2.2em;${evalPageBreaksAfter.has(ex.id)?'page-break-after:always;break-after:page;':''}">
+      <div data-ex-id="${ex.id}" style="margin-bottom:2.2em;${evalPageBreaksAfter.has(ex.id)?'page-break-after:always;break-after:page;':''}">
         <p style="font-weight:700;margin:0 0 5px;display:grid;grid-template-columns:1fr 70px;gap:8px;">
           <span>Exercice ${i+1}${ex.title ? ' · '+escapeHtml(ex.title) : ''}</span>
           <span style="text-align:right;">${ex.bareme ? formatPts(ex.bareme) : ''}</span>
@@ -843,6 +847,10 @@ async function openEvalPreview(){
   // Repères de saut de page : la largeur de ce conteneur (700px) correspond à la largeur
   // utile du PDF (A4, marges de 10mm de chaque côté) -- on peut donc déduire la hauteur d'une
   // page dans les mêmes proportions et matérialiser où les pages se coupent réellement.
+  // Combine deux sources : les sauts EXPLICITES (evalPageBreaksAfter, garantis à cette
+  // position précise) et une estimation automatique par hauteur pour le reste (un segment
+  // entre deux sauts explicites, ou toute l'évaluation s'il n'y en a aucun, qui dépasse une
+  // page).
   requestAnimationFrame(()=>{
     // Important : la modale vient tout juste de devenir visible (display:flex) -- il faut
     // attendre que sa mise en page (largeur réelle du conteneur à 700px) soit stabilisée avant
@@ -851,14 +859,39 @@ async function openEvalPreview(){
     const pxPerMm = 700/190; // largeur utile A4 (210mm - 2x10mm de marge) mise à l'échelle sur 700px
     const pageHeightPx = 277*pxPerMm; // hauteur utile A4 (297mm - 2x10mm de marge)
     const totalHeight = content.scrollHeight;
+
+    // Position Y (bas) de chaque saut de page EXPLICITE, dans l'ordre d'apparition.
+    const sautsExplicites = evaluationExercises
+      .filter(ex=>evalPageBreaksAfter.has(ex.id))
+      .map(ex=>content.querySelector('[data-ex-id="'+ex.id+'"]'))
+      .filter(Boolean)
+      .map(el=>el.offsetTop + el.offsetHeight)
+      .sort((a,b)=>a-b);
+
     const marks = document.getElementById('evalPreviewPageMarks');
     let html = '';
-    const nPages = Math.max(1, Math.ceil(totalHeight/pageHeightPx));
-    for(let p=1; p<nPages; p++){
-      const y = p*pageHeightPx;
-      html += `<div style="position:absolute;top:${y}px;left:0;width:100%;border-top:2px dashed #E35D3A;"></div>
-        <div style="position:absolute;top:${y+4}px;left:0;background:#E35D3A;color:#fff;font-size:.7rem;padding:1px 6px;border-radius:0 4px 4px 0;font-family:'Space Grotesk',sans-serif;">Page ${p+1} →</div>`;
+    let pageNum = 1;
+    let segmentStart = 0;
+    function marqueAutoDansSegment(finSegment){
+      // Place des repères automatiques (par hauteur de page) à l'intérieur du segment
+      // [segmentStart, finSegment) -- seulement si ce segment dépasse une page.
+      let y = segmentStart + pageHeightPx;
+      while(y < finSegment){
+        pageNum++;
+        html += `<div style="position:absolute;top:${y}px;left:0;width:100%;border-top:2px dashed #E35D3A;"></div>
+          <div style="position:absolute;top:${y+4}px;left:0;background:#E35D3A;color:#fff;font-size:.7rem;padding:1px 6px;border-radius:0 4px 4px 0;font-family:'Space Grotesk',sans-serif;">Page ${pageNum} →</div>`;
+        y += pageHeightPx;
+      }
     }
+    sautsExplicites.forEach(y=>{
+      marqueAutoDansSegment(y);
+      pageNum++;
+      html += `<div style="position:absolute;top:${y}px;left:0;width:100%;border-top:2px dashed #1F3A5C;"></div>
+        <div style="position:absolute;top:${y+4}px;left:0;background:#1F3A5C;color:#fff;font-size:.7rem;padding:1px 6px;border-radius:0 4px 4px 0;font-family:'Space Grotesk',sans-serif;">✂ Page ${pageNum} →</div>`;
+      segmentStart = y;
+    });
+    marqueAutoDansSegment(totalHeight);
+
     marks.innerHTML = html;
     marks.style.height = totalHeight+'px';
   });
