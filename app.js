@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.547', items:[
+    "Évaluations : espacement augmenté entre deux exercices à l'impression, plus aéré.",
+  ]},
   { version:'2026-08-19.546', items:[
     "Évaluations : fix de l'accord du barème (\"1 pt\" au lieu de \"1 pts\"). Nouveau bouton \"Saut de page\" sur chaque exercice, pour contrôler la pagination à l'impression. Nouveau champ \"Consignes générales\", affiché en haut de la copie avant le premier exercice, indépendant de tout exercice précis.",
   ]},

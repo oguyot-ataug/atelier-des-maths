@@ -734,7 +734,7 @@ function buildEvaluationContentHTML(){
     <div style="height:3cm;border-top:1px solid #1C1B2E;border-bottom:1px solid #1C1B2E;margin:16px 0 24px;"></div>
     ${document.getElementById('evalConsignes').value.trim() ? `<div style="margin:0 0 16px;padding:10px 14px;border:1px solid #1C1B2E;border-radius:6px;">${renderMathText(document.getElementById('evalConsignes').value)}</div>` : ''}
     ${evaluationExercises.map((ex,i)=>`
-      <div style="margin-bottom:8px;${evalPageBreaksAfter.has(ex.id)?'page-break-after:always;break-after:page;':''}">
+      <div style="margin-bottom:2.2em;${evalPageBreaksAfter.has(ex.id)?'page-break-after:always;break-after:page;':''}">
         <p style="font-weight:700;margin:0 0 5px;display:grid;grid-template-columns:1fr 70px;gap:8px;">
           <span>Exercice ${i+1}${ex.title ? ' · '+escapeHtml(ex.title) : ''}</span>
           <span style="text-align:right;">${ex.bareme ? formatPts(ex.bareme) : ''}</span>
