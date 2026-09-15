@@ -1349,7 +1349,7 @@ function renderMathText(raw){
     // - le "y" du pronom dans "il y" ("il y a", "il y en a"...)
     if(!digits){
       if(letter==='t' && str[offset-1]==='-' && str[offset+1]==='-') return m;
-      if(letter==='y' && str.slice(Math.max(0,offset-3), offset)==='il ') return m;
+      if(letter==='y' && str.slice(offset+1, offset+3)===' a') return m;
     }
     const expr = digits ? `${digits.replace(',','.')}${letter}` : letter;
     return protect(katexSpan(expr));
@@ -2286,6 +2286,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.550', items:[
+    "Fix : \"combien y a-t-il ?\" -- le correctif précédent sur le \"y\" ne couvrait que \"il y a\" ; élargi pour couvrir toute tournure où \"y\" est suivi de \"a\" (\"y a-t-il\", \"qu'y a-t-il\"...).",
+  ]},
   { version:'2026-08-19.549', items:[
     "Fix : le \"y\" de \"il y a\" et le \"t\" euphonique (\"coupe-t-il\", \"mange-t-elle\"...) n'étaient plus reconnus comme du texte français, mais mis en italique comme une variable mathématique isolée.",
   ]},
