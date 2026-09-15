@@ -57,6 +57,9 @@ document.getElementById('view-evaluation').innerHTML = `
       </label>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
+      <textarea id="evalConsignes" placeholder="Consignes générales (facultatif) -- affichées en haut de la copie, avant le premier exercice" style="flex:1;min-width:280px;min-height:44px;padding:7px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);font-family:inherit;" oninput="scheduleEvalAutoSave()"></textarea>
+    </div>
+    <div class="tool-row" style="margin-bottom:10px;">
       <label class="hint" style="margin:0;"><input type="checkbox" id="evalUseAI" onchange="toggleEvalAIOptions()"> <span class=gicon>smart_toy</span> Laisser l'IA proposer des exercices</label>
       <button class="btn secondary" onclick="addManualExercise()">+ Ajouter un exercice vierge</button>
       <button class="btn secondary" onclick="openEvalPreview()"><span class=gicon>visibility</span> Aperçu de l'évaluation</button>
@@ -137,6 +140,7 @@ document.body.insertAdjacentHTML('beforeend', `
    câblés ici : à construire dans une prochaine session.
    ============================================================ */
 let evaluationExercises = [];
+let evalPageBreaksAfter = new Set(); // ids d'exercices après lesquels insérer un saut de page
 let currentEvaluationId = null;
 
 /* Sauvegarde/chargement/partage : réutilise le compte prof déjà connecté (currentUser, sb).
@@ -156,6 +160,7 @@ function scheduleEvalAutoSave(){
   clearTimeout(evalAutoSaveTimer);
   evalAutoSaveTimer = setTimeout(autoSaveEvaluation, 1500);
 }
+function formatPts(n){ return n + (n===1 ? ' pt' : ' pts'); }
 function buildEvalPayload(exercisesOverride, blocksOverride){
   const exos = exercisesOverride || evaluationExercises;
   let relevantBlocks;
@@ -171,7 +176,7 @@ function buildEvalPayload(exercisesOverride, blocksOverride){
     classes: document.getElementById('evalClasses').value,
     eval_date: document.getElementById('evalDate').value || null,
     duree: parseInt(document.getElementById('evalDuree').value) || null,
-    data: { evaluationExercises: exos, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalLineHeight: document.getElementById('evalLineHeight').value },
+    data: { evaluationExercises: exos, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalLineHeight: document.getElementById('evalLineHeight').value, evalConsignes: document.getElementById('evalConsignes').value, pageBreaksAfter: Array.from(evalPageBreaksAfter) },
   };
 }
 // Suivi du dernier état connu du serveur, exercice par exercice -- permet de savoir, à la
@@ -377,6 +382,8 @@ async function loadEvaluation(id){
   document.getElementById('evalDate').value = data.eval_date || '';
   document.getElementById('evalDuree').value = data.duree || 55;
   document.getElementById('evalLineHeight').value = (data.data && data.data.evalLineHeight) || '1.5';
+  document.getElementById('evalConsignes').value = (data.data && data.data.evalConsignes) || '';
+  evalPageBreaksAfter = new Set((data.data && data.data.pageBreaksAfter) || []);
   const savedType = (data.data && data.data.evalType) || 'Évaluation';
   const typeSelect = document.getElementById('evalType');
   typeSelect.value = Array.from(typeSelect.options).some(o=>o.value===savedType) ? savedType : '__custom';
@@ -563,15 +570,17 @@ function renderEvalExercicesList(){
       <div class="tool-shell" style="margin-bottom:8px;">
         <div style="display:grid;grid-template-columns:1fr 90px auto;align-items:center;margin-bottom:6px;gap:8px;">
           <strong style="font-family:'Space Grotesk',sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Exercice ${i+1}${ex.title?' · '+escapeHtml(ex.title):''}</strong>
-          <span class="hint" style="margin:0;text-align:right;">${ex.bareme ? ex.bareme+' pts' : ''}</span>
+          <span class="hint" style="margin:0;text-align:right;">${ex.bareme ? formatPts(ex.bareme) : ''}</span>
           <span style="display:flex;gap:6px;align-items:center;">
             <button type="button" onclick="moveEvalExercice(${ex.id},-1)" ${i===0?'disabled style="opacity:.35;"':''} title="Monter" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↑</button>
             <button type="button" onclick="moveEvalExercice(${ex.id},1)" ${i===evaluationExercises.length-1?'disabled style="opacity:.35;"':''} title="Descendre" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↓</button>
             <button type="button" onclick="editEvalExercice(${ex.id})" title="Modifier ou supprimer" style="border:none;background:rgba(31,58,92,.08);border-radius:6px;padding:4px 10px;cursor:pointer;"><span class=gicon>edit</span> Éditer</button>
+            <button type="button" onclick="toggleEvalPageBreak(${ex.id})" title="Insérer un saut de page après cet exercice" style="border:none;background:${evalPageBreaksAfter.has(ex.id)?'rgba(31,58,92,.15)':'rgba(28,43,57,.06)'};color:${evalPageBreaksAfter.has(ex.id)?'#1F3A5C':'inherit'};border-radius:6px;padding:4px 10px;cursor:pointer;">✂</button>
           </span>
         </div>
         <div>${blocksRowsHTML(ctx, ex.rows, false, ex.cellBorders)}</div>
       </div>
+      ${evalPageBreaksAfter.has(ex.id) ? '<div style="border-top:2px dashed #1F3A5C;margin:0 0 8px;padding-top:4px;text-align:center;"><span class="hint" style="color:#1F3A5C;">✂ Saut de page ici à l\'impression</span></div>' : ''}
     `;
     }
     return `
@@ -582,6 +591,7 @@ function renderEvalExercicesList(){
           <button type="button" onclick="moveEvalExercice(${ex.id},-1)" ${i===0?'disabled style="opacity:.35;"':''} title="Monter" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↑</button>
           <button type="button" onclick="moveEvalExercice(${ex.id},1)" ${i===evaluationExercises.length-1?'disabled style="opacity:.35;"':''} title="Descendre" style="border:none;background:rgba(28,43,57,.06);border-radius:6px;padding:3px 9px;cursor:pointer;">↓</button>
           <button type="button" onclick="validateEvalExercice(${ex.id})" title="Aperçu final, sans les outils" style="border:none;background:rgba(35,140,90,.12);color:#1F7A4D;border-radius:6px;padding:3px 9px;cursor:pointer;">✓ Valider</button>
+          <button type="button" onclick="toggleEvalPageBreak(${ex.id})" title="Insérer un saut de page après cet exercice" style="border:none;background:${evalPageBreaksAfter.has(ex.id)?'rgba(31,58,92,.15)':'rgba(28,43,57,.06)'};color:${evalPageBreaksAfter.has(ex.id)?'#1F3A5C':'inherit'};border-radius:6px;padding:3px 9px;cursor:pointer;">✂ ${evalPageBreaksAfter.has(ex.id)?'Saut de page ✓':'Saut de page'}</button>
           <button type="button" onclick="removeEvalExercice(${ex.id})" style="border:none;background:rgba(217,48,37,.1);color:#D93025;border-radius:6px;padding:3px 8px;cursor:pointer;"><span class=gicon>close</span> Supprimer l'exercice</button>
         </span>
       </div>
@@ -606,6 +616,7 @@ function renderEvalExercicesList(){
       <p class="hint" style="margin:4px 0 0;">Fais glisser un bloc pour changer sa ligne/colonne (utilise les outils ci-dessous pour en ajouter, y compris du texte).</p>
       <div class="tool-row" style="margin-top:6px;">${toolButtonsHTML(ctx)}</div>
     </div>
+    ${evalPageBreaksAfter.has(ex.id) ? '<div style="border-top:2px dashed #1F3A5C;margin:0 0 8px;padding-top:4px;text-align:center;"><span class="hint" style="color:#1F3A5C;">✂ Saut de page ici à l\'impression</span></div>' : ''}
   `;}).join('');
   attachResizeObservers();
   scheduleEvalAutoSave();
@@ -659,6 +670,11 @@ async function removeEvalExercice(id){
   delete blocksStores['ex-'+id];
   renderEvalExercicesList();
 }
+function toggleEvalPageBreak(id){
+  if(evalPageBreaksAfter.has(id)) evalPageBreaksAfter.delete(id);
+  else evalPageBreaksAfter.add(id);
+  renderEvalExercicesList();
+}
 function moveEvalExercice(id, dir){
   const idx = evaluationExercises.findIndex(e=>e.id===id);
   const newIdx = idx+dir;
@@ -685,6 +701,8 @@ async function clearEvaluation(){
   if(evaluationExercises.length && !(await niceConfirm('Effacer tous les exercices de cette évaluation ?'))) return;
   evaluationExercises.forEach(ex=>delete blocksStores['ex-'+ex.id]);
   evaluationExercises = [];
+  evalPageBreaksAfter = new Set();
+  document.getElementById('evalConsignes').value = '';
   evalLastSyncedExercises = {};
   currentEvaluationId = null;
   unsubscribeEvalRealtime();
@@ -710,15 +728,16 @@ function buildEvaluationContentHTML(){
     </div>
     <div style="height:2.4em;"></div>
     <p style="text-align:center;font-weight:700;font-size:1.3rem;margin:0;">${escapeHtml(title)} de Mathématiques</p>
-    <p style="text-align:center;font-size:.85rem;color:#5B6472;margin:4px 0 0;">${duree ? 'Durée : '+duree+' min' : ''}${total>0 ? ' · Barème : '+total+' pts' : ''}</p>
+    <p style="text-align:center;font-size:.85rem;color:#5B6472;margin:4px 0 0;">${duree ? 'Durée : '+duree+' min' : ''}${total>0 ? ' · Barème : '+formatPts(total) : ''}</p>
     <div style="height:2.4em;"></div>
     <p style="margin:0;">NOM : .................................................... Prénom : ....................................................</p>
     <div style="height:3cm;border-top:1px solid #1C1B2E;border-bottom:1px solid #1C1B2E;margin:16px 0 24px;"></div>
+    ${document.getElementById('evalConsignes').value.trim() ? `<div style="margin:0 0 16px;padding:10px 14px;border:1px solid #1C1B2E;border-radius:6px;">${renderMathText(document.getElementById('evalConsignes').value)}</div>` : ''}
     ${evaluationExercises.map((ex,i)=>`
-      <div style="margin-bottom:8px;">
+      <div style="margin-bottom:8px;${evalPageBreaksAfter.has(ex.id)?'page-break-after:always;break-after:page;':''}">
         <p style="font-weight:700;margin:0 0 5px;display:grid;grid-template-columns:1fr 70px;gap:8px;">
           <span>Exercice ${i+1}${ex.title ? ' · '+escapeHtml(ex.title) : ''}</span>
-          <span style="text-align:right;">${ex.bareme ? ex.bareme+' pts' : ''}</span>
+          <span style="text-align:right;">${ex.bareme ? formatPts(ex.bareme) : ''}</span>
         </p>
         ${blocksRowsHTML('ex-'+ex.id, ensureExRows(ex), false, ex.cellBorders)}
       </div>

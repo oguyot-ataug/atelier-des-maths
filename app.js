@@ -2279,6 +2279,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.546', items:[
+    "Évaluations : fix de l'accord du barème (\"1 pt\" au lieu de \"1 pts\"). Nouveau bouton \"Saut de page\" sur chaque exercice, pour contrôler la pagination à l'impression. Nouveau champ \"Consignes générales\", affiché en haut de la copie avant le premier exercice, indépendant de tout exercice précis.",
+  ]},
   { version:'2026-08-19.545', items:[
     "Évaluations partagées : la sauvegarde fusionne désormais exercice par exercice -- si un collègue modifie un exercice pendant que vous en modifiez un autre, les deux modifications sont conservées au lieu que la dernière sauvegarde écrase l'autre. Le risque se limite maintenant au cas où vous modifiez tous les deux exactement le même exercice en même temps.",
   ]},
