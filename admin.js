@@ -706,7 +706,8 @@ function adminRenderAccountsListing(){
   const loginIdentifiant = email => email ? (email.endsWith('@mathcollege.local') ? email.slice(0, -('@mathcollege.local'.length)) : email) : '(inconnu)';
   const matches = p => {
     if(roleFilter && p.role!==roleFilter) return false;
-    if(classeFilter && !classIdsOf(p).includes(classeFilter)) return false;
+    if(classeFilter==='__sans_classe'){ if(classIdsOf(p).length>0) return false; }
+    else if(classeFilter && !classIdsOf(p).includes(classeFilter)) return false;
     if(uaiFilter && !uaisOf(p).includes(uaiFilter)) return false;
     if(search){
       const hay = ((p.nom||'')+' '+loginIdentifiant(p.email)).toLowerCase();
@@ -835,7 +836,7 @@ async function adminRefreshListings(){
   const classeSelect = document.getElementById('adminAccFilterClasse');
   if(classeSelect){
     const prev = classeSelect.value;
-    classeSelect.innerHTML = '<option value="">Toutes les classes</option>' + adminAccountsCache.classesList.map(c=>`<option value="${c.id}">${escapeHtml(c.nom)} (${escapeHtml(c.niveau)})</option>`).join('');
+    classeSelect.innerHTML = '<option value="">Toutes les classes</option><option value="__sans_classe">⚠ Sans classe</option>' + adminAccountsCache.classesList.map(c=>`<option value="${c.id}">${escapeHtml(c.nom)} (${escapeHtml(c.niveau)})</option>`).join('');
     if(adminAccountsCache.classesList.some(c=>c.id===prev)) classeSelect.value = prev;
   }
   const uaiSelect = document.getElementById('adminAccFilterUai');

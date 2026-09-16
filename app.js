@@ -2286,6 +2286,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.551', items:[
+    "Admin, \"Déjà enregistré\" : nouvelle option \"⚠ Sans classe\" dans le filtre par classe, pour retrouver les comptes (élèves ou profs) n'ayant aucune classe associée.",
+  ]},
   { version:'2026-08-19.550', items:[
     "Fix : \"combien y a-t-il ?\" -- le correctif précédent sur le \"y\" ne couvrait que \"il y a\" ; élargi pour couvrir toute tournure où \"y\" est suivi de \"a\" (\"y a-t-il\", \"qu'y a-t-il\"...).",
   ]},
