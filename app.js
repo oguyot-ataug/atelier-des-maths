@@ -1485,7 +1485,7 @@ async function toggleProjection(){
       #projHeader .cor-header-date{font-size:clamp(.85rem, 1.4vw, 1.1rem);color:#5B6472;margin-top:.2em;text-transform:capitalize;}
       #projContent{
         font-family:'Space Grotesk',Arial,sans-serif;color:#20242E;
-        font-size:clamp(1.6rem, 4.2vw, 3.4rem);line-height:1.7;font-weight:400;
+        font-size:clamp(1.2rem, 2.8vw, 2.2rem);line-height:1.7;font-weight:400;
         max-width:100%;text-align:left;
       }
       #projContent .hint{color:#9aa0a8;font-weight:400;}
@@ -2286,6 +2286,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.552', items:[
+    "Fix : dans l'outil de correction, la fenêtre de projection affichait le texte bien trop gros (jusqu'à 3,4rem, plus grand que le titre de l'en-tête) -- taille ramenée à une échelle plus raisonnable.",
+  ]},
   { version:'2026-08-19.551', items:[
     "Admin, \"Déjà enregistré\" : nouvelle option \"⚠ Sans classe\" dans le filtre par classe, pour retrouver les comptes (élèves ou profs) n'ayant aucune classe associée.",
   ]},
