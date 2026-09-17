@@ -68,6 +68,7 @@ document.getElementById('view-evaluation').innerHTML = `
       <button class="btn" onclick="saveEvaluation()"><span class=gicon>save</span> Sauvegarder / renommer</button>
       <button class="btn secondary" onclick="openEvalListModal()">📂 Mes évaluations</button>
       <button class="btn secondary" onclick="shareEvaluation()"><span class=gicon>link</span> Partager avec un collègue</button>
+      <button class="btn secondary" onclick="addEvaluationToCahier()"><span class=gicon>menu_book</span> Ajouter au cahier</button>
       <button class="btn secondary" id="btnEvalUndo" onclick="undoEvaluation()" style="display:none;"><span class=gicon>undo</span> Annuler la dernière modification</button>
       <span class="hint" id="evalSaveStatus" style="margin:0;"></span>
     </div>
@@ -715,6 +716,50 @@ async function clearEvaluation(){
   const collabBanner = document.getElementById('evalCollabBanner');
   if(collabBanner) collabBanner.innerHTML = '';
   renderEvalExercicesList();
+}
+/* Ajoute chaque exercice de l'évaluation au cahier de la classe active, sous forme d'entrées
+   normales (mêmes champs qu'une correction) -- un exercice = une entrée, avec son numéro et son
+   titre. Seul l'énoncé est repris (aucune correction n'existe encore à ce stade), donc aucun
+   risque de révéler les réponses. Réutilise directement blocksStores['ex-'+id] : pas de
+   duplication de données, le même mécanisme de sync que addToCahier() (app.js). */
+async function addEvaluationToCahier(){
+  if(!currentClassId){ await niceAlert("Sélectionnez d'abord une classe active (boutons en haut de page) avant d'ajouter au cahier."); return; }
+  if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant de l'ajouter au cahier."); return; }
+  const niveau = document.getElementById('evalNiveau').value;
+  const date = document.getElementById('evalDate').value || todayISO();
+  const typeSel = document.getElementById('evalType').value;
+  const typeTitle = (typeSel==='__custom' ? document.getElementById('evalTypeCustom').value.trim() : typeSel) || 'Évaluation';
+  const chapitres = getSelectedEvalChapitres().join(', ') || typeTitle;
+  const newEntries = evaluationExercises.map((ex,i)=>{
+    const ctx = 'ex-'+ex.id;
+    ensureExRows(ex);
+    return {
+      niveau,
+      chapitre: chapitres,
+      exo: String(i+1),
+      titre: (ex.title||'') + (ex.bareme ? (ex.title?' · ':'') + formatPts(Number(ex.bareme)) : ''),
+      date,
+      raw: '',
+      figure: blocksRowsHTML(ctx, ex.rows, false, ex.cellBorders),
+      blocksData: JSON.parse(JSON.stringify(blocksStores[ctx]||[])),
+      rows: JSON.parse(JSON.stringify(ex.rows||[1])),
+      cellBorders: JSON.parse(JSON.stringify(ex.cellBorders||{})),
+    };
+  });
+  cahier.push(...newEntries);
+  sortCahierInPlace();
+  saveCahier();
+  renderCahier();
+  if(isSyncEnabled()){
+    for(const entry of newEntries){
+      const res = await syncAddEntry(entry);
+      if(res.ok) entry.id = res.id;
+      else if(!res.offline){ await niceAlert("<span class=gicon>warning</span> Ajouté localement, mais échec de synchronisation avec le serveur pour au moins un exercice : "+(res.error||'erreur inconnue')+"."); break; }
+    }
+    saveCahier();
+    renderCahier();
+  }
+  await niceAlert(`${newEntries.length} exercice(s) ajouté(s) au cahier de la classe active, daté(s) du ${new Date(date+'T00:00:00').toLocaleDateString('fr-FR')}.`);
 }
 function buildEvaluationContentHTML(){
   const niveau = document.getElementById('evalNiveau').value;

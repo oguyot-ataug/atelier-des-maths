@@ -2286,6 +2286,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.554', items:[
+    "Créer une évaluation -- nouveau bouton « Ajouter au cahier » : chaque exercice de l'évaluation devient une entrée du cahier de correction de la classe active (numéro, titre, barème), pour que les élèves retrouvent l'énoncé du jour dans leur cahier. Seul l'énoncé est repris, aucune correction n'existe encore à ce stade.",
+  ]},
   { version:'2026-08-19.553', items:[
     "Fix : division posée -- après une soustraction, le chiffre suivant du dividende n'apparaissait jamais visuellement \"abaissé\" (ex. 628÷13 : la ligne affichait \"1 0\" au lieu de \"1 0 8\" avant la soustraction suivante), donnant l'impression qu'il avait été oublié. Corrigé dans l'aperçu final et dans le mode pas-à-pas.",
   ]},
