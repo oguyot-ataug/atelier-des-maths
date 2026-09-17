@@ -726,11 +726,34 @@ async function addEvaluationToCahier(){
   if(!currentClassId){ await niceAlert("Sélectionnez d'abord une classe active (boutons en haut de page) avant d'ajouter au cahier."); return; }
   if(!evaluationExercises.length){ await niceAlert("Ajoutez au moins un exercice avant de l'ajouter au cahier."); return; }
   const niveau = document.getElementById('evalNiveau').value;
+  const classes = document.getElementById('evalClasses').value.trim();
   const date = document.getElementById('evalDate').value || todayISO();
+  const duree = document.getElementById('evalDuree').value;
+  const consignes = document.getElementById('evalConsignes').value.trim();
   const typeSel = document.getElementById('evalType').value;
   const typeTitle = (typeSel==='__custom' ? document.getElementById('evalTypeCustom').value.trim() : typeSel) || 'Évaluation';
   const chapitres = getSelectedEvalChapitres().join(', ') || typeTitle;
-  const newEntries = evaluationExercises.map((ex,i)=>{
+  const total = evalBaremeTotal();
+  const dateFmt = new Date(date+'T00:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  // En-tête (titre, classe(s), durée, barème total, consignes) -- absente jusqu'ici du cahier :
+  // seuls les exercices y étaient repris, sans le cadre général de l'évaluation.
+  const headerEntry = {
+    niveau,
+    chapitre: chapitres,
+    exo: 'Cours',
+    titre: '',
+    date,
+    raw: '',
+    figure: `<div style="margin:2px 0 8px;">
+      <p style="font-weight:700;font-size:1.05rem;margin:0 0 4px;">${escapeHtml(typeTitle)} de Mathématiques${classes ? ' -- '+escapeHtml(classes) : ''}</p>
+      <p class="hint" style="margin:0;">${escapeHtml(dateFmt)}${duree ? ' · Durée : '+escapeHtml(duree)+' min' : ''}${total>0 ? ' · Barème total : '+formatPts(total) : ''}</p>
+      ${consignes ? `<div style="margin-top:8px;padding:8px 12px;border:1px solid rgba(28,43,57,.2);border-radius:6px;">${renderMathText(consignes)}</div>` : ''}
+    </div>`,
+    blocksData: [],
+    rows: [1],
+    cellBorders: {},
+  };
+  const newEntries = [headerEntry, ...evaluationExercises.map((ex,i)=>{
     const ctx = 'ex-'+ex.id;
     ensureExRows(ex);
     return {
@@ -745,7 +768,7 @@ async function addEvaluationToCahier(){
       rows: JSON.parse(JSON.stringify(ex.rows||[1])),
       cellBorders: JSON.parse(JSON.stringify(ex.cellBorders||{})),
     };
-  });
+  })];
   cahier.push(...newEntries);
   sortCahierInPlace();
   saveCahier();
@@ -759,7 +782,7 @@ async function addEvaluationToCahier(){
     saveCahier();
     renderCahier();
   }
-  await niceAlert(`${newEntries.length} exercice(s) ajouté(s) au cahier de la classe active, daté(s) du ${new Date(date+'T00:00:00').toLocaleDateString('fr-FR')}.`);
+  await niceAlert(`${evaluationExercises.length} exercice(s) (+ l'en-tête) ajouté(s) au cahier de la classe active, daté(s) du ${new Date(date+'T00:00:00').toLocaleDateString('fr-FR')}.`);
 }
 function buildEvaluationContentHTML(){
   const niveau = document.getElementById('evalNiveau').value;

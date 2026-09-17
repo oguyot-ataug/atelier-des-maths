@@ -2286,6 +2286,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.555', items:[
+    "Créer une évaluation -- « Ajouter au cahier » ajoute maintenant aussi l'en-tête (titre, classe, durée, barème total, consignes) en première entrée, avant les exercices : jusqu'ici seuls les exercices étaient repris, sans le cadre général.",
+  ]},
   { version:'2026-08-19.554', items:[
     "Créer une évaluation -- nouveau bouton « Ajouter au cahier » : chaque exercice de l'évaluation devient une entrée du cahier de correction de la classe active (numéro, titre, barème), pour que les élèves retrouvent l'énoncé du jour dans leur cahier. Seul l'énoncé est repris, aucune correction n'existe encore à ce stade.",
   ]},
