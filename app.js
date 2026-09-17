@@ -2286,6 +2286,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.556', items:[
+    "Cahier de corrections -- fix : l'en-tête d'évaluation ajoutée au cahier affichait \"Cours\" devant, sans rapport avec son contenu. Les entrées sans étiquette (exo vide) n'affichent plus rien devant leur titre.",
+  ]},
   { version:'2026-08-19.555', items:[
     "Créer une évaluation -- « Ajouter au cahier » ajoute maintenant aussi l'en-tête (titre, classe, durée, barème total, consignes) en première entrée, avant les exercices : jusqu'ici seuls les exercices étaient repris, sans le cadre général.",
   ]},
@@ -4230,7 +4233,10 @@ function clearCahier(btn){
 
 function entryRowsHTML(e, idx, editable, showRemoveBtn){
   if(showRemoveBtn===undefined) showRemoveBtn = true; // rétrocompatible (accordéon élève)
-  const refLabel = e.exo==='Cours' ? 'Cours' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo));
+  // exo==='' : entrée sans étiquette (ex. en-tête d'évaluation ajoutée au cahier), distinct de
+  // '-' (déjà utilisé par l'outil de correction pour "numéro non renseigné", qui affiche encore
+  // "Exercice -").
+  const refLabel = e.exo==='' ? '' : e.exo==='Cours' ? 'Cours' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo));
   let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}</div>`;
   if(editable){
     // Le déplacement ne peut se faire QU'À L'INTÉRIEUR du même groupe (même date + même

@@ -740,7 +740,7 @@ async function addEvaluationToCahier(){
   const headerEntry = {
     niveau,
     chapitre: chapitres,
-    exo: 'Cours',
+    exo: '',
     titre: '',
     date,
     raw: '',
