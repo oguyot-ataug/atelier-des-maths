@@ -1350,11 +1350,19 @@ function divisionPoseeHTML(res, vierge, showDiff){
   const rows = [{cells: dpAlignedCells(dividendStr, N-1, N), bold:true}];
   let lastEndCol = -1;
   if(showDiff){
+    // Chaque valeur qui va être divisée (ex. 108) doit apparaître en une seule ligne, chiffre
+    // du dividende abaissé compris -- jamais juste le reste seul (ex. 10) suivi directement de
+    // la ligne de soustraction suivante, ce qui donnerait l'impression que le chiffre suivant
+    // n'a jamais été abaissé. La toute première étape reste une exception : sa valeur est déjà
+    // visible dans les chiffres bruts du dividende, pas besoin de la réécrire.
+    let firstTrigger = true;
     res.steps.forEach((s,i)=>{
       if(s.sub>0){
+        if(!firstTrigger) rows.push({cells: dpAlignedCells(vierge?'':String(s.value), i, N)});
+        firstTrigger = false;
         rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:!vierge, underline:!vierge, endCol:i});
-        rows.push({cells: dpAlignedCells(vierge?'':String(s.value-s.sub), i, N)});
         lastEndCol = i;
+        if(i===N-1) rows.push({cells: dpAlignedCells(vierge?'':String(res.remainder), i, N)});
       }
     });
     if(lastEndCol < N-1) rows.push({cells: dpAlignedCells(vierge?'':String(res.remainder), N-1, N)});
@@ -1389,11 +1397,18 @@ function buildDivisionStages(res){
   const rows = [{cells: dpAlignedCells(dividendStr, N-1, N), bold:true}];
   const stages = [];
   let quotientSoFar = '';
+  let firstTrigger = true;
   stages.push({rows: rows.slice(), quotient: '', caption: `On pose la division de ${res.dividend} par ${res.divisor}.`});
   res.steps.forEach((s,i)=>{
     if(s.qDigit===null){
       stages.push({rows: rows.slice(), quotient: quotientSoFar, caption: `On prend le nombre ${s.value} : il est inférieur à ${res.divisor}, donc on prend un chiffre de plus.`});
     } else if(s.sub>0){
+      // La valeur divisée à cette étape (ex. 108) inclut le chiffre du dividende tout juste
+      // abaissé -- elle doit être visible en une seule ligne avant la soustraction, sinon on
+      // a l'impression que ce chiffre n'a jamais été abaissé. Exception : la toute première
+      // étape, dont la valeur est déjà visible dans les chiffres bruts du dividende.
+      if(!firstTrigger) rows.push({cells: dpAlignedCells(String(s.value), i, N)});
+      firstTrigger = false;
       rows.push({cells: dpAlignedCells(String(s.sub), i, N), sign:true, underline:true, endCol:i});
       rows.push({cells: dpAlignedCells(String(s.value-s.sub), i, N)});
       quotientSoFar += s.qDigit;

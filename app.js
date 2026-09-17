@@ -2286,6 +2286,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.553', items:[
+    "Fix : division posée -- après une soustraction, le chiffre suivant du dividende n'apparaissait jamais visuellement \"abaissé\" (ex. 628÷13 : la ligne affichait \"1 0\" au lieu de \"1 0 8\" avant la soustraction suivante), donnant l'impression qu'il avait été oublié. Corrigé dans l'aperçu final et dans le mode pas-à-pas.",
+  ]},
   { version:'2026-08-19.552', items:[
     "Fix : dans l'outil de correction, la fenêtre de projection affichait le texte bien trop gros (jusqu'à 3,4rem, plus grand que le titre de l'en-tête) -- taille ramenée à une échelle plus raisonnable.",
   ]},
