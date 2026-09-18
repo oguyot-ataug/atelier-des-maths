@@ -1173,8 +1173,15 @@ async function exportCoursPDF(){
   // n'ont pas la place de tenir sur la largeur réduite du wrapper PDF (700px, contre ~1032px
   // sur le site) et retombent sur 1 seule colonne -- forcé à 2 colonnes fixes pour l'export,
   // indépendamment de la largeur (signalé : "il n'y a plus deux calculs par ligne").
-  clone.querySelectorAll('[style*="grid-template-columns"][style*="auto-fit"]').forEach(el=>{
-    el.style.gridTemplateColumns = 'repeat(2, 1fr)';
+  clone.querySelectorAll('[style*="grid-template-columns"]').forEach(el=>{
+    if(el.getAttribute('style').includes('auto-fit')) el.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    // Marquer chaque case (def-box) insécable ne suffit pas : si le saut de page tombe QUAND
+    // MÊME à l'intérieur de la grille (CSS Grid, positionnement en 2D), html2pdf ne sait pas
+    // repousser correctement une seule case sans casser l'alignement des autres -- constaté :
+    // la case A tranchée en deux, sa suite réapparaissant décalée, désolidarisée de B/C/D.
+    // La grille entière est donc protégée comme un seul bloc insécable (petite, tient sans
+    // problème sur une page).
+    el.style.pageBreakInside='avoid'; el.style.breakInside='avoid';
   });
   // Un encadré (définition/propriété/règle/exemple) coupé au milieu par un saut de page est
   // illisible -- protégé dans tous les cas, pas seulement s'il contient une formule (signalé :
@@ -2351,6 +2358,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.563', items:[
+    "Export PDF -- fix (constaté sur un vrai PDF) : la grille \"Calculs astucieux\" pouvait être tranchée en plein milieu par un saut de page, avec une case (A) coupée en deux et sa suite réapparaissant décalée, désolidarisée des autres. Marquer chaque case comme insécable ne suffisait pas -- la grille entière est maintenant protégée comme un seul bloc insécable.",
+  ]},
   { version:'2026-08-19.562', items:[
     "Export PDF -- 2 nouvelles corrections, confirmées sur un vrai PDF généré : (1) les grilles à 2 colonnes (ex. \"Calculs astucieux\" du paragraphe Distributivité, 5e N1) retombaient à 1 seule colonne dans le PDF car le wrapper d'export est beaucoup plus étroit (700px) que le site (~1032px) -- forcées à 2 colonnes fixes pour l'export ; (2) le dernier paragraphe d'un chapitre pouvait être coupé en plein milieu par un saut de page (la protection anti-coupure ne s'appliquait qu'aux paragraphes contenant une formule) -- étendue à tous les paragraphes.",
   ]},
