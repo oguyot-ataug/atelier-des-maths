@@ -124,16 +124,16 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
       <p style="margin:4px 0 12px;">C'est la même aire, calculée de deux façons différentes, donc <b>k × (a + b) = k × a + k × b</b>.</p>
 
       <div class="sub-header"><span class="letter">B</span><h4>Exemples</h4></div>
-      <p class="example-title">Exemple 1 : calcule de deux façons B = 7 × (4 + 6).</p>
+      <p class="example-title">Exemple 1 : calcule de deux façons A = 7 × (4 + 6).</p>
       <ul class="example-list">
-        <li>Méthode directe : B = 7 × 10 = 70.</li>
-        <li>Avec la distributivité : B = 7 × 4 + 7 × 6 = 28 + 42 = 70.</li>
+        <li>Méthode directe : A = 7 × 10 = 70.</li>
+        <li>Avec la distributivité : A = 7 × 4 + 7 × 6 = 28 + 42 = 70.</li>
       </ul>
       <p class="hint" style="margin:-8px 0 16px;">On retrouve bien le même résultat par les deux méthodes.</p>
-      <p class="example-title">Exemple 2 : calcule de deux façons C = 9 × (12 − 4).</p>
+      <p class="example-title">Exemple 2 : calcule de deux façons B = 9 × (12 − 4).</p>
       <ul class="example-list">
-        <li>Méthode directe : C = 9 × 8 = 72.</li>
-        <li>Avec la distributivité : C = 9 × 12 − 9 × 4 = 108 − 36 = 72.</li>
+        <li>Méthode directe : B = 9 × 8 = 72.</li>
+        <li>Avec la distributivité : B = 9 × 12 − 9 × 4 = 108 − 36 = 72.</li>
       </ul>
 
       <div class="sub-header"><span class="letter">C</span><h4>Calculs astucieux</h4></div>
@@ -152,7 +152,7 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
           <div>&nbsp;&nbsp;36</div>
           <div style="border-bottom:1.5px solid #1C1B2E;padding-bottom:4px;">×&nbsp;23</div>
           <div style="color:#0C5BA0;">108</div>
-          <div style="color:#FF8208;">720&nbsp;</div>
+          <div style="color:#FF8208;">720</div>
           <div style="border-top:1.5px solid #1C1B2E;padding-top:4px;font-weight:700;">828</div>
         </div>
       </div>
