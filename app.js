@@ -1160,12 +1160,21 @@ async function exportCoursPDF(){
   clone.querySelectorAll('.we-expr').forEach(el=>{ el.style.fontSize='0.85em'; });
   clone.querySelectorAll('.interaction-hint').forEach(el=>el.remove());
   await expandStepDemosInClone(clone);
-  // Empêche un saut de page de couper une formule en deux (ce qui provoque un chevauchement visuel).
+  // Empêche un saut de page de couper un paragraphe (ou une formule) en deux au milieu d'une
+  // phrase -- protégé dans tous les cas, pas seulement s'il contient une formule (signalé :
+  // "le dernier texte est coupé").
   clone.querySelectorAll('p, li, .step-column > div').forEach(el=>{
+    el.style.pageBreakInside='avoid'; el.style.breakInside='avoid';
     if(el.querySelector('.tex')){
-      el.style.pageBreakInside='avoid'; el.style.breakInside='avoid';
       el.style.lineHeight='2.2'; // laisse assez de place verticale au numérateur/dénominateur d'une fraction
     }
+  });
+  // PDF uniquement : les grilles "auto-fit" (ex. "Calculs astucieux", 2 colonnes sur le site)
+  // n'ont pas la place de tenir sur la largeur réduite du wrapper PDF (700px, contre ~1032px
+  // sur le site) et retombent sur 1 seule colonne -- forcé à 2 colonnes fixes pour l'export,
+  // indépendamment de la largeur (signalé : "il n'y a plus deux calculs par ligne").
+  clone.querySelectorAll('[style*="grid-template-columns"][style*="auto-fit"]').forEach(el=>{
+    el.style.gridTemplateColumns = 'repeat(2, 1fr)';
   });
   // Un encadré (définition/propriété/règle/exemple) coupé au milieu par un saut de page est
   // illisible -- protégé dans tous les cas, pas seulement s'il contient une formule (signalé :
@@ -2342,6 +2351,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.562', items:[
+    "Export PDF -- 2 nouvelles corrections, confirmées sur un vrai PDF généré : (1) les grilles à 2 colonnes (ex. \"Calculs astucieux\" du paragraphe Distributivité, 5e N1) retombaient à 1 seule colonne dans le PDF car le wrapper d'export est beaucoup plus étroit (700px) que le site (~1032px) -- forcées à 2 colonnes fixes pour l'export ; (2) le dernier paragraphe d'un chapitre pouvait être coupé en plein milieu par un saut de page (la protection anti-coupure ne s'appliquait qu'aux paragraphes contenant une formule) -- étendue à tous les paragraphes.",
+  ]},
   { version:'2026-08-19.561', items:[
     "Export PDF (prof/admin) -- 3 corrections signalées : (1) la case \"masquer les propriétés\" ne masquait presque jamais rien, car elle ne reconnaissait que le badge exact \"Propriétés\" (pluriel, sans numéro) alors que la quasi-totalité des chapitres utilisent \"Propriété\", \"Propriété 1\", \"Propriétés 2\"... -- pareil pour \"Définition\" au singulier ; (2) un encadré (définition/propriété/règle/exemple) ou une carte de calcul posé (multiplication, division...) pouvait être coupé au milieu par un saut de page -- protégés dans tous les cas, pas seulement s'ils contiennent une formule. Nouveauté : la modale d'export permet maintenant de cocher les paragraphes numérotés à inclure (tout est coché par défaut), pour exporter un seul paragraphe au lieu du chapitre entier.",
   ]},
