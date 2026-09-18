@@ -139,10 +139,10 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
       <div class="sub-header"><span class="letter">C</span><h4>Calculs astucieux</h4></div>
       <p style="margin:0 0 10px;">La distributivité permet de calculer plus vite de tête, en faisant apparaître 100 (ou un autre nombre facile à multiplier).</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 20px;margin-bottom:14px;">
-        <div class="def-box" style="margin:0;">47 × 101<br>= 47 × (100 + 1)<br>= 4 700 + 47<br>= <b>4 747</b></div>
-        <div class="def-box" style="margin:0;">8 × 99<br>= 8 × (100 − 1)<br>= 800 − 8<br>= <b>792</b></div>
-        <div class="def-box" style="margin:0;">6 × 102<br>= 6 × (100 + 2)<br>= 600 + 12<br>= <b>612</b></div>
-        <div class="def-box" style="margin:0;">5 × 98<br>= 5 × (100 − 2)<br>= 500 − 10<br>= <b>490</b></div>
+        <div class="def-box" style="margin:0;">A = 47 × 101<br>A = 47 × (100 + 1)<br>A = 47 × 100 + 47 × 1<br>A = 4 700 + 47<br>A = <b>4 747</b></div>
+        <div class="def-box" style="margin:0;">B = 8 × 99<br>B = 8 × (100 − 1)<br>B = 8 × 100 − 8 × 1<br>B = 800 − 8<br>B = <b>792</b></div>
+        <div class="def-box" style="margin:0;">C = 6 × 102<br>C = 6 × (100 + 2)<br>C = 6 × 100 + 6 × 2<br>C = 600 + 12<br>C = <b>612</b></div>
+        <div class="def-box" style="margin:0;">D = 5 × 98<br>D = 5 × (100 − 2)<br>D = 5 × 100 − 5 × 2<br>D = 500 − 10<br>D = <b>490</b></div>
       </div>
 
       <div class="sub-header"><span class="letter">D</span><h4>On l'utilise depuis toujours, en posant les multiplications !</h4></div>
