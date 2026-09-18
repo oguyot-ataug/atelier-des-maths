@@ -1055,10 +1055,46 @@ function openExportPdfOptions(){
   document.getElementById('exportHideDefinitions').checked = false;
   document.getElementById('exportHideProprietes').checked = false;
   document.getElementById('exportHideRegles').checked = false;
+  populateExportParagraphChoices();
   document.getElementById('exportPdfOptionsOverlay').style.display='flex';
 }
 function closeExportPdfOptions(){
   document.getElementById('exportPdfOptionsOverlay').style.display='none';
+}
+// Liste les paragraphes numérotés (.lesson-header) du chapitre actuellement affiché, sous
+// forme de cases à cocher, toutes cochées par défaut (= comportement précédent : tout
+// exporter) -- signalé : "il serait mieux de pouvoir dire aussi quel paragraphe on souhaite
+// exporter".
+function populateExportParagraphChoices(){
+  const box = document.getElementById('exportParagraphChoices');
+  const headers = getVisibleCoursContent().querySelectorAll(':scope > .lesson-header');
+  if(!headers.length){ box.innerHTML = '<span class="hint">(chapitre sans paragraphes numérotés -- export intégral)</span>'; return; }
+  box.innerHTML = Array.from(headers).map(h=>{
+    const num = h.querySelector('.num')?.textContent.trim() || '';
+    const title = h.querySelector('h3')?.textContent.trim() || '';
+    return `<label class="hint" style="display:block;margin:0 0 6px;"><input type="checkbox" class="export-paragraph-check" data-num="${num}" checked> ${num}. ${title}</label>`;
+  }).join('');
+}
+function toggleAllExportParagraphs(){
+  const boxes = document.querySelectorAll('.export-paragraph-check');
+  const allChecked = Array.from(boxes).every(b=>b.checked);
+  boxes.forEach(b=>{ b.checked = !allChecked; });
+}
+// Retire du clone tout ce qui appartient à un paragraphe numéroté décoché. Structure ciblée :
+// tous les éléments d'un même paragraphe (badges, def-box, figures...) sont des frères
+// directs entre un .lesson-header et le suivant (jamais imbriqués dans un conteneur par
+// paragraphe) -- on bascule donc un simple booléen "keep" à chaque .lesson-header rencontré.
+function filterCoursByParagraph(clone){
+  const checks = Array.from(document.querySelectorAll('.export-paragraph-check'));
+  if(!checks.length || checks.every(c=>c.checked)) return; // rien de décoché -- export intégral, inchangé
+  const selectedNums = new Set(checks.filter(c=>c.checked).map(c=>c.dataset.num));
+  let keep = true;
+  Array.from(clone.children).forEach(el=>{
+    if(el.classList.contains('lesson-header')){
+      keep = selectedNums.has(el.querySelector('.num')?.textContent.trim());
+    }
+    if(!keep) el.remove();
+  });
 }
 /* Vide le contenu de chaque encadré définition/propriété/règle sélectionné pour être masqué,
    sans retirer l'encadré lui-même (qui reste visible, avec son étiquette) -- laisse de la
@@ -1079,7 +1115,12 @@ function blankOutSelectedBoxes(clone){
   ).join('');
   clone.querySelectorAll('.def-badge, .prop-badge').forEach(badge=>{
     const label = badge.textContent.trim();
-    const shouldHide = (label==='Définitions' && hideDef) || (label==='Propriétés' && hideProp) || (label.startsWith('Règle') && hideRegle);
+    // startsWith (pas ===) : les badges varient en nombre et en singulier/pluriel selon les
+    // chapitres ("Propriété", "Propriété 1", "Propriétés 2", "Définition", "Définitions"...) --
+    // une égalité stricte ne matchait que la forme plurielle sans numéro, ratant la grande
+    // majorité des badges "Propriété" (signalé : "j'avais coché de ne pas mettre... il a mis
+    // les propriétés").
+    const shouldHide = (label.startsWith('Définition') && hideDef) || (label.startsWith('Propriété') && hideProp) || (label.startsWith('Règle') && hideRegle);
     if(!shouldHide) return;
     const box = badge.nextElementSibling;
     if(box && box.classList.contains('def-box')){
@@ -1104,6 +1145,7 @@ async function exportCoursPDF(){
   const title = document.getElementById('chap-title').textContent || 'cours';
   await advanceAllStepDemosToEndAsync(content);
   const clone = content.cloneNode(true);
+  filterCoursByParagraph(clone);
   blankOutSelectedBoxes(clone);
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.read-aloud-btn').forEach(el=>el.remove());
@@ -1119,11 +1161,25 @@ async function exportCoursPDF(){
   clone.querySelectorAll('.interaction-hint').forEach(el=>el.remove());
   await expandStepDemosInClone(clone);
   // Empêche un saut de page de couper une formule en deux (ce qui provoque un chevauchement visuel).
-  clone.querySelectorAll('p, li, .def-box, .step-column > div').forEach(el=>{
+  clone.querySelectorAll('p, li, .step-column > div').forEach(el=>{
     if(el.querySelector('.tex')){
       el.style.pageBreakInside='avoid'; el.style.breakInside='avoid';
       el.style.lineHeight='2.2'; // laisse assez de place verticale au numérateur/dénominateur d'une fraction
     }
+  });
+  // Un encadré (définition/propriété/règle/exemple) coupé au milieu par un saut de page est
+  // illisible -- protégé dans tous les cas, pas seulement s'il contient une formule (signalé :
+  // "du contenu peut être coupé : c'est moche").
+  clone.querySelectorAll('.def-box').forEach(el=>{
+    el.style.pageBreakInside='avoid'; el.style.breakInside='avoid';
+  });
+  // Même protection pour les encadrés "calcul posé" (multiplication posée, division posée...),
+  // qui suivent tous la même convention de mise en page : une carte centrée dans un conteneur
+  // display:flex;justify-content:center, en dehors de toute .def-box.
+  clone.querySelectorAll('div[style*="justify-content:center"]').forEach(wrap=>{
+    Array.from(wrap.children).forEach(child=>{
+      child.style.pageBreakInside='avoid'; child.style.breakInside='avoid';
+    });
   });
   // Empêche un saut de page de séparer un titre (ou un badge Règle/Définition) du contenu qui le suit juste après :
   // html2pdf ne "colle" pas fiablement deux éléments voisins avec page-break-before/after, donc on les regroupe
@@ -2286,6 +2342,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.561', items:[
+    "Export PDF (prof/admin) -- 3 corrections signalées : (1) la case \"masquer les propriétés\" ne masquait presque jamais rien, car elle ne reconnaissait que le badge exact \"Propriétés\" (pluriel, sans numéro) alors que la quasi-totalité des chapitres utilisent \"Propriété\", \"Propriété 1\", \"Propriétés 2\"... -- pareil pour \"Définition\" au singulier ; (2) un encadré (définition/propriété/règle/exemple) ou une carte de calcul posé (multiplication, division...) pouvait être coupé au milieu par un saut de page -- protégés dans tous les cas, pas seulement s'ils contiennent une formule. Nouveauté : la modale d'export permet maintenant de cocher les paragraphes numérotés à inclure (tout est coché par défaut), pour exporter un seul paragraphe au lieu du chapitre entier.",
+  ]},
   { version:'2026-08-19.560', items:[
     "5e -- N1 Opérations sur les nombres décimaux, paragraphe Distributivité : la multiplication posée indique maintenant directement, à droite de chaque ligne (108 et 720), d'où vient le résultat (← 3 × 36, ← 20 × 36). Les deux paragraphes d'explication qui redisaient la même chose juste en dessous ont été retirés (redondants).",
   ]},
