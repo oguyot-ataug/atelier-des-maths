@@ -2286,6 +2286,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.559', items:[
+    "5e -- N1 Opérations sur les nombres décimaux, paragraphe Distributivité : le commentaire sous la multiplication posée (108 = 3 × 36 / 720 = 20 × 36) et la phrase de conclusion (23 × 36 = ...) sont chacun sur leur propre ligne au lieu d'être regroupés, pour une lecture plus claire.",
+  ]},
   { version:'2026-08-19.558', items:[
     "5e -- N1 Opérations sur les nombres décimaux, paragraphe Distributivité -- corrections : les deux lignes de la multiplication posée (108 et 720) n'étaient plus alignées à cause d'un espace insécable en trop ; les deux exemples de la partie B étaient nommés B et C (conflit avec le C du paragraphe suivant), renommés A et B ; les 4 calculs astucieux détaillent maintenant l'étape intermédiaire (ex. A = 47 × 100 + 47 × 1) avec la lettre répétée à chaque ligne ; la grille de ces 4 calculs passe en 2 colonnes fixes (A/B puis C/D) pour éviter que les lignes de calcul ne soient coupées.",
   ]},

@@ -157,10 +157,13 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
         </div>
       </div>
       <p style="text-align:center;margin:10px 0 0;">
-        <span style="color:#0C5BA0;font-weight:700;">108 = 3 × 36</span> (ligne des <b>unités</b> de 23)&nbsp; +&nbsp;
+        <span style="color:#0C5BA0;font-weight:700;">108 = 3 × 36</span> (ligne des <b>unités</b> de 23)
+      </p>
+      <p style="text-align:center;margin:4px 0 0;">
         <span style="color:#FF8208;font-weight:700;">720 = 20 × 36</span> (ligne des <b>dizaines</b> de 23, décalée d'un rang -- on l'écrit souvent 72)
       </p>
-      <p style="margin:8px 0 0;">On retrouve exactement la distributivité, avec 23 = 20 + 3 : <b>23 × 36 = (20 × 36) + (3 × 36) = 720 + 108 = 828</b>.</p>
+      <p style="margin:8px 0 0;">On retrouve exactement la distributivité, avec 23 = 20 + 3 :</p>
+      <p style="margin:4px 0 0;"><b>23 × 36 = (20 × 36) + (3 × 36) = 720 + 108 = 828</b>.</p>
 
 `;
 
