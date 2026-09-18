@@ -86,6 +86,82 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
         Remarque : à la fin, on retrouve l'égalité <b>758 = (12 × 63) + 2</b>, avec 2 &lt; 12.
       </div>
 
+      <div class="lesson-header"><span class="num">4</span><h3>Distributivité</h3></div>
+      <span class="prop-badge">Propriété</span>
+      <div class="def-box">
+        Pour tous nombres <i>k</i>, <i>a</i> et <i>b</i> :
+        <div style="text-align:center;font-weight:700;margin:10px 0 4px;">k × (a + b) = k × a + k × b</div>
+        <div style="text-align:center;font-weight:700;margin:4px 0 10px;">k × (a − b) = k × a − k × b</div>
+        On dit que la multiplication est <b>distributive</b> sur l'addition et sur la soustraction.
+      </div>
+
+      <div class="sub-header"><span class="letter">A</span><h4>Démonstration : l'aire d'un rectangle découpé en deux</h4></div>
+      <div class="figure-wrap" style="max-width:420px;margin:12px auto;">
+        <svg viewBox="0 0 300 150" style="width:100%;display:block;">
+          <rect x="40" y="25" width="130" height="70" fill="rgba(12,91,160,.14)" stroke="#0C5BA0" stroke-width="2"/>
+          <rect x="170" y="25" width="90" height="70" fill="rgba(255,130,8,.14)" stroke="#FF8208" stroke-width="2"/>
+          <line x1="40" y1="15" x2="170" y2="15" stroke="#1C1B2E" stroke-width="1"/>
+          <line x1="40" y1="11" x2="40" y2="19" stroke="#1C1B2E" stroke-width="1"/>
+          <line x1="170" y1="11" x2="170" y2="19" stroke="#1C1B2E" stroke-width="1"/>
+          <text x="98" y="10" font-family="Space Grotesk" font-size="13" fill="#0C5BA0" text-anchor="middle">a</text>
+          <line x1="170" y1="15" x2="260" y2="15" stroke="#1C1B2E" stroke-width="1"/>
+          <line x1="260" y1="11" x2="260" y2="19" stroke="#1C1B2E" stroke-width="1"/>
+          <text x="215" y="10" font-family="Space Grotesk" font-size="13" fill="#FF8208" text-anchor="middle">b</text>
+          <line x1="25" y1="25" x2="25" y2="95" stroke="#1C1B2E" stroke-width="1"/>
+          <line x1="21" y1="25" x2="29" y2="25" stroke="#1C1B2E" stroke-width="1"/>
+          <line x1="21" y1="95" x2="29" y2="95" stroke="#1C1B2E" stroke-width="1"/>
+          <text x="14" y="64" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" text-anchor="middle">k</text>
+          <line x1="40" y1="105" x2="260" y2="105" stroke="#9CA3AF" stroke-width="1"/>
+          <line x1="40" y1="101" x2="40" y2="109" stroke="#9CA3AF" stroke-width="1"/>
+          <line x1="260" y1="101" x2="260" y2="109" stroke="#9CA3AF" stroke-width="1"/>
+          <text x="150" y="122" font-family="Space Grotesk" font-size="13" fill="#6B7A8C" text-anchor="middle">a + b</text>
+          <text x="105" y="64" font-family="Space Grotesk" font-size="13" fill="#0C5BA0" text-anchor="middle">k × a</text>
+          <text x="215" y="64" font-family="Space Grotesk" font-size="13" fill="#FF8208" text-anchor="middle">k × b</text>
+        </svg>
+      </div>
+      <p style="margin:8px 0 4px;">Ce grand rectangle a pour largeur <i>k</i> et pour longueur <i>a</i> + <i>b</i> : son aire est donc <b>k × (a + b)</b>.</p>
+      <p style="margin:4px 0 0;">Or, on peut aussi calculer son aire en additionnant celle des deux morceaux : le rectangle bleu, d'aire <b>k × a</b>, et le rectangle orange, d'aire <b>k × b</b>.</p>
+      <p style="margin:4px 0 12px;">C'est la même aire, calculée de deux façons différentes, donc <b>k × (a + b) = k × a + k × b</b>.</p>
+
+      <div class="sub-header"><span class="letter">B</span><h4>Exemples</h4></div>
+      <p class="example-title">Exemple 1 : calcule de deux façons B = 7 × (4 + 6).</p>
+      <ul class="example-list">
+        <li>Méthode directe : B = 7 × 10 = 70.</li>
+        <li>Avec la distributivité : B = 7 × 4 + 7 × 6 = 28 + 42 = 70.</li>
+      </ul>
+      <p class="hint" style="margin:-8px 0 16px;">On retrouve bien le même résultat par les deux méthodes.</p>
+      <p class="example-title">Exemple 2 : calcule de deux façons C = 9 × (12 − 4).</p>
+      <ul class="example-list">
+        <li>Méthode directe : C = 9 × 8 = 72.</li>
+        <li>Avec la distributivité : C = 9 × 12 − 9 × 4 = 108 − 36 = 72.</li>
+      </ul>
+
+      <div class="sub-header"><span class="letter">C</span><h4>Calculs astucieux</h4></div>
+      <p style="margin:0 0 10px;">La distributivité permet de calculer plus vite de tête, en faisant apparaître 100 (ou un autre nombre facile à multiplier).</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 20px;margin-bottom:14px;">
+        <div class="def-box" style="margin:0;">47 × 101<br>= 47 × (100 + 1)<br>= 4 700 + 47<br>= <b>4 747</b></div>
+        <div class="def-box" style="margin:0;">8 × 99<br>= 8 × (100 − 1)<br>= 800 − 8<br>= <b>792</b></div>
+        <div class="def-box" style="margin:0;">6 × 102<br>= 6 × (100 + 2)<br>= 600 + 12<br>= <b>612</b></div>
+        <div class="def-box" style="margin:0;">5 × 98<br>= 5 × (100 − 2)<br>= 500 − 10<br>= <b>490</b></div>
+      </div>
+
+      <div class="sub-header"><span class="letter">D</span><h4>On l'utilise depuis toujours, en posant les multiplications !</h4></div>
+      <p style="margin:0 0 10px;">Quand on pose une multiplication, on décompose en réalité l'un des facteurs en dizaines et en unités : c'est encore la distributivité, même si on ne l'écrit pas.</p>
+      <div style="display:flex;justify-content:center;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1.25rem;text-align:right;line-height:1.9;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);padding:16px 28px;">
+          <div>&nbsp;&nbsp;36</div>
+          <div style="border-bottom:1.5px solid #1C1B2E;padding-bottom:4px;">×&nbsp;23</div>
+          <div style="color:#0C5BA0;">108</div>
+          <div style="color:#FF8208;">720&nbsp;</div>
+          <div style="border-top:1.5px solid #1C1B2E;padding-top:4px;font-weight:700;">828</div>
+        </div>
+      </div>
+      <p style="text-align:center;margin:10px 0 0;">
+        <span style="color:#0C5BA0;font-weight:700;">108 = 3 × 36</span> (ligne des <b>unités</b> de 23)&nbsp; +&nbsp;
+        <span style="color:#FF8208;font-weight:700;">720 = 20 × 36</span> (ligne des <b>dizaines</b> de 23, décalée d'un rang -- on l'écrit souvent 72)
+      </p>
+      <p style="margin:8px 0 0;">On retrouve exactement la distributivité, avec 23 = 20 + 3 : <b>23 × 36 = (20 × 36) + (3 × 36) = 720 + 108 = 828</b>.</p>
+
 `;
 
 document.getElementById('histoire-demo-decimaux').innerHTML = `

@@ -2286,6 +2286,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.557', items:[
+    "5e -- N1 Opérations sur les nombres décimaux : nouveau paragraphe 4, Distributivité (k × (a + b) = k × a + k × b et sa version soustraction), avec démonstration par l'aire d'un rectangle découpé en deux, deux exemples vérifiant l'égalité par les deux méthodes, des calculs astucieux (×101, ×99, ×102, ×98 en passant par 100), et un rapprochement avec la multiplication posée (23 × 36 = (20 × 36) + (3 × 36), les deux lignes du calcul posé).",
+  ]},
   { version:'2026-08-19.556', items:[
     "Cahier de corrections -- fix : l'en-tête d'évaluation ajoutée au cahier affichait \"Cours\" devant, sans rapport avec son contenu. Les entrées sans étiquette (exo vide) n'affichent plus rien devant leur titre.",
   ]},
