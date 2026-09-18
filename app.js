@@ -2286,6 +2286,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.558', items:[
+    "5e -- N1 Opérations sur les nombres décimaux, paragraphe Distributivité -- corrections : les deux lignes de la multiplication posée (108 et 720) n'étaient plus alignées à cause d'un espace insécable en trop ; les deux exemples de la partie B étaient nommés B et C (conflit avec le C du paragraphe suivant), renommés A et B ; les 4 calculs astucieux détaillent maintenant l'étape intermédiaire (ex. A = 47 × 100 + 47 × 1) avec la lettre répétée à chaque ligne ; la grille de ces 4 calculs passe en 2 colonnes fixes (A/B puis C/D) pour éviter que les lignes de calcul ne soient coupées.",
+  ]},
   { version:'2026-08-19.557', items:[
     "5e -- N1 Opérations sur les nombres décimaux : nouveau paragraphe 4, Distributivité (k × (a + b) = k × a + k × b et sa version soustraction), avec démonstration par l'aire d'un rectangle découpé en deux, deux exemples vérifiant l'égalité par les deux méthodes, des calculs astucieux (×101, ×99, ×102, ×98 en passant par 100), et un rapprochement avec la multiplication posée (23 × 36 = (20 × 36) + (3 × 36), les deux lignes du calcul posé).",
   ]},
