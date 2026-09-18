@@ -138,7 +138,7 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
 
       <div class="sub-header"><span class="letter">C</span><h4>Calculs astucieux</h4></div>
       <p style="margin:0 0 10px;">La distributivité permet de calculer plus vite de tête, en faisant apparaître 100 (ou un autre nombre facile à multiplier).</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 20px;margin-bottom:14px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:10px 20px;margin-bottom:14px;">
         <div class="def-box" style="margin:0;">A = 47 × 101<br>A = 47 × (100 + 1)<br>A = 47 × 100 + 47 × 1<br>A = 4 700 + 47<br>A = <b>4 747</b></div>
         <div class="def-box" style="margin:0;">B = 8 × 99<br>B = 8 × (100 − 1)<br>B = 8 × 100 − 8 × 1<br>B = 800 − 8<br>B = <b>792</b></div>
         <div class="def-box" style="margin:0;">C = 6 × 102<br>C = 6 × (100 + 2)<br>C = 6 × 100 + 6 × 2<br>C = 600 + 12<br>C = <b>612</b></div>
