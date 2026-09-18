@@ -2286,6 +2286,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.560', items:[
+    "5e -- N1 Opérations sur les nombres décimaux, paragraphe Distributivité : la multiplication posée indique maintenant directement, à droite de chaque ligne (108 et 720), d'où vient le résultat (← 3 × 36, ← 20 × 36). Les deux paragraphes d'explication qui redisaient la même chose juste en dessous ont été retirés (redondants).",
+  ]},
   { version:'2026-08-19.559', items:[
     "5e -- N1 Opérations sur les nombres décimaux, paragraphe Distributivité : le commentaire sous la multiplication posée (108 = 3 × 36 / 720 = 20 × 36) et la phrase de conclusion (23 × 36 = ...) sont chacun sur leur propre ligne au lieu d'être regroupés, pour une lecture plus claire.",
   ]},

@@ -148,21 +148,20 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
       <div class="sub-header"><span class="letter">D</span><h4>On l'utilise depuis toujours, en posant les multiplications !</h4></div>
       <p style="margin:0 0 10px;">Quand on pose une multiplication, on décompose en réalité l'un des facteurs en dizaines et en unités : c'est encore la distributivité, même si on ne l'écrit pas.</p>
       <div style="display:flex;justify-content:center;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:1.25rem;text-align:right;line-height:1.9;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);padding:16px 28px;">
-          <div>&nbsp;&nbsp;36</div>
-          <div style="border-bottom:1.5px solid #1C1B2E;padding-bottom:4px;">×&nbsp;23</div>
-          <div style="color:#0C5BA0;">108</div>
-          <div style="color:#FF8208;">720</div>
-          <div style="border-top:1.5px solid #1C1B2E;padding-top:4px;font-weight:700;">828</div>
+        <div style="display:grid;grid-template-columns:auto auto;column-gap:18px;align-items:center;font-family:'JetBrains Mono',monospace;font-size:1.25rem;line-height:1.9;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);padding:16px 28px;">
+          <div style="text-align:right;">&nbsp;&nbsp;36</div>
+          <div></div>
+          <div style="text-align:right;border-bottom:1.5px solid #1C1B2E;padding-bottom:4px;">×&nbsp;23</div>
+          <div></div>
+          <div style="text-align:right;color:#0C5BA0;">108</div>
+          <div style="font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#0C5BA0;white-space:nowrap;">← 3 × 36</div>
+          <div style="text-align:right;color:#FF8208;">720</div>
+          <div style="font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:#FF8208;white-space:nowrap;">← 20 × 36</div>
+          <div style="text-align:right;border-top:1.5px solid #1C1B2E;padding-top:4px;font-weight:700;">828</div>
+          <div></div>
         </div>
       </div>
-      <p style="text-align:center;margin:10px 0 0;">
-        <span style="color:#0C5BA0;font-weight:700;">108 = 3 × 36</span> (ligne des <b>unités</b> de 23)
-      </p>
-      <p style="text-align:center;margin:4px 0 0;">
-        <span style="color:#FF8208;font-weight:700;">720 = 20 × 36</span> (ligne des <b>dizaines</b> de 23, décalée d'un rang -- on l'écrit souvent 72)
-      </p>
-      <p style="margin:8px 0 0;">On retrouve exactement la distributivité, avec 23 = 20 + 3 :</p>
+      <p style="margin:14px 0 0;">On retrouve exactement la distributivité, avec 23 = 20 + 3 :</p>
       <p style="margin:4px 0 0;"><b>23 × 36 = (20 × 36) + (3 × 36) = 720 + 108 = 828</b>.</p>
 
 `;
