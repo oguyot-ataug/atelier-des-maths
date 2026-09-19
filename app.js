@@ -2360,6 +2360,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.573', items:[
+    "Fix (suite) -- un compte admin+prof voyait encore toutes les classes dans Supervision malgré le correctif précédent : celui-ci ne portait que sur le nouvel onglet \"Mes classes\", pas sur le sélecteur de classe active en haut de page (loadMyClasses), partagé par Supervision, Cahier de correction et les autres outils prof. Ce sélecteur ne montre désormais plus que les classes où le compte est effectivement prof, quel que soit son rôle -- Administration reste le seul endroit listant toutes les classes.",
+  ]},
   { version:'2026-08-19.572', items:[
     "Administration -- nouveau : bouton \"Supprimer cette classe\" (n'existait pas jusqu'ici, signalé : \"comment un administrateur peut-il supprimer des classes ?\"). Refusée avec un message explicite tant que la classe a le moindre historique (sessions/résultats de Permis Rapporteur, résultats du Compte est bon ou d'automatismes, devoirs, entrées de cahier) -- l'historique d'une classe déjà utilisée n'est jamais effacé silencieusement.",
   ]},
@@ -3683,14 +3686,16 @@ async function selectClassFromModal(id){
 }
 async function loadMyClasses(){
   if(!currentUser) return;
-  let classesList, error;
-  if(currentUserRole==='admin'){
-    const res = await sb.from('classes').select('id,nom,niveau');
-    classesList = res.data || []; error = res.error;
-  } else {
-    const res = await sb.from('class_teachers').select('classes(id,nom,niveau)').eq('teacher_id', currentUser.id);
-    classesList = (res.data||[]).map(row=>row.classes).filter(Boolean); error = res.error;
-  }
+  // Toujours "mes classes" (celles où je suis prof), même pour un compte admin+prof --
+  // accountClassesList alimente le sélecteur de classe active partagé par tous les outils
+  // PROF (Supervision, Cahier de correction...) ; Administration a sa propre requête séparée
+  // (adminRefreshDropdowns, admin.js) qui continue de lister TOUTES les classes, c'est le bon
+  // endroit pour ça. Signalé : "je vois toujours dans Supervision toutes les classes alors que
+  // je ne suis pas professeur dans ces classes" -- un précédent correctif n'avait traité que le
+  // nouvel onglet "Mes classes" de Supervision, pas ce sélecteur, qui est la source commune de
+  // currentClassId partout ailleurs.
+  const res = await sb.from('class_teachers').select('classes(id,nom,niveau)').eq('teacher_id', currentUser.id);
+  let classesList = (res.data||[]).map(row=>row.classes).filter(Boolean), error = res.error;
   classesList.sort((a,b)=>a.nom.localeCompare(b.nom));
   populateAccountClassList(classesList);
   if(!accountClassesList.some(c=>c.id===currentClassId)){
