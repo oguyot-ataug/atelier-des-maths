@@ -182,7 +182,9 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       showView('view-evaluation'); setActiveTopnav('evaluation'); if(typeof initEvaluationView==='function') initEvaluationView();
     }
     if(nav==='tableau'){
-      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      // Accessible aux élèves aussi (même esprit que figure-sandbox, un espace de
+      // construction libre) -- signalé : "l'outil Tableau interactif est disponible
+      // uniquement pour le professeur. Permettre son utilisation par l'élève."
       showView('view-tableau'); setActiveTopnav('tableau'); if(typeof initTableauView==='function') initTableauView();
     }
     if(nav==='cahier'){
@@ -233,7 +235,7 @@ function setActiveTopnav(key){
   else if(key==='compte') document.querySelector('.nav-links button[data-nav="compte"]').classList.add('active');
   else if(key==='correction') document.querySelector('.nav-links button[data-nav="correction"]').classList.add('active');
   else if(key==='evaluation') document.querySelector('.nav-links button[data-nav="evaluation"]').classList.add('active');
-  else if(key==='tableau') document.querySelector('.nav-links button[data-nav="tableau"]').classList.add('active');
+  else if(key==='tableau') document.querySelectorAll('.nav-links button[data-nav="tableau"]').forEach(b=>b.classList.add('active'));
   else if(key==='cahier') document.querySelector('.nav-links button[data-nav="cahier"]').classList.add('active');
   else if(key==='admin') document.querySelector('.nav-links button[data-nav="admin"]').classList.add('active');
   else if(key==='supervision') document.querySelector('.nav-links button[data-nav="supervision"]').classList.add('active');
@@ -2358,6 +2360,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.569', items:[
+    "3 changements : (1) « Figure géométrique (bac à sable) » renommé en « Géométrie Interactive » ; (2) le Tableau interactif (géométrie -- règle, équerre, compas, rapporteur...) est désormais accessible aux élèves, pas seulement aux profs, via une nouvelle entrée dans le menu S'entraîner ; (3) les zones de texte du Tableau interactif peuvent désormais contenir de vraies mathématiques (fractions a/b, x^2, $...$ pour du LaTeX complexe -- même moteur que les Consignes d'une évaluation ou l'outil de correction), au lieu de texte brut uniquement.",
+  ]},
   { version:'2026-08-19.568', items:[
     "Outil prof \"Créer une évaluation\" -- dans la grille de notation par critères, les cases à cocher sont déplacées dans leur propre colonne à droite des consignes (au lieu d'être collées devant chaque item), fidèle au modèle d'origine fourni.",
   ]},
@@ -5903,7 +5908,7 @@ async function tbOpenCodageModal(){
 }
 let tbTextNextId = 1;
 async function tbAddTextZone(){
-  const text = await nicePrompt('Texte à afficher sur le tableau', '');
+  const text = await nicePrompt('Texte à afficher sur le tableau (maths : a/b, x^2, $...$ pour du LaTeX complexe)', '');
   if(text===null || !text.trim()) return;
   tbTexts.push({id: tbTextNextId++, x:450, y:280, text: text.trim(), fontSize:16});
   tbRender();
@@ -5912,7 +5917,7 @@ async function tbAddTextZone(){
 async function tbEditTextZone(id){
   const t = tbTexts.find(x=>x.id===id);
   if(!t) return;
-  const text = await nicePrompt('Texte -- laissez vide pour le retirer', t.text);
+  const text = await nicePrompt('Texte -- laissez vide pour le retirer (maths : a/b, x^2, $...$ pour du LaTeX complexe)', t.text);
   if(text===null) return;
   if(!text.trim()){ tbTexts = tbTexts.filter(x=>x.id!==id); } else { t.text = text.trim(); }
   tbRender();
@@ -6392,10 +6397,18 @@ function tbRender(){
   </g>`;
   }).join('');
   const textsHtml = tbTexts.map(t=>{
-    const w = Math.max(30, t.text.length*t.fontSize*0.56+10);
+    const w = Math.max(30, t.text.length*t.fontSize*0.62+16);
+    // Rendu via renderMathText (fractions a/b, x^2, $...$ pour du LaTeX complexe -- même
+    // moteur que le champ Consignes de l'évaluation ou l'outil de correction) au lieu d'un
+    // simple <text> SVG, qui ne peut afficher que du texte brut -- foreignObject nécessaire,
+    // un <text> SVG ne peut pas contenir de HTML/KaTeX (signalé : "permettre à l'élève
+    // d'écrire des mathématiques"). Rect invisible dédié à l'interaction (glisser) : le
+    // foreignObject reste pointer-events:none pour ne jamais lui voler le clic.
     return `<g data-role="textZone" data-id="${t.id}" style="cursor:move;">
     <rect x="${(t.x-5).toFixed(1)}" y="${(t.y-t.fontSize-4).toFixed(1)}" width="${w.toFixed(1)}" height="${(t.fontSize+10).toFixed(1)}" fill="transparent" pointer-events="all"/>
-    <text x="${t.x}" y="${t.y}" font-size="${t.fontSize}" fill="#1C1B2E" font-family="'Space Grotesk',sans-serif">${escapeHtml(t.text)}</text>
+    <foreignObject x="${(t.x-2).toFixed(1)}" y="${(t.y-t.fontSize-2).toFixed(1)}" width="${w.toFixed(1)}" height="${(t.fontSize*1.6+8).toFixed(1)}" style="overflow:visible;pointer-events:none;">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font-size:${t.fontSize}px;color:#1C1B2E;font-family:'Space Grotesk',sans-serif;line-height:1.3;white-space:nowrap;">${renderMathText(t.text)}</div>
+    </foreignObject>
   </g>`;
   }).join('');
   const codagesHtml = tbCodages.map(c=>{

@@ -28,7 +28,7 @@ const ROUTE_LABELS = {
 /* Routes reservees (role requis), miroir exact des gardes déjà présentes dans le
    gestionnaire de clic data-nav de app.js -- ne pas les dupliquer ailleurs. */
 const ROUTE_AUTH = {
-  correction:['prof','admin'], evaluation:['prof','admin'], tableau:['prof','admin'],
+  correction:['prof','admin'], evaluation:['prof','admin'],
   admin:['admin'], supervision:['prof','admin'], mesresultats:['eleve'],
 };
 
