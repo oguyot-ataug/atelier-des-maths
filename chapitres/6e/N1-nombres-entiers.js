@@ -263,14 +263,17 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
   <div class="exo-card">
     <div class="num">Entraînement libre</div>
     <h4 style="margin:0 0 6px;">Exerce-toi : division euclidienne</h4>
-    <p class="hint" style="margin:0 0 10px;">Choisis un dividende et un diviseur (ou tire un exercice au hasard), pose la division sur ton cahier, puis vérifie étape par étape.</p>
+    <p class="hint" style="margin:0 0 10px;">Indique un dividende et un diviseur (les tiens, ou au hasard) : la division posée se calcule automatiquement.</p>
     <div class="tool-row" style="margin-bottom:10px;">
-      <label class="hint" style="margin:0;">Dividende : <input type="number" id="neDivPracDividende" style="width:100px;margin-left:4px;" min="1"></label>
-      <label class="hint" style="margin:0;">Diviseur : <input type="number" id="neDivPracDiviseur" style="width:80px;margin-left:4px;" min="1"></label>
+      <input type="number" id="neDivPracDividende" placeholder="Dividende (ex. 823)" style="width:160px;">
+      <input type="number" id="neDivPracDiviseur" placeholder="Diviseur (ex. 14)" style="width:160px;">
       <button type="button" class="btn secondary" onclick="neGenerateDivPractice()"><span class="gicon">casino</span> Nombres au hasard</button>
-      <button type="button" class="btn" onclick="neStartDivPractice()">Vérifier étape par étape</button>
+      <button type="button" class="btn" onclick="neUpdateDivPractice()">Calculer</button>
     </div>
     <div id="neDivPracArea"></div>
+    <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="neDivPracStepByStep"> Afficher le détail étape par étape (plutôt que le résultat final seul)</label>
+    <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" id="neDivPracShowDiff" checked onchange="neUpdateDivPractice()"> Afficher les différences (détail des soustractions -- décochez pour ne garder que les restes successifs)</label>
+    <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" id="neDivPracVierge"> N'afficher que le dividende et le diviseur (à compléter toi-même sur ton cahier)</label>
   </div>
 </div>
 `;
@@ -305,44 +308,26 @@ function neDivisionPoseeNext(){ if(neDivisionPoseeIdx<NE_DIVISION_POSEE_STEPS.le
 function neDivisionPoseeReset(){ neDivisionPoseeIdx=0; neRenderDivisionPosee(); }
 
 /* ---- Exerce-toi : division euclidienne (dividende/diviseur au choix ou au hasard) --
-   réutilise computeDivisionPosee/buildDivisionStages/dpRenderDivisionTable
-   (outils-figures.js, chargé avant ce fichier), plutôt que de réécrire un widget de division
-   posée de plus : l'élève entre ses propres nombres (ou en tire au hasard), pose la division
-   sur son cahier, puis vérifie étape par étape -- signalé : "mettre cet outil de division
-   euclidienne dans les chapitres ... dans la partie exercices. Exerce-toi : dividende,
-   diviseur....". */
-let neDivPracRes = null, neDivPracStages = null, neDivPracIdx = 0;
+   même outil que celui du prof (previewDivisionPosee, outils-figures.js), avec les mêmes
+   options (étape par étape, différences, vierge), juste sans les boutons d'insertion --
+   signalé : "je ne pensais pas à un exercice étape par étape mais plutôt à l'outil identique
+   de celui du prof (sans les boutons d'ajout), juste aperçu ! et les mêmes options". */
 function neGenerateDivPractice(){
   document.getElementById('neDivPracDividende').value = Math.floor(Math.random()*900)+100; // 100-999
   document.getElementById('neDivPracDiviseur').value = Math.floor(Math.random()*17)+3; // 3-19
-  document.getElementById('neDivPracArea').innerHTML = '';
-  neDivPracStages = null;
+  neUpdateDivPractice();
 }
-function neStartDivPractice(){
-  const dividende = parseInt(document.getElementById('neDivPracDividende').value);
-  const diviseur = parseInt(document.getElementById('neDivPracDiviseur').value);
+function neUpdateDivPractice(){
+  const a = parseInt(document.getElementById('neDivPracDividende').value);
+  const b = parseInt(document.getElementById('neDivPracDiviseur').value);
   const area = document.getElementById('neDivPracArea');
-  const res = computeDivisionPosee(dividende, diviseur);
-  if(!res){ area.innerHTML = '<p class="hint" style="color:var(--accent-orange);">Entre un dividende et un diviseur entiers valides (diviseur non nul).</p>'; return; }
-  neDivPracRes = res;
-  neDivPracStages = buildDivisionStages(res);
-  neDivPracIdx = 0;
-  neRenderDivPractice();
+  const res = computeDivisionPosee(a,b);
+  if(!res){ area.innerHTML = divisionPoseeHTML(null); return; }
+  const stepByStep = document.getElementById('neDivPracStepByStep').checked;
+  const vierge = document.getElementById('neDivPracVierge').checked;
+  const showDiff = document.getElementById('neDivPracShowDiff').checked;
+  area.innerHTML = (stepByStep && !vierge) ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res, vierge, showDiff);
 }
-function neRenderDivPractice(){
-  if(!neDivPracStages) return;
-  const st = neDivPracStages[neDivPracIdx];
-  document.getElementById('neDivPracArea').innerHTML = `
-    <div class="figure-wrap" style="margin-top:10px;">
-      ${dpRenderDivisionTable(st.rows, st.quotient, neDivPracRes.divisor)}
-      <p class="hint" style="margin:8px 0 0;">${st.caption}</p>
-      <div class="figure-toolbar">
-        <button type="button" class="btn" onclick="neDivPracNext()">Étape suivante →</button>
-        <button type="button" class="btn secondary" onclick="neStartDivPractice()">Recommencer</button>
-      </div>
-    </div>`;
-}
-function neDivPracNext(){ if(neDivPracIdx<neDivPracStages.length-1) neDivPracIdx++; neRenderDivPractice(); }
 
 /* ---- Méthode : chiffre des... vs nombre de... (représentation visuelle) ----
    Signalé : "elle n'est pas assez visuelle. Il faudrait mettre en couleur le chiffre concerné

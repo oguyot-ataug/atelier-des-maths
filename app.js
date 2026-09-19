@@ -2361,6 +2361,9 @@ function populateSupervisionClassSelect(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.579', items:[
+    "« Exerce-toi : division euclidienne » (6e N1, 5e N1) revu : remplacé le déroulé étape par étape forcé par un aperçu direct identique à l'outil prof (mêmes options -- étape par étape, différences, vierge -- juste sans les boutons d'insertion). Résultat immédiat au clic sur Calculer, comme dans l'outil prof.",
+  ]},
   { version:'2026-08-19.578', items:[
     "Nouveau, dans les Exercices des chapitres 6e N1 Nombres entiers et 5e N1 Opérations sur les nombres décimaux : « Exerce-toi : division euclidienne ». L'élève choisit un dividende et un diviseur (ou en tire au hasard), puis vérifie sa division posée étape par étape -- réutilise l'outil Division euclidienne (avec son fix récent sur les quotients à 0). Au passage, les deux exercices de division déjà présents dans ces chapitres (946÷15 et 537÷23) perdent leurs parenthèses inutiles autour de la multiplication, comme l'outil.",
   ]},
