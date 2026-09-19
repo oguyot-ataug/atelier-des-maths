@@ -320,16 +320,18 @@ document.getElementById('exos-demo-decimaux').innerHTML = `
           <div class="num">Entraînement libre</div>
           <h4 style="margin:0 0 6px;">Exerce-toi : division euclidienne</h4>
           <p class="hint" style="margin:0 0 10px;">Indique un dividende et un diviseur (les tiens, ou au hasard) : la division posée se calcule automatiquement.</p>
-          <div class="tool-row" style="margin-bottom:10px;">
-            <input type="number" id="decDivPracDividende" placeholder="Dividende (ex. 823)" style="width:160px;">
-            <input type="number" id="decDivPracDiviseur" placeholder="Diviseur (ex. 14)" style="width:160px;">
-            <button type="button" class="btn secondary" onclick="decGenerateDivPractice()"><span class="gicon">casino</span> Nombres au hasard</button>
-            <button type="button" class="btn" onclick="decUpdateDivPractice()">Calculer</button>
+          <div data-role="dec-div-prac-widget">
+            <div class="tool-row" style="margin-bottom:10px;">
+              <input type="number" data-role="dec-div-prac-dividende" placeholder="Dividende (ex. 823)" style="width:160px;">
+              <input type="number" data-role="dec-div-prac-diviseur" placeholder="Diviseur (ex. 14)" style="width:160px;">
+              <button type="button" class="btn secondary" onclick="decGenerateDivPractice(this)"><span class="gicon">casino</span> Nombres au hasard</button>
+              <button type="button" class="btn" onclick="decUpdateDivPractice(this)">Calculer</button>
+            </div>
+            <div data-role="dec-div-prac-area"></div>
+            <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" data-role="dec-div-prac-step"> Afficher le détail étape par étape (plutôt que le résultat final seul)</label>
+            <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" data-role="dec-div-prac-diff" checked onchange="decUpdateDivPractice(this)"> Afficher les différences (détail des soustractions -- décochez pour ne garder que les restes successifs)</label>
+            <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" data-role="dec-div-prac-vierge"> N'afficher que le dividende et le diviseur (à compléter toi-même sur ton cahier)</label>
           </div>
-          <div id="decDivPracArea"></div>
-          <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="decDivPracStepByStep"> Afficher le détail étape par étape (plutôt que le résultat final seul)</label>
-          <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" id="decDivPracShowDiff" checked onchange="decUpdateDivPractice()"> Afficher les différences (détail des soustractions -- décochez pour ne garder que les restes successifs)</label>
-          <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" id="decDivPracVierge"> N'afficher que le dividende et le diviseur (à compléter toi-même sur ton cahier)</label>
         </div>
       </div>
 `;
@@ -390,20 +392,31 @@ function divisionPoseeReset(){ divisionPoseeIdx=0; renderDivisionPosee(); }
    options (étape par étape, différences, vierge), juste sans les boutons d'insertion --
    signalé : "je ne pensais pas à un exercice étape par étape mais plutôt à l'outil identique
    de celui du prof (sans les boutons d'ajout), juste aperçu ! et les mêmes options". */
-function decGenerateDivPractice(){
-  document.getElementById('decDivPracDividende').value = Math.floor(Math.random()*9000)+1000; // 1000-9999
-  document.getElementById('decDivPracDiviseur').value = Math.floor(Math.random()*90)+10; // 10-99
-  decUpdateDivPractice();
+/* Le widget est scopé via closest('[data-role="dec-div-prac-widget"]') plutôt que des id fixes :
+   signalé "en mode zoom, le résultat ne s'affiche pas" -- la loupe (openZoomBox, app.js) clone
+   le contenu de la carte dans #zoomBoxContent (via clone.innerHTML : la carte .exo-card elle-
+   même n'est PAS conservée, seuls ses enfants le sont) et re-préfixe tous les id pour éviter les
+   conflits avec l'original resté caché derrière l'overlay. Avec des id fixes, les boutons de la
+   copie zoomée continuaient donc à lire/écrire l'original invisible ; et closest('.exo-card')
+   échouait dans le zoom puisque ce conteneur n'y existe justement plus. Le wrapper dédié
+   [data-role="dec-div-prac-widget"], lui, fait partie des enfants clonés : il fonctionne donc à
+   l'identique, qu'on soit dans la carte normale ou dans sa copie zoomée. */
+function decGenerateDivPractice(btn){
+  const wrap = btn.closest('[data-role="dec-div-prac-widget"]');
+  wrap.querySelector('[data-role="dec-div-prac-dividende"]').value = Math.floor(Math.random()*9000)+1000; // 1000-9999
+  wrap.querySelector('[data-role="dec-div-prac-diviseur"]').value = Math.floor(Math.random()*90)+10; // 10-99
+  decUpdateDivPractice(btn);
 }
-function decUpdateDivPractice(){
-  const a = parseInt(document.getElementById('decDivPracDividende').value);
-  const b = parseInt(document.getElementById('decDivPracDiviseur').value);
-  const area = document.getElementById('decDivPracArea');
+function decUpdateDivPractice(el){
+  const wrap = el.closest('[data-role="dec-div-prac-widget"]');
+  const a = parseInt(wrap.querySelector('[data-role="dec-div-prac-dividende"]').value);
+  const b = parseInt(wrap.querySelector('[data-role="dec-div-prac-diviseur"]').value);
+  const area = wrap.querySelector('[data-role="dec-div-prac-area"]');
   const res = computeDivisionPosee(a,b);
   if(!res){ area.innerHTML = divisionPoseeHTML(null); return; }
-  const stepByStep = document.getElementById('decDivPracStepByStep').checked;
-  const vierge = document.getElementById('decDivPracVierge').checked;
-  const showDiff = document.getElementById('decDivPracShowDiff').checked;
+  const stepByStep = wrap.querySelector('[data-role="dec-div-prac-step"]').checked;
+  const vierge = wrap.querySelector('[data-role="dec-div-prac-vierge"]').checked;
+  const showDiff = wrap.querySelector('[data-role="dec-div-prac-diff"]').checked;
   area.innerHTML = (stepByStep && !vierge) ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res, vierge, showDiff);
 }
 

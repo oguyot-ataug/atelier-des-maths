@@ -264,16 +264,18 @@ document.getElementById('exos-demo-nombres-entiers').innerHTML = `
     <div class="num">Entraînement libre</div>
     <h4 style="margin:0 0 6px;">Exerce-toi : division euclidienne</h4>
     <p class="hint" style="margin:0 0 10px;">Indique un dividende et un diviseur (les tiens, ou au hasard) : la division posée se calcule automatiquement.</p>
-    <div class="tool-row" style="margin-bottom:10px;">
-      <input type="number" id="neDivPracDividende" placeholder="Dividende (ex. 823)" style="width:160px;">
-      <input type="number" id="neDivPracDiviseur" placeholder="Diviseur (ex. 14)" style="width:160px;">
-      <button type="button" class="btn secondary" onclick="neGenerateDivPractice()"><span class="gicon">casino</span> Nombres au hasard</button>
-      <button type="button" class="btn" onclick="neUpdateDivPractice()">Calculer</button>
+    <div data-role="ne-div-prac-widget">
+      <div class="tool-row" style="margin-bottom:10px;">
+        <input type="number" data-role="ne-div-prac-dividende" placeholder="Dividende (ex. 823)" style="width:160px;">
+        <input type="number" data-role="ne-div-prac-diviseur" placeholder="Diviseur (ex. 14)" style="width:160px;">
+        <button type="button" class="btn secondary" onclick="neGenerateDivPractice(this)"><span class="gicon">casino</span> Nombres au hasard</button>
+        <button type="button" class="btn" onclick="neUpdateDivPractice(this)">Calculer</button>
+      </div>
+      <div data-role="ne-div-prac-area"></div>
+      <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" data-role="ne-div-prac-step"> Afficher le détail étape par étape (plutôt que le résultat final seul)</label>
+      <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" data-role="ne-div-prac-diff" checked onchange="neUpdateDivPractice(this)"> Afficher les différences (détail des soustractions -- décochez pour ne garder que les restes successifs)</label>
+      <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" data-role="ne-div-prac-vierge"> N'afficher que le dividende et le diviseur (à compléter toi-même sur ton cahier)</label>
     </div>
-    <div id="neDivPracArea"></div>
-    <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="neDivPracStepByStep"> Afficher le détail étape par étape (plutôt que le résultat final seul)</label>
-    <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" id="neDivPracShowDiff" checked onchange="neUpdateDivPractice()"> Afficher les différences (détail des soustractions -- décochez pour ne garder que les restes successifs)</label>
-    <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" id="neDivPracVierge"> N'afficher que le dividende et le diviseur (à compléter toi-même sur ton cahier)</label>
   </div>
 </div>
 `;
@@ -312,20 +314,31 @@ function neDivisionPoseeReset(){ neDivisionPoseeIdx=0; neRenderDivisionPosee(); 
    options (étape par étape, différences, vierge), juste sans les boutons d'insertion --
    signalé : "je ne pensais pas à un exercice étape par étape mais plutôt à l'outil identique
    de celui du prof (sans les boutons d'ajout), juste aperçu ! et les mêmes options". */
-function neGenerateDivPractice(){
-  document.getElementById('neDivPracDividende').value = Math.floor(Math.random()*900)+100; // 100-999
-  document.getElementById('neDivPracDiviseur').value = Math.floor(Math.random()*17)+3; // 3-19
-  neUpdateDivPractice();
+/* Le widget est scopé via closest('[data-role="ne-div-prac-widget"]') plutôt que des id fixes :
+   signalé "en mode zoom, le résultat ne s'affiche pas" -- la loupe (openZoomBox, app.js) clone
+   le contenu de la carte dans #zoomBoxContent (via clone.innerHTML : la carte .exo-card elle-
+   même n'est PAS conservée, seuls ses enfants le sont) et re-préfixe tous les id pour éviter les
+   conflits avec l'original resté caché derrière l'overlay. Avec des id fixes, les boutons de la
+   copie zoomée continuaient donc à lire/écrire l'original invisible ; et closest('.exo-card')
+   échouait dans le zoom puisque ce conteneur n'y existe justement plus. Le wrapper dédié
+   [data-role="ne-div-prac-widget"], lui, fait partie des enfants clonés : il fonctionne donc à
+   l'identique, qu'on soit dans la carte normale ou dans sa copie zoomée. */
+function neGenerateDivPractice(btn){
+  const wrap = btn.closest('[data-role="ne-div-prac-widget"]');
+  wrap.querySelector('[data-role="ne-div-prac-dividende"]').value = Math.floor(Math.random()*900)+100; // 100-999
+  wrap.querySelector('[data-role="ne-div-prac-diviseur"]').value = Math.floor(Math.random()*17)+3; // 3-19
+  neUpdateDivPractice(btn);
 }
-function neUpdateDivPractice(){
-  const a = parseInt(document.getElementById('neDivPracDividende').value);
-  const b = parseInt(document.getElementById('neDivPracDiviseur').value);
-  const area = document.getElementById('neDivPracArea');
+function neUpdateDivPractice(el){
+  const wrap = el.closest('[data-role="ne-div-prac-widget"]');
+  const a = parseInt(wrap.querySelector('[data-role="ne-div-prac-dividende"]').value);
+  const b = parseInt(wrap.querySelector('[data-role="ne-div-prac-diviseur"]').value);
+  const area = wrap.querySelector('[data-role="ne-div-prac-area"]');
   const res = computeDivisionPosee(a,b);
   if(!res){ area.innerHTML = divisionPoseeHTML(null); return; }
-  const stepByStep = document.getElementById('neDivPracStepByStep').checked;
-  const vierge = document.getElementById('neDivPracVierge').checked;
-  const showDiff = document.getElementById('neDivPracShowDiff').checked;
+  const stepByStep = wrap.querySelector('[data-role="ne-div-prac-step"]').checked;
+  const vierge = wrap.querySelector('[data-role="ne-div-prac-vierge"]').checked;
+  const showDiff = wrap.querySelector('[data-role="ne-div-prac-diff"]').checked;
   area.innerHTML = (stepByStep && !vierge) ? divisionStagesHTML(buildDivisionStages(res), res) : divisionPoseeHTML(res, vierge, showDiff);
 }
 

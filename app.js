@@ -2361,6 +2361,9 @@ function populateSupervisionClassSelect(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.580', items:[
+    "Fix : dans le widget « Exerce-toi : division euclidienne » (6e N1, 5e N1), le résultat ne s'affichait pas en mode plein écran (loupe) -- la copie plein écran d'une carte d'exercice perd sa propre enveloppe (seul son contenu est dupliqué), donc les boutons qui cherchaient leur carte parente ne la trouvaient plus une fois zoomés. Au passage, fix plus général sur la loupe plein écran elle-même : un champ rempli ou une case décochée revenait à son état par défaut au moment du zoom (la copie ne gardait que la valeur d'origine, pas celle tapée ou modifiée) -- ce qui touchait potentiellement tout widget à champs de saisie affiché en plein écran, pas seulement celui-ci.",
+  ]},
   { version:'2026-08-19.579', items:[
     "« Exerce-toi : division euclidienne » (6e N1, 5e N1) revu : remplacé le déroulé étape par étape forcé par un aperçu direct identique à l'outil prof (mêmes options -- étape par étape, différences, vierge -- juste sans les boutons d'insertion). Résultat immédiat au clic sur Calculer, comme dans l'outil prof.",
   ]},
@@ -5129,8 +5132,15 @@ function refreshZoomBoxContent(){
     clone.querySelectorAll(`[data-target="${el.id}"]`).forEach(btn=>btn.setAttribute('data-target', newId));
     el.id = newId;
   });
+  // Transplante les vrais nœuds clonés (et non `clone.innerHTML`, une chaîne de caractères) --
+  // signalé : "en mode zoom, le résultat ne s'affiche pas" sur un widget avec des champs de
+  // saisie. cloneNode(true) copie bien la valeur ACTUELLE d'un champ ou l'état coché d'une
+  // case (pas seulement leur valeur par défaut), mais cette valeur vivante se perdait dès que
+  // `clone.innerHTML` la sérialisait en HTML (la sérialisation d'un <input> ne reflète que son
+  // attribut `value`/`checked` d'origine, jamais l'état modifié par l'utilisateur ou du JS) --
+  // les champs retombaient donc vides et les cases décochées se recochaient dans le zoom.
   const contentEl = document.getElementById('zoomBoxContent');
-  contentEl.innerHTML = clone.innerHTML;
+  contentEl.replaceChildren(...clone.childNodes);
   renderStaticMath(contentEl); // les formules KaTeX du clone doivent être rendues à nouveau
   document.getElementById('zoomBoxOverlay').style.display = 'flex';
 }
