@@ -2360,6 +2360,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.571', items:[
+    "Fix -- Supervision, onglet \"Mes classes\" : un compte à la fois admin et prof voyait systématiquement TOUTES les classes de l'établissement (comportement hérité du rôle admin), au lieu de seulement celles où il est effectivement prof. Administration reste l'endroit pour voir toutes les classes -- Supervision n'affiche désormais que les siennes, quel que soit le rôle du compte.",
+  ]},
   { version:'2026-08-19.570', items:[
     "Supervision -- nouvel onglet \"Mes classes\" : les classes du prof sont présentées en accordéon (comme dans Administration), avec la gestion des sessions de Permis Rapporteur (démarrer / clôturer) pour chacune. Jusqu'ici cette gestion n'existait que dans Administration, réservée aux admins -- un prof (sans ce rôle) ne pouvait donc jamais créer de session pour sa classe.",
   ]},
@@ -3828,27 +3831,27 @@ document.querySelectorAll('.sup-tab-btn').forEach(btn=>{
     if(btn.dataset.suptab==='classes') renderSupervisionClassesAccordion();
   });
 });
-/* Onglet "Mes classes" de Supervision : présente les classes du prof (ou toutes pour un admin)
-   en accordéon, comme dans Administration -- avec la gestion des sessions Permis Rapporteur,
-   jusqu'ici accessible seulement depuis Administration (réservée aux admins), inaccessible aux
-   profs qui n'ont pas ce rôle. Signalé : "le prof n'a pas accès à administration... il doit
-   pouvoir gérer ça dans l'outil supervision". Reprend le même schéma que
-   adminRefreshDropdowns() (admin.js) pour la partie Permis Rapporteur, adapté à la liste de
-   classes du compte courant (accountClassesList ne porte pas le niveau ni l'effectif, d'où une
-   requête dédiée ici plutôt que sa réutilisation directe). */
+/* Onglet "Mes classes" de Supervision : présente les classes DONT JE SUIS PROF en accordéon,
+   comme dans Administration -- avec la gestion des sessions Permis Rapporteur, jusqu'ici
+   accessible seulement depuis Administration (réservée aux admins), inaccessible aux profs
+   qui n'ont pas ce rôle. Signalé : "le prof n'a pas accès à administration... il doit pouvoir
+   gérer ça dans l'outil supervision". Toujours "mes classes", même pour un compte admin+prof
+   (voir plus bas) -- Administration reste l'endroit pour voir/gérer TOUTES les classes. Reprend
+   le même schéma que adminRefreshDropdowns() (admin.js) pour la partie Permis Rapporteur,
+   adapté à la liste de classes du compte courant (accountClassesList ne porte pas le niveau ni
+   l'effectif, d'où une requête dédiée ici plutôt que sa réutilisation directe). */
 async function renderSupervisionClassesAccordion(){
   const el = document.getElementById('supervisionClassesAccordion');
   if(!el || !currentUser) return;
   el.innerHTML = 'Chargement…';
-  let classesList;
-  if(currentUserRole==='admin'){
-    const res = await sb.from('classes').select('id,nom,niveau');
-    classesList = res.data || [];
-  } else {
-    const res = await sb.from('class_teachers').select('classes(id,nom,niveau)').eq('teacher_id', currentUser.id);
-    classesList = (res.data||[]).map(row=>row.classes).filter(Boolean);
-  }
-  if(!classesList.length){ el.innerHTML = '<p class="hint">Aucune classe associée à votre compte.</p>'; return; }
+  // Toujours "mes classes" (celles où je suis prof), jamais toutes les classes -- même pour
+  // un compte qui est À LA FOIS admin et prof : voir toutes les classes reste le rôle
+  // d'Administration, Supervision reste celui d'un prof sur SES classes (signalé : "en tant
+  // qu'administrateur et prof, je vois systématiquement toutes les classes dans la partie
+  // prof supervision -- n'afficher que mes classes").
+  const res = await sb.from('class_teachers').select('classes(id,nom,niveau)').eq('teacher_id', currentUser.id);
+  const classesList = (res.data||[]).map(row=>row.classes).filter(Boolean);
+  if(!classesList.length){ el.innerHTML = '<p class="hint">Aucune classe associée à votre compte en tant que professeur.</p>'; return; }
   classesList.sort((a,b)=>a.nom.localeCompare(b.nom));
   const classIds = classesList.map(c=>c.id);
   const { data: classStudents } = await sb.from('class_students').select('class_id').in('class_id', classIds);
