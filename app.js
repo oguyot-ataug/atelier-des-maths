@@ -2309,15 +2309,28 @@ function updateClassDisplays(name){
   if(classStatus) classStatus.textContent = name || 'aucune';
   const studentClassStatus = document.getElementById('studentClassStatus');
   if(studentClassStatus) studentClassStatus.textContent = name || 'aucune';
+  const cahierClassStatus = document.getElementById('cahierClassStatus');
+  if(cahierClassStatus) cahierClassStatus.textContent = name || 'aucune';
   const btn = document.getElementById('accountClassButton');
   if(btn) btn.textContent = name || 'Choisir une classe...';
-  renderCorClassQuickPicker();
+  renderClassQuickPicker('corClassQuickPicker');
+  renderClassQuickPicker('cahierClassQuickPicker');
+  // Le sélecteur rapide du cahier (boutons cliquables, comme dans l'Outil de correction)
+  // n'a d'intérêt que pour un prof/admin qui bascule entre plusieurs classes -- un élève n'a
+  // qu'une seule classe, la ligne simple suffit. Signalé : "le mettre également dans la
+  // rubrique cahier d'élèves pour les profs".
+  const isStaff = currentUserRole==='prof' || currentUserRole==='admin';
+  const cahierClassBox = document.getElementById('cahierClassBox');
+  const cahierClassSimple = document.getElementById('cahierClassSimple');
+  if(cahierClassBox) cahierClassBox.style.display = isStaff ? 'block' : 'none';
+  if(cahierClassSimple) cahierClassSimple.style.display = isStaff ? 'none' : 'flex';
   updateAddCahierButtonState();
 }
-/* Boutons cliquables pour choisir directement une classe depuis l'outil de correction, sans
-   passer par le menu compte -- évite d'avoir à naviguer ailleurs juste pour ça. */
-function renderCorClassQuickPicker(){
-  const box = document.getElementById('corClassQuickPicker');
+/* Boutons cliquables pour choisir directement une classe sans passer par le menu compte --
+   réutilisé par l'Outil de correction (#corClassQuickPicker) et le Cahier de corrections
+   (#cahierClassQuickPicker, profs/admin seulement). */
+function renderClassQuickPicker(boxId){
+  const box = document.getElementById(boxId);
   if(!box) return;
   if(!accountClassesList.length){ box.innerHTML=''; return; }
   box.innerHTML = accountClassesList.map(c=>`
@@ -2360,6 +2373,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.574', items:[
+    "Cahier de corrections -- le sélecteur de classe active à boutons cliquables, jusqu'ici propre à l'Outil de correction, est désormais aussi disponible ici pour les profs/admin (permet de changer de classe sans passer par le menu compte). Un élève continue de voir uniquement la ligne simple, une seule classe le concernant.",
+  ]},
   { version:'2026-08-19.573', items:[
     "Fix (suite) -- un compte admin+prof voyait encore toutes les classes dans Supervision malgré le correctif précédent : celui-ci ne portait que sur le nouvel onglet \"Mes classes\", pas sur le sélecteur de classe active en haut de page (loadMyClasses), partagé par Supervision, Cahier de correction et les autres outils prof. Ce sélecteur ne montre désormais plus que les classes où le compte est effectivement prof, quel que soit son rôle -- Administration reste le seul endroit listant toutes les classes.",
   ]},
