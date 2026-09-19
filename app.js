@@ -2358,6 +2358,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.568', items:[
+    "Outil prof \"Créer une évaluation\" -- dans la grille de notation par critères, les cases à cocher sont déplacées dans leur propre colonne à droite des consignes (au lieu d'être collées devant chaque item), fidèle au modèle d'origine fourni.",
+  ]},
   { version:'2026-08-19.567', items:[
     "Outil prof \"Créer une évaluation\" -- la grille de notation par critères est déplacée sous les traits de l'appréciation du professeur, avant le premier exercice (elle était en page à part, à la fin). Police encore réduite (titre 7pt, tableau 6pt) pour empiéter le moins possible sur la place réservée aux exercices.",
   ]},

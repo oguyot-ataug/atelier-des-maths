@@ -862,7 +862,8 @@ function grilleNotationHTML(){
   const rows = criteres.map(c=>`
     <tr>
       <td style="border:1px solid #1C1B2E;padding:2px 5px;font-weight:700;vertical-align:top;">${escapeHtml(c.titre)}</td>
-      <td style="border:1px solid #1C1B2E;padding:2px 5px;vertical-align:top;">${c.items.map(it=>`<div>☐ ${escapeHtml(it)}</div>`).join('')}</td>
+      <td style="border:1px solid #1C1B2E;padding:2px 5px;vertical-align:top;">${c.items.map(it=>`<div>${escapeHtml(it)}</div>`).join('')}</td>
+      <td style="border:1px solid #1C1B2E;padding:2px 5px;text-align:center;vertical-align:top;">${c.items.map(()=>`<div>☐</div>`).join('')}</td>
       <td style="border:1px solid #1C1B2E;padding:2px 5px;font-weight:700;text-align:center;vertical-align:top;white-space:nowrap;">…. / ${formatPts(c.points).replace(' pts','').replace(' pt','')}</td>
     </tr>`).join('');
   return `
@@ -872,6 +873,7 @@ function grilleNotationHTML(){
         <thead><tr>
           <th style="border:1px solid #1C1B2E;padding:2px 5px;text-align:left;background:#EAF1F8;">Critère d'évaluation</th>
           <th style="border:1px solid #1C1B2E;padding:2px 5px;text-align:left;background:#EAF1F8;">Consignes associées</th>
+          <th style="border:1px solid #1C1B2E;padding:2px 5px;background:#EAF1F8;"></th>
           <th style="border:1px solid #1C1B2E;padding:2px 5px;text-align:center;background:#EAF1F8;white-space:nowrap;">… / ${total}</th>
         </tr></thead>
         <tbody>${rows}</tbody>
