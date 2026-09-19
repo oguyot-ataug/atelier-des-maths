@@ -83,7 +83,7 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
         </div>
       </div>
       <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
-        Remarque : à la fin, on retrouve l'égalité <b>758 = (12 × 63) + 2</b>, avec 2 &lt; 12.
+        Remarque : à la fin, on retrouve l'égalité <b>758 = 12 × 63 + 2</b>, avec 2 &lt; 12.
       </div>
 
       <div class="lesson-header"><span class="num">4</span><h3>Distributivité</h3></div>
@@ -300,7 +300,7 @@ document.getElementById('exos-demo-decimaux').innerHTML = `
                 </div>
               </div>
             </div>
-            <p style="margin:0 0 8px;">537 = (23 × 23) + 8, avec 8 &lt; 23.</p>
+            <p style="margin:0 0 8px;">537 = 23 × 23 + 8, avec 8 &lt; 23.</p>
             <p style="margin:0;">Vérification : 23 × 23 + 8 = 529 + 8 = <b>537</b>. ✓</p>
           </div>
         </div>
@@ -315,6 +315,18 @@ document.getElementById('exos-demo-decimaux').innerHTML = `
               <div class="we-row"><span class="we-expr">F = 6</span></div>
             </div>
           </div>
+        </div>
+        <div class="exo-card">
+          <div class="num">Entraînement libre</div>
+          <h4 style="margin:0 0 6px;">Exerce-toi : division euclidienne</h4>
+          <p class="hint" style="margin:0 0 10px;">Choisis un dividende et un diviseur (ou tire un exercice au hasard), pose la division sur ton cahier, puis vérifie étape par étape.</p>
+          <div class="tool-row" style="margin-bottom:10px;">
+            <label class="hint" style="margin:0;">Dividende : <input type="number" id="decDivPracDividende" style="width:100px;margin-left:4px;" min="1"></label>
+            <label class="hint" style="margin:0;">Diviseur : <input type="number" id="decDivPracDiviseur" style="width:80px;margin-left:4px;" min="1"></label>
+            <button type="button" class="btn secondary" onclick="decGenerateDivPractice()"><span class="gicon">casino</span> Nombres au hasard</button>
+            <button type="button" class="btn" onclick="decStartDivPractice()">Vérifier étape par étape</button>
+          </div>
+          <div id="decDivPracArea"></div>
         </div>
       </div>
 `;
@@ -369,6 +381,46 @@ function renderDivisionPosee(){
 function divisionPoseeNext(){ if(divisionPoseeIdx<DIVISION_POSEE_STEPS.length-1) divisionPoseeIdx++; renderDivisionPosee(); }
 
 function divisionPoseeReset(){ divisionPoseeIdx=0; renderDivisionPosee(); }
+
+/* ---- Exerce-toi : division euclidienne (dividende/diviseur au choix ou au hasard) --
+   réutilise computeDivisionPosee/buildDivisionStages/dpRenderDivisionTable
+   (outils-figures.js, chargé avant ce fichier), plutôt que de réécrire un widget de division
+   posée de plus : l'élève entre ses propres nombres (ou en tire au hasard), pose la division
+   sur son cahier, puis vérifie étape par étape -- signalé : "mettre cet outil de division
+   euclidienne dans les chapitres ... dans la partie exercices. Exerce-toi : dividende,
+   diviseur....". */
+let decDivPracRes = null, decDivPracStages = null, decDivPracIdx = 0;
+function decGenerateDivPractice(){
+  document.getElementById('decDivPracDividende').value = Math.floor(Math.random()*9000)+1000; // 1000-9999
+  document.getElementById('decDivPracDiviseur').value = Math.floor(Math.random()*90)+10; // 10-99
+  document.getElementById('decDivPracArea').innerHTML = '';
+  decDivPracStages = null;
+}
+function decStartDivPractice(){
+  const dividende = parseInt(document.getElementById('decDivPracDividende').value);
+  const diviseur = parseInt(document.getElementById('decDivPracDiviseur').value);
+  const area = document.getElementById('decDivPracArea');
+  const res = computeDivisionPosee(dividende, diviseur);
+  if(!res){ area.innerHTML = '<p class="hint" style="color:var(--accent-orange);">Entre un dividende et un diviseur entiers valides (diviseur non nul).</p>'; return; }
+  decDivPracRes = res;
+  decDivPracStages = buildDivisionStages(res);
+  decDivPracIdx = 0;
+  decRenderDivPractice();
+}
+function decRenderDivPractice(){
+  if(!decDivPracStages) return;
+  const st = decDivPracStages[decDivPracIdx];
+  document.getElementById('decDivPracArea').innerHTML = `
+    <div class="figure-wrap" style="margin-top:10px;">
+      ${dpRenderDivisionTable(st.rows, st.quotient, decDivPracRes.divisor)}
+      <p class="hint" style="margin:8px 0 0;">${st.caption}</p>
+      <div class="figure-toolbar">
+        <button type="button" class="btn" onclick="decDivPracNext()">Étape suivante →</button>
+        <button type="button" class="btn secondary" onclick="decStartDivPractice()">Recommencer</button>
+      </div>
+    </div>`;
+}
+function decDivPracNext(){ if(decDivPracIdx<decDivPracStages.length-1) decDivPracIdx++; decRenderDivPractice(); }
 
 /* ---- Méthode : calcul avec priorités ET parenthèses imbriquées combinées ---- */
 const OD_IMBRIQUEES_STEPS = [

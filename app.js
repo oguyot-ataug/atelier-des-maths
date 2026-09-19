@@ -2361,6 +2361,9 @@ function populateSupervisionClassSelect(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.578', items:[
+    "Nouveau, dans les Exercices des chapitres 6e N1 Nombres entiers et 5e N1 Opérations sur les nombres décimaux : « Exerce-toi : division euclidienne ». L'élève choisit un dividende et un diviseur (ou en tire au hasard), puis vérifie sa division posée étape par étape -- réutilise l'outil Division euclidienne (avec son fix récent sur les quotients à 0). Au passage, les deux exercices de division déjà présents dans ces chapitres (946÷15 et 537÷23) perdent leurs parenthèses inutiles autour de la multiplication, comme l'outil.",
+  ]},
   { version:'2026-08-19.577', items:[
     "Outil Division euclidienne -- fix important : quand un chiffre du quotient est 0 (ex. 1815 : 17, quotient 106), l'étape correspondante était totalement invisible dans le calcul posé -- le tableau sautait directement de la ligne précédente à la valeur suivante (108->115 sans jamais montrer 11), sans aucune trace du 0. La soustraction \"11 − 0 = 11\" s'affiche désormais comme n'importe quelle autre étape, avant de faire descendre le chiffre suivant -- dans l'aperçu simple (avec ou sans le détail des différences) et dans le déroulé pas à pas, avec une légende dédiée expliquant le 0.",
   ]},
