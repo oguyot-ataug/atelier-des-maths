@@ -2360,6 +2360,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.572', items:[
+    "Administration -- nouveau : bouton \"Supprimer cette classe\" (n'existait pas jusqu'ici, signalé : \"comment un administrateur peut-il supprimer des classes ?\"). Refusée avec un message explicite tant que la classe a le moindre historique (sessions/résultats de Permis Rapporteur, résultats du Compte est bon ou d'automatismes, devoirs, entrées de cahier) -- l'historique d'une classe déjà utilisée n'est jamais effacé silencieusement.",
+  ]},
   { version:'2026-08-19.571', items:[
     "Fix -- Supervision, onglet \"Mes classes\" : un compte à la fois admin et prof voyait systématiquement TOUTES les classes de l'établissement (comportement hérité du rôle admin), au lieu de seulement celles où il est effectivement prof. Administration reste l'endroit pour voir toutes les classes -- Supervision n'affiche désormais que les siennes, quel que soit le rôle du compte.",
   ]},

@@ -889,6 +889,9 @@ async function adminRefreshListings(){
             <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="adminDemarrerPermisSession('${c.id}')">+ Nouvelle session</button>
             ${sessionsHtml}
           </div>
+          <div style="margin-top:10px;text-align:right;">
+            <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;color:#a83c1f;border:1px solid #a83c1f;" onclick="adminSupprimerClasse('${c.id}','${escapeHtml(c.nom).replace(/'/g,"\\'")}')"><span class=gicon>delete</span> Supprimer cette classe</button>
+          </div>
         </div>
       </div>`;
     }).join('');
@@ -910,6 +913,38 @@ async function adminDemarrerPermisSession(classId){
 }
 async function adminCloturerPermisSession(sessionId){
   await sb.from('permis_rapporteur_sessions').update({cloturee:true}).eq('id', sessionId);
+  await adminRefreshDropdowns();
+}
+/* Suppression d'une classe -- bloquée dès qu'il reste le moindre historique (résultats,
+   sessions, devoirs, cahier), plutôt qu'une suppression en cascade qui l'effacerait
+   silencieusement : certaines des tables concernées (permis_rapporteur_sessions,
+   permis_rapporteur_resultats, ceb_results) référencent classes en NO ACTION (pas de
+   suppression en cascade côté base) et n'ont même pas de politique de sécurité autorisant leur
+   suppression depuis le client -- la suppression de la classe échouerait de toute façon dans
+   ce cas, avec une erreur peu claire pour l'admin. Ce contrôle donne un message explicite
+   plutôt que de laisser échouer la requête. Signalé : "comment un administrateur peut-il
+   supprimer des classes ?" -- cette fonctionnalité n'existait pas du tout jusqu'ici. */
+async function adminSupprimerClasse(classId, className){
+  if(!(await niceConfirm(`Supprimer définitivement la classe « ${className} » ? Les comptes élèves et profs ne sont pas supprimés, seulement leur rattachement à cette classe.`))) return;
+  const historyChecks = [
+    {table:'permis_rapporteur_sessions', col:'classe_id', label:'des sessions de Permis Rapporteur'},
+    {table:'permis_rapporteur_resultats', col:'classe_id', label:'des résultats de Permis Rapporteur'},
+    {table:'ceb_results', col:'class_id', label:'des résultats du Compte est bon'},
+    {table:'cm_results', col:'class_id', label:'des résultats d\'automatismes'},
+    {table:'devoirs', col:'class_id', label:'des devoirs'},
+    {table:'cahier_entries', col:'class_id', label:'des entrées de cahier'},
+  ];
+  const present = [];
+  for(const h of historyChecks){
+    const { data } = await sb.from(h.table).select('id').eq(h.col, classId).limit(1);
+    if(data && data.length) present.push(h.label);
+  }
+  if(present.length){
+    await niceAlert(`Impossible de supprimer cette classe : elle a encore ${present.join(', ')}. Cette classe a été utilisée -- son historique doit être conservé.`);
+    return;
+  }
+  const { error } = await sb.from('classes').delete().eq('id', classId);
+  if(error){ await niceAlert("Échec de la suppression : "+error.message); return; }
   await adminRefreshDropdowns();
 }
 async function adminRefreshBugReports(){
