@@ -868,7 +868,7 @@ function grilleNotationHTML(){
   return `
     <div style="page-break-before:always;break-before:page;">
       <p style="font-weight:700;font-size:1.1rem;margin:0 0 10px;">Grille de notation par critères</p>
-      <table style="width:100%;border-collapse:collapse;font-size:.92rem;">
+      <table style="width:100%;border-collapse:collapse;font-size:8pt;">
         <thead><tr>
           <th style="border:1px solid #1C1B2E;padding:8px 10px;text-align:left;background:#EAF1F8;">Critère d'évaluation</th>
           <th style="border:1px solid #1C1B2E;padding:8px 10px;text-align:left;background:#EAF1F8;">Consignes associées</th>

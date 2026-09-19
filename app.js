@@ -2358,6 +2358,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.566', items:[
+    "Outil prof \"Créer une évaluation\" -- la grille de notation par critères passe en police 8pt (au lieu de .92rem) pour prendre moins de place.",
+  ]},
   { version:'2026-08-19.565', items:[
     "Outil prof \"Créer une évaluation\" -- ajout d'une grille de notation par critères, en page à part à la fin de la copie : un vrai tableau (bordures, une case à cocher par item, colonne de points) fidèle à un modèle de grille de correction fourni. Pré-remplie par défaut (4 critères : Structure et Clarté, Propreté et Soin, Mise en Valeur des Résultats, Rigueur de Rédaction & Orthographe), modifiable via un champ texte au format simple (\"Titre : points\" puis lignes \"- item\"), et désactivable d'une case à cocher.",
   ]},
