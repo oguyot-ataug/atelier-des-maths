@@ -851,9 +851,9 @@ function parseGrilleNotation(text){
     };
   }).filter(Boolean);
 }
-// Grille de notation par critères, en page à part (fin de la copie) : un vrai tableau avec
-// bordures et une case à cocher par item, comme une grille de correction qu'un professeur
-// distribue en même temps que le sujet ou agrafe à la copie.
+// Grille de notation par critères, sous les traits de l'appréciation et avant le premier
+// exercice (jamais en page à part) : un vrai tableau avec bordures et une case à cocher par
+// item, en petit format pour ne pas empiéter sur la place réservée aux exercices.
 function grilleNotationHTML(){
   if(!document.getElementById('evalIncludeGrilleNotation').checked) return '';
   const criteres = parseGrilleNotation(document.getElementById('evalGrilleNotation').value);
@@ -861,18 +861,18 @@ function grilleNotationHTML(){
   const total = criteres.reduce((s,c)=>s+c.points, 0);
   const rows = criteres.map(c=>`
     <tr>
-      <td style="border:1px solid #1C1B2E;padding:8px 10px;font-weight:700;vertical-align:top;">${escapeHtml(c.titre)}</td>
-      <td style="border:1px solid #1C1B2E;padding:8px 10px;vertical-align:top;">${c.items.map(it=>`<div>☐ ${escapeHtml(it)}</div>`).join('')}</td>
-      <td style="border:1px solid #1C1B2E;padding:8px 10px;font-weight:700;text-align:center;vertical-align:top;white-space:nowrap;">…. / ${formatPts(c.points).replace(' pts','').replace(' pt','')}</td>
+      <td style="border:1px solid #1C1B2E;padding:2px 5px;font-weight:700;vertical-align:top;">${escapeHtml(c.titre)}</td>
+      <td style="border:1px solid #1C1B2E;padding:2px 5px;vertical-align:top;">${c.items.map(it=>`<div>☐ ${escapeHtml(it)}</div>`).join('')}</td>
+      <td style="border:1px solid #1C1B2E;padding:2px 5px;font-weight:700;text-align:center;vertical-align:top;white-space:nowrap;">…. / ${formatPts(c.points).replace(' pts','').replace(' pt','')}</td>
     </tr>`).join('');
   return `
-    <div style="page-break-before:always;break-before:page;">
-      <p style="font-weight:700;font-size:1.1rem;margin:0 0 10px;">Grille de notation par critères</p>
-      <table style="width:100%;border-collapse:collapse;font-size:8pt;">
+    <div style="margin:0 0 14px;">
+      <p style="font-weight:700;font-size:7pt;margin:0 0 3px;">Grille de notation par critères</p>
+      <table style="width:100%;border-collapse:collapse;font-size:6pt;">
         <thead><tr>
-          <th style="border:1px solid #1C1B2E;padding:8px 10px;text-align:left;background:#EAF1F8;">Critère d'évaluation</th>
-          <th style="border:1px solid #1C1B2E;padding:8px 10px;text-align:left;background:#EAF1F8;">Consignes associées</th>
-          <th style="border:1px solid #1C1B2E;padding:8px 10px;text-align:center;background:#EAF1F8;white-space:nowrap;">… / ${total}</th>
+          <th style="border:1px solid #1C1B2E;padding:2px 5px;text-align:left;background:#EAF1F8;">Critère d'évaluation</th>
+          <th style="border:1px solid #1C1B2E;padding:2px 5px;text-align:left;background:#EAF1F8;">Consignes associées</th>
+          <th style="border:1px solid #1C1B2E;padding:2px 5px;text-align:center;background:#EAF1F8;white-space:nowrap;">… / ${total}</th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
@@ -898,6 +898,7 @@ function buildEvaluationContentHTML(){
     <div style="height:2.4em;"></div>
     <p style="margin:0;">NOM : .................................................... Prénom : ....................................................</p>
     ${appreciationZoneHTML()}
+    ${grilleNotationHTML()}
     ${(document.getElementById('evalShowConsignes').checked && document.getElementById('evalConsignes').value.trim()) ? `<div style="margin:0 0 16px;padding:10px 14px;border:1px solid #1C1B2E;border-radius:6px;">${renderMathText(document.getElementById('evalConsignes').value)}</div>` : ''}
     ${evaluationExercises.map((ex,i)=>`
       <div data-ex-id="${ex.id}" style="margin-bottom:2.2em;${evalPageBreaksAfter.has(ex.id)?'page-break-after:always;break-after:page;':''}">
@@ -908,7 +909,6 @@ function buildEvaluationContentHTML(){
         ${blocksRowsHTML('ex-'+ex.id, ensureExRows(ex), false, ex.cellBorders)}
       </div>
     `).join('')}
-    ${grilleNotationHTML()}
   `;
 }
 /* Convertit un <svg> en image PNG (data URL) : html2canvas a un support natif des SVG très

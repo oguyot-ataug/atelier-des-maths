@@ -2358,6 +2358,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.567', items:[
+    "Outil prof \"Créer une évaluation\" -- la grille de notation par critères est déplacée sous les traits de l'appréciation du professeur, avant le premier exercice (elle était en page à part, à la fin). Police encore réduite (titre 7pt, tableau 6pt) pour empiéter le moins possible sur la place réservée aux exercices.",
+  ]},
   { version:'2026-08-19.566', items:[
     "Outil prof \"Créer une évaluation\" -- la grille de notation par critères passe en police 8pt (au lieu de .92rem) pour prendre moins de place.",
   ]},
