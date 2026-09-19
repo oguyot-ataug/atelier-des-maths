@@ -21,6 +21,30 @@
    cette lecture.
    ===================================================================== */
 
+// Contenu par défaut de la grille de notation par critères (voir grilleNotationHTML) --
+// reprend telle quelle la grille utilisée par l'utilisateur, pour ne pas repartir de zéro à
+// chaque évaluation. Un critère par paragraphe : "Titre : points" suivi de lignes "- item".
+const DEFAULT_GRILLE_NOTATION_TEXT = `Structure et Clarté : 5
+- Écrire « Mathématiques » en entier en haut de la copie.
+- Indiquer clairement les exercices et numéroter les questions conformément à l'énoncé.
+- Sauter une ligne après chaque exercice ou partie d'exercice.
+
+Propreté et Soin : 6
+- Pas de blanc (correcteur fluide/ruban) ni de « souris ».
+- Utiliser un brouillon pour éviter les ratures. Si une rature est inévitable, la faire proprement à la règle.
+- Respecter les marges : ne rien écrire dans la marge.
+
+Mise en Valeur des Résultats : 4
+- Encadrer ou souligner les résultats finaux en couleur (sauf rouge) et à la règle.
+- Ne pas rédiger le texte ou les calculs en rouge (couleur réservée à la correction).
+
+Rigueur de Rédaction & Orthographe : 5
+- Ne pas utiliser le pronom « je » (privilégier une formulation impersonnelle ou « on »).
+- Accorder une attention particulière à l'orthographe, à la grammaire et à la syntaxe.
+- Reprendre systématiquement les termes de la question posée dans la réponse rédigée.
+- Maîtriser les homophones grammaticaux fondamentaux (et/est, a/à).
+- Connaître l'orthographe du vocabulaire spécifique au chapitre.`;
+
 document.getElementById('view-evaluation').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;">Créer une évaluation</h1>
@@ -68,6 +92,10 @@ document.getElementById('view-evaluation').innerHTML = `
           <option value="0">Aucun</option>
         </select>
       </label>
+    </div>
+    <div class="tool-row" style="margin-bottom:10px;align-items:flex-start;">
+      <label class="hint" style="margin:0;"><input type="checkbox" id="evalIncludeGrilleNotation" checked onchange="scheduleEvalAutoSave()"> Inclure une grille de notation par critères (page à part, à la fin)</label>
+      <textarea id="evalGrilleNotation" style="flex:1;min-width:280px;min-height:44px;padding:7px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);font-family:inherit;font-size:.85rem;" oninput="scheduleEvalAutoSave()" placeholder="Un critère par paragraphe : &quot;Titre : points&quot; suivi de lignes &quot;- item&quot;">${escapeHtml(DEFAULT_GRILLE_NOTATION_TEXT)}</textarea>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
       <label class="hint" style="margin:0;"><input type="checkbox" id="evalUseAI" onchange="toggleEvalAIOptions()"> <span class=gicon>smart_toy</span> Laisser l'IA proposer des exercices</label>
@@ -187,7 +215,7 @@ function buildEvalPayload(exercisesOverride, blocksOverride){
     classes: document.getElementById('evalClasses').value,
     eval_date: document.getElementById('evalDate').value || null,
     duree: parseInt(document.getElementById('evalDuree').value) || null,
-    data: { evaluationExercises: exos, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalLineHeight: document.getElementById('evalLineHeight').value, evalConsignes: document.getElementById('evalConsignes').value, evalShowConsignes: document.getElementById('evalShowConsignes').checked, evalAppreciationLines: document.getElementById('evalAppreciationLines').value, pageBreaksAfter: Array.from(evalPageBreaksAfter) },
+    data: { evaluationExercises: exos, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalLineHeight: document.getElementById('evalLineHeight').value, evalConsignes: document.getElementById('evalConsignes').value, evalShowConsignes: document.getElementById('evalShowConsignes').checked, evalAppreciationLines: document.getElementById('evalAppreciationLines').value, evalIncludeGrilleNotation: document.getElementById('evalIncludeGrilleNotation').checked, evalGrilleNotation: document.getElementById('evalGrilleNotation').value, pageBreaksAfter: Array.from(evalPageBreaksAfter) },
   };
 }
 // Suivi du dernier état connu du serveur, exercice par exercice -- permet de savoir, à la
@@ -396,6 +424,8 @@ async function loadEvaluation(id){
   document.getElementById('evalConsignes').value = (data.data && data.data.evalConsignes) || '';
   document.getElementById('evalShowConsignes').checked = (data.data && data.data.evalShowConsignes!==undefined) ? data.data.evalShowConsignes : true;
   document.getElementById('evalAppreciationLines').value = (data.data && data.data.evalAppreciationLines) || '2';
+  document.getElementById('evalIncludeGrilleNotation').checked = (data.data && data.data.evalIncludeGrilleNotation!==undefined) ? data.data.evalIncludeGrilleNotation : true;
+  document.getElementById('evalGrilleNotation').value = (data.data && data.data.evalGrilleNotation!==undefined) ? data.data.evalGrilleNotation : DEFAULT_GRILLE_NOTATION_TEXT;
   evalPageBreaksAfter = new Set((data.data && data.data.pageBreaksAfter) || []);
   const savedType = (data.data && data.data.evalType) || 'Évaluation';
   const typeSelect = document.getElementById('evalType');
@@ -805,6 +835,49 @@ function appreciationZoneHTML(){
   if(mode==='1') return '<div style="border-bottom:1px solid #1C1B2E;margin:16px 0 24px;height:1.2cm;"></div>';
   return '<div style="height:3cm;border-top:1px solid #1C1B2E;border-bottom:1px solid #1C1B2E;margin:16px 0 24px;"></div>';
 }
+// Découpe le texte de #evalGrilleNotation en critères -- un paragraphe (séparé par une ligne
+// vide) par critère, sa 1re ligne "Titre : points" et les lignes suivantes "- item" pour la
+// liste à puces. Un paragraphe mal formé (pas de ": points" sur la 1re ligne) est ignoré.
+function parseGrilleNotation(text){
+  return text.split(/\n\s*\n/).map(block=>{
+    const lines = block.split('\n').map(l=>l.trim()).filter(Boolean);
+    if(!lines.length) return null;
+    const m = lines[0].match(/^(.+?)\s*:\s*(\d+(?:[.,]\d+)?)\s*$/);
+    if(!m) return null;
+    return {
+      titre: m[1].trim(),
+      points: Number(m[2].replace(',','.')),
+      items: lines.slice(1).map(l=>l.replace(/^-\s*/, '')).filter(Boolean),
+    };
+  }).filter(Boolean);
+}
+// Grille de notation par critères, en page à part (fin de la copie) : un vrai tableau avec
+// bordures et une case à cocher par item, comme une grille de correction qu'un professeur
+// distribue en même temps que le sujet ou agrafe à la copie.
+function grilleNotationHTML(){
+  if(!document.getElementById('evalIncludeGrilleNotation').checked) return '';
+  const criteres = parseGrilleNotation(document.getElementById('evalGrilleNotation').value);
+  if(!criteres.length) return '';
+  const total = criteres.reduce((s,c)=>s+c.points, 0);
+  const rows = criteres.map(c=>`
+    <tr>
+      <td style="border:1px solid #1C1B2E;padding:8px 10px;font-weight:700;vertical-align:top;">${escapeHtml(c.titre)}</td>
+      <td style="border:1px solid #1C1B2E;padding:8px 10px;vertical-align:top;">${c.items.map(it=>`<div>☐ ${escapeHtml(it)}</div>`).join('')}</td>
+      <td style="border:1px solid #1C1B2E;padding:8px 10px;font-weight:700;text-align:center;vertical-align:top;white-space:nowrap;">…. / ${formatPts(c.points).replace(' pts','').replace(' pt','')}</td>
+    </tr>`).join('');
+  return `
+    <div style="page-break-before:always;break-before:page;">
+      <p style="font-weight:700;font-size:1.1rem;margin:0 0 10px;">Grille de notation par critères</p>
+      <table style="width:100%;border-collapse:collapse;font-size:.92rem;">
+        <thead><tr>
+          <th style="border:1px solid #1C1B2E;padding:8px 10px;text-align:left;background:#EAF1F8;">Critère d'évaluation</th>
+          <th style="border:1px solid #1C1B2E;padding:8px 10px;text-align:left;background:#EAF1F8;">Consignes associées</th>
+          <th style="border:1px solid #1C1B2E;padding:8px 10px;text-align:center;background:#EAF1F8;white-space:nowrap;">… / ${total}</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
 function buildEvaluationContentHTML(){
   const niveau = document.getElementById('evalNiveau').value;
   const classes = document.getElementById('evalClasses').value.trim();
@@ -835,6 +908,7 @@ function buildEvaluationContentHTML(){
         ${blocksRowsHTML('ex-'+ex.id, ensureExRows(ex), false, ex.cellBorders)}
       </div>
     `).join('')}
+    ${grilleNotationHTML()}
   `;
 }
 /* Convertit un <svg> en image PNG (data URL) : html2canvas a un support natif des SVG très

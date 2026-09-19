@@ -2358,6 +2358,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.565', items:[
+    "Outil prof \"Créer une évaluation\" -- ajout d'une grille de notation par critères, en page à part à la fin de la copie : un vrai tableau (bordures, une case à cocher par item, colonne de points) fidèle à un modèle de grille de correction fourni. Pré-remplie par défaut (4 critères : Structure et Clarté, Propreté et Soin, Mise en Valeur des Résultats, Rigueur de Rédaction & Orthographe), modifiable via un champ texte au format simple (\"Titre : points\" puis lignes \"- item\"), et désactivable d'une case à cocher.",
+  ]},
   { version:'2026-08-19.564', items:[
     "Outil prof \"Créer une évaluation\" -- 2 nouveaux réglages pour la copie exportée : une case à cocher pour afficher ou non les consignes générales (indépendamment du fait qu'elles soient renseignées ou non), et un choix pour la zone d'appréciation du professeur sous NOM/Prénom -- 2 traits espacés (encadré, comportement d'origine), 1 seul trait, ou aucun.",
   ]},
