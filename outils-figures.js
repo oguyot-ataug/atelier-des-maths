@@ -1389,7 +1389,7 @@ function divisionPoseeHTML(res, vierge, showDiff){
   const table = dpRenderDivisionTable(rows, vierge?'':res.quotient, res.divisor, undefined, vierge);
   if(vierge) return `<div style="margin:10px 0;padding:14px 0;">${table}</div>`;
   return `<div style="margin:10px 0;padding:14px 0;">${table}</div>
-  <p class="hint" style="margin:0;">${res.dividend} = (${res.divisor} × ${res.quotient}) + ${res.remainder}</p>`;
+  <p class="hint" style="margin:0;">${res.dividend} = ${res.divisor} × ${res.quotient} + ${res.remainder}, avec ${res.remainder} &lt; ${res.divisor}</p>`;
 }
 function buildDivisionStages(res){
   const dividendStr = String(res.dividend);
@@ -1418,7 +1418,7 @@ function buildDivisionStages(res){
       stages.push({rows: rows.slice(), quotient: quotientSoFar, caption: `On abaisse le chiffre suivant du dividende. ${s.value} reste inférieur à ${res.divisor}, donc on pose 0 au quotient et on abaisse encore.`});
     }
   });
-  stages.push({rows: rows.slice(), quotient: String(res.quotient), caption: `La division est terminée : ${res.dividend} = (${res.divisor} × ${res.quotient}) + ${res.remainder}.`, final:true});
+  stages.push({rows: rows.slice(), quotient: String(res.quotient), caption: `La division est terminée : ${res.dividend} = ${res.divisor} × ${res.quotient} + ${res.remainder}, avec ${res.remainder} &lt; ${res.divisor}.`, final:true});
   return stages;
 }
 function divisionStagesHTML(stages, res){

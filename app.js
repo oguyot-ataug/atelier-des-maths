@@ -2361,6 +2361,9 @@ function populateSupervisionClassSelect(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.576', items:[
+    "Outil Division euclidienne (dividende/diviseur) -- l'égalité affichée sous la division posée s'écrivait avec des parenthèses inutiles autour de la multiplication (ex. 1815 = (16 × 113) + 7) et sans préciser la condition sur le reste. Écrite désormais 1815 = 16 × 113 + 7, avec 7 < 16 -- dans l'aperçu simple et dans le déroulé étape par étape.",
+  ]},
   { version:'2026-08-19.575', items:[
     "Suppression du sélecteur de classe du menu Compte (modale \"Choisir une classe\") -- devenu redondant : l'Outil de correction et le Cahier de corrections ont chacun leur propre sélecteur à boutons cliquables, et Supervision son propre menu déroulant. Les mentions \"Changez de classe depuis le menu compte, en haut à droite\" (Outil de correction, Cahier) ont été retirées en conséquence, ce chemin n'existant plus.",
   ]},
