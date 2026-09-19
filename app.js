@@ -2360,6 +2360,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.570', items:[
+    "Supervision -- nouvel onglet \"Mes classes\" : les classes du prof sont présentées en accordéon (comme dans Administration), avec la gestion des sessions de Permis Rapporteur (démarrer / clôturer) pour chacune. Jusqu'ici cette gestion n'existait que dans Administration, réservée aux admins -- un prof (sans ce rôle) ne pouvait donc jamais créer de session pour sa classe.",
+  ]},
   { version:'2026-08-19.569', items:[
     "3 changements : (1) « Figure géométrique (bac à sable) » renommé en « Géométrie Interactive » ; (2) le Tableau interactif (géométrie -- règle, équerre, compas, rapporteur...) est désormais accessible aux élèves, pas seulement aux profs, via une nouvelle entrée dans le menu S'entraîner ; (3) les zones de texte du Tableau interactif peuvent désormais contenir de vraies mathématiques (fractions a/b, x^2, $...$ pour du LaTeX complexe -- même moteur que les Consignes d'une évaluation ou l'outil de correction), au lieu de texte brut uniquement.",
   ]},
@@ -3822,8 +3825,73 @@ document.querySelectorAll('.sup-tab-btn').forEach(btn=>{
     document.querySelectorAll('.sup-tab-panel').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('suppanel-'+btn.dataset.suptab).classList.add('active');
+    if(btn.dataset.suptab==='classes') renderSupervisionClassesAccordion();
   });
 });
+/* Onglet "Mes classes" de Supervision : présente les classes du prof (ou toutes pour un admin)
+   en accordéon, comme dans Administration -- avec la gestion des sessions Permis Rapporteur,
+   jusqu'ici accessible seulement depuis Administration (réservée aux admins), inaccessible aux
+   profs qui n'ont pas ce rôle. Signalé : "le prof n'a pas accès à administration... il doit
+   pouvoir gérer ça dans l'outil supervision". Reprend le même schéma que
+   adminRefreshDropdowns() (admin.js) pour la partie Permis Rapporteur, adapté à la liste de
+   classes du compte courant (accountClassesList ne porte pas le niveau ni l'effectif, d'où une
+   requête dédiée ici plutôt que sa réutilisation directe). */
+async function renderSupervisionClassesAccordion(){
+  const el = document.getElementById('supervisionClassesAccordion');
+  if(!el || !currentUser) return;
+  el.innerHTML = 'Chargement…';
+  let classesList;
+  if(currentUserRole==='admin'){
+    const res = await sb.from('classes').select('id,nom,niveau');
+    classesList = res.data || [];
+  } else {
+    const res = await sb.from('class_teachers').select('classes(id,nom,niveau)').eq('teacher_id', currentUser.id);
+    classesList = (res.data||[]).map(row=>row.classes).filter(Boolean);
+  }
+  if(!classesList.length){ el.innerHTML = '<p class="hint">Aucune classe associée à votre compte.</p>'; return; }
+  classesList.sort((a,b)=>a.nom.localeCompare(b.nom));
+  const classIds = classesList.map(c=>c.id);
+  const { data: classStudents } = await sb.from('class_students').select('class_id').in('class_id', classIds);
+  const { data: sessions } = await sb.from('permis_rapporteur_sessions').select('id,code,classe_id,cloturee,created_at').in('classe_id', classIds).order('created_at',{ascending:false});
+  el.innerHTML = classesList.map((c,idx)=>{
+    const nbEleves = (classStudents||[]).filter(r=>r.class_id===c.id).length;
+    const sessionsHere = (sessions||[]).filter(s=>s.classe_id===c.id);
+    const sessionsHtml = sessionsHere.length ? sessionsHere.map(s=>`
+      <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+        <span style="font-family:'JetBrains Mono',monospace;font-weight:700;${s.cloturee?'text-decoration:line-through;color:var(--ink-soft);':'color:var(--accent);'}">${escapeHtml(s.code)}</span>
+        <span class="hint" style="margin:0;">${s.cloturee?'clôturée':'active'}</span>
+        ${s.cloturee?'':`<button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="supCloturerPermisSession('${s.id}')">Clôturer</button>`}
+      </div>`).join('') : '<p class="hint" style="margin:4px 0 0;">Aucune session pour l\'instant.</p>';
+    const color = c.niveau==='6e' ? '#FF8208' : '#0C5BA0';
+    const accId = 'supAccClasse'+idx;
+    return `<div class="nb-accordion-section">
+      <button type="button" class="nb-accordion-header" style="--acc-color:${color};--acc-bg:${color}0D;" onclick="toggleNbAccordion('${accId}')">
+        <span class="gicon nb-accordion-chevron">expand_more</span>
+        <span class="gicon">school</span><span>${escapeHtml(c.nom)}</span>
+        <span class="nb-accordion-count">${c.niveau} · ${nbEleves} élève${nbEleves>1?'s':''}</span>
+      </button>
+      <div class="nb-accordion-body" id="${accId}">
+        <div style="padding:8px;background:rgba(31,58,92,.05);border-radius:6px;">
+          <b style="font-size:.85rem;"><span class=gicon>school</span> Permis Rapporteur</b>
+          <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="supDemarrerPermisSession('${c.id}')">+ Nouvelle session</button>
+          ${sessionsHtml}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function supDemarrerPermisSession(classId){
+  const code = arGenererCodeSession();
+  const { error } = await sb.from('permis_rapporteur_sessions').insert({
+    code, classe_id: classId, prof_id: currentUser ? currentUser.id : null,
+  });
+  if(error){ await niceAlert("Échec : "+error.message); return; }
+  await renderSupervisionClassesAccordion();
+}
+async function supCloturerPermisSession(sessionId){
+  await sb.from('permis_rapporteur_sessions').update({cloturee:true}).eq('id', sessionId);
+  await renderSupervisionClassesAccordion();
+}
 async function renderSupervision(){
   renderTeacherStudentsListing();
   const el = document.getElementById('supervisionContent');
