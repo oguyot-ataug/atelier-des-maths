@@ -2246,8 +2246,6 @@ async function refreshAuthUI(){
     if(btnReportBug) btnReportBug.style.display = isStaff ? 'block' : 'none';
     const chapSuggestRow = document.getElementById('chapSuggestRow');
     if(chapSuggestRow) chapSuggestRow.style.display = isStaff ? 'block' : 'none';
-    const classRow = document.getElementById('accountClassRow');
-    if(classRow) classRow.style.display = isStaff ? 'block' : 'none'; // un élève ne choisit pas sa classe, elle lui est assignée
     // Bouton d'abonnement : uniquement pour les profs approuvés (pas admin, pas élève),
     // en essai ou dont l'abonnement a expiré -- pas pour un abonnement déjà actif.
     const btnSubscribe = document.getElementById('btnSubscribe');
@@ -2311,8 +2309,6 @@ function updateClassDisplays(name){
   if(studentClassStatus) studentClassStatus.textContent = name || 'aucune';
   const cahierClassStatus = document.getElementById('cahierClassStatus');
   if(cahierClassStatus) cahierClassStatus.textContent = name || 'aucune';
-  const btn = document.getElementById('accountClassButton');
-  if(btn) btn.textContent = name || 'Choisir une classe...';
   renderClassQuickPicker('corClassQuickPicker');
   renderClassQuickPicker('cahierClassQuickPicker');
   // Le sélecteur rapide du cahier (boutons cliquables, comme dans l'Outil de correction)
@@ -2351,7 +2347,7 @@ function updateAddCahierButtonState(){
   btn.title = disabled ? 'Sélectionnez une classe ci-dessus avant d\'ajouter au cahier.' : '';
   if(hint) hint.innerHTML = disabled
     ? '<span class=gicon>warning</span> Sélectionnez une classe ci-dessus pour pouvoir ajouter des corrections au cahier.'
-    : 'Changez de classe depuis le menu <span style="font-weight:700;"><span class=gicon>person</span> compte</span>, en haut à droite.';
+    : '';
 }
 let accountClassesList = [];
 function populateAccountClassList(classesList){
@@ -2363,16 +2359,11 @@ function populateSupervisionClassSelect(){
   if(!accountClassesList.length){ sel.innerHTML = '<option value="">Aucune classe</option>'; return; }
   sel.innerHTML = accountClassesList.map(c=>`<option value="${c.id}" ${c.id===currentClassId?'selected':''}>${escapeHtml(c.label)}</option>`).join('');
 }
-function openClassModal(){
-  renderClassModalList();
-  document.getElementById('classModalOverlay').style.display='flex';
-}
-function closeClassModal(){
-  document.getElementById('classModalOverlay').style.display='none';
-}
-
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.575', items:[
+    "Suppression du sélecteur de classe du menu Compte (modale \"Choisir une classe\") -- devenu redondant : l'Outil de correction et le Cahier de corrections ont chacun leur propre sélecteur à boutons cliquables, et Supervision son propre menu déroulant. Les mentions \"Changez de classe depuis le menu compte, en haut à droite\" (Outil de correction, Cahier) ont été retirées en conséquence, ce chemin n'existant plus.",
+  ]},
   { version:'2026-08-19.574', items:[
     "Cahier de corrections -- le sélecteur de classe active à boutons cliquables, jusqu'ici propre à l'Outil de correction, est désormais aussi disponible ici pour les profs/admin (permet de changer de classe sans passer par le menu compte). Un élève continue de voir uniquement la ligne simple, une seule classe le concernant.",
   ]},
@@ -3687,17 +3678,8 @@ async function submitBugReport(){
   bugReportTypeOverride = 'bug';
   setTimeout(()=>{ if(document.getElementById('bugReportModalOverlay').style.display!=='none') closeBugReportModal(); }, 1200);
 }
-function renderClassModalList(){
-  const list = document.getElementById('classModalList');
-  if(!accountClassesList.length){ list.innerHTML = '<p class="hint">Aucune classe disponible pour ce compte.</p>'; return; }
-  list.innerHTML = accountClassesList.map(c=>`
-    <div class="class-modal-item ${c.id===currentClassId?'active':''}" onclick="selectClassFromModal('${c.id}')">
-      <span>${escapeHtml(c.label)}</span>${c.id===currentClassId?'<span>✓</span>':''}
-    </div>`).join('');
-}
 async function selectClassFromModal(id){
   currentClassId = id;
-  closeClassModal();
   await applyClassSelection();
 }
 async function loadMyClasses(){
