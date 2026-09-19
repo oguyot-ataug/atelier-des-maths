@@ -60,6 +60,16 @@ document.getElementById('view-evaluation').innerHTML = `
       <textarea id="evalConsignes" placeholder="Consignes générales (facultatif) -- affichées en haut de la copie, avant le premier exercice" style="flex:1;min-width:280px;min-height:44px;padding:7px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);font-family:inherit;" oninput="scheduleEvalAutoSave()"></textarea>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
+      <label class="hint" style="margin:0;"><input type="checkbox" id="evalShowConsignes" checked onchange="scheduleEvalAutoSave()"> Afficher les consignes sur la copie</label>
+      <label class="hint" style="margin:0;">Appréciation du professeur :
+        <select id="evalAppreciationLines" style="margin-left:4px;" onchange="scheduleEvalAutoSave()">
+          <option value="2" selected>2 traits espacés (encadré)</option>
+          <option value="1">1 trait</option>
+          <option value="0">Aucun</option>
+        </select>
+      </label>
+    </div>
+    <div class="tool-row" style="margin-bottom:10px;">
       <label class="hint" style="margin:0;"><input type="checkbox" id="evalUseAI" onchange="toggleEvalAIOptions()"> <span class=gicon>smart_toy</span> Laisser l'IA proposer des exercices</label>
       <button class="btn secondary" onclick="addManualExercise()">+ Ajouter un exercice vierge</button>
       <button class="btn secondary" onclick="openEvalPreview()"><span class=gicon>visibility</span> Aperçu de l'évaluation</button>
@@ -177,7 +187,7 @@ function buildEvalPayload(exercisesOverride, blocksOverride){
     classes: document.getElementById('evalClasses').value,
     eval_date: document.getElementById('evalDate').value || null,
     duree: parseInt(document.getElementById('evalDuree').value) || null,
-    data: { evaluationExercises: exos, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalLineHeight: document.getElementById('evalLineHeight').value, evalConsignes: document.getElementById('evalConsignes').value, pageBreaksAfter: Array.from(evalPageBreaksAfter) },
+    data: { evaluationExercises: exos, blocksStores: relevantBlocks, evalType: document.getElementById('evalType').value, evalTypeCustom: document.getElementById('evalTypeCustom').value, evalLineHeight: document.getElementById('evalLineHeight').value, evalConsignes: document.getElementById('evalConsignes').value, evalShowConsignes: document.getElementById('evalShowConsignes').checked, evalAppreciationLines: document.getElementById('evalAppreciationLines').value, pageBreaksAfter: Array.from(evalPageBreaksAfter) },
   };
 }
 // Suivi du dernier état connu du serveur, exercice par exercice -- permet de savoir, à la
@@ -384,6 +394,8 @@ async function loadEvaluation(id){
   document.getElementById('evalDuree').value = data.duree || 55;
   document.getElementById('evalLineHeight').value = (data.data && data.data.evalLineHeight) || '1.5';
   document.getElementById('evalConsignes').value = (data.data && data.data.evalConsignes) || '';
+  document.getElementById('evalShowConsignes').checked = (data.data && data.data.evalShowConsignes!==undefined) ? data.data.evalShowConsignes : true;
+  document.getElementById('evalAppreciationLines').value = (data.data && data.data.evalAppreciationLines) || '2';
   evalPageBreaksAfter = new Set((data.data && data.data.pageBreaksAfter) || []);
   const savedType = (data.data && data.data.evalType) || 'Évaluation';
   const typeSelect = document.getElementById('evalType');
@@ -784,6 +796,15 @@ async function addEvaluationToCahier(){
   }
   await niceAlert(`${evaluationExercises.length} exercice(s) (+ l'en-tête) ajouté(s) au cahier de la classe active, daté(s) du ${new Date(date+'T00:00:00').toLocaleDateString('fr-FR')}.`);
 }
+// Zone réservée à l'appréciation du professeur, sous la ligne NOM/Prénom -- 3 réglages
+// possibles (case "evalAppreciationLines") : encadré à 2 traits espacés (comportement
+// d'origine), un seul trait, ou rien du tout.
+function appreciationZoneHTML(){
+  const mode = document.getElementById('evalAppreciationLines').value;
+  if(mode==='0') return '';
+  if(mode==='1') return '<div style="border-bottom:1px solid #1C1B2E;margin:16px 0 24px;height:1.2cm;"></div>';
+  return '<div style="height:3cm;border-top:1px solid #1C1B2E;border-bottom:1px solid #1C1B2E;margin:16px 0 24px;"></div>';
+}
 function buildEvaluationContentHTML(){
   const niveau = document.getElementById('evalNiveau').value;
   const classes = document.getElementById('evalClasses').value.trim();
@@ -803,8 +824,8 @@ function buildEvaluationContentHTML(){
     <p style="text-align:center;font-size:.85rem;color:#5B6472;margin:4px 0 0;">${duree ? 'Durée : '+duree+' min' : ''}${total>0 ? ' · Barème : '+formatPts(total) : ''}</p>
     <div style="height:2.4em;"></div>
     <p style="margin:0;">NOM : .................................................... Prénom : ....................................................</p>
-    <div style="height:3cm;border-top:1px solid #1C1B2E;border-bottom:1px solid #1C1B2E;margin:16px 0 24px;"></div>
-    ${document.getElementById('evalConsignes').value.trim() ? `<div style="margin:0 0 16px;padding:10px 14px;border:1px solid #1C1B2E;border-radius:6px;">${renderMathText(document.getElementById('evalConsignes').value)}</div>` : ''}
+    ${appreciationZoneHTML()}
+    ${(document.getElementById('evalShowConsignes').checked && document.getElementById('evalConsignes').value.trim()) ? `<div style="margin:0 0 16px;padding:10px 14px;border:1px solid #1C1B2E;border-radius:6px;">${renderMathText(document.getElementById('evalConsignes').value)}</div>` : ''}
     ${evaluationExercises.map((ex,i)=>`
       <div data-ex-id="${ex.id}" style="margin-bottom:2.2em;${evalPageBreaksAfter.has(ex.id)?'page-break-after:always;break-after:page;':''}">
         <p style="font-weight:700;margin:0 0 5px;display:grid;grid-template-columns:1fr 70px;gap:8px;">

@@ -2358,6 +2358,9 @@ function closeClassModal(){
 
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.564', items:[
+    "Outil prof \"Créer une évaluation\" -- 2 nouveaux réglages pour la copie exportée : une case à cocher pour afficher ou non les consignes générales (indépendamment du fait qu'elles soient renseignées ou non), et un choix pour la zone d'appréciation du professeur sous NOM/Prénom -- 2 traits espacés (encadré, comportement d'origine), 1 seul trait, ou aucun.",
+  ]},
   { version:'2026-08-19.563', items:[
     "Export PDF -- fix (constaté sur un vrai PDF) : la grille \"Calculs astucieux\" pouvait être tranchée en plein milieu par un saut de page, avec une case (A) coupée en deux et sa suite réapparaissant décalée, désolidarisée des autres. Marquer chaque case comme insécable ne suffisait pas -- la grille entière est maintenant protégée comme un seul bloc insécable.",
   ]},
