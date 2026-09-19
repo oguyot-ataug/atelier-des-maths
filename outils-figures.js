@@ -1355,9 +1355,13 @@ function divisionPoseeHTML(res, vierge, showDiff){
     // la ligne de soustraction suivante, ce qui donnerait l'impression que le chiffre suivant
     // n'a jamais été abaissé. La toute première étape reste une exception : sa valeur est déjà
     // visible dans les chiffres bruts du dividende, pas besoin de la réécrire.
+    // Un quotient nul (dans 11, combien de fois 17 ? 0 fois) suit exactement la même règle --
+    // soustraction 11 − 0 = 11 affichée comme les autres, jamais sautée (s.sub!==null exclut
+    // seulement la toute première étape "on prend un chiffre de plus", avant que le quotient ne
+    // démarre), sinon rien n'explique visuellement d'où vient ce 0 dans le quotient.
     let firstTrigger = true;
     res.steps.forEach((s,i)=>{
-      if(s.sub>0){
+      if(s.sub!==null){
         if(!firstTrigger) rows.push({cells: dpAlignedCells(vierge?'':String(s.value), i, N)});
         firstTrigger = false;
         rows.push({cells: dpAlignedCells(vierge?'':String(s.sub), i, N), sign:!vierge, underline:!vierge, endCol:i});
@@ -1371,10 +1375,11 @@ function divisionPoseeHTML(res, vierge, showDiff){
     // (déjà visibles dans l'en-tête) -- elle reste mentale. Pour les étapes suivantes, chaque
     // "valeur" (ex. 117) contient déjà le reste précédent dans ses premiers chiffres (le "11"
     // de 117) : pas besoin de l'écrire une seconde fois à part. Seul le tout dernier reste,
-    // qui n'est jamais repris dans une valeur suivante, s'écrit séparément à la fin.
+    // qui n'est jamais repris dans une valeur suivante, s'écrit séparément à la fin. Un quotient
+    // nul reste une "valeur" à part entière (ex. 11), pas sautée -- voir plus haut.
     let firstTrigger = true;
     res.steps.forEach((s,i)=>{
-      if(s.sub>0){
+      if(s.sub!==null){
         if(firstTrigger){ firstTrigger = false; return; }
         rows.push({cells: dpAlignedCells(vierge?'':String(s.value), i, N)});
       }
@@ -1402,20 +1407,23 @@ function buildDivisionStages(res){
   res.steps.forEach((s,i)=>{
     if(s.qDigit===null){
       stages.push({rows: rows.slice(), quotient: quotientSoFar, caption: `On prend le nombre ${s.value} : il est inférieur à ${res.divisor}, donc on prend un chiffre de plus.`});
-    } else if(s.sub>0){
+    } else {
       // La valeur divisée à cette étape (ex. 108) inclut le chiffre du dividende tout juste
       // abaissé -- elle doit être visible en une seule ligne avant la soustraction, sinon on
       // a l'impression que ce chiffre n'a jamais été abaissé. Exception : la toute première
       // étape, dont la valeur est déjà visible dans les chiffres bruts du dividende.
+      // Un quotient nul (dans 11, combien de fois 17 ? 0 fois) fait comme les autres --
+      // soustraction 11 − 0 = 11 affichée, jamais sautée, sinon rien n'explique visuellement
+      // d'où vient le 0 du quotient (signalé : le 0 "sortait de nulle part").
       if(!firstTrigger) rows.push({cells: dpAlignedCells(String(s.value), i, N)});
       firstTrigger = false;
       rows.push({cells: dpAlignedCells(String(s.sub), i, N), sign:true, underline:true, endCol:i});
       rows.push({cells: dpAlignedCells(String(s.value-s.sub), i, N)});
       quotientSoFar += s.qDigit;
-      stages.push({rows: rows.slice(), quotient: quotientSoFar, caption: `${res.divisor} × ${s.qDigit} = ${s.sub}, le plus proche de ${s.value} sans le dépasser. ${s.value} − ${s.sub} = ${s.value-s.sub}.`});
-    } else {
-      quotientSoFar += '0';
-      stages.push({rows: rows.slice(), quotient: quotientSoFar, caption: `On abaisse le chiffre suivant du dividende. ${s.value} reste inférieur à ${res.divisor}, donc on pose 0 au quotient et on abaisse encore.`});
+      const caption = s.sub>0
+        ? `${res.divisor} × ${s.qDigit} = ${s.sub}, le plus proche de ${s.value} sans le dépasser. ${s.value} − ${s.sub} = ${s.value-s.sub}.`
+        : `Dans ${s.value}, combien de fois ${res.divisor} ? 0 fois (${s.value} &lt; ${res.divisor}). On pose 0 au quotient : ${s.value} − 0 = ${s.value}, puis on abaisse le chiffre suivant.`;
+      stages.push({rows: rows.slice(), quotient: quotientSoFar, caption});
     }
   });
   stages.push({rows: rows.slice(), quotient: String(res.quotient), caption: `La division est terminée : ${res.dividend} = ${res.divisor} × ${res.quotient} + ${res.remainder}, avec ${res.remainder} &lt; ${res.divisor}.`, final:true});

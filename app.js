@@ -2361,6 +2361,9 @@ function populateSupervisionClassSelect(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.577', items:[
+    "Outil Division euclidienne -- fix important : quand un chiffre du quotient est 0 (ex. 1815 : 17, quotient 106), l'étape correspondante était totalement invisible dans le calcul posé -- le tableau sautait directement de la ligne précédente à la valeur suivante (108->115 sans jamais montrer 11), sans aucune trace du 0. La soustraction \"11 − 0 = 11\" s'affiche désormais comme n'importe quelle autre étape, avant de faire descendre le chiffre suivant -- dans l'aperçu simple (avec ou sans le détail des différences) et dans le déroulé pas à pas, avec une légende dédiée expliquant le 0.",
+  ]},
   { version:'2026-08-19.576', items:[
     "Outil Division euclidienne (dividende/diviseur) -- l'égalité affichée sous la division posée s'écrivait avec des parenthèses inutiles autour de la multiplication (ex. 1815 = (16 × 113) + 7) et sans préciser la condition sur le reste. Écrite désormais 1815 = 16 × 113 + 7, avec 7 < 16 -- dans l'aperçu simple et dans le déroulé étape par étape.",
   ]},
