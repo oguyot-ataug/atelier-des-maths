@@ -2361,6 +2361,9 @@ function populateSupervisionClassSelect(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.582', items:[
+    "CM1 (Opérations sur les nombres entiers) : la soustraction posée est passée de la méthode par emprunt à la méthode par compensation (on ajoute 10 au chiffre du haut ET 1 au chiffre du bas de la colonne suivante) -- plus aucun chiffre n'est barré ou modifié dans les opérations posées, seulement de petites annotations « +10 »/« +1 » au-dessus, comme les retenues de l'addition. La multiplication posée affiche désormais, à côté de chaque ligne, ce qu'elle représente (« ← 34 × 3 (chiffre des unités de 23) », etc.) -- dans le cours et dans la méthode animée.",
+  ]},
   { version:'2026-08-19.581', items:[
     "CM1 : nouveau chapitre N2 (Opérations sur les nombres entiers), construit à partir d'un cours de référence fourni -- vocabulaire des quatre opérations, addition/soustraction/multiplication/division posées (4 méthodes animées pas à pas, dont la division qui réutilise directement l'outil déjà existant), multiples et diviseurs, critères de divisibilité (2, 5, 10). 6 exercices corrigés + le widget « Exerce-toi : division euclidienne » (nombres adaptés au niveau CM1).",
   ]},

@@ -8,20 +8,22 @@
    ============================================================ */
 
 /* Petit constructeur de table pour les opérations posées (addition, soustraction,
-   multiplication) : chaque "rangée" est un tableau de cellules (chaîne, ou {v,strike} pour un
-   chiffre barré -- utile pour les emprunts de la soustraction), avec une colonne de signe à
-   gauche (+, −, × ou vide) et éventuellement un trait sous la rangée (bar). small=true pour la
-   petite rangée des retenues/ajustements au-dessus des nombres, big=true pour le résultat. */
+   multiplication) : chaque "rangée" est un tableau de cellules (chaîne ou nombre), avec une
+   colonne de signe à gauche (+, −, × ou vide) et éventuellement un trait sous la rangée (bar).
+   small=true pour une petite rangée d'ajustement (retenue, compensation...) au-dessus des
+   nombres, big=true pour le résultat. label=texte optionnel affiché à droite de la rangée
+   (ex. "← 34 × 3") pour rappeler ce que représente cette ligne -- signalé : "pour la
+   multiplication, bien faire comprendre ce que représente chaque ligne". Aucun chiffre n'est
+   jamais barré ici (signalé : "étrange tous ces chiffres barrés" -- voir la méthode de
+   compensation utilisée pour la soustraction, qui ne modifie ni ne barre jamais les chiffres
+   d'origine, seulement de petites annotations "+10"/"+1" au-dessus). */
 function cm1opRowsTable(rows){
   const trs = rows.map(r=>{
     const fs = r.small ? '.72rem' : (r.big ? '1.2rem' : '1.1rem');
     const signTd = `<td style="width:26px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;color:${r.signColor||'var(--accent-orange)'};${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${r.sign||'&nbsp;'}</td>`;
-    const tds = r.cells.map(c=>{
-      const strike = c && c.strike;
-      const val = (c && typeof c==='object') ? c.v : c;
-      return `<td style="width:32px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;${r.color?`color:${r.color};`:''}${strike?'text-decoration:line-through;opacity:.4;':''}${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${(val!=null&&val!=='')?val:'&nbsp;'}</td>`;
-    }).join('');
-    return `<tr>${signTd}${tds}</tr>`;
+    const tds = r.cells.map(c=>`<td style="width:32px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;${r.color?`color:${r.color};`:''}${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${(c!=null&&c!=='')?c:'&nbsp;'}</td>`).join('');
+    const labelTd = r.label ? `<td style="padding-left:14px;text-align:left;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--ink-soft);white-space:nowrap;">${r.label}</td>` : '';
+    return `<tr>${signTd}${tds}${labelTd}</tr>`;
   }).join('');
   return `<table style="border-collapse:collapse;margin:10px auto;">${trs}</table>`;
 }
@@ -55,11 +57,12 @@ ${cm1opRowsTable([
 
 <div class="lesson-header"><span class="num">3</span><h3>La soustraction posée</h3></div>
 <span class="prop-badge">Méthode</span>
-<div class="def-box">On aligne les nombres par colonnes, le plus grand nombre au-dessus. On soustrait colonne par colonne, en partant de la droite. Si le chiffre du haut est plus petit que celui du bas, on <b>emprunte</b> une dizaine à la colonne suivante (le chiffre emprunté diminue de 1).</div>
+<div class="def-box">On aligne les nombres par colonnes, le plus grand nombre au-dessus. On soustrait colonne par colonne, en partant de la droite. Si le chiffre du haut est plus petit que celui du bas, on utilise la <b>compensation</b> : on ajoute 10 au chiffre du haut, ET on ajoute 1 au chiffre du bas de la colonne suivante -- comme on ajoute la même quantité (10) aux deux nombres, leur différence ne change pas !</div>
 <p class="example-title">Exemple : 623 − 148</p>
 ${cm1opRowsTable([
-  {cells:[{v:'5'},'11','13'], small:true},
-  {cells:[{v:'6',strike:true}, {v:'2',strike:true}, '3']},
+  {cells:['','+10','+10'], small:true},
+  {cells:['6','2','3']},
+  {cells:['+1','+1',''], small:true},
   {cells:['1','4','8'], sign:'−', bar:true},
   {cells:['4','7','5'], color:'var(--accent-orange)', big:true},
 ])}
@@ -70,11 +73,11 @@ ${cm1opRowsTable([
 <div class="def-box">On multiplie d'abord le nombre du haut par le chiffre des <b>unités</b> du nombre du bas, puis par son chiffre des <b>dizaines</b> (le résultat s'écrit alors décalé, car on multiplie en réalité par des dizaines entières). On <b>additionne</b> enfin ces deux résultats intermédiaires.</div>
 <p class="example-title">Exemple : 34 × 23</p>
 ${cm1opRowsTable([
-  {cells:['','3','4']},
-  {cells:['','2','3'], sign:'×', bar:true},
-  {cells:['1','0','2']},
-  {cells:['6','8','0'], bar:true},
-  {cells:['7','8','2'], color:'var(--accent-orange)', big:true},
+  {cells:['','3','4'], label:'le nombre qu\'on multiplie'},
+  {cells:['','2','3'], sign:'×', bar:true, label:'par combien on multiplie'},
+  {cells:['1','0','2'], label:'← 34 × 3 (chiffre des unités de 23)'},
+  {cells:['6','8','0'], bar:true, label:'← 34 × 20 (chiffre des dizaines de 23)'},
+  {cells:['7','8','2'], color:'var(--accent-orange)', big:true, label:'← 102 + 680'},
 ])}
 <p class="hint" style="text-align:center;margin:0 0 10px;">34 × 3 = 102 &nbsp;·&nbsp; 34 × 20 = 680 &nbsp;·&nbsp; 102 + 680 = 782. Le résultat s'appelle le <b>produit</b>.</p>
 
@@ -123,9 +126,9 @@ document.getElementById('methode-demo-cm1-operations-nombres-entiers').innerHTML
   </div>
 </div>
 
-<div class="sub-header"><span class="letter">M</span><h4>Comment poser une soustraction avec emprunt ?</h4></div>
+<div class="sub-header"><span class="letter">M</span><h4>Comment poser une soustraction par compensation ?</h4></div>
 <div class="figure-wrap">
-  <p class="hint interaction-hint" style="margin-top:6px;">623 − 148 : clique sur « Étape suivante » pour découvrir comment fonctionne l'emprunt.</p>
+  <p class="hint interaction-hint" style="margin-top:6px;">623 − 148 : clique sur « Étape suivante » pour découvrir comment fonctionne la compensation.</p>
   <div class="step-display" id="cm1op-soustractionDisplay"></div>
   <div class="figure-toolbar">
     <button class="btn" onclick="cm1opSoustractionDemo.next()">Étape suivante →</button>
@@ -184,8 +187,9 @@ document.getElementById('exos-demo-cm1-operations-nombres-entiers').innerHTML = 
     <button type="button" class="exo-correction-toggle" data-target="cm1op-correction-2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1op-correction-2">
       ${cm1opRowsTable([
-        {cells:[{v:'3'},'13',''], small:true},
-        {cells:[{v:'5',strike:true},{v:'4',strike:true},'2']},
+        {cells:['','+10','+10'], small:true},
+        {cells:['5','4','2']},
+        {cells:['+1','+1',''], small:true},
         {cells:['2','6','7'], sign:'−', bar:true},
         {cells:['2','7','5'], color:'var(--accent-orange)', big:true},
       ])}
@@ -200,7 +204,7 @@ document.getElementById('exos-demo-cm1-operations-nombres-entiers').innerHTML = 
       ${cm1opRowsTable([
         {cells:['2','1','3']},
         {cells:['','','4'], sign:'×', bar:true},
-        {cells:['8','5','2'], color:'var(--accent-orange)', big:true},
+        {cells:['8','5','2'], color:'var(--accent-orange)', big:true, label:'← 213 × 4'},
       ])}
       <p style="margin:0;text-align:center;">213 × 4 = <b>852</b></p>
     </div>
@@ -301,34 +305,44 @@ const CM1OP_ADDITION_STEPS = [
 ];
 const cm1opAdditionDemo = makeSingleStepDemo(CM1OP_ADDITION_STEPS, 'cm1op-additionDisplay');
 
+/* Méthode de compensation (plutôt que l'emprunt classique) : quand un chiffre du haut est plus
+   petit que celui du bas, on ajoute 10 à ce chiffre du haut ET 1 au chiffre du bas de la colonne
+   suivante -- comme on ajoute la même quantité aux deux nombres, la différence ne change pas.
+   Ni le nombre du haut ni celui du bas ne sont jamais modifiés ou barrés : seules de petites
+   annotations "+10"/"+1" apparaissent au-dessus, comme les retenues de l'addition. */
 const CM1OP_SOUSTRACTION_STEPS = [
   {expr: cm1opRowsTable([
       {cells:['','',''], small:true},
       {cells:['6','2','3']},
+      {cells:['','',''], small:true},
       {cells:['1','4','8'], sign:'−', bar:true},
       {cells:['','',''], color:'var(--accent-orange)', big:true},
     ]), note: "On pose la soustraction : 623 (le nombre dont on part) au-dessus, 148 (le nombre qu'on enlève) en dessous, alignés par colonnes."},
   {expr: cm1opRowsTable([
-      {cells:['',{v:'1'},'13'], small:true},
-      {cells:['6',{v:'2',strike:true},'3']},
+      {cells:['','','+10'], small:true},
+      {cells:['6','2','3']},
+      {cells:['','+1',''], small:true},
       {cells:['1','4','8'], sign:'−', bar:true},
       {cells:['','','5'], color:'var(--accent-orange)', big:true},
-    ]), note: "Unités : 3 − 8, impossible ! On emprunte 1 dizaine (10 unités) à la colonne des dizaines : 3 devient 13. Le 2 des dizaines devient 1. 13 − 8 = 5."},
+    ]), note: "Unités : 3 − 8, impossible ! Je compense : j'ajoute 10 au chiffre des unités du haut (3 devient 13) ET j'ajoute 1 au chiffre des dizaines du bas (4 devient 5) -- la différence ne change pas. 13 − 8 = 5."},
   {expr: cm1opRowsTable([
-      {cells:[{v:'5'},'11','13'], small:true},
-      {cells:[{v:'6',strike:true},{v:'2',strike:true},'3']},
+      {cells:['','+10','+10'], small:true},
+      {cells:['6','2','3']},
+      {cells:['+1','+1',''], small:true},
       {cells:['1','4','8'], sign:'−', bar:true},
       {cells:['','7','5'], color:'var(--accent-orange)', big:true},
-    ]), note: "Dizaines : après l'emprunt, il reste 1 dizaine. 1 − 4, impossible ! On emprunte 1 centaine à la colonne des centaines : 1 devient 11. Le 6 des centaines devient 5. 11 − 4 = 7."},
+    ]), note: "Dizaines : 2 − 5 (le 4 compensé en 5), impossible ! Je compense encore : j'ajoute 10 au chiffre des dizaines du haut (2 devient 12) ET j'ajoute 1 au chiffre des centaines du bas (1 devient 2). 12 − 5 = 7."},
   {expr: cm1opRowsTable([
-      {cells:[{v:'5'},'11','13'], small:true},
-      {cells:[{v:'6',strike:true},{v:'2',strike:true},'3']},
+      {cells:['','+10','+10'], small:true},
+      {cells:['6','2','3']},
+      {cells:['+1','+1',''], small:true},
       {cells:['1','4','8'], sign:'−', bar:true},
       {cells:['4','7','5'], color:'var(--accent-orange)', big:true},
-    ]), note: "Centaines : après l'emprunt, il reste 5. 5 − 1 = 4."},
+    ]), note: "Centaines : 6 − 2 (le 1 compensé en 2) = 4."},
   {expr: cm1opRowsTable([
-      {cells:[{v:'5'},'11','13'], small:true},
-      {cells:[{v:'6',strike:true},{v:'2',strike:true},'3']},
+      {cells:['','+10','+10'], small:true},
+      {cells:['6','2','3']},
+      {cells:['+1','+1',''], small:true},
       {cells:['1','4','8'], sign:'−', bar:true},
       {cells:['4','7','5'], color:'var(--accent-orange)', big:true},
     ]), note: "623 − 148 = 475. Le résultat de la soustraction s'appelle la différence."},
@@ -337,33 +351,33 @@ const cm1opSoustractionDemo = makeSingleStepDemo(CM1OP_SOUSTRACTION_STEPS, 'cm1o
 
 const CM1OP_MULTIPLICATION_STEPS = [
   {expr: cm1opRowsTable([
-      {cells:['','3','4']},
-      {cells:['','2','3'], sign:'×', bar:true},
+      {cells:['','3','4'], label:'le nombre qu\'on multiplie'},
+      {cells:['','2','3'], sign:'×', bar:true, label:'par combien on multiplie'},
     ]), note: "On pose la multiplication : 34 (le nombre qu'on multiplie) au-dessus, 23 (par combien on multiplie) en dessous."},
   {expr: cm1opRowsTable([
-      {cells:['','3','4']},
-      {cells:['','2','3'], sign:'×', bar:true},
-      {cells:['1','0','2'], color:'var(--accent-orange)'},
+      {cells:['','3','4'], label:'le nombre qu\'on multiplie'},
+      {cells:['','2','3'], sign:'×', bar:true, label:'par combien on multiplie'},
+      {cells:['1','0','2'], color:'var(--accent-orange)', label:'← 34 × 3 (chiffre des unités de 23)'},
     ]), note: "On multiplie d'abord 34 par le chiffre des unités de 23, c'est-à-dire par 3 : 34 × 3 = 102. On écrit ce résultat sous le trait."},
   {expr: cm1opRowsTable([
-      {cells:['','3','4']},
-      {cells:['','2','3'], sign:'×', bar:true},
-      {cells:['1','0','2']},
-      {cells:['6','8','0'], color:'var(--accent-orange)', bar:true},
+      {cells:['','3','4'], label:'le nombre qu\'on multiplie'},
+      {cells:['','2','3'], sign:'×', bar:true, label:'par combien on multiplie'},
+      {cells:['1','0','2'], label:'← 34 × 3 (chiffre des unités de 23)'},
+      {cells:['6','8','0'], color:'var(--accent-orange)', bar:true, label:'← 34 × 20 (chiffre des dizaines de 23)'},
     ]), note: "On multiplie ensuite 34 par le chiffre des dizaines de 23, c'est-à-dire par 20 (2 dizaines) : 34 × 20 = 680. On écrit ce second résultat juste en dessous, avec un trait pour préparer l'addition."},
   {expr: cm1opRowsTable([
-      {cells:['','3','4']},
-      {cells:['','2','3'], sign:'×', bar:true},
-      {cells:['1','0','2']},
-      {cells:['6','8','0'], bar:true},
-      {cells:['7','8','2'], color:'var(--accent-orange)', big:true},
+      {cells:['','3','4'], label:'le nombre qu\'on multiplie'},
+      {cells:['','2','3'], sign:'×', bar:true, label:'par combien on multiplie'},
+      {cells:['1','0','2'], label:'← 34 × 3 (chiffre des unités de 23)'},
+      {cells:['6','8','0'], bar:true, label:'← 34 × 20 (chiffre des dizaines de 23)'},
+      {cells:['7','8','2'], color:'var(--accent-orange)', big:true, label:'← 102 + 680'},
     ]), note: "Il ne reste plus qu'à additionner les deux résultats : 102 + 680 = 782."},
   {expr: cm1opRowsTable([
-      {cells:['','3','4']},
-      {cells:['','2','3'], sign:'×', bar:true},
-      {cells:['1','0','2']},
-      {cells:['6','8','0'], bar:true},
-      {cells:['7','8','2'], color:'var(--accent-orange)', big:true},
+      {cells:['','3','4'], label:'le nombre qu\'on multiplie'},
+      {cells:['','2','3'], sign:'×', bar:true, label:'par combien on multiplie'},
+      {cells:['1','0','2'], label:'← 34 × 3 (chiffre des unités de 23)'},
+      {cells:['6','8','0'], bar:true, label:'← 34 × 20 (chiffre des dizaines de 23)'},
+      {cells:['7','8','2'], color:'var(--accent-orange)', big:true, label:'← 102 + 680'},
     ]), note: "34 × 23 = 782. Le résultat de la multiplication s'appelle le produit."},
 ];
 const cm1opMultiplicationDemo = makeSingleStepDemo(CM1OP_MULTIPLICATION_STEPS, 'cm1op-multiplicationDisplay');
