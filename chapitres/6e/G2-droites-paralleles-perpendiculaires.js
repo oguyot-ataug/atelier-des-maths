@@ -357,14 +357,38 @@ document.getElementById('exos-demo-droites-paralleles').innerHTML = `
   <div class="exo-card">
     <div class="num">Exercice 1</div>
     Trace un segment [RS] de 6 cm, puis construis sa médiatrice à la règle et à l'équerre.
+    <button type="button" class="exo-correction-toggle" data-target="dp-ex1-correction" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="dp-ex1-correction">
+      ${dpMedMethodeSVGBlock('dp-ex1', '0 0 400 240', 'R', 'S')}
+      <div class="figure-toolbar">
+        <button class="btn" onclick="dpEx1Demo.next()">Étape suivante →</button>
+        <button class="btn secondary" onclick="dpEx1Demo.reset()">Recommencer</button>
+      </div>
+    </div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
     Trace une droite (d) et un point T n'appartenant pas à (d). Construis la droite parallèle à (d) passant par T.
+    <button type="button" class="exo-correction-toggle" data-target="dp-ex2-correction" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="dp-ex2-correction">
+      ${dpParaMethodeSVGBlock('dp-ex2', '0 0 400 430', '(d)', "(d')", 'T')}
+      <div class="figure-toolbar">
+        <button class="btn" onclick="dpEx2Demo.next()">Étape suivante →</button>
+        <button class="btn secondary" onclick="dpEx2Demo.reset()">Recommencer</button>
+      </div>
+    </div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
     (d) ⊥ (d') et (d') // (d''). Que peut-on dire de la position relative de (d) et (d'') ? Rédige ta réponse.
+    <button type="button" class="exo-correction-toggle" data-target="dp-ex3-correction" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+    <div class="exo-correction" id="dp-ex3-correction">
+      <div id="dp-ex3-display"></div>
+      <div class="figure-toolbar">
+        <button class="btn" onclick="dpEx3Demo.next()">Étape suivante →</button>
+        <button class="btn secondary" onclick="dpEx3Demo.reset()">Recommencer</button>
+      </div>
+    </div>
   </div>
 </div>
 `;
@@ -1100,6 +1124,334 @@ function dpRenderParaMethode(animate){
 function dpParaMethodeNext(){ if(dpPamIdx<DP_PAM_STEPS.length-1){ dpPamIdx++; dpRenderParaMethode(DP_PAM_STEPS[dpPamIdx].phase==='traced'); } }
 function dpParaMethodeReset(){ dpPamIdx=0; dpRenderParaMethode(false); }
 
+/* ================= Corrections d'exercices en étapes ("Penses-tu pouvoir corriger les
+   exercices [...] avec des étape par étape ?") =================
+   Les exercices 1 et 2 utilisent EXACTEMENT les mêmes constructions que celles déjà animées
+   plus haut (médiatrice, parallèle à la règle et l'équerre) -- plutôt que de dupliquer à la main
+   ~130 lignes de géométrie (échelle partagée équerre/règle, retournement en miroir selon le
+   signe du glissement...), les deux moteurs ci-dessus sont généralisés en fabriques
+   paramétrables (points/longueur/étiquettes en argument, tous les id préfixés) : la LOGIQUE déjà
+   au point (et ses cas particuliers déjà débogués) est réutilisée telle quelle pour construire
+   une SECONDE instance indépendante, avec les valeurs propres à chaque exercice. */
+function dpMedMethodeSVGBlock(idPrefix, viewBox, labelA, labelB){
+  return `<svg id="${idPrefix}Svg" viewBox="${viewBox}" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="${idPrefix}-seg" stroke="#1C1B2E" stroke-width="1.8"/>
+    <circle id="${idPrefix}-A" r="5" fill="#1C1B2E" data-marker="cross"/>
+    <circle id="${idPrefix}-B" r="5" fill="#1C1B2E" data-marker="cross"/>
+    <text id="${idPrefix}-labelA" font-style="italic" font-size="14">${labelA}</text>
+    <text id="${idPrefix}-labelB" font-style="italic" font-size="14">${labelB}</text>
+    <rect id="${idPrefix}-measureRuler" rx="6" fill="rgba(205,228,255,.35)" stroke="#1C1B2E" stroke-width="1.5" style="display:none;"/>
+    <path id="${idPrefix}-measureTicks" stroke="#1C1B2E" stroke-width="1" fill="none" style="display:none;"/>
+    <g id="${idPrefix}-measureLabels" style="display:none;"></g>
+    <line id="${idPrefix}-tick1a" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
+    <line id="${idPrefix}-tick1b" stroke="#1F6B3A" stroke-width="1.8" style="display:none;"/>
+    <circle id="${idPrefix}-midpoint" r="3.5" fill="#1C1B2E" style="display:none;" data-marker="cross"/>
+    <g id="${idPrefix}-equerre" style="display:none;">${equerreSVG(TB_EQUERRE_LEGX, TB_EQUERRE_LEGY)}</g>
+    <g id="${idPrefix}-ruler" style="display:none;">${rulerSVG(true)}</g>
+    <polygon id="${idPrefix}-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
+    <polygon id="${idPrefix}-pencil-tip" fill="#3A2A1A" style="display:none;"/>
+    <line id="${idPrefix}-medLine" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
+    <path id="${idPrefix}-angleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3" style="display:none;"/>
+    <text id="${idPrefix}-labelMed" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A" style="display:none;">médiatrice</text>
+  </svg>
+  <p class="hint" id="${idPrefix}-note" style="text-align:center;margin-top:8px;"></p>`;
+}
+/* Fabrique généralisée à partir de dpRenderMedMethode (voir plus haut) -- même logique, points/
+   longueur/étiquettes en argument au lieu de constantes DP_MM_*, id préfixés par idPrefix. */
+function makeMedMethodeDemo(idPrefix, PA, PB, lengthCm, labelA, labelB){
+  const dir = dpDir(PA, PB);
+  const perp = {x:-dir.y, y:dir.x};
+  const mid = {x:(PA.x+PB.x)/2, y:(PA.y+PB.y)/2};
+  const steps = [
+    {phase:'measure', note:`On mesure le segment [${labelA}${labelB}] à la règle graduée : le 0 est posé sur ${labelA}, on lit ${lengthCm} cm sur ${labelB}.`},
+    {phase:'midpoint', note:`On prend la moitié de ${lengthCm} cm, soit ${lengthCm/2} cm : c'est là que se trouve le milieu M. On code les longueurs égales ${labelA}M = M${labelB}.`},
+    {phase:'equerre', note:`On place un côté de l'angle droit de l'équerre le long de [${labelA}${labelB}], au niveau de M.`},
+    {phase:'ruler', note:`On pose la règle le long de l'autre côté de l'équerre : elle est perpendiculaire à [${labelA}${labelB}] en M.`},
+    {phase:'removed', note:"On retire l'équerre : seule la règle reste en place."},
+    {phase:'traced', note:"On trace la médiatrice le long de la règle, en codant l'angle droit."},
+    {phase:'clean', note:`On retire la règle : cette droite est la médiatrice de [${labelA}${labelB}].`},
+  ];
+  let idx = 0;
+  function render(animate){
+    dpAnimationToken++;
+    const s = steps[idx];
+    dpSetLine(document.getElementById(idPrefix+'-seg'), {x1:PA.x,y1:PA.y,x2:PB.x,y2:PB.y});
+    dpSetPt(document.getElementById(idPrefix+'-A'), PA);
+    dpSetPt(document.getElementById(idPrefix+'-B'), PB);
+    dpSetTxt(document.getElementById(idPrefix+'-labelA'), PA, -16, 5);
+    dpSetTxt(document.getElementById(idPrefix+'-labelB'), PB, 8, 5);
+
+    const measureRuler = document.getElementById(idPrefix+'-measureRuler');
+    const measureTicks = document.getElementById(idPrefix+'-measureTicks'), measureLabels = document.getElementById(idPrefix+'-measureLabels');
+    if(s.phase==='measure'){
+      const rulerW = 30;
+      const segLen = Math.hypot(PB.x-PA.x, PB.y-PA.y);
+      const cmPx = segLen/lengthCm, mmPx = cmPx/10;
+      const totalCm = 10;
+      const rulerLenPx = cmPx*totalCm;
+      const mAngDeg = Math.atan2(dir.y, dir.x)*180/Math.PI;
+      const leftMarginPx = cmPx*0.6;
+      measureRuler.setAttribute('transform', `translate(${PA.x},${PA.y}) rotate(${mAngDeg.toFixed(2)})`);
+      measureRuler.setAttribute('x', (-leftMarginPx).toFixed(1));
+      measureRuler.setAttribute('y', '0');
+      measureRuler.setAttribute('width', (rulerLenPx+leftMarginPx).toFixed(1));
+      measureRuler.setAttribute('height', rulerW);
+      measureRuler.style.display='';
+      let ticksPath = '';
+      let labelsHtml = '';
+      const nbMm = totalCm*10;
+      for(let i=0;i<=nbMm;i++){
+        const isCm = i%10===0;
+        const pt = {x:PA.x+dir.x*mmPx*i, y:PA.y+dir.y*mmPx*i};
+        const isHalfCm = i%10===5;
+        const tickDepth = isCm ? 11 : (isHalfCm ? 8 : 5);
+        const t2 = {x:pt.x+perp.x*tickDepth, y:pt.y+perp.y*tickDepth};
+        ticksPath += `M ${pt.x} ${pt.y} L ${t2.x} ${t2.y} `;
+        if(isCm){
+          const cmIndex = i/10;
+          const isHalf = cmIndex===lengthCm/2;
+          const labelPos = {x:pt.x+perp.x*20, y:pt.y+perp.y*20};
+          labelsHtml += `<text x="${labelPos.x}" y="${labelPos.y}" font-size="${isHalf?11:9}" text-anchor="middle" fill="${isHalf?'#1F6B3A':'#1C1B2E'}" font-weight="${isHalf?700:400}">${cmIndex}</text>`;
+        }
+      }
+      measureTicks.setAttribute('d', ticksPath);
+      measureTicks.style.display='';
+      measureLabels.innerHTML = labelsHtml;
+      measureLabels.style.display='';
+    } else {
+      measureRuler.style.display='none';
+      measureTicks.style.display='none';
+      measureLabels.style.display='none';
+    }
+
+    const tick1a = document.getElementById(idPrefix+'-tick1a'), tick1b = document.getElementById(idPrefix+'-tick1b'), midpoint = document.getElementById(idPrefix+'-midpoint');
+    const midpointOnwards = ['midpoint','equerre','ruler','removed','traced','clean'];
+    if(midpointOnwards.indexOf(s.phase)!==-1){
+      const tickLen=9, tickAngle=Math.atan2(dir.y,dir.x)+Math.PI/2.6;
+      const q1 = {x:(PA.x+mid.x)/2, y:(PA.y+mid.y)/2};
+      const q2 = {x:(mid.x+PB.x)/2, y:(mid.y+PB.y)/2};
+      tick1a.setAttribute('x1', q1.x-Math.cos(tickAngle)*tickLen); tick1a.setAttribute('y1', q1.y-Math.sin(tickAngle)*tickLen);
+      tick1a.setAttribute('x2', q1.x+Math.cos(tickAngle)*tickLen); tick1a.setAttribute('y2', q1.y+Math.sin(tickAngle)*tickLen);
+      tick1b.setAttribute('x1', q2.x-Math.cos(tickAngle)*tickLen); tick1b.setAttribute('y1', q2.y-Math.sin(tickAngle)*tickLen);
+      tick1b.setAttribute('x2', q2.x+Math.cos(tickAngle)*tickLen); tick1b.setAttribute('y2', q2.y+Math.sin(tickAngle)*tickLen);
+      tick1a.style.display=''; tick1b.style.display='';
+      dpSetPt(midpoint, mid); midpoint.style.display='';
+    } else {
+      tick1a.style.display='none'; tick1b.style.display='none'; midpoint.style.display='none';
+    }
+
+    const equerre = document.getElementById(idPrefix+'-equerre');
+    const eqScale = 0.44;
+    if(s.phase==='equerre' || s.phase==='ruler'){
+      const angDeg = Math.atan2(dir.y, dir.x)*180/Math.PI;
+      equerre.setAttribute('transform', `translate(${mid.x},${mid.y}) rotate(${angDeg.toFixed(2)}) scale(${eqScale})`);
+      equerre.style.display='';
+    } else {
+      equerre.style.display='none';
+    }
+
+    const rulerScale = 0.44;
+    const ruler = document.getElementById(idPrefix+'-ruler');
+    if(s.phase==='ruler' || s.phase==='removed' || s.phase==='traced'){
+      const rAngDeg = Math.atan2(perp.y, perp.x)*180/Math.PI;
+      const backOffset = TB_RULER_L*rulerScale*0.3;
+      const rStart = {x:mid.x-perp.x*backOffset, y:mid.y-perp.y*backOffset};
+      ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAngDeg.toFixed(2)}) scale(${rulerScale})`);
+      ruler.style.display='';
+    } else {
+      ruler.style.display='none';
+    }
+
+    const medLine = document.getElementById(idPrefix+'-medLine'), angleMark = document.getElementById(idPrefix+'-angleMark');
+    const pencil = document.getElementById(idPrefix+'-pencil'), pencilTip = document.getElementById(idPrefix+'-pencil-tip');
+    const labelMed = document.getElementById(idPrefix+'-labelMed');
+    if(s.phase==='traced' || s.phase==='clean'){
+      const medExt = dpExtend(mid, perp, TB_RULER_L*rulerScale/2);
+      medLine.style.display='';
+      angleMark.setAttribute('d', dpRightAngleMark(mid, {x:dir.x,y:dir.y}, {x:perp.x,y:perp.y}, 13));
+      angleMark.style.display='';
+      dpSetTxt(labelMed, {x:medExt.x2+dir.x*16, y:medExt.y2+dir.y*16}, 0, 0);
+      labelMed.style.display='';
+      if(s.phase==='traced'){
+        pencil.style.display=''; pencilTip.style.display='';
+        if(animate){
+          dpAnimateTrace(medLine, pencil, pencilTip, {x:medExt.x1,y:medExt.y1}, {x:medExt.x2,y:medExt.y2}, dir, 900);
+        } else {
+          dpSetLine(medLine, medExt);
+          const tipPoint = {x:medExt.x2, y:medExt.y2};
+          const pencilShapes = dpPencilPolygons(tipPoint, perp, dir);
+          pencil.setAttribute('points', pencilShapes.body);
+          pencilTip.setAttribute('points', pencilShapes.tip);
+        }
+      } else {
+        dpSetLine(medLine, medExt);
+        pencil.style.display='none'; pencilTip.style.display='none';
+      }
+    } else {
+      medLine.style.display='none'; angleMark.style.display='none';
+      pencil.style.display='none'; pencilTip.style.display='none';
+      labelMed.style.display='none';
+    }
+
+    document.getElementById(idPrefix+'-note').textContent = s.note;
+  }
+  return {
+    next(){ if(idx<steps.length-1){ idx++; render(steps[idx].phase==='traced'); } },
+    reset(){ idx=0; render(false); },
+    render,
+  };
+}
+
+function dpParaMethodeSVGBlock(idPrefix, viewBox, labelD, labelDpp, labelPt){
+  return `<svg id="${idPrefix}Svg" viewBox="${viewBox}" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="${idPrefix}-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
+    <circle id="${idPrefix}-N" r="5" fill="#E35D3A" data-marker="cross"/>
+    <text id="${idPrefix}-labelN" font-style="italic" font-size="14">${labelPt}</text>
+    <g id="${idPrefix}-ruler" style="display:none;">${rulerSVG(true)}</g>
+    <g id="${idPrefix}-ruler2" style="display:none;">${rulerSVG(true)}</g>
+    <g id="${idPrefix}-equerre" style="display:none;">${equerreSVG(TB_EQUERRE_LEGX, TB_EQUERRE_LEGY)}</g>
+    <polygon id="${idPrefix}-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
+    <polygon id="${idPrefix}-pencil-tip" fill="#3A2A1A" style="display:none;"/>
+    <line id="${idPrefix}-lineDpp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
+    <text id="${idPrefix}-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C">${labelD}</text>
+    <text id="${idPrefix}-labelDpp" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A" style="display:none;">${labelDpp}</text>
+  </svg>
+  <p class="hint" id="${idPrefix}-note" style="text-align:center;margin-top:8px;"></p>`;
+}
+/* Fabrique généralisée à partir de dpRenderParaMethode (voir plus haut) -- même logique
+   (notamment le retournement en miroir de l'équerre selon le signe du glissement, déjà débogué),
+   points/étiquettes en argument au lieu de constantes DP_PAM_*, id préfixés par idPrefix. */
+function makeParaMethodeDemo(idPrefix, P1, P2, N, labelD, labelDpp, labelPt){
+  const dir = dpDir(P1, P2);
+  const perp = {x:-dir.y, y:dir.x};
+  const slideDist = perp.x*(N.x-P1.x) + perp.y*(N.y-P1.y);
+  const touchDist = Math.hypot(N.x-(P1.x+perp.x*slideDist), N.y-(P1.y+perp.y*slideDist));
+  const steps = [
+    {frac: 0, phase:'equerre-only', note:`On place un côté de l'angle droit de l'équerre sur la droite ${labelD}.`},
+    {frac: 0, phase:'slide', note:"On vient poser la règle le long de l'autre côté de l'équerre."},
+    {frac: 0.5, phase:'slide', note:`L'équerre glisse le long de la règle (sans que la règle ne bouge), en direction du point ${labelPt}.`},
+    {frac: 1, phase:'slide', note:`On arrête de glisser dès que le côté de l'équerre passe par le point ${labelPt}.`},
+    {frac: 1, phase:'ruler2', note:"On vient poser une seconde règle le long de ce côté de l'équerre."},
+    {frac: 1, phase:'removed', note:"On retire l'équerre (et la première règle) : seule la seconde règle reste en place."},
+    {frac: 1, phase:'traced', note:`On trace la parallèle le long de cette règle : on nomme ${labelDpp} la droite obtenue.`},
+    {frac: 1, phase:'clean', note:`On retire la seconde règle : ${labelD} et ${labelDpp} sont parallèles.`},
+  ];
+  let idx = 0;
+  function render(animate){
+    dpAnimationToken++;
+    const s = steps[idx];
+    const scale = Math.max(0.44, (Math.abs(slideDist)+50)/TB_RULER_L, (touchDist+18)/TB_EQUERRE_LEGX, 150/TB_RULER_L);
+    const dExt = dpExtend({x:(P1.x+P2.x)/2,y:(P1.y+P2.y)/2}, dir, 260);
+    dpSetLine(document.getElementById(idPrefix+'-lineD'), dExt);
+    dpSetPt(document.getElementById(idPrefix+'-N'), N);
+    dpSetTxt(document.getElementById(idPrefix+'-labelN'), N, 8, -10);
+    dpSetTxt(document.getElementById(idPrefix+'-labelD'), {x:P2.x+dir.x*24+perp.x*16, y:P2.y+dir.y*24+perp.y*16}, 0, 0);
+
+    const ruler = document.getElementById(idPrefix+'-ruler');
+    if(s.phase==='slide'){
+      const backOffset = TB_RULER_L*scale*0.1;
+      const rAng = Math.atan2(perp.y, perp.x)*180/Math.PI;
+      const farPoint = Math.min(0, slideDist);
+      const rStart = {x:P1.x+perp.x*(farPoint-backOffset), y:P1.y+perp.y*(farPoint-backOffset)};
+      ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAng.toFixed(2)}) scale(${scale.toFixed(3)})`);
+      ruler.style.display='';
+    } else {
+      ruler.style.display='none';
+    }
+
+    const corner = {x:P1.x+perp.x*slideDist*s.frac, y:P1.y+perp.y*slideDist*s.frac};
+    const sign = (slideDist>=0?1:-1);
+    const equerre = document.getElementById(idPrefix+'-equerre');
+    if(s.phase==='removed' || s.phase==='traced' || s.phase==='clean'){
+      equerre.style.display='none';
+    } else {
+      const angDeg = Math.atan2(dir.y, dir.x)*180/Math.PI;
+      const scaleY = sign>=0 ? scale : -scale;
+      equerre.setAttribute('transform', `translate(${corner.x},${corner.y}) rotate(${angDeg.toFixed(2)}) scale(${scale.toFixed(3)},${scaleY.toFixed(3)})`);
+      if(sign<0 && !equerre.dataset.unmirrored){
+        equerre.innerHTML = dpUnmirrorText(equerreSVG(TB_EQUERRE_LEGX, TB_EQUERRE_LEGY));
+        equerre.dataset.unmirrored = '1';
+      } else if(sign>=0 && equerre.dataset.unmirrored){
+        equerre.innerHTML = equerreSVG(TB_EQUERRE_LEGX, TB_EQUERRE_LEGY);
+        equerre.dataset.unmirrored = '';
+      }
+      equerre.style.display='';
+    }
+
+    const ruler2 = document.getElementById(idPrefix+'-ruler2');
+    if(s.phase==='ruler2' || s.phase==='removed' || s.phase==='traced'){
+      const backOffset2 = TB_RULER_L*scale*0.45;
+      let r2Ang, r2Start;
+      if(sign>=0){
+        r2Ang = Math.atan2(-dir.y, -dir.x)*180/Math.PI;
+        r2Start = {x:N.x+dir.x*backOffset2, y:N.y+dir.y*backOffset2};
+      } else {
+        r2Ang = Math.atan2(dir.y, dir.x)*180/Math.PI;
+        r2Start = {x:N.x-dir.x*backOffset2, y:N.y-dir.y*backOffset2};
+      }
+      ruler2.setAttribute('transform', `translate(${r2Start.x},${r2Start.y}) rotate(${r2Ang.toFixed(2)}) scale(${scale.toFixed(3)})`);
+      ruler2.style.display='';
+    } else {
+      ruler2.style.display='none';
+    }
+
+    const lineDpp = document.getElementById(idPrefix+'-lineDpp');
+    const pencil = document.getElementById(idPrefix+'-pencil'), pencilTip = document.getElementById(idPrefix+'-pencil-tip');
+    const labelDpp = document.getElementById(idPrefix+'-labelDpp');
+    if(s.phase==='traced' || s.phase==='clean'){
+      const dppExt = dpExtend(N, dir, TB_RULER_L*scale/2);
+      lineDpp.style.display='';
+      dpSetTxt(labelDpp, {x:dppExt.x2+perp.x*16, y:dppExt.y2+perp.y*16}, 0, 0);
+      labelDpp.style.display='';
+      if(s.phase==='traced'){
+        pencil.style.display=''; pencilTip.style.display='';
+        if(animate){
+          dpAnimateTrace(lineDpp, pencil, pencilTip, {x:dppExt.x1,y:dppExt.y1}, {x:dppExt.x2,y:dppExt.y2}, perp, 900);
+        } else {
+          dpSetLine(lineDpp, dppExt);
+          const tipPoint = {x:dppExt.x2, y:dppExt.y2};
+          const pencilShapes = dpPencilPolygons(tipPoint, dir, perp);
+          pencil.setAttribute('points', pencilShapes.body);
+          pencilTip.setAttribute('points', pencilShapes.tip);
+        }
+      } else {
+        dpSetLine(lineDpp, dppExt);
+        pencil.style.display='none';
+        pencilTip.style.display='none';
+      }
+    } else {
+      lineDpp.style.display='none';
+      pencil.style.display='none';
+      pencilTip.style.display='none';
+      labelDpp.style.display='none';
+    }
+    document.getElementById(idPrefix+'-note').textContent = s.note;
+  }
+  return {
+    next(){ if(idx<steps.length-1){ idx++; render(steps[idx].phase==='traced'); } },
+    reset(){ idx=0; render(false); },
+    render,
+  };
+}
+
+/* Exercice 1 : médiatrice de [RS], 6 cm (mêmes points utilisés pour générer le SVG ci-dessus). */
+const DP_EX1_R={x:90,y:190}, DP_EX1_S={x:270,y:100};
+const dpEx1Demo = makeMedMethodeDemo('dp-ex1', DP_EX1_R, DP_EX1_S, 6, 'R', 'S');
+
+/* Exercice 2 : parallèle à (d) passant par T. */
+const DP_EX2_D1={x:55,y:150}, DP_EX2_D2={x:290,y:70}, DP_EX2_T={x:200,y:210};
+const dpEx2Demo = makeParaMethodeDemo('dp-ex2', DP_EX2_D1, DP_EX2_D2, DP_EX2_T, '(d)', "(d')", 'T');
+
+/* Exercice 3 : rédaction en étapes (voir makeRedactionStepDemo, app.js) -- cas "dual" de la
+   rédaction type ci-dessus (parallélisme donné, perpendicularité à établir, au lieu de
+   l'inverse). */
+const DP_EX3_ROWS = [
+  {expr:"On sait que (d) ⊥ (d') et (d') // (d'').", comment:"Données de l'énoncé."},
+  {expr:"Or, si deux droites sont parallèles, toute droite perpendiculaire à l'une est perpendiculaire à l'autre.", comment:"Propriété utilisée."},
+  {expr:"Donc (d) ⊥ (d'').", comment:"Conclusion."},
+];
+const dpEx3Demo = makeRedactionStepDemo(DP_EX3_ROWS, 'dp-ex3-display');
+
 /* ================= RÉQUERRE : perpendiculaire ================= */
 const DP_RQP_D1={x:60,y:190}, DP_RQP_D2={x:340,y:110}, DP_RQP_M={x:230,y:50};
 const dpRqpDir = dpDir(DP_RQP_D1, DP_RQP_D2);
@@ -1300,7 +1652,7 @@ function dpRegisterGeoDemos(){
   registerGeoStepDemo('dp-rqa-svg', { steps:()=>DP_RQA_STEPS, getIdx:()=>dpRqaIdx, goto:(i,animate)=>{ dpRqaIdx=i; dpRenderRqPara(animate); } });
 }
 DEMO_REGISTRY['6e|Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles', histoire:'histoire-demo-droites-paralleles',
-  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethAnimReset(); dpRegisterGeoDemos(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); injectCourseAddButtons(document.getElementById('methode-demo-droites-paralleles')); } };
+  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethAnimReset(); dpEx1Demo.reset(); dpEx2Demo.reset(); dpEx3Demo.reset(); dpRegisterGeoDemos(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); injectCourseAddButtons(document.getElementById('methode-demo-droites-paralleles')); } };
 
 DEMO_QUIZZES['6e|Droites parallèles et perpendiculaires'] = [
   {q:"Que signifie (d) ⊥ (d') ?",

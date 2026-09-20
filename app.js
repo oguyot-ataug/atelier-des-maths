@@ -914,6 +914,27 @@ function makeSingleStepDemo(steps, displayId){
     render,
   };
 }
+/* Révèle une justification rédigée ligne par ligne, au clic sur "Étape suivante" -- même mise en
+   page que .redaction-template/.we-row (voir la "Rédaction type" de chaque chapitre), mais pour
+   la correction d'un exercice de rédaction/démonstration : chaque étape ajoute la phrase
+   suivante au lieu de tout montrer d'un coup. rows: [{expr, comment}] (comment optionnel) --
+   .we-row:last-child met déjà en évidence la dernière ligne (la conclusion) via le CSS existant. */
+function makeRedactionStepDemo(rows, displayId){
+  let idx = 0;
+  function render(){
+    const el = document.getElementById(displayId);
+    if(!el) return;
+    const lines = rows.slice(0, idx+1).map(r=>
+      `<div class="we-row"><span class="we-expr">${r.expr}</span><span class="we-comment">${r.comment||''}</span></div>`
+    ).join('');
+    el.innerHTML = `<div class="redaction-template">${lines}</div>`;
+  }
+  return {
+    next(){ if(idx<rows.length-1) idx++; render(); },
+    reset(){ idx=0; render(); },
+    render,
+  };
+}
 function rotateAroundPoint(p, center, angleDeg){
   const a = angleDeg*Math.PI/180;
   const dx=p.x-center.x, dy=p.y-center.y;
@@ -2359,6 +2380,9 @@ function populateSupervisionClassSelect(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.585', items:[
+    "6e, Droites parallèles et perpendiculaires : les 3 exercices ont désormais une correction en étapes (« Étape suivante »), au lieu d'aucune correction du tout. Exercice 1 (médiatrice de [RS]) et exercice 2 (parallèle à (d) passant par T) réutilisent les mêmes constructions à la règle et à l'équerre déjà animées dans le cours, avec leurs propres points. Exercice 3 (justification de rédaction) se dévoile phrase par phrase, comme un calcul qui se déroule, plutôt que tout d'un coup.",
+  ]},
   { version:'2026-08-19.584', items:[
     "Fix : les figures SVG (constructions à la règle et à l'équerre, etc.) ne grossissaient pas vraiment en mode zoom, et changeaient de dimension à chaque étape d'une animation -- signalé sur \"Construction à la règle et l'équerre\" (6e, droites perpendiculaires) mais concerne toutes les figures SVG du site. Cause : le SVG garde son style width:100% d'origine, ambigu dans la fenêtre de zoom (qui se dimensionne elle-même sur son contenu) -- le navigateur le résolvait de façon peu fiable, sans vraiment agrandir, et différemment à chaque re-rendu. Les figures SVG ont désormais une taille fixe et stable en zoom (700px, contre ~460px normalement) : elles grossissent pour de vrai, et ne bougent plus d'une étape à l'autre.",
   ]},
