@@ -887,7 +887,6 @@ function makeStepDemo(steps, displayId){
     }).join('');
     el.innerHTML = `<div class="step-column">${lines}</div><div class="step-note">${steps[idx].note}</div>`;
     renderStaticMath(el);
-    syncZoomBoxIfShowing(el);
   }
   return {
     next(){ if(idx<steps.length-1) idx++; render(); },
@@ -908,7 +907,6 @@ function makeSingleStepDemo(steps, displayId){
     el._stepDemoSteps = steps;
     el.innerHTML = `<div class="step-column"><div>${steps[idx].expr}</div></div><div class="step-note">${steps[idx].note}</div>`;
     renderStaticMath(el);
-    syncZoomBoxIfShowing(el);
   }
   return {
     next(){ if(idx<steps.length-1) idx++; render(); },
@@ -2361,6 +2359,9 @@ function populateSupervisionClassSelect(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.583', items:[
+    "Fix important sur la loupe plein écran (zoom) : les figures interactives à points déplaçables (ex. symétrie centrale 5e -- \"impossible de déplacer le point en mode zoom\") et les animations lancées par bouton (\"le demi-tour n'est pas visible en mode zoom\") ne fonctionnaient pas une fois zoomées. Cause : la loupe affichait une COPIE de la figure, qui n'a jamais les écouteurs de glisser-déposer (jamais recopiés lors d'un clonage) ni la bonne cible pour les animations (qui continuaient d'agir sur l'original resté caché derrière l'overlay). La loupe déplace désormais le vrai élément dans la fenêtre de zoom (au lieu d'en cloner une copie), qui revient à sa place exacte à la fermeture -- ses écouteurs et son fonctionnement restent donc intacts, qu'il soit zoomé ou non. Concerne toutes les figures interactives du site, pas seulement la symétrie centrale.",
+  ]},
   { version:'2026-08-19.582', items:[
     "CM1 (Opérations sur les nombres entiers) : la soustraction posée est passée de la méthode par emprunt à la méthode par compensation (on ajoute 10 au chiffre du haut ET 1 au chiffre du bas de la colonne suivante) -- plus aucun chiffre n'est barré ou modifié dans les opérations posées, seulement de petites annotations « +10 »/« +1 » au-dessus, comme les retenues de l'addition. La multiplication posée affiche désormais, à côté de chaque ligne, ce qu'elle représente (« ← 34 × 3 (chiffre des unités de 23) », etc.) -- dans le cours et dans la méthode animée.",
   ]},
@@ -5114,50 +5115,39 @@ function injectZoomButtons(container){
     card.appendChild(btn);
   });
 }
-// Boîte actuellement affichée en plein écran (permet de la resynchroniser après un clic sur
-// "Étape suivante"/"Recommencer", DONT LES BOUTONS RESTENT FONCTIONNELS dans le zoom --
-// signalé : "les agrandissements avec étape suivante, ne montrent pas le bouton étape
-// suivante"). Ces boutons appellent les mêmes fonctions globales qui mettent à jour
-// l'affichage ORIGINAL (caché derrière le zoom) ; refreshZoomBoxContent reclone alors ce
-// contenu fraîchement mis à jour dans la fenêtre plein écran.
+// Boîte actuellement affichée en plein écran. Déplace le vrai nœud DOM dans la fenêtre de zoom
+// (au lieu d'en afficher une COPIE, comme avant) : un marqueur vide reste à sa place d'origine
+// pour pouvoir l'y remettre à la fermeture. Signalé : sur une figure interactive avec des points
+// déplaçables à la souris/au doigt (ex. symétrie centrale 5e), "impossible de déplacer le point
+// en mode zoom", et "l'animation lancer le demi-tour n'est pas visible en mode zoom". Cause : ces
+// figures répèrent leurs éléments par un id FIXE (getElementById('svgTri')...) et branchent le
+// glisser-déposer via des propriétés JS (el.onmousedown=..., addEventListener) -- une copie
+// clonée n'a ni ces écouteurs (jamais recopiés par cloneNode) ni la bonne cible (le code continue
+// à agir sur l'original resté caché derrière l'overlay, invisible). En déplaçant le nœud RÉEL
+// plutôt qu'une copie, ses écouteurs et son id restent intacts et pointent forcément au bon
+// endroit -- qu'il soit dans son emplacement d'origine ou dans la fenêtre de zoom, c'est
+// physiquement le même élément. Au passage, ça simplifie aussi tout ce qui touchait déjà les
+// boutons "Étape suivante"/correction dans le zoom (voir l'ancienne logique de reclonage et de
+// ré-préfixage d'id, devenue inutile : plus qu'une seule copie de chaque nœud existe jamais).
 let zoomedBox = null;
+let zoomedBoxPlaceholder = null;
 function openZoomBox(box){
+  if(zoomedBox) closeZoomBox();
   zoomedBox = box;
-  refreshZoomBoxContent();
-}
-function refreshZoomBoxContent(){
-  if(!zoomedBox) return;
-  const clone = zoomedBox.cloneNode(true);
-  clone.querySelectorAll('.zoom-btn, .read-aloud-btn').forEach(b=>b.remove());
-  // La correction ET les boutons d'étape restent FONCTIONNELS dans le zoom -- mais leurs
-  // identifiants sont re-préfixés pour ne pas entrer en conflit avec l'original resté dans
-  // la page (sinon un bouton avec le MÊME id agirait sur l'original caché plutôt que sur la
-  // copie affichée).
-  clone.querySelectorAll('[id]').forEach(el=>{
-    const newId = 'zoom-'+el.id;
-    clone.querySelectorAll(`[data-target="${el.id}"]`).forEach(btn=>btn.setAttribute('data-target', newId));
-    el.id = newId;
-  });
-  // Transplante les vrais nœuds clonés (et non `clone.innerHTML`, une chaîne de caractères) --
-  // signalé : "en mode zoom, le résultat ne s'affiche pas" sur un widget avec des champs de
-  // saisie. cloneNode(true) copie bien la valeur ACTUELLE d'un champ ou l'état coché d'une
-  // case (pas seulement leur valeur par défaut), mais cette valeur vivante se perdait dès que
-  // `clone.innerHTML` la sérialisait en HTML (la sérialisation d'un <input> ne reflète que son
-  // attribut `value`/`checked` d'origine, jamais l'état modifié par l'utilisateur ou du JS) --
-  // les champs retombaient donc vides et les cases décochées se recochaient dans le zoom.
+  zoomedBoxPlaceholder = document.createComment('zoom-placeholder');
+  box.parentNode.insertBefore(zoomedBoxPlaceholder, box);
+  box.querySelectorAll('.zoom-btn, .read-aloud-btn').forEach(b=>{ b.dataset.zoomHidden='1'; b.style.display='none'; });
   const contentEl = document.getElementById('zoomBoxContent');
-  contentEl.replaceChildren(...clone.childNodes);
-  renderStaticMath(contentEl); // les formules KaTeX du clone doivent être rendues à nouveau
+  contentEl.innerHTML = '';
+  contentEl.appendChild(box);
   document.getElementById('zoomBoxOverlay').style.display = 'flex';
 }
-// Appelée après CHAQUE rendu d'une démo par étapes (makeStepDemo/makeSingleStepDemo) : si la
-// boîte actuellement zoomée contient cet affichage, on resynchronise le zoom avec le nouvel
-// état -- sinon rien ne se passe (cas normal, aucun zoom ouvert sur cet élément).
-function syncZoomBoxIfShowing(displayEl){
-  if(zoomedBox && zoomedBox.contains(displayEl)) refreshZoomBoxContent();
-}
 function closeZoomBox(){
+  if(!zoomedBox) return;
+  zoomedBox.querySelectorAll('[data-zoom-hidden]').forEach(b=>{ b.style.display=''; delete b.dataset.zoomHidden; });
+  zoomedBoxPlaceholder.parentNode.replaceChild(zoomedBox, zoomedBoxPlaceholder);
   zoomedBox = null;
+  zoomedBoxPlaceholder = null;
   document.getElementById('zoomBoxOverlay').style.display = 'none';
 }
 document.addEventListener('keydown', (e)=>{
