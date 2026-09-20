@@ -250,6 +250,16 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 #zoomBoxOverlay .zoom-content .od-tree-input{font-size:1.3rem;}
 #zoomBoxOverlay .zoom-content .od-tree-op-label{font-size:1.2rem;}
 #zoomBoxOverlay .zoom-content .od-tree-chip{font-size:1.2rem;}
+/* Les figures SVG utilisent leur propre style="width:100%;max-width:460px" (ou une autre valeur
+   fixe selon le chapitre), pensé pour la taille normale de la page -- resté tel quel, un SVG
+   grossissait à peine (ou même rétrécissait) en plein écran : signalé "ce ne sont pas des vrais
+   zoom [...] ça ne grossit pas". Cause : un `width:100%` dans un conteneur qui se dimensionne
+   lui-même sur son contenu (.zoom-content n'a pas de largeur propre) crée une dépendance
+   circulaire que le navigateur résout de façon peu fiable -- d'où aussi le "change de dimension
+   à chaque étape" (la largeur résolue variait à chaque re-rendu). Une largeur FIXE et prioritaire
+   ici lève l'ambiguïté : le SVG grossit vraiment (700px, contre ~460px normalement) et sa largeur
+   reste stable d'une étape à l'autre ; `height:auto` garde ses proportions (déduites du viewBox). */
+#zoomBoxOverlay .zoom-content svg{width:700px !important;max-width:88vw !important;height:auto !important;}
 #zoomBoxOverlay .zoom-close{
   position:fixed;top:24px;right:28px;border:none;background:rgba(255,255,255,.12);color:#fff;
   border-radius:50%;width:48px;height:48px;font-size:1.5rem;cursor:pointer;display:flex;

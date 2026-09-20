@@ -2359,6 +2359,9 @@ function populateSupervisionClassSelect(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.584', items:[
+    "Fix : les figures SVG (constructions à la règle et à l'équerre, etc.) ne grossissaient pas vraiment en mode zoom, et changeaient de dimension à chaque étape d'une animation -- signalé sur \"Construction à la règle et l'équerre\" (6e, droites perpendiculaires) mais concerne toutes les figures SVG du site. Cause : le SVG garde son style width:100% d'origine, ambigu dans la fenêtre de zoom (qui se dimensionne elle-même sur son contenu) -- le navigateur le résolvait de façon peu fiable, sans vraiment agrandir, et différemment à chaque re-rendu. Les figures SVG ont désormais une taille fixe et stable en zoom (700px, contre ~460px normalement) : elles grossissent pour de vrai, et ne bougent plus d'une étape à l'autre.",
+  ]},
   { version:'2026-08-19.583', items:[
     "Fix important sur la loupe plein écran (zoom) : les figures interactives à points déplaçables (ex. symétrie centrale 5e -- \"impossible de déplacer le point en mode zoom\") et les animations lancées par bouton (\"le demi-tour n'est pas visible en mode zoom\") ne fonctionnaient pas une fois zoomées. Cause : la loupe affichait une COPIE de la figure, qui n'a jamais les écouteurs de glisser-déposer (jamais recopiés lors d'un clonage) ni la bonne cible pour les animations (qui continuaient d'agir sur l'original resté caché derrière l'overlay). La loupe déplace désormais le vrai élément dans la fenêtre de zoom (au lieu d'en cloner une copie), qui revient à sa place exacte à la fermeture -- ses écouteurs et son fonctionnement restent donc intacts, qu'il soit zoomé ou non. Concerne toutes les figures interactives du site, pas seulement la symétrie centrale.",
   ]},
