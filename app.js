@@ -2361,6 +2361,9 @@ function populateSupervisionClassSelect(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.581', items:[
+    "CM1 : nouveau chapitre N2 (Opérations sur les nombres entiers), construit à partir d'un cours de référence fourni -- vocabulaire des quatre opérations, addition/soustraction/multiplication/division posées (4 méthodes animées pas à pas, dont la division qui réutilise directement l'outil déjà existant), multiples et diviseurs, critères de divisibilité (2, 5, 10). 6 exercices corrigés + le widget « Exerce-toi : division euclidienne » (nombres adaptés au niveau CM1).",
+  ]},
   { version:'2026-08-19.580', items:[
     "Fix : dans le widget « Exerce-toi : division euclidienne » (6e N1, 5e N1), le résultat ne s'affichait pas en mode plein écran (loupe) -- la copie plein écran d'une carte d'exercice perd sa propre enveloppe (seul son contenu est dupliqué), donc les boutons qui cherchaient leur carte parente ne la trouvaient plus une fois zoomés. Au passage, fix plus général sur la loupe plein écran elle-même : un champ rempli ou une case décochée revenait à son état par défaut au moment du zoom (la copie ne gardait que la valeur d'origine, pas celle tapée ou modifiée) -- ce qui touchait potentiellement tout widget à champs de saisie affiché en plein écran, pas seulement celui-ci.",
   ]},
