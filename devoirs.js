@@ -278,6 +278,7 @@ function returnToDevoirCreationFromTest(){
   if(typeof renderDevoirsProf==='function') renderDevoirsProf();
 }
 async function renderDevoirsProf(){
+  resetDevoirFormState(); // efface un éventuel état d'édition laissé par une édition abandonnée
   const select = document.getElementById('devoirNewClasse');
   select.innerHTML = (accountClassesList||[]).map(c=>`<option value="${c.id}">${escapeHtml(c.label)}</option>`).join('') || '<option value="">Aucune classe</option>';
   renderDevoirTargetModePicker();
@@ -364,7 +365,10 @@ async function editDevoirPrompt(devoirId){
   renderDevoirTypePicker();
   document.querySelector('.devoir-zone-create').scrollIntoView({behavior:'smooth', block:'start'});
 }
-function cancelDevoirEdit(){
+/* Remise à zéro pure du formulaire (aucune navigation) -- utilisée par cancelDevoirEdit ET par
+   renderDevoirsProf (pour effacer un éventuel état d'édition laissé par une édition abandonnée
+   sans passer par "Annuler", par ex. en quittant via le menu principal). */
+function resetDevoirFormState(){
   devoirEditingId = null; devoirEditingCebRounds = null; devoirEditingCebNLarge = null;
   document.getElementById('devoirNewTitre').value = '';
   document.getElementById('devoirNewConsigne').value = '';
@@ -377,8 +381,27 @@ function cancelDevoirEdit(){
   document.getElementById('devoirCreateTitle').innerHTML = '<span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir';
   document.getElementById('devoirCreateBtn').textContent = 'Assigner ce devoir';
   document.getElementById('devoirCancelEditBtn').style.display = 'none';
+}
+/* Édition ouverte depuis Supervision (supEditDevoirAndOpen, app.js) : où revenir après
+   "Annuler la modification" ou un enregistrement réussi. */
+let devoirReturnTarget = null;
+function cancelDevoirEdit(){
+  const wasEditing = !!devoirEditingId;
+  const returnTarget = devoirReturnTarget;
+  devoirReturnTarget = null;
+  resetDevoirFormState();
   renderDevoirTargetModePicker();
   renderDevoirTypePicker();
+  if(!wasEditing) return;
+  // Signalé : "je ne reviens pas au menu de départ, j'ai la création d'un devoir qui est
+  // ouvert" -- annuler (ou enregistrer) une édition doit ramener là où on était, pas laisser un
+  // formulaire de création vide affiché comme si on en démarrait un nouveau.
+  if(returnTarget==='supervision'){
+    showView('view-supervision'); setActiveTopnav('supervision'); loadMyClasses();
+    document.querySelector('.sup-tab-btn[data-suptab="classes"]')?.click();
+  } else {
+    document.querySelector('.devoir-zone-list')?.scrollIntoView({behavior:'smooth', block:'start'});
+  }
 }
 function devoirTypeLabel(type){ const t = DEVOIR_TYPES.find(t=>t.id===type); return t ? t.label : type; }
 async function refreshDevoirsProfListing(){

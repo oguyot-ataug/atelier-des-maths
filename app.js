@@ -2377,6 +2377,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.595', items:[
+    "Devoirs, édition -- fix -- signalé : \"même chose quand j'édite puis annule, je ne reviens pas au menu de départ, j'ai la création d'un devoir qui est ouvert\". Une édition lancée depuis Supervision (bouton crayon du résumé par classe) ramène désormais à Supervision après \"Annuler la modification\" OU un enregistrement réussi, au lieu de laisser la page Devoirs affichée avec un formulaire vide. Une édition lancée directement depuis la page Devoirs reste sur cette page après annulation, mais redescend vers la liste des devoirs plutôt que de laisser le formulaire (vide) affiché en haut.",
+  ]},
   { version:'2026-08-19.594', items:[
     "Devoirs, bouton Tester -- fix -- pour Compte est bon, en cours de partie (avant d'avoir validé un compte), il n'y avait aucun moyen de revenir au formulaire du devoir -- signalé : \"on ne peut pas quitter ou revenir en arrière, on est obligé de repasser par tous les menus\". Le bouton \"Nouveau tirage\" est remplacé par \"Quitter le test\" pendant un test, qui ramène directement au formulaire (brouillon conservé) en un clic.",
   ]},
@@ -3988,6 +3991,10 @@ async function renderClassDevoirsSummary(classId, containerId, nbEleves){
 /* Ouvre la page Devoirs complète avec ce devoir déjà chargé en édition -- évite de dupliquer le
    formulaire de modification dans le résumé par classe de Supervision. */
 async function supEditDevoirAndOpen(devoirId){
+  // Mémorise qu'on vient de Supervision : cancelDevoirEdit (devoirs.js) y ramène après "Annuler
+  // la modification" ou un enregistrement réussi, au lieu de laisser le formulaire de la page
+  // Devoirs affiché -- signalé : "je ne reviens pas au menu de départ".
+  if(typeof devoirReturnTarget!=='undefined') devoirReturnTarget = 'supervision';
   showView('view-devoirs-prof'); setActiveTopnav('devoirsprof');
   if(typeof renderDevoirsProf==='function') await renderDevoirsProf();
   if(typeof editDevoirPrompt==='function') await editDevoirPrompt(devoirId);
