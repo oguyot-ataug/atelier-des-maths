@@ -2377,6 +2377,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.588', items:[
+    "Supervision, onglet Devoirs : dépend désormais lui aussi de la classe active (comme Comptes/Résultats), au lieu de montrer toutes les classes en accordéon -- signalé : \"l'onglet devoirs doit également dépendre de la classe active !\". Se met à jour en direct si on change de classe (chips) pendant que l'onglet est ouvert. Retrait du menu \"Devoirs\" du menu principal (Outils prof), son contenu étant désormais dans Supervision -- l'outil complet (création, gestion) reste accessible via le bouton \"+ Nouveau devoir\".",
+  ]},
   { version:'2026-08-19.587', items:[
     "Supervision, refonte suite à un échange sur l'ergonomie (\"cette organisation n'est pas très logique\") : le sélecteur de classe passe d'un menu déroulant à des boutons cliquables (mêmes \"chips\" que le Cahier de corrections), et n'apparaît plus que sur Comptes/Résultats -- il n'avait aucun effet sur l'ancien onglet \"Mes classes\", qui montre déjà toutes les classes à la fois. Cet onglet devient \"Devoirs\" : en plus des sessions de Permis Rapporteur (déjà là), chaque classe affiche désormais aussi ses devoirs assignés (rendus, voir/supprimer), avec un raccourci \"+ Nouveau devoir\" vers l'outil Devoirs, classe déjà présélectionnée.",
   ]},
@@ -3771,7 +3774,13 @@ async function applyClassSelection(){
   }
   if(document.getElementById('cahierList')) renderCahier();
   if(document.getElementById('cahierEleveContent')) renderCahierEleve();
-  if(document.getElementById('view-supervision').classList.contains('active')){ renderSupervision(); renderSupervisionCeb(); }
+  if(document.getElementById('view-supervision').classList.contains('active')){
+    renderSupervision(); renderSupervisionCeb();
+    // L'onglet Devoirs dépend lui aussi de la classe active (comme Comptes/Résultats) --
+    // le re-rendre si c'est l'onglet actuellement affiché, sinon il resterait sur l'ancienne
+    // classe jusqu'au prochain clic sur cet onglet.
+    if(document.querySelector('.sup-tab-btn[data-suptab="classes"]')?.classList.contains('active')) renderSupervisionDevoirsTab();
+  }
   updateCourseAddButtonsState();
 }
 let teacherStudentsCache = []; // {id, nom, identifiant, statutKey, badgeHtml} -- pour filtrer sans re-requêter
@@ -3885,81 +3894,42 @@ document.querySelectorAll('.sup-tab-btn').forEach(btn=>{
     document.querySelectorAll('.sup-tab-panel').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('suppanel-'+btn.dataset.suptab).classList.add('active');
-    // Le sélecteur de classe active (chips) ne pilote que Comptes/Résultats -- masqué sur
-    // Devoirs, qui montre déjà TOUTES les classes en accordéon, indépendamment de la classe
-    // active (signalé : "cette organisation n'est pas très logique", le sélecteur restait
-    // affiché sans le moindre effet sur cet onglet).
-    const pickerBox = document.getElementById('supervisionClassPickerBox');
-    if(pickerBox) pickerBox.style.display = btn.dataset.suptab==='classes' ? 'none' : 'block';
-    if(btn.dataset.suptab==='classes') renderSupervisionClassesAccordion();
+    if(btn.dataset.suptab==='classes') renderSupervisionDevoirsTab();
   });
 });
-/* Onglet "Mes classes" de Supervision : présente les classes DONT JE SUIS PROF en accordéon,
-   comme dans Administration -- avec la gestion des sessions Permis Rapporteur, jusqu'ici
-   accessible seulement depuis Administration (réservée aux admins), inaccessible aux profs
-   qui n'ont pas ce rôle. Signalé : "le prof n'a pas accès à administration... il doit pouvoir
-   gérer ça dans l'outil supervision". Toujours "mes classes", même pour un compte admin+prof
-   (voir plus bas) -- Administration reste l'endroit pour voir/gérer TOUTES les classes. Reprend
-   le même schéma que adminRefreshDropdowns() (admin.js) pour la partie Permis Rapporteur,
-   adapté à la liste de classes du compte courant (accountClassesList ne porte pas le niveau ni
-   l'effectif, d'où une requête dédiée ici plutôt que sa réutilisation directe). */
-async function renderSupervisionClassesAccordion(){
-  const el = document.getElementById('supervisionClassesAccordion');
+/* Onglet "Devoirs" de Supervision : sessions Permis Rapporteur et devoirs de la classe ACTIVE --
+   comme Comptes/Résultats, piloté par le même sélecteur de classe (chips) au-dessus des onglets.
+   Signalé : "l'onglet devoirs doit également dépendre de la classe active !" -- la version
+   précédente montrait TOUTES les classes du prof en accordéon, indépendamment de la classe
+   active, ce qui rendait le sélecteur trompeur sur cet onglet (masqué en attendant ce fix).
+   Permis Rapporteur restait jusqu'ici accessible seulement depuis Administration (réservée aux
+   admins), inaccessible à un prof qui n'a pas ce rôle -- signalé : "le prof n'a pas accès à
+   administration... il doit pouvoir gérer ça dans l'outil supervision". */
+async function renderSupervisionDevoirsTab(){
+  const el = document.getElementById('supervisionDevoirsContent');
   if(!el || !currentUser) return;
+  if(!currentClassId){ el.innerHTML = '<p class="hint">Choisissez une classe active pour voir ses sessions et ses devoirs.</p>'; return; }
   el.innerHTML = 'Chargement…';
-  // Toujours "mes classes" (celles où je suis prof), jamais toutes les classes -- même pour
-  // un compte qui est À LA FOIS admin et prof : voir toutes les classes reste le rôle
-  // d'Administration, Supervision reste celui d'un prof sur SES classes (signalé : "en tant
-  // qu'administrateur et prof, je vois systématiquement toutes les classes dans la partie
-  // prof supervision -- n'afficher que mes classes").
-  const res = await sb.from('class_teachers').select('classes(id,nom,niveau)').eq('teacher_id', currentUser.id);
-  const classesList = (res.data||[]).map(row=>row.classes).filter(Boolean);
-  if(!classesList.length){ el.innerHTML = '<p class="hint">Aucune classe associée à votre compte en tant que professeur.</p>'; return; }
-  classesList.sort((a,b)=>a.nom.localeCompare(b.nom));
-  const classIds = classesList.map(c=>c.id);
-  const { data: classStudents } = await sb.from('class_students').select('class_id').in('class_id', classIds);
-  const { data: sessions } = await sb.from('permis_rapporteur_sessions').select('id,code,classe_id,cloturee,created_at').in('classe_id', classIds).order('created_at',{ascending:false});
-  el.innerHTML = classesList.map((c,idx)=>{
-    const nbEleves = (classStudents||[]).filter(r=>r.class_id===c.id).length;
-    const sessionsHere = (sessions||[]).filter(s=>s.classe_id===c.id);
-    const sessionsHtml = sessionsHere.length ? sessionsHere.map(s=>`
-      <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
-        <span style="font-family:'JetBrains Mono',monospace;font-weight:700;${s.cloturee?'text-decoration:line-through;color:var(--ink-soft);':'color:var(--accent);'}">${escapeHtml(s.code)}</span>
-        <span class="hint" style="margin:0;">${s.cloturee?'clôturée':'active'}</span>
-        ${s.cloturee?'':`<button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="supCloturerPermisSession('${s.id}')">Clôturer</button>`}
-      </div>`).join('') : '<p class="hint" style="margin:4px 0 0;">Aucune session pour l\'instant.</p>';
-    const color = c.niveau==='6e' ? '#FF8208' : '#0C5BA0';
-    const accId = 'supAccClasse'+idx;
-    return `<div class="nb-accordion-section">
-      <button type="button" class="nb-accordion-header" style="--acc-color:${color};--acc-bg:${color}0D;" onclick="toggleNbAccordion('${accId}')">
-        <span class="gicon nb-accordion-chevron">expand_more</span>
-        <span class="gicon">school</span><span>${escapeHtml(c.nom)}</span>
-        <span class="nb-accordion-count">${c.niveau} · ${nbEleves} élève${nbEleves>1?'s':''}</span>
-      </button>
-      <div class="nb-accordion-body" id="${accId}">
-        <div style="padding:8px;background:rgba(31,58,92,.05);border-radius:6px;">
-          <b style="font-size:.85rem;"><span class=gicon>school</span> Permis Rapporteur</b>
-          <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="supDemarrerPermisSession('${c.id}')">+ Nouvelle session</button>
-          ${sessionsHtml}
-        </div>
-        <div style="padding:8px;background:rgba(31,58,92,.05);border-radius:6px;margin-top:8px;">
-          <b style="font-size:.85rem;"><span class=gicon>assignment</span> Devoirs</b>
-          <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="openDevoirsForClass('${c.id}')">+ Nouveau devoir</button>
-          <div id="${accId}-devoirs" style="margin-top:4px;">Chargement…</div>
-        </div>
-      </div>
+  const { data: sessions } = await sb.from('permis_rapporteur_sessions').select('id,code,classe_id,cloturee,created_at').eq('classe_id', currentClassId).order('created_at',{ascending:false});
+  const sessionsHtml = (sessions&&sessions.length) ? sessions.map(s=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+      <span style="font-family:'JetBrains Mono',monospace;font-weight:700;${s.cloturee?'text-decoration:line-through;color:var(--ink-soft);':'color:var(--accent);'}">${escapeHtml(s.code)}</span>
+      <span class="hint" style="margin:0;">${s.cloturee?'clôturée':'active'}</span>
+      ${s.cloturee?'':`<button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="supCloturerPermisSession('${s.id}')">Clôturer</button>`}
+    </div>`).join('') : '<p class="hint" style="margin:4px 0 0;">Aucune session pour l\'instant.</p>';
+  const { count: nbEleves } = await sb.from('class_students').select('*',{count:'exact',head:true}).eq('class_id', currentClassId);
+  el.innerHTML = `
+    <div style="padding:8px;background:rgba(31,58,92,.05);border-radius:6px;">
+      <b style="font-size:.85rem;"><span class=gicon>school</span> Permis Rapporteur</b>
+      <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="supDemarrerPermisSession('${currentClassId}')">+ Nouvelle session</button>
+      ${sessionsHtml}
+    </div>
+    <div style="padding:8px;background:rgba(31,58,92,.05);border-radius:6px;margin-top:8px;">
+      <b style="font-size:.85rem;"><span class=gicon>assignment</span> Devoirs</b>
+      <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="openDevoirsForClass('${currentClassId}')">+ Nouveau devoir</button>
+      <div id="supervisionDevoirsListing" style="margin-top:4px;">Chargement…</div>
     </div>`;
-  }).join('');
-  // Résumé des devoirs par classe -- après coup (comme les sessions Permis Rapporteur, chargées
-  // pour toutes les classes même repliées) : réutilise directement les fonctions déjà éprouvées
-  // de devoirs.js (openDevoirSubmissions, deleteDevoirPrompt) plutôt que de dupliquer la
-  // logique de rendu/suppression -- seule la REQUÊTE est filtrée par classe ici, ce que
-  // refreshDevoirsProfListing (devoirs.js) ne fait pas (elle liste TOUTES les classes du prof
-  // d'un coup, adapté à sa propre page mais pas à un résumé par carte de classe).
-  classesList.forEach((c,idx)=>{
-    const nbEleves = (classStudents||[]).filter(r=>r.class_id===c.id).length;
-    renderClassDevoirsSummary(c.id, 'supAccClasse'+idx+'-devoirs', nbEleves);
-  });
+  await renderClassDevoirsSummary(currentClassId, 'supervisionDevoirsListing', nbEleves||0);
 }
 /* Résumé des devoirs d'UNE classe (titre, échéance, X/Y rendus), avec les mêmes actions que la
    page Devoirs complète -- voir la note ci-dessus. */
@@ -4004,11 +3974,11 @@ async function supDemarrerPermisSession(classId){
     code, classe_id: classId, prof_id: currentUser ? currentUser.id : null,
   });
   if(error){ await niceAlert("Échec : "+error.message); return; }
-  await renderSupervisionClassesAccordion();
+  await renderSupervisionDevoirsTab();
 }
 async function supCloturerPermisSession(sessionId){
   await sb.from('permis_rapporteur_sessions').update({cloturee:true}).eq('id', sessionId);
-  await renderSupervisionClassesAccordion();
+  await renderSupervisionDevoirsTab();
 }
 async function renderSupervision(){
   renderTeacherStudentsListing();
