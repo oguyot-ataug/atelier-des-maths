@@ -167,7 +167,7 @@ function renderDevoirAutomatismesPicker(){
   box.innerHTML = sorted.map(s=>`<label style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.85rem;">
     <input type="checkbox" value="${s.id}" ${devoirNewAutomatismesSeqs.has(s.id)?'checked':''} onchange="toggleDevoirAutomatismesSeq('${s.id}',this.checked)">
     <span style="flex:1;">${escapeHtml(s.label)}</span>
-    <button type="button" class="btn secondary" style="font-size:.68rem;padding:2px 7px;flex:none;" onclick="event.preventDefault();runCM('${s.id}')">Tester</button>
+    <button type="button" class="btn secondary" style="font-size:.68rem;padding:2px 7px;flex:none;" onclick="event.preventDefault();testDevoirAutomatismesSeq('${s.id}')">Tester</button>
   </label>`).join('');
   document.getElementById('devoirAutomatismesCount').textContent = devoirNewAutomatismesSeqs.size;
 }
@@ -269,12 +269,19 @@ function openDevoirFigureDepartEditor(){
     };
   }
 }
-/* Bouton "Tester" -- signalé : "il me manque un bouton tester pour voir le rendu". Rejoue
-   l'activité exactement comme un élève la vivrait, sans rien enregistrer : figure_completer et
-   automatismes réutilisent des outils qui n'écrivent en base QUE pour un compte élève connecté
+/* Bouton "Tester" -- signalé : "il me manque un bouton tester pour voir le rendu", puis "pouvoir
+   tester et revenir au menu quand on valide ou annule" pour les autres types. Rejoue l'activité
+   exactement comme un élève la vivrait, sans rien enregistrer : figure_completer et automatismes
+   réutilisent des outils qui n'écrivent en base QUE pour un compte élève connecté
    (currentUserRole==='eleve'), donc rien à faire de spécial pour eux -- le prof qui teste ne
-   déclenche aucune écriture. Compte est bon a besoin d'un indicateur (devoirTestModeActive) pour
-   savoir revenir au formulaire au lieu de proposer "Compte suivant" en fin de partie. */
+   déclenche aucune écriture. devoirTestModeActive (lu par calcul-mental.js et compte-est-bon.js)
+   fait apparaître un bouton "Retour à la création du devoir" pendant le test, qu'on valide ou
+   qu'on veuille juste quitter. */
+function testDevoirAutomatismesSeq(seqId){
+  if(typeof runCM!=='function') return;
+  devoirTestModeActive = true;
+  runCM(seqId);
+}
 async function testDevoirFigureCompleter(){
   if(!devoirNewFigureDepart){ await niceAlert('Construisez d\'abord la figure de départ.'); return; }
   openFigureTool();

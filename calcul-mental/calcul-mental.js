@@ -221,6 +221,7 @@ function renderCMPicker(){
   box.querySelectorAll('.cm-chip[data-id]').forEach(chip=>{
     chip.addEventListener('click',()=>{
       currentDevoirCM = null; // séquence choisie librement, hors contexte d'un devoir
+      if(typeof devoirTestModeActive!=='undefined') devoirTestModeActive = false;
       runCM(chip.dataset.id);
     });
   });
@@ -252,6 +253,15 @@ function closeCMModal(){
   document.getElementById('cmExerciseModalOverlay').style.display='none';
   if(cmTimerInterval){ clearInterval(cmTimerInterval); cmTimerInterval=null; }
   currentDevoirCM = null;
+  if(typeof devoirTestModeActive!=='undefined') devoirTestModeActive = false;
+}
+/* Bouton "↩ Retour à la création du devoir" -- signalé (à propos de Compte est bon, puis étendu
+   aux autres types) : "pouvoir tester et revenir au menu quand on valide ou annule". Ferme la
+   modale ET ramène au formulaire du devoir (returnToDevoirCreationFromTest, devoirs.js), qu'on
+   ait validé (Corriger) ou pas. */
+function returnToDevoirCreationFromCMTest(){
+  closeCMModal();
+  if(typeof returnToDevoirCreationFromTest==='function') returnToDevoirCreationFromTest();
 }
 function runCM(id){
   const seqDef = CM_SEQUENCES.find(s=>s.id===id);
@@ -259,9 +269,11 @@ function runCM(id){
   const qs = Array.from({length:8},()=>seqDef.gen());
   document.getElementById('cmModalTitle').textContent = seqDef.label;
   const ws=document.getElementById('cmWorkspace');
+  const devoirTestBtn = (typeof devoirTestModeActive!=='undefined' && devoirTestModeActive)
+    ? `<button class="btn secondary" onclick="returnToDevoirCreationFromCMTest()">↩ Retour à la création du devoir</button> ` : '';
   ws.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;">
       <span class="cm-timer" id="cmTimerDisplay">0,0\u00A0s</span>
-      <div><button class="btn secondary" onclick="runCM('${id}')">Nouvelle série ↻</button> <button class="btn" onclick="checkCM()">Corriger</button></div>
+      <div>${devoirTestBtn}<button class="btn secondary" onclick="runCM('${id}')">Nouvelle série ↻</button> <button class="btn" onclick="checkCM()">Corriger</button></div>
     </div>
     <div class="cm-q-grid">${qs.map((q,i)=>{
       const parts = q.text.split('...');

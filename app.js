@@ -2381,6 +2381,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.597', items:[
+    "Devoirs, bouton Tester -- signalé : \"même principe pour la création des autres devoirs (automatismes...), pouvoir tester et revenir au menu quand on valide ou annule\". Le test d'une séquence d'Automatismes affiche désormais, comme pour Compte est bon, un bouton \"Retour à la création du devoir\" -- présent dès le début du test et qui reste après avoir cliqué \"Corriger\", pour revenir en un clic au formulaire (brouillon conservé) qu'on valide ou qu'on veuille simplement quitter.",
+  ]},
   { version:'2026-08-19.596', items:[
     "Devoirs, Compte est bon -- signalé : \"il faudrait que je puisse les valider ou les regénérer un par un car certains sont trop difficiles\". Chaque compte du devoir est maintenant listé individuellement avec ses propres boutons \"Tester\" (joue exactement ce tirage) et \"Régénérer\" (retire un nouveau tirage pour ce compte seulement, sans toucher aux autres) -- une coche verte indique les comptes déjà testés. Changer le nombre de \"grands nombres\" régénère l'ensemble des comptes (la difficulté change pour tous) ; changer le nombre de comptes à jouer ajoute ou retire des tirages sans toucher à ceux déjà en place.",
   ]},
