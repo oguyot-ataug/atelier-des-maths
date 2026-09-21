@@ -2328,8 +2328,11 @@ function updateClassDisplays(name){
   if(studentClassStatus) studentClassStatus.textContent = name || 'aucune';
   const cahierClassStatus = document.getElementById('cahierClassStatus');
   if(cahierClassStatus) cahierClassStatus.textContent = name || 'aucune';
+  const supervisionClassStatus = document.getElementById('supervisionClassStatus');
+  if(supervisionClassStatus) supervisionClassStatus.textContent = name || 'aucune';
   renderClassQuickPicker('corClassQuickPicker');
   renderClassQuickPicker('cahierClassQuickPicker');
+  renderClassQuickPicker('supervisionClassQuickPicker');
   // Le sélecteur rapide du cahier (boutons cliquables, comme dans l'Outil de correction)
   // n'a d'intérêt que pour un prof/admin qui bascule entre plusieurs classes -- un élève n'a
   // qu'une seule classe, la ligne simple suffit. Signalé : "le mettre également dans la
@@ -2372,14 +2375,11 @@ let accountClassesList = [];
 function populateAccountClassList(classesList){
   accountClassesList = classesList.map(c=>({id:c.id, label:`${c.nom} (${c.niveau})`}));
 }
-function populateSupervisionClassSelect(){
-  const sel = document.getElementById('supervisionClassSelect');
-  if(!sel) return;
-  if(!accountClassesList.length){ sel.innerHTML = '<option value="">Aucune classe</option>'; return; }
-  sel.innerHTML = accountClassesList.map(c=>`<option value="${c.id}" ${c.id===currentClassId?'selected':''}>${escapeHtml(c.label)}</option>`).join('');
-}
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.587', items:[
+    "Supervision, refonte suite à un échange sur l'ergonomie (\"cette organisation n'est pas très logique\") : le sélecteur de classe passe d'un menu déroulant à des boutons cliquables (mêmes \"chips\" que le Cahier de corrections), et n'apparaît plus que sur Comptes/Résultats -- il n'avait aucun effet sur l'ancien onglet \"Mes classes\", qui montre déjà toutes les classes à la fois. Cet onglet devient \"Devoirs\" : en plus des sessions de Permis Rapporteur (déjà là), chaque classe affiche désormais aussi ses devoirs assignés (rendus, voir/supprimer), avec un raccourci \"+ Nouveau devoir\" vers l'outil Devoirs, classe déjà présélectionnée.",
+  ]},
   { version:'2026-08-19.586', items:[
     "5e, Symétrie centrale : suppression de la seconde « Rédaction type » (« Justifier une symétrie de figure ») dans les Exercices, redondante avec la correction de l'exercice 2 désormais disponible. Les 2 exercices ont chacun une correction en étapes : l'exercice 1 (construction du symétrique de M au compas et à la règle) réutilise la même construction déjà animée dans la Méthode animée, avec ses propres points ; l'exercice 2 (parallélogramme, justification) se dévoile phrase par phrase.",
   ]},
@@ -3758,7 +3758,6 @@ async function applyClassSelection(){
   const found = accountClassesList.find(c=>c.id===currentClassId);
   const className = found ? found.label : null;
   updateClassDisplays(className);
-  populateSupervisionClassSelect();
   if(currentClassId){
     // Population initiale légère (juste aujourd'hui) -- suffisant pour la liste prof par
     // défaut (corListFilterDate=aujourd'hui) ; renderCahierEleve() affine ensuite avec son
@@ -3886,6 +3885,12 @@ document.querySelectorAll('.sup-tab-btn').forEach(btn=>{
     document.querySelectorAll('.sup-tab-panel').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('suppanel-'+btn.dataset.suptab).classList.add('active');
+    // Le sélecteur de classe active (chips) ne pilote que Comptes/Résultats -- masqué sur
+    // Devoirs, qui montre déjà TOUTES les classes en accordéon, indépendamment de la classe
+    // active (signalé : "cette organisation n'est pas très logique", le sélecteur restait
+    // affiché sans le moindre effet sur cet onglet).
+    const pickerBox = document.getElementById('supervisionClassPickerBox');
+    if(pickerBox) pickerBox.style.display = btn.dataset.suptab==='classes' ? 'none' : 'block';
     if(btn.dataset.suptab==='classes') renderSupervisionClassesAccordion();
   });
 });
@@ -3937,9 +3942,61 @@ async function renderSupervisionClassesAccordion(){
           <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="supDemarrerPermisSession('${c.id}')">+ Nouvelle session</button>
           ${sessionsHtml}
         </div>
+        <div style="padding:8px;background:rgba(31,58,92,.05);border-radius:6px;margin-top:8px;">
+          <b style="font-size:.85rem;"><span class=gicon>assignment</span> Devoirs</b>
+          <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="openDevoirsForClass('${c.id}')">+ Nouveau devoir</button>
+          <div id="${accId}-devoirs" style="margin-top:4px;">Chargement…</div>
+        </div>
       </div>
     </div>`;
   }).join('');
+  // Résumé des devoirs par classe -- après coup (comme les sessions Permis Rapporteur, chargées
+  // pour toutes les classes même repliées) : réutilise directement les fonctions déjà éprouvées
+  // de devoirs.js (openDevoirSubmissions, deleteDevoirPrompt) plutôt que de dupliquer la
+  // logique de rendu/suppression -- seule la REQUÊTE est filtrée par classe ici, ce que
+  // refreshDevoirsProfListing (devoirs.js) ne fait pas (elle liste TOUTES les classes du prof
+  // d'un coup, adapté à sa propre page mais pas à un résumé par carte de classe).
+  classesList.forEach((c,idx)=>{
+    const nbEleves = (classStudents||[]).filter(r=>r.class_id===c.id).length;
+    renderClassDevoirsSummary(c.id, 'supAccClasse'+idx+'-devoirs', nbEleves);
+  });
+}
+/* Résumé des devoirs d'UNE classe (titre, échéance, X/Y rendus), avec les mêmes actions que la
+   page Devoirs complète -- voir la note ci-dessus. */
+async function renderClassDevoirsSummary(classId, containerId, nbEleves){
+  const el = document.getElementById(containerId);
+  if(!el || !currentUser) return;
+  const { data: devoirsList, error } = await sb.from('devoirs')
+    .select('id,titre,date_limite')
+    .eq('teacher_id', currentUser.id).eq('class_id', classId).order('created_at',{ascending:false});
+  if(error){ el.textContent = 'Erreur : '+error.message; return; }
+  if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint" style="margin:4px 0 0;">Aucun devoir pour l\'instant.</p>'; return; }
+  const rows = await Promise.all(devoirsList.map(async d=>{
+    const { count: nbRendus } = await sb.from('devoirs_rendus').select('*',{count:'exact',head:true}).eq('devoir_id', d.id).eq('est_rendu', true);
+    const dateStr = d.date_limite ? new Date(d.date_limite).toLocaleDateString('fr-FR') : '';
+    return `<div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+      <span style="flex:1;">${escapeHtml(d.titre)}${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${nbEleves||0} rendu(s)</span>
+      <button class="btn secondary" style="padding:3px 8px;font-size:.72rem;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span></button>
+      <button class="btn secondary" style="padding:3px 8px;font-size:.72rem;color:#a83c1f;" onclick="supDeleteDevoirAndRefresh('${d.id}','${classId}','${containerId}',${nbEleves})"><span class=gicon>delete</span></button>
+    </div>`;
+  }));
+  el.innerHTML = rows.join('');
+}
+/* deleteDevoirPrompt (devoirs.js) ne rafraîchit que la page Devoirs complète
+   (#devoirsProfListing) -- ce résumé par classe a son propre conteneur à re-render après coup. */
+async function supDeleteDevoirAndRefresh(devoirId, classId, containerId, nbEleves){
+  await deleteDevoirPrompt(devoirId);
+  await renderClassDevoirsSummary(classId, containerId, nbEleves);
+}
+/* Ouvre la page Devoirs complète (création/gestion) avec la classe déjà présélectionnée --
+   plutôt que de dupliquer le formulaire de création dans chaque carte de l'accordéon. */
+async function openDevoirsForClass(classId){
+  showView('view-devoirs-prof'); setActiveTopnav('devoirsprof');
+  if(typeof renderDevoirsProf==='function') await renderDevoirsProf();
+  const select = document.getElementById('devoirNewClasse');
+  if(select) select.value = classId;
+  const titreInput = document.getElementById('devoirNewTitre');
+  if(titreInput) titreInput.focus();
 }
 async function supDemarrerPermisSession(classId){
   const code = arGenererCodeSession();
