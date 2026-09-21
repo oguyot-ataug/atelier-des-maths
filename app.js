@@ -2377,6 +2377,10 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.592', items:[
+    "Devoirs : fix -- la suppression d'un devoir (ou d'une session de Permis Rapporteur) semblait ne rien faire, l'élément réapparaissait toujours. Cause : le professeur n'avait pas le droit de supprimer les rendus de ses élèves (RLS), ce qui bloquait ensuite la suppression du devoir lui-même dès qu'un rendu existait ; et aucune règle n'autorisait la suppression d'une session de Permis Rapporteur. Corrigé (RLS ajustée) -- les erreurs éventuelles s'affichent désormais au lieu d'échouer silencieusement.",
+    "Devoirs : un devoir déjà créé peut désormais être modifié (bouton \"Éditer\") -- même formulaire que la création, avec conservation des tirages Compte est bon déjà joués si le nombre de comptes et la difficulté ne changent pas. Nouveau champ \"Date de dépôt\" : si elle est fixée dans le futur, le devoir reste invisible aux élèves jusqu'à cette date (publication programmée), en plus de la date limite existante.",
+  ]},
   { version:'2026-08-19.591', items:[
     "Devoirs (prof), présentation -- signalé : \"c'est pas terrible... différencier les zones de création et de devoir créés, ajouter des couleurs\". Sur la page Devoirs : liseré bleu pour la zone \"Nouveau devoir\", vert pour \"Devoirs assignés\" ; chaque type d'activité (fichier, figure, figure à compléter, automatismes, compte est bon) a sa propre couleur, reprise sur le sélecteur de type et sur chaque ligne de la liste (mêmes couleurs que les groupes d'Automatismes, pour rester cohérent). Même traitement pour l'onglet Devoirs de Supervision (Permis Rapporteur en bleu, Devoirs en orange). Nouveau : bouton \"Supprimer\" pour une session de Permis Rapporteur (jusqu'ici seule la clôture était possible).",
   ]},
@@ -3945,7 +3949,8 @@ async function renderSupervisionDevoirsTab(){
 }
 async function supDeletePermisSession(sessionId){
   if(!(await niceConfirm('Supprimer définitivement cette session de Permis Rapporteur ? Le code ne sera plus utilisable.'))) return;
-  await sb.from('permis_rapporteur_sessions').delete().eq('id', sessionId);
+  const { error } = await sb.from('permis_rapporteur_sessions').delete().eq('id', sessionId);
+  if(error){ await niceAlert('Erreur : '+error.message); return; }
   await renderSupervisionDevoirsTab();
 }
 /* Résumé des devoirs d'UNE classe (titre, échéance, X/Y rendus), avec les mêmes actions que la
@@ -3967,11 +3972,19 @@ async function renderClassDevoirsSummary(classId, containerId, nbEleves){
     return `<div class="devoir-row" style="--dt-color:${t?t.color:'var(--ink-soft)'};display:flex;align-items:center;gap:8px;">
       <span class=gicon style="color:var(--dt-color);font-size:1.1rem;">${t?t.icon:'assignment'}</span>
       <span style="flex:1;">${escapeHtml(d.titre)}${dateStr?' · limite : '+dateStr:''}${cible?` · <span class="devoir-target-pill">${d.student_ids.length} élève(s)</span>`:''} · ${nbRendus||0}/${totalPourCeDevoir||0} rendu(s)</span>
+      <button class="btn secondary" style="padding:3px 8px;font-size:.72rem;" onclick="supEditDevoirAndOpen('${d.id}')"><span class=gicon>edit</span></button>
       <button class="btn secondary" style="padding:3px 8px;font-size:.72rem;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span></button>
       <button class="btn secondary" style="padding:3px 8px;font-size:.72rem;color:#a83c1f;" onclick="supDeleteDevoirAndRefresh('${d.id}','${classId}','${containerId}',${nbEleves})"><span class=gicon>delete</span></button>
     </div>`;
   }));
   el.innerHTML = rows.join('');
+}
+/* Ouvre la page Devoirs complète avec ce devoir déjà chargé en édition -- évite de dupliquer le
+   formulaire de modification dans le résumé par classe de Supervision. */
+async function supEditDevoirAndOpen(devoirId){
+  showView('view-devoirs-prof'); setActiveTopnav('devoirsprof');
+  if(typeof renderDevoirsProf==='function') await renderDevoirsProf();
+  if(typeof editDevoirPrompt==='function') await editDevoirPrompt(devoirId);
 }
 /* deleteDevoirPrompt (devoirs.js) ne rafraîchit que la page Devoirs complète
    (#devoirsProfListing) -- ce résumé par classe a son propre conteneur à re-render après coup. */
@@ -3998,7 +4011,8 @@ async function supDemarrerPermisSession(classId){
   await renderSupervisionDevoirsTab();
 }
 async function supCloturerPermisSession(sessionId){
-  await sb.from('permis_rapporteur_sessions').update({cloturee:true}).eq('id', sessionId);
+  const { error } = await sb.from('permis_rapporteur_sessions').update({cloturee:true}).eq('id', sessionId);
+  if(error){ await niceAlert('Erreur : '+error.message); return; }
   await renderSupervisionDevoirsTab();
 }
 async function renderSupervision(){

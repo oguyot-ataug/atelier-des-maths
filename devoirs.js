@@ -13,12 +13,16 @@ document.getElementById('view-devoirs-prof').innerHTML = `
   <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, ou un défi Compte est bon.</p>
 
   <div class="tool-shell devoir-zone-create">
-    <p class="example-title devoir-zone-title" style="margin-bottom:6px;"><span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir</p>
+    <p class="example-title devoir-zone-title" style="margin-bottom:6px;" id="devoirCreateTitle"><span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir</p>
     <div class="tool-row">
       <input type="text" id="devoirNewTitre" placeholder="Titre (ex. Exercice 4 p.32)" style="min-width:220px;">
       <select id="devoirNewClasse" onchange="onDevoirNewClasseChange()"></select>
-      <input type="date" id="devoirNewDate" title="Date limite (facultative)">
     </div>
+    <div class="tool-row">
+      <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><span class=gicon style="font-size:1rem;">upload</span> Date de dépôt : <input type="date" id="devoirNewDateDepot" title="Date de dépôt / publication (facultative -- visible immédiatement si vide)"></label>
+      <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><span class=gicon style="font-size:1rem;">event</span> Date limite : <input type="date" id="devoirNewDate" title="Date limite (facultative)"></label>
+    </div>
+    <p class="hint" style="margin:0 0 8px;">Si une date de dépôt future est choisie, le devoir reste invisible aux élèves jusqu'à cette date.</p>
     <textarea id="devoirNewConsigne" rows="4" style="width:100%;margin-top:8px;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;" placeholder="Consigne (texte libre)..."></textarea>
 
     <p class="hint" style="margin:12px 0 4px;font-weight:700;">Destinataires :</p>
@@ -53,7 +57,8 @@ document.getElementById('view-devoirs-prof').innerHTML = `
     </div>
 
     <div class="tool-row" style="margin-top:10px;">
-      <button class="btn" onclick="createDevoir()">Assigner ce devoir</button>
+      <button class="btn" id="devoirCreateBtn" onclick="createDevoir()">Assigner ce devoir</button>
+      <button class="btn secondary" id="devoirCancelEditBtn" style="display:none;" onclick="cancelDevoirEdit()">Annuler la modification</button>
     </div>
     <span class="hint" id="devoirCreateStatus" style="margin:0;"></span>
   </div>
@@ -92,6 +97,13 @@ let devoirNewAutomatismesSeqs = new Set(); // sequence_id choisis (type=automati
 let devoirNewCebNLarge = 2, devoirNewCebTimerOn = true, devoirNewCebTimerDuration = 60, devoirNewCebRounds = 1; // type=compte_est_bon
 let devoirNewTargetMode = 'class'; // 'class' (toute la classe) | 'eleves' (sélection)
 let devoirNewTargetIds = new Set(); // student_id choisis quand devoirNewTargetMode==='eleves'
+/* Édition d'un devoir existant -- le même formulaire sert à la création ET à la modification.
+   devoirEditingCebRounds/devoirEditingCebNLarge mémorisent les réglages Compte est bon déjà
+   enregistrés : si le prof ne les change pas, les tirages déjà joués par les élèves sont
+   conservés au lieu d'être régénérés (voir createDevoir). */
+let devoirEditingId = null;
+let devoirEditingCebRounds = null;
+let devoirEditingCebNLarge = null;
 
 /* Destinataires du devoir : toute la classe (comportement d'origine) ou une sélection d'élèves
    de la classe -- signalé : "permettre d'assigner à la classe ou quelques élèves de la classe". */
@@ -230,6 +242,7 @@ async function createDevoir(){
   const titre = document.getElementById('devoirNewTitre').value.trim();
   const consigne = document.getElementById('devoirNewConsigne').value.trim();
   const classId = document.getElementById('devoirNewClasse').value;
+  const dateDepotStr = document.getElementById('devoirNewDateDepot').value;
   const dateStr = document.getElementById('devoirNewDate').value;
   if(!titre || !consigne || !classId){ status.textContent = 'Titre, consigne et classe sont nécessaires.'; return; }
   if(devoirNewType==='figure_completer' && !devoirNewFigureDepart){ status.textContent = 'Construisez la figure de départ avant d\'assigner ce devoir.'; return; }
@@ -238,6 +251,7 @@ async function createDevoir(){
   status.textContent = 'Enregistrement…';
   const payload = {
     teacher_id: currentUser.id, class_id: classId, titre, consigne, type: devoirNewType,
+    date_depot: dateDepotStr ? new Date(dateDepotStr).toISOString() : null,
     date_limite: dateStr ? new Date(dateStr).toISOString() : null,
     student_ids: devoirNewTargetMode==='eleves' ? Array.from(devoirNewTargetIds) : null,
   };
@@ -247,34 +261,83 @@ async function createDevoir(){
     payload.ceb_n_large = devoirNewCebNLarge;
     payload.ceb_timer_on = devoirNewCebTimerOn;
     payload.ceb_timer_duration = devoirNewCebTimerOn ? devoirNewCebTimerDuration : null;
-    // Le tirage de chaque compte est fixé UNE FOIS ici (et non régénéré à chaque partie) pour
-    // que tous les élèves du devoir jouent exactement les mêmes nombres et le même compte à
-    // atteindre -- signalé : "est-ce que tous les élèves auront les mêmes ?".
-    if(typeof cebGenerateSolvableDraw!=='function'){ status.textContent = "Erreur : l'outil Compte est bon n'a pas pu se charger."; return; }
-    payload.ceb_rounds = Array.from({length: devoirNewCebRounds}, ()=>{
-      const draw = cebGenerateSolvableDraw(devoirNewCebNLarge);
-      return { numbers: draw.numbers, target: draw.target, solutionExpr: draw.solution?draw.solution.expr:null, solutionValue: draw.solution?draw.solution.value:null };
-    });
+    // Si on modifie un devoir existant SANS changer le nombre de comptes ni la difficulté,
+    // on garde les tirages déjà enregistrés (et donc la progression déjà faite par les
+    // élèves) au lieu de les régénérer à chaque modification du titre/de la consigne/etc.
+    const reuseRounds = devoirEditingId && devoirEditingCebRounds && devoirEditingCebRounds.length===devoirNewCebRounds && devoirEditingCebNLarge===devoirNewCebNLarge;
+    if(reuseRounds){
+      payload.ceb_rounds = devoirEditingCebRounds;
+    } else {
+      // Le tirage de chaque compte est fixé UNE FOIS ici (et non régénéré à chaque partie) pour
+      // que tous les élèves du devoir jouent exactement les mêmes nombres et le même compte à
+      // atteindre -- signalé : "est-ce que tous les élèves auront les mêmes ?".
+      if(typeof cebGenerateSolvableDraw!=='function'){ status.textContent = "Erreur : l'outil Compte est bon n'a pas pu se charger."; return; }
+      payload.ceb_rounds = Array.from({length: devoirNewCebRounds}, ()=>{
+        const draw = cebGenerateSolvableDraw(devoirNewCebNLarge);
+        return { numbers: draw.numbers, target: draw.target, solutionExpr: draw.solution?draw.solution.expr:null, solutionValue: draw.solution?draw.solution.value:null };
+      });
+    }
   }
-  const { error } = await sb.from('devoirs').insert(payload);
+  const { error } = devoirEditingId
+    ? await sb.from('devoirs').update(payload).eq('id', devoirEditingId)
+    : await sb.from('devoirs').insert(payload);
   if(error){ status.textContent = 'Erreur : '+error.message; return; }
-  status.textContent = '✓ Devoir assigné.';
+  status.textContent = devoirEditingId ? '✓ Devoir modifié.' : '✓ Devoir assigné.';
+  cancelDevoirEdit();
+  await refreshDevoirsProfListing();
+}
+/* Charge un devoir existant dans le formulaire (identique à celui de création) pour le
+   modifier -- signalé : "permettre l'édition d'un devoir déjà créé". */
+async function editDevoirPrompt(devoirId){
+  const { data: d, error } = await sb.from('devoirs').select('*').eq('id', devoirId).single();
+  if(error || !d){ await niceAlert('Erreur : '+(error?error.message:'devoir introuvable')); return; }
+  devoirEditingId = devoirId;
+  devoirEditingCebRounds = d.ceb_rounds || null;
+  devoirEditingCebNLarge = d.ceb_n_large ?? null;
+  document.getElementById('devoirNewTitre').value = d.titre || '';
+  document.getElementById('devoirNewConsigne').value = d.consigne || '';
+  document.getElementById('devoirNewClasse').value = d.class_id;
+  document.getElementById('devoirNewDateDepot').value = d.date_depot ? d.date_depot.slice(0,10) : '';
+  document.getElementById('devoirNewDate').value = d.date_limite ? d.date_limite.slice(0,10) : '';
+  devoirNewType = d.type;
+  devoirNewFigureDepart = d.figure_depart || null;
+  devoirNewAutomatismesSeqs = new Set(d.automatismes_sequences || []);
+  devoirNewCebNLarge = d.ceb_n_large ?? 2;
+  devoirNewCebTimerOn = d.ceb_timer_on ?? true;
+  devoirNewCebTimerDuration = d.ceb_timer_duration || 60;
+  devoirNewCebRounds = (d.ceb_rounds||[]).length || 1;
+  devoirNewTargetMode = (d.student_ids && d.student_ids.length) ? 'eleves' : 'class';
+  devoirNewTargetIds = new Set(d.student_ids || []);
+  document.getElementById('devoirFigureDepartStatus').textContent = d.figure_depart ? '✓ Figure de départ déjà enregistrée (modifiable).' : '';
+  document.getElementById('devoirCreateTitle').innerHTML = '<span class=gicon style="color:var(--accent);">edit</span> Modifier le devoir';
+  document.getElementById('devoirCreateBtn').textContent = 'Enregistrer les modifications';
+  document.getElementById('devoirCancelEditBtn').style.display = 'inline-flex';
+  document.getElementById('devoirCreateStatus').textContent = '';
+  renderDevoirTargetModePicker();
+  renderDevoirTypePicker();
+  document.querySelector('.devoir-zone-create').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function cancelDevoirEdit(){
+  devoirEditingId = null; devoirEditingCebRounds = null; devoirEditingCebNLarge = null;
   document.getElementById('devoirNewTitre').value = '';
   document.getElementById('devoirNewConsigne').value = '';
+  document.getElementById('devoirNewDateDepot').value = '';
   document.getElementById('devoirNewDate').value = '';
   devoirNewType = 'fichier'; devoirNewFigureDepart = null; devoirNewAutomatismesSeqs = new Set();
   devoirNewCebNLarge = 2; devoirNewCebTimerOn = true; devoirNewCebTimerDuration = 60; devoirNewCebRounds = 1;
   devoirNewTargetMode = 'class'; devoirNewTargetIds = new Set();
   document.getElementById('devoirFigureDepartStatus').textContent = '';
+  document.getElementById('devoirCreateTitle').innerHTML = '<span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir';
+  document.getElementById('devoirCreateBtn').textContent = 'Assigner ce devoir';
+  document.getElementById('devoirCancelEditBtn').style.display = 'none';
   renderDevoirTargetModePicker();
   renderDevoirTypePicker();
-  await refreshDevoirsProfListing();
 }
 function devoirTypeLabel(type){ const t = DEVOIR_TYPES.find(t=>t.id===type); return t ? t.label : type; }
 async function refreshDevoirsProfListing(){
   const el = document.getElementById('devoirsProfListing');
   const { data: devoirsList, error } = await sb.from('devoirs')
-    .select('id,titre,consigne,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_rounds,student_ids,classes(nom,niveau)')
+    .select('id,titre,consigne,date_depot,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_rounds,student_ids,classes(nom,niveau)')
     .eq('teacher_id', currentUser.id).order('created_at',{ascending:false});
   if(error){ el.textContent = 'Erreur : '+error.message; return; }
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir assigné pour l\'instant.</p>'; return; }
@@ -291,10 +354,13 @@ async function refreshDevoirsProfListing(){
       : d.type==='compte_est_bon' ? ` · ${(d.ceb_rounds||[]).length||1} compte(s), ${d.ceb_n_large??2} grand(s) nombre(s), ${d.ceb_timer_on?'chronométré':'illimité'}`
       : '';
     const cibleDetail = cible ? `<span class="devoir-target-pill">${d.student_ids.length} élève(s) ciblé(s)</span> · ` : '';
+    const enAttente = d.date_depot && new Date(d.date_depot) > new Date();
+    const depotDetail = enAttente ? `<span class="devoir-target-pill" style="background:rgba(255,130,8,.12);color:var(--accent-orange);">⏳ publication le ${new Date(d.date_depot).toLocaleDateString('fr-FR')}</span> · ` : '';
     const t = DEVOIR_TYPES.find(t=>t.id===d.type);
     return `<div class="devoir-row" style="--dt-color:${t?t.color:'var(--ink-soft)'};display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span><b>${escapeHtml(d.titre)}</b> · ${escapeHtml(d.classes ? d.classes.nom+' ('+d.classes.niveau+')' : '')} · ${cibleDetail}<span class="devoir-row-type"><span class=gicon style="font-size:1rem;vertical-align:middle;">${t?t.icon:'assignment'}</span> ${devoirTypeLabel(d.type)}</span><span class="hint" style="margin:0;">${typeDetail}</span>${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${totalEleves||0} rendu(s)</span>
+      <span><b>${escapeHtml(d.titre)}</b> · ${escapeHtml(d.classes ? d.classes.nom+' ('+d.classes.niveau+')' : '')} · ${depotDetail}${cibleDetail}<span class="devoir-row-type"><span class=gicon style="font-size:1rem;vertical-align:middle;">${t?t.icon:'assignment'}</span> ${devoirTypeLabel(d.type)}</span><span class="hint" style="margin:0;">${typeDetail}</span>${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${totalEleves||0} rendu(s)</span>
       <span style="display:flex;gap:6px;flex:none;">
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="editDevoirPrompt('${d.id}')"><span class=gicon>edit</span> Éditer</button>
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span> Voir les rendus</button>
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="deleteDevoirPrompt('${d.id}')"><span class=gicon>delete</span> Supprimer</button>
       </span>
@@ -304,8 +370,10 @@ async function refreshDevoirsProfListing(){
 }
 async function deleteDevoirPrompt(devoirId){
   if(!(await niceConfirm('Supprimer ce devoir et tous ses rendus ?'))) return;
-  await sb.from('devoirs_rendus').delete().eq('devoir_id', devoirId);
-  await sb.from('devoirs').delete().eq('id', devoirId);
+  const { error: err1 } = await sb.from('devoirs_rendus').delete().eq('devoir_id', devoirId);
+  if(err1){ await niceAlert('Erreur : '+err1.message); return; }
+  const { error: err2 } = await sb.from('devoirs').delete().eq('id', devoirId);
+  if(err2){ await niceAlert('Erreur : '+err2.message); return; }
   await refreshDevoirsProfListing();
 }
 /* Ouvre la liste des élèves de la classe concernée par ce devoir. Pour fichier/figure/
@@ -476,13 +544,18 @@ async function renderDevoirsEleve(){
   const classIds = (accountClassesList||[]).map(c=>c.id);
   if(!classIds.length){ el.innerHTML = '<p class="hint">Aucune classe associée à ce compte.</p>'; return; }
   const { data: devoirsListRaw, error } = await sb.from('devoirs')
-    .select('id,titre,consigne,date_limite,teacher_id,type,figure_depart,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_timer_duration,ceb_rounds,student_ids,profiles(nom)')
+    .select('id,titre,consigne,date_depot,date_limite,teacher_id,type,figure_depart,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_timer_duration,ceb_rounds,student_ids,profiles(nom)')
     .in('class_id', classIds).order('date_limite',{ascending:true, nullsFirst:false});
   if(error){ el.innerHTML = 'Erreur : '+error.message; return; }
+  const now = new Date();
   // Un devoir ciblant une sélection d'élèves n'est visible que par les élèves concernés
   // (student_ids null/vide = toute la classe) -- signalé : "permettre d'assigner à la classe
-  // ou quelques élèves de la classe".
-  const devoirsList = (devoirsListRaw||[]).filter(d => !d.student_ids || !d.student_ids.length || d.student_ids.includes(currentUser.id));
+  // ou quelques élèves de la classe". Un devoir avec une date de dépôt future reste invisible
+  // jusqu'à cette date -- signalé : "donner une date de dépôt du prof" (publication programmée).
+  const devoirsList = (devoirsListRaw||[]).filter(d =>
+    (!d.student_ids || !d.student_ids.length || d.student_ids.includes(currentUser.id))
+    && (!d.date_depot || new Date(d.date_depot) <= now)
+  );
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir pour l\'instant.</p>'; return; }
   const { data: mesRendus } = await sb.from('devoirs_rendus').select('*').eq('student_id', currentUser.id);
   const renduByDevoir = new Map((mesRendus||[]).map(r=>[r.devoir_id, r]));
