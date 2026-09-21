@@ -16,10 +16,17 @@ document.getElementById('view-devoirs-prof').innerHTML = `
     <p class="example-title" style="margin-bottom:6px;">Nouveau devoir</p>
     <div class="tool-row">
       <input type="text" id="devoirNewTitre" placeholder="Titre (ex. Exercice 4 p.32)" style="min-width:220px;">
-      <select id="devoirNewClasse"></select>
+      <select id="devoirNewClasse" onchange="onDevoirNewClasseChange()"></select>
       <input type="date" id="devoirNewDate" title="Date limite (facultative)">
     </div>
     <textarea id="devoirNewConsigne" rows="4" style="width:100%;margin-top:8px;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;" placeholder="Consigne (texte libre)..."></textarea>
+
+    <p class="hint" style="margin:12px 0 4px;font-weight:700;">Destinataires :</p>
+    <div class="tool-row" id="devoirTargetModePicker" style="margin-bottom:4px;"></div>
+    <div id="devoirTargetElevesBox" style="display:none;margin-top:6px;">
+      <p class="hint" style="margin:0 0 6px;">Élèves concernés (<span id="devoirTargetElevesCount">0</span> sélectionné(s)) :</p>
+      <div id="devoirTargetElevesPicker" style="max-height:180px;overflow-y:auto;border:1px solid rgba(28,43,57,.15);border-radius:8px;padding:8px;"></div>
+    </div>
 
     <p class="hint" style="margin:12px 0 4px;font-weight:700;">Type d'activité :</p>
     <div class="tool-row" id="devoirTypePicker" style="margin-bottom:4px;"></div>
@@ -39,7 +46,10 @@ document.getElementById('view-devoirs-prof').innerHTML = `
       <p class="hint" style="margin:0 0 4px;">Nombre de "grands nombres" (25, 50, 75, 100) :</p>
       <div class="tool-row" id="devoirCebNLargePicker" style="margin-bottom:8px;"></div>
       <p class="hint" style="margin:0 0 4px;">Chronomètre :</p>
-      <div class="tool-row" id="devoirCebTimerPicker"></div>
+      <div class="tool-row" id="devoirCebTimerPicker" style="margin-bottom:8px;"></div>
+      <p class="hint" style="margin:0 0 4px;">Nombre de comptes à jouer :</p>
+      <div class="tool-row" id="devoirCebRoundsPicker"></div>
+      <p class="hint" style="margin:6px 0 0;">Le même tirage (mêmes 6 nombres, même compte à atteindre) est servi à tous les élèves concernés, pour chaque compte.</p>
     </div>
 
     <div class="tool-row" style="margin-top:10px;">
@@ -77,7 +87,44 @@ const DEVOIR_TYPES = [
 let devoirNewType = 'fichier';
 let devoirNewFigureDepart = null; // serializeFigState(...) de la figure de départ (type=figure_completer)
 let devoirNewAutomatismesSeqs = new Set(); // sequence_id choisis (type=automatismes)
-let devoirNewCebNLarge = 2, devoirNewCebTimerOn = true, devoirNewCebTimerDuration = 60; // type=compte_est_bon
+let devoirNewCebNLarge = 2, devoirNewCebTimerOn = true, devoirNewCebTimerDuration = 60, devoirNewCebRounds = 1; // type=compte_est_bon
+let devoirNewTargetMode = 'class'; // 'class' (toute la classe) | 'eleves' (sélection)
+let devoirNewTargetIds = new Set(); // student_id choisis quand devoirNewTargetMode==='eleves'
+
+/* Destinataires du devoir : toute la classe (comportement d'origine) ou une sélection d'élèves
+   de la classe -- signalé : "permettre d'assigner à la classe ou quelques élèves de la classe". */
+function renderDevoirTargetModePicker(){
+  const box = document.getElementById('devoirTargetModePicker');
+  if(!box) return;
+  box.innerHTML = `
+    <button type="button" class="btn secondary" style="opacity:${devoirNewTargetMode==='class'?'1':'.55'};" onclick="setDevoirNewTargetMode('class')"><span class=gicon>groups</span> Toute la classe</button>
+    <button type="button" class="btn secondary" style="opacity:${devoirNewTargetMode==='eleves'?'1':'.55'};" onclick="setDevoirNewTargetMode('eleves')"><span class=gicon>person</span> Élèves sélectionnés</button>
+  `;
+  const box2 = document.getElementById('devoirTargetElevesBox');
+  if(box2) box2.style.display = devoirNewTargetMode==='eleves' ? 'block' : 'none';
+  if(devoirNewTargetMode==='eleves') renderDevoirTargetElevesPicker();
+}
+function setDevoirNewTargetMode(mode){ devoirNewTargetMode = mode; renderDevoirTargetModePicker(); }
+function onDevoirNewClasseChange(){
+  devoirNewTargetIds = new Set(); // la sélection d'élèves ne survit pas à un changement de classe
+  if(devoirNewTargetMode==='eleves') renderDevoirTargetElevesPicker();
+}
+async function renderDevoirTargetElevesPicker(){
+  const box = document.getElementById('devoirTargetElevesPicker');
+  const classId = document.getElementById('devoirNewClasse').value;
+  if(!box || !classId) return;
+  const { data: eleves } = await sb.from('class_students').select('profiles(id,nom)').eq('class_id', classId);
+  const list = (eleves||[]).map(r=>r.profiles).filter(Boolean).sort((a,b)=>(a.nom||'').localeCompare(b.nom||''));
+  box.innerHTML = list.map(e=>`<label style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.85rem;">
+    <input type="checkbox" value="${e.id}" ${devoirNewTargetIds.has(e.id)?'checked':''} onchange="toggleDevoirTargetEleve('${e.id}',this.checked)">
+    ${escapeHtml(e.nom||'(sans nom)')}
+  </label>`).join('') || '<p class="hint" style="margin:0;">Aucun élève dans cette classe.</p>';
+  document.getElementById('devoirTargetElevesCount').textContent = devoirNewTargetIds.size;
+}
+function toggleDevoirTargetEleve(id, checked){
+  if(checked) devoirNewTargetIds.add(id); else devoirNewTargetIds.delete(id);
+  document.getElementById('devoirTargetElevesCount').textContent = devoirNewTargetIds.size;
+}
 
 function renderDevoirTypePicker(){
   const box = document.getElementById('devoirTypePicker');
@@ -138,6 +185,17 @@ function renderDevoirCebPicker(){
       tBox.appendChild(b);
     });
   }
+  const rBox = document.getElementById('devoirCebRoundsPicker');
+  if(rBox){
+    rBox.innerHTML = '';
+    for(let n=1;n<=5;n++){
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'btn secondary'; b.textContent = n===1 ? '1 compte' : n+' comptes';
+      b.style.opacity = devoirNewCebRounds===n ? '1' : '.55';
+      b.onclick = ()=>{ devoirNewCebRounds=n; renderDevoirCebPicker(); };
+      rBox.appendChild(b);
+    }
+  }
 }
 /* Ouvre l'outil figure pour construire la figure DE DÉPART d'un devoir "figure à compléter" --
    même outil que pour un devoir "libre", mais le bouton "Valider" enregistre l'état courant dans
@@ -164,6 +222,7 @@ function openDevoirFigureDepartEditor(){
 async function renderDevoirsProf(){
   const select = document.getElementById('devoirNewClasse');
   select.innerHTML = (accountClassesList||[]).map(c=>`<option value="${c.id}">${escapeHtml(c.label)}</option>`).join('') || '<option value="">Aucune classe</option>';
+  renderDevoirTargetModePicker();
   renderDevoirTypePicker();
   await refreshDevoirsProfListing();
 }
@@ -176,14 +235,28 @@ async function createDevoir(){
   if(!titre || !consigne || !classId){ status.textContent = 'Titre, consigne et classe sont nécessaires.'; return; }
   if(devoirNewType==='figure_completer' && !devoirNewFigureDepart){ status.textContent = 'Construisez la figure de départ avant d\'assigner ce devoir.'; return; }
   if(devoirNewType==='automatismes' && !devoirNewAutomatismesSeqs.size){ status.textContent = 'Choisissez au moins une séquence.'; return; }
+  if(devoirNewTargetMode==='eleves' && !devoirNewTargetIds.size){ status.textContent = 'Sélectionnez au moins un élève.'; return; }
   status.textContent = 'Enregistrement…';
   const payload = {
     teacher_id: currentUser.id, class_id: classId, titre, consigne, type: devoirNewType,
     date_limite: dateStr ? new Date(dateStr).toISOString() : null,
+    student_ids: devoirNewTargetMode==='eleves' ? Array.from(devoirNewTargetIds) : null,
   };
   if(devoirNewType==='figure_completer') payload.figure_depart = devoirNewFigureDepart;
   if(devoirNewType==='automatismes') payload.automatismes_sequences = Array.from(devoirNewAutomatismesSeqs);
-  if(devoirNewType==='compte_est_bon'){ payload.ceb_n_large = devoirNewCebNLarge; payload.ceb_timer_on = devoirNewCebTimerOn; payload.ceb_timer_duration = devoirNewCebTimerOn ? devoirNewCebTimerDuration : null; }
+  if(devoirNewType==='compte_est_bon'){
+    payload.ceb_n_large = devoirNewCebNLarge;
+    payload.ceb_timer_on = devoirNewCebTimerOn;
+    payload.ceb_timer_duration = devoirNewCebTimerOn ? devoirNewCebTimerDuration : null;
+    // Le tirage de chaque compte est fixé UNE FOIS ici (et non régénéré à chaque partie) pour
+    // que tous les élèves du devoir jouent exactement les mêmes nombres et le même compte à
+    // atteindre -- signalé : "est-ce que tous les élèves auront les mêmes ?".
+    if(typeof cebGenerateSolvableDraw!=='function'){ status.textContent = "Erreur : l'outil Compte est bon n'a pas pu se charger."; return; }
+    payload.ceb_rounds = Array.from({length: devoirNewCebRounds}, ()=>{
+      const draw = cebGenerateSolvableDraw(devoirNewCebNLarge);
+      return { numbers: draw.numbers, target: draw.target, solutionExpr: draw.solution?draw.solution.expr:null, solutionValue: draw.solution?draw.solution.value:null };
+    });
+  }
   const { error } = await sb.from('devoirs').insert(payload);
   if(error){ status.textContent = 'Erreur : '+error.message; return; }
   status.textContent = '✓ Devoir assigné.';
@@ -191,8 +264,10 @@ async function createDevoir(){
   document.getElementById('devoirNewConsigne').value = '';
   document.getElementById('devoirNewDate').value = '';
   devoirNewType = 'fichier'; devoirNewFigureDepart = null; devoirNewAutomatismesSeqs = new Set();
-  devoirNewCebNLarge = 2; devoirNewCebTimerOn = true; devoirNewCebTimerDuration = 60;
+  devoirNewCebNLarge = 2; devoirNewCebTimerOn = true; devoirNewCebTimerDuration = 60; devoirNewCebRounds = 1;
+  devoirNewTargetMode = 'class'; devoirNewTargetIds = new Set();
   document.getElementById('devoirFigureDepartStatus').textContent = '';
+  renderDevoirTargetModePicker();
   renderDevoirTypePicker();
   await refreshDevoirsProfListing();
 }
@@ -200,20 +275,25 @@ function devoirTypeLabel(type){ const t = DEVOIR_TYPES.find(t=>t.id===type); ret
 async function refreshDevoirsProfListing(){
   const el = document.getElementById('devoirsProfListing');
   const { data: devoirsList, error } = await sb.from('devoirs')
-    .select('id,titre,consigne,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,classes(nom,niveau)')
+    .select('id,titre,consigne,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_rounds,student_ids,classes(nom,niveau)')
     .eq('teacher_id', currentUser.id).order('created_at',{ascending:false});
   if(error){ el.textContent = 'Erreur : '+error.message; return; }
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir assigné pour l\'instant.</p>'; return; }
-  // Nombre de rendus / nombre d'élèves de la classe, pour chaque devoir.
+  // Nombre de rendus / nombre d'élèves concernés (toute la classe, ou la sélection d'élèves
+  // ciblée par ce devoir -- signalé : "permettre d'assigner à la classe ou quelques élèves").
   const rows = await Promise.all(devoirsList.map(async d=>{
-    const { count: totalEleves } = await sb.from('class_students').select('*',{count:'exact',head:true}).eq('class_id', d.class_id);
+    const cible = d.student_ids && d.student_ids.length;
+    let totalEleves;
+    if(cible){ totalEleves = d.student_ids.length; }
+    else { const { count } = await sb.from('class_students').select('*',{count:'exact',head:true}).eq('class_id', d.class_id); totalEleves = count; }
     const { count: nbRendus } = await sb.from('devoirs_rendus').select('*',{count:'exact',head:true}).eq('devoir_id', d.id).eq('est_rendu', true);
     const dateStr = d.date_limite ? new Date(d.date_limite).toLocaleDateString('fr-FR') : '';
     const typeDetail = d.type==='automatismes' ? ` · ${(d.automatismes_sequences||[]).length} séquence(s)`
-      : d.type==='compte_est_bon' ? ` · ${d.ceb_n_large??2} grand(s) nombre(s), ${d.ceb_timer_on?'chronométré':'illimité'}`
+      : d.type==='compte_est_bon' ? ` · ${(d.ceb_rounds||[]).length||1} compte(s), ${d.ceb_n_large??2} grand(s) nombre(s), ${d.ceb_timer_on?'chronométré':'illimité'}`
       : '';
+    const cibleDetail = cible ? ` · ${d.student_ids.length} élève(s) ciblé(s)` : '';
     return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
-      <span><b>${escapeHtml(d.titre)}</b> · ${escapeHtml(d.classes ? d.classes.nom+' ('+d.classes.niveau+')' : '')} · <span class="hint" style="margin:0;">${devoirTypeLabel(d.type)}${typeDetail}</span>${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${totalEleves||0} rendu(s)</span>
+      <span><b>${escapeHtml(d.titre)}</b> · ${escapeHtml(d.classes ? d.classes.nom+' ('+d.classes.niveau+')' : '')}${cibleDetail} · <span class="hint" style="margin:0;">${devoirTypeLabel(d.type)}${typeDetail}</span>${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${totalEleves||0} rendu(s)</span>
       <span style="display:flex;gap:6px;flex:none;">
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span> Voir les rendus</button>
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="deleteDevoirPrompt('${d.id}')"><span class=gicon>delete</span> Supprimer</button>
@@ -236,7 +316,12 @@ async function deleteDevoirPrompt(devoirId){
 async function openDevoirSubmissions(devoirId){
   const { data: devoir } = await sb.from('devoirs').select('*, classes(nom,niveau)').eq('id', devoirId).single();
   if(!devoir) return;
-  const { data: eleves } = await sb.from('class_students').select('profiles(id,nom)').eq('class_id', devoir.class_id);
+  // Restreint aux élèves ciblés par ce devoir quand une sélection a été faite (au lieu de toute
+  // la classe) -- signalé : "permettre d'assigner à la classe ou quelques élèves de la classe".
+  const cibleQuery = sb.from('class_students').select('profiles(id,nom)');
+  const { data: eleves } = (devoir.student_ids && devoir.student_ids.length)
+    ? await cibleQuery.eq('class_id', devoir.class_id).in('student_id', devoir.student_ids)
+    : await cibleQuery.eq('class_id', devoir.class_id);
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.style.zIndex = '300';
@@ -322,22 +407,32 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
   }).join('');
 }
 async function devoirSubmissionRowsCeb(devoir, eleves){
-  const { data: attempts } = await sb.from('ceb_results').select('student_id,gap,success,created_at').eq('devoir_id', devoir.id).order('created_at',{ascending:false});
+  const rounds = devoir.ceb_rounds || [];
+  const nRounds = rounds.length || 1;
+  const { data: attempts } = await sb.from('ceb_results').select('student_id,devoir_round,gap,result_value,created_at').eq('devoir_id', devoir.id).order('created_at',{ascending:false});
   const byStudent = new Map();
   (attempts||[]).forEach(a=>{
-    if(!byStudent.has(a.student_id)) byStudent.set(a.student_id, []);
-    byStudent.get(a.student_id).push(a);
+    if(!byStudent.has(a.student_id)) byStudent.set(a.student_id, new Map());
+    const m = byStudent.get(a.student_id);
+    const idx = a.devoir_round ?? 0;
+    // Meilleur écart conservé si le compte a été retenté plusieurs fois.
+    const prev = m.get(idx);
+    if(!prev || a.gap<prev.gap) m.set(idx, a);
   });
   return eleves.map(row=>{
     const eleve = row.profiles; if(!eleve) return '';
-    const list = byStudent.get(eleve.id) || [];
-    const bestGap = list.length ? Math.min(...list.map(a=>a.gap)) : null;
-    const nbReussies = list.filter(a=>a.success).length;
+    const m = byStudent.get(eleve.id) || new Map();
+    const nbFaits = Array.from({length:nRounds}, (_,i)=>i).filter(i=>m.has(i)).length;
+    const detail = Array.from({length:nRounds}, (_,i)=>{
+      const r = m.get(i);
+      return `<div class="hint" style="margin:2px 0;">${r?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} Compte ${i+1}${r?` : écart ${r.gap} (réponse ${r.result_value})`:''}</div>`;
+    }).join('');
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
         <span><b>${escapeHtml(eleve.nom||'(sans nom)')}</b></span>
-        <span class="hint" style="margin:0;">${list.length ? `${list.length} tentative${list.length>1?'s':''}, ${nbReussies} exacte${nbReussies>1?'s':''}, meilleur écart : ${bestGap}` : 'Pas encore tenté.'}</span>
+        <span class="hint" style="margin:0;">${nbFaits}/${nRounds} compte(s) fait(s)</span>
       </div>
+      ${detail}
     </div>`;
   }).join('');
 }
@@ -380,10 +475,14 @@ async function renderDevoirsEleve(){
   el.innerHTML = '<p class="hint">Chargement…</p>';
   const classIds = (accountClassesList||[]).map(c=>c.id);
   if(!classIds.length){ el.innerHTML = '<p class="hint">Aucune classe associée à ce compte.</p>'; return; }
-  const { data: devoirsList, error } = await sb.from('devoirs')
-    .select('id,titre,consigne,date_limite,teacher_id,type,figure_depart,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_timer_duration,profiles(nom)')
+  const { data: devoirsListRaw, error } = await sb.from('devoirs')
+    .select('id,titre,consigne,date_limite,teacher_id,type,figure_depart,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_timer_duration,ceb_rounds,student_ids,profiles(nom)')
     .in('class_id', classIds).order('date_limite',{ascending:true, nullsFirst:false});
   if(error){ el.innerHTML = 'Erreur : '+error.message; return; }
+  // Un devoir ciblant une sélection d'élèves n'est visible que par les élèves concernés
+  // (student_ids null/vide = toute la classe) -- signalé : "permettre d'assigner à la classe
+  // ou quelques élèves de la classe".
+  const devoirsList = (devoirsListRaw||[]).filter(d => !d.student_ids || !d.student_ids.length || d.student_ids.includes(currentUser.id));
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir pour l\'instant.</p>'; return; }
   const { data: mesRendus } = await sb.from('devoirs_rendus').select('*').eq('student_id', currentUser.id);
   const renduByDevoir = new Map((mesRendus||[]).map(r=>[r.devoir_id, r]));
@@ -414,13 +513,29 @@ async function renderDevoirsEleve(){
       }).join('');
       actionHtml = `<div style="margin-top:4px;">${detail}</div>`;
     } else if(d.type==='compte_est_bon'){
-      const { data: attempts } = await sb.from('ceb_results').select('gap,success').eq('devoir_id', d.id).eq('student_id', currentUser.id);
-      const list = attempts || [];
-      const nbReussies = list.filter(a=>a.success).length;
+      const rounds = d.ceb_rounds || [];
+      const { data: attempts } = await sb.from('ceb_results').select('devoir_round,gap,result_value').eq('devoir_id', d.id).eq('student_id', currentUser.id);
+      const bestByRound = new Map();
+      (attempts||[]).forEach(a=>{
+        const idx = a.devoir_round ?? 0;
+        const prev = bestByRound.get(idx);
+        if(!prev || a.gap<prev.gap) bestByRound.set(idx, a);
+      });
+      // Cache en mémoire (par id devoir) pour startDevoirCEB (compte-est-bon.js) : les tirages
+      // (numbers/target) sont trop volumineux et mal adaptés à un attribut onclick.
+      window._devoirCebRoundsCache = window._devoirCebRoundsCache || {};
+      window._devoirCebRoundsCache[d.id] = { rounds, timerOn: d.ceb_timer_on, timerDuration: d.ceb_timer_duration };
       const settingsLabel = `${d.ceb_n_large??2} grand(s) nombre(s), ${d.ceb_timer_on?'chronométré ('+(d.ceb_timer_duration||60)+' s)':'illimité'}`;
-      actionHtml = `<div class="tool-row" style="margin-top:4px;">
-        <span class="hint" style="margin:0;">${settingsLabel}${list.length?` · ${list.length} tentative${list.length>1?'s':''}, ${nbReussies} exacte${nbReussies>1?'s':''}`:''}</span>
-        <button class="btn secondary" onclick="startDevoirCEB('${d.id}',${d.ceb_n_large??2},${!!d.ceb_timer_on},${d.ceb_timer_duration||60})"><span class=gicon>casino</span> ${list.length?'Retenter':'Lancer le défi'}</button>
+      const roundsHtml = rounds.map((r,i)=>{
+        const done = bestByRound.get(i);
+        return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0;">
+          <span class="hint" style="margin:0;">${done?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} Compte ${i+1}${done?` : écart ${done.gap}`:''}</span>
+          <button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="startDevoirCEB('${d.id}',${i})">${done?'Retenter':'Jouer'}</button>
+        </div>`;
+      }).join('');
+      actionHtml = `<div style="margin-top:4px;">
+        <p class="hint" style="margin:0 0 4px;">${settingsLabel}</p>
+        ${roundsHtml}
       </div>`;
     } else if(d.type==='figure_completer'){
       actionHtml = `<div class="tool-row" style="margin-top:4px;">
@@ -569,19 +684,26 @@ async function refreshDevoirAutomatismesProgress(devoirId){
     devoir_id: devoirId, student_id: currentUser.id, type: 'automatismes', est_rendu: true, submitted_at: new Date().toISOString(),
   }, { onConflict: 'devoir_id,student_id' });
 }
-/* Devoir "compte est bon" : considéré fait dès la première tentative jouée -- le prof choisit
-   la difficulté (nb de grands nombres, chronomètre), pas un nombre minimal de tentatives
-   (décision explicite de l'utilisateur). Appelée par compte-est-bon.js après chaque tentative
-   enregistrée dans le contexte d'un devoir. */
+/* Devoir "compte est bon" : considéré fait une fois TOUS les comptes assignés joués au moins une
+   fois chacun (le nombre de comptes est choisi par le prof -- "il faut pouvoir en assigner
+   plusieurs"). Appelée par compte-est-bon.js après chaque tentative enregistrée dans le contexte
+   d'un devoir. */
 async function refreshDevoirCEBProgress(devoirId){
+  const { data: devoir } = await sb.from('devoirs').select('ceb_rounds').eq('id', devoirId).single();
+  if(!devoir) return;
+  const nRounds = (devoir.ceb_rounds || []).length || 1;
+  const { data: attempts } = await sb.from('ceb_results').select('devoir_round').eq('devoir_id', devoirId).eq('student_id', currentUser.id);
+  const doneRounds = new Set((attempts||[]).map(a=>a.devoir_round ?? 0));
+  if(doneRounds.size < nRounds) return;
   await sb.from('devoirs_rendus').upsert({
     devoir_id: devoirId, student_id: currentUser.id, type: 'compte_est_bon', est_rendu: true, submitted_at: new Date().toISOString(),
   }, { onConflict: 'devoir_id,student_id' });
 }
-/* startDevoirCMSequence(devoirId, sequenceId) et startDevoirCEB(devoirId, nLarge, timerOn,
-   timerDuration) sont définies dans calcul-mental.js / compte-est-bon.js (chargés après
-   devoirs.js) -- elles y ont besoin de runCM/cebStartGame et des variables d'état de ces
-   modules, inutile de les dupliquer ici. */
+/* startDevoirCMSequence(devoirId, sequenceId) et startDevoirCEB(devoirId, roundIndex) sont
+   définies dans calcul-mental.js / compte-est-bon.js (chargés après devoirs.js) -- elles y ont
+   besoin de runCM/cebStartGame et des variables d'état de ces modules, inutile de les dupliquer
+   ici. startDevoirCEB lit window._devoirCebRoundsCache (rempli par renderDevoirsEleve ci-dessus)
+   pour récupérer le tirage fixé (numbers/target) de la manche demandée. */
 
 /* ================= BAC À SABLE : sauvegarde nommée ================= */
 /* Enregistre la figure courante sous un nom choisi -- permet de la reprendre ultérieurement

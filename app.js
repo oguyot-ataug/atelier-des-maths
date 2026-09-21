@@ -2377,6 +2377,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.590', items:[
+    "Devoirs : deux évolutions suite à un échange sur Compte est bon. 1) Compte est bon : le prof peut désormais assigner plusieurs comptes dans un même devoir (1 à 5) -- le tirage de chaque compte est fixé à la création et servi identique à tous les élèves concernés (avant : un tirage aléatoire différent à chaque tentative). Le devoir est rendu une fois tous les comptes joués. 2) Tous les types de devoirs (fichier, figure, figure à compléter, automatismes, compte est bon) peuvent désormais être assignés soit à toute la classe (comme avant), soit à une sélection d'élèves de la classe -- signalé : \"permettre d'assigner à la classe ou quelques élèves de la classe\".",
+  ]},
   { version:'2026-08-19.589', items:[
     "Devoirs : un devoir peut désormais porter sur une figure de géométrie dynamique à compléter, une ou plusieurs séquences d'Automatismes, ou un défi Compte est bon avec la difficulté choisie par le prof (en plus du fichier ou de la figure libre à rendre, déjà existants) -- un seul type par devoir. Pour \"Figure à compléter\", le prof construit la figure de départ avec l'outil habituel ; l'élève la reprend et la complète. Pour Automatismes, le devoir est considéré fait quand toutes les séquences assignées ont été tentées au moins une fois ; pour Compte est bon, dès la première tentative jouée avec les réglages du prof (le tirage reste toujours garanti réalisable et tiré au hasard). Le suivi des rendus (\"Voir les rendus\") affiche le détail adapté à chaque type.",
   ]},

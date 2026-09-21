@@ -143,17 +143,36 @@ let cebNextTileId = 1;
 let cebSelectedOp = null;
 let cebSelectedTileId = null;
 let cebSettings = { nLarge: 2, timerOn: true, timerDuration: 60 };
-let currentDevoirCEB = null; // {devoirId} -- suivi quand un défi est lancé depuis un devoir (voir devoirs.js)
-/* Lance un défi Compte est bon dans le contexte d'un devoir (bouton "Lancer le défi" de
-   renderDevoirsEleve, devoirs.js), avec la difficulté choisie par le prof. Contourne l'écran de
-   réglages habituel : on force directement le tirage avec ces réglages. */
-function startDevoirCEB(devoirId, nLarge, timerOn, timerDuration){
-  currentDevoirCEB = { devoirId };
+let currentDevoirCEB = null; // {devoirId, roundIndex} -- suivi quand un compte est lancé depuis un devoir (voir devoirs.js)
+/* Lance un compte précis d'un devoir (bouton "Jouer"/"Retenter" de renderDevoirsEleve,
+   devoirs.js). Le tirage (numbers/target) est celui fixé par le prof à la création du devoir --
+   identique pour tous les élèves du devoir, contrairement au tirage libre toujours aléatoire --
+   signalé : "est-ce que tous les élèves auront les mêmes ?". Contourne l'écran de réglages
+   habituel. */
+function startDevoirCEB(devoirId, roundIndex){
+  const cache = (window._devoirCebRoundsCache||{})[devoirId];
+  const round = cache && cache.rounds && cache.rounds[roundIndex];
+  if(!round) return;
+  currentDevoirCEB = { devoirId, roundIndex };
   showView('view-compte');
   setActiveTopnav('compte');
   document.getElementById('cebRoot').dataset.built = '1';
-  cebSettings = { nLarge: nLarge??2, timerOn: !!timerOn, timerDuration: timerDuration||60, timerCustom:false };
-  cebStartGame();
+  cebSettings = { nLarge: round.numbers.filter(n=>CEB_LARGE_POOL.includes(n)).length, timerOn: !!cache.timerOn, timerDuration: cache.timerDuration||60, timerCustom:false };
+  cebStartGame({
+    numbers: round.numbers, target: round.target,
+    solution: round.solutionExpr ? {expr: round.solutionExpr, value: round.solutionValue} : null,
+    exact: round.solutionValue===round.target,
+  });
+}
+/* Ramène l'élève à la liste de ses devoirs après un compte joué en contexte de devoir (au lieu
+   du bouton "Compte suivant →", qui tirerait un compte libre au hasard sans rapport avec le
+   devoir). */
+function returnToDevoirsAfterCEB(){
+  currentDevoirCEB = null;
+  if(currentUserRole==='eleve'){
+    showView('view-devoirs-eleve'); setActiveTopnav('mesdevoirs');
+    if(typeof renderDevoirsEleve==='function') renderDevoirsEleve();
+  }
 }
 
 function cebInit(){
@@ -278,8 +297,8 @@ function cebRenderTimerDial(container){
   svg.onpointerup = ()=>{ dragging=false; };
 }
 
-function cebStartGame(){
-  const draw = cebGenerateSolvableDraw(cebSettings.nLarge);
+function cebStartGame(forcedDraw){
+  const draw = forcedDraw || cebGenerateSolvableDraw(cebSettings.nLarge);
   const tiles = draw.numbers.map(n=>({id:cebNextTileId++, value:n, expr:String(n), prec:3, used:false}));
   cebState = {
     numbers: draw.numbers, target: draw.target, solution: draw.solution, exact: draw.exact,
@@ -475,6 +494,7 @@ async function cebSaveAttempt(best){
       time_used_ms: cebState.timerOn ? (cebSettings.timerDuration - Math.max(0,cebState.timeLeft)) * 1000 : null,
       expression: best.expr,
       devoir_id: currentDevoirCEB ? currentDevoirCEB.devoirId : null,
+      devoir_round: currentDevoirCEB ? currentDevoirCEB.roundIndex : null,
     });
     if(!error && currentDevoirCEB && typeof refreshDevoirCEBProgress==='function'){
       await refreshDevoirCEBProgress(currentDevoirCEB.devoirId);
@@ -543,7 +563,9 @@ function cebRenderResult(best){
     </div>
     <div class="figure-toolbar" style="justify-content:center;margin-top:16px;">
       <button class="btn secondary" onclick="cebShowSolution()">Voir une solution</button>
-      <button class="btn" onclick="cebStartGame()">Compte suivant →</button>
+      ${currentDevoirCEB
+        ? `<button class="btn" onclick="returnToDevoirsAfterCEB()">↩ Revenir à mes devoirs</button>`
+        : `<button class="btn" onclick="cebStartGame()">Compte suivant →</button>`}
       <button class="btn secondary" onclick="cebRenderSetup()"><span class="gicon">settings</span> Paramètres</button>
     </div>
     <div id="cebSolutionBox"></div>
