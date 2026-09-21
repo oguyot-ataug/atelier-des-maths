@@ -2377,6 +2377,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.594', items:[
+    "Devoirs, bouton Tester -- fix -- pour Compte est bon, en cours de partie (avant d'avoir validé un compte), il n'y avait aucun moyen de revenir au formulaire du devoir -- signalé : \"on ne peut pas quitter ou revenir en arrière, on est obligé de repasser par tous les menus\". Le bouton \"Nouveau tirage\" est remplacé par \"Quitter le test\" pendant un test, qui ramène directement au formulaire (brouillon conservé) en un clic.",
+  ]},
   { version:'2026-08-19.593', items:[
     "Devoirs : bouton \"Tester (voir comme un élève)\" pour les 3 types d'activité interactifs, dans le formulaire de création/édition -- signalé : \"il me manque un bouton tester pour voir le rendu\". Figure à compléter : ouvre la figure de départ dans l'outil, en lecture normale (sans bouton de validation). Automatismes : un bouton \"Tester\" par séquence lance directement la série de questions. Compte est bon : lance un tirage avec les réglages en cours, avec un retour direct au formulaire en fin de partie. Rien n'est jamais enregistré côté élève pendant un test (le compte du prof ne peut pas écrire de résultat).",
   ]},

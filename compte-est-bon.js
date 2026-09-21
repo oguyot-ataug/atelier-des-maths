@@ -351,7 +351,9 @@ function cebRenderGame(){
     <div class="figure-toolbar" style="justify-content:center;">
       <button class="btn secondary" onclick="cebUndo()">↩ Annuler la dernière étape</button>
       <button class="btn" onclick="cebFinish()">Valider ce compte</button>
-      <button class="btn secondary" onclick="cebRenderSetup()">Nouveau tirage</button>
+      ${(typeof devoirTestModeActive!=='undefined' && devoirTestModeActive)
+        ? `<button class="btn secondary" onclick="returnToDevoirCreationFromTest()">↩ Quitter le test</button>`
+        : `<button class="btn secondary" onclick="cebRenderSetup()">Nouveau tirage</button>`}
     </div>
     <div id="cebStepsBox" style="margin-top:22px;max-width:420px;margin-left:auto;margin-right:auto;"></div>
   </div>
