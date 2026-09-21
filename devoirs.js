@@ -12,8 +12,8 @@ document.getElementById('view-devoirs-prof').innerHTML = `
   <h1 style="margin:6px 0 4px;"><span class=gicon>assignment</span> Devoirs</h1>
   <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, ou un défi Compte est bon.</p>
 
-  <div class="tool-shell">
-    <p class="example-title" style="margin-bottom:6px;">Nouveau devoir</p>
+  <div class="tool-shell devoir-zone-create">
+    <p class="example-title devoir-zone-title" style="margin-bottom:6px;"><span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir</p>
     <div class="tool-row">
       <input type="text" id="devoirNewTitre" placeholder="Titre (ex. Exercice 4 p.32)" style="min-width:220px;">
       <select id="devoirNewClasse" onchange="onDevoirNewClasseChange()"></select>
@@ -58,8 +58,8 @@ document.getElementById('view-devoirs-prof').innerHTML = `
     <span class="hint" id="devoirCreateStatus" style="margin:0;"></span>
   </div>
 
-  <div class="tool-shell" style="margin-top:16px;">
-    <p class="example-title" style="margin-bottom:6px;">Devoirs assignés</p>
+  <div class="tool-shell devoir-zone-list" style="margin-top:16px;">
+    <p class="example-title devoir-zone-title" style="margin-bottom:6px;"><span class=gicon style="color:#1F7A4D;">checklist</span> Devoirs assignés</p>
     <div id="devoirsProfListing"><p class="hint">Chargement…</p></div>
   </div>
 `;
@@ -77,12 +77,14 @@ document.getElementById('view-devoirs-eleve').innerHTML = `
    "figure_completer", "automatismes" et "compte_est_bon" réutilisent des outils déjà existants
    (outils-figures.js, calcul-mental.js, compte-est-bon.js) plutôt que d'en recréer une version
    dédiée aux devoirs. */
+/* Couleurs reprises des groupes d'Automatismes (CM_GROUPS, calcul-mental.js) pour rester
+   cohérent avec le reste du site plutôt que d'inventer une nouvelle palette. */
 const DEVOIR_TYPES = [
-  {id:'fichier', label:'Fichier à rendre', icon:'upload_file'},
-  {id:'figure', label:'Figure à construire (libre)', icon:'draw'},
-  {id:'figure_completer', label:'Figure à compléter', icon:'auto_fix_high'},
-  {id:'automatismes', label:'Automatismes', icon:'bolt'},
-  {id:'compte_est_bon', label:'Compte est bon', icon:'casino'},
+  {id:'fichier', label:'Fichier à rendre', icon:'upload_file', color:'#5B6472'},
+  {id:'figure', label:'Figure à construire (libre)', icon:'draw', color:'#0C5BA0'},
+  {id:'figure_completer', label:'Figure à compléter', icon:'auto_fix_high', color:'#26AAB1'},
+  {id:'automatismes', label:'Automatismes', icon:'bolt', color:'#FF8208'},
+  {id:'compte_est_bon', label:'Compte est bon', icon:'casino', color:'#9E1F5E'},
 ];
 let devoirNewType = 'fichier';
 let devoirNewFigureDepart = null; // serializeFigState(...) de la figure de départ (type=figure_completer)
@@ -97,8 +99,8 @@ function renderDevoirTargetModePicker(){
   const box = document.getElementById('devoirTargetModePicker');
   if(!box) return;
   box.innerHTML = `
-    <button type="button" class="btn secondary" style="opacity:${devoirNewTargetMode==='class'?'1':'.55'};" onclick="setDevoirNewTargetMode('class')"><span class=gicon>groups</span> Toute la classe</button>
-    <button type="button" class="btn secondary" style="opacity:${devoirNewTargetMode==='eleves'?'1':'.55'};" onclick="setDevoirNewTargetMode('eleves')"><span class=gicon>person</span> Élèves sélectionnés</button>
+    <button type="button" class="btn secondary${devoirNewTargetMode==='class'?' active':''}" onclick="setDevoirNewTargetMode('class')"><span class=gicon>groups</span> Toute la classe</button>
+    <button type="button" class="btn secondary${devoirNewTargetMode==='eleves'?' active':''}" onclick="setDevoirNewTargetMode('eleves')"><span class=gicon>person</span> Élèves sélectionnés</button>
   `;
   const box2 = document.getElementById('devoirTargetElevesBox');
   if(box2) box2.style.display = devoirNewTargetMode==='eleves' ? 'block' : 'none';
@@ -129,7 +131,7 @@ function toggleDevoirTargetEleve(id, checked){
 function renderDevoirTypePicker(){
   const box = document.getElementById('devoirTypePicker');
   if(!box) return;
-  box.innerHTML = DEVOIR_TYPES.map(t=>`<button type="button" class="btn secondary" style="opacity:${devoirNewType===t.id?'1':'.55'};" onclick="setDevoirNewType('${t.id}')"><span class=gicon>${t.icon}</span> ${t.label}</button>`).join('');
+  box.innerHTML = DEVOIR_TYPES.map(t=>`<button type="button" class="devoir-type-btn${devoirNewType===t.id?' active':''}" style="--dt-color:${t.color};--dt-bg:${t.color}14;" onclick="setDevoirNewType('${t.id}')"><span class=gicon>${t.icon}</span> ${t.label}</button>`).join('');
   const boxes = {figure_completer:'devoirTypeFigureCompleterBox', automatismes:'devoirTypeAutomatismesBox', compte_est_bon:'devoirTypeCebBox'};
   Object.keys(boxes).forEach(type=>{
     const el = document.getElementById(boxes[type]);
@@ -166,8 +168,7 @@ function renderDevoirCebPicker(){
     nlBox.innerHTML = '';
     for(let n=0;n<=4;n++){
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'btn secondary'; b.textContent = n===0 ? 'Aucun' : String(n);
-      b.style.opacity = devoirNewCebNLarge===n ? '1' : '.55';
+      b.type = 'button'; b.className = 'btn secondary'+(devoirNewCebNLarge===n?' active':''); b.textContent = n===0 ? 'Aucun' : String(n);
       b.onclick = ()=>{ devoirNewCebNLarge=n; renderDevoirCebPicker(); };
       nlBox.appendChild(b);
     }
@@ -178,9 +179,8 @@ function renderDevoirCebPicker(){
     const opts = [{on:false,label:'Illimité'},{on:true,dur:45,label:'45 s'},{on:true,dur:60,label:'1 min'},{on:true,dur:90,label:'1 min 30'}];
     opts.forEach(o=>{
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'btn secondary'; b.textContent = o.label;
       const active = o.on===devoirNewCebTimerOn && (!o.on || o.dur===devoirNewCebTimerDuration);
-      b.style.opacity = active ? '1' : '.55';
+      b.type = 'button'; b.className = 'btn secondary'+(active?' active':''); b.textContent = o.label;
       b.onclick = ()=>{ devoirNewCebTimerOn=o.on; if(o.on) devoirNewCebTimerDuration=o.dur; renderDevoirCebPicker(); };
       tBox.appendChild(b);
     });
@@ -190,8 +190,7 @@ function renderDevoirCebPicker(){
     rBox.innerHTML = '';
     for(let n=1;n<=5;n++){
       const b = document.createElement('button');
-      b.type = 'button'; b.className = 'btn secondary'; b.textContent = n===1 ? '1 compte' : n+' comptes';
-      b.style.opacity = devoirNewCebRounds===n ? '1' : '.55';
+      b.type = 'button'; b.className = 'btn secondary'+(devoirNewCebRounds===n?' active':''); b.textContent = n===1 ? '1 compte' : n+' comptes';
       b.onclick = ()=>{ devoirNewCebRounds=n; renderDevoirCebPicker(); };
       rBox.appendChild(b);
     }
@@ -291,9 +290,10 @@ async function refreshDevoirsProfListing(){
     const typeDetail = d.type==='automatismes' ? ` · ${(d.automatismes_sequences||[]).length} séquence(s)`
       : d.type==='compte_est_bon' ? ` · ${(d.ceb_rounds||[]).length||1} compte(s), ${d.ceb_n_large??2} grand(s) nombre(s), ${d.ceb_timer_on?'chronométré':'illimité'}`
       : '';
-    const cibleDetail = cible ? ` · ${d.student_ids.length} élève(s) ciblé(s)` : '';
-    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
-      <span><b>${escapeHtml(d.titre)}</b> · ${escapeHtml(d.classes ? d.classes.nom+' ('+d.classes.niveau+')' : '')}${cibleDetail} · <span class="hint" style="margin:0;">${devoirTypeLabel(d.type)}${typeDetail}</span>${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${totalEleves||0} rendu(s)</span>
+    const cibleDetail = cible ? `<span class="devoir-target-pill">${d.student_ids.length} élève(s) ciblé(s)</span> · ` : '';
+    const t = DEVOIR_TYPES.find(t=>t.id===d.type);
+    return `<div class="devoir-row" style="--dt-color:${t?t.color:'var(--ink-soft)'};display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span><b>${escapeHtml(d.titre)}</b> · ${escapeHtml(d.classes ? d.classes.nom+' ('+d.classes.niveau+')' : '')} · ${cibleDetail}<span class="devoir-row-type"><span class=gicon style="font-size:1rem;vertical-align:middle;">${t?t.icon:'assignment'}</span> ${devoirTypeLabel(d.type)}</span><span class="hint" style="margin:0;">${typeDetail}</span>${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${totalEleves||0} rendu(s)</span>
       <span style="display:flex;gap:6px;flex:none;">
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span> Voir les rendus</button>
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="deleteDevoirPrompt('${d.id}')"><span class=gicon>delete</span> Supprimer</button>

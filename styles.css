@@ -754,6 +754,45 @@ footer a:hover{color:var(--accent);}
 .tool-row select, .tool-row input[type=text]{
   padding:9px 12px;border-radius:8px;border:1px solid rgba(28,43,57,.2);font-family:'Inter',sans-serif;font-size:.88rem;
 }
+
+/* ---------- Devoirs (prof) : différenciation visuelle des zones et des types d'activité --
+   signalé : "la présentation c'est pas terrible... différencier les zones de création et de
+   devoir créés, ajouter des couleurs". Zone de création = liseré bleu (--accent), zone des
+   devoirs déjà créés = liseré vert (cohérent avec le vert "déjà fait" utilisé ailleurs sur le
+   site, cm-badge-perfect notamment). Chaque type d'activité a sa propre couleur, reprise à la
+   fois sur le sélecteur de type et sur chaque ligne de la liste -- mêmes couleurs que les
+   groupes d'Automatismes (cm-group-header) pour rester cohérent avec le reste du site. */
+.devoir-zone-create{border-top:4px solid var(--accent);}
+.devoir-zone-list{border-top:4px solid #1F7A4D;}
+.devoir-zone-title{display:flex;align-items:center;gap:8px;margin:0 0 14px;}
+.devoir-type-btn{
+  border:1.5px solid var(--dt-color,rgba(28,43,57,.18));
+  background:var(--dt-bg,rgba(28,43,57,.04));
+  color:var(--dt-color,var(--ink-soft));
+  border-radius:8px;padding:7px 14px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.83rem;
+  cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.15s;
+}
+.devoir-type-btn:hover{filter:brightness(.97);transform:translateY(-1px);}
+.devoir-type-btn.active{background:var(--dt-color,var(--accent));color:#fff;border-color:var(--dt-color,var(--accent));}
+.devoir-row{
+  border-left:4px solid var(--dt-color,rgba(28,43,57,.15));background:rgba(28,43,57,.02);
+  border-radius:0 8px 8px 0;padding:10px 12px;margin-top:8px;
+}
+.devoir-row-type{font-weight:700;color:var(--dt-color,var(--ink-soft));}
+.devoir-target-pill{
+  display:inline-block;padding:1px 9px;border-radius:20px;font-size:.7rem;font-weight:700;
+  background:rgba(12,91,160,.1);color:var(--accent);vertical-align:middle;
+}
+/* Zones de l'onglet Devoirs de Supervision (Permis Rapporteur / Devoirs) -- même logique de
+   liseré coloré que ci-dessus, pour distinguer les deux blocs plutôt qu'un même gris uniforme. */
+.sup-zone{background:var(--white);border:1px solid rgba(28,43,57,.1);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);}
+.sup-zone+.sup-zone{margin-top:10px;}
+.sup-zone-permis{border-left:4px solid var(--accent);}
+.sup-zone-devoirs{border-left:4px solid var(--accent-orange);}
+.sup-zone-title{display:flex;align-items:center;gap:8px;font-size:.85rem;margin:0 0 8px;}
+.sup-zone-title.permis{color:var(--accent);}
+.sup-zone-title.devoirs{color:var(--accent-orange);}
+.sup-session-row{display:flex;align-items:center;gap:8px;padding:5px 0;flex-wrap:wrap;}
 #correctionInput{
   width:100%;min-height:120px;padding:14px;border-radius:8px;border:1px solid rgba(28,43,57,.2);
   font-family:'JetBrains Mono',monospace;font-size:1rem;line-height:1.6;resize:vertical;

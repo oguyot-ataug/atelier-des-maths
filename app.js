@@ -2377,6 +2377,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.591', items:[
+    "Devoirs (prof), présentation -- signalé : \"c'est pas terrible... différencier les zones de création et de devoir créés, ajouter des couleurs\". Sur la page Devoirs : liseré bleu pour la zone \"Nouveau devoir\", vert pour \"Devoirs assignés\" ; chaque type d'activité (fichier, figure, figure à compléter, automatismes, compte est bon) a sa propre couleur, reprise sur le sélecteur de type et sur chaque ligne de la liste (mêmes couleurs que les groupes d'Automatismes, pour rester cohérent). Même traitement pour l'onglet Devoirs de Supervision (Permis Rapporteur en bleu, Devoirs en orange). Nouveau : bouton \"Supprimer\" pour une session de Permis Rapporteur (jusqu'ici seule la clôture était possible).",
+  ]},
   { version:'2026-08-19.590', items:[
     "Devoirs : deux évolutions suite à un échange sur Compte est bon. 1) Compte est bon : le prof peut désormais assigner plusieurs comptes dans un même devoir (1 à 5) -- le tirage de chaque compte est fixé à la création et servi identique à tous les élèves concernés (avant : un tirage aléatoire différent à chaque tentative). Le devoir est rendu une fois tous les comptes joués. 2) Tous les types de devoirs (fichier, figure, figure à compléter, automatismes, compte est bon) peuvent désormais être assignés soit à toute la classe (comme avant), soit à une sélection d'élèves de la classe -- signalé : \"permettre d'assigner à la classe ou quelques élèves de la classe\".",
   ]},
@@ -3918,24 +3921,32 @@ async function renderSupervisionDevoirsTab(){
   el.innerHTML = 'Chargement…';
   const { data: sessions } = await sb.from('permis_rapporteur_sessions').select('id,code,classe_id,cloturee,created_at').eq('classe_id', currentClassId).order('created_at',{ascending:false});
   const sessionsHtml = (sessions&&sessions.length) ? sessions.map(s=>`
-    <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+    <div class="sup-session-row">
       <span style="font-family:'JetBrains Mono',monospace;font-weight:700;${s.cloturee?'text-decoration:line-through;color:var(--ink-soft);':'color:var(--accent);'}">${escapeHtml(s.code)}</span>
       <span class="hint" style="margin:0;">${s.cloturee?'clôturée':'active'}</span>
       ${s.cloturee?'':`<button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="supCloturerPermisSession('${s.id}')">Clôturer</button>`}
+      <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;color:#a83c1f;" onclick="supDeletePermisSession('${s.id}')"><span class=gicon>delete</span> Supprimer</button>
     </div>`).join('') : '<p class="hint" style="margin:4px 0 0;">Aucune session pour l\'instant.</p>';
   const { count: nbEleves } = await sb.from('class_students').select('*',{count:'exact',head:true}).eq('class_id', currentClassId);
   el.innerHTML = `
-    <div style="padding:8px;background:rgba(31,58,92,.05);border-radius:6px;">
-      <b style="font-size:.85rem;"><span class=gicon>school</span> Permis Rapporteur</b>
-      <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="supDemarrerPermisSession('${currentClassId}')">+ Nouvelle session</button>
+    <div class="sup-zone sup-zone-permis">
+      <p class="sup-zone-title permis"><span class=gicon>school</span> <b>Permis Rapporteur</b>
+        <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;margin-left:auto;" onclick="supDemarrerPermisSession('${currentClassId}')">+ Nouvelle session</button>
+      </p>
       ${sessionsHtml}
     </div>
-    <div style="padding:8px;background:rgba(31,58,92,.05);border-radius:6px;margin-top:8px;">
-      <b style="font-size:.85rem;"><span class=gicon>assignment</span> Devoirs</b>
-      <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;float:right;" onclick="openDevoirsForClass('${currentClassId}')">+ Nouveau devoir</button>
-      <div id="supervisionDevoirsListing" style="margin-top:4px;">Chargement…</div>
+    <div class="sup-zone sup-zone-devoirs">
+      <p class="sup-zone-title devoirs"><span class=gicon>assignment</span> <b>Devoirs</b>
+        <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;margin-left:auto;" onclick="openDevoirsForClass('${currentClassId}')">+ Nouveau devoir</button>
+      </p>
+      <div id="supervisionDevoirsListing">Chargement…</div>
     </div>`;
   await renderClassDevoirsSummary(currentClassId, 'supervisionDevoirsListing', nbEleves||0);
+}
+async function supDeletePermisSession(sessionId){
+  if(!(await niceConfirm('Supprimer définitivement cette session de Permis Rapporteur ? Le code ne sera plus utilisable.'))) return;
+  await sb.from('permis_rapporteur_sessions').delete().eq('id', sessionId);
+  await renderSupervisionDevoirsTab();
 }
 /* Résumé des devoirs d'UNE classe (titre, échéance, X/Y rendus), avec les mêmes actions que la
    page Devoirs complète -- voir la note ci-dessus. */
@@ -3943,15 +3954,19 @@ async function renderClassDevoirsSummary(classId, containerId, nbEleves){
   const el = document.getElementById(containerId);
   if(!el || !currentUser) return;
   const { data: devoirsList, error } = await sb.from('devoirs')
-    .select('id,titre,date_limite')
+    .select('id,titre,date_limite,type,student_ids')
     .eq('teacher_id', currentUser.id).eq('class_id', classId).order('created_at',{ascending:false});
   if(error){ el.textContent = 'Erreur : '+error.message; return; }
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint" style="margin:4px 0 0;">Aucun devoir pour l\'instant.</p>'; return; }
   const rows = await Promise.all(devoirsList.map(async d=>{
     const { count: nbRendus } = await sb.from('devoirs_rendus').select('*',{count:'exact',head:true}).eq('devoir_id', d.id).eq('est_rendu', true);
     const dateStr = d.date_limite ? new Date(d.date_limite).toLocaleDateString('fr-FR') : '';
-    return `<div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
-      <span style="flex:1;">${escapeHtml(d.titre)}${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${nbEleves||0} rendu(s)</span>
+    const t = (typeof DEVOIR_TYPES!=='undefined') ? DEVOIR_TYPES.find(t=>t.id===d.type) : null;
+    const cible = d.student_ids && d.student_ids.length;
+    const totalPourCeDevoir = cible ? d.student_ids.length : nbEleves;
+    return `<div class="devoir-row" style="--dt-color:${t?t.color:'var(--ink-soft)'};display:flex;align-items:center;gap:8px;">
+      <span class=gicon style="color:var(--dt-color);font-size:1.1rem;">${t?t.icon:'assignment'}</span>
+      <span style="flex:1;">${escapeHtml(d.titre)}${dateStr?' · limite : '+dateStr:''}${cible?` · <span class="devoir-target-pill">${d.student_ids.length} élève(s)</span>`:''} · ${nbRendus||0}/${totalPourCeDevoir||0} rendu(s)</span>
       <button class="btn secondary" style="padding:3px 8px;font-size:.72rem;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span></button>
       <button class="btn secondary" style="padding:3px 8px;font-size:.72rem;color:#a83c1f;" onclick="supDeleteDevoirAndRefresh('${d.id}','${classId}','${containerId}',${nbEleves})"><span class=gicon>delete</span></button>
     </div>`;
