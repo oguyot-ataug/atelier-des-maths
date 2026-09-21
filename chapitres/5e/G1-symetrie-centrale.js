@@ -279,20 +279,32 @@ document.getElementById('exos-demo-symetrie').innerHTML = `
         <div class="redaction-template">
           <span class="fill">O</span> est le milieu du segment <span class="fill">[AA']</span>.<br>Donc <span class="fill">A'</span> est le symétrique du point <span class="fill">A</span> par rapport au point <span class="fill">O</span>.
         </div>
-        <h3 style="margin-top:18px;">Rédaction type : « Justifier une symétrie de figure »</h3>
-        <div class="redaction-template">
-          <span class="fill">A'B'C'</span> est l'image du triangle <span class="fill">ABC</span> par la symétrie centrale de centre <span class="fill">O</span>.<br>Donc <span class="fill">A'B'C'</span> et <span class="fill">ABC</span> ont la même forme et la même taille, mais sont retournés d'un demi-tour.
-        </div>
       </div>
       <div class="redaction-block">
         <h3>Exercices</h3>
         <div class="exo-card">
           <div class="num">Exercice 1</div>
           Place un point O et un point M à 4 cm de O. Construis le symétrique M' de M par rapport à O, en laissant apparents les traits de construction.
+          <button type="button" class="exo-correction-toggle" data-target="sym-ex1-correction" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+          <div class="exo-correction" id="sym-ex1-correction">
+            ${dpSymMethodSVGBlock('sym-ex1')}
+            <div class="figure-toolbar">
+              <button class="btn" onclick="symEx1Demo.next()">Étape suivante →</button>
+              <button class="btn secondary" onclick="symEx1Demo.reset()">Recommencer</button>
+            </div>
+          </div>
         </div>
         <div class="exo-card">
           <div class="num">Exercice 2</div>
           ABCD est un parallélogramme de centre O. Explique pourquoi C est le symétrique de A par rapport à O.
+          <button type="button" class="exo-correction-toggle" data-target="sym-ex2-correction" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
+          <div class="exo-correction" id="sym-ex2-correction">
+            <div id="sym-ex2-display"></div>
+            <div class="figure-toolbar">
+              <button class="btn" onclick="symEx2Demo.next()">Étape suivante →</button>
+              <button class="btn secondary" onclick="symEx2Demo.reset()">Recommencer</button>
+            </div>
+          </div>
         </div>
       </div>
 `;
@@ -857,11 +869,135 @@ const M_STEPS = [
 ];
 function mGotoStep(i){ methodStep = i+1; mRenderStepInstant(methodStep); }
 
+/* ================= Correction d'exercice en étapes (« corrige les exercices ») =================
+   Exercice 1 reprend la MÊME construction au compas et à la règle que la méthode animée
+   ci-dessus (svgMethod/nextMethodStep/mRenderStepInstant), mais celle-ci est bâtie autour de
+   constantes UNIQUES calculées une fois au chargement (mA, O, mR, mRulerScale...) et
+   d'animations continues (requestAnimationFrame) difficiles à paramétrer sans risque pour une
+   seconde instance. Plutôt que de reprendre l'animation image par image, cette fabrique
+   généralise le RENDU INSTANTANÉ de chaque étape (mRenderStepInstant, déjà utilisé pour la
+   reconstitution filmstrip du cahier/PDF) : mêmes 4 états visuels (rien / demi-droite tracée /
+   + arc de compas / + A' codé), mêmes formules géométriques, juste points/étiquettes en argument
+   et id préfixés -- sans la phase de glissement animé du crayon ni le balayage progressif de
+   l'arc, qui n'apportent rien à une correction figée. */
+function dpSymMethodSVGBlock(idPrefix){
+  return `<svg id="${idPrefix}Svg" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:14px auto;">
+    <line id="${idPrefix}-tickO" class="pt-tick" stroke="#1C1B2E" stroke-width="2"/>
+    <text id="${idPrefix}-labelO" font-family="Space Grotesk" font-size="13" fill="#1C1B2E"></text>
+    <line id="${idPrefix}-tickA" class="pt-tick" stroke="#1F3A5C" stroke-width="2"/>
+    <text id="${idPrefix}-labelA" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700"></text>
+    <line id="${idPrefix}-step1" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <g id="${idPrefix}-rulerTool" opacity="0"></g>
+    <g id="${idPrefix}-pencilTool" opacity="0"></g>
+    <polyline id="${idPrefix}-arc" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"/>
+    <g id="${idPrefix}-compass" opacity="0"></g>
+    <line id="${idPrefix}-tickAprime" class="pt-tick" stroke="#E35D3A" stroke-width="2" opacity="0"/>
+    <text id="${idPrefix}-labelAprime" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" opacity="0"></text>
+    <line id="${idPrefix}-codeAO" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+    <line id="${idPrefix}-codeOAprime" stroke="#1C1B2E" stroke-width="1.6" opacity="0"/>
+  </svg>
+  <p class="hint" id="${idPrefix}-note" style="text-align:center;margin-top:8px;"></p>`;
+}
+function makePointSymConstructionDemo(idPrefix, ptO, ptA, labelA, labelAprime){
+  const R = Math.hypot(ptA.x-ptO.x, ptA.y-ptO.y);
+  const angleA = Math.atan2(ptA.y-ptO.y, ptA.x-ptO.x);
+  const legLen = 0.7*R+30;
+  const Aprime = {x:2*ptO.x-ptA.x, y:2*ptO.y-ptA.y};
+  const dirAO = {x:(ptO.x-ptA.x)/R, y:(ptO.y-ptA.y)/R};
+  const overshoot = 40;
+  const step1End = {x:Aprime.x+dirAO.x*overshoot, y:Aprime.y+dirAO.y*overshoot};
+  const rayAngleDeg = Math.atan2(step1End.y-ptA.y, step1End.x-ptA.x)*180/Math.PI;
+  const rayLen = Math.hypot(step1End.x-ptA.x, step1End.y-ptA.y);
+  const rulerScale = Math.max(0.44, (rayLen+50)/TB_RULER_L);
+  const rulerBackOffset = 30*rulerScale;
+  const rulerStart = {
+    x: ptA.x - Math.cos(rayAngleDeg*Math.PI/180)*rulerBackOffset,
+    y: ptA.y - Math.sin(rayAngleDeg*Math.PI/180)*rulerBackOffset,
+  };
+  const arcHalfAngle = 20*Math.PI/180;
+  function pointOnCircle(angle){ return {x:ptO.x+R*Math.cos(angle), y:ptO.y+R*Math.sin(angle)}; }
+  function arcCrossingPoints(){
+    const target = angleA+Math.PI;
+    const pts=[];
+    for(let a=target-arcHalfAngle; a<=target+arcHalfAngle+1e-6; a+=Math.PI/60){ const p=pointOnCircle(a); pts.push(`${p.x},${p.y}`); }
+    return pts.join(' ');
+  }
+  const steps = [
+    {s:0, note:`On place le point O et le point ${labelA}.`},
+    {s:1, note:`Je trace la demi-droite [${labelA}O) à la règle, en la prolongeant largement au-delà de O.`},
+    {s:2, note:`Je pique le compas en ${labelA}, j'ouvre jusqu'à O, puis je reporte cette longueur O${labelA} de l'autre côté de O sur la demi-droite (arc de cercle).`},
+    {s:3, note:`Le point où l'arc coupe la droite est ${labelAprime}, le symétrique de ${labelA} : on a bien O${labelAprime} = O${labelA}, avec O entre ${labelA} et ${labelAprime}.`},
+  ];
+  let idx = 0;
+  function el(suffix){ return document.getElementById(idPrefix+suffix); }
+  function render(){
+    const s = steps[idx].s;
+    el('-step1').setAttribute('opacity', s>=1?'1':'0');
+    if(s>=1){ el('-step1').setAttribute('x1',ptA.x); el('-step1').setAttribute('y1',ptA.y); el('-step1').setAttribute('x2',step1End.x.toFixed(1)); el('-step1').setAttribute('y2',step1End.y.toFixed(1)); }
+    el('-rulerTool').setAttribute('opacity', s===1?'1':'0');
+    el('-pencilTool').setAttribute('opacity', s===1?'1':'0');
+    if(s===1){
+      el('-rulerTool').innerHTML = rulerSVG(true);
+      el('-rulerTool').setAttribute('transform', `translate(${rulerStart.x.toFixed(1)},${rulerStart.y.toFixed(1)}) rotate(${rayAngleDeg.toFixed(1)}) scale(${rulerScale.toFixed(3)})`);
+      el('-pencilTool').innerHTML = pencilSVG(idPrefix+'-pencil');
+      el('-pencilTool').setAttribute('transform', `translate(${step1End.x.toFixed(1)},${step1End.y.toFixed(1)}) rotate(${(rayAngleDeg-90+55).toFixed(1)}) scale(${rulerScale.toFixed(3)})`);
+    }
+    const showArc = s>=2;
+    el('-arc').setAttribute('opacity', showArc?'1':'0');
+    el('-arc').setAttribute('points', showArc?arcCrossingPoints():'');
+    el('-compass').setAttribute('opacity', s===2?'1':'0');
+    if(s===2){
+      el('-compass').innerHTML = compassSVG(R, legLen);
+      const angle = angleA+Math.PI;
+      el('-compass').setAttribute('transform', `translate(${ptO.x},${ptO.y}) rotate(${(angle*180/Math.PI).toFixed(2)})`);
+    }
+    const showAprime = s>=3;
+    el('-tickAprime').setAttribute('opacity', showAprime?'1':'0');
+    el('-labelAprime').setAttribute('opacity', showAprime?'1':'0');
+    el('-codeAO').setAttribute('opacity', showAprime?'1':'0');
+    el('-codeOAprime').setAttribute('opacity', showAprime?'1':'0');
+    if(showAprime){
+      setTick(el('-tickAprime'), Aprime.x, Aprime.y, angleA);
+      let perp = {x:-dirAO.y, y:dirAO.x};
+      if(perp.y<0) perp = {x:dirAO.y, y:-dirAO.x};
+      const labelOffset=28, labelRightNudge=12;
+      el('-labelAprime').setAttribute('x', (Aprime.x+perp.x*labelOffset+labelRightNudge).toFixed(1));
+      el('-labelAprime').setAttribute('y', (Aprime.y+perp.y*labelOffset).toFixed(1));
+      const midAO = {x:(ptA.x+ptO.x)/2,y:(ptA.y+ptO.y)/2}, midOAprime={x:(ptO.x+Aprime.x)/2,y:(ptO.y+Aprime.y)/2};
+      setSlantTick(el('-codeAO'), midAO.x, midAO.y, angleA);
+      setSlantTick(el('-codeOAprime'), midOAprime.x, midOAprime.y, angleA);
+    }
+    el('-note').textContent = steps[idx].note;
+  }
+  function init(){
+    el('-labelO').setAttribute('x', ptO.x+7); el('-labelO').setAttribute('y', ptO.y-8); el('-labelO').textContent = 'O';
+    el('-labelA').setAttribute('x', ptA.x-20); el('-labelA').setAttribute('y', ptA.y-10); el('-labelA').textContent = labelA;
+    el('-labelAprime').textContent = labelAprime;
+    setTick(el('-tickA'), ptA.x, ptA.y, angleA);
+    setTick(el('-tickO'), ptO.x, ptO.y, angleA);
+    render();
+  }
+  return {
+    next(){ if(idx<steps.length-1){ idx++; render(); } },
+    reset(){ idx=0; render(); },
+    init,
+  };
+}
+const symEx1Demo = makePointSymConstructionDemo('sym-ex1', {x:200,y:150}, {x:120,y:220}, 'M', "M'");
+
+/* Exercice 2 : rédaction en étapes (makeRedactionStepDemo, app.js) -- même principe que 6e/G2. */
+const SYM_EX2_ROWS = [
+  {expr:"O est le centre du parallélogramme ABCD, donc O est le milieu des diagonales [AC] et [BD].", comment:"Propriété du parallélogramme."},
+  {expr:"En particulier, O est le milieu du segment [AC].", comment:"On ne garde que la diagonale qui nous intéresse."},
+  {expr:"Or, dire que O est le milieu de [AC] signifie exactement que C est le symétrique de A par rapport à O.", comment:"Définition du symétrique d'un point."},
+];
+const symEx2Demo = makeRedactionStepDemo(SYM_EX2_ROWS, 'sym-ex2-display');
+
 /* ---- nombres relatifs : point + opposé sur droite graduée ---- */
 
 
 DEMO_REGISTRY['5e|Symétrie centrale'] = { cours:'cours-demo-symetrie', methode:'methode-demo-symetrie', exos:'exos-demo-symetrie', histoire:'histoire-demo-symetrie',
-  init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); registerGeoStepDemo('svgMethod', { steps:()=>M_STEPS, getIdx:()=>methodStep-1, goto:(i)=>mGotoStep(i) }); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); injectCourseAddButtons(document.getElementById('methode-demo-symetrie')); } };
+  init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); symEx1Demo.init(); symEx2Demo.reset(); registerGeoStepDemo('svgMethod', { steps:()=>M_STEPS, getIdx:()=>methodStep-1, goto:(i)=>mGotoStep(i) }); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); injectCourseAddButtons(document.getElementById('methode-demo-symetrie')); } };
 
 DEMO_QUIZZES['5e|Symétrie centrale'] = [
   {q:"O est le milieu de [AA']. Que peut-on dire de A' par rapport à A ?",

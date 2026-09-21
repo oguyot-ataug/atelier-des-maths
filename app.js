@@ -2380,6 +2380,9 @@ function populateSupervisionClassSelect(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.586', items:[
+    "5e, Symétrie centrale : suppression de la seconde « Rédaction type » (« Justifier une symétrie de figure ») dans les Exercices, redondante avec la correction de l'exercice 2 désormais disponible. Les 2 exercices ont chacun une correction en étapes : l'exercice 1 (construction du symétrique de M au compas et à la règle) réutilise la même construction déjà animée dans la Méthode animée, avec ses propres points ; l'exercice 2 (parallélogramme, justification) se dévoile phrase par phrase.",
+  ]},
   { version:'2026-08-19.585', items:[
     "6e, Droites parallèles et perpendiculaires : les 3 exercices ont désormais une correction en étapes (« Étape suivante »), au lieu d'aucune correction du tout. Exercice 1 (médiatrice de [RS]) et exercice 2 (parallèle à (d) passant par T) réutilisent les mêmes constructions à la règle et à l'équerre déjà animées dans le cours, avec leurs propres points. Exercice 3 (justification de rédaction) se dévoile phrase par phrase, comme un calcul qui se déroule, plutôt que tout d'un coup.",
   ]},
