@@ -143,6 +143,18 @@ let cebNextTileId = 1;
 let cebSelectedOp = null;
 let cebSelectedTileId = null;
 let cebSettings = { nLarge: 2, timerOn: true, timerDuration: 60 };
+let currentDevoirCEB = null; // {devoirId} -- suivi quand un défi est lancé depuis un devoir (voir devoirs.js)
+/* Lance un défi Compte est bon dans le contexte d'un devoir (bouton "Lancer le défi" de
+   renderDevoirsEleve, devoirs.js), avec la difficulté choisie par le prof. Contourne l'écran de
+   réglages habituel : on force directement le tirage avec ces réglages. */
+function startDevoirCEB(devoirId, nLarge, timerOn, timerDuration){
+  currentDevoirCEB = { devoirId };
+  showView('view-compte');
+  setActiveTopnav('compte');
+  document.getElementById('cebRoot').dataset.built = '1';
+  cebSettings = { nLarge: nLarge??2, timerOn: !!timerOn, timerDuration: timerDuration||60, timerCustom:false };
+  cebStartGame();
+}
 
 function cebInit(){
   if(document.getElementById('cebRoot').dataset.built) return;
@@ -163,6 +175,7 @@ function cebToggleFullscreen(){
 }
 
 function cebRenderSetup(){
+  currentDevoirCEB = null; // retour à l'écran de réglages libre : quitte le contexte d'un devoir
   const root = document.getElementById('cebRoot');
   root.innerHTML = `
   <div class="ceb-setup plain-card" style="padding:24px 28px;max-width:560px;position:relative;">
@@ -449,7 +462,7 @@ async function cebSaveAttempt(best){
   if(!best) return;
   const gap = Math.abs(best.value - cebState.target);
   try{
-    await sb.from('ceb_results').insert({
+    const { error } = await sb.from('ceb_results').insert({
       student_id: currentUser.id,
       class_id: currentClassId,
       target: cebState.target,
@@ -461,7 +474,11 @@ async function cebSaveAttempt(best){
       timer_duration: cebState.timerOn ? cebSettings.timerDuration : null,
       time_used_ms: cebState.timerOn ? (cebSettings.timerDuration - Math.max(0,cebState.timeLeft)) * 1000 : null,
       expression: best.expr,
+      devoir_id: currentDevoirCEB ? currentDevoirCEB.devoirId : null,
     });
+    if(!error && currentDevoirCEB && typeof refreshDevoirCEBProgress==='function'){
+      await refreshDevoirCEBProgress(currentDevoirCEB.devoirId);
+    }
   }catch(e){ /* enregistrement best-effort : ne bloque jamais l'affichage du résultat */ }
 }
 

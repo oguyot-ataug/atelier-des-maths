@@ -220,6 +220,7 @@ function renderCMPicker(){
   box.innerHTML = html;
   box.querySelectorAll('.cm-chip[data-id]').forEach(chip=>{
     chip.addEventListener('click',()=>{
+      currentDevoirCM = null; // séquence choisie librement, hors contexte d'un devoir
       runCM(chip.dataset.id);
     });
   });
@@ -230,6 +231,14 @@ function renderCMPicker(){
 let currentCMSeq = null;
 let cmStartTime = null;
 let cmTimerInterval = null;
+let currentDevoirCM = null; // {devoirId} -- suivi quand une séquence est lancée depuis un devoir (voir devoirs.js)
+/* Lance une séquence d'automatismes dans le contexte d'un devoir (bouton "Faire cette séquence"
+   de renderDevoirsEleve, devoirs.js). La tentative sera notée avec ce devoir_id (voir checkCM),
+   ce qui permet à refreshDevoirAutomatismesProgress (devoirs.js) de suivre la progression. */
+function startDevoirCMSequence(devoirId, seqId){
+  currentDevoirCM = { devoirId };
+  runCM(seqId);
+}
 function formatStopwatch(ms){
   const s = ms/1000;
   return s.toFixed(1).replace('.',',')+'\u00A0s';
@@ -242,6 +251,7 @@ function updateCMTimerDisplay(){
 function closeCMModal(){
   document.getElementById('cmExerciseModalOverlay').style.display='none';
   if(cmTimerInterval){ clearInterval(cmTimerInterval); cmTimerInterval=null; }
+  currentDevoirCM = null;
 }
 function runCM(id){
   const seqDef = CM_SEQUENCES.find(s=>s.id===id);
@@ -289,17 +299,21 @@ async function checkCM(){
       sequence_id: currentCMSeq ? currentCMSeq.id : null,
       sequence_label: currentCMSeq ? currentCMSeq.label : null,
       score, total, duration_ms: durationMs,
+      devoir_id: currentDevoirCM ? currentDevoirCM.devoirId : null,
     });
     if(status){
       status.textContent = error
         ? "Score : "+score+"/"+total+" (non enregistré : "+error.message+")"
-        : "Score : "+score+"/"+total+(perfect ? " — sans faute, en "+formatDuration(durationMs)+" ! Enregistré, votre professeur peut le voir." : " — enregistré, votre professeur peut le voir.");
+        : "Score : "+score+"/"+total+(perfect ? " — sans faute, en "+formatDuration(durationMs)+" ! Enregistré, votre professeur peut le voir." : " — enregistré, votre professeur peut le voir.")+(currentDevoirCM ? " Cette séquence compte pour votre devoir." : '');
     }
     if(!error){
       if(currentCMSeq){ cmAttempted.add(currentCMSeq.id); if(perfect) cmPerfected.add(currentCMSeq.id); }
       applyCMBadges();
     }
     if(!error && perfect && currentCMSeq){ await showCMRecords(currentCMSeq.id, durationMs); refreshCMRecords(); }
+    if(!error && currentDevoirCM && typeof refreshDevoirAutomatismesProgress==='function'){
+      await refreshDevoirAutomatismesProgress(currentDevoirCM.devoirId);
+    }
   } else if(status){
     status.textContent = "Score : "+score+"/"+total+(perfect ? " — en "+formatDuration(durationMs)+"." : ".");
   }

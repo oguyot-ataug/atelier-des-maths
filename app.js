@@ -2377,6 +2377,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.589', items:[
+    "Devoirs : un devoir peut désormais porter sur une figure de géométrie dynamique à compléter, une ou plusieurs séquences d'Automatismes, ou un défi Compte est bon avec la difficulté choisie par le prof (en plus du fichier ou de la figure libre à rendre, déjà existants) -- un seul type par devoir. Pour \"Figure à compléter\", le prof construit la figure de départ avec l'outil habituel ; l'élève la reprend et la complète. Pour Automatismes, le devoir est considéré fait quand toutes les séquences assignées ont été tentées au moins une fois ; pour Compte est bon, dès la première tentative jouée avec les réglages du prof (le tirage reste toujours garanti réalisable et tiré au hasard). Le suivi des rendus (\"Voir les rendus\") affiche le détail adapté à chaque type.",
+  ]},
   { version:'2026-08-19.588', items:[
     "Supervision, onglet Devoirs : dépend désormais lui aussi de la classe active (comme Comptes/Résultats), au lieu de montrer toutes les classes en accordéon -- signalé : \"l'onglet devoirs doit également dépendre de la classe active !\". Se met à jour en direct si on change de classe (chips) pendant que l'onglet est ouvert. Retrait du menu \"Devoirs\" du menu principal (Outils prof), son contenu étant désormais dans Supervision -- l'outil complet (création, gestion) reste accessible via le bouton \"+ Nouveau devoir\".",
   ]},

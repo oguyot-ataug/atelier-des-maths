@@ -10,7 +10,7 @@
 document.getElementById('view-devoirs-prof').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;"><span class=gicon>assignment</span> Devoirs</h1>
-  <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe (consigne libre) -- chaque élève pourra rendre un fichier ou une figure construite avec l'outil géométrie.</p>
+  <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, ou un défi Compte est bon.</p>
 
   <div class="tool-shell">
     <p class="example-title" style="margin-bottom:6px;">Nouveau devoir</p>
@@ -20,7 +20,29 @@ document.getElementById('view-devoirs-prof').innerHTML = `
       <input type="date" id="devoirNewDate" title="Date limite (facultative)">
     </div>
     <textarea id="devoirNewConsigne" rows="4" style="width:100%;margin-top:8px;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;" placeholder="Consigne (texte libre)..."></textarea>
-    <div class="tool-row" style="margin-top:8px;">
+
+    <p class="hint" style="margin:12px 0 4px;font-weight:700;">Type d'activité :</p>
+    <div class="tool-row" id="devoirTypePicker" style="margin-bottom:4px;"></div>
+
+    <div id="devoirTypeFigureCompleterBox" style="display:none;margin-top:6px;">
+      <p class="hint" style="margin:0 0 6px;">Construisez la figure de départ que l'élève devra compléter.</p>
+      <button type="button" class="btn secondary" onclick="openDevoirFigureDepartEditor()"><span class=gicon>draw</span> Construire la figure de départ</button>
+      <span class="hint" id="devoirFigureDepartStatus" style="margin-left:8px;"></span>
+    </div>
+
+    <div id="devoirTypeAutomatismesBox" style="display:none;margin-top:6px;">
+      <p class="hint" style="margin:0 0 6px;">Choisissez une ou plusieurs séquences à assigner (<span id="devoirAutomatismesCount">0</span> sélectionnée(s)) :</p>
+      <div id="devoirAutomatismesPicker" style="max-height:220px;overflow-y:auto;border:1px solid rgba(28,43,57,.15);border-radius:8px;padding:8px;"></div>
+    </div>
+
+    <div id="devoirTypeCebBox" style="display:none;margin-top:6px;">
+      <p class="hint" style="margin:0 0 4px;">Nombre de "grands nombres" (25, 50, 75, 100) :</p>
+      <div class="tool-row" id="devoirCebNLargePicker" style="margin-bottom:8px;"></div>
+      <p class="hint" style="margin:0 0 4px;">Chronomètre :</p>
+      <div class="tool-row" id="devoirCebTimerPicker"></div>
+    </div>
+
+    <div class="tool-row" style="margin-top:10px;">
       <button class="btn" onclick="createDevoir()">Assigner ce devoir</button>
     </div>
     <span class="hint" id="devoirCreateStatus" style="margin:0;"></span>
@@ -35,14 +57,114 @@ document.getElementById('view-devoirs-prof').innerHTML = `
 document.getElementById('view-devoirs-eleve').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;"><span class=gicon>assignment</span> Mes devoirs</h1>
-  <p style="color:var(--ink-soft);max-width:70ch;">Le travail proposé par vos professeurs. Rendez un fichier, ou construisez une figure avec l'outil géométrie.</p>
+  <p style="color:var(--ink-soft);max-width:70ch;">Le travail proposé par vos professeurs.</p>
   <div id="devoirsEleveListing"><p class="hint">Chargement…</p></div>
 `;
 
 /* ================= CÔTÉ PROF ================= */
+/* Type d'activité assignée -- un seul type par devoir (plus simple à créer et à suivre qu'un
+   cumul d'activités ; pour combiner plusieurs activités, il suffit de créer plusieurs devoirs).
+   "figure_completer", "automatismes" et "compte_est_bon" réutilisent des outils déjà existants
+   (outils-figures.js, calcul-mental.js, compte-est-bon.js) plutôt que d'en recréer une version
+   dédiée aux devoirs. */
+const DEVOIR_TYPES = [
+  {id:'fichier', label:'Fichier à rendre', icon:'upload_file'},
+  {id:'figure', label:'Figure à construire (libre)', icon:'draw'},
+  {id:'figure_completer', label:'Figure à compléter', icon:'auto_fix_high'},
+  {id:'automatismes', label:'Automatismes', icon:'bolt'},
+  {id:'compte_est_bon', label:'Compte est bon', icon:'casino'},
+];
+let devoirNewType = 'fichier';
+let devoirNewFigureDepart = null; // serializeFigState(...) de la figure de départ (type=figure_completer)
+let devoirNewAutomatismesSeqs = new Set(); // sequence_id choisis (type=automatismes)
+let devoirNewCebNLarge = 2, devoirNewCebTimerOn = true, devoirNewCebTimerDuration = 60; // type=compte_est_bon
+
+function renderDevoirTypePicker(){
+  const box = document.getElementById('devoirTypePicker');
+  if(!box) return;
+  box.innerHTML = DEVOIR_TYPES.map(t=>`<button type="button" class="btn secondary" style="opacity:${devoirNewType===t.id?'1':'.55'};" onclick="setDevoirNewType('${t.id}')"><span class=gicon>${t.icon}</span> ${t.label}</button>`).join('');
+  const boxes = {figure_completer:'devoirTypeFigureCompleterBox', automatismes:'devoirTypeAutomatismesBox', compte_est_bon:'devoirTypeCebBox'};
+  Object.keys(boxes).forEach(type=>{
+    const el = document.getElementById(boxes[type]);
+    if(el) el.style.display = devoirNewType===type ? 'block' : 'none';
+  });
+  if(devoirNewType==='automatismes') renderDevoirAutomatismesPicker();
+  if(devoirNewType==='compte_est_bon') renderDevoirCebPicker();
+}
+function setDevoirNewType(t){ devoirNewType = t; renderDevoirTypePicker(); }
+/* Réutilise directement CM_SEQUENCES (calcul-mental.js) -- pas de duplication de la liste des
+   88 séquences câblées. Chargé APRÈS devoirs.js (voir index.html) : sans risque, cette fonction
+   n'est jamais appelée avant que l'utilisateur n'interagisse avec le formulaire, bien après que
+   tous les scripts différés ont fini de s'exécuter. */
+function renderDevoirAutomatismesPicker(){
+  const box = document.getElementById('devoirAutomatismesPicker');
+  if(!box || typeof CM_SEQUENCES==='undefined') return;
+  const sorted = CM_SEQUENCES.slice().sort((a,b)=>a.seq-b.seq);
+  box.innerHTML = sorted.map(s=>`<label style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.85rem;">
+    <input type="checkbox" value="${s.id}" ${devoirNewAutomatismesSeqs.has(s.id)?'checked':''} onchange="toggleDevoirAutomatismesSeq('${s.id}',this.checked)">
+    ${escapeHtml(s.label)}
+  </label>`).join('');
+  document.getElementById('devoirAutomatismesCount').textContent = devoirNewAutomatismesSeqs.size;
+}
+function toggleDevoirAutomatismesSeq(id, checked){
+  if(checked) devoirNewAutomatismesSeqs.add(id); else devoirNewAutomatismesSeqs.delete(id);
+  document.getElementById('devoirAutomatismesCount').textContent = devoirNewAutomatismesSeqs.size;
+}
+/* Mini-picker autonome pour les réglages Compte est bon -- plutôt qu'une réutilisation directe
+   de cebRenderSetup() (compte-est-bon.js), fortement couplée à sa propre mise en page/état de
+   jeu (#cebRoot, cebSettings...), plus risquée à réemployer ici pour juste 2 réglages. */
+function renderDevoirCebPicker(){
+  const nlBox = document.getElementById('devoirCebNLargePicker');
+  if(nlBox){
+    nlBox.innerHTML = '';
+    for(let n=0;n<=4;n++){
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'btn secondary'; b.textContent = n===0 ? 'Aucun' : String(n);
+      b.style.opacity = devoirNewCebNLarge===n ? '1' : '.55';
+      b.onclick = ()=>{ devoirNewCebNLarge=n; renderDevoirCebPicker(); };
+      nlBox.appendChild(b);
+    }
+  }
+  const tBox = document.getElementById('devoirCebTimerPicker');
+  if(tBox){
+    tBox.innerHTML = '';
+    const opts = [{on:false,label:'Illimité'},{on:true,dur:45,label:'45 s'},{on:true,dur:60,label:'1 min'},{on:true,dur:90,label:'1 min 30'}];
+    opts.forEach(o=>{
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'btn secondary'; b.textContent = o.label;
+      const active = o.on===devoirNewCebTimerOn && (!o.on || o.dur===devoirNewCebTimerDuration);
+      b.style.opacity = active ? '1' : '.55';
+      b.onclick = ()=>{ devoirNewCebTimerOn=o.on; if(o.on) devoirNewCebTimerDuration=o.dur; renderDevoirCebPicker(); };
+      tBox.appendChild(b);
+    });
+  }
+}
+/* Ouvre l'outil figure pour construire la figure DE DÉPART d'un devoir "figure à compléter" --
+   même outil que pour un devoir "libre", mais le bouton "Valider" enregistre l'état courant dans
+   devoirNewFigureDepart (variable locale, envoyée à la création du devoir) au lieu de l'insérer
+   dans un cahier. */
+function openDevoirFigureDepartEditor(){
+  openFigureTool();
+  if(devoirNewFigureDepart){
+    const cloned = deserializeFigState(devoirNewFigureDepart);
+    figState.points = cloned.points; figState.shapes = cloned.shapes; figState.nextLabel = figState.points.length;
+    renderFigureSvg();
+  }
+  const validateBtn = document.getElementById('figValidateBtn');
+  if(validateBtn){
+    validateBtn.style.display = 'inline-flex';
+    validateBtn.textContent = 'Utiliser cette figure de départ';
+    validateBtn.onclick = ()=>{
+      devoirNewFigureDepart = serializeFigState(figState);
+      document.getElementById('devoirFigureDepartStatus').textContent = '✓ Figure de départ enregistrée.';
+      closeFigureTool();
+    };
+  }
+}
 async function renderDevoirsProf(){
   const select = document.getElementById('devoirNewClasse');
   select.innerHTML = (accountClassesList||[]).map(c=>`<option value="${c.id}">${escapeHtml(c.label)}</option>`).join('') || '<option value="">Aucune classe</option>';
+  renderDevoirTypePicker();
   await refreshDevoirsProfListing();
 }
 async function createDevoir(){
@@ -52,22 +174,33 @@ async function createDevoir(){
   const classId = document.getElementById('devoirNewClasse').value;
   const dateStr = document.getElementById('devoirNewDate').value;
   if(!titre || !consigne || !classId){ status.textContent = 'Titre, consigne et classe sont nécessaires.'; return; }
+  if(devoirNewType==='figure_completer' && !devoirNewFigureDepart){ status.textContent = 'Construisez la figure de départ avant d\'assigner ce devoir.'; return; }
+  if(devoirNewType==='automatismes' && !devoirNewAutomatismesSeqs.size){ status.textContent = 'Choisissez au moins une séquence.'; return; }
   status.textContent = 'Enregistrement…';
-  const { error } = await sb.from('devoirs').insert({
-    teacher_id: currentUser.id, class_id: classId, titre, consigne,
+  const payload = {
+    teacher_id: currentUser.id, class_id: classId, titre, consigne, type: devoirNewType,
     date_limite: dateStr ? new Date(dateStr).toISOString() : null,
-  });
+  };
+  if(devoirNewType==='figure_completer') payload.figure_depart = devoirNewFigureDepart;
+  if(devoirNewType==='automatismes') payload.automatismes_sequences = Array.from(devoirNewAutomatismesSeqs);
+  if(devoirNewType==='compte_est_bon'){ payload.ceb_n_large = devoirNewCebNLarge; payload.ceb_timer_on = devoirNewCebTimerOn; payload.ceb_timer_duration = devoirNewCebTimerOn ? devoirNewCebTimerDuration : null; }
+  const { error } = await sb.from('devoirs').insert(payload);
   if(error){ status.textContent = 'Erreur : '+error.message; return; }
   status.textContent = '✓ Devoir assigné.';
   document.getElementById('devoirNewTitre').value = '';
   document.getElementById('devoirNewConsigne').value = '';
   document.getElementById('devoirNewDate').value = '';
+  devoirNewType = 'fichier'; devoirNewFigureDepart = null; devoirNewAutomatismesSeqs = new Set();
+  devoirNewCebNLarge = 2; devoirNewCebTimerOn = true; devoirNewCebTimerDuration = 60;
+  document.getElementById('devoirFigureDepartStatus').textContent = '';
+  renderDevoirTypePicker();
   await refreshDevoirsProfListing();
 }
+function devoirTypeLabel(type){ const t = DEVOIR_TYPES.find(t=>t.id===type); return t ? t.label : type; }
 async function refreshDevoirsProfListing(){
   const el = document.getElementById('devoirsProfListing');
   const { data: devoirsList, error } = await sb.from('devoirs')
-    .select('id,titre,consigne,date_limite,created_at,class_id,classes(nom,niveau)')
+    .select('id,titre,consigne,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,classes(nom,niveau)')
     .eq('teacher_id', currentUser.id).order('created_at',{ascending:false});
   if(error){ el.textContent = 'Erreur : '+error.message; return; }
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir assigné pour l\'instant.</p>'; return; }
@@ -76,8 +209,11 @@ async function refreshDevoirsProfListing(){
     const { count: totalEleves } = await sb.from('class_students').select('*',{count:'exact',head:true}).eq('class_id', d.class_id);
     const { count: nbRendus } = await sb.from('devoirs_rendus').select('*',{count:'exact',head:true}).eq('devoir_id', d.id).eq('est_rendu', true);
     const dateStr = d.date_limite ? new Date(d.date_limite).toLocaleDateString('fr-FR') : '';
+    const typeDetail = d.type==='automatismes' ? ` · ${(d.automatismes_sequences||[]).length} séquence(s)`
+      : d.type==='compte_est_bon' ? ` · ${d.ceb_n_large??2} grand(s) nombre(s), ${d.ceb_timer_on?'chronométré':'illimité'}`
+      : '';
     return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
-      <span><b>${escapeHtml(d.titre)}</b> · ${escapeHtml(d.classes ? d.classes.nom+' ('+d.classes.niveau+')' : '')}${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${totalEleves||0} rendu(s)</span>
+      <span><b>${escapeHtml(d.titre)}</b> · ${escapeHtml(d.classes ? d.classes.nom+' ('+d.classes.niveau+')' : '')} · <span class="hint" style="margin:0;">${devoirTypeLabel(d.type)}${typeDetail}</span>${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${totalEleves||0} rendu(s)</span>
       <span style="display:flex;gap:6px;flex:none;">
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span> Voir les rendus</button>
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="deleteDevoirPrompt('${d.id}')"><span class=gicon>delete</span> Supprimer</button>
@@ -92,30 +228,54 @@ async function deleteDevoirPrompt(devoirId){
   await sb.from('devoirs').delete().eq('id', devoirId);
   await refreshDevoirsProfListing();
 }
-/* Ouvre la liste des élèves de la classe concernée par ce devoir, avec leur rendu (fichier
-   téléchargeable, ou figure affichée directement), et un champ note/commentaire éditable. */
+/* Ouvre la liste des élèves de la classe concernée par ce devoir. Pour fichier/figure/
+   figure_completer : rendu téléchargeable ou affichable, avec note/commentaire (comportement
+   d'origine, inchangé). Pour automatismes/compte_est_bon : pas de "rendu" au sens fichier --
+   le détail vient directement des tentatives enregistrées (cm_results/ceb_results, liées par
+   devoir_id), puisque ces activités se jouent en direct plutôt que de se "rendre". */
 async function openDevoirSubmissions(devoirId){
   const { data: devoir } = await sb.from('devoirs').select('*, classes(nom,niveau)').eq('id', devoirId).single();
   if(!devoir) return;
   const { data: eleves } = await sb.from('class_students').select('profiles(id,nom)').eq('class_id', devoir.class_id);
-  const { data: rendus } = await sb.from('devoirs_rendus').select('*').eq('devoir_id', devoirId);
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.style.zIndex = '300';
+  let rows;
+  if(devoir.type==='automatismes'){
+    rows = await devoirSubmissionRowsAutomatismes(devoir, eleves||[]);
+  } else if(devoir.type==='compte_est_bon'){
+    rows = await devoirSubmissionRowsCeb(devoir, eleves||[]);
+  } else {
+    rows = await devoirSubmissionRowsFichierFigure(devoir, eleves||[]);
+  }
+  overlay.innerHTML = `
+    <div class="modal-card" style="max-width:560px;max-height:80vh;overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">${escapeHtml(devoir.titre)}</strong>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()"><span class=gicon>close</span></button>
+      </div>
+      <p class="hint" style="margin:0 0 12px;">${escapeHtml(devoir.consigne)}</p>
+      ${rows || '<p class="hint">Aucun élève dans cette classe.</p>'}
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
+}
+async function devoirSubmissionRowsFichierFigure(devoir, eleves){
+  const { data: rendus } = await sb.from('devoirs_rendus').select('*').eq('devoir_id', devoir.id);
   const rendusByStudent = new Map((rendus||[]).map(r=>[r.student_id, r]));
   // Cache en mémoire (par id élève) : embarquer le JSON directement dans l'attribut HTML
   // onclick cassait l'attribut (les guillemets du JSON entraient en conflit avec ceux de
   // l'attribut, signalé : "je n'arrive pas à ouvrir la figure de l'élève").
   window._devoirFiguresCache = window._devoirFiguresCache || {};
-  (rendus||[]).forEach(r=>{ if(r.type==='figure') window._devoirFiguresCache[r.student_id] = r.figure_data; });
-  const overlay = document.createElement('div');
-  overlay.className = 'modal-overlay';
-  overlay.style.zIndex = '300';
-  const rows = (eleves||[]).map(row=>{
+  (rendus||[]).forEach(r=>{ if(r.type==='figure' || r.type==='figure_completer') window._devoirFiguresCache[r.student_id] = r.figure_data; });
+  return eleves.map(row=>{
     const eleve = row.profiles; if(!eleve) return '';
     const rendu = rendusByStudent.get(eleve.id);
     let content, brouillonTag = '';
     if(!rendu) content = '<span class="hint">Pas encore rendu.</span>';
     else {
       if(!rendu.est_rendu) brouillonTag = ' <span style="color:#8A6D1F;font-weight:700;">(brouillon, pas encore rendu)</span>';
-      if(rendu.type==='figure') content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="previewDevoirFigure('${eleve.id}')"><span class=gicon>visibility</span> Voir la figure</button>${brouillonTag}`;
+      if(rendu.type==='figure' || rendu.type==='figure_completer') content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="previewDevoirFigure('${eleve.id}')"><span class=gicon>visibility</span> Voir la figure</button>${brouillonTag}`;
       else content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="downloadDevoirFile('${rendu.fichier_path}')"><span class=gicon>download</span> Télécharger le fichier</button>${brouillonTag}`;
     }
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
@@ -130,17 +290,56 @@ async function openDevoirSubmissions(devoirId){
       </div>` : ''}
     </div>`;
   }).join('');
-  overlay.innerHTML = `
-    <div class="modal-card" style="max-width:560px;max-height:80vh;overflow-y:auto;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">${escapeHtml(devoir.titre)}</strong>
-        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()"><span class=gicon>close</span></button>
+}
+async function devoirSubmissionRowsAutomatismes(devoir, eleves){
+  const seqs = devoir.automatismes_sequences || [];
+  const { data: attempts } = await sb.from('cm_results').select('student_id,sequence_id,score,total').eq('devoir_id', devoir.id);
+  const byStudent = new Map();
+  (attempts||[]).forEach(a=>{
+    if(!byStudent.has(a.student_id)) byStudent.set(a.student_id, new Map());
+    const m = byStudent.get(a.student_id);
+    // Meilleur score conservé si la séquence a été retentée plusieurs fois.
+    const prev = m.get(a.sequence_id);
+    if(!prev || a.score>prev.score) m.set(a.sequence_id, a);
+  });
+  return eleves.map(row=>{
+    const eleve = row.profiles; if(!eleve) return '';
+    const m = byStudent.get(eleve.id) || new Map();
+    const nbFaites = seqs.filter(id=>m.has(id)).length;
+    const detail = seqs.map(id=>{
+      const seqDef = (typeof CM_SEQUENCES!=='undefined') ? CM_SEQUENCES.find(s=>s.id===id) : null;
+      const label = seqDef ? seqDef.label : id;
+      const r = m.get(id);
+      return `<div class="hint" style="margin:2px 0;">${r?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}${r?` : ${r.score}/${r.total}`:''}</div>`;
+    }).join('');
+    return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+        <span><b>${escapeHtml(eleve.nom||'(sans nom)')}</b></span>
+        <span class="hint" style="margin:0;">${nbFaites}/${seqs.length} séquence(s) faite(s)</span>
       </div>
-      <p class="hint" style="margin:0 0 12px;">${escapeHtml(devoir.consigne)}</p>
-      ${rows || '<p class="hint">Aucun élève dans cette classe.</p>'}
+      ${detail}
     </div>`;
-  document.body.appendChild(overlay);
-  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
+  }).join('');
+}
+async function devoirSubmissionRowsCeb(devoir, eleves){
+  const { data: attempts } = await sb.from('ceb_results').select('student_id,gap,success,created_at').eq('devoir_id', devoir.id).order('created_at',{ascending:false});
+  const byStudent = new Map();
+  (attempts||[]).forEach(a=>{
+    if(!byStudent.has(a.student_id)) byStudent.set(a.student_id, []);
+    byStudent.get(a.student_id).push(a);
+  });
+  return eleves.map(row=>{
+    const eleve = row.profiles; if(!eleve) return '';
+    const list = byStudent.get(eleve.id) || [];
+    const bestGap = list.length ? Math.min(...list.map(a=>a.gap)) : null;
+    const nbReussies = list.filter(a=>a.success).length;
+    return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+        <span><b>${escapeHtml(eleve.nom||'(sans nom)')}</b></span>
+        <span class="hint" style="margin:0;">${list.length ? `${list.length} tentative${list.length>1?'s':''}, ${nbReussies} exacte${nbReussies>1?'s':''}, meilleur écart : ${bestGap}` : 'Pas encore tenté.'}</span>
+      </div>
+    </div>`;
+  }).join('');
 }
 async function saveDevoirFeedback(renduId, studentId){
   const note = document.getElementById('devoirNote_'+studentId).value;
@@ -175,20 +374,23 @@ function previewDevoirFigure(studentId){
 }
 
 /* ================= CÔTÉ ÉLÈVE ================= */
-let currentDevoirSubmission = null; // {devoirId} -- suivi pendant la construction d'une figure à rendre
+let currentDevoirSubmission = null; // {devoirId, type:'figure'|'figure_completer'} -- suivi pendant la construction d'une figure
 async function renderDevoirsEleve(){
   const el = document.getElementById('devoirsEleveListing');
   el.innerHTML = '<p class="hint">Chargement…</p>';
   const classIds = (accountClassesList||[]).map(c=>c.id);
   if(!classIds.length){ el.innerHTML = '<p class="hint">Aucune classe associée à ce compte.</p>'; return; }
   const { data: devoirsList, error } = await sb.from('devoirs')
-    .select('id,titre,consigne,date_limite,teacher_id,profiles(nom)')
+    .select('id,titre,consigne,date_limite,teacher_id,type,figure_depart,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_timer_duration,profiles(nom)')
     .in('class_id', classIds).order('date_limite',{ascending:true, nullsFirst:false});
   if(error){ el.innerHTML = 'Erreur : '+error.message; return; }
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir pour l\'instant.</p>'; return; }
   const { data: mesRendus } = await sb.from('devoirs_rendus').select('*').eq('student_id', currentUser.id);
   const renduByDevoir = new Map((mesRendus||[]).map(r=>[r.devoir_id, r]));
-  el.innerHTML = devoirsList.map(d=>{
+  // Type "automatismes"/"compte_est_bon" : pas de simple statut oui/non -- le détail de
+  // progression vient des tentatives elles-mêmes (cm_results/ceb_results), d'où une requête
+  // par devoir concerné plutôt qu'une seule requête groupée.
+  const rows = await Promise.all(devoirsList.map(async d=>{
     const rendu = renduByDevoir.get(d.id);
     const dateStr = d.date_limite ? new Date(d.date_limite).toLocaleDateString('fr-FR') : '';
     const statusBadge = rendu && rendu.est_rendu
@@ -196,20 +398,55 @@ async function renderDevoirsEleve(){
       : rendu
         ? `<span style="color:#8A6D1F;font-weight:700;">[Brouillon enregistré -- pas encore rendu]</span>`
         : `<span style="color:#B8860B;font-weight:700;">[À rendre]</span>`;
+    let actionHtml;
+    if(d.type==='automatismes'){
+      const seqs = d.automatismes_sequences || [];
+      const { data: attempts } = await sb.from('cm_results').select('sequence_id').eq('devoir_id', d.id).eq('student_id', currentUser.id);
+      const doneIds = new Set((attempts||[]).map(a=>a.sequence_id));
+      const detail = seqs.map(id=>{
+        const seqDef = (typeof CM_SEQUENCES!=='undefined') ? CM_SEQUENCES.find(s=>s.id===id) : null;
+        const label = seqDef ? seqDef.label : id;
+        const done = doneIds.has(id);
+        return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0;">
+          <span class="hint" style="margin:0;">${done?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}</span>
+          <button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="startDevoirCMSequence('${d.id}','${id}')">${done?'Refaire':'Faire cette séquence'}</button>
+        </div>`;
+      }).join('');
+      actionHtml = `<div style="margin-top:4px;">${detail}</div>`;
+    } else if(d.type==='compte_est_bon'){
+      const { data: attempts } = await sb.from('ceb_results').select('gap,success').eq('devoir_id', d.id).eq('student_id', currentUser.id);
+      const list = attempts || [];
+      const nbReussies = list.filter(a=>a.success).length;
+      const settingsLabel = `${d.ceb_n_large??2} grand(s) nombre(s), ${d.ceb_timer_on?'chronométré ('+(d.ceb_timer_duration||60)+' s)':'illimité'}`;
+      actionHtml = `<div class="tool-row" style="margin-top:4px;">
+        <span class="hint" style="margin:0;">${settingsLabel}${list.length?` · ${list.length} tentative${list.length>1?'s':''}, ${nbReussies} exacte${nbReussies>1?'s':''}`:''}</span>
+        <button class="btn secondary" onclick="startDevoirCEB('${d.id}',${d.ceb_n_large??2},${!!d.ceb_timer_on},${d.ceb_timer_duration||60})"><span class=gicon>casino</span> ${list.length?'Retenter':'Lancer le défi'}</button>
+      </div>`;
+    } else if(d.type==='figure_completer'){
+      actionHtml = `<div class="tool-row" style="margin-top:4px;">
+        <button class="btn secondary" onclick="startDevoirFigureCompleter('${d.id}')"><span class=gicon>auto_fix_high</span> ${rendu&&rendu.figure_data?'Reprendre la figure':'Compléter la figure'}</button>
+      </div>`;
+    } else if(d.type==='figure'){
+      actionHtml = `<div class="tool-row" style="margin-top:4px;">
+        <button class="btn secondary" onclick="startDevoirFigure('${d.id}')"><span class=gicon>draw</span> Construire une figure</button>
+      </div>`;
+    } else {
+      actionHtml = `<div class="tool-row" style="margin-top:4px;">
+        <input type="file" id="devoirFile_${d.id}" style="max-width:220px;">
+        <button class="btn secondary" onclick="submitDevoirFile('${d.id}')"><span class=gicon>upload_file</span> Rendre ce fichier</button>
+      </div>`;
+    }
     return `<div class="tool-shell" style="margin-top:10px;">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
         <span><b>${escapeHtml(d.titre)}</b>${dateStr?' · limite : '+dateStr:''} ${statusBadge}</span>
       </div>
       <p class="hint" style="margin:6px 0;">${escapeHtml(d.consigne)}</p>
       ${rendu && rendu.commentaire_prof ? `<p class="hint" style="margin:0 0 8px;"><b>Commentaire du prof :</b> ${escapeHtml(rendu.commentaire_prof)}</p>` : ''}
-      <div class="tool-row">
-        <input type="file" id="devoirFile_${d.id}" style="max-width:220px;">
-        <button class="btn secondary" onclick="submitDevoirFile('${d.id}')"><span class=gicon>upload_file</span> Rendre ce fichier</button>
-        <button class="btn secondary" onclick="startDevoirFigure('${d.id}')"><span class=gicon>draw</span> Construire une figure</button>
-      </div>
+      ${actionHtml}
       <span class="hint" id="devoirSubmitStatus_${d.id}" style="margin:0;"></span>
     </div>`;
-  }).join('');
+  }));
+  el.innerHTML = rows.join('');
 }
 async function submitDevoirFile(devoirId){
   const status = document.getElementById('devoirSubmitStatus_'+devoirId);
@@ -235,7 +472,7 @@ async function submitDevoirFile(devoirId){
 /* Ouvre l'outil figure en mode "rendu de devoir" : un bouton "Rendre ce devoir" apparaît dans
    le panneau tant que ce contexte est actif (voir outils-figures.js). */
 function startDevoirFigure(devoirId){
-  currentDevoirSubmission = { devoirId };
+  currentDevoirSubmission = { devoirId, type: 'figure' };
   openFigureTool();
   // "Valider et insérer la figure" n'a pas de sens dans ce contexte (rien à insérer dans un
   // cahier) -- remplacé par "Rendre le devoir" + "Charger mon dernier rendu" (pour reprendre
@@ -252,6 +489,36 @@ function startDevoirFigure(devoirId){
   if(enonceRow) enonceRow.style.display = 'none';
   if(enonceHint) enonceHint.style.display = 'none';
 }
+/* Ouvre l'outil figure pour un devoir "figure à compléter" : précharge le rendu de l'élève déjà
+   en cours s'il existe, sinon la figure de départ construite par le prof. */
+async function startDevoirFigureCompleter(devoirId){
+  currentDevoirSubmission = { devoirId, type: 'figure_completer' };
+  openFigureTool();
+  const { data: rendu } = await sb.from('devoirs_rendus').select('figure_data')
+    .eq('devoir_id', devoirId).eq('student_id', currentUser.id).maybeSingle();
+  let toLoad = rendu && rendu.figure_data;
+  if(!toLoad){
+    const { data: devoir } = await sb.from('devoirs').select('figure_depart').eq('id', devoirId).single();
+    toLoad = devoir && devoir.figure_depart;
+  }
+  if(toLoad){
+    const restored = deserializeFigState(toLoad);
+    figState.points = restored.points;
+    figState.shapes = restored.shapes;
+    figState.nextLabel = figState.points.length;
+    renderFigureSvg();
+  }
+  const validateBtn = document.getElementById('figValidateBtn');
+  const submitBtn = document.getElementById('figSubmitDevoirBtn');
+  const loadBtn = document.getElementById('figLoadDevoirBtn');
+  if(validateBtn) validateBtn.style.display = 'none';
+  if(submitBtn) submitBtn.style.display = 'inline-flex';
+  if(loadBtn) loadBtn.style.display = 'none'; // déjà préchargé automatiquement ci-dessus
+  const enonceRow = document.getElementById('figEnonceIaRow');
+  const enonceHint = document.getElementById('figEnonceIaHint');
+  if(enonceRow) enonceRow.style.display = 'none';
+  if(enonceHint) enonceHint.style.display = 'none';
+}
 /* Recharge le dernier rendu (figure) de l'élève pour CE devoir, pour reprendre un travail
    déjà commencé plutôt que de repartir de zéro. */
 async function loadMyDevoirFigure(){
@@ -259,7 +526,7 @@ async function loadMyDevoirFigure(){
   const { data: rendu, error } = await sb.from('devoirs_rendus').select('type,figure_data')
     .eq('devoir_id', currentDevoirSubmission.devoirId).eq('student_id', currentUser.id).maybeSingle();
   if(error){ await niceAlert('Erreur : '+error.message); return; }
-  if(!rendu || rendu.type!=='figure' || !rendu.figure_data){ await niceAlert('Aucun rendu (figure) précédent trouvé pour ce devoir.'); return; }
+  if(!rendu || rendu.type!==currentDevoirSubmission.type || !rendu.figure_data){ await niceAlert('Aucun rendu (figure) précédent trouvé pour ce devoir.'); return; }
   const restored = deserializeFigState(rendu.figure_data);
   figState.points = restored.points;
   figState.shapes = restored.shapes;
@@ -268,10 +535,10 @@ async function loadMyDevoirFigure(){
 }
 async function submitCurrentFigureAsDevoir(){
   if(!currentDevoirSubmission) return;
-  const { devoirId } = currentDevoirSubmission;
+  const { devoirId, type } = currentDevoirSubmission;
   const snapshot = serializeFigState(figState);
   const { error } = await sb.from('devoirs_rendus').upsert({
-    devoir_id: devoirId, student_id: currentUser.id, type:'figure', figure_data: snapshot, submitted_at: new Date().toISOString(),
+    devoir_id: devoirId, student_id: currentUser.id, type, figure_data: snapshot, submitted_at: new Date().toISOString(),
   }, { onConflict: 'devoir_id,student_id' });
   if(error){ await niceAlert('Erreur : '+error.message); return; }
   await niceAlert('Figure enregistrée.');
@@ -286,6 +553,35 @@ async function submitCurrentFigureAsDevoir(){
   await niceAlert('Devoir rendu avec succès.');
   await renderDevoirsEleve();
 }
+/* Devoir "automatismes" : pas de fichier/figure à rendre -- le devoir est considéré fait une
+   fois que l'élève a tenté TOUTES les séquences assignées (au moins une fois chacune, quel que
+   soit le score). Appelée par calcul-mental.js après chaque tentative jouée dans le contexte
+   d'un devoir (voir startDevoirCMSequence ci-dessous). */
+async function refreshDevoirAutomatismesProgress(devoirId){
+  const { data: devoir } = await sb.from('devoirs').select('automatismes_sequences').eq('id', devoirId).single();
+  if(!devoir) return;
+  const seqs = devoir.automatismes_sequences || [];
+  if(!seqs.length) return;
+  const { data: attempts } = await sb.from('cm_results').select('sequence_id').eq('devoir_id', devoirId).eq('student_id', currentUser.id);
+  const doneIds = new Set((attempts||[]).map(a=>a.sequence_id));
+  if(!seqs.every(id=>doneIds.has(id))) return;
+  await sb.from('devoirs_rendus').upsert({
+    devoir_id: devoirId, student_id: currentUser.id, type: 'automatismes', est_rendu: true, submitted_at: new Date().toISOString(),
+  }, { onConflict: 'devoir_id,student_id' });
+}
+/* Devoir "compte est bon" : considéré fait dès la première tentative jouée -- le prof choisit
+   la difficulté (nb de grands nombres, chronomètre), pas un nombre minimal de tentatives
+   (décision explicite de l'utilisateur). Appelée par compte-est-bon.js après chaque tentative
+   enregistrée dans le contexte d'un devoir. */
+async function refreshDevoirCEBProgress(devoirId){
+  await sb.from('devoirs_rendus').upsert({
+    devoir_id: devoirId, student_id: currentUser.id, type: 'compte_est_bon', est_rendu: true, submitted_at: new Date().toISOString(),
+  }, { onConflict: 'devoir_id,student_id' });
+}
+/* startDevoirCMSequence(devoirId, sequenceId) et startDevoirCEB(devoirId, nLarge, timerOn,
+   timerDuration) sont définies dans calcul-mental.js / compte-est-bon.js (chargés après
+   devoirs.js) -- elles y ont besoin de runCM/cebStartGame et des variables d'état de ces
+   modules, inutile de les dupliquer ici. */
 
 /* ================= BAC À SABLE : sauvegarde nommée ================= */
 /* Enregistre la figure courante sous un nom choisi -- permet de la reprendre ultérieurement
