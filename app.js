@@ -2377,6 +2377,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.593', items:[
+    "Devoirs : bouton \"Tester (voir comme un élève)\" pour les 3 types d'activité interactifs, dans le formulaire de création/édition -- signalé : \"il me manque un bouton tester pour voir le rendu\". Figure à compléter : ouvre la figure de départ dans l'outil, en lecture normale (sans bouton de validation). Automatismes : un bouton \"Tester\" par séquence lance directement la série de questions. Compte est bon : lance un tirage avec les réglages en cours, avec un retour direct au formulaire en fin de partie. Rien n'est jamais enregistré côté élève pendant un test (le compte du prof ne peut pas écrire de résultat).",
+  ]},
   { version:'2026-08-19.592', items:[
     "Devoirs : fix -- la suppression d'un devoir (ou d'une session de Permis Rapporteur) semblait ne rien faire, l'élément réapparaissait toujours. Cause : le professeur n'avait pas le droit de supprimer les rendus de ses élèves (RLS), ce qui bloquait ensuite la suppression du devoir lui-même dès qu'un rendu existait ; et aucune règle n'autorisait la suppression d'une session de Permis Rapporteur. Corrigé (RLS ajustée) -- les erreurs éventuelles s'affichent désormais au lieu d'échouer silencieusement.",
     "Devoirs : un devoir déjà créé peut désormais être modifié (bouton \"Éditer\") -- même formulaire que la création, avec conservation des tirages Compte est bon déjà joués si le nombre de comptes et la difficulté ne changent pas. Nouveau champ \"Date de dépôt\" : si elle est fixée dans le futur, le devoir reste invisible aux élèves jusqu'à cette date (publication programmée), en plus de la date limite existante.",

@@ -195,6 +195,7 @@ function cebToggleFullscreen(){
 
 function cebRenderSetup(){
   currentDevoirCEB = null; // retour à l'écran de réglages libre : quitte le contexte d'un devoir
+  if(typeof devoirTestModeActive!=='undefined') devoirTestModeActive = false;
   const root = document.getElementById('cebRoot');
   root.innerHTML = `
   <div class="ceb-setup plain-card" style="padding:24px 28px;max-width:560px;position:relative;">
@@ -563,9 +564,11 @@ function cebRenderResult(best){
     </div>
     <div class="figure-toolbar" style="justify-content:center;margin-top:16px;">
       <button class="btn secondary" onclick="cebShowSolution()">Voir une solution</button>
-      ${currentDevoirCEB
-        ? `<button class="btn" onclick="returnToDevoirsAfterCEB()">↩ Revenir à mes devoirs</button>`
-        : `<button class="btn" onclick="cebStartGame()">Compte suivant →</button>`}
+      ${(typeof devoirTestModeActive!=='undefined' && devoirTestModeActive)
+        ? `<button class="btn" onclick="returnToDevoirCreationFromTest()">↩ Retour à la création du devoir</button>`
+        : currentDevoirCEB
+          ? `<button class="btn" onclick="returnToDevoirsAfterCEB()">↩ Revenir à mes devoirs</button>`
+          : `<button class="btn" onclick="cebStartGame()">Compte suivant →</button>`}
       <button class="btn secondary" onclick="cebRenderSetup()"><span class="gicon">settings</span> Paramètres</button>
     </div>
     <div id="cebSolutionBox"></div>

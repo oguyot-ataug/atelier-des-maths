@@ -38,11 +38,12 @@ document.getElementById('view-devoirs-prof').innerHTML = `
     <div id="devoirTypeFigureCompleterBox" style="display:none;margin-top:6px;">
       <p class="hint" style="margin:0 0 6px;">Construisez la figure de départ que l'élève devra compléter.</p>
       <button type="button" class="btn secondary" onclick="openDevoirFigureDepartEditor()"><span class=gicon>draw</span> Construire la figure de départ</button>
+      <button type="button" class="btn secondary" onclick="testDevoirFigureCompleter()"><span class=gicon>visibility</span> Tester (voir comme un élève)</button>
       <span class="hint" id="devoirFigureDepartStatus" style="margin-left:8px;"></span>
     </div>
 
     <div id="devoirTypeAutomatismesBox" style="display:none;margin-top:6px;">
-      <p class="hint" style="margin:0 0 6px;">Choisissez une ou plusieurs séquences à assigner (<span id="devoirAutomatismesCount">0</span> sélectionnée(s)) :</p>
+      <p class="hint" style="margin:0 0 6px;">Choisissez une ou plusieurs séquences à assigner (<span id="devoirAutomatismesCount">0</span> sélectionnée(s)) -- bouton "Tester" pour jouer une séquence comme un élève :</p>
       <div id="devoirAutomatismesPicker" style="max-height:220px;overflow-y:auto;border:1px solid rgba(28,43,57,.15);border-radius:8px;padding:8px;"></div>
     </div>
 
@@ -52,8 +53,9 @@ document.getElementById('view-devoirs-prof').innerHTML = `
       <p class="hint" style="margin:0 0 4px;">Chronomètre :</p>
       <div class="tool-row" id="devoirCebTimerPicker" style="margin-bottom:8px;"></div>
       <p class="hint" style="margin:0 0 4px;">Nombre de comptes à jouer :</p>
-      <div class="tool-row" id="devoirCebRoundsPicker"></div>
-      <p class="hint" style="margin:6px 0 0;">Le même tirage (mêmes 6 nombres, même compte à atteindre) est servi à tous les élèves concernés, pour chaque compte.</p>
+      <div class="tool-row" id="devoirCebRoundsPicker" style="margin-bottom:8px;"></div>
+      <p class="hint" style="margin:6px 0 8px;">Le même tirage (mêmes 6 nombres, même compte à atteindre) est servi à tous les élèves concernés, pour chaque compte.</p>
+      <button type="button" class="btn secondary" onclick="testDevoirCeb()"><span class=gicon>visibility</span> Tester (voir comme un élève)</button>
     </div>
 
     <div class="tool-row" style="margin-top:10px;">
@@ -163,7 +165,8 @@ function renderDevoirAutomatismesPicker(){
   const sorted = CM_SEQUENCES.slice().sort((a,b)=>a.seq-b.seq);
   box.innerHTML = sorted.map(s=>`<label style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.85rem;">
     <input type="checkbox" value="${s.id}" ${devoirNewAutomatismesSeqs.has(s.id)?'checked':''} onchange="toggleDevoirAutomatismesSeq('${s.id}',this.checked)">
-    ${escapeHtml(s.label)}
+    <span style="flex:1;">${escapeHtml(s.label)}</span>
+    <button type="button" class="btn secondary" style="font-size:.68rem;padding:2px 7px;flex:none;" onclick="event.preventDefault();runCM('${s.id}')">Tester</button>
   </label>`).join('');
   document.getElementById('devoirAutomatismesCount').textContent = devoirNewAutomatismesSeqs.size;
 }
@@ -229,6 +232,50 @@ function openDevoirFigureDepartEditor(){
       closeFigureTool();
     };
   }
+}
+/* Bouton "Tester" -- signalé : "il me manque un bouton tester pour voir le rendu". Rejoue
+   l'activité exactement comme un élève la vivrait, sans rien enregistrer : figure_completer et
+   automatismes réutilisent des outils qui n'écrivent en base QUE pour un compte élève connecté
+   (currentUserRole==='eleve'), donc rien à faire de spécial pour eux -- le prof qui teste ne
+   déclenche aucune écriture. Compte est bon a besoin d'un indicateur (devoirTestModeActive) pour
+   savoir revenir au formulaire au lieu de proposer "Compte suivant" en fin de partie. */
+async function testDevoirFigureCompleter(){
+  if(!devoirNewFigureDepart){ await niceAlert('Construisez d\'abord la figure de départ.'); return; }
+  openFigureTool();
+  const cloned = deserializeFigState(devoirNewFigureDepart);
+  figState.points = cloned.points; figState.shapes = cloned.shapes; figState.nextLabel = figState.points.length;
+  renderFigureSvg();
+  const validateBtn = document.getElementById('figValidateBtn');
+  const submitBtn = document.getElementById('figSubmitDevoirBtn');
+  const loadBtn = document.getElementById('figLoadDevoirBtn');
+  if(validateBtn) validateBtn.style.display = 'none';
+  if(submitBtn) submitBtn.style.display = 'none';
+  if(loadBtn) loadBtn.style.display = 'none';
+  const enonceRow = document.getElementById('figEnonceIaRow');
+  const enonceHint = document.getElementById('figEnonceIaHint');
+  if(enonceRow) enonceRow.style.display = 'none';
+  if(enonceHint) enonceHint.style.display = 'none';
+  // "Fermer" (et pas un autre libellé) : confirmAndCloseFigureTool (outils-figures.js) reconnaît
+  // exactement ce texte pour fermer sans demander confirmation (aperçu en lecture, rien à perdre --
+  // même convention que previewDevoirFigure).
+  const closeBtn = document.getElementById('figCloseBtn');
+  if(closeBtn) closeBtn.textContent = 'Fermer';
+}
+let devoirTestModeActive = false; // vrai pendant un test "Compte est bon" lancé depuis le formulaire
+/* compte-est-bon.js (chargé après devoirs.js) lit devoirTestModeActive pour proposer "Retour à la
+   création du devoir" plutôt que "Compte suivant" en fin de partie. */
+function testDevoirCeb(){
+  if(typeof cebStartGame!=='function'){ return; }
+  devoirTestModeActive = true;
+  cebSettings = { nLarge: devoirNewCebNLarge, timerOn: devoirNewCebTimerOn, timerDuration: devoirNewCebTimerDuration, timerCustom:false };
+  showView('view-compte'); setActiveTopnav('compte');
+  document.getElementById('cebRoot').dataset.built = '1';
+  cebStartGame();
+}
+function returnToDevoirCreationFromTest(){
+  devoirTestModeActive = false;
+  showView('view-devoirs-prof'); setActiveTopnav('devoirsprof');
+  if(typeof renderDevoirsProf==='function') renderDevoirsProf();
 }
 async function renderDevoirsProf(){
   const select = document.getElementById('devoirNewClasse');
