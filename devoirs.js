@@ -54,8 +54,8 @@ document.getElementById('view-devoirs-prof').innerHTML = `
       <div class="tool-row" id="devoirCebTimerPicker" style="margin-bottom:8px;"></div>
       <p class="hint" style="margin:0 0 4px;">Nombre de comptes à jouer :</p>
       <div class="tool-row" id="devoirCebRoundsPicker" style="margin-bottom:8px;"></div>
-      <p class="hint" style="margin:6px 0 8px;">Le même tirage (mêmes 6 nombres, même compte à atteindre) est servi à tous les élèves concernés, pour chaque compte.</p>
-      <button type="button" class="btn secondary" onclick="testDevoirCeb()"><span class=gicon>visibility</span> Tester (voir comme un élève)</button>
+      <p class="hint" style="margin:6px 0 8px;">Le même tirage (mêmes 6 nombres, même compte à atteindre) est servi à tous les élèves concernés, pour chaque compte. Testez chaque compte et régénérez ceux qui sont trop difficiles.</p>
+      <div id="devoirCebRoundsList" style="border:1px solid rgba(28,43,57,.15);border-radius:8px;padding:8px;"></div>
     </div>
 
     <div class="tool-row" style="margin-top:10px;">
@@ -97,15 +97,16 @@ let devoirNewType = 'fichier';
 let devoirNewFigureDepart = null; // serializeFigState(...) de la figure de départ (type=figure_completer)
 let devoirNewAutomatismesSeqs = new Set(); // sequence_id choisis (type=automatismes)
 let devoirNewCebNLarge = 2, devoirNewCebTimerOn = true, devoirNewCebTimerDuration = 60, devoirNewCebRounds = 1; // type=compte_est_bon
+/* Tirages Compte est bon réellement en brouillon -- {numbers,target,solutionExpr,solutionValue,
+   tested} par compte. Générés dès qu'affichés (ou chargés depuis un devoir existant en édition),
+   modifiés en place par régénération individuelle -- c'est ce tableau, tel quel, qui est
+   enregistré à la sauvegarde (voir createDevoir). Signalé : "il faudrait que je puisse les
+   valider ou les regénérer un par un car certains sont trop difficiles". */
+let devoirNewCebRoundsData = [];
 let devoirNewTargetMode = 'class'; // 'class' (toute la classe) | 'eleves' (sélection)
 let devoirNewTargetIds = new Set(); // student_id choisis quand devoirNewTargetMode==='eleves'
-/* Édition d'un devoir existant -- le même formulaire sert à la création ET à la modification.
-   devoirEditingCebRounds/devoirEditingCebNLarge mémorisent les réglages Compte est bon déjà
-   enregistrés : si le prof ne les change pas, les tirages déjà joués par les élèves sont
-   conservés au lieu d'être régénérés (voir createDevoir). */
+/* Édition d'un devoir existant -- le même formulaire sert à la création ET à la modification. */
 let devoirEditingId = null;
-let devoirEditingCebRounds = null;
-let devoirEditingCebNLarge = null;
 
 /* Destinataires du devoir : toute la classe (comportement d'origine) ou une sélection d'élèves
    de la classe -- signalé : "permettre d'assigner à la classe ou quelques élèves de la classe". */
@@ -184,7 +185,7 @@ function renderDevoirCebPicker(){
     for(let n=0;n<=4;n++){
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'btn secondary'+(devoirNewCebNLarge===n?' active':''); b.textContent = n===0 ? 'Aucun' : String(n);
-      b.onclick = ()=>{ devoirNewCebNLarge=n; renderDevoirCebPicker(); };
+      b.onclick = ()=>{ devoirNewCebNLarge=n; regenerateAllDevoirCebRounds(); renderDevoirCebPicker(); };
       nlBox.appendChild(b);
     }
   }
@@ -206,10 +207,45 @@ function renderDevoirCebPicker(){
     for(let n=1;n<=5;n++){
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'btn secondary'+(devoirNewCebRounds===n?' active':''); b.textContent = n===1 ? '1 compte' : n+' comptes';
-      b.onclick = ()=>{ devoirNewCebRounds=n; renderDevoirCebPicker(); };
+      b.onclick = ()=>{ devoirNewCebRounds=n; adjustDevoirCebRoundsCount(); renderDevoirCebPicker(); };
       rBox.appendChild(b);
     }
   }
+  if(!devoirNewCebRoundsData.length) regenerateAllDevoirCebRounds();
+  const listBox = document.getElementById('devoirCebRoundsList');
+  if(listBox){
+    listBox.innerHTML = devoirNewCebRoundsData.map((r,i)=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:4px 0;${i>0?'border-top:1px solid rgba(28,43,57,.06);':''}">
+        <span style="flex:1;font-size:.85rem;">${r.tested?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;color:var(--ink-soft);">radio_button_unchecked</span>'} Compte ${i+1} <span class="hint" style="margin:0;">(cible ${r.target})</span></span>
+        <button type="button" class="btn secondary" style="font-size:.7rem;padding:3px 8px;" onclick="testDevoirCeb(${i})"><span class=gicon>visibility</span> Tester</button>
+        <button type="button" class="btn secondary" style="font-size:.7rem;padding:3px 8px;" onclick="regenerateDevoirCebRound(${i})"><span class=gicon>refresh</span> Régénérer</button>
+      </div>`).join('');
+  }
+}
+/* Un compte = un tirage {numbers,target,solutionExpr,solutionValue,tested}. */
+function generateDevoirCebRound(){
+  const draw = cebGenerateSolvableDraw(devoirNewCebNLarge);
+  return { numbers: draw.numbers, target: draw.target, solutionExpr: draw.solution?draw.solution.expr:null, solutionValue: draw.solution?draw.solution.value:null, tested:false };
+}
+/* La difficulté (nombre de grands nombres) change : les tirages existants ne correspondent plus,
+   on régénère tout le lot. */
+function regenerateAllDevoirCebRounds(){
+  if(typeof cebGenerateSolvableDraw!=='function') return;
+  devoirNewCebRoundsData = Array.from({length: devoirNewCebRounds}, ()=>generateDevoirCebRound());
+}
+/* Le nombre de comptes change : on ajoute/retire des tirages sans toucher à ceux déjà là (déjà
+   testés/validés par le prof). */
+function adjustDevoirCebRoundsCount(){
+  if(typeof cebGenerateSolvableDraw!=='function') return;
+  while(devoirNewCebRoundsData.length < devoirNewCebRounds) devoirNewCebRoundsData.push(generateDevoirCebRound());
+  if(devoirNewCebRoundsData.length > devoirNewCebRounds) devoirNewCebRoundsData.length = devoirNewCebRounds;
+}
+/* Bouton "Régénérer" -- signalé : "il faudrait que je puisse les valider ou les regénérer un par
+   un car certains sont trop difficiles". Retire juste ce compte-là, sans toucher aux autres. */
+function regenerateDevoirCebRound(index){
+  if(typeof cebGenerateSolvableDraw!=='function') return;
+  devoirNewCebRoundsData[index] = generateDevoirCebRound();
+  renderDevoirCebPicker();
 }
 /* Ouvre l'outil figure pour construire la figure DE DÉPART d'un devoir "figure à compléter" --
    même outil que pour un devoir "libre", mais le bouton "Valider" enregistre l'état courant dans
@@ -263,14 +299,23 @@ async function testDevoirFigureCompleter(){
 }
 let devoirTestModeActive = false; // vrai pendant un test "Compte est bon" lancé depuis le formulaire
 /* compte-est-bon.js (chargé après devoirs.js) lit devoirTestModeActive pour proposer "Retour à la
-   création du devoir" plutôt que "Compte suivant" en fin de partie. */
-function testDevoirCeb(){
+   création du devoir" plutôt que "Compte suivant" en fin de partie. Teste le tirage EXACT de ce
+   compte (et pas un tirage aléatoire à part) : c'est bien celui-là qui sera assigné aux élèves si
+   le prof ne le régénère pas. */
+function testDevoirCeb(index){
   if(typeof cebStartGame!=='function'){ return; }
+  const round = devoirNewCebRoundsData[index];
+  if(!round) return;
+  round.tested = true;
   devoirTestModeActive = true;
   cebSettings = { nLarge: devoirNewCebNLarge, timerOn: devoirNewCebTimerOn, timerDuration: devoirNewCebTimerDuration, timerCustom:false };
   showView('view-compte'); setActiveTopnav('compte');
   document.getElementById('cebRoot').dataset.built = '1';
-  cebStartGame();
+  cebStartGame({
+    numbers: round.numbers, target: round.target,
+    solution: round.solutionExpr ? {expr: round.solutionExpr, value: round.solutionValue} : null,
+    exact: round.solutionValue===round.target,
+  });
 }
 function returnToDevoirCreationFromTest(){
   devoirTestModeActive = false;
@@ -278,9 +323,10 @@ function returnToDevoirCreationFromTest(){
   if(typeof renderDevoirsProf==='function') renderDevoirsProf();
 }
 async function renderDevoirsProf(){
-  resetDevoirFormState(); // efface un éventuel état d'édition laissé par une édition abandonnée
   const select = document.getElementById('devoirNewClasse');
+  const previousValue = select.value; // préserve la classe déjà choisie (ex. retour d'un test Compte est bon)
   select.innerHTML = (accountClassesList||[]).map(c=>`<option value="${c.id}">${escapeHtml(c.label)}</option>`).join('') || '<option value="">Aucune classe</option>';
+  if(previousValue && Array.from(select.options).some(o=>o.value===previousValue)) select.value = previousValue;
   renderDevoirTargetModePicker();
   renderDevoirTypePicker();
   await refreshDevoirsProfListing();
@@ -309,22 +355,12 @@ async function createDevoir(){
     payload.ceb_n_large = devoirNewCebNLarge;
     payload.ceb_timer_on = devoirNewCebTimerOn;
     payload.ceb_timer_duration = devoirNewCebTimerOn ? devoirNewCebTimerDuration : null;
-    // Si on modifie un devoir existant SANS changer le nombre de comptes ni la difficulté,
-    // on garde les tirages déjà enregistrés (et donc la progression déjà faite par les
-    // élèves) au lieu de les régénérer à chaque modification du titre/de la consigne/etc.
-    const reuseRounds = devoirEditingId && devoirEditingCebRounds && devoirEditingCebRounds.length===devoirNewCebRounds && devoirEditingCebNLarge===devoirNewCebNLarge;
-    if(reuseRounds){
-      payload.ceb_rounds = devoirEditingCebRounds;
-    } else {
-      // Le tirage de chaque compte est fixé UNE FOIS ici (et non régénéré à chaque partie) pour
-      // que tous les élèves du devoir jouent exactement les mêmes nombres et le même compte à
-      // atteindre -- signalé : "est-ce que tous les élèves auront les mêmes ?".
-      if(typeof cebGenerateSolvableDraw!=='function'){ status.textContent = "Erreur : l'outil Compte est bon n'a pas pu se charger."; return; }
-      payload.ceb_rounds = Array.from({length: devoirNewCebRounds}, ()=>{
-        const draw = cebGenerateSolvableDraw(devoirNewCebNLarge);
-        return { numbers: draw.numbers, target: draw.target, solutionExpr: draw.solution?draw.solution.expr:null, solutionValue: draw.solution?draw.solution.value:null };
-      });
-    }
+    // devoirNewCebRoundsData EST le brouillon en cours : chaque tirage y reste identique tant que
+    // le prof ne le régénère pas explicitement (bouton "Régénérer", ou changement de difficulté/
+    // nombre de comptes) -- c'est donc lui, tel quel, qu'on enregistre, plutôt que de reproduire
+    // séparément la même logique de génération ici.
+    if(!devoirNewCebRoundsData.length){ status.textContent = "Erreur : les tirages Compte est bon n'ont pas pu être générés."; return; }
+    payload.ceb_rounds = devoirNewCebRoundsData.map(r=>({numbers:r.numbers, target:r.target, solutionExpr:r.solutionExpr, solutionValue:r.solutionValue}));
   }
   const { error } = devoirEditingId
     ? await sb.from('devoirs').update(payload).eq('id', devoirEditingId)
@@ -340,8 +376,6 @@ async function editDevoirPrompt(devoirId){
   const { data: d, error } = await sb.from('devoirs').select('*').eq('id', devoirId).single();
   if(error || !d){ await niceAlert('Erreur : '+(error?error.message:'devoir introuvable')); return; }
   devoirEditingId = devoirId;
-  devoirEditingCebRounds = d.ceb_rounds || null;
-  devoirEditingCebNLarge = d.ceb_n_large ?? null;
   document.getElementById('devoirNewTitre').value = d.titre || '';
   document.getElementById('devoirNewConsigne').value = d.consigne || '';
   document.getElementById('devoirNewClasse').value = d.class_id;
@@ -354,6 +388,10 @@ async function editDevoirPrompt(devoirId){
   devoirNewCebTimerOn = d.ceb_timer_on ?? true;
   devoirNewCebTimerDuration = d.ceb_timer_duration || 60;
   devoirNewCebRounds = (d.ceb_rounds||[]).length || 1;
+  // Reprend les tirages déjà enregistrés tels quels (au lieu d'en générer de nouveaux) : le prof
+  // ne perd rien de ce qui a déjà été testé/validé, et peut régénérer individuellement ceux qui
+  // posent problème.
+  devoirNewCebRoundsData = (d.ceb_rounds||[]).map(r=>({numbers:r.numbers, target:r.target, solutionExpr:r.solutionExpr, solutionValue:r.solutionValue, tested:false}));
   devoirNewTargetMode = (d.student_ids && d.student_ids.length) ? 'eleves' : 'class';
   devoirNewTargetIds = new Set(d.student_ids || []);
   document.getElementById('devoirFigureDepartStatus').textContent = d.figure_depart ? '✓ Figure de départ déjà enregistrée (modifiable).' : '';
@@ -369,13 +407,14 @@ async function editDevoirPrompt(devoirId){
    renderDevoirsProf (pour effacer un éventuel état d'édition laissé par une édition abandonnée
    sans passer par "Annuler", par ex. en quittant via le menu principal). */
 function resetDevoirFormState(){
-  devoirEditingId = null; devoirEditingCebRounds = null; devoirEditingCebNLarge = null;
+  devoirEditingId = null;
   document.getElementById('devoirNewTitre').value = '';
   document.getElementById('devoirNewConsigne').value = '';
   document.getElementById('devoirNewDateDepot').value = '';
   document.getElementById('devoirNewDate').value = '';
   devoirNewType = 'fichier'; devoirNewFigureDepart = null; devoirNewAutomatismesSeqs = new Set();
   devoirNewCebNLarge = 2; devoirNewCebTimerOn = true; devoirNewCebTimerDuration = 60; devoirNewCebRounds = 1;
+  devoirNewCebRoundsData = [];
   devoirNewTargetMode = 'class'; devoirNewTargetIds = new Set();
   document.getElementById('devoirFigureDepartStatus').textContent = '';
   document.getElementById('devoirCreateTitle').innerHTML = '<span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir';

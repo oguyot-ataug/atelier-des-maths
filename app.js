@@ -206,6 +206,10 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     }
     if(nav==='devoirsprof'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      // Efface un éventuel brouillon d'édition laissé par une édition abandonnée sans passer par
+      // "Annuler" (ex. quitter via ce même menu) -- renderDevoirsProf ne le fait plus lui-même
+      // car il est aussi appelé au retour d'un test Compte est bon, où le brouillon doit survivre.
+      if(typeof resetDevoirFormState==='function') resetDevoirFormState();
       showView('view-devoirs-prof'); setActiveTopnav('devoirsprof'); if(typeof renderDevoirsProf==='function') renderDevoirsProf();
     }
     if(nav==='mesdevoirs'){
@@ -2377,6 +2381,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.596', items:[
+    "Devoirs, Compte est bon -- signalé : \"il faudrait que je puisse les valider ou les regénérer un par un car certains sont trop difficiles\". Chaque compte du devoir est maintenant listé individuellement avec ses propres boutons \"Tester\" (joue exactement ce tirage) et \"Régénérer\" (retire un nouveau tirage pour ce compte seulement, sans toucher aux autres) -- une coche verte indique les comptes déjà testés. Changer le nombre de \"grands nombres\" régénère l'ensemble des comptes (la difficulté change pour tous) ; changer le nombre de comptes à jouer ajoute ou retire des tirages sans toucher à ceux déjà en place.",
+  ]},
   { version:'2026-08-19.595', items:[
     "Devoirs, édition -- fix -- signalé : \"même chose quand j'édite puis annule, je ne reviens pas au menu de départ, j'ai la création d'un devoir qui est ouvert\". Une édition lancée depuis Supervision (bouton crayon du résumé par classe) ramène désormais à Supervision après \"Annuler la modification\" OU un enregistrement réussi, au lieu de laisser la page Devoirs affichée avec un formulaire vide. Une édition lancée directement depuis la page Devoirs reste sur cette page après annulation, mais redescend vers la liste des devoirs plutôt que de laisser le formulaire (vide) affiché en haut.",
   ]},
@@ -4008,6 +4015,7 @@ async function supDeleteDevoirAndRefresh(devoirId, classId, containerId, nbEleve
 /* Ouvre la page Devoirs complète (création/gestion) avec la classe déjà présélectionnée --
    plutôt que de dupliquer le formulaire de création dans chaque carte de l'accordéon. */
 async function openDevoirsForClass(classId){
+  if(typeof resetDevoirFormState==='function') resetDevoirFormState(); // nouveau devoir : jamais un brouillon d'édition resté ouvert
   showView('view-devoirs-prof'); setActiveTopnav('devoirsprof');
   if(typeof renderDevoirsProf==='function') await renderDevoirsProf();
   const select = document.getElementById('devoirNewClasse');
