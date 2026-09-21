@@ -654,7 +654,36 @@ function previewDevoirFigure(studentId){
 
 /* ================= CÔTÉ ÉLÈVE ================= */
 let currentDevoirSubmission = null; // {devoirId, type:'figure'|'figure_completer'} -- suivi pendant la construction d'une figure
+/* Pastille sur le bouton "Mes devoirs" du menu -- signalé : "les élèves sont-ils prévenus... que
+   des devoirs les attendent ?". Compte les devoirs pas encore rendus (brouillon ou pas commencé),
+   avec la même logique de ciblage/publication programmée que renderDevoirsEleve -- appelée juste
+   après la connexion (refreshAuthUI, app.js), pas besoin d'ouvrir la page Devoirs pour le savoir.
+   Rappelée aussi en fin de renderDevoirsEleve pour rester à jour après un rendu. */
+async function refreshDevoirsNavBadge(){
+  const badge = document.getElementById('navMesDevoirsBadge');
+  if(!badge) return;
+  if(currentUserRole!=='eleve' || !currentUser){ badge.style.display = 'none'; return; }
+  const classIds = (accountClassesList||[]).map(c=>c.id);
+  if(!classIds.length){ badge.style.display = 'none'; return; }
+  const { data: devoirsListRaw, error } = await sb.from('devoirs').select('id,student_ids,date_depot').in('class_id', classIds);
+  if(error || !devoirsListRaw){ badge.style.display = 'none'; return; }
+  const now = new Date();
+  const devoirsList = devoirsListRaw.filter(d =>
+    (!d.student_ids || !d.student_ids.length || d.student_ids.includes(currentUser.id))
+    && (!d.date_depot || new Date(d.date_depot) <= now)
+  );
+  if(!devoirsList.length){ badge.style.display = 'none'; return; }
+  const { data: mesRendus } = await sb.from('devoirs_rendus').select('devoir_id,est_rendu').eq('student_id', currentUser.id);
+  const renduByDevoir = new Map((mesRendus||[]).map(r=>[r.devoir_id, r]));
+  const nbEnAttente = devoirsList.filter(d=>{
+    const rendu = renduByDevoir.get(d.id);
+    return !rendu || !rendu.est_rendu;
+  }).length;
+  if(nbEnAttente>0){ badge.textContent = nbEnAttente; badge.style.display = 'inline-flex'; }
+  else badge.style.display = 'none';
+}
 async function renderDevoirsEleve(){
+  refreshDevoirsNavBadge(); // reste à jour après un rendu -- indépendant du reste de ce rendu
   const el = document.getElementById('devoirsEleveListing');
   el.innerHTML = '<p class="hint">Chargement…</p>';
   const classIds = (accountClassesList||[]).map(c=>c.id);

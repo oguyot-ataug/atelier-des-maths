@@ -2284,6 +2284,9 @@ async function refreshAuthUI(){
     if(currentUserRole==='admin') await adminRefreshDropdowns();
     if(isStaff) await loadMyClasses();
     if(currentUserRole==='eleve') await loadMyStudentClasses();
+    // Pastille "devoirs en attente" sur le bouton "Mes devoirs" -- signalé : "les élèves sont-ils
+    // prévenus... ?". accountClassesList doit déjà être peuplée (loadMyStudentClasses ci-dessus).
+    if(typeof refreshDevoirsNavBadge==='function') await refreshDevoirsNavBadge();
 
     // Première connexion (ou tout compte créé/réinitialisé par un administrateur) : la
     // modale de changement de mot de passe s'ouvre automatiquement, sans possibilité de
@@ -2305,6 +2308,8 @@ async function refreshAuthUI(){
     if(navCahier) navCahier.style.display='none';
     if(navMesResultats) navMesResultats.style.display='none';
     if(navMesDevoirs) navMesDevoirs.style.display='none';
+    const navMesDevoirsBadgeOut = document.getElementById('navMesDevoirsBadge');
+    if(navMesDevoirsBadgeOut) navMesDevoirsBadgeOut.style.display='none';
     if(navAdmin) navAdmin.style.display='none';
     const btnReportBugOut = document.getElementById('btnReportBug');
     if(btnReportBugOut) btnReportBugOut.style.display='none';
@@ -2381,6 +2386,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.598', items:[
+    "Devoirs : pastille sur le bouton \"Mes devoirs\" du menu, affichant le nombre de devoirs pas encore rendus -- signalé : \"les élèves sont-ils prévenus en allant sur le site que des devoirs les attendent ?\". Visible dès la connexion, sans avoir à ouvrir la page Devoirs. Se met à jour après chaque rendu et tient compte du ciblage (classe entière ou élèves sélectionnés) et de la date de dépôt (un devoir pas encore publié ne compte pas).",
+  ]},
   { version:'2026-08-19.597', items:[
     "Devoirs, bouton Tester -- signalé : \"même principe pour la création des autres devoirs (automatismes...), pouvoir tester et revenir au menu quand on valide ou annule\". Le test d'une séquence d'Automatismes affiche désormais, comme pour Compte est bon, un bouton \"Retour à la création du devoir\" -- présent dès le début du test et qui reste après avoir cliqué \"Corriger\", pour revenir en un clic au formulaire (brouillon conservé) qu'on valide ou qu'on veuille simplement quitter.",
   ]},
