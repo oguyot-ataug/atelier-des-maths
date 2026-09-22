@@ -346,7 +346,7 @@ async function openEditProfModal(id){
   document.getElementById('editProfClassesList').innerHTML = 'Chargement…';
   const { data: prof, error } = await sb.from('profiles').select('*').eq('id', id).single();
   if(error){ document.getElementById('editProfStatus').textContent = 'Erreur : '+error.message; return; }
-  editProfTargetName = (prof.nom||prof.email||'').replace(/'/g,"\\'");
+  editProfTargetName = (profileDisplayName(prof)||prof.email||'').replace(/'/g,"\\'");
   editProfTargetRole = prof.role;
   document.getElementById('editProfNom').value = prof.nom||'';
   document.getElementById('editProfPrenom').value = prof.prenom||'';
@@ -477,7 +477,7 @@ async function adminGenerateAllInviteLinks(){
       if(data.error){ fail++; continue; }
       ok++;
       const cls = classById.get(studentClassId.get(p.id));
-      results.push({ classe: cls ? cls.nom : 'Sans classe', nom: p.nom||'(sans nom)', identifiant: loginIdentifiant(p.email), url: location.origin+'/invitation.html?invite='+data.token });
+      results.push({ classe: cls ? cls.nom : 'Sans classe', nom: profileDisplayName(p)||'(sans nom)', identifiant: loginIdentifiant(p.email), url: location.origin+'/invitation.html?invite='+data.token });
     }catch(err){ fail++; }
   }
   status.innerHTML = `✓ ${ok} lien(s) généré(s)` + (fail?`, ${fail} échec(s).`:'.');
@@ -506,7 +506,7 @@ async function adminShowExistingInviteLinks(){
   const results = invitations.map(inv=>{
     const p = eleveById.get(inv.user_id);
     const cls = classById.get(studentClassId.get(inv.user_id));
-    return { classe: cls ? cls.nom : 'Sans classe', nom: p ? (p.nom||'(sans nom)') : '(élève introuvable)', identifiant: p ? loginIdentifiant(p.email) : '?', url: location.origin+'/invitation.html?invite='+inv.token };
+    return { classe: cls ? cls.nom : 'Sans classe', nom: p ? (profileDisplayName(p)||'(sans nom)') : '(élève introuvable)', identifiant: p ? loginIdentifiant(p.email) : '?', url: location.origin+'/invitation.html?invite='+inv.token };
   });
   renderInviteLinksTable(results, `Liens d'invitation en attente (${results.length}, triés par classe)`);
 }
@@ -731,7 +731,7 @@ function adminRenderAccountsListing(){
     else if(classeFilter && !classIdsOf(p).includes(classeFilter)) return false;
     if(uaiFilter && !uaisOf(p).includes(uaiFilter)) return false;
     if(search){
-      const hay = ((p.nom||'')+' '+loginIdentifiant(p.email)).toLowerCase();
+      const hay = ((profileDisplayName(p)||'')+' '+loginIdentifiant(p.email)).toLowerCase();
       if(!hay.includes(search)) return false;
     }
     return true;
@@ -758,14 +758,14 @@ function adminRenderAccountsListing(){
     return `<span class="hint">${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span>`;
   };
   const rowHTML = p => {
-    const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
+    const safeName = escapeHtml(profileDisplayName(p)||p.email||'').replace(/'/g,"\\'");
     const editBtn = `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span></button>`;
     const categoryBtn = p.role==='prof' ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeCategoryPrompt('${p.id}','${safeName}')"><span class=gicon>workspace_premium</span></button>` : '';
     const inviteBtn = p.must_change_password ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminGenerateInviteLink('${p.id}','${safeName}')"><span class=gicon>link</span></button>` : '';
     const rowBg = !lastLoginMap.get(p.id) ? 'background:rgba(28,43,57,.02);' : '';
     return `<tr style="${rowBg}">
       <td style="width:24px;"><input type="checkbox" class="adminAccCheckbox" value="${p.id}"></td>
-      <td style="font-weight:600;">${escapeHtml(p.nom||'(sans nom)')}${p.role==='admin'?' <span class="hint">[admin]</span>':''}</td>
+      <td style="font-weight:600;">${escapeHtml(profileDisplayName(p)||'(sans nom)')}${p.role==='admin'?' <span class="hint">[admin]</span>':''}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">${escapeHtml(loginIdentifiant(p.email))}</td>
       <td>${subscriptionBadge(p)}</td>
       <td>${lastLoginCell(p)}</td>
@@ -819,16 +819,16 @@ async function adminDeleteSelectedAccounts(){
   await adminRefreshListings();
 }
 async function adminRefreshDropdowns(){
-  const { data: profs } = await sb.from('profiles').select('id,nom,role').in('role',['prof','admin']);
-  const { data: eleves } = await sb.from('profiles').select('id,nom').eq('role','eleve');
+  const { data: profs } = await sb.from('profiles').select('id,nom,prenom,role').in('role',['prof','admin']);
+  const { data: eleves } = await sb.from('profiles').select('id,nom,prenom').eq('role','eleve');
   const { data: classesList } = await sb.from('classes').select('id,nom,niveau').order('nom');
   const fillSelect = (id, items, label)=>{
     const el = document.getElementById(id);
     if(!el) return;
     el.innerHTML = `<option value="">${label}...</option>` + items.map(it=>`<option value="${it.id}">${it.label}</option>`).join('');
   };
-  fillSelect('adminAssignTeacherSelect', (profs||[]).map(p=>({id:p.id, label:escapeHtml(p.nom||p.id)+(p.role==='admin'?' (admin)':'')})), 'Choisir un prof');
-  fillSelect('adminAssignStudentSelect', (eleves||[]).map(p=>({id:p.id, label:escapeHtml(p.nom||p.id)})), 'Choisir un élève');
+  fillSelect('adminAssignTeacherSelect', (profs||[]).map(p=>({id:p.id, label:escapeHtml(profileDisplayName(p)||p.id)+(p.role==='admin'?' (admin)':'')})), 'Choisir un prof');
+  fillSelect('adminAssignStudentSelect', (eleves||[]).map(p=>({id:p.id, label:escapeHtml(profileDisplayName(p)||p.id)})), 'Choisir un élève');
   fillSelect('adminAssignTeacherClassSelect', (classesList||[]).map(c=>({id:c.id, label:escapeHtml(c.nom)+' ('+escapeHtml(c.niveau)+')'})), 'Choisir une classe');
   fillSelect('adminAssignStudentClassSelect', (classesList||[]).map(c=>({id:c.id, label:escapeHtml(c.nom)+' ('+escapeHtml(c.niveau)+')'})), 'Choisir une classe');
   await adminRefreshListings();
@@ -837,14 +837,14 @@ let adminAccountsCache = { profs:[], eleves:[], lastLoginMap:new Map(), classesL
 async function adminRefreshListings(){
   await adminRefreshBugReports();
   await adminRefreshSignupRequests();
-  const { data: profs } = await sb.from('profiles').select('id,nom,email,role,subscription_status,subscription_expires_at,must_change_password').in('role',['prof','admin']).order('nom');
-  const { data: eleves } = await sb.from('profiles').select('id,nom,email,role,must_change_password').eq('role','eleve').order('nom');
+  const { data: profs } = await sb.from('profiles').select('id,nom,prenom,email,role,subscription_status,subscription_expires_at,must_change_password').in('role',['prof','admin']).order('nom');
+  const { data: eleves } = await sb.from('profiles').select('id,nom,prenom,email,role,must_change_password').eq('role','eleve').order('nom');
   // Date de dernière connexion (auth.users, normalement inaccessible via RLS classique) --
   // exposée uniquement à un admin via une fonction SECURITY DEFINER dédiée.
   const { data: lastSignIns } = await sb.rpc('get_last_sign_in_times');
   const { data: classesList } = await sb.from('classes').select('id,nom,niveau,uai').order('nom');
-  const { data: classTeachers } = await sb.from('class_teachers').select('class_id, teacher_id, profiles(nom,email)');
-  const { data: classStudents } = await sb.from('class_students').select('class_id, student_id, profiles(nom,email)');
+  const { data: classTeachers } = await sb.from('class_teachers').select('class_id, teacher_id, profiles(nom,prenom,email)');
+  const { data: classStudents } = await sb.from('class_students').select('class_id, student_id, profiles(nom,prenom,email)');
   const { data: etablissements } = await sb.from('etablissements').select('uai,nom').order('nom');
   adminAccountsCache = {
     profs: profs||[], eleves: eleves||[],
@@ -874,9 +874,9 @@ async function adminRefreshListings(){
     if(!classesList || !classesList.length){ classesEl.textContent = 'Aucune classe créée pour l\'instant.'; return; }
     classesEl.innerHTML = classesList.map((c,idx)=>{
       const profsHere = (classTeachers||[]).filter(r=>r.class_id===c.id);
-      const elevesHere = (classStudents||[]).filter(r=>r.class_id===c.id).map(r=>r.profiles && (r.profiles.nom||r.profiles.email)).filter(Boolean);
+      const elevesHere = (classStudents||[]).filter(r=>r.class_id===c.id).map(r=>r.profiles && (profileDisplayName(r.profiles)||r.profiles.email)).filter(Boolean);
       const profsHtml = profsHere.length ? profsHere.map(r=>{
-        const label = escapeHtml((r.profiles && (r.profiles.nom||r.profiles.email))||'?');
+        const label = escapeHtml((r.profiles && (profileDisplayName(r.profiles)||r.profiles.email))||'?');
         return `<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(31,58,92,.06);border-radius:12px;padding:2px 4px 2px 10px;margin:2px 4px 2px 0;">${label}
           <button type="button" onclick="adminRemoveTeacherFromClass('${r.teacher_id}','${c.id}')" title="Retirer ce prof de la classe" style="border:none;background:none;cursor:pointer;color:#a83c1f;font-size:.9rem;line-height:1;padding:2px;">✕</button>
         </span>`;

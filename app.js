@@ -1353,6 +1353,15 @@ function cleanExpr(s){
   return s;
 }
 function escapeHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+/* Nom affiché "Nom Prénom" -- signalé : "dans supervision, résultats, administration, il faut
+   afficher Nom et Prénom" (depuis la séparation des deux champs, build 605). Retombe sur l'un
+   des deux seul s'il manque, puis sur null (l'appelant décide alors du repli, ex. l'e-mail). */
+function profileDisplayName(p){
+  if(!p) return null;
+  const nom = (p.nom||'').trim();
+  const prenom = (p.prenom||'').trim();
+  return [nom, prenom].filter(Boolean).join(' ') || null;
+}
 /* Modales "propres" (alerte, confirmation, saisie), pour remplacer les alert()/confirm()/
    prompt() natifs du navigateur -- ceux-ci ont un rendu très daté et ne s'intègrent pas au
    reste du site. Chacune renvoie une Promise, à utiliser avec await. */
@@ -2251,11 +2260,13 @@ async function refreshAuthUI(){
         currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='eleve' ? 'Élève' : '';
     }
 
-    // Avatar : initiales (prénom + nom) si disponibles, sinon la première lettre de ce qu'on a,
-    // sinon on garde l'icône générique -- jamais de case vide dans le rond.
+    // Avatar : première lettre du prénom en majuscule -- signalé : "la pastille de l'élève
+    // quand il est connecté doit afficher la première lettre de son prénom en majuscule".
+    // Repli sur la première lettre du nom si pas de prénom, puis sur l'icône générique --
+    // jamais de case vide dans le rond.
     const avatarBtn = document.getElementById('accountAvatar');
-    const initials = [prenomTrim, nomTrim].filter(Boolean).map(s=>s[0]).join('').toUpperCase();
-    avatarBtn.innerHTML = initials || '<span class=gicon>person</span>';
+    const avatarLetter = (prenomTrim || nomTrim || '').charAt(0).toUpperCase();
+    avatarBtn.innerHTML = avatarLetter || '<span class=gicon>person</span>';
     avatarBtn.title = fullName ? `Mon compte · ${fullName}` : 'Mon compte';
 
     const isStaff = !accessBlocked && (currentUserRole==='admin' || currentUserRole==='prof');
@@ -2386,6 +2397,10 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.606', items:[
+    "Affichage \"Nom Prénom\" (au lieu du seul nom de famille) -- signalé : \"dans supervision, résultats, administration, il faut afficher Nom et Prénom\", suite à la séparation des deux champs (build 605). Concerne la liste des élèves de Supervision (onglets Comptes et Résultats, y compris les exports CSV), et la liste des comptes d'Administration (tableau, sélecteurs \"Affecter\", liens d'invitation).",
+    "Pastille de compte -- signalé : \"la pastille de l'élève quand il est connecté doit afficher la première lettre de son prénom en majuscule\". Affichait jusqu'ici les initiales prénom+nom (ex. \"LD\") depuis que le prénom est renseigné -- affiche maintenant une seule lettre, celle du prénom.",
+  ]},
   { version:'2026-08-19.605', items:[
     "Fix -- signalé : \"l'import est merdique, tous les élèves ont NOM Prénom dans le champ NOM\". L'import en masse d'élèves collait tout le champ \"NOM Prénom\" dans nom, laissant prénom vide. Corrigé : la ligne collée est désormais séparée automatiquement (les mots en MAJUSCULES en début de ligne = nom, le reste = prénom), y compris pour les noms composés (ex. \"KIESGEN DE RICHTER Zoé\"). Les 123 comptes élèves déjà créés avec ce défaut ont été corrigés en base avec la même règle (vérifiée une par une avant application, aucun cas ambigu).",
   ]},
@@ -3851,7 +3866,7 @@ async function renderTeacherStudentsListing(){
   if(!el) return;
   if(!currentClassId){ el.innerHTML = 'Choisissez une classe pour voir ses élèves.'; return; }
   el.innerHTML = 'Chargement…';
-  const { data, error } = await sb.from('class_students').select('profiles(id,nom,email)').eq('class_id', currentClassId);
+  const { data, error } = await sb.from('class_students').select('profiles(id,nom,prenom,email)').eq('class_id', currentClassId);
   if(error){ el.innerHTML = "Erreur : "+error.message; return; }
   const students = (data||[]).map(r=>r.profiles).filter(Boolean).sort((a,b)=>(a.nom||'').localeCompare(b.nom||''));
   if(!students.length){ el.innerHTML = 'Aucun élève dans cette classe pour l\'instant.'; teacherStudentsCache=[]; return; }
@@ -3878,7 +3893,7 @@ async function renderTeacherStudentsListing(){
   };
   teacherStudentsCache = students.map(s=>{
     const info = connexionInfo(s.id);
-    return { id:s.id, nom: s.nom||'?', identifiant: loginIdentifiant(s.email), statutKey: info.key, badgeHtml: info.badge };
+    return { id:s.id, nom: profileDisplayName(s)||'?', identifiant: loginIdentifiant(s.email), statutKey: info.key, badgeHtml: info.badge };
   });
   renderTeacherStudentsFiltered();
 }
@@ -3969,7 +3984,7 @@ function downloadCsv(filename, headers, rows){
    actuellement appliqué (élève / exercice / dates), pas tout l'historique de la classe. */
 function exportSupervisionCsv(){
   if(!supervisionFilteredData.length){ niceAlert('Aucun résultat à exporter avec ce filtre.'); return; }
-  const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
+  const nameOf = r => (r.profiles && (profileDisplayName(r.profiles) || r.profiles.email)) || 'Élève inconnu';
   const rows = supervisionFilteredData.map(r=>{
     const pct = Math.round(100*r.score/r.total);
     const perfect = r.score===r.total;
@@ -3982,7 +3997,7 @@ function exportSupervisionCsv(){
    active (cette section n'a pas de filtre élève/date). */
 function exportSupervisionCebCsv(){
   if(!supervisionCebData.length){ niceAlert('Aucun résultat à exporter.'); return; }
-  const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
+  const nameOf = r => (r.profiles && (profileDisplayName(r.profiles) || r.profiles.email)) || 'Élève inconnu';
   const rows = supervisionCebData.map(r=>{
     const date = r.created_at ? new Date(r.created_at).toLocaleString('fr-FR') : '';
     return [nameOf(r), r.target, r.success?'Oui':'Non', r.gap, r.result_value, r.timed?'Chronométré':'Illimité', date];
@@ -4115,7 +4130,7 @@ async function renderSupervision(){
   if(!currentClassId){ el.innerHTML = 'Choisissez une classe dans le menu compte pour voir ses résultats.'; return; }
   el.innerHTML = 'Chargement…';
   const { data, error } = await sb.from('cm_results')
-    .select('score,total,sequence_label,created_at,duration_ms,profiles(nom,email)')
+    .select('score,total,sequence_label,created_at,duration_ms,profiles(nom,prenom,email)')
     .eq('class_id', currentClassId)
     .order('created_at', {ascending:false});
   if(error){ el.innerHTML = "Erreur : "+error.message; return; }
@@ -4124,7 +4139,7 @@ async function renderSupervision(){
   renderSupervisionFiltered();
 }
 function populateSupervisionFilters(){
-  const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
+  const nameOf = r => (r.profiles && (profileDisplayName(r.profiles) || r.profiles.email)) || 'Élève inconnu';
   const eleves = Array.from(new Set(supervisionData.map(nameOf))).sort((a,b)=>a.localeCompare(b,'fr'));
   const exercices = Array.from(new Set(supervisionData.map(r=>r.sequence_label||'-'))).sort((a,b)=>a.localeCompare(b,'fr'));
   const selEleve = document.getElementById('supFilterEleve'), selExo = document.getElementById('supFilterExercice');
@@ -4147,7 +4162,7 @@ function renderSupervisionFiltered(){
   const el = document.getElementById('supervisionContent');
   if(!el) return;
   if(!supervisionData.length){ el.innerHTML = "Aucun résultat d'automatismes pour cette classe pour le moment."; return; }
-  const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
+  const nameOf = r => (r.profiles && (profileDisplayName(r.profiles) || r.profiles.email)) || 'Élève inconnu';
   const eleveFilter = document.getElementById('supFilterEleve').value;
   const exoFilter = document.getElementById('supFilterExercice').value;
   const fromFilter = document.getElementById('supFilterFrom').value;
@@ -4212,13 +4227,13 @@ async function renderSupervisionCeb(){
   if(!currentClassId){ el.innerHTML = 'Choisissez une classe dans le menu compte pour voir ses résultats.'; return; }
   el.innerHTML = 'Chargement…';
   const { data, error } = await sb.from('ceb_results')
-    .select('target,result_value,gap,success,timed,timer_duration,time_used_ms,expression,created_at,profiles(nom,email)')
+    .select('target,result_value,gap,success,timed,timer_duration,time_used_ms,expression,created_at,profiles(nom,prenom,email)')
     .eq('class_id', currentClassId)
     .order('created_at', {ascending:false});
   if(error){ el.innerHTML = "Erreur : "+error.message; return; }
   supervisionCebData = data || [];
   if(!data || !data.length){ el.innerHTML = "Aucun résultat du compte est bon pour cette classe pour le moment."; return; }
-  const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
+  const nameOf = r => (r.profiles && (profileDisplayName(r.profiles) || r.profiles.email)) || 'Élève inconnu';
   const byStudent = {};
   data.forEach(r=>{ const name=nameOf(r); byStudent[name] = byStudent[name] || []; byStudent[name].push(r); });
   el.innerHTML = Object.keys(byStudent).sort((a,b)=>a.localeCompare(b,'fr')).map(name=>{
