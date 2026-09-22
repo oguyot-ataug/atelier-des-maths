@@ -495,6 +495,18 @@ async function deleteDevoirPrompt(devoirId){
   if(err2){ await niceAlert('Erreur : '+err2.message); return; }
   await refreshDevoirsProfListing();
 }
+/* Couleur selon le taux de réussite -- mêmes seuils que Supervision (app.js), pour rester
+   cohérent visuellement entre les deux endroits où des résultats sont affichés. */
+function devoirPctColor(pct){ return pct>=70?'#1F7A4D':pct>=40?'#C77D1E':'#9E1F5E'; }
+/* Ligne d'export CSV accumulées pendant la construction des lignes de la modale (une par
+   élève/exercice), consommées par exportDevoirSubmissionsCsv -- signalé : "faire la même chose
+   dans les résultats des devoirs" (couleurs, %, barre de réussite, export CSV -- comme
+   Supervision). */
+let devoirSubmissionsExport = { headers: [], rows: [], filename: 'resultats-devoir.csv' };
+function exportDevoirSubmissionsCsv(){
+  if(!devoirSubmissionsExport.rows.length){ niceAlert('Aucun résultat à exporter.'); return; }
+  downloadCsv(devoirSubmissionsExport.filename, devoirSubmissionsExport.headers, devoirSubmissionsExport.rows);
+}
 /* Ouvre la liste des élèves de la classe concernée par ce devoir. Pour fichier/figure/
    figure_completer : rendu téléchargeable ou affichable, avec note/commentaire (comportement
    d'origine, inchangé). Pour automatismes/compte_est_bon : pas de "rendu" au sens fichier --
@@ -509,16 +521,20 @@ async function openDevoirSubmissions(devoirId){
   const { data: eleves } = (devoir.student_ids && devoir.student_ids.length)
     ? await cibleQuery.eq('class_id', devoir.class_id).in('student_id', devoir.student_ids)
     : await cibleQuery.eq('class_id', devoir.class_id);
+  // Trié par élève, ordre alphabétique (accents compris) -- signalé : "trier par élève, ordre
+  // alphabétique" (même demande déjà appliquée à Supervision).
+  const elevesTries = (eleves||[]).slice().sort((a,b)=>(a.profiles?.nom||'').localeCompare(b.profiles?.nom||'','fr'));
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.style.zIndex = '300';
   let rows;
+  devoirSubmissionsExport = { headers: [], rows: [], filename: `resultats-${(devoir.titre||'devoir').toLowerCase().replace(/[^a-z0-9]+/g,'-')}.csv` };
   if(devoir.type==='automatismes'){
-    rows = await devoirSubmissionRowsAutomatismes(devoir, eleves||[]);
+    rows = await devoirSubmissionRowsAutomatismes(devoir, elevesTries);
   } else if(devoir.type==='compte_est_bon'){
-    rows = await devoirSubmissionRowsCeb(devoir, eleves||[]);
+    rows = await devoirSubmissionRowsCeb(devoir, elevesTries);
   } else {
-    rows = await devoirSubmissionRowsFichierFigure(devoir, eleves||[]);
+    rows = await devoirSubmissionRowsFichierFigure(devoir, elevesTries);
   }
   overlay.innerHTML = `
     <div class="modal-card" style="max-width:560px;max-height:80vh;overflow-y:auto;">
@@ -527,6 +543,9 @@ async function openDevoirSubmissions(devoirId){
         <button class="modal-close" onclick="this.closest('.modal-overlay').remove()"><span class=gicon>close</span></button>
       </div>
       <p class="hint" style="margin:0 0 12px;">${escapeHtml(devoir.consigne)}</p>
+      <div style="text-align:right;margin:-4px 0 10px;">
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="exportDevoirSubmissionsCsv()"><span class=gicon>download</span> Exporter CSV</button>
+      </div>
       ${rows || '<p class="hint">Aucun élève dans cette classe.</p>'}
     </div>`;
   document.body.appendChild(overlay);
@@ -540,19 +559,35 @@ async function devoirSubmissionRowsFichierFigure(devoir, eleves){
   // l'attribut, signalé : "je n'arrive pas à ouvrir la figure de l'élève").
   window._devoirFiguresCache = window._devoirFiguresCache || {};
   (rendus||[]).forEach(r=>{ if(r.type==='figure' || r.type==='figure_completer') window._devoirFiguresCache[r.student_id] = r.figure_data; });
-  return eleves.map(row=>{
+  // Barre de réussite globale de la classe -- signalé : "couleurs et % de réussite, une barre de
+  // réussite" (comme Supervision). Ici la "réussite" est le taux de rendus effectifs.
+  const nbRendus = eleves.filter(row=>row.profiles && rendusByStudent.get(row.profiles.id)?.est_rendu).length;
+  const pctClasse = eleves.length ? Math.round(100*nbRendus/eleves.length) : 0;
+  const colorClasse = devoirPctColor(pctClasse);
+  const bar = eleves.length ? `<div style="margin:0 0 12px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+      <span class="hint" style="margin:0;font-weight:700;">Rendus de la classe</span>
+      <span class="hint" style="margin:0;font-weight:700;color:${colorClasse};">${pctClasse}% (${nbRendus}/${eleves.length})</span>
+    </div>
+    <div class="sup-progress-bar" style="margin-top:4px;"><div class="sup-progress-fill" style="width:${pctClasse}%;background:${colorClasse};"></div></div>
+  </div>` : '';
+  const exportRows = [];
+  const body = eleves.map(row=>{
     const eleve = row.profiles; if(!eleve) return '';
     const rendu = rendusByStudent.get(eleve.id);
-    let content, brouillonTag = '';
+    let content, brouillonTag = '', statut = 'Pas encore rendu';
     if(!rendu) content = '<span class="hint">Pas encore rendu.</span>';
     else {
+      statut = rendu.est_rendu ? 'Rendu' : 'Brouillon (pas encore rendu)';
       if(!rendu.est_rendu) brouillonTag = ' <span style="color:#8A6D1F;font-weight:700;">(brouillon, pas encore rendu)</span>';
       if(rendu.type==='figure' || rendu.type==='figure_completer') content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="previewDevoirFigure('${eleve.id}')"><span class=gicon>visibility</span> Voir la figure</button>${brouillonTag}`;
       else content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="downloadDevoirFile('${rendu.fichier_path}')"><span class=gicon>download</span> Télécharger le fichier</button>${brouillonTag}`;
     }
+    const pillColor = rendu && rendu.est_rendu ? '#1F7A4D' : rendu ? '#8A6D1F' : '#9E1F5E';
+    exportRows.push([eleve.nom||'(sans nom)', statut, rendu?.note ?? '', rendu?.commentaire_prof || '']);
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span><b>${escapeHtml(eleve.nom||'(sans nom)')}</b></span>
+        <span><b>${escapeHtml(eleve.nom||'(sans nom)')}</b> <span class="sup-score-pill" style="background:${pillColor}1A;color:${pillColor};font-size:.7rem;">${statut}</span></span>
         <span>${content}</span>
       </div>
       ${rendu ? `<div class="tool-row" style="margin-top:6px;">
@@ -562,6 +597,9 @@ async function devoirSubmissionRowsFichierFigure(devoir, eleves){
       </div>` : ''}
     </div>`;
   }).join('');
+  devoirSubmissionsExport.headers = ['Élève','Statut','Note /20','Commentaire'];
+  devoirSubmissionsExport.rows = exportRows;
+  return bar + body;
 }
 async function devoirSubmissionRowsAutomatismes(devoir, eleves){
   const seqs = devoir.automatismes_sequences || [];
@@ -574,24 +612,41 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
     const prev = m.get(a.sequence_id);
     if(!prev || a.score>prev.score) m.set(a.sequence_id, a);
   });
-  return eleves.map(row=>{
+  const exportRows = [];
+  const body = eleves.map(row=>{
     const eleve = row.profiles; if(!eleve) return '';
     const m = byStudent.get(eleve.id) || new Map();
     const nbFaites = seqs.filter(id=>m.has(id)).length;
+    // Barre de réussite -- signalé : "couleurs et % de réussite, une barre de réussite,
+    // progression colorée" (comme Supervision). Taux calculé sur les séquences déjà faites.
+    const totalScore = Array.from(m.values()).reduce((s,r)=>s+r.score,0);
+    const totalMax = Array.from(m.values()).reduce((s,r)=>s+r.total,0);
+    const pctEleve = totalMax ? Math.round(100*totalScore/totalMax) : null;
+    const colorEleve = pctEleve!==null ? devoirPctColor(pctEleve) : 'var(--ink-soft)';
     const detail = seqs.map(id=>{
       const seqDef = (typeof CM_SEQUENCES!=='undefined') ? CM_SEQUENCES.find(s=>s.id===id) : null;
       const label = seqDef ? seqDef.label : id;
       const r = m.get(id);
-      return `<div class="hint" style="margin:2px 0;">${r?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}${r?` : ${r.score}/${r.total}`:''}</div>`;
+      const pct = r ? Math.round(100*r.score/r.total) : null;
+      const color = pct!==null ? devoirPctColor(pct) : 'var(--ink-soft)';
+      exportRows.push([eleve.nom||'(sans nom)', label, r?r.score:'', r?r.total:'', pct!==null?pct+'%':'', r?'Oui':'Non']);
+      return `<div class="hint" style="margin:2px 0;">${r?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}${r?` : <span style="color:${color};font-weight:700;">${r.score}/${r.total} (${pct}%)</span>`:''}</div>`;
     }).join('');
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
         <span><b>${escapeHtml(eleve.nom||'(sans nom)')}</b></span>
-        <span class="hint" style="margin:0;">${nbFaites}/${seqs.length} séquence(s) faite(s)</span>
+        <span style="text-align:right;">
+          <span class="hint" style="margin:0;">${nbFaites}/${seqs.length} séquence(s) faite(s)</span>
+          ${pctEleve!==null ? `<br><span class="hint" style="margin:0;font-weight:700;color:${colorEleve};">${pctEleve}% de réussite</span>` : ''}
+        </span>
       </div>
+      ${pctEleve!==null ? `<div class="sup-progress-bar" style="margin:6px 0;"><div class="sup-progress-fill" style="width:${pctEleve}%;background:${colorEleve};"></div></div>` : ''}
       ${detail}
     </div>`;
   }).join('');
+  devoirSubmissionsExport.headers = ['Élève','Séquence','Score','Total','%','Fait'];
+  devoirSubmissionsExport.rows = exportRows;
+  return body;
 }
 async function devoirSubmissionRowsCeb(devoir, eleves){
   const rounds = devoir.ceb_rounds || [];
@@ -606,22 +661,37 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
     const prev = m.get(idx);
     if(!prev || a.gap<prev.gap) m.set(idx, a);
   });
-  return eleves.map(row=>{
+  const exportRows = [];
+  const body = eleves.map(row=>{
     const eleve = row.profiles; if(!eleve) return '';
     const m = byStudent.get(eleve.id) || new Map();
     const nbFaits = Array.from({length:nRounds}, (_,i)=>i).filter(i=>m.has(i)).length;
+    // "Réussite" = compte tombé pile (écart 0) -- signalé : "couleurs et % de réussite, une
+    // barre de réussite, progression colorée" (comme Supervision).
+    const nbExacts = Array.from(m.values()).filter(r=>r.gap===0).length;
+    const pctEleve = nbFaits ? Math.round(100*nbExacts/nbFaits) : null;
+    const colorEleve = pctEleve!==null ? devoirPctColor(pctEleve) : 'var(--ink-soft)';
     const detail = Array.from({length:nRounds}, (_,i)=>{
       const r = m.get(i);
-      return `<div class="hint" style="margin:2px 0;">${r?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} Compte ${i+1}${r?` : écart ${r.gap} (réponse ${r.result_value})`:''}</div>`;
+      const color = r ? (r.gap===0 ? '#1F7A4D' : '#C77D1E') : 'var(--ink-soft)';
+      exportRows.push([eleve.nom||'(sans nom)', 'Compte '+(i+1), r?r.gap:'', r?r.result_value:'', r?(r.gap===0?'Oui':'Non'):'', r?'Oui':'Non']);
+      return `<div class="hint" style="margin:2px 0;">${r?`<span class="gicon" style="font-size:.9rem;color:${color};">${r.gap===0?'check':'adjust'}</span>`:'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} Compte ${i+1}${r?` : <span style="color:${color};font-weight:700;">écart ${r.gap}</span> (réponse ${r.result_value})`:''}</div>`;
     }).join('');
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
         <span><b>${escapeHtml(eleve.nom||'(sans nom)')}</b></span>
-        <span class="hint" style="margin:0;">${nbFaits}/${nRounds} compte(s) fait(s)</span>
+        <span style="text-align:right;">
+          <span class="hint" style="margin:0;">${nbFaits}/${nRounds} compte(s) fait(s)</span>
+          ${pctEleve!==null ? `<br><span class="hint" style="margin:0;font-weight:700;color:${colorEleve};">${pctEleve}% exacts</span>` : ''}
+        </span>
       </div>
+      ${pctEleve!==null ? `<div class="sup-progress-bar" style="margin:6px 0;"><div class="sup-progress-fill" style="width:${pctEleve}%;background:${colorEleve};"></div></div>` : ''}
       ${detail}
     </div>`;
   }).join('');
+  devoirSubmissionsExport.headers = ['Élève','Compte','Écart','Réponse obtenue','Exact','Fait'];
+  devoirSubmissionsExport.rows = exportRows;
+  return body;
 }
 async function saveDevoirFeedback(renduId, studentId){
   const note = document.getElementById('devoirNote_'+studentId).value;

@@ -2386,6 +2386,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.603', items:[
+    "Devoirs, résultats par devoir (« Voir les rendus ») -- signalé : \"faire la même chose dans les résultats des devoirs\" (comme Supervision). Les élèves sont maintenant triés par ordre alphabétique. Pour Automatismes et Compte est bon, chaque score affiche son %, avec une barre de réussite colorée par élève (rouge/orange/vert selon le taux). Pour les devoirs fichier/figure, une pastille de statut (Rendu/Brouillon/Pas encore rendu) et une barre de réussite globale de la classe ont été ajoutées. Un bouton \"Exporter CSV\" télécharge les résultats affichés, quel que soit le type de devoir.",
+  ]},
   { version:'2026-08-19.602', items:[
     "Supervision, onglet Résultats -- signalé : \"les résultats peuvent être mieux présentés... mettre des couleurs et des % de réussite, une barre de réussite, progression colorée, et pouvoir exporter en CSV\". Chaque score affiche désormais son pourcentage en plus de la fraction, une barre de réussite colorée résume le taux global de chaque élève (Automatismes et Compte est bon), le tri par élève est alphabétique en tenant compte des accents, et un bouton \"Exporter CSV\" télécharge les résultats affichés (Automatismes : respecte les filtres élève/exercice/dates en cours ; Compte est bon : toutes les tentatives de la classe active).",
   ]},
