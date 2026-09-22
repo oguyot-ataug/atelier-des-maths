@@ -821,6 +821,10 @@ footer a:hover{color:var(--accent);}
   display:inline-block;padding:2px 10px;border-radius:20px;font-weight:700;font-size:.8rem;
   font-family:'Space Grotesk',sans-serif;
 }
+/* Barre de réussite colorée (résultats Supervision) -- signalé : "une barre de réussite,
+   progression colorée". */
+.sup-progress-bar{width:100%;height:8px;border-radius:5px;background:rgba(28,43,57,.08);overflow:hidden;}
+.sup-progress-fill{height:100%;border-radius:5px;transition:width .3s ease;}
 .tool-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
 .tool-row select, .tool-row input[type=text]{
   padding:9px 12px;border-radius:8px;border:1px solid rgba(28,43,57,.2);font-family:'Inter',sans-serif;font-size:.88rem;

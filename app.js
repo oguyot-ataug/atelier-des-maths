@@ -2386,6 +2386,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.602', items:[
+    "Supervision, onglet Résultats -- signalé : \"les résultats peuvent être mieux présentés... mettre des couleurs et des % de réussite, une barre de réussite, progression colorée, et pouvoir exporter en CSV\". Chaque score affiche désormais son pourcentage en plus de la fraction, une barre de réussite colorée résume le taux global de chaque élève (Automatismes et Compte est bon), le tri par élève est alphabétique en tenant compte des accents, et un bouton \"Exporter CSV\" télécharge les résultats affichés (Automatismes : respecte les filtres élève/exercice/dates en cours ; Compte est bon : toutes les tentatives de la classe active).",
+  ]},
   { version:'2026-08-19.601', items:[
     "Automatismes -- signalé : \"certains élèves cliquent deux fois sur suivant sans faire exprès\". Le bouton \"Suivant\"/\"Valider\" reste désormais désactivé tant que la case de réponse est vide, qu'on tape au clavier ou via le pavé tactile -- impossible de passer une question sans réponse par un double-clic accidentel.",
     "Devoirs, correction d'un comportement inattendu -- signalé : \"j'ai remarqué qu'ils avaient accès à un devoir alors que je n'avais pas renseigné la date de dépôt\". Un devoir sans date de dépôt est maintenant un brouillon invisible aux élèves (au lieu d'être publié immédiatement comme avant) : il faut choisir une date (aujourd'hui pour publier tout de suite, ou une date future pour programmer) pour qu'il apparaisse dans leur liste. Le formulaire de création et la liste côté professeur (pastille \"brouillon, pas encore visible\") ont été mis à jour en conséquence.",
@@ -3938,6 +3941,45 @@ async function teacherConfirmResetPassword(){
   }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
 }
 let supervisionData = [];
+let supervisionFilteredData = [];
+let supervisionCebData = [];
+/* Export CSV générique -- BOM UTF-8 pour qu'Excel affiche correctement les accents, séparateur
+   point-virgule (convention française d'Excel). */
+function downloadCsv(filename, headers, rows){
+  const esc = v => { const s = (v===null||v===undefined) ? '' : String(v); return /[;"\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; };
+  const lines = [headers.map(esc).join(';'), ...rows.map(r=>r.map(esc).join(';'))];
+  const csv = '﻿' + lines.join('\r\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+/* Export du tableau Automatismes -- signalé : "pouvoir exporter en csv". Respecte le filtre
+   actuellement appliqué (élève / exercice / dates), pas tout l'historique de la classe. */
+function exportSupervisionCsv(){
+  if(!supervisionFilteredData.length){ niceAlert('Aucun résultat à exporter avec ce filtre.'); return; }
+  const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
+  const rows = supervisionFilteredData.map(r=>{
+    const pct = Math.round(100*r.score/r.total);
+    const perfect = r.score===r.total;
+    const date = r.created_at ? new Date(r.created_at).toLocaleString('fr-FR') : '';
+    return [nameOf(r), r.sequence_label||'-', r.score, r.total, pct+'%', (perfect && r.duration_ms!=null) ? formatDuration(r.duration_ms) : '', date];
+  }).sort((a,b)=>String(a[0]).localeCompare(String(b[0]),'fr'));
+  downloadCsv(`resultats-automatismes-${new Date().toISOString().slice(0,10)}.csv`, ['Élève','Exercice','Score','Total','%','Temps','Date'], rows);
+}
+/* Export du tableau Compte est bon -- même principe, sur l'ensemble des tentatives de la classe
+   active (cette section n'a pas de filtre élève/date). */
+function exportSupervisionCebCsv(){
+  if(!supervisionCebData.length){ niceAlert('Aucun résultat à exporter.'); return; }
+  const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
+  const rows = supervisionCebData.map(r=>{
+    const date = r.created_at ? new Date(r.created_at).toLocaleString('fr-FR') : '';
+    return [nameOf(r), r.target, r.success?'Oui':'Non', r.gap, r.result_value, r.timed?'Chronométré':'Illimité', date];
+  }).sort((a,b)=>String(a[0]).localeCompare(String(b[0]),'fr'));
+  downloadCsv(`resultats-compte-est-bon-${new Date().toISOString().slice(0,10)}.csv`, ['Élève','Cible','Réussi','Écart','Résultat obtenu','Mode','Date'], rows);
+}
 document.querySelectorAll('.sup-tab-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     document.querySelectorAll('.sup-tab-btn').forEach(b=>b.classList.remove('active'));
@@ -4074,8 +4116,8 @@ async function renderSupervision(){
 }
 function populateSupervisionFilters(){
   const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
-  const eleves = Array.from(new Set(supervisionData.map(nameOf))).sort();
-  const exercices = Array.from(new Set(supervisionData.map(r=>r.sequence_label||'-'))).sort();
+  const eleves = Array.from(new Set(supervisionData.map(nameOf))).sort((a,b)=>a.localeCompare(b,'fr'));
+  const exercices = Array.from(new Set(supervisionData.map(r=>r.sequence_label||'-'))).sort((a,b)=>a.localeCompare(b,'fr'));
   const selEleve = document.getElementById('supFilterEleve'), selExo = document.getElementById('supFilterExercice');
   if(selEleve){
     const prev = selEleve.value;
@@ -4111,6 +4153,7 @@ function renderSupervisionFiltered(){
     return true;
   });
   if(!filtered.length){ el.innerHTML = 'Aucun résultat pour ce filtre.'; return; }
+  supervisionFilteredData = filtered;
 
   const byStudent = {};
   filtered.forEach(r=>{
@@ -4118,8 +4161,16 @@ function renderSupervisionFiltered(){
     byStudent[name] = byStudent[name] || [];
     byStudent[name].push(r);
   });
-  el.innerHTML = Object.keys(byStudent).sort().map(name=>{
+  // Trié par élève, ordre alphabétique (localeCompare pour les accents) -- signalé : "trier par
+  // élève, ordre alphabétique".
+  el.innerHTML = Object.keys(byStudent).sort((a,b)=>a.localeCompare(b,'fr')).map(name=>{
     const results = byStudent[name];
+    // Barre de réussite globale de l'élève sur la sélection filtrée -- signalé : "une barre de
+    // réussite, progression colorée".
+    const totalScore = results.reduce((s,r)=>s+r.score,0);
+    const totalMax = results.reduce((s,r)=>s+r.total,0);
+    const overallPct = totalMax ? Math.round(100*totalScore/totalMax) : 0;
+    const barColor = overallPct>=70?'#1F7A4D':overallPct>=40?'#C77D1E':'#9E1F5E';
     const rows = results.map(r=>{
       const pct = Math.round(100*r.score/r.total);
       const date = new Date(r.created_at).toLocaleString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
@@ -4127,14 +4178,18 @@ function renderSupervisionFiltered(){
       const color = pct>=70?'#1F7A4D':pct>=40?'#C77D1E':'#9E1F5E';
       return `<tr>
         <td>${escapeHtml(r.sequence_label||'-')}</td>
-        <td style="text-align:center;"><span class="sup-score-pill" style="background:${color}1A;color:${color};">${r.score}/${r.total}</span></td>
+        <td style="text-align:center;"><span class="sup-score-pill" style="background:${color}1A;color:${color};">${r.score}/${r.total} (${pct}%)</span></td>
         <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--ink-soft);">${perfect && r.duration_ms!=null ? formatDuration(r.duration_ms) : '-'}</td>
         <td style="text-align:right;color:var(--ink-soft);white-space:nowrap;">${date}</td>
       </tr>`;
     }).join('');
     return `<div class="tool-shell" style="margin-bottom:14px;padding:14px 16px;">
-      <strong style="font-family:'Space Grotesk',sans-serif;">${escapeHtml(name)}</strong>
-      <table class="sup-table" style="margin-top:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+        <strong style="font-family:'Space Grotesk',sans-serif;">${escapeHtml(name)}</strong>
+        <span class="hint" style="margin:0;font-weight:700;color:${barColor};">${overallPct}% de réussite (${totalScore}/${totalMax})</span>
+      </div>
+      <div class="sup-progress-bar" style="margin-top:6px;"><div class="sup-progress-fill" style="width:${overallPct}%;background:${barColor};"></div></div>
+      <table class="sup-table" style="margin-top:10px;">
         <thead><tr><th>Exercice</th><th style="text-align:center;">Score</th><th style="text-align:right;">Temps</th><th style="text-align:right;">Date</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
@@ -4152,11 +4207,12 @@ async function renderSupervisionCeb(){
     .eq('class_id', currentClassId)
     .order('created_at', {ascending:false});
   if(error){ el.innerHTML = "Erreur : "+error.message; return; }
+  supervisionCebData = data || [];
   if(!data || !data.length){ el.innerHTML = "Aucun résultat du compte est bon pour cette classe pour le moment."; return; }
   const nameOf = r => (r.profiles && (r.profiles.nom || r.profiles.email)) || 'Élève inconnu';
   const byStudent = {};
   data.forEach(r=>{ const name=nameOf(r); byStudent[name] = byStudent[name] || []; byStudent[name].push(r); });
-  el.innerHTML = Object.keys(byStudent).sort().map(name=>{
+  el.innerHTML = Object.keys(byStudent).sort((a,b)=>a.localeCompare(b,'fr')).map(name=>{
     const results = byStudent[name];
     const forMode = timed => results.filter(r=>r.timed===timed);
     const statLine = (label, rows) => {
@@ -4164,9 +4220,12 @@ async function renderSupervisionCeb(){
       const succ = rows.filter(r=>r.success).length;
       const pct = Math.round(100*succ/rows.length);
       const color = pct>=70?'#1F7A4D':pct>=40?'#C77D1E':'#9E1F5E';
-      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:5px 0;">
-        <span style="font-weight:600;">${label}</span>
-        <span class="sup-score-pill" style="background:${color}1A;color:${color};">${succ}/${rows.length} réussies (${pct}%)</span>
+      return `<div style="padding:5px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+          <span style="font-weight:600;">${label}</span>
+          <span class="sup-score-pill" style="background:${color}1A;color:${color};">${succ}/${rows.length} réussies (${pct}%)</span>
+        </div>
+        <div class="sup-progress-bar" style="margin-top:4px;"><div class="sup-progress-fill" style="width:${pct}%;background:${color};"></div></div>
       </div>`;
     };
     const recentRows = results.slice(0,5).map(r=>{
