@@ -2397,6 +2397,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.612', items:[
+    "Compte est bon (devoirs), médailles -- signalé : \"il faudrait mettre un chrono pour savoir en combien de temps il trouve chaque compte et ainsi pouvoir les classer, à condition qu'ils aient bien trouvé tous les comptes justes\". Un vrai chronomètre mesure désormais le temps de chaque compte, y compris en mode illimité (avant, seul le mode chronométré calculait un temps). Même principe que les médailles Automatismes : les 3 élèves les plus rapides à avoir trouvé TOUS les comptes exactement (temps cumulé le plus bas) reçoivent 🥇🥈🥉, en temps réel, en excluant les élèves \"en retard\". Le temps de chaque compte (avec le record de la session) et la médaille en cours s'affichent côté élève ; les médailles s'affichent en temps réel côté prof dans \"Voir les rendus\".",
+  ]},
   { version:'2026-08-19.611', items:[
     "Mes devoirs (élève) -- signalé : \"si j'ai rendu un devoir, je ne le vois plus dans ma liste, il faudrait pouvoir tous les voir : en cours, rendu, en retard\". Un filtre de statut apparaît en haut de la page (Tous / En cours / Rendu / En retard), par défaut sur \"Tous\" -- tous les devoirs, y compris déjà rendus, restent visibles ; le filtre permet de n'afficher que ceux d'un statut donné.",
   ]},

@@ -304,6 +304,9 @@ function cebStartGame(forcedDraw){
   cebState = {
     numbers: draw.numbers, target: draw.target, solution: draw.solution, exact: draw.exact,
     tiles, steps: [], timeLeft: cebSettings.timerDuration, timerOn: cebSettings.timerOn, timerId: null, finished:false,
+    // Chrono réel (indépendant du mode chronométré/illimité) -- signalé : "mettre un chrono
+    // pour savoir en combien de temps il trouve chaque compte et ainsi pouvoir les classer".
+    startedAt: performance.now(),
   };
   cebSelectedOp = null;
   cebSelectedTileId = null;
@@ -494,7 +497,9 @@ async function cebSaveAttempt(best){
       gap,
       timed: cebState.timerOn,
       timer_duration: cebState.timerOn ? cebSettings.timerDuration : null,
-      time_used_ms: cebState.timerOn ? (cebSettings.timerDuration - Math.max(0,cebState.timeLeft)) * 1000 : null,
+      // Chrono réel écoulé depuis le début du compte, que le mode soit chronométré (décompte)
+      // ou illimité -- avant, illimité ne calculait aucun temps du tout.
+      time_used_ms: Math.round(performance.now() - cebState.startedAt),
       expression: best.expr,
       devoir_id: currentDevoirCEB ? currentDevoirCEB.devoirId : null,
       devoir_round: currentDevoirCEB ? currentDevoirCEB.roundIndex : null,

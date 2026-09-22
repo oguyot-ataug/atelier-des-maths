@@ -716,10 +716,11 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
 async function devoirSubmissionRowsCeb(devoir, eleves){
   const rounds = devoir.ceb_rounds || [];
   const nRounds = rounds.length || 1;
-  const { data: attempts } = await sb.from('ceb_results').select('student_id,devoir_round,gap,result_value,created_at').eq('devoir_id', devoir.id).order('created_at',{ascending:false});
+  const { data: attempts } = await sb.from('ceb_results').select('student_id,devoir_round,gap,result_value,time_used_ms,created_at').eq('devoir_id', devoir.id).order('created_at',{ascending:false});
   const { data: rendus } = await sb.from('devoirs_rendus').select('student_id,est_rendu').eq('devoir_id', devoir.id);
   const renduByStudent = new Map((rendus||[]).map(r=>[r.student_id, r.est_rendu]));
   const byStudent = new Map();
+  const timeByStudent = new Map(); // student_id -> Map(devoir_round -> meilleur temps EXACT)
   (attempts||[]).forEach(a=>{
     if(!byStudent.has(a.student_id)) byStudent.set(a.student_id, new Map());
     const m = byStudent.get(a.student_id);
@@ -727,13 +728,41 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
     // Meilleur écart conservé si le compte a été retenté plusieurs fois.
     const prev = m.get(idx);
     if(!prev || a.gap<prev.gap) m.set(idx, a);
+    if(a.gap===0 && a.time_used_ms!=null){
+      if(!timeByStudent.has(a.student_id)) timeByStudent.set(a.student_id, new Map());
+      const tm = timeByStudent.get(a.student_id);
+      const prevTime = tm.get(idx);
+      if(prevTime==null || a.time_used_ms<prevTime) tm.set(idx, a.time_used_ms);
+    }
   });
+  // Médailles -- signalé : "mettre un chrono pour savoir en combien de temps il trouve chaque
+  // compte et ainsi pouvoir les classer, à condition qu'ils aient bien trouvé tous les comptes
+  // justes" -- même principe que les Automatismes (le prof peut déjà lire tous les ceb_results
+  // de sa classe, RLS ceb_results_select, pas besoin de la fonction SECURITY DEFINER ici).
+  const medailleByStudent = new Map();
+  if(rounds.length){
+    const classement = eleves
+      .map(row=>row.profiles && row.profiles.id)
+      .filter(Boolean)
+      .map(id=>{
+        const tm = timeByStudent.get(id) || new Map();
+        const qualified = rounds.every((r,i)=>tm.has(i));
+        const cumulative = qualified ? rounds.reduce((s,r,i)=>s+tm.get(i),0) : null;
+        const retard = devoirStatutInfo(!!renduByStudent.get(id), devoir.date_limite).retard;
+        return { id, qualified, cumulative, retard };
+      })
+      .filter(s=>s.qualified && !s.retard)
+      .sort((a,b)=>a.cumulative-b.cumulative);
+    ['or','argent','bronze'].forEach((m,i)=>{ if(classement[i]) medailleByStudent.set(classement[i].id, m); });
+  }
   const exportRows = [];
   const body = eleves.map(row=>{
     const eleve = row.profiles; if(!eleve) return '';
     const m = byStudent.get(eleve.id) || new Map();
     const nbFaits = Array.from({length:nRounds}, (_,i)=>i).filter(i=>m.has(i)).length;
     const statutLabel = devoirStatutInfo(!!renduByStudent.get(eleve.id), devoir.date_limite).label;
+    const medaille = medailleByStudent.get(eleve.id);
+    const medailleHtml = medaille ? ` <span title="Médaille ${DEVOIR_MEDAILLES[medaille].label}" style="font-size:1rem;">${DEVOIR_MEDAILLES[medaille].emoji}</span>` : '';
     // "Réussite" = compte tombé pile (écart 0) -- signalé : "couleurs et % de réussite, une
     // barre de réussite, progression colorée" (comme Supervision).
     const nbExacts = Array.from(m.values()).filter(r=>r.gap===0).length;
@@ -742,12 +771,14 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
     const detail = Array.from({length:nRounds}, (_,i)=>{
       const r = m.get(i);
       const color = r ? (r.gap===0 ? '#1F7A4D' : '#C77D1E') : 'var(--ink-soft)';
-      exportRows.push([profileDisplayName(eleve)||'(sans nom)', statutLabel, 'Compte '+(i+1), r?r.gap:'', r?r.result_value:'', r?(r.gap===0?'Oui':'Non'):'', r?'Oui':'Non']);
-      return `<div class="hint" style="margin:2px 0;">${r?`<span class="gicon" style="font-size:.9rem;color:${color};">${r.gap===0?'check':'adjust'}</span>`:'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} Compte ${i+1}${r?` : <span style="color:${color};font-weight:700;">écart ${r.gap}</span> (réponse ${r.result_value})`:''}</div>`;
+      const myTime = (timeByStudent.get(eleve.id)||new Map()).get(i);
+      const timeHtml = myTime!=null ? ` <span class="hint" style="margin:0;">· ${formatDuration(myTime)}</span>` : '';
+      exportRows.push([profileDisplayName(eleve)||'(sans nom)', statutLabel, 'Compte '+(i+1), r?r.gap:'', r?r.result_value:'', r?(r.gap===0?'Oui':'Non'):'', r?'Oui':'Non', myTime!=null?formatDuration(myTime):'']);
+      return `<div class="hint" style="margin:2px 0;">${r?`<span class="gicon" style="font-size:.9rem;color:${color};">${r.gap===0?'check':'adjust'}</span>`:'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} Compte ${i+1}${r?` : <span style="color:${color};font-weight:700;">écart ${r.gap}</span> (réponse ${r.result_value})${timeHtml}`:''}</div>`;
     }).join('');
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!renduByStudent.get(eleve.id), devoir.date_limite)}</span>
+        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!renduByStudent.get(eleve.id), devoir.date_limite)}${medailleHtml}</span>
         <span style="text-align:right;">
           <span class="hint" style="margin:0;">${nbFaits}/${nRounds} compte(s) fait(s)</span>
           ${pctEleve!==null ? `<br><span class="hint" style="margin:0;font-weight:700;color:${colorEleve};">${pctEleve}% exacts</span>` : ''}
@@ -757,7 +788,7 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
       ${detail}
     </div>`;
   }).join('');
-  devoirSubmissionsExport.headers = ['Élève','Statut','Compte','Écart','Réponse obtenue','Exact','Fait'];
+  devoirSubmissionsExport.headers = ['Élève','Statut','Compte','Écart','Réponse obtenue','Exact','Fait','Temps'];
   devoirSubmissionsExport.rows = exportRows;
   return body;
 }
@@ -938,12 +969,17 @@ async function renderDevoirsEleve(){
       </div>`;
     } else if(d.type==='compte_est_bon'){
       const rounds = d.ceb_rounds || [];
-      const { data: attempts } = await sb.from('ceb_results').select('devoir_round,gap,result_value').eq('devoir_id', d.id).eq('student_id', currentUser.id);
+      const { data: attempts } = await sb.from('ceb_results').select('devoir_round,gap,result_value,time_used_ms').eq('devoir_id', d.id).eq('student_id', currentUser.id);
       const bestByRound = new Map();
+      const bestTimeByRound = new Map(); // meilleur temps PARMI les tentatives exactes -- pour les médailles
       (attempts||[]).forEach(a=>{
         const idx = a.devoir_round ?? 0;
         const prev = bestByRound.get(idx);
         if(!prev || a.gap<prev.gap) bestByRound.set(idx, a);
+        if(a.gap===0 && a.time_used_ms!=null){
+          const prevTime = bestTimeByRound.get(idx);
+          if(prevTime==null || a.time_used_ms<prevTime) bestTimeByRound.set(idx, a.time_used_ms);
+        }
       });
       // Cache en mémoire (par id devoir) pour startDevoirCEB (compte-est-bon.js) : les tirages
       // (numbers/target) sont trop volumineux et mal adaptés à un attribut onclick.
@@ -955,6 +991,15 @@ async function renderDevoirsEleve(){
       const nbExacts = Array.from(bestByRound.values()).filter(a=>a.gap===0).length;
       const pctExact = rounds.length ? Math.round(100*nbExacts/rounds.length) : null;
       const colorExact = pctExact!==null ? devoirPctColor(pctExact) : 'var(--ink-soft)';
+      // Médailles -- signalé : "mettre un chrono pour savoir en combien de temps il trouve
+      // chaque compte et ainsi pouvoir les classer, à condition qu'ils aient bien trouvé tous
+      // les comptes justes" -- même principe que les Automatismes (voir plus haut).
+      const [{ data: sessionBestRows }, { data: medailleRows }] = await Promise.all([
+        sb.rpc('ceb_get_devoir_round_best_times', { p_devoir_id: d.id }),
+        sb.rpc('ceb_get_devoir_medailles', { p_devoir_id: d.id }),
+      ]);
+      const sessionBestByRound = new Map((sessionBestRows||[]).map(r=>[r.devoir_round, r.best_ms]));
+      const medaille = (medailleRows && medailleRows[0]) || {};
       const roundsHtml = rounds.map((r,i)=>{
         const best = bestByRound.get(i);
         const exact = best && best.gap===0;
@@ -962,11 +1007,27 @@ async function renderDevoirsEleve(){
           : best ? '<span class="gicon" style="font-size:.9rem;color:#C77D1E;">adjust</span>'
           : '<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>';
         const label = exact ? ' : trouvé !' : best ? ` : écart ${best.gap}` : '';
+        const myTime = bestTimeByRound.get(i);
+        const sessionBest = sessionBestByRound.get(i);
+        const timeHtml = myTime!=null
+          ? ` <span class="hint" style="margin:0;">· ${formatDuration(myTime)}${sessionBest!=null && myTime<=sessionBest ? ' 🏆' : sessionBest!=null ? ` (record de la session : ${formatDuration(sessionBest)})` : ''}</span>`
+          : '';
         return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0;">
-          <span class="hint" style="margin:0;">${icon} Compte ${i+1}${label}</span>
+          <span class="hint" style="margin:0;">${icon} Compte ${i+1}${label}${timeHtml}</span>
           <button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="startDevoirCEB('${d.id}',${i})">${best?'Retenter':'Jouer'}</button>
         </div>`;
       }).join('');
+      const medalInfoCeb = DEVOIR_MEDAILLES[medaille.my_medal];
+      const medailleHtmlCeb = medaille.my_retard
+        ? `<div class="hint" style="margin-top:8px;padding:6px 10px;background:rgba(158,31,94,.08);border-radius:8px;">🚫 Hors compétition (devoir en retard).</div>`
+        : medalInfoCeb
+          ? `<div style="margin-top:8px;padding:8px 12px;background:${medalInfoCeb.bg};border-radius:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span style="font-weight:700;color:${medalInfoCeb.color};">${medalInfoCeb.emoji} ${medalInfoCeb.fullLabel} !</span>
+              <span class="hint" style="margin:0;">Temps cumulé : ${formatDuration(medaille.my_cumulative_ms)}</span>
+            </div>`
+          : medaille.my_qualified
+            ? `<p class="hint" style="margin-top:8px;">Tous les comptes trouvés ! Temps cumulé : <b>${formatDuration(medaille.my_cumulative_ms)}</b> -- pas encore de médaille (3 élèves plus rapides pour l'instant)${medaille.seuil_bronze_ms!=null ? `, pour le bronze : ${formatDuration(medaille.seuil_bronze_ms)}` : ''}.</p>`
+            : `<p class="hint" style="margin-top:8px;">🏅 Trouvez tous les comptes exactement pour viser une médaille (temps cumulé le plus rapide de la classe).</p>`;
       actionHtml = `<div style="margin-top:4px;">
         <p class="hint" style="margin:0 0 4px;">${settingsLabel}</p>
         ${pctExact!==null ? `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 0 2px;">
@@ -975,6 +1036,7 @@ async function renderDevoirsEleve(){
         </div>
         <div class="sup-progress-bar" style="margin-bottom:8px;"><div class="sup-progress-fill" style="width:${pctExact}%;background:${colorExact};"></div></div>` : ''}
         ${roundsHtml}
+        ${medailleHtmlCeb}
         ${(rendu && rendu.est_rendu) ? '' : `<p class="hint" style="margin:8px 0 0;">Ce devoir se rend automatiquement une fois tous les comptes trouvés exactement -- vous pouvez retenter autant de fois que vous voulez.</p>`}
       </div>`;
     } else if(d.type==='figure_completer'){
