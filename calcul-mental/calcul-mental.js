@@ -240,7 +240,8 @@ let cmExample = null;   // question de démonstration affichée sur l'écran d'a
 
 /* Lance une séquence d'automatismes dans le contexte d'un devoir (bouton "Faire cette séquence"
    de renderDevoirsEleve, devoirs.js). La tentative sera notée avec ce devoir_id (voir checkCM),
-   ce qui permet à refreshDevoirAutomatismesProgress (devoirs.js) de suivre la progression. */
+   ce qui permet à renderDevoirsEleve d'afficher le score par séquence et le total du devoir --
+   le rendu lui-même reste manuel (bouton "Rendre le devoir", submitDevoirAutomatismes). */
 function startDevoirCMSequence(devoirId, seqId){
   currentDevoirCM = { devoirId };
   runCM(seqId);
@@ -413,9 +414,6 @@ async function checkCM(){
       applyCMBadges();
     }
     if(!error && perfect && currentCMSeq){ await showCMRecords(currentCMSeq.id, durationMs); refreshCMRecords(); }
-    if(!error && currentDevoirCM && typeof refreshDevoirAutomatismesProgress==='function'){
-      await refreshDevoirAutomatismesProgress(currentDevoirCM.devoirId);
-    }
   } else if(status){
     status.textContent = "Score : "+score+"/"+total+(perfect ? " — en "+formatDuration(durationMs)+"." : ".");
   }

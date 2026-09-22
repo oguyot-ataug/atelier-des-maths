@@ -793,18 +793,46 @@ async function renderDevoirsEleve(){
     let actionHtml;
     if(d.type==='automatismes'){
       const seqs = d.automatismes_sequences || [];
-      const { data: attempts } = await sb.from('cm_results').select('sequence_id').eq('devoir_id', d.id).eq('student_id', currentUser.id);
-      const doneIds = new Set((attempts||[]).map(a=>a.sequence_id));
+      const isRendu = !!(rendu && rendu.est_rendu);
+      // Score par séquence (meilleure tentative) + total du devoir, coloré comme dans la vue
+      // du professeur -- signalé : "avoir nos pourcentages de réussite en s'inspirant de ce
+      // qui a été fait pour le prof".
+      const { data: attempts } = await sb.from('cm_results').select('sequence_id,score,total').eq('devoir_id', d.id).eq('student_id', currentUser.id);
+      const bestBySeq = new Map();
+      (attempts||[]).forEach(a=>{
+        const prev = bestBySeq.get(a.sequence_id);
+        if(!prev || a.score>prev.score) bestBySeq.set(a.sequence_id, a);
+      });
+      const totalScore = Array.from(bestBySeq.values()).reduce((s,a)=>s+a.score,0);
+      const totalMax = Array.from(bestBySeq.values()).reduce((s,a)=>s+a.total,0);
+      const overallPct = totalMax ? Math.round(100*totalScore/totalMax) : null;
+      const overallColor = overallPct!==null ? devoirPctColor(overallPct) : 'var(--ink-soft)';
       const detail = seqs.map(id=>{
         const seqDef = (typeof CM_SEQUENCES!=='undefined') ? CM_SEQUENCES.find(s=>s.id===id) : null;
         const label = seqDef ? seqDef.label : id;
-        const done = doneIds.has(id);
+        const best = bestBySeq.get(id);
+        const pct = best ? Math.round(100*best.score/best.total) : null;
+        const color = pct!==null ? devoirPctColor(pct) : 'var(--ink-soft)';
+        const scoreHtml = best ? ` <span style="color:${color};font-weight:700;">${best.score}/${best.total} (${pct}%)</span>` : '';
         return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0;">
-          <span class="hint" style="margin:0;">${done?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}</span>
-          <button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="startDevoirCMSequence('${d.id}','${id}')">${done?'Refaire':'Faire cette séquence'}</button>
+          <span class="hint" style="margin:0;">${best?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}${scoreHtml}</span>
+          ${isRendu ? '' : `<button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="startDevoirCMSequence('${d.id}','${id}')">${best?'Refaire':'Faire cette séquence'}</button>`}
         </div>`;
       }).join('');
-      actionHtml = `<div style="margin-top:4px;">${detail}</div>`;
+      actionHtml = `<div style="margin-top:4px;">
+        ${overallPct!==null ? `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:2px;">
+          <span class="hint" style="margin:0;">Score global</span>
+          <span class="hint" style="margin:0;font-weight:700;color:${overallColor};">${overallPct}%</span>
+        </div>
+        <div class="sup-progress-bar" style="margin-bottom:8px;"><div class="sup-progress-fill" style="width:${overallPct}%;background:${overallColor};"></div></div>` : ''}
+        ${detail}
+        ${isRendu
+          ? `<p class="hint" style="margin:8px 0 0;"><span class="gicon" style="font-size:.9rem;vertical-align:middle;">lock</span> Devoir rendu -- vous ne pouvez plus modifier vos réponses.</p>`
+          : `<div class="tool-row" style="margin-top:8px;">
+              <button class="btn" onclick="submitDevoirAutomatismes('${d.id}')"><span class=gicon>send</span> Rendre le devoir</button>
+            </div>
+            <p class="hint" style="margin:4px 0 0;">Vous pouvez retenter chaque séquence autant de fois que vous voulez avant de rendre.</p>`}
+      </div>`;
     } else if(d.type==='compte_est_bon'){
       const rounds = d.ceb_rounds || [];
       const { data: attempts } = await sb.from('ceb_results').select('devoir_round,gap,result_value').eq('devoir_id', d.id).eq('student_id', currentUser.id);
@@ -819,16 +847,32 @@ async function renderDevoirsEleve(){
       window._devoirCebRoundsCache = window._devoirCebRoundsCache || {};
       window._devoirCebRoundsCache[d.id] = { rounds, timerOn: d.ceb_timer_on, timerDuration: d.ceb_timer_duration };
       const settingsLabel = `${d.ceb_n_large??2} grand(s) nombre(s), ${d.ceb_timer_on?'chronométré ('+(d.ceb_timer_duration||60)+' s)':'illimité'}`;
+      // "Trouvé" = écart 0 -- un compte simplement tenté mais pas exact reste à réessayer
+      // (voir refreshDevoirCEBProgress : le rendu n'arrive que si tout est trouvé).
+      const nbExacts = Array.from(bestByRound.values()).filter(a=>a.gap===0).length;
+      const pctExact = rounds.length ? Math.round(100*nbExacts/rounds.length) : null;
+      const colorExact = pctExact!==null ? devoirPctColor(pctExact) : 'var(--ink-soft)';
       const roundsHtml = rounds.map((r,i)=>{
-        const done = bestByRound.get(i);
+        const best = bestByRound.get(i);
+        const exact = best && best.gap===0;
+        const icon = exact ? '<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>'
+          : best ? '<span class="gicon" style="font-size:.9rem;color:#C77D1E;">adjust</span>'
+          : '<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>';
+        const label = exact ? ' : trouvé !' : best ? ` : écart ${best.gap}` : '';
         return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0;">
-          <span class="hint" style="margin:0;">${done?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} Compte ${i+1}${done?` : écart ${done.gap}`:''}</span>
-          <button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="startDevoirCEB('${d.id}',${i})">${done?'Retenter':'Jouer'}</button>
+          <span class="hint" style="margin:0;">${icon} Compte ${i+1}${label}</span>
+          <button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="startDevoirCEB('${d.id}',${i})">${best?'Retenter':'Jouer'}</button>
         </div>`;
       }).join('');
       actionHtml = `<div style="margin-top:4px;">
         <p class="hint" style="margin:0 0 4px;">${settingsLabel}</p>
+        ${pctExact!==null ? `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 0 2px;">
+          <span class="hint" style="margin:0;">Comptes trouvés</span>
+          <span class="hint" style="margin:0;font-weight:700;color:${colorExact};">${pctExact}%</span>
+        </div>
+        <div class="sup-progress-bar" style="margin-bottom:8px;"><div class="sup-progress-fill" style="width:${pctExact}%;background:${colorExact};"></div></div>` : ''}
         ${roundsHtml}
+        ${(rendu && rendu.est_rendu) ? '' : `<p class="hint" style="margin:8px 0 0;">Ce devoir se rend automatiquement une fois tous les comptes trouvés exactement -- vous pouvez retenter autant de fois que vous voulez.</p>`}
       </div>`;
     } else if(d.type==='figure_completer'){
       actionHtml = `<div class="tool-row" style="margin-top:4px;">
@@ -961,33 +1005,33 @@ async function submitCurrentFigureAsDevoir(){
   await niceAlert('Devoir rendu avec succès.');
   await renderDevoirsEleve();
 }
-/* Devoir "automatismes" : pas de fichier/figure à rendre -- le devoir est considéré fait une
-   fois que l'élève a tenté TOUTES les séquences assignées (au moins une fois chacune, quel que
-   soit le score). Appelée par calcul-mental.js après chaque tentative jouée dans le contexte
-   d'un devoir (voir startDevoirCMSequence ci-dessous). */
-async function refreshDevoirAutomatismesProgress(devoirId){
-  const { data: devoir } = await sb.from('devoirs').select('automatismes_sequences').eq('id', devoirId).single();
-  if(!devoir) return;
-  const seqs = devoir.automatismes_sequences || [];
-  if(!seqs.length) return;
-  const { data: attempts } = await sb.from('cm_results').select('sequence_id').eq('devoir_id', devoirId).eq('student_id', currentUser.id);
-  const doneIds = new Set((attempts||[]).map(a=>a.sequence_id));
-  if(!seqs.every(id=>doneIds.has(id))) return;
-  await sb.from('devoirs_rendus').upsert({
+/* Devoir "automatismes" : contrairement au compte est bon, il n'y a pas de critère de réussite
+   objectif (une séquence n'est jamais "trouvée" ou pas) -- signalé : "pour les autres devoirs,
+   on peut tenter plusieurs fois, essayer d'améliorer... avoir un bouton rendre permet de
+   boucler totalement le devoir". Le rendu est donc une action explicite de l'élève
+   (submitDevoirAutomatismes, bouton "Rendre le devoir" de renderDevoirsEleve), pas automatique
+   -- tant qu'il n'a pas rendu, il peut retenter chaque séquence autant de fois qu'il veut. */
+async function submitDevoirAutomatismes(devoirId){
+  if(!(await niceConfirm('Rendre ce devoir ? Vous ne pourrez plus retenter les séquences ensuite.'))) return;
+  const { error } = await sb.from('devoirs_rendus').upsert({
     devoir_id: devoirId, student_id: currentUser.id, type: 'automatismes', est_rendu: true, submitted_at: new Date().toISOString(),
   }, { onConflict: 'devoir_id,student_id' });
+  if(error){ await niceAlert('Erreur : '+error.message); return; }
+  await renderDevoirsEleve();
 }
-/* Devoir "compte est bon" : considéré fait une fois TOUS les comptes assignés joués au moins une
-   fois chacun (le nombre de comptes est choisi par le prof -- "il faut pouvoir en assigner
-   plusieurs"). Appelée par compte-est-bon.js après chaque tentative enregistrée dans le contexte
-   d'un devoir. */
+/* Devoir "compte est bon" : contrairement aux automatismes, chaque compte a un critère de
+   réussite objectif (trouver EXACTEMENT la cible) -- le rendu reste donc automatique, mais
+   seulement une fois que TOUS les comptes assignés ont été trouvés exactement, pas simplement
+   tentés -- signalé : "pour le compte est bon, le rendu se fait quand on a tout trouvé
+   automatiquement". Appelée par compte-est-bon.js après chaque tentative enregistrée dans le
+   contexte d'un devoir. */
 async function refreshDevoirCEBProgress(devoirId){
   const { data: devoir } = await sb.from('devoirs').select('ceb_rounds').eq('id', devoirId).single();
   if(!devoir) return;
   const nRounds = (devoir.ceb_rounds || []).length || 1;
-  const { data: attempts } = await sb.from('ceb_results').select('devoir_round').eq('devoir_id', devoirId).eq('student_id', currentUser.id);
-  const doneRounds = new Set((attempts||[]).map(a=>a.devoir_round ?? 0));
-  if(doneRounds.size < nRounds) return;
+  const { data: attempts } = await sb.from('ceb_results').select('devoir_round,gap').eq('devoir_id', devoirId).eq('student_id', currentUser.id);
+  const exactRounds = new Set((attempts||[]).filter(a=>a.gap===0).map(a=>a.devoir_round ?? 0));
+  if(exactRounds.size < nRounds) return;
   await sb.from('devoirs_rendus').upsert({
     devoir_id: devoirId, student_id: currentUser.id, type: 'compte_est_bon', est_rendu: true, submitted_at: new Date().toISOString(),
   }, { onConflict: 'devoir_id,student_id' });

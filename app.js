@@ -2397,6 +2397,11 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.608', items:[
+    "Devoirs élève (Automatismes / Compte est bon), refonte suite à un test réel : \"je ne sais pas si mes résultats sont transmis... comment je rends mon travail ?\". Chaque séquence/compte affiche désormais son score en %, coloré comme dans la vue du professeur, avec une barre de réussite globale pour le devoir.",
+    "Automatismes -- signalé : \"on peut tenter plusieurs fois, essayer d'améliorer... avoir un bouton rendre permet de boucler totalement le devoir\". Le rendu n'est plus automatique : un bouton \"Rendre le devoir\" apparaît, à cliquer quand l'élève est satisfait -- il peut retenter chaque séquence autant de fois qu'il veut avant. Une fois rendu, les séquences ne sont plus modifiables.",
+    "Compte est bon -- signalé : \"le rendu se fait quand on a tout trouvé automatiquement\". Le rendu automatique exigeait jusqu'ici seulement d'avoir TENTÉ chaque compte assigné, pas de l'avoir trouvé exactement -- corrigé : il faut maintenant avoir trouvé LA cible exacte (écart 0) pour chaque compte. Les comptes déjà tentés sans succès restent réessayables sans limite. Un devoir déjà marqué \"Rendu\" à tort sous l'ancienne règle a été remis à jour en base.",
+  ]},
   { version:'2026-08-19.607', items:[
     "Fix -- signalé : \"les résultats dans devoir n'affichent pas le prénom\". La modale \"Voir les rendus\" d'un devoir (Supervision → Devoirs) était restée à l'écart de la correction précédente (build 606) : elle affiche maintenant \"Nom Prénom\" comme partout ailleurs, pour les 3 types de devoirs (fichier/figure, automatismes, compte est bon) et dans leur export CSV.",
   ]},
