@@ -194,11 +194,11 @@ function applyCMChipRecords(){
 // "rendre la page des automatismes un peu plus sexy... tous ces blocs austères, ce n'est pas
 // engageant". Chaque groupe a sa couleur et son symbole distinctifs.
 const CM_GROUPS = [
-  {min:1, max:21, title:'Additions et soustractions', symbol:'+', color:'#FF8208', bg:'rgba(255,130,8,.08)'},
-  {min:22, max:39, title:'Tables et multiplications', symbol:'×', color:'#0C5BA0', bg:'rgba(12,91,160,.08)'},
-  {min:42, max:52, title:'Divisions', symbol:'÷', color:'#26AAB1', bg:'rgba(38,170,177,.08)'},
-  {min:64, max:69, title:'Pourcentages et écritures', symbol:'%', color:'#5B2F9E', bg:'rgba(91,47,158,.08)'},
-  {min:74, max:112, title:'Calcul avec les décimaux', symbol:'0,1', color:'#9E1F5E', bg:'rgba(158,31,94,.08)'},
+  {min:1, max:21, title:'Additions et soustractions', symbol:'+', color:'#FF8208', dark:'#B85400', bg:'rgba(255,130,8,.08)'},
+  {min:22, max:39, title:'Tables et multiplications', symbol:'×', color:'#0C5BA0', dark:'#123B6B', bg:'rgba(12,91,160,.08)'},
+  {min:42, max:52, title:'Divisions', symbol:'÷', color:'#26AAB1', dark:'#1C8388', bg:'rgba(38,170,177,.08)'},
+  {min:64, max:69, title:'Pourcentages et écritures', symbol:'%', color:'#5B2F9E', dark:'#3A1D66', bg:'rgba(91,47,158,.08)'},
+  {min:74, max:112, title:'Calcul avec les décimaux', symbol:'0,1', color:'#9E1F5E', dark:'#6B1440', bg:'rgba(158,31,94,.08)'},
 ];
 function cmGroupFor(seq){ return CM_GROUPS.find(g=>seq>=g.min && seq<=g.max) || CM_GROUPS[CM_GROUPS.length-1]; }
 
@@ -272,6 +272,13 @@ function cmDevoirTestBtnHtml(){
   return (typeof devoirTestModeActive!=='undefined' && devoirTestModeActive)
     ? `<button class="btn secondary" onclick="returnToDevoirCreationFromCMTest()">↩ Retour à la création du devoir</button>` : '';
 }
+/* Couleur du thème (groupe de la séquence, voir CM_GROUPS) appliquée à la carte de jeu --
+   demandé : "rendre la fenêtre plus sexy, un peu comme le compte est bon" (carte dégradée
+   sombre à la place du fond blanc austère). */
+function cmGameStyle(){
+  const g = currentCMSeq ? cmGroupFor(currentCMSeq.seq) : CM_GROUPS[1];
+  return `--cm-accent:${g.color};--cm-accent-dark:${g.dark};`;
+}
 
 /* Point d'entrée d'une séquence -- affiche d'abord un écran d'accueil (exemple non noté +
    bouton "Démarrer") plutôt que de lancer directement le chrono sur la 1re question -- signalé :
@@ -292,15 +299,16 @@ function renderCMIntro(){
   if(cmTimerInterval){ clearInterval(cmTimerInterval); cmTimerInterval=null; }
   const ws = document.getElementById('cmWorkspace');
   const parts = cmExample.text.split('...');
+  const g = currentCMSeq ? cmGroupFor(currentCMSeq.seq) : CM_GROUPS[1];
   ws.innerHTML = `
     <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">${cmDevoirTestBtnHtml()}</div>
     <div class="cm-intro">
       <p class="hint" style="margin:0 0 4px;">8 questions à la suite, chronométrées dès que vous démarrez.</p>
-      <div class="cm-example-box">
-        <div class="cm-example-label">Exemple</div>
+      <div class="cm-example-box" style="border-left-color:${g.color};">
+        <div class="cm-example-label" style="color:${g.color};">Exemple</div>
         <span>${parts[0]}${formatNb(cmExample.ans)}${parts[1]||''}</span>
       </div>
-      <button class="btn" onclick="startCMExercise()">Démarrer →</button>
+      <button class="btn" style="background:${g.color};" onclick="startCMExercise()">Démarrer →</button>
     </div>`;
 }
 function startCMExercise(){
@@ -321,19 +329,21 @@ function renderCMQuestion(){
   const isLast = cmCurrentIndex === cmQuestions.length-1;
   const ws = document.getElementById('cmWorkspace');
   ws.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">
-      <span class="cm-timer" id="cmTimerDisplay">0,0 s</span>
-      ${cmDevoirTestBtnHtml()}
-    </div>
-    <p class="cm-progress">Question ${cmCurrentIndex+1} / ${cmQuestions.length}</p>
-    <div class="cm-question-box">
-      <span>${parts[0]}</span><input type="text" inputmode="decimal" autocomplete="off" id="cmAnswerInput" value="${cmAnswers[cmCurrentIndex]||''}"><span>${parts[1]||''}</span>
-    </div>
-    <div class="cm-keypad" id="cmKeypad">
-      ${['7','8','9','4','5','6','1','2','3',',','0','⌫'].map(k=>`<button type="button" class="${k==='⌫'?'cm-key-erase':''}" onclick="cmKeypadPress('${k==="⌫"?"back":k}')">${k}</button>`).join('')}
-    </div>
-    <div style="text-align:center;">
-      <button class="btn" id="cmNextBtn" onclick="cmGoNext()">${isLast?'Valider ✓':'Suivant →'}</button>
+    <div class="cm-game" style="${cmGameStyle()}">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">
+        <span class="cm-timer" id="cmTimerDisplay">0,0 s</span>
+        ${cmDevoirTestBtnHtml()}
+      </div>
+      <p class="cm-progress">Question ${cmCurrentIndex+1} / ${cmQuestions.length}</p>
+      <div class="cm-question-box">
+        <span>${parts[0]}</span><input type="text" inputmode="decimal" autocomplete="off" id="cmAnswerInput" value="${cmAnswers[cmCurrentIndex]||''}"><span>${parts[1]||''}</span>
+      </div>
+      <div class="cm-keypad" id="cmKeypad">
+        ${['7','8','9','4','5','6','1','2','3',',','0','⌫'].map(k=>`<button type="button" class="${k==='⌫'?'cm-key-erase':''}" onclick="cmKeypadPress('${k==="⌫"?"back":k}')">${k}</button>`).join('')}
+      </div>
+      <div style="text-align:center;">
+        <button class="btn" id="cmNextBtn" onclick="cmGoNext()">${isLast?'Valider ✓':'Suivant →'}</button>
+      </div>
     </div>`;
   updateCMTimerDisplay();
   const input = document.getElementById('cmAnswerInput');
@@ -403,18 +413,20 @@ async function checkCM(){
 function renderCMResult(score, total, durationMs){
   const ws = document.getElementById('cmWorkspace');
   ws.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;">
-      <span class="cm-timer">${formatStopwatch(durationMs||0)}</span>
-      <div>${cmDevoirTestBtnHtml()} <button class="btn secondary" onclick="runCM('${currentCMSeq.id}')">Recommencer ↻</button></div>
-    </div>
-    <p class="hint" id="cmResultStatus" style="margin-top:0;"></p>
-    <div class="cm-q-grid">${cmQuestions.map((q,i)=>{
-      const parts = q.text.split('...');
-      const userVal = cmAnswers[i];
-      const ok = parseFloat((userVal||'').replace(',','.'))===q.ans;
-      return `<div class="cm-q ${ok?'ok':'ko'}"><span>${parts[0]}</span><span class="cm-q-answer">${userVal?escapeHtml(userVal):'—'}</span><span>${parts[1]||''}${!ok?` <span class="hint" style="margin:0;">(réponse : ${formatNb(q.ans)})</span>`:''}</span></div>`;
-    }).join('')}</div>
-    <div class="cm-records" id="cmRecordsBox" style="display:none;"></div>`;
+    <div class="cm-game" style="${cmGameStyle()}">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;">
+        <span class="cm-timer">${formatStopwatch(durationMs||0)}</span>
+        <div>${cmDevoirTestBtnHtml()} <button class="btn secondary" onclick="runCM('${currentCMSeq.id}')">Recommencer ↻</button></div>
+      </div>
+      <p class="hint" id="cmResultStatus" style="margin-top:0;"></p>
+      <div class="cm-q-grid">${cmQuestions.map((q,i)=>{
+        const parts = q.text.split('...');
+        const userVal = cmAnswers[i];
+        const ok = parseFloat((userVal||'').replace(',','.'))===q.ans;
+        return `<div class="cm-q ${ok?'ok':'ko'}"><span>${parts[0]}</span><span class="cm-q-answer">${userVal?escapeHtml(userVal):'—'}</span><span>${parts[1]||''}${!ok?` <span class="hint" style="margin:0;">(réponse : ${formatNb(q.ans)})</span>`:''}</span></div>`;
+      }).join('')}</div>
+      <div class="cm-records" id="cmRecordsBox" style="display:none;"></div>
+    </div>`;
 }
 async function showCMRecords(sequenceId, myDurationMs){
   const box = document.getElementById('cmRecordsBox');

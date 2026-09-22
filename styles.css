@@ -711,30 +711,61 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
    "un pavé numérique tactile pour les Chromebooks" (ni souris, ni pavé physique fiable). */
 .cm-intro{text-align:center;padding:6px 0 10px;}
 .cm-example-box{
-  background:var(--paper);border-radius:10px;padding:16px 20px;margin:14px auto;
-  max-width:340px;font-family:'JetBrains Mono',monospace;font-size:1.1rem;
+  background:var(--paper);border-radius:10px;border-left:4px solid var(--ink-soft);padding:16px 20px;margin:14px auto;
+  max-width:340px;font-family:'JetBrains Mono',monospace;font-size:1.1rem;box-shadow:0 2px 8px rgba(28,43,57,.08);
 }
 .cm-example-label{font-family:'Space Grotesk',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin-bottom:6px;}
-.cm-progress{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.85rem;color:var(--ink-soft);text-align:center;margin:0 0 4px;}
+.cm-progress{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.9rem;color:#fff;opacity:.85;text-align:center;margin:0 0 4px;}
+
+/* Carte de jeu (question + résultat) au style dégradé sombre, teintée selon le groupe de la
+   séquence (--cm-accent/--cm-accent-dark, voir cmGameStyle) -- demandé : "rendre la fenêtre
+   plus sexy, un peu comme le compte est bon". Reprend le principe de .ceb-game. */
+.cm-game{
+  background:linear-gradient(160deg,var(--cm-accent,var(--accent)),var(--cm-accent-dark,#123B6B));
+  border-radius:20px;padding:26px 22px;box-shadow:0 20px 50px rgba(12,43,80,.25);
+}
+.cm-game .cm-timer{color:#fff;}
+.cm-game .hint{color:rgba(255,255,255,.85);}
+.cm-game button.btn.secondary{background:rgba(255,255,255,.16);color:#fff;}
+.cm-game button.btn.secondary:hover{background:rgba(255,255,255,.26);}
+.cm-game button.btn:not(.secondary){background:#fff;color:var(--ink);}
+.cm-game button.btn:not(.secondary):hover{background:#fff;filter:brightness(.96);}
 .cm-question-box{
-  background:var(--paper);border-radius:12px;padding:26px 16px;margin:10px auto 18px;
-  max-width:420px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.3rem;
-  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;
+  background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.35);border-radius:16px;
+  padding:30px 18px;margin:10px auto 22px;max-width:460px;text-align:center;
+  font-family:'JetBrains Mono',monospace;font-size:1.5rem;color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;
 }
 .cm-question-box input{
-  width:110px;text-align:center;padding:6px 8px;margin:0 4px;border-radius:8px;
-  border:2px solid rgba(28,43,57,.25);font-family:'JetBrains Mono',monospace;font-size:1.2rem;
+  width:130px;text-align:center;padding:8px 10px;margin:0 4px;border-radius:10px;
+  border:none;font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;
+  background:#fff;color:var(--ink);
 }
-.cm-question-box input:focus{outline:none;border-color:var(--accent);}
-.cm-keypad{display:grid;grid-template-columns:repeat(3,54px);gap:8px;justify-content:center;margin:16px auto;}
+.cm-question-box input:focus{outline:3px solid rgba(255,255,255,.5);}
+.cm-keypad{display:grid;grid-template-columns:repeat(3,72px);gap:12px;justify-content:center;margin:18px auto;}
 .cm-keypad button{
-  width:54px;height:46px;border-radius:10px;border:1px solid rgba(28,43,57,.15);
-  background:var(--white);font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;
-  color:var(--ink);cursor:pointer;transition:.1s;
+  width:72px;height:64px;border-radius:14px;border:none;
+  background:linear-gradient(160deg,#FFFFFF,#F3ECDD);box-shadow:0 3px 0 rgba(12,20,30,.3),0 4px 10px rgba(0,0,0,.15);
+  font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;
+  color:var(--ink);cursor:pointer;transition:transform .1s ease, box-shadow .1s ease;
 }
-.cm-keypad button:hover{background:rgba(28,43,57,.06);}
-.cm-keypad button:active{background:rgba(28,43,57,.12);transform:scale(.95);}
-.cm-keypad button.cm-key-erase{color:#a83c1f;}
+.cm-keypad button:hover{transform:translateY(-2px);box-shadow:0 5px 0 rgba(12,20,30,.3),0 8px 16px rgba(0,0,0,.18);}
+.cm-keypad button:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(12,20,30,.3),0 2px 6px rgba(0,0,0,.15);}
+.cm-keypad button.cm-key-erase{color:#fff;background:linear-gradient(160deg,#F76B6B,#C23B3B);box-shadow:0 3px 0 #8C2626,0 4px 10px rgba(0,0,0,.15);}
+.cm-game .cm-q{background:rgba(255,255,255,.12);color:#fff;}
+.cm-game .cm-q input,.cm-game .cm-q .cm-q-answer{border-color:rgba(255,255,255,.4);color:#fff;}
+.cm-game .cm-q.ok input,.cm-game .cm-q.ok .cm-q-answer{background:rgba(62,190,122,.3);border-color:#3EBE7A;}
+.cm-game .cm-q.ko input,.cm-game .cm-q.ko .cm-q-answer{background:rgba(247,107,107,.25);border-color:#F76B6B;}
+.cm-game .cm-record-box{background:rgba(255,255,255,.12);color:#fff;}
+.cm-game .cm-record-box.cm-record-mine{background:rgba(255,255,255,.22);}
+
+@media (max-width:480px){
+  .cm-game{padding:18px 12px;border-radius:14px;}
+  .cm-question-box{padding:20px 12px;font-size:1.2rem;}
+  .cm-question-box input{width:100px;font-size:1.15rem;}
+  .cm-keypad{grid-template-columns:repeat(3,58px);gap:8px;}
+  .cm-keypad button{width:58px;height:52px;font-size:1.2rem;border-radius:12px;}
+}
 
 footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:30px;}
 footer a{text-decoration:underline;text-underline-offset:2px;}

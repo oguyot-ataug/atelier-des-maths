@@ -2386,6 +2386,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.600', items:[
+    "Automatismes, esthétique -- signalé : \"un pavé numérique un peu plus gros\" et \"rendre la fenêtre plus sexy, un peu comme le compte est bon\". La fenêtre d'exercice (question et résultat) reprend désormais une carte dégradée colorée, comme pour Compte est bon, teintée selon le thème de la séquence (additions, tables, divisions, pourcentages, décimaux). Le pavé numérique tactile est nettement agrandi (boutons 72×64 px au lieu de 54×46) avec un relief 3D.",
+  ]},
   { version:'2026-08-19.599', items:[
     "Automatismes, refonte de l'ergonomie suite à plusieurs remarques : 1) un écran d'accueil (exemple résolu + bouton \"Démarrer\") s'affiche avant chaque série -- le chrono ne démarre qu'au clic sur \"Démarrer\", plus de calculs qui s'enchaînent sans prévenir. 2) Les 8 calculs s'affichent désormais un par un (au lieu d'une grille complète d'un coup), avec un repère \"Question X / 8\". 3) Un bouton \"Suivant\" (\"Valider\" sur le dernier) fait passer au calcul suivant -- la touche Entrée du clavier fait la même chose. 4) Un pavé numérique tactile (chiffres, virgule, effacer) est affiché sous chaque question, utile sur Chromebook ou tout appareil sans pavé numérique physique -- la saisie au clavier reste pleinement disponible en parallèle. L'écran de résultat final (score, revue des 8 réponses, records) est inchangé dans son contenu.",
   ]},
