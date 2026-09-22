@@ -2386,6 +2386,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.599', items:[
+    "Automatismes, refonte de l'ergonomie suite à plusieurs remarques : 1) un écran d'accueil (exemple résolu + bouton \"Démarrer\") s'affiche avant chaque série -- le chrono ne démarre qu'au clic sur \"Démarrer\", plus de calculs qui s'enchaînent sans prévenir. 2) Les 8 calculs s'affichent désormais un par un (au lieu d'une grille complète d'un coup), avec un repère \"Question X / 8\". 3) Un bouton \"Suivant\" (\"Valider\" sur le dernier) fait passer au calcul suivant -- la touche Entrée du clavier fait la même chose. 4) Un pavé numérique tactile (chiffres, virgule, effacer) est affiché sous chaque question, utile sur Chromebook ou tout appareil sans pavé numérique physique -- la saisie au clavier reste pleinement disponible en parallèle. L'écran de résultat final (score, revue des 8 réponses, records) est inchangé dans son contenu.",
+  ]},
   { version:'2026-08-19.598', items:[
     "Devoirs : pastille sur le bouton \"Mes devoirs\" du menu, affichant le nombre de devoirs pas encore rendus -- signalé : \"les élèves sont-ils prévenus en allant sur le site que des devoirs les attendent ?\". Visible dès la connexion, sans avoir à ouvrir la page Devoirs. Se met à jour après chaque rendu et tient compte du ciblage (classe entière ou élèves sélectionnés) et de la date de dépôt (un devoir pas encore publié ne compte pas).",
   ]},

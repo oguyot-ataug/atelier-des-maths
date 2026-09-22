@@ -233,6 +233,11 @@ let currentCMSeq = null;
 let cmStartTime = null;
 let cmTimerInterval = null;
 let currentDevoirCM = null; // {devoirId} -- suivi quand une séquence est lancée depuis un devoir (voir devoirs.js)
+let cmQuestions = [];   // les 8 questions notées de la série en cours
+let cmAnswers = [];     // réponses tapées, dans le même ordre que cmQuestions
+let cmCurrentIndex = 0; // question affichée en ce moment (parcours progressif)
+let cmExample = null;   // question de démonstration affichée sur l'écran d'accueil, jamais notée
+
 /* Lance une séquence d'automatismes dans le contexte d'un devoir (bouton "Faire cette séquence"
    de renderDevoirsEleve, devoirs.js). La tentative sera notée avec ce devoir_id (voir checkCM),
    ce qui permet à refreshDevoirAutomatismesProgress (devoirs.js) de suivre la progression. */
@@ -242,7 +247,7 @@ function startDevoirCMSequence(devoirId, seqId){
 }
 function formatStopwatch(ms){
   const s = ms/1000;
-  return s.toFixed(1).replace('.',',')+'\u00A0s';
+  return s.toFixed(1).replace('.',',')+' s';
 }
 function updateCMTimerDisplay(){
   const el = document.getElementById('cmTimerDisplay');
@@ -263,46 +268,109 @@ function returnToDevoirCreationFromCMTest(){
   closeCMModal();
   if(typeof returnToDevoirCreationFromTest==='function') returnToDevoirCreationFromTest();
 }
+function cmDevoirTestBtnHtml(){
+  return (typeof devoirTestModeActive!=='undefined' && devoirTestModeActive)
+    ? `<button class="btn secondary" onclick="returnToDevoirCreationFromCMTest()">↩ Retour à la création du devoir</button>` : '';
+}
+
+/* Point d'entrée d'une séquence -- affiche d'abord un écran d'accueil (exemple non noté +
+   bouton "Démarrer") plutôt que de lancer directement le chrono sur la 1re question -- signalé :
+   "le chrono et la séance démarrent immédiatement alors que je ne sais pas ce que je dois
+   faire". Le chrono ne démarre qu'au clic sur "Démarrer" (voir startCMExercise). */
 function runCM(id){
   const seqDef = CM_SEQUENCES.find(s=>s.id===id);
   currentCMSeq = seqDef;
-  const qs = Array.from({length:8},()=>seqDef.gen());
+  cmExample = seqDef.gen();
+  cmQuestions = Array.from({length:8},()=>seqDef.gen());
+  cmAnswers = new Array(8).fill('');
+  cmCurrentIndex = 0;
   document.getElementById('cmModalTitle').textContent = seqDef.label;
-  const ws=document.getElementById('cmWorkspace');
-  const devoirTestBtn = (typeof devoirTestModeActive!=='undefined' && devoirTestModeActive)
-    ? `<button class="btn secondary" onclick="returnToDevoirCreationFromCMTest()">↩ Retour à la création du devoir</button> ` : '';
-  ws.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;">
-      <span class="cm-timer" id="cmTimerDisplay">0,0\u00A0s</span>
-      <div>${devoirTestBtn}<button class="btn secondary" onclick="runCM('${id}')">Nouvelle série ↻</button> <button class="btn" onclick="checkCM()">Corriger</button></div>
-    </div>
-    <div class="cm-q-grid">${qs.map((q,i)=>{
-      const parts = q.text.split('...');
-      return `<div class="cm-q" data-ans="${q.ans}"><span>${parts[0]}</span><input type="text" data-i="${i}"><span>${parts[1]||''}</span></div>`;
-    }).join('')}</div>
-    <p class="hint" id="cmResultStatus" style="margin-top:10px;"></p>
-    <div class="cm-records" id="cmRecordsBox" style="display:none;"></div>`;
+  renderCMIntro();
   document.getElementById('cmExerciseModalOverlay').style.display='flex';
+}
+function renderCMIntro(){
+  if(cmTimerInterval){ clearInterval(cmTimerInterval); cmTimerInterval=null; }
+  const ws = document.getElementById('cmWorkspace');
+  const parts = cmExample.text.split('...');
+  ws.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">${cmDevoirTestBtnHtml()}</div>
+    <div class="cm-intro">
+      <p class="hint" style="margin:0 0 4px;">8 questions à la suite, chronométrées dès que vous démarrez.</p>
+      <div class="cm-example-box">
+        <div class="cm-example-label">Exemple</div>
+        <span>${parts[0]}${formatNb(cmExample.ans)}${parts[1]||''}</span>
+      </div>
+      <button class="btn" onclick="startCMExercise()">Démarrer →</button>
+    </div>`;
+}
+function startCMExercise(){
   cmStartTime = performance.now();
   if(cmTimerInterval) clearInterval(cmTimerInterval);
   cmTimerInterval = setInterval(updateCMTimerDisplay, 100);
+  renderCMQuestion();
+}
+/* Affiche UNE question à la fois (au lieu des 8 en grille) -- signalé : "ne pas montrer tous les
+   calculs d'un coup, les afficher progressivement" -- avec un pavé numérique tactile qui
+   complète, sans jamais remplacer, la saisie au clavier physique (utile sur Chromebook ou tout
+   autre appareil sans pavé numérique dédié) -- signalé : "il n'y a pas de pavé numérique... on
+   pourrait en afficher un tactile". La touche Entrée du clavier fait la même chose que le bouton
+   Suivant/Valider -- signalé : "comment passer d'un calcul au suivant ?". */
+function renderCMQuestion(){
+  const q = cmQuestions[cmCurrentIndex];
+  const parts = q.text.split('...');
+  const isLast = cmCurrentIndex === cmQuestions.length-1;
+  const ws = document.getElementById('cmWorkspace');
+  ws.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">
+      <span class="cm-timer" id="cmTimerDisplay">0,0 s</span>
+      ${cmDevoirTestBtnHtml()}
+    </div>
+    <p class="cm-progress">Question ${cmCurrentIndex+1} / ${cmQuestions.length}</p>
+    <div class="cm-question-box">
+      <span>${parts[0]}</span><input type="text" inputmode="decimal" autocomplete="off" id="cmAnswerInput" value="${cmAnswers[cmCurrentIndex]||''}"><span>${parts[1]||''}</span>
+    </div>
+    <div class="cm-keypad" id="cmKeypad">
+      ${['7','8','9','4','5','6','1','2','3',',','0','⌫'].map(k=>`<button type="button" class="${k==='⌫'?'cm-key-erase':''}" onclick="cmKeypadPress('${k==="⌫"?"back":k}')">${k}</button>`).join('')}
+    </div>
+    <div style="text-align:center;">
+      <button class="btn" id="cmNextBtn" onclick="cmGoNext()">${isLast?'Valider ✓':'Suivant →'}</button>
+    </div>`;
   updateCMTimerDisplay();
-  const firstInput = ws.querySelector('.cm-q input');
-  if(firstInput) firstInput.focus();
+  const input = document.getElementById('cmAnswerInput');
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); cmGoNext(); } });
+  input.focus();
+}
+/* Touches du pavé tactile -- insèrent dans le champ de saisie comme si l'élève tapait au
+   clavier (même valeur, même comparaison à la correction dans checkCM). */
+function cmKeypadPress(k){
+  const input = document.getElementById('cmAnswerInput');
+  if(!input) return;
+  if(k==='back') input.value = input.value.slice(0,-1);
+  else if(k===','){ if(!input.value.includes(',')) input.value += ','; }
+  else input.value += k;
+  input.focus();
+}
+function cmGoNext(){
+  const input = document.getElementById('cmAnswerInput');
+  cmAnswers[cmCurrentIndex] = input ? input.value : '';
+  if(cmCurrentIndex < cmQuestions.length-1){
+    cmCurrentIndex++;
+    renderCMQuestion();
+  } else {
+    checkCM();
+  }
 }
 async function checkCM(){
   if(cmTimerInterval){ clearInterval(cmTimerInterval); cmTimerInterval=null; }
   const durationMs = cmStartTime ? Math.round(performance.now()-cmStartTime) : null;
-  updateCMTimerDisplay();
-  let score=0, total=0;
-  document.querySelectorAll('.cm-q').forEach(box=>{
-    const input=box.querySelector('input');
-    const val=parseFloat(input.value.replace(',','.'));
-    const ans=parseFloat(box.dataset.ans);
-    box.classList.remove('ok','ko');
-    total++;
-    if(val===ans){ box.classList.add('ok'); score++; } else box.classList.add('ko');
+  let score=0;
+  const total = cmQuestions.length;
+  cmQuestions.forEach((q,i)=>{
+    const val = parseFloat((cmAnswers[i]||'').replace(',','.'));
+    if(val===q.ans) score++;
   });
   const perfect = score===total;
+  renderCMResult(score, total, durationMs);
   const status = document.getElementById('cmResultStatus');
   if(currentUserRole==='eleve' && currentUser){
     const { error } = await sb.from('cm_results').insert({
@@ -329,6 +397,24 @@ async function checkCM(){
   } else if(status){
     status.textContent = "Score : "+score+"/"+total+(perfect ? " — en "+formatDuration(durationMs)+"." : ".");
   }
+}
+/* Écran de résultat -- reprend chaque question avec la réponse donnée par l'élève (verte si
+   juste, rouge avec la bonne réponse sinon), comme le faisait la grille d'origine. */
+function renderCMResult(score, total, durationMs){
+  const ws = document.getElementById('cmWorkspace');
+  ws.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;">
+      <span class="cm-timer">${formatStopwatch(durationMs||0)}</span>
+      <div>${cmDevoirTestBtnHtml()} <button class="btn secondary" onclick="runCM('${currentCMSeq.id}')">Recommencer ↻</button></div>
+    </div>
+    <p class="hint" id="cmResultStatus" style="margin-top:0;"></p>
+    <div class="cm-q-grid">${cmQuestions.map((q,i)=>{
+      const parts = q.text.split('...');
+      const userVal = cmAnswers[i];
+      const ok = parseFloat((userVal||'').replace(',','.'))===q.ans;
+      return `<div class="cm-q ${ok?'ok':'ko'}"><span>${parts[0]}</span><span class="cm-q-answer">${userVal?escapeHtml(userVal):'—'}</span><span>${parts[1]||''}${!ok?` <span class="hint" style="margin:0;">(réponse : ${formatNb(q.ans)})</span>`:''}</span></div>`;
+    }).join('')}</div>
+    <div class="cm-records" id="cmRecordsBox" style="display:none;"></div>`;
 }
 async function showCMRecords(sequenceId, myDurationMs){
   const box = document.getElementById('cmRecordsBox');
