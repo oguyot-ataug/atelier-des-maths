@@ -2397,6 +2397,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.609', items:[
+    "Devoirs, modale \"Voir les rendus\" (prof) -- signalé : \"indiquer le statut du devoir de l'élève (en cours ou rendu, retard)\". Une pastille colorée apparaît à côté de chaque élève : Rendu (vert), En retard (magenta -- date limite dépassée et pas encore rendu), ou En cours (bleu). S'applique aux 3 types de devoirs (fichier/figure, automatismes, compte est bon) et à leur export CSV.",
+  ]},
   { version:'2026-08-19.608', items:[
     "Devoirs élève (Automatismes / Compte est bon), refonte suite à un test réel : \"je ne sais pas si mes résultats sont transmis... comment je rends mon travail ?\". Chaque séquence/compte affiche désormais son score en %, coloré comme dans la vue du professeur, avec une barre de réussite globale pour le devoir.",
     "Automatismes -- signalé : \"on peut tenter plusieurs fois, essayer d'améliorer... avoir un bouton rendre permet de boucler totalement le devoir\". Le rendu n'est plus automatique : un bouton \"Rendre le devoir\" apparaît, à cliquer quand l'élève est satisfait -- il peut retenter chaque séquence autant de fois qu'il veut avant. Une fois rendu, les séquences ne sont plus modifiables.",
