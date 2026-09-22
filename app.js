@@ -2397,6 +2397,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.610', items:[
+    "Automatismes (devoirs), médailles -- signalé : \"pour créer un peu d'émulation, je propose de mettre des médailles\". Pour un devoir Automatismes, les 3 élèves les plus rapides à avoir 100% de bonnes réponses sur TOUTES les séquences du devoir (temps cumulé le plus bas) reçoivent 🥇🥈🥉. Le classement est en temps réel : une meilleure performance peut reprendre une médaille à tout moment. Un élève noté \"en retard\" (date limite dépassée, devoir pas rendu) devient hors compétition, même s'il aurait le meilleur temps. Côté élève : le temps de chaque séquence s'affiche avec le record de la session, et un encart indique la médaille en cours (ou ce qu'il reste à faire pour en obtenir une). Côté prof : les médailles s'affichent en temps réel dans \"Voir les rendus\", même si le devoir n'est pas encore rendu.",
+  ]},
   { version:'2026-08-19.609', items:[
     "Devoirs, modale \"Voir les rendus\" (prof) -- signalé : \"indiquer le statut du devoir de l'élève (en cours ou rendu, retard)\". Une pastille colorée apparaît à côté de chaque élève : Rendu (vert), En retard (magenta -- date limite dépassée et pas encore rendu), ou En cours (bleu). S'applique aux 3 types de devoirs (fichier/figure, automatismes, compte est bon) et à leur export CSV.",
   ]},

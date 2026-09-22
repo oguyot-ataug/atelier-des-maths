@@ -503,9 +503,9 @@ function devoirPctColor(pct){ return pct>=70?'#1F7A4D':pct>=40?'#C77D1E':'#9E1F5
    retard)". "En retard" = date limite dépassée et pas encore rendu. Renvoie {label, color, html}
    pour être réutilisable à la fois dans l'affichage et dans l'export CSV. */
 function devoirStatutInfo(estRendu, dateLimite){
-  if(estRendu) return { label:'Rendu', color:'#1F7A4D' };
-  const enRetard = dateLimite && new Date(dateLimite) < new Date();
-  return enRetard ? { label:'En retard', color:'#9E1F5E' } : { label:'En cours', color:'#0C5BA0' };
+  if(estRendu) return { label:'Rendu', color:'#1F7A4D', retard:false };
+  const enRetard = !!(dateLimite && new Date(dateLimite) < new Date());
+  return enRetard ? { label:'En retard', color:'#9E1F5E', retard:true } : { label:'En cours', color:'#0C5BA0', retard:false };
 }
 function devoirStatutPill(estRendu, dateLimite){
   const { label, color } = devoirStatutInfo(estRendu, dateLimite);
@@ -614,25 +614,62 @@ async function devoirSubmissionRowsFichierFigure(devoir, eleves){
   devoirSubmissionsExport.rows = exportRows;
   return bar + body;
 }
+/* Emoji + libellé des 3 médailles -- réutilisé côté élève (renderDevoirsEleve) et prof
+   (devoirSubmissionRowsAutomatismes). */
+const DEVOIR_MEDAILLES = {
+  or:{emoji:'🥇',label:"Or",fullLabel:"Médaille d'or",color:'#A67C00',bg:'rgba(255,199,44,.18)'},
+  argent:{emoji:'🥈',label:'Argent',fullLabel:"Médaille d'argent",color:'#6B6B76',bg:'rgba(180,180,190,.22)'},
+  bronze:{emoji:'🥉',label:'Bronze',fullLabel:'Médaille de bronze',color:'#8B4A22',bg:'rgba(205,127,50,.18)'},
+};
 async function devoirSubmissionRowsAutomatismes(devoir, eleves){
   const seqs = devoir.automatismes_sequences || [];
-  const { data: attempts } = await sb.from('cm_results').select('student_id,sequence_id,score,total').eq('devoir_id', devoir.id);
+  const { data: attempts } = await sb.from('cm_results').select('student_id,sequence_id,score,total,duration_ms').eq('devoir_id', devoir.id);
   const { data: rendus } = await sb.from('devoirs_rendus').select('student_id,est_rendu').eq('devoir_id', devoir.id);
   const renduByStudent = new Map((rendus||[]).map(r=>[r.student_id, r.est_rendu]));
   const byStudent = new Map();
+  const timeByStudent = new Map(); // student_id -> Map(sequence_id -> meilleur temps À 100%)
   (attempts||[]).forEach(a=>{
     if(!byStudent.has(a.student_id)) byStudent.set(a.student_id, new Map());
     const m = byStudent.get(a.student_id);
     // Meilleur score conservé si la séquence a été retentée plusieurs fois.
     const prev = m.get(a.sequence_id);
     if(!prev || a.score>prev.score) m.set(a.sequence_id, a);
+    if(a.score===a.total && a.duration_ms!=null){
+      if(!timeByStudent.has(a.student_id)) timeByStudent.set(a.student_id, new Map());
+      const tm = timeByStudent.get(a.student_id);
+      const prevTime = tm.get(a.sequence_id);
+      if(prevTime==null || a.duration_ms<prevTime) tm.set(a.sequence_id, a.duration_ms);
+    }
   });
+  // Médailles -- signalé : "pour créer un peu d'émulation... 100% de bonnes réponses + le
+  // meilleur temps cumulé... au prof, afficher les médailles en temps réel (même si le travail
+  // n'est pas rendu)... si un élève est noté retard, il devient hors compétition". Calculé
+  // directement ici (le prof peut déjà lire tous les cm_results de sa classe, RLS
+  // cm_results_select) -- pas besoin de la fonction SECURITY DEFINER utilisée côté élève.
+  const medailleByStudent = new Map();
+  if(seqs.length){
+    const classement = eleves
+      .map(row=>row.profiles && row.profiles.id)
+      .filter(Boolean)
+      .map(id=>{
+        const tm = timeByStudent.get(id) || new Map();
+        const qualified = seqs.every(sid=>tm.has(sid));
+        const cumulative = qualified ? seqs.reduce((s,sid)=>s+tm.get(sid),0) : null;
+        const retard = devoirStatutInfo(!!renduByStudent.get(id), devoir.date_limite).retard;
+        return { id, qualified, cumulative, retard };
+      })
+      .filter(s=>s.qualified && !s.retard)
+      .sort((a,b)=>a.cumulative-b.cumulative);
+    ['or','argent','bronze'].forEach((m,i)=>{ if(classement[i]) medailleByStudent.set(classement[i].id, m); });
+  }
   const exportRows = [];
   const body = eleves.map(row=>{
     const eleve = row.profiles; if(!eleve) return '';
     const m = byStudent.get(eleve.id) || new Map();
     const nbFaites = seqs.filter(id=>m.has(id)).length;
     const statutLabel = devoirStatutInfo(!!renduByStudent.get(eleve.id), devoir.date_limite).label;
+    const medaille = medailleByStudent.get(eleve.id);
+    const medailleHtml = medaille ? ` <span title="Médaille ${DEVOIR_MEDAILLES[medaille].label}" style="font-size:1rem;">${DEVOIR_MEDAILLES[medaille].emoji}</span>` : '';
     // Barre de réussite -- signalé : "couleurs et % de réussite, une barre de réussite,
     // progression colorée" (comme Supervision). Taux calculé sur les séquences déjà faites.
     const totalScore = Array.from(m.values()).reduce((s,r)=>s+r.score,0);
@@ -645,12 +682,14 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
       const r = m.get(id);
       const pct = r ? Math.round(100*r.score/r.total) : null;
       const color = pct!==null ? devoirPctColor(pct) : 'var(--ink-soft)';
-      exportRows.push([profileDisplayName(eleve)||'(sans nom)', statutLabel, label, r?r.score:'', r?r.total:'', pct!==null?pct+'%':'', r?'Oui':'Non']);
-      return `<div class="hint" style="margin:2px 0;">${r?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}${r?` : <span style="color:${color};font-weight:700;">${r.score}/${r.total} (${pct}%)</span>`:''}</div>`;
+      const myTime = (timeByStudent.get(eleve.id)||new Map()).get(id);
+      const timeHtml = myTime!=null ? ` <span class="hint" style="margin:0;">· ${formatDuration(myTime)}</span>` : '';
+      exportRows.push([profileDisplayName(eleve)||'(sans nom)', statutLabel, label, r?r.score:'', r?r.total:'', pct!==null?pct+'%':'', r?'Oui':'Non', myTime!=null?formatDuration(myTime):'']);
+      return `<div class="hint" style="margin:2px 0;">${r?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}${r?` : <span style="color:${color};font-weight:700;">${r.score}/${r.total} (${pct}%)</span>${timeHtml}`:''}</div>`;
     }).join('');
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!renduByStudent.get(eleve.id), devoir.date_limite)}</span>
+        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!renduByStudent.get(eleve.id), devoir.date_limite)}${medailleHtml}</span>
         <span style="text-align:right;">
           <span class="hint" style="margin:0;">${nbFaites}/${seqs.length} séquence(s) faite(s)</span>
           ${pctEleve!==null ? `<br><span class="hint" style="margin:0;font-weight:700;color:${colorEleve};">${pctEleve}% de réussite</span>` : ''}
@@ -660,7 +699,7 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
       ${detail}
     </div>`;
   }).join('');
-  devoirSubmissionsExport.headers = ['Élève','Statut','Séquence','Score','Total','%','Fait'];
+  devoirSubmissionsExport.headers = ['Élève','Statut','Séquence','Score','Total','%','Fait','Temps'];
   devoirSubmissionsExport.rows = exportRows;
   return body;
 }
@@ -816,16 +855,31 @@ async function renderDevoirsEleve(){
       // Score par séquence (meilleure tentative) + total du devoir, coloré comme dans la vue
       // du professeur -- signalé : "avoir nos pourcentages de réussite en s'inspirant de ce
       // qui a été fait pour le prof".
-      const { data: attempts } = await sb.from('cm_results').select('sequence_id,score,total').eq('devoir_id', d.id).eq('student_id', currentUser.id);
+      const { data: attempts } = await sb.from('cm_results').select('sequence_id,score,total,duration_ms').eq('devoir_id', d.id).eq('student_id', currentUser.id);
       const bestBySeq = new Map();
+      const bestTimeBySeq = new Map(); // meilleur temps PARMI les tentatives à 100% -- pour les médailles
       (attempts||[]).forEach(a=>{
         const prev = bestBySeq.get(a.sequence_id);
         if(!prev || a.score>prev.score) bestBySeq.set(a.sequence_id, a);
+        if(a.score===a.total && a.duration_ms!=null){
+          const prevTime = bestTimeBySeq.get(a.sequence_id);
+          if(prevTime==null || a.duration_ms<prevTime) bestTimeBySeq.set(a.sequence_id, a.duration_ms);
+        }
       });
       const totalScore = Array.from(bestBySeq.values()).reduce((s,a)=>s+a.score,0);
       const totalMax = Array.from(bestBySeq.values()).reduce((s,a)=>s+a.total,0);
       const overallPct = totalMax ? Math.round(100*totalScore/totalMax) : null;
       const overallColor = overallPct!==null ? devoirPctColor(overallPct) : 'var(--ink-soft)';
+      // Médailles -- signalé : "pour créer un peu d'émulation... 100% de bonnes réponses + le
+      // meilleur temps cumulé... si un élève est en retard, il devient hors compétition". Le
+      // classement (qui compare à TOUS les élèves de la classe) doit passer par une fonction
+      // SECURITY DEFINER : un élève ne peut lire que ses propres lignes cm_results (RLS).
+      const [{ data: sessionBestRows }, { data: medailleRows }] = await Promise.all([
+        sb.rpc('cm_get_devoir_seq_best_times', { p_devoir_id: d.id }),
+        sb.rpc('cm_get_devoir_medailles', { p_devoir_id: d.id }),
+      ]);
+      const sessionBestBySeq = new Map((sessionBestRows||[]).map(r=>[r.sequence_id, r.best_ms]));
+      const medaille = (medailleRows && medailleRows[0]) || {};
       const detail = seqs.map(id=>{
         const seqDef = (typeof CM_SEQUENCES!=='undefined') ? CM_SEQUENCES.find(s=>s.id===id) : null;
         const label = seqDef ? seqDef.label : id;
@@ -833,11 +887,29 @@ async function renderDevoirsEleve(){
         const pct = best ? Math.round(100*best.score/best.total) : null;
         const color = pct!==null ? devoirPctColor(pct) : 'var(--ink-soft)';
         const scoreHtml = best ? ` <span style="color:${color};font-weight:700;">${best.score}/${best.total} (${pct}%)</span>` : '';
+        const myTime = bestTimeBySeq.get(id);
+        const sessionBest = sessionBestBySeq.get(id);
+        const timeHtml = myTime!=null
+          ? ` <span class="hint" style="margin:0;">· ${formatDuration(myTime)}${sessionBest!=null && myTime<=sessionBest ? ' 🏆' : sessionBest!=null ? ` (record de la session : ${formatDuration(sessionBest)})` : ''}</span>`
+          : '';
         return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0;">
-          <span class="hint" style="margin:0;">${best?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}${scoreHtml}</span>
+          <span class="hint" style="margin:0;">${best?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}${scoreHtml}${timeHtml}</span>
           ${isRendu ? '' : `<button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="startDevoirCMSequence('${d.id}','${id}')">${best?'Refaire':'Faire cette séquence'}</button>`}
         </div>`;
       }).join('');
+      // Médailles -- 100% sur toutes les séquences + temps cumulé le plus rapide de la classe,
+      // classement live parmi les élèves non "en retard" (voir cm_get_devoir_medailles).
+      const medalInfo = DEVOIR_MEDAILLES[medaille.my_medal];
+      const medailleHtml = medaille.my_retard
+        ? `<div class="hint" style="margin-top:8px;padding:6px 10px;background:rgba(158,31,94,.08);border-radius:8px;">🚫 Hors compétition (devoir en retard).</div>`
+        : medalInfo
+          ? `<div style="margin-top:8px;padding:8px 12px;background:${medalInfo.bg};border-radius:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span style="font-weight:700;color:${medalInfo.color};">${medalInfo.emoji} ${medalInfo.fullLabel} !</span>
+              <span class="hint" style="margin:0;">Temps cumulé : ${formatDuration(medaille.my_cumulative_ms)}</span>
+            </div>`
+          : medaille.my_qualified
+            ? `<p class="hint" style="margin-top:8px;">100% partout ! Temps cumulé : <b>${formatDuration(medaille.my_cumulative_ms)}</b> -- pas encore de médaille (3 élèves plus rapides pour l'instant)${medaille.seuil_bronze_ms!=null ? `, pour le bronze : ${formatDuration(medaille.seuil_bronze_ms)}` : ''}.</p>`
+            : `<p class="hint" style="margin-top:8px;">🏅 100% à toutes les séquences pour viser une médaille (temps cumulé le plus rapide de la classe).</p>`;
       actionHtml = `<div style="margin-top:4px;">
         ${overallPct!==null ? `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:2px;">
           <span class="hint" style="margin:0;">Score global</span>
@@ -845,6 +917,7 @@ async function renderDevoirsEleve(){
         </div>
         <div class="sup-progress-bar" style="margin-bottom:8px;"><div class="sup-progress-fill" style="width:${overallPct}%;background:${overallColor};"></div></div>` : ''}
         ${detail}
+        ${medailleHtml}
         ${isRendu
           ? `<p class="hint" style="margin:8px 0 0;"><span class="gicon" style="font-size:.9rem;vertical-align:middle;">lock</span> Devoir rendu -- vous ne pouvez plus modifier vos réponses.</p>`
           : `<div class="tool-row" style="margin-top:8px;">
