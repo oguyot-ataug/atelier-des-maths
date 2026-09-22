@@ -2404,6 +2404,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.615', items:[
+    "Fix -- Compte est bon (devoir), signalé : \"le chrono part de 0 quand je quitte et je reviens sur le compte !\". Revenir sur un compte laissé EN COURS (quitté sans avoir cliqué \"Valider\") reprend maintenant exactement où on l'avait laissé -- chrono et étapes déjà posées conservés -- au lieu de relancer un tirage tout neuf à chaque fois. Un compte déjà validé (juste ou pas), lui, repart bien de zéro au clic sur \"Retenter\", comme une nouvelle tentative.",
+  ]},
   { version:'2026-08-19.614', items:[
     "Compte est bon -- signalé : \"il faudrait afficher le chrono qui défile pour l'élève\". Un chrono (temps écoulé) s'affiche désormais pendant le compte, y compris en mode illimité qui n'affichait jusqu'ici rien du tout -- en mode chronométré, il s'affiche en plus du décompte existant. Même chrono que celui qui sert à établir les médailles.",
   ]},

@@ -153,16 +153,29 @@ function startDevoirCEB(devoirId, roundIndex){
   const cache = (window._devoirCebRoundsCache||{})[devoirId];
   const round = cache && cache.rounds && cache.rounds[roundIndex];
   if(!round) return;
-  currentDevoirCEB = { devoirId, roundIndex };
   showView('view-compte');
   setActiveTopnav('compte');
   document.getElementById('cebRoot').dataset.built = '1';
+  // Reprend un compte laissé EN COURS (quitté sans avoir validé) au lieu d'en relancer un tout
+  // neuf -- signalé : "le chrono part de 0 quand je quitte et je reviens sur le compte". Le
+  // chrono (cebState.startedAt) et les étapes déjà posées sont conservés ; seul un compte
+  // FINI (validé, juste ou pas) ou un compte différent en relance un nouveau, chrono à zéro.
+  if(cebState && !cebState.finished && cebState.devoirId===devoirId && cebState.devoirRoundIndex===roundIndex){
+    currentDevoirCEB = { devoirId, roundIndex };
+    cebRenderGame();
+    if(cebState.timerOn) cebStartTimer();
+    cebStartStopwatch();
+    return;
+  }
+  currentDevoirCEB = { devoirId, roundIndex };
   cebSettings = { nLarge: round.numbers.filter(n=>CEB_LARGE_POOL.includes(n)).length, timerOn: !!cache.timerOn, timerDuration: cache.timerDuration||60, timerCustom:false };
   cebStartGame({
     numbers: round.numbers, target: round.target,
     solution: round.solutionExpr ? {expr: round.solutionExpr, value: round.solutionValue} : null,
     exact: round.solutionValue===round.target,
   });
+  cebState.devoirId = devoirId;
+  cebState.devoirRoundIndex = roundIndex;
 }
 /* Ramène l'élève à la liste de ses devoirs après un compte joué en contexte de devoir (au lieu
    du bouton "Compte suivant →", qui tirerait un compte libre au hasard sans rapport avec le
