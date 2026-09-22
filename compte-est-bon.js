@@ -168,12 +168,12 @@ function startDevoirCEB(devoirId, roundIndex){
    du bouton "Compte suivant →", qui tirerait un compte libre au hasard sans rapport avec le
    devoir). */
 function returnToDevoirsAfterCEB(){
-  // Coupe le décompte (mode chronométré) si on quitte un compte pas encore validé -- signalé :
-  // "faire attention que si on ferme un compte en cours... ça ne remette pas le chrono à zéro".
-  // Sans ça, l'intervalle continuait à tourner en arrière-plan et décomptait le PROCHAIN compte
-  // démarré (cebState est une variable globale réaffectée à chaque nouvelle partie), faussant
-  // son chrono.
-  if(cebState && cebState.timerId){ clearInterval(cebState.timerId); }
+  // Coupe le décompte et le chrono qui défile si on quitte un compte pas encore validé --
+  // signalé : "faire attention que si on ferme un compte en cours... ça ne remette pas le
+  // chrono à zéro". Sans ça, les intervalles continuaient à tourner en arrière-plan et
+  // décomptaient/chronométraient le PROCHAIN compte démarré (cebState est une variable globale
+  // réaffectée à chaque nouvelle partie), faussant son chrono.
+  if(cebState){ clearInterval(cebState.timerId); clearInterval(cebState.stopwatchId); }
   currentDevoirCEB = null;
   if(currentUserRole==='eleve'){
     showView('view-devoirs-eleve'); setActiveTopnav('mesdevoirs');
@@ -200,10 +200,10 @@ function cebToggleFullscreen(){
 }
 
 function cebRenderSetup(){
-  // Coupe le décompte d'un compte en cours qu'on quitte sans le valider -- même raison que
-  // returnToDevoirsAfterCEB (évite qu'un intervalle orphelin fausse le chrono du prochain
-  // compte démarré).
-  if(cebState && cebState.timerId){ clearInterval(cebState.timerId); }
+  // Coupe le décompte et le chrono qui défile d'un compte en cours qu'on quitte sans le
+  // valider -- même raison que returnToDevoirsAfterCEB (évite des intervalles orphelins qui
+  // fausseraient le chrono du prochain compte démarré).
+  if(cebState){ clearInterval(cebState.timerId); clearInterval(cebState.stopwatchId); }
   currentDevoirCEB = null; // retour à l'écran de réglages libre : quitte le contexte d'un devoir
   if(typeof devoirTestModeActive!=='undefined') devoirTestModeActive = false;
   const root = document.getElementById('cebRoot');
@@ -316,12 +316,13 @@ function cebStartGame(forcedDraw){
     tiles, steps: [], timeLeft: cebSettings.timerDuration, timerOn: cebSettings.timerOn, timerId: null, finished:false,
     // Chrono réel (indépendant du mode chronométré/illimité) -- signalé : "mettre un chrono
     // pour savoir en combien de temps il trouve chaque compte et ainsi pouvoir les classer".
-    startedAt: performance.now(),
+    startedAt: performance.now(), stopwatchId: null,
   };
   cebSelectedOp = null;
   cebSelectedTileId = null;
   cebRenderGame();
   if(cebState.timerOn) cebStartTimer();
+  cebStartStopwatch();
 }
 
 function cebStartTimer(){
@@ -334,6 +335,21 @@ function cebStartTimer(){
       cebFinish();
     }
   }, 1000);
+}
+
+/* Chrono qui défile (temps écoulé), affiché que le compte soit chronométré ou illimité --
+   signalé : "il faudrait afficher le chrono qui défile pour l'élève". Même granularité (100 ms)
+   que le chrono des Automatismes, réutilise son format d'affichage (formatStopwatch,
+   calcul-mental.js). */
+function cebStartStopwatch(){
+  clearInterval(cebState.stopwatchId);
+  cebState.stopwatchId = setInterval(cebUpdateStopwatchDisplay, 100);
+  cebUpdateStopwatchDisplay();
+}
+function cebUpdateStopwatchDisplay(){
+  const el = document.getElementById('cebStopwatch');
+  if(!el || !cebState) return;
+  el.textContent = '⏱ ' + formatStopwatch(performance.now() - cebState.startedAt);
 }
 
 function cebUpdateTimerDisplay(){
@@ -350,7 +366,8 @@ function cebRenderGame(){
   const root = document.getElementById('cebRoot');
   root.innerHTML = `
   <div class="ceb-game">
-    ${cebState.timerOn ? `<div id="cebTimer" style="text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.3rem;color:#fff;margin-bottom:10px;"></div>` : ''}
+    ${cebState.timerOn ? `<div id="cebTimer" style="text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.3rem;color:#fff;margin-bottom:2px;"></div>` : ''}
+    <div id="cebStopwatch" style="text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:${cebState.timerOn?'.85rem':'1.2rem'};color:${cebState.timerOn?'rgba(255,255,255,.75)':'#fff'};margin-bottom:10px;"></div>
     <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:18px;position:relative;">
       <button class="ceb-fullscreen-btn" onclick="cebToggleFullscreen()" title="Plein écran" aria-label="Plein écran"><span class="gicon">fullscreen</span></button>
       <div class="ceb-target-badge">
@@ -483,6 +500,7 @@ async function cebFinish(){
   if(cebState.finished) return;
   cebState.finished = true;
   clearInterval(cebState.timerId);
+  clearInterval(cebState.stopwatchId);
   let best = null;
   // Aucune opération effectuée : traité comme une absence de réponse, jamais comme si
   // l'élève avait "choisi" un des nombres tirés au hasard simplement parce qu'il restait
