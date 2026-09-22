@@ -517,7 +517,7 @@ async function openDevoirSubmissions(devoirId){
   if(!devoir) return;
   // Restreint aux élèves ciblés par ce devoir quand une sélection a été faite (au lieu de toute
   // la classe) -- signalé : "permettre d'assigner à la classe ou quelques élèves de la classe".
-  const cibleQuery = sb.from('class_students').select('profiles(id,nom)');
+  const cibleQuery = sb.from('class_students').select('profiles(id,nom,prenom)');
   const { data: eleves } = (devoir.student_ids && devoir.student_ids.length)
     ? await cibleQuery.eq('class_id', devoir.class_id).in('student_id', devoir.student_ids)
     : await cibleQuery.eq('class_id', devoir.class_id);
@@ -584,10 +584,10 @@ async function devoirSubmissionRowsFichierFigure(devoir, eleves){
       else content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="downloadDevoirFile('${rendu.fichier_path}')"><span class=gicon>download</span> Télécharger le fichier</button>${brouillonTag}`;
     }
     const pillColor = rendu && rendu.est_rendu ? '#1F7A4D' : rendu ? '#8A6D1F' : '#9E1F5E';
-    exportRows.push([eleve.nom||'(sans nom)', statut, rendu?.note ?? '', rendu?.commentaire_prof || '']);
+    exportRows.push([profileDisplayName(eleve)||'(sans nom)', statut, rendu?.note ?? '', rendu?.commentaire_prof || '']);
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span><b>${escapeHtml(eleve.nom||'(sans nom)')}</b> <span class="sup-score-pill" style="background:${pillColor}1A;color:${pillColor};font-size:.7rem;">${statut}</span></span>
+        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> <span class="sup-score-pill" style="background:${pillColor}1A;color:${pillColor};font-size:.7rem;">${statut}</span></span>
         <span>${content}</span>
       </div>
       ${rendu ? `<div class="tool-row" style="margin-top:6px;">
@@ -629,12 +629,12 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
       const r = m.get(id);
       const pct = r ? Math.round(100*r.score/r.total) : null;
       const color = pct!==null ? devoirPctColor(pct) : 'var(--ink-soft)';
-      exportRows.push([eleve.nom||'(sans nom)', label, r?r.score:'', r?r.total:'', pct!==null?pct+'%':'', r?'Oui':'Non']);
+      exportRows.push([profileDisplayName(eleve)||'(sans nom)', label, r?r.score:'', r?r.total:'', pct!==null?pct+'%':'', r?'Oui':'Non']);
       return `<div class="hint" style="margin:2px 0;">${r?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}${r?` : <span style="color:${color};font-weight:700;">${r.score}/${r.total} (${pct}%)</span>`:''}</div>`;
     }).join('');
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span><b>${escapeHtml(eleve.nom||'(sans nom)')}</b></span>
+        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b></span>
         <span style="text-align:right;">
           <span class="hint" style="margin:0;">${nbFaites}/${seqs.length} séquence(s) faite(s)</span>
           ${pctEleve!==null ? `<br><span class="hint" style="margin:0;font-weight:700;color:${colorEleve};">${pctEleve}% de réussite</span>` : ''}
@@ -674,12 +674,12 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
     const detail = Array.from({length:nRounds}, (_,i)=>{
       const r = m.get(i);
       const color = r ? (r.gap===0 ? '#1F7A4D' : '#C77D1E') : 'var(--ink-soft)';
-      exportRows.push([eleve.nom||'(sans nom)', 'Compte '+(i+1), r?r.gap:'', r?r.result_value:'', r?(r.gap===0?'Oui':'Non'):'', r?'Oui':'Non']);
+      exportRows.push([profileDisplayName(eleve)||'(sans nom)', 'Compte '+(i+1), r?r.gap:'', r?r.result_value:'', r?(r.gap===0?'Oui':'Non'):'', r?'Oui':'Non']);
       return `<div class="hint" style="margin:2px 0;">${r?`<span class="gicon" style="font-size:.9rem;color:${color};">${r.gap===0?'check':'adjust'}</span>`:'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} Compte ${i+1}${r?` : <span style="color:${color};font-weight:700;">écart ${r.gap}</span> (réponse ${r.result_value})`:''}</div>`;
     }).join('');
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span><b>${escapeHtml(eleve.nom||'(sans nom)')}</b></span>
+        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b></span>
         <span style="text-align:right;">
           <span class="hint" style="margin:0;">${nbFaits}/${nRounds} compte(s) fait(s)</span>
           ${pctEleve!==null ? `<br><span class="hint" style="margin:0;font-weight:700;color:${colorEleve};">${pctEleve}% exacts</span>` : ''}

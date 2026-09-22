@@ -2397,6 +2397,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.607', items:[
+    "Fix -- signalé : \"les résultats dans devoir n'affichent pas le prénom\". La modale \"Voir les rendus\" d'un devoir (Supervision → Devoirs) était restée à l'écart de la correction précédente (build 606) : elle affiche maintenant \"Nom Prénom\" comme partout ailleurs, pour les 3 types de devoirs (fichier/figure, automatismes, compte est bon) et dans leur export CSV.",
+  ]},
   { version:'2026-08-19.606', items:[
     "Affichage \"Nom Prénom\" (au lieu du seul nom de famille) -- signalé : \"dans supervision, résultats, administration, il faut afficher Nom et Prénom\", suite à la séparation des deux champs (build 605). Concerne la liste des élèves de Supervision (onglets Comptes et Résultats, y compris les exports CSV), et la liste des comptes d'Administration (tableau, sélecteurs \"Affecter\", liens d'invitation).",
     "Pastille de compte -- signalé : \"la pastille de l'élève quand il est connecté doit afficher la première lettre de son prénom en majuscule\". Affichait jusqu'ici les initiales prénom+nom (ex. \"LD\") depuis que le prénom est renseigné -- affiche maintenant une seule lettre, celle du prénom.",
