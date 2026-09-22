@@ -1019,6 +1019,20 @@ async function adminUpdateBugStatus(id, status){
   }
   await adminRefreshBugReports();
 }
+/* Sépare "NOM Prénom" (convention des listes d'élèves collées ici, ex. export Pronote) en
+   nom/prénom -- signalé : "l'import est merdique, tous les élèves ont NOM Prénom dans le champ
+   NOM". Le nom de famille est la suite de mots en MAJUSCULES en début de chaîne (convention
+   d'écriture des rosters administratifs, y compris pour les noms composés, ex. "KIESGEN DE
+   RICHTER Zoé"), le reste est le prénom. Repli sur l'ancien comportement (tout dans nom, prénom
+   vide) si aucune séparation fiable n'est trouvée (ex. "Jean Dupont" sans majuscules).
+   Vérifiée sur les 123 comptes élèves déjà en base avant application (aucune ambiguïté). */
+function splitNomPrenom(full){
+  const tokens = full.trim().split(/\s+/);
+  let i = 0;
+  while(i < tokens.length && tokens[i].toUpperCase()===tokens[i] && /[A-ZÀ-Ý]/.test(tokens[i])) i++;
+  if(i===0 || i>=tokens.length) return { nom: full, prenom: '' };
+  return { nom: tokens.slice(0,i).join(' '), prenom: tokens.slice(i).join(' ') };
+}
 async function adminBulkCreateStudents(){
   const raw = document.getElementById('adminBulkStudents').value;
   const status = document.getElementById('adminBulkStatus');
@@ -1032,7 +1046,8 @@ async function adminBulkCreateStudents(){
     status.textContent = `Création en cours… (${i+1}/${lines.length})`;
     const parts = lines[i].split('\t').map(s=>s.trim());
     if(parts.length<2){ fail++; errors.push(`Ligne ${i+1} : format invalide (au moins Nom Prénom et identifiant attendus, séparés par des tabulations)`); continue; }
-    const [nom, identifiant, password, uai, classeNom] = parts;
+    const [nomPrenomFull, identifiant, password, uai, classeNom] = parts;
+    const { nom, prenom } = splitNomPrenom(nomPrenomFull);
     const email = toAuthEmail(identifiant);
     try{
       const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
@@ -1041,14 +1056,15 @@ async function adminBulkCreateStudents(){
         body: JSON.stringify({ email, password: password||undefined, role:'eleve', nom }),
       });
       const data = await res.json();
-      if(data.error){ fail++; errors.push(`${nom} (${identifiant}) : ${data.error}`); continue; }
+      if(data.error){ fail++; errors.push(`${nomPrenomFull} (${identifiant}) : ${data.error}`); continue; }
       ok++;
-      if(data.inviteToken) invites.push({ nom, url: location.origin+'/invitation.html?invite='+data.inviteToken });
+      if(data.inviteToken) invites.push({ nom: nomPrenomFull, url: location.origin+'/invitation.html?invite='+data.inviteToken });
       // La fonction serveur ne renvoie pas d'id exploitable directement (même constat que
       // pour la création à l'unité, adminCreateAccount) -- retrouve le profil fraîchement
       // créé par son e-mail.
       const { data: prof } = await sb.from('profiles').select('id').eq('email', email).single();
       if(!prof) continue; // ne devrait pas arriver (le compte vient d'être créé avec succès), sécurité
+      if(prenom) await sb.from('profiles').update({prenom}).eq('id', prof.id);
       // UAI : simple champ texte sur le profil, pas besoin de recherche/création.
       if(uai) await sb.from('profiles').update({uai}).eq('id', prof.id);
       // Une classe doit être rattachée à un établissement (signalé : "les classes doivent
@@ -1079,9 +1095,9 @@ async function adminBulkCreateStudents(){
         }
         if(classCache[cacheKey]) await sb.from('class_students').insert({ student_id: prof.id, class_id: classCache[cacheKey] });
       } else if(classeNom && !uai){
-        errors.push(`${nom} : classe "${classeNom}" ignorée (UAI manquant sur cette ligne -- une classe doit être rattachée à un établissement)`);
+        errors.push(`${nomPrenomFull} : classe "${classeNom}" ignorée (UAI manquant sur cette ligne -- une classe doit être rattachée à un établissement)`);
       }
-    }catch(err){ fail++; errors.push(`${nom} (${identifiant}) : erreur réseau`); }
+    }catch(err){ fail++; errors.push(`${nomPrenomFull} (${identifiant}) : erreur réseau`); }
   }
   let html = `✓ ${ok} compte(s) créé(s)` + (errors.length?`, <span class=gicon>warning</span> ${fail?fail+' échec(s)':'avertissement(s)'} :<br>`+errors.map(escapeHtml).join('<br>') : '.');
   if(invites.length){

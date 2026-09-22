@@ -2386,6 +2386,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.605', items:[
+    "Fix -- signalé : \"l'import est merdique, tous les élèves ont NOM Prénom dans le champ NOM\". L'import en masse d'élèves collait tout le champ \"NOM Prénom\" dans nom, laissant prénom vide. Corrigé : la ligne collée est désormais séparée automatiquement (les mots en MAJUSCULES en début de ligne = nom, le reste = prénom), y compris pour les noms composés (ex. \"KIESGEN DE RICHTER Zoé\"). Les 123 comptes élèves déjà créés avec ce défaut ont été corrigés en base avec la même règle (vérifiée une par une avant application, aucun cas ambigu).",
+  ]},
   { version:'2026-08-19.604', items:[
     "Administration, fix -- signalé : \"je croyais que dans admin je pouvais modifier les noms prénoms des élèves ?\". Le bouton \"Modifier\" (icône outil) de la liste des comptes n'existait que pour les profs/admins -- il apparaît maintenant aussi pour les élèves, avec une modale simplifiée (nom, prénom, identifiant, mot de passe) qui masque l'UAI et les classes rattachées, propres aux comptes prof.",
   ]},
