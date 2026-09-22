@@ -133,6 +133,12 @@ function showView(id){
   // le menu lui-même, sans qu'aucune erreur ne s'affiche (rien ne plante, l'overlay fait juste
   // écran).
   if(typeof closeAllToolPanels==='function') closeAllToolPanels();
+  // Coupe le décompte d'un Compte est bon resté en cours (mode chronométré) si on change de page
+  // par le menu sans avoir validé -- signalé : "faire attention que si on ferme un compte en
+  // cours... ça ne remette pas le chrono à zéro". Sans ça, l'intervalle continuait à tourner en
+  // arrière-plan et faussait le chrono du PROCHAIN compte démarré (cebState est réaffectée à
+  // chaque nouvelle partie, mais l'ancien intervalle continuait de la décompter).
+  if(typeof cebState!=='undefined' && cebState && cebState.timerId){ clearInterval(cebState.timerId); }
   const fbOverlay = document.getElementById('formulaBuilderOverlay');
   if(fbOverlay) fbOverlay.style.display='none';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -2397,6 +2403,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.613', items:[
+    "Fix -- Compte est bon, signalé : \"faire attention que si on ferme un compte en cours alors qu'on ne l'a pas trouvé, que ça ne remette pas le chrono à zéro\". Abandonner un compte non validé n'a jamais enregistré ni écrasé de temps (rien n'est envoyé tant qu'on n'a pas cliqué \"Valider\"), mais deux vrais bugs liés y ont été corrigés au passage : 1) en mode chronométré, quitter un compte en cours sans le valider (bouton, ou changer de page par le menu) laissait le décompte tourner en arrière-plan et fausser le chrono du compte suivant démarré. 2) Pendant un compte d'un devoir, le bouton affiché était \"Nouveau tirage\" (menait vers un tirage libre sans rapport) au lieu d'un retour vers le devoir -- remplacé par \"Revenir à mes devoirs\".",
+  ]},
   { version:'2026-08-19.612', items:[
     "Compte est bon (devoirs), médailles -- signalé : \"il faudrait mettre un chrono pour savoir en combien de temps il trouve chaque compte et ainsi pouvoir les classer, à condition qu'ils aient bien trouvé tous les comptes justes\". Un vrai chronomètre mesure désormais le temps de chaque compte, y compris en mode illimité (avant, seul le mode chronométré calculait un temps). Même principe que les médailles Automatismes : les 3 élèves les plus rapides à avoir trouvé TOUS les comptes exactement (temps cumulé le plus bas) reçoivent 🥇🥈🥉, en temps réel, en excluant les élèves \"en retard\". Le temps de chaque compte (avec le record de la session) et la médaille en cours s'affichent côté élève ; les médailles s'affichent en temps réel côté prof dans \"Voir les rendus\".",
   ]},

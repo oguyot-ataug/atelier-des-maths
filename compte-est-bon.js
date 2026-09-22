@@ -168,6 +168,12 @@ function startDevoirCEB(devoirId, roundIndex){
    du bouton "Compte suivant →", qui tirerait un compte libre au hasard sans rapport avec le
    devoir). */
 function returnToDevoirsAfterCEB(){
+  // Coupe le décompte (mode chronométré) si on quitte un compte pas encore validé -- signalé :
+  // "faire attention que si on ferme un compte en cours... ça ne remette pas le chrono à zéro".
+  // Sans ça, l'intervalle continuait à tourner en arrière-plan et décomptait le PROCHAIN compte
+  // démarré (cebState est une variable globale réaffectée à chaque nouvelle partie), faussant
+  // son chrono.
+  if(cebState && cebState.timerId){ clearInterval(cebState.timerId); }
   currentDevoirCEB = null;
   if(currentUserRole==='eleve'){
     showView('view-devoirs-eleve'); setActiveTopnav('mesdevoirs');
@@ -194,6 +200,10 @@ function cebToggleFullscreen(){
 }
 
 function cebRenderSetup(){
+  // Coupe le décompte d'un compte en cours qu'on quitte sans le valider -- même raison que
+  // returnToDevoirsAfterCEB (évite qu'un intervalle orphelin fausse le chrono du prochain
+  // compte démarré).
+  if(cebState && cebState.timerId){ clearInterval(cebState.timerId); }
   currentDevoirCEB = null; // retour à l'écran de réglages libre : quitte le contexte d'un devoir
   if(typeof devoirTestModeActive!=='undefined') devoirTestModeActive = false;
   const root = document.getElementById('cebRoot');
@@ -356,7 +366,15 @@ function cebRenderGame(){
       <button class="btn" onclick="cebFinish()">Valider ce compte</button>
       ${(typeof devoirTestModeActive!=='undefined' && devoirTestModeActive)
         ? `<button class="btn secondary" onclick="returnToDevoirCreationFromTest()">↩ Quitter le test</button>`
-        : `<button class="btn secondary" onclick="cebRenderSetup()">Nouveau tirage</button>`}
+        : currentDevoirCEB
+          // "Nouveau tirage" n'a pas de sens ici : le tirage d'un compte de devoir est fixé par
+          // le prof, pas aléatoire -- signalé : "faire attention que si on ferme un compte en
+          // cours... ça ne remette pas le chrono à zéro". Fermer sans valider n'enregistre rien
+          // (cebSaveAttempt n'est appelée que par cebFinish) et ne touche donc jamais un temps
+          // déjà enregistré pour ce compte -- mais le bouton "Nouveau tirage" sortait quand même
+          // l'élève du devoir vers un tirage libre sans rapport, d'où ce bouton de retour dédié.
+          ? `<button class="btn secondary" onclick="returnToDevoirsAfterCEB()">↩ Revenir à mes devoirs</button>`
+          : `<button class="btn secondary" onclick="cebRenderSetup()">Nouveau tirage</button>`}
     </div>
     <div id="cebStepsBox" style="margin-top:22px;max-width:420px;margin-left:auto;margin-right:auto;"></div>
   </div>
