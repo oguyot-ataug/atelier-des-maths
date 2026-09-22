@@ -2397,6 +2397,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.611', items:[
+    "Mes devoirs (élève) -- signalé : \"si j'ai rendu un devoir, je ne le vois plus dans ma liste, il faudrait pouvoir tous les voir : en cours, rendu, en retard\". Un filtre de statut apparaît en haut de la page (Tous / En cours / Rendu / En retard), par défaut sur \"Tous\" -- tous les devoirs, y compris déjà rendus, restent visibles ; le filtre permet de n'afficher que ceux d'un statut donné.",
+  ]},
   { version:'2026-08-19.610', items:[
     "Automatismes (devoirs), médailles -- signalé : \"pour créer un peu d'émulation, je propose de mettre des médailles\". Pour un devoir Automatismes, les 3 élèves les plus rapides à avoir 100% de bonnes réponses sur TOUTES les séquences du devoir (temps cumulé le plus bas) reçoivent 🥇🥈🥉. Le classement est en temps réel : une meilleure performance peut reprendre une médaille à tout moment. Un élève noté \"en retard\" (date limite dépassée, devoir pas rendu) devient hors compétition, même s'il aurait le meilleur temps. Côté élève : le temps de chaque séquence s'affiche avec le record de la session, et un encart indique la médaille en cours (ou ce qu'il reste à faire pour en obtenir une). Côté prof : les médailles s'affichent en temps réel dans \"Voir les rendus\", même si le devoir n'est pas encore rendu.",
   ]},

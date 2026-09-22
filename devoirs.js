@@ -75,6 +75,16 @@ document.getElementById('view-devoirs-eleve').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;"><span class=gicon>assignment</span> Mes devoirs</h1>
   <p style="color:var(--ink-soft);max-width:70ch;">Le travail proposé par vos professeurs.</p>
+  <div class="tool-row" style="margin:10px 0;">
+    <label class="hint" style="display:flex;align-items:center;gap:8px;margin:0;">Statut :
+      <select id="devoirsEleveFilter" onchange="renderDevoirsEleveFiltered()">
+        <option value="">Tous</option>
+        <option value="En cours">En cours</option>
+        <option value="Rendu">Rendu</option>
+        <option value="En retard">En retard</option>
+      </select>
+    </label>
+  </div>
   <div id="devoirsEleveListing"><p class="hint">Chargement…</p></div>
 `;
 
@@ -813,16 +823,17 @@ async function refreshDevoirsNavBadge(){
   if(nbEnAttente>0){ badge.textContent = nbEnAttente; badge.style.display = 'inline-flex'; }
   else badge.style.display = 'none';
 }
+let devoirsEleveCache = []; // [{id, statut, html}] -- alimente le filtre de statut (renderDevoirsEleveFiltered)
 async function renderDevoirsEleve(){
   refreshDevoirsNavBadge(); // reste à jour après un rendu -- indépendant du reste de ce rendu
   const el = document.getElementById('devoirsEleveListing');
   el.innerHTML = '<p class="hint">Chargement…</p>';
   const classIds = (accountClassesList||[]).map(c=>c.id);
-  if(!classIds.length){ el.innerHTML = '<p class="hint">Aucune classe associée à ce compte.</p>'; return; }
+  if(!classIds.length){ devoirsEleveCache = []; el.innerHTML = '<p class="hint">Aucune classe associée à ce compte.</p>'; return; }
   const { data: devoirsListRaw, error } = await sb.from('devoirs')
     .select('id,titre,consigne,date_depot,date_limite,teacher_id,type,figure_depart,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_timer_duration,ceb_rounds,student_ids,profiles(nom)')
     .in('class_id', classIds).order('date_limite',{ascending:true, nullsFirst:false});
-  if(error){ el.innerHTML = 'Erreur : '+error.message; return; }
+  if(error){ devoirsEleveCache = []; el.innerHTML = 'Erreur : '+error.message; return; }
   const now = new Date();
   // Un devoir ciblant une sélection d'élèves n'est visible que par les élèves concernés
   // (student_ids null/vide = toute la classe) -- signalé : "permettre d'assigner à la classe
@@ -834,7 +845,7 @@ async function renderDevoirsEleve(){
     (!d.student_ids || !d.student_ids.length || d.student_ids.includes(currentUser.id))
     && (d.date_depot && new Date(d.date_depot) <= now)
   );
-  if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir pour l\'instant.</p>'; return; }
+  if(!devoirsList || !devoirsList.length){ devoirsEleveCache = []; el.innerHTML = '<p class="hint">Aucun devoir pour l\'instant.</p>'; return; }
   const { data: mesRendus } = await sb.from('devoirs_rendus').select('*').eq('student_id', currentUser.id);
   const renduByDevoir = new Map((mesRendus||[]).map(r=>[r.devoir_id, r]));
   // Type "automatismes"/"compte_est_bon" : pas de simple statut oui/non -- le détail de
@@ -980,7 +991,7 @@ async function renderDevoirsEleve(){
         <button class="btn secondary" onclick="submitDevoirFile('${d.id}')"><span class=gicon>upload_file</span> Rendre ce fichier</button>
       </div>`;
     }
-    return `<div class="tool-shell" style="margin-top:10px;">
+    const html = `<div class="tool-shell" style="margin-top:10px;">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
         <span><b>${escapeHtml(d.titre)}</b>${dateStr?' · limite : '+dateStr:''} ${statusBadge}</span>
       </div>
@@ -989,8 +1000,22 @@ async function renderDevoirsEleve(){
       ${actionHtml}
       <span class="hint" id="devoirSubmitStatus_${d.id}" style="margin:0;"></span>
     </div>`;
+    return { id: d.id, statut: devoirStatutInfo(!!(rendu && rendu.est_rendu), d.date_limite).label, html };
   }));
-  el.innerHTML = rows.join('');
+  devoirsEleveCache = rows;
+  renderDevoirsEleveFiltered();
+}
+/* Filtre par statut (Tous / En cours / Rendu / En retard) -- signalé : "si j'ai rendu un devoir,
+   je ne le vois plus dans ma liste... il faudrait pouvoir tous les voir". Filtre client, sans
+   nouvelle requête (devoirsEleveCache déjà peuplé par renderDevoirsEleve). */
+function renderDevoirsEleveFiltered(){
+  const el = document.getElementById('devoirsEleveListing');
+  if(!el) return;
+  if(!devoirsEleveCache.length){ el.innerHTML = '<p class="hint">Aucun devoir pour l\'instant.</p>'; return; }
+  const filterSel = document.getElementById('devoirsEleveFilter');
+  const filter = filterSel ? filterSel.value : '';
+  const filtered = filter ? devoirsEleveCache.filter(d=>d.statut===filter) : devoirsEleveCache;
+  el.innerHTML = filtered.length ? filtered.map(d=>d.html).join('') : '<p class="hint">Aucun devoir ne correspond à ce filtre.</p>';
 }
 async function submitDevoirFile(devoirId){
   const status = document.getElementById('devoirSubmitStatus_'+devoirId);
