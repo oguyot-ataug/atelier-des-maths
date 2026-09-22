@@ -19,10 +19,10 @@ document.getElementById('view-devoirs-prof').innerHTML = `
       <select id="devoirNewClasse" onchange="onDevoirNewClasseChange()"></select>
     </div>
     <div class="tool-row">
-      <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><span class=gicon style="font-size:1rem;">upload</span> Date de dépôt : <input type="date" id="devoirNewDateDepot" title="Date de dépôt / publication (facultative -- visible immédiatement si vide)"></label>
+      <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><span class=gicon style="font-size:1rem;">upload</span> Date de dépôt : <input type="date" id="devoirNewDateDepot" title="Date de dépôt / publication -- tant qu'elle n'est pas renseignée, le devoir reste un brouillon invisible aux élèves"></label>
       <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;"><span class=gicon style="font-size:1rem;">event</span> Date limite : <input type="date" id="devoirNewDate" title="Date limite (facultative)"></label>
     </div>
-    <p class="hint" style="margin:0 0 8px;">Si une date de dépôt future est choisie, le devoir reste invisible aux élèves jusqu'à cette date.</p>
+    <p class="hint" style="margin:0 0 8px;">Tant qu'aucune date de dépôt n'est choisie, le devoir reste un brouillon invisible aux élèves. Choisis aujourd'hui pour le publier tout de suite, ou une date future pour programmer sa publication.</p>
     <textarea id="devoirNewConsigne" rows="4" style="width:100%;margin-top:8px;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;" placeholder="Consigne (texte libre)..."></textarea>
 
     <p class="hint" style="margin:12px 0 4px;font-weight:700;">Destinataires :</p>
@@ -471,7 +471,10 @@ async function refreshDevoirsProfListing(){
       : '';
     const cibleDetail = cible ? `<span class="devoir-target-pill">${d.student_ids.length} élève(s) ciblé(s)</span> · ` : '';
     const enAttente = d.date_depot && new Date(d.date_depot) > new Date();
-    const depotDetail = enAttente ? `<span class="devoir-target-pill" style="background:rgba(255,130,8,.12);color:var(--accent-orange);">⏳ publication le ${new Date(d.date_depot).toLocaleDateString('fr-FR')}</span> · ` : '';
+    const brouillon = !d.date_depot;
+    const depotDetail = enAttente
+      ? `<span class="devoir-target-pill" style="background:rgba(255,130,8,.12);color:var(--accent-orange);">⏳ publication le ${new Date(d.date_depot).toLocaleDateString('fr-FR')}</span> · `
+      : brouillon ? `<span class="devoir-target-pill" style="background:rgba(28,43,57,.1);color:var(--ink-soft);">🔒 brouillon, pas encore visible</span> · ` : '';
     const t = DEVOIR_TYPES.find(t=>t.id===d.type);
     return `<div class="devoir-row" style="--dt-color:${t?t.color:'var(--ink-soft)'};display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
       <span><b>${escapeHtml(d.titre)}</b> · ${escapeHtml(d.classes ? d.classes.nom+' ('+d.classes.niveau+')' : '')} · ${depotDetail}${cibleDetail}<span class="devoir-row-type"><span class=gicon style="font-size:1rem;vertical-align:middle;">${t?t.icon:'assignment'}</span> ${devoirTypeLabel(d.type)}</span><span class="hint" style="margin:0;">${typeDetail}</span>${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${totalEleves||0} rendu(s)</span>
@@ -670,7 +673,7 @@ async function refreshDevoirsNavBadge(){
   const now = new Date();
   const devoirsList = devoirsListRaw.filter(d =>
     (!d.student_ids || !d.student_ids.length || d.student_ids.includes(currentUser.id))
-    && (!d.date_depot || new Date(d.date_depot) <= now)
+    && (d.date_depot && new Date(d.date_depot) <= now)
   );
   if(!devoirsList.length){ badge.style.display = 'none'; return; }
   const { data: mesRendus } = await sb.from('devoirs_rendus').select('devoir_id,est_rendu').eq('student_id', currentUser.id);
@@ -695,11 +698,13 @@ async function renderDevoirsEleve(){
   const now = new Date();
   // Un devoir ciblant une sélection d'élèves n'est visible que par les élèves concernés
   // (student_ids null/vide = toute la classe) -- signalé : "permettre d'assigner à la classe
-  // ou quelques élèves de la classe". Un devoir avec une date de dépôt future reste invisible
-  // jusqu'à cette date -- signalé : "donner une date de dépôt du prof" (publication programmée).
+  // ou quelques élèves de la classe". Un devoir sans date de dépôt (ou avec une date future)
+  // reste invisible tant que le prof ne l'a pas explicitement publié -- signalé : "j'ai remarqué
+  // qu'ils avaient accès à un devoir alors que je n'avais pas renseigné la date de dépôt" (un
+  // devoir non publié doit rester un brouillon, jamais visible par défaut).
   const devoirsList = (devoirsListRaw||[]).filter(d =>
     (!d.student_ids || !d.student_ids.length || d.student_ids.includes(currentUser.id))
-    && (!d.date_depot || new Date(d.date_depot) <= now)
+    && (d.date_depot && new Date(d.date_depot) <= now)
   );
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir pour l\'instant.</p>'; return; }
   const { data: mesRendus } = await sb.from('devoirs_rendus').select('*').eq('student_id', currentUser.id);

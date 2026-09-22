@@ -342,13 +342,23 @@ function renderCMQuestion(){
         ${['7','8','9','4','5','6','1','2','3',',','0','⌫'].map(k=>`<button type="button" class="${k==='⌫'?'cm-key-erase':''}" onclick="cmKeypadPress('${k==="⌫"?"back":k}')">${k}</button>`).join('')}
       </div>
       <div style="text-align:center;">
-        <button class="btn" id="cmNextBtn" onclick="cmGoNext()">${isLast?'Valider ✓':'Suivant →'}</button>
+        <button class="btn" id="cmNextBtn" onclick="cmGoNext()" ${(cmAnswers[cmCurrentIndex]||'').trim()===''?'disabled':''}>${isLast?'Valider ✓':'Suivant →'}</button>
       </div>
     </div>`;
   updateCMTimerDisplay();
   const input = document.getElementById('cmAnswerInput');
   input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); cmGoNext(); } });
+  input.addEventListener('input', cmUpdateNextBtnState);
   input.focus();
+}
+/* Le bouton Suivant/Valider reste désactivé tant que la case est vide -- signalé : "certains
+   élèves cliquent deux fois sur suivant sans faire exprès" (le double-clic sautait alors la
+   question suivante sans réponse). */
+function cmUpdateNextBtnState(){
+  const input = document.getElementById('cmAnswerInput');
+  const btn = document.getElementById('cmNextBtn');
+  if(!input || !btn) return;
+  btn.disabled = input.value.trim()==='';
 }
 /* Touches du pavé tactile -- insèrent dans le champ de saisie comme si l'élève tapait au
    clavier (même valeur, même comparaison à la correction dans checkCM). */
@@ -359,9 +369,11 @@ function cmKeypadPress(k){
   else if(k===','){ if(!input.value.includes(',')) input.value += ','; }
   else input.value += k;
   input.focus();
+  cmUpdateNextBtnState();
 }
 function cmGoNext(){
   const input = document.getElementById('cmAnswerInput');
+  if(input && input.value.trim()==='') return;
   cmAnswers[cmCurrentIndex] = input ? input.value : '';
   if(cmCurrentIndex < cmQuestions.length-1){
     cmCurrentIndex++;

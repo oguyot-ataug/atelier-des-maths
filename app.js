@@ -2386,6 +2386,10 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.601', items:[
+    "Automatismes -- signalé : \"certains élèves cliquent deux fois sur suivant sans faire exprès\". Le bouton \"Suivant\"/\"Valider\" reste désormais désactivé tant que la case de réponse est vide, qu'on tape au clavier ou via le pavé tactile -- impossible de passer une question sans réponse par un double-clic accidentel.",
+    "Devoirs, correction d'un comportement inattendu -- signalé : \"j'ai remarqué qu'ils avaient accès à un devoir alors que je n'avais pas renseigné la date de dépôt\". Un devoir sans date de dépôt est maintenant un brouillon invisible aux élèves (au lieu d'être publié immédiatement comme avant) : il faut choisir une date (aujourd'hui pour publier tout de suite, ou une date future pour programmer) pour qu'il apparaisse dans leur liste. Le formulaire de création et la liste côté professeur (pastille \"brouillon, pas encore visible\") ont été mis à jour en conséquence.",
+  ]},
   { version:'2026-08-19.600', items:[
     "Automatismes, esthétique -- signalé : \"un pavé numérique un peu plus gros\" et \"rendre la fenêtre plus sexy, un peu comme le compte est bon\". La fenêtre d'exercice (question et résultat) reprend désormais une carte dégradée colorée, comme pour Compte est bon, teintée selon le thème de la séquence (additions, tables, divisions, pourcentages, décimaux). Le pavé numérique tactile est nettement agrandi (boutons 72×64 px au lieu de 54×46) avec un relief 3D.",
   ]},
