@@ -211,11 +211,13 @@ document.body.insertAdjacentHTML('beforeend', `
         <button class="btn secondary" style="font-size:.78rem;padding:4px 10px;" onclick="adminResetPasswordPrompt(editProfTargetId, editProfTargetName)"><span class=gicon>key</span> Réinitialiser</button>
       </div>
     </div>
-    <label class="hint" style="margin:0;display:block;margin-bottom:14px;">UAI de l'établissement
-      <input type="text" id="editProfUai" placeholder="ex. 0751234A" style="width:100%;margin-top:4px;padding:8px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;">
-    </label>
-    <p class="hint" style="margin:0 0 6px;">Classes rattachées (établissement) :</p>
-    <div id="editProfClassesList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;max-height:160px;overflow:auto;"></div>
+    <div id="editProfUaiClassesBox">
+      <label class="hint" style="margin:0;display:block;margin-bottom:14px;">UAI de l'établissement
+        <input type="text" id="editProfUai" placeholder="ex. 0751234A" style="width:100%;margin-top:4px;padding:8px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);box-sizing:border-box;">
+      </label>
+      <p class="hint" style="margin:0 0 6px;">Classes rattachées (établissement) :</p>
+      <div id="editProfClassesList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;max-height:160px;overflow:auto;"></div>
+    </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;">
       <span class="hint" id="editProfStatus" style="margin:auto 8px auto 0;"></span>
       <button class="btn secondary" onclick="closeEditProfModal()">Annuler</button>
@@ -331,7 +333,12 @@ async function adminCreateAccount(){
   }catch(err){ status.textContent = 'Erreur réseau : '+err.message; }
 }
 let resetPasswordTargetUserId = null;
-let editProfTargetId = null, editProfTargetName = '';
+let editProfTargetId = null, editProfTargetName = '', editProfTargetRole = 'prof';
+/* Modale "Modifier le compte" -- ouverte aussi bien pour un prof/admin que pour un élève.
+   Signalé : "je croyais que dans admin je pouvais modifier les noms prénoms des élèves ?" --
+   le bouton n'existait jusqu'ici que pour les comptes prof/admin. L'UAI et les classes
+   rattachées (établissement) n'ont de sens que pour un prof (class_teachers) -- masqués pour
+   un élève, dont la classe se gère depuis la section "Affecter" du panneau admin. */
 async function openEditProfModal(id){
   editProfTargetId = id;
   document.getElementById('editProfModalOverlay').style.display='flex';
@@ -340,12 +347,19 @@ async function openEditProfModal(id){
   const { data: prof, error } = await sb.from('profiles').select('*').eq('id', id).single();
   if(error){ document.getElementById('editProfStatus').textContent = 'Erreur : '+error.message; return; }
   editProfTargetName = (prof.nom||prof.email||'').replace(/'/g,"\\'");
+  editProfTargetRole = prof.role;
   document.getElementById('editProfNom').value = prof.nom||'';
   document.getElementById('editProfPrenom').value = prof.prenom||'';
   document.getElementById('editProfUai').value = prof.uai||'';
   const loginIdentifiant = prof.email ? (prof.email.endsWith('@mathcollege.local') ? prof.email.slice(0, -('@mathcollege.local'.length)) : prof.email) : '(inconnu)';
   document.getElementById('editProfIdentifiantDisplay').textContent = loginIdentifiant;
-  await renderEditProfClasses(prof);
+  const uaiClassesBox = document.getElementById('editProfUaiClassesBox');
+  if(prof.role==='eleve'){
+    uaiClassesBox.style.display = 'none';
+  } else {
+    uaiClassesBox.style.display = '';
+    await renderEditProfClasses(prof);
+  }
 }
 /* Classes "de l'établissement" : celles enseignées par au moins un collègue partageant le même
    UAI que ce prof (à défaut d'UAI renseigné, on affiche toutes les classes). Coche celles déjà
@@ -379,18 +393,25 @@ async function saveEditProfModal(){
   status.textContent = 'Enregistrement…';
   const nom = document.getElementById('editProfNom').value.trim();
   const prenom = document.getElementById('editProfPrenom').value.trim();
-  const uai = document.getElementById('editProfUai').value.trim();
-  const { error } = await sb.from('profiles').update({nom, prenom, uai: uai||null}).eq('id', editProfTargetId);
+  const patch = { nom, prenom };
+  // UAI et classes rattachées (class_teachers) n'existent que pour un prof/admin -- un élève
+  // n'a ni l'un ni l'autre (sa classe se gère via class_students, ailleurs dans le panneau).
+  if(editProfTargetRole!=='eleve'){
+    patch.uai = document.getElementById('editProfUai').value.trim() || null;
+  }
+  const { error } = await sb.from('profiles').update(patch).eq('id', editProfTargetId);
   if(error){ status.textContent = 'Erreur : '+error.message; return; }
-  // Classes cochées/décochées : on aligne class_teachers sur l'état actuel des cases.
-  const checked = new Set(Array.from(document.querySelectorAll('.editProfClassCheck:checked')).map(el=>el.value));
-  const all = Array.from(document.querySelectorAll('.editProfClassCheck')).map(el=>el.value);
-  const { data: myLinks } = await sb.from('class_teachers').select('class_id').eq('teacher_id', editProfTargetId);
-  const current = new Set((myLinks||[]).map(l=>l.class_id));
-  const toAdd = all.filter(id=>checked.has(id) && !current.has(id));
-  const toRemove = all.filter(id=>!checked.has(id) && current.has(id));
-  if(toAdd.length) await sb.from('class_teachers').insert(toAdd.map(class_id=>({class_id, teacher_id: editProfTargetId})));
-  if(toRemove.length) await sb.from('class_teachers').delete().eq('teacher_id', editProfTargetId).in('class_id', toRemove);
+  if(editProfTargetRole!=='eleve'){
+    // Classes cochées/décochées : on aligne class_teachers sur l'état actuel des cases.
+    const checked = new Set(Array.from(document.querySelectorAll('.editProfClassCheck:checked')).map(el=>el.value));
+    const all = Array.from(document.querySelectorAll('.editProfClassCheck')).map(el=>el.value);
+    const { data: myLinks } = await sb.from('class_teachers').select('class_id').eq('teacher_id', editProfTargetId);
+    const current = new Set((myLinks||[]).map(l=>l.class_id));
+    const toAdd = all.filter(id=>checked.has(id) && !current.has(id));
+    const toRemove = all.filter(id=>!checked.has(id) && current.has(id));
+    if(toAdd.length) await sb.from('class_teachers').insert(toAdd.map(class_id=>({class_id, teacher_id: editProfTargetId})));
+    if(toRemove.length) await sb.from('class_teachers').delete().eq('teacher_id', editProfTargetId).in('class_id', toRemove);
+  }
   status.textContent = '✓ Enregistré';
   await adminRefreshListings();
   setTimeout(closeEditProfModal, 600);
@@ -738,7 +759,7 @@ function adminRenderAccountsListing(){
   };
   const rowHTML = p => {
     const safeName = escapeHtml(p.nom||p.email||'').replace(/'/g,"\\'");
-    const editBtn = (p.role==='prof'||p.role==='admin') ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span></button>` : '';
+    const editBtn = `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span></button>`;
     const categoryBtn = p.role==='prof' ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeCategoryPrompt('${p.id}','${safeName}')"><span class=gicon>workspace_premium</span></button>` : '';
     const inviteBtn = p.must_change_password ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminGenerateInviteLink('${p.id}','${safeName}')"><span class=gicon>link</span></button>` : '';
     const rowBg = !lastLoginMap.get(p.id) ? 'background:rgba(28,43,57,.02);' : '';

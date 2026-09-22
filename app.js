@@ -2386,6 +2386,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.604', items:[
+    "Administration, fix -- signalé : \"je croyais que dans admin je pouvais modifier les noms prénoms des élèves ?\". Le bouton \"Modifier\" (icône outil) de la liste des comptes n'existait que pour les profs/admins -- il apparaît maintenant aussi pour les élèves, avec une modale simplifiée (nom, prénom, identifiant, mot de passe) qui masque l'UAI et les classes rattachées, propres aux comptes prof.",
+  ]},
   { version:'2026-08-19.603', items:[
     "Devoirs, résultats par devoir (« Voir les rendus ») -- signalé : \"faire la même chose dans les résultats des devoirs\" (comme Supervision). Les élèves sont maintenant triés par ordre alphabétique. Pour Automatismes et Compte est bon, chaque score affiche son %, avec une barre de réussite colorée par élève (rouge/orange/vert selon le taux). Pour les devoirs fichier/figure, une pastille de statut (Rendu/Brouillon/Pas encore rendu) et une barre de réussite globale de la classe ont été ajoutées. Un bouton \"Exporter CSV\" télécharge les résultats affichés, quel que soit le type de devoir.",
   ]},
