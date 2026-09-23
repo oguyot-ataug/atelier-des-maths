@@ -152,6 +152,54 @@ document.body.insertAdjacentHTML('beforeend', `
       </div>
     </div>
     </div>
+    <div id="opGroupWrap" style="display:none;">
+    <div class="tool-group-tabs" style="display:flex;gap:6px;margin-bottom:10px;">
+      <button type="button" class="tool-tab-btn" id="opTabAdd" onclick="openAdditionTool()">Addition</button>
+      <button type="button" class="tool-tab-btn" id="opTabSous" onclick="openSoustractionTool()">Soustraction</button>
+      <button type="button" class="tool-tab-btn" id="opTabMult" onclick="openMultiplicationTool()">Multiplication</button>
+    </div>
+    <div id="additionPanel" class="figure-wrap" style="display:none;">
+      <p class="hint" style="margin:0 0 10px;">Indiquez les termes à additionner : l'addition posée (avec retenues) est calculée et mise en forme automatiquement.</p>
+      <div class="tool-row" style="margin-bottom:10px;">
+        <input type="text" id="addTermes" placeholder="Termes séparés par + (ex. 356 + 178)" style="width:280px;">
+        <button type="button" class="btn secondary" onclick="previewAdditionPosee()">Calculer</button>
+      </div>
+      <div id="additionPreview"></div>
+      <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="addVierge"> N'afficher que les termes (à compléter par l'élève -- retenues et résultat laissés vides)</label>
+      <div class="figure-toolbar" style="margin-top:10px;">
+        <button type="button" class="btn" onclick="insertAdditionPosee()">Insérer l'addition</button>
+        <button type="button" class="btn secondary" onclick="closeAdditionTool()">Fermer sans insérer</button>
+      </div>
+    </div>
+    <div id="soustractionPanel" class="figure-wrap" style="display:none;">
+      <p class="hint" style="margin:0 0 10px;">Indiquez les deux nombres (le plus grand en premier) : la soustraction posée est calculée avec la méthode de compensation (celle utilisée en CM1, sans jamais barrer aucun chiffre).</p>
+      <div class="tool-row" style="margin-bottom:10px;">
+        <input type="number" id="sousA" placeholder="Nombre (ex. 623)" style="width:160px;">
+        <input type="number" id="sousB" placeholder="À soustraire (ex. 148)" style="width:160px;">
+        <button type="button" class="btn secondary" onclick="previewSoustractionPosee()">Calculer</button>
+      </div>
+      <div id="soustractionPreview"></div>
+      <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="sousVierge"> N'afficher que les deux nombres (à compléter par l'élève -- compensations et résultat laissés vides)</label>
+      <div class="figure-toolbar" style="margin-top:10px;">
+        <button type="button" class="btn" onclick="insertSoustractionPosee()">Insérer la soustraction</button>
+        <button type="button" class="btn secondary" onclick="closeSoustractionTool()">Fermer sans insérer</button>
+      </div>
+    </div>
+    <div id="multiplicationPanel" class="figure-wrap" style="display:none;">
+      <p class="hint" style="margin:0 0 10px;">Indiquez les deux facteurs : la multiplication posée (produits intermédiaires) est calculée automatiquement -- un chiffre nul du second facteur ne produit pas de ligne inutile.</p>
+      <div class="tool-row" style="margin-bottom:10px;">
+        <input type="number" id="multA" placeholder="Nombre à multiplier (ex. 34)" style="width:160px;">
+        <input type="number" id="multB" placeholder="Facteur (ex. 508)" style="width:160px;">
+        <button type="button" class="btn secondary" onclick="previewMultiplicationPosee()">Calculer</button>
+      </div>
+      <div id="multiplicationPreview"></div>
+      <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="multVierge"> N'afficher que les deux facteurs (à compléter par l'élève -- produits intermédiaires et résultat laissés vides)</label>
+      <div class="figure-toolbar" style="margin-top:10px;">
+        <button type="button" class="btn" onclick="insertMultiplicationPosee()">Insérer la multiplication</button>
+        <button type="button" class="btn secondary" onclick="closeMultiplicationTool()">Fermer sans insérer</button>
+      </div>
+    </div>
+    </div>
     <div id="axeGroupWrap" style="display:none;">
     <div class="tool-group-tabs" style="display:flex;gap:6px;margin-bottom:10px;">
       <button type="button" class="tool-tab-btn" id="axeTabAxe" onclick="openAxeTool()">Axe gradué</button>
@@ -854,6 +902,7 @@ const TOOL_ICONS = {
   figure: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4 L21 20 L3 20 Z"/></svg>`,
   tableau: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="17" height="17" rx="1"/><line x1="3.5" y1="9.5" x2="20.5" y2="9.5"/><line x1="3.5" y1="15.5" x2="20.5" y2="15.5"/><line x1="9.5" y1="3.5" x2="9.5" y2="20.5"/><line x1="15.5" y1="3.5" x2="15.5" y2="20.5"/></svg>`,
   division: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/><circle cx="12" cy="6" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="18" r="1.3" fill="currentColor" stroke="none"/></svg>`,
+  operations: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="7" x2="11" y2="7"/><line x1="8" y1="4" x2="8" y2="10"/><line x1="5" y1="17" x2="11" y2="17"/><line x1="15" y1="10" x2="21" y2="10"/><line x1="15" y1="14" x2="21" y2="14"/></svg>`,
   axe: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="3"/><polyline points="1.5,7 4,3 6.5,7"/><line x1="3" y1="20" x2="21" y2="20"/><polyline points="17,17.5 21,20 17,22.5"/><circle cx="10" cy="13" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="8" r="1.3" fill="currentColor" stroke="none"/></svg>`,
   fraction: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3 A9 9 0 0 1 12 21 Z" fill="currentColor" stroke="none"/><line x1="12" y1="3" x2="12" y2="21"/></svg>`,
   cubes: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2 L21 7 L21 17 L12 22 L3 17 L3 7 Z"/><path d="M12 2 L12 12 L21 7 M12 12 L3 7 M12 12 L12 22"/></svg>`,
@@ -869,6 +918,7 @@ function toolButtonsHTML(ctx){
     <button type="button" class="tool-icon-btn" title="Figure géométrique" onclick="${set}openFigureTool()">${TOOL_ICONS.figure}</button>
     <button type="button" class="tool-icon-btn" title="Tableau" onclick="${set}openTableauTool()">${TOOL_ICONS.tableau}</button>
     <button type="button" class="tool-icon-btn" title="Division (euclidienne / décimale)" onclick="${set}openDivisionTool()">${TOOL_ICONS.division}</button>
+    <button type="button" class="tool-icon-btn" title="Opération posée (addition / soustraction / multiplication)" onclick="${set}openAdditionTool()">${TOOL_ICONS.operations}</button>
     <button type="button" class="tool-icon-btn" title="Axe gradué / Repère" onclick="${set}openAxeTool()">${TOOL_ICONS.axe}</button>
     <button type="button" class="tool-icon-btn" title="Fraction visuelle (disque / rectangle)" onclick="${set}openDisqueTool()">${TOOL_ICONS.fraction}</button>
     <button type="button" class="tool-icon-btn" title="Cubes empilés" onclick="${set}openCubesTool()">${TOOL_ICONS.cubes}</button>
@@ -896,7 +946,7 @@ const SCALE_PX_PER_CM = 20;
    modale elle-même -- appelé au début de chaque fonction d'ouverture d'outil, pour qu'un seul
    outil (ou groupe) soit jamais visible à la fois. */
 function hideAllToolContent(){
-  ['figurePanel','tableauPanel','conversionPanel','tableauGroupWrap','textBlockPanel','imagePanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','conversionPanel','tableauGroupWrap','textBlockPanel','imagePanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap','opGroupWrap','additionPanel','soustractionPanel','multiplicationPanel'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -915,7 +965,7 @@ function activateToolTab(wrapId, activeTabId, inactiveTabId){
   });
 }
 function closeAllToolPanels(){
-  ['figurePanel','tableauPanel','conversionPanel','tableauGroupWrap','textBlockPanel','imagePanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap'].forEach(id=>{
+  ['figurePanel','tableauPanel','conversionPanel','tableauGroupWrap','textBlockPanel','imagePanel','cubesPanel','graphPanel','statsPanel','probaGroupWrap','urnPanel','cardsPanel','dicePanel','treePanel','divisionPanel','divisionDecPanel','axePanel','reperePanel','disquePanel','rectFracPanel','divisionGroupWrap','axeGroupWrap','shapeGroupWrap','opGroupWrap','additionPanel','soustractionPanel','multiplicationPanel'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.style.display='none';
   });
@@ -1472,6 +1522,229 @@ function reopenDivisionPosee(data){
   document.getElementById('divStepByStep').checked = data.stepByStep;
   document.getElementById('divShowDiff').checked = data.showDiff!==false;
   previewDivisionPosee();
+}
+
+/* ---- mini outils : addition / soustraction / multiplication posées -- signalé : "il manque la
+   possibilité de créer des additions, soustractions et multiplications posées, corrigées ou à
+   faire". Réutilisent dpAlignedCells (déjà défini plus haut, alignement d'un nombre sur N
+   colonnes) et cm1opRowsTable (chapitres/cm1/N2-operations-nombres-entiers.js, chargé après ce
+   fichier -- appel sûr car seulement depuis l'intérieur de fonctions, jamais au chargement,
+   même principe que divisionPoseeHTML utilisée par ce même chapitre CM1 dans l'autre sens). Le
+   rendu (colonnes, retenues/compensations en petit au-dessus, barre, résultat) reprend
+   exactement la présentation déjà enseignée dans le cours CM1, pour que l'élève retrouve la
+   même méthode dans une évaluation ou une correction. */
+function computeAdditionPosee(addends){
+  addends = (addends||[]).filter(n=>Number.isInteger(n) && n>=0);
+  if(addends.length<2) return null;
+  const width = Math.max(...addends.map(a=>String(a).length));
+  const digitsArr = addends.map(a=>String(a).padStart(width,'0').split('').map(Number));
+  const resultDigits = new Array(width).fill(0);
+  const carryAbove = new Array(width).fill(''); // retenue affichée au-dessus de la colonne i
+  let carry = 0;
+  for(let col=width-1; col>=0; col--){
+    let sum = carry;
+    digitsArr.forEach(d=>{ sum += d[col]; });
+    resultDigits[col] = sum % 10;
+    carry = Math.floor(sum/10);
+    if(carry>0 && col>0) carryAbove[col-1] = String(carry);
+  }
+  // Débordement (ex. 999 + 1 = 1000) : la somme a un chiffre de plus que le plus grand terme,
+  // jamais annoncé par une retenue au-dessus d'une colonne inexistante -- il apparaît de
+  // lui-même dans la ligne du résultat (voir additionPoseeHTML).
+  const overflow = carry>0 ? carry : null;
+  const sum = addends.reduce((s,a)=>s+a,0);
+  return { addends, width, resultDigits, carryAbove, overflow, sum };
+}
+function additionPoseeHTML(res, vierge){
+  if(!res) return '<p class="hint" style="color:var(--accent-orange);">Indiquez au moins deux termes entiers positifs, séparés par des +.</p>';
+  const N = res.width + (res.overflow!=null ? 1 : 0);
+  const offset = N - res.width;
+  const rows = [];
+  const hasCarry = res.carryAbove.some(c=>c!=='');
+  if(hasCarry && !vierge){
+    rows.push({ cells: new Array(offset).fill('').concat(res.carryAbove), small:true, color:'var(--accent-orange)' });
+  }
+  res.addends.forEach((a,i)=>{
+    const isLast = i===res.addends.length-1;
+    rows.push({ cells: dpAlignedCells(String(a), N-1, N), sign: isLast?'+':'', bar: isLast });
+  });
+  rows.push({ cells: vierge ? new Array(N).fill('') : dpAlignedCells(String(res.sum), N-1, N), color:'var(--accent-orange)', big:true });
+  return `<div style="margin:10px 0;padding:14px 0;">${cm1opRowsTable(rows)}</div>`;
+}
+function parseAdditionTermes(str){
+  return (str||'').split(/[+,\s]+/).map(s=>s.trim()).filter(Boolean).map(s=>parseInt(s,10)).filter(n=>Number.isInteger(n) && n>=0);
+}
+function previewAdditionPosee(){
+  const res = computeAdditionPosee(parseAdditionTermes(document.getElementById('addTermes').value));
+  const vierge = document.getElementById('addVierge').checked;
+  document.getElementById('additionPreview').innerHTML = additionPoseeHTML(res, vierge);
+}
+function openAdditionTool(){
+  activateToolTab('opGroupWrap', 'opTabAdd', ['opTabSous','opTabMult']);
+  document.getElementById('toolsModalOverlay').style.display='flex';
+  document.getElementById('additionPanel').style.display='block';
+  document.getElementById('additionPreview').innerHTML='';
+  document.getElementById('additionPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function closeAdditionTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('additionPanel').style.display='none';}
+function insertAdditionPosee(){
+  const termes = parseAdditionTermes(document.getElementById('addTermes').value);
+  const res = computeAdditionPosee(termes);
+  if(!res){ document.getElementById('additionPreview').innerHTML = additionPoseeHTML(null); return; }
+  const vierge = document.getElementById('addVierge').checked;
+  addPendingBlock('additionPosee', additionPoseeHTML(res, vierge), {termes, vierge}, 'reopenAdditionPosee');
+  closeAdditionTool();
+}
+function reopenAdditionPosee(data){
+  openAdditionTool();
+  document.getElementById('addTermes').value = data.termes.join(' + ');
+  document.getElementById('addVierge').checked = !!data.vierge;
+  previewAdditionPosee();
+}
+
+/* Méthode de compensation (comme dans le cours CM1) : jamais de chiffre barré. Quand le chiffre
+   du haut est plus petit que celui du bas, on ajoute 10 au chiffre du haut ("+10" affiché
+   au-dessus) ET 1 au chiffre du bas de la colonne suivante ("+1" affiché au-dessus de cette
+   colonne) -- la différence ne change pas puisqu'on ajoute la même quantité aux deux nombres. */
+function computeSoustractionPosee(a, b){
+  if(!Number.isInteger(a) || !Number.isInteger(b) || a<0 || b<0 || a<b) return null;
+  const width = String(a).length;
+  const da = String(a).padStart(width,'0').split('').map(Number);
+  const db = String(b).padStart(width,'0').split('').map(Number);
+  const resultDigits = new Array(width).fill(0);
+  const topCompensation = new Array(width).fill('');
+  const bottomCompensation = new Array(width).fill('');
+  let owe = false;
+  for(let col=width-1; col>=0; col--){
+    let botVal = db[col] + (owe?1:0);
+    if(owe) bottomCompensation[col] = '+1';
+    owe = false;
+    let topVal = da[col];
+    if(topVal < botVal){
+      topVal += 10;
+      topCompensation[col] = '+10';
+      owe = true;
+    }
+    resultDigits[col] = topVal - botVal;
+  }
+  return { a, b, width, resultDigits, topCompensation, bottomCompensation, difference: a-b };
+}
+function soustractionPoseeHTML(res, vierge){
+  if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le premier nombre doit être supérieur ou égal au second (deux entiers positifs).</p>';
+  const N = res.width;
+  const rows = [];
+  const hasTop = res.topCompensation.some(c=>c!=='');
+  const hasBottom = res.bottomCompensation.some(c=>c!=='');
+  if(hasTop && !vierge) rows.push({ cells: res.topCompensation, small:true, color:'var(--accent-orange)' });
+  rows.push({ cells: dpAlignedCells(String(res.a), N-1, N) });
+  if(hasBottom && !vierge) rows.push({ cells: res.bottomCompensation, small:true, color:'var(--accent-orange)' });
+  rows.push({ cells: dpAlignedCells(String(res.b), N-1, N), sign:'−', bar:true });
+  rows.push({ cells: vierge ? new Array(N).fill('') : dpAlignedCells(String(res.difference), N-1, N), color:'var(--accent-orange)', big:true });
+  return `<div style="margin:10px 0;padding:14px 0;">${cm1opRowsTable(rows)}</div>`;
+}
+function previewSoustractionPosee(){
+  const a = parseInt(document.getElementById('sousA').value);
+  const b = parseInt(document.getElementById('sousB').value);
+  const res = computeSoustractionPosee(a,b);
+  const vierge = document.getElementById('sousVierge').checked;
+  document.getElementById('soustractionPreview').innerHTML = soustractionPoseeHTML(res, vierge);
+}
+function openSoustractionTool(){
+  activateToolTab('opGroupWrap', 'opTabSous', ['opTabAdd','opTabMult']);
+  document.getElementById('toolsModalOverlay').style.display='flex';
+  document.getElementById('soustractionPanel').style.display='block';
+  document.getElementById('soustractionPreview').innerHTML='';
+  document.getElementById('soustractionPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function closeSoustractionTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('soustractionPanel').style.display='none';}
+function insertSoustractionPosee(){
+  const a = parseInt(document.getElementById('sousA').value);
+  const b = parseInt(document.getElementById('sousB').value);
+  const res = computeSoustractionPosee(a,b);
+  if(!res){ document.getElementById('soustractionPreview').innerHTML = soustractionPoseeHTML(null); return; }
+  const vierge = document.getElementById('sousVierge').checked;
+  addPendingBlock('soustractionPosee', soustractionPoseeHTML(res, vierge), {a,b,vierge}, 'reopenSoustractionPosee');
+  closeSoustractionTool();
+}
+function reopenSoustractionPosee(data){
+  openSoustractionTool();
+  document.getElementById('sousA').value = data.a;
+  document.getElementById('sousB').value = data.b;
+  document.getElementById('sousVierge').checked = !!data.vierge;
+  previewSoustractionPosee();
+}
+
+/* Une ligne de produit intermédiaire PAR CHIFFRE NON NUL du second facteur seulement -- signalé :
+   "si je multiplie par 508, je n'ai besoin que deux lignes... je ne vais pas demander à l'élève
+   une ligne de 0". Un chiffre nul (ici la dizaine de 508) ne produit donc aucune ligne. Avec un
+   second facteur à un seul chiffre, le produit s'écrit directement (pas de détail à additionner). */
+function computeMultiplicationPosee(a, b){
+  if(!Number.isInteger(a) || !Number.isInteger(b) || a<0 || b<=0) return null;
+  const bDigits = String(b).split('').map(Number);
+  const n = bDigits.length;
+  const placeLabels = ['unités','dizaines','centaines','milliers','dizaines de milliers','centaines de milliers'];
+  const partials = [];
+  for(let i=0;i<n;i++){
+    const place = n-1-i;
+    const digit = bDigits[i];
+    if(digit===0) continue;
+    partials.push({ digit, place, value: a*digit*Math.pow(10,place), placeLabel: placeLabels[place] || `10^${place}` });
+  }
+  return { a, b, partials, product: a*b, singleDigitMultiplier: n===1 };
+}
+function multiplicationPoseeHTML(res, vierge){
+  if(!res) return '<p class="hint" style="color:var(--accent-orange);">Indiquez deux entiers positifs (le second non nul).</p>';
+  const allValues = [res.a, res.b, res.product, ...res.partials.map(p=>p.value)];
+  const N = Math.max(...allValues.map(v=>String(v).length));
+  const rows = [];
+  rows.push({ cells: dpAlignedCells(String(res.a), N-1, N) });
+  rows.push({ cells: dpAlignedCells(String(res.b), N-1, N), sign:'×', bar:true });
+  if(res.singleDigitMultiplier){
+    rows.push({ cells: vierge ? new Array(N).fill('') : dpAlignedCells(String(res.product), N-1, N), color:'var(--accent-orange)', big:true });
+  } else {
+    res.partials.forEach((p,i)=>{
+      const isLast = i===res.partials.length-1;
+      const zeros = p.place>0 ? '0'.repeat(p.place) : '';
+      rows.push({
+        cells: vierge ? new Array(N).fill('') : dpAlignedCells(String(p.value), N-1, N),
+        bar: isLast,
+        label: `← ${res.a} × ${p.digit}${zeros} (chiffre des ${p.placeLabel} de ${res.b})`,
+      });
+    });
+    rows.push({ cells: vierge ? new Array(N).fill('') : dpAlignedCells(String(res.product), N-1, N), color:'var(--accent-orange)', big:true });
+  }
+  return `<div style="margin:10px 0;padding:14px 0;">${cm1opRowsTable(rows)}</div>`;
+}
+function previewMultiplicationPosee(){
+  const a = parseInt(document.getElementById('multA').value);
+  const b = parseInt(document.getElementById('multB').value);
+  const res = computeMultiplicationPosee(a,b);
+  const vierge = document.getElementById('multVierge').checked;
+  document.getElementById('multiplicationPreview').innerHTML = multiplicationPoseeHTML(res, vierge);
+}
+function openMultiplicationTool(){
+  activateToolTab('opGroupWrap', 'opTabMult', ['opTabAdd','opTabSous']);
+  document.getElementById('toolsModalOverlay').style.display='flex';
+  document.getElementById('multiplicationPanel').style.display='block';
+  document.getElementById('multiplicationPreview').innerHTML='';
+  document.getElementById('multiplicationPanel').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function closeMultiplicationTool(){document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('multiplicationPanel').style.display='none';}
+function insertMultiplicationPosee(){
+  const a = parseInt(document.getElementById('multA').value);
+  const b = parseInt(document.getElementById('multB').value);
+  const res = computeMultiplicationPosee(a,b);
+  if(!res){ document.getElementById('multiplicationPreview').innerHTML = multiplicationPoseeHTML(null); return; }
+  const vierge = document.getElementById('multVierge').checked;
+  addPendingBlock('multiplicationPosee', multiplicationPoseeHTML(res, vierge), {a,b,vierge}, 'reopenMultiplicationPosee');
+  closeMultiplicationTool();
+}
+function reopenMultiplicationPosee(data){
+  openMultiplicationTool();
+  document.getElementById('multA').value = data.a;
+  document.getElementById('multB').value = data.b;
+  document.getElementById('multVierge').checked = !!data.vierge;
+  previewMultiplicationPosee();
 }
 /* ============================================================
    Nouveaux ajouts pour l'outil de correction : division décimale,

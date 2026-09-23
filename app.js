@@ -2479,6 +2479,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.626', items:[
+    "Nouveaux outils (évaluation et correction) : addition, soustraction et multiplication posées -- signalé : \"il manque la possibilité de créer des additions, soustractions et multiplications posées, corrigées ou à faire\". Addition : retenues affichées au-dessus, comme en cours. Soustraction : méthode de compensation (celle enseignée en CM1, sans jamais barrer un chiffre) -- \"+10\" au-dessus du chiffre concerné, \"+1\" au-dessus du chiffre suivant. Multiplication : une ligne de produit intermédiaire par chiffre NON NUL du second facteur seulement -- multiplier par 508 ne demande que 2 lignes, jamais une ligne pour le 0 des dizaines. Chaque outil propose une version corrigée ou une version vierge (à compléter par l'élève, avec la bonne place laissée pour chaque calcul).",
+  ]},
   { version:'2026-08-19.625', items:[
     "Fix -- signalé : \"en mode reprendre, il est écrit pour l'élève qu'il n'est plus en compétition alors que finalement il pourrait le redevenir\". Le message \"Hors compétition\" affiché à l'élève sur un devoir \"à reprendre\" (Automatismes et Compte est bon) précise désormais que c'est temporaire, et explique comment redevenir éligible à une médaille (retravailler et renvoyer le devoir) -- au lieu de la formulation définitive partagée avec le cas \"en retard\".",
   ]},
