@@ -1053,8 +1053,11 @@ function aiUsageCallCost(row){
   if(row.input_tokens==null || row.output_tokens==null) return null;
   return row.input_tokens/1e6*AI_USAGE_PRICE_INPUT_PER_1M + row.output_tokens/1e6*AI_USAGE_PRICE_OUTPUT_PER_1M;
 }
-function aiUsageFormatCost(usd){
-  return usd==null ? '<span class="hint">inconnu</span>' : '$'+usd.toFixed(usd<0.01?4:3);
+/* knownCalls = nombre d'appels ayant servi à calculer costSum -- distingue "coût connu de 0"
+   (knownCalls>0) de "aucun appel avec tokens connus" (knownCalls===0, où costSum vaut 0 par
+   construction mais ne doit PAS s'afficher comme "$0.000", trompeur : on ne sait juste pas). */
+function aiUsageFormatCost(costSum, knownCalls){
+  return knownCalls ? '$'+costSum.toFixed(costSum<0.01?4:3) : '<span class="hint">inconnu</span>';
 }
 /* Panneau "Usage IA" -- signalé : "Est-ce que j'ai un endroit pour voir qui a utilisé l'IA et
    le coût engendré ?". Un seul jeton d'API Anthropic (côté serveur, dans ai-proxy) sert à tout
@@ -1090,12 +1093,13 @@ async function adminRefreshAiUsage(){
     f.calls++; if(cost==null) f.coutInconnu++; else f.cost += cost;
   }
 
+  const totalConnus = totalCalls - callsCoutInconnu;
   elSummary.innerHTML = `<table class="sup-table">
     <tbody>
       <tr><td>Nombre total d'appels</td><td style="font-weight:700;">${totalCalls}</td></tr>
-      <tr><td>Coût total estimé</td><td style="font-weight:700;">${aiUsageFormatCost(totalCost)}${callsCoutInconnu?` <span class="hint">(+ ${callsCoutInconnu} appel(s) à coût inconnu, non comptés)</span>`:''}</td></tr>
+      <tr><td>Coût total estimé</td><td style="font-weight:700;">${aiUsageFormatCost(totalCost, totalConnus)}${callsCoutInconnu?` <span class="hint">(+ ${callsCoutInconnu} appel(s) à coût inconnu, non comptés)</span>`:''}</td></tr>
     </tbody>
-  </table>`;
+  </table>${!totalConnus ? `<p class="hint" style="margin:8px 0 0;">Le suivi des tokens vient d'être activé (déploiement du build 2026-08-19.633) : aucun appel n'a encore eu lieu depuis. Les ${totalCalls} appel(s) listé(s) datent tous d'avant, d'où le coût inconnu -- ce n'est pas un bug, il suffit d'attendre une prochaine utilisation de l'assistant IA pour voir apparaître des coûts.</p>` : ''}`;
 
   const userRows = [...byUser.values()].sort((a,b)=> b.cost - a.cost || b.calls - a.calls);
   elByUser.innerHTML = `<table class="sup-table">
@@ -1105,7 +1109,7 @@ async function adminRefreshAiUsage(){
       return `<tr>
         <td style="font-weight:600;">${escapeHtml(name)}</td>
         <td style="text-align:right;">${u.calls}</td>
-        <td style="text-align:right;">${aiUsageFormatCost(u.cost)}${u.coutInconnu?` <span class="hint">(+${u.coutInconnu} inconnu)</span>`:''}</td>
+        <td style="text-align:right;">${aiUsageFormatCost(u.cost, u.calls-u.coutInconnu)}${u.coutInconnu?` <span class="hint">(+${u.coutInconnu} inconnu)</span>`:''}</td>
       </tr>`;
     }).join('')}</tbody>
   </table>`;
@@ -1116,7 +1120,7 @@ async function adminRefreshAiUsage(){
     <tbody>${featureRows.map(([feature,f])=>`<tr>
         <td style="font-weight:600;">${escapeHtml(feature)}</td>
         <td style="text-align:right;">${f.calls}</td>
-        <td style="text-align:right;">${aiUsageFormatCost(f.cost)}${f.coutInconnu?` <span class="hint">(+${f.coutInconnu} inconnu)</span>`:''}</td>
+        <td style="text-align:right;">${aiUsageFormatCost(f.cost, f.calls-f.coutInconnu)}${f.coutInconnu?` <span class="hint">(+${f.coutInconnu} inconnu)</span>`:''}</td>
       </tr>`).join('')}</tbody>
   </table>`;
 }

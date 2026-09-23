@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.634', items:[
+    "Fix -- onglet Administration « Usage IA », signalé : \"les coûts affichés sont nuls !\". Ce n'était pas un bug de calcul mais un affichage trompeur : tant qu'aucun appel IA n'a eu lieu depuis l'activation du suivi des tokens (build .633), le coût total s'affichait \"$0.000\" au lieu de \"inconnu\" -- un coût de 0 et un coût non mesuré n'ont pourtant rien à voir. Affiche désormais \"inconnu\" tant qu'aucun appel avec tokens connus n'existe, avec une explication claire (le suivi vient d'être activé, il suffit d'attendre une prochaine utilisation de l'assistant IA).",
+  ]},
   { version:'2026-08-19.633', items:[
     "Administration, nouvel onglet « Usage IA » -- signalé : \"est-ce que j'ai un endroit pour voir qui a utilisé l'IA et le coût engendré ?\". Nombre d'appels et coût estimé par utilisateur et par fonctionnalité (le coût est calculé à partir des tokens consommés par appel, désormais enregistrés -- les appels antérieurs à ce déploiement restent comptés mais avec un coût affiché comme inconnu, faute de tokens enregistrés à l'époque). Au passage, correction d'un texte de la page d'accueil qui laissait penser que chaque prof utilise sa propre clé API -- en réalité une seule clé, payée par l'établissement, sert à tout le monde.",
   ]},
