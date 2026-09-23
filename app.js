@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.642', items:[
+    "Tableau IA -- signalé : \"l'arc est trop grand. Et le point C n'est pas l'intersection !\". Arc réduit à ~40° (au lieu de 100°), plus proche du petit arc qu'un professeur trace réellement. Surtout : le plan est désormais vérifié géométriquement avant d'être joué -- chaque point censé être une intersection (même \"towardX\"/\"towardY\" qu'un cercle/une perpendiculaire précédent) est recalculé et comparé à ce que le cercle/la perpendiculaire donnent réellement ; en cas d'écart (erreur de calcul de l'IA), la construction est rejetée avec un message clair plutôt que dessinée fausse à l'écran -- il suffit de relancer.",
+  ]},
   { version:'2026-08-19.641', items:[
     "Tableau IA -- 4 signalements corrigés d'un coup. (1) \"A et B sont placés avant de mesurer correctement à la règle\" : nouvelle étape « measure », la règle se place et le crayon glisse le long AVANT que le point mesuré n'apparaisse (au lieu de placer les deux points puis tracer entre eux après coup). (2) \"le crayon n'apparaît jamais pour les tracés\" : un vrai outil crayon suit maintenant la pointe du trait pendant tout tracé à la règle ou à l'équerre (le compas avait déjà sa propre mine visible). (3) \"il ne faut pas laisser les outils sur la feuille quand ils ne sont plus utiles\" : chaque outil (règle, équerre, compas, crayon) est rangé automatiquement dès la fin de l'étape qui l'utilise. (4) \"un arc suffit, pas un cercle complet\" : le compas ne trace plus qu'un arc d'environ 100° du côté du point cherché, sauf si un cercle complet est vraiment la figure demandée.",
   ]},
@@ -7855,31 +7858,76 @@ RÈGLES IMPORTANTES :
 ${enonce}
 """`;
 }
+/* Au-delà de la validation structurelle (types, références connues...), vérifie que chaque
+   point d'intersection ANNONCÉ par un cercle/une perpendiculaire précédente (même
+   "towardX"/"towardY", à peu près) est bien géométriquement dessus -- signalé : "le point C
+   n'est pas l'intersection !". L'IA calcule ses propres coordonnées "à la main" (trigonométrie,
+   résolution de système) et peut se tromper ; plutôt que de dessiner une figure silencieusement
+   fausse, on rejette le plan (l'utilisateur peut relancer) dès qu'un point ne colle pas avec le
+   cercle/la perpendiculaire censé le déterminer. MATCH_TOL (généreuse) sert seulement à savoir
+   QUEL point un "towardX/towardY" approximatif désigne ; GEOM_TOL (stricte) sert à la vérité
+   géométrique elle-même. */
+const TB_AI_MATCH_TOL = 40, TB_AI_GEOM_TOL = 6;
 function tbAiValidatePlan(steps){
   if(!Array.isArray(steps) || !steps.length) return {ok:false, error:"réponse vide ou pas une liste d'étapes"};
   if(steps.length>TB_AI_MAX_STEPS) return {ok:false, error:'trop d\'étapes ('+steps.length+')'};
   const known = new Set();
+  const coords = new Map(); // label -> {x,y}
+  const circlesSeen = [];   // {centerX,centerY,radiusPx,towardX,towardY}
+  const perpsSeen = [];     // {atX,atY,dirX,dirY,towardX,towardY}
+  const checkAgainstIntersections = (label, x, y)=>{
+    for(const c of circlesSeen){
+      if(Math.hypot(c.towardX-x, c.towardY-y) < TB_AI_MATCH_TOL){
+        const d = Math.hypot(x-c.centerX, y-c.centerY);
+        if(Math.abs(d-c.radiusPx) > TB_AI_GEOM_TOL) return "le point "+label+" n'est pas sur le cercle/arc censé le déterminer (calcul incohérent)";
+      }
+    }
+    for(const p of perpsSeen){
+      if(Math.hypot(p.towardX-x, p.towardY-y) < TB_AI_MATCH_TOL){
+        const vx=x-p.atX, vy=y-p.atY;
+        const along = vx*p.dirX + vy*p.dirY;
+        const perpDist = Math.abs(vx*(-p.dirY) + vy*p.dirX);
+        if(perpDist > TB_AI_GEOM_TOL || along < -TB_AI_GEOM_TOL) return "le point "+label+" n'est pas sur la perpendiculaire censée le déterminer (calcul incohérent)";
+      }
+    }
+    return null;
+  };
   for(const s of steps){
     if(!s || typeof s!=='object' || typeof s.type!=='string') return {ok:false, error:'étape invalide'};
     if(s.type==='point'){
       if(typeof s.label!=='string' || !s.label.trim()) return {ok:false, error:'point sans label'};
       if(!Number.isFinite(s.x) || !Number.isFinite(s.y)) return {ok:false, error:'coordonnées invalides pour le point '+s.label};
       if(s.x<-50||s.x>950||s.y<-50||s.y>610) return {ok:false, error:'point '+s.label+' hors du cadre'};
-      known.add(s.label);
+      const geomErr = checkAgainstIntersections(s.label, s.x, s.y);
+      if(geomErr) return {ok:false, error:geomErr};
+      known.add(s.label); coords.set(s.label, {x:s.x, y:s.y});
     } else if(s.type==='measure'){
       if(!known.has(s.from)) return {ok:false, error:'mesure référence un point inconnu ('+s.from+')'};
       if(typeof s.label!=='string' || !s.label.trim()) return {ok:false, error:'mesure sans label pour le point obtenu'};
       if(!Number.isFinite(s.x) || !Number.isFinite(s.y)) return {ok:false, error:'coordonnées invalides pour le point '+s.label};
       if(s.x<-50||s.x>950||s.y<-50||s.y>610) return {ok:false, error:'point '+s.label+' hors du cadre'};
-      known.add(s.label);
+      known.add(s.label); coords.set(s.label, {x:s.x, y:s.y});
     } else if(s.type==='segment'){
       if(!known.has(s.from) || !known.has(s.to)) return {ok:false, error:'segment référence un point inconnu ('+s.from+'→'+s.to+')'};
     } else if(s.type==='circle'){
       if(!known.has(s.center)) return {ok:false, error:'cercle référence un point inconnu ('+s.center+')'};
       if(!Number.isFinite(s.radiusCm) || s.radiusCm<=0 || s.radiusCm>17) return {ok:false, error:'rayon de cercle invalide'};
+      if(Number.isFinite(s.towardX) && Number.isFinite(s.towardY)){
+        const c = coords.get(s.center);
+        circlesSeen.push({centerX:c.x, centerY:c.y, radiusPx:s.radiusCm*TB_PX_PER_CM, towardX:s.towardX, towardY:s.towardY});
+      }
     } else if(s.type==='perpendicular'){
       if(!known.has(s.at) || !known.has(s.reference)) return {ok:false, error:'perpendiculaire référence un point inconnu ('+s.at+'/'+s.reference+')'};
       if(!Number.isFinite(s.towardX) || !Number.isFinite(s.towardY)) return {ok:false, error:'perpendiculaire : coordonnées "toward" invalides'};
+      const A = coords.get(s.at), R = coords.get(s.reference);
+      const baseAngle = Math.atan2(R.y-A.y, R.x-A.x);
+      let bestDir=null, bestDot=-Infinity;
+      for(const cand of [baseAngle, baseAngle+Math.PI]){
+        const dx=-Math.sin(cand), dy=Math.cos(cand);
+        const dot = dx*(s.towardX-A.x) + dy*(s.towardY-A.y);
+        if(dot>bestDot){ bestDot=dot; bestDir={x:dx,y:dy}; }
+      }
+      perpsSeen.push({atX:A.x, atY:A.y, dirX:bestDir.x, dirY:bestDir.y, towardX:s.towardX, towardY:s.towardY});
     } else if(s.type==='text'){
       if(!Number.isFinite(s.x) || !Number.isFinite(s.y) || typeof s.text!=='string') return {ok:false, error:'texte invalide'};
     } else {
@@ -8024,8 +8072,8 @@ async function tbAiDrawCircle(C, radiusPx, target){
   tbInk.push(stroke);
   let startAngle, sweep;
   if(target){
-    startAngle = Math.atan2(target.y-C.y, target.x-C.x)*180/Math.PI - 50;
-    sweep = 100;
+    startAngle = Math.atan2(target.y-C.y, target.x-C.x)*180/Math.PI - 20;
+    sweep = 40;
   } else {
     startAngle = t.angle;
     sweep = 360;
