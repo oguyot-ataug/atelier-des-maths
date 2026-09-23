@@ -530,6 +530,11 @@ function exportDevoirSubmissionsCsv(){
   if(!devoirSubmissionsExport.rows.length){ niceAlert('Aucun résultat à exporter.'); return; }
   downloadCsv(devoirSubmissionsExport.filename, devoirSubmissionsExport.headers, devoirSubmissionsExport.rows);
 }
+/* Podium affiché en haut de la feuille de résultats prof -- signalé : "écrire le podium en haut
+   de page" (les médailles n'étaient jusqu'ici visibles qu'au fil des lignes, une par élève).
+   Rempli par devoirSubmissionRowsAutomatismes/Ceb à partir du même classement (qualifiés, hors
+   élèves en retard, trié par temps cumulé croissant) que celui utilisé pour medailleByStudent. */
+let devoirSubmissionsPodium = '';
 /* Ouvre la liste des élèves de la classe concernée par ce devoir. Pour fichier/figure/
    figure_completer : rendu téléchargeable ou affichable, avec note/commentaire (comportement
    d'origine, inchangé). Pour automatismes/compte_est_bon : pas de "rendu" au sens fichier --
@@ -552,6 +557,7 @@ async function openDevoirSubmissions(devoirId){
   overlay.style.zIndex = '300';
   let rows;
   devoirSubmissionsExport = { headers: [], rows: [], filename: `resultats-${(devoir.titre||'devoir').toLowerCase().replace(/[^a-z0-9]+/g,'-')}.csv` };
+  devoirSubmissionsPodium = '';
   if(devoir.type==='automatismes'){
     rows = await devoirSubmissionRowsAutomatismes(devoir, elevesTries);
   } else if(devoir.type==='compte_est_bon'){
@@ -569,6 +575,7 @@ async function openDevoirSubmissions(devoirId){
       <div style="text-align:right;margin:-4px 0 10px;">
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="exportDevoirSubmissionsCsv()"><span class=gicon>download</span> Exporter CSV</button>
       </div>
+      ${devoirSubmissionsPodium}
       ${rows || '<p class="hint">Aucun élève dans cette classe.</p>'}
     </div>`;
   document.body.appendChild(overlay);
@@ -631,6 +638,26 @@ const DEVOIR_MEDAILLES = {
   argent:{emoji:'🥈',label:'Argent',fullLabel:"Médaille d'argent",color:'#6B6B76',bg:'rgba(180,180,190,.22)'},
   bronze:{emoji:'🥉',label:'Bronze',fullLabel:'Médaille de bronze',color:'#8B4A22',bg:'rgba(205,127,50,.18)'},
 };
+/* Podium en haut de la feuille de résultats prof -- signalé : "écrire le podium en haut de page".
+   `classement` : déjà trié (temps cumulé croissant), déjà filtré aux élèves qualifiés et non "en
+   retard" -- le même tableau que celui qui alimente medailleByStudent, ici on en affiche juste le
+   TOP 3 groupé au lieu d'un médaillon par ligne. */
+function devoirPodiumHtml(classement, elevesById){
+  const top3 = classement.slice(0,3);
+  if(!top3.length) return '';
+  const order = ['or','argent','bronze'];
+  return `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:0 0 16px;padding:12px;background:rgba(28,43,57,.03);border-radius:10px;">
+    ${top3.map((s,i)=>{
+      const info = DEVOIR_MEDAILLES[order[i]];
+      const nom = profileDisplayName(elevesById.get(s.id))||'?';
+      return `<div style="text-align:center;padding:6px 14px;background:${info.bg};border-radius:8px;min-width:90px;">
+        <div style="font-size:1.5rem;line-height:1;">${info.emoji}</div>
+        <div style="font-weight:700;font-size:.82rem;color:${info.color};margin-top:2px;">${escapeHtml(nom)}</div>
+        <div class="hint" style="margin:0;">${formatDuration(s.cumulative)}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
 async function devoirSubmissionRowsAutomatismes(devoir, eleves){
   const seqs = devoir.automatismes_sequences || [];
   const { data: attempts } = await sb.from('cm_results').select('student_id,sequence_id,score,total,duration_ms').eq('devoir_id', devoir.id);
@@ -671,6 +698,8 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
       .filter(s=>s.qualified && !s.retard)
       .sort((a,b)=>a.cumulative-b.cumulative);
     ['or','argent','bronze'].forEach((m,i)=>{ if(classement[i]) medailleByStudent.set(classement[i].id, m); });
+    const elevesById = new Map(eleves.filter(r=>r.profiles).map(r=>[r.profiles.id, r.profiles]));
+    devoirSubmissionsPodium = devoirPodiumHtml(classement, elevesById);
   }
   const exportRows = [];
   const body = eleves.map(row=>{
@@ -754,6 +783,8 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
       .filter(s=>s.qualified && !s.retard)
       .sort((a,b)=>a.cumulative-b.cumulative);
     ['or','argent','bronze'].forEach((m,i)=>{ if(classement[i]) medailleByStudent.set(classement[i].id, m); });
+    const elevesById = new Map(eleves.filter(r=>r.profiles).map(r=>[r.profiles.id, r.profiles]));
+    devoirSubmissionsPodium = devoirPodiumHtml(classement, elevesById);
   }
   const exportRows = [];
   const body = eleves.map(row=>{

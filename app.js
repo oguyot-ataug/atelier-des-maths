@@ -2404,6 +2404,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.618', items:[
+    "Feuilles de résultats des devoirs (prof) -- signalé : \"écrire le podium en haut de page\". Pour un devoir Automatismes ou Compte est bon avec des médailles en jeu, un podium (🥇🥈🥉, nom et temps cumulé) s'affiche désormais en haut de la fenêtre \"Voir les rendus\", au-dessus de la liste par élève -- avant, les médailles n'apparaissaient qu'au fil des lignes, une par élève.",
+  ]},
   { version:'2026-08-19.617', items:[
     "Fix -- Compte est bon (devoirs), signalé : \"si un compte est trouvé, je ne dois pas pouvoir recommencer pour améliorer le score !\". Un compte déjà trouvé exactement (écart 0) est maintenant verrouillé -- plus de bouton \"Retenter\". Avant, comme le tirage d'un devoir est fixe (identique à chaque tentative, contrairement au tirage libre), connaître déjà la solution permettait de rejouer le même compte pour battre artificiellement son propre temps et fausser le classement des médailles.",
   ]},
