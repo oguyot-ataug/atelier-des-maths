@@ -1560,10 +1560,12 @@ function additionPoseeHTML(res, vierge){
   const N = res.width + (res.overflow!=null ? 1 : 0);
   const offset = N - res.width;
   const rows = [];
-  const hasCarry = res.carryAbove.some(c=>c!=='');
-  if(hasCarry && !vierge){
-    rows.push({ cells: new Array(offset).fill('').concat(res.carryAbove), small:true, color:'var(--accent-orange)' });
-  }
+  // La ligne des retenues est TOUJOURS réservée, même vide (sans retenue, ou en mode vierge) --
+  // signalé : "en posant ces trois additions côte à côte, les premiers termes ne sont pas
+  // alignés". Sans ça, une addition sans retenue commençait une ligne plus haut que ses voisines
+  // qui en ont une, désalignant le premier terme dès qu'on pose plusieurs additions ensemble.
+  const showCarryDigits = !vierge && res.carryAbove.some(c=>c!=='');
+  rows.push({ cells: showCarryDigits ? new Array(offset).fill('').concat(res.carryAbove) : new Array(N).fill(''), small:true, color:'var(--accent-orange)' });
   res.addends.forEach((a,i)=>{
     const isLast = i===res.addends.length-1;
     rows.push({ cells: dpAlignedCells(String(a), N-1, N), sign: isLast?'+':'', bar: isLast });
@@ -1633,11 +1635,14 @@ function soustractionPoseeHTML(res, vierge){
   if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le premier nombre doit être supérieur ou égal au second (deux entiers positifs).</p>';
   const N = res.width;
   const rows = [];
-  const hasTop = res.topCompensation.some(c=>c!=='');
-  const hasBottom = res.bottomCompensation.some(c=>c!=='');
-  if(hasTop && !vierge) rows.push({ cells: res.topCompensation, small:true, color:'var(--accent-orange)' });
+  // Les deux lignes de compensation sont TOUJOURS réservées, même vides -- même raison que pour
+  // l'addition (voir plus haut) : sans ça, plusieurs soustractions posées côte à côte n'ont pas
+  // leur premier terme aligné selon qu'il y a ou non des compensations.
+  const showTop = !vierge && res.topCompensation.some(c=>c!=='');
+  const showBottom = !vierge && res.bottomCompensation.some(c=>c!=='');
+  rows.push({ cells: showTop ? res.topCompensation : new Array(N).fill(''), small:true, color:'var(--accent-orange)' });
   rows.push({ cells: dpAlignedCells(String(res.a), N-1, N) });
-  if(hasBottom && !vierge) rows.push({ cells: res.bottomCompensation, small:true, color:'var(--accent-orange)' });
+  rows.push({ cells: showBottom ? res.bottomCompensation : new Array(N).fill(''), small:true, color:'var(--accent-orange)' });
   rows.push({ cells: dpAlignedCells(String(res.b), N-1, N), sign:'−', bar:true });
   rows.push({ cells: vierge ? new Array(N).fill('') : dpAlignedCells(String(res.difference), N-1, N), color:'var(--accent-orange)', big:true });
   return `<div style="margin:10px 0;padding:14px 0;">${cm1opRowsTable(rows)}</div>`;

@@ -2479,6 +2479,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.627', items:[
+    "Fix -- additions et soustractions posées, signalé : \"en posant ces trois additions côte à côte, les premiers termes ne sont pas alignés\" (une addition/soustraction sans retenue démarrait plus haut que ses voisines qui en ont une). La ligne des retenues (addition) et les deux lignes de compensation (soustraction) réservent désormais toujours leur place, même vides -- le premier terme commence donc toujours à la même hauteur, avec ou sans retenue. Espacement resserré entre les retenues et les chiffres qu'elles annotent (signalé : \"l'espace... est un peu généreux\"), y compris dans le cours CM1 qui partage le même rendu.",
+  ]},
   { version:'2026-08-19.626', items:[
     "Nouveaux outils (évaluation et correction) : addition, soustraction et multiplication posées -- signalé : \"il manque la possibilité de créer des additions, soustractions et multiplications posées, corrigées ou à faire\". Addition : retenues affichées au-dessus, comme en cours. Soustraction : méthode de compensation (celle enseignée en CM1, sans jamais barrer un chiffre) -- \"+10\" au-dessus du chiffre concerné, \"+1\" au-dessus du chiffre suivant. Multiplication : une ligne de produit intermédiaire par chiffre NON NUL du second facteur seulement -- multiplier par 508 ne demande que 2 lignes, jamais une ligne pour le 0 des dizaines. Chaque outil propose une version corrigée ou une version vierge (à compléter par l'élève, avec la bonne place laissée pour chaque calcul).",
   ]},

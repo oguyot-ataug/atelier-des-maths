@@ -20,8 +20,13 @@
 function cm1opRowsTable(rows){
   const trs = rows.map(r=>{
     const fs = r.small ? '.72rem' : (r.big ? '1.2rem' : '1.1rem');
-    const signTd = `<td style="width:26px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;color:${r.signColor||'var(--accent-orange)'};${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${r.sign||'&nbsp;'}</td>`;
-    const tds = r.cells.map(c=>`<td style="width:32px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;${r.color?`color:${r.color};`:''}${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${(c!=null&&c!=='')?c:'&nbsp;'}</td>`).join('');
+    // line-height:1 + petit padding explicite -- sans ça, la ligne des retenues (police plus
+    // petite) hérite de la hauteur de ligne par défaut du navigateur et flotte visiblement
+    // au-dessus de la colonne qu'elle annote au lieu d'y rester collée -- signalé : "l'espace
+    // entre la ligne des retenues et les chiffres en dessous est un peu généreux".
+    const vPad = r.small ? '1px' : '2px';
+    const signTd = `<td style="width:26px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;line-height:1;padding:${vPad} 0;color:${r.signColor||'var(--accent-orange)'};${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${r.sign||'&nbsp;'}</td>`;
+    const tds = r.cells.map(c=>`<td style="width:32px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:${fs};font-weight:700;line-height:1;padding:${vPad} 0;${r.color?`color:${r.color};`:''}${r.bar?'border-bottom:2.5px solid var(--ink);':''}">${(c!=null&&c!=='')?c:'&nbsp;'}</td>`).join('');
     const labelTd = r.label ? `<td style="padding-left:14px;text-align:left;font-family:'Inter',sans-serif;font-size:.78rem;color:var(--ink-soft);white-space:nowrap;">${r.label}</td>` : '';
     return `<tr>${signTd}${tds}${labelTd}</tr>`;
   }).join('');
