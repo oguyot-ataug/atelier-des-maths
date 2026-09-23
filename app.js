@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.632', items:[
+    "Page d'accueil -- signalé : \"il manque des informations sur pas mal de nouvelles fonctionnalités\". Ajout des « Devoirs en ligne » (élèves et profs), mention des opérations posées dans l'outil de correction, et du partage entre collègues pour le cahier de corrections -- ces fonctionnalités existaient déjà mais n'étaient nulle part visibles sur la page d'accueil.",
+  ]},
   { version:'2026-08-19.631', items:[
     "Outil de correction, brouillons -- signalé : \"mettre des exercices en attente, préparer le terrain sans mettre de date\". Nouveau bouton « Brouillons » qui vide le champ date (le bouton principal devient « + Ajouter aux brouillons ») et « Récupérer un brouillon » qui liste les exercices préparés sans date pour les rouvrir. Dès qu'une date est renseignée et l'exercice enregistré, il sort des brouillons et rejoint le cahier normal. Les brouillons ne sont jamais visibles dans le cahier consulté par les élèves ni dans le cahier normal du prof -- uniquement via ces deux boutons.",
   ]},
