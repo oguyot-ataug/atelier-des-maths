@@ -2404,6 +2404,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.619', items:[
+    "Devoirs, nouveau statut \"À reprendre\" -- signalé : \"des élèves ont rendu leur travail alors qu'ils auraient encore pu améliorer leur score, permettre au professeur de changer le statut d'un devoir rendu en Redonné\". Un bouton \"À reprendre\" apparaît désormais dans \"Voir les rendus\" sur chaque devoir rendu -- le statut de l'élève repasse à \"À reprendre\" (visible côté élève et prof), et le devoir se rouvre automatiquement : les séquences d'automatismes redeviennent modifiables, les comptes déjà trouvés en Compte est bon se retentent, et le fichier/la figure reste modifiable comme avant. Le statut repasse tout seul à \"Rendu\" dès que l'élève envoie à nouveau son travail. Un devoir \"à reprendre\" est provisoirement hors compétition pour les médailles, le temps d'être repris.",
+  ]},
   { version:'2026-08-19.618', items:[
     "Feuilles de résultats des devoirs (prof) -- signalé : \"écrire le podium en haut de page\". Pour un devoir Automatismes ou Compte est bon avec des médailles en jeu, un podium (🥇🥈🥉, nom et temps cumulé) s'affiche désormais en haut de la fenêtre \"Voir les rendus\", au-dessus de la liste par élève -- avant, les médailles n'apparaissaient qu'au fil des lignes, une par élève.",
   ]},

@@ -82,6 +82,7 @@ document.getElementById('view-devoirs-eleve').innerHTML = `
         <option value="En cours">En cours</option>
         <option value="Rendu">Rendu</option>
         <option value="En retard">En retard</option>
+        <option value="À reprendre">À reprendre</option>
       </select>
     </label>
   </div>
@@ -512,13 +513,20 @@ function devoirPctColor(pct){ return pct>=70?'#1F7A4D':pct>=40?'#C77D1E':'#9E1F5
    "Voir les rendus" -- signalé : "indiquer le statut du devoir de l'élève (en cours ou rendu,
    retard)". "En retard" = date limite dépassée et pas encore rendu. Renvoie {label, color, html}
    pour être réutilisable à la fois dans l'affichage et dans l'export CSV. */
-function devoirStatutInfo(estRendu, dateLimite){
+/* aReprendre : le prof a explicitement renvoyé ce devoir déjà rendu -- signalé : "des élèves ont
+   rendu leur travail alors qu'ils auraient encore pu améliorer leur score... permettre au
+   professeur de changer le statut... pour signaler à l'élève que j'attends plus de lui" (voir
+   markDevoirAReprendre). Prioritaire sur "Rendu"/"En retard". Le champ `retard` ci-dessous sert
+   aussi de signal "hors compétition" pour les médailles (voir les classements plus bas) : un
+   devoir renvoyé en est exclu au même titre qu'un devoir en retard, le temps qu'il soit repris. */
+function devoirStatutInfo(estRendu, dateLimite, aReprendre){
+  if(aReprendre) return { label:'À reprendre', color:'#B8511F', retard:true };
   if(estRendu) return { label:'Rendu', color:'#1F7A4D', retard:false };
   const enRetard = !!(dateLimite && new Date(dateLimite) < new Date());
   return enRetard ? { label:'En retard', color:'#9E1F5E', retard:true } : { label:'En cours', color:'#0C5BA0', retard:false };
 }
-function devoirStatutPill(estRendu, dateLimite){
-  const { label, color } = devoirStatutInfo(estRendu, dateLimite);
+function devoirStatutPill(estRendu, dateLimite, aReprendre){
+  const { label, color } = devoirStatutInfo(estRendu, dateLimite, aReprendre);
   return `<span class="sup-score-pill" style="background:${color}1A;color:${color};font-size:.7rem;">${label}</span>`;
 }
 /* Ligne d'export CSV accumulées pendant la construction des lignes de la modale (une par
@@ -608,22 +616,26 @@ async function devoirSubmissionRowsFichierFigure(devoir, eleves){
     let content, brouillonTag = '';
     if(!rendu) content = '<span class="hint">Pas encore rendu.</span>';
     else {
-      if(!rendu.est_rendu) brouillonTag = ' <span style="color:#8A6D1F;font-weight:700;">(brouillon enregistré)</span>';
+      // Un devoir "à reprendre" a aussi est_rendu=false (voir markDevoirAReprendre) mais ce n'est
+      // pas un simple brouillon : le tag "(brouillon enregistré)" ne doit s'afficher que pour un
+      // vrai brouillon jamais rendu, pas pour un devoir explicitement renvoyé par le prof.
+      if(!rendu.est_rendu && !rendu.a_reprendre) brouillonTag = ' <span style="color:#8A6D1F;font-weight:700;">(brouillon enregistré)</span>';
       if(rendu.type==='figure' || rendu.type==='figure_completer') content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="previewDevoirFigure('${eleve.id}')"><span class=gicon>visibility</span> Voir la figure</button>${brouillonTag}`;
       else content = `<button class="btn secondary" style="font-size:.72rem;padding:3px 8px;" onclick="downloadDevoirFile('${rendu.fichier_path}')"><span class=gicon>download</span> Télécharger le fichier</button>${brouillonTag}`;
     }
-    const statutInfo = devoirStatutInfo(!!(rendu && rendu.est_rendu), devoir.date_limite);
-    const statutLabel = statutInfo.label + (rendu && !rendu.est_rendu ? ' (brouillon)' : '');
+    const statutInfo = devoirStatutInfo(!!(rendu && rendu.est_rendu), devoir.date_limite, !!(rendu && rendu.a_reprendre));
+    const statutLabel = statutInfo.label + (rendu && !rendu.est_rendu && !rendu.a_reprendre ? ' (brouillon)' : '');
     exportRows.push([profileDisplayName(eleve)||'(sans nom)', statutLabel, rendu?.note ?? '', rendu?.commentaire_prof || '']);
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!(rendu && rendu.est_rendu), devoir.date_limite)}</span>
+        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!(rendu && rendu.est_rendu), devoir.date_limite, !!(rendu && rendu.a_reprendre))}</span>
         <span>${content}</span>
       </div>
       ${rendu ? `<div class="tool-row" style="margin-top:6px;">
         <input type="number" step="0.5" min="0" max="20" placeholder="Note /20" value="${rendu.note??''}" style="width:80px;" id="devoirNote_${eleve.id}">
         <input type="text" placeholder="Commentaire" value="${escapeHtml(rendu.commentaire_prof||'')}" style="flex:1;min-width:160px;" id="devoirComment_${eleve.id}">
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="saveDevoirFeedback('${rendu.id}','${eleve.id}')">Enregistrer</button>
+        ${rendu.est_rendu ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="markDevoirAReprendre(this,'${devoir.id}','${eleve.id}')"><span class=gicon>reply</span> À reprendre</button>` : ''}
       </div>` : ''}
     </div>`;
   }).join('');
@@ -661,8 +673,8 @@ function devoirPodiumHtml(classement, elevesById){
 async function devoirSubmissionRowsAutomatismes(devoir, eleves){
   const seqs = devoir.automatismes_sequences || [];
   const { data: attempts } = await sb.from('cm_results').select('student_id,sequence_id,score,total,duration_ms').eq('devoir_id', devoir.id);
-  const { data: rendus } = await sb.from('devoirs_rendus').select('student_id,est_rendu').eq('devoir_id', devoir.id);
-  const renduByStudent = new Map((rendus||[]).map(r=>[r.student_id, r.est_rendu]));
+  const { data: rendus } = await sb.from('devoirs_rendus').select('student_id,est_rendu,a_reprendre').eq('devoir_id', devoir.id);
+  const renduByStudent = new Map((rendus||[]).map(r=>[r.student_id, r]));
   const byStudent = new Map();
   const timeByStudent = new Map(); // student_id -> Map(sequence_id -> meilleur temps À 100%)
   (attempts||[]).forEach(a=>{
@@ -692,7 +704,8 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
         const tm = timeByStudent.get(id) || new Map();
         const qualified = seqs.every(sid=>tm.has(sid));
         const cumulative = qualified ? seqs.reduce((s,sid)=>s+tm.get(sid),0) : null;
-        const retard = devoirStatutInfo(!!renduByStudent.get(id), devoir.date_limite).retard;
+        const r = renduByStudent.get(id);
+        const retard = devoirStatutInfo(!!(r&&r.est_rendu), devoir.date_limite, !!(r&&r.a_reprendre)).retard;
         return { id, qualified, cumulative, retard };
       })
       .filter(s=>s.qualified && !s.retard)
@@ -706,7 +719,8 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
     const eleve = row.profiles; if(!eleve) return '';
     const m = byStudent.get(eleve.id) || new Map();
     const nbFaites = seqs.filter(id=>m.has(id)).length;
-    const statutLabel = devoirStatutInfo(!!renduByStudent.get(eleve.id), devoir.date_limite).label;
+    const renduEleve = renduByStudent.get(eleve.id);
+    const statutLabel = devoirStatutInfo(!!(renduEleve&&renduEleve.est_rendu), devoir.date_limite, !!(renduEleve&&renduEleve.a_reprendre)).label;
     const medaille = medailleByStudent.get(eleve.id);
     const medailleHtml = medaille ? ` <span title="Médaille ${DEVOIR_MEDAILLES[medaille].label}" style="font-size:1rem;">${DEVOIR_MEDAILLES[medaille].emoji}</span>` : '';
     // Barre de réussite -- signalé : "couleurs et % de réussite, une barre de réussite,
@@ -728,7 +742,7 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
     }).join('');
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!renduByStudent.get(eleve.id), devoir.date_limite)}${medailleHtml}</span>
+        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!(renduEleve&&renduEleve.est_rendu), devoir.date_limite, !!(renduEleve&&renduEleve.a_reprendre))}${medailleHtml}</span>
         <span style="text-align:right;">
           <span class="hint" style="margin:0;">${nbFaites}/${seqs.length} séquence(s) faite(s)</span>
           ${pctEleve!==null ? `<br><span class="hint" style="margin:0;font-weight:700;color:${colorEleve};">${pctEleve}% de réussite</span>` : ''}
@@ -736,6 +750,7 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
       </div>
       ${pctEleve!==null ? `<div class="sup-progress-bar" style="margin:6px 0;"><div class="sup-progress-fill" style="width:${pctEleve}%;background:${colorEleve};"></div></div>` : ''}
       ${detail}
+      ${renduEleve && renduEleve.est_rendu ? `<div style="text-align:right;margin-top:4px;"><button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="markDevoirAReprendre(this,'${devoir.id}','${eleve.id}')"><span class=gicon>reply</span> À reprendre</button></div>` : ''}
     </div>`;
   }).join('');
   devoirSubmissionsExport.headers = ['Élève','Statut','Séquence','Score','Total','%','Fait','Temps'];
@@ -746,8 +761,8 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
   const rounds = devoir.ceb_rounds || [];
   const nRounds = rounds.length || 1;
   const { data: attempts } = await sb.from('ceb_results').select('student_id,devoir_round,gap,result_value,time_used_ms,created_at').eq('devoir_id', devoir.id).order('created_at',{ascending:false});
-  const { data: rendus } = await sb.from('devoirs_rendus').select('student_id,est_rendu').eq('devoir_id', devoir.id);
-  const renduByStudent = new Map((rendus||[]).map(r=>[r.student_id, r.est_rendu]));
+  const { data: rendus } = await sb.from('devoirs_rendus').select('student_id,est_rendu,a_reprendre').eq('devoir_id', devoir.id);
+  const renduByStudent = new Map((rendus||[]).map(r=>[r.student_id, r]));
   const byStudent = new Map();
   const timeByStudent = new Map(); // student_id -> Map(devoir_round -> meilleur temps EXACT)
   (attempts||[]).forEach(a=>{
@@ -777,7 +792,8 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
         const tm = timeByStudent.get(id) || new Map();
         const qualified = rounds.every((r,i)=>tm.has(i));
         const cumulative = qualified ? rounds.reduce((s,r,i)=>s+tm.get(i),0) : null;
-        const retard = devoirStatutInfo(!!renduByStudent.get(id), devoir.date_limite).retard;
+        const r2 = renduByStudent.get(id);
+        const retard = devoirStatutInfo(!!(r2&&r2.est_rendu), devoir.date_limite, !!(r2&&r2.a_reprendre)).retard;
         return { id, qualified, cumulative, retard };
       })
       .filter(s=>s.qualified && !s.retard)
@@ -791,7 +807,8 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
     const eleve = row.profiles; if(!eleve) return '';
     const m = byStudent.get(eleve.id) || new Map();
     const nbFaits = Array.from({length:nRounds}, (_,i)=>i).filter(i=>m.has(i)).length;
-    const statutLabel = devoirStatutInfo(!!renduByStudent.get(eleve.id), devoir.date_limite).label;
+    const renduEleve = renduByStudent.get(eleve.id);
+    const statutLabel = devoirStatutInfo(!!(renduEleve&&renduEleve.est_rendu), devoir.date_limite, !!(renduEleve&&renduEleve.a_reprendre)).label;
     const medaille = medailleByStudent.get(eleve.id);
     const medailleHtml = medaille ? ` <span title="Médaille ${DEVOIR_MEDAILLES[medaille].label}" style="font-size:1rem;">${DEVOIR_MEDAILLES[medaille].emoji}</span>` : '';
     // "Réussite" = compte tombé pile (écart 0) -- signalé : "couleurs et % de réussite, une
@@ -809,7 +826,7 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
     }).join('');
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!renduByStudent.get(eleve.id), devoir.date_limite)}${medailleHtml}</span>
+        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!(renduEleve&&renduEleve.est_rendu), devoir.date_limite, !!(renduEleve&&renduEleve.a_reprendre))}${medailleHtml}</span>
         <span style="text-align:right;">
           <span class="hint" style="margin:0;">${nbFaits}/${nRounds} compte(s) fait(s)</span>
           ${pctEleve!==null ? `<br><span class="hint" style="margin:0;font-weight:700;color:${colorEleve};">${pctEleve}% exacts</span>` : ''}
@@ -817,6 +834,7 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
       </div>
       ${pctEleve!==null ? `<div class="sup-progress-bar" style="margin:6px 0;"><div class="sup-progress-fill" style="width:${pctEleve}%;background:${colorEleve};"></div></div>` : ''}
       ${detail}
+      ${renduEleve && renduEleve.est_rendu ? `<div style="text-align:right;margin-top:4px;"><button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="markDevoirAReprendre(this,'${devoir.id}','${eleve.id}')"><span class=gicon>reply</span> À reprendre</button></div>` : ''}
     </div>`;
   }).join('');
   devoirSubmissionsExport.headers = ['Élève','Statut','Compte','Écart','Réponse obtenue','Exact','Fait','Temps'];
@@ -827,6 +845,23 @@ async function saveDevoirFeedback(renduId, studentId){
   const note = document.getElementById('devoirNote_'+studentId).value;
   const commentaire = document.getElementById('devoirComment_'+studentId).value.trim();
   await sb.from('devoirs_rendus').update({ note: note?+note:null, commentaire_prof: commentaire||null }).eq('id', renduId);
+}
+/* Renvoie un devoir déjà rendu à l'élève pour qu'il le retravaille -- signalé : "des élèves ont
+   rendu leur travail alors qu'ils auraient encore pu améliorer leur score... permettre au
+   professeur de changer le statut d'un devoir rendu en 'À reprendre', pour signaler à l'élève
+   que j'attends plus de lui". Repasse aussi est_rendu à false : pour Automatismes (déverrouille
+   les séquences, voir isRendu dans renderDevoirsEleve) et Compte est bon (déverrouille les
+   comptes déjà trouvés, voir le blocage anti-triche de build 617), sinon le statut "À reprendre"
+   contredirait un verrou "devoir rendu" toujours actif. Redevient "Rendu" tout seul au prochain
+   envoi de l'élève (voir submitDevoirAutomatismes, refreshDevoirCEBProgress, submitDevoirFile,
+   startDevoirFigure/Completer). */
+async function markDevoirAReprendre(btn, devoirId, studentId){
+  if(!(await niceConfirm('Renvoyer ce devoir à l\'élève avec le statut "À reprendre" ? Il pourra à nouveau le retravailler.'))) return;
+  const { error } = await sb.from('devoirs_rendus').update({ a_reprendre: true, est_rendu: false }).eq('devoir_id', devoirId).eq('student_id', studentId);
+  if(error){ await niceAlert('Erreur : '+error.message); return; }
+  const overlay = btn.closest('.modal-overlay');
+  if(overlay) overlay.remove();
+  await openDevoirSubmissions(devoirId);
 }
 async function downloadDevoirFile(path){
   const { data, error } = await sb.storage.from('devoirs-rendus').createSignedUrl(path, 60);
@@ -916,11 +951,16 @@ async function renderDevoirsEleve(){
   const rows = await Promise.all(devoirsList.map(async d=>{
     const rendu = renduByDevoir.get(d.id);
     const dateStr = d.date_limite ? new Date(d.date_limite).toLocaleDateString('fr-FR') : '';
-    const statusBadge = rendu && rendu.est_rendu
-      ? `<span style="color:#1F7A4D;font-weight:700;">[Rendu${rendu.note!=null ? ' -- note : '+rendu.note+'/20' : ''}]</span>`
-      : rendu
-        ? `<span style="color:#8A6D1F;font-weight:700;">[Brouillon enregistré -- pas encore rendu]</span>`
-        : `<span style="color:#B8860B;font-weight:700;">[À rendre]</span>`;
+    // "À reprendre" prioritaire sur les autres cas -- signalé : "permettre au professeur de
+    // changer le statut d'un devoir rendu en 'À reprendre', pour signaler à l'élève que
+    // j'attends plus de lui" (voir markDevoirAReprendre, devoirs.js côté prof).
+    const statusBadge = rendu && rendu.a_reprendre
+      ? `<span style="color:#B8511F;font-weight:700;"><span class="gicon" style="font-size:.9rem;vertical-align:middle;">reply</span> [À reprendre -- votre professeur attend mieux, vous pouvez retravailler ce devoir]</span>`
+      : rendu && rendu.est_rendu
+        ? `<span style="color:#1F7A4D;font-weight:700;">[Rendu${rendu.note!=null ? ' -- note : '+rendu.note+'/20' : ''}]</span>`
+        : rendu
+          ? `<span style="color:#8A6D1F;font-weight:700;">[Brouillon enregistré -- pas encore rendu]</span>`
+          : `<span style="color:#B8860B;font-weight:700;">[À rendre]</span>`;
     let actionHtml;
     if(d.type==='automatismes'){
       const seqs = d.automatismes_sequences || [];
@@ -991,6 +1031,7 @@ async function renderDevoirsEleve(){
         <div class="sup-progress-bar" style="margin-bottom:8px;"><div class="sup-progress-fill" style="width:${overallPct}%;background:${overallColor};"></div></div>` : ''}
         ${detail}
         ${medailleHtml}
+        ${rendu && rendu.a_reprendre ? `<p class="hint" style="margin:8px 0 0;color:#B8511F;font-weight:700;"><span class="gicon" style="font-size:.9rem;vertical-align:middle;">reply</span> Votre professeur vous demande de reprendre ce devoir.</p>` : ''}
         ${isRendu
           ? `<p class="hint" style="margin:8px 0 0;"><span class="gicon" style="font-size:.9rem;vertical-align:middle;">lock</span> Devoir rendu -- vous ne pouvez plus modifier vos réponses.</p>`
           : `<div class="tool-row" style="margin-top:8px;">
@@ -1047,7 +1088,9 @@ async function renderDevoirsEleve(){
         // compte est trouvé, je ne dois pas pouvoir recommencer pour améliorer le score !". Sans
         // ça, connaissant déjà la solution, l'élève pouvait rejouer le même compte pour battre
         // son propre temps et fausser le classement des médailles (basé sur le temps cumulé).
-        const actionBtn = exact
+        // Sauf si le prof a explicitement renvoyé le devoir ("À reprendre") : ce verrou anti-
+        // triche n'a plus lieu d'être quand c'est le prof lui-même qui redemande le travail.
+        const actionBtn = exact && !(rendu && rendu.a_reprendre)
           ? `<span class="hint" style="margin:0;font-size:.7rem;color:#1F7A4D;">verrouillé</span>`
           : `<button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="startDevoirCEB('${d.id}',${i})">${best?'Retenter':'Jouer'}</button>`;
         return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0;">
@@ -1057,7 +1100,7 @@ async function renderDevoirsEleve(){
       }).join('');
       const medalInfoCeb = DEVOIR_MEDAILLES[medaille.my_medal];
       const medailleHtmlCeb = medaille.my_retard
-        ? `<div class="hint" style="margin-top:8px;padding:6px 10px;background:rgba(158,31,94,.08);border-radius:8px;">🚫 Hors compétition (devoir en retard).</div>`
+        ? `<div class="hint" style="margin-top:8px;padding:6px 10px;background:rgba(158,31,94,.08);border-radius:8px;">🚫 Hors compétition (devoir ${rendu && rendu.a_reprendre ? 'à reprendre' : 'en retard'}).</div>`
         : medalInfoCeb
           ? `<div style="margin-top:8px;padding:8px 12px;background:${medalInfoCeb.bg};border-radius:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
               <span style="font-weight:700;color:${medalInfoCeb.color};">${medalInfoCeb.emoji} ${medalInfoCeb.fullLabel} !</span>
@@ -1075,6 +1118,7 @@ async function renderDevoirsEleve(){
         <div class="sup-progress-bar" style="margin-bottom:8px;"><div class="sup-progress-fill" style="width:${pctExact}%;background:${colorExact};"></div></div>` : ''}
         ${roundsHtml}
         ${medailleHtmlCeb}
+        ${rendu && rendu.a_reprendre ? `<p class="hint" style="margin:8px 0 0;color:#B8511F;font-weight:700;"><span class="gicon" style="font-size:.9rem;vertical-align:middle;">reply</span> Votre professeur vous demande de reprendre ce devoir.</p>` : ''}
         ${(rendu && rendu.est_rendu) ? '' : `<p class="hint" style="margin:8px 0 0;">Ce devoir se rend automatiquement une fois tous les comptes trouvés exactement -- vous pouvez retenter autant de fois que vous voulez.</p>`}
       </div>`;
     } else if(d.type==='figure_completer'){
@@ -1100,7 +1144,7 @@ async function renderDevoirsEleve(){
       ${actionHtml}
       <span class="hint" id="devoirSubmitStatus_${d.id}" style="margin:0;"></span>
     </div>`;
-    return { id: d.id, statut: devoirStatutInfo(!!(rendu && rendu.est_rendu), d.date_limite).label, html };
+    return { id: d.id, statut: devoirStatutInfo(!!(rendu && rendu.est_rendu), d.date_limite, !!(rendu && rendu.a_reprendre)).label, html };
   }));
   devoirsEleveCache = rows;
   renderDevoirsEleveFiltered();
@@ -1133,7 +1177,9 @@ async function submitDevoirFile(devoirId){
   status.textContent = '✓ Fichier enregistré.';
   const veutRendre = await niceConfirm('Voulez-vous rendre votre devoir ?');
   if(!veutRendre) return; // reste en brouillon (fichier enregistré, mais pas encore rendu)
-  const { error: err2 } = await sb.from('devoirs_rendus').update({ est_rendu: true }).eq('devoir_id', devoirId).eq('student_id', currentUser.id);
+  // a_reprendre repasse à false ici -- signalé : "changer le statut d'un devoir rendu en 'À
+  // reprendre'... redevient Rendu au prochain envoi de l'élève" (voir markDevoirAReprendre).
+  const { error: err2 } = await sb.from('devoirs_rendus').update({ est_rendu: true, a_reprendre: false }).eq('devoir_id', devoirId).eq('student_id', currentUser.id);
   if(err2){ status.textContent = 'Erreur : '+err2.message; return; }
   status.textContent = '✓ Devoir rendu.';
   await renderDevoirsEleve();
@@ -1215,7 +1261,9 @@ async function submitCurrentFigureAsDevoir(){
   // l'élève veut rendre définitivement -- ne ferme/ne quitte l'outil que dans ce cas.
   const veutRendre = await niceConfirm('Voulez-vous rendre votre devoir ?');
   if(!veutRendre) return; // reste en brouillon, l'outil reste ouvert pour continuer à travailler
-  const { error: err2 } = await sb.from('devoirs_rendus').update({ est_rendu: true }).eq('devoir_id', devoirId).eq('student_id', currentUser.id);
+  // a_reprendre repasse à false ici -- signalé : "changer le statut d'un devoir rendu en 'À
+  // reprendre'... redevient Rendu au prochain envoi de l'élève" (voir markDevoirAReprendre).
+  const { error: err2 } = await sb.from('devoirs_rendus').update({ est_rendu: true, a_reprendre: false }).eq('devoir_id', devoirId).eq('student_id', currentUser.id);
   if(err2){ await niceAlert('Erreur : '+err2.message); return; }
   currentDevoirSubmission = null;
   closeFigureTool();
@@ -1230,8 +1278,10 @@ async function submitCurrentFigureAsDevoir(){
    -- tant qu'il n'a pas rendu, il peut retenter chaque séquence autant de fois qu'il veut. */
 async function submitDevoirAutomatismes(devoirId){
   if(!(await niceConfirm('Rendre ce devoir ? Vous ne pourrez plus retenter les séquences ensuite.'))) return;
+  // a_reprendre repasse à false ici -- signalé : "changer le statut d'un devoir rendu en 'À
+  // reprendre'... redevient Rendu au prochain envoi de l'élève" (voir markDevoirAReprendre).
   const { error } = await sb.from('devoirs_rendus').upsert({
-    devoir_id: devoirId, student_id: currentUser.id, type: 'automatismes', est_rendu: true, submitted_at: new Date().toISOString(),
+    devoir_id: devoirId, student_id: currentUser.id, type: 'automatismes', est_rendu: true, a_reprendre: false, submitted_at: new Date().toISOString(),
   }, { onConflict: 'devoir_id,student_id' });
   if(error){ await niceAlert('Erreur : '+error.message); return; }
   await renderDevoirsEleve();
@@ -1249,8 +1299,10 @@ async function refreshDevoirCEBProgress(devoirId){
   const { data: attempts } = await sb.from('ceb_results').select('devoir_round,gap').eq('devoir_id', devoirId).eq('student_id', currentUser.id);
   const exactRounds = new Set((attempts||[]).filter(a=>a.gap===0).map(a=>a.devoir_round ?? 0));
   if(exactRounds.size < nRounds) return;
+  // a_reprendre repasse à false ici -- signalé : "changer le statut d'un devoir rendu en 'À
+  // reprendre'... redevient Rendu au prochain envoi de l'élève" (voir markDevoirAReprendre).
   await sb.from('devoirs_rendus').upsert({
-    devoir_id: devoirId, student_id: currentUser.id, type: 'compte_est_bon', est_rendu: true, submitted_at: new Date().toISOString(),
+    devoir_id: devoirId, student_id: currentUser.id, type: 'compte_est_bon', est_rendu: true, a_reprendre: false, submitted_at: new Date().toISOString(),
   }, { onConflict: 'devoir_id,student_id' });
 }
 /* startDevoirCMSequence(devoirId, sequenceId) et startDevoirCEB(devoirId, roundIndex) sont
