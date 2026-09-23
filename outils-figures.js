@@ -1695,7 +1695,11 @@ function computeMultiplicationPosee(a, b){
   const n = bDigits.length;
   const placeLabels = ['unités','dizaines','centaines','milliers','dizaines de milliers','centaines de milliers'];
   const partials = [];
-  for(let i=0;i<n;i++){
+  // Chiffre des UNITÉS du multiplicateur d'abord, puis dizaines, centaines... (comme enseigné
+  // en CM1 : "on multiplie d'abord... par le chiffre des unités... puis par son chiffre des
+  // dizaines") -- signalé : "la première ligne doit correspondre à 9 × 412". D'où la boucle à
+  // l'envers (i de n-1 à 0) plutôt que de gauche à droite.
+  for(let i=n-1;i>=0;i--){
     const place = n-1-i;
     const digit = bDigits[i];
     if(digit===0) continue;

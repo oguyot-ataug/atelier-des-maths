@@ -2479,6 +2479,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.630', items:[
+    "Fix -- multiplication posée, signalé : \"la première ligne doit correspondre à 9 × 412\". L'ordre des lignes de produit intermédiaire était inversé (chiffre le plus élevé du facteur en premier, unités en dernier) au lieu de l'ordre enseigné en CM1 -- chiffre des unités du multiplicateur d'abord, puis dizaines, centaines... La barre de soulignement (avant le résultat) se retrouve donc naturellement sous la bonne ligne.",
+  ]},
   { version:'2026-08-19.629', items:[
     "Multiplication posée -- signalé : \"ne pas forcément écrire à quoi correspond chaque ligne, le proposer en option\". Une case à cocher (« Expliquer ce que représente chaque ligne ») permet désormais de masquer les explications (ex. \"← 34 × 20 (chiffre des dizaines de 508)\") pour un rendu plus sobre une fois la méthode acquise -- cochée par défaut, comme avant.",
   ]},
