@@ -1013,8 +1013,14 @@ async function renderDevoirsEleve(){
       // Médailles -- 100% sur toutes les séquences + temps cumulé le plus rapide de la classe,
       // classement live parmi les élèves non "en retard" (voir cm_get_devoir_medailles).
       const medalInfo = DEVOIR_MEDAILLES[medaille.my_medal];
+      // "à reprendre" est temporaire (redevient éligible dès que le devoir est retravaillé et
+      // renvoyé, voir submitDevoirAutomatismes) -- signalé : "il est écrit pour l'élève qu'il
+      // n'est plus en compétition alors que finalement il pourrait le redevenir". Distinct du
+      // retard, qui lui ne se résorbe pas de la même façon.
       const medailleHtml = medaille.my_retard
-        ? `<div class="hint" style="margin-top:8px;padding:6px 10px;background:rgba(158,31,94,.08);border-radius:8px;">🚫 Hors compétition (devoir en retard).</div>`
+        ? (rendu && rendu.a_reprendre
+            ? `<div class="hint" style="margin-top:8px;padding:6px 10px;background:rgba(158,31,94,.08);border-radius:8px;">🚫 Hors compétition pour l'instant (devoir à reprendre) -- retravaillez-le et renvoyez-le pour redevenir éligible à une médaille.</div>`
+            : `<div class="hint" style="margin-top:8px;padding:6px 10px;background:rgba(158,31,94,.08);border-radius:8px;">🚫 Hors compétition (devoir en retard).</div>`)
         : medalInfo
           ? `<div style="margin-top:8px;padding:8px 12px;background:${medalInfo.bg};border-radius:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
               <span style="font-weight:700;color:${medalInfo.color};">${medalInfo.emoji} ${medalInfo.fullLabel} !</span>
@@ -1099,8 +1105,13 @@ async function renderDevoirsEleve(){
         </div>`;
       }).join('');
       const medalInfoCeb = DEVOIR_MEDAILLES[medaille.my_medal];
+      // "à reprendre" est temporaire (redevient éligible une fois tous les comptes retrouvés
+      // exactement, voir refreshDevoirCEBProgress) -- signalé : "il est écrit pour l'élève qu'il
+      // n'est plus en compétition alors que finalement il pourrait le redevenir".
       const medailleHtmlCeb = medaille.my_retard
-        ? `<div class="hint" style="margin-top:8px;padding:6px 10px;background:rgba(158,31,94,.08);border-radius:8px;">🚫 Hors compétition (devoir ${rendu && rendu.a_reprendre ? 'à reprendre' : 'en retard'}).</div>`
+        ? (rendu && rendu.a_reprendre
+            ? `<div class="hint" style="margin-top:8px;padding:6px 10px;background:rgba(158,31,94,.08);border-radius:8px;">🚫 Hors compétition pour l'instant (devoir à reprendre) -- retrouvez tous les comptes exactement pour redevenir éligible à une médaille.</div>`
+            : `<div class="hint" style="margin-top:8px;padding:6px 10px;background:rgba(158,31,94,.08);border-radius:8px;">🚫 Hors compétition (devoir en retard).</div>`)
         : medalInfoCeb
           ? `<div style="margin-top:8px;padding:8px 12px;background:${medalInfoCeb.bg};border-radius:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
               <span style="font-weight:700;color:${medalInfoCeb.color};">${medalInfoCeb.emoji} ${medalInfoCeb.fullLabel} !</span>

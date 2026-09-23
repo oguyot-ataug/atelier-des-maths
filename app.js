@@ -2479,6 +2479,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.625', items:[
+    "Fix -- signalé : \"en mode reprendre, il est écrit pour l'élève qu'il n'est plus en compétition alors que finalement il pourrait le redevenir\". Le message \"Hors compétition\" affiché à l'élève sur un devoir \"à reprendre\" (Automatismes et Compte est bon) précise désormais que c'est temporaire, et explique comment redevenir éligible à une médaille (retravailler et renvoyer le devoir) -- au lieu de la formulation définitive partagée avec le cas \"en retard\".",
+  ]},
   { version:'2026-08-19.624', items:[
     "Fix -- signalé : \"j'ai actualisé 20 fois la page sans tomber sur la nouvelle version\". Le bouton \"Recharger\" de la bannière de nouvelle version faisait un simple rechargement de la MÊME URL -- un serveur intermédiaire qui met en cache par URL exacte (proxy de réseau d'établissement, par exemple) pouvait continuer à reservir l'ancienne version indéfiniment, sans que rien ne le distingue d'un vrai rechargement. Il navigue désormais vers une URL jamais vue auparavant, qui ne peut être en cache nulle part.",
   ]},
