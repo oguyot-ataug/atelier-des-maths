@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.640', items:[
+    "Fix -- Tableau IA, \"l'IA n'a pas renvoyé un JSON exploitable\" persistait malgré un premier correctif. La première version ne gérait que le cas d'un texte AVANT/APRÈS le JSON (recherche du premier '[' au dernier ']') -- insuffisante si un AUTRE crochet apparaît dans le texte avant le vrai tableau (ex. une phrase citant \"[BC]\"), ou si l'IA enveloppe le tableau dans un objet (ex. {\"etapes\":[...]}) malgré la consigne d'un tableau nu. Recherche désormais chaque tableau [...] correctement équilibré où qu'il soit dans la réponse (en ignorant les crochets à l'intérieur des chaînes), et déballe automatiquement un objet-enveloppe le cas échéant.",
+  ]},
   { version:'2026-08-19.639', items:[
     "Tableau IA -- signalé : \"ne pas écrire les étapes. Pouvoir revenir à la première étape et regarder le tracé lentement\". Le récit écrit (accumulé au fur et à mesure) est retiré ; remplacé par une barre de lecture pas à pas façon lecteur vidéo : « Étape suivante » (une seule étape à la fois, le professeur avance à son rythme), « Précédent » et « Depuis le début » (retour instantané, sans ré-animer), et un réglage de vitesse (normale / lente / très lente) pour regarder un tracé au ralenti.",
   ]},
@@ -8066,20 +8069,52 @@ function tbAiPlaybackRestart(){
   while(tbAiPlanIndex>0){ tbUndo(); tbAiPlanIndex--; }
   tbAiPlaybackUpdateUI();
 }
-/* Extrait le tableau JSON de la réponse de l'IA. Malgré la consigne "rien d'autre que le
-   JSON", Claude ajoute parfois une courte phrase d'intro ou des balises ```json``` -- plutôt
-   que de ne gérer qu'un format de sortie précis (ce qui avait été signalé : "l'IA n'a pas
-   renvoyé un JSON exploitable" alors que les logs montrent que l'appel avait bien réussi et
-   renvoyé du texte), on cherche le tableau [...] le plus englobant où qu'il soit dans la
-   réponse. La réponse brute est journalisée en console en cas d'échec, pour diagnostiquer
-   sans avoir à reproduire l'appel. */
+/* Repère toutes les sous-chaînes [...] correctement équilibrées (en ignorant les crochets à
+   l'intérieur de chaînes JSON, ex. dans un texte "[Ax)") -- contrairement à un simple
+   indexOf('[')...lastIndexOf(']'), ceci reste correct même si la réponse contient un AUTRE
+   crochet avant ou après le vrai tableau JSON (ex. une phrase d'intro qui cite "[BC]"). */
+function tbAiExtractJsonArrays(text){
+  const candidates = [];
+  for(let i=0;i<text.length;i++){
+    if(text[i]!=='[') continue;
+    let depth=0, inStr=false, strCh=null, esc=false;
+    for(let j=i;j<text.length;j++){
+      const c=text[j];
+      if(inStr){
+        if(esc) esc=false;
+        else if(c==='\\') esc=true;
+        else if(c===strCh) inStr=false;
+        continue;
+      }
+      if(c==='"'||c==="'"){ inStr=true; strCh=c; continue; }
+      if(c==='[') depth++;
+      else if(c===']'){ depth--; if(depth===0){ candidates.push(text.slice(i,j+1)); break; } }
+    }
+  }
+  return candidates;
+}
+/* Extrait le tableau d'étapes de la réponse de l'IA. Malgré la consigne "rien d'autre que le
+   JSON", Claude ajoute parfois une courte phrase d'intro, des balises ```json```, ou enveloppe
+   le tableau dans un objet (ex. {"etapes":[...]}) malgré la consigne d'un tableau nu -- signalé
+   deux fois : "l'IA n'a pas renvoyé un JSON exploitable" alors que les logs montrent que l'appel
+   réussissait et renvoyait du texte. On essaie donc, dans l'ordre : le texte brut tel quel, puis
+   chaque tableau [...] correctement équilibré trouvé n'importe où dans la réponse (du plus long
+   au plus court) -- et pour chaque tentative qui donne un OBJET plutôt qu'un tableau, on
+   cherche la première propriété qui EST un tableau. La réponse brute est journalisée en
+   console en cas d'échec total, pour diagnostiquer sans avoir à reproduire l'appel. */
 function tbAiParseSteps(raw){
-  const attempts = [raw.trim()];
-  const start = raw.indexOf('['), end = raw.lastIndexOf(']');
-  if(start!==-1 && end>start) attempts.push(raw.slice(start, end+1));
+  const bracketCandidates = tbAiExtractJsonArrays(raw).sort((a,b)=>b.length-a.length);
+  const attempts = [raw.trim(), ...bracketCandidates];
   for(const text of attempts){
-    try{ const parsed = JSON.parse(text); if(Array.isArray(parsed)) return parsed; }
-    catch(e){ /* essai suivant */ }
+    let parsed;
+    try{ parsed = JSON.parse(text); }
+    catch(e){ continue; }
+    if(Array.isArray(parsed) && parsed.length) return parsed;
+    if(parsed && typeof parsed==='object'){
+      for(const key of Object.keys(parsed)){
+        if(Array.isArray(parsed[key]) && parsed[key].length) return parsed[key];
+      }
+    }
   }
   console.warn('tableau-ia : réponse non exploitable, réponse brute reçue :', raw);
   return null;
