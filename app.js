@@ -2301,6 +2301,10 @@ async function refreshAuthUI(){
 
     if(currentUserRole==='admin') await adminRefreshDropdowns();
     if(isStaff) await loadMyClasses();
+    // Panneau "ce qui mérite votre attention" sur l'accueil, à la place d'un email de rappel --
+    // voir renderProfHomeDigest plus bas.
+    if(isStaff) await renderProfHomeDigest();
+    else { const digestEl=document.getElementById('profHomeDigest'); if(digestEl){ digestEl.style.display='none'; digestEl.innerHTML=''; } }
     if(currentUserRole==='eleve') await loadMyStudentClasses();
     // Pastille "devoirs en attente" sur le bouton "Mes devoirs" -- signalé : "les élèves sont-ils
     // prévenus... ?". accountClassesList doit déjà être peuplée (loadMyStudentClasses ci-dessus).
@@ -2336,6 +2340,8 @@ async function refreshAuthUI(){
     const btnGenerateQuiz = document.getElementById('btnGenerateQuiz'), quizLoginHint = document.getElementById('quizLoginHint');
     if(btnGenerateQuiz) btnGenerateQuiz.style.display='none';
     if(quizLoginHint) quizLoginHint.style.display='inline';
+    const digestElOut = document.getElementById('profHomeDigest');
+    if(digestElOut){ digestElOut.style.display='none'; digestElOut.innerHTML=''; }
 
     const wasRestrictedOut = restrictedVisitor;
     restrictedVisitor = true;
@@ -2345,6 +2351,57 @@ async function refreshAuthUI(){
   updateCourseAddButtonsState();
 }
 sb.auth.onAuthStateChange(()=>refreshAuthUI());
+
+/* Panneau "Ce qui mérite votre attention" sur la page d'accueil, pour prof/admin -- signalé :
+   "ça pourrait être intéressant [un récap par email]... nos comptes sont fermés également aux
+   adresses hors de notre domaine". Aucun mécanisme d'envoi ne marche de façon fiable pour tout
+   le monde (domaines Google Education fermés, parfois même aux comptes enseignants) -- tout
+   reste donc dans l'app, consulté à la connexion, sans dépendre d'aucun service externe.
+   S'appuie sur deux fonctions SECURITY DEFINER (get_teacher_pending_digest,
+   get_teacher_a_reprendre_digest) qui ne renvoient que les devoirs du prof connecté
+   (auth.uid()). Ne montre que ce qui demande une action (devoirs pas rendus proches/dépassés de
+   la date limite, "à reprendre" toujours en attente) -- pas les médailles, qui sont valorisantes
+   mais pas "à traiter". */
+async function renderProfHomeDigest(){
+  const box = document.getElementById('profHomeDigest');
+  if(!box) return;
+  try{
+    const [{ data: pending, error: e1 }, { data: aReprendre, error: e2 }] = await Promise.all([
+      sb.rpc('get_teacher_pending_digest'),
+      sb.rpc('get_teacher_a_reprendre_digest'),
+    ]);
+    if(e1 || e2 || (!(pending&&pending.length) && !(aReprendre&&aReprendre.length))){
+      box.style.display = 'none'; box.innerHTML = '';
+      return;
+    }
+    const pendingHtml = (pending||[]).map(r=>{
+      const dateStr = r.date_limite ? new Date(r.date_limite).toLocaleDateString('fr-FR') : '';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.06);flex-wrap:wrap;">
+        <span class="hint" style="margin:0;"><b>${escapeHtml(r.devoir_titre)}</b> -- ${r.nb_en_attente}/${r.nb_total} élève(s) n'ont pas encore rendu${dateStr ? ' (limite : '+dateStr+')' : ''}</span>
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${r.devoir_id}')">Voir</button>
+      </div>`;
+    }).join('');
+    // Regroupé par devoir (plusieurs élèves "à reprendre" sur le même devoir tiennent sur une
+    // seule ligne) plutôt qu'une ligne par élève.
+    const aReprendreByDevoir = new Map();
+    (aReprendre||[]).forEach(r=>{
+      if(!aReprendreByDevoir.has(r.devoir_id)) aReprendreByDevoir.set(r.devoir_id, { titre: r.devoir_titre, eleves: [] });
+      aReprendreByDevoir.get(r.devoir_id).eleves.push(profileDisplayName({nom:r.student_nom, prenom:r.student_prenom}) || '?');
+    });
+    const aReprendreHtml = Array.from(aReprendreByDevoir.entries()).map(([devoirId, info])=>{
+      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.06);flex-wrap:wrap;">
+        <span class="hint" style="margin:0;"><b>${escapeHtml(info.titre)}</b> -- "à reprendre" toujours en attente : ${info.eleves.map(escapeHtml).join(', ')}</span>
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${devoirId}')">Voir</button>
+      </div>`;
+    }).join('');
+    box.innerHTML = `
+      <div class="plain-card" style="padding:20px 24px;margin-bottom:20px;">
+        <p style="margin:0 0 10px;font-weight:700;font-family:'Space Grotesk',sans-serif;"><span class="gicon" style="vertical-align:middle;">notifications_active</span> Ce qui mérite votre attention</p>
+        ${pendingHtml}${aReprendreHtml}
+      </div>`;
+    box.style.display = 'block';
+  }catch(e){ box.style.display = 'none'; box.innerHTML = ''; }
+}
 
 function updateClassDisplays(name){
   const badge = document.getElementById('activeClassBadge');
@@ -2404,6 +2461,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.621', items:[
+    "Accueil (prof), nouveau panneau « Ce qui mérite votre attention » -- suite à l'idée d'un récap par email, abandonnée (aucun mécanisme d'envoi ne marche de façon fiable pour tout le monde -- domaines Google Education fermés, parfois même aux comptes enseignants). Dès la connexion, un panneau liste les devoirs dont la date limite approche ou est dépassée avec des élèves n'ayant pas encore rendu, et les devoirs \"à reprendre\" toujours en attente -- avec un accès direct à \"Voir les rendus\". Invisible s'il n'y a rien à signaler.",
+  ]},
   { version:'2026-08-19.620', items:[
     "Fix -- signalé : \"après les déploiements je dois faire plusieurs rafraîchissements de page avant d'avoir la nouvelle version, on avait déjà eu ce problème\". Le précédent correctif (balises anti-cache dans la page) ne suffisait pas : ces balises sont largement ignorées des navigateurs modernes, et GitHub Pages ne permet pas de personnaliser ses en-têtes HTTP -- un rechargement classique pouvait donc continuer à servir une version en cache. Le site vérifie désormais lui-même, à intervalles réguliers et à chaque retour sur l'onglet, si une nouvelle version a été déployée (requête réseau qui ignore explicitement le cache), et propose de recharger via une petite bannière -- jamais de rechargement automatique, pour ne pas couper un exercice en cours.",
   ]},
