@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.643', items:[
+    "Fix -- Tableau IA, le correctif précédent (rejet si un point d'intersection ne collait pas exactement) était trop strict : \"calcul incohérent\" apparaissait même sur des constructions en fait correctes, un simple arrondi de l'IA suffisant à dépasser la tolérance. Le code calcule désormais lui-même la vraie intersection (cercle × cercle, ou cercle × perpendiculaire, avec la géométrie exacte déjà connue) et RECALE silencieusement le point dessus au lieu de rejeter, tant que l'écart reste raisonnable (~3,6 cm, largement au-delà d'un simple arrondi) -- ce qui corrige au passage, automatiquement, le bug initialement signalé (\"le point C n'est pas l'intersection\") au lieu de se contenter de le détecter. Seul un écart franchement plus grand (signe d'un vrai raisonnement erroné) est encore rejeté.",
+  ]},
   { version:'2026-08-19.642', items:[
     "Tableau IA -- signalé : \"l'arc est trop grand. Et le point C n'est pas l'intersection !\". Arc réduit à ~40° (au lieu de 100°), plus proche du petit arc qu'un professeur trace réellement. Surtout : le plan est désormais vérifié géométriquement avant d'être joué -- chaque point censé être une intersection (même \"towardX\"/\"towardY\" qu'un cercle/une perpendiculaire précédent) est recalculé et comparé à ce que le cercle/la perpendiculaire donnent réellement ; en cas d'écart (erreur de calcul de l'IA), la construction est rejetée avec un message clair plutôt que dessinée fausse à l'écran -- il suffit de relancer.",
   ]},
@@ -7858,16 +7861,45 @@ RÈGLES IMPORTANTES :
 ${enonce}
 """`;
 }
-/* Au-delà de la validation structurelle (types, références connues...), vérifie que chaque
-   point d'intersection ANNONCÉ par un cercle/une perpendiculaire précédente (même
-   "towardX"/"towardY", à peu près) est bien géométriquement dessus -- signalé : "le point C
-   n'est pas l'intersection !". L'IA calcule ses propres coordonnées "à la main" (trigonométrie,
-   résolution de système) et peut se tromper ; plutôt que de dessiner une figure silencieusement
-   fausse, on rejette le plan (l'utilisateur peut relancer) dès qu'un point ne colle pas avec le
-   cercle/la perpendiculaire censé le déterminer. MATCH_TOL (généreuse) sert seulement à savoir
-   QUEL point un "towardX/towardY" approximatif désigne ; GEOM_TOL (stricte) sert à la vérité
-   géométrique elle-même. */
-const TB_AI_MATCH_TOL = 40, TB_AI_GEOM_TOL = 6;
+/* Intersection d'un cercle (centre C, rayon r) avec la demi-droite issue de A dans la direction
+   dir (unitaire) -- retourne celle des (au plus deux) solutions la plus proche de "hint", ou
+   null si la demi-droite ne coupe pas le cercle. */
+function tbAiIntersectRayCircle(A, dir, C, r, hint){
+  const dx=A.x-C.x, dy=A.y-C.y;
+  const b = dx*dir.x + dy*dir.y;
+  const disc = b*b - (dx*dx+dy*dy-r*r);
+  if(disc<0) return null;
+  const sq = Math.sqrt(disc);
+  const p1 = {x:A.x+(-b+sq)*dir.x, y:A.y+(-b+sq)*dir.y};
+  const p2 = {x:A.x+(-b-sq)*dir.x, y:A.y+(-b-sq)*dir.y};
+  return (Math.hypot(p1.x-hint.x,p1.y-hint.y) <= Math.hypot(p2.x-hint.x,p2.y-hint.y)) ? p1 : p2;
+}
+/* Intersection de deux cercles (C1,r1) et (C2,r2) -- même principe, plus proche de "hint". */
+function tbAiIntersectCircles(C1, r1, C2, r2, hint){
+  const dx=C2.x-C1.x, dy=C2.y-C1.y, d=Math.hypot(dx,dy);
+  if(d<1e-6) return null;
+  const a = (d*d+r1*r1-r2*r2)/(2*d);
+  const h2 = r1*r1-a*a;
+  if(h2<0) return null;
+  const h = Math.sqrt(h2);
+  const ux=dx/d, uy=dy/d, px=C1.x+a*ux, py=C1.y+a*uy;
+  const p1 = {x:px-h*uy, y:py+h*ux}, p2 = {x:px+h*uy, y:py-h*ux};
+  return (Math.hypot(p1.x-hint.x,p1.y-hint.y) <= Math.hypot(p2.x-hint.x,p2.y-hint.y)) ? p1 : p2;
+}
+/* Au-delà de la validation structurelle (types, références connues...), RECALCULE chaque point
+   d'intersection ANNONCÉ par un ou deux cercles/une perpendiculaire précédents (même
+   "towardX"/"towardY", à peu près) à partir de la géométrie exacte déjà connue par ce code
+   (centres, rayons, direction de la perpendiculaire), plutôt que de se fier aveuglément au
+   calcul à la main de l'IA (trigonométrie/résolution de système, qui peut comporter une petite
+   erreur d'arrondi -- ou, plus rarement, une vraie erreur) -- signalé deux fois : "le point C
+   n'est pas l'intersection !", puis (après un premier correctif trop strict qui REJETAIT tout
+   écart, même un simple arrondi) "calcul incohérent" sur une construction en fait correcte.
+   Le point est donc silencieusement ajusté sur la valeur exacte dès qu'elle reste proche de
+   celle de l'IA (TB_AI_SNAP_MAX, généreux -- un écart de cet ordre n'est qu'un arrondi) ; le
+   plan n'est rejeté que si l'écart est plus grand, signe d'une vraie erreur de raisonnement
+   plutôt que d'arrondi. MATCH_TOL (encore plus généreux) sert seulement à savoir QUEL point un
+   "towardX/towardY" approximatif désigne. */
+const TB_AI_MATCH_TOL = 40, TB_AI_SNAP_MAX = 80;
 function tbAiValidatePlan(steps){
   if(!Array.isArray(steps) || !steps.length) return {ok:false, error:"réponse vide ou pas une liste d'étapes"};
   if(steps.length>TB_AI_MAX_STEPS) return {ok:false, error:'trop d\'étapes ('+steps.length+')'};
@@ -7875,22 +7907,39 @@ function tbAiValidatePlan(steps){
   const coords = new Map(); // label -> {x,y}
   const circlesSeen = [];   // {centerX,centerY,radiusPx,towardX,towardY}
   const perpsSeen = [];     // {atX,atY,dirX,dirY,towardX,towardY}
-  const checkAgainstIntersections = (label, x, y)=>{
-    for(const c of circlesSeen){
-      if(Math.hypot(c.towardX-x, c.towardY-y) < TB_AI_MATCH_TOL){
-        const d = Math.hypot(x-c.centerX, y-c.centerY);
-        if(Math.abs(d-c.radiusPx) > TB_AI_GEOM_TOL) return "le point "+label+" n'est pas sur le cercle/arc censé le déterminer (calcul incohérent)";
-      }
+  /* Retourne {x,y} recalculé si ce point correspond à une intersection identifiable, null si
+     aucun cercle/perpendiculaire proche ne s'applique (point libre, laissé tel quel), ou
+     lève une erreur (chaîne) si l'écart avec la valeur exacte est trop grand pour n'être qu'un
+     arrondi. */
+  const resolveIntersection = (label, x, y)=>{
+    const matchingCircles = circlesSeen.filter(c=>Math.hypot(c.towardX-x, c.towardY-y) < TB_AI_MATCH_TOL);
+    const matchingPerp = perpsSeen.find(p=>Math.hypot(p.towardX-x, p.towardY-y) < TB_AI_MATCH_TOL);
+    let exact = null;
+    if(matchingCircles.length>=2){
+      const [c1,c2] = matchingCircles;
+      exact = tbAiIntersectCircles({x:c1.centerX,y:c1.centerY}, c1.radiusPx, {x:c2.centerX,y:c2.centerY}, c2.radiusPx, {x,y});
+    } else if(matchingCircles.length===1 && matchingPerp){
+      const c = matchingCircles[0];
+      exact = tbAiIntersectRayCircle({x:matchingPerp.atX,y:matchingPerp.atY}, {x:matchingPerp.dirX,y:matchingPerp.dirY}, {x:c.centerX,y:c.centerY}, c.radiusPx, {x,y});
+    } else if(matchingCircles.length===1){
+      // Un seul cercle : pas de 2e contrainte pour trianguler -- on se contente de recaler le
+      // point EXACTEMENT sur le cercle, dans la même direction depuis le centre (corrige un
+      // rayon légèrement faux sans pouvoir corriger un angle faux, qu'aucune donnée ne permet
+      // de déterminer ici).
+      const c = matchingCircles[0];
+      const dx=x-c.centerX, dy=y-c.centerY, dist=Math.hypot(dx,dy);
+      if(dist>1e-6) exact = {x:c.centerX+dx/dist*c.radiusPx, y:c.centerY+dy/dist*c.radiusPx};
+    } else if(matchingPerp){
+      // Une seule perpendiculaire : recale uniquement l'écart latéral (projette sur la
+      // demi-droite), garde la distance parcourue le long d'elle telle que l'IA l'a choisie.
+      const vx=x-matchingPerp.atX, vy=y-matchingPerp.atY;
+      const along = Math.max(0, vx*matchingPerp.dirX + vy*matchingPerp.dirY);
+      exact = {x:matchingPerp.atX+along*matchingPerp.dirX, y:matchingPerp.atY+along*matchingPerp.dirY};
     }
-    for(const p of perpsSeen){
-      if(Math.hypot(p.towardX-x, p.towardY-y) < TB_AI_MATCH_TOL){
-        const vx=x-p.atX, vy=y-p.atY;
-        const along = vx*p.dirX + vy*p.dirY;
-        const perpDist = Math.abs(vx*(-p.dirY) + vy*p.dirX);
-        if(perpDist > TB_AI_GEOM_TOL || along < -TB_AI_GEOM_TOL) return "le point "+label+" n'est pas sur la perpendiculaire censée le déterminer (calcul incohérent)";
-      }
-    }
-    return null;
+    if(!exact) return {value:null, error:null};
+    const gap = Math.hypot(exact.x-x, exact.y-y);
+    if(gap > TB_AI_SNAP_MAX) return {value:null, error:"le point "+label+" ne correspond pas à l'intersection tracée (calcul incohérent)"};
+    return {value:exact, error:null};
   };
   for(const s of steps){
     if(!s || typeof s!=='object' || typeof s.type!=='string') return {ok:false, error:'étape invalide'};
@@ -7898,8 +7947,9 @@ function tbAiValidatePlan(steps){
       if(typeof s.label!=='string' || !s.label.trim()) return {ok:false, error:'point sans label'};
       if(!Number.isFinite(s.x) || !Number.isFinite(s.y)) return {ok:false, error:'coordonnées invalides pour le point '+s.label};
       if(s.x<-50||s.x>950||s.y<-50||s.y>610) return {ok:false, error:'point '+s.label+' hors du cadre'};
-      const geomErr = checkAgainstIntersections(s.label, s.x, s.y);
-      if(geomErr) return {ok:false, error:geomErr};
+      const resolved = resolveIntersection(s.label, s.x, s.y);
+      if(resolved.error) return {ok:false, error:resolved.error};
+      if(resolved.value){ s.x = resolved.value.x; s.y = resolved.value.y; }
       known.add(s.label); coords.set(s.label, {x:s.x, y:s.y});
     } else if(s.type==='measure'){
       if(!known.has(s.from)) return {ok:false, error:'mesure référence un point inconnu ('+s.from+')'};
