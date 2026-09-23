@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.644', items:[
+    "Tableau IA -- deux signalements après confirmation que la construction fonctionne (\"beaucoup mieux\"). (1) \"la demi-droite perpendiculaire doit être plus longue, elle a été calculée pour s'arrêter en C\" : elle s'étend désormais nettement au-delà du point cherché (+3 cm), au lieu de s'arrêter pile dessus -- ce qui trahissait visuellement la réponse avant que le compas ne l'ait \"trouvée\". (2) \"ne pas retracer les côtés AB et AC qui existent déjà\" : les côtés déjà tracés comme sous-produit d'une mesure à la règle ou d'une demi-droite à l'équerre ne sont plus jamais redessinés par une étape \"segment\" redondante (repérage automatique + consigne renforcée dans le prompt).",
+  ]},
   { version:'2026-08-19.643', items:[
     "Fix -- Tableau IA, le correctif précédent (rejet si un point d'intersection ne collait pas exactement) était trop strict : \"calcul incohérent\" apparaissait même sur des constructions en fait correctes, un simple arrondi de l'IA suffisant à dépasser la tolérance. Le code calcule désormais lui-même la vraie intersection (cercle × cercle, ou cercle × perpendiculaire, avec la géométrie exacte déjà connue) et RECALE silencieusement le point dessus au lieu de rejeter, tant que l'écart reste raisonnable (~3,6 cm, largement au-delà d'un simple arrondi) -- ce qui corrige au passage, automatiquement, le bug initialement signalé (\"le point C n'est pas l'intersection\") au lieu de se contenter de le détecter. Seul un écart franchement plus grand (signe d'un vrai raisonnement erroné) est encore rejeté.",
   ]},
@@ -7832,10 +7835,10 @@ Le tableau est un plan de 900×560 pixels. Origine (0,0) en haut à gauche, x ve
 Réponds UNIQUEMENT par un tableau JSON (aucun texte avant/après, pas de balises markdown), une liste d'étapes, choisies EXACTEMENT parmi ces 6 types :
 
 1. {"type":"point","label":"A","x":123,"y":456} -- pose un point nommé (une lettre majuscule, éventuellement suivie d'un chiffre, ex. "A", "M1") à des coordonnées EXACTES en pixels, SANS geste de mesure visible (la règle n'apparaît pas). Réservé au tout premier point "libre" de la figure, et aux points obtenus par une construction déjà visible sur le tableau (intersection de deux cercles, d'une demi-droite et d'un cercle...) -- jamais à un point simplement mesuré depuis un autre point déjà posé : pour ça, utilise "measure" ci-dessous.
-2. {"type":"measure","from":"A","label":"B","x":123,"y":456} -- MESURE à la règle, depuis un point "from" déjà posé, la distance jusqu'aux coordonnées EXACTES données (que tu calcules toi-même), et pose le point "label" résultant UNE FOIS la mesure faite (la règle se place avec son 0 sur "from", puis le crayon glisse le long d'elle jusqu'à la longueur voulue -- c'est l'étape à utiliser à chaque fois qu'un point est défini par une longueur depuis un point déjà connu, ex. "AB = 6 cm"). Longueur maximale en une fois : 14 cm (${maxSegPx} px).
-3. {"type":"segment","from":"A","to":"B"} -- trace à la règle le segment entre deux points DÉJÀ posés (utilisé pour relier des points déjà existants, ex. refermer un triangle une fois ses 3 sommets connus -- PAS pour créer un nouveau point, voir "measure").
+2. {"type":"measure","from":"A","label":"B","x":123,"y":456} -- MESURE à la règle, depuis un point "from" déjà posé, la distance jusqu'aux coordonnées EXACTES données (que tu calcules toi-même), et pose le point "label" résultant UNE FOIS la mesure faite (la règle se place avec son 0 sur "from", puis le crayon glisse le long d'elle jusqu'à la longueur voulue -- c'est l'étape à utiliser à chaque fois qu'un point est défini par une longueur depuis un point déjà connu, ex. "AB = 6 cm"). Cette étape trace DÉJÀ le segment ["from","label"] -- ne le retrace jamais avec "segment" ensuite. Longueur maximale en une fois : 14 cm (${maxSegPx} px).
+3. {"type":"segment","from":"A","to":"B"} -- trace à la règle le segment entre deux points DÉJÀ posés, quand ce segment n'a PAS encore été tracé par une étape "measure" ou "perpendicular" précédente (utilisé pour fermer un côté encore manquant, ex. le dernier côté d'un triangle une fois ses 3 sommets connus -- jamais pour créer un nouveau point, voir "measure").
 4. {"type":"circle","center":"A","radiusCm":5,"towardX":123,"towardY":456} -- trace au compas un ARC (pas un cercle complet) centré sur un point déjà posé, de rayon EN CENTIMÈTRES (17 cm maximum). "towardX"/"towardY" sont les coordonnées (même approximatives) du point cherché du côté duquel tracer l'arc -- donne-les PRESQUE TOUJOURS (un cercle entier est rarement utile, il alourdit la figure pour rien) ; omets-les seulement si un cercle complet est vraiment la figure demandée.
-5. {"type":"perpendicular","at":"A","reference":"B","towardX":123,"towardY":456} -- trace à l'équerre une demi-droite [Ax) issue du point "at" (déjà posé), PERPENDICULAIRE à la droite ("at"→"reference", deux points déjà posés). "towardX"/"towardY" sont les coordonnées (même approximatives) d'un point du côté vers lequel la demi-droite doit s'étendre (ex. celles, déjà calculées, du sommet qu'on va trouver dessus) -- sert uniquement à choisir le bon côté, pas la longueur exacte.
+5. {"type":"perpendicular","at":"A","reference":"B","towardX":123,"towardY":456} -- trace à l'équerre une demi-droite [Ax) issue du point "at" (déjà posé), PERPENDICULAIRE à la droite ("at"→"reference", deux points déjà posés), qui s'étend BIEN AU-DELÀ du point cherché (la longueur exacte est calculée par le code, pas par toi -- une vraie demi-droite ne s'arrête jamais pile au bon endroit, ce serait trahir la réponse avant que le compas ne l'ait trouvée). "towardX"/"towardY" sont les coordonnées (même approximatives) d'un point du côté vers lequel la demi-droite doit s'étendre (ex. celles, déjà calculées, du sommet qu'on va trouver dessus) -- sert à choisir le bon côté ET signifie que le segment ["at", ce sommet] est déjà tracé : ne le retrace jamais avec "segment" ensuite.
 6. {"type":"text","x":123,"y":456,"text":"AB = 6 cm"} -- étiquette de texte libre (ex. pour indiquer une mesure), à côté de la figure sans la recouvrir.
 
 MÉTHODES DE CONSTRUCTION CLASSIQUES À UTILISER (choisis celle qui correspond à l'énoncé -- ne calcule JAMAIS directement par trigonométrie la position d'un point qui doit normalement se construire à la règle/au compas/à l'équerre ; seul le tout premier point "libre" de la figure peut être placé par un choix de coordonnées, avec "point") :
@@ -7844,7 +7847,7 @@ MÉTHODES DE CONSTRUCTION CLASSIQUES À UTILISER (choisis celle qui correspond �
 
 - Triangle connu par ses 3 côtés (ou report d'une longueur depuis un point) : pose ou mesure deux points, puis utilise DEUX "circle" (un centré sur chacun des deux sommets déjà connus, de rayon la longueur du 3e côté depuis chacun, chacun avec "towardX"/"towardY" pointant vers le sommet cherché) -- le point cherché est à l'intersection des deux arcs. Calcule toi-même les coordonnées de cette intersection (résolution du système des deux équations de cercle) pour l'étape "point" suivante.
 
-- Angle droit EN UN SOMMET DÉJÀ NOMMÉ dans l'énoncé (ex. "triangle ABC rectangle en A" connu par un côté et l'hypoténuse) : c'est la méthode PAR DÉFAUT, à l'équerre -- pose d'abord le côté connu depuis ce sommet (avec "measure"), utilise "perpendicular" en ce sommet pour tracer la demi-droite perpendiculaire à ce côté, puis un "circle" (report de longueur, centré sur l'autre extrémité connue, de rayon l'hypoténuse, "towardX"/"towardY" vers le sommet cherché) qui vient l'intercepter -- le sommet cherché est à l'intersection entre la demi-droite et l'arc. Calcule ces coordonnées toi-même (le point est sur la perpendiculaire ET à la bonne distance du centre du cercle), avec les mêmes coordonnées pour "towardX"/"towardY" des étapes "perpendicular" et "circle".
+- Angle droit EN UN SOMMET DÉJÀ NOMMÉ dans l'énoncé (ex. "triangle ABC rectangle en A" connu par un côté et l'hypoténuse) : c'est la méthode PAR DÉFAUT, à l'équerre -- pose d'abord le côté connu depuis ce sommet (avec "measure"), utilise "perpendicular" en ce sommet pour tracer la demi-droite perpendiculaire à ce côté, puis un "circle" (report de longueur, centré sur l'autre extrémité connue, de rayon l'hypoténuse, "towardX"/"towardY" vers le sommet cherché) qui vient l'intercepter -- le sommet cherché est à l'intersection entre la demi-droite et l'arc. Calcule ces coordonnées toi-même (le point est sur la perpendiculaire ET à la bonne distance du centre du cercle), avec les mêmes coordonnées pour "towardX"/"towardY" des étapes "perpendicular" et "circle". Une seule étape "segment" suffit ensuite pour fermer le triangle (entre l'autre extrémité connue et ce nouveau sommet) : les deux autres côtés sont déjà tracés par "measure" et "perpendicular".
 
 - Angle droit SANS sommet imposé (ex. construire un point qui voit un segment sous un angle droit, sans savoir où) : utilise le CERCLE DE THALÈS. Pose le milieu du côté qui sera l'hypoténuse (point de construction, label libre type "O" ou "M") ; trace un "circle" centré sur ce milieu, de rayon la MOITIÉ de l'hypoténuse, "towardX"/"towardY" vers le sommet cherché (tout point sur cet arc voit l'hypoténuse sous un angle droit) ; un second "circle" (report de longueur, même "towardX"/"towardY") donne le sommet cherché à leur intersection.
 
@@ -7853,6 +7856,7 @@ MÉTHODES DE CONSTRUCTION CLASSIQUES À UTILISER (choisis celle qui correspond �
 RÈGLES IMPORTANTES :
 - Calcule toutes les coordonnées EXACTEMENT (trigonométrie/résolution d'intersection de cercles ou droites selon le cas) -- jamais d'approximation grossière au jugé.
 - N'utilise dans "measure"/"segment"/"circle"/"perpendicular" QUE des labels déjà posés par une étape "point" ou "measure" antérieure.
+- Ne trace jamais deux fois le même côté : "measure" trace ["from","label"], "perpendicular" trace ["at", le point qui s'y trouvera] -- une étape "segment" ne sert qu'à fermer un côté qu'aucune étape précédente n'a encore tracé.
 - Maximum ${TB_AI_MAX_STEPS} étapes. Reste sobre : une construction juste, méthodique et lisible plutôt que décorative.
 - Réponds uniquement par le JSON, rien d'autre (pas de \`\`\`json).
 
@@ -8184,6 +8188,18 @@ async function tbAiDrawPerpendicular(A, reference, target, lengthPx){
   await tbAiSleep(150);
   tbAiPutAwayTools('equerre','crayon');
 }
+/* Vrai si un trait déjà tracé passe à la fois par A et par B (n'importe où le long de son
+   tracé, pas seulement à ses extrémités -- une demi-droite à l'équerre s'étend maintenant au
+   delà du point qui nous intéresse, cf. tbAiDrawPerpendicular). Sert à éviter de retracer un
+   côté déjà obtenu comme sous-produit d'une étape "measure"/"perpendicular" précédente. */
+function tbAiAlreadyConnected(A, B){
+  const tol = 5;
+  return tbInk.some(stroke=>{
+    const hasA = stroke.points.some(p=>Math.hypot(p[0]-A.x,p[1]-A.y)<tol);
+    const hasB = stroke.points.some(p=>Math.hypot(p[0]-B.x,p[1]-B.y)<tol);
+    return hasA && hasB;
+  });
+}
 /* Exécute UNE SEULE étape (mutation d'état + animation), sans pousser d'historique -- c'est
    l'appelant (la barre de lecture pas à pas ci-dessous) qui en pousse un par étape. */
 async function tbAiExecuteStep(step){
@@ -8195,7 +8211,9 @@ async function tbAiExecuteStep(step){
     if(A) await tbAiDrawMeasure(A, step.label, step.x, step.y);
   } else if(step.type==='segment'){
     const A = tbPoints.find(p=>p.label===step.from), B = tbPoints.find(p=>p.label===step.to);
-    if(A && B) await tbAiDrawSegment(A, B);
+    // Ne retrace pas un côté déjà relié par l'encre d'une étape "measure"/"perpendicular"
+    // précédente -- signalé : "ne pas retracer les côtés AB et AC qui existent déjà".
+    if(A && B && !tbAiAlreadyConnected(A, B)) await tbAiDrawSegment(A, B);
   } else if(step.type==='circle'){
     const C = tbPoints.find(p=>p.label===step.center);
     if(C){
@@ -8207,7 +8225,10 @@ async function tbAiExecuteStep(step){
     if(A && ref){
       const target = {x:step.towardX, y:step.towardY};
       const dist = Math.hypot(target.x-A.x, target.y-A.y);
-      const lengthPx = Math.min(16*TB_PX_PER_CM, Math.max(4*TB_PX_PER_CM, dist*1.3));
+      // La demi-droite s'étend nettement AU-DELÀ de "target" (le point qui sera trouvé dessus
+      // par la suite) -- signalé : "elle a été calculée en amont pour s'arrêter en C", ce qui
+      // trahissait visuellement le résultat avant que le compas ne l'ait "trouvé".
+      const lengthPx = Math.min(16*TB_PX_PER_CM, dist + 3*TB_PX_PER_CM);
       await tbAiDrawPerpendicular(A, ref, target, lengthPx);
     }
   } else if(step.type==='text'){
