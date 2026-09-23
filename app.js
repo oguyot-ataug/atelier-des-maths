@@ -1992,7 +1992,7 @@ function fillTdChapitres(){
 fillTdChapitres();
 function todayISO(){ return new Date().toISOString().slice(0,10); }
 function fmtDateFR(iso){
-  if(!iso) return 'Date non précisée';
+  if(!iso) return 'Brouillon';
   const d = new Date(iso+'T00:00:00');
   const s = d.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
   return s.charAt(0).toUpperCase()+s.slice(1);
@@ -2473,12 +2473,28 @@ function updateAddCahierButtonState(){
     ? '<span class=gicon>warning</span> Sélectionnez une classe ci-dessus pour pouvoir ajouter des corrections au cahier.'
     : '';
 }
+/* Libellé du bouton principal du cahier -- "+ Ajouter aux brouillons" tant que la date est vide
+   (voir startBrouillon), "+ Ajouter au cahier de corrections" dès qu'une date est renseignée --
+   signalé : "le bouton ajouter au cahier se transforme en ajouter aux brouillons". Sans objet en
+   cours d'édition (editCahierEntry impose déjà "Enregistrer la modification", valable que
+   l'entrée éditée ait une date ou non). */
+function updateAddCahierButtonLabel(){
+  if(editingEntryId!==null) return;
+  const btn = document.getElementById('btnAddCahier');
+  if(!btn) return;
+  const dateField = document.getElementById('corDate');
+  const isDraft = dateField && !dateField.value;
+  btn.innerHTML = isDraft ? '<span class=gicon>bookmark_add</span> + Ajouter aux brouillons' : '+ Ajouter au cahier de corrections';
+}
 let accountClassesList = [];
 function populateAccountClassList(classesList){
   accountClassesList = classesList.map(c=>({id:c.id, label:`${c.nom} (${c.niveau})`}));
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.631', items:[
+    "Outil de correction, brouillons -- signalé : \"mettre des exercices en attente, préparer le terrain sans mettre de date\". Nouveau bouton « Brouillons » qui vide le champ date (le bouton principal devient « + Ajouter aux brouillons ») et « Récupérer un brouillon » qui liste les exercices préparés sans date pour les rouvrir. Dès qu'une date est renseignée et l'exercice enregistré, il sort des brouillons et rejoint le cahier normal. Les brouillons ne sont jamais visibles dans le cahier consulté par les élèves ni dans le cahier normal du prof -- uniquement via ces deux boutons.",
+  ]},
   { version:'2026-08-19.630', items:[
     "Fix -- multiplication posée, signalé : \"la première ligne doit correspondre à 9 × 412\". L'ordre des lignes de produit intermédiaire était inversé (chiffre le plus élevé du facteur en premier, unités en dernier) au lieu de l'ordre enseigné en CM1 -- chiffre des unités du multiplicateur d'abord, puis dizaines, centaines... La barre de soulignement (avant le résultat) se retrouve donc naturellement sous la bonne ligne.",
   ]},
@@ -4504,7 +4520,11 @@ const CAHIER_COLS_LEGERES = 'id,class_id,niveau,chapitre,exo,titre,date,raw,html
 // chaînes de date, aucune colonne lourde).
 async function fetchCahierDatesList(){
   if(!currentClassId) return [];
-  const { data, error } = await sb.from('cahier_entries').select('date').eq('class_id', currentClassId);
+  // Exclut les brouillons (date NULL) -- signalé : "mettre des exercices en attente... sans
+  // mettre de date". Ne doivent jamais apparaître dans le cahier normal (vu aussi par les
+  // élèves) ni dans son accordéon par date -- seulement via "Récupérer un brouillon", voir
+  // fetchCahierBrouillons plus bas.
+  const { data, error } = await sb.from('cahier_entries').select('date').eq('class_id', currentClassId).not('date', 'is', null);
   if(error){ console.error('fetch dates list failed', error); return []; }
   const counts = new Map();
   data.forEach(r=>{ const d=r.date||''; counts.set(d, (counts.get(d)||0)+1); });
@@ -4524,7 +4544,8 @@ async function fetchCahierEntriesForDate(date){
 // la requête via fromDate/toDate plutôt que de tout charger sans distinction.
 async function syncFetchAll(fromDate, toDate){
   if(!currentClassId) return null;
-  let q = sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', currentClassId);
+  // Exclut les brouillons (date NULL) -- voir le commentaire de fetchCahierDatesList.
+  let q = sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', currentClassId).not('date', 'is', null);
   if(fromDate) q = q.gte('date', fromDate);
   if(toDate) q = q.lte('date', toDate);
   const { data, error } = await q.order('ordre', {ascending:true, nullsFirst:false}).order('date').order('created_at', {ascending:true});
@@ -4536,6 +4557,16 @@ async function syncFetchAll(fromDate, toDate){
 async function fetchCahierEntryEditData(id){
   const { data, error } = await sb.from('cahier_entries').select('blocksData,rows,cellBorders').eq('id', id).single();
   if(error){ console.error('fetch entry edit data failed', error); return null; }
+  return data;
+}
+// Liste des brouillons (date NULL) de la classe active -- signalé : "un bouton brouillons...
+// un autre bouton permet de récupérer un brouillon existant". Colonnes légères seulement (comme
+// syncFetchAll) : les colonnes lourdes (blocksData/rows/cellBorders) sont chargées à la demande
+// par editCahierEntry au moment où le brouillon choisi est effectivement rouvert.
+async function fetchCahierBrouillons(){
+  if(!currentClassId) return [];
+  const { data, error } = await sb.from('cahier_entries').select(CAHIER_COLS_LEGERES).eq('class_id', currentClassId).is('date', null).order('created_at', {ascending:false});
+  if(error){ console.error('fetch brouillons failed', error); return []; }
   return data;
 }
 async function syncAddEntry(entry){
@@ -4676,6 +4707,61 @@ function reuseSharedCorrectionEntry(i){
   renderCorrectionPreview();
   closeSharedCorrectionsModal();
 }
+/* Vide le champ date pour préparer un brouillon -- signalé : "un bouton brouillons en effet qui
+   annule la date par défaut". Rien d'autre à faire ici : addToCahier() enregistre déjà avec
+   date:null dès que ce champ est vide, updateAddCahierButtonLabel() ajuste le libellé du bouton
+   principal en conséquence. */
+function startBrouillon(){
+  document.getElementById('corDate').value = '';
+  updateAddCahierButtonLabel();
+  document.getElementById('correctionForm').scrollIntoView({behavior:'smooth', block:'start'});
+}
+/* Exclut les brouillons (date vide) d'un affichage normal du cahier -- ne doivent apparaître
+   qu'au clic sur "Récupérer un brouillon" (openBrouillonPicker), jamais dans le cahier vu par
+   les élèves ni dans la propre liste du prof juste après un ajout. */
+function cahierDated(arr){ return (arr||[]).filter(e=>!!e.date); }
+/* Petite fenêtre listant les brouillons de la classe active -- signalé : "un autre bouton permet
+   de récupérer un brouillon existant". Colonnes légères seulement (voir fetchCahierBrouillons) ;
+   le contenu détaillé se charge à la demande via editCahierEntry, comme pour une entrée datée
+   normale. */
+async function openBrouillonPicker(){
+  if(!currentClassId){ niceAlert("Sélectionnez d'abord une classe active (boutons en haut de page)."); return; }
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'brouillonPickerOverlay';
+  overlay.innerHTML = `<div class="modal-card" style="max-width:480px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;"><span class=gicon>bookmark</span> Brouillons</strong>
+      <button class="modal-close" onclick="this.closest('.modal-overlay').remove()"><span class=gicon>close</span></button>
+    </div>
+    <div id="brouillonPickerList"><p class="hint">Chargement…</p></div>
+  </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
+  const list = await fetchCahierBrouillons();
+  window._brouillonPickerList = list;
+  const box = document.getElementById('brouillonPickerList');
+  if(!box) return; // fenêtre déjà refermée entre-temps
+  if(!list.length){ box.innerHTML = '<p class="hint">Aucun brouillon pour cette classe.</p>'; return; }
+  box.innerHTML = list.map((e,i)=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
+      <span><b>${escapeHtml(e.titre||'(sans titre)')}</b><br><span class="hint" style="margin:0;">${escapeHtml(e.chapitre||'')}${e.exo && e.exo!=='-' ? ' · Exercice '+escapeHtml(e.exo) : ''}</span></span>
+      <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="loadBrouillonEntry(${i})">Reprendre</button>
+    </div>`).join('');
+}
+/* Charge un brouillon choisi dans l'éditeur -- le pousse d'abord dans `cahier` (il n'y est pas,
+   la liste normale l'exclut, voir cahierDated) pour qu'editCahierEntry le retrouve normalement,
+   ET pour qu'addToCahier reconnaisse ensuite la MÊME entrée (via editingEntryId) au moment de
+   l'enregistrer -- une simple mise à jour de la ligne existante plutôt qu'un doublon, dès qu'une
+   date est renseignée. */
+function loadBrouillonEntry(i){
+  const entry = (window._brouillonPickerList||[])[i];
+  if(!entry) return;
+  const overlay = document.getElementById('brouillonPickerOverlay');
+  if(overlay) overlay.remove();
+  cahier.push(entry);
+  editCahierEntry(cahier.length-1);
+}
 async function addToCahier(){
   if(!currentClassId){ niceAlert("Sélectionnez d'abord une classe active (boutons en haut de page)."); return; }
   const textareaVisible = document.getElementById('correctionInputWrap').style.display !== 'none';
@@ -4687,7 +4773,10 @@ async function addToCahier(){
     chapitre: document.getElementById('corChapitre').value,
     exo: document.getElementById('corExoNum').value || '-',
     titre: document.getElementById('corTitre').value.trim(),
-    date: document.getElementById('corDate').value || todayISO(),
+    // Date vide = brouillon (voir startBrouillon) -- ne retombe PLUS sur aujourd'hui par défaut,
+    // signalé : "un bouton brouillons... qui annule la date par défaut". Reste null tant que le
+    // prof n'a pas explicitement choisi une date, plutôt que de silencieusement la fixer.
+    date: document.getElementById('corDate').value || null,
     raw: raw,
     figure: figureHtml,
     blocksData: JSON.parse(JSON.stringify(blocksStores['global']||[])),
@@ -4711,7 +4800,7 @@ async function addToCahier(){
       cahier.push(entry);
     }
     editingEntryId = null;
-    document.getElementById('btnAddCahier').textContent = '+ Ajouter au cahier de corrections';
+    updateAddCahierButtonLabel();
     document.getElementById('btnCancelEdit').style.display = 'none';
   } else {
     cahier.push(entry);
@@ -4739,7 +4828,10 @@ async function editCahierEntry(i){
   document.getElementById('corChapitre').value = e.chapitre;
   document.getElementById('corExoNum').value = e.exo==='-'?'':e.exo;
   document.getElementById('corTitre').value = e.titre||'';
-  document.getElementById('corDate').value = e.date||todayISO();
+  // Reste vide pour un brouillon (e.date null) -- ne retombe plus sur aujourd'hui, sinon
+  // rouvrir un brouillon lui assignait silencieusement une date et le faisait sortir des
+  // brouillons sans que le prof l'ait demandé.
+  document.getElementById('corDate').value = e.date||'';
   const hasText = !!(e.raw && e.raw.trim());
   document.getElementById('correctionInput').value = e.raw||'';
   document.getElementById('correctionInputWrap').style.display = hasText ? 'block' : 'none';
@@ -4777,7 +4869,7 @@ async function editCahierEntry(i){
 }
 function cancelEditCahier(){
   editingEntryId = null;
-  document.getElementById('btnAddCahier').textContent = '+ Ajouter au cahier de corrections';
+  updateAddCahierButtonLabel();
   document.getElementById('btnCancelEdit').style.display = 'none';
   clearCorrectionInput();
 }
@@ -5103,13 +5195,17 @@ function renderCahier(){
   if(dateInput && !dateInput.value && corListFilterDate) dateInput.value = corListFilterDate;
   const toggleBtn = document.getElementById('btnCorListDateToggle');
   if(toggleBtn) toggleBtn.innerHTML = corListFilterDate ? 'Voir toutes les dates' : "<span class=gicon>calendar_month</span> Corrections du jour";
-  document.getElementById('cahierCount').textContent = cahier.length+' exercice(s)';
+  // cahierDated() exclut les brouillons (date vide) -- ne doivent jamais apparaître dans le
+  // cahier normal, seulement via "Récupérer un brouillon" (openBrouillonPicker). `cahier` peut
+  // en contenir un transitoirement pendant son édition (voir loadBrouillonEntry).
+  const datedCahier = cahierDated(cahier);
+  document.getElementById('cahierCount').textContent = datedCahier.length+' exercice(s)';
   const list=document.getElementById('cahierList');
   const status=document.getElementById('corListFilterStatus');
   if(!currentClassId){ list.innerHTML = '<div class="placeholder-box">Choisissez une classe ci-dessus pour voir et ajouter des corrections.</div>'; if(status) status.textContent=''; return; }
-  if(!cahier.length){ list.innerHTML = '<div class="placeholder-box">Le cahier est vide pour l\'instant, ajoutez une correction ci-dessus.</div>'; if(status) status.textContent=''; return; }
-  const shown = corListFilterDate ? cahier.filter(e=>e.date===corListFilterDate) : cahier;
-  if(status) status.textContent = corListFilterDate ? `${shown.length} sur ${cahier.length} au total` : '';
+  if(!datedCahier.length){ list.innerHTML = '<div class="placeholder-box">Le cahier est vide pour l\'instant, ajoutez une correction ci-dessus.</div>'; if(status) status.textContent=''; return; }
+  const shown = corListFilterDate ? datedCahier.filter(e=>e.date===corListFilterDate) : datedCahier;
+  if(status) status.textContent = corListFilterDate ? `${shown.length} sur ${datedCahier.length} au total` : '';
   if(!shown.length){ list.innerHTML = '<div class="placeholder-box">Aucune correction à cette date. <a href="#" onclick="showAllCorListDates();return false;">Voir toutes les dates</a>.</div>'; return; }
   list.innerHTML = groupedEntriesHTML(shown, (e,i)=>`
     <div class="cahier-entry">
