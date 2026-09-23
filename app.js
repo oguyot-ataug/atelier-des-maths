@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.646', items:[
+    "Fix -- Tableau IA, signalé : \"il a refait la demi-droite trop courte\". La longueur de la demi-droite à l'équerre est calculée à partir du \"towardX\"/\"towardY\" indiqué par l'IA -- mais le recalage automatique d'un point d'intersection (ajouté récemment) ne corrigeait que le POINT final, jamais le \"towardX\"/\"towardY\" de la perpendiculaire ou du cercle qui l'ont produit. Si l'IA indiquait un \"towardX\"/\"towardY\" trop proche du départ (mais quand même recalé correctement au final), la demi-droite restait dimensionnée sur cette estimation trop courte. Le recalage répercute désormais la position exacte sur ces étapes aussi, donc la longueur de la demi-droite correspond toujours à la vraie distance jusqu'au point réellement trouvé.",
+  ]},
   { version:'2026-08-19.645', items:[
     "Tableau IA -- signalé : \"il faut finir en traçant le segment BC\". L'IA s'arrêtait parfois juste après avoir placé le dernier sommet, sans refermer le dernier côté du triangle. Nouvelle consigne explicite dans le prompt : ne jamais s'arrêter tant qu'un côté de la figure demandée n'a pas été tracé, en ajoutant le \"segment\" manquant en toute fin de construction si besoin.",
   ]},
@@ -7947,6 +7950,15 @@ function tbAiValidatePlan(steps){
     if(!exact) return {value:null, error:null};
     const gap = Math.hypot(exact.x-x, exact.y-y);
     if(gap > TB_AI_SNAP_MAX) return {value:null, error:"le point "+label+" ne correspond pas à l'intersection tracée (calcul incohérent)"};
+    // Répercute la correction sur les étapes "circle"/"perpendicular" d'origine : sinon leur
+    // "towardX"/"towardY" (utilisé à l'exécution pour calculer la longueur de la demi-droite et
+    // la direction de l'arc) resterait l'ancienne valeur approximative de l'IA, potentiellement
+    // bien plus proche du point de départ que la vraie intersection -- signalé : "il a refait la
+    // demi-droite trop courte" (une demi-droite dimensionnée sur un "towardX/towardY" trop
+    // proche de A restait courte même après la marge de +3cm, le point réel étant en fait plus
+    // loin une fois recalé).
+    matchingCircles.forEach(c=>{ c.step.towardX = exact.x; c.step.towardY = exact.y; });
+    if(matchingPerp){ matchingPerp.step.towardX = exact.x; matchingPerp.step.towardY = exact.y; }
     return {value:exact, error:null};
   };
   for(const s of steps){
@@ -7972,7 +7984,7 @@ function tbAiValidatePlan(steps){
       if(!Number.isFinite(s.radiusCm) || s.radiusCm<=0 || s.radiusCm>17) return {ok:false, error:'rayon de cercle invalide'};
       if(Number.isFinite(s.towardX) && Number.isFinite(s.towardY)){
         const c = coords.get(s.center);
-        circlesSeen.push({centerX:c.x, centerY:c.y, radiusPx:s.radiusCm*TB_PX_PER_CM, towardX:s.towardX, towardY:s.towardY});
+        circlesSeen.push({centerX:c.x, centerY:c.y, radiusPx:s.radiusCm*TB_PX_PER_CM, towardX:s.towardX, towardY:s.towardY, step:s});
       }
     } else if(s.type==='perpendicular'){
       if(!known.has(s.at) || !known.has(s.reference)) return {ok:false, error:'perpendiculaire référence un point inconnu ('+s.at+'/'+s.reference+')'};
@@ -7985,7 +7997,7 @@ function tbAiValidatePlan(steps){
         const dot = dx*(s.towardX-A.x) + dy*(s.towardY-A.y);
         if(dot>bestDot){ bestDot=dot; bestDir={x:dx,y:dy}; }
       }
-      perpsSeen.push({atX:A.x, atY:A.y, dirX:bestDir.x, dirY:bestDir.y, towardX:s.towardX, towardY:s.towardY});
+      perpsSeen.push({atX:A.x, atY:A.y, dirX:bestDir.x, dirY:bestDir.y, towardX:s.towardX, towardY:s.towardY, step:s});
     } else if(s.type==='text'){
       if(!Number.isFinite(s.x) || !Number.isFinite(s.y) || typeof s.text!=='string') return {ok:false, error:'texte invalide'};
     } else {
