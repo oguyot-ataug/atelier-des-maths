@@ -2374,30 +2374,48 @@ async function renderProfHomeDigest(){
       box.style.display = 'none'; box.innerHTML = '';
       return;
     }
-    const pendingHtml = (pending||[]).map(r=>{
-      const dateStr = r.date_limite ? new Date(r.date_limite).toLocaleDateString('fr-FR') : '';
-      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.06);flex-wrap:wrap;">
-        <span class="hint" style="margin:0;"><b>${escapeHtml(r.devoir_titre)}</b> -- ${r.nb_en_attente}/${r.nb_total} élève(s) n'ont pas encore rendu${dateStr ? ' (limite : '+dateStr+')' : ''}</span>
-        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${r.devoir_id}')">Voir</button>
-      </div>`;
-    }).join('');
-    // Regroupé par devoir (plusieurs élèves "à reprendre" sur le même devoir tiennent sur une
-    // seule ligne) plutôt qu'une ligne par élève.
-    const aReprendreByDevoir = new Map();
+    // Regroupé par classe -- signalé : "afficher par classe pour une meilleure lecture". Les
+    // libellés viennent d'accountClassesList (déjà peuplée par loadMyClasses juste avant, voir
+    // refreshAuthUI), pas d'une requête supplémentaire.
+    const classLabelById = new Map(accountClassesList.map(c=>[c.id, c.label]));
+    const byClass = new Map(); // class_id -> { pendingRows:[], aReprendreByDevoir: Map(devoirId -> {titre, eleves:[]}) }
+    const classEntry = (classId)=>{
+      if(!byClass.has(classId)) byClass.set(classId, { pendingRows:[], aReprendreByDevoir: new Map() });
+      return byClass.get(classId);
+    };
+    (pending||[]).forEach(r=>classEntry(r.class_id).pendingRows.push(r));
     (aReprendre||[]).forEach(r=>{
-      if(!aReprendreByDevoir.has(r.devoir_id)) aReprendreByDevoir.set(r.devoir_id, { titre: r.devoir_titre, eleves: [] });
-      aReprendreByDevoir.get(r.devoir_id).eleves.push(profileDisplayName({nom:r.student_nom, prenom:r.student_prenom}) || '?');
+      const arMap = classEntry(r.class_id).aReprendreByDevoir;
+      if(!arMap.has(r.devoir_id)) arMap.set(r.devoir_id, { titre: r.devoir_titre, eleves: [] });
+      arMap.get(r.devoir_id).eleves.push(profileDisplayName({nom:r.student_nom, prenom:r.student_prenom}) || '?');
     });
-    const aReprendreHtml = Array.from(aReprendreByDevoir.entries()).map(([devoirId, info])=>{
-      return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.06);flex-wrap:wrap;">
-        <span class="hint" style="margin:0;"><b>${escapeHtml(info.titre)}</b> -- "à reprendre" toujours en attente : ${info.eleves.map(escapeHtml).join(', ')}</span>
-        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${devoirId}')">Voir</button>
-      </div>`;
-    }).join('');
+    const classesHtml = Array.from(byClass.entries())
+      .sort((a,b)=>(classLabelById.get(a[0])||'').localeCompare(classLabelById.get(b[0])||'', 'fr'))
+      .map(([classId, entry])=>{
+        const pendingHtml = entry.pendingRows.map(r=>{
+          const dateStr = r.date_limite ? new Date(r.date_limite).toLocaleDateString('fr-FR') : '';
+          return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.06);flex-wrap:wrap;">
+            <span class="hint" style="margin:0;"><b>${escapeHtml(r.devoir_titre)}</b> -- ${r.nb_en_attente}/${r.nb_total} élève(s) n'ont pas encore rendu${dateStr ? ' (limite : '+dateStr+')' : ''}</span>
+            <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${r.devoir_id}')">Voir</button>
+          </div>`;
+        }).join('');
+        // Regroupé par devoir (plusieurs élèves "à reprendre" sur le même devoir tiennent sur une
+        // seule ligne) plutôt qu'une ligne par élève.
+        const aReprendreHtml = Array.from(entry.aReprendreByDevoir.entries()).map(([devoirId, info])=>{
+          return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(28,43,57,.06);flex-wrap:wrap;">
+            <span class="hint" style="margin:0;"><b>${escapeHtml(info.titre)}</b> -- "à reprendre" toujours en attente : ${info.eleves.map(escapeHtml).join(', ')}</span>
+            <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${devoirId}')">Voir</button>
+          </div>`;
+        }).join('');
+        return `<div style="margin-top:12px;">
+          <p style="margin:0 0 4px;font-weight:700;color:var(--accent);">${escapeHtml(classLabelById.get(classId) || 'Classe')}</p>
+          ${pendingHtml}${aReprendreHtml}
+        </div>`;
+      }).join('');
     box.innerHTML = `
       <div class="plain-card" style="padding:20px 24px;margin-bottom:20px;">
-        <p style="margin:0 0 10px;font-weight:700;font-family:'Space Grotesk',sans-serif;"><span class="gicon" style="vertical-align:middle;">notifications_active</span> Ce qui mérite votre attention</p>
-        ${pendingHtml}${aReprendreHtml}
+        <p style="margin:0 0 6px;font-weight:700;font-family:'Space Grotesk',sans-serif;"><span class="gicon" style="vertical-align:middle;">notifications_active</span> Ce qui mérite votre attention</p>
+        ${classesHtml}
       </div>`;
     box.style.display = 'block';
   }catch(e){ box.style.display = 'none'; box.innerHTML = ''; }
@@ -2461,6 +2479,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.622', items:[
+    "Panneau « Ce qui mérite votre attention » (accueil prof), signalé : \"afficher par classe pour une meilleure lecture\". Les devoirs pas encore rendus et les devoirs \"à reprendre\" sont désormais regroupés par classe (ordre alphabétique) au lieu d'une simple liste à plat.",
+  ]},
   { version:'2026-08-19.621', items:[
     "Accueil (prof), nouveau panneau « Ce qui mérite votre attention » -- suite à l'idée d'un récap par email, abandonnée (aucun mécanisme d'envoi ne marche de façon fiable pour tout le monde -- domaines Google Education fermés, parfois même aux comptes enseignants). Dès la connexion, un panneau liste les devoirs dont la date limite approche ou est dépassée avec des élèves n'ayant pas encore rendu, et les devoirs \"à reprendre\" toujours en attente -- avec un accès direct à \"Voir les rendus\". Invisible s'il n'y a rien à signaler.",
   ]},
