@@ -2283,6 +2283,10 @@ async function refreshAuthUI(){
     if(navMesResultats) navMesResultats.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
     if(navMesDevoirs) navMesDevoirs.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
     if(navAdmin) navAdmin.style.display = (!accessBlocked && currentUserRole==='admin') ? 'inline-block' : 'none';
+    // Tableau IA -- signalé : "ne faire apparaître Construire avec l'IA que pour moi (admin).
+    // Tant que ça fonctionne mal" -- réservé le temps de fiabiliser les constructions générées.
+    const tbBtnAi = document.getElementById('tbBtnAi');
+    if(tbBtnAi) tbBtnAi.style.display = (!accessBlocked && currentUserRole==='admin') ? 'inline-block' : 'none';
     const btnReportBug = document.getElementById('btnReportBug');
     if(btnReportBug) btnReportBug.style.display = isStaff ? 'block' : 'none';
     const chapSuggestRow = document.getElementById('chapSuggestRow');
@@ -2333,6 +2337,8 @@ async function refreshAuthUI(){
     const navMesDevoirsBadgeOut = document.getElementById('navMesDevoirsBadge');
     if(navMesDevoirsBadgeOut) navMesDevoirsBadgeOut.style.display='none';
     if(navAdmin) navAdmin.style.display='none';
+    const tbBtnAiOut = document.getElementById('tbBtnAi');
+    if(tbBtnAiOut) tbBtnAiOut.style.display='none';
     const btnReportBugOut = document.getElementById('btnReportBug');
     if(btnReportBugOut) btnReportBugOut.style.display='none';
     const chapSuggestRowOut = document.getElementById('chapSuggestRow');
@@ -2492,6 +2498,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.647', items:[
+    "Tableau interactif, « Construire avec l'IA » réservé à l'administrateur -- signalé : \"ne faire apparaître Construire avec l'IA que pour moi (admin), tant que ça fonctionne mal\". Le bouton n'apparaît plus pour les profs ni les élèves le temps de fiabiliser les constructions générées.",
+  ]},
   { version:'2026-08-19.646', items:[
     "Fix -- Tableau IA, signalé : \"il a refait la demi-droite trop courte\". La longueur de la demi-droite à l'équerre est calculée à partir du \"towardX\"/\"towardY\" indiqué par l'IA -- mais le recalage automatique d'un point d'intersection (ajouté récemment) ne corrigeait que le POINT final, jamais le \"towardX\"/\"towardY\" de la perpendiculaire ou du cercle qui l'ont produit. Si l'IA indiquait un \"towardX\"/\"towardY\" trop proche du départ (mais quand même recalé correctement au final), la demi-droite restait dimensionnée sur cette estimation trop courte. Le recalage répercute désormais la position exacte sur ces étapes aussi, donc la longueur de la demi-droite correspond toujours à la vraie distance jusqu'au point réellement trouvé.",
   ]},
