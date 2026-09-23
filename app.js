@@ -2479,6 +2479,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.623', items:[
+    "Fix -- signalé : \"quand on clique sur 'à reprendre', la fenêtre de confirmation se met derrière et on ne la voit pas\". La fenêtre de confirmation/alerte générique (utilisée partout sur le site) repassait derrière certaines fenêtres déjà ouvertes (\"Voir les rendus\", panneaux de l'outil figure), faute d'un ordre d'affichage dédié -- elle s'affiche maintenant toujours par-dessus tout le reste.",
+  ]},
   { version:'2026-08-19.622', items:[
     "Panneau « Ce qui mérite votre attention » (accueil prof), signalé : \"afficher par classe pour une meilleure lecture\". Les devoirs pas encore rendus et les devoirs \"à reprendre\" sont désormais regroupés par classe (ordre alphabétique) au lieu d'une simple liste à plat.",
   ]},

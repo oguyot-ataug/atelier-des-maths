@@ -155,6 +155,13 @@ a{color:inherit;text-decoration:none;}
 #newVersionBanner button{white-space:nowrap;}
 
 .modal-overlay{position:fixed;inset:0;background:rgba(28,43,57,.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+/* niceAlert/niceConfirm/nicePrompt (app.js, niceModal) doivent toujours s'afficher AU-DESSUS de
+   toute autre fenêtre déjà ouverte -- signalé : "quand on clique sur 'à reprendre', la fenêtre de
+   confirmation se met derrière et on ne la voit pas". Sans ce z-index dédié, #niceModalOverlay
+   retombait sur le 100 par défaut de .modal-overlay, plus bas que "Voir les rendus" (300) ou les
+   panneaux de l'outil figure (400). Valeur choisie au-dessus de tous les z-index fixes utilisés
+   ailleurs dans le site (max actuel : 600, la bannière de nouvelle version). */
+#niceModalOverlay{z-index:700;}
 .modal-card{background:var(--white);border-radius:14px;padding:22px;max-width:420px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.28);}
 .modal-close{border:none;background:transparent;font-size:1.1rem;cursor:pointer;color:var(--ink-soft);line-height:1;padding:4px;}
 .modal-close:hover{color:var(--ink);}
