@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.641', items:[
+    "Tableau IA -- 4 signalements corrigés d'un coup. (1) \"A et B sont placés avant de mesurer correctement à la règle\" : nouvelle étape « measure », la règle se place et le crayon glisse le long AVANT que le point mesuré n'apparaisse (au lieu de placer les deux points puis tracer entre eux après coup). (2) \"le crayon n'apparaît jamais pour les tracés\" : un vrai outil crayon suit maintenant la pointe du trait pendant tout tracé à la règle ou à l'équerre (le compas avait déjà sa propre mine visible). (3) \"il ne faut pas laisser les outils sur la feuille quand ils ne sont plus utiles\" : chaque outil (règle, équerre, compas, crayon) est rangé automatiquement dès la fin de l'étape qui l'utilise. (4) \"un arc suffit, pas un cercle complet\" : le compas ne trace plus qu'un arc d'environ 100° du côté du point cherché, sauf si un cercle complet est vraiment la figure demandée.",
+  ]},
   { version:'2026-08-19.640', items:[
     "Fix -- Tableau IA, \"l'IA n'a pas renvoyé un JSON exploitable\" persistait malgré un premier correctif. La première version ne gérait que le cas d'un texte AVANT/APRÈS le JSON (recherche du premier '[' au dernier ']') -- insuffisante si un AUTRE crochet apparaît dans le texte avant le vrai tableau (ex. une phrase citant \"[BC]\"), ou si l'IA enveloppe le tableau dans un objet (ex. {\"etapes\":[...]}) malgré la consigne d'un tableau nu. Recherche désormais chaque tableau [...] correctement équilibré où qu'il soit dans la réponse (en ignorant les crochets à l'intérieur des chaînes), et déballe automatiquement un objet-enveloppe le cas échéant.",
   ]},
@@ -7820,27 +7823,30 @@ function tbAiBuildPrompt(enonce){
 Le tableau est un plan de 900×560 pixels. Origine (0,0) en haut à gauche, x vers la droite, y vers le BAS (comme un écran).
 Échelle : ${TB_PX_PER_CM} pixels = 1 cm. Garde toute la construction dans x∈[80,820] et y∈[80,480].
 
-Réponds UNIQUEMENT par un tableau JSON (aucun texte avant/après, pas de balises markdown), une liste d'étapes, choisies EXACTEMENT parmi ces 5 types :
+Réponds UNIQUEMENT par un tableau JSON (aucun texte avant/après, pas de balises markdown), une liste d'étapes, choisies EXACTEMENT parmi ces 6 types :
 
-1. {"type":"point","label":"A","x":123,"y":456} -- pose un point nommé (une lettre majuscule, éventuellement suivie d'un chiffre, ex. "A", "M1") à des coordonnées EXACTES en pixels. Place le premier point raisonnablement au centre-gauche du cadre.
-2. {"type":"segment","from":"A","to":"B"} -- trace à la règle le segment entre deux points DÉJÀ posés par une étape "point" précédente. Longueur maximale utilisable en une fois : 14 cm (${maxSegPx} px) -- ne génère jamais un segment plus long (comme une vraie règle de classe).
-3. {"type":"circle","center":"A","radiusCm":5} -- trace un cercle complet au compas, centré sur un point déjà posé, de rayon EN CENTIMÈTRES (pas en pixels, 17 cm maximum).
-4. {"type":"perpendicular","at":"A","reference":"B","towardX":123,"towardY":456} -- trace à l'équerre une demi-droite [Ax) issue du point "at" (déjà posé), PERPENDICULAIRE à la droite ("at"→"reference", deux points déjà posés). "towardX"/"towardY" sont les coordonnées (même approximatives) d'un point du côté vers lequel la demi-droite doit s'étendre (ex. celles, déjà calculées, du sommet qu'on va trouver dessus) -- sert uniquement à choisir le bon côté, pas la longueur exacte.
-5. {"type":"text","x":123,"y":456,"text":"AB = 6 cm"} -- étiquette de texte libre (ex. pour indiquer une mesure), à côté de la figure sans la recouvrir.
+1. {"type":"point","label":"A","x":123,"y":456} -- pose un point nommé (une lettre majuscule, éventuellement suivie d'un chiffre, ex. "A", "M1") à des coordonnées EXACTES en pixels, SANS geste de mesure visible (la règle n'apparaît pas). Réservé au tout premier point "libre" de la figure, et aux points obtenus par une construction déjà visible sur le tableau (intersection de deux cercles, d'une demi-droite et d'un cercle...) -- jamais à un point simplement mesuré depuis un autre point déjà posé : pour ça, utilise "measure" ci-dessous.
+2. {"type":"measure","from":"A","label":"B","x":123,"y":456} -- MESURE à la règle, depuis un point "from" déjà posé, la distance jusqu'aux coordonnées EXACTES données (que tu calcules toi-même), et pose le point "label" résultant UNE FOIS la mesure faite (la règle se place avec son 0 sur "from", puis le crayon glisse le long d'elle jusqu'à la longueur voulue -- c'est l'étape à utiliser à chaque fois qu'un point est défini par une longueur depuis un point déjà connu, ex. "AB = 6 cm"). Longueur maximale en une fois : 14 cm (${maxSegPx} px).
+3. {"type":"segment","from":"A","to":"B"} -- trace à la règle le segment entre deux points DÉJÀ posés (utilisé pour relier des points déjà existants, ex. refermer un triangle une fois ses 3 sommets connus -- PAS pour créer un nouveau point, voir "measure").
+4. {"type":"circle","center":"A","radiusCm":5,"towardX":123,"towardY":456} -- trace au compas un ARC (pas un cercle complet) centré sur un point déjà posé, de rayon EN CENTIMÈTRES (17 cm maximum). "towardX"/"towardY" sont les coordonnées (même approximatives) du point cherché du côté duquel tracer l'arc -- donne-les PRESQUE TOUJOURS (un cercle entier est rarement utile, il alourdit la figure pour rien) ; omets-les seulement si un cercle complet est vraiment la figure demandée.
+5. {"type":"perpendicular","at":"A","reference":"B","towardX":123,"towardY":456} -- trace à l'équerre une demi-droite [Ax) issue du point "at" (déjà posé), PERPENDICULAIRE à la droite ("at"→"reference", deux points déjà posés). "towardX"/"towardY" sont les coordonnées (même approximatives) d'un point du côté vers lequel la demi-droite doit s'étendre (ex. celles, déjà calculées, du sommet qu'on va trouver dessus) -- sert uniquement à choisir le bon côté, pas la longueur exacte.
+6. {"type":"text","x":123,"y":456,"text":"AB = 6 cm"} -- étiquette de texte libre (ex. pour indiquer une mesure), à côté de la figure sans la recouvrir.
 
-MÉTHODES DE CONSTRUCTION CLASSIQUES À UTILISER (choisis celle qui correspond à l'énoncé -- ne calcule JAMAIS directement par trigonométrie la position d'un point qui doit normalement se construire à la règle/au compas/à l'équerre ; seuls les tout premiers points "libres" de la figure peuvent être placés par un choix de coordonnées) :
+MÉTHODES DE CONSTRUCTION CLASSIQUES À UTILISER (choisis celle qui correspond à l'énoncé -- ne calcule JAMAIS directement par trigonométrie la position d'un point qui doit normalement se construire à la règle/au compas/à l'équerre ; seul le tout premier point "libre" de la figure peut être placé par un choix de coordonnées, avec "point") :
 
-- Triangle connu par ses 3 côtés (ou report d'une longueur depuis un point) : pose deux points, trace le segment entre eux si besoin, puis utilise DEUX "circle" (un centré sur chacun des deux sommets déjà connus, de rayon la longueur du 3e côté depuis chacun) -- le point cherché est à l'intersection. Calcule toi-même les coordonnées de cette intersection (résolution du système des deux équations de cercle) pour l'étape "point" suivante.
+- Longueur connue depuis un point déjà posé (ex. "AB = 6 cm") : "measure" (voir ci-dessus), pas "point" + "segment" séparément.
 
-- Angle droit EN UN SOMMET DÉJÀ NOMMÉ dans l'énoncé (ex. "triangle ABC rectangle en A" connu par un côté et l'hypoténuse) : c'est la méthode PAR DÉFAUT, à l'équerre -- pose d'abord le côté connu depuis ce sommet (ex. [AB]), utilise "perpendicular" en ce sommet pour tracer la demi-droite perpendiculaire à ce côté, puis un "circle" (report de longueur, centré sur l'autre extrémité connue, de rayon l'hypoténuse) qui vient l'intercepter -- le sommet cherché est à l'intersection entre la demi-droite et le cercle. Calcule ces coordonnées toi-même (le point est sur la perpendiculaire ET à la bonne distance du centre du cercle), avec pour "towardX"/"towardY" de l'étape "perpendicular" les coordonnées de ce sommet.
+- Triangle connu par ses 3 côtés (ou report d'une longueur depuis un point) : pose ou mesure deux points, puis utilise DEUX "circle" (un centré sur chacun des deux sommets déjà connus, de rayon la longueur du 3e côté depuis chacun, chacun avec "towardX"/"towardY" pointant vers le sommet cherché) -- le point cherché est à l'intersection des deux arcs. Calcule toi-même les coordonnées de cette intersection (résolution du système des deux équations de cercle) pour l'étape "point" suivante.
 
-- Angle droit SANS sommet imposé (ex. construire un point qui voit un segment sous un angle droit, sans savoir où) : utilise le CERCLE DE THALÈS. Pose le milieu du côté qui sera l'hypoténuse (point de construction, label libre type "O" ou "M") ; trace un "circle" centré sur ce milieu, de rayon la MOITIÉ de l'hypoténuse (tout point dessus voit l'hypoténuse sous un angle droit) ; un second "circle" (report de longueur) donne le sommet cherché à leur intersection.
+- Angle droit EN UN SOMMET DÉJÀ NOMMÉ dans l'énoncé (ex. "triangle ABC rectangle en A" connu par un côté et l'hypoténuse) : c'est la méthode PAR DÉFAUT, à l'équerre -- pose d'abord le côté connu depuis ce sommet (avec "measure"), utilise "perpendicular" en ce sommet pour tracer la demi-droite perpendiculaire à ce côté, puis un "circle" (report de longueur, centré sur l'autre extrémité connue, de rayon l'hypoténuse, "towardX"/"towardY" vers le sommet cherché) qui vient l'intercepter -- le sommet cherché est à l'intersection entre la demi-droite et l'arc. Calcule ces coordonnées toi-même (le point est sur la perpendiculaire ET à la bonne distance du centre du cercle), avec les mêmes coordonnées pour "towardX"/"towardY" des étapes "perpendicular" et "circle".
+
+- Angle droit SANS sommet imposé (ex. construire un point qui voit un segment sous un angle droit, sans savoir où) : utilise le CERCLE DE THALÈS. Pose le milieu du côté qui sera l'hypoténuse (point de construction, label libre type "O" ou "M") ; trace un "circle" centré sur ce milieu, de rayon la MOITIÉ de l'hypoténuse, "towardX"/"towardY" vers le sommet cherché (tout point sur cet arc voit l'hypoténuse sous un angle droit) ; un second "circle" (report de longueur, même "towardX"/"towardY") donne le sommet cherché à leur intersection.
 
 - Plus généralement (médiatrice, bissectrice...) : même principe -- un point qui résulte d'une propriété géométrique se construit à la règle/au compas/à l'équerre, jamais par un calcul trigonométrique direct qui "saute" l'étape de construction.
 
 RÈGLES IMPORTANTES :
 - Calcule toutes les coordonnées EXACTEMENT (trigonométrie/résolution d'intersection de cercles ou droites selon le cas) -- jamais d'approximation grossière au jugé.
-- N'utilise dans "segment"/"circle"/"perpendicular" QUE des labels déjà posés par une étape "point" antérieure.
+- N'utilise dans "measure"/"segment"/"circle"/"perpendicular" QUE des labels déjà posés par une étape "point" ou "measure" antérieure.
 - Maximum ${TB_AI_MAX_STEPS} étapes. Reste sobre : une construction juste, méthodique et lisible plutôt que décorative.
 - Réponds uniquement par le JSON, rien d'autre (pas de \`\`\`json).
 
@@ -7857,6 +7863,12 @@ function tbAiValidatePlan(steps){
     if(!s || typeof s!=='object' || typeof s.type!=='string') return {ok:false, error:'étape invalide'};
     if(s.type==='point'){
       if(typeof s.label!=='string' || !s.label.trim()) return {ok:false, error:'point sans label'};
+      if(!Number.isFinite(s.x) || !Number.isFinite(s.y)) return {ok:false, error:'coordonnées invalides pour le point '+s.label};
+      if(s.x<-50||s.x>950||s.y<-50||s.y>610) return {ok:false, error:'point '+s.label+' hors du cadre'};
+      known.add(s.label);
+    } else if(s.type==='measure'){
+      if(!known.has(s.from)) return {ok:false, error:'mesure référence un point inconnu ('+s.from+')'};
+      if(typeof s.label!=='string' || !s.label.trim()) return {ok:false, error:'mesure sans label pour le point obtenu'};
       if(!Number.isFinite(s.x) || !Number.isFinite(s.y)) return {ok:false, error:'coordonnées invalides pour le point '+s.label};
       if(s.x<-50||s.x>950||s.y<-50||s.y>610) return {ok:false, error:'point '+s.label+' hors du cadre'};
       known.add(s.label);
@@ -7898,11 +7910,33 @@ function tbAiTweenProps(target, props, durationMs){
     requestAnimationFrame(frame);
   });
 }
+/* Le crayon (outil "crayon", pointe en (0,0) local -- cf. pencilSVG) est un outil À PART du
+   guide (règle/équerre) sur lequel il glisse : en manipulation manuelle, on pose D'ABORD le
+   guide, puis on prend le crayon et on le fait glisser le long de son bord. L'animation avait
+   sauté cette étape (le trait apparaissait sans aucun crayon visible) -- on le fait maintenant
+   apparaître et suivre la pointe du trait à chaque frame de tracé. Inutile pour le compas : son
+   propre rendu (tbRender) dessine déjà une mine à l'extrémité de la branche mobile. */
+function tbAiEnsureCrayon(x, y, angle){
+  let c = tbTools.find(t=>t.type==='crayon');
+  if(!c){ c = {id:tbNextId++, type:'crayon', x, y, angle:angle||0}; tbTools.push(c); }
+  else { c.x=x; c.y=y; if(angle!==undefined) c.angle=angle; }
+  return c;
+}
+/* Range un ou plusieurs outils (les retire du tableau) une fois qu'ils ne servent plus --
+   signalé : "il ne faut pas laisser les outils sur la feuille quand ils ne sont plus utiles".
+   Appelé à la fin de chaque étape de tracé, pour que seuls les tracés/points restent visibles
+   entre deux étapes, jamais les outils qui les ont produits. */
+function tbAiPutAwayTools(...types){
+  tbTools = tbTools.filter(t=>!types.includes(t.type));
+  tbRenderPalette();
+  tbRender();
+}
 /* Pose la règle graduée alignée sur [AB] (son bord haut passant exactement par A et B, centrée
-   sur leur milieu -- cf. TB_DEFS.regle_grad.edges[0] = bord haut en y local 0) puis trace le
-   trait pendant le déplacement du crayon le long de ce bord, comme un vrai geste. Un seul
-   exemplaire de règle est réutilisé (déplacé) d'une étape à l'autre plutôt que d'en empiler
-   plusieurs sur le tableau. */
+   sur leur milieu -- cf. TB_DEFS.regle_grad.edges[0] = bord haut en y local 0), fait glisser le
+   crayon le long de ce bord pour tracer, puis range règle et crayon. Un seul exemplaire de
+   règle est réutilisé (déplacé) tant qu'elle sert d'une étape à l'autre. Sert à relier deux
+   points DÉJÀ posés (ex. fermer un triangle une fois tous ses sommets connus) -- pour créer un
+   nouveau point en le mesurant depuis un point existant, voir tbAiDrawMeasure. */
 async function tbAiDrawSegment(A, B){
   const angle = Math.atan2(B.y-A.y, B.x-A.x)*180/Math.PI;
   const rad = angle*Math.PI/180;
@@ -7922,15 +7956,54 @@ async function tbAiDrawSegment(A, B){
   tbInk.push(stroke);
   const n = 18;
   for(let i=0;i<=n;i++){
-    stroke.points.push([A.x+(B.x-A.x)*i/n, A.y+(B.y-A.y)*i/n]);
+    const px=A.x+(B.x-A.x)*i/n, py=A.y+(B.y-A.y)*i/n;
+    stroke.points.push([px,py]);
+    tbAiEnsureCrayon(px,py,angle+90);
     tbRender();
     await tbAiSleep(18);
   }
+  await tbAiSleep(150);
+  tbAiPutAwayTools('regle_grad','crayon');
 }
-/* Pose la pointe du compas en C, l'ouvre jusqu'au rayon voulu (sans tracer), puis fait un tour
-   complet en traçant -- même mécanique (t.x/t.y = pointe fixe, t.angle = direction du crayon,
-   t.radius = écartement) que le compas manipulable à la main, cf. rendu dans tbRender(). */
-async function tbAiDrawCircle(C, radiusPx){
+/* Mesure une longueur À LA RÈGLE depuis un point déjà posé, et ne place le point mesuré qu'une
+   fois le tracé terminé -- signalé : "A et B sont placés avant de mesurer correctement à la
+   règle", la règle et le crayon doivent apparaître et faire le geste AVANT que le point
+   n'existe, pas après. Combine mesure et tracé en un seul geste continu, comme en vrai. */
+async function tbAiDrawMeasure(A, label, targetX, targetY){
+  const angle = Math.atan2(targetY-A.y, targetX-A.x)*180/Math.PI;
+  let t = tbTools.find(x=>x.type==='regle_grad');
+  if(!t){
+    t = {id:tbNextId++, type:'regle_grad', x:A.x, y:A.y, angle};
+    tbTools.push(t);
+    tbRenderPalette();
+    tbRender();
+  } else {
+    await tbAiTweenProps(t, {x:A.x, y:A.y, angle}, 700);
+  }
+  await tbAiSleep(150);
+  const stroke = {color: tbCurrentColor(), points: []};
+  tbInk.push(stroke);
+  const n = 18;
+  for(let i=0;i<=n;i++){
+    const px=A.x+(targetX-A.x)*i/n, py=A.y+(targetY-A.y)*i/n;
+    stroke.points.push([px,py]);
+    tbAiEnsureCrayon(px,py,angle+90);
+    tbRender();
+    await tbAiSleep(18);
+  }
+  tbPoints.push({id:tbPointNextId++, x:targetX, y:targetY, label});
+  tbRender();
+  await tbAiSleep(150);
+  tbAiPutAwayTools('regle_grad','crayon');
+}
+/* Pose la pointe du compas en C, l'ouvre jusqu'au rayon voulu (sans tracer), puis trace -- même
+   mécanique (t.x/t.y = pointe fixe, t.angle = direction du crayon, t.radius = écartement) que
+   le compas manipulable à la main. Un ARC (pas un cercle complet) est tracé dès qu'une
+   direction cible est donnée -- signalé : "il n'est pas nécessaire de faire un cercle complet,
+   un arc suffit", comme le ferait un professeur qui ne trace qu'un petit arc autour de
+   l'intersection cherchée. Sans cible (paramètre "target" omis), trace un cercle complet --
+   pour les rares cas où le cercle EST la figure demandée, pas un outil de construction. */
+async function tbAiDrawCircle(C, radiusPx, target){
   const clampedR = Math.min(radiusPx, TB_COMPASS_MAX_RADIUS-5);
   let t = tbTools.find(x=>x.type==='compas');
   if(!t){
@@ -7949,24 +8022,35 @@ async function tbAiDrawCircle(C, radiusPx){
   t.mode = 'draw';
   const stroke = {color: tbCurrentColor(), points: []};
   tbInk.push(stroke);
-  const startAngle = t.angle, frames = 48;
+  let startAngle, sweep;
+  if(target){
+    startAngle = Math.atan2(target.y-C.y, target.x-C.x)*180/Math.PI - 50;
+    sweep = 100;
+  } else {
+    startAngle = t.angle;
+    sweep = 360;
+  }
+  t.angle = startAngle;
+  const frames = Math.max(12, Math.round(48*sweep/360));
   for(let i=0;i<=frames;i++){
-    t.angle = startAngle + 360*i/frames;
+    t.angle = startAngle + sweep*i/frames;
     const rad = t.angle*Math.PI/180;
     stroke.points.push([t.x+t.radius*Math.cos(rad), t.y+t.radius*Math.sin(rad)]);
     tbRender();
     await tbAiSleep(16);
   }
   t.mode = 'closed';
+  await tbAiSleep(150);
+  tbAiPutAwayTools('compas');
 }
 /* Pose l'équerre en A (son sommet d'angle droit, en (0,0) local -- cf. TB_DEFS.equerre.edges[0]
    et [1], les deux côtés de l'angle droit partant de l'origine), un côté aligné le long de
-   [A,reference] (comme si on la posait contre la règle/le segment déjà tracé), et trace au
-   crayon une demi-droite le long de l'autre côté -- perpendiculaire donc, cf. demandé :
-   "avec équerre on trace une demi-droite [Ax) perpendiculaire à [AB]". Deux orientations sont
-   géométriquement possibles pour ce deuxième côté (l'équerre peut se poser d'un côté ou de
-   l'autre de la droite) : on choisit celle qui va vers "target" (les coordonnées, même
-   approximatives, du point qu'on cherche à intercepter ensuite, ex. avec le compas). */
+   [A,reference] (comme si on la posait contre la règle/le segment déjà tracé), et fait glisser
+   le crayon le long de l'autre côté -- perpendiculaire donc, cf. demandé : "avec équerre on
+   trace une demi-droite [Ax) perpendiculaire à [AB]". Deux orientations sont géométriquement
+   possibles pour ce deuxième côté (l'équerre peut se poser d'un côté ou de l'autre de la
+   droite) : on choisit celle qui va vers "target" (les coordonnées, même approximatives, du
+   point qu'on cherche à intercepter ensuite, ex. avec le compas). */
 async function tbAiDrawPerpendicular(A, reference, target, lengthPx){
   const baseAngle = Math.atan2(reference.y-A.y, reference.x-A.x)*180/Math.PI;
   const candidates = [baseAngle, baseAngle+180];
@@ -7993,10 +8077,14 @@ async function tbAiDrawPerpendicular(A, reference, target, lengthPx){
   tbInk.push(stroke);
   const n = 18;
   for(let i=0;i<=n;i++){
-    stroke.points.push([A.x+dirX*lengthPx*i/n, A.y+dirY*lengthPx*i/n]);
+    const px=A.x+dirX*lengthPx*i/n, py=A.y+dirY*lengthPx*i/n;
+    stroke.points.push([px,py]);
+    tbAiEnsureCrayon(px,py,bestAngle+90);
     tbRender();
     await tbAiSleep(18);
   }
+  await tbAiSleep(150);
+  tbAiPutAwayTools('equerre','crayon');
 }
 /* Exécute UNE SEULE étape (mutation d'état + animation), sans pousser d'historique -- c'est
    l'appelant (la barre de lecture pas à pas ci-dessous) qui en pousse un par étape. */
@@ -8004,12 +8092,18 @@ async function tbAiExecuteStep(step){
   if(step.type==='point'){
     tbPoints.push({id:tbPointNextId++, x:step.x, y:step.y, label:step.label});
     tbRender();
+  } else if(step.type==='measure'){
+    const A = tbPoints.find(p=>p.label===step.from);
+    if(A) await tbAiDrawMeasure(A, step.label, step.x, step.y);
   } else if(step.type==='segment'){
     const A = tbPoints.find(p=>p.label===step.from), B = tbPoints.find(p=>p.label===step.to);
     if(A && B) await tbAiDrawSegment(A, B);
   } else if(step.type==='circle'){
     const C = tbPoints.find(p=>p.label===step.center);
-    if(C) await tbAiDrawCircle(C, step.radiusCm*TB_PX_PER_CM);
+    if(C){
+      const target = (Number.isFinite(step.towardX) && Number.isFinite(step.towardY)) ? {x:step.towardX, y:step.towardY} : null;
+      await tbAiDrawCircle(C, step.radiusCm*TB_PX_PER_CM, target);
+    }
   } else if(step.type==='perpendicular'){
     const A = tbPoints.find(p=>p.label===step.at), ref = tbPoints.find(p=>p.label===step.reference);
     if(A && ref){
