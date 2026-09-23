@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.637', items:[
+    "Tableau interactif, « Construire avec l'IA » -- signalé : \"c'est nul, ce que je voulais c'était bien dire ce que j'allais faire pas à pas\". Deux manques identifiés sur l'exemple donné (triangle rectangle en A connaissant l'hypoténuse BC et le côté AB) : (1) aucune explication n'accompagnait les gestes, (2) la seule méthode enseignée à l'IA (intersection de deux cercles pour un triangle à 3 côtés connus) ne s'applique pas à un angle droit -- il fallait la méthode du cercle de Thalès. Chaque étape porte désormais une explication au présent (\"Je pique en B et j'ouvre à 4 cm...\"), affichée et accumulée au-dessus du tableau au fur et à mesure -- un vrai récit de la construction, qui reste lisible une fois l'animation terminée. Le cercle de Thalès (angle droit sans le mesurer) est maintenant décrit à l'IA à côté de la méthode des 3 côtés, avec la consigne de toujours passer par une construction au compas plutôt que de calculer un point directement par trigonométrie.",
+  ]},
   { version:'2026-08-19.636', items:[
     "Fix -- Tableau interactif, « Construire avec l'IA », signalé : \"l'IA n'a pas renvoyé un JSON exploitable\". Les logs montraient que l'appel réussissait bien et renvoyait du texte -- le souci venait de l'extraction : une courte phrase d'introduction ou des balises ```json``` ajoutées par l'IA malgré la consigne \"rien d'autre que le JSON\" faisaient échouer l'analyse, qui ne gérait qu'un format de sortie unique. Recherche désormais le tableau JSON le plus englobant où qu'il soit dans la réponse, quel que soit ce qui l'entoure.",
   ]},
@@ -6602,7 +6605,11 @@ function tbCurrentColor(){
   return el ? el.value : '#1C1B2E';
 }
 function tbClearInk(){ tbInk = []; tbRender(); }
-function tbClearAll(){ tbInk = []; tbTools = []; tbPoints = []; tbTexts = []; tbCodages = []; tbRenderPalette(); tbRender(); tbRenderHistoryPanel(); tbPushHistory(); }
+function tbClearAll(){
+  tbInk = []; tbTools = []; tbPoints = []; tbTexts = []; tbCodages = []; tbRenderPalette(); tbRender(); tbRenderHistoryPanel(); tbPushHistory();
+  const captionBox = document.getElementById('tbAiCaptionBox');
+  if(captionBox){ captionBox.style.display = 'none'; captionBox.innerHTML = ''; }
+}
 /* Enregistre le contenu du tableau en image PNG. #tbInkLayer (traits, points, textes,
    codages) et #tbToolsLayer (outils posés, boutons d'action) sont deux groupes SVG déjà
    bien séparés (voir tbRender) -- sans outils, on clone le SVG et on retire simplement
@@ -7801,22 +7808,29 @@ function tbCloseAiModal(){
 }
 function tbAiBuildPrompt(enonce){
   const maxSegPx = 14*TB_PX_PER_CM;
-  return `Tu es un générateur de constructions géométriques pour un tableau interactif de mathématiques (collège, France).
+  return `Tu es un professeur de mathématiques (collège/lycée, France) qui construit une figure au tableau, à la règle et au compas, en expliquant chaque geste à sa classe -- pas juste un calculateur de coordonnées. Le but est de reproduire une VRAIE construction géométrique enseignée, avec sa méthode, pas seulement d'obtenir la bonne figure finale par le calcul le plus direct.
 Le tableau est un plan de 900×560 pixels. Origine (0,0) en haut à gauche, x vers la droite, y vers le BAS (comme un écran).
 Échelle : ${TB_PX_PER_CM} pixels = 1 cm. Garde toute la construction dans x∈[80,820] et y∈[80,480].
 
-Réponds UNIQUEMENT par un tableau JSON (aucun texte avant/après, pas de balises markdown), une liste d'étapes, choisies EXACTEMENT parmi ces 4 types :
+Réponds UNIQUEMENT par un tableau JSON (aucun texte avant/après, pas de balises markdown), une liste d'étapes, choisies EXACTEMENT parmi ces 4 types. CHAQUE étape porte un champ "explication" : une phrase courte, au présent, dans le ton d'un professeur qui commente son geste en le faisant (ex. "Je trace [BC], l'hypoténuse, à la règle." / "Je pique le compas en B et j'ouvre à 4 cm." / "Le cercle de diamètre [BC] passe par tous les points qui voient BC sous un angle droit -- j'y place donc A.").
 
-1. {"type":"point","label":"A","x":123,"y":456} -- pose un point nommé (une lettre majuscule, éventuellement suivie d'un chiffre, ex. "A", "M1") à des coordonnées EXACTES en pixels que tu calcules toi-même (trigonométrie si besoin). Place le premier point raisonnablement au centre-gauche du cadre.
-2. {"type":"segment","from":"A","to":"B"} -- trace à la règle le segment entre deux points DÉJÀ posés par une étape "point" précédente. Longueur maximale utilisable en une fois : 14 cm (${maxSegPx} px) -- ne génère jamais un segment plus long (comme une vraie règle de classe).
-3. {"type":"circle","center":"A","radiusCm":5} -- trace un cercle complet au compas, centré sur un point déjà posé, de rayon EN CENTIMÈTRES (pas en pixels, 17 cm maximum).
-4. {"type":"text","x":123,"y":456,"text":"AB = 6 cm"} -- étiquette de texte libre (ex. pour indiquer une mesure), à côté de la figure sans la recouvrir.
+1. {"type":"point","label":"A","x":123,"y":456,"explication":"..."} -- pose un point nommé (une lettre majuscule, éventuellement suivie d'un chiffre, ex. "A", "M1") à des coordonnées EXACTES en pixels. Place le premier point raisonnablement au centre-gauche du cadre.
+2. {"type":"segment","from":"A","to":"B","explication":"..."} -- trace à la règle le segment entre deux points DÉJÀ posés par une étape "point" précédente. Longueur maximale utilisable en une fois : 14 cm (${maxSegPx} px) -- ne génère jamais un segment plus long (comme une vraie règle de classe).
+3. {"type":"circle","center":"A","radiusCm":5,"explication":"..."} -- trace un cercle complet au compas, centré sur un point déjà posé, de rayon EN CENTIMÈTRES (pas en pixels, 17 cm maximum).
+4. {"type":"text","x":123,"y":456,"text":"AB = 6 cm","explication":"..."} -- étiquette de texte libre (ex. pour indiquer une mesure), à côté de la figure sans la recouvrir.
+
+MÉTHODES DE CONSTRUCTION CLASSIQUES À UTILISER (choisis celle qui correspond à l'énoncé -- ne calcule JAMAIS directement par trigonométrie la position d'un point qui doit normalement se construire au compas ; seuls les tout premiers points "libres" de la figure peuvent être placés par un choix de coordonnées) :
+
+- Triangle connu par ses 3 côtés (ou report d'une longueur depuis un point) : pose deux points, trace le segment entre eux si besoin, puis utilise DEUX "circle" (un centré sur chacun des deux sommets déjà connus, de rayon la longueur du 3e côté depuis chacun) -- le point cherché est à l'intersection. Calcule toi-même les coordonnées de cette intersection (résolution du système des deux équations de cercle) pour l'étape "point" suivante, avec une explication du type "L'intersection des deux arcs donne C, à la bonne distance de A et de B."
+
+- Angle droit SANS le mesurer (ex. triangle rectangle connu par son hypoténuse et un côté) : utilise le CERCLE DE THALÈS. Pose d'abord le milieu du côté qui sera l'hypoténuse (un point de construction, label libre type "O" ou "M", avec une explication précisant que c'est un milieu) ; trace un "circle" centré sur ce milieu, de rayon la MOITIÉ de l'hypoténuse (c'est le cercle de Thalès : tout point dessus voit l'hypoténuse sous un angle droit) ; trace un second "circle" (report de longueur) centré sur l'une des extrémités de l'hypoténuse pour le côté connu ; le sommet de l'angle droit est à leur intersection -- calcule ces coordonnées toi-même, avec une explication qui rappelle POURQUOI (angle inscrit dans un demi-cercle).
+
+- Plus généralement (médiatrice, bissectrice...) : même principe -- un point qui résulte d'une propriété géométrique se construit par intersection de cercles tracés au compas, jamais par un calcul trigonométrique direct qui "saute" l'étape de construction.
 
 RÈGLES IMPORTANTES :
-- Calcule TOUTES les coordonnées toi-même avec une trigonométrie exacte (loi des cosinus/Al-Kashi, etc. si besoin) -- jamais d'approximation grossière au jugé.
+- Calcule toutes les coordonnées EXACTEMENT (trigonométrie/résolution d'intersection de cercles selon le cas) -- jamais d'approximation grossière au jugé.
 - N'utilise dans "segment"/"circle" QUE des labels déjà posés par une étape "point" antérieure.
-- Pour une construction réellement "au compas" (report de longueur, triangle connaissant ses 3 côtés...), utilise deux "circle" dont l'INTERSECTION donne le point cherché : calcule toi-même les coordonnées de cette intersection (résolution du système des deux équations de cercle) pour l'étape "point" suivante -- ne place jamais ce point "à l'estime".
-- Maximum ${TB_AI_MAX_STEPS} étapes. Reste sobre : une construction juste et lisible plutôt que décorative.
+- Maximum ${TB_AI_MAX_STEPS} étapes. Reste sobre : une construction juste, méthodique et lisible plutôt que décorative.
 - Réponds uniquement par le JSON, rien d'autre (pas de \`\`\`json).
 
 Énoncé à construire :
@@ -7845,6 +7859,9 @@ function tbAiValidatePlan(steps){
     } else {
       return {ok:false, error:"type d'étape inconnu : "+s.type};
     }
+    // "explication" est encouragée (voir prompt) mais pas obligatoire -- normalisée en chaîne
+    // pour que le code d'affichage du récit n'ait jamais à revérifier son type.
+    s.explication = typeof s.explication==='string' ? s.explication.trim() : '';
   }
   return {ok:true, steps};
 }
@@ -7928,8 +7945,28 @@ async function tbAiDrawCircle(C, radiusPx){
   }
   t.mode = 'closed';
 }
+/* Récit de la construction : chaque étape ajoute sa ligne d'explication au fur et à mesure
+   (affichée pendant l'animation ET conservée après, comme trace écrite de la méthode --
+   demandé : "quand je voulais un traitement IA c'était pour bien dire ce que j'allais faire
+   pas à pas"). */
+function tbAiCaptionShow(){
+  const box = document.getElementById('tbAiCaptionBox');
+  if(!box) return;
+  box.style.display = 'block';
+  box.innerHTML = '';
+}
+function tbAiCaptionAppend(text){
+  const box = document.getElementById('tbAiCaptionBox');
+  if(!box || !text) return;
+  const line = document.createElement('div');
+  line.style.marginBottom = '4px';
+  line.textContent = (box.children.length+1)+'. '+text;
+  box.appendChild(line);
+}
 async function tbAiExecutePlan(steps){
+  tbAiCaptionShow();
   for(const step of steps){
+    tbAiCaptionAppend(step.explication);
     if(step.type==='point'){
       tbPoints.push({id:tbPointNextId++, x:step.x, y:step.y, label:step.label});
       tbRender();
