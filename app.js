@@ -2404,6 +2404,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.616', items:[
+    "Fix -- Mes devoirs (élève), signalé : \"le compte rendu ne se met pas à jour après la fin d'un exercice, ils sont obligés d'actualiser la page\". Terminer un exercice d'automatismes lancé depuis un devoir (score enregistré) puis fermer la fenêtre rafraîchit maintenant immédiatement la liste \"Mes devoirs\" derrière -- nouveau score, statut et médaille visibles sans recharger la page. Le même parcours côté Compte est bon rafraîchissait déjà correctement.",
+  ]},
   { version:'2026-08-19.615', items:[
     "Fix -- Compte est bon (devoir), signalé : \"le chrono part de 0 quand je quitte et je reviens sur le compte !\". Revenir sur un compte laissé EN COURS (quitté sans avoir cliqué \"Valider\") reprend maintenant exactement où on l'avait laissé -- chrono et étapes déjà posées conservés -- au lieu de relancer un tirage tout neuf à chaque fois. Un compte déjà validé (juste ou pas), lui, repart bien de zéro au clic sur \"Retenter\", comme une nouvelle tentative.",
   ]},

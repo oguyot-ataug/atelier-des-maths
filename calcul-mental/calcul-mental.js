@@ -258,8 +258,15 @@ function updateCMTimerDisplay(){
 function closeCMModal(){
   document.getElementById('cmExerciseModalOverlay').style.display='none';
   if(cmTimerInterval){ clearInterval(cmTimerInterval); cmTimerInterval=null; }
+  const wasDevoirContext = !!currentDevoirCM;
   currentDevoirCM = null;
   if(typeof devoirTestModeActive!=='undefined') devoirTestModeActive = false;
+  // Rafraîchit "Mes devoirs" (rendu en arrière-plan pendant que la modale d'exercice était
+  // ouverte) pour refléter immédiatement le nouveau score/statut -- signalé : "le compte rendu
+  // ne se met pas à jour après la fin d'un exercice, ils sont obligés d'actualiser la page".
+  if(wasDevoirContext && currentUserRole==='eleve' && typeof renderDevoirsEleve==='function'){
+    renderDevoirsEleve();
+  }
 }
 /* Bouton "↩ Retour à la création du devoir" -- signalé (à propos de Compte est bon, puis étendu
    aux autres types) : "pouvoir tester et revenir au menu quand on valide ou annule". Ferme la
