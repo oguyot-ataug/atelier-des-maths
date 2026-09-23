@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.635', items:[
+    "Tableau interactif, nouveau : « Construire avec l'IA » -- signalé : \"j'aimerais qu'il s'anime automatiquement si je lui donne un énoncé, interprété par l'IA qui fabrique l'animation des outils pas à pas\". On décrit une construction (ex. « Construire un triangle ABC tel que AB = 6 cm, AC = 4 cm et BC = 5 cm ») et l'IA calcule les coordonnées exactes (trigonométrie, intersections de cercles pour les reports au compas), puis la règle et le compas s'animent tout seuls, pas à pas, pour la tracer -- chaque étape reste dans l'historique (annuler/rétablir fonctionnent normalement). Portée volontairement limitée à la règle et au compas dans cette première version (pas encore l'équerre ni le rapporteur) : à vérifier avant de projeter en classe, comme tout contenu généré par IA.",
+  ]},
   { version:'2026-08-19.634', items:[
     "Fix -- onglet Administration « Usage IA », signalé : \"les coûts affichés sont nuls !\". Ce n'était pas un bug de calcul mais un affichage trompeur : tant qu'aucun appel IA n'a eu lieu depuis l'activation du suivi des tokens (build .633), le coût total s'affichait \"$0.000\" au lieu de \"inconnu\" -- un coût de 0 et un coût non mesuré n'ont pourtant rien à voir. Affiche désormais \"inconnu\" tant qu'aucun appel avec tokens connus n'existe, avec une explication claire (le suivi vient d'être activé, il suffit d'attendre une prochaine utilisation de l'assistant IA).",
   ]},
@@ -7768,6 +7771,202 @@ function tbAttachHandlers(){
     tbDrag = null;
   }
   svg.onpointerleave = ()=>{ tbDrag = null; };
+}
+
+/* ======================= TABLEAU INTERACTIF : construction par IA =======================
+   Demandé : "j'aimerais que le tableau s'anime automatiquement si je lui donne un énoncé,
+   interprété par l'IA qui fabrique l'animation des outils pas à pas pour construire les
+   figures". Plutôt que de demander à l'IA de piloter les outils au pixel près (ce qui
+   reproduirait toute la mécanique de prise en main/aimantage, conçue pour un geste humain,
+   pas pour être pilotée par du JSON), elle produit un plan de construction dans un
+   vocabulaire restreint de 4 étapes (point/segment/cercle/texte) avec des coordonnées EXACTES
+   qu'elle calcule elle-même par trigonométrie -- le code ici se contente d'animer la règle et
+   le compas jusqu'à ces coordonnées déjà connues, et de tracer le trait pendant le mouvement.
+   Portée volontairement limitée à la règle et au compas (pas l'équerre/le rapporteur) : ce
+   sont les deux seuls outils dont le geste de tracé est un simple segment/cercle, donc fiable
+   à piloter sans reproduire la détection de contact/glissement -- largement suffisant pour les
+   constructions classiques de collège (triangles connaissant leurs côtés, report de longueur
+   au compas par intersection de deux cercles, etc). */
+const TB_PX_PER_CM = 22; // même échelle que la règle graduée (cf. rulerSVG, cmStep=22)
+const TB_AI_MAX_STEPS = 15;
+function tbOpenAiModal(){
+  document.getElementById('tbAiModalOverlay').style.display = 'flex';
+  document.getElementById('tbAiStatus').textContent = '';
+}
+function tbCloseAiModal(){
+  document.getElementById('tbAiModalOverlay').style.display = 'none';
+}
+function tbAiBuildPrompt(enonce){
+  const maxSegPx = 14*TB_PX_PER_CM;
+  return `Tu es un générateur de constructions géométriques pour un tableau interactif de mathématiques (collège, France).
+Le tableau est un plan de 900×560 pixels. Origine (0,0) en haut à gauche, x vers la droite, y vers le BAS (comme un écran).
+Échelle : ${TB_PX_PER_CM} pixels = 1 cm. Garde toute la construction dans x∈[80,820] et y∈[80,480].
+
+Réponds UNIQUEMENT par un tableau JSON (aucun texte avant/après, pas de balises markdown), une liste d'étapes, choisies EXACTEMENT parmi ces 4 types :
+
+1. {"type":"point","label":"A","x":123,"y":456} -- pose un point nommé (une lettre majuscule, éventuellement suivie d'un chiffre, ex. "A", "M1") à des coordonnées EXACTES en pixels que tu calcules toi-même (trigonométrie si besoin). Place le premier point raisonnablement au centre-gauche du cadre.
+2. {"type":"segment","from":"A","to":"B"} -- trace à la règle le segment entre deux points DÉJÀ posés par une étape "point" précédente. Longueur maximale utilisable en une fois : 14 cm (${maxSegPx} px) -- ne génère jamais un segment plus long (comme une vraie règle de classe).
+3. {"type":"circle","center":"A","radiusCm":5} -- trace un cercle complet au compas, centré sur un point déjà posé, de rayon EN CENTIMÈTRES (pas en pixels, 17 cm maximum).
+4. {"type":"text","x":123,"y":456,"text":"AB = 6 cm"} -- étiquette de texte libre (ex. pour indiquer une mesure), à côté de la figure sans la recouvrir.
+
+RÈGLES IMPORTANTES :
+- Calcule TOUTES les coordonnées toi-même avec une trigonométrie exacte (loi des cosinus/Al-Kashi, etc. si besoin) -- jamais d'approximation grossière au jugé.
+- N'utilise dans "segment"/"circle" QUE des labels déjà posés par une étape "point" antérieure.
+- Pour une construction réellement "au compas" (report de longueur, triangle connaissant ses 3 côtés...), utilise deux "circle" dont l'INTERSECTION donne le point cherché : calcule toi-même les coordonnées de cette intersection (résolution du système des deux équations de cercle) pour l'étape "point" suivante -- ne place jamais ce point "à l'estime".
+- Maximum ${TB_AI_MAX_STEPS} étapes. Reste sobre : une construction juste et lisible plutôt que décorative.
+- Réponds uniquement par le JSON, rien d'autre (pas de \`\`\`json).
+
+Énoncé à construire :
+"""
+${enonce}
+"""`;
+}
+function tbAiValidatePlan(steps){
+  if(!Array.isArray(steps) || !steps.length) return {ok:false, error:"réponse vide ou pas une liste d'étapes"};
+  if(steps.length>TB_AI_MAX_STEPS) return {ok:false, error:'trop d\'étapes ('+steps.length+')'};
+  const known = new Set();
+  for(const s of steps){
+    if(!s || typeof s!=='object' || typeof s.type!=='string') return {ok:false, error:'étape invalide'};
+    if(s.type==='point'){
+      if(typeof s.label!=='string' || !s.label.trim()) return {ok:false, error:'point sans label'};
+      if(!Number.isFinite(s.x) || !Number.isFinite(s.y)) return {ok:false, error:'coordonnées invalides pour le point '+s.label};
+      if(s.x<-50||s.x>950||s.y<-50||s.y>610) return {ok:false, error:'point '+s.label+' hors du cadre'};
+      known.add(s.label);
+    } else if(s.type==='segment'){
+      if(!known.has(s.from) || !known.has(s.to)) return {ok:false, error:'segment référence un point inconnu ('+s.from+'→'+s.to+')'};
+    } else if(s.type==='circle'){
+      if(!known.has(s.center)) return {ok:false, error:'cercle référence un point inconnu ('+s.center+')'};
+      if(!Number.isFinite(s.radiusCm) || s.radiusCm<=0 || s.radiusCm>17) return {ok:false, error:'rayon de cercle invalide'};
+    } else if(s.type==='text'){
+      if(!Number.isFinite(s.x) || !Number.isFinite(s.y) || typeof s.text!=='string') return {ok:false, error:'texte invalide'};
+    } else {
+      return {ok:false, error:"type d'étape inconnu : "+s.type};
+    }
+  }
+  return {ok:true, steps};
+}
+function tbAiSleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+function tbAiEase(t){ return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+/* Anime une ou plusieurs propriétés numériques d'un outil déjà posé (tbTools) vers des valeurs
+   cibles, en rappelant tbRender() à chaque frame -- PAS d'historique poussé ici (un seul
+   tbPushHistory() par étape complète, dans tbAiExecutePlan). */
+function tbAiTweenProps(target, props, durationMs){
+  const start = {}; Object.keys(props).forEach(k=>{ start[k]=target[k]; });
+  return new Promise(resolve=>{
+    const t0 = performance.now();
+    function frame(now){
+      const t = Math.min(1, (now-t0)/durationMs);
+      const e = tbAiEase(t);
+      Object.keys(props).forEach(k=>{ target[k] = start[k] + (props[k]-start[k])*e; });
+      tbRender();
+      if(t<1) requestAnimationFrame(frame); else resolve();
+    }
+    requestAnimationFrame(frame);
+  });
+}
+/* Pose la règle graduée alignée sur [AB] (son bord haut passant exactement par A et B, centrée
+   sur leur milieu -- cf. TB_DEFS.regle_grad.edges[0] = bord haut en y local 0) puis trace le
+   trait pendant le déplacement du crayon le long de ce bord, comme un vrai geste. Un seul
+   exemplaire de règle est réutilisé (déplacé) d'une étape à l'autre plutôt que d'en empiler
+   plusieurs sur le tableau. */
+async function tbAiDrawSegment(A, B){
+  const angle = Math.atan2(B.y-A.y, B.x-A.x)*180/Math.PI;
+  const rad = angle*Math.PI/180;
+  const Lmid = TB_RULER_L/2;
+  const targetX = (A.x+B.x)/2 - Lmid*Math.cos(rad), targetY = (A.y+B.y)/2 - Lmid*Math.sin(rad);
+  let t = tbTools.find(x=>x.type==='regle_grad');
+  if(!t){
+    t = {id:tbNextId++, type:'regle_grad', x:targetX, y:targetY, angle};
+    tbTools.push(t);
+    tbRenderPalette();
+    tbRender();
+  } else {
+    await tbAiTweenProps(t, {x:targetX, y:targetY, angle}, 700);
+  }
+  await tbAiSleep(150);
+  const stroke = {color: tbCurrentColor(), points: []};
+  tbInk.push(stroke);
+  const n = 18;
+  for(let i=0;i<=n;i++){
+    stroke.points.push([A.x+(B.x-A.x)*i/n, A.y+(B.y-A.y)*i/n]);
+    tbRender();
+    await tbAiSleep(18);
+  }
+}
+/* Pose la pointe du compas en C, l'ouvre jusqu'au rayon voulu (sans tracer), puis fait un tour
+   complet en traçant -- même mécanique (t.x/t.y = pointe fixe, t.angle = direction du crayon,
+   t.radius = écartement) que le compas manipulable à la main, cf. rendu dans tbRender(). */
+async function tbAiDrawCircle(C, radiusPx){
+  const clampedR = Math.min(radiusPx, TB_COMPASS_MAX_RADIUS-5);
+  let t = tbTools.find(x=>x.type==='compas');
+  if(!t){
+    t = {id:tbNextId++, type:'compas', x:C.x, y:C.y, angle:-90, radius:Math.max(20,clampedR*0.3), mode:'closed'};
+    tbTools.push(t);
+    tbRenderPalette();
+    tbRender();
+  } else {
+    t.mode = 'closed';
+    await tbAiTweenProps(t, {x:C.x, y:C.y}, 500);
+  }
+  await tbAiSleep(120);
+  t.mode = 'closed';
+  await tbAiTweenProps(t, {radius: clampedR}, 500);
+  await tbAiSleep(120);
+  t.mode = 'draw';
+  const stroke = {color: tbCurrentColor(), points: []};
+  tbInk.push(stroke);
+  const startAngle = t.angle, frames = 48;
+  for(let i=0;i<=frames;i++){
+    t.angle = startAngle + 360*i/frames;
+    const rad = t.angle*Math.PI/180;
+    stroke.points.push([t.x+t.radius*Math.cos(rad), t.y+t.radius*Math.sin(rad)]);
+    tbRender();
+    await tbAiSleep(16);
+  }
+  t.mode = 'closed';
+}
+async function tbAiExecutePlan(steps){
+  for(const step of steps){
+    if(step.type==='point'){
+      tbPoints.push({id:tbPointNextId++, x:step.x, y:step.y, label:step.label});
+      tbRender();
+    } else if(step.type==='segment'){
+      const A = tbPoints.find(p=>p.label===step.from), B = tbPoints.find(p=>p.label===step.to);
+      if(A && B) await tbAiDrawSegment(A, B);
+    } else if(step.type==='circle'){
+      const C = tbPoints.find(p=>p.label===step.center);
+      if(C) await tbAiDrawCircle(C, step.radiusCm*TB_PX_PER_CM);
+    } else if(step.type==='text'){
+      tbTexts.push({id:tbTextNextId++, x:step.x, y:step.y, text:step.text, fontSize:16});
+      tbRender();
+    }
+    tbPushHistory();
+    await tbAiSleep(280);
+  }
+}
+async function tbAiGenerate(){
+  const enonce = document.getElementById('tbAiEnonce').value.trim();
+  const status = document.getElementById('tbAiStatus');
+  const btn = document.getElementById('tbAiGenerateBtn');
+  if(!enonce){ status.textContent = "Écrivez d'abord un énoncé."; return; }
+  if(!currentUser){ status.textContent = 'Connectez-vous pour utiliser cette fonctionnalité.'; return; }
+  status.textContent = 'Génération en cours (calcul des coordonnées par IA)…';
+  btn.disabled = true;
+  try{
+    const raw = await callClaude(tbAiBuildPrompt(enonce), 3000, {feature:'tableau-ia'});
+    const jsonText = raw.trim().replace(/^```(?:json)?/i,'').replace(/```\s*$/,'').trim();
+    let steps;
+    try{ steps = JSON.parse(jsonText); }
+    catch(e){ status.textContent = "L'IA n'a pas renvoyé un JSON exploitable -- réessayez (parfois il faut relancer une fois)."; return; }
+    const check = tbAiValidatePlan(steps);
+    if(!check.ok){ status.textContent = 'Construction invalide : '+check.error+' -- réessayez.'; return; }
+    tbCloseAiModal();
+    await tbAiExecutePlan(check.steps);
+  }catch(err){
+    status.textContent = 'Erreur : '+err.message;
+  }finally{
+    btn.disabled = false;
+  }
 }
 
 /* ======================= détection de nouvelle version ======================= */
