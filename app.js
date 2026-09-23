@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.639', items:[
+    "Tableau IA -- signalé : \"ne pas écrire les étapes. Pouvoir revenir à la première étape et regarder le tracé lentement\". Le récit écrit (accumulé au fur et à mesure) est retiré ; remplacé par une barre de lecture pas à pas façon lecteur vidéo : « Étape suivante » (une seule étape à la fois, le professeur avance à son rythme), « Précédent » et « Depuis le début » (retour instantané, sans ré-animer), et un réglage de vitesse (normale / lente / très lente) pour regarder un tracé au ralenti.",
+  ]},
   { version:'2026-08-19.638', items:[
     "Tableau IA -- ajout de la méthode à l'équerre, décrite précisément : \"on trace le segment AB de bonne longueur... avec équerre on trace une demi-droite [Ax) perpendiculaire à [AB]... on prend le compas centré en B, écarté de 7 cm et on vient intercepter [Ax)\". Nouveau type d'étape \"perpendicular\" (trace au compas une demi-droite à l'équerre depuis un point déjà posé) -- c'est maintenant la méthode PAR DÉFAUT pour un angle droit en un sommet nommé dans l'énoncé (ex. \"triangle ABC rectangle en A\"), le cercle de Thalès restant proposé pour les cas où le sommet de l'angle droit n'est pas imposé à l'avance.",
   ]},
@@ -6610,8 +6613,7 @@ function tbCurrentColor(){
 function tbClearInk(){ tbInk = []; tbRender(); }
 function tbClearAll(){
   tbInk = []; tbTools = []; tbPoints = []; tbTexts = []; tbCodages = []; tbRenderPalette(); tbRender(); tbRenderHistoryPanel(); tbPushHistory();
-  const captionBox = document.getElementById('tbAiCaptionBox');
-  if(captionBox){ captionBox.style.display = 'none'; captionBox.innerHTML = ''; }
+  if(typeof tbAiPlaybackHide==='function') tbAiPlaybackHide();
 }
 /* Enregistre le contenu du tableau en image PNG. #tbInkLayer (traits, points, textes,
    codages) et #tbToolsLayer (outils posés, boutons d'action) sont deux groupes SVG déjà
@@ -7811,25 +7813,25 @@ function tbCloseAiModal(){
 }
 function tbAiBuildPrompt(enonce){
   const maxSegPx = 14*TB_PX_PER_CM;
-  return `Tu es un professeur de mathématiques (collège/lycée, France) qui construit une figure au tableau, à la règle et au compas, en expliquant chaque geste à sa classe -- pas juste un calculateur de coordonnées. Le but est de reproduire une VRAIE construction géométrique enseignée, avec sa méthode, pas seulement d'obtenir la bonne figure finale par le calcul le plus direct.
+  return `Tu es un professeur de mathématiques (collège/lycée, France) qui construit une figure au tableau, à la règle et au compas -- pas juste un calculateur de coordonnées. Le but est de reproduire une VRAIE construction géométrique enseignée, avec sa méthode, pas seulement d'obtenir la bonne figure finale par le calcul le plus direct.
 Le tableau est un plan de 900×560 pixels. Origine (0,0) en haut à gauche, x vers la droite, y vers le BAS (comme un écran).
 Échelle : ${TB_PX_PER_CM} pixels = 1 cm. Garde toute la construction dans x∈[80,820] et y∈[80,480].
 
-Réponds UNIQUEMENT par un tableau JSON (aucun texte avant/après, pas de balises markdown), une liste d'étapes, choisies EXACTEMENT parmi ces 5 types. CHAQUE étape porte un champ "explication" : une phrase courte, au présent, dans le ton d'un professeur qui commente son geste en le faisant (ex. "Je trace [BC], l'hypoténuse, à la règle." / "Je pique le compas en B et j'ouvre à 4 cm." / "Avec l'équerre, je trace la demi-droite [Ax), perpendiculaire à [AB] en A.").
+Réponds UNIQUEMENT par un tableau JSON (aucun texte avant/après, pas de balises markdown), une liste d'étapes, choisies EXACTEMENT parmi ces 5 types :
 
-1. {"type":"point","label":"A","x":123,"y":456,"explication":"..."} -- pose un point nommé (une lettre majuscule, éventuellement suivie d'un chiffre, ex. "A", "M1") à des coordonnées EXACTES en pixels. Place le premier point raisonnablement au centre-gauche du cadre.
-2. {"type":"segment","from":"A","to":"B","explication":"..."} -- trace à la règle le segment entre deux points DÉJÀ posés par une étape "point" précédente. Longueur maximale utilisable en une fois : 14 cm (${maxSegPx} px) -- ne génère jamais un segment plus long (comme une vraie règle de classe).
-3. {"type":"circle","center":"A","radiusCm":5,"explication":"..."} -- trace un cercle complet au compas, centré sur un point déjà posé, de rayon EN CENTIMÈTRES (pas en pixels, 17 cm maximum).
-4. {"type":"perpendicular","at":"A","reference":"B","towardX":123,"towardY":456,"explication":"..."} -- trace à l'équerre une demi-droite [Ax) issue du point "at" (déjà posé), PERPENDICULAIRE à la droite ("at"→"reference", deux points déjà posés). "towardX"/"towardY" sont les coordonnées (même approximatives) d'un point du côté vers lequel la demi-droite doit s'étendre (ex. celles, déjà calculées, du sommet qu'on va trouver dessus) -- sert uniquement à choisir le bon côté, pas la longueur exacte.
-5. {"type":"text","x":123,"y":456,"text":"AB = 6 cm","explication":"..."} -- étiquette de texte libre (ex. pour indiquer une mesure), à côté de la figure sans la recouvrir.
+1. {"type":"point","label":"A","x":123,"y":456} -- pose un point nommé (une lettre majuscule, éventuellement suivie d'un chiffre, ex. "A", "M1") à des coordonnées EXACTES en pixels. Place le premier point raisonnablement au centre-gauche du cadre.
+2. {"type":"segment","from":"A","to":"B"} -- trace à la règle le segment entre deux points DÉJÀ posés par une étape "point" précédente. Longueur maximale utilisable en une fois : 14 cm (${maxSegPx} px) -- ne génère jamais un segment plus long (comme une vraie règle de classe).
+3. {"type":"circle","center":"A","radiusCm":5} -- trace un cercle complet au compas, centré sur un point déjà posé, de rayon EN CENTIMÈTRES (pas en pixels, 17 cm maximum).
+4. {"type":"perpendicular","at":"A","reference":"B","towardX":123,"towardY":456} -- trace à l'équerre une demi-droite [Ax) issue du point "at" (déjà posé), PERPENDICULAIRE à la droite ("at"→"reference", deux points déjà posés). "towardX"/"towardY" sont les coordonnées (même approximatives) d'un point du côté vers lequel la demi-droite doit s'étendre (ex. celles, déjà calculées, du sommet qu'on va trouver dessus) -- sert uniquement à choisir le bon côté, pas la longueur exacte.
+5. {"type":"text","x":123,"y":456,"text":"AB = 6 cm"} -- étiquette de texte libre (ex. pour indiquer une mesure), à côté de la figure sans la recouvrir.
 
 MÉTHODES DE CONSTRUCTION CLASSIQUES À UTILISER (choisis celle qui correspond à l'énoncé -- ne calcule JAMAIS directement par trigonométrie la position d'un point qui doit normalement se construire à la règle/au compas/à l'équerre ; seuls les tout premiers points "libres" de la figure peuvent être placés par un choix de coordonnées) :
 
-- Triangle connu par ses 3 côtés (ou report d'une longueur depuis un point) : pose deux points, trace le segment entre eux si besoin, puis utilise DEUX "circle" (un centré sur chacun des deux sommets déjà connus, de rayon la longueur du 3e côté depuis chacun) -- le point cherché est à l'intersection. Calcule toi-même les coordonnées de cette intersection (résolution du système des deux équations de cercle) pour l'étape "point" suivante, avec une explication du type "L'intersection des deux arcs donne C, à la bonne distance de A et de B."
+- Triangle connu par ses 3 côtés (ou report d'une longueur depuis un point) : pose deux points, trace le segment entre eux si besoin, puis utilise DEUX "circle" (un centré sur chacun des deux sommets déjà connus, de rayon la longueur du 3e côté depuis chacun) -- le point cherché est à l'intersection. Calcule toi-même les coordonnées de cette intersection (résolution du système des deux équations de cercle) pour l'étape "point" suivante.
 
 - Angle droit EN UN SOMMET DÉJÀ NOMMÉ dans l'énoncé (ex. "triangle ABC rectangle en A" connu par un côté et l'hypoténuse) : c'est la méthode PAR DÉFAUT, à l'équerre -- pose d'abord le côté connu depuis ce sommet (ex. [AB]), utilise "perpendicular" en ce sommet pour tracer la demi-droite perpendiculaire à ce côté, puis un "circle" (report de longueur, centré sur l'autre extrémité connue, de rayon l'hypoténuse) qui vient l'intercepter -- le sommet cherché est à l'intersection entre la demi-droite et le cercle. Calcule ces coordonnées toi-même (le point est sur la perpendiculaire ET à la bonne distance du centre du cercle), avec pour "towardX"/"towardY" de l'étape "perpendicular" les coordonnées de ce sommet.
 
-- Angle droit SANS sommet imposé (ex. construire un point qui voit un segment sous un angle droit, sans savoir où) : utilise le CERCLE DE THALÈS. Pose le milieu du côté qui sera l'hypoténuse (point de construction, label libre type "O" ou "M", avec une explication précisant que c'est un milieu) ; trace un "circle" centré sur ce milieu, de rayon la MOITIÉ de l'hypoténuse (tout point dessus voit l'hypoténuse sous un angle droit) ; un second "circle" (report de longueur) donne le sommet cherché à leur intersection.
+- Angle droit SANS sommet imposé (ex. construire un point qui voit un segment sous un angle droit, sans savoir où) : utilise le CERCLE DE THALÈS. Pose le milieu du côté qui sera l'hypoténuse (point de construction, label libre type "O" ou "M") ; trace un "circle" centré sur ce milieu, de rayon la MOITIÉ de l'hypoténuse (tout point dessus voit l'hypoténuse sous un angle droit) ; un second "circle" (report de longueur) donne le sommet cherché à leur intersection.
 
 - Plus généralement (médiatrice, bissectrice...) : même principe -- un point qui résulte d'une propriété géométrique se construit à la règle/au compas/à l'équerre, jamais par un calcul trigonométrique direct qui "saute" l'étape de construction.
 
@@ -7868,18 +7870,18 @@ function tbAiValidatePlan(steps){
     } else {
       return {ok:false, error:"type d'étape inconnu : "+s.type};
     }
-    // "explication" est encouragée (voir prompt) mais pas obligatoire -- normalisée en chaîne
-    // pour que le code d'affichage du récit n'ait jamais à revérifier son type.
-    s.explication = typeof s.explication==='string' ? s.explication.trim() : '';
   }
   return {ok:true, steps};
 }
-function tbAiSleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+let tbAiSpeedMultiplier = 1; // 1 = normal, >1 = plus lent -- contrôlé par le sélecteur de vitesse de la barre de lecture
+function tbAiSetSpeed(v){ tbAiSpeedMultiplier = parseFloat(v)||1; }
+function tbAiSleep(ms){ return new Promise(r=>setTimeout(r, ms*tbAiSpeedMultiplier)); }
 function tbAiEase(t){ return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
 /* Anime une ou plusieurs propriétés numériques d'un outil déjà posé (tbTools) vers des valeurs
    cibles, en rappelant tbRender() à chaque frame -- PAS d'historique poussé ici (un seul
    tbPushHistory() par étape complète, dans tbAiExecutePlan). */
 function tbAiTweenProps(target, props, durationMs){
+  durationMs = durationMs*tbAiSpeedMultiplier;
   const start = {}; Object.keys(props).forEach(k=>{ start[k]=target[k]; });
   return new Promise(resolve=>{
     const t0 = performance.now();
@@ -7993,52 +7995,76 @@ async function tbAiDrawPerpendicular(A, reference, target, lengthPx){
     await tbAiSleep(18);
   }
 }
-/* Récit de la construction : chaque étape ajoute sa ligne d'explication au fur et à mesure
-   (affichée pendant l'animation ET conservée après, comme trace écrite de la méthode --
-   demandé : "quand je voulais un traitement IA c'était pour bien dire ce que j'allais faire
-   pas à pas"). */
-function tbAiCaptionShow(){
-  const box = document.getElementById('tbAiCaptionBox');
-  if(!box) return;
-  box.style.display = 'block';
-  box.innerHTML = '';
-}
-function tbAiCaptionAppend(text){
-  const box = document.getElementById('tbAiCaptionBox');
-  if(!box || !text) return;
-  const line = document.createElement('div');
-  line.style.marginBottom = '4px';
-  line.textContent = (box.children.length+1)+'. '+text;
-  box.appendChild(line);
-}
-async function tbAiExecutePlan(steps){
-  tbAiCaptionShow();
-  for(const step of steps){
-    tbAiCaptionAppend(step.explication);
-    if(step.type==='point'){
-      tbPoints.push({id:tbPointNextId++, x:step.x, y:step.y, label:step.label});
-      tbRender();
-    } else if(step.type==='segment'){
-      const A = tbPoints.find(p=>p.label===step.from), B = tbPoints.find(p=>p.label===step.to);
-      if(A && B) await tbAiDrawSegment(A, B);
-    } else if(step.type==='circle'){
-      const C = tbPoints.find(p=>p.label===step.center);
-      if(C) await tbAiDrawCircle(C, step.radiusCm*TB_PX_PER_CM);
-    } else if(step.type==='perpendicular'){
-      const A = tbPoints.find(p=>p.label===step.at), ref = tbPoints.find(p=>p.label===step.reference);
-      if(A && ref){
-        const target = {x:step.towardX, y:step.towardY};
-        const dist = Math.hypot(target.x-A.x, target.y-A.y);
-        const lengthPx = Math.min(16*TB_PX_PER_CM, Math.max(4*TB_PX_PER_CM, dist*1.3));
-        await tbAiDrawPerpendicular(A, ref, target, lengthPx);
-      }
-    } else if(step.type==='text'){
-      tbTexts.push({id:tbTextNextId++, x:step.x, y:step.y, text:step.text, fontSize:16});
-      tbRender();
+/* Exécute UNE SEULE étape (mutation d'état + animation), sans pousser d'historique -- c'est
+   l'appelant (la barre de lecture pas à pas ci-dessous) qui en pousse un par étape. */
+async function tbAiExecuteStep(step){
+  if(step.type==='point'){
+    tbPoints.push({id:tbPointNextId++, x:step.x, y:step.y, label:step.label});
+    tbRender();
+  } else if(step.type==='segment'){
+    const A = tbPoints.find(p=>p.label===step.from), B = tbPoints.find(p=>p.label===step.to);
+    if(A && B) await tbAiDrawSegment(A, B);
+  } else if(step.type==='circle'){
+    const C = tbPoints.find(p=>p.label===step.center);
+    if(C) await tbAiDrawCircle(C, step.radiusCm*TB_PX_PER_CM);
+  } else if(step.type==='perpendicular'){
+    const A = tbPoints.find(p=>p.label===step.at), ref = tbPoints.find(p=>p.label===step.reference);
+    if(A && ref){
+      const target = {x:step.towardX, y:step.towardY};
+      const dist = Math.hypot(target.x-A.x, target.y-A.y);
+      const lengthPx = Math.min(16*TB_PX_PER_CM, Math.max(4*TB_PX_PER_CM, dist*1.3));
+      await tbAiDrawPerpendicular(A, ref, target, lengthPx);
     }
-    tbPushHistory();
-    await tbAiSleep(280);
+  } else if(step.type==='text'){
+    tbTexts.push({id:tbTextNextId++, x:step.x, y:step.y, text:step.text, fontSize:16});
+    tbRender();
   }
+}
+/* Barre de lecture pas à pas -- signalé : "ne pas écrire les étapes. Pouvoir revenir à la
+   première étape et regarder le tracé lentement". Remplace l'ancien enchaînement automatique
+   de toutes les étapes (avec récit écrit) par un contrôle manuel façon lecteur vidéo
+   (Précédent/Suivant/Depuis le début + vitesse) -- le professeur avance à son propre rythme
+   devant la classe. "Précédent"/"Depuis le début" réutilisent l'historique annuler/rétablir
+   déjà existant (un instantané est poussé après chaque étape) plutôt que de ré-animer à
+   l'envers, ce qui n'aurait pas de sens visuellement pour un trait déjà tracé. */
+let tbAiPlanSteps = null;
+let tbAiPlanIndex = 0; // nombre d'étapes déjà exécutées (0 = rien encore fait)
+function tbAiPlaybackShow(){
+  const bar = document.getElementById('tbAiPlaybackBar');
+  if(bar) bar.style.display = 'flex';
+}
+function tbAiPlaybackHide(){
+  const bar = document.getElementById('tbAiPlaybackBar');
+  if(bar) bar.style.display = 'none';
+  tbAiPlanSteps = null;
+  tbAiPlanIndex = 0;
+}
+function tbAiPlaybackUpdateUI(){
+  const counter = document.getElementById('tbAiPlaybackCounter');
+  if(counter) counter.textContent = 'Étape '+tbAiPlanIndex+' / '+(tbAiPlanSteps?tbAiPlanSteps.length:0);
+  const prevBtn = document.getElementById('tbAiPlaybackPrev'), nextBtn = document.getElementById('tbAiPlaybackNext');
+  if(prevBtn) prevBtn.disabled = tbAiPlanIndex<=0;
+  if(nextBtn) nextBtn.disabled = !tbAiPlanSteps || tbAiPlanIndex>=tbAiPlanSteps.length;
+}
+async function tbAiPlaybackNext(){
+  if(!tbAiPlanSteps || tbAiPlanIndex>=tbAiPlanSteps.length) return;
+  const prevBtn = document.getElementById('tbAiPlaybackPrev'), nextBtn = document.getElementById('tbAiPlaybackNext');
+  if(prevBtn) prevBtn.disabled = true;
+  if(nextBtn) nextBtn.disabled = true;
+  await tbAiExecuteStep(tbAiPlanSteps[tbAiPlanIndex]);
+  tbPushHistory();
+  tbAiPlanIndex++;
+  tbAiPlaybackUpdateUI();
+}
+function tbAiPlaybackPrev(){
+  if(tbAiPlanIndex<=0) return;
+  tbUndo();
+  tbAiPlanIndex--;
+  tbAiPlaybackUpdateUI();
+}
+function tbAiPlaybackRestart(){
+  while(tbAiPlanIndex>0){ tbUndo(); tbAiPlanIndex--; }
+  tbAiPlaybackUpdateUI();
 }
 /* Extrait le tableau JSON de la réponse de l'IA. Malgré la consigne "rien d'autre que le
    JSON", Claude ajoute parfois une courte phrase d'intro ou des balises ```json``` -- plutôt
@@ -8073,7 +8099,10 @@ async function tbAiGenerate(){
     const check = tbAiValidatePlan(steps);
     if(!check.ok){ status.textContent = 'Construction invalide : '+check.error+' -- réessayez.'; return; }
     tbCloseAiModal();
-    await tbAiExecutePlan(check.steps);
+    tbAiPlanSteps = check.steps;
+    tbAiPlanIndex = 0;
+    tbAiPlaybackShow();
+    tbAiPlaybackUpdateUI();
   }catch(err){
     status.textContent = 'Erreur : '+err.message;
   }finally{
