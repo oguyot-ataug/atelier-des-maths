@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.636', items:[
+    "Fix -- Tableau interactif, « Construire avec l'IA », signalé : \"l'IA n'a pas renvoyé un JSON exploitable\". Les logs montraient que l'appel réussissait bien et renvoyait du texte -- le souci venait de l'extraction : une courte phrase d'introduction ou des balises ```json``` ajoutées par l'IA malgré la consigne \"rien d'autre que le JSON\" faisaient échouer l'analyse, qui ne gérait qu'un format de sortie unique. Recherche désormais le tableau JSON le plus englobant où qu'il soit dans la réponse, quel que soit ce qui l'entoure.",
+  ]},
   { version:'2026-08-19.635', items:[
     "Tableau interactif, nouveau : « Construire avec l'IA » -- signalé : \"j'aimerais qu'il s'anime automatiquement si je lui donne un énoncé, interprété par l'IA qui fabrique l'animation des outils pas à pas\". On décrit une construction (ex. « Construire un triangle ABC tel que AB = 6 cm, AC = 4 cm et BC = 5 cm ») et l'IA calcule les coordonnées exactes (trigonométrie, intersections de cercles pour les reports au compas), puis la règle et le compas s'animent tout seuls, pas à pas, pour la tracer -- chaque étape reste dans l'historique (annuler/rétablir fonctionnent normalement). Portée volontairement limitée à la règle et au compas dans cette première version (pas encore l'équerre ni le rapporteur) : à vérifier avant de projeter en classe, comme tout contenu généré par IA.",
   ]},
@@ -7944,6 +7947,24 @@ async function tbAiExecutePlan(steps){
     await tbAiSleep(280);
   }
 }
+/* Extrait le tableau JSON de la réponse de l'IA. Malgré la consigne "rien d'autre que le
+   JSON", Claude ajoute parfois une courte phrase d'intro ou des balises ```json``` -- plutôt
+   que de ne gérer qu'un format de sortie précis (ce qui avait été signalé : "l'IA n'a pas
+   renvoyé un JSON exploitable" alors que les logs montrent que l'appel avait bien réussi et
+   renvoyé du texte), on cherche le tableau [...] le plus englobant où qu'il soit dans la
+   réponse. La réponse brute est journalisée en console en cas d'échec, pour diagnostiquer
+   sans avoir à reproduire l'appel. */
+function tbAiParseSteps(raw){
+  const attempts = [raw.trim()];
+  const start = raw.indexOf('['), end = raw.lastIndexOf(']');
+  if(start!==-1 && end>start) attempts.push(raw.slice(start, end+1));
+  for(const text of attempts){
+    try{ const parsed = JSON.parse(text); if(Array.isArray(parsed)) return parsed; }
+    catch(e){ /* essai suivant */ }
+  }
+  console.warn('tableau-ia : réponse non exploitable, réponse brute reçue :', raw);
+  return null;
+}
 async function tbAiGenerate(){
   const enonce = document.getElementById('tbAiEnonce').value.trim();
   const status = document.getElementById('tbAiStatus');
@@ -7954,10 +7975,8 @@ async function tbAiGenerate(){
   btn.disabled = true;
   try{
     const raw = await callClaude(tbAiBuildPrompt(enonce), 3000, {feature:'tableau-ia'});
-    const jsonText = raw.trim().replace(/^```(?:json)?/i,'').replace(/```\s*$/,'').trim();
-    let steps;
-    try{ steps = JSON.parse(jsonText); }
-    catch(e){ status.textContent = "L'IA n'a pas renvoyé un JSON exploitable -- réessayez (parfois il faut relancer une fois)."; return; }
+    const steps = tbAiParseSteps(raw);
+    if(!steps){ status.textContent = "L'IA n'a pas renvoyé un JSON exploitable -- réessayez (parfois il faut relancer une fois)."; return; }
     const check = tbAiValidatePlan(steps);
     if(!check.ok){ status.textContent = 'Construction invalide : '+check.error+' -- réessayez.'; return; }
     tbCloseAiModal();
