@@ -2404,6 +2404,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.620', items:[
+    "Fix -- signalé : \"après les déploiements je dois faire plusieurs rafraîchissements de page avant d'avoir la nouvelle version, on avait déjà eu ce problème\". Le précédent correctif (balises anti-cache dans la page) ne suffisait pas : ces balises sont largement ignorées des navigateurs modernes, et GitHub Pages ne permet pas de personnaliser ses en-têtes HTTP -- un rechargement classique pouvait donc continuer à servir une version en cache. Le site vérifie désormais lui-même, à intervalles réguliers et à chaque retour sur l'onglet, si une nouvelle version a été déployée (requête réseau qui ignore explicitement le cache), et propose de recharger via une petite bannière -- jamais de rechargement automatique, pour ne pas couper un exercice en cours.",
+  ]},
   { version:'2026-08-19.619', items:[
     "Devoirs, nouveau statut \"À reprendre\" -- signalé : \"des élèves ont rendu leur travail alors qu'ils auraient encore pu améliorer leur score, permettre au professeur de changer le statut d'un devoir rendu en Redonné\". Un bouton \"À reprendre\" apparaît désormais dans \"Voir les rendus\" sur chaque devoir rendu -- le statut de l'élève repasse à \"À reprendre\" (visible côté élève et prof), et le devoir se rouvre automatiquement : les séquences d'automatismes redeviennent modifiables, les comptes déjà trouvés en Compte est bon se retentent, et le fichier/la figure reste modifiable comme avant. Le statut repasse tout seul à \"Rendu\" dès que l'élève envoie à nouveau son travail. Un devoir \"à reprendre\" est provisoirement hors compétition pour les médailles, le temps d'être repris.",
   ]},
@@ -7556,6 +7559,54 @@ function tbAttachHandlers(){
   }
   svg.onpointerleave = ()=>{ tbDrag = null; };
 }
+
+/* ======================= détection de nouvelle version ======================= */
+/* Vérifie régulièrement si une nouvelle version du site a été déployée, et PROPOSE de recharger
+   -- signalé : "après les déploiements je dois faire plusieurs rafraîchissements de page avant
+   d'avoir la nouvelle version. On avait déjà eu ce problème". Le fix précédent (balises <meta>
+   Cache-Control/Pragma, voir <head>) ne suffit pas : ces balises sont largement ignorées des
+   navigateurs modernes pour les décisions de cache RÉELLES (contrairement à de vrais en-têtes
+   HTTP), et GitHub Pages ne permet pas de personnaliser ses en-têtes -- un rechargement classique
+   peut donc continuer à servir une page (et les scripts qu'elle référence) depuis le cache du
+   navigateur. On contourne donc ce cache nous-mêmes : une requête réseau EXPLICITEMENT non mise
+   en cache (cache:'no-store') sur la page elle-même, dont on compare le build affiché
+   (#buildTag) à celui déjà chargé. Ne recharge JAMAIS automatiquement (juste une bannière
+   discrète, avec bouton) : un élève peut être en plein exercice chronométré, le lui faire perdre
+   serait pire que le problème d'origine. */
+let newVersionDetected = false;
+async function checkForNewVersion(){
+  if(newVersionDetected) return;
+  try{
+    const res = await fetch(location.pathname + '?_vc=' + Date.now(), { cache:'no-store' });
+    const html = await res.text();
+    const m = html.match(/id="buildTag"[^>]*>([^<]+)</);
+    const currentTag = document.getElementById('buildTag')?.textContent;
+    if(m && currentTag && m[1] !== currentTag){
+      newVersionDetected = true;
+      showNewVersionBanner();
+    }
+  }catch(e){ /* vérification best-effort : une coupure réseau ne doit jamais gêner l'usage normal */ }
+}
+function showNewVersionBanner(){
+  let banner = document.getElementById('newVersionBanner');
+  if(!banner){
+    banner = document.createElement('div');
+    banner.id = 'newVersionBanner';
+    banner.innerHTML = `
+      <span><span class="gicon" style="font-size:1rem;vertical-align:middle;">refresh</span> Nouvelle version du site disponible.</span>
+      <button class="btn" style="padding:5px 12px;font-size:.8rem;" onclick="location.reload()">Recharger</button>
+      <button class="btn secondary" style="padding:5px 8px;font-size:.8rem;" onclick="document.getElementById('newVersionBanner').style.display='none'" aria-label="Fermer">✕</button>
+    `;
+    document.body.appendChild(banner);
+  }
+  banner.style.display = 'flex';
+}
+// Au chargement (léger différé pour ne pas concurrencer le rendu initial), puis toutes les 5
+// minutes pour un onglet resté ouvert longtemps, puis à chaque retour sur l'onglet (cas
+// fréquent : le site reste ouvert pendant qu'on déploie, puis on y revient et on rafraîchit).
+setTimeout(checkForNewVersion, 4000);
+setInterval(checkForNewVersion, 5*60*1000);
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkForNewVersion(); });
 
 /* ======================= init ======================= */
 renderNiveau('6e');

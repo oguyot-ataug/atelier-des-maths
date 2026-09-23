@@ -143,6 +143,17 @@ a{color:inherit;text-decoration:none;}
 }
 .account-dropdown input{padding:7px 9px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-family:'Inter',sans-serif;font-size:.85rem;}
 
+/* Bannière "nouvelle version" (app.js, checkForNewVersion) -- signalé : "après les déploiements
+   je dois faire plusieurs rafraîchissements de page avant d'avoir la nouvelle version". Non
+   bloquante et jamais automatique (contrairement à un rechargement forcé), pour ne jamais couper
+   un élève en plein exercice. */
+#newVersionBanner{
+  position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:600;display:none;
+  align-items:center;gap:12px;background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;
+  box-shadow:0 6px 20px rgba(0,0,0,.28);font-size:.85rem;max-width:90vw;
+}
+#newVersionBanner button{white-space:nowrap;}
+
 .modal-overlay{position:fixed;inset:0;background:rgba(28,43,57,.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
 .modal-card{background:var(--white);border-radius:14px;padding:22px;max-width:420px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.28);}
 .modal-close{border:none;background:transparent;font-size:1.1rem;cursor:pointer;color:var(--ink-soft);line-height:1;padding:4px;}
