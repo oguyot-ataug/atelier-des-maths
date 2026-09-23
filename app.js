@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.645', items:[
+    "Tableau IA -- signalé : \"il faut finir en traçant le segment BC\". L'IA s'arrêtait parfois juste après avoir placé le dernier sommet, sans refermer le dernier côté du triangle. Nouvelle consigne explicite dans le prompt : ne jamais s'arrêter tant qu'un côté de la figure demandée n'a pas été tracé, en ajoutant le \"segment\" manquant en toute fin de construction si besoin.",
+  ]},
   { version:'2026-08-19.644', items:[
     "Tableau IA -- deux signalements après confirmation que la construction fonctionne (\"beaucoup mieux\"). (1) \"la demi-droite perpendiculaire doit être plus longue, elle a été calculée pour s'arrêter en C\" : elle s'étend désormais nettement au-delà du point cherché (+3 cm), au lieu de s'arrêter pile dessus -- ce qui trahissait visuellement la réponse avant que le compas ne l'ait \"trouvée\". (2) \"ne pas retracer les côtés AB et AC qui existent déjà\" : les côtés déjà tracés comme sous-produit d'une mesure à la règle ou d'une demi-droite à l'équerre ne sont plus jamais redessinés par une étape \"segment\" redondante (repérage automatique + consigne renforcée dans le prompt).",
   ]},
@@ -7857,6 +7860,7 @@ RÈGLES IMPORTANTES :
 - Calcule toutes les coordonnées EXACTEMENT (trigonométrie/résolution d'intersection de cercles ou droites selon le cas) -- jamais d'approximation grossière au jugé.
 - N'utilise dans "measure"/"segment"/"circle"/"perpendicular" QUE des labels déjà posés par une étape "point" ou "measure" antérieure.
 - Ne trace jamais deux fois le même côté : "measure" trace ["from","label"], "perpendicular" trace ["at", le point qui s'y trouvera] -- une étape "segment" ne sert qu'à fermer un côté qu'aucune étape précédente n'a encore tracé.
+- TERMINE TOUJOURS la figure entièrement fermée : pour un triangle, les 3 côtés doivent tous être tracés (par "measure", "perpendicular" ou "segment") avant la dernière étape -- vérifie, une fois tous les sommets connus, qu'aucun côté ne manque encore, et ajoute le "segment" nécessaire s'il en manque un. Ne t'arrête jamais juste après avoir placé le dernier sommet.
 - Maximum ${TB_AI_MAX_STEPS} étapes. Reste sobre : une construction juste, méthodique et lisible plutôt que décorative.
 - Réponds uniquement par le JSON, rien d'autre (pas de \`\`\`json).
 
