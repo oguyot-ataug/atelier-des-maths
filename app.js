@@ -2479,6 +2479,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.628', items:[
+    "Soustraction posée -- signalé : \"je préfère que le +1 sur le deuxième terme se note... à gauche du 2 en écrivant non pas +1 mais 1+ en petit\". La compensation du chiffre du bas s'écrit désormais en petit directement à gauche du chiffre concerné, au lieu d'une ligne séparée au-dessus -- dans l'outil de correction/évaluation ET dans le cours CM1 (leçon, exemples et animation étape par étape), harmonisés pour utiliser la même présentation.",
+  ]},
   { version:'2026-08-19.627', items:[
     "Fix -- additions et soustractions posées, signalé : \"en posant ces trois additions côte à côte, les premiers termes ne sont pas alignés\" (une addition/soustraction sans retenue démarrait plus haut que ses voisines qui en ont une). La ligne des retenues (addition) et les deux lignes de compensation (soustraction) réservent désormais toujours leur place, même vides -- le premier terme commence donc toujours à la même hauteur, avec ou sans retenue. Espacement resserré entre les retenues et les chiffres qu'elles annotent (signalé : \"l'espace... est un peu généreux\"), y compris dans le cours CM1 qui partage le même rendu.",
   ]},

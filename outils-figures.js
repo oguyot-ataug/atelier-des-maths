@@ -1635,15 +1635,20 @@ function soustractionPoseeHTML(res, vierge){
   if(!res) return '<p class="hint" style="color:var(--accent-orange);">Le premier nombre doit être supérieur ou égal au second (deux entiers positifs).</p>';
   const N = res.width;
   const rows = [];
-  // Les deux lignes de compensation sont TOUJOURS réservées, même vides -- même raison que pour
-  // l'addition (voir plus haut) : sans ça, plusieurs soustractions posées côte à côte n'ont pas
-  // leur premier terme aligné selon qu'il y a ou non des compensations.
+  // La ligne de compensation du haut ("+10") est TOUJOURS réservée, même vide -- voir plus haut
+  // (alignement de plusieurs soustractions côte à côte).
   const showTop = !vierge && res.topCompensation.some(c=>c!=='');
-  const showBottom = !vierge && res.bottomCompensation.some(c=>c!=='');
   rows.push({ cells: showTop ? res.topCompensation : new Array(N).fill(''), small:true, color:'var(--accent-orange)' });
   rows.push({ cells: dpAlignedCells(String(res.a), N-1, N) });
-  rows.push({ cells: showBottom ? res.bottomCompensation : new Array(N).fill(''), small:true, color:'var(--accent-orange)' });
-  rows.push({ cells: dpAlignedCells(String(res.b), N-1, N), sign:'−', bar:true });
+  // Compensation du bas ("+1") -- signalé : "je préfère que le +1 sur le deuxième terme se note
+  // en dessous du 2 ou mieux à gauche du 2 en écrivant non pas +1 mais 1+ en petit". Écrite en
+  // petit directement à gauche du chiffre concerné (dans la même cellule, via cm1opCompPrefix,
+  // chapitres/cm1/N2-operations-nombres-entiers.js), plutôt qu'en ligne séparée au-dessus --
+  // supprime au passage une ligne, sans rien perdre pour l'alignement (voir plus haut) puisque
+  // le nombre total de lignes reste désormais fixe.
+  const bottomDigits = dpAlignedCells(String(res.b), N-1, N);
+  const bottomCells = bottomDigits.map((c,i)=> (c==='' || vierge || res.bottomCompensation[i]==='') ? c : cm1opCompPrefix(c));
+  rows.push({ cells: bottomCells, sign:'−', bar:true });
   rows.push({ cells: vierge ? new Array(N).fill('') : dpAlignedCells(String(res.difference), N-1, N), color:'var(--accent-orange)', big:true });
   return `<div style="margin:10px 0;padding:14px 0;">${cm1opRowsTable(rows)}</div>`;
 }

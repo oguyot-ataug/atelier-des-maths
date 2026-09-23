@@ -16,7 +16,8 @@
    multiplication, bien faire comprendre ce que représente chaque ligne". Aucun chiffre n'est
    jamais barré ici (signalé : "étrange tous ces chiffres barrés" -- voir la méthode de
    compensation utilisée pour la soustraction, qui ne modifie ni ne barre jamais les chiffres
-   d'origine, seulement de petites annotations "+10"/"+1" au-dessus). */
+   d'origine, seulement une petite annotation "+10" au-dessus du chiffre du haut, et "1+" en
+   petit à gauche du chiffre du bas concerné -- voir cm1opCompPrefix ci-dessous). */
 function cm1opRowsTable(rows){
   const trs = rows.map(r=>{
     const fs = r.small ? '.72rem' : (r.big ? '1.2rem' : '1.1rem');
@@ -31,6 +32,14 @@ function cm1opRowsTable(rows){
     return `<tr>${signTd}${tds}${labelTd}</tr>`;
   }).join('');
   return `<table style="border-collapse:collapse;margin:10px auto;">${trs}</table>`;
+}
+/* Petite annotation "1+" (compensation de soustraction) directement à gauche d'un chiffre, dans
+   la même cellule -- signalé : "je préfère que le +1 sur le deuxième terme se note... à gauche
+   du 2 en écrivant non pas +1 mais 1+ en petit". Réutilisée par soustractionPoseeHTML
+   (outils-figures.js, chargé avant ce fichier -- appel sûr, seulement depuis l'intérieur d'une
+   fonction, jamais au chargement). */
+function cm1opCompPrefix(digit){
+  return `<span style="white-space:nowrap;"><span style="font-size:.55em;color:var(--accent-orange);vertical-align:top;">1+</span>${digit}</span>`;
 }
 
 document.getElementById('cours-demo-cm1-operations-nombres-entiers').innerHTML = `
@@ -67,8 +76,7 @@ ${cm1opRowsTable([
 ${cm1opRowsTable([
   {cells:['','+10','+10'], small:true},
   {cells:['6','2','3']},
-  {cells:['+1','+1',''], small:true},
-  {cells:['1','4','8'], sign:'−', bar:true},
+  {cells:[cm1opCompPrefix('1'), cm1opCompPrefix('4'), '8'], sign:'−', bar:true},
   {cells:['4','7','5'], color:'var(--accent-orange)', big:true},
 ])}
 <p class="hint" style="text-align:center;margin:0 0 10px;">623 − 148 = 475. Le résultat s'appelle la <b>différence</b>.</p>
@@ -194,8 +202,7 @@ document.getElementById('exos-demo-cm1-operations-nombres-entiers').innerHTML = 
       ${cm1opRowsTable([
         {cells:['','+10','+10'], small:true},
         {cells:['5','4','2']},
-        {cells:['+1','+1',''], small:true},
-        {cells:['2','6','7'], sign:'−', bar:true},
+        {cells:[cm1opCompPrefix('2'), cm1opCompPrefix('6'), '7'], sign:'−', bar:true},
         {cells:['2','7','5'], color:'var(--accent-orange)', big:true},
       ])}
       <p style="margin:0;text-align:center;">542 − 267 = <b>275</b></p>
@@ -313,42 +320,38 @@ const cm1opAdditionDemo = makeSingleStepDemo(CM1OP_ADDITION_STEPS, 'cm1op-additi
 /* Méthode de compensation (plutôt que l'emprunt classique) : quand un chiffre du haut est plus
    petit que celui du bas, on ajoute 10 à ce chiffre du haut ET 1 au chiffre du bas de la colonne
    suivante -- comme on ajoute la même quantité aux deux nombres, la différence ne change pas.
-   Ni le nombre du haut ni celui du bas ne sont jamais modifiés ou barrés : seules de petites
-   annotations "+10"/"+1" apparaissent au-dessus, comme les retenues de l'addition. */
+   Ni le nombre du haut ni celui du bas ne sont jamais modifiés ou barrés : seule une petite
+   annotation "+10" apparaît au-dessus du chiffre du haut (comme les retenues de l'addition), et
+   "1+" en petit à gauche du chiffre du bas concerné, sur sa propre ligne. */
 const CM1OP_SOUSTRACTION_STEPS = [
   {expr: cm1opRowsTable([
       {cells:['','',''], small:true},
       {cells:['6','2','3']},
-      {cells:['','',''], small:true},
       {cells:['1','4','8'], sign:'−', bar:true},
       {cells:['','',''], color:'var(--accent-orange)', big:true},
     ]), note: "On pose la soustraction : 623 (le nombre dont on part) au-dessus, 148 (le nombre qu'on enlève) en dessous, alignés par colonnes."},
   {expr: cm1opRowsTable([
       {cells:['','','+10'], small:true},
       {cells:['6','2','3']},
-      {cells:['','+1',''], small:true},
-      {cells:['1','4','8'], sign:'−', bar:true},
+      {cells:['1', cm1opCompPrefix('4'), '8'], sign:'−', bar:true},
       {cells:['','','5'], color:'var(--accent-orange)', big:true},
     ]), note: "Unités : 3 − 8, impossible ! Je compense : j'ajoute 10 au chiffre des unités du haut (3 devient 13) ET j'ajoute 1 au chiffre des dizaines du bas (4 devient 5) -- la différence ne change pas. 13 − 8 = 5."},
   {expr: cm1opRowsTable([
       {cells:['','+10','+10'], small:true},
       {cells:['6','2','3']},
-      {cells:['+1','+1',''], small:true},
-      {cells:['1','4','8'], sign:'−', bar:true},
+      {cells:[cm1opCompPrefix('1'), cm1opCompPrefix('4'), '8'], sign:'−', bar:true},
       {cells:['','7','5'], color:'var(--accent-orange)', big:true},
     ]), note: "Dizaines : 2 − 5 (le 4 compensé en 5), impossible ! Je compense encore : j'ajoute 10 au chiffre des dizaines du haut (2 devient 12) ET j'ajoute 1 au chiffre des centaines du bas (1 devient 2). 12 − 5 = 7."},
   {expr: cm1opRowsTable([
       {cells:['','+10','+10'], small:true},
       {cells:['6','2','3']},
-      {cells:['+1','+1',''], small:true},
-      {cells:['1','4','8'], sign:'−', bar:true},
+      {cells:[cm1opCompPrefix('1'), cm1opCompPrefix('4'), '8'], sign:'−', bar:true},
       {cells:['4','7','5'], color:'var(--accent-orange)', big:true},
     ]), note: "Centaines : 6 − 2 (le 1 compensé en 2) = 4."},
   {expr: cm1opRowsTable([
       {cells:['','+10','+10'], small:true},
       {cells:['6','2','3']},
-      {cells:['+1','+1',''], small:true},
-      {cells:['1','4','8'], sign:'−', bar:true},
+      {cells:[cm1opCompPrefix('1'), cm1opCompPrefix('4'), '8'], sign:'−', bar:true},
       {cells:['4','7','5'], color:'var(--accent-orange)', big:true},
     ]), note: "623 − 148 = 475. Le résultat de la soustraction s'appelle la différence."},
 ];
