@@ -2479,6 +2479,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.624', items:[
+    "Fix -- signalé : \"j'ai actualisé 20 fois la page sans tomber sur la nouvelle version\". Le bouton \"Recharger\" de la bannière de nouvelle version faisait un simple rechargement de la MÊME URL -- un serveur intermédiaire qui met en cache par URL exacte (proxy de réseau d'établissement, par exemple) pouvait continuer à reservir l'ancienne version indéfiniment, sans que rien ne le distingue d'un vrai rechargement. Il navigue désormais vers une URL jamais vue auparavant, qui ne peut être en cache nulle part.",
+  ]},
   { version:'2026-08-19.623', items:[
     "Fix -- signalé : \"quand on clique sur 'à reprendre', la fenêtre de confirmation se met derrière et on ne la voit pas\". La fenêtre de confirmation/alerte générique (utilisée partout sur le site) repassait derrière certaines fenêtres déjà ouvertes (\"Voir les rendus\", panneaux de l'outil figure), faute d'un ordre d'affichage dédié -- elle s'affiche maintenant toujours par-dessus tout le reste.",
   ]},
@@ -7671,6 +7674,15 @@ async function checkForNewVersion(){
     }
   }catch(e){ /* vérification best-effort : une coupure réseau ne doit jamais gêner l'usage normal */ }
 }
+/* location.reload() rechargeait la MÊME URL que la page déjà ouverte -- un serveur, un CDN ou un
+   éventuel proxy de réseau (établissement scolaire, etc.) qui met en cache par URL exacte peut
+   très bien reservir la version déjà en cache, sans que rien ne le distingue d'un vrai
+   rechargement -- signalé : "j'ai actualisé 20 fois la page sans tomber sur la nouvelle
+   version". On navigue à la place vers une URL jamais vue (nouveau paramètre), qui ne PEUT pas
+   déjà être en cache nulle part. */
+function forceReloadFreshUrl(){
+  location.href = location.pathname + '?_vc=' + Date.now();
+}
 function showNewVersionBanner(){
   let banner = document.getElementById('newVersionBanner');
   if(!banner){
@@ -7678,7 +7690,7 @@ function showNewVersionBanner(){
     banner.id = 'newVersionBanner';
     banner.innerHTML = `
       <span><span class="gicon" style="font-size:1rem;vertical-align:middle;">refresh</span> Nouvelle version du site disponible.</span>
-      <button class="btn" style="padding:5px 12px;font-size:.8rem;" onclick="location.reload()">Recharger</button>
+      <button class="btn" style="padding:5px 12px;font-size:.8rem;" onclick="forceReloadFreshUrl()">Recharger</button>
       <button class="btn secondary" style="padding:5px 8px;font-size:.8rem;" onclick="document.getElementById('newVersionBanner').style.display='none'" aria-label="Fermer">✕</button>
     `;
     document.body.appendChild(banner);
