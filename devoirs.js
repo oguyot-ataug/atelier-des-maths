@@ -1012,9 +1012,16 @@ async function renderDevoirsEleve(){
         const timeHtml = myTime!=null
           ? ` <span class="hint" style="margin:0;">· ${formatDuration(myTime)}${sessionBest!=null && myTime<=sessionBest ? ' 🏆' : sessionBest!=null ? ` (record de la session : ${formatDuration(sessionBest)})` : ''}</span>`
           : '';
+        // Un compte déjà trouvé exactement (écart 0) ne se retente plus -- signalé : "si un
+        // compte est trouvé, je ne dois pas pouvoir recommencer pour améliorer le score !". Sans
+        // ça, connaissant déjà la solution, l'élève pouvait rejouer le même compte pour battre
+        // son propre temps et fausser le classement des médailles (basé sur le temps cumulé).
+        const actionBtn = exact
+          ? `<span class="hint" style="margin:0;font-size:.7rem;color:#1F7A4D;">verrouillé</span>`
+          : `<button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="startDevoirCEB('${d.id}',${i})">${best?'Retenter':'Jouer'}</button>`;
         return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0;">
           <span class="hint" style="margin:0;">${icon} Compte ${i+1}${label}${timeHtml}</span>
-          <button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="startDevoirCEB('${d.id}',${i})">${best?'Retenter':'Jouer'}</button>
+          ${actionBtn}
         </div>`;
       }).join('');
       const medalInfoCeb = DEVOIR_MEDAILLES[medaille.my_medal];

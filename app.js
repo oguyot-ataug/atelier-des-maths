@@ -2404,6 +2404,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.617', items:[
+    "Fix -- Compte est bon (devoirs), signalé : \"si un compte est trouvé, je ne dois pas pouvoir recommencer pour améliorer le score !\". Un compte déjà trouvé exactement (écart 0) est maintenant verrouillé -- plus de bouton \"Retenter\". Avant, comme le tirage d'un devoir est fixe (identique à chaque tentative, contrairement au tirage libre), connaître déjà la solution permettait de rejouer le même compte pour battre artificiellement son propre temps et fausser le classement des médailles.",
+  ]},
   { version:'2026-08-19.616', items:[
     "Fix -- Mes devoirs (élève), signalé : \"le compte rendu ne se met pas à jour après la fin d'un exercice, ils sont obligés d'actualiser la page\". Terminer un exercice d'automatismes lancé depuis un devoir (score enregistré) puis fermer la fenêtre rafraîchit maintenant immédiatement la liste \"Mes devoirs\" derrière -- nouveau score, statut et médaille visibles sans recharger la page. Le même parcours côté Compte est bon rafraîchissait déjà correctement.",
   ]},
