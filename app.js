@@ -2479,6 +2479,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.629', items:[
+    "Multiplication posée -- signalé : \"ne pas forcément écrire à quoi correspond chaque ligne, le proposer en option\". Une case à cocher (« Expliquer ce que représente chaque ligne ») permet désormais de masquer les explications (ex. \"← 34 × 20 (chiffre des dizaines de 508)\") pour un rendu plus sobre une fois la méthode acquise -- cochée par défaut, comme avant.",
+  ]},
   { version:'2026-08-19.628', items:[
     "Soustraction posée -- signalé : \"je préfère que le +1 sur le deuxième terme se note... à gauche du 2 en écrivant non pas +1 mais 1+ en petit\". La compensation du chiffre du bas s'écrit désormais en petit directement à gauche du chiffre concerné, au lieu d'une ligne séparée au-dessus -- dans l'outil de correction/évaluation ET dans le cours CM1 (leçon, exemples et animation étape par étape), harmonisés pour utiliser la même présentation.",
   ]},

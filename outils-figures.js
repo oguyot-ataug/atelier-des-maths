@@ -193,7 +193,8 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="btn secondary" onclick="previewMultiplicationPosee()">Calculer</button>
       </div>
       <div id="multiplicationPreview"></div>
-      <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="multVierge"> N'afficher que les deux facteurs (à compléter par l'élève -- produits intermédiaires et résultat laissés vides)</label>
+      <label class="hint" style="display:block;margin:10px 0 0;"><input type="checkbox" id="multLabels" checked onchange="previewMultiplicationPosee()"> Expliquer ce que représente chaque ligne (ex. "← 34 × 20 (chiffre des dizaines de 508)")</label>
+      <label class="hint" style="display:block;margin:6px 0 0;"><input type="checkbox" id="multVierge" onchange="previewMultiplicationPosee()"> N'afficher que les deux facteurs (à compléter par l'élève -- produits intermédiaires et résultat laissés vides)</label>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" onclick="insertMultiplicationPosee()">Insérer la multiplication</button>
         <button type="button" class="btn secondary" onclick="closeMultiplicationTool()">Fermer sans insérer</button>
@@ -1702,7 +1703,11 @@ function computeMultiplicationPosee(a, b){
   }
   return { a, b, partials, product: a*b, singleDigitMultiplier: n===1 };
 }
-function multiplicationPoseeHTML(res, vierge){
+/* showLabels : signalé : "ne pas forcément écrire à quoi correspond chaque ligne, le proposer en
+   option" -- coché par défaut (comportement d'origine), mais désactivable pour un rendu plus
+   sobre une fois la méthode acquise. */
+function multiplicationPoseeHTML(res, vierge, showLabels){
+  if(showLabels===undefined) showLabels = true;
   if(!res) return '<p class="hint" style="color:var(--accent-orange);">Indiquez deux entiers positifs (le second non nul).</p>';
   const allValues = [res.a, res.b, res.product, ...res.partials.map(p=>p.value)];
   const N = Math.max(...allValues.map(v=>String(v).length));
@@ -1718,7 +1723,7 @@ function multiplicationPoseeHTML(res, vierge){
       rows.push({
         cells: vierge ? new Array(N).fill('') : dpAlignedCells(String(p.value), N-1, N),
         bar: isLast,
-        label: `← ${res.a} × ${p.digit}${zeros} (chiffre des ${p.placeLabel} de ${res.b})`,
+        label: showLabels ? `← ${res.a} × ${p.digit}${zeros} (chiffre des ${p.placeLabel} de ${res.b})` : '',
       });
     });
     rows.push({ cells: vierge ? new Array(N).fill('') : dpAlignedCells(String(res.product), N-1, N), color:'var(--accent-orange)', big:true });
@@ -1730,7 +1735,8 @@ function previewMultiplicationPosee(){
   const b = parseInt(document.getElementById('multB').value);
   const res = computeMultiplicationPosee(a,b);
   const vierge = document.getElementById('multVierge').checked;
-  document.getElementById('multiplicationPreview').innerHTML = multiplicationPoseeHTML(res, vierge);
+  const showLabels = document.getElementById('multLabels').checked;
+  document.getElementById('multiplicationPreview').innerHTML = multiplicationPoseeHTML(res, vierge, showLabels);
 }
 function openMultiplicationTool(){
   activateToolTab('opGroupWrap', 'opTabMult', ['opTabAdd','opTabSous']);
@@ -1746,7 +1752,8 @@ function insertMultiplicationPosee(){
   const res = computeMultiplicationPosee(a,b);
   if(!res){ document.getElementById('multiplicationPreview').innerHTML = multiplicationPoseeHTML(null); return; }
   const vierge = document.getElementById('multVierge').checked;
-  addPendingBlock('multiplicationPosee', multiplicationPoseeHTML(res, vierge), {a,b,vierge}, 'reopenMultiplicationPosee');
+  const showLabels = document.getElementById('multLabels').checked;
+  addPendingBlock('multiplicationPosee', multiplicationPoseeHTML(res, vierge, showLabels), {a,b,vierge,showLabels}, 'reopenMultiplicationPosee');
   closeMultiplicationTool();
 }
 function reopenMultiplicationPosee(data){
@@ -1754,6 +1761,7 @@ function reopenMultiplicationPosee(data){
   document.getElementById('multA').value = data.a;
   document.getElementById('multB').value = data.b;
   document.getElementById('multVierge').checked = !!data.vierge;
+  document.getElementById('multLabels').checked = data.showLabels!==false;
   previewMultiplicationPosee();
 }
 /* ============================================================
