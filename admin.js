@@ -9,6 +9,12 @@
    accountClassesList).
    ===================================================================== */
 
+// Tarif Anthropic pour le modèle utilisé par ai-proxy (claude-sonnet-4-6), en $/million de tokens.
+const AI_USAGE_PRICE_INPUT_PER_1M = 3;
+const AI_USAGE_PRICE_OUTPUT_PER_1M = 15;
+// Les appels enregistrés avant cette date n'ont pas de tokens (colonnes ajoutées le 23/09/2026) : coût inconnu.
+const AI_USAGE_TOKENS_SINCE_LABEL = '23/09/2026';
+
 document.getElementById('view-admin').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;"><span class=gicon>build</span> Administration</h1>
@@ -19,6 +25,7 @@ document.getElementById('view-admin').innerHTML = `
     <button class="tab-btn" data-admin-tab="inscriptions"><span class=gicon>edit_note</span> Inscriptions</button>
     <button class="tab-btn" data-admin-tab="listing"><span class=gicon>assignment</span> Déjà enregistré</button>
     <button class="tab-btn" data-admin-tab="signalements"><span class=gicon>bug_report</span> Signalements</button>
+    <button class="tab-btn" data-admin-tab="ia"><span class=gicon>smart_toy</span> Usage IA</button>
   </div>
 
   <div class="tab-panel active" id="admin-panel-comptes">
@@ -164,6 +171,24 @@ MARTIN Marie	mmartin		0123456A	6eA"></textarea>
       <button class="btn secondary" style="float:right;" onclick="adminRefreshBugReports()"><span class=gicon>refresh</span> Actualiser</button>
       <p class="hint" style="margin:6px 0 14px;">Signalements envoyés par les profs depuis le menu de leur compte.</p>
       <div id="adminBugReportsListing" class="hint">Chargement…</div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="admin-panel-ia">
+    <div class="tool-shell">
+      <button class="btn secondary" style="float:right;" onclick="adminRefreshAiUsage()"><span class=gicon>refresh</span> Actualiser</button>
+      <p class="hint" style="margin:6px 0 14px;clear:right;max-width:75ch;">
+        Utilisation de l'assistant IA (quiz générés, rédaction assistée…) : un seul jeton d'API Anthropic,
+        payé par l'établissement, sert pour tous les comptes -- il n'y a pas de "clé API" propre à chaque prof.
+        Le coût est estimé à partir du nombre de tokens consommés par appel
+        (tarif Claude Sonnet : $3 / million de tokens en entrée, $15 / million de tokens en sortie).
+        ${AI_USAGE_TOKENS_SINCE_LABEL ? `Les appels antérieurs au <b>${AI_USAGE_TOKENS_SINCE_LABEL}</b> n'ont pas de tokens enregistrés (comptés dans le nombre d'appels, mais avec un coût inconnu).` : ''}
+      </p>
+      <div id="adminAiUsageSummary" class="hint">Chargement…</div>
+      <p class="example-title" style="margin:16px 0 6px;color:#0C5BA0;">Par utilisateur</p>
+      <div id="adminAiUsageByUser" class="hint"></div>
+      <p class="example-title" style="margin:16px 0 6px;color:#26AAB1;">Par fonctionnalité</p>
+      <div id="adminAiUsageByFeature" class="hint"></div>
     </div>
   </div>`;
 
@@ -837,6 +862,7 @@ let adminAccountsCache = { profs:[], eleves:[], lastLoginMap:new Map(), classesL
 async function adminRefreshListings(){
   await adminRefreshBugReports();
   await adminRefreshSignupRequests();
+  await adminRefreshAiUsage();
   const { data: profs } = await sb.from('profiles').select('id,nom,prenom,email,role,subscription_status,subscription_expires_at,must_change_password').in('role',['prof','admin']).order('nom');
   const { data: eleves } = await sb.from('profiles').select('id,nom,prenom,email,role,must_change_password').eq('role','eleve').order('nom');
   // Date de dernière connexion (auth.users, normalement inaccessible via RLS classique) --
@@ -1019,6 +1045,82 @@ async function adminUpdateBugStatus(id, status){
   }
   await adminRefreshBugReports();
 }
+
+/* Coût estimé d'un appel IA à partir des tokens consommés (data.usage renvoyé par Anthropic,
+   journalisé depuis le 23/09/2026). Retourne null si les tokens ne sont pas connus (appels
+   antérieurs à cette date) -- à distinguer d'un coût de 0. */
+function aiUsageCallCost(row){
+  if(row.input_tokens==null || row.output_tokens==null) return null;
+  return row.input_tokens/1e6*AI_USAGE_PRICE_INPUT_PER_1M + row.output_tokens/1e6*AI_USAGE_PRICE_OUTPUT_PER_1M;
+}
+function aiUsageFormatCost(usd){
+  return usd==null ? '<span class="hint">inconnu</span>' : '$'+usd.toFixed(usd<0.01?4:3);
+}
+/* Panneau "Usage IA" -- signalé : "Est-ce que j'ai un endroit pour voir qui a utilisé l'IA et
+   le coût engendré ?". Un seul jeton d'API Anthropic (côté serveur, dans ai-proxy) sert à tout
+   le monde -- ce panneau sert à suivre qui l'utilise et estimer ce que ça coûte. */
+async function adminRefreshAiUsage(){
+  const elSummary = document.getElementById('adminAiUsageSummary');
+  const elByUser = document.getElementById('adminAiUsageByUser');
+  const elByFeature = document.getElementById('adminAiUsageByFeature');
+  if(!elSummary) return;
+  elSummary.textContent = 'Chargement…';
+  elByUser.innerHTML = ''; elByFeature.innerHTML = '';
+  const { data, error } = await sb.from('ai_usage_log')
+    .select('user_id,feature,chapitre,niveau,input_tokens,output_tokens,created_at,profiles(nom,prenom,email)')
+    .order('created_at', {ascending:false})
+    .limit(5000);
+  if(error){ elSummary.textContent = 'Erreur : '+error.message; return; }
+  if(!data || !data.length){ elSummary.innerHTML = '<div class="hint">Aucun appel IA enregistré pour l\'instant.</div>'; return; }
+
+  let totalCalls = data.length, totalCost = 0, callsCoutInconnu = 0;
+  const byUser = new Map(), byFeature = new Map();
+  for(const row of data){
+    const cost = aiUsageCallCost(row);
+    if(cost==null) callsCoutInconnu++; else totalCost += cost;
+
+    const uKey = row.user_id;
+    if(!byUser.has(uKey)) byUser.set(uKey, { profile:row.profiles, calls:0, cost:0, coutInconnu:0 });
+    const u = byUser.get(uKey);
+    u.calls++; if(cost==null) u.coutInconnu++; else u.cost += cost;
+
+    const fKey = row.feature || '(non précisé)';
+    if(!byFeature.has(fKey)) byFeature.set(fKey, { calls:0, cost:0, coutInconnu:0 });
+    const f = byFeature.get(fKey);
+    f.calls++; if(cost==null) f.coutInconnu++; else f.cost += cost;
+  }
+
+  elSummary.innerHTML = `<table class="sup-table">
+    <tbody>
+      <tr><td>Nombre total d'appels</td><td style="font-weight:700;">${totalCalls}</td></tr>
+      <tr><td>Coût total estimé</td><td style="font-weight:700;">${aiUsageFormatCost(totalCost)}${callsCoutInconnu?` <span class="hint">(+ ${callsCoutInconnu} appel(s) à coût inconnu, non comptés)</span>`:''}</td></tr>
+    </tbody>
+  </table>`;
+
+  const userRows = [...byUser.values()].sort((a,b)=> b.cost - a.cost || b.calls - a.calls);
+  elByUser.innerHTML = `<table class="sup-table">
+    <thead><tr><th>Utilisateur</th><th style="text-align:right;">Appels</th><th style="text-align:right;">Coût estimé</th></tr></thead>
+    <tbody>${userRows.map(u=>{
+      const name = (u.profile && (profileDisplayName(u.profile) || u.profile.email)) || 'Utilisateur inconnu';
+      return `<tr>
+        <td style="font-weight:600;">${escapeHtml(name)}</td>
+        <td style="text-align:right;">${u.calls}</td>
+        <td style="text-align:right;">${aiUsageFormatCost(u.cost)}${u.coutInconnu?` <span class="hint">(+${u.coutInconnu} inconnu)</span>`:''}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+
+  const featureRows = [...byFeature.entries()].sort((a,b)=> b[1].cost - a[1].cost || b[1].calls - a[1].calls);
+  elByFeature.innerHTML = `<table class="sup-table">
+    <thead><tr><th>Fonctionnalité</th><th style="text-align:right;">Appels</th><th style="text-align:right;">Coût estimé</th></tr></thead>
+    <tbody>${featureRows.map(([feature,f])=>`<tr>
+        <td style="font-weight:600;">${escapeHtml(feature)}</td>
+        <td style="text-align:right;">${f.calls}</td>
+        <td style="text-align:right;">${aiUsageFormatCost(f.cost)}${f.coutInconnu?` <span class="hint">(+${f.coutInconnu} inconnu)</span>`:''}</td>
+      </tr>`).join('')}</tbody>
+  </table>`;
+}
+
 /* Sépare "NOM Prénom" (convention des listes d'élèves collées ici, ex. export Pronote) en
    nom/prénom -- signalé : "l'import est merdique, tous les élèves ont NOM Prénom dans le champ
    NOM". Le nom de famille est la suite de mots en MAJUSCULES en début de chaîne (convention

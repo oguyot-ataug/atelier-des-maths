@@ -2492,6 +2492,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.633', items:[
+    "Administration, nouvel onglet « Usage IA » -- signalé : \"est-ce que j'ai un endroit pour voir qui a utilisé l'IA et le coût engendré ?\". Nombre d'appels et coût estimé par utilisateur et par fonctionnalité (le coût est calculé à partir des tokens consommés par appel, désormais enregistrés -- les appels antérieurs à ce déploiement restent comptés mais avec un coût affiché comme inconnu, faute de tokens enregistrés à l'époque). Au passage, correction d'un texte de la page d'accueil qui laissait penser que chaque prof utilise sa propre clé API -- en réalité une seule clé, payée par l'établissement, sert à tout le monde.",
+  ]},
   { version:'2026-08-19.632', items:[
     "Page d'accueil -- signalé : \"il manque des informations sur pas mal de nouvelles fonctionnalités\". Ajout des « Devoirs en ligne » (élèves et profs), mention des opérations posées dans l'outil de correction, et du partage entre collègues pour le cahier de corrections -- ces fonctionnalités existaient déjà mais n'étaient nulle part visibles sur la page d'accueil.",
   ]},
