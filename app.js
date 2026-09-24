@@ -2498,6 +2498,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.648', items:[
+    "Tableau interactif, « Construire avec l'IA » entièrement retravaillé -- demandé : \"si je trace un segment d'une certaine longueur, je dois bien voir la prise de mesure à la règle puis le tracé. Bien différencier les tracés de segments, de droites et demi-droites. Et ainsi de suite pour l'ensemble des stratégies de tracés.\" L'IA ne calcule plus aucune coordonnée (origine de toutes les erreurs précédentes) : elle décrit seulement la méthode de construction, et le site calcule la géométrie exactement puis anime le vrai geste de chaque instrument. Segment de longueur donnée : 0 de la règle sur le point, lecture de la graduation, point marqué, puis tracé. Segment, demi-droite et droite nettement distingués (arrêt aux extrémités / départ de l'origine / prolongement des deux côtés). Perpendiculaire : l'équerre glisse le long de la droite jusqu'au point. Parallèle : équerre qui coulisse le long de la règle. Compas : écartement pris sur la règle (ou reporté depuis la figure), puis petits arcs gris de construction. Rapporteur : centre sur le sommet, 0° sur le côté, repère à la graduation, puis demi-droite à la règle. Également : milieu mesuré, médiatrice et bissectrice au compas, codages (angle droit, longueurs égales), noms de droites. Toujours réservé à l'administrateur le temps de la mise au point.",
+  ]},
   { version:'2026-08-19.647', items:[
     "Tableau interactif, « Construire avec l'IA » réservé à l'administrateur -- signalé : \"ne faire apparaître Construire avec l'IA que pour moi (admin), tant que ça fonctionne mal\". Le bouton n'apparaît plus pour les profs ni les élèves le temps de fiabiliser les constructions générées.",
   ]},
@@ -6124,6 +6127,7 @@ function tbUpdateHistoryButtons(){
 let tbPointNextId = 1;
 let tbTools = [];   // outils posés sur le tableau
 let tbInk = [];     // traits déjà tracés {color, points:[[x,y],...]}
+let tbAiOverlay = []; // repères SVG transitoires de la construction par IA (lecture d'une graduation...), cf. tableau-ia.js
 let tbDrag = null;  // interaction en cours (déplacement/rotation/tracé)
 let tbInitialized = false;
 
@@ -7166,11 +7170,11 @@ function tbRender(){
           <circle cx="4" cy="-4" r="1.7" fill="#1C1B2E"/>
           <circle cx="0" cy="-19" r="7" fill="#2EA8C9" stroke="#1C1B2E" stroke-width="1.4"/>
         </g>
-        <g data-role="compassLockIcon" data-id="${t.id}" transform="translate(${iconX.toFixed(1)},${iconY.toFixed(1)})" style="cursor:pointer;">
+        ${t.aiDriven ? '' : `<g data-role="compassLockIcon" data-id="${t.id}" transform="translate(${iconX.toFixed(1)},${iconY.toFixed(1)})" style="cursor:pointer;">
           <circle cx="0" cy="0" r="14" fill="${modeColor}" stroke="#fff" stroke-width="1.8"/>
           <text x="0" y="5" font-size="13" text-anchor="middle" font-family="'Material Symbols Outlined','sans-serif'">${modeEmoji}</text>
         </g>
-        <text x="${iconX.toFixed(1)}" y="${(iconY-20).toFixed(1)}" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="700">${modeLabel}</text>
+        <text x="${iconX.toFixed(1)}" y="${(iconY-20).toFixed(1)}" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="700">${modeLabel}</text>`}
       </g>`;
     }
     const def = TB_DEFS[t.type];
@@ -7196,7 +7200,7 @@ function tbRender(){
     return `<g transform="translate(${t.x.toFixed(1)},${t.y.toFixed(1)}) rotate(${t.angle.toFixed(1)})">
       <g data-role="body" data-id="${t.id}">${def.svg(t.id)}</g>${protractorRay}
       ${t.slideLock ? `<g transform="rotate(${-t.angle.toFixed(1)})" style="pointer-events:none;"><circle cx="0" cy="0" r="9" fill="#1F7A4D" stroke="#fff" stroke-width="1.4"/><text x="0" y="4" font-size="10" text-anchor="middle" font-family="'Material Symbols Outlined'">link</text></g>` : ''}
-      ${rh && t.type==='crayon' ? `<g data-role="rotate" data-id="${t.id}" transform="translate(${rh.x},${rh.y})">
+      ${t.aiDriven ? '' : rh && t.type==='crayon' ? `<g data-role="rotate" data-id="${t.id}" transform="translate(${rh.x},${rh.y})">
           <circle cx="0" cy="0" r="15" fill="${penModeColor}" stroke="#fff" stroke-width="2"/>
           <text x="0" y="6" font-size="16" text-anchor="middle" transform="rotate(${-t.angle.toFixed(1)})" font-family="'Material Symbols Outlined'">${penModeIcon}</text>
         </g>` : (rh ? `<circle data-role="rotate" data-id="${t.id}" cx="${rh.x}" cy="${rh.y}" r="${rh.r||11}" fill="#0D5BA3" fill-opacity="${rh.opacity!==undefined?rh.opacity:1}" stroke="#fff" stroke-width="1.6"/>` : '')}
@@ -7209,7 +7213,7 @@ function tbRender(){
   // B (ou, à l'inverse, prolonger exactement comme demandé).
   let segActionsHtml = '';
   tbTools.forEach(t=>{
-    if(t.type==='crayon' || t.type==='compas') return;
+    if(t.type==='crayon' || t.type==='compas' || t.aiDriven) return;
     const pts = tbPointsOnEdge(t);
     if(pts.length<2) return;
     const A = pts[0], B = pts[pts.length-1];
@@ -7229,7 +7233,10 @@ function tbRender(){
   // mais que le contact en direct n'est plus détecté (ex. après une rotation), un bouton de
   // secours reste affiché sur l'outil verrouillé -- pour toujours pouvoir le déverrouiller.
   let slideLockHtml = '';
-  const contact = tbFindSlideContact();
+  // Outils manipulés par la construction IA (tableau-ia.js) : pas de bouton de coulissement
+  // proposé pendant qu'ils glissent l'un contre l'autre, ce n'est pas l'utilisateur qui les tient.
+  const aiDriving = tbTools.some(t=>t.aiDriven);
+  const contact = aiDriving ? null : tbFindSlideContact();
   if(contact){
     const already = contact.square.slideLock && contact.square.slideLock.targetId===contact.ruler.id;
     slideLockHtml = `<g data-role="slideLockBtn" data-square="${contact.square.id}" data-ruler="${contact.ruler.id}" transform="translate(${contact.contactX.toFixed(1)},${(contact.contactY-16).toFixed(1)})" style="cursor:pointer;">
@@ -7255,7 +7262,7 @@ function tbRender(){
   // peuvent coexister si les deux bords se trouvent près d'un trait en même temps.
   let reqSlideLockHtml = '';
   [{edgeIdx:1, label:'Coulisser'}, {edgeIdx:3, label:'Parallèle'}].forEach(({edgeIdx, label})=>{
-    const reqContact = tbFindRequerreInkContact(edgeIdx);
+    const reqContact = aiDriving ? null : tbFindRequerreInkContact(edgeIdx);
     if(reqContact){
       const already = reqContact.tool.slideLock && reqContact.tool.slideLock.targetStrokeId===reqContact.strokeId && reqContact.tool.slideLock.edgeIdx===edgeIdx;
       reqSlideLockHtml += `<g data-role="requerreSlideLockBtn" data-tool="${reqContact.tool.id}" data-stroke="${reqContact.strokeId}" data-edge="${edgeIdx}" transform="translate(${reqContact.contactX.toFixed(1)},${(reqContact.contactY-16).toFixed(1)})" style="cursor:pointer;">
@@ -7295,6 +7302,7 @@ function tbRender(){
     ${bgImageHtml}
     <g id="tbInkLayer">${inkHtml}${pointsHtml}${textsHtml}${codagesHtml}${protractorPreview}${pencilSnapRing}</g>
     <g id="tbToolsLayer">${toolsHtml}${segActionsHtml}${slideLockHtml}${reqSlideLockHtml}</g>
+    <g id="tbAiOverlayLayer" style="pointer-events:none;">${tbAiOverlay.join('')}</g>
   </svg>`;
   tbAttachHandlers();
 }
@@ -7816,571 +7824,6 @@ function tbAttachHandlers(){
     tbDrag = null;
   }
   svg.onpointerleave = ()=>{ tbDrag = null; };
-}
-
-/* ======================= TABLEAU INTERACTIF : construction par IA =======================
-   Demandé : "j'aimerais que le tableau s'anime automatiquement si je lui donne un énoncé,
-   interprété par l'IA qui fabrique l'animation des outils pas à pas pour construire les
-   figures". Plutôt que de demander à l'IA de piloter les outils au pixel près (ce qui
-   reproduirait toute la mécanique de prise en main/aimantage, conçue pour un geste humain,
-   pas pour être pilotée par du JSON), elle produit un plan de construction dans un
-   vocabulaire restreint de 4 étapes (point/segment/cercle/texte) avec des coordonnées EXACTES
-   qu'elle calcule elle-même par trigonométrie -- le code ici se contente d'animer la règle et
-   le compas jusqu'à ces coordonnées déjà connues, et de tracer le trait pendant le mouvement.
-   Portée volontairement limitée à la règle et au compas (pas l'équerre/le rapporteur) : ce
-   sont les deux seuls outils dont le geste de tracé est un simple segment/cercle, donc fiable
-   à piloter sans reproduire la détection de contact/glissement -- largement suffisant pour les
-   constructions classiques de collège (triangles connaissant leurs côtés, report de longueur
-   au compas par intersection de deux cercles, etc). */
-const TB_PX_PER_CM = 22; // même échelle que la règle graduée (cf. rulerSVG, cmStep=22)
-const TB_AI_MAX_STEPS = 15;
-function tbOpenAiModal(){
-  document.getElementById('tbAiModalOverlay').style.display = 'flex';
-  document.getElementById('tbAiStatus').textContent = '';
-}
-function tbCloseAiModal(){
-  document.getElementById('tbAiModalOverlay').style.display = 'none';
-}
-function tbAiBuildPrompt(enonce){
-  const maxSegPx = 14*TB_PX_PER_CM;
-  return `Tu es un professeur de mathématiques (collège/lycée, France) qui construit une figure au tableau, à la règle et au compas -- pas juste un calculateur de coordonnées. Le but est de reproduire une VRAIE construction géométrique enseignée, avec sa méthode, pas seulement d'obtenir la bonne figure finale par le calcul le plus direct.
-Le tableau est un plan de 900×560 pixels. Origine (0,0) en haut à gauche, x vers la droite, y vers le BAS (comme un écran).
-Échelle : ${TB_PX_PER_CM} pixels = 1 cm. Garde toute la construction dans x∈[80,820] et y∈[80,480].
-
-Réponds UNIQUEMENT par un tableau JSON (aucun texte avant/après, pas de balises markdown), une liste d'étapes, choisies EXACTEMENT parmi ces 6 types :
-
-1. {"type":"point","label":"A","x":123,"y":456} -- pose un point nommé (une lettre majuscule, éventuellement suivie d'un chiffre, ex. "A", "M1") à des coordonnées EXACTES en pixels, SANS geste de mesure visible (la règle n'apparaît pas). Réservé au tout premier point "libre" de la figure, et aux points obtenus par une construction déjà visible sur le tableau (intersection de deux cercles, d'une demi-droite et d'un cercle...) -- jamais à un point simplement mesuré depuis un autre point déjà posé : pour ça, utilise "measure" ci-dessous.
-2. {"type":"measure","from":"A","label":"B","x":123,"y":456} -- MESURE à la règle, depuis un point "from" déjà posé, la distance jusqu'aux coordonnées EXACTES données (que tu calcules toi-même), et pose le point "label" résultant UNE FOIS la mesure faite (la règle se place avec son 0 sur "from", puis le crayon glisse le long d'elle jusqu'à la longueur voulue -- c'est l'étape à utiliser à chaque fois qu'un point est défini par une longueur depuis un point déjà connu, ex. "AB = 6 cm"). Cette étape trace DÉJÀ le segment ["from","label"] -- ne le retrace jamais avec "segment" ensuite. Longueur maximale en une fois : 14 cm (${maxSegPx} px).
-3. {"type":"segment","from":"A","to":"B"} -- trace à la règle le segment entre deux points DÉJÀ posés, quand ce segment n'a PAS encore été tracé par une étape "measure" ou "perpendicular" précédente (utilisé pour fermer un côté encore manquant, ex. le dernier côté d'un triangle une fois ses 3 sommets connus -- jamais pour créer un nouveau point, voir "measure").
-4. {"type":"circle","center":"A","radiusCm":5,"towardX":123,"towardY":456} -- trace au compas un ARC (pas un cercle complet) centré sur un point déjà posé, de rayon EN CENTIMÈTRES (17 cm maximum). "towardX"/"towardY" sont les coordonnées (même approximatives) du point cherché du côté duquel tracer l'arc -- donne-les PRESQUE TOUJOURS (un cercle entier est rarement utile, il alourdit la figure pour rien) ; omets-les seulement si un cercle complet est vraiment la figure demandée.
-5. {"type":"perpendicular","at":"A","reference":"B","towardX":123,"towardY":456} -- trace à l'équerre une demi-droite [Ax) issue du point "at" (déjà posé), PERPENDICULAIRE à la droite ("at"→"reference", deux points déjà posés), qui s'étend BIEN AU-DELÀ du point cherché (la longueur exacte est calculée par le code, pas par toi -- une vraie demi-droite ne s'arrête jamais pile au bon endroit, ce serait trahir la réponse avant que le compas ne l'ait trouvée). "towardX"/"towardY" sont les coordonnées (même approximatives) d'un point du côté vers lequel la demi-droite doit s'étendre (ex. celles, déjà calculées, du sommet qu'on va trouver dessus) -- sert à choisir le bon côté ET signifie que le segment ["at", ce sommet] est déjà tracé : ne le retrace jamais avec "segment" ensuite.
-6. {"type":"text","x":123,"y":456,"text":"AB = 6 cm"} -- étiquette de texte libre (ex. pour indiquer une mesure), à côté de la figure sans la recouvrir.
-
-MÉTHODES DE CONSTRUCTION CLASSIQUES À UTILISER (choisis celle qui correspond à l'énoncé -- ne calcule JAMAIS directement par trigonométrie la position d'un point qui doit normalement se construire à la règle/au compas/à l'équerre ; seul le tout premier point "libre" de la figure peut être placé par un choix de coordonnées, avec "point") :
-
-- Longueur connue depuis un point déjà posé (ex. "AB = 6 cm") : "measure" (voir ci-dessus), pas "point" + "segment" séparément.
-
-- Triangle connu par ses 3 côtés (ou report d'une longueur depuis un point) : pose ou mesure deux points, puis utilise DEUX "circle" (un centré sur chacun des deux sommets déjà connus, de rayon la longueur du 3e côté depuis chacun, chacun avec "towardX"/"towardY" pointant vers le sommet cherché) -- le point cherché est à l'intersection des deux arcs. Calcule toi-même les coordonnées de cette intersection (résolution du système des deux équations de cercle) pour l'étape "point" suivante.
-
-- Angle droit EN UN SOMMET DÉJÀ NOMMÉ dans l'énoncé (ex. "triangle ABC rectangle en A" connu par un côté et l'hypoténuse) : c'est la méthode PAR DÉFAUT, à l'équerre -- pose d'abord le côté connu depuis ce sommet (avec "measure"), utilise "perpendicular" en ce sommet pour tracer la demi-droite perpendiculaire à ce côté, puis un "circle" (report de longueur, centré sur l'autre extrémité connue, de rayon l'hypoténuse, "towardX"/"towardY" vers le sommet cherché) qui vient l'intercepter -- le sommet cherché est à l'intersection entre la demi-droite et l'arc. Calcule ces coordonnées toi-même (le point est sur la perpendiculaire ET à la bonne distance du centre du cercle), avec les mêmes coordonnées pour "towardX"/"towardY" des étapes "perpendicular" et "circle". Une seule étape "segment" suffit ensuite pour fermer le triangle (entre l'autre extrémité connue et ce nouveau sommet) : les deux autres côtés sont déjà tracés par "measure" et "perpendicular".
-
-- Angle droit SANS sommet imposé (ex. construire un point qui voit un segment sous un angle droit, sans savoir où) : utilise le CERCLE DE THALÈS. Pose le milieu du côté qui sera l'hypoténuse (point de construction, label libre type "O" ou "M") ; trace un "circle" centré sur ce milieu, de rayon la MOITIÉ de l'hypoténuse, "towardX"/"towardY" vers le sommet cherché (tout point sur cet arc voit l'hypoténuse sous un angle droit) ; un second "circle" (report de longueur, même "towardX"/"towardY") donne le sommet cherché à leur intersection.
-
-- Plus généralement (médiatrice, bissectrice...) : même principe -- un point qui résulte d'une propriété géométrique se construit à la règle/au compas/à l'équerre, jamais par un calcul trigonométrique direct qui "saute" l'étape de construction.
-
-RÈGLES IMPORTANTES :
-- Calcule toutes les coordonnées EXACTEMENT (trigonométrie/résolution d'intersection de cercles ou droites selon le cas) -- jamais d'approximation grossière au jugé.
-- N'utilise dans "measure"/"segment"/"circle"/"perpendicular" QUE des labels déjà posés par une étape "point" ou "measure" antérieure.
-- Ne trace jamais deux fois le même côté : "measure" trace ["from","label"], "perpendicular" trace ["at", le point qui s'y trouvera] -- une étape "segment" ne sert qu'à fermer un côté qu'aucune étape précédente n'a encore tracé.
-- TERMINE TOUJOURS la figure entièrement fermée : pour un triangle, les 3 côtés doivent tous être tracés (par "measure", "perpendicular" ou "segment") avant la dernière étape -- vérifie, une fois tous les sommets connus, qu'aucun côté ne manque encore, et ajoute le "segment" nécessaire s'il en manque un. Ne t'arrête jamais juste après avoir placé le dernier sommet.
-- Maximum ${TB_AI_MAX_STEPS} étapes. Reste sobre : une construction juste, méthodique et lisible plutôt que décorative.
-- Réponds uniquement par le JSON, rien d'autre (pas de \`\`\`json).
-
-Énoncé à construire :
-"""
-${enonce}
-"""`;
-}
-/* Intersection d'un cercle (centre C, rayon r) avec la demi-droite issue de A dans la direction
-   dir (unitaire) -- retourne celle des (au plus deux) solutions la plus proche de "hint", ou
-   null si la demi-droite ne coupe pas le cercle. */
-function tbAiIntersectRayCircle(A, dir, C, r, hint){
-  const dx=A.x-C.x, dy=A.y-C.y;
-  const b = dx*dir.x + dy*dir.y;
-  const disc = b*b - (dx*dx+dy*dy-r*r);
-  if(disc<0) return null;
-  const sq = Math.sqrt(disc);
-  const p1 = {x:A.x+(-b+sq)*dir.x, y:A.y+(-b+sq)*dir.y};
-  const p2 = {x:A.x+(-b-sq)*dir.x, y:A.y+(-b-sq)*dir.y};
-  return (Math.hypot(p1.x-hint.x,p1.y-hint.y) <= Math.hypot(p2.x-hint.x,p2.y-hint.y)) ? p1 : p2;
-}
-/* Intersection de deux cercles (C1,r1) et (C2,r2) -- même principe, plus proche de "hint". */
-function tbAiIntersectCircles(C1, r1, C2, r2, hint){
-  const dx=C2.x-C1.x, dy=C2.y-C1.y, d=Math.hypot(dx,dy);
-  if(d<1e-6) return null;
-  const a = (d*d+r1*r1-r2*r2)/(2*d);
-  const h2 = r1*r1-a*a;
-  if(h2<0) return null;
-  const h = Math.sqrt(h2);
-  const ux=dx/d, uy=dy/d, px=C1.x+a*ux, py=C1.y+a*uy;
-  const p1 = {x:px-h*uy, y:py+h*ux}, p2 = {x:px+h*uy, y:py-h*ux};
-  return (Math.hypot(p1.x-hint.x,p1.y-hint.y) <= Math.hypot(p2.x-hint.x,p2.y-hint.y)) ? p1 : p2;
-}
-/* Au-delà de la validation structurelle (types, références connues...), RECALCULE chaque point
-   d'intersection ANNONCÉ par un ou deux cercles/une perpendiculaire précédents (même
-   "towardX"/"towardY", à peu près) à partir de la géométrie exacte déjà connue par ce code
-   (centres, rayons, direction de la perpendiculaire), plutôt que de se fier aveuglément au
-   calcul à la main de l'IA (trigonométrie/résolution de système, qui peut comporter une petite
-   erreur d'arrondi -- ou, plus rarement, une vraie erreur) -- signalé deux fois : "le point C
-   n'est pas l'intersection !", puis (après un premier correctif trop strict qui REJETAIT tout
-   écart, même un simple arrondi) "calcul incohérent" sur une construction en fait correcte.
-   Le point est donc silencieusement ajusté sur la valeur exacte dès qu'elle reste proche de
-   celle de l'IA (TB_AI_SNAP_MAX, généreux -- un écart de cet ordre n'est qu'un arrondi) ; le
-   plan n'est rejeté que si l'écart est plus grand, signe d'une vraie erreur de raisonnement
-   plutôt que d'arrondi. MATCH_TOL (encore plus généreux) sert seulement à savoir QUEL point un
-   "towardX/towardY" approximatif désigne. */
-const TB_AI_MATCH_TOL = 40, TB_AI_SNAP_MAX = 80;
-function tbAiValidatePlan(steps){
-  if(!Array.isArray(steps) || !steps.length) return {ok:false, error:"réponse vide ou pas une liste d'étapes"};
-  if(steps.length>TB_AI_MAX_STEPS) return {ok:false, error:'trop d\'étapes ('+steps.length+')'};
-  const known = new Set();
-  const coords = new Map(); // label -> {x,y}
-  const circlesSeen = [];   // {centerX,centerY,radiusPx,towardX,towardY}
-  const perpsSeen = [];     // {atX,atY,dirX,dirY,towardX,towardY}
-  /* Retourne {x,y} recalculé si ce point correspond à une intersection identifiable, null si
-     aucun cercle/perpendiculaire proche ne s'applique (point libre, laissé tel quel), ou
-     lève une erreur (chaîne) si l'écart avec la valeur exacte est trop grand pour n'être qu'un
-     arrondi. */
-  const resolveIntersection = (label, x, y)=>{
-    const matchingCircles = circlesSeen.filter(c=>Math.hypot(c.towardX-x, c.towardY-y) < TB_AI_MATCH_TOL);
-    const matchingPerp = perpsSeen.find(p=>Math.hypot(p.towardX-x, p.towardY-y) < TB_AI_MATCH_TOL);
-    let exact = null;
-    if(matchingCircles.length>=2){
-      const [c1,c2] = matchingCircles;
-      exact = tbAiIntersectCircles({x:c1.centerX,y:c1.centerY}, c1.radiusPx, {x:c2.centerX,y:c2.centerY}, c2.radiusPx, {x,y});
-    } else if(matchingCircles.length===1 && matchingPerp){
-      const c = matchingCircles[0];
-      exact = tbAiIntersectRayCircle({x:matchingPerp.atX,y:matchingPerp.atY}, {x:matchingPerp.dirX,y:matchingPerp.dirY}, {x:c.centerX,y:c.centerY}, c.radiusPx, {x,y});
-    } else if(matchingCircles.length===1){
-      // Un seul cercle : pas de 2e contrainte pour trianguler -- on se contente de recaler le
-      // point EXACTEMENT sur le cercle, dans la même direction depuis le centre (corrige un
-      // rayon légèrement faux sans pouvoir corriger un angle faux, qu'aucune donnée ne permet
-      // de déterminer ici).
-      const c = matchingCircles[0];
-      const dx=x-c.centerX, dy=y-c.centerY, dist=Math.hypot(dx,dy);
-      if(dist>1e-6) exact = {x:c.centerX+dx/dist*c.radiusPx, y:c.centerY+dy/dist*c.radiusPx};
-    } else if(matchingPerp){
-      // Une seule perpendiculaire : recale uniquement l'écart latéral (projette sur la
-      // demi-droite), garde la distance parcourue le long d'elle telle que l'IA l'a choisie.
-      const vx=x-matchingPerp.atX, vy=y-matchingPerp.atY;
-      const along = Math.max(0, vx*matchingPerp.dirX + vy*matchingPerp.dirY);
-      exact = {x:matchingPerp.atX+along*matchingPerp.dirX, y:matchingPerp.atY+along*matchingPerp.dirY};
-    }
-    if(!exact) return {value:null, error:null};
-    const gap = Math.hypot(exact.x-x, exact.y-y);
-    if(gap > TB_AI_SNAP_MAX) return {value:null, error:"le point "+label+" ne correspond pas à l'intersection tracée (calcul incohérent)"};
-    // Répercute la correction sur les étapes "circle"/"perpendicular" d'origine : sinon leur
-    // "towardX"/"towardY" (utilisé à l'exécution pour calculer la longueur de la demi-droite et
-    // la direction de l'arc) resterait l'ancienne valeur approximative de l'IA, potentiellement
-    // bien plus proche du point de départ que la vraie intersection -- signalé : "il a refait la
-    // demi-droite trop courte" (une demi-droite dimensionnée sur un "towardX/towardY" trop
-    // proche de A restait courte même après la marge de +3cm, le point réel étant en fait plus
-    // loin une fois recalé).
-    matchingCircles.forEach(c=>{ c.step.towardX = exact.x; c.step.towardY = exact.y; });
-    if(matchingPerp){ matchingPerp.step.towardX = exact.x; matchingPerp.step.towardY = exact.y; }
-    return {value:exact, error:null};
-  };
-  for(const s of steps){
-    if(!s || typeof s!=='object' || typeof s.type!=='string') return {ok:false, error:'étape invalide'};
-    if(s.type==='point'){
-      if(typeof s.label!=='string' || !s.label.trim()) return {ok:false, error:'point sans label'};
-      if(!Number.isFinite(s.x) || !Number.isFinite(s.y)) return {ok:false, error:'coordonnées invalides pour le point '+s.label};
-      if(s.x<-50||s.x>950||s.y<-50||s.y>610) return {ok:false, error:'point '+s.label+' hors du cadre'};
-      const resolved = resolveIntersection(s.label, s.x, s.y);
-      if(resolved.error) return {ok:false, error:resolved.error};
-      if(resolved.value){ s.x = resolved.value.x; s.y = resolved.value.y; }
-      known.add(s.label); coords.set(s.label, {x:s.x, y:s.y});
-    } else if(s.type==='measure'){
-      if(!known.has(s.from)) return {ok:false, error:'mesure référence un point inconnu ('+s.from+')'};
-      if(typeof s.label!=='string' || !s.label.trim()) return {ok:false, error:'mesure sans label pour le point obtenu'};
-      if(!Number.isFinite(s.x) || !Number.isFinite(s.y)) return {ok:false, error:'coordonnées invalides pour le point '+s.label};
-      if(s.x<-50||s.x>950||s.y<-50||s.y>610) return {ok:false, error:'point '+s.label+' hors du cadre'};
-      known.add(s.label); coords.set(s.label, {x:s.x, y:s.y});
-    } else if(s.type==='segment'){
-      if(!known.has(s.from) || !known.has(s.to)) return {ok:false, error:'segment référence un point inconnu ('+s.from+'→'+s.to+')'};
-    } else if(s.type==='circle'){
-      if(!known.has(s.center)) return {ok:false, error:'cercle référence un point inconnu ('+s.center+')'};
-      if(!Number.isFinite(s.radiusCm) || s.radiusCm<=0 || s.radiusCm>17) return {ok:false, error:'rayon de cercle invalide'};
-      if(Number.isFinite(s.towardX) && Number.isFinite(s.towardY)){
-        const c = coords.get(s.center);
-        circlesSeen.push({centerX:c.x, centerY:c.y, radiusPx:s.radiusCm*TB_PX_PER_CM, towardX:s.towardX, towardY:s.towardY, step:s});
-      }
-    } else if(s.type==='perpendicular'){
-      if(!known.has(s.at) || !known.has(s.reference)) return {ok:false, error:'perpendiculaire référence un point inconnu ('+s.at+'/'+s.reference+')'};
-      if(!Number.isFinite(s.towardX) || !Number.isFinite(s.towardY)) return {ok:false, error:'perpendiculaire : coordonnées "toward" invalides'};
-      const A = coords.get(s.at), R = coords.get(s.reference);
-      const baseAngle = Math.atan2(R.y-A.y, R.x-A.x);
-      let bestDir=null, bestDot=-Infinity;
-      for(const cand of [baseAngle, baseAngle+Math.PI]){
-        const dx=-Math.sin(cand), dy=Math.cos(cand);
-        const dot = dx*(s.towardX-A.x) + dy*(s.towardY-A.y);
-        if(dot>bestDot){ bestDot=dot; bestDir={x:dx,y:dy}; }
-      }
-      perpsSeen.push({atX:A.x, atY:A.y, dirX:bestDir.x, dirY:bestDir.y, towardX:s.towardX, towardY:s.towardY, step:s});
-    } else if(s.type==='text'){
-      if(!Number.isFinite(s.x) || !Number.isFinite(s.y) || typeof s.text!=='string') return {ok:false, error:'texte invalide'};
-    } else {
-      return {ok:false, error:"type d'étape inconnu : "+s.type};
-    }
-  }
-  return {ok:true, steps};
-}
-let tbAiSpeedMultiplier = 1; // 1 = normal, >1 = plus lent -- contrôlé par le sélecteur de vitesse de la barre de lecture
-function tbAiSetSpeed(v){ tbAiSpeedMultiplier = parseFloat(v)||1; }
-function tbAiSleep(ms){ return new Promise(r=>setTimeout(r, ms*tbAiSpeedMultiplier)); }
-function tbAiEase(t){ return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
-/* Anime une ou plusieurs propriétés numériques d'un outil déjà posé (tbTools) vers des valeurs
-   cibles, en rappelant tbRender() à chaque frame -- PAS d'historique poussé ici (un seul
-   tbPushHistory() par étape complète, dans tbAiExecutePlan). */
-function tbAiTweenProps(target, props, durationMs){
-  durationMs = durationMs*tbAiSpeedMultiplier;
-  const start = {}; Object.keys(props).forEach(k=>{ start[k]=target[k]; });
-  return new Promise(resolve=>{
-    const t0 = performance.now();
-    function frame(now){
-      const t = Math.min(1, (now-t0)/durationMs);
-      const e = tbAiEase(t);
-      Object.keys(props).forEach(k=>{ target[k] = start[k] + (props[k]-start[k])*e; });
-      tbRender();
-      if(t<1) requestAnimationFrame(frame); else resolve();
-    }
-    requestAnimationFrame(frame);
-  });
-}
-/* Le crayon (outil "crayon", pointe en (0,0) local -- cf. pencilSVG) est un outil À PART du
-   guide (règle/équerre) sur lequel il glisse : en manipulation manuelle, on pose D'ABORD le
-   guide, puis on prend le crayon et on le fait glisser le long de son bord. L'animation avait
-   sauté cette étape (le trait apparaissait sans aucun crayon visible) -- on le fait maintenant
-   apparaître et suivre la pointe du trait à chaque frame de tracé. Inutile pour le compas : son
-   propre rendu (tbRender) dessine déjà une mine à l'extrémité de la branche mobile. */
-function tbAiEnsureCrayon(x, y, angle){
-  let c = tbTools.find(t=>t.type==='crayon');
-  if(!c){ c = {id:tbNextId++, type:'crayon', x, y, angle:angle||0}; tbTools.push(c); }
-  else { c.x=x; c.y=y; if(angle!==undefined) c.angle=angle; }
-  return c;
-}
-/* Range un ou plusieurs outils (les retire du tableau) une fois qu'ils ne servent plus --
-   signalé : "il ne faut pas laisser les outils sur la feuille quand ils ne sont plus utiles".
-   Appelé à la fin de chaque étape de tracé, pour que seuls les tracés/points restent visibles
-   entre deux étapes, jamais les outils qui les ont produits. */
-function tbAiPutAwayTools(...types){
-  tbTools = tbTools.filter(t=>!types.includes(t.type));
-  tbRenderPalette();
-  tbRender();
-}
-/* Pose la règle graduée alignée sur [AB] (son bord haut passant exactement par A et B, centrée
-   sur leur milieu -- cf. TB_DEFS.regle_grad.edges[0] = bord haut en y local 0), fait glisser le
-   crayon le long de ce bord pour tracer, puis range règle et crayon. Un seul exemplaire de
-   règle est réutilisé (déplacé) tant qu'elle sert d'une étape à l'autre. Sert à relier deux
-   points DÉJÀ posés (ex. fermer un triangle une fois tous ses sommets connus) -- pour créer un
-   nouveau point en le mesurant depuis un point existant, voir tbAiDrawMeasure. */
-async function tbAiDrawSegment(A, B){
-  const angle = Math.atan2(B.y-A.y, B.x-A.x)*180/Math.PI;
-  const rad = angle*Math.PI/180;
-  const Lmid = TB_RULER_L/2;
-  const targetX = (A.x+B.x)/2 - Lmid*Math.cos(rad), targetY = (A.y+B.y)/2 - Lmid*Math.sin(rad);
-  let t = tbTools.find(x=>x.type==='regle_grad');
-  if(!t){
-    t = {id:tbNextId++, type:'regle_grad', x:targetX, y:targetY, angle};
-    tbTools.push(t);
-    tbRenderPalette();
-    tbRender();
-  } else {
-    await tbAiTweenProps(t, {x:targetX, y:targetY, angle}, 700);
-  }
-  await tbAiSleep(150);
-  const stroke = {color: tbCurrentColor(), points: []};
-  tbInk.push(stroke);
-  const n = 18;
-  for(let i=0;i<=n;i++){
-    const px=A.x+(B.x-A.x)*i/n, py=A.y+(B.y-A.y)*i/n;
-    stroke.points.push([px,py]);
-    tbAiEnsureCrayon(px,py,angle+90);
-    tbRender();
-    await tbAiSleep(18);
-  }
-  await tbAiSleep(150);
-  tbAiPutAwayTools('regle_grad','crayon');
-}
-/* Mesure une longueur À LA RÈGLE depuis un point déjà posé, et ne place le point mesuré qu'une
-   fois le tracé terminé -- signalé : "A et B sont placés avant de mesurer correctement à la
-   règle", la règle et le crayon doivent apparaître et faire le geste AVANT que le point
-   n'existe, pas après. Combine mesure et tracé en un seul geste continu, comme en vrai. */
-async function tbAiDrawMeasure(A, label, targetX, targetY){
-  const angle = Math.atan2(targetY-A.y, targetX-A.x)*180/Math.PI;
-  let t = tbTools.find(x=>x.type==='regle_grad');
-  if(!t){
-    t = {id:tbNextId++, type:'regle_grad', x:A.x, y:A.y, angle};
-    tbTools.push(t);
-    tbRenderPalette();
-    tbRender();
-  } else {
-    await tbAiTweenProps(t, {x:A.x, y:A.y, angle}, 700);
-  }
-  await tbAiSleep(150);
-  const stroke = {color: tbCurrentColor(), points: []};
-  tbInk.push(stroke);
-  const n = 18;
-  for(let i=0;i<=n;i++){
-    const px=A.x+(targetX-A.x)*i/n, py=A.y+(targetY-A.y)*i/n;
-    stroke.points.push([px,py]);
-    tbAiEnsureCrayon(px,py,angle+90);
-    tbRender();
-    await tbAiSleep(18);
-  }
-  tbPoints.push({id:tbPointNextId++, x:targetX, y:targetY, label});
-  tbRender();
-  await tbAiSleep(150);
-  tbAiPutAwayTools('regle_grad','crayon');
-}
-/* Pose la pointe du compas en C, l'ouvre jusqu'au rayon voulu (sans tracer), puis trace -- même
-   mécanique (t.x/t.y = pointe fixe, t.angle = direction du crayon, t.radius = écartement) que
-   le compas manipulable à la main. Un ARC (pas un cercle complet) est tracé dès qu'une
-   direction cible est donnée -- signalé : "il n'est pas nécessaire de faire un cercle complet,
-   un arc suffit", comme le ferait un professeur qui ne trace qu'un petit arc autour de
-   l'intersection cherchée. Sans cible (paramètre "target" omis), trace un cercle complet --
-   pour les rares cas où le cercle EST la figure demandée, pas un outil de construction. */
-async function tbAiDrawCircle(C, radiusPx, target){
-  const clampedR = Math.min(radiusPx, TB_COMPASS_MAX_RADIUS-5);
-  let t = tbTools.find(x=>x.type==='compas');
-  if(!t){
-    t = {id:tbNextId++, type:'compas', x:C.x, y:C.y, angle:-90, radius:Math.max(20,clampedR*0.3), mode:'closed'};
-    tbTools.push(t);
-    tbRenderPalette();
-    tbRender();
-  } else {
-    t.mode = 'closed';
-    await tbAiTweenProps(t, {x:C.x, y:C.y}, 500);
-  }
-  await tbAiSleep(120);
-  t.mode = 'closed';
-  await tbAiTweenProps(t, {radius: clampedR}, 500);
-  await tbAiSleep(120);
-  t.mode = 'draw';
-  const stroke = {color: tbCurrentColor(), points: []};
-  tbInk.push(stroke);
-  let startAngle, sweep;
-  if(target){
-    startAngle = Math.atan2(target.y-C.y, target.x-C.x)*180/Math.PI - 20;
-    sweep = 40;
-  } else {
-    startAngle = t.angle;
-    sweep = 360;
-  }
-  t.angle = startAngle;
-  const frames = Math.max(12, Math.round(48*sweep/360));
-  for(let i=0;i<=frames;i++){
-    t.angle = startAngle + sweep*i/frames;
-    const rad = t.angle*Math.PI/180;
-    stroke.points.push([t.x+t.radius*Math.cos(rad), t.y+t.radius*Math.sin(rad)]);
-    tbRender();
-    await tbAiSleep(16);
-  }
-  t.mode = 'closed';
-  await tbAiSleep(150);
-  tbAiPutAwayTools('compas');
-}
-/* Pose l'équerre en A (son sommet d'angle droit, en (0,0) local -- cf. TB_DEFS.equerre.edges[0]
-   et [1], les deux côtés de l'angle droit partant de l'origine), un côté aligné le long de
-   [A,reference] (comme si on la posait contre la règle/le segment déjà tracé), et fait glisser
-   le crayon le long de l'autre côté -- perpendiculaire donc, cf. demandé : "avec équerre on
-   trace une demi-droite [Ax) perpendiculaire à [AB]". Deux orientations sont géométriquement
-   possibles pour ce deuxième côté (l'équerre peut se poser d'un côté ou de l'autre de la
-   droite) : on choisit celle qui va vers "target" (les coordonnées, même approximatives, du
-   point qu'on cherche à intercepter ensuite, ex. avec le compas). */
-async function tbAiDrawPerpendicular(A, reference, target, lengthPx){
-  const baseAngle = Math.atan2(reference.y-A.y, reference.x-A.x)*180/Math.PI;
-  const candidates = [baseAngle, baseAngle+180];
-  let bestAngle = candidates[0], bestDot = -Infinity;
-  for(const cand of candidates){
-    const rad = cand*Math.PI/180;
-    const dirX = -Math.sin(rad), dirY = Math.cos(rad);
-    const dot = dirX*(target.x-A.x) + dirY*(target.y-A.y);
-    if(dot>bestDot){ bestDot=dot; bestAngle=cand; }
-  }
-  const rad = bestAngle*Math.PI/180;
-  const dirX = -Math.sin(rad), dirY = Math.cos(rad);
-  let t = tbTools.find(x=>x.type==='equerre');
-  if(!t){
-    t = {id:tbNextId++, type:'equerre', x:A.x, y:A.y, angle:bestAngle};
-    tbTools.push(t);
-    tbRenderPalette();
-    tbRender();
-  } else {
-    await tbAiTweenProps(t, {x:A.x, y:A.y, angle:bestAngle}, 700);
-  }
-  await tbAiSleep(150);
-  const stroke = {color: tbCurrentColor(), points: []};
-  tbInk.push(stroke);
-  const n = 18;
-  for(let i=0;i<=n;i++){
-    const px=A.x+dirX*lengthPx*i/n, py=A.y+dirY*lengthPx*i/n;
-    stroke.points.push([px,py]);
-    tbAiEnsureCrayon(px,py,bestAngle+90);
-    tbRender();
-    await tbAiSleep(18);
-  }
-  await tbAiSleep(150);
-  tbAiPutAwayTools('equerre','crayon');
-}
-/* Vrai si un trait déjà tracé passe à la fois par A et par B (n'importe où le long de son
-   tracé, pas seulement à ses extrémités -- une demi-droite à l'équerre s'étend maintenant au
-   delà du point qui nous intéresse, cf. tbAiDrawPerpendicular). Sert à éviter de retracer un
-   côté déjà obtenu comme sous-produit d'une étape "measure"/"perpendicular" précédente. */
-function tbAiAlreadyConnected(A, B){
-  const tol = 5;
-  return tbInk.some(stroke=>{
-    const hasA = stroke.points.some(p=>Math.hypot(p[0]-A.x,p[1]-A.y)<tol);
-    const hasB = stroke.points.some(p=>Math.hypot(p[0]-B.x,p[1]-B.y)<tol);
-    return hasA && hasB;
-  });
-}
-/* Exécute UNE SEULE étape (mutation d'état + animation), sans pousser d'historique -- c'est
-   l'appelant (la barre de lecture pas à pas ci-dessous) qui en pousse un par étape. */
-async function tbAiExecuteStep(step){
-  if(step.type==='point'){
-    tbPoints.push({id:tbPointNextId++, x:step.x, y:step.y, label:step.label});
-    tbRender();
-  } else if(step.type==='measure'){
-    const A = tbPoints.find(p=>p.label===step.from);
-    if(A) await tbAiDrawMeasure(A, step.label, step.x, step.y);
-  } else if(step.type==='segment'){
-    const A = tbPoints.find(p=>p.label===step.from), B = tbPoints.find(p=>p.label===step.to);
-    // Ne retrace pas un côté déjà relié par l'encre d'une étape "measure"/"perpendicular"
-    // précédente -- signalé : "ne pas retracer les côtés AB et AC qui existent déjà".
-    if(A && B && !tbAiAlreadyConnected(A, B)) await tbAiDrawSegment(A, B);
-  } else if(step.type==='circle'){
-    const C = tbPoints.find(p=>p.label===step.center);
-    if(C){
-      const target = (Number.isFinite(step.towardX) && Number.isFinite(step.towardY)) ? {x:step.towardX, y:step.towardY} : null;
-      await tbAiDrawCircle(C, step.radiusCm*TB_PX_PER_CM, target);
-    }
-  } else if(step.type==='perpendicular'){
-    const A = tbPoints.find(p=>p.label===step.at), ref = tbPoints.find(p=>p.label===step.reference);
-    if(A && ref){
-      const target = {x:step.towardX, y:step.towardY};
-      const dist = Math.hypot(target.x-A.x, target.y-A.y);
-      // La demi-droite s'étend nettement AU-DELÀ de "target" (le point qui sera trouvé dessus
-      // par la suite) -- signalé : "elle a été calculée en amont pour s'arrêter en C", ce qui
-      // trahissait visuellement le résultat avant que le compas ne l'ait "trouvé".
-      const lengthPx = Math.min(16*TB_PX_PER_CM, dist + 3*TB_PX_PER_CM);
-      await tbAiDrawPerpendicular(A, ref, target, lengthPx);
-    }
-  } else if(step.type==='text'){
-    tbTexts.push({id:tbTextNextId++, x:step.x, y:step.y, text:step.text, fontSize:16});
-    tbRender();
-  }
-}
-/* Barre de lecture pas à pas -- signalé : "ne pas écrire les étapes. Pouvoir revenir à la
-   première étape et regarder le tracé lentement". Remplace l'ancien enchaînement automatique
-   de toutes les étapes (avec récit écrit) par un contrôle manuel façon lecteur vidéo
-   (Précédent/Suivant/Depuis le début + vitesse) -- le professeur avance à son propre rythme
-   devant la classe. "Précédent"/"Depuis le début" réutilisent l'historique annuler/rétablir
-   déjà existant (un instantané est poussé après chaque étape) plutôt que de ré-animer à
-   l'envers, ce qui n'aurait pas de sens visuellement pour un trait déjà tracé. */
-let tbAiPlanSteps = null;
-let tbAiPlanIndex = 0; // nombre d'étapes déjà exécutées (0 = rien encore fait)
-function tbAiPlaybackShow(){
-  const bar = document.getElementById('tbAiPlaybackBar');
-  if(bar) bar.style.display = 'flex';
-}
-function tbAiPlaybackHide(){
-  const bar = document.getElementById('tbAiPlaybackBar');
-  if(bar) bar.style.display = 'none';
-  tbAiPlanSteps = null;
-  tbAiPlanIndex = 0;
-}
-function tbAiPlaybackUpdateUI(){
-  const counter = document.getElementById('tbAiPlaybackCounter');
-  if(counter) counter.textContent = 'Étape '+tbAiPlanIndex+' / '+(tbAiPlanSteps?tbAiPlanSteps.length:0);
-  const prevBtn = document.getElementById('tbAiPlaybackPrev'), nextBtn = document.getElementById('tbAiPlaybackNext');
-  if(prevBtn) prevBtn.disabled = tbAiPlanIndex<=0;
-  if(nextBtn) nextBtn.disabled = !tbAiPlanSteps || tbAiPlanIndex>=tbAiPlanSteps.length;
-}
-async function tbAiPlaybackNext(){
-  if(!tbAiPlanSteps || tbAiPlanIndex>=tbAiPlanSteps.length) return;
-  const prevBtn = document.getElementById('tbAiPlaybackPrev'), nextBtn = document.getElementById('tbAiPlaybackNext');
-  if(prevBtn) prevBtn.disabled = true;
-  if(nextBtn) nextBtn.disabled = true;
-  await tbAiExecuteStep(tbAiPlanSteps[tbAiPlanIndex]);
-  tbPushHistory();
-  tbAiPlanIndex++;
-  tbAiPlaybackUpdateUI();
-}
-function tbAiPlaybackPrev(){
-  if(tbAiPlanIndex<=0) return;
-  tbUndo();
-  tbAiPlanIndex--;
-  tbAiPlaybackUpdateUI();
-}
-function tbAiPlaybackRestart(){
-  while(tbAiPlanIndex>0){ tbUndo(); tbAiPlanIndex--; }
-  tbAiPlaybackUpdateUI();
-}
-/* Repère toutes les sous-chaînes [...] correctement équilibrées (en ignorant les crochets à
-   l'intérieur de chaînes JSON, ex. dans un texte "[Ax)") -- contrairement à un simple
-   indexOf('[')...lastIndexOf(']'), ceci reste correct même si la réponse contient un AUTRE
-   crochet avant ou après le vrai tableau JSON (ex. une phrase d'intro qui cite "[BC]"). */
-function tbAiExtractJsonArrays(text){
-  const candidates = [];
-  for(let i=0;i<text.length;i++){
-    if(text[i]!=='[') continue;
-    let depth=0, inStr=false, strCh=null, esc=false;
-    for(let j=i;j<text.length;j++){
-      const c=text[j];
-      if(inStr){
-        if(esc) esc=false;
-        else if(c==='\\') esc=true;
-        else if(c===strCh) inStr=false;
-        continue;
-      }
-      if(c==='"'||c==="'"){ inStr=true; strCh=c; continue; }
-      if(c==='[') depth++;
-      else if(c===']'){ depth--; if(depth===0){ candidates.push(text.slice(i,j+1)); break; } }
-    }
-  }
-  return candidates;
-}
-/* Extrait le tableau d'étapes de la réponse de l'IA. Malgré la consigne "rien d'autre que le
-   JSON", Claude ajoute parfois une courte phrase d'intro, des balises ```json```, ou enveloppe
-   le tableau dans un objet (ex. {"etapes":[...]}) malgré la consigne d'un tableau nu -- signalé
-   deux fois : "l'IA n'a pas renvoyé un JSON exploitable" alors que les logs montrent que l'appel
-   réussissait et renvoyait du texte. On essaie donc, dans l'ordre : le texte brut tel quel, puis
-   chaque tableau [...] correctement équilibré trouvé n'importe où dans la réponse (du plus long
-   au plus court) -- et pour chaque tentative qui donne un OBJET plutôt qu'un tableau, on
-   cherche la première propriété qui EST un tableau. La réponse brute est journalisée en
-   console en cas d'échec total, pour diagnostiquer sans avoir à reproduire l'appel. */
-function tbAiParseSteps(raw){
-  const bracketCandidates = tbAiExtractJsonArrays(raw).sort((a,b)=>b.length-a.length);
-  const attempts = [raw.trim(), ...bracketCandidates];
-  for(const text of attempts){
-    let parsed;
-    try{ parsed = JSON.parse(text); }
-    catch(e){ continue; }
-    if(Array.isArray(parsed) && parsed.length) return parsed;
-    if(parsed && typeof parsed==='object'){
-      for(const key of Object.keys(parsed)){
-        if(Array.isArray(parsed[key]) && parsed[key].length) return parsed[key];
-      }
-    }
-  }
-  console.warn('tableau-ia : réponse non exploitable, réponse brute reçue :', raw);
-  return null;
-}
-async function tbAiGenerate(){
-  const enonce = document.getElementById('tbAiEnonce').value.trim();
-  const status = document.getElementById('tbAiStatus');
-  const btn = document.getElementById('tbAiGenerateBtn');
-  if(!enonce){ status.textContent = "Écrivez d'abord un énoncé."; return; }
-  if(!currentUser){ status.textContent = 'Connectez-vous pour utiliser cette fonctionnalité.'; return; }
-  status.textContent = 'Génération en cours (calcul des coordonnées par IA)…';
-  btn.disabled = true;
-  try{
-    const raw = await callClaude(tbAiBuildPrompt(enonce), 3000, {feature:'tableau-ia'});
-    const steps = tbAiParseSteps(raw);
-    if(!steps){ status.textContent = "L'IA n'a pas renvoyé un JSON exploitable -- réessayez (parfois il faut relancer une fois)."; return; }
-    const check = tbAiValidatePlan(steps);
-    if(!check.ok){ status.textContent = 'Construction invalide : '+check.error+' -- réessayez.'; return; }
-    tbCloseAiModal();
-    tbAiPlanSteps = check.steps;
-    tbAiPlanIndex = 0;
-    tbAiPlaybackShow();
-    tbAiPlaybackUpdateUI();
-  }catch(err){
-    status.textContent = 'Erreur : '+err.message;
-  }finally{
-    btn.disabled = false;
-  }
 }
 
 /* ======================= détection de nouvelle version ======================= */
