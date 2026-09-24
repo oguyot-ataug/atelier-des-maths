@@ -351,6 +351,14 @@ function tbAiEvaluate(program, flips){
         actions.push({op:'mark_right_angle', A, u1:tbV.norm(tbV.sub(B,A)), u2:tbV.norm(tbV.sub(C,A))});
         break;
       }
+      case 'mark_angle': {
+        const A = P(i,s.vertex);
+        if(!Array.isArray(s.points) || s.points.length!==2) err(i, '« points » doit lister deux points');
+        const u1 = tbV.norm(tbV.sub(P(i,s.points[0]),A)), u2 = tbV.norm(tbV.sub(P(i,s.points[1]),A));
+        const deg = Math.acos(Math.max(-1, Math.min(1, tbV.dot(u1,u2))))*180/Math.PI;
+        actions.push({op:'mark_angle', A, u1, u2, text: s.value===false ? '' : tbAiFmtDeg(deg), count: Math.max(1, Math.min(3, Math.round(s.count||1)))});
+        break;
+      }
       case 'mark_equal': {
         if(!Array.isArray(s.segments) || !s.segments.length) err(i, '« segments » attendu');
         const segs = s.segments.map(pair=>{
@@ -519,6 +527,38 @@ function tbAiAlreadyTraced(a, b){
   const dSeg = (p,s,e)=>{ const dx=e[0]-s[0], dy=e[1]-s[1], l2=dx*dx+dy*dy||1; const t=Math.max(0,Math.min(1,((p.x-s[0])*dx+(p.y-s[1])*dy)/l2)); return Math.hypot(p.x-(s[0]+t*dx), p.y-(s[1]+t*dy)); };
   return tbInk.some(st=>st.straight && st.points.length>1 && dSeg(a,st.points[0],st.points[st.points.length-1])<3 && dSeg(b,st.points[0],st.points[st.points.length-1])<3);
 }
+/* ---------- Codages (demandé : "coder les figures -- angles droits, valeurs des angles :
+   juste la valeur") ---------- */
+function tbAiFmtDeg(deg){
+  const r = Math.round(deg*10)/10;
+  return (Number.isInteger(r) ? String(r) : String(r).replace('.',','))+'°';
+}
+/* Petit carré d'angle droit au sommet V, entre les directions écran d1 et d2 (unitaires). */
+function tbAiCodeRightAngle(V, d1, d2){
+  if(tbCodages.some(c=>c.kind==='right' && Math.hypot(c.x-V.x, c.y-V.y)<3)) return;
+  const useD1 = (-d1.y*d2.x + d1.x*d2.y) > 0;
+  tbCodages.push({id:tbCodageNextId++, kind:'right', x:V.x, y:V.y, angle:tbAiVecAng(useD1 ? d1 : d2)});
+}
+/* Arc d'angle au sommet V entre d1 et d2 (le plus petit des deux angles), avec éventuellement
+   sa valeur écrite seule ("40°"), placée dans l'angle le long de la bissectrice. */
+function tbAiCodeAngle(V, d1, d2, text, count){
+  if(tbCodages.some(c=>c.kind==='arc' && Math.hypot(c.x-V.x, c.y-V.y)<3 && Math.abs(tbAiNorm180(c.angle1-tbAiVecAng(d1)))<1 && Math.abs(tbAiNorm180(c.angle2-tbAiVecAng(d2)))<1)) return;
+  const a1 = tbAiVecAng(d1), a2 = tbAiVecAng(d2);
+  const r = text ? 22 : 26;
+  tbCodages.push({id:tbCodageNextId++, kind:'arc', x:V.x, y:V.y, angle:a1, angle1:a1, angle2:a2, count:count||1, r});
+  if(!text) return;
+  let bx = d1.x+d2.x, by = d1.y+d2.y; const bl = Math.hypot(bx,by);
+  if(bl<1e-6){ bx = -d1.y; by = d1.x; } else { bx/=bl; by/=bl; }
+  const deg = Math.acos(Math.max(-1, Math.min(1, d1.x*d2.x+d1.y*d2.y)))*180/Math.PI;
+  const dist = r+16+Math.max(0, 40-deg)*0.6, fs = 15, w = text.length*fs*0.55;
+  tbTexts.push({id:tbTextNextId++, x:V.x+bx*dist-w/2, y:V.y+by*dist+fs/2-2, text, fontSize:fs});
+}
+/* Traits de longueurs égales au milieu de [P,Q] (écran). */
+function tbAiCodeTicks(P, Q, count){
+  tbCodages.push({id:tbCodageNextId++, kind:'tick', x:(P.x+Q.x)/2, y:(P.y+Q.y)/2, angle:tbAiAng(P,Q), count:count||1});
+}
+const tbAiUnit = (from,to)=>{ const dx=to.x-from.x, dy=to.y-from.y, l=Math.hypot(dx,dy)||1; return {x:dx/l, y:dy/l}; };
+
 /* Portion [t0,t1] (px, le long de u depuis p) visible dans le tableau. */
 function tbAiClip(p, u, t0, t1){
   const lim = [[8,892,'x'],[8,552,'y']];
@@ -688,6 +728,8 @@ const tbAiSteps = {
     }
     if(a.footName){ await tbAiPutAway('equerre','regle_grad'); await tbAiMark(H, a.footName); }
     await tbAiPutAwayAll();
+    tbAiCodeRightAngle(H, dS, nS);
+    tbRender();
   },
   /* Parallèle : équerre posée sur la droite, règle contre l'autre côté de l'équerre, l'équerre
      glisse le long de la règle jusqu'au point, puis tracé le long de l'équerre. */
@@ -740,6 +782,7 @@ const tbAiSteps = {
     await tbAiMark(I, a.name);
     tbAiClearHighlights();
     await tbAiPutAwayAll();
+    if(tbAiAlreadyTraced(A,B)){ tbAiCodeTicks(A,I,1); tbAiCodeTicks(I,B,1); tbRender(); }
   },
   /* Médiatrice au compas : même écartement depuis A puis depuis B, deux points d'intersection,
      droite qui passe par ces deux points. */
@@ -755,6 +798,12 @@ const tbAiSteps = {
     const ex = tbAiExtent(a.obj);
     if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
     await tbAiPutAwayAll();
+    const As = S(a.A), Bs = S(a.B), I = S(tbV.mid(a.A,a.B));
+    if(tbAiAlreadyTraced(As,Bs)){
+      tbAiCodeTicks(As,I,1); tbAiCodeTicks(I,Bs,1);
+      tbAiCodeRightAngle(I, tbAiUnit(I,Bs), tbAiUnit(I,S(a.E)));
+      tbRender();
+    }
   },
   /* Bissectrice au compas : un arc depuis le sommet coupe les deux côtés, deux arcs de même
      écartement depuis ces points se coupent sur la bissectrice. */
@@ -777,6 +826,11 @@ const tbAiSteps = {
     const ex = tbAiExtent(a.obj);
     if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
     await tbAiPutAwayAll();
+    // Les deux angles égaux, codés à l'identique (arc barré).
+    const As = S(a.A), dK = tbAiUnit(As, S(a.K));
+    tbAiCodeAngle(As, tbAiUnit(As, S(a.P)), dK, '', 3);
+    tbAiCodeAngle(As, dK, tbAiUnit(As, S(a.Q)), '', 3);
+    tbRender();
   },
   /* Angle au rapporteur : centre sur le sommet, 0° sur le côté de référence, repère à la bonne
      graduation, puis demi-droite à la règle depuis le sommet par ce repère. */
@@ -800,11 +854,16 @@ const tbAiSteps = {
     const ex = tbAiExtent(a.obj);
     if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
     await tbAiPutAwayAll();
+    tbAiCodeAngle(A, tbAiUnit(A,B), dS, tbAiFmtDeg(a.deg), 1);
+    tbRender();
   },
   async mark_right_angle(a){
-    const A = tbAiPlan.S(a.A), d1 = tbAiSd(a.u1), d2 = tbAiSd(a.u2);
-    const useD1 = (-d1.y*d2.x + d1.x*d2.y) > 0;
-    tbCodages.push({id:tbCodageNextId++, kind:'right', x:A.x, y:A.y, angle:tbAiVecAng(useD1 ? d1 : d2)});
+    tbAiCodeRightAngle(tbAiPlan.S(a.A), tbAiSd(a.u1), tbAiSd(a.u2));
+    tbRender();
+    await tbAiSleep(300);
+  },
+  async mark_angle(a){
+    tbAiCodeAngle(tbAiPlan.S(a.A), tbAiSd(a.u1), tbAiSd(a.u2), a.text, a.count);
     tbRender();
     await tbAiSleep(300);
   },
@@ -858,22 +917,25 @@ OPÉRATIONS DISPONIBLES :
 - {"op":"angle_bisector","id":"b","angle":["B","A","C"]} : BISSECTRICE de l'angle BAC (sommet au milieu) au compas.
 - {"op":"angle","id":"dA","vertex":"A","from":"B","degrees":50,"side":"up"} : ANGLE AU RAPPORTEUR : demi-droite d'origine A faisant 50° avec [AB), du côté "side". Option "mark":"x" pour nommer le repère.
 - {"op":"mark_right_angle","vertex":"A","points":["B","C"]} : codage de l'angle droit BAC.
+- {"op":"mark_angle","vertex":"A","points":["B","C"]} : arc de l'angle BAC avec sa valeur seule (ex. "60°", calculée automatiquement). "value":false pour l'arc seul, "count" (1 à 3) pour coder des angles égaux.
 - {"op":"mark_equal","segments":[["A","B"],["A","C"]],"count":1} : codage de longueurs égales.
+
+CODAGE : sont codés AUTOMATIQUEMENT (ne les ajoute pas) les angles droits construits à l'équerre ("perpendicular"), les angles construits au rapporteur ("angle", arc + valeur), la médiatrice (angle droit + milieu) et la bissectrice (angles égaux). Ajoute toi-même les autres codages qui décrivent la figure demandée : angles droits obtenus autrement (ex. les 4 angles d'un rectangle, sauf ceux déjà construits à l'équerre), longueurs égales (triangle isocèle ou équilatéral, losange, carré, milieu), valeurs d'angles données par l'énoncé et non construites au rapporteur.
 - {"op":"label","text":"(d)","on":"d1"} : nom d'une droite ou d'un cercle.
 
 STRATÉGIES CLASSIQUES (choisis celle que l'on enseigne pour l'énoncé) :
 - Triangle connaissant les 3 longueurs : segment_length pour un côté, puis deux "circle" (centres aux extrémités, rayons les deux autres longueurs), "intersect" pour le 3e sommet, puis "segment" pour les deux côtés restants.
-- Triangle rectangle en A (un côté de l'angle droit et l'hypoténuse) : segment_length [AB], "perpendicular" en A de kind "ray", "circle" de centre B de rayon l'hypoténuse, "intersect" C, "segment" [BC] ([AC] est déjà tracé par la demi-droite), "mark_right_angle".
-- Triangle rectangle en A (les deux côtés de l'angle droit) : segment_length [AB], "perpendicular" en A (ray), segment_length de A à C avec "along", "segment" [BC], "mark_right_angle".
+- Triangle rectangle en A (un côté de l'angle droit et l'hypoténuse) : segment_length [AB], "perpendicular" en A de kind "ray", "circle" de centre B de rayon l'hypoténuse, "intersect" C, "segment" [BC] ([AC] est déjà tracé par la demi-droite ; l'angle droit est codé automatiquement).
+- Triangle rectangle en A (les deux côtés de l'angle droit) : segment_length [AB], "perpendicular" en A (ray), segment_length de A à C avec "along", "segment" [BC].
 - Triangle connaissant deux longueurs et l'angle compris : segment_length [AB], "angle" en A, segment_length de A à C avec "along", "segment" [BC].
 - Triangle connaissant une longueur et les deux angles adjacents : segment_length [AB], "angle" en A depuis B, "angle" en B depuis A (même "side"), "intersect" C.
 - Triangle isocèle / équilatéral : cercles de même rayon ("circle" ou "radius_from") puis "intersect".
-- Rectangle / carré : segment_length [AB], deux "perpendicular" (en A et en B, ray, même side), deux segment_length avec "along", "segment" pour fermer, codages.
+- Rectangle / carré : segment_length [AB], deux "perpendicular" (en A et en B, ray, même side), deux segment_length avec "along", "segment" pour fermer, puis "mark_right_angle" pour les deux autres angles (et "mark_equal" pour un carré).
 - Losange : cercles de même rayon depuis deux sommets. Parallélogramme : "parallel" ou reports au compas ("radius_from").
 - Milieu, médiatrice, bissectrice, perpendiculaire, parallèle : opérations dédiées ci-dessus.
 
 EXEMPLE 1 -- "Construire un triangle ABC rectangle en A tel que AB = 4 cm et BC = 7 cm." :
-[{"op":"point","name":"A"},{"op":"segment_length","from":"A","to":"B","length":4},{"op":"perpendicular","id":"dA","through":"A","to":["A","B"],"kind":"ray","side":"up"},{"op":"circle","id":"cB","center":"B","radius":7},{"op":"intersect","name":"C","of":["dA","cB"]},{"op":"segment","from":"B","to":"C"},{"op":"mark_right_angle","vertex":"A","points":["B","C"]}]
+[{"op":"point","name":"A"},{"op":"segment_length","from":"A","to":"B","length":4},{"op":"perpendicular","id":"dA","through":"A","to":["A","B"],"kind":"ray","side":"up"},{"op":"circle","id":"cB","center":"B","radius":7},{"op":"intersect","name":"C","of":["dA","cB"]},{"op":"segment","from":"B","to":"C"}]
 
 EXEMPLE 2 -- "Construire un triangle EFG tel que EF = 6 cm, EG = 4 cm et FG = 5 cm." :
 [{"op":"point","name":"E"},{"op":"segment_length","from":"E","to":"F","length":6},{"op":"circle","id":"cE","center":"E","radius":4},{"op":"circle","id":"cF","center":"F","radius":5},{"op":"intersect","name":"G","of":["cE","cF"],"pick":"up"},{"op":"segment","from":"E","to":"G"},{"op":"segment","from":"F","to":"G"}]

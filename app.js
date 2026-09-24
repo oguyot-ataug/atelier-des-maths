@@ -2498,6 +2498,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.650', items:[
+    "Tableau IA, codage des figures -- demandé : \"coder les figures (angles droits, valeurs des angles [sans] le nom : juste la valeur)\". Codage automatique à la fin de chaque geste : angle droit (petit carré) dès qu'une perpendiculaire est tracée à l'équerre, arc + valeur seule (ex. « 40° », jamais « BAC = 40° ») pour chaque angle construit au rapporteur, traits égaux + angle droit pour la médiatrice, arcs identiques pour la bissectrice, traits égaux pour un milieu. L'IA peut aussi coder elle-même les autres angles droits (ex. les 4 angles d'un rectangle), les longueurs égales et afficher la valeur d'un angle déjà présent sur la figure. Revenir d'une étape efface aussi son codage.",
+  ]},
   { version:'2026-08-19.649', items:[
     "Tableau IA, perpendiculaire à l'équerre -- signalé : \"l'équerre est venue coulisser sur le segment mais on ne peut pas procéder ainsi car elle n'est finalement posée sur aucun objet\". Elle reposait sur le prolongement NON tracé de la droite (au-delà de A). Elle se pose désormais sur la partie réellement tracée ([AB]) et coulisse le long d'elle jusqu'au point ; selon le côté où part la perpendiculaire, c'est le petit ou le grand côté de l'angle droit qui repose sur le tracé (une équerre ne se retourne pas).",
   ]},
@@ -7074,7 +7077,7 @@ function tbRender(){
       const arcCount = c.count<=2 ? c.count : 1;
       let arcs = '';
       for(let i=0;i<arcCount;i++){
-        const r = 13+i*6;
+        const r = (c.r||13)+i*6;
         const x1 = c.x+r*Math.cos(a1), y1 = c.y+r*Math.sin(a1);
         const x2 = c.x+r*Math.cos(a2), y2 = c.y+r*Math.sin(a2);
         const largeArc = Math.abs(a2-a1)>Math.PI ? 1 : 0, sweep = (a2-a1)>0 ? 1 : 0;
@@ -7082,7 +7085,7 @@ function tbRender(){
       }
       if(c.count>2){
         // Barré : un arc simple + 1 ou 2 petites striures qui le traversent.
-        const strikes = c.count-2, r = 13, mid = (a1+a2)/2;
+        const strikes = c.count-2, r = c.r||13, mid = (a1+a2)/2;
         for(let k=0;k<strikes;k++){
           const a = mid + (k-(strikes-1)/2)*0.2;
           const mx=c.x+r*Math.cos(a), my=c.y+r*Math.sin(a);
