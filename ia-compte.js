@@ -119,6 +119,7 @@ async function renderIaPage(){
   const isAdmin = currentUserRole==='admin';
   const siteKey = isAdmin || !!iaSettings.use_site_key;
   const hasKey = siteKey || !!iaSettings.key_last4;
+  const paidBySite = siteKey;
   const selectedMode = iaSettings.student_mode==='selected';
   const feats = iaSettings.student_features || {};
   const quota = iaSettings.student_weekly_quota;
@@ -131,7 +132,7 @@ async function renderIaPage(){
     <div class="tool-shell ia-card">
       <strong class="ia-h"><span class="gicon">key</span> 1. Votre clé Anthropic</strong>
       ${iaSettings.use_site_key
-        ? `<p style="margin:6px 0 8px;padding:8px 12px;background:rgba(31,122,77,.08);border-left:3px solid #1F7A4D;border-radius:6px;"><span class="gicon">verified</span> <b>L'administrateur vous permet d'utiliser la clé du site</b> : vous n'avez pas besoin de clé personnelle. Si vous en ajoutez une quand même, c'est elle qui sera utilisée.</p>`
+        ? `<p style="margin:6px 0 8px;padding:8px 12px;background:rgba(31,122,77,.08);border-left:3px solid #1F7A4D;border-radius:6px;"><span class="gicon">verified</span> <b>L'administrateur a choisi la clé du site pour votre compte</b> : vous n'avez pas besoin de clé personnelle, votre IA et celle de vos élèves sont prises en charge.</p>`
         : `<p class="hint" style="margin:6px 0 8px;">L'IA du site est payée par <b>votre propre compte Anthropic</b> (l'entreprise qui fournit l'IA Claude) : vous y ajoutez vous-même des crédits et fixez un plafond de dépense. Le site n'encaisse rien.</p>`}
       <div id="iaKeyStatus" style="margin-bottom:8px;">${iaSettings.key_last4
         ? `<span style="color:#1F7A4D;font-weight:700;"><span class="gicon">check_circle</span> Clé enregistrée</span> <span class="hint-mono">sk-ant-…${iaEsc(iaSettings.key_last4)}</span> <span class="hint">(${iaSettings.key_set_at ? new Date(iaSettings.key_set_at).toLocaleDateString('fr-FR') : ''})</span>`
@@ -166,7 +167,7 @@ async function renderIaPage(){
     <div class="tool-shell ia-card" style="${hasKey?'':'opacity:.55;'}">
       <strong class="ia-h"><span class="gicon">groups</span> 3. L'IA pour mes élèves</strong>
       <label style="display:flex;align-items:center;gap:8px;margin:8px 0 4px;font-weight:600;"><input type="checkbox" id="iaStudents" ${iaSettings.ai_students?'checked':''} ${hasKey?'':'disabled'} onchange="document.getElementById('iaStudentOpts').style.opacity=this.checked?1:.5"> Autoriser l'IA pour les élèves de mes classes</label>
-      <p class="hint" style="margin:0 0 8px;">Leurs utilisations sont payées par ${iaSettings.key_last4?'votre clé':siteKey?'la clé du site':'votre clé'} et figurent dans le rapport ci-dessous. Décoché : aucun outil IA pour vos élèves. Classes concernées : ${iaMyClasses.length ? iaMyClasses.map(c=>iaEsc(c.nom)).join(', ') : '<i>aucune classe rattachée</i>'}.</p>
+      <p class="hint" style="margin:0 0 8px;">Leurs utilisations sont payées par ${paidBySite?'la clé du site':'votre clé'} et figurent dans le rapport ci-dessous. Décoché : aucun outil IA pour vos élèves. Classes concernées : ${iaMyClasses.length ? iaMyClasses.map(c=>iaEsc(c.nom)).join(', ') : '<i>aucune classe rattachée</i>'}.</p>
       <div id="iaStudentOpts" style="opacity:${iaSettings.ai_students?1:.5};">
         <div style="display:flex;flex-wrap:wrap;gap:6px 18px;">
           ${IA_STUDENT_FEATURES.map(f=>`<label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" class="iaStuFeat" value="${f.key}" ${feats[f.key]?'checked':''} ${hasKey?'':'disabled'}> ${f.label}</label>`).join('')}
@@ -204,15 +205,11 @@ async function renderIaPage(){
       </div>
       <div id="iaReport"><p class="hint">Chargement…</p></div>
     </div>
-    ${isAdmin ? `<div class="tool-shell ia-card">
-      <strong class="ia-h"><span class="gicon">admin_panel_settings</span> 5. Professeurs : quelle clé ?</strong>
-      <p class="hint" style="margin:6px 0 8px;">Pour chaque collègue, vous décidez s'il peut utiliser <b>la clé du site</b> (payée par vous) ou s'il doit utiliser <b>sa propre clé</b>. Chacun active ensuite lui-même l'IA pour lui et/ou ses élèves.</p>
-      <div id="iaAdminTeachers"><p class="hint">Chargement…</p></div>
-    </div>` : ''}`;
+    ${isAdmin ? `<p class="hint" style="margin:0 0 16px;"><span class="gicon">admin_panel_settings</span> Le choix « clé du site / clé personnelle » de chaque professeur se règle dans <a href="#/admin" onclick="event.preventDefault(); showView('view-admin'); setActiveTopnav('admin'); document.querySelector('#adminTabs [data-admin-tab=ia]')?.click();">Administration &gt; IA</a>.</p>` : ''}`;
   document.getElementById('iaPeriod').value = iaPeriod;
   iaCountPicked();
   iaLoadReport();
-  if(isAdmin) iaLoadAdminTeachers();
+
 }
 
 async function iaSaveKey(){
@@ -320,8 +317,8 @@ function iaCountPicked(){
 }
 
 /* ---- Administrateur : clé du site ou clé personnelle, professeur par professeur ---- */
-async function iaLoadAdminTeachers(){
-  const box = document.getElementById('iaAdminTeachers'); if(!box) return;
+async function iaLoadAdminTeachers(boxId){
+  const box = document.getElementById(boxId||'adminAiTeachers'); if(!box) return;
   const { data, error } = await sb.rpc('admin_ai_teachers');
   if(error){ box.innerHTML = '<p class="hint">Erreur : '+iaEsc(error.message)+'</p>'; return; }
   const rows = (data||[]).map(t=>{
@@ -329,23 +326,28 @@ async function iaLoadAdminTeachers(){
     const isAdm = t.role==='admin';
     return `<tr>
       <td>${iaEsc([t.nom,t.prenom].filter(Boolean).join(' '))}${isAdm?' <span class="hint">(vous)</span>':''}</td>
-      <td>${isAdm ? '<span class="hint">clé du site</span>' : `<label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" ${t.use_site_key?'checked':''} onchange="iaAdminSetSiteKey('${t.teacher_id}', this)"> autorisée</label>`}</td>
-      <td>${t.has_key ? '<span class="hint-mono">…'+iaEsc(t.key_last4||'')+'</span>' : '<span class="hint">aucune</span>'}</td>
+      <td>${isAdm ? '<span class="hint">clé du site</span>' : `<select onchange="iaAdminSetSiteKey('${t.teacher_id}', this)" style="padding:4px 6px;">
+          <option value="site" ${t.use_site_key?'selected':''}>Clé du site</option>
+          <option value="perso" ${t.use_site_key?'':'selected'}>Clé personnelle</option></select>`}</td>
+      <td>${t.has_key ? '<span class="hint-mono">…'+iaEsc(t.key_last4||'')+'</span>' : (isAdm||t.use_site_key ? '<span class="hint">aucune (inutile)</span>' : '<span style="color:#B3261E;">aucune : IA inactive</span>')}</td>
       <td>${t.ai_self||isAdm ? 'oui' : 'non'}</td>
       <td>${t.ai_students ? (t.student_mode==='selected' ? 'élèves choisis' : 'tous') : 'non'}</td>
       <td>${t.calls_30d}</td><td>${t.calls_30d ? iaFmtUsd(cost) : '–'}</td>
     </tr>`;
   });
-  box.innerHTML = iaTable(['Professeur','Clé du site','Clé personnelle','IA pour lui','IA élèves','Utilisations (30 j)','Coût (30 j)'], rows)
+  box.innerHTML = iaTable(['Professeur','Clé utilisée','Sa clé personnelle','IA pour lui','IA élèves','Utilisations (30 j)','Coût (30 j)'], rows)
     + '<span class="hint" id="iaAdminMsg" style="display:block;margin-top:6px;min-height:1.2em;"></span>';
 }
-async function iaAdminSetSiteKey(teacherId, cb){
+async function iaAdminSetSiteKey(teacherId, sel){
   const msg = document.getElementById('iaAdminMsg');
-  cb.disabled = true;
-  const { error } = await sb.rpc('admin_set_teacher_site_key', {p_teacher: teacherId, p_allowed: cb.checked});
-  cb.disabled = false;
-  if(error){ cb.checked = !cb.checked; if(msg) msg.innerHTML = '<span style="color:#B3261E;">Erreur : '+iaEsc(error.message)+'</span>'; return; }
-  if(msg) msg.innerHTML = '<span style="color:#1F7A4D;">'+(cb.checked ? 'Clé du site autorisée : ce professeur n\'a plus besoin de sa propre clé (il doit encore activer l\'IA dans sa page).' : 'Clé du site retirée : ce professeur devra utiliser sa propre clé.')+'</span>';
+  const site = sel.value==='site';
+  sel.disabled = true;
+  const { error } = await sb.rpc('admin_set_teacher_site_key', {p_teacher: teacherId, p_allowed: site});
+  sel.disabled = false;
+  if(error){ sel.value = site ? 'perso' : 'site'; if(msg) msg.innerHTML = '<span style="color:#B3261E;">Erreur : '+iaEsc(error.message)+'</span>'; return; }
+  if(msg) msg.innerHTML = '<span style="color:#1F7A4D;">'+(site ? 'Enregistré : ce professeur utilise la clé du site (il doit encore activer l\'IA dans sa page).' : 'Enregistré : ce professeur doit utiliser sa clé personnelle.')+'</span>';
+  const sc = sel.closest('tr') && sel.closest('tr').children[2];
+  if(sc && !/…/.test(sc.textContent)) sc.innerHTML = site ? '<span class="hint">aucune (inutile)</span>' : '<span style="color:#B3261E;">aucune : IA inactive</span>';
 }
 
 /* ---- Rapport ---- */

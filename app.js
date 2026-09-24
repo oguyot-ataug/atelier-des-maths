@@ -2518,6 +2518,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.660', items:[
+    "Administration, IA -- précisé : \"au niveau admin : l'admin choisit si le prof utilise la clé du site ou sa clé perso\". Le choix se fait désormais dans Administration : onglet « IA » (anciennement « Usage IA »), tableau « Clé IA des professeurs » avec un sélecteur « Clé du site / Clé personnelle » par professeur (appliqué immédiatement), et le même choix dans la fenêtre « Modifier le compte » d'un professeur. Le choix est strict : « clé du site » = c'est la clé du site qui paie (même si le professeur a enregistré une clé) ; « clé personnelle » = sa clé, sans laquelle son IA reste inactive. La carte correspondante de la page Intelligence artificielle est remplacée par un lien vers l'Administration.",
+  ]},
   { version:'2026-08-19.659', items:[
     "Fix -- Administration, onglet Usage IA : \"Could not embed because more than one relationship was found for 'ai_usage_log' and 'profiles'\". Le journal IA pointe désormais deux fois vers les comptes (qui a utilisé l'IA, et qui paie) : la requête précise maintenant laquelle. Texte d'explication mis à jour (clé du site ou clé personnelle du professeur, au lieu de « un seul jeton pour tous ») et nouveau tableau « Par payeur ».",
   ]},

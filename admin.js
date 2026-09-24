@@ -25,7 +25,7 @@ document.getElementById('view-admin').innerHTML = `
     <button class="tab-btn" data-admin-tab="inscriptions"><span class=gicon>edit_note</span> Inscriptions</button>
     <button class="tab-btn" data-admin-tab="listing"><span class=gicon>assignment</span> Déjà enregistré</button>
     <button class="tab-btn" data-admin-tab="signalements"><span class=gicon>bug_report</span> Signalements</button>
-    <button class="tab-btn" data-admin-tab="ia"><span class=gicon>smart_toy</span> Usage IA</button>
+    <button class="tab-btn" data-admin-tab="ia"><span class=gicon>smart_toy</span> IA</button>
   </div>
 
   <div class="tab-panel active" id="admin-panel-comptes">
@@ -175,6 +175,11 @@ MARTIN Marie	mmartin		0123456A	6eA"></textarea>
   </div>
 
   <div class="tab-panel" id="admin-panel-ia">
+    <div class="tool-shell" style="margin-bottom:16px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;"><span class=gicon>key</span> Clé IA des professeurs</strong>
+      <p class="hint" style="margin:6px 0 10px;max-width:80ch;">Pour chaque professeur, vous choisissez qui paie son IA (et celle de ses élèves) : <b>la clé du site</b> (la vôtre) ou <b>sa clé personnelle</b> (qu'il enregistre lui-même dans Mon compte &gt; Intelligence artificielle). Le choix s'applique immédiatement. Chaque professeur active ensuite lui-même l'IA pour lui et/ou ses élèves.</p>
+      <div id="adminAiTeachers" class="hint">Chargement…</div>
+    </div>
     <div class="tool-shell">
       <button class="btn secondary" style="float:right;" onclick="adminRefreshAiUsage()"><span class=gicon>refresh</span> Actualiser</button>
       <p class="hint" style="margin:6px 0 14px;clear:right;max-width:75ch;">
@@ -245,6 +250,12 @@ document.body.insertAdjacentHTML('beforeend', `
       </label>
       <p class="hint" style="margin:0 0 6px;">Classes rattachées (établissement) :</p>
       <div id="editProfClassesList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;max-height:160px;overflow:auto;"></div>
+    </div>
+    <div id="editProfAiBox" style="display:none;background:rgba(13,91,163,.05);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+      <p style="margin:0 0 6px;font-weight:600;"><span class=gicon>smart_toy</span> Intelligence artificielle : clé utilisée</p>
+      <label style="display:flex;align-items:center;gap:8px;margin:4px 0;"><input type="radio" name="editProfAiKey" value="site"> Clé du site (payée par l'administrateur)</label>
+      <label style="display:flex;align-items:center;gap:8px;margin:4px 0;"><input type="radio" name="editProfAiKey" value="perso"> Clé personnelle du professeur</label>
+      <p class="hint" id="editProfAiInfo" style="margin:6px 0 0;"></p>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;">
       <span class="hint" id="editProfStatus" style="margin:auto 8px auto 0;"></span>
@@ -388,6 +399,17 @@ async function openEditProfModal(id){
     uaiClassesBox.style.display = '';
     await renderEditProfClasses(prof);
   }
+  // Clé IA (professeurs seulement : l'administrateur utilise toujours la clé du site).
+  const aiBox = document.getElementById('editProfAiBox');
+  aiBox.style.display = prof.role==='prof' ? '' : 'none';
+  if(prof.role==='prof'){
+    const { data: ai } = await sb.from('teacher_ai_settings').select('use_site_key,key_last4,ai_self,ai_students').eq('teacher_id', id).maybeSingle();
+    const site = !!(ai && ai.use_site_key);
+    document.querySelectorAll('input[name=editProfAiKey]').forEach(r=>{ r.checked = (r.value==='site')===site; });
+    document.getElementById('editProfAiInfo').textContent =
+      (ai && ai.key_last4 ? 'Clé personnelle enregistrée (…'+ai.key_last4+'). ' : 'Aucune clé personnelle enregistrée. ')
+      + 'IA pour lui : '+(ai && ai.ai_self ? 'activée' : 'non')+' · IA pour ses élèves : '+(ai && ai.ai_students ? 'activée' : 'non')+'.';
+  }
 }
 /* Classes "de l'établissement" : celles enseignées par au moins un collègue partageant le même
    UAI que ce prof (à défaut d'UAI renseigné, on affiche toutes les classes). Coche celles déjà
@@ -440,8 +462,16 @@ async function saveEditProfModal(){
     if(toAdd.length) await sb.from('class_teachers').insert(toAdd.map(class_id=>({class_id, teacher_id: editProfTargetId})));
     if(toRemove.length) await sb.from('class_teachers').delete().eq('teacher_id', editProfTargetId).in('class_id', toRemove);
   }
+  if(editProfTargetRole==='prof'){
+    const choice = document.querySelector('input[name=editProfAiKey]:checked');
+    if(choice){
+      const { error: aiErr } = await sb.rpc('admin_set_teacher_site_key', {p_teacher: editProfTargetId, p_allowed: choice.value==='site'});
+      if(aiErr){ status.textContent = 'Erreur (clé IA) : '+aiErr.message; return; }
+    }
+  }
   status.textContent = '✓ Enregistré';
   await adminRefreshListings();
+  if(typeof iaLoadAdminTeachers==='function') iaLoadAdminTeachers('adminAiTeachers');
   setTimeout(closeEditProfModal, 600);
 }
 function adminResetPasswordPrompt(userId, name){
@@ -1066,6 +1096,7 @@ function aiUsageFormatCost(costSum, knownCalls){
    le coût engendré ?". Un seul jeton d'API Anthropic (côté serveur, dans ai-proxy) sert à tout
    le monde -- ce panneau sert à suivre qui l'utilise et estimer ce que ça coûte. */
 async function adminRefreshAiUsage(){
+  if(typeof iaLoadAdminTeachers==='function') iaLoadAdminTeachers('adminAiTeachers');
   const elSummary = document.getElementById('adminAiUsageSummary');
   const elByUser = document.getElementById('adminAiUsageByUser');
   const elByFeature = document.getElementById('adminAiUsageByFeature');
