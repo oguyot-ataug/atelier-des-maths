@@ -466,7 +466,7 @@ document.body.insertAdjacentHTML('beforeend', `
         <textarea id="enonceInput" rows="2" style="flex:1;min-width:260px;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);"
           placeholder="Ex. : ABC triangle&#10;I milieu de [BC]&#10;cercle de centre A passant par B"></textarea>
         <button type="button" class="btn secondary" onclick="buildFromEnonce()" style="align-self:flex-start;"><span class=gicon>straighten</span> Construire à partir de l'énoncé</button>
-        <button type="button" class="btn orange" onclick="interpretEnonceWithAI()" style="align-self:flex-start;"><span class=gicon>smart_toy</span> Interpréter avec l'IA</button>
+        <button type="button" class="btn orange needs-ai-figure" onclick="interpretEnonceWithAI()" style="align-self:flex-start;"><span class=gicon>smart_toy</span> Interpréter avec l'IA</button>
       </div>
       <p class="hint" style="margin:-4px 0 10px;" id="figEnonceIaHint">Phrases reconnues directement : <span class="hint-mono">ABC triangle</span> (rectangle/isocèle/équilatéral, ex. <span class="hint-mono">ABC triangle rectangle en A</span>) · <span class="hint-mono">ABCD carré/rectangle/losange/parallélogramme</span> · <span class="hint-mono">I milieu de [BC]</span> · <span class="hint-mono">cercle de centre A passant par B</span>. Pour tout le reste (ou un énoncé complet en français libre), utilisez « Interpréter avec l'IA » (nécessite une clé API, à renseigner dans l'onglet Quiz IA).</p>
       <!-- Barre d'outils HORIZONTALE au-dessus du canevas (pas latérale) : la figure et les
@@ -927,7 +927,7 @@ function toolButtonsHTML(ctx){
     <button type="button" class="tool-icon-btn" title="Graphique (droites / fonctions)" onclick="${set}openGraphTool()">${TOOL_ICONS.graph}</button>
     <button type="button" class="tool-icon-btn" title="Diagramme statistique" onclick="${set}openStatsTool()">${TOOL_ICONS.stats}</button>
     <button type="button" class="tool-icon-btn" title="Probabilités (sac/urne, cartes, dés, arbre)" onclick="${set}openUrnTool()">${TOOL_ICONS.urn}</button>
-    <button type="button" class="tool-icon-btn geo-anim-btn" title="Animation géométrique (construction pas à pas aux instruments, générée par l'IA)" onclick="${set}openGeoAnimTool()">${TOOL_ICONS.geoanim}</button>
+    <button type="button" class="tool-icon-btn needs-ai-geoanim" title="Animation géométrique (construction pas à pas aux instruments, générée par l'IA)" onclick="${set}openGeoAnimTool()">${TOOL_ICONS.geoanim}</button>
   `;
 }
 let figDragPoint = null;

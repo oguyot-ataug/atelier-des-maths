@@ -19,17 +19,18 @@ const ROUTE_SIMPLE = {
   'view-cm':'cm', 'view-compte':'compte', 'view-correction':'correction',
   'view-evaluation':'evaluation', 'view-tableau':'tableau', 'view-cahier-eleve':'cahier',
   'view-admin':'admin', 'view-supervision':'supervision', 'view-mesresultats':'mesresultats',
+  'view-ia':'ia',
 };
 const ROUTE_LABELS = {
   cm:'Suivi', compte:'Mon compte', correction:'Correction', evaluation:'Évaluation',
   tableau:'Tableau interactif', cahier:'Cahier élève', admin:'Administration',
-  supervision:'Supervision', mesresultats:'Mes résultats',
+  supervision:'Supervision', mesresultats:'Mes résultats', ia:'Intelligence artificielle',
 };
 /* Routes reservees (role requis), miroir exact des gardes déjà présentes dans le
    gestionnaire de clic data-nav de app.js -- ne pas les dupliquer ailleurs. */
 const ROUTE_AUTH = {
   correction:['prof','admin'], evaluation:['prof','admin'],
-  admin:['admin'], supervision:['prof','admin'], mesresultats:['eleve'],
+  admin:['admin'], supervision:['prof','admin'], mesresultats:['eleve'], ia:['prof','admin'],
 };
 
 function routerSlugify(s){
@@ -159,6 +160,8 @@ function routerRestoreFromHash(){
         showView('view-admin'); setActiveTopnav('admin');
       } else if(key==='supervision'){
         showView('view-supervision'); setActiveTopnav('supervision'); renderSupervision(); renderSupervisionCeb();
+      } else if(key==='ia'){
+        showView('view-ia'); setActiveTopnav(null); if(typeof renderIaPage==='function') renderIaPage();
       } else if(key==='mesresultats'){
         showView('view-mesresultats'); setActiveTopnav('mesresultats'); renderMesResultats();
       } else {

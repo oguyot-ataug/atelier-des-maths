@@ -2283,11 +2283,14 @@ async function refreshAuthUI(){
     if(navMesResultats) navMesResultats.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
     if(navMesDevoirs) navMesDevoirs.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
     if(navAdmin) navAdmin.style.display = (!accessBlocked && currentUserRole==='admin') ? 'inline-block' : 'none';
-    // Tableau IA -- signalé : "ne faire apparaître Construire avec l'IA que pour moi (admin).
-    // Tant que ça fonctionne mal" -- réservé le temps de fiabiliser les constructions générées.
+    // Outils IA : affichés selon les droits (IA du professeur, IA accordée aux élèves) -- voir
+    // ia-compte.js. Le bouton reste masqué par CSS tant que l'accès n'est pas confirmé.
     const tbBtnAi = document.getElementById('tbBtnAi');
-    if(tbBtnAi) tbBtnAi.style.display = (!accessBlocked && currentUserRole==='admin') ? 'inline-block' : 'none';
-    document.body.classList.toggle('tb-ai-admin', !accessBlocked && currentUserRole==='admin');
+    if(tbBtnAi) tbBtnAi.style.display = accessBlocked ? 'none' : 'inline-block';
+    const btnIaSettings = document.getElementById('btnIaSettings');
+    if(btnIaSettings) btnIaSettings.style.display = isStaff ? 'block' : 'none';
+    if(accessBlocked){ if(typeof clearAiAccess==='function') clearAiAccess(); }
+    else if(typeof loadAiAccess==='function') loadAiAccess();
     const btnReportBug = document.getElementById('btnReportBug');
     if(btnReportBug) btnReportBug.style.display = isStaff ? 'block' : 'none';
     const chapSuggestRow = document.getElementById('chapSuggestRow');
@@ -2340,7 +2343,9 @@ async function refreshAuthUI(){
     if(navAdmin) navAdmin.style.display='none';
     const tbBtnAiOut = document.getElementById('tbBtnAi');
     if(tbBtnAiOut) tbBtnAiOut.style.display='none';
-    document.body.classList.remove('tb-ai-admin');
+    const btnIaSettingsOut = document.getElementById('btnIaSettings');
+    if(btnIaSettingsOut) btnIaSettingsOut.style.display='none';
+    if(typeof clearAiAccess==='function') clearAiAccess();
     const btnReportBugOut = document.getElementById('btnReportBug');
     if(btnReportBugOut) btnReportBugOut.style.display='none';
     const chapSuggestRowOut = document.getElementById('chapSuggestRow');
@@ -2513,6 +2518,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.657', items:[
+    "Intelligence artificielle : chaque professeur paie sa propre IA -- demandé : \"le professeur choisit s'il veut utiliser l'IA pour lui et/ou pour ses élèves. Ensuite, il ajoute des crédits sur Anthropic directement. Et il a une vue claire sur l'utilisation [...] un rapport bien détaillé\". Nouvelle page Mon compte > Intelligence artificielle : (1) clé Anthropic personnelle, vérifiée auprès d'Anthropic puis conservée chiffrée (seuls ses 4 derniers caractères s'affichent) + notice pour créer un compte, ajouter des crédits et fixer un plafond ; (2) « L'IA pour moi » ; (3) « L'IA pour mes élèves » avec le choix des outils (quiz, construction au tableau interactif, interprétation de figures) et un quota par élève sur 7 jours ; (4) rapport détaillé : totaux, coût estimé, par fonctionnalité, par classe, par élève, par jour, journal complet et export tableur.",
+    "Sans IA activée, les outils qui s'en servent disparaissent (quiz IA, évaluation par IA, interprétation de figure, construction IA au tableau, animation géométrique) ; un élève n'y a accès que si son professeur l'a autorisé, dans la limite de son quota. Le serveur revérifie tout à chaque appel et utilise la clé du bon professeur. L'administrateur (et ses classes) continue d'utiliser la clé du site.",
+  ]},
   { version:'2026-08-19.656', items:[
     "Outil de correction, nouvel outil « Animation géométrique » -- demandé : \"une fois l'exercice ouvert, avoir un outil en plus des autres : Animation Géométrique\". Nouvelle icône dans la barre d'outils de l'exercice (à côté de Texte, Figure, Division…) : on écrit l'énoncé, on coche les outils autorisés, « Générer la construction », on la regarde (pas à pas ou « Lecture »), puis « Insérer dans l'exercice ». Le bloc inséré (figure + « Voir la construction pas à pas ») se modifie comme les autres blocs : l'outil se rouvre avec l'énoncé et la construction. Tout se passe dans la fenêtre de l'outil, sans passer par le tableau interactif (dont le contenu n'est jamais touché) ; l'ancien bouton « Ajouter aux exercices corrigés » de la barre de lecture est retiré. Toujours réservé à l'administrateur le temps de la mise au point.",
   ]},

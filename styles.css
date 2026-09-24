@@ -549,10 +549,19 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
   align-items:center; justify-content:center; transition:background .15s, border-color .15s;
   color:var(--ink-soft);
 }
-/* Animation géométrique (construction IA) : réservée à l'administrateur le temps de la mise au
-   point -- la classe tb-ai-admin est posée sur <body> par refreshAuthUI. */
-.tool-icon-btn.geo-anim-btn{display:none;}
-body.tb-ai-admin .tool-icon-btn.geo-anim-btn{display:inline-flex;}
+/* Outils IA : visibles seulement si l'utilisateur y a droit (classes posées sur <body> par
+   ia-compte.js d'après my_ai_access -- le relais ai-proxy revérifie tout côté serveur). */
+body:not(.ai-quiz) .needs-ai-quiz, body:not(.ai-figure) .needs-ai-figure, body:not(.ai-tableau) .needs-ai-tableau,
+body:not(.ai-eval) .needs-ai-eval, body:not(.ai-geoanim) .needs-ai-geoanim{display:none !important;}
+/* Page « Intelligence artificielle » */
+.ia-card{margin-bottom:16px;}
+.ia-h{font-family:'Space Grotesk',sans-serif;font-size:1.02rem;}
+.ia-sub{font-family:'Space Grotesk',sans-serif;font-size:.95rem;margin:16px 0 6px;}
+.ia-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
+.ia-tile{border:1px solid rgba(28,43,57,.12);border-radius:10px;padding:10px 14px;background:#fff;}
+.ia-tile-v{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;}
+.ia-tile-l{font-size:.82rem;color:var(--ink-soft);}
+.ia-table td,.ia-table th{white-space:nowrap;}
 .tool-icon-btn:hover{background:rgba(28,43,57,.05); border-color:rgba(28,43,57,.25); color:var(--ink);}
 
 .placeholder-box{

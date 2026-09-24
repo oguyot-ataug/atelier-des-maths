@@ -98,7 +98,7 @@ document.getElementById('view-evaluation').innerHTML = `
       <textarea id="evalGrilleNotation" style="flex:1;min-width:280px;min-height:44px;padding:7px 10px;border-radius:8px;border:1px solid rgba(28,43,57,.2);font-family:inherit;font-size:.85rem;" oninput="scheduleEvalAutoSave()" placeholder="Un critère par paragraphe : &quot;Titre : points&quot; suivi de lignes &quot;- item&quot;">${escapeHtml(DEFAULT_GRILLE_NOTATION_TEXT)}</textarea>
     </div>
     <div class="tool-row" style="margin-bottom:10px;">
-      <label class="hint" style="margin:0;"><input type="checkbox" id="evalUseAI" onchange="toggleEvalAIOptions()"> <span class=gicon>smart_toy</span> Laisser l'IA proposer des exercices</label>
+      <label class="hint needs-ai-eval" style="margin:0;"><input type="checkbox" id="evalUseAI" onchange="toggleEvalAIOptions()"> <span class=gicon>smart_toy</span> Laisser l'IA proposer des exercices</label>
       <button class="btn secondary" onclick="addManualExercise()">+ Ajouter un exercice vierge</button>
       <button class="btn secondary" onclick="openEvalPreview()"><span class=gicon>visibility</span> Aperçu de l'évaluation</button>
     </div>
@@ -111,7 +111,7 @@ document.getElementById('view-evaluation').innerHTML = `
       <span class="hint" id="evalSaveStatus" style="margin:0;"></span>
     </div>
     <div id="evalCollabBanner"></div>
-    <div id="evalAIOptions" style="display:none;">
+    <div id="evalAIOptions" class="needs-ai-eval" style="display:none;">
       <div class="tool-row" style="margin-bottom:10px;">
         <label class="hint" style="margin:0;">Nombre d'exercices : <input type="number" id="evalNbExo" value="4" min="1" max="10" style="width:55px;margin-left:4px;"></label>
         <label class="hint" style="margin:0;"><input type="checkbox" id="evalQuestionCours"> Inclure une question de cours (restituer une définition/propriété, sans calcul)</label>
