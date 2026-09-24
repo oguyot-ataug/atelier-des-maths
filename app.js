@@ -2498,6 +2498,9 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.652', items:[
+    "Fix -- mutualisation des corrections, signalé : \"j'ai des exercices corrigés que ma collègue ne voit pas\". La liste « corrections d'un collègue » était plafonnée à 30 entrées par chapitre : au-delà, les plus anciennes disparaissaient (ex. 40 corrections en 5B sur N1, seules les 30 dernières étaient visibles). Plafond supprimé côté base : toutes les corrections du chapitre apparaissent désormais.",
+  ]},
   { version:'2026-08-19.651', items:[
     "Tableau IA, noms des points -- demandé : \"pour les labels des points, ne pas les superposer sur des tracés\". Chaque nom est placé à l'endroit le plus dégagé autour de son point (en tenant compte des traits déjà tracés ET de ceux qui restent à tracer, des arcs, codages et textes), de préférence vers l'extérieur de la figure ; un nom que de nouveaux tracés viendraient toucher est déplacé.",
     "Tableau IA, longueurs -- demandé : \"écrire aussi les longueurs quand elles sont données\". Chaque longueur de l'énoncé (ex. « 4 cm », « 3,5 cm ») s'écrit le long de son segment dès qu'il est tracé, à l'extérieur de la figure : segment mesuré à la règle, mais aussi rayon du compas quand le point obtenu est relié au centre (ex. BC = 7 cm dans le triangle rectangle).",
