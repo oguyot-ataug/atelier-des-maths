@@ -121,8 +121,11 @@ async function renderIaPage(){
   // Mode de clé décidé par l'administrateur ou le référent : site / établissement / personnelle.
   const keyMode = isAdmin ? 'site' : (iaSettings.key_mode || 'perso');
   const etabKey = !!(aiAccess && aiAccess.etab_key);
-  const hasKey = keyMode==='site' || (keyMode==='etab' && etabKey) || (keyMode==='perso' && !!iaSettings.key_last4);
-  const payerLabel = keyMode==='site' ? 'la clé du site' : keyMode==='etab' ? 'la clé de votre établissement' : 'votre clé';
+  // La clé personnelle sert aussi de clé de secours en mode site / établissement.
+  const persoKey = !!iaSettings.key_last4;
+  const hasKey = keyMode==='site' || (keyMode==='etab' && etabKey) || persoKey;
+  const mainKeyLabel = keyMode==='site' ? 'la clé du site' : 'la clé de l\'établissement';
+  const payerLabel = keyMode==='site' ? 'la clé du site' + (persoKey ? ' (puis votre clé de secours si besoin)' : '') : (keyMode==='etab' && etabKey) ? 'la clé de votre établissement' + (persoKey ? ' (puis votre clé de secours si besoin)' : '') : 'votre clé';
   const selectedMode = iaSettings.student_mode==='selected';
   const feats = iaSettings.student_features || {};
   const quota = iaSettings.student_weekly_quota;
@@ -139,11 +142,14 @@ async function renderIaPage(){
         : keyMode==='etab'
         ? (etabKey
           ? `<p style="margin:6px 0 8px;padding:8px 12px;background:rgba(31,122,77,.08);border-left:3px solid #1F7A4D;border-radius:6px;"><span class="gicon">domain</span> <b>Votre établissement prend en charge votre IA</b> (clé de l'établissement, gérée par votre référent) : vous n'avez pas besoin de clé personnelle.</p>`
-          : `<p style="margin:6px 0 8px;padding:8px 12px;background:rgba(179,38,30,.07);border-left:3px solid #B3261E;border-radius:6px;"><span class="gicon">domain</span> Votre IA doit passer par <b>la clé de votre établissement</b>, mais votre référent ne l'a pas encore enregistrée : l'IA reste inactive en attendant.</p>`)
+          : persoKey
+          ? `<p style="margin:6px 0 8px;padding:8px 12px;background:rgba(31,122,77,.08);border-left:3px solid #1F7A4D;border-radius:6px;"><span class="gicon">domain</span> Votre IA doit passer par <b>la clé de votre établissement</b>, que votre référent n'a pas encore enregistrée : <b>votre clé personnelle est utilisée en attendant</b>.</p>`
+          : `<p style="margin:6px 0 8px;padding:8px 12px;background:rgba(179,38,30,.07);border-left:3px solid #B3261E;border-radius:6px;"><span class="gicon">domain</span> Votre IA doit passer par <b>la clé de votre établissement</b>, mais votre référent ne l'a pas encore enregistrée : l'IA reste inactive en attendant (sauf si vous enregistrez votre clé personnelle ci-dessous).</p>`)
         : `<p class="hint" style="margin:6px 0 8px;">L'IA du site est payée par <b>votre propre compte Anthropic</b> (l'entreprise qui fournit l'IA Claude) : vous y ajoutez vous-même des crédits et fixez un plafond de dépense. Le site n'encaisse rien.</p>`}
       <div id="iaKeyStatus" style="margin-bottom:8px;">${iaSettings.key_last4
-        ? `<span style="color:#1F7A4D;font-weight:700;"><span class="gicon">check_circle</span> Clé enregistrée</span> <span class="hint-mono">sk-ant-…${iaEsc(iaSettings.key_last4)}</span> <span class="hint">(${iaSettings.key_set_at ? new Date(iaSettings.key_set_at).toLocaleDateString('fr-FR') : ''})</span>`
-        : keyMode!=='perso' ? `<span class="hint">Aucune clé personnelle (inutile : ${keyMode==='site'?'la clé du site':'la clé de l\'établissement'} est utilisée).</span>`
+        ? `<span style="color:#1F7A4D;font-weight:700;"><span class="gicon">check_circle</span> ${keyMode==='perso'?'Clé enregistrée':'Clé de secours enregistrée'}</span> <span class="hint-mono">sk-ant-…${iaEsc(iaSettings.key_last4)}</span> <span class="hint">(${iaSettings.key_set_at ? new Date(iaSettings.key_set_at).toLocaleDateString('fr-FR') : ''})</span>`
+          + (keyMode!=='perso' ? `<span class="hint" style="display:block;margin-top:4px;">Elle prend le relais automatiquement, à vos frais, si ${mainKeyLabel} n'est plus utilisable (${keyMode==='site'?'budget mensuel de l\'établissement atteint':'clé absente ou sans crédit'}). Vos outils fonctionnent ainsi sans interruption.</span>` : '')
+        : keyMode!=='perso' ? `<span class="hint">Aucune clé personnelle : ${mainKeyLabel} est utilisée. <b>Facultatif</b> : si vous enregistrez votre propre clé, elle servira de <b>clé de secours</b> et prendra le relais automatiquement si ${mainKeyLabel} n'est plus utilisable (${keyMode==='site'?'budget mensuel de l\'établissement atteint':'clé absente ou sans crédit'}).</span>`
         : `<span style="color:#B3261E;font-weight:700;"><span class="gicon">block</span> Aucune clé : l'IA est désactivée pour vous et vos élèves.</span>`}</div>
       <div class="tool-row" style="margin:0;">
         <input type="password" id="iaKeyInput" placeholder="sk-ant-api03-…" autocomplete="off" style="flex:1;min-width:220px;">
@@ -353,7 +359,7 @@ async function iaLoadAdminTeachers(boxId){
     return `<tr>
       <td>${iaEsc([t.nom,t.prenom].filter(Boolean).join(' '))}${me?' <span class="hint">(vous)</span>':''}${isAdminUser&&t.uai?'<div class="hint" style="margin:0;">'+iaEsc(t.uai)+'</div>':''}</td>
       <td>${modeCell}</td>
-      <td class="ia-keyok">${isAdm ? '<span class="hint">—</span>' : okCell}${t.has_key?' <span class="hint-mono" title="clé personnelle enregistrée">(perso …'+iaEsc(t.key_last4||'')+')</span>':''}</td>
+      <td class="ia-keyok">${isAdm ? '<span class="hint">—</span>' : okCell}${t.has_key?' <span class="hint-mono" title="clé personnelle enregistrée : utilisée en mode « clé personnelle », sinon clé de secours si la clé prévue ne suffit plus">(perso …'+iaEsc(t.key_last4||'')+')</span>':''}</td>
       <td>${t.ai_self ? 'oui' : 'non'}</td>
       <td>${t.ai_students ? (t.student_mode==='selected' ? 'élèves choisis' : 'tous') : 'non'}</td>
       <td>${t.calls_30d}</td><td>${t.calls_30d ? iaFmtUsd(cost) : '–'}</td>

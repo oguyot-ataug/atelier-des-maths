@@ -2540,6 +2540,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.666', items:[
+    "IA : CLÉ PERSONNELLE DE SECOURS -- demandé : \"si il y a une limite à la clé générale ou à celle de l'établissement, le fait de mettre sa clé personnelle permet de faire fonctionner les outils sans se soucier des conditions générales\". Un professeur sur la clé du site ou de l'établissement peut désormais enregistrer sa propre clé Anthropic : elle prend automatiquement le relais (à ses frais) quand la clé prévue n'est plus utilisable -- budget mensuel de l'établissement atteint, clé d'établissement pas encore enregistrée, refusée ou sans crédit. Cela vaut pour lui et pour ses élèves ; tant que la clé prévue fonctionne, c'est toujours elle qui paie.",
+    "Page « Intelligence artificielle » : la clé personnelle y apparaît comme « Clé de secours enregistrée » avec son rôle expliqué ; le rapport IA indique « clé perso » pour les appels qu'elle a payés.",
+  ]},
   { version:'2026-08-19.665', items:[
     "Établissements -- signalé : \"l'administrateur général vous autorise un accès limité sur la clé API générale du site\" (information absente de l'en-tête de Mon établissement). Nouveau réglage par établissement dans Administration > Établissements (compte admin) : « Clé IA du site » autorisée ou non, avec un budget mensuel facultatif en dollars et la dépense du mois. Une fois le budget atteint, l'IA sur la clé du site s'arrête pour cet établissement jusqu'au mois suivant (message clair aux professeurs et aux élèves ; vérifié côté serveur).",
     "Mon établissement : l'en-tête indique désormais l'accès IA (« accès limité à la clé IA du site -- budget X $ / mois, déjà utilisé Y $ ce mois-ci », ou clé de l'établissement), et le référent peut lui-même mettre ses collègues sur la clé du site quand elle est ouverte à son établissement.",
