@@ -161,31 +161,32 @@ async function renderIaPage(){
     ${keyCard}
     <div class="tool-shell ia-card" style="${hasKey?'':'opacity:.55;'}">
       <strong class="ia-h"><span class="gicon">person</span> 2. L'IA pour moi</strong>
-      <label style="display:flex;align-items:center;gap:8px;margin:8px 0 4px;font-weight:600;"><input type="checkbox" id="iaSelf" ${iaSettings.ai_self||isAdmin?'checked':''} ${hasKey&&!isAdmin?'':'disabled'}> Utiliser l'IA dans mes outils</label>
+      <label style="display:flex;align-items:center;gap:8px;margin:8px 0 4px;font-weight:600;"><input type="checkbox" id="iaSelf" ${iaSettings.ai_self||isAdmin?'checked':''} ${hasKey&&!isAdmin?'':'disabled'} onchange="iaSaveSettings('iaSelfMsg')"> Utiliser l'IA dans mes outils</label>
+      <span class="hint" id="iaSelfMsg" style="display:block;margin:0 0 4px;min-height:1.2em;"></span>
       <p class="hint" style="margin:0;">Débloque : ${Object.values(IA_FEATURE_LABELS).join(' · ')} (outil « Animation géométrique » compris). Décoché : ces outils disparaissent de votre compte.${isAdmin?' Toujours actif pour l\'administrateur.':''}</p>
     </div>
     <div class="tool-shell ia-card" style="${hasKey?'':'opacity:.55;'}">
       <strong class="ia-h"><span class="gicon">groups</span> 3. L'IA pour mes élèves</strong>
-      <label style="display:flex;align-items:center;gap:8px;margin:8px 0 4px;font-weight:600;"><input type="checkbox" id="iaStudents" ${iaSettings.ai_students?'checked':''} ${hasKey?'':'disabled'} onchange="document.getElementById('iaStudentOpts').style.opacity=this.checked?1:.5"> Autoriser l'IA pour les élèves de mes classes</label>
+      <label style="display:flex;align-items:center;gap:8px;margin:8px 0 4px;font-weight:600;"><input type="checkbox" id="iaStudents" ${iaSettings.ai_students?'checked':''} ${hasKey?'':'disabled'} onchange="document.getElementById('iaStudentOpts').style.opacity=this.checked?1:.5; iaSaveSettings()"> Autoriser l'IA pour les élèves de mes classes</label>
       <p class="hint" style="margin:0 0 8px;">Leurs utilisations sont payées par ${paidBySite?'la clé du site':'votre clé'} et figurent dans le rapport ci-dessous. Décoché : aucun outil IA pour vos élèves. Classes concernées : ${iaMyClasses.length ? iaMyClasses.map(c=>iaEsc(c.nom)).join(', ') : '<i>aucune classe rattachée</i>'}.</p>
       <div id="iaStudentOpts" style="opacity:${iaSettings.ai_students?1:.5};">
         <div style="display:flex;flex-wrap:wrap;gap:6px 18px;">
-          ${IA_STUDENT_FEATURES.map(f=>`<label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" class="iaStuFeat" value="${f.key}" ${feats[f.key]?'checked':''} ${hasKey?'':'disabled'}> ${f.label}</label>`).join('')}
+          ${IA_STUDENT_FEATURES.map(f=>`<label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" class="iaStuFeat" value="${f.key}" ${feats[f.key]?'checked':''} ${hasKey?'':'disabled'} onchange="iaSaveSettings()"> ${f.label}</label>`).join('')}
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;">
           <span>Au plus</span>
-          <input type="number" id="iaQuota" min="0" max="1000" value="${quota==null?'':quota}" placeholder="∞" style="width:80px;" ${hasKey?'':'disabled'}>
+          <input type="number" id="iaQuota" min="0" max="1000" value="${quota==null?'':quota}" placeholder="∞" style="width:80px;" ${hasKey?'':'disabled'} onchange="iaSaveSettings()">
           <span>utilisations par élève sur 7 jours glissants</span>
           <span class="hint" style="margin:0;">(laisser vide = sans limite)</span>
         </div>
         <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px 18px;">
-          <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="iaMode" value="all" ${selectedMode?'':'checked'} ${hasKey?'':'disabled'} onchange="iaToggleModeUI()"> <b>Tous</b> les élèves de mes classes</label>
-          <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="iaMode" value="selected" ${selectedMode?'checked':''} ${hasKey?'':'disabled'} onchange="iaToggleModeUI()"> <b>Seulement les élèves que je choisis</b> (ex. ceux qui ont le plus besoin d'aide)</label>
+          <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="iaMode" value="all" ${selectedMode?'':'checked'} ${hasKey?'':'disabled'} onchange="iaToggleModeUI(); iaSaveSettings()"> <b>Tous</b> les élèves de mes classes</label>
+          <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="iaMode" value="selected" ${selectedMode?'checked':''} ${hasKey?'':'disabled'} onchange="iaToggleModeUI(); iaSaveSettings()"> <b>Seulement les élèves que je choisis</b> (ex. ceux qui ont le plus besoin d'aide)</label>
         </div>
         <div id="iaStudentPicker" style="display:${selectedMode?'block':'none'};margin-top:10px;">${iaStudentPickerHtml(hasKey)}</div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
-        <button class="btn" onclick="iaSaveSettings()" ${hasKey?'':'disabled'}>Enregistrer les réglages</button>
+        <button class="btn" onclick="iaSaveSettings()" ${hasKey?'':'disabled'}>Enregistrer la sélection d'élèves</button>
         <span class="hint" id="iaSettingsMsg" style="margin:0;"></span>
       </div>
     </div>
@@ -237,8 +238,13 @@ async function iaRemoveKey(){
     await renderIaPage();
   }catch(e){ await niceAlert('Échec : '+e.message); }
 }
-async function iaSaveSettings(){
-  const msg = document.getElementById('iaSettingsMsg');
+/* Enregistrement IMMÉDIAT à chaque changement (signalé : "lorsqu'elle coche Utiliser l'IA dans
+   mes outils, ça se décoche tout seul" -- la case n'était enregistrée qu'avec un bouton situé
+   plus bas, dans la carte des élèves). Le message s'affiche à côté du réglage modifié. */
+let iaSaveSeq = 0;
+async function iaSaveSettings(msgId){
+  const msg = document.getElementById(msgId||'iaSettingsMsg');
+  const seq = ++iaSaveSeq;
   const feats = {};
   document.querySelectorAll('.iaStuFeat').forEach(c=>{ feats[c.value] = c.checked; });
   const qv = document.getElementById('iaQuota').value.trim();
@@ -270,7 +276,9 @@ async function iaSaveSettings(){
     sel.forEach(r=>iaStudentAccess.set(r.student_id, r));
   }
   await loadAiAccess();
+  if(seq!==iaSaveSeq) return; // un enregistrement plus récent est en cours
   const nSel = sel.filter(r=>r.enabled).length;
+  if(msgId==='iaSelfMsg'){ msg.innerHTML = '<span style="color:#1F7A4D;"><span class="gicon">check</span> Enregistré : '+(row.ai_self ? 'les outils IA sont activés pour vous.' : 'les outils IA sont désactivés pour vous.')+'</span>'; return; }
   msg.innerHTML = '<span style="color:#1F7A4D;"><span class="gicon">check</span> Réglages enregistrés'+(row.student_mode==='selected' && row.ai_students ? ' ('+nSel+' élève'+(nSel>1?'s':'')+' autorisé'+(nSel>1?'s':'')+')' : '')+'.</span>';
 }
 

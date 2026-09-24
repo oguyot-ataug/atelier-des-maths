@@ -2540,6 +2540,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.662', items:[
+    "Fix -- page Intelligence artificielle, signalé : \"lorsqu'elle coche Utiliser l'IA dans mes outils, ça se décoche tout seul\". La case n'était enregistrée que par le bouton situé plus bas, dans la carte des élèves : sans ce clic, rien n'était sauvegardé et la case réapparaissait décochée. Chaque réglage (IA pour moi, IA pour mes élèves, outils, quota, mode) s'enregistre désormais immédiatement, avec une confirmation à côté ; le bouton ne sert plus qu'à valider la sélection d'élèves.",
+  ]},
   { version:'2026-08-19.661', items:[
     "Établissements, étape 1 : RÉFÉRENT D'ÉTABLISSEMENT et LICENCE ÉTABLISSEMENT -- demandé : \"désigner un professeur comme Référent Établissement avec certains droits pour son établissement : import d'élèves, import profs, import classe, et gestion globale de son établissement\" (un seul référent par établissement, qui valide aussi les inscriptions de ses collègues), et \"prévoir la licence établissement\".",
     "Administration > nouvel onglet « Établissements » (administrateur général) : pour chaque UAI, son référent (choisi parmi ses professeurs), sa licence (date de fin) et une note (bon de commande, facture…), avec le nombre de professeurs, d'élèves et de classes.",
