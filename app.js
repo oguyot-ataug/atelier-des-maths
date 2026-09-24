@@ -2494,10 +2494,26 @@ function updateAddCahierButtonLabel(){
 }
 let accountClassesList = [];
 function populateAccountClassList(classesList){
-  accountClassesList = classesList.map(c=>({id:c.id, label:`${c.nom} (${c.niveau})`}));
+  accountClassesList = classesList.map(c=>({id:c.id, label:`${c.nom} (${c.niveau})`, niveau:c.niveau}));
+}
+/* Le niveau de l'outil de correction suit la classe active -- signalé : "si je choisis la classe
+   de 6V, il faudrait que ça modifie tout de suite le niveau dans la partie correction". Resté
+   sur "5e" par défaut, il faisait ranger des corrections de 6e sous un chapitre de 5e, que les
+   collègues de 6e ne retrouvaient alors jamais (ex. "1 page 10" en 6V). */
+function syncCorNiveauToClass(){
+  const found = accountClassesList.find(c=>c.id===currentClassId);
+  const sel = document.getElementById('corNiveau');
+  if(!found || !sel || sel.value===found.niveau) return;
+  if(![...sel.options].some(o=>o.value===found.niveau)) return;
+  sel.value = found.niveau;
+  fillCorChapitres();
+  if(typeof renderCorrectionPreview==='function') renderCorrectionPreview();
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.653', items:[
+    "Outil de correction -- demandé : \"si je choisis la classe de 6V, il faudrait que ça modifie tout de suite le niveau dans la partie correction en dessous\". Le niveau (et la liste des chapitres) suit désormais automatiquement la classe active. C'était aussi la vraie cause de \"Guislaine ne voit pas l'exercice 1 page 10 en 6e\" : resté sur « 5e » par défaut, le formulaire avait rangé 19 corrections de 6e (6V et 6O, pages 6 à 10) sous le chapitre de 5e « N1 · Opérations sur les nombres décimaux », invisible depuis un chapitre de 6e. Elles ont été reclassées en base dans « N1 · Nombres entiers » (6e), et le niveau de chaque entrée a été réaligné sur celui de sa classe.",
+  ]},
   { version:'2026-08-19.652', items:[
     "Fix -- mutualisation des corrections, signalé : \"j'ai des exercices corrigés que ma collègue ne voit pas\". La liste « corrections d'un collègue » était plafonnée à 30 entrées par chapitre : au-delà, les plus anciennes disparaissaient (ex. 40 corrections en 5B sur N1, seules les 30 dernières étaient visibles). Plafond supprimé côté base : toutes les corrections du chapitre apparaissent désormais.",
   ]},
@@ -4081,6 +4097,7 @@ async function applyClassSelection(){
   const found = accountClassesList.find(c=>c.id===currentClassId);
   const className = found ? found.label : null;
   updateClassDisplays(className);
+  syncCorNiveauToClass();
   if(currentClassId){
     // Population initiale légère (juste aujourd'hui) -- suffisant pour la liste prof par
     // défaut (corListFilterDate=aujourd'hui) ; renderCahierEleve() affine ensuite avec son
