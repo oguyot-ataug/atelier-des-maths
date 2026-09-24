@@ -2511,6 +2511,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.654', items:[
+    "Tableau IA, exercices corrigés -- demandé : \"permettre d'ajouter le résultat dans les exercices corrigés ou mettre le module dans les exos corrigés\". Nouveau bouton « Ajouter aux exercices corrigés » dans la barre de lecture : la figure finale (nette, à l'échelle) est insérée dans l'outil de correction, avec un bouton « Voir la construction pas à pas » qui rejoue toute l'animation sur le tableau -- y compris pour les élèves depuis leur cahier, avec un bouton pour revenir au cahier.",
+    "Tableau interactif, zoom -- demandé : \"permettre de zoomer la zone de travail car parfois les constructions sont un peu trop petites\". Boutons ➖ / ➕ / « Ajuster » : tracés et outils grossissent ensemble (la règle reste juste par rapport à la figure). Une construction IA s'affiche d'emblée zoomée sur la figure.",
+    "Tableau IA, outils autorisés -- demandé : \"permettre d'utiliser la réquerre dans l'énoncé ou de dire quels sont les outils autorisés (tous par défaut)\". Cases à cocher règle graduée / équerre / réquerre / compas / rapporteur (toutes cochées par défaut, mémorisées). Perpendiculaire et parallèle se font à l'équerre, à la réquerre (traversant posé sur la droite puis coulissé ; ligne centrale sur la droite puis coulissée) ou au compas (arcs de cercle ; parallélogramme), selon ce qui est autorisé -- ou selon l'instrument imposé par l'énoncé (« à la réquerre », « à la règle et au compas »).",
+    "Tableau IA, couleurs -- demandé : \"permettre dans l'énoncé de dessiner des objets en couleur\". Ex. « tracer en rouge la droite (d) » : chaque tracé peut être noir, rouge, bleu, vert, orange, violet, rose, marron ou gris ; les arcs de construction restent gris.",
+  ]},
   { version:'2026-08-19.653', items:[
     "Outil de correction -- demandé : \"si je choisis la classe de 6V, il faudrait que ça modifie tout de suite le niveau dans la partie correction en dessous\". Le niveau (et la liste des chapitres) suit désormais automatiquement la classe active. C'était aussi la vraie cause de \"Guislaine ne voit pas l'exercice 1 page 10 en 6e\" : resté sur « 5e » par défaut, le formulaire avait rangé 19 corrections de 6e (6V et 6O, pages 6 à 10) sous le chapitre de 5e « N1 · Opérations sur les nombres décimaux », invisible depuis un chapitre de 6e. Elles ont été reclassées en base dans « N1 · Nombres entiers » (6e), et le niveau de chaque entrée a été réaligné sur celui de sa classe.",
   ]},
@@ -6787,6 +6793,46 @@ function tbToggleHistoryPanel(){
   panel.style.display = showing ? 'none' : 'block';
   if(!showing) tbRenderHistoryPanel();
 }
+/* Zoom de la zone de travail (demandé : "permettre de zoomer la zone de travail car parfois les
+   constructions sont un peu trop petites"). On réduit simplement la fenêtre visible (viewBox) :
+   tracés ET outils grossissent ensemble, la règle reste juste par rapport à la figure, et les
+   gestes à la souris/au doigt restent exacts (conversion via getScreenCTM, voir tbSvgPoint). */
+let tbZoom = 1, tbViewCenter = null;
+const TB_ZOOM_MAX = 3;
+function tbViewBox(){
+  const W = 900, H = 560, w = W/tbZoom, h = H/tbZoom, c = tbViewCenter || {x:W/2, y:H/2};
+  return [Math.max(0, Math.min(W-w, c.x-w/2)), Math.max(0, Math.min(H-h, c.y-h/2)), w, h];
+}
+function tbContentBox(){
+  const xs = [], ys = [];
+  tbInk.forEach(st=>st.points.forEach(p=>{ xs.push(p[0]); ys.push(p[1]); }));
+  tbPoints.forEach(p=>{ xs.push(p.x-20, p.x+20); ys.push(p.y-20, p.y+20); });
+  tbTexts.forEach(t=>{ xs.push(t.x, t.x+t.text.length*t.fontSize*0.6); ys.push(t.y-t.fontSize, t.y+4); });
+  if(!xs.length) return null;
+  return {x0:Math.min(...xs)-20, x1:Math.max(...xs)+20, y0:Math.min(...ys)-20, y1:Math.max(...ys)+20};
+}
+function tbUpdateZoomLabel(){
+  const el = document.getElementById('tbZoomLabel');
+  if(el) el.textContent = Math.round(tbZoom*100)+' %';
+}
+function tbZoomBy(f){
+  const nz = Math.max(1, Math.min(TB_ZOOM_MAX, Math.round(tbZoom*f*100)/100));
+  if(nz===tbZoom) return;
+  if(!tbViewCenter){ const b = tbContentBox(); tbViewCenter = b ? {x:(b.x0+b.x1)/2, y:(b.y0+b.y1)/2} : {x:450, y:280}; }
+  tbZoom = nz;
+  if(tbZoom===1) tbViewCenter = null;
+  tbRender(); tbUpdateZoomLabel();
+}
+/* Ajuste le zoom pour que la figure (ou la boîte donnée) remplisse la zone de travail. */
+function tbZoomFit(box){
+  box = box || tbContentBox();
+  if(!box){ tbZoomReset(); return; }
+  const w = Math.max(60, box.x1-box.x0), h = Math.max(60, box.y1-box.y0);
+  tbZoom = Math.max(1, Math.min(TB_ZOOM_MAX, Math.floor(Math.min(900/w, 560/h)*20)/20));
+  tbViewCenter = tbZoom===1 ? null : {x:(box.x0+box.x1)/2, y:(box.y0+box.y1)/2};
+  tbRender(); tbUpdateZoomLabel();
+}
+function tbZoomReset(){ tbZoom = 1; tbViewCenter = null; tbRender(); tbUpdateZoomLabel(); }
 function tbSvgPoint(e){
   const svg = document.getElementById('tbSvg');
   const pt = svg.createSVGPoint();
@@ -7327,7 +7373,7 @@ function tbRender(){
   const bgImageHtml = tbBgImageIdx!==null && tbBgImages[tbBgImageIdx]
     ? `<image href="${tbBgImages[tbBgImageIdx]}" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="xMidYMid meet" opacity="${tbBgImageOpacity}"/>`
     : '';
-  document.getElementById('tbBoardWrap').innerHTML = `<svg id="tbSvg" width="100%" viewBox="0 0 ${W} ${H}" style="display:block;touch-action:none;user-select:none;background:#fff;">
+  document.getElementById('tbBoardWrap').innerHTML = `<svg id="tbSvg" width="100%" viewBox="${tbViewBox().map(v=>v.toFixed(1)).join(' ')}" style="display:block;touch-action:none;user-select:none;background:#fff;">
     <defs>${bgDefs}</defs>
     ${bgRect}
     ${bgImageHtml}

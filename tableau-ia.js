@@ -36,6 +36,21 @@ const TB_AI_HL = '#E35D3A', TB_AI_HL2 = '#1F7A4D';
 
 class TbAiError extends Error {}
 
+/* Outils autorisés pour la construction (demandé : "permettre d'utiliser la réquerre dans
+   l'énoncé ou de dire quels sont les outils autorisés, tous par défaut"). */
+const TB_AI_TOOL_NAMES = {regle:'règle graduée', equerre:'équerre', requerre:'réquerre', compas:'compas', rapporteur:'rapporteur'};
+let tbAiAllowed = new Set(Object.keys(TB_AI_TOOL_NAMES));
+/* Couleurs des tracés (demandé : "permettre dans l'énoncé de dessiner des objets en couleur"). */
+const TB_AI_COLORS = {noir:'#1C1B2E', rouge:'#D93025', bleu:'#0D5BA3', vert:'#1F7A4D', orange:'#E8710A', violet:'#7B3FA0', rose:'#D6337A', marron:'#8B5A2B', gris:'#6B7280'};
+const TB_AI_COLOR_ALIASES = {black:'noir', red:'rouge', blue:'bleu', green:'vert', purple:'violet', pink:'rose', brown:'marron', grey:'gris', gray:'gris'};
+function tbAiColor(c){
+  if(typeof c!=='string') return null;
+  const k = c.trim().toLowerCase();
+  if(/^#[0-9a-f]{6}$/.test(k)) return k;
+  return TB_AI_COLORS[k] || TB_AI_COLORS[TB_AI_COLOR_ALIASES[k]] || null;
+}
+let tbAiStrokeColor = null; // couleur des tracés de l'étape en cours (null = couleur du crayon)
+
 /* ---------- vecteurs (cm, repère mathématique : y vers le HAUT) ---------- */
 const tbV = {
   add:(a,b)=>({x:a.x+b.x, y:a.y+b.y}),
@@ -98,7 +113,8 @@ const tbAiRound05 = v=>Math.round(v*2)/2;
    (points de définition, intersections trouvées plus tard dans le programme...) : la longueur
    des droites/demi-droites et la position des arcs de compas en découlent, calculées APRÈS
    coup (tbAiFinalize) -- une demi-droite dépasse donc toujours le point qu'on y trouvera. */
-function tbAiEvaluate(program, flips){
+function tbAiEvaluate(program, flips, allowed){
+  allowed = allowed || tbAiAllowed;
   const pts = new Map(), objs = new Map(), actions = [], marks = [], lengths = [];
   // Longueurs données par l'énoncé, écrites sur la figure dès que le segment est tracé
   // (demandé : "écrire aussi les longueurs quand elles sont données").
@@ -144,6 +160,38 @@ function tbAiEvaluate(program, flips){
   const hit = (o,p)=>{ if(o.kind==='circle') o.hits.push(Math.atan2(p.y-o.c.y, p.x-o.c.x)); else o.hits.push(tbV.dot(tbV.sub(p,o.p), o.u)); };
   const addPoint = (name,p)=>{ pts.set(name,p); marks.push(p); };
   const linearObj = (kind,p,u,len)=>({kind, p, u, t0: kind==='line'?-Infinity:0, t1: kind==='segment'?len:Infinity, hits:[]});
+  // ---- outils autorisés ----
+  const has = t=>allowed.has(t);
+  const need = (i,t)=>{ if(!has(t)) err(i, 'outil non autorisé : '+TB_AI_TOOL_NAMES[t]); };
+  const needStraight = i=>{ if(!has('regle') && !has('requerre')) err(i, 'il faut une règle ou une réquerre pour tracer un trait droit (non autorisées)'); };
+  // Mesure d'une longueur (règle jusqu'à 15 cm, réquerre jusqu'à 10 cm depuis son 0).
+  const gradTool = (i,L)=>{
+    if(has('regle')) return 'regle_grad';
+    if(has('requerre')){ if(L>10) err(i, 'longueur trop grande pour la réquerre (10 cm depuis son 0)'); return 'requerre2'; }
+    err(i, 'mesure impossible : ni règle graduée ni réquerre autorisée');
+  };
+  // Écartement du compas pris sur un instrument gradué (la réquerre va de -10 à +10 cm).
+  const openTool = (i,r,exact)=>{
+    if(has('regle')) return 'regle_grad';
+    if(has('requerre')) return 'requerre2';
+    if(exact) err(i, 'écartement de '+r+' cm impossible à prendre sans règle graduée ni réquerre');
+    return null;
+  };
+  // Instrument de la perpendiculaire / parallèle : celui demandé ("tool"), sinon le premier
+  // autorisé parmi équerre, réquerre, compas.
+  const squareMethod = (i,s,para)=>{
+    const order = ['equerre','requerre','compas'];
+    const ok = m=>has(m) && (m!=='equerre' || !para || has('regle'));
+    if(s.tool!==undefined){
+      if(!order.includes(s.tool)) err(i, '« tool » attendu : equerre, requerre ou compas');
+      need(i, s.tool);
+      if(!ok(s.tool)) err(i, 'la parallèle à l\'équerre demande aussi la règle (non autorisée)');
+      return s.tool;
+    }
+    const m = order.find(ok);
+    if(!m) err(i, (para?'parallèle':'perpendiculaire')+' impossible avec les outils autorisés');
+    return m;
+  };
 
   program.forEach((s,i)=>{
     if(!s || typeof s!=='object') err(i, 'étape invalide');
@@ -197,13 +245,15 @@ function tbAiEvaluate(program, flips){
         addPoint(s.to,B);
         if(s.show_length!==false) given(s.from, s.to, A, B, L);
         register(i, s.id, linearObj('segment', A, u, L));
-        actions.push({op:'segment_length', A, B, L, to:s.to, trace: !along, style:s.style||'final'});
+        if(!along) needStraight(i);
+        actions.push({op:'segment_length', A, B, L, to:s.to, trace: !along, gtool: gradTool(i,L), style:s.style||'final'});
         break;
       }
       case 'segment': {
         const A = P(i,s.from), B = P(i,s.to), L = tbV.dist(A,B);
         if(L<1e-6) err(i, 'points confondus');
         register(i, s.id, linearObj('segment', A, tbV.norm(tbV.sub(B,A)), L));
+        needStraight(i);
         actions.push({op:'segment', A, B, style:s.style||'final'});
         break;
       }
@@ -223,6 +273,7 @@ function tbAiEvaluate(program, flips){
         } else err(i, '« through » attendu (deux points, ou un point + « direction »)');
         const o = register(i, s.id, linearObj(s.op, p, u));
         defs.forEach(q=>hit(o,q));
+        needStraight(i);
         actions.push({op:s.op, obj:o, style:s.style||'final'});
         break;
       }
@@ -248,7 +299,26 @@ function tbAiEvaluate(program, flips){
         if(L.obj) hit(L.obj,H);
         let footName = null;
         if(s.foot!==undefined && !onLine){ newName(i,s.foot); addPoint(s.foot,H); footName = s.foot; }
-        actions.push({op:'perpendicular', H, n, uRef:L.u, support:{obj:L.obj, pts:L.pts}, obj:o, footName, style:s.style||'final'});
+        needStraight(i);
+        const method = squareMethod(i,s,false);
+        const act = {op:'perpendicular', method, H, n, uRef:L.u, support:{obj:L.obj, pts:L.pts}, obj:o, footName, style:s.style||'final'};
+        if(method==='compas'){
+          // Point sur la droite : un arc centré en M coupe la droite en P et Q, puis deux arcs
+          // de même (plus grand) écartement depuis P et Q se coupent en K. Point hors de la
+          // droite : l'arc centré en M coupe la droite en P et Q, les arcs depuis P et Q (même
+          // écartement) se recoupent en K, symétrique de M.
+          let r0, r1, h, K;
+          if(onLine){ r0 = 2.5; r1 = 4; h = Math.sqrt(r1*r1-r0*r0); K = tbV.add(H, tbV.mul(n,h)); }
+          else { r0 = Math.min(15, Math.ceil(Math.max(off+1.2, off*1.35)*2)/2); r1 = r0; h = Math.sqrt(r0*r0-off*off); K = tbV.sub(H, tbV.mul(n,off)); }
+          const half = onLine ? r0 : h;
+          const Pp = tbV.sub(H, tbV.mul(L.u,half)), Q = tbV.add(H, tbV.mul(L.u,half));
+          const c0 = {kind:'circle', c:M, r:r0, hits:[]}, cP = {kind:'circle', c:Pp, r:r1, hits:[]}, cQ = {kind:'circle', c:Q, r:r1, hits:[]};
+          hit(c0,Pp); hit(c0,Q); hit(cP,K); hit(cQ,K); hit(o,K);
+          if(L.obj){ hit(L.obj,Pp); hit(L.obj,Q); }
+          marks.push(Pp,Q,K);
+          Object.assign(act, {P:Pp, Q, K, r0, r1, c0, cP, cQ, otool: openTool(i,r0,false)});
+        }
+        actions.push(act);
         break;
       }
       case 'parallel': {
@@ -262,7 +332,23 @@ function tbAiEvaluate(program, flips){
         const u = kind==='ray' ? tbAiPick([L.u, tbV.mul(L.u,-1)], s.side||'right') : L.u;
         const o = register(i, s.id, linearObj(kind, M, u));
         hit(o,M); if(L.obj) hit(L.obj,H);
-        actions.push({op:'parallel', M, H, d, n:tbV.norm(tbV.sub(M,H)), uRef:L.u, obj:o, style:s.style||'final'});
+        needStraight(i);
+        const method = squareMethod(i,s,true);
+        const act = {op:'parallel', method, M, H, d, n:tbV.norm(tbV.sub(M,H)), uRef:L.u, obj:o, style:s.style||'final'};
+        if(method==='compas'){
+          // Parallélogramme : A0, B0 sur la droite, N tel que A0B0NM parallélogramme (MN = A0B0
+          // reporté depuis M, B0N = A0M reporté depuis B0), puis la droite (MN).
+          let A0, B0, needMarks = false;
+          if(L.pts && tbV.dist(L.pts[0],L.pts[1])>=2 && tbV.dist(L.pts[0],L.pts[1])<=12){ [A0,B0] = L.pts; }
+          else { A0 = tbV.sub(H, tbV.mul(L.u,2)); B0 = tbV.add(H, tbV.mul(L.u,2)); needMarks = true; }
+          const N = tbV.add(M, tbV.sub(B0,A0));
+          const cM = {kind:'circle', c:M, r:tbV.dist(A0,B0), hits:[]}, cB = {kind:'circle', c:B0, r:tbV.dist(A0,M), hits:[]};
+          hit(cM,N); hit(cB,N); hit(o,N);
+          if(L.obj){ hit(L.obj,A0); hit(L.obj,B0); }
+          marks.push(A0,B0,N);
+          Object.assign(act, {A0, B0, N, cM, cB, needMarks});
+        }
+        actions.push(act);
         break;
       }
       case 'circle': {
@@ -274,8 +360,9 @@ function tbAiEvaluate(program, flips){
           if(r<0.2) err(i, 'écartement trop petit');
           if(r>17) err(i, 'écartement trop grand pour le compas (17 cm max)');
         } else r = num(i, s.radius, 'rayon', 0.2, 15);
+        need(i,'compas');
         const o = register(i, s.id, {kind:'circle', c:C, r, hits:[], full:!!s.full, centerName: from ? null : s.center, showLen: s.show_length!==false});
-        actions.push({op:'circle', C, r, from, obj:o, style:s.style});
+        actions.push({op:'circle', C, r, from, obj:o, gtool: from ? null : openTool(i,r,true), style:s.style});
         break;
       }
       case 'intersect': {
@@ -304,7 +391,7 @@ function tbAiEvaluate(program, flips){
         if(L>15) err(i, 'segment trop long pour être mesuré avec la règle (15 cm)');
         const I = tbV.mid(A,B);
         addPoint(s.name,I);
-        actions.push({op:'midpoint', A, B, I, L, name:s.name});
+        actions.push({op:'midpoint', A, B, I, L, name:s.name, gtool: gradTool(i,L)});
         break;
       }
       case 'perpendicular_bisector': {
@@ -321,7 +408,8 @@ function tbAiEvaluate(program, flips){
         hit(o,E); hit(o,F);
         const names = Array.isArray(s.points) ? s.points : [];
         [E,F].forEach((q,k)=>{ if(names[k]){ newName(i,names[k]); addPoint(names[k],q); } else marks.push(q); });
-        actions.push({op:'perpendicular_bisector', A, B, r, E, F, ca, cb, obj:o, names, style:s.style||'final'});
+        need(i,'compas'); needStraight(i);
+        actions.push({op:'perpendicular_bisector', A, B, r, E, F, ca, cb, obj:o, names, otool: openTool(i,r,false), style:s.style||'final'});
         break;
       }
       case 'angle_bisector': {
@@ -336,7 +424,8 @@ function tbAiEvaluate(program, flips){
         const o = register(i, s.id, linearObj('ray', A, tbV.norm(tbV.sub(K,A))));
         hit(o,A); hit(o,K);
         marks.push(Pp,Q,K);
-        actions.push({op:'angle_bisector', A, P:Pp, Q, K, r, obj:o, style:s.style||'final'});
+        need(i,'compas'); needStraight(i);
+        actions.push({op:'angle_bisector', A, P:Pp, Q, K, r, obj:o, otool: openTool(i,r,false), style:s.style||'final'});
         break;
       }
       case 'angle': {
@@ -355,6 +444,7 @@ function tbAiEvaluate(program, flips){
         hit(o,A); hit(o,Mk);
         let markName = null;
         if(s.mark){ newName(i,s.mark); addPoint(s.mark,Mk); markName = s.mark; } else marks.push(Mk);
+        need(i,'rapporteur'); needStraight(i);
         actions.push({op:'angle', A, B, dv, deg, Mk, markName, obj:o, style:s.style||'final'});
         break;
       }
@@ -394,6 +484,12 @@ function tbAiEvaluate(program, flips){
       default:
         err(i, 'opération inconnue « '+s.op+' »');
     }
+    const last = actions[actions.length-1];
+    if(last && s.color!==undefined){
+      const c = tbAiColor(s.color);
+      if(!c) err(i, 'couleur inconnue « '+s.color+' » (noir, rouge, bleu, vert, orange, violet, rose, marron, gris)');
+      last.color = c;
+    }
   });
   return {actions, objs, pts, marks, lengths};
 }
@@ -401,7 +497,7 @@ function tbAiEvaluate(program, flips){
 /* Longueur tracée des objets linéaires, arcs de compas, puis mise en page à l'échelle réelle. */
 function tbAiFinalize(ev){
   const allObjs = new Set(ev.objs.values());
-  ev.actions.forEach(a=>{ ['obj','ca','cb'].forEach(k=>{ if(a[k]) allObjs.add(a[k]); }); });
+  ev.actions.forEach(a=>{ ['obj','ca','cb','c0','cP','cQ','cM','cB'].forEach(k=>{ if(a[k]) allObjs.add(a[k]); }); });
   allObjs.forEach(o=>{
     if(o.kind==='circle') return;
     const hs = o.hits.length ? o.hits : [0];
@@ -438,15 +534,17 @@ function tbAiFinalize(ev){
     else if(a.obj && a.obj.kind!=='circle'){ p = tbV.add(a.obj.p, tbV.mul(a.obj.u,a.obj.e0)); q = tbV.add(a.obj.p, tbV.mul(a.obj.u,a.obj.e1)); }
     if(p){ const P = S(p), Q = S(q); future.push({ax:P.x, ay:P.y, bx:Q.x, by:Q.y, r:1.5}); }
   });
-  return {actions: ev.actions, S, centroid: cen, lengths: ev.lengths, future};
+  const sb = box.map(S);
+  const screenBox = {x0:Math.min(...sb.map(p=>p.x))-30, x1:Math.max(...sb.map(p=>p.x))+30, y0:Math.min(...sb.map(p=>p.y))-30, y1:Math.max(...sb.map(p=>p.y))+30};
+  return {actions: ev.actions, S, centroid: cen, lengths: ev.lengths, future, screenBox};
 }
 
-function tbAiCompile(program){
+function tbAiCompile(program, allowed){
   if(!Array.isArray(program) || !program.length) throw new TbAiError('réponse vide ou pas une liste d\'étapes');
   if(program.length>TB_AI_MAX_STEPS) throw new TbAiError('trop d\'étapes ('+program.length+', maximum '+TB_AI_MAX_STEPS+')');
   const flips = new Set();
   for(let attempt=0; attempt<8; attempt++){
-    try{ return tbAiFinalize(tbAiEvaluate(program, flips)); }
+    try{ return tbAiFinalize(tbAiEvaluate(program, flips, allowed)); }
     catch(e){ if(e && e.tbAiFlip!==undefined && !flips.has(e.tbAiFlip)){ flips.add(e.tbAiFlip); continue; } throw e; }
   }
   throw new TbAiError('construction impossible (intersections introuvables)');
@@ -521,7 +619,7 @@ function tbAiClearHighlights(){ tbAiOverlay = []; tbRender(); }
 async function tbAiTraceLine(a, b, style){
   await tbAiPencilTo(a, 380);
   const pen = tbAiFindTool('crayon');
-  const stroke = {id:tbNextId++, color:tbCurrentColor(), construction: style==='construction', straight:true, points:[[a.x,a.y]]};
+  const stroke = {id:tbNextId++, color:tbAiStrokeColor||tbCurrentColor(), construction: style==='construction', straight:true, points:[[a.x,a.y]]};
   tbInk.push(stroke);
   const n = Math.max(10, Math.round(Math.hypot(b.x-a.x, b.y-a.y)/4));
   for(let k=1;k<=n;k++){
@@ -741,7 +839,8 @@ function tbAiRulerThrough(from, to, type){
 async function tbAiRuledStroke(from, to, style, skip){
   const len = Math.hypot(to.x-from.x, to.y-from.y);
   if(len<1) return;
-  const type = len<=TB_AI_RULER_MAX ? 'regle_grad' : 'requerre2';
+  const canR = tbAiAllowed.has('regle'), canQ = tbAiAllowed.has('requerre');
+  const type = (canR && (len<=TB_AI_RULER_MAX || !canQ)) ? 'regle_grad' : 'requerre2';
   await tbAiPutAway(type==='regle_grad' ? 'requerre2' : 'regle_grad', 'equerre', 'rapporteur', 'compas');
   const maxL = type==='regle_grad' ? TB_AI_RULER_MAX : TB_AI_REQ_MAX;
   const n = Math.ceil(len/maxL), u = {x:(to.x-from.x)/len, y:(to.y-from.y)/len};
@@ -753,9 +852,17 @@ async function tbAiRuledStroke(from, to, style, skip){
     for(const [p0,p1] of pieces) if(p1>p0+1) await tbAiTraceLine(tbAiAt(from,u,p0), tbAiAt(from,u,p1), style);
   }
 }
+/* Instrument gradué posé avec la graduation 0 (décalée de shiftPx) sur P, bord gradué dans la
+   direction ang (degrés écran). Règle : 0 à l'origine de l'outil ; réquerre : 0 au pied du
+   traversant (x=233), sur le bord principal (y=4). */
+function tbAiGradPose(type, P, ang, shiftPx){
+  const req = type==='requerre2', lx = (req ? 233 : 0) + (shiftPx||0), ly = req ? 4 : 0;
+  const ex = tbAiDirDeg(ang), ey = tbAiDirDeg(ang+90);
+  return {x:P.x-ex.x*lx-ey.x*ly, y:P.y-ex.y*lx-ey.y*ly, angle:ang};
+}
 /* Écartement du compas : pris sur la règle posée en bas du tableau (rayon connu en cm), ou
    directement sur la figure entre deux points (report de longueur). */
-async function tbAiTakeOpening(rPx, fromPts){
+async function tbAiTakeOpening(rPx, fromPts, gtool){
   if(fromPts){
     const P = fromPts[0], Q = fromPts[1];
     const cp = await tbAiBring('compas', {x:P.x, y:P.y, angle:tbAiAng(P,Q), radius:Math.min(30,rPx), mode:'open'});
@@ -766,7 +873,17 @@ async function tbAiTakeOpening(rPx, fromPts){
     return cp;
   }
   const B = TB_AI_BENCH;
-  await tbAiBring('regle_grad', {x:B.x, y:B.y, angle:0});
+  if(gtool===undefined) gtool = tbAiAllowed.has('regle') ? 'regle_grad' : tbAiAllowed.has('requerre') ? 'requerre2' : null;
+  if(!gtool){
+    // Aucun instrument gradué autorisé : écartement libre (seul compte d'avoir le même).
+    const cp = await tbAiBring('compas', {x:B.x, y:B.y-30, angle:0, radius:30, mode:'open'});
+    await tbAiMoveTool(cp, {radius:rPx}, 700);
+    await tbAiSleep(300);
+    return cp;
+  }
+  // Réquerre : graduée de -10 à +10 cm autour de son 0 ; au-delà de 10 cm, la pointe part de -10.
+  const shift = (gtool==='requerre2' && rPx>10*TB_PX_PER_CM) ? -10*TB_PX_PER_CM : 0;
+  await tbAiBring(gtool, tbAiGradPose(gtool, B, 0, shift));
   tbAiHighlight(B);
   const cp = await tbAiBring('compas', {x:B.x, y:B.y, angle:0, radius:30, mode:'open'});
   tbAiHighlight({x:B.x+rPx, y:B.y});
@@ -793,7 +910,7 @@ async function tbAiCompassArcs(cp, C, rPx, windows, style){
     cp.mode = 'closed';
     await tbAiMoveTool(cp, {angle:-w0*180/Math.PI}, 300);
     cp.mode = 'draw';
-    const stroke = {id:tbNextId++, color:tbCurrentColor(), construction: style==='construction', points:[]};
+    const stroke = {id:tbNextId++, color:tbAiStrokeColor||tbCurrentColor(), construction: style==='construction', points:[]};
     tbInk.push(stroke);
     const n = Math.max(10, Math.round(rPx*(w1-w0)/4));
     for(let k=0;k<=n;k++){
@@ -816,6 +933,91 @@ function tbAiSquareAngle(uRefS, towardS){
   return a0;
 }
 
+/* ---- Perpendiculaire à la réquerre : le traversant (perpendiculaire au bord principal) repose
+   SUR le tracé de référence et coulisse le long de lui jusqu'au pied ; le crayon suit le bord
+   principal, qui est alors perpendiculaire à la droite. ---- */
+const TB_REQ_TRAV_X = 233, TB_REQ_EDGE_Y = 4, TB_REQ_CENTER_Y = 69, TB_REQ_REACH = 225;
+function tbAiReqPose(P, ang, lx, ly){
+  const ex = tbAiDirDeg(ang), ey = tbAiDirDeg(ang+90);
+  return {x:P.x-ex.x*lx-ey.x*ly, y:P.y-ex.y*lx-ey.y*ly, angle:ang};
+}
+async function tbAiPerpRequerre(a, H, nS, dS){
+  const ang = tbAiVecAng(dS)-90; // axe du traversant (y local) = dS, le long du tracé
+  const start = tbAiAt(H, dS, 70);
+  await tbAiBring('requerre2', tbAiReqPose(start, ang, TB_REQ_TRAV_X, TB_REQ_EDGE_Y));
+  await tbAiSleep(200);
+  await tbAiMoveTool(tbAiFindTool('requerre2'), tbAiReqPose(H, ang, TB_REQ_TRAV_X, TB_REQ_EDGE_Y), 650);
+  const ex = tbAiExtent(a.obj);
+  if(ex){
+    const s0 = Math.max(ex.t0, -TB_REQ_REACH), s1 = Math.min(ex.t1, TB_REQ_REACH);
+    if(s1>s0+1) await tbAiTraceLine(tbAiAt(ex.pS,ex.uS,s0), tbAiAt(ex.pS,ex.uS,s1), a.style);
+    if(ex.t1>s1+2 || ex.t0<s0-2){
+      await tbAiPutAway('requerre2','crayon');
+      await tbAiRuledStroke(ex.a, ex.b, a.style, [s0-ex.t0, s1-ex.t0]);
+    }
+  }
+  if(a.footName){ await tbAiPutAway('requerre2','regle_grad'); await tbAiMark(H, a.footName); }
+  await tbAiPutAwayAll();
+  tbAiCodeRightAngle(H, dS, nS);
+  tbRender();
+}
+/* ---- Perpendiculaire au compas (règle et compas seulement) ---- */
+async function tbAiPerpCompas(a){
+  const S = tbAiPlan.S, H = S(a.H), nS = tbAiSd(a.n), r0 = a.r0*TB_PX_PER_CM, r1 = a.r1*TB_PX_PER_CM;
+  let cp = await tbAiTakeOpening(r0, null, a.otool);
+  await tbAiPutAway('regle_grad','requerre2');
+  await tbAiCompassArcs(cp, S(a.c0.c), r0, tbAiArcWindows(a.c0, 16), 'construction');
+  if(Math.abs(r1-r0)>0.5){ cp = await tbAiTakeOpening(r1, null, a.otool); await tbAiPutAway('regle_grad','requerre2'); }
+  await tbAiCompassArcs(cp, S(a.cP.c), r1, tbAiArcWindows(a.cP, 16), 'construction');
+  await tbAiCompassArcs(cp, S(a.cQ.c), r1, tbAiArcWindows(a.cQ, 16), 'construction');
+  await tbAiPutAway('compas');
+  await tbAiMark(S(a.K), '');
+  const ex = tbAiExtent(a.obj);
+  if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
+  if(a.footName){ await tbAiPutAway('regle_grad','requerre2'); await tbAiMark(H, a.footName); }
+  await tbAiPutAwayAll();
+  const uS = tbAiSd(a.uRef);
+  tbAiCodeRightAngle(H, uS, nS);
+  tbRender();
+}
+/* ---- Parallèle à la réquerre : la ligne centrale (parallèle au bord principal) posée sur la
+   droite, puis la réquerre coulisse perpendiculairement jusqu'à ce que le bord principal passe
+   par le point ; tracé le long du bord. ---- */
+async function tbAiParaRequerre(a){
+  const S = tbAiPlan.S, nS = tbAiSd(a.n), dPx = a.d*TB_PX_PER_CM;
+  const ex = tbAiExtent(a.obj);
+  if(!ex){ await tbAiPutAwayAll(); return; }
+  const ang = tbAiVecAng({x:-nS.x, y:-nS.y})-90; // y local (vers le corps) = du point vers la droite
+  const tc = (ex.t0+ex.t1)/2;
+  const C = tbAiAt(ex.pS, ex.uS, tc);
+  const fin = tbAiReqPose(C, ang, TB_REQ2_L/2, TB_REQ_EDGE_Y);
+  const shift = dPx-(TB_REQ_CENTER_Y-TB_REQ_EDGE_Y);
+  await tbAiBring('requerre2', {x:fin.x-nS.x*shift, y:fin.y-nS.y*shift, angle:ang});
+  await tbAiSleep(300);
+  await tbAiMoveTool(tbAiFindTool('requerre2'), {x:fin.x, y:fin.y}, 1000);
+  const s0 = Math.max(ex.t0, tc-TB_REQ_REACH), s1 = Math.min(ex.t1, tc+TB_REQ_REACH);
+  await tbAiTraceLine(tbAiAt(ex.pS,ex.uS,s0), tbAiAt(ex.pS,ex.uS,s1), a.style);
+  if(ex.t1>s1+2 || ex.t0<s0-2){
+    await tbAiPutAway('requerre2','crayon');
+    await tbAiRuledStroke(ex.a, ex.b, a.style, [s0-ex.t0, s1-ex.t0]);
+  }
+  await tbAiPutAwayAll();
+}
+/* ---- Parallèle au compas : construction d'un parallélogramme A0B0NM. ---- */
+async function tbAiParaCompas(a){
+  const S = tbAiPlan.S, A0 = S(a.A0), B0 = S(a.B0), M = S(a.M);
+  if(a.needMarks){ await tbAiMark(A0, ''); await tbAiMark(B0, ''); await tbAiPutAway('crayon'); }
+  let cp = await tbAiTakeOpening(a.cM.r*TB_PX_PER_CM, [A0, B0]);
+  await tbAiCompassArcs(cp, M, a.cM.r*TB_PX_PER_CM, tbAiArcWindows(a.cM, 16), 'construction');
+  cp = await tbAiTakeOpening(a.cB.r*TB_PX_PER_CM, [A0, M]);
+  await tbAiCompassArcs(cp, B0, a.cB.r*TB_PX_PER_CM, tbAiArcWindows(a.cB, 16), 'construction');
+  await tbAiPutAway('compas');
+  await tbAiMark(S(a.N), '');
+  const ex = tbAiExtent(a.obj);
+  if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
+  await tbAiPutAwayAll();
+}
+
 const tbAiSteps = {
   async point(a){
     await tbAiMark(tbAiPlan.S(a.p), a.name);
@@ -825,7 +1027,7 @@ const tbAiSteps = {
      crayon, PUIS tracé de A à B. */
   async segment_length(a){
     const S = tbAiPlan.S, A = S(a.A), B = S(a.B);
-    await tbAiBring('regle_grad', {x:A.x, y:A.y, angle:tbAiAng(A,B)});
+    await tbAiBring(a.gtool, tbAiGradPose(a.gtool, A, tbAiAng(A,B)));
     tbAiHighlight(A);
     await tbAiSleep(500);
     tbAiHighlight(B);
@@ -862,6 +1064,7 @@ const tbAiSteps = {
      l'angle droit qui repose sur le tracé. */
   async perpendicular(a){
     const S = tbAiPlan.S, H = S(a.H), nS = tbAiSd(a.n), uS = tbAiSd(a.uRef);
+    if(a.method==='compas') return tbAiPerpCompas(a);
     let sA = null, sB = null;
     if(a.support.obj){ const e = tbAiExtent(a.support.obj); if(e){ sA = e.a; sB = e.b; } }
     else if(a.support.pts){ sA = S(a.support.pts[0]); sB = S(a.support.pts[1]); }
@@ -870,6 +1073,7 @@ const tbAiSteps = {
       const far = Math.hypot(sA.x-H.x, sA.y-H.y) > Math.hypot(sB.x-H.x, sB.y-H.y) ? sA : sB;
       if(Math.hypot(far.x-H.x, far.y-H.y) > 1) dS = tbV.norm({x:far.x-H.x, y:far.y-H.y});
     }
+    if(a.method==='requerre') return tbAiPerpRequerre(a, H, nS, dS);
     // leg1 de l'équerre = leg0 tourné de +90° à l'écran : (x,y) -> (-y,x).
     const leg0OnLine = (-dS.y*nS.x + dS.x*nS.y) > 0;
     const ang = leg0OnLine ? tbAiVecAng(dS) : tbAiVecAng(nS);
@@ -895,6 +1099,8 @@ const tbAiSteps = {
   /* Parallèle : équerre posée sur la droite, règle contre l'autre côté de l'équerre, l'équerre
      glisse le long de la règle jusqu'au point, puis tracé le long de l'équerre. */
   async parallel(a){
+    if(a.method==='compas') return tbAiParaCompas(a);
+    if(a.method==='requerre') return tbAiParaRequerre(a);
     const S = tbAiPlan.S, M = S(a.M), nS = tbAiSd(a.n), uS = tbAiSd(a.uRef), dPx = a.d*TB_PX_PER_CM;
     const a0 = tbAiSquareAngle(uS, nS), leg0 = tbAiDirDeg(a0);
     const ex = tbAiExtent(a.obj);
@@ -922,8 +1128,8 @@ const tbAiSteps = {
   async circle(a){
     const S = tbAiPlan.S, C = S(a.C), rPx = a.r*TB_PX_PER_CM;
     const style = a.style || ((a.obj.full || !a.obj.hits.length) ? 'final' : 'construction');
-    const cp = await tbAiTakeOpening(rPx, a.from ? [S(a.from[0]), S(a.from[1])] : null);
-    if(!a.from) await tbAiPutAway('regle_grad');
+    const cp = await tbAiTakeOpening(rPx, a.from ? [S(a.from[0]), S(a.from[1])] : null, a.gtool);
+    if(!a.from) await tbAiPutAway('regle_grad','requerre2');
     await tbAiCompassArcs(cp, C, rPx, tbAiArcWindows(a.obj), style);
     await tbAiPutAwayAll();
   },
@@ -934,7 +1140,7 @@ const tbAiSteps = {
   /* Milieu : règle avec son 0 sur A, lecture de la longueur en B, puis de la moitié. */
   async midpoint(a){
     const S = tbAiPlan.S, A = S(a.A), B = S(a.B), I = S(a.I);
-    await tbAiBring('regle_grad', {x:A.x, y:A.y, angle:tbAiAng(A,B)});
+    await tbAiBring(a.gtool, tbAiGradPose(a.gtool, A, tbAiAng(A,B)));
     tbAiHighlight(A); await tbAiSleep(450);
     tbAiHighlight(B); await tbAiSleep(550);
     tbAiHighlight(I, TB_AI_HL2); await tbAiSleep(500);
@@ -947,8 +1153,8 @@ const tbAiSteps = {
      droite qui passe par ces deux points. */
   async perpendicular_bisector(a){
     const S = tbAiPlan.S, rPx = a.r*TB_PX_PER_CM;
-    const cp = await tbAiTakeOpening(rPx, null);
-    await tbAiPutAway('regle_grad');
+    const cp = await tbAiTakeOpening(rPx, null, a.otool);
+    await tbAiPutAway('regle_grad','requerre2');
     await tbAiCompassArcs(cp, S(a.A), rPx, tbAiArcWindows(a.ca, 16), 'construction');
     await tbAiCompassArcs(cp, S(a.B), rPx, tbAiArcWindows(a.cb, 16), 'construction');
     await tbAiPutAway('compas');
@@ -973,8 +1179,8 @@ const tbAiSteps = {
     while(delta>Math.PI) delta -= 2*Math.PI; while(delta<-Math.PI) delta += 2*Math.PI;
     const mg = 12*Math.PI/180, w = delta>0 ? [aP-mg, aP+delta+mg] : [aP+delta-mg, aP+mg];
     const aK = (c)=>Math.atan2(a.K.y-c.y, a.K.x-c.x), h = 16*Math.PI/180;
-    const cp = await tbAiTakeOpening(rPx, null);
-    await tbAiPutAway('regle_grad');
+    const cp = await tbAiTakeOpening(rPx, null, a.otool);
+    await tbAiPutAway('regle_grad','requerre2');
     await tbAiCompassArcs(cp, S(a.A), rPx, [w], 'construction');
     await tbAiMark(S(a.P), ''); await tbAiMark(S(a.Q), '');
     await tbAiPutAway('crayon');
@@ -1056,8 +1262,15 @@ const tbAiSteps = {
 };
 
 /* ======================= IA : consigne, appel, extraction ======================= */
-function tbAiBuildPrompt(enonce){
+function tbAiBuildPrompt(enonce, tools){
+  const allowedT = tools && tools.length ? tools : Object.keys(TB_AI_TOOL_NAMES);
+  const forbidden = Object.keys(TB_AI_TOOL_NAMES).filter(t=>!allowedT.includes(t));
+  const toolsLine = 'OUTILS AUTORISÉS : '+allowedT.map(t=>TB_AI_TOOL_NAMES[t]).join(', ')+'.'
+    + (forbidden.length ? ' OUTILS INTERDITS : '+forbidden.map(t=>TB_AI_TOOL_NAMES[t]).join(', ')+' -- n\'utilise aucune opération qui en a besoin.' : '');
   return `Tu es professeur de mathématiques en France (collège). On te donne un énoncé de construction géométrique. Tu dois écrire le PROGRAMME DE CONSTRUCTION que le professeur réalise au tableau avec ses instruments (règle graduée, équerre, compas, rapporteur), dans l'ordre où il le ferait réellement devant la classe.
+
+${toolsLine}
+Besoins des opérations : segment_length et midpoint = règle graduée (ou réquerre, 10 cm max) ; segment, line, ray = règle ou réquerre ; circle, perpendicular_bisector, angle_bisector = compas ; angle = rapporteur ; perpendicular et parallel = équerre, réquerre OU compas (le logiciel prend le premier autorisé, ou celui indiqué par "tool").
 
 Tu ne calcules AUCUNE coordonnée : le logiciel calcule toute la géométrie et anime les instruments. Tu indiques seulement les longueurs (en cm), les angles (en degrés), les points et les objets tracés.
 
@@ -1069,8 +1282,8 @@ OPÉRATIONS DISPONIBLES :
 - {"op":"segment","from":"A","to":"B"} : segment entre deux points DÉJÀ construits (le trait s'arrête exactement en A et en B). Sert à fermer une figure. Inutile si ce côté est déjà tracé (le logiciel l'ignore alors).
 - {"op":"line","id":"d","through":["A","B"]} : DROITE (AB), tracée de part et d'autre des deux points. Ou {"op":"line","id":"d","through":"A","direction":30}.
 - {"op":"ray","id":"d","from":"A","through":"B"} : DEMI-DROITE [AB), partant exactement de A et dépassant B. Ou {"op":"ray","id":"d","from":"A","direction":60}.
-- {"op":"perpendicular","id":"d1","through":"A","to":["A","B"],"kind":"ray","side":"up"} : PERPENDICULAIRE À L'ÉQUERRE à la droite (AB) (ou "to":"d" pour une droite déjà nommée) passant par A. "kind" : "line" (droite), "ray" (demi-droite qui part de la droite de référence), "segment" (segment du point jusqu'au pied, point hors de la droite). "side" (up/down/left/right) : de quel côté part la demi-droite quand le point est SUR la droite. "foot":"H" pour nommer le pied de la perpendiculaire quand le point est hors de la droite.
-- {"op":"parallel","id":"d2","through":"M","to":["A","B"]} : PARALLÈLE à (AB) passant par M (équerre qui glisse le long de la règle). "kind":"line" par défaut.
+- {"op":"perpendicular","id":"d1","through":"A","to":["A","B"],"kind":"ray","side":"up"} : PERPENDICULAIRE À L'ÉQUERRE à la droite (AB) (ou "to":"d" pour une droite déjà nommée) passant par A. Option "tool" : "equerre", "requerre" ou "compas" pour imposer l'instrument quand l'énoncé le précise (ex. « à la réquerre », « à la règle et au compas ») ; sinon ne la mets pas. "kind" : "line" (droite), "ray" (demi-droite qui part de la droite de référence), "segment" (segment du point jusqu'au pied, point hors de la droite). "side" (up/down/left/right) : de quel côté part la demi-droite quand le point est SUR la droite. "foot":"H" pour nommer le pied de la perpendiculaire quand le point est hors de la droite.
+- {"op":"parallel","id":"d2","through":"M","to":["A","B"]} : PARALLÈLE à (AB) passant par M (équerre qui glisse le long de la règle, réquerre, ou parallélogramme au compas). "kind":"line" par défaut. Même option "tool" que ci-dessus.
 - {"op":"circle","id":"c1","center":"B","radius":7} : COMPAS de centre B, écartement 7 cm pris sur la règle. Ou "radius_from":["A","C"] pour reporter la longueur AC (écartement pris directement sur la figure). S'il sert à trouver un point (intersection), seul un petit arc est tracé ; sinon le cercle complet ("full":true pour forcer le cercle complet).
 - {"op":"intersect","name":"C","of":["d1","c1"],"pick":"up"} : on marque le point d'intersection de deux objets (droites, demi-droites, segments, cercles). "pick" (up/down/left/right) choisit l'intersection s'il y en a deux (par défaut : celle du haut).
 - {"op":"midpoint","name":"I","of":["A","B"]} : MILIEU mesuré à la règle.
@@ -1084,6 +1297,8 @@ OPÉRATIONS DISPONIBLES :
 
 CODAGE : sont codés AUTOMATIQUEMENT (ne les ajoute pas) les angles droits construits à l'équerre ("perpendicular"), les angles construits au rapporteur ("angle", arc + valeur), la médiatrice (angle droit + milieu) et la bissectrice (angles égaux). Ajoute toi-même les autres codages qui décrivent la figure demandée : angles droits obtenus autrement (ex. les 4 angles d'un rectangle, sauf ceux déjà construits à l'équerre), longueurs égales (triangle isocèle ou équilatéral, losange, carré, milieu), valeurs d'angles données par l'énoncé et non construites au rapporteur.
 
+COULEURS : si l'énoncé demande un tracé en couleur, ajoute "color" à l'étape qui le trace (segment_length, segment, line, ray, perpendicular, parallel, circle, perpendicular_bisector, angle_bisector, angle) : "noir", "rouge", "bleu", "vert", "orange", "violet", "rose", "marron" ou "gris". Ex. {"op":"line","id":"d","through":["A","B"],"color":"rouge"}. Sinon, ne mets pas "color". Les arcs de construction restent gris.
+
 LONGUEURS : les longueurs données sont écrites AUTOMATIQUEMENT sur la figure (ex. "4 cm") : celle d'un "segment_length", et le rayon d'un "circle" (en cm) quand le point obtenu sur ce cercle est relié au centre par un segment tracé. N'ajoute pas de "label" pour elles. Pour une longueur auxiliaire qui n'est pas une donnée de l'énoncé, ajoute "show_length":false (sur "segment_length" ou "circle").
 
 STRATÉGIES CLASSIQUES (choisis celle que l'on enseigne pour l'énoncé) :
@@ -1096,6 +1311,7 @@ STRATÉGIES CLASSIQUES (choisis celle que l'on enseigne pour l'énoncé) :
 - Rectangle / carré : segment_length [AB], deux "perpendicular" (en A et en B, ray, même side), deux segment_length avec "along", "segment" pour fermer, puis "mark_right_angle" pour les deux autres angles (et "mark_equal" pour un carré).
 - Losange : cercles de même rayon depuis deux sommets. Parallélogramme : "parallel" ou reports au compas ("radius_from").
 - Milieu, médiatrice, bissectrice, perpendiculaire, parallèle : opérations dédiées ci-dessus.
+- Sans rapporteur : un angle de 90° = "perpendicular", 60° = triangle équilatéral au compas ("circle" + "intersect"), 45° ou 30° = "angle_bisector" d'un angle de 90° ou 60°.
 
 EXEMPLE 1 -- "Construire un triangle ABC rectangle en A tel que AB = 4 cm et BC = 7 cm." :
 [{"op":"point","name":"A"},{"op":"segment_length","from":"A","to":"B","length":4},{"op":"perpendicular","id":"dA","through":"A","to":["A","B"],"kind":"ray","side":"up"},{"op":"circle","id":"cB","center":"B","radius":7},{"op":"intersect","name":"C","of":["dA","cB"]},{"op":"segment","from":"B","to":"C"}]
@@ -1153,14 +1369,29 @@ function tbAiParseSteps(raw){
 }
 
 /* ======================= Interface : fenêtre + barre de lecture pas à pas ======================= */
+const TB_AI_TOOLS_KEY = 'tbAiAllowedTools';
+function tbAiReadToolChecks(){
+  const tools = [...document.querySelectorAll('#tbAiToolChecks input[type=checkbox]')].filter(c=>c.checked).map(c=>c.value);
+  try{ localStorage.setItem(TB_AI_TOOLS_KEY, JSON.stringify(tools)); }catch(e){}
+  return tools;
+}
 function tbOpenAiModal(){
+  let saved = null;
+  try{ saved = JSON.parse(localStorage.getItem(TB_AI_TOOLS_KEY)||'null'); }catch(e){}
+  document.querySelectorAll('#tbAiToolChecks input[type=checkbox]').forEach(c=>{ c.checked = Array.isArray(saved) ? saved.includes(c.value) : true; });
   document.getElementById('tbAiModalOverlay').style.display = 'flex';
   document.getElementById('tbAiStatus').textContent = '';
 }
 function tbCloseAiModal(){ document.getElementById('tbAiModalOverlay').style.display = 'none'; }
 
 let tbAiPlanIndex = 0, tbAiBusy = false;
-function tbAiPlaybackShow(){ const bar = document.getElementById('tbAiPlaybackBar'); if(bar) bar.style.display = 'flex'; }
+function tbAiPlaybackShow(){
+  const bar = document.getElementById('tbAiPlaybackBar'); if(bar) bar.style.display = 'flex';
+  // Ajout aux exercices corrigés : réservé aux professeurs (un élève peut rejouer une
+  // construction depuis son cahier, pas l'ajouter).
+  const add = document.getElementById('tbAiAddCorBtn');
+  if(add) add.style.display = (typeof currentUserRole!=='undefined' && (currentUserRole==='prof' || currentUserRole==='admin')) ? '' : 'none';
+}
 function tbAiPlaybackHide(){
   const bar = document.getElementById('tbAiPlaybackBar'); if(bar) bar.style.display = 'none';
   tbAiPlan = null; tbAiPlanIndex = 0; tbAiOverlay = [];
@@ -1178,8 +1409,10 @@ async function tbAiPlaybackNext(){
   tbAiBusy = true; tbAiPlaybackUpdateUI();
   try{
     const a = tbAiPlan.actions[tbAiPlanIndex];
+    tbAiStrokeColor = a.color || null;
     await tbAiSteps[a.op](a);
   } finally {
+    tbAiStrokeColor = null;
     tbAiOverlay = [];
     tbTools = tbTools.filter(t=>!t.aiDriven);
     try{ tbAiWriteLengths(); tbAiLayoutLabels(); }catch(e){ console.warn('tableau-ia : mise en page', e); }
@@ -1201,9 +1434,22 @@ function tbAiPlaybackRestart(){
   tbAiPlaybackUpdateUI();
 }
 /* Charge un programme déjà écrit (utilisé par tbAiGenerate, et pratique pour tester). */
-function tbAiLoadProgram(program){
-  tbAiPlan = tbAiCompile(program);
+function tbAiLoadProgram(program, tools){
+  const allowed = new Set((tools && tools.length ? tools : Object.keys(TB_AI_TOOL_NAMES)).filter(t=>TB_AI_TOOL_NAMES[t]));
+  const plan = tbAiCompile(program, allowed);
+  tbAiAllowed = allowed;
+  tbAiPlan = plan;
+  plan.program = program; plan.tools = [...allowed];
   tbAiPlanIndex = 0;
+  // Zoom sur la figure (demandé : "zoomer la zone de travail car parfois les constructions sont
+  // un peu trop petites") -- les outils, à la même échelle, restent justes.
+  // Zoom limité (~×1,6) : au-delà, règle et réquerre remplissent tout l'écran et le geste
+  // devient illisible.
+  if(typeof tbZoomFit==='function' && plan.screenBox){
+    const b = plan.screenBox, cx = (b.x0+b.x1)/2, cy = (b.y0+b.y1)/2;
+    const w = Math.max(b.x1-b.x0, 560), h = Math.max(b.y1-b.y0, 350);
+    tbZoomFit({x0:cx-w/2, x1:cx+w/2, y0:cy-h/2, y1:cy+h/2});
+  }
   tbAiPlaybackShow();
   tbAiPlaybackUpdateUI();
   return tbAiPlan;
@@ -1216,10 +1462,12 @@ async function tbAiGenerate(){
   status.textContent = 'Préparation de la construction par IA…';
   btn.disabled = true;
   try{
-    const raw = await callClaude(tbAiBuildPrompt(enonce), 3000, {feature:'tableau-ia'});
+    const tools = tbAiReadToolChecks();
+    if(!tools.length){ status.textContent = 'Cochez au moins un outil.'; return; }
+    const raw = await callClaude(tbAiBuildPrompt(enonce, tools), 3000, {feature:'tableau-ia'});
     const program = tbAiParseSteps(raw);
     if(!program){ status.textContent = "L'IA n'a pas renvoyé un programme exploitable -- réessayez."; return; }
-    try{ tbAiLoadProgram(program); }
+    try{ tbAiLoadProgram(program, tools); }
     catch(e){
       if(e instanceof TbAiError){ status.textContent = 'Construction impossible : '+e.message+' -- réessayez ou reformulez l\'énoncé.'; console.warn('tableau-ia : programme rejeté', program); return; }
       throw e;
@@ -1230,4 +1478,76 @@ async function tbAiGenerate(){
   }finally{
     btn.disabled = false;
   }
+}
+
+/* ======================= Exercices corrigés ======================= */
+/* Ajoute la figure construite aux exercices corrigés (demandé : "permettre d'ajouter le
+   résultat dans les exercices corrigés ou mettre le module dans les exos corrigés") : un bloc
+   avec la figure finale (vectorielle, à l'échelle) ET un bouton qui rejoue la construction pas
+   à pas sur le tableau -- y compris pour les élèves depuis leur cahier. */
+function tbAiFigureBBox(){
+  const xs = [], ys = [];
+  const add = (x,y)=>{ xs.push(x); ys.push(y); };
+  tbInk.forEach(st=>st.points.forEach(p=>add(p[0],p[1])));
+  tbPoints.forEach(p=>{ add(p.x-8,p.y-8); add(p.x+8,p.y+8); if(p.label){ const R = tbAiLabelRect(p); add(R.cx-R.hw,R.cy-R.hh); add(R.cx+R.hw,R.cy+R.hh); } });
+  tbTexts.forEach(t=>{ const R = tbAiTextRect(t); add(R.cx-R.hw-4,R.cy-R.hh-4); add(R.cx+R.hw+4,R.cy+R.hh+4); });
+  tbCodages.forEach(c=>{ add(c.x-16,c.y-16); add(c.x+16,c.y+16); });
+  if(!xs.length) return null;
+  return {x0:Math.max(0,Math.min(...xs)-12), y0:Math.max(0,Math.min(...ys)-12), x1:Math.min(900,Math.max(...xs)+12), y1:Math.min(560,Math.max(...ys)+12)};
+}
+async function tbAiAddToCorrection(){
+  if(tbAiBusy) return;
+  if(tbAiPlan && tbAiPlanIndex<tbAiPlan.actions.length){
+    // Figure complète : on termine d'abord les étapes restantes, en accéléré.
+    const speed = tbAiSpeed;
+    tbAiSetSpeed('0.02');
+    while(tbAiPlan && tbAiPlanIndex<tbAiPlan.actions.length) await tbAiPlaybackNext();
+    tbAiSpeed = speed;
+  }
+  const bb = tbAiFigureBBox();
+  const layer = document.getElementById('tbInkLayer');
+  if(!bb || !layer){ await niceAlert('Le tableau est vide : rien à ajouter.'); return; }
+  const g = layer.cloneNode(true);
+  g.removeAttribute('id');
+  g.querySelectorAll('[data-role]').forEach(el=>el.removeAttribute('data-role'));
+  g.querySelectorAll('[pointer-events]').forEach(el=>{ if(el.getAttribute('fill')==='transparent') el.remove(); });
+  const w = bb.x1-bb.x0, h = bb.y1-bb.y0;
+  let replay = '';
+  if(tbAiPlan && tbAiPlan.program){
+    const payload = escapeHtml(JSON.stringify({program:tbAiPlan.program, tools:tbAiPlan.tools})).replace(/"/g,'&quot;');
+    replay = `<div style="margin-top:4px;"><button type="button" class="btn secondary" style="font-size:.8rem;padding:4px 12px;" data-tbprog="${payload}" onclick="event.stopPropagation(); if(window.tbAiReplayFromBlock) tbAiReplayFromBlock(this);"><span class="gicon">play_circle</span> Voir la construction pas à pas</button></div>`;
+  }
+  const html = `<div class="tb-ai-figure" style="text-align:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="${bb.x0.toFixed(1)} ${bb.y0.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}" width="${w.toFixed(0)}" style="max-width:100%;height:auto;">${g.innerHTML}</svg>${replay}</div>`;
+  setToolContext('global');
+  addPendingBlock('tbfigure', html, null, null);
+  if(typeof showView==='function'){ showView('view-correction'); if(typeof setActiveTopnav==='function') setActiveTopnav('correction'); }
+  const prev = document.getElementById('correctionPreview');
+  if(prev) prev.scrollIntoView({behavior:'smooth', block:'center'});
+}
+let tbAiReturnView = null;
+function tbAiReplayFromBlock(btn){
+  let d;
+  try{ d = JSON.parse(btn.getAttribute('data-tbprog')); }catch(e){ return; }
+  if(!d || !Array.isArray(d.program)) return;
+  const from = document.querySelector('.view.active');
+  tbAiReturnView = from ? from.id : null;
+  showView('view-tableau');
+  if(typeof setActiveTopnav==='function') setActiveTopnav('tableau');
+  if(typeof initTableauView==='function') initTableauView();
+  tbClearAll();
+  try{ tbAiLoadProgram(d.program, d.tools); }
+  catch(e){ niceAlert('Construction illisible : '+e.message); return; }
+  const back = document.getElementById('tbAiReturnBtn');
+  if(back) back.style.display = tbAiReturnView ? '' : 'none';
+  const bar = document.getElementById('tbAiPlaybackBar');
+  if(bar) bar.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function tbAiReturn(){
+  const back = document.getElementById('tbAiReturnBtn');
+  if(back) back.style.display = 'none';
+  const id = tbAiReturnView;
+  tbAiReturnView = null;
+  if(!id || !document.getElementById(id)) return;
+  showView(id); // la page d'origine (cahier, correction...) est restée telle quelle, juste masquée
+  if(typeof setActiveTopnav==='function' && typeof ROUTE_SIMPLE!=='undefined' && ROUTE_SIMPLE[id]) setActiveTopnav(ROUTE_SIMPLE[id]);
 }
