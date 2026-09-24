@@ -112,7 +112,7 @@ function tbAiEvaluate(program, flips){
     if(Array.isArray(ref) && ref.length===2){
       const a=P(i,ref[0]), b=P(i,ref[1]);
       if(tbV.dist(a,b)<1e-6) err(i, 'les points '+ref[0]+' et '+ref[1]+' sont confondus');
-      return {p:a, u:tbV.norm(tbV.sub(b,a)), obj:null};
+      return {p:a, u:tbV.norm(tbV.sub(b,a)), obj:null, pts:[a,b]};
     }
     if(typeof ref==='string' && objs.has(ref)){
       const o = objs.get(ref);
@@ -234,7 +234,7 @@ function tbAiEvaluate(program, flips){
         if(L.obj) hit(L.obj,H);
         let footName = null;
         if(s.foot!==undefined && !onLine){ newName(i,s.foot); addPoint(s.foot,H); footName = s.foot; }
-        actions.push({op:'perpendicular', H, n, uRef:L.u, obj:o, footName, style:s.style||'final'});
+        actions.push({op:'perpendicular', H, n, uRef:L.u, support:{obj:L.obj, pts:L.pts}, obj:o, footName, style:s.style||'final'});
         break;
       }
       case 'parallel': {
@@ -650,17 +650,33 @@ const tbAiSteps = {
     if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
     await tbAiPutAwayAll();
   },
-  /* Perpendiculaire à l'équerre : un côté de l'angle droit posé sur la droite, l'équerre glisse
-     jusqu'au pied, le crayon suit l'autre côté ; prolongement à la règle si nécessaire. */
+  /* Perpendiculaire à l'équerre : un côté de l'angle droit posé SUR la partie déjà tracée de la
+     droite de référence (signalé : l'équerre "n'est finalement posée sur aucun objet" quand elle
+     reposait sur le prolongement non tracé), elle coulisse le long de ce tracé jusqu'au pied, le
+     crayon suit l'autre côté ; prolongement à la règle si nécessaire. Une équerre ne se
+     retourne pas : selon le côté où part la perpendiculaire, c'est le petit ou le grand côté de
+     l'angle droit qui repose sur le tracé. */
   async perpendicular(a){
     const S = tbAiPlan.S, H = S(a.H), nS = tbAiSd(a.n), uS = tbAiSd(a.uRef);
-    const a0 = tbAiSquareAngle(uS, nS), leg0 = tbAiDirDeg(a0);
-    await tbAiBring('equerre', {x:H.x-leg0.x*70, y:H.y-leg0.y*70, angle:a0});
+    let sA = null, sB = null;
+    if(a.support.obj){ const e = tbAiExtent(a.support.obj); if(e){ sA = e.a; sB = e.b; } }
+    else if(a.support.pts){ sA = S(a.support.pts[0]); sB = S(a.support.pts[1]); }
+    let dS = uS;
+    if(sA){
+      const far = Math.hypot(sA.x-H.x, sA.y-H.y) > Math.hypot(sB.x-H.x, sB.y-H.y) ? sA : sB;
+      if(Math.hypot(far.x-H.x, far.y-H.y) > 1) dS = tbV.norm({x:far.x-H.x, y:far.y-H.y});
+    }
+    // leg1 de l'équerre = leg0 tourné de +90° à l'écran : (x,y) -> (-y,x).
+    const leg0OnLine = (-dS.y*nS.x + dS.x*nS.y) > 0;
+    const ang = leg0OnLine ? tbAiVecAng(dS) : tbAiVecAng(nS);
+    const legMax = leg0OnLine ? TB_EQUERRE_LEGY-8 : TB_EQUERRE_LEGX-12;
+    const start = tbAiAt(H, dS, 70);
+    await tbAiBring('equerre', {x:start.x, y:start.y, angle:ang});
     await tbAiSleep(200);
     await tbAiMoveTool(tbAiFindTool('equerre'), {x:H.x, y:H.y}, 650);
     const ex = tbAiExtent(a.obj);
     if(ex){
-      const legMax = TB_EQUERRE_LEGY-8, s0 = Math.max(0,ex.t0), s1 = Math.min(ex.t1, legMax);
+      const s0 = Math.max(0,ex.t0), s1 = Math.min(ex.t1, legMax);
       if(s1>s0+1) await tbAiTraceLine(tbAiAt(ex.pS,ex.uS,s0), tbAiAt(ex.pS,ex.uS,s1), a.style);
       const needRuler = ex.t1>legMax+2 || ex.t0<-2;
       if(needRuler){
