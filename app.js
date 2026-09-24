@@ -2518,6 +2518,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.659', items:[
+    "Fix -- Administration, onglet Usage IA : \"Could not embed because more than one relationship was found for 'ai_usage_log' and 'profiles'\". Le journal IA pointe désormais deux fois vers les comptes (qui a utilisé l'IA, et qui paie) : la requête précise maintenant laquelle. Texte d'explication mis à jour (clé du site ou clé personnelle du professeur, au lieu de « un seul jeton pour tous ») et nouveau tableau « Par payeur ».",
+  ]},
   { version:'2026-08-19.658', items:[
     "Intelligence artificielle -- demandé : \"en tant qu'admin, je dois pouvoir décider si mes collègues doivent utiliser leur propre clé ou s'ils peuvent utiliser la clé principale\". Nouvelle carte « 5. Professeurs : quelle clé ? » (page Intelligence artificielle, administrateur) : pour chaque collègue, une case « clé du site autorisée », avec sa clé personnelle éventuelle, ses réglages et sa consommation sur 30 jours. Un professeur autorisé n'a plus besoin de clé (la sienne reste prioritaire s'il en ajoute une) ; il ne peut pas se donner ce droit lui-même.",
     "IA des élèves au cas par cas -- demandé : \"pour les élèves, pouvoir le faire au cas par cas. On peut cibler les élèves les plus en difficulté\". Choix « Tous les élèves de mes classes » ou « Seulement les élèves que je choisis » : liste par classe avec recherche, « Tout cocher / Tout décocher », un quota propre facultatif par élève et ses utilisations sur 30 jours. Vérifié côté serveur : un élève non coché n'a aucun accès, et un professeur ne peut choisir que des élèves de ses classes.",

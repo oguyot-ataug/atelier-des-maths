@@ -178,15 +178,18 @@ MARTIN Marie	mmartin		0123456A	6eA"></textarea>
     <div class="tool-shell">
       <button class="btn secondary" style="float:right;" onclick="adminRefreshAiUsage()"><span class=gicon>refresh</span> Actualiser</button>
       <p class="hint" style="margin:6px 0 14px;clear:right;max-width:75ch;">
-        Utilisation de l'assistant IA (quiz générés, rédaction assistée…) : un seul jeton d'API Anthropic,
-        payé par l'établissement, sert pour tous les comptes -- il n'y a pas de "clé API" propre à chaque prof.
-        Le coût est estimé à partir du nombre de tokens consommés par appel
+        Utilisation de l'assistant IA (quiz générés, rédaction assistée…) : chaque appel est payé soit par
+        <b>la clé du site</b> (la vôtre, et celle des collègues que vous y autorisez), soit par <b>la clé
+        personnelle</b> du professeur concerné -- réglages et rapport détaillé dans Mon compte &gt;
+        Intelligence artificielle. Le coût est estimé à partir du nombre de tokens consommés par appel
         (tarif Claude Sonnet : $3 / million de tokens en entrée, $15 / million de tokens en sortie).
         ${AI_USAGE_TOKENS_SINCE_LABEL ? `Les appels antérieurs au <b>${AI_USAGE_TOKENS_SINCE_LABEL}</b> n'ont pas de tokens enregistrés (comptés dans le nombre d'appels, mais avec un coût inconnu).` : ''}
       </p>
       <div id="adminAiUsageSummary" class="hint">Chargement…</div>
       <p class="example-title" style="margin:16px 0 6px;color:#0C5BA0;">Par utilisateur</p>
       <div id="adminAiUsageByUser" class="hint"></div>
+      <p class="example-title" style="margin:16px 0 6px;color:#1F7A4D;">Par payeur</p>
+      <div id="adminAiUsageByPayer" class="hint"></div>
       <p class="example-title" style="margin:16px 0 6px;color:#26AAB1;">Par fonctionnalité</p>
       <div id="adminAiUsageByFeature" class="hint"></div>
     </div>
@@ -1070,7 +1073,7 @@ async function adminRefreshAiUsage(){
   elSummary.textContent = 'Chargement…';
   elByUser.innerHTML = ''; elByFeature.innerHTML = '';
   const { data, error } = await sb.from('ai_usage_log')
-    .select('user_id,feature,chapitre,niveau,input_tokens,output_tokens,created_at,profiles(nom,prenom,email)')
+    .select('user_id,feature,chapitre,niveau,input_tokens,output_tokens,created_at,key_source,billed_to,profiles:profiles!ai_usage_log_user_id_fkey(nom,prenom,email),payeur:profiles!ai_usage_log_billed_to_fkey(nom,prenom,email)')
     .order('created_at', {ascending:false})
     .limit(5000);
   if(error){ elSummary.textContent = 'Erreur : '+error.message; return; }
@@ -1112,6 +1115,25 @@ async function adminRefreshAiUsage(){
         <td style="text-align:right;">${aiUsageFormatCost(u.cost, u.calls-u.coutInconnu)}${u.coutInconnu?` <span class="hint">(+${u.coutInconnu} inconnu)</span>`:''}</td>
       </tr>`;
     }).join('')}</tbody>
+  </table>`;
+
+  // Qui paie : clé du site (et pour qui) ou clé personnelle d'un professeur.
+  const byPayer = new Map();
+  for(const row of data){
+    const who = (row.payeur && (profileDisplayName(row.payeur) || row.payeur.email)) || '—';
+    const k = (row.key_source==='prof' ? 'Clé personnelle de ' : 'Clé du site · ') + who;
+    if(!byPayer.has(k)) byPayer.set(k, {calls:0, cost:0, coutInconnu:0});
+    const p = byPayer.get(k), cost = aiUsageCallCost(row);
+    p.calls++; if(cost==null) p.coutInconnu++; else p.cost += cost;
+  }
+  const elByPayer = document.getElementById('adminAiUsageByPayer');
+  if(elByPayer) elByPayer.innerHTML = `<table class="sup-table">
+    <thead><tr><th>Payé par</th><th style="text-align:right;">Appels</th><th style="text-align:right;">Coût estimé</th></tr></thead>
+    <tbody>${[...byPayer.entries()].sort((a,b)=>b[1].cost-a[1].cost || b[1].calls-a[1].calls).map(([k,p])=>`<tr>
+        <td style="font-weight:600;">${escapeHtml(k)}</td>
+        <td style="text-align:right;">${p.calls}</td>
+        <td style="text-align:right;">${aiUsageFormatCost(p.cost, p.calls-p.coutInconnu)}${p.coutInconnu?` <span class="hint">(+${p.coutInconnu} inconnu)</span>`:''}</td>
+      </tr>`).join('')}</tbody>
   </table>`;
 
   const featureRows = [...byFeature.entries()].sort((a,b)=> b[1].cost - a[1].cost || b[1].calls - a[1].calls);
