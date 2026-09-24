@@ -2540,6 +2540,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.663', items:[
+    "Établissements, étape 2 : CLÉ IA D'ÉTABLISSEMENT -- demandé : \"le référent saisit la clé de son collège et choisit, pour chaque collègue, entre clé de l'établissement et clé personnelle. Il a aussi le rapport IA de son établissement\".",
+    "Mon établissement > onglet « IA » (référent) : clé Anthropic du collège (vérifiée auprès d'Anthropic, conservée chiffrée, jamais relisible), choix pour chaque collègue entre « Clé de l'établissement » et « Clé personnelle », avec l'état de la clé, l'activation de l'IA et la consommation sur 30 jours, puis le rapport IA de l'établissement (par fonctionnalité, classe, personne, jour, journal détaillé, export tableur).",
+    "Chaque professeur a désormais trois modes de clé : clé du site (attribuée uniquement par l'administrateur général, que le référent ne peut pas modifier), clé de l'établissement, clé personnelle. L'administrateur général choisit parmi les trois (onglet IA et fenêtre « Modifier le compte ») ; la page Intelligence artificielle du professeur indique clairement qui prend en charge son IA, et prévient si la clé de l'établissement n'est pas encore enregistrée.",
+  ]},
   { version:'2026-08-19.662', items:[
     "Fix -- page Intelligence artificielle, signalé : \"lorsqu'elle coche Utiliser l'IA dans mes outils, ça se décoche tout seul\". La case n'était enregistrée que par le bouton situé plus bas, dans la carte des élèves : sans ce clic, rien n'était sauvegardé et la case réapparaissait décochée. Chaque réglage (IA pour moi, IA pour mes élèves, outils, quota, mode) s'enregistre désormais immédiatement, avec une confirmation à côté ; le bouton ne sert plus qu'à valider la sélection d'élèves.",
   ]},

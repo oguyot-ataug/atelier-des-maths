@@ -185,12 +185,14 @@ MARTIN Marie	mmartin		0123456A	6eA"></textarea>
   </div>
 
   <div class="tab-panel" id="admin-panel-ia">
+    <div id="adminEtabKeyBox" style="display:none;"></div>
     <div class="tool-shell" style="margin-bottom:16px;">
       <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;"><span class=gicon>key</span> Clé IA des professeurs</strong>
-      <p class="hint" style="margin:6px 0 10px;max-width:80ch;">Pour chaque professeur, vous choisissez qui paie son IA (et celle de ses élèves) : <b>la clé du site</b> (la vôtre) ou <b>sa clé personnelle</b> (qu'il enregistre lui-même dans Mon compte &gt; Intelligence artificielle). Le choix s'applique immédiatement. Chaque professeur active ensuite lui-même l'IA pour lui et/ou ses élèves.</p>
+      <p class="hint" id="adminAiTeachersHint" style="margin:6px 0 10px;max-width:80ch;"></p>
       <div id="adminAiTeachers" class="hint">Chargement…</div>
     </div>
-    <div class="tool-shell">
+    <div id="adminEtabReportBox" style="display:none;"></div>
+    <div class="tool-shell" id="adminGlobalAiUsage">
       <button class="btn secondary" style="float:right;" onclick="adminRefreshAiUsage()"><span class=gicon>refresh</span> Actualiser</button>
       <p class="hint" style="margin:6px 0 14px;clear:right;max-width:75ch;">
         Utilisation de l'assistant IA (quiz générés, rédaction assistée…) : chaque appel est payé soit par
@@ -253,7 +255,7 @@ function adminApplyScopeUI(){
       sub.innerHTML = `<b>${escapeHtml((etab&&etab.nom)||'')}</b> · UAI <span class="hint-mono">${escapeHtml(scope)}</span> · ${lic}.<br>Vous êtes le référent de votre établissement : comptes professeurs et élèves, classes, imports et validation des inscriptions de vos collègues.`;
     } else sub.textContent = 'Gestion des comptes, des classes, des établissements et des signalements.';
   }
-  ['signalements','ia','etablissements'].forEach(t=>{
+  ['signalements','etablissements'].forEach(t=>{
     const b = document.querySelector('#adminTabs [data-admin-tab="'+t+'"]');
     if(b){ b.style.display = scoped ? 'none' : ''; if(scoped && b.classList.contains('active')) document.querySelector('#adminTabs [data-admin-tab="comptes"]').click(); }
   });
@@ -263,6 +265,14 @@ function adminApplyScopeUI(){
   ['adminNewUai','adminNewClassUai'].forEach(id=>{ const el = document.getElementById(id); if(el){ el.readOnly = scoped; if(scoped) el.value = scope; el.style.opacity = scoped ? .6 : 1; } });
   const uaiFilter = document.getElementById('adminAccFilterUai'); if(uaiFilter) uaiFilter.style.display = scoped ? 'none' : '';
   const syncBtn = document.getElementById('adminSyncEmailsBtn'); if(syncBtn) syncBtn.style.display = scoped ? 'none' : '';
+  // Onglet IA : le référent y gère la clé de son établissement, le choix de clé de ses collègues et
+  // le rapport de l'établissement ; l'administrateur y voit en plus l'usage de tout le site.
+  const showEl = (id, on)=>{ const el = document.getElementById(id); if(el) el.style.display = on ? '' : 'none'; };
+  showEl('adminEtabKeyBox', scoped); showEl('adminEtabReportBox', scoped); showEl('adminGlobalAiUsage', !scoped);
+  const tHint = document.getElementById('adminAiTeachersHint');
+  if(tHint) tHint.innerHTML = scoped
+    ? "Pour chaque collègue, choisissez qui paie son IA (et celle de ses élèves) : <b>la clé de l'établissement</b> (ci-dessus) ou <b>sa clé personnelle</b>. Le choix s'applique immédiatement ; chacun active ensuite lui-même l'IA dans sa page. « Clé du site » ne peut être attribuée que par l'administrateur général."
+    : "Pour chaque professeur, vous choisissez qui paie son IA (et celle de ses élèves) : <b>la clé du site</b> (la vôtre), <b>la clé de son établissement</b> (enregistrée par le référent) ou <b>sa clé personnelle</b>. Le choix s'applique immédiatement ; chacun active ensuite lui-même l'IA dans sa page.";
   const note = document.getElementById('adminBulkScopeNote');
   if(note){ note.style.display = scoped ? 'block' : 'none'; note.innerHTML = scoped ? `Les comptes et les classes sont automatiquement créés dans <b>votre établissement (UAI ${escapeHtml(scope)})</b> : la colonne UAI peut rester vide.` : ''; }
 }
@@ -272,7 +282,7 @@ async function adminRefreshEtablissements(){
   const box = document.getElementById('adminEtabListing');
   if(!box || adminScopeUai()) return;
   const [{ data: etabs, error }, { data: staff }, { data: cls }, { data: eleves }] = await Promise.all([
-    sb.from('etablissements').select('uai,nom,ville,referent_id,licence_until,licence_note').order('nom'),
+    sb.from('etablissements').select('uai,nom,ville,referent_id,licence_until,licence_note,ai_key_last4').order('nom'),
     sb.from('profiles').select('id,nom,prenom,role,uai').in('role',['prof','admin']),
     sb.from('classes').select('id,uai'),
     sb.from('profiles').select('uai').eq('role','eleve'),
@@ -280,7 +290,7 @@ async function adminRefreshEtablissements(){
   if(error){ box.textContent = 'Erreur : '+error.message; return; }
   if(!etabs || !etabs.length){ box.textContent = 'Aucun établissement.'; return; }
   const today = new Date().toISOString().slice(0,10);
-  box.innerHTML = `<div style="overflow-x:auto;"><table class="sup-table"><thead><tr><th>UAI</th><th>Nom</th><th>Référent</th><th>Licence jusqu'au</th><th>Note (facture, bon de commande…)</th><th>Profs · élèves · classes</th><th></th></tr></thead><tbody>
+  box.innerHTML = `<div style="overflow-x:auto;"><table class="sup-table"><thead><tr><th>UAI</th><th>Nom</th><th>Référent</th><th>Licence jusqu'au</th><th>Note (facture, bon de commande…)</th><th>Clé IA</th><th>Profs · élèves · classes</th><th></th></tr></thead><tbody>
     ${etabs.map(e=>{
       const profsHere = (staff||[]).filter(p=>p.uai===e.uai && p.role==='prof');
       const nbEleves = (eleves||[]).filter(p=>p.uai===e.uai).length, nbClasses = (cls||[]).filter(c=>c.uai===e.uai).length;
@@ -293,6 +303,7 @@ async function adminRefreshEtablissements(){
           ${!profsHere.length ? '<div class="hint" style="margin:2px 0 0;">aucun professeur rattaché à cet UAI</div>' : ''}</td>
         <td><input type="date" id="etabLic_${k}" value="${e.licence_until||''}"> ${e.licence_until ? `<div class="hint" style="margin:2px 0 0;color:${active?'#1F7A4D':'#a83c1f'};">${active?'active':'expirée'}</div>` : ''}</td>
         <td><input type="text" id="etabNote_${k}" value="${escapeHtml(e.licence_note||'')}" style="min-width:160px;"></td>
+        <td>${e.ai_key_last4 ? '<span class="hint-mono">…'+escapeHtml(e.ai_key_last4)+'</span>' : '<span class="hint">aucune</span>'}</td>
         <td>${profsHere.length} · ${nbEleves} · ${nbClasses}</td>
         <td style="white-space:nowrap;"><button class="btn" style="padding:4px 12px;font-size:.8rem;" onclick="adminSaveEtablissement('${escapeHtml(e.uai)}')">Enregistrer</button> <span class="hint" id="etabMsg_${k}" style="margin:0;"></span></td>
       </tr>`;
@@ -351,6 +362,7 @@ document.body.insertAdjacentHTML('beforeend', `
     <div id="editProfAiBox" style="display:none;background:rgba(13,91,163,.05);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
       <p style="margin:0 0 6px;font-weight:600;"><span class=gicon>smart_toy</span> Intelligence artificielle : clé utilisée</p>
       <label style="display:flex;align-items:center;gap:8px;margin:4px 0;"><input type="radio" name="editProfAiKey" value="site"> Clé du site (payée par l'administrateur)</label>
+      <label style="display:flex;align-items:center;gap:8px;margin:4px 0;"><input type="radio" name="editProfAiKey" value="etab"> Clé de son établissement (enregistrée par le référent)</label>
       <label style="display:flex;align-items:center;gap:8px;margin:4px 0;"><input type="radio" name="editProfAiKey" value="perso"> Clé personnelle du professeur</label>
       <p class="hint" id="editProfAiInfo" style="margin:6px 0 0;"></p>
     </div>
@@ -493,9 +505,9 @@ async function openEditProfModal(id){
   const aiBoxShown = prof.role==='prof' && !adminScopeUai(); // choix de clé : administrateur général
   aiBox.style.display = aiBoxShown ? '' : 'none';
   if(aiBoxShown){
-    const { data: ai } = await sb.from('teacher_ai_settings').select('use_site_key,key_last4,ai_self,ai_students').eq('teacher_id', id).maybeSingle();
-    const site = !!(ai && ai.use_site_key);
-    document.querySelectorAll('input[name=editProfAiKey]').forEach(r=>{ r.checked = (r.value==='site')===site; });
+    const { data: ai } = await sb.from('teacher_ai_settings').select('key_mode,key_last4,ai_self,ai_students').eq('teacher_id', id).maybeSingle();
+    const mode = (ai && ai.key_mode) || 'perso';
+    document.querySelectorAll('input[name=editProfAiKey]').forEach(r=>{ r.checked = r.value===mode; });
     document.getElementById('editProfAiInfo').textContent =
       (ai && ai.key_last4 ? 'Clé personnelle enregistrée (…'+ai.key_last4+'). ' : 'Aucune clé personnelle enregistrée. ')
       + 'IA pour lui : '+(ai && ai.ai_self ? 'activée' : 'non')+' · IA pour ses élèves : '+(ai && ai.ai_students ? 'activée' : 'non')+'.';
@@ -557,7 +569,7 @@ async function saveEditProfModal(){
   if(editProfTargetRole==='prof' && !adminScopeUai()){
     const choice = document.querySelector('input[name=editProfAiKey]:checked');
     if(choice){
-      const { error: aiErr } = await sb.rpc('admin_set_teacher_site_key', {p_teacher: editProfTargetId, p_allowed: choice.value==='site'});
+      const { error: aiErr } = await sb.rpc('set_teacher_key_mode', {p_teacher: editProfTargetId, p_mode: choice.value});
       if(aiErr){ status.textContent = 'Erreur (clé IA) : '+aiErr.message; return; }
     }
   }
@@ -993,6 +1005,7 @@ let adminAccountsCache = { profs:[], eleves:[], lastLoginMap:new Map(), classesL
 async function adminRefreshListings(){
   const scope = adminScopeUai();
   if(!scope){ await adminRefreshBugReports(); await adminRefreshAiUsage(); adminRefreshEtablissements(); }
+  else if(typeof iaLoadAdminTeachers==='function'){ iaLoadAdminTeachers('adminAiTeachers'); iaRenderEtabAiBox(); }
   await adminRefreshSignupRequests();
   const { data: profs } = await sb.from('profiles').select('id,nom,prenom,email,role,subscription_status,subscription_expires_at,must_change_password').in('role',['prof','admin']).order('nom');
   const { data: eleves } = await sb.from('profiles').select('id,nom,prenom,email,role,must_change_password').eq('role','eleve').order('nom');
@@ -1252,7 +1265,7 @@ async function adminRefreshAiUsage(){
   const byPayer = new Map();
   for(const row of data){
     const who = (row.payeur && (profileDisplayName(row.payeur) || row.payeur.email)) || '—';
-    const k = (row.key_source==='prof' ? 'Clé personnelle de ' : 'Clé du site · ') + who;
+    const k = (row.key_source==='prof' ? 'Clé personnelle de ' : row.key_source==='etab' ? 'Clé de l\'établissement · ' : 'Clé du site · ') + who;
     if(!byPayer.has(k)) byPayer.set(k, {calls:0, cost:0, coutInconnu:0});
     const p = byPayer.get(k), cost = aiUsageCallCost(row);
     p.calls++; if(cost==null) p.coutInconnu++; else p.cost += cost;
