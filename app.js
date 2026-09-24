@@ -199,7 +199,8 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       showView('view-cahier-eleve'); setActiveTopnav('cahier'); renderCahierEleve();
     }
     if(nav==='admin'){
-      if(currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      if(currentUserRole!=='admin' && !currentReferentEtab){ toggleAccountMenu(); return; }
+      if(typeof adminApplyScopeUI==='function') adminApplyScopeUI();
       showView('view-admin'); setActiveTopnav('admin');
     }
     if(nav==='supervision'){
@@ -2043,6 +2044,10 @@ try{
 let currentUser = null;
 let isStaffGlobal = false;
 let currentUserRole = null; // 'admin' | 'prof' | 'eleve' | null
+// Référent d'établissement : {uai, nom, licence_until} de l'établissement qu'il gère (sinon null).
+let currentReferentEtab = null;
+// Licence de l'établissement du compte connecté (date de fin 'AAAA-MM-JJ' si active, sinon null).
+let currentEtabLicence = null;
 let currentClassId = null;
 
 /* Police OpenDyslexic (accessibilité) : préférence personnelle, stockée en local sur cet
@@ -2124,7 +2129,7 @@ async function globalSignIn(){
 }
 async function globalSignOut(){
   await sb.auth.signOut();
-  currentUser = null; currentUserRole = null; currentClassId = null;
+  currentUser = null; currentUserRole = null; currentClassId = null; currentReferentEtab = null; currentEtabLicence = null;
   refreshAuthUI();
 }
 /* Inscription en libre-service pour les professeurs (accès réservé aux adresses
@@ -2242,8 +2247,19 @@ async function refreshAuthUI(){
 
   if(session){
     currentUser = session.user;
-    const { data: profile } = await sb.from('profiles').select('role,nom,prenom,signup_status,subscription_status,subscription_expires_at,must_change_password').eq('id', currentUser.id).single();
+    const { data: profile } = await sb.from('profiles').select('role,nom,prenom,uai,signup_status,subscription_status,subscription_expires_at,must_change_password').eq('id', currentUser.id).single();
     currentUserRole = profile ? profile.role : null;
+    // Référent d'établissement, et licence de l'établissement (couvre tous ses professeurs).
+    currentReferentEtab = null; currentEtabLicence = null;
+    if(profile && profile.role!=='eleve'){
+      const todayStr = new Date().toISOString().slice(0,10);
+      const [{ data: refEtab }, { data: myEtab }] = await Promise.all([
+        sb.from('etablissements').select('uai,nom,licence_until').eq('referent_id', currentUser.id).maybeSingle(),
+        profile.uai ? sb.from('etablissements').select('uai,nom,licence_until').eq('uai', profile.uai).maybeSingle() : Promise.resolve({data:null}),
+      ]);
+      if(refEtab && profile.role!=='admin') currentReferentEtab = refEtab;
+      if(myEtab && myEtab.licence_until && myEtab.licence_until >= todayStr) currentEtabLicence = myEtab.licence_until;
+    }
 
     loggedOutEl.style.display='none'; loggedInEl.style.display='block';
     const prenomTrim = profile && profile.prenom ? profile.prenom.trim() : '';
@@ -2254,7 +2270,8 @@ async function refreshAuthUI(){
     // Un compte prof en attente de validation, refusé, ou dont l'abonnement a expiré ne
     // doit pas accéder aux fonctionnalités (mais reste connecté pour voir son statut).
     const pendingOrRejected = profile && profile.role==='prof' && (profile.signup_status==='pending' || profile.signup_status==='rejected');
-    const subscriptionExpired = profile && profile.subscription_status==='expired';
+    // Une licence établissement active lève l'expiration de l'abonnement individuel.
+    const subscriptionExpired = profile && profile.subscription_status==='expired' && !currentEtabLicence;
     const accessBlocked = pendingOrRejected || subscriptionExpired;
     if(pendingOrRejected){
       document.getElementById('accountRoleDisplay').innerHTML = profile.signup_status==='pending'
@@ -2264,7 +2281,9 @@ async function refreshAuthUI(){
       document.getElementById('accountRoleDisplay').innerHTML = '<span class=gicon>warning</span> Abonnement expiré. Contactez contact@latelieraugmente.fr pour le renouveler.';
     } else {
       document.getElementById('accountRoleDisplay').textContent =
-        currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='eleve' ? 'Élève' : '';
+        (currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='eleve' ? 'Élève' : '')
+        + (currentReferentEtab ? ' · référent '+(currentReferentEtab.nom||currentReferentEtab.uai) : '')
+        + (currentEtabLicence && currentUserRole==='prof' ? ' · licence établissement jusqu\'au '+new Date(currentEtabLicence+'T00:00:00').toLocaleDateString('fr-FR') : '');
     }
 
     // Avatar : première lettre du prénom en majuscule -- signalé : "la pastille de l'élève
@@ -2282,7 +2301,10 @@ async function refreshAuthUI(){
     if(navCahier) navCahier.style.display = accessBlocked ? 'none' : 'inline-block'; // accessible à tous les comptes connectés (prof, admin, élève), sauf accès bloqué
     if(navMesResultats) navMesResultats.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
     if(navMesDevoirs) navMesDevoirs.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
-    if(navAdmin) navAdmin.style.display = (!accessBlocked && currentUserRole==='admin') ? 'inline-block' : 'none';
+    if(navAdmin){
+      navAdmin.style.display = (!accessBlocked && (currentUserRole==='admin' || currentReferentEtab)) ? 'inline-block' : 'none';
+      navAdmin.textContent = currentUserRole==='admin' ? 'Administration' : 'Mon établissement';
+    }
     // Outils IA : affichés selon les droits (IA du professeur, IA accordée aux élèves) -- voir
     // ia-compte.js. Le bouton reste masqué par CSS tant que l'accès n'est pas confirmé.
     const tbBtnAi = document.getElementById('tbBtnAi');
@@ -2299,7 +2321,7 @@ async function refreshAuthUI(){
     // en essai ou dont l'abonnement a expiré -- pas pour un abonnement déjà actif.
     const btnSubscribe = document.getElementById('btnSubscribe');
     if(btnSubscribe){
-      const showSubscribe = profile && profile.role==='prof' && profile.signup_status==='approved'
+      const showSubscribe = profile && profile.role==='prof' && profile.signup_status==='approved' && !currentEtabLicence
         && (profile.subscription_status==='trial' || profile.subscription_status==='expired');
       btnSubscribe.style.display = showSubscribe ? 'block' : 'none';
     }
@@ -2307,7 +2329,7 @@ async function refreshAuthUI(){
     if(btnGenerateQuiz) btnGenerateQuiz.style.display = 'inline-block';
     if(quizLoginHint) quizLoginHint.style.display = 'none';
 
-    if(currentUserRole==='admin') await adminRefreshDropdowns();
+    if(currentUserRole==='admin' || currentReferentEtab){ if(typeof adminApplyScopeUI==='function') adminApplyScopeUI(); await adminRefreshDropdowns(); }
     if(isStaff) await loadMyClasses();
     // Panneau "ce qui mérite votre attention" sur l'accueil, à la place d'un email de rappel --
     // voir renderProfHomeDigest plus bas.
@@ -2329,7 +2351,7 @@ async function refreshAuthUI(){
     restrictedVisitor = accessBlocked || !(currentUserRole==='eleve' || isStaff);
     if(wasRestricted !== restrictedVisitor && currentLevel) renderNiveau(currentLevel);
   } else {
-    currentUser = null; currentUserRole = null; currentClassId = null;
+    currentUser = null; currentUserRole = null; currentClassId = null; currentReferentEtab = null; currentEtabLicence = null; currentReferentEtab = null; currentEtabLicence = null;
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
     isStaffGlobal = false;
     const avatarBtnOut = document.getElementById('accountAvatar');
@@ -2518,6 +2540,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.661', items:[
+    "Établissements, étape 1 : RÉFÉRENT D'ÉTABLISSEMENT et LICENCE ÉTABLISSEMENT -- demandé : \"désigner un professeur comme Référent Établissement avec certains droits pour son établissement : import d'élèves, import profs, import classe, et gestion globale de son établissement\" (un seul référent par établissement, qui valide aussi les inscriptions de ses collègues), et \"prévoir la licence établissement\".",
+    "Administration > nouvel onglet « Établissements » (administrateur général) : pour chaque UAI, son référent (choisi parmi ses professeurs), sa licence (date de fin) et une note (bon de commande, facture…), avec le nombre de professeurs, d'élèves et de classes.",
+    "Le référent voit « Mon établissement » dans le menu : la même page que l'Administration, mais limitée à son UAI -- création de comptes professeurs/élèves, import en masse, classes, rattachements, liens d'invitation, mots de passe, identifiants, suppression, et validation des inscriptions de ses collègues. Tout est vérifié côté serveur : il ne peut agir sur aucun autre établissement, aucun compte administrateur, ni sur sa licence ou son rôle de référent.",
+    "Licence établissement : tant qu'elle court, tous les professeurs de l'établissement ont accès au site sans abonnement individuel (le bouton « S'abonner » disparaît, et « licence établissement jusqu'au … » s'affiche dans leur compte).",
+  ]},
   { version:'2026-08-19.660', items:[
     "Administration, IA -- précisé : \"au niveau admin : l'admin choisit si le prof utilise la clé du site ou sa clé perso\". Le choix se fait désormais dans Administration : onglet « IA » (anciennement « Usage IA »), tableau « Clé IA des professeurs » avec un sélecteur « Clé du site / Clé personnelle » par professeur (appliqué immédiatement), et le même choix dans la fenêtre « Modifier le compte » d'un professeur. Le choix est strict : « clé du site » = c'est la clé du site qui paie (même si le professeur a enregistré une clé) ; « clé personnelle » = sa clé, sans laquelle son IA reste inactive. La carte correspondante de la page Intelligence artificielle est remplacée par un lien vers l'Administration.",
   ]},

@@ -134,7 +134,8 @@ function routerRestoreFromHash(){
     } else {
       const key = parts[0];
       const roles = ROUTE_AUTH[key];
-      const authorized = !roles || roles.includes(currentUserRole);
+      const authorized = !roles || roles.includes(currentUserRole)
+        || (key==='admin' && typeof currentReferentEtab!=='undefined' && !!currentReferentEtab); // référent : « Mon établissement »
       if(!authorized){
         showView('view-home'); setActiveTopnav(null);
         if(typeof toggleAccountMenu==='function') toggleAccountMenu();
@@ -157,6 +158,7 @@ function routerRestoreFromHash(){
         if(!currentUser){ showView('view-home'); setActiveTopnav(null); if(typeof toggleAccountMenu==='function') toggleAccountMenu(); }
         else { showView('view-cahier-eleve'); setActiveTopnav('cahier'); renderCahierEleve(); }
       } else if(key==='admin'){
+        if(typeof adminApplyScopeUI==='function') adminApplyScopeUI();
         showView('view-admin'); setActiveTopnav('admin');
       } else if(key==='supervision'){
         showView('view-supervision'); setActiveTopnav('supervision'); renderSupervision(); renderSupervisionCeb();

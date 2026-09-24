@@ -17,8 +17,8 @@ const AI_USAGE_TOKENS_SINCE_LABEL = '23/09/2026';
 
 document.getElementById('view-admin').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
-  <h1 style="margin:6px 0 4px;"><span class=gicon>build</span> Administration</h1>
-  <p style="color:var(--ink-soft);max-width:70ch;">Gestion des comptes, des classes, et des signalements.</p>
+  <h1 style="margin:6px 0 4px;" id="adminTitle"><span class=gicon>build</span> Administration</h1>
+  <p style="color:var(--ink-soft);max-width:75ch;" id="adminSubtitle">Gestion des comptes, des classes, et des signalements.</p>
 
   <div class="tabs" id="adminTabs">
     <button class="tab-btn active" data-admin-tab="comptes">Comptes &amp; classes</button>
@@ -26,6 +26,7 @@ document.getElementById('view-admin').innerHTML = `
     <button class="tab-btn" data-admin-tab="listing"><span class=gicon>assignment</span> Déjà enregistré</button>
     <button class="tab-btn" data-admin-tab="signalements"><span class=gicon>bug_report</span> Signalements</button>
     <button class="tab-btn" data-admin-tab="ia"><span class=gicon>smart_toy</span> IA</button>
+    <button class="tab-btn" data-admin-tab="etablissements"><span class=gicon>domain</span> Établissements</button>
   </div>
 
   <div class="tab-panel active" id="admin-panel-comptes">
@@ -44,7 +45,7 @@ document.getElementById('view-admin').innerHTML = `
             <input type="text" id="adminNewNom" placeholder="Nom (affichage)" style="width:160px;">
             <input type="text" id="adminNewPrenom" placeholder="Prénom" style="width:130px;">
             <input type="text" id="adminNewUai" placeholder="UAI établissement (ex. 0751234A)" style="width:170px;">
-            <select id="adminNewRole"><option value="prof">Professeur</option><option value="eleve">Élève</option><option value="admin">Administrateur</option></select>
+            <select id="adminNewRole"><option value="prof">Professeur</option><option value="eleve">Élève</option><option value="admin" id="adminNewRoleAdminOpt">Administrateur</option></select>
             <button class="btn" onclick="adminCreateAccount()">Créer le compte</button>
           </div>
           <span class="hint" id="adminAccountStatus" style="margin:0;"></span>
@@ -57,6 +58,7 @@ document.getElementById('view-admin').innerHTML = `
           <span class="gicon">group_add</span><span>Import en masse d'élèves</span>
         </button>
         <div class="nb-accordion-body" id="accImportMasse">
+          <p class="hint" id="adminBulkScopeNote" style="display:none;margin:0 0 8px;padding:6px 10px;background:rgba(31,122,77,.08);border-radius:6px;"></p>
           <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, 5 colonnes séparées par une tabulation : Nom Prénom, identifiant, mot de passe, UAI, classe -- un copier-coller direct depuis un tableur fonctionne). <b>Laissez la colonne "mot de passe" vide</b> pour recevoir à la place un lien d'invitation personnel : l'élève choisit alors lui-même son mot de passe en cliquant dessus. La classe est créée automatiquement si elle n'existe pas encore (niveau déduit du préfixe "6e"/"5e" du nom).</p>
           <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="DUPONT Jean	jdupont		0123456A	6eA
 MARTIN Marie	mmartin		0123456A	6eA"></textarea>
@@ -133,7 +135,7 @@ MARTIN Marie	mmartin		0123456A	6eA"></textarea>
         </button>
         <div class="nb-accordion-body" id="accOutilsAvances">
           <div class="tool-row" style="margin-bottom:8px;">
-            <button class="btn secondary" onclick="adminSyncEmails()">🔧 Réparer les identifiants manquants</button>
+            <button class="btn secondary" id="adminSyncEmailsBtn" onclick="adminSyncEmails()">🔧 Réparer les identifiants manquants</button>
             <button class="btn secondary" onclick="adminGenerateAllInviteLinks()"><span class=gicon>link</span> Générer tous les liens d'invitation</button>
             <button class="btn secondary" onclick="adminShowExistingInviteLinks()"><span class=gicon>refresh</span> Réafficher les liens déjà générés</button>
           </div>
@@ -149,7 +151,7 @@ MARTIN Marie	mmartin		0123456A	6eA"></textarea>
         <select id="adminAccFilterRole" onchange="adminRenderAccountsListing()">
           <option value="">Tous les rôles</option>
           <option value="prof">Profs</option>
-          <option value="admin">Admins</option>
+          <option value="admin" id="adminAccFilterRoleAdminOpt">Admins</option>
           <option value="eleve">Élèves</option>
         </select>
         <select id="adminAccFilterClasse" onchange="adminRenderAccountsListing()"><option value="">Toutes les classes</option></select>
@@ -163,6 +165,14 @@ MARTIN Marie	mmartin		0123456A	6eA"></textarea>
       <div id="adminAccountsListing" class="hint"></div>
       <p class="example-title" style="margin:16px 0 6px;color:#26AAB1;">Classes</p>
       <div id="adminClassesListing" class="hint"></div>
+    </div>
+  </div>
+
+  <div class="tab-panel" id="admin-panel-etablissements">
+    <div class="tool-shell">
+      <button class="btn secondary" style="float:right;" onclick="adminRefreshEtablissements()"><span class=gicon>refresh</span> Actualiser</button>
+      <p class="hint" style="margin:6px 0 14px;clear:right;max-width:80ch;">Pour chaque établissement (UAI) : son <b>référent</b> (un professeur de l'établissement, qui gère alors lui-même comptes, classes, imports et inscriptions de son établissement depuis « Mon établissement ») et sa <b>licence établissement</b> (tant qu'elle court, tous ses professeurs ont accès au site sans abonnement individuel).</p>
+      <div id="adminEtabListing" class="hint">Chargement…</div>
     </div>
   </div>
 
@@ -218,6 +228,93 @@ document.querySelectorAll('#adminTabs .tab-btn').forEach(btn=>{
     document.getElementById('admin-panel-'+btn.dataset.adminTab).classList.add('active');
   });
 });
+
+/* ---- Périmètre : administrateur général (tout le site) ou RÉFÉRENT d'établissement (son UAI
+   seulement -- demandé : "désigner un professeur comme Référent Établissement avec certains droits
+   pour son établissement : import d'élèves, import profs, import classe, et gestion globale").
+   Les règles d'accès de la base et la fonction serveur admin-create-user appliquent ce même
+   périmètre : l'interface ne fait que l'afficher. ---- */
+function adminScopeUai(){
+  if(typeof currentUserRole!=='undefined' && currentUserRole==='admin') return null;
+  return (typeof currentReferentEtab!=='undefined' && currentReferentEtab) ? currentReferentEtab.uai : '__aucun__';
+}
+function adminApplyScopeUI(){
+  const scope = adminScopeUai();
+  const scoped = !!scope;
+  const etab = scoped ? currentReferentEtab : null;
+  const title = document.getElementById('adminTitle'), sub = document.getElementById('adminSubtitle');
+  if(title) title.innerHTML = scoped ? '<span class=gicon>domain</span> Mon établissement' : '<span class=gicon>build</span> Administration';
+  if(typeof ROUTE_LABELS!=='undefined') ROUTE_LABELS.admin = scoped ? 'Mon établissement' : 'Administration'; // fil d'Ariane
+  if(sub){
+    if(scoped){
+      const lic = etab && etab.licence_until && etab.licence_until >= new Date().toISOString().slice(0,10)
+        ? `<span style="color:#1F7A4D;font-weight:600;">licence établissement active jusqu'au ${new Date(etab.licence_until+'T00:00:00').toLocaleDateString('fr-FR')}</span>`
+        : `<span style="color:#a83c1f;">pas de licence établissement en cours</span> (vos collègues ont besoin d'un abonnement individuel)`;
+      sub.innerHTML = `<b>${escapeHtml((etab&&etab.nom)||'')}</b> · UAI <span class="hint-mono">${escapeHtml(scope)}</span> · ${lic}.<br>Vous êtes le référent de votre établissement : comptes professeurs et élèves, classes, imports et validation des inscriptions de vos collègues.`;
+    } else sub.textContent = 'Gestion des comptes, des classes, des établissements et des signalements.';
+  }
+  ['signalements','ia','etablissements'].forEach(t=>{
+    const b = document.querySelector('#adminTabs [data-admin-tab="'+t+'"]');
+    if(b){ b.style.display = scoped ? 'none' : ''; if(scoped && b.classList.contains('active')) document.querySelector('#adminTabs [data-admin-tab="comptes"]').click(); }
+  });
+  const hideOpt = (id)=>{ const o = document.getElementById(id); if(o){ o.hidden = scoped; o.disabled = scoped; } };
+  hideOpt('adminNewRoleAdminOpt'); hideOpt('adminAccFilterRoleAdminOpt');
+  const roleSel = document.getElementById('adminNewRole'); if(roleSel && scoped && roleSel.value==='admin') roleSel.value = 'prof';
+  ['adminNewUai','adminNewClassUai'].forEach(id=>{ const el = document.getElementById(id); if(el){ el.readOnly = scoped; if(scoped) el.value = scope; el.style.opacity = scoped ? .6 : 1; } });
+  const uaiFilter = document.getElementById('adminAccFilterUai'); if(uaiFilter) uaiFilter.style.display = scoped ? 'none' : '';
+  const syncBtn = document.getElementById('adminSyncEmailsBtn'); if(syncBtn) syncBtn.style.display = scoped ? 'none' : '';
+  const note = document.getElementById('adminBulkScopeNote');
+  if(note){ note.style.display = scoped ? 'block' : 'none'; note.innerHTML = scoped ? `Les comptes et les classes sont automatiquement créés dans <b>votre établissement (UAI ${escapeHtml(scope)})</b> : la colonne UAI peut rester vide.` : ''; }
+}
+
+/* ---- Onglet « Établissements » (administrateur général) : référent + licence ---- */
+async function adminRefreshEtablissements(){
+  const box = document.getElementById('adminEtabListing');
+  if(!box || adminScopeUai()) return;
+  const [{ data: etabs, error }, { data: staff }, { data: cls }, { data: eleves }] = await Promise.all([
+    sb.from('etablissements').select('uai,nom,ville,referent_id,licence_until,licence_note').order('nom'),
+    sb.from('profiles').select('id,nom,prenom,role,uai').in('role',['prof','admin']),
+    sb.from('classes').select('id,uai'),
+    sb.from('profiles').select('uai').eq('role','eleve'),
+  ]);
+  if(error){ box.textContent = 'Erreur : '+error.message; return; }
+  if(!etabs || !etabs.length){ box.textContent = 'Aucun établissement.'; return; }
+  const today = new Date().toISOString().slice(0,10);
+  box.innerHTML = `<div style="overflow-x:auto;"><table class="sup-table"><thead><tr><th>UAI</th><th>Nom</th><th>Référent</th><th>Licence jusqu'au</th><th>Note (facture, bon de commande…)</th><th>Profs · élèves · classes</th><th></th></tr></thead><tbody>
+    ${etabs.map(e=>{
+      const profsHere = (staff||[]).filter(p=>p.uai===e.uai && p.role==='prof');
+      const nbEleves = (eleves||[]).filter(p=>p.uai===e.uai).length, nbClasses = (cls||[]).filter(c=>c.uai===e.uai).length;
+      const active = e.licence_until && e.licence_until >= today;
+      const k = e.uai.replace(/[^A-Za-z0-9]/g,'');
+      return `<tr>
+        <td class="hint-mono">${escapeHtml(e.uai)}</td>
+        <td><input type="text" id="etabNom_${k}" value="${escapeHtml(e.nom||'')}" style="min-width:180px;"></td>
+        <td><select id="etabRef_${k}"><option value="">— aucun —</option>${profsHere.map(p=>`<option value="${p.id}" ${p.id===e.referent_id?'selected':''}>${escapeHtml(profileDisplayName(p)||p.id)}</option>`).join('')}</select>
+          ${!profsHere.length ? '<div class="hint" style="margin:2px 0 0;">aucun professeur rattaché à cet UAI</div>' : ''}</td>
+        <td><input type="date" id="etabLic_${k}" value="${e.licence_until||''}"> ${e.licence_until ? `<div class="hint" style="margin:2px 0 0;color:${active?'#1F7A4D':'#a83c1f'};">${active?'active':'expirée'}</div>` : ''}</td>
+        <td><input type="text" id="etabNote_${k}" value="${escapeHtml(e.licence_note||'')}" style="min-width:160px;"></td>
+        <td>${profsHere.length} · ${nbEleves} · ${nbClasses}</td>
+        <td style="white-space:nowrap;"><button class="btn" style="padding:4px 12px;font-size:.8rem;" onclick="adminSaveEtablissement('${escapeHtml(e.uai)}')">Enregistrer</button> <span class="hint" id="etabMsg_${k}" style="margin:0;"></span></td>
+      </tr>`;
+    }).join('')}
+  </tbody></table></div>`;
+}
+async function adminSaveEtablissement(uai){
+  const k = uai.replace(/[^A-Za-z0-9]/g,'');
+  const msg = document.getElementById('etabMsg_'+k);
+  const row = {
+    nom: document.getElementById('etabNom_'+k).value.trim() || ('Établissement '+uai),
+    referent_id: document.getElementById('etabRef_'+k).value || null,
+    licence_until: document.getElementById('etabLic_'+k).value || null,
+    licence_note: document.getElementById('etabNote_'+k).value.trim() || null,
+  };
+  msg.textContent = 'Enregistrement…';
+  const { error } = await sb.from('etablissements').update(row).eq('uai', uai);
+  if(error){ msg.innerHTML = '<span style="color:#a83c1f;">'+escapeHtml(/referent_id/.test(error.message) ? 'ce professeur est déjà référent d\'un autre établissement' : error.message)+'</span>'; return; }
+  msg.textContent = '✓';
+  setTimeout(()=>{ if(msg.isConnected) msg.textContent=''; }, 2000);
+  adminRefreshEtablissements();
+}
 
 document.body.insertAdjacentHTML('beforeend', `
 <div id="editProfModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeEditProfModal();">
@@ -339,21 +436,12 @@ async function adminCreateAccount(){
     const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
       method:'POST',
       headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
-      body: JSON.stringify({ email, password: password||undefined, role, nom: nom || identifiant }),
+      // Prénom et UAI enregistrés directement par la fonction serveur (pour un référent, l'UAI
+      // est toujours le sien, imposé côté serveur).
+      body: JSON.stringify({ email, password: password||undefined, role, nom: nom || identifiant, prenom: prenom || undefined, uai: (adminScopeUai() || uai) || undefined }),
     });
     const data = await res.json();
     if(data.error){ status.textContent = "Erreur : "+data.error; return; }
-    if(uai || prenom){
-      // L'UAI et le prénom ne sont pas gérés par la fonction de création de compte : on les
-      // renseigne à part, juste après, en retrouvant le profil fraîchement créé par son e-mail.
-      const { data: prof } = await sb.from('profiles').select('id').eq('email', email).single();
-      if(prof){
-        const patch = {};
-        if(uai) patch.uai = uai;
-        if(prenom) patch.prenom = prenom;
-        await sb.from('profiles').update(patch).eq('id', prof.id);
-      }
-    }
     if(data.inviteToken){
       const url = location.origin+'/invitation.html?invite='+data.inviteToken;
       status.innerHTML = `✓ Compte créé (${role}). <b>Lien d'invitation</b> (la personne choisit son propre mot de passe en cliquant dessus) :
@@ -362,7 +450,7 @@ async function adminCreateAccount(){
     } else {
       status.textContent = '✓ Compte créé ('+role+').';
     }
-    document.getElementById('adminNewEmail').value=''; document.getElementById('adminNewPassword').value=''; document.getElementById('adminNewNom').value=''; document.getElementById('adminNewPrenom').value=''; document.getElementById('adminNewUai').value='';
+    document.getElementById('adminNewEmail').value=''; document.getElementById('adminNewPassword').value=''; document.getElementById('adminNewNom').value=''; document.getElementById('adminNewPrenom').value=''; document.getElementById('adminNewUai').value = adminScopeUai() || '';
     await adminRefreshDropdowns();
     // Le compte tout juste créé n'a encore aucune classe/UAI associé (à moins d'en avoir
     // renseigné un ci-dessus) -- si un filtre classe/établissement était déjà actif d'une
@@ -390,6 +478,7 @@ async function openEditProfModal(id){
   document.getElementById('editProfNom').value = prof.nom||'';
   document.getElementById('editProfPrenom').value = prof.prenom||'';
   document.getElementById('editProfUai').value = prof.uai||'';
+  document.getElementById('editProfUai').readOnly = !!adminScopeUai(); // le référent ne change pas l'UAI
   const loginIdentifiant = prof.email ? (prof.email.endsWith('@mathcollege.local') ? prof.email.slice(0, -('@mathcollege.local'.length)) : prof.email) : '(inconnu)';
   document.getElementById('editProfIdentifiantDisplay').textContent = loginIdentifiant;
   const uaiClassesBox = document.getElementById('editProfUaiClassesBox');
@@ -401,8 +490,9 @@ async function openEditProfModal(id){
   }
   // Clé IA (professeurs seulement : l'administrateur utilise toujours la clé du site).
   const aiBox = document.getElementById('editProfAiBox');
-  aiBox.style.display = prof.role==='prof' ? '' : 'none';
-  if(prof.role==='prof'){
+  const aiBoxShown = prof.role==='prof' && !adminScopeUai(); // choix de clé : administrateur général
+  aiBox.style.display = aiBoxShown ? '' : 'none';
+  if(aiBoxShown){
     const { data: ai } = await sb.from('teacher_ai_settings').select('use_site_key,key_last4,ai_self,ai_students').eq('teacher_id', id).maybeSingle();
     const site = !!(ai && ai.use_site_key);
     document.querySelectorAll('input[name=editProfAiKey]').forEach(r=>{ r.checked = (r.value==='site')===site; });
@@ -416,7 +506,9 @@ async function openEditProfModal(id){
    liées à CE prof précisément. */
 async function renderEditProfClasses(prof){
   const box = document.getElementById('editProfClassesList');
-  const { data: allClasses } = await sb.from('classes').select('id,nom,niveau').order('nom');
+  let allClassesQ = sb.from('classes').select('id,nom,niveau').order('nom');
+  if(adminScopeUai()) allClassesQ = allClassesQ.eq('uai', adminScopeUai());
+  const { data: allClasses } = await allClassesQ;
   const { data: myLinks } = await sb.from('class_teachers').select('class_id').eq('teacher_id', prof.id);
   const myClassIds = new Set((myLinks||[]).map(l=>l.class_id));
   let relevantClassIds = null; // null = pas de filtre (toutes les classes)
@@ -462,7 +554,7 @@ async function saveEditProfModal(){
     if(toAdd.length) await sb.from('class_teachers').insert(toAdd.map(class_id=>({class_id, teacher_id: editProfTargetId})));
     if(toRemove.length) await sb.from('class_teachers').delete().eq('teacher_id', editProfTargetId).in('class_id', toRemove);
   }
-  if(editProfTargetRole==='prof'){
+  if(editProfTargetRole==='prof' && !adminScopeUai()){
     const choice = document.querySelector('input[name=editProfAiKey]:checked');
     if(choice){
       const { error: aiErr } = await sb.rpc('admin_set_teacher_site_key', {p_teacher: editProfTargetId, p_allowed: choice.value==='site'});
@@ -720,25 +812,28 @@ async function adminSyncEmails(){
 async function adminCreateClass(){
   const nom = document.getElementById('adminNewClassNom').value.trim();
   const niveau = document.getElementById('adminNewClassNiveau').value;
-  const uai = document.getElementById('adminNewClassUai').value.trim();
+  const uai = adminScopeUai() || document.getElementById('adminNewClassUai').value.trim();
   const status = document.getElementById('adminClassStatus');
   if(!nom){ status.textContent = 'Le nom est requis.'; return; }
   if(!uai){ status.textContent = "L'UAI de l'établissement est requis (une classe doit être rattachée à un établissement)."; return; }
-  // L'établissement doit exister AVANT la classe (classes.uai référence etablissements.uai).
-  const { data: existingEtab } = await sb.from('etablissements').select('uai').eq('uai', uai).maybeSingle();
-  if(!existingEtab){
-    const { error: etabErr } = await sb.from('etablissements').insert({ uai, nom: 'Établissement '+uai });
-    if(etabErr){ status.textContent = "Erreur (établissement) : "+etabErr.message; return; }
+  // L'établissement doit exister AVANT la classe (classes.uai référence etablissements.uai) --
+  // celui d'un référent existe forcément.
+  if(!adminScopeUai()){
+    const { data: existingEtab } = await sb.from('etablissements').select('uai').eq('uai', uai).maybeSingle();
+    if(!existingEtab){
+      const { error: etabErr } = await sb.from('etablissements').insert({ uai, nom: 'Établissement '+uai });
+      if(etabErr){ status.textContent = "Erreur (établissement) : "+etabErr.message; return; }
+    }
   }
   const { error } = await sb.from('classes').insert({ nom, niveau, uai });
   status.textContent = error ? "Erreur : "+error.message : '✓ Classe créée.';
-  if(!error){ document.getElementById('adminNewClassNom').value=''; document.getElementById('adminNewClassUai').value=''; await adminRefreshDropdowns(); await loadMyClasses(); }
+  if(!error){ document.getElementById('adminNewClassNom').value=''; document.getElementById('adminNewClassUai').value = adminScopeUai() || ''; await adminRefreshDropdowns(); await loadMyClasses(); }
 }
 async function adminUpdateClassNiveauUai(classId){
   const niveau = document.getElementById('classNiveau_'+classId).value;
-  const uai = document.getElementById('classUai_'+classId).value.trim();
+  const uai = adminScopeUai() || document.getElementById('classUai_'+classId).value.trim();
   const status = document.getElementById('classSaveStatus_'+classId);
-  if(uai){
+  if(uai && !adminScopeUai()){
     // L'établissement doit exister AVANT la classe (classes.uai référence etablissements.uai).
     const { data: existingEtab } = await sb.from('etablissements').select('uai').eq('uai', uai).maybeSingle();
     if(!existingEtab){
@@ -818,7 +913,7 @@ function adminRenderAccountsListing(){
   const rowHTML = p => {
     const safeName = escapeHtml(profileDisplayName(p)||p.email||'').replace(/'/g,"\\'");
     const editBtn = `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span></button>`;
-    const categoryBtn = p.role==='prof' ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeCategoryPrompt('${p.id}','${safeName}')"><span class=gicon>workspace_premium</span></button>` : '';
+    const categoryBtn = (p.role==='prof' && !adminScopeUai()) ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminChangeCategoryPrompt('${p.id}','${safeName}')"><span class=gicon>workspace_premium</span></button>` : '';
     const inviteBtn = p.must_change_password ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="adminGenerateInviteLink('${p.id}','${safeName}')"><span class=gicon>link</span></button>` : '';
     const rowBg = !lastLoginMap.get(p.id) ? 'background:rgba(28,43,57,.02);' : '';
     return `<tr style="${rowBg}">
@@ -879,7 +974,10 @@ async function adminDeleteSelectedAccounts(){
 async function adminRefreshDropdowns(){
   const { data: profs } = await sb.from('profiles').select('id,nom,prenom,role').in('role',['prof','admin']);
   const { data: eleves } = await sb.from('profiles').select('id,nom,prenom').eq('role','eleve');
-  const { data: classesList } = await sb.from('classes').select('id,nom,niveau').order('nom');
+  const scope = adminScopeUai();
+  let classesQ = sb.from('classes').select('id,nom,niveau').order('nom');
+  if(scope) classesQ = classesQ.eq('uai', scope);
+  const { data: classesList } = await classesQ;
   const fillSelect = (id, items, label)=>{
     const el = document.getElementById(id);
     if(!el) return;
@@ -893,15 +991,17 @@ async function adminRefreshDropdowns(){
 }
 let adminAccountsCache = { profs:[], eleves:[], lastLoginMap:new Map(), classesList:[], classTeachers:[], classStudents:[], etablissements:[] };
 async function adminRefreshListings(){
-  await adminRefreshBugReports();
+  const scope = adminScopeUai();
+  if(!scope){ await adminRefreshBugReports(); await adminRefreshAiUsage(); adminRefreshEtablissements(); }
   await adminRefreshSignupRequests();
-  await adminRefreshAiUsage();
   const { data: profs } = await sb.from('profiles').select('id,nom,prenom,email,role,subscription_status,subscription_expires_at,must_change_password').in('role',['prof','admin']).order('nom');
   const { data: eleves } = await sb.from('profiles').select('id,nom,prenom,email,role,must_change_password').eq('role','eleve').order('nom');
   // Date de dernière connexion (auth.users, normalement inaccessible via RLS classique) --
   // exposée uniquement à un admin via une fonction SECURITY DEFINER dédiée.
   const { data: lastSignIns } = await sb.rpc('get_last_sign_in_times');
-  const { data: classesList } = await sb.from('classes').select('id,nom,niveau,uai').order('nom');
+  let classesQ = sb.from('classes').select('id,nom,niveau,uai').order('nom');
+  if(scope) classesQ = classesQ.eq('uai', scope);
+  const { data: classesList } = await classesQ;
   const { data: classTeachers } = await sb.from('class_teachers').select('class_id, teacher_id, profiles(nom,prenom,email)');
   const { data: classStudents } = await sb.from('class_students').select('class_id, student_id, profiles(nom,prenom,email)');
   const { data: etablissements } = await sb.from('etablissements').select('uai,nom').order('nom');
@@ -958,7 +1058,7 @@ async function adminRefreshListings(){
         <div class="nb-accordion-body" id="${accId}">
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;">
             <label class="hint" style="margin:0;">Niveau : <select id="classNiveau_${c.id}"><option value="6e" ${c.niveau==='6e'?'selected':''}>6e</option><option value="5e" ${c.niveau==='5e'?'selected':''}>5e</option></select></label>
-            <label class="hint" style="margin:0;">UAI : <input type="text" id="classUai_${c.id}" value="${escapeHtml(c.uai||'')}" style="width:110px;"></label>
+            <label class="hint" style="margin:0;">UAI : <input type="text" id="classUai_${c.id}" value="${escapeHtml(c.uai||'')}" style="width:110px;" ${scope?'readonly':''}></label>
             <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="adminUpdateClassNiveauUai('${c.id}')">Enregistrer</button>
             <span class="hint" id="classSaveStatus_${c.id}" style="margin:0;"></span>
           </div>
@@ -1205,14 +1305,15 @@ async function adminBulkCreateStudents(){
     status.textContent = `Création en cours… (${i+1}/${lines.length})`;
     const parts = lines[i].split('\t').map(s=>s.trim());
     if(parts.length<2){ fail++; errors.push(`Ligne ${i+1} : format invalide (au moins Nom Prénom et identifiant attendus, séparés par des tabulations)`); continue; }
-    const [nomPrenomFull, identifiant, password, uai, classeNom] = parts;
+    const [nomPrenomFull, identifiant, password, uaiCol, classeNom] = parts;
+    const uai = adminScopeUai() || uaiCol; // référent : toujours son établissement
     const { nom, prenom } = splitNomPrenom(nomPrenomFull);
     const email = toAuthEmail(identifiant);
     try{
       const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
         method:'POST',
         headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
-        body: JSON.stringify({ email, password: password||undefined, role:'eleve', nom }),
+        body: JSON.stringify({ email, password: password||undefined, role:'eleve', nom, prenom: prenom || undefined, uai: uai || undefined }),
       });
       const data = await res.json();
       if(data.error){ fail++; errors.push(`${nomPrenomFull} (${identifiant}) : ${data.error}`); continue; }
@@ -1223,9 +1324,7 @@ async function adminBulkCreateStudents(){
       // créé par son e-mail.
       const { data: prof } = await sb.from('profiles').select('id').eq('email', email).single();
       if(!prof) continue; // ne devrait pas arriver (le compte vient d'être créé avec succès), sécurité
-      if(prenom) await sb.from('profiles').update({prenom}).eq('id', prof.id);
-      // UAI : simple champ texte sur le profil, pas besoin de recherche/création.
-      if(uai) await sb.from('profiles').update({uai}).eq('id', prof.id);
+      // Prénom et UAI : déjà enregistrés par la fonction serveur.
       // Une classe doit être rattachée à un établissement (signalé : "les classes doivent
       // être rattachées à un UAI. Dans un UAI, on trouve les profs et les classes puis les
       // élèves"). Sans UAI fourni sur cette ligne, on ne peut pas créer/rattacher la classe
@@ -1233,7 +1332,7 @@ async function adminBulkCreateStudents(){
       if(classeNom && uai){
         // L'établissement doit exister AVANT la classe (classes.uai référence
         // etablissements.uai) -- créé automatiquement s'il est absent.
-        if(!etabCache.has(uai)){
+        if(!etabCache.has(uai) && !adminScopeUai()){
           const { data: existingEtab } = await sb.from('etablissements').select('uai').eq('uai', uai).maybeSingle();
           if(!existingEtab){
             const { error: etabErr } = await sb.from('etablissements').insert({ uai, nom: 'Établissement '+uai });
