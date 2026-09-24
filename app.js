@@ -2498,6 +2498,11 @@ function populateAccountClassList(classesList){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.651', items:[
+    "Tableau IA, noms des points -- demandé : \"pour les labels des points, ne pas les superposer sur des tracés\". Chaque nom est placé à l'endroit le plus dégagé autour de son point (en tenant compte des traits déjà tracés ET de ceux qui restent à tracer, des arcs, codages et textes), de préférence vers l'extérieur de la figure ; un nom que de nouveaux tracés viendraient toucher est déplacé.",
+    "Tableau IA, longueurs -- demandé : \"écrire aussi les longueurs quand elles sont données\". Chaque longueur de l'énoncé (ex. « 4 cm », « 3,5 cm ») s'écrit le long de son segment dès qu'il est tracé, à l'extérieur de la figure : segment mesuré à la règle, mais aussi rayon du compas quand le point obtenu est relié au centre (ex. BC = 7 cm dans le triangle rectangle).",
+    "Tableau IA, règle trop courte -- signalé : \"parfois la règle se place pour tracer un segment, mais elle peut être trop petite. Préférer alors la réquerre\". Au-delà de la longueur de la règle, c'est la réquerre (plus longue) qui vient se poser sur le tracé ; pour un trait encore plus long, elle coulisse le long du trait et le crayon reprend là où il s'était arrêté.",
+  ]},
   { version:'2026-08-19.650', items:[
     "Tableau IA, codage des figures -- demandé : \"coder les figures (angles droits, valeurs des angles [sans] le nom : juste la valeur)\". Codage automatique à la fin de chaque geste : angle droit (petit carré) dès qu'une perpendiculaire est tracée à l'équerre, arc + valeur seule (ex. « 40° », jamais « BAC = 40° ») pour chaque angle construit au rapporteur, traits égaux + angle droit pour la médiatrice, arcs identiques pour la bissectrice, traits égaux pour un milieu. L'IA peut aussi coder elle-même les autres angles droits (ex. les 4 angles d'un rectangle), les longueurs égales et afficher la valeur d'un angle déjà présent sur la figure. Revenir d'une étape efface aussi son codage.",
   ]},

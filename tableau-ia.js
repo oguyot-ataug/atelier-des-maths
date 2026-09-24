@@ -24,10 +24,14 @@ const TB_AI_MAX_STEPS = 25;
 const TB_AI_REGION = {x0:70, x1:830, y0:45, y1:470}; // zone de la figure (le bas sert d'établi)
 const TB_AI_BENCH = {x:70, y:522};   // règle posée en bas du tableau pour prendre un écartement
 const TB_AI_ENTRY = {                // d'où arrive / où repart chaque outil
-  regle_grad:{x:0,y:340}, equerre:{x:0,y:340}, rapporteur:{x:0,y:-360},
+  regle_grad:{x:0,y:340}, requerre2:{x:0,y:380}, equerre:{x:0,y:340}, rapporteur:{x:0,y:-360},
   compas:{x:280,y:-320}, crayon:{x:200,y:-240},
 };
-const TB_AI_PENCIL_ANGLE = 25;       // crayon tenu légèrement penché, comme une main droite
+const TB_AI_PENCIL_ANGLE = 25;
+// Longueur traçable d'un seul geste (px) : au-delà, la règle est trop courte (signalé : "la
+// règle se place pour tracer un segment, mais elle peut être trop petite. Préférer alors la
+// réquerre") ; au-delà de la réquerre, elle coulisse le long du tracé pour le prolonger.
+const TB_AI_RULER_MAX = TB_RULER_L-20, TB_AI_REQ_MAX = TB_REQ2_L-30;       // crayon tenu légèrement penché, comme une main droite
 const TB_AI_HL = '#E35D3A', TB_AI_HL2 = '#1F7A4D';
 
 class TbAiError extends Error {}
@@ -95,7 +99,15 @@ const tbAiRound05 = v=>Math.round(v*2)/2;
    des droites/demi-droites et la position des arcs de compas en découlent, calculées APRÈS
    coup (tbAiFinalize) -- une demi-droite dépasse donc toujours le point qu'on y trouvera. */
 function tbAiEvaluate(program, flips){
-  const pts = new Map(), objs = new Map(), actions = [], marks = [];
+  const pts = new Map(), objs = new Map(), actions = [], marks = [], lengths = [];
+  // Longueurs données par l'énoncé, écrites sur la figure dès que le segment est tracé
+  // (demandé : "écrire aussi les longueurs quand elles sont données").
+  const given = (n1, n2, a, b, L)=>{
+    if(!n1 || !n2) return;
+    const key = [n1,n2].sort().join('|');
+    if(!lengths.some(g=>g.key===key)) lengths.push({key, a, b, L});
+  };
+  const givenOnCircle = (o, name, X)=>{ if(o.kind==='circle' && o.centerName && o.showLen) given(o.centerName, name, o.c, X, o.r); };
   const err = (i,msg)=>{ throw new TbAiError('Étape '+(i+1)+' ('+(program[i]&&program[i].op||'?')+') : '+msg); };
   const P = (i,name)=>{ if(typeof name!=='string' || !pts.has(name)) err(i, 'point « '+name+' » inconnu (il doit être construit avant)'); return pts.get(name); };
   const newName = (i,name)=>{
@@ -151,6 +163,7 @@ function tbAiEvaluate(program, flips){
             p = tbV.add(o.p, tbV.mul(o.u,t));
           }
           hit(o,p);
+          givenOnCircle(o, s.name, p);
         } else if(!pts.size){
           p = {x:0, y:0};
         } else {
@@ -182,6 +195,7 @@ function tbAiEvaluate(program, flips){
           hit(along,A); hit(along,B);
         }
         addPoint(s.to,B);
+        if(s.show_length!==false) given(s.from, s.to, A, B, L);
         register(i, s.id, linearObj('segment', A, u, L));
         actions.push({op:'segment_length', A, B, L, to:s.to, trace: !along, style:s.style||'final'});
         break;
@@ -260,7 +274,7 @@ function tbAiEvaluate(program, flips){
           if(r<0.2) err(i, 'écartement trop petit');
           if(r>17) err(i, 'écartement trop grand pour le compas (17 cm max)');
         } else r = num(i, s.radius, 'rayon', 0.2, 15);
-        const o = register(i, s.id, {kind:'circle', c:C, r, hits:[], full:!!s.full});
+        const o = register(i, s.id, {kind:'circle', c:C, r, hits:[], full:!!s.full, centerName: from ? null : s.center, showLen: s.show_length!==false});
         actions.push({op:'circle', C, r, from, obj:o, style:s.style});
         break;
       }
@@ -279,7 +293,7 @@ function tbAiEvaluate(program, flips){
         if(fresh.length) cands = fresh;
         const X = tbAiPick(cands, s.pick||'up');
         hit(o1,X); hit(o2,X);
-        if(s.name){ newName(i,s.name); addPoint(s.name,X); } else marks.push(X);
+        if(s.name){ newName(i,s.name); addPoint(s.name,X); givenOnCircle(o1, s.name, X); givenOnCircle(o2, s.name, X); } else marks.push(X);
         actions.push({op:'intersect', X, name:s.name||''});
         break;
       }
@@ -381,7 +395,7 @@ function tbAiEvaluate(program, flips){
         err(i, 'opération inconnue « '+s.op+' »');
     }
   });
-  return {actions, objs, pts, marks};
+  return {actions, objs, pts, marks, lengths};
 }
 
 /* Longueur tracée des objets linéaires, arcs de compas, puis mise en page à l'échelle réelle. */
@@ -415,7 +429,16 @@ function tbAiFinalize(ev){
   const S = p=>({x: cx+(p.x-mx)*TB_PX_PER_CM, y: cy-(p.y-my)*TB_PX_PER_CM});
   const named = [...ev.pts.values()];
   const cen = named.length ? S({x:named.reduce((a,p)=>a+p.x,0)/named.length, y:named.reduce((a,p)=>a+p.y,0)/named.length}) : {x:cx,y:cy};
-  return {actions: ev.actions, S, centroid: cen};
+  // Tous les traits droits qui seront tracés : un nom de point posé tôt les évite déjà.
+  const future = [];
+  ev.actions.forEach(a=>{
+    let p = null, q = null;
+    if(a.op==='segment_length'){ if(a.trace){ p = a.A; q = a.B; } }
+    else if(a.op==='segment'){ p = a.A; q = a.B; }
+    else if(a.obj && a.obj.kind!=='circle'){ p = tbV.add(a.obj.p, tbV.mul(a.obj.u,a.obj.e0)); q = tbV.add(a.obj.p, tbV.mul(a.obj.u,a.obj.e1)); }
+    if(p){ const P = S(p), Q = S(q); future.push({ax:P.x, ay:P.y, bx:Q.x, by:Q.y, r:1.5}); }
+  });
+  return {actions: ev.actions, S, centroid: cen, lengths: ev.lengths, future};
 }
 
 function tbAiCompile(program){
@@ -508,15 +531,12 @@ async function tbAiTraceLine(a, b, style){
     await tbAiSleep(14);
   }
 }
-/* Pose un point au crayon (petite croix + nom placé à l'extérieur de la figure). */
+/* Pose un point au crayon (petite croix + nom placé là où il ne chevauche aucun tracé). */
 async function tbAiMark(p, label){
   await tbAiPencilTo(p, 420);
-  const c = tbAiPlan ? tbAiPlan.centroid : p;
-  let ux = p.x-c.x, uy = p.y-c.y; const l = Math.hypot(ux,uy);
-  if(l<1){ ux = 0.6; uy = -0.8; } else { ux/=l; uy/=l; }
-  // Nom décalé vers l'extérieur de la figure, et un peu de côté quand cette direction est
-  // quasi verticale (sinon il chevaucherait un trait vertical passant par le point).
-  tbPoints.push({id:tbPointNextId++, x:p.x, y:p.y, label:label||'', labelDx: ux*15-5+(ux<-0.3?-5:0)+(Math.abs(ux)<0.35?10:0), labelDy: uy*15+6});
+  const pt = {id:tbPointNextId++, x:p.x, y:p.y, label:label||'', aiLabel:true};
+  if(pt.label) Object.assign(pt, tbAiBestLabelOffset(pt, tbAiObstacles({point:pt, future:true})));
+  tbPoints.push(pt);
   tbRender();
   await tbAiSleep(260);
 }
@@ -526,6 +546,134 @@ async function tbAiMark(p, label){
 function tbAiAlreadyTraced(a, b){
   const dSeg = (p,s,e)=>{ const dx=e[0]-s[0], dy=e[1]-s[1], l2=dx*dx+dy*dy||1; const t=Math.max(0,Math.min(1,((p.x-s[0])*dx+(p.y-s[1])*dy)/l2)); return Math.hypot(p.x-(s[0]+t*dx), p.y-(s[1]+t*dy)); };
   return tbInk.some(st=>st.straight && st.points.length>1 && dSeg(a,st.points[0],st.points[st.points.length-1])<3 && dSeg(b,st.points[0],st.points[st.points.length-1])<3);
+}
+/* ---------- Placement des noms de points et des longueurs (signalé : "pour les labels des
+   points, ne pas les superposer sur des tracés") ----------
+   Obstacles = "capsules" (segment + épaisseur) : traits tracés (et, pour un nom posé en cours
+   de construction, ceux qui restent à tracer), croix des points, codages, textes et autres
+   noms. Chaque étiquette est un rectangle ; on garde la position candidate la plus dégagée. */
+function tbAiPtSegDist(px, py, s){
+  const dx = s.bx-s.ax, dy = s.by-s.ay, l2 = dx*dx+dy*dy;
+  const t = l2 ? Math.max(0, Math.min(1, ((px-s.ax)*dx+(py-s.ay)*dy)/l2)) : 0;
+  return Math.hypot(px-(s.ax+t*dx), py-(s.ay+t*dy));
+}
+function tbAiSegHitsRect(s, R){
+  let t0 = 0, t1 = 1; const dx = s.bx-s.ax, dy = s.by-s.ay;
+  const pp = [-dx, dx, -dy, dy], qq = [s.ax-(R.cx-R.hw), (R.cx+R.hw)-s.ax, s.ay-(R.cy-R.hh), (R.cy+R.hh)-s.ay];
+  for(let k=0;k<4;k++){
+    if(pp[k]===0){ if(qq[k]<0) return false; continue; }
+    const r = qq[k]/pp[k];
+    if(pp[k]<0){ if(r>t1) return false; if(r>t0) t0 = r; } else { if(r<t0) return false; if(r<t1) t1 = r; }
+  }
+  return true;
+}
+function tbAiRectClearance(R, obs){
+  const pr = (x,y)=>Math.hypot(Math.max(0, Math.abs(x-R.cx)-R.hw), Math.max(0, Math.abs(y-R.cy)-R.hh));
+  let m = Infinity;
+  for(const s of obs){
+    let d;
+    if(tbAiSegHitsRect(s,R)) d = 0;
+    else d = Math.min(pr(s.ax,s.ay), pr(s.bx,s.by),
+      tbAiPtSegDist(R.cx-R.hw, R.cy-R.hh, s), tbAiPtSegDist(R.cx+R.hw, R.cy-R.hh, s),
+      tbAiPtSegDist(R.cx+R.hw, R.cy+R.hh, s), tbAiPtSegDist(R.cx-R.hw, R.cy+R.hh, s));
+    d -= s.r;
+    if(d<m) m = d;
+  }
+  return m;
+}
+function tbAiLabelRect(pt){
+  const w = Math.max(10, (pt.label||'').length*10.5), lx = pt.x+(pt.labelDx!==undefined?pt.labelDx:11), ly = pt.y+(pt.labelDy!==undefined?pt.labelDy:-8);
+  return {cx:lx+w/2, cy:ly-6, hw:w/2, hh:7};
+}
+function tbAiTextRect(t){
+  const w = t.text.length*t.fontSize*0.55;
+  return {cx:t.x+w/2, cy:t.y-t.fontSize/2+2, hw:w/2, hh:t.fontSize/2};
+}
+function tbAiObstacles(opt){
+  const o = opt||{}, obs = [];
+  const seg = (ax,ay,bx,by,r)=>obs.push({ax,ay,bx,by,r});
+  const box = R=>seg(R.cx-R.hw, R.cy, R.cx+R.hw, R.cy, R.hh);
+  tbInk.forEach(st=>{
+    const P = st.points, r = st.construction ? 1 : 1.5;
+    if(P.length<2) return;
+    if(st.straight) seg(P[0][0],P[0][1],P[P.length-1][0],P[P.length-1][1],r);
+    else for(let k=1;k<P.length;k++) seg(P[k-1][0],P[k-1][1],P[k][0],P[k][1],r);
+  });
+  if(o.future && tbAiPlan && tbAiPlan.future) obs.push(...tbAiPlan.future);
+  tbPoints.forEach(q=>{
+    seg(q.x,q.y,q.x,q.y,8);
+    if(q!==o.point && q.label) box(tbAiLabelRect(q));
+  });
+  tbCodages.forEach(c=>{
+    if(c.kind==='arc'){
+      const r = c.r||13, a1 = c.angle1*Math.PI/180; let d = (c.angle2-c.angle1)*Math.PI/180;
+      while(d>Math.PI) d -= 2*Math.PI; while(d<-Math.PI) d += 2*Math.PI;
+      for(let k=0;k<6;k++){ const u = a1+d*k/6, v = a1+d*(k+1)/6; seg(c.x+r*Math.cos(u), c.y+r*Math.sin(u), c.x+r*Math.cos(v), c.y+r*Math.sin(v), c.count>2?5:2); }
+    } else if(c.kind==='right'){
+      const a = c.angle*Math.PI/180;
+      seg(c.x+5*(Math.cos(a)-Math.sin(a)), c.y+5*(Math.sin(a)+Math.cos(a)), c.x+5*(Math.cos(a)-Math.sin(a)), c.y+5*(Math.sin(a)+Math.cos(a)), 8);
+    } else seg(c.x,c.y,c.x,c.y,7);
+  });
+  tbTexts.forEach(t=>{ if(t!==o.text) box(tbAiTextRect(t)); });
+  return obs;
+}
+const tbAiInBoard = R=>R.cx-R.hw>4 && R.cx+R.hw<896 && R.cy-R.hh>4 && R.cy+R.hh<556;
+/* Meilleur décalage du nom d'un point : tout autour du point, de préférence vers l'extérieur
+   de la figure, le plus près possible tant qu'il ne touche rien. */
+function tbAiBestLabelOffset(pt, obs){
+  const w = Math.max(10, pt.label.length*10.5), hw = w/2, hh = 7;
+  const c = tbAiPlan ? tbAiPlan.centroid : pt;
+  let ox = pt.x-c.x, oy = pt.y-c.y; const ol = Math.hypot(ox,oy);
+  if(ol>1){ ox/=ol; oy/=ol; } else { ox = 0.6; oy = -0.8; }
+  let best = null;
+  for(let k=0;k<24;k++){
+    const th = k*Math.PI/12, dx = Math.cos(th), dy = Math.sin(th);
+    for(const gap of [5,10,16,24]){
+      const ext = Math.abs(dx)*hw + Math.abs(dy)*hh;
+      const R = {cx:pt.x+dx*(gap+ext), cy:pt.y+dy*(gap+ext), hw, hh};
+      const clr = tbAiRectClearance(R, obs);
+      const score = Math.min(clr,8)*10 + (dx*ox+dy*oy)*6 - gap*0.7 + (tbAiInBoard(R)?0:-1000);
+      if(!best || score>best.score) best = {score, R, clr};
+    }
+  }
+  return {labelDx: best.R.cx-hw-pt.x, labelDy: best.R.cy+6-pt.y};
+}
+/* En fin d'étape : un nom que de nouveaux tracés (arcs, codages, textes...) viennent toucher
+   est déplacé ; les autres ne bougent pas. */
+function tbAiLayoutLabels(){
+  tbPoints.forEach(pt=>{
+    if(!pt.aiLabel || !pt.label) return;
+    const obs = tbAiObstacles({point:pt});
+    if(tbAiRectClearance(tbAiLabelRect(pt), obs) >= 3) return;
+    Object.assign(pt, tbAiBestLabelOffset(pt, obs));
+  });
+}
+function tbAiFmtCm(L){
+  const r = Math.round(L*10)/10;
+  return (Number.isInteger(r) ? String(r) : String(r).replace('.',','))+' cm';
+}
+/* Écrit chaque longueur donnée par l'énoncé dès que son segment est tracé : le long du
+   segment, de préférence à l'extérieur de la figure et sans chevaucher aucun tracé. */
+function tbAiWriteLengths(){
+  if(!tbAiPlan || !tbAiPlan.lengths) return;
+  const S = tbAiPlan.S, c = tbAiPlan.centroid;
+  tbAiPlan.lengths.forEach(g=>{
+    if(tbTexts.some(t=>t.aiLen===g.key)) return;
+    const A = S(g.a), B = S(g.b);
+    if(!tbAiAlreadyTraced(A,B)) return;
+    const text = tbAiFmtCm(g.L), fs = 15, hw = text.length*fs*0.55/2, hh = fs/2;
+    const u = tbAiUnit(A,B), obs = tbAiObstacles({});
+    let best = null;
+    for(const sg of [1,-1]) for(const f of [0.5,0.4,0.6,0.3,0.7]) for(const gap of [4,8,14]){
+      const nx = -u.y*sg, ny = u.x*sg, M = {x:A.x+(B.x-A.x)*f, y:A.y+(B.y-A.y)*f};
+      const ext = Math.abs(nx)*hw + Math.abs(ny)*hh;
+      const R = {cx:M.x+nx*(gap+ext), cy:M.y+ny*(gap+ext), hw, hh};
+      const clr = tbAiRectClearance(R, obs), out = (nx*(M.x-c.x)+ny*(M.y-c.y)) > 0 ? 1 : -1;
+      const score = Math.min(clr,8)*10 + out*8 - Math.abs(f-0.5)*30 - gap*0.6 + (tbAiInBoard(R)?0:-1000);
+      if(!best || score>best.score) best = {score, R};
+    }
+    tbTexts.push({id:tbTextNextId++, x:best.R.cx-hw, y:best.R.cy+fs/2-2, text, fontSize:fs, aiLen:g.key});
+  });
 }
 /* ---------- Codages (demandé : "coder les figures -- angles droits, valeurs des angles :
    juste la valeur") ---------- */
@@ -575,19 +723,35 @@ function tbAiExtent(o){
   const r = tbAiClip(pS, uS, o.e0*TB_PX_PER_CM, o.e1*TB_PX_PER_CM);
   return r ? {a:tbAiAt(pS,uS,r[0]), b:tbAiAt(pS,uS,r[1]), pS, uS, t0:r[0], t1:r[1]} : null;
 }
-/* Règle posée avec son bord gradué sur la droite (from,to), centrée sur la portion à tracer,
-   le corps de la règle du côté opposé à la figure (pour ne pas la masquer). */
-function tbAiRulerThrough(from, to){
+/* Règle (ou réquerre) posée avec son bord de tracé sur la droite (from,to), centrée sur la
+   portion à tracer, le corps de l'outil du côté opposé à la figure (pour ne pas la masquer). */
+function tbAiRulerThrough(from, to, type){
+  const req = type==='requerre2', L = req ? TB_REQ2_L : TB_RULER_L, edge = req ? 4 : 0;
   const d = tbV.norm({x:to.x-from.x, y:to.y-from.y}), m = {x:(from.x+to.x)/2, y:(from.y+to.y)/2}, c = tbAiPlan.centroid;
   let a = tbAiVecAng(d);
-  const body = tbAiDirDeg(a+90);
-  if(body.x*(m.x-c.x)+body.y*(m.y-c.y) < -0.5) a += 180;
-  const dd = tbAiDirDeg(a);
-  return {x:m.x-dd.x*TB_RULER_L/2, y:m.y-dd.y*TB_RULER_L/2, angle:a};
+  const body0 = tbAiDirDeg(a+90);
+  if(body0.x*(m.x-c.x)+body0.y*(m.y-c.y) < -0.5) a += 180;
+  const dd = tbAiDirDeg(a), body = tbAiDirDeg(a+90);
+  return {x:m.x-dd.x*L/2-body.x*edge, y:m.y-dd.y*L/2-body.y*edge, angle:a};
 }
-async function tbAiRuledStroke(from, to, style){
-  await tbAiBring('regle_grad', tbAiRulerThrough(from,to));
-  await tbAiTraceLine(from, to, style);
+/* Trait droit de from à to le long d'une règle ; si la règle est trop courte, la réquerre
+   (plus longue) ; si même la réquerre ne suffit pas, elle coulisse le long du tracé et le
+   crayon reprend là où il s'était arrêté. "skip" = [s0,s1] (px depuis from) : portion déjà
+   tracée (ex. le long de l'équerre), que le crayon ne repasse pas. */
+async function tbAiRuledStroke(from, to, style, skip){
+  const len = Math.hypot(to.x-from.x, to.y-from.y);
+  if(len<1) return;
+  const type = len<=TB_AI_RULER_MAX ? 'regle_grad' : 'requerre2';
+  await tbAiPutAway(type==='regle_grad' ? 'requerre2' : 'regle_grad', 'equerre', 'rapporteur', 'compas');
+  const maxL = type==='regle_grad' ? TB_AI_RULER_MAX : TB_AI_REQ_MAX;
+  const n = Math.ceil(len/maxL), u = {x:(to.x-from.x)/len, y:(to.y-from.y)/len};
+  for(let k=0;k<n;k++){
+    const c0 = len*k/n, c1 = len*(k+1)/n;
+    const tool = tbAiFindTool(type);
+    await tbAiBring(type, tbAiRulerThrough(tbAiAt(from,u,c0), tbAiAt(from,u,c1), type), tool ? 700 : 550);
+    const pieces = skip ? [[c0, Math.min(c1, skip[0])], [Math.max(c0, skip[1]), c1]] : [[c0,c1]];
+    for(const [p0,p1] of pieces) if(p1>p0+1) await tbAiTraceLine(tbAiAt(from,u,p0), tbAiAt(from,u,p1), style);
+  }
 }
 /* Écartement du compas : pris sur la règle posée en bas du tableau (rayon connu en cm), ou
    directement sur la figure entre deux points (report de longueur). */
@@ -718,12 +882,9 @@ const tbAiSteps = {
     if(ex){
       const s0 = Math.max(0,ex.t0), s1 = Math.min(ex.t1, legMax);
       if(s1>s0+1) await tbAiTraceLine(tbAiAt(ex.pS,ex.uS,s0), tbAiAt(ex.pS,ex.uS,s1), a.style);
-      const needRuler = ex.t1>legMax+2 || ex.t0<-2;
-      if(needRuler){
+      if(ex.t1>legMax+2 || ex.t0<-2){
         await tbAiPutAway('equerre','crayon');
-        await tbAiBring('regle_grad', tbAiRulerThrough(ex.a, ex.b));
-        if(ex.t1>legMax+2) await tbAiTraceLine(tbAiAt(ex.pS,ex.uS,s1), ex.b, a.style);
-        if(ex.t0<-2) await tbAiTraceLine(tbAiAt(ex.pS,ex.uS,0), ex.a, a.style);
+        await tbAiRuledStroke(ex.a, ex.b, a.style, [Math.max(0,s0)-ex.t0, s1-ex.t0]);
       }
     }
     if(a.footName){ await tbAiPutAway('equerre','regle_grad'); await tbAiMark(H, a.footName); }
@@ -754,9 +915,7 @@ const tbAiSteps = {
     await tbAiTraceLine(tbAiAt(M,leg0,s0), tbAiAt(M,leg0,e1), a.style);
     if(s1>e1+2){
       await tbAiPutAway('equerre','regle_grad','crayon');
-      const from = tbAiAt(M,leg0,s0), to = tbAiAt(M,leg0,s1);
-      await tbAiBring('regle_grad', tbAiRulerThrough(from,to));
-      await tbAiTraceLine(tbAiAt(M,leg0,e1), to, a.style);
+      await tbAiRuledStroke(tbAiAt(M,leg0,s0), tbAiAt(M,leg0,s1), a.style, [0, e1-s0]);
     }
     await tbAiPutAwayAll();
   },
@@ -846,7 +1005,9 @@ const tbAiSteps = {
     const Mk = S(a.Mk);
     tbAiHighlight(Mk);
     await tbAiSleep(400);
-    tbPoints.push({id:tbPointNextId++, x:Mk.x, y:Mk.y, label:a.markName||'', labelDx:10, labelDy:-8});
+    const mkPt = {id:tbPointNextId++, x:Mk.x, y:Mk.y, label:a.markName||'', aiLabel:true};
+    if(mkPt.label) Object.assign(mkPt, tbAiBestLabelOffset(mkPt, tbAiObstacles({point:mkPt, future:true})));
+    tbPoints.push(mkPt);
     tbRender();
     await tbAiSleep(300);
     tbAiClearHighlights();
@@ -919,9 +1080,11 @@ OPÉRATIONS DISPONIBLES :
 - {"op":"mark_right_angle","vertex":"A","points":["B","C"]} : codage de l'angle droit BAC.
 - {"op":"mark_angle","vertex":"A","points":["B","C"]} : arc de l'angle BAC avec sa valeur seule (ex. "60°", calculée automatiquement). "value":false pour l'arc seul, "count" (1 à 3) pour coder des angles égaux.
 - {"op":"mark_equal","segments":[["A","B"],["A","C"]],"count":1} : codage de longueurs égales.
+- {"op":"label","text":"(d)","on":"d1"} : nom d'une droite ou d'un cercle.
 
 CODAGE : sont codés AUTOMATIQUEMENT (ne les ajoute pas) les angles droits construits à l'équerre ("perpendicular"), les angles construits au rapporteur ("angle", arc + valeur), la médiatrice (angle droit + milieu) et la bissectrice (angles égaux). Ajoute toi-même les autres codages qui décrivent la figure demandée : angles droits obtenus autrement (ex. les 4 angles d'un rectangle, sauf ceux déjà construits à l'équerre), longueurs égales (triangle isocèle ou équilatéral, losange, carré, milieu), valeurs d'angles données par l'énoncé et non construites au rapporteur.
-- {"op":"label","text":"(d)","on":"d1"} : nom d'une droite ou d'un cercle.
+
+LONGUEURS : les longueurs données sont écrites AUTOMATIQUEMENT sur la figure (ex. "4 cm") : celle d'un "segment_length", et le rayon d'un "circle" (en cm) quand le point obtenu sur ce cercle est relié au centre par un segment tracé. N'ajoute pas de "label" pour elles. Pour une longueur auxiliaire qui n'est pas une donnée de l'énoncé, ajoute "show_length":false (sur "segment_length" ou "circle").
 
 STRATÉGIES CLASSIQUES (choisis celle que l'on enseigne pour l'énoncé) :
 - Triangle connaissant les 3 longueurs : segment_length pour un côté, puis deux "circle" (centres aux extrémités, rayons les deux autres longueurs), "intersect" pour le 3e sommet, puis "segment" pour les deux côtés restants.
@@ -1019,6 +1182,7 @@ async function tbAiPlaybackNext(){
   } finally {
     tbAiOverlay = [];
     tbTools = tbTools.filter(t=>!t.aiDriven);
+    try{ tbAiWriteLengths(); tbAiLayoutLabels(); }catch(e){ console.warn('tableau-ia : mise en page', e); }
     tbRenderPalette(); tbRender();
     tbPushHistory();
     tbAiPlanIndex++;
