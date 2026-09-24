@@ -2254,7 +2254,7 @@ async function refreshAuthUI(){
     if(profile && profile.role!=='eleve'){
       const todayStr = new Date().toISOString().slice(0,10);
       const [{ data: refEtab }, { data: myEtab }] = await Promise.all([
-        sb.from('etablissements').select('uai,nom,licence_until').eq('referent_id', currentUser.id).maybeSingle(),
+        sb.from('etablissements').select('uai,nom,licence_until,site_key_allowed,site_key_monthly_cap').eq('referent_id', currentUser.id).maybeSingle(),
         profile.uai ? sb.from('etablissements').select('uai,nom,licence_until').eq('uai', profile.uai).maybeSingle() : Promise.resolve({data:null}),
       ]);
       if(refEtab && profile.role!=='admin') currentReferentEtab = refEtab;
@@ -2540,6 +2540,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.665', items:[
+    "Établissements -- signalé : \"l'administrateur général vous autorise un accès limité sur la clé API générale du site\" (information absente de l'en-tête de Mon établissement). Nouveau réglage par établissement dans Administration > Établissements (compte admin) : « Clé IA du site » autorisée ou non, avec un budget mensuel facultatif en dollars et la dépense du mois. Une fois le budget atteint, l'IA sur la clé du site s'arrête pour cet établissement jusqu'au mois suivant (message clair aux professeurs et aux élèves ; vérifié côté serveur).",
+    "Mon établissement : l'en-tête indique désormais l'accès IA (« accès limité à la clé IA du site -- budget X $ / mois, déjà utilisé Y $ ce mois-ci », ou clé de l'établissement), et le référent peut lui-même mettre ses collègues sur la clé du site quand elle est ouverte à son établissement.",
+  ]},
   { version:'2026-08-19.664', items:[
     "Établissements, étape 3 : séparation des comptes -- demandé : \"deux comptes séparés : un administrateur général du site, et mon compte actuel en référent de mon établissement\". Nouveau compte « admin » (administrateur général : établissements, référents, licences, signalements, usage IA de tout le site). Le compte de travail d'Olivier Guyot devient professeur + référent de La Malgrange (0541306B) : classes, cahiers et contenus inchangés, « Mon établissement » à la place de l'Administration, IA toujours sur la clé du site.",
   ]},

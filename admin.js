@@ -171,7 +171,7 @@ MARTIN Marie	mmartin		0123456A	6eA"></textarea>
   <div class="tab-panel" id="admin-panel-etablissements">
     <div class="tool-shell">
       <button class="btn secondary" style="float:right;" onclick="adminRefreshEtablissements()"><span class=gicon>refresh</span> Actualiser</button>
-      <p class="hint" style="margin:6px 0 14px;clear:right;max-width:80ch;">Pour chaque établissement (UAI) : son <b>référent</b> (un professeur de l'établissement, qui gère alors lui-même comptes, classes, imports et inscriptions de son établissement depuis « Mon établissement ») et sa <b>licence établissement</b> (tant qu'elle court, tous ses professeurs ont accès au site sans abonnement individuel).</p>
+      <p class="hint" style="margin:6px 0 14px;clear:right;max-width:80ch;">« Clé IA du site » : l'établissement peut utiliser votre clé (son référent y met alors les collègues de son choix), dans la limite d'un <b>budget mensuel</b> facultatif (vide = sans plafond ; une fois atteint, l'IA sur la clé du site s'arrête jusqu'au mois suivant pour cet établissement).<br>Pour chaque établissement (UAI) : son <b>référent</b> (un professeur de l'établissement, qui gère alors lui-même comptes, classes, imports et inscriptions de son établissement depuis « Mon établissement ») et sa <b>licence établissement</b> (tant qu'elle court, tous ses professeurs ont accès au site sans abonnement individuel).</p>
       <div id="adminEtabListing" class="hint">Chargement…</div>
     </div>
   </div>
@@ -252,7 +252,8 @@ function adminApplyScopeUI(){
       const lic = etab && etab.licence_until && etab.licence_until >= new Date().toISOString().slice(0,10)
         ? `<span style="color:#1F7A4D;font-weight:600;">licence établissement active jusqu'au ${new Date(etab.licence_until+'T00:00:00').toLocaleDateString('fr-FR')}</span>`
         : `<span style="color:#a83c1f;">pas de licence établissement en cours</span> (vos collègues ont besoin d'un abonnement individuel)`;
-      sub.innerHTML = `<b>${escapeHtml((etab&&etab.nom)||'')}</b> · UAI <span class="hint-mono">${escapeHtml(scope)}</span> · ${lic}.<br>Vous êtes le référent de votre établissement : comptes professeurs et élèves, classes, imports et validation des inscriptions de vos collègues.`;
+      sub.innerHTML = `<b>${escapeHtml((etab&&etab.nom)||'')}</b> · UAI <span class="hint-mono">${escapeHtml(scope)}</span> · ${lic}.<br><span id="adminSubtitleAi"></span>Vous êtes le référent de votre établissement : comptes professeurs et élèves, classes, imports et validation des inscriptions de vos collègues.`;
+      adminRenderScopeAiLine();
     } else sub.textContent = 'Gestion des comptes, des classes, des établissements et des signalements.';
   }
   ['signalements','etablissements'].forEach(t=>{
@@ -271,10 +272,33 @@ function adminApplyScopeUI(){
   showEl('adminEtabKeyBox', scoped); showEl('adminEtabReportBox', scoped); showEl('adminGlobalAiUsage', !scoped);
   const tHint = document.getElementById('adminAiTeachersHint');
   if(tHint) tHint.innerHTML = scoped
-    ? "Pour chaque collègue, choisissez qui paie son IA (et celle de ses élèves) : <b>la clé de l'établissement</b> (ci-dessus) ou <b>sa clé personnelle</b>. Le choix s'applique immédiatement ; chacun active ensuite lui-même l'IA dans sa page. « Clé du site » ne peut être attribuée que par l'administrateur général."
+    ? ((etab && etab.site_key_allowed)
+        ? "Pour chaque collègue, choisissez qui paie son IA (et celle de ses élèves) : <b>la clé du site</b> (accès accordé à votre établissement par l'administrateur général, dans la limite de son budget mensuel), <b>la clé de l'établissement</b> (ci-dessus) ou <b>sa clé personnelle</b>. Le choix s'applique immédiatement ; chacun active ensuite lui-même l'IA dans sa page."
+        : "Pour chaque collègue, choisissez qui paie son IA (et celle de ses élèves) : <b>la clé de l'établissement</b> (ci-dessus) ou <b>sa clé personnelle</b>. Le choix s'applique immédiatement ; chacun active ensuite lui-même l'IA dans sa page. La clé du site n'est pas ouverte à votre établissement (décision de l'administrateur général).")
     : "Pour chaque professeur, vous choisissez qui paie son IA (et celle de ses élèves) : <b>la clé du site</b> (la vôtre), <b>la clé de son établissement</b> (enregistrée par le référent) ou <b>sa clé personnelle</b>. Le choix s'applique immédiatement ; chacun active ensuite lui-même l'IA dans sa page.";
   const note = document.getElementById('adminBulkScopeNote');
   if(note){ note.style.display = scoped ? 'block' : 'none'; note.innerHTML = scoped ? `Les comptes et les classes sont automatiquement créés dans <b>votre établissement (UAI ${escapeHtml(scope)})</b> : la colonne UAI peut rester vide.` : ''; }
+}
+
+/* Ligne « IA » de l'en-tête du référent (signalé : "l'administrateur général vous autorise un
+   accès limité sur la clé API générale du site" -- à afficher, avec le budget du mois). */
+function adminFmtUsd(v){ return (Math.round((Number(v)||0)*100)/100).toFixed(2).replace('.',',')+' $'; }
+async function adminRenderScopeAiLine(){
+  const el = document.getElementById('adminSubtitleAi');
+  if(!el || !currentReferentEtab) return;
+  const { data: st } = await sb.rpc('etab_ai_status', {p_uai: currentReferentEtab.uai});
+  if(!st){ el.innerHTML = ''; return; }
+  currentReferentEtab.site_key_allowed = st.site_key_allowed; currentReferentEtab.site_key_monthly_cap = st.cap;
+  let txt;
+  if(st.site_key_allowed && st.cap!=null){
+    const over = Number(st.spent_month) >= Number(st.cap);
+    txt = `<span class="gicon">smart_toy</span> IA : l'administrateur général vous autorise un <b>accès limité à la clé IA du site</b> -- budget <b>${adminFmtUsd(st.cap)} / mois</b>, déjà utilisé <b style="color:${over?'#a83c1f':'#1F7A4D'};">${adminFmtUsd(st.spent_month)}</b> ce mois-ci${over?' (budget atteint : l\'IA sur la clé du site est suspendue jusqu\'au mois prochain)':''}.`;
+  } else if(st.site_key_allowed){
+    txt = `<span class="gicon">smart_toy</span> IA : l'administrateur général vous autorise l'<b>accès à la clé IA du site</b> (sans plafond mensuel fixé) -- utilisé ce mois-ci : <b>${adminFmtUsd(st.spent_month)}</b>.`;
+  } else {
+    txt = `<span class="gicon">smart_toy</span> IA : ${st.etab_key ? 'clé IA de l\'établissement enregistrée.' : 'pas d\'accès à la clé du site ; enregistrez la clé IA de l\'établissement (onglet IA), ou chaque collègue utilise sa clé personnelle.'}`;
+  }
+  el.innerHTML = txt + '<br>';
 }
 
 /* ---- Onglet « Établissements » (administrateur général) : référent + licence ---- */
@@ -282,7 +306,7 @@ async function adminRefreshEtablissements(){
   const box = document.getElementById('adminEtabListing');
   if(!box || adminScopeUai()) return;
   const [{ data: etabs, error }, { data: staff }, { data: cls }, { data: eleves }] = await Promise.all([
-    sb.from('etablissements').select('uai,nom,ville,referent_id,licence_until,licence_note,ai_key_last4').order('nom'),
+    sb.from('etablissements').select('uai,nom,ville,referent_id,licence_until,licence_note,ai_key_last4,site_key_allowed,site_key_monthly_cap').order('nom'),
     sb.from('profiles').select('id,nom,prenom,role,uai').in('role',['prof','admin']),
     sb.from('classes').select('id,uai'),
     sb.from('profiles').select('uai').eq('role','eleve'),
@@ -290,7 +314,9 @@ async function adminRefreshEtablissements(){
   if(error){ box.textContent = 'Erreur : '+error.message; return; }
   if(!etabs || !etabs.length){ box.textContent = 'Aucun établissement.'; return; }
   const today = new Date().toISOString().slice(0,10);
-  box.innerHTML = `<div style="overflow-x:auto;"><table class="sup-table"><thead><tr><th>UAI</th><th>Nom</th><th>Référent</th><th>Licence jusqu'au</th><th>Note (facture, bon de commande…)</th><th>Clé IA</th><th>Profs · élèves · classes</th><th></th></tr></thead><tbody>
+  const spent = {};
+  await Promise.all(etabs.map(async e=>{ const { data } = await sb.rpc('etab_ai_status', {p_uai: e.uai}); spent[e.uai] = data ? data.spent_month : 0; }));
+  box.innerHTML = `<div style="overflow-x:auto;"><table class="sup-table"><thead><tr><th>UAI</th><th>Nom</th><th>Référent</th><th>Licence jusqu'au</th><th>Note (facture, bon de commande…)</th><th>Clé IA du site</th><th>Clé IA étab.</th><th>Profs · élèves · classes</th><th></th></tr></thead><tbody>
     ${etabs.map(e=>{
       const profsHere = (staff||[]).filter(p=>p.uai===e.uai && p.role==='prof');
       const nbEleves = (eleves||[]).filter(p=>p.uai===e.uai).length, nbClasses = (cls||[]).filter(c=>c.uai===e.uai).length;
@@ -303,6 +329,9 @@ async function adminRefreshEtablissements(){
           ${!profsHere.length ? '<div class="hint" style="margin:2px 0 0;">aucun professeur rattaché à cet UAI</div>' : ''}</td>
         <td><input type="date" id="etabLic_${k}" value="${e.licence_until||''}"> ${e.licence_until ? `<div class="hint" style="margin:2px 0 0;color:${active?'#1F7A4D':'#a83c1f'};">${active?'active':'expirée'}</div>` : ''}</td>
         <td><input type="text" id="etabNote_${k}" value="${escapeHtml(e.licence_note||'')}" style="min-width:160px;"></td>
+        <td style="white-space:nowrap;"><label style="display:flex;align-items:center;gap:5px;"><input type="checkbox" id="etabSite_${k}" ${e.site_key_allowed?'checked':''}> autorisée</label>
+          <label class="hint" style="margin:3px 0 0;display:flex;align-items:center;gap:4px;">budget <input type="number" id="etabCap_${k}" min="0" step="0.5" value="${e.site_key_monthly_cap!=null?e.site_key_monthly_cap:''}" placeholder="∞" style="width:70px;"> $/mois</label>
+          <div class="hint" style="margin:2px 0 0;">ce mois-ci : ${adminFmtUsd(spent[e.uai])}</div></td>
         <td>${e.ai_key_last4 ? '<span class="hint-mono">…'+escapeHtml(e.ai_key_last4)+'</span>' : '<span class="hint">aucune</span>'}</td>
         <td>${profsHere.length} · ${nbEleves} · ${nbClasses}</td>
         <td style="white-space:nowrap;"><button class="btn" style="padding:4px 12px;font-size:.8rem;" onclick="adminSaveEtablissement('${escapeHtml(e.uai)}')">Enregistrer</button> <span class="hint" id="etabMsg_${k}" style="margin:0;"></span></td>
@@ -318,6 +347,8 @@ async function adminSaveEtablissement(uai){
     referent_id: document.getElementById('etabRef_'+k).value || null,
     licence_until: document.getElementById('etabLic_'+k).value || null,
     licence_note: document.getElementById('etabNote_'+k).value.trim() || null,
+    site_key_allowed: document.getElementById('etabSite_'+k).checked,
+    site_key_monthly_cap: document.getElementById('etabCap_'+k).value.trim()==='' ? null : Math.max(0, Number(document.getElementById('etabCap_'+k).value)),
   };
   msg.textContent = 'Enregistrement…';
   const { error } = await sb.from('etablissements').update(row).eq('uai', uai);

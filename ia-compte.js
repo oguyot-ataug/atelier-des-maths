@@ -135,7 +135,7 @@ async function renderIaPage(){
     <div class="tool-shell ia-card">
       <strong class="ia-h"><span class="gicon">key</span> 1. Votre clé Anthropic</strong>
       ${keyMode==='site'
-        ? `<p style="margin:6px 0 8px;padding:8px 12px;background:rgba(31,122,77,.08);border-left:3px solid #1F7A4D;border-radius:6px;"><span class="gicon">verified</span> <b>L'administrateur a choisi la clé du site pour votre compte</b> : vous n'avez pas besoin de clé personnelle, votre IA et celle de vos élèves sont prises en charge.</p>`
+        ? `<p style="margin:6px 0 8px;padding:8px 12px;background:rgba(31,122,77,.08);border-left:3px solid #1F7A4D;border-radius:6px;"><span class="gicon">verified</span> <b>Votre IA passe par la clé du site</b> : vous n'avez pas besoin de clé personnelle, votre IA et celle de vos élèves sont prises en charge (dans la limite du budget mensuel éventuellement accordé à votre établissement).</p>`
         : keyMode==='etab'
         ? (etabKey
           ? `<p style="margin:6px 0 8px;padding:8px 12px;background:rgba(31,122,77,.08);border-left:3px solid #1F7A4D;border-radius:6px;"><span class="gicon">domain</span> <b>Votre établissement prend en charge votre IA</b> (clé de l'établissement, gérée par votre référent) : vous n'avez pas besoin de clé personnelle.</p>`
@@ -342,9 +342,10 @@ async function iaLoadAdminTeachers(boxId){
   const rows = (data||[]).map(t=>{
     const cost = ((t.in_30d||0)*IA_PRICE_IN + (t.out_30d||0)*IA_PRICE_OUT)/1e6;
     const isAdm = t.role==='admin', me = currentUser && t.teacher_id===currentUser.id;
-    const modes = isAdminUser ? ['site','etab','perso'] : ['etab','perso'];
+    const siteAllowed = isAdminUser || !!(currentReferentEtab && currentReferentEtab.site_key_allowed);
+    const modes = siteAllowed ? ['site','etab','perso'] : ['etab','perso'];
     const modeCell = isAdm ? '<span class="hint">clé du site</span>'
-      : (!isAdminUser && t.key_mode==='site') ? '<span class="hint">Clé du site<br>(décidé par l\'administrateur)</span>'
+      : (!siteAllowed && t.key_mode==='site') ? '<span class="hint">Clé du site<br>(décidé par l\'administrateur)</span>'
       : `<select onchange="iaSetTeacherKeyMode('${t.teacher_id}', this)" data-prev="${t.key_mode}" style="padding:4px 6px;">${modes.map(m=>`<option value="${m}" ${t.key_mode===m?'selected':''}>${IA_KEY_MODE_LABELS[m]}</option>`).join('')}</select>`;
     const okCell = t.key_ok ? '<span style="color:#1F7A4D;">✓ disponible</span>'
       : t.key_mode==='etab' ? '<span style="color:#B3261E;">clé de l\'établissement non enregistrée</span>'
