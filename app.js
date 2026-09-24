@@ -2511,6 +2511,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.655', items:[
+    "Exercices corrigés, construction animée -- demandé : \"est-il possible de voir l'animation dans les exercices corrigés ?\". Le bouton « Voir la construction pas à pas » ouvre désormais la construction dans une fenêtre PAR-DESSUS l'exercice corrigé (cahier élève, outil de correction), sans changer de page : étape par étape, depuis le début, vitesse réglable, et nouveau bouton « Lecture » qui enchaîne toutes les étapes (« Pause » pour s'arrêter). À la fermeture, on retrouve l'exercice, et le tableau interactif personnel est laissé intact.",
+  ]},
   { version:'2026-08-19.654', items:[
     "Tableau IA, exercices corrigés -- demandé : \"permettre d'ajouter le résultat dans les exercices corrigés ou mettre le module dans les exos corrigés\". Nouveau bouton « Ajouter aux exercices corrigés » dans la barre de lecture : la figure finale (nette, à l'échelle) est insérée dans l'outil de correction, avec un bouton « Voir la construction pas à pas » qui rejoue toute l'animation sur le tableau -- y compris pour les élèves depuis leur cahier, avec un bouton pour revenir au cahier.",
     "Tableau interactif, zoom -- demandé : \"permettre de zoomer la zone de travail car parfois les constructions sont un peu trop petites\". Boutons ➖ / ➕ / « Ajuster » : tracés et outils grossissent ensemble (la règle reste juste par rapport à la figure). Une construction IA s'affiche d'emblée zoomée sur la figure.",

@@ -1524,30 +1524,74 @@ async function tbAiAddToCorrection(){
   const prev = document.getElementById('correctionPreview');
   if(prev) prev.scrollIntoView({behavior:'smooth', block:'center'});
 }
-let tbAiReturnView = null;
+/* "Voir la construction pas à pas" (bloc d'un exercice corrigé) : l'animation se joue dans une
+   fenêtre PAR-DESSUS l'exercice (demandé : "est-il possible de voir l'animation dans les
+   exercices corrigés ?"), sans quitter la page. Le tableau (et sa barre de lecture) y est
+   simplement déplacé le temps de la lecture ; son contenu, son historique et son zoom sont
+   sauvegardés puis rétablis à la fermeture -- le tableau personnel n'est jamais touché. */
+let tbAiPlayer = null;
 function tbAiReplayFromBlock(btn){
   let d;
   try{ d = JSON.parse(btn.getAttribute('data-tbprog')); }catch(e){ return; }
   if(!d || !Array.isArray(d.program)) return;
-  const from = document.querySelector('.view.active');
-  tbAiReturnView = from ? from.id : null;
-  showView('view-tableau');
-  if(typeof setActiveTopnav==='function') setActiveTopnav('tableau');
-  if(typeof initTableauView==='function') initTableauView();
-  tbClearAll();
-  try{ tbAiLoadProgram(d.program, d.tools); }
-  catch(e){ niceAlert('Construction illisible : '+e.message); return; }
-  const back = document.getElementById('tbAiReturnBtn');
-  if(back) back.style.display = tbAiReturnView ? '' : 'none';
-  const bar = document.getElementById('tbAiPlaybackBar');
-  if(bar) bar.scrollIntoView({behavior:'smooth', block:'start'});
+  tbAiOpenPlayer(d);
 }
-function tbAiReturn(){
-  const back = document.getElementById('tbAiReturnBtn');
-  if(back) back.style.display = 'none';
-  const id = tbAiReturnView;
-  tbAiReturnView = null;
-  if(!id || !document.getElementById(id)) return;
-  showView(id); // la page d'origine (cahier, correction...) est restée telle quelle, juste masquée
-  if(typeof setActiveTopnav==='function' && typeof ROUTE_SIMPLE!=='undefined' && ROUTE_SIMPLE[id]) setActiveTopnav(ROUTE_SIMPLE[id]);
+function tbAiOpenPlayer(d){
+  if(tbAiPlayer || tbAiBusy) return;
+  if(typeof initTableauView==='function') initTableauView();
+  const ov = document.getElementById('tbAiPlayerOverlay'), body = document.getElementById('tbAiPlayerBody');
+  const wrap = document.getElementById('tbBoardWrap'), bar = document.getElementById('tbAiPlaybackBar');
+  if(!ov || !body || !wrap || !bar) return;
+  tbAiPlayer = {
+    snap: tbSnapshot(), hist: tbHistory.slice(), histIdx: tbHistoryIndex,
+    zoom: tbZoom, center: tbViewCenter, plan: tbAiPlan, planIdx: tbAiPlanIndex, allowed: tbAiAllowed,
+    wrapHome: [wrap.parentNode, wrap.nextSibling], barHome: [bar.parentNode, bar.nextSibling], barDisplay: bar.style.display,
+  };
+  body.appendChild(bar); body.appendChild(wrap);
+  ov.style.display = 'flex';
+  tbTools = []; tbInk = []; tbPoints = []; tbTexts = []; tbCodages = [];
+  tbBackground = 'blank'; tbBgImageIdx = null;
+  tbHistory = []; tbHistoryIndex = -1; tbPushHistory();
+  try{ tbAiLoadProgram(d.program, d.tools); }
+  catch(e){ tbAiClosePlayer(); niceAlert('Construction illisible : '+e.message); return; }
+  ['tbAiAddCorBtn'].forEach(id=>{ const el = document.getElementById(id); if(el) el.style.display = 'none'; });
+}
+async function tbAiClosePlayer(){
+  if(!tbAiPlayer) return;
+  tbAiAutoPlay = false;
+  while(tbAiBusy) await new Promise(r=>setTimeout(r, 50)); // termine proprement le geste en cours
+  const P = tbAiPlayer, wrap = document.getElementById('tbBoardWrap'), bar = document.getElementById('tbAiPlaybackBar');
+  P.wrapHome[0].insertBefore(wrap, P.wrapHome[1]);
+  P.barHome[0].insertBefore(bar, P.barHome[1]);
+  bar.style.display = P.barDisplay;
+  tbAiPlayer = null;
+  tbTools = tbTools.filter(t=>!t.aiDriven); tbAiOverlay = [];
+  tbAiPlan = P.plan; tbAiPlanIndex = P.planIdx; tbAiAllowed = P.allowed;
+  tbZoom = P.zoom; tbViewCenter = P.center;
+  tbRestoreSnapshot(P.snap);
+  tbHistory = P.hist; tbHistoryIndex = P.histIdx;
+  if(typeof tbUpdateHistoryButtons==='function') tbUpdateHistoryButtons();
+  if(typeof tbUpdateZoomLabel==='function') tbUpdateZoomLabel();
+  tbAiPlaybackShow(); if(!tbAiPlan) bar.style.display = 'none';
+  tbAiPlaybackUpdateUI();
+  document.getElementById('tbAiPlayerOverlay').style.display = 'none';
+}
+/* Croix de la barre de lecture : ferme la fenêtre de lecture, ou termine la lecture sur le tableau. */
+function tbAiPlaybackClose(){ if(tbAiPlayer) tbAiClosePlayer(); else tbAiPlaybackHide(); }
+/* Lecture continue : enchaîne toutes les étapes (un clic de plus met en pause après l'étape). */
+let tbAiAutoPlay = false;
+function tbAiUpdatePlayAllBtn(){
+  const b = document.getElementById('tbAiPlayAllBtn');
+  if(b) b.innerHTML = tbAiAutoPlay ? '<span class="gicon">pause</span> Pause' : '<span class="gicon">play_arrow</span> Lecture';
+}
+async function tbAiPlayAll(){
+  if(tbAiAutoPlay){ tbAiAutoPlay = false; tbAiUpdatePlayAllBtn(); return; }
+  if(!tbAiPlan || tbAiBusy) return;
+  if(tbAiPlanIndex>=tbAiPlan.actions.length) tbAiPlaybackRestart();
+  tbAiAutoPlay = true; tbAiUpdatePlayAllBtn();
+  while(tbAiAutoPlay && tbAiPlan && tbAiPlanIndex<tbAiPlan.actions.length){
+    await tbAiPlaybackNext();
+    if(tbAiAutoPlay) await tbAiSleep(450);
+  }
+  tbAiAutoPlay = false; tbAiUpdatePlayAllBtn();
 }
