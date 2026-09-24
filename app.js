@@ -2540,6 +2540,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.664', items:[
+    "Établissements, étape 3 : séparation des comptes -- demandé : \"deux comptes séparés : un administrateur général du site, et mon compte actuel en référent de mon établissement\". Nouveau compte « admin » (administrateur général : établissements, référents, licences, signalements, usage IA de tout le site). Le compte de travail d'Olivier Guyot devient professeur + référent de La Malgrange (0541306B) : classes, cahiers et contenus inchangés, « Mon établissement » à la place de l'Administration, IA toujours sur la clé du site.",
+  ]},
   { version:'2026-08-19.663', items:[
     "Établissements, étape 2 : CLÉ IA D'ÉTABLISSEMENT -- demandé : \"le référent saisit la clé de son collège et choisit, pour chaque collègue, entre clé de l'établissement et clé personnelle. Il a aussi le rapport IA de son établissement\".",
     "Mon établissement > onglet « IA » (référent) : clé Anthropic du collège (vérifiée auprès d'Anthropic, conservée chiffrée, jamais relisible), choix pour chaque collègue entre « Clé de l'établissement » et « Clé personnelle », avec l'état de la clé, l'activation de l'IA et la consommation sur 30 jours, puis le rapport IA de l'établissement (par fonctionnalité, classe, personne, jour, journal détaillé, export tableur).",
