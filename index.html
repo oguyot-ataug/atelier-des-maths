@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-<link rel="stylesheet" href="styles.css?v=20260819-655">
+<link rel="stylesheet" href="styles.css?v=20260819-656">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -27,7 +27,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.655</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.656</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -860,8 +860,7 @@
           <option value="2.5">Lente</option>
           <option value="5">Très lente</option>
         </select>
-        <button type="button" class="btn secondary" id="tbAiAddCorBtn" onclick="tbAiAddToCorrection()" title="Insérer la figure finale et son animation dans l'outil de correction" style="margin-left:auto;"><span class="gicon">playlist_add</span> Ajouter aux exercices corrigés</button>
-        <button type="button" class="btn secondary" onclick="tbAiPlaybackClose()" title="Terminer la lecture pas à pas"><span class="gicon">close</span></button>
+        <button type="button" class="btn secondary" id="tbAiCloseBtn" onclick="tbAiPlaybackClose()" title="Terminer la lecture pas à pas" style="margin-left:auto;"><span class="gicon">close</span></button>
       </div>
       <div id="tbBoardWrap" style="border:1.5px solid rgba(28,43,57,.18);border-radius:10px;overflow:hidden;background:#fff;touch-action:none;"></div>
       <div id="tbHelpBox" style="margin-top:8px;padding:10px 14px;background:rgba(13,91,163,.07);border-radius:8px;font-size:.85rem;color:var(--ink-soft);min-height:20px;"></div>
@@ -869,6 +868,36 @@
     <div id="tbHistoryPanel" style="display:none;width:220px;flex:none;border:1.5px solid rgba(28,43,57,.18);border-radius:10px;background:#fff;max-height:560px;overflow-y:auto;"></div>
   </div>
 </section>
+
+<div id="geoAnimOverlay" class="modal-overlay" style="display:none;z-index:250;">
+  <div class="modal-card" style="max-width:980px;width:96vw;max-height:94vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;"><span class="gicon">play_circle</span> Animation géométrique</strong>
+      <button class="modal-close" onclick="geoAnimCancel()"><span class="gicon">close</span></button>
+    </div>
+    <p class="hint" style="margin:0 0 8px;">Écrivez l'énoncé de la construction : l'IA choisit la méthode, la figure est calculée exactement puis construite aux instruments, pas à pas. Vérifiez la méthode avant de l'insérer.</p>
+    <textarea id="geoAnimEnonce" rows="3" placeholder="Construire un triangle ABC rectangle en A tel que AB = 4 cm et BC = 7 cm." style="width:100%;resize:vertical;"></textarea>
+    <div style="margin-top:8px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;">
+      <span class="hint" style="margin:0;">Outils autorisés :</span>
+      <div id="geoAnimToolChecks" style="display:flex;flex-wrap:wrap;gap:6px 14px;">
+        <label class="hint" style="margin:0;display:flex;align-items:center;gap:5px;"><input type="checkbox" value="regle" checked> Règle graduée</label>
+        <label class="hint" style="margin:0;display:flex;align-items:center;gap:5px;"><input type="checkbox" value="equerre" checked> Équerre</label>
+        <label class="hint" style="margin:0;display:flex;align-items:center;gap:5px;"><input type="checkbox" value="requerre" checked> Réquerre</label>
+        <label class="hint" style="margin:0;display:flex;align-items:center;gap:5px;"><input type="checkbox" value="compas" checked> Compas</label>
+        <label class="hint" style="margin:0;display:flex;align-items:center;gap:5px;"><input type="checkbox" value="rapporteur" checked> Rapporteur</label>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;">
+      <button class="btn" id="geoAnimGenerateBtn" onclick="geoAnimGenerate()"><span class="gicon">smart_toy</span> Générer la construction</button>
+      <span class="hint" id="geoAnimStatus" style="margin:0;"></span>
+    </div>
+    <div id="geoAnimStage" style="margin-top:10px;"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;">
+      <button class="btn secondary" onclick="geoAnimCancel()">Annuler</button>
+      <button class="btn" id="geoAnimInsertBtn" onclick="geoAnimInsert()" disabled><span class="gicon">playlist_add</span> Insérer dans l'exercice</button>
+    </div>
+  </div>
+</div>
 
 <div id="tbAiPlayerOverlay" class="modal-overlay" style="display:none;z-index:300;" onclick="if(event.target===this) tbAiClosePlayer();">
   <div class="modal-card" style="max-width:980px;width:96vw;">
@@ -1167,47 +1196,47 @@
 <footer>Une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a> · L'Atelier des Maths · Programme B.O. 2026 · <a href="#" data-nav="mentions-legales">Mentions légales</a> · <a href="#" data-nav="confidentialite">Confidentialité</a> · <a href="#" data-nav="niveau" data-lvl="cm1" style="color:var(--ink-soft);">CM1 (aperçu)</a></footer>
 
 <script src="https://js.stripe.com/v3/"></script>
-<script defer src="app.js?v=20260819-655"></script>
-<script defer src="outils-figures.js?v=20260819-655"></script>
-<script defer src="evaluation.js?v=20260819-655"></script>
-<script defer src="admin.js?v=20260819-655"></script>
-<script defer src="tableau-ia.js?v=20260819-655"></script>
-<script defer src="devoirs.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-655"></script>
-<script defer src="chapitres/cm1/N1-nombres-entiers.js?v=20260819-655"></script>
-<script defer src="chapitres/cm1/G1-droites-paralleles-perpendiculaires.js?v=20260819-655"></script>
-<script defer src="chapitres/cm1/N2-operations-nombres-entiers.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/N4-multiplication-division.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/D3-proportionnalite.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/G5-construction-triangles.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/G4-symetrie-axiale.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/N5-fractions-comparaison-addition.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/D1-gestion-donnees.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/D2-probabilites.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/M1-aire-perimetre.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/M2-heures-durees.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/G6-proprietes-triangles.js?v=20260819-655"></script>
-<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/N4-fractions.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/N6-equations.js?v=20260819-655"></script>
-<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-655"></script>
-<script defer src="calcul-mental/calcul-mental.js?v=20260819-655"></script>
-<script defer src="compte-est-bon.js?v=20260819-655"></script>
-<script defer src="router.js?v=20260819-655"></script>
+<script defer src="app.js?v=20260819-656"></script>
+<script defer src="outils-figures.js?v=20260819-656"></script>
+<script defer src="evaluation.js?v=20260819-656"></script>
+<script defer src="admin.js?v=20260819-656"></script>
+<script defer src="tableau-ia.js?v=20260819-656"></script>
+<script defer src="devoirs.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-656"></script>
+<script defer src="chapitres/cm1/N1-nombres-entiers.js?v=20260819-656"></script>
+<script defer src="chapitres/cm1/G1-droites-paralleles-perpendiculaires.js?v=20260819-656"></script>
+<script defer src="chapitres/cm1/N2-operations-nombres-entiers.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/N4-multiplication-division.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/D3-proportionnalite.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/G5-construction-triangles.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/G4-symetrie-axiale.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/N5-fractions-comparaison-addition.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/D1-gestion-donnees.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/D2-probabilites.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/M1-aire-perimetre.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/M2-heures-durees.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/G6-proprietes-triangles.js?v=20260819-656"></script>
+<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/N4-fractions.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/N6-equations.js?v=20260819-656"></script>
+<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-656"></script>
+<script defer src="calcul-mental/calcul-mental.js?v=20260819-656"></script>
+<script defer src="compte-est-bon.js?v=20260819-656"></script>
+<script defer src="router.js?v=20260819-656"></script>
 </body>
 </html>

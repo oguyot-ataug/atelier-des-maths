@@ -1387,10 +1387,9 @@ function tbCloseAiModal(){ document.getElementById('tbAiModalOverlay').style.dis
 let tbAiPlanIndex = 0, tbAiBusy = false;
 function tbAiPlaybackShow(){
   const bar = document.getElementById('tbAiPlaybackBar'); if(bar) bar.style.display = 'flex';
-  // Ajout aux exercices corrigés : réservé aux professeurs (un élève peut rejouer une
-  // construction depuis son cahier, pas l'ajouter).
-  const add = document.getElementById('tbAiAddCorBtn');
-  if(add) add.style.display = (typeof currentUserRole!=='undefined' && (currentUserRole==='prof' || currentUserRole==='admin')) ? '' : 'none';
+  // Dans l'outil « Animation géométrique », la fenêtre a ses propres boutons de fermeture.
+  const close = document.getElementById('tbAiCloseBtn');
+  if(close) close.style.display = (tbAiBorrow && tbAiBorrow.mode==='tool') ? 'none' : '';
 }
 function tbAiPlaybackHide(){
   const bar = document.getElementById('tbAiPlaybackBar'); if(bar) bar.style.display = 'none';
@@ -1481,10 +1480,56 @@ async function tbAiGenerate(){
 }
 
 /* ======================= Exercices corrigés ======================= */
-/* Ajoute la figure construite aux exercices corrigés (demandé : "permettre d'ajouter le
-   résultat dans les exercices corrigés ou mettre le module dans les exos corrigés") : un bloc
-   avec la figure finale (vectorielle, à l'échelle) ET un bouton qui rejoue la construction pas
-   à pas sur le tableau -- y compris pour les élèves depuis leur cahier. */
+/* Le tableau (et sa barre de lecture) peut être "emprunté" dans une fenêtre : outil « Animation
+   géométrique » de l'outil de correction, ou lecture d'une construction depuis un exercice
+   corrigé. Son contenu, son historique et son zoom sont sauvegardés puis rétablis au retour --
+   le tableau personnel n'est jamais touché. */
+let tbAiBorrow = null;
+function tbAiBorrowBoard(container, mode){
+  if(tbAiBorrow || tbAiBusy) return false;
+  if(typeof initTableauView==='function') initTableauView();
+  const wrap = document.getElementById('tbBoardWrap'), bar = document.getElementById('tbAiPlaybackBar');
+  if(!container || !wrap || !bar) return false;
+  tbAiBorrow = {
+    mode, snap: tbSnapshot(), hist: tbHistory.slice(), histIdx: tbHistoryIndex,
+    zoom: tbZoom, center: tbViewCenter, plan: tbAiPlan, planIdx: tbAiPlanIndex, allowed: tbAiAllowed,
+    wrapHome: [wrap.parentNode, wrap.nextSibling], barHome: [bar.parentNode, bar.nextSibling], barDisplay: bar.style.display,
+  };
+  container.appendChild(bar); container.appendChild(wrap);
+  tbAiResetBorrowedBoard();
+  return true;
+}
+function tbAiResetBorrowedBoard(){
+  tbTools = []; tbInk = []; tbPoints = []; tbTexts = []; tbCodages = [];
+  tbBackground = 'blank'; tbBgImageIdx = null;
+  tbAiPlan = null; tbAiPlanIndex = 0; tbAiOverlay = [];
+  tbZoom = 1; tbViewCenter = null;
+  tbHistory = []; tbHistoryIndex = -1; tbPushHistory();
+  const bar = document.getElementById('tbAiPlaybackBar'); if(bar) bar.style.display = 'none';
+  tbRender();
+}
+async function tbAiReturnBoard(){
+  if(!tbAiBorrow) return;
+  tbAiAutoPlay = false;
+  while(tbAiBusy) await new Promise(r=>setTimeout(r, 50)); // termine proprement le geste en cours
+  const P = tbAiBorrow, wrap = document.getElementById('tbBoardWrap'), bar = document.getElementById('tbAiPlaybackBar');
+  P.wrapHome[0].insertBefore(wrap, P.wrapHome[1]);
+  P.barHome[0].insertBefore(bar, P.barHome[1]);
+  tbAiBorrow = null;
+  tbTools = tbTools.filter(t=>!t.aiDriven); tbAiOverlay = [];
+  tbAiPlan = P.plan; tbAiPlanIndex = P.planIdx; tbAiAllowed = P.allowed;
+  tbZoom = P.zoom; tbViewCenter = P.center;
+  tbRestoreSnapshot(P.snap);
+  tbHistory = P.hist; tbHistoryIndex = P.histIdx;
+  if(typeof tbUpdateHistoryButtons==='function') tbUpdateHistoryButtons();
+  if(typeof tbUpdateZoomLabel==='function') tbUpdateZoomLabel();
+  tbAiPlaybackShow();
+  bar.style.display = tbAiPlan ? 'flex' : 'none';
+  tbAiPlaybackUpdateUI();
+}
+
+/* Bloc "exercice corrigé" : la figure finale (vectorielle, à l'échelle) + un bouton qui rejoue
+   la construction dans une fenêtre, par-dessus l'exercice. */
 function tbAiFigureBBox(){
   const xs = [], ys = [];
   const add = (x,y)=>{ xs.push(x); ys.push(y); };
@@ -1495,18 +1540,19 @@ function tbAiFigureBBox(){
   if(!xs.length) return null;
   return {x0:Math.max(0,Math.min(...xs)-12), y0:Math.max(0,Math.min(...ys)-12), x1:Math.min(900,Math.max(...xs)+12), y1:Math.min(560,Math.max(...ys)+12)};
 }
-async function tbAiAddToCorrection(){
-  if(tbAiBusy) return;
-  if(tbAiPlan && tbAiPlanIndex<tbAiPlan.actions.length){
-    // Figure complète : on termine d'abord les étapes restantes, en accéléré.
-    const speed = tbAiSpeed;
-    tbAiSetSpeed('0.02');
-    while(tbAiPlan && tbAiPlanIndex<tbAiPlan.actions.length) await tbAiPlaybackNext();
-    tbAiSpeed = speed;
-  }
-  const bb = tbAiFigureBBox();
-  const layer = document.getElementById('tbInkLayer');
-  if(!bb || !layer){ await niceAlert('Le tableau est vide : rien à ajouter.'); return; }
+async function tbAiFinishPlan(){
+  if(!tbAiPlan || tbAiPlanIndex>=tbAiPlan.actions.length) return;
+  tbAiAutoPlay = false;
+  while(tbAiBusy) await new Promise(r=>setTimeout(r, 50));
+  const speed = tbAiSpeed;
+  tbAiSetSpeed('0.02');
+  while(tbAiPlan && tbAiPlanIndex<tbAiPlan.actions.length) await tbAiPlaybackNext();
+  tbAiSpeed = speed;
+}
+function tbAiFigureBlockHtml(){
+  tbRender();
+  const bb = tbAiFigureBBox(), layer = document.getElementById('tbInkLayer');
+  if(!bb || !layer) return null;
   const g = layer.cloneNode(true);
   g.removeAttribute('id');
   g.querySelectorAll('[data-role]').forEach(el=>el.removeAttribute('data-role'));
@@ -1517,19 +1563,92 @@ async function tbAiAddToCorrection(){
     const payload = escapeHtml(JSON.stringify({program:tbAiPlan.program, tools:tbAiPlan.tools})).replace(/"/g,'&quot;');
     replay = `<div style="margin-top:4px;"><button type="button" class="btn secondary" style="font-size:.8rem;padding:4px 12px;" data-tbprog="${payload}" onclick="event.stopPropagation(); if(window.tbAiReplayFromBlock) tbAiReplayFromBlock(this);"><span class="gicon">play_circle</span> Voir la construction pas à pas</button></div>`;
   }
-  const html = `<div class="tb-ai-figure" style="text-align:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="${bb.x0.toFixed(1)} ${bb.y0.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}" width="${w.toFixed(0)}" style="max-width:100%;height:auto;">${g.innerHTML}</svg>${replay}</div>`;
-  setToolContext('global');
-  addPendingBlock('tbfigure', html, null, null);
-  if(typeof showView==='function'){ showView('view-correction'); if(typeof setActiveTopnav==='function') setActiveTopnav('correction'); }
-  const prev = document.getElementById('correctionPreview');
-  if(prev) prev.scrollIntoView({behavior:'smooth', block:'center'});
+  return `<div class="tb-ai-figure" style="text-align:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="${bb.x0.toFixed(1)} ${bb.y0.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}" width="${w.toFixed(0)}" style="max-width:100%;height:auto;">${g.innerHTML}</svg>${replay}</div>`;
 }
+
+/* ---- Outil « Animation géométrique » de l'outil de correction (demandé : "une fois
+   l'exercice ouvert, avoir un outil en plus des autres : Animation géométrique"). ---- */
+let geoAnimData = null; // {enonce, program, tools} de la construction en cours dans l'outil
+function geoAnimSetTools(tools){
+  let saved = tools || null;
+  if(!saved){ try{ saved = JSON.parse(localStorage.getItem(TB_AI_TOOLS_KEY)||'null'); }catch(e){} }
+  document.querySelectorAll('#geoAnimToolChecks input[type=checkbox]').forEach(c=>{ c.checked = Array.isArray(saved) ? saved.includes(c.value) : true; });
+}
+function geoAnimReadTools(){
+  const tools = [...document.querySelectorAll('#geoAnimToolChecks input[type=checkbox]')].filter(c=>c.checked).map(c=>c.value);
+  try{ localStorage.setItem(TB_AI_TOOLS_KEY, JSON.stringify(tools)); }catch(e){}
+  return tools;
+}
+function openGeoAnimTool(data){
+  const ov = document.getElementById('geoAnimOverlay');
+  if(!ov || tbAiBorrow) return;
+  if(!tbAiBorrowBoard(document.getElementById('geoAnimStage'), 'tool')) return;
+  ov.style.display = 'flex';
+  geoAnimData = null;
+  document.getElementById('geoAnimEnonce').value = (data && data.enonce) || '';
+  document.getElementById('geoAnimStatus').textContent = '';
+  geoAnimSetTools(data && data.tools);
+  document.getElementById('geoAnimInsertBtn').disabled = true;
+  if(data && Array.isArray(data.program)){
+    try{ geoAnimLoad(data.enonce||'', data.program, data.tools); }
+    catch(e){ document.getElementById('geoAnimStatus').textContent = 'Construction illisible : '+e.message; }
+  }
+}
+/* Modifier un bloc déjà inséré : rouvre l'outil avec son énoncé et sa construction. */
+function reopenGeoAnimBlock(data){ openGeoAnimTool(data); }
+function geoAnimLoad(enonce, program, tools){
+  tbAiResetBorrowedBoard();
+  tbAiLoadProgram(program, tools);
+  geoAnimData = {enonce, program, tools: tbAiPlan.tools};
+  document.getElementById('geoAnimInsertBtn').disabled = false;
+}
+async function geoAnimGenerate(){
+  const enonce = document.getElementById('geoAnimEnonce').value.trim();
+  const status = document.getElementById('geoAnimStatus'), btn = document.getElementById('geoAnimGenerateBtn');
+  if(!enonce){ status.textContent = "Écrivez d'abord un énoncé."; return; }
+  const tools = geoAnimReadTools();
+  if(!tools.length){ status.textContent = 'Cochez au moins un outil.'; return; }
+  if(tbAiBusy){ tbAiAutoPlay = false; status.textContent = 'Patientez la fin du geste en cours…'; return; }
+  status.textContent = 'Préparation de la construction par IA…';
+  btn.disabled = true;
+  try{
+    const raw = await callClaude(tbAiBuildPrompt(enonce, tools), 3000, {feature:'tableau-ia'});
+    const program = tbAiParseSteps(raw);
+    if(!program){ status.textContent = "L'IA n'a pas renvoyé un programme exploitable -- réessayez."; return; }
+    try{ geoAnimLoad(enonce, program, tools); }
+    catch(e){
+      if(e instanceof TbAiError){ status.textContent = 'Construction impossible : '+e.message+' -- réessayez ou reformulez l\'énoncé.'; console.warn('tableau-ia : programme rejeté', program); return; }
+      throw e;
+    }
+    status.textContent = 'Construction prête : « Lecture » pour la voir en entier, puis « Insérer dans l\'exercice ».';
+  }catch(err){
+    status.textContent = 'Erreur : '+err.message;
+  }finally{
+    btn.disabled = false;
+  }
+}
+async function geoAnimInsert(){
+  if(!geoAnimData) return;
+  const btn = document.getElementById('geoAnimInsertBtn');
+  btn.disabled = true;
+  await tbAiFinishPlan();
+  const html = tbAiFigureBlockHtml();
+  const data = JSON.parse(JSON.stringify(geoAnimData));
+  await tbAiReturnBoard();
+  document.getElementById('geoAnimOverlay').style.display = 'none';
+  geoAnimData = null;
+  if(!html){ await niceAlert('La construction est vide : rien à insérer.'); return; }
+  addPendingBlock('geoanim', html, data, 'reopenGeoAnimBlock');
+}
+async function geoAnimCancel(){
+  if(typeof cancelBlockEdit==='function') cancelBlockEdit();
+  geoAnimData = null;
+  await tbAiReturnBoard();
+  document.getElementById('geoAnimOverlay').style.display = 'none';
+}
+
 /* "Voir la construction pas à pas" (bloc d'un exercice corrigé) : l'animation se joue dans une
-   fenêtre PAR-DESSUS l'exercice (demandé : "est-il possible de voir l'animation dans les
-   exercices corrigés ?"), sans quitter la page. Le tableau (et sa barre de lecture) y est
-   simplement déplacé le temps de la lecture ; son contenu, son historique et son zoom sont
-   sauvegardés puis rétablis à la fermeture -- le tableau personnel n'est jamais touché. */
-let tbAiPlayer = null;
+   fenêtre PAR-DESSUS l'exercice (cahier élève, outil de correction), sans quitter la page. */
 function tbAiReplayFromBlock(btn){
   let d;
   try{ d = JSON.parse(btn.getAttribute('data-tbprog')); }catch(e){ return; }
@@ -1537,47 +1656,22 @@ function tbAiReplayFromBlock(btn){
   tbAiOpenPlayer(d);
 }
 function tbAiOpenPlayer(d){
-  if(tbAiPlayer || tbAiBusy) return;
-  if(typeof initTableauView==='function') initTableauView();
-  const ov = document.getElementById('tbAiPlayerOverlay'), body = document.getElementById('tbAiPlayerBody');
-  const wrap = document.getElementById('tbBoardWrap'), bar = document.getElementById('tbAiPlaybackBar');
-  if(!ov || !body || !wrap || !bar) return;
-  tbAiPlayer = {
-    snap: tbSnapshot(), hist: tbHistory.slice(), histIdx: tbHistoryIndex,
-    zoom: tbZoom, center: tbViewCenter, plan: tbAiPlan, planIdx: tbAiPlanIndex, allowed: tbAiAllowed,
-    wrapHome: [wrap.parentNode, wrap.nextSibling], barHome: [bar.parentNode, bar.nextSibling], barDisplay: bar.style.display,
-  };
-  body.appendChild(bar); body.appendChild(wrap);
+  const ov = document.getElementById('tbAiPlayerOverlay');
+  if(!ov || !tbAiBorrowBoard(document.getElementById('tbAiPlayerBody'), 'player')) return;
   ov.style.display = 'flex';
-  tbTools = []; tbInk = []; tbPoints = []; tbTexts = []; tbCodages = [];
-  tbBackground = 'blank'; tbBgImageIdx = null;
-  tbHistory = []; tbHistoryIndex = -1; tbPushHistory();
   try{ tbAiLoadProgram(d.program, d.tools); }
-  catch(e){ tbAiClosePlayer(); niceAlert('Construction illisible : '+e.message); return; }
-  ['tbAiAddCorBtn'].forEach(id=>{ const el = document.getElementById(id); if(el) el.style.display = 'none'; });
+  catch(e){ tbAiClosePlayer(); niceAlert('Construction illisible : '+e.message); }
 }
 async function tbAiClosePlayer(){
-  if(!tbAiPlayer) return;
-  tbAiAutoPlay = false;
-  while(tbAiBusy) await new Promise(r=>setTimeout(r, 50)); // termine proprement le geste en cours
-  const P = tbAiPlayer, wrap = document.getElementById('tbBoardWrap'), bar = document.getElementById('tbAiPlaybackBar');
-  P.wrapHome[0].insertBefore(wrap, P.wrapHome[1]);
-  P.barHome[0].insertBefore(bar, P.barHome[1]);
-  bar.style.display = P.barDisplay;
-  tbAiPlayer = null;
-  tbTools = tbTools.filter(t=>!t.aiDriven); tbAiOverlay = [];
-  tbAiPlan = P.plan; tbAiPlanIndex = P.planIdx; tbAiAllowed = P.allowed;
-  tbZoom = P.zoom; tbViewCenter = P.center;
-  tbRestoreSnapshot(P.snap);
-  tbHistory = P.hist; tbHistoryIndex = P.histIdx;
-  if(typeof tbUpdateHistoryButtons==='function') tbUpdateHistoryButtons();
-  if(typeof tbUpdateZoomLabel==='function') tbUpdateZoomLabel();
-  tbAiPlaybackShow(); if(!tbAiPlan) bar.style.display = 'none';
-  tbAiPlaybackUpdateUI();
+  if(!tbAiBorrow || tbAiBorrow.mode!=='player') return;
+  await tbAiReturnBoard();
   document.getElementById('tbAiPlayerOverlay').style.display = 'none';
 }
 /* Croix de la barre de lecture : ferme la fenêtre de lecture, ou termine la lecture sur le tableau. */
-function tbAiPlaybackClose(){ if(tbAiPlayer) tbAiClosePlayer(); else tbAiPlaybackHide(); }
+function tbAiPlaybackClose(){
+  if(tbAiBorrow){ if(tbAiBorrow.mode==='player') tbAiClosePlayer(); }
+  else tbAiPlaybackHide();
+}
 /* Lecture continue : enchaîne toutes les étapes (un clic de plus met en pause après l'étape). */
 let tbAiAutoPlay = false;
 function tbAiUpdatePlayAllBtn(){

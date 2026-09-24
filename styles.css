@@ -549,6 +549,10 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
   align-items:center; justify-content:center; transition:background .15s, border-color .15s;
   color:var(--ink-soft);
 }
+/* Animation géométrique (construction IA) : réservée à l'administrateur le temps de la mise au
+   point -- la classe tb-ai-admin est posée sur <body> par refreshAuthUI. */
+.tool-icon-btn.geo-anim-btn{display:none;}
+body.tb-ai-admin .tool-icon-btn.geo-anim-btn{display:inline-flex;}
 .tool-icon-btn:hover{background:rgba(28,43,57,.05); border-color:rgba(28,43,57,.25); color:var(--ink);}
 
 .placeholder-box{
