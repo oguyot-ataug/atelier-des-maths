@@ -59,12 +59,16 @@ document.getElementById('view-admin').innerHTML = `
         </button>
         <div class="nb-accordion-body" id="accImportMasse">
           <p class="hint" id="adminBulkScopeNote" style="display:none;margin:0 0 8px;padding:6px 10px;background:rgba(31,122,77,.08);border-radius:6px;"></p>
-          <p class="hint" style="margin:0 0 8px;">Collez une liste (une ligne par élève, 5 colonnes séparées par une tabulation : Nom Prénom, identifiant, mot de passe, UAI, classe -- un copier-coller direct depuis un tableur fonctionne). <b>Laissez la colonne "mot de passe" vide</b> pour recevoir à la place un lien d'invitation personnel : l'élève choisit alors lui-même son mot de passe en cliquant dessus. La classe est créée automatiquement si elle n'existe pas encore (niveau déduit du préfixe "6e"/"5e" du nom).</p>
-          <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="DUPONT Jean	jdupont		0123456A	6eA
-MARTIN Marie	mmartin		0123456A	6eA"></textarea>
+          <p class="hint" style="margin:0 0 8px;">Collez une liste, une ligne par élève, colonnes dans cet ordre (copier-coller direct depuis un tableur, ou séparateur « ; ») :<br>
+            <b>NOM</b> · <b>Prénom</b> · <b>Classe</b> · <b>identifiant</b> <i>(facultatif)</i> · <b>mot de passe</b> <i>(facultatif)</i><span id="adminBulkUaiCol"> · <b>UAI</b></span><br>
+            Identifiant vide : il est fabriqué automatiquement sur le modèle <span class="hint-mono">p.nom</span> (ex. <span class="hint-mono">e.viard</span>). Mot de passe vide : l'élève reçoit un lien d'invitation personnel et choisit lui-même son mot de passe. La classe est créée si elle n'existe pas encore (niveau déduit du nom : « 5… » = 5e, sinon 6e). Une ligne d'en-tête « NOM ; Prénom ; … » est ignorée.<br>
+            <b>Homonymes</b> : un identifiant n'existe qu'une fois sur tout le site. S'il est déjà pris, un chiffre est ajouté (<span class="hint-mono">e.viard2</span>, <span class="hint-mono">e.viard3</span>…). Si un élève de même nom et prénom existe déjà dans l'établissement, il est considéré comme déjà inscrit (simplement rattaché à la classe), sauf si vous indiquez que c'est un autre élève. Tout est vérifié et affiché <b>avant</b> la création.</p>
+          <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="DUPONT	Jean	6A
+MARTIN	Marie	6A	m.martin	soleil24"></textarea>
           <div class="tool-row" style="margin-top:8px;">
-            <button class="btn" onclick="adminBulkCreateStudents()">Créer tous les comptes élèves</button>
+            <button class="btn" onclick="adminBulkPreview()"><span class="gicon">fact_check</span> Vérifier la liste</button>
           </div>
+          <div id="adminBulkPreview" style="margin-top:8px;"></div>
           <div class="hint" id="adminBulkStatus" style="margin:0;"></div>
         </div>
       </div>
@@ -277,7 +281,9 @@ function adminApplyScopeUI(){
         : "Pour chaque collègue, choisissez qui paie son IA (et celle de ses élèves) : <b>la clé de l'établissement</b> (ci-dessus) ou <b>sa clé personnelle</b>. Le choix s'applique immédiatement ; chacun active ensuite lui-même l'IA dans sa page. Une clé personnelle enregistrée sert aussi de <b>clé de secours</b> : elle prend le relais automatiquement si la clé prévue n'est plus utilisable (budget atteint, clé absente ou sans crédit). La clé du site n'est pas ouverte à votre établissement (décision de l'administrateur général).")
     : "Pour chaque professeur, vous choisissez qui paie son IA (et celle de ses élèves) : <b>la clé du site</b> (la vôtre), <b>la clé de son établissement</b> (enregistrée par le référent) ou <b>sa clé personnelle</b>. Le choix s'applique immédiatement ; chacun active ensuite lui-même l'IA dans sa page. Une clé personnelle enregistrée sert aussi de <b>clé de secours</b> : elle prend le relais automatiquement si la clé prévue n'est plus utilisable (budget atteint, clé absente ou sans crédit).";
   const note = document.getElementById('adminBulkScopeNote');
-  if(note){ note.style.display = scoped ? 'block' : 'none'; note.innerHTML = scoped ? `Les comptes et les classes sont automatiquement créés dans <b>votre établissement (UAI ${escapeHtml(scope)})</b> : la colonne UAI peut rester vide.` : ''; }
+  if(note){ note.style.display = scoped ? 'block' : 'none'; note.innerHTML = scoped ? `Les comptes et les classes sont automatiquement créés dans <b>votre établissement (UAI ${escapeHtml(scope)})</b> : pas de colonne UAI.` : ''; }
+  const uaiCol = document.getElementById('adminBulkUaiCol');
+  if(uaiCol) uaiCol.style.display = scoped ? 'none' : '';
 }
 
 /* Ligne « IA » de l'en-tête du référent (signalé : "l'administrateur général vous autorise un
@@ -1336,83 +1342,236 @@ function splitNomPrenom(full){
   if(i===0 || i>=tokens.length) return { nom: full, prenom: '' };
   return { nom: tokens.slice(0,i).join(' '), prenom: tokens.slice(i).join(' ') };
 }
-async function adminBulkCreateStudents(){
-  const raw = document.getElementById('adminBulkStudents').value;
-  const status = document.getElementById('adminBulkStatus');
-  const lines = raw.split('\n').map(l=>l.trim()).filter(Boolean);
-  if(!lines.length){ status.textContent = 'Collez au moins une ligne (Nom Prénom, identifiant, [mot de passe facultatif], UAI, classe).'; return; }
-  const { data:{ session } } = await sb.auth.getSession();
-  let ok=0, fail=0; const errors=[]; const invites=[]; // {nom, url} -- pour le tableau récapitulatif
-  const classCache = {}; // clé "uai|nom" -- évite de rechercher/créer la même classe à chaque ligne, distingue 2 classes de même nom dans des établissements différents
-  const etabCache = new Set(); // UAI déjà vérifiés/créés dans etablissements cette session
-  for(let i=0;i<lines.length;i++){
-    status.textContent = `Création en cours… (${i+1}/${lines.length})`;
-    const parts = lines[i].split('\t').map(s=>s.trim());
-    if(parts.length<2){ fail++; errors.push(`Ligne ${i+1} : format invalide (au moins Nom Prénom et identifiant attendus, séparés par des tabulations)`); continue; }
-    const [nomPrenomFull, identifiant, password, uaiCol, classeNom] = parts;
-    const uai = adminScopeUai() || uaiCol; // référent : toujours son établissement
-    const { nom, prenom } = splitNomPrenom(nomPrenomFull);
-    const email = toAuthEmail(identifiant);
-    try{
-      const res = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
-        body: JSON.stringify({ email, password: password||undefined, role:'eleve', nom, prenom: prenom || undefined, uai: uai || undefined }),
-      });
-      const data = await res.json();
-      if(data.error){ fail++; errors.push(`${nomPrenomFull} (${identifiant}) : ${data.error}`); continue; }
-      ok++;
-      if(data.inviteToken) invites.push({ nom: nomPrenomFull, url: location.origin+'/invitation.html?invite='+data.inviteToken });
-      // La fonction serveur ne renvoie pas d'id exploitable directement (même constat que
-      // pour la création à l'unité, adminCreateAccount) -- retrouve le profil fraîchement
-      // créé par son e-mail.
-      const { data: prof } = await sb.from('profiles').select('id').eq('email', email).single();
-      if(!prof) continue; // ne devrait pas arriver (le compte vient d'être créé avec succès), sécurité
-      // Prénom et UAI : déjà enregistrés par la fonction serveur.
-      // Une classe doit être rattachée à un établissement (signalé : "les classes doivent
-      // être rattachées à un UAI. Dans un UAI, on trouve les profs et les classes puis les
-      // élèves"). Sans UAI fourni sur cette ligne, on ne peut pas créer/rattacher la classe
-      // correctement -- on l'ignore plutôt que de créer une classe "orpheline".
-      if(classeNom && uai){
-        // L'établissement doit exister AVANT la classe (classes.uai référence
-        // etablissements.uai) -- créé automatiquement s'il est absent.
-        if(!etabCache.has(uai) && !adminScopeUai()){
-          const { data: existingEtab } = await sb.from('etablissements').select('uai').eq('uai', uai).maybeSingle();
-          if(!existingEtab){
-            const { error: etabErr } = await sb.from('etablissements').insert({ uai, nom: 'Établissement '+uai });
-            if(etabErr){ errors.push(`Établissement "${uai}" : ${etabErr.message}`); }
-          }
-          etabCache.add(uai);
-        }
-        const cacheKey = uai+'|'+classeNom;
-        if(!(cacheKey in classCache)){
-          const { data: existing } = await sb.from('classes').select('id').eq('nom', classeNom).eq('uai', uai).maybeSingle();
-          if(existing) classCache[cacheKey] = existing.id;
-          else {
-            const niveau = /^5/.test(classeNom) ? '5e' : '6e';
-            const { data: created, error: createErr } = await sb.from('classes').insert({ nom: classeNom, niveau, uai }).select('id').single();
-            if(createErr){ errors.push(`Classe "${classeNom}" (${uai}) : ${createErr.message}`); classCache[cacheKey] = null; }
-            else classCache[cacheKey] = created.id;
-          }
-        }
-        if(classCache[cacheKey]) await sb.from('class_students').insert({ student_id: prof.id, class_id: classCache[cacheKey] });
-      } else if(classeNom && !uai){
-        errors.push(`${nomPrenomFull} : classe "${classeNom}" ignorée (UAI manquant sur cette ligne -- une classe doit être rattachée à un établissement)`);
-      }
-    }catch(err){ fail++; errors.push(`${nomPrenomFull} (${identifiant}) : erreur réseau`); }
+/* Import en masse d'élèves -- demandé : "pour un référent, il faudrait importer : NOM, Prénom,
+   Classe, identifiant, (mot de passe optionnel). Plus besoin de l'UAI qui est par défaut.
+   Attention, comment se gèrent les identifiants s'il y a des homonymes ?".
+   Deux temps : adminBulkPreview() analyse la liste et affiche, AVANT toute création, l'identifiant
+   retenu pour chaque élève ; adminBulkCreateStudents() crée ensuite les comptes.
+   Homonymes : l'identifiant (e-mail de connexion) est unique sur tout le site. Identifiant vide =>
+   fabriqué sur le modèle « p.nom » (convention des comptes existants) ; s'il est déjà pris (en
+   base, sur tout le site, via identifiants_pris, ou plus haut dans la liste), un chiffre est
+   ajouté : e.viard2, e.viard3... Un élève de même nom et prénom déjà inscrit dans l'établissement
+   est considéré comme le même élève (ré-importation : simplement rattaché à la classe), sauf si
+   l'utilisateur coche « c'est un autre élève ». */
+let adminBulkPlan = null, adminBulkResults = [];
+function adminNormName(x){ return String(x||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
+function adminMakeIdent(nom, prenom){
+  const clean = t => String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase()
+    .replace(/['’\s]+/g,'-').replace(/[^a-z0-9-]/g,'').replace(/-+/g,'-').replace(/^-|-$/g,'');
+  const p = clean(prenom).charAt(0), n = clean(nom);
+  return (p ? p+'.' : '') + (n || 'eleve');
+}
+function adminBulkParse(raw, scopeUai){
+  const rows = [];
+  raw.split('\n').forEach((line, idx) => {
+    if(!line.trim()) return;
+    const sep = line.includes('\t') ? '\t' : line.includes(';') ? ';' : ',';
+    const c = line.split(sep).map(x => x.trim().replace(/^"(.*)"$/, '$1').trim());
+    if(!rows.length && /^noms?( de famille)?$/.test(adminNormName(c[0]))) return; // ligne d'en-tête
+    let [nom, prenom, classe, ident, pwd, uai] = c;
+    nom = nom || ''; prenom = prenom || '';
+    if(nom && !prenom){ const sp = splitNomPrenom(nom); nom = sp.nom; prenom = sp.prenom; } // "NOM Prénom" dans une seule colonne
+    rows.push({ line: idx+1, nom, prenom, classe: classe || '', identIn: (ident || '').toLowerCase(), pwd: pwd || '',
+      uai: scopeUai || (uai || '').toUpperCase() });
+  });
+  return rows;
+}
+async function adminBulkPreview(){
+  const box = document.getElementById('adminBulkPreview');
+  document.getElementById('adminBulkStatus').innerHTML = '';
+  const scope = adminScopeUai();
+  const rows = adminBulkParse(document.getElementById('adminBulkStudents').value, scope);
+  if(!rows.length){ adminBulkPlan = null; box.innerHTML = '<span class="hint">Collez au moins une ligne : NOM, Prénom, Classe (identifiant et mot de passe facultatifs).</span>'; return; }
+  box.innerHTML = '<span class="hint">Vérification des identifiants…</span>';
+  rows.forEach(r => { r.base = r.identIn || adminMakeIdent(r.nom, r.prenom); r.forceNew = false; });
+  // Élèves déjà inscrits dans le(s) établissement(s) concerné(s), pour repérer les ré-importations.
+  const uais = [...new Set(rows.map(r => r.uai).filter(Boolean))];
+  let etabStudents = [];
+  if(uais.length){
+    const { data } = await sb.from('profiles').select('id,nom,prenom,email,uai').eq('role','eleve').in('uai', uais);
+    etabStudents = data || [];
   }
-  let html = `✓ ${ok} compte(s) créé(s)` + (errors.length?`, <span class=gicon>warning</span> ${fail?fail+' échec(s)':'avertissement(s)'} :<br>`+errors.map(escapeHtml).join('<br>') : '.');
-  if(invites.length){
-    html += `<div style="margin-top:10px;"><b>Liens d'invitation à distribuer aux élèves</b> (chacun choisit son propre mot de passe en cliquant dessus) :</div>
-      <table class="sup-table" style="margin-top:6px;">
-        <thead><tr><th>Nom</th><th>Lien</th></tr></thead>
-        <tbody>${invites.map(i=>`<tr><td>${escapeHtml(i.nom)}</td><td><a href="${i.url}" target="_blank">${i.url}</a></td></tr>`).join('')}</tbody>
-      </table>`;
+  const emails = new Set(etabStudents.map(p => String(p.email||'').toLowerCase()).filter(Boolean));
+  rows.forEach(r => { for(let k=1; k<=30; k++) emails.add(toAuthEmail(k===1 ? r.base : r.base+k)); });
+  const { data: taken, error } = await sb.rpc('identifiants_pris', { p_emails: [...emails] });
+  if(error){ adminBulkPlan = null; box.innerHTML = `<span style="color:#B3261E;">Vérification impossible : ${escapeHtml(error.message)}</span>`; return; }
+  const byName = new Map();
+  etabStudents.forEach(p => {
+    const k = p.uai+'|'+adminNormName(p.nom)+'|'+adminNormName(p.prenom);
+    if(!byName.has(k)) byName.set(k, []);
+    byName.get(k).push(p);
+  });
+  adminBulkPlan = { rows, scope, takenMap: new Map((taken||[]).map(t => [t.email, t])), byName };
+  adminBulkAssign();
+}
+// Attribue les identifiants (recalculé à chaque case « autre élève » cochée ou décochée).
+function adminBulkAssign(){
+  const { rows, scope, takenMap, byName } = adminBulkPlan;
+  const used = new Set(), claimed = new Set(), seenNames = new Set();
+  const freeIdent = base => { for(let k=1; k<=30; k++){ const id = k===1 ? base : base+k; if(!takenMap.has(toAuthEmail(id)) && !used.has(id)) return id; } return null; };
+  rows.forEach(r => {
+    r.errors = []; r.status = ''; r.ident = null; r.existing = null; r.adjusted = null; r.dupInList = false;
+    if(!r.nom) r.errors.push('NOM manquant');
+    if(!r.prenom) r.errors.push('prénom manquant');
+    if(r.identIn && !/^[a-z0-9._-]+$/.test(r.identIn)) r.errors.push('identifiant invalide (lettres sans accent, chiffres, point, tiret)');
+    if(r.pwd && r.pwd.length < 6) r.errors.push('mot de passe trop court (6 caractères minimum)');
+    if(!scope && r.classe && !r.uai) r.errors.push('UAI manquant (nécessaire pour la classe)');
+    if(r.errors.length){ r.status = 'error'; return; }
+    const nameKey = adminNormName(r.nom)+'|'+adminNormName(r.prenom);
+    r.dupInList = seenNames.has(nameKey); seenNames.add(nameKey);
+    if(!r.forceNew && r.uai){
+      const match = (byName.get(r.uai+'|'+nameKey) || []).find(p => !claimed.has(p.id));
+      if(match){
+        claimed.add(match.id);
+        const email = String(match.email||'').toLowerCase();
+        const t = takenMap.get(email) || {};
+        r.existing = { id: match.id, ident: email.replace(/@mathcollege\.local$/, ''), classes: t.classes || '' };
+        r.ident = r.existing.ident; used.add(r.ident);
+        r.status = 'existing';
+        return;
+      }
+    }
+    r.ident = freeIdent(r.base);
+    if(!r.ident){ r.status = 'error'; r.errors.push('aucun identifiant libre'); return; }
+    used.add(r.ident);
+    r.status = 'new';
+    if(r.ident !== r.base){
+      const t = takenMap.get(toAuthEmail(r.base));
+      r.adjusted = t ? (t.meme_etab ? `${t.nom||''} ${t.prenom||''}`.trim() + (t.classes ? ' ('+t.classes+')' : '') : 'un compte d\'un autre établissement')
+                     : 'une ligne précédente de cette liste';
+    }
+  });
+  adminBulkRenderPreview();
+}
+function adminBulkToggleNew(i, checked){ adminBulkPlan.rows[i].forceNew = checked; adminBulkAssign(); }
+function adminBulkRenderPreview(){
+  const box = document.getElementById('adminBulkPreview');
+  const rows = adminBulkPlan.rows;
+  const nNew = rows.filter(r => r.status==='new').length, nErr = rows.filter(r => r.status==='error').length;
+  const nAttach = rows.filter(r => r.status==='existing' && r.classe && !adminBulkInClass(r)).length;
+  const nNothing = rows.filter(r => r.status==='existing').length - nAttach;
+  const nAdj = rows.filter(r => r.adjusted).length;
+  const statusCell = (r, i) => {
+    if(r.status==='error') return `<span style="color:#B3261E;font-weight:600;"><span class="gicon">error</span> ${escapeHtml(r.errors.join(' ; '))}</span> <span class="hint">(ligne ignorée)</span>`;
+    if(r.status==='existing'){
+      const inClass = adminBulkInClass(r);
+      return `<span style="color:#0D5BA3;font-weight:600;"><span class="gicon">how_to_reg</span> Déjà inscrit</span> <span class="hint">(${r.existing.classes ? 'classe '+escapeHtml(r.existing.classes) : 'sans classe'})${r.classe ? (inClass ? ' : déjà dans cette classe, rien à faire' : ' : sera '+(r.existing.classes ? 'aussi ' : '')+'rattaché à '+escapeHtml(r.classe)+(r.existing.classes ? ' (sans être retiré de '+escapeHtml(r.existing.classes)+')' : '')) : ''}</span>
+        <label class="hint" style="display:flex;align-items:center;gap:6px;margin-top:4px;"><input type="checkbox" onchange="adminBulkToggleNew(${i}, this.checked)"> C'est un autre élève (homonyme) : créer un nouveau compte</label>`;
+    }
+    let h = `<span style="color:#1F7A4D;font-weight:600;"><span class="gicon">person_add</span> Nouveau compte</span>`;
+    if(r.adjusted) h += `<br><span class="hint"><span class="gicon">info</span> <span class="hint-mono">${escapeHtml(r.base)}</span> déjà pris par ${escapeHtml(r.adjusted)} : identifiant <b class="hint-mono">${escapeHtml(r.ident)}</b></span>`;
+    if(r.dupInList) h += `<br><span class="hint">Homonyme d'un élève plus haut dans la liste.</span>`;
+    if(r.forceNew) h += `<br><label class="hint" style="display:flex;align-items:center;gap:6px;"><input type="checkbox" checked onchange="adminBulkToggleNew(${i}, this.checked)"> Autre élève (homonyme)</label>`;
+    return h;
+  };
+  box.innerHTML = `
+    <div style="overflow-x:auto;"><table class="sup-table">
+      <thead><tr><th>Ligne</th><th>NOM</th><th>Prénom</th><th>Classe</th><th>Identifiant</th><th>Mot de passe</th><th>Résultat prévu</th></tr></thead>
+      <tbody>${rows.map((r, i) => `<tr${r.status==='error' ? ' style="background:rgba(179,38,30,.05);"' : ''}>
+        <td class="hint">${r.line}</td><td style="font-weight:600;">${escapeHtml(r.nom)}</td><td>${escapeHtml(r.prenom)}</td>
+        <td>${escapeHtml(r.classe) || '<span class="hint">—</span>'}${!adminBulkPlan.scope && r.uai ? ' <span class="hint">'+escapeHtml(r.uai)+'</span>' : ''}</td>
+        <td class="hint-mono">${r.ident ? escapeHtml(r.ident) : '—'}</td>
+        <td>${r.status==='new' ? (r.pwd ? '<span class="hint-mono">'+escapeHtml(r.pwd)+'</span>' : '<span class="hint">lien d\'invitation</span>') : '<span class="hint">—</span>'}</td>
+        <td>${statusCell(r, i)}</td></tr>`).join('')}</tbody>
+    </table></div>
+    <p style="margin:10px 0 6px;"><b>${nNew}</b> compte(s) à créer${nAdj ? ` (dont ${nAdj} avec un identifiant ajusté pour cause d'homonymie)` : ''} · <b>${nAttach}</b> élève(s) déjà inscrit(s) à rattacher à une classe${nNothing ? ` · ${nNothing} déjà en place` : ''}${nErr ? ` · <span style="color:#B3261E;"><b>${nErr}</b> ligne(s) en erreur, ignorée(s)</span>` : ''}.</p>
+    <div class="tool-row" style="margin:0;">
+      <button class="btn" onclick="adminBulkCreateStudents()" ${nNew + nAttach ? '' : 'disabled'}><span class="gicon">group_add</span> Créer ${nNew} compte(s)${nAttach ? ' et rattacher '+nAttach+' élève(s)' : ''}</button>
+      <button class="btn secondary" onclick="adminBulkPlan=null;document.getElementById('adminBulkPreview').innerHTML=''">Annuler</button>
+    </div>`;
+}
+function adminBulkInClass(r){
+  return !!(r.existing && r.classe && r.existing.classes.split(', ').includes(r.classe));
+}
+async function adminBulkEnsureClass(uai, classeNom, cache, etabCache, errors){
+  const cacheKey = uai+'|'+classeNom;
+  if(cacheKey in cache) return cache[cacheKey];
+  // L'établissement doit exister AVANT la classe (classes.uai référence etablissements.uai) --
+  // créé automatiquement s'il est absent (administrateur uniquement ; le référent a le sien).
+  if(!etabCache.has(uai) && !adminScopeUai()){
+    const { data: existingEtab } = await sb.from('etablissements').select('uai').eq('uai', uai).maybeSingle();
+    if(!existingEtab){
+      const { error: etabErr } = await sb.from('etablissements').insert({ uai, nom: 'Établissement '+uai });
+      if(etabErr) errors.push(`Établissement "${uai}" : ${etabErr.message}`);
+    }
+    etabCache.add(uai);
+  }
+  const { data: existing } = await sb.from('classes').select('id').eq('nom', classeNom).eq('uai', uai).maybeSingle();
+  if(existing) return cache[cacheKey] = existing.id;
+  const niveau = /^5/.test(classeNom) ? '5e' : '6e';
+  const { data: created, error: createErr } = await sb.from('classes').insert({ nom: classeNom, niveau, uai }).select('id').single();
+  if(createErr){ errors.push(`Classe "${classeNom}" : ${createErr.message}`); return cache[cacheKey] = null; }
+  return cache[cacheKey] = created.id;
+}
+async function adminBulkCreateStudents(){
+  if(!adminBulkPlan) return;
+  const status = document.getElementById('adminBulkStatus');
+  const todo = adminBulkPlan.rows.filter(r => r.status==='new' || (r.status==='existing' && r.classe && !adminBulkInClass(r)));
+  const { data:{ session } } = await sb.auth.getSession();
+  const errors = [], classCache = {}, etabCache = new Set();
+  adminBulkResults = [];
+  let created = 0, attached = 0;
+  document.getElementById('adminBulkPreview').innerHTML = '';
+  for(let i=0; i<todo.length; i++){
+    const r = todo[i];
+    status.textContent = `Création en cours… (${i+1}/${todo.length})`;
+    const res = { nom: r.nom, prenom: r.prenom, classe: r.classe, ident: r.ident, pwd: r.status==='new' ? r.pwd : '', url: '', result: '' };
+    try{
+      let studentId = r.existing ? r.existing.id : null;
+      if(r.status==='new'){
+        const email = toAuthEmail(r.ident);
+        const resp = await fetch(SUPABASE_URL+'/functions/v1/admin-create-user', {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
+          body: JSON.stringify({ email, password: r.pwd || undefined, role:'eleve', nom: r.nom, prenom: r.prenom, uai: r.uai || undefined }),
+        });
+        const data = await resp.json();
+        if(data.error){ errors.push(`${r.nom} ${r.prenom} (${r.ident}) : ${data.error}`); res.result = 'échec : '+data.error; adminBulkResults.push(res); continue; }
+        created++;
+        if(data.inviteToken) res.url = location.origin+'/invitation.html?invite='+data.inviteToken;
+        // La fonction serveur ne renvoie pas d'id exploitable : retrouve le profil par son e-mail.
+        const { data: prof } = await sb.from('profiles').select('id').eq('email', email).single();
+        studentId = prof && prof.id;
+        res.result = 'compte créé';
+      } else res.result = 'déjà inscrit';
+      if(studentId && r.classe && r.uai){
+        const classId = await adminBulkEnsureClass(r.uai, r.classe, classCache, etabCache, errors);
+        if(classId){
+          const { error: linkErr } = await sb.from('class_students').insert({ student_id: studentId, class_id: classId });
+          if(linkErr && !/duplicate|unique/i.test(linkErr.message)) errors.push(`${r.nom} ${r.prenom} : rattachement à ${r.classe} impossible (${linkErr.message})`);
+          else { res.result += ', rattaché à '+r.classe; if(r.status==='existing') attached++; }
+        }
+      }
+    }catch(err){ errors.push(`${r.nom} ${r.prenom} (${r.ident}) : erreur réseau`); res.result = 'échec : erreur réseau'; }
+    adminBulkResults.push(res);
+  }
+  let html = `✓ ${created} compte(s) créé(s)${attached ? `, ${attached} élève(s) déjà inscrit(s) rattaché(s) à leur classe` : ''}.`
+    + (errors.length ? `<br><span class="gicon">warning</span> ${errors.length} problème(s) :<br>`+errors.map(escapeHtml).join('<br>') : '');
+  if(adminBulkResults.length){
+    html += `<div style="margin-top:10px;"><b>Identifiants à distribuer aux élèves</b> (gardez cette liste : le mot de passe ou le lien d'invitation n'est plus affiché ensuite).</div>
+      <div class="tool-row" style="margin:6px 0;"><button class="btn secondary" onclick="adminBulkExportCsv()"><span class="gicon">download</span> Télécharger (tableur)</button></div>
+      <div style="overflow-x:auto;"><table class="sup-table">
+        <thead><tr><th>NOM</th><th>Prénom</th><th>Classe</th><th>Identifiant</th><th>Mot de passe / lien d'invitation</th><th>Résultat</th></tr></thead>
+        <tbody>${adminBulkResults.map(x => `<tr><td style="font-weight:600;">${escapeHtml(x.nom)}</td><td>${escapeHtml(x.prenom)}</td><td>${escapeHtml(x.classe)}</td>
+          <td class="hint-mono">${escapeHtml(x.ident||'')}</td>
+          <td>${x.pwd ? '<span class="hint-mono">'+escapeHtml(x.pwd)+'</span>' : x.url ? `<a href="${x.url}" target="_blank">${x.url}</a>` : '<span class="hint">—</span>'}</td>
+          <td class="hint">${escapeHtml(x.result)}</td></tr>`).join('')}</tbody>
+      </table></div>`;
   }
   status.innerHTML = html;
-  if(ok) document.getElementById('adminBulkStudents').value='';
+  if(created || attached) document.getElementById('adminBulkStudents').value = '';
+  adminBulkPlan = null;
   await adminRefreshDropdowns();
   await adminRefreshListings();
+}
+function adminBulkExportCsv(){
+  const q = v => '"'+String(v||'').replace(/"/g,'""')+'"';
+  const lines = [['NOM','Prénom','Classe','Identifiant','Mot de passe','Lien d\'invitation','Résultat'].map(q).join(';')]
+    .concat(adminBulkResults.map(x => [x.nom, x.prenom, x.classe, x.ident, x.pwd, x.url, x.result].map(q).join(';')));
+  const blob = new Blob(['﻿'+lines.join('\r\n')], { type:'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'identifiants-eleves.csv'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 async function adminAssignTeacher(){
   const teacher_id = document.getElementById('adminAssignTeacherSelect').value;
