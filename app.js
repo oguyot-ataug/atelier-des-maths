@@ -2541,6 +2541,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.670', items:[
+    "Confidentialité -- demandé : \"ajoute la phrase dans la page Confidentialité\". Nouvelle mention dans « Destinataires et sous-traitants » : en mode apprentissage, la reconnaissance vocale est assurée par le navigateur (Google pour Chrome et Edge, Apple pour Safari), qui peut traiter la voix de l'élève sur ses serveurs pendant la récitation ; L'Atelier des Maths n'enregistre ni ne conserve aucun son.",
+  ]},
   { version:'2026-08-19.669', items:[
     "MODE APPRENTISSAGE des définitions, règles et propriétés -- demandé : \"un mode apprentissage (nouvel icône). L'idée est de masquer la définition et de l'afficher progressivement à la dictée vocale si le mot est le bon. Si hésitation ou mot faux, ça cache à nouveau la définition\". Nouveau bouton micro sur chaque encadré du cours (à côté de « écouter » et de la loupe) : les mots sont remplacés par des caches de même longueur, l'élève récite à voix haute et chaque mot juste se dévoile. Un mot faux, un « euh » ou plus de 5 secondes sans mot juste : tout se recache et on recommence du début (l'encadré tremble, le message dit quel mot n'allait pas).",
     "Aides : barre de temps qui montre le délai avant « hésitation », compteur de mots trouvés et record, bouton « Indice » (dévoile le mot suivant), « Relire » (maintenir appuyé pour revoir l'encadré, puis on recommence), « Recommencer », « Quitter ». Les notations et formules ([AB], OM = r, fractions…) n'ont pas à être récitées mot pour mot : elles se dévoilent seules. Accents, pluriels, homophones (et/est, son/sont…), chiffres ou nombres en lettres, unités (cm = centimètres) sont tolérés. Vérifié sur les 200 encadrés des cours et méthodes.",
