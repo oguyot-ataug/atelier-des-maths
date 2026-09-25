@@ -1181,7 +1181,8 @@ async function exportCoursPDF(){
   filterCoursByParagraph(clone);
   blankOutSelectedBoxes(clone);
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
-  clone.querySelectorAll('.read-aloud-btn').forEach(el=>el.remove());
+  clone.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar').forEach(el=>el.remove());
+  clone.querySelectorAll('.lrn-active').forEach(el=>el.classList.remove('lrn-active')); // mode apprentissage : texte en clair
   clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
   // Réduction spécifique au PDF : .katex a font-size:1.18em globalement sur le site (voir
   // styles.css), ce qui fait ressortir les formules -- fréquentes dans les exemples --
@@ -2540,6 +2541,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.669', items:[
+    "MODE APPRENTISSAGE des définitions, règles et propriétés -- demandé : \"un mode apprentissage (nouvel icône). L'idée est de masquer la définition et de l'afficher progressivement à la dictée vocale si le mot est le bon. Si hésitation ou mot faux, ça cache à nouveau la définition\". Nouveau bouton micro sur chaque encadré du cours (à côté de « écouter » et de la loupe) : les mots sont remplacés par des caches de même longueur, l'élève récite à voix haute et chaque mot juste se dévoile. Un mot faux, un « euh » ou plus de 5 secondes sans mot juste : tout se recache et on recommence du début (l'encadré tremble, le message dit quel mot n'allait pas).",
+    "Aides : barre de temps qui montre le délai avant « hésitation », compteur de mots trouvés et record, bouton « Indice » (dévoile le mot suivant), « Relire » (maintenir appuyé pour revoir l'encadré, puis on recommence), « Recommencer », « Quitter ». Les notations et formules ([AB], OM = r, fractions…) n'ont pas à être récitées mot pour mot : elles se dévoilent seules. Accents, pluriels, homophones (et/est, son/sont…), chiffres ou nombres en lettres, unités (cm = centimètres) sont tolérés. Vérifié sur les 200 encadrés des cours et méthodes.",
+    "Fonctionne avec Chrome, Edge et Safari (ordinateur, tablette, téléphone), micro autorisé ; message clair sinon (Firefox, micro refusé ou absent).",
+  ]},
   { version:'2026-08-19.668', items:[
     "RÉFÉRENCEMENT GOOGLE -- demandé : \"comment bien référencer mon site pour qu'il apparaisse en tête sur Google\", puis \"lance la partie A\". Jusqu'ici Google ne voyait qu'une seule page (les chapitres sont des adresses en #/…, qu'il n'indexe pas séparément).",
     "Nouvelles pages indexables, générées à partir du vrai contenu des chapitres (définitions, propriétés, figures, méthode, exercices, histoire, formules) : une page par chapitre ayant un cours (30 : maths.latelieraugmente.fr/6e/distance-et-cercles/, /5e/symetrie-centrale/…), le sommaire de chaque niveau (/6e/, /5e/) et une page « Pour les professeurs » (/professeurs/) qui présente les outils. Chaque page renvoie vers le chapitre interactif et son quiz. Les 9 chapitres encore en construction apparaîtront automatiquement dès que leur cours existera.",
@@ -5686,6 +5692,7 @@ function injectCourseAddButtons(container){
   updateCourseAddButtonsState();
   injectReadAloudButtons(container);
   injectZoomButtons(container);
+  if(typeof injectLearnButtons==='function') injectLearnButtons(container); // apprentissage.js
 }
 /* Lecture à voix haute des définitions (accessibilité, même esprit que le sélecteur de
    police OpenDyslexic). Branché sur le même point d'entrée que les boutons "+ Cahier"
@@ -5783,7 +5790,8 @@ function openZoomBox(box){
   zoomedBox = box;
   zoomedBoxPlaceholder = document.createComment('zoom-placeholder');
   box.parentNode.insertBefore(zoomedBoxPlaceholder, box);
-  box.querySelectorAll('.zoom-btn, .read-aloud-btn').forEach(b=>{ b.dataset.zoomHidden='1'; b.style.display='none'; });
+  if(typeof lrnState!=='undefined' && lrnState && lrnState.box===box) lrnStop();
+  box.querySelectorAll('.zoom-btn, .read-aloud-btn, .learn-btn').forEach(b=>{ b.dataset.zoomHidden='1'; b.style.display='none'; });
   const contentEl = document.getElementById('zoomBoxContent');
   contentEl.innerHTML = '';
   contentEl.appendChild(box);
@@ -5988,7 +5996,7 @@ async function addSectionToCahier(headerEl){
   const wrapper = document.createElement('div');
   const headerClone = headerEl.cloneNode(true);
   headerClone.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
-  headerClone.querySelectorAll('.read-aloud-btn').forEach(b=>b.remove());
+  headerClone.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar').forEach(b=>b.remove());
   wrapper.appendChild(headerClone);
   let node = headerEl.nextElementSibling;
   while(node){
@@ -6000,7 +6008,8 @@ async function addSectionToCahier(headerEl){
     node = node.nextElementSibling;
   }
   wrapper.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
-  wrapper.querySelectorAll('.read-aloud-btn').forEach(b=>b.remove());
+  wrapper.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar').forEach(b=>b.remove());
+  wrapper.querySelectorAll('.lrn-active').forEach(el=>el.classList.remove('lrn-active'));
   wrapper.querySelectorAll('.figure-toolbar').forEach(b=>b.remove());
   wrapper.querySelectorAll('.interaction-hint').forEach(b=>b.remove());
   await expandStepDemosInClone(wrapper);
