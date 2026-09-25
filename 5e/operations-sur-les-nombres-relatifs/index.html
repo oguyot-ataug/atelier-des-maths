@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opérations sur les nombres relatifs – Cours de maths 5e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 5e : Opérations sur les nombres relatifs. Addition de nombres relatifs, Soustraction de nombres relatifs, Somme algébrique. Définitions,…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/5e/operations-sur-les-nombres-relatifs/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Opérations sur les nombres relatifs – Cours de maths 5e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 5e : Opérations sur les nombres relatifs. Addition de nombres relatifs, Soustraction de nombres relatifs, Somme algébrique. Définitions,…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/5e/operations-sur-les-nombres-relatifs/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Opérations sur les nombres relatifs (5e)","headline":"Opérations sur les nombres relatifs – cours de mathématiques de 5e","description":"Cours de maths 5e : Opérations sur les nombres relatifs. Addition de nombres relatifs, Soustraction de nombres relatifs, Somme algébrique. Définitions,…","url":"https://maths.latelieraugmente.fr/5e/operations-sur-les-nombres-relatifs/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"5e (cycle 4, collège)","about":"Nombres et calculs","teaches":["Addition de nombres relatifs","Soustraction de nombres relatifs","Somme algébrique"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 5e","url":"https://maths.latelieraugmente.fr/5e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 5e","item":"https://maths.latelieraugmente.fr/5e/"},{"@type":"ListItem","position":3,"name":"Opérations sur les nombres relatifs","item":"https://maths.latelieraugmente.fr/5e/operations-sur-les-nombres-relatifs/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/5e/">Cours de maths 5e</a> › Opérations sur les nombres relatifs</div>
+<h1>Opérations sur les nombres relatifs</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span> Cours de mathématiques de 5e (cinquième) · chapitre 11 · Addition de nombres relatifs · Soustraction de nombres relatifs · Somme algébrique</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/5e/11-operations-sur-les-nombres-relatifs/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Addition de nombres relatifs</h3></div>
+
+<span class="prop-badge">Règle 1</span>
+<div class="def-box">Pour additionner deux nombres relatifs de <b>même signe</b>, on additionne leurs valeurs absolues et on garde le signe commun.</div>
+<p class="example-title">Exemples :</p>
+<ul class="example-list">
+  <li>(+5) et (+4) sont deux nombres positifs, donc leur somme est positive.<br>A = (+5) + (+4) = +9<br>La valeur absolue de la somme est la somme des valeurs absolues, soit 5 + 4 = 9.</li>
+  <li>(−2,3) et (−11) sont deux nombres négatifs, donc leur somme est négative.<br>B = (−2,3) + (−11) = −13,3<br>La valeur absolue de la somme est la somme des valeurs absolues, soit 2,3 + 11 = 13,3.</li>
+</ul>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : la somme de deux nombres négatifs est toujours négative.</div>
+
+<span class="prop-badge">Règle 2</span>
+<div class="def-box">Pour additionner deux nombres relatifs de <b>signes contraires</b>, on soustrait leurs valeurs absolues (la plus petite à la plus grande), et le signe du résultat est celui du nombre qui a la plus grande valeur absolue.</div>
+<p class="example-title">Exemples :</p>
+<ul class="example-list">
+  <li>C'est (+15) qui a la plus grande valeur absolue, donc la somme est positive.<br>C = (+15) + (−6) = +9<br>La valeur absolue de la somme est la différence des valeurs absolues, soit 15 − 6 = 9.</li>
+  <li>C'est (−9) qui a la plus grande valeur absolue, donc la somme est négative.<br>D = (+3,2) + (−9) = −5,8<br>La valeur absolue de la somme est la différence des valeurs absolues, soit 9 − 3,2 = 5,8.</li>
+</ul>
+
+<span class="prop-badge">Règle 3</span>
+<div class="def-box">La somme de deux nombres <b>opposés</b> est égale à 0.</div>
+<p class="example-title">Exemple :</p>
+<p style="margin:4px 0 12px;">E = (−7,4) + (+7,4) = 0</p>
+
+<span class="prop-badge">Règle 4</span>
+<div class="def-box">Pour calculer la somme de plusieurs nombres relatifs, on peut commencer par regrouper, d'un côté, les nombres positifs et calculer leur somme et, de l'autre, les nombres négatifs et calculer leur somme, puis on applique les règles précédentes.</div>
+<p class="example-title">Exemple :</p>
+<p style="margin:4px 0 4px;">F = (−6) + (+9) + (−2) + (+5) + (−3)</p>
+<p style="margin:4px 0 4px;">F = (+9) + (+5) + (−6) + (−2) + (−3)</p>
+<p style="margin:4px 0 12px;">F = (+14) + (−11) = 3</p>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : on peut aussi commencer par regrouper les termes opposés s'il y en a.</div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Soustraction de nombres relatifs</h3></div>
+<span class="prop-badge">Règle</span>
+<div class="def-box">Soustraire un nombre relatif revient à additionner son <b>opposé</b>.</div>
+<p class="example-title">Exemples :</p>
+<ul class="example-list">
+  <li>Soustraire (+10) revient à ajouter (−10).<br>G = (+6) − (+10) = (+6) + (−10) = −4</li>
+  <li>Soustraire (−8,5) revient à ajouter (+8,5).<br>H = (−3,5) − (−8,5) = (−3,5) + (+8,5) = 5</li>
+</ul>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : la différence de deux nombres égaux est égale à 0. Par exemple : (−8) − (−8) = 0.</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Somme algébrique</h3></div>
+<span class="prop-badge">Règle 1</span>
+<div class="def-box">Dans une suite d'additions et de soustractions de nombres relatifs, on commence par remplacer chaque soustraction par l'<b>addition du nombre opposé</b>.</div>
+<p class="example-title">Exemple :</p>
+<p style="margin:4px 0 4px;">I = (−5) − (+3,2) − (−9)</p>
+<p style="margin:4px 0 12px;">I = (−5) + (−3,2) + (+9)</p>
+
+<span class="prop-badge">Règle 2</span>
+<div class="def-box">Dans une suite d'additions de nombres relatifs, on peut supprimer les signes d'addition et les parenthèses autour de chaque nombre, et le signe d'un nombre positif écrit en début de calcul.</div>
+<p class="example-title">Exemples :</p>
+<ul class="example-list">
+  <li>J = (−4) + (+6,5) + (−2)<br>J = −4 + 6,5 − 2</li>
+  <li>K = (+3,3) + (−7) − (−15)<br>K = (+3,3) + (−7) + (+15)<br>K = 3,3 − 7 + 15</li>
+</ul>
+
+<span class="prop-badge">Règle 3</span>
+<div class="def-box">Pour calculer <b>une somme algébrique simplifiée</b>, on peut commencer par regrouper, d'un côté, les nombres positifs et calculer leur somme et, de l'autre, les nombres négatifs et calculer leur somme.</div>
+<p class="example-title">Exemple :</p>
+<p style="margin:4px 0 4px;">L = 6,5 − 9 + 4 − 3,5 + 11 − 2</p>
+<p style="margin:4px 0 4px;">L = 6,5 + 4 + 11 − 9 − 3,5 − 2</p>
+<p style="margin:4px 0 4px;">L = 21,5 − 14,5</p>
+<p style="margin:4px 0 12px;">L = 7</p>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : additionner deux nombres relatifs, un « bond » sur la droite graduée</h4></div>
+<div class="figure-wrap">
+  <p class="hint" style="margin-top:6px;">Choisis un exemple : le point part de départ, bondit du nombre de cases indiqué, et atterrit sur le résultat.</p>
+  <svg id="or-svgJump" viewBox="0 0 600 150" style="width:100%;max-width:560px;display:block;margin:14px auto;">
+    <line x1="30" y1="100" x2="570" y2="100" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <polygon points="570,100 560,95 560,105" fill="#1C1B2E"></polygon>
+    <g id="or-jumpTicks"><line x1="48" y1="93" x2="48" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="48" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-7</text><line x1="84" y1="93" x2="84" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="84" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-6</text><line x1="120" y1="93" x2="120" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="120" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-5</text><line x1="156" y1="93" x2="156" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="156" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-4</text><line x1="192" y1="93" x2="192" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="192" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-3</text><line x1="228" y1="93" x2="228" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="228" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-2</text><line x1="264" y1="93" x2="264" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="264" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-1</text><line x1="300" y1="93" x2="300" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="300" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">0</text><line x1="336" y1="93" x2="336" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="336" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">1</text><line x1="372" y1="93" x2="372" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="372" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">2</text><line x1="408" y1="93" x2="408" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="408" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">3</text><line x1="444" y1="93" x2="444" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="444" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">4</text><line x1="480" y1="93" x2="480" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="480" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">5</text><line x1="516" y1="93" x2="516" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="516" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">6</text><line x1="552" y1="93" x2="552" y2="107" stroke="#1C1B2E" stroke-width="1.3"></line><text x="552" y="124" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">7</text></g>
+    <path id="or-jumpArc" fill="none" stroke="#E35D3A" stroke-width="2" stroke-dasharray="5 4" opacity="0"></path>
+    <circle id="or-jumpDot" r="8" fill="#1F3A5C" cx="300" cy="100"></circle>
+    <text id="or-jumpLabel" font-family="JetBrains Mono" font-size="15" font-weight="700" fill="#1F3A5C" text-anchor="middle"></text>
+  </svg>
+  
+  <div class="step-list" id="or-jumpRuleSteps">
+    <div class="step-item" data-rule="diff"><div class="step-num">≠</div><div><b>Signes différents</b> : on soustrait la plus petite valeur absolue de la plus grande, et on garde le signe du nombre qui a la plus grande valeur absolue.</div></div>
+    <div class="step-item" data-rule="same"><div class="step-num">=</div><div><b>Même signe</b> : on additionne les valeurs absolues, et on garde le signe commun.</div></div>
+  </div>
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : additionner deux nombres relatifs de signes contraires</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <div class="step-display" id="or-additionDisplay"><div class="step-column"><div class="">N = (+8) + (−14)</div></div><div class="step-note">On repère les deux nombres relatifs à additionner.</div></div>
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : calculer une somme algébrique</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <div class="step-display" id="or-sommeDisplay"><div class="step-column"><div class="">P = 5,2 − 8 + 3 − 1,2 + 9 − 4</div></div><div class="step-note">On part d'une somme algébrique déjà simplifiée (sans parenthèses).</div></div>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Additionner deux nombres relatifs de signes contraires »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">M = (+7) + (−12)</span><span class="we-comment">On repère les deux nombres à additionner.</span></div>
+    <div class="we-row"><span class="we-expr">C'est (−12) qui a la plus grande valeur absolue, donc la somme est négative.</span><span class="we-comment">On compare les valeurs absolues.</span></div>
+    <div class="we-row"><span class="we-expr">M = −(12 − 7) = −5</span><span class="we-comment">On soustrait les valeurs absolues et on applique le signe trouvé.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Calcule : A = (−8) + (−5) &nbsp;&nbsp; B = (+6,4) + (+3,1) &nbsp;&nbsp; C = (+11) + (−4)
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Calcule : D = (+5) − (+9) &nbsp;&nbsp; E = (−2,5) − (−7,5) &nbsp;&nbsp; F = (−6) − (+6)
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Écris sans parenthèses ni signe d'addition, puis calcule : G = (+4) + (−9,5) + (−2) + (+13,5)
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Calcule astucieusement, en regroupant les nombres positifs entre eux et les nombres négatifs entre eux : H = 8 − 12,5 + 5 − 3 + 7,5 − 2
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Poser des règles pour calculer avec des nombres négatifs n'a rien d'évident : c'est le mathématicien indien Brahmagupta qui, en 628, dans son livre <i>Brahmasphutasiddhanta</i>, pose le premier des règles complètes pour additionner, soustraire, multiplier et diviser des nombres positifs et négatifs (y compris la fameuse règle « moins fois moins donne plus »). Curieusement, alors que les calculs étaient déjà maîtrisés, de nombreux mathématiciens européens ont continué, bien plus tard, à considérer les nombres négatifs comme des résultats « absurdes » ou dépourvus de sens, jusqu'au 17e-18e siècle.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/5e/11-operations-sur-les-nombres-relatifs/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/5e/parallelogrammes/">Parallélogrammes</a></span>
+  <a href="/5e/">Tous les chapitres de 5e</a>
+  <span><a href="/5e/parallelogrammes-particuliers/">Parallélogrammes particuliers</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nombres décimaux – Cours de maths 6e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 6e : Nombres décimaux. Sous-multiples de l'unité, Décomposition et nom des chiffres, Repérage sur une demi-droite graduée, Comparaison et…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/6e/nombres-decimaux/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Nombres décimaux – Cours de maths 6e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 6e : Nombres décimaux. Sous-multiples de l'unité, Décomposition et nom des chiffres, Repérage sur une demi-droite graduée, Comparaison et…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/6e/nombres-decimaux/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Nombres décimaux (6e)","headline":"Nombres décimaux – cours de mathématiques de 6e","description":"Cours de maths 6e : Nombres décimaux. Sous-multiples de l'unité, Décomposition et nom des chiffres, Repérage sur une demi-droite graduée, Comparaison et…","url":"https://maths.latelieraugmente.fr/6e/nombres-decimaux/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"6e (cycle 3, collège)","about":"Nombres et calculs","teaches":["Sous-multiples de l'unité","Décomposition et nom des chiffres","Repérage sur une demi-droite graduée","Comparaison et rangement"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 6e","url":"https://maths.latelieraugmente.fr/6e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 6e","item":"https://maths.latelieraugmente.fr/6e/"},{"@type":"ListItem","position":3,"name":"Nombres décimaux","item":"https://maths.latelieraugmente.fr/6e/nombres-decimaux/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/6e/">Cours de maths 6e</a> › Nombres décimaux</div>
+<h1>Nombres décimaux</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span> Cours de mathématiques de 6e (sixième) · chapitre 5 · Sous-multiples de l'unité · Décomposition et nom des chiffres · Repérage sur une demi-droite graduée · Comparaison et rangement</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/5-nombres-decimaux/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Sous-multiples de l'unité</h3></div>
+
+<div class="sub-header"><span class="letter">A</span><h4>Les dixièmes</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Quand on coupe une unité en 10 parties égales, on obtient des <b>dixièmes</b>. Un dixième se note <span class="tex" data-tex-source="\dfrac{1}{10}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>10</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">10</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>. Dans l'unité, il y a 10 dixièmes, donc <span class="tex" data-tex-source="1 = \dfrac{10}{10}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>10</mn><mn>10</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">1</span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">10</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">10</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>.</div>
+
+
+<div class="sub-header"><span class="letter">B</span><h4>Les centièmes</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Quand on coupe une unité en 100 parties égales, on obtient des <b>centièmes</b>. Un centième se note <span class="tex" data-tex-source="\dfrac{1}{100}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>100</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">100</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>. Dans l'unité, il y a 100 centièmes, donc <span class="tex" data-tex-source="1 = \dfrac{100}{100}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>100</mn><mn>100</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">1</span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">100</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">100</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>.</div>
+
+
+<div class="sub-header"><span class="letter">C</span><h4>Les millièmes</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Quand on coupe une unité en 1 000 parties égales, on obtient des <b>millièmes</b>. Un millième se note <span class="tex" data-tex-source="\dfrac{1}{1\,000}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mrow><mn>1</mn><mtext> </mtext><mn>000</mn></mrow></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">000</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>. Dans l'unité, il y a 1 000 millièmes, donc <span class="tex" data-tex-source="1 = \dfrac{1\,000}{1\,000}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mn>1</mn><mtext> </mtext><mn>000</mn></mrow><mrow><mn>1</mn><mtext> </mtext><mn>000</mn></mrow></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">1</span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">000</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span><span class="mord">000</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>.</div>
+<p class="example-title">Exemple :</p>
+<p style="text-align:center;margin:4px 0 12px;"><span class="tex" data-tex-source="\dfrac{8\,347}{1\,000} = 8 + \dfrac{347}{1\,000} = 8,347" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mn>8</mn><mtext> </mtext><mn>347</mn></mrow><mrow><mn>1</mn><mtext> </mtext><mn>000</mn></mrow></mfrac></mstyle><mo>=</mo><mn>8</mn><mo>+</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>347</mn><mrow><mn>1</mn><mtext> </mtext><mn>000</mn></mrow></mfrac></mstyle><mo>=</mo><mn>8</mn><mo separator="true">,</mo><mn>347</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">000</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">8</span><span class="mord">347</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">8</span><span class="mbin">+</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">000</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">347</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">8</span><span class="mpunct">,</span><span class="mord">347</span></span></span></span></span></p>
+
+<div class="lesson-header"><span class="num">2</span><h3>Décomposition et nom des chiffres</h3></div>
+<span class="def-badge">Définitions</span>
+<div class="def-box">Un nombre pouvant s'écrire sous la forme d'une fraction décimale est un <b>nombre décimal</b>. Il peut aussi se noter en utilisant une virgule : c'est son <b>écriture décimale</b>.</div>
+<p class="example-title">Exemple : on considère le nombre décimal 5 218,647.</p>
+<ul class="example-list">
+  <li><b>a.</b> Écris-le en toutes lettres.</li>
+  <li><b>b.</b> Donnes-en une décomposition.</li>
+  <li><b>c.</b> Donne le nom de chaque chiffre.</li>
+</ul>
+<p class="hint" style="margin:10px 0 6px;">On peut s'aider d'un tableau de classes :</p>
+<div style="overflow-x:auto;">
+<table style="border-collapse:collapse;width:100%;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin:0 0 16px;">
+  <tbody><tr>
+    <th colspan="3" style="background:var(--accent);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Classe des mille</th>
+    <th colspan="3" style="background:var(--accent);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Classe des unités</th>
+    <th style="background:var(--accent-orange);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Dixièmes<br><span class="tex" data-tex-source="\dfrac{1}{10}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>10</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">10</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span></th>
+    <th style="background:var(--accent-orange);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Centièmes<br><span class="tex" data-tex-source="\dfrac{1}{100}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>100</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">100</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span></th>
+    <th style="background:var(--accent-orange);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Millièmes<br><span class="tex" data-tex-source="\dfrac{1}{1\,000}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mrow><mn>1</mn><mtext> </mtext><mn>000</mn></mrow></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">000</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span></th>
+  </tr>
+  <tr>
+    <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">C</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">D</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">U</th>
+    <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">C</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">D</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">U</th>
+    <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(227,93,58,.06);"></th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(227,93,58,.06);"></th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(227,93,58,.06);"></th>
+  </tr>
+  <tr>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">5</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">2</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">1</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">8</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">6</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">4</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;">7</td>
+  </tr>
+</tbody></table>
+</div>
+<ul class="example-list">
+  <li><b>a.</b> Ce nombre se lit donc : cinq-mille-deux-cent-dix-huit virgule six-cent-quarante-sept.</li>
+  <li><b>b.</b> Il peut se décomposer ainsi :<br>
+    5 218,647 = (5 × 1 000) + (2 × 100) + (1 × 10) + (8 × 1) + <span class="tex" data-tex-source="\left(6 \times \dfrac{1}{10}\right) + \left(4 \times \dfrac{1}{100}\right) + \left(7 \times \dfrac{1}{1\,000}\right)" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo fence="true">(</mo><mn>6</mn><mo>×</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>10</mn></mfrac></mstyle><mo fence="true">)</mo></mrow><mo>+</mo><mrow><mo fence="true">(</mo><mn>4</mn><mo>×</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>100</mn></mfrac></mstyle><mo fence="true">)</mo></mrow><mo>+</mo><mrow><mo fence="true">(</mo><mn>7</mn><mo>×</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mrow><mn>1</mn><mtext> </mtext><mn>000</mn></mrow></mfrac></mstyle><mo fence="true">)</mo></mrow></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size3">(</span></span><span class="mord">6</span><span class="mbin">×</span><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">10</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size3">)</span></span></span><span class="mbin">+</span></span><span class="base"><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size3">(</span></span><span class="mord">4</span><span class="mbin">×</span><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">100</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size3">)</span></span></span><span class="mbin">+</span></span><span class="base"><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size3">(</span></span><span class="mord">7</span><span class="mbin">×</span><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">000</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size3">)</span></span></span></span></span></span></span>
+  </li>
+  <li><b>c.</b>
+    5 est le chiffre des unités de mille &nbsp;·&nbsp; 2 est le chiffre des centaines &nbsp;·&nbsp; 1 est le chiffre des dizaines<br>
+    8 est le chiffre des unités &nbsp;·&nbsp; 6 est le chiffre des dixièmes &nbsp;·&nbsp; 4 est le chiffre des centièmes &nbsp;·&nbsp; 7 est le chiffre des millièmes
+  </li>
+</ul>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
+  Remarque : un nombre entier est un nombre décimal particulier. En effet, 12 peut s'écrire avec une virgule (12,0) ou sous la forme d'une fraction décimale <span class="tex" data-tex-source="\left(\dfrac{120}{10}\right)" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo fence="true">(</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>120</mn><mn>10</mn></mfrac></mstyle><mo fence="true">)</mo></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size3">(</span></span><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">10</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">120</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size3">)</span></span></span></span></span></span></span>.
+</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Repérage sur une demi-droite graduée</h3></div>
+<p class="example-title">Exemple : quelles sont les abscisses des points M et N ?</p>
+
+<div class="figure-wrap">
+  <svg id="svgNdLine" viewBox="0 0 510 110" style="width:100%;max-width:480px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="15" y1="60" x2="480" y2="60" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <polygon points="480,60 470,55 470,65" fill="#1C1B2E"></polygon>
+    <line x1="37" y1="57" x2="37" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="44" y1="57" x2="44" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="51" y1="57" x2="51" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="58" y1="57" x2="58" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="65" y1="57" x2="65" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="72" y1="57" x2="72" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="79" y1="57" x2="79" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="86" y1="57" x2="86" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="93" y1="57" x2="93" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="30" y1="54" x2="30" y2="66" stroke="#1C1B2E" stroke-width="1.3"></line><text x="30" y="84" font-family="JetBrains Mono" font-size="13" fill="#1C1B2E" text-anchor="middle">0</text><line x1="107" y1="57" x2="107" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="114" y1="57" x2="114" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="121" y1="57" x2="121" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="128" y1="57" x2="128" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="135" y1="57" x2="135" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="142" y1="57" x2="142" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="149" y1="57" x2="149" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="156" y1="57" x2="156" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="163" y1="57" x2="163" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="100" y1="54" x2="100" y2="66" stroke="#1C1B2E" stroke-width="1.3"></line><text x="100" y="84" font-family="JetBrains Mono" font-size="13" fill="#1C1B2E" text-anchor="middle">1</text><line x1="177" y1="57" x2="177" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="184" y1="57" x2="184" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="191" y1="57" x2="191" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="198" y1="57" x2="198" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="205" y1="57" x2="205" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="212" y1="57" x2="212" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="219" y1="57" x2="219" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="226" y1="57" x2="226" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="233" y1="57" x2="233" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="170" y1="54" x2="170" y2="66" stroke="#1C1B2E" stroke-width="1.3"></line><text x="170" y="84" font-family="JetBrains Mono" font-size="13" fill="#1C1B2E" text-anchor="middle">2</text><line x1="247" y1="57" x2="247" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="254" y1="57" x2="254" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="261" y1="57" x2="261" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="268" y1="57" x2="268" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="275" y1="57" x2="275" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="282" y1="57" x2="282" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="289" y1="57" x2="289" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="296" y1="57" x2="296" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="303" y1="57" x2="303" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="240" y1="54" x2="240" y2="66" stroke="#1C1B2E" stroke-width="1.3"></line><text x="240" y="84" font-family="JetBrains Mono" font-size="13" fill="#1C1B2E" text-anchor="middle">3</text><line x1="317" y1="57" x2="317" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="324" y1="57" x2="324" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="331" y1="57" x2="331" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="338" y1="57" x2="338" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="345" y1="57" x2="345" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="352" y1="57" x2="352" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="359" y1="57" x2="359" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="366" y1="57" x2="366" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="373" y1="57" x2="373" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="310" y1="54" x2="310" y2="66" stroke="#1C1B2E" stroke-width="1.3"></line><text x="310" y="84" font-family="JetBrains Mono" font-size="13" fill="#1C1B2E" text-anchor="middle">4</text><line x1="387" y1="57" x2="387" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="394" y1="57" x2="394" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="401" y1="57" x2="401" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="408" y1="57" x2="408" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="415" y1="57" x2="415" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="422" y1="57" x2="422" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="429" y1="57" x2="429" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="436" y1="57" x2="436" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="443" y1="57" x2="443" y2="63" stroke="#1C1B2E" stroke-width="1"></line><line x1="380" y1="54" x2="380" y2="66" stroke="#1C1B2E" stroke-width="1.3"></line><text x="380" y="84" font-family="JetBrains Mono" font-size="13" fill="#1C1B2E" text-anchor="middle">5</text><line x1="450" y1="54" x2="450" y2="66" stroke="#1C1B2E" stroke-width="1.3"></line><text x="450" y="84" font-family="JetBrains Mono" font-size="13" fill="#1C1B2E" text-anchor="middle">6</text>
+    <line id="ndPointM" x1="128" y1="49" x2="128" y2="71" stroke="#1F3A5C" stroke-width="3" style=""></line>
+    <text id="ndLabelM" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#1F3A5C" text-anchor="middle" x="128" y="46">M</text>
+    <line id="ndPointN" x1="359" y1="49" x2="359" y2="71" stroke="#E35D3A" stroke-width="3" style=""></line>
+    <text id="ndLabelN" font-family="JetBrains Mono" font-size="14" font-weight="700" fill="#E35D3A" text-anchor="middle" x="359" y="46">N</text>
+  </svg>
+  
+  <p class="hint" id="ndAbscisseNote" style="text-align:center;margin-top:8px;">Point M : abscisse <b>1,4</b> &nbsp;·&nbsp; Point N : abscisse <b>4,7</b></p>
+</div>
+<p style="margin:10px 0 4px;">Dans la position de départ, le point M a pour abscisse <span class="tex" data-tex-source="1 + \dfrac{4}{10}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>+</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>4</mn><mn>10</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">1</span><span class="mbin">+</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">10</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">4</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>, soit 1,4. Le point N a pour abscisse <span class="tex" data-tex-source="4 + \dfrac{7}{10}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mo>+</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>7</mn><mn>10</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">4</span><span class="mbin">+</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">10</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">7</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>, soit 4,7.</p>
+<p style="margin:4px 0 12px;">On note M(1,4) et N(4,7).</p>
+
+<div class="lesson-header"><span class="num">4</span><h3>Comparaison et rangement</h3></div>
+<div class="sub-header"><span class="letter">A</span><h4>Comparaison de deux nombres décimaux</h4></div>
+<span class="prop-badge">Règle</span>
+<div class="def-box">
+  Pour comparer deux nombres décimaux écrits sous forme décimale :
+  <ul style="margin:8px 0 0;padding-left:20px;line-height:1.8;">
+    <li>on compare les <b>parties entières</b> ;</li>
+    <li>si les parties entières sont égales, alors on compare les <b>chiffres des dixièmes</b> ;</li>
+    <li>si les chiffres des dixièmes sont égaux, alors on compare les <b>chiffres des centièmes</b> ;</li>
+    <li>et ainsi de suite jusqu'à ce que les deux nombres aient des chiffres différents.</li>
+  </ul>
+</div>
+<p class="example-title">Exemple : compare les nombres 46,285 et 46,29.</p>
+<ul class="example-list">
+  <li>On compare d'abord les <b>parties entières</b> des deux nombres : elles sont égales, donc on compare les <b>chiffres des dixièmes</b> ;</li>
+  <li>ils sont égaux, donc on compare les <b>chiffres des centièmes</b> ;</li>
+  <li>8 &lt; 9 donc 46,285 &lt; 46,29.</li>
+</ul>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
+  Remarque : quand les parties entières sont égales, on peut comparer les parties décimales en millièmes. <span class="tex" data-tex-source="46,285 = 46 + \dfrac{285}{1\,000}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>46</mn><mo separator="true">,</mo><mn>285</mn><mo>=</mo><mn>46</mn><mo>+</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>285</mn><mrow><mn>1</mn><mtext> </mtext><mn>000</mn></mrow></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">46</span><span class="mpunct">,</span><span class="mord">285</span><span class="mrel">=</span></span><span class="base"><span class="mord">46</span><span class="mbin">+</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">000</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">285</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span> et <span class="tex" data-tex-source="46,29 = 46 + \dfrac{290}{1\,000}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>46</mn><mo separator="true">,</mo><mn>29</mn><mo>=</mo><mn>46</mn><mo>+</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>290</mn><mrow><mn>1</mn><mtext> </mtext><mn>000</mn></mrow></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">46</span><span class="mpunct">,</span><span class="mord">29</span><span class="mrel">=</span></span><span class="base"><span class="mord">46</span><span class="mbin">+</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">000</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">290</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>. Or, 290 millièmes est plus grand que 285 millièmes, donc 46,29 &gt; 46,285.
+</div>
+
+<div class="sub-header" style="margin-top:16px;"><span class="letter">B</span><h4>Rangement de nombres décimaux</h4></div>
+<p class="example-title">Exemple : range les nombres 12,6 ; 126,4 ; 12,64 ; 12,46 dans l'ordre croissant.</p>
+<p style="margin:4px 0 4px;">On repère le plus petit, puis le plus petit des nombres qui restent, et ainsi de suite.</p>
+<p style="margin:4px 0 12px;">On obtient donc : 12,46 &lt; 12,6 &lt; 12,64 &lt; 126,4.</p>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode : comparer deux nombres décimaux</h4></div>
+<div class="figure-wrap">
+  
+  <div class="step-display" id="nd-comparerDisplay"><div class="step-column"><div class="">Compare 34,158 et 34,16.</div></div><div class="step-note">On part des deux nombres à comparer.</div></div>
+  
+</div>
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : décomposer un nombre décimal</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <div class="step-display" id="nd-decomposerDisplay"><div class="step-column"><div class="">Décompose le nombre 47,206.</div></div><div class="step-note">On repère chaque chiffre et sa position.</div></div>
+  
+</div>
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : ne pas confondre « chiffre des... » et « nombre de... »</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <div class="step-display" id="nd-chiffreNombreDisplay"><div class="step-column"><div class="">84,153</div></div><div class="step-note">On reprend un nombre décimal.</div></div>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Comparer deux nombres décimaux »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">On compare les parties entières de 9,42 et 9,4 : elles sont égales.</span><span class="we-comment">Ce que je sais.</span></div>
+    <div class="we-row"><span class="we-expr">Or, 9,4 = 9,40, donc on compare les chiffres des dixièmes (4 = 4), puis des centièmes (2 &gt; 0).</span><span class="we-comment">On énonce la règle et on l'applique.</span></div>
+    <div class="we-row"><span class="we-expr">Donc 9,42 &gt; 9,4.</span><span class="we-comment">Conclusion.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Écris en toutes lettres le nombre 3 067,452, puis donnes-en une décomposition.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Compare les nombres 58,371 et 58,38. Rédige ta réponse.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Range dans l'ordre décroissant : 7,05 ; 7,5 ; 70,5 ; 7,505.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Sur une demi-droite graduée, place les points R(2,3) et S(0,8).
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Pour le nombre 62,489, donne : <b>a.</b> le chiffre des centièmes ; <b>b.</b> le nombre de centièmes. Explique la différence entre les deux réponses.
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Les nombres décimaux tels que nous les écrivons (avec une virgule) sont une invention récente à l'échelle de l'histoire des mathématiques : c'est le savant flamand Simon Stevin qui, en 1585, en publie le premier exposé complet et accessible, dans un petit livre intitulé <i>La Thiende</i> (« Le Dixième »). Il y explique cette méthode aux <i>« astrologues, arpenteurs, tapissiers, tonneliers, maîtres de la monnaie et à tous marchands »</i>, pour qu'ils puissent calculer sans passer par les fractions. Certaines civilisations, comme les mathématiciens arabes et chinois, utilisaient déjà des idées proches bien avant lui, mais c'est Stevin qui a rendu cette écriture vraiment utilisable par tous en Europe.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/5-nombres-decimaux/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/6e/distance-et-cercles/">Distance et cercles</a></span>
+  <a href="/6e/">Tous les chapitres de 6e</a>
+  <span><a href="/6e/angles-et-rapporteur/">Angles et rapporteur</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

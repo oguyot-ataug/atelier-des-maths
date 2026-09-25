@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Symétrie centrale – Cours de maths 5e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 5e : Symétrie centrale. Définition de la symétrie centrale, Propriétés de la symétrie centrale, Centre de symétrie. Définitions, figures…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/5e/symetrie-centrale/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Symétrie centrale – Cours de maths 5e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 5e : Symétrie centrale. Définition de la symétrie centrale, Propriétés de la symétrie centrale, Centre de symétrie. Définitions, figures…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/5e/symetrie-centrale/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Symétrie centrale (5e)","headline":"Symétrie centrale – cours de mathématiques de 5e","description":"Cours de maths 5e : Symétrie centrale. Définition de la symétrie centrale, Propriétés de la symétrie centrale, Centre de symétrie. Définitions, figures…","url":"https://maths.latelieraugmente.fr/5e/symetrie-centrale/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"5e (cycle 4, collège)","about":"Géométrie","teaches":["Définition de la symétrie centrale","Propriétés de la symétrie centrale","Centre de symétrie"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 5e","url":"https://maths.latelieraugmente.fr/5e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 5e","item":"https://maths.latelieraugmente.fr/5e/"},{"@type":"ListItem","position":3,"name":"Symétrie centrale","item":"https://maths.latelieraugmente.fr/5e/symetrie-centrale/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/5e/">Cours de maths 5e</a> › Symétrie centrale</div>
+<h1>Symétrie centrale</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span> Cours de mathématiques de 5e (cinquième) · chapitre 2 · Définition de la symétrie centrale · Propriétés de la symétrie centrale · Centre de symétrie</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/5e/2-symetrie-centrale/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Définition de la symétrie centrale</h3></div>
+
+      <div class="sub-header"><span class="letter">A</span><h4>Symétrie centrale et demi-tour</h4></div>
+      <span class="def-badge">Définition</span>
+      <div class="def-box">On dit que deux figures sont <b>symétriques par rapport à un point O</b> lorsque l'une vient se superposer exactement à l'autre après un <b>demi-tour effectué autour de O</b>. Cette transformation s'appelle la <b>symétrie centrale de centre O</b>.</div>
+
+      <div class="figure-wrap">
+        <strong style="font-family:'Space Grotesk',sans-serif;">Exemple : un demi-tour autour de O</strong>
+        
+        <svg id="svgTri" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:10px auto;touch-action:none;">
+          <line x1="192" y1="122" x2="208" y2="138" stroke="#1C1B2E" stroke-width="2" class="pt-cross"></line>
+          <line x1="208" y1="122" x2="192" y2="138" stroke="#1C1B2E" stroke-width="2" class="pt-cross"></line>
+          <text x="210" y="122" font-family="Space Grotesk" font-size="13" fill="#1C1B2E">O</text>
+          <polygon id="triGhost" fill="none" stroke="#E35D3A" stroke-width="2" stroke-dasharray="5 4" points="290,190 230,200 260,150"></polygon>
+          <polygon id="triShape" fill="#1F3A5C" fill-opacity=".25" stroke="#1F3A5C" stroke-width="2" points="110,70 170,60 140,110"></polygon>
+          <circle class="triHandle vertex-handle" data-i="0" r="13" style="" cx="110" cy="70"></circle>
+          <circle class="triHandle vertex-handle" data-i="1" r="13" style="" cx="170" cy="60"></circle>
+          <circle class="triHandle vertex-handle" data-i="2" r="13" style="" cx="140" cy="110"></circle>
+        </svg>
+        
+      </div>
+
+      <div class="sub-header"><span class="letter">B</span><h4>Symétrique d'un point</h4></div>
+      <span class="def-badge">Définition</span>
+      <div class="def-box">Un point <b>A' est le symétrique d'un point A par rapport à un point O</b> lorsque <b>O est le milieu du segment [AA']</b>.</div>
+
+      <div class="figure-wrap">
+        <strong style="font-family:'Space Grotesk',sans-serif;">Exemple : le symétrique d'un point</strong>
+        
+        <svg id="svgPoint" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:10px auto;touch-action:none;">
+          <line id="ptLine" x1="120" y1="60" x2="280" y2="200" stroke="#B7C3CD" stroke-width="1.5" stroke-dasharray="4 4"></line>
+          <line id="markO" class="pt-tick" stroke="#1C1B2E" stroke-width="2" x1="203.62177534327685" y1="125.86082817911218" x2="196.37822465672315" y2="134.13917182088784"></line>
+          <text x="200" y="150" font-family="Space Grotesk" font-size="14" fill="#1C1B2E">O</text>
+          <line id="markA" class="pt-tick" stroke="#1F3A5C" stroke-width="2" x1="123.62177534327685" y1="55.860828179112175" x2="116.37822465672315" y2="64.13917182088782"></line>
+          <circle id="ptA" cx="120" cy="60" r="15" fill="transparent" style=""></circle>
+          <text id="ptALabel" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" x="102" y="46">A</text>
+          <line id="markAprime" class="pt-tick" stroke="#E35D3A" stroke-width="2" x1="283.62177534327685" y1="195.86082817911216" x2="276.37822465672315" y2="204.13917182088784"></line>
+          <text id="ptAprimeLabel" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" x="292" y="220">A'</text>
+          <line id="codeOA" stroke="#8A2E1C" stroke-width="1.5" x1="162.23004159493738" y1="87.31710246815375" x2="157.76995840506262" y2="102.68289753184625"></line>
+          <line id="codeOAprime" stroke="#8A2E1C" stroke-width="1.5" x1="242.23004159493738" y1="157.31710246815376" x2="237.76995840506262" y2="172.68289753184624"></line>
+        </svg>
+        
+        <p class="hint" style="margin:6px 0 0;">Les petits traits sur [OA] et [OA'] indiquent qu'ils sont codés de <b>même longueur</b> : c'est ce qui prouve que O est le milieu de [AA'].</p>
+      </div>
+      <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
+        Remarque : le symétrique de O par rapport à lui-même est O, c'est le seul point que la symétrie centrale laisse à sa place (on dit qu'il est <b>invariant</b>).
+      </div>
+
+      <div class="lesson-header"><span class="num">2</span><h3>Propriétés de la symétrie centrale</h3></div>
+
+      <div class="sub-header"><span class="letter">A</span><h4>Symétrique d'une droite</h4></div>
+      <span class="prop-badge">Propriété</span>
+      <div class="def-box">Le symétrique d'une droite par une symétrie centrale est une droite <b>parallèle</b> à la droite de départ. La symétrie centrale <b>conserve l'alignement</b> des points.</div>
+      <div class="figure-wrap">
+        <strong style="font-family:'Space Grotesk',sans-serif;">Exemple</strong>
+        
+        <svg id="svgDroite" viewBox="0 0 400 240" style="width:100%;max-width:440px;display:block;margin:10px auto;touch-action:none;">
+          <line id="lineD" stroke="#1F3A5C" stroke-width="1.6" x1="-124.58251423359269" y1="-61.00646663626239" x2="384.5825142335927" y2="236.0064666362624"></line>
+          <line id="lineDprime" stroke="#E35D3A" stroke-width="1.6" stroke-dasharray="6 4" x1="524.5825142335927" y1="301.0064666362624" x2="15.41748576640731" y2="3.993533363737612"></line>
+          <line id="crossO1" stroke="#1C1B2E" stroke-width="2" x1="194" y1="114" x2="206" y2="126"></line>
+          <line id="crossO2" stroke="#1C1B2E" stroke-width="2" x1="194" y1="126" x2="206" y2="114"></line>
+          <text id="labelO" font-family="Space Grotesk" font-size="13" fill="#1C1B2E" x="210" y="112">O</text>
+          <line id="tickI" class="pt-tick" stroke="#1F3A5C" stroke-width="2" x1="102.77129064038247" y1="65.24921604505862" x2="97.22870935961753" y2="74.75078395494138"></line>
+          <circle id="handleI" r="15" fill="transparent" style="" cx="100" cy="70"></circle>
+          <text id="labelI" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" x="80" y="60">I</text>
+          <line id="tickJ" class="pt-tick" stroke="#1F3A5C" stroke-width="2" x1="162.77129064038246" y1="100.24921604505862" x2="157.22870935961754" y2="109.75078395494138"></line>
+          <circle id="handleJ" r="15" fill="transparent" style="" cx="160" cy="105"></circle>
+          <text id="labelJ" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" x="168" y="95">J</text>
+          <line id="tickIprime" class="pt-tick" stroke="#E35D3A" stroke-width="2" x1="302.77129064038246" y1="165.2492160450586" x2="297.22870935961754" y2="174.7507839549414"></line>
+          <text id="labelIprime" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" x="308" y="188">I'</text>
+          <line id="tickJprime" class="pt-tick" stroke="#E35D3A" stroke-width="2" x1="242.77129064038246" y1="130.2492160450586" x2="237.22870935961754" y2="139.7507839549414"></line>
+          <text id="labelJprime" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" x="218" y="153">J'</text>
+          <text id="labelDroiteD" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" x="-116.58251423359269" y="-69.00646663626239">(d)</text>
+          <text id="labelDroiteDprime" font-family="Space Grotesk" font-size="13" fill="#E35D3A" x="-18.58251423359269" y="21.993533363737612">(d')</text>
+        </svg>
+        
+      </div>
+
+      <div class="sub-header"><span class="letter">B</span><h4>Symétrique d'un segment</h4></div>
+      <span class="prop-badge">Propriété</span>
+      <div class="def-box">Le symétrique d'un segment par une symétrie centrale est un segment de <b>même longueur</b>. La symétrie centrale <b>conserve les longueurs</b>.</div>
+      <div class="figure-wrap">
+        <strong style="font-family:'Space Grotesk',sans-serif;">Exemple</strong>
+        
+        <svg id="svgSegment" viewBox="0 0 400 200" style="width:100%;max-width:400px;display:block;margin:10px auto;touch-action:none;">
+          <line id="segRS" stroke="#1F3A5C" stroke-width="2.2" x1="80" y1="60" x2="130" y2="150"></line>
+          <line id="segRSprime" stroke="#E35D3A" stroke-width="2.2" x1="320" y1="140" x2="270" y2="50"></line>
+          <line id="segDropR" stroke="#B7C3CD" stroke-width="1.2" stroke-dasharray="3 3" x1="80" y1="60" x2="320" y2="140"></line>
+          <line id="segDropS" stroke="#B7C3CD" stroke-width="1.2" stroke-dasharray="3 3" x1="130" y1="150" x2="270" y2="50"></line>
+          <line id="segCrossO1" stroke="#1C1B2E" stroke-width="2" x1="194" y1="94" x2="206" y2="106"></line>
+          <line id="segCrossO2" stroke="#1C1B2E" stroke-width="2" x1="194" y1="106" x2="206" y2="94"></line>
+          <text id="segLabelO" font-family="Space Grotesk" font-size="13" fill="#1C1B2E" x="210" y="92">O</text>
+          <line id="segCodeRS" stroke="#8A2E1C" stroke-width="1.5" x1="109.6961118003386" y1="98.52338560984826" x2="100.3038881996614" y2="111.47661439015174"></line>
+          <line id="segCodeRSprime" stroke="#8A2E1C" stroke-width="1.5" x1="299.6961118003386" y1="88.52338560984826" x2="290.3038881996614" y2="101.47661439015174"></line>
+          <line id="tickR" class="pt-tick" stroke="#1F3A5C" stroke-width="2" x1="84.80786501866845" y1="57.32896387851753" x2="75.19213498133155" y2="62.67103612148247"></line>
+          <circle id="handleR" r="15" fill="transparent" style="" cx="80" cy="60"></circle>
+          <text id="segLabelR" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" x="58" y="54">R</text>
+          <line id="tickS" class="pt-tick" stroke="#1F3A5C" stroke-width="2" x1="134.80786501866845" y1="147.32896387851753" x2="125.19213498133155" y2="152.67103612148247"></line>
+          <circle id="handleS" r="15" fill="transparent" style="" cx="130" cy="150"></circle>
+          <text id="segLabelS" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" x="140" y="166">S</text>
+          <line id="tickRprime" class="pt-tick" stroke="#E35D3A" stroke-width="2" x1="324.80786501866845" y1="137.32896387851753" x2="315.19213498133155" y2="142.67103612148247"></line>
+          <text id="segLabelRprime" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" x="328" y="148">R'</text>
+          <line id="tickSprime" class="pt-tick" stroke="#E35D3A" stroke-width="2" x1="274.80786501866845" y1="47.32896387851753" x2="265.19213498133155" y2="52.67103612148247"></line>
+          <text id="segLabelSprime" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" x="252" y="38">S'</text>
+        </svg>
+        
+      </div>
+
+      <div class="sub-header"><span class="letter">C</span><h4>Symétrique d'un polygone</h4></div>
+      <span class="prop-badge">Propriété</span>
+      <div class="def-box">Le symétrique d'un polygone par une symétrie centrale est un polygone <b>superposable</b> au premier : <b>mêmes longueurs de côtés, mêmes mesures d'angles, même périmètre et même aire</b>.</div>
+      <div class="figure-wrap">
+        <strong style="font-family:'Space Grotesk',sans-serif;">Exemple</strong>
+        
+        
+        <svg id="svgPolygone" viewBox="0 0 400 240" style="width:100%;max-width:400px;display:block;margin:10px auto;touch-action:none;">
+          <polygon id="polyShape" fill="#1F3A5C" fill-opacity=".12" stroke="#1F3A5C" stroke-width="2" points="145,58.25 201.29165124598853,150.875 88.7083487540115,150.87500000000003"></polygon>
+          <polygon id="polyShapePrime" fill="#E35D3A" fill-opacity=".12" stroke="#E35D3A" stroke-width="2" points="255,181.75 198.70834875401147,89.125 311.29165124598853,89.12499999999997"></polygon>
+          <line id="polyCrossO1" stroke="#1C1B2E" stroke-width="2" x1="194" y1="114" x2="206" y2="126"></line>
+          <line id="polyCrossO2" stroke="#1C1B2E" stroke-width="2" x1="194" y1="126" x2="206" y2="114"></line>
+          <text id="polyLabelO" font-family="Space Grotesk" font-size="13" fill="#1C1B2E" x="210" y="112">O</text>
+          <g id="polygoneCodes"><line x1="174.81085531619155" y1="102.06696876982647" x2="171.48079592979698" y2="107.05803123017353" stroke="#E35D3A" stroke-width="0.7"></line><line x1="225.18914468380845" y1="137.93303123017353" x2="228.51920407020302" y2="132.94196876982647" stroke="#E35D3A" stroke-width="0.7"></line><line x1="149.26785478522208" y1="153.59392336110994" x2="146.73214521477792" y2="148.15607663889006" stroke="#1F3A5C" stroke-width="0.7"></line><line x1="143.26785478522208" y1="153.59392336110994" x2="140.73214521477792" y2="148.15607663889006" stroke="#1F3A5C" stroke-width="0.7"></line><line x1="250.73214521477792" y1="86.40607663889004" x2="253.26785478522208" y2="91.84392336110993" stroke="#1F3A5C" stroke-width="0.7"></line><line x1="256.7321452147779" y1="86.40607663889004" x2="259.2678547852221" y2="91.84392336110993" stroke="#1F3A5C" stroke-width="0.7"></line><circle cx="116.85417437700575" cy="104.56250000000001" r="4" fill="none" stroke="#1F6B3A" stroke-width="1.1"></circle><circle cx="283.14582562299427" cy="135.4375" r="4" fill="none" stroke="#1F6B3A" stroke-width="1.1"></circle><polyline points="138.2484611279405,69.35930793789917 138.93454688780352,69.74827285046524 139.64295665096208,70.09491817432811 140.37108310323947,70.39796807548015 141.11624636284958,70.65630717360814 141.8757038437472,70.86898464726953 142.6466603497627,71.03521773340685 143.42627836236898,71.15439460832053 144.2116884842167,71.22607663949637 145,71.25 145.7883115157833,71.22607663949637 146.57372163763102,71.15439460832053 147.3533396502373,71.03521773340685 148.1242961562528,70.86898464726953 148.88375363715042,70.65630717360814 149.62891689676053,70.39796807548015 150.35704334903792,70.09491817432811 151.06545311219648,69.74827285046524 151.7515388720595,69.35930793789916" fill="none" stroke="#E35D3A" stroke-width="0.8"></polyline><line x1="145.0" y1="68.8" x2="145.0" y2="73.8" stroke="#E35D3A" stroke-width="0.7"></line><polyline points="261.7515388720595,170.64069206210084 261.0654531121965,170.25172714953476 260.35704334903795,169.90508182567189 259.62891689676053,169.60203192451985 258.8837536371504,169.34369282639184 258.1242961562528,169.13101535273046 257.3533396502373,168.96478226659315 256.573721637631,168.84560539167947 255.7883115157833,168.77392336050363 255,168.75 254.2116884842167,168.77392336050363 253.42627836236898,168.84560539167947 252.6466603497627,168.96478226659315 251.8757038437472,169.13101535273046 251.11624636284958,169.34369282639184 250.37108310323947,169.60203192451985 249.64295665096205,169.90508182567189 248.93454688780352,170.25172714953476 248.2484611279405,170.64069206210084" fill="none" stroke="#E35D3A" stroke-width="0.8"></polyline><line x1="255.0" y1="171.3" x2="255.0" y2="166.3" stroke="#E35D3A" stroke-width="0.7"></line><polyline points="194.54011237392902,139.76569206210084 193.9189585725198,140.16783404711683 193.321691868765,140.60466663026918 192.75024737222492,141.07477449926503 192.20647653000285,141.57663453181075 191.69214112816317,142.10862073044015 191.2089075836468,142.6690094906521 190.75834154517653,143.25598518528938 190.3419028206458,143.86764604706568 189.9609406474256,144.50201033018152 189.61668932091345,145.15702273106592 189.31026419548778,145.83056104744117 189.04265807082425,146.52044305413526 188.8147379752822,147.22443357336533 188.627242356783,147.9402517165842 188.48077869028148,148.66557827442742 188.3758215095823,149.39806323081723 188.31271086987766,150.1353333768789 188.29165124598853,150.875" fill="none" stroke="#1F3A5C" stroke-width="0.8"></polyline><line x1="191.7" y1="146.5" x2="187.2" y2="144.5" stroke="#1F3A5C" stroke-width="0.7"></line><line x1="192.6" y1="145.0" x2="188.5" y2="142.2" stroke="#1F3A5C" stroke-width="0.7"></line><polyline points="205.45988762607098,100.23430793789916 206.0810414274802,99.83216595288317 206.678308131235,99.39533336973082 207.24975262777508,98.92522550073497 207.79352346999715,98.42336546818925 208.30785887183683,97.89137926955985 208.7910924163532,97.3309905093479 209.24165845482347,96.74401481471062 209.6580971793542,96.13235395293432 210.0390593525744,95.4979896698185 210.38331067908655,94.84297726893408 210.68973580451222,94.16943895255883 210.95734192917575,93.47955694586474 211.18526202471782,92.77556642663467 211.372757643217,92.05974828341579 211.51922130971852,91.33442172557258 211.6241784904177,90.60193676918277 211.68728913012234,89.8646666231211 211.70834875401147,89.125" fill="none" stroke="#1F3A5C" stroke-width="0.8"></polyline><line x1="208.3" y1="93.5" x2="212.8" y2="95.5" stroke="#1F3A5C" stroke-width="0.7"></line><line x1="207.4" y1="95.0" x2="211.5" y2="97.8" stroke="#1F3A5C" stroke-width="0.7"></line><polyline points="101.7083487540115,150.87500000000003 101.68728913012235,150.13533337687892 101.62417849041775,149.39806323081726 101.51922130971853,148.66557827442745 101.37275764321703,147.94025171658424 101.18526202471783,147.22443357336536 100.95734192917578,146.52044305413528 100.68973580451224,145.83056104744117 100.38331067908659,145.15702273106595 100.03905935257444,144.50201033018152 99.65809717935423,143.8676460470657 99.2416584548235,143.2559851852894 98.79109241635321,142.66900949065212 98.30785887183686,142.10862073044018 97.79352346999718,141.57663453181078 97.2497526277751,141.07477449926506 96.67830813123504,140.6046666302692 96.08104142748022,140.16783404711686 95.459887626071,139.76569206210087" fill="none" stroke="#1F6B3A" stroke-width="0.8"></polyline><line x1="97.9" y1="145.7" x2="102.2" y2="143.3" stroke="#1F6B3A" stroke-width="0.7"></line><line x1="95.68109373774254" y1="146.95316020318865" x2="104.39702496740635" y2="142.05086045717442" stroke="#1F6B3A" stroke-width="1.1"></line><polyline points="298.29165124598853,89.12499999999997 298.31271086987766,89.86466662312107 298.3758215095823,90.60193676918274 298.4807786902815,91.33442172557257 298.627242356783,92.05974828341576 298.8147379752822,92.77556642663464 299.04265807082425,93.47955694586472 299.3102641954878,94.1694389525588 299.61668932091345,94.84297726893406 299.96094064742556,95.49798966981847 300.34190282064577,96.1323539529343 300.75834154517656,96.7440148147106 301.2089075836468,97.33099050934788 301.6921411281632,97.89137926955982 302.2064765300028,98.42336546818922 302.7502473722249,98.92522550073494 303.32169186876496,99.39533336973079 303.9189585725198,99.83216595288314 304.54011237392905,100.23430793789913" fill="none" stroke="#1F6B3A" stroke-width="0.8"></polyline><line x1="302.1" y1="94.3" x2="297.8" y2="96.7" stroke="#1F6B3A" stroke-width="0.7"></line><line x1="304.3189062622575" y1="93.04683979681135" x2="295.6029750325937" y2="97.94913954282558" stroke="#1F6B3A" stroke-width="1.1"></line></g>
+          <g id="polyLabels"><text x="145" y="38.25" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" text-anchor="middle">P</text><text x="255" y="201.75" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" text-anchor="middle">P'</text><text x="218.8271921668604" y="160.4929418074985" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" text-anchor="middle">Q</text><text x="181.1728078331396" y="79.50705819250147" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" text-anchor="middle">Q'</text><text x="71.17280783313961" y="160.49294180749857" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700" text-anchor="middle">R</text><text x="328.8271921668604" y="79.50705819250145" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" text-anchor="middle">R'</text></g>
+          <g id="polyHandles"><circle class="poly-handle vertex-handle" data-i="0" cx="145" cy="58.25" r="12" style=""></circle><circle class="poly-handle vertex-handle" data-i="1" cx="201.29165124598853" cy="150.875" r="12" style=""></circle><circle class="poly-handle vertex-handle" data-i="2" cx="88.7083487540115" cy="150.87500000000003" r="12" style=""></circle></g>
+        </svg>
+        
+      </div>
+
+      <div class="sub-header"><span class="letter">D</span><h4>Symétrique d'un cercle</h4></div>
+      <span class="prop-badge">Propriété</span>
+      <div class="def-box">Le symétrique d'un cercle par une symétrie centrale est un cercle de <b>même rayon</b>, dont le <b>centre est le symétrique</b> du centre de départ.</div>
+      <div class="figure-wrap">
+        <strong style="font-family:'Space Grotesk',sans-serif;">Exemple</strong>
+        
+        <svg id="svgCercle" viewBox="0 0 400 220" style="width:100%;max-width:400px;display:block;margin:10px auto;touch-action:none;">
+          <circle id="cercleN" fill="none" stroke="#1F3A5C" stroke-width="1.8" cx="110" cy="110" r="50"></circle>
+          <circle id="cercleNprime" fill="none" stroke="#E35D3A" stroke-width="1.8" cx="290" cy="110" r="50"></circle>
+          <line id="cercleDrop" stroke="#B7C3CD" stroke-width="1.2" stroke-dasharray="3 3" x1="110" y1="110" x2="290" y2="110"></line>
+          <line id="rayonNM" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="4 3" x1="110" y1="110" x2="160" y2="110"></line>
+          <line id="rayonNMprime" stroke="#E35D3A" stroke-width="1.3" stroke-dasharray="4 3" x1="290" y1="110" x2="240" y2="110"></line>
+          <line id="codeRayonNM" stroke="#8A2E1C" stroke-width="1.5" x1="132.0416721678151" y1="103.65584549074345" x2="137.9583278321849" y2="116.34415450925655"></line>
+          <line id="codeRayonNMprime" stroke="#8A2E1C" stroke-width="1.5" x1="262.0416721678151" y1="103.65584549074345" x2="267.9583278321849" y2="116.34415450925655"></line>
+          <line id="cercleCrossO1" stroke="#1C1B2E" stroke-width="2" x1="194" y1="104" x2="206" y2="116"></line>
+          <line id="cercleCrossO2" stroke="#1C1B2E" stroke-width="2" x1="194" y1="116" x2="206" y2="104"></line>
+          <text id="cercleLabelO" font-family="Space Grotesk" font-size="13" fill="#1C1B2E" x="210" y="102">O</text>
+          <text id="cercleNameC" font-family="Caveat" font-size="26" font-weight="700" fill="#1F3A5C" x="96" y="50">(C)</text>
+          <text id="cercleNameCprime" font-family="Caveat" font-size="26" font-weight="700" fill="#E35D3A" x="274" y="50">(C')</text>
+          <line id="crossN1" stroke="#1F3A5C" stroke-width="2" x1="104" y1="104" x2="116" y2="116"></line>
+          <line id="crossN2" stroke="#1F3A5C" stroke-width="2" x1="104" y1="116" x2="116" y2="104"></line>
+          <circle id="handleN" r="15" fill="transparent" style="" cx="110" cy="110"></circle>
+          <text id="cercleLabelN" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700" x="119" y="101">N</text>
+          <line id="tickM" class="pt-tick" stroke="#1F3A5C" stroke-width="2" x1="160" y1="104.5" x2="160" y2="115.5"></line>
+          <circle id="dotM" r="3.5" fill="#1F3A5C" cx="160" cy="110"></circle>
+          <circle id="handleM" r="12" fill="transparent" style="" cx="160" cy="110"></circle>
+          <text id="cercleLabelM" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700" x="174" y="110">M</text>
+          <line id="crossNprime1" stroke="#E35D3A" stroke-width="2" x1="284" y1="104" x2="296" y2="116"></line>
+          <line id="crossNprime2" stroke="#E35D3A" stroke-width="2" x1="284" y1="116" x2="296" y2="104"></line>
+          <text id="cercleLabelNprime" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700" x="299" y="101">N'</text>
+          <line id="tickMprime" class="pt-tick" stroke="#E35D3A" stroke-width="2" x1="240" y1="104.5" x2="240" y2="115.5"></line>
+          <circle id="dotMprime" r="3.5" fill="#E35D3A" cx="240" cy="110"></circle>
+          <text id="cercleLabelMprime" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700" x="226" y="110">M'</text>
+        </svg>
+        
+      </div>
+      <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
+        Remarque : pour construire le symétrique d'un <b>arc de cercle</b>, on construit les symétriques de son centre et de ses deux extrémités, puis on trace l'arc qui les relie.
+      </div>
+
+      <div class="lesson-header"><span class="num">3</span><h3>Centre de symétrie</h3></div>
+      <span class="def-badge">Définition</span>
+      <div class="def-box">On dit qu'un point O est le <b>centre de symétrie</b> d'une figure lorsque cette figure est sa propre image par la symétrie centrale de centre O (autrement dit, elle se superpose à elle-même après un demi-tour autour de O).</div>
+
+      <div class="figure-wrap">
+        <strong style="font-family:'Space Grotesk',sans-serif;">Exemple 1</strong>
+        <p class="hint" style="margin-top:6px;">Lancez le demi-tour : l'hexagone tourne de 180° autour de O et vient se superposer exactement à sa position de départ.</p>
+        <svg id="svgHexa" viewBox="0 0 400 260" style="width:100%;max-width:380px;display:block;margin:10px auto;">
+          <polygon id="hexaGhost" points="120,80 90,140 140,220 280,200 310,140 260,60" fill="none" stroke="#E35D3A" stroke-width="1.6" stroke-dasharray="5 4"></polygon>
+          <polygon id="hexaShape" points="120,80 90,140 140,220 280,200 310,140 260,60" fill="#1F3A5C" fill-opacity=".12" stroke="#1C1B2E" stroke-width="2"></polygon>
+          <line x1="194" y1="134" x2="206" y2="146" stroke="#1C1B2E" stroke-width="2"></line><line x1="206" y1="134" x2="194" y2="146" stroke="#1C1B2E" stroke-width="2"></line>
+          <text x="208" y="132" font-family="Space Grotesk" font-size="13" fill="#1C1B2E">O</text>
+          <g id="hexaLabels">
+            <text x="104" y="72" font-family="Space Grotesk" font-size="13">G</text>
+            <text x="68" y="144" font-family="Space Grotesk" font-size="13">H</text>
+            <text x="128" y="240" font-family="Space Grotesk" font-size="13">I</text>
+            <text x="286" y="216" font-family="Space Grotesk" font-size="13">J</text>
+            <text x="316" y="144" font-family="Space Grotesk" font-size="13">K</text>
+            <text x="260" y="48" font-family="Space Grotesk" font-size="13">L</text>
+          </g>
+        </svg>
+        
+        <p class="hint" style="margin-top:8px;">Dans l'hexagone GHIJKL : G a pour symétrique J, H a pour symétrique K, et I a pour symétrique L par rapport à O. Ce polygone admet donc O comme centre de symétrie.</p>
+      </div>
+
+      <p class="example-title">Autres exemples :</p>
+      <ul class="example-list">
+        <li>Un parallélogramme WXYZ a pour centre de symétrie le point d'intersection O de ses diagonales [WY] et [XZ].</li>
+        <li>Un triangle quelconque n'a pas de centre de symétrie. Un triangle équilatéral, lui, possède trois axes de symétrie, mais toujours aucun centre de symétrie.</li>
+      </ul>
+
+      <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
+        <span class="gicon">warning</span> Piège classique : ne pas confondre la <b>symétrie centrale</b> (demi-tour autour d'un point, la figure « tourne ») avec la <b>symétrie axiale</b> (retournement autour d'une droite, la figure est « retournée comme dans un miroir »). Un bon réflexe : si l'énoncé donne un point, c'est une symétrie centrale ; s'il donne une droite, c'est une symétrie axiale.
+      </div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Construire le symétrique d'un point A, au compas et à la règle</h4></div>
+<div class="figure-wrap">
+        <svg id="svgMethod" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:14px auto;">
+          <line id="mTickO" class="pt-tick" stroke="#1C1B2E" stroke-width="2" x1="196.37822465672315" y1="134.13917182088784" x2="203.62177534327685" y2="125.86082817911218"></line>
+          <text x="207" y="122" font-family="Space Grotesk" font-size="13" fill="#1C1B2E">O</text>
+          <line id="mTickA" class="pt-tick" stroke="#1F3A5C" stroke-width="2" x1="116.37822465672315" y1="64.13917182088782" x2="123.62177534327685" y2="55.860828179112175"></line>
+          <text x="100" y="50" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">A</text>
+          <line id="mStep1" x1="120" y1="60" x2="120" y2="60" stroke="#1C1B2E" stroke-width="1.6" opacity="0"></line>
+          <g id="mRulerTool" opacity="0" transform="translate(99.9,42.4) rotate(41.2) scale(0.890)"><rect x="-14" y="0" width="354" height="36" rx="6" fill="rgba(205,228,255,.35)" stroke="#1C1B2E" stroke-width="1.5"></rect><line x1="0" y1="0" x2="0" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="0" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">0</text><line x1="2.2" y1="0" x2="2.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="4.4" y1="0" x2="4.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="6.6" y1="0" x2="6.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="8.8" y1="0" x2="8.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="11.0" y1="0" x2="11.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="13.2" y1="0" x2="13.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="15.4" y1="0" x2="15.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="17.6" y1="0" x2="17.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="19.8" y1="0" x2="19.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="22" y1="0" x2="22" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="22" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">1</text><line x1="24.2" y1="0" x2="24.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="26.4" y1="0" x2="26.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="28.6" y1="0" x2="28.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="30.8" y1="0" x2="30.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="33.0" y1="0" x2="33.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="35.2" y1="0" x2="35.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="37.4" y1="0" x2="37.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="39.6" y1="0" x2="39.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="41.8" y1="0" x2="41.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="44" y1="0" x2="44" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="44" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">2</text><line x1="46.2" y1="0" x2="46.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="48.4" y1="0" x2="48.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="50.6" y1="0" x2="50.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="52.8" y1="0" x2="52.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="55.0" y1="0" x2="55.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="57.2" y1="0" x2="57.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="59.4" y1="0" x2="59.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="61.6" y1="0" x2="61.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="63.8" y1="0" x2="63.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="66" y1="0" x2="66" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="66" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">3</text><line x1="68.2" y1="0" x2="68.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="70.4" y1="0" x2="70.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="72.6" y1="0" x2="72.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="74.8" y1="0" x2="74.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="77.0" y1="0" x2="77.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="79.2" y1="0" x2="79.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="81.4" y1="0" x2="81.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="83.6" y1="0" x2="83.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="85.8" y1="0" x2="85.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="88" y1="0" x2="88" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="88" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">4</text><line x1="90.2" y1="0" x2="90.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="92.4" y1="0" x2="92.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="94.6" y1="0" x2="94.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="96.8" y1="0" x2="96.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="99.0" y1="0" x2="99.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="101.2" y1="0" x2="101.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="103.4" y1="0" x2="103.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="105.6" y1="0" x2="105.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="107.8" y1="0" x2="107.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="110" y1="0" x2="110" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="110" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">5</text><line x1="112.2" y1="0" x2="112.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="114.4" y1="0" x2="114.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="116.6" y1="0" x2="116.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="118.8" y1="0" x2="118.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="121.0" y1="0" x2="121.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="123.2" y1="0" x2="123.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="125.4" y1="0" x2="125.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="127.6" y1="0" x2="127.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="129.8" y1="0" x2="129.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="132" y1="0" x2="132" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="132" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">6</text><line x1="134.2" y1="0" x2="134.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="136.4" y1="0" x2="136.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="138.6" y1="0" x2="138.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="140.8" y1="0" x2="140.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="143.0" y1="0" x2="143.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="145.2" y1="0" x2="145.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="147.4" y1="0" x2="147.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="149.6" y1="0" x2="149.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="151.8" y1="0" x2="151.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="154" y1="0" x2="154" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="154" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">7</text><line x1="156.2" y1="0" x2="156.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="158.4" y1="0" x2="158.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="160.6" y1="0" x2="160.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="162.8" y1="0" x2="162.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="165.0" y1="0" x2="165.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="167.2" y1="0" x2="167.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="169.4" y1="0" x2="169.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="171.6" y1="0" x2="171.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="173.8" y1="0" x2="173.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="176" y1="0" x2="176" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="176" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">8</text><line x1="178.2" y1="0" x2="178.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="180.4" y1="0" x2="180.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="182.6" y1="0" x2="182.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="184.8" y1="0" x2="184.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="187.0" y1="0" x2="187.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="189.2" y1="0" x2="189.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="191.4" y1="0" x2="191.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="193.6" y1="0" x2="193.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="195.8" y1="0" x2="195.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="198" y1="0" x2="198" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="198" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">9</text><line x1="200.2" y1="0" x2="200.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="202.4" y1="0" x2="202.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="204.6" y1="0" x2="204.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="206.8" y1="0" x2="206.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="209.0" y1="0" x2="209.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="211.2" y1="0" x2="211.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="213.4" y1="0" x2="213.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="215.6" y1="0" x2="215.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="217.8" y1="0" x2="217.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="220" y1="0" x2="220" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="220" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">10</text><line x1="222.2" y1="0" x2="222.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="224.4" y1="0" x2="224.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="226.6" y1="0" x2="226.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="228.8" y1="0" x2="228.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="231.0" y1="0" x2="231.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="233.2" y1="0" x2="233.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="235.4" y1="0" x2="235.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="237.6" y1="0" x2="237.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="239.8" y1="0" x2="239.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="242" y1="0" x2="242" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="242" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">11</text><line x1="244.2" y1="0" x2="244.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="246.4" y1="0" x2="246.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="248.6" y1="0" x2="248.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="250.8" y1="0" x2="250.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="253.0" y1="0" x2="253.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="255.2" y1="0" x2="255.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="257.4" y1="0" x2="257.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="259.6" y1="0" x2="259.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="261.8" y1="0" x2="261.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="264" y1="0" x2="264" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="264" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">12</text><line x1="266.2" y1="0" x2="266.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="268.4" y1="0" x2="268.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="270.6" y1="0" x2="270.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="272.8" y1="0" x2="272.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="275.0" y1="0" x2="275.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="277.2" y1="0" x2="277.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="279.4" y1="0" x2="279.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="281.6" y1="0" x2="281.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="283.8" y1="0" x2="283.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="286" y1="0" x2="286" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="286" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">13</text><line x1="288.2" y1="0" x2="288.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="290.4" y1="0" x2="290.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="292.6" y1="0" x2="292.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="294.8" y1="0" x2="294.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="297.0" y1="0" x2="297.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="299.2" y1="0" x2="299.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="301.4" y1="0" x2="301.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="303.6" y1="0" x2="303.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="305.8" y1="0" x2="305.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="308" y1="0" x2="308" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="308" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">14</text><line x1="310.2" y1="0" x2="310.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="312.4" y1="0" x2="312.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="314.6" y1="0" x2="314.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="316.8" y1="0" x2="316.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="319.0" y1="0" x2="319.0" y2="9" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="321.2" y1="0" x2="321.2" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="323.4" y1="0" x2="323.4" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="325.6" y1="0" x2="325.6" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="327.8" y1="0" x2="327.8" y2="5" stroke="#1C1B2E" stroke-width="0.7"></line><line x1="330" y1="0" x2="330" y2="14" stroke="#1C1B2E" stroke-width="1.1"></line>
+        <text x="330" y="25" font-size="9" text-anchor="middle" fill="#1C1B2E" font-family="'JetBrains Mono',monospace">15</text>
+    <circle cx="34" cy="24.5" r="6" fill="#fff" fill-opacity="0.75" stroke="#1C1B2E" stroke-width="1"></circle>
+    <circle cx="0" cy="0" r="5" fill="#D93025" stroke="#1C1B2E" stroke-width="1"></circle></g>
+          <g id="mPencilTool" opacity="0" transform="translate(310.1,226.3) rotate(6.2) scale(0.890)"><g data-role="pencilBody" data-id="m-pencil">
+    <rect x="-7" y="-100" width="14" height="14" fill="#D93025" stroke="#1C1B2E" stroke-width="1.4"></rect>
+    <rect x="-7" y="-86" width="14" height="51" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.4"></rect>
+    <polygon points="-7,-35 7,-35 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1.4"></polygon>
+    <polygon points="-2.5,-10 2.5,-10 0,0" fill="#3a2b1f"></polygon>
+  </g>
+  <circle data-role="tip" data-id="m-pencil" cx="0" cy="0" r="18" fill="transparent" pointer-events="all"></circle></g>
+          <polyline id="mArc" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0" points=""></polyline>
+          <g id="mCompass" opacity="0"><line x1="6.1" y1="-10.3" x2="53.2" y2="-89.9" stroke="#1C1B2E" stroke-width="5" stroke-linecap="butt"></line>
+    <line x1="106.3" y1="0.0" x2="53.2" y2="-89.9" stroke="#1C1B2E" stroke-width="5" stroke-linecap="round"></line>
+    <g transform="rotate(30.6)">
+      <polygon points="0,0 -3.5,-18 3.5,-18" fill="#6B7280" stroke="#1C1B2E" stroke-width="1"></polygon>
+    </g>
+    <g transform="translate(106.3,0.0) rotate(-30.6)">
+      <rect x="-4.5" y="-22" width="9" height="8" fill="#D93025" stroke="#1C1B2E" stroke-width="1.1"></rect>
+      <rect x="-4.5" y="-14" width="9" height="10" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.1"></rect>
+      <polygon points="-4.5,-4 4.5,-4 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1.1"></polygon>
+      <polygon points="-1.6,-1.3 1.6,-1.3 0,0" fill="#3a2b1f"></polygon>
+    </g>
+    <g transform="translate(53.2,-89.9)">
+      <ellipse cx="0" cy="0" rx="12" ry="16" fill="#2EA8C9" stroke="#1C1B2E" stroke-width="1.6"></ellipse>
+      <circle cx="-4" cy="-4" r="1.7" fill="#1C1B2E"></circle>
+      <circle cx="4" cy="-4" r="1.7" fill="#1C1B2E"></circle>
+      <circle cx="0" cy="-19" r="7" fill="#2EA8C9" stroke="#1C1B2E" stroke-width="1.4"></circle>
+    </g></g>
+          <line id="mTickAprime" class="pt-tick" stroke="#E35D3A" stroke-width="2" opacity="0"></line>
+          <text id="mStep3t" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700" opacity="0">A'</text>
+          <line id="mCodeAO" stroke="#1C1B2E" stroke-width="1.6" opacity="0"></line>
+          <line id="mCodeOAprime" stroke="#1C1B2E" stroke-width="1.6" opacity="0"></line>
+        </svg>
+        <div class="step-list">
+          <div class="step-item" data-step="1"><div class="step-num">1</div><div>Je trace la <b>demi-droite [AO)</b> à la règle, en la prolongeant largement au-delà de O.</div></div>
+          <div class="step-item" data-step="2"><div class="step-num">2</div><div>Je pique le <b>compas en A</b>, j'ouvre jusqu'à O, puis je reporte cette longueur <b>OA</b> de l'autre côté de O sur la demi-droite (arc de cercle).</div></div>
+          <div class="step-item" data-step="3"><div class="step-num">3</div><div>Le point où l'arc coupe la droite est <b>A'</b>, le symétrique de A : on a bien <b>OA' = OA</b>, avec O entre A et A'.</div></div>
+        </div>
+        
+      </div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+        <h3>Rédaction type : « Construire le symétrique d'un point »</h3>
+        <div class="redaction-template">
+          <span class="fill">O</span> est le milieu du segment <span class="fill">[AA']</span>.<br>Donc <span class="fill">A'</span> est le symétrique du point <span class="fill">A</span> par rapport au point <span class="fill">O</span>.
+        </div>
+      </div>
+      <div class="redaction-block">
+        <h3>Exercices</h3>
+        <div class="exo-card">
+          <div class="num">Exercice 1</div>
+          Place un point O et un point M à 4 cm de O. Construis le symétrique M' de M par rapport à O, en laissant apparents les traits de construction.
+          
+          
+        </div>
+        <div class="exo-card">
+          <div class="num">Exercice 2</div>
+          ABCD est un parallélogramme de centre O. Explique pourquoi C est le symétrique de A par rapport à O.
+          
+          
+        </div>
+      </div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Contrairement à beaucoup d'autres notions de ce cours, la symétrie n'a pas vraiment d'inventeur : elle est utilisée depuis la Préhistoire, bien avant d'être étudiée mathématiquement. On retrouve des motifs symétriques (par rotation, comme la symétrie centrale, ou par réflexion) dans des ornements vieux de plusieurs dizaines de milliers d'années, sur toutes les civilisations. Ce sont les mathématiciens grecs, notamment autour d'Euclide, qui commencent à étudier ces transformations de façon rigoureuse, en s'intéressant en particulier aux propriétés des figures régulières.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/5e/2-symetrie-centrale/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/5e/operations-sur-les-nombres-decimaux/">Opérations sur les nombres décimaux</a></span>
+  <a href="/5e/">Tous les chapitres de 5e</a>
+  <span><a href="/5e/divisibilite/">Divisibilité</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

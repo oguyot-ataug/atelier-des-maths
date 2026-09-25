@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Droites remarquables dans un triangle – Cours de maths 5e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 5e : Droites remarquables dans un triangle. Définitions, Concourance des droites remarquables dans un triangle. Définitions, figures…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/5e/droites-remarquables-dans-un-triangle/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Droites remarquables dans un triangle – Cours de maths 5e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 5e : Droites remarquables dans un triangle. Définitions, Concourance des droites remarquables dans un triangle. Définitions, figures…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/5e/droites-remarquables-dans-un-triangle/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Droites remarquables dans un triangle (5e)","headline":"Droites remarquables dans un triangle – cours de mathématiques de 5e","description":"Cours de maths 5e : Droites remarquables dans un triangle. Définitions, Concourance des droites remarquables dans un triangle. Définitions, figures…","url":"https://maths.latelieraugmente.fr/5e/droites-remarquables-dans-un-triangle/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"5e (cycle 4, collège)","about":"Géométrie","teaches":["Définitions","Concourance des droites remarquables dans un triangle"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 5e","url":"https://maths.latelieraugmente.fr/5e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 5e","item":"https://maths.latelieraugmente.fr/5e/"},{"@type":"ListItem","position":3,"name":"Droites remarquables dans un triangle","item":"https://maths.latelieraugmente.fr/5e/droites-remarquables-dans-un-triangle/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/5e/">Cours de maths 5e</a> › Droites remarquables dans un triangle</div>
+<h1>Droites remarquables dans un triangle</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span> Cours de mathématiques de 5e (cinquième) · chapitre 6 · Définitions · Concourance des droites remarquables dans un triangle</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/5e/6-droites-remarquables-dans-un-triangle/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Définitions</h3></div>
+
+<div class="sub-header"><span class="letter">A</span><h4>Médiatrices</h4></div>
+<span class="prop-badge">Définition</span>
+<div class="def-box">La <b>médiatrice d'un segment</b> est la droite perpendiculaire à ce segment en son milieu.</div>
+<div class="figure-wrap"><svg viewBox="0 0 380 230" style="width:100%;max-width:360px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <polygon points="220,20 30,210 330,210" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <line x1="180" y1="120" x2="180" y2="300" stroke="#1F3A5C" stroke-width="1.8"></line>
+    <polyline points="171,210 171,219 180,219" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <line x1="105" y1="215" x2="105" y2="205" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="255" y1="215" x2="255" y2="205" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <circle cx="180" cy="210" r="2.4" fill="#1C1B2E"></circle>
+    <text x="214" y="12" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="16" y="216" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="338" y="216" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+  </svg></div>
+<p style="margin:10px 0 12px;">On a tracé la médiatrice du côté [BC] : elle passe par le milieu de [BC] et lui est perpendiculaire.</p>
+
+<div class="sub-header"><span class="letter">B</span><h4>Bissectrice</h4></div>
+<span class="prop-badge">Définition</span>
+<div class="def-box">La <b>bissectrice d'un angle</b> est la droite qui partage cet angle en deux angles adjacents de même mesure.</div>
+<div class="figure-wrap"><svg viewBox="0 0 380 230" style="width:100%;max-width:360px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <polygon points="220,20 30,210 330,210" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <line x1="220" y1="20" x2="192.71411387195718" y2="228.21978872865924" stroke="#1F6B3A" stroke-width="1.8"></line>
+    <polyline points="195.9583694396574,44.04163056034262 196.84907436550634,44.90049481970476 197.77044031079564,45.726380935220945 198.72124702111273,46.518195105691035 199.7002352507804,47.27488865470107 200.7061084305981,47.99545941948734 201.73753438501453,48.678953078197836 202.793147096457,49.32446441379337 203.87154851448133,49.93113851291445 204.97131040734575,50.49817189812605 206.09097625355693,51.02481359204085 207.2290631708829,51.510366111911495 208.38406388027798,51.95418639337477 209.5544487021188,52.35568664212417 210.73866758210772,52.71433511238304 211.93515214416016,53.02965681114709 213.14231776755742,53.30123412726383 214.35856568561385,53.528707384515535 215.5822851030788,53.7117753179734" fill="none" stroke="#1F6B3A" stroke-width="1.3"></polyline><polyline points="215.5822851030788,53.7117753179734 216.81185532946924,53.85019547299197 218.0456479255077,53.94378452631538 219.28202885982233,53.99241852887011 220.51936067305363,53.99603306992281 221.75600464650068,53.95462336238569 222.9903229724357,53.86824424915652 224.22068092321172,53.73701013048484 225.44544901629126,53.56109481246064 226.66300517232835,53.34073127682603 227.8717368634458,53.0762113724149 229.07004324886228,52.76788542862917 230.25633729504148,52.41616179146355 231.4290478775547,52.02150628269324 232.58662186187348,51.58444158294093 233.7275261603366,51.105546539440105 234.85024976256685,50.58545539941139 235.95330573664899,50.02485697006736 237.03523319841796,49.42449370635829" fill="none" stroke="#1F6B3A" stroke-width="1.3"></polyline><line x1="208.5593306306547" y1="52.26625302667361" x2="201.3832901840368" y2="48.730090769578496" stroke="#1C1B2E" stroke-width="1.3"></line><line x1="230.5854441460726" y1="52.55684831537563" x2="222.7405661985841" y2="54.12461423827642" stroke="#1C1B2E" stroke-width="1.3"></line>
+    <text x="214" y="12" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="16" y="216" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="338" y="216" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+  </svg></div>
+<p style="margin:10px 0 12px;">On a tracé la bissectrice de l'angle <span class="tex" data-tex-source="\widehat{BAC}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>B</mi><mi>A</mi><mi>C</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span> : elle partage cet angle en deux angles adjacents de même mesure.</p>
+
+<div class="sub-header"><span class="letter">C</span><h4>Hauteurs</h4></div>
+<span class="prop-badge">Définition</span>
+<div class="def-box">Dans un triangle, une <b>hauteur</b> est une droite qui passe par un sommet et qui est perpendiculaire au côté opposé à ce sommet.</div>
+<div class="figure-wrap"><svg viewBox="0 0 400 260" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <polygon points="137,105 30,195 330,195" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <line x1="137" y1="105" x2="137" y2="195" stroke="#1F3A5C" stroke-width="1.8"></line>
+    <polyline points="146,195 146,186 137,186" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <line x1="330" y1="195" x2="205.69696659675685" y2="47.21750473169983" stroke="#E35D3A" stroke-width="1.8"></line>
+    <line x1="137" y1="105" x2="205.69696659675685" y2="47.21750473169983" stroke="#5B6B78" stroke-width="1.3" stroke-dasharray="5,4"></line>
+    <polyline points="198.8094285038586,53.01076107152078 204.60268484367955,59.89829916441903 211.4902229365778,54.10504282459807" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <circle cx="137" cy="195" r="2.2" fill="#1C1B2E"></circle>
+    <circle cx="205.69696659675685" cy="47.21750473169983" r="2.2" fill="#1C1B2E"></circle>
+    <text x="131" y="95" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="14" y="201" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="338" y="201" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+  </svg></div>
+<p style="margin:10px 0 4px;">On a tracé :</p>
+<ul style="margin:4px 0 12px;padding-left:22px;">
+  <li>la hauteur issue de A, qui traverse le triangle ABC ;</li>
+  <li>la hauteur issue de C (en pointillés au-delà du triangle), qui est <span style="color:#E35D3A;font-weight:700;">extérieure</span> au triangle ABC.</li>
+</ul>
+
+<div class="sub-header"><span class="letter">D</span><h4>Médianes</h4></div>
+<span class="prop-badge">Définition</span>
+<div class="def-box">Dans un triangle, une <b>médiane</b> est une droite qui passe par un sommet et par le milieu du côté opposé à ce sommet.</div>
+<div class="figure-wrap"><svg viewBox="0 0 380 230" style="width:100%;max-width:360px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <polygon points="220,20 30,210 330,210" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <line x1="220" y1="20" x2="180" y2="210" stroke="#9E1F5E" stroke-width="1.8"></line>
+    <line x1="105" y1="215" x2="105" y2="205" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="255" y1="215" x2="255" y2="205" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <circle cx="180" cy="210" r="2.4" fill="#1C1B2E"></circle>
+    <text x="214" y="12" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="16" y="216" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="338" y="216" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+  </svg></div>
+<p style="margin:10px 0 12px;">On a tracé la médiane issue de A : elle passe par A et par le milieu de [BC].</p>
+
+<div class="lesson-header"><span class="num">2</span><h3>Concourance des droites remarquables dans un triangle</h3></div>
+
+<div class="sub-header"><span class="letter">A</span><h4>Médiatrices</h4></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Les médiatrices des trois côtés d'un triangle sont <b>concourantes</b> en un point qui est le <b>centre du cercle circonscrit</b> à ce triangle.</div>
+<div style="display:flex;flex-wrap:wrap;gap:18px;justify-content:center;">
+  <div class="figure-wrap"><svg viewBox="0 0 380 340" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <circle cx="180" cy="170" r="155.24174696260025" fill="none" stroke="#1F6B3A" stroke-width="1.4"></circle>
+    <polygon points="220,20 30,210 330,210" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <line x1="190.60660171779818" y1="180.60660171779818" x2="114.39339828220179" y2="104.39339828220179" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"></line>
+    <line x1="287.9813942822169" y1="107.48445594187443" x2="167.01860571778312" y2="177.51554405812556" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"></line>
+    <line x1="180" y1="155" x2="180" y2="225" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"></line>
+    <polyline points="120.05025253169417,119.94974746830583 115.10050506338834,115 120.05025253169417,110.05025253169417" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <polyline points="278.5072538937919,121.05798399836789 272.44926989542404,124.56523789215981 268.9420160016321,118.50725389379193" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <polyline points="187,210 187,217 180,217" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <line x1="169.67157287525382" y1="64.67157287525382" x2="175.32842712474618" y2="70.32842712474618" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="74.67157287525382" y1="159.67157287525382" x2="80.32842712474618" y2="165.32842712474618" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="243.23663682520876" y1="68.11946302539701" x2="250.16004710905779" y2="64.11117286106338" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="244.83995289094221" y1="70.88882713893662" x2="251.76336317479124" y2="66.88053697460299" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="298.2366368252088" y1="163.119463025397" x2="305.16004710905776" y2="159.11117286106338" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="299.83995289094224" y1="165.88882713893662" x2="306.7633631747912" y2="161.880536974603" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="101.8" y1="214" x2="101.8" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="105" y1="214" x2="105" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="108.2" y1="214" x2="108.2" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="251.8" y1="214" x2="251.8" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="255" y1="214" x2="255" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="258.2" y1="214" x2="258.2" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <circle cx="180" cy="170" r="3" fill="#E35D3A"></circle>
+    <text x="214" y="12" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="16" y="216" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="338" y="216" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+    <text x="186" y="164" font-size="12" font-style="italic" fill="#1C1B2E">O</text>
+  </svg><p class="hint" style="text-align:center;">Triangle à angles aigus : O est à l'intérieur.</p></div>
+  <div class="figure-wrap"><svg viewBox="0 0 380 440" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <circle cx="180" cy="264.72777777777776" r="165.4145186911571" fill="none" stroke="#1F6B3A" stroke-width="1.4"></circle>
+    <polygon points="137,105 30,195 330,195" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <line x1="189.65542723303497" y1="276.20700793260824" x2="73.84457276696509" y2="138.52076984516958" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"></line>
+    <line x1="239.83942562640397" y1="136.4054539344893" x2="173.66057437359603" y2="278.3223238432885" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"></line>
+    <line x1="180" y1="180" x2="180" y2="279.72777777777776" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"></line>
+    <polyline points="78.14302592774581,154.50586604208297 73.63715988566285,149.14889196982878 78.99413395791704,144.6430259277458" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <polyline points="239.84412149723832,152.95839862565518 236.88572287158314,159.3025201228935 230.54160137434482,156.34412149723832" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <polyline points="187,195 187,202 180,202" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <line x1="107.67521940452401" y1="124.43887195871189" x2="112.82478059547599" y2="130.5611280412881" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="54.17521940452402" y1="169.4388719587119" x2="59.32478059547598" y2="175.5611280412881" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="182.10940158597114" y1="130.44900688398644" x2="185.4904285867199" y2="123.19858231571405" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="185.0095714132801" y1="131.80141768428595" x2="188.39059841402886" y2="124.55099311601357" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="278.60940158597117" y1="175.4490068839864" x2="281.99042858671993" y2="168.19858231571405" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="281.50957141328007" y1="176.80141768428595" x2="284.89059841402883" y2="169.5509931160136" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="101.8" y1="199" x2="101.8" y2="191" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="105" y1="199" x2="105" y2="191" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="108.2" y1="199" x2="108.2" y2="191" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="251.8" y1="199" x2="251.8" y2="191" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="255" y1="199" x2="255" y2="191" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="258.2" y1="199" x2="258.2" y2="191" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <circle cx="180" cy="264.72777777777776" r="3" fill="#E35D3A"></circle>
+    <text x="131" y="97" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="16" y="201" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="338" y="201" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+    <text x="186" y="258.72777777777776" font-size="12" font-style="italic" fill="#1C1B2E">O</text>
+  </svg><p class="hint" style="text-align:center;">Triangle avec un angle obtus : O est à l'extérieur.</p></div>
+</div>
+<p style="margin:10px 0 4px;">Dans un triangle qui a tous ses angles aigus, le centre du cercle circonscrit se trouve à l'intérieur du triangle.</p>
+<p style="margin:4px 0 12px;">Dans un triangle qui a un de ses angles obtus, le centre du cercle circonscrit se trouve à l'extérieur du triangle.</p>
+
+<div class="sub-header"><span class="letter">B</span><h4>Médiatrices et triangle rectangle</h4></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Un triangle rectangle est inscrit dans un <b>cercle de diamètre son hypoténuse</b>.</div>
+<div class="figure-wrap"><svg viewBox="0 0 380 300" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <circle cx="190" cy="150" r="147.64823060233402" fill="none" stroke="#1F6B3A" stroke-width="1.4"></circle>
+    <polygon points="60,220 60,80 320,220" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <polyline points="60,210 70,210 70,220" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <circle cx="190" cy="150" r="3" fill="#E35D3A"></circle>
+    <text x="40" y="236" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="44" y="84" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="328" y="224" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+    <text x="196" y="142" font-size="12" font-style="italic" fill="#1C1B2E">O</text>
+  </svg></div>
+<p style="margin:10px 0 12px;">Le milieu O de l'hypoténuse [BC] est le centre du cercle circonscrit au triangle ABC, rectangle en A.</p>
+
+<div class="sub-header"><span class="letter">C</span><h4>Hauteurs</h4></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Les trois hauteurs d'un triangle sont <b>concourantes</b> en un point qui est <b>l'orthocentre</b> de ce triangle.</div>
+<div style="display:flex;flex-wrap:wrap;gap:18px;justify-content:center;">
+  <div class="figure-wrap" id="dr-ortho-def-wrap"><svg viewBox="0 0 380 230" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <polygon points="220,20 30,210 330,210" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <line x1="220" y1="5" x2="220" y2="225" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="4,3"></line>
+    <line x1="267.67019096271486" y1="72.40146839000721" x2="17.018605717783107" y2="217.51554405812556" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="4,3"></line>
+    <line x1="340.6066017177982" y1="220.6066017177982" x2="169.39339828220182" y2="49.393398282201815" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="4,3"></line>
+    <circle cx="220" cy="99.99999999999999" r="3" fill="#E35D3A"></circle>
+    <text x="214" y="12" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="16" y="216" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="338" y="216" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+    <text x="226" y="93.99999999999999" font-size="12" font-style="italic" fill="#1C1B2E">H</text>
+  </svg><p class="hint" style="text-align:center;">Triangle à angles aigus : H est à l'intérieur.</p></div>
+  <div class="figure-wrap" id="dr-ortho-obtus-wrap"><svg viewBox="0 0 380 300" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <polygon points="137,150 30,240 330,240" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <line x1="137" y1="-4.455555555555577" x2="137" y2="255" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="4,3"></line>
+    <line x1="143.33942562640397" y1="-3.050101621066318" x2="23.66057437359604" y2="253.5945460655107" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="4,3"></line>
+    <line x1="339.6554272330349" y1="251.47923015483042" x2="127.344572766965" y2="-0.9347857103860235" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="4,3"></line>
+    <circle cx="137" cy="10.544444444444423" r="3" fill="#E35D3A"></circle>
+    <text x="131" y="142" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="16" y="246" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="338" y="246" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+    <text x="143" y="4.544444444444423" font-size="12" font-style="italic" fill="#1C1B2E">H</text>
+  </svg><p class="hint" style="text-align:center;">Triangle avec un angle obtus : H est à l'extérieur.</p></div>
+</div>
+<p style="margin:10px 0 4px;">Dans un triangle qui a tous ses angles aigus, l'orthocentre se trouve à l'intérieur du triangle.</p>
+<p style="margin:4px 0 12px;">Dans un triangle qui a un de ses angles obtus, l'orthocentre se trouve à l'extérieur du triangle.</p>
+
+<div class="sub-header"><span class="letter">D</span><h4>Médianes</h4></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Les trois médianes d'un triangle sont <b>concourantes</b> en un point qui est le <b>centre de gravité</b> de ce triangle.</div>
+<div class="figure-wrap"><svg viewBox="0 0 380 230" style="width:100%;max-width:360px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <polygon points="220,20 30,210 330,210" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <line x1="220" y1="20" x2="180" y2="210" stroke="#9E1F5E" stroke-width="1.4"></line>
+    <line x1="30" y1="210" x2="275" y2="115" stroke="#9E1F5E" stroke-width="1.4"></line>
+    <line x1="330" y1="210" x2="125" y2="115" stroke="#9E1F5E" stroke-width="1.4"></line>
+    <line x1="105" y1="214" x2="105" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="255" y1="214" x2="255" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="243.23663682520876" y1="68.11946302539701" x2="250.16004710905779" y2="64.11117286106338" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="244.83995289094221" y1="70.88882713893662" x2="251.76336317479124" y2="66.88053697460299" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="298.2366368252088" y1="163.119463025397" x2="305.16004710905776" y2="159.11117286106338" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="299.83995289094224" y1="165.88882713893662" x2="306.7633631747912" y2="161.880536974603" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="171.93431457505076" y1="62.40883117545686" x2="177.59116882454313" y2="68.06568542494924" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="169.67157287525382" y1="64.67157287525382" x2="175.32842712474618" y2="70.32842712474618" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="167.40883117545687" y1="66.93431457505076" x2="173.06568542494924" y2="72.59116882454313" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="76.93431457505076" y1="157.40883117545687" x2="82.59116882454313" y2="163.06568542494924" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="74.67157287525382" y1="159.67157287525382" x2="80.32842712474618" y2="165.32842712474618" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="72.40883117545687" y1="161.93431457505076" x2="78.06568542494924" y2="167.59116882454313" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <circle cx="193.33333333333334" cy="146.66666666666666" r="3" fill="#E35D3A"></circle>
+    <text x="214" y="12" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="16" y="216" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="338" y="216" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+    <text x="199.33333333333334" y="140.66666666666666" font-size="12" font-style="italic" fill="#1C1B2E">G</text>
+  </svg></div>
+<p style="margin:10px 0 12px;">Le centre de gravité est toujours situé à l'intérieur du triangle, quels que soient ses angles.</p>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : démontrer qu'un triangle est rectangle grâce au cercle circonscrit</h4></div>
+<div class="figure-wrap">
+  
+  <div class="figure-wrap"><svg viewBox="0 0 380 300" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <circle cx="190" cy="150" r="147.64823060233402" fill="none" stroke="#1F6B3A" stroke-width="1.4"></circle>
+    <polygon points="60,220 60,80 320,220" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <polyline points="60,210 70,210 70,220" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <circle cx="190" cy="150" r="3" fill="#E35D3A"></circle>
+    <text x="40" y="236" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="44" y="84" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="328" y="224" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+    <text x="196" y="142" font-size="12" font-style="italic" fill="#1C1B2E">O</text>
+  </svg></div>
+  <div class="step-display" id="dr-methodeRectDisplay"><div class="step-column"><div class="">O est le milieu de [BC], et O est équidistant de A, B et C.</div></div><div class="step-note">Ce que je sais.</div></div>
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : construire le centre du cercle circonscrit à un triangle</h4></div>
+<div class="figure-wrap" style="margin-top:24px;">
+  
+  <div class="figure-wrap"><svg viewBox="0 0 380 340" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <circle cx="180" cy="170" r="155.24174696260025" fill="none" stroke="#1F6B3A" stroke-width="1.4"></circle>
+    <polygon points="220,20 30,210 330,210" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <line x1="190.60660171779818" y1="180.60660171779818" x2="114.39339828220179" y2="104.39339828220179" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"></line>
+    <line x1="287.9813942822169" y1="107.48445594187443" x2="167.01860571778312" y2="177.51554405812556" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"></line>
+    <line x1="180" y1="155" x2="180" y2="225" stroke="#1F3A5C" stroke-width="1.2" stroke-dasharray="4,3"></line>
+    <polyline points="120.05025253169417,119.94974746830583 115.10050506338834,115 120.05025253169417,110.05025253169417" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <polyline points="278.5072538937919,121.05798399836789 272.44926989542404,124.56523789215981 268.9420160016321,118.50725389379193" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <polyline points="187,210 187,217 180,217" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline>
+    <line x1="169.67157287525382" y1="64.67157287525382" x2="175.32842712474618" y2="70.32842712474618" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="74.67157287525382" y1="159.67157287525382" x2="80.32842712474618" y2="165.32842712474618" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="243.23663682520876" y1="68.11946302539701" x2="250.16004710905779" y2="64.11117286106338" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="244.83995289094221" y1="70.88882713893662" x2="251.76336317479124" y2="66.88053697460299" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="298.2366368252088" y1="163.119463025397" x2="305.16004710905776" y2="159.11117286106338" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="299.83995289094224" y1="165.88882713893662" x2="306.7633631747912" y2="161.880536974603" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="101.8" y1="214" x2="101.8" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="105" y1="214" x2="105" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="108.2" y1="214" x2="108.2" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="251.8" y1="214" x2="251.8" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="255" y1="214" x2="255" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="258.2" y1="214" x2="258.2" y2="206" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <circle cx="180" cy="170" r="3" fill="#E35D3A"></circle>
+    <text x="214" y="12" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="16" y="216" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="338" y="216" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+    <text x="186" y="164" font-size="12" font-style="italic" fill="#1C1B2E">O</text>
+  </svg></div>
+  <div class="step-display" id="dr-methodeCircumDisplay"><div class="step-column"><div class="">Je trace la médiatrice du côté [AB].</div></div><div class="step-note">Ce que je fais : première médiatrice.</div></div>
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : construire l'orthocentre d'un triangle</h4></div>
+<div class="figure-wrap" style="margin-top:24px;">
+  
+  <div class="figure-wrap"><svg viewBox="0 0 380 230" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <polygon points="220,20 30,210 330,210" fill="none" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <line x1="220" y1="5" x2="220" y2="225" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="4,3"></line>
+    <line x1="267.67019096271486" y1="72.40146839000721" x2="17.018605717783107" y2="217.51554405812556" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="4,3"></line>
+    <line x1="340.6066017177982" y1="220.6066017177982" x2="169.39339828220182" y2="49.393398282201815" stroke="#1F3A5C" stroke-width="1.3" stroke-dasharray="4,3"></line>
+    <circle cx="220" cy="99.99999999999999" r="3" fill="#E35D3A"></circle>
+    <text x="214" y="12" font-size="12" font-style="italic" fill="#1C1B2E">A</text>
+    <text x="16" y="216" font-size="12" font-style="italic" fill="#1C1B2E">B</text>
+    <text x="338" y="216" font-size="12" font-style="italic" fill="#1C1B2E">C</text>
+    <text x="226" y="93.99999999999999" font-size="12" font-style="italic" fill="#1C1B2E">H</text>
+  </svg></div>
+  <div class="step-display" id="dr-methodeOrthoDisplay"><div class="step-column"><div class="">Je trace la hauteur issue de A.</div></div><div class="step-note">Ce que je fais : première hauteur.</div></div>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Démontrer qu'un triangle est rectangle »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">O est le milieu de [BC], et O est équidistant de A, B et C.</span><span class="we-comment">Ce que je sais.</span></div>
+    <div class="we-row"><span class="we-expr"><span style="color:var(--accent-orange);font-weight:700;">Or,</span> si un point d'un triangle appartient au cercle de diamètre le côté opposé, alors le triangle est rectangle en ce point.</span><span class="we-comment">On énonce la propriété.</span></div>
+    <div class="we-row"><span class="we-expr"><span style="color:var(--accent);font-weight:700;">Donc</span> le triangle ABC est rectangle en A.</span><span class="we-comment">Conclusion.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Trace un triangle ABC quelconque. Trace la médiatrice de [AB] et la médiatrice de [AC]. Nomme O leur point d'intersection. Que représente le point O pour ce triangle ?
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Un triangle RST est tel que O, milieu de [RS], vérifie OR = OS = OT. Démontre que le triangle RST est rectangle en T. Rédige ta réponse.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Trace un triangle quelconque et ses trois hauteurs. Que peux-tu dire de leur point de concours si le triangle a un angle obtus ?
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Trace un triangle et ses trois médianes. Nomme G leur point de concours. G peut-il se trouver à l'extérieur du triangle ? Justifie.
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Les quatre droites remarquables d'un triangle (médiatrices, bissectrices, hauteurs, médianes) et leurs points de concours étaient déjà connus des mathématiciens grecs de l'Antiquité. Mais il faudra attendre 1765 pour qu'une découverte surprenante soit faite : le mathématicien suisse Leonhard Euler démontre que, dans un même triangle, le centre de gravité, l'orthocentre et le centre du cercle circonscrit sont toujours alignés sur une même droite, aujourd'hui appelée la <b>droite d'Euler</b>. Un lien inattendu entre des points qu'on pensait indépendants !
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/5e/6-droites-remarquables-dans-un-triangle/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/5e/fractions/">Fractions</a></span>
+  <a href="/5e/">Tous les chapitres de 5e</a>
+  <span><a href="/5e/proportionnalite/">Proportionnalité</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

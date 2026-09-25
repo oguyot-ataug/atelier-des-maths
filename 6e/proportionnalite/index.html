@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proportionnalité – Cours de maths 6e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 6e : Proportionnalité. Situations de proportionnalité, Échelle. Définitions, figures interactives, méthode animée, exercices et un peu…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/6e/proportionnalite/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Proportionnalité – Cours de maths 6e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 6e : Proportionnalité. Situations de proportionnalité, Échelle. Définitions, figures interactives, méthode animée, exercices et un peu…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/6e/proportionnalite/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Proportionnalité (6e)","headline":"Proportionnalité – cours de mathématiques de 6e","description":"Cours de maths 6e : Proportionnalité. Situations de proportionnalité, Échelle. Définitions, figures interactives, méthode animée, exercices et un peu…","url":"https://maths.latelieraugmente.fr/6e/proportionnalite/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"6e (cycle 3, collège)","about":"Données et probabilités","teaches":["Situations de proportionnalité","Échelle"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 6e","url":"https://maths.latelieraugmente.fr/6e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 6e","item":"https://maths.latelieraugmente.fr/6e/"},{"@type":"ListItem","position":3,"name":"Proportionnalité","item":"https://maths.latelieraugmente.fr/6e/proportionnalite/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/6e/">Cours de maths 6e</a> › Proportionnalité</div>
+<h1>Proportionnalité</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#BFDCFB;color:#1A4E9E;">Données et probabilités</span> Cours de mathématiques de 6e (sixième) · chapitre 15 · Situations de proportionnalité · Échelle</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/15-proportionnalite/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Situations de proportionnalité</h3></div>
+
+<div class="sub-header"><span class="letter">A</span><h4>Grandeurs proportionnelles</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">On dit que deux grandeurs sont <b>proportionnelles</b> quand les valeurs prises par l'une s'obtiennent en multipliant celles prises par l'autre par un même nombre non nul, appelé <b>coefficient de proportionnalité</b>.</div>
+
+<p class="example-title">Exemple : le côté et le périmètre d'un carré</p>
+<p style="margin:4px 0 12px;">La longueur du côté et le périmètre d'un carré sont des grandeurs proportionnelles : le périmètre d'un carré s'obtient en multipliant la longueur de son côté par 4. Le coefficient de proportionnalité est donc 4.</p>
+
+<p class="example-title">Contre-exemple : la chute d'un ballon</p>
+<p style="margin:4px 0 12px;">Voici la distance parcourue par un ballon en chute libre. En 1 seconde, il parcourt 5 m, donc le coefficient serait 5. En 2 secondes, il parcourt 20 m, donc le coefficient serait 10. Ces deux coefficients sont différents : la durée de chute et la distance parcourue <b>ne sont donc pas proportionnelles</b>.</p>
+
+<div class="sub-header"><span class="letter">B</span><h4>Tableau de proportionnalité</h4></div>
+<span class="prop-badge">Règle 1</span>
+<div class="def-box">Dans un tableau de proportionnalité, les nombres de la seconde ligne s'obtiennent en multipliant les nombres correspondants de la première ligne par le <b>coefficient de proportionnalité</b>.</div>
+
+<p class="example-title">Exemple : la consommation d'une voiture</p>
+<p style="margin:4px 0 8px;">À la vitesse de 70 km/h, une voiture consomme 5 L aux 100 km. La consommation de carburant et la distance parcourue sont proportionnelles.</p>
+<p style="margin:4px 0 8px;">À cette vitesse, quand la voiture parcourt une distance de 1 km, elle consomme 0,05 L (5 L : 100). On peut regrouper ces résultats dans un tableau de proportionnalité :</p>
+<div style="overflow-x:auto;margin:10px 0 12px;">
+  <table style="border-collapse:collapse;font-size:.92rem;">
+    <tbody><tr>
+      <td style="padding:6px 14px;background:rgba(31,58,92,.06);font-weight:600;border:1px solid rgba(28,43,57,.15);">Distance parcourue (en km)</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">100</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">1</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">15</td>
+    </tr>
+    <tr>
+      <td style="padding:6px 14px;background:rgba(31,58,92,.06);font-weight:600;border:1px solid rgba(28,43,57,.15);">Consommation (en L)</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">5</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">0,05</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">7</td>
+    </tr>
+  </tbody></table>
+</div>
+<p style="margin:4px 0 4px;">À cette vitesse, la consommation en litres de carburant est égale au produit du nombre de kilomètres parcourus par 0,05, qui est le <b>coefficient de proportionnalité</b>.</p>
+<p style="margin:4px 0 12px;">Dans cette situation, ce coefficient permet de calculer la consommation à partir de la distance parcourue : par exemple, pour 15 km, la consommation sera <span class="tex" data-tex-source="15 \times 0{,}05 = 0{,}75" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>15</mn><mo>×</mo><mn>0</mn><mo separator="true" lspace="0em" rspace="0em">,</mo><mn>05</mn><mo>=</mo><mn>0</mn><mo separator="true" lspace="0em" rspace="0em">,</mo><mn>75</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">15</span><span class="mbin">×</span></span><span class="base"><span class="mord">0</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">05</span><span class="mrel">=</span></span><span class="base"><span class="mord">0</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">75</span></span></span></span></span> L.</p>
+
+<span class="prop-badge">Règle 2</span>
+<div class="def-box">On peut compléter un tableau de proportionnalité à l'aide des propriétés de la <b>linéarité</b> : additionner (ou soustraire) deux colonnes déjà connues donne une nouvelle colonne correcte, et multiplier une colonne connue par un nombre donne aussi une colonne correcte.</div>
+
+<p class="example-title">Exemple : la confiture de kiwis</p>
+<p style="margin:4px 0 8px;">2 kg de kiwis contiennent 64 g de sucre, et 5 kg de kiwis contiennent 160 g de sucre. Détermine la masse de sucre contenue dans 7 kg puis dans 13 kg de kiwis.</p>
+<p style="margin:4px 0 8px;">On résume ces données dans un tableau de proportionnalité :</p>
+<div style="overflow-x:auto;margin:10px 0 12px;">
+  <table style="border-collapse:collapse;font-size:.92rem;">
+    <tbody><tr>
+      <td style="padding:6px 14px;background:rgba(31,58,92,.06);font-weight:600;border:1px solid rgba(28,43,57,.15);">Masse de kiwis (en kg)</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">2</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">5</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">15</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">7</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">13</td>
+    </tr>
+    <tr>
+      <td style="padding:6px 14px;background:rgba(31,58,92,.06);font-weight:600;border:1px solid rgba(28,43,57,.15);">Masse de sucre (en g)</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">64</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">160</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">480</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">224</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">416</td>
+    </tr>
+  </tbody></table>
+</div>
+<ul class="example-list">
+  <li>On obtient d'abord la colonne 15 kg en multipliant la colonne 5 kg par 3 : <span class="tex" data-tex-source="160 \times 3 = 480" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>160</mn><mo>×</mo><mn>3</mn><mo>=</mo><mn>480</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">160</span><span class="mbin">×</span></span><span class="base"><span class="mord">3</span><span class="mrel">=</span></span><span class="base"><span class="mord">480</span></span></span></span></span>.</li>
+  <li>7 kg = 2 kg + 5 kg, donc la masse de sucre pour 7 kg est <span class="tex" data-tex-source="64 + 160 = 224" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>64</mn><mo>+</mo><mn>160</mn><mo>=</mo><mn>224</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">64</span><span class="mbin">+</span></span><span class="base"><span class="mord">160</span><span class="mrel">=</span></span><span class="base"><span class="mord">224</span></span></span></span></span> g.</li>
+  <li>13 kg = 15 kg − 2 kg, donc la masse de sucre pour 13 kg est <span class="tex" data-tex-source="480 - 64 = 416" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>480</mn><mo>−</mo><mn>64</mn><mo>=</mo><mn>416</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">480</span><span class="mbin">−</span></span><span class="base"><span class="mord">64</span><span class="mrel">=</span></span><span class="base"><span class="mord">416</span></span></span></span></span> g.</li>
+</ul>
+
+<div class="lesson-header"><span class="num">2</span><h3>Échelle</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">
+  Une <b>échelle</b> permet de passer d'une mesure sur un <b>plan</b>, sur une <b>carte</b> ou sur une <b>image</b> à une mesure <b>réelle</b>.<br>
+  Une échelle s'écrit sous la forme d'une <b>fraction</b> <span class="tex" data-tex-source="\dfrac{a}{b}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mi>a</mi><mi>b</mi></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.1076em;"><span style="top:-2.314em;"><span class="mord"><span class="mord mathnormal">b</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord mathnormal">a</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span> : le <b>numérateur</b> <i>a</i> représente un nombre d'unités sur le plan, et le <b>dénominateur</b> <i>b</i> représente le nombre de la <b>même unité</b> en réalité. Par exemple, une échelle de <span class="tex" data-tex-source="\dfrac{1}{1000}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>1000</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1000</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span> (on dit aussi « au 1/1000<sup>e</sup> ») signifie que <b>1 cm sur le plan représente 1 000 cm</b>, soit <b>10 m</b>, <b>en réalité</b>.
+</div>
+
+<p class="example-title">Exemple : le plan de la chambre de Léa</p>
+<p style="margin:4px 0 8px;">Voici le plan de la chambre de Léa, dessiné à l'échelle <span class="tex" data-tex-source="\dfrac{1}{25}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>25</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">25</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>. Quelle est la longueur réelle de la chambre, sachant qu'elle mesure 12 cm sur le plan ? Et quelle est la largeur réelle du lit, sachant qu'il mesure 6 cm sur le plan ?</p>
+
+<div class="figure-wrap" style="max-width:420px;margin:12px auto;">
+  <svg viewBox="0 0 340 260" style="width:100%;display:block;">
+    <rect x="30" y="20" width="260" height="180" fill="#F7F5EF" stroke="#1C1B2E" stroke-width="2.5"></rect>
+    <rect x="150" y="20" width="40" height="4" fill="#fff"></rect>
+    <rect x="50" y="40" width="70" height="110" fill="#BFD8E8" stroke="#1C1B2E" stroke-width="1.6" rx="4"></rect>
+    <rect x="50" y="40" width="70" height="22" fill="#9FC3D8" stroke="#1C1B2E" stroke-width="1.2"></rect>
+    <line x1="30" y1="212" x2="290" y2="212" stroke="#1C1B2E" stroke-width="1.2"></line>
+    <line x1="30" y1="206" x2="30" y2="218" stroke="#1C1B2E" stroke-width="1.2"></line>
+    <line x1="290" y1="206" x2="290" y2="218" stroke="#1C1B2E" stroke-width="1.2"></line>
+    <text x="160" y="230" text-anchor="middle" font-family="Space Grotesk" font-size="14" fill="#1C1B2E" font-weight="700">12 cm</text>
+    <line x1="50" y1="30" x2="120" y2="30" stroke="#1F3A5C" stroke-width="1.2"></line>
+    <line x1="50" y1="25" x2="50" y2="35" stroke="#1F3A5C" stroke-width="1.2"></line>
+    <line x1="120" y1="25" x2="120" y2="35" stroke="#1F3A5C" stroke-width="1.2"></line>
+    <text x="85" y="16" text-anchor="middle" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">6 cm</text>
+    <text x="85" y="105" text-anchor="middle" font-family="Inter" font-size="12" fill="#12253A">Lit</text>
+    <g transform="translate(30,240)">
+      <text x="0" y="4" font-family="JetBrains Mono" font-size="12" fill="#1C1B2E">Échelle : 1/25</text>
+    </g>
+  </svg>
+</div>
+
+<p style="margin:4px 0 4px;">Pour déterminer la longueur réelle de la chambre...</p>
+<ul class="example-list">
+  <li>① on mesure la longueur sur le plan : 12 cm</li>
+  <li>② l'échelle est <span class="tex" data-tex-source="\dfrac{1}{25}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>25</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">25</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>, donc 1 cm sur le plan représente 25 cm en réalité, donc 12 cm représentent <span class="tex" data-tex-source="12 \times 25 = 300" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>12</mn><mo>×</mo><mn>25</mn><mo>=</mo><mn>300</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">12</span><span class="mbin">×</span></span><span class="base"><span class="mord">25</span><span class="mrel">=</span></span><span class="base"><span class="mord">300</span></span></span></span></span> cm</li>
+</ul>
+<p style="margin:4px 0 12px;">La longueur réelle de la chambre est donc <b>300 cm</b>, soit <b>3 m</b>.</p>
+
+<p style="margin:4px 0 4px;">Pour déterminer la largeur réelle du lit...</p>
+<ul class="example-list">
+  <li>① on mesure la largeur sur le plan : 6 cm</li>
+  <li>② l'échelle est <span class="tex" data-tex-source="\dfrac{1}{25}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>25</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">25</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>, donc 6 cm représentent <span class="tex" data-tex-source="6 \times 25 = 150" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>6</mn><mo>×</mo><mn>25</mn><mo>=</mo><mn>150</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">6</span><span class="mbin">×</span></span><span class="base"><span class="mord">25</span><span class="mrel">=</span></span><span class="base"><span class="mord">150</span></span></span></span></span> cm</li>
+</ul>
+<p style="margin:4px 0 12px;">La largeur réelle du lit est donc <b>150 cm</b>, soit <b>1,5 m</b>.</p>
+
+<p style="margin:8px 0 6px;">On peut récapituler ceci dans un tableau :</p>
+<div style="overflow-x:auto;margin:10px 0 4px;">
+  <table style="border-collapse:collapse;font-size:.92rem;">
+    <tbody><tr>
+      <td style="padding:6px 14px;background:rgba(31,58,92,.06);font-weight:600;border:1px solid rgba(28,43,57,.15);">Distance sur le plan (en cm)</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">1</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">12</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">6</td>
+    </tr>
+    <tr>
+      <td style="padding:6px 14px;background:rgba(31,58,92,.06);font-weight:600;border:1px solid rgba(28,43,57,.15);">Distance réelle (en cm)</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;">25</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">300</td>
+      <td style="padding:6px 14px;border:1px solid rgba(28,43,57,.15);text-align:center;color:var(--accent-orange);font-weight:700;">150</td>
+    </tr>
+  </tbody></table>
+</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <p class="example-title" style="margin-top:0;">Grandeur et unité</p>
+<span class="def-badge">Définition</span>
+<div class="def-box">
+  Une <b>grandeur</b> est ce que l'on peut mesurer (une longueur, une durée, un prix, une masse, un volume, une aire...). Une <b>unité</b> permet d'exprimer la mesure d'une grandeur.
+</div>
+<p style="margin:10px 0 0;">Par exemple, une <b>température</b> est une grandeur, et elle peut s'exprimer dans l'unité <b>°C</b> (degré Celsius).</p>
+
+<p class="example-title">Jeu : associe chaque grandeur à son unité</p>
+
+<div class="pgame-board" id="pgame6-board">
+    <div class="pgame-col"><div class="pgame-card" data-role="g" data-val="Durée">Durée</div><div class="pgame-card" data-role="g" data-val="Masse">Masse</div><div class="pgame-card" data-role="g" data-val="Prix">Prix</div><div class="pgame-card" data-role="g" data-val="Aire">Aire</div><div class="pgame-card" data-role="g" data-val="Longueur">Longueur</div><div class="pgame-card" data-role="g" data-val="Volume">Volume</div></div>
+    <div class="pgame-col"><div class="pgame-card" data-role="u" data-val="L">L</div><div class="pgame-card" data-role="u" data-val="m">m</div><div class="pgame-card" data-role="u" data-val="€">€</div><div class="pgame-card" data-role="u" data-val="s">s</div><div class="pgame-card" data-role="u" data-val="m²">m²</div><div class="pgame-card" data-role="u" data-val="kg">kg</div></div>
+  </div>
+<p class="hint" id="pgame6-status" style="margin:10px 0;">0 / 6 paires trouvées.</p>
+
+
+<p class="example-title" style="margin-top:26px;">Évolution d'une grandeur</p>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">
+  On connaît une valeur initiale de deux grandeurs A et B associées, ainsi qu'un objectif pour B. On veut faire évoluer A pour atteindre cet objectif.
+</div>
+
+<p style="margin:14px 0 10px;"><b>Exemple</b> : une voiture consomme <span style="color:var(--accent);font-weight:700;">5 L</span> pour parcourir <span style="color:var(--accent);font-weight:700;">100 km</span>. Quelle est sa consommation pour <span style="color:var(--accent-orange);font-weight:700;">250 km</span> ?</p>
+<div class="figure-wrap">
+  
+  <div class="step-display" id="pp6EvolDisplay"><div class="step-column"><div class="">On note C la consommation cherchée pour 250 km.</div></div><div class="step-note">On cherche une consommation. Donc on va faire évoluer la consommation initiale (5 L).</div></div>
+  
+</div>
+
+<p class="example-title" style="margin-top:26px;">Autre méthode : l'association dans un tableau</p>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">Quand on connaît <b>deux paires</b> de valeurs associées, on peut parfois passer de l'une à l'autre par une opération simple, et appliquer cette même opération sur l'autre grandeur.</div>
+
+<p style="margin:14px 0 6px;"><b>Exemple</b> : on connaît les paires (5 ; 100) et (3 ; 60). On cherche la valeur de B associée à A = 8.</p>
+<div class="figure-wrap">
+  
+  <div id="pp6lin1-wrap"><svg id="pp6lin1-svg" viewBox="0 0 465 224" style="width:100%;max-width:440px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><rect x="10" y="62" width="140" height="44" fill="rgba(31,58,92,.06)" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="80" y="89" font-size="13" text-anchor="middle" fill="#1C1B2E" font-weight="700">Grandeur A</text><rect x="10" y="106" width="140" height="44" fill="rgba(31,58,92,.06)" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="80" y="133" font-size="13" text-anchor="middle" fill="#1C1B2E" font-weight="700">Grandeur B</text><rect x="160" y="62" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="205" y="89" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">5</text><rect x="260" y="62" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="305" y="89" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">3</text><rect x="360" y="62" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="405" y="89" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">8</text><rect x="160" y="106" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="205" y="133" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">100</text><rect x="260" y="106" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="305" y="133" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">60</text><rect x="360" y="106" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="405" y="133" font-size="15" text-anchor="middle" fill="var(--accent-orange)" font-weight="700">?</text></svg></div>
+  <div class="step-list" id="pp6lin1-steps">
+    <div class="step-item done" data-step="0"><div class="step-num">1</div><div>On considère A = 8. On veut trouver B.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On remarque que 8 = 5 + 3.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>On applique la même addition à B : 100 + 60 = 160.</div></div>
+  </div>
+  
+</div>
+
+<p style="margin:22px 0 6px;"><b>Autre exemple</b> : toujours avec (5 ; 100) et (3 ; 60), on cherche cette fois la valeur de A associée à B = 40.</p>
+<div class="figure-wrap">
+  
+  <div id="pp6lin2-wrap"><svg id="pp6lin2-svg" viewBox="0 0 465 224" style="width:100%;max-width:440px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><rect x="10" y="62" width="140" height="44" fill="rgba(31,58,92,.06)" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="80" y="89" font-size="13" text-anchor="middle" fill="#1C1B2E" font-weight="700">Grandeur A</text><rect x="10" y="106" width="140" height="44" fill="rgba(31,58,92,.06)" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="80" y="133" font-size="13" text-anchor="middle" fill="#1C1B2E" font-weight="700">Grandeur B</text><rect x="160" y="62" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="205" y="89" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">5</text><rect x="260" y="62" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="305" y="89" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">3</text><rect x="360" y="62" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="405" y="89" font-size="15" text-anchor="middle" fill="var(--accent-orange)" font-weight="700">?</text><rect x="160" y="106" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="205" y="133" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">100</text><rect x="260" y="106" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="305" y="133" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">60</text><rect x="360" y="106" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="405" y="133" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">40</text></svg></div>
+  <div class="step-list" id="pp6lin2-steps">
+    <div class="step-item done" data-step="0"><div class="step-num">1</div><div>On considère B = 40. On veut trouver A.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On remarque que 40 = 100 − 60.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>On applique la même soustraction à A : 5 − 3 = 2.</div></div>
+  </div>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <p class="hint" style="margin:8px 0;">Les exercices de ce chapitre sont en cours de préparation, ils arriveront dans une prochaine mise à jour.</p>
+</section>
+
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/15-proportionnalite/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/6e/proprietes-des-triangles/">Propriétés des triangles</a></span>
+  <a href="/6e/">Tous les chapitres de 6e</a>
+  <span><a href="/6e/aire-et-perimetre/">Aire et périmètre</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

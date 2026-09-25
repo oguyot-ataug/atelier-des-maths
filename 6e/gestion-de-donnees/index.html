@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestion de données – Cours de maths 6e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 6e : Gestion de données. Tableaux, Représentations graphiques et interprétations. Définitions, figures interactives, méthode animée,…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/6e/gestion-de-donnees/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Gestion de données – Cours de maths 6e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 6e : Gestion de données. Tableaux, Représentations graphiques et interprétations. Définitions, figures interactives, méthode animée,…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/6e/gestion-de-donnees/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Gestion de données (6e)","headline":"Gestion de données – cours de mathématiques de 6e","description":"Cours de maths 6e : Gestion de données. Tableaux, Représentations graphiques et interprétations. Définitions, figures interactives, méthode animée,…","url":"https://maths.latelieraugmente.fr/6e/gestion-de-donnees/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"6e (cycle 3, collège)","about":"Données et probabilités","teaches":["Tableaux","Représentations graphiques et interprétations"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 6e","url":"https://maths.latelieraugmente.fr/6e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 6e","item":"https://maths.latelieraugmente.fr/6e/"},{"@type":"ListItem","position":3,"name":"Gestion de données","item":"https://maths.latelieraugmente.fr/6e/gestion-de-donnees/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/6e/">Cours de maths 6e</a> › Gestion de données</div>
+<h1>Gestion de données</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#BFDCFB;color:#1A4E9E;">Données et probabilités</span> Cours de mathématiques de 6e (sixième) · chapitre 12 · Tableaux · Représentations graphiques et interprétations</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/12-gestion-de-donnees/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Tableaux</h3></div>
+
+<span class="prop-badge">Règle</span>
+<div class="def-box">Un tableau permet de <b>regrouper</b> et d'<b>organiser</b> des données, de lire <b>facilement</b> les informations.</div>
+
+<p class="example-title">Exemple : on considère les tableaux ci-dessous.</p>
+<div style="display:flex;gap:20px;flex-wrap:wrap;margin:14px 0;">
+  <table style="flex:1;min-width:240px;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:.92rem;">
+    <thead>
+      <tr style="background:#1F3A5C;color:#fff;">
+        <th style="padding:9px 12px;text-align:left;font-family:'Space Grotesk',sans-serif;">Continent</th>
+        <th style="padding:9px 12px;text-align:right;font-family:'Space Grotesk',sans-serif;">Population en 1995<br>en millions d'habitants</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(28,43,57,.12);">Afrique</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid rgba(28,43,57,.12);">728</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(28,43,57,.12);">Asie</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid rgba(28,43,57,.12);">3 458</td></tr>
+      <tr style="background:rgba(248,175,35,.30);"><td style="padding:8px 12px;font-weight:700;border-bottom:1px solid rgba(28,43,57,.12);">Europe</td><td style="padding:8px 12px;text-align:right;font-weight:700;border-bottom:1px solid rgba(28,43,57,.12);">727</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(28,43,57,.12);">Amérique</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid rgba(28,43,57,.12);">775</td></tr>
+      <tr><td style="padding:8px 12px;">Océanie</td><td style="padding:8px 12px;text-align:right;">28</td></tr>
+    </tbody>
+  </table>
+  <table style="flex:1;min-width:240px;border-collapse:collapse;font-family:'Inter',sans-serif;font-size:.92rem;">
+    <thead>
+      <tr style="background:#1F3A5C;color:#fff;">
+        <th style="padding:9px 12px;text-align:left;font-family:'Space Grotesk',sans-serif;">Continent</th>
+        <th style="padding:9px 12px;text-align:right;font-family:'Space Grotesk',sans-serif;">Population en 2022<br>en millions d'habitants</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(28,43,57,.12);">Afrique</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid rgba(28,43,57,.12);">1 419</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(28,43,57,.12);">Asie</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid rgba(28,43,57,.12);">4 730</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(28,43,57,.12);">Europe</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid rgba(28,43,57,.12);">742</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid rgba(28,43,57,.12);">Amérique</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid rgba(28,43,57,.12);">1 028</td></tr>
+      <tr style="background:rgba(227,93,58,.20);"><td style="padding:8px 12px;font-weight:700;">Océanie</td><td style="padding:8px 12px;text-align:right;font-weight:700;">55</td></tr>
+    </tbody>
+  </table>
+</div>
+<ul class="example-list">
+  <li>Le nombre <b>727</b> indique que l'Europe comptait 727 millions d'habitants en 1995.</li>
+  <li>Le nombre <b>55</b> indique que l'Océanie comptait 55 millions d'habitants en 2022.</li>
+</ul>
+
+<div class="lesson-header"><span class="num">2</span><h3>Représentations graphiques et interprétations</h3></div>
+
+<div class="sub-header"><span class="letter">A</span><h4>Diagramme en barres</h4></div>
+<span class="prop-badge">Règle</span>
+<div class="def-box">Dans un diagramme en barres, les <b>hauteurs des barres</b> sont <b>proportionnelles</b> aux quantités représentées.</div>
+<p class="example-title">Exemple :</p>
+<p>Ce diagramme en barres représente la population en 1995 et en 2022, en millions d'habitants, par continent.</p>
+<div class="figure-wrap" style="max-width:420px;margin:12px auto;">
+  <svg viewBox="0 0 380 280" style="width:100%;display:block;">
+    <line x1="50" y1="20" x2="50" y2="240" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="50" y1="240" x2="370" y2="240" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <text x="4" y="16" font-family="Inter" font-size="9" fill="#6B7280">Population</text>
+    <text x="4" y="26" font-family="Inter" font-size="9" fill="#6B7280">millions</text>
+    <line x1="47" y1="240" x2="370" y2="240" stroke="#E4DFD6" stroke-width="1"></line><text x="10" y="243" font-family="JetBrains Mono" font-size="8" fill="#6B7280">0</text><line x1="47" y1="218" x2="370" y2="218" stroke="#E4DFD6" stroke-width="1"></line><text x="10" y="221" font-family="JetBrains Mono" font-size="8" fill="#6B7280">500</text><line x1="47" y1="196" x2="370" y2="196" stroke="#E4DFD6" stroke-width="1"></line><text x="10" y="199" font-family="JetBrains Mono" font-size="8" fill="#6B7280">1000</text><line x1="47" y1="174" x2="370" y2="174" stroke="#E4DFD6" stroke-width="1"></line><text x="10" y="177" font-family="JetBrains Mono" font-size="8" fill="#6B7280">1500</text><line x1="47" y1="152" x2="370" y2="152" stroke="#E4DFD6" stroke-width="1"></line><text x="10" y="155" font-family="JetBrains Mono" font-size="8" fill="#6B7280">2000</text><line x1="47" y1="130" x2="370" y2="130" stroke="#E4DFD6" stroke-width="1"></line><text x="10" y="133" font-family="JetBrains Mono" font-size="8" fill="#6B7280">2500</text><line x1="47" y1="108" x2="370" y2="108" stroke="#E4DFD6" stroke-width="1"></line><text x="10" y="111" font-family="JetBrains Mono" font-size="8" fill="#6B7280">3000</text><line x1="47" y1="86" x2="370" y2="86" stroke="#E4DFD6" stroke-width="1"></line><text x="10" y="89" font-family="JetBrains Mono" font-size="8" fill="#6B7280">3500</text><line x1="47" y1="64" x2="370" y2="64" stroke="#E4DFD6" stroke-width="1"></line><text x="10" y="67" font-family="JetBrains Mono" font-size="8" fill="#6B7280">4000</text><line x1="47" y1="42" x2="370" y2="42" stroke="#E4DFD6" stroke-width="1"></line><text x="10" y="45" font-family="JetBrains Mono" font-size="8" fill="#6B7280">4500</text><line x1="47" y1="20" x2="370" y2="20" stroke="#E4DFD6" stroke-width="1"></line><text x="10" y="23" font-family="JetBrains Mono" font-size="8" fill="#6B7280">5000</text>
+    <g>
+      <rect x="65" y="208.0" width="14" height="32.0" fill="#2EA8C9"></rect>
+      <rect x="81" y="177.6" width="14" height="62.4" fill="#2E7D5B"></rect>
+      <text x="72" y="252" font-family="Inter" font-size="9" fill="#1C1B2E" text-anchor="middle">Afrique</text>
+
+      <rect x="130" y="87.8" width="14" height="152.2" fill="#2EA8C9"></rect>
+      <rect x="146" y="31.9" width="14" height="208.1" fill="#2E7D5B"></rect>
+      <text x="137" y="252" font-family="Inter" font-size="9" fill="#1C1B2E" text-anchor="middle">Asie</text>
+
+      <rect x="195" y="208.0" width="14" height="32.0" fill="#2EA8C9"></rect>
+      <rect x="211" y="207.4" width="14" height="32.6" fill="#2E7D5B"></rect>
+      <text x="202" y="252" font-family="Inter" font-size="9" fill="#1C1B2E" text-anchor="middle">Europe</text>
+
+      <rect x="260" y="205.9" width="14" height="34.1" fill="#2EA8C9"></rect>
+      <rect x="276" y="194.8" width="14" height="45.2" fill="#2E7D5B"></rect>
+      <text x="267" y="252" font-family="Inter" font-size="9" fill="#1C1B2E" text-anchor="middle">Amérique</text>
+
+      <rect x="325" y="238.8" width="14" height="1.2" fill="#2EA8C9"></rect>
+      <rect x="341" y="237.6" width="14" height="2.4" fill="#2E7D5B"></rect>
+      <text x="332" y="252" font-family="Inter" font-size="9" fill="#1C1B2E" text-anchor="middle">Océanie</text>
+    </g>
+    <rect x="120" y="10" width="12" height="12" fill="#2EA8C9"></rect>
+    <text x="136" y="20" font-family="Inter" font-size="9" fill="#1C1B2E">Population en 1995</text>
+    <rect x="250" y="10" width="12" height="12" fill="#2E7D5B"></rect>
+    <text x="266" y="20" font-family="Inter" font-size="9" fill="#1C1B2E">Population en 2022</text>
+  </svg>
+</div>
+<ul class="example-list">
+  <li>On peut voir que la population en Asie est la plus importante des cinq continents.</li>
+</ul>
+
+<div class="sub-header"><span class="letter">B</span><h4>Diagramme circulaire</h4></div>
+<span class="prop-badge">Règle</span>
+<div class="def-box">Dans un diagramme circulaire, les <b>mesures des angles</b> sont <b>proportionnelles</b> aux quantités représentées.</div>
+<p class="example-title">Exemple :</p>
+<p>Ce diagramme circulaire représente la population en 2022, en millions d'habitants, par continent.</p>
+<div class="figure-wrap" style="max-width:300px;margin:12px auto;">
+  <svg viewBox="0 0 300 300" style="width:100%;display:block;">
+    <path d="M 150 150 L 150.0 30.0 A 120 120 0 0 1 257.9 97.5 Z" fill="#1F3A5C" stroke="#fff" stroke-width="1.5"></path>
+    <path d="M 150 150 L 257.9 97.5 A 120 120 0 1 1 31.1 134.1 Z" fill="#E35D3A" stroke="#fff" stroke-width="1.5"></path>
+    <path d="M 150 150 L 31.1 134.1 A 120 120 0 0 1 59.6 71.1 Z" fill="#F8AF23" stroke="#fff" stroke-width="1.5"></path>
+    <path d="M 150 150 L 59.6 71.1 A 120 120 0 0 1 144.8 30.1 Z" fill="#2E7D5B" stroke="#fff" stroke-width="1.5"></path>
+    <path d="M 150 150 L 144.8 30.1 A 120 120 0 0 1 150.0 30.0 Z" fill="#1C1B2E" stroke="#fff" stroke-width="1.5"></path>
+  </svg>
+  <div style="display:flex;flex-wrap:wrap;gap:10px 18px;justify-content:center;margin-top:10px;font-family:'Inter',sans-serif;font-size:.85rem;">
+    <span>Afrique</span>
+    <span>Asie</span>
+    <span>Europe</span>
+    <span>Amérique</span>
+    <span>Océanie</span>
+  </div>
+</div>
+<ul class="example-list">
+  <li>On peut voir que plus de la moitié de la population en 2022 se trouve en Asie car le secteur orange mesure plus de 180°.</li>
+</ul>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Construire un diagramme en barres</h4></div>
+<p class="hint" style="margin:8px 0;">On considère le tableau suivant : nombre d'élèves par niveau dans un collège.</p>
+<table style="border-collapse:collapse;font-family:'Inter',sans-serif;font-size:.9rem;margin:8px 0 14px;">
+  <thead><tr style="background:#1F3A5C;color:#fff;"><th style="padding:7px 14px;">Niveau</th><th style="padding:7px 14px;">6e</th><th style="padding:7px 14px;">5e</th><th style="padding:7px 14px;">4e</th><th style="padding:7px 14px;">3e</th></tr></thead>
+  <tbody><tr><td style="padding:6px 14px;border-bottom:1px solid rgba(28,43,57,.12);font-weight:700;">Élèves</td><td style="padding:6px 14px;border-bottom:1px solid rgba(28,43,57,.12);text-align:center;">120</td><td style="padding:6px 14px;border-bottom:1px solid rgba(28,43,57,.12);text-align:center;">110</td><td style="padding:6px 14px;border-bottom:1px solid rgba(28,43,57,.12);text-align:center;">105</td><td style="padding:6px 14px;border-bottom:1px solid rgba(28,43,57,.12);text-align:center;">98</td></tr></tbody>
+</table>
+<div class="figure-wrap" style="max-width:340px;margin:12px auto;">
+  <svg id="gdBarSvg" viewBox="0 0 320 250" style="width:100%;display:block;">
+    <line x1="40" y1="20" x2="40" y2="220" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="40" y1="220" x2="300" y2="220" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="37" y1="220" x2="300" y2="220" stroke="#E4DFD6" stroke-width="1"></line><text x="4" y="223" font-family="JetBrains Mono" font-size="8" fill="#6B7280">0</text><line x1="37" y1="191.42857142857144" x2="300" y2="191.42857142857144" stroke="#E4DFD6" stroke-width="1"></line><text x="4" y="194.42857142857144" font-family="JetBrains Mono" font-size="8" fill="#6B7280">20</text><line x1="37" y1="162.85714285714286" x2="300" y2="162.85714285714286" stroke="#E4DFD6" stroke-width="1"></line><text x="4" y="165.85714285714286" font-family="JetBrains Mono" font-size="8" fill="#6B7280">40</text><line x1="37" y1="134.28571428571428" x2="300" y2="134.28571428571428" stroke="#E4DFD6" stroke-width="1"></line><text x="4" y="137.28571428571428" font-family="JetBrains Mono" font-size="8" fill="#6B7280">60</text><line x1="37" y1="105.71428571428572" x2="300" y2="105.71428571428572" stroke="#E4DFD6" stroke-width="1"></line><text x="4" y="108.71428571428572" font-family="JetBrains Mono" font-size="8" fill="#6B7280">80</text><line x1="37" y1="77.14285714285714" x2="300" y2="77.14285714285714" stroke="#E4DFD6" stroke-width="1"></line><text x="4" y="80.14285714285714" font-family="JetBrains Mono" font-size="8" fill="#6B7280">100</text><line x1="37" y1="48.571428571428584" x2="300" y2="48.571428571428584" stroke="#E4DFD6" stroke-width="1"></line><text x="4" y="51.571428571428584" font-family="JetBrains Mono" font-size="8" fill="#6B7280">120</text><line x1="37" y1="20" x2="300" y2="20" stroke="#E4DFD6" stroke-width="1"></line><text x="4" y="23" font-family="JetBrains Mono" font-size="8" fill="#6B7280">140</text>
+    <rect id="gdBar6e" x="65" y="220" width="40" height="0" fill="#2EA8C9"></rect>
+    <rect id="gdBar5e" x="130" y="220" width="40" height="0" fill="#2EA8C9"></rect>
+    <rect id="gdBar4e" x="195" y="220" width="40" height="0" fill="#2EA8C9"></rect>
+    <rect id="gdBar3e" x="260" y="220" width="40" height="0" fill="#2EA8C9"></rect>
+    <text id="gdVal6e" x="85" y="215" font-family="JetBrains Mono" font-size="10" fill="#1C1B2E" text-anchor="middle" opacity="0"></text>
+    <text id="gdVal5e" x="150" y="215" font-family="JetBrains Mono" font-size="10" fill="#1C1B2E" text-anchor="middle" opacity="0"></text>
+    <text id="gdVal4e" x="215" y="215" font-family="JetBrains Mono" font-size="10" fill="#1C1B2E" text-anchor="middle" opacity="0"></text>
+    <text id="gdVal3e" x="280" y="215" font-family="JetBrains Mono" font-size="10" fill="#1C1B2E" text-anchor="middle" opacity="0"></text>
+    <text x="85" y="235" font-family="Inter" font-size="10" fill="#1C1B2E" text-anchor="middle">6e</text>
+    <text x="150" y="235" font-family="Inter" font-size="10" fill="#1C1B2E" text-anchor="middle">5e</text>
+    <text x="215" y="235" font-family="Inter" font-size="10" fill="#1C1B2E" text-anchor="middle">4e</text>
+    <text x="280" y="235" font-family="Inter" font-size="10" fill="#1C1B2E" text-anchor="middle">3e</text>
+  </svg>
+  
+</div>
+<div class="step-list" id="gdBarSteps">
+  <div class="step-item" data-step="1"><div class="step-num">1</div><div>On trace deux axes perpendiculaires, et on gradue l'axe vertical selon les valeurs à représenter.</div></div>
+  <div class="step-item" data-step="2"><div class="step-num">2</div><div>Pour le niveau 6e (120 élèves), on trace une barre dont la hauteur est proportionnelle à 120.</div></div>
+  <div class="step-item" data-step="3"><div class="step-num">3</div><div>Pour le niveau 5e (110 élèves), on trace une barre dont la hauteur est proportionnelle à 110.</div></div>
+  <div class="step-item" data-step="4"><div class="step-num">4</div><div>Pour le niveau 4e (105 élèves), on trace une barre dont la hauteur est proportionnelle à 105.</div></div>
+  <div class="step-item" data-step="5"><div class="step-num">5</div><div>Pour le niveau 3e (98 élèves), on trace une barre dont la hauteur est proportionnelle à 98.</div></div>
+</div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Construire un diagramme circulaire</h4></div>
+<p class="hint" style="margin:8px 0;">On considère le tableau suivant : sport pratiqué par les 25 élèves d'une classe.</p>
+<table style="border-collapse:collapse;font-family:'Inter',sans-serif;font-size:.9rem;margin:8px 0 14px;">
+  <thead><tr style="background:#1F3A5C;color:#fff;"><th style="padding:7px 14px;">Sport</th><th style="padding:7px 14px;">Football</th><th style="padding:7px 14px;">Basket</th><th style="padding:7px 14px;">Natation</th><th style="padding:7px 14px;">Autre</th></tr></thead>
+  <tbody><tr><td style="padding:6px 14px;border-bottom:1px solid rgba(28,43,57,.12);font-weight:700;">Élèves</td><td style="padding:6px 14px;border-bottom:1px solid rgba(28,43,57,.12);text-align:center;">10</td><td style="padding:6px 14px;border-bottom:1px solid rgba(28,43,57,.12);text-align:center;">6</td><td style="padding:6px 14px;border-bottom:1px solid rgba(28,43,57,.12);text-align:center;">4</td><td style="padding:6px 14px;border-bottom:1px solid rgba(28,43,57,.12);text-align:center;">5</td></tr></tbody>
+</table>
+<div class="figure-wrap" style="max-width:280px;margin:12px auto;">
+  <svg id="gdPieSvg" viewBox="0 0 220 220" style="width:100%;display:block;">
+    <circle cx="110" cy="110" r="90" fill="none" stroke="#E4DFD6" stroke-width="1"></circle>
+    <path id="gdPieFootball" fill="#2EA8C9" stroke="#fff" stroke-width="1.5" opacity="0"></path>
+    <path id="gdPieBasket" fill="#E35D3A" stroke="#fff" stroke-width="1.5" opacity="0"></path>
+    <path id="gdPieNatation" fill="#F8AF23" stroke="#fff" stroke-width="1.5" opacity="0"></path>
+    <path id="gdPieAutre" fill="#2E7D5B" stroke="#fff" stroke-width="1.5" opacity="0"></path>
+  </svg>
+  
+  
+</div>
+<div class="step-list" id="gdPieSteps">
+  <div class="step-item" data-step="1"><div class="step-num">1</div><div>On calcule le total des effectifs : <span class="tex" data-tex-source="10+6+4+5=25" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>10</mn><mo>+</mo><mn>6</mn><mo>+</mo><mn>4</mn><mo>+</mo><mn>5</mn><mo>=</mo><mn>25</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">10</span><span class="mbin">+</span></span><span class="base"><span class="mord">6</span><span class="mbin">+</span></span><span class="base"><span class="mord">4</span><span class="mbin">+</span></span><span class="base"><span class="mord">5</span><span class="mrel">=</span></span><span class="base"><span class="mord">25</span></span></span></span></span> élèves.</div></div>
+  <div class="step-item" data-step="2"><div class="step-num">2</div><div>Football : <span class="tex" data-tex-source="\dfrac{10}{25} \times 360 = 144°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>10</mn><mn>25</mn></mfrac></mstyle><mo>×</mo><mn>360</mn><mo>=</mo><mn>144</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">25</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">10</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mbin">×</span></span><span class="base"><span class="mord">360</span><span class="mrel">=</span></span><span class="base"><span class="mord">144°</span></span></span></span></span>. On trace le secteur correspondant.</div></div>
+  <div class="step-item" data-step="3"><div class="step-num">3</div><div>Basket : <span class="tex" data-tex-source="\dfrac{6}{25} \times 360 = 86{,}4°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>6</mn><mn>25</mn></mfrac></mstyle><mo>×</mo><mn>360</mn><mo>=</mo><mn>86</mn><mo separator="true" lspace="0em" rspace="0em">,</mo><mn>4</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">25</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">6</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mbin">×</span></span><span class="base"><span class="mord">360</span><span class="mrel">=</span></span><span class="base"><span class="mord">86</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">4°</span></span></span></span></span>. On trace le secteur correspondant.</div></div>
+  <div class="step-item" data-step="4"><div class="step-num">4</div><div>Natation : <span class="tex" data-tex-source="\dfrac{4}{25} \times 360 = 57{,}6°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>4</mn><mn>25</mn></mfrac></mstyle><mo>×</mo><mn>360</mn><mo>=</mo><mn>57</mn><mo separator="true" lspace="0em" rspace="0em">,</mo><mn>6</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">25</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">4</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mbin">×</span></span><span class="base"><span class="mord">360</span><span class="mrel">=</span></span><span class="base"><span class="mord">57</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">6°</span></span></span></span></span>. On trace le secteur correspondant.</div></div>
+  <div class="step-item" data-step="5"><div class="step-num">5</div><div>Autre : <span class="tex" data-tex-source="\dfrac{5}{25} \times 360 = 72°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>5</mn><mn>25</mn></mfrac></mstyle><mo>×</mo><mn>360</mn><mo>=</mo><mn>72</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">25</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">5</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mbin">×</span></span><span class="base"><span class="mord">360</span><span class="mrel">=</span></span><span class="base"><span class="mord">72°</span></span></span></span></span>. On trace le secteur correspondant, ce qui referme le cercle.</div></div>
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Interpréter un secteur d'un diagramme circulaire »</h3>
+  <p style="margin:4px 0 10px;">Un diagramme circulaire représente le sport pratiqué par les 25 élèves d'une classe. <b>Peut-on dire que plus de la moitié des élèves pratiquent le football ?</b></p>
+  <div class="figure-wrap" style="max-width:220px;margin:0 auto 14px;">
+    <svg viewBox="0 0 220 220" style="width:100%;display:block;">
+      <path d="M 110 110 L 110.0 20.0 A 90 90 0 0 1 162.9 182.8 Z" fill="#2EA8C9" stroke="#fff" stroke-width="1.5"></path>
+      <path d="M 110 110 L 162.9 182.8 A 90 90 0 0 1 40.7 167.4 Z" fill="#E35D3A" stroke="#fff" stroke-width="1.5"></path>
+      <path d="M 110 110 L 40.7 167.4 A 90 90 0 0 1 24.4 82.2 Z" fill="#F8AF23" stroke="#fff" stroke-width="1.5"></path>
+      <path d="M 110 110 L 24.4 82.2 A 90 90 0 0 1 110.0 20.0 Z" fill="#2E7D5B" stroke="#fff" stroke-width="1.5"></path>
+      <text x="162.3" y="93.0" font-family="Space Grotesk" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">144°</text>
+    </svg>
+    <div style="display:flex;flex-wrap:wrap;gap:8px 14px;justify-content:center;margin-top:8px;font-family:'Inter',sans-serif;font-size:.8rem;">
+      <span>Football</span>
+      <span>Basket</span>
+      <span>Natation</span>
+      <span>Autre</span>
+    </div>
+  </div>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">Le secteur associé à Football mesure 144°.</span><span class="we-comment">On relève la mesure de l'angle.</span></div>
+    <div class="we-row"><span class="we-expr">Or, 144° &lt; 180°.</span><span class="we-comment">On compare à 180° (un demi-tour).</span></div>
+    <div class="we-row"><span class="we-expr">Donc moins de la moitié des élèves pratiquent le football.</span><span class="we-comment">Conclusion.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Un club de sport compte 40 adhérents : 18 font de la natation, 12 du tennis, et 10 de la gymnastique. Construis un tableau présentant ces informations.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    En utilisant le tableau de l'exercice 1, construis un diagramme en barres représentant le nombre d'adhérents par activité.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    En utilisant le tableau de l'exercice 1, calcule la mesure de l'angle associé à chaque activité dans un diagramme circulaire, puis construis ce diagramme.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Un diagramme circulaire représente la répartition des 900 élèves d'un collège par niveau. Le secteur associé aux élèves de 6e mesure 100°. Calcule le nombre d'élèves de 6e dans ce collège.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Sur un diagramme circulaire représentant les 30 élèves d'une classe selon leur mode de transport, le secteur « à pied » mesure 168°. Explique pourquoi plus de la moitié des élèves viennent à pied. Rédige ta réponse.
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Représenter des données par des dessins plutôt que par des nombres bruts est une invention étonnamment récente : c'est l'ingénieur et économiste écossais <b>William Playfair</b> qui, à la toute fin du XVIIIe siècle, invente à peu près seul le diagramme en barres et le diagramme circulaire, dans son <i>Commercial and Political Atlas</i> (1786) puis dans son <i>Statistical Breviary</i> (1801), pour représenter les échanges commerciaux entre pays. Playfair défendait l'idée qu'un bon graphique permet de comprendre en quelques secondes ce que des pages entières de tableaux de chiffres mettraient de longues minutes à faire comprendre. Ses idées mettront pourtant du temps à s'imposer : c'est seulement plus d'un demi-siècle plus tard que l'infirmière britannique <b>Florence Nightingale</b> popularise ce type de représentation, avec un diagramme circulaire de sa création (le « diagramme en rose ») pour convaincre l'armée britannique que la plupart des soldats mouraient de maladies évitables plutôt que de blessures de guerre, contribuant ainsi à une réforme complète des hôpitaux militaires.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/12-gestion-de-donnees/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/6e/fractions-comparaison-et-addition/">Fractions : comparaison et addition</a></span>
+  <a href="/6e/">Tous les chapitres de 6e</a>
+  <span><a href="/6e/proprietes-des-triangles/">Propriétés des triangles</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

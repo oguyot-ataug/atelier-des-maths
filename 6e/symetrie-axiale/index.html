@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Symétrie axiale – Cours de maths 6e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 6e : Symétrie axiale. Figures symétriques, Symétrie d'un point, Propriétés de la symétrie axiale, Axe de symétrie d'un segment, Axe de…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/6e/symetrie-axiale/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Symétrie axiale – Cours de maths 6e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 6e : Symétrie axiale. Figures symétriques, Symétrie d'un point, Propriétés de la symétrie axiale, Axe de symétrie d'un segment, Axe de…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/6e/symetrie-axiale/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Symétrie axiale (6e)","headline":"Symétrie axiale – cours de mathématiques de 6e","description":"Cours de maths 6e : Symétrie axiale. Figures symétriques, Symétrie d'un point, Propriétés de la symétrie axiale, Axe de symétrie d'un segment, Axe de…","url":"https://maths.latelieraugmente.fr/6e/symetrie-axiale/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"6e (cycle 3, collège)","about":"Géométrie","teaches":["Figures symétriques","Symétrie d'un point","Propriétés de la symétrie axiale","Axe de symétrie d'un segment","Axe de symétrie d'un angle"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 6e","url":"https://maths.latelieraugmente.fr/6e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 6e","item":"https://maths.latelieraugmente.fr/6e/"},{"@type":"ListItem","position":3,"name":"Symétrie axiale","item":"https://maths.latelieraugmente.fr/6e/symetrie-axiale/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/6e/">Cours de maths 6e</a> › Symétrie axiale</div>
+<h1>Symétrie axiale</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span> Cours de mathématiques de 6e (sixième) · chapitre 10 · Figures symétriques · Symétrie d'un point · Propriétés de la symétrie axiale · Axe de symétrie d'un segment · Axe de symétrie d'un angle</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/10-symetrie-axiale/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Figures symétriques</h3></div>
+
+<span class="def-badge">Définition</span>
+<div class="def-box">Deux figures sont <b>symétriques</b> par rapport à une droite si elles se superposent par pliage le long de cette droite, appelée l'<b>axe de symétrie</b>.</div>
+<p class="example-title">Exemple :</p>
+<div class="figure-wrap" style="max-width:300px;margin:12px auto;">
+  <svg viewBox="0 0 280 160" style="width:100%;display:block;">
+    <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"></line>
+    <polygon points="60,60 100,60 100,100 80,120 60,100" fill="rgba(31,58,92,.10)" stroke="#1F3A5C" stroke-width="1.8"></polygon>
+    <g id="symF1RightGroup" transform="translate(140,0) scale(1,1) translate(-140,0)">
+      <polygon points="220,60 180,60 180,100 200,120 220,100" fill="rgba(227,93,58,.10)" stroke="#E35D3A" stroke-width="1.8"></polygon>
+    </g>
+    <text x="145" y="20" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700">(d)</text>
+  </svg>
+  
+</div>
+<p style="margin:4px 0 0;">Les deux figures se superposent par pliage le long de la droite <b>(d)</b> : elles sont donc symétriques par rapport à <b>(d)</b>.</p>
+<p style="margin:8px 0 0;">Deux points sont symétriques par rapport à une droite s'ils se superposent par pliage le long de cette droite.</p>
+
+<div class="lesson-header"><span class="num">2</span><h3>Symétrie d'un point</h3></div>
+
+<span class="def-badge">Définition</span>
+<div class="def-box">Le <b>symétrique</b> d'un point M par rapport à une droite (d) est le point M' tel que <b>(d) soit la médiatrice</b> du segment [MM'] (c'est-à-dire tel que (d) soit perpendiculaire au segment [MM'] en son milieu).</div>
+<p class="example-title">Exemple : construis M', symétrique du point M par rapport à la droite (d).</p>
+<p class="hint" style="margin:0 0 8px;">Axe horizontal ou vertical :</p>
+<div class="figure-wrap" style="max-width:320px;margin:12px auto;">
+  <svg id="symF2Svg" viewBox="0 0 260 140" style="width:100%;display:block;">
+    <defs>
+      <pattern id="gridSymAxiale" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#E4DFD6" stroke-width="1"></path>
+      </pattern>
+    </defs>
+    <rect x="0" y="0" width="260" height="140" fill="url(#gridSymAxiale)"></rect>
+    <line x1="140" y1="0" x2="140" y2="140" stroke="#E35D3A" stroke-width="1.4"></line>
+    <line id="symF2Line" x1="80" y1="60" x2="200" y2="60" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 3"></line>
+    <line id="symF2MpCross1" stroke="#1F3A5C" stroke-width="1.6" x1="195" y1="55" x2="205" y2="65"></line>
+    <line id="symF2MpCross2" stroke="#1F3A5C" stroke-width="1.6" x1="195" y1="65" x2="205" y2="55"></line>
+    <line id="symF2MCross1" stroke="#1F3A5C" stroke-width="1.8" x1="74" y1="54" x2="86" y2="66"></line>
+    <line id="symF2MCross2" stroke="#1F3A5C" stroke-width="1.8" x1="74" y1="66" x2="86" y2="54"></line>
+    <circle id="symF2M" cx="80" cy="60" r="11" fill="transparent" style=""></circle>
+    <text id="symF2MLabel" x="58" y="52" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M</text>
+    <text id="symF2MpLabel" x="210" y="52" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M'</text>
+    <text x="145" y="16" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700">(d)</text>
+  </svg>
+  <p class="hint" style="text-align:center;margin:4px 0 0;">Déplace le point <b>M</b> (le point bleu).</p>
+</div>
+<p style="margin:4px 0 0;">M et M' sont situés à la même distance de <b>(d)</b>, de part et d'autre, sur une perpendiculaire à <b>(d)</b>. On compte le nombre de carreaux de M jusqu'à <b>(d)</b>, et on reporte le même nombre de carreaux de l'autre côté de <b>(d)</b>.</p>
+
+<p class="hint" style="margin:16px 0 8px;">Axe en diagonale : on rejoint <b>(d)</b> à l'horizontale en comptant les carreaux, puis on redescend à la verticale en comptant le <b>même nombre</b> de carreaux.</p>
+<div class="figure-wrap" style="max-width:280px;margin:12px auto;">
+  <svg id="symF3Svg" viewBox="0 0 200 180" style="width:100%;display:block;">
+    <rect x="0" y="0" width="200" height="180" fill="url(#gridSymAxiale)"></rect>
+    <line x1="10" y1="170" x2="190" y2="-10" stroke="#E35D3A" stroke-width="1.4"></line>
+    <line id="symF3LineH" x1="60" y1="60" x2="120.0" y2="60.0" stroke="#9CA3AF" stroke-width="1.3" stroke-dasharray="3 3"></line>
+    <line id="symF3LineV" x1="120.0" y1="60.0" x2="120.0" y2="120.0" stroke="#9CA3AF" stroke-width="1.3" stroke-dasharray="3 3"></line>
+    <text id="symF3HCount" x="76" y="54" font-family="JetBrains Mono" font-size="11" fill="#6B7280">3 carreaux</text>
+    <text id="symF3VCount" x="128" y="94" font-family="JetBrains Mono" font-size="11" fill="#6B7280">3 carreaux</text>
+    <circle id="symF3H" cx="120.0" cy="60.0" r="2" fill="#9CA3AF"></circle>
+    <line id="symF3MpCross1" stroke="#1F3A5C" stroke-width="1.6" x1="115" y1="115" x2="125" y2="125"></line>
+    <line id="symF3MpCross2" stroke="#1F3A5C" stroke-width="1.6" x1="115" y1="125" x2="125" y2="115"></line>
+    <line id="symF3MCross1" stroke="#1F3A5C" stroke-width="1.8" x1="54" y1="54" x2="66" y2="66"></line>
+    <line id="symF3MCross2" stroke="#1F3A5C" stroke-width="1.8" x1="54" y1="66" x2="66" y2="54"></line>
+    <circle id="symF3M" cx="60" cy="60" r="11" fill="transparent" style=""></circle>
+    <text id="symF3MLabel" x="38" y="52" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M</text>
+    <text id="symF3MpLabel" x="128" y="138" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">M'</text>
+    <text x="150" y="30" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700">(d)</text>
+  </svg>
+  <p class="hint" style="text-align:center;margin:4px 0 0;">Déplace le point <b>M</b> (le point bleu).</p>
+</div>
+<p style="margin:4px 0 0;">De M, on avance à l'horizontale jusqu'à <b>(d)</b> en comptant les carreaux. À partir de ce point de <b>(d)</b>, on redescend à la verticale en comptant le même nombre de carreaux : on trouve <b>M'</b>.</p>
+<div class="def-box" style="margin-top:12px;">
+  <p style="margin:0;">Si un point appartient à l'axe de symétrie, alors son symétrique est le point lui-même.</p>
+</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Propriétés de la symétrie axiale</h3></div>
+
+<span class="prop-badge">Propriété 1</span>
+<p style="margin:4px 0 2px;font-weight:700;">Symétrique d'une droite</p>
+<div class="def-box">Le symétrique d'une droite par rapport à un axe est <b>une droite</b>. La symétrie axiale <b>conserve l'alignement</b>.</div>
+
+<span class="prop-badge">Propriété 2</span>
+<p style="margin:4px 0 2px;font-weight:700;">Symétrique d'un segment</p>
+<div class="def-box">Le symétrique d'un segment par rapport à un axe est <b>un segment de même longueur</b>. La symétrie axiale <b>conserve les longueurs</b>.</div>
+<p class="hint" style="margin:6px 0 0;">Remarque : le symétrique du milieu d'un segment est le milieu du segment symétrique.</p>
+
+<span class="prop-badge">Propriété 3</span>
+<p style="margin:4px 0 2px;font-weight:700;">Symétrique d'un cercle</p>
+<div class="def-box">Le symétrique d'un cercle par rapport à un axe est <b>un cercle de même rayon</b>. Les centres de ces cercles sont symétriques par rapport à cet axe.</div>
+
+<span class="prop-badge">Propriété 4</span>
+<p style="margin:4px 0 2px;font-weight:700;">Symétrique d'un angle</p>
+<div class="def-box">Le symétrique d'un angle est <b>un angle de même mesure</b>. La symétrie axiale <b>conserve les mesures des angles</b>.</div>
+<p class="hint" style="margin:6px 0 0;">Remarque : pour construire le symétrique d'une figure complexe, on la décompose en figures usuelles et on construit le symétrique de chacune d'elles.</p>
+
+<p class="example-title" style="margin-top:16px;">Exemples :</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:10px 0;">
+  <div class="figure-wrap" style="margin:0;">
+    <p class="hint" style="text-align:center;margin:0 0 4px;">Symétrique d'une droite</p>
+    <svg id="symF4Svg" viewBox="0 0 280 160" style="width:100%;display:block;">
+      <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"></line>
+      <line id="symF4Left" x1="51.3" y1="24.3" x2="118.7" y2="145.7" stroke="#1F3A5C" stroke-width="1.8"></line>
+      <line id="symF4Right" x1="228.7" y1="24.3" x2="161.3" y2="145.7" stroke="#E35D3A" stroke-width="1.8"></line>
+      <line id="symF4Tick1" stroke="#1F3A5C" stroke-width="1.8" x1="66.9932582089723" y1="36.11485655057094" x2="53.0067417910277" y2="43.88514344942906"></line>
+      <line id="symF4Tick2" stroke="#1F3A5C" stroke-width="1.8" x1="116.9932582089723" y1="126.11485655057095" x2="103.0067417910277" y2="133.88514344942905"></line>
+      <circle id="symF4P1" cx="60" cy="40" r="11" fill="transparent" style=""></circle>
+      <circle id="symF4P2" cx="110" cy="130" r="11" fill="transparent" style=""></circle>
+    </svg>
+    <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace les 2 points bleus.</p>
+  </div>
+  <div class="figure-wrap" style="margin:0;">
+    <p class="hint" style="text-align:center;margin:0 0 4px;">Symétrique d'un segment</p>
+    <svg id="symF5Svg" viewBox="0 0 280 160" style="width:100%;display:block;">
+      <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"></line>
+      <line id="symF5Left" x1="60" y1="50" x2="100" y2="110" stroke="#1F3A5C" stroke-width="1.8"></line>
+      <line id="symF5Right" x1="220" y1="50" x2="180" y2="110" stroke="#E35D3A" stroke-width="1.8"></line>
+      <line id="symF5TickC" stroke="#1F3A5C" stroke-width="1.8" x1="65.8243520603649" y1="46.1170986264234" x2="54.17564793963509" y2="53.8829013735766"></line>
+      <line id="symF5TickD" stroke="#1F3A5C" stroke-width="1.8" x1="105.8243520603649" y1="106.1170986264234" x2="94.1756479396351" y2="113.8829013735766"></line>
+      <line id="symF5TickCp" stroke="#1F3A5C" stroke-width="1.8" x1="225.8243520603649" y1="53.8829013735766" x2="214.1756479396351" y2="46.1170986264234"></line>
+      <line id="symF5TickDp" stroke="#1F3A5C" stroke-width="1.8" x1="185.8243520603649" y1="113.8829013735766" x2="174.1756479396351" y2="106.1170986264234"></line>
+      <circle id="symF5C" cx="60" cy="50" r="11" fill="transparent" style=""></circle>
+      <circle id="symF5D" cx="100" cy="110" r="11" fill="transparent" style=""></circle>
+      <text id="symF5CLabel" x="48" y="44" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">C</text>
+      <text id="symF5DLabel" x="104" y="122" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">D</text>
+      <text id="symF5CpLabel" x="224" y="44" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">C'</text>
+      <text id="symF5DpLabel" x="160" y="122" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">D'</text>
+    </svg>
+    <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace les 2 points bleus.</p>
+  </div>
+  <div class="figure-wrap" style="margin:0;">
+    <p class="hint" style="text-align:center;margin:0 0 4px;">Symétrique d'un cercle</p>
+    <svg id="symF6Svg" viewBox="0 0 280 160" style="width:100%;display:block;">
+      <line x1="140" y1="10" x2="140" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"></line>
+      <line id="symF6Axis" x1="70" y1="80" x2="210" y2="80" stroke="#9CA3AF" stroke-width="1.2" stroke-dasharray="4 3"></line>
+      <circle id="symF6Left" cx="70" cy="80" r="35" fill="none" stroke="#1F3A5C" stroke-width="1.8"></circle>
+      <circle id="symF6Right" cx="210" cy="80" r="35" fill="none" stroke="#E35D3A" stroke-width="1.8"></circle>
+      <line id="symF6RightCross1" stroke="#E35D3A" stroke-width="1.4" x1="205" y1="75" x2="215" y2="85"></line>
+      <line id="symF6RightCross2" stroke="#E35D3A" stroke-width="1.4" x1="205" y1="85" x2="215" y2="75"></line>
+      <line id="symF6LeftCross1" stroke="#1F3A5C" stroke-width="1.6" x1="64" y1="74" x2="76" y2="86"></line>
+      <line id="symF6LeftCross2" stroke="#1F3A5C" stroke-width="1.6" x1="64" y1="86" x2="76" y2="74"></line>
+      <circle id="symF6LeftCenter" cx="70" cy="80" r="11" fill="transparent" style=""></circle>
+    </svg>
+    <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace le centre bleu.</p>
+  </div>
+</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Axe de symétrie d'un segment</h3></div>
+
+<span class="prop-badge">Propriété 1</span>
+<div class="def-box">La <b>médiatrice</b> d'un segment est <b>un axe de symétrie</b> de ce segment.</div>
+
+<span class="prop-badge">Propriétés 2</span>
+<div class="def-box">
+  <ul class="example-list" style="margin:0;">
+    <li>Si un point appartient à la médiatrice d'un segment, alors <b>il est situé à égale distance des extrémités</b> de ce segment.</li>
+    <li>Réciproquement, si un point est équidistant des extrémités d'un segment, alors <b>il appartient à la médiatrice</b> de ce segment.</li>
+  </ul>
+</div>
+<p class="hint" style="margin:6px 0 0;">Remarque : si un point n'est pas sur la médiatrice d'un segment, alors il est plus proche de l'une des extrémités que de l'autre.</p>
+
+<span class="prop-badge">Propriété 3</span>
+<div class="def-box">La médiatrice d'un segment est <b>l'ensemble des points équidistants</b> des extrémités de ce segment.</div>
+
+<p class="example-title">Exemple :</p>
+<div class="figure-wrap" style="max-width:280px;margin:12px auto;">
+  <svg id="symF7Svg" viewBox="0 0 240 170" style="width:100%;display:block;">
+    <line x1="120" y1="20" x2="120" y2="150" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"></line>
+    <line x1="50" y1="140" x2="190" y2="140" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <path d="M 108 140 L 108 128 L 120 128 L 120 140" fill="none" stroke="#9CA3AF" stroke-width="1.1"></path>
+    <line id="symF7PA" x1="50" y1="140" x2="120" y2="50" stroke="#1C1B2E" stroke-width="1"></line>
+    <line id="symF7PB" x1="190" y1="140" x2="120" y2="50" stroke="#1C1B2E" stroke-width="1"></line>
+    <line id="symF7TickA" x1="78.17598996647047" y1="93.44022852241483" x2="91.82401003352953" y2="96.55977147758517" stroke="#1C1B2E" stroke-width="1.6" opacity="1"></line>
+    <line id="symF7TickB" x1="161.82401003352953" y1="93.44022852241483" x2="148.17598996647047" y2="96.55977147758517" stroke="#1C1B2E" stroke-width="1.6" opacity="1"></line>
+    <line id="symF7PCross1" stroke="#1F3A5C" stroke-width="1.8" x1="114" y1="44" x2="126" y2="56"></line>
+    <line id="symF7PCross2" stroke="#1F3A5C" stroke-width="1.8" x1="114" y1="56" x2="126" y2="44"></line>
+    <circle id="symF7P" cx="120" cy="50" r="11" fill="transparent" style=""></circle>
+    <text x="38" y="150" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">A</text>
+    <text x="196" y="150" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">B</text>
+    <text id="symF7PLabel" x="130" y="42" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">P</text>
+    <text x="126" y="18" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700">(d)</text>
+  </svg>
+  <p id="symF7Status" class="hint" style="text-align:center;margin:4px 0 0;"><b>P</b> est sur la médiatrice : <b>PA = PB</b>.</p>
+  <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace le point <b>P</b> (le point bleu), sur la médiatrice ou en dehors.</p>
+</div>
+<p style="margin:4px 0 0;"><b>(d)</b> est la médiatrice de <b>[AB]</b>. Tant que <b>P</b> reste sur <b>(d)</b>, il est équidistant de <b>A</b> et de <b>B</b> : <b>PA = PB</b>.</p>
+
+<div class="lesson-header"><span class="num">5</span><h3>Axe de symétrie d'un angle</h3></div>
+
+<span class="prop-badge">Propriété</span>
+<div class="def-box">La <b>bissectrice</b> d'un angle est <b>l'axe de symétrie</b> de cet angle.</div>
+
+<p class="example-title">Exemple :</p>
+<div class="figure-wrap" style="max-width:280px;margin:12px auto;">
+  <svg id="symF8Svg" viewBox="0 0 250 190" style="width:100%;display:block;">
+    <line id="symF8RayX" x1="60" y1="170" x2="248.0" y2="170.0" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <line id="symF8RayY" x1="60" y1="170" x2="167.8" y2="16.0" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <line id="symF8Bis" x1="60" y1="170" x2="184.2" y2="105.3" stroke="#E35D3A" stroke-width="1.4" stroke-dasharray="5 4"></line>
+    <path id="symF8Arc1" d="M 92.0 170.0 A 32 32 0 0 0 88.4 155.2" fill="none" stroke="#9CA3AF" stroke-width="1.3"></path>
+    <path id="symF8Arc2" d="M 88.4 155.2 A 32 32 0 0 0 78.3 143.8" fill="none" stroke="#9CA3AF" stroke-width="1.3"></path>
+    <line id="symF8TickX" stroke="#1F3A5C" stroke-width="1.8" x1="230" y1="162" x2="230" y2="178"></line>
+    <line id="symF8TickY" stroke="#1F3A5C" stroke-width="1.8" x1="150.94592360280197" y1="26.112617022779563" x2="164.05407639719803" y2="35.28738297722043"></line>
+    <circle id="symF8X" cx="230" cy="170" r="11" fill="transparent" style=""></circle>
+    <circle id="symF8Y" cx="157.5" cy="30.7" r="11" fill="transparent" style=""></circle>
+    <text x="42" y="180" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">O</text>
+    <text id="symF8XLabel" x="234" y="176" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">A</text>
+    <text id="symF8YLabel" x="151.5" y="22.7" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">B</text>
+  </svg>
+  <p class="hint" style="text-align:center;margin:2px 0 0;">Déplace les points <b>A</b> et <b>B</b> (les points bleus).</p>
+</div>
+<p style="margin:4px 0 0;">La demi-droite (en pointillés), <b>bissectrice</b> de l'angle <span class="tex" data-tex-source="\widehat{AOB}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>A</mi><mi>O</mi><mi>B</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.05017em;">OB</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span>, le partage en deux angles de même mesure.</p>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Bissectrice d'un angle au compas</h4></div>
+<p class="hint" style="margin:8px 0;">La construction à l'équerre et au rapporteur a déjà été vue dans le chapitre sur les angles. Voici la construction <b>au compas</b>.</p>
+<div class="figure-wrap" style="max-width:340px;margin:12px auto;">
+  <svg id="bisSvg" viewBox="0 100 280 320" style="width:100%;display:block;">
+    <line id="bisRay1" x1="70" y1="300" x2="220" y2="300" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <line id="bisRay2" x1="70" y1="300" x2="156.0" y2="177.1" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <polyline id="bisArcO1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+    <polyline id="bisArcO2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+    <polyline id="bisArcP1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+    <polyline id="bisArcP2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+    <line id="bisRayFinal" x1="70" y1="300" x2="70" y2="300" stroke="#E35D3A" stroke-width="1.8" opacity="0"></line>
+    <path id="bisAngleArc1" fill="none" stroke="#9CA3AF" stroke-width="1.3" opacity="0"></path>
+    <path id="bisAngleArc2" fill="none" stroke="#9CA3AF" stroke-width="1.3" opacity="0"></path>
+    <line id="bisAngleTick1" stroke="#9CA3AF" stroke-width="1.3" opacity="0"></line>
+    <line id="bisAngleTick2" stroke="#9CA3AF" stroke-width="1.3" opacity="0"></line>
+    <circle id="bisP1Dot" cx="160" cy="300" r="2" fill="#1C1B2E" opacity="0"></circle>
+    <circle id="bisP2Dot" cx="121.6" cy="226.3" r="2" fill="#1C1B2E" opacity="0"></circle>
+    <g id="bisCompass" transform="translate(70,300)" opacity="0"></g>
+    <g id="bisRulerTool" opacity="0"><rect x="-14" y="0" width="354" height="36" rx="6" fill="rgba(205,228,255,.35)" stroke="#1C1B2E" stroke-width="1.5"></rect>
+    <circle cx="34" cy="24.5" r="6" fill="#fff" fill-opacity="0.75" stroke="#1C1B2E" stroke-width="1"></circle>
+    <circle cx="0" cy="0" r="5" fill="#D93025" stroke="#1C1B2E" stroke-width="1"></circle></g>
+    <g id="bisPencilTool" opacity="0"><g data-role="pencilBody" data-id="bis-pencil">
+    <rect x="-7" y="-100" width="14" height="14" fill="#D93025" stroke="#1C1B2E" stroke-width="1.4"></rect>
+    <rect x="-7" y="-86" width="14" height="51" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.4"></rect>
+    <polygon points="-7,-35 7,-35 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1.4"></polygon>
+    <polygon points="-2.5,-10 2.5,-10 0,0" fill="#3a2b1f"></polygon>
+  </g>
+  <circle data-role="tip" data-id="bis-pencil" cx="0" cy="0" r="18" fill="transparent" pointer-events="all"></circle></g>
+    <text x="52" y="312" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">O</text>
+  </svg>
+  <div class="step-list">
+    <div class="step-item" data-step="1"><div class="step-num">1</div><div>Prendre un écartement au compas quelconque.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Piquer au sommet de l'angle et intercepter les deux côtés (deux petits arcs, sans les joindre).</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">3</div><div>Piquer sur chaque point d'intersection : construire deux arcs de cercle de même écartement, qui se coupent.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">4</div><div>Finir à la règle et au crayon : tracer la demi-droite depuis le sommet, en passant par ce point.</div></div>
+    <div class="step-item" data-step="5"><div class="step-num">5</div><div>Coder les deux angles obtenus : ils sont égaux.</div></div>
+  </div>
+  
+</div>
+
+<div class="sub-header" style="margin-top:28px;"><span class="letter">M</span><h4>Médiatrice d'un segment au compas</h4></div>
+<p class="hint" style="margin:8px 0;">Une seconde méthode, avec le compas plutôt qu'à la règle et à l'équerre.</p>
+<div class="figure-wrap" style="max-width:320px;margin:12px auto;">
+  <svg id="medSvg" viewBox="0 190 250 220" style="width:100%;display:block;">
+    <line id="medSegAB" x1="50" y1="300" x2="190" y2="300" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <polyline id="medArcA1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+    <polyline id="medArcA2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+    <polyline id="medArcB1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+    <polyline id="medArcB2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+    <line id="medLine" x1="120" y1="300" x2="120" y2="300" stroke="#E35D3A" stroke-width="1.8" opacity="0"></line>
+    <path id="medRightAngle" d="M 110 300 L 110 290 L 120 290 L 120 300" fill="none" stroke="#9CA3AF" stroke-width="1.1" opacity="0"></path>
+    <line id="medTickIA" x1="89.0" y1="305.7" x2="81.0" y2="294.3" stroke="#1C1B2E" stroke-width="1.6" opacity="0"></line>
+    <line id="medTickIB" x1="151.0" y1="305.7" x2="159.0" y2="294.3" stroke="#1C1B2E" stroke-width="1.6" opacity="0"></line>
+    <circle id="medQ1Dot" cx="120" cy="371.4" r="2" fill="#1C1B2E" opacity="0"></circle>
+    <circle id="medQ2Dot" cx="120" cy="228.6" r="2" fill="#1C1B2E" opacity="0"></circle>
+    <g id="medCompass" transform="translate(50,300)" opacity="0"></g>
+    <g id="medRulerTool" opacity="0"><rect x="-14" y="0" width="354" height="36" rx="6" fill="rgba(205,228,255,.35)" stroke="#1C1B2E" stroke-width="1.5"></rect>
+    <circle cx="34" cy="24.5" r="6" fill="#fff" fill-opacity="0.75" stroke="#1C1B2E" stroke-width="1"></circle>
+    <circle cx="0" cy="0" r="5" fill="#D93025" stroke="#1C1B2E" stroke-width="1"></circle></g>
+    <g id="medPencilTool" opacity="0"><g data-role="pencilBody" data-id="med-pencil">
+    <rect x="-7" y="-100" width="14" height="14" fill="#D93025" stroke="#1C1B2E" stroke-width="1.4"></rect>
+    <rect x="-7" y="-86" width="14" height="51" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.4"></rect>
+    <polygon points="-7,-35 7,-35 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1.4"></polygon>
+    <polygon points="-2.5,-10 2.5,-10 0,0" fill="#3a2b1f"></polygon>
+  </g>
+  <circle data-role="tip" data-id="med-pencil" cx="0" cy="0" r="18" fill="transparent" pointer-events="all"></circle></g>
+    <text x="38" y="312" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">A</text>
+    <text x="196" y="312" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">B</text>
+  </svg>
+  <div class="step-list">
+    <div class="step-item" data-step="1"><div class="step-num">1</div><div>Piquer en A avec un écartement supérieur à la moitié de [AB] : tracer un arc de chaque côté de [AB].</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">2</div><div>Piquer en B avec le <b>même écartement</b> : tracer deux arcs qui recoupent les précédents.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">3</div><div>Tracer, à la règle, la droite passant par les deux points d'intersection : c'est la médiatrice.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">4</div><div>Coder le milieu de [AB] et l'angle droit.</div></div>
+  </div>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Justifier que deux points sont symétriques »</h3>
+  <div class="redaction-template">
+    <span class="fill">(d)</span> est la médiatrice du segment <span class="fill">[MM']</span>.<br>Donc <span class="fill">M'</span> est le symétrique du point <span class="fill">M</span> par rapport à la droite <span class="fill">(d)</span>.
+  </div>
+  <h3 style="margin-top:18px;">Rédaction type : « Justifier qu'un point appartient à la médiatrice »</h3>
+  <div class="redaction-template">
+    <span class="fill">PA = PB</span>.<br>Or, si un point est équidistant des extrémités d'un segment, alors il appartient à la médiatrice de ce segment.<br>Donc <span class="fill">P</span> appartient à la médiatrice de <span class="fill">[AB]</span>.
+  </div>
+  <h3 style="margin-top:18px;">Rédaction type : « Justifier qu'une demi-droite est une bissectrice »</h3>
+  <div class="redaction-template">
+    La demi-droite <span class="fill">[Oz)</span> partage l'angle <span class="fill tex" data-tex-source="\widehat{xOy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>O</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span> en deux angles de même mesure : <span class="fill tex" data-tex-source="\widehat{xOz} = \widehat{zOy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>O</mi><mi>z</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mover accent="true"><mrow><mi>z</mi><mi>O</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.04398em;">z</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span>.<br>Donc <span class="fill">[Oz)</span> est la bissectrice de l'angle <span class="fill tex" data-tex-source="\widehat{xOy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>O</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span>.
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Trace une droite (d) et un point M n'appartenant pas à (d). Construis le symétrique M' de M par rapport à (d), à la règle et à l'équerre, en laissant apparents les traits de construction.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Trace un segment [AB] de 6 cm. Construis sa médiatrice au compas, en laissant apparents les deux couples d'arcs de cercle. Code le milieu et l'angle droit obtenus.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Trace un angle <span class="tex" data-tex-source="\widehat{xOy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>O</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span> de 70°. Construis sa bissectrice au compas, en laissant apparents les traits de construction. Code les deux angles obtenus.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    ABC est un triangle isocèle en A. La droite (d) est la médiatrice de [BC] et passe par A. Explique pourquoi B et C sont symétriques par rapport à (d).
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    P est un point tel que PA = 5 cm et PB = 5 cm, où A et B sont les extrémités d'un segment. Explique pourquoi P appartient à la médiatrice de [AB].
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  La symétrie axiale est sans doute la plus ancienne notion de géométrie observée par l'être humain : on la retrouve dans la nature (le corps humain, les ailes d'un papillon, les feuilles de nombreuses plantes) bien avant toute étude mathématique. Les architectes de l'Antiquité l'utilisent systématiquement pour donner un sentiment d'équilibre à leurs monuments : les temples grecs, comme le Parthénon, sont conçus autour d'un axe de symétrie central, tout comme de nombreuses façades de cathédrales gothiques bien plus tard. Le mot « symétrie » vient d'ailleurs du grec <i>sun</i> (avec) et <i>metron</i> (mesure) : une figure symétrique est littéralement une figure de « même mesure » de part et d'autre de son axe. Euclide, dans ses <i>Éléments</i> (IIIe siècle avant J.-C.), utilise déjà des constructions à la règle et au compas qui reposent sur ces idées, sans disposer du vocabulaire moderne. Il faut attendre le XIXe siècle et le développement de la théorie des groupes, notamment les travaux du mathématicien allemand Felix Klein, pour que la symétrie soit formalisée comme une transformation géométrique à part entière, ouvrant la voie à son usage en cristallographie et en physique moderne.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/10-symetrie-axiale/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/6e/multiplication-et-division/">Multiplication et division</a></span>
+  <a href="/6e/">Tous les chapitres de 6e</a>
+  <span><a href="/6e/fractions-comparaison-et-addition/">Fractions : comparaison et addition</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

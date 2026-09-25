@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Droites parallèles et perpendiculaires – Cours de maths 6e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 6e : Droites parallèles et perpendiculaires. Vocabulaire de base, Droites perpendiculaires, Droites parallèles, Position relative de deux…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/6e/droites-paralleles-et-perpendiculaires/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Droites parallèles et perpendiculaires – Cours de maths 6e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 6e : Droites parallèles et perpendiculaires. Vocabulaire de base, Droites perpendiculaires, Droites parallèles, Position relative de deux…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/6e/droites-paralleles-et-perpendiculaires/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Droites parallèles et perpendiculaires (6e)","headline":"Droites parallèles et perpendiculaires – cours de mathématiques de 6e","description":"Cours de maths 6e : Droites parallèles et perpendiculaires. Vocabulaire de base, Droites perpendiculaires, Droites parallèles, Position relative de deux…","url":"https://maths.latelieraugmente.fr/6e/droites-paralleles-et-perpendiculaires/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"6e (cycle 3, collège)","about":"Géométrie","teaches":["Vocabulaire de base","Droites perpendiculaires","Droites parallèles","Position relative de deux droites","Médiatrice d'un segment"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 6e","url":"https://maths.latelieraugmente.fr/6e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 6e","item":"https://maths.latelieraugmente.fr/6e/"},{"@type":"ListItem","position":3,"name":"Droites parallèles et perpendiculaires","item":"https://maths.latelieraugmente.fr/6e/droites-paralleles-et-perpendiculaires/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/6e/">Cours de maths 6e</a> › Droites parallèles et perpendiculaires</div>
+<h1>Droites parallèles et perpendiculaires</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span> Cours de mathématiques de 6e (sixième) · chapitre 2 · Vocabulaire de base · Droites perpendiculaires · Droites parallèles · Position relative de deux droites · Médiatrice d'un segment</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/2-droites-paralleles-et-perpendiculaires/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Vocabulaire de base</h3></div>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">On désigne un point par une lettre <b>capitale</b> : A, B, C, D, ... , M, N, ...</div>
+<p style="font-weight:700;margin:0 0 8px;">Exemples</p>
+<div style="overflow-x:auto;">
+<table style="border-collapse:collapse;width:100%;font-size:.92rem;margin:0 0 18px;text-align:center;">
+  <tbody><tr>
+    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><circle cx="35" cy="25" r="2.2"></circle><text x="42" y="20" font-size="14" font-style="italic">A</text></svg></td>
+    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="30" y1="20" x2="40" y2="30" stroke="#1C1B2E" stroke-width="1.3"></line><line x1="40" y1="20" x2="30" y2="30" stroke="#1C1B2E" stroke-width="1.3"></line><text x="44" y="20" font-size="14" font-style="italic">B</text></svg></td>
+    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="15" y1="35" x2="55" y2="15" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="32.2" y1="20.5" x2="37.8" y2="29.5" stroke="#1C1B2E" stroke-width="1.3"></line><text x="32" y="10" font-size="14" font-style="italic">E</text></svg></td>
+    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="10" y1="30" x2="35" y2="15" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="35" y1="15" x2="60" y2="30" stroke="#1C1B2E" stroke-width="1.6"></line><text x="30" y="10" font-size="14" font-style="italic">C</text></svg></td>
+    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="10" y1="15" x2="60" y2="35" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="10" y1="35" x2="60" y2="15" stroke="#1C1B2E" stroke-width="1.6"></line><text x="38" y="14" font-size="14" font-style="italic">N</text></svg></td>
+  </tr>
+  <tr>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">point libre</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">point libre (variante)</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">point sur une droite</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">sommet d'un angle</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">intersection</td>
+  </tr>
+</tbody></table>
+</div>
+<div style="overflow-x:auto;">
+<table style="border-collapse:collapse;width:100%;font-size:.92rem;margin:10px 0 18px;">
+  <tbody><tr>
+    <th style="background:rgba(31,58,92,.06);padding:8px;border:1px solid rgba(28,43,57,.15);text-align:left;">Notation</th>
+    <th style="background:rgba(31,58,92,.06);padding:8px;border:1px solid rgba(28,43,57,.15);text-align:left;">Signification</th>
+    <th style="background:rgba(31,58,92,.06);padding:8px;border:1px solid rgba(28,43,57,.15);text-align:left;">Figure</th>
+  </tr>
+  <tr>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">[EF]</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Se lit « segment [EF] ». C'est le segment d'extrémités E et F.</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="20" y1="25" x2="120" y2="25" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="20" y1="18" x2="20" y2="32" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="120" y1="18" x2="120" y2="32" stroke="#1C1B2E" stroke-width="1.6"></line><text x="16" y="14" font-size="13" font-style="italic">E</text><text x="116" y="14" font-size="13" font-style="italic">F</text></svg></td>
+  </tr>
+  <tr>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">(EF)</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Se lit « droite (EF) ». C'est la droite qui passe par les points E et F, prolongée à l'infini des deux côtés.</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="5" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"></line><circle cx="35" cy="25" r="2.2"></circle><circle cx="105" cy="25" r="2.2"></circle><text x="31" y="14" font-size="13" font-style="italic">E</text><text x="101" y="14" font-size="13" font-style="italic">F</text></svg></td>
+  </tr>
+  <tr>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">(xy)</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Se lit « droite (xy) ». C'est la droite désignée uniquement par sa <b>direction</b>, sans faire référence à un point particulier. Les lettres <i>x</i> et <i>y</i> (minuscules) représentent les deux directions opposées de la droite, qui s'étend à l'infini de chaque côté.</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="5" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"></line><text x="8" y="18" font-size="13" font-style="italic">x</text><text x="122" y="18" font-size="13" font-style="italic">y</text></svg></td>
+  </tr>
+  <tr>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">[EF)</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Se lit « demi-droite [EF) ». C'est la demi-droite d'origine E qui passe par F, prolongée au-delà de F seulement.</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="25" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="25" y1="18" x2="25" y2="32" stroke="#1C1B2E" stroke-width="1.6"></line><circle cx="95" cy="25" r="2.2"></circle><text x="21" y="14" font-size="13" font-style="italic">E</text><text x="91" y="14" font-size="13" font-style="italic">F</text></svg></td>
+  </tr>
+  <tr>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">[Ox)</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Se lit « demi-droite [Ox) ». C'est la demi-droite d'<b>origine O</b> (un point précis, en majuscule) qui s'étend à l'infini dans la <b>direction</b> <i>x</i> (en minuscule, sans autre point de référence).</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="25" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="25" y1="18" x2="25" y2="32" stroke="#1C1B2E" stroke-width="1.6"></line><text x="19" y="14" font-size="13" font-style="italic">O</text><text x="122" y="18" font-size="13" font-style="italic">x</text></svg></td>
+  </tr>
+  <tr>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">G ∈ (d)<br>H ∉ (d)</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le point G <b>appartient</b> à la droite (d). Le point H <b>n'appartient pas</b> à la droite (d).</td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 60" style="width:130px;"><line x1="5" y1="35" x2="135" y2="35" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="55" y1="29" x2="55" y2="41" stroke="#1C1B2E" stroke-width="1.6" transform="rotate(-20 55 35)"></line><text x="50" y="20" font-size="13" font-style="italic">G</text><line x1="93" y1="9" x2="101" y2="17" stroke="#1C1B2E" stroke-width="1.3"></line><line x1="101" y1="9" x2="93" y2="17" stroke="#1C1B2E" stroke-width="1.3"></line><text x="106" y="17" font-size="13" font-style="italic">H</text></svg></td>
+  </tr>
+</tbody></table>
+</div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Droites perpendiculaires</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Deux droites sont <b>sécantes</b> si elles se coupent en un seul point, appelé <b>point d'intersection</b>.</div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Deux droites sont <b>perpendiculaires</b> si elles sont sécantes en formant un angle droit. On note (d) ⊥ (d').</div>
+<p class="example-title">Exemple : construis la droite (d') perpendiculaire à la droite (d) passant par le point M.</p>
+
+<div class="figure-wrap">
+  <svg id="dp-perpSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-perpLineD" stroke="#1F3A5C" stroke-width="1.8" x1="-48.50254226770696" y1="33.537679302244015" x2="448.502542267707" y2="186.46232069775598"></line>
+    <line id="dp-perpLineDp" stroke="#E35D3A" stroke-width="1.8" x1="274.11287732562846" y1="-93.36685130829247" x2="185.88712267437154" y2="193.36685130829247"></line>
+    <path id="dp-perpAngleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3" d="M 223.9214466626478 117.36044512696857 L 228.03864854637314 103.97953900486127 L 214.65774242426585 99.86233712113594"></path>
+    <line id="dp-perpTick1" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line id="dp-perpTick2" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <circle id="dp-perpD1" r="5.5" fill="#1F3A5C" style="" data-marker="cross" cx="70" cy="70"></circle>
+    <circle id="dp-perpD2" r="5.5" fill="#1F3A5C" style="" data-marker="cross" cx="330" cy="150"></circle>
+    <circle id="dp-perpM" r="5.5" fill="#E35D3A" style="" data-marker="cross" cx="230" cy="50"></circle>
+    <text id="dp-perpLabelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C" x="348.23332262792644" y="172.35052451165174">(d)</text>
+    <text id="dp-perpLabelDp" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A" x="232.05860094186264" y="97.71542897388811">(d')</text>
+    <text id="dp-perpLabelM" font-style="italic" font-size="14" x="238" y="40">M</text>
+  </svg>
+  
+</div>
+
+<p class="example-title" style="margin-top:16px;">Construction à la règle et à l'équerre :</p>
+<div class="figure-wrap">
+  <svg id="dp-perpMethodeSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-pm-lineD" stroke="#1F3A5C" stroke-width="1.8" x1="-48.50254226770696" y1="33.537679302244015" x2="448.502542267707" y2="186.46232069775598"></line>
+    <circle id="dp-pm-M" r="5" fill="#E35D3A" data-marker="cross" cx="230" cy="50"></circle>
+    <text id="dp-pm-labelM" font-style="italic" font-size="14" x="238" y="40">M</text>
+    <g id="dp-pm-equerre" style="" transform="translate(108.23116034887799,81.76343395350092) rotate(-162.90) scale(0.440)">
+      <polygon points="0,0 340,0 0,196.29909152447274" fill="rgba(205,225,245,.4)" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <polygon points="34.0,34.0 213.1,34.0 34.0,137.4" fill="#fff" fill-opacity="0.85" stroke="#1C1B2E" stroke-width="1.1"></polygon>
+    <line x1="22" y1="0" x2="22" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="22" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">1</text><line x1="2.2" y1="0" x2="2.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="4.4" y1="0" x2="4.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="6.6" y1="0" x2="6.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="8.8" y1="0" x2="8.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="11.0" y1="0" x2="11.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="13.2" y1="0" x2="13.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="15.4" y1="0" x2="15.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="17.6" y1="0" x2="17.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="19.8" y1="0" x2="19.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="44" y1="0" x2="44" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="44" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">2</text><line x1="24.2" y1="0" x2="24.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="26.4" y1="0" x2="26.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="28.6" y1="0" x2="28.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="30.8" y1="0" x2="30.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="33.0" y1="0" x2="33.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="35.2" y1="0" x2="35.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="37.4" y1="0" x2="37.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="39.6" y1="0" x2="39.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="41.8" y1="0" x2="41.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="66" y1="0" x2="66" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="66" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">3</text><line x1="46.2" y1="0" x2="46.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="48.4" y1="0" x2="48.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="50.6" y1="0" x2="50.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="52.8" y1="0" x2="52.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="55.0" y1="0" x2="55.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="57.2" y1="0" x2="57.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="59.4" y1="0" x2="59.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="61.6" y1="0" x2="61.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="63.8" y1="0" x2="63.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="88" y1="0" x2="88" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="88" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">4</text><line x1="68.2" y1="0" x2="68.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="70.4" y1="0" x2="70.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="72.6" y1="0" x2="72.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="74.8" y1="0" x2="74.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="77.0" y1="0" x2="77.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="79.2" y1="0" x2="79.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="81.4" y1="0" x2="81.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="83.6" y1="0" x2="83.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="85.8" y1="0" x2="85.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="110" y1="0" x2="110" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="110" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">5</text><line x1="90.2" y1="0" x2="90.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="92.4" y1="0" x2="92.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="94.6" y1="0" x2="94.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="96.8" y1="0" x2="96.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="99.0" y1="0" x2="99.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="101.2" y1="0" x2="101.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="103.4" y1="0" x2="103.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="105.6" y1="0" x2="105.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="107.8" y1="0" x2="107.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="132" y1="0" x2="132" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="132" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">6</text><line x1="112.2" y1="0" x2="112.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="114.4" y1="0" x2="114.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="116.6" y1="0" x2="116.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="118.8" y1="0" x2="118.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="121.0" y1="0" x2="121.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="123.2" y1="0" x2="123.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="125.4" y1="0" x2="125.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="127.6" y1="0" x2="127.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="129.8" y1="0" x2="129.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="154" y1="0" x2="154" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="154" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">7</text><line x1="134.2" y1="0" x2="134.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="136.4" y1="0" x2="136.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="138.6" y1="0" x2="138.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="140.8" y1="0" x2="140.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="143.0" y1="0" x2="143.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="145.2" y1="0" x2="145.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="147.4" y1="0" x2="147.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="149.6" y1="0" x2="149.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="151.8" y1="0" x2="151.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="176" y1="0" x2="176" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="176" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">8</text><line x1="156.2" y1="0" x2="156.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="158.4" y1="0" x2="158.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="160.6" y1="0" x2="160.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="162.8" y1="0" x2="162.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="165.0" y1="0" x2="165.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="167.2" y1="0" x2="167.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="169.4" y1="0" x2="169.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="171.6" y1="0" x2="171.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="173.8" y1="0" x2="173.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="198" y1="0" x2="198" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="198" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">9</text><line x1="178.2" y1="0" x2="178.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="180.4" y1="0" x2="180.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="182.6" y1="0" x2="182.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="184.8" y1="0" x2="184.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="187.0" y1="0" x2="187.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="189.2" y1="0" x2="189.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="191.4" y1="0" x2="191.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="193.6" y1="0" x2="193.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="195.8" y1="0" x2="195.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="220" y1="0" x2="220" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="220" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">10</text><line x1="200.2" y1="0" x2="200.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="202.4" y1="0" x2="202.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="204.6" y1="0" x2="204.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="206.8" y1="0" x2="206.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="209.0" y1="0" x2="209.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="211.2" y1="0" x2="211.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="213.4" y1="0" x2="213.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="215.6" y1="0" x2="215.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="217.8" y1="0" x2="217.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="242" y1="0" x2="242" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="242" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">11</text><line x1="222.2" y1="0" x2="222.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="224.4" y1="0" x2="224.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="226.6" y1="0" x2="226.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="228.8" y1="0" x2="228.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="231.0" y1="0" x2="231.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="233.2" y1="0" x2="233.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="235.4" y1="0" x2="235.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="237.6" y1="0" x2="237.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="239.8" y1="0" x2="239.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="264" y1="0" x2="264" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="264" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">12</text><line x1="244.2" y1="0" x2="244.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="246.4" y1="0" x2="246.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="248.6" y1="0" x2="248.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="250.8" y1="0" x2="250.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="253.0" y1="0" x2="253.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="255.2" y1="0" x2="255.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="257.4" y1="0" x2="257.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="259.6" y1="0" x2="259.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="261.8" y1="0" x2="261.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="286" y1="0" x2="286" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="286" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">13</text><line x1="266.2" y1="0" x2="266.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="268.4" y1="0" x2="268.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="270.6" y1="0" x2="270.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="272.8" y1="0" x2="272.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="275.0" y1="0" x2="275.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="277.2" y1="0" x2="277.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="279.4" y1="0" x2="279.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="281.6" y1="0" x2="281.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="283.8" y1="0" x2="283.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="308" y1="0" x2="308" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="308" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">14</text><line x1="288.2" y1="0" x2="288.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="290.4" y1="0" x2="290.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="292.6" y1="0" x2="292.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="294.8" y1="0" x2="294.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="297.0" y1="0" x2="297.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="299.2" y1="0" x2="299.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="301.4" y1="0" x2="301.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="303.6" y1="0" x2="303.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="305.8" y1="0" x2="305.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line>
+    </g>
+    
+    
+    
+    
+    
+    <text id="dp-pm-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C" x="357.64406979072714" y="141.76559623254937">(d)</text>
+    
+  </svg>
+  <p class="hint" id="dp-pm-note" style="text-align:center;margin-top:8px;">On place un côté de l'angle droit de l'équerre sur la droite (d).</p>
+  
+</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Droites parallèles</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Deux droites sont <b>parallèles</b> si elles ne sont pas sécantes. On note (d) // (d').</div>
+<p class="example-title">Exemple : construis la droite (d'') parallèle à la droite (d) passant par le point N.</p>
+
+<div class="figure-wrap">
+  <svg id="dp-paraSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-paraLineD" stroke="#1F3A5C" stroke-width="1.8" x1="-66.65765749313357" y1="232.21921916437785" x2="426.65765749313357" y2="67.78078083562215"></line>
+    <line id="dp-paraLineDpp" stroke="#E35D3A" stroke-width="1.8" x1="-96.65765749313357" y1="132.21921916437785" x2="396.65765749313357" y2="-32.21921916437785"></line>
+    <circle id="dp-paraP1" r="5.5" fill="#1F3A5C" style="" data-marker="cross" cx="60" cy="190"></circle>
+    <circle id="dp-paraP2" r="5.5" fill="#1F3A5C" style="" data-marker="cross" cx="300" cy="110"></circle>
+    <circle id="dp-paraN" r="5.5" fill="#E35D3A" style="" data-marker="cross" cx="150" cy="50"></circle>
+    <text id="dp-paraLabelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C" x="327.8280434094817" y="117.58946638440412">(d)</text>
+    <text id="dp-paraLabelDpp" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A" x="177.82804340948172" y="57.589466384404105">(d'')</text>
+    <text id="dp-paraLabelN" font-style="italic" font-size="14" x="158" y="40">N</text>
+  </svg>
+  
+</div>
+
+<p class="example-title" style="margin-top:16px;">Construction à la règle et à l'équerre :</p>
+<div class="figure-wrap">
+  <svg id="dp-paraMethodeSvg" viewBox="0 0 400 430" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-pam-lineD" stroke="#1F3A5C" stroke-width="1.8" x1="-66.65765749313357" y1="207.21921916437785" x2="426.65765749313357" y2="42.78078083562215"></line>
+    <circle id="dp-pam-N" r="5" fill="#E35D3A" data-marker="cross" cx="216" cy="223"></circle>
+    <text id="dp-pam-labelN" font-style="italic" font-size="14" x="224" y="213">N</text>
+    
+    
+    <g id="dp-pam-equerre" style="" transform="translate(60,165) rotate(-18.43) scale(0.454,0.454)">
+      <polygon points="0,0 340,0 0,196.29909152447274" fill="rgba(205,225,245,.4)" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <polygon points="34.0,34.0 213.1,34.0 34.0,137.4" fill="#fff" fill-opacity="0.85" stroke="#1C1B2E" stroke-width="1.1"></polygon>
+    <line x1="22" y1="0" x2="22" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="22" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">1</text><line x1="2.2" y1="0" x2="2.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="4.4" y1="0" x2="4.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="6.6" y1="0" x2="6.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="8.8" y1="0" x2="8.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="11.0" y1="0" x2="11.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="13.2" y1="0" x2="13.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="15.4" y1="0" x2="15.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="17.6" y1="0" x2="17.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="19.8" y1="0" x2="19.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="44" y1="0" x2="44" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="44" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">2</text><line x1="24.2" y1="0" x2="24.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="26.4" y1="0" x2="26.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="28.6" y1="0" x2="28.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="30.8" y1="0" x2="30.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="33.0" y1="0" x2="33.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="35.2" y1="0" x2="35.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="37.4" y1="0" x2="37.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="39.6" y1="0" x2="39.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="41.8" y1="0" x2="41.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="66" y1="0" x2="66" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="66" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">3</text><line x1="46.2" y1="0" x2="46.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="48.4" y1="0" x2="48.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="50.6" y1="0" x2="50.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="52.8" y1="0" x2="52.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="55.0" y1="0" x2="55.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="57.2" y1="0" x2="57.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="59.4" y1="0" x2="59.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="61.6" y1="0" x2="61.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="63.8" y1="0" x2="63.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="88" y1="0" x2="88" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="88" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">4</text><line x1="68.2" y1="0" x2="68.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="70.4" y1="0" x2="70.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="72.6" y1="0" x2="72.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="74.8" y1="0" x2="74.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="77.0" y1="0" x2="77.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="79.2" y1="0" x2="79.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="81.4" y1="0" x2="81.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="83.6" y1="0" x2="83.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="85.8" y1="0" x2="85.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="110" y1="0" x2="110" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="110" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">5</text><line x1="90.2" y1="0" x2="90.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="92.4" y1="0" x2="92.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="94.6" y1="0" x2="94.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="96.8" y1="0" x2="96.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="99.0" y1="0" x2="99.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="101.2" y1="0" x2="101.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="103.4" y1="0" x2="103.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="105.6" y1="0" x2="105.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="107.8" y1="0" x2="107.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="132" y1="0" x2="132" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="132" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">6</text><line x1="112.2" y1="0" x2="112.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="114.4" y1="0" x2="114.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="116.6" y1="0" x2="116.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="118.8" y1="0" x2="118.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="121.0" y1="0" x2="121.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="123.2" y1="0" x2="123.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="125.4" y1="0" x2="125.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="127.6" y1="0" x2="127.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="129.8" y1="0" x2="129.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="154" y1="0" x2="154" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="154" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">7</text><line x1="134.2" y1="0" x2="134.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="136.4" y1="0" x2="136.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="138.6" y1="0" x2="138.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="140.8" y1="0" x2="140.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="143.0" y1="0" x2="143.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="145.2" y1="0" x2="145.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="147.4" y1="0" x2="147.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="149.6" y1="0" x2="149.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="151.8" y1="0" x2="151.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="176" y1="0" x2="176" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="176" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">8</text><line x1="156.2" y1="0" x2="156.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="158.4" y1="0" x2="158.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="160.6" y1="0" x2="160.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="162.8" y1="0" x2="162.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="165.0" y1="0" x2="165.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="167.2" y1="0" x2="167.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="169.4" y1="0" x2="169.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="171.6" y1="0" x2="171.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="173.8" y1="0" x2="173.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="198" y1="0" x2="198" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="198" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">9</text><line x1="178.2" y1="0" x2="178.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="180.4" y1="0" x2="180.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="182.6" y1="0" x2="182.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="184.8" y1="0" x2="184.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="187.0" y1="0" x2="187.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="189.2" y1="0" x2="189.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="191.4" y1="0" x2="191.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="193.6" y1="0" x2="193.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="195.8" y1="0" x2="195.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="220" y1="0" x2="220" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="220" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">10</text><line x1="200.2" y1="0" x2="200.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="202.4" y1="0" x2="202.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="204.6" y1="0" x2="204.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="206.8" y1="0" x2="206.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="209.0" y1="0" x2="209.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="211.2" y1="0" x2="211.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="213.4" y1="0" x2="213.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="215.6" y1="0" x2="215.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="217.8" y1="0" x2="217.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="242" y1="0" x2="242" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="242" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">11</text><line x1="222.2" y1="0" x2="222.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="224.4" y1="0" x2="224.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="226.6" y1="0" x2="226.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="228.8" y1="0" x2="228.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="231.0" y1="0" x2="231.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="233.2" y1="0" x2="233.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="235.4" y1="0" x2="235.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="237.6" y1="0" x2="237.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="239.8" y1="0" x2="239.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="264" y1="0" x2="264" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="264" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">12</text><line x1="244.2" y1="0" x2="244.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="246.4" y1="0" x2="246.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="248.6" y1="0" x2="248.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="250.8" y1="0" x2="250.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="253.0" y1="0" x2="253.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="255.2" y1="0" x2="255.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="257.4" y1="0" x2="257.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="259.6" y1="0" x2="259.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="261.8" y1="0" x2="261.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="286" y1="0" x2="286" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="286" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">13</text><line x1="266.2" y1="0" x2="266.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="268.4" y1="0" x2="268.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="270.6" y1="0" x2="270.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="272.8" y1="0" x2="272.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="275.0" y1="0" x2="275.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="277.2" y1="0" x2="277.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="279.4" y1="0" x2="279.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="281.6" y1="0" x2="281.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="283.8" y1="0" x2="283.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="308" y1="0" x2="308" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="308" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">14</text><line x1="288.2" y1="0" x2="288.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="290.4" y1="0" x2="290.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="292.6" y1="0" x2="292.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="294.8" y1="0" x2="294.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="297.0" y1="0" x2="297.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="299.2" y1="0" x2="299.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="301.4" y1="0" x2="301.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="303.6" y1="0" x2="303.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="305.8" y1="0" x2="305.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line>
+    </g>
+    
+    
+    
+    <text id="dp-pam-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C" x="327.8280434094817" y="92.58946638440412">(d)</text>
+    
+  </svg>
+  <p class="hint" id="dp-pam-note" style="text-align:center;margin-top:8px;">On place un côté de l'angle droit de l'équerre sur la droite (d).</p>
+  
+</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Position relative de deux droites</h3></div>
+<span class="prop-badge">Propriété 1</span>
+<div class="def-box">Deux droites sont : soit <b>sécantes</b> ; soit <b>parallèles</b>.</div>
+<span class="prop-badge">Propriété 2</span>
+<div class="def-box">Deux droites sécantes sont : soit <b>perpendiculaires</b> ; soit <b>non perpendiculaires</b>.</div>
+<p class="hint" style="margin:10px 0 6px;">Remarque : on peut résumer tout cela dans une carte mentale, selon le nombre de points communs aux deux droites.</p>
+<svg viewBox="0 0 460 210" style="width:100%;max-width:480px;display:block;margin:10px auto;font-family:'Space Grotesk',sans-serif;">
+  <line x1="230" y1="40" x2="112" y2="68" stroke="#1C1B2E" stroke-width="1.3"></line>
+  <line x1="230" y1="40" x2="348" y2="68" stroke="#1C1B2E" stroke-width="1.3"></line>
+  <line x1="112" y1="100" x2="58" y2="128" stroke="#1C1B2E" stroke-width="1.1"></line>
+  <line x1="112" y1="100" x2="166" y2="128" stroke="#1C1B2E" stroke-width="1.1"></line>
+  <line x1="348" y1="100" x2="294" y2="128" stroke="#1C1B2E" stroke-width="1.1"></line>
+  <line x1="348" y1="100" x2="402" y2="128" stroke="#1C1B2E" stroke-width="1.1"></line>
+  <rect x="170" y="6" width="120" height="34" rx="8" fill="#1F3A5C"></rect>
+  <text x="230" y="27" text-anchor="middle" fill="#fff" font-size="12.5">Deux droites</text>
+  <rect x="57" y="68" width="110" height="32" rx="8" fill="#E35D3A"></rect>
+  <text x="112" y="89" text-anchor="middle" fill="#fff" font-size="12.5">Sécantes</text>
+  <rect x="293" y="68" width="110" height="32" rx="8" fill="#E35D3A"></rect>
+  <text x="348" y="89" text-anchor="middle" fill="#fff" font-size="12.5">Parallèles</text>
+  <rect x="10" y="128" width="96" height="48" rx="6" fill="rgba(31,58,92,.08)" stroke="#1F3A5C" stroke-width="1"></rect>
+  <text x="58" y="147" text-anchor="middle" font-size="11">Perpendiculaires</text>
+  <text x="58" y="164" text-anchor="middle" font-size="11" fill="#8A4210" font-weight="700">1 point commun</text>
+  <rect x="118" y="128" width="96" height="48" rx="6" fill="rgba(31,58,92,.08)" stroke="#1F3A5C" stroke-width="1"></rect>
+  <text x="166" y="141" text-anchor="middle" font-size="10.5">Non</text>
+  <text x="166" y="154" text-anchor="middle" font-size="10.5">perpendiculaires</text>
+  <text x="166" y="169" text-anchor="middle" font-size="11" fill="#8A4210" font-weight="700">1 point commun</text>
+  <rect x="246" y="128" width="96" height="48" rx="6" fill="rgba(31,58,92,.08)" stroke="#1F3A5C" stroke-width="1"></rect>
+  <text x="294" y="147" text-anchor="middle" font-size="11">Confondues</text>
+  <text x="294" y="164" text-anchor="middle" font-size="11" fill="#8A4210" font-weight="700">une infinité</text>
+  <rect x="354" y="128" width="96" height="48" rx="6" fill="rgba(31,58,92,.08)" stroke="#1F3A5C" stroke-width="1"></rect>
+  <text x="402" y="147" text-anchor="middle" font-size="11">Distinctes</text>
+  <text x="402" y="164" text-anchor="middle" font-size="11" fill="#8A4210" font-weight="700">0 point commun</text>
+</svg>
+
+<div class="lesson-header"><span class="num">5</span><h3>Médiatrice d'un segment</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">La <b>médiatrice</b> d'un segment est la droite perpendiculaire à ce segment, en son milieu.</div>
+<p class="example-title">Exemple : construis la médiatrice du segment [AB].</p>
+
+<div class="figure-wrap">
+  <svg id="dp-medSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-medSeg" stroke="#1C1B2E" stroke-width="1.8" x1="90" y1="170" x2="310" y2="80"></line>
+    <line id="dp-medLine" stroke="#E35D3A" stroke-width="1.8" x1="150.77773005633446" y1="4.678895693262035" x2="249.22226994366554" y2="245.32110430673796"></line>
+    <path id="dp-medAngleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3" d="M 212.0321104306738 120.07777300563345 L 216.95433742504036 132.10988343630726 L 204.92222699436655 137.0321104306738"></path>
+    <line id="dp-medTick1a" stroke="#1F6B3A" stroke-width="1.8" x1="138.85991798841326" y1="140.91977258060263" x2="151.14008201158674" y2="154.08022741939737"></line>
+    <line id="dp-medTick1b" stroke="#1F6B3A" stroke-width="1.8" x1="248.85991798841326" y1="95.91977258060264" x2="261.14008201158674" y2="109.08022741939736"></line>
+    <circle id="dp-medP" r="5.5" fill="#1C1B2E" style="" data-marker="cross" cx="90" cy="170"></circle>
+    <circle id="dp-medQ" r="5.5" fill="#1C1B2E" style="" data-marker="cross" cx="310" cy="80"></circle>
+    <text id="dp-medLabelP" font-style="italic" font-size="14" x="76" y="174">A</text>
+    <text id="dp-medLabelQ" font-style="italic" font-size="14" x="318" y="84">B</text>
+    <text id="dp-medLabelMed" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A" x="182.71797074323024" y="176.5328173723406">médiatrice</text>
+  </svg>
+  
+</div>
+
+<p class="example-title" style="margin-top:16px;">Construction à la règle et à l'équerre :</p>
+<div class="figure-wrap">
+  <svg id="dp-medMethodeSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-mm-seg" stroke="#1C1B2E" stroke-width="1.8" x1="90" y1="170" x2="310" y2="80"></line>
+    <circle id="dp-mm-A" r="5" fill="#1C1B2E" data-marker="cross" cx="90" cy="170"></circle>
+    <circle id="dp-mm-B" r="5" fill="#1C1B2E" data-marker="cross" cx="310" cy="80"></circle>
+    <text id="dp-mm-labelA" font-style="italic" font-size="14" x="74" y="175">A</text>
+    <text id="dp-mm-labelB" font-style="italic" font-size="14" x="318" y="85">B</text>
+    <rect id="dp-mm-measureRuler" rx="6" fill="rgba(205,228,255,.35)" stroke="#1C1B2E" stroke-width="1.5" style="" transform="translate(90,170) rotate(-22.25)" x="-17.8" y="0" width="314.9" height="30"></rect>
+    <path id="dp-mm-measureTicks" stroke="#1C1B2E" stroke-width="1" fill="none" style="" d="M 90 170 L 94.16496130292555 180.18101651826245 M 92.75 168.875 L 94.64316422860252 173.50273478102838 M 95.5 167.75 L 97.39316422860252 172.37773478102838 M 98.25 166.625 L 100.14316422860252 171.25273478102838 M 101 165.5 L 102.89316422860252 170.12773478102838 M 103.75 164.375 L 106.77906276576404 171.7793756496454 M 106.5 163.25 L 108.39316422860252 167.87773478102838 M 109.25 162.125 L 111.14316422860252 166.75273478102838 M 112 161 L 113.89316422860252 165.62773478102838 M 114.75 159.875 L 116.64316422860252 164.50273478102838 M 117.5 158.75 L 121.66496130292555 168.93101651826245 M 120.25 157.625 L 122.14316422860252 162.25273478102838 M 123 156.5 L 124.89316422860252 161.12773478102838 M 125.75 155.375 L 127.64316422860252 160.00273478102838 M 128.5 154.25 L 130.39316422860253 158.87773478102838 M 131.25 153.125 L 134.27906276576402 160.5293756496454 M 134 152 L 135.89316422860253 156.62773478102838 M 136.75 150.875 L 138.64316422860253 155.50273478102838 M 139.5 149.75 L 141.39316422860253 154.37773478102838 M 142.25 148.625 L 144.14316422860253 153.25273478102838 M 145 147.5 L 149.16496130292555 157.68101651826245 M 147.75 146.375 L 149.64316422860253 151.00273478102838 M 150.5 145.25 L 152.39316422860253 149.87773478102838 M 153.25 144.125 L 155.14316422860253 148.75273478102838 M 156 143 L 157.89316422860253 147.62773478102838 M 158.75 141.875 L 161.77906276576402 149.2793756496454 M 161.5 140.75 L 163.39316422860253 145.37773478102838 M 164.25 139.625 L 166.14316422860253 144.25273478102838 M 167 138.5 L 168.89316422860253 143.12773478102838 M 169.75 137.375 L 171.64316422860253 142.00273478102838 M 172.5 136.25 L 176.66496130292555 146.43101651826245 M 175.25 135.125 L 177.14316422860253 139.75273478102838 M 178 134 L 179.89316422860253 138.62773478102838 M 180.75 132.875 L 182.64316422860253 137.50273478102838 M 183.5 131.75 L 185.39316422860253 136.37773478102838 M 186.25 130.625 L 189.27906276576402 138.0293756496454 M 189 129.5 L 190.89316422860253 134.12773478102838 M 191.75 128.375 L 193.64316422860253 133.00273478102838 M 194.5 127.25 L 196.39316422860253 131.87773478102838 M 197.25 126.125 L 199.14316422860253 130.75273478102838 M 200 125 L 204.16496130292555 135.18101651826245 M 202.75 123.875 L 204.64316422860253 128.50273478102838 M 205.5 122.75 L 207.39316422860253 127.37773478102838 M 208.25 121.625 L 210.14316422860253 126.25273478102838 M 211 120.5 L 212.89316422860253 125.12773478102838 M 213.75 119.375 L 216.77906276576402 126.77937564964542 M 216.5 118.25 L 218.39316422860253 122.87773478102838 M 219.24999999999997 117.125 L 221.1431642286025 121.75273478102838 M 221.99999999999997 116 L 223.8931642286025 120.62773478102838 M 224.74999999999997 114.875 L 226.6431642286025 119.50273478102838 M 227.49999999999997 113.75 L 231.66496130292552 123.93101651826244 M 230.24999999999997 112.625 L 232.1431642286025 117.25273478102838 M 232.99999999999997 111.5 L 234.8931642286025 116.12773478102838 M 235.74999999999997 110.375 L 237.6431642286025 115.00273478102838 M 238.49999999999997 109.25 L 240.3931642286025 113.87773478102838 M 241.24999999999997 108.125 L 244.279062765764 115.52937564964542 M 243.99999999999997 107 L 245.8931642286025 111.62773478102838 M 246.74999999999997 105.875 L 248.6431642286025 110.50273478102838 M 249.49999999999997 104.75 L 251.3931642286025 109.37773478102838 M 252.24999999999997 103.625 L 254.1431642286025 108.25273478102838 M 254.99999999999997 102.5 L 259.1649613029255 112.68101651826244 M 257.75 101.375 L 259.64316422860253 106.00273478102838 M 260.5 100.25 L 262.39316422860253 104.87773478102838 M 263.25 99.125 L 265.14316422860253 103.75273478102838 M 266 98 L 267.89316422860253 102.62773478102838 M 268.75 96.875 L 271.779062765764 104.27937564964542 M 271.5 95.75 L 273.39316422860253 100.37773478102838 M 274.25 94.625 L 276.14316422860253 99.25273478102838 M 277 93.5 L 278.89316422860253 98.12773478102838 M 279.75 92.375 L 281.64316422860253 97.00273478102838 M 282.5 91.25 L 286.6649613029255 101.43101651826244 M 285.25 90.125 L 287.14316422860253 94.75273478102838 M 288 89 L 289.89316422860253 93.62773478102838 M 290.75 87.875 L 292.64316422860253 92.50273478102838 M 293.5 86.75 L 295.39316422860253 91.37773478102838 M 296.25 85.625 L 299.279062765764 93.02937564964542 M 299 84.5 L 300.89316422860253 89.12773478102838 M 301.75 83.375 L 303.64316422860253 88.00273478102838 M 304.5 82.25 L 306.39316422860253 86.87773478102838 M 307.25 81.125 L 309.14316422860253 85.75273478102838 M 310 80 L 314.1649613029255 90.18101651826244 M 312.75 78.875 L 314.64316422860253 83.50273478102838 M 315.5 77.75 L 317.39316422860253 82.37773478102838 M 318.25 76.625 L 320.14316422860253 81.25273478102838 M 321 75.5 L 322.89316422860253 80.12773478102838 M 323.75 74.375 L 326.779062765764 81.77937564964542 M 326.5 73.25 L 328.39316422860253 77.87773478102838 M 329.25 72.125 L 331.14316422860253 76.75273478102838 M 332 71 L 333.89316422860253 75.62773478102838 M 334.75 69.875 L 336.64316422860253 74.50273478102838 M 337.5 68.75 L 341.6649613029255 78.93101651826244 M 340.25 67.625 L 342.14316422860253 72.25273478102838 M 343 66.5 L 344.89316422860253 71.12773478102838 M 345.75 65.375 L 347.64316422860253 70.00273478102838 M 348.49999999999994 64.25 L 350.3931642286025 68.87773478102838 M 351.24999999999994 63.125 L 354.27906276576397 70.52937564964542 M 353.99999999999994 62 L 355.8931642286025 66.62773478102838 M 356.74999999999994 60.875 L 358.6431642286025 65.50273478102838 M 359.49999999999994 59.75 L 361.3931642286025 64.37773478102838 M 362.24999999999994 58.625 L 364.1431642286025 63.25273478102838 M 364.99999999999994 57.5 L 369.16496130292546 67.68101651826244 "></path>
+    <g id="dp-mm-measureLabels" style=""><text x="97.57265691441009" y="188.51093912411352" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="400">0</text><text x="125.07265691441009" y="177.26093912411352" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="400">1</text><text x="152.5726569144101" y="166.01093912411352" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="400">2</text><text x="180.0726569144101" y="154.76093912411352" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="400">3</text><text x="207.5726569144101" y="143.51093912411352" font-size="11" text-anchor="middle" fill="#1F6B3A" font-weight="700">4</text><text x="235.07265691441006" y="132.26093912411352" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="400">5</text><text x="262.57265691441006" y="121.01093912411353" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="400">6</text><text x="290.07265691441006" y="109.76093912411353" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="400">7</text><text x="317.57265691441006" y="98.51093912411353" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="400">8</text><text x="345.07265691441006" y="87.26093912411353" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="400">9</text><text x="372.57265691441" y="76.01093912411353" font-size="9" text-anchor="middle" fill="#1C1B2E" font-weight="400">10</text></g>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  </svg>
+  <p class="hint" id="dp-mm-note" style="text-align:center;margin-top:8px;">On mesure le segment [AB] à la règle graduée : le 0 est posé sur A, on lit 8 cm sur B.</p>
+  
+</div>
+
+<div class="lesson-header"><span class="num">6</span><h3>Utiliser une réquerre (règle-équerre)</h3></div>
+<div class="def-box">La <b>réquerre</b> (ou règle-équerre) combine une règle graduée et un angle droit intégré en son centre (repéré par le 0) : un seul outil pour tracer perpendiculaires, parallèles et médiatrices, sans avoir à poser une règle séparée.</div>
+
+<p class="example-title">Perpendiculaire à (d) passant par M :</p>
+<div class="figure-wrap">
+  <svg id="dp-rqp-svg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-rqp-lineD" stroke="#1F3A5C" stroke-width="1.8" x1="-49.99622638661401" y1="221.4274932533183" x2="449.996226386614" y2="78.57250674668171"></line>
+    <circle id="dp-rqp-M" r="5" fill="#E35D3A" data-marker="cross" cx="230" cy="50"></circle>
+    <text id="dp-rqp-labelM" font-style="italic" font-size="14" x="238" y="40">M</text>
+    <text id="dp-rqp-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C" x="358.6810366970217" y="88.02230976820975">(d)</text>
+    <image id="dp-rqp-tool" href="assets/requerre-translucide.png" style="opacity:0.92;" width="280" height="82" transform="translate(108.08,176.26) rotate(-105.95) translate(-140.00,-41.00)"></image>
+    <line id="dp-rqp-centerMark" stroke="#1C1B2E" stroke-width="2" x1="71.22474695398091" y1="186.79292944171974" x2="144.9276478101014" y2="165.73495776854244"></line>
+    
+    
+    
+    
+    
+  </svg>
+  <p class="hint" id="dp-rqp-note" style="text-align:center;margin-top:8px;">On pose la réquerre perpendiculairement à (d) : le trait fin qui traverse sa largeur reste sur (d).</p>
+  
+</div>
+
+<p class="example-title" style="margin-top:16px;">Parallèle à (d) passant par A (méthode 1 : deux perpendiculaires successives) :</p>
+<div class="figure-wrap">
+  <svg id="dp-rqa-svg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-rqa-lineD" stroke="#1F3A5C" stroke-width="1.8" x1="-69.59999999999997" y1="227.8" x2="429.59999999999997" y2="82.2"></line>
+    <circle id="dp-rqa-A" r="5" fill="#E35D3A" data-marker="cross" cx="150" cy="50"></circle>
+    <text id="dp-rqa-labelA" font-style="italic" font-size="14" x="158" y="40">A</text>
+    <text id="dp-rqa-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C" x="318.56" y="97.92">(d)</text>
+    <image id="dp-rqa-tool" href="assets/requerre-translucide.png" style="opacity:0.92;" width="280" height="82" transform="translate(98.40,178.80) rotate(-106.26) translate(-140.00,-41.00)"></image>
+    <line id="dp-rqa-centerMark" stroke="#1C1B2E" stroke-width="2" x1="61.60695652173912" y1="189.5313043478261" x2="135.19304347826085" y2="168.06869565217391"></line>
+    
+    
+    
+    
+    
+    
+    
+    
+  </svg>
+  <p class="hint" id="dp-rqa-note" style="text-align:center;margin-top:8px;">Première perpendiculaire (Δ) : réquerre posée perpendiculairement à (d), on la fait glisser vers A.</p>
+  
+</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode : tracer une perpendiculaire à l'équerre et à la règle</h4></div>
+<p class="example-title">Construction à la règle et à l'équerre :</p>
+<div class="figure-wrap">
+  <svg id="dp-methAnimSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="dp-mA-lineD" stroke="#1F3A5C" stroke-width="1.8" x1="-48.50254226770696" y1="33.537679302244015" x2="448.502542267707" y2="186.46232069775598"></line>
+    <circle id="dp-mA-M" r="5" fill="#E35D3A" data-marker="cross" cx="230" cy="50"></circle>
+    <text id="dp-mA-labelM" font-style="italic" font-size="14" x="238" y="40">M</text>
+    <g id="dp-mA-equerre" style="" transform="translate(108.23116034887799,81.76343395350092) rotate(-162.90) scale(0.440)">
+      <polygon points="0,0 340,0 0,196.29909152447274" fill="rgba(205,225,245,.4)" stroke="#1C1B2E" stroke-width="1.6"></polygon>
+    <polygon points="34.0,34.0 213.1,34.0 34.0,137.4" fill="#fff" fill-opacity="0.85" stroke="#1C1B2E" stroke-width="1.1"></polygon>
+    <line x1="22" y1="0" x2="22" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="22" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">1</text><line x1="2.2" y1="0" x2="2.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="4.4" y1="0" x2="4.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="6.6" y1="0" x2="6.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="8.8" y1="0" x2="8.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="11.0" y1="0" x2="11.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="13.2" y1="0" x2="13.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="15.4" y1="0" x2="15.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="17.6" y1="0" x2="17.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="19.8" y1="0" x2="19.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="44" y1="0" x2="44" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="44" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">2</text><line x1="24.2" y1="0" x2="24.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="26.4" y1="0" x2="26.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="28.6" y1="0" x2="28.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="30.8" y1="0" x2="30.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="33.0" y1="0" x2="33.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="35.2" y1="0" x2="35.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="37.4" y1="0" x2="37.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="39.6" y1="0" x2="39.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="41.8" y1="0" x2="41.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="66" y1="0" x2="66" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="66" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">3</text><line x1="46.2" y1="0" x2="46.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="48.4" y1="0" x2="48.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="50.6" y1="0" x2="50.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="52.8" y1="0" x2="52.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="55.0" y1="0" x2="55.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="57.2" y1="0" x2="57.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="59.4" y1="0" x2="59.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="61.6" y1="0" x2="61.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="63.8" y1="0" x2="63.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="88" y1="0" x2="88" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="88" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">4</text><line x1="68.2" y1="0" x2="68.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="70.4" y1="0" x2="70.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="72.6" y1="0" x2="72.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="74.8" y1="0" x2="74.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="77.0" y1="0" x2="77.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="79.2" y1="0" x2="79.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="81.4" y1="0" x2="81.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="83.6" y1="0" x2="83.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="85.8" y1="0" x2="85.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="110" y1="0" x2="110" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="110" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">5</text><line x1="90.2" y1="0" x2="90.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="92.4" y1="0" x2="92.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="94.6" y1="0" x2="94.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="96.8" y1="0" x2="96.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="99.0" y1="0" x2="99.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="101.2" y1="0" x2="101.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="103.4" y1="0" x2="103.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="105.6" y1="0" x2="105.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="107.8" y1="0" x2="107.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="132" y1="0" x2="132" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="132" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">6</text><line x1="112.2" y1="0" x2="112.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="114.4" y1="0" x2="114.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="116.6" y1="0" x2="116.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="118.8" y1="0" x2="118.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="121.0" y1="0" x2="121.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="123.2" y1="0" x2="123.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="125.4" y1="0" x2="125.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="127.6" y1="0" x2="127.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="129.8" y1="0" x2="129.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="154" y1="0" x2="154" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="154" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">7</text><line x1="134.2" y1="0" x2="134.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="136.4" y1="0" x2="136.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="138.6" y1="0" x2="138.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="140.8" y1="0" x2="140.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="143.0" y1="0" x2="143.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="145.2" y1="0" x2="145.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="147.4" y1="0" x2="147.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="149.6" y1="0" x2="149.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="151.8" y1="0" x2="151.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="176" y1="0" x2="176" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="176" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">8</text><line x1="156.2" y1="0" x2="156.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="158.4" y1="0" x2="158.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="160.6" y1="0" x2="160.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="162.8" y1="0" x2="162.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="165.0" y1="0" x2="165.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="167.2" y1="0" x2="167.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="169.4" y1="0" x2="169.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="171.6" y1="0" x2="171.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="173.8" y1="0" x2="173.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="198" y1="0" x2="198" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="198" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">9</text><line x1="178.2" y1="0" x2="178.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="180.4" y1="0" x2="180.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="182.6" y1="0" x2="182.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="184.8" y1="0" x2="184.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="187.0" y1="0" x2="187.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="189.2" y1="0" x2="189.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="191.4" y1="0" x2="191.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="193.6" y1="0" x2="193.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="195.8" y1="0" x2="195.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="220" y1="0" x2="220" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="220" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">10</text><line x1="200.2" y1="0" x2="200.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="202.4" y1="0" x2="202.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="204.6" y1="0" x2="204.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="206.8" y1="0" x2="206.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="209.0" y1="0" x2="209.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="211.2" y1="0" x2="211.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="213.4" y1="0" x2="213.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="215.6" y1="0" x2="215.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="217.8" y1="0" x2="217.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="242" y1="0" x2="242" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="242" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">11</text><line x1="222.2" y1="0" x2="222.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="224.4" y1="0" x2="224.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="226.6" y1="0" x2="226.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="228.8" y1="0" x2="228.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="231.0" y1="0" x2="231.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="233.2" y1="0" x2="233.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="235.4" y1="0" x2="235.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="237.6" y1="0" x2="237.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="239.8" y1="0" x2="239.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="264" y1="0" x2="264" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="264" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">12</text><line x1="244.2" y1="0" x2="244.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="246.4" y1="0" x2="246.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="248.6" y1="0" x2="248.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="250.8" y1="0" x2="250.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="253.0" y1="0" x2="253.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="255.2" y1="0" x2="255.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="257.4" y1="0" x2="257.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="259.6" y1="0" x2="259.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="261.8" y1="0" x2="261.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="286" y1="0" x2="286" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="286" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">13</text><line x1="266.2" y1="0" x2="266.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="268.4" y1="0" x2="268.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="270.6" y1="0" x2="270.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="272.8" y1="0" x2="272.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="275.0" y1="0" x2="275.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="277.2" y1="0" x2="277.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="279.4" y1="0" x2="279.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="281.6" y1="0" x2="281.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="283.8" y1="0" x2="283.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="308" y1="0" x2="308" y2="7" stroke="#1C1B2E" stroke-width="0.8"></line>
+      <text x="308" y="15" font-size="6.5" text-anchor="middle" fill="#1C1B2E">14</text><line x1="288.2" y1="0" x2="288.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="290.4" y1="0" x2="290.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="292.6" y1="0" x2="292.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="294.8" y1="0" x2="294.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="297.0" y1="0" x2="297.0" y2="5" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="299.2" y1="0" x2="299.2" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="301.4" y1="0" x2="301.4" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="303.6" y1="0" x2="303.6" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line><line x1="305.8" y1="0" x2="305.8" y2="3" stroke="#1C1B2E" stroke-width="0.6"></line>
+    </g>
+    
+    
+    
+    
+    
+    <text id="dp-mA-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C" x="357.64406979072714" y="141.76559623254937">(d)</text>
+    
+  </svg>
+  <p class="hint" id="dp-mA-note" style="text-align:center;margin-top:8px;">On place un côté de l'angle droit de l'équerre sur la droite (d).</p>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Justifier que deux droites sont perpendiculaires »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">On sait que (d) ⊥ (d') et (d') ⊥ (d'').</span></div>
+    <div class="we-row"><span class="we-expr">Or, deux droites perpendiculaires à une même troisième sont parallèles entre elles.</span><span class="we-comment">Propriété utilisée.</span></div>
+    <div class="we-row"><span class="we-expr">Donc (d) // (d'').</span><span class="we-comment">Conclusion.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Trace un segment [RS] de 6 cm, puis construis sa médiatrice à la règle et à l'équerre.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Trace une droite (d) et un point T n'appartenant pas à (d). Construis la droite parallèle à (d) passant par T.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    (d) ⊥ (d') et (d') // (d''). Que peut-on dire de la position relative de (d) et (d'') ? Rédige ta réponse.
+    
+    
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Comment être sûr que deux droites ne se croiseront jamais, même si on les prolonge indéfiniment ? Cette question a longtemps préoccupé les mathématiciens. Vers 300 av. J.-C., Euclide pose comme règle de base (un « postulat », qu'on admet sans démonstration) une phrase compliquée sur les droites parallèles, dans son livre <i>Les Éléments</i>. Pendant plus de 2 000 ans, de nombreux mathématiciens ont essayé de démontrer que cette règle n'était pas vraiment nécessaire, sans jamais y parvenir, jusqu'à ce qu'on découvre, au 19e siècle, qu'elle décrit bien une propriété propre à notre géométrie « plate », et qu'il existe d'autres géométries où elle ne s'applique pas !
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/2-droites-paralleles-et-perpendiculaires/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/6e/nombres-entiers/">Nombres entiers</a></span>
+  <a href="/6e/">Tous les chapitres de 6e</a>
+  <span><a href="/6e/fractions-nombres-et-partage/">Fractions : nombres et partage</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

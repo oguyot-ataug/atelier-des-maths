@@ -1,0 +1,7 @@
+# L'Atelier des Maths -- généré par tools/build-seo.js
+User-agent: *
+Allow: /
+# Liens d'invitation personnels : jamais dans les moteurs de recherche.
+Disallow: /invitation.html
+
+Sitemap: https://maths.latelieraugmente.fr/sitemap.xml

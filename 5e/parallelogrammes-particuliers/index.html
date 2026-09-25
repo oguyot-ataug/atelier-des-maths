@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parallélogrammes particuliers – Cours de maths 5e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 5e : Parallélogrammes particuliers. Le rectangle, Le losange, Le carré. Définitions, figures interactives, méthode animée, exercices et un…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/5e/parallelogrammes-particuliers/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Parallélogrammes particuliers – Cours de maths 5e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 5e : Parallélogrammes particuliers. Le rectangle, Le losange, Le carré. Définitions, figures interactives, méthode animée, exercices et un…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/5e/parallelogrammes-particuliers/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Parallélogrammes particuliers (5e)","headline":"Parallélogrammes particuliers – cours de mathématiques de 5e","description":"Cours de maths 5e : Parallélogrammes particuliers. Le rectangle, Le losange, Le carré. Définitions, figures interactives, méthode animée, exercices et un…","url":"https://maths.latelieraugmente.fr/5e/parallelogrammes-particuliers/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"5e (cycle 4, collège)","about":"Géométrie","teaches":["Le rectangle","Le losange","Le carré"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 5e","url":"https://maths.latelieraugmente.fr/5e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 5e","item":"https://maths.latelieraugmente.fr/5e/"},{"@type":"ListItem","position":3,"name":"Parallélogrammes particuliers","item":"https://maths.latelieraugmente.fr/5e/parallelogrammes-particuliers/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/5e/">Cours de maths 5e</a> › Parallélogrammes particuliers</div>
+<h1>Parallélogrammes particuliers</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span> Cours de mathématiques de 5e (cinquième) · chapitre 12 · Le rectangle · Le losange · Le carré</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/5e/12-parallelogrammes-particuliers/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Le rectangle</h3></div>
+
+<div class="sub-header"><span class="letter">A</span><h4>Définition et propriétés caractéristiques</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Un <b>rectangle</b> est un quadrilatère qui a ses quatre angles droits.</div>
+<span class="prop-badge">Propriété 1</span>
+<div class="def-box">Si un quadrilatère est un <b>rectangle</b> alors c'est un <b>parallélogramme</b>.</div>
+<p style="margin:10px 0 6px;"><b>Démonstration</b> :</p>
+<p style="margin:2px 0;">MNPQ est un rectangle. Il a donc quatre angles droits.</p>
+<p style="margin:2px 0;">Les droites (MN) et (QP) sont perpendiculaires à la même droite (NP), donc elles sont parallèles entre elles.</p>
+<p style="margin:2px 0 12px;">Les droites (MQ) et (NP) sont perpendiculaires à la même droite (QP), donc elles sont parallèles entre elles. Donc MNPQ est un parallélogramme.</p>
+<p class="hint" style="margin:0 0 14px;">Remarque : un rectangle a donc toutes les propriétés du parallélogramme.</p>
+<div class="figure-wrap"><svg viewBox="0 0 400 260" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><line x1="80" y1="70" x2="320" y2="70" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="320" y1="70" x2="320" y2="190" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="320" y1="190" x2="80" y2="190" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="80" y1="190" x2="80" y2="70" stroke="#1C1B2E" stroke-width="1.6"></line><polyline points="94,70 94,84 80,84" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><polyline points="306,70 306,84 320,84" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><polyline points="320,176 306,176 306,190" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><polyline points="80,176 94,176 94,190" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><text x="64" y="64" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="328" y="64" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="328" y="208" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="64" y="208" font-size="13" font-style="italic" fill="#1C1B2E">D</text></svg></div>
+<p style="margin:10px 0 14px;">ABCD est un rectangle. Ses quatre angles sont droits.</p>
+
+<span class="prop-badge">Propriété 2</span>
+<div class="def-box">Si un quadrilatère est un <b>rectangle</b> alors ses diagonales se coupent en leur milieu et ont la même longueur.</div>
+<div class="figure-wrap"><svg viewBox="0 0 400 260" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><line x1="80" y1="70" x2="320" y2="70" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="320" y1="70" x2="320" y2="190" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="320" y1="190" x2="80" y2="190" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="80" y1="190" x2="80" y2="70" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="80" y1="70" x2="320" y2="190" stroke="#1C1B2E" stroke-width="1.3"></line>
+    <line x1="320" y1="70" x2="80" y2="190" stroke="#1C1B2E" stroke-width="1.3"></line><line x1="142.2360679774998" y1="95.52786404500043" x2="137.7639320225002" y2="104.47213595499957" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="262.2360679774998" y1="104.47213595499957" x2="257.7639320225002" y2="95.52786404500043" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="257.7639320225002" y1="164.47213595499957" x2="262.2360679774998" y2="155.52786404500043" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="137.7639320225002" y1="155.52786404500043" x2="142.2360679774998" y2="164.47213595499957" stroke="#1C1B2E" stroke-width="1.4"></line><circle cx="200" cy="130" r="2.6" fill="#1C1B2E"></circle><text x="207" y="124" font-size="13" font-style="italic" fill="#1C1B2E">O</text><text x="64" y="64" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="328" y="64" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="328" y="208" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="64" y="208" font-size="13" font-style="italic" fill="#1C1B2E">D</text></svg></div>
+<p style="margin:10px 0 14px;">ABCD est un rectangle de centre O. Donc ses diagonales [AC] et [BD] se coupent en leur milieu O et ont la même longueur : OA = OB = OC = OD et AC = BD.</p>
+
+<div class="sub-header"><span class="letter">B</span><h4>Reconnaître un rectangle</h4></div>
+<span class="prop-badge">Propriété 1</span>
+<div class="def-box">Si un quadrilatère possède <b>trois angles droits</b> alors c'est un <b>rectangle</b>.</div>
+<div class="figure-wrap"><svg viewBox="0 0 400 260" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><line x1="80" y1="70" x2="320" y2="70" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="320" y1="70" x2="320" y2="190" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="320" y1="190" x2="80" y2="190" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="80" y1="190" x2="80" y2="70" stroke="#1C1B2E" stroke-width="1.6"></line><polyline points="94,70 94,84 80,84" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><polyline points="306,70 306,84 320,84" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><polyline points="320,176 306,176 306,190" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><text x="64" y="64" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="328" y="64" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="328" y="208" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="64" y="208" font-size="13" font-style="italic" fill="#1C1B2E">D</text></svg></div>
+<p style="margin:10px 0 14px;">Le quadrilatère ABCD a trois angles droits en A, B et C. Or, la somme des angles d'un quadrilatère est toujours égale à 360°. Donc l'angle en D mesure aussi 90°, et ABCD est un rectangle.</p>
+
+<span class="prop-badge">Propriété 2</span>
+<div class="def-box">Si un <b>parallélogramme</b> a ses diagonales de <b>même longueur</b> alors c'est un <b>rectangle</b>.</div>
+<div class="figure-wrap"><div id="pcDynWrap-rectDiag"><svg id="pcDynSvg-rectDiag" viewBox="0 0 440 400" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;touch-action:none;">
+    <line x1="160" y1="250" x2="290" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="290" y1="250" x2="340" y2="120" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="340" y1="120" x2="210" y2="120" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="210" y1="120" x2="160" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="160" y1="250" x2="340" y2="120" stroke="#1F3A5C" stroke-width="1.3"></line>
+      <line x1="290" y1="250" x2="210" y2="120" stroke="#9E1F5E" stroke-width="1.3"></line><text x="144" y="254" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="298" y="254" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="348" y="114" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="202" y="110" font-size="13" font-style="italic" fill="#1C1B2E">D</text><circle cx="210" cy="120" r="10" fill="var(--accent-orange)" stroke="#fff" stroke-width="2" style="" data-pcdyn="rectDiag"></circle>
+  </svg></div><p class="hint" id="pcDynStatus-rectDiag" style="text-align: center; font-weight: 700; margin: 6px 0px; color: var(--ink-soft);">Fais glisser le point orange.</p></div>
+<p style="margin:10px 0 6px;"><b>Démonstration</b> :</p>
+<p style="margin:2px 0 14px;">ABCD est un parallélogramme tel que AC = BD. Ses côtés opposés ont donc la même longueur deux à deux, et ses diagonales ont la même longueur : ABCD est donc un rectangle.</p>
+
+<span class="prop-badge">Propriété 3</span>
+<div class="def-box">Si un <b>parallélogramme</b> a un <b>angle droit</b> alors c'est un <b>rectangle</b>.</div>
+<div class="figure-wrap"><div id="pcDynWrap-rectAngle"><svg id="pcDynSvg-rectAngle" viewBox="0 0 440 400" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;touch-action:none;">
+    <line x1="160" y1="250" x2="290" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="290" y1="250" x2="320" y2="130" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="320" y1="130" x2="190" y2="130" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="190" y1="130" x2="160" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <text x="144" y="254" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="298" y="254" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="328" y="124" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="182" y="120" font-size="13" font-style="italic" fill="#1C1B2E">D</text><circle cx="190" cy="130" r="10" fill="var(--accent-orange)" stroke="#fff" stroke-width="2" style="" data-pcdyn="rectAngle"></circle>
+  </svg></div><p class="hint" id="pcDynStatus-rectAngle" style="text-align: center; font-weight: 700; margin: 6px 0px; color: var(--ink-soft);">Fais glisser le point orange.</p></div>
+<p style="margin:10px 0 6px;"><b>Démonstration</b> :</p>
+<p style="margin:2px 0;">ABCD est un parallélogramme dont l'angle en A est droit.</p>
+<p style="margin:2px 0;">Les côtés (AB) et (CD) sont parallèles et, comme (AD) est perpendiculaire à (AB), (AD) est également perpendiculaire à (CD). Donc l'angle en D est droit également.</p>
+<p style="margin:2px 0 14px;">De la même manière, les angles en B et en C sont droits eux aussi. Donc le parallélogramme ABCD est un rectangle.</p>
+
+<div class="lesson-header"><span class="num">2</span><h3>Le losange</h3></div>
+
+<div class="sub-header"><span class="letter">A</span><h4>Définition et propriétés caractéristiques</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Un <b>losange</b> est un quadrilatère qui a ses quatre côtés de même longueur.</div>
+<span class="prop-badge">Propriété 1</span>
+<div class="def-box">Si un quadrilatère est un <b>losange</b> alors c'est un <b>parallélogramme</b>.</div>
+<p style="margin:10px 0 6px;"><b>Démonstration</b> :</p>
+<p style="margin:2px 0 12px;">Les côtés opposés du losange ont la même longueur deux à deux (puisque ses quatre côtés sont égaux), donc c'est un parallélogramme.</p>
+<p class="hint" style="margin:0 0 14px;">Remarque : un losange a donc toutes les propriétés du parallélogramme.</p>
+<div class="figure-wrap"><svg viewBox="0 0 400 300" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><line x1="60" y1="150" x2="200" y2="60" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="200" y1="60" x2="340" y2="150" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="340" y1="150" x2="200" y2="240" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="200" y1="240" x2="60" y2="150" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="132.70378795656748" y1="109.20589237688277" x2="127.2962120434325" y2="100.79410762311723" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="267.2962120434325" y1="109.20589237688277" x2="272.7037879565675" y2="100.79410762311723" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="267.2962120434325" y1="190.79410762311724" x2="272.7037879565675" y2="199.20589237688276" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="132.70378795656748" y1="190.79410762311724" x2="127.2962120434325" y2="199.20589237688276" stroke="#1C1B2E" stroke-width="1.4"></line><text x="44" y="154" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="196" y="50" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="348" y="154" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="194" y="260" font-size="13" font-style="italic" fill="#1C1B2E">D</text></svg></div>
+<p style="margin:10px 0 14px;">ABCD est un losange. AB = BC = CD = DA, donc ABCD est un losange.</p>
+
+<span class="prop-badge">Propriété 2</span>
+<div class="def-box">Si un quadrilatère est un <b>losange</b> alors ses diagonales se coupent en leur milieu et sont perpendiculaires.</div>
+<div class="figure-wrap"><svg viewBox="0 0 400 300" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><line x1="60" y1="150" x2="200" y2="60" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="200" y1="60" x2="340" y2="150" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="340" y1="150" x2="200" y2="240" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="200" y1="240" x2="60" y2="150" stroke="#1C1B2E" stroke-width="1.6"></line><line x1="60" y1="150" x2="340" y2="150" stroke="#1C1B2E" stroke-width="1.3"></line>
+    <line x1="200" y1="60" x2="200" y2="240" stroke="#1C1B2E" stroke-width="1.3"></line><polyline points="211,150 211,161 200,161" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><line x1="130" y1="145" x2="130" y2="155" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="270" y1="155" x2="270" y2="145" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="205" y1="106.7" x2="195" y2="106.7" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="205" y1="103.3" x2="195" y2="103.3" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="195" y1="193.3" x2="205" y2="193.3" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="195" y1="196.7" x2="205" y2="196.7" stroke="#1C1B2E" stroke-width="1.4"></line><circle cx="200" cy="150" r="2.6" fill="#1C1B2E"></circle><text x="207" y="144" font-size="13" font-style="italic" fill="#1C1B2E">O</text><text x="44" y="154" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="196" y="50" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="348" y="154" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="194" y="260" font-size="13" font-style="italic" fill="#1C1B2E">D</text></svg></div>
+<p style="margin:10px 0 14px;">ABCD est un losange de centre O. Donc ses diagonales [AC] et [BD] se coupent en leur milieu O et sont perpendiculaires : OA = OC, OB = OD et (AC) ⊥ (BD).</p>
+
+<div class="sub-header"><span class="letter">B</span><h4>Reconnaître un losange</h4></div>
+<span class="prop-badge">Propriété 1</span>
+<div class="def-box">Si un <b>parallélogramme</b> a <b>deux côtés consécutifs de même longueur</b> alors c'est un <b>losange</b>.</div>
+<div class="figure-wrap"><div id="pcDynWrap-losSides"><svg id="pcDynSvg-losSides" viewBox="0 0 440 400" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;touch-action:none;">
+    <line x1="160" y1="250" x2="290" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="290" y1="250" x2="350" y2="110" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="350" y1="110" x2="220" y2="110" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="220" y1="110" x2="160" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <text x="144" y="254" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="298" y="254" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="358" y="104" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="212" y="100" font-size="13" font-style="italic" fill="#1C1B2E">D</text><circle cx="220" cy="110" r="10" fill="var(--accent-orange)" stroke="#fff" stroke-width="2" style="" data-pcdyn="losSides"></circle>
+  </svg></div><p class="hint" id="pcDynStatus-losSides" style="text-align: center; font-weight: 700; margin: 6px 0px; color: var(--ink-soft);">Fais glisser le point orange.</p></div>
+<p style="margin:10px 0 6px;"><b>Démonstration</b> :</p>
+<p style="margin:2px 0;">ABCD est un parallélogramme tel que AB = AD. Ses côtés opposés ont donc la même longueur deux à deux : AB = CD et AD = BC.</p>
+<p style="margin:2px 0 14px;">Or AB = AD, donc AB = BC = CD = DA. Le quadrilatère ABCD a ses quatre côtés de même longueur : c'est donc un losange.</p>
+
+<span class="prop-badge">Propriété 2</span>
+<div class="def-box">Si un <b>parallélogramme</b> a ses diagonales <b>perpendiculaires</b> alors c'est un <b>losange</b>.</div>
+<div class="figure-wrap"><div id="pcDynWrap-losDiag"><svg id="pcDynSvg-losDiag" viewBox="0 0 440 400" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;touch-action:none;">
+    <line x1="160" y1="250" x2="290" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="290" y1="250" x2="360" y2="100" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="360" y1="100" x2="230" y2="100" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="230" y1="100" x2="160" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="160" y1="250" x2="360" y2="100" stroke="#1F3A5C" stroke-width="1.3"></line>
+      <line x1="290" y1="250" x2="230" y2="100" stroke="#9E1F5E" stroke-width="1.3"></line><text x="144" y="254" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="298" y="254" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="368" y="94" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="222" y="90" font-size="13" font-style="italic" fill="#1C1B2E">D</text><circle cx="230" cy="100" r="10" fill="var(--accent-orange)" stroke="#fff" stroke-width="2" style="" data-pcdyn="losDiag"></circle>
+  </svg></div><p class="hint" id="pcDynStatus-losDiag" style="text-align: center; font-weight: 700; margin: 6px 0px; color: var(--ink-soft);">Fais glisser le point orange.</p></div>
+<p style="margin:10px 0 14px;">ABCD est un parallélogramme dont les diagonales [AC] et [BD] sont perpendiculaires. Donc le parallélogramme ABCD est un losange.</p>
+
+<div class="lesson-header"><span class="num">3</span><h3>Le carré</h3></div>
+
+<span class="def-badge">Définition</span>
+<div class="def-box">Un <b>carré</b> est un quadrilatère qui a quatre angles droits et quatre côtés de même longueur.</div>
+<div class="figure-wrap"><svg viewBox="0 0 400 260" style="width:100%;max-width:380px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><line x1="120" y1="70" x2="280" y2="70" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="280" y1="70" x2="280" y2="230" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="280" y1="230" x2="120" y2="230" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="120" y1="230" x2="120" y2="70" stroke="#1C1B2E" stroke-width="1.6"></line><polyline points="134,70 134,84 120,84" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><polyline points="266,70 266,84 280,84" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><polyline points="280,216 266,216 266,230" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><polyline points="120,216 134,216 134,230" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><line x1="200" y1="75" x2="200" y2="65" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="275" y1="150" x2="285" y2="150" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="200" y1="225" x2="200" y2="235" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="125" y1="150" x2="115" y2="150" stroke="#1C1B2E" stroke-width="1.4"></line><text x="104" y="64" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="288" y="64" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="288" y="248" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="104" y="248" font-size="13" font-style="italic" fill="#1C1B2E">D</text></svg></div>
+<p style="margin:10px 0 6px;">ABCD est un carré. AB = BC = CD = DA et (AB) ⊥ (BC) ; (BC) ⊥ (CD) ; (CD) ⊥ (DA) ; (DA) ⊥ (AB).</p>
+<p class="hint" style="margin:0 0 14px;">Remarques : un carré est un quadrilatère qui est à la fois un rectangle et un losange. Un carré a donc toutes les propriétés du parallélogramme, du rectangle et du losange.</p>
+
+<p class="example-title" style="margin-top:0;">Reconnaître un carré</p>
+<span class="prop-badge">Propriété 1</span>
+<div class="def-box">Si un <b>losange</b> a un <b>angle droit</b> alors c'est un <b>carré</b>.</div>
+<div class="figure-wrap"><div id="pcDynWrap-carre1"><svg id="pcDynSvg-carre1" viewBox="0 0 440 400" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;touch-action:none;">
+    <line x1="160" y1="250" x2="290" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="290" y1="250" x2="368" y2="146" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="368" y1="146" x2="238" y2="146" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="238" y1="146" x2="160" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="225" y1="255" x2="225" y2="245" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="333" y1="201" x2="325" y2="195" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="303" y1="141" x2="303" y2="151" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="195" y1="195" x2="203" y2="201" stroke="#1C1B2E" stroke-width="1.4"></line><text x="144" y="254" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="298" y="254" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="376" y="140" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="230" y="136" font-size="13" font-style="italic" fill="#1C1B2E">D</text><circle cx="238" cy="146" r="10" fill="var(--accent-orange)" stroke="#fff" stroke-width="2" style="" data-pcdyn="carre1"></circle>
+  </svg></div><p class="hint" id="pcDynStatus-carre1" style="text-align: center; font-weight: 700; margin: 6px 0px; color: var(--ink-soft);">Fais glisser le point orange.</p></div>
+<p style="margin:10px 0 14px;">ABCD est un losange dont l'angle en A est droit. Un losange a toutes les propriétés du parallélogramme, donc les angles en B, C et D sont droits également (Propriété 3 du rectangle). ABCD a donc ses quatre côtés égaux et ses quatre angles droits : c'est un carré.</p>
+
+<span class="prop-badge">Propriété 2</span>
+<div class="def-box">Si un <b>rectangle</b> a <b>deux côtés consécutifs de même longueur</b> alors c'est un <b>carré</b>.</div>
+<div class="figure-wrap"><div id="pcDynWrap-carre2"><svg id="pcDynSvg-carre2" viewBox="0 0 440 400" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;touch-action:none;">
+    <line x1="160" y1="250" x2="290" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="290" y1="250" x2="290" y2="100" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="290" y1="100" x2="160" y2="100" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="160" y1="100" x2="160" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <polyline points="174,250 174,236 160,236" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><polyline points="276,250 276,236 290,236" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><polyline points="290,114 276,114 276,100" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><polyline points="160,114 174,114 174,100" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><text x="144" y="254" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="298" y="254" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="298" y="94" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="152" y="90" font-size="13" font-style="italic" fill="#1C1B2E">D</text><circle cx="160" cy="100" r="10" fill="var(--accent-orange)" stroke="#fff" stroke-width="2" style="" data-pcdyn="carre2"></circle>
+  </svg></div><p class="hint" id="pcDynStatus-carre2" style="text-align: center; font-weight: 700; margin: 6px 0px; color: var(--ink-soft);">Fais glisser le point orange.</p></div>
+<p style="margin:10px 0 14px;">ABCD est un rectangle tel que AB = AD. Un rectangle est un parallélogramme, donc ABCD est aussi un losange (Propriété 1 du losange). ABCD a donc ses quatre angles droits et ses quatre côtés égaux : c'est un carré.</p>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <p class="example-title" style="margin-top:0;">🔎 Utilitaire : quel est ce quadrilatère ?</p>
+<p style="margin:0 0 14px;">Coche les propriétés que vérifie un quadrilatère ABCD : l'outil détermine le nom le plus précis qui correspond à cette combinaison, et affiche une figure correspondante.</p>
+<div class="figure-wrap">
+  
+  <div style="text-align:center;">
+    <p class="hint" style="margin:0 0 4px;">Ce quadrilatère est un(e) :</p>
+    <p id="qcResult" style="font-size:1.6rem;font-weight:700;font-family:'Space Grotesk',sans-serif;color:var(--accent-orange);margin:0 0 14px;">Quelconque</p>
+  </div>
+  <div id="qcFigure"><svg viewBox="0 0 420 320" style="width:100%;max-width:360px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><line x1="90" y1="200" x2="300" y2="230" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="300" y1="230" x2="330" y2="90" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="330" y1="90" x2="150" y2="60" stroke="#1C1B2E" stroke-width="1.6"></line>
+    <line x1="150" y1="60" x2="90" y2="200" stroke="#1C1B2E" stroke-width="1.6"></line><text x="74" y="206" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="308" y="240" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="338" y="84" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="142" y="50" font-size="13" font-style="italic" fill="#1C1B2E">D</text></svg></div>
+  
+</div>
+
+<p class="example-title" style="margin-top:26px;">Construis un rectangle ABCD de centre O dont les diagonales mesurent 3,4 cm et tel que AB = 3 cm</p>
+<p style="margin:8px 0;"><b>Avant de construire</b>, on représente à main levée ce que l'on cherche, avec les données de l'énoncé codées :</p>
+<div class="figure-wrap"><svg viewBox="0 0 400 280" style="width:100%;max-width:320px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><path d="M 85 205 C 155.74120521145286 197.05727469749135 227.17839305139617 199.09030040334488 300 190" fill="none" stroke="#1C1B2E" stroke-width="1.5" stroke-linecap="round"></path><path d="M 300 190 C 307.93723661567924 153.46613249453705 304.9370725382406 115.7604006290972 312 78" fill="none" stroke="#1C1B2E" stroke-width="1.5" stroke-linecap="round"></path><path d="M 312 78 C 235.659239786388 86.60197826129544 158.58768028481595 85.23069565160607 80 95" fill="none" stroke="#1C1B2E" stroke-width="1.5" stroke-linecap="round"></path><path d="M 80 95 C 77.65412583915881 131.4816306436746 86.2969056206309 167.46377701724407 85 205" fill="none" stroke="#1C1B2E" stroke-width="1.5" stroke-linecap="round"></path><line x1="85" y1="205" x2="312" y2="78" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"></line>
+    <line x1="300" y1="190" x2="80" y2="95" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"></line><line x1="139.30873936951394" y1="168.8864869045643" x2="144.19126063048606" y2="177.6135130954357" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="257.69126063048606" y1="114.1135130954357" x2="252.80873936951394" y2="105.3864869045643" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="247.094295402925" y1="170.26142302274457" x2="251.405704597075" y2="161.23857697725543" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="141.07643886361453" y1="113.59552676691781" x2="137.42356113638547" y2="122.90447323308219" stroke="#1C1B2E" stroke-width="1.4"></line><circle cx="198.5" cy="141.5" r="2" fill="#1C1B2E"></circle><text x="204.5" y="133.5" font-size="13" font-style="italic" fill="#1C1B2E">O</text><text x="71" y="223" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="306" y="208" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="318" y="72" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="66" y="89" font-size="13" font-style="italic" fill="#1C1B2E">D</text><text x="176.5" y="239" font-size="12" fill="#1C1B2E">3 cm</text><text x="103.75" y="177.25" font-size="11" fill="#1C1B2E">1,7 cm</text><text x="265.25" y="107.75" font-size="11" fill="#1C1B2E">1,7 cm</text><text x="255.25" y="155.75" font-size="11" fill="#1C1B2E">1,7 cm</text><text x="133.25" y="134.25" font-size="11" fill="#1C1B2E">1,7 cm</text></svg></div>
+<div class="figure-wrap">
+  
+  <div id="pccR1Wrap"><svg id="pccR1Svg" viewBox="0 0 400 300" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><line x1="105" y1="250" x2="295" y2="250" stroke="#1C1B2E" stroke-width="1.6"></line><circle cx="105" cy="250" r="2.4" fill="#1C1B2E"></circle><circle cx="295" cy="250" r="2.4" fill="#1C1B2E"></circle><text x="91" y="268" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="301" y="268" font-size="13" font-style="italic" fill="#1C1B2E">B</text></svg></div>
+  <div class="step-list" id="pccR1Steps">
+    <div class="step-item done" data-step="0"><div class="step-num">1</div><div>On trace le segment [AB] de longueur 3 cm.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>Arcs de centre A et de centre B, de rayon 1,7 cm : ils se coupent en O.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>O est le centre du rectangle. On trace les demi-droites [AO) et [BO), prolongées au-delà de O.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">4</div><div>Au compas, on reporte OA au-delà de O sur [AO) pour obtenir C, et OB au-delà de O sur [BO) pour obtenir D.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">5</div><div>On trace les côtés [BC], [CD] et [DA]. ABCD est le rectangle cherché.</div></div>
+  </div>
+  
+</div>
+
+<p class="example-title" style="margin-top:26px;">Construis un losange ABCD de centre O dont les diagonales vérifient AC = 3,6 cm et BD = 2 cm</p>
+<p style="margin:8px 0;"><b>Avant de construire</b>, on représente à main levée ce que l'on cherche, avec les données de l'énoncé codées :</p>
+<div class="figure-wrap"><svg viewBox="0 0 400 300" style="width:100%;max-width:320px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><path d="M 75 190 C 118.28116959246265 154.2577930352855 154.79177387671646 111.15627595295268 200 75" fill="none" stroke="#1C1B2E" stroke-width="1.5" stroke-linecap="round"></path><path d="M 200 75 C 237.40862068965518 105.10344827586206 267.2310344827586 143.17241379310346 305 175" fill="none" stroke="#1C1B2E" stroke-width="1.5" stroke-linecap="round"></path><path d="M 305 175 C 263.66594797765896 200.60192655669505 228.11206936312138 234.36409792440662 185 260" fill="none" stroke="#1C1B2E" stroke-width="1.5" stroke-linecap="round"></path><path d="M 185 260 C 146.55249803122734 240.27464595092843 114.01062647657947 211.2690155368037 75 190" fill="none" stroke="#1C1B2E" stroke-width="1.5" stroke-linecap="round"></path><line x1="132.17460431327203" y1="181.26059947017092" x2="132.82539568672797" y2="191.23940052982908" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="247.82539568672797" y1="183.73940052982908" x2="247.17460431327203" y2="173.76059947017092" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="199.82104635278037" y1="130.90580891183407" x2="189.86403419285935" y2="129.9795752225391" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="200.13596580714065" y1="127.52042477746092" x2="190.17895364721963" y2="126.59419108816594" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="182.61982332775426" y1="219.2316155847638" x2="192.59907641743882" y2="219.87543836474345" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="182.40092358256118" y1="222.62456163525655" x2="192.38017667224574" y2="223.2683844152362" stroke="#1C1B2E" stroke-width="1.4"></line><line x1="75" y1="190" x2="305" y2="175" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"></line>
+    <line x1="200" y1="75" x2="185" y2="260" stroke="#1C1B2E" stroke-width="1" stroke-dasharray="3,3"></line><polyline points="199.97880105965817,181.84920862654403 199.17064237199762,191.8164991076908 189.19184131233945,192.46729048114676" fill="none" stroke="#1C1B2E" stroke-width="1.3"></polyline><circle cx="190" cy="182.5" r="2" fill="#1C1B2E"></circle><text x="196" y="174.5" font-size="13" font-style="italic" fill="#1C1B2E">O</text><text x="61" y="208" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="206" y="69" font-size="13" font-style="italic" fill="#1C1B2E">B</text><text x="311" y="193" font-size="13" font-style="italic" fill="#1C1B2E">C</text><text x="191" y="278" font-size="13" font-style="italic" fill="#1C1B2E">D</text><text x="92.5" y="188.25" font-size="11" fill="#1C1B2E">1,8 cm</text><text x="255.5" y="174.75" font-size="11" fill="#1C1B2E">1,8 cm</text><text x="203" y="120.75" font-size="11" fill="#1C1B2E">1 cm</text><text x="195.5" y="237.25" font-size="11" fill="#1C1B2E">1 cm</text></svg></div>
+<div class="figure-wrap">
+  
+  <div id="pccL1Wrap"><svg id="pccL1Svg" viewBox="0 0 400 340" style="width:100%;max-width:400px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><line x1="100" y1="210" x2="300" y2="210" stroke="#1C1B2E" stroke-width="1.6"></line><circle cx="100" cy="210" r="2.4" fill="#1C1B2E"></circle><circle cx="300" cy="210" r="2.4" fill="#1C1B2E"></circle><text x="86" y="228" font-size="13" font-style="italic" fill="#1C1B2E">A</text><text x="306" y="228" font-size="13" font-style="italic" fill="#1C1B2E">C</text></svg></div>
+  <div class="step-list" id="pccL1Steps">
+    <div class="step-item done" data-step="0"><div class="step-num">1</div><div>On trace le segment [AC] de longueur 3,6 cm.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On trace la médiatrice de [AC] (arcs de même rayon centrés en A et en C).</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>O, milieu de [AC], est à l'intersection de la médiatrice et de [AC].</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">4</div><div>Au compas, on reporte 1 cm de part et d'autre de O sur la médiatrice, pour obtenir B et D.</div></div>
+    <div class="step-item" data-step="4"><div class="step-num">5</div><div>On trace les côtés [AB], [BC], [CD] et [DA]. ABCD est le losange cherché.</div></div>
+  </div>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Justifier qu'un quadrilatère est un losange »</h3>
+  <p style="margin:0 0 12px;"><b>Énoncé</b> : EFGH est un parallélogramme tel que EF = EH. Justifie que EFGH est un losange.</p>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">EFGH est un parallélogramme tel que EF = EH.</span><span class="we-comment">Ce que je sais.</span></div>
+    <div class="we-row"><span class="we-expr"><span style="color:var(--accent-orange);font-weight:700;">Or,</span> si un parallélogramme a deux côtés consécutifs de même longueur, alors c'est un losange.</span><span class="we-comment">On énonce la propriété.</span></div>
+    <div class="we-row"><span class="we-expr"><span style="color:var(--accent);font-weight:700;">Donc</span> le quadrilatère EFGH est un losange.</span><span class="we-comment">Conclusion.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    MNPQ est un rectangle de centre O tel que MP = 7,2 cm. Donne les longueurs OM, ON, OP et OQ. Justifie ta réponse.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    RSTU est un parallélogramme dont les diagonales [RT] et [SU] sont perpendiculaires. Justifie que RSTU est un losange.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    VWXY est un quadrilatère tel que les angles en V, W et X sont droits. Justifie que VWXY est un rectangle.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    ABCD est un losange tel que l'angle en A mesure 90°. Justifie que ABCD est un carré.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Un quadrilatère peut-il être un losange sans être un parallélogramme ? Justifie ta réponse.
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Bien avant qu'on démontre leurs propriétés, les rectangles et les carrés étaient déjà utilisés en pratique : en Égypte antique, des arpenteurs surnommés les « tendeurs de corde » utilisaient une corde à 12 nœuds régulièrement espacés pour tracer des angles droits sur le terrain, en formant un triangle de côtés 3, 4 et 5 nœuds (aujourd'hui on dirait un « triangle 3-4-5 »). Cette technique très simple leur permettait de construire des rectangles bien droits pour délimiter des champs ou poser les fondations de monuments, sans le moindre instrument de mesure d'angle.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/5e/12-parallelogrammes-particuliers/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/5e/operations-sur-les-nombres-relatifs/">Opérations sur les nombres relatifs</a></span>
+  <a href="/5e/">Tous les chapitres de 5e</a>
+  <span><a href="/5e/calcul-litteral/">Calcul littéral</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

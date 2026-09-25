@@ -22,3 +22,18 @@ elle-même). Sans ce GRANT, la table se crée sans erreur mais devient inaccessi
 `supabase db reset` local. Source : mail Supabase du 23/09/2026.
 
 Project ID Supabase de ce dépôt : `rngzubhnypmistjsumpz`.
+
+## Référencement : régénérer les pages statiques après toute modification d'un chapitre
+
+Les pages indexables par Google (`6e/<chapitre>/`, `5e/<chapitre>/`, `6e/`, `5e/`, `professeurs/`),
+`sitemap.xml` et `robots.txt` sont GÉNÉRÉES à partir du vrai contenu des chapitres par
+`tools/build-seo.js` (ne pas les modifier à la main). Après toute modification d'un fichier de
+`chapitres/`, d'un titre de chapitre (CH6/CH5 dans app.js) ou de la page professeurs, relancer :
+
+```
+(cd tools && npm install)   # une fois par session : KaTeX pour rendre les formules
+NODE_PATH=/opt/node22/lib/node_modules node tools/build-seo.js
+```
+
+et committer les fichiers produits avec le reste. Un chapitre sans vrai cours (« Cours en
+construction ») n'a pas de page : elle apparaît automatiquement dès que son cours existe.

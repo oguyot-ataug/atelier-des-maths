@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "description": "Outils de construction du site (référencement) -- voir build-seo.js",
+  "dependencies": {
+    "katex": "0.16.9"
+  }
+}

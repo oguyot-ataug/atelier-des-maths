@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propriétés des triangles – Cours de maths 6e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 6e : Propriétés des triangles. Somme des angles d'un triangle, Cercle circonscrit à un triangle. Définitions, figures interactives, méthode…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/6e/proprietes-des-triangles/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Propriétés des triangles – Cours de maths 6e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 6e : Propriétés des triangles. Somme des angles d'un triangle, Cercle circonscrit à un triangle. Définitions, figures interactives, méthode…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/6e/proprietes-des-triangles/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Propriétés des triangles (6e)","headline":"Propriétés des triangles – cours de mathématiques de 6e","description":"Cours de maths 6e : Propriétés des triangles. Somme des angles d'un triangle, Cercle circonscrit à un triangle. Définitions, figures interactives, méthode…","url":"https://maths.latelieraugmente.fr/6e/proprietes-des-triangles/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"6e (cycle 3, collège)","about":"Géométrie","teaches":["Somme des angles d'un triangle","Cercle circonscrit à un triangle"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 6e","url":"https://maths.latelieraugmente.fr/6e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 6e","item":"https://maths.latelieraugmente.fr/6e/"},{"@type":"ListItem","position":3,"name":"Propriétés des triangles","item":"https://maths.latelieraugmente.fr/6e/proprietes-des-triangles/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/6e/">Cours de maths 6e</a> › Propriétés des triangles</div>
+<h1>Propriétés des triangles</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span> Cours de mathématiques de 6e (sixième) · chapitre 13 · Somme des angles d'un triangle · Cercle circonscrit à un triangle</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/13-proprietes-des-triangles/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Somme des angles d'un triangle</h3></div>
+
+<span class="prop-badge">Propriété</span>
+<div class="def-box">La somme des mesures des angles d'un triangle est égale à <b>180°</b>, soit un <b>angle plat</b>.</div>
+
+<p class="example-title" style="margin-top:0;">Exemple :</p>
+<div class="figure-wrap" style="max-width:300px;margin:12px auto;">
+  <svg viewBox="0 0 240 200" style="width:100%;display:block;">
+    <line x1="40" y1="160" x2="200" y2="160" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <line x1="200" y1="160" x2="130" y2="50" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <line x1="130" y1="50" x2="40" y2="160" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <path d="M 66.0 160.0 A 26 26 0 0 0 56.5 139.9" fill="none" stroke="#E35D3A" stroke-width="2"></path>
+    <path d="M 174.0 160.0 A 26 26 0 0 1 186.0 138.1" fill="none" stroke="#2EA8C9" stroke-width="2"></path>
+    <path d="M 113.5 70.1 A 26 26 0 0 0 144.0 71.9" fill="none" stroke="#F8AF23" stroke-width="2"></path>
+    <text x="24" y="172" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">A</text>
+    <text x="206" y="172" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">B</text>
+    <text x="126" y="40" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">C</text>
+  </svg>
+</div>
+<p style="margin:4px 0 0;">Dans le triangle ABC : <span class="tex" data-tex-source="\widehat{BAC} + \widehat{ABC} + \widehat{ACB} = 180°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>B</mi><mi>A</mi><mi>C</mi></mrow><mo stretchy="true">^</mo></mover><mo>+</mo><mover accent="true"><mrow><mi>A</mi><mi>B</mi><mi>C</mi></mrow><mo stretchy="true">^</mo></mover><mo>+</mo><mover accent="true"><mrow><mi>A</mi><mi>C</mi><mi>B</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mn>180</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mbin">+</span></span><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.07153em;">BC</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mbin">+</span></span><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.05017em;">CB</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">180°</span></span></span></span></span>.</p>
+
+<p class="example-title" style="margin-top:26px;">Pourquoi cette propriété est-elle vraie ?</p>
+<p class="hint" style="margin:6px 0 12px;">On trace la droite (d), parallèle à (AB), passant par C.</p>
+<div class="figure-wrap" style="max-width:300px;margin:12px auto;">
+  <svg viewBox="0 0 240 200" style="width:100%;display:block;">
+    <line x1="40" y1="50" x2="220" y2="50" stroke="#9CA3AF" stroke-width="1.4" stroke-dasharray="4 4"></line>
+    <line x1="40" y1="160" x2="200" y2="160" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <line x1="200" y1="160" x2="130" y2="50" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <line x1="130" y1="50" x2="40" y2="160" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <path d="M 66.0 160.0 A 26 26 0 0 0 56.5 139.9" fill="none" stroke="#E35D3A" stroke-width="2"></path>
+    <path d="M 174.0 160.0 A 26 26 0 0 1 186.0 138.1" fill="none" stroke="#2EA8C9" stroke-width="2"></path>
+    <path d="M 108.0 50.0 A 22 22 0 0 0 116.1 67.0" fill="none" stroke="#E35D3A" stroke-width="2"></path>
+    <path d="M 116.1 67.0 A 22 22 0 0 0 141.8 68.6" fill="none" stroke="#F8AF23" stroke-width="2"></path>
+    <path d="M 141.8 68.6 A 22 22 0 0 0 152.0 50.0" fill="none" stroke="#2EA8C9" stroke-width="2"></path>
+    <text x="24" y="172" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">A</text>
+    <text x="206" y="172" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">B</text>
+    <text x="126" y="40" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">C</text>
+    <text x="14" y="44" font-family="Space Grotesk" font-size="13" fill="#6B7A8C" font-style="italic">(d)</text>
+  </svg>
+</div>
+<p style="margin:4px 0 0;">Comme (d) est parallèle à (AB), les trois angles marqués en <b>C</b> (rouge, jaune, bleu) se superposent exactement aux angles <span class="tex" data-tex-source="\widehat{BAC}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>B</mi><mi>A</mi><mi>C</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span> (rouge), <span class="tex" data-tex-source="\widehat{ACB}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>A</mi><mi>C</mi><mi>B</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.05017em;">CB</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span> (jaune) et <span class="tex" data-tex-source="\widehat{ABC}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>A</mi><mi>B</mi><mi>C</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.07153em;">BC</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span> (bleu) du triangle. Or ces trois angles, mis bout à bout en <b>C</b>, reconstituent un <b>angle plat</b> : ils mesurent donc en tout <b>180°</b>.</p>
+
+<p class="example-title" style="margin-top:26px;">Exemple : angle manquant</p>
+<p style="margin:4px 0 10px;">Dans le triangle HJK, <span class="tex" data-tex-source="\widehat{JHK} = 48°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>J</mi><mi>H</mi><mi>K</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mn>48</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.07153em;">HK</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">48°</span></span></span></span></span> et <span class="tex" data-tex-source="\widehat{HJK} = 63°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>H</mi><mi>J</mi><mi>K</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mn>63</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.07153em;">K</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">63°</span></span></span></span></span>. Quelle est la mesure de l'angle <span class="tex" data-tex-source="\widehat{HKJ}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>H</mi><mi>K</mi><mi>J</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">HK</span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span> ?</p>
+<div class="figure-wrap" style="max-width:280px;margin:12px auto;">
+  <svg viewBox="0 0 240 200" style="width:100%;display:block;">
+    <line x1="40" y1="170" x2="220" y2="170" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <line x1="220" y1="170" x2="155.0" y2="42.3" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <line x1="155.0" y1="42.3" x2="40" y2="170" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <path d="M 66.0 170.0 A 26 26 0 0 0 57.4 150.7" fill="none" stroke="#E35D3A" stroke-width="2"></path>
+    <path d="M 194.0 170.0 A 26 26 0 0 1 208.2 146.8" fill="none" stroke="#2EA8C9" stroke-width="2"></path>
+    <text x="24" y="182" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">H</text>
+    <text x="226" y="182" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">J</text>
+    <text x="152" y="30" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">K</text>
+    <text x="80" y="160" font-family="Space Grotesk" font-size="13" fill="#E35D3A" font-weight="700">48°</text>
+    <text x="175" y="156" font-family="Space Grotesk" font-size="13" fill="#2EA8C9" font-weight="700">63°</text>
+    <text x="143" y="72" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">?</text>
+  </svg>
+</div>
+<div class="redaction-block">
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">La somme des mesures des angles du triangle HJK est égale à 180°, donc :</span></div>
+    <div class="we-row"><span class="we-expr"><span class="tex" data-tex-source="\widehat{JHK} + \widehat{HJK} + \widehat{HKJ} = 180°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>J</mi><mi>H</mi><mi>K</mi></mrow><mo stretchy="true">^</mo></mover><mo>+</mo><mover accent="true"><mrow><mi>H</mi><mi>J</mi><mi>K</mi></mrow><mo stretchy="true">^</mo></mover><mo>+</mo><mover accent="true"><mrow><mi>H</mi><mi>K</mi><mi>J</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mn>180</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.07153em;">HK</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mbin">+</span></span><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.08125em;">H</span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord mathnormal" style="margin-right:0.07153em;">K</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mbin">+</span></span><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">HK</span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">180°</span></span></span></span></span></span></div>
+    <div class="we-row"><span class="we-expr"><span class="tex" data-tex-source="48° + 63° + \widehat{HKJ} = 180°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>48</mn><mi mathvariant="normal">°</mi><mo>+</mo><mn>63</mn><mi mathvariant="normal">°</mi><mo>+</mo><mover accent="true"><mrow><mi>H</mi><mi>K</mi><mi>J</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mn>180</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">48°</span><span class="mbin">+</span></span><span class="base"><span class="mord">63°</span><span class="mbin">+</span></span><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">HK</span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">180°</span></span></span></span></span></span></div>
+    <div class="we-row"><span class="we-expr"><span class="tex" data-tex-source="111° + \widehat{HKJ} = 180°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>111</mn><mi mathvariant="normal">°</mi><mo>+</mo><mover accent="true"><mrow><mi>H</mi><mi>K</mi><mi>J</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mn>180</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">111°</span><span class="mbin">+</span></span><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">HK</span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">180°</span></span></span></span></span></span></div>
+    <div class="we-row"><span class="we-expr"><span class="tex" data-tex-source="\widehat{HKJ} = 180° - 111° = 69°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>H</mi><mi>K</mi><mi>J</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mn>180</mn><mi mathvariant="normal">°</mi><mo>−</mo><mn>111</mn><mi mathvariant="normal">°</mi><mo>=</mo><mn>69</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">HK</span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">180°</span><span class="mbin">−</span></span><span class="base"><span class="mord">111°</span><span class="mrel">=</span></span><span class="base"><span class="mord">69°</span></span></span></span></span></span></div>
+  </div>
+</div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Cercle circonscrit à un triangle</h3></div>
+
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Dans un triangle, les <b>médiatrices des trois côtés</b> sont <b>concourantes</b> en un point qui est le <b>centre du cercle circonscrit</b> au triangle. (Le cercle circonscrit à un triangle est le cercle qui passe par ses trois sommets.)</div>
+
+<p class="example-title">Exemple :</p>
+<div class="figure-wrap" style="max-width:320px;margin:12px auto;">
+  <svg viewBox="0 0 270 250" style="width:100%;display:block;">
+    <circle cx="134.7" cy="132.4" r="102.46" fill="none" stroke="#0C5BA0" stroke-width="1.6"></circle>
+    <line x1="140.7" y1="186.0" x2="132.7" y2="114.5" stroke="#9CA3AF" stroke-width="1.4" stroke-dasharray="4 4"></line>
+    <line x1="184.9" y1="96.5" x2="120.1" y2="142.8" stroke="#9CA3AF" stroke-width="1.4" stroke-dasharray="4 4"></line>
+    <line x1="84.6" y1="107.3" x2="150.8" y2="140.4" stroke="#9CA3AF" stroke-width="1.4" stroke-dasharray="4 4"></line>
+    <path d="M 140.0 180.0 L 148.0 179.1 L 147.1 171.2 L 139.1 172.0" fill="none" stroke="#9CA3AF" stroke-width="1.1"></path>
+    <path d="M 180.0 100.0 L 175.4 93.5 L 168.8 98.1 L 173.5 104.6" fill="none" stroke="#9CA3AF" stroke-width="1.1"></path>
+    <path d="M 90.0 110.0 L 86.4 117.2 L 93.6 120.7 L 97.2 113.6" fill="none" stroke="#9CA3AF" stroke-width="1.1"></path>
+    <line x1="50" y1="190" x2="230" y2="170" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <line x1="230" y1="170" x2="130" y2="30" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <line x1="130" y1="30" x2="50" y2="190" stroke="#1C1B2E" stroke-width="1.8"></line>
+    <circle cx="134.7" cy="132.4" r="2.6" fill="#1C1B2E"></circle>
+    <text x="30" y="204" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">R</text>
+    <text x="238" y="176" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">S</text>
+    <text x="126" y="20" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">T</text>
+    <text x="140" y="128" font-family="Space Grotesk" font-size="14" fill="#1F3A5C" font-weight="700">O</text>
+  </svg>
+</div>
+<p style="margin:4px 0 0;">Les médiatrices des trois côtés de RST (en pointillés) se coupent au point <b>O</b> : c'est le centre du cercle circonscrit au triangle RST. On a <span class="tex" data-tex-source="OR = OS = OT" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mi>R</mi><mo>=</mo><mi>O</mi><mi>S</mi><mo>=</mo><mi>O</mi><mi>T</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal" style="margin-right:0.00773em;">OR</span><span class="mrel">=</span></span><span class="base"><span class="mord mathnormal" style="margin-right:0.05764em;">OS</span><span class="mrel">=</span></span><span class="base"><span class="mord mathnormal" style="margin-right:0.13889em;">OT</span></span></span></span></span> : ce sont trois rayons du même cercle.</p>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Construire le cercle circonscrit à un triangle, à la règle et au compas</h4></div>
+<p class="hint" style="margin:8px 0;">On construit les médiatrices de deux côtés du triangle ABC : leur point d'intersection O est le centre du cercle circonscrit.</p>
+<div class="figure-wrap" style="max-width:760px;margin:12px auto;">
+  <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
+    <div style="flex:1 1 320px;max-width:360px;">
+      <svg id="circSvg" viewBox="0 90 330 340" style="width:100%;display:block;">
+        <line x1="60" y1="300" x2="220" y2="300" stroke="#1C1B2E" stroke-width="1.8"></line>
+        <line x1="220" y1="300" x2="150" y2="150" stroke="#1C1B2E" stroke-width="1.8"></line>
+        <line x1="150" y1="150" x2="60" y2="300" stroke="#1C1B2E" stroke-width="1.8"></line>
+        <polyline id="circArcA1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+        <polyline id="circArcA2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+        <polyline id="circArcB1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+        <polyline id="circArcB2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+        <polyline id="circArcB3" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+        <polyline id="circArcB4" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+        <polyline id="circArcC1" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+        <polyline id="circArcC2" fill="none" stroke="#9CA3AF" stroke-width="1.2" opacity="0"></polyline>
+        <line id="circMedAB" x1="140" y1="300" x2="140" y2="300" stroke="#E35D3A" stroke-width="1.8" opacity="0"></line>
+        <line id="circMedBC" x1="185" y1="225" x2="185" y2="225" stroke="#2EA8C9" stroke-width="1.8" opacity="0"></line>
+        <circle id="circQ1Dot" cx="140" cy="402.5" r="2" fill="#1C1B2E" opacity="0"></circle>
+        <circle id="circQ2Dot" cx="140" cy="197.5" r="2" fill="#1C1B2E" opacity="0"></circle>
+        <circle id="circQ3Dot" cx="287.3" cy="177.2" r="2" fill="#1C1B2E" opacity="0"></circle>
+        <circle id="circQ4Dot" cx="82.7" cy="272.8" r="2" fill="#1C1B2E" opacity="0"></circle>
+        <text id="circLabelO" x="146" y="242" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700" opacity="0">O</text>
+        <circle id="circCircle" cx="140" cy="246" r="96.52" fill="none" stroke="#0C5BA0" stroke-width="1.6" opacity="0"></circle>
+        <g id="circCompass" transform="translate(60,300)" opacity="0"></g>
+        <g id="circRulerTool" opacity="0"><rect x="-14" y="0" width="354" height="36" rx="6" fill="rgba(205,228,255,.35)" stroke="#1C1B2E" stroke-width="1.5"></rect>
+    <circle cx="34" cy="24.5" r="6" fill="#fff" fill-opacity="0.75" stroke="#1C1B2E" stroke-width="1"></circle>
+    <circle cx="0" cy="0" r="5" fill="#D93025" stroke="#1C1B2E" stroke-width="1"></circle></g>
+        <g id="circPencilTool" opacity="0"><g data-role="pencilBody" data-id="circ-pencil">
+    <rect x="-7" y="-100" width="14" height="14" fill="#D93025" stroke="#1C1B2E" stroke-width="1.4"></rect>
+    <rect x="-7" y="-86" width="14" height="51" fill="#E8B93A" stroke="#1C1B2E" stroke-width="1.4"></rect>
+    <polygon points="-7,-35 7,-35 0,0" fill="#D9B48F" stroke="#1C1B2E" stroke-width="1.4"></polygon>
+    <polygon points="-2.5,-10 2.5,-10 0,0" fill="#3a2b1f"></polygon>
+  </g>
+  <circle data-role="tip" data-id="circ-pencil" cx="0" cy="0" r="18" fill="transparent" pointer-events="all"></circle></g>
+        <text x="46" y="316" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">A</text>
+        <text x="226" y="316" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">B</text>
+        <text x="146" y="140" font-family="Space Grotesk" font-size="13" fill="#1F3A5C" font-weight="700">C</text>
+      </svg>
+      <p class="hint" id="circCurrentStep" style="min-height:32px;margin:8px 0;">Clique sur « Étape suivante » pour commencer.</p>
+      
+    </div>
+    <div style="flex:1 1 280px;min-width:260px;max-width:360px;">
+      <div class="step-list">
+        <div class="step-item" data-step="1"><div class="step-num">1</div><div>Piquer en A avec un écartement supérieur à la moitié de [AB] : tracer un arc de chaque côté de [AB].</div></div>
+        <div class="step-item" data-step="2"><div class="step-num">2</div><div>Piquer en B avec le <b>même écartement</b> : tracer deux arcs qui recoupent les précédents.</div></div>
+        <div class="step-item" data-step="3"><div class="step-num">3</div><div>Tracer, à la règle, la médiatrice de [AB] (droite passant par les deux points d'intersection).</div></div>
+        <div class="step-item" data-step="4"><div class="step-num">4</div><div>Piquer en B avec un écartement supérieur à la moitié de [BC] : tracer un arc de chaque côté de [BC].</div></div>
+        <div class="step-item" data-step="5"><div class="step-num">5</div><div>Piquer en C avec le <b>même écartement</b> : tracer deux arcs qui recoupent les précédents.</div></div>
+        <div class="step-item" data-step="6"><div class="step-num">6</div><div>Tracer, à la règle, la médiatrice de [BC] : elle coupe la médiatrice de [AB] au point O.</div></div>
+        <div class="step-item" data-step="7"><div class="step-num">7</div><div>Piquer le compas en O avec un écartement égal à OA : tracer le cercle circonscrit au triangle ABC.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Calculer un angle manquant dans un triangle »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">La somme des mesures des angles d'un triangle est égale à 180°, donc :</span></div>
+    <div class="we-row"><span class="we-expr"><span class="fill tex" data-tex-source="\widehat{xyz}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>x</mi><mi>y</mi><mi>z</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7306em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.04398em;">yz</span></span></span><span class="svg-align" style="top:-3.4306em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span> + <span class="fill tex" data-tex-source="\widehat{yzx}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>y</mi><mi>z</mi><mi>x</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7306em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.04398em;">yz</span><span class="mord mathnormal">x</span></span></span><span class="svg-align" style="top:-3.4306em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span> + <span class="fill tex" data-tex-source="\widehat{zxy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>z</mi><mi>x</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7306em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.4306em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span> = 180°</span></div>
+    <div class="we-row"><span class="we-expr">Donc <span class="fill tex" data-tex-source="\widehat{zxy}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>z</mi><mi>x</mi><mi>y</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7306em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.04398em;">z</span><span class="mord mathnormal">x</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span></span></span><span class="svg-align" style="top:-3.4306em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span> = 180° − (<span class="fill">…</span> + <span class="fill">…</span>) = <span class="fill">…</span></span></div>
+  </div>
+  <h3 style="margin-top:18px;">Rédaction type : « Justifier qu'un point est le centre du cercle circonscrit »</h3>
+  <div class="redaction-template">
+    <span class="fill">O</span> appartient à la médiatrice de <span class="fill">[AB]</span> et à la médiatrice de <span class="fill">[BC]</span>.<br>Or les médiatrices des côtés d'un triangle sont concourantes en un point qui est le centre du cercle circonscrit à ce triangle.<br>Donc <span class="fill">O</span> est le centre du cercle circonscrit au triangle <span class="fill">ABC</span>.
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Dans un triangle MNP, <span class="tex" data-tex-source="\widehat{NMP} = 62°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>N</mi><mi>M</mi><mi>P</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mn>62</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">NMP</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">62°</span></span></span></span></span> et <span class="tex" data-tex-source="\widehat{MNP} = 74°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>M</mi><mi>N</mi><mi>P</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mn>74</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">MNP</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">74°</span></span></span></span></span>. Calcule la mesure de l'angle <span class="tex" data-tex-source="\widehat{MPN}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>M</mi><mi>P</mi><mi>N</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">MPN</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span>. Rédige ta réponse.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Un triangle a deux angles de même mesure 55°. Calcule la mesure du troisième angle.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Trace un triangle ABC tel que AB = 7 cm, BC = 6 cm et CA = 5 cm. Construis le cercle circonscrit à ce triangle, en laissant apparents tous les traits de construction (arcs de compas, médiatrices).
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Un point O vérifie OA = OB = OC pour un triangle ABC. Explique pourquoi O est le centre du cercle circonscrit à ce triangle.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Dans un triangle RST rectangle en S, on donne <span class="tex" data-tex-source="\widehat{RTS} = 35°" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>R</mi><mi>T</mi><mi>S</mi></mrow><mo stretchy="true">^</mo></mover><mo>=</mo><mn>35</mn><mi mathvariant="normal">°</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">RTS</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">35°</span></span></span></span></span>. Calcule la mesure de l'angle <span class="tex" data-tex-source="\widehat{SRT}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>S</mi><mi>R</mi><mi>T</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">SRT</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span>. Rédige ta réponse.
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  <p style="margin:0 0 12px;">En 1792, en pleine Révolution française, les astronomes <b>Jean-Baptiste Delambre</b> et <b>Pierre Méchain</b> partent chacun de leur côté (l'un vers Dunkerque, l'autre vers Barcelone) pour une mission qui va durer sept ans : mesurer précisément la distance entre les deux villes, afin de définir une nouvelle unité universelle, le <b>mètre</b>. Le mètre est alors fixé comme la dix-millionième partie de la distance entre le pôle Nord et l'équateur, en passant par Paris.</p>
+  <p style="margin:0 0 12px;">Mais comment mesurer une distance de plus de 1000 km à la fin du XVIII<sup>e</sup> siècle, sans GPS ni satellite ? Impossible de tendre un ruban aussi long ! Delambre et Méchain utilisent la <b>triangulation</b> : ils repèrent des points élevés (clochers, collines, tours) tout le long du trajet, et forment ainsi une chaîne de triangles reliant Dunkerque à Barcelone.</p>
+  <div class="figure-wrap" style="max-width:260px;margin:4px auto 14px;">
+    <svg viewBox="0 0 200 320" style="width:100%;display:block;">
+      <line x1="100" y1="20" x2="60" y2="110" stroke="#1C1B2E" stroke-width="1.6"></line>
+      <line x1="100" y1="20" x2="140" y2="110" stroke="#1C1B2E" stroke-width="1.6"></line>
+      <line x1="60" y1="110" x2="140" y2="110" stroke="#E35D3A" stroke-width="2.2"></line>
+      <line x1="60" y1="110" x2="60" y2="200" stroke="#1C1B2E" stroke-width="1.6"></line>
+      <line x1="140" y1="110" x2="60" y2="200" stroke="#1C1B2E" stroke-width="1.6"></line>
+      <line x1="140" y1="110" x2="100" y2="290" stroke="#1C1B2E" stroke-width="1.6"></line>
+      <line x1="60" y1="200" x2="100" y2="290" stroke="#1C1B2E" stroke-width="1.6"></line>
+      <path d="M 131.9 91.7 A 20 20 0 0 0 120.0 110.0" fill="none" stroke="#2EA8C9" stroke-width="2"></path>
+      <text x="107" y="97" font-family="Space Grotesk" font-size="10" fill="#2EA8C9" font-weight="700">angle mesuré</text>
+      <circle cx="100" cy="20" r="3" fill="#1C1B2E"></circle>
+      <circle cx="60" cy="110" r="3" fill="#1C1B2E"></circle>
+      <circle cx="140" cy="110" r="3" fill="#1C1B2E"></circle>
+      <circle cx="60" cy="200" r="3" fill="#1C1B2E"></circle>
+      <circle cx="100" cy="290" r="3" fill="#1C1B2E"></circle>
+      <text x="104" y="14" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">Dunkerque</text>
+      <text x="4" y="102" font-family="Space Grotesk" font-size="11" fill="#1F3A5C" font-weight="700">Paris</text>
+      <text x="104" y="306" font-family="Space Grotesk" font-size="12" fill="#1F3A5C" font-weight="700">Barcelone</text>
+    </svg>
+    <p class="hint" style="text-align:center;margin:2px 0 0;">En orange : la seule distance mesurée directement (une courte <b>base</b>, sur un terrain plat). Tout le reste se calcule, triangle après triangle.</p>
+  </div>
+  <p style="margin:0 0 12px;">À chaque triangle, au lieu de mesurer des distances (très difficile sur le terrain), ils mesurent seulement des <b>angles</b>, avec un instrument de précision appelé cercle répétiteur. En ne connaissant qu'un seul côté du premier triangle (la base, mesurée directement) et tous les angles de la chaîne, ils calculent triangle après triangle la longueur de tous les autres côtés, exactement grâce à la propriété que vous venez d'étudier : <b>la somme des angles d'un triangle vaut toujours 180°</b>.</p>
+  <p style="margin:0 0 12px;">Un détail amusant : les clochers et collines choisis pour la triangulation ne sont jamais exactement alignés sur le méridien, la ligne imaginaire qu'on cherche à mesurer ! Impossible de trouver des points parfaitement alignés sur plus de 1000 km. Pour corriger cela, Delambre et Méchain mesurent en plus, à chaque bout du trajet, la hauteur du Soleil à midi : cela leur donne la position exacte de Dunkerque et de Barcelone sur le globe, et leur permet de calculer précisément quelle portion du méridien leur chaîne de triangles représente, même si le chemin suivi zigzague un peu autour de la ligne idéale.</p>
+  <p style="margin:0 0 12px;">Le voyage n'est pas de tout repos : Méchain manque plusieurs fois d'être arrêté comme espion (la France est en guerre), et reste obsédé jusqu'à sa mort par une petite erreur de mesure qu'il pense avoir commise. Le mètre, lui, est officiellement adopté en 1799, et sert toujours de référence aujourd'hui, bien que redéfini depuis à partir de la vitesse de la lumière.</p>
+  <p style="margin:18px 0 8px;font-weight:700;color:#1F3A5C;">Pour aller plus loin</p>
+  <div class="figure-wrap" style="max-width:480px;margin:0 auto 10px;">
+    
+    <p class="hint" style="text-align:center;margin:6px 0 0;">Vidéo : <i>Le mètre : son origine, son histoire, la mesure de la Méridienne et sa valeur actuelle</i> (chaîne J't'explique)</p>
+  </div>
+  <p class="hint" style="margin:0;">Envie de lire plutôt qu'écouter ? Le mathématicien <b>Denis Guedj</b> (auteur du <i>Théorème du Perroquet</i>) a raconté cette expédition sous forme de roman, <i>La Méridienne</i>.</p>
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/13-proprietes-des-triangles/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/6e/gestion-de-donnees/">Gestion de données</a></span>
+  <a href="/6e/">Tous les chapitres de 6e</a>
+  <span><a href="/6e/proportionnalite/">Proportionnalité</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

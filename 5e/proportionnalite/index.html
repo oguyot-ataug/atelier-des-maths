@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proportionnalité – Cours de maths 5e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 5e : Proportionnalité. Tableau de proportionnalité, Caractérisation graphique de la proportionnalité. Définitions, figures interactives,…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/5e/proportionnalite/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Proportionnalité – Cours de maths 5e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 5e : Proportionnalité. Tableau de proportionnalité, Caractérisation graphique de la proportionnalité. Définitions, figures interactives,…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/5e/proportionnalite/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Proportionnalité (5e)","headline":"Proportionnalité – cours de mathématiques de 5e","description":"Cours de maths 5e : Proportionnalité. Tableau de proportionnalité, Caractérisation graphique de la proportionnalité. Définitions, figures interactives,…","url":"https://maths.latelieraugmente.fr/5e/proportionnalite/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"5e (cycle 4, collège)","about":"Proportionnalité et fonctions","teaches":["Tableau de proportionnalité","Caractérisation graphique de la proportionnalité"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 5e","url":"https://maths.latelieraugmente.fr/5e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 5e","item":"https://maths.latelieraugmente.fr/5e/"},{"@type":"ListItem","position":3,"name":"Proportionnalité","item":"https://maths.latelieraugmente.fr/5e/proportionnalite/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/5e/">Cours de maths 5e</a> › Proportionnalité</div>
+<h1>Proportionnalité</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FAC3DE;color:#9E1F5E;">Proportionnalité et fonctions</span> Cours de mathématiques de 5e (cinquième) · chapitre 7 · Tableau de proportionnalité · Caractérisation graphique de la proportionnalité</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/5e/7-proportionnalite/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Tableau de proportionnalité</h3></div>
+
+<div class="sub-header"><span class="letter">A</span><h4>Définition</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Un tableau de nombres à deux lignes est un <b>tableau de proportionnalité</b> quand les nombres de la seconde ligne s'obtiennent en multipliant les nombres correspondants de la première ligne par un même nombre non nul, appelé <b>coefficient de proportionnalité</b>.</div>
+
+<p style="margin:14px 0 6px;"><b>Exemples</b> : ces tableaux sont-ils des tableaux de proportionnalité ?</p>
+<div style="display:flex;flex-wrap:wrap;gap:20px;">
+  <div style="flex:1;min-width:240px;">
+    <table style="border-collapse:collapse;width:100%;text-align:center;font-size:.88rem;margin:0 0 8px;">
+      <tbody><tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Côté</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">2 cm</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">3 cm</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">5 cm</td></tr>
+      <tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Périmètre du carré</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">8 cm</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">12 cm</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">20 cm</td></tr>
+    </tbody></table>
+    <p style="margin:4px 0;">Les quotients <span class="tex" data-tex-source="\dfrac{8}{2}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>8</mn><mn>2</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">2</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">8</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>, <span class="tex" data-tex-source="\dfrac{12}{3}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>12</mn><mn>3</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">3</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">12</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span> et <span class="tex" data-tex-source="\dfrac{20}{5}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>20</mn><mn>5</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">5</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">20</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span> sont tous égaux à 4.</p>
+    <p style="margin:4px 0;">Donc ce tableau est un tableau de proportionnalité.</p>
+  </div>
+  <div style="flex:1;min-width:240px;">
+    <table style="border-collapse:collapse;width:100%;text-align:center;font-size:.88rem;margin:0 0 8px;">
+      <tbody><tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Côté</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">2 cm</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">3 cm</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">5 cm</td></tr>
+      <tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Aire du carré</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">4 cm²</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">9 cm²</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">25 cm²</td></tr>
+    </tbody></table>
+    <p style="margin:4px 0;">Les quotients <span class="tex" data-tex-source="\dfrac{4}{2}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>4</mn><mn>2</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">2</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">4</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>, <span class="tex" data-tex-source="\dfrac{9}{3}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>9</mn><mn>3</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">3</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">9</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span> et <span class="tex" data-tex-source="\dfrac{25}{5}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>25</mn><mn>5</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">5</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">25</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span> ne sont pas tous égaux (2, puis 3, puis 5).</p>
+    <p style="margin:4px 0;">Donc ce tableau n'est pas un tableau de proportionnalité.</p>
+  </div>
+</div>
+
+<div class="sub-header"><span class="letter">B</span><h4>Compléter un tableau de proportionnalité</h4></div>
+<span class="prop-badge">Règle</span>
+<div class="def-box">Dans un tableau de proportionnalité, on peut compléter la (les) valeur(s) manquante(s) en utilisant plusieurs méthodes : ① le retour à l'unité ; ② les propriétés de linéarité ; ③ le coefficient de proportionnalité.</div>
+
+<p style="margin:14px 0 6px;"><b>Exemple</b> : une voiture consomme 5 L pour parcourir 100 km. Complète le tableau de proportionnalité suivant.</p>
+<table style="border-collapse:collapse;width:100%;max-width:420px;text-align:center;font-size:.88rem;margin:0 0 14px;">
+  <tbody><tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Distance parcourue</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">100 km</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">250 km</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">350 km</td></tr>
+  <tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Consommation</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">5 L</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">?</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">?</td></tr>
+</tbody></table>
+
+<p style="margin:10px 0 4px;">① À l'aide du retour à l'unité :</p>
+<p style="margin:2px 0;">Quand la voiture parcourt 1 km, elle consomme <span class="tex" data-tex-source="\dfrac{5}{100} = 0,05" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>5</mn><mn>100</mn></mfrac></mstyle><mo>=</mo><mn>0</mn><mo separator="true">,</mo><mn>05</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">100</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">5</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">0</span><span class="mpunct">,</span><span class="mord">05</span></span></span></span></span> L.</p>
+<p style="margin:2px 0;">Quand la voiture parcourt 250 km, elle consomme 250 fois plus, soit <span class="tex" data-tex-source="250 \times 0,05" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>250</mn><mo>×</mo><mn>0</mn><mo separator="true">,</mo><mn>05</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">250</span><span class="mbin">×</span></span><span class="base"><span class="mord">0</span><span class="mpunct">,</span><span class="mord">05</span></span></span></span></span> L = 12,5 L.</p>
+<p style="margin:2px 0 14px;">Quand la voiture parcourt 350 km, elle consomme 350 fois plus, soit <span class="tex" data-tex-source="350 \times 0,05" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>350</mn><mo>×</mo><mn>0</mn><mo separator="true">,</mo><mn>05</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">350</span><span class="mbin">×</span></span><span class="base"><span class="mord">0</span><span class="mpunct">,</span><span class="mord">05</span></span></span></span></span> L = 17,5 L.</p>
+
+<p style="margin:10px 0 4px;">② À l'aide des propriétés de linéarité :</p>
+<p style="margin:2px 0;">100 km × 2,5 = 250 km, donc 5 L × 2,5 = 12,5 L.</p>
+<p style="margin:2px 0 14px;">100 km + 250 km = 350 km, donc 5 L + 12,5 L = 17,5 L.</p>
+
+<p style="margin:10px 0 4px;">③ À l'aide du coefficient de proportionnalité :</p>
+<p style="margin:2px 0 14px;">Le coefficient de proportionnalité est <span class="tex" data-tex-source="\dfrac{5}{100} = 0,05" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>5</mn><mn>100</mn></mfrac></mstyle><mo>=</mo><mn>0</mn><mo separator="true">,</mo><mn>05</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">100</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">5</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">0</span><span class="mpunct">,</span><span class="mord">05</span></span></span></span></span>. On multiplie chaque distance par 0,05 pour obtenir la consommation correspondante.</p>
+
+<table style="border-collapse:collapse;width:100%;max-width:420px;text-align:center;font-size:.88rem;margin:0 0 16px;">
+  <tbody><tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Distance parcourue</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">100 km</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">250 km</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">350 km</td></tr>
+  <tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Consommation</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">5 L</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);font-weight:700;color:var(--accent-orange);">12,5 L</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);font-weight:700;color:var(--accent-orange);">17,5 L</td></tr>
+</tbody></table>
+
+<div class="lesson-header"><span class="num">2</span><h3>Caractérisation graphique de la proportionnalité</h3></div>
+
+<span class="prop-badge">Propriété 1</span>
+<div class="def-box">Une situation de proportionnalité est représentée graphiquement dans un repère par des <b>points alignés avec l'origine du repère</b>.</div>
+
+<p style="margin:14px 0 6px;"><b>Exemple</b> : un plan a une échelle de 1/500.</p>
+<table style="border-collapse:collapse;width:100%;max-width:420px;text-align:center;font-size:.88rem;margin:0 0 10px;">
+  <tbody><tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Sur le plan</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">0 cm</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">1 cm</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">2 cm</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">3 cm</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">4 cm</td></tr>
+  <tr><th style="padding:6px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);text-align:left;">Dans la réalité</th><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">0 m</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">5 m</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">10 m</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">15 m</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">20 m</td></tr>
+</tbody></table>
+<div class="figure-wrap"><svg viewBox="0 0 260 210" style="width:100%;max-width:260px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="32" y1="16" x2="32" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="32" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">0</text><line x1="85.5" y1="16" x2="85.5" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="85.5" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">1</text><line x1="139" y1="16" x2="139" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="139" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">2</text><line x1="192.5" y1="16" x2="192.5" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="192.5" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">3</text><line x1="246" y1="16" x2="246" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="246" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">4</text><line x1="32" y1="184" x2="246" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><line x1="32" y1="142" x2="246" y2="142" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="145" font-size="10" text-anchor="end" fill="#5B6B78">5</text><line x1="32" y1="100" x2="246" y2="100" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="103" font-size="10" text-anchor="end" fill="#5B6B78">10</text><line x1="32" y1="58" x2="246" y2="58" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="61" font-size="10" text-anchor="end" fill="#5B6B78">15</text><line x1="32" y1="16" x2="246" y2="16" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="19" font-size="10" text-anchor="end" fill="#5B6B78">20</text><line x1="32" y1="184" x2="246" y2="184" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="32" y1="16" x2="32" y2="184" stroke="#1C1B2E" stroke-width="1.4"></line><polyline points="32.0,184.0 85.5,142.0 139.0,100.0 192.5,58.0 246.0,16.0" fill="none" stroke="#1F6B3A" stroke-width="1.6" stroke-dasharray="5,4"></polyline><line x1="28.0" y1="180.0" x2="36.0" y2="188.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="28.0" y1="188.0" x2="36.0" y2="180.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="81.5" y1="138.0" x2="89.5" y2="146.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="81.5" y1="146.0" x2="89.5" y2="138.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="135.0" y1="96.0" x2="143.0" y2="104.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="135.0" y1="104.0" x2="143.0" y2="96.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="188.5" y1="54.0" x2="196.5" y2="62.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="188.5" y1="62.0" x2="196.5" y2="54.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="242.0" y1="12.0" x2="250.0" y2="20.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="242.0" y1="20.0" x2="250.0" y2="12.0" stroke="#1F6B3A" stroke-width="1.6"></line><text x="32" y="13" font-size="10" fill="#1C1B2E">en m</text><text x="246" y="178" font-size="10" text-anchor="end" fill="#1C1B2E">en cm</text>
+  </svg></div>
+<p style="margin:10px 0 14px;">On représente cette situation de proportionnalité dans un repère : les points sont alignés avec l'origine du repère.</p>
+
+<span class="prop-badge">Propriété 2</span>
+<div class="def-box">Réciproquement, si une situation est représentée graphiquement dans un repère par des <b>points alignés avec l'origine du repère</b> alors c'est une <b>situation de proportionnalité</b>.</div>
+
+<p class="hint" style="margin:10px 0 14px;">Remarque : donc si une situation n'est pas représentée graphiquement dans un repère par des points alignés avec l'origine du repère alors ce n'est pas une situation de proportionnalité.</p>
+
+<p style="margin:14px 0 8px;"><b>Exemples</b> : ces graphiques représentent-ils des situations de proportionnalité ?</p>
+<div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">
+  <div style="flex:1;min-width:200px;max-width:240px;text-align:center;">
+    <svg viewBox="0 0 260 210" style="width:100%;max-width:260px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="32" y1="16" x2="32" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="32" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">0</text><line x1="85.5" y1="16" x2="85.5" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="85.5" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">1</text><line x1="139" y1="16" x2="139" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="139" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">2</text><line x1="192.5" y1="16" x2="192.5" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="192.5" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">3</text><line x1="246" y1="16" x2="246" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="246" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">4</text><line x1="32" y1="184" x2="246" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><line x1="32" y1="142" x2="246" y2="142" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="145" font-size="10" text-anchor="end" fill="#5B6B78">5</text><line x1="32" y1="100" x2="246" y2="100" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="103" font-size="10" text-anchor="end" fill="#5B6B78">10</text><line x1="32" y1="58" x2="246" y2="58" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="61" font-size="10" text-anchor="end" fill="#5B6B78">15</text><line x1="32" y1="16" x2="246" y2="16" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="19" font-size="10" text-anchor="end" fill="#5B6B78">20</text><line x1="32" y1="184" x2="246" y2="184" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="32" y1="16" x2="32" y2="184" stroke="#1C1B2E" stroke-width="1.4"></line><polyline points="32.0,184.0 85.5,142.0 139.0,100.0 192.5,58.0 246.0,16.0" fill="none" stroke="#1F6B3A" stroke-width="1.6" stroke-dasharray="5,4"></polyline><line x1="28.0" y1="180.0" x2="36.0" y2="188.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="28.0" y1="188.0" x2="36.0" y2="180.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="81.5" y1="138.0" x2="89.5" y2="146.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="81.5" y1="146.0" x2="89.5" y2="138.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="135.0" y1="96.0" x2="143.0" y2="104.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="135.0" y1="104.0" x2="143.0" y2="96.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="188.5" y1="54.0" x2="196.5" y2="62.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="188.5" y1="62.0" x2="196.5" y2="54.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="242.0" y1="12.0" x2="250.0" y2="20.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="242.0" y1="20.0" x2="250.0" y2="12.0" stroke="#1F6B3A" stroke-width="1.6"></line><text x="32" y="13" font-size="10" fill="#1C1B2E">en m</text><text x="246" y="178" font-size="10" text-anchor="end" fill="#1C1B2E">en cm</text>
+  </svg>
+    <p style="margin:8px 0;"><b>Oui</b>, ce graphique représente une situation de proportionnalité : les points sont alignés avec l'origine du repère.</p>
+  </div>
+  <div style="flex:1;min-width:200px;max-width:240px;text-align:center;">
+    <svg viewBox="0 0 260 210" style="width:100%;max-width:260px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="32" y1="16" x2="32" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="32" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">0</text><line x1="85.5" y1="16" x2="85.5" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="85.5" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">1</text><line x1="139" y1="16" x2="139" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="139" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">2</text><line x1="192.5" y1="16" x2="192.5" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="192.5" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">3</text><line x1="246" y1="16" x2="246" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="246" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">4</text><line x1="32" y1="184" x2="246" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><line x1="32" y1="142" x2="246" y2="142" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="145" font-size="10" text-anchor="end" fill="#5B6B78">5</text><line x1="32" y1="100" x2="246" y2="100" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="103" font-size="10" text-anchor="end" fill="#5B6B78">10</text><line x1="32" y1="58" x2="246" y2="58" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="61" font-size="10" text-anchor="end" fill="#5B6B78">15</text><line x1="32" y1="16" x2="246" y2="16" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="19" font-size="10" text-anchor="end" fill="#5B6B78">20</text><line x1="32" y1="184" x2="246" y2="184" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="32" y1="16" x2="32" y2="184" stroke="#1C1B2E" stroke-width="1.4"></line><polyline points="32.0,142.0 85.5,110.5 139.0,79.0 192.5,47.5 246.0,16.0" fill="none" stroke="#1F6B3A" stroke-width="1.6" stroke-dasharray="5,4"></polyline><line x1="28.0" y1="138.0" x2="36.0" y2="146.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="28.0" y1="146.0" x2="36.0" y2="138.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="81.5" y1="106.5" x2="89.5" y2="114.5" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="81.5" y1="114.5" x2="89.5" y2="106.5" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="135.0" y1="75.0" x2="143.0" y2="83.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="135.0" y1="83.0" x2="143.0" y2="75.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="188.5" y1="43.5" x2="196.5" y2="51.5" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="188.5" y1="51.5" x2="196.5" y2="43.5" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="242.0" y1="12.0" x2="250.0" y2="20.0" stroke="#1F6B3A" stroke-width="1.6"></line><line x1="242.0" y1="20.0" x2="250.0" y2="12.0" stroke="#1F6B3A" stroke-width="1.6"></line><text x="32" y="13" font-size="10" fill="#1C1B2E">en m</text><text x="246" y="178" font-size="10" text-anchor="end" fill="#1C1B2E">en cm</text>
+  </svg>
+    <p style="margin:8px 0;"><b>Non</b>, ce graphique ne représente pas une situation de proportionnalité : les points sont alignés mais pas avec l'origine du repère.</p>
+  </div>
+  <div style="flex:1;min-width:200px;max-width:240px;text-align:center;">
+    <svg viewBox="0 0 260 210" style="width:100%;max-width:260px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line x1="32" y1="16" x2="32" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="32" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">0</text><line x1="85.5" y1="16" x2="85.5" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="85.5" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">1</text><line x1="139" y1="16" x2="139" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="139" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">2</text><line x1="192.5" y1="16" x2="192.5" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="192.5" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">3</text><line x1="246" y1="16" x2="246" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="246" y="199" font-size="10" text-anchor="middle" fill="#5B6B78">4</text><line x1="32" y1="184" x2="246" y2="184" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><line x1="32" y1="142" x2="246" y2="142" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="145" font-size="10" text-anchor="end" fill="#5B6B78">10</text><line x1="32" y1="100" x2="246" y2="100" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="103" font-size="10" text-anchor="end" fill="#5B6B78">20</text><line x1="32" y1="58" x2="246" y2="58" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="61" font-size="10" text-anchor="end" fill="#5B6B78">30</text><line x1="32" y1="16" x2="246" y2="16" stroke="rgba(28,43,57,.12)" stroke-width="1"></line><text x="26" y="19" font-size="10" text-anchor="end" fill="#5B6B78">40</text><line x1="32" y1="184" x2="246" y2="184" stroke="#1C1B2E" stroke-width="1.4"></line>
+    <line x1="32" y1="16" x2="32" y2="184" stroke="#1C1B2E" stroke-width="1.4"></line><polyline points="32.0,142.0 85.5,91.6 139.0,58.0 192.5,37.0 246.0,24.4" fill="none" stroke="#9E1F5E" stroke-width="1.6" stroke-dasharray="5,4"></polyline><line x1="28.0" y1="138.0" x2="36.0" y2="146.0" stroke="#9E1F5E" stroke-width="1.6"></line><line x1="28.0" y1="146.0" x2="36.0" y2="138.0" stroke="#9E1F5E" stroke-width="1.6"></line><line x1="81.5" y1="87.6" x2="89.5" y2="95.6" stroke="#9E1F5E" stroke-width="1.6"></line><line x1="81.5" y1="95.6" x2="89.5" y2="87.6" stroke="#9E1F5E" stroke-width="1.6"></line><line x1="135.0" y1="54.0" x2="143.0" y2="62.0" stroke="#9E1F5E" stroke-width="1.6"></line><line x1="135.0" y1="62.0" x2="143.0" y2="54.0" stroke="#9E1F5E" stroke-width="1.6"></line><line x1="188.5" y1="33.0" x2="196.5" y2="41.0" stroke="#9E1F5E" stroke-width="1.6"></line><line x1="188.5" y1="41.0" x2="196.5" y2="33.0" stroke="#9E1F5E" stroke-width="1.6"></line><line x1="242.0" y1="20.4" x2="250.0" y2="28.4" stroke="#9E1F5E" stroke-width="1.6"></line><line x1="242.0" y1="28.4" x2="250.0" y2="20.4" stroke="#9E1F5E" stroke-width="1.6"></line>
+  </svg>
+    <p style="margin:8px 0;"><b>Non</b>, ce graphique ne représente pas une situation de proportionnalité : les points ne sont pas alignés.</p>
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <p class="example-title" style="margin-top:0;">Grandeur et unité</p>
+<span class="def-badge">Définition</span>
+<div class="def-box">
+  Une <b>grandeur</b> est ce que l'on peut mesurer (une longueur, une durée, un prix, une masse, un volume, une aire...). Une <b>unité</b> permet d'exprimer la mesure d'une grandeur.
+</div>
+<p style="margin:10px 0 0;">Par exemple, une <b>température</b> est une grandeur, et elle peut s'exprimer dans l'unité <b>°C</b> (degré Celsius).</p>
+
+<p class="example-title">Jeu : associe chaque grandeur à son unité</p>
+
+<div class="pgame-board" id="pgame-board">
+    <div class="pgame-col"><div class="pgame-card" data-role="g" data-val="Aire">Aire</div><div class="pgame-card" data-role="g" data-val="Durée">Durée</div><div class="pgame-card" data-role="g" data-val="Volume">Volume</div><div class="pgame-card" data-role="g" data-val="Prix">Prix</div><div class="pgame-card" data-role="g" data-val="Masse">Masse</div><div class="pgame-card" data-role="g" data-val="Longueur">Longueur</div></div>
+    <div class="pgame-col"><div class="pgame-card" data-role="u" data-val="m">m</div><div class="pgame-card" data-role="u" data-val="s">s</div><div class="pgame-card" data-role="u" data-val="€">€</div><div class="pgame-card" data-role="u" data-val="kg">kg</div><div class="pgame-card" data-role="u" data-val="m²">m²</div><div class="pgame-card" data-role="u" data-val="L">L</div></div>
+  </div>
+<p class="hint" id="pgame-status" style="margin:10px 0;">0 / 6 paires trouvées.</p>
+
+
+<p class="example-title" style="margin-top:26px;">Évolution d'une grandeur</p>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">
+  On connaît une valeur initiale de deux grandeurs A et B associées, ainsi qu'un objectif pour B. On veut faire évoluer A pour atteindre cet objectif.
+</div>
+
+<p style="margin:14px 0 10px;"><b>Exemple</b> : une voiture consomme <span style="color:var(--accent);font-weight:700;">5 L</span> pour parcourir <span style="color:var(--accent);font-weight:700;">100 km</span>. Quelle est sa consommation pour <span style="color:var(--accent-orange);font-weight:700;">250 km</span> ?</p>
+<div class="figure-wrap">
+  
+  <div class="step-display" id="ppEvolDisplay"><div class="step-column"><div class="">On note C la consommation cherchée pour 250 km.</div></div><div class="step-note">On cherche une consommation. Donc on va faire évoluer la consommation initiale (5 L).</div></div>
+  
+</div>
+
+<p class="example-title" style="margin-top:26px;">Autre méthode : l'association dans un tableau</p>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">Quand on connaît <b>deux paires</b> de valeurs associées, on peut parfois passer de l'une à l'autre par une opération simple, et appliquer cette même opération sur l'autre grandeur.</div>
+
+<p style="margin:14px 0 6px;"><b>Exemple</b> : on connaît les paires (5 ; 100) et (3 ; 60). On cherche la valeur de B associée à A = 8.</p>
+<div class="figure-wrap">
+  
+  <div id="pplin1-wrap"><svg id="pplin1-svg" viewBox="0 0 465 224" style="width:100%;max-width:440px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><rect x="10" y="62" width="140" height="44" fill="rgba(31,58,92,.06)" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="80" y="89" font-size="13" text-anchor="middle" fill="#1C1B2E" font-weight="700">Grandeur A</text><rect x="10" y="106" width="140" height="44" fill="rgba(31,58,92,.06)" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="80" y="133" font-size="13" text-anchor="middle" fill="#1C1B2E" font-weight="700">Grandeur B</text><rect x="160" y="62" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="205" y="89" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">5</text><rect x="260" y="62" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="305" y="89" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">3</text><rect x="360" y="62" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="405" y="89" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">8</text><rect x="160" y="106" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="205" y="133" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">100</text><rect x="260" y="106" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="305" y="133" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">60</text><rect x="360" y="106" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="405" y="133" font-size="15" text-anchor="middle" fill="var(--accent-orange)" font-weight="700">?</text></svg></div>
+  <div class="step-list" id="pplin1-steps">
+    <div class="step-item done" data-step="0"><div class="step-num">1</div><div>On considère A = 8. On veut trouver B.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On remarque que 8 = 5 + 3.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>On applique la même addition à B : 100 + 60 = 160.</div></div>
+  </div>
+  
+</div>
+
+<p style="margin:22px 0 6px;"><b>Autre exemple</b> : toujours avec (5 ; 100) et (3 ; 60), on cherche cette fois la valeur de A associée à B = 40.</p>
+<div class="figure-wrap">
+  
+  <div id="pplin2-wrap"><svg id="pplin2-svg" viewBox="0 0 465 224" style="width:100%;max-width:440px;display:block;margin:0 auto;background:var(--white);border-radius:8px;"><rect x="10" y="62" width="140" height="44" fill="rgba(31,58,92,.06)" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="80" y="89" font-size="13" text-anchor="middle" fill="#1C1B2E" font-weight="700">Grandeur A</text><rect x="10" y="106" width="140" height="44" fill="rgba(31,58,92,.06)" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="80" y="133" font-size="13" text-anchor="middle" fill="#1C1B2E" font-weight="700">Grandeur B</text><rect x="160" y="62" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="205" y="89" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">5</text><rect x="260" y="62" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="305" y="89" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">3</text><rect x="360" y="62" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="405" y="89" font-size="15" text-anchor="middle" fill="var(--accent-orange)" font-weight="700">?</text><rect x="160" y="106" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="205" y="133" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">100</text><rect x="260" y="106" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="305" y="133" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">60</text><rect x="360" y="106" width="90" height="44" fill="none" stroke="#1C1B2E" stroke-width="1.3"></rect>
+    <text x="405" y="133" font-size="15" text-anchor="middle" fill="#1C1B2E" font-weight="400">40</text></svg></div>
+  <div class="step-list" id="pplin2-steps">
+    <div class="step-item done" data-step="0"><div class="step-num">1</div><div>On considère B = 40. On veut trouver A.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On remarque que 40 = 100 − 60.</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>On applique la même soustraction à A : 5 − 3 = 2.</div></div>
+  </div>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Justifier qu'un tableau n'est pas un tableau de proportionnalité »</h3>
+  <p style="margin:0 0 12px;"><b>Énoncé</b> : Voici un tableau de nombres. Justifie qu'il ne s'agit pas d'un tableau de proportionnalité.</p>
+  <table style="border-collapse:collapse;max-width:320px;text-align:center;font-size:.88rem;margin:0 0 12px;">
+    <tbody><tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">3</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">5</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">8</td></tr>
+    <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">12</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">20</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">31</td></tr>
+  </tbody></table>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr"><span class="tex" data-tex-source="\dfrac{12}{3} = 4" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>12</mn><mn>3</mn></mfrac></mstyle><mo>=</mo><mn>4</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">3</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">12</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">4</span></span></span></span></span> et <span class="tex" data-tex-source="\dfrac{20}{5} = 4" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>20</mn><mn>5</mn></mfrac></mstyle><mo>=</mo><mn>4</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">5</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">20</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">4</span></span></span></span></span>, mais <span class="tex" data-tex-source="\dfrac{31}{8} = 3,875" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>31</mn><mn>8</mn></mfrac></mstyle><mo>=</mo><mn>3</mn><mo separator="true">,</mo><mn>875</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">8</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">31</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">3</span><span class="mpunct">,</span><span class="mord">875</span></span></span></span></span>.</span><span class="we-comment">Ce que je sais : je calcule les quotients.</span></div>
+    <div class="we-row"><span class="we-expr"><span style="color:var(--accent-orange);font-weight:700;">Or,</span> dans un tableau de proportionnalité, tous les quotients doivent être égaux.</span><span class="we-comment">On énonce la propriété (contraposée de la définition).</span></div>
+    <div class="we-row"><span class="we-expr"><span style="color:var(--accent);font-weight:700;">Donc</span> ce tableau n'est pas un tableau de proportionnalité.</span><span class="we-comment">Conclusion.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Une recette pour 4 personnes nécessite 200 g de farine. Complète pour 6 personnes et pour 10 personnes, en indiquant la méthode utilisée.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Recopie et complète ce tableau de proportionnalité, puis donne son coefficient de proportionnalité.
+    <table style="border-collapse:collapse;max-width:320px;text-align:center;font-size:.88rem;margin:8px 0 0;">
+      <tbody><tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">4</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">7</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">…</td></tr>
+      <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">10</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">…</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">27,5</td></tr>
+    </tbody></table>
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Un graphique représente une situation par des points alignés, mais qui ne passent pas par l'origine du repère. Cette situation est-elle une situation de proportionnalité ? Justifie ta réponse.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Justifie que le tableau suivant n'est pas un tableau de proportionnalité.
+    <table style="border-collapse:collapse;max-width:320px;text-align:center;font-size:.88rem;margin:8px 0 0;">
+      <tbody><tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">2</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">5</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">6</td></tr>
+      <tr><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">6</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">15</td><td style="padding:6px;border:1px solid rgba(28,43,57,.2);">19</td></tr>
+    </tbody></table>
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Selon une légende rapportée par plusieurs auteurs antiques, le savant grec Thalès (6e siècle av. J.-C.) aurait mesuré la hauteur de la grande pyramide d'Égypte sans même y monter, en utilisant un simple bâton planté dans le sol : il aurait attendu le moment où l'ombre du bâton était égale à sa propre hauteur, sachant qu'à cet instant précis, l'ombre de la pyramide serait elle aussi égale à sa hauteur. Les historiens doutent aujourd'hui que Thalès soit vraiment l'inventeur de cette idée (les Babyloniens et les Égyptiens connaissaient déjà ce principe de proportionnalité), mais l'anecdote reste un bel exemple de la puissance de ces méthodes : mesurer un objet immense sans y toucher.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/5e/7-proportionnalite/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/5e/droites-remarquables-dans-un-triangle/">Droites remarquables dans un triangle</a></span>
+  <a href="/5e/">Tous les chapitres de 5e</a>
+  <span><a href="/5e/nombres-relatifs/">Nombres relatifs</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

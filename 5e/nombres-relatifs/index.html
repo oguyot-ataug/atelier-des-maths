@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nombres relatifs – Cours de maths 5e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 5e : Nombres relatifs. Nombres relatifs, Repérage sur une droite, Repérage dans le plan, Comparaison de relatifs. Définitions, figures…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/5e/nombres-relatifs/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Nombres relatifs – Cours de maths 5e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 5e : Nombres relatifs. Nombres relatifs, Repérage sur une droite, Repérage dans le plan, Comparaison de relatifs. Définitions, figures…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/5e/nombres-relatifs/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Nombres relatifs (5e)","headline":"Nombres relatifs – cours de mathématiques de 5e","description":"Cours de maths 5e : Nombres relatifs. Nombres relatifs, Repérage sur une droite, Repérage dans le plan, Comparaison de relatifs. Définitions, figures…","url":"https://maths.latelieraugmente.fr/5e/nombres-relatifs/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"5e (cycle 4, collège)","about":"Nombres et calculs","teaches":["Nombres relatifs","Repérage sur une droite","Repérage dans le plan","Comparaison de relatifs"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 5e","url":"https://maths.latelieraugmente.fr/5e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 5e","item":"https://maths.latelieraugmente.fr/5e/"},{"@type":"ListItem","position":3,"name":"Nombres relatifs","item":"https://maths.latelieraugmente.fr/5e/nombres-relatifs/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/5e/">Cours de maths 5e</a> › Nombres relatifs</div>
+<h1>Nombres relatifs</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span> Cours de mathématiques de 5e (cinquième) · chapitre 8 · Nombres relatifs · Repérage sur une droite · Repérage dans le plan · Comparaison de relatifs</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/5e/8-nombres-relatifs/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Nombres relatifs</h3></div>
+      <span class="def-badge">Définitions</span>
+      <div class="def-box">
+        <ul style="margin:0;padding-left:20px;line-height:1.8;">
+          <li>Un nombre est dit <b>positif</b> lorsqu'il est supérieur ou égal à 0.</li>
+          <li>Un nombre est dit <b>négatif</b> lorsqu'il est inférieur ou égal à 0.</li>
+          <li>0 appartient donc à la fois aux nombres positifs et aux nombres négatifs.</li>
+          <li>L'ensemble formé par tous ces nombres, positifs et négatifs, s'appelle les <b>nombres relatifs</b>.</li>
+        </ul>
+      </div>
+      <p class="example-title">Exemples :</p>
+      <ul class="example-list">
+        <li>+7 est un nombre positif ; on peut aussi l'écrire simplement 7.</li>
+        <li>−4,5 est un nombre négatif : c'est un nombre décimal relatif.</li>
+        <li>Autres nombres positifs : +20 ; 1,5 ; <span class="tex" data-tex-source="\dfrac{3}{4}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>3</mn><mn>4</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">4</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">3</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>.</li>
+        <li>Autres nombres négatifs : −8,3 ; <span class="tex" data-tex-source="-\dfrac{2}{5}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>2</mn><mn>5</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">−</span><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">5</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">2</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span> ; −0,12.</li>
+      </ul>
+
+      <div class="lesson-header"><span class="num">2</span><h3>Repérage sur une droite</h3></div>
+      <span class="def-badge">Définition 1</span>
+      <div class="def-box">On dit qu'une droite est <b>graduée</b> lorsqu'on y a choisi un point de départ (appelé <b>origine</b> et noté O) ainsi qu'une longueur de référence appelée l'<b>unité</b>.</div>
+      <span class="def-badge">Définition 2</span>
+      <div class="def-box">Sur une droite graduée, chaque point occupe une position que l'on traduit par un nombre relatif : c'est son <b>abscisse</b>.</div>
+
+      <div class="figure-wrap">
+        <strong style="font-family:'Space Grotesk',sans-serif;">Exemple : un nombre relatif et son opposé</strong>
+        
+        <svg id="svgRelLine" viewBox="0 0 600 130" style="width:100%;max-width:560px;display:block;margin:10px auto;touch-action:none;">
+          <line x1="30" y1="70" x2="570" y2="70" stroke="#1C1B2E" stroke-width="1.6"></line>
+          <polygon points="570,70 560,65 560,75" fill="#1C1B2E"></polygon>
+          <g id="relTicks"><line x1="48" y1="63" x2="48" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="48" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-7</text><line x1="84" y1="63" x2="84" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="84" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-6</text><line x1="120" y1="63" x2="120" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="120" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-5</text><line x1="156" y1="63" x2="156" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="156" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-4</text><line x1="192" y1="63" x2="192" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="192" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-3</text><line x1="228" y1="63" x2="228" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="228" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-2</text><line x1="264" y1="63" x2="264" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="264" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">-1</text><line x1="300" y1="63" x2="300" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="300" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">0</text><line x1="336" y1="63" x2="336" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="336" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">1</text><line x1="372" y1="63" x2="372" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="372" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">2</text><line x1="408" y1="63" x2="408" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="408" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">3</text><line x1="444" y1="63" x2="444" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="444" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">4</text><line x1="480" y1="63" x2="480" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="480" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">5</text><line x1="516" y1="63" x2="516" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="516" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">6</text><line x1="552" y1="63" x2="552" y2="77" stroke="#1C1B2E" stroke-width="1.3"></line><text x="552" y="94" font-family="JetBrains Mono" font-size="11" fill="#5C5A78" text-anchor="middle">7</text></g>
+          <line id="relArcLeft" x1="300" y1="70" x2="0" y2="0" stroke="#B7C3CD" stroke-width="1.3" stroke-dasharray="3 4"></line>
+          <line id="relMarkPt" class="pt-tick" stroke="#1F3A5C" stroke-width="2.4" x1="426" y1="64.5" x2="426" y2="75.5"></line>
+          <text id="relLabelPt" font-family="JetBrains Mono" font-size="14" fill="#1F3A5C" font-weight="700" x="426" y="56" text-anchor="middle">+3.5</text>
+          <line id="relMarkOpp" class="pt-tick" stroke="#E35D3A" stroke-width="2.4" x1="174" y1="64.5" x2="174" y2="75.5"></line>
+          <text id="relLabelOpp" font-family="JetBrains Mono" font-size="14" fill="#E35D3A" font-weight="700" x="174" y="104" text-anchor="middle">-3.5</text>
+          <circle id="relHandle" r="16" fill="transparent" style="" cx="426" cy="70"></circle>
+        </svg>
+        <div class="figure-toolbar">
+          
+          <span class="hint" id="relCoords" style="margin:0;">Nombre : +3.5   →   opposé : -3.5   (même distance à 0, signe contraire)</span>
+        </div>
+      </div>
+
+      <span class="def-badge">Définition 3</span>
+      <div class="def-box">La distance qui sépare un point M de l'origine O est appelée la <b>valeur absolue</b> du nombre relatif associé à M.</div>
+      <p class="example-title">Exemples :</p>
+      <ul class="example-list">
+        <li>La valeur absolue de −6 est 6.</li>
+        <li>La valeur absolue de +9 est 9.</li>
+      </ul>
+      <span class="def-badge">Définition 4</span>
+      <div class="def-box">On dit que deux nombres relatifs sont <b>opposés</b> lorsqu'ils ont la même valeur absolue mais des signes différents.</div>
+      <p class="example-title">Exemple :</p>
+      <ul class="example-list"><li>+2,5 et −2,5 sont deux nombres opposés.</li></ul>
+      <div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
+        Remarque : un nombre et son opposé occupent des positions <b>symétriques par rapport à l'origine</b> sur une droite graduée, on retrouve ici l'idée de symétrie centrale, avec 0 comme centre.
+      </div>
+
+      <div class="lesson-header"><span class="num">3</span><h3>Repérage dans le plan</h3></div>
+      <span class="def-badge">Définition 1</span>
+      <div class="def-box">Lorsqu'on trace, dans un plan, deux droites graduées perpendiculaires partageant la même origine, on obtient un <b>repère orthogonal</b>. La droite horizontale est l'<b>axe des abscisses</b>, la droite verticale est l'<b>axe des ordonnées</b>.</div>
+      <span class="def-badge">Définition 2</span>
+      <div class="def-box">Dans un tel repère, la position de chaque point est donnée par deux nombres relatifs appelés ses <b>coordonnées</b> : le premier est l'<b>abscisse</b>, le second l'<b>ordonnée</b>.</div>
+
+      <div class="figure-wrap">
+        <strong style="font-family:'Space Grotesk',sans-serif;">Exemple : repérer un point dans le plan</strong>
+        
+        <svg id="svgPlane" viewBox="0 0 480 300" style="width:100%;max-width:460px;display:block;margin:10px auto;touch-action:none;">
+          <g id="planeGrid"><line x1="40" y1="20" x2="40" y2="290" stroke="#EAE6F3" stroke-width="1"></line><line x1="74" y1="20" x2="74" y2="290" stroke="#EAE6F3" stroke-width="1"></line><line x1="108" y1="20" x2="108" y2="290" stroke="#EAE6F3" stroke-width="1"></line><line x1="142" y1="20" x2="142" y2="290" stroke="#EAE6F3" stroke-width="1"></line><line x1="176" y1="20" x2="176" y2="290" stroke="#EAE6F3" stroke-width="1"></line><line x1="210" y1="20" x2="210" y2="290" stroke="#EAE6F3" stroke-width="1"></line><line x1="244" y1="20" x2="244" y2="290" stroke="#EAE6F3" stroke-width="1"></line><line x1="278" y1="20" x2="278" y2="290" stroke="#EAE6F3" stroke-width="1"></line><line x1="312" y1="20" x2="312" y2="290" stroke="#EAE6F3" stroke-width="1"></line><line x1="346" y1="20" x2="346" y2="290" stroke="#EAE6F3" stroke-width="1"></line><line x1="380" y1="20" x2="380" y2="290" stroke="#EAE6F3" stroke-width="1"></line><line x1="20" y1="306" x2="460" y2="306" stroke="#EAE6F3" stroke-width="1"></line><line x1="20" y1="272" x2="460" y2="272" stroke="#EAE6F3" stroke-width="1"></line><line x1="20" y1="238" x2="460" y2="238" stroke="#EAE6F3" stroke-width="1"></line><line x1="20" y1="204" x2="460" y2="204" stroke="#EAE6F3" stroke-width="1"></line><line x1="20" y1="170" x2="460" y2="170" stroke="#EAE6F3" stroke-width="1"></line><line x1="20" y1="136" x2="460" y2="136" stroke="#EAE6F3" stroke-width="1"></line><line x1="20" y1="102" x2="460" y2="102" stroke="#EAE6F3" stroke-width="1"></line><line x1="20" y1="68" x2="460" y2="68" stroke="#EAE6F3" stroke-width="1"></line></g>
+          <line x1="20" y1="170" x2="460" y2="170" stroke="#1F3A5C" stroke-width="1.6"></line>
+          <polygon points="460,170 450,165 450,175" fill="#1F3A5C"></polygon>
+          <line x1="210" y1="290" x2="210" y2="20" stroke="#E35D3A" stroke-width="1.6"></line>
+          <polygon points="210,20 204,31 216,31" fill="#E35D3A"></polygon>
+          <text x="330" y="162" font-family="Space Grotesk" font-size="12" fill="#1F3A5C">axe des abscisses</text>
+          <text x="216" y="34" font-family="Space Grotesk" font-size="12" fill="#E35D3A">axe des ordonnées</text>
+          <text x="216" y="184" font-family="JetBrains Mono" font-size="12" fill="#5B6472">O</text>
+          <line id="planeDropX" stroke="#C7C2DC" stroke-width="1.2" stroke-dasharray="3 3" x1="312" y1="238" x2="312" y2="170"></line>
+          <line id="planeDropY" stroke="#C7C2DC" stroke-width="1.2" stroke-dasharray="3 3" x1="312" y1="238" x2="210" y2="238"></line>
+          <line id="planeMarkX" class="pt-tick" stroke="#1F3A5C" stroke-width="2" x1="312" y1="164.5" x2="312" y2="175.5"></line>
+          <line id="planeMarkY" class="pt-tick" stroke="#E35D3A" stroke-width="2" x1="215.5" y1="238" x2="204.5" y2="238"></line>
+          <circle id="planeHandle" r="16" fill="transparent" style="" cx="312" cy="238"></circle>
+          <text id="planeLabel" font-family="Space Grotesk" font-size="13" font-weight="700" fill="#1C1B2E" x="322" y="228">P(3 ; -2)</text>
+        </svg>
+        <div class="figure-toolbar">
+          
+          <span class="hint" id="planeCoords" style="margin:0;">Abscisse : 3   ·   Ordonnée : -2</span>
+        </div>
+      </div>
+
+      <p class="example-title">Remarques :</p>
+      <ul class="example-list">
+        <li>L'origine O a pour coordonnées (0 ; 0).</li>
+        <li>Un point situé sur l'axe des abscisses a toujours une ordonnée égale à 0.</li>
+        <li>Un point situé sur l'axe des ordonnées a toujours une abscisse égale à 0.</li>
+      </ul>
+
+      <div class="lesson-header"><span class="num">4</span><h3>Comparaison de relatifs</h3></div>
+      <span class="def-badge">Règles</span>
+      <div class="def-box">
+        <ul style="margin:0;padding-left:20px;line-height:1.8;">
+          <li>Entre deux nombres positifs, le plus grand est celui dont la <b>valeur absolue est la plus grande</b>.</li>
+          <li>Un nombre négatif est <b>toujours plus petit</b> qu'un nombre positif.</li>
+          <li>Entre deux nombres négatifs, le plus grand est celui dont la <b>valeur absolue est la plus petite</b>.</li>
+        </ul>
+      </div>
+      <p class="example-title">Exemples :</p>
+      <ul class="example-list">
+        <li>12,3 et 12,08 sont deux nombres positifs. 12,3 a la plus grande valeur absolue, donc 12,3 &gt; 12,08.</li>
+        <li>−5,2 est négatif et 1,1 est positif, donc 1,1 &gt; −5,2.</li>
+        <li>−7 et −2 sont deux nombres négatifs : −7 a la plus grande valeur absolue, c'est donc le plus petit des deux, et −7 &lt; −2.</li>
+      </ul>
+
+      <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
+        <span class="gicon">warning</span> Piège classique : un nombre négatif de grande valeur absolue reste un <b>petit</b> nombre. On voit souvent l'erreur −10 &gt; −3 (en ne comparant que les chiffres 10 et 3), c'est l'inverse : −10 &lt; −3.
+      </div>
+</section>
+
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+        <h3>Rédaction type : « Comparer deux nombres relatifs »</h3>
+        <div class="redaction-template">
+          <span class="fill">−9</span> et <span class="fill">−2</span> sont deux nombres négatifs.<br>|−9| = 9 et |−2| = 2, donc |−9| &gt; |−2|.<br>Or, entre deux négatifs, le plus grand est celui de plus petite valeur absolue.<br>Donc <span class="fill">−9 &lt; −2</span>.
+        </div>
+        <h3 style="margin-top:18px;">Rédaction type : « Donner l'opposé d'un nombre »</h3>
+        <div class="redaction-template">
+          <span class="fill">−4</span> et <span class="fill">4</span> ont la même valeur absolue et des signes contraires.<br>Donc <span class="fill">4</span> est l'opposé de <span class="fill">−4</span>.
+        </div>
+      </div>
+      <div class="redaction-block">
+        <h3>Exercices</h3>
+        <div class="exo-card">
+          <div class="num">Exercice 1</div>
+          Range dans l'ordre croissant : 4 ; −7 ; −1 ; 0 ; −10 ; 2,5.
+        </div>
+        <div class="exo-card">
+          <div class="num">Exercice 2</div>
+          Donne l'opposé de chacun des nombres suivants : 6 ; −3,5 ; 0 ; −12.
+        </div>
+      </div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Les nombres négatifs sont utilisés bien avant d'être vraiment acceptés par les mathématiciens ! Dès environ 200 av. J.-C., en Chine, on utilisait des baguettes de calcul rouges pour les nombres positifs et noires pour les négatifs, notamment pour tenir des comptes commerciaux. Vers 628, en Inde, le mathématicien Brahmagupta est le premier à poser clairement des règles de calcul avec des nombres négatifs (addition, soustraction...). En Europe, en revanche, il faudra attendre le 17e siècle, voire le 19e siècle pour certains savants, avant que les nombres négatifs soient pleinement acceptés comme des nombres à part entière.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/5e/8-nombres-relatifs/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/5e/proportionnalite/">Proportionnalité</a></span>
+  <a href="/5e/">Tous les chapitres de 5e</a>
+  <span><a href="/5e/parallelogrammes/">Parallélogrammes</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

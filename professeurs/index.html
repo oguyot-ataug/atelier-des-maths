@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outils pour les professeurs de maths au collège | L'Atelier des Maths</title>
+<meta name="description" content="Outil de correction à projeter, tableau interactif de géométrie (règle, équerre, compas, rapporteur), constructions animées par IA, devoirs en ligne et cahier de corrections partagé.">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/professeurs/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Outils pour les professeurs de maths au collège | L'Atelier des Maths">
+<meta property="og:description" content="Outil de correction à projeter, tableau interactif de géométrie (règle, équerre, compas, rapporteur), constructions animées par IA, devoirs en ligne et cahier de corrections partagé.">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/professeurs/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","applicationCategory":"EducationalApplication","operatingSystem":"Navigateur web","inLanguage":"fr","description":"Outil de correction à projeter, tableau interactif de géométrie (règle, équerre, compas, rapporteur), constructions animées par IA, devoirs en ligne et cahier de corrections partagé.","audience":{"@type":"EducationalAudience","educationalRole":"teacher"},"offers":{"@type":"Offer","price":"16.90","priceCurrency":"EUR","description":"Abonnement annuel enseignant, après 15 jours d'essai gratuit"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Pour les professeurs","item":"https://maths.latelieraugmente.fr/professeurs/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › Pour les professeurs</div>
+<h1>Des outils pour enseigner les maths au collège</h1>
+<p class="seo-sub">L'Atelier des Maths accompagne les professeurs de mathématiques de 6e et de 5e : en classe (projection, géométrie au tableau), pour les devoirs, les évaluations et le suivi des élèves. Conçu par un professeur de mathématiques, conforme au programme 2026.</p>
+<div class="seo-feat">
+  <div><h3><span class="gicon">desktop_windows</span> Outil de correction à projeter</h3><p>Rédigez la correction au clavier et projetez-la en direct au vidéoprojecteur ou sur le TNI : figures, graphiques, arbres de probabilités, opérations posées, impression en un clic.</p></div>
+  <div><h3><span class="gicon">architecture</span> Tableau interactif de géométrie</h3><p>Règle, équerre, réquerre, compas et rapporteur à manipuler comme au tableau, avec zoom : idéal pour montrer les gestes de construction à toute la classe.</p></div>
+  <div><h3><span class="gicon">auto_awesome</span> Constructions géométriques animées par IA</h3><p>Écrivez l'énoncé (« construire un triangle ABC tel que… ») : la construction se dessine pas à pas avec les vrais instruments, codages et longueurs, en choisissant les outils autorisés.</p></div>
+  <div><h3><span class="gicon">menu_book</span> Cahier de corrections partagé</h3><p>Chaque correction est archivée par classe et par date, partagée avec vos collègues du même niveau, consultable en ligne et imprimable.</p></div>
+  <div><h3><span class="gicon">assignment_turned_in</span> Devoirs en ligne</h3><p>Automatismes, « Le compte est bon » ou fichier à rendre : vous voyez qui a rendu, qui est en retard, les scores et les médailles en temps réel.</p></div>
+  <div><h3><span class="gicon">edit_note</span> Évaluations</h3><p>Rédaction manuelle ou assistée par IA, mise en page en colonnes, impression fidèle à l'écran.</p></div>
+  <div><h3><span class="gicon">pin</span> Automatismes et calcul mental</h3><p>112 séquences d'automatismes générées et corrigées automatiquement, et « Le compte est bon » pour muscler le calcul mental.</p></div>
+  <div><h3><span class="gicon">bar_chart</span> Suivi des classes</h3><p>Progression des automatismes et résultats de chaque élève, classe par classe.</p></div>
+  <div><h3><span class="gicon">domain</span> Gestion d'établissement</h3><p>Un professeur référent gère les comptes de son collège : import des élèves et des classes, validation des collègues, licence établissement et clé IA commune.</p></div>
+</div>
+<section class="seo-section">
+  <h2><span class="gicon">school</span> Pour vos élèves</h2>
+  <p>Chaque chapitre de <a href="/6e/" style="color:var(--accent);font-weight:600;">6e</a> et de <a href="/5e/" style="color:var(--accent);font-weight:600;">5e</a> propose un cours avec des figures manipulables, une méthode animée, des exercices de rédaction, un quiz différent à chaque essai et un peu d'histoire des mathématiques. Vous décidez, classe par classe et même élève par élève, quels outils d'intelligence artificielle leur sont ouverts.</p>
+</section>
+<section class="seo-section">
+  <h2><span class="gicon">key</span> Accès</h2>
+  <p>L'inscription est réservée aux enseignants disposant d'une adresse académique. Après vérification, vous bénéficiez de <b>15 jours d'essai gratuit</b>, puis d'un abonnement annuel (16,90 € par an). Un établissement peut aussi prendre une <b>licence établissement</b> pour tous ses professeurs. Les fonctions d'IA utilisent votre propre clé, celle de l'établissement ou celle du site selon ce qui a été décidé : vous voyez toujours le détail de la consommation.</p>
+  <p style="margin-top:12px;"><a class="seo-btn" href="/">Découvrir l'application</a></p>
+</section>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

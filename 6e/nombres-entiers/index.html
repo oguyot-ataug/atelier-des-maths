@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nombres entiers – Cours de maths 6e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 6e : Nombres entiers. Les grands nombres, Addition, soustraction, multiplication, Division euclidienne, Multiples et diviseurs d'un nombre…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/6e/nombres-entiers/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Nombres entiers – Cours de maths 6e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 6e : Nombres entiers. Les grands nombres, Addition, soustraction, multiplication, Division euclidienne, Multiples et diviseurs d'un nombre…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/6e/nombres-entiers/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Nombres entiers (6e)","headline":"Nombres entiers – cours de mathématiques de 6e","description":"Cours de maths 6e : Nombres entiers. Les grands nombres, Addition, soustraction, multiplication, Division euclidienne, Multiples et diviseurs d'un nombre…","url":"https://maths.latelieraugmente.fr/6e/nombres-entiers/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"6e (cycle 3, collège)","about":"Nombres et calculs","teaches":["Les grands nombres","Addition, soustraction, multiplication","Division euclidienne","Multiples et diviseurs d'un nombre entier"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 6e","url":"https://maths.latelieraugmente.fr/6e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 6e","item":"https://maths.latelieraugmente.fr/6e/"},{"@type":"ListItem","position":3,"name":"Nombres entiers","item":"https://maths.latelieraugmente.fr/6e/nombres-entiers/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/6e/">Cours de maths 6e</a> › Nombres entiers</div>
+<h1>Nombres entiers</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span> Cours de mathématiques de 6e (sixième) · chapitre 1 · Les grands nombres · Addition, soustraction, multiplication · Division euclidienne · Multiples et diviseurs d'un nombre entier</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/1-nombres-entiers/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Les grands nombres</h3></div>
+<span class="def-badge">Définitions</span>
+<div class="def-box">
+  <ul style="margin:0;padding-left:20px;line-height:1.8;">
+    <li>Un <b>chiffre</b> est l'un des dix symboles 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, utilisés pour écrire les nombres.</li>
+    <li>Un <b>nombre</b> s'écrit à l'aide d'un ou plusieurs chiffres, assemblés dans un certain ordre.</li>
+  </ul>
+</div>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
+  À retenir : les chiffres sont l'<b>alphabet</b> des nombres (de même que des lettres s'assemblent pour former des mots, des chiffres s'assemblent pour former des nombres).
+</div>
+<span class="prop-badge">Règle</span>
+<div class="def-box">Pour pouvoir lire facilement un grand nombre entier, on regroupe ses chiffres par <b>tranches de trois</b>, en partant de la droite.</div>
+<p class="example-title">Exemple : 2384907156 s'écrit 2 384 907 156.</p>
+<ul class="example-list">
+  <li>Écris ce nombre en toutes lettres.</li>
+  <li>Décompose ce nombre.</li>
+  <li>Donne le nom de chaque chiffre.</li>
+  <li>Quel est le nombre de millions de ce nombre ?</li>
+</ul>
+<p class="hint" style="margin:10px 0 6px;">On peut s'aider d'un tableau de classes :</p>
+<div style="overflow-x:auto;">
+<table style="border-collapse:collapse;width:100%;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin:0 0 16px;">
+  <tbody><tr>
+    <th colspan="3" style="background:var(--accent);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Classe des milliards</th>
+    <th colspan="3" style="background:var(--accent);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Classe des millions</th>
+    <th colspan="3" style="background:var(--accent);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Classe des mille</th>
+    <th colspan="3" style="background:var(--accent);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Classe des unités</th>
+  </tr>
+  <tr>
+    <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">C</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">D</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">U</th>
+    <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">C</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">D</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">U</th>
+    <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">C</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">D</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">U</th>
+    <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">C</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">D</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">U</th>
+  </tr>
+  <tr>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">2</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">3</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">8</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">4</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">9</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">0</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">7</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">1</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">5</td><td style="padding:8px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;">6</td>
+  </tr>
+</tbody></table>
+</div>
+<ul class="example-list">
+  <li>Ce nombre s'écrit : deux-milliards-trois-cent-quatre-vingt-quatre-millions-neuf-cent-sept-mille-cent-cinquante-six.</li>
+  <li>Il se décompose ainsi :<br>
+    2 384 907 156 = (2 × 1 000 000 000) + (3 × 100 000 000) + (8 × 10 000 000) + (4 × 1 000 000)<br>
+    + (9 × 100 000) + (7 × 1 000) + (1 × 100) + (5 × 10) + (6 × 1)
+  </li>
+  <li>
+    2 est le chiffre des unités de milliards &nbsp;·&nbsp; 3 est le chiffre des centaines de millions &nbsp;·&nbsp; 8 est le chiffre des dizaines de millions<br>
+    4 est le chiffre des unités de millions &nbsp;·&nbsp; 9 est le chiffre des centaines de mille &nbsp;·&nbsp; 0 est le chiffre des dizaines de mille<br>
+    7 est le chiffre des unités de mille &nbsp;·&nbsp; 1 est le chiffre des centaines &nbsp;·&nbsp; 5 est le chiffre des dizaines &nbsp;·&nbsp; 6 est le chiffre des unités
+  </li>
+  <li>Le nombre de millions est <b>2 384</b>. À ne pas confondre avec le chiffre des millions, qui est 4.</li>
+</ul>
+
+<div class="lesson-header"><span class="num">2</span><h3>Addition, soustraction, multiplication</h3></div>
+<span class="def-badge">Définitions</span>
+<div class="def-box">Les nombres que l'on additionne s'appellent les <b>termes</b>. Le résultat d'une addition s'appelle la <b>somme</b>.</div>
+<span class="def-badge">Définitions</span>
+<div class="def-box">Les nombres que l'on soustrait s'appellent les <b>termes</b>. Le résultat d'une soustraction s'appelle la <b>différence</b>.</div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : on ne peut pas changer les termes de place dans une soustraction.</div>
+<span class="def-badge">Définitions</span>
+<div class="def-box">Les nombres que l'on multiplie s'appellent les <b>facteurs</b>. Le résultat d'une multiplication s'appelle le <b>produit</b>.</div>
+<span class="prop-badge">Propriétés</span>
+<div class="def-box">
+  <ul style="margin:0;padding-left:20px;line-height:1.8;">
+    <li>Dans une addition, on a le droit de <b>regrouper</b> ou de <b>changer</b> des termes de place.</li>
+    <li>Dans une multiplication, on a le droit de <b>regrouper</b> ou de <b>changer</b> des facteurs de place.</li>
+  </ul>
+</div>
+<p class="example-title">Exemples :</p>
+<div class="redaction-template" style="margin-bottom:12px;">
+  <div class="we-row"><span class="we-expr">A = <span class="grp-a">28</span> + <span class="grp-b">45</span> + <span class="grp-a">72</span> + <span class="grp-b">15</span></span><span class="we-comment">On repère les termes que l'on veut regrouper.</span></div>
+  <div class="we-row"><span class="we-expr">A = (<span class="grp-a">28 + 72</span>) + (<span class="grp-b">45 + 15</span>)</span><span class="we-comment">On les regroupe entre parenthèses.</span></div>
+  <div class="we-row"><span class="we-expr">A = 100 + 60</span><span class="we-comment">Chaque parenthèse tombe juste.</span></div>
+  <div class="we-row"><span class="we-expr">A = 160</span><span class="we-comment">Résultat final.</span></div>
+</div>
+<div class="redaction-template">
+  <div class="we-row"><span class="we-expr">B = <span class="grp-a">8</span> × <span class="grp-a">125</span> × 4</span><span class="we-comment">On repère les facteurs que l'on veut regrouper.</span></div>
+  <div class="we-row"><span class="we-expr">B = (<span class="grp-a">8 × 125</span>) × 4</span><span class="we-comment">On les regroupe entre parenthèses.</span></div>
+  <div class="we-row"><span class="we-expr">B = 1 000 × 4</span><span class="we-comment">Le produit entre parenthèses tombe juste.</span></div>
+  <div class="we-row"><span class="we-expr">B = 4 000</span><span class="we-comment">Résultat final.</span></div>
+</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Division euclidienne</h3></div>
+<span class="prop-badge">Règle</span>
+<div class="def-box">Dans une division euclidienne, on a toujours : <b>dividende = (diviseur × quotient) + reste</b>, avec <b>reste &lt; diviseur</b>.</div>
+<div class="figure-wrap">
+  <strong style="font-family:'Space Grotesk',sans-serif;">Exemple posé : la division de 823 par 14</strong>
+  
+  <div style="display:flex;justify-content:center;align-items:stretch;gap:0;font-family:'JetBrains Mono',monospace;font-size:1.25rem;padding:20px 10px;background:var(--white);border-radius:8px;border:1px solid rgba(28,43,57,.1);">
+    <div style="text-align:right;padding-right:16px;">
+      <div class="dp-tag" style="color:var(--accent);">dividende</div>
+      <div id="ne-dpLeft" style="text-align:right;line-height:2;min-width:70px;"><div>&nbsp;&nbsp;823</div></div>
+      
+    </div>
+    <div style="border-left:2px solid #1C1B2E;padding-left:16px;">
+      <div class="dp-tag" style="color:var(--accent-orange);">diviseur</div>
+      <div style="line-height:2;border-bottom:1.5px solid #1C1B2E;padding-bottom:2px;margin-left:-16px;padding-left:16px;">14</div>
+      <div style="display:flex;align-items:baseline;gap:8px;line-height:2;margin-top:6px;">
+        
+        <span class="dp-tag" style="color:#1F6B3A;white-space:nowrap;">← quotient</span>
+      </div>
+    </div>
+  </div>
+  <div class="step-note" id="ne-dpNote" style="text-align:center;margin-top:10px;">On prend d'abord le nombre formé par le chiffre des centaines : 8. Comme 8 &lt; 14, ce nombre ne contient pas 14 : il faut prendre un chiffre de plus.</div>
+  
+</div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
+  Remarque : à la fin, on retrouve l'égalité <b>823 = (14 × 58) + 11</b>, avec 11 &lt; 14.
+</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Multiples et diviseurs d'un nombre entier</h3></div>
+<div class="sub-header"><span class="letter">A</span><h4>Multiples et diviseurs d'un nombre entier</h4></div>
+<span class="def-badge">Définitions</span>
+<div class="def-box">Soient <i>a</i> et <i>b</i> deux nombres entiers.
+  <ul style="margin:8px 0 0;padding-left:20px;line-height:1.8;">
+    <li><i>a</i> est un <b>multiple</b> de <i>b</i> si <i>a</i> est le produit de <i>b</i> par un nombre entier.</li>
+    <li><i>b</i> est alors un <b>diviseur</b> de <i>a</i>.</li>
+  </ul>
+</div>
+<p class="example-title">Exemple : soit l'égalité 1 904 = 56 × 34. Fais une phrase avec les mots « multiple » et « diviseur ».</p>
+<ul class="example-list">
+  <li>1 904 est un <b>multiple</b> de 56. (Et de 34 aussi !)</li>
+  <li>56 est un <b>diviseur</b> de 1 904. On dit aussi « 1 904 est <b>divisible</b> par 56 » ou « 56 <b>divise</b> 1 904 ».</li>
+</ul>
+
+<div class="sub-header"><span class="letter">B</span><h4>Critères de divisibilité</h4></div>
+<span class="prop-badge">Règles</span>
+<div class="def-box">
+  <ul style="margin:0;padding-left:20px;line-height:1.8;">
+    <li>Un nombre entier est <b>divisible par 2</b> (pair) si son chiffre des unités est 0, 2, 4, 6 ou 8.</li>
+    <li>Un nombre entier est <b>divisible par 5</b> si son chiffre des unités est 0 ou 5.</li>
+    <li>Un nombre entier est <b>divisible par 10</b> si son chiffre des unités est 0.</li>
+  </ul>
+</div>
+<p class="example-title">Exemple 1 : on considère le nombre 47 236. Est-il divisible par 2 et par 5 ?</p>
+<ul class="example-list">
+  <li>Son chiffre des unités est 6 donc 47 236 est <b>divisible par 2</b>.</li>
+  <li>Son chiffre des unités n'est ni 0 ni 5 donc 47 236 n'est <b>pas divisible par 5</b>.</li>
+</ul>
+<p class="example-title">Exemple 2 : on considère le nombre 15 480. Est-il divisible par 2, par 5 et par 10 ?</p>
+<ul class="example-list">
+  <li>Son chiffre des unités est 0 donc 15 480 est <b>divisible par 2</b>, <b>par 5</b> et <b>par 10</b> en même temps !</li>
+</ul>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Ne pas confondre « chiffre des... » et « nombre de... »</h4></div>
+<div class="figure-wrap">
+  <p class="hint" style="margin-top:6px;">Sur le nombre 2 384 907 156 déjà étudié en cours, cliquez sur "Étape suivante".</p>
+  <div class="step-display" id="ne-chiffreNombreDisplay"><div class="step-column"><div class=""><div style="display:flex;gap:16px;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:1.9rem;font-weight:700;margin:14px 0;"><div style="display:flex;"><span style="padding:4px 7px;border-radius:6px;transition:.2s;color:var(--ink);">2</span></div><div style="display:flex;"><span style="padding:4px 7px;border-radius:6px;transition:.2s;color:var(--ink);">3</span><span style="padding:4px 7px;border-radius:6px;transition:.2s;color:var(--ink);">8</span><span style="padding:4px 7px;border-radius:6px;transition:.2s;color:var(--ink);">4</span></div><div style="display:flex;"><span style="padding:4px 7px;border-radius:6px;transition:.2s;color:var(--ink);">9</span><span style="padding:4px 7px;border-radius:6px;transition:.2s;color:var(--ink);">0</span><span style="padding:4px 7px;border-radius:6px;transition:.2s;color:var(--ink);">7</span></div><div style="display:flex;"><span style="padding:4px 7px;border-radius:6px;transition:.2s;color:var(--ink);">1</span><span style="padding:4px 7px;border-radius:6px;transition:.2s;color:var(--ink);">5</span><span style="padding:4px 7px;border-radius:6px;transition:.2s;color:var(--ink);">6</span></div></div></div></div><div class="step-note">On reprend le nombre étudié en cours : 2 384 907 156.</div></div>
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>S'entraîner avec la monnaie imaginaire "€uclide"</h4></div>
+<div class="figure-wrap">
+  <p class="hint" style="margin-top:6px;">Il existe des billets de 1, 10, 100, 1 000, 10 000 €uclide, etc. Répondez sans utiliser de billets d'une valeur supérieure à celle demandée : c'est exactement la notion de "nombre de dizaines / centaines / milliers".</p>
+  <p class="hint" id="ne-euclideCounter" style="font-weight:700;margin:10px 0 4px;">Question 1 / 5</p>
+  <p id="ne-euclideQuestion" style="font-size:1.15rem;margin:0 0 14px;">Combien faut-il de billets de <b>10 €uclide</b>, sachant qu'il n'y a plus de billets de <b>100 €uclide</b>, pour faire <b>347</b> €uclide ?</p>
+  
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Décomposer un grand nombre »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">1 205 067</span><span class="we-comment">On repère les tranches de trois chiffres en partant de la droite.</span></div>
+    <div class="we-row"><span class="we-expr">= (1×1 000 000) + (2×100 000) + (0×10 000) + (5×1 000) + (0×100) + (6×10) + (7×1)</span><span class="we-comment">On décompose selon la valeur de chaque chiffre.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Écris en toutes lettres le nombre 3 052 189, puis décompose-le.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Dans le nombre 4 671 528, donne le chiffre des dizaines de mille, puis le nombre de dizaines de mille.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Dans le nombre 8 209 456, donne le chiffre des centaines de mille, puis le nombre de centaines de mille.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Attention au piège ! Dans le nombre 5 038 700, donne le chiffre des centaines de mille, puis le nombre de centaines de mille.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Pose la division euclidienne de 946 par 15, puis vérifie ton résultat avec l'égalité dividende = (diviseur × quotient) + reste.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Entraînement libre</div>
+    <h4 style="margin:0 0 6px;">Exerce-toi : division euclidienne</h4>
+    <p class="hint" style="margin:0 0 10px;">Indique un dividende et un diviseur (les tiens, ou au hasard) : la division posée se calcule automatiquement.</p>
+    
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Compter est sans doute l'une des toutes premières activités mathématiques de l'humanité. L'os de Lebombo, découvert en Afrique australe et vieux d'environ 35 000 ans, porte 29 encoches gravées, probablement pour suivre le cycle de la Lune : c'est l'un des plus anciens objets connus liés au comptage. Beaucoup plus tard, vers 3400 av. J.-C., les Sumériens, en Mésopotamie, inventent l'une des premières écritures des nombres, en gravant des symboles dans des tablettes d'argile pour tenir les comptes de leurs récoltes et de leurs troupeaux.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/1-nombres-entiers/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span></span>
+  <a href="/6e/">Tous les chapitres de 6e</a>
+  <span><a href="/6e/droites-paralleles-et-perpendiculaires/">Droites parallèles et perpendiculaires</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

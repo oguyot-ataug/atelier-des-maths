@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opérations et ordre de grandeur – Cours de maths 6e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 6e : Opérations et ordre de grandeur. Addition de nombres décimaux, Soustraction de nombres décimaux. Définitions, figures interactives,…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/6e/operations-et-ordre-de-grandeur/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Opérations et ordre de grandeur – Cours de maths 6e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 6e : Opérations et ordre de grandeur. Addition de nombres décimaux, Soustraction de nombres décimaux. Définitions, figures interactives,…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/6e/operations-et-ordre-de-grandeur/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Opérations et ordre de grandeur (6e)","headline":"Opérations et ordre de grandeur – cours de mathématiques de 6e","description":"Cours de maths 6e : Opérations et ordre de grandeur. Addition de nombres décimaux, Soustraction de nombres décimaux. Définitions, figures interactives,…","url":"https://maths.latelieraugmente.fr/6e/operations-et-ordre-de-grandeur/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"6e (cycle 3, collège)","about":"Nombres et calculs","teaches":["Addition de nombres décimaux","Soustraction de nombres décimaux"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 6e","url":"https://maths.latelieraugmente.fr/6e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 6e","item":"https://maths.latelieraugmente.fr/6e/"},{"@type":"ListItem","position":3,"name":"Opérations et ordre de grandeur","item":"https://maths.latelieraugmente.fr/6e/operations-et-ordre-de-grandeur/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/6e/">Cours de maths 6e</a> › Opérations et ordre de grandeur</div>
+<h1>Opérations et ordre de grandeur</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span> Cours de mathématiques de 6e (sixième) · chapitre 7 · Addition de nombres décimaux · Soustraction de nombres décimaux</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/7-operations-et-ordre-de-grandeur/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Addition de nombres décimaux</h3></div>
+<span class="prop-badge">Règle</span>
+<div class="def-box">Pour poser et effectuer une <b>addition</b> de nombres décimaux, on place les nombres les uns en dessous des autres, de sorte que les <b>virgules soient alignées verticalement</b>.</div>
+
+<p style="margin:12px 0 8px;"><b>Exemples</b> :</p>
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;">
+  <div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:1.15rem;"><div style="width:120px;"><span style="display:inline-block;width:20px;text-align:center;">9</span><span style="display:inline-block;width:20px;text-align:center;">,</span><span style="display:inline-block;width:20px;text-align:center;">4</span></div><div style="width:120px;"><span style="display:inline-block;width:20px;text-align:center;">+</span><span style="display:inline-block;width:20px;text-align:center;">0</span><span style="display:inline-block;width:20px;text-align:center;">,</span><span style="display:inline-block;width:20px;text-align:center;">6</span><span style="display:inline-block;width:20px;text-align:center;">3</span></div><div style="width:120px;"><span style="display:inline-block;width:20px;text-align:center;">+</span><span style="display:inline-block;width:20px;text-align:center;">1</span><span style="display:inline-block;width:20px;text-align:center;">2</span></div><div style="width:120px;border-top:1.5px solid #1C1B2E;padding-top:2px;"><span style="display:inline-block;width:20px;text-align:center;">=</span><span style="display:inline-block;width:20px;text-align:center;">2</span><span style="display:inline-block;width:20px;text-align:center;">2</span><span style="display:inline-block;width:20px;text-align:center;">,</span><span style="display:inline-block;width:20px;text-align:center;">0</span><span style="display:inline-block;width:20px;text-align:center;">3</span></div></div>
+    <p class="hint" style="text-align:center;margin:2px 0;">Addition bien posée</p>
+  </div>
+  <div>
+    <div style="color:#9E1F5E;"><div style="font-family:'JetBrains Mono',monospace;font-size:1.15rem;"><div style="width:120px;"><span style="display:inline-block;width:20px;text-align:center;">9</span><span style="display:inline-block;width:20px;text-align:center;">,</span><span style="display:inline-block;width:20px;text-align:center;">4</span></div><div style="width:120px;"><span style="display:inline-block;width:20px;text-align:center;">+</span><span style="display:inline-block;width:20px;text-align:center;">0</span><span style="display:inline-block;width:20px;text-align:center;">,</span><span style="display:inline-block;width:20px;text-align:center;">6</span><span style="display:inline-block;width:20px;text-align:center;">3</span></div><div style="width:120px;"><span style="display:inline-block;width:20px;text-align:center;">+</span><span style="display:inline-block;width:20px;text-align:center;">1</span><span style="display:inline-block;width:20px;text-align:center;">2</span></div></div></div>
+    <p class="hint" style="text-align:center;margin:2px 0;color:#9E1F5E;">Addition mal posée (virgules non alignées)</p>
+  </div>
+</div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Soustraction de nombres décimaux</h3></div>
+<span class="prop-badge">Règle</span>
+<div class="def-box">Pour poser et effectuer une <b>soustraction</b> de nombres décimaux, on place les nombres les uns en dessous des autres, de sorte que les <b>virgules soient alignées verticalement</b>.</div>
+<p style="margin:14px 0 6px;">Pour poser la soustraction 15 − 6,3, on place les nombres correctement et on ajoute un zéro pour que les deux nombres aient le même nombre de chiffres dans leur partie décimale (en effet, 15 = 15,0).</p>
+<div style="font-family:'JetBrains Mono',monospace;font-size:1.15rem;"><div style="width:120px;"><span style="display:inline-block;width:20px;text-align:center;">1</span><span style="display:inline-block;width:20px;text-align:center;">5</span><span style="display:inline-block;width:20px;text-align:center;">,</span><span style="display:inline-block;width:20px;text-align:center;">0</span></div><div style="width:120px;"><span style="display:inline-block;width:20px;text-align:center;">−</span><span style="display:inline-block;width:20px;text-align:center;">6</span><span style="display:inline-block;width:20px;text-align:center;">,</span><span style="display:inline-block;width:20px;text-align:center;">3</span></div><div style="width:120px;border-top:1.5px solid #1C1B2E;padding-top:2px;"><span style="display:inline-block;width:20px;text-align:center;">=</span><span style="display:inline-block;width:20px;text-align:center;">8</span><span style="display:inline-block;width:20px;text-align:center;">,</span><span style="display:inline-block;width:20px;text-align:center;">7</span></div></div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <p class="example-title" style="margin-top:0;">Soustraire des nombres décimaux (méthode par compensation)</p>
+<p style="margin:0 0 14px;">Même principe que pour soustraire des durées (voir le chapitre « Heures et durée ») : quand une colonne est trop petite pour soustraire, on lui ajoute 10 (au lieu de 60 pour les durées), et on compense en ajoutant 1 à la colonne suivante du second terme.</p>
+<p style="margin:0 0 8px;"><b>Exemple</b> : calcule 8,30 − 2,56.</p>
+<div class="figure-wrap" style="max-width:320px;margin:8px 0;">
+  <table id="ogSubTable" style="width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:.95rem;text-align:center;">
+    <thead>
+      <tr><th style="width:16px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">unités</th><th style="padding:4px;"></th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">dixièmes</th><th style="padding:4px;color:#6B7A8C;font-weight:400;font-size:.72rem;">centièmes</th></tr>
+      <tr>
+        <td style="vertical-align:top;"></td><td style="vertical-align:top;"></td><td style="vertical-align:top;"></td>
+        <td id="ogSubPlus10Dix" style="height:16px;color:#1E9E5A;font-size:.75rem;vertical-align:top;"></td>
+        <td id="ogSubPlus10Cent" style="height:16px;color:#1E9E5A;font-size:.75rem;vertical-align:top;"></td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="vertical-align:top;"></td><td style="vertical-align:top;">8</td><td style="vertical-align:top;">,</td><td style="vertical-align:top;">3</td><td style="vertical-align:top;">0</td></tr>
+      <tr>
+        <td style="vertical-align:top;">−</td>
+        <td style="vertical-align:top;">2</td>
+        <td style="vertical-align:top;">,</td>
+        <td style="vertical-align:top;">5</td>
+        <td style="vertical-align:top;">6</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr style="border-top:2px solid #1C1B2E;">
+        <td style="vertical-align:top;"></td>
+        <td id="ogSubResUnite" style="padding-top:6px;font-weight:700;vertical-align:top;"></td>
+        <td style="padding-top:6px;font-weight:700;vertical-align:top;">,</td>
+        <td id="ogSubResDix" style="padding-top:6px;font-weight:700;vertical-align:top;"></td>
+        <td id="ogSubResCent" style="padding-top:6px;font-weight:700;vertical-align:top;"></td>
+      </tr>
+    </tfoot>
+  </table>
+  <p class="hint" id="ogSubText" style="min-height:64px;margin:10px 0 0;">Clique sur « Étape suivante » pour commencer.</p>
+  
+</div>
+
+<p class="example-title" style="margin-top:26px;">Arrondir un nombre décimal</p>
+<span class="prop-badge">Règle</span>
+<div class="def-box">Pour arrondir un nombre à un rang donné, on repère le chiffre de ce rang, puis on regarde le chiffre juste après.
+  <ul style="margin:8px 0 0;padding-left:20px;line-height:1.8;">
+    <li>S'il vaut <b>0, 1, 2, 3 ou 4</b>, on ne change rien au chiffre repéré, et on supprime tout ce qui suit.</li>
+    <li>S'il vaut <b>5, 6, 7, 8 ou 9</b>, on augmente le chiffre repéré de 1 (avec parfois une retenue), et on supprime tout ce qui suit.</li>
+  </ul>
+</div>
+
+<p class="example-title" style="margin-top:22px;">Troncature, arrondi par défaut, arrondi par excès</p>
+<div class="def-box">
+  <b>Troncature</b> : on supprime tous les chiffres après le rang demandé, sans regarder le chiffre suivant.<br>
+  <b>Arrondi par défaut</b> : la valeur, à ce rang, la plus proche du nombre tout en restant <b>inférieure ou égale</b>.<br>
+  <b>Arrondi par excès</b> : la valeur, à ce rang, la plus proche du nombre tout en restant <b>supérieure ou égale</b>.
+</div>
+<p style="margin:12px 0 8px;">Pour un nombre positif, la troncature et l'arrondi par défaut donnent toujours la même valeur. L'arrondi "classique" (au plus proche), lui, correspond tantôt à l'arrondi par défaut, tantôt à l'arrondi par excès, selon le chiffre suivant.</p>
+<p style="margin:0 0 8px;"><b>Exemple</b> : pour le nombre 8,6427 :</p>
+<table style="border-collapse:collapse;width:100%;font-size:.88rem;margin:0 0 16px;">
+  <tbody><tr>
+    <th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Rang</th>
+    <th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Troncature</th>
+    <th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Arrondi par défaut</th>
+    <th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Arrondi par excès</th>
+    <th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">Arrondi (au plus proche)</th>
+  </tr>
+  <tr>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">à l'unité</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">9</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;font-weight:700;color:var(--accent-orange);">9</td>
+  </tr>
+  <tr>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">au dixième</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8,6</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8,6</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8,7</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;font-weight:700;color:var(--accent-orange);">8,6</td>
+  </tr>
+  <tr>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);">au centième</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8,64</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8,64</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;">8,65</td>
+    <td style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);text-align:center;font-weight:700;color:var(--accent-orange);">8,64</td>
+  </tr>
+</tbody></table>
+<p class="hint" style="margin:0 0 14px;">À l'unité, le chiffre suivant (6) est 5 ou plus : l'arrondi au plus proche correspond à l'arrondi par excès (9). Au dixième et au centième, le chiffre suivant (4 puis 2) est inférieur à 5 : l'arrondi au plus proche correspond à l'arrondi par défaut.</p>
+
+<p style="margin:12px 0 8px;"><b>Exemple 1</b> : arrondis 27,342 au dixième.</p>
+<div class="figure-wrap">
+  
+  <div id="og-r1-table"><div style="overflow-x:auto;padding:6px 0;"><div style="display:flex;"><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--ink-soft);">milliers</div><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--ink-soft);">centaines</div><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--ink-soft);">dizaines</div><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--ink-soft);border-right:2px dashed #1C1B2E;">unités</div><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--accent-orange);">dixièmes</div><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--ink-soft);">centièmes</div><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--ink-soft);">millièmes</div></div><div style="display:flex;font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;"><div style="width:50px;text-align:center;border-radius:6px;">2</div><div style="width:50px;text-align:center;border-radius:6px;border-right:2px dashed #1C1B2E;">7</div><div style="width:50px;text-align:center;border-radius:6px;background:rgba(255,130,8,.20);">3</div><div style="width:50px;text-align:center;border-radius:6px;">4</div><div style="width:50px;text-align:center;border-radius:6px;">2</div></div></div></div>
+  <div class="step-note" id="og-r1-note" style="text-align:center;margin-top:10px;">On veut arrondir 27,342 au dixième. On repère le chiffre des dixièmes : 3.</div>
+  <div class="step-list" id="og-r1-steps">
+    <div class="step-item done" data-step="0"><div class="step-num">1</div><div>On repère le chiffre des dixièmes.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On regarde le chiffre juste après (les centièmes).</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>Il est inférieur à 5 : on ne change rien, on supprime la suite.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">4</div><div>On lit le résultat : 27,3.</div></div>
+  </div>
+  
+</div>
+
+<p style="margin:18px 0 8px;"><b>Exemple 2</b> : arrondis 9,96 à l'unité (attention à la retenue).</p>
+<div class="figure-wrap">
+  
+  <div id="og-r2-table"><div style="overflow-x:auto;padding:6px 0;"><div style="display:flex;"><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--ink-soft);">milliers</div><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--ink-soft);">centaines</div><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--ink-soft);">dizaines</div><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--accent-orange);border-right:2px dashed #1C1B2E;">unités</div><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--ink-soft);">dixièmes</div><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--ink-soft);">centièmes</div><div style="width:50px;text-align:center;font-size:.6rem;line-height:1.15;font-weight:700;color:var(--ink-soft);">millièmes</div></div><div style="display:flex;font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;"><div style="width:50px;text-align:center;border-radius:6px;background:rgba(255,130,8,.20);border-right:2px dashed #1C1B2E;">9</div><div style="width:50px;text-align:center;border-radius:6px;">9</div><div style="width:50px;text-align:center;border-radius:6px;">6</div></div></div></div>
+  <div class="step-note" id="og-r2-note" style="text-align:center;margin-top:10px;">On veut arrondir 9,96 à l'unité. On repère le chiffre des unités : 9.</div>
+  <div class="step-list" id="og-r2-steps">
+    <div class="step-item done" data-step="0"><div class="step-num">1</div><div>On repère le chiffre des unités.</div></div>
+    <div class="step-item" data-step="1"><div class="step-num">2</div><div>On regarde le chiffre juste après (les dixièmes).</div></div>
+    <div class="step-item" data-step="2"><div class="step-num">3</div><div>Il est 5 ou plus : on augmente le chiffre des unités de 1, avec une retenue.</div></div>
+    <div class="step-item" data-step="3"><div class="step-num">4</div><div>On lit le résultat : 10.</div></div>
+  </div>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Pose et effectue : 23,7 + 4,08 + 9, puis 18 − 5,64.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Arrondis 14,378 au centième.
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Arrondis 6,95 à l'unité (attention à la retenue).
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Pour le nombre 12,367, donne : la troncature au dixième, l'arrondi par défaut au dixième, l'arrondi par excès au dixième, puis l'arrondi classique au dixième.
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Estimer un ordre de grandeur, c'est un peu ce que le savant grec Archimède a fait vers 250 av. J.-C., dans un texte appelé <i>L'Arénaire</i> (« Celui qui compte les grains de sable »). À une époque où les Grecs ne savaient nommer que des nombres allant jusqu'à la « myriade » (10 000), Archimède invente un système pour écrire des nombres immensément plus grands, et calcule qu'il faudrait environ 10<sup>63</sup> grains de sable pour remplir tout l'Univers tel qu'on l'imaginait alors ! Cet exercice, à la fois amusant et sérieux, est l'un des tout premiers exemples connus de calcul d'ordre de grandeur.
+
+  <p class="example-title" style="margin-top:20px;">Des cailloux au boulier : additionner et soustraire avant les chiffres</p>
+  <p style="margin:0 0 12px;">Le mot « calcul » vient du latin <i>calculus</i>, qui signifie « petit caillou » : les Romains posaient de petits cailloux sur une table recouverte de sable (en grec, <i>abax</i>, d'où le mot « abaque ») pour compter et effectuer leurs opérations. Ils inventent ensuite l'<b>abaque à jetons</b>, une planche gravée de rainures dans lesquelles glissent des jetons, chaque rainure représentant un rang de la numération (unités, dizaines, centaines...). Cet outil reste utilisé en Europe jusqu'à la fin du XVIII<sup>e</sup> siècle, bien après l'apparition de nos chiffres actuels.</p>
+  <p style="margin:0 0 12px;">En Chine apparaît au XIII<sup>e</sup> siècle le <b>boulier</b> (<i>suanpan</i>), qui pousse l'idée encore plus loin : chaque tige verticale représente un rang (unités, dizaines, centaines...), et des boules coulissantes permettent de composer n'importe quel chiffre de 0 à 9 sur chaque tige. C'est une manière très concrète de voir ce qu'est une <b>base de numération</b> : la position d'une boule sur sa tige compte dix fois plus que la même position sur la tige juste à sa droite -- exactement le principe qu'on utilise en posant une addition ou une soustraction, en alignant bien les unités sous les unités, les dixièmes sous les dixièmes...</p>
+  <p style="margin:0;">Le boulier permet aussi de <i>voir</i> physiquement une retenue : quand une tige atteint 10 boules, on les échange contre une seule boule sur la tige suivante -- exactement le geste qu'on fait mentalement lorsqu'on pose une addition avec retenue, ou une soustraction avec la méthode par compensation.</p>
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/7-operations-et-ordre-de-grandeur/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/6e/angles-et-rapporteur/">Angles et rapporteur</a></span>
+  <a href="/6e/">Tous les chapitres de 6e</a>
+  <span><a href="/6e/construction-de-triangles/">Construction de triangles</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>
