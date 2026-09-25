@@ -2541,6 +2541,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.671', items:[
+    "Mode apprentissage -- signalé : \"c'est trop compliqué à réciter. Ça revient toujours au début\". Trois causes corrigées : un mot encore provisoire (que le navigateur corrige ensuite tout seul) était déjà compté comme faux ; à chaque erreur le micro redémarrait et perdait les premiers mots redits ; et toute erreur renvoyait au tout début.",
+    "Trois niveaux au choix dans la barre (mémorisé sur l'appareil) : FACILE (par défaut) -- un mot faux est seulement signalé (le mot attendu est souligné en rouge, « redis la suite après … »), rien ne se recache, pas de limite de temps, et les petites erreurs de la reconnaissance vocale sont pardonnées ; NORMAL -- un mot faux ou 10 s d'hésitation recachent seulement la phrase en cours ; DIFFICILE -- le principe d'origine : mot faux, « euh » ou 6 s d'hésitation, tout se recache.",
+    "Plus naturel : redire le début de sa phrase n'est plus une faute, le prochain mot à trouver est souligné, « Recommencer » remet les compteurs à zéro, et le message final propose le niveau au-dessus. Correction au passage : des mots entre parenthèses comme « (une » ou « (ou » étaient pris pour des notations.",
+  ]},
   { version:'2026-08-19.670', items:[
     "Confidentialité -- demandé : \"ajoute la phrase dans la page Confidentialité\". Nouvelle mention dans « Destinataires et sous-traitants » : en mode apprentissage, la reconnaissance vocale est assurée par le navigateur (Google pour Chrome et Edge, Apple pour Safari), qui peut traiter la voix de l'élève sur ses serveurs pendant la récitation ; L'Atelier des Maths n'enregistre ni ne conserve aucun son.",
   ]},

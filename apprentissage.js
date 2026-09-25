@@ -7,8 +7,8 @@
    Principe : un bouton micro sur chaque encadré .def-box (même point d'entrée que les boutons
    « écouter » et « loupe » : injectCourseAddButtons). En mode apprentissage, chaque mot de
    l'encadré est remplacé par un cache de la même largeur ; l'élève récite, la reconnaissance
-   vocale du navigateur (Web Speech API) transcrit, et chaque mot juste se dévoile. Un mot faux,
-   un « euh » ou un silence trop long (hésitation) recache tout : on recommence du début.
+   vocale du navigateur (Web Speech API) transcrit, et chaque mot juste se dévoile. Ce qui se
+   passe sur un mot faux ou une hésitation dépend du niveau choisi (voir LRN_LEVELS).
 
    Tolérances (la reconnaissance vocale n'est pas parfaite) :
    - les notations (points, segments, formules, lettres isolées) et la ponctuation ne sont pas à
@@ -18,11 +18,21 @@
      homophones fréquents (et/est, son/sont, ces/ses...) sont confondus ; chiffres et nombres
      en lettres aussi (« 2 » = « deux ») ;
    - un petit mot (le, de, et...) « avalé » par la reconnaissance est accepté ;
-   - le dernier mot d'une phrase en cours de dictée n'est jugé qu'une fois confirmé par le
-     navigateur (il corrige souvent le mot en cours).
+   - une dictée n'est jugée qu'une fois confirmée par le navigateur (il corrige souvent ses mots
+     en cours de route) ; redire le début de sa phrase n'est pas une faute.
    ============================================================ */
 
-const LRN_HESITATION_MS = 5000; // silence toléré entre deux mots avant de tout recacher
+/* Trois niveaux (signalé : "c'est trop compliqué à réciter, ça revient toujours au début") :
+   - facile    : un mot faux est signalé mais rien ne se recache ; pas de limite de temps ;
+   - normal    : un mot faux ou 10 s d'hésitation recachent la PHRASE en cours ;
+   - difficile : un mot faux, un « euh » ou 6 s d'hésitation recachent TOUT (le principe d'origine). */
+const LRN_LEVELS = {
+  facile:    { label: 'Facile',    hesitationMs: 0,     scope: 'none' },
+  normal:    { label: 'Normal',    hesitationMs: 10000, scope: 'sentence' },
+  difficile: { label: 'Difficile', hesitationMs: 6000,  scope: 'all' },
+};
+function lrnGetLevel(){ try { const l = localStorage.getItem('lrnLevel'); if (LRN_LEVELS[l]) return l; } catch (e) {} return 'facile'; }
+function lrnSetLevel(l){ try { localStorage.setItem('lrnLevel', l); } catch (e) {} }
 const LRN_FILLERS = new Set(['euh', 'heu', 'hum', 'hmm', 'bah', 'ben', 'euuh', 'heuu']);
 const LRN_HOMOPHONES = [
   ['et', 'est', 'ai', 'es', 'e', 'eh'], ['a', 'as', 'ah'], ['ce', 'se', 'ceux'], ['ces', 'ses', 'sait', 'sais'],
@@ -45,6 +55,7 @@ function lrnNormalize(text){
     .replace(/[’`]/g, "'")
     .replace(/\b(?:l|d|j|m|n|s|t|c|qu|jusqu|lorsqu|puisqu)'/g, ' ') // élisions : « l'angle » -> « angle »
     .replace(/°/g, ' degres ')
+    .replace(/%/g, ' pourcent ')
     .replace(/(\d)[,.](\d)/g, '$1v$2')                              // 3,5 : un seul mot
     .replace(/œ/g, 'oe').replace(/æ/g, 'ae')
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -80,7 +91,7 @@ function lrnSame(spoken, expected){
 function lrnWrap(box){
   const units = [];
   const isFreeWord = raw => {
-    if (/[\[\]()]/.test(raw)) return true;                 // [AB], (d), (xy)
+    if (/[\[(][A-Za-z0-9'’]{1,4}[\])]/.test(raw)) return true; // [AB], (d), (xy), [AB) -- pas « (une » ni « (ou »
     if (/^[^a-zà-ÿœ]*[A-Z][^a-zà-ÿœ]*$/.test(raw)) return true;   // A, AB, OM, B'
     const toks = lrnNormalize(raw);
     return !toks.length || toks.every(t => /^[a-z]$/.test(t) && t !== 'a' && t !== 'y'); // r, x, ponctuation seule
@@ -119,7 +130,11 @@ function lrnWrap(box){
   walk(box);
   // Mots attendus à plat, chacun rattaché à son unité.
   const expected = [];
-  units.forEach((u, ui) => { u.toks.forEach(t => expected.push({ t, ui })); u.left = u.toks.length; });
+  // Numéro de phrase de chaque unité (une phrase se termine par . ; : ! ?) : au niveau « Normal »,
+  // une erreur ne recache que la phrase en cours.
+  let sent = 0;
+  units.forEach(u => { u.sent = sent; if (!u.el.classList.contains('lrn-block') && /[.;:!?]["»)]*$/.test(u.el.textContent)) sent++; });
+  units.forEach((u, ui) => { u.toks.forEach(t => expected.push({ t, ui, sent: u.sent })); u.left = u.toks.length; });
   return { units, expected };
 }
 function lrnUnwrap(box){
@@ -128,27 +143,53 @@ function lrnUnwrap(box){
   box.normalize();
 }
 
-/* Avance dans la liste des mots attendus avec les mots dictés (depuis la position pos).
-   Renvoie la nouvelle position, ou error:true si un mot est faux / une hésitation est dite. */
-function lrnMatch(words, pos, expected, isFinal){
-  let p = pos, skip = 0;
+/* Aligne les mots dictés sur les mots attendus à partir de la position start, avec tolérance
+   (mots avalés, mots dits pour une notation, mots coupés en deux, petits mots parasites).
+   S'arrête au premier mot qui ne colle pas : { pos, bad (mot fautif), filler (un « euh » dit) }. */
+function lrnAlign(words, start, expected, lenient){
+  let p = start, skip = 0, filler = false;
   for (let i = 0; i < words.length; i++) {
     const w = words[i];
-    if (LRN_FILLERS.has(w)) return { pos: p, error: true, reason: 'hesitation' };
+    if (LRN_FILLERS.has(w)) { filler = true; continue; }
     if (p >= expected.length) break;
     if (lrnSame(w, expected[p].t)) { p++; skip = 0; continue; }
-    // Mot composé coupé en deux par la reconnaissance (« quadri latère »).
     if (i + 1 < words.length && lrnSame(w + words[i + 1], expected[p].t)) { p++; i++; skip = 0; continue; }
-    // Petit mot attendu avalé par la reconnaissance.
+    // Un ou deux mots attendus avalés par la reconnaissance (« la longueur segment »).
+    let k = 1, found = false;
+    for (; k <= 2 && p + k < expected.length; k++) if (lrnSame(w, expected[p + k].t) && w.length >= 3) { found = true; break; }
+    if (found) { p += k + 1; skip = 0; continue; }
     if (expected[p].t.length <= 3 && p + 1 < expected.length && lrnSame(w, expected[p + 1].t)) { p += 2; skip = 0; continue; }
-    // Mots prononcés pour une notation (« A B », « égal ») ou petit mot parasite : ignorés.
-    if (skip < expected[p].skipBudget) { skip++; continue; }
-    if (w.length <= 2 && i + 1 < words.length && lrnSame(words[i + 1], expected[p].t)) continue;
-    // Dernier mot d'une dictée encore en cours : le navigateur peut encore le corriger.
-    if (!isFinal && i === words.length - 1) break;
-    return { pos: p, error: true, reason: 'wrong', heard: w };
+    if (skip < expected[p].skipBudget) { skip++; continue; }                    // mots dits pour une notation
+    if (w.length <= 2 && i + 1 < words.length && lrnSame(words[i + 1], expected[p].t)) continue; // petit mot parasite
+    if (lenient) {
+      // Niveau facile : erreurs de la reconnaissance vocale plutôt que de l'élève.
+      const nxt = words[i + 1];
+      // Un mot mal compris, suivi de mots justes (« se coupe en un seul » pour « se coupent en un seul »).
+      if (p + 1 < expected.length && nxt !== undefined && lrnSame(nxt, expected[p + 1].t)
+          && (words[i + 2] === undefined || p + 2 >= expected.length || lrnSame(words[i + 2], expected[p + 2].t))) { p++; skip = 0; continue; }
+      // Jusqu'à 3 mots attendus manqués, si la suite colle.
+      let jumped = false;
+      for (let k = 1; k <= 3 && p + k < expected.length; k++) {
+        if (lrnSame(w, expected[p + k].t) && (nxt === undefined || p + k + 1 >= expected.length || lrnSame(nxt, expected[p + k + 1].t))) { p += k + 1; jumped = true; break; }
+      }
+      if (jumped) { skip = 0; continue; }
+      if (nxt === undefined && p + 1 < expected.length && w.length >= 4 && lrnLev(w, expected[p].t) <= 2) { p++; continue; } // dernier mot presque juste
+    }
+    return { pos: p, bad: w, filler };
   }
-  return { pos: p, error: false };
+  return { pos: p, bad: null, filler };
+}
+/* Meilleur alignement d'une phrase dictée : depuis la position atteinte, ou en reprenant un peu
+   plus haut (l'élève qui redit le début de sa phrase n'est pas en faute). */
+function lrnBestAlign(words, from, expected, lenient){
+  let best = lrnAlign(words, from, expected, lenient);
+  if (!words.length) return best;
+  for (let s = Math.max(0, from - 20); s < from; s++) {
+    if (!lrnSame(words[0], expected[s].t)) continue;
+    const r = lrnAlign(words, s, expected, lenient);
+    if (r.pos > best.pos || (r.pos === best.pos && best.bad && !r.bad)) best = r;
+  }
+  return best;
 }
 
 function injectLearnButtons(container){
@@ -174,18 +215,26 @@ function lrnToggle(box){
   lrnStart(box);
 }
 
+function lrnIntro(level){
+  return level === 'facile' ? 'Récite à voix haute : chaque mot juste se dévoile. Si un mot ne va pas, redis-le, rien ne se recache.'
+    : level === 'normal' ? 'Récite à voix haute : chaque mot juste se dévoile. Un mot faux ou une longue hésitation recache la phrase en cours.'
+    : 'Récite à voix haute : chaque mot juste se dévoile. Un mot faux, un « euh » ou une hésitation, et tout se recache !';
+}
+
 function lrnStart(box){
   const SR = lrnSpeechCtor();
   const { units, expected } = lrnWrap(box);
   // Mot attendu juste après des notations/formules : les mots dictés pour les lire sont ignorés.
   let prevUnit = -1;
   expected.forEach(e => { e.skipBudget = units.slice(prevUnit + 1, e.ui).filter(u => u.free).reduce((n, u) => n + u.budget, 0); prevUnit = e.ui; });
+  const level = lrnGetLevel();
   const bar = document.createElement('div');
   bar.className = 'lrn-bar';
   bar.innerHTML = `
     <div class="lrn-status"><span class="gicon lrn-mic">mic</span> <span class="lrn-msg"></span></div>
     <div class="lrn-timer"><div></div></div>
     <div class="lrn-actions">
+      <span class="lrn-levels" role="group" aria-label="Niveau">${Object.entries(LRN_LEVELS).map(([k, v]) => `<button type="button" data-level="${k}" class="${k === level ? 'on' : ''}">${v.label}</button>`).join('')}</span>
       <button type="button" class="lrn-hint"><span class=gicon>lightbulb</span> Indice</button>
       <button type="button" class="lrn-peek"><span class=gicon>visibility</span> Relire</button>
       <button type="button" class="lrn-restart"><span class=gicon>replay</span> Recommencer</button>
@@ -193,15 +242,28 @@ function lrnStart(box){
     </div>`;
   box.appendChild(bar);
   box.classList.add('lrn-active');
-  const st = lrnState = { box, bar, units, expected, pos: 0, committed: 0, hints: 0, errors: 0, best: 0,
+  const st = lrnState = { box, bar, units, expected, level, pos: 0, committed: 0, hints: 0, errors: 0, best: 0,
     rec: null, running: false, done: false, lastProgress: Date.now(), timer: null, listening: false };
+  bar.querySelectorAll('.lrn-levels button').forEach(b => b.onclick = e => {
+    e.stopPropagation();
+    st.level = b.dataset.level; lrnSetLevel(st.level);
+    bar.querySelectorAll('.lrn-levels button').forEach(x => x.classList.toggle('on', x === b));
+    st.lastProgress = Date.now();
+    if (!st.done) lrnSay(lrnIntro(st.level));
+  });
   bar.querySelector('.lrn-hint').onclick = e => { e.stopPropagation(); lrnHint(); };
-  bar.querySelector('.lrn-restart').onclick = e => { e.stopPropagation(); lrnReset('Recommence depuis le début.'); };
+  bar.querySelector('.lrn-restart').onclick = e => { e.stopPropagation(); st.errors = 0; st.hints = 0; lrnHide('all', lrnIntro(st.level), false); };
   bar.querySelector('.lrn-stop').onclick = e => { e.stopPropagation(); lrnStop(); };
   const peek = bar.querySelector('.lrn-peek');
-  // « Relire » : dévoile tout tant qu'on appuie, puis recache (et on recommence du début).
+  // « Relire » : dévoile tout tant qu'on appuie ; ensuite, selon le niveau, rien / la phrase / tout se recache.
   const peekOn = e => { e.preventDefault(); e.stopPropagation(); box.classList.add('lrn-peeking'); };
-  const peekOff = e => { if (!box.classList.contains('lrn-peeking')) return; e.stopPropagation(); box.classList.remove('lrn-peeking'); lrnReset('Tu as relu : récite depuis le début.'); };
+  const peekOff = e => {
+    if (!box.classList.contains('lrn-peeking')) return;
+    e.stopPropagation(); box.classList.remove('lrn-peeking');
+    st.lastProgress = Date.now();
+    const scope = LRN_LEVELS[st.level].scope;
+    if (scope !== 'none') lrnHide(scope, scope === 'all' ? 'Tu as relu : récite depuis le début.' : 'Tu as relu : reprends la phrase.', false);
+  };
   peek.addEventListener('pointerdown', peekOn); peek.addEventListener('pointerup', peekOff); peek.addEventListener('pointerleave', peekOff);
   peek.onclick = e => e.stopPropagation();
   lrnRender();
@@ -210,7 +272,7 @@ function lrnStart(box){
     bar.querySelector('.lrn-mic').textContent = 'mic_off';
     return;
   }
-  lrnSay('Récite à voix haute : chaque mot juste se dévoile. Un mot faux ou une hésitation, et tout se recache !');
+  lrnSay(lrnIntro(level));
   st.running = true;
   lrnListen();
   st.timer = setInterval(lrnTick, 200);
@@ -233,7 +295,7 @@ async function lrnListen(){
   } catch (e) { /* option récente, facultative */ }
   if (lrnState !== st || !st.running) return;
   st.rec = rec;
-  rec.onstart = () => { st.listening = true; st.lastProgress = Date.now(); lrnRender(); };
+  rec.onstart = () => { st.listening = true; lrnRender(); };
   rec.onresult = ev => lrnOnResult(st, ev);
   rec.onerror = ev => {
     if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed') {
@@ -248,30 +310,56 @@ async function lrnListen(){
       lrnSay('La dictée vocale a besoin d\'une connexion internet sur ce navigateur.', 'err');
     }
   };
-  rec.onend = () => { st.listening = false; if (lrnState === st && st.running && !st.done) setTimeout(() => { if (lrnState === st && st.running) lrnListen(); }, 150); else lrnRender(); };
+  rec.onend = () => { st.listening = false; if (lrnState === st && st.running && !st.done) setTimeout(() => { if (lrnState === st && st.running) lrnListen(); }, 100); else lrnRender(); };
   try { rec.start(); } catch (e) { setTimeout(() => lrnListen(), 400); }
 }
 
+/* Chaque « résultat » du navigateur est un morceau de dictée entre deux pauses. Tant qu'il est
+   provisoire, il ne sert qu'à dévoiler (jamais à sanctionner : le navigateur corrige souvent ses
+   mots en cours de route) ; une fois confirmé, il est jugé une seule fois. */
 function lrnOnResult(st, ev){
   if (lrnState !== st || st.done) return;
   for (let i = ev.resultIndex; i < ev.results.length; i++) {
     const res = ev.results[i];
     let best = null;
     for (let a = 0; a < res.length; a++) {
-      const m = lrnMatch(lrnNormalize(res[a].transcript), st.committed, st.expected, res.isFinal);
-      if (!best || (best.error && !m.error) || (best.error === m.error && m.pos > best.pos)) best = m;
+      const r = lrnBestAlign(lrnNormalize(res[a].transcript), st.committed, st.expected, st.level === 'facile');
+      if (!best || r.pos > best.pos || (r.pos === best.pos && best.bad && !r.bad)) best = r;
     }
     if (!best) continue;
-    if (best.error) {
-      st.errors++;
-      lrnReset(best.reason === 'hesitation' ? 'Hésitation… tout se recache : recommence depuis le début.'
-        : `« ${best.heard} » : ce n'est pas le bon mot. Tout se recache, recommence depuis le début.`, true);
-      return;
+    if (!res.isFinal) { if (best.pos > st.pos) lrnSetPos(best.pos); continue; }
+    const reached = Math.max(st.committed, best.pos);
+    st.committed = reached;
+    lrnSetPos(reached);
+    if (st.done) return;
+    const lvl = LRN_LEVELS[st.level];
+    if (best.filler && st.level === 'difficile') { st.errors++; lrnHide('all', 'Hésitation (« euh »)… tout se recache : recommence depuis le début.', true); return; }
+    if (best.bad) {
+      if (lvl.scope === 'none') {
+        st.errors++;
+        lrnMarkNext(true);
+        lrnSay(`J'ai entendu « ${best.bad} », ce n'est pas le mot attendu. Redis la suite${st.pos ? ` après « ${lrnPrevText(st)} »` : ''}.`, 'err');
+      } else {
+        st.errors++;
+        lrnHide(lvl.scope, `« ${best.bad} » : ce n'est pas le bon mot. ${lvl.scope === 'all' ? 'Tout se recache, recommence depuis le début.' : 'La phrase se recache : reprends-la.'}`, true);
+      }
+    } else if (best.pos > 0) {
+      lrnMarkNext(false);
+      if (st.bar.querySelector('.lrn-msg').classList.contains('err')) lrnSay('C\'est reparti, continue !');
     }
-    // Résultat confirmé : il fait foi, même s'il revient sur un mot deviné trop tôt.
-    if (res.isFinal) { st.committed = best.pos; lrnSetPos(best.pos); }
-    else if (best.pos > st.pos) lrnSetPos(best.pos);
   }
+}
+function lrnPrevText(st){
+  const u = st.units[st.expected[st.pos - 1].ui];
+  return u.el.textContent.replace(/[.,;:!?»«"]+$/, '');
+}
+// Souligne le prochain mot à trouver (en rouge juste après une erreur).
+function lrnMarkNext(isError){
+  const st = lrnState; if (!st) return;
+  st.units.forEach(u => u.el.classList.remove('lrn-next', 'lrn-next-err'));
+  if (st.pos >= st.expected.length) return;
+  const u = st.units[st.expected[st.pos].ui];
+  u.el.classList.add(isError ? 'lrn-next-err' : 'lrn-next');
 }
 
 function lrnSetPos(pos){
@@ -285,6 +373,7 @@ function lrnSetPos(pos){
   st.pos = pos;
   st.best = Math.max(st.best, pos);
   lrnRender();
+  lrnMarkNext(false);
   if (st.pos >= st.expected.length) lrnSuccess();
 }
 
@@ -295,26 +384,26 @@ function lrnHint(){
   let p = st.pos; while (p < st.expected.length && st.expected[p].ui === ui) p++; // tout le mot affiché
   st.committed = p;
   lrnSetPos(p);
-  lrnRestartListening(); // nouvelle phrase à partir d'ici (la dictée en cours partait d'avant l'indice)
   if (!st.done) lrnSay(`Indice : « ${st.units[ui].el.textContent} ». Continue !`);
 }
 
-function lrnReset(msg, isError){
+/* Recache : 'all' = tout, 'sentence' = depuis le début de la phrase en cours. */
+function lrnHide(scope, msg, isError){
   const st = lrnState; if (!st) return;
-  st.pos = 0; st.committed = 0; st.done = false; st.lastProgress = Date.now();
-  st.units.forEach(u => { u.left = u.toks.length; });
+  let to = 0;
+  if (scope === 'sentence' && st.pos > 0) {
+    const cur = st.pos < st.expected.length ? st.expected[st.pos].sent : st.expected[st.pos - 1].sent;
+    to = st.expected.findIndex(e => e.sent === cur);
+    if (to < 0) to = 0;
+  }
+  const wasDone = st.done;
+  st.done = false; st.committed = to; st.lastProgress = Date.now();
   st.box.classList.remove('lrn-won');
   if (isError) { st.box.classList.remove('lrn-shake'); void st.box.offsetWidth; st.box.classList.add('lrn-shake'); }
-  lrnRender();
+  st.pos = -1; lrnSetPos(to);
   if (msg) lrnSay(msg, isError ? 'err' : '');
-  lrnRestartListening();
-}
-// Repart sur une dictée neuve (les mots déjà dits dans la phrase en cours ne comptent plus).
-function lrnRestartListening(){
-  const st = lrnState; if (!st || st.done || !lrnSpeechCtor()) return;
+  if (wasDone || !st.running) { if (lrnSpeechCtor()) { st.running = true; lrnListen(); } }
   if (!st.timer) st.timer = setInterval(lrnTick, 200);
-  if (st.running) { try { st.rec && st.rec.abort(); } catch (e) {} return; } // onend relance l'écoute
-  st.running = true; lrnListen();
 }
 
 function lrnSuccess(){
@@ -322,20 +411,25 @@ function lrnSuccess(){
   st.done = true; st.running = false;
   try { st.rec && st.rec.stop(); } catch (e) {}
   st.box.classList.add('lrn-won');
-  lrnSay(`Bravo ! Récitée en entier${st.hints ? ` (avec ${st.hints} indice${st.hints > 1 ? 's' : ''})` : ' sans aucune aide'}${st.errors ? ` après ${st.errors} essai${st.errors > 1 ? 's' : ''} recommencé${st.errors > 1 ? 's' : ''}` : ''}. « Recommencer » pour la réciter encore.`, 'ok');
+  lrnMarkNext(false);
+  const e = st.errors, h = st.hints;
+  lrnSay(`Bravo ! Récitée en entier${h ? ` avec ${h} indice${h > 1 ? 's' : ''}` : ' sans indice'}${e ? ` et ${e} erreur${e > 1 ? 's' : ''}` : ' et sans erreur'} (niveau ${LRN_LEVELS[st.level].label.toLowerCase()}). « Recommencer » pour la réciter encore${st.level !== 'difficile' ? ', ou essaie le niveau au-dessus' : ''} !`, 'ok');
 }
 
 function lrnTick(){
   const st = lrnState; if (!st) return;
   const bar = st.bar.querySelector('.lrn-timer > div');
+  const ms = LRN_LEVELS[st.level].hesitationMs;
+  st.bar.querySelector('.lrn-timer').style.visibility = ms ? '' : 'hidden';
   // Hésitation : seulement une fois la récitation commencée (au moins un mot trouvé).
-  if (!st.running || st.done || st.pos === 0 || st.box.classList.contains('lrn-peeking')) { bar.style.width = '0%'; return; }
-  const left = Math.max(0, 1 - (Date.now() - st.lastProgress) / LRN_HESITATION_MS);
+  if (!ms || !st.running || st.done || st.pos === 0 || st.box.classList.contains('lrn-peeking')) { bar.style.width = '0%'; return; }
+  const left = Math.max(0, 1 - (Date.now() - st.lastProgress) / ms);
   bar.style.width = (left * 100) + '%';
   bar.style.background = left < .35 ? '#B3261E' : left < .65 ? '#F8AF23' : '#1F7A4D';
   if (left <= 0) {
     st.errors++;
-    lrnReset('Trop long… c\'est une hésitation : tout se recache, recommence depuis le début.', true);
+    const scope = LRN_LEVELS[st.level].scope;
+    lrnHide(scope, scope === 'all' ? 'Trop long… c\'est une hésitation : tout se recache, recommence depuis le début.' : 'Trop long… la phrase se recache : reprends-la.', true);
   }
 }
 
@@ -372,6 +466,7 @@ function lrnStop(){
   try { st.rec && st.rec.abort(); } catch (e) {}
   st.bar.remove();
   st.box.classList.remove('lrn-active', 'lrn-won', 'lrn-shake', 'lrn-peeking');
+  st.units.forEach(u => u.el.classList.remove('lrn-next', 'lrn-next-err'));
   lrnUnwrap(st.box);
 }
 // Quitter la page du chapitre (ou fermer l'onglet) coupe le micro.
