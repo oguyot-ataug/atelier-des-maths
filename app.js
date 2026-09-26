@@ -2556,6 +2556,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.684', items:[
+    "Accueil, Nouveautés -- signalé : \"Les constructions s'animent aux instruments : je n'aime pas ce titre, je ne comprends pas le sens !\". La vidéo s'intitule désormais « Voir une figure se construire pas à pas », avec une description plus explicite (on tape un énoncé, la figure se trace avec la règle, l'équerre, le compas et le rapporteur, étape par étape). Même formulation dans les pages de présentation des chapitres.",
+    "Technique : pour un visiteur ou un élève sans cours personnalisé, le chapitre n'est plus reconstruit bloc par bloc à l'ouverture (le cours d'origine reste tel quel) ; les pages de présentation générées pour Google gardent ainsi leur mise en forme.",
+  ]},
   { version:'2026-08-19.683', items:[
     "Nouvelle vidéo -- demandé : \"Faire également une vidéo qui parcourt tous les outils disponibles dans le module de correction\". « L'outil de correction, tous ses outils » (dans les Nouveautés de l'accueil) : les 13 outils l'un après l'autre (texte, image, figure, tableau de conversion, division décimale, multiplication posée, axe gradué, fraction visuelle, cubes, graphique, diagramme, probabilités, animation géométrique), puis la mise en page en colonnes, la fenêtre de projection, les brouillons et les corrections des collègues.",
     "Correctif (Évaluation, outil de correction) : insérer un tableau libre ou un tableau de conversion rempli ouvrait à tort la question « Fermer sans insérer ? Le contenu saisi sera perdu. » alors que le tableau venait d'être inséré ; la fenêtre se ferme désormais directement.",

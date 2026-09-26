@@ -227,7 +227,7 @@ function chapterPage(ch, prev, next) {
 <h1>${esc(ch.t)}</h1>
 <p class="seo-sub"><span class="seo-badge" style="background:${bg};color:${fg};">${esc(CAT_LABEL[ch.cat] || '')}</span> Cours de mathématiques de ${lvl} (${info.long}) · chapitre ${ch.n}${topics.length ? ' · ' + esc(topics.join(' · ')) : ''}</p>
 <div class="seo-cta">
-  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les constructions s'animent pas à pas et un quiz s'invente à chaque essai.</p>
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
   <a class="seo-btn" href="${appUrl(lvl, ch)}">Ouvrir le chapitre interactif</a>
 </div>
 ${section('cours', 'menu_book', 'Le cours', '')}

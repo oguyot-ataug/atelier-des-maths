@@ -148,6 +148,11 @@ function cpOrder(container, layout){
 }
 function cpApply(container, layout){
   if(!container) return;
+  // Chapitre jamais personnalisé dans cette page (visiteur, élève sans version de son professeur) :
+  // le cours d'origine reste tel quel, sans le reconstruire bloc par bloc (ce qui retirait aussi
+  // la mise en forme du code source des pages générées pour Google, voir tools/build-seo.js).
+  if(!layout && !container.dataset.cpTouched) return;
+  container.dataset.cpTouched = '1';
   const order = cpOrder(container, layout);
   // Blocs ajoutés qui ne font plus partie de la version affichée : retirés.
   const reg = cpRegistry(container), keep = new Set(order.map(o=>o.b));
@@ -814,6 +819,7 @@ function cpStartEdit(){
   const v = cpCache.get(cid);
   const order = cpOrder(container, v ? v.layout : null); // part de la version en vigueur (la sienne ou celle de l'établissement)
   cpEditing = { cid, container, before: order.map(o=>({b:o.b, hidden:o.hidden})), dirty:false };
+  container.dataset.cpTouched = '1'; // l'éditeur réorganise le DOM : cpApply devra le remettre en ordre
   container.classList.add('cp-edit-mode');
   const top = document.createElement('button');
   top.type = 'button'; top.className = 'cp-add-top';
