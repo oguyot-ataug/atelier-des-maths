@@ -33,7 +33,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-<link rel="stylesheet" href="styles.css?v=20260819-694">
+<link rel="stylesheet" href="styles.css?v=20260819-695">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -43,7 +43,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.694</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.695</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -71,6 +71,7 @@
     <button data-nav="cahier" id="navCahier" style="display:none;">Cahier élève</button>
     <button data-nav="mesdevoirs" id="navMesDevoirs" style="display:none;">Mes devoirs<span id="navMesDevoirsBadge" class="nav-badge" style="display:none;"></span></button>
     <button data-nav="mesresultats" id="navMesResultats" style="display:none;">Mes résultats</button>
+    <button data-nav="famille" id="navFamille" style="display:none;">Espace famille</button>
     <button data-nav="admin" id="navAdmin" style="display:none;">Administration</button>
   </div>
   <button class="hamburger" id="hamburgerBtn" aria-label="Ouvrir le menu" onclick="toggleMobileNav()">
@@ -1173,7 +1174,7 @@
     <p class="hint">Dernière mise à jour : septembre 2026. Cette page décrit les données personnelles traitées par L'Atelier des Maths (maths.latelieraugmente.fr), conformément au Règlement Général sur la Protection des Données (RGPD).</p>
 
     <h3>1. Responsable du traitement</h3>
-    <p>L'Atelier Augmenté est responsable du traitement des données techniques du site (comptes, hébergement). Pour les comptes élèves créés par un établissement scolaire, l'établissement (via son enseignant référent) est responsable de la création et de la gestion pédagogique de ces comptes ; L'Atelier Augmenté agit alors comme sous-traitant technique.</p>
+    <p>L'Atelier Augmenté est responsable du traitement des données techniques du site (comptes, hébergement). Pour les comptes élèves créés par un établissement scolaire, l'établissement (via son enseignant référent) est responsable de la création et de la gestion pédagogique de ces comptes ; L'Atelier Augmenté agit alors comme sous-traitant technique. Pour les <b>comptes Famille</b>, L'Atelier Augmenté est responsable du traitement.</p>
 
     <h3>2. Données collectées</h3>
     <p>Selon le type de compte :</p>
@@ -1181,6 +1182,8 @@
       <li><b>Comptes enseignants</b> : nom, prénom, adresse email, établissement (UAI), statut d'abonnement (essai/actif/expiré) et identifiants de paiement Stripe le cas échéant.</li>
       <li><b>Comptes élèves</b> : nom, un identifiant de connexion (pas nécessairement une adresse email réelle), classe et établissement. Ces comptes sont créés par l'enseignant ou l'administrateur, pas directement par l'élève ou sa famille.</li>
       <li><b>Contenu pédagogique produit</b> : réponses aux exercices et quiz, résultats d'automatismes, devoirs rendus, figures géométriques enregistrées, entrées de cahier -- rattachés au compte pour permettre le suivi pédagogique par l'enseignant.</li>
+      <li><b>Comptes Famille (parent)</b> : nom, prénom, adresse e-mail ; la déclaration sur l'honneur faite à l'inscription, avec sa date, l'adresse IP et le navigateur utilisés (preuve de la déclaration) ; les niveaux achetés, les montants et dates de paiement (le paiement lui-même est traité par Stripe : nous ne recevons jamais les numéros de carte).</li>
+      <li><b>Comptes Famille (enfants)</b> : prénom, identifiant de connexion, classe et code du collège fréquenté (ou l'indication « hors collège »), ainsi que les résultats des exercices. Ces comptes sont créés et contrôlés par le parent, titulaire de l'autorité parentale, qui voit les résultats de ses enfants et peut les supprimer à tout moment. Aucune publicité ni aucun profilage commercial ne s'applique aux comptes d'enfants.</li>
       <li><b>Signalements</b> : si vous utilisez le bouton de signalement de bug, le texte que vous rédigez ainsi que des informations techniques (page concernée) sont enregistrés.</li>
     </ul>
     <p class="hint">Aucune donnée de santé, biométrique ou autre catégorie de données dites "sensibles" n'est collectée.</p>
@@ -1190,16 +1193,17 @@
 
     <h3>4. Destinataires et sous-traitants</h3>
     <p>Les données sont hébergées par <b>Supabase</b> (base de données et authentification), sur des serveurs situés en <b>Irlande</b> (Union Européenne) -- et le code du site par <b>GitHub, Inc.</b> (GitHub Pages, contenu statique sans données personnelles stockées). Les paiements des abonnements enseignants sont traités par <b>Stripe</b>, qui ne reçoit pas les données pédagogiques des élèves. Aucune donnée n'est vendue ni transmise à des tiers à des fins commerciales.</p>
+    <p><b>Intelligence artificielle (facultative)</b> : quand l'IA est utilisée, le texte de la demande (chapitre, question ou énoncé) est transmis à <b>Anthropic</b> (États-Unis), avec la clé de l'enseignant, de l'établissement ou du parent qui paie l'appel. Aucun nom ni identifiant d'élève n'y est joint. Chaque appel est noté (date, outil, volume) pour le rapport de consommation du payeur.</p>
     <p><b>Mode apprentissage (facultatif)</b> : la reconnaissance vocale est assurée par le navigateur (Google pour Chrome et Edge, Apple pour Safari), qui peut traiter la voix de l'élève sur ses serveurs pendant la récitation. L'Atelier des Maths n'enregistre ni ne conserve aucun son.</p>
 
     <h3>5. Durée de conservation</h3>
-    <p>Les données sont conservées le temps de l'utilisation active du compte. Un compte inactif peut être supprimé à la demande de l'enseignant responsable, de l'établissement, ou de l'administrateur du site. Pour exercer ce droit, contactez-nous (coordonnées ci-dessous).</p>
+    <p>Les données sont conservées le temps de l'utilisation active du compte. Un compte inactif peut être supprimé à la demande de l'enseignant responsable, de l'établissement, ou de l'administrateur du site. Pour exercer ce droit, contactez-nous (coordonnées ci-dessous). Un parent peut supprimer lui-même son compte Famille et ceux de ses enfants, avec leurs résultats, depuis l'Espace famille. Les factures et paiements sont conservés 10 ans (obligation comptable).</p>
 
     <h3>6. Vos droits</h3>
-    <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement et de portabilité de vos données, ainsi que d'un droit d'opposition. Pour un compte élève, ces droits s'exercent en priorité auprès de l'enseignant ou de l'établissement responsable du compte. Vous pouvez aussi nous contacter directement à <a href="mailto:contact@latelieraugmente.fr">contact@latelieraugmente.fr</a>. Vous disposez également du droit d'introduire une réclamation auprès de la CNIL (www.cnil.fr).</p>
+    <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement et de portabilité de vos données, ainsi que d'un droit d'opposition. Pour un compte élève, ces droits s'exercent en priorité auprès de l'enseignant ou de l'établissement responsable du compte ; pour un compte enfant Famille, auprès du parent ou directement auprès de nous. Vous pouvez aussi nous contacter directement à <a href="mailto:contact@latelieraugmente.fr">contact@latelieraugmente.fr</a>. Vous disposez également du droit d'introduire une réclamation auprès de la CNIL (www.cnil.fr).</p>
 
     <h3>7. Sécurité</h3>
-    <p>L'accès aux données est protégé par authentification et des règles d'accès strictes (chaque enseignant ne voit que les élèves de ses propres classes). Les mots de passe ne sont jamais stockés en clair.</p>
+    <p>L'accès aux données est protégé par authentification et des règles d'accès strictes (chaque enseignant ne voit que les élèves de ses propres classes ; un parent ne voit que ses propres enfants). Les clés d'IA sont stockées chiffrées. Les mots de passe ne sont jamais stockés en clair.</p>
   </div>
 </section>
 
@@ -1250,6 +1254,46 @@
   <p style="color:var(--ink-soft);max-width:75ch;">Vous choisissez si l'IA est utilisée pour vous et/ou pour vos élèves. Elle fonctionne avec <b>votre propre compte Anthropic</b>, où vous ajoutez directement des crédits ; ici, vous suivez en détail tout ce qui est consommé.</p>
   <div id="iaRoot"></div>
 </section>
+<!-- ================= OFFRE FAMILLE (famille.js) ================= -->
+<section class="view" id="view-famille">
+  <span class="back-btn" data-nav="home">← Accueil</span>
+  <div id="famRoot"></div>
+</section>
+
+<section class="view" id="view-cgv">
+  <span class="back-btn" data-nav="home">← Accueil</span>
+  <h1 style="margin:6px 0 4px;">Conditions générales de vente – Offre Famille</h1>
+  <div style="max-width:72ch;line-height:1.65;">
+    <p class="hint">Version du 26 septembre 2026. Ces conditions s'appliquent aux achats de l'offre Famille par des particuliers. Les licences des professeurs et des établissements font l'objet d'un devis et de conditions propres.</p>
+    <h2>1. Vendeur</h2>
+    <p>Olivier GUYOT, entrepreneur individuel (EI), sous le nom commercial L'Atelier Augmenté – SIRET 100 460 781 00014 – 2 clos du Moulin, 54420 Saulxures-lès-Nancy – <a href="mailto:contact@latelieraugmente.fr">contact@latelieraugmente.fr</a> – 06 61 77 99 88. TVA non applicable, art. 293 B du CGI.</p>
+    <h2>2. Ce qui est vendu</h2>
+    <p>Un accès au site L'Atelier des Maths (cours, méthodes, exercices, automatismes, Objectif Nombre, outils de géométrie, suivi des résultats) pour les niveaux choisis, <b>jusqu'au 31 août de l'année scolaire</b> concernée (un achat effectué à partir du 1<sup>er</sup> juin vaut pour l'année scolaire suivante). Chaque niveau acheté ouvre aussi le niveau inférieur, en révision. L'achat permet de créer jusqu'à <b>4 comptes enfants</b>, gérés par le parent.</p>
+    <p>Prix TTC : <b>1 niveau 29 €</b>, <b>2 niveaux 45 €</b>, <b>collège complet 59 €</b>. Les niveaux proposés sont ceux en ligne au moment de l'achat ; la formule « collège complet » donne accès à la 4e et à la 3e dès leur mise en ligne pendant la période payée. Ajouter un niveau en cours d'année coûte la différence entre la nouvelle formule et ce qui a déjà été payé pour l'année.</p>
+    <h2>3. Qui peut acheter</h2>
+    <p>L'offre est réservée aux personnes majeures agissant pour leur famille, à des fins non professionnelles. Elle <b>n'est pas proposée aux familles dont un enfant est scolarisé dans l'établissement où enseigne le concepteur du site</b> : le parent le certifie lors de l'inscription, et le code du collège déclaré pour chaque enfant est vérifié. Une fausse déclaration entraîne la fermeture des comptes, sans remboursement.</p>
+    <h2>4. Commande et paiement</h2>
+    <p>La commande se fait depuis l'Espace famille : choix des niveaux, récapitulatif du prix, puis paiement par carte bancaire sur la page sécurisée de notre prestataire Stripe (nous ne recevons jamais les données de carte). L'accès est ouvert dès la confirmation du paiement, et une facture est envoyée par e-mail. Il s'agit d'un <b>paiement unique, sans reconduction automatique</b> : aucun prélèvement n'a lieu l'année suivante sans nouvelle commande de votre part.</p>
+    <h2>5. Droit de rétractation</h2>
+    <p>L'accès étant un contenu numérique fourni immédiatement, le parent demande expressément, avant de payer, à y accéder dès le paiement et reconnaît perdre ainsi son droit de rétractation de 14 jours (article L221-28, 13° du Code de la consommation). Cette demande et cette renonciation sont rappelées sur la page de paiement et enregistrées avec la commande.</p>
+    <h2>6. Comptes des enfants</h2>
+    <p>Le parent crée, modifie et supprime lui-même les comptes de ses enfants, dont il garde la responsabilité : il choisit les identifiants et mots de passe, les transmet à ses enfants et veille à leur usage. Les comptes sont strictement personnels et réservés à la famille.</p>
+    <h2>7. Intelligence artificielle (facultative)</h2>
+    <p>Les outils d'IA fonctionnent uniquement avec la clé personnelle du parent auprès d'Anthropic. Leur coût est facturé directement par Anthropic au parent, selon son propre contrat avec cette société ; il n'est pas compris dans le prix de l'offre. Le parent décide, pour lui et pour chaque enfant, d'activer ou non l'IA et d'en limiter l'usage. Les réponses produites par une IA peuvent contenir des erreurs : elles accompagnent le travail de l'enfant sans remplacer les cours ni l'adulte.</p>
+    <h2>8. Garanties et responsabilité</h2>
+    <p>Le parent bénéficie de la garantie légale de conformité des contenus et services numériques (articles L224-25-12 et suivants du Code de la consommation). Nous faisons notre possible pour que le site reste accessible en permanence, hors maintenance ; en cas d'interruption de notre fait de plus de 7 jours consécutifs, la période correspondante est remboursée au prorata sur demande. Le site est un outil d'entraînement : il ne garantit aucun résultat scolaire.</p>
+    <h2>9. Fin du service et suppression du compte</h2>
+    <p>L'accès prend fin automatiquement à la date indiquée dans l'Espace famille. Le parent peut supprimer à tout moment son compte et ceux de ses enfants depuis l'Espace famille ; l'accès en cours n'est alors pas remboursé. En cas de manquement grave (fausse déclaration, partage des comptes hors de la famille, usage frauduleux), nous pouvons fermer les comptes après en avoir informé le parent par e-mail.</p>
+    <h2>10. Propriété intellectuelle</h2>
+    <p>Les contenus du site restent la propriété de L'Atelier Augmenté. L'accès permet un usage personnel et familial ; toute reproduction ou diffusion, même partielle, est interdite.</p>
+    <h2>11. Données personnelles</h2>
+    <p>Voir la <a href="#/confidentialite">politique de confidentialité</a>.</p>
+    <h2>12. Réclamations et médiation</h2>
+    <p>Pour toute réclamation, écrivez d'abord à <a href="mailto:contact@latelieraugmente.fr">contact@latelieraugmente.fr</a>. Si aucune solution n'est trouvée, vous pouvez recourir gratuitement au médiateur de la consommation dont nous relevons : <b id="cgvMediateur">[médiateur de la consommation : adhésion en cours]</b>.</p>
+    <h2>13. Droit applicable</h2>
+    <p>Ces conditions sont soumises au droit français. En cas de litige, le consommateur peut saisir, à son choix, la juridiction du lieu où il demeurait au moment de la commande ou celle du lieu du fait dommageable.</p>
+  </div>
+</section>
 <section class="view" id="view-devoirs-prof"></section>
 <section class="view" id="view-devoirs-eleve"></section>
 
@@ -1263,52 +1307,53 @@
 <footer>Une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a> · L'Atelier des Maths · Programme B.O. 2026 · <a href="#" data-nav="mentions-legales">Mentions légales</a> · <a href="#" data-nav="confidentialite">Confidentialité</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a> · <a href="#" data-nav="niveau" data-lvl="cm1" style="color:var(--ink-soft);">CM1 (aperçu)</a></footer>
 
 <script src="https://js.stripe.com/v3/"></script>
-<script defer src="app.js?v=20260819-694"></script>
-<script defer src="outils-figures.js?v=20260819-694"></script>
-<script defer src="evaluation.js?v=20260819-694"></script>
-<script defer src="admin.js?v=20260819-694"></script>
-<script defer src="facturation.js?v=20260819-694"></script>
-<script defer src="ia-compte.js?v=20260819-694"></script>
-<script defer src="apprentissage.js?v=20260819-694"></script>
-<script defer src="cours-perso.js?v=20260819-694"></script>
-<script defer src="tableau-ia.js?v=20260819-694"></script>
-<script defer src="devoirs.js?v=20260819-694"></script>
-<script defer src="suivi-devoirs.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-694"></script>
-<script defer src="chapitres/cm1/N1-nombres-entiers.js?v=20260819-694"></script>
-<script defer src="chapitres/cm1/G1-droites-paralleles-perpendiculaires.js?v=20260819-694"></script>
-<script defer src="chapitres/cm1/N2-operations-nombres-entiers.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/N4-multiplication-division.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/D3-proportionnalite.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/G5-construction-triangles.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/G4-symetrie-axiale.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/N5-fractions-comparaison-addition.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/D1-gestion-donnees.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/D2-probabilites.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/M1-aire-perimetre.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/M2-heures-durees.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/G6-proprietes-triangles.js?v=20260819-694"></script>
-<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/N4-fractions.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/N6-equations.js?v=20260819-694"></script>
-<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-694"></script>
-<script defer src="calcul-mental/calcul-mental.js?v=20260819-694"></script>
-<script defer src="compte-est-bon.js?v=20260819-694"></script>
-<script defer src="router.js?v=20260819-694"></script>
+<script defer src="app.js?v=20260819-695"></script>
+<script defer src="outils-figures.js?v=20260819-695"></script>
+<script defer src="evaluation.js?v=20260819-695"></script>
+<script defer src="admin.js?v=20260819-695"></script>
+<script defer src="facturation.js?v=20260819-695"></script>
+<script defer src="ia-compte.js?v=20260819-695"></script>
+<script defer src="famille.js?v=20260819-695"></script>
+<script defer src="apprentissage.js?v=20260819-695"></script>
+<script defer src="cours-perso.js?v=20260819-695"></script>
+<script defer src="tableau-ia.js?v=20260819-695"></script>
+<script defer src="devoirs.js?v=20260819-695"></script>
+<script defer src="suivi-devoirs.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-695"></script>
+<script defer src="chapitres/cm1/N1-nombres-entiers.js?v=20260819-695"></script>
+<script defer src="chapitres/cm1/G1-droites-paralleles-perpendiculaires.js?v=20260819-695"></script>
+<script defer src="chapitres/cm1/N2-operations-nombres-entiers.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/N4-multiplication-division.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/D3-proportionnalite.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/G5-construction-triangles.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/G4-symetrie-axiale.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/N5-fractions-comparaison-addition.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/D1-gestion-donnees.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/D2-probabilites.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/M1-aire-perimetre.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/M2-heures-durees.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/G6-proprietes-triangles.js?v=20260819-695"></script>
+<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/N4-fractions.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/N6-equations.js?v=20260819-695"></script>
+<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-695"></script>
+<script defer src="calcul-mental/calcul-mental.js?v=20260819-695"></script>
+<script defer src="compte-est-bon.js?v=20260819-695"></script>
+<script defer src="router.js?v=20260819-695"></script>
 </body>
 </html>

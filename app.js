@@ -180,6 +180,8 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     }
     if(nav==='mentions-legales'){ showView('view-mentions-legales'); setActiveTopnav(null); }
     if(nav==='confidentialite'){ showView('view-confidentialite'); setActiveTopnav(null); }
+    if(nav==='cgv'){ showView('view-cgv'); setActiveTopnav(null); }
+    if(nav==='famille'){ showView('view-famille'); setActiveTopnav('famille'); if(typeof renderFamille==='function') renderFamille(); }
     if(nav==='correction'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-correction'); setActiveTopnav('correction');
@@ -250,6 +252,7 @@ function setActiveTopnav(key){
   else if(key==='tableau') document.querySelectorAll('.nav-links button[data-nav="tableau"]').forEach(b=>b.classList.add('active'));
   else if(key==='cahier') document.querySelector('.nav-links button[data-nav="cahier"]').classList.add('active');
   else if(key==='admin') document.querySelector('.nav-links button[data-nav="admin"]').classList.add('active');
+  else if(key==='famille') document.querySelector('.nav-links button[data-nav="famille"]')?.classList.add('active');
   else if(key==='supervision') document.querySelector('.nav-links button[data-nav="supervision"]').classList.add('active');
   else if(key==='progression') document.querySelector('.nav-links button[data-nav="progression"]').classList.add('active');
   else if(key==='mesresultats') document.querySelector('.nav-links button[data-nav="mesresultats"]').classList.add('active');
@@ -283,6 +286,25 @@ const FREE_CHAPTERS = {
    par défaut, le temps que refreshAuthUI() détermine l'état réel de la session). */
 let restrictedVisitor = true;
 function isChapterFree(lvl, titre){ return (FREE_CHAPTERS[lvl]||[]).includes(titre); }
+/* Compte Famille (parent ou enfant, voir famille.js) : seuls les niveaux payés, et le niveau
+   inférieur de chacun en révision, sont ouverts -- les autres chapitres restent verrouillés
+   comme pour un visiteur (sauf les chapitres gratuits). */
+function isChapterLocked(lvl, titre){
+  if(isChapterFree(lvl, titre)) return false;
+  if(restrictedVisitor) return true;
+  return typeof familleNiveaux!=='undefined' && Array.isArray(familleNiveaux) && !familleNiveaux.includes(lvl);
+}
+function lockedChapterLabel(){
+  return (typeof familleNiveaux!=='undefined' && Array.isArray(familleNiveaux) && !restrictedVisitor) ? 'hors de votre accès Famille' : 'réservé aux inscrits';
+}
+function onLockedChapterClick(){
+  if(typeof familleNiveaux!=='undefined' && Array.isArray(familleNiveaux) && !restrictedVisitor){
+    if(currentUserRole==='parent'){ showView('view-famille'); setActiveTopnav('famille'); renderFamille(); }
+    else niceAlert('Ce niveau ne fait pas partie de ton accès. Demande à tes parents de l\'ajouter depuis leur Espace famille.');
+    return;
+  }
+  openProfSignupModal();
+}
 function renderNiveau(lvl){
   document.getElementById('niveau-title').textContent = 'Progression de '+lvl;
   const data = CHAPITRES_BY_LEVEL[lvl] || CH6;
@@ -547,9 +569,9 @@ function renderTheme(data, lvl){
       <div class="chap-grid">`;
     items.forEach(c=>{
       const ready = !!DEMO_REGISTRY[lvl+'|'+c.t];
-      const locked = restrictedVisitor && !isChapterFree(lvl, c.t);
+      const locked = isChapterLocked(lvl, c.t);
       html += `<div class="chap-card ${ready?'ready':''} ${locked?'locked':''}" style="border-left-color:${CATS[cat].text}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
-        ${locked?'<span class="status lock-status"><span class=gicon>lock</span> réservé aux inscrits</span>':(ready?'':'<span class="status">à venir</span>')}
+        ${locked?'<span class="status lock-status"><span class=gicon>lock</span> '+lockedChapterLabel()+'</span>':(ready?'':'<span class="status">à venir</span>')}
         <div class="code">${c.code} · ch. ${c.n}</div>
         <div class="titre">${c.dispT||c.t}</div>
         <div class="meta"><span>p. ${c.p}</span><span>${c.s} sem.</span></div>
@@ -561,7 +583,7 @@ function renderTheme(data, lvl){
   box.innerHTML=html;
   box.querySelectorAll('.chap-card').forEach(card=>{
     card.addEventListener('click',()=>{
-      if(card.classList.contains('locked')){ openProfSignupModal(); return; }
+      if(card.classList.contains('locked')){ onLockedChapterClick(); return; }
       openChapitre({code:card.dataset.code,cat:card.dataset.cat,t:card.dataset.t,p:card.dataset.p,s:card.dataset.s,d:card.dataset.d});
     });
   });
@@ -625,11 +647,11 @@ function renderFrise(data, lvl){
     // Indépendant de la progression calendaire ci-dessus : est-ce que le contenu du
     // chapitre (cours/méthode/exercices) a déjà été créé sur le site, ou pas encore ?
     const hasContent = !!DEMO_REGISTRY[lvl+'|'+c.t];
-    const locked = restrictedVisitor && !isChapterFree(lvl, c.t);
+    const locked = isChapterLocked(lvl, c.t);
     html += `<div class="tl-item${done?' tl-done':''}${locked?' locked':''}" data-code="${c.code}" data-cat="${c.cat}" data-t="${c.t}" data-p="${c.p}" data-s="${c.s}" data-d="${c.d}">
       <span class="dot" style="background:${CATS[c.cat].text}"></span>
       <span class="titre">${c.dispT||c.t}</span>
-      ${locked?'<span class="tl-content-badge missing lock-status"><span class=gicon>lock</span> réservé aux inscrits</span>':`<span class="tl-content-badge ${hasContent?'ready':'missing'}" title="${hasContent?'Contenu du site déjà créé':'Contenu du site pas encore créé'}">${hasContent?'<span class=gicon>public</span> En ligne':'<span class=gicon>edit</span> À créer'}</span>`}
+      ${locked?'<span class="tl-content-badge missing lock-status"><span class=gicon>lock</span> '+lockedChapterLabel()+'</span>':`<span class="tl-content-badge ${hasContent?'ready':'missing'}" title="${hasContent?'Contenu du site déjà créé':'Contenu du site pas encore créé'}">${hasContent?'<span class=gicon>public</span> En ligne':'<span class=gicon>edit</span> À créer'}</span>`}
       <span class="dates">${c.code} · ${c.d}</span>
       ${done?'<span class="tl-check" title="Chapitre déjà traité (date passée)">✓</span>':''}
     </div>`;
@@ -641,7 +663,7 @@ function renderFrise(data, lvl){
   box.innerHTML=html;
   box.querySelectorAll('.tl-item').forEach(card=>{
     card.addEventListener('click',()=>{
-      if(card.classList.contains('locked')){ openProfSignupModal(); return; }
+      if(card.classList.contains('locked')){ onLockedChapterClick(); return; }
       openChapitre({code:card.dataset.code,cat:card.dataset.cat,t:card.dataset.t,p:card.dataset.p,s:card.dataset.s,d:card.dataset.d});
     });
   });
@@ -2263,9 +2285,14 @@ async function refreshAuthUI(){
     currentUser = session.user;
     const { data: profile } = await sb.from('profiles').select('role,nom,prenom,uai,signup_status,subscription_status,subscription_expires_at,must_change_password').eq('id', currentUser.id).single();
     currentUserRole = profile ? profile.role : null;
+    // Offre Famille (parent, ou enfant d'une famille) : niveaux ouverts -- voir famille.js.
+    const prevFamilleNiveaux = JSON.stringify(typeof familleNiveaux!=='undefined' ? familleNiveaux : null);
+    if(typeof familleLoad==='function') await familleLoad(currentUserRole);
+    const familleChanged = prevFamilleNiveaux !== JSON.stringify(typeof familleNiveaux!=='undefined' ? familleNiveaux : null);
+    const isFamilleEnfant = currentUserRole==='eleve' && typeof famState!=='undefined' && !!famState;
     // Référent d'établissement, et licence de l'établissement (couvre tous ses professeurs).
     currentReferentEtab = null; currentEtabLicence = null;
-    if(profile && profile.role!=='eleve'){
+    if(profile && profile.role!=='eleve' && profile.role!=='parent'){
       const todayStr = new Date().toISOString().slice(0,10);
       const [{ data: refEtab }, { data: myEtab }] = await Promise.all([
         sb.from('etablissements').select('uai,nom,licence_until,site_key_allowed,site_key_monthly_cap').eq('referent_id', currentUser.id).maybeSingle(),
@@ -2295,7 +2322,7 @@ async function refreshAuthUI(){
       document.getElementById('accountRoleDisplay').innerHTML = '<span class=gicon>warning</span> Abonnement expiré. Contactez contact@latelieraugmente.fr pour le renouveler.';
     } else {
       document.getElementById('accountRoleDisplay').textContent =
-        (currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='eleve' ? 'Élève' : '')
+        (currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='parent' ? 'Parent · compte Famille' : isFamilleEnfant ? 'Élève · compte Famille' : currentUserRole==='eleve' ? 'Élève' : '')
         + (currentReferentEtab ? ' · référent '+(currentReferentEtab.nom||currentReferentEtab.uai) : '')
         + (currentEtabLicence && currentUserRole==='prof' ? ' · licence établissement jusqu\'au '+new Date(currentEtabLicence+'T00:00:00').toLocaleDateString('fr-FR') : '');
     }
@@ -2312,9 +2339,11 @@ async function refreshAuthUI(){
     const isStaff = !accessBlocked && (currentUserRole==='admin' || currentUserRole==='prof');
     isStaffGlobal = isStaff;
     if(navCorrection) navCorrection.style.display = isStaff ? 'inline-block' : 'none';
-    if(navCahier) navCahier.style.display = accessBlocked ? 'none' : 'inline-block'; // accessible à tous les comptes connectés (prof, admin, élève), sauf accès bloqué
+    if(navCahier) navCahier.style.display = (accessBlocked || currentUserRole==='parent') ? 'none' : 'inline-block'; // accessible à tous les comptes connectés (prof, admin, élève), sauf accès bloqué
     if(navMesResultats) navMesResultats.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
-    if(navMesDevoirs) navMesDevoirs.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
+    if(navMesDevoirs) navMesDevoirs.style.display = (!accessBlocked && currentUserRole==='eleve' && !isFamilleEnfant) ? 'inline-block' : 'none';
+    const navFamille = document.getElementById('navFamille');
+    if(navFamille) navFamille.style.display = currentUserRole==='parent' ? 'inline-block' : 'none';
     if(navAdmin){
       navAdmin.style.display = (!accessBlocked && (currentUserRole==='admin' || currentReferentEtab)) ? 'inline-block' : 'none';
       navAdmin.textContent = currentUserRole==='admin' ? 'Administration' : 'Mon établissement';
@@ -2363,8 +2392,8 @@ async function refreshAuthUI(){
     // Restriction d'accès aux chapitres non gratuits : levée pour tout compte élève, et
     // pour un compte prof/admin approuvé et à jour (essai ou abonnement actif).
     const wasRestricted = restrictedVisitor;
-    restrictedVisitor = accessBlocked || !(currentUserRole==='eleve' || isStaff);
-    if(wasRestricted !== restrictedVisitor && currentLevel) renderNiveau(currentLevel);
+    restrictedVisitor = accessBlocked || !(currentUserRole==='eleve' || currentUserRole==='parent' || isStaff);
+    if((wasRestricted !== restrictedVisitor || familleChanged) && currentLevel) renderNiveau(currentLevel);
   } else {
     currentUser = null; currentUserRole = null; currentClassId = null; currentReferentEtab = null; currentEtabLicence = null; currentReferentEtab = null; currentEtabLicence = null;
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
@@ -2375,6 +2404,10 @@ async function refreshAuthUI(){
     if(navCahier) navCahier.style.display='none';
     if(navMesResultats) navMesResultats.style.display='none';
     if(navMesDevoirs) navMesDevoirs.style.display='none';
+    const navFamilleOut = document.getElementById('navFamille');
+    if(navFamilleOut) navFamilleOut.style.display='none';
+    const hadFamille = typeof familleNiveaux!=='undefined' && familleNiveaux!==null;
+    if(typeof familleClear==='function') familleClear();
     const navMesDevoirsBadgeOut = document.getElementById('navMesDevoirsBadge');
     if(navMesDevoirsBadgeOut) navMesDevoirsBadgeOut.style.display='none';
     if(navAdmin) navAdmin.style.display='none';
@@ -2396,10 +2429,13 @@ async function refreshAuthUI(){
 
     const wasRestrictedOut = restrictedVisitor;
     restrictedVisitor = true;
-    if(!wasRestrictedOut && currentLevel) renderNiveau(currentLevel);
+    if((!wasRestrictedOut || hadFamille) && currentLevel) renderNiveau(currentLevel);
   }
   // reflète l'état de connexion sur les boutons "+ Cahier" déjà injectés dans les cours ouverts
   updateCourseAddButtonsState();
+  // Espace famille affiché (connexion / déconnexion depuis cette page) : on le redessine.
+  const famView = document.getElementById('view-famille');
+  if(famView && famView.classList.contains('active') && typeof renderFamille==='function') renderFamille();
 }
 sb.auth.onAuthStateChange(()=>refreshAuthUI());
 
@@ -2556,6 +2592,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.695', items:[
+    "Offre Famille (pas encore annoncée : accessible par /#/famille et la page tarifs cachée) -- demandé : \"un particulier type famille pourrait acheter aussi un accès pour les cours et mettre sa propre clé IA\", \"Certifié au départ que les enfants ne sont pas scolarisés dans l'établissement du concepteur du site\", \"1 niveau/2 niveaux plus que nombre d'enfants\", \"C'est le parent qui gère les comptes des enfants\". Inscription du parent avec déclaration sur l'honneur (texte, date, IP et navigateur enregistrés) et acceptation des CGV. Espace famille : jusqu'à 4 comptes enfants (refus automatique si le collège déclaré figure dans la liste d'exclusion, 0541306B par défaut, modifiable dans Administration > Familles) ; paiement unique Stripe 29 € (1 niveau) / 45 € (2) / 59 € (collège complet) jusqu'au 31 août, sans reconduction, ajout d'un niveau à la différence ; chaque niveau ouvre aussi le niveau inférieur en révision ; suivi des résultats de chaque enfant ; IA avec la clé personnelle du parent, activée, limitée et choisie outil par outil pour chaque enfant ; suppression du compte. Nouvelles pages : conditions générales de vente (/#/cgv) et politique de confidentialité complétée (comptes Famille, mineurs, IA).",
+  ]},
   { version:'2026-08-19.694', items:[
     "Facturation, signature des devis en ligne -- demandé : \"le faire signer en ligne par code\". Bouton « Envoyer pour signature » sur un devis : l'établissement reçoit par e-mail un lien personnel vers le devis, indique son nom et sa qualité, coche « Bon pour accord » et valide avec un code à 6 chiffres reçu par e-mail (15 minutes, 5 essais, 5 codes par lien). La preuve est conservée (nom, qualité, date, adresse IP, navigateur, empreinte SHA-256 du devis) ; le devis passe en « Commande reçue », la licence de l'établissement s'ouvre, et vous recevez un e-mail. Le PDF du devis porte la mention « Bon pour accord – signé électroniquement ». Un nouvel envoi remplace le lien précédent.",
   ]},

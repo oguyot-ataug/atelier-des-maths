@@ -19,12 +19,15 @@ const ROUTE_SIMPLE = {
   'view-cm':'cm', 'view-compte':'compte', 'view-correction':'correction',
   'view-evaluation':'evaluation', 'view-tableau':'tableau', 'view-cahier-eleve':'cahier',
   'view-admin':'admin', 'view-supervision':'supervision', 'view-mesresultats':'mesresultats',
-  'view-ia':'ia',
+  'view-ia':'ia', 'view-famille':'famille', 'view-cgv':'cgv',
+  'view-confidentialite':'confidentialite', 'view-mentions-legales':'mentions-legales',
 };
 const ROUTE_LABELS = {
   cm:'Suivi', compte:'Objectif Nombre', correction:'Correction', evaluation:'Évaluation',
   tableau:'Tableau interactif', cahier:'Cahier élève', admin:'Administration',
   supervision:'Supervision', mesresultats:'Mes résultats', ia:'Intelligence artificielle',
+  famille:'Espace famille', cgv:'Conditions générales de vente', confidentialite:'Confidentialité',
+  'mentions-legales':'Mentions légales',
 };
 /* Routes reservees (role requis), miroir exact des gardes déjà présentes dans le
    gestionnaire de clic data-nav de app.js -- ne pas les dupliquer ailleurs. */
@@ -164,6 +167,10 @@ function routerRestoreFromHash(){
         showView('view-supervision'); setActiveTopnav('supervision'); renderSupervision(); renderSupervisionCeb();
       } else if(key==='ia'){
         showView('view-ia'); setActiveTopnav(null); if(typeof renderIaPage==='function') renderIaPage();
+      } else if(key==='famille'){
+        showView('view-famille'); setActiveTopnav('famille'); if(typeof renderFamille==='function') renderFamille();
+      } else if(key==='cgv' || key==='confidentialite' || key==='mentions-legales'){
+        showView('view-'+key); setActiveTopnav(null);
       } else if(key==='mesresultats'){
         showView('view-mesresultats'); setActiveTopnav('mesresultats'); renderMesResultats();
       } else {

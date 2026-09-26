@@ -35,6 +35,8 @@ function applyAiAccessClasses(){
   const on = new Set();
   const a = aiAccess;
   if(a && (a.role==='prof' || a.role==='admin') && a.self) AI_BODY_CLASSES.forEach(c=>on.add(c));
+  // Parent (offre Famille) : tous les outils IA sauf ceux réservés aux professeurs (évaluation).
+  if(a && a.role==='parent' && a.self) AI_BODY_CLASSES.filter(c=>c!=='ai-eval').forEach(c=>on.add(c));
   if(a && a.role==='eleve' && a.features){
     if(a.features.quiz) on.add('ai-quiz');
     if(a.features.figure) on.add('ai-figure');
