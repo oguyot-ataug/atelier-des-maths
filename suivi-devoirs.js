@@ -2,17 +2,17 @@
    SUIVI-DEVOIRS.JS -- Tentatives et temps de travail RÉEL sur les devoirs
    Demandé : "Dans les résultats des devoirs, est-ce qu'on peut voir le nombre de tentatives
    des élèves et le temps passé réellement dessus ?" -- puis : "L'élève peut être en pause une
-   minute facilement sur un compte est bon ! Il cherche, ce n'est pas facile. Pour les
+   minute facilement sur un Objectif Nombre ! Il cherche, ce n'est pas facile. Pour les
    automatismes, ok."
 
    Chaque séance de travail d'un élève sur un devoir (une tentative de séquence d'automatismes,
-   un compte du Compte est bon, une séance dans l'outil de figure) est une ligne de
+   un compte d'Objectif Nombre, une séance dans l'outil de figure) est une ligne de
    devoir_sessions. Le temps ACTIF n'avance que si :
      - l'onglet est visible (changer d'onglet ou d'application met en pause),
-     - l'activité est à l'écran (modale d'automatismes ouverte, vue Compte est bon affichée,
+     - l'activité est à l'écran (modale d'automatismes ouverte, vue Objectif Nombre affichée,
        outil de figure ouvert),
      - l'élève n'est pas inactif depuis trop longtemps : 1 minute pour les automatismes (des
-       calculs rapides), 5 minutes pour le Compte est bon et les figures (chercher sans toucher
+       calculs rapides), 5 minutes pour Objectif Nombre et les figures (chercher sans toucher
        à rien fait partie du travail).
    Quand l'élève dépasse ce seuil (vraiment parti), l'attente déjà comptée depuis sa dernière
    action est retirée. Une séance quittée sans être finie est « abandonnée ». Le temps est enregistré toutes les
@@ -100,7 +100,7 @@ function dsCMStart(){
 }
 function dsCMEnd(statut){ if(dsCM){ dsEnd(dsCM, statut); dsCM = null; } }
 
-/* ---------- Compte est bon ---------- */
+/* ---------- Objectif Nombre ---------- */
 let dsCEB = null;
 function dsCEBStart(){
   if(dsCEB) dsEnd(dsCEB, 'abandonnee'); // nouveau compte alors que le précédent n'était pas validé

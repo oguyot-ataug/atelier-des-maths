@@ -269,7 +269,7 @@ function closeCMModal(){
     renderDevoirsEleve();
   }
 }
-/* Bouton "↩ Retour à la création du devoir" -- signalé (à propos de Compte est bon, puis étendu
+/* Bouton "↩ Retour à la création du devoir" -- signalé (à propos d'Objectif Nombre, puis étendu
    aux autres types) : "pouvoir tester et revenir au menu quand on valide ou annule". Ferme la
    modale ET ramène au formulaire du devoir (returnToDevoirCreationFromTest, devoirs.js), qu'on
    ait validé (Corriger) ou pas. */
@@ -282,7 +282,7 @@ function cmDevoirTestBtnHtml(){
     ? `<button class="btn secondary" onclick="returnToDevoirCreationFromCMTest()">↩ Retour à la création du devoir</button>` : '';
 }
 /* Couleur du thème (groupe de la séquence, voir CM_GROUPS) appliquée à la carte de jeu --
-   demandé : "rendre la fenêtre plus sexy, un peu comme le compte est bon" (carte dégradée
+   demandé : "rendre la fenêtre plus sexy, un peu comme Objectif Nombre" (carte dégradée
    sombre à la place du fond blanc austère). */
 function cmGameStyle(){
   const g = currentCMSeq ? cmGroupFor(currentCMSeq.seq) : CM_GROUPS[1];

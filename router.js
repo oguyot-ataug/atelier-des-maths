@@ -22,7 +22,7 @@ const ROUTE_SIMPLE = {
   'view-ia':'ia',
 };
 const ROUTE_LABELS = {
-  cm:'Suivi', compte:'Mon compte', correction:'Correction', evaluation:'Évaluation',
+  cm:'Suivi', compte:'Objectif Nombre', correction:'Correction', evaluation:'Évaluation',
   tableau:'Tableau interactif', cahier:'Cahier élève', admin:'Administration',
   supervision:'Supervision', mesresultats:'Mes résultats', ia:'Intelligence artificielle',
 };

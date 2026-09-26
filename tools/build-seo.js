@@ -290,9 +290,9 @@ function teachersPage() {
     ['architecture', 'Tableau interactif de géométrie', "Règle, équerre, réquerre, compas et rapporteur à manipuler comme au tableau, avec zoom : idéal pour montrer les gestes de construction à toute la classe."],
     ['auto_awesome', 'Constructions géométriques animées par IA', "Écrivez l'énoncé (« construire un triangle ABC tel que… ») : la construction se dessine pas à pas avec les vrais instruments, codages et longueurs, en choisissant les outils autorisés."],
     ['menu_book', 'Cahier de corrections partagé', "Chaque correction est archivée par classe et par date, partagée avec vos collègues du même niveau, consultable en ligne et imprimable."],
-    ['assignment_turned_in', 'Devoirs en ligne', "Automatismes, « Le compte est bon » ou fichier à rendre : vous voyez qui a rendu, qui est en retard, les scores et les médailles en temps réel."],
+    ['assignment_turned_in', 'Devoirs en ligne', "Automatismes, « Objectif Nombre » ou fichier à rendre : vous voyez qui a rendu, qui est en retard, les scores et les médailles en temps réel."],
     ['edit_note', 'Évaluations', "Rédaction manuelle ou assistée par IA, mise en page en colonnes, impression fidèle à l'écran."],
-    ['pin', 'Automatismes et calcul mental', "112 séquences d'automatismes générées et corrigées automatiquement, et « Le compte est bon » pour muscler le calcul mental."],
+    ['pin', 'Automatismes et calcul mental', "112 séquences d'automatismes générées et corrigées automatiquement, et « Objectif Nombre » pour muscler le calcul mental."],
     ['bar_chart', 'Suivi des classes', "Progression des automatismes et résultats de chaque élève, classe par classe."],
     ['domain', 'Gestion d\'établissement', "Un professeur référent gère les comptes de son collège : import des élèves et des classes, validation des collègues, licence établissement et clé IA commune."],
   ];

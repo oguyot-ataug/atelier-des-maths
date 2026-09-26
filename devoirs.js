@@ -10,7 +10,7 @@
 document.getElementById('view-devoirs-prof').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;"><span class=gicon>assignment</span> Devoirs</h1>
-  <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, ou un défi Compte est bon.</p>
+  <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, ou un défi Objectif Nombre.</p>
 
   <div class="tool-shell devoir-zone-create">
     <p class="example-title devoir-zone-title" style="margin-bottom:6px;" id="devoirCreateTitle"><span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir</p>
@@ -102,13 +102,13 @@ const DEVOIR_TYPES = [
   {id:'figure', label:'Figure à construire (libre)', icon:'draw', color:'#0C5BA0'},
   {id:'figure_completer', label:'Figure à compléter', icon:'auto_fix_high', color:'#26AAB1'},
   {id:'automatismes', label:'Automatismes', icon:'bolt', color:'#FF8208'},
-  {id:'compte_est_bon', label:'Compte est bon', icon:'casino', color:'#9E1F5E'},
+  {id:'compte_est_bon', label:'Objectif Nombre', icon:'casino', color:'#9E1F5E'},
 ];
 let devoirNewType = 'fichier';
 let devoirNewFigureDepart = null; // serializeFigState(...) de la figure de départ (type=figure_completer)
 let devoirNewAutomatismesSeqs = new Set(); // sequence_id choisis (type=automatismes)
 let devoirNewCebNLarge = 2, devoirNewCebTimerOn = true, devoirNewCebTimerDuration = 60, devoirNewCebRounds = 1; // type=compte_est_bon
-/* Tirages Compte est bon réellement en brouillon -- {numbers,target,solutionExpr,solutionValue,
+/* Tirages Objectif Nombre réellement en brouillon -- {numbers,target,solutionExpr,solutionValue,
    tested} par compte. Générés dès qu'affichés (ou chargés depuis un devoir existant en édition),
    modifiés en place par régénération individuelle -- c'est ce tableau, tel quel, qui est
    enregistré à la sauvegarde (voir createDevoir). Signalé : "il faudrait que je puisse les
@@ -186,7 +186,7 @@ function toggleDevoirAutomatismesSeq(id, checked){
   if(checked) devoirNewAutomatismesSeqs.add(id); else devoirNewAutomatismesSeqs.delete(id);
   document.getElementById('devoirAutomatismesCount').textContent = devoirNewAutomatismesSeqs.size;
 }
-/* Mini-picker autonome pour les réglages Compte est bon -- plutôt qu'une réutilisation directe
+/* Mini-picker autonome pour les réglages Objectif Nombre -- plutôt qu'une réutilisation directe
    de cebRenderSetup() (compte-est-bon.js), fortement couplée à sa propre mise en page/état de
    jeu (#cebRoot, cebSettings...), plus risquée à réemployer ici pour juste 2 réglages. */
 function renderDevoirCebPicker(){
@@ -315,7 +315,7 @@ async function testDevoirFigureCompleter(){
   const closeBtn = document.getElementById('figCloseBtn');
   if(closeBtn) closeBtn.textContent = 'Fermer';
 }
-let devoirTestModeActive = false; // vrai pendant un test "Compte est bon" lancé depuis le formulaire
+let devoirTestModeActive = false; // vrai pendant un test "Objectif Nombre" lancé depuis le formulaire
 /* compte-est-bon.js (chargé après devoirs.js) lit devoirTestModeActive pour proposer "Retour à la
    création du devoir" plutôt que "Compte suivant" en fin de partie. Teste le tirage EXACT de ce
    compte (et pas un tirage aléatoire à part) : c'est bien celui-là qui sera assigné aux élèves si
@@ -342,7 +342,7 @@ function returnToDevoirCreationFromTest(){
 }
 async function renderDevoirsProf(){
   const select = document.getElementById('devoirNewClasse');
-  const previousValue = select.value; // préserve la classe déjà choisie (ex. retour d'un test Compte est bon)
+  const previousValue = select.value; // préserve la classe déjà choisie (ex. retour d'un test Objectif Nombre)
   select.innerHTML = (accountClassesList||[]).map(c=>`<option value="${c.id}">${escapeHtml(c.label)}</option>`).join('') || '<option value="">Aucune classe</option>';
   if(previousValue && Array.from(select.options).some(o=>o.value===previousValue)) select.value = previousValue;
   renderDevoirTargetModePicker();
@@ -377,7 +377,7 @@ async function createDevoir(){
     // le prof ne le régénère pas explicitement (bouton "Régénérer", ou changement de difficulté/
     // nombre de comptes) -- c'est donc lui, tel quel, qu'on enregistre, plutôt que de reproduire
     // séparément la même logique de génération ici.
-    if(!devoirNewCebRoundsData.length){ status.textContent = "Erreur : les tirages Compte est bon n'ont pas pu être générés."; return; }
+    if(!devoirNewCebRoundsData.length){ status.textContent = "Erreur : les tirages Objectif Nombre n'ont pas pu être générés."; return; }
     payload.ceb_rounds = devoirNewCebRoundsData.map(r=>({numbers:r.numbers, target:r.target, solutionExpr:r.solutionExpr, solutionValue:r.solutionValue}));
   }
   const { error } = devoirEditingId
@@ -896,7 +896,7 @@ async function saveDevoirFeedback(renduId, studentId){
    rendu leur travail alors qu'ils auraient encore pu améliorer leur score... permettre au
    professeur de changer le statut d'un devoir rendu en 'À reprendre', pour signaler à l'élève
    que j'attends plus de lui". Repasse aussi est_rendu à false : pour Automatismes (déverrouille
-   les séquences, voir isRendu dans renderDevoirsEleve) et Compte est bon (déverrouille les
+   les séquences, voir isRendu dans renderDevoirsEleve) et Objectif Nombre (déverrouille les
    comptes déjà trouvés, voir le blocage anti-triche de build 617), sinon le statut "À reprendre"
    contredirait un verrou "devoir rendu" toujours actif. Redevient "Rendu" tout seul au prochain
    envoi de l'élève (voir submitDevoirAutomatismes, refreshDevoirCEBProgress, submitDevoirFile,
@@ -1330,7 +1330,7 @@ async function submitCurrentFigureAsDevoir(){
   await niceAlert('Devoir rendu avec succès.');
   await renderDevoirsEleve();
 }
-/* Devoir "automatismes" : contrairement au compte est bon, il n'y a pas de critère de réussite
+/* Devoir "automatismes" : contrairement à Objectif Nombre, il n'y a pas de critère de réussite
    objectif (une séquence n'est jamais "trouvée" ou pas) -- signalé : "pour les autres devoirs,
    on peut tenter plusieurs fois, essayer d'améliorer... avoir un bouton rendre permet de
    boucler totalement le devoir". Le rendu est donc une action explicite de l'élève
@@ -1346,10 +1346,10 @@ async function submitDevoirAutomatismes(devoirId){
   if(error){ await niceAlert('Erreur : '+error.message); return; }
   await renderDevoirsEleve();
 }
-/* Devoir "compte est bon" : contrairement aux automatismes, chaque compte a un critère de
+/* Devoir "Objectif Nombre" : contrairement aux automatismes, chaque compte a un critère de
    réussite objectif (trouver EXACTEMENT la cible) -- le rendu reste donc automatique, mais
    seulement une fois que TOUS les comptes assignés ont été trouvés exactement, pas simplement
-   tentés -- signalé : "pour le compte est bon, le rendu se fait quand on a tout trouvé
+   tentés -- signalé : "pour Objectif Nombre, le rendu se fait quand on a tout trouvé
    automatiquement". Appelée par compte-est-bon.js après chaque tentative enregistrée dans le
    contexte d'un devoir. */
 async function refreshDevoirCEBProgress(devoirId){

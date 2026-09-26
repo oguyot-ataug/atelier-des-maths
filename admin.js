@@ -1159,7 +1159,7 @@ async function adminSupprimerClasse(classId, className){
   const historyChecks = [
     {table:'permis_rapporteur_sessions', col:'classe_id', label:'des sessions de Permis Rapporteur'},
     {table:'permis_rapporteur_resultats', col:'classe_id', label:'des résultats de Permis Rapporteur'},
-    {table:'ceb_results', col:'class_id', label:'des résultats du Compte est bon'},
+    {table:'ceb_results', col:'class_id', label:"des résultats d'Objectif Nombre"},
     {table:'cm_results', col:'class_id', label:'des résultats d\'automatismes'},
     {table:'devoirs', col:'class_id', label:'des devoirs'},
     {table:'cahier_entries', col:'class_id', label:'des entrées de cahier'},

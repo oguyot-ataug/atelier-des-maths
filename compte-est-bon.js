@@ -1,5 +1,5 @@
 /* ============================================================
-   LE COMPTE EST BON
+   OBJECTIF NOMBRE
    Jeu de calcul mental inspiré de "Des chiffres et des lettres".
    -----------------------------------------------------------
    Principes :
