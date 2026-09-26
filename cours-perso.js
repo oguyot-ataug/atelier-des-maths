@@ -18,6 +18,13 @@
    remarques, exemples, paragraphes, listes) : un bloc qui contient une figure, un tableau ou
    un élément interactif ne l'est pas. Si le cours d'origine change ensuite ce bloc, la version
    réécrite par le professeur est conservée (et le nouveau texte d'origine apparaît à côté).
+   Étape 4 : figure dynamique ({k:'fig', l:titre, x:consigne, f:figure, vb:viewBox}). Elle se
+   construit avec l'outil de figure du site (outils-figures.js : points, segments, droites,
+   cercles, milieux, symétriques, codages, construction depuis un énoncé...) et se stocke au
+   format serializeFigState. Dans le cours, elle est dessinée par renderFigureSvg lui-même et
+   l'élève peut déplacer les points libres (ou posés sur un objet) : le reste suit, avec les
+   mêmes règles que dans l'outil (onFigureMouseMove). Toutes les chaînes de la figure sont
+   échappées avant le rendu (étiquettes, couleurs...).
 
    Principe : un onglet de chapitre est une suite plate d'éléments (encadrés, titres, figures,
    exemples...). On la découpe en BLOCS (une étiquette « Définition » / un titre d'exemple reste
@@ -186,6 +193,7 @@ const CP_KINDS = {
   ex:     { nom:'Exemple', icon:'lightbulb', label:'Exemple' },
   h1:     { nom:'Titre de paragraphe', icon:'title', titleOnly:true },
   h2:     { nom:'Sous-titre', icon:'format_size', titleOnly:true },
+  fig:    { nom:'Figure dynamique', icon:'category', fig:true },
 };
 const CP_MAX_TEXT = 3000;
 function cpRegistry(container){ return container._cpCustom || (container._cpCustom = new Map()); }
@@ -199,6 +207,123 @@ function cpCustomBlock(container, id, spec, orig){
   if(orig!==null || id.indexOf('u:')!==0) b.orig = orig;
   reg.set(id, b);
   return b;
+}
+
+/* ---------- figures dynamiques ---------- */
+function cpFigVB(vb){
+  return (Array.isArray(vb) && vb.length===4 && vb.every(Number.isFinite) && vb[2]>0 && vb[3]>0) ? vb : [0, 0, 500, 320];
+}
+/* Échappe toutes les chaînes (étiquettes, couleurs, textes de mesure...) : la figure vient de
+   la base et renderFigureSvg insère ses champs tels quels dans le SVG. */
+function cpFigClean(v){
+  // Idempotent : une chaîne déjà échappée (figure rouverte puis revalidée) ne l'est pas deux fois.
+  if(typeof v==='string') return cpEsc(v.replace(/&(lt|gt|quot|amp);/g, (m, e)=>({lt:'<', gt:'>', quot:'"', amp:'&'})[e]));
+  if(Array.isArray(v)) return v.map(cpFigClean);
+  if(v && typeof v==='object'){ const o = {}; for(const k in v) o[k] = cpFigClean(v[k]); return o; }
+  return (typeof v==='number' && !Number.isFinite(v)) ? 0 : v;
+}
+function cpFigState(f){
+  const r = deserializeFigState(cpFigClean(f));
+  return { points:r.points||[], shapes:r.shapes||[], mode:'deplacer', selected:[], refShape:null, nextLabel:0, lengthGroups:{}, angleGroups:{} };
+}
+const cpFigDraggable = p=>!p.def || p.def.type==='point-sur-droite' || p.def.type==='point-sur-cercle';
+/* Exécute fn avec la figure `st` comme figure courante de l'outil et `svgEl` comme #figureSvg
+   (renderFigureSvg, recomputeDependents, onFigureMouseMove travaillent sur ces deux globales). */
+function cpFigSwap(svgEl, st, fn){
+  const real = document.getElementById('figureSvg');
+  const savedState = figState, savedDrag = figDragPoint, oldId = svgEl.id;
+  if(real && real!==svgEl) real.id = 'figureSvg-cp';
+  svgEl.id = 'figureSvg';
+  figState = st;
+  try{ fn(); }
+  finally{
+    svgEl.id = oldId;
+    if(real && real!==svgEl) real.id = 'figureSvg';
+    figState = savedState; figDragPoint = savedDrag;
+  }
+}
+function cpFigRender(svgEl, st){
+  if(svgEl.isConnected) cpFigSwap(svgEl, st, renderFigureSvg);
+  else {
+    let scratch = document.getElementById('cpFigScratch');
+    if(!scratch){
+      scratch = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      scratch.id = 'cpFigScratch'; scratch.style.display = 'none';
+      document.body.appendChild(scratch);
+    }
+    cpFigSwap(scratch, st, renderFigureSvg);
+    svgEl.innerHTML = scratch.innerHTML;
+    scratch.innerHTML = '';
+  }
+  // Poignées : les points que l'élève peut déplacer.
+  const ns = 'http://www.w3.org/2000/svg';
+  st.points.filter(cpFigDraggable).forEach(p=>{
+    const c = document.createElementNS(ns, 'circle');
+    c.setAttribute('class', 'cp-fig-handle');
+    c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); c.setAttribute('r', 6);
+    svgEl.insertBefore(c, svgEl.firstChild);
+  });
+}
+function cpFigMount(svg, spec){
+  if(!spec.f || typeof deserializeFigState!=='function' || typeof renderFigureSvg!=='function') return;
+  let st;
+  try{ st = cpFigState(spec.f); cpFigRender(svg, st); }catch(e){ console.warn('figure :', e); return; }
+  let drag = null;
+  const at = ev=>{ const m = svg.getScreenCTM(); if(!m) return null; const q = svg.createSVGPoint(); q.x = ev.clientX; q.y = ev.clientY; return q.matrixTransform(m.inverse()); };
+  const near = q=>{
+    let best = null, bd = 16;
+    st.points.forEach(p=>{ if(!cpFigDraggable(p)) return; const d = Math.hypot(p.x-q.x, p.y-q.y); if(d<bd){ bd = d; best = p; } });
+    return best;
+  };
+  svg.addEventListener('pointerdown', ev=>{
+    const q = at(ev); if(!q) return;
+    const p = near(q); if(!p) return;
+    drag = p; ev.preventDefault();
+    try{ svg.setPointerCapture(ev.pointerId); }catch(e){}
+    svg.classList.add('cp-fig-dragging');
+  });
+  svg.addEventListener('pointermove', ev=>{
+    if(!drag){ const q = at(ev); svg.style.cursor = (q && near(q)) ? 'grab' : ''; return; }
+    ev.preventDefault();
+    // Même déplacement que dans l'outil de figure (contraintes, longueurs fixes, dépendants).
+    cpFigSwap(svg, st, ()=>{ figDragPoint = drag; figDragLabel = null; figDragMeasure = null; onFigureMouseMove(ev); });
+    cpFigRender(svg, st);
+  });
+  const end = ()=>{ if(!drag) return; drag = null; svg.classList.remove('cp-fig-dragging'); svg.style.cursor = ''; };
+  svg.addEventListener('pointerup', end);
+  svg.addEventListener('pointercancel', end);
+  const reset = svg.parentElement && svg.parentElement.querySelector('.cp-fig-reset');
+  if(reset) reset.onclick = e=>{ e.stopPropagation(); st = cpFigState(spec.f); cpFigRender(svg, st); };
+}
+/* Ouvre l'outil de figure du site (vide, ou avec `data`) ; « Valider » rend la figure à `cb`. */
+let cpFigHook = null, cpFigPatched = false;
+function cpFigOpenEditor(data, cb){
+  if(typeof openFigureTool!=='function'){ alert('Outil de figure indisponible.'); return; }
+  if(!cpFigPatched){
+    cpFigPatched = true;
+    const ov = validateFigure, oc = closeFigureTool;
+    validateFigure = function(){
+      if(!cpFigHook) return ov.apply(this, arguments);
+      const f = serializeFigState(figState);
+      if(!f.points.length){ const h = document.getElementById('figureHint'); if(h) h.textContent = 'Placez au moins un point avant de valider.'; return; }
+      const hook = cpFigHook;
+      const vb = [figViewBox.x, figViewBox.y, figViewBox.w, figViewBox.h].map(v=>Math.round(v*10)/10);
+      closeFigureTool();
+      hook({ f, vb });
+    };
+    closeFigureTool = function(){
+      if(cpFigHook){
+        cpFigHook = null;
+        const b = document.getElementById('figValidateBtn');
+        if(b && b.dataset.cpText){ b.textContent = b.dataset.cpText; delete b.dataset.cpText; }
+      }
+      return oc.apply(this, arguments);
+    };
+  }
+  if(data && data.f) reopenFigure(cpFigClean(data.f)); else openFigureTool();
+  cpFigHook = cb;
+  const b = document.getElementById('figValidateBtn');
+  if(b){ if(!b.dataset.cpText) b.dataset.cpText = b.textContent; b.textContent = '✓ Valider la figure pour le cours'; }
 }
 
 /* ---------- réécriture d'un bloc d'origine ---------- */
@@ -286,6 +411,7 @@ function cpSpecFromBlock(b){
 function cpBuildBlock(id, spec, container){
   const holder = document.createElement('div');
   holder.innerHTML = cpRenderSpec(spec);
+  holder.querySelectorAll('svg.cp-fig').forEach(svg=>cpFigMount(svg, spec));
   const nodes = [...holder.children];
   nodes.forEach(n=>{ n.dataset.cpCustom = '1'; });
   // Mêmes boutons que le cours d'origine (+ Cahier, écouter, loupe, apprentissage).
@@ -345,6 +471,13 @@ function cpRenderSpec(spec){
     case 'ex': {
       const title = spec.np ? (label ? cpInline(label) : '') : label ? (/^exemple/i.test(label) ? cpInline(label) : 'Exemple : ' + cpInline(label)) : 'Exemple :';
       return (title ? `<p class="example-title">${title}</p>` : '') + `<div class="cp-rich cp-example">${cpRich(x, 'example-list').join('')}</div>`;
+    }
+    case 'fig': {
+      const consigne = x.trim() ? x.split('\n').map(cpInline).join('<br>') : 'Déplace les points pour faire varier la figure.';
+      return (label ? `<p class="example-title">${cpInline(label)}</p>` : '')
+        + `<div class="figure-wrap cp-fig-wrap"><svg class="cp-fig" viewBox="${cpFigVB(spec.vb).join(' ')}" role="img" aria-label="Figure dynamique"></svg>`
+        + `<div class="cp-fig-bar"><span class="hint" style="margin:0;"><span class="gicon" style="font-size:1em;vertical-align:-2px;">pan_tool_alt</span> ${consigne}</span>`
+        + `<button type="button" class="cp-fig-reset" title="Remettre la figure dans sa position de départ"><span class="gicon">restart_alt</span></button></div></div>`;
     }
     default: return `<div class="cp-rich cp-par">${cpRich(x).join('')}</div>`;
   }
@@ -517,6 +650,10 @@ function cpOpenForm(editW, anchor){
     ${origBlock!==undefined ? '<p class="hint" style="margin:-4px 0 10px;">Le texte d\'origine est conservé : le bouton <span class="gicon" style="font-size:1em;vertical-align:-2px;">undo</span> le rétablit à tout moment.</p>' : ''}
     <div class="cp-kinds">${Object.entries(CP_KINDS).map(([k,K])=>`<button type="button" data-k="${k}" class="${k===spec.k?'on':''}"><span class="gicon">${K.icon}</span> ${K.nom}</button>`).join('')}</div>
     <label class="cp-f-label"><span></span><input type="text" maxlength="160"></label>
+    <div class="cp-f-figrow">
+      <button type="button" class="btn secondary cp-f-figbtn"><span class="gicon">category</span> <span>Construire la figure</span></button>
+      <span class="hint" style="margin:0;">Outil de figure du site : points, segments, droites, cercles, milieux, symétriques, codages… ou construction automatique à partir d'un énoncé. Dans le cours, vos élèves pourront déplacer les points libres : le reste de la figure suit.</span>
+    </div>
     <div class="cp-f-textwrap">
       <div class="cp-tools">
         <button type="button" data-t="b" title="Gras : **texte**"><span class="gicon">format_bold</span></button>
@@ -536,15 +673,24 @@ function cpOpenForm(editW, anchor){
   const input = f.querySelector('input'), ta = f.querySelector('textarea');
   input.value = spec.l || ''; ta.value = spec.x || '';
   let kind = spec.k;
+  let figData = spec.f ? { f:spec.f, vb:spec.vb } : null;
+  f.querySelector('.cp-f-figbtn').onclick = ()=>cpFigOpenEditor(figData, d=>{ figData = d; refresh(); f.scrollIntoView({block:'center'}); });
   const refresh = ()=>{
     const K = CP_KINDS[kind];
     f.querySelectorAll('.cp-kinds button').forEach(b=>b.classList.toggle('on', b.dataset.k===kind));
-    f.querySelector('.cp-f-label span').textContent = K.titleOnly ? 'Titre' : (K.label ? 'Étiquette (facultatif)' : 'Titre (facultatif, non affiché)');
+    f.querySelector('.cp-f-label span').textContent = K.titleOnly ? 'Titre' : K.fig ? 'Titre au-dessus de la figure (facultatif)' : (K.label ? 'Étiquette (facultatif)' : 'Titre (facultatif, non affiché)');
     f.querySelector('.cp-f-label').style.display = (kind==='p' || kind==='box') ? 'none' : '';
-    input.placeholder = K.titleOnly ? 'ex. Le cercle' : kind==='ex' ? 'ex. calculer une longueur' : (K.label ? 'ex. ' + K.label + ' 3' : '');
+    input.placeholder = K.titleOnly ? 'ex. Le cercle' : kind==='ex' ? 'ex. calculer une longueur' : K.fig ? 'ex. Médiatrice d\'un segment' : (K.label ? 'ex. ' + K.label + ' 3' : '');
     f.querySelector('.cp-f-textwrap').style.display = K.titleOnly ? 'none' : '';
+    f.querySelector('.cp-tools').style.display = K.fig ? 'none' : '';
+    f.querySelector('.cp-f-figrow').style.display = K.fig ? '' : 'none';
+    f.querySelector('.cp-f-figbtn span:last-child').textContent = figData ? 'Modifier la figure' : 'Construire la figure';
+    ta.placeholder = K.fig ? 'Consigne pour l\'élève (facultatif), ex. Déplace le point A : que remarques-tu ?' : '';
     const prev = f.querySelector('.cp-f-preview');
-    prev.innerHTML = cpRenderSpec(Object.assign({ k:kind, l:input.value, x:ta.value }, spec.np && kind===spec.k ? {np:1} : {}));
+    if(K.fig && !figData){ prev.innerHTML = '<p class="hint" style="margin:0;">Construisez la figure pour la voir ici.</p>'; return; }
+    const pv = Object.assign({ k:kind, l:input.value, x:ta.value }, spec.np && kind===spec.k ? {np:1} : {}, K.fig ? { f:figData.f, vb:figData.vb } : {});
+    prev.innerHTML = cpRenderSpec(pv);
+    if(K.fig) prev.querySelectorAll('svg.cp-fig').forEach(svg=>cpFigMount(svg, pv));
     const num = prev.querySelector('.num'), let_ = prev.querySelector('.letter');
     if(num) num.textContent = '#'; if(let_) let_.textContent = '#';
   };
@@ -564,8 +710,8 @@ function cpOpenForm(editW, anchor){
   f.querySelector('.cp-f-ok').onclick = ()=>{
     const K = CP_KINDS[kind];
     const l = input.value.trim().slice(0,160), x = ta.value.replace(/\s+$/,'').slice(0, CP_MAX_TEXT);
-    if(K.titleOnly ? !l : !x.trim()){ f.querySelector('.cp-f-msg').textContent = K.titleOnly ? 'Écrivez le titre.' : 'Écrivez le texte du bloc.'; return; }
-    const newSpec = K.titleOnly ? { k:kind, l } : (kind==='p' || kind==='box') ? { k:kind, x } : { k:kind, l, x };
+    if(K.fig ? !figData : K.titleOnly ? !l : !x.trim()){ f.querySelector('.cp-f-msg').textContent = K.fig ? 'Construisez d\'abord la figure.' : K.titleOnly ? 'Écrivez le titre.' : 'Écrivez le texte du bloc.'; return; }
+    const newSpec = K.fig ? { k:kind, l, x, f:figData.f, vb:figData.vb } : K.titleOnly ? { k:kind, l } : (kind==='p' || kind==='box') ? { k:kind, x } : { k:kind, l, x };
     if(spec.np && kind===spec.k) newSpec.np = 1; // titre d'exemple / remarque d'origine gardé tel quel
     if(fromOrig && JSON.stringify(newSpec)===JSON.stringify(fromOrig)){ cpCloseForm(); return; } // rien de changé
     const id = eb ? eb.id : 'u:' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);

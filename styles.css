@@ -1159,3 +1159,13 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
 .cp-f-preview > :last-child{margin-bottom:0;}
 .cp-f-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;}
 .cp-eb-ctl{grid-auto-rows:30px;}
+/* Étape 4 : figures dynamiques ajoutées par le professeur */
+.cp-fig-wrap{padding:12px;}
+.cp-fig{display:block;width:100%;max-width:640px;height:auto;margin:0 auto;background:#fff;touch-action:none;user-select:none;-webkit-user-select:none;}
+.cp-fig-handle{fill:rgba(255,130,8,.16);stroke:rgba(255,130,8,.55);stroke-width:1;}
+#view-chapitre.lvl-5e .cp-fig-handle{fill:rgba(12,91,160,.14);stroke:rgba(12,91,160,.5);}
+.cp-fig-dragging{cursor:grabbing!important;}
+.cp-fig-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;}
+.cp-fig-reset{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;border:none;background:rgba(28,43,57,.07);color:var(--ink-soft);cursor:pointer;flex:0 0 auto;}
+.cp-fig-reset:hover{background:rgba(28,43,57,.14);color:var(--ink);}
+.cp-f-figrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 10px;}

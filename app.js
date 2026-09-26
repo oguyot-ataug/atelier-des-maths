@@ -2546,6 +2546,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.677', items:[
+    "Cours personnalisés, étape 4 -- demandé : \"Lance l'étape 4 : ajouter des figures dynamiques\". Nouveau type de bloc « Figure dynamique » : le bouton « Construire la figure » ouvre l'outil de figure du site (points, segments, droites, cercles, milieux, symétriques, points sur un objet, codages, et construction automatique à partir d'un énoncé). Titre et consigne pour l'élève facultatifs, aperçu manipulable dans le formulaire.",
+    "Dans le cours, la figure est vraiment dynamique : l'élève déplace les points libres (repérés par un halo), les points posés sur une droite ou un cercle glissent le long de leur objet, et tout ce qui en dépend (milieux, symétriques, cercles, segments de longueur fixe) suit, avec les mêmes règles que dans l'outil. Le bouton ↺ remet la figure dans sa position de départ. Fonctionne à la souris et au doigt.",
+    "La figure se modifie ensuite avec le crayon (l'outil s'ouvre avec la figure), se déplace, se masque ou se supprime comme les autres blocs ajoutés.",
+  ]},
   { version:'2026-08-19.676', items:[
     "Cours personnalisés, étape 3 -- demandé : \"Lance l'étape 3 : modifier le texte des blocs\". En mode « Personnaliser cet onglet », le crayon apparaît sur les blocs de texte du cours d'origine (titres, définitions, propriétés, règles, remarques, exemples, paragraphes et listes : 683 blocs sur 1023) ; le formulaire s'ouvre pré-rempli avec le texte du bloc (gras, formules et listes compris) et l'aperçu montre le résultat.",
     "Le texte d'origine n'est jamais perdu : il reste dans la page, masqué, et le bouton « Rétablir le texte d'origine » le fait revenir. Un bloc réécrit porte l'étiquette « Texte modifié par vous » pendant la personnalisation. Valider sans rien changer ne crée pas de réécriture ; tout rétablir redonne le cours d'origine (qui suit alors de nouveau toutes les mises à jour).",
