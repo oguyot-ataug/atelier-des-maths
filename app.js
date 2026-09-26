@@ -2546,6 +2546,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.681', items:[
+    "Page d'accueil -- demandé : \"La page d'accueil avec les nouveautés en insérant les vidéos (attention un lien pour ne pas trop prendre sur supabase)\". Nouvelle section « Nouveautés en vidéo » : constructions animées aux instruments, mode apprentissage, Automatismes et Compte est bon en devoir, cours personnalisables. Les vidéos (720p, 1 à 3 Mo) sont servies par le site lui-même, pas par Supabase, et ne se chargent qu'au clic sur lecture (seule une image d'aperçu est affichée avant).",
+    "Présentation d'accueil et listes « Pour les élèves » / « Pour les professeurs » mises à jour : mode apprentissage, cours personnalisables, tentatives et temps de travail réel des devoirs.",
+  ]},
   { version:'2026-08-19.680', items:[
     "Résultats des devoirs -- demandé : \"voir le nombre de tentatives des élèves et le temps passé réellement dessus\". Automatismes et Compte est bon : pour chaque séquence ou compte, nombre de tentatives (dont abandonnées) et temps de travail réel ; en tête de chaque élève, le total. Figures (à construire ou à compléter) : nombre de séances de travail, temps réel et nombre d'enregistrements. Colonnes Tentatives, Abandons et Temps de travail ajoutées à l'export CSV.",
     "Temps de travail réel : le chrono ne compte que si l'onglet est visible et l'activité à l'écran ; il s'arrête après 1 minute sans aucune action pour les automatismes, mais seulement après 5 minutes pour le Compte est bon et les figures -- précisé : \"L'élève peut être en pause une minute facilement sur un compte est bon ! Il cherche, ce n'est pas facile.\" Une séquence ou un compte quitté sans être validé est compté comme tentative abandonnée. Pour les tentatives faites avant cette version, seule la durée brute est connue : elle est affichée avec « ≈ … (pauses comprises) ».",
