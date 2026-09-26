@@ -711,6 +711,8 @@ function openChapitre(c, tab, lvlOverride){
   // n'était appelée que sur les conteneurs cours/méthode par chaque chapitre, jamais sur les
   // exercices. Fix universel ici, au lieu de modifier chaque fichier de chapitre un par un.
   if(demo) injectZoomButtons(document.getElementById(demo.exos));
+  // Cours personnalisés (cours-perso.js) : version du professeur ou de l'établissement.
+  if(typeof cpOnChapterOpen==='function') cpOnChapterOpen(demo||null);
   showView('view-chapitre');
 }
 document.querySelectorAll('.tab-btn').forEach(btn=>{
@@ -1100,7 +1102,7 @@ function closeExportPdfOptions(){
 // exporter".
 function populateExportParagraphChoices(){
   const box = document.getElementById('exportParagraphChoices');
-  const headers = getVisibleCoursContent().querySelectorAll(':scope > .lesson-header');
+  const headers = getVisibleCoursContent().querySelectorAll(':scope > .lesson-header:not(.cp-hidden)');
   if(!headers.length){ box.innerHTML = '<span class="hint">(chapitre sans paragraphes numérotés -- export intégral)</span>'; return; }
   box.innerHTML = Array.from(headers).map(h=>{
     const num = h.querySelector('.num')?.textContent.trim() || '';
@@ -1178,6 +1180,7 @@ async function exportCoursPDF(){
   const title = document.getElementById('chap-title').textContent || 'cours';
   await advanceAllStepDemosToEndAsync(content);
   const clone = content.cloneNode(true);
+  clone.querySelectorAll(':scope > .cp-hidden').forEach(el=>el.remove()); // blocs masqués par le professeur (cours personnalisé)
   filterCoursByParagraph(clone);
   blankOutSelectedBoxes(clone);
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
@@ -2318,6 +2321,7 @@ async function refreshAuthUI(){
     if(btnReportBug) btnReportBug.style.display = isStaff ? 'block' : 'none';
     const chapSuggestRow = document.getElementById('chapSuggestRow');
     if(chapSuggestRow) chapSuggestRow.style.display = isStaff ? 'block' : 'none';
+    if(typeof cpOnAuthChange==='function') cpOnAuthChange();
     // Bouton d'abonnement : uniquement pour les profs approuvés (pas admin, pas élève),
     // en essai ou dont l'abonnement a expiré -- pas pour un abonnement déjà actif.
     const btnSubscribe = document.getElementById('btnSubscribe');
@@ -2373,6 +2377,7 @@ async function refreshAuthUI(){
     if(btnReportBugOut) btnReportBugOut.style.display='none';
     const chapSuggestRowOut = document.getElementById('chapSuggestRow');
     if(chapSuggestRowOut) chapSuggestRowOut.style.display='none';
+    if(typeof cpOnAuthChange==='function') cpOnAuthChange();
     const btnGenerateQuiz = document.getElementById('btnGenerateQuiz'), quizLoginHint = document.getElementById('quizLoginHint');
     if(btnGenerateQuiz) btnGenerateQuiz.style.display='none';
     if(quizLoginHint) quizLoginHint.style.display='inline';
@@ -2541,6 +2546,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.674', items:[
+    "Cours personnalisés, étape 1 -- idée : \"un prof puisse s'attribuer les cours, les modifier, déplacer des éléments [...] Dans le menu méthodes et exercices, idem.\" Nouveau bouton « Personnaliser cet onglet » (professeurs) sous les onglets Cours, Méthode animée et Exercices : chaque bloc (titre, définition, propriété, exemple, figure...) se déplace par glisser-déposer ou avec les flèches, et se masque avec l'œil. Les figures restent interactives : ce sont les blocs d'origine qui sont déplacés, pas des copies.",
+    "Qui voit quoi -- décidé : \"Les élèves du profs voient la version modifiée. Les autres voient la version par défaut\". Un élève voit la version d'un de ses professeurs (mention « Cours adapté par ton professeur »), sinon celle de l'établissement, sinon le cours d'origine. Les blocs non modifiés continuent de suivre les mises à jour du cours d'origine ; un bloc ajouté plus tard au cours d'origine apparaît à sa place logique.",
+    "Partage établissement -- \"Très bonne idée le partage établissement\" : le référent peut « Enregistrer et publier pour l'établissement » ; tous les professeurs de l'établissement (sans version personnelle) et leurs élèves voient alors cette version. « Voir le cours d'origine » permet de comparer sans rien perdre ; « Revenir au cours d'origine » supprime sa version.",
+    "Les blocs masqués sont aussi retirés de l'export PDF et de l'ajout au cahier.",
+  ]},
   { version:'2026-08-19.673', items:[
     "Constructions animées (IA) -- signalé : \"pour la médiatrice au compas, le compas sort de l'écran. En fait il doit venir tout de suite piquer sur une extrémité du segment, puis seulement prendre un écartement suffisamment grand et faire ses arcs de cercle. À aucun moment le compas n'a besoin de prendre un écartement sur la règle !\". Médiatrice, bissectrice et perpendiculaire au compas : le compas pique directement sur le point, s'ouvre sur place puis trace ses arcs -- plus aucun passage par la règle pour un écartement libre.",
     "Écartement précis (rayon imposé en cm) -- signalé : \"la prise de dimension se retrouve hors champ, on ne voit pas le compas prendre sa dimension sur la règle\". La règle est désormais posée dans la partie visible du tableau, juste sous la figure, et non plus à un endroit fixe en bas du tableau (hors de la zone zoomée).",
@@ -6020,7 +6031,7 @@ async function addSectionToCahier(headerEl){
     const isNodeSub = node.classList && node.classList.contains('sub-header');
     if(isNodeLesson) break;
     if(!isLesson && isNodeSub) break;
-    wrapper.appendChild(node.cloneNode(true));
+    if(!node.classList.contains('cp-hidden')) wrapper.appendChild(node.cloneNode(true)); // bloc masqué (cours personnalisé)
     node = node.nextElementSibling;
   }
   wrapper.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
