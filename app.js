@@ -2556,6 +2556,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.692', items:[
+    "Facturation -- demandé : \"passer un devis en facture et intégrer le devis signé\". Chaque devis accepte une pièce jointe (devis signé ou bon de commande, PDF ou photo, 10 Mo au maximum), rangée dans un espace privé réservé à l'administrateur : depuis « Commande reçue » ou le bouton « Joindre » (« Remplacer » ensuite), consultable d'un clic dans la liste, et rappelée sur la facture correspondante. Nouveau bouton « Facturer » directement sur un devis émis : commande, licence, pièce jointe et facture en une seule étape.",
+  ]},
   { version:'2026-08-19.691', items:[
     "Facturation -- demandé : \"Ok pour la facture mais pour le devis ?\". Les devis indiquent désormais les conditions de paiement (délai, Chorus Pro et mandat administratif pour un établissement public, virement pour un privé), avec l'IBAN et le BIC sur leur propre ligne, sans coupure, comme sur les factures.",
   ]},

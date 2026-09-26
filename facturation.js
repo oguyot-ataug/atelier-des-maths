@@ -370,15 +370,20 @@ function facRenderDocs(){
       if(d.licence_until) suivi.push('licence jusqu\'au ' + facDate(d.licence_until));
       if(d.type === 'facture' && d.statut !== 'payee' && d.statut !== 'annule' && d.date_echeance) suivi.push('échéance ' + facDate(d.date_echeance));
       if(d.paye_le) suivi.push('payée le ' + facDate(d.paye_le));
+      if(d.piece_jointe) suivi.push(`<a href="#" onclick="facVoirPJ('${d.id}');return false;" style="color:#0C5BA0;font-weight:600;"><span class="gicon">attach_file</span> ${facEsc(d.piece_jointe_nom || 'pièce jointe')}</a>`);
       if(src) suivi.push('← ' + facEsc(src.numero));
+      if(src && src.piece_jointe && d.type === 'facture') suivi.push(`<a href="#" onclick="facVoirPJ('${src.id}');return false;" style="color:#0C5BA0;"><span class="gicon">attach_file</span> document signé du devis</a>`);
       const fact = d.type === 'devis' ? facState.docs.find(x=>x.source_id === d.id && x.type === 'facture') : null;
       if(fact) suivi.push('→ ' + facEsc(fact.numero));
       const act = [`<button class="btn secondary" onclick="facOpenPdf('${d.id}')"><span class="gicon">picture_as_pdf</span> PDF</button>`];
       if(d.type === 'devis' && d.statut === 'emis'){
         act.push(`<button class="btn" onclick="facCommande('${d.id}')">Commande reçue</button>`);
+        act.push(`<button class="btn" onclick="facCommande('${d.id}', true)" title="Enregistrer la commande et émettre la facture en une fois">Facturer</button>`);
         act.push(`<button class="btn secondary" onclick="facSetStatut('${d.id}','refuse')">Refusé</button>`);
       }
       if(d.type === 'devis' && d.statut === 'accepte' && !fact) act.push(`<button class="btn" onclick="facFacturer('${d.id}')">Facturer</button>`);
+      if(d.type === 'devis' && d.statut !== 'refuse' && d.statut !== 'annule')
+        act.push(`<button class="btn secondary" onclick="facJoindre('${d.id}')" title="Devis signé ou bon de commande (PDF ou image)"><span class="gicon">attach_file</span> ${d.piece_jointe ? 'Remplacer' : 'Joindre'}</button>`);
       if(d.type === 'facture' && d.statut === 'emis'){
         act.push(`<button class="btn" onclick="facPayee('${d.id}')">Payée</button>`);
         act.push(`<button class="btn secondary" onclick="facAvoir('${d.id}')">Annuler par un avoir</button>`);
@@ -407,18 +412,23 @@ async function facSetStatut(id, statut){
   facRefresh();
 }
 /* Commande reçue : n° d'engagement / bon de commande, et ouverture de la licence de l'établissement. */
-function facCommande(id){
+function facCommande(id, facturer){
   const d = facState.docs.find(x=>x.id === id); if(!d) return;
+  if(facturer && facEmetteurIncomplet()) return;
   const prive = (d.client||{}).statut === 'prive';
   facModal(`<strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">Commande reçue · ${facEsc(d.numero)}</strong>
     <label>${prive ? 'Référence du bon de commande (ou « devis signé »)' : 'Numéro d\'engagement (sur le bon de commande)'}<input type="text" id="facCmdNum" value="${facEsc(d.numero_engagement)}"></label>
     ${(d.client||{}).uai ? `<label>Ouvrir la licence de l'établissement jusqu'au<input type="date" id="facCmdLic" value="${d.periode_fin || ''}"><small style="font-weight:400;">Tous les professeurs de l'UAI ${facEsc(d.client.uai)} ont alors accès au site.</small></label>` : '<p class="hint">Pas d\'UAI sur la fiche : la licence n\'est pas ouverte automatiquement.</p>'}
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;"><button class="btn secondary" onclick="facCloseModal()">Annuler</button><button class="btn" onclick="facCommandeOk('${id}')">Enregistrer</button></div>`);
+    <label>${prive ? 'Devis signé' : 'Bon de commande'} (PDF ou photo, facultatif)<input type="file" id="facCmdFile" accept="application/pdf,image/*">${d.piece_jointe ? `<small style="font-weight:400;">Déjà joint : ${facEsc(d.piece_jointe_nom || 'pièce jointe')} (un nouveau fichier le remplace).</small>` : ''}</label>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap;"><button class="btn secondary" onclick="facCloseModal()">Annuler</button>
+      ${facturer ? `<button class="btn" onclick="facCommandeOk('${id}', true)">Enregistrer et émettre la facture</button>` : `<button class="btn" onclick="facCommandeOk('${id}')">Enregistrer</button>`}</div>`);
 }
-async function facCommandeOk(id){
+async function facCommandeOk(id, facturer){
   const d = facState.docs.find(x=>x.id === id); if(!d) return;
   const num = document.getElementById('facCmdNum').value.trim();
   const licEl = document.getElementById('facCmdLic'), lic = licEl ? licEl.value : '';
+  const file = (document.getElementById('facCmdFile').files || [])[0];
+  if(file && !(await facUploadPJ(d, file))) return;
   const { error } = await sb.from('facturation_documents').update({ statut:'accepte', numero_engagement:num, licence_until: lic || null }).eq('id', id);
   if(error){ niceAlert('Erreur : ' + error.message); return; }
   if(lic && d.client.uai){
@@ -429,8 +439,45 @@ async function facCommandeOk(id){
       : await sb.from('etablissements').insert({ uai: d.client.uai, nom: d.client.nom, licence_until: lic, licence_note: note });
     if(r.error){ niceAlert('Commande enregistrée, mais la licence n\'a pas pu être ouverte : ' + r.error.message); }
   }
-  facCloseModal(); facRefresh();
+  facCloseModal(); await facRefresh();
   if(typeof adminRefreshEtablissements === 'function') adminRefreshEtablissements();
+  if(facturer) facFacturer(id);
+}
+/* ---------- Pièce jointe (devis signé, bon de commande) : stockage privé « facturation » ---------- */
+const FAC_PJ_MAX = 10 * 1024 * 1024;
+async function facUploadPJ(d, file){
+  if(!/^(application\/pdf|image\/)/.test(file.type || '')){ niceAlert('Joignez un PDF ou une image (photo ou scan).'); return false; }
+  if(file.size > FAC_PJ_MAX){ niceAlert('Fichier trop lourd (10 Mo au maximum).'); return false; }
+  const ext = (file.name.split('.').pop() || 'pdf').toLowerCase().replace(/[^a-z0-9]/g, '') || 'pdf';
+  const path = `${d.numero}/${Date.now()}.${ext}`;
+  const up = await sb.storage.from('facturation').upload(path, file, { contentType: file.type, upsert: false });
+  if(up.error){ niceAlert('Échec de l\'envoi du fichier : ' + up.error.message); return false; }
+  const old = d.piece_jointe;
+  const { error } = await sb.from('facturation_documents').update({ piece_jointe: path, piece_jointe_nom: file.name.slice(0, 120) }).eq('id', d.id);
+  if(error){ await sb.storage.from('facturation').remove([path]); niceAlert('Erreur : ' + error.message); return false; }
+  if(old && old !== path) sb.storage.from('facturation').remove([old]);
+  d.piece_jointe = path; d.piece_jointe_nom = file.name.slice(0, 120);
+  return true;
+}
+function facJoindre(id){
+  const d = facState.docs.find(x=>x.id === id); if(!d) return;
+  const prive = (d.client||{}).statut === 'prive';
+  facModal(`<strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">Pièce jointe · ${facEsc(d.numero)}</strong>
+    <label>${prive ? 'Devis signé' : 'Bon de commande ou devis signé'} (PDF ou photo, 10 Mo au maximum)<input type="file" id="facPjFile" accept="application/pdf,image/*">${d.piece_jointe ? `<small style="font-weight:400;">Déjà joint : ${facEsc(d.piece_jointe_nom || 'pièce jointe')} (le nouveau fichier le remplace).</small>` : ''}</label>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;"><button class="btn secondary" onclick="facCloseModal()">Annuler</button><button class="btn" onclick="facJoindreOk('${id}')">Joindre</button></div>`);
+}
+async function facJoindreOk(id){
+  const d = facState.docs.find(x=>x.id === id); if(!d) return;
+  const file = (document.getElementById('facPjFile').files || [])[0];
+  if(!file){ niceAlert('Choisissez un fichier.'); return; }
+  if(await facUploadPJ(d, file)){ facCloseModal(); facRenderDocs(); }
+}
+async function facVoirPJ(id){
+  const d = facState.docs.find(x=>x.id === id); if(!d || !d.piece_jointe) return;
+  const w = window.open('', '_blank'); // ouverte tout de suite (sinon bloquée comme fenêtre surgissante)
+  const { data, error } = await sb.storage.from('facturation').createSignedUrl(d.piece_jointe, 300);
+  if(error || !data){ if(w) w.close(); niceAlert('Impossible d\'ouvrir la pièce jointe : ' + (error ? error.message : '')); return; }
+  if(w) w.location = data.signedUrl; else window.location.href = data.signedUrl;
 }
 async function facFacturer(id){
   const d = facState.docs.find(x=>x.id === id); if(!d) return;
