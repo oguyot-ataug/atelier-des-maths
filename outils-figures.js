@@ -1072,7 +1072,7 @@ function insertTableau(){
   });
   html += '</table>';
   addPendingBlock('tableau', html, {cols, rows, grid}, 'reopenTableau');
-  closeTableauTool();
+  hideTableauPanel(); // déjà inséré : fermer sans la question « Fermer sans insérer ? »
 }
 function reopenTableau(data){
   openTableauTool();
@@ -1321,7 +1321,7 @@ function insertConversionGrid(){
   }
   html += '</table>';
   addPendingBlock('conversion', html, {mode, values}, 'reopenConversionGrid');
-  closeConversionTool();
+  hideConversionPanel(); // déjà inséré : fermer sans la question « Fermer sans insérer ? »
 }
 function reopenConversionGrid(data){
   openConversionTool(data.mode);
