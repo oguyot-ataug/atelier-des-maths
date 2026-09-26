@@ -2592,6 +2592,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.696', items:[
+    "Mentions légales complétées -- demandé : \"complète les mentions légales avec le SIRET et l'adresse\". Éditeur : Olivier GUYOT (EI), nom commercial L'Atelier Augmenté, SIRET, adresse postale, téléphone, mention TVA 293 B et directeur de la publication.",
+  ]},
   { version:'2026-08-19.695', items:[
     "Offre Famille (pas encore annoncée : accessible par /#/famille et la page tarifs cachée) -- demandé : \"un particulier type famille pourrait acheter aussi un accès pour les cours et mettre sa propre clé IA\", \"Certifié au départ que les enfants ne sont pas scolarisés dans l'établissement du concepteur du site\", \"1 niveau/2 niveaux plus que nombre d'enfants\", \"C'est le parent qui gère les comptes des enfants\". Inscription du parent avec déclaration sur l'honneur (texte, date, IP et navigateur enregistrés) et acceptation des CGV. Espace famille : jusqu'à 4 comptes enfants (refus automatique si le collège déclaré figure dans la liste d'exclusion, 0541306B par défaut, modifiable dans Administration > Familles) ; paiement unique Stripe 29 € (1 niveau) / 45 € (2) / 59 € (collège complet) jusqu'au 31 août, sans reconduction, ajout d'un niveau à la différence ; chaque niveau ouvre aussi le niveau inférieur en révision ; suivi des résultats de chaque enfant ; IA avec la clé personnelle du parent, activée, limitée et choisie outil par outil pour chaque enfant ; suppression du compte. Nouvelles pages : conditions générales de vente (/#/cgv) et politique de confidentialité complétée (comptes Famille, mineurs, IA).",
   ]},
