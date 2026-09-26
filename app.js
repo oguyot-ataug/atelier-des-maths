@@ -2556,6 +2556,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.685', items:[
+    "Vidéo « Voir une figure se construire pas à pas » -- demandé : \"La figure se construit sous vos yeux plutôt que l'énoncé\". La carte d'ouverture de la vidéo dit désormais « La figure se construit sous vos yeux ».",
+  ]},
   { version:'2026-08-19.684', items:[
     "Accueil, Nouveautés -- signalé : \"Les constructions s'animent aux instruments : je n'aime pas ce titre, je ne comprends pas le sens !\". La vidéo s'intitule désormais « Voir une figure se construire pas à pas », avec une description plus explicite (on tape un énoncé, la figure se trace avec la règle, l'équerre, le compas et le rapporteur, étape par étape). Même formulation dans les pages de présentation des chapitres.",
     "Technique : pour un visiteur ou un élève sans cours personnalisé, le chapitre n'est plus reconstruit bloc par bloc à l'ouverture (le cours d'origine reste tel quel) ; les pages de présentation générées pour Google gardent ainsi leur mise en forme.",
