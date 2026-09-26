@@ -1186,3 +1186,7 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
 .cp-f-exo-del{border:none;background:none;cursor:pointer;color:var(--ink-soft);display:flex;padding:2px;}
 .cp-f-exo textarea{min-height:0;}
 .cp-form .cp-f-exo-c{background:#F2F3F5;}
+/* Constructions aux instruments ajoutées par le professeur */
+.cp-geo-fig{text-align:center;}
+.cp-geo-svg{display:inline-block;max-width:100%;height:auto;}
+.cp-f-georow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 10px;}

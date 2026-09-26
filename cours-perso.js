@@ -31,6 +31,12 @@
    partage entre collègues : une version « prof » marquée partage=true est proposée aux autres
    professeurs du même établissement (fonction cours_versions_partagees), qui peuvent
    l'afficher en aperçu puis la copier dans leur propre version.
+   Construction aux instruments ({k:'geo', l, x, e:énoncé, p:programme, t:outils, svg}) : créée
+   avec l'outil « Animation géométrique » (tableau-ia.js : énoncé -> construction calculée puis
+   tracée à la règle, l'équerre, le compas, le rapporteur). Le cours montre la figure finale
+   (SVG enregistré, filtré à l'affichage : éléments de dessin seulement, aucun script ni
+   lien) et « Voir la construction pas à pas » la rejoue dans le lecteur du site
+   (tbAiOpenPlayer), comme dans le cahier.
 
    Principe : un onglet de chapitre est une suite plate d'éléments (encadrés, titres, figures,
    exemples...). On la découpe en BLOCS (une étiquette « Définition » / un titre d'exemple reste
@@ -207,6 +213,7 @@ const CP_KINDS = {
   steps:  { nom:'Méthode pas à pas', icon:'format_list_numbered' },
   redac:  { nom:'Rédaction type', icon:'edit_note' },
   exo:    { nom:'Exercices', icon:'assignment', exo:true },
+  geo:    { nom:'Construction aux instruments', icon:'architecture', geo:true },
 };
 let cpUid = 0;
 const CP_MAX_TEXT = 3000;
@@ -234,6 +241,83 @@ function cpStepsMount(el){
     next.disabled = !items().some(x=>!x.classList.contains('done'));
   };
   if(reset) reset.onclick = e=>{ e.stopPropagation(); items().forEach(x=>x.classList.remove('done')); if(next) next.disabled = false; };
+}
+
+/* ---------- constructions aux instruments ---------- */
+const CP_SVG_TAGS = new Set(['svg','g','path','line','circle','ellipse','rect','polygon','polyline','text','tspan','defs','clipPath','marker','linearGradient','radialGradient','stop','pattern','mask','title','desc']);
+/* SVG enregistré -> nœud SVG sûr : analysé dans un document inerte, seuls les éléments de
+   dessin sont gardés, sans attribut d'événement ni lien. */
+function cpSafeSvg(str){
+  if(typeof str!=='string' || !str.trim()) return null;
+  const doc = new DOMParser().parseFromString(str, 'image/svg+xml');
+  const root = doc.documentElement;
+  if(!root || root.nodeName!=='svg' || doc.getElementsByTagName('parsererror').length) return null;
+  const clean = el=>{
+    [...el.children].forEach(ch=>{ if(!CP_SVG_TAGS.has(ch.nodeName)) ch.remove(); else clean(ch); });
+    [...el.attributes].forEach(a=>{
+      const n = a.name.toLowerCase(), v = a.value.toLowerCase();
+      if(n.startsWith('on') || n==='href' || n.endsWith(':href') || v.includes('javascript:') || (n==='style' && /url\(|expression/.test(v))) el.removeAttribute(a.name);
+    });
+  };
+  clean(root);
+  root.setAttribute('class', 'cp-geo-svg'); // largeur d'origine (figure à l'échelle), réduite si l'écran est plus étroit
+  return document.importNode(root, true);
+}
+function cpGeoMount(el, spec){
+  const fig = el.querySelector('.cp-geo-fig'), play = el.querySelector('.cp-geo-play');
+  const svg = cpSafeSvg(spec.svg);
+  if(fig){ fig.innerHTML = ''; if(svg) fig.appendChild(svg); else fig.innerHTML = '<p class="hint" style="margin:0;">Figure indisponible.</p>'; }
+  if(play){
+    if(!Array.isArray(spec.p) || typeof tbAiOpenPlayer!=='function') play.style.display = 'none';
+    else play.onclick = e=>{ e.stopPropagation(); tbAiOpenPlayer({ program:spec.p, tools:spec.t }); };
+  }
+}
+/* Ouvre l'outil « Animation géométrique » (vide, ou avec une construction existante) ;
+   « Insérer dans le cours » rend {e, p, t, svg} à `cb`. */
+let cpGeoHook = null, cpGeoPatched = false;
+function cpGeoRestoreBtn(){
+  const b = document.getElementById('geoAnimInsertBtn');
+  if(b && b.dataset.cpHtml){ b.innerHTML = b.dataset.cpHtml; delete b.dataset.cpHtml; }
+}
+function cpGeoOpenEditor(data, cb){
+  if(typeof openGeoAnimTool!=='function'){ alert('Outil de construction indisponible.'); return; }
+  if(!cpGeoPatched){
+    cpGeoPatched = true;
+    const oi = geoAnimInsert, oc = geoAnimCancel;
+    geoAnimInsert = async function(){
+      if(!cpGeoHook) return oi.apply(this, arguments);
+      if(!geoAnimData) return;
+      const btn = document.getElementById('geoAnimInsertBtn');
+      btn.disabled = true;
+      await tbAiFinishPlan();
+      const html = tbAiFigureBlockHtml();
+      const d = JSON.parse(JSON.stringify(geoAnimData));
+      await tbAiReturnBoard();
+      document.getElementById('geoAnimOverlay').style.display = 'none';
+      geoAnimData = null;
+      const hook = cpGeoHook; cpGeoHook = null; cpGeoRestoreBtn();
+      const holder = document.createElement('div'); holder.innerHTML = html || '';
+      const svg = holder.querySelector('svg');
+      if(!svg){ alert('La construction est vide : rien à insérer.'); return; }
+      hook({ e:d.enonce || '', p:d.program, t:d.tools, svg:svg.outerHTML });
+    };
+    const og = geoAnimGenerate;
+    geoAnimGenerate = async function(){
+      const r = await og.apply(this, arguments);
+      const st = document.getElementById('geoAnimStatus');
+      if(cpGeoHook && st) st.textContent = st.textContent.replace("« Insérer dans l'exercice »", '« Insérer dans le cours »');
+      return r;
+    };
+    geoAnimCancel = async function(){
+      if(cpGeoHook){ cpGeoHook = null; cpGeoRestoreBtn(); }
+      return oc.apply(this, arguments);
+    };
+  }
+  openGeoAnimTool(data && Array.isArray(data.p) ? { enonce:data.e, program:data.p, tools:data.t } : null);
+  if(document.getElementById('geoAnimOverlay').style.display!=='flex') return; // tableau déjà occupé
+  cpGeoHook = cb;
+  const b = document.getElementById('geoAnimInsertBtn');
+  if(b){ if(!b.dataset.cpHtml) b.dataset.cpHtml = b.innerHTML; b.innerHTML = '<span class="gicon">playlist_add</span> Insérer dans le cours'; }
 }
 
 /* ---------- figures dynamiques ---------- */
@@ -440,6 +524,7 @@ function cpBuildBlock(id, spec, container){
   holder.innerHTML = cpRenderSpec(spec);
   holder.querySelectorAll('svg.cp-fig').forEach(svg=>cpFigMount(svg, spec));
   holder.querySelectorAll('.cp-steps').forEach(cpStepsMount);
+  holder.querySelectorAll('.cp-geo').forEach(el=>cpGeoMount(el, spec));
   const nodes = [...holder.children];
   nodes.forEach(n=>{ n.dataset.cpCustom = '1'; });
   // Mêmes boutons que le cours d'origine (+ Cahier, écouter, loupe, apprentissage).
@@ -535,6 +620,13 @@ function cpRenderSpec(spec){
           : '';
         return `<div class="exo-card"><div class="num">Exercice ${i+1}</div><div class="cp-rich">${cpRich(it.e).join('')}</div>${cor}</div>`;
       }).join('') + `</div>`;
+    }
+    case 'geo': {
+      const txt = x.trim() || spec.e || '';
+      return (label ? `<p class="example-title">${cpInline(label)}</p>` : '')
+        + `<div class="figure-wrap cp-geo"><div class="cp-geo-fig"></div>`
+        + `<div class="cp-fig-bar"><span class="hint" style="margin:0;">${txt ? String(txt).split('\n').map(cpInline).join('<br>') : ''}</span>`
+        + `<button type="button" class="btn secondary cp-geo-play"><span class="gicon">play_circle</span> Voir la construction pas à pas</button></div></div>`;
     }
     default: return `<div class="cp-rich cp-par">${cpRich(x).join('')}</div>`;
   }
@@ -813,6 +905,10 @@ function cpOpenForm(editW, anchor){
       <button type="button" class="btn secondary cp-f-figbtn"><span class="gicon">category</span> <span>Construire la figure</span></button>
       <span class="hint" style="margin:0;">Outil de figure du site : points, segments, droites, cercles, milieux, symétriques, codages… ou construction automatique à partir d'un énoncé. Dans le cours, vos élèves pourront déplacer les points libres : le reste de la figure suit.</span>
     </div>
+    <div class="cp-f-georow">
+      <button type="button" class="btn secondary cp-f-geobtn"><span class="gicon">architecture</span> <span>Créer la construction</span></button>
+      <span class="hint" style="margin:0;">Outil « Animation géométrique » : écrivez l'énoncé, choisissez les instruments autorisés, l'IA prépare la construction ; vérifiez-la en lecture puis « Insérer dans le cours ». Vos élèves verront la figure finale et pourront rejouer la construction pas à pas, à la règle, à l'équerre, au compas ou au rapporteur.</span>
+    </div>
     <div class="cp-f-textwrap">
       <div class="cp-tools">
         <button type="button" data-t="b" title="Gras : **texte**"><span class="gicon">format_bold</span></button>
@@ -838,6 +934,8 @@ function cpOpenForm(editW, anchor){
   input.value = spec.l || ''; ta.value = spec.x || '';
   let kind = spec.k;
   let figData = spec.f ? { f:spec.f, vb:spec.vb } : null;
+  let geoData = Array.isArray(spec.p) ? { e:spec.e, p:spec.p, t:spec.t, svg:spec.svg } : null;
+  f.querySelector('.cp-f-geobtn').onclick = ()=>cpGeoOpenEditor(geoData, d=>{ geoData = d; refresh(); f.scrollIntoView({block:'center'}); });
   let exos = Array.isArray(spec.items) && spec.items.length ? spec.items.map(it=>({ e:it.e||'', c:it.c||'' })) : [{ e:'', c:'' }];
   const exoBox = f.querySelector('.cp-f-exos');
   const renderExos = ()=>{
@@ -865,7 +963,7 @@ function cpOpenForm(editW, anchor){
   const refresh = ()=>{
     const K = CP_KINDS[kind];
     f.querySelectorAll('.cp-kinds button').forEach(b=>b.classList.toggle('on', b.dataset.k===kind));
-    f.querySelector('.cp-f-label span').textContent = K.titleOnly ? 'Titre' : K.fig ? 'Titre au-dessus de la figure (facultatif)'
+    f.querySelector('.cp-f-label span').textContent = K.titleOnly ? 'Titre' : (K.fig || K.geo) ? 'Titre au-dessus de la figure (facultatif)'
       : kind==='steps' ? 'Titre de la méthode (facultatif)' : kind==='redac' ? 'Titre (facultatif)' : kind==='exo' ? 'Titre du bloc (facultatif, « Exercices » par défaut)'
       : (K.label ? 'Étiquette (facultatif)' : 'Titre (facultatif, non affiché)');
     f.querySelector('.cp-f-label').style.display = (kind==='p' || kind==='box') ? 'none' : '';
@@ -877,16 +975,21 @@ function cpOpenForm(editW, anchor){
     f.querySelector('.cp-tools .hint').textContent = kind==='steps' ? 'Une étape par ligne · **gras** · $formule$'
       : kind==='redac' ? 'Une ligne par étape : calcul ou phrase | commentaire (ex. P = 2 × (5 + 3) | On applique la formule.) · une ligne sans « | » s\'affiche comme texte (énoncé) · $formule$'
       : '**gras** · $formule$ (ex. $\\frac{3}{4}$, $3 \\times 5$) · « - » en début de ligne pour une liste · ligne vide = nouveau paragraphe';
-    f.querySelector('.cp-tools').style.display = K.fig ? 'none' : '';
+    f.querySelector('.cp-tools').style.display = (K.fig || K.geo) ? 'none' : '';
     f.querySelector('.cp-f-figrow').style.display = K.fig ? '' : 'none';
+    f.querySelector('.cp-f-georow').style.display = K.geo ? '' : 'none';
+    f.querySelector('.cp-f-geobtn span:last-child').textContent = geoData ? 'Modifier la construction' : 'Créer la construction';
     f.querySelector('.cp-f-figbtn span:last-child').textContent = figData ? 'Modifier la figure' : 'Construire la figure';
     ta.placeholder = K.fig ? 'Consigne pour l\'élève (facultatif), ex. Déplace le point A : que remarques-tu ?'
+      : K.geo ? 'Texte sous la figure (facultatif ; par défaut, l\'énoncé de la construction)'
       : kind==='steps' ? 'On pique le compas en A.\nOn trace un arc de cercle.\n…'
       : kind==='redac' ? 'Un rectangle mesure 5 cm sur 3 cm. Calcule son périmètre.\nP = 2 × (L + l) | Formule du périmètre.\nP = 2 × (5 + 3) | On remplace.\nP = 16 cm | On conclut avec l\'unité.' : '';
     const prev = f.querySelector('.cp-f-preview');
     if(K.fig && !figData){ prev.innerHTML = '<p class="hint" style="margin:0;">Construisez la figure pour la voir ici.</p>'; return; }
-    const pv = Object.assign({ k:kind, l:input.value, x:ta.value }, spec.np && kind===spec.k ? {np:1} : {}, K.fig ? { f:figData.f, vb:figData.vb } : {}, K.exo ? { items:exos } : {});
+    if(K.geo && !geoData){ prev.innerHTML = '<p class="hint" style="margin:0;">Créez la construction pour la voir ici.</p>'; return; }
+    const pv = Object.assign({ k:kind, l:input.value, x:ta.value }, spec.np && kind===spec.k ? {np:1} : {}, K.fig ? { f:figData.f, vb:figData.vb } : {}, K.exo ? { items:exos } : {}, K.geo ? geoData : {});
     prev.innerHTML = cpRenderSpec(pv);
+    prev.querySelectorAll('.cp-geo').forEach(el=>cpGeoMount(el, pv));
     if(K.fig) prev.querySelectorAll('svg.cp-fig').forEach(svg=>cpFigMount(svg, pv));
     prev.querySelectorAll('.cp-steps').forEach(cpStepsMount);
     const num = prev.querySelector('.lesson-header .num'), let_ = prev.querySelector('.sub-header .letter');
@@ -910,11 +1013,11 @@ function cpOpenForm(editW, anchor){
     const l = input.value.trim().slice(0,160), x = ta.value.replace(/\s+$/,'').slice(0, CP_MAX_TEXT);
     const items = exos.map(it=>({ e:it.e.replace(/\s+$/,'').slice(0, CP_MAX_TEXT), c:it.c.replace(/\s+$/,'').slice(0, CP_MAX_TEXT) })).filter(it=>it.e.trim()).slice(0, 30)
       .map(it=>it.c.trim() ? it : { e:it.e });
-    if(K.exo ? !items.length : K.fig ? !figData : K.titleOnly ? !l : !x.trim()){
-      f.querySelector('.cp-f-msg').textContent = K.exo ? 'Écrivez au moins un énoncé.' : K.fig ? 'Construisez d\'abord la figure.' : K.titleOnly ? 'Écrivez le titre.' : 'Écrivez le texte du bloc.';
+    if(K.geo ? !geoData : K.exo ? !items.length : K.fig ? !figData : K.titleOnly ? !l : !x.trim()){
+      f.querySelector('.cp-f-msg').textContent = K.geo ? 'Créez d\'abord la construction.' : K.exo ? 'Écrivez au moins un énoncé.' : K.fig ? 'Construisez d\'abord la figure.' : K.titleOnly ? 'Écrivez le titre.' : 'Écrivez le texte du bloc.';
       return;
     }
-    const newSpec = K.exo ? { k:kind, l, items } : K.fig ? { k:kind, l, x, f:figData.f, vb:figData.vb } : K.titleOnly ? { k:kind, l } : (kind==='p' || kind==='box') ? { k:kind, x } : { k:kind, l, x };
+    const newSpec = K.geo ? { k:kind, l, x, e:geoData.e, p:geoData.p, t:geoData.t, svg:geoData.svg } : K.exo ? { k:kind, l, items } : K.fig ? { k:kind, l, x, f:figData.f, vb:figData.vb } : K.titleOnly ? { k:kind, l } : (kind==='p' || kind==='box') ? { k:kind, x } : { k:kind, l, x };
     if(spec.np && kind===spec.k) newSpec.np = 1; // titre d'exemple / remarque d'origine gardé tel quel
     if(fromOrig && JSON.stringify(newSpec)===JSON.stringify(fromOrig)){ cpCloseForm(); return; } // rien de changé
     const id = eb ? eb.id : 'u:' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
@@ -1002,7 +1105,7 @@ async function cpSaveEdit(publishEtab){
   const { cid, container } = cpEditing;
   const layout = cpLayoutFromOrder(order);
   const original = cpIsOriginalOrder(container, order);
-  if(JSON.stringify(layout).length > 200000){ cpSay('Version trop volumineuse : raccourcissez vos blocs ajoutés.', true); return; }
+  if(JSON.stringify(layout).length > 1500000){ cpSay('Version trop volumineuse : raccourcissez vos blocs ajoutés.', true); return; }
   cpSay('Enregistrement…');
   try{
     // Sa propre version : supprimée si elle redevient identique à l'original (le cours suit
