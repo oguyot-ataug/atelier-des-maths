@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Page de signature d'un devis : accessible uniquement par le lien personnel envoyé par e-mail. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Signature du devis | L'Atelier des Maths</title>
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#FDF9F6;--ink:#20242E;--soft:#5B6472;--accent:#0C5BA0;--orange:#FF8208;--green:#1F7A4D;--red:#a83c1f;--line:rgba(28,43,57,.1);--shadow:0 4px 22px rgba(31,58,92,.10),0 1px 3px rgba(31,58,92,.08);}
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,Arial,sans-serif;line-height:1.5;}
+  .gicon{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:1.2em;line-height:1;vertical-align:-.2em;display:inline-block;}
+  header{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);background:rgba(253,249,246,.95);}
+  header img{height:42px;}
+  header span{font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--soft);}
+  main{max-width:860px;margin:0 auto;padding:20px 16px 60px;}
+  h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;margin:10px 0 4px;}
+  .sub{color:var(--soft);margin:0 0 18px;}
+  .card{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:22px;margin:0 0 18px;}
+  .banner{display:flex;gap:12px;align-items:flex-start;border-radius:14px;padding:14px 16px;margin:0 0 18px;font-size:.97rem;}
+  .banner .gicon{font-size:1.6rem;flex:none;}
+  .banner.ok{background:#E8F6EE;border:1px solid #BFE5CF;color:#155d3a;}
+  .banner.warn{background:#FFF3E6;border:1px solid #FFD2A6;color:#8a4210;}
+  .banner.err{background:#FBEAEA;border:1px solid #F0C4C4;color:var(--red);}
+  /* Devis */
+  .dv-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .dv-em{font-size:.9rem;color:var(--soft);}
+  .dv-em b{color:var(--ink);font-size:1rem;}
+  .dv-ttl{text-align:right;}
+  .dv-ttl h2{margin:0;font-family:'Space Grotesk',sans-serif;color:var(--accent);font-size:1.8rem;letter-spacing:.5px;}
+  .dv-ttl div{font-size:.9rem;color:var(--soft);}
+  .dv-dest{margin:16px 0 12px auto;max-width:360px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.93rem;}
+  .dv-dest .lbl{font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;color:var(--soft);}
+  .dv-obj{background:#f5f8fc;border-radius:10px;padding:10px 12px;font-size:.93rem;margin:6px 0 12px;display:flex;gap:12px;align-items:center;}
+  .dv-obj img{height:44px;flex:none;}
+  table{width:100%;border-collapse:collapse;font-size:.92rem;}
+  th{background:#eef3f9;text-align:left;padding:8px;font-size:.82rem;}
+  td{padding:9px 8px;border-bottom:1px solid #e6eaef;vertical-align:top;}
+  .n{text-align:right;white-space:nowrap;}
+  .det{font-size:.8rem;color:var(--soft);}
+  .tot{display:flex;justify-content:flex-end;gap:40px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.25rem;border-top:2px solid var(--ink);margin:10px 0 2px auto;max-width:360px;padding-top:8px;}
+  .tva{text-align:right;font-size:.82rem;color:var(--soft);}
+  .cond{font-size:.9rem;margin-top:12px;}
+  .iban{white-space:nowrap;font-weight:700;}
+  /* Signature */
+  .sig h3{font-family:'Space Grotesk',sans-serif;margin:0 0 4px;font-size:1.25rem;}
+  .sig p.hint{color:var(--soft);font-size:.9rem;margin:0 0 14px;}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  label.f{display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:.88rem;color:var(--soft);margin-bottom:12px;}
+  input[type=text],select{font:inherit;font-size:1rem;padding:10px 12px;border:1.5px solid rgba(28,43,57,.2);border-radius:10px;background:#fff;color:var(--ink);}
+  input:focus,select:focus{outline:none;border-color:var(--accent);}
+  .accord{display:flex;gap:10px;align-items:flex-start;background:#FAF7F2;border-radius:10px;padding:12px;margin:4px 0 14px;font-size:.93rem;cursor:pointer;}
+  .accord input{width:20px;height:20px;margin-top:2px;flex:none;}
+  button{font:inherit;cursor:pointer;border:none;border-radius:10px;padding:12px 18px;font-weight:700;}
+  .btn{background:var(--accent);color:#fff;}
+  .btn:disabled{opacity:.5;cursor:default;}
+  .btn.alt{background:#fff;color:var(--accent);border:1.5px solid rgba(12,91,160,.35);}
+  .code{font-size:1.8rem;letter-spacing:10px;text-align:center;width:220px;font-family:'Space Grotesk',monospace;}
+  .msg{margin:10px 0 0;font-size:.92rem;min-height:1.2em;}
+  .msg.err{color:var(--red);} .msg.ok{color:var(--green);}
+  .legal{font-size:.78rem;color:var(--soft);margin-top:16px;border-top:1px solid var(--line);padding-top:10px;}
+  .signed-box{border:2px solid var(--green);border-radius:12px;padding:12px 14px;margin-top:14px;font-size:.92rem;}
+  .signed-box b{color:var(--green);}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+  footer{text-align:center;color:var(--soft);font-size:.8rem;margin-top:24px;}
+  .mob{display:none;}
+  @media (max-width:620px){ .row{grid-template-columns:1fr;} .dv-ttl{text-align:left;} .tot{max-width:none;}
+    #devis th:nth-child(2),#devis th:nth-child(3),#devis td:nth-child(2),#devis td:nth-child(3){display:none;} .mob{display:block;} }
+  @media print{ header,.sig,.actions,.no-print,footer{display:none !important;} body{background:#fff;} .card{box-shadow:none;padding:0;} main{padding:0;} }
+</style>
+</head>
+<body>
+<header><img src="/assets/logo-header.png" alt="L'Atelier des Maths"><span>Signature du devis</span></header>
+<main>
+  <div id="app"><div class="card">Chargement du devis…</div></div>
+  <footer>L'Atelier des Maths · maths.latelieraugmente.fr · une production de L'Atelier Augmenté</footer>
+</main>
+<script>
+/* Page de signature d'un devis (lien personnel envoyé par e-mail). Toute la logique et les
+   contrôles (validité du lien, code, essais) sont côté serveur, fonction devis-signature. */
+const FN = 'https://rngzubhnypmistjsumpz.supabase.co/functions/v1/devis-signature';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZ3p1YmhueXBtaXN0anN1bXB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MTExNjEsImV4cCI6MjEwMDM4NzE2MX0.V56LFlb1ITWPmoO-DwLw3coeS7epY9NM5K2Waj03pac';
+const token = new URLSearchParams(location.search).get('t') || '';
+const app = document.getElementById('app');
+let state = { data:null, step:1, nom:'', qualite:'' };
+
+const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const nl = s => esc(s).replace(/\n/g, '<br>');
+const money = n => (Number(n)||0).toLocaleString('fr-FR', {minimumFractionDigits:2, maximumFractionDigits:2}).replace(/ /g,' ') + ' €';
+const frDate = d => d ? new Date(d + (d.length === 10 ? 'T00:00:00' : '')).toLocaleDateString('fr-FR') : '';
+const frDateTime = d => new Date(d).toLocaleString('fr-FR', {dateStyle:'long', timeStyle:'short'});
+
+async function api(body){
+  try{
+    const r = await fetch(FN, { method:'POST', headers:{ 'Content-Type':'application/json', apikey: ANON, Authorization: 'Bearer ' + ANON }, body: JSON.stringify(Object.assign({ token }, body)) });
+    const j = await r.json().catch(()=>({ error:'Réponse illisible du serveur.' }));
+    return r.ok ? j : Object.assign({ error: j.error || ('Erreur ' + r.status) }, j);
+  }catch(e){ return { error:'Connexion impossible. Vérifiez votre accès à Internet puis réessayez.' }; }
+}
+
+function devisHtml(d){
+  const em = d.emetteur || {}, cl = d.client || {}, prive = cl.statut === 'prive';
+  const lignes = (d.lignes||[]).map(l=>`<tr><td>${esc(l.designation)}${l.detail ? `<div class="det">${esc(l.detail)}</div>` : ''}<div class="det mob">${l.qte}${l.unite ? ' ' + esc(l.unite) + (Math.abs(l.qte) > 1 ? 's' : '') : ''} × ${money(l.pu)}</div></td>
+    <td class="n">${l.qte}${l.unite ? ' ' + esc(l.unite) + (Math.abs(l.qte) > 1 ? 's' : '') : ''}</td><td class="n">${money(l.pu)}</td><td class="n">${money(Math.round(l.qte*l.pu*100)/100)}</td></tr>`).join('');
+  const iban = em.iban ? `<br><span class="iban">IBAN ${esc(em.iban)}</span>${em.bic ? ` <span class="iban">· BIC ${esc(em.bic)}</span>` : ''}` : '';
+  const delai = Number(em.delai_paiement_jours ?? 30);
+  const periode = d.periode_debut && d.periode_fin ? `, du ${frDate(d.periode_debut)} au ${frDate(d.periode_fin)}` : '';
+  return `<div class="card" id="devis">
+    <div class="dv-top">
+      <div class="dv-em"><img src="/assets/logo-atelier-augmente.png" alt="L'Atelier Augmenté" style="height:64px;display:block;margin-bottom:6px;"><b>${esc(em.nom)}</b>${em.enseigne ? '<br>' + esc(em.enseigne) : ''}<br>${nl(em.adresse)}<br>SIRET ${esc(em.siret)}${em.email ? '<br>' + esc(em.email) : ''}</div>
+      <div class="dv-ttl"><h2>DEVIS</h2><div>N° <b>${esc(d.numero)}</b><br>Date : ${frDate(d.date_emission)}${d.date_validite ? '<br>Valable jusqu\'au ' + frDate(d.date_validite) : ''}</div></div>
+    </div>
+    <div class="dv-dest"><div class="lbl">Établissement</div><b>${esc(prive && cl.organisme ? cl.organisme : cl.nom)}</b>${prive && cl.organisme ? '<br>pour ' + esc(cl.nom) : ''}<br>${nl(cl.adresse)}${cl.uai ? '<br>UAI ' + esc(cl.uai) : ''}${cl.siret ? '<br>SIRET ' + esc(cl.siret) : ''}</div>
+    <div class="dv-obj"><img src="/assets/logo-header.png" alt="L'Atelier des Maths"><div><b>Objet :</b> L'Atelier des Maths – licence établissement${periode}${(d.niveaux||[]).length ? ' – niveaux ' + d.niveaux.join(', ') : ''}.</div></div>
+    <div style="overflow-x:auto;"><table><tr><th>Désignation</th><th class="n">Quantité</th><th class="n">Prix unitaire</th><th class="n">Montant</th></tr>${lignes}</table></div>
+    <div class="tot"><span>Total</span><span>${money(d.total)}</span></div>
+    ${em.mention_tva ? `<div class="tva">${esc(em.mention_tva)}</div>` : ''}
+    ${d.notes ? `<p class="cond">${nl(d.notes)}</p>` : ''}
+    <p class="cond"><b>Conditions de paiement :</b> ${delai ? `à ${delai} jours` : 'à réception'} de la facture, ${prive ? 'par virement' : 'déposée sur Chorus Pro, par mandat administratif (virement)'} :${iban}</p>
+    ${d.signature ? `<div class="signed-box"><b><span class="gicon">verified</span> Bon pour accord – signé électroniquement</b><br>le ${esc(frDateTime(d.signature.signed_at))} par <b style="color:inherit;">${esc(d.signature.nom)}</b> (${esc(d.signature.qualite)}), code de confirmation envoyé à ${esc(d.signature.email)}.<br><span style="font-size:.8rem;color:var(--soft);">Empreinte du devis : ${esc((d.signature.doc_hash||'').slice(0,32))}…</span></div>` : ''}
+  </div>`;
+}
+const QUALITES = ["Chef d'établissement", "Principal(e) adjoint(e)", "Directeur / Directrice", "Président(e) de l'organisme de gestion (OGEC)", "Gestionnaire / adjoint(e) gestionnaire"];
+function sigHtml(){
+  const d = state.data;
+  if(state.step === 1) return `<div class="card sig">
+    <h3><span class="gicon">draw</span> Signer ce devis</h3>
+    <p class="hint">Indiquez votre nom et votre qualité, puis recevez un code de confirmation à l'adresse ${esc(d.email)}.</p>
+    <div class="row">
+      <label class="f">Nom et prénom<input type="text" id="nom" autocomplete="name" value="${esc(state.nom)}"></label>
+      <label class="f">Qualité<select id="qualite" onchange="document.getElementById('qualiteAutreWrap').style.display=this.value==='autre'?'':'none'">
+        <option value="">Choisir…</option>${QUALITES.map(q=>`<option ${state.qualite===q?'selected':''}>${esc(q)}</option>`).join('')}<option value="autre">Autre…</option></select></label>
+    </div>
+    <label class="f" id="qualiteAutreWrap" style="display:none;">Précisez votre qualité<input type="text" id="qualiteAutre"></label>
+    <label class="accord"><input type="checkbox" id="accord"><span><b>Bon pour accord.</b> J'ai lu ce devis n° ${esc(d.doc.numero)} d'un montant de ${money(d.doc.total)} et je l'accepte au nom de l'établissement.</span></label>
+    <button class="btn" id="btnCode" onclick="askCode()"><span class="gicon">mail</span> Recevoir mon code par e-mail</button>
+    <div class="msg" id="msg"></div>
+    <p class="legal">Votre signature électronique est constituée de votre nom, de votre qualité et du code reçu par e-mail. La date et l'heure, l'adresse IP et une empreinte numérique du devis sont conservées comme preuve de l'accord.</p>
+  </div>`;
+  return `<div class="card sig">
+    <h3><span class="gicon">password</span> Saisissez votre code</h3>
+    <p class="hint">Un code à 6 chiffres vient d'être envoyé à <b>${esc(state.sentTo || d.email)}</b>. Il est valable 15 minutes. Pensez à regarder dans les indésirables.</p>
+    <input type="text" id="code" class="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" oninput="this.value=this.value.replace(/\\D/g,'')">
+    <div class="actions" style="margin-top:14px;">
+      <button class="btn" id="btnSign" onclick="doSign()"><span class="gicon">draw</span> Signer le devis</button>
+      <button class="btn alt" onclick="askCode(true)">Renvoyer un code</button>
+      <button class="btn alt" onclick="state.step=1;render()">Modifier mon nom</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </div>`;
+}
+function render(){
+  const d = state.data;
+  if(!d){ return; }
+  let head = '';
+  if(d.error) { app.innerHTML = `<div class="banner err"><span class="gicon">error</span><div><b>${esc(d.error)}</b><br>Si vous pensez qu'il s'agit d'une erreur, écrivez à <a href="mailto:contact@latelieraugmente.fr">contact@latelieraugmente.fr</a>.</div></div>`; return; }
+  if(d.signed) head = `<div class="banner ok"><span class="gicon">verified</span><div><b>Ce devis est signé.</b> Merci ! La facture vous sera adressée prochainement.</div></div>`;
+  else if(d.revoked) head = `<div class="banner warn"><span class="gicon">link_off</span><div><b>Ce lien n'est plus valable</b> : un lien plus récent vous a été envoyé par e-mail.</div></div>`;
+  else if(d.expired) head = `<div class="banner warn"><span class="gicon">event_busy</span><div><b>Ce devis a dépassé sa date de validité.</b> Écrivez à <a href="mailto:contact@latelieraugmente.fr">contact@latelieraugmente.fr</a> pour en recevoir un nouveau.</div></div>`;
+  else if(d.doc.statut !== 'emis') head = `<div class="banner warn"><span class="gicon">info</span><div><b>Ce devis n'est plus en attente de signature.</b></div></div>`;
+  const canSign = !d.signed && !d.revoked && !d.expired && d.doc.statut === 'emis';
+  app.innerHTML = `<h1>Devis ${esc(d.doc.numero)}</h1><p class="sub">${esc((d.doc.client||{}).nom)} · ${money(d.doc.total)}</p>${head}
+    ${devisHtml(d.doc)}
+    <div class="actions no-print" style="margin:-6px 0 18px;"><button class="btn alt" onclick="window.print()"><span class="gicon">print</span> Imprimer / enregistrer en PDF</button></div>
+    ${canSign ? sigHtml() : ''}`;
+}
+function setMsg(t, ok){ const m = document.getElementById('msg'); if(m){ m.textContent = t || ''; m.className = 'msg ' + (ok ? 'ok' : 'err'); } }
+async function askCode(resend){
+  if(!resend){
+    const nom = document.getElementById('nom').value.trim();
+    let q = document.getElementById('qualite').value;
+    if(q === 'autre') q = document.getElementById('qualiteAutre').value.trim();
+    if(nom.length < 3){ setMsg('Indiquez votre nom et votre prénom.'); return; }
+    if(!q || q.length < 2){ setMsg('Indiquez votre qualité.'); return; }
+    if(!document.getElementById('accord').checked){ setMsg('Cochez « Bon pour accord » pour continuer.'); return; }
+    state.nom = nom; state.qualite = q; state.accord = true;
+  }
+  const b = document.getElementById(resend ? 'btnSign' : 'btnCode'); if(b) b.disabled = true;
+  setMsg('Envoi du code…', true);
+  const r = await api({ action:'code' });
+  if(b) b.disabled = false;
+  if(r.error){ setMsg(r.error); return; }
+  state.sentTo = r.email; state.step = 2; render();
+  setMsg(resend ? 'Un nouveau code vient d\'être envoyé.' : '', true);
+  const c = document.getElementById('code'); if(c) c.focus();
+}
+async function doSign(){
+  const code = (document.getElementById('code').value || '').trim();
+  if(!/^\d{6}$/.test(code)){ setMsg('Le code compte 6 chiffres.'); return; }
+  const b = document.getElementById('btnSign'); b.disabled = true;
+  setMsg('Signature en cours…', true);
+  const r = await api({ action:'sign', code, nom: state.nom, qualite: state.qualite, accord: !!state.accord });
+  b.disabled = false;
+  if(r.error){ setMsg(r.error); return; }
+  state.data = await api({ action:'view' }); render();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+(async ()=>{
+  if(!token){ state.data = { error:'Lien incomplet : ouvrez le lien reçu par e-mail en entier.' }; render(); return; }
+  state.data = await api({ action:'view' }); render();
+})();
+</script>
+</body>
+</html>

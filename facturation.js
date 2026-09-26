@@ -190,15 +190,17 @@ function facPanelHtml(){
 /* ---------- Chargement ---------- */
 async function facRefresh(){
   if(adminScopeUai()) return;
-  const [em, cl, docs, etabs] = await Promise.all([
+  const [em, cl, docs, etabs, sigs] = await Promise.all([
     sb.from('facturation_emetteur').select('*').eq('id', 1).maybeSingle(),
     sb.from('facturation_clients').select('*').order('nom'),
     sb.from('facturation_documents').select('*').order('created_at', {ascending:false}),
     sb.from('etablissements').select('uai,nom,licence_until'),
+    sb.from('facturation_signatures').select('document_id,email,created_at,expires_at,revoked,signed_at,signataire_nom,signataire_qualite,code_sends').order('created_at', {ascending:false}),
   ]);
   const err = em.error || cl.error || docs.error;
   if(err){ document.getElementById('facDocs').textContent = 'Erreur : ' + err.message; return; }
   facState.emetteur = em.data; facState.clients = cl.data || []; facState.docs = docs.data || []; facState.etabs = etabs.data || [];
+  facState.sigs = (sigs && sigs.data) || [];
   facFillEmetteur();
   const sel = document.getElementById('facClientSel'), keep = sel.value;
   sel.innerHTML = '<option value="">+ Nouvel établissement</option>' + facState.clients.map(c=>
@@ -385,6 +387,11 @@ function facRenderDocs(){
       if(d.licence_until) suivi.push('licence jusqu\'au ' + facDate(d.licence_until));
       if(d.type === 'facture' && d.statut !== 'payee' && d.statut !== 'annule' && d.date_echeance) suivi.push('échéance ' + facDate(d.date_echeance));
       if(d.paye_le) suivi.push('payée le ' + facDate(d.paye_le));
+      if(d.type === 'devis'){
+        const sg = (facState.sigs||[]).find(x=>x.document_id === d.id && (x.signed_at || !x.revoked));
+        if(sg && sg.signed_at) suivi.push(`<span style="color:#1F7A4D;font-weight:600;"><span class="gicon">verified</span> signé en ligne le ${facDate(sg.signed_at.slice(0,10))} par ${facEsc(sg.signataire_nom)} (${facEsc(sg.signataire_qualite)})</span>`);
+        else if(sg && d.statut === 'emis') suivi.push(`<span style="color:#0C5BA0;"><span class="gicon">outgoing_mail</span> envoyé pour signature à ${facEsc(sg.email)} le ${facDate(sg.created_at.slice(0,10))}${sg.code_sends ? ` · ${sg.code_sends} code${sg.code_sends > 1 ? 's' : ''} demandé${sg.code_sends > 1 ? 's' : ''}` : ''}</span>`);
+      }
       if(d.piece_jointe) suivi.push(`<a href="#" onclick="facVoirPJ('${d.id}');return false;" style="color:#0C5BA0;font-weight:600;"><span class="gicon">attach_file</span> ${facEsc(d.piece_jointe_nom || 'pièce jointe')}</a>`);
       if(src) suivi.push('← ' + facEsc(src.numero));
       if(src && src.piece_jointe && d.type === 'facture') suivi.push(`<a href="#" onclick="facVoirPJ('${src.id}');return false;" style="color:#0C5BA0;"><span class="gicon">attach_file</span> document signé du devis</a>`);
@@ -392,6 +399,7 @@ function facRenderDocs(){
       if(fact) suivi.push('→ ' + facEsc(fact.numero));
       const act = [`<button class="btn secondary" onclick="facOpenPdf('${d.id}')"><span class="gicon">picture_as_pdf</span> PDF</button>`];
       if(d.type === 'devis' && d.statut === 'emis'){
+        act.push(`<button class="btn" onclick="facSignature('${d.id}')" title="Envoyer à l'établissement un lien pour signer le devis en ligne, avec un code reçu par e-mail"><span class="gicon">draw</span> Envoyer pour signature</button>`);
         act.push(`<button class="btn" onclick="facCommande('${d.id}')">Commande reçue</button>`);
         act.push(`<button class="btn" onclick="facCommande('${d.id}', true)" title="Enregistrer la commande et émettre la facture en une fois">Facturer</button>`);
         act.push(`<button class="btn secondary" onclick="facSetStatut('${d.id}','refuse')">Refusé</button>`);
@@ -458,6 +466,32 @@ async function facCommandeOk(id, facturer){
   if(typeof adminRefreshEtablissements === 'function') adminRefreshEtablissements();
   if(facturer) facFacturer(id);
 }
+/* ---------- Signature en ligne (fonction devis-signature) ---------- */
+function facSignature(id){
+  const d = facState.docs.find(x=>x.id === id); if(!d) return;
+  const cur = facState.clients.find(c=>c.id === d.client_id) || d.client || {};
+  const prev = (facState.sigs||[]).find(x=>x.document_id === id && !x.revoked && !x.signed_at);
+  facModal(`<strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;"><span class="gicon">draw</span> Envoyer le devis ${facEsc(d.numero)} pour signature</strong>
+    <p class="hint" style="margin:8px 0 0;">L'établissement reçoit un lien pour consulter le devis et le signer : nom, qualité, puis un code à 6 chiffres envoyé à cette adresse. Une fois signé, le devis passe en « Commande reçue »${(d.client||{}).uai ? ' et la licence de l\'établissement s\'ouvre' : ''} ; vous êtes prévenu par e-mail.</p>
+    <label>Adresse e-mail du signataire (chef d'établissement, secrétariat de direction…)<input type="email" id="facSigEmail" value="${facEsc((prev && prev.email) || cur.email || '')}" placeholder="ce.0441111b@ac-nantes.fr"></label>
+    ${prev ? `<p class="hint" style="margin:0;">Un lien a déjà été envoyé à ${facEsc(prev.email)} le ${facDate(prev.created_at.slice(0,10))} : le nouvel envoi le remplace.</p>` : ''}
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;"><button class="btn secondary" onclick="facCloseModal()">Annuler</button><button class="btn" id="facSigBtn" onclick="facSignatureOk('${id}')">Envoyer</button></div>
+    <p class="hint" id="facSigMsg" style="margin:8px 0 0;"></p>`);
+}
+async function facSignatureOk(id){
+  const email = document.getElementById('facSigEmail').value.trim();
+  const msg = document.getElementById('facSigMsg'), btn = document.getElementById('facSigBtn');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent = 'Adresse e-mail invalide.'; return; }
+  btn.disabled = true; msg.textContent = 'Envoi…';
+  const { data, error } = await sb.functions.invoke('devis-signature', { body: { action:'send', document_id:id, email } });
+  let err = error ? error.message : (data && data.error);
+  if(error && error.context && typeof error.context.json === 'function'){ try{ const j = await error.context.json(); if(j && j.error) err = j.error; }catch(e){} }
+  btn.disabled = false;
+  if(err){ msg.innerHTML = '<span style="color:#a83c1f;">Échec : ' + facEsc(err) + '</span>'; return; }
+  facCloseModal(); await facRefresh();
+  niceAlert(`Lien de signature envoyé à ${data.email}. Vous recevrez un e-mail dès que le devis sera signé.`);
+}
+
 /* ---------- Pièce jointe (devis signé, bon de commande) : stockage privé « facturation » ---------- */
 const FAC_PJ_MAX = 10 * 1024 * 1024;
 async function facUploadPJ(d, file){
@@ -559,8 +593,10 @@ function facDocHtml(d){
     const conditions = `<p><b>Conditions de paiement :</b> ${delai ? `à ${delai} jours` : 'à réception'} de la facture, ${prive
       ? 'par virement'
       : 'déposée sur Chorus Pro, par mandat administratif (virement)'} :${iban}</p>`;
-    bloc = `<p>Devis valable jusqu'au <b>${facDate(d.date_validite)}</b>.</p>` + conditions + (prive
-      ? `<div class="accord"><b>Bon pour accord</b><br>Date, nom, signature et cachet :<div style="height:70px;"></div></div>`
+    const sgn = d.signature;
+    const signe = sgn ? `<div class="accord" style="border-color:#1F7A4D;width:auto;"><b style="color:#1F7A4D;">Bon pour accord – signé électroniquement</b><br>le ${facEsc(new Date(sgn.signed_at).toLocaleString('fr-FR', {dateStyle:'long', timeStyle:'short'}))} par <b>${facEsc(sgn.nom)}</b> (${facEsc(sgn.qualite)}), code de confirmation envoyé à ${facEsc(sgn.email)}.<br><span class="small">Empreinte du devis (SHA-256) : ${facEsc(sgn.doc_hash)}</span></div>` : '';
+    bloc = `<p>Devis valable jusqu'au <b>${facDate(d.date_validite)}</b>.</p>` + conditions + signe + (prive
+      ? (d.signature ? '' : `<div class="accord"><b>Bon pour accord</b><br>Date, nom, signature et cachet :<div style="height:70px;"></div></div>`)
       : `<p>Pour commander : adressez un bon de commande mentionnant le numéro de ce devis (<b>${facEsc(d.numero)}</b>) à ${facEsc(em.email)}.</p>`);
   } else if(d.type === 'facture'){
     bloc = `<p>Échéance : <b>${facDate(d.date_echeance)}</b>${d.numero_engagement ? ` · ${prive ? 'Commande' : 'N° d\'engagement'} : <b>${facEsc(d.numero_engagement)}</b>` : ''}</p>

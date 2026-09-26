@@ -2556,6 +2556,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.694', items:[
+    "Facturation, signature des devis en ligne -- demandé : \"le faire signer en ligne par code\". Bouton « Envoyer pour signature » sur un devis : l'établissement reçoit par e-mail un lien personnel vers le devis, indique son nom et sa qualité, coche « Bon pour accord » et valide avec un code à 6 chiffres reçu par e-mail (15 minutes, 5 essais, 5 codes par lien). La preuve est conservée (nom, qualité, date, adresse IP, navigateur, empreinte SHA-256 du devis) ; le devis passe en « Commande reçue », la licence de l'établissement s'ouvre, et vous recevez un e-mail. Le PDF du devis porte la mention « Bon pour accord – signé électroniquement ». Un nouvel envoi remplace le lien précédent.",
+  ]},
   { version:'2026-08-19.693', items:[
     "E-mails envoyés depuis le domaine latelieraugmente.fr (vérifié chez Resend) : notifications d'inscription depuis notifications@latelieraugmente.fr, facturation depuis devis@latelieraugmente.fr (réponses vers contact@). Facturation > Mes informations : bouton « Envoyer un e-mail de test » pour vérifier l'envoi avant la signature des devis en ligne.",
   ]},
