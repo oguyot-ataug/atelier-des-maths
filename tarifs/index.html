@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Page de travail : pas encore publique (aucun lien, absente du sitemap, non indexée). -->
+<meta name="robots" content="noindex, nofollow">
+<title>Tarifs | L'Atelier des Maths</title>
+<meta name="description" content="Tarifs de L'Atelier des Maths : gratuit pour les élèves, abonnement professeur, licence établissement par niveau.">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  body{background:var(--paper);}
+  .t-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .t-top img{height:40px;display:block;}
+  .t-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .t-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .t-top nav a:hover{background:rgba(12,91,160,.07);}
+  .t-top nav a.cta{background:var(--accent);color:#fff;}
+  .t-wrap{max-width:1080px;margin:0 auto;padding:10px 16px 50px;}
+  .gicon{font-family:'Material Symbols Outlined';font-weight:normal;font-style:normal;font-size:1.15em;line-height:1;vertical-align:-.18em;display:inline-block;}
+
+  .t-hero{text-align:center;padding:34px 0 18px;}
+  .t-hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.9rem,4.5vw,2.8rem);line-height:1.1;margin:0 0 10px;}
+  .t-hero p{color:var(--ink-soft);font-size:1.08rem;max-width:62ch;margin:0 auto;}
+  .t-free-students{display:inline-flex;align-items:center;gap:8px;margin-top:18px;background:#E8F6EE;color:#1F7A4D;border:1px solid #BFE5CF;border-radius:999px;padding:8px 16px;font-weight:700;}
+
+  .t-tabs{display:flex;justify-content:center;gap:8px;margin:26px 0 8px;flex-wrap:wrap;}
+  .t-tabs a{padding:9px 18px;border-radius:999px;font-weight:700;border:1.5px solid rgba(12,91,160,.25);color:var(--accent);background:#fff;}
+  .t-tabs a:hover{background:rgba(12,91,160,.06);}
+
+  .t-section{margin:40px 0 0;scroll-margin-top:80px;}
+  .t-section > h2{font-family:'Space Grotesk',sans-serif;font-size:1.65rem;margin:0 0 4px;display:flex;align-items:center;gap:10px;}
+  .t-section > .t-lede{color:var(--ink-soft);margin:0 0 20px;max-width:75ch;}
+
+  .t-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;align-items:stretch;}
+  .t-card{position:relative;background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:22px 22px 20px;display:flex;flex-direction:column;border:1.5px solid transparent;}
+  .t-card.featured{border-color:var(--accent);box-shadow:0 10px 34px rgba(12,91,160,.18),0 1px 3px rgba(31,58,92,.08);}
+  .t-flag{position:absolute;top:-12px;left:22px;background:var(--accent);color:#fff;font-size:.74rem;font-weight:700;letter-spacing:.3px;text-transform:uppercase;padding:4px 10px;border-radius:999px;}
+  .t-flag.orange{background:var(--accent-orange);}
+  .t-card h3{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;margin:4px 0 2px;}
+  .t-for{color:var(--ink-soft);font-size:.92rem;margin:0 0 14px;min-height:2.6em;}
+  .t-price{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:2.4rem;line-height:1;color:var(--ink);}
+  .t-price small{font-size:1rem;font-weight:600;color:var(--ink-soft);margin-left:4px;}
+  .t-price-note{font-size:.85rem;color:var(--ink-soft);margin:6px 0 16px;min-height:1.2em;}
+  .t-list{list-style:none;margin:0 0 18px;padding:0;display:flex;flex-direction:column;gap:8px;font-size:.95rem;}
+  .t-list li{display:flex;gap:9px;align-items:flex-start;line-height:1.4;}
+  .t-list li .gicon{color:#1F7A4D;flex:none;margin-top:1px;}
+  .t-list li.off{color:#9AA1AC;}
+  .t-list li.off .gicon{color:#C3C8CF;}
+  .t-list li.plus .gicon{color:var(--accent-orange);}
+  .t-btn{margin-top:auto;display:block;text-align:center;font-weight:700;padding:11px 16px;border-radius:10px;background:var(--accent);color:#fff !important;}
+  .t-btn.alt{background:#fff;color:var(--accent) !important;border:1.5px solid rgba(12,91,160,.35);}
+  .t-btn:hover{filter:brightness(1.06);}
+
+  .t-note{display:flex;gap:12px;align-items:flex-start;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.16);border-radius:12px;padding:14px 16px;margin:18px 0 0;font-size:.95rem;}
+  .t-note .gicon{color:var(--accent);font-size:1.4rem;flex:none;}
+  .t-note.orange{background:rgba(255,130,8,.07);border-color:rgba(255,130,8,.25);}
+  .t-note.orange .gicon{color:var(--accent-orange);}
+
+  .t-addon{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:18px 22px;margin-top:18px;}
+  .t-addon .ico{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#FFE3C4,#FFD0A0);display:flex;align-items:center;justify-content:center;color:#A04E00;font-size:1.7rem;}
+  .t-addon h3{font-family:'Space Grotesk',sans-serif;margin:0 0 3px;font-size:1.12rem;}
+  .t-addon p{margin:0;color:var(--ink-soft);font-size:.93rem;}
+  .t-addon .t-price{font-size:1.7rem;white-space:nowrap;text-align:right;}
+
+  .t-levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;}
+  .t-level{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:20px;text-align:center;position:relative;border:1.5px solid transparent;}
+  .t-level.featured{border-color:var(--accent-orange);}
+  .t-level h3{font-family:'Space Grotesk',sans-serif;margin:6px 0 4px;font-size:1.15rem;}
+  .t-level .t-price{font-size:2.1rem;margin:8px 0 2px;}
+  .t-level .t-per{color:var(--ink-soft);font-size:.86rem;}
+  .t-chips{display:flex;justify-content:center;gap:6px;margin-top:10px;flex-wrap:wrap;}
+  .t-chip{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.85rem;padding:3px 10px;border-radius:999px;background:#F1EDE6;color:#8A7E6A;}
+  .t-chip.on6{background:#FFE3C4;color:#A04E00;}
+  .t-chip.on5{background:#D6E7FA;color:#0C5BA0;}
+  .t-chip.soon{background:#EEE;color:#888;border:1px dashed #BBB;}
+  .t-etab-feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:14px;margin-top:18px;}
+  .t-feat{background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:16px 18px;}
+  .t-feat .gicon{font-size:1.6rem;color:var(--accent);}
+  .t-feat h4{font-family:'Space Grotesk',sans-serif;margin:6px 0 4px;font-size:1.02rem;}
+  .t-feat p{margin:0;color:var(--ink-soft);font-size:.92rem;line-height:1.45;}
+
+  .t-table-wrap{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow-x:auto;}
+  table.t-table{border-collapse:collapse;width:100%;min-width:620px;font-size:.93rem;}
+  .t-table th,.t-table td{padding:11px 14px;border-bottom:1px solid rgba(28,43,57,.07);text-align:center;}
+  .t-table th:first-child,.t-table td:first-child{text-align:left;}
+  .t-table thead th{font-family:'Space Grotesk',sans-serif;font-size:1rem;background:#FAF7F2;position:sticky;top:0;}
+  .t-table thead th.hl{color:var(--accent);}
+  .t-table tr.grp td{background:#F6F2EA;font-weight:700;font-family:'Space Grotesk',sans-serif;color:var(--ink);font-size:.9rem;text-align:left;}
+  .t-table .yes{color:#1F7A4D;font-weight:700;}
+  .t-table .no{color:#C3C8CF;}
+  .t-table .part{color:#A04E00;font-size:.86rem;}
+  .t-table td.hl{background:rgba(12,91,160,.035);}
+
+  .t-services{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
+  .t-service{background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;}
+  .t-service .gicon{font-size:1.6rem;color:var(--accent-orange);}
+  .t-service h4{font-family:'Space Grotesk',sans-serif;margin:6px 0 4px;}
+  .t-service p{margin:0 0 10px;color:var(--ink-soft);font-size:.92rem;line-height:1.45;flex:1;}
+  .t-service .t-sur{font-weight:700;color:var(--ink);font-size:.9rem;}
+
+  .t-faq details{background:#fff;border-radius:12px;box-shadow:var(--shadow);margin:0 0 10px;padding:0 18px;}
+  .t-faq summary{cursor:pointer;padding:14px 0;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:12px;}
+  .t-faq summary::-webkit-details-marker{display:none;}
+  .t-faq summary::after{content:'+';font-size:1.3rem;color:var(--accent);line-height:1;}
+  .t-faq details[open] summary::after{content:'–';}
+  .t-faq details p{margin:0 0 14px;color:var(--ink-soft);line-height:1.55;}
+
+  .t-contact{margin-top:44px;background:linear-gradient(135deg,#0C5BA0,#1F3A5C);color:#fff;border-radius:18px;padding:28px 26px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+  .t-contact h2{font-family:'Space Grotesk',sans-serif;margin:0 0 6px;font-size:1.5rem;color:#fff;}
+  .t-contact p{margin:0;opacity:.9;max-width:60ch;}
+  .t-contact a.t-btn{background:#fff;color:var(--accent) !important;margin:0;white-space:nowrap;}
+  .t-foot{text-align:center;color:var(--ink-soft);font-size:.84rem;margin-top:26px;}
+
+  .t-swipe{display:none;}
+  @media (max-width:640px){
+    .t-swipe{display:inline;}
+    .t-addon{grid-template-columns:auto 1fr;}
+    .t-addon .t-price{grid-column:1 / -1;text-align:left;}
+    .t-for{min-height:0;}
+  }
+</style>
+</head>
+<body>
+<header class="t-top">
+  <a href="/"><img src="/assets/logo-header.png" alt="L'Atelier des Maths"></a>
+  <nav>
+    <a href="/6e/">6e</a>
+    <a href="/5e/">5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir le site</a>
+  </nav>
+</header>
+
+<main class="t-wrap">
+  <section class="t-hero">
+    <h1>Des tarifs simples,<br>pour un professeur ou tout un collège</h1>
+    <p>Cours, outils de classe, devoirs, évaluations et cahier de corrections pour la 6e et la 5e, et bientôt pour la 4e et la 3e.</p>
+    <div class="t-free-students"><span class="gicon">school</span> Les élèves n'ont jamais rien à payer</div>
+    <div class="t-tabs">
+      <a href="#professeurs">Professeur</a>
+      <a href="#etablissements">Établissement</a>
+      <a href="#comparatif">Comparatif</a>
+      <a href="#accompagnement">Accompagnement</a>
+    </div>
+  </section>
+
+  <!-- ================= PROFESSEURS ================= -->
+  <section class="t-section" id="professeurs">
+    <h2><span class="gicon">person</span> Pour un professeur</h2>
+    <p class="t-lede">Commencez gratuitement avec une classe. Passez à l'abonnement quand vous voulez tout utiliser avec toutes vos classes.</p>
+    <div class="t-cards">
+      <article class="t-card">
+        <h3>Découverte</h3>
+        <p class="t-for">Pour essayer le site avec une classe, sans engagement.</p>
+        <div class="t-price">0 €</div>
+        <div class="t-price-note">pour toujours</div>
+        <ul class="t-list">
+          <li><span class="gicon">check_circle</span>Tous les cours, méthodes animées, exercices et quiz</li>
+          <li><span class="gicon">check_circle</span>Outils de classe : tableau interactif, figures, outil de correction à projeter</li>
+          <li><span class="gicon">check_circle</span>1 classe avec comptes élèves</li>
+          <li><span class="gicon">check_circle</span>Cahier de corrections de cette classe</li>
+          <li><span class="gicon">check_circle</span>3 devoirs en cours à la fois</li>
+          <li class="off"><span class="gicon">block</span>Évaluations, cours personnalisés</li>
+        </ul>
+        <a class="t-btn alt" href="/">Créer mon compte</a>
+      </article>
+
+      <article class="t-card featured">
+        <span class="t-flag">Recommandé</span>
+        <h3>Professeur</h3>
+        <p class="t-for">Tout le site, pour toutes vos classes et tous vos élèves.</p>
+        <div class="t-price">19 €<small>/ an</small></div>
+        <div class="t-price-note">soit moins de 1,60 € par mois · 15 jours d'essai gratuit</div>
+        <ul class="t-list">
+          <li><span class="gicon">check_circle</span><span><b>Classes et élèves illimités</b></span></li>
+          <li><span class="gicon">check_circle</span>Devoirs illimités : fichier ou figure à rendre, automatismes, Objectif Nombre</li>
+          <li><span class="gicon">check_circle</span>Résultats, tentatives et temps de travail réel des élèves</li>
+          <li><span class="gicon">check_circle</span>Créateur d'évaluations avec barème et grille de notation</li>
+          <li><span class="gicon">check_circle</span>Cahier de corrections pour chaque classe</li>
+          <li><span class="gicon">check_circle</span>Cours personnalisés, partagés avec vos collègues si vous le souhaitez</li>
+          <li class="plus"><span class="gicon">smart_toy</span>IA avec votre propre clé, ou avec le pack IA ci-dessous</li>
+        </ul>
+        <a class="t-btn" href="/">M'abonner</a>
+      </article>
+    </div>
+
+    <div class="t-note orange">
+      <span class="gicon">favorite</span>
+      <div><b>Vous êtes déjà abonné ?</b> Vous gardez votre tarif actuel de 16,90 € par an, aussi longtemps que votre abonnement continue.</div>
+    </div>
+
+    <div class="t-addon">
+      <div class="ico"><span class="gicon">smart_toy</span></div>
+      <div>
+        <h3>Option : pack IA</h3>
+        <p>L'IA propose les exercices d'une évaluation, construit les figures pas à pas aux instruments et crée des quiz. Utilisez la clé du site, sans rien configurer, avec une consommation incluse chaque trimestre. Avec votre propre clé Anthropic, l'IA ne coûte rien de plus sur le site.</p>
+      </div>
+      <div class="t-price">5 €<small>/ trimestre</small></div>
+    </div>
+  </section>
+
+  <!-- ================= ÉTABLISSEMENTS ================= -->
+  <section class="t-section" id="etablissements">
+    <h2><span class="gicon">apartment</span> Pour un établissement</h2>
+    <p class="t-lede">Une licence par niveau, comme pour les manuels : <b>tous les professeurs de mathématiques</b> et <b>tous les élèves</b> de l'établissement en profitent. Il n'y a rien à compter.</p>
+    <div class="t-levels">
+      <article class="t-level">
+        <h3>1 niveau</h3>
+        <div class="t-chips"><span class="t-chip on6">6e</span><span class="t-chip">ou</span><span class="t-chip on5">5e</span></div>
+        <div class="t-price">49 €</div>
+        <div class="t-per">par an</div>
+      </article>
+      <article class="t-level">
+        <h3>2 niveaux</h3>
+        <div class="t-chips"><span class="t-chip on6">6e</span><span class="t-chip on5">5e</span></div>
+        <div class="t-price">79 €</div>
+        <div class="t-per">par an</div>
+      </article>
+      <article class="t-level featured">
+        <span class="t-flag orange">Collège complet</span>
+        <h3>Tous les niveaux</h3>
+        <div class="t-chips"><span class="t-chip on6">6e</span><span class="t-chip on5">5e</span><span class="t-chip soon">4e</span><span class="t-chip soon">3e</span></div>
+        <div class="t-price">129 €</div>
+        <div class="t-per">par an · 4e et 3e incluses dès leur ouverture</div>
+      </article>
+    </div>
+
+    <div class="t-etab-feats">
+      <div class="t-feat"><span class="gicon">workspace_premium</span><h4>Tout l'abonnement Professeur</h4><p>Pour chaque professeur de mathématiques de l'établissement, sans abonnement individuel.</p></div>
+      <div class="t-feat"><span class="gicon">badge</span><h4>Un référent dans l'équipe</h4><p>Il crée les comptes, les classes et les inscriptions, et importe les listes d'élèves.</p></div>
+      <div class="t-feat"><span class="gicon">menu_book</span><h4>Cours de l'établissement</h4><p>Une version commune des cours, préparée en équipe, que chaque collègue peut encore adapter.</p></div>
+      <div class="t-feat"><span class="gicon">smart_toy</span><h4>IA partagée</h4><p>Une clé IA commune, avec un budget mensuel et le détail de la consommation par professeur.</p></div>
+      <div class="t-feat"><span class="gicon">receipt_long</span><h4>Devis et facture</h4><p>Paiement par mandat administratif, facture déposée sur Chorus Pro.</p></div>
+    </div>
+  </section>
+
+  <!-- ================= COMPARATIF ================= -->
+  <section class="t-section" id="comparatif">
+    <h2><span class="gicon">table_view</span> Comparatif des prestations</h2>
+    <p class="t-lede">Ce que comprend chaque formule.<span class="t-swipe"> Faites glisser le tableau pour voir les autres formules.</span></p>
+    <div class="t-table-wrap">
+      <table class="t-table">
+        <thead><tr><th></th><th>Découverte</th><th class="hl">Professeur</th><th>Établissement</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="4">En classe</td></tr>
+          <tr><td>Cours, méthodes animées, exercices</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Quiz et mode apprentissage des définitions</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Tableau interactif (règle, équerre, compas, rapporteur)</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Outil de correction à projeter (13 outils)</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr class="grp"><td colspan="4">Classes et élèves</td></tr>
+          <tr><td>Classes avec comptes élèves</td><td class="part">1 classe</td><td class="yes hl">Illimitées</td><td class="yes">Illimitées</td></tr>
+          <tr><td>Cahier de corrections de la classe</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Devoirs (fichier, figure, automatismes, Objectif Nombre)</td><td class="part">3 en cours</td><td class="yes hl">Illimités</td><td class="yes">Illimités</td></tr>
+          <tr><td>Résultats, médailles, temps de travail réel</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Créateur d'évaluations</td><td class="no">—</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr class="grp"><td colspan="4">Personnalisation et équipe</td></tr>
+          <tr><td>Cours personnalisés</td><td class="no">—</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Partage des cours avec les collègues</td><td class="no">—</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Version commune des cours pour l'établissement</td><td class="no">—</td><td class="no hl">—</td><td class="yes">✓</td></tr>
+          <tr><td>Référent : comptes, classes, imports</td><td class="no">—</td><td class="no hl">—</td><td class="yes">✓</td></tr>
+          <tr class="grp"><td colspan="4">Intelligence artificielle</td></tr>
+          <tr><td>Avec sa propre clé Anthropic</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Avec la clé du site</td><td class="no">—</td><td class="part hl">Pack IA</td><td class="part">Clé partagée</td></tr>
+          <tr class="grp"><td colspan="4">Paiement</td></tr>
+          <tr><td>Carte bancaire</td><td class="no">—</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Devis, mandat administratif, Chorus Pro</td><td class="no">—</td><td class="no hl">—</td><td class="yes">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================= ACCOMPAGNEMENT ================= -->
+  <section class="t-section" id="accompagnement">
+    <h2><span class="gicon">handshake</span> Accompagnement</h2>
+    <p class="t-lede">Pour bien démarrer en équipe, en plus d'une licence.</p>
+    <div class="t-services">
+      <div class="t-service"><span class="gicon">videocam</span><h4>Présentation à l'équipe</h4><p>Une heure en visio avec l'équipe de mathématiques : prise en main, questions, mise en place des classes.</p><span class="t-sur">Sur devis</span></div>
+      <div class="t-service"><span class="gicon">co_present</span><h4>Formation dans l'établissement</h4><p>Une demi-journée ou une journée : outils de classe, devoirs, évaluations, cours personnalisés et usage raisonné de l'IA.</p><span class="t-sur">Sur devis</span></div>
+      <div class="t-service"><span class="gicon">edit_note</span><h4>Cours sur mesure</h4><p>Adaptation des cours à la progression de l'équipe, ajout de méthodes et d'exercices propres à l'établissement.</p><span class="t-sur">Sur devis</span></div>
+    </div>
+  </section>
+
+  <!-- ================= FAQ ================= -->
+  <section class="t-section t-faq" id="questions">
+    <h2><span class="gicon">help</span> Questions fréquentes</h2>
+    <details><summary>Les élèves doivent-ils payer quelque chose ?</summary><p>Non, jamais. Les comptes élèves sont créés par leur professeur ou par le référent de l'établissement, et restent gratuits quelle que soit la formule.</p></details>
+    <details><summary>Que se passe-t-il à la fin des 15 jours d'essai ?</summary><p>Vous choisissez de vous abonner ou non. Sans abonnement, votre compte passe en formule Découverte : vos cours personnalisés et vos évaluations restent enregistrés et redeviennent utilisables dès que vous vous abonnez.</p></details>
+    <details><summary>Mon établissement prend une licence : que devient mon abonnement ?</summary><p>La licence établissement couvre tous les professeurs de mathématiques de l'établissement. Un abonnement individuel en cours n'a plus besoin d'être renouvelé.</p></details>
+    <details><summary>Comment fonctionne le prix par niveau ?</summary><p>L'établissement choisit les niveaux utilisés, comme pour les manuels. Tous les professeurs et tous les élèves de ces niveaux y ont accès. Les outils communs (correction, cahier, devoirs, évaluations) servent pour toutes les classes.</p></details>
+    <details><summary>L'IA est-elle obligatoire ?</summary><p>Non. Tout le site fonctionne sans IA. Elle aide à proposer des exercices, construire des figures ou créer des quiz. Chaque professeur choisit : sa propre clé, la clé de l'établissement ou le pack IA. La consommation est toujours affichée en détail.</p></details>
+    <details><summary>Comment un établissement paie-t-il ?</summary><p>Sur devis : bon de commande, puis facture déposée sur Chorus Pro et paiement par mandat administratif. Le paiement par carte reste possible.</p></details>
+  </section>
+
+  <section class="t-contact">
+    <div>
+      <h2>Un devis pour votre établissement ?</h2>
+      <p>Indiquez le nom de l'établissement, son numéro UAI et les niveaux souhaités : vous recevez un devis rapidement.</p>
+    </div>
+    <a class="t-btn" href="mailto:contact@latelieraugmente.fr?subject=Devis%20L%27Atelier%20des%20Maths">Demander un devis</a>
+  </section>
+
+  <p class="t-foot">Tarifs 2026-2027 · L'Atelier des Maths, une production de <a href="https://latelieraugmente.fr" style="text-decoration:underline;">L'Atelier Augmenté</a></p>
+</main>
+</body>
+</html>
