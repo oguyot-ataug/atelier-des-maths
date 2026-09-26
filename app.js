@@ -1915,9 +1915,19 @@ function attachResizeObservers(){
   document.querySelectorAll('.resizable-block').forEach(el=>{
     if(el.dataset.observed) return;
     el.dataset.observed = '1';
-    let first = true;
+    // Seul un redimensionnement FAIT PAR LE PROFESSEUR (poignée tirée à la souris ou au doigt)
+    // est enregistré. Avant, toute variation de taille l'était : passage de l'exercice en
+    // colonnes, largeur de fenêtre, texte qui se réorganise... Un bloc de texte se retrouvait
+    // alors figé à une largeur et une hauteur arbitraires et coupé dans l'aperçu et le PDF ; et
+    // à chaque re-rendu (valider, déplacer, insérer), l'élément retiré de la page était mesuré
+    // 0 x 0, ce qui effaçait au contraire les vrais redimensionnements.
+    el.addEventListener('pointerdown', ()=>{
+      el._manualResizeUntil = Infinity;
+      window.addEventListener('pointerup', ()=>{ el._manualResizeUntil = performance.now() + 400; }, { once:true });
+    });
     new ResizeObserver(entries=>{
-      if(first){ first=false; return; } // ignore la mesure initiale (pas un vrai redimensionnement)
+      if(!el.isConnected || !entries[0].contentRect.width) return;
+      if(!(performance.now() < (el._manualResizeUntil || 0))) return;
       const id = parseInt(el.dataset.blockId), ctx = el.dataset.ctx;
       const arr = blocksStores[ctx]||[];
       const b = arr.find(x=>x.id===id);
@@ -2546,6 +2556,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.682', items:[
+    "Deux nouvelles vidéos côté professeur -- demandé : \"Faire encore deux vidéos côté prof : Création d'une évaluation / Correction des exercices pour le cahier ou +cahier depuis le cours\". Dans les « Nouveautés » de l'accueil : « Une évaluation en quelques minutes » (exercices proposés par l'IA, barème, figure, texte et figure côte à côte, aperçu de la copie) et « Le cahier de la classe » (« + Cahier » depuis le cours, outil de correction avec une division posée, puis le cahier vu par l'élève). Comme les autres, hébergées avec le site (pas sur Supabase) et chargées seulement au clic.",
+    "Correctif (Évaluation, outil de correction) : seul un redimensionnement fait à la main (poignée tirée à la souris ou au doigt) est désormais retenu pour un bloc. Avant, un bloc redimensionné (une figure réduite, par exemple) reprenait sa taille par défaut dès qu'on validait, déplaçait ou insérait un bloc -- la figure s'imprimait alors en pleine largeur dans l'aperçu et le PDF ; et à l'inverse, un simple passage en colonnes ou un changement de largeur de fenêtre pouvait figer un bloc de texte à une taille arbitraire.",
+  ]},
   { version:'2026-08-19.681', items:[
     "Page d'accueil -- demandé : \"La page d'accueil avec les nouveautés en insérant les vidéos (attention un lien pour ne pas trop prendre sur supabase)\". Nouvelle section « Nouveautés en vidéo » : constructions animées aux instruments, mode apprentissage, Automatismes et Compte est bon en devoir, cours personnalisables. Les vidéos (720p, 1 à 3 Mo) sont servies par le site lui-même, pas par Supabase, et ne se chargent qu'au clic sur lecture (seule une image d'aperçu est affichée avant).",
     "Présentation d'accueil et listes « Pour les élèves » / « Pour les professeurs » mises à jour : mode apprentissage, cours personnalisables, tentatives et temps de travail réel des devoirs.",
