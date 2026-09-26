@@ -71,6 +71,10 @@ function facPanelHtml(){
           <label>Délai de paiement (jours)<input type="number" min="0" id="facEmDelai"></label>
         </div>
         <button class="btn" onclick="facSaveEmetteur()">Enregistrer mes informations</button> <span class="hint" id="facEmMsg" style="margin:0;"></span>
+        <div class="tool-row" style="margin-top:12px;">
+          <button class="btn secondary" onclick="facTestMail()"><span class="gicon">mail</span> Envoyer un e-mail de test</button>
+          <span class="hint" id="facMailMsg" style="margin:0;">Envoyé depuis devis@latelieraugmente.fr vers votre adresse ci-dessus.</span>
+        </div>
       </div>
     </div>
 
@@ -231,6 +235,17 @@ async function facSaveEmetteur(){
   const { error } = await sb.from('facturation_emetteur').update(row).eq('id', 1);
   msg.textContent = error ? 'Erreur : ' + error.message : '✓ Enregistré';
   if(!error){ facState.emetteur = Object.assign({}, facState.emetteur, row); facFillEmetteur(); facRenderTotal(); setTimeout(()=>msg.textContent='', 3000); }
+}
+
+/* E-mail d'essai (fonction facturation-mail) : vérifie l'envoi depuis latelieraugmente.fr. */
+async function facTestMail(){
+  const msg = document.getElementById('facMailMsg');
+  msg.textContent = 'Envoi…';
+  const { data, error } = await sb.functions.invoke('facturation-mail', { body: { action: 'test' } });
+  let err = error ? error.message : (data && data.error);
+  if(error && error.context && typeof error.context.json === 'function'){ try{ const j = await error.context.json(); if(j && j.error) err = j.error; }catch(e){} }
+  msg.innerHTML = err ? '<span style="color:#a83c1f;">Échec : ' + facEsc(err) + '</span>'
+    : `<span style="color:#1F7A4D;">✓ E-mail envoyé à ${facEsc(data.to)} : vérifiez votre boîte de réception (et les indésirables).</span>`;
 }
 
 /* ---------- Client ---------- */

@@ -2556,6 +2556,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.693', items:[
+    "E-mails envoyés depuis le domaine latelieraugmente.fr (vérifié chez Resend) : notifications d'inscription depuis notifications@latelieraugmente.fr, facturation depuis devis@latelieraugmente.fr (réponses vers contact@). Facturation > Mes informations : bouton « Envoyer un e-mail de test » pour vérifier l'envoi avant la signature des devis en ligne.",
+  ]},
   { version:'2026-08-19.692', items:[
     "Facturation -- demandé : \"passer un devis en facture et intégrer le devis signé\". Chaque devis accepte une pièce jointe (devis signé ou bon de commande, PDF ou photo, 10 Mo au maximum), rangée dans un espace privé réservé à l'administrateur : depuis « Commande reçue » ou le bouton « Joindre » (« Remplacer » ensuite), consultable d'un clic dans la liste, et rappelée sur la facture correspondante. Nouveau bouton « Facturer » directement sur un devis émis : commande, licence, pièce jointe et facture en une seule étape.",
   ]},
