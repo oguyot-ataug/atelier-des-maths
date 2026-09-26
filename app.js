@@ -2541,6 +2541,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.673', items:[
+    "Constructions animées (IA) -- signalé : \"pour la médiatrice au compas, le compas sort de l'écran. En fait il doit venir tout de suite piquer sur une extrémité du segment, puis seulement prendre un écartement suffisamment grand et faire ses arcs de cercle. À aucun moment le compas n'a besoin de prendre un écartement sur la règle !\". Médiatrice, bissectrice et perpendiculaire au compas : le compas pique directement sur le point, s'ouvre sur place puis trace ses arcs -- plus aucun passage par la règle pour un écartement libre.",
+    "Écartement précis (rayon imposé en cm) -- signalé : \"la prise de dimension se retrouve hors champ, on ne voit pas le compas prendre sa dimension sur la règle\". La règle est désormais posée dans la partie visible du tableau, juste sous la figure, et non plus à un endroit fixe en bas du tableau (hors de la zone zoomée).",
+    "La charnière du compas se place du côté où elle reste visible (elle pouvait dépasser du tableau pendant les arcs tracés vers le bas).",
+  ]},
   { version:'2026-08-19.672', items:[
     "Référencement : balise de vérification Google Search Console ajoutée sur la page d'accueil (propriété https://maths.latelieraugmente.fr/), pour pouvoir déclarer le sitemap et suivre l'indexation.",
   ]},
@@ -7305,7 +7310,10 @@ function tbRender(){
       // "pointe" = l'ancrage fixe (t.x,t.y) ; "mine" = le crayon qui trace, à l'autre bout.
       const mineX = t.x+t.radius*Math.cos(rad), mineY = t.y+t.radius*Math.sin(rad);
       const distTotal = Math.hypot(mineX-t.x, mineY-t.y) || 1;
-      const perpX = (mineY-t.y)/distTotal, perpY = -(mineX-t.x)/distTotal;
+      // Côté de la charnière : par défaut toujours le même ; le compas animé par l'IA peut le
+      // retourner (hingeFlip = -1) pour qu'elle reste dans la zone visible du tableau.
+      const hs = t.hingeFlip===-1 ? -1 : 1;
+      const perpX = hs*(mineY-t.y)/distTotal, perpY = -hs*(mineX-t.x)/distTotal;
       // Longueur des branches FIXE (comme un vrai compas) : la charnière se rapproche de la
       // base pointe-mine à mesure qu'on écarte, sans jamais rallonger les branches elles-mêmes.
       const half = distTotal/2;

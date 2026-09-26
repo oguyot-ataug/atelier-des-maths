@@ -22,7 +22,7 @@
 const TB_PX_PER_CM = 22;             // échelle de la règle graduée (cf. rulerSVG, cmStep=22)
 const TB_AI_MAX_STEPS = 25;
 const TB_AI_REGION = {x0:70, x1:830, y0:45, y1:470}; // zone de la figure (le bas sert d'établi)
-const TB_AI_BENCH = {x:70, y:522};   // règle posée en bas du tableau pour prendre un écartement
+const TB_AI_BENCH = {x:70, y:522};   // repli : règle posée en bas du tableau pour prendre un écartement
 const TB_AI_ENTRY = {                // d'où arrive / où repart chaque outil
   regle_grad:{x:0,y:340}, requerre2:{x:0,y:380}, equerre:{x:0,y:340}, rapporteur:{x:0,y:-360},
   compas:{x:280,y:-320}, crayon:{x:200,y:-240},
@@ -581,6 +581,7 @@ async function tbAiMoveTool(t, pose, ms){
   const props = {};
   for(const k in pose){
     if(k==='angle' || k==='rayAngle') props[k] = (t[k]||0) + tbAiNorm180(pose[k]-(t[k]||0));
+    else if(k==='hingeFlip') t[k] = pose[k]; // côté de la charnière : jamais interpolé
     else if(typeof pose[k]==='number') props[k] = pose[k];
     else t[k] = pose[k];
   }
@@ -860,8 +861,40 @@ function tbAiGradPose(type, P, ang, shiftPx){
   const ex = tbAiDirDeg(ang), ey = tbAiDirDeg(ang+90);
   return {x:P.x-ex.x*lx-ey.x*ly, y:P.y-ex.y*lx-ey.y*ly, angle:ang};
 }
-/* Écartement du compas : pris sur la règle posée en bas du tableau (rayon connu en cm), ou
-   directement sur la figure entre deux points (report de longueur). */
+/* Endroit où poser la règle pour prendre un écartement précis -- signalé : "la prise de dimension
+   se retrouve hors champ, on ne voit pas le compas prendre sa dimension sur la règle" (la règle
+   était posée à un endroit fixe, en bas du tableau, hors de la zone zoomée sur la figure).
+   Désormais : dans la partie VISIBLE du tableau, juste sous la figure (sans la recouvrir si la
+   place le permet), centrée sous elle, avec la place au-dessus pour les branches du compas. */
+function tbAiBenchFor(rPx){
+  const vb = typeof tbViewBox==='function' ? tbViewBox() : [0,0,900,560];
+  const [vx,vy,vw,vh] = vb, m = 14;
+  const fig = tbAiPlan && tbAiPlan.screenBox;
+  const cx = fig ? (fig.x0+fig.x1)/2 : vx+vw/2;
+  const x = Math.max(vx+m, Math.min(vx+vw-rPx-m-20, cx-rPx/2));
+  const yMax = vy+vh-TB_RULER_W-10, yMin = Math.min(yMax, vy+Math.min(200, vh*0.55));
+  const y = Math.max(yMin, Math.min(yMax, fig ? fig.y1+40 : yMax));
+  return {x, y};
+}
+/* Écartement « libre » (médiatrice, bissectrice, perpendiculaire au compas) : aucune longueur
+   précise n'est demandée, donc pas de règle -- signalé : "il doit venir tout de suite piquer sur
+   une extrémité du segment, puis seulement prendre un écartement suffisamment grand et faire ses
+   arcs de cercle. À aucun moment le compas n'a besoin de prendre un écartement sur la règle".
+   Le compas pique directement sur le centre C, branche crayon tournée vers le premier arc
+   (angleDeg), puis s'ouvre jusqu'au rayon voulu. */
+async function tbAiOpenOn(C, rPx, angleDeg){
+  await tbAiPutAway('regle_grad','requerre2');
+  const m0 = -angleDeg*Math.PI/180;
+  const cp = await tbAiBring('compas', {x:C.x, y:C.y, angle:angleDeg, radius:Math.min(30,rPx), mode:'open', hingeFlip:tbAiHingeSide(C, rPx, m0, m0)});
+  tbAiHighlight(C);
+  await tbAiMoveTool(cp, {radius:rPx}, 750);
+  await tbAiSleep(300);
+  tbAiClearHighlights();
+  return cp;
+}
+/* Écartement du compas : pris sur la règle (rayon connu en cm), posée dans la zone visible près
+   de la figure (tbAiBenchFor), ou directement sur la figure entre deux points (report de
+   longueur). */
 async function tbAiTakeOpening(rPx, fromPts, gtool){
   if(fromPts){
     const P = fromPts[0], Q = fromPts[1];
@@ -872,7 +905,7 @@ async function tbAiTakeOpening(rPx, fromPts, gtool){
     tbAiClearHighlights();
     return cp;
   }
-  const B = TB_AI_BENCH;
+  const B = tbAiBenchFor(rPx);
   if(gtool===undefined) gtool = tbAiAllowed.has('regle') ? 'regle_grad' : tbAiAllowed.has('requerre') ? 'requerre2' : null;
   if(!gtool){
     // Aucun instrument gradué autorisé : écartement libre (seul compte d'avoir le même).
@@ -885,7 +918,7 @@ async function tbAiTakeOpening(rPx, fromPts, gtool){
   const shift = (gtool==='requerre2' && rPx>10*TB_PX_PER_CM) ? -10*TB_PX_PER_CM : 0;
   await tbAiBring(gtool, tbAiGradPose(gtool, B, 0, shift));
   tbAiHighlight(B);
-  const cp = await tbAiBring('compas', {x:B.x, y:B.y, angle:0, radius:30, mode:'open'});
+  const cp = await tbAiBring('compas', {x:B.x, y:B.y, angle:0, radius:30, mode:'open', hingeFlip:tbAiHingeSide(B, rPx, 0, 0)});
   tbAiHighlight({x:B.x+rPx, y:B.y});
   await tbAiMoveTool(cp, {radius:rPx}, 800);
   await tbAiSleep(450);
@@ -902,12 +935,32 @@ function tbAiArcWindows(o, half){
   ws.forEach(w=>{ const last = out[out.length-1]; if(last && w[0]<=last[1]) last[1] = Math.max(last[1],w[1]); else out.push(w.slice()); });
   return out;
 }
+/* Côté de la charnière du compas (1 ou -1) qui la garde au mieux dans la partie visible du
+   tableau, pour un compas piqué en C, d'écartement rPx, dont la mine parcourt les angles
+   mathématiques w0..w1 -- signalé : "le compas sort de l'écran". */
+function tbAiHingeSide(C, rPx, w0, w1, current){
+  const [vx,vy,vw,vh] = typeof tbViewBox==='function' ? tbViewBox() : [0,0,900,560];
+  const H = Math.sqrt(Math.max(TB_COMPASS_LEG*TB_COMPASS_LEG - rPx*rPx/4, 4));
+  const score = s => {
+    let n = 0;
+    for(let k=0;k<=6;k++){
+      const m = w0+(w1-w0)*k/6, dx = rPx*Math.cos(m), dy = -rPx*Math.sin(m), d = Math.hypot(dx,dy)||1;
+      const hx = C.x+dx/2 + s*dy/d*H, hy = C.y+dy/2 - s*dx/d*H;
+      n -= Math.max(0, vx+12-hx) + Math.max(0, hx-(vx+vw-12)) + Math.max(0, vy+12-hy) + Math.max(0, hy-(vy+vh-12));
+    }
+    return n;
+  };
+  const a = score(1), b = score(-1), cur = current===-1 ? -1 : 1;
+  return Math.abs(a-b) < 1 ? cur : (a > b ? 1 : -1);
+}
 /* Compas déjà ouvert : se déplace sur le centre C puis trace les arcs demandés. */
 async function tbAiCompassArcs(cp, C, rPx, windows, style){
   cp.mode = 'closed';
+  cp.hingeFlip = tbAiHingeSide(C, rPx, windows[0][0], windows[0][1], cp.hingeFlip);
   await tbAiMoveTool(cp, {x:C.x, y:C.y, angle:-windows[0][0]*180/Math.PI}, 750);
   for(const [w0,w1] of windows){
     cp.mode = 'closed';
+    cp.hingeFlip = tbAiHingeSide(C, rPx, w0, w1, cp.hingeFlip);
     await tbAiMoveTool(cp, {angle:-w0*180/Math.PI}, 300);
     cp.mode = 'draw';
     const stroke = {id:tbNextId++, color:tbAiStrokeColor||tbCurrentColor(), construction: style==='construction', points:[]};
@@ -964,11 +1017,18 @@ async function tbAiPerpRequerre(a, H, nS, dS){
 /* ---- Perpendiculaire au compas (règle et compas seulement) ---- */
 async function tbAiPerpCompas(a){
   const S = tbAiPlan.S, H = S(a.H), nS = tbAiSd(a.n), r0 = a.r0*TB_PX_PER_CM, r1 = a.r1*TB_PX_PER_CM;
-  let cp = await tbAiTakeOpening(r0, null, a.otool);
-  await tbAiPutAway('regle_grad','requerre2');
-  await tbAiCompassArcs(cp, S(a.c0.c), r0, tbAiArcWindows(a.c0, 16), 'construction');
-  if(Math.abs(r1-r0)>0.5){ cp = await tbAiTakeOpening(r1, null, a.otool); await tbAiPutAway('regle_grad','requerre2'); }
-  await tbAiCompassArcs(cp, S(a.cP.c), r1, tbAiArcWindows(a.cP, 16), 'construction');
+  // Écartements libres : le compas pique directement sur le centre, sans passer par la règle.
+  const w0 = tbAiArcWindows(a.c0, 16), wP = tbAiArcWindows(a.cP, 16);
+  const cp = await tbAiOpenOn(S(a.c0.c), r0, -w0[0][0]*180/Math.PI);
+  await tbAiCompassArcs(cp, S(a.c0.c), r0, w0, 'construction');
+  if(Math.abs(r1-r0)>0.5){
+    // Nouvel écartement, pris sur place : le compas pique sur le centre suivant, puis s'ouvre.
+    cp.mode = 'open';
+    await tbAiMoveTool(cp, {x:S(a.cP.c).x, y:S(a.cP.c).y, angle:-wP[0][0]*180/Math.PI}, 700);
+    await tbAiMoveTool(cp, {radius:r1}, 650);
+    await tbAiSleep(250);
+  }
+  await tbAiCompassArcs(cp, S(a.cP.c), r1, wP, 'construction');
   await tbAiCompassArcs(cp, S(a.cQ.c), r1, tbAiArcWindows(a.cQ, 16), 'construction');
   await tbAiPutAway('compas');
   await tbAiMark(S(a.K), '');
@@ -1152,10 +1212,9 @@ const tbAiSteps = {
   /* Médiatrice au compas : même écartement depuis A puis depuis B, deux points d'intersection,
      droite qui passe par ces deux points. */
   async perpendicular_bisector(a){
-    const S = tbAiPlan.S, rPx = a.r*TB_PX_PER_CM;
-    const cp = await tbAiTakeOpening(rPx, null, a.otool);
-    await tbAiPutAway('regle_grad','requerre2');
-    await tbAiCompassArcs(cp, S(a.A), rPx, tbAiArcWindows(a.ca, 16), 'construction');
+    const S = tbAiPlan.S, rPx = a.r*TB_PX_PER_CM, wa = tbAiArcWindows(a.ca, 16);
+    const cp = await tbAiOpenOn(S(a.A), rPx, -wa[0][0]*180/Math.PI);
+    await tbAiCompassArcs(cp, S(a.A), rPx, wa, 'construction');
     await tbAiCompassArcs(cp, S(a.B), rPx, tbAiArcWindows(a.cb, 16), 'construction');
     await tbAiPutAway('compas');
     await tbAiMark(S(a.E), a.names[0]||'');
@@ -1179,8 +1238,7 @@ const tbAiSteps = {
     while(delta>Math.PI) delta -= 2*Math.PI; while(delta<-Math.PI) delta += 2*Math.PI;
     const mg = 12*Math.PI/180, w = delta>0 ? [aP-mg, aP+delta+mg] : [aP+delta-mg, aP+mg];
     const aK = (c)=>Math.atan2(a.K.y-c.y, a.K.x-c.x), h = 16*Math.PI/180;
-    const cp = await tbAiTakeOpening(rPx, null, a.otool);
-    await tbAiPutAway('regle_grad','requerre2');
+    const cp = await tbAiOpenOn(S(a.A), rPx, -w[0]*180/Math.PI);
     await tbAiCompassArcs(cp, S(a.A), rPx, [w], 'construction');
     await tbAiMark(S(a.P), ''); await tbAiMark(S(a.Q), '');
     await tbAiPutAway('crayon');
