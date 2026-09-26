@@ -2556,6 +2556,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.691', items:[
+    "Facturation -- demandé : \"Ok pour la facture mais pour le devis ?\". Les devis indiquent désormais les conditions de paiement (délai, Chorus Pro et mandat administratif pour un établissement public, virement pour un privé), avec l'IBAN et le BIC sur leur propre ligne, sans coupure, comme sur les factures.",
+  ]},
   { version:'2026-08-19.690', items:[
     "Facturation -- signalé : \"Paiement par mandat administratif : aller à la ligne pour ne pas couper l'IBAN\". Sur les factures (établissement public comme privé), l'IBAN et le BIC passent sur leur propre ligne, en gras, et ne sont jamais coupés.",
   ]},

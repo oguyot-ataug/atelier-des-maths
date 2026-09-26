@@ -493,9 +493,13 @@ function facDocHtml(d){
   const iban = '<br><span class="iban">' + (em.iban ? `IBAN ${facEsc(em.iban)}${em.bic ? '</span> <span class="iban">· BIC ' + facEsc(em.bic) : ''}` : 'IBAN : à compléter') + '</span>';
   let bloc = '';
   if(d.type === 'devis'){
-    bloc = `<p>Devis valable jusqu'au <b>${facDate(d.date_validite)}</b>.</p>` + (prive
+    const delai = Number(em.delai_paiement_jours ?? 30);
+    const conditions = `<p><b>Conditions de paiement :</b> ${delai ? `à ${delai} jours` : 'à réception'} de la facture, ${prive
+      ? 'par virement'
+      : 'déposée sur Chorus Pro, par mandat administratif (virement)'} :${iban}</p>`;
+    bloc = `<p>Devis valable jusqu'au <b>${facDate(d.date_validite)}</b>.</p>` + conditions + (prive
       ? `<div class="accord"><b>Bon pour accord</b><br>Date, nom, signature et cachet :<div style="height:70px;"></div></div>`
-      : `<p>Pour commander : adressez un bon de commande mentionnant le numéro de ce devis (<b>${facEsc(d.numero)}</b>) à ${facEsc(em.email)}. La facture sera déposée sur Chorus Pro au SIRET de l'établissement.</p>`);
+      : `<p>Pour commander : adressez un bon de commande mentionnant le numéro de ce devis (<b>${facEsc(d.numero)}</b>) à ${facEsc(em.email)}.</p>`);
   } else if(d.type === 'facture'){
     bloc = `<p>Échéance : <b>${facDate(d.date_echeance)}</b>${d.numero_engagement ? ` · ${prive ? 'Commande' : 'N° d\'engagement'} : <b>${facEsc(d.numero_engagement)}</b>` : ''}</p>
       <p>${prive ? `Paiement par virement, en indiquant la référence <b>${facEsc(d.numero)}</b> :${iban}` : `Facture déposée sur Chorus Pro. Paiement par mandat administratif, par virement :${iban}`}</p>
