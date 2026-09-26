@@ -589,9 +589,32 @@ async function openDevoirSubmissions(devoirId){
   document.body.appendChild(overlay);
   overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
 }
+/* Tentatives et temps de travail réel (suivi-devoirs.js) -- demandé : "voir le nombre de
+   tentatives des élèves et le temps passé réellement dessus". `done` = tentatives terminées
+   connues par ailleurs (cm_results / ceb_results, y compris celles d'avant le suivi) et
+   `oldMs` leur durée brute, utilisée seulement si aucune séance n'a été suivie. */
+function devoirEffortInfo(sessions, item, done, oldMs){
+  const S = typeof dsSummary==='function' ? dsSummary(sessions, item) : { n:0, abandons:0, enCours:0, activeMs:0, actions:0 };
+  const tentatives = done + S.abandons;
+  let temps = '', tempsCsv = '';
+  if(S.n){
+    const partiel = done > S.n - S.abandons; // tentatives d'avant la mise en place du suivi
+    temps = (partiel ? '≥ ' : '') + dsFormatMs(S.activeMs) + ' de travail';
+    tempsCsv = (partiel ? '>= ' : '') + dsFormatMs(S.activeMs).replace(/\u00A0/g,' ');
+  } else if(oldMs){
+    temps = '≈ ' + dsFormatMs(oldMs) + ' (pauses comprises)';
+    tempsCsv = '~ ' + dsFormatMs(oldMs).replace(/\u00A0/g,' ') + ' (pauses comprises)';
+  }
+  const html = tentatives || temps
+    ? `<span class="hint devoir-effort" style="margin:0;" title="Temps de travail réel : onglet visible et élève actif (pauses et changements d'onglet exclus)">${tentatives ? `${tentatives} tentative${tentatives>1?'s':''}${S.abandons ? ` (dont ${S.abandons} abandonnée${S.abandons>1?'s':''})` : ''}` : ''}${tentatives && temps ? ' · ' : ''}${temps}${S.enCours ? ' · <b>en cours</b>' : ''}</span>`
+    : '';
+  return { tentatives, abandons:S.abandons, activeMs:S.activeMs, suivi:S.n>0, html, tempsCsv, actions:S.actions, seances:S.n };
+}
 async function devoirSubmissionRowsFichierFigure(devoir, eleves){
   const { data: rendus } = await sb.from('devoirs_rendus').select('*').eq('devoir_id', devoir.id);
   const rendusByStudent = new Map((rendus||[]).map(r=>[r.student_id, r]));
+  const isFigure = devoir.type==='figure' || devoir.type==='figure_completer';
+  const sessionsByStudent = (isFigure && typeof dsLoadForDevoir==='function') ? (await dsLoadForDevoir(devoir.id) || new Map()) : new Map();
   // Cache en mémoire (par id élève) : embarquer le JSON directement dans l'attribut HTML
   // onclick cassait l'attribut (les guillemets du JSON entraient en conflit avec ceux de
   // l'attribut, signalé : "je n'arrive pas à ouvrir la figure de l'élève").
@@ -625,10 +648,15 @@ async function devoirSubmissionRowsFichierFigure(devoir, eleves){
     }
     const statutInfo = devoirStatutInfo(!!(rendu && rendu.est_rendu), devoir.date_limite, !!(rendu && rendu.a_reprendre));
     const statutLabel = statutInfo.label + (rendu && !rendu.est_rendu && !rendu.a_reprendre ? ' (brouillon)' : '');
-    exportRows.push([profileDisplayName(eleve)||'(sans nom)', statutLabel, rendu?.note ?? '', rendu?.commentaire_prof || '']);
+    // Figures : séances de travail dans l'outil, temps réel, enregistrements.
+    const S = isFigure && typeof dsSummary==='function' ? dsSummary(sessionsByStudent.get(eleve.id)) : null;
+    const effortHtml = S && S.n ? `<div class="hint devoir-effort" style="margin:2px 0 0;" title="Temps de travail réel : outil de figure ouvert, onglet visible, élève actif">${S.n} séance${S.n>1?'s':''} de travail · ${dsFormatMs(S.activeMs)} · ${S.actions} enregistrement${S.actions>1?'s':''}</div>` : '';
+    const exportRow = [profileDisplayName(eleve)||'(sans nom)', statutLabel, rendu?.note ?? '', rendu?.commentaire_prof || ''];
+    if(isFigure) exportRow.push(S ? S.n : '', S && S.n ? dsFormatMs(S.activeMs).replace(/\u00A0/g,' ') : '', S ? S.actions : '');
+    exportRows.push(exportRow);
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!(rendu && rendu.est_rendu), devoir.date_limite, !!(rendu && rendu.a_reprendre))}</span>
+        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!(rendu && rendu.est_rendu), devoir.date_limite, !!(rendu && rendu.a_reprendre))}${effortHtml}</span>
         <span>${content}</span>
       </div>
       ${rendu ? `<div class="tool-row" style="margin-top:6px;">
@@ -639,7 +667,7 @@ async function devoirSubmissionRowsFichierFigure(devoir, eleves){
       </div>` : ''}
     </div>`;
   }).join('');
-  devoirSubmissionsExport.headers = ['Élève','Statut','Note /20','Commentaire'];
+  devoirSubmissionsExport.headers = ['Élève','Statut','Note /20','Commentaire'].concat(isFigure ? ['Séances','Temps de travail','Enregistrements'] : []);
   devoirSubmissionsExport.rows = exportRows;
   return bar + body;
 }
@@ -675,6 +703,9 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
   const { data: attempts } = await sb.from('cm_results').select('student_id,sequence_id,score,total,duration_ms').eq('devoir_id', devoir.id);
   const { data: rendus } = await sb.from('devoirs_rendus').select('student_id,est_rendu,a_reprendre').eq('devoir_id', devoir.id);
   const renduByStudent = new Map((rendus||[]).map(r=>[r.student_id, r]));
+  const sessionsByStudent = (typeof dsLoadForDevoir==='function' ? await dsLoadForDevoir(devoir.id) : null) || new Map();
+  const doneCount = new Map(), doneMs = new Map(); // "élève|séquence" -> tentatives terminées, durée brute cumulée
+  (attempts||[]).forEach(a=>{ const k = a.student_id+'|'+a.sequence_id; doneCount.set(k, (doneCount.get(k)||0)+1); doneMs.set(k, (doneMs.get(k)||0)+(a.duration_ms||0)); });
   const byStudent = new Map();
   const timeByStudent = new Map(); // student_id -> Map(sequence_id -> meilleur temps À 100%)
   (attempts||[]).forEach(a=>{
@@ -729,6 +760,8 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
     const totalMax = Array.from(m.values()).reduce((s,r)=>s+r.total,0);
     const pctEleve = totalMax ? Math.round(100*totalScore/totalMax) : null;
     const colorEleve = pctEleve!==null ? devoirPctColor(pctEleve) : 'var(--ink-soft)';
+    const sess = sessionsByStudent.get(eleve.id) || [];
+    let totT = 0, totMs = 0, totOld = 0;
     const detail = seqs.map(id=>{
       const seqDef = (typeof CM_SEQUENCES!=='undefined') ? CM_SEQUENCES.find(s=>s.id===id) : null;
       const label = seqDef ? seqDef.label : id;
@@ -736,16 +769,20 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
       const pct = r ? Math.round(100*r.score/r.total) : null;
       const color = pct!==null ? devoirPctColor(pct) : 'var(--ink-soft)';
       const myTime = (timeByStudent.get(eleve.id)||new Map()).get(id);
-      const timeHtml = myTime!=null ? ` <span class="hint" style="margin:0;">· ${formatDuration(myTime)}</span>` : '';
-      exportRows.push([profileDisplayName(eleve)||'(sans nom)', statutLabel, label, r?r.score:'', r?r.total:'', pct!==null?pct+'%':'', r?'Oui':'Non', myTime!=null?formatDuration(myTime):'']);
-      return `<div class="hint" style="margin:2px 0;">${r?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}${r?` : <span style="color:${color};font-weight:700;">${r.score}/${r.total} (${pct}%)</span>${timeHtml}`:''}</div>`;
+      const timeHtml = myTime!=null ? ` <span class="hint" style="margin:0;" title="Meilleur temps sans faute">· meilleur temps ${formatDuration(myTime)}</span>` : '';
+      const k = eleve.id+'|'+id;
+      const eff = devoirEffortInfo(sess, id, doneCount.get(k)||0, doneMs.get(k)||0);
+      totT += eff.tentatives; if(eff.suivi) totMs += eff.activeMs; else totOld += (doneMs.get(k)||0);
+      exportRows.push([profileDisplayName(eleve)||'(sans nom)', statutLabel, label, r?r.score:'', r?r.total:'', pct!==null?pct+'%':'', r?'Oui':'Non', myTime!=null?formatDuration(myTime):'', eff.tentatives, eff.abandons, eff.tempsCsv]);
+      return `<div class="hint" style="margin:2px 0;">${r?'<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check</span>':'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} ${escapeHtml(label)}${r?` : <span style="color:${color};font-weight:700;">${r.score}/${r.total} (${pct}%)</span>${timeHtml}`:''}${eff.html ? `<br><span style="padding-left:20px;">${eff.html}</span>` : ''}</div>`;
     }).join('');
+    const totHtml = totT ? `<br><span class="hint devoir-effort" style="margin:0;">${totT} tentative${totT>1?'s':''}${totMs ? ' · ' + dsFormatMs(totMs) + ' de travail' : ''}${totOld ? (totMs ? ' + ≈ ' + dsFormatMs(totOld) + ' avant le suivi' : ' · ≈ ' + dsFormatMs(totOld) + ' (pauses comprises)') : ''}</span>` : '';
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
         <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!(renduEleve&&renduEleve.est_rendu), devoir.date_limite, !!(renduEleve&&renduEleve.a_reprendre))}${medailleHtml}</span>
         <span style="text-align:right;">
           <span class="hint" style="margin:0;">${nbFaites}/${seqs.length} séquence(s) faite(s)</span>
-          ${pctEleve!==null ? `<br><span class="hint" style="margin:0;font-weight:700;color:${colorEleve};">${pctEleve}% de réussite</span>` : ''}
+          ${pctEleve!==null ? `<br><span class="hint" style="margin:0;font-weight:700;color:${colorEleve};">${pctEleve}% de réussite</span>` : ''}${totHtml}
         </span>
       </div>
       ${pctEleve!==null ? `<div class="sup-progress-bar" style="margin:6px 0;"><div class="sup-progress-fill" style="width:${pctEleve}%;background:${colorEleve};"></div></div>` : ''}
@@ -753,7 +790,7 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
       ${renduEleve && renduEleve.est_rendu ? `<div style="text-align:right;margin-top:4px;"><button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="markDevoirAReprendre(this,'${devoir.id}','${eleve.id}')"><span class=gicon>reply</span> À reprendre</button></div>` : ''}
     </div>`;
   }).join('');
-  devoirSubmissionsExport.headers = ['Élève','Statut','Séquence','Score','Total','%','Fait','Temps'];
+  devoirSubmissionsExport.headers = ['Élève','Statut','Séquence','Score','Total','%','Fait','Meilleur temps','Tentatives','Abandons','Temps de travail'];
   devoirSubmissionsExport.rows = exportRows;
   return body;
 }
@@ -763,6 +800,9 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
   const { data: attempts } = await sb.from('ceb_results').select('student_id,devoir_round,gap,result_value,time_used_ms,created_at').eq('devoir_id', devoir.id).order('created_at',{ascending:false});
   const { data: rendus } = await sb.from('devoirs_rendus').select('student_id,est_rendu,a_reprendre').eq('devoir_id', devoir.id);
   const renduByStudent = new Map((rendus||[]).map(r=>[r.student_id, r]));
+  const sessionsByStudent = (typeof dsLoadForDevoir==='function' ? await dsLoadForDevoir(devoir.id) : null) || new Map();
+  const doneCount = new Map(), doneMs = new Map(); // "élève|compte" -> tentatives terminées, durée brute cumulée
+  (attempts||[]).forEach(a=>{ const k = a.student_id+'|'+(a.devoir_round ?? 0); doneCount.set(k, (doneCount.get(k)||0)+1); doneMs.set(k, (doneMs.get(k)||0)+(a.time_used_ms||0)); });
   const byStudent = new Map();
   const timeByStudent = new Map(); // student_id -> Map(devoir_round -> meilleur temps EXACT)
   (attempts||[]).forEach(a=>{
@@ -816,20 +856,26 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
     const nbExacts = Array.from(m.values()).filter(r=>r.gap===0).length;
     const pctEleve = nbFaits ? Math.round(100*nbExacts/nbFaits) : null;
     const colorEleve = pctEleve!==null ? devoirPctColor(pctEleve) : 'var(--ink-soft)';
+    const sess = sessionsByStudent.get(eleve.id) || [];
+    let totT = 0, totMs = 0, totOld = 0;
     const detail = Array.from({length:nRounds}, (_,i)=>{
       const r = m.get(i);
       const color = r ? (r.gap===0 ? '#1F7A4D' : '#C77D1E') : 'var(--ink-soft)';
       const myTime = (timeByStudent.get(eleve.id)||new Map()).get(i);
-      const timeHtml = myTime!=null ? ` <span class="hint" style="margin:0;">· ${formatDuration(myTime)}</span>` : '';
-      exportRows.push([profileDisplayName(eleve)||'(sans nom)', statutLabel, 'Compte '+(i+1), r?r.gap:'', r?r.result_value:'', r?(r.gap===0?'Oui':'Non'):'', r?'Oui':'Non', myTime!=null?formatDuration(myTime):'']);
-      return `<div class="hint" style="margin:2px 0;">${r?`<span class="gicon" style="font-size:.9rem;color:${color};">${r.gap===0?'check':'adjust'}</span>`:'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} Compte ${i+1}${r?` : <span style="color:${color};font-weight:700;">écart ${r.gap}</span> (réponse ${r.result_value})${timeHtml}`:''}</div>`;
+      const timeHtml = myTime!=null ? ` <span class="hint" style="margin:0;" title="Meilleur temps pour un compte exact">· meilleur temps ${formatDuration(myTime)}</span>` : '';
+      const k = eleve.id+'|'+i;
+      const eff = devoirEffortInfo(sess, i, doneCount.get(k)||0, doneMs.get(k)||0);
+      totT += eff.tentatives; if(eff.suivi) totMs += eff.activeMs; else totOld += (doneMs.get(k)||0);
+      exportRows.push([profileDisplayName(eleve)||'(sans nom)', statutLabel, 'Compte '+(i+1), r?r.gap:'', r?r.result_value:'', r?(r.gap===0?'Oui':'Non'):'', r?'Oui':'Non', myTime!=null?formatDuration(myTime):'', eff.tentatives, eff.abandons, eff.tempsCsv]);
+      return `<div class="hint" style="margin:2px 0;">${r?`<span class="gicon" style="font-size:.9rem;color:${color};">${r.gap===0?'check':'adjust'}</span>`:'<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>'} Compte ${i+1}${r?` : <span style="color:${color};font-weight:700;">écart ${r.gap}</span> (réponse ${r.result_value})${timeHtml}`:''}${eff.html ? `<br><span style="padding-left:20px;">${eff.html}</span>` : ''}</div>`;
     }).join('');
+    const totHtml = totT ? `<br><span class="hint devoir-effort" style="margin:0;">${totT} tentative${totT>1?'s':''}${totMs ? ' · ' + dsFormatMs(totMs) + ' de travail' : ''}${totOld ? (totMs ? ' + ≈ ' + dsFormatMs(totOld) + ' avant le suivi' : ' · ≈ ' + dsFormatMs(totOld) + ' (pauses comprises)') : ''}</span>` : '';
     return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
         <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!(renduEleve&&renduEleve.est_rendu), devoir.date_limite, !!(renduEleve&&renduEleve.a_reprendre))}${medailleHtml}</span>
         <span style="text-align:right;">
           <span class="hint" style="margin:0;">${nbFaits}/${nRounds} compte(s) fait(s)</span>
-          ${pctEleve!==null ? `<br><span class="hint" style="margin:0;font-weight:700;color:${colorEleve};">${pctEleve}% exacts</span>` : ''}
+          ${pctEleve!==null ? `<br><span class="hint" style="margin:0;font-weight:700;color:${colorEleve};">${pctEleve}% exacts</span>` : ''}${totHtml}
         </span>
       </div>
       ${pctEleve!==null ? `<div class="sup-progress-bar" style="margin:6px 0;"><div class="sup-progress-fill" style="width:${pctEleve}%;background:${colorEleve};"></div></div>` : ''}
@@ -837,7 +883,7 @@ async function devoirSubmissionRowsCeb(devoir, eleves){
       ${renduEleve && renduEleve.est_rendu ? `<div style="text-align:right;margin-top:4px;"><button class="btn secondary" style="font-size:.7rem;padding:3px 7px;" onclick="markDevoirAReprendre(this,'${devoir.id}','${eleve.id}')"><span class=gicon>reply</span> À reprendre</button></div>` : ''}
     </div>`;
   }).join('');
-  devoirSubmissionsExport.headers = ['Élève','Statut','Compte','Écart','Réponse obtenue','Exact','Fait','Temps'];
+  devoirSubmissionsExport.headers = ['Élève','Statut','Compte','Écart','Réponse obtenue','Exact','Fait','Meilleur temps','Tentatives','Abandons','Temps de travail'];
   devoirSubmissionsExport.rows = exportRows;
   return body;
 }
@@ -1200,6 +1246,7 @@ async function submitDevoirFile(devoirId){
 function startDevoirFigure(devoirId){
   currentDevoirSubmission = { devoirId, type: 'figure' };
   openFigureTool();
+  if(typeof dsFigStart==='function') dsFigStart(devoirId); // temps de travail réel (suivi-devoirs.js)
   // "Valider et insérer la figure" n'a pas de sens dans ce contexte (rien à insérer dans un
   // cahier) -- remplacé par "Rendre le devoir" + "Charger mon dernier rendu" (pour reprendre
   // un travail déjà commencé).
@@ -1220,6 +1267,7 @@ function startDevoirFigure(devoirId){
 async function startDevoirFigureCompleter(devoirId){
   currentDevoirSubmission = { devoirId, type: 'figure_completer' };
   openFigureTool();
+  if(typeof dsFigStart==='function') dsFigStart(devoirId); // temps de travail réel (suivi-devoirs.js)
   const { data: rendu } = await sb.from('devoirs_rendus').select('figure_data')
     .eq('devoir_id', devoirId).eq('student_id', currentUser.id).maybeSingle();
   let toLoad = rendu && rendu.figure_data;
@@ -1267,6 +1315,7 @@ async function submitCurrentFigureAsDevoir(){
     devoir_id: devoirId, student_id: currentUser.id, type, figure_data: snapshot, submitted_at: new Date().toISOString(),
   }, { onConflict: 'devoir_id,student_id' });
   if(error){ await niceAlert('Erreur : '+error.message); return; }
+  if(typeof dsFigSaved==='function') dsFigSaved();
   await niceAlert('Figure enregistrée.');
   // Enregistrer d'abord (brouillon, encore modifiable), PUIS demande explicitement si
   // l'élève veut rendre définitivement -- ne ferme/ne quitte l'outil que dans ce cas.

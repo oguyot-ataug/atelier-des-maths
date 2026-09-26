@@ -2546,6 +2546,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.680', items:[
+    "Résultats des devoirs -- demandé : \"voir le nombre de tentatives des élèves et le temps passé réellement dessus\". Automatismes et Compte est bon : pour chaque séquence ou compte, nombre de tentatives (dont abandonnées) et temps de travail réel ; en tête de chaque élève, le total. Figures (à construire ou à compléter) : nombre de séances de travail, temps réel et nombre d'enregistrements. Colonnes Tentatives, Abandons et Temps de travail ajoutées à l'export CSV.",
+    "Temps de travail réel : le chrono ne compte que si l'onglet est visible et l'activité à l'écran ; il s'arrête après 1 minute sans aucune action pour les automatismes, mais seulement après 5 minutes pour le Compte est bon et les figures -- précisé : \"L'élève peut être en pause une minute facilement sur un compte est bon ! Il cherche, ce n'est pas facile.\" Une séquence ou un compte quitté sans être validé est compté comme tentative abandonnée. Pour les tentatives faites avant cette version, seule la durée brute est connue : elle est affichée avec « ≈ … (pauses comprises) ».",
+    "Le « meilleur temps » affiché jusqu'ici (meilleure séquence sans faute, meilleur compte exact, qui sert aux médailles) est inchangé et désormais libellé comme tel.",
+  ]},
   { version:'2026-08-19.679', items:[
     "Cours personnalisés -- demandé : \"On doit pouvoir aussi utiliser les constructions de figures avec les outils.\" Nouveau type de bloc « Construction aux instruments » : « Créer la construction » ouvre l'outil Animation géométrique (énoncé, instruments autorisés, construction préparée par l'IA, vérification en lecture), puis « Insérer dans le cours ». Le cours affiche la figure finale, à l'échelle, et « Voir la construction pas à pas » rejoue le tracé à la règle, à l'équerre, au compas ou au rapporteur dans le lecteur du site (étape par étape, lecture continue, vitesse réglable) -- pour les élèves comme pour le professeur.",
     "La construction se modifie ensuite avec le crayon (l'outil se rouvre avec l'énoncé et la construction), et se déplace, se masque ou se supprime comme les autres blocs. Par sécurité, la figure enregistrée est filtrée à l'affichage (éléments de dessin uniquement).",

@@ -258,6 +258,7 @@ function updateCMTimerDisplay(){
 function closeCMModal(){
   document.getElementById('cmExerciseModalOverlay').style.display='none';
   if(cmTimerInterval){ clearInterval(cmTimerInterval); cmTimerInterval=null; }
+  if(typeof dsCMEnd==='function') dsCMEnd('abandonnee'); // fermée avant d'avoir validé (sinon déjà terminée)
   const wasDevoirContext = !!currentDevoirCM;
   currentDevoirCM = null;
   if(typeof devoirTestModeActive!=='undefined') devoirTestModeActive = false;
@@ -321,6 +322,7 @@ function renderCMIntro(){
 }
 function startCMExercise(){
   cmStartTime = performance.now();
+  if(typeof dsCMStart==='function') dsCMStart(); // temps de travail réel sur un devoir (suivi-devoirs.js)
   if(cmTimerInterval) clearInterval(cmTimerInterval);
   cmTimerInterval = setInterval(updateCMTimerDisplay, 100);
   renderCMQuestion();
@@ -393,6 +395,7 @@ function cmGoNext(){
 async function checkCM(){
   if(cmTimerInterval){ clearInterval(cmTimerInterval); cmTimerInterval=null; }
   const durationMs = cmStartTime ? Math.round(performance.now()-cmStartTime) : null;
+  if(typeof dsCMEnd==='function') dsCMEnd('terminee');
   let score=0;
   const total = cmQuestions.length;
   cmQuestions.forEach((q,i)=>{

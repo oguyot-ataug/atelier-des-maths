@@ -333,6 +333,7 @@ function cebStartGame(forcedDraw){
   };
   cebSelectedOp = null;
   cebSelectedTileId = null;
+  if(typeof dsCEBStart==='function') dsCEBStart(); // temps de travail réel sur un devoir (suivi-devoirs.js)
   cebRenderGame();
   if(cebState.timerOn) cebStartTimer();
   cebStartStopwatch();
@@ -512,6 +513,7 @@ function cebUndo(){
 async function cebFinish(){
   if(cebState.finished) return;
   cebState.finished = true;
+  if(typeof dsCEBEnd==='function') dsCEBEnd('terminee');
   clearInterval(cebState.timerId);
   clearInterval(cebState.stopwatchId);
   let best = null;

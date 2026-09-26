@@ -1005,6 +1005,7 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
 function closeFigureTool(){
   document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('figurePanel').style.display='none';
   if(typeof currentDevoirSubmission!=='undefined') currentDevoirSubmission = null;
+  if(typeof dsFigEnd==='function') dsFigEnd(); // fin de la séance de travail sur un devoir (suivi-devoirs.js)
 }
 /* Utilisée uniquement par le bouton "Fermer sans insérer" -- demande confirmation seulement
    si au moins un point a été tracé (signalé : "le bouton Fermer sans insérer est dangereux
