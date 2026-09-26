@@ -489,7 +489,8 @@ function facDocHtml(d){
   const ids = [cli.uai ? 'UAI ' + facEsc(cli.uai) : '', cli.siret ? 'SIRET ' + facEsc(cli.siret) : '', !prive && cli.code_service ? 'Code service ' + facEsc(cli.code_service) : ''].filter(Boolean).join('<br>');
   const lignes = (d.lignes||[]).map(l=>`<tr><td>${facEsc(l.designation)}${l.detail ? `<div class="det">${facEsc(l.detail)}</div>` : ''}</td>
     <td class="n">${l.qte}${l.unite ? ' ' + facEsc(l.unite) + (Math.abs(l.qte) > 1 ? 's' : '') : ''}</td><td class="n">${facMoney(l.pu)}</td><td class="n">${facMoney(facLineTotal(l))}</td></tr>`).join('');
-  const iban = em.iban ? `IBAN ${facEsc(em.iban)}${em.bic ? ' · BIC ' + facEsc(em.bic) : ''}` : 'IBAN : à compléter';
+  // Coordonnées bancaires sur leur propre ligne, jamais coupées (IBAN et BIC insécables).
+  const iban = '<br><span class="iban">' + (em.iban ? `IBAN ${facEsc(em.iban)}${em.bic ? '</span> <span class="iban">· BIC ' + facEsc(em.bic) : ''}` : 'IBAN : à compléter') + '</span>';
   let bloc = '';
   if(d.type === 'devis'){
     bloc = `<p>Devis valable jusqu'au <b>${facDate(d.date_validite)}</b>.</p>` + (prive
@@ -497,7 +498,7 @@ function facDocHtml(d){
       : `<p>Pour commander : adressez un bon de commande mentionnant le numéro de ce devis (<b>${facEsc(d.numero)}</b>) à ${facEsc(em.email)}. La facture sera déposée sur Chorus Pro au SIRET de l'établissement.</p>`);
   } else if(d.type === 'facture'){
     bloc = `<p>Échéance : <b>${facDate(d.date_echeance)}</b>${d.numero_engagement ? ` · ${prive ? 'Commande' : 'N° d\'engagement'} : <b>${facEsc(d.numero_engagement)}</b>` : ''}</p>
-      <p>${prive ? `Paiement par virement, en indiquant la référence <b>${facEsc(d.numero)}</b> : ${iban}` : `Facture déposée sur Chorus Pro. Paiement par mandat administratif, par virement : ${iban}`}</p>
+      <p>${prive ? `Paiement par virement, en indiquant la référence <b>${facEsc(d.numero)}</b> :${iban}` : `Facture déposée sur Chorus Pro. Paiement par mandat administratif, par virement :${iban}`}</p>
       <p class="small">${prive
         ? 'En cas de retard de paiement : pénalités au taux de trois fois le taux d\'intérêt légal et indemnité forfaitaire pour frais de recouvrement de 40 € (art. L441-10 du code de commerce). Pas d\'escompte pour paiement anticipé.'
         : 'En cas de retard de paiement : intérêts moratoires au taux de la Banque centrale européenne majoré de 8 points et indemnité forfaitaire pour frais de recouvrement de 40 € (code de la commande publique). Pas d\'escompte pour paiement anticipé.'}</p>`;
@@ -529,6 +530,7 @@ function facDocHtml(d){
     .tot tr.big td{font-size:12.5pt;font-weight:bold;border-top:2px solid #1c2330;padding-top:8px;}
     .tva{text-align:right;font-size:9pt;color:#444;margin-top:2px;}
     .small{font-size:8.5pt;color:#555;}
+    .iban{white-space:nowrap;font-weight:bold;}
     .accord{border:1px solid #cfd6df;border-radius:6px;padding:10px 12px;width:55%;margin-top:10px;}
     .notes{margin-top:10px;padding:8px 10px;background:#f6f7f9;border-radius:6px;}
     .foot{margin-top:28px;border-top:1px solid #d5dbe2;padding-top:8px;font-size:8pt;color:#6b7482;text-align:center;}

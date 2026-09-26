@@ -2556,6 +2556,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.690', items:[
+    "Facturation -- signalé : \"Paiement par mandat administratif : aller à la ligne pour ne pas couper l'IBAN\". Sur les factures (établissement public comme privé), l'IBAN et le BIC passent sur leur propre ligne, en gras, et ne sont jamais coupés.",
+  ]},
   { version:'2026-08-19.689', items:[
     "Facturation -- demandé : \"Peut-on mettre le logo de l'entreprise et de l'Atelier des maths sur la facture ?\". Les devis, factures et avoirs portent le logo de L'Atelier Augmenté en tête (au-dessus de vos coordonnées) et celui de L'Atelier des Maths dans le bandeau « Objet », à l'écran comme à l'impression et dans le PDF.",
   ]},
