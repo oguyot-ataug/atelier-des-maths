@@ -61,6 +61,22 @@
   .t-note.orange{background:rgba(255,130,8,.07);border-color:rgba(255,130,8,.25);}
   .t-note.orange .gicon{color:var(--accent-orange);}
 
+  .t-ia{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:20px 22px;margin-top:18px;}
+  .t-ia-head{display:flex;gap:14px;align-items:center;}
+  .t-ia-head .ico{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#FFE3C4,#FFD0A0);display:flex;align-items:center;justify-content:center;color:#A04E00;font-size:1.7rem;flex:none;}
+  .t-ia-head h3{font-family:'Space Grotesk',sans-serif;margin:0 0 3px;font-size:1.2rem;}
+  .t-ia-head p{margin:0;color:var(--ink-soft);font-size:.95rem;}
+  .t-ia-uses{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px;}
+  .t-ia-uses > span{display:inline-flex;align-items:center;gap:6px;background:#FAF7F2;border-radius:999px;padding:6px 12px;font-size:.9rem;font-weight:600;}
+  .t-ia-uses .gicon{color:#A04E00;}
+  .t-ia-q{font-weight:700;margin:16px 0 10px;}
+  .t-ia-ways{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;}
+  .t-ia-way{border:1.5px solid rgba(28,43,57,.12);border-radius:14px;padding:16px 18px;}
+  .t-ia-way.pack{border-color:rgba(255,130,8,.5);background:rgba(255,130,8,.04);}
+  .t-ia-way-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+  .t-ia-way h4{font-family:'Space Grotesk',sans-serif;margin:0;font-size:1.08rem;}
+  .t-ia-way .t-price{font-size:1.6rem;}
+  .t-ia-way .t-list{margin:0;font-size:.92rem;}
   .t-addon{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:18px 22px;margin-top:18px;}
   .t-addon .ico{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#FFE3C4,#FFD0A0);display:flex;align-items:center;justify-content:center;color:#A04E00;font-size:1.7rem;}
   .t-addon h3{font-family:'Space Grotesk',sans-serif;margin:0 0 3px;font-size:1.12rem;}
@@ -220,13 +236,38 @@
       <div><b>Vous êtes déjà abonné ?</b> Vous gardez votre tarif actuel de 16,90 € par an, aussi longtemps que votre abonnement continue.</div>
     </div>
 
-    <div class="t-addon">
-      <div class="ico"><span class="gicon">smart_toy</span></div>
-      <div>
-        <h3>Option : pack IA</h3>
-        <p>L'IA propose les exercices d'une évaluation, construit les figures pas à pas aux instruments et crée des quiz. Utilisez la clé du site, sans rien configurer, avec une consommation incluse chaque trimestre. Avec votre propre clé Anthropic, l'IA ne coûte rien de plus sur le site.</p>
+    <div class="t-ia">
+      <div class="t-ia-head">
+        <div class="ico"><span class="gicon">smart_toy</span></div>
+        <div>
+          <h3>Option : l'IA</h3>
+          <p>Facultative : tout le site fonctionne sans elle. Elle vous fait gagner du temps sur trois tâches :</p>
+        </div>
       </div>
-      <div class="t-price">5 €<small>/ trimestre</small></div>
+      <div class="t-ia-uses">
+        <span><span class="gicon">quiz</span> Proposer les exercices d'une évaluation</span>
+        <span><span class="gicon">architecture</span> Construire une figure pas à pas aux instruments</span>
+        <span><span class="gicon">checklist</span> Créer un quiz sur un chapitre</span>
+      </div>
+      <p class="t-ia-q">Deux façons de l'utiliser, au choix :</p>
+      <div class="t-ia-ways">
+        <div class="t-ia-way pack">
+          <div class="t-ia-way-top"><h4>Pack IA</h4><div class="t-price">5 €<small>/ trimestre</small></div></div>
+          <ul class="t-list">
+            <li><span class="gicon">check_circle</span><span><b>100 demandes par trimestre</b> : une demande, c'est une évaluation proposée, une figure construite ou un quiz créé</span></li>
+            <li><span class="gicon">check_circle</span>Rien à installer : ça marche tout de suite</li>
+            <li><span class="gicon">check_circle</span>Le compteur de demandes est visible dans votre compte</li>
+          </ul>
+        </div>
+        <div class="t-ia-way">
+          <div class="t-ia-way-top"><h4>Votre propre clé</h4><div class="t-price">0 €<small>sur le site</small></div></div>
+          <ul class="t-list">
+            <li><span class="gicon">check_circle</span><span>Vous ouvrez un compte chez Anthropic, l'entreprise qui fournit l'IA, et vous lui payez directement ce que vous consommez : <b>1 à 3 centimes par demande</b></span></li>
+            <li><span class="gicon">check_circle</span>Sans limite de demandes, avec un plafond de dépense que vous fixez</li>
+            <li><span class="gicon">check_circle</span>Le site vous guide pas à pas pour créer la clé</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </section>
 
