@@ -25,6 +25,12 @@
    l'élève peut déplacer les points libres (ou posés sur un objet) : le reste suit, avec les
    mêmes règles que dans l'outil (onFigureMouseMove). Toutes les chaînes de la figure sont
    échappées avant le rendu (étiquettes, couleurs...).
+   Étape 5 : blocs propres aux onglets Méthode et Exercices, avec les classes du site --
+   « Méthode pas à pas » (step-list + « Étape suivante »), « Rédaction type » (redaction-block,
+   lignes « calcul | commentaire ») et « Exercices » (exo-card avec correction dépliante) -- et
+   partage entre collègues : une version « prof » marquée partage=true est proposée aux autres
+   professeurs du même établissement (fonction cours_versions_partagees), qui peuvent
+   l'afficher en aperçu puis la copier dans leur propre version.
 
    Principe : un onglet de chapitre est une suite plate d'éléments (encadrés, titres, figures,
    exemples...). On la découpe en BLOCS (une étiquette « Définition » / un titre d'exemple reste
@@ -46,6 +52,10 @@ let cpCache = new Map();        // conteneur -> {layout, source, auteur} | null
 let cpCurrentDemo = null;
 let cpShowOriginal = false;     // un prof peut revoir le cours d'origine sans rien perdre
 let cpEditing = null;
+let cpShared = new Map();       // conteneur -> versions partagées par les collègues [{id, layout, auteur, updated_at}]
+let cpShareOn = new Map();      // conteneur -> sa propre version est-elle partagée ?
+let cpPreview = null;           // aperçu d'une version de collègue : {cid, entry}
+let cpSharedOpen = false;       // liste des versions de collègues dépliée
 
 /* ---------- découpage en blocs ---------- */
 function cpHash(s){
@@ -194,7 +204,11 @@ const CP_KINDS = {
   h1:     { nom:'Titre de paragraphe', icon:'title', titleOnly:true },
   h2:     { nom:'Sous-titre', icon:'format_size', titleOnly:true },
   fig:    { nom:'Figure dynamique', icon:'category', fig:true },
+  steps:  { nom:'Méthode pas à pas', icon:'format_list_numbered' },
+  redac:  { nom:'Rédaction type', icon:'edit_note' },
+  exo:    { nom:'Exercices', icon:'assignment', exo:true },
 };
+let cpUid = 0;
 const CP_MAX_TEXT = 3000;
 function cpRegistry(container){ return container._cpCustom || (container._cpCustom = new Map()); }
 /* Bloc ajouté (orig === undefined) ou réécrit (orig = bloc d'origine, ou null s'il a disparu). */
@@ -207,6 +221,19 @@ function cpCustomBlock(container, id, spec, orig){
   if(orig!==null || id.indexOf('u:')!==0) b.orig = orig;
   reg.set(id, b);
   return b;
+}
+
+/* ---------- méthode pas à pas ---------- */
+function cpStepsMount(el){
+  const next = el.querySelector('.cp-step-next'), reset = el.querySelector('.cp-step-reset');
+  const items = ()=>[...el.querySelectorAll('.step-item')];
+  if(next) next.onclick = e=>{
+    e.stopPropagation();
+    const it = items().find(x=>!x.classList.contains('done'));
+    if(it) it.classList.add('done');
+    next.disabled = !items().some(x=>!x.classList.contains('done'));
+  };
+  if(reset) reset.onclick = e=>{ e.stopPropagation(); items().forEach(x=>x.classList.remove('done')); if(next) next.disabled = false; };
 }
 
 /* ---------- figures dynamiques ---------- */
@@ -412,6 +439,7 @@ function cpBuildBlock(id, spec, container){
   const holder = document.createElement('div');
   holder.innerHTML = cpRenderSpec(spec);
   holder.querySelectorAll('svg.cp-fig').forEach(svg=>cpFigMount(svg, spec));
+  holder.querySelectorAll('.cp-steps').forEach(cpStepsMount);
   const nodes = [...holder.children];
   nodes.forEach(n=>{ n.dataset.cpCustom = '1'; });
   // Mêmes boutons que le cours d'origine (+ Cahier, écouter, loupe, apprentissage).
@@ -479,6 +507,35 @@ function cpRenderSpec(spec){
         + `<div class="cp-fig-bar"><span class="hint" style="margin:0;"><span class="gicon" style="font-size:1em;vertical-align:-2px;">pan_tool_alt</span> ${consigne}</span>`
         + `<button type="button" class="cp-fig-reset" title="Remettre la figure dans sa position de départ"><span class="gicon">restart_alt</span></button></div></div>`;
     }
+    case 'steps': {
+      const steps = x.split('\n').map(t=>t.trim().replace(/^(\d+\s*[.)]|[-•])\s+/, '')).filter(Boolean);
+      return `<div class="figure-wrap cp-steps">${label ? `<p class="example-title">${cpInline(label)}</p>` : ''}`
+        + `<div class="step-list" style="margin-top:0;">${steps.map((t,i)=>`<div class="step-item" data-step="${i+1}"><div class="step-num">${i+1}</div><div>${cpInline(t)}</div></div>`).join('')}</div>`
+        + `<div class="figure-toolbar"><button type="button" class="btn cp-step-next">Étape suivante →</button><button type="button" class="btn secondary cp-step-reset">Revoir depuis le début</button></div></div>`;
+    }
+    case 'redac': {
+      const t = label ? (/^r[ée]daction/i.test(label) ? cpInline(label) : `Rédaction type : « ${cpInline(label)} »`) : 'Rédaction type';
+      let body = '', rows = [];
+      const flush = ()=>{ if(rows.length){ body += `<div class="redaction-template">${rows.join('')}</div>`; rows = []; } };
+      x.split('\n').forEach(line=>{
+        if(!line.trim()) return;
+        const i = line.indexOf('|');
+        if(i>=0) rows.push(`<div class="we-row"><span class="we-expr">${cpInline(line.slice(0,i).trim())}</span><span class="we-comment">${cpInline(line.slice(i+1).trim())}</span></div>`);
+        else { flush(); body += `<p style="margin:4px 0 10px;">${cpInline(line.trim())}</p>`; }
+      });
+      flush();
+      return `<div class="redaction-block cp-redac"><h3>${t}</h3>${body}</div>`;
+    }
+    case 'exo': {
+      const items = (Array.isArray(spec.items) ? spec.items : []).filter(it=>it && typeof it.e==='string');
+      return `<div class="redaction-block cp-exo"><h3>${label ? cpInline(label) : 'Exercices'}</h3>` + items.map((it, i)=>{
+        const id = 'cp-cor-' + (++cpUid);
+        const cor = typeof it.c==='string' && it.c.trim()
+          ? `<button type="button" class="exo-correction-toggle" data-target="${id}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button><div class="exo-correction cp-rich" id="${id}">${cpRich(it.c).join('')}</div>`
+          : '';
+        return `<div class="exo-card"><div class="num">Exercice ${i+1}</div><div class="cp-rich">${cpRich(it.e).join('')}</div>${cor}</div>`;
+      }).join('') + `</div>`;
+    }
     default: return `<div class="cp-rich cp-par">${cpRich(x).join('')}</div>`;
   }
 }
@@ -488,10 +545,19 @@ async function cpLoad(containers){
   const want = containers.filter(c=>!cpCache.has(c));
   if(want.length && typeof sb!=='undefined' && currentUser){
     try{
-      const { data, error } = await sb.rpc('cours_versions', { p_containers: want });
-      if(error) throw error;
-      want.forEach(c=>cpCache.set(c, null));
-      (data||[]).forEach(r=>cpCache.set(r.container, {layout:r.layout, source:r.source, auteur:r.auteur}));
+      const staff = cpIsStaff();
+      // Le partage est un complément : s'il échoue, les versions s'affichent quand même.
+      const opt = f=>{ if(!staff) return Promise.resolve({ data:[] }); try{ return Promise.resolve(f()).catch(e=>({ error:e })); }catch(e){ return Promise.resolve({ error:e }); } };
+      const [v, sh, mine] = await Promise.all([
+        sb.rpc('cours_versions', { p_containers: want }),
+        opt(()=>sb.rpc('cours_versions_partagees', { p_containers: want })),
+        opt(()=>sb.from('cours_perso').select('container,partage').eq('scope','prof').eq('owner_id', currentUser.id).in('container', want)),
+      ]);
+      if(v.error) throw v.error;
+      want.forEach(c=>{ cpCache.set(c, null); cpShared.set(c, []); cpShareOn.set(c, false); });
+      (v.data||[]).forEach(r=>cpCache.set(r.container, {layout:r.layout, source:r.source, auteur:r.auteur}));
+      if(!sh.error) (sh.data||[]).forEach(r=>{ if(cpShared.has(r.container)) cpShared.get(r.container).push(r); });
+      if(!mine.error) (mine.data||[]).forEach(r=>cpShareOn.set(r.container, !!r.partage));
     }catch(e){ console.warn('cours perso :', e); }
   }
 }
@@ -503,6 +569,7 @@ async function cpOnChapterOpen(demo){
   if(cpEditing) cpCancelEdit(true);
   cpCurrentDemo = demo;
   cpShowOriginal = false;
+  cpPreview = null; cpSharedOpen = false;
   const ids = cpDemoContainers(demo);
   if(!demo){ cpRenderBar(); return; }
   if(!currentUser){ ids.forEach(id=>cpApply(document.getElementById(id), null)); cpRenderBar(); return; }
@@ -526,6 +593,14 @@ function cpRenderBar(){
   const v = cid ? cpCache.get(cid) : null;
   const staff = cpIsStaff();
   let html = '';
+  if(cpPreview && cpPreview.cid===cid){
+    const e = cpPreview.entry;
+    bar.innerHTML = `<span class="cp-chip cp-chip-prev"><span class="gicon">visibility</span> Aperçu : version de ${cpEsc(e.auteur||'un collègue')}</span>
+      <button type="button" class="btn cp-btn" onclick="cpCopyShared()"><span class="gicon">content_copy</span> Copier dans ma version</button>
+      <button type="button" class="btn secondary cp-btn" onclick="cpClosePreview()">Fermer l'aperçu</button>`;
+    bar.style.display = 'flex';
+    return;
+  }
   if(v && !cpShowOriginal){
     const who = v.source==='moi' ? 'votre version' : v.source==='etab' ? 'version de l\'établissement' : ('version de ' + cpEsc(v.auteur||'votre professeur'));
     html += `<span class="cp-chip"><span class="gicon">tune</span> ${staff ? 'Cours personnalisé : ' + who : (v.source==='etab' ? 'Cours adapté par ton établissement' : 'Cours adapté par ton professeur')}</span>`;
@@ -535,12 +610,91 @@ function cpRenderBar(){
   }
   if(staff && cid){
     html += `<button type="button" class="btn secondary cp-btn" onclick="cpStartEdit()"><span class="gicon">edit_note</span> Personnaliser cet onglet</button>`;
+    if(v && v.source==='moi' && !cpShowOriginal)
+      html += `<label class="cp-share" title="Vos collègues de l'établissement pourront voir cette version et la copier (vos élèves la voient dans tous les cas)"><input type="checkbox" ${cpShareOn.get(cid) ? 'checked' : ''} onchange="cpSetShare(this.checked)"> Partager avec mes collègues</label>`;
+    const shared = cpShared.get(cid) || [];
+    if(shared.length){
+      html += `<button type="button" class="cp-link" onclick="cpToggleSharedList()"><span class="gicon" style="font-size:1em;vertical-align:-2px;">group</span> Versions de collègues (${shared.length})</button>`;
+      if(cpSharedOpen) html += `<div class="cp-shared-list">${shared.map((e, i)=>`<div class="cp-shared-item">
+          <div><b>${cpEsc(e.auteur||'Un collègue')}</b> <span class="hint" style="margin:0;">· ${cpEsc(cpDate(e.updated_at))} · ${cpEsc(cpSummary(document.getElementById(cid), e.layout))}</span></div>
+          <div class="cp-shared-actions"><button type="button" class="btn secondary cp-btn" onclick="cpOpenPreview(${i})"><span class="gicon">visibility</span> Aperçu</button>
+          <button type="button" class="btn secondary cp-btn" onclick="cpCopyShared(${i})"><span class="gicon">content_copy</span> Copier dans ma version</button></div>
+        </div>`).join('')}</div>`;
+    }
   }
   bar.innerHTML = html;
   bar.style.display = html ? 'flex' : 'none';
 }
+function cpDate(d){ try{ return 'modifiée le ' + new Date(d).toLocaleDateString('fr-FR'); }catch(e){ return ''; } }
+/* Résumé d'une version : ce qu'elle change par rapport au cours d'origine. */
+function cpSummary(container, layout){
+  const bl = (layout && Array.isArray(layout.blocks)) ? layout.blocks : [];
+  const add = bl.filter(e=>e.add).length, rw = bl.filter(e=>e.rep).length, hid = bl.filter(e=>e.h).length;
+  let moved = false;
+  if(container){
+    const orig = cpBlocks(container).map(b=>b.id), pos = new Map(orig.map((id, i)=>[id, i]));
+    const seq = bl.filter(e=>!e.add && pos.has(e.id)).map(e=>pos.get(e.id));
+    moved = seq.some((x, i)=>i && x<seq[i-1]);
+  }
+  const parts = [];
+  if(add) parts.push(add + (add>1 ? ' blocs ajoutés' : ' bloc ajouté'));
+  if(rw) parts.push(rw + (rw>1 ? ' blocs réécrits' : ' bloc réécrit'));
+  if(hid) parts.push(hid + (hid>1 ? ' blocs masqués' : ' bloc masqué'));
+  if(moved) parts.push('ordre modifié');
+  return parts.join(', ') || 'aucune modification';
+}
+function cpToggleSharedList(){ cpSharedOpen = !cpSharedOpen; cpRenderBar(); }
+function cpOpenPreview(i){
+  const cid = cpActiveContainerId(), e = (cpShared.get(cid) || [])[i];
+  if(!e) return;
+  cpPreview = { cid, entry:e };
+  cpShowOriginal = false;
+  cpApply(document.getElementById(cid), e.layout);
+  cpRenderBar();
+  document.getElementById(cid).scrollIntoView({behavior:'smooth', block:'start'});
+}
+function cpClosePreview(){
+  if(!cpPreview) return;
+  const cid = cpPreview.cid, v = cpCache.get(cid);
+  cpPreview = null;
+  cpApply(document.getElementById(cid), v ? v.layout : null);
+  cpRenderBar();
+}
+async function cpCopyShared(i){
+  const cid = cpPreview ? cpPreview.cid : cpActiveContainerId();
+  const e = cpPreview ? cpPreview.entry : (cpShared.get(cid) || [])[i];
+  if(!e || !cid) return;
+  const v = cpCache.get(cid);
+  if(v && v.source==='moi' && !confirm(`Remplacer votre version de cet onglet par celle de ${e.auteur||'votre collègue'} ?`)) return;
+  try{
+    const { data: mine } = await sb.from('cours_perso').select('id').eq('scope','prof').eq('owner_id', currentUser.id).eq('container', cid).maybeSingle();
+    const r = mine
+      ? await sb.from('cours_perso').update({ layout:e.layout, updated_at:new Date().toISOString() }).eq('id', mine.id)
+      : await sb.from('cours_perso').insert({ scope:'prof', owner_id:currentUser.id, container:cid, layout:e.layout });
+    if(r && r.error) throw r.error;
+  }catch(err){ cpToast('Copie impossible : ' + (err.message||err)); return; }
+  cpPreview = null; cpSharedOpen = false;
+  cpCache.delete(cid);
+  await cpLoad([cid]);
+  const nv = cpCache.get(cid);
+  cpApply(document.getElementById(cid), nv ? nv.layout : null);
+  cpRenderBar();
+  cpToast('Version copiée : c\'est maintenant la vôtre (vos élèves la voient), modifiable à volonté.');
+}
+async function cpSetShare(on){
+  const cid = cpActiveContainerId();
+  if(!cid) return;
+  try{
+    const { error } = await sb.from('cours_perso').update({ partage:!!on }).eq('scope','prof').eq('owner_id', currentUser.id).eq('container', cid);
+    if(error) throw error;
+    cpShareOn.set(cid, !!on);
+    cpToast(on ? 'Votre version est proposée à vos collègues de l\'établissement.' : 'Votre version n\'est plus partagée.');
+  }catch(e){ cpToast('Modification impossible : ' + (e.message||e)); }
+  cpRenderBar();
+}
 function cpEsc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function cpToggleOriginal(){
+  if(cpPreview) cpClosePreview();
   cpShowOriginal = !cpShowOriginal;
   cpDemoContainers(cpCurrentDemo).forEach(id=>{ const v = cpCache.get(id); cpApply(document.getElementById(id), (v && !cpShowOriginal) ? v.layout : null); });
   cpRenderBar();
@@ -552,6 +706,8 @@ document.addEventListener('click', e=>{
     if(cpEditing.dirty && !confirm('Changer d\'onglet abandonne la personnalisation en cours. Continuer ?')){ e.stopPropagation(); e.preventDefault(); return; }
     cpCancelEdit(true);
   }
+  if(cpPreview) cpClosePreview();
+  cpSharedOpen = false;
   setTimeout(cpRenderBar, 0);
 }, true);
 
@@ -561,6 +717,7 @@ function cpStartEdit(){
   const container = cid && document.getElementById(cid);
   if(!container) return;
   if(typeof lrnState!=='undefined' && lrnState && typeof lrnStop==='function') lrnStop();
+  if(cpPreview) cpClosePreview();
   if(cpShowOriginal){ cpShowOriginal = false; }
   const v = cpCache.get(cid);
   const order = cpOrder(container, v ? v.layout : null); // part de la version en vigueur (la sienne ou celle de l'établissement)
@@ -639,7 +796,9 @@ function cpOpenForm(editW, anchor){
   const eb = editW ? editW._cpBlock : null;
   // Bloc d'origine pas encore réécrit : formulaire pré-rempli avec son texte.
   const fromOrig = eb && !eb.custom ? cpSpecFromBlock(eb) : null;
-  const spec = eb ? (eb.custom || fromOrig) : { k:'p', l:'', x:'' };
+  // Type proposé par défaut selon l'onglet : Méthode -> méthode pas à pas, Exercices -> exercices.
+  const tabKind = cpCurrentDemo && cpEditing && cpEditing.cid===cpCurrentDemo.methode ? 'steps' : cpCurrentDemo && cpEditing && cpEditing.cid===cpCurrentDemo.exos ? 'exo' : 'p';
+  const spec = eb ? (eb.custom || fromOrig) : { k:tabKind, l:'', x:'' };
   if(!spec) return;
   const origBlock = eb ? (eb.custom ? eb.orig : eb) : undefined; // undefined = bloc ajouté
   const f = document.createElement('div');
@@ -663,6 +822,11 @@ function cpOpenForm(editW, anchor){
       </div>
       <textarea rows="5" maxlength="${CP_MAX_TEXT}"></textarea>
     </div>
+    <div class="cp-f-exowrap">
+      <div class="cp-f-exos"></div>
+      <button type="button" class="btn secondary cp-f-addexo"><span class="gicon">add</span> Ajouter un exercice</button>
+      <span class="hint" style="margin:0 0 0 8px;">**gras** et $formule$ fonctionnent aussi ici. La correction, facultative, se déplie sous l'exercice.</span>
+    </div>
     <div class="cp-f-prevlabel">Aperçu (tel que le verront vos élèves)</div>
     <div class="cp-f-preview"></div>
     <div class="cp-f-actions">
@@ -674,24 +838,58 @@ function cpOpenForm(editW, anchor){
   input.value = spec.l || ''; ta.value = spec.x || '';
   let kind = spec.k;
   let figData = spec.f ? { f:spec.f, vb:spec.vb } : null;
+  let exos = Array.isArray(spec.items) && spec.items.length ? spec.items.map(it=>({ e:it.e||'', c:it.c||'' })) : [{ e:'', c:'' }];
+  const exoBox = f.querySelector('.cp-f-exos');
+  const renderExos = ()=>{
+    exoBox.innerHTML = exos.map((it, i)=>`<div class="cp-f-exo" data-i="${i}">
+        <div class="cp-f-exo-head"><b>Exercice ${i+1}</b>${exos.length>1 ? `<button type="button" class="cp-f-exo-del" title="Retirer cet exercice"><span class="gicon">close</span></button>` : ''}</div>
+        <textarea class="cp-f-exo-e" rows="3" maxlength="${CP_MAX_TEXT}" placeholder="Énoncé de l'exercice"></textarea>
+        <textarea class="cp-f-exo-c" rows="2" maxlength="${CP_MAX_TEXT}" placeholder="Correction (facultatif)"></textarea>
+      </div>`).join('');
+    exoBox.querySelectorAll('.cp-f-exo').forEach(box=>{
+      const i = +box.dataset.i, e = box.querySelector('.cp-f-exo-e'), c = box.querySelector('.cp-f-exo-c');
+      e.value = exos[i].e; c.value = exos[i].c;
+      e.oninput = ()=>{ exos[i].e = e.value; refresh(); };
+      c.oninput = ()=>{ exos[i].c = c.value; refresh(); };
+      const del = box.querySelector('.cp-f-exo-del');
+      if(del) del.onclick = ()=>{ exos.splice(i, 1); renderExos(); refresh(); };
+    });
+  };
+  f.querySelector('.cp-f-addexo').onclick = ()=>{
+    if(exos.length>=30) return;
+    exos.push({ e:'', c:'' }); renderExos(); refresh();
+    const last = exoBox.querySelector('.cp-f-exo:last-child .cp-f-exo-e'); if(last) last.focus();
+  };
+  renderExos();
   f.querySelector('.cp-f-figbtn').onclick = ()=>cpFigOpenEditor(figData, d=>{ figData = d; refresh(); f.scrollIntoView({block:'center'}); });
   const refresh = ()=>{
     const K = CP_KINDS[kind];
     f.querySelectorAll('.cp-kinds button').forEach(b=>b.classList.toggle('on', b.dataset.k===kind));
-    f.querySelector('.cp-f-label span').textContent = K.titleOnly ? 'Titre' : K.fig ? 'Titre au-dessus de la figure (facultatif)' : (K.label ? 'Étiquette (facultatif)' : 'Titre (facultatif, non affiché)');
+    f.querySelector('.cp-f-label span').textContent = K.titleOnly ? 'Titre' : K.fig ? 'Titre au-dessus de la figure (facultatif)'
+      : kind==='steps' ? 'Titre de la méthode (facultatif)' : kind==='redac' ? 'Titre (facultatif)' : kind==='exo' ? 'Titre du bloc (facultatif, « Exercices » par défaut)'
+      : (K.label ? 'Étiquette (facultatif)' : 'Titre (facultatif, non affiché)');
     f.querySelector('.cp-f-label').style.display = (kind==='p' || kind==='box') ? 'none' : '';
-    input.placeholder = K.titleOnly ? 'ex. Le cercle' : kind==='ex' ? 'ex. calculer une longueur' : K.fig ? 'ex. Médiatrice d\'un segment' : (K.label ? 'ex. ' + K.label + ' 3' : '');
-    f.querySelector('.cp-f-textwrap').style.display = K.titleOnly ? 'none' : '';
+    input.placeholder = K.titleOnly ? 'ex. Le cercle' : kind==='ex' ? 'ex. calculer une longueur' : K.fig ? 'ex. Médiatrice d\'un segment'
+      : kind==='steps' ? 'ex. Construire la médiatrice au compas' : kind==='redac' ? 'ex. Calculer le périmètre d\'un rectangle' : kind==='exo' ? 'Exercices' : (K.label ? 'ex. ' + K.label + ' 3' : '');
+    f.querySelector('.cp-f-textwrap').style.display = (K.titleOnly || K.exo) ? 'none' : '';
+    f.querySelector('.cp-f-exowrap').style.display = K.exo ? '' : 'none';
+    f.querySelector('.cp-tools [data-t="l"]').style.display = (kind==='steps' || kind==='redac') ? 'none' : '';
+    f.querySelector('.cp-tools .hint').textContent = kind==='steps' ? 'Une étape par ligne · **gras** · $formule$'
+      : kind==='redac' ? 'Une ligne par étape : calcul ou phrase | commentaire (ex. P = 2 × (5 + 3) | On applique la formule.) · une ligne sans « | » s\'affiche comme texte (énoncé) · $formule$'
+      : '**gras** · $formule$ (ex. $\\frac{3}{4}$, $3 \\times 5$) · « - » en début de ligne pour une liste · ligne vide = nouveau paragraphe';
     f.querySelector('.cp-tools').style.display = K.fig ? 'none' : '';
     f.querySelector('.cp-f-figrow').style.display = K.fig ? '' : 'none';
     f.querySelector('.cp-f-figbtn span:last-child').textContent = figData ? 'Modifier la figure' : 'Construire la figure';
-    ta.placeholder = K.fig ? 'Consigne pour l\'élève (facultatif), ex. Déplace le point A : que remarques-tu ?' : '';
+    ta.placeholder = K.fig ? 'Consigne pour l\'élève (facultatif), ex. Déplace le point A : que remarques-tu ?'
+      : kind==='steps' ? 'On pique le compas en A.\nOn trace un arc de cercle.\n…'
+      : kind==='redac' ? 'Un rectangle mesure 5 cm sur 3 cm. Calcule son périmètre.\nP = 2 × (L + l) | Formule du périmètre.\nP = 2 × (5 + 3) | On remplace.\nP = 16 cm | On conclut avec l\'unité.' : '';
     const prev = f.querySelector('.cp-f-preview');
     if(K.fig && !figData){ prev.innerHTML = '<p class="hint" style="margin:0;">Construisez la figure pour la voir ici.</p>'; return; }
-    const pv = Object.assign({ k:kind, l:input.value, x:ta.value }, spec.np && kind===spec.k ? {np:1} : {}, K.fig ? { f:figData.f, vb:figData.vb } : {});
+    const pv = Object.assign({ k:kind, l:input.value, x:ta.value }, spec.np && kind===spec.k ? {np:1} : {}, K.fig ? { f:figData.f, vb:figData.vb } : {}, K.exo ? { items:exos } : {});
     prev.innerHTML = cpRenderSpec(pv);
     if(K.fig) prev.querySelectorAll('svg.cp-fig').forEach(svg=>cpFigMount(svg, pv));
-    const num = prev.querySelector('.num'), let_ = prev.querySelector('.letter');
+    prev.querySelectorAll('.cp-steps').forEach(cpStepsMount);
+    const num = prev.querySelector('.lesson-header .num'), let_ = prev.querySelector('.sub-header .letter');
     if(num) num.textContent = '#'; if(let_) let_.textContent = '#';
   };
   f.querySelectorAll('.cp-kinds button').forEach(b=>b.onclick = ()=>{ kind = b.dataset.k; refresh(); });
@@ -710,8 +908,13 @@ function cpOpenForm(editW, anchor){
   f.querySelector('.cp-f-ok').onclick = ()=>{
     const K = CP_KINDS[kind];
     const l = input.value.trim().slice(0,160), x = ta.value.replace(/\s+$/,'').slice(0, CP_MAX_TEXT);
-    if(K.fig ? !figData : K.titleOnly ? !l : !x.trim()){ f.querySelector('.cp-f-msg').textContent = K.fig ? 'Construisez d\'abord la figure.' : K.titleOnly ? 'Écrivez le titre.' : 'Écrivez le texte du bloc.'; return; }
-    const newSpec = K.fig ? { k:kind, l, x, f:figData.f, vb:figData.vb } : K.titleOnly ? { k:kind, l } : (kind==='p' || kind==='box') ? { k:kind, x } : { k:kind, l, x };
+    const items = exos.map(it=>({ e:it.e.replace(/\s+$/,'').slice(0, CP_MAX_TEXT), c:it.c.replace(/\s+$/,'').slice(0, CP_MAX_TEXT) })).filter(it=>it.e.trim()).slice(0, 30)
+      .map(it=>it.c.trim() ? it : { e:it.e });
+    if(K.exo ? !items.length : K.fig ? !figData : K.titleOnly ? !l : !x.trim()){
+      f.querySelector('.cp-f-msg').textContent = K.exo ? 'Écrivez au moins un énoncé.' : K.fig ? 'Construisez d\'abord la figure.' : K.titleOnly ? 'Écrivez le titre.' : 'Écrivez le texte du bloc.';
+      return;
+    }
+    const newSpec = K.exo ? { k:kind, l, items } : K.fig ? { k:kind, l, x, f:figData.f, vb:figData.vb } : K.titleOnly ? { k:kind, l } : (kind==='p' || kind==='box') ? { k:kind, x } : { k:kind, l, x };
     if(spec.np && kind===spec.k) newSpec.np = 1; // titre d'exemple / remarque d'origine gardé tel quel
     if(fromOrig && JSON.stringify(newSpec)===JSON.stringify(fromOrig)){ cpCloseForm(); return; } // rien de changé
     const id = eb ? eb.id : 'u:' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
@@ -862,7 +1065,7 @@ function cpToast(msg){
 }
 /* Changement de compte (connexion / déconnexion) : les versions en cache ne valent plus. */
 function cpOnAuthChange(){
-  cpCache = new Map();
+  cpCache = new Map(); cpShared = new Map(); cpShareOn = new Map(); cpPreview = null;
   if(cpEditing) cpCancelEdit(true);
   if(cpCurrentDemo) cpOnChapterOpen(cpCurrentDemo);
 }

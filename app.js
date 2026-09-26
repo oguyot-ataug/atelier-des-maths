@@ -2546,6 +2546,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.678', items:[
+    "Cours personnalisés, étape 5 -- demandé : \"Lance l'étape 5 : Méthode, Exercices et partage\". Trois nouveaux types de blocs, avec la présentation du site : « Méthode pas à pas » (une étape par ligne, dévoilées une à une avec « Étape suivante → », comme les méthodes animées), « Rédaction type » (lignes « calcul | commentaire », dernière ligne mise en valeur) et « Exercices » (autant d'exercices que voulu, chacun avec sa correction facultative qui se déplie sous l'énoncé). Le type proposé par défaut dépend de l'onglet : méthode pas à pas dans Méthode, exercices dans Exercices.",
+    "Partage entre collègues : sur une version personnelle, la case « Partager avec mes collègues » la propose aux autres professeurs de l'établissement (et à eux seuls, jamais aux élèves d'autres classes). Un collègue voit alors « Versions de collègues (n) » avec l'auteur, la date et un résumé (blocs ajoutés, réécrits, masqués, ordre modifié) ; « Aperçu » l'affiche sans rien changer, « Copier dans ma version » la reprend à son compte, modifiable ensuite librement.",
+  ]},
   { version:'2026-08-19.677', items:[
     "Cours personnalisés, étape 4 -- demandé : \"Lance l'étape 4 : ajouter des figures dynamiques\". Nouveau type de bloc « Figure dynamique » : le bouton « Construire la figure » ouvre l'outil de figure du site (points, segments, droites, cercles, milieux, symétriques, points sur un objet, codages, et construction automatique à partir d'un énoncé). Titre et consigne pour l'élève facultatifs, aperçu manipulable dans le formulaire.",
     "Dans le cours, la figure est vraiment dynamique : l'élève déplace les points libres (repérés par un halo), les points posés sur une droite ou un cercle glissent le long de leur objet, et tout ce qui en dépend (milieux, symétriques, cercles, segments de longueur fixe) suit, avec les mêmes règles que dans l'outil. Le bouton ↺ remet la figure dans sa position de départ. Fonctionne à la souris et au doigt.",

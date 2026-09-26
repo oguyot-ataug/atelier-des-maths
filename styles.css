@@ -1169,3 +1169,20 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
 .cp-fig-reset{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;border:none;background:rgba(28,43,57,.07);color:var(--ink-soft);cursor:pointer;flex:0 0 auto;}
 .cp-fig-reset:hover{background:rgba(28,43,57,.14);color:var(--ink);}
 .cp-f-figrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 10px;}
+/* Étape 5 : méthode pas à pas, rédaction type, exercices ; partage entre collègues */
+.cp-steps .step-list{margin-top:0;}
+.cp-exo .exo-card .cp-rich > p{margin:4px 0 0;}
+.cp-exo .exo-correction > p{margin:0 0 6px;}
+.cp-exo .exo-correction > :last-child{margin-bottom:0;}
+.cp-share{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;color:var(--ink-soft);cursor:pointer;}
+.cp-chip-prev{background:#FFF4E5;color:#9A4B00;}
+.cp-shared-list{width:100%;display:flex;flex-direction:column;gap:6px;margin-top:2px;}
+.cp-shared-item{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;padding:8px 12px;border:1px solid rgba(28,43,57,.12);border-radius:10px;background:#fff;font-size:.88rem;}
+.cp-shared-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.cp-f-exowrap{margin:0 0 4px;}
+.cp-f-exos{display:flex;flex-direction:column;gap:10px;margin:0 0 8px;}
+.cp-f-exo{border:1px solid rgba(28,43,57,.14);border-radius:10px;padding:10px;background:#FAFBFC;display:flex;flex-direction:column;gap:6px;}
+.cp-f-exo-head{display:flex;align-items:center;justify-content:space-between;font-size:.85rem;}
+.cp-f-exo-del{border:none;background:none;cursor:pointer;color:var(--ink-soft);display:flex;padding:2px;}
+.cp-f-exo textarea{min-height:0;}
+.cp-form .cp-f-exo-c{background:#F2F3F5;}
