@@ -2556,6 +2556,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.688', items:[
+    "Administration, nouvel onglet Facturation (administrateur général) -- demandé : \"devis et factures depuis l'Administration\", en distinguant établissements publics et privés. Fiche par établissement (public ou privé, UAI, SIRET, organisme de gestion, code service Chorus Pro), calcul automatique de la licence au prix par élève et par niveau, lignes libres (formation, remise). Devis numérotés (D-2026-001…), « Commande reçue » (n° d'engagement ou bon de commande) qui ouvre la licence de l'établissement, facture (F-2026-001…) prête à déposer sur Chorus Pro ou à envoyer à l'organisme de gestion, paiement, et avoir pour annuler une facture. PDF avec les mentions obligatoires (EI, SIRET, TVA, échéance, pénalités de retard). Numérotation continue attribuée par le serveur ; un document émis ne se modifie plus. Vos coordonnées (« Mes informations ») sont exigées avant le premier devis.",
+  ]},
   { version:'2026-08-19.687', items:[
     "Vidéos de l'accueil -- signalé : \"dans les vidéos les dates sont au format anglais au lieu de jj/mm/aaaa\". Les vidéos « Automatismes et Objectif Nombre en devoir », « Une évaluation en quelques minutes », « Le cahier de la classe » et « L'outil de correction, tous ses outils » ont été réenregistrées avec des dates au format français (jj/mm/aaaa).",
   ]},
