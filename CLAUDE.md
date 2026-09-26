@@ -37,3 +37,7 @@ NODE_PATH=/opt/node22/lib/node_modules node tools/build-seo.js
 
 et committer les fichiers produits avec le reste. Un chapitre sans vrai cours (« Cours en
 construction ») n'a pas de page : elle apparaît automatiquement dès que son cours existe.
+
+Ne JAMAIS retirer de `index.html` la balise `<meta name="google-site-verification" ...>` : elle
+prouve à Google Search Console que le site nous appartient (validée le 26/09/2026) ; sans elle,
+l'accès au suivi de l'indexation est perdu.
