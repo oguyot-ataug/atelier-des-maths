@@ -2546,6 +2546,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.675', items:[
+    "Cours personnalisés, étape 2 -- demandé : \"Lance l'étape 2 : ajouter des blocs de texte\". En mode « Personnaliser cet onglet », le bouton + de chaque bloc (ou « Ajouter un bloc au début ») ouvre un formulaire : Paragraphe, Définition, Propriété, Règle, Encadré, Remarque, Exemple, Titre de paragraphe ou Sous-titre, avec aperçu immédiat tel que le verront les élèves. Les blocs ajoutés ont exactement l'apparence du cours (mêmes encadrés, étiquettes, puces d'exemple) et les mêmes boutons (+ Cahier, écouter, loupe, mode apprentissage).",
+    "Mise en forme simple : **gras**, $formule$ (ex. $\\frac{3}{4}$, rendue comme les formules du cours), « - » en début de ligne pour une liste, ligne vide pour un nouveau paragraphe. Tout autre code est affiché tel quel (jamais interprété). Un bloc ajouté se modifie (crayon) ou se supprime (corbeille) ; il se déplace et se masque comme les autres.",
+    "Numérotation automatique dans une version personnalisée : les paragraphes (1, 2, 3…) et sous-parties (A, B, C…) sont renumérotés dans l'ordre affiché, blocs masqués exclus ; le cours d'origine garde ses numéros.",
+  ]},
   { version:'2026-08-19.674', items:[
     "Cours personnalisés, étape 1 -- idée : \"un prof puisse s'attribuer les cours, les modifier, déplacer des éléments [...] Dans le menu méthodes et exercices, idem.\" Nouveau bouton « Personnaliser cet onglet » (professeurs) sous les onglets Cours, Méthode animée et Exercices : chaque bloc (titre, définition, propriété, exemple, figure...) se déplace par glisser-déposer ou avec les flèches, et se masque avec l'œil. Les figures restent interactives : ce sont les blocs d'origine qui sont déplacés, pas des copies.",
     "Qui voit quoi -- décidé : \"Les élèves du profs voient la version modifiée. Les autres voient la version par défaut\". Un élève voit la version d'un de ses professeurs (mention « Cours adapté par ton professeur »), sinon celle de l'établissement, sinon le cours d'origine. Les blocs non modifiés continuent de suivre les mises à jour du cours d'origine ; un bloc ajouté plus tard au cours d'origine apparaît à sa place logique.",

@@ -4,8 +4,14 @@
    prof voient la version modifiée, les autres voient la version par défaut", "partage
    établissement", et les blocs non modifiés suivent les mises à jour du cours d'origine.
 
-   Étape 1 (ce fichier) : réorganiser et masquer les blocs d'un onglet (Cours, Méthode,
-   Exercices), revenir à l'original, publier la version pour tout l'établissement (référent).
+   Étape 1 : réorganiser et masquer les blocs d'un onglet (Cours, Méthode, Exercices), revenir à
+   l'original, publier la version pour tout l'établissement (référent).
+   Étape 2 : ajouter ses propres blocs (paragraphe, définition, propriété, règle, remarque,
+   exemple, titre de paragraphe, sous-titre), rendus avec les classes du site. Leur contenu est
+   stocké dans la version elle-même ({id:'u:…', add:{k, l, x}}) ; le texte est TOUJOURS échappé,
+   seules deux notations sont interprétées : **gras** et $formule$ (KaTeX). Les numéros des
+   paragraphes (1, 2, 3…) et des sous-parties (A, B, C…) sont recalculés dans une version
+   personnalisée ; les lettres de méthode (M) ne sont pas touchées.
 
    Principe : un onglet de chapitre est une suite plate d'éléments (encadrés, titres, figures,
    exemples...). On la découpe en BLOCS (une étiquette « Définition » / un titre d'exemple reste
@@ -57,7 +63,7 @@ function cpBlocks(container){
     // Élément apparu depuis (ajout dynamique d'une figure) : rattaché au bloc qui le précède.
     const known = new Set(container._cpBlocks.flatMap(b=>b.nodes));
     [...container.children].forEach(el=>{
-      if(known.has(el) || el.classList.contains('cp-eb')) return;
+      if(known.has(el) || el.classList.contains('cp-eb') || el.classList.contains('cp-form') || el.classList.contains('cp-add-top') || el.dataset.cpCustom) return;
       let prev = el.previousElementSibling;
       while(prev && !known.has(prev)) prev = prev.previousElementSibling;
       const b = prev ? container._cpBlocks.find(x=>x.nodes.includes(prev)) : container._cpBlocks[0];
@@ -90,11 +96,15 @@ function cpBlockLabel(b){
 }
 
 /* ---------- application d'une version ---------- */
-function cpOrder(blocks, layout){
+function cpOrder(container, layout){
+  const blocks = cpBlocks(container);
   if(!layout || !Array.isArray(layout.blocks)) return blocks.map(b=>({b, hidden:false}));
   const byId = new Map(blocks.map(b=>[b.id,b]));
   const out = [], placed = new Set();
-  layout.blocks.forEach(e=>{ const b = byId.get(e.id); if(b && !placed.has(b.id)){ out.push({b, hidden:!!e.h}); placed.add(b.id); } });
+  layout.blocks.forEach(e=>{
+    const b = e.add ? cpCustomBlock(container, e) : byId.get(e.id);
+    if(b && !placed.has(b.id)){ out.push({b, hidden:!!e.h}); placed.add(b.id); }
+  });
   // Blocs ajoutés depuis au cours d'origine : juste après leur voisin d'origine déjà placé.
   blocks.forEach((b,i)=>{
     if(placed.has(b.id)) return;
@@ -107,18 +117,140 @@ function cpOrder(blocks, layout){
 }
 function cpApply(container, layout){
   if(!container) return;
-  const blocks = cpBlocks(container);
-  cpOrder(blocks, layout).forEach(({b, hidden})=>{
+  const order = cpOrder(container, layout);
+  // Blocs ajoutés qui ne font plus partie de la version affichée : retirés.
+  const reg = cpRegistry(container), keep = new Set(order.map(o=>o.b));
+  reg.forEach((b, id)=>{ if(!keep.has(b)){ b.nodes.forEach(n=>n.remove()); reg.delete(id); } });
+  order.forEach(({b, hidden})=>{
     b.nodes.forEach(n=>{ container.appendChild(n); n.classList.toggle('cp-hidden', hidden); });
   });
+  cpRenumber(container, !!layout);
 }
 function cpLayoutFromOrder(order){
-  return {v:1, blocks: order.map(o=>o.hidden ? {id:o.b.id, h:1} : {id:o.b.id})};
+  return {v:1, blocks: order.map(o=>{
+    const e = {id:o.b.id};
+    if(o.b.custom) e.add = o.b.custom;
+    if(o.hidden) e.h = 1;
+    return e;
+  })};
 }
-function cpIsOriginal(blocks, layout){
-  if(!layout) return true;
-  const ord = cpOrder(blocks, layout);
-  return ord.every((o,i)=>o.b===blocks[i] && !o.hidden);
+function cpIsOriginalOrder(container, order){
+  const blocks = cpBlocks(container);
+  return order.length===blocks.length && order.every((o,i)=>o.b===blocks[i] && !o.hidden);
+}
+
+/* Numérotation : 1, 2, 3… pour les paragraphes, A, B, C… (remis à zéro à chaque paragraphe)
+   pour les sous-parties, dans l'ordre affiché et sans compter les blocs masqués. Les lettres
+   hors de cette suite (M = méthode) restent telles quelles. Sans version personnalisée
+   (active=false), les numéros d'origine sont remis. */
+function cpRenumber(container, active){
+  const hs = [...container.querySelectorAll('.lesson-header, .sub-header')]
+    .filter(h=>h.parentElement===container || h.parentElement.classList.contains('cp-eb-body'));
+  let n = 0, l = 0;
+  hs.forEach(h=>{
+    const span = h.querySelector(':scope > .num, :scope > .letter');
+    if(!span) return;
+    if(span.dataset.cpOrig===undefined) span.dataset.cpOrig = span.textContent;
+    const orig = span.dataset.cpOrig;
+    if(!active){ span.textContent = orig; return; }
+    const hidden = h.classList.contains('cp-hidden') || h.closest('.cp-eb-hidden');
+    if(h.classList.contains('lesson-header')){
+      if(!/^\d*$/.test(orig) || hidden) return;
+      span.textContent = String(++n); l = 0;
+    } else {
+      if(!/^[A-L]?$/.test(orig) || hidden) return;
+      span.textContent = String.fromCharCode(65 + l++);
+    }
+  });
+}
+
+/* ---------- blocs ajoutés par le professeur ---------- */
+const CP_KINDS = {
+  p:      { nom:'Paragraphe', icon:'notes' },
+  def:    { nom:'Définition', icon:'menu_book', badge:'def-badge', label:'Définition' },
+  prop:   { nom:'Propriété', icon:'verified', badge:'prop-badge', label:'Propriété' },
+  regle:  { nom:'Règle', icon:'rule', badge:'prop-badge', label:'Règle' },
+  box:    { nom:'Encadré', icon:'crop_square' },
+  hint:   { nom:'Remarque', icon:'info', label:'Remarque' },
+  ex:     { nom:'Exemple', icon:'lightbulb', label:'Exemple' },
+  h1:     { nom:'Titre de paragraphe', icon:'title', titleOnly:true },
+  h2:     { nom:'Sous-titre', icon:'format_size', titleOnly:true },
+};
+const CP_MAX_TEXT = 3000;
+function cpRegistry(container){ return container._cpCustom || (container._cpCustom = new Map()); }
+function cpCustomBlock(container, e){
+  const spec = e.add;
+  if(!spec || !CP_KINDS[spec.k] || typeof e.id!=='string' || !e.id.startsWith('u:')) return null;
+  const reg = cpRegistry(container), key = JSON.stringify(spec), old = reg.get(e.id);
+  if(old && old.key===key) return old;
+  if(old) old.nodes.forEach(n=>n.remove());
+  const b = cpBuildBlock(e.id, spec, container);
+  reg.set(e.id, b);
+  return b;
+}
+function cpBuildBlock(id, spec, container){
+  const holder = document.createElement('div');
+  holder.innerHTML = cpRenderSpec(spec);
+  const nodes = [...holder.children];
+  nodes.forEach(n=>{ n.dataset.cpCustom = '1'; });
+  // Mêmes boutons que le cours d'origine (+ Cahier, écouter, loupe, apprentissage).
+  const isExos = container && cpCurrentDemo && container.id===cpCurrentDemo.exos;
+  try{
+    if(isExos){ if(typeof injectZoomButtons==='function') injectZoomButtons(holder); }
+    else if(typeof injectCourseAddButtons==='function') injectCourseAddButtons(holder);
+  }catch(err){ console.warn(err); }
+  return { id, nodes:[...holder.children], custom:spec, key:JSON.stringify(spec) };
+}
+/* Texte du professeur -> HTML : tout est échappé, puis **gras**, $formule$, listes (« - »),
+   retours à la ligne. */
+function cpMath(src){
+  const esc = cpEsc(src);
+  let html;
+  try{ html = katex.renderToString(src, {throwOnError:false}); }catch(e){ html = esc; }
+  return `<span class="tex" data-tex-source="${esc}" data-rendered="1">${html}</span>`;
+}
+function cpInline(line){
+  const parts = line.split(/(\$[^$\n]+\$)/g);
+  return parts.map(part=>{
+    if(/^\$[^$\n]+\$$/.test(part)) return cpMath(part.slice(1,-1));
+    return cpEsc(part).replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>');
+  }).join('');
+}
+/* Paragraphes séparés par une ligne vide ; lignes « - … » regroupées en liste. */
+function cpRich(text, listClass){
+  const out = [];
+  String(text||'').replace(/\r/g,'').split(/\n\s*\n/).forEach(par=>{
+    const lines = par.split('\n').filter(x=>x.trim()!=='');
+    let buf = [], list = [];
+    const flushText = ()=>{ if(buf.length){ out.push('<p>' + buf.map(cpInline).join('<br>') + '</p>'); buf = []; } };
+    const flushList = ()=>{ if(list.length){ out.push(`<ul class="${listClass||'cp-list'}">` + list.map(x=>'<li>'+cpInline(x)+'</li>').join('') + '</ul>'); list = []; } };
+    lines.forEach(x=>{
+      const m = x.match(/^\s*[-•]\s+(.*)$/);
+      if(m){ flushText(); list.push(m[1]); } else { flushList(); buf.push(x.trim()); }
+    });
+    flushText(); flushList();
+  });
+  return out;
+}
+function cpRenderSpec(spec){
+  const K = CP_KINDS[spec.k], label = (spec.l||'').trim(), x = spec.x||'';
+  switch(spec.k){
+    case 'h1': return `<div class="lesson-header"><span class="num"></span><h3>${cpInline(label||'Nouveau paragraphe')}</h3></div>`;
+    case 'h2': return `<div class="sub-header"><span class="letter"></span><h4>${cpInline(label||'Nouvelle partie')}</h4></div>`;
+    case 'def': case 'prop': case 'regle':
+      return `<span class="${K.badge}">${cpEsc(label||K.label)}</span><div class="def-box cp-rich">${cpRich(x).join('')}</div>`;
+    case 'box': return `<div class="def-box cp-rich">${cpRich(x).join('')}</div>`;
+    case 'hint': {
+      const pars = cpRich(x);
+      const lead = `${cpEsc(label||K.label)} : `;
+      return `<div class="hint cp-rich cp-hint">${pars.length ? pars[0].replace(/^<p>/, '<p>'+lead) + pars.slice(1).join('') : '<p>'+lead+'</p>'}</div>`;
+    }
+    case 'ex': {
+      const title = label ? (/^exemple/i.test(label) ? cpInline(label) : 'Exemple : ' + cpInline(label)) : 'Exemple :';
+      return `<p class="example-title">${title}</p><div class="cp-rich cp-example">${cpRich(x, 'example-list').join('')}</div>`;
+    }
+    default: return `<div class="cp-rich cp-par">${cpRich(x).join('')}</div>`;
+  }
 }
 
 /* ---------- chargement ---------- */
@@ -201,42 +333,143 @@ function cpStartEdit(){
   if(typeof lrnState!=='undefined' && lrnState && typeof lrnStop==='function') lrnStop();
   if(cpShowOriginal){ cpShowOriginal = false; }
   const v = cpCache.get(cid);
-  const blocks = cpBlocks(container);
-  const order = cpOrder(blocks, v ? v.layout : null); // part de la version en vigueur (la sienne ou celle de l'établissement)
+  const order = cpOrder(container, v ? v.layout : null); // part de la version en vigueur (la sienne ou celle de l'établissement)
   cpEditing = { cid, container, before: order.map(o=>({b:o.b, hidden:o.hidden})), dirty:false };
   container.classList.add('cp-edit-mode');
+  const top = document.createElement('button');
+  top.type = 'button'; top.className = 'cp-add-top';
+  top.innerHTML = '<span class="gicon">add</span> Ajouter un bloc au début';
+  top.onclick = ()=>cpOpenForm(null, top);
+  container.appendChild(top);
   order.forEach(({b, hidden})=>{
-    const w = document.createElement('div');
-    w.className = 'cp-eb' + (hidden ? ' cp-eb-hidden' : '');
-    const main = b.nodes[b.nodes.length-1];
-    if(main.classList.contains('lesson-header')) w.classList.add('cp-eb-h1');
-    else if(main.classList.contains('sub-header')) w.classList.add('cp-eb-h2');
-    w.dataset.id = b.id;
-    w._cpBlock = b;
-    w.innerHTML = `<div class="cp-eb-ctl">
-        <span class="cp-eb-handle" draggable="true" title="Glisser pour déplacer"><span class="gicon">drag_indicator</span></span>
-        <button type="button" title="Monter" onclick="cpMove(this,-1)"><span class="gicon">arrow_upward</span></button>
-        <button type="button" title="Descendre" onclick="cpMove(this,1)"><span class="gicon">arrow_downward</span></button>
-        <button type="button" class="cp-eye" title="${hidden ? 'Afficher ce bloc' : 'Masquer ce bloc pour mes élèves'}" onclick="cpToggleHide(this)"><span class="gicon">${hidden ? 'visibility_off' : 'visibility'}</span></button>
-      </div><div class="cp-eb-body"></div>`;
-    container.appendChild(w);
-    const body = w.querySelector('.cp-eb-body');
-    b.nodes.forEach(n=>{ n.classList.remove('cp-hidden'); body.appendChild(n); });
-    const h = w.querySelector('.cp-eb-handle');
-    h.addEventListener('dragstart', ev=>{ cpEditing.drag = w; w.classList.add('cp-drag'); ev.dataTransfer.effectAllowed = 'move'; try{ ev.dataTransfer.setData('text/plain', b.id); ev.dataTransfer.setDragImage(w, 20, 20); }catch(e){} });
-    h.addEventListener('dragend', ()=>{ w.classList.remove('cp-drag'); if(cpEditing) cpEditing.drag = null; });
-    w.addEventListener('dragover', ev=>{
-      const d = cpEditing && cpEditing.drag;
-      if(!d || d===w) return;
-      ev.preventDefault();
-      const r = w.getBoundingClientRect();
-      const after = ev.clientY > r.top + r.height/2;
-      if(after ? w.nextElementSibling!==d : w.previousElementSibling!==d){ container.insertBefore(d, after ? w.nextSibling : w); cpEditing.dirty = true; }
-    });
-    w.addEventListener('drop', ev=>ev.preventDefault());
+    container.appendChild(cpMakeWrapper(b, hidden));
   });
+  cpRenumber(container, true);
   cpRenderEditBar();
   container.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function cpMakeWrapper(b, hidden){
+  const container = cpEditing.container;
+  const w = document.createElement('div');
+  w.className = 'cp-eb' + (hidden ? ' cp-eb-hidden' : '') + (b.custom ? ' cp-eb-custom' : '');
+  const main = b.nodes[b.nodes.length-1];
+  if(main.classList.contains('lesson-header')) w.classList.add('cp-eb-h1');
+  else if(main.classList.contains('sub-header')) w.classList.add('cp-eb-h2');
+  w.dataset.id = b.id;
+  w._cpBlock = b;
+  w.innerHTML = `<div class="cp-eb-ctl">
+      <span class="cp-eb-handle" draggable="true" title="Glisser pour déplacer"><span class="gicon">drag_indicator</span></span>
+      <button type="button" title="Monter" onclick="cpMove(this,-1)"><span class="gicon">arrow_upward</span></button>
+      <button type="button" title="Descendre" onclick="cpMove(this,1)"><span class="gicon">arrow_downward</span></button>
+      <button type="button" class="cp-eye" title="${hidden ? 'Afficher ce bloc' : 'Masquer ce bloc pour mes élèves'}" onclick="cpToggleHide(this)"><span class="gicon">${hidden ? 'visibility_off' : 'visibility'}</span></button>
+      <button type="button" class="cp-add" title="Ajouter un bloc juste après" onclick="cpOpenForm(null, this.closest('.cp-eb'))"><span class="gicon">add</span></button>
+      ${b.custom ? `<button type="button" title="Modifier ce bloc" onclick="cpOpenForm(this.closest('.cp-eb'))"><span class="gicon">edit</span></button>
+      <button type="button" class="cp-del" title="Supprimer ce bloc" onclick="cpDeleteBlock(this)"><span class="gicon">delete</span></button>` : ''}
+    </div><div class="cp-eb-body">${b.custom ? '<span class="cp-mine-tag">Ajouté par vous</span>' : ''}</div>`;
+  const body = w.querySelector('.cp-eb-body');
+  b.nodes.forEach(n=>{ n.classList.remove('cp-hidden'); body.appendChild(n); });
+  const h = w.querySelector('.cp-eb-handle');
+  h.addEventListener('dragstart', ev=>{ cpEditing.drag = w; w.classList.add('cp-drag'); ev.dataTransfer.effectAllowed = 'move'; try{ ev.dataTransfer.setData('text/plain', b.id); ev.dataTransfer.setDragImage(w, 20, 20); }catch(e){} });
+  h.addEventListener('dragend', ()=>{ w.classList.remove('cp-drag'); if(cpEditing){ cpEditing.drag = null; cpRenumber(container, true); } });
+  w.addEventListener('dragover', ev=>{
+    const d = cpEditing && cpEditing.drag;
+    if(!d || d===w) return;
+    ev.preventDefault();
+    const r = w.getBoundingClientRect();
+    const after = ev.clientY > r.top + r.height/2;
+    if(after ? w.nextElementSibling!==d : w.previousElementSibling!==d){ container.insertBefore(d, after ? w.nextSibling : w); cpEditing.dirty = true; }
+  });
+  w.addEventListener('drop', ev=>ev.preventDefault());
+  return w;
+}
+function cpDeleteBlock(btn){
+  const w = btn.closest('.cp-eb');
+  if(!confirm('Supprimer ce bloc ?')) return;
+  w.remove();
+  cpEditing.dirty = true;
+  cpRenumber(cpEditing.container, true);
+}
+
+/* Formulaire d'ajout (après `anchor`, ou au début) ou de modification (`editW`). */
+function cpOpenForm(editW, anchor){
+  cpCloseForm();
+  const spec = editW ? editW._cpBlock.custom : { k:'p', l:'', x:'' };
+  const f = document.createElement('div');
+  f.className = 'cp-form';
+  f._edit = editW || null;
+  f.innerHTML = `
+    <div class="cp-form-title">${editW ? 'Modifier le bloc' : 'Nouveau bloc'}</div>
+    <div class="cp-kinds">${Object.entries(CP_KINDS).map(([k,K])=>`<button type="button" data-k="${k}" class="${k===spec.k?'on':''}"><span class="gicon">${K.icon}</span> ${K.nom}</button>`).join('')}</div>
+    <label class="cp-f-label"><span></span><input type="text" maxlength="160"></label>
+    <div class="cp-f-textwrap">
+      <div class="cp-tools">
+        <button type="button" data-t="b" title="Gras : **texte**"><span class="gicon">format_bold</span></button>
+        <button type="button" data-t="m" title="Formule : $\\frac{3}{4}$"><span class="gicon">function</span></button>
+        <button type="button" data-t="l" title="Liste : une ligne par élément, commençant par « - »"><span class="gicon">format_list_bulleted</span></button>
+        <span class="hint" style="margin:0;">**gras** · $formule$ (ex. $\\frac{3}{4}$, $3 \\times 5$) · « - » en début de ligne pour une liste · ligne vide = nouveau paragraphe</span>
+      </div>
+      <textarea rows="5" maxlength="${CP_MAX_TEXT}"></textarea>
+    </div>
+    <div class="cp-f-prevlabel">Aperçu (tel que le verront vos élèves)</div>
+    <div class="cp-f-preview"></div>
+    <div class="cp-f-actions">
+      <button type="button" class="btn cp-f-ok"><span class="gicon">check</span> ${editW ? 'Valider' : 'Ajouter'}</button>
+      <button type="button" class="btn secondary cp-f-cancel">Annuler</button>
+      <span class="hint cp-f-msg" style="margin:0;"></span>
+    </div>`;
+  const input = f.querySelector('input'), ta = f.querySelector('textarea');
+  input.value = spec.l || ''; ta.value = spec.x || '';
+  let kind = spec.k;
+  const refresh = ()=>{
+    const K = CP_KINDS[kind];
+    f.querySelectorAll('.cp-kinds button').forEach(b=>b.classList.toggle('on', b.dataset.k===kind));
+    f.querySelector('.cp-f-label span').textContent = K.titleOnly ? 'Titre' : (K.label ? 'Étiquette (facultatif)' : 'Titre (facultatif, non affiché)');
+    f.querySelector('.cp-f-label').style.display = (kind==='p' || kind==='box') ? 'none' : '';
+    input.placeholder = K.titleOnly ? 'ex. Le cercle' : kind==='ex' ? 'ex. calculer une longueur' : (K.label ? 'ex. ' + K.label + ' 3' : '');
+    f.querySelector('.cp-f-textwrap').style.display = K.titleOnly ? 'none' : '';
+    const prev = f.querySelector('.cp-f-preview');
+    prev.innerHTML = cpRenderSpec({ k:kind, l:input.value, x:ta.value });
+    const num = prev.querySelector('.num'), let_ = prev.querySelector('.letter');
+    if(num) num.textContent = '#'; if(let_) let_.textContent = '#';
+  };
+  f.querySelectorAll('.cp-kinds button').forEach(b=>b.onclick = ()=>{ kind = b.dataset.k; refresh(); });
+  input.oninput = refresh; ta.oninput = refresh;
+  f.querySelectorAll('.cp-tools button').forEach(b=>b.onclick = ()=>{
+    const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.slice(s, e);
+    let ins, caret;
+    if(b.dataset.t==='b'){ ins = '**' + (sel||'texte') + '**'; caret = s + 2; }
+    else if(b.dataset.t==='m'){ ins = '$' + (sel||'\\frac{3}{4}') + '$'; caret = s + 1; }
+    else { const lines = (sel||'élément').split('\n'); ins = (s>0 && ta.value[s-1]!=='\n' ? '\n' : '') + lines.map(x=>'- '+x.replace(/^\s*-\s*/,'')).join('\n'); caret = s + ins.length; }
+    ta.setRangeText(ins, s, e, 'end');
+    if(!sel && b.dataset.t!=='l') ta.setSelectionRange(caret, caret + ins.length - (b.dataset.t==='b' ? 4 : 2));
+    ta.focus(); refresh();
+  });
+  f.querySelector('.cp-f-cancel').onclick = ()=>cpCloseForm();
+  f.querySelector('.cp-f-ok').onclick = ()=>{
+    const K = CP_KINDS[kind];
+    const l = input.value.trim().slice(0,160), x = ta.value.replace(/\s+$/,'').slice(0, CP_MAX_TEXT);
+    if(K.titleOnly ? !l : !x.trim()){ f.querySelector('.cp-f-msg').textContent = K.titleOnly ? 'Écrivez le titre.' : 'Écrivez le texte du bloc.'; return; }
+    const newSpec = K.titleOnly ? { k:kind, l } : (kind==='p' || kind==='box') ? { k:kind, x } : { k:kind, l, x };
+    const id = editW ? editW._cpBlock.id : 'u:' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+    const b = cpBuildBlock(id, newSpec, cpEditing.container);
+    const hidden = editW ? editW.classList.contains('cp-eb-hidden') : false;
+    const w = cpMakeWrapper(b, hidden);
+    f.replaceWith(w);
+    if(editW) editW.remove();
+    cpEditing.dirty = true;
+    cpRenumber(cpEditing.container, true);
+    w.classList.add('cp-flash'); setTimeout(()=>w.classList.remove('cp-flash'), 700);
+    w.scrollIntoView({block:'nearest', behavior:'smooth'});
+  };
+  if(editW){ editW.style.display = 'none'; editW.after(f); }
+  else anchor.after(f);
+  refresh();
+  f.scrollIntoView({block:'center', behavior:'smooth'});
+  setTimeout(()=>(CP_KINDS[kind].titleOnly ? input : ta).focus({preventScroll:true}), 50);
+}
+function cpCloseForm(){
+  if(!cpEditing) return;
+  cpEditing.container.querySelectorAll(':scope > .cp-form').forEach(f=>{ if(f._edit) f._edit.style.display = ''; f.remove(); });
 }
 function cpMove(btn, dir){
   const w = btn.closest('.cp-eb');
@@ -244,6 +477,7 @@ function cpMove(btn, dir){
   if(!sib || !sib.classList.contains('cp-eb')) return;
   w.parentNode.insertBefore(w, dir<0 ? sib : sib.nextSibling);
   cpEditing.dirty = true;
+  cpRenumber(cpEditing.container, true);
   w.scrollIntoView({block:'nearest', behavior:'smooth'});
   w.classList.add('cp-flash'); setTimeout(()=>w.classList.remove('cp-flash'), 500);
 }
@@ -253,6 +487,7 @@ function cpToggleHide(btn){
   btn.innerHTML = `<span class="gicon">${h ? 'visibility_off' : 'visibility'}</span>`;
   btn.title = h ? 'Afficher ce bloc' : 'Masquer ce bloc pour mes élèves';
   cpEditing.dirty = true;
+  cpRenumber(cpEditing.container, true);
 }
 function cpEditOrder(){
   return [...cpEditing.container.querySelectorAll(':scope > .cp-eb')].map(w=>({b:w._cpBlock, hidden:w.classList.contains('cp-eb-hidden')}));
@@ -261,7 +496,7 @@ function cpEditOrder(){
 function cpUnwrap(order){
   const c = cpEditing.container;
   order.forEach(({b, hidden})=>b.nodes.forEach(n=>{ c.appendChild(n); n.classList.toggle('cp-hidden', hidden); }));
-  c.querySelectorAll(':scope > .cp-eb').forEach(w=>w.remove());
+  c.querySelectorAll(':scope > .cp-eb, :scope > .cp-form, :scope > .cp-add-top').forEach(w=>w.remove());
   c.classList.remove('cp-edit-mode');
 }
 function cpRenderEditBar(){
@@ -270,7 +505,7 @@ function cpRenderEditBar(){
   const referent = typeof currentReferentEtab!=='undefined' && currentReferentEtab && currentReferentEtab.uai;
   bar.innerHTML = `
     <span class="cp-chip cp-chip-edit"><span class="gicon">edit_note</span> Personnalisation</span>
-    <span class="hint" style="margin:0;flex:1;min-width:220px;">Glissez un bloc par sa poignée (ou flèches) pour le déplacer ; l'œil le masque pour vos élèves. Les figures restent interactives.</span>
+    <span class="hint" style="margin:0;flex:1;min-width:220px;">Glissez un bloc par sa poignée (ou flèches) pour le déplacer ; l'œil le masque pour vos élèves ; <b>+</b> ajoute un bloc à vous juste après. Les figures restent interactives.</span>
     <button type="button" class="btn" onclick="cpSaveEdit()"><span class="gicon">save</span> Enregistrer</button>
     <button type="button" class="btn secondary" onclick="cpCancelEdit()">Annuler</button>
     ${v && v.source==='moi' ? '<button type="button" class="btn secondary" onclick="cpResetMine()"><span class="gicon">restart_alt</span> Revenir au cours d\'origine</button>' : ''}
@@ -282,17 +517,20 @@ function cpSay(msg, err){ const m = document.getElementById('cpMsg'); if(m){ m.t
 function cpCancelEdit(silent){
   if(!cpEditing) return;
   if(!silent && cpEditing.dirty && !confirm('Abandonner les modifications en cours ?')) return;
+  const c = cpEditing.container, v = cpCache.get(cpEditing.cid);
   cpUnwrap(cpEditing.before);
   cpEditing = null;
+  cpApply(c, (v && !cpShowOriginal) ? v.layout : null);
   cpRenderBar();
 }
 async function cpSaveEdit(publishEtab){
   if(!cpEditing) return;
+  if(cpEditing.container.querySelector(':scope > .cp-form') && !confirm('Un bloc en cours d\'écriture n\'a pas été validé et sera perdu. Enregistrer quand même ?')) return;
   const order = cpEditOrder();
   const { cid, container } = cpEditing;
-  const blocks = cpBlocks(container);
   const layout = cpLayoutFromOrder(order);
-  const original = order.every((o,i)=>o.b===blocks[i] && !o.hidden);
+  const original = cpIsOriginalOrder(container, order);
+  if(JSON.stringify(layout).length > 200000){ cpSay('Version trop volumineuse : raccourcissez vos blocs ajoutés.', true); return; }
   cpSay('Enregistrement…');
   try{
     // Sa propre version : supprimée si elle redevient identique à l'original (le cours suit
@@ -315,7 +553,11 @@ async function cpSaveEdit(publishEtab){
       else { const { error } = await sb.from('cours_perso').insert({ scope:'etab', owner_id: currentUser.id, uai, container: cid, layout }); if(error) throw error; }
     }
   }catch(e){ cpSay('Enregistrement impossible : ' + (e.message||e), true); return; }
+  cpCloseForm();
   cpUnwrap(order);
+  // Blocs ajoutés/modifiés pendant l'édition : ce sont désormais ceux de la version.
+  const reg = cpRegistry(container);
+  order.forEach(({b})=>{ if(b.custom){ const old = reg.get(b.id); if(old && old!==b) old.nodes.forEach(n=>n.remove()); reg.set(b.id, b); } });
   cpEditing = null;
   cpCache.delete(cid);
   await cpLoad([cid]);
