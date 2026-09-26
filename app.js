@@ -2541,6 +2541,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.672', items:[
+    "Référencement : balise de vérification Google Search Console ajoutée sur la page d'accueil (propriété https://maths.latelieraugmente.fr/), pour pouvoir déclarer le sitemap et suivre l'indexation.",
+  ]},
   { version:'2026-08-19.671', items:[
     "Mode apprentissage -- signalé : \"c'est trop compliqué à réciter. Ça revient toujours au début\". Trois causes corrigées : un mot encore provisoire (que le navigateur corrige ensuite tout seul) était déjà compté comme faux ; à chaque erreur le micro redémarrait et perdait les premiers mots redits ; et toute erreur renvoyait au tout début.",
     "Trois niveaux au choix dans la barre (mémorisé sur l'appareil) : FACILE (par défaut) -- un mot faux est seulement signalé (le mot attendu est souligné en rouge, « redis la suite après … »), rien ne se recache, pas de limite de temps, et les petites erreurs de la reconnaissance vocale sont pardonnées ; NORMAL -- un mot faux ou 10 s d'hésitation recachent seulement la phrase en cours ; DIFFICILE -- le principe d'origine : mot faux, « euh » ou 6 s d'hésitation, tout se recache.",
