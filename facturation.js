@@ -515,7 +515,10 @@ function facDocHtml(d){
     .ttl div{font-size:10pt;line-height:1.5;}
     .dest{margin:22px 0 16px auto;width:48%;border:1px solid #cfd6df;border-radius:6px;padding:10px 12px;line-height:1.45;}
     .dest .lbl{font-size:8.5pt;color:#6b7482;text-transform:uppercase;letter-spacing:.5px;}
-    .obj{margin:6px 0 12px;}
+    .obj{margin:6px 0 12px;display:flex;align-items:center;gap:14px;background:#f5f8fc;border-radius:8px;padding:8px 12px;}
+    .logo-aa{height:80px;margin-bottom:6px;}
+    .logo-adm{height:52px;flex:none;}
+    img{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     table{width:100%;border-collapse:collapse;margin-top:6px;}
     th{background:#eef3f9;text-align:left;font-size:9pt;padding:7px 8px;border-bottom:1px solid #b9c3cf;}
     td{padding:8px;border-bottom:1px solid #e3e7ec;vertical-align:top;}
@@ -535,12 +538,12 @@ function facDocHtml(d){
   </style></head><body>
     <button class="print" onclick="window.print()">Imprimer / Enregistrer en PDF</button>
     <div class="top">
-      <div class="em"><b>${facEsc(em.nom || '(nom à compléter)')}</b>${em.enseigne ? '<br>' + facEsc(em.enseigne) : ''}<br>${nl(em.adresse || '(adresse à compléter)')}<br>
+      <div class="em"><img class="logo-aa" src="${facLogo('logo-atelier-augmente.png')}" alt="L'Atelier Augmenté"><br><b>${facEsc(em.nom || '(nom à compléter)')}</b>${em.enseigne ? '<br>' + facEsc(em.enseigne) : ''}<br>${nl(em.adresse || '(adresse à compléter)')}<br>
         SIRET ${facEsc(em.siret || '(à compléter)')}${em.email ? '<br>' + facEsc(em.email) : ''}${em.telephone ? ' · ' + facEsc(em.telephone) : ''}</div>
       <div class="ttl"><h1>${titre}</h1><div>N° <b>${facEsc(d.numero)}</b><br>Date : ${facDate(d.date_emission)}${d.type === 'devis' && d.date_validite ? '<br>Valable jusqu\'au ' + facDate(d.date_validite) : ''}${d.type === 'facture' && d.date_echeance ? '<br>Échéance : ' + facDate(d.date_echeance) : ''}</div></div>
     </div>
     <div class="dest"><div class="lbl">${d.type === 'devis' ? 'Établissement' : 'Facturé à'}</div>${destinataire}<br>${nl(cli.adresse)}${ids ? '<br>' + ids : ''}</div>
-    <div class="obj"><b>Objet :</b> L'Atelier des Maths (maths.latelieraugmente.fr) – licence établissement${periode ? ', ' + periode : ''}${(d.niveaux||[]).length ? ' – niveaux ' + d.niveaux.join(', ') : ''}.</div>
+    <div class="obj"><img class="logo-adm" src="${facLogo('logo-header.png')}" alt="L'Atelier des Maths"><div><b>Objet :</b> L'Atelier des Maths (maths.latelieraugmente.fr) – licence établissement${periode ? ', ' + periode : ''}${(d.niveaux||[]).length ? ' – niveaux ' + d.niveaux.join(', ') : ''}.</div></div>
     <table><tr><th>Désignation</th><th class="n">Quantité</th><th class="n">Prix unitaire</th><th class="n">Montant</th></tr>${lignes}</table>
     <table class="tot"><tr class="big"><td>${d.type === 'avoir' ? 'Total de l\'avoir' : d.type === 'devis' ? 'Total' : 'Net à payer'}</td><td class="n">${facMoney(d.total)}</td></tr></table>
     ${em.mention_tva ? `<div class="tva">${facEsc(em.mention_tva)}</div>` : ''}
@@ -549,10 +552,14 @@ function facDocHtml(d){
     <div class="foot">${facEsc(em.nom)}${em.enseigne ? ' – ' + facEsc(em.enseigne) : ''} · SIRET ${facEsc(em.siret)} · ${facEsc(em.email)}</div>
   </body></html>`;
 }
+function facLogo(f){ return location.origin + '/assets/' + f; }
 function facOpenPdf(id){
   const d = facState.docs.find(x=>x.id === id); if(!d) return;
-  const w = window.open('', '_blank', 'width=900,height=1000');
-  if(!w){ niceAlert('La fenêtre n\'a pas pu s\'ouvrir : autorisez les fenêtres pop-up pour ce site.'); return; }
-  w.document.open(); w.document.write(facDocHtml(d)); w.document.close();
+  // Document ouvert depuis un fichier temporaire du navigateur (même origine) : les logos se
+  // chargent de façon fiable, contrairement à une fenêtre vierge remplie par document.write.
+  const url = URL.createObjectURL(new Blob([facDocHtml(d)], { type:'text/html;charset=utf-8' }));
+  const w = window.open(url, '_blank', 'width=900,height=1000');
+  if(!w){ URL.revokeObjectURL(url); niceAlert('La fenêtre n\'a pas pu s\'ouvrir : autorisez les fenêtres pop-up pour ce site.'); return; }
+  setTimeout(()=>URL.revokeObjectURL(url), 120000);
   w.focus();
 }
