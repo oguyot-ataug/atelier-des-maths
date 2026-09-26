@@ -2556,6 +2556,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.687', items:[
+    "Vidéos de l'accueil -- signalé : \"dans les vidéos les dates sont au format anglais au lieu de jj/mm/aaaa\". Les vidéos « Automatismes et Objectif Nombre en devoir », « Une évaluation en quelques minutes », « Le cahier de la classe » et « L'outil de correction, tous ses outils » ont été réenregistrées avec des dates au format français (jj/mm/aaaa).",
+  ]},
   { version:'2026-08-19.686', items:[
     "Le jeu de calcul s'appelle désormais « Objectif Nombre » -- demandé : \"le compte est bon est une marque déposée. On pourrait la remplacer par Objectif Nombre\". Nouveau nom partout : menu S'entraîner, page du jeu, accueil, devoirs (création, résultats, export CSV), Supervision, Administration, pages de présentation et vidéo « Automatismes et Objectif Nombre en devoir » (réenregistrée). Les résultats et devoirs déjà enregistrés sont conservés tels quels.",
     "Correctif : le fil d'Ariane de la page du jeu indiquait « Mon compte » (confusion avec le compte utilisateur) ; il indique maintenant « Objectif Nombre ».",
