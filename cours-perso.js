@@ -12,6 +12,12 @@
    seules deux notations sont interprétées : **gras** et $formule$ (KaTeX). Les numéros des
    paragraphes (1, 2, 3…) et des sous-parties (A, B, C…) sont recalculés dans une version
    personnalisée ; les lettres de méthode (M) ne sont pas touchées.
+   Étape 3 : modifier le texte d'un bloc d'origine ({id:<id d'origine>, rep:{k, l, x}}). Le bloc
+   d'origine reste dans la page, masqué (on peut le rétablir) ; sa version réécrite prend sa
+   place. Seuls les blocs de texte sont modifiables (titres, définitions, propriétés, règles,
+   remarques, exemples, paragraphes, listes) : un bloc qui contient une figure, un tableau ou
+   un élément interactif ne l'est pas. Si le cours d'origine change ensuite ce bloc, la version
+   réécrite par le professeur est conservée (et le nouveau texte d'origine apparaît à côté).
 
    Principe : un onglet de chapitre est une suite plate d'éléments (encadrés, titres, figures,
    exemples...). On la découpe en BLOCS (une étiquette « Définition » / un titre d'exemple reste
@@ -102,7 +108,9 @@ function cpOrder(container, layout){
   const byId = new Map(blocks.map(b=>[b.id,b]));
   const out = [], placed = new Set();
   layout.blocks.forEach(e=>{
-    const b = e.add ? cpCustomBlock(container, e) : byId.get(e.id);
+    const b = e.add ? (typeof e.id==='string' && e.id.startsWith('u:') ? cpCustomBlock(container, e.id, e.add, null) : null)
+      : e.rep ? cpCustomBlock(container, e.id, e.rep, byId.get(e.id) || null)
+      : byId.get(e.id);
     if(b && !placed.has(b.id)){ out.push({b, hidden:!!e.h}); placed.add(b.id); }
   });
   // Blocs ajoutés depuis au cours d'origine : juste après leur voisin d'origine déjà placé.
@@ -123,13 +131,16 @@ function cpApply(container, layout){
   reg.forEach((b, id)=>{ if(!keep.has(b)){ b.nodes.forEach(n=>n.remove()); reg.delete(id); } });
   order.forEach(({b, hidden})=>{
     b.nodes.forEach(n=>{ container.appendChild(n); n.classList.toggle('cp-hidden', hidden); });
+    if(b.orig) b.orig.nodes.forEach(n=>{ container.appendChild(n); n.classList.add('cp-hidden'); }); // texte d'origine d'un bloc réécrit
   });
   cpRenumber(container, !!layout);
+  // Boutons « + Cahier » des blocs ajoutés/réécrits : état selon le compte (masqués pour un élève).
+  if(reg.size && typeof updateCourseAddButtonsState==='function') updateCourseAddButtonsState();
 }
 function cpLayoutFromOrder(order){
   return {v:1, blocks: order.map(o=>{
     const e = {id:o.b.id};
-    if(o.b.custom) e.add = o.b.custom;
+    if(o.b.custom) e[o.b.orig!==undefined ? 'rep' : 'add'] = o.b.custom;
     if(o.hidden) e.h = 1;
     return e;
   })};
@@ -178,15 +189,99 @@ const CP_KINDS = {
 };
 const CP_MAX_TEXT = 3000;
 function cpRegistry(container){ return container._cpCustom || (container._cpCustom = new Map()); }
-function cpCustomBlock(container, e){
-  const spec = e.add;
-  if(!spec || !CP_KINDS[spec.k] || typeof e.id!=='string' || !e.id.startsWith('u:')) return null;
-  const reg = cpRegistry(container), key = JSON.stringify(spec), old = reg.get(e.id);
-  if(old && old.key===key) return old;
+/* Bloc ajouté (orig === undefined) ou réécrit (orig = bloc d'origine, ou null s'il a disparu). */
+function cpCustomBlock(container, id, spec, orig){
+  if(!spec || !CP_KINDS[spec.k] || typeof id!=='string') return null;
+  const reg = cpRegistry(container), key = JSON.stringify(spec), old = reg.get(id);
+  if(old && old.key===key){ if(orig!==null || old.orig!==undefined) old.orig = orig; return old; }
   if(old) old.nodes.forEach(n=>n.remove());
-  const b = cpBuildBlock(e.id, spec, container);
-  reg.set(e.id, b);
+  const b = cpBuildBlock(id, spec, container);
+  if(orig!==null || id.indexOf('u:')!==0) b.orig = orig;
+  reg.set(id, b);
   return b;
+}
+
+/* ---------- réécriture d'un bloc d'origine ---------- */
+const CP_INLINE_OK = new Set(['P','BR','STRONG','B','EM','I','U','SPAN','UL','OL','LI','SUP','SUB','SMALL']);
+const CP_SUP = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','+':'⁺','-':'⁻'};
+const CP_SUB = {'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉'};
+/* Contenu HTML d'origine -> notation simple (**gras**, $formule$, « - » listes). Renvoie null
+   si le contenu comporte autre chose que du texte mis en forme (figure, tableau, bouton...). */
+function cpToMarkup(el){
+  const c = el.cloneNode(true);
+  c.querySelectorAll('.add-to-cahier-btn, .read-aloud-btn, .zoom-btn, .learn-btn, .lrn-bar').forEach(b=>b.remove());
+  let ok = true;
+  const walk = n=>{
+    if(n.nodeType===3) return n.nodeValue.replace(/\s+/g,' ');
+    if(n.nodeType!==1) return '';
+    if(n.classList.contains('tex')) return '$' + (n.dataset.texSource || n.textContent).trim() + '$';
+    if(n.classList.contains('katex')){
+      const a = n.querySelector('annotation[encoding="application/x-tex"]');
+      if(a) return '$' + a.textContent.trim() + '$';
+      ok = false; return '';
+    }
+    if(!CP_INLINE_OK.has(n.tagName) || n.id || n.hasAttribute('onclick')){ ok = false; return ''; }
+    // Un <span> à classe (compteur de jeu, surlignage...) peut être piloté par le script du chapitre.
+    if(n.tagName==='SPAN' && [...n.classList].some(c=>!/^(lrn|katex)/.test(c))){ ok = false; return ''; }
+    const inner = ()=>[...n.childNodes].map(walk).join('');
+    switch(n.tagName){
+      case 'BR': return '\n';
+      case 'STRONG': case 'B': { const t = inner(); return t.trim() ? '**' + t.trim() + '**' + (/\s$/.test(t) ? ' ' : '') : t; }
+      case 'P': return '\n\n' + inner().trim() + '\n\n';
+      case 'UL': case 'OL': return '\n\n' + [...n.children].map(li=>{
+        if(li.tagName!=='LI' || li.querySelector('ul, ol, p')){ ok = false; return ''; } // sous-liste : non gérée
+        // Retour à la ligne dans un élément de liste : ligne de suite, indentée de deux espaces.
+        return '- ' + [...li.childNodes].map(walk).join('').trim().split('\n').map(x=>x.trim()).filter(Boolean).join('\n  ');
+      }).join('\n') + '\n\n';
+      case 'SUP': case 'SUB': {
+        const t = inner(), map = n.tagName==='SUP' ? CP_SUP : CP_SUB;
+        if([...t].every(ch=>map[ch])) return [...t].map(ch=>map[ch]).join('');
+        ok = false; return t;
+      }
+      default: return inner();
+    }
+  };
+  const txt = [...c.childNodes].map(walk).join('');
+  if(!ok) return null;
+  return txt.split('\n').map(x=>/^ {2}\S/.test(x) ? '  ' + x.trim() : x.trim()).join('\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+/* Bloc d'origine -> {k, l, x} pour le formulaire, ou null s'il n'est pas modifiable. */
+function cpSpecFromBlock(b){
+  const ns = b.nodes, first = ns[0], last = ns[ns.length-1];
+  const is = (n, cls)=>n.classList.contains(cls);
+  if(ns.some(n=>n.id || n.hasAttribute('onclick') || n.querySelector('[id], [onclick], svg, canvas, img, input, select, textarea, table, iframe'))) return null;
+  const titleOf = (h, sel)=>{ const t = h.querySelector(sel); return t ? cpToMarkup(t) : null; };
+  if(ns.length===1 && is(first,'lesson-header')){ const l = titleOf(first,'h3'); return l ? {k:'h1', l} : null; }
+  if(ns.length===1 && is(first,'sub-header')){ const l = titleOf(first,'h4'); return l ? {k:'h2', l} : null; }
+  if(ns.length===2 && (is(first,'def-badge') || is(first,'prop-badge')) && is(last,'def-box')){
+    const l = first.textContent.trim(), x = cpToMarkup(last);
+    if(x===null) return null;
+    return {k: is(first,'def-badge') ? 'def' : (/^r[èe]gle/i.test(l) ? 'regle' : 'prop'), l, x};
+  }
+  if(ns.length===1 && is(first,'def-box')){ const x = cpToMarkup(first); return x!==null ? {k:'box', x} : null; }
+  const plain = n=>(n.tagName==='P' && (!n.className || n.className==='hint')) || (n.tagName==='UL' && (!n.className || is(n,'example-list')));
+  const textOf = n=>{ if(n.tagName==='P') return cpToMarkup(n); const d = document.createElement('div'); d.appendChild(n.cloneNode(true)); return cpToMarkup(d); };
+  if(is(first,'example-title')){
+    if(!ns.slice(1).every(plain)) return null;
+    const t = cpToMarkup(first); if(t===null) return null;
+    const rest = ns.slice(1).map(textOf);
+    if(rest.some(x=>x===null)) return null;
+    const x = rest.join('\n\n').trim();
+    if(/^exemple\s*:?$/i.test(t.trim())) return {k:'ex', l:'', x};
+    if(/^exemple\s*:/i.test(t)) return {k:'ex', l:t.replace(/^exemple\s*:\s*/i, ''), x};
+    return {k:'ex', l:t, x, np:1}; // titre à garder tel quel (« Contre-exemple : … », « Arrondir un nombre »…)
+  }
+  if(ns.length===1 && first.tagName==='P' && is(first,'hint')){
+    const x = cpToMarkup(first); if(x===null) return null;
+    const m = x.match(/^(remarque[^:]{0,20})\s*:\s*([\s\S]*)$/i);
+    return m ? {k:'hint', l:m[1].trim(), x:m[2].trim()} : {k:'hint', l:'', x, np:1};
+  }
+  if(ns.every(plain)){
+    const parts = ns.map(textOf);
+    if(parts.some(x=>x===null)) return null;
+    return ns.some(n=>is(n,'example-list')) ? {k:'ex', l:'', x:parts.join('\n\n'), np:1} : {k:'p', x:parts.join('\n\n')};
+  }
+  return null;
 }
 function cpBuildBlock(id, spec, container){
   const holder = document.createElement('div');
@@ -223,10 +318,12 @@ function cpRich(text, listClass){
     const lines = par.split('\n').filter(x=>x.trim()!=='');
     let buf = [], list = [];
     const flushText = ()=>{ if(buf.length){ out.push('<p>' + buf.map(cpInline).join('<br>') + '</p>'); buf = []; } };
-    const flushList = ()=>{ if(list.length){ out.push(`<ul class="${listClass||'cp-list'}">` + list.map(x=>'<li>'+cpInline(x)+'</li>').join('') + '</ul>'); list = []; } };
+    const flushList = ()=>{ if(list.length){ out.push(`<ul class="${listClass||'cp-list'}">` + list.map(x=>'<li>'+x.split('\n').map(cpInline).join('<br>')+'</li>').join('') + '</ul>'); list = []; } };
     lines.forEach(x=>{
       const m = x.match(/^\s*[-•]\s+(.*)$/);
-      if(m){ flushText(); list.push(m[1]); } else { flushList(); buf.push(x.trim()); }
+      if(m){ flushText(); list.push(m[1]); }
+      else if(list.length && /^\s{2,}\S/.test(x)) list[list.length-1] += '\n' + x.trim(); // suite de l'élément (retour à la ligne)
+      else { flushList(); buf.push(x.trim()); }
     });
     flushText(); flushList();
   });
@@ -242,12 +339,12 @@ function cpRenderSpec(spec){
     case 'box': return `<div class="def-box cp-rich">${cpRich(x).join('')}</div>`;
     case 'hint': {
       const pars = cpRich(x);
-      const lead = `${cpEsc(label||K.label)} : `;
+      const lead = label ? `${cpEsc(label)} : ` : (spec.np ? '' : `${K.label} : `);
       return `<div class="hint cp-rich cp-hint">${pars.length ? pars[0].replace(/^<p>/, '<p>'+lead) + pars.slice(1).join('') : '<p>'+lead+'</p>'}</div>`;
     }
     case 'ex': {
-      const title = label ? (/^exemple/i.test(label) ? cpInline(label) : 'Exemple : ' + cpInline(label)) : 'Exemple :';
-      return `<p class="example-title">${title}</p><div class="cp-rich cp-example">${cpRich(x, 'example-list').join('')}</div>`;
+      const title = spec.np ? (label ? cpInline(label) : '') : label ? (/^exemple/i.test(label) ? cpInline(label) : 'Exemple : ' + cpInline(label)) : 'Exemple :';
+      return (title ? `<p class="example-title">${title}</p>` : '') + `<div class="cp-rich cp-example">${cpRich(x, 'example-list').join('')}</div>`;
     }
     default: return `<div class="cp-rich cp-par">${cpRich(x).join('')}</div>`;
   }
@@ -351,6 +448,8 @@ function cpStartEdit(){
 function cpMakeWrapper(b, hidden){
   const container = cpEditing.container;
   const w = document.createElement('div');
+  const rewritten = !!b.custom && b.orig!==undefined, added = !!b.custom && !rewritten;
+  const editable = !b.custom && cpSpecFromBlock(b)!==null;
   w.className = 'cp-eb' + (hidden ? ' cp-eb-hidden' : '') + (b.custom ? ' cp-eb-custom' : '');
   const main = b.nodes[b.nodes.length-1];
   if(main.classList.contains('lesson-header')) w.classList.add('cp-eb-h1');
@@ -363,9 +462,10 @@ function cpMakeWrapper(b, hidden){
       <button type="button" title="Descendre" onclick="cpMove(this,1)"><span class="gicon">arrow_downward</span></button>
       <button type="button" class="cp-eye" title="${hidden ? 'Afficher ce bloc' : 'Masquer ce bloc pour mes élèves'}" onclick="cpToggleHide(this)"><span class="gicon">${hidden ? 'visibility_off' : 'visibility'}</span></button>
       <button type="button" class="cp-add" title="Ajouter un bloc juste après" onclick="cpOpenForm(null, this.closest('.cp-eb'))"><span class="gicon">add</span></button>
-      ${b.custom ? `<button type="button" title="Modifier ce bloc" onclick="cpOpenForm(this.closest('.cp-eb'))"><span class="gicon">edit</span></button>
-      <button type="button" class="cp-del" title="Supprimer ce bloc" onclick="cpDeleteBlock(this)"><span class="gicon">delete</span></button>` : ''}
-    </div><div class="cp-eb-body">${b.custom ? '<span class="cp-mine-tag">Ajouté par vous</span>' : ''}</div>`;
+      ${b.custom || editable ? `<button type="button" title="${editable ? 'Modifier le texte de ce bloc' : 'Modifier ce bloc'}" onclick="cpOpenForm(this.closest('.cp-eb'))"><span class="gicon">edit</span></button>` : ''}
+      ${added ? `<button type="button" class="cp-del" title="Supprimer ce bloc" onclick="cpDeleteBlock(this)"><span class="gicon">delete</span></button>` : ''}
+      ${rewritten && b.orig ? `<button type="button" class="cp-restore" title="Rétablir le texte d'origine" onclick="cpRestoreOrig(this)"><span class="gicon">undo</span></button>` : ''}
+    </div><div class="cp-eb-body">${added ? '<span class="cp-mine-tag">Ajouté par vous</span>' : rewritten ? '<span class="cp-mine-tag cp-rew-tag">Texte modifié par vous</span>' : ''}</div>`;
   const body = w.querySelector('.cp-eb-body');
   b.nodes.forEach(n=>{ n.classList.remove('cp-hidden'); body.appendChild(n); });
   const h = w.querySelector('.cp-eb-handle');
@@ -382,6 +482,16 @@ function cpMakeWrapper(b, hidden){
   w.addEventListener('drop', ev=>ev.preventDefault());
   return w;
 }
+function cpRestoreOrig(btn){
+  const w = btn.closest('.cp-eb'), b = w._cpBlock;
+  if(!b.orig) return;
+  cpCloseForm();
+  const nw = cpMakeWrapper(b.orig, w.classList.contains('cp-eb-hidden'));
+  w.replaceWith(nw);
+  cpEditing.dirty = true;
+  cpRenumber(cpEditing.container, true);
+  nw.classList.add('cp-flash'); setTimeout(()=>nw.classList.remove('cp-flash'), 700);
+}
 function cpDeleteBlock(btn){
   const w = btn.closest('.cp-eb');
   if(!confirm('Supprimer ce bloc ?')) return;
@@ -393,12 +503,18 @@ function cpDeleteBlock(btn){
 /* Formulaire d'ajout (après `anchor`, ou au début) ou de modification (`editW`). */
 function cpOpenForm(editW, anchor){
   cpCloseForm();
-  const spec = editW ? editW._cpBlock.custom : { k:'p', l:'', x:'' };
+  const eb = editW ? editW._cpBlock : null;
+  // Bloc d'origine pas encore réécrit : formulaire pré-rempli avec son texte.
+  const fromOrig = eb && !eb.custom ? cpSpecFromBlock(eb) : null;
+  const spec = eb ? (eb.custom || fromOrig) : { k:'p', l:'', x:'' };
+  if(!spec) return;
+  const origBlock = eb ? (eb.custom ? eb.orig : eb) : undefined; // undefined = bloc ajouté
   const f = document.createElement('div');
   f.className = 'cp-form';
   f._edit = editW || null;
   f.innerHTML = `
-    <div class="cp-form-title">${editW ? 'Modifier le bloc' : 'Nouveau bloc'}</div>
+    <div class="cp-form-title">${!eb ? 'Nouveau bloc' : origBlock!==undefined ? 'Modifier le texte du bloc' : 'Modifier le bloc'}</div>
+    ${origBlock!==undefined ? '<p class="hint" style="margin:-4px 0 10px;">Le texte d\'origine est conservé : le bouton <span class="gicon" style="font-size:1em;vertical-align:-2px;">undo</span> le rétablit à tout moment.</p>' : ''}
     <div class="cp-kinds">${Object.entries(CP_KINDS).map(([k,K])=>`<button type="button" data-k="${k}" class="${k===spec.k?'on':''}"><span class="gicon">${K.icon}</span> ${K.nom}</button>`).join('')}</div>
     <label class="cp-f-label"><span></span><input type="text" maxlength="160"></label>
     <div class="cp-f-textwrap">
@@ -428,7 +544,7 @@ function cpOpenForm(editW, anchor){
     input.placeholder = K.titleOnly ? 'ex. Le cercle' : kind==='ex' ? 'ex. calculer une longueur' : (K.label ? 'ex. ' + K.label + ' 3' : '');
     f.querySelector('.cp-f-textwrap').style.display = K.titleOnly ? 'none' : '';
     const prev = f.querySelector('.cp-f-preview');
-    prev.innerHTML = cpRenderSpec({ k:kind, l:input.value, x:ta.value });
+    prev.innerHTML = cpRenderSpec(Object.assign({ k:kind, l:input.value, x:ta.value }, spec.np && kind===spec.k ? {np:1} : {}));
     const num = prev.querySelector('.num'), let_ = prev.querySelector('.letter');
     if(num) num.textContent = '#'; if(let_) let_.textContent = '#';
   };
@@ -450,12 +566,16 @@ function cpOpenForm(editW, anchor){
     const l = input.value.trim().slice(0,160), x = ta.value.replace(/\s+$/,'').slice(0, CP_MAX_TEXT);
     if(K.titleOnly ? !l : !x.trim()){ f.querySelector('.cp-f-msg').textContent = K.titleOnly ? 'Écrivez le titre.' : 'Écrivez le texte du bloc.'; return; }
     const newSpec = K.titleOnly ? { k:kind, l } : (kind==='p' || kind==='box') ? { k:kind, x } : { k:kind, l, x };
-    const id = editW ? editW._cpBlock.id : 'u:' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+    if(spec.np && kind===spec.k) newSpec.np = 1; // titre d'exemple / remarque d'origine gardé tel quel
+    if(fromOrig && JSON.stringify(newSpec)===JSON.stringify(fromOrig)){ cpCloseForm(); return; } // rien de changé
+    const id = eb ? eb.id : 'u:' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
     const b = cpBuildBlock(id, newSpec, cpEditing.container);
+    if(origBlock!==undefined) b.orig = origBlock;
     const hidden = editW ? editW.classList.contains('cp-eb-hidden') : false;
     const w = cpMakeWrapper(b, hidden);
     f.replaceWith(w);
     if(editW) editW.remove();
+    if(typeof updateCourseAddButtonsState==='function') updateCourseAddButtonsState();
     cpEditing.dirty = true;
     cpRenumber(cpEditing.container, true);
     w.classList.add('cp-flash'); setTimeout(()=>w.classList.remove('cp-flash'), 700);
@@ -495,7 +615,10 @@ function cpEditOrder(){
 /* Démonte l'édition : les éléments reprennent leur place à plat, dans l'ordre donné. */
 function cpUnwrap(order){
   const c = cpEditing.container;
-  order.forEach(({b, hidden})=>b.nodes.forEach(n=>{ c.appendChild(n); n.classList.toggle('cp-hidden', hidden); }));
+  order.forEach(({b, hidden})=>{
+    b.nodes.forEach(n=>{ c.appendChild(n); n.classList.toggle('cp-hidden', hidden); });
+    if(b.orig) b.orig.nodes.forEach(n=>{ c.appendChild(n); n.classList.add('cp-hidden'); });
+  });
   c.querySelectorAll(':scope > .cp-eb, :scope > .cp-form, :scope > .cp-add-top').forEach(w=>w.remove());
   c.classList.remove('cp-edit-mode');
 }
@@ -505,7 +628,7 @@ function cpRenderEditBar(){
   const referent = typeof currentReferentEtab!=='undefined' && currentReferentEtab && currentReferentEtab.uai;
   bar.innerHTML = `
     <span class="cp-chip cp-chip-edit"><span class="gicon">edit_note</span> Personnalisation</span>
-    <span class="hint" style="margin:0;flex:1;min-width:220px;">Glissez un bloc par sa poignée (ou flèches) pour le déplacer ; l'œil le masque pour vos élèves ; <b>+</b> ajoute un bloc à vous juste après. Les figures restent interactives.</span>
+    <span class="hint" style="margin:0;flex:1;min-width:220px;">Glissez un bloc par sa poignée (ou flèches) pour le déplacer ; l'œil le masque pour vos élèves ; <b>+</b> ajoute un bloc à vous juste après ; le crayon modifie le texte (figures et tableaux ne se modifient pas). Les figures restent interactives.</span>
     <button type="button" class="btn" onclick="cpSaveEdit()"><span class="gicon">save</span> Enregistrer</button>
     <button type="button" class="btn secondary" onclick="cpCancelEdit()">Annuler</button>
     ${v && v.source==='moi' ? '<button type="button" class="btn secondary" onclick="cpResetMine()"><span class="gicon">restart_alt</span> Revenir au cours d\'origine</button>' : ''}

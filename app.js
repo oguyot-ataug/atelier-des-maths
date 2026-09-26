@@ -2546,6 +2546,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.676', items:[
+    "Cours personnalisés, étape 3 -- demandé : \"Lance l'étape 3 : modifier le texte des blocs\". En mode « Personnaliser cet onglet », le crayon apparaît sur les blocs de texte du cours d'origine (titres, définitions, propriétés, règles, remarques, exemples, paragraphes et listes : 683 blocs sur 1023) ; le formulaire s'ouvre pré-rempli avec le texte du bloc (gras, formules et listes compris) et l'aperçu montre le résultat.",
+    "Le texte d'origine n'est jamais perdu : il reste dans la page, masqué, et le bouton « Rétablir le texte d'origine » le fait revenir. Un bloc réécrit porte l'étiquette « Texte modifié par vous » pendant la personnalisation. Valider sans rien changer ne crée pas de réécriture ; tout rétablir redonne le cours d'origine (qui suit alors de nouveau toutes les mises à jour).",
+    "Les blocs contenant une figure, un tableau, un cadre de rédaction ou un élément interactif ne sont pas modifiables (ils restent déplaçables et masquables). Si le texte d'origine d'un bloc réécrit change plus tard, la version du professeur est conservée.",
+    "Correctif : le bouton « + Cahier » d'un titre ajouté ou réécrit était visible par les élèves.",
+  ]},
   { version:'2026-08-19.675', items:[
     "Cours personnalisés, étape 2 -- demandé : \"Lance l'étape 2 : ajouter des blocs de texte\". En mode « Personnaliser cet onglet », le bouton + de chaque bloc (ou « Ajouter un bloc au début ») ouvre un formulaire : Paragraphe, Définition, Propriété, Règle, Encadré, Remarque, Exemple, Titre de paragraphe ou Sous-titre, avec aperçu immédiat tel que le verront les élèves. Les blocs ajoutés ont exactement l'apparence du cours (mêmes encadrés, étiquettes, puces d'exemple) et les mêmes boutons (+ Cahier, écouter, loupe, mode apprentissage).",
     "Mise en forme simple : **gras**, $formule$ (ex. $\\frac{3}{4}$, rendue comme les formules du cours), « - » en début de ligne pour une liste, ligne vide pour un nouveau paragraphe. Tout autre code est affiché tel quel (jamais interprété). Un bloc ajouté se modifie (crayon) ou se supprime (corbeille) ; il se déplace et se masque comme les autres.",
