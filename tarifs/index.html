@@ -78,6 +78,32 @@
   .t-chip.on6{background:#FFE3C4;color:#A04E00;}
   .t-chip.on5{background:#D6E7FA;color:#0C5BA0;}
   .t-chip.soon{background:#EEE;color:#888;border:1px dashed #BBB;}
+
+  .t-level .t-unit{font-size:.95rem;color:var(--ink-soft);font-weight:600;}
+  .t-level .t-ex{margin-top:10px;font-size:.84rem;color:var(--ink-soft);background:#FAF7F2;border-radius:8px;padding:6px 8px;}
+  .t-calc{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:20px 22px;margin-top:18px;display:grid;grid-template-columns:1.2fr 1fr;gap:22px;align-items:center;}
+  .t-calc h3{font-family:'Space Grotesk',sans-serif;margin:0 0 4px;font-size:1.15rem;}
+  .t-calc .hint2{color:var(--ink-soft);font-size:.88rem;margin:0 0 12px;}
+  .t-calc-rows{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .t-calc-lvl{border:1.5px solid rgba(28,43,57,.12);border-radius:12px;padding:10px;text-align:center;}
+  .t-calc-lvl.on{border-color:var(--accent);background:rgba(12,91,160,.04);}
+  .t-calc-lvl label{display:flex;justify-content:center;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-weight:700;cursor:pointer;}
+  .t-calc-lvl input[type=number]{width:100%;margin-top:8px;padding:6px;border:1px solid rgba(28,43,57,.2);border-radius:8px;text-align:center;font-size:1rem;}
+  .t-calc-lvl small{display:block;color:var(--ink-soft);font-size:.74rem;margin-top:4px;}
+  .t-calc-out{text-align:center;background:linear-gradient(135deg,#F2F7FD,#FFF6EC);border-radius:14px;padding:18px;}
+  .t-calc-out .big{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:2.4rem;line-height:1.1;}
+  .t-calc-out .det{color:var(--ink-soft);font-size:.9rem;margin-top:6px;line-height:1.45;}
+  .t-calc-out .cmp{margin-top:10px;font-size:.86rem;color:#1F7A4D;font-weight:600;}
+  .t-pay{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:18px;}
+  .t-pay-card{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:20px 22px;border-top:5px solid var(--accent);}
+  .t-pay-card.priv{border-top-color:var(--accent-orange);}
+  .t-pay-card h3{font-family:'Space Grotesk',sans-serif;margin:0 0 2px;font-size:1.12rem;display:flex;gap:8px;align-items:center;}
+  .t-pay-card .sub{color:var(--ink-soft);font-size:.88rem;margin:0 0 12px;}
+  .t-steps{counter-reset:st;list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;font-size:.93rem;}
+  .t-steps li{counter-increment:st;display:flex;gap:10px;line-height:1.4;}
+  .t-steps li::before{content:counter(st);flex:none;width:22px;height:22px;border-radius:50%;background:rgba(12,91,160,.1);color:var(--accent);font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center;}
+  .t-pay-card.priv .t-steps li::before{background:rgba(255,130,8,.12);color:#A04E00;}
+  @media (max-width:760px){ .t-calc{grid-template-columns:1fr;} .t-calc-rows{grid-template-columns:repeat(2,1fr);} }
   .t-etab-feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:14px;margin-top:18px;}
   .t-feat{background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:16px 18px;}
   .t-feat .gicon{font-size:1.6rem;color:var(--accent);}
@@ -174,8 +200,8 @@
         <span class="t-flag">Recommandé</span>
         <h3>Professeur</h3>
         <p class="t-for">Tout le site, pour toutes vos classes et tous vos élèves.</p>
-        <div class="t-price">19 €<small>/ an</small></div>
-        <div class="t-price-note">soit moins de 1,60 € par mois · 15 jours d'essai gratuit</div>
+        <div class="t-price">29 €<small>/ an</small></div>
+        <div class="t-price-note">soit moins de 2,50 € par mois · 15 jours d'essai gratuit</div>
         <ul class="t-list">
           <li><span class="gicon">check_circle</span><span><b>Classes et élèves illimités</b></span></li>
           <li><span class="gicon">check_circle</span>Devoirs illimités : fichier ou figure à rendre, automatismes, Objectif Nombre</li>
@@ -207,27 +233,48 @@
   <!-- ================= ÉTABLISSEMENTS ================= -->
   <section class="t-section" id="etablissements">
     <h2><span class="gicon">apartment</span> Pour un établissement</h2>
-    <p class="t-lede">Une licence par niveau, comme pour les manuels : <b>tous les professeurs de mathématiques</b> et <b>tous les élèves</b> de l'établissement en profitent. Il n'y a rien à compter.</p>
+    <p class="t-lede">Comme pour les manuels numériques : un prix <b>par élève et par niveau</b>. Les licences professeurs sont <b>offertes</b>, une par tranche de 20 élèves. En pratique, toute l'équipe de mathématiques est couverte.</p>
     <div class="t-levels">
       <article class="t-level">
         <h3>1 niveau</h3>
         <div class="t-chips"><span class="t-chip on6">6e</span><span class="t-chip">ou</span><span class="t-chip on5">5e</span></div>
-        <div class="t-price">49 €</div>
-        <div class="t-per">par an</div>
+        <div class="t-price">4 €</div>
+        <div class="t-unit">par élève et par an</div>
+        <div class="t-ex">ex. 125 élèves de 6e : <b>500 €</b></div>
       </article>
       <article class="t-level">
-        <h3>2 niveaux</h3>
-        <div class="t-chips"><span class="t-chip on6">6e</span><span class="t-chip on5">5e</span></div>
-        <div class="t-price">79 €</div>
-        <div class="t-per">par an</div>
+        <h3>2 ou 3 niveaux</h3>
+        <div class="t-chips"><span class="t-chip on6">6e</span><span class="t-chip on5">5e</span><span class="t-chip soon">4e</span></div>
+        <div class="t-price">3,50 €</div>
+        <div class="t-unit">par élève et par an</div>
+        <div class="t-ex">ex. 250 élèves de 6e et 5e : <b>875 €</b></div>
       </article>
       <article class="t-level featured">
         <span class="t-flag orange">Collège complet</span>
-        <h3>Tous les niveaux</h3>
+        <h3>Les 4 niveaux</h3>
         <div class="t-chips"><span class="t-chip on6">6e</span><span class="t-chip on5">5e</span><span class="t-chip soon">4e</span><span class="t-chip soon">3e</span></div>
-        <div class="t-price">129 €</div>
-        <div class="t-per">par an · 4e et 3e incluses dès leur ouverture</div>
+        <div class="t-price">3 €</div>
+        <div class="t-unit">par élève et par an</div>
+        <div class="t-ex">ex. 500 élèves : <b>1 500 €</b> · 4e et 3e dès leur ouverture</div>
       </article>
+    </div>
+
+    <div class="t-calc" id="calcul">
+      <div>
+        <h3><span class="gicon">calculate</span> Estimez le prix pour votre établissement</h3>
+        <p class="hint2">Cochez les niveaux et indiquez le nombre d'élèves de chacun.</p>
+        <div class="t-calc-rows">
+          <div class="t-calc-lvl on"><label><input type="checkbox" data-lvl="6e" checked> 6e</label><input type="number" min="0" step="1" value="125" data-n="6e" aria-label="Élèves de 6e"></div>
+          <div class="t-calc-lvl on"><label><input type="checkbox" data-lvl="5e" checked> 5e</label><input type="number" min="0" step="1" value="125" data-n="5e" aria-label="Élèves de 5e"></div>
+          <div class="t-calc-lvl"><label><input type="checkbox" data-lvl="4e"> 4e</label><input type="number" min="0" step="1" value="125" data-n="4e" aria-label="Élèves de 4e"><small>bientôt</small></div>
+          <div class="t-calc-lvl"><label><input type="checkbox" data-lvl="3e"> 3e</label><input type="number" min="0" step="1" value="125" data-n="3e" aria-label="Élèves de 3e"><small>bientôt</small></div>
+        </div>
+      </div>
+      <div class="t-calc-out" aria-live="polite">
+        <div class="big" id="calcTotal">875 €</div>
+        <div class="det" id="calcDet">par an · 250 élèves à 3,50 €<br>12 licences professeurs offertes</div>
+        <div class="cmp" id="calcCmp"></div>
+      </div>
     </div>
 
     <div class="t-etab-feats">
@@ -235,7 +282,34 @@
       <div class="t-feat"><span class="gicon">badge</span><h4>Un référent dans l'équipe</h4><p>Il crée les comptes, les classes et les inscriptions, et importe les listes d'élèves.</p></div>
       <div class="t-feat"><span class="gicon">menu_book</span><h4>Cours de l'établissement</h4><p>Une version commune des cours, préparée en équipe, que chaque collègue peut encore adapter.</p></div>
       <div class="t-feat"><span class="gicon">smart_toy</span><h4>IA partagée</h4><p>Une clé IA commune, avec un budget mensuel et le détail de la consommation par professeur.</p></div>
-      <div class="t-feat"><span class="gicon">receipt_long</span><h4>Devis et facture</h4><p>Paiement par mandat administratif, facture déposée sur Chorus Pro.</p></div>
+      <div class="t-feat"><span class="gicon">groups</span><h4>Élèves inclus</h4><p>Chaque élève a son compte : cours, devoirs, cahier de corrections, en classe comme à la maison.</p></div>
+    </div>
+
+    <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.25rem;margin:30px 0 4px;" id="facturation"><span class="gicon">receipt_long</span> Commande et facturation</h3>
+    <p class="t-lede" style="margin-bottom:0;">Chaque établissement commande selon ses règles.</p>
+    <div class="t-pay">
+      <div class="t-pay-card">
+        <h3><span class="gicon">account_balance</span> Établissement public</h3>
+        <p class="sub">Collège public (EPLE)</p>
+        <ol class="t-steps">
+          <li>Devis au nom de l'établissement, avec son numéro UAI et les effectifs par niveau.</li>
+          <li>Bon de commande de l'établissement, avec son numéro d'engagement.</li>
+          <li>Ouverture des accès dès réception du bon de commande.</li>
+          <li>Facture déposée sur Chorus Pro (SIRET de l'établissement).</li>
+          <li>Paiement par mandat administratif, sous 30 jours.</li>
+        </ol>
+      </div>
+      <div class="t-pay-card priv">
+        <h3><span class="gicon">domain</span> Établissement privé</h3>
+        <p class="sub">Sous contrat ou hors contrat (OGEC, association de gestion)</p>
+        <ol class="t-steps">
+          <li>Devis au nom de l'organisme de gestion, avec les effectifs par niveau.</li>
+          <li>Devis signé ou bon de commande.</li>
+          <li>Ouverture des accès dès réception.</li>
+          <li>Facture envoyée par e-mail au format PDF.</li>
+          <li>Paiement par virement ou par carte, sous 30 jours.</li>
+        </ol>
+      </div>
     </div>
   </section>
 
@@ -268,7 +342,9 @@
           <tr><td>Avec la clé du site</td><td class="no">—</td><td class="part hl">Pack IA</td><td class="part">Clé partagée</td></tr>
           <tr class="grp"><td colspan="4">Paiement</td></tr>
           <tr><td>Carte bancaire</td><td class="no">—</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
-          <tr><td>Devis, mandat administratif, Chorus Pro</td><td class="no">—</td><td class="no hl">—</td><td class="yes">✓</td></tr>
+          <tr><td>Devis et bon de commande</td><td class="no">—</td><td class="no hl">—</td><td class="yes">✓</td></tr>
+          <tr><td>Public : Chorus Pro et mandat administratif</td><td class="no">—</td><td class="no hl">—</td><td class="yes">✓</td></tr>
+          <tr><td>Privé : facture PDF, virement</td><td class="no">—</td><td class="no hl">—</td><td class="yes">✓</td></tr>
         </tbody>
       </table>
     </div>
@@ -291,20 +367,46 @@
     <details><summary>Les élèves doivent-ils payer quelque chose ?</summary><p>Non, jamais. Les comptes élèves sont créés par leur professeur ou par le référent de l'établissement, et restent gratuits quelle que soit la formule.</p></details>
     <details><summary>Que se passe-t-il à la fin des 15 jours d'essai ?</summary><p>Vous choisissez de vous abonner ou non. Sans abonnement, votre compte passe en formule Découverte : vos cours personnalisés et vos évaluations restent enregistrés et redeviennent utilisables dès que vous vous abonnez.</p></details>
     <details><summary>Mon établissement prend une licence : que devient mon abonnement ?</summary><p>La licence établissement couvre tous les professeurs de mathématiques de l'établissement. Un abonnement individuel en cours n'a plus besoin d'être renouvelé.</p></details>
-    <details><summary>Comment fonctionne le prix par niveau ?</summary><p>L'établissement choisit les niveaux utilisés, comme pour les manuels. Tous les professeurs et tous les élèves de ces niveaux y ont accès. Les outils communs (correction, cahier, devoirs, évaluations) servent pour toutes les classes.</p></details>
+    <details><summary>Comment est calculé le prix établissement ?</summary><p>Comme pour un manuel numérique : l'établissement choisit les niveaux et paie pour les élèves de ces niveaux. Le prix par élève baisse avec le nombre de niveaux : 4 € pour un niveau, 3,50 € pour deux ou trois, 3 € pour le collège complet. Une licence professeur est offerte par tranche de 20 élèves. Les outils communs (correction, cahier, devoirs, évaluations) servent pour toutes les classes.</p></details>
     <details><summary>L'IA est-elle obligatoire ?</summary><p>Non. Tout le site fonctionne sans IA. Elle aide à proposer des exercices, construire des figures ou créer des quiz. Chaque professeur choisit : sa propre clé, la clé de l'établissement ou le pack IA. La consommation est toujours affichée en détail.</p></details>
-    <details><summary>Comment un établissement paie-t-il ?</summary><p>Sur devis : bon de commande, puis facture déposée sur Chorus Pro et paiement par mandat administratif. Le paiement par carte reste possible.</p></details>
+    <details><summary>Comment un établissement paie-t-il ?</summary><p>Toujours sur devis. Un établissement public passe un bon de commande, reçoit la facture sur Chorus Pro et paie par mandat administratif. Un établissement privé reçoit une facture PDF au nom de son organisme de gestion et paie par virement ou par carte.</p></details>
+    <details><summary>Les effectifs changent en cours d'année : que se passe-t-il ?</summary><p>La licence est calculée sur les effectifs de la rentrée et ne bouge plus jusqu'à l'année suivante. Un élève arrivé en cours d'année est inclus sans supplément.</p></details>
   </section>
 
   <section class="t-contact">
     <div>
       <h2>Un devis pour votre établissement ?</h2>
-      <p>Indiquez le nom de l'établissement, son numéro UAI et les niveaux souhaités : vous recevez un devis rapidement.</p>
+      <p>Indiquez le nom de l'établissement, public ou privé, son numéro UAI, les niveaux et les effectifs : vous recevez un devis rapidement.</p>
     </div>
     <a class="t-btn" href="mailto:contact@latelieraugmente.fr?subject=Devis%20L%27Atelier%20des%20Maths">Demander un devis</a>
   </section>
 
   <p class="t-foot">Tarifs 2026-2027 · L'Atelier des Maths, une production de <a href="https://latelieraugmente.fr" style="text-decoration:underline;">L'Atelier Augmenté</a></p>
 </main>
+<script>
+/* Calculateur de la licence établissement : prix par élève selon le nombre de niveaux choisis,
+   une licence professeur offerte par tranche de 20 élèves (comme les manuels numériques). */
+(function(){
+  var root = document.getElementById('calcul'); if(!root) return;
+  var PRIX = {1:4, 2:3.5, 3:3.5, 4:3};
+  var fmt = function(n){ return n.toLocaleString('fr-FR', {minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2}).replace(/\u202f/g, '\u00a0') + '\u00a0€'; };
+  function upd(){
+    var lv = 0, eleves = 0;
+    root.querySelectorAll('.t-calc-lvl').forEach(function(box){
+      var cb = box.querySelector('input[type=checkbox]'), n = Math.max(0, parseInt(box.querySelector('input[type=number]').value, 10) || 0);
+      box.classList.toggle('on', cb.checked);
+      if(cb.checked){ lv++; eleves += n; }
+    });
+    var tot = document.getElementById('calcTotal'), det = document.getElementById('calcDet'), cmp = document.getElementById('calcCmp');
+    if(!lv || !eleves){ tot.textContent = '—'; det.textContent = 'Cochez au moins un niveau avec des élèves.'; cmp.textContent = ''; return; }
+    var p = PRIX[lv], total = Math.round(eleves * p * 100) / 100, profs = Math.floor(eleves / 20);
+    tot.textContent = fmt(total);
+    det.innerHTML = 'par an · ' + eleves + ' élève' + (eleves > 1 ? 's' : '') + ' à ' + fmt(p) + (lv === 4 ? ' (collège complet)' : '') +
+      '<br>' + (profs ? profs + ' licence' + (profs > 1 ? 's' : '') + ' professeur offerte' + (profs > 1 ? 's' : '') : 'à partir de 20 élèves : licences professeurs offertes');
+    cmp.textContent = 'Pour comparaison, un manuel numérique à 7 € par élève : ' + fmt(eleves * 7) + '.';
+  }
+  root.addEventListener('input', upd); root.addEventListener('change', upd); upd();
+})();
+</script>
 </body>
 </html>
