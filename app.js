@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.720', items:[
+    "Interrogations en ligne : correction automatique en option -- demandé : \"Ne pas [noter] les copies automatiquement (mettre en option). Laisser le prof corriger par copie ou question par question.\" Nouveau réglage « Correction automatique des questions fermées », décoché pour les nouveaux questionnaires (les anciens gardent la correction automatique), modifiable aussi depuis la page de correction. Décoché, chaque question attend votre note (une réponse vide vaut 0 d'office) : la correction automatique n'est plus qu'une proposition (« Proposition : 1 / 1 (juste) · accepter »), à accepter une à une, pour toute une copie (« Tout accepter », vue copie par copie) ou pour toutes les copies d'une question (vue question par question), ou à remplacer par votre note.",
+  ]},
   { version:'2026-08-19.719', items:[
     "Interrogations en ligne : questionnaires enregistrés bien visibles -- signalé : \"Il faut absolument que les interrogations sauvegardées soient visibles. J'ai pourtant cliqué sur Enregistrer mais rien ne se passe.\" L'onglet « Mes interrogations » (ouvert par défaut) montre en tête les questionnaires « Enregistrés, pas encore donnés », avec Reprendre, Donner à une classe, Aperçu et Supprimer. Un bouton « Enregistrer sans donner » est ajouté à côté de « Donner à la classe », et chaque enregistrement affiche un bandeau de confirmation en bas de l'écran.",
     "Banque de questions : import d'un questionnaire complet -- signalé : \"on retrouve les exercices qu'on peut importer un à un mais pas en tant que questionnaire complet\". Onglet « Questionnaires complets » avec « Tout importer » (questions, et réglages si le questionnaire en cours est vide), à côté de « Questions une à une ».",
