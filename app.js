@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.730', items:[
+    "Caméra depuis un téléphone ou une tablette -- demandé : \"si je le fais directement depuis un smartphone, outil de correction, puis icône caméra, il faut ouvrir directement l'application smartphone, pas mettre un code barre, car je ne pourrai pas le scanner\". Sur téléphone / tablette, l'icône caméra ouvre directement l'appareil photo (plus de QR code) ; on peut aussi choisir une photo existante. La photo arrive dans le même éditeur (recadrage, luminosité, contraste, Document, crayon, surligneur, texte, sélection), en plein écran, avec un bouton « Autre photo » ; après « Insérer dans la correction », la fenêtre se ferme et l'image est dans la correction. Sur ordinateur, rien ne change (QR code et direct du téléphone).",
+  ]},
   { version:'2026-08-19.729', items:[
     "Caméra du téléphone : outil Sélection (flèche) -- demandé : \"avoir l'icône type flèche pour pouvoir déplacer les zones textes et/ou les agrandir/rétrécir\". Un clic sur un texte ou un trait le sélectionne (cadre orange) : on le fait glisser pour le déplacer, la poignée d'angle l'agrandit ou le rétrécit, un double-clic sur un texte permet de le modifier, une couleur le recolore, et la corbeille ou la touche Suppr le supprime. Un texte qui vient d'être écrit est aussitôt sélectionné, prêt à être placé ; la poignée reste visible même si le texte dépasse de l'image.",
   ]},

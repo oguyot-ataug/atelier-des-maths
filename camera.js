@@ -22,6 +22,11 @@
      zoomer sur une partie du cahier pendant la projection), crayon, surligneur et texte (l'image
      se fige). Les annotations sont repérées dans l'image entière pivotée : recadrer ensuite ne
      les déplace pas.
+   - Sur un téléphone ou une tablette, pas de QR code (on ne peut pas se scanner soi-même) : l'outil
+     ouvre directement l'appareil photo de l'appareil, puis la photo prise passe dans le même
+     éditeur (recadrage, réglages, annotations, insertion). Demandé : "Si je le fais directement
+     depuis un smartphone [...] il faut ouvrir directement l'application smartphone, pas mettre
+     un code barre, car je ne pourrai pas le scanner".
    Dépend de app.js (sb, currentUser, niceAlert), outils-figures.js (addPendingBlock, TOOL_ICONS)
    et vendor/qrcode.js.
    ===================================================================== */
@@ -40,18 +45,32 @@ function camCode(){
 function camUrl(code){ return location.origin + '/camera.html?c=' + code; }
 const CAM_ICO = (n) => `<span class="gicon">${n}</span>`;
 
+// Téléphone ou tablette (iPadOS se présente comme un Mac, mais tactile).
+function camSurMobile(){
+  const ua = navigator.userAgent || '';
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(ua) || (/Macintosh/.test(ua) && (navigator.maxTouchPoints || 0) > 1);
+}
+
 function openCameraTool(){
   camFermer(true);
+  const local = camSurMobile();
   const code = camCode();
-  cam = { code, frames: new Map(), img: null, rot: 0, frozen: false, connecte: false, derniere: 0,
+  cam = { code, local, frames: new Map(), img: null, rot: 0, frozen: false, connecte: false, derniere: 0,
     annots: [], sel: -1, outil: 'crayon', color: CAM_COULEURS[0], crop: { x: 0, y: 0, w: 1, h: 1 }, cropEdit: null, lum: 100, con: 100, gris: false, geste: null };
   let o = document.getElementById('camOverlay');
   if(!o){ o = document.createElement('div'); o.id = 'camOverlay'; document.body.appendChild(o); }
   o.className = 'cam-ov';
   o.innerHTML = `<div class="cam-box" id="camBox">
-    <div class="cam-head">${CAM_ICO('videocam')} <b>Caméra du téléphone</b> <span id="camEtat" class="cam-etat attente">En attente du téléphone…</span>
+    <div class="cam-head">${CAM_ICO(local ? 'photo_camera' : 'videocam')} <b>${local ? 'Photo' : 'Caméra du téléphone'}</b> ${local ? '' : '<span id="camEtat" class="cam-etat attente">En attente du téléphone…</span>'}
       <button type="button" class="cam-x" onclick="camFermer()" title="Fermer">${CAM_ICO('close')}</button></div>
-    <div class="cam-pair" id="camPair">
+    ${local ? `<div class="cam-pair cam-local" id="camPair">
+      <input type="file" id="camPrise" accept="image/*" capture="environment" hidden onchange="camFichier(this)">
+      <input type="file" id="camGalerie" accept="image/*" hidden onchange="camFichier(this)">
+      <p class="cam-big">Photographiez un cahier ou une copie</p>
+      <button type="button" class="btn cam-gros" onclick="document.getElementById('camPrise').click()">${CAM_ICO('photo_camera')} Prendre une photo</button>
+      <button type="button" class="btn secondary cam-gros" onclick="document.getElementById('camGalerie').click()">${CAM_ICO('photo_library')} Choisir une photo existante</button>
+      <p class="hint">Vous pourrez ensuite la recadrer, l'éclaircir, l'annoter puis l'insérer dans la correction. Rien n'est enregistré tant que vous ne l'insérez pas.</p>
+    </div>` : `<div class="cam-pair" id="camPair">
       <div class="cam-qr" id="camQr"></div>
       <div class="cam-steps">
         <p class="cam-big">Scannez ce QR code avec l'appareil photo de votre téléphone</p>
@@ -59,7 +78,7 @@ function openCameraTool(){
         <div class="cam-code">${code.slice(0, 4)}-${code.slice(4)}</div>
         <p class="hint">Le téléphone n'a pas besoin d'être connecté au site. Rien n'est enregistré : l'image n'est conservée que si vous l'insérez dans la correction.</p>
       </div>
-    </div>
+    </div>`}
     <div class="cam-stage" id="camStage" hidden>
       <div class="cam-view" id="camView"><canvas id="camCanvas"></canvas><canvas id="camDraw"></canvas><span class="cam-live" id="camLive">● EN DIRECT</span>
         <div class="cam-cropbar" id="camCropBar" hidden><span>Faites glisser les coins ou le cadre</span>
@@ -70,8 +89,8 @@ function openCameraTool(){
     </div>
     <div class="cam-tools" id="camTools" hidden>
       <div class="cam-row">
-        <button type="button" class="btn secondary" id="camFigerBtn" onclick="camFiger()">${CAM_ICO('pause')} Figer</button>
-        <button type="button" class="btn secondary" onclick="camPhoto()" title="Demande au téléphone une photo en pleine résolution, plus nette que l'image en direct">${CAM_ICO('photo_camera')} Photo nette</button>
+        ${local ? `<button type="button" class="btn secondary" onclick="document.getElementById('camPrise').click()" title="Prendre une autre photo">${CAM_ICO('photo_camera')} Autre photo</button>` : `<button type="button" class="btn secondary" id="camFigerBtn" onclick="camFiger()">${CAM_ICO('pause')} Figer</button>
+        <button type="button" class="btn secondary" onclick="camPhoto()" title="Demande au téléphone une photo en pleine résolution, plus nette que l'image en direct">${CAM_ICO('photo_camera')} Photo nette</button>`}
         <button type="button" class="btn secondary" onclick="camPivoter()" title="Pivoter d'un quart de tour">${CAM_ICO('rotate_right')}</button>
         <span class="cam-sep"></span>
         <span class="cam-seg" id="camOutils">
@@ -86,7 +105,7 @@ function openCameraTool(){
         <button type="button" class="btn secondary" onclick="camAnnuler()" title="Annuler la dernière annotation">${CAM_ICO('undo')}</button>
         <button type="button" class="btn secondary" onclick="camEffacer()" title="Effacer toutes les annotations">${CAM_ICO('ink_eraser')}</button>
         <span class="cam-sep"></span>
-        <button type="button" class="btn secondary" onclick="camPleinEcran()" title="Plein écran">${CAM_ICO('fullscreen')}</button>
+        ${local ? '' : `<button type="button" class="btn secondary" onclick="camPleinEcran()" title="Plein écran">${CAM_ICO('fullscreen')}</button>`}
         <button type="button" class="btn" id="camInsBtn" onclick="camInserer()">${CAM_ICO('add_photo_alternate')} Insérer dans la correction</button>
       </div>
       <div class="cam-row cam-reglages">
@@ -100,12 +119,18 @@ function openCameraTool(){
     </div>
   </div>`;
   o.style.display = 'flex';
+  camBrancherDessin();
+  camMajOutils();
+  window.addEventListener('resize', camRedessiner);
+  if(local){ // ouvre tout de suite l'appareil photo (on est encore dans le clic du professeur)
+    cam.outil = 'crayon'; camMajOutils();
+    try{ document.getElementById('camPrise').click(); }catch(e){}
+    return;
+  }
   try{
     const q = qrcode(0, 'M'); q.addData(camUrl(code)); q.make();
     document.getElementById('camQr').innerHTML = q.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
   }catch(e){ document.getElementById('camQr').innerHTML = '<p class="hint">QR code indisponible : utilisez le code.</p>'; }
-  camBrancherDessin();
-  camMajOutils();
   cam.ch = sb.channel('cam-' + code, { config: { broadcast: { self: false } } })
     .on('broadcast', { event: 'hello' }, () => { camEnvoyer('hello-ok', {}); camConnecte(true); })
     .on('broadcast', { event: 'part' }, ({ payload }) => camMorceau(payload))
@@ -113,7 +138,33 @@ function openCameraTool(){
     .on('broadcast', { event: 'bye' }, () => camConnecte(false))
     .subscribe();
   cam.veille = setInterval(() => { if(cam && cam.connecte && Date.now() - cam.derniere > 8000) camConnecte(false, true); }, 3000);
-  window.addEventListener('resize', camRedessiner);
+}
+
+// Sur téléphone / tablette : photo prise avec l'appareil (ou choisie dans la galerie), réduite
+// comme une « photo nette » (grand côté 2400 px), puis ouverte dans l'éditeur, déjà figée.
+function camFichier(input){
+  const f = input.files && input.files[0]; input.value = '';
+  if(!cam || !f) return;
+  const u = URL.createObjectURL(f), src = new Image();
+  src.onload = () => {
+    URL.revokeObjectURL(u);
+    if(!cam) return;
+    const k = Math.min(1, 2400 / Math.max(src.naturalWidth, src.naturalHeight));
+    const cv = document.createElement('canvas'); cv.width = Math.round(src.naturalWidth * k); cv.height = Math.round(src.naturalHeight * k);
+    cv.getContext('2d').drawImage(src, 0, 0, cv.width, cv.height);
+    const im = new Image();
+    im.onload = () => {
+      if(!cam) return;
+      Object.assign(cam, { img: im, rot: 0, frozen: true, annots: [], sel: -1, crop: { x: 0, y: 0, w: 1, h: 1 }, cropEdit: null });
+      const b = document.getElementById('camSupprBtn'); if(b) b.hidden = true;
+      document.getElementById('camPair').hidden = true; document.getElementById('camStage').hidden = false; document.getElementById('camTools').hidden = false;
+      document.getElementById('camLive').hidden = true;
+      camMajOutils(); camRedessiner();
+    };
+    im.src = cv.toDataURL('image/jpeg', 0.9);
+  };
+  src.onerror = () => { URL.revokeObjectURL(u); niceAlert('Cette image n\'a pas pu être ouverte.'); };
+  src.src = u;
 }
 
 /* ---------------- Transport ---------------- */
@@ -441,6 +492,7 @@ async function camInserer(){
     const html = `<div style="text-align:center;padding:6px 0;"><img src="${url}" style="max-width:100%;max-height:400px;border-radius:6px;border:1px solid rgba(28,43,57,.15);" alt="Photo"/></div>`;
     addPendingBlock('image', html, { src: url }, 'reopenImageBlock');
     btn.innerHTML = `${CAM_ICO('check')} Insérée`;
+    if(cam && cam.local){ setTimeout(() => camFermer(), 700); return; } // sur téléphone : retour direct à la correction
     setTimeout(() => { if(document.getElementById('camInsBtn')){ btn.innerHTML = avant; btn.disabled = false; } }, 1600);
   }catch(e){
     console.error('caméra : insertion', e);
@@ -474,6 +526,10 @@ function camFermer(silencieux){
     .cam-pair{flex:1;display:flex;align-items:center;justify-content:center;gap:40px;padding:24px;flex-wrap:wrap;}
     .cam-qr{width:min(300px,70vw);} .cam-qr svg{width:100%;height:auto;display:block;}
     .cam-steps{max-width:420px;} .cam-steps p{margin:0 0 10px;} .cam-big{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.25rem;}
+    .cam-local{flex-direction:column;gap:14px;text-align:center;} .cam-local .hint{max-width:380px;margin:4px 0 0;}
+    .cam-gros{font-size:1.02rem;padding:13px 22px;width:min(320px,100%);justify-content:center;}
+    @media (max-width:700px){ .cam-ov{padding:0;} .cam-box{border-radius:0;width:100%;height:100%;} .cam-tools{padding:6px 8px 8px;max-height:42vh;overflow-y:auto;}
+      .cam-sep{display:none;} #camInsBtn{margin-left:0;} .cam-reglages input[type=range]{width:96px;} }
     .cam-code{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:700;letter-spacing:4px;color:#0C5BA0;margin:4px 0 14px;}
     .cam-stage{flex:1;min-height:0;display:flex;background:#1C2230;}
     .cam-view{flex:1;min-width:0;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;}
