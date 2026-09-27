@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.735', items:[
+    "Éditeur d'interrogation : en mode « Entraînement / remédiation », le récapitulatif affiche « entraînement, non noté » au lieu du total de points et de la note sur 20 (repéré en préparant la vidéo de l'entraînement).",
+  ]},
   { version:'2026-08-19.734', items:[
     "Nouveautés de la page d'accueil : vidéo « La séance en direct » -- demandé : \"On peut faire une vidéo pour le mode en direct ?\", avec des ordinateurs portables plutôt que des téléphones (\"On évite les téléphones en classe\"), puis \"ajoute-la aux nouveautés et sur l'atelier augmenté\".",
   ]},

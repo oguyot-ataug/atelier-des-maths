@@ -351,7 +351,8 @@ async function qzEdImage(id, input){
 function qzEdMajTotal(){
   const el = document.getElementById('qzEdTotal'); if(!el || !qzEd) return;
   const n = qzEd.questions.filter(q => q.type !== 'texte').length, max = qzTotalMax(qzEd.questions);
-  el.innerHTML = `${n} question${n > 1 ? 's' : ''} · <b>${qzNum(max)} point${max > 1 ? 's' : ''}</b>${max ? ` · note ramenée sur ${qzEd.reglages.note_sur}` : ''}`;
+  el.innerHTML = qzEstEntrainement(qzEd.reglages) ? `${n} question${n > 1 ? 's' : ''} · <b>entraînement, non noté</b>`
+    : `${n} question${n > 1 ? 's' : ''} · <b>${qzNum(max)} point${max > 1 ? 's' : ''}</b>${max ? ` · note ramenée sur ${qzEd.reglages.note_sur}` : ''}`;
   qzEd.questions.forEach(q => { const p = document.getElementById('qzEdPts_' + q.id); if(p) p.textContent = q.type === 'texte' ? '' : qzNum(qzMax(q)) + ' pt' + (qzMax(q) > 1 ? 's' : ''); });
 }
 function qzEdMajApercu(id){
