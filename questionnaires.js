@@ -1223,6 +1223,7 @@ function qzCRenderQuestions(){
       <div class="qz-q-head"><span class="qz-type-pill"><span class="gicon">${qzType(q.type).icon}</span> ${qzType(q.type).label}</span><span class="qz-q-pts">${qzNum(qzMax(q))} pts · moyenne ${qzNum(moy)}</span></div>
       ${qzEnonceHtml(q)}
       ${qzManuel(q) && q.attendus ? `<div class="qz-sol"><span class="gicon">fact_check</span> <div><b>Attendus :</b> ${qzMath(q.attendus)}</div></div>` : ''}
+      ${q.figure_corrige && typeof qziFigDynHtml === 'function' ? qziFigDynHtml(q.figure_corrige, 'Figure attendue', true) : ''}
       ${stats}
     </div>
     ${propos.length ? `<div class="qz-propo-bar"><span class="gicon">bolt</span> <span>${propos.length} copie${propos.length > 1 ? 's ont' : ' a'} une proposition de la correction automatique pour cette question.</span>

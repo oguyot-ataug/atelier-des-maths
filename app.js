@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.725', items:[
+    "Interrogations en ligne, correction des figures : en vue « question par question », la figure attendue s'affiche une seule fois en haut (au lieu d'être répétée sous chaque copie), et faire glisser un point ne sélectionne plus le texte autour de la figure.",
+  ]},
   { version:'2026-08-19.724', items:[
     "Carnet de notes des interrogations : colonnes de notes à côté des noms -- signalé : \"Rapprocher la colonne notes des noms des élèves !\" Le tableau prend maintenant la largeur de son contenu au lieu de toute la page ; lignes alternées et ligne survolée surlignée pour suivre un élève d'un coup d'œil.",
   ]},

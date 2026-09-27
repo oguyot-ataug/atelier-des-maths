@@ -715,7 +715,7 @@ QZ_EXT.figure = {
     if(mode === 'passer') return `${qziFigHtml(rep || q.figure, rep ? 'Ma figure' : 'Figure de départ')}
       <button type="button" class="btn secondary" onclick="qziFigOuvrir('${q.id}')"><span class="gicon">draw</span> ${rep ? 'Modifier ma figure' : 'Construire ma figure'}</button>`;
     return `${rep ? qziFigDynHtml(rep, 'Figure de l\'élève', prof) : '<p class="hint">Aucune figure.</p>'}
-      ${corr && q.figure_corrige ? qziFigDynHtml(q.figure_corrige, 'Figure attendue', prof) : ''}
+      ${corr && q.figure_corrige && !(ctx && ctx.pfx === 'k') ? qziFigDynHtml(q.figure_corrige, 'Figure attendue', prof) : ''}
       ${corr && q.attendus ? `<div class="qz-sol"><span class="gicon">fact_check</span> <div><b>Attendus :</b> ${qzMath(q.attendus)}</div></div>` : ''}`;
   },
   repondue(q, rep){ return !!(rep && rep.f && rep.f.points && rep.f.points.length); },
@@ -810,6 +810,7 @@ QZ_EXT.figure = {
     .qz-fig-box{margin:6px 0;}
     .qz-fig-box figcaption{font-size:.78rem;font-weight:700;color:var(--ink-soft);margin-bottom:3px;}
     .qz-fig{display:block;width:100%;max-width:520px;height:auto;background:#fff;border:1px solid rgba(28,43,57,.12);border-radius:8px;}
+    .qz-fig-box.dyn{user-select:none;-webkit-user-select:none;} /* glisser un point ne sélectionne pas le texte autour */
     .qz-fig-box.dyn .qz-fig{touch-action:none;cursor:default;}
     .qz-fig-aide{display:inline-flex;align-items:center;gap:3px;font-weight:400;font-size:.74rem;color:#6B3FA0;margin-left:6px;} .qz-fig-aide .gicon{font-size:15px;}
     .qz-fig-tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
