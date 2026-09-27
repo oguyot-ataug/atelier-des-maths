@@ -641,6 +641,36 @@ function qziFigHtml(fig, titre){
     return `<figure class="qz-fig-box">${titre ? `<figcaption>${titre}</figcaption>` : ''}${svg.outerHTML}</figure>`;
   }catch(e){ return '<p class="hint">Figure illisible.</p>'; }
 }
+/* Figure manipulable (correction, résultats) -- signalé : "Je ne peux pas déplacer les points ici.
+   Donc je ne peux pas vérifier." Même visionneuse que les figures des cours personnalisés
+   (cpFigMount) : les points libres se déplacent, ceux posés sur une droite ou un cercle glissent
+   dessus, tout ce qui en dépend suit -- une construction juste (perpendiculaire...) le reste,
+   un dessin « à l'œil » se déforme. Rien n'est enregistré ; « Remettre la figure » la rétablit. */
+const QZI_FIGS = new Map(); let qziFigN = 0;
+function qziFigDynHtml(fig, titre, prof){
+  if(!fig || !fig.f || typeof cpFigMount !== 'function') return qziFigHtml(fig, titre);
+  const id = 'qzf' + (++qziFigN); QZI_FIGS.set(id, fig);
+  return `<figure class="qz-fig-box dyn" data-qzfig="${id}">
+    <figcaption>${titre || ''} <span class="qz-fig-aide"><span class="gicon">pan_tool</span> déplacez les points pour vérifier la construction</span></figcaption>
+    <svg class="qz-fig" viewBox="${cpFigVB(fig.vb).join(' ')}" xmlns="${QZI_NS}"></svg>
+    <div class="qz-fig-tools"><button type="button" class="btn secondary qz-mini cp-fig-reset"><span class="gicon">restart_alt</span> Remettre la figure</button>
+      ${prof ? `<button type="button" class="btn secondary qz-mini" onclick="qziFigOutil('${id}')" title="Mesurer des longueurs ou des angles, tester la construction avec tous les outils ; la copie de l'élève n'est pas modifiée"><span class="gicon">architecture</span> Ouvrir dans l'outil de géométrie</button>` : ''}</div>
+  </figure>`;
+}
+// Appelée après chaque affichage (voir qzChargerPhotos) : branche les figures pas encore montées.
+function qziFigMonter(root){
+  (root || document).querySelectorAll('figure.qz-fig-box.dyn:not([data-monte])').forEach(b => {
+    const fig = QZI_FIGS.get(b.dataset.qzfig); if(!fig) return;
+    b.dataset.monte = '1';
+    try{ cpFigMount(b.querySelector('svg'), { f: fig.f }); }catch(e){ console.warn('figure :', e); }
+  });
+}
+function qziFigOutil(id){
+  const fig = QZI_FIGS.get(id); if(!fig || typeof cpFigOpenEditor !== 'function') return;
+  cpFigOpenEditor({ f: fig.f, vb: fig.vb }, () => {});
+  const b = document.getElementById('figValidateBtn'); if(b) b.textContent = 'Fermer (la copie n\'est pas modifiée)';
+  ['figEnonceIaRow', 'figEnonceIaHint'].forEach(x => { const el = document.getElementById(x); if(el) el.style.display = 'none'; });
+}
 // Image JPEG (base64) d'une figure, pour la correction par l'IA.
 async function qziFigImage(fig){
   const html = qziFigHtml(fig); if(!html) return null;
@@ -680,12 +710,12 @@ QZ_EXT.figure = {
           ${q.figure_corrige ? `<button type="button" class="btn secondary qz-mini" onclick="qzEdSet('${id}','figure_corrige',null,true)"><span class="gicon">delete</span></button>` : ''}</div>
       </div>${qziCriteresHtml(q)}`;
   },
-  saisie(q, rep, mode){
-    const corr = mode === 'corrige';
+  saisie(q, rep, mode, ctx){
+    const corr = mode === 'corrige', prof = !!ctx && (ctx.pfx === 'c' || ctx.pfx === 'k');
     if(mode === 'passer') return `${qziFigHtml(rep || q.figure, rep ? 'Ma figure' : 'Figure de départ')}
       <button type="button" class="btn secondary" onclick="qziFigOuvrir('${q.id}')"><span class="gicon">draw</span> ${rep ? 'Modifier ma figure' : 'Construire ma figure'}</button>`;
-    return `${rep ? qziFigHtml(rep, 'Figure de l\'élève') : '<p class="hint">Aucune figure.</p>'}
-      ${corr && q.figure_corrige ? qziFigHtml(q.figure_corrige, 'Figure attendue') : ''}
+    return `${rep ? qziFigDynHtml(rep, 'Figure de l\'élève', prof) : '<p class="hint">Aucune figure.</p>'}
+      ${corr && q.figure_corrige ? qziFigDynHtml(q.figure_corrige, 'Figure attendue', prof) : ''}
       ${corr && q.attendus ? `<div class="qz-sol"><span class="gicon">fact_check</span> <div><b>Attendus :</b> ${qzMath(q.attendus)}</div></div>` : ''}`;
   },
   repondue(q, rep){ return !!(rep && rep.f && rep.f.points && rep.f.points.length); },
@@ -780,6 +810,10 @@ QZ_EXT.figure = {
     .qz-fig-box{margin:6px 0;}
     .qz-fig-box figcaption{font-size:.78rem;font-weight:700;color:var(--ink-soft);margin-bottom:3px;}
     .qz-fig{display:block;width:100%;max-width:520px;height:auto;background:#fff;border:1px solid rgba(28,43,57,.12);border-radius:8px;}
+    .qz-fig-box.dyn .qz-fig{touch-action:none;cursor:default;}
+    .qz-fig-aide{display:inline-flex;align-items:center;gap:3px;font-weight:400;font-size:.74rem;color:#6B3FA0;margin-left:6px;} .qz-fig-aide .gicon{font-size:15px;}
+    .qz-fig-tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+    .qz-fig-tools .cp-fig-reset{width:auto;height:auto;border-radius:999px;padding:4px 10px;display:inline-flex;gap:4px;font:inherit;font-size:.76rem;font-weight:700;}
     .qz-fig-ed{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
     @media (max-width:700px){ .qz-fig-ed{grid-template-columns:1fr;} .qz-as-g{min-width:0;flex:1;} }
   `;

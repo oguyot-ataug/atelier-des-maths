@@ -562,6 +562,7 @@ function qzEnonceHtml(q){
 }
 // Photos privées (bucket devoirs-rendus) : liens signés, chargés après affichage.
 async function qzChargerPhotos(root){
+  if(typeof qziFigMonter === 'function') qziFigMonter(root); // figures manipulables (questionnaires-interactif.js)
   const imgs = (root || document).querySelectorAll('img[data-qzphoto]:not([src])');
   for(const img of imgs){
     const { data } = await sb.storage.from('devoirs-rendus').createSignedUrl(img.dataset.qzphoto, 3600);
@@ -870,7 +871,7 @@ function qzRenderApercuCorrige(){
     <div class="qz-note-big"><span>${qzNum(s.total)} / ${qzNum(s.max)} points</span><small>${s.aCorriger ? `${s.aCorriger} question${s.aCorriger > 1 ? 's' : ''} ouverte${s.aCorriger > 1 ? 's' : ''} à corriger à la main` : `soit ${qzNum(s.note)} / ${s.sur}`}</small></div>
     <p class="hint">Voici ce que verra l'élève après la publication des résultats (correction automatique des questions fermées${qzCorrAuto(qzP.reglages) ? '' : ' : avec votre réglage, ce ne seront que des propositions, à accepter ou modifier à la correction'}).</p>
     <div class="qz-questions">${qzP.questions.map(q => q.type === 'texte' ? `<div class="qz-doc">${qzEnonceHtml(q)}</div>` : qzCarteResultat(q, copie, num[q.id], { reglages: qzP.reglages, seed: null, pfx: 'a' })).join('')}</div>
-    <div class="qz-rendre-row"><button class="btn secondary" onclick="qzApercu()"><span class="gicon">replay</span> Recommencer l'aperçu</button><button class="btn" onclick="qzRetourEleve()">Retour à l'éditeur</button></div>`;
+    <div class="qz-rendre-row"><button class="btn secondary" onclick="qzApercu()"><span class="gicon">replay</span> Recommencer l'aperçu</button><button class="btn" onclick="qzRetourEleve()">Retour à l'éditeur</button></div>`;  qzChargerPhotos(document.getElementById('qzRoot'));
 }
 function qzCarteResultat(q, copie, numero, ctx){
   const p = qzPoints(q, copie), max = qzMax(q), c = (copie.correction || {})[q.id] || {};

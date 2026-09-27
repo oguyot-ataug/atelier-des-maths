@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.722', items:[
+    "Interrogations en ligne : figures des élèves manipulables à la correction -- signalé sur une question « Construis un triangle ABC rectangle en A » : \"Je ne peux pas déplacer les points ici. Donc je ne peux pas vérifier.\" La figure de l'élève (et la figure attendue) s'affiche maintenant avec la visionneuse des cours personnalisés : on déplace les points libres, les points construits sur une droite ou un cercle glissent dessus et tout ce qui en dépend suit. Une construction juste garde ses propriétés (l'angle droit reste droit), un dessin fait « à l'œil » se déforme. « Remettre la figure » la rétablit, et « Ouvrir dans l'outil de géométrie » permet de mesurer longueurs et angles. La copie de l'élève n'est jamais modifiée. Même chose dans les résultats publiés, côté élève.",
+  ]},
   { version:'2026-08-19.721', items:[
     "Interrogations en ligne : partage avec un collègue plus visible -- signalé : \"Je ne vois pas où on peut partager à une collègue ou faire une copie à une collègue.\" Le bouton « Partager » n'existait que dans l'onglet « Mes questionnaires » : il est maintenant aussi sur chaque questionnaire enregistré et chaque interrogation donnée de l'onglet « Mes interrogations », et dans le formulaire (« Partager avec un collègue », qui enregistre d'abord le questionnaire). Une pastille « partagé » signale les questionnaires partagés, un bandeau confirme avec qui, et la fenêtre de partage explique que le collègue le retrouve dans « Partagés avec moi » et peut le copier dans ses questionnaires. La copie d'un collègue ne reprend plus la classe ni les élèves choisis dans le brouillon d'origine.",
   ]},
