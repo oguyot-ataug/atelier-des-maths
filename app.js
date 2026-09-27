@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.734', items:[
+    "Nouveautés de la page d'accueil : vidéo « La séance en direct » -- demandé : \"On peut faire une vidéo pour le mode en direct ?\", avec des ordinateurs portables plutôt que des téléphones (\"On évite les téléphones en classe\"), puis \"ajoute-la aux nouveautés et sur l'atelier augmenté\".",
+  ]},
   { version:'2026-08-19.733', items:[
     "Séance en direct : quand la correction est affichée, l'écran projeté montre la bonne réponse cochée (QCM) et chaque affirmation du vrai/faux jugée en vert, au lieu de lignes rouges sans réponse (repéré en préparant la vidéo de démonstration).",
   ]},
