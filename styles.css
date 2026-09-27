@@ -158,6 +158,9 @@ a{color:inherit;text-decoration:none;}
 .auth-sub{font-size:.8rem;color:var(--ink-soft);margin-top:2px;}
 .auth-label{display:block;font-size:.78rem;font-weight:600;color:var(--ink-soft);margin:0 0 5px;letter-spacing:.2px;}
 .auth-label-hint{font-weight:400;opacity:.85;}
+.auth-label-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.auth-link{font-size:.76rem;font-weight:600;color:var(--accent);text-decoration:none;}
+.auth-link:hover{text-decoration:underline;}
 .auth-field{position:relative;margin:0 0 12px;}
 .auth-field > .gicon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:20px;color:#8A93A1;pointer-events:none;z-index:1;transition:color .15s;}
 .auth-field input{display:block;width:100%;box-sizing:border-box;padding:11px 12px 11px 42px !important;border:1.5px solid #DDE2EA !important;border-radius:11px !important;

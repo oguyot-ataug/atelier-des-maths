@@ -2113,10 +2113,12 @@ let changePasswordMandatory = false;
    depuis le menu du compte), soit de façon OBLIGATOIRE (première connexion, ou après une
    réinitialisation par un administrateur), auquel cas elle ne peut pas être fermée sans
    changer effectivement le mot de passe. */
-function openChangePasswordModal(mandatory){
+function openChangePasswordModal(mandatory, message){
   changePasswordMandatory = !!mandatory;
   document.getElementById('changePasswordModalOverlay').style.display = 'flex';
-  document.getElementById('changePasswordMandatoryHint').style.display = mandatory ? 'block' : 'none';
+  const hint = document.getElementById('changePasswordMandatoryHint');
+  hint.textContent = message || hint.dataset.defaut || hint.textContent;
+  hint.style.display = mandatory ? 'block' : 'none';
   document.getElementById('changePasswordCloseBtn').style.display = mandatory ? 'none' : 'inline-flex';
   document.getElementById('changePasswordNew').value = '';
   document.getElementById('changePasswordConfirm').value = '';
@@ -2139,6 +2141,44 @@ async function submitChangePassword(){
   status.textContent = 'Mot de passe changé avec succès.';
   changePasswordMandatory = false;
   setTimeout(()=>{ document.getElementById('changePasswordModalOverlay').style.display = 'none'; }, 900);
+}
+/* Mot de passe oublié -- signalé : "Il manque aussi 'mot de passe oublié' (pour les familles ou
+   les professeurs qui ont bien une adresse académique renseignée)". Supabase envoie un lien
+   personnel par e-mail ; au retour sur le site (?reinit=1, événement PASSWORD_RECOVERY), la
+   fenêtre de changement de mot de passe s'ouvre. Les élèves (identifiant sans adresse e-mail)
+   sont renvoyés vers leur professeur ou leurs parents. */
+function toggleForgotPassword(show){
+  document.getElementById('authLoginForm').style.display = show ? 'none' : '';
+  document.getElementById('authForgotForm').style.display = show ? '' : 'none';
+  document.getElementById('authSignupBlock').style.display = show ? 'none' : '';
+  document.getElementById('forgotStatus').textContent = '';
+  if(show){
+    const id = (document.getElementById('globalAuthEmail').value || '').trim();
+    const f = document.getElementById('forgotEmail');
+    if(id.includes('@') && !/@mathcollege\.local$/i.test(id)) f.value = id;
+    setTimeout(()=>f.focus(), 50);
+  }
+}
+async function submitForgotPassword(){
+  const email = (document.getElementById('forgotEmail').value || '').trim();
+  const st = document.getElementById('forgotStatus');
+  if(!email.includes('@') || /@mathcollege\.local$/i.test(email)){
+    st.textContent = "Un identifiant d'élève n'a pas d'adresse e-mail : demandez un nouveau mot de passe à votre professeur (ou à vos parents pour un compte Famille).";
+    return;
+  }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ st.textContent = 'Adresse e-mail invalide.'; return; }
+  const btn = document.getElementById('btnForgotSubmit'); btn.disabled = true;
+  st.textContent = 'Envoi en cours…';
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/?reinit=1' });
+  btn.disabled = false;
+  // Même message que l'adresse existe ou non : on ne révèle pas quels e-mails ont un compte.
+  st.textContent = error && /rate|seconds|too many/i.test(error.message)
+    ? 'Trop de demandes rapprochées : réessayez dans une minute.'
+    : "Si un compte existe avec cette adresse, un e-mail vient d'être envoyé. Cliquez sur le lien qu'il contient pour choisir un nouveau mot de passe (pensez à regarder dans les indésirables).";
+}
+function ouvrirReinitialisation(){
+  if(/[?&]reinit=1/.test(location.search)) history.replaceState(null, '', location.pathname + '#/');
+  openChangePasswordModal(true, 'Choisissez votre nouveau mot de passe : il remplacera l\'ancien dès que vous l\'aurez validé.');
 }
 function toggleAccountMenu(){
   const d = document.getElementById('accountDropdown');
@@ -2426,6 +2466,8 @@ async function refreshAuthUI(){
     // modale de changement de mot de passe s'ouvre automatiquement, sans possibilité de
     // l'ignorer, tant que le mot de passe n'a pas été changé.
     if(profile && profile.must_change_password) openChangePasswordModal(true);
+    // Retour du lien « mot de passe oublié » reçu par e-mail.
+    if(/[?&]reinit=1/.test(location.search)) ouvrirReinitialisation();
 
     // Restriction d'accès aux chapitres non gratuits : levée pour tout compte élève, et
     // pour un compte prof/admin approuvé et à jour (essai ou abonnement actif).
@@ -2475,7 +2517,10 @@ async function refreshAuthUI(){
   const famView = document.getElementById('view-famille');
   if(famView && famView.classList.contains('active') && typeof renderFamille==='function') renderFamille();
 }
-sb.auth.onAuthStateChange(()=>refreshAuthUI());
+sb.auth.onAuthStateChange((event)=>{
+  refreshAuthUI();
+  if(event === 'PASSWORD_RECOVERY') ouvrirReinitialisation();
+});
 
 /* Panneau "Ce qui mérite votre attention" sur la page d'accueil, pour prof/admin -- signalé :
    "ça pourrait être intéressant [un récap par email]... nos comptes sont fermés également aux
@@ -2630,6 +2675,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.702', items:[
+    "Mot de passe oublié -- signalé : \"Il manque aussi 'mot de passe oublié' (pour les familles ou les professeurs qui ont bien une adresse académique renseignée)\". Lien dans le menu de connexion : l'adresse e-mail reçoit un lien personnel ; au retour sur le site, la fenêtre « Choisissez votre nouveau mot de passe » s'ouvre. Même message que l'adresse ait un compte ou non (on ne révèle pas quelles adresses sont inscrites). Les élèves, dont l'identifiant n'a pas d'adresse e-mail, sont invités à demander un nouveau mot de passe à leur professeur ou à leurs parents.",
+  ]},
   { version:'2026-08-19.701', items:[
     "Offre Famille, factures de L'Atelier Augmenté -- demandé : \"je pensais que la facture arrivait de l'atelier augmenté et non de stripe\", \"les parents peuvent consulter leur facture en ligne dans l'application et la télécharger\". À chaque paiement, facture émise dans votre série (F-2026-…), au nom et à l'adresse saisis sur la page de paiement, marquée « Acquittée », sans pénalités de retard (réservées aux professionnels) ; e-mail depuis factures@latelieraugmente.fr ; rubrique « Mes factures » dans l'Espace famille (Voir / Télécharger en PDF) ; visible aussi dans Administration > Facturation. Plus de facture Stripe. Paiements de test : factures TEST-2026-… hors série, exclues des totaux.",
     "Offre Famille, tarifs et codes promo -- demandé : \"On pourrait augmenter un peu les prix et faire un code promo RENTREE26 qui les ramène au prix qu'on avait prévu au départ\", \"des codes promos type VACANCES27 pour faire un abonnement été pas trop cher\". Tarifs 35 € / 55 € / 69 €, modifiables dans Administration > Familles. Codes promo (prix fixes ou remise en %, dates de validité, date de fin d'accès, nombre d'utilisations, une fois par famille) : RENTREE26 (29/45/59 € jusqu'au 30/11/2026) et VACANCES27 (9,90/14,90/19,90 €, accès jusqu'au 31/08/2027, valable du 01/05 au 15/08/2027). Le prix affiché dans l'Espace famille est calculé par le serveur, avec le prix barré quand un code s'applique.",
