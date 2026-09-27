@@ -44,7 +44,7 @@ function openCameraTool(){
   camFermer(true);
   const code = camCode();
   cam = { code, frames: new Map(), img: null, rot: 0, frozen: false, connecte: false, derniere: 0,
-    annots: [], outil: 'crayon', color: CAM_COULEURS[0], crop: { x: 0, y: 0, w: 1, h: 1 }, cropEdit: null, lum: 100, con: 100, gris: false, geste: null };
+    annots: [], sel: -1, outil: 'crayon', color: CAM_COULEURS[0], crop: { x: 0, y: 0, w: 1, h: 1 }, cropEdit: null, lum: 100, con: 100, gris: false, geste: null };
   let o = document.getElementById('camOverlay');
   if(!o){ o = document.createElement('div'); o.id = 'camOverlay'; document.body.appendChild(o); }
   o.className = 'cam-ov';
@@ -75,12 +75,14 @@ function openCameraTool(){
         <button type="button" class="btn secondary" onclick="camPivoter()" title="Pivoter d'un quart de tour">${CAM_ICO('rotate_right')}</button>
         <span class="cam-sep"></span>
         <span class="cam-seg" id="camOutils">
+          <button type="button" data-o="select" onclick="camOutil('select')" title="Sélection : cliquez sur un texte ou un trait pour le déplacer ; la poignée d'angle l'agrandit ou le rétrécit ; double-clic sur un texte pour le modifier">${CAM_ICO('arrow_selector_tool')}</button>
           <button type="button" data-o="crayon" onclick="camOutil('crayon')" title="Crayon">${CAM_ICO('edit')}</button>
           <button type="button" data-o="surligne" onclick="camOutil('surligne')" title="Surligneur">${CAM_ICO('ink_highlighter')}</button>
           <button type="button" data-o="texte" onclick="camOutil('texte')" title="Texte : cliquez sur l'image à l'endroit voulu">${CAM_ICO('title')}</button>
           <button type="button" data-o="recadrer" onclick="camOutil('recadrer')" title="Recadrer">${CAM_ICO('crop')}</button>
         </span>
         <span class="cam-annot">${CAM_COULEURS.map((c, i) => `<button type="button" class="cam-col${i ? '' : ' on'}" style="--c:${c}" onclick="camCouleur('${c}',this)" aria-label="Couleur"></button>`).join('')}</span>
+        <button type="button" class="btn secondary" id="camSupprBtn" onclick="camSupprimerSel()" title="Supprimer l'élément sélectionné (touche Suppr)" hidden>${CAM_ICO('delete')}</button>
         <button type="button" class="btn secondary" onclick="camAnnuler()" title="Annuler la dernière annotation">${CAM_ICO('undo')}</button>
         <button type="button" class="btn secondary" onclick="camEffacer()" title="Effacer toutes les annotations">${CAM_ICO('ink_eraser')}</button>
         <span class="cam-sep"></span>
@@ -169,7 +171,7 @@ function camDessinerAnnots(ctx, iw, ih){
   const base = Math.min(iw, ih);
   cam.annots.forEach(a => {
     if(a.type === 'texte'){
-      const fs = Math.round(base * 0.055);
+      const fs = Math.round(base * 0.055 * (a.s || 1));
       ctx.font = `700 ${fs}px Inter, Arial, sans-serif`; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
       ctx.lineWidth = Math.max(2, fs / 5); ctx.strokeStyle = 'rgba(255,255,255,.92)'; ctx.strokeText(a.t, a.x * iw, a.y * ih);
       ctx.fillStyle = a.c; ctx.fillText(a.t, a.x * iw, a.y * ih);
@@ -194,6 +196,13 @@ function camRedessiner(){
   const ctx = c.getContext('2d'); ctx.setTransform(...m); camDessinerImage(ctx, t.iw, t.ih);
   const dc = d.getContext('2d'); dc.setTransform(1, 0, 0, 1, 0, 0); dc.clearRect(0, 0, d.width, d.height);
   dc.setTransform(...m); camDessinerAnnots(dc, t.iw, t.ih);
+  if(cam.sel >= 0 && cam.annots[cam.sel] && !cam.cropEdit){ // élément sélectionné : cadre + poignée d'angle
+    dc.setTransform(r, 0, 0, r, 0, 0);
+    const b = camEcran(camBoite(cam.annots[cam.sel]), t);
+    dc.setLineDash([6, 4]); dc.strokeStyle = '#FF8208'; dc.lineWidth = 2; dc.strokeRect(b.x, b.y, b.w, b.h); dc.setLineDash([]);
+    dc.fillStyle = '#fff'; dc.strokeStyle = '#FF8208'; dc.lineWidth = 2.5;
+    const [hx, hy] = camPoignee(b, t); dc.beginPath(); dc.rect(hx - 7, hy - 7, 14, 14); dc.fill(); dc.stroke();
+  }
   if(cam.cropEdit){ // cadre de recadrage
     dc.setTransform(r, 0, 0, r, 0, 0);
     const e = cam.cropEdit, x = e.x * t.w, y = e.y * t.h, w = e.w * t.w, h = e.h * t.h;
@@ -215,7 +224,7 @@ function camFigerEtat(on){
   if(b) b.innerHTML = on ? `${CAM_ICO('play_arrow')} Reprendre le direct` : `${CAM_ICO('pause')} Figer`;
   const l = document.getElementById('camLive'); if(l){ l.textContent = on ? '❚❚ IMAGE FIGÉE' : '● EN DIRECT'; l.classList.toggle('fige', on); }
   camEnvoyer(on ? 'pause' : 'resume', {});
-  if(!on){ cam.annots = []; camRedessiner(); }
+  if(!on){ cam.annots = []; cam.sel = -1; const b = document.getElementById('camSupprBtn'); if(b) b.hidden = true; camRedessiner(); }
 }
 function camFiger(){ if(cam && cam.img) camFigerEtat(!cam.frozen); }
 function camPhoto(){
@@ -223,9 +232,31 @@ function camPhoto(){
   camEnvoyer('req-photo', {});
   const l = document.getElementById('camLive'); if(l) l.textContent = '… photo en cours';
 }
-function camPivoter(){ if(!cam || !cam.img) return; cam.rot = (cam.rot + 90) % 360; cam.annots = []; cam.crop = { x: 0, y: 0, w: 1, h: 1 }; cam.cropEdit = null; camMajOutils(); camRedessiner(); }
+function camPivoter(){ if(!cam || !cam.img) return; cam.rot = (cam.rot + 90) % 360; cam.annots = []; cam.sel = -1; cam.crop = { x: 0, y: 0, w: 1, h: 1 }; cam.cropEdit = null; camMajOutils(); camRedessiner(); }
+// Boîte englobante d'une annotation, en coordonnées 0-1 de l'image pivotée entière.
+let camMesure = null;
+function camBoite(a){
+  const [iw, ih] = camDims(), base = Math.min(iw, ih);
+  if(a.type === 'texte'){
+    const fs = base * 0.055 * (a.s || 1);
+    camMesure = camMesure || document.createElement('canvas').getContext('2d');
+    camMesure.font = `700 ${fs}px Inter, Arial, sans-serif`;
+    const w = camMesure.measureText(a.t).width + fs * 0.2;
+    return { x: a.x - fs * 0.1 / iw, y: a.y - fs * 0.62 / ih, w: w / iw, h: fs * 1.24 / ih };
+  }
+  const xs = a.p.map(q => q[0]), ys = a.p.map(q => q[1]), pad = (a.type === 'surligne' ? base / 56 : base / 300) + 4;
+  const x1 = Math.min(...xs) - pad / iw, y1 = Math.min(...ys) - pad / ih, x2 = Math.max(...xs) + pad / iw, y2 = Math.max(...ys) + pad / ih;
+  return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+}
+// Boîte en pixels d'écran (zone affichée t, voir camTaille).
+// Poignée d'angle d'une boîte, ramenée dans la zone visible (un texte qui déborde reste réglable).
+function camPoignee(b, t){ return [Math.min(Math.max(b.x + b.w, 10), t.w - 9), Math.min(Math.max(b.y + b.h, 10), t.h - 9)]; }
+function camEcran(b, t){ return { x: (b.x - t.c.x) / t.c.w * t.w, y: (b.y - t.c.y) / t.c.h * t.h, w: b.w / t.c.w * t.w, h: b.h / t.c.h * t.h }; }
+function camSelect(i){ if(!cam) return; cam.sel = i; const b = document.getElementById('camSupprBtn'); if(b) b.hidden = i < 0; camRedessiner(); }
+function camSupprimerSel(){ if(!cam || cam.sel < 0) return; cam.annots.splice(cam.sel, 1); camSelect(-1); }
 function camOutil(o){
   if(!cam) return;
+  if(o !== 'select') camSelect(-1);
   if(o === 'recadrer'){ if(!cam.img) return; cam.cropEdit = Object.assign({}, cam.crop); }
   else if(cam.cropEdit) camRecadrerFin(true);
   cam.outil = o; camMajOutils(); camRedessiner();
@@ -233,11 +264,15 @@ function camOutil(o){
 function camMajOutils(){
   document.querySelectorAll('#camOutils button').forEach(b => b.classList.toggle('on', b.dataset.o === cam.outil));
   const bar = document.getElementById('camCropBar'); if(bar) bar.hidden = !cam.cropEdit;
-  const d = document.getElementById('camDraw'); if(d) d.style.cursor = cam.outil === 'texte' ? 'text' : cam.outil === 'recadrer' ? 'move' : 'crosshair';
+  const d = document.getElementById('camDraw'); if(d) d.style.cursor = cam.outil === 'texte' ? 'text' : cam.outil === 'recadrer' ? 'move' : cam.outil === 'select' ? 'default' : 'crosshair';
 }
-function camCouleur(c, el){ cam.color = c; document.querySelectorAll('.cam-col').forEach(b => b.classList.toggle('on', b === el)); if(cam.outil === 'recadrer') camOutil('crayon'); }
-function camAnnuler(){ if(cam){ cam.annots.pop(); camRedessiner(); } }
-function camEffacer(){ if(cam){ cam.annots = []; camRedessiner(); } }
+function camCouleur(c, el){
+  cam.color = c; document.querySelectorAll('.cam-col').forEach(b => b.classList.toggle('on', b === el));
+  if(cam.outil === 'select' && cam.sel >= 0){ cam.annots[cam.sel].c = c; camRedessiner(); return; } // recolore l'élément choisi
+  if(cam.outil === 'recadrer') camOutil('crayon');
+}
+function camAnnuler(){ if(cam){ cam.annots.pop(); camSelect(-1); } }
+function camEffacer(){ if(cam){ cam.annots = []; camSelect(-1); } }
 function camReglage(k, v){ if(!cam) return; cam[k] = k === 'gris' ? !!v : Number(v); camRedessiner(); }
 function camMajReglages(){
   const set = (id, v, p) => { const e = document.getElementById(id); if(e) e[p || 'value'] = v; };
@@ -267,6 +302,20 @@ function camBrancherDessin(){
       let poignee = null; for(const k in coins){ if(Math.hypot(coins[k][0] - u, coins[k][1] - v) < seuil * 1.5) poignee = k; }
       if(!poignee && !(u >= e.x && u <= e.x + e.w && v >= e.y && v <= e.y + e.h)) return;
       cam.geste = { type: 'crop', poignee: poignee || 'move', u0: u, v0: v, e0: Object.assign({}, e) };
+    } else if(cam.outil === 'select'){
+      const t = camTaille(), [ex, ey] = local(ev).map((q, k) => q * (k ? t.h : t.w));
+      if(cam.sel >= 0 && cam.annots[cam.sel]){ // poignée d'angle de l'élément déjà choisi
+        const [hx, hy] = camPoignee(camEcran(camBoite(cam.annots[cam.sel]), t), t);
+        if(Math.abs(ex - hx) < 14 && Math.abs(ey - hy) < 14){
+          cam.geste = { type: 'taille', b0: camBoite(cam.annots[cam.sel]), a0: JSON.parse(JSON.stringify(cam.annots[cam.sel])), p0: img(ev) };
+          try{ d.setPointerCapture(ev.pointerId); }catch(e){} return;
+        }
+      }
+      let i = cam.annots.length - 1;
+      for(; i >= 0; i--){ const b = camEcran(camBoite(cam.annots[i]), t); if(ex >= b.x - 6 && ex <= b.x + b.w + 6 && ey >= b.y - 6 && ey <= b.y + b.h + 6) break; }
+      camSelect(i);
+      if(i < 0) return;
+      cam.geste = { type: 'deplacer', a0: JSON.parse(JSON.stringify(cam.annots[i])), p0: img(ev) };
     } else if(cam.outil === 'texte'){
       camTexte(ev, img(ev)); return;
     } else {
@@ -279,6 +328,18 @@ function camBrancherDessin(){
   d.addEventListener('pointermove', ev => {
     if(!cam || !cam.geste) return;
     if(cam.geste.type === 'trait'){ cam.annots[cam.annots.length - 1].p.push(img(ev)); camRedessiner(); return; }
+    if(cam.geste.type === 'deplacer' || cam.geste.type === 'taille'){
+      const g = cam.geste, [x, y] = img(ev), a = cam.annots[cam.sel], a0 = g.a0; if(!a) return;
+      if(g.type === 'deplacer'){
+        const dx = x - g.p0[0], dy = y - g.p0[1];
+        if(a.type === 'texte'){ a.x = a0.x + dx; a.y = a0.y + dy; } else a.p = a0.p.map(([u, v]) => [u + dx, v + dy]);
+      } else { // agrandir / rétrécir depuis le coin haut gauche
+        const b = g.b0, f = Math.min(8, Math.max(0.2, (((x - b.x) / b.w) + ((y - b.y) / b.h)) / 2));
+        if(a.type === 'texte'){ a.s = (a0.s || 1) * f; a.y = b.y + (a0.y - b.y) * f; a.x = b.x + (a0.x - b.x) * f; }
+        else a.p = a0.p.map(([u, v]) => [b.x + (u - b.x) * f, b.y + (v - b.y) * f]);
+      }
+      camRedessiner(); return;
+    }
     const g = cam.geste, [u, v] = local(ev), du = u - g.u0, dv = v - g.v0, e0 = g.e0, m = 0.04;
     let x1 = e0.x, y1 = e0.y, x2 = e0.x + e0.w, y2 = e0.y + e0.h;
     if(g.poignee === 'move'){ const dx = Math.min(Math.max(du, -x1), 1 - x2), dy = Math.min(Math.max(dv, -y1), 1 - y2); x1 += dx; x2 += dx; y1 += dy; y2 += dy; }
@@ -292,18 +353,47 @@ function camBrancherDessin(){
   });
   const fin = () => { if(cam) cam.geste = null; };
   d.addEventListener('pointerup', fin); d.addEventListener('pointercancel', fin);
+  // Survol : curseur adapté (déplacer, poignée d'angle)
+  d.addEventListener('pointermove', ev => {
+    if(!cam || cam.geste || cam.outil !== 'select' || !cam.img) return;
+    const t = camTaille(), [ex, ey] = local(ev).map((q, k) => q * (k ? t.h : t.w));
+    let cur = 'default';
+    if(cam.sel >= 0 && cam.annots[cam.sel]){ const [hx, hy] = camPoignee(camEcran(camBoite(cam.annots[cam.sel]), t), t); if(Math.abs(ex - hx) < 14 && Math.abs(ey - hy) < 14) cur = 'nwse-resize'; }
+    if(cur === 'default' && cam.annots.some(a => { const b = camEcran(camBoite(a), t); return ex >= b.x - 6 && ex <= b.x + b.w + 6 && ey >= b.y - 6 && ey <= b.y + b.h + 6; })) cur = 'move';
+    d.style.cursor = cur;
+  });
+  // Double-clic sur un texte : le modifier
+  d.addEventListener('dblclick', ev => {
+    if(!cam || cam.outil !== 'select' || cam.sel < 0) return;
+    const a = cam.annots[cam.sel]; if(!a || a.type !== 'texte') return;
+    camTexte(ev, [a.x, a.y], cam.sel);
+  });
 }
+// Suppr / Retour arrière : supprime l'élément sélectionné.
+document.addEventListener('keydown', ev => {
+  if(!cam || cam.sel < 0 || (ev.key !== 'Delete' && ev.key !== 'Backspace')) return;
+  if(/^(INPUT|TEXTAREA)$/.test((document.activeElement || {}).tagName || '')) return;
+  ev.preventDefault(); camSupprimerSel();
+});
 // Zone de saisie posée à l'endroit cliqué ; Entrée ou clic ailleurs pour valider, Échap pour annuler.
-function camTexte(ev, [x, y]){
+function camTexte(ev, [x, y], modif){
   if(!cam.frozen) camFigerEtat(true);
+  const exist = modif !== undefined ? cam.annots[modif] : null;
   const v = document.getElementById('camView'), r = v.getBoundingClientRect();
   document.querySelectorAll('.cam-texte-in').forEach(e => e.remove());
   const inp = document.createElement('input');
-  inp.className = 'cam-texte-in'; inp.placeholder = 'Votre texte…'; inp.style.color = cam.color;
+  inp.className = 'cam-texte-in'; inp.placeholder = 'Votre texte…'; inp.style.color = exist ? exist.c : cam.color; if(exist) inp.value = exist.t;
   inp.style.left = (ev.clientX - r.left) + 'px'; inp.style.top = (ev.clientY - r.top) + 'px';
   v.appendChild(inp); setTimeout(() => inp.focus(), 0);
   let fait = false;
-  const valider = ok => { if(fait) return; fait = true; const t = inp.value.trim(); inp.remove(); if(ok && t && cam){ cam.annots.push({ type: 'texte', c: cam.color, x, y, t }); camRedessiner(); } };
+  const valider = ok => {
+    if(fait) return; fait = true; const t = inp.value.trim(); inp.remove(); if(!ok || !cam) return;
+    if(exist){ if(t) exist.t = t; else { cam.annots.splice(modif, 1); camSelect(-1); return; } camSelect(modif); return; }
+    if(!t) return;
+    cam.annots.push({ type: 'texte', c: cam.color, x, y, t, s: 1 });
+    // Aussitôt sélectionné (outil Sélection) : on peut le déplacer ou changer sa taille tout de suite.
+    cam.outil = 'select'; camMajOutils(); camSelect(cam.annots.length - 1);
+  };
   inp.addEventListener('keydown', e => { if(e.key === 'Enter') valider(true); if(e.key === 'Escape') valider(false); e.stopPropagation(); });
   inp.addEventListener('blur', () => valider(true));
 }

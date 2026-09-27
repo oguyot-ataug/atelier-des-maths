@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.729', items:[
+    "Caméra du téléphone : outil Sélection (flèche) -- demandé : \"avoir l'icône type flèche pour pouvoir déplacer les zones textes et/ou les agrandir/rétrécir\". Un clic sur un texte ou un trait le sélectionne (cadre orange) : on le fait glisser pour le déplacer, la poignée d'angle l'agrandit ou le rétrécit, un double-clic sur un texte permet de le modifier, une couleur le recolore, et la corbeille ou la touche Suppr le supprime. Un texte qui vient d'être écrit est aussitôt sélectionné, prêt à être placé ; la poignée reste visible même si le texte dépasse de l'image.",
+  ]},
   { version:'2026-08-19.728', items:[
     "Caméra du téléphone : recadrage et retouches -- demandé : \"Permettre de recadrer l'image avant de l'insérer. Et ajouter des outils de contraste, luminosité et crayon ou insertion texte.\" Recadrer (cadre à poignées, « Toute l'image », Valider), luminosité, contraste, noir et blanc, bouton « Document » (page blanche, écriture bien noire) ; recadrage et réglages s'appliquent aussi au direct, pour zoomer sur une partie du cahier pendant la projection. Annotations : crayon, surligneur et texte (clic à l'endroit voulu, Entrée pour valider), en 5 couleurs, annuler / effacer ; recadrer ensuite ne les déplace pas. L'image insérée reprend le recadrage, les réglages et les annotations. Le téléphone envoie aussi un signe de vie : il ne paraît plus déconnecté quand l'image est figée.",
   ]},
