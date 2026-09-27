@@ -202,10 +202,26 @@ const CM_GROUPS = [
 ];
 function cmGroupFor(seq){ return CM_GROUPS.find(g=>seq>=g.min && seq<=g.max) || CM_GROUPS[CM_GROUPS.length-1]; }
 
+/* Mode découverte (visiteur non connecté, voir demo.js) : seule la première séquence de chaque
+   rubrique est ouverte -- demandé : "En mode hors connexion, permettre uniquement le premier
+   automatisme de chaque rubrique, les autres restent inaccessibles". */
+function cmSequencesLibres(){
+  const sorted = CM_SEQUENCES.slice().sort((a,b)=>a.seq-b.seq);
+  const libres = new Set();
+  CM_GROUPS.forEach(g=>{ const f = sorted.find(s=>s.seq>=g.min && s.seq<=g.max); if(f) libres.add(f.id); });
+  return libres;
+}
+function cmVisiteur(){ return typeof currentUser==='undefined' || !currentUser; }
+function cmVisiteurBloque(id){
+  if(!cmVisiteur() || cmSequencesLibres().has(id)) return false;
+  if(typeof demoInvite==='function') demoInvite('Automatismes', "En découverte, la première séquence de chaque rubrique est libre. Connectez-vous pour accéder aux 88 séquences, suivre vos progrès et battre vos records.");
+  return true;
+}
 function renderCMPicker(){
   const box=document.getElementById('cmPicker');
   const sorted = CM_SEQUENCES.slice().sort((a,b)=>a.seq-b.seq);
-  let html = '';
+  const visiteur = cmVisiteur(), libres = cmSequencesLibres();
+  let html = visiteur ? `<div class="cm-demo-banner"><span class="gicon">lock_open</span><span><b>Mode découverte</b> : la première séquence de chaque rubrique est libre. <a onclick="event.stopPropagation();demoOuvrirConnexion(event)">Connectez-vous</a> pour tout débloquer.</span></div>` : '';
   let currentGroup = null;
   sorted.forEach(s=>{
     const g = cmGroupFor(s.seq);
@@ -213,7 +229,8 @@ function renderCMPicker(){
       currentGroup = g;
       html += `<div class="cm-group-header" style="color:${g.color};"><span class="cm-group-symbol" style="background:${g.color};">${g.symbol}</span>${g.title}</div>`;
     }
-    html += `<div class="cm-chip" data-id="${s.id}" style="--cm-accent:${g.color};--cm-accent-bg:${g.bg};"><div>${s.label}</div><div class="seq">séquence ${s.seq}</div></div>`;
+    const verrou = visiteur && !libres.has(s.id), libre = visiteur && libres.has(s.id);
+    html += `<div class="cm-chip${verrou ? ' cm-chip-locked' : ''}${libre ? ' cm-chip-free' : ''}" data-id="${s.id}" style="--cm-accent:${g.color};--cm-accent-bg:${g.bg};">${libre ? '<span class="cm-chip-freebadge">LIBRE</span>' : ''}${verrou ? '<span class="gicon cm-chip-lockico">lock</span>' : ''}<div>${s.label}</div><div class="seq">séquence ${s.seq}</div></div>`;
   });
   html += `<div class="cm-group-header" style="color:var(--ink-soft);"><span class="cm-group-symbol" style="background:var(--ink-soft);">+24</span>À venir</div>`;
   html += `<div class="cm-chip" style="opacity:.5;cursor:default;"><div>+ 24 autres séquences</div><div class="seq">nécessitent une UI dédiée</div></div>`;
@@ -294,6 +311,7 @@ function cmGameStyle(){
    "le chrono et la séance démarrent immédiatement alors que je ne sais pas ce que je dois
    faire". Le chrono ne démarre qu'au clic sur "Démarrer" (voir startCMExercise). */
 function runCM(id){
+  if(!currentDevoirCM && cmVisiteurBloque(id)) return;
   const seqDef = CM_SEQUENCES.find(s=>s.id===id);
   currentCMSeq = seqDef;
   cmExample = seqDef.gen();

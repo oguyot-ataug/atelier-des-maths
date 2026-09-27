@@ -148,6 +148,8 @@ function routerRestoreFromHash(){
         showView('view-cm'); setActiveTopnav('cm');
         if(typeof refreshCMProgress==='function') refreshCMProgress();
         if(typeof refreshCMRecords==='function') refreshCMRecords();
+      } else if((key==='compte' || key==='tableau') && !currentUser && typeof showDemo==='function'){
+        showDemo(key); // visiteur : démonstration seulement (demo.js)
       } else if(key==='compte'){
         showView('view-compte'); setActiveTopnav('compte');
         if(typeof cebInit==='function') cebInit();

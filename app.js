@@ -153,6 +153,10 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     if(nav==='home'){ showView('view-home'); setActiveTopnav(null); }
     if(nav==='niveau'){ currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
     if(nav==='cm'){ showView('view-cm'); setActiveTopnav('cm'); if(typeof refreshCMProgress==='function') refreshCMProgress(); if(typeof refreshCMRecords==='function') refreshCMRecords(); }
+    // Visiteur non connecté : page de démonstration à la place de l'outil (demo.js).
+    if((nav==='compte' || nav==='figure-sandbox' || nav==='tableau') && !currentUser && typeof showDemo==='function'){
+      showDemo(nav==='figure-sandbox' ? 'geometrie' : nav); return;
+    }
     if(nav==='compte'){ showView('view-compte'); setActiveTopnav('compte'); if(typeof cebInit==='function') cebInit(); }
     if(nav==='figure-sandbox'){
       // Bac à sable géométrie : accessible à tous (élèves compris), sans lien avec un
@@ -2513,6 +2517,10 @@ async function refreshAuthUI(){
   }
   // reflète l'état de connexion sur les boutons "+ Cahier" déjà injectés dans les cours ouverts
   updateCourseAddButtonsState();
+  // Mode découverte (demo.js) : automatismes re-verrouillés / déverrouillés, et un visiteur qui
+  // se connecte depuis une page de démonstration arrive directement dans l'outil.
+  if(typeof renderCMPicker==='function' && document.getElementById('cmPicker')) renderCMPicker();
+  if(currentUser && typeof demoOuvrirOutil==='function') demoOuvrirOutil();
   // Espace famille affiché (connexion / déconnexion depuis cette page) : on le redessine.
   const famView = document.getElementById('view-famille');
   if(famView && famView.classList.contains('active') && typeof renderFamille==='function') renderFamille();
@@ -2675,6 +2683,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.705', items:[
+    "Mode découverte (visiteur non connecté) du menu « S'entraîner » -- demandé : \"En mode hors connexion, permettre uniquement le premier automatisme de chaque rubrique, les autres restent inaccessibles. Pour les autres rubriques de ce menu, montrer des vidéos de présentation ou des gifs mais pas de possibilités d'accès (mode démo)\". Automatismes : la première séquence de chaque rubrique est libre (badge « LIBRE »), les autres sont grisées avec un cadenas et proposent de se connecter. Objectif Nombre, Géométrie interactive et Tableau interactif : page de présentation avec une courte vidéo de démonstration en boucle (sans son), les points forts et les boutons « Se connecter », « Je suis professeur » (et « Je suis parent » quand l'offre Famille est visible). Après connexion depuis une démonstration, l'outil s'ouvre directement.",
+  ]},
   { version:'2026-08-19.704', items:[
     "Fix -- Administration, demandes d'inscription des professeurs : « Could not embed because more than one relationship was found for 'profiles' and 'etablissements' ». Depuis l'ajout du référent d'établissement, deux liens existent entre professeurs et établissements (l'établissement du professeur, le référent de l'établissement) ; la liste précise maintenant qu'il s'agit de l'établissement du professeur.",
   ]},
