@@ -52,7 +52,13 @@ const QZ_REGLAGES_DEFAUT = { mode:'maison', duree:30, melanger_questions:false, 
 
 function qzId(){ return Math.random().toString(36).slice(2, 9); }
 function qzEsc(s){ return escapeHtml(String(s ?? '')); }
-function qzMath(s){ return renderMathText(String(s ?? '')).replace(/\n/g, '<br>'); }
+// Retours à la ligne écrits « \n » en toutes lettres (antislash + n) par l'IA -- signalé : un
+// énoncé généré affichait « \ n n(a) » (le n isolé était même pris pour une variable). Remplacés
+// par de vrais sauts de ligne HORS des formules $...$, où \neq, \not, \nu... sont du LaTeX.
+function qzSauts(s){
+  return String(s ?? '').split('$').map((p, i) => i % 2 ? p.replace(/\\n(?![a-zA-Z])/g, '\n') : p.replace(/\\r\\n|\\n/g, '\n')).join('$');
+}
+function qzMath(s){ return renderMathText(qzSauts(s)).replace(/\n/g, '<br>'); }
 function qzType(id){ return QZ_TYPES.find(t => t.id === id) || QZ_TYPES[0]; }
 function qzComp(id){ return QZ_COMPETENCES.find(c => c.id === id) || null; }
 function qzNum(n){ return (Math.round(n * 100) / 100).toString().replace('.', ','); }
@@ -1289,6 +1295,7 @@ async function qzGenerer(){
 ${chap ? `Chapitre : ${chap}.` : ''}${theme ? `\nThème ou notions : ${theme}.` : ''}
 Nombre de questions : ${nb}. Difficulté : ${diff}. Types autorisés : ${types.map(t => noms[t]).join(', ')} (varie les types).
 ${consignes ? `Consignes du professeur : ${consignes}\n` : ''}
+Pour aller à la ligne dans un texte (ex. avant « (a) », « (b) »), mets un vrai saut de ligne JSON, c'est-à-dire \\n avec un seul antislash, jamais \\\\n.
 Écriture des maths : fractions a/b (ex. 3/4), puissances x^2, racines sqrt(2), virgule décimale (2,5) ; ou LaTeX entre $...$ si nécessaire. Pas de figure à dessiner.
 Pour chaque question, indique la compétence travaillée parmi : chercher, modeliser, representer, raisonner, calculer, communiquer ; et une courte explication (méthode) montrée à l'élève avec la correction.
 Réponds UNIQUEMENT par un tableau JSON valide, sans texte autour, dont chaque élément suit l'un de ces formats :
@@ -1317,6 +1324,7 @@ Réponds UNIQUEMENT par un tableau JSON valide, sans texte autour, dont chaque �
 // Réponse de l'IA → question au format de l'éditeur (champs vérifiés, identifiants neufs).
 function qzGenNormaliser(x){
   if(!x || !QZ_TYPES.some(t => t.id === x.type) || x.type === 'texte') return null;
+  x = JSON.parse(JSON.stringify(x), (k, v) => typeof v === 'string' ? qzSauts(v) : v);
   const q = qzEdNouvelle(x.type);
   q.enonce = String(x.enonce || '').trim();
   if(!q.enonce) return null;

@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.717', items:[
+    "Interrogations en ligne : retours à la ligne des questions générées par l'IA -- signalé sur un énoncé généré (« Léa achète 6 stylos et 6 cahiers. \\ n n(a) Écris le calcul... ») : l'IA écrivait parfois ses retours à la ligne « \\n » en toutes lettres, affichés comme un antislash et un n (pris en plus pour une variable). Ils deviennent de vrais sauts de ligne, à la génération comme à l'affichage (les questions déjà enregistrées sont donc corrigées aussi), sans toucher aux formules LaTeX ($a \\neq b$ reste ≠). La consigne donnée à l'IA le précise désormais.",
+  ]},
   { version:'2026-08-19.716', items:[
     "Interrogations en ligne : sauvegarde automatique -- signalé : \"Quand on prépare un questionnaire, il manque une sauvegarde. On perd tout si on ne partage pas tout de suite.\" Dès qu'il a un titre ou une question, le questionnaire en préparation est enregistré tout seul (2 secondes après chaque modification, et en quittant la page par le menu) comme brouillon dans « Mes questionnaires », avec la classe, les dates et la consigne déjà choisies ; l'heure du dernier enregistrement s'affiche sous le titre. Les brouillons portent une étiquette « Brouillon » (ou « Brouillon à compléter » s'il manque encore quelque chose) et un bouton « Reprendre ». « Donner à une classe » sur un brouillon le donne lui-même, sans créer de copie en double. Bouton « Enregistrer » dans l'éditeur pour enregistrer tout de suite, même incomplet. Une interrogation déjà donnée n'est pas modifiée en direct (les élèves la voient) : copie de secours sur l'appareil, proposée à la réouverture, jusqu'à « Enregistrer les modifications ».",
   ]},
