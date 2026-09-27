@@ -993,7 +993,8 @@ async function callClaude(userPrompt, maxTokens, meta){
   const res = await fetch(SUPABASE_URL+'/functions/v1/ai-proxy', {
     method:'POST',
     headers:{ 'Content-Type':'application/json', 'Authorization': 'Bearer '+session.access_token },
-    body: JSON.stringify({ prompt: userPrompt, maxTokens: maxTokens||800, feature:(meta&&meta.feature)||null, chapitre:(meta&&meta.chapitre)||null, niveau:(meta&&meta.niveau)||null }),
+    // meta.images : [{media_type, data(base64)}] -- photos jointes (professeurs, voir ai-proxy v18).
+    body: JSON.stringify({ prompt: userPrompt, maxTokens: maxTokens||800, feature:(meta&&meta.feature)||null, chapitre:(meta&&meta.chapitre)||null, niveau:(meta&&meta.niveau)||null, images:(meta&&meta.images)||undefined }),
   });
   const data = await res.json();
   if(data.error) throw new Error(data.error);
@@ -2685,6 +2686,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.711', items:[
+    "Questionnaires, étape 2 : l'IA -- demandé : \"Pour les questions ouvertes, proposer une correction IA\" (choix retenu : note pré-remplie, à valider). Dans la correction (copie par copie ou question par question), bouton « Proposer une note (IA) » sur chaque réponse ouverte, ou pour toutes les copies pas encore notées d'une question : l'IA lit la réponse écrite ET les photos de la copie, l'évalue avec vos attendus et votre barème (critères cochés), et propose une note, un commentaire pour l'élève et une justification pour vous (avec ce qu'elle a lu sur la photo). La note reste « à valider » : elle ne compte pas et bloque la publication tant que vous ne l'avez pas validée (une par une, ou « Valider toutes les propositions ») ou modifiée.",
+    "Questionnaires : bouton « Générer avec l'IA » dans l'éditeur -- niveau, chapitre du programme ou thème libre, nombre de questions, difficulté, types de questions et consignes ; les questions générées (avec réponses attendues, barème, compétence et explication) s'ajoutent au questionnaire et restent entièrement modifiables. Ces deux outils utilisent la même clé IA que vos autres outils (menu Mon compte > Intelligence artificielle).",
+  ]},
   { version:'2026-08-19.710', items:[
     "Nouveau : questionnaires en ligne (étape 1) -- demandé : \"pouvoir faire des questionnaires (type interrogation en ligne) à la manière de Google Forms. On pourrait créer des questions de tout type avec les attendus et le barème. Pouvoir reprendre chaque copie par copie ou par questions\". Nouveau type de devoir « Questionnaire » : QCM (une ou plusieurs bonnes réponses, points partiels ou tout ou rien), vrai/faux, réponse numérique (3/4 = 0,75 reconnus égaux, tolérance, unité), réponse courte, question ouverte (réponse au clavier ou photo de la copie, attendus et barème détaillé par critères), bloc de texte/document ; formules et images dans les énoncés ; points et compétence (Chercher, Modéliser, Représenter, Raisonner, Calculer, Communiquer) par question ; bouton « Tester comme un élève ». Deux modes : à la maison, ou interrogation en classe chronométrée (copie rendue automatiquement à la fin, sorties de la page signalées au professeur), mélange des questions et des propositions au choix.",
     "Questionnaires : réponses enregistrées automatiquement pendant la passation ; les réponses attendues ne sont jamais envoyées au navigateur de l'élève avant la publication des résultats. Correction copie par copie ou question par question (avec la répartition des réponses aux QCM), correction automatique des questions fermées (modifiable), critères cochables pour les questions ouvertes, commentaires ; possibilité de rouvrir une copie ou de fermer le questionnaire. Les élèves voient leur note, leurs points par question, vos commentaires et le corrigé quand vous publiez les résultats.",
