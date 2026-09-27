@@ -2592,6 +2592,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.698', items:[
+    "Offre Famille, mode test Stripe -- demandé : \"On peut faire des simulations de paiement avec stripe non ?\". Administration > Familles : case « test » par compte. Un compte marqué test paie avec la clé test de Stripe (carte 4242 4242 4242 4242) ; ses paiements sont marqués « test » et exclus du total encaissé. Le webhook n'utilise les événements de test que pour ces comptes-là, jamais pour les abonnements professeurs.",
+  ]},
   { version:'2026-08-19.697', items:[
     "Médiateur de la consommation : CM2C (49 rue de Ponthieu, 75008 Paris, litiges@cm2c.net) indiqué dans les CGV Famille, les mentions légales et sur la page de paiement de l'Espace famille, avec la mention fournie par CM2C (article L641-1 du Code de la consommation).",
   ]},

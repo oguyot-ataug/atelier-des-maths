@@ -183,6 +183,7 @@ async function renderFamille(){
     <p style="color:var(--ink-soft);margin:0 0 14px;">Bonjour ${famEsc(currentUser && document.getElementById('accountNameDisplay').textContent)} : vous gérez ici l'accès, les comptes de vos enfants, leur suivi et l'IA.</p>
     ${paye && !active ? '<div class="fam-banner"><span class="gicon">hourglass_top</span> Paiement reçu, activation en cours… cette page se met à jour toute seule.</div>' : ''}
     ${paye && active ? '<div class="fam-banner ok"><span class="gicon">check_circle</span> Merci ! Votre accès est activé. La facture vous a été envoyée par e-mail.</div>' : ''}
+    ${famData.fam.stripe_test ? '<div class="fam-banner"><span class="gicon">science</span><span><b>Compte de test</b> : les paiements sont simulés par Stripe, aucun argent ne circule. Carte de test : <code>4242 4242 4242 4242</code>, date future quelconque, code 123.</span></div>' : ''}
     ${famAccesHtml(famData.fam, active)}
     ${famEnfantsHtml(enfants, active)}
     ${famSuiviHtml(enfants)}
@@ -220,7 +221,7 @@ function famAccesHtml(fam, active){
     <button class="btn" id="famPayBtn" onclick="famPayer()" disabled><span class="gicon">credit_card</span> Payer par carte</button>
     <span class="hint" id="famPayMsg" style="display:block;margin-top:6px;"></span>
     <p class="hint" style="margin:8px 0 0;">Paiement unique et sécurisé (Stripe), <b>sans reconduction automatique</b> : rien ne sera prélevé l'an prochain sans votre accord. Facture envoyée par e-mail. En cas de litige, après nous avoir écrit, vous pouvez recourir gratuitement au médiateur de la consommation CM2C (<a href="https://www.cm2c.net/declarer-un-litige.php" target="_blank" rel="noopener">cm2c.net</a>, 49 rue de Ponthieu, 75008 Paris) ; voir les <a href="#/cgv">CGV</a>.${fam.montant_paye_centimes && memePeriode ? ' Déjà payé pour cette année : '+famEuros(fam.montant_paye_centimes)+'.' : ''}</p>
-    ${famData.pay.length ? `<details style="margin-top:8px;"><summary class="hint">Historique des paiements</summary><table class="fam-table" style="margin-top:6px;"><tr><th>Date</th><th>Niveaux</th><th>Montant</th><th>Accès jusqu'au</th></tr>${famData.pay.map(p=>`<tr><td>${famDate(p.created_at)}</td><td>${(p.niveaux||[]).join(', ')}</td><td>${famEuros(p.montant_centimes)}</td><td>${famDate(p.acces_until)}</td></tr>`).join('')}</table></details>` : ''}
+    ${famData.pay.length ? `<details style="margin-top:8px;"><summary class="hint">Historique des paiements</summary><table class="fam-table" style="margin-top:6px;"><tr><th>Date</th><th>Niveaux</th><th>Montant</th><th>Accès jusqu'au</th></tr>${famData.pay.map(p=>`<tr><td>${famDate(p.created_at)}</td><td>${(p.niveaux||[]).join(', ')}</td><td>${famEuros(p.montant_centimes)}${p.test?' <span class="fam-badge" style="background:#6A4FB3;">test</span>':''}</td><td>${famDate(p.acces_until)}</td></tr>`).join('')}</table></details>` : ''}
   </div>`;
 }
 function famMajPrix(){
@@ -518,24 +519,25 @@ async function famAdminRefresh(){
     sb.from('familles').select('*, profiles!familles_parent_id_fkey(nom,prenom,email)').order('created_at', {ascending:false}),
     sb.from('famille_enfants').select('parent_id,uai,hors_college'),
     sb.from('famille_exclusions').select('*').order('uai'),
-    sb.from('famille_paiements').select('montant_centimes,created_at'),
+    sb.from('famille_paiements').select('montant_centimes,created_at,test'),
   ]);
   const today = new Date().toISOString().slice(0,10);
   const nbEnf = new Map(); (enf||[]).forEach(e=>nbEnf.set(e.parent_id, (nbEnf.get(e.parent_id)||0)+1));
   const actives = (fams||[]).filter(f=>f.acces_until && f.acces_until>=today).length;
-  const ca = (pays||[]).reduce((a,p)=>a+p.montant_centimes,0);
+  const ca = (pays||[]).filter(p=>!p.test).reduce((a,p)=>a+p.montant_centimes,0);
   const rows = (fams||[]).map(f=>{
     const p = f.profiles||{}, act = f.acces_until && f.acces_until>=today;
     return `<tr><td>${famEsc([p.prenom,p.nom].filter(Boolean).join(' '))}<br><small class="hint">${famEsc(p.email)}</small></td>
       <td>${act?'<span class="fam-badge" style="background:#1E7B34;">active</span>':'<span class="fam-badge" style="background:#8A8F98;">sans accès</span>'}</td>
       <td>${(f.niveaux||[]).join(', ')||'–'}</td><td>${famDate(f.acces_until)||'–'}</td><td>${nbEnf.get(f.parent_id)||0}</td>
-      <td>${famEuros(f.montant_paye_centimes||0)}</td><td><small class="hint">${famDate(f.certification&&f.certification.date)}</small></td></tr>`;
+      <td>${famEuros(f.montant_paye_centimes||0)}</td><td><small class="hint">${famDate(f.certification&&f.certification.date)}</small></td>
+      <td><label class="hint" style="display:inline-flex;gap:4px;align-items:center;margin:0;white-space:nowrap;" title="Paiements simulés avec la clé test de Stripe (cartes fictives)"><input type="checkbox" ${f.stripe_test?'checked':''} onchange="famAdminTest('${f.parent_id}', this)"> test</label></td></tr>`;
   }).join('');
   root.innerHTML = `
     <div class="tool-shell fam-card">
       <strong class="fam-h"><span class="gicon">family_restroom</span> Comptes Famille</strong>
-      <p class="hint" style="margin:4px 0 8px;">${(fams||[]).length} famille(s) inscrite(s), ${actives} avec un accès en cours · ${famEuros(ca)} encaissés au total (voir aussi le tableau de bord Stripe).</p>
-      ${rows ? `<div style="overflow-x:auto;"><table class="fam-table"><tr><th>Parent</th><th>Statut</th><th>Niveaux</th><th>Jusqu'au</th><th>Enfants</th><th>Payé (année)</th><th>Déclaration</th></tr>${rows}</table></div>` : '<p class="hint">Aucune famille pour l\'instant.</p>'}
+      <p class="hint" style="margin:4px 0 8px;">${(fams||[]).length} famille(s) inscrite(s), ${actives} avec un accès en cours · ${famEuros(ca)} encaissés au total, paiements de test exclus (voir aussi le tableau de bord Stripe). Cochez « test » pour qu'un compte paie avec les cartes fictives de Stripe.</p>
+      ${rows ? `<div style="overflow-x:auto;"><table class="fam-table"><tr><th>Parent</th><th>Statut</th><th>Niveaux</th><th>Jusqu'au</th><th>Enfants</th><th>Payé (année)</th><th>Déclaration</th><th>Stripe</th></tr>${rows}</table></div>` : '<p class="hint">Aucune famille pour l\'instant.</p>'}
     </div>
     <div class="tool-shell fam-card">
       <strong class="fam-h"><span class="gicon">block</span> Établissements exclus de l'offre Famille</strong>
@@ -544,6 +546,10 @@ async function famAdminRefresh(){
       <div class="fam-row" style="margin-top:8px;"><input type="text" id="famExclUai" maxlength="8" placeholder="UAI" style="width:110px;text-transform:uppercase;"> <input type="text" id="famExclMotif" placeholder="motif (facultatif)" style="flex:1;min-width:180px;"> <button class="btn" onclick="famAdminExclAjouter()">Ajouter</button></div>
       <span class="hint" id="famExclMsg" style="display:block;margin-top:6px;"></span>
     </div>`;
+}
+async function famAdminTest(parentId, cb){
+  const { error } = await sb.from('familles').update({ stripe_test: cb.checked }).eq('parent_id', parentId);
+  if(error){ cb.checked = !cb.checked; niceAlert('Erreur : '+error.message); }
 }
 async function famAdminExclAjouter(){
   const uai = (document.getElementById('famExclUai').value||'').trim().toUpperCase();
