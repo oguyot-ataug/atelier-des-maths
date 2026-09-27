@@ -451,8 +451,10 @@ function qzEdHtml(){
   return `
     <div id="qzEdReglages"></div>
     <div class="qz-ed-bar"><span class="gicon">quiz</span> <span id="qzEdTotal"></span>
-      <button type="button" class="btn secondary qz-mini needs-ai-eval" style="margin-left:auto;" onclick="qzGenOuvrir()"><span class="gicon">smart_toy</span> Générer avec l'IA</button>
-      <button type="button" class="btn secondary qz-mini" onclick="qzApercu()"><span class="gicon">visibility</span> Tester comme un élève</button></div>
+      <button type="button" class="btn secondary qz-mini" style="margin-left:auto;" onclick="qzImporterOuvrir()" title="Reprendre des questions de vos questionnaires ou de ceux de vos collègues"><span class="gicon">inventory_2</span> Importer des questions</button>
+      <button type="button" class="btn secondary qz-mini needs-ai-eval" onclick="qzGenOuvrir()"><span class="gicon">smart_toy</span> Générer avec l'IA</button>
+      <button type="button" class="btn secondary qz-mini" onclick="qzApercu()"><span class="gicon">visibility</span> Tester comme un élève</button>
+      <button type="button" class="btn secondary qz-mini" onclick="qzEnregistrerSeul()" title="Garder ce questionnaire dans « Mes questionnaires » sans le donner tout de suite"><span class="gicon">save</span> Enregistrer sans donner</button></div>
     <div id="qzEdListe"></div>
     <p class="hint" style="margin:12px 0 6px;font-weight:700;">Ajouter :</p>
     <div class="qz-add-row">${QZ_TYPES.map(t => `<button type="button" class="qz-add" onclick="qzEdAjouter('${t.id}')" title="${qzEsc(t.aide)}"><span class="gicon">${t.icon}</span> ${t.label}</button>`).join('')}</div>`;
@@ -564,6 +566,7 @@ function qzPInit(data, apercu){
 }
 function qzRetourEleve(){
   qzPStop();
+  if(qzP && qzP.retourBanque){ qzP = null; if(typeof qzBanqueOuvrir === 'function') qzBanqueOuvrir(); return; }
   if(qzP && qzP.apercu){ qzP = null; showView('view-devoirs-prof'); setActiveTopnav('devoirsprof'); const b = document.querySelector('.devoir-zone-create'); if(b) b.scrollIntoView({ block: 'start' }); return; }
   qzP = null;
   showView('view-devoirs-eleve'); setActiveTopnav('mesdevoirs');

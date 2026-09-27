@@ -11,7 +11,7 @@ document.getElementById('view-devoirs-prof').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;"><span class=gicon>assignment</span> Devoirs</h1>
   <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, un défi Objectif Nombre, ou un questionnaire en ligne.</p>
-  <div class="tool-row" style="margin:0 0 12px;"><button class="btn secondary" onclick="qzOuvrirCarnet()"><span class=gicon>menu_book</span> Carnet de notes des questionnaires</button></div>
+  <div class="tool-row" style="margin:0 0 12px;"><button class="btn secondary" onclick="qzBanqueOuvrir()"><span class=gicon>library_books</span> Mes questionnaires</button><button class="btn secondary" onclick="qzOuvrirCarnet()"><span class=gicon>menu_book</span> Carnet de notes des questionnaires</button></div>
 
   <div class="tool-shell devoir-zone-create">
     <p class="example-title devoir-zone-title" style="margin-bottom:6px;" id="devoirCreateTitle"><span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir</p>
@@ -480,7 +480,7 @@ function devoirTypeLabel(type){ const t = DEVOIR_TYPES.find(t=>t.id===type); ret
 async function refreshDevoirsProfListing(){
   const el = document.getElementById('devoirsProfListing');
   const { data: devoirsList, error } = await sb.from('devoirs')
-    .select('id,titre,consigne,date_depot,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_rounds,student_ids,qz_publie_at,classes(nom,niveau)')
+    .select('id,titre,consigne,date_depot,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_rounds,student_ids,qz_publie_at,questionnaire_id,classes(nom,niveau)')
     .eq('teacher_id', currentUser.id).order('created_at',{ascending:false});
   if(error){ el.textContent = 'Erreur : '+error.message; return; }
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir assigné pour l\'instant.</p>'; return; }
@@ -509,7 +509,7 @@ async function refreshDevoirsProfListing(){
       <span style="display:flex;gap:6px;flex:none;">
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="editDevoirPrompt('${d.id}')"><span class=gicon>edit</span> Éditer</button>
         ${d.type==='questionnaire'
-          ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="qzOuvrirCorrection('${d.id}')"><span class=gicon>fact_check</span> Corriger</button>`
+          ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="qzOuvrirCorrection('${d.id}')"><span class=gicon>fact_check</span> Corriger</button>${d.questionnaire_id ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="qzBanqueDonner('${d.questionnaire_id}')" title="Donner une copie de ce questionnaire à une autre classe"><span class=gicon>content_copy</span> Réutiliser</button>` : ''}`
           : `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span> Voir les rendus</button>`}
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="deleteDevoirPrompt('${d.id}')"><span class=gicon>delete</span> Supprimer</button>
       </span>
