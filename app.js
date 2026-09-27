@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.736', items:[
+    "Nouveautés de la page d'accueil : vidéo « L'entraînement non noté » -- demandé : \"Fais aussi une vidéo pour le mode entraînement\", puis \"ajoute-la aux nouveautés et sur l'atelier augmenté\".",
+  ]},
   { version:'2026-08-19.735', items:[
     "Éditeur d'interrogation : en mode « Entraînement / remédiation », le récapitulatif affiche « entraînement, non noté » au lieu du total de points et de la note sur 20 (repéré en préparant la vidéo de l'entraînement).",
   ]},
