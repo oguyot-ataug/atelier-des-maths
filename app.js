@@ -2675,6 +2675,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.704', items:[
+    "Fix -- Administration, demandes d'inscription des professeurs : « Could not embed because more than one relationship was found for 'profiles' and 'etablissements' ». Depuis l'ajout du référent d'établissement, deux liens existent entre professeurs et établissements (l'établissement du professeur, le référent de l'établissement) ; la liste précise maintenant qu'il s'agit de l'établissement du professeur.",
+  ]},
   { version:'2026-08-19.703', items:[
     "Accès à l'offre Famille depuis le site -- signalé : \"Comment les familles s'inscrivent ? Il n'y a pas de lien direct sur la connexion ou la page d'accueil\". Bandeau « Vous êtes parent ? » sur l'accueil (visiteurs : découvrir l'offre, avec le prix de départ ; parents : accès direct à leur Espace famille) et bouton « Je suis parent » dans le menu de connexion. Affichés seulement quand la case « Offre Famille visible sur le site » est cochée dans Administration > Familles (l'adresse directe /#/famille marche toujours).",
     "Fix -- menu de connexion : il s'ouvrait par-dessus l'avatar (quand « Aa » et l'avatar sont empilés), qu'on ne pouvait alors plus cliquer pour le refermer. Il s'ouvre maintenant juste en dessous.",

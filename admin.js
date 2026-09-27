@@ -1599,7 +1599,7 @@ async function adminRefreshSignupRequests(){
   const el = document.getElementById('adminSignupRequestsListing');
   if(!el) return;
   const { data: requests, error } = await sb.from('profiles')
-    .select('id,nom,prenom,email,uai,created_at,etablissements(nom)')
+    .select('id,nom,prenom,email,uai,created_at,etablissements!profiles_uai_fkey(nom)')
     .eq('role','prof').eq('signup_status','pending')
     .order('created_at',{ascending:true});
   if(error){ el.textContent = 'Erreur : '+error.message; return; }
