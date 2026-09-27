@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.715', items:[
+    "Interrogations en ligne séparées des devoirs -- demandé : \"Je préfère que questionnaire (interro en ligne) soit séparé de l'attribution de devoirs type automatismes et objectif nombre.\" La page Devoirs en ligne ne propose plus le type Questionnaire et ne liste plus les interrogations. Tout se fait depuis Outils prof > Évaluations > Interrogations en ligne : onglet « Interrogations données » (état brouillon / programmée / ouverte / fermée / résultats publiés, copies rendues, copies à corriger ; Corriger, Modifier, Réutiliser pour une autre classe, Supprimer), « Mes questionnaires », « Partagés avec moi », Carnet de notes, et un formulaire « Nouvelle interrogation » à part (titre, classe, toute la classe ou élèves choisis, ouverture, date limite, consigne, puis les questions). Côté élève, « Mes devoirs » range les interrogations dans une section à part, au-dessus des devoirs.",
+  ]},
   { version:'2026-08-19.714', items:[
     "Menus réorganisés -- demandé : \"Dans outils profs un menu évaluations qui mènent vers Création évaluation, Devoirs en ligne, Interrogation en ligne\". Outils prof > Évaluations (un clic le déplie ; toujours déplié sur téléphone) : Créer une évaluation, Devoirs en ligne, Interrogations en ligne. La page des questionnaires s'appelle désormais « Interrogations en ligne » (mes questionnaires, partagés avec moi, nouvelle interrogation, carnet de notes). Les Devoirs en ligne ont maintenant leur propre adresse (#/devoirs) : recharger la page ne ramène plus à l'accueil.",
   ]},
@@ -4745,7 +4748,7 @@ async function renderClassDevoirsSummary(classId, containerId, nbEleves){
   const rows = await Promise.all(devoirsList.map(async d=>{
     const { count: nbRendus } = await sb.from('devoirs_rendus').select('*',{count:'exact',head:true}).eq('devoir_id', d.id).eq('est_rendu', true);
     const dateStr = d.date_limite ? new Date(d.date_limite).toLocaleDateString('fr-FR') : '';
-    const t = (typeof DEVOIR_TYPES!=='undefined') ? DEVOIR_TYPES.find(t=>t.id===d.type) : null;
+    const t = (typeof DEVOIR_TYPES!=='undefined') ? (DEVOIR_TYPES.find(t=>t.id===d.type) || (d.type==='questionnaire' ? DEVOIR_TYPE_INTERRO : null)) : null;
     const cible = d.student_ids && d.student_ids.length;
     const totalPourCeDevoir = cible ? d.student_ids.length : nbEleves;
     return `<div class="devoir-row" style="--dt-color:${t?t.color:'var(--ink-soft)'};display:flex;align-items:center;gap:8px;">

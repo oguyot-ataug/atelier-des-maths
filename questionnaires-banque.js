@@ -13,10 +13,11 @@
      questions, sans jamais pouvoir modifier l'original.
    - Banque de questions (dans l'éditeur, « Importer des questions ») : toutes les questions de
      mes questionnaires et de ceux partagés avec moi, filtrables par mot, type et compétence.
-   Dépend de questionnaires.js (qzEd, qzPInit...) et de devoirs.js (formulaire de devoir).
+   Dépend de questionnaires.js (qzEd, qzPInit...) et de questionnaires-interros.js (formulaire,
+   onglet « Interrogations données »).
    ===================================================================== */
 
-let qzB = null; // { mes:[], partages:[], devoirs:Map(qid→[devoirs]), onglet, filtre }
+let qzB = null; // { mes:[], partages:[], devoirs:Map(qid→[devoirs]), interros:[], onglet:'donnees'|'mes'|'partages', filtre }
 
 async function qzBanqueCharger(){
   const [{ data: mes, error }, { data: partages }] = await Promise.all([
@@ -28,14 +29,14 @@ async function qzBanqueCharger(){
   const { data: dv } = ids.length ? await sb.from('devoirs').select('id,titre,questionnaire_id,classes(nom)').in('questionnaire_id', ids) : { data: [] };
   const devoirs = new Map();
   (dv || []).forEach(d => { if(!devoirs.has(d.questionnaire_id)) devoirs.set(d.questionnaire_id, []); devoirs.get(d.questionnaire_id).push(d); });
-  qzB = Object.assign(qzB || { onglet: 'mes', filtre: '' }, { mes: mes || [], partages: Array.isArray(partages) ? partages : [], devoirs });
+  qzB = Object.assign(qzB || { onglet: 'donnees', filtre: '' }, { mes: mes || [], partages: Array.isArray(partages) ? partages : [], devoirs });
   return qzB;
 }
 async function qzBanqueOuvrir(){
   showView('view-qz-banque'); setActiveTopnav('questionnaires');
   const root = document.getElementById('qzBanqueRoot');
   root.innerHTML = '<p class="hint">Chargement…</p>';
-  try{ await qzBanqueCharger(); }catch(e){ root.innerHTML = '<p class="hint">Erreur : ' + qzEsc(e.message) + '</p>'; return; }
+  try{ await qzBanqueCharger(); await qzInterrosCharger(); }catch(e){ root.innerHTML = '<p class="hint">Erreur : ' + qzEsc(e.message) + '</p>'; return; }
   qzBanqueRender();
 }
 function qzBanqueResume(q){
@@ -70,17 +71,19 @@ function qzBanqueRender(){
   const f = qzNormTexte(qzB.filtre || '');
   const garde = q => !f || qzNormTexte((q.titre || '') + ' ' + (q.auteur || '') + ' ' + (q.questions || []).map(x => x.enonce || '').join(' ')).includes(f);
   const liste = (qzB.onglet === 'mes' ? qzB.mes : qzB.partages).filter(garde);
+  const interros = (qzB.interros || []).filter(d => !f || qzNormTexte((d.titre || '') + ' ' + (d.classes ? d.classes.nom : '')).includes(f));
   root.innerHTML = `<span class="back-btn" onclick="showView('view-home');setActiveTopnav(null);">← Accueil</span>
     <h1 style="margin:6px 0 4px;"><span class="gicon">quiz</span> Interrogations en ligne</h1>
-    <p style="color:var(--ink-soft);max-width:75ch;">Vos questionnaires, ceux que vos collègues partagent avec vous, et la banque de toutes leurs questions (bouton « Importer des questions » dans l'éditeur). Donner un questionnaire à une classe en crée une copie : le modifier ensuite ne change rien pour les autres classes. Les interrogations données se corrigent depuis <a href="#" onclick="event.preventDefault();document.querySelector('[data-nav=devoirsprof]').click();">Devoirs en ligne</a> (bouton « Corriger »).</p>
+    <p style="color:var(--ink-soft);max-width:75ch;">Des interrogations notées, à la manière de Google Forms, séparées des devoirs d'entraînement : créez-les, donnez-les à une classe (en classe, chronométrées, ou à la maison), corrigez-les copie par copie ou question par question, puis publiez les résultats. Vos questionnaires et ceux de vos collègues sont réutilisables : donner un questionnaire à une classe en crée une copie, le modifier ensuite ne change rien pour les autres classes.</p>
     <div class="qz-c-tools">
-      <div class="qz-tabs"><button class="${qzB.onglet === 'mes' ? 'on' : ''}" onclick="qzB.onglet='mes';qzBanqueRender()"><span class="gicon">person</span> Mes questionnaires (${qzB.mes.length})</button>
+      <div class="qz-tabs"><button class="${qzB.onglet === 'donnees' ? 'on' : ''}" onclick="qzB.onglet='donnees';qzBanqueRender()"><span class="gicon">assignment_turned_in</span> Interrogations données (${(qzB.interros || []).length})</button>
+        <button class="${qzB.onglet === 'mes' ? 'on' : ''}" onclick="qzB.onglet='mes';qzBanqueRender()"><span class="gicon">person</span> Mes questionnaires (${qzB.mes.length})</button>
         <button class="${qzB.onglet === 'partages' ? 'on' : ''}" onclick="qzB.onglet='partages';qzBanqueRender()"><span class="gicon">group</span> Partagés avec moi (${qzB.partages.length})</button></div>
       <input type="search" class="qz-b-search" placeholder="Rechercher (titre, énoncé, auteur)…" value="${qzEsc(qzB.filtre)}" oninput="qzB.filtre=this.value;clearTimeout(qzB.t);qzB.t=setTimeout(()=>{qzBanqueRender();const i=document.querySelector('.qz-b-search');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}},250)">
       <button class="btn secondary" onclick="qzOuvrirCarnet()"><span class="gicon">menu_book</span> Carnet de notes</button>
       <button class="btn" onclick="qzBanqueNouveau()"><span class="gicon">add</span> Nouvelle interrogation</button>
     </div>
-    <div class="qz-b-grid">${liste.map(q => qzBanqueCarte(q, qzB.onglet !== 'mes')).join('') || `<p class="hint">${qzB.onglet === 'mes' ? (f ? 'Aucun questionnaire ne correspond.' : 'Aucun questionnaire pour l\'instant : créez-en un avec « Nouveau questionnaire » (ou dans un nouveau devoir).') : 'Aucun questionnaire partagé avec vous pour l\'instant.'}</p>`}</div>`;
+    ${qzB.onglet === 'donnees' ? qzInterrosHtml(interros) : `<div class="qz-b-grid">${liste.map(q => qzBanqueCarte(q, qzB.onglet !== 'mes')).join('') || `<p class="hint">${qzB.onglet === 'mes' ? (f ? 'Aucun questionnaire ne correspond.' : 'Aucun questionnaire pour l\'instant : créez-en un avec « Nouvelle interrogation ».') : 'Aucun questionnaire partagé avec vous pour l\'instant.'}</p>`}</div>`}`;
 }
 function qzBanqueTrouver(id){ return qzB && (qzB.mes.find(q => q.id === id) || qzB.partages.find(q => q.id === id)); }
 async function qzBanqueSur(id){
@@ -96,28 +99,13 @@ async function qzBanqueApercu(id){
     questions: qzPreparer(JSON.parse(JSON.stringify(q.questions || []))), copie: null }, true);
   qzP.retourBanque = true;
 }
-// Charge une COPIE du questionnaire dans le formulaire « Nouveau devoir ».
+// Ouvre le formulaire « Nouvelle interrogation » avec une COPIE du questionnaire.
 async function qzBanqueDonner(id){
   const q = await qzBanqueSur(id);
   if(!q){ await niceAlert('Questionnaire introuvable.'); return; }
-  showView('view-devoirs-prof'); setActiveTopnav('devoirsprof');
-  if(typeof renderDevoirsProf === 'function') await renderDevoirsProf();
-  if(typeof resetDevoirFormState === 'function') resetDevoirFormState();
-  qzEd = { id: null, questions: JSON.parse(JSON.stringify(q.questions || [])), reglages: Object.assign({}, QZ_REGLAGES_DEFAUT, q.reglages || {}, { ferme: false }) };
-  qzEdOuverte = null;
-  document.getElementById('devoirNewTitre').value = q.titre || '';
-  setDevoirNewType('questionnaire');
-  document.getElementById('devoirCreateStatus').textContent = `Questionnaire « ${q.titre || 'Sans titre'} » chargé : choisissez la classe et la date de dépôt, modifiez-le si besoin, puis assignez.`;
-  document.querySelector('.devoir-zone-create').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  await qzFormOuvrir({ copieDe: q });
 }
-function qzBanqueNouveau(){
-  showView('view-devoirs-prof'); setActiveTopnav('devoirsprof');
-  Promise.resolve(typeof renderDevoirsProf === 'function' ? renderDevoirsProf() : null).then(() => {
-    if(typeof resetDevoirFormState === 'function') resetDevoirFormState();
-    setDevoirNewType('questionnaire');
-    document.querySelector('.devoir-zone-create').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-}
+function qzBanqueNouveau(){ return qzFormOuvrir(); }
 async function qzBanqueCopier(id){
   const q = await qzBanqueSur(id); if(!q) return;
   const partage = q.teacher_id ? q.teacher_id !== currentUser.id : !!q.auteur;
@@ -131,7 +119,7 @@ async function qzBanqueCopier(id){
 async function qzBanqueSupprimer(id){
   const q = qzBanqueTrouver(id); if(!q) return;
   const dv = qzB.devoirs.get(id) || [];
-  if(dv.length){ await niceAlert(`Ce questionnaire est utilisé par ${dv.length > 1 ? dv.length + ' devoirs' : 'le devoir « ' + dv[0].titre + ' »'} : supprimez d'abord ${dv.length > 1 ? 'ces devoirs' : 'ce devoir'} (avec les copies des élèves), ou gardez-le.`); return; }
+  if(dv.length){ await niceAlert(`Ce questionnaire est utilisé par ${dv.length > 1 ? dv.length + ' interrogations' : 'l\'interrogation « ' + dv[0].titre + ' »'} : supprimez d'abord ${dv.length > 1 ? 'ces interrogations' : 'cette interrogation'} (onglet « Interrogations données », avec les copies des élèves), ou gardez-le.`); return; }
   if(!(await niceConfirm(`Supprimer définitivement « ${q.titre || 'Sans titre'} » ?`))) return;
   const { error } = await sb.from('questionnaires').delete().eq('id', id);
   if(error){ await niceAlert('Erreur : ' + error.message); return; }
@@ -257,15 +245,6 @@ function qzImporter(){
   document.getElementById('qzBIOverlay').style.display = 'none';
   niceAlert(`${nouvelles.length} question${nouvelles.length > 1 ? 's importées' : ' importée'}. Vous pouvez les modifier : l'original n'est pas touché.`);
 }
-// Enregistre le questionnaire dans « Mes questionnaires » sans créer de devoir.
-async function qzEnregistrerSeul(){
-  const titre = (document.getElementById('devoirNewTitre').value || '').trim();
-  const st = document.getElementById('devoirCreateStatus');
-  if(!titre){ st.textContent = 'Donnez un titre au questionnaire (champ « Titre ») avant de l\'enregistrer.'; return; }
-  try{ await qzEdEnregistrer(titre); st.textContent = '✓ Questionnaire enregistré dans « Mes questionnaires » (pas encore donné à une classe).'; }
-  catch(e){ st.textContent = e.message || String(e); }
-}
-
 (function qzbStyles(){
   const st = document.createElement('style');
   st.textContent = `

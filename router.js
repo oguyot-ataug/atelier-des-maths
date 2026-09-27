@@ -21,7 +21,7 @@ const ROUTE_SIMPLE = {
   'view-admin':'admin', 'view-supervision':'supervision', 'view-mesresultats':'mesresultats',
   'view-ia':'ia', 'view-famille':'famille', 'view-cgv':'cgv',
   'view-confidentialite':'confidentialite', 'view-mentions-legales':'mentions-legales',
-  'view-qz-carnet':'carnet', 'view-qz-banque':'questionnaires', 'view-devoirs-prof':'devoirs',
+  'view-qz-carnet':'carnet', 'view-qz-banque':'questionnaires', 'view-qz-form':'questionnaires', 'view-devoirs-prof':'devoirs',
 };
 const ROUTE_LABELS = {
   cm:'Suivi', compte:'Objectif Nombre', correction:'Correction', evaluation:'Évaluation',

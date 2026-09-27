@@ -1,5 +1,5 @@
 /* =====================================================================
-   questionnaires.js -- Questionnaires en ligne (type de devoir « Questionnaire »)
+   questionnaires.js -- Questionnaires en ligne (interrogations en ligne, page à part des devoirs)
 
    Demandé : "pouvoir faire des questionnaires (type interrogation en ligne) à la manière de
    Google Forms. On pourrait créer des questions de tout type (plus complet que Form) avec les
@@ -7,7 +7,7 @@
    questions ouvertes, proposer une correction IA."
 
    Étape 1 (ce fichier) :
-   - éditeur (dans le formulaire « Nouveau devoir ») : QCM, vrai/faux, réponse numérique, réponse
+   - éditeur (dans le formulaire « Nouvelle interrogation ») : QCM, vrai/faux, réponse numérique, réponse
      courte, question ouverte (texte ou photo, attendus, critères du barème), bloc de texte ;
      points et compétence par question ; mode « en classe » (chronométré) ou « à la maison » ;
    - passation élève (#view-questionnaire) : enregistrement automatique, chrono, sorties de page
@@ -21,7 +21,7 @@
    lui donnent le corrigé qu'une fois les résultats publiés (voir la migration questionnaires_etape1).
 
    Dépend de app.js (sb, currentUser, escapeHtml, renderMathText, niceAlert, niceConfirm,
-   nicePrompt, showView, accountClassesList) et de devoirs.js (DEVOIR_TYPES, formulaire).
+   nicePrompt, showView, accountClassesList) ; le formulaire est dans questionnaires-interros.js.
    ===================================================================== */
 
 const QZ_COMPETENCES = [
@@ -175,7 +175,7 @@ function qzOrdreChoix(q, reglages, seed){
 }
 
 /* =====================================================================
-   ÉDITEUR (professeur) -- dans le formulaire « Nouveau devoir » de devoirs.js
+   ÉDITEUR (professeur) -- dans le formulaire « Nouvelle interrogation » (questionnaires-interros.js)
    ===================================================================== */
 let qzEd = null; // { id, questions, reglages }
 let qzEdOuverte = null; // id de la question dépliée
@@ -188,7 +188,7 @@ async function qzEdCharger(questionnaireId){
   if(error || !data){ await niceAlert('Questionnaire introuvable' + (error ? ' : ' + error.message : '.')); return; }
   qzEd = { id: data.id, questions: data.questions || [], reglages: Object.assign({}, QZ_REGLAGES_DEFAUT, data.reglages || {}) };
 }
-// Enregistre le questionnaire (appelé par createDevoir) ; renvoie son id, ou lève une erreur lisible.
+// Enregistre le questionnaire (appelé par qzFormEnregistrer) ; renvoie son id, ou lève une erreur lisible.
 async function qzEdEnregistrer(titre){
   if(!qzEd) qzEdReset();
   const erreurs = qzEdVerifier();
@@ -323,7 +323,7 @@ function qzEdRenderReglages(){
   const r = qzEd.reglages;
   box.innerHTML = `
     <div class="qz-mode-row">
-      <button type="button" class="qz-mode${r.mode === 'maison' ? ' on' : ''}" onclick="qzEdReglage('mode','maison')"><span class="gicon">home</span><span><b>À la maison</b><small>Sans limite de temps, jusqu'à la date limite du devoir.</small></span></button>
+      <button type="button" class="qz-mode${r.mode === 'maison' ? ' on' : ''}" onclick="qzEdReglage('mode','maison')"><span class="gicon">home</span><span><b>À la maison</b><small>Sans limite de temps, jusqu'à la date limite de l'interrogation.</small></span></button>
       <button type="button" class="qz-mode${r.mode === 'classe' ? ' on' : ''}" onclick="qzEdReglage('mode','classe')"><span class="gicon">timer</span><span><b>Interrogation en classe</b><small>Durée limitée, copie rendue automatiquement à la fin, sorties de la page signalées.</small></span></button>
     </div>
     <div class="qz-reg-grid">
@@ -460,7 +460,7 @@ function qzEdHtml(){
     <div class="qz-add-row">${QZ_TYPES.map(t => `<button type="button" class="qz-add" onclick="qzEdAjouter('${t.id}')" title="${qzEsc(t.aide)}"><span class="gicon">${t.icon}</span> ${t.label}</button>`).join('')}</div>`;
 }
 function qzEdMonter(){
-  const box = document.getElementById('devoirTypeQuestionnaireBox');
+  const box = document.getElementById('qzfEditeur');
   if(!box) return;
   if(!qzEd) qzEdReset();
   if(!box.dataset.monte){ box.innerHTML = qzEdHtml(); box.dataset.monte = '1'; }
@@ -548,8 +548,8 @@ async function qzOuvrir(devoirId){
 }
 function qzApercu(){
   if(!qzEd || !qzEd.questions.length){ niceAlert('Ajoutez d\'abord des questions.'); return; }
-  const titre = (document.getElementById('devoirNewTitre') || {}).value || 'Questionnaire';
-  const consigne = (document.getElementById('devoirNewConsigne') || {}).value || '';
+  const titre = (document.getElementById('qzfTitre') || {}).value || 'Questionnaire';
+  const consigne = (document.getElementById('qzfConsigne') || {}).value || '';
   showView('view-questionnaire');
   qzPInit({ devoir: { id: 'apercu', titre, consigne, publie: false }, reglages: qzEd.reglages,
     questions: qzPreparer(JSON.parse(JSON.stringify(qzEd.questions))), copie: null }, true);
@@ -567,7 +567,7 @@ function qzPInit(data, apercu){
 function qzRetourEleve(){
   qzPStop();
   if(qzP && qzP.retourBanque){ qzP = null; if(typeof qzBanqueOuvrir === 'function') qzBanqueOuvrir(); return; }
-  if(qzP && qzP.apercu){ qzP = null; showView('view-devoirs-prof'); setActiveTopnav('devoirsprof'); const b = document.querySelector('.devoir-zone-create'); if(b) b.scrollIntoView({ block: 'start' }); return; }
+  if(qzP && qzP.apercu){ qzP = null; showView('view-qz-form'); setActiveTopnav('questionnaires'); const b = document.getElementById('qzfEditeur'); if(b) b.scrollIntoView({ block: 'start' }); return; }
   qzP = null;
   showView('view-devoirs-eleve'); setActiveTopnav('mesdevoirs');
   if(typeof renderDevoirsEleve === 'function') renderDevoirsEleve();
@@ -861,11 +861,11 @@ function qzTick(){
    ===================================================================== */
 let qzC = null; // { devoir, questionnaire, eleves, copies:Map(studentId→copie), vue, eleveSel, questionSel }
 async function qzOuvrirCorrection(devoirId, vue){
-  showView('view-qz-correction'); setActiveTopnav('devoirsprof');
+  showView('view-qz-correction'); setActiveTopnav('questionnaires');
   const root = document.getElementById('qzCorrRoot');
   root.innerHTML = '<p class="hint">Chargement…</p>';
   const { data: devoir, error } = await sb.from('devoirs').select('*, classes(nom,niveau)').eq('id', devoirId).single();
-  if(error || !devoir){ root.innerHTML = '<p class="hint">Devoir introuvable.</p>'; return; }
+  if(error || !devoir){ root.innerHTML = '<p class="hint">Interrogation introuvable.</p>'; return; }
   const [{ data: qz }, { data: copies }, eleves] = await Promise.all([
     sb.from('questionnaires').select('*').eq('id', devoir.questionnaire_id).maybeSingle(),
     sb.from('qz_copies').select('*').eq('devoir_id', devoirId),
@@ -902,7 +902,7 @@ function qzCRender(){
   const encours = qzC.eleves.filter(e => { return !qzEstRendue(qzC.copies.get(e.id)) && qzC.copies.has(e.id); }).length;
   const publie = !!d.qz_publie_at;
   root.innerHTML = `
-    <span class="back-btn" onclick="qzCFermer()">← Devoirs</span>
+    <span class="back-btn" onclick="qzCFermer()">← Interrogations en ligne</span>
     <div class="qz-c-head">
       <div><h1 style="margin:4px 0 2px;"><span class="gicon">quiz</span> ${qzEsc(d.titre)}</h1>
         <p class="hint" style="margin:0;">${qzEsc(d.classes ? d.classes.nom : '')} · ${qzC.reglages.mode === 'classe' ? `interrogation en classe (${qzC.reglages.duree} min)` : 'à la maison'} · ${qzNum(qzTotalMax(qzC.qz.questions))} points, note sur ${qzC.reglages.note_sur}</p></div>
@@ -927,7 +927,7 @@ function qzCRender(){
   if(qzC.vue === 'copies') qzCRenderCopies(); else qzCRenderQuestions();
 }
 function qzCVue(v){ qzC.vue = v; qzCRender(); }
-function qzCFermer(){ qzC = null; showView('view-devoirs-prof'); setActiveTopnav('devoirsprof'); if(typeof refreshDevoirsProfListing === 'function') refreshDevoirsProfListing(); }
+function qzCFermer(){ qzC = null; if(qzB) qzB.onglet = 'donnees'; qzBanqueOuvrir(); }
 async function qzCFermerAcces(ferme){
   qzC.reglages.ferme = ferme;
   const reglages = Object.assign({}, qzC.qz.reglages || {}, { ferme });
@@ -1249,7 +1249,7 @@ function qzGenChapitres(n){
   return liste.map(c => `<option value="${qzEsc(c.t)}">${qzEsc(c.t)}</option>`).join('');
 }
 function qzGenOuvrir(){
-  const classe = (accountClassesList || []).find(c => c.id === (document.getElementById('devoirNewClasse') || {}).value);
+  const classe = (accountClassesList || []).find(c => c.id === (document.getElementById('qzfClasse') || {}).value);
   const niveau = classe && classe.niveau === '5e' ? '5e' : '6e';
   let o = document.getElementById('qzGenOverlay');
   if(!o){ o = document.createElement('div'); o.id = 'qzGenOverlay'; o.className = 'modal-overlay'; o.style.zIndex = '400'; document.body.appendChild(o);
@@ -1448,7 +1448,7 @@ function qzCarnetCompetences(body){
 (function qzStyles(){
   const st = document.createElement('style');
   st.textContent = `
-    #devoirTypeQuestionnaireBox{margin-top:8px;}
+    #qzfEditeur{margin-top:4px;}
     .qz-mode-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
     .qz-mode{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1.5px solid rgba(28,43,57,.15);background:#fff;border-radius:12px;padding:10px 12px;cursor:pointer;font:inherit;color:var(--ink);}
     .qz-mode .gicon{font-size:26px;color:#6B3FA0;}

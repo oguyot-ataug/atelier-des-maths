@@ -10,8 +10,8 @@
 document.getElementById('view-devoirs-prof').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;"><span class=gicon>assignment</span> Devoirs</h1>
-  <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, un défi Objectif Nombre, ou un questionnaire en ligne.</p>
-  <div class="tool-row" style="margin:0 0 12px;"><button class="btn secondary" onclick="qzBanqueOuvrir()"><span class=gicon>quiz</span> Interrogations en ligne (mes questionnaires)</button><button class="btn secondary" onclick="qzOuvrirCarnet()"><span class=gicon>menu_book</span> Carnet de notes des questionnaires</button></div>
+  <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, ou un défi Objectif Nombre.</p>
+  <p class="hint" style="margin:0 0 12px;max-width:75ch;"><span class=gicon style="font-size:1rem;vertical-align:middle;color:#6B3FA0;">quiz</span> Les interrogations notées (questionnaires en ligne) ont leur propre page : <a href="#" onclick="event.preventDefault();qzBanqueOuvrir();">Outils prof › Évaluations › Interrogations en ligne</a>.</p>
 
   <div class="tool-shell devoir-zone-create">
     <p class="example-title devoir-zone-title" style="margin-bottom:6px;" id="devoirCreateTitle"><span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir</p>
@@ -59,7 +59,6 @@ document.getElementById('view-devoirs-prof').innerHTML = `
       <div id="devoirCebRoundsList" style="border:1px solid rgba(28,43,57,.15);border-radius:8px;padding:8px;"></div>
     </div>
 
-    <div id="devoirTypeQuestionnaireBox" style="display:none;"></div>
 
     <div class="tool-row" style="margin-top:10px;">
       <button class="btn" id="devoirCreateBtn" onclick="createDevoir()">Assigner ce devoir</button>
@@ -106,8 +105,11 @@ const DEVOIR_TYPES = [
   {id:'figure_completer', label:'Figure à compléter', icon:'auto_fix_high', color:'#26AAB1'},
   {id:'automatismes', label:'Automatismes', icon:'bolt', color:'#FF8208'},
   {id:'compte_est_bon', label:'Objectif Nombre', icon:'casino', color:'#9E1F5E'},
-  {id:'questionnaire', label:'Questionnaire', icon:'quiz', color:'#6B3FA0'},
 ];
+/* Les interrogations en ligne (type 'questionnaire') restent des lignes de la table devoirs mais
+   ont leur propre page (questionnaires-interros.js) : absentes du formulaire et de la liste de la
+   page Devoirs ; cette entrée ne sert qu'à les afficher ailleurs (Supervision). */
+const DEVOIR_TYPE_INTERRO = {id:'questionnaire', label:'Interrogation en ligne', icon:'quiz', color:'#6B3FA0'};
 let devoirNewType = 'fichier';
 let devoirNewFigureDepart = null; // serializeFigState(...) de la figure de départ (type=figure_completer)
 let devoirNewAutomatismesSeqs = new Set(); // sequence_id choisis (type=automatismes)
@@ -162,14 +164,13 @@ function renderDevoirTypePicker(){
   const box = document.getElementById('devoirTypePicker');
   if(!box) return;
   box.innerHTML = DEVOIR_TYPES.map(t=>`<button type="button" class="devoir-type-btn${devoirNewType===t.id?' active':''}" style="--dt-color:${t.color};--dt-bg:${t.color}14;" onclick="setDevoirNewType('${t.id}')"><span class=gicon>${t.icon}</span> ${t.label}</button>`).join('');
-  const boxes = {figure_completer:'devoirTypeFigureCompleterBox', automatismes:'devoirTypeAutomatismesBox', compte_est_bon:'devoirTypeCebBox', questionnaire:'devoirTypeQuestionnaireBox'};
+  const boxes = {figure_completer:'devoirTypeFigureCompleterBox', automatismes:'devoirTypeAutomatismesBox', compte_est_bon:'devoirTypeCebBox'};
   Object.keys(boxes).forEach(type=>{
     const el = document.getElementById(boxes[type]);
     if(el) el.style.display = devoirNewType===type ? 'block' : 'none';
   });
   if(devoirNewType==='automatismes') renderDevoirAutomatismesPicker();
   if(devoirNewType==='compte_est_bon') renderDevoirCebPicker();
-  if(devoirNewType==='questionnaire' && typeof qzEdMonter==='function') qzEdMonter();
 }
 function setDevoirNewType(t){ devoirNewType = t; renderDevoirTypePicker(); }
 /* Réutilise directement CM_SEQUENCES (calcul-mental.js) -- pas de duplication de la liste des
@@ -358,7 +359,6 @@ async function createDevoir(){
   const status = document.getElementById('devoirCreateStatus');
   const titre = document.getElementById('devoirNewTitre').value.trim();
   let consigne = document.getElementById('devoirNewConsigne').value.trim();
-  if(!consigne && devoirNewType==='questionnaire') consigne = 'Répondez aux questions.';
   const classId = document.getElementById('devoirNewClasse').value;
   const dateDepotStr = document.getElementById('devoirNewDateDepot').value;
   const dateStr = document.getElementById('devoirNewDate').value;
@@ -367,13 +367,6 @@ async function createDevoir(){
   if(devoirNewType==='automatismes' && !devoirNewAutomatismesSeqs.size){ status.textContent = 'Choisissez au moins une séquence.'; return; }
   if(devoirNewTargetMode==='eleves' && !devoirNewTargetIds.size){ status.textContent = 'Sélectionnez au moins un élève.'; return; }
   status.textContent = 'Enregistrement…';
-  // Questionnaire : les questions (avec réponses attendues et barème) sont enregistrées à part,
-  // dans une table que les élèves ne lisent pas (voir questionnaires.js).
-  let questionnaireId = null;
-  if(devoirNewType==='questionnaire'){
-    try{ questionnaireId = await qzEdEnregistrer(titre); }
-    catch(e){ status.textContent = e.message || String(e); return; }
-  }
   const payload = {
     teacher_id: currentUser.id, class_id: classId, titre, consigne, type: devoirNewType,
     date_depot: dateDepotStr ? new Date(dateDepotStr).toISOString() : null,
@@ -381,7 +374,6 @@ async function createDevoir(){
     student_ids: devoirNewTargetMode==='eleves' ? Array.from(devoirNewTargetIds) : null,
   };
   if(devoirNewType==='figure_completer') payload.figure_depart = devoirNewFigureDepart;
-  if(devoirNewType==='questionnaire') payload.questionnaire_id = questionnaireId;
   if(devoirNewType==='automatismes') payload.automatismes_sequences = Array.from(devoirNewAutomatismesSeqs);
   if(devoirNewType==='compte_est_bon'){
     payload.ceb_n_large = devoirNewCebNLarge;
@@ -407,6 +399,8 @@ async function createDevoir(){
 async function editDevoirPrompt(devoirId){
   const { data: d, error } = await sb.from('devoirs').select('*').eq('id', devoirId).single();
   if(error || !d){ await niceAlert('Erreur : '+(error?error.message:'devoir introuvable')); return; }
+  // Les interrogations en ligne ont leur propre formulaire (questionnaires-interros.js).
+  if(d.type==='questionnaire' && typeof qzFormModifier==='function'){ devoirReturnTarget = null; return qzFormModifier(devoirId); }
   devoirEditingId = devoirId;
   document.getElementById('devoirNewTitre').value = d.titre || '';
   document.getElementById('devoirNewConsigne').value = d.consigne || '';
@@ -424,7 +418,6 @@ async function editDevoirPrompt(devoirId){
   // ne perd rien de ce qui a déjà été testé/validé, et peut régénérer individuellement ceux qui
   // posent problème.
   devoirNewCebRoundsData = (d.ceb_rounds||[]).map(r=>({numbers:r.numbers, target:r.target, solutionExpr:r.solutionExpr, solutionValue:r.solutionValue, tested:false}));
-  if(typeof qzEdCharger==='function') await qzEdCharger(d.type==='questionnaire' ? d.questionnaire_id : null);
   devoirNewTargetMode = (d.student_ids && d.student_ids.length) ? 'eleves' : 'class';
   devoirNewTargetIds = new Set(d.student_ids || []);
   document.getElementById('devoirFigureDepartStatus').textContent = d.figure_depart ? '✓ Figure de départ déjà enregistrée (modifiable).' : '';
@@ -449,7 +442,6 @@ function resetDevoirFormState(){
   devoirNewCebNLarge = 2; devoirNewCebTimerOn = true; devoirNewCebTimerDuration = 60; devoirNewCebRounds = 1;
   devoirNewCebRoundsData = [];
   devoirNewTargetMode = 'class'; devoirNewTargetIds = new Set();
-  if(typeof qzEdReset==='function') qzEdReset();
   document.getElementById('devoirFigureDepartStatus').textContent = '';
   document.getElementById('devoirCreateTitle').innerHTML = '<span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir';
   document.getElementById('devoirCreateBtn').textContent = 'Assigner ce devoir';
@@ -476,12 +468,12 @@ function cancelDevoirEdit(){
     document.querySelector('.devoir-zone-list')?.scrollIntoView({behavior:'smooth', block:'start'});
   }
 }
-function devoirTypeLabel(type){ const t = DEVOIR_TYPES.find(t=>t.id===type); return t ? t.label : type; }
+function devoirTypeLabel(type){ const t = DEVOIR_TYPES.find(t=>t.id===type) || (type==='questionnaire' ? DEVOIR_TYPE_INTERRO : null); return t ? t.label : type; }
 async function refreshDevoirsProfListing(){
   const el = document.getElementById('devoirsProfListing');
   const { data: devoirsList, error } = await sb.from('devoirs')
     .select('id,titre,consigne,date_depot,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_rounds,student_ids,qz_publie_at,questionnaire_id,classes(nom,niveau)')
-    .eq('teacher_id', currentUser.id).order('created_at',{ascending:false});
+    .eq('teacher_id', currentUser.id).neq('type','questionnaire').order('created_at',{ascending:false});
   if(error){ el.textContent = 'Erreur : '+error.message; return; }
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir assigné pour l\'instant.</p>'; return; }
   // Nombre de rendus / nombre d'élèves concernés (toute la classe, ou la sélection d'élèves
@@ -495,7 +487,6 @@ async function refreshDevoirsProfListing(){
     const dateStr = d.date_limite ? new Date(d.date_limite).toLocaleDateString('fr-FR') : '';
     const typeDetail = d.type==='automatismes' ? ` · ${(d.automatismes_sequences||[]).length} séquence(s)`
       : d.type==='compte_est_bon' ? ` · ${(d.ceb_rounds||[]).length||1} compte(s), ${d.ceb_n_large??2} grand(s) nombre(s), ${d.ceb_timer_on?'chronométré':'illimité'}`
-      : d.type==='questionnaire' ? (d.qz_publie_at ? ' · résultats publiés' : ' · résultats non publiés')
       : '';
     const cibleDetail = cible ? `<span class="devoir-target-pill">${d.student_ids.length} élève(s) ciblé(s)</span> · ` : '';
     const enAttente = d.date_depot && new Date(d.date_depot) > new Date();
@@ -508,9 +499,7 @@ async function refreshDevoirsProfListing(){
       <span><b>${escapeHtml(d.titre)}</b> · ${escapeHtml(d.classes ? d.classes.nom+' ('+d.classes.niveau+')' : '')} · ${depotDetail}${cibleDetail}<span class="devoir-row-type"><span class=gicon style="font-size:1rem;vertical-align:middle;">${t?t.icon:'assignment'}</span> ${devoirTypeLabel(d.type)}</span><span class="hint" style="margin:0;">${typeDetail}</span>${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${totalEleves||0} rendu(s)</span>
       <span style="display:flex;gap:6px;flex:none;">
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="editDevoirPrompt('${d.id}')"><span class=gicon>edit</span> Éditer</button>
-        ${d.type==='questionnaire'
-          ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="qzOuvrirCorrection('${d.id}')"><span class=gicon>fact_check</span> Corriger</button>${d.questionnaire_id ? `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="qzBanqueDonner('${d.questionnaire_id}')" title="Donner une copie de ce questionnaire à une autre classe"><span class=gicon>content_copy</span> Réutiliser</button>` : ''}`
-          : `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span> Voir les rendus</button>`}
+        <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span> Voir les rendus</button>
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="deleteDevoirPrompt('${d.id}')"><span class=gicon>delete</span> Supprimer</button>
       </span>
     </div>`;
@@ -1229,7 +1218,7 @@ async function renderDevoirsEleve(){
       ${actionHtml}
       <span class="hint" id="devoirSubmitStatus_${d.id}" style="margin:0;"></span>
     </div>`;
-    return { id: d.id, statut: devoirStatutInfo(!!(rendu && rendu.est_rendu), d.date_limite, !!(rendu && rendu.a_reprendre)).label, html };
+    return { id: d.id, type: d.type, statut: devoirStatutInfo(!!(rendu && rendu.est_rendu), d.date_limite, !!(rendu && rendu.a_reprendre)).label, html };
   }));
   devoirsEleveCache = rows;
   renderDevoirsEleveFiltered();
@@ -1244,7 +1233,14 @@ function renderDevoirsEleveFiltered(){
   const filterSel = document.getElementById('devoirsEleveFilter');
   const filter = filterSel ? filterSel.value : '';
   const filtered = filter ? devoirsEleveCache.filter(d=>d.statut===filter) : devoirsEleveCache;
-  el.innerHTML = filtered.length ? filtered.map(d=>d.html).join('') : '<p class="hint">Aucun devoir ne correspond à ce filtre.</p>';
+  if(!filtered.length){ el.innerHTML = '<p class="hint">Aucun devoir ne correspond à ce filtre.</p>'; return; }
+  // Interrogations en ligne à part des devoirs -- demandé : "que questionnaire (interro en ligne)
+  // soit séparé de l'attribution de devoirs type automatismes et objectif nombre".
+  const interros = filtered.filter(d=>d.type==='questionnaire'), autres = filtered.filter(d=>d.type!=='questionnaire');
+  const titre = (icon, t) => `<h2 style="margin:18px 0 0;font-size:1.15rem;"><span class=gicon style="vertical-align:middle;">${icon}</span> ${t}</h2>`;
+  el.innerHTML = !interros.length ? autres.map(d=>d.html).join('')
+    : titre('quiz', 'Interrogations en ligne') + interros.map(d=>d.html).join('')
+      + (autres.length ? titre('assignment', 'Devoirs') + autres.map(d=>d.html).join('') : '');
 }
 async function submitDevoirFile(devoirId){
   const status = document.getElementById('devoirSubmitStatus_'+devoirId);
