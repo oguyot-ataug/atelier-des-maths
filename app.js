@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.721', items:[
+    "Interrogations en ligne : partage avec un collègue plus visible -- signalé : \"Je ne vois pas où on peut partager à une collègue ou faire une copie à une collègue.\" Le bouton « Partager » n'existait que dans l'onglet « Mes questionnaires » : il est maintenant aussi sur chaque questionnaire enregistré et chaque interrogation donnée de l'onglet « Mes interrogations », et dans le formulaire (« Partager avec un collègue », qui enregistre d'abord le questionnaire). Une pastille « partagé » signale les questionnaires partagés, un bandeau confirme avec qui, et la fenêtre de partage explique que le collègue le retrouve dans « Partagés avec moi » et peut le copier dans ses questionnaires. La copie d'un collègue ne reprend plus la classe ni les élèves choisis dans le brouillon d'origine.",
+  ]},
   { version:'2026-08-19.720', items:[
     "Interrogations en ligne : correction automatique en option -- demandé : \"Ne pas [noter] les copies automatiquement (mettre en option). Laisser le prof corriger par copie ou question par question.\" Nouveau réglage « Correction automatique des questions fermées », décoché pour les nouveaux questionnaires (les anciens gardent la correction automatique), modifiable aussi depuis la page de correction. Décoché, chaque question attend votre note (une réponse vide vaut 0 d'office) : la correction automatique n'est plus qu'une proposition (« Proposition : 1 / 1 (juste) · accepter »), à accepter une à une, pour toute une copie (« Tout accepter », vue copie par copie) ou pour toutes les copies d'une question (vue question par question), ou à remplacer par votre note.",
   ]},

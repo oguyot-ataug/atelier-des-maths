@@ -42,6 +42,7 @@ function qzFormHtml(){
     <div class="tool-shell"><p class="example-title" style="margin:0 0 6px;"><span class="gicon" style="color:#6B3FA0;">edit_note</span> Les questions</p><div id="qzfEditeur"></div></div>
     <div class="tool-row" style="margin:0 0 30px;">
       <button class="btn" id="qzfDonner" onclick="qzFormEnregistrer()"><span class="gicon">send</span> Donner à la classe</button>
+      <button class="btn secondary" onclick="qzFormPartager()" title="Envoyer ce questionnaire à des collègues : ils le retrouvent dans « Partagés avec moi » et peuvent le copier"><span class="gicon">share</span> Partager avec un collègue</button>
       <button class="btn secondary" id="qzfSauver" onclick="qzEnregistrerSeul()" title="Enregistrer maintenant dans « Mes questionnaires », sans le donner (c'est aussi fait automatiquement)"><span class="gicon">save</span> Enregistrer sans donner</button>
       <button class="btn secondary" id="qzfFermer" onclick="qzFormFermer()">Fermer (le brouillon est gardé)</button>
       <span class="hint" id="qzfStatus" style="margin:0;"></span>
@@ -101,9 +102,10 @@ async function qzFormOuvrir(opts){
     delete reg.brouillon;
     qzEd = { id: q.id, questions: JSON.parse(JSON.stringify(q.questions || [])), reglages: reg };
     $('qzfTitre').value = q.titre === 'Sans titre' ? '' : (q.titre || '');
-    if(b.classe && (accountClassesList || []).some(c => c.id === b.classe)) $('qzfClasse').value = b.classe;
+    const maClasse = b.classe && (accountClassesList || []).some(c => c.id === b.classe);
+    if(maClasse) $('qzfClasse').value = b.classe;
     $('qzfOuverture').value = b.ouverture || ''; $('qzfLimite').value = b.limite || ''; $('qzfConsigne').value = b.consigne || '';
-    if(b.eleves && b.eleves.length){ qzF.cible = 'eleves'; qzF.eleves = new Set(b.eleves); }
+    if(maClasse && b.eleves && b.eleves.length){ qzF.cible = 'eleves'; qzF.eleves = new Set(b.eleves); }
     $('qzfAuto').innerHTML = `<span class="gicon">cloud_done</span> Brouillon repris (enregistré le ${new Date(q.updated_at || Date.now()).toLocaleString('fr-FR')}) : les modifications sont enregistrées automatiquement.`;
   } else if(opts.copieDe){
     const q = opts.copieDe, reg = Object.assign({}, QZ_REGLAGES_DEFAUT, q.reglages || {}, { ferme: false });
@@ -225,6 +227,17 @@ async function qzEnregistrerSeul(){
   if(qzAuto && qzAuto.dernier) qzToast(`<span class="gicon">cloud_done</span> « ${qzEsc(qzAutoForm().titre || 'Sans titre')} » est enregistré dans vos questionnaires. Vous le retrouverez sur la page Interrogations en ligne (« Enregistrés, pas encore donnés »).`);
   else qzToast('L\'enregistrement a échoué : vérifiez votre connexion puis réessayez.', 'err');
 }
+// Partager depuis le formulaire : enregistre d'abord (un questionnaire neuf n'existe pas encore).
+async function qzFormPartager(){
+  if(!qzAuto) qzAutoDemarrer(qzF && qzF.devoirId ? 'local' : 'db');
+  if(qzAuto.mode === 'db'){
+    if(!qzEd.questions.length && !qzAutoForm().titre){ qzToast('Donnez un titre ou ajoutez une question avant de partager.', 'warn'); return; }
+    if(qzAuto.enCours) await qzAuto.enCours;
+    if(!qzEd.id || qzAutoEtat() !== qzAuto.dernier){ qzAuto.dernier = null; await qzAutoSauver(qzAuto); }
+  }
+  if(!qzEd.id){ qzToast('Enregistrement impossible : vérifiez votre connexion puis réessayez.', 'err'); return; }
+  await qzBanquePartager(qzEd.id);
+}
 function qzToast(html, genre){
   let t = document.getElementById('qzToast');
   if(!t){ t = document.createElement('div'); t.id = 'qzToast'; document.body.appendChild(t); }
@@ -269,7 +282,7 @@ function qzInterrosHtml(liste){
   if(!liste.length) return `<p class="hint">Aucune interrogation pour l'instant : « Nouvelle interrogation » pour en créer une (ou « Donner à une classe » depuis Mes questionnaires).</p>`;
   return `<div class="qz-i-liste">${liste.map(d => { const e = qzInterroEtat(d), r = d._reg || QZ_REGLAGES_DEFAUT;
     return `<div class="qz-i-row">
-      <div class="qz-i-main"><b>${qzEsc(d.titre)}</b>
+      <div class="qz-i-main"><b>${qzEsc(d.titre)}</b>${d._q && (d._q.partage_etab || (d._q.partage_profs || []).length) ? ' <span class="qz-b-share"><span class="gicon">group</span> partagé</span>' : ''}
         <div class="hint" style="margin:2px 0 0;">${qzEsc(d.classes ? d.classes.nom : '')}${d.student_ids && d.student_ids.length ? ` · ${d.student_ids.length} élève${d.student_ids.length > 1 ? 's' : ''} choisi${d.student_ids.length > 1 ? 's' : ''}` : ''} · ${r.mode === 'classe' ? 'en classe, ' + r.duree + ' min' : 'à la maison'}${d.date_limite ? ' · limite le ' + new Date(d.date_limite).toLocaleDateString('fr-FR') : ''}</div></div>
       <span class="qz-i-etat ${e.c}"><span class="gicon">${e.i}</span> ${e.t}</span>
       <span class="qz-i-stat" title="Copies rendues"><b>${d._rendues}</b>/${d._total} rendue${d._rendues > 1 ? 's' : ''}${d._enCours ? ` · ${d._enCours} en cours` : ''}</span>
@@ -277,7 +290,8 @@ function qzInterrosHtml(liste){
       <span class="qz-i-act">
         <button class="btn qz-mini" onclick="qzOuvrirCorrection('${d.id}')"><span class="gicon">fact_check</span> Corriger</button>
         <button class="btn secondary qz-mini" onclick="qzFormModifier('${d.id}')" title="Modifier"><span class="gicon">edit</span></button>
-        ${d.questionnaire_id ? `<button class="btn secondary qz-mini" onclick="qzBanqueDonner('${d.questionnaire_id}')" title="Donner une copie à une autre classe"><span class="gicon">content_copy</span></button>` : ''}
+        ${d.questionnaire_id ? `<button class="btn secondary qz-mini" onclick="qzBanqueDonner('${d.questionnaire_id}')" title="Donner une copie à une autre classe"><span class="gicon">content_copy</span></button>
+        <button class="btn secondary qz-mini" onclick="qzBanquePartager('${d.questionnaire_id}')" title="Partager le questionnaire avec des collègues (ils pourront le copier)"><span class="gicon">share</span></button>` : ''}
         <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzInterroSupprimer('${d.id}')" title="Supprimer"><span class="gicon">delete</span></button>
       </span></div>`; }).join('')}</div>`;
 }
@@ -290,11 +304,12 @@ function qzBrouillonsHtml(f){
   return `<p class="qz-i-sec"><span class="gicon">save</span> Enregistrés, pas encore donnés (${liste.length})</p>
     <div class="qz-i-liste" style="margin-bottom:18px;">${liste.map(q => { const r = qzBanqueResume(q), b = (q.reglages || {}).brouillon;
       return `<div class="qz-i-row brouillon">
-        <div class="qz-i-main"><b>${qzEsc(q.titre || 'Sans titre')}</b>${b && b.a_completer ? ' <span class="qz-b-draft inc">à compléter</span>' : ''}
+        <div class="qz-i-main"><b>${qzEsc(q.titre || 'Sans titre')}</b>${b && b.a_completer ? ' <span class="qz-b-draft inc">à compléter</span>' : ''}${(q.partage_etab || (q.partage_profs || []).length) ? ' <span class="qz-b-share"><span class="gicon">group</span> partagé</span>' : ''}
           <div class="hint" style="margin:2px 0 0;">${r.n} question${r.n > 1 ? 's' : ''} · ${qzNum(r.pts)} pts · enregistré le ${new Date(q.updated_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}</div></div>
         <span class="qz-i-act">
           <button class="btn qz-mini" onclick="qzBanqueReprendre('${q.id}')"><span class="gicon">edit</span> Reprendre</button>
           <button class="btn secondary qz-mini" onclick="qzBanqueDonner('${q.id}')"><span class="gicon">assignment_add</span> Donner à une classe</button>
+          <button class="btn secondary qz-mini" onclick="qzBanquePartager('${q.id}')" title="Partager avec des collègues (ils pourront le copier)"><span class="gicon">share</span> Partager</button>
           <button class="btn secondary qz-mini" onclick="qzBanqueApercu('${q.id}')" title="Aperçu"><span class="gicon">visibility</span></button>
           <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzBanqueSupprimer('${q.id}')" title="Supprimer"><span class="gicon">delete</span></button>
         </span></div>`; }).join('')}</div>

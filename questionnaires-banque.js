@@ -77,7 +77,7 @@ function qzBanqueRender(){
   const interros = (qzB.interros || []).filter(d => !f || qzNormTexte((d.titre || '') + ' ' + (d.classes ? d.classes.nom : '')).includes(f));
   root.innerHTML = `<span class="back-btn" onclick="showView('view-home');setActiveTopnav(null);">← Accueil</span>
     <h1 style="margin:6px 0 4px;"><span class="gicon">quiz</span> Interrogations en ligne</h1>
-    <p style="color:var(--ink-soft);max-width:75ch;">Des interrogations notées, à la manière de Google Forms, séparées des devoirs d'entraînement : créez-les, donnez-les à une classe (en classe, chronométrées, ou à la maison), corrigez-les copie par copie ou question par question, puis publiez les résultats. Vos questionnaires et ceux de vos collègues sont réutilisables : donner un questionnaire à une classe en crée une copie, le modifier ensuite ne change rien pour les autres classes.</p>
+    <p style="color:var(--ink-soft);max-width:75ch;">Des interrogations notées, à la manière de Google Forms, séparées des devoirs d'entraînement : créez-les, donnez-les à une classe (en classe, chronométrées, ou à la maison), corrigez-les copie par copie ou question par question, puis publiez les résultats. Vos questionnaires et ceux de vos collègues sont réutilisables : donner un questionnaire à une classe en crée une copie, le modifier ensuite ne change rien pour les autres classes. Pour en envoyer un à un collègue : bouton <b><span class="gicon" style="font-size:1rem;vertical-align:middle;">share</span> Partager</b> ; il le retrouve dans « Partagés avec moi » et peut le copier chez lui.</p>
     <div class="qz-c-tools">
       <div class="qz-tabs"><button class="${qzB.onglet === 'donnees' ? 'on' : ''}" onclick="qzB.onglet='donnees';qzBanqueRender()"><span class="gicon">assignment_turned_in</span> Mes interrogations (${(qzB.interros || []).length + qzB.mes.filter(q => !(qzB.devoirs.get(q.id) || []).length).length})</button>
         <button class="${qzB.onglet === 'mes' ? 'on' : ''}" onclick="qzB.onglet='mes';qzBanqueRender()"><span class="gicon">person</span> Mes questionnaires (${qzB.mes.length})</button>
@@ -121,7 +121,7 @@ async function qzBanqueCopier(id){
   const partage = q.teacher_id ? q.teacher_id !== currentUser.id : !!q.auteur;
   const titre = partage ? q.titre : 'Copie de ' + (q.titre || 'questionnaire');
   const { error } = await sb.from('questionnaires').insert({ teacher_id: currentUser.id, titre,
-    questions: JSON.parse(JSON.stringify(q.questions || [])), reglages: Object.assign({}, q.reglages || {}, { ferme: false }) });
+    questions: JSON.parse(JSON.stringify(q.questions || [])), reglages: Object.assign({}, q.reglages || {}, { ferme: false, brouillon: partage ? undefined : (q.reglages || {}).brouillon }) });
   if(error){ await niceAlert('Erreur : ' + error.message); return; }
   await qzBanqueCharger(); qzB.onglet = 'mes'; qzBanqueRender();
   await niceAlert(partage ? `« ${titre} » est copié dans vos questionnaires : vous pouvez le modifier et le donner à vos classes.` : `« ${titre} » a été créé.`);
@@ -140,13 +140,16 @@ async function qzBanqueSupprimer(id){
    Partage avec des collègues
    --------------------------------------------------------------------- */
 let qzBP = null; // { id, etab, profs:Map(id→{nom,prenom}), collegues:[] }
+// Signalé : "Je ne vois pas où on peut partager à une collègue ou faire une copie à une
+// collègue" -- bouton « Partager » maintenant sur chaque questionnaire enregistré, chaque
+// interrogation donnée et dans le formulaire ; le collègue le retrouve dans « Partagés avec moi ».
 async function qzBanquePartager(id){
-  const q = qzBanqueTrouver(id); if(!q) return;
+  const q = await qzBanqueSur(id); if(!q){ await niceAlert('Questionnaire introuvable : enregistrez-le d\'abord.'); return; }
   const [{ data: collegues }, { data: choisis }] = await Promise.all([
     sb.rpc('qz_collegues'),
     (q.partage_profs || []).length ? sb.rpc('qz_profs', { p_email: null, p_ids: q.partage_profs }) : Promise.resolve({ data: [] }),
   ]);
-  qzBP = { id, etab: !!q.partage_etab, collegues: collegues || [], profs: new Map((choisis || []).map(p => [p.id, p])) };
+  qzBP = { id, q, etab: !!q.partage_etab, collegues: collegues || [], profs: new Map((choisis || []).map(p => [p.id, p])) };
   let o = document.getElementById('qzBPOverlay');
   if(!o){ o = document.createElement('div'); o.id = 'qzBPOverlay'; o.className = 'modal-overlay'; o.style.zIndex = '400'; document.body.appendChild(o);
     o.addEventListener('click', e => { if(e.target === o) o.style.display = 'none'; }); }
@@ -154,13 +157,13 @@ async function qzBanquePartager(id){
   qzBPRender();
 }
 function qzBPRender(){
-  const o = document.getElementById('qzBPOverlay'), q = qzBanqueTrouver(qzBP.id); if(!o || !q) return;
+  const o = document.getElementById('qzBPOverlay'), q = qzBP.q; if(!o || !q) return;
   const nom = p => qzEsc(((p.prenom || '') + ' ' + (p.nom || '')).trim() || '(sans nom)');
   const autres = Array.from(qzBP.profs.values()).filter(p => !qzBP.collegues.some(c => c.id === p.id));
   o.innerHTML = `<div class="modal-card qz-gen">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;"><span class="gicon" style="color:#6B3FA0;vertical-align:middle;">share</span> Partager « ${qzEsc(q.titre || 'Sans titre')} »</b>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;"><span class="gicon" style="color:#6B3FA0;vertical-align:middle;">share</span> Partager « ${qzEsc(q.titre || 'Sans titre')} » avec des collègues</b>
       <button class="modal-close" onclick="document.getElementById('qzBPOverlay').style.display='none'"><span class="gicon">close</span></button></div>
-    <p class="hint" style="margin:6px 0 12px;">Vos collègues pourront le consulter, le copier, le donner à leurs classes et en importer des questions, corrigés compris. Ils ne pourront jamais modifier le vôtre, ni voir vos élèves ou leurs copies.</p>
+    <p class="hint" style="margin:6px 0 12px;">Vos collègues le retrouveront sur leur page Interrogations en ligne, onglet <b>« Partagés avec moi »</b> : ils pourront le consulter, <b>le copier dans leurs questionnaires</b> (leur copie est alors à eux, modifiable), le donner à leurs classes et en importer des questions, corrigés compris. Ils ne pourront jamais modifier le vôtre, ni voir vos élèves ou leurs copies.</p>
     <label class="qz-check" style="font-weight:600;"><input type="checkbox" ${qzBP.etab ? 'checked' : ''} onchange="qzBP.etab=this.checked"> Tous les professeurs de mon établissement</label>
     <p class="qz-lab" style="margin-top:12px;">Ou des collègues choisis</p>
     <div class="qz-bp-list">${qzBP.collegues.map(c => `<label class="qz-check"><input type="checkbox" ${qzBP.profs.has(c.id) ? 'checked' : ''} onchange="qzBPToggle('${c.id}',this.checked)"> ${nom(c)}</label>`).join('') || '<span class="hint" style="margin:0;">Aucun autre professeur inscrit dans votre établissement.</span>'}
@@ -191,7 +194,12 @@ async function qzBPEnregistrer(){
   const { error } = await sb.from('questionnaires').update({ partage_etab: qzBP.etab, partage_profs: profs }).eq('id', qzBP.id);
   if(error){ document.getElementById('qzBPStatus').textContent = 'Erreur : ' + error.message; return; }
   document.getElementById('qzBPOverlay').style.display = 'none';
-  await qzBanqueCharger(); qzBanqueRender();
+  Object.assign(qzBP.q, { partage_etab: qzBP.etab, partage_profs: profs });
+  const noms = Array.from(qzBP.profs.values()).map(p => ((p.prenom || '') + ' ' + (p.nom || '')).trim()).filter(Boolean);
+  const qui = [qzBP.etab ? 'tous les professeurs de votre établissement' : '', noms.length > 2 ? noms.slice(0, 2).join(', ') + ' et ' + (noms.length - 2) + ' autre' + (noms.length > 3 ? 's' : '') : noms.join(' et ')].filter(Boolean).join(' et ');
+  if(typeof qzToast === 'function') qzToast(qui ? `<span class="gicon">share</span> Partagé avec ${qzEsc(qui)} : ${qzBP.etab || noms.length > 1 ? 'ils le trouveront' : 'il ou elle le trouvera'} dans « Partagés avec moi ».` : '<span class="gicon">share</span> Ce questionnaire n\'est plus partagé.');
+  const surHub = document.getElementById('view-qz-banque').classList.contains('active');
+  await qzBanqueCharger(); if(surHub) qzBanqueRender();
 }
 
 /* ---------------------------------------------------------------------
