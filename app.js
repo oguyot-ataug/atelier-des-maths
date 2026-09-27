@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.726', items:[
+    "Page d'accueil, Nouveautés : vidéo « Des interrogations en ligne » en tête -- demandé : \"Oui ajoute-la\". Création (QCM, vrai/faux, nombre, associer, figure « triangle rectangle », question ouverte), correction copie par copie et question par question avec les figures manipulables, propositions de l'IA, résultats côté élève, carnet de notes.",
+  ]},
   { version:'2026-08-19.725', items:[
     "Interrogations en ligne, correction des figures : en vue « question par question », la figure attendue s'affiche une seule fois en haut (au lieu d'être répétée sous chaque copie), et faire glisser un point ne sélectionne plus le texte autour de la figure.",
   ]},
