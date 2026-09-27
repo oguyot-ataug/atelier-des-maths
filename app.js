@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.727', items:[
+    "Nouvel outil « Caméra du téléphone » (barre d'outils de la correction, des évaluations et des énoncés d'interrogation) -- demandé : \"un outil qui permet d'afficher quasi en direct sur l'ordinateur du professeur une prise de vue faite sur le smartphone. On pourrait l'utiliser pour commenter une correction ou s'en servir comme image en direct dans les corrections.\" L'ordinateur affiche un QR code (ou un code à 8 caractères pour maths.latelieraugmente.fr/camera.html) ; le téléphone, sans connexion au site, filme avec sa caméra arrière et l'image s'affiche en direct sur l'ordinateur, à projeter en plein écran. Boutons : Figer / Reprendre le direct, Photo nette (pleine résolution demandée au téléphone), Pivoter, annotation au crayon en 4 couleurs (annuler, effacer), Insérer dans la correction (image pivotée et annotée). Côté téléphone : pause, lampe si disponible, changement de caméra, écran maintenu allumé. Rien n'est enregistré tant que l'image n'est pas insérée.",
+  ]},
   { version:'2026-08-19.726', items:[
     "Page d'accueil, Nouveautés : vidéo « Des interrogations en ligne » en tête -- demandé : \"Oui ajoute-la\". Création (QCM, vrai/faux, nombre, associer, figure « triangle rectangle », question ouverte), correction copie par copie et question par question avec les figures manipulables, propositions de l'IA, résultats côté élève, carnet de notes.",
   ]},

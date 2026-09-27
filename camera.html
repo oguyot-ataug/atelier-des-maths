@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1C2230">
+<title>Caméra du téléphone · L'Atelier des Maths</title>
+<link rel="icon" href="assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  *{box-sizing:border-box;} [hidden]{display:none!important;} html,body{margin:0;height:100%;background:#1C2230;color:#fff;font-family:Inter,system-ui,sans-serif;}
+  body{display:flex;flex-direction:column;}
+  header{display:flex;align-items:center;gap:10px;padding:12px 14px;padding-top:max(12px,env(safe-area-inset-top));}
+  header img{height:30px;background:#fff;border-radius:8px;padding:3px 6px;}
+  header b{font-family:'Space Grotesk',sans-serif;font-size:1.05rem;}
+  #etat{margin-left:auto;font-size:.78rem;font-weight:700;border-radius:999px;padding:4px 10px;background:#FFF4E6;color:#B8511F;}
+  #etat.ok{background:#EAF6EC;color:#1E7B34;} #etat.pause{background:#E8EDF5;color:#0C5BA0;}
+  main{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;}
+  video{max-width:100%;max-height:100%;background:#000;}
+  .panneau{background:#fff;color:#20242E;border-radius:16px;padding:22px;margin:18px;max-width:420px;text-align:center;}
+  .panneau h1{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin:0 0 10px;}
+  .panneau p{color:#4E5665;line-height:1.45;margin:0 0 14px;}
+  input{font:700 1.6rem 'Space Grotesk',monospace;letter-spacing:4px;text-align:center;width:100%;padding:10px;border:2px solid #C9D2DE;border-radius:12px;text-transform:uppercase;}
+  button{font:600 1rem Inter,sans-serif;border:none;border-radius:12px;padding:13px 18px;cursor:pointer;}
+  .primaire{background:#0C5BA0;color:#fff;width:100%;margin-top:12px;}
+  footer{display:flex;gap:8px;justify-content:center;padding:12px;padding-bottom:max(12px,env(safe-area-inset-bottom));flex-wrap:wrap;}
+  footer button{background:rgba(255,255,255,.12);color:#fff;display:inline-flex;align-items:center;gap:6px;}
+  footer button.fort{background:#FF8208;}
+  #flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .3s;}
+  .aide{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:.8rem;color:rgba(255,255,255,.75);}
+  .err{color:#a83c1f;font-weight:600;}
+</style>
+</head>
+<body>
+<header><img src="assets/logo-header.png" alt=""><b>Caméra du téléphone</b><span id="etat">Pas encore connecté</span></header>
+<main id="main"></main>
+<footer id="barre" hidden>
+  <button id="bPause" onclick="basculerPause()">⏸ Pause</button>
+  <button class="fort" onclick="photoNette()">📷 Photo nette</button>
+  <button id="bTorche" onclick="torche()" hidden>🔦 Lampe</button>
+  <button onclick="changerCamera()">🔄 Caméra</button>
+</footer>
+<script>
+/* Caméra du téléphone (voir camera.js) : filme et envoie les images à l'ordinateur du professeur
+   par un canal temps réel Supabase dont le nom est le code affiché sur l'ordinateur. Aucune
+   connexion au site n'est nécessaire et rien n'est enregistré ici. */
+const SUPABASE_URL = 'https://rngzubhnypmistjsumpz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZ3p1YmhueXBtaXN0anN1bXB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MTExNjEsImV4cCI6MjEwMDM4NzE2MX0.V56LFlb1ITWPmoO-DwLw3coeS7epY9NM5K2Waj03pac';
+const ALPHA = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/;
+const MORCEAU = 24000;              // caractères base64 par message (sous la limite temps réel)
+const LIVE_COTE = 1280, LIVE_Q = 0.6, PHOTO_COTE = 2400, PHOTO_Q = 0.85, INTERVALLE = 180;
+let sb, ch, flux, video, code, connecte = false, pause = false, envoiEnCours = false, attente = null, numero = 0, facing = 'environment', verrou = null, hello = null;
+const $ = id => document.getElementById(id);
+function etat(t, cls){ const e = $('etat'); e.textContent = t; e.className = cls || ''; }
+
+function accueil(msg){
+  $('main').innerHTML = `<div class="panneau"><h1>Relier ce téléphone</h1>
+    <p>Tapez le code affiché sur l'ordinateur (outil de correction › Caméra du téléphone).</p>
+    <input id="saisie" maxlength="9" autocomplete="off" autocapitalize="characters" placeholder="ABCD-EFGH">
+    ${msg ? `<p class="err" style="margin-top:10px;">${msg}</p>` : ''}
+    <button class="primaire" onclick="validerCode()">Continuer</button></div>`;
+}
+function validerCode(){
+  const c = ($('saisie').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if(!ALPHA.test(c)) return accueil('Code incomplet ou incorrect.');
+  history.replaceState(null, '', '?c=' + c); preparer(c);
+}
+function preparer(c){
+  code = c;
+  $('main').innerHTML = `<div class="panneau"><h1>Prêt à filmer</h1>
+    <p>Autorisez l'accès à l'appareil photo : l'image s'affichera en direct sur l'ordinateur. Visez le cahier ou la copie, bien à plat et éclairé.</p>
+    <button class="primaire" onclick="demarrer()">Démarrer la caméra</button></div>`;
+}
+async function ouvrirCamera(){
+  if(flux) flux.getTracks().forEach(t => t.stop());
+  flux = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1080 } } });
+  video.srcObject = flux; await video.play().catch(() => {});
+  const t = flux.getVideoTracks()[0], cap = t.getCapabilities ? t.getCapabilities() : {};
+  $('bTorche').hidden = !cap.torch;
+}
+async function demarrer(){
+  $('main').innerHTML = '<video id="video" playsinline muted autoplay></video><div id="flash"></div><div class="aide" id="aide">Connexion à l\'ordinateur…</div>';
+  video = $('video');
+  try{ await ouvrirCamera(); }
+  catch(e){ $('main').innerHTML = `<div class="panneau"><h1>Caméra inaccessible</h1><p>${e && e.name === 'NotAllowedError' ? 'L\'accès à l\'appareil photo a été refusé : autorisez-le dans les réglages du navigateur, puis rechargez la page.' : 'Impossible d\'ouvrir l\'appareil photo sur ce téléphone.'}</p><button class="primaire" onclick="location.reload()">Réessayer</button></div>`; return; }
+  $('barre').hidden = false;
+  try{ verrou = await navigator.wakeLock.request('screen'); }catch(e){}
+  document.addEventListener('visibilitychange', async () => { if(!document.hidden){ try{ verrou = await navigator.wakeLock.request('screen'); }catch(e){} } });
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  ch = sb.channel('cam-' + code, { config: { broadcast: { self: false } } })
+    .on('broadcast', { event: 'hello-ok' }, () => { if(!connecte){ connecte = true; etat(pause ? 'En pause' : 'En direct', pause ? 'pause' : 'ok'); $('aide').textContent = 'L\'image s\'affiche sur l\'ordinateur.'; boucle(); } })
+    .on('broadcast', { event: 'ack' }, ({ payload }) => { if(attente && payload && payload.f === attente.f){ clearTimeout(attente.t); const r = attente.r; attente = null; r(); } })
+    .on('broadcast', { event: 'pause' }, () => { pause = true; majPause(); })
+    .on('broadcast', { event: 'resume' }, () => { pause = false; majPause(); boucle(); })
+    .on('broadcast', { event: 'req-photo' }, () => photoNette())
+    .on('broadcast', { event: 'bye' }, () => { connecte = false; etat('Ordinateur fermé'); $('aide').textContent = 'L\'outil a été fermé sur l\'ordinateur.'; })
+    .subscribe(s => { if(s === 'SUBSCRIBED') direBonjour(); });
+}
+function direBonjour(){
+  clearInterval(hello);
+  const f = () => { if(!connecte) ch.send({ type: 'broadcast', event: 'hello', payload: {} }); else clearInterval(hello); };
+  f(); hello = setInterval(f, 2000);
+}
+function majPause(){ $('bPause').textContent = pause ? '▶ Reprendre' : '⏸ Pause'; if(connecte) etat(pause ? 'En pause' : 'En direct', pause ? 'pause' : 'ok'); }
+function basculerPause(){ pause = !pause; majPause(); if(!pause) boucle(); }
+function capturer(cote, q){
+  const w = video.videoWidth, h = video.videoHeight; if(!w || !h) return Promise.resolve(null);
+  const k = Math.min(1, cote / Math.max(w, h)), c = document.createElement('canvas');
+  c.width = Math.round(w * k); c.height = Math.round(h * k);
+  c.getContext('2d').drawImage(video, 0, 0, c.width, c.height);
+  return new Promise(res => c.toBlob(b => { if(!b) return res(null); const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.readAsDataURL(b); }, 'image/jpeg', q));
+}
+// Envoie une image en morceaux, puis attend l'accusé de réception (ou abandonne au bout de 4 s).
+async function envoyer(b64, k){
+  const f = ++numero, n = Math.ceil(b64.length / MORCEAU);
+  for(let i = 0; i < n; i++){
+    await ch.send({ type: 'broadcast', event: 'part', payload: { f, i, n, k, d: b64.slice(i * MORCEAU, (i + 1) * MORCEAU) } });
+    if(k === 'photo' && i % 6 === 5) await new Promise(r => setTimeout(r, 40));
+  }
+  await new Promise(r => { attente = { f, r, t: setTimeout(() => { attente = null; r(); }, 4000) }; });
+}
+async function boucle(){
+  if(envoiEnCours) return; envoiEnCours = true;
+  try{
+    while(connecte && !pause && !document.hidden){
+      const t0 = Date.now(), b64 = await capturer(LIVE_COTE, LIVE_Q);
+      if(b64) await envoyer(b64, 'live');
+      const reste = INTERVALLE - (Date.now() - t0); if(reste > 0) await new Promise(r => setTimeout(r, reste));
+    }
+  } finally { envoiEnCours = false; }
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden && connecte && !pause) boucle(); });
+async function photoNette(){
+  if(!connecte || !video) return;
+  const fl = $('flash'); if(fl){ fl.style.opacity = .8; setTimeout(() => fl.style.opacity = 0, 150); }
+  if(navigator.vibrate) navigator.vibrate(40);
+  pause = true; majPause();
+  while(envoiEnCours) await new Promise(r => setTimeout(r, 50));
+  const b64 = await capturer(PHOTO_COTE, PHOTO_Q);
+  if(b64){ $('aide').textContent = 'Envoi de la photo…'; await envoyer(b64, 'photo'); $('aide').textContent = 'Photo envoyée : elle est figée sur l\'ordinateur. « Reprendre » pour revenir au direct.'; }
+}
+async function changerCamera(){ facing = facing === 'environment' ? 'user' : 'environment'; try{ await ouvrirCamera(); }catch(e){} }
+let torcheOn = false;
+async function torche(){ const t = flux && flux.getVideoTracks()[0]; if(!t) return; torcheOn = !torcheOn; try{ await t.applyConstraints({ advanced: [{ torch: torcheOn }] }); }catch(e){} }
+window.addEventListener('pagehide', () => { try{ if(ch) ch.send({ type: 'broadcast', event: 'bye', payload: {} }); }catch(e){} });
+
+window.addEventListener('DOMContentLoaded', () => {
+  const c = (new URLSearchParams(location.search).get('c') || '').toUpperCase();
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ $('main').innerHTML = '<div class="panneau"><h1>Navigateur non compatible</h1><p>Ouvrez cette page avec le navigateur habituel du téléphone (Safari, Chrome…).</p></div>'; return; }
+  if(ALPHA.test(c)) preparer(c); else accueil(c ? 'Ce code n\'est pas valable.' : '');
+});
+</script>
+</body>
+</html>

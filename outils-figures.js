@@ -910,6 +910,7 @@ const TOOL_ICONS = {
   graph: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21 L3 3"/><path d="M3 21 L21 21"/><path d="M4 15 Q9 4 13 13 T21 6"/></svg>`,
   stats: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><rect x="5" y="13" width="4" height="8" fill="currentColor" stroke="none"/><rect x="11" y="8" width="4" height="13" fill="currentColor" stroke="none"/><rect x="17" y="3" width="4" height="18" fill="currentColor" stroke="none"/></svg>`,
   geoanim: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20 L13 20"/><path d="M3 20 L9 8"/><path d="M9 8 A7 7 0 0 1 15 15" stroke-dasharray="2 2"/><path d="M15 12 L21 16 L15 20 Z" fill="currentColor" stroke="none"/></svg>`,
+  camera: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><circle cx="12" cy="9" r="3"/><line x1="10.5" y1="18.5" x2="13.5" y2="18.5"/></svg>`,
   urn: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4 L4 20 Q4 22 6 22 L18 22 Q20 22 20 20 L18 4"/><circle cx="9" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="14" cy="15" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="9" r="1.6" fill="currentColor" stroke="none"/></svg>`,
 };
 function toolButtonsHTML(ctx){
@@ -917,6 +918,7 @@ function toolButtonsHTML(ctx){
   return `
     <button type="button" class="tool-icon-btn" title="Texte" onclick="${set}openTextBlockTool()">${TOOL_ICONS.texte}</button>
     <button type="button" class="tool-icon-btn" title="Importer une image" onclick="${set}openImageTool()">${TOOL_ICONS.image}</button>
+    <button type="button" class="tool-icon-btn" title="Caméra du téléphone : filmer un cahier ou une copie en direct, l'annoter, l'insérer" onclick="${set}if(typeof openCameraTool==='function')openCameraTool()">${TOOL_ICONS.camera}</button>
     <button type="button" class="tool-icon-btn" title="Figure géométrique" onclick="${set}openFigureTool()">${TOOL_ICONS.figure}</button>
     <button type="button" class="tool-icon-btn" title="Tableau" onclick="${set}openTableauTool()">${TOOL_ICONS.tableau}</button>
     <button type="button" class="tool-icon-btn" title="Division (euclidienne / décimale)" onclick="${set}openDivisionTool()">${TOOL_ICONS.division}</button>
