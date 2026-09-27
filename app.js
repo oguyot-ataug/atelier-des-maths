@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.718', items:[
+    "Interrogations en ligne : réponses numériques rédigées -- signalé : l'élève avait répondu « 2,5 = 2 + 0,5 donc 4 * 2,5 = 4*2 + 4*0,5 = 8 + 2 = 10 » (réponse attendue : 10) et obtenait 0 / 2. La correction automatique lit maintenant le résultat final d'un calcul (ce qui suit le dernier « = ») et ignore l'unité (« 10 € »). Une réponse qui n'est pas un nombre lisible (calcul sans résultat, phrase) n'est plus comptée 0 : elle passe « à vérifier » dans la correction, avec les boutons de note rapide. Pendant la saisie, l'élève est prévenu : « Écrivez seulement le résultat : un nombre ». Les notes déjà enregistrées ou publiées sont recalculées à l'ouverture de la correction. L'IA ne génère plus de question « réponse numérique » qui demande une méthode (« utilise la distributivité », « justifie ») : ce sont des questions ouvertes.",
+  ]},
   { version:'2026-08-19.717', items:[
     "Interrogations en ligne : retours à la ligne des questions générées par l'IA -- signalé sur un énoncé généré (« Léa achète 6 stylos et 6 cahiers. \\ n n(a) Écris le calcul... ») : l'IA écrivait parfois ses retours à la ligne « \\n » en toutes lettres, affichés comme un antislash et un n (pris en plus pour une variable). Ils deviennent de vrais sauts de ligne, à la génération comme à l'affichage (les questions déjà enregistrées sont donc corrigées aussi), sans toucher aux formules LaTeX ($a \\neq b$ reste ≠). La consigne donnée à l'IA le précise désormais.",
   ]},

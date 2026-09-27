@@ -82,6 +82,22 @@ function qzParseNombre(s){
   if(f){ const b = parseFloat(f[2]); return b ? parseFloat(f[1]) / b : NaN; }
   return /^-?\d*\.?\d+$/.test(t) ? parseFloat(t) : NaN;
 }
+// Valeur d'une réponse numérique : le nombre saisi, ou le résultat final d'un calcul rédigé --
+// signalé : « 2,5 = 2 + 0,5 donc 4 * 2,5 = 4*2 + 4*0,5 = 8 + 2 = 10 » comptait 0 alors que la
+// réponse attendue était 10. On lit ce qui suit le dernier « = », sans l'unité (« 10 € », « 12 cm² »).
+function qzValeurNum(rep){
+  const t = String(rep ?? '').split('=').pop().trim();
+  const v = qzParseNombre(t);
+  if(!isNaN(v)) return v;
+  const m = t.match(/^(-?[\d\s  ]*[.,]?\d+(?:\s*\/\s*-?\d+(?:[.,]\d+)?)?)\s*[^\d=+*×\/()-]*$/);
+  return m ? qzParseNombre(m[1].replace(/\s*\/\s*/, '/')) : NaN;
+}
+// Aperçu sous la case d'une réponse numérique (fraction mise en forme, ou rappel du format attendu).
+function qzNumApercu(v){
+  v = String(v ?? '');
+  if(/\//.test(v) && !isNaN(qzParseNombre(v))) return qzMath(v);
+  return v.trim() && isNaN(qzValeurNum(v)) ? '<span class="qz-num-warn"><span class="gicon">info</span> Écrivez seulement le résultat : un nombre (ex. 10 ou 3/4).</span>' : '';
+}
 function qzNormTexte(s, casse){
   let t = String(s ?? '').trim().replace(/\s+/g, ' ').replace(/[.!;]+$/, '');
   if(!casse) t = t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
@@ -89,7 +105,8 @@ function qzNormTexte(s, casse){
 }
 function qzListe(s){ return String(s ?? '').split(/\s*[;\n]\s*/).map(x => x.trim()).filter(Boolean); }
 
-// Points obtenus automatiquement, ou null si la question se corrige à la main (ouverte).
+// Points obtenus automatiquement, ou null si la question se corrige à la main (ouverte), ou si la
+// réponse à une question numérique n'est pas un nombre lisible (à vérifier par le professeur).
 function qzNoteAuto(q, rep){
   const max = qzMax(q);
   if(q.type === 'texte') return 0;
@@ -113,13 +130,14 @@ function qzNoteAuto(q, rep){
     return Math.round(max * justes / items.length * 100) / 100;
   }
   if(q.type === 'numerique'){
-    const v = qzParseNombre(rep), tol = Math.abs(qzParseNombre(q.tolerance)) || 0;
+    if(!String(rep).trim()) return 0;
+    const v = qzValeurNum(rep), tol = Math.abs(qzParseNombre(q.tolerance)) || 0;
     const ok = qzListe(q.reponses).some(r => {
       const a = qzParseNombre(r);
       if(!isNaN(a) && !isNaN(v)) return Math.abs(a - v) <= tol + 1e-9 * Math.max(1, Math.abs(a));
       return qzNormTexte(r) === qzNormTexte(rep);
     });
-    return ok ? max : 0;
+    return ok ? max : isNaN(v) ? null : 0;
   }
   if(q.type === 'courte'){
     return qzListe(q.reponses).some(r => qzNormTexte(r, q.casse) === qzNormTexte(rep, q.casse)) ? max : 0;
@@ -512,7 +530,7 @@ function qzRenderSaisie(q, rep, mode, ctx){
       <input type="text" class="qz-input" value="${qzEsc(val)}" ${dis} autocomplete="off" spellcheck="false" inputmode="${q.type === 'numerique' ? 'text' : 'text'}"
         oninput="qzSaisieTexte('${id}',this.value)" placeholder="${q.type === 'numerique' ? 'Votre réponse (ex. 3/4 ou 0,75)' : 'Votre réponse'}">
       ${q.unite ? `<span class="qz-unite">${qzEsc(q.unite)}</span>` : ''}
-      ${q.type === 'numerique' ? `<span class="qz-num-apercu" id="qzNumAp_${ctx.pfx}${id}">${val && /\//.test(val) ? qzMath(val) : ''}</span>` : ''}
+      ${q.type === 'numerique' ? `<span class="qz-num-apercu" id="qzNumAp_${ctx.pfx}${id}">${mode === 'passer' ? qzNumApercu(val) : val && /\//.test(val) ? qzMath(val) : ''}</span>` : ''}
     </div>${corr && q.reponses ? `<p class="qz-sol"><span class="gicon">check_circle</span> Réponse attendue : ${qzListe(q.reponses).map(qzMath).join(' ou ')}</p>` : ''}`;
   }
   if(q.type === 'ouverte'){
@@ -688,7 +706,7 @@ function qzSaisieVf(qid, iid, v){
 function qzSaisieTexte(qid, v){
   if(!qzP) return;
   qzP.reponses[qid] = v;
-  const ap = document.getElementById('qzNumAp_p' + qid); if(ap) ap.innerHTML = /\//.test(v) ? qzMath(v) : '';
+  const ap = document.getElementById('qzNumAp_p' + qid); if(ap) ap.innerHTML = qzNumApercu(v);
   qzModifie();
 }
 function qzSaisieOuverte(qid, v){
@@ -886,6 +904,22 @@ async function qzOuvrirCorrection(devoirId, vue){
   qzC.eleveSel = premiere ? premiere.id : (eleves[0] && eleves[0].id);
   qzC.questionSel = (qz.questions.find(q => qzManuel(q)) || qz.questions.find(q => q.type !== 'texte') || {}).id;
   qzCRender();
+  qzCResync();
+}
+// Notes déjà enregistrées (copie publiée ou corrigée) recalculées si la correction automatique a
+// changé depuis -- ex. une réponse numérique rédigée « ... = 8 + 2 = 10 », comptée 0 avant que le
+// résultat final d'un calcul soit reconnu. Une copie devenue « à vérifier » garde sa note.
+async function qzCResync(){
+  const d = qzC.devoir, qz = qzC.qz;
+  for(const c of qzC.copies.values()){
+    if(c.total == null || !qzEstRendue(c)) continue;
+    const s = qzScoreCopie(qz.questions, c, qzC.reglages);
+    if(s.aCorriger || (Math.abs(s.total - Number(c.total)) < 1e-9 && Math.abs(s.note - Number(c.note)) < 1e-9)) continue;
+    const { error } = await sb.from('qz_copies').update({ total: s.total, note: s.note }).eq('id', c.id);
+    if(error || !qzC || qzC.qz !== qz) return;
+    Object.assign(c, { total: s.total, note: s.note });
+    if(d.qz_publie_at) await sb.from('devoirs_rendus').update({ note: s.sur === 20 ? s.note : null }).eq('devoir_id', d.id).eq('student_id', c.student_id);
+  }
 }
 async function qzElevesDevoir(devoir){
   let req = sb.from('class_students').select('student_id, profiles(id,nom,prenom)').eq('class_id', devoir.class_id);
@@ -966,8 +1000,9 @@ function qzCNoteur(q, e, c){
     <div class="qz-noteur-row">
       <span class="qz-pts-in"><input type="number" step="0.25" min="0" max="${max}" value="${affiche === null || affiche === undefined ? '' : affiche}" placeholder="?" onchange="qzCPoints('${cle}',this.value)"> / ${qzNum(max)}</span>
       ${iaBtn}
-      ${auto !== null ? `<span class="qz-auto">${manuel ? `corrigé à la main (auto : ${qzNum(auto)}) <button type="button" class="qz-link" onclick="qzCPoints('${cle}','')">rétablir</button>` : '<span class="gicon">bolt</span> correction automatique'}</span>` : ''}
-      ${!qzManuel(q) ? '' : `<span class="qz-quick">${[0, max / 2, max].filter((v, i, a) => a.indexOf(v) === i).map(v => `<button type="button" onclick="qzCPoints('${cle}','${v}')">${qzNum(v)}</button>`).join('')}</span>`}
+      ${auto !== null ? `<span class="qz-auto">${manuel ? `corrigé à la main (auto : ${qzNum(auto)}) <button type="button" class="qz-link" onclick="qzCPoints('${cle}','')">rétablir</button>` : '<span class="gicon">bolt</span> correction automatique'}</span>`
+        : !qzManuel(q) ? `<span class="qz-auto">${manuel ? 'corrigé à la main' : '<span class="gicon" style="color:#B8511F;">help</span> réponse non reconnue comme un nombre : à vérifier'}</span>` : ''}
+      ${!qzManuel(q) && auto !== null ? '' : `<span class="qz-quick">${[0, max / 2, max].filter((v, i, a) => a.indexOf(v) === i).map(v => `<button type="button" onclick="qzCPoints('${cle}','${v}')">${qzNum(v)}</button>`).join('')}</span>`}
       <input type="text" class="qz-comment-in" value="${qzEsc(corr.commentaire || '')}" placeholder="Commentaire pour l'élève (facultatif)" onchange="qzCCommentaire('${cle}',this.value)">
     </div>
   </div>`;
@@ -1296,6 +1331,7 @@ ${chap ? `Chapitre : ${chap}.` : ''}${theme ? `\nThème ou notions : ${theme}.` 
 Nombre de questions : ${nb}. Difficulté : ${diff}. Types autorisés : ${types.map(t => noms[t]).join(', ')} (varie les types).
 ${consignes ? `Consignes du professeur : ${consignes}\n` : ''}
 Pour aller à la ligne dans un texte (ex. avant « (a) », « (b) »), mets un vrai saut de ligne JSON, c'est-à-dire \\n avec un seul antislash, jamais \\\\n.
+Une question « réponse numérique » ne demande QUE un résultat (un nombre à taper, sans phrase ni calcul à écrire) ; dès que l'élève doit montrer une méthode (« utilise la distributivité », « justifie », « explique », « détaille »), c'est une question ouverte, avec ses attendus et ses critères.
 Écriture des maths : fractions a/b (ex. 3/4), puissances x^2, racines sqrt(2), virgule décimale (2,5) ; ou LaTeX entre $...$ si nécessaire. Pas de figure à dessiner.
 Pour chaque question, indique la compétence travaillée parmi : chercher, modeliser, representer, raisonner, calculer, communiquer ; et une courte explication (méthode) montrée à l'élève avec la correction.
 Réponds UNIQUEMENT par un tableau JSON valide, sans texte autour, dont chaque élément suit l'un de ces formats :
@@ -1567,6 +1603,7 @@ function qzCarnetCompetences(body){
     .qz-input:focus{outline:none;border-color:#6B3FA0;box-shadow:0 0 0 3px rgba(107,63,160,.14);}
     .qz-unite{font-weight:700;}
     .qz-num-apercu{font-size:1.1rem;}
+    .qz-num-warn{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;color:#B8511F;} .qz-num-warn .gicon{font-size:16px;}
     .qz-photos{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;}
     .qz-photo{position:relative;}
     .qz-photo img{height:110px;max-width:180px;object-fit:cover;border-radius:8px;border:1px solid rgba(28,43,57,.15);cursor:zoom-in;background:#f4f4f4;}
