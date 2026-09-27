@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.724', items:[
+    "Carnet de notes des interrogations : colonnes de notes à côté des noms -- signalé : \"Rapprocher la colonne notes des noms des élèves !\" Le tableau prend maintenant la largeur de son contenu au lieu de toute la page ; lignes alternées et ligne survolée surlignée pour suivre un élève d'un coup d'œil.",
+  ]},
   { version:'2026-08-19.723', items:[
     "Carnet de notes des interrogations : classes en chips, « Sans copie rendue » en boutons -- signalé : \"Le choix de la classe peut être remplacé par des chips. La liste déroulante sans copie rendue n'est pas très sexy non plus.\" Chaque classe est une pastille cliquable (la classe affichée est en violet), et le choix de ce qui s'écrit pour un élève sans copie rendue se fait avec trois boutons : Vide, Abs, 0.",
   ]},

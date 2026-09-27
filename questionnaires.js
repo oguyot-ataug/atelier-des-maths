@@ -1841,8 +1841,14 @@ function qzCarnetCompetences(body){
     .qz-gen-grid input,.qz-gen-grid select{padding:6px 8px;border:1px solid rgba(28,43,57,.2);border-radius:8px;font:inherit;font-weight:400;}
     .qz-gen-types{display:flex;flex-wrap:wrap;gap:6px 14px;}
     /* Carnet */
-    .qz-carnet-wrap{overflow-x:auto;background:#fff;border-radius:12px;border:1px solid rgba(28,43,57,.1);}
-    .qz-carnet{border-collapse:collapse;width:100%;font-size:.88rem;}
+    /* Largeur ajustée au contenu : la colonne des notes reste à côté des noms -- signalé :
+       "Rapprocher la colonne notes des noms des élèves !" (le tableau prenait toute la largeur). */
+    .qz-carnet-wrap{overflow-x:auto;background:#fff;border-radius:12px;border:1px solid rgba(28,43,57,.1);width:fit-content;max-width:100%;}
+    .qz-carnet{border-collapse:collapse;width:auto;font-size:.88rem;}
+    .qz-carnet th:not(:first-child),.qz-carnet td:not(:first-child){min-width:84px;}
+    .qz-carnet th:first-child,.qz-carnet td:first-child{padding-right:18px;}
+    .qz-carnet tbody tr:nth-child(even) td{background:#FCFBF8;}
+    .qz-carnet tbody tr:hover td{background:#F4EFFA;}
     .qz-carnet th,.qz-carnet td{border-bottom:1px solid rgba(28,43,57,.08);padding:6px 10px;text-align:center;white-space:nowrap;}
     .qz-carnet th:first-child,.qz-carnet td:first-child{text-align:left;position:sticky;left:0;background:#fff;}
     .qz-carnet thead th{vertical-align:bottom;background:#FAF8F3;}
