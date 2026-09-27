@@ -438,6 +438,7 @@ function progMode(m){
   document.querySelectorAll('#progTabs button').forEach(b => b.classList.toggle('on', b.dataset.m === 'libre'));
   document.getElementById('progListe').hidden = true; document.getElementById('progConsigne').hidden = true;
   document.getElementById('progVerif').hidden = true; document.getElementById('progModeleLbl').hidden = true;
+  document.getElementById('progDevoirBandeau').hidden = true; document.getElementById('progSortie').hidden = true;
   prog.ws.updateToolbox(progToolbox(null));
   let json = null; try{ json = JSON.parse(localStorage.getItem('progLibre:' + ((currentUser && currentUser.id) || 'anon')) || 'null'); }catch(e){}
   progCharger(json || progDepartDefaut());

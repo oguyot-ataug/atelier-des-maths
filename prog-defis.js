@@ -279,7 +279,7 @@ async function progVerifier(){
   msg.innerHTML = `<div class="prog-res ${r.ok ? 'ok' : 'ko'}"><span class="gicon">${r.ok ? 'celebration' : 'info'}</span> ${progEsc(r.message)}</div>
     ${r.ok ? (() => { const l = progDefisVisibles(), i = l.findIndex(x => x.id === d.id), n = l.slice(i + 1).find(x => !(progSuivi[x.id] || {}).reussi) || l.find(x => !(progSuivi[x.id] || {}).reussi);
       return n ? `<button type="button" class="btn qz-mini" style="margin-top:8px;" onclick="progDefi('${n.id}')">Défi suivant : ${progEsc(n.titre)} <span class="gicon">arrow_forward</span></button>` : '<p class="hint" style="margin:8px 0 0;">Tous les défis sont réussis. Bravo !</p>'; })() : ''}`;
-  if(r.ok) progLancer();
+  if(r.ok && d.trace) progLancer(); // un tracé se redessine ; un calcul redemanderait un nombre
   if(premiere && prog.devoir) await progDevoirRendre();
   progListeRender();
   const c = document.querySelector('.prog-c-head b'); if(r.ok && c && !document.querySelector('.prog-c-ok')) c.insertAdjacentHTML('afterend', '<span class="prog-c-ok"><span class="gicon">check_circle</span> Réussi</span>');
