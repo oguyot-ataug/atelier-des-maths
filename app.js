@@ -2675,6 +2675,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.703', items:[
+    "Accès à l'offre Famille depuis le site -- signalé : \"Comment les familles s'inscrivent ? Il n'y a pas de lien direct sur la connexion ou la page d'accueil\". Bandeau « Vous êtes parent ? » sur l'accueil (visiteurs : découvrir l'offre, avec le prix de départ ; parents : accès direct à leur Espace famille) et bouton « Je suis parent » dans le menu de connexion. Affichés seulement quand la case « Offre Famille visible sur le site » est cochée dans Administration > Familles (l'adresse directe /#/famille marche toujours).",
+    "Fix -- menu de connexion : il s'ouvrait par-dessus l'avatar (quand « Aa » et l'avatar sont empilés), qu'on ne pouvait alors plus cliquer pour le refermer. Il s'ouvre maintenant juste en dessous.",
+  ]},
   { version:'2026-08-19.702', items:[
     "Mot de passe oublié -- signalé : \"Il manque aussi 'mot de passe oublié' (pour les familles ou les professeurs qui ont bien une adresse académique renseignée)\". Lien dans le menu de connexion : l'adresse e-mail reçoit un lien personnel ; au retour sur le site, la fenêtre « Choisissez votre nouveau mot de passe » s'ouvre. Même message que l'adresse ait un compte ou non (on ne révèle pas quelles adresses sont inscrites). Les élèves, dont l'identifiant n'a pas d'adresse e-mail, sont invités à demander un nouveau mot de passe à leur professeur ou à leurs parents.",
   ]},

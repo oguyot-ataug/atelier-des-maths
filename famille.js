@@ -25,6 +25,28 @@ async function famChargerGrille(){
   try{ const { data } = await sb.from('famille_parametres').select('prix').eq('id', 1).maybeSingle(); if(data && data.prix) famGrille = data.prix; }catch(e){}
 }
 function famPrixTxt(c){ return (c/100).toFixed(2).replace('.',',').replace(',00','') + ' €'; }
+// Liens publics vers l'offre (bandeau de l'accueil, « Je suis parent » dans le menu de connexion) :
+// affichés seulement quand l'administrateur a rendu l'offre visible (famille_parametres.publique).
+let famPublique = false;
+async function famAppliquerVisibilite(){
+  try{
+    const { data } = await sb.from('famille_parametres').select('prix,publique').eq('id', 1).maybeSingle();
+    if(data){ famPublique = !!data.publique; if(data.prix) famGrille = data.prix; }
+  }catch(e){}
+  famMajLiens();
+}
+function famMajLiens(){
+  const role = typeof currentUserRole !== 'undefined' ? currentUserRole : null;
+  const connecte = typeof currentUser !== 'undefined' && !!currentUser;
+  const banner = document.getElementById('famHomeBanner'), btn = document.getElementById('btnSignupFamille');
+  // Bandeau : pour les visiteurs (découvrir l'offre) et les parents (accès direct à leur espace).
+  if(banner) banner.style.display = (famPublique && (!connecte || role === 'parent')) ? 'flex' : 'none';
+  if(btn) btn.style.display = famPublique ? 'flex' : 'none';
+  const cta = document.getElementById('famHomeCta'), prix = document.getElementById('famHomePrix');
+  if(cta) cta.innerHTML = role === 'parent' ? 'Mon Espace famille <span class="gicon">arrow_forward</span>' : 'Découvrir l\'offre Famille <span class="gicon">arrow_forward</span>';
+  if(prix) prix.textContent = role === 'parent' ? '' : 'À partir de ' + famPrixTxt(famGrille['1']) + ' par année scolaire.';
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(famAppliquerVisibilite, 0)); else setTimeout(famAppliquerVisibilite, 0);
 function famFinAnnee(){ const d = new Date(), y = d.getFullYear(); return (d.getMonth()+1 >= 6 ? y+1 : y)+'-08-31'; }
 function famDate(s){ return s ? new Date(String(s).length===10 ? s+'T00:00:00' : s).toLocaleDateString('fr-FR') : ''; }
 function famEsc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -37,7 +59,7 @@ let familleNiveaux = null;  // null : compte non Famille ; sinon niveaux ouverts
 async function familleLoad(role){
   famState = null; familleNiveaux = null;
   document.body.classList.remove('famille-no-print');
-  if(role!=='parent' && role!=='eleve') return;
+  if(role!=='parent' && role!=='eleve'){ famMajLiens(); return; }
   try{
     const { data, error } = await sb.rpc('ma_famille');
     if(error || !data) return;
@@ -48,8 +70,9 @@ async function familleLoad(role){
     // remplacée par un message (CSS @media print), Ctrl+P intercepté sur un chapitre.
     document.body.classList.add('famille-no-print');
   }catch(e){ /* hors ligne */ }
+  finally{ famMajLiens(); }
 }
-function familleClear(){ famState = null; familleNiveaux = null; document.body.classList.remove('famille-no-print'); }
+function familleClear(){ famState = null; familleNiveaux = null; document.body.classList.remove('famille-no-print'); famMajLiens(); }
 function familleSansImpression(){
   if(!document.body.classList.contains('famille-no-print')) return false;
   niceAlert("L'impression et l'enregistrement en PDF des cours ne sont pas disponibles avec un compte Famille. Les cours restent consultables à tout moment sur le site.");
@@ -624,7 +647,7 @@ async function famAdminRefresh(){
     sb.from('famille_enfants').select('parent_id,uai,hors_college'),
     sb.from('famille_exclusions').select('*').order('uai'),
     sb.from('famille_paiements').select('montant_centimes,created_at,test,promo_code'),
-    sb.from('famille_parametres').select('prix').eq('id', 1).maybeSingle(),
+    sb.from('famille_parametres').select('prix,publique').eq('id', 1).maybeSingle(),
     sb.from('famille_codes_promo').select('*').order('created_at', {ascending:false}),
   ]);
   famAdminCodes = codes || [];
@@ -661,6 +684,7 @@ async function famAdminRefresh(){
     </div>
     <div class="tool-shell fam-card">
       <strong class="fam-h"><span class="gicon">sell</span> Tarifs Famille</strong>
+      <label class="fam-check" style="margin:6px 0 10px;"><input type="checkbox" id="famPublique" ${param && param.publique ? 'checked' : ''} onchange="famAdminPublique(this)"> <span><b>Offre Famille visible sur le site</b> : bandeau « Vous êtes parent ? » sur l'accueil et bouton « Je suis parent » dans le menu de connexion. Décoché, l'offre reste accessible par l'adresse directe maths.latelieraugmente.fr/#/famille.</span></label>
       <p class="hint" style="margin:4px 0 8px;">Prix TTC par année scolaire, appliqués à tous les nouveaux paiements (et affichés sur la page de présentation).</p>
       <div class="fam-row">
         <label class="hint">1 niveau <input type="number" id="famTarif1" min="1" step="0.01" value="${eur(grille['1'])}" style="width:80px;"> €</label>
@@ -690,6 +714,12 @@ async function famAdminTest(parentId, cb){
   if(error){ cb.checked = !cb.checked; niceAlert('Erreur : '+error.message); }
 }
 let famAdminCodes = [];
+async function famAdminPublique(cb){
+  const { error } = await sb.from('famille_parametres').update({ publique: cb.checked, updated_at: new Date().toISOString() }).eq('id', 1);
+  if(error){ cb.checked = !cb.checked; return niceAlert('Erreur : ' + error.message); }
+  famPublique = cb.checked; famMajLiens();
+  famMsg('famTarifMsg', cb.checked ? '✓ Offre visible sur le site' : '✓ Offre masquée (adresse directe seulement)', true);
+}
 async function famAdminTarifs(){
   const v = i => Math.round(parseFloat(String(document.getElementById('famTarif'+i).value).replace(',','.'))*100);
   const prix = { '1': v(1), '2': v(2), '3': v(3) };
