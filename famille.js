@@ -261,7 +261,7 @@ async function renderFamille(){
   famMajPrix();
   if(paye){
     if(!active && (famData.polls = (famData.polls||0)+1) <= 8){ setTimeout(renderFamille, 2500); }
-    else { history.replaceState(null, '', location.pathname + location.hash); if(active){ await familleLoad('parent'); if(currentLevel) renderNiveau(currentLevel); } }
+    else { const q = new URLSearchParams(location.search); q.delete('famille'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); if(active){ await familleLoad('parent'); if(currentLevel) renderNiveau(currentLevel); } }
   }
 }
 

@@ -2683,6 +2683,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.707', items:[
+    "Fix -- signalé : \"à chaque fois que je recharge la page famille, il se met en version 705 et me propose de recharger la page\". GitHub Pages autorise le navigateur et son réseau de diffusion à garder la page jusqu'à 10 minutes : rouvrir ou recharger une adresse comme /#/famille pouvait redonner l'ancienne version, puis la bannière « Nouvelle version », en boucle. Désormais, si la page vient de s'ouvrir et qu'on n'a encore rien touché, le site passe tout seul à la nouvelle version (une seule fois, sans boucle possible) ; sinon la bannière reste proposée. Le bouton « Recharger » garde la rubrique ouverte (avant : retour à l'accueil).",
+  ]},
   { version:'2026-08-19.706', items:[
     "Offre Famille, déclaration sur l'honneur précisée -- demandé : \"n'est scolarisé dans l'établissement où enseigne le concepteur du site : Préciser : Ensemble scolaire La Malgrange à Jarville-La-Malgrange\". Le texte certifié à l'inscription et les CGV (article 3) nomment maintenant l'Ensemble scolaire La Malgrange (Jarville-la-Malgrange). Nouvelle version de la déclaration (27/09/2026) enregistrée pour les nouvelles inscriptions ; CGV en version du 27 septembre 2026.",
   ]},
@@ -8293,6 +8296,21 @@ function tbAttachHandlers(){
    discrète, avec bouton) : un élève peut être en plein exercice chronométré, le lui faire perdre
    serait pire que le problème d'origine. */
 let newVersionDetected = false;
+/* Page tout juste ouverte, pas encore touchée : on peut passer à la nouvelle version sans rien
+   faire perdre -- signalé : "à chaque fois que je recharge la page famille, il se met en version
+   705 et me propose de recharger la page". GitHub Pages autorise le navigateur (et son CDN) à
+   garder la page jusqu'à 10 minutes : rouvrir ou recharger /#/famille pouvait donc redonner
+   l'ancienne version, puis afficher la bannière, encore et encore. Dans ce cas précis (page
+   ouverte depuis moins de 20 s, aucun clic ni touche), on bascule tout seul, une seule fois par
+   version (garde en sessionStorage contre toute boucle), sur l'adresse de la nouvelle version en
+   gardant la rubrique ouverte (#/famille...). Sinon : la bannière, comme avant. */
+let versionUserActed = false;
+['pointerdown','keydown'].forEach(ev => addEventListener(ev, () => { versionUserActed = true; }, { capture:true, once:true }));
+function freshVersionUrl(tag){
+  const q = new URLSearchParams(location.search);
+  q.set('_vc', tag ? tag.replace(/^build\s*/, '') : String(Date.now()));
+  return location.pathname + '?' + q.toString() + location.hash;
+}
 async function checkForNewVersion(){
   if(newVersionDetected) return;
   try{
@@ -8302,7 +8320,14 @@ async function checkForNewVersion(){
     const currentTag = document.getElementById('buildTag')?.textContent;
     if(m && currentTag && m[1] !== currentTag){
       newVersionDetected = true;
-      showNewVersionBanner();
+      let dejaTente = false;
+      try{ dejaTente = sessionStorage.getItem('versionAuto') === m[1]; }catch(e){}
+      if(!versionUserActed && !dejaTente && performance.now() < 20000){
+        try{ sessionStorage.setItem('versionAuto', m[1]); }catch(e){}
+        location.replace(freshVersionUrl(m[1]));
+        return;
+      }
+      showNewVersionBanner(m[1]);
     }
   }catch(e){ /* vérification best-effort : une coupure réseau ne doit jamais gêner l'usage normal */ }
 }
@@ -8312,10 +8337,13 @@ async function checkForNewVersion(){
    rechargement -- signalé : "j'ai actualisé 20 fois la page sans tomber sur la nouvelle
    version". On navigue à la place vers une URL jamais vue (nouveau paramètre), qui ne PEUT pas
    déjà être en cache nulle part. */
+let newVersionTag = null;
 function forceReloadFreshUrl(){
-  location.href = location.pathname + '?_vc=' + Date.now();
+  // Garde la rubrique ouverte (#/famille, #/6e/...) : avant, on revenait à l'accueil.
+  location.href = freshVersionUrl(newVersionTag);
 }
-function showNewVersionBanner(){
+function showNewVersionBanner(tag){
+  if(tag) newVersionTag = tag;
   let banner = document.getElementById('newVersionBanner');
   if(!banner){
     banner = document.createElement('div');
@@ -8332,7 +8360,7 @@ function showNewVersionBanner(){
 // Au chargement (léger différé pour ne pas concurrencer le rendu initial), puis toutes les 5
 // minutes pour un onglet resté ouvert longtemps, puis à chaque retour sur l'onglet (cas
 // fréquent : le site reste ouvert pendant qu'on déploie, puis on y revient et on rafraîchit).
-setTimeout(checkForNewVersion, 4000);
+setTimeout(checkForNewVersion, 1500);
 setInterval(checkForNewVersion, 5*60*1000);
 document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkForNewVersion(); });
 
