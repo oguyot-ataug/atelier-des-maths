@@ -18,7 +18,13 @@
 const FAM_ORDRE = ['6e','5e','4e','3e'];
 const FAM_DISPO = ['6e','5e']; // niveaux en ligne : miroir de NIVEAUX_DISPONIBLES (fonction famille)
 const FAM_EXCLUSION_TEXTE = "Je certifie qu'aucun de mes enfants inscrits sur L'Atelier des Maths n'est scolarisé dans l'établissement où enseigne le concepteur du site, et je m'engage à ne pas créer de compte pour un enfant qui y serait scolarisé. Je reconnais qu'une fausse déclaration entraîne la fermeture des comptes sans remboursement.";
-function famPrix(n){ return n<=0 ? 0 : n===1 ? 29 : n===2 ? 45 : 59; }
+// Prix affichés (en centimes, par nombre de niveaux) : lus dans famille_parametres, modifiables
+// dans Administration > Familles. Le montant réellement payé est toujours recalculé par le serveur.
+let famGrille = { '1':3500, '2':5500, '3':6900 };
+async function famChargerGrille(){
+  try{ const { data } = await sb.from('famille_parametres').select('prix').eq('id', 1).maybeSingle(); if(data && data.prix) famGrille = data.prix; }catch(e){}
+}
+function famPrixTxt(c){ return (c/100).toFixed(2).replace('.',',').replace(',00','') + ' €'; }
 function famFinAnnee(){ const d = new Date(), y = d.getFullYear(); return (d.getMonth()+1 >= 6 ? y+1 : y)+'-08-31'; }
 function famDate(s){ return s ? new Date(String(s).length===10 ? s+'T00:00:00' : s).toLocaleDateString('fr-FR') : ''; }
 function famEsc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -30,15 +36,31 @@ let familleNiveaux = null;  // null : compte non Famille ; sinon niveaux ouverts
 
 async function familleLoad(role){
   famState = null; familleNiveaux = null;
+  document.body.classList.remove('famille-no-print');
   if(role!=='parent' && role!=='eleve') return;
   try{
     const { data, error } = await sb.rpc('ma_famille');
     if(error || !data) return;
     famState = data;
     familleNiveaux = Array.isArray(data.niveaux_ouverts) ? data.niveaux_ouverts : [];
+    // Demandé : "Pour les parents, ne pas permettre l'enregistrement PDF/impression dans les
+    // cours" -- parent et enfants d'une famille : bouton d'export masqué, impression du cours
+    // remplacée par un message (CSS @media print), Ctrl+P intercepté sur un chapitre.
+    document.body.classList.add('famille-no-print');
   }catch(e){ /* hors ligne */ }
 }
-function familleClear(){ famState = null; familleNiveaux = null; }
+function familleClear(){ famState = null; familleNiveaux = null; document.body.classList.remove('famille-no-print'); }
+function familleSansImpression(){
+  if(!document.body.classList.contains('famille-no-print')) return false;
+  niceAlert("L'impression et l'enregistrement en PDF des cours ne sont pas disponibles avec un compte Famille. Les cours restent consultables à tout moment sur le site.");
+  return true;
+}
+document.addEventListener('keydown', e => {
+  if((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P') && document.body.classList.contains('famille-no-print')){
+    const chap = document.getElementById('view-chapitre');
+    if(chap && chap.classList.contains('active')){ e.preventDefault(); familleSansImpression(); }
+  }
+}, true);
 
 async function famCall(body){
   const { data:{ session } } = await sb.auth.getSession();
@@ -65,9 +87,9 @@ function famPresentationHtml(){
     <p style="margin:0;max-width:72ch;">Les cours, méthodes et exercices du collège, les automatismes et Objectif Nombre, avec un compte pour chaque enfant et un suivi pour vous.</p>
   </div>
   <div class="fam-offres">
-    <div class="fam-offre"><b>1 niveau</b><span class="fam-prix">29 €</span><small>par année scolaire</small></div>
-    <div class="fam-offre"><b>2 niveaux</b><span class="fam-prix">45 €</span><small>par année scolaire</small></div>
-    <div class="fam-offre"><b>Collège complet</b><span class="fam-prix">59 €</span><small>dès que la 4e et la 3e seront en ligne</small></div>
+    <div class="fam-offre"><b>1 niveau</b><span class="fam-prix">${famPrixTxt(famGrille['1'])}</span><small>par année scolaire</small></div>
+    <div class="fam-offre"><b>2 niveaux</b><span class="fam-prix">${famPrixTxt(famGrille['2'])}</span><small>par année scolaire</small></div>
+    <div class="fam-offre"><b>Collège complet</b><span class="fam-prix">${famPrixTxt(famGrille['3'])}</span><small>dès que la 4e et la 3e seront en ligne</small></div>
   </div>
   <ul class="fam-points">
     <li><span class="gicon">group</span><span>Jusqu'à <b>4 comptes enfants</b> (des jumeaux ont chacun leur compte), gérés par vous.</span></li>
@@ -79,18 +101,28 @@ function famPresentationHtml(){
 }
 function famSignupHtml(){
   return `
-  <div class="tool-shell fam-card" style="max-width:560px;">
-    <strong class="fam-h"><span class="gicon">person_add</span> Créer mon compte Famille</strong>
-    <div class="fam-form">
-      <label>Prénom<input type="text" id="famSuPrenom" autocomplete="given-name"></label>
-      <label>Nom<input type="text" id="famSuNom" autocomplete="family-name"></label>
-      <label class="wide">Adresse e-mail<input type="email" id="famSuEmail" autocomplete="email"></label>
-      <label class="wide">Mot de passe (8 caractères minimum)<input type="password" id="famSuPassword" autocomplete="new-password"></label>
+  <div class="fam-signup">
+    <div class="auth-modal-head fam-signup-head">
+      <span class="auth-badge big"><span class="gicon">family_restroom</span></span>
+      <div class="auth-title">Créer mon compte Famille</div>
+      <div class="auth-sub">Gratuit : vous choisirez l'accès et paierez ensuite, depuis votre Espace famille.</div>
     </div>
-    ${famCertifHtml()}
-    <button class="btn" id="famSuBtn" onclick="famSignup()" style="width:100%;margin-top:10px;">Créer mon compte Famille</button>
-    <span class="hint" id="famSuMsg" style="display:block;margin-top:8px;"></span>
-    <p class="hint" style="margin:10px 0 0;">Déjà inscrit ? Connectez-vous avec le bouton <span class="gicon">person</span> en haut à droite.</p>
+    <form class="auth-modal-body" onsubmit="famSignup();return false;">
+      <div class="auth-grid">
+        <div><label class="auth-label" for="famSuPrenom">Prénom</label>
+          <div class="auth-field"><span class="gicon">badge</span><input type="text" id="famSuPrenom" autocomplete="given-name"></div></div>
+        <div><label class="auth-label" for="famSuNom">Nom</label>
+          <div class="auth-field"><span class="gicon">badge</span><input type="text" id="famSuNom" autocomplete="family-name"></div></div>
+      </div>
+      <label class="auth-label" for="famSuEmail">Adresse e-mail</label>
+      <div class="auth-field"><span class="gicon">mail</span><input type="email" id="famSuEmail" placeholder="vous@exemple.fr" autocomplete="email"></div>
+      <label class="auth-label" for="famSuPassword">Mot de passe <span class="auth-label-hint">(8 caractères minimum)</span></label>
+      <div class="auth-field"><span class="gicon">lock</span><input type="password" id="famSuPassword" autocomplete="new-password"></div>
+      <div class="fam-checks">${famCertifHtml()}</div>
+      <button type="submit" class="btn-auth orange" id="famSuBtn"><span class="gicon">rocket_launch</span> Créer mon compte Famille</button>
+      <span class="auth-status" id="famSuMsg"></span>
+      <p class="auth-foot">Déjà inscrit ? Connectez-vous avec le bouton <span class="gicon" style="font-size:15px;vertical-align:-3px;">person</span> en haut à droite.</p>
+    </form>
   </div>`;
 }
 function famCertifHtml(){
@@ -118,9 +150,9 @@ async function famSignup(){
   } });
   if(error){ btn.disabled = false; return famMsg('famSuMsg', 'Erreur : '+error.message); }
   if(!data.session){
-    document.querySelector('#famRoot .fam-card').innerHTML = `<strong class="fam-h"><span class="gicon">mark_email_unread</span> Plus qu'une étape : confirmez votre adresse</strong>
+    document.querySelector('#famRoot .fam-signup .auth-modal-body').outerHTML = `<div class="auth-modal-body"><strong class="fam-h"><span class="gicon">mark_email_unread</span> Plus qu'une étape : confirmez votre adresse</strong>
       <p style="margin:8px 0;">Un e-mail de <b>L'Atelier des Maths</b> vient d'être envoyé à <b>${famEsc(email)}</b>. Cliquez sur le bouton qu'il contient : vous reviendrez ici, connecté, et votre compte Famille sera prêt.</p>
-      <p class="hint" style="margin:0;">Rien reçu d'ici quelques minutes ? Regardez dans les courriers indésirables, ou écrivez à contact@latelieraugmente.fr.</p>`;
+      <p class="hint" style="margin:0;">Rien reçu d'ici quelques minutes ? Regardez dans les courriers indésirables, ou écrivez à contact@latelieraugmente.fr.</p></div>`;
     return;
   }
   try{
@@ -147,6 +179,7 @@ let famData = null;
 async function renderFamille(){
   const root = document.getElementById('famRoot');
   if(!root) return;
+  await famChargerGrille();
   if(!currentUser){ root.innerHTML = famPresentationHtml() + famSignupHtml(); return; }
   if(!currentUserRole){
     // Le profil vient peut-être d'être créé : on relit le rôle avant de proposer de finaliser.
@@ -172,11 +205,12 @@ async function renderFamille(){
   if(!famData) root.innerHTML = '<p class="hint">Chargement…</p>';
   const paye = /[?&]famille=paye/.test(location.search);
   const since30 = new Date(Date.now()-30*24*3600e3).toISOString();
-  const [{ data: fam }, { data: enf }, { data: pay }, { data: ai }] = await Promise.all([
+  const [{ data: fam }, { data: enf }, { data: pay }, { data: ai }, { data: factures }] = await Promise.all([
     sb.from('familles').select('*').eq('parent_id', currentUser.id).maybeSingle(),
     sb.from('famille_enfants').select('*, profiles(prenom,nom,email)').eq('parent_id', currentUser.id).order('created_at'),
     sb.from('famille_paiements').select('*').eq('parent_id', currentUser.id).order('created_at', {ascending:false}),
     sb.from('teacher_ai_settings').select('key_last4,key_set_at').eq('teacher_id', currentUser.id).maybeSingle(),
+    sb.from('facturation_documents').select('*').eq('famille_parent_id', currentUser.id).order('created_at', {ascending:false}),
   ]);
   const enfants = (enf||[]).map(e=>({ ...e, prenom:(e.profiles&&e.profiles.prenom)||'', identifiant: famIdent(e.profiles&&e.profiles.email) }));
   const ids = enfants.map(e=>e.enfant_id);
@@ -185,7 +219,7 @@ async function renderFamille(){
     sb.from('ceb_results').select('student_id,target,result_value,gap,success,timed,created_at').in('student_id', ids).order('created_at', {ascending:false}).limit(300),
     sb.from('ai_usage_log').select('user_id,feature,input_tokens,output_tokens,created_at').eq('billed_to', currentUser.id).gte('created_at', since30).order('created_at', {ascending:false}),
   ]) : [{data:[]},{data:[]},(await sb.from('ai_usage_log').select('user_id,feature,input_tokens,output_tokens,created_at').eq('billed_to', currentUser.id).gte('created_at', since30))];
-  famData = { fam: fam||{}, enfants, pay: pay||[], ai: ai||{}, cm: cm||[], ceb: ceb||[], use: use||[] };
+  famData = { fam: fam||{}, enfants, pay: pay||[], ai: ai||{}, cm: cm||[], ceb: ceb||[], use: use||[], factures: factures||[], code: (famData && famData.code) || '' };
   const today = new Date().toISOString().slice(0,10);
   const active = !!(fam && fam.acces_until && fam.acces_until >= today);
 
@@ -193,9 +227,10 @@ async function renderFamille(){
     <h1 style="margin:6px 0 4px;"><span class="gicon">family_restroom</span> Espace famille</h1>
     <p style="color:var(--ink-soft);margin:0 0 14px;">Bonjour ${famEsc(currentUser && document.getElementById('accountNameDisplay').textContent)} : vous gérez ici l'accès, les comptes de vos enfants, leur suivi et l'IA.</p>
     ${paye && !active ? '<div class="fam-banner"><span class="gicon">hourglass_top</span> Paiement reçu, activation en cours… cette page se met à jour toute seule.</div>' : ''}
-    ${paye && active ? '<div class="fam-banner ok"><span class="gicon">check_circle</span> Merci ! Votre accès est activé. La facture vous a été envoyée par e-mail.</div>' : ''}
+    ${paye && active ? '<div class="fam-banner ok"><span class="gicon">check_circle</span> Merci ! Votre accès est activé. Votre facture est disponible ci-dessous, dans « Mes factures », et vous a été annoncée par e-mail.</div>' : ''}
     ${famData.fam.stripe_test ? '<div class="fam-banner"><span class="gicon">science</span><span><b>Compte de test</b> : les paiements sont simulés par Stripe, aucun argent ne circule. Carte de test : <code>4242 4242 4242 4242</code>, date future quelconque, code 123.</span></div>' : ''}
     ${famAccesHtml(famData.fam, active)}
+    ${famFacturesHtml(famData.factures)}
     ${famEnfantsHtml(enfants, active)}
     ${famSuiviHtml(enfants)}
     ${famIaHtml(famData.fam, famData.ai, enfants, famData.use)}
@@ -227,27 +262,44 @@ function famAccesHtml(fam, active){
     ${statut}
     <p class="hint" style="margin:10px 0 4px;">${memePeriode ? 'Ajouter un niveau (vous ne payez que la différence) :' : 'Choisissez les niveaux pour l\'année scolaire '+anneeLabel+' (accès jusqu\'au '+famDate(fin)+') :'}</p>
     <div class="fam-nivs">${cases}</div>
-    <p style="margin:8px 0;" id="famPrix"></p>
+    <div class="fam-code">
+      <input type="text" id="famCode" placeholder="Code promo" value="${famEsc(famData.code||'')}" maxlength="30" autocomplete="off" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter'){event.preventDefault();famAppliquerCode();}">
+      <button class="btn secondary" onclick="famAppliquerCode()">Appliquer</button>
+      <span class="hint" id="famCodeMsg"></span>
+    </div>
+    <div class="fam-prixbox" id="famPrix"></div>
     <label class="fam-check"><input type="checkbox" id="famRenonce"> <span>Je demande l'accès immédiat au contenu numérique dès le paiement et je reconnais perdre ainsi mon droit de rétractation de 14 jours (art. L221-28 13° du Code de la consommation).</span></label>
     <button class="btn" id="famPayBtn" onclick="famPayer()" disabled><span class="gicon">credit_card</span> Payer par carte</button>
     <span class="hint" id="famPayMsg" style="display:block;margin-top:6px;"></span>
-    <p class="hint" style="margin:8px 0 0;">Paiement unique et sécurisé (Stripe), <b>sans reconduction automatique</b> : rien ne sera prélevé l'an prochain sans votre accord. Facture envoyée par e-mail. En cas de litige, après nous avoir écrit, vous pouvez recourir gratuitement au médiateur de la consommation CM2C (<a href="https://www.cm2c.net/declarer-un-litige.php" target="_blank" rel="noopener">cm2c.net</a>, 49 rue de Ponthieu, 75008 Paris) ; voir les <a href="#/cgv">CGV</a>.${fam.montant_paye_centimes && memePeriode ? ' Déjà payé pour cette année : '+famEuros(fam.montant_paye_centimes)+'.' : ''}</p>
+    <p class="hint" style="margin:8px 0 0;">Paiement unique et sécurisé (Stripe), <b>sans reconduction automatique</b> : rien ne sera prélevé l'an prochain sans votre accord. Facture émise par L'Atelier Augmenté, disponible ci-dessous. En cas de litige, après nous avoir écrit, vous pouvez recourir gratuitement au médiateur de la consommation CM2C (<a href="https://www.cm2c.net/declarer-un-litige.php" target="_blank" rel="noopener">cm2c.net</a>, 49 rue de Ponthieu, 75008 Paris) ; voir les <a href="#/cgv">CGV</a>.${fam.montant_paye_centimes && memePeriode ? ' Déjà payé pour cette année : '+famEuros(fam.montant_paye_centimes)+'.' : ''}</p>
     ${famData.pay.length ? `<details style="margin-top:8px;"><summary class="hint">Historique des paiements</summary><table class="fam-table" style="margin-top:6px;"><tr><th>Date</th><th>Niveaux</th><th>Montant</th><th>Accès jusqu'au</th></tr>${famData.pay.map(p=>`<tr><td>${famDate(p.created_at)}</td><td>${(p.niveaux||[]).join(', ')}</td><td>${famEuros(p.montant_centimes)}${p.test?' <span class="fam-badge" style="background:#6A4FB3;">test</span>':''}</td><td>${famDate(p.acces_until)}</td></tr>`).join('')}</table></details>` : ''}
   </div>`;
 }
-function famMajPrix(){
+// Prix calculé par le serveur (tarifs en vigueur, code promo, ce qui a déjà été payé cette année) :
+// l'affichage est toujours exactement ce qui sera demandé sur la page de paiement.
+let famDevisSeq = 0;
+async function famMajPrix(){
   const el = document.getElementById('famPrix'); if(!el || !famData) return;
-  const fam = famData.fam, today = new Date().toISOString().slice(0,10), fin = famFinAnnee();
-  const memePeriode = fam.acces_until && fam.acces_until >= today && fam.acces_until === fin;
-  const actuels = memePeriode ? (fam.niveaux||[]) : [];
-  const choisis = [...document.querySelectorAll('.famNiv:checked:not(:disabled)')].map(c=>c.value);
-  const total = FAM_ORDRE.filter(n=>choisis.includes(n) || actuels.includes(n));
-  const deja = memePeriode ? (fam.montant_paye_centimes||0)/100 : 0;
-  const montant = Math.max(0, famPrix(total.length) - deja);
   const btn = document.getElementById('famPayBtn');
+  const choisis = [...document.querySelectorAll('.famNiv:checked:not(:disabled)')].map(c=>c.value);
   if(!choisis.length){ el.innerHTML = '<span class="hint">Cochez au moins un niveau.</span>'; if(btn) btn.disabled = true; return; }
-  el.innerHTML = `Total : <b style="font-size:1.1rem;">${montant.toFixed(2).replace('.',',').replace(',00','')} €</b> <span class="hint">pour ${total.join(', ')}${deja?' (formule '+famPrix(total.length)+' € − '+deja.toFixed(2).replace('.',',').replace(',00','')+' € déjà payés)':''}</span>`;
-  if(btn) btn.disabled = montant <= 0;
+  const seq = ++famDevisSeq;
+  el.innerHTML = '<span class="hint">Calcul du prix…</span>'; if(btn) btn.disabled = true;
+  let d;
+  try{ d = await famCall({ action:'devis', niveaux: choisis, code: famData.code || '' }); }
+  catch(e){ if(seq === famDevisSeq) el.innerHTML = '<span style="color:#B3261E;">'+famEsc(e.message)+'</span>'; return; }
+  if(seq !== famDevisSeq) return;
+  const cm = document.getElementById('famCodeMsg');
+  if(cm) cm.innerHTML = famData.code ? (d.code ? '<span style="color:#1E7B34;"><span class="gicon">check_circle</span> '+famEsc(d.code_libelle || 'Code appliqué')+'</span>' : '<span style="color:#B3261E;">'+famEsc(d.code_msg || 'Code non valable.')+'</span>') : '';
+  const barre = d.prix_formule < d.prix_liste ? `<s class="hint">${famPrixTxt(d.prix_liste)}</s> ` : '';
+  el.innerHTML = `<div class="fam-total">Total : ${d.deja ? '' : barre}<b>${famPrixTxt(d.montant)}</b></div>
+    <div class="hint">${d.niveaux.join(', ')} · accès jusqu'au <b>${famDate(d.acces_until)}</b>${d.deja ? ` · formule ${barre}${famPrixTxt(d.prix_formule)} − ${famPrixTxt(d.deja)} déjà payés` : ''}${d.code ? ' · code <b>'+famEsc(d.code)+'</b>' : ''}</div>`;
+  if(btn) btn.disabled = d.montant <= 0;
+}
+function famAppliquerCode(){
+  const inp = document.getElementById('famCode'); if(!inp) return;
+  famData.code = (inp.value||'').trim().toUpperCase().replace(/\s+/g,'');
+  famMajPrix();
 }
 async function famPayer(){
   const choisis = [...document.querySelectorAll('.famNiv:checked:not(:disabled)')].map(c=>c.value);
@@ -255,9 +307,31 @@ async function famPayer(){
   const btn = document.getElementById('famPayBtn'); btn.disabled = true;
   famMsg('famPayMsg', 'Redirection vers le paiement…', true);
   try{
-    const r = await famCall({ action:'paiement', niveaux: choisis, renonciation:true, origin: location.origin });
+    const r = await famCall({ action:'paiement', niveaux: choisis, code: famData.code || '', renonciation:true, origin: location.origin });
     location.href = r.url;
   }catch(e){ btn.disabled = false; famMsg('famPayMsg', e.message); }
+}
+
+function famFacturesHtml(factures){
+  if(!factures.length) return '';
+  return `
+  <div class="tool-shell fam-card">
+    <strong class="fam-h"><span class="gicon">receipt_long</span> Mes factures</strong>
+    <div class="fam-factures">${factures.map(f=>`
+      <div class="fam-facture">
+        <div><b>${famEsc(f.numero)}</b>${f.test ? ' <span class="fam-badge" style="background:#6A4FB3;">test</span>' : ''}<div class="hint" style="margin:0;">${famDate(f.date_emission)} · ${(f.niveaux||[]).join(', ')} · ${famPrixTxt(Math.round(Number(f.total)*100))}</div></div>
+        <div class="fam-actions">
+          <button class="btn secondary" onclick="famVoirFacture('${f.id}', false)"><span class="gicon">visibility</span> Voir</button>
+          <button class="btn" onclick="famVoirFacture('${f.id}', true)"><span class="gicon">download</span> Télécharger (PDF)</button>
+        </div>
+      </div>`).join('')}
+    </div>
+    <p class="hint" style="margin:8px 0 0;">« Télécharger » ouvre la facture et la fenêtre d'impression : choisissez « Enregistrer au format PDF ».</p>
+  </div>`;
+}
+function famVoirFacture(id, telecharger){
+  const f = famData && famData.factures.find(x=>x.id === id); if(!f) return;
+  if(typeof facOpenPdf === 'function') facOpenPdf(null, f, telecharger);
 }
 
 function famEnfantsHtml(enfants, active){
@@ -477,6 +551,19 @@ async function famSupprimerCompte(){
     .fam-actions{display:flex;gap:6px;flex-wrap:wrap;}
     .fam-actions .btn{padding:3px 10px;font-size:.78rem;}
     .fam-add{margin-top:8px;}
+    .fam-signup{max-width:560px;margin:0 auto 16px;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 18px 48px rgba(28,43,57,.14);border:1px solid rgba(28,43,57,.06);}
+    .fam-signup-head{background:radial-gradient(120% 140% at 0% 0%,#FFAE5C 0%,var(--accent-orange) 50%,#E46A00 100%);}
+    .fam-checks{background:#FAFBFC;border:1px solid #E4E8EE;border-radius:12px;padding:4px 12px;margin:4px 0 14px;}
+    .fam-checks .fam-check{font-size:.82rem;}
+    .fam-codeform{margin-top:12px;padding:12px 14px;border:1.5px solid rgba(12,91,160,.18);border-radius:12px;background:#F8FAFD;}
+    .fam-code{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0 4px;}
+    .fam-code input{width:170px;text-transform:uppercase;letter-spacing:.5px;}
+    .fam-code .btn{padding:6px 14px;}
+    .fam-prixbox{margin:10px 0;padding:10px 14px;background:#F4F8FD;border-radius:10px;border:1px solid rgba(12,91,160,.12);}
+    .fam-total{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;}
+    .fam-total b{font-size:1.45rem;color:var(--accent);}
+    .fam-factures{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+    .fam-facture{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid rgba(28,43,57,.1);border-radius:10px;padding:8px 12px;}
     .fam-add summary{cursor:pointer;font-weight:700;color:var(--accent);}
     .fam-suivi{background:#fff;border:1px solid rgba(28,43,57,.1);border-radius:10px;padding:8px 12px;margin:6px 0;}
     .fam-suivi summary{cursor:pointer;}
@@ -485,6 +572,12 @@ async function famSupprimerCompte(){
     .fam-banner{background:#FFF4E0;border-radius:10px;padding:10px 14px;margin:0 0 12px;display:flex;gap:8px;align-items:center;}
     .fam-banner.ok{background:#E3F4E6;}
     #view-cgv h2{font-size:1.05rem;margin:18px 0 6px;}
+    body.famille-no-print #btnExportCoursPdf{display:none !important;}
+    #famNoPrintMsg{display:none;}
+    @media print{
+      body.famille-no-print #view-chapitre{display:none !important;}
+      body.famille-no-print:has(#view-chapitre.active) #famNoPrintMsg{display:block !important;font:600 14pt 'Space Grotesk',Arial,sans-serif;text-align:center;margin:40mm 20mm;color:#1c2b39;line-height:1.5;}
+    }
     .fam-step{font-family:'Space Grotesk',sans-serif;font-weight:700;margin:14px 0 6px;color:var(--ink);}
     .fam-badge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:.75rem;font-weight:700;color:#fff;white-space:nowrap;}
     .fam-table{width:100%;border-collapse:collapse;font-size:.88rem;background:#fff;border-radius:10px;overflow:hidden;}
@@ -526,13 +619,29 @@ async function famSupprimerCompte(){
 async function famAdminRefresh(){
   const root = document.getElementById('famAdminRoot'); if(!root) return;
   if(currentUserRole!=='admin'){ root.innerHTML = '<p class="hint">Réservé à l\'administrateur.</p>'; return; }
-  const [{ data: fams }, { data: enf }, { data: excl }, { data: pays }] = await Promise.all([
+  const [{ data: fams }, { data: enf }, { data: excl }, { data: pays }, { data: param }, { data: codes }] = await Promise.all([
     sb.from('familles').select('*, profiles!familles_parent_id_fkey(nom,prenom,email)').order('created_at', {ascending:false}),
     sb.from('famille_enfants').select('parent_id,uai,hors_college'),
     sb.from('famille_exclusions').select('*').order('uai'),
-    sb.from('famille_paiements').select('montant_centimes,created_at,test'),
+    sb.from('famille_paiements').select('montant_centimes,created_at,test,promo_code'),
+    sb.from('famille_parametres').select('prix').eq('id', 1).maybeSingle(),
+    sb.from('famille_codes_promo').select('*').order('created_at', {ascending:false}),
   ]);
+  famAdminCodes = codes || [];
+  const grille = (param && param.prix) || famGrille;
+  const usages = new Map(); (pays||[]).filter(p=>!p.test && p.promo_code).forEach(p=>usages.set(p.promo_code, (usages.get(p.promo_code)||0)+1));
+  const eur = c => c==null ? '' : (c/100).toFixed(2).replace('.',',').replace(',00','');
   const today = new Date().toISOString().slice(0,10);
+  const codeEtat = c => !c.actif ? ['désactivé','#8A8F98'] : (c.valide_au && today > c.valide_au) ? ['expiré','#8A8F98'] : (c.valide_du && today < c.valide_du) ? ['à venir','#8A5A00'] : ['actif','#1E7B34'];
+  const lignesCodes = famAdminCodes.map(c=>{ const [et, col] = codeEtat(c); return `<tr>
+    <td><b style="font-family:'JetBrains Mono',monospace;">${famEsc(c.code)}</b><div class="hint" style="margin:0;">${famEsc(c.libelle)}</div></td>
+    <td>${c.prix ? `${eur(c.prix['1'])} / ${eur(c.prix['2'])} / ${eur(c.prix['3'])} €` : `−${c.remise_pct} %`}</td>
+    <td>${c.valide_du ? famDate(c.valide_du) : '…'} → ${c.valide_au ? famDate(c.valide_au) : '…'}</td>
+    <td>${c.fin_acces ? famDate(c.fin_acces) : '31/08 (année scolaire)'}</td>
+    <td>${usages.get(c.code)||0}${c.max_utilisations ? ' / '+c.max_utilisations : ''}${c.une_fois_par_famille ? '<div class="hint" style="margin:0;">1 fois / famille</div>' : ''}</td>
+    <td><span class="fam-badge" style="background:${col};">${et}</span></td>
+    <td class="fam-actions"><button class="btn secondary" onclick="famAdminCodeForm('${famEsc(c.code)}')">Modifier</button>
+      <button class="btn secondary" onclick="famAdminCodeActif('${famEsc(c.code)}', ${!c.actif})">${c.actif ? 'Désactiver' : 'Réactiver'}</button></td></tr>`; }).join('');
   const nbEnf = new Map(); (enf||[]).forEach(e=>nbEnf.set(e.parent_id, (nbEnf.get(e.parent_id)||0)+1));
   const actives = (fams||[]).filter(f=>f.acces_until && f.acces_until>=today).length;
   const ca = (pays||[]).filter(p=>!p.test).reduce((a,p)=>a+p.montant_centimes,0);
@@ -551,6 +660,24 @@ async function famAdminRefresh(){
       ${rows ? `<div style="overflow-x:auto;"><table class="fam-table"><tr><th>Parent</th><th>Statut</th><th>Niveaux</th><th>Jusqu'au</th><th>Enfants</th><th>Payé (année)</th><th>Déclaration</th><th>Stripe</th></tr>${rows}</table></div>` : '<p class="hint">Aucune famille pour l\'instant.</p>'}
     </div>
     <div class="tool-shell fam-card">
+      <strong class="fam-h"><span class="gicon">sell</span> Tarifs Famille</strong>
+      <p class="hint" style="margin:4px 0 8px;">Prix TTC par année scolaire, appliqués à tous les nouveaux paiements (et affichés sur la page de présentation).</p>
+      <div class="fam-row">
+        <label class="hint">1 niveau <input type="number" id="famTarif1" min="1" step="0.01" value="${eur(grille['1'])}" style="width:80px;"> €</label>
+        <label class="hint">2 niveaux <input type="number" id="famTarif2" min="1" step="0.01" value="${eur(grille['2'])}" style="width:80px;"> €</label>
+        <label class="hint">Collège complet <input type="number" id="famTarif3" min="1" step="0.01" value="${eur(grille['3'])}" style="width:80px;"> €</label>
+        <button class="btn" onclick="famAdminTarifs()">Enregistrer</button>
+        <span class="hint" id="famTarifMsg"></span>
+      </div>
+    </div>
+    <div class="tool-shell fam-card">
+      <strong class="fam-h"><span class="gicon">confirmation_number</span> Codes promo</strong>
+      <p class="hint" style="margin:4px 0 8px;">Le parent saisit le code dans son Espace famille avant de payer. Un code fixe des prix (1 / 2 / 3 niveaux) ou une remise en %, et peut limiter l'accès à une date (ex. accès d'été jusqu'au 31 août).</p>
+      ${lignesCodes ? `<div style="overflow-x:auto;"><table class="fam-table"><tr><th>Code</th><th>Prix</th><th>Valable</th><th>Accès jusqu'au</th><th>Utilisations</th><th>État</th><th></th></tr>${lignesCodes}</table></div>` : '<p class="hint">Aucun code.</p>'}
+      <button class="btn secondary" style="margin-top:8px;" onclick="famAdminCodeForm(null)"><span class="gicon">add</span> Nouveau code</button>
+      <div id="famCodeForm"></div>
+    </div>
+    <div class="tool-shell fam-card">
       <strong class="fam-h"><span class="gicon">block</span> Établissements exclus de l'offre Famille</strong>
       <p class="hint" style="margin:4px 0 8px;">Un parent ne peut pas créer de compte enfant en déclarant l'un de ces collèges (message neutre, la liste n'est jamais montrée).</p>
       ${(excl||[]).map(x=>`<div class="fam-row" style="margin:4px 0;"><code>${famEsc(x.uai)}</code> <span class="hint">${famEsc(x.motif||'')}</span> <button class="btn secondary" style="padding:2px 10px;font-size:.78rem;" onclick="famAdminExclRetirer('${famEsc(x.uai)}')">Retirer</button></div>`).join('')}
@@ -561,6 +688,71 @@ async function famAdminRefresh(){
 async function famAdminTest(parentId, cb){
   const { error } = await sb.from('familles').update({ stripe_test: cb.checked }).eq('parent_id', parentId);
   if(error){ cb.checked = !cb.checked; niceAlert('Erreur : '+error.message); }
+}
+let famAdminCodes = [];
+async function famAdminTarifs(){
+  const v = i => Math.round(parseFloat(String(document.getElementById('famTarif'+i).value).replace(',','.'))*100);
+  const prix = { '1': v(1), '2': v(2), '3': v(3) };
+  if(Object.values(prix).some(x=>!(x >= 50))) return famMsg('famTarifMsg', 'Prix invalides.');
+  const { error } = await sb.from('famille_parametres').update({ prix, updated_at: new Date().toISOString() }).eq('id', 1);
+  if(error) return famMsg('famTarifMsg', error.message);
+  famGrille = prix; famMsg('famTarifMsg', '✓ Tarifs enregistrés', true);
+}
+function famAdminCodeForm(code){
+  const c = code ? famAdminCodes.find(x=>x.code === code) : null;
+  const eur = x => x==null ? '' : (x/100).toFixed(2).replace(',00','');
+  const mode = c && c.remise_pct ? 'pct' : 'prix';
+  document.getElementById('famCodeForm').innerHTML = `
+    <div class="fam-codeform">
+      <div class="fam-step" style="margin-top:0;">${c ? 'Modifier le code '+famEsc(c.code) : 'Nouveau code promo'}</div>
+      <div class="fam-form">
+        <label>Code<input type="text" id="fcCode" value="${famEsc(c ? c.code : '')}" ${c ? 'disabled' : ''} maxlength="30" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9_-]/g,'')" placeholder="EX. RENTREE26"></label>
+        <label class="wide">Libellé (montré au parent quand le code s'applique)<input type="text" id="fcLib" value="${famEsc(c ? c.libelle : '')}" placeholder="Rentrée 2026 : prix de lancement"></label>
+        <label>Type
+          <select id="fcMode" onchange="document.getElementById('fcPrixBox').style.display=this.value==='prix'?'':'none';document.getElementById('fcPctBox').style.display=this.value==='pct'?'':'none';">
+            <option value="prix" ${mode==='prix'?'selected':''}>Prix fixes</option><option value="pct" ${mode==='pct'?'selected':''}>Remise en %</option></select></label>
+        <label id="fcPrixBox" class="wide" style="${mode==='prix'?'':'display:none;'}">Prix (€) : 1 niveau / 2 niveaux / collège complet
+          <span style="display:flex;gap:8px;"><input type="number" step="0.01" id="fcP1" value="${eur(c && c.prix && c.prix['1'])}" style="width:90px;"><input type="number" step="0.01" id="fcP2" value="${eur(c && c.prix && c.prix['2'])}" style="width:90px;"><input type="number" step="0.01" id="fcP3" value="${eur(c && c.prix && c.prix['3'])}" style="width:90px;"></span></label>
+        <label id="fcPctBox" style="${mode==='pct'?'':'display:none;'}">Remise (%)<input type="number" id="fcPct" min="1" max="90" value="${c && c.remise_pct || ''}"></label>
+        <label>Valable du<input type="date" id="fcDu" value="${c && c.valide_du || ''}"></label>
+        <label>au<input type="date" id="fcAu" value="${c && c.valide_au || ''}"></label>
+        <label>Accès jusqu'au (facultatif)<input type="date" id="fcFin" value="${c && c.fin_acces || ''}"><small>Vide : fin de l'année scolaire (31 août).</small></label>
+        <label>Utilisations max (facultatif)<input type="number" id="fcMax" min="1" value="${c && c.max_utilisations || ''}"></label>
+        <label class="fam-check wide"><input type="checkbox" id="fcUne" ${!c || c.une_fois_par_famille ? 'checked' : ''}> <span>Une seule utilisation par famille</span></label>
+      </div>
+      <button class="btn" onclick="famAdminCodeSave(${c ? 'true' : 'false'})">Enregistrer</button>
+      <button class="btn secondary" onclick="document.getElementById('famCodeForm').innerHTML=''">Annuler</button>
+      <span class="hint" id="fcMsg"></span>
+    </div>`;
+  document.getElementById('famCodeForm').scrollIntoView({ block:'nearest' });
+}
+async function famAdminCodeSave(edition){
+  const g = id => document.getElementById(id).value.trim();
+  const code = g('fcCode').toUpperCase();
+  if(!/^[A-Z0-9_-]{3,30}$/.test(code)) return famMsg('fcMsg', 'Code : 3 à 30 lettres majuscules, chiffres, - ou _.');
+  const cts = id => { const v = g(id); return v === '' ? null : Math.round(parseFloat(v.replace(',','.'))*100); };
+  const row = { code, libelle: g('fcLib'), valide_du: g('fcDu') || null, valide_au: g('fcAu') || null, fin_acces: g('fcFin') || null,
+    max_utilisations: g('fcMax') ? parseInt(g('fcMax'),10) : null, une_fois_par_famille: document.getElementById('fcUne').checked, prix: null, remise_pct: null };
+  if(g('fcMode') === 'prix'){
+    const prix = { '1': cts('fcP1'), '2': cts('fcP2'), '3': cts('fcP3') };
+    if(Object.values(prix).some(x=>!(x >= 50))) return famMsg('fcMsg', 'Indiquez les trois prix (0,50 € minimum).');
+    row.prix = prix;
+  } else {
+    const pct = parseInt(g('fcPct'),10);
+    if(!(pct >= 1 && pct <= 90)) return famMsg('fcMsg', 'Remise entre 1 et 90 %.');
+    row.remise_pct = pct;
+  }
+  if(row.valide_du && row.valide_au && row.valide_au < row.valide_du) return famMsg('fcMsg', 'La date de fin de validité précède la date de début.');
+  const { error } = edition
+    ? await sb.from('famille_codes_promo').update(row).eq('code', code)
+    : await sb.from('famille_codes_promo').insert(row);
+  if(error) return famMsg('fcMsg', /duplicate|unique/i.test(error.message) ? 'Ce code existe déjà.' : error.message);
+  famAdminRefresh();
+}
+async function famAdminCodeActif(code, actif){
+  const { error } = await sb.from('famille_codes_promo').update({ actif }).eq('code', code);
+  if(error) return niceAlert('Erreur : '+error.message);
+  famAdminRefresh();
 }
 async function famAdminExclAjouter(){
   const uai = (document.getElementById('famExclUai').value||'').trim().toUpperCase();

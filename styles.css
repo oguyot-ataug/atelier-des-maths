@@ -143,6 +143,59 @@ a{color:inherit;text-decoration:none;}
 }
 .account-dropdown input{padding:7px 9px;border-radius:6px;border:1px solid rgba(28,43,57,.2);font-family:'Inter',sans-serif;font-size:.85rem;}
 
+/* ---------- Formulaires de connexion et d'inscription ---------- demandé : "rendre les
+   formulaires d'inscription et de connexion plus sexy". Style commun (menu de connexion,
+   inscription professeur, inscription Famille) : champs avec icône, bouton principal plein,
+   séparateur, en-tête illustré. */
+.account-dropdown:has(#accountLoggedOut:not([style*="none"])){width:300px;max-width:calc(100vw - 24px);padding:18px;border-radius:16px;box-shadow:0 18px 48px rgba(28,43,57,.18);}
+.auth-head{display:flex;align-items:center;gap:12px;margin:0 0 14px;}
+.auth-badge{flex:none;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#FFE3C4,#FFD0A0);color:var(--accent-orange);}
+.auth-badge .gicon{font-size:24px;}
+.auth-badge.big{width:56px;height:56px;border-radius:16px;margin:0 auto 10px;background:rgba(255,255,255,.18);color:#fff;}
+.auth-badge.big .gicon{font-size:30px;}
+.auth-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.15rem;line-height:1.2;color:var(--ink);}
+.auth-sub{font-size:.8rem;color:var(--ink-soft);margin-top:2px;}
+.auth-label{display:block;font-size:.78rem;font-weight:600;color:var(--ink-soft);margin:0 0 5px;letter-spacing:.2px;}
+.auth-label-hint{font-weight:400;opacity:.85;}
+.auth-field{position:relative;margin:0 0 12px;}
+.auth-field > .gicon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:20px;color:#8A93A1;pointer-events:none;z-index:1;transition:color .15s;}
+.auth-field input{display:block;width:100%;box-sizing:border-box;padding:11px 12px 11px 42px !important;border:1.5px solid #DDE2EA !important;border-radius:11px !important;
+  background:#FAFBFC;font:500 .95rem 'Inter',sans-serif !important;color:var(--ink);transition:border-color .15s, box-shadow .15s, background .15s;margin:0 !important;}
+.auth-field input::placeholder{color:#A4ACB8;font-weight:400;}
+.auth-field input:focus{outline:none;border-color:var(--accent) !important;background:#fff;box-shadow:0 0 0 4px rgba(12,91,160,.13);}
+.auth-field:focus-within > .gicon{color:var(--accent);}
+.auth-field .pw-wrap > input{padding-right:42px !important;}
+.btn-auth{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:4px 0 0;padding:12px 16px;border:none;border-radius:11px;cursor:pointer;
+  background:linear-gradient(135deg,#1170C4,var(--accent));color:#fff;font:700 .98rem 'Space Grotesk',sans-serif;
+  box-shadow:0 8px 18px rgba(12,91,160,.28);transition:transform .12s, box-shadow .12s, filter .12s;}
+.btn-auth:hover{filter:brightness(1.07);transform:translateY(-1px);box-shadow:0 10px 22px rgba(12,91,160,.32);}
+.btn-auth:active{transform:translateY(0);}
+.btn-auth:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+.btn-auth.orange{background:linear-gradient(135deg,#FF9A33,var(--accent-orange));box-shadow:0 8px 18px rgba(255,130,8,.3);}
+.btn-auth-alt{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:10px 14px;border-radius:11px;cursor:pointer;
+  background:#fff;border:1.5px solid #DDE2EA;color:var(--ink);font:600 .9rem 'Space Grotesk',sans-serif;transition:.15s;margin:0 0 8px;}
+.btn-auth-alt .gicon{color:var(--accent);}
+.btn-auth-alt:hover{border-color:var(--accent);background:#F4F8FD;}
+.auth-status{display:block;margin-top:8px;font-size:.82rem;color:var(--ink-soft);line-height:1.4;}
+.auth-status:empty{display:none;}
+.auth-sep{display:flex;align-items:center;gap:10px;margin:16px 0 12px;color:var(--ink-soft);font-size:.76rem;}
+.auth-sep::before,.auth-sep::after{content:"";flex:1;height:1px;background:#E4E8EE;}
+.auth-foot{margin:8px 0 0;font-size:.74rem;color:var(--ink-soft);line-height:1.45;text-align:center;}
+.auth-modal{padding:0 !important;overflow:hidden;max-height:92vh;overflow-y:auto;}
+.auth-modal-head{position:relative;text-align:center;padding:26px 22px 22px;color:#fff;
+  background:radial-gradient(120% 140% at 0% 0%,#1A7AD0 0%,var(--accent) 55%,#0A4A84 100%);}
+.auth-modal-head .auth-title{color:#fff;font-size:1.35rem;}
+.auth-modal-head .auth-sub{color:rgba(255,255,255,.85);font-size:.85rem;}
+.auth-modal-head .modal-close{position:absolute;top:10px;right:10px;color:rgba(255,255,255,.85);}
+.auth-modal-head .modal-close:hover{color:#fff;}
+.auth-modal-body{padding:20px 22px 22px;}
+.auth-perks{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:0 0 16px;}
+.auth-perks > span{display:inline-flex;align-items:center;gap:5px;background:#F1F6FC;color:var(--accent);border-radius:999px;padding:5px 11px;font-size:.78rem;font-weight:600;}
+.auth-perks .gicon{font-size:16px;}
+.auth-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;}
+@media (max-width:480px){ .auth-grid{grid-template-columns:1fr;} .auth-modal-head{padding:22px 16px 18px;} .auth-modal-body{padding:16px;} }
+
 /* Bannière "nouvelle version" (app.js, checkForNewVersion) -- signalé : "après les déploiements
    je dois faire plusieurs rafraîchissements de page avant d'avoir la nouvelle version". Non
    bloquante et jamais automatique (contrairement à un rechargement forcé), pour ne jamais couper

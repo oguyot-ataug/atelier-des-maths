@@ -371,9 +371,10 @@ function facRenderDocs(){
   const f = document.getElementById('facFilterType').value;
   const docs = facState.docs.filter(d=>!f || d.type === f);
   const y = new Date().getFullYear();
-  const factY = facState.docs.filter(d=>(d.type === 'facture' || d.type === 'avoir') && d.annee === y);
+  // Les factures de test (paiements Famille simulés) ne comptent jamais dans les totaux.
+  const factY = facState.docs.filter(d=>(d.type === 'facture' || d.type === 'avoir') && d.annee === y && !d.test);
   const ca = factY.reduce((t,d)=>t + Number(d.total), 0);
-  const encaisse = facState.docs.filter(d=>d.type === 'facture' && d.statut === 'payee' && (d.paye_le||'').startsWith(String(y))).reduce((t,d)=>t + Number(d.total), 0);
+  const encaisse = facState.docs.filter(d=>d.type === 'facture' && !d.test && d.statut === 'payee' && (d.paye_le||'').startsWith(String(y))).reduce((t,d)=>t + Number(d.total), 0);
   document.getElementById('facTotals').innerHTML = `${y} : facturé <b>${facMoney(ca)}</b> · encaissé <b>${facMoney(encaisse)}</b>`;
   if(!docs.length){ box.innerHTML = 'Aucun document pour l\'instant.'; return; }
   box.innerHTML = `<div style="overflow-x:auto;"><table class="sup-table"><thead><tr><th>Numéro</th><th>Date</th><th>Établissement</th><th>Montant</th><th>Statut</th><th>Suivi</th><th></th></tr></thead><tbody>
@@ -414,7 +415,7 @@ function facRenderDocs(){
       return `<tr>
         <td class="hint-mono" style="white-space:nowrap;"><b>${facEsc(d.numero)}</b><div class="hint" style="margin:0;">${d.type}</div></td>
         <td style="white-space:nowrap;">${facDate(d.date_emission)}</td>
-        <td>${facEsc(cli.nom)}<div class="hint" style="margin:0;">${cli.statut === 'prive' ? 'privé' : 'public'}${cli.uai ? ' · ' + facEsc(cli.uai) : ''}</div></td>
+        <td>${facEsc(cli.nom)}<div class="hint" style="margin:0;">${cli.statut === 'particulier' ? 'Famille (particulier)' + (d.test ? ' · <b style="color:#6A4FB3;">test</b>' : '') : cli.statut === 'prive' ? 'privé' : 'public'}${cli.uai ? ' · ' + facEsc(cli.uai) : ''}</div></td>
         <td style="white-space:nowrap;text-align:right;">${facMoney(d.total)}</td>
         <td><span class="fac-badge" style="background:${st.color};">${d.type === 'facture' && d.statut === 'emis' ? 'À payer' : st.label}</span></td>
         <td class="hint" style="margin:0;">${suivi.join('<br>')}</td>
@@ -576,12 +577,16 @@ function facDocHtml(d){
   const em = d.emetteur || {}, cli = d.client || {};
   const src = d.source_id ? facState.docs.find(x=>x.id === d.source_id) : null;
   const prive = cli.statut === 'prive';
+  // Facture d'un particulier (offre Famille) : payée par carte à la commande, pas d'échéance ni
+  // de pénalités de retard (réservées aux professionnels).
+  const particulier = cli.statut === 'particulier';
   const titre = { devis:'DEVIS', facture:'FACTURE', avoir:'AVOIR' }[d.type];
   const nl = s => facEsc(s).replace(/\n/g, '<br>');
   const periode = d.periode_debut && d.periode_fin ? `du ${facDate(d.periode_debut)} au ${facDate(d.periode_fin)}` : '';
   const destinataire = prive
     ? `<b>${facEsc(cli.organisme || cli.nom)}</b>${cli.organisme ? `<br>pour ${facEsc(cli.nom)}` : ''}`
     : `<b>${facEsc(cli.nom)}</b>`;
+  const contactClient = particulier && cli.email ? '<br>' + facEsc(cli.email) : '';
   const ids = [cli.uai ? 'UAI ' + facEsc(cli.uai) : '', cli.siret ? 'SIRET ' + facEsc(cli.siret) : '', !prive && cli.code_service ? 'Code service ' + facEsc(cli.code_service) : ''].filter(Boolean).join('<br>');
   const lignes = (d.lignes||[]).map(l=>`<tr><td>${facEsc(l.designation)}${l.detail ? `<div class="det">${facEsc(l.detail)}</div>` : ''}</td>
     <td class="n">${l.qte}${l.unite ? ' ' + facEsc(l.unite) + (Math.abs(l.qte) > 1 ? 's' : '') : ''}</td><td class="n">${facMoney(l.pu)}</td><td class="n">${facMoney(facLineTotal(l))}</td></tr>`).join('');
@@ -598,6 +603,9 @@ function facDocHtml(d){
     bloc = `<p>Devis valable jusqu'au <b>${facDate(d.date_validite)}</b>.</p>` + conditions + signe + (prive
       ? (d.signature ? '' : `<div class="accord"><b>Bon pour accord</b><br>Date, nom, signature et cachet :<div style="height:70px;"></div></div>`)
       : `<p>Pour commander : adressez un bon de commande mentionnant le numéro de ce devis (<b>${facEsc(d.numero)}</b>) à ${facEsc(em.email)}.</p>`);
+  } else if(d.type === 'facture' && particulier){
+    bloc = `<p><b>Facture acquittée</b> : payée par carte bancaire le ${facDate(d.paye_le || d.date_emission)} (paiement en ligne sécurisé).</p>
+      <p class="small">Accès personnel et familial à L'Atelier des Maths, sans reconduction automatique. Conditions générales de vente : maths.latelieraugmente.fr/#/cgv.</p>`;
   } else if(d.type === 'facture'){
     bloc = `<p>Échéance : <b>${facDate(d.date_echeance)}</b>${d.numero_engagement ? ` · ${prive ? 'Commande' : 'N° d\'engagement'} : <b>${facEsc(d.numero_engagement)}</b>` : ''}</p>
       <p>${prive ? `Paiement par virement, en indiquant la référence <b>${facEsc(d.numero)}</b> :${iban}` : `Facture déposée sur Chorus Pro. Paiement par mandat administratif, par virement :${iban}`}</p>
@@ -635,21 +643,23 @@ function facDocHtml(d){
     .iban{white-space:nowrap;font-weight:bold;}
     .accord{border:1px solid #cfd6df;border-radius:6px;padding:10px 12px;width:55%;margin-top:10px;}
     .notes{margin-top:10px;padding:8px 10px;background:#f6f7f9;border-radius:6px;}
+    .test{border:2px dashed #6A4FB3;color:#4b2c91;background:#f4f0fc;border-radius:8px;padding:8px 12px;margin:0 0 14px;font-weight:bold;text-align:center;}
     .foot{margin-top:28px;border-top:1px solid #d5dbe2;padding-top:8px;font-size:8pt;color:#6b7482;text-align:center;}
     @media screen{body{max-width:760px;margin:28px auto 90px;padding:0 24px;}}
     .print{position:fixed;bottom:18px;right:18px;box-shadow:0 4px 14px rgba(0,0,0,.2);background:#0C5BA0;color:#fff;border:none;border-radius:20px;padding:9px 18px;font-weight:bold;cursor:pointer;}
     @media print{.print{display:none;}}
   </style></head><body>
     <button class="print" onclick="window.print()">Imprimer / Enregistrer en PDF</button>
+    ${d.test ? '<div class="test">DOCUMENT DE TEST – SANS VALEUR (paiement simulé, aucun encaissement)</div>' : ''}
     <div class="top">
       <div class="em"><img class="logo-aa" src="${facLogo('logo-atelier-augmente.png')}" alt="L'Atelier Augmenté"><br><b>${facEsc(em.nom || '(nom à compléter)')}</b>${em.enseigne ? '<br>' + facEsc(em.enseigne) : ''}<br>${nl(em.adresse || '(adresse à compléter)')}<br>
         SIRET ${facEsc(em.siret || '(à compléter)')}${em.email ? '<br>' + facEsc(em.email) : ''}${em.telephone ? ' · ' + facEsc(em.telephone) : ''}</div>
-      <div class="ttl"><h1>${titre}</h1><div>N° <b>${facEsc(d.numero)}</b><br>Date : ${facDate(d.date_emission)}${d.type === 'devis' && d.date_validite ? '<br>Valable jusqu\'au ' + facDate(d.date_validite) : ''}${d.type === 'facture' && d.date_echeance ? '<br>Échéance : ' + facDate(d.date_echeance) : ''}</div></div>
+      <div class="ttl"><h1>${titre}</h1><div>N° <b>${facEsc(d.numero)}</b><br>Date : ${facDate(d.date_emission)}${particulier && d.type === 'facture' ? '<br><b style="color:#1F7A4D;">Acquittée</b>' : ''}${d.type === 'devis' && d.date_validite ? '<br>Valable jusqu\'au ' + facDate(d.date_validite) : ''}${d.type === 'facture' && d.date_echeance ? '<br>Échéance : ' + facDate(d.date_echeance) : ''}</div></div>
     </div>
-    <div class="dest"><div class="lbl">${d.type === 'devis' ? 'Établissement' : 'Facturé à'}</div>${destinataire}<br>${nl(cli.adresse)}${ids ? '<br>' + ids : ''}</div>
-    <div class="obj"><img class="logo-adm" src="${facLogo('logo-header.png')}" alt="L'Atelier des Maths"><div><b>Objet :</b> L'Atelier des Maths (maths.latelieraugmente.fr) – licence établissement${periode ? ', ' + periode : ''}${(d.niveaux||[]).length ? ' – niveaux ' + d.niveaux.join(', ') : ''}.</div></div>
+    <div class="dest"><div class="lbl">${d.type === 'devis' ? 'Établissement' : 'Facturé à'}</div>${destinataire}${cli.adresse ? '<br>' + nl(cli.adresse) : ''}${contactClient}${ids ? '<br>' + ids : ''}</div>
+    <div class="obj"><img class="logo-adm" src="${facLogo('logo-header.png')}" alt="L'Atelier des Maths"><div><b>Objet :</b> L'Atelier des Maths (maths.latelieraugmente.fr) – ${particulier ? 'offre Famille' : 'licence établissement'}${periode ? ', ' + periode : ''}${(d.niveaux||[]).length ? ' – niveaux ' + d.niveaux.join(', ') : ''}.</div></div>
     <table><tr><th>Désignation</th><th class="n">Quantité</th><th class="n">Prix unitaire</th><th class="n">Montant</th></tr>${lignes}</table>
-    <table class="tot"><tr class="big"><td>${d.type === 'avoir' ? 'Total de l\'avoir' : d.type === 'devis' ? 'Total' : 'Net à payer'}</td><td class="n">${facMoney(d.total)}</td></tr></table>
+    <table class="tot"><tr class="big"><td>${d.type === 'avoir' ? 'Total de l\'avoir' : d.type === 'devis' ? 'Total' : particulier ? 'Total payé' : 'Net à payer'}</td><td class="n">${facMoney(d.total)}</td></tr></table>
     ${em.mention_tva ? `<div class="tva">${facEsc(em.mention_tva)}</div>` : ''}
     ${d.notes ? `<div class="notes">${nl(d.notes)}</div>` : ''}
     <div style="margin-top:16px;">${bloc}</div>
@@ -657,11 +667,13 @@ function facDocHtml(d){
   </body></html>`;
 }
 function facLogo(f){ return location.origin + '/assets/' + f; }
-function facOpenPdf(id){
-  const d = facState.docs.find(x=>x.id === id); if(!d) return;
+function facOpenPdf(id, docOverride, autoPrint){
+  const d = docOverride || facState.docs.find(x=>x.id === id); if(!d) return;
   // Document ouvert depuis un fichier temporaire du navigateur (même origine) : les logos se
   // chargent de façon fiable, contrairement à une fenêtre vierge remplie par document.write.
-  const url = URL.createObjectURL(new Blob([facDocHtml(d)], { type:'text/html;charset=utf-8' }));
+  // autoPrint : ouvre directement la fenêtre d'impression, où l'on choisit « Enregistrer au format PDF ».
+  const html = autoPrint ? facDocHtml(d).replace('</body>', '<script>window.addEventListener("load",()=>setTimeout(()=>window.print(),400));<\/script></body>') : facDocHtml(d);
+  const url = URL.createObjectURL(new Blob([html], { type:'text/html;charset=utf-8' }));
   const w = window.open(url, '_blank', 'width=900,height=1000');
   if(!w){ URL.revokeObjectURL(url); niceAlert('La fenêtre n\'a pas pu s\'ouvrir : autorisez les fenêtres pop-up pour ce site.'); return; }
   setTimeout(()=>URL.revokeObjectURL(url), 120000);

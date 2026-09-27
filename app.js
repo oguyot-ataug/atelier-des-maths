@@ -1108,6 +1108,7 @@ async function advanceAllStepDemosToEndAsync(container){
 // option pour éditer les pdf en demandant quel contenu on veut masquer") -- les élèves n'ont
 // pas d'usage de cette option, export direct pour eux sans passer par la modale.
 function openExportPdfOptions(){
+  if(typeof familleSansImpression==='function' && familleSansImpression()) return;
   if(!isStaffGlobal){ exportCoursPDF(); return; }
   document.getElementById('exportHideDefinitions').checked = false;
   document.getElementById('exportHideProprietes').checked = false;
@@ -1192,6 +1193,7 @@ function blankOutSelectedBoxes(clone){
   });
 }
 async function exportCoursPDF(){
+  if(typeof familleSansImpression==='function' && familleSansImpression()) return;
   const hint=document.getElementById('exportHint');
   // Feedback IMMÉDIAT au clic, avant tout travail lourd -- signalé : "on n'a pas d'indication
   // au départ de l'appui sur le bouton, on ne sait pas si ça travaille ou pas".
@@ -2628,6 +2630,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.701', items:[
+    "Offre Famille, factures de L'Atelier Augmenté -- demandé : \"je pensais que la facture arrivait de l'atelier augmenté et non de stripe\", \"les parents peuvent consulter leur facture en ligne dans l'application et la télécharger\". À chaque paiement, facture émise dans votre série (F-2026-…), au nom et à l'adresse saisis sur la page de paiement, marquée « Acquittée », sans pénalités de retard (réservées aux professionnels) ; e-mail depuis factures@latelieraugmente.fr ; rubrique « Mes factures » dans l'Espace famille (Voir / Télécharger en PDF) ; visible aussi dans Administration > Facturation. Plus de facture Stripe. Paiements de test : factures TEST-2026-… hors série, exclues des totaux.",
+    "Offre Famille, tarifs et codes promo -- demandé : \"On pourrait augmenter un peu les prix et faire un code promo RENTREE26 qui les ramène au prix qu'on avait prévu au départ\", \"des codes promos type VACANCES27 pour faire un abonnement été pas trop cher\". Tarifs 35 € / 55 € / 69 €, modifiables dans Administration > Familles. Codes promo (prix fixes ou remise en %, dates de validité, date de fin d'accès, nombre d'utilisations, une fois par famille) : RENTREE26 (29/45/59 € jusqu'au 30/11/2026) et VACANCES27 (9,90/14,90/19,90 €, accès jusqu'au 31/08/2027, valable du 01/05 au 15/08/2027). Le prix affiché dans l'Espace famille est calculé par le serveur, avec le prix barré quand un code s'applique.",
+    "Comptes Famille (parent et enfants) : pas d'export PDF ni d'impression des cours -- demandé : \"Pour les parents, ne pas permettre l'enregistrement PDF/impression dans les cours\". Bouton « Exporter en PDF » masqué, Ctrl+P intercepté, et l'impression d'un chapitre affiche un message à la place du cours.",
+    "Formulaires de connexion et d'inscription redessinés -- demandé : \"rendre les formulaires d'inscription et de connexion plus sexy\". Champs avec icônes, bouton principal, connexion avec la touche Entrée (et mémorisation par le gestionnaire de mots de passe), en-têtes illustrés pour l'inscription professeur (bleu) et Famille (orange).",
+  ]},
   { version:'2026-08-19.700', items:[
     "Œil pour afficher le mot de passe -- demandé : \"Quand on met ou choisit des mots de passe, il faudrait rajouter l'oeil pour voir ce qu'on tape\". Sur tous les champs mot de passe : connexion, inscription professeur et Famille, changement de mot de passe, mot de passe fixé par l'administrateur ou le professeur, clés IA, et page d'activation du compte élève.",
   ]},

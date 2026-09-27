@@ -33,7 +33,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-<link rel="stylesheet" href="styles.css?v=20260819-700">
+<link rel="stylesheet" href="styles.css?v=20260819-701">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -43,7 +43,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.700</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.701</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -83,12 +83,21 @@
     <button class="account-avatar" id="accountAvatar" onclick="toggleAccountMenu()" title="Mon compte"><span class="gicon">person</span></button>
     <div class="account-dropdown" id="accountDropdown" style="display:none;">
       <div id="accountLoggedOut">
-        <strong style="font-family:'Space Grotesk',sans-serif;font-size:.9rem;">Connexion</strong>
-        <input type="text" id="globalAuthEmail" placeholder="identifiant" style="width:100%;margin-top:8px;">
-        <input type="password" id="globalAuthPassword" placeholder="mot de passe" style="width:100%;margin-top:6px;">
-        <button class="btn secondary" onclick="globalSignIn()" style="width:100%;margin-top:8px;">Se connecter</button>
-        <span class="hint" id="globalAuthStatus" style="display:block;margin-top:6px;"></span>
-        <button class="btn secondary" onclick="openProfSignupModal()" style="width:100%;margin-top:10px;font-size:.82rem;">S'inscrire en tant que professeur</button>
+        <form class="auth-box" onsubmit="globalSignIn();return false;">
+          <div class="auth-head">
+            <span class="auth-badge"><span class="gicon">waving_hand</span></span>
+            <div><div class="auth-title">Bonjour !</div><div class="auth-sub">Élèves, parents et professeurs</div></div>
+          </div>
+          <label class="auth-label" for="globalAuthEmail">Identifiant ou e-mail</label>
+          <div class="auth-field"><span class="gicon">person</span><input type="text" id="globalAuthEmail" placeholder="ex. leo.martin" autocomplete="username" autocapitalize="off" spellcheck="false"></div>
+          <label class="auth-label" for="globalAuthPassword">Mot de passe</label>
+          <div class="auth-field"><span class="gicon">lock</span><input type="password" id="globalAuthPassword" placeholder="Votre mot de passe" autocomplete="current-password"></div>
+          <button type="submit" class="btn-auth"><span class="gicon">login</span> Se connecter</button>
+          <span class="auth-status" id="globalAuthStatus"></span>
+        </form>
+        <div class="auth-sep"><span>Pas encore de compte ?</span></div>
+        <button type="button" class="btn-auth-alt" onclick="openProfSignupModal()"><span class="gicon">school</span> Je suis professeur</button>
+        <p class="auth-foot">Élève : ton identifiant t'est donné par ton professeur (ou par tes parents).</p>
       </div>
       <div id="accountLoggedIn" style="display:none;">
         <div id="accountNameDisplay" style="font-weight:700;font-family:'Space Grotesk',sans-serif;"></div>
@@ -120,24 +129,35 @@
 
 
 <div id="profSignupModalOverlay" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeProfSignupModal();">
-  <div class="modal-card" style="max-width:480px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;">Inscription professeur</strong>
-      <button class="modal-close" onclick="closeProfSignupModal()"><span class="gicon">close</span></button>
+  <div class="modal-card auth-modal" style="max-width:500px;">
+    <div class="auth-modal-head">
+      <button class="modal-close" onclick="closeProfSignupModal()" aria-label="Fermer"><span class="gicon">close</span></button>
+      <span class="auth-badge big"><span class="gicon">school</span></span>
+      <div class="auth-title">Inscription professeur</div>
+      <div class="auth-sub">15 jours d'essai gratuit après validation de votre compte</div>
     </div>
-    <p class="hint" style="margin:0 0 14px;">L'inscription est réservée aux enseignants disposant d'une adresse académique (<code>@ac-...fr</code>). Après vérification par l'administrateur, vous bénéficiez de <b>15 jours d'essai gratuit</b>, puis d'un abonnement annuel.</p>
-    <label class="hint" style="display:block;margin:0 0 4px;">Prénom</label>
-    <input type="text" id="profSignupPrenom" style="width:100%;margin-bottom:10px;box-sizing:border-box;">
-    <label class="hint" style="display:block;margin:0 0 4px;">Nom</label>
-    <input type="text" id="profSignupNom" style="width:100%;margin-bottom:10px;box-sizing:border-box;">
-    <label class="hint" style="display:block;margin:0 0 4px;">Adresse académique (ex. prenom.nom@ac-nancy-metz.fr)</label>
-    <input type="email" id="profSignupEmail" style="width:100%;margin-bottom:10px;box-sizing:border-box;">
-    <label class="hint" style="display:block;margin:0 0 4px;">Code UAI de l'établissement (ex. 0541306B)</label>
-    <input type="text" id="profSignupUai" maxlength="8" style="width:100%;margin-bottom:10px;box-sizing:border-box;text-transform:uppercase;">
-    <label class="hint" style="display:block;margin:0 0 4px;">Mot de passe (8 caractères minimum)</label>
-    <input type="password" id="profSignupPassword" style="width:100%;margin-bottom:14px;box-sizing:border-box;">
-    <button class="btn" style="width:100%;" onclick="submitProfSignup()" id="btnProfSignupSubmit">S'inscrire</button>
-    <span class="hint" id="profSignupStatus" style="display:block;margin-top:10px;"></span>
+    <form class="auth-modal-body" onsubmit="submitProfSignup();return false;">
+      <div class="auth-perks">
+        <span><span class="gicon">menu_book</span> Cours 6e et 5e</span>
+        <span><span class="gicon">assignment</span> Devoirs et suivi</span>
+        <span><span class="gicon">draw</span> Outils de classe</span>
+      </div>
+      <div class="auth-grid">
+        <div><label class="auth-label" for="profSignupPrenom">Prénom</label>
+          <div class="auth-field"><span class="gicon">badge</span><input type="text" id="profSignupPrenom" autocomplete="given-name"></div></div>
+        <div><label class="auth-label" for="profSignupNom">Nom</label>
+          <div class="auth-field"><span class="gicon">badge</span><input type="text" id="profSignupNom" autocomplete="family-name"></div></div>
+      </div>
+      <label class="auth-label" for="profSignupEmail">Adresse académique</label>
+      <div class="auth-field"><span class="gicon">mail</span><input type="email" id="profSignupEmail" placeholder="prenom.nom@ac-nancy-metz.fr" autocomplete="email"></div>
+      <label class="auth-label" for="profSignupUai">Code UAI de l'établissement</label>
+      <div class="auth-field"><span class="gicon">apartment</span><input type="text" id="profSignupUai" maxlength="8" placeholder="0541306B" style="text-transform:uppercase;"></div>
+      <label class="auth-label" for="profSignupPassword">Mot de passe <span class="auth-label-hint">(8 caractères minimum)</span></label>
+      <div class="auth-field"><span class="gicon">lock</span><input type="password" id="profSignupPassword" autocomplete="new-password"></div>
+      <button type="submit" class="btn-auth" id="btnProfSignupSubmit"><span class="gicon">how_to_reg</span> Créer mon compte</button>
+      <span class="auth-status" id="profSignupStatus"></span>
+      <p class="auth-foot">Réservé aux enseignants disposant d'une adresse académique (<code>@ac-…fr</code>). Votre compte est vérifié par l'administrateur, puis l'essai gratuit commence ; ensuite, un abonnement annuel.</p>
+    </form>
   </div>
 </div>
 
@@ -405,7 +425,7 @@
   <!-- COURS -->
   <div class="tab-panel active" id="panel-cours">
     <div class="figure-toolbar" style="margin-bottom:18px;">
-      <button class="btn secondary" onclick="openExportPdfOptions()"><span class="gicon">description</span> Exporter en PDF</button>
+      <button class="btn secondary" id="btnExportCoursPdf" onclick="openExportPdfOptions()"><span class="gicon">description</span> Exporter en PDF</button>
       <span class="hint" id="exportHint" style="margin:0;"></span>
     </div>
     <div id="cours-demo-symetrie" style="display:none;">
@@ -1270,6 +1290,9 @@
   <div id="famRoot"></div>
 </section>
 
+<!-- Comptes Famille : message imprimé à la place du cours (voir famille.js, famille-no-print). -->
+<div id="famNoPrintMsg">L'impression et l'enregistrement en PDF des cours ne sont pas disponibles avec un compte Famille.<br>Les cours restent consultables à tout moment sur maths.latelieraugmente.fr.</div>
+
 <section class="view" id="view-cgv">
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;">Conditions générales de vente – Offre Famille</h1>
@@ -1279,11 +1302,12 @@
     <p>Olivier GUYOT, entrepreneur individuel (EI), sous le nom commercial L'Atelier Augmenté – SIRET 100 460 781 00014 – 2 clos du Moulin, 54420 Saulxures-lès-Nancy – <a href="mailto:contact@latelieraugmente.fr">contact@latelieraugmente.fr</a> – 06 61 77 99 88. TVA non applicable, art. 293 B du CGI.</p>
     <h2>2. Ce qui est vendu</h2>
     <p>Un accès au site L'Atelier des Maths (cours, méthodes, exercices, automatismes, Objectif Nombre, outils de géométrie, suivi des résultats) pour les niveaux choisis, <b>jusqu'au 31 août de l'année scolaire</b> concernée (un achat effectué à partir du 1<sup>er</sup> juin vaut pour l'année scolaire suivante). Chaque niveau acheté ouvre aussi le niveau inférieur, en révision. L'achat permet de créer jusqu'à <b>4 comptes enfants</b>, gérés par le parent.</p>
-    <p>Prix TTC : <b>1 niveau 29 €</b>, <b>2 niveaux 45 €</b>, <b>collège complet 59 €</b>. Les niveaux proposés sont ceux en ligne au moment de l'achat ; la formule « collège complet » donne accès à la 4e et à la 3e dès leur mise en ligne pendant la période payée. Ajouter un niveau en cours d'année coûte la différence entre la nouvelle formule et ce qui a déjà été payé pour l'année.</p>
+    <p>Le prix TTC dépend du nombre de niveaux choisis (1 niveau, 2 niveaux ou collège complet). Il est affiché dans l'Espace famille et récapitulé avant le paiement ; c'est ce prix qui s'applique à la commande. Les niveaux proposés sont ceux en ligne au moment de l'achat ; la formule « collège complet » donne accès à la 4e et à la 3e dès leur mise en ligne pendant la période payée. Ajouter un niveau en cours d'année coûte la différence entre la nouvelle formule et ce qui a déjà été payé pour l'année.</p>
+    <p><b>Codes promotionnels.</b> Un code saisi avant le paiement peut réduire le prix, pendant sa période de validité et dans ses conditions d'utilisation (par exemple une fois par famille). Certains codes donnent un accès de durée plus courte (par exemple un accès d'été) : la date de fin d'accès est alors indiquée avant le paiement et sur la facture.</p>
     <h2>3. Qui peut acheter</h2>
     <p>L'offre est réservée aux personnes majeures agissant pour leur famille, à des fins non professionnelles. Elle <b>n'est pas proposée aux familles dont un enfant est scolarisé dans l'établissement où enseigne le concepteur du site</b> : le parent le certifie lors de l'inscription, et le code du collège déclaré pour chaque enfant est vérifié. Une fausse déclaration entraîne la fermeture des comptes, sans remboursement.</p>
     <h2>4. Commande et paiement</h2>
-    <p>La commande se fait depuis l'Espace famille : choix des niveaux, récapitulatif du prix, puis paiement par carte bancaire sur la page sécurisée de notre prestataire Stripe (nous ne recevons jamais les données de carte). L'accès est ouvert dès la confirmation du paiement, et une facture est envoyée par e-mail. Il s'agit d'un <b>paiement unique, sans reconduction automatique</b> : aucun prélèvement n'a lieu l'année suivante sans nouvelle commande de votre part.</p>
+    <p>La commande se fait depuis l'Espace famille : choix des niveaux, récapitulatif du prix, puis paiement par carte bancaire sur la page sécurisée de notre prestataire Stripe (nous ne recevons jamais les données de carte). L'accès est ouvert dès la confirmation du paiement, et la facture, émise par L'Atelier Augmenté, est disponible à tout moment dans l'Espace famille (rubrique « Mes factures ») et annoncée par e-mail. Il s'agit d'un <b>paiement unique, sans reconduction automatique</b> : aucun prélèvement n'a lieu l'année suivante sans nouvelle commande de votre part.</p>
     <h2>5. Droit de rétractation</h2>
     <p>L'accès étant un contenu numérique fourni immédiatement, le parent demande expressément, avant de payer, à y accéder dès le paiement et reconnaît perdre ainsi son droit de rétractation de 14 jours (article L221-28, 13° du Code de la consommation). Cette demande et cette renonciation sont rappelées sur la page de paiement et enregistrées avec la commande.</p>
     <h2>6. Comptes des enfants</h2>
@@ -1319,54 +1343,54 @@
 <footer>Une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a> · L'Atelier des Maths · Programme B.O. 2026 · <a href="#" data-nav="mentions-legales">Mentions légales</a> · <a href="#" data-nav="confidentialite">Confidentialité</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a> · <a href="#" data-nav="niveau" data-lvl="cm1" style="color:var(--ink-soft);">CM1 (aperçu)</a></footer>
 
 <script src="https://js.stripe.com/v3/"></script>
-<script defer src="app.js?v=20260819-700"></script>
-<script defer src="outils-figures.js?v=20260819-700"></script>
-<script defer src="evaluation.js?v=20260819-700"></script>
-<script defer src="admin.js?v=20260819-700"></script>
-<script defer src="facturation.js?v=20260819-700"></script>
-<script defer src="ia-compte.js?v=20260819-700"></script>
-<script defer src="famille.js?v=20260819-700"></script>
-<script defer src="mot-de-passe.js?v=20260819-700"></script>
-<script defer src="apprentissage.js?v=20260819-700"></script>
-<script defer src="cours-perso.js?v=20260819-700"></script>
-<script defer src="tableau-ia.js?v=20260819-700"></script>
-<script defer src="devoirs.js?v=20260819-700"></script>
-<script defer src="suivi-devoirs.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-700"></script>
-<script defer src="chapitres/cm1/N1-nombres-entiers.js?v=20260819-700"></script>
-<script defer src="chapitres/cm1/G1-droites-paralleles-perpendiculaires.js?v=20260819-700"></script>
-<script defer src="chapitres/cm1/N2-operations-nombres-entiers.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/N4-multiplication-division.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/D3-proportionnalite.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/G5-construction-triangles.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/G4-symetrie-axiale.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/N5-fractions-comparaison-addition.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/D1-gestion-donnees.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/D2-probabilites.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/M1-aire-perimetre.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/M2-heures-durees.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/G6-proprietes-triangles.js?v=20260819-700"></script>
-<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/N4-fractions.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/N6-equations.js?v=20260819-700"></script>
-<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-700"></script>
-<script defer src="calcul-mental/calcul-mental.js?v=20260819-700"></script>
-<script defer src="compte-est-bon.js?v=20260819-700"></script>
-<script defer src="router.js?v=20260819-700"></script>
+<script defer src="app.js?v=20260819-701"></script>
+<script defer src="outils-figures.js?v=20260819-701"></script>
+<script defer src="evaluation.js?v=20260819-701"></script>
+<script defer src="admin.js?v=20260819-701"></script>
+<script defer src="facturation.js?v=20260819-701"></script>
+<script defer src="ia-compte.js?v=20260819-701"></script>
+<script defer src="famille.js?v=20260819-701"></script>
+<script defer src="mot-de-passe.js?v=20260819-701"></script>
+<script defer src="apprentissage.js?v=20260819-701"></script>
+<script defer src="cours-perso.js?v=20260819-701"></script>
+<script defer src="tableau-ia.js?v=20260819-701"></script>
+<script defer src="devoirs.js?v=20260819-701"></script>
+<script defer src="suivi-devoirs.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-701"></script>
+<script defer src="chapitres/cm1/N1-nombres-entiers.js?v=20260819-701"></script>
+<script defer src="chapitres/cm1/G1-droites-paralleles-perpendiculaires.js?v=20260819-701"></script>
+<script defer src="chapitres/cm1/N2-operations-nombres-entiers.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/N4-multiplication-division.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/D3-proportionnalite.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/G5-construction-triangles.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/G4-symetrie-axiale.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/N5-fractions-comparaison-addition.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/D1-gestion-donnees.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/D2-probabilites.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/M1-aire-perimetre.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/M2-heures-durees.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/G6-proprietes-triangles.js?v=20260819-701"></script>
+<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/N4-fractions.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/N6-equations.js?v=20260819-701"></script>
+<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-701"></script>
+<script defer src="calcul-mental/calcul-mental.js?v=20260819-701"></script>
+<script defer src="compte-est-bon.js?v=20260819-701"></script>
+<script defer src="router.js?v=20260819-701"></script>
 </body>
 </html>
