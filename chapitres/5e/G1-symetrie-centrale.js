@@ -86,8 +86,8 @@ document.getElementById('cours-demo-symetrie').innerHTML = `
           <text id="labelIprime" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700">I'</text>
           <line id="tickJprime" class="pt-tick" stroke="#E35D3A" stroke-width="2"/>
           <text id="labelJprime" font-family="Space Grotesk" font-size="14" fill="#E35D3A" font-weight="700">J'</text>
-          <text id="labelDroiteD" font-family="Space Grotesk" font-size="13" fill="#1F3A5C">(d)</text>
-          <text id="labelDroiteDprime" font-family="Space Grotesk" font-size="13" fill="#E35D3A">(d')</text>
+          <text id="labelDroiteD" text-anchor="middle" dominant-baseline="middle" font-family="Space Grotesk" font-size="13" fill="#1F3A5C">(d)</text>
+          <text id="labelDroiteDprime" text-anchor="middle" dominant-baseline="middle" font-family="Space Grotesk" font-size="13" fill="#E35D3A">(d')</text>
         </svg>
         <div class="figure-toolbar">
           <button class="btn secondary" onclick="resetDroiteDemo()">Réinitialiser</button>
@@ -426,8 +426,41 @@ function updateDroiteDemo(){
   set('#labelIprime',{x:Ip.x+8,y:Ip.y+18}); set('#labelJprime',{x:Jp.x-22,y:Jp.y+18});
   setCross(svgEl.querySelector('#crossO1'), svgEl.querySelector('#crossO2'), droiteO.x, droiteO.y);
   set('#labelO',{x:droiteO.x+10,y:droiteO.y-8});
-  set('#labelDroiteD',{x:dLine.x1+8,y:dLine.y1-8});
-  set('#labelDroiteDprime',{x:dPrimeLine.x2-34,y:dPrimeLine.y2+18});
+  // Étiquettes (d) et (d') près de l'endroit où chaque droite entre dans la figure : placées au
+  // bout des droites prolongées (260 au-delà de I et J), elles tombaient hors du cadre, invisibles.
+  // Chacune du côté de sa droite opposé à O (d et d' sont de part et d'autre de O), et à des bouts
+  // opposés de la figure, pour qu'on ne puisse pas les confondre.
+  const pD = droiteLabelPos(I, J), pDp = droiteLabelPos(Ip, Jp);
+  set('#labelDroiteD',{x:pD.x,y:pD.y}); set('#labelDroiteDprime',{x:pDp.x,y:pDp.y});
+}
+function droiteLabelPos(a, b){
+  // Bout de la droite (dans le cadre) le plus éloigné des deux points, pour ne pas chevaucher
+  // leurs noms ; puis on avance un peu vers l'intérieur si l'un d'eux reste trop près.
+  const loin = q => Math.min(Math.hypot(q.x-a.x,q.y-a.y), Math.hypot(q.x-b.x,q.y-b.y));
+  const e1 = droiteBordPoint(a, b, true), e2 = droiteBordPoint(a, b, false);
+  const dx=b.x-a.x, dy=b.y-a.y, len=Math.hypot(dx,dy)||1;
+  let p = loin(e1) >= loin(e2) ? e1 : e2;
+  if(loin(p) < 45){
+    const m = {x:(a.x+b.x)/2, y:(a.y+b.y)/2};
+    p = {x:(p.x+m.x)/2, y:(p.y+m.y)/2};
+  }
+  let nx=-dy/len, ny=dx/len;
+  if((p.x-droiteO.x)*nx + (p.y-droiteO.y)*ny < 0){ nx=-nx; ny=-ny; }
+  // Si O est sur la droite, on garde un côté fixe (au-dessus).
+  if(Math.abs((a.x-droiteO.x)*(-dy/len) + (a.y-droiteO.y)*(dx/len)) < 1 && ny > 0){ nx=-nx; ny=-ny; }
+  return {x:p.x+nx*16, y:p.y+ny*16};
+}
+// Point de la droite (ab) au bord d'un cadre intérieur à la figure (400 x 240), côté début ou fin.
+function droiteBordPoint(a, b, debut){
+  const dx=b.x-a.x, dy=b.y-a.y, len=Math.hypot(dx,dy)||1, ux=dx/len, uy=dy/len;
+  let t0=-1e9, t1=1e9;
+  [[ux,a.x,30,360],[uy,a.y,30,205]].forEach(([u,p0,lo,hi])=>{
+    if(Math.abs(u)<1e-9) return;
+    let ta=(lo-p0)/u, tb=(hi-p0)/u; if(ta>tb) [ta,tb]=[tb,ta];
+    t0=Math.max(t0,ta); t1=Math.min(t1,tb);
+  });
+  const t = t0>t1 ? 0 : (debut ? t0 : t1);
+  return {x:a.x+ux*t, y:a.y+uy*t};
 }
 
 function resetDroiteDemo(){ droiteI={x:100,y:70}; droiteJ={x:160,y:105}; updateDroiteDemo(); }

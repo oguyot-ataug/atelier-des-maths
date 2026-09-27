@@ -163,7 +163,7 @@ document.getElementById('cours-demo-aire-perimetre').innerHTML = `
   <li>Un millimètre carré (mm²) est l'aire d'un carré d'un millimètre de côté.</li>
 </ul>
 <div class="figure-wrap" style="max-width:180px;margin:10px auto;">
-  <svg viewBox="0 0 120 100" style="width:100%;display:block;">
+  <svg viewBox="-6 0 134 100" style="width:100%;display:block;">
     <line x1="36" y1="20" x2="36" y2="80" stroke="#B9E8C4" stroke-width="0.6"/>
     <line x1="30" y1="26" x2="90" y2="26" stroke="#B9E8C4" stroke-width="0.6"/>
     <line x1="42" y1="20" x2="42" y2="80" stroke="#B9E8C4" stroke-width="0.6"/>

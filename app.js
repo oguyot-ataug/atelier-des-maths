@@ -2683,6 +2683,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.709', items:[
+    "Fix -- signalé : \"encore un peu coupé au niveau de 2 de cm²\" (6e, Aire et périmètre, figure 1 cm² = 100 mm²). L'étiquette « 1 cm² » dépassait du cadre de la figure (déjà en taille normale, pas seulement en zoom) : cadre élargi. Toutes les étiquettes des figures de 6e et de 5e (cours, méthodes, exercices) ont ensuite été contrôlées automatiquement ; trois autres étaient coupées ou invisibles et sont corrigées : « L » en haut des figures des angles correspondants (5e, Angles et parallélisme, méthode), « H » en haut du triangle obtus (5e, Droites remarquables : orthocentre à l'extérieur), et « (d) », « (d') » dans la figure à points déplaçables de la symétrie centrale (5e), qui tombaient hors du cadre : elles se placent maintenant à l'intérieur, chacune de son côté de O, loin des noms des points, même quand on déplace I et J.",
+  ]},
   { version:'2026-08-19.708', items:[
     "Fix loupe (zoom plein écran) -- signalé : \"Dans le chapitre 6e, gestion de données, les graphiques sont coupés en mode zoom\". Le cadre de la figure gardait en zoom sa largeur de la page (420 px pour le diagramme en barres, 300 px pour le diagramme circulaire), plus étroite que le graphique agrandi : toute la droite était coupée. En zoom, le cadre s'adapte maintenant au graphique, et chaque figure est limitée à la hauteur de l'écran pour être vue en entier sans défiler (le diagramme circulaire dépassait en bas). Vérifié sur les 143 figures zoomables des cours et méthodes de 6e et de 5e ; au passage, corrigé aussi les scènes animées du rapporteur (6e, angles : construire un angle, bissectrice), dont le tracé était coupé en zoom.",
   ]},

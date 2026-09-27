@@ -419,7 +419,7 @@ function apBuildMethodeCorrespondantsSvg(){
     ${wM}${wN}
     <circle cx="${M.x}" cy="${M.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${N.x}" cy="${N.y}" r="2.6" fill="#1C1B2E"/>
-    ${apSideLabel(AP_SBOT, L, 'L', {side:1, dist:14})}
+    ${apSideLabel(AP_SBOT, L, 'L', {side:-1, dist:14})}
     ${apSideLabel(AP_DLEFT, K, 'K', {side:-1})}
     ${apLabel(M.x+8, M.y-8, 'M')}
     ${apLabel(N.x-16, N.y+18, 'N')}
@@ -446,7 +446,7 @@ function apBuildMethodeCorrDirectSvg(){
     ${wM}${wN}
     <circle cx="${M.x}" cy="${M.y}" r="2.6" fill="#1C1B2E"/>
     <circle cx="${N.x}" cy="${N.y}" r="2.6" fill="#1C1B2E"/>
-    ${apSideLabel(AP_SBOT, L, 'L', {side:1, dist:14})}
+    ${apSideLabel(AP_SBOT, L, 'L', {side:-1, dist:14})}
     ${apSideLabel(AP_DLEFT, K, 'K', {side:-1})}
     ${apLabel(M.x+8, M.y-8, 'M')}
     ${apLabel(N.x-16, N.y+18, 'N')}

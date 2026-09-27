@@ -345,7 +345,7 @@ document.getElementById('cours-demo-droites-remarquables-5e').innerHTML = `
 <p style="margin:10px 0 12px;">Le centre de gravité est toujours situé à l'intérieur du triangle, quels que soient ses angles.</p>
 `;
 document.getElementById('dr-ortho-def-wrap').innerHTML = drBuildOrthocenterSvg(DR_T_DEF, 380, 230) + "<p class=\"hint\" style=\"text-align:center;\">Triangle à angles aigus : H est à l'intérieur.</p>";
-document.getElementById('dr-ortho-obtus-wrap').innerHTML = drBuildOrthocenterSvg(drTranslateTri(DR_T_OBTUS,0,45), 380, 300) + "<p class=\"hint\" style=\"text-align:center;\">Triangle avec un angle obtus : H est à l'extérieur.</p>";
+document.getElementById('dr-ortho-obtus-wrap').innerHTML = drBuildOrthocenterSvg(drTranslateTri(DR_T_OBTUS,0,62), 380, 300) + "<p class=\"hint\" style=\"text-align:center;\">Triangle avec un angle obtus : H est à l'extérieur.</p>";
 
 document.getElementById('histoire-demo-droites-remarquables-5e').innerHTML = `
 <div class="history-box">
