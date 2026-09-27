@@ -33,7 +33,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
-<link rel="stylesheet" href="styles.css?v=20260819-736">
+<link rel="stylesheet" href="styles.css?v=20260819-737">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -43,7 +43,7 @@
 <div class="topbar">
   <div class="brand">
     <img class="brand-mark" src="assets/logo-horizontal.png" alt="L'Atelier des Maths" style="width:auto;height:52px;flex:none;">
-    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.736</span>
+    <span id="buildTag" style="font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:400;color:var(--ink-soft);opacity:.6;margin-left:2px;vertical-align:middle;" title="Identifiant de version : si ce numéro ne change pas après un rechargement forcé (Ctrl+Maj+R), c'est que la nouvelle version n'est pas encore déployée.">build 2026-08-19.737</span>
   </div>
   <div class="nav-links" id="navLinks">
     <button data-nav="home" class="active">Accueil</button>
@@ -300,132 +300,124 @@
     <span class="fam-home-cta" id="famHomeCta">Découvrir l'offre Famille <span class="gicon">arrow_forward</span></span>
   </a>
 
-  <div class="section-title"><h2><span class="gicon">new_releases</span> Nouveautés</h2><span class="count">en vidéo</span></div>
-  <div class="news-grid">
-    <article class="news-card">
-      <video controls preload="none" playsinline poster="assets/videos/entrainement-non-note.jpg" aria-label="Vidéo : L'entraînement non noté"><source src="assets/videos/entrainement-non-note.mp4" type="video/mp4"></video>
-      <div class="news-body"><span class="news-tag">Élèves · Professeurs</span><h3>L'entraînement non noté</h3><p>Un questionnaire en entraînement ou en remédiation : l'élève vérifie chaque réponse, réessaie, puis voit la correction et l'explication. Le professeur voit qui a réussi du premier coup, après plusieurs essais, ou pas encore. Rien n'est noté.</p></div>
-    </article>
-    <article class="news-card">
-      <video controls preload="none" playsinline poster="assets/videos/seance-en-direct.jpg" aria-label="Vidéo : La séance en direct"><source src="assets/videos/seance-en-direct.mp4" type="video/mp4"></video>
-      <div class="news-body"><span class="news-tag">Professeurs · Élèves</span><h3>La séance en direct</h3><p>Les questions une à une, au rythme du professeur : chaque élève répond depuis son ordinateur, les pourcentages de réponses justes et fausses s'affichent en direct, puis on corrige dans la foulée. Bilan par question et par élève, rien n'est noté.</p></div>
-    </article>
-    <article class="news-card">
-      <video controls preload="none" playsinline poster="assets/videos/camera-du-telephone.jpg" aria-label="Vidéo : La caméra du téléphone"><source src="assets/videos/camera-du-telephone.mp4" type="video/mp4"></video>
-      <div class="news-body"><span class="news-tag">Professeurs</span><h3>La caméra du téléphone</h3><p>Le cahier d'un élève filmé en direct et projeté au tableau, depuis l'outil de correction : photo nette, recadrage, écriture rendue lisible, annotations, puis insertion dans la correction. Depuis un téléphone, l'appareil photo s'ouvre directement.</p></div>
-    </article>
-    <article class="news-card">
-      <video controls preload="none" playsinline poster="assets/videos/interrogations-en-ligne.jpg" aria-label="Vidéo : Des interrogations en ligne"><source src="assets/videos/interrogations-en-ligne.mp4" type="video/mp4"></video>
-      <div class="news-body"><span class="news-tag">Professeurs · Élèves</span><h3>Des interrogations en ligne</h3><p>QCM, vrai/faux, nombres, associer, figures à construire, questions ouvertes : corrigées copie par copie ou question par question, figures manipulables, propositions de l'IA, résultats pour l'élève et carnet de notes.</p></div>
-    </article>
-    <article class="news-card">
-      <video controls preload="none" playsinline poster="assets/videos/construction-animee.jpg" aria-label="Vidéo : Voir une figure se construire pas à pas"><source src="assets/videos/construction-animee.mp4?v=2" type="video/mp4"></video>
-      <div class="news-body"><span class="news-tag">Élèves · Professeurs</span><h3>Voir une figure se construire pas à pas</h3><p>Tapez un énoncé de géométrie : la figure se trace sous vos yeux avec la règle, l'équerre, le compas et le rapporteur, étape par étape, comme au tableau.</p></div>
-    </article>
-    <article class="news-card">
-      <video controls preload="none" playsinline poster="assets/videos/mode-apprentissage.jpg" aria-label="Vidéo : Apprendre ses définitions en les récitant"><source src="assets/videos/mode-apprentissage.mp4" type="video/mp4"></video>
-      <div class="news-body"><span class="news-tag">Élèves</span><h3>Apprendre ses définitions en les récitant</h3><p>Le mode apprentissage cache une définition : il faut la réciter à voix haute pour la faire réapparaître, mot après mot. Trois niveaux, de Facile à Difficile.</p></div>
-    </article>
-    <article class="news-card">
-      <video controls preload="none" playsinline poster="assets/videos/devoirs-automatismes-objectif-nombre.jpg?v=2" aria-label="Vidéo : Automatismes et Objectif Nombre en devoir"><source src="assets/videos/devoirs-automatismes-objectif-nombre.mp4?v=2" type="video/mp4"></video>
-      <div class="news-body"><span class="news-tag">Élèves · Professeurs</span><h3>Automatismes et Objectif Nombre en devoir</h3><p>Donnés en quelques clics, corrigés tout seuls : score, meilleur temps et médailles pour l'élève ; podium, tentatives et temps de travail réel pour le professeur.</p></div>
-    </article>
-    <article class="news-card">
-      <video controls preload="none" playsinline poster="assets/videos/personnaliser-les-cours.jpg" aria-label="Vidéo : Votre cours, à votre façon"><source src="assets/videos/personnaliser-les-cours.mp4" type="video/mp4"></video>
-      <div class="news-body"><span class="news-tag">Professeurs</span><h3>Votre cours, à votre façon</h3><p>Masquez, déplacez, réécrivez les blocs du cours, ajoutez les vôtres (formules, méthodes, exercices, figures dynamiques) : vos élèves voient votre version.</p></div>
-    </article>
-    <article class="news-card">
-      <video controls preload="none" playsinline poster="assets/videos/creer-une-evaluation.jpg?v=2" aria-label="Vidéo : Une évaluation en quelques minutes"><source src="assets/videos/creer-une-evaluation.mp4?v=2" type="video/mp4"></video>
-      <div class="news-body"><span class="news-tag">Professeurs</span><h3>Une évaluation en quelques minutes</h3><p>Exercices proposés par l'IA sur les chapitres choisis, barème, figures et mise en page en colonnes : la copie est prête à imprimer ou à enregistrer en PDF.</p></div>
-    </article>
-    <article class="news-card">
-      <video controls preload="none" playsinline poster="assets/videos/cahier-de-la-classe.jpg?v=2" aria-label="Vidéo : Le cahier de la classe"><source src="assets/videos/cahier-de-la-classe.mp4?v=2" type="video/mp4"></video>
-      <div class="news-body"><span class="news-tag">Professeurs · Élèves</span><h3>Le cahier de la classe</h3><p>« + Cahier » sur une partie du cours, corrections rédigées en classe avec l'outil de correction (divisions posées, figures…) : chaque élève retrouve tout, jour après jour.</p></div>
-    </article>
-    <article class="news-card">
-      <video controls preload="none" playsinline poster="assets/videos/outils-de-correction.jpg?v=2" aria-label="Vidéo : L'outil de correction, tous ses outils"><source src="assets/videos/outils-de-correction.mp4?v=2" type="video/mp4"></video>
-      <div class="news-body"><span class="news-tag">Professeurs</span><h3>L'outil de correction, tous ses outils</h3><p>Texte mis en forme, photo de copie, figure, tableaux de conversion, divisions et opérations posées, axe gradué, fractions, cubes, graphiques, statistiques, probabilités et construction animée.</p></div>
-    </article>
-  </div>
-
-  <div class="section-title"><h2><span class="gicon">person</span>‍<span class="gicon">school</span> Pour les élèves, dans chaque chapitre</h2></div>
+  <!-- Accueil réorganisé -- demandé : "réorganiser la page d'accueil et mettre les vidéos en accordéon dans
+       les vignettes". Chaque vidéo de démonstration est dans la vignette de son outil (« Voir la vidéo »
+       l'ouvre sur toute la largeur, une seule à la fois) ; section du professeur ou de l'élève en premier
+       selon le compte (homeOrdonner, app.js). -->
+  <div id="homeProfs">
+  <div class="section-title"><h2><span class="gicon">school</span> Pour les professeurs</h2><span class="count">en vidéo</span></div>
   <div class="mini-links">
-    <div class="mini-link" data-nav="chapitre" data-demo="1">
-      <div class="t"><span class="gicon">straighten</span> Cours &amp; figures dynamiques</div>
-      <div class="d">Points déplaçables, mesures qui se recalculent en direct.</div>
+    <div class="mini-link has-video" data-nav="questionnaires">
+      <div class="mv-txt"><div class="t"><span class="gicon">quiz</span> Interrogations en ligne <span class="mv-new">Nouveau</span></div>
+      <div class="d">QCM, vrai/faux, nombres, figures à construire, questions ouvertes : corrigées copie par copie ou question par question, carnet de notes.</div>
+      <button type="button" class="mv-btn" data-video="interrogations-en-ligne" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>2 min 30</small></button></div>
     </div>
-    <div class="mini-link" data-nav="chapitre" data-demo="1" data-tab="methode">
-      <div class="t"><span class="gicon">edit</span> Constructions animées</div>
-      <div class="d">Compas et règle, étape par étape, à revoir autant que voulu.</div>
+    <div class="mini-link has-video" data-nav="questionnaires">
+      <div class="mv-txt"><div class="t"><span class="gicon">cast_for_education</span> Séance en direct <span class="mv-new">Nouveau</span></div>
+      <div class="d">Les questions une à une : chaque élève répond depuis son ordinateur, les pourcentages de justes et de faux s'affichent en direct. Non noté.</div>
+      <button type="button" class="mv-btn" data-video="seance-en-direct" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>1 min 28</small></button></div>
     </div>
-    <div class="mini-link" data-nav="chapitre" data-demo="1" data-tab="exercices">
-      <div class="t"><span class="gicon">edit</span> Méthodes de rédaction</div>
-      <div class="d">Des phrases-modèles pour rédiger comme en classe.</div>
+    <div class="mini-link has-video" data-nav="questionnaires">
+      <div class="mv-txt"><div class="t"><span class="gicon">fitness_center</span> Entraînement non noté <span class="mv-new">Nouveau</span></div>
+      <div class="d">L'élève vérifie chaque réponse, réessaie, puis voit la correction ; vous voyez qui a réussi. Idéal pour la remédiation.</div>
+      <button type="button" class="mv-btn" data-video="entrainement-non-note" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>1 min 13</small></button></div>
     </div>
-    <div class="mini-link" data-nav="chapitre" data-demo="1" data-tab="quiz">
-      <div class="t"><span class="gicon">smart_toy</span> Quiz générés par IA</div>
-      <div class="d">Des questions nouvelles à chaque essai.</div>
+    <div class="mini-link has-video" data-nav="correction">
+      <div class="mv-txt"><div class="t"><span class="gicon">photo_camera</span> Caméra du téléphone <span class="mv-new">Nouveau</span></div>
+      <div class="d">Le cahier d'un élève filmé et projeté en direct, recadré, annoté, puis rangé dans la correction.</div>
+      <button type="button" class="mv-btn" data-video="camera-du-telephone" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>1 min 24</small></button></div>
     </div>
-    <div class="mini-link" data-nav="chapitre" data-demo="1">
-      <div class="t"><span class="gicon">record_voice_over</span> Mode apprentissage</div>
-      <div class="d">Récitez une définition à voix haute pour la faire réapparaître, mot après mot.</div>
+    <div class="mini-link has-video" data-nav="correction">
+      <div class="mv-txt"><div class="t"><span class="gicon">desktop_windows</span> Outil de correction</div>
+      <div class="d">Rédigez au clavier, projetez en direct, insérez figures, graphiques, probabilités, opérations posées, imprimez en un clic.</div>
+      <button type="button" class="mv-btn" data-video="outils-de-correction" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>2 min 15</small></button></div>
     </div>
-    <div class="mini-link" data-nav="mesdevoirs">
-      <div class="t"><span class="gicon">assignment</span> Devoirs en ligne</div>
-      <div class="d">Automatismes, Objectif Nombre ou fichier à rendre, avec vos scores et vos médailles en temps réel.</div>
+    <div class="mini-link has-video" data-nav="correction">
+      <div class="mv-txt"><div class="t"><span class="gicon">menu_book</span> Cahier de la classe</div>
+      <div class="d">Parties du cours et corrections faites en classe, archivées par classe et par date : chaque élève les retrouve, même absent.</div>
+      <button type="button" class="mv-btn" data-video="cahier-de-la-classe" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>50 s</small></button></div>
     </div>
-  </div>
-
-  <div class="section-title"><h2><span class="gicon">person</span>‍<span class="gicon">school</span> Pour les professeurs</h2></div>
-  <div class="mini-links">
-    <div class="mini-link" data-nav="correction">
-      <div class="t"><span class="gicon">desktop_windows</span> Outil de correction</div>
-      <div class="d">Rédigez au clavier, projetez en direct, insérez figures/graphiques/probabilités/opérations posées, imprimez en un clic.</div>
+    <div class="mini-link has-video" data-nav="evaluation">
+      <div class="mv-txt"><div class="t"><span class="gicon">edit_note</span> Créer une évaluation</div>
+      <div class="d">Exercices proposés par l'IA, barème, figures, mise en page en colonnes : la copie est prête à imprimer.</div>
+      <button type="button" class="mv-btn" data-video="creer-une-evaluation" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>43 s</small></button></div>
     </div>
-    <div class="mini-link" data-nav="evaluation">
-      <div class="t"><span class="gicon">edit_note</span> Créer une évaluation</div>
-      <div class="d">Rédaction manuelle ou assistée par IA, mise en page en colonnes, impression fidèle à l'écran.</div>
+    <div class="mini-link has-video" data-nav="devoirsprof">
+      <div class="mv-txt"><div class="t"><span class="gicon">assignment_turned_in</span> Devoirs en ligne</div>
+      <div class="d">Automatismes et Objectif Nombre corrigés tout seuls : qui a rendu, médailles, tentatives et temps de travail réel.</div>
+      <button type="button" class="mv-btn" data-video="devoirs-automatismes-objectif-nombre" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>56 s</small></button></div>
     </div>
-    <div class="mini-link" data-nav="correction">
-      <div class="t"><span class="gicon">menu_book</span> Cahier de corrections</div>
-      <div class="d">Chaque correction archivée par classe et par date, partagée avec vos collègues, à imprimer ou consulter en ligne.</div>
+    <div class="mini-link has-video" data-nav="chapitre" data-demo="1">
+      <div class="mv-txt"><div class="t"><span class="gicon">tune</span> Cours personnalisables</div>
+      <div class="d">Masquez, déplacez, réécrivez ou ajoutez des blocs dans chaque chapitre : vos élèves voient votre version.</div>
+      <button type="button" class="mv-btn" data-video="personnaliser-les-cours" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>1 min 02</small></button></div>
+    </div>
+    <div class="mini-link has-video" data-nav="tableau">
+      <div class="mv-txt"><div class="t"><span class="gicon">draw</span> Tableau interactif</div>
+      <div class="d">Tapez un énoncé de géométrie : la figure se construit sous les yeux de la classe, à la règle, au compas, à l'équerre.</div>
+      <button type="button" class="mv-btn" data-video="construction-animee" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>42 s</small></button></div>
     </div>
     <div class="mini-link" data-nav="supervision">
-      <div class="t"><span class="gicon">bar_chart</span> Suivi des classes</div>
-      <div class="d">Progression des automatismes et résultats des élèves, classe par classe.</div>
-    </div>
-    <div class="mini-link" data-nav="devoirsprof">
-      <div class="t"><span class="gicon">assignment_turned_in</span> Devoirs en ligne</div>
-      <div class="d">Assignez un devoir, suivez qui a rendu ou est en retard, médailles, tentatives et temps de travail réel, le tout depuis un tableau de bord dès la connexion.</div>
-    </div>
-    <div class="mini-link" data-nav="chapitre" data-demo="1">
-      <div class="t"><span class="gicon">edit_note</span> Cours personnalisables</div>
-      <div class="d">Masquez, déplacez, réécrivez ou ajoutez des blocs dans chaque chapitre : vos élèves voient votre version.</div>
+      <div class="mv-txt"><div class="t"><span class="gicon">bar_chart</span> Suivi des classes</div>
+      <div class="d">Progression des automatismes et résultats des élèves, classe par classe.</div></div>
     </div>
   </div>
+  </div>
 
-  <div class="section-title"><h2><span class="gicon">pin</span> Automatismes</h2></div>
-  <div class="plain-card" style="padding:24px 28px;">
-    <p style="margin:0 0 14px;color:var(--ink-soft);">112 séquences du cahier, générées et corrigées automatiquement, pour s'entraîner au calcul mental chaque semaine.</p>
-    <div class="figure-toolbar">
+  <div id="homeEleves">
+  <div class="section-title"><h2><span class="gicon">person</span> Pour les élèves, dans chaque chapitre</h2></div>
+  <div class="mini-links">
+    <div class="mini-link" data-nav="chapitre" data-demo="1">
+      <div class="mv-txt"><div class="t"><span class="gicon">straighten</span> Cours &amp; figures dynamiques</div>
+      <div class="d">Points déplaçables, mesures qui se recalculent en direct.</div></div>
+    </div>
+    <div class="mini-link has-video" data-nav="chapitre" data-demo="1" data-tab="methode">
+      <div class="mv-txt"><div class="t"><span class="gicon">animation</span> Constructions animées</div>
+      <div class="d">Compas, règle et équerre, étape par étape, à revoir autant que voulu.</div>
+      <button type="button" class="mv-btn" data-video="construction-animee" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>42 s</small></button></div>
+    </div>
+    <div class="mini-link has-video" data-nav="chapitre" data-demo="1">
+      <div class="mv-txt"><div class="t"><span class="gicon">record_voice_over</span> Mode apprentissage</div>
+      <div class="d">Récitez une définition à voix haute pour la faire réapparaître, mot après mot.</div>
+      <button type="button" class="mv-btn" data-video="mode-apprentissage" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>36 s</small></button></div>
+    </div>
+    <div class="mini-link has-video" data-nav="mesdevoirs">
+      <div class="mv-txt"><div class="t"><span class="gicon">fitness_center</span> Interrogations et entraînements <span class="mv-new">Nouveau</span></div>
+      <div class="d">En ligne, depuis « Mes devoirs » : vérifier sa réponse, réessayer, comprendre la correction.</div>
+      <button type="button" class="mv-btn" data-video="entrainement-non-note" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>1 min 13</small></button></div>
+    </div>
+    <div class="mini-link has-video" data-nav="mesdevoirs">
+      <div class="mv-txt"><div class="t"><span class="gicon">assignment</span> Devoirs en ligne</div>
+      <div class="d">Automatismes, Objectif Nombre ou fichier à rendre, avec vos scores et vos médailles en temps réel.</div>
+      <button type="button" class="mv-btn" data-video="devoirs-automatismes-objectif-nombre" aria-expanded="false" onclick="homeVideo(this,event)"><span class="gicon">play_circle</span> Voir la vidéo <small>56 s</small></button></div>
+    </div>
+    <div class="mini-link" data-nav="chapitre" data-demo="1" data-tab="exercices">
+      <div class="mv-txt"><div class="t"><span class="gicon">edit</span> Méthodes de rédaction</div>
+      <div class="d">Des phrases-modèles pour rédiger comme en classe.</div></div>
+    </div>
+    <div class="mini-link" data-nav="chapitre" data-demo="1" data-tab="quiz">
+      <div class="mv-txt"><div class="t"><span class="gicon">smart_toy</span> Quiz générés par IA</div>
+      <div class="d">Des questions nouvelles à chaque essai.</div></div>
+    </div>
+  </div>
+  </div>
+
+  <div class="section-title"><h2><span class="gicon">add_circle</span> Et aussi</h2></div>
+  <div class="home-extras">
+    <div class="plain-card">
+      <h3><span class="gicon">pin</span> Automatismes</h3>
+      <p>112 séquences du cahier, générées et corrigées automatiquement, pour s'entraîner au calcul mental chaque semaine.</p>
       <button class="btn" data-nav="cm">Ouvrir les automatismes →</button>
     </div>
-  </div>
-
-  <div class="section-title"><h2><span class="gicon">casino</span> Objectif Nombre</h2></div>
-  <div class="plain-card" style="padding:24px 28px;">
-    <p style="margin:0 0 14px;color:var(--ink-soft);">Comme dans l'émission : un tirage de 6 nombres, un compte à atteindre avec +, −, × et ÷, et toujours une solution exacte possible. Idéal pour muscler le calcul mental.</p>
-    <div class="figure-toolbar">
+    <div class="plain-card">
+      <h3><span class="gicon">casino</span> Objectif Nombre</h3>
+      <p>Un tirage de 6 nombres, un compte à atteindre avec +, −, × et ÷, et toujours une solution exacte possible.</p>
       <button class="btn orange" data-nav="compte">Jouer →</button>
     </div>
-  </div>
-
-  <div class="section-title"><h2><span class="gicon">calendar_month</span> Frise de progression</h2></div>
-  <div class="plain-card" style="padding:24px 28px;">
-    <p style="margin:0 0 14px;color:var(--ink-soft);">Chaque chapitre situé dans l'année, semaine par semaine, avec les vacances scolaires -- pour les niveaux 6e et 5e.</p>
-    <div class="figure-toolbar">
-      <button class="btn" data-nav="niveau" data-lvl="6e">Frise 6e →</button>
-      <button class="btn orange" data-nav="niveau" data-lvl="5e">Frise 5e →</button>
+    <div class="plain-card">
+      <h3><span class="gicon">calendar_month</span> Frise de progression</h3>
+      <p>Chaque chapitre situé dans l'année, semaine par semaine, avec les vacances scolaires.</p>
+      <div class="home-extras-btns"><button class="btn" data-nav="niveau" data-lvl="6e">Frise 6e →</button><button class="btn orange" data-nav="niveau" data-lvl="5e">Frise 5e →</button></div>
     </div>
   </div>
 </section>
@@ -1405,63 +1397,63 @@
 <footer>Une production de <a href="https://www.latelieraugmente.fr" target="_blank" rel="noopener">L'Atelier Augmenté</a> · L'Atelier des Maths · Programme B.O. 2026 · <a href="#" data-nav="mentions-legales">Mentions légales</a> · <a href="#" data-nav="confidentialite">Confidentialité</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a> · <a href="#" data-nav="niveau" data-lvl="cm1" style="color:var(--ink-soft);">CM1 (aperçu)</a></footer>
 
 <script src="https://js.stripe.com/v3/"></script>
-<script defer src="app.js?v=20260819-736"></script>
-<script defer src="outils-figures.js?v=20260819-736"></script>
-<script defer src="evaluation.js?v=20260819-736"></script>
-<script defer src="admin.js?v=20260819-736"></script>
-<script defer src="facturation.js?v=20260819-736"></script>
-<script defer src="ia-compte.js?v=20260819-736"></script>
-<script defer src="famille.js?v=20260819-736"></script>
-<script defer src="demo.js?v=20260819-736"></script>
-<script defer src="mot-de-passe.js?v=20260819-736"></script>
-<script defer src="apprentissage.js?v=20260819-736"></script>
-<script defer src="cours-perso.js?v=20260819-736"></script>
-<script defer src="tableau-ia.js?v=20260819-736"></script>
-<script defer src="devoirs.js?v=20260819-736"></script>
-<script defer src="suivi-devoirs.js?v=20260819-736"></script>
-<script defer src="questionnaires.js?v=20260819-736"></script>
-<script defer src="questionnaires-interactif.js?v=20260819-736"></script>
-<script defer src="questionnaires-banque.js?v=20260819-736"></script>
-<script defer src="questionnaires-interros.js?v=20260819-736"></script>
-<script defer src="questionnaires-entrainement.js?v=20260819-736"></script>
-<script defer src="questionnaires-direct.js?v=20260819-736"></script>
-<script defer src="vendor/qrcode.js?v=20260819-736"></script>
-<script defer src="camera.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-736"></script>
-<script defer src="chapitres/cm1/N1-nombres-entiers.js?v=20260819-736"></script>
-<script defer src="chapitres/cm1/G1-droites-paralleles-perpendiculaires.js?v=20260819-736"></script>
-<script defer src="chapitres/cm1/N2-operations-nombres-entiers.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/N4-multiplication-division.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/D3-proportionnalite.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/G5-construction-triangles.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/G4-symetrie-axiale.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/N5-fractions-comparaison-addition.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/D1-gestion-donnees.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/D2-probabilites.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/M1-aire-perimetre.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/M2-heures-durees.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/G6-proprietes-triangles.js?v=20260819-736"></script>
-<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/N4-fractions.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/N6-equations.js?v=20260819-736"></script>
-<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-736"></script>
-<script defer src="calcul-mental/calcul-mental.js?v=20260819-736"></script>
-<script defer src="compte-est-bon.js?v=20260819-736"></script>
-<script defer src="router.js?v=20260819-736"></script>
+<script defer src="app.js?v=20260819-737"></script>
+<script defer src="outils-figures.js?v=20260819-737"></script>
+<script defer src="evaluation.js?v=20260819-737"></script>
+<script defer src="admin.js?v=20260819-737"></script>
+<script defer src="facturation.js?v=20260819-737"></script>
+<script defer src="ia-compte.js?v=20260819-737"></script>
+<script defer src="famille.js?v=20260819-737"></script>
+<script defer src="demo.js?v=20260819-737"></script>
+<script defer src="mot-de-passe.js?v=20260819-737"></script>
+<script defer src="apprentissage.js?v=20260819-737"></script>
+<script defer src="cours-perso.js?v=20260819-737"></script>
+<script defer src="tableau-ia.js?v=20260819-737"></script>
+<script defer src="devoirs.js?v=20260819-737"></script>
+<script defer src="suivi-devoirs.js?v=20260819-737"></script>
+<script defer src="questionnaires.js?v=20260819-737"></script>
+<script defer src="questionnaires-interactif.js?v=20260819-737"></script>
+<script defer src="questionnaires-banque.js?v=20260819-737"></script>
+<script defer src="questionnaires-interros.js?v=20260819-737"></script>
+<script defer src="questionnaires-entrainement.js?v=20260819-737"></script>
+<script defer src="questionnaires-direct.js?v=20260819-737"></script>
+<script defer src="vendor/qrcode.js?v=20260819-737"></script>
+<script defer src="camera.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/G1-symetrie-centrale.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/N2-nombres-relatifs.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/N3-operations-relatifs.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/N1-operations-nombres-decimaux.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/N1-nombres-entiers.js?v=20260819-737"></script>
+<script defer src="chapitres/cm1/N1-nombres-entiers.js?v=20260819-737"></script>
+<script defer src="chapitres/cm1/G1-droites-paralleles-perpendiculaires.js?v=20260819-737"></script>
+<script defer src="chapitres/cm1/N2-operations-nombres-entiers.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/G2-droites-paralleles-perpendiculaires.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/N2-fractions-nombres-partage.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/G3-angles-rapporteur.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/N3-nombres-decimaux.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/N4-operations-ordre-grandeur.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/N4-multiplication-division.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/D3-proportionnalite.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/G5-construction-triangles.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/G4-symetrie-axiale.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/N5-fractions-comparaison-addition.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/D1-gestion-donnees.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/D2-probabilites.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/M1-aire-perimetre.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/M2-heures-durees.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/G6-proprietes-triangles.js?v=20260819-737"></script>
+<script defer src="chapitres/6e/G1-distance-et-cercles.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/N4-fractions.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/N1-divisibilite.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/G3-droites-remarquables.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/G4-parallelogrammes.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/G5-parallelogrammes-particuliers.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/P1-proportionnalite.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/N5-calcul-litteral.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/N6-equations.js?v=20260819-737"></script>
+<script defer src="chapitres/5e/G2-angles-parallelisme.js?v=20260819-737"></script>
+<script defer src="calcul-mental/calcul-mental.js?v=20260819-737"></script>
+<script defer src="compte-est-bon.js?v=20260819-737"></script>
+<script defer src="router.js?v=20260819-737"></script>
 </body>
 </html>

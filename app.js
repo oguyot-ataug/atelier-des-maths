@@ -145,6 +145,41 @@ function showView(id){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
+/* Accueil : vidéos de démonstration en accordéon dans les vignettes -- demandé : "réorganiser la page
+   d'accueil et mettre les vidéos en accordéon dans les vignettes". « Voir la vidéo » ouvre la vignette
+   sur toute la largeur avec la vidéo (une seule ouverte à la fois) ; un clic dans la vidéo ne déclenche
+   pas la navigation de la vignette. */
+const HOME_VIDEO_V = { 'construction-animee':'?v=2', 'devoirs-automatismes-objectif-nombre':'?v=2', 'creer-une-evaluation':'?v=2', 'cahier-de-la-classe':'?v=2', 'outils-de-correction':'?v=2' };
+function homeVideoFermer(tile){
+  if(!tile) return;
+  const v = tile.querySelector('video'); if(v) v.pause();
+  tile.querySelector('.mv-panel')?.remove();
+  tile.querySelector('.mv-go')?.remove();
+  tile.classList.remove('open');
+  const b = tile.querySelector('.mv-btn'); if(b) b.setAttribute('aria-expanded', 'false');
+}
+function homeVideo(btn, ev){
+  if(ev) ev.stopPropagation();
+  const tile = btn.closest('.mini-link'); if(!tile) return;
+  if(tile.classList.contains('open')){ homeVideoFermer(tile); return; }
+  document.querySelectorAll('#view-home .mini-link.open').forEach(homeVideoFermer);
+  const nom = btn.dataset.video, q = HOME_VIDEO_V[nom] || '';
+  const titre = (tile.querySelector('.t')?.textContent || '').replace('Nouveau', '').trim();
+  const p = document.createElement('div'); p.className = 'mv-panel';
+  p.innerHTML = `<video controls playsinline preload="metadata" poster="assets/videos/${nom}.jpg${q}" aria-label="Vidéo : ${titre.replace(/"/g, '')}"><source src="assets/videos/${nom}.mp4${q}" type="video/mp4"></video>`;
+  p.addEventListener('click', e => e.stopPropagation());
+  tile.appendChild(p); tile.classList.add('open'); btn.setAttribute('aria-expanded', 'true');
+  if(!tile.querySelector('.mv-go') && tile.dataset.nav){ const g = document.createElement('button'); g.type = 'button'; g.className = 'btn mv-go'; g.innerHTML = 'Ouvrir l\'outil <span class="gicon">arrow_forward</span>';
+    g.addEventListener('click', e => { e.stopPropagation(); homeVideoFermer(tile); tile.click(); }); tile.querySelector('.mv-txt').appendChild(g); }
+  const v = p.querySelector('video'); v.play().catch(() => {});
+  setTimeout(() => tile.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 60);
+}
+// Section du compte en premier : professeurs (et visiteurs) d'abord, élèves d'abord pour un élève.
+function homeOrdonner(){
+  const p = document.getElementById('homeProfs'), e = document.getElementById('homeEleves'); if(!p || !e) return;
+  if(currentUserRole === 'eleve'){ if(p.previousElementSibling !== e) p.before(e); }
+  else if(e.previousElementSibling !== p) e.before(p);
+}
 document.querySelectorAll('[data-nav]').forEach(el=>{
   el.addEventListener('click',(e)=>{
     if(el.tagName==='A' && el.getAttribute('href')==='#') e.preventDefault();
@@ -2469,6 +2504,7 @@ async function refreshAuthUI(){
     // voir renderProfHomeDigest plus bas.
     if(isStaff) await renderProfHomeDigest();
     else { const digestEl=document.getElementById('profHomeDigest'); if(digestEl){ digestEl.style.display='none'; digestEl.innerHTML=''; } }
+    if(typeof homeOrdonner==='function') homeOrdonner();
     if(currentUserRole==='eleve') await loadMyStudentClasses();
     // Pastille "devoirs en attente" sur le bouton "Mes devoirs" -- signalé : "les élèves sont-ils
     // prévenus... ?". accountClassesList doit déjà être peuplée (loadMyStudentClasses ci-dessus).
@@ -2691,6 +2727,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.737', items:[
+    "Page d'accueil réorganisée -- demandé : \"réorganiser la page d'accueil et mettre les vidéos en accordéon dans les vignettes\". Les grandes cartes vidéo « Nouveautés » disparaissent : chaque vidéo est dans la vignette de son outil (« Voir la vidéo » l'ouvre sur toute la largeur, une seule à la fois, avec « Ouvrir l'outil »), badge « Nouveau » sur les nouveautés (interrogations en ligne, séance en direct, entraînement non noté, caméra du téléphone). Section « Pour les professeurs » en premier pour un professeur ou un visiteur, « Pour les élèves » en premier pour un élève. Automatismes, Objectif Nombre et frise de progression regroupés sur une rangée « Et aussi ».",
+  ]},
   { version:'2026-08-19.736', items:[
     "Nouveautés de la page d'accueil : vidéo « L'entraînement non noté » -- demandé : \"Fais aussi une vidéo pour le mode entraînement\", puis \"ajoute-la aux nouveautés et sur l'atelier augmenté\".",
   ]},

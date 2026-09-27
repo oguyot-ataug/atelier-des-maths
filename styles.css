@@ -1289,3 +1289,23 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
 .news-body p{margin:0;color:var(--ink-soft);font-size:.88rem;line-height:1.55;}
 .news-tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--accent-orange);}
 @media (max-width:720px){ .news-grid{grid-template-columns:1fr;} }
+
+/* ---------- accueil : vignettes avec vidéo en accordéon ---------- */
+.mini-link .t{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.mv-new{background:#D93025;color:#fff;border-radius:999px;padding:1px 8px;font:700 .68rem Inter,sans-serif;letter-spacing:.3px;}
+.mv-btn{display:inline-flex;align-items:center;gap:5px;margin-top:10px;border:1.5px solid rgba(12,91,160,.25);background:rgba(12,91,160,.06);color:#0C5BA0;
+  border-radius:999px;padding:4px 12px 4px 8px;font:600 .8rem Inter,sans-serif;cursor:pointer;}
+.mv-btn .gicon{font-size:1.2rem;} .mv-btn small{color:#5B6472;font-weight:500;}
+.mv-btn:hover{background:rgba(12,91,160,.12);}
+.mini-link.open{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:22px;align-items:start;cursor:default;transform:none;border-color:rgba(12,91,160,.35);}
+.mini-link.open .mv-btn{background:#0C5BA0;color:#fff;border-color:#0C5BA0;} .mini-link.open .mv-btn small{color:rgba(255,255,255,.8);}
+.mini-link.open .t{font-size:1.15rem;} .mini-link.open .d{font-size:.92rem;}
+.mv-panel video{display:block;width:100%;aspect-ratio:16/9;background:#1C2B39;border-radius:10px;}
+.mv-go{margin:10px 0 0 6px;padding:5px 14px;font-size:.8rem;border-radius:999px;vertical-align:top;}
+@media (max-width:900px){ .mini-link.open{grid-template-columns:1fr;} }
+.home-extras{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px;}
+.home-extras .plain-card{padding:18px 20px;display:flex;flex-direction:column;align-items:flex-start;}
+.home-extras h3{margin:0 0 6px;font-size:1.05rem;display:flex;align-items:center;gap:6px;}
+.home-extras p{margin:0 0 12px;color:var(--ink-soft);font-size:.88rem;flex:1;}
+.home-extras-btns{display:flex;gap:8px;flex-wrap:wrap;}
+@media (max-width:900px){ .home-extras{grid-template-columns:1fr;} }
