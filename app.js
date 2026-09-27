@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.731', items:[
+    "Nouveautés de la page d'accueil : vidéo « La caméra du téléphone » -- demandé : \"On pourrait faire une vidéo spécifique\", puis \"Oui ajoute-la aux nouveautés\". Le cahier d'un élève filmé en direct, photo nette, recadrage, réglage Document, annotations (erreur surlignée, résultat barré, bonne réponse écrite), outil flèche pour ajuster et placer le texte, insertion dans la correction ; puis l'appareil photo direct depuis un téléphone.",
+  ]},
   { version:'2026-08-19.730', items:[
     "Caméra depuis un téléphone ou une tablette -- demandé : \"si je le fais directement depuis un smartphone, outil de correction, puis icône caméra, il faut ouvrir directement l'application smartphone, pas mettre un code barre, car je ne pourrai pas le scanner\". Sur téléphone / tablette, l'icône caméra ouvre directement l'appareil photo (plus de QR code) ; on peut aussi choisir une photo existante. La photo arrive dans le même éditeur (recadrage, luminosité, contraste, Document, crayon, surligneur, texte, sélection), en plein écran, avec un bouton « Autre photo » ; après « Insérer dans la correction », la fenêtre se ferme et l'image est dans la correction. Sur ordinateur, rien ne change (QR code et direct du téléphone).",
   ]},
