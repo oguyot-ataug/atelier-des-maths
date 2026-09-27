@@ -17,7 +17,7 @@
 
 const FAM_ORDRE = ['6e','5e','4e','3e'];
 const FAM_DISPO = ['6e','5e']; // niveaux en ligne : miroir de NIVEAUX_DISPONIBLES (fonction famille)
-const FAM_EXCLUSION_TEXTE = "Je certifie qu'aucun de mes enfants inscrits sur L'Atelier des Maths n'est scolarisé dans l'établissement où enseigne le concepteur du site, et je m'engage à ne pas créer de compte pour un enfant qui y serait scolarisé. Je reconnais qu'une fausse déclaration entraîne la fermeture des comptes sans remboursement.";
+const FAM_EXCLUSION_TEXTE = "Je certifie qu'aucun de mes enfants inscrits sur L'Atelier des Maths n'est scolarisé à l'Ensemble scolaire La Malgrange (Jarville-la-Malgrange), établissement où enseigne le concepteur du site, et je m'engage à ne pas créer de compte pour un enfant qui y serait scolarisé. Je reconnais qu'une fausse déclaration entraîne la fermeture des comptes sans remboursement.";
 // Prix affichés (en centimes, par nombre de niveaux) : lus dans famille_parametres, modifiables
 // dans Administration > Familles. Le montant réellement payé est toujours recalculé par le serveur.
 let famGrille = { '1':3500, '2':5500, '3':6900 };

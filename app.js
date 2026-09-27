@@ -2683,6 +2683,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.706', items:[
+    "Offre Famille, déclaration sur l'honneur précisée -- demandé : \"n'est scolarisé dans l'établissement où enseigne le concepteur du site : Préciser : Ensemble scolaire La Malgrange à Jarville-La-Malgrange\". Le texte certifié à l'inscription et les CGV (article 3) nomment maintenant l'Ensemble scolaire La Malgrange (Jarville-la-Malgrange). Nouvelle version de la déclaration (27/09/2026) enregistrée pour les nouvelles inscriptions ; CGV en version du 27 septembre 2026.",
+  ]},
   { version:'2026-08-19.705', items:[
     "Mode découverte (visiteur non connecté) du menu « S'entraîner » -- demandé : \"En mode hors connexion, permettre uniquement le premier automatisme de chaque rubrique, les autres restent inaccessibles. Pour les autres rubriques de ce menu, montrer des vidéos de présentation ou des gifs mais pas de possibilités d'accès (mode démo)\". Automatismes : la première séquence de chaque rubrique est libre (badge « LIBRE »), les autres sont grisées avec un cadenas et proposent de se connecter. Objectif Nombre, Géométrie interactive et Tableau interactif : page de présentation avec une courte vidéo de démonstration en boucle (sans son), les points forts et les boutons « Se connecter », « Je suis professeur » (et « Je suis parent » quand l'offre Famille est visible). Après connexion depuis une démonstration, l'outil s'ouvre directement.",
   ]},
