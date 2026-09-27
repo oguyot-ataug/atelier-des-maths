@@ -266,9 +266,10 @@ async function qzInterrosCharger(){
     d._total = d.student_ids && d.student_ids.length ? d.student_ids.length : (taille[d.class_id] || 0);
     d._rendues = cp.filter(qzEstRendue).length;
     d._enCours = cp.length - d._rendues;
-    d._aCorriger = q ? cp.filter(c => qzEstRendue(c) && qzScoreCopie(q.questions, c, reg).aCorriger).length : 0;
+    d._aCorriger = q && !qzEstEntrainement(reg) ? cp.filter(c => qzEstRendue(c) && qzScoreCopie(q.questions, c, reg).aCorriger).length : 0;
   });
   qzB.interros = interros;
+  if(typeof qzDirectsCharger === 'function') await qzDirectsCharger();
 }
 function qzInterroEtat(d){
   const now = new Date();
@@ -283,14 +284,15 @@ function qzInterrosHtml(liste){
   return `<div class="qz-i-liste">${liste.map(d => { const e = qzInterroEtat(d), r = d._reg || QZ_REGLAGES_DEFAUT;
     return `<div class="qz-i-row">
       <div class="qz-i-main"><b>${qzEsc(d.titre)}</b>${d._q && (d._q.partage_etab || (d._q.partage_profs || []).length) ? ' <span class="qz-b-share"><span class="gicon">group</span> partagé</span>' : ''}
-        <div class="hint" style="margin:2px 0 0;">${qzEsc(d.classes ? d.classes.nom : '')}${d.student_ids && d.student_ids.length ? ` · ${d.student_ids.length} élève${d.student_ids.length > 1 ? 's' : ''} choisi${d.student_ids.length > 1 ? 's' : ''}` : ''} · ${r.mode === 'classe' ? 'en classe, ' + r.duree + ' min' : 'à la maison'}${d.date_limite ? ' · limite le ' + new Date(d.date_limite).toLocaleDateString('fr-FR') : ''}</div></div>
+        <div class="hint" style="margin:2px 0 0;">${qzEsc(d.classes ? d.classes.nom : '')}${d.student_ids && d.student_ids.length ? ` · ${d.student_ids.length} élève${d.student_ids.length > 1 ? 's' : ''} choisi${d.student_ids.length > 1 ? 's' : ''}` : ''} · ${qzEstEntrainement(r) ? '<b style="color:#16767B;">entraînement, non noté</b>' : r.mode === 'classe' ? 'en classe, ' + r.duree + ' min' : 'à la maison'}${d.date_limite ? ' · limite le ' + new Date(d.date_limite).toLocaleDateString('fr-FR') : ''}</div></div>
       <span class="qz-i-etat ${e.c}"><span class="gicon">${e.i}</span> ${e.t}</span>
-      <span class="qz-i-stat" title="Copies rendues"><b>${d._rendues}</b>/${d._total} rendue${d._rendues > 1 ? 's' : ''}${d._enCours ? ` · ${d._enCours} en cours` : ''}</span>
-      <span class="qz-i-stat${d._aCorriger ? ' warn' : ''}">${d._aCorriger ? `<b>${d._aCorriger}</b> à corriger` : d._rendues ? '✓ corrigé' : ''}</span>
+      <span class="qz-i-stat" title="${qzEstEntrainement(r) ? 'Entraînements terminés' : 'Copies rendues'}"><b>${d._rendues}</b>/${d._total} ${qzEstEntrainement(r) ? 'terminé' : 'rendue'}${d._rendues > 1 ? 's' : ''}${d._enCours ? ` · ${d._enCours} en cours` : ''}</span>
+      <span class="qz-i-stat${d._aCorriger ? ' warn' : ''}">${d._aCorriger ? `<b>${d._aCorriger}</b> à corriger` : d._rendues && !qzEstEntrainement(r) ? '✓ corrigé' : ''}</span>
       <span class="qz-i-act">
-        <button class="btn qz-mini" onclick="qzOuvrirCorrection('${d.id}')"><span class="gicon">fact_check</span> Corriger</button>
+        <button class="btn qz-mini" onclick="qzOuvrirCorrection('${d.id}')">${qzEstEntrainement(r) ? '<span class="gicon">insights</span> Résultats' : '<span class="gicon">fact_check</span> Corriger'}</button>
         <button class="btn secondary qz-mini" onclick="qzFormModifier('${d.id}')" title="Modifier"><span class="gicon">edit</span></button>
-        ${d.questionnaire_id ? `<button class="btn secondary qz-mini" onclick="qzBanqueDonner('${d.questionnaire_id}')" title="Donner une copie à une autre classe"><span class="gicon">content_copy</span></button>
+        ${d.questionnaire_id ? `<button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${d.questionnaire_id}')" title="Séance en direct avec ces questions : une à une, sans note, réponses en direct"><span class="gicon">cast_for_education</span></button>
+        <button class="btn secondary qz-mini" onclick="qzBanqueDonner('${d.questionnaire_id}')" title="Donner une copie à une autre classe"><span class="gicon">content_copy</span></button>
         <button class="btn secondary qz-mini" onclick="qzBanquePartager('${d.questionnaire_id}')" title="Partager le questionnaire avec des collègues (ils pourront le copier)"><span class="gicon">share</span></button>` : ''}
         <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzInterroSupprimer('${d.id}')" title="Supprimer"><span class="gicon">delete</span></button>
       </span></div>`; }).join('')}</div>`;
@@ -309,6 +311,7 @@ function qzBrouillonsHtml(f){
         <span class="qz-i-act">
           <button class="btn qz-mini" onclick="qzBanqueReprendre('${q.id}')"><span class="gicon">edit</span> Reprendre</button>
           <button class="btn secondary qz-mini" onclick="qzBanqueDonner('${q.id}')"><span class="gicon">assignment_add</span> Donner à une classe</button>
+          <button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${q.id}')" title="Séance en direct : les questions une à une, sans note, réponses en direct"><span class="gicon">cast_for_education</span> En direct</button>
           <button class="btn secondary qz-mini" onclick="qzBanquePartager('${q.id}')" title="Partager avec des collègues (ils pourront le copier)"><span class="gicon">share</span> Partager</button>
           <button class="btn secondary qz-mini" onclick="qzBanqueApercu('${q.id}')" title="Aperçu"><span class="gicon">visibility</span></button>
           <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzBanqueSupprimer('${q.id}')" title="Supprimer"><span class="gicon">delete</span></button>

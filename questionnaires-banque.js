@@ -63,6 +63,7 @@ function qzBanqueCarte(q, partage){
       ${!partage && !dv.length ? `<button class="btn qz-mini" onclick="qzBanqueReprendre('${q.id}')" title="Continuer à préparer ce questionnaire"><span class="gicon">edit</span> Reprendre</button>` : ''}
       <button class="btn secondary qz-mini" onclick="qzBanqueApercu('${q.id}')"><span class="gicon">visibility</span> Aperçu</button>
       <button class="btn ${!partage && !dv.length ? 'secondary ' : ''}qz-mini" onclick="qzBanqueDonner('${q.id}')"><span class="gicon">assignment_add</span> Donner à une classe</button>
+      <button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${q.id}')" title="Poser les questions une à une à toute la classe, sans note, et voir les réponses en direct"><span class="gicon">cast_for_education</span> En direct</button>
       ${partage ? `<button class="btn secondary qz-mini" onclick="qzBanqueCopier('${q.id}')"><span class="gicon">content_copy</span> Copier dans mes questionnaires</button>`
         : `<button class="btn secondary qz-mini" onclick="qzBanqueCopier('${q.id}')"><span class="gicon">content_copy</span> Dupliquer</button>
            <button class="btn secondary qz-mini" onclick="qzBanquePartager('${q.id}')"><span class="gicon">share</span> Partager</button>
@@ -78,6 +79,7 @@ function qzBanqueRender(){
   root.innerHTML = `<span class="back-btn" onclick="showView('view-home');setActiveTopnav(null);">← Accueil</span>
     <h1 style="margin:6px 0 4px;"><span class="gicon">quiz</span> Interrogations en ligne</h1>
     <p style="color:var(--ink-soft);max-width:75ch;">Des interrogations notées, à la manière de Google Forms, séparées des devoirs d'entraînement : créez-les, donnez-les à une classe (en classe, chronométrées, ou à la maison), corrigez-les copie par copie ou question par question, puis publiez les résultats. Vos questionnaires et ceux de vos collègues sont réutilisables : donner un questionnaire à une classe en crée une copie, le modifier ensuite ne change rien pour les autres classes. Pour en envoyer un à un collègue : bouton <b><span class="gicon" style="font-size:1rem;vertical-align:middle;">share</span> Partager</b> ; il le retrouve dans « Partagés avec moi » et peut le copier chez lui.</p>
+    <p class="qzd-intro"><span class="gicon">cast_for_education</span><span><b>Nouveau : la séance en direct.</b> Bouton <b>En direct</b> sur un questionnaire : les questions s'affichent une à une au rythme du professeur, chaque élève répond depuis son compte, vous voyez en direct le pourcentage de réponses justes et fausses, puis vous affichez la correction. Rien n'est noté.</span></p>
     <div class="qz-c-tools">
       <div class="qz-tabs"><button class="${qzB.onglet === 'donnees' ? 'on' : ''}" onclick="qzB.onglet='donnees';qzBanqueRender()"><span class="gicon">assignment_turned_in</span> Mes interrogations (${(qzB.interros || []).length + qzB.mes.filter(q => !(qzB.devoirs.get(q.id) || []).length).length})</button>
         <button class="${qzB.onglet === 'mes' ? 'on' : ''}" onclick="qzB.onglet='mes';qzBanqueRender()"><span class="gicon">person</span> Mes questionnaires (${qzB.mes.length})</button>
@@ -86,7 +88,7 @@ function qzBanqueRender(){
       <button class="btn secondary" onclick="qzOuvrirCarnet()"><span class="gicon">menu_book</span> Carnet de notes</button>
       <button class="btn" onclick="qzBanqueNouveau()"><span class="gicon">add</span> Nouvelle interrogation</button>
     </div>
-    ${qzB.onglet === 'donnees' ? qzBrouillonsHtml(f) + qzInterrosHtml(interros) : `<div class="qz-b-grid">${liste.map(q => qzBanqueCarte(q, qzB.onglet !== 'mes')).join('') || `<p class="hint">${qzB.onglet === 'mes' ? (f ? 'Aucun questionnaire ne correspond.' : 'Aucun questionnaire pour l\'instant : créez-en un avec « Nouvelle interrogation ».') : 'Aucun questionnaire partagé avec vous pour l\'instant.'}</p>`}</div>`}`;
+    ${qzB.onglet === 'donnees' ? (typeof qzDirectsHtml === 'function' ? qzDirectsHtml() : '') + qzBrouillonsHtml(f) + qzInterrosHtml(interros) : `<div class="qz-b-grid">${liste.map(q => qzBanqueCarte(q, qzB.onglet !== 'mes')).join('') || `<p class="hint">${qzB.onglet === 'mes' ? (f ? 'Aucun questionnaire ne correspond.' : 'Aucun questionnaire pour l\'instant : créez-en un avec « Nouvelle interrogation ».') : 'Aucun questionnaire partagé avec vous pour l\'instant.'}</p>`}</div>`}`;
 }
 function qzBanqueTrouver(id){ return qzB && (qzB.mes.find(q => q.id === id) || qzB.partages.find(q => q.id === id)); }
 async function qzBanqueSur(id){

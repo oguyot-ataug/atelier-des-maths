@@ -149,6 +149,19 @@ function qzNoteAuto(q, rep){
 // question." Désactivée : chaque question attend la note du professeur (la correction
 // automatique n'est plus qu'une proposition à accepter) ; une réponse vide vaut 0 d'office.
 // Questionnaires créés avant l'option : correction automatique (réglage absent).
+// Verdict d'une réponse (séance en direct, entraînement) : 'juste' | 'partiel' | 'faux' | 'avoir'
+// (à regarder : question ouverte, nombre illisible) | 'vide'. Une question sans barème compte sur 1 point.
+function qzVerdict(q, rep){
+  if(rep == null || rep === '' || (Array.isArray(rep) && !rep.length)) return 'vide';
+  if(qzManuel(q)) return 'avoir';
+  const qq = qzMax(q) > 0 ? q : Object.assign({}, q, { points: 1 });
+  const pts = qzNoteAuto(qq, rep), max = qzMax(qq);
+  if(pts === null || !(max > 0)) return 'avoir';
+  if(pts >= max - 1e-9) return 'juste';
+  if(pts <= 1e-9) return 'faux';
+  return 'partiel';
+}
+function qzEstEntrainement(reglages){ return !!reglages && reglages.mode === 'entrainement'; }
 function qzCorrAuto(reglages){ return !reglages || reglages.correction_auto !== false; }
 // Points retenus pour une question d'une copie : correction du professeur (ou de l'IA validée),
 // sinon correction automatique (si activée) ; null = reste à corriger.
@@ -359,7 +372,16 @@ function qzEdRenderReglages(){
     <div class="qz-mode-row">
       <button type="button" class="qz-mode${r.mode === 'maison' ? ' on' : ''}" onclick="qzEdReglage('mode','maison')"><span class="gicon">home</span><span><b>À la maison</b><small>Sans limite de temps, jusqu'à la date limite de l'interrogation.</small></span></button>
       <button type="button" class="qz-mode${r.mode === 'classe' ? ' on' : ''}" onclick="qzEdReglage('mode','classe')"><span class="gicon">timer</span><span><b>Interrogation en classe</b><small>Durée limitée, copie rendue automatiquement à la fin, sorties de la page signalées.</small></span></button>
+      <button type="button" class="qz-mode${r.mode === 'entrainement' ? ' on' : ''}" onclick="qzEdReglage('mode','entrainement')"><span class="gicon">fitness_center</span><span><b>Entraînement / remédiation</b><small>Non noté : l'élève vérifie chaque réponse, réessaie, puis voit la correction. Peut être refait.</small></span></button>
     </div>
+    ${r.mode === 'entrainement' ? `<div class="qz-reg-grid">
+      <label>Essais par question <select onchange="qzEdReglage('essais', parseInt(this.value,10))">
+        ${[[1, '1 (correction tout de suite)'], [2, '2'], [3, '3'], [0, 'illimités']].map(([v, l]) => `<option value="${v}"${Number(r.essais ?? 2) === v ? ' selected' : ''}>${l}</option>`).join('')}
+      </select></label>
+      <label class="qz-check"><input type="checkbox" ${r.melanger_questions ? 'checked' : ''} onchange="qzEdReglage('melanger_questions', this.checked)"> Mélanger l'ordre des questions</label>
+      <label class="qz-check"><input type="checkbox" ${r.melanger_choix ? 'checked' : ''} onchange="qzEdReglage('melanger_choix', this.checked)"> Mélanger les propositions des QCM</label>
+    </div>
+    <p class="hint" style="margin:6px 0 0;">Pas de note ni de carnet : vous suivez qui a réussi du premier coup, après plusieurs essais, ou pas encore. Donnez-le à toute la classe ou à quelques élèves (remédiation).</p>` : `
     <div class="qz-reg-grid">
       ${r.mode === 'classe' ? `<label>Durée <span><input type="number" min="1" max="240" value="${r.duree || 30}" onchange="qzEdReglage('duree', Math.max(1, parseInt(this.value,10)||30))" style="width:70px;"> min</span></label>` : ''}
       <label>Note sur <span><input type="number" min="1" max="100" value="${r.note_sur}" onchange="qzEdReglage('note_sur', Math.max(1, parseFloat(String(this.value).replace(',','.'))||20))" style="width:70px;"></span></label>
@@ -371,7 +393,7 @@ function qzEdRenderReglages(){
       <label class="qz-check" title="Cochée : les QCM, vrai/faux, nombres, points à placer... sont notés d'office, vous vérifiez. Décochée : vous notez chaque question vous-même, copie par copie ou question par question (la correction automatique n'est qu'une proposition à accepter)."><input type="checkbox" ${qzCorrAuto(r) ? 'checked' : ''} onchange="qzEdReglage('correction_auto', this.checked)"> Correction automatique des questions fermées</label>
       <label class="qz-check" title="L'élève ne voit qu'une question à l'écran, avec Précédente / Suivante : plus difficile de tout photographier ou de comparer d'un coup d'œil avec son voisin"><input type="checkbox" ${r.une_par_une ? 'checked' : ''} onchange="qzEdReglage('une_par_une', this.checked)"> Une question à la fois (limite la triche)</label>
       ${r.une_par_une ? `<label class="qz-check" title="Une question validée ne peut plus être revue ni modifiée"><input type="checkbox" ${r.sans_retour ? 'checked' : ''} onchange="qzEdReglage('sans_retour', this.checked)"> Sans retour en arrière</label>` : ''}
-    </div>`;
+    </div>`}`;
 }
 function qzEdCompSelect(q){
   return `<select onchange="qzEdSet('${q.id}','competence',this.value)" title="Compétence évaluée">
@@ -620,6 +642,7 @@ function qzEntete(sousTitre){
   ${sousTitre || ''}`;
 }
 function qzRenderAccueil(){
+  if(qzEstEntrainement(qzP.reglages)) return qzEntAccueil();
   const r = qzP.reglages, n = qzP.questions.filter(q => q.type !== 'texte').length, max = qzTotalMax(qzP.questions);
   document.getElementById('qzRoot').innerHTML = `${qzEntete()}
     <div class="qz-accueil">
@@ -669,6 +692,7 @@ function qzRenderPassation(){
     <div class="qz-questions${qzP.reglages.une_par_une ? ' une' : ''}">${qzPages(ordre).map((page, ip) => `<div class="qz-page" data-page="${ip}">${page.map(q => {
       if(q.type === 'texte') return `<div class="qz-doc">${qzEnonceHtml(q)}</div>`;
       n++;
+      if(qzEstEntrainement(qzP.reglages)) return qzEntBlocHtml(q, n, ctx);
       const comp = qzComp(q.competence);
       return `<div class="qz-q" id="qzQ_${q.id}" data-qid="${q.id}">
         <div class="qz-q-head"><span class="qz-q-num">${n}</span><span class="qz-q-pts">${qzNum(qzMax(q))} pt${qzMax(q) > 1 ? 's' : ''}</span>${comp ? `<span class="qz-comp" style="--c:${comp.color}">${comp.label}</span>` : ''}</div>
@@ -678,8 +702,10 @@ function qzRenderPassation(){
     }).join('')}</div>`).join('')}</div>
     ${qzP.reglages.une_par_une ? '<div class="qz-nav bas" id="qzNavBas"></div>' : ''}
     <div class="qz-rendre-row" id="qzRendreRow">
-      <button class="btn qz-go" onclick="qzRendre(false)"><span class="gicon">send</span> Rendre ma copie</button>
-      <span class="hint" style="margin:0;">Vous pourrez encore la relire avant de confirmer.</span>
+      ${qzEstEntrainement(qzP.reglages) ? `<button class="btn qz-go" onclick="qzRendre(false)"><span class="gicon">flag</span> J'ai terminé</button>
+      <span class="hint" style="margin:0;">Tu verras le bilan de ton entraînement.</span>`
+      : `<button class="btn qz-go" onclick="qzRendre(false)"><span class="gicon">send</span> Rendre ma copie</button>
+      <span class="hint" style="margin:0;">Vous pourrez encore la relire avant de confirmer.</span>`}
     </div>`;
   qzMajProgress();
   qzChargerPhotos(document.getElementById('qzRoot'));
@@ -736,6 +762,11 @@ function qzNavRender(){
 function qzMajProgress(){
   const el = document.getElementById('qzProgress'); if(!el) return;
   const qs = qzP.questions.filter(q => q.type !== 'texte');
+  if(qzEstEntrainement(qzP.reglages)){
+    const f = qs.filter(q => qzEntEtat(q).fini).length;
+    el.innerHTML = `<b>${f}</b> / ${qs.length} terminée${qs.length > 1 ? 's' : ''}`;
+    return;
+  }
   const faites = qs.filter(q => qzRepondue(q, qzP.reponses[q.id])).length;
   el.innerHTML = `<b>${faites}</b> / ${qs.length} répondue${qs.length > 1 ? 's' : ''}`;
   qs.forEach(q => { const b = document.getElementById('qzQ_' + q.id); if(b) b.classList.toggle('fait', qzRepondue(q, qzP.reponses[q.id])); });
@@ -749,7 +780,7 @@ function qzRepondue(q, rep){
   if(qzX(q).repondue) return qzX(q).repondue(q, rep);
   return String(rep).trim() !== '';
 }
-function qzModifie(){ qzP.sale = true; qzMajProgress(); qzSaveMsg('Modifications non enregistrées…'); clearTimeout(qzP.saveT); qzP.saveT = setTimeout(qzSauver, 1500); }
+function qzModifie(){ if(qzP && qzP.direct){ if(typeof qzDirectEnvoyer === 'function') qzDirectEnvoyer(); return; } qzP.sale = true; qzMajProgress(); qzSaveMsg('Modifications non enregistrées…'); clearTimeout(qzP.saveT); qzP.saveT = setTimeout(qzSauver, 1500); }
 function qzSaisieQcm(qid, cid, coche, multiple){
   if(!qzP) return;
   if(multiple){ const a = new Set(Array.isArray(qzP.reponses[qid]) ? qzP.reponses[qid] : []); if(coche) a.add(cid); else a.delete(cid); qzP.reponses[qid] = Array.from(a); }
@@ -841,14 +872,17 @@ async function qzSauver(rendre){
 }
 async function qzRendre(auto){
   if(!qzP || !qzP.copie) return;
-  if(!auto){
+  if(!auto && qzEstEntrainement(qzP.reglages)){
+    const reste = qzP.questions.filter(q => q.type !== 'texte' && !qzEntEtat(q).fini).length;
+    if(reste && !(await niceConfirm(`${reste > 1 ? reste + ' questions ne sont pas terminées' : 'Une question n\'est pas terminée'}. Terminer quand même l'entraînement ?`))) return;
+  } else if(!auto){
     const qs = qzP.questions.filter(q => q.type !== 'texte'), num = qzNumeros();
     const vides = qs.filter(q => !qzRepondue(q, qzP.reponses[q.id])).map(q => num[q.id]);
     const msg = vides.length ? `Vous n'avez pas répondu ${vides.length > 1 ? 'aux questions ' + vides.join(', ') : 'à la question ' + vides[0]}.\n\nRendre quand même votre copie ? Vous ne pourrez plus la modifier.`
       : 'Rendre votre copie ? Vous ne pourrez plus la modifier.';
     if(!(await niceConfirm(msg))) return;
   }
-  if(qzP.apercu){ qzPStop(); return qzRenderApercuCorrige(); }
+  if(qzP.apercu){ qzPStop(); return qzEstEntrainement(qzP.reglages) ? qzEntBilan() : qzRenderApercuCorrige(); }
   const ok = await qzSauver(true);
   if(!ok){ if(!auto) await niceAlert('La copie n\'a pas pu être envoyée. Vérifiez votre connexion puis réessayez.'); else setTimeout(() => qzRendre(true), 5000); return; }
   qzPStop();
@@ -856,6 +890,7 @@ async function qzRendre(auto){
   qzRenderRendue(auto);
 }
 function qzRenderRendue(auto){
+  if(qzEstEntrainement(qzP.reglages)) return qzEntBilan();
   const ctx = qzPCtx(), ordre = qzOrdre(qzP.questions, qzP.reglages, ctx.seed), num = qzNumeros();
   document.getElementById('qzRoot').innerHTML = `${qzEntete()}
     <div class="qz-done"><span class="gicon">task_alt</span><div><b>${auto ? 'Temps écoulé : votre copie a été rendue automatiquement.' : 'Copie rendue !'}</b>
@@ -972,6 +1007,7 @@ async function qzOuvrirCorrection(devoirId, vue){
 // changé depuis -- ex. une réponse numérique rédigée « ... = 8 + 2 = 10 », comptée 0 avant que le
 // résultat final d'un calcul soit reconnu. Une copie devenue « à vérifier » garde sa note.
 async function qzCResync(){
+  if(qzEstEntrainement(qzC.reglages)) return; // rien n'est noté
   const d = qzC.devoir, qz = qzC.qz;
   for(const c of qzC.copies.values()){
     if(c.total == null || !qzEstRendue(c)) continue;
@@ -1001,6 +1037,7 @@ function qzCStatsEleve(e){
 }
 function qzCRender(){
   const root = document.getElementById('qzCorrRoot'); if(!root || !qzC) return;
+  if(qzEstEntrainement(qzC.reglages)) return qzEntResultats(root);
   const d = qzC.devoir, rendues = qzC.eleves.filter(e => { return qzEstRendue(qzC.copies.get(e.id)); });
   const aCorriger = rendues.filter(e => qzScoreCopie(qzC.qz.questions, qzC.copies.get(e.id), qzC.reglages).aCorriger).length;
   const encours = qzC.eleves.filter(e => { return !qzEstRendue(qzC.copies.get(e.id)) && qzC.copies.has(e.id); }).length;
@@ -1538,8 +1575,9 @@ async function qzCarnetCharger(){
     qids.length ? sb.from('questionnaires').select('id,questions,reglages').in('id', qids) : { data: [] },
     qzElevesDevoir({ class_id: qzK.classId }),
   ]);
-  qzK.devoirs = devoirs || []; qzK.eleves = eleves;
   qzK.qz = new Map((qzs || []).map(q => [q.id, q]));
+  qzK.devoirs = (devoirs || []).filter(d => !qzEstEntrainement((qzK.qz.get(d.questionnaire_id) || {}).reglages)); // entraînements : non notés
+  qzK.eleves = eleves;
   qzK.copies = new Map((copies || []).map(c => [c.devoir_id + '|' + c.student_id, c]));
   qzCarnetRender();
 }
