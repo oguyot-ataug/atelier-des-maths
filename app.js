@@ -2683,6 +2683,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.708', items:[
+    "Fix loupe (zoom plein écran) -- signalé : \"Dans le chapitre 6e, gestion de données, les graphiques sont coupés en mode zoom\". Le cadre de la figure gardait en zoom sa largeur de la page (420 px pour le diagramme en barres, 300 px pour le diagramme circulaire), plus étroite que le graphique agrandi : toute la droite était coupée. En zoom, le cadre s'adapte maintenant au graphique, et chaque figure est limitée à la hauteur de l'écran pour être vue en entier sans défiler (le diagramme circulaire dépassait en bas). Vérifié sur les 143 figures zoomables des cours et méthodes de 6e et de 5e ; au passage, corrigé aussi les scènes animées du rapporteur (6e, angles : construire un angle, bissectrice), dont le tracé était coupé en zoom.",
+  ]},
   { version:'2026-08-19.707', items:[
     "Fix -- signalé : \"à chaque fois que je recharge la page famille, il se met en version 705 et me propose de recharger la page\". GitHub Pages autorise le navigateur et son réseau de diffusion à garder la page jusqu'à 10 minutes : rouvrir ou recharger une adresse comme /#/famille pouvait redonner l'ancienne version, puis la bannière « Nouvelle version », en boucle. Désormais, si la page vient de s'ouvrir et qu'on n'a encore rien touché, le site passe tout seul à la nouvelle version (une seule fois, sans boucle possible) ; sinon la bannière reste proposée. Le bouton « Recharger » garde la rubrique ouverte (avant : retour à l'accueil).",
   ]},
@@ -6075,6 +6078,12 @@ function openZoomBox(box){
   box.parentNode.insertBefore(zoomedBoxPlaceholder, box);
   if(typeof lrnState!=='undefined' && lrnState && lrnState.box===box) lrnStop();
   box.querySelectorAll('.zoom-btn, .read-aloud-btn, .learn-btn').forEach(b=>{ b.dataset.zoomHidden='1'; b.style.display='none'; });
+  // Proportions de chaque figure SVG : en zoom, sa largeur est limitée pour qu'elle tienne
+  // entière en hauteur dans l'écran (voir #zoomBoxOverlay dans styles.css).
+  box.querySelectorAll('svg').forEach(svg=>{
+    const vb = svg.viewBox && svg.viewBox.baseVal;
+    if(vb && vb.width > 0 && vb.height > 0) svg.style.setProperty('--zoom-ratio', String(vb.width / vb.height));
+  });
   const contentEl = document.getElementById('zoomBoxContent');
   contentEl.innerHTML = '';
   contentEl.appendChild(box);
