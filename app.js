@@ -1489,7 +1489,9 @@ function renderMathText(raw){
   //    pour garantir exactement la même police, taille et graisse partout -- mélanger KaTeX pour
   //    les fractions et une simple police italique pour le reste donnait des tailles/styles
   //    incohérents d'une ligne à l'autre.
-  text = text.replace(/\b(\d+(?:[.,]\d+)?)?([xyznktA-Z])\b/g, (m,digits,letter,offset,str)=>{
+  // Limites de mot « Unicode » (et non \b, qui ignore les lettres accentuées) : sans ça, le L de
+  // « Léa » ou le R de « Répondez » passait pour une lettre isolée et s'affichait en italique.
+  text = text.replace(/(?<![\p{L}\p{N}_])(\d+(?:[.,]\d+)?)?([xyznktA-Z])(?![\p{L}\p{N}_])/gu, (m,digits,letter,offset,str)=>{
     // Exclut deux tournures françaises courantes, non des variables mathématiques :
     // - le "t" euphonique entouré de tirets ("coupe-t-il", "y a-t-il", "mange-t-elle"...)
     // - le "y" du pronom dans "il y" ("il y a", "il y en a"...)
@@ -2683,6 +2685,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.710', items:[
+    "Nouveau : questionnaires en ligne (étape 1) -- demandé : \"pouvoir faire des questionnaires (type interrogation en ligne) à la manière de Google Forms. On pourrait créer des questions de tout type avec les attendus et le barème. Pouvoir reprendre chaque copie par copie ou par questions\". Nouveau type de devoir « Questionnaire » : QCM (une ou plusieurs bonnes réponses, points partiels ou tout ou rien), vrai/faux, réponse numérique (3/4 = 0,75 reconnus égaux, tolérance, unité), réponse courte, question ouverte (réponse au clavier ou photo de la copie, attendus et barème détaillé par critères), bloc de texte/document ; formules et images dans les énoncés ; points et compétence (Chercher, Modéliser, Représenter, Raisonner, Calculer, Communiquer) par question ; bouton « Tester comme un élève ». Deux modes : à la maison, ou interrogation en classe chronométrée (copie rendue automatiquement à la fin, sorties de la page signalées au professeur), mélange des questions et des propositions au choix.",
+    "Questionnaires : réponses enregistrées automatiquement pendant la passation ; les réponses attendues ne sont jamais envoyées au navigateur de l'élève avant la publication des résultats. Correction copie par copie ou question par question (avec la répartition des réponses aux QCM), correction automatique des questions fermées (modifiable), critères cochables pour les questions ouvertes, commentaires ; possibilité de rouvrir une copie ou de fermer le questionnaire. Les élèves voient leur note, leurs points par question, vos commentaires et le corrigé quand vous publiez les résultats.",
+    "Carnet de notes des questionnaires (Devoirs > Carnet de notes) -- demandé : \"consultation sur le site sous forme de carnet de notes et bouton copier la colonne pour pouvoir saisir rapidement les notes dans notre logiciel dédié\". Une colonne par questionnaire, élèves dans l'ordre alphabétique, bouton « Copier » par colonne (case vide, « Abs » ou 0 pour une copie non rendue), moyenne, et onglet « Compétences » (pourcentage de réussite par compétence et par élève). Prochaines étapes : correction proposée par l'IA pour les questions ouvertes et génération de questions ; questions interactives (repère, axe gradué, glisser-déposer, figures) ; banque de questions partagée avec un collègue.",
+    "Fix affichage des formules dans les textes : un prénom ou un mot commençant par une majuscule suivie d'une lettre accentuée (« Léa », « Répondez », « Hélène ») voyait sa première lettre mise en italique comme une variable mathématique. Au passage, sécurité : un élève ne peut plus modifier lui-même la note ou le commentaire du professeur sur son rendu de devoir.",
+  ]},
   { version:'2026-08-19.709', items:[
     "Fix -- signalé : \"encore un peu coupé au niveau de 2 de cm²\" (6e, Aire et périmètre, figure 1 cm² = 100 mm²). L'étiquette « 1 cm² » dépassait du cadre de la figure (déjà en taille normale, pas seulement en zoom) : cadre élargi. Toutes les étiquettes des figures de 6e et de 5e (cours, méthodes, exercices) ont ensuite été contrôlées automatiquement ; trois autres étaient coupées ou invisibles et sont corrigées : « L » en haut des figures des angles correspondants (5e, Angles et parallélisme, méthode), « H » en haut du triangle obtus (5e, Droites remarquables : orthocentre à l'extérieur), et « (d) », « (d') » dans la figure à points déplaçables de la symétrie centrale (5e), qui tombaient hors du cadre : elles se placent maintenant à l'intérieur, chacune de son côté de O, loin des noms des points, même quand on déplace I et J.",
   ]},
