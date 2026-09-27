@@ -2592,6 +2592,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.697', items:[
+    "Médiateur de la consommation : CM2C (49 rue de Ponthieu, 75008 Paris, litiges@cm2c.net) indiqué dans les CGV Famille, les mentions légales et sur la page de paiement de l'Espace famille, avec la mention fournie par CM2C (article L641-1 du Code de la consommation).",
+  ]},
   { version:'2026-08-19.696', items:[
     "Mentions légales complétées -- demandé : \"complète les mentions légales avec le SIRET et l'adresse\". Éditeur : Olivier GUYOT (EI), nom commercial L'Atelier Augmenté, SIRET, adresse postale, téléphone, mention TVA 293 B et directeur de la publication.",
   ]},
