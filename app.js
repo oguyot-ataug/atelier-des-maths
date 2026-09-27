@@ -2209,15 +2209,21 @@ async function submitProfSignup(){
   btn.disabled = true;
   status.textContent = 'Inscription en cours…';
 
-  const { data: signUpData, error: signUpError } = await sb.auth.signUp({ email, password });
+  // Les informations d'inscription voyagent avec le compte (user_metadata) : si Supabase exige
+  // la confirmation de l'adresse, l'inscription se termine toute seule au retour du lien reçu
+  // par e-mail (finaliserInscriptionEnAttente, appelée par refreshAuthUI).
+  const { data: signUpData, error: signUpError } = await sb.auth.signUp({ email, password, options: {
+    emailRedirectTo: location.origin + '/',
+    data: { inscription: 'prof', nom, prenom, uai },
+  } });
   if(signUpError){
     status.textContent = 'Erreur : '+signUpError.message;
     btn.disabled = false;
     return;
   }
   const userId = signUpData.user && signUpData.user.id;
-  if(!userId){
-    status.textContent = "Compte créé, mais confirmation par e-mail requise avant de pouvoir continuer l'inscription. Vérifiez votre boîte académique.";
+  if(!userId || !signUpData.session){
+    status.textContent = "Presque fini ! Un e-mail de confirmation vient d'être envoyé à votre adresse académique : cliquez sur le lien qu'il contient pour valider votre inscription (pensez à regarder dans les indésirables).";
     btn.disabled = false;
     return;
   }
@@ -2273,6 +2279,32 @@ async function startStripeCheckout(){
     btn.disabled = false;
   }
 }
+/* Inscription commencée avant la confirmation de l'adresse e-mail (lien reçu par e-mail) : le
+   compte existe, pas encore le profil. On le crée à la première connexion, à partir des
+   informations saisies lors de l'inscription (user_metadata). Une seule fois par page. */
+let finalisationInscription = null;
+function finaliserInscriptionEnAttente(user){
+  if(finalisationInscription) return finalisationInscription;
+  const m = (user && user.user_metadata) || {};
+  finalisationInscription = (async ()=>{
+    try{
+      if(m.inscription==='famille' && typeof famCall==='function'){
+        await famCall({ action:'inscription', prenom:m.prenom, nom:m.nom, certification:m.certification===true, cgv:m.cgv===true });
+        return true;
+      }
+      if(m.inscription==='prof' && m.uai){
+        await sb.from('etablissements').upsert({ uai: m.uai, nom: 'À vérifier par l\'administrateur' }, { onConflict: 'uai', ignoreDuplicates: true });
+        const { error } = await sb.from('profiles').insert({ id: user.id, role: 'prof', nom: m.nom, prenom: m.prenom, email: user.email, uai: m.uai,
+          signup_status: 'pending', subscription_status: 'trial' });
+        if(error) return false;
+        try{ await sb.functions.invoke('notify-prof-signup', { body: { nom: m.nom, prenom: m.prenom, email: user.email, uai: m.uai } }); }catch(e){ /* non bloquant */ }
+        return true;
+      }
+    }catch(e){ console.warn('Finalisation de l\'inscription :', e); }
+    return false;
+  })();
+  return finalisationInscription;
+}
 async function refreshAuthUI(){
   const { data:{ session } } = await sb.auth.getSession();
   const loggedOutEl = document.getElementById('accountLoggedOut'), loggedInEl = document.getElementById('accountLoggedIn');
@@ -2283,7 +2315,11 @@ async function refreshAuthUI(){
 
   if(session){
     currentUser = session.user;
-    const { data: profile } = await sb.from('profiles').select('role,nom,prenom,uai,signup_status,subscription_status,subscription_expires_at,must_change_password').eq('id', currentUser.id).single();
+    const profileCols = 'role,nom,prenom,uai,signup_status,subscription_status,subscription_expires_at,must_change_password';
+    let { data: profile } = await sb.from('profiles').select(profileCols).eq('id', currentUser.id).maybeSingle();
+    if(!profile && currentUser.user_metadata && currentUser.user_metadata.inscription && await finaliserInscriptionEnAttente(currentUser)){
+      ({ data: profile } = await sb.from('profiles').select(profileCols).eq('id', currentUser.id).maybeSingle());
+    }
     currentUserRole = profile ? profile.role : null;
     // Offre Famille (parent, ou enfant d'une famille) : niveaux ouverts -- voir famille.js.
     const prevFamilleNiveaux = JSON.stringify(typeof familleNiveaux!=='undefined' ? familleNiveaux : null);
@@ -2592,6 +2628,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.699', items:[
+    "Inscription avec confirmation de l'adresse e-mail -- signalé : \"Le mail vient de supabase pour la famille. C'est pas top\", et le lien menait à localhost. Le lien de confirmation ramène désormais sur le site (Espace famille pour un parent, accueil pour un professeur), et l'inscription se termine toute seule au retour : les informations saisies (nom, prénom, UAI, déclaration sur l'honneur) sont gardées avec le compte. Corrige aussi l'inscription des professeurs, qui échouait (« Erreur lors de la création du profil ») quand la confirmation de l'adresse est demandée.",
+  ]},
   { version:'2026-08-19.698', items:[
     "Offre Famille, mode test Stripe -- demandé : \"On peut faire des simulations de paiement avec stripe non ?\". Administration > Familles : case « test » par compte. Un compte marqué test paie avec la clé test de Stripe (carte 4242 4242 4242 4242) ; ses paiements sont marqués « test » et exclus du total encaissé. Le webhook n'utilise les événements de test que pour ces comptes-là, jamais pour les abonnements professeurs.",
   ]},

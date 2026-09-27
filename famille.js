@@ -109,9 +109,20 @@ async function famSignup(){
   if(!cgv) return famMsg('famSuMsg', 'Merci d\'accepter les conditions générales de vente.');
   const btn = document.getElementById('famSuBtn'); btn.disabled = true;
   famMsg('famSuMsg', 'Création du compte…', true);
-  const { data, error } = await sb.auth.signUp({ email, password });
+  // Les informations voyagent avec le compte : si l'adresse doit d'abord être confirmée, le lien
+  // reçu par e-mail ramène ici, connecté, et l'inscription se termine toute seule (app.js,
+  // finaliserInscriptionEnAttente).
+  const { data, error } = await sb.auth.signUp({ email, password, options: {
+    emailRedirectTo: location.origin + '/?inscription=famille',
+    data: { inscription: 'famille', prenom, nom, certification: true, cgv: true },
+  } });
   if(error){ btn.disabled = false; return famMsg('famSuMsg', 'Erreur : '+error.message); }
-  if(!data.session){ btn.disabled = false; return famMsg('famSuMsg', 'Compte créé : confirmez votre adresse avec le lien reçu par e-mail, puis connectez-vous et revenez sur cette page pour terminer.', true); }
+  if(!data.session){
+    document.querySelector('#famRoot .fam-card').innerHTML = `<strong class="fam-h"><span class="gicon">mark_email_unread</span> Plus qu'une étape : confirmez votre adresse</strong>
+      <p style="margin:8px 0;">Un e-mail de <b>L'Atelier des Maths</b> vient d'être envoyé à <b>${famEsc(email)}</b>. Cliquez sur le bouton qu'il contient : vous reviendrez ici, connecté, et votre compte Famille sera prêt.</p>
+      <p class="hint" style="margin:0;">Rien reçu d'ici quelques minutes ? Regardez dans les courriers indésirables, ou écrivez à contact@latelieraugmente.fr.</p>`;
+    return;
+  }
   try{
     await famCall({ action:'inscription', prenom, nom, certification:true, cgv:true });
   }catch(e){ btn.disabled = false; return famMsg('famSuMsg', e.message); }

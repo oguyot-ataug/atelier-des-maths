@@ -118,6 +118,8 @@ function routerUpdateBreadcrumb(){
    précédent/suivant, ou clic sur un lien du fil d'Ariane). Mêmes gardes de rôle
    qu'à l'origine dans le gestionnaire de clic data-nav de app.js -- ne pas diverger. */
 function routerRestoreFromHash(){
+  // Retour du lien de confirmation d'une inscription Famille (?inscription=famille) : Espace famille.
+  if(/[?&]inscription=famille\b/.test(location.search)) history.replaceState(null, '', location.pathname + '#/famille');
   const hash = location.hash || '#/';
   const parts = hash.replace(/^#\/?/,'').split('/').filter(Boolean);
   routerSyncing = true;
