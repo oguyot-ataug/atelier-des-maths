@@ -2691,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.723', items:[
+    "Carnet de notes des interrogations : classes en chips, « Sans copie rendue » en boutons -- signalé : \"Le choix de la classe peut être remplacé par des chips. La liste déroulante sans copie rendue n'est pas très sexy non plus.\" Chaque classe est une pastille cliquable (la classe affichée est en violet), et le choix de ce qui s'écrit pour un élève sans copie rendue se fait avec trois boutons : Vide, Abs, 0.",
+  ]},
   { version:'2026-08-19.722', items:[
     "Interrogations en ligne : figures des élèves manipulables à la correction -- signalé sur une question « Construis un triangle ABC rectangle en A » : \"Je ne peux pas déplacer les points ici. Donc je ne peux pas vérifier.\" La figure de l'élève (et la figure attendue) s'affiche maintenant avec la visionneuse des cours personnalisés : on déplace les points libres, les points construits sur une droite ou un cercle glissent dessus et tout ce qui en dépend suit. Une construction juste garde ses propriétés (l'angle droit reste droit), un dessin fait « à l'œil » se déforme. « Remettre la figure » la rétablit, et « Ouvrir dans l'outil de géométrie » permet de mesurer longueurs et angles. La copie de l'élève n'est jamais modifiée. Même chose dans les résultats publiés, côté élève.",
   ]},

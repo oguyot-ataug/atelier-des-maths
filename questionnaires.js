@@ -1499,18 +1499,31 @@ async function qzOuvrirCarnet(){
   const root = document.getElementById('qzCarnetRoot');
   const classes = accountClassesList || [];
   if(!qzK) qzK = { classId: classes[0] && classes[0].id, vue: 'notes', absent: '' };
+  if(!classes.some(c => c.id === qzK.classId)) qzK.classId = classes[0] && classes[0].id;
   root.innerHTML = `<span class="back-btn" onclick="qzBanqueOuvrir()">← Interrogations en ligne</span>
     <h1 style="margin:6px 0 4px;"><span class="gicon">menu_book</span> Carnet de notes</h1>
     <p style="color:var(--ink-soft);max-width:75ch;">Les notes des questionnaires, par classe. « Copier » place la colonne dans le presse-papiers, dans l'ordre alphabétique des élèves, prête à être collée dans votre logiciel de notes.</p>
+    <div class="qz-k-chips" id="qzKClasses"></div>
     <div class="qz-c-tools">
-      <select id="qzKClasse" onchange="qzK.classId=this.value;qzCarnetCharger()">${classes.map(c => `<option value="${c.id}"${c.id === qzK.classId ? ' selected' : ''}>${qzEsc(c.label)}</option>`).join('') || '<option value="">Aucune classe</option>'}</select>
       <div class="qz-tabs"><button id="qzKTabNotes" onclick="qzCarnetVue('notes')"><span class="gicon">grade</span> Notes</button><button id="qzKTabComp" onclick="qzCarnetVue('competences')"><span class="gicon">insights</span> Compétences</button></div>
-      <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;">Sans copie rendue :
-        <select onchange="qzK.absent=this.value;qzCarnetRender()"><option value="">case vide</option><option value="Abs"${qzK.absent === 'Abs' ? ' selected' : ''}>Abs</option><option value="0"${qzK.absent === '0' ? ' selected' : ''}>0</option></select></label>
+      <div class="qz-k-absent" id="qzKAbsent"></div>
     </div>
     <div id="qzKBody"><p class="hint">Chargement…</p></div>`;
+  qzCarnetOutils();
   qzCarnetCharger();
 }
+// Classes en chips et choix « sans copie rendue » en boutons -- signalé : "Le choix de la classe
+// peut être remplacé par des chips. La liste déroulante sans copie rendue n'est pas très sexy."
+function qzCarnetOutils(){
+  const classes = accountClassesList || [];
+  const box = document.getElementById('qzKClasses');
+  if(box) box.innerHTML = classes.map(c => `<button type="button" class="qz-k-chip${c.id === qzK.classId ? ' on' : ''}" onclick="qzCarnetClasse('${c.id}')"><span class="gicon">groups</span> ${qzEsc(c.label)}</button>`).join('')
+    || '<span class="hint" style="margin:0;">Aucune classe.</span>';
+  const ab = document.getElementById('qzKAbsent');
+  if(ab) ab.innerHTML = `<span class="qz-k-lab" title="Ce qui est écrit (et copié) pour un élève qui n'a pas rendu de copie">Sans copie rendue</span>
+    <span class="qz-seg">${[['', 'Vide'], ['Abs', 'Abs'], ['0', '0']].map(([v, l]) => `<button type="button" class="${qzK.absent === v ? 'on' : ''}" onclick="qzK.absent='${v}';qzCarnetOutils();qzCarnetRender()">${l}</button>`).join('')}</span>`;
+}
+function qzCarnetClasse(id){ if(id === qzK.classId) return; qzK.classId = id; qzCarnetOutils(); qzCarnetCharger(); }
 function qzCarnetVue(v){ qzK.vue = v; qzCarnetRender(); }
 async function qzCarnetCharger(){
   const body = document.getElementById('qzKBody'); if(!body) return;
@@ -1714,6 +1727,16 @@ function qzCarnetCompetences(body){
     .qz-propo{border:1px dashed #6B3FA0;background:#F4EFFA;color:#6B3FA0;border-radius:999px;padding:3px 10px;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
     .qz-propo .gicon{font-size:16px;} .qz-propo:hover{background:#6B3FA0;color:#fff;}
     .qz-propo-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#F4EFFA;border-radius:10px;padding:8px 12px;margin:8px 0;font-size:.85rem;color:#6B3FA0;}
+    .qz-k-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 8px;}
+    .qz-k-chip{display:inline-flex;align-items:center;gap:5px;border:1.5px solid rgba(107,63,160,.25);background:#fff;color:var(--ink);border-radius:999px;padding:5px 12px;font:inherit;font-size:.85rem;font-weight:600;cursor:pointer;transition:.15s;}
+    .qz-k-chip .gicon{font-size:17px;color:#6B3FA0;}
+    .qz-k-chip:hover{border-color:#6B3FA0;background:#F4EFFA;}
+    .qz-k-chip.on{background:#6B3FA0;border-color:#6B3FA0;color:#fff;} .qz-k-chip.on .gicon{color:#fff;}
+    .qz-k-absent{display:inline-flex;align-items:center;gap:8px;}
+    .qz-k-lab{font-size:.8rem;color:var(--ink-soft);}
+    .qz-seg{display:inline-flex;background:rgba(28,43,57,.06);border-radius:999px;padding:3px;gap:2px;}
+    .qz-seg button{border:none;background:none;font:inherit;font-size:.8rem;font-weight:700;color:var(--ink-soft);padding:4px 12px;border-radius:999px;cursor:pointer;}
+    .qz-seg button.on{background:#fff;color:#6B3FA0;box-shadow:0 1px 3px rgba(28,43,57,.15);}
     .qz-num-warn{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;color:#B8511F;} .qz-num-warn .gicon{font-size:16px;}
     .qz-photos{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;}
     .qz-photo{position:relative;}
