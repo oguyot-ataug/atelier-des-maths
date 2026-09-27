@@ -11,7 +11,7 @@ document.getElementById('view-devoirs-prof').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;"><span class=gicon>assignment</span> Devoirs</h1>
   <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, un défi Objectif Nombre, ou un questionnaire en ligne.</p>
-  <div class="tool-row" style="margin:0 0 12px;"><button class="btn secondary" onclick="qzBanqueOuvrir()"><span class=gicon>library_books</span> Mes questionnaires</button><button class="btn secondary" onclick="qzOuvrirCarnet()"><span class=gicon>menu_book</span> Carnet de notes des questionnaires</button></div>
+  <div class="tool-row" style="margin:0 0 12px;"><button class="btn secondary" onclick="qzBanqueOuvrir()"><span class=gicon>quiz</span> Interrogations en ligne (mes questionnaires)</button><button class="btn secondary" onclick="qzOuvrirCarnet()"><span class=gicon>menu_book</span> Carnet de notes des questionnaires</button></div>
 
   <div class="tool-shell devoir-zone-create">
     <p class="example-title devoir-zone-title" style="margin-bottom:6px;" id="devoirCreateTitle"><span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir</p>

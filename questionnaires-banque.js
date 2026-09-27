@@ -32,7 +32,7 @@ async function qzBanqueCharger(){
   return qzB;
 }
 async function qzBanqueOuvrir(){
-  showView('view-qz-banque'); setActiveTopnav('devoirsprof');
+  showView('view-qz-banque'); setActiveTopnav('questionnaires');
   const root = document.getElementById('qzBanqueRoot');
   root.innerHTML = '<p class="hint">Chargement…</p>';
   try{ await qzBanqueCharger(); }catch(e){ root.innerHTML = '<p class="hint">Erreur : ' + qzEsc(e.message) + '</p>'; return; }
@@ -70,14 +70,15 @@ function qzBanqueRender(){
   const f = qzNormTexte(qzB.filtre || '');
   const garde = q => !f || qzNormTexte((q.titre || '') + ' ' + (q.auteur || '') + ' ' + (q.questions || []).map(x => x.enonce || '').join(' ')).includes(f);
   const liste = (qzB.onglet === 'mes' ? qzB.mes : qzB.partages).filter(garde);
-  root.innerHTML = `<span class="back-btn" onclick="showView('view-devoirs-prof');setActiveTopnav('devoirsprof');">← Devoirs</span>
-    <h1 style="margin:6px 0 4px;"><span class="gicon">library_books</span> Mes questionnaires</h1>
-    <p style="color:var(--ink-soft);max-width:75ch;">Vos questionnaires, ceux que vos collègues partagent avec vous, et la banque de toutes leurs questions (bouton « Importer des questions » dans l'éditeur). Donner un questionnaire à une classe en crée une copie : le modifier ensuite ne change rien pour les autres classes.</p>
+  root.innerHTML = `<span class="back-btn" onclick="showView('view-home');setActiveTopnav(null);">← Accueil</span>
+    <h1 style="margin:6px 0 4px;"><span class="gicon">quiz</span> Interrogations en ligne</h1>
+    <p style="color:var(--ink-soft);max-width:75ch;">Vos questionnaires, ceux que vos collègues partagent avec vous, et la banque de toutes leurs questions (bouton « Importer des questions » dans l'éditeur). Donner un questionnaire à une classe en crée une copie : le modifier ensuite ne change rien pour les autres classes. Les interrogations données se corrigent depuis <a href="#" onclick="event.preventDefault();document.querySelector('[data-nav=devoirsprof]').click();">Devoirs en ligne</a> (bouton « Corriger »).</p>
     <div class="qz-c-tools">
       <div class="qz-tabs"><button class="${qzB.onglet === 'mes' ? 'on' : ''}" onclick="qzB.onglet='mes';qzBanqueRender()"><span class="gicon">person</span> Mes questionnaires (${qzB.mes.length})</button>
         <button class="${qzB.onglet === 'partages' ? 'on' : ''}" onclick="qzB.onglet='partages';qzBanqueRender()"><span class="gicon">group</span> Partagés avec moi (${qzB.partages.length})</button></div>
       <input type="search" class="qz-b-search" placeholder="Rechercher (titre, énoncé, auteur)…" value="${qzEsc(qzB.filtre)}" oninput="qzB.filtre=this.value;clearTimeout(qzB.t);qzB.t=setTimeout(()=>{qzBanqueRender();const i=document.querySelector('.qz-b-search');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}},250)">
-      <button class="btn" onclick="qzBanqueNouveau()"><span class="gicon">add</span> Nouveau questionnaire</button>
+      <button class="btn secondary" onclick="qzOuvrirCarnet()"><span class="gicon">menu_book</span> Carnet de notes</button>
+      <button class="btn" onclick="qzBanqueNouveau()"><span class="gicon">add</span> Nouvelle interrogation</button>
     </div>
     <div class="qz-b-grid">${liste.map(q => qzBanqueCarte(q, qzB.onglet !== 'mes')).join('') || `<p class="hint">${qzB.onglet === 'mes' ? (f ? 'Aucun questionnaire ne correspond.' : 'Aucun questionnaire pour l\'instant : créez-en un avec « Nouveau questionnaire » (ou dans un nouveau devoir).') : 'Aucun questionnaire partagé avec vous pour l\'instant.'}</p>`}</div>`;
 }

@@ -129,6 +129,12 @@ a{color:inherit;text-decoration:none;}
 }
 .nav-dropdown.open .nav-dropdown-menu{display:block;}
 .nav-dropdown-menu button{display:block;width:100%;text-align:left;white-space:nowrap;border-radius:6px;}
+/* Sous-menu dans un menu déroulant (Outils prof > Évaluations) : se déplie sous son intitulé. */
+.nav-sub-trigger::after{content:'▸';font-size:.8em;margin-left:6px;opacity:.7;display:inline-block;transition:transform .15s;}
+.nav-sub.open > .nav-sub-trigger::after{transform:rotate(90deg);}
+.nav-sub-menu{display:none;margin:2px 0 4px 12px;padding-left:6px;border-left:2px solid rgba(12,91,160,.18);}
+.nav-sub.open > .nav-sub-menu{display:block;}
+.nav-sub-menu button .gicon{font-size:1.05em;vertical-align:-2px;margin-right:4px;opacity:.75;}
 .account-menu{position:relative;flex:none;margin-left:10px;}
 .account-avatar{
   width:36px;height:36px;border-radius:50%;border:1px solid rgba(28,43,57,.15);background:var(--white);
@@ -1085,6 +1091,10 @@ footer a:hover{color:var(--accent);}
     background:transparent;min-width:0;
   }
   .nav-dropdown-menu button{padding-left:22px;}
+  .nav-sub-trigger{pointer-events:none;opacity:.8;}
+  .nav-sub-trigger::after{display:none;}
+  .nav-sub-menu{display:block !important;margin-left:22px;}
+  .nav-sub-menu button{padding-left:14px;}
   .nav-links button{width:100%;text-align:left;padding:12px 14px;font-size:.92rem;}
   .brand-mark{height:40px !important;}
 

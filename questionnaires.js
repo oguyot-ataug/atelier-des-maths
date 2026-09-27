@@ -1350,11 +1350,11 @@ function qzGenNormaliser(x){
    ===================================================================== */
 let qzK = null;
 async function qzOuvrirCarnet(){
-  showView('view-qz-carnet'); setActiveTopnav('devoirsprof');
+  showView('view-qz-carnet'); setActiveTopnav('questionnaires');
   const root = document.getElementById('qzCarnetRoot');
   const classes = accountClassesList || [];
   if(!qzK) qzK = { classId: classes[0] && classes[0].id, vue: 'notes', absent: '' };
-  root.innerHTML = `<span class="back-btn" onclick="showView('view-devoirs-prof');setActiveTopnav('devoirsprof');">← Devoirs</span>
+  root.innerHTML = `<span class="back-btn" onclick="qzBanqueOuvrir()">← Interrogations en ligne</span>
     <h1 style="margin:6px 0 4px;"><span class="gicon">menu_book</span> Carnet de notes</h1>
     <p style="color:var(--ink-soft);max-width:75ch;">Les notes des questionnaires, par classe. « Copier » place la colonne dans le presse-papiers, dans l'ordre alphabétique des élèves, prête à être collée dans votre logiciel de notes.</p>
     <div class="qz-c-tools">

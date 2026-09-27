@@ -226,6 +226,10 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       if(typeof resetDevoirFormState==='function') resetDevoirFormState();
       showView('view-devoirs-prof'); setActiveTopnav('devoirsprof'); if(typeof renderDevoirsProf==='function') renderDevoirsProf();
     }
+    if(nav==='questionnaires'){
+      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      if(typeof qzBanqueOuvrir==='function') qzBanqueOuvrir();
+    }
     if(nav==='mesdevoirs'){
       if(currentUserRole!=='eleve'){ toggleAccountMenu(); return; }
       showView('view-devoirs-eleve'); setActiveTopnav('mesdevoirs'); if(typeof renderDevoirsEleve==='function') renderDevoirsEleve();
@@ -260,6 +264,7 @@ function setActiveTopnav(key){
   else if(key==='supervision') document.querySelector('.nav-links button[data-nav="supervision"]').classList.add('active');
   else if(key==='progression') document.querySelector('.nav-links button[data-nav="progression"]').classList.add('active');
   else if(key==='mesresultats') document.querySelector('.nav-links button[data-nav="mesresultats"]').classList.add('active');
+  else if(key==='devoirsprof' || key==='questionnaires') document.querySelector(`.nav-links button[data-nav="${key}"]`)?.classList.add('active');
   else document.querySelector('.nav-links button[data-nav="home"]').classList.add('active');
 }
 document.getElementById('chap-back').addEventListener('click',()=>{
@@ -2686,6 +2691,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.714', items:[
+    "Menus réorganisés -- demandé : \"Dans outils profs un menu évaluations qui mènent vers Création évaluation, Devoirs en ligne, Interrogation en ligne\". Outils prof > Évaluations (un clic le déplie ; toujours déplié sur téléphone) : Créer une évaluation, Devoirs en ligne, Interrogations en ligne. La page des questionnaires s'appelle désormais « Interrogations en ligne » (mes questionnaires, partagés avec moi, nouvelle interrogation, carnet de notes). Les Devoirs en ligne ont maintenant leur propre adresse (#/devoirs) : recharger la page ne ramène plus à l'accueil.",
+  ]},
   { version:'2026-08-19.713', items:[
     "Questionnaires, étape 4 : banque et partage -- demandé : créer les questions \"à la main, par l'IA, ou depuis une banque de questions, et partage possible avec un collègue\". Nouvelle page « Mes questionnaires » (Devoirs > Mes questionnaires) : tous vos questionnaires, avec aperçu, « Donner à une classe » (une copie est donnée : la modifier ne change rien pour les autres classes), dupliquer, partager, supprimer (refusé tant qu'un devoir l'utilise). Bouton « Réutiliser » sur les devoirs questionnaires, et « Enregistrer sans donner » dans l'éditeur pour préparer un questionnaire à l'avance.",
     "Questionnaires : partage avec tous les professeurs de l'établissement et/ou avec des collègues choisis, y compris d'un autre établissement (retrouvés par l'adresse de leur compte). Onglet « Partagés avec moi » : vos collègues les consultent, les copient dans leurs questionnaires ou les donnent à leurs classes -- sans jamais pouvoir modifier l'original, ni voir vos élèves ou leurs copies.",
