@@ -186,7 +186,8 @@ async function qzEdCharger(questionnaireId){
   if(!questionnaireId) return;
   const { data, error } = await sb.from('questionnaires').select('*').eq('id', questionnaireId).maybeSingle();
   if(error || !data){ await niceAlert('Questionnaire introuvable' + (error ? ' : ' + error.message : '.')); return; }
-  qzEd = { id: data.id, questions: data.questions || [], reglages: Object.assign({}, QZ_REGLAGES_DEFAUT, data.reglages || {}) };
+  qzEd = { id: data.id, questions: JSON.parse(JSON.stringify(data.questions || [])), reglages: Object.assign({}, QZ_REGLAGES_DEFAUT, data.reglages || {}) };
+  delete qzEd.reglages.brouillon;
 }
 // Enregistre le questionnaire (appelé par qzFormEnregistrer) ; renvoie son id, ou lève une erreur lisible.
 async function qzEdEnregistrer(titre){
@@ -194,6 +195,7 @@ async function qzEdEnregistrer(titre){
   const erreurs = qzEdVerifier();
   if(erreurs.length) throw new Error(erreurs[0]);
   qzEd.questions = qzPreparer(qzEd.questions);
+  delete qzEd.reglages.brouillon; // donné : ce n'est plus un brouillon (voir questionnaires-interros.js)
   const row = { titre: titre || '', questions: qzEd.questions, reglages: qzEd.reglages, updated_at: new Date().toISOString() };
   if(qzEd.id){
     const { error } = await sb.from('questionnaires').update(row).eq('id', qzEd.id);
@@ -454,7 +456,7 @@ function qzEdHtml(){
       <button type="button" class="btn secondary qz-mini" style="margin-left:auto;" onclick="qzImporterOuvrir()" title="Reprendre des questions de vos questionnaires ou de ceux de vos collègues"><span class="gicon">inventory_2</span> Importer des questions</button>
       <button type="button" class="btn secondary qz-mini needs-ai-eval" onclick="qzGenOuvrir()"><span class="gicon">smart_toy</span> Générer avec l'IA</button>
       <button type="button" class="btn secondary qz-mini" onclick="qzApercu()"><span class="gicon">visibility</span> Tester comme un élève</button>
-      <button type="button" class="btn secondary qz-mini" onclick="qzEnregistrerSeul()" title="Garder ce questionnaire dans « Mes questionnaires » sans le donner tout de suite"><span class="gicon">save</span> Enregistrer sans donner</button></div>
+      <button type="button" class="btn secondary qz-mini" onclick="qzEnregistrerSeul()" title="Enregistrer maintenant dans « Mes questionnaires », même incomplet (c'est aussi fait automatiquement)"><span class="gicon">save</span> Enregistrer</button></div>
     <div id="qzEdListe"></div>
     <p class="hint" style="margin:12px 0 6px;font-weight:700;">Ajouter :</p>
     <div class="qz-add-row">${QZ_TYPES.map(t => `<button type="button" class="qz-add" onclick="qzEdAjouter('${t.id}')" title="${qzEsc(t.aide)}"><span class="gicon">${t.icon}</span> ${t.label}</button>`).join('')}</div>`;

@@ -33,6 +33,7 @@ async function qzBanqueCharger(){
   return qzB;
 }
 async function qzBanqueOuvrir(){
+  if(typeof qzAutoArreter === 'function') await qzAutoArreter(true); // brouillon en cours d'édition (questionnaires-interros.js)
   showView('view-qz-banque'); setActiveTopnav('questionnaires');
   const root = document.getElementById('qzBanqueRoot');
   root.innerHTML = '<p class="hint">Chargement…</p>';
@@ -49,17 +50,19 @@ function qzBanqueCarte(q, partage){
   const r = qzBanqueResume(q), dv = partage ? [] : (qzB.devoirs.get(q.id) || []);
   const reg = Object.assign({}, QZ_REGLAGES_DEFAUT, q.reglages || {});
   const nbPartage = (q.partage_profs || []).length;
+  const brouillon = !partage && !dv.length && reg.brouillon, incomplet = brouillon && reg.brouillon.a_completer;
   return `<div class="qz-b-card">
     <div class="qz-b-head">
-      <div><b>${qzEsc(q.titre || 'Sans titre')}</b>
+      <div><b>${qzEsc(q.titre || 'Sans titre')}</b>${brouillon ? ` <span class="qz-b-draft${incomplet ? ' inc' : ''}">${incomplet ? 'Brouillon à compléter' : 'Brouillon'}</span>` : ''}
         <div class="hint" style="margin:2px 0 0;">${r.n} question${r.n > 1 ? 's' : ''} · ${qzNum(r.pts)} pts · ${reg.mode === 'classe' ? 'en classe, ' + reg.duree + ' min' : 'à la maison'} · ${partage ? 'partagé par ' + qzEsc(q.auteur) : 'modifié le ' + new Date(q.updated_at).toLocaleDateString('fr-FR')}</div></div>
       ${!partage && (q.partage_etab || nbPartage) ? `<span class="qz-b-share"><span class="gicon">group</span> ${q.partage_etab ? 'Établissement' : ''}${q.partage_etab && nbPartage ? ' + ' : ''}${nbPartage ? nbPartage + ' collègue' + (nbPartage > 1 ? 's' : '') : ''}</span>` : ''}
     </div>
     <div class="qz-b-types">${Object.keys(r.types).map(t => `<span class="qz-type-pill"><span class="gicon">${qzType(t).icon}</span> ${qzType(t).label}${r.types[t] > 1 ? ' ×' + r.types[t] : ''}</span>`).join('')}</div>
     ${partage ? '' : `<div class="hint" style="margin:6px 0 0;">${dv.length ? 'Donné à : ' + dv.map(d => qzEsc((d.classes ? d.classes.nom + ' · ' : '') + d.titre)).join(' ; ') : 'Pas encore donné à une classe.'}</div>`}
     <div class="qz-b-act">
+      ${!partage && !dv.length ? `<button class="btn qz-mini" onclick="qzBanqueReprendre('${q.id}')" title="Continuer à préparer ce questionnaire"><span class="gicon">edit</span> Reprendre</button>` : ''}
       <button class="btn secondary qz-mini" onclick="qzBanqueApercu('${q.id}')"><span class="gicon">visibility</span> Aperçu</button>
-      <button class="btn qz-mini" onclick="qzBanqueDonner('${q.id}')"><span class="gicon">assignment_add</span> Donner à une classe</button>
+      <button class="btn ${!partage && !dv.length ? 'secondary ' : ''}qz-mini" onclick="qzBanqueDonner('${q.id}')"><span class="gicon">assignment_add</span> Donner à une classe</button>
       ${partage ? `<button class="btn secondary qz-mini" onclick="qzBanqueCopier('${q.id}')"><span class="gicon">content_copy</span> Copier dans mes questionnaires</button>`
         : `<button class="btn secondary qz-mini" onclick="qzBanqueCopier('${q.id}')"><span class="gicon">content_copy</span> Dupliquer</button>
            <button class="btn secondary qz-mini" onclick="qzBanquePartager('${q.id}')"><span class="gicon">share</span> Partager</button>
@@ -99,11 +102,18 @@ async function qzBanqueApercu(id){
     questions: qzPreparer(JSON.parse(JSON.stringify(q.questions || []))), copie: null }, true);
   qzP.retourBanque = true;
 }
-// Ouvre le formulaire « Nouvelle interrogation » avec une COPIE du questionnaire.
+// Ouvre le formulaire « Nouvelle interrogation » : le questionnaire lui-même s'il est à moi et pas
+// encore donné (brouillon), sinon une COPIE (les notes d'une autre classe ne bougent jamais).
 async function qzBanqueDonner(id){
   const q = await qzBanqueSur(id);
   if(!q){ await niceAlert('Questionnaire introuvable.'); return; }
-  await qzFormOuvrir({ copieDe: q });
+  const libre = qzB && qzB.mes.some(x => x.id === id) && !(qzB.devoirs.get(id) || []).length;
+  await qzFormOuvrir(libre ? { questionnaire: q } : { copieDe: q });
+}
+async function qzBanqueReprendre(id){
+  const q = await qzBanqueSur(id);
+  if(!q){ await niceAlert('Questionnaire introuvable.'); return; }
+  await qzFormOuvrir({ questionnaire: q });
 }
 function qzBanqueNouveau(){ return qzFormOuvrir(); }
 async function qzBanqueCopier(id){
@@ -251,6 +261,8 @@ function qzImporter(){
     #qzBanqueRoot{max-width:1100px;}
     .qz-b-search{flex:1;min-width:200px;padding:7px 10px;border:1px solid rgba(28,43,57,.2);border-radius:10px;font:inherit;}
     .qz-b-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px;}
+    .qz-b-draft{display:inline-block;margin-left:6px;border-radius:999px;padding:1px 8px;font-size:.7rem;font-weight:700;background:#EEF4FB;color:#0C5BA0;vertical-align:middle;}
+    .qz-b-draft.inc{background:#FFF4E6;color:#B8511F;}
     .qz-b-card{background:#fff;border:1px solid rgba(28,43,57,.1);border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(28,43,57,.04);display:flex;flex-direction:column;gap:6px;}
     .qz-b-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;}
     .qz-b-share{flex:none;display:inline-flex;align-items:center;gap:4px;background:#EAF6EC;color:#1E7B34;border-radius:999px;padding:2px 9px;font-size:.72rem;font-weight:700;}

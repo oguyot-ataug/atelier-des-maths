@@ -9,6 +9,12 @@
    - Onglet « Interrogations données » de la page Interrogations en ligne : état (brouillon,
      programmée, ouverte, fermée, résultats publiés), copies rendues, à corriger ; Corriger,
      Modifier, Réutiliser, Supprimer.
+   - Sauvegarde automatique -- signalé : "il manque une sauvegarde. On perd tout si on ne partage
+     pas tout de suite". Un nouveau questionnaire est enregistré tout seul (quelques secondes après
+     chaque modification) comme brouillon dans « Mes questionnaires », avec la classe, les dates et
+     la consigne déjà choisies ; « Reprendre » le rouvre là où on l'avait laissé. Une interrogation
+     déjà donnée n'est PAS modifiée en direct (les élèves la voient) : copie de secours sur
+     l'appareil, proposée à la réouverture, jusqu'à « Enregistrer les modifications ».
    Techniquement, une interrogation reste une ligne de la table devoirs (type « questionnaire ») :
    les élèves la reçoivent comme avant, dans une section à part de « Mes devoirs ».
    ===================================================================== */
@@ -17,8 +23,9 @@ let qzF = null; // { devoirId, cible:'classe'|'eleves', eleves:Set }
 
 function qzFormHtml(){
   const classes = accountClassesList || [];
-  return `<span class="back-btn" onclick="qzBanqueOuvrir()">← Interrogations en ligne</span>
+  return `<span class="back-btn" onclick="qzFormFermer()">← Interrogations en ligne</span>
     <h1 style="margin:6px 0 4px;" id="qzfTitreH"><span class="gicon">quiz</span> Nouvelle interrogation</h1>
+    <p class="qz-auto" id="qzfAuto"><span class="gicon">cloud</span> Enregistrement automatique : le brouillon est gardé dans « Mes questionnaires » dès la première question.</p>
     <div class="tool-shell qz-f">
       <div class="qz-f-grid">
         <label class="qz-f-full">Titre <input type="text" id="qzfTitre" placeholder="ex. Interro n°3 : les fractions"></label>
@@ -35,7 +42,7 @@ function qzFormHtml(){
     <div class="tool-shell"><p class="example-title" style="margin:0 0 6px;"><span class="gicon" style="color:#6B3FA0;">edit_note</span> Les questions</p><div id="qzfEditeur"></div></div>
     <div class="tool-row" style="margin:0 0 30px;">
       <button class="btn" id="qzfDonner" onclick="qzFormEnregistrer()"><span class="gicon">send</span> Donner à la classe</button>
-      <button class="btn secondary" onclick="qzBanqueOuvrir()">Annuler</button>
+      <button class="btn secondary" id="qzfFermer" onclick="qzFormFermer()">Fermer (le brouillon est gardé)</button>
       <span class="hint" id="qzfStatus" style="margin:0;"></span>
     </div>`;
 }
@@ -52,41 +59,132 @@ function qzFormCible(){
     el.innerHTML = `<div class="qz-bp-list">${eleves.map(e => `<label class="qz-check"><input type="checkbox" ${qzF.eleves.has(e.id) ? 'checked' : ''} onchange="this.checked?qzF.eleves.add('${e.id}'):qzF.eleves.delete('${e.id}')"> ${qzEsc(e.label)}</label>`).join('') || '<span class="hint" style="margin:0;">Aucun élève dans cette classe.</span>'}</div>`;
   });
 }
-// Ouvre le formulaire : vide, avec une copie d'un questionnaire (copieDe), ou une interrogation existante (devoirId).
+// Ouvre le formulaire : vide, avec une copie d'un questionnaire (copieDe), un brouillon ou un
+// questionnaire pas encore donné (questionnaire : modifié sur place), ou une interrogation déjà donnée (devoirId).
 async function qzFormOuvrir(opts){
   opts = opts || {};
+  await qzAutoArreter(true);
   showView('view-qz-form'); setActiveTopnav('questionnaires');
   const root = document.getElementById('qzFormRoot');
   root.innerHTML = qzFormHtml();
   qzF = { devoirId: null, cible: 'classe', eleves: new Set() };
   qzEdReset();
   const box = document.getElementById('qzfEditeur'); delete box.dataset.monte;
+  const $ = id => document.getElementById(id);
   if(opts.devoirId){
     const { data: d, error } = await sb.from('devoirs').select('*').eq('id', opts.devoirId).single();
     if(error || !d){ await niceAlert('Interrogation introuvable.'); return qzBanqueOuvrir(); }
     qzF.devoirId = d.id;
     await qzEdCharger(d.questionnaire_id);
-    document.getElementById('qzfTitreH').innerHTML = '<span class="gicon">edit</span> Modifier l\'interrogation';
-    document.getElementById('qzfDonner').innerHTML = '<span class="gicon">check</span> Enregistrer les modifications';
-    document.getElementById('qzfTitre').value = d.titre || '';
-    document.getElementById('qzfClasse').value = d.class_id;
-    document.getElementById('qzfOuverture').value = d.date_depot ? d.date_depot.slice(0, 10) : '';
-    document.getElementById('qzfLimite').value = d.date_limite ? d.date_limite.slice(0, 10) : '';
-    document.getElementById('qzfConsigne').value = d.consigne === 'Répondez aux questions.' ? '' : (d.consigne || '');
+    $('qzfTitreH').innerHTML = '<span class="gicon">edit</span> Modifier l\'interrogation';
+    $('qzfDonner').innerHTML = '<span class="gicon">check</span> Enregistrer les modifications';
+    $('qzfFermer').textContent = 'Annuler les modifications';
+    $('qzfTitre').value = d.titre || '';
+    $('qzfClasse').value = d.class_id;
+    $('qzfOuverture').value = d.date_depot ? d.date_depot.slice(0, 10) : '';
+    $('qzfLimite').value = d.date_limite ? d.date_limite.slice(0, 10) : '';
+    $('qzfConsigne').value = d.consigne === 'Répondez aux questions.' ? '' : (d.consigne || '');
     if(d.student_ids && d.student_ids.length){ qzF.cible = 'eleves'; qzF.eleves = new Set(d.student_ids); }
     const { count } = await sb.from('qz_copies').select('id', { count: 'exact', head: true }).eq('devoir_id', d.id);
-    if(count) document.getElementById('qzfStatus').innerHTML = `<b style="color:#B8511F;">${count} élève${count > 1 ? 's ont' : ' a'} déjà commencé :</b> modifier les réponses attendues ou le barème change leur note.`;
+    if(count) $('qzfStatus').innerHTML = `<b style="color:#B8511F;">${count} élève${count > 1 ? 's ont' : ' a'} déjà commencé :</b> modifier les réponses attendues ou le barème change leur note.`;
+    // Copie de secours d'une modification non enregistrée (onglet fermé, page quittée...)
+    let secours = null; try{ secours = JSON.parse(localStorage.getItem('qzEdit:' + d.id) || 'null'); }catch(e){}
+    if(secours && secours.q && JSON.stringify(secours.q) !== JSON.stringify(qzEd.questions)
+      && await niceConfirm(`Des modifications de cette interrogation n'ont pas été enregistrées (le ${new Date(secours.at).toLocaleString('fr-FR')}). Les reprendre ?`)){
+      qzEd.questions = secours.q; qzEd.reglages = Object.assign({}, qzEd.reglages, secours.r || {});
+      if(secours.t) $('qzfTitre').value = secours.t;
+    }
+  } else if(opts.questionnaire){
+    const q = opts.questionnaire, reg = Object.assign({}, QZ_REGLAGES_DEFAUT, q.reglages || {}), b = reg.brouillon || {};
+    delete reg.brouillon;
+    qzEd = { id: q.id, questions: JSON.parse(JSON.stringify(q.questions || [])), reglages: reg };
+    $('qzfTitre').value = q.titre === 'Sans titre' ? '' : (q.titre || '');
+    if(b.classe && (accountClassesList || []).some(c => c.id === b.classe)) $('qzfClasse').value = b.classe;
+    $('qzfOuverture').value = b.ouverture || ''; $('qzfLimite').value = b.limite || ''; $('qzfConsigne').value = b.consigne || '';
+    if(b.eleves && b.eleves.length){ qzF.cible = 'eleves'; qzF.eleves = new Set(b.eleves); }
+    $('qzfAuto').innerHTML = `<span class="gicon">cloud_done</span> Brouillon repris (enregistré le ${new Date(q.updated_at || Date.now()).toLocaleString('fr-FR')}) : les modifications sont enregistrées automatiquement.`;
   } else if(opts.copieDe){
-    const q = opts.copieDe;
-    qzEd = { id: null, questions: JSON.parse(JSON.stringify(q.questions || [])), reglages: Object.assign({}, QZ_REGLAGES_DEFAUT, q.reglages || {}, { ferme: false }) };
-    document.getElementById('qzfTitre').value = q.titre || '';
-    document.getElementById('qzfStatus').textContent = `Questionnaire « ${q.titre || 'Sans titre'} » chargé (copie) : choisissez la classe et la date d'ouverture, adaptez-le si besoin.`;
+    const q = opts.copieDe, reg = Object.assign({}, QZ_REGLAGES_DEFAUT, q.reglages || {}, { ferme: false });
+    delete reg.brouillon;
+    qzEd = { id: null, questions: JSON.parse(JSON.stringify(q.questions || [])), reglages: reg };
+    $('qzfTitre').value = q.titre || '';
+    $('qzfStatus').textContent = `Questionnaire « ${q.titre || 'Sans titre'} » chargé (copie) : choisissez la classe et la date d'ouverture, adaptez-le si besoin.`;
   }
   qzFormCible();
   qzEdMonter();
   window.scrollTo(0, 0);
+  qzAutoDemarrer(qzF.devoirId ? 'local' : 'db');
 }
 function qzFormModifier(devoirId){ return qzFormOuvrir({ devoirId }); }
+async function qzFormFermer(){
+  const a = qzAuto;
+  if(a && a.mode === 'local'){
+    if(qzAutoEtat() !== a.base && !(await niceConfirm('Les modifications de cette interrogation ne sont pas enregistrées. Les abandonner ?'))) return;
+    try{ localStorage.removeItem(a.cle); }catch(e){}
+    await qzAutoArreter(false);
+  }
+  qzBanqueOuvrir(); // enregistre d'abord le brouillon en cours (qzAutoArreter)
+}
+
+/* ---------------------------------------------------------------------
+   Sauvegarde automatique
+   --------------------------------------------------------------------- */
+let qzAuto = null; // { mode:'db'|'local', cle, dernier, base, timer, enCours:Promise|null }
+function qzAutoForm(){
+  const v = id => ((document.getElementById(id) || {}).value || '').trim();
+  return { titre: v('qzfTitre'), classe: v('qzfClasse'), ouverture: v('qzfOuverture'), limite: v('qzfLimite'), consigne: v('qzfConsigne'),
+    eleves: qzF && qzF.cible === 'eleves' ? Array.from(qzF.eleves) : [] };
+}
+function qzAutoEtat(){ return JSON.stringify({ f: qzAutoForm(), q: qzEd ? qzEd.questions : [], r: qzEd ? qzEd.reglages : {} }); }
+function qzAutoDemarrer(mode){
+  const etat = qzAutoEtat();
+  qzAuto = { mode, cle: qzF && qzF.devoirId ? 'qzEdit:' + qzF.devoirId : null, dernier: etat, base: etat, timer: setInterval(qzAutoTick, 2000), enCours: null };
+}
+// Arrête la sauvegarde automatique ; enregistre d'abord ce qui ne l'est pas encore si demandé.
+async function qzAutoArreter(flush){
+  const a = qzAuto; if(!a) return;
+  clearInterval(a.timer);
+  if(a.enCours) await a.enCours;
+  if(flush && qzAutoEtat() !== a.dernier) await qzAutoSauver(a);
+  if(qzAuto === a) qzAuto = null;
+}
+async function qzAutoTick(){
+  const a = qzAuto; if(!a || a.enCours) return;
+  const surPage = ['view-qz-form', 'view-questionnaire'].some(id => { const v = document.getElementById(id); return v && v.classList.contains('active'); });
+  if(qzAutoEtat() !== a.dernier) await qzAutoSauver(a);
+  if(!surPage && qzAuto === a && !a.enCours){ clearInterval(a.timer); qzAuto = null; } // page quittée par le menu : dernier enregistrement fait
+}
+function qzAutoInfo(html){ const el = document.getElementById('qzfAuto'); if(el) el.innerHTML = html; }
+function qzAutoSauver(a){
+  const etat = qzAutoEtat(), heure = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const f = qzAutoForm();
+  if(a.mode === 'local'){
+    try{ localStorage.setItem(a.cle, JSON.stringify({ at: Date.now(), t: f.titre, q: qzEd.questions, r: qzEd.reglages })); }catch(e){}
+    a.dernier = etat;
+    qzAutoInfo(`<span class="gicon" style="color:#B8511F;">edit_note</span> Modifications en cours (copie de secours sur cet appareil à ${heure}) : les élèves voient encore l'ancienne version jusqu'à « Enregistrer les modifications ».`);
+    return Promise.resolve();
+  }
+  if(!qzEd || (!qzEd.questions.length && !f.titre)) return Promise.resolve(); // rien à garder
+  const aCompleter = qzEdVerifier().length > 0;
+  const row = { titre: f.titre || 'Sans titre', questions: qzEd.questions,
+    reglages: Object.assign({}, qzEd.reglages, { brouillon: { classe: f.classe, ouverture: f.ouverture, limite: f.limite, consigne: f.consigne, eleves: f.eleves, a_completer: aCompleter } }),
+    updated_at: new Date().toISOString() };
+  qzAutoInfo('<span class="gicon">cloud_sync</span> Enregistrement…');
+  a.enCours = (async () => {
+    const r = qzEd.id ? await sb.from('questionnaires').update(row).eq('id', qzEd.id)
+      : await sb.from('questionnaires').insert(Object.assign({ teacher_id: currentUser.id }, row)).select('id').single();
+    if(r.error){ qzAutoInfo(`<span class="gicon" style="color:#a83c1f;">cloud_off</span> Enregistrement impossible (${qzEsc(r.error.message)}) : nouvel essai dans quelques secondes.`); return; }
+    if(!qzEd.id && r.data) qzEd.id = r.data.id;
+    a.dernier = etat;
+    qzAutoInfo(`<span class="gicon" style="color:#1E7B34;">cloud_done</span> Brouillon enregistré à ${heure} dans « Mes questionnaires »${aCompleter ? ' (encore incomplet : à terminer avant de le donner)' : ''}.`);
+  })().finally(() => { a.enCours = null; });
+  return a.enCours;
+}
+window.addEventListener('beforeunload', ev => {
+  if(!qzAuto) return;
+  if(qzAuto.mode === 'db' ? qzAutoEtat() !== qzAuto.dernier || qzAuto.enCours : qzAutoEtat() !== qzAuto.base){ ev.preventDefault(); ev.returnValue = ''; }
+});
+
 async function qzFormEnregistrer(){
   const st = document.getElementById('qzfStatus');
   const titre = document.getElementById('qzfTitre').value.trim();
@@ -95,26 +193,32 @@ async function qzFormEnregistrer(){
   if(!titre || !classId){ st.textContent = 'Le titre et la classe sont nécessaires.'; return; }
   if(qzF.cible === 'eleves' && !qzF.eleves.size){ st.textContent = 'Choisissez au moins un élève.'; return; }
   st.textContent = 'Enregistrement…';
+  const auto = qzAuto; if(auto){ clearInterval(auto.timer); if(auto.enCours) await auto.enCours; }
+  const reprendre = () => { if(auto && qzAuto === auto) auto.timer = setInterval(qzAutoTick, 2000); };
   let questionnaireId;
-  try{ questionnaireId = await qzEdEnregistrer(titre); }catch(e){ st.textContent = e.message || String(e); return; }
+  try{ questionnaireId = await qzEdEnregistrer(titre); }catch(e){ st.textContent = e.message || String(e); reprendre(); return; }
   const payload = { teacher_id: currentUser.id, class_id: classId, titre, type: 'questionnaire', questionnaire_id: questionnaireId,
     consigne: document.getElementById('qzfConsigne').value.trim() || 'Répondez aux questions.',
     date_depot: ouv ? new Date(ouv).toISOString() : null, date_limite: lim ? new Date(lim).toISOString() : null,
     student_ids: qzF.cible === 'eleves' ? Array.from(qzF.eleves) : null };
   const { error } = qzF.devoirId ? await sb.from('devoirs').update(payload).eq('id', qzF.devoirId) : await sb.from('devoirs').insert(payload);
-  if(error){ st.textContent = 'Erreur : ' + error.message; return; }
+  if(error){ st.textContent = 'Erreur : ' + error.message; reprendre(); return; }
+  if(auto && auto.cle){ try{ localStorage.removeItem(auto.cle); }catch(e){} }
+  if(qzAuto === auto) qzAuto = null;
   const nouveau = !qzF.devoirId;
   if(qzB) qzB.onglet = 'donnees';
   await qzBanqueOuvrir();
   await niceAlert(nouveau ? (ouv ? `« ${titre} » est donnée à la classe.` : `« ${titre} » est enregistrée en brouillon : choisissez une date d'ouverture pour la donner.`) : 'Interrogation modifiée.');
 }
-// Enregistre le questionnaire dans « Mes questionnaires » sans créer d'interrogation.
+// Bouton « Enregistrer » de l'éditeur : enregistre tout de suite (même incomplet).
 async function qzEnregistrerSeul(){
-  const titre = (document.getElementById('qzfTitre') || {}).value ? document.getElementById('qzfTitre').value.trim() : '';
+  if(!qzAuto) return;
+  if(qzAuto.mode === 'local') return qzFormEnregistrer(); // interrogation déjà donnée
   const st = document.getElementById('qzfStatus');
-  if(!titre){ st.textContent = 'Donnez un titre au questionnaire avant de l\'enregistrer.'; return; }
-  try{ await qzEdEnregistrer(titre); st.textContent = '✓ Enregistré dans « Mes questionnaires » (pas encore donné à une classe).'; }
-  catch(e){ st.textContent = e.message || String(e); }
+  if(!qzEd.questions.length && !qzAutoForm().titre){ st.textContent = 'Rien à enregistrer pour l\'instant : donnez un titre ou ajoutez une question.'; return; }
+  if(qzAuto.enCours) await qzAuto.enCours;
+  await qzAutoSauver(qzAuto);
+  st.textContent = '';
 }
 
 /* ---------------------------------------------------------------------
@@ -178,6 +282,8 @@ async function qzInterroSupprimer(id){
   const st = document.createElement('style');
   st.textContent = `
     #qzFormRoot{max-width:1000px;}
+    .qz-auto{display:flex;align-items:center;gap:6px;margin:0 0 10px;font-size:.84rem;color:var(--ink-soft);}
+    .qz-auto .gicon{font-size:18px;}
     .qz-f-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px 14px;}
     .qz-f-grid label{display:flex;flex-direction:column;gap:4px;font-size:.84rem;font-weight:600;}
     .qz-f-grid .qz-f-full{grid-column:1/-1;}
