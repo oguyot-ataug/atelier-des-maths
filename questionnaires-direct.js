@@ -239,6 +239,13 @@ function qzDirectStatsHtml(q){
     return `<span class="qzd-nom ${cls}" title="${qzEsc(e.label)}">${qzEsc(e.prenom || e.label)}</span>`; }).join('')}</div>`;
   return h;
 }
+// Réponse modèle affichée au tableau quand la correction est montrée (QCM : les bonnes propositions
+// cochées ; vrai/faux : chaque affirmation jugée) ; les autres types montrent déjà la réponse attendue.
+function qzDirectBonneReponse(q){
+  if(q.type === 'vf') return Object.fromEntries((q.items || []).map(it => [it.id, !!it.vrai]));
+  if(q.type === 'qcm'){ const b = (q.choix || []).filter(c => c.correct).map(c => c.id); return q.multiple ? b : b[0] || null; }
+  return null;
+}
 function qzDirectMajStats(){
   if(!qzD) return;
   const i = qzDirectIndex(), box = document.getElementById('qzdRes');
@@ -274,7 +281,7 @@ function qzDirectRender(){
           <span class="qz-type-pill"><span class="gicon">${qzType(p.q.type).icon}</span> ${qzType(p.q.type).label}</span>
           ${corr ? '<span class="qzd-phase corr"><span class="gicon">fact_check</span> Correction affichée</span>' : '<span class="qzd-phase"><span class="dot"></span> Les élèves répondent</span>'}</div>
         ${p.docs.map(d => `<div class="qz-doc">${qzEnonceHtml(d)}</div>`).join('')}
-        <div class="qz-q" id="qzdQ_${p.q.id}">${qzEnonceHtml(p.q)}<div class="qz-q-rep">${qzRenderSaisie(p.q, null, corr ? 'corrige' : 'lecture', { reglages: {}, seed: null, pfx: 'd' })}</div></div>
+        <div class="qz-q" id="qzdQ_${p.q.id}">${qzEnonceHtml(p.q)}<div class="qz-q-rep">${qzRenderSaisie(p.q, corr ? qzDirectBonneReponse(p.q) : null, corr ? 'corrige' : 'lecture', { reglages: {}, seed: null, pfx: 'd' })}</div></div>
       </div>
       <div class="qzd-res" id="qzdRes">${qzDirectStatsHtml(p.q)}</div>
     </div>
