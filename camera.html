@@ -99,6 +99,8 @@ async function demarrer(){
     .on('broadcast', { event: 'bye' }, () => { connecte = false; etat('Ordinateur fermé'); $('aide').textContent = 'L\'outil a été fermé sur l\'ordinateur.'; })
     .subscribe(s => { if(s === 'SUBSCRIBED') direBonjour(); });
 }
+// Signe de vie toutes les 3 s, même en pause : l'ordinateur sait que le téléphone est toujours là.
+setInterval(() => { if(ch && connecte) ch.send({ type: 'broadcast', event: 'ping', payload: {} }); }, 3000);
 function direBonjour(){
   clearInterval(hello);
   const f = () => { if(!connecte) ch.send({ type: 'broadcast', event: 'hello', payload: {} }); else clearInterval(hello); };

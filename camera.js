@@ -5,7 +5,8 @@
 
    Demandé : "un outil qui permet d'afficher quasi en direct sur l'ordinateur du professeur une
    prise de vue faite sur le smartphone. On pourrait l'utiliser pour commenter une correction ou
-   s'en servir comme image en direct dans les corrections."
+   s'en servir comme image en direct dans les corrections." Puis : "Permettre de recadrer l'image
+   avant de l'insérer. Et ajouter des outils de contraste, luminosité et crayon ou insertion texte."
 
    Fonctionnement :
    - L'ordinateur ouvre un canal temps réel Supabase (broadcast) au nom tiré au hasard
@@ -17,29 +18,39 @@
      avant la suivante, ce qui règle le débit sur la qualité du réseau.
    - Rien n'est enregistré tant que le professeur n'insère pas l'image : le cahier d'un élève
      filmé n'est stocké nulle part.
+   - Édition : recadrage, luminosité / contraste / noir et blanc (appliqués aussi au direct, pour
+     zoomer sur une partie du cahier pendant la projection), crayon, surligneur et texte (l'image
+     se fige). Les annotations sont repérées dans l'image entière pivotée : recadrer ensuite ne
+     les déplace pas.
    Dépend de app.js (sb, currentUser, niceAlert), outils-figures.js (addPendingBlock, TOOL_ICONS)
    et vendor/qrcode.js.
    ===================================================================== */
 
 const CAM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-let cam = null; // { code, ch, frames:Map, img, rot, frozen, strokes, drawing, color, connecte, photoAttendue }
+const CAM_COULEURS = ['#D93025', '#0C5BA0', '#1E7B34', '#FF8208', '#1C2230'];
+let cam = null;
+/* cam = { code, ch, frames:Map, img, rot, frozen, connecte, derniere, veille,
+     annots:[{type:'trait'|'surligne', c, p:[[x,y]...]} | {type:'texte', c, x, y, t}],   (coordonnées 0-1 dans l'image pivotée entière)
+     outil:'crayon'|'surligne'|'texte'|'recadrer', color, crop:{x,y,w,h} (0-1), cropEdit, lum, con, gris } */
 
 function camCode(){
   const a = new Uint8Array(8); crypto.getRandomValues(a);
   return Array.from(a, x => CAM_ALPHABET[x % CAM_ALPHABET.length]).join('');
 }
 function camUrl(code){ return location.origin + '/camera.html?c=' + code; }
+const CAM_ICO = (n) => `<span class="gicon">${n}</span>`;
 
 function openCameraTool(){
   camFermer(true);
   const code = camCode();
-  cam = { code, frames: new Map(), img: null, rot: 0, frozen: false, strokes: [], drawing: false, color: '#D93025', connecte: false, photoAttendue: false, derniere: 0 };
+  cam = { code, frames: new Map(), img: null, rot: 0, frozen: false, connecte: false, derniere: 0,
+    annots: [], outil: 'crayon', color: CAM_COULEURS[0], crop: { x: 0, y: 0, w: 1, h: 1 }, cropEdit: null, lum: 100, con: 100, gris: false, geste: null };
   let o = document.getElementById('camOverlay');
   if(!o){ o = document.createElement('div'); o.id = 'camOverlay'; document.body.appendChild(o); }
   o.className = 'cam-ov';
   o.innerHTML = `<div class="cam-box" id="camBox">
-    <div class="cam-head"><span class="gicon">videocam</span> <b>Caméra du téléphone</b> <span id="camEtat" class="cam-etat attente">En attente du téléphone…</span>
-      <button type="button" class="cam-x" onclick="camFermer()" title="Fermer"><span class="gicon">close</span></button></div>
+    <div class="cam-head">${CAM_ICO('videocam')} <b>Caméra du téléphone</b> <span id="camEtat" class="cam-etat attente">En attente du téléphone…</span>
+      <button type="button" class="cam-x" onclick="camFermer()" title="Fermer">${CAM_ICO('close')}</button></div>
     <div class="cam-pair" id="camPair">
       <div class="cam-qr" id="camQr"></div>
       <div class="cam-steps">
@@ -50,39 +61,60 @@ function openCameraTool(){
       </div>
     </div>
     <div class="cam-stage" id="camStage" hidden>
-      <div class="cam-view" id="camView"><canvas id="camCanvas"></canvas><canvas id="camDraw"></canvas><span class="cam-live" id="camLive">● EN DIRECT</span></div>
+      <div class="cam-view" id="camView"><canvas id="camCanvas"></canvas><canvas id="camDraw"></canvas><span class="cam-live" id="camLive">● EN DIRECT</span>
+        <div class="cam-cropbar" id="camCropBar" hidden><span>Faites glisser les coins ou le cadre</span>
+          <button type="button" class="btn secondary" onclick="camRecadrerTout()">Toute l'image</button>
+          <button type="button" class="btn secondary" onclick="camRecadrerFin(false)">Annuler</button>
+          <button type="button" class="btn" onclick="camRecadrerFin(true)">${CAM_ICO('check')} Valider</button></div>
+      </div>
     </div>
     <div class="cam-tools" id="camTools" hidden>
-      <button type="button" class="btn secondary" id="camFigerBtn" onclick="camFiger()"><span class="gicon">pause</span> Figer</button>
-      <button type="button" class="btn secondary" onclick="camPhoto()" title="Demande au téléphone une photo en pleine résolution, plus nette que l'image en direct"><span class="gicon">photo_camera</span> Photo nette</button>
-      <button type="button" class="btn secondary" onclick="camPivoter()" title="Pivoter d'un quart de tour"><span class="gicon">rotate_right</span></button>
-      <span class="cam-sep"></span>
-      <span class="cam-annot" title="Annoter l'image (elle se fige)">
-        ${['#D93025', '#0C5BA0', '#1E7B34', '#FF8208'].map(c => `<button type="button" class="cam-col${c === '#D93025' ? ' on' : ''}" style="--c:${c}" onclick="camCouleur('${c}',this)" aria-label="Crayon"></button>`).join('')}
-        <button type="button" class="btn secondary" onclick="camAnnuler()" title="Annuler le dernier trait"><span class="gicon">undo</span></button>
-        <button type="button" class="btn secondary" onclick="camEffacer()" title="Effacer les annotations"><span class="gicon">ink_eraser</span></button>
-      </span>
-      <span class="cam-sep"></span>
-      <button type="button" class="btn secondary" onclick="camPleinEcran()"><span class="gicon">fullscreen</span> Plein écran</button>
-      <button type="button" class="btn" id="camInsBtn" onclick="camInserer()"><span class="gicon">add_photo_alternate</span> Insérer dans la correction</button>
+      <div class="cam-row">
+        <button type="button" class="btn secondary" id="camFigerBtn" onclick="camFiger()">${CAM_ICO('pause')} Figer</button>
+        <button type="button" class="btn secondary" onclick="camPhoto()" title="Demande au téléphone une photo en pleine résolution, plus nette que l'image en direct">${CAM_ICO('photo_camera')} Photo nette</button>
+        <button type="button" class="btn secondary" onclick="camPivoter()" title="Pivoter d'un quart de tour">${CAM_ICO('rotate_right')}</button>
+        <span class="cam-sep"></span>
+        <span class="cam-seg" id="camOutils">
+          <button type="button" data-o="crayon" onclick="camOutil('crayon')" title="Crayon">${CAM_ICO('edit')}</button>
+          <button type="button" data-o="surligne" onclick="camOutil('surligne')" title="Surligneur">${CAM_ICO('ink_highlighter')}</button>
+          <button type="button" data-o="texte" onclick="camOutil('texte')" title="Texte : cliquez sur l'image à l'endroit voulu">${CAM_ICO('title')}</button>
+          <button type="button" data-o="recadrer" onclick="camOutil('recadrer')" title="Recadrer">${CAM_ICO('crop')}</button>
+        </span>
+        <span class="cam-annot">${CAM_COULEURS.map((c, i) => `<button type="button" class="cam-col${i ? '' : ' on'}" style="--c:${c}" onclick="camCouleur('${c}',this)" aria-label="Couleur"></button>`).join('')}</span>
+        <button type="button" class="btn secondary" onclick="camAnnuler()" title="Annuler la dernière annotation">${CAM_ICO('undo')}</button>
+        <button type="button" class="btn secondary" onclick="camEffacer()" title="Effacer toutes les annotations">${CAM_ICO('ink_eraser')}</button>
+        <span class="cam-sep"></span>
+        <button type="button" class="btn secondary" onclick="camPleinEcran()" title="Plein écran">${CAM_ICO('fullscreen')}</button>
+        <button type="button" class="btn" id="camInsBtn" onclick="camInserer()">${CAM_ICO('add_photo_alternate')} Insérer dans la correction</button>
+      </div>
+      <div class="cam-row cam-reglages">
+        <label title="Luminosité">${CAM_ICO('light_mode')}<input type="range" id="camLum" min="50" max="180" value="100" oninput="camReglage('lum',this.value)"></label>
+        <label title="Contraste">${CAM_ICO('contrast')}<input type="range" id="camCon" min="50" max="250" value="100" oninput="camReglage('con',this.value)"></label>
+        <label class="cam-chk"><input type="checkbox" id="camGris" onchange="camReglage('gris',this.checked)"> Noir et blanc</label>
+        <button type="button" class="btn secondary" onclick="camDocument()" title="Page blanche et écriture bien noire : idéal pour un cahier ou une copie">${CAM_ICO('auto_fix_high')} Document</button>
+        <button type="button" class="btn secondary" onclick="camReglagesZero()" title="Revenir à l'image d'origine">${CAM_ICO('restart_alt')}</button>
+        <span class="hint" style="margin:0 0 0 auto;" id="camInfo"></span>
+      </div>
     </div>
   </div>`;
   o.style.display = 'flex';
-  // QR code
   try{
     const q = qrcode(0, 'M'); q.addData(camUrl(code)); q.make();
     document.getElementById('camQr').innerHTML = q.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
   }catch(e){ document.getElementById('camQr').innerHTML = '<p class="hint">QR code indisponible : utilisez le code.</p>'; }
   camBrancherDessin();
-  // Canal temps réel
+  camMajOutils();
   cam.ch = sb.channel('cam-' + code, { config: { broadcast: { self: false } } })
     .on('broadcast', { event: 'hello' }, () => { camEnvoyer('hello-ok', {}); camConnecte(true); })
     .on('broadcast', { event: 'part' }, ({ payload }) => camMorceau(payload))
+    .on('broadcast', { event: 'ping' }, () => { if(!cam) return; cam.derniere = Date.now(); if(!cam.connecte){ camEnvoyer('hello-ok', {}); camConnecte(true); } })
     .on('broadcast', { event: 'bye' }, () => camConnecte(false))
     .subscribe();
   cam.veille = setInterval(() => { if(cam && cam.connecte && Date.now() - cam.derniere > 8000) camConnecte(false, true); }, 3000);
   window.addEventListener('resize', camRedessiner);
 }
+
+/* ---------------- Transport ---------------- */
 function camEnvoyer(event, payload){ if(cam && cam.ch) cam.ch.send({ type: 'broadcast', event, payload }); }
 function camConnecte(on, silence){
   if(!cam) return;
@@ -109,87 +141,204 @@ function camMorceau(p){
     if(!cam) return;
     const premiere = !cam.img;
     cam.img = im;
-    if(fr.k === 'photo'){ cam.photoAttendue = false; camFigerEtat(true); }
+    if(fr.k === 'photo') camFigerEtat(true);
     if(premiere){ document.getElementById('camPair').hidden = true; document.getElementById('camStage').hidden = false; document.getElementById('camTools').hidden = false; }
     camRedessiner();
   };
   im.src = 'data:image/jpeg;base64,' + fr.parts.join('');
 }
-// Taille d'affichage (image pivotée, ajustée à la zone)
+
+/* ---------------- Affichage ---------------- */
+// Dimensions de l'image pivotée entière (en pixels de l'image).
+function camDims(){ const q = cam.rot % 180 !== 0; return q ? [cam.img.naturalHeight, cam.img.naturalWidth] : [cam.img.naturalWidth, cam.img.naturalHeight]; }
+// Cadre affiché : le recadrage, ou l'image entière pendant qu'on le règle.
+function camCadre(){ return cam.cropEdit ? { x: 0, y: 0, w: 1, h: 1 } : cam.crop; }
 function camTaille(){
   const v = document.getElementById('camView'); if(!v || !cam || !cam.img) return null;
-  const quart = cam.rot % 180 !== 0;
-  const iw = quart ? cam.img.naturalHeight : cam.img.naturalWidth, ih = quart ? cam.img.naturalWidth : cam.img.naturalHeight;
-  const maxW = v.clientWidth, maxH = v.clientHeight;
-  const k = Math.min(maxW / iw, maxH / ih);
-  return { iw, ih, w: Math.max(1, Math.round(iw * k)), h: Math.max(1, Math.round(ih * k)) };
+  const [iw, ih] = camDims(), c = camCadre(), rw = c.w * iw, rh = c.h * ih;
+  const k = Math.min(v.clientWidth / rw, v.clientHeight / rh);
+  return { iw, ih, c, k, w: Math.max(1, Math.round(rw * k)), h: Math.max(1, Math.round(rh * k)) };
 }
-function camDessinerImage(ctx, w, h){
-  ctx.save(); ctx.translate(w / 2, h / 2); ctx.rotate(cam.rot * Math.PI / 180);
-  const quart = cam.rot % 180 !== 0, dw = quart ? h : w, dh = quart ? w : h;
+function camDessinerImage(ctx, iw, ih){
+  ctx.save(); ctx.translate(iw / 2, ih / 2); ctx.rotate(cam.rot * Math.PI / 180);
+  const q = cam.rot % 180 !== 0, dw = q ? ih : iw, dh = q ? iw : ih;
   ctx.drawImage(cam.img, -dw / 2, -dh / 2, dw, dh); ctx.restore();
 }
-function camDessinerTraits(ctx, w, h){
-  const ep = Math.max(2, Math.round(Math.min(w, h) / 160));
-  cam.strokes.forEach(s => {
-    ctx.strokeStyle = s.c; ctx.lineWidth = ep; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.beginPath(); s.p.forEach(([x, y], i) => i ? ctx.lineTo(x * w, y * h) : ctx.moveTo(x * w, y * h)); ctx.stroke();
+// Annotations, en pixels de l'image pivotée entière (le contexte est déjà transformé).
+function camDessinerAnnots(ctx, iw, ih){
+  const base = Math.min(iw, ih);
+  cam.annots.forEach(a => {
+    if(a.type === 'texte'){
+      const fs = Math.round(base * 0.055);
+      ctx.font = `700 ${fs}px Inter, Arial, sans-serif`; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+      ctx.lineWidth = Math.max(2, fs / 5); ctx.strokeStyle = 'rgba(255,255,255,.92)'; ctx.strokeText(a.t, a.x * iw, a.y * ih);
+      ctx.fillStyle = a.c; ctx.fillText(a.t, a.x * iw, a.y * ih);
+      return;
+    }
+    const sur = a.type === 'surligne';
+    ctx.save(); ctx.globalAlpha = sur ? 0.35 : 1;
+    ctx.strokeStyle = sur && a.c === '#1C2230' ? '#FFD600' : a.c;
+    ctx.lineWidth = Math.max(2, base / (sur ? 28 : 170)); ctx.lineCap = sur ? 'butt' : 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); a.p.forEach(([x, y], i) => i ? ctx.lineTo(x * iw, y * ih) : ctx.moveTo(x * iw, y * ih)); ctx.stroke();
+    ctx.restore();
   });
 }
+function camFiltreCss(){ return `brightness(${cam.lum / 100}) contrast(${cam.con / 100})${cam.gris ? ' grayscale(1)' : ''}`; }
 function camRedessiner(){
   const t = camTaille(); if(!t) return;
   const c = document.getElementById('camCanvas'), d = document.getElementById('camDraw');
   const r = window.devicePixelRatio || 1;
-  [c, d].forEach(x => { x.width = t.w * r; x.height = t.h * r; x.style.width = t.w + 'px'; x.style.height = t.h + 'px'; });
-  const ctx = c.getContext('2d'); ctx.setTransform(r, 0, 0, r, 0, 0); camDessinerImage(ctx, t.w, t.h);
-  const dc = d.getContext('2d'); dc.setTransform(r, 0, 0, r, 0, 0); dc.clearRect(0, 0, t.w, t.h); camDessinerTraits(dc, t.w, t.h);
+  [c, d].forEach(x => { x.width = Math.round(t.w * r); x.height = Math.round(t.h * r); x.style.width = t.w + 'px'; x.style.height = t.h + 'px'; });
+  c.style.filter = camFiltreCss();
+  const m = [r * t.k, 0, 0, r * t.k, -t.c.x * t.iw * t.k * r, -t.c.y * t.ih * t.k * r];
+  const ctx = c.getContext('2d'); ctx.setTransform(...m); camDessinerImage(ctx, t.iw, t.ih);
+  const dc = d.getContext('2d'); dc.setTransform(1, 0, 0, 1, 0, 0); dc.clearRect(0, 0, d.width, d.height);
+  dc.setTransform(...m); camDessinerAnnots(dc, t.iw, t.ih);
+  if(cam.cropEdit){ // cadre de recadrage
+    dc.setTransform(r, 0, 0, r, 0, 0);
+    const e = cam.cropEdit, x = e.x * t.w, y = e.y * t.h, w = e.w * t.w, h = e.h * t.h;
+    dc.fillStyle = 'rgba(10,14,22,.55)'; dc.beginPath(); dc.rect(0, 0, t.w, t.h); dc.rect(x, y, w, h); dc.fill('evenodd');
+    dc.strokeStyle = '#fff'; dc.lineWidth = 2; dc.strokeRect(x, y, w, h);
+    dc.strokeStyle = 'rgba(255,255,255,.45)'; dc.lineWidth = 1;
+    for(const f of [1 / 3, 2 / 3]){ dc.beginPath(); dc.moveTo(x + w * f, y); dc.lineTo(x + w * f, y + h); dc.moveTo(x, y + h * f); dc.lineTo(x + w, y + h * f); dc.stroke(); }
+    dc.fillStyle = '#FF8208';
+    [[x, y], [x + w, y], [x, y + h], [x + w, y + h]].forEach(([a, b]) => { dc.beginPath(); dc.arc(a, b, 8, 0, 7); dc.fill(); });
+  }
+  const info = document.getElementById('camInfo');
+  if(info){ const [iw, ih] = camDims(); info.textContent = `${Math.round(cam.crop.w * iw)} × ${Math.round(cam.crop.h * ih)} px`; }
 }
+
+/* ---------------- Commandes ---------------- */
 function camFigerEtat(on){
   cam.frozen = on;
   const b = document.getElementById('camFigerBtn');
-  if(b) b.innerHTML = on ? '<span class="gicon">play_arrow</span> Reprendre le direct' : '<span class="gicon">pause</span> Figer';
+  if(b) b.innerHTML = on ? `${CAM_ICO('play_arrow')} Reprendre le direct` : `${CAM_ICO('pause')} Figer`;
   const l = document.getElementById('camLive'); if(l){ l.textContent = on ? '❚❚ IMAGE FIGÉE' : '● EN DIRECT'; l.classList.toggle('fige', on); }
   camEnvoyer(on ? 'pause' : 'resume', {});
-  if(!on){ cam.strokes = []; camRedessiner(); }
+  if(!on){ cam.annots = []; camRedessiner(); }
 }
 function camFiger(){ if(cam && cam.img) camFigerEtat(!cam.frozen); }
 function camPhoto(){
   if(!cam || !cam.connecte){ niceAlert('Le téléphone n\'est pas connecté.'); return; }
-  cam.photoAttendue = true; camEnvoyer('req-photo', {});
+  camEnvoyer('req-photo', {});
   const l = document.getElementById('camLive'); if(l) l.textContent = '… photo en cours';
 }
-function camPivoter(){ if(!cam || !cam.img) return; cam.rot = (cam.rot + 90) % 360; cam.strokes = []; camRedessiner(); }
-function camCouleur(c, el){ cam.color = c; document.querySelectorAll('.cam-col').forEach(b => b.classList.toggle('on', b === el)); }
-function camAnnuler(){ if(cam){ cam.strokes.pop(); camRedessiner(); } }
-function camEffacer(){ if(cam){ cam.strokes = []; camRedessiner(); } }
+function camPivoter(){ if(!cam || !cam.img) return; cam.rot = (cam.rot + 90) % 360; cam.annots = []; cam.crop = { x: 0, y: 0, w: 1, h: 1 }; cam.cropEdit = null; camMajOutils(); camRedessiner(); }
+function camOutil(o){
+  if(!cam) return;
+  if(o === 'recadrer'){ if(!cam.img) return; cam.cropEdit = Object.assign({}, cam.crop); }
+  else if(cam.cropEdit) camRecadrerFin(true);
+  cam.outil = o; camMajOutils(); camRedessiner();
+}
+function camMajOutils(){
+  document.querySelectorAll('#camOutils button').forEach(b => b.classList.toggle('on', b.dataset.o === cam.outil));
+  const bar = document.getElementById('camCropBar'); if(bar) bar.hidden = !cam.cropEdit;
+  const d = document.getElementById('camDraw'); if(d) d.style.cursor = cam.outil === 'texte' ? 'text' : cam.outil === 'recadrer' ? 'move' : 'crosshair';
+}
+function camCouleur(c, el){ cam.color = c; document.querySelectorAll('.cam-col').forEach(b => b.classList.toggle('on', b === el)); if(cam.outil === 'recadrer') camOutil('crayon'); }
+function camAnnuler(){ if(cam){ cam.annots.pop(); camRedessiner(); } }
+function camEffacer(){ if(cam){ cam.annots = []; camRedessiner(); } }
+function camReglage(k, v){ if(!cam) return; cam[k] = k === 'gris' ? !!v : Number(v); camRedessiner(); }
+function camMajReglages(){
+  const set = (id, v, p) => { const e = document.getElementById(id); if(e) e[p || 'value'] = v; };
+  set('camLum', cam.lum); set('camCon', cam.con); set('camGris', cam.gris, 'checked'); camRedessiner();
+}
+function camDocument(){ if(!cam) return; cam.lum = 118; cam.con = 175; cam.gris = true; camMajReglages(); }
+function camReglagesZero(){ if(!cam) return; cam.lum = 100; cam.con = 100; cam.gris = false; camMajReglages(); }
+function camRecadrerTout(){ if(cam && cam.cropEdit){ cam.cropEdit = { x: 0, y: 0, w: 1, h: 1 }; camRedessiner(); } }
+function camRecadrerFin(valider){
+  if(!cam || !cam.cropEdit) return;
+  if(valider){ const e = cam.cropEdit; cam.crop = { x: e.x, y: e.y, w: Math.max(0.03, e.w), h: Math.max(0.03, e.h) }; }
+  cam.cropEdit = null; cam.outil = 'crayon'; camMajOutils(); camRedessiner();
+}
+
+/* ---------------- Gestes sur l'image ---------------- */
 function camBrancherDessin(){
   const d = document.getElementById('camDraw');
-  const pos = ev => { const r = d.getBoundingClientRect(); return [(ev.clientX - r.left) / r.width, (ev.clientY - r.top) / r.height]; };
+  const local = ev => { const r = d.getBoundingClientRect(); return [(ev.clientX - r.left) / r.width, (ev.clientY - r.top) / r.height]; };
+  // point de l'écran -> coordonnées dans l'image pivotée entière (0-1)
+  const img = ev => { const [u, v] = local(ev), c = camCadre(); return [c.x + u * c.w, c.y + v * c.h]; };
   d.addEventListener('pointerdown', ev => {
     if(!cam || !cam.img) return;
-    if(!cam.frozen) camFigerEtat(true); // on annote une image fixe
-    cam.drawing = true; try{ d.setPointerCapture(ev.pointerId); }catch(e){}
-    cam.strokes.push({ c: cam.color, p: [pos(ev)] }); ev.preventDefault();
+    ev.preventDefault();
+    if(cam.outil === 'recadrer'){ // coin le plus proche (sinon déplacement du cadre)
+      const [u, v] = local(ev), e = cam.cropEdit, r = d.getBoundingClientRect(), seuil = 22 / Math.min(r.width, r.height);
+      const coins = { nw: [e.x, e.y], ne: [e.x + e.w, e.y], sw: [e.x, e.y + e.h], se: [e.x + e.w, e.y + e.h] };
+      let poignee = null; for(const k in coins){ if(Math.hypot(coins[k][0] - u, coins[k][1] - v) < seuil * 1.5) poignee = k; }
+      if(!poignee && !(u >= e.x && u <= e.x + e.w && v >= e.y && v <= e.y + e.h)) return;
+      cam.geste = { type: 'crop', poignee: poignee || 'move', u0: u, v0: v, e0: Object.assign({}, e) };
+    } else if(cam.outil === 'texte'){
+      camTexte(ev, img(ev)); return;
+    } else {
+      if(!cam.frozen) camFigerEtat(true); // on annote une image fixe
+      cam.annots.push({ type: cam.outil === 'surligne' ? 'surligne' : 'trait', c: cam.color, p: [img(ev)] });
+      cam.geste = { type: 'trait' };
+    }
+    try{ d.setPointerCapture(ev.pointerId); }catch(e){}
   });
-  d.addEventListener('pointermove', ev => { if(!cam || !cam.drawing) return; cam.strokes[cam.strokes.length - 1].p.push(pos(ev)); camRedessiner(); });
-  const fin = () => { if(cam) cam.drawing = false; };
+  d.addEventListener('pointermove', ev => {
+    if(!cam || !cam.geste) return;
+    if(cam.geste.type === 'trait'){ cam.annots[cam.annots.length - 1].p.push(img(ev)); camRedessiner(); return; }
+    const g = cam.geste, [u, v] = local(ev), du = u - g.u0, dv = v - g.v0, e0 = g.e0, m = 0.04;
+    let x1 = e0.x, y1 = e0.y, x2 = e0.x + e0.w, y2 = e0.y + e0.h;
+    if(g.poignee === 'move'){ const dx = Math.min(Math.max(du, -x1), 1 - x2), dy = Math.min(Math.max(dv, -y1), 1 - y2); x1 += dx; x2 += dx; y1 += dy; y2 += dy; }
+    else {
+      if(g.poignee.includes('w')) x1 = Math.min(Math.max(0, x1 + du), x2 - m);
+      if(g.poignee.includes('e')) x2 = Math.max(Math.min(1, x2 + du), x1 + m);
+      if(g.poignee.includes('n')) y1 = Math.min(Math.max(0, y1 + dv), y2 - m);
+      if(g.poignee.includes('s')) y2 = Math.max(Math.min(1, y2 + dv), y1 + m);
+    }
+    cam.cropEdit = { x: x1, y: y1, w: x2 - x1, h: y2 - y1 }; camRedessiner();
+  });
+  const fin = () => { if(cam) cam.geste = null; };
   d.addEventListener('pointerup', fin); d.addEventListener('pointercancel', fin);
+}
+// Zone de saisie posée à l'endroit cliqué ; Entrée ou clic ailleurs pour valider, Échap pour annuler.
+function camTexte(ev, [x, y]){
+  if(!cam.frozen) camFigerEtat(true);
+  const v = document.getElementById('camView'), r = v.getBoundingClientRect();
+  document.querySelectorAll('.cam-texte-in').forEach(e => e.remove());
+  const inp = document.createElement('input');
+  inp.className = 'cam-texte-in'; inp.placeholder = 'Votre texte…'; inp.style.color = cam.color;
+  inp.style.left = (ev.clientX - r.left) + 'px'; inp.style.top = (ev.clientY - r.top) + 'px';
+  v.appendChild(inp); setTimeout(() => inp.focus(), 0);
+  let fait = false;
+  const valider = ok => { if(fait) return; fait = true; const t = inp.value.trim(); inp.remove(); if(ok && t && cam){ cam.annots.push({ type: 'texte', c: cam.color, x, y, t }); camRedessiner(); } };
+  inp.addEventListener('keydown', e => { if(e.key === 'Enter') valider(true); if(e.key === 'Escape') valider(false); e.stopPropagation(); });
+  inp.addEventListener('blur', () => valider(true));
 }
 function camPleinEcran(){
   const b = document.getElementById('camBox'); if(!b) return;
   if(document.fullscreenElement) document.exitFullscreen(); else if(b.requestFullscreen) b.requestFullscreen().catch(() => {});
 }
-document.addEventListener('fullscreenchange', () => setTimeout(camRedessiner, 120));
-// Image finale : pleine résolution, pivotée, annotations comprises.
+document.addEventListener('fullscreenchange', () => setTimeout(() => { if(cam) camRedessiner(); }, 120));
+
+/* ---------------- Image finale ---------------- */
+// Luminosité / contraste / noir et blanc appliqués pixel par pixel (même rendu que le filtre CSS
+// de l'affichage, et indépendant de la prise en charge de ctx.filter par le navigateur).
+function camAppliquerReglages(ctx, w, h){
+  if(cam.lum === 100 && cam.con === 100 && !cam.gris) return;
+  const d = ctx.getImageData(0, 0, w, h), p = d.data, b = cam.lum / 100, c = cam.con / 100, o = 128 * (1 - c);
+  for(let i = 0; i < p.length; i += 4){
+    let r = p[i] * b, g = p[i + 1] * b, bl = p[i + 2] * b;
+    r = r * c + o; g = g * c + o; bl = bl * c + o;
+    if(cam.gris){ const y = 0.2126 * r + 0.7152 * g + 0.0722 * bl; r = g = bl = y; }
+    p[i] = r; p[i + 1] = g; p[i + 2] = bl; // Uint8ClampedArray : bornes 0-255 automatiques
+  }
+  ctx.putImageData(d, 0, 0);
+}
 function camComposer(){
-  const quart = cam.rot % 180 !== 0;
-  const w = quart ? cam.img.naturalHeight : cam.img.naturalWidth, h = quart ? cam.img.naturalWidth : cam.img.naturalHeight;
-  const c = document.createElement('canvas'); c.width = w; c.height = h;
-  const ctx = c.getContext('2d'); camDessinerImage(ctx, w, h); camDessinerTraits(ctx, w, h);
-  return new Promise(res => c.toBlob(res, 'image/jpeg', 0.88));
+  const [iw, ih] = camDims(), c = cam.crop, w = Math.max(1, Math.round(c.w * iw)), h = Math.max(1, Math.round(c.h * ih));
+  const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d');
+  ctx.setTransform(1, 0, 0, 1, -c.x * iw, -c.y * ih); camDessinerImage(ctx, iw, ih);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); camAppliquerReglages(ctx, w, h);
+  ctx.setTransform(1, 0, 0, 1, -c.x * iw, -c.y * ih); camDessinerAnnots(ctx, iw, ih);
+  return new Promise(res => cv.toBlob(res, 'image/jpeg', 0.88));
 }
 async function camInserer(){
   if(!cam || !cam.img) return;
+  if(cam.cropEdit) camRecadrerFin(true);
   if(!cam.frozen) camFigerEtat(true);
   const btn = document.getElementById('camInsBtn'); btn.disabled = true;
   const avant = btn.innerHTML; btn.innerHTML = 'Envoi en cours…';
@@ -201,8 +350,8 @@ async function camInserer(){
     const url = sb.storage.from('cahier-images').getPublicUrl(path).data.publicUrl;
     const html = `<div style="text-align:center;padding:6px 0;"><img src="${url}" style="max-width:100%;max-height:400px;border-radius:6px;border:1px solid rgba(28,43,57,.15);" alt="Photo"/></div>`;
     addPendingBlock('image', html, { src: url }, 'reopenImageBlock');
-    btn.innerHTML = '<span class="gicon">check</span> Insérée';
-    setTimeout(() => { if(document.getElementById('camInsBtn')) { btn.innerHTML = avant; btn.disabled = false; } }, 1600);
+    btn.innerHTML = `${CAM_ICO('check')} Insérée`;
+    setTimeout(() => { if(document.getElementById('camInsBtn')){ btn.innerHTML = avant; btn.disabled = false; } }, 1600);
   }catch(e){
     console.error('caméra : insertion', e);
     btn.innerHTML = avant; btn.disabled = false;
@@ -210,7 +359,7 @@ async function camInserer(){
   }
 }
 function camFermer(silencieux){
-  if(!cam) { const o = document.getElementById('camOverlay'); if(o) o.style.display = 'none'; return; }
+  if(!cam){ const o = document.getElementById('camOverlay'); if(o) o.style.display = 'none'; return; }
   try{ camEnvoyer('bye', {}); }catch(e){}
   clearInterval(cam.veille);
   try{ if(cam.ch) sb.removeChannel(cam.ch); }catch(e){}
@@ -225,7 +374,7 @@ function camFermer(silencieux){
   st.textContent = `
     .cam-ov [hidden]{display:none!important;}
     .cam-ov{position:fixed;inset:0;z-index:420;background:rgba(20,26,36,.55);display:none;align-items:center;justify-content:center;padding:14px;}
-    .cam-box{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:min(1200px,100%);height:min(860px,100%);display:flex;flex-direction:column;overflow:hidden;}
+    .cam-box{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.3);width:min(1240px,100%);height:min(900px,100%);display:flex;flex-direction:column;overflow:hidden;}
     .cam-box:fullscreen{width:100%;height:100%;border-radius:0;}
     .cam-head{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid rgba(28,43,57,.1);font-family:'Space Grotesk',sans-serif;}
     .cam-head .gicon{color:#0C5BA0;}
@@ -239,14 +388,25 @@ function camFermer(silencieux){
     .cam-stage{flex:1;min-height:0;display:flex;background:#1C2230;}
     .cam-view{flex:1;min-width:0;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;}
     .cam-view canvas{position:absolute;} #camDraw{cursor:crosshair;touch-action:none;}
-    .cam-live{position:absolute;top:10px;left:12px;background:rgba(217,48,37,.92);color:#fff;font:700 .72rem Inter,sans-serif;border-radius:6px;padding:3px 8px;letter-spacing:.5px;}
+    .cam-live{position:absolute;top:10px;left:12px;background:rgba(217,48,37,.92);color:#fff;font:700 .72rem Inter,sans-serif;border-radius:6px;padding:3px 8px;letter-spacing:.5px;z-index:2;}
     .cam-live.fige{background:rgba(28,43,57,.8);}
-    .cam-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid rgba(28,43,57,.1);}
-    .cam-tools .btn{padding:6px 12px;font-size:.84rem;}
+    .cam-cropbar{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:rgba(20,26,36,.85);color:#fff;border-radius:12px;padding:8px 10px 8px 14px;font-size:.84rem;z-index:3;}
+    .cam-cropbar .btn{padding:5px 12px;font-size:.82rem;}
+    .cam-cropbar .btn.secondary{background:rgba(255,255,255,.16);color:#fff;border-color:transparent;}
+    .cam-texte-in{position:absolute;z-index:4;transform:translateY(-50%);font:700 20px Inter,sans-serif;border:2px dashed #FF8208;border-radius:6px;padding:4px 8px;background:rgba(255,255,255,.95);min-width:220px;outline:none;}
+    .cam-tools{display:flex;flex-direction:column;gap:6px;padding:8px 14px 10px;border-top:1px solid rgba(28,43,57,.1);}
+    .cam-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+    .cam-tools .btn{padding:6px 11px;font-size:.84rem;}
     .cam-sep{width:1px;height:26px;background:rgba(28,43,57,.15);margin:0 4px;}
-    .cam-annot{display:inline-flex;align-items:center;gap:5px;}
-    .cam-col{width:24px;height:24px;border-radius:50%;background:var(--c);border:3px solid #fff;box-shadow:0 0 0 1.5px rgba(28,43,57,.25);cursor:pointer;padding:0;}
+    .cam-seg{display:inline-flex;background:rgba(28,43,57,.06);border-radius:10px;padding:3px;gap:2px;}
+    .cam-seg button{border:none;background:none;border-radius:8px;padding:5px 8px;cursor:pointer;color:#4E5665;display:inline-flex;}
+    .cam-seg button.on{background:#fff;color:#0C5BA0;box-shadow:0 1px 3px rgba(28,43,57,.2);}
+    .cam-annot{display:inline-flex;align-items:center;gap:5px;margin:0 4px;}
+    .cam-col{width:22px;height:22px;border-radius:50%;background:var(--c);border:3px solid #fff;box-shadow:0 0 0 1.5px rgba(28,43,57,.25);cursor:pointer;padding:0;}
     .cam-col.on{box-shadow:0 0 0 2.5px var(--c);}
+    .cam-reglages label{display:inline-flex;align-items:center;gap:6px;font-size:.84rem;color:#4E5665;}
+    .cam-reglages input[type=range]{width:130px;accent-color:#0C5BA0;}
+    .cam-chk{margin:0 6px;}
     #camInsBtn{margin-left:auto;}
   `;
   document.head.appendChild(st);
