@@ -21,14 +21,14 @@ const ROUTE_SIMPLE = {
   'view-admin':'admin', 'view-supervision':'supervision', 'view-mesresultats':'mesresultats',
   'view-ia':'ia', 'view-famille':'famille', 'view-cgv':'cgv',
   'view-confidentialite':'confidentialite', 'view-mentions-legales':'mentions-legales',
-  'view-qz-carnet':'carnet', 'view-qz-banque':'questionnaires', 'view-qz-form':'questionnaires', 'view-devoirs-prof':'devoirs',
+  'view-programmation':'programmation', 'view-qz-carnet':'carnet', 'view-qz-banque':'questionnaires', 'view-qz-form':'questionnaires', 'view-devoirs-prof':'devoirs',
 };
 const ROUTE_LABELS = {
   cm:'Suivi', compte:'Objectif Nombre', correction:'Correction', evaluation:'Évaluation',
   tableau:'Tableau interactif', cahier:'Cahier élève', admin:'Administration',
   supervision:'Supervision', mesresultats:'Mes résultats', ia:'Intelligence artificielle',
   famille:'Espace famille', cgv:'Conditions générales de vente', confidentialite:'Confidentialité',
-  'mentions-legales':'Mentions légales', carnet:'Carnet de notes', questionnaires:'Interrogations en ligne', devoirs:'Devoirs en ligne',
+  'mentions-legales':'Mentions légales', programmation:'Programmation', carnet:'Carnet de notes', questionnaires:'Interrogations en ligne', devoirs:'Devoirs en ligne',
 };
 /* Routes reservees (role requis), miroir exact des gardes déjà présentes dans le
    gestionnaire de clic data-nav de app.js -- ne pas les dupliquer ailleurs. */
@@ -182,6 +182,8 @@ function routerRestoreFromHash(){
       } else if(key==='devoirs'){
         if(typeof resetDevoirFormState==='function') resetDevoirFormState();
         showView('view-devoirs-prof'); setActiveTopnav('devoirsprof'); if(typeof renderDevoirsProf==='function') renderDevoirsProf();
+      } else if(key==='programmation'){
+        if(typeof progOuvrir==='function') progOuvrir();
       } else if(key==='questionnaires'){
         if(typeof qzBanqueOuvrir==='function') qzBanqueOuvrir();
       } else if(key==='mesresultats'){

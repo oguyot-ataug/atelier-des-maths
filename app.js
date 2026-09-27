@@ -229,6 +229,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-evaluation'); setActiveTopnav('evaluation'); if(typeof initEvaluationView==='function') initEvaluationView();
     }
+    if(nav==='programmation'){ if(typeof progQuitterDevoir==='function') progQuitterDevoir(); if(typeof progOuvrir==='function') progOuvrir(); }
     if(nav==='tableau'){
       // Accessible aux élèves aussi (même esprit que figure-sandbox, un espace de
       // construction libre) -- signalé : "l'outil Tableau interactif est disponible
@@ -293,6 +294,7 @@ function setActiveTopnav(key){
   else if(key==='correction') document.querySelector('.nav-links button[data-nav="correction"]').classList.add('active');
   else if(key==='evaluation') document.querySelector('.nav-links button[data-nav="evaluation"]').classList.add('active');
   else if(key==='tableau') document.querySelectorAll('.nav-links button[data-nav="tableau"]').forEach(b=>b.classList.add('active'));
+  else if(key==='programmation') document.querySelectorAll('.nav-links button[data-nav="programmation"]').forEach(b=>b.classList.add('active'));
   else if(key==='cahier') document.querySelector('.nav-links button[data-nav="cahier"]').classList.add('active');
   else if(key==='admin') document.querySelector('.nav-links button[data-nav="admin"]').classList.add('active');
   else if(key==='famille') document.querySelector('.nav-links button[data-nav="famille"]')?.classList.add('active');
@@ -2727,6 +2729,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.738', items:[
+    "Programmation par blocs -- demandé : \"il ne manque plus qu'une chose sur le site, c'est l'apprentissage à la programmation par blocs\" (façon Scratch, avec défis et devoirs). Nouvelle page S'entraîner › Programmation (blocs) : blocs aux couleurs de Scratch (événements, mouvement, stylo, apparence, contrôle, capteurs, opérateurs, variables), un lutin qui se déplace et trace sur une scène avec repère (x, y), vitesse réglable. 15 défis 6e/5e vérifiés automatiquement (segment, carré, rectangle, triangle, escalier, hexagone, étoile, frise, polygone à n côtés, programmes de calcul, périmètre, plus grand de deux nombres, pair/impair, somme de 1 à 100) : figure acceptée même tournée ou retournée, programmes de calcul testés avec plusieurs nombres, message d'aide précis en cas d'erreur, blocs imposés (« répéter », variables…). Onglet « Création libre » pour inventer ses propres programmes. Progression enregistrée (programme, essais, défi réussi).",
+    "Nouveau type de devoir « Programmation (blocs) » : le professeur choisit les défis (bouton « Essayer » pour les tester), l'élève les ouvre depuis « Mes devoirs », le devoir se rend tout seul quand tous les défis sont réussis. Dans « Voir les rendus » : réussite de la classe par défi, pour chaque élève les défis réussis, le nombre d'essais et le temps de travail réel, avec le programme de l'élève consultable en lecture seule (et exécutable). Export CSV.",
+  ]},
   { version:'2026-08-19.737', items:[
     "Page d'accueil réorganisée -- demandé : \"réorganiser la page d'accueil et mettre les vidéos en accordéon dans les vignettes\". Les grandes cartes vidéo « Nouveautés » disparaissent : chaque vidéo est dans la vignette de son outil (« Voir la vidéo » l'ouvre sur toute la largeur, une seule à la fois, avec « Ouvrir l'outil »), badge « Nouveau » sur les nouveautés (interrogations en ligne, séance en direct, entraînement non noté, caméra du téléphone). Section « Pour les professeurs » en premier pour un professeur ou un visiteur, « Pour les élèves » en premier pour un élève. Automatismes, Objectif Nombre et frise de progression regroupés sur une rangée « Et aussi ».",
   ]},

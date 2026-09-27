@@ -20,7 +20,7 @@
    Ne concerne que les élèves (jamais le test d'un devoir par le professeur).
    ===================================================================== */
 
-const DS_IDLE_MS = { automatismes: 60*1000, compte_est_bon: 5*60*1000, figure: 5*60*1000 };
+const DS_IDLE_MS = { automatismes: 60*1000, compte_est_bon: 5*60*1000, figure: 5*60*1000, programmation: 5*60*1000 };
 const DS_FLUSH_MS = 20*1000;
 const dsOpen = new Set();   // séances en cours dans cette page
 let dsLastInput = performance.now();

@@ -10,7 +10,7 @@
 document.getElementById('view-devoirs-prof').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;"><span class=gicon>assignment</span> Devoirs</h1>
-  <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, ou un défi Objectif Nombre.</p>
+  <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, un défi Objectif Nombre ou des défis de programmation par blocs.</p>
   <p class="hint" style="margin:0 0 12px;max-width:75ch;"><span class=gicon style="font-size:1rem;vertical-align:middle;color:#6B3FA0;">quiz</span> Les interrogations notées (questionnaires en ligne) ont leur propre page : <a href="#" onclick="event.preventDefault();qzBanqueOuvrir();">Outils prof › Évaluations › Interrogations en ligne</a>.</p>
 
   <div class="tool-shell devoir-zone-create">
@@ -59,6 +59,11 @@ document.getElementById('view-devoirs-prof').innerHTML = `
       <div id="devoirCebRoundsList" style="border:1px solid rgba(28,43,57,.15);border-radius:8px;padding:8px;"></div>
     </div>
 
+    <div id="devoirTypeProgBox" style="display:none;margin-top:6px;">
+      <p class="hint" style="margin:0 0 6px;">Choisissez les défis de programmation à faire (<span id="devoirProgCount">0</span> sélectionné(s)), dans l'ordre de la liste. Chaque programme est vérifié automatiquement ; le devoir est rendu quand tous les défis sont réussis.</p>
+      <div id="devoirProgPicker" style="max-height:260px;overflow-y:auto;border:1px solid rgba(28,43,57,.15);border-radius:8px;padding:8px;"></div>
+    </div>
+
 
     <div class="tool-row" style="margin-top:10px;">
       <button class="btn" id="devoirCreateBtn" onclick="createDevoir()">Assigner ce devoir</button>
@@ -105,6 +110,7 @@ const DEVOIR_TYPES = [
   {id:'figure_completer', label:'Figure à compléter', icon:'auto_fix_high', color:'#26AAB1'},
   {id:'automatismes', label:'Automatismes', icon:'bolt', color:'#FF8208'},
   {id:'compte_est_bon', label:'Objectif Nombre', icon:'casino', color:'#9E1F5E'},
+  {id:'programmation', label:'Programmation (blocs)', icon:'extension', color:'#4C97FF'},
 ];
 /* Les interrogations en ligne (type 'questionnaire') restent des lignes de la table devoirs mais
    ont leur propre page (questionnaires-interros.js) : absentes du formulaire et de la liste de la
@@ -113,6 +119,7 @@ const DEVOIR_TYPE_INTERRO = {id:'questionnaire', label:'Interrogation en ligne',
 let devoirNewType = 'fichier';
 let devoirNewFigureDepart = null; // serializeFigState(...) de la figure de départ (type=figure_completer)
 let devoirNewAutomatismesSeqs = new Set(); // sequence_id choisis (type=automatismes)
+let devoirNewProgDefis = new Set(); // défis de programmation choisis (type=programmation, PROG_DEFIS de prog-defis.js)
 let devoirNewCebNLarge = 2, devoirNewCebTimerOn = true, devoirNewCebTimerDuration = 60, devoirNewCebRounds = 1; // type=compte_est_bon
 /* Tirages Objectif Nombre réellement en brouillon -- {numbers,target,solutionExpr,solutionValue,
    tested} par compte. Générés dès qu'affichés (ou chargés depuis un devoir existant en édition),
@@ -164,13 +171,31 @@ function renderDevoirTypePicker(){
   const box = document.getElementById('devoirTypePicker');
   if(!box) return;
   box.innerHTML = DEVOIR_TYPES.map(t=>`<button type="button" class="devoir-type-btn${devoirNewType===t.id?' active':''}" style="--dt-color:${t.color};--dt-bg:${t.color}14;" onclick="setDevoirNewType('${t.id}')"><span class=gicon>${t.icon}</span> ${t.label}</button>`).join('');
-  const boxes = {figure_completer:'devoirTypeFigureCompleterBox', automatismes:'devoirTypeAutomatismesBox', compte_est_bon:'devoirTypeCebBox'};
+  const boxes = {figure_completer:'devoirTypeFigureCompleterBox', automatismes:'devoirTypeAutomatismesBox', compte_est_bon:'devoirTypeCebBox', programmation:'devoirTypeProgBox'};
   Object.keys(boxes).forEach(type=>{
     const el = document.getElementById(boxes[type]);
     if(el) el.style.display = devoirNewType===type ? 'block' : 'none';
   });
   if(devoirNewType==='automatismes') renderDevoirAutomatismesPicker();
   if(devoirNewType==='compte_est_bon') renderDevoirCebPicker();
+  if(devoirNewType==='programmation') renderDevoirProgPicker();
+}
+/* Défis de programmation (prog-defis.js) : cases à cocher groupées par niveau, bouton « Essayer »
+   pour ouvrir le défi dans l'éditeur de blocs comme un élève. */
+function renderDevoirProgPicker(){
+  const box = document.getElementById('devoirProgPicker');
+  if(!box || typeof PROG_DEFIS==='undefined') return;
+  let niv = '';
+  box.innerHTML = PROG_DEFIS.map(d=>`${d.niveau!==niv ? `<p class="hint" style="margin:${niv?'8px':'0'} 0 2px;font-weight:700;">${(niv = d.niveau)}</p>` : ''}<label style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:.85rem;">
+    <input type="checkbox" value="${d.id}" ${devoirNewProgDefis.has(d.id)?'checked':''} onchange="toggleDevoirProgDefi('${d.id}',this.checked)">
+    <span style="flex:1;"><b>${escapeHtml(d.titre)}</b> <span class="hint" style="margin:0;">· ${d.type==='calcul'?'Calcul':'Tracé'}</span></span>
+    <button type="button" class="btn secondary" style="font-size:.68rem;padding:2px 7px;flex:none;" onclick="event.preventDefault();progOuvrir({defi:'${d.id}'})">Essayer</button>
+  </label>`).join('');
+  document.getElementById('devoirProgCount').textContent = devoirNewProgDefis.size;
+}
+function toggleDevoirProgDefi(id, checked){
+  if(checked) devoirNewProgDefis.add(id); else devoirNewProgDefis.delete(id);
+  document.getElementById('devoirProgCount').textContent = devoirNewProgDefis.size;
 }
 function setDevoirNewType(t){ devoirNewType = t; renderDevoirTypePicker(); }
 /* Réutilise directement CM_SEQUENCES (calcul-mental.js) -- pas de duplication de la liste des
@@ -365,6 +390,7 @@ async function createDevoir(){
   if(!titre || !consigne || !classId){ status.textContent = 'Titre, consigne et classe sont nécessaires.'; return; }
   if(devoirNewType==='figure_completer' && !devoirNewFigureDepart){ status.textContent = 'Construisez la figure de départ avant d\'assigner ce devoir.'; return; }
   if(devoirNewType==='automatismes' && !devoirNewAutomatismesSeqs.size){ status.textContent = 'Choisissez au moins une séquence.'; return; }
+  if(devoirNewType==='programmation' && !devoirNewProgDefis.size){ status.textContent = 'Choisissez au moins un défi de programmation.'; return; }
   if(devoirNewTargetMode==='eleves' && !devoirNewTargetIds.size){ status.textContent = 'Sélectionnez au moins un élève.'; return; }
   status.textContent = 'Enregistrement…';
   const payload = {
@@ -375,6 +401,8 @@ async function createDevoir(){
   };
   if(devoirNewType==='figure_completer') payload.figure_depart = devoirNewFigureDepart;
   if(devoirNewType==='automatismes') payload.automatismes_sequences = Array.from(devoirNewAutomatismesSeqs);
+  // Dans l'ordre de la liste des défis (du plus simple au plus difficile), pas dans l'ordre des clics.
+  if(devoirNewType==='programmation') payload.prog_defis = PROG_DEFIS.map(d=>d.id).filter(id=>devoirNewProgDefis.has(id));
   if(devoirNewType==='compte_est_bon'){
     payload.ceb_n_large = devoirNewCebNLarge;
     payload.ceb_timer_on = devoirNewCebTimerOn;
@@ -410,6 +438,7 @@ async function editDevoirPrompt(devoirId){
   devoirNewType = d.type;
   devoirNewFigureDepart = d.figure_depart || null;
   devoirNewAutomatismesSeqs = new Set(d.automatismes_sequences || []);
+  devoirNewProgDefis = new Set(d.prog_defis || []);
   devoirNewCebNLarge = d.ceb_n_large ?? 2;
   devoirNewCebTimerOn = d.ceb_timer_on ?? true;
   devoirNewCebTimerDuration = d.ceb_timer_duration || 60;
@@ -438,7 +467,7 @@ function resetDevoirFormState(){
   document.getElementById('devoirNewConsigne').value = '';
   document.getElementById('devoirNewDateDepot').value = '';
   document.getElementById('devoirNewDate').value = '';
-  devoirNewType = 'fichier'; devoirNewFigureDepart = null; devoirNewAutomatismesSeqs = new Set();
+  devoirNewType = 'fichier'; devoirNewFigureDepart = null; devoirNewAutomatismesSeqs = new Set(); devoirNewProgDefis = new Set();
   devoirNewCebNLarge = 2; devoirNewCebTimerOn = true; devoirNewCebTimerDuration = 60; devoirNewCebRounds = 1;
   devoirNewCebRoundsData = [];
   devoirNewTargetMode = 'class'; devoirNewTargetIds = new Set();
@@ -472,7 +501,7 @@ function devoirTypeLabel(type){ const t = DEVOIR_TYPES.find(t=>t.id===type) || (
 async function refreshDevoirsProfListing(){
   const el = document.getElementById('devoirsProfListing');
   const { data: devoirsList, error } = await sb.from('devoirs')
-    .select('id,titre,consigne,date_depot,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_rounds,student_ids,qz_publie_at,questionnaire_id,classes(nom,niveau)')
+    .select('id,titre,consigne,date_depot,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_rounds,prog_defis,student_ids,qz_publie_at,questionnaire_id,classes(nom,niveau)')
     .eq('teacher_id', currentUser.id).neq('type','questionnaire').order('created_at',{ascending:false});
   if(error){ el.textContent = 'Erreur : '+error.message; return; }
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir assigné pour l\'instant.</p>'; return; }
@@ -487,6 +516,7 @@ async function refreshDevoirsProfListing(){
     const dateStr = d.date_limite ? new Date(d.date_limite).toLocaleDateString('fr-FR') : '';
     const typeDetail = d.type==='automatismes' ? ` · ${(d.automatismes_sequences||[]).length} séquence(s)`
       : d.type==='compte_est_bon' ? ` · ${(d.ceb_rounds||[]).length||1} compte(s), ${d.ceb_n_large??2} grand(s) nombre(s), ${d.ceb_timer_on?'chronométré':'illimité'}`
+      : d.type==='programmation' ? ` · ${(d.prog_defis||[]).length} défi(s)`
       : '';
     const cibleDetail = cible ? `<span class="devoir-target-pill">${d.student_ids.length} élève(s) ciblé(s)</span> · ` : '';
     const enAttente = d.date_depot && new Date(d.date_depot) > new Date();
@@ -579,6 +609,8 @@ async function openDevoirSubmissions(devoirId){
     rows = await devoirSubmissionRowsAutomatismes(devoir, elevesTries);
   } else if(devoir.type==='compte_est_bon'){
     rows = await devoirSubmissionRowsCeb(devoir, elevesTries);
+  } else if(devoir.type==='programmation'){
+    rows = await devoirSubmissionRowsProg(devoir, elevesTries);
   } else {
     rows = await devoirSubmissionRowsFichierFigure(devoir, elevesTries);
   }
@@ -803,6 +835,61 @@ async function devoirSubmissionRowsAutomatismes(devoir, eleves){
   devoirSubmissionsExport.rows = exportRows;
   return body;
 }
+/* Programmation : défis réussis par élève (prog_progress, lisible par le prof de la classe), essais,
+   temps de travail réel par défi (devoir_sessions, kind 'programmation') et lecture du programme. */
+async function devoirSubmissionRowsProg(devoir, eleves){
+  const ids = devoir.prog_defis || [];
+  const studentIds = eleves.map(r=>r.profiles && r.profiles.id).filter(Boolean);
+  const [{ data: pp }, { data: rendus }, sessionsByStudent] = await Promise.all([
+    ids.length && studentIds.length ? sb.from('prog_progress').select('user_id,defi_id,programme,reussi,tentatives,reussi_at').in('user_id', studentIds).in('defi_id', ids) : Promise.resolve({ data: [] }),
+    sb.from('devoirs_rendus').select('*').eq('devoir_id', devoir.id),
+    typeof dsLoadForDevoir==='function' ? dsLoadForDevoir(devoir.id).then(m=>m||new Map()) : Promise.resolve(new Map()),
+  ]);
+  const key = (u,d)=>u+'|'+d, prog = new Map((pp||[]).map(r=>[key(r.user_id, r.defi_id), r]));
+  const rendusByStudent = new Map((rendus||[]).map(r=>[r.student_id, r]));
+  const titre = id=>{ const d = typeof progDefiParId==='function' ? progDefiParId(id) : null; return d ? d.titre : id; };
+  window._progVoirCache = [];
+  // Barre par défi : part de la classe qui l'a réussi.
+  const parDefi = ids.map(id=>{
+    const n = studentIds.filter(u=>prog.get(key(u,id))?.reussi).length;
+    const pct = studentIds.length ? Math.round(100*n/studentIds.length) : 0, color = devoirPctColor(pct);
+    return `<div style="display:flex;align-items:center;gap:8px;margin:3px 0;">
+      <span class="hint" style="margin:0;flex:0 0 190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(titre(id))}</span>
+      <div class="sup-progress-bar" style="flex:1;"><div class="sup-progress-fill" style="width:${pct}%;background:${color};"></div></div>
+      <span class="hint" style="margin:0;font-weight:700;color:${color};flex:0 0 64px;text-align:right;">${n}/${studentIds.length}</span>
+    </div>`;
+  }).join('');
+  const bar = ids.length && studentIds.length ? `<div style="margin:0 0 12px;"><span class="hint" style="margin:0;font-weight:700;">Réussite par défi</span>${parDefi}</div>` : '';
+  const exportRows = [];
+  const body = eleves.map(row=>{
+    const eleve = row.profiles; if(!eleve) return '';
+    const rendu = rendusByStudent.get(eleve.id), sessions = sessionsByStudent.get(eleve.id);
+    const nOk = ids.filter(id=>prog.get(key(eleve.id,id))?.reussi).length;
+    const S = typeof dsSummary==='function' ? dsSummary(sessions) : null;
+    const essais = ids.reduce((t,id)=>t+(prog.get(key(eleve.id,id))?.tentatives||0), 0);
+    const chips = ids.map(id=>{
+      const r = prog.get(key(eleve.id,id)), Si = typeof dsSummary==='function' ? dsSummary(sessions, id) : null;
+      const c = r && r.reussi ? '#1F7A4D' : r && r.tentatives ? '#C77D1E' : '#8A94A3';
+      let voir = '';
+      if(r && r.programme){ window._progVoirCache.push({ nom: profileDisplayName(eleve)||'(sans nom)', defi: id, programme: r.programme, devoirId: devoir.id });
+        voir = ` <button type="button" class="btn secondary" style="font-size:.66rem;padding:1px 6px;" title="Voir le programme (lecture seule)" onclick="this.closest('.modal-overlay').remove();progVoirEleve(${window._progVoirCache.length-1})"><span class=gicon style="font-size:.85rem;">visibility</span></button>`; }
+      return `<div class="hint" style="margin:0;padding:2px 0;display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span class="gicon" style="font-size:.9rem;color:${c};">${r && r.reussi ? 'check_circle' : r && r.tentatives ? 'pending' : 'radio_button_unchecked'}</span> ${escapeHtml(titre(id))}${r && r.tentatives ? ` · ${r.tentatives} essai${r.tentatives>1?'s':''}` : ''}${Si && Si.n ? ` · ${dsFormatMs(Si.activeMs)}` : ''}${voir}</div>`;
+    }).join('');
+    const statut = devoirStatutInfo(!!(rendu && rendu.est_rendu), devoir.date_limite, !!(rendu && rendu.a_reprendre));
+    exportRows.push([profileDisplayName(eleve)||'(sans nom)', statut.label, nOk+'/'+ids.length, essais, S && S.n ? dsFormatMs(S.activeMs).replace(/\u00A0/g,' ') : ''].concat(ids.map(id=>{ const r = prog.get(key(eleve.id,id)); return r && r.reussi ? 'réussi' : r && r.tentatives ? 'en cours' : ''; })));
+    return `<div style="padding:8px 0;border-bottom:1px solid rgba(28,43,57,.06);">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span><b>${escapeHtml(profileDisplayName(eleve)||'(sans nom)')}</b> ${devoirStatutPill(!!(rendu && rendu.est_rendu), devoir.date_limite, !!(rendu && rendu.a_reprendre))}</span>
+        <span class="hint" style="margin:0;font-weight:700;color:${devoirPctColor(ids.length ? Math.round(100*nOk/ids.length) : 0)};">${nOk} / ${ids.length} défi${ids.length>1?'s':''}</span>
+      </div>
+      ${S && S.n ? `<div class="hint devoir-effort" style="margin:2px 0 0;" title="Temps de travail réel : éditeur de blocs ouvert, onglet visible, élève actif">${S.n} séance${S.n>1?'s':''} de travail · ${dsFormatMs(S.activeMs)}${S.enCours ? ' · <b>en cours</b>' : ''}</div>` : ''}
+      <div style="margin-top:4px;">${chips}</div>
+    </div>`;
+  }).join('');
+  devoirSubmissionsExport.headers = ['Élève','Statut','Défis réussis','Essais','Temps de travail'].concat(ids.map(titre));
+  devoirSubmissionsExport.rows = exportRows;
+  return bar + body;
+}
 async function devoirSubmissionRowsCeb(devoir, eleves){
   const rounds = devoir.ceb_rounds || [];
   const nRounds = rounds.length || 1;
@@ -983,7 +1070,7 @@ async function renderDevoirsEleve(){
   const classIds = (accountClassesList||[]).map(c=>c.id);
   if(!classIds.length){ devoirsEleveCache = []; el.innerHTML = '<p class="hint">Aucune classe associée à ce compte.</p>'; return; }
   const { data: devoirsListRaw, error } = await sb.from('devoirs')
-    .select('id,titre,consigne,date_depot,date_limite,teacher_id,type,figure_depart,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_timer_duration,ceb_rounds,student_ids,qz_publie_at,profiles(nom)')
+    .select('id,titre,consigne,date_depot,date_limite,teacher_id,type,figure_depart,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_timer_duration,ceb_rounds,prog_defis,student_ids,qz_publie_at,profiles(nom)')
     .in('class_id', classIds).order('date_limite',{ascending:true, nullsFirst:false});
   if(error){ devoirsEleveCache = []; el.innerHTML = 'Erreur : '+error.message; return; }
   const now = new Date();
@@ -1194,6 +1281,30 @@ async function renderDevoirsEleve(){
       actionHtml = `<div class="tool-row" style="margin-top:4px;">
         <button class="btn${rendu_ ? ' secondary' : ''}" onclick="qzOuvrir('${d.id}')"><span class=gicon>${d.qz_publie_at && rendu_ ? 'grading' : 'quiz'}</span> ${label}</button>
         ${rendu_ && !d.qz_publie_at ? '<span class="hint" style="margin:0;">En attente de la correction de votre professeur.</span>' : ''}
+      </div>`;
+    } else if(d.type==='programmation'){
+      // Progression lue dans prog_progress (ses propres lignes, RLS), commune aux défis faits hors devoir.
+      const ids = d.prog_defis || [];
+      const { data: pp } = ids.length ? await sb.from('prog_progress').select('defi_id,reussi,tentatives').eq('user_id', currentUser.id).in('defi_id', ids) : { data: [] };
+      const byId = new Map((pp||[]).map(r=>[r.defi_id, r]));
+      const nOk = ids.filter(id=>byId.get(id)?.reussi).length;
+      const pct = ids.length ? Math.round(100*nOk/ids.length) : 0, color = devoirPctColor(pct);
+      const liste = ids.map(id=>{
+        const def = typeof progDefiParId==='function' ? progDefiParId(id) : null, r = byId.get(id);
+        const icon = r && r.reussi ? '<span class="gicon" style="font-size:.9rem;color:#1F7A4D;">check_circle</span>'
+          : r && r.tentatives ? '<span class="gicon" style="font-size:.9rem;color:#C77D1E;">pending</span>'
+          : '<span class="gicon" style="font-size:.9rem;">radio_button_unchecked</span>';
+        return `<div class="hint" style="margin:0;padding:2px 0;">${icon} ${escapeHtml(def ? def.titre : id)}${r && r.tentatives ? ` · ${r.tentatives} essai${r.tentatives>1?'s':''}` : ''}</div>`;
+      }).join('');
+      actionHtml = `<div style="margin-top:4px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 0 2px;">
+          <span class="hint" style="margin:0;">Défis réussis</span>
+          <span class="hint" style="margin:0;font-weight:700;color:${color};">${nOk} / ${ids.length}</span>
+        </div>
+        <div class="sup-progress-bar" style="margin-bottom:8px;"><div class="sup-progress-fill" style="width:${pct}%;background:${color};"></div></div>
+        ${liste}
+        <div class="tool-row" style="margin-top:6px;"><button class="btn${nOk===ids.length ? ' secondary' : ''}" onclick="progOuvrirDevoir('${d.id}')"><span class=gicon>extension</span> ${nOk===ids.length ? 'Revoir mes programmes' : nOk || byId.size ? 'Continuer les défis' : 'Commencer les défis'}</button></div>
+        ${(rendu && rendu.est_rendu) ? '' : '<p class="hint" style="margin:8px 0 0;">Ce devoir se rend automatiquement quand tous les défis sont réussis.</p>'}
       </div>`;
     } else if(d.type==='figure_completer'){
       actionHtml = `<div class="tool-row" style="margin-top:4px;">
