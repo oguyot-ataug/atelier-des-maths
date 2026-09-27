@@ -2628,6 +2628,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.700', items:[
+    "Œil pour afficher le mot de passe -- demandé : \"Quand on met ou choisit des mots de passe, il faudrait rajouter l'oeil pour voir ce qu'on tape\". Sur tous les champs mot de passe : connexion, inscription professeur et Famille, changement de mot de passe, mot de passe fixé par l'administrateur ou le professeur, clés IA, et page d'activation du compte élève.",
+  ]},
   { version:'2026-08-19.699', items:[
     "Inscription avec confirmation de l'adresse e-mail -- signalé : \"Le mail vient de supabase pour la famille. C'est pas top\", et le lien menait à localhost. Le lien de confirmation ramène désormais sur le site (Espace famille pour un parent, accueil pour un professeur), et l'inscription se termine toute seule au retour : les informations saisies (nom, prénom, UAI, déclaration sur l'honneur) sont gardées avec le compte. Corrige aussi l'inscription des professeurs, qui échouait (« Erreur lors de la création du profil ») quand la confirmation de l'adresse est demandée.",
   ]},
