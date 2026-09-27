@@ -42,6 +42,7 @@ function qzFormHtml(){
     <div class="tool-shell"><p class="example-title" style="margin:0 0 6px;"><span class="gicon" style="color:#6B3FA0;">edit_note</span> Les questions</p><div id="qzfEditeur"></div></div>
     <div class="tool-row" style="margin:0 0 30px;">
       <button class="btn" id="qzfDonner" onclick="qzFormEnregistrer()"><span class="gicon">send</span> Donner à la classe</button>
+      <button class="btn secondary" id="qzfSauver" onclick="qzEnregistrerSeul()" title="Enregistrer maintenant dans « Mes questionnaires », sans le donner (c'est aussi fait automatiquement)"><span class="gicon">save</span> Enregistrer sans donner</button>
       <button class="btn secondary" id="qzfFermer" onclick="qzFormFermer()">Fermer (le brouillon est gardé)</button>
       <span class="hint" id="qzfStatus" style="margin:0;"></span>
     </div>`;
@@ -79,6 +80,7 @@ async function qzFormOuvrir(opts){
     $('qzfTitreH').innerHTML = '<span class="gicon">edit</span> Modifier l\'interrogation';
     $('qzfDonner').innerHTML = '<span class="gicon">check</span> Enregistrer les modifications';
     $('qzfFermer').textContent = 'Annuler les modifications';
+    $('qzfSauver').style.display = 'none';
     $('qzfTitre').value = d.titre || '';
     $('qzfClasse').value = d.class_id;
     $('qzfOuverture').value = d.date_depot ? d.date_depot.slice(0, 10) : '';
@@ -211,14 +213,24 @@ async function qzFormEnregistrer(){
   await niceAlert(nouveau ? (ouv ? `« ${titre} » est donnée à la classe.` : `« ${titre} » est enregistrée en brouillon : choisissez une date d'ouverture pour la donner.`) : 'Interrogation modifiée.');
 }
 // Bouton « Enregistrer » de l'éditeur : enregistre tout de suite (même incomplet).
+// Signalé : "J'ai pourtant cliqué sur Enregistrer mais rien ne se passe" -- le message s'affichait
+// seulement sous le titre, hors de l'écran : confirmation bien visible maintenant (bandeau en bas).
 async function qzEnregistrerSeul(){
-  if(!qzAuto) return;
+  if(!qzAuto) qzAutoDemarrer(qzF && qzF.devoirId ? 'local' : 'db');
   if(qzAuto.mode === 'local') return qzFormEnregistrer(); // interrogation déjà donnée
-  const st = document.getElementById('qzfStatus');
-  if(!qzEd.questions.length && !qzAutoForm().titre){ st.textContent = 'Rien à enregistrer pour l\'instant : donnez un titre ou ajoutez une question.'; return; }
+  if(!qzEd.questions.length && !qzAutoForm().titre){ qzToast('Rien à enregistrer pour l\'instant : donnez un titre ou ajoutez une question.', 'warn'); return; }
   if(qzAuto.enCours) await qzAuto.enCours;
+  qzAuto.dernier = null; // enregistrer même sans modification
   await qzAutoSauver(qzAuto);
-  st.textContent = '';
+  if(qzAuto && qzAuto.dernier) qzToast(`<span class="gicon">cloud_done</span> « ${qzEsc(qzAutoForm().titre || 'Sans titre')} » est enregistré dans vos questionnaires. Vous le retrouverez sur la page Interrogations en ligne (« Enregistrés, pas encore donnés »).`);
+  else qzToast('L\'enregistrement a échoué : vérifiez votre connexion puis réessayez.', 'err');
+}
+function qzToast(html, genre){
+  let t = document.getElementById('qzToast');
+  if(!t){ t = document.createElement('div'); t.id = 'qzToast'; document.body.appendChild(t); }
+  t.className = 'qz-toast ' + (genre || 'ok'); t.innerHTML = html;
+  requestAnimationFrame(() => t.classList.add('on'));
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('on'), 5000);
 }
 
 /* ---------------------------------------------------------------------
@@ -269,6 +281,25 @@ function qzInterrosHtml(liste){
         <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzInterroSupprimer('${d.id}')" title="Supprimer"><span class="gicon">delete</span></button>
       </span></div>`; }).join('')}</div>`;
 }
+// Questionnaires enregistrés mais jamais donnés (brouillons), en tête de la page -- signalé : "Il
+// faut absolument que les interrogations sauvegardées soient visibles".
+function qzBrouillonsHtml(f){
+  const liste = (qzB.mes || []).filter(q => !(qzB.devoirs.get(q.id) || []).length)
+    .filter(q => !f || qzNormTexte((q.titre || '') + ' ' + (q.questions || []).map(x => x.enonce || '').join(' ')).includes(f));
+  if(!liste.length) return '';
+  return `<p class="qz-i-sec"><span class="gicon">save</span> Enregistrés, pas encore donnés (${liste.length})</p>
+    <div class="qz-i-liste" style="margin-bottom:18px;">${liste.map(q => { const r = qzBanqueResume(q), b = (q.reglages || {}).brouillon;
+      return `<div class="qz-i-row brouillon">
+        <div class="qz-i-main"><b>${qzEsc(q.titre || 'Sans titre')}</b>${b && b.a_completer ? ' <span class="qz-b-draft inc">à compléter</span>' : ''}
+          <div class="hint" style="margin:2px 0 0;">${r.n} question${r.n > 1 ? 's' : ''} · ${qzNum(r.pts)} pts · enregistré le ${new Date(q.updated_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}</div></div>
+        <span class="qz-i-act">
+          <button class="btn qz-mini" onclick="qzBanqueReprendre('${q.id}')"><span class="gicon">edit</span> Reprendre</button>
+          <button class="btn secondary qz-mini" onclick="qzBanqueDonner('${q.id}')"><span class="gicon">assignment_add</span> Donner à une classe</button>
+          <button class="btn secondary qz-mini" onclick="qzBanqueApercu('${q.id}')" title="Aperçu"><span class="gicon">visibility</span></button>
+          <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzBanqueSupprimer('${q.id}')" title="Supprimer"><span class="gicon">delete</span></button>
+        </span></div>`; }).join('')}</div>
+    <p class="qz-i-sec"><span class="gicon">assignment_turned_in</span> Données à une classe</p>`;
+}
 async function qzInterroSupprimer(id){
   const d = (qzB.interros || []).find(x => x.id === id); if(!d) return;
   if(!(await niceConfirm(`Supprimer l'interrogation « ${d.titre} » et toutes les copies des élèves ? Le questionnaire reste dans « Mes questionnaires ».`))) return;
@@ -289,6 +320,11 @@ async function qzInterroSupprimer(id){
     .qz-f-grid .qz-f-full{grid-column:1/-1;}
     .qz-f-grid input,.qz-f-grid select{padding:7px 9px;border:1px solid rgba(28,43,57,.2);border-radius:8px;font:inherit;font-weight:400;}
     .qz-i-liste{display:flex;flex-direction:column;gap:8px;}
+    .qz-i-sec{display:flex;align-items:center;gap:6px;font-family:'Space Grotesk',sans-serif;font-weight:700;margin:6px 0 8px;}
+    .qz-i-row.brouillon{border-left-color:#0C5BA0;border-style:dashed;border-left-style:solid;}
+    .qz-toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,30px);opacity:0;pointer-events:none;transition:.25s;z-index:900;max-width:min(560px,calc(100vw - 32px));
+      background:#1E7B34;color:#fff;border-radius:12px;padding:10px 16px;box-shadow:0 8px 24px rgba(0,0,0,.18);display:flex;gap:8px;align-items:center;font-size:.9rem;}
+    .qz-toast.on{opacity:1;transform:translate(-50%,0);} .qz-toast.warn{background:#B8511F;} .qz-toast.err{background:#a83c1f;}
     .qz-i-row{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;background:#fff;border:1px solid rgba(28,43,57,.1);border-left:4px solid #6B3FA0;border-radius:12px;padding:10px 14px;}
     .qz-i-main{flex:1;min-width:200px;}
     .qz-i-etat{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:3px 10px;font-size:.76rem;font-weight:700;background:#eee;color:#555;white-space:nowrap;}

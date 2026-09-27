@@ -79,14 +79,14 @@ function qzBanqueRender(){
     <h1 style="margin:6px 0 4px;"><span class="gicon">quiz</span> Interrogations en ligne</h1>
     <p style="color:var(--ink-soft);max-width:75ch;">Des interrogations notées, à la manière de Google Forms, séparées des devoirs d'entraînement : créez-les, donnez-les à une classe (en classe, chronométrées, ou à la maison), corrigez-les copie par copie ou question par question, puis publiez les résultats. Vos questionnaires et ceux de vos collègues sont réutilisables : donner un questionnaire à une classe en crée une copie, le modifier ensuite ne change rien pour les autres classes.</p>
     <div class="qz-c-tools">
-      <div class="qz-tabs"><button class="${qzB.onglet === 'donnees' ? 'on' : ''}" onclick="qzB.onglet='donnees';qzBanqueRender()"><span class="gicon">assignment_turned_in</span> Interrogations données (${(qzB.interros || []).length})</button>
+      <div class="qz-tabs"><button class="${qzB.onglet === 'donnees' ? 'on' : ''}" onclick="qzB.onglet='donnees';qzBanqueRender()"><span class="gicon">assignment_turned_in</span> Mes interrogations (${(qzB.interros || []).length + qzB.mes.filter(q => !(qzB.devoirs.get(q.id) || []).length).length})</button>
         <button class="${qzB.onglet === 'mes' ? 'on' : ''}" onclick="qzB.onglet='mes';qzBanqueRender()"><span class="gicon">person</span> Mes questionnaires (${qzB.mes.length})</button>
         <button class="${qzB.onglet === 'partages' ? 'on' : ''}" onclick="qzB.onglet='partages';qzBanqueRender()"><span class="gicon">group</span> Partagés avec moi (${qzB.partages.length})</button></div>
       <input type="search" class="qz-b-search" placeholder="Rechercher (titre, énoncé, auteur)…" value="${qzEsc(qzB.filtre)}" oninput="qzB.filtre=this.value;clearTimeout(qzB.t);qzB.t=setTimeout(()=>{qzBanqueRender();const i=document.querySelector('.qz-b-search');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}},250)">
       <button class="btn secondary" onclick="qzOuvrirCarnet()"><span class="gicon">menu_book</span> Carnet de notes</button>
       <button class="btn" onclick="qzBanqueNouveau()"><span class="gicon">add</span> Nouvelle interrogation</button>
     </div>
-    ${qzB.onglet === 'donnees' ? qzInterrosHtml(interros) : `<div class="qz-b-grid">${liste.map(q => qzBanqueCarte(q, qzB.onglet !== 'mes')).join('') || `<p class="hint">${qzB.onglet === 'mes' ? (f ? 'Aucun questionnaire ne correspond.' : 'Aucun questionnaire pour l\'instant : créez-en un avec « Nouvelle interrogation ».') : 'Aucun questionnaire partagé avec vous pour l\'instant.'}</p>`}</div>`}`;
+    ${qzB.onglet === 'donnees' ? qzBrouillonsHtml(f) + qzInterrosHtml(interros) : `<div class="qz-b-grid">${liste.map(q => qzBanqueCarte(q, qzB.onglet !== 'mes')).join('') || `<p class="hint">${qzB.onglet === 'mes' ? (f ? 'Aucun questionnaire ne correspond.' : 'Aucun questionnaire pour l\'instant : créez-en un avec « Nouvelle interrogation ».') : 'Aucun questionnaire partagé avec vous pour l\'instant.'}</p>`}</div>`}`;
 }
 function qzBanqueTrouver(id){ return qzB && (qzB.mes.find(q => q.id === id) || qzB.partages.find(q => q.id === id)); }
 async function qzBanqueSur(id){
@@ -207,9 +207,12 @@ async function qzImporterOuvrir(){
   try{ await qzBanqueCharger(); }catch(e){ o.innerHTML = `<div class="modal-card qz-bi"><p class="hint">Erreur : ${qzEsc(e.message)}</p></div>`; return; }
   const lignes = [];
   const courant = qzEd && qzEd.id;
-  qzB.mes.filter(q => q.id !== courant).forEach(q => (q.questions || []).forEach(x => lignes.push({ q: x, source: q.titre || 'Sans titre', auteur: '' })));
-  qzB.partages.forEach(q => (q.questions || []).forEach(x => lignes.push({ q: x, source: q.titre || 'Sans titre', auteur: q.auteur })));
-  qzBI = { lignes, choix: new Set(), filtre: '', type: '', comp: '' };
+  // Questionnaires complets -- signalé : "on retrouve les exercices qu'on peut importer un à un
+  // mais pas en tant que questionnaire complet".
+  const complets = qzB.mes.filter(q => q.id !== courant).map(q => ({ q, auteur: '' })).concat(qzB.partages.map(q => ({ q, auteur: q.auteur })))
+    .filter(x => (x.q.questions || []).length);
+  complets.forEach(({ q, auteur }) => (q.questions || []).forEach(x => lignes.push({ q: x, qid: q.id, source: q.titre || 'Sans titre', auteur })));
+  qzBI = { lignes, complets, choix: new Set(), filtre: '', type: '', comp: '', vue: 'questionnaires' };
   qzImporterRender();
 }
 function qzImporterRender(){
@@ -221,7 +224,15 @@ function qzImporterRender(){
   o.innerHTML = `<div class="modal-card qz-bi">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;"><span class="gicon" style="color:#6B3FA0;vertical-align:middle;">inventory_2</span> Banque de questions</b>
       <button class="modal-close" onclick="document.getElementById('qzBIOverlay').style.display='none'"><span class="gicon">close</span></button></div>
-    <p class="hint" style="margin:4px 0 10px;">Les questions de vos questionnaires et de ceux partagés avec vous. Cochez-les puis importez : elles sont copiées dans ce questionnaire (réponses, barème et éléments d'énoncé compris), et restent modifiables.</p>
+    <p class="hint" style="margin:4px 0 10px;">Vos questionnaires et ceux partagés avec vous : importez-en un en entier, ou choisissez des questions une à une. Tout est copié dans ce questionnaire (réponses, barème et éléments d'énoncé compris) et reste modifiable ; l'original n'est pas touché.</p>
+    <div class="qz-tabs" style="margin-bottom:10px;"><button class="${qzBI.vue === 'questionnaires' ? 'on' : ''}" onclick="qzBI.vue='questionnaires';qzImporterRender()"><span class="gicon">quiz</span> Questionnaires complets (${qzBI.complets.length})</button>
+      <button class="${qzBI.vue === 'questions' ? 'on' : ''}" onclick="qzBI.vue='questions';qzImporterRender()"><span class="gicon">list</span> Questions une à une (${qzBI.lignes.length})</button></div>
+    ${qzBI.vue === 'questionnaires' ? `<div class="qz-bi-liste">${qzBI.complets.map(({ q, auteur }) => { const r = qzBanqueResume(q);
+      return `<div class="qz-bi-row qz-bi-qz"><div class="qz-bi-main"><b>${qzEsc(q.titre || 'Sans titre')}</b>
+        <div class="hint" style="margin:2px 0 0;">${r.n} question${r.n > 1 ? 's' : ''} · ${qzNum(r.pts)} pts${auteur ? ' · partagé par ' + qzEsc(auteur) : ' · modifié le ' + new Date(q.updated_at).toLocaleDateString('fr-FR')}</div>
+        <div class="qz-b-types" style="margin-top:4px;">${Object.keys(r.types).map(t => `<span class="qz-type-pill"><span class="gicon">${qzType(t).icon}</span> ${qzType(t).label}${r.types[t] > 1 ? ' ×' + r.types[t] : ''}</span>`).join('')}</div></div>
+        <button class="btn qz-mini" onclick="qzImporterComplet('${q.id}')"><span class="gicon">download</span> Tout importer</button></div>`; }).join('')
+      || '<p class="hint">Aucun questionnaire enregistré pour l\'instant.</p>'}</div></div>` : `
     <div class="qz-bi-filtres">
       <input type="search" id="qzBIF" placeholder="Rechercher…" value="${qzEsc(qzBI.filtre)}" oninput="qzBI.filtre=this.value;clearTimeout(qzBI.t);qzBI.t=setTimeout(()=>{qzImporterRender();const i=document.getElementById('qzBIF');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}},250)">
       <select onchange="qzBI.type=this.value;qzImporterRender()"><option value="">Tous les types</option>${types.map(t => `<option value="${t}"${qzBI.type === t ? ' selected' : ''}>${qzType(t).label}</option>`).join('')}</select>
@@ -237,7 +248,7 @@ function qzImporterRender(){
     <div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;">
       <button class="btn" ${qzBI.choix.size ? '' : 'disabled'} onclick="qzImporter()"><span class="gicon">download</span> Importer ${qzBI.choix.size ? qzBI.choix.size + ' question' + (qzBI.choix.size > 1 ? 's' : '') : ''}</button>
       ${vis.length ? `<button class="btn secondary qz-mini" onclick="qzBIToutes()">Tout cocher (${vis.length})</button>` : ''}
-    </div></div>`;
+    </div>`}</div>`;
 }
 function qzBIChoix(i, on){ if(on) qzBI.choix.add(i); else qzBI.choix.delete(i); qzImporterRender(); }
 function qzBIToutes(){
@@ -245,6 +256,22 @@ function qzBIToutes(){
   qzBI.lignes.forEach((l, i) => { if((!qzBI.type || l.q.type === qzBI.type) && (!qzBI.comp || l.q.competence === qzBI.comp)
     && (!f || qzNormTexte((l.q.enonce || '') + ' ' + (l.q.trous_source || '') + ' ' + l.source + ' ' + l.auteur).includes(f))) qzBI.choix.add(i); });
   qzImporterRender();
+}
+function qzImporterComplet(qid){
+  const src = qzBI.complets.find(x => x.q.id === qid); if(!src) return;
+  if(!qzEd) qzEdReset();
+  const vide = !qzEd.questions.length;
+  const nouvelles = (src.q.questions || []).map(x => Object.assign(JSON.parse(JSON.stringify(x)), { id: qzId() }));
+  qzEd.questions.push(...nouvelles);
+  if(vide){ // questionnaire vide : on reprend aussi ses réglages (mode, durée, barème...) et son titre
+    const reg = Object.assign({}, QZ_REGLAGES_DEFAUT, src.q.reglages || {}, { ferme: false }); delete reg.brouillon;
+    qzEd.reglages = reg; qzEdRenderReglages();
+    const t = document.getElementById('qzfTitre'); if(t && !t.value.trim()) t.value = src.q.titre || '';
+  }
+  qzEdOuverte = null;
+  qzEdRender();
+  document.getElementById('qzBIOverlay').style.display = 'none';
+  niceAlert(`« ${src.q.titre || 'Sans titre'} » importé : ${nouvelles.length} question${nouvelles.length > 1 ? 's' : ''}${vide ? ' et ses réglages' : ''}. Vous pouvez tout modifier : l'original n'est pas touché.`);
 }
 function qzImporter(){
   if(!qzEd) qzEdReset();
@@ -261,6 +288,7 @@ function qzImporter(){
     #qzBanqueRoot{max-width:1100px;}
     .qz-b-search{flex:1;min-width:200px;padding:7px 10px;border:1px solid rgba(28,43,57,.2);border-radius:10px;font:inherit;}
     .qz-b-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px;}
+    .qz-bi-qz{display:flex;align-items:center;gap:10px;cursor:default;}
     .qz-b-draft{display:inline-block;margin-left:6px;border-radius:999px;padding:1px 8px;font-size:.7rem;font-weight:700;background:#EEF4FB;color:#0C5BA0;vertical-align:middle;}
     .qz-b-draft.inc{background:#FFF4E6;color:#B8511F;}
     .qz-b-card{background:#fff;border:1px solid rgba(28,43,57,.1);border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(28,43,57,.04);display:flex;flex-direction:column;gap:6px;}

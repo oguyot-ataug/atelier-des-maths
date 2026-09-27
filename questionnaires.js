@@ -360,6 +360,8 @@ function qzEdRenderReglages(){
       </select></label>
       <label class="qz-check"><input type="checkbox" ${r.melanger_questions ? 'checked' : ''} onchange="qzEdReglage('melanger_questions', this.checked)"> Mélanger l'ordre des questions</label>
       <label class="qz-check"><input type="checkbox" ${r.melanger_choix ? 'checked' : ''} onchange="qzEdReglage('melanger_choix', this.checked)"> Mélanger les propositions des QCM</label>
+      <label class="qz-check" title="L'élève ne voit qu'une question à l'écran, avec Précédente / Suivante : plus difficile de tout photographier ou de comparer d'un coup d'œil avec son voisin"><input type="checkbox" ${r.une_par_une ? 'checked' : ''} onchange="qzEdReglage('une_par_une', this.checked)"> Une question à la fois (limite la triche)</label>
+      ${r.une_par_une ? `<label class="qz-check" title="Une question validée ne peut plus être revue ni modifiée"><input type="checkbox" ${r.sans_retour ? 'checked' : ''} onchange="qzEdReglage('sans_retour', this.checked)"> Sans retour en arrière</label>` : ''}
     </div>`;
 }
 function qzEdCompSelect(q){
@@ -653,7 +655,8 @@ function qzRenderPassation(){
     </div>
     <div id="qzSortieMsg" class="qz-sortie" style="display:none;"></div>
     ${qzP.data.devoir.consigne ? `<p class="qz-consigne">${qzMath(qzP.data.devoir.consigne)}</p>` : ''}
-    <div class="qz-questions">${ordre.map(q => {
+    ${qzP.reglages.une_par_une ? '<div class="qz-nav" id="qzNav"></div>' : ''}
+    <div class="qz-questions${qzP.reglages.une_par_une ? ' une' : ''}">${qzPages(ordre).map((page, ip) => `<div class="qz-page" data-page="${ip}">${page.map(q => {
       if(q.type === 'texte') return `<div class="qz-doc">${qzEnonceHtml(q)}</div>`;
       n++;
       const comp = qzComp(q.competence);
@@ -662,15 +665,63 @@ function qzRenderPassation(){
         ${qzEnonceHtml(q)}
         <div class="qz-q-rep">${qzRenderSaisie(q, qzP.reponses[q.id], 'passer', ctx)}</div>
       </div>`;
-    }).join('')}</div>
-    <div class="qz-rendre-row">
+    }).join('')}</div>`).join('')}</div>
+    ${qzP.reglages.une_par_une ? '<div class="qz-nav bas" id="qzNavBas"></div>' : ''}
+    <div class="qz-rendre-row" id="qzRendreRow">
       <button class="btn qz-go" onclick="qzRendre(false)"><span class="gicon">send</span> Rendre ma copie</button>
       <span class="hint" style="margin:0;">Vous pourrez encore la relire avant de confirmer.</span>
     </div>`;
   qzMajProgress();
   qzChargerPhotos(document.getElementById('qzRoot'));
   if(typeof qzMonterInter === 'function') qzMonterInter(document.getElementById('qzRoot'));
+  if(qzP.reglages.une_par_une){
+    let p = 0; try{ p = parseInt(localStorage.getItem(qzPageCle()), 10) || 0; }catch(e){}
+    qzAllerPage(p, true);
+  }
   qzPStart();
+}
+/* Une question à la fois -- demandé : "prévoir une option affiche un seul exercice à la fois :
+   pour éviter/limiter la triche". Une page = une question, précédée des éventuels documents
+   (type « texte ») qui l'introduisent. « Sans retour en arrière » : une question passée ne se
+   revoit plus (la page atteinte est gardée sur l'appareil, pour qu'un rechargement n'y ramène pas). */
+function qzPages(ordre){
+  const pages = []; let docs = [];
+  ordre.forEach(q => { if(q.type === 'texte') docs.push(q); else { pages.push(docs.concat(q)); docs = []; } });
+  if(docs.length){ if(pages.length) pages[pages.length - 1].push(...docs); else pages.push(docs); }
+  return pages;
+}
+function qzPageCle(){ return 'qzPage:' + (qzP.apercu ? 'apercu' : qzP.devoirId + ':' + ((qzP.copie && qzP.copie.id) || '')); }
+function qzNbPages(){ return document.querySelectorAll('#qzRoot .qz-page').length; }
+function qzAllerPage(i, init){
+  const nb = qzNbPages(); if(!nb) return;
+  i = Math.max(0, Math.min(nb - 1, i));
+  if(qzP.reglages.sans_retour && !init && i < (qzP.page || 0)) return;
+  qzP.page = i;
+  if(!qzP.apercu){ try{ localStorage.setItem(qzPageCle(), String(i)); }catch(e){} }
+  document.querySelectorAll('#qzRoot .qz-page').forEach(el => el.classList.toggle('on', Number(el.dataset.page) === i));
+  const rr = document.getElementById('qzRendreRow'); if(rr) rr.style.display = i === nb - 1 ? '' : 'none';
+  qzNavRender();
+  if(!init){ const top = document.getElementById('qzBar'); if(top) top.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
+}
+async function qzPageSuivante(){
+  const i = qzP.page || 0;
+  if(qzP.reglages.sans_retour){
+    const qs = Array.from(document.querySelectorAll(`#qzRoot .qz-page[data-page="${i}"] .qz-q`)).map(el => qzP.questions.find(q => q.id === el.dataset.qid)).filter(Boolean);
+    const vide = qs.some(q => !qzRepondue(q, qzP.reponses[q.id]));
+    if(!(await niceConfirm(vide ? 'Vous n\'avez pas répondu à cette question. Passer quand même ? Vous ne pourrez plus y revenir.' : 'Valider cette réponse et passer à la question suivante ? Vous ne pourrez plus y revenir.'))) return;
+    if(qzP.sale) qzSauver();
+  }
+  qzAllerPage(i + 1);
+}
+function qzNavRender(){
+  const nb = qzNbPages(), i = qzP.page || 0, sr = !!qzP.reglages.sans_retour;
+  const pages = Array.from(document.querySelectorAll('#qzRoot .qz-page'));
+  const faite = el => { const qs = Array.from(el.querySelectorAll('.qz-q')); return qs.length && qs.every(b => b.classList.contains('fait')); };
+  const pastilles = pages.map((el, k) => `<button type="button" class="qz-pastille${k === i ? ' on' : ''}${faite(el) ? ' fait' : ''}" ${sr ? 'disabled' : `onclick="qzAllerPage(${k})"`} aria-label="Question ${k + 1}">${k + 1}</button>`).join('');
+  const html = `<button type="button" class="btn secondary qz-mini" ${i === 0 || sr ? 'style="visibility:hidden"' : ''} onclick="qzAllerPage(${i - 1})"><span class="gicon">arrow_back</span> Précédente</button>
+    <span class="qz-nav-mid"><b>Question ${i + 1} / ${nb}</b>${sr ? '<small>Sans retour en arrière</small>' : ''}<span class="qz-pastilles">${pastilles}</span></span>
+    ${i < nb - 1 ? `<button type="button" class="btn qz-mini" onclick="qzPageSuivante()">${sr ? 'Valider et continuer' : 'Suivante'} <span class="gicon">arrow_forward</span></button>` : '<span class="qz-nav-fin">Dernière question</span>'}`;
+  ['qzNav', 'qzNavBas'].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = html; });
 }
 function qzMajProgress(){
   const el = document.getElementById('qzProgress'); if(!el) return;
@@ -678,6 +729,7 @@ function qzMajProgress(){
   const faites = qs.filter(q => qzRepondue(q, qzP.reponses[q.id])).length;
   el.innerHTML = `<b>${faites}</b> / ${qs.length} répondue${qs.length > 1 ? 's' : ''}`;
   qs.forEach(q => { const b = document.getElementById('qzQ_' + q.id); if(b) b.classList.toggle('fait', qzRepondue(q, qzP.reponses[q.id])); });
+  if(qzP.reglages.une_par_une && document.getElementById('qzNav')) qzNavRender();
 }
 function qzRepondue(q, rep){
   if(rep == null || rep === '') return false;
@@ -1603,6 +1655,15 @@ function qzCarnetCompetences(body){
     .qz-input:focus{outline:none;border-color:#6B3FA0;box-shadow:0 0 0 3px rgba(107,63,160,.14);}
     .qz-unite{font-weight:700;}
     .qz-num-apercu{font-size:1.1rem;}
+    .qz-questions.une .qz-page{display:none;} .qz-questions.une .qz-page.on{display:block;}
+    .qz-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:10px 0;background:#F4EFFA;border-radius:12px;padding:8px 10px;}
+    .qz-nav-mid{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:0;}
+    .qz-nav-mid small{color:#B8511F;font-weight:700;font-size:.72rem;}
+    .qz-pastilles{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;}
+    .qz-pastille{width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(107,63,160,.35);background:#fff;font:inherit;font-size:.72rem;font-weight:700;color:#6B3FA0;cursor:pointer;padding:0;}
+    .qz-pastille.fait{background:#6B3FA0;color:#fff;border-color:#6B3FA0;} .qz-pastille.on{outline:2px solid #FF8208;outline-offset:1px;}
+    .qz-pastille:disabled{cursor:default;}
+    .qz-nav-fin{font-size:.8rem;color:var(--ink-soft);}
     .qz-num-warn{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;color:#B8511F;} .qz-num-warn .gicon{font-size:16px;}
     .qz-photos{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;}
     .qz-photo{position:relative;}
