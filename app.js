@@ -336,15 +336,25 @@ function isChapterFree(lvl, titre){ return (FREE_CHAPTERS[lvl]||[]).includes(tit
 /* Compte Famille (parent ou enfant, voir famille.js) : seuls les niveaux payés, et le niveau
    inférieur de chacun en révision, sont ouverts -- les autres chapitres restent verrouillés
    comme pour un visiteur (sauf les chapitres gratuits). */
+/* Offre Professeur seul (et élèves des classes créées en libre-service, voir offres-prof.js) :
+   même principe, avec offreNiveaux. */
+function offreHorsNiveau(lvl){ return typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux) && !offreNiveaux.includes(lvl); }
 function isChapterLocked(lvl, titre){
   if(isChapterFree(lvl, titre)) return false;
   if(restrictedVisitor) return true;
+  if(offreHorsNiveau(lvl)) return true;
   return typeof familleNiveaux!=='undefined' && Array.isArray(familleNiveaux) && !familleNiveaux.includes(lvl);
 }
 function lockedChapterLabel(){
+  if(!restrictedVisitor && typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux)) return currentUserRole==='prof' ? 'hors de votre offre' : 'hors du niveau de ta classe';
   return (typeof familleNiveaux!=='undefined' && Array.isArray(familleNiveaux) && !restrictedVisitor) ? 'hors de votre accès Famille' : 'réservé aux inscrits';
 }
 function onLockedChapterClick(){
+  if(!restrictedVisitor && typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux)){
+    if(currentUserRole==='prof' && typeof openAbonnement==='function') openAbonnement();
+    else niceAlert('Ce niveau ne fait pas partie de ta classe. Tu peux travailler les chapitres de ton niveau et du niveau précédent.');
+    return;
+  }
   if(typeof familleNiveaux!=='undefined' && Array.isArray(familleNiveaux) && !restrictedVisitor){
     if(currentUserRole==='parent'){ showView('view-famille'); setActiveTopnav('famille'); renderFamille(); }
     else niceAlert('Ce niveau ne fait pas partie de ton accès. Demande à tes parents de l\'ajouter depuis leur Espace famille.');
@@ -2429,6 +2439,11 @@ async function refreshAuthUI(){
       if(refEtab && profile.role!=='admin') currentReferentEtab = refEtab;
       if(myEtab && myEtab.licence_until && myEtab.licence_until >= todayStr) currentEtabLicence = myEtab.licence_until;
     }
+    // Offres professeur (offres-prof.js) : niveaux ouverts d'un Professeur seul, ou de l'élève d'une
+    // classe créée en libre-service.
+    const prevOffreNiveaux = JSON.stringify(typeof offreNiveaux!=='undefined' ? offreNiveaux : null);
+    if(typeof offreLoad==='function') await offreLoad(currentUserRole, !!currentEtabLicence);
+    const offreChanged = prevOffreNiveaux !== JSON.stringify(typeof offreNiveaux!=='undefined' ? offreNiveaux : null);
 
     loggedOutEl.style.display='none'; loggedInEl.style.display='block';
     const prenomTrim = profile && profile.prenom ? profile.prenom.trim() : '';
@@ -2440,14 +2455,19 @@ async function refreshAuthUI(){
     // doit pas accéder aux fonctionnalités (mais reste connecté pour voir son statut).
     const pendingOrRejected = profile && profile.role==='prof' && (profile.signup_status==='pending' || profile.signup_status==='rejected');
     // Une licence établissement active lève l'expiration de l'abonnement individuel.
-    const subscriptionExpired = profile && profile.subscription_status==='expired' && !currentEtabLicence;
+    // Essai de 15 jours ou offre payée dont la date est dépassée : bloqué aussi (jusqu'ici l'essai
+    // n'expirait jamais, seul le statut « expired » posé à la main bloquait).
+    const subscriptionExpired = profile && !currentEtabLicence && (profile.subscription_status==='expired'
+      || (profile.role==='prof' && !!profile.subscription_expires_at && new Date(profile.subscription_expires_at) < new Date()));
     const accessBlocked = pendingOrRejected || subscriptionExpired;
     if(pendingOrRejected){
       document.getElementById('accountRoleDisplay').innerHTML = profile.signup_status==='pending'
         ? '<span class=gicon>hourglass_top</span> Inscription en attente de validation par l\'administrateur.'
         : '<span class=gicon>cancel</span> Inscription refusée. Contactez contact@latelieraugmente.fr.';
     } else if(subscriptionExpired){
-      document.getElementById('accountRoleDisplay').innerHTML = '<span class=gicon>warning</span> Abonnement expiré. Contactez contact@latelieraugmente.fr pour le renouveler.';
+      document.getElementById('accountRoleDisplay').innerHTML = profile.role==='prof'
+        ? '<span class=gicon>warning</span> Essai ou offre terminé : choisissez votre offre dans « Mon abonnement ».'
+        : '<span class=gicon>warning</span> Abonnement expiré. Contactez contact@latelieraugmente.fr pour le renouveler.';
     } else {
       document.getElementById('accountRoleDisplay').textContent =
         (currentUserRole==='admin' ? 'Administrateur' : currentUserRole==='prof' ? 'Professeur' : currentUserRole==='parent' ? 'Parent · compte Famille' : isFamilleEnfant ? 'Élève · compte Famille' : currentUserRole==='eleve' ? 'Élève' : '')
@@ -2491,13 +2511,14 @@ async function refreshAuthUI(){
     const chapSuggestRow = document.getElementById('chapSuggestRow');
     if(chapSuggestRow) chapSuggestRow.style.display = isStaff ? 'block' : 'none';
     if(typeof cpOnAuthChange==='function') cpOnAuthChange();
-    // Bouton d'abonnement : uniquement pour les profs approuvés (pas admin, pas élève),
-    // en essai ou dont l'abonnement a expiré -- pas pour un abonnement déjà actif.
+    // « Mon abonnement » (offres-prof.js) : pour les profs approuvés hors licence établissement --
+    // offre, classes en libre-service, factures ; accessible aussi quand l'essai est terminé.
     const btnSubscribe = document.getElementById('btnSubscribe');
     if(btnSubscribe){
-      const showSubscribe = profile && profile.role==='prof' && profile.signup_status==='approved' && !currentEtabLicence
-        && (profile.subscription_status==='trial' || profile.subscription_status==='expired');
+      const showSubscribe = profile && profile.role==='prof' && profile.signup_status==='approved' && !currentEtabLicence;
       btnSubscribe.style.display = showSubscribe ? 'block' : 'none';
+      btnSubscribe.innerHTML = (profile && (subscriptionExpired || profile.subscription_status==='trial'))
+        ? '<span class="gicon">credit_card</span> Choisir mon offre' : '<span class="gicon">workspace_premium</span> Mon abonnement et mes classes';
     }
     const btnGenerateQuiz = document.getElementById('btnGenerateQuiz'), quizLoginHint = document.getElementById('quizLoginHint');
     if(btnGenerateQuiz) btnGenerateQuiz.style.display = 'inline-block';
@@ -2526,7 +2547,7 @@ async function refreshAuthUI(){
     // pour un compte prof/admin approuvé et à jour (essai ou abonnement actif).
     const wasRestricted = restrictedVisitor;
     restrictedVisitor = accessBlocked || !(currentUserRole==='eleve' || currentUserRole==='parent' || isStaff);
-    if((wasRestricted !== restrictedVisitor || familleChanged) && currentLevel) renderNiveau(currentLevel);
+    if((wasRestricted !== restrictedVisitor || familleChanged || offreChanged) && currentLevel) renderNiveau(currentLevel);
   } else {
     currentUser = null; currentUserRole = null; currentClassId = null; currentReferentEtab = null; currentEtabLicence = null; currentReferentEtab = null; currentEtabLicence = null;
     loggedOutEl.style.display='block'; loggedInEl.style.display='none';
@@ -2542,6 +2563,7 @@ async function refreshAuthUI(){
     if(navFamilleOut) navFamilleOut.style.display='none';
     const hadFamille = typeof familleNiveaux!=='undefined' && familleNiveaux!==null;
     if(typeof familleClear==='function') familleClear();
+    if(typeof offreClear==='function') offreClear();
     const navMesDevoirsBadgeOut = document.getElementById('navMesDevoirsBadge');
     if(navMesDevoirsBadgeOut) navMesDevoirsBadgeOut.style.display='none';
     if(navAdmin) navAdmin.style.display='none';
@@ -2733,6 +2755,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.741', items:[
+    "Nouvelles offres professeur, comme un manuel numérique -- demandé : \"j'ai peur qu'un professeur en profite pour donner des cours particuliers\", \"limiter l'accès à un niveau / 1 classe (30 élèves) pour 39 €\", \"le prof particulier (fixe + abonnement par élève) -> permet de faire des cours en groupe\". Professeur seul : 39 € par an pour un niveau et une classe de 30 élèves, 29 € par niveau en plus ; le professeur et ses élèves n'ont que ces niveaux (et le niveau inférieur en révision). Professeur particulier : 39 € + 20 € par élève, groupes libres. Paiement unique pour l'année scolaire (jusqu'au 31 août), compléments à la différence, facture de L'Atelier Augmenté. L'offre Découverte gratuite disparaît : 15 jours d'essai (une classe de 30 élèves), et l'essai expire désormais vraiment.",
+    "« Mon abonnement et mes classes » (menu du compte) : choix de l'offre avec le prix calculé, paiement Stripe, puis le professeur crée lui-même sa classe (ou ses groupes) et les comptes de ses élèves (une liste « Prénom Nom », identifiants et mots de passe créés, fiches à imprimer, nouveau mot de passe, suppression), dans les limites de son offre vérifiées par le serveur ; ses factures. Les comptes actuels, activés par l'administrateur ou couverts par une licence établissement, ne changent pas.",
+    "Administration › Offres profs : prix modifiables, professeurs et leur offre, mode test Stripe, et un tableau de vigilance (classes au nom évocateur, 5 élèves au plus, activité surtout le soir, le mercredi après-midi et le week-end) -- des indices à vérifier, jamais de blocage automatique. Page Tarifs, page Professeurs et conditions générales de vente (partie B) mises à jour.",
+  ]},
   { version:'2026-08-19.740', items:[
     "Séance en direct : code au tableau et groupes -- demandé : \"on distribue à une classe entière ? C'est direct ou il y a un code ? Je préfère afficher un code au tableau ou choisir mes élèves dans la classe (on est parfois en groupe)\". En ouvrant une séance : la classe, puis toute la classe ou un groupe d'élèves cochés, puis comment ils rejoignent -- avec un code à 4 chiffres affiché en grand au tableau (par défaut : seuls les élèves présents qui tapent le code entrent) ou automatiquement par le bandeau. Côté élève : menu S'entraîner › Séance en direct (code), ou le code tapé directement dans le bandeau rouge. Le code reste visible en haut de l'écran du professeur pendant la séance ; un élève hors du groupe ne peut pas entrer, même avec le code.",
     "« Séance en direct » dans les modes de l'interrogation -- demandé : \"la séance en direct pourrait s'afficher dans la zone de type d'activités\". Quatrième choix à côté de À la maison, Interrogation en classe et Entraînement : pas de dates ni de note, on choisit la classe (ou des élèves) et le bouton devient « Ouvrir la séance en direct ».",

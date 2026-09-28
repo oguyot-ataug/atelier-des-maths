@@ -315,7 +315,7 @@ ${feats.map(f => `  <div><h3><span class="gicon">${f[0]}</span> ${esc(f[1])}</h3
 </section>
 <section class="seo-section">
   <h2><span class="gicon">key</span> Accès</h2>
-  <p>L'inscription est réservée aux enseignants disposant d'une adresse académique. Après vérification, vous bénéficiez de <b>15 jours d'essai gratuit</b>, puis d'un abonnement annuel (16,90 € par an). Un établissement peut aussi prendre une <b>licence établissement</b> pour tous ses professeurs. Les fonctions d'IA utilisent votre propre clé, celle de l'établissement ou celle du site selon ce qui a été décidé : vous voyez toujours le détail de la consommation.</p>
+  <p>L'inscription est réservée aux enseignants disposant d'une adresse académique. Après vérification, vous bénéficiez de <b>15 jours d'essai gratuit</b>, puis vous choisissez votre offre, comme pour un manuel numérique : <b>Professeur seul</b> (39 € par an pour un niveau et une classe de 30 élèves, 29 € par niveau en plus) ou <b>Professeur particulier</b> pour les cours particuliers (39 € par an et 20 € par élève). Un établissement peut aussi prendre une <b>licence établissement</b> pour tous ses professeurs. Les fonctions d'IA utilisent votre propre clé, celle de l'établissement ou celle du site selon ce qui a été décidé : vous voyez toujours le détail de la consommation.</p>
   <p style="margin-top:12px;"><a class="seo-btn" href="/">Découvrir l'application</a></p>
 </section>`;
   return { url, html: layout({ title, description, canonical: url, jsonld, body, ogType: 'website' }) };

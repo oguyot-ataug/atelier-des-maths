@@ -19,7 +19,7 @@ const ROUTE_SIMPLE = {
   'view-cm':'cm', 'view-compte':'compte', 'view-correction':'correction',
   'view-evaluation':'evaluation', 'view-tableau':'tableau', 'view-cahier-eleve':'cahier',
   'view-admin':'admin', 'view-supervision':'supervision', 'view-mesresultats':'mesresultats',
-  'view-ia':'ia', 'view-famille':'famille', 'view-cgv':'cgv',
+  'view-ia':'ia', 'view-famille':'famille', 'view-abonnement':'abonnement', 'view-cgv':'cgv',
   'view-confidentialite':'confidentialite', 'view-mentions-legales':'mentions-legales',
   'view-programmation':'programmation', 'view-qz-carnet':'carnet', 'view-qz-banque':'questionnaires', 'view-qz-form':'questionnaires', 'view-devoirs-prof':'devoirs',
 };
@@ -27,7 +27,7 @@ const ROUTE_LABELS = {
   cm:'Suivi', compte:'Objectif Nombre', correction:'Correction', evaluation:'Évaluation',
   tableau:'Tableau interactif', cahier:'Cahier élève', admin:'Administration',
   supervision:'Supervision', mesresultats:'Mes résultats', ia:'Intelligence artificielle',
-  famille:'Espace famille', cgv:'Conditions générales de vente', confidentialite:'Confidentialité',
+  famille:'Espace famille', abonnement:'Mon abonnement', cgv:'Conditions générales de vente', confidentialite:'Confidentialité',
   'mentions-legales':'Mentions légales', programmation:'Programmation', carnet:'Carnet de notes', questionnaires:'Interrogations en ligne', devoirs:'Devoirs en ligne',
 };
 /* Routes reservees (role requis), miroir exact des gardes déjà présentes dans le
@@ -175,6 +175,8 @@ function routerRestoreFromHash(){
         showView('view-ia'); setActiveTopnav(null); if(typeof renderIaPage==='function') renderIaPage();
       } else if(key==='famille'){
         showView('view-famille'); setActiveTopnav('famille'); if(typeof renderFamille==='function') renderFamille();
+      } else if(key==='abonnement'){
+        showView('view-abonnement'); setActiveTopnav(null); if(typeof renderAbonnement==='function') renderAbonnement();
       } else if(key==='cgv' || key==='confidentialite' || key==='mentions-legales'){
         showView('view-'+key); setActiveTopnav(null);
       } else if(key==='carnet'){
