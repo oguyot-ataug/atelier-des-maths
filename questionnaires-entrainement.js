@@ -149,8 +149,8 @@ function qzEntResultats(root){
     return { q, n: cs.length, premier: cs.filter(x => x.k === 'premier').length, apres: cs.filter(x => x.k === 'apres').length, rate: cs.filter(x => x.k === 'rate').length, avoir: cs.filter(x => x.k === 'avoir').length }; });
   const pct = (x, n) => n ? Math.round(100 * x / n) : 0;
   root.innerHTML = `<span class="back-btn" onclick="qzCFermer()">← Interrogations en ligne</span>
-    <h1 style="margin:6px 0 2px;"><span class="gicon">fitness_center</span> ${qzEsc(d.titre)}</h1>
-    <p class="hint" style="margin:0 0 12px;">${qzEsc(d.classes ? d.classes.nom : '')} · Entraînement non noté · <b>${faits}</b> terminé${faits > 1 ? 's' : ''}${enCours ? ` · ${enCours} en cours` : ''} sur ${qzC.eleves.length} élève${qzC.eleves.length > 1 ? 's' : ''}</p>
+    <h1 style="margin:6px 0 2px;"><span class="gicon" style="color:${QZ_MODES.entrainement.c};">fitness_center</span> ${qzEsc(d.titre)}</h1>
+    <p class="hint" style="margin:0 0 12px;">${qzModeBadge('entrainement')} · ${qzEsc(d.classes ? d.classes.nom : '')} · <b>${faits}</b> terminé${faits > 1 ? 's' : ''}${enCours ? ` · ${enCours} en cours` : ''} sur ${qzC.eleves.length} élève${qzC.eleves.length > 1 ? 's' : ''}</p>
     <h3 style="margin:10px 0 6px;">Par question</h3>
     <div class="qzd-blist">${parQ.map(x => `<div class="qzd-bl"><span class="qzd-bl-n">${num[x.q.id]}</span><span class="qzd-bl-t">${qzEsc(String(x.q.enonce || '').replace(/\$/g, '').replace(/\s+/g, ' ').slice(0, 90)) || qzType(x.q.type).label}</span>
       <span class="qzd-bl-b">${x.n ? `<div class="qzd-bar">${[['premier', 'juste'], ['apres', 'apres'], ['rate', 'faux'], ['avoir', 'avoir']].filter(([k]) => x[k]).map(([k, cls]) => `<span class="${cls}" style="flex:${x[k]}">${pct(x[k], x.n) >= 15 ? pct(x[k], x.n) + ' %' : ''}</span>`).join('')}</div>` : '<span class="hint" style="margin:0;">pas encore faite</span>'}</span>

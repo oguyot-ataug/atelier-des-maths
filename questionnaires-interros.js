@@ -216,7 +216,7 @@ async function qzFormEnregistrer(){
     consigne: document.getElementById('qzfConsigne').value.trim() || (qzEd && qzEd.reglages.mode === 'sondage' ? 'Donne ton avis : pas de bonne ou de mauvaise réponse, réponds sincèrement.' : 'Répondez aux questions.'),
     date_depot: ouv ? new Date(ouv).toISOString() : null, date_limite: lim ? new Date(lim).toISOString() : null,
     student_ids: qzF.cible === 'eleves' ? Array.from(qzF.eleves) : null,
-    qz_mode: qzEd && qzEd.reglages.mode === 'sondage' ? 'sondage' : null }; // l'élève ne lit pas le questionnaire : « Répondre au sondage » dans Mes devoirs
+    qz_mode: qzModeCle(qzEd && qzEd.reglages) }; // l'élève ne lit pas le questionnaire : mode affiché dans « Mon travail »
   const { error } = qzF.devoirId ? await sb.from('devoirs').update(payload).eq('id', qzF.devoirId) : await sb.from('devoirs').insert(payload);
   if(error){ st.textContent = 'Erreur : ' + error.message; reprendre(); return; }
   if(auto && auto.cle){ try{ localStorage.removeItem(auto.cle); }catch(e){} }
@@ -307,9 +307,9 @@ function qzInterroEtat(d){
 function qzInterrosHtml(liste){
   if(!liste.length) return `<p class="hint">Aucune interrogation pour l'instant : « Nouvelle interrogation » pour en créer une (ou « Donner à une classe » depuis Mes questionnaires).</p>`;
   return `<div class="qz-i-liste">${liste.map(d => { const e = qzInterroEtat(d), r = d._reg || QZ_REGLAGES_DEFAUT;
-    return `<div class="qz-i-row">
-      <div class="qz-i-main"><b>${qzEsc(d.titre)}</b>${d._q && (d._q.partage_etab || (d._q.partage_profs || []).length) ? ' <span class="qz-b-share"><span class="gicon">group</span> partagé</span>' : ''}
-        <div class="hint" style="margin:2px 0 0;">${qzEsc(d.classes ? d.classes.nom : '')}${d.student_ids && d.student_ids.length ? ` · ${d.student_ids.length} élève${d.student_ids.length > 1 ? 's' : ''} choisi${d.student_ids.length > 1 ? 's' : ''}` : ''} · ${qzEstEntrainement(r) ? '<b style="color:#16767B;">entraînement, non noté</b>' : qzEstSondage(r) ? '<b style="color:#16767B;">sondage, sans note</b>' : r.mode === 'classe' ? 'en classe, ' + r.duree + ' min' : 'à la maison'}${d.date_limite ? ' · limite le ' + new Date(d.date_limite).toLocaleDateString('fr-FR') : ''}</div></div>
+    return `<div class="qz-i-row qz-mlisere" style="--m:${qzMode(r).c}">
+      <div class="qz-i-main">${qzModeBadge(r)} <b>${qzEsc(d.titre)}</b>${d._q && (d._q.partage_etab || (d._q.partage_profs || []).length) ? ' <span class="qz-b-share"><span class="gicon">group</span> partagé</span>' : ''}
+        <div class="hint" style="margin:2px 0 0;">${qzEsc(d.classes ? d.classes.nom : '')}${d.student_ids && d.student_ids.length ? ` · ${d.student_ids.length} élève${d.student_ids.length > 1 ? 's' : ''} choisi${d.student_ids.length > 1 ? 's' : ''}` : ''}${d.date_limite ? ' · limite le ' + new Date(d.date_limite).toLocaleDateString('fr-FR') : ''}</div></div>
       <span class="qz-i-etat ${e.c}"><span class="gicon">${e.i}</span> ${e.t}</span>
       <span class="qz-i-stat" title="${qzEstEntrainement(r) ? 'Entraînements terminés' : qzEstSondage(r) ? 'Réponses envoyées' : 'Copies rendues'}"><b>${d._rendues}</b>/${d._total} ${qzEstEntrainement(r) ? 'terminé' : qzEstSondage(r) ? 'réponse' : 'rendue'}${d._rendues > 1 ? 's' : ''}${d._enCours ? ` · ${d._enCours} en cours` : ''}</span>
       <span class="qz-i-stat${d._aCorriger ? ' warn' : ''}">${d._aCorriger ? `<b>${d._aCorriger}</b> à corriger` : d._rendues && !qzEstEntrainement(r) && !qzEstSondage(r) ? '✓ corrigé' : ''}</span>
@@ -330,9 +330,9 @@ function qzBrouillonsHtml(f){
   if(!liste.length) return '';
   return `<p class="qz-i-sec"><span class="gicon">save</span> Enregistrés, pas encore donnés (${liste.length})</p>
     <div class="qz-i-liste" style="margin-bottom:18px;">${liste.map(q => { const r = qzBanqueResume(q), b = (q.reglages || {}).brouillon;
-      return `<div class="qz-i-row brouillon">
-        <div class="qz-i-main"><b>${qzEsc(q.titre || 'Sans titre')}</b>${b && b.a_completer ? ' <span class="qz-b-draft inc">à compléter</span>' : ''}${(q.partage_etab || (q.partage_profs || []).length) ? ' <span class="qz-b-share"><span class="gicon">group</span> partagé</span>' : ''}
-          <div class="hint" style="margin:2px 0 0;">${r.n} question${r.n > 1 ? 's' : ''} · ${qzNum(r.pts)} pts · enregistré le ${new Date(q.updated_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}</div></div>
+      return `<div class="qz-i-row brouillon qz-mlisere" style="--m:${qzMode(q.reglages).c}">
+        <div class="qz-i-main">${qzModeBadge(q.reglages, '')} <b>${qzEsc(q.titre || 'Sans titre')}</b>${b && b.a_completer ? ' <span class="qz-b-draft inc">à compléter</span>' : ''}${(q.partage_etab || (q.partage_profs || []).length) ? ' <span class="qz-b-share"><span class="gicon">group</span> partagé</span>' : ''}
+          <div class="hint" style="margin:2px 0 0;">${r.n} question${r.n > 1 ? 's' : ''} · ${['maison', 'classe'].includes(qzModeCle(q.reglages)) ? qzNum(r.pts) + ' pts · ' : ''}enregistré le ${new Date(q.updated_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}</div></div>
         <span class="qz-i-act">
           <button class="btn qz-mini" onclick="qzBanqueReprendre('${q.id}')"><span class="gicon">edit</span> Reprendre</button>
           <button class="btn secondary qz-mini" onclick="qzBanqueDonner('${q.id}')"><span class="gicon">assignment_add</span> Donner à une classe</button>

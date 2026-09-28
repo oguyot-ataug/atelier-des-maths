@@ -46,7 +46,8 @@ const QZD_VERDICTS = [['juste', 'Juste'], ['partiel', 'En partie'], ['faux', 'Fa
 async function qzDirectLancer(questionnaireId, choix){
   const q = await qzBanqueSur(questionnaireId);
   if(!q){ await niceAlert('Questionnaire introuvable.'); return; }
-  const questions = qzPreparer(JSON.parse(JSON.stringify(q.questions || [])));
+  const defaut = Number((q.reglages || {}).duree_direct) || 0; // minuteur par défaut du questionnaire
+  const questions = qzPreparer(JSON.parse(JSON.stringify(q.questions || []))).map(x => x.type === 'texte' || x.duree_direct != null ? x : Object.assign(x, { duree_direct: defaut }));
   const nb = questions.filter(x => x.type !== 'texte').length;
   if(!nb){ await niceAlert('Ce questionnaire n\'a pas encore de question.'); return; }
   choix = choix || await qzDirectChoix(q.titre || 'Questionnaire', nb, (q.reglages || {}).acces);
@@ -84,7 +85,7 @@ function qzDirectChoix(titre, nb, accesDefaut){
           <p class="hint" style="margin:4px 0 0;"><span id="qzdMNb">${st.eleves.size}</span> élève(s) choisi(s) · <a href="#" data-tous>tous</a> · <a href="#" data-aucun>aucun</a></p>` : ''}
         <p class="qzd-m-lab">3. Comment les élèves rejoignent-ils ?</p>
         <div class="qzd-m-acces">
-          <button type="button" class="qzd-m-opt${st.acces === 'code' ? ' on' : ''}" data-acces="code"><span class="gicon">pin</span><span><b>Avec un code affiché au tableau</b><small>Menu S'entraîner › Séance en direct, ou le bandeau rouge : l'élève tape le code. Seuls les élèves présents entrent.</small></span></button>
+          <button type="button" class="qzd-m-opt${st.acces === 'code' ? ' on' : ''}" data-acces="code"><span class="gicon">pin</span><span><b>Avec un code affiché au tableau</b><small>En haut de la page « Mon travail », ou dans le bandeau rouge : l'élève tape le code. Seuls les élèves présents entrent.</small></span></button>
           <button type="button" class="qzd-m-opt${st.acces === 'auto' ? ' on' : ''}" data-acces="auto"><span class="gicon">bolt</span><span><b>Automatiquement</b><small>Un bandeau « Rejoindre » apparaît sur l'écran des élèves concernés, sans code.</small></span></button>
         </div>` : ''}
         <p class="hint qzd-m-err" id="qzdMErr" style="margin:10px 0 0;color:#a83c1f;"></p>
@@ -123,7 +124,11 @@ async function qzDirectOuvrir(id){
   const eleves = await qzElevesDevoir({ class_id: row.class_id, student_ids: row.student_ids });
   const pages = qzPages(row.questions || []).map(p => ({ docs: p.filter(x => x.type === 'texte'), q: p.find(x => x.type !== 'texte') })).filter(p => p.q);
   let pref = {}; try{ pref = JSON.parse(localStorage.getItem('qzdAffichage') || '{}') || {}; }catch(e){}
-  qzD = { id, row, etat: row.etat || {}, pages, eleves, reps: new Map(), vus: new Map(), cacher: !!pref.cacher, noms: false, sig: '' };
+  qzD = { id, row, etat: row.etat || {}, pages, eleves, reps: new Map(), valides: new Map(), vus: new Map(), cacher: !!pref.cacher, noms: false, sig: '', durees: {}, decal: 0 };
+  if(qzD.etat.fin_at && !row.ended_at){ // minuteur en cours (reprise) : recaler l'horloge sur celle du serveur
+    const t0 = Date.now(), { data: u } = await sb.from('qz_direct').update({ updated_at: new Date().toISOString() }).eq('id', id).select('updated_at').single();
+    if(u && u.updated_at && qzD && qzD.id === id) qzD.decal = Date.parse(u.updated_at) - (t0 + Date.now()) / 2;
+  }
   qzD.ch = sb.channel(qzDCanal(id), { config: { broadcast: { self: false } } })
     .on('broadcast', { event: 'rep' }, () => qzDirectRepsBientot())
     .on('broadcast', { event: 'ici' }, ({ payload }) => { if(qzD && payload && payload.e){ qzD.vus.set(payload.e, Date.now()); qzDirectMajPresence(); } })
@@ -148,16 +153,17 @@ function qzDirectQuitter(){
 async function qzDirectChargerReps(sansRendu){
   if(!qzD) return;
   const id = qzD.id;
-  const { data, error } = await sb.from('qz_direct_rep').select('qid,student_id,reponse,updated_at').eq('direct_id', id);
+  const { data, error } = await sb.from('qz_direct_rep').select('qid,student_id,reponse,valide,updated_at').eq('direct_id', id);
   if(error || !qzD || qzD.id !== id) return;
-  const m = new Map();
+  const m = new Map(), v = new Map();
   (data || []).forEach(r => {
-    if(!m.has(r.qid)) m.set(r.qid, new Map());
+    if(!m.has(r.qid)){ m.set(r.qid, new Map()); v.set(r.qid, new Set()); }
     m.get(r.qid).set(r.student_id, r.reponse);
+    if(r.valide) v.get(r.qid).add(r.student_id);
     const t = Date.parse(r.updated_at) || 0; if(t > (qzD.vus.get(r.student_id) || 0)) qzD.vus.set(r.student_id, t);
   });
-  const sig = JSON.stringify((data || []).map(r => [r.qid, r.student_id, r.updated_at]));
-  qzD.reps = m;
+  const sig = JSON.stringify((data || []).map(r => [r.qid, r.student_id, r.updated_at, r.valide]));
+  qzD.reps = m; qzD.valides = v;
   if(!sansRendu && sig !== qzD.sig) qzDirectMajStats();
   qzD.sig = sig;
 }
@@ -166,9 +172,11 @@ function qzDirectRepsBientot(){ if(!qzD) return; clearTimeout(qzD.repT); qzD.rep
 // Changement d'état (question en cours, correction…) : enregistré, puis annoncé aux élèves.
 async function qzDirectEtat(nouvel){
   if(!qzD) return false;
-  const { error } = await sb.from('qz_direct').update({ etat: nouvel, updated_at: new Date().toISOString() }).eq('id', qzD.id);
+  const t0 = Date.now();
+  const { data, error } = await sb.from('qz_direct').update({ etat: nouvel, updated_at: new Date().toISOString() }).eq('id', qzD.id).select('etat,updated_at').single();
   if(error){ await niceAlert('Erreur : ' + error.message); return false; }
-  qzD.etat = nouvel;
+  qzD.etat = (data && data.etat) || nouvel;
+  if(data && data.updated_at) qzD.decal = Date.parse(data.updated_at) - (t0 + Date.now()) / 2; // horloge du serveur (minuteur)
   try{ qzD.ch.send({ type: 'broadcast', event: 'etat', payload: { phase: nouvel.phase, qid: nouvel.qid || null } }); }catch(e){}
   qzDirectRender();
   return true;
@@ -177,18 +185,57 @@ function qzDirectIndex(){ return qzD ? qzD.pages.findIndex(p => p.q.id === qzD.e
 function qzDirectAller(i){
   const p = qzD && qzD.pages[i]; if(!p) return;
   const lancees = Array.from(new Set((qzD.etat.lancees || []).concat(p.q.id)));
-  return qzDirectEtat({ phase: 'question', qid: p.q.id, docs: p.docs.map(d => d.id), n: i + 1, total: qzD.pages.length, lancees });
+  const duree = qzDirectDuree(p.q);
+  return qzDirectEtat(Object.assign({ phase: 'question', qid: p.q.id, docs: p.docs.map(d => d.id), n: i + 1, total: qzD.pages.length, lancees, duree },
+    duree ? { chrono: duree } : { fin_at: null }));
 }
 function qzDirectCorriger(){ return qzDirectEtat(Object.assign({}, qzD.etat, { phase: 'correction' })); }
-function qzDirectRouvrir(){ return qzDirectEtat(Object.assign({}, qzD.etat, { phase: 'question' })); }
+function qzDirectRouvrir(){ const d = qzD.etat.duree || 0; return qzDirectEtat(Object.assign({}, qzD.etat, { phase: 'question' }, d ? { chrono: d } : { fin_at: null })); }
+
+/* Minuteur -- demandé : "prévoir un bouton de validation pour chaque question et/ou un timer (adapté à
+   chaque question)". Durée propre à chaque question (éditeur, mode Séance en direct), modifiable ici
+   pendant la séance ; l'heure de fin est calculée par le serveur (déclencheur qz_direct_chrono) et, une
+   fois passée, la question est close pour les élèves (qz_direct_repondre). */
+const QZD_DUREES = [0, 15, 30, 45, 60, 90, 120, 180, 300];
+function qzDDureeTxt(s){ s = Number(s) || 0; return !s ? 'Sans minuteur' : s < 60 ? s + ' s' : Math.floor(s / 60) + ' min' + (s % 60 ? ' ' + (s % 60) : ''); }
+function qzDirectDuree(q){ return qzD && qzD.durees && qzD.durees[q.id] != null ? qzD.durees[q.id] : Number(q.duree_direct) || 0; }
+function qzDNow(){ return Date.now() + ((qzD && qzD.decal) || 0); }
+function qzDReste(){ const f = qzD && qzD.etat.fin_at ? Date.parse(qzD.etat.fin_at) : NaN; return isNaN(f) ? null : Math.max(0, f - qzDNow()); }
+// Question close : autre question, correction affichée, ou minuteur écoulé.
+function qzDFerme(qid){ return !qzD || qid !== qzD.etat.qid || qzD.etat.phase !== 'question' || !!qzD.row.ended_at || qzDReste() === 0; }
+async function qzDirectChrono(sec){
+  if(!qzD || qzD.etat.phase !== 'question') return;
+  sec = Math.max(0, Number(sec) || 0);
+  qzD.durees = qzD.durees || {}; qzD.durees[qzD.etat.qid] = sec;
+  await qzDirectEtat(Object.assign({}, qzD.etat, { duree: sec }, sec ? { chrono: sec } : { fin_at: null }));
+}
+async function qzDirectPlus(sec){ const r = qzDReste(); if(r === null) return; await qzDirectEtat(Object.assign({}, qzD.etat, { chrono: Math.ceil(r / 1000) + sec })); }
+async function qzDirectStopChrono(){ if(!(await niceConfirm('Arrêter les réponses maintenant ? Les élèves ne pourront plus répondre à cette question.'))) return; await qzDirectEtat(Object.assign({}, qzD.etat, { chrono: 0 })); }
+function qzDMinuteurHtml(q){
+  const r = qzDReste(), sel = `<select class="qzd-chrono-sel" onchange="qzDirectChrono(this.value)" title="Minuteur de cette question">${QZD_DUREES.concat(QZD_DUREES.includes(qzD.etat.duree || 0) ? [] : [qzD.etat.duree]).map(d => `<option value="${d}"${d === (qzD.etat.duree || 0) ? ' selected' : ''}>${d ? '⏱ ' + qzDDureeTxt(d) : 'Sans minuteur'}</option>`).join('')}</select>`;
+  if(r === null) return `<div class="qzd-chrono off">${sel}</div>`;
+  const s = Math.ceil(r / 1000);
+  return `<div class="qzd-chrono${s === 0 ? ' fini' : s <= 10 ? ' urgent' : ''}"><span class="qzd-chrono-t" id="qzdChrono"><span class="gicon">timer</span> ${s === 0 ? 'Temps écoulé' : Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0')}</span>
+    ${s ? `<button type="button" class="qzd-tg" onclick="qzDirectPlus(30)" title="30 secondes de plus">+30 s</button><button type="button" class="qzd-tg" onclick="qzDirectStopChrono()" title="Clore les réponses maintenant"><span class="gicon">stop</span></button>` : `<button type="button" class="qzd-tg" onclick="qzDirectPlus(30)" title="Rouvrir 30 secondes">+30 s</button>`}${sel}</div>`;
+}
+// Tic du minuteur (professeur) : décompte, puis résultats recalculés quand le temps est écoulé.
+function qzDirectTic(){
+  if(!qzD || !qzDVueActive()) return;
+  const r = qzDReste(); if(r === null || qzD.etat.phase !== 'question') return;
+  const el = document.getElementById('qzdChrono'), fini = r === 0;
+  if(fini !== !!qzD.chronoFini){ qzD.chronoFini = fini; qzDirectRender(); return; }
+  if(el && !fini){ const s = Math.ceil(r / 1000); el.innerHTML = `<span class="gicon">timer</span> ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; el.parentElement.classList.toggle('urgent', s <= 10); }
+}
+setInterval(qzDirectTic, 500);
 function qzDirectSuivante(){ const i = qzDirectIndex(); return i + 1 < qzD.pages.length ? qzDirectAller(i + 1) : qzDirectTerminer(); }
 async function qzDirectRelancer(){
   const qid = qzD && qzD.etat.qid; if(!qid) return;
   const n = (qzD.reps.get(qid) || new Map()).size;
   if(n && !(await niceConfirm(`Effacer les ${n} réponse${n > 1 ? 's' : ''} à cette question et la reposer ?`))) return;
   await sb.from('qz_direct_rep').delete().eq('direct_id', qzD.id).eq('qid', qid);
-  qzD.reps.delete(qid);
-  await qzDirectEtat(Object.assign({}, qzD.etat, { phase: 'question' }));
+  qzD.reps.delete(qid); if(qzD.valides) qzD.valides.delete(qid);
+  const d = qzD.etat.duree || 0;
+  await qzDirectEtat(Object.assign({}, qzD.etat, { phase: 'question' }, d ? { chrono: d } : { fin_at: null }));
 }
 async function qzDirectTerminer(){
   if(!qzD) return;
@@ -212,11 +259,23 @@ function qzDirectPleinEcran(){
   if(document.fullscreenElement) document.exitFullscreen().catch(() => {}); else if(el.requestFullscreen) el.requestFullscreen().catch(() => {});
 }
 
+/* Demandé : "pour les vrais/faux, attendre que l'élève ait répondu à toutes les questions avant de dire
+   qu'ils ont terminé dans le suivi". Une réponse compte quand l'élève l'a validée (bouton « Valider »,
+   possible seulement une fois la question complète) ; quand la question est close (correction, minuteur
+   écoulé, question suivante), les réponses complètes non validées comptent aussi. Les autres sont des
+   brouillons : « en train de répondre ». */
 function qzDStats(q){
-  const m = qzD.reps.get(q.id) || new Map(), c = { juste: 0, partiel: 0, faux: 0, avoir: 0, sondage: 0 };
-  let n = 0;
-  qzD.eleves.forEach(e => { if(!m.has(e.id)) return; const v = qzDVerdict(q, m.get(e.id)); if(v === 'vide') return; c[v]++; n++; });
-  return { c, n, total: qzD.eleves.length, m };
+  const toutes = qzD.reps.get(q.id) || new Map(), val = (qzD.valides && qzD.valides.get(q.id)) || new Set(), ferme = qzDFerme(q.id);
+  const c = { juste: 0, partiel: 0, faux: 0, avoir: 0, sondage: 0 }, m = new Map();
+  let n = 0, brouillons = 0;
+  qzD.eleves.forEach(e => {
+    if(!toutes.has(e.id)) return;
+    const r = toutes.get(e.id);
+    if(!(val.has(e.id) || (ferme && qzRepondue(q, r)))){ brouillons++; return; }
+    const v = qzDVerdict(q, r); if(v === 'vide') return;
+    m.set(e.id, r); c[v]++; n++;
+  });
+  return { c, n, total: qzD.eleves.length, m, brouillons, ferme };
 }
 function qzDPct(x, n){ return n ? Math.round(100 * x / n) : 0; }
 function qzDBarre(c, n, grand){
@@ -269,8 +328,10 @@ function qzDirectDetailHtml(q, s, corr){
 }
 function qzDirectStatsHtml(q){
   const s = qzDStats(q), corr = qzD.etat.phase === 'correction', montrer = corr || !qzD.cacher;
-  let h = `<div class="qzd-compte"><div><b id="qzdNbRep">${s.n}</b> / ${s.total}</div><span>élève${s.n > 1 ? 's ont' : ' a'} répondu</span>
-    <div class="qzd-prog"><i style="width:${qzDPct(s.n, s.total)}%"></i></div></div>`;
+  let h = `<div class="qzd-compte"><div><b id="qzdNbRep">${s.n}</b> / ${s.total}</div><span>${s.ferme ? (s.n > 1 ? 'élèves ont répondu' : 'élève a répondu') : s.n > 1 ? 'élèves ont validé leur réponse' : 'élève a validé sa réponse'}</span>
+    <div class="qzd-prog"><i style="width:${qzDPct(s.n, s.total)}%"></i></div>
+    ${!s.ferme && s.brouillons ? `<small class="qzd-brouillons"><span class="gicon">edit</span> ${s.brouillons} en train de répondre</small>` : ''}
+    ${!s.ferme && s.total && s.n === s.total ? '<small class="qzd-tous"><span class="gicon">check_circle</span> Tout le monde a répondu</small>' : ''}</div>`;
   if(!montrer) h += `<p class="qzd-cache"><span class="gicon">visibility_off</span> Résultats masqués jusqu'à la correction.</p>`;
   else if(s.n && qzX(q).sondage) h += qzDirectDetailHtml(q, s, corr); // sondage : les choix, sans juste/faux
   else if(s.n){
@@ -300,7 +361,7 @@ function qzDirectMajStats(){
 function qzDirectNavHtml(){
   const cur = qzDirectIndex(), lancees = qzD.etat.lancees || [];
   return qzD.pages.map((p, i) => {
-    const n = (qzD.reps.get(p.q.id) || new Map()).size;
+    const n = qzDStats(p.q).n;
     return `<button type="button" class="qzd-puce${i === cur ? ' on' : ''}${lancees.includes(p.q.id) ? ' faite' : ''}" onclick="qzDirectAller(${i})" title="Question ${i + 1}${n ? ' · ' + n + ' réponse' + (n > 1 ? 's' : '') : ''}">${i + 1}</button>`;
   }).join('');
 }
@@ -314,7 +375,7 @@ function qzDirectRender(){
   else if(!p || e.phase === 'attente') corps = `<div class="qzd-attente">
       <span class="gicon">cast_for_education</span>
       <h2>Les élèves rejoignent la séance</h2>
-      ${qzD.row.acces === 'code' ? `<p>Sur leur compte : menu <b>S'entraîner › Séance en direct</b> (ou le bandeau rouge), puis ce code :</p>
+      ${qzD.row.acces === 'code' ? `<p>Sur leur compte : <b>Mon travail</b> (ou le bandeau rouge), puis ce code :</p>
       <div class="qzd-code" aria-label="Code de la séance">${qzEsc(qzD.row.code || '')}</div>`
       : '<p>Sur leur compte, un bandeau <b>« Séance en direct »</b> apparaît : ils cliquent sur <b>Rejoindre</b>.</p>'}
       ${qzD.row.student_ids && qzD.row.student_ids.length ? `<p class="hint" style="margin:0 auto;text-align:center;">Groupe de ${qzD.row.student_ids.length} élève${qzD.row.student_ids.length > 1 ? 's' : ''} : ${qzEsc(qzD.eleves.map(e => e.prenom || e.label).join(', '))}</p>` : ''}
@@ -326,7 +387,8 @@ function qzDirectRender(){
       <div class="qzd-q">
         <div class="qzd-qhead"><span class="qzd-num">Question ${i + 1} / ${qzD.pages.length}</span>
           <span class="qz-type-pill"><span class="gicon">${qzType(p.q.type).icon}</span> ${qzType(p.q.type).label}</span>
-          ${corr ? '<span class="qzd-phase corr"><span class="gicon">fact_check</span> Correction affichée</span>' : '<span class="qzd-phase"><span class="dot"></span> Les élèves répondent</span>'}</div>
+          ${corr ? '<span class="qzd-phase corr"><span class="gicon">fact_check</span> Correction affichée</span>' : qzDReste() === 0 ? '<span class="qzd-phase clos"><span class="gicon">lock_clock</span> Réponses closes</span>' : '<span class="qzd-phase"><span class="dot"></span> Les élèves répondent</span>'}
+          ${corr ? '' : qzDMinuteurHtml(p.q)}</div>
         ${p.docs.map(d => `<div class="qz-doc">${qzEnonceHtml(d)}</div>`).join('')}
         <div class="qz-q" id="qzdQ_${p.q.id}">${qzEnonceHtml(p.q)}<div class="qz-q-rep">${qzRenderSaisie(p.q, corr ? qzDirectBonneReponse(p.q) : null, corr ? 'corrige' : 'lecture', { reglages: {}, seed: null, pfx: 'd' })}</div></div>
       </div>
@@ -502,8 +564,11 @@ async function qzDirectEleveCharger(){
     document.getElementById('qzDirectRoot').innerHTML = `<p class="hint">${qzEsc((error && error.message) || 'Séance introuvable.')}</p><button class="btn secondary" onclick="qzDirectEleveQuitter()">← Accueil</button>`;
     return;
   }
-  const cle = [data.phase, data.qid || '', data.maj || ''].join('|');
+  const cle = [data.phase, data.qid || '', data.maj || '', data.valide ? 1 : 0].join('|');
+  if(data.now) qzDE.decal = Date.parse(data.now) - Date.now();
   if(cle === qzDE.cle) return; // rien de neuf : la saisie en cours n'est pas touchée
+  // Même question (minuteur changé...) : la réponse en cours de saisie est gardée.
+  if(qzP && qzP.direct && qzDE.etat && qzDE.etat.qid === data.qid && data.question && qzP.reponses[data.qid] !== undefined && !data.valide) data.reponse = qzP.reponses[data.qid];
   qzDE.cle = cle; qzDE.etat = data;
   qzDirectEleveRender();
 }
@@ -528,17 +593,21 @@ function qzDirectEleveRender(){
       <p>Ton professeur va lancer la première question. Reste sur cette page.</p></div></div>`;
     return;
   }
-  const q = d.question, corr = d.phase === 'correction';
-  qzP = { direct: true, apercu: false, data: { devoir: { id: 'direct', titre: d.titre } }, devoirId: 'direct-' + qzDE.id,
+  const q = d.question, corr = d.phase === 'correction', reste = qzDEReste(), fini = reste === 0, bloque = corr || fini || !!d.valide;
+  qzP = { direct: true, apercu: false, data: { devoir: { id: 'direct', titre: d.titre } }, devoirId: 'direct-' + qzDE.id, qid: q.id,
     questions: (d.docs || []).concat(q), reglages: {}, copie: null, reponses: {}, sorties: 0, log: [] };
   if(d.reponse != null) qzP.reponses[q.id] = d.reponse;
   const rep = qzP.reponses[q.id], ctx = { reglages: {}, seed: null, pfx: 'p' };
   root.innerHTML = `<div class="qzd">${head}
     ${corr ? qzDVerdictHtml(qzDVerdict(q, rep)) : ''}
+    ${!corr && reste !== null ? `<div class="qzd-e-chrono${fini ? ' fini' : ''}" id="qzdEChrono">${qzDEChronoTxt(reste)}</div>` : ''}
     ${(d.docs || []).map(x => `<div class="qz-doc">${qzEnonceHtml(x)}</div>`).join('')}
-    <div class="qz-q qzd-eq" id="qzQ_${q.id}" data-qid="${q.id}">${qzEnonceHtml(q)}<div class="qz-q-rep">${qzRenderSaisie(q, rep, corr ? 'corrige' : 'passer', ctx)}</div></div>
+    <div class="qz-q qzd-eq" id="qzQ_${q.id}" data-qid="${q.id}">${qzEnonceHtml(q)}<div class="qz-q-rep">${qzRenderSaisie(q, rep, corr ? 'corrige' : bloque ? 'lecture' : 'passer', ctx)}</div></div>
     ${corr ? '<p class="qzd-envoi"><span class="gicon">hourglass_top</span> Attends la question suivante…</p>'
-      : `<p class="qzd-envoi" id="qzdEnvoi">${rep != null ? '<span class="gicon">check_circle</span> Réponse envoyée : tu peux encore la modifier jusqu\'à la correction.' : 'Réponds : ta réponse part toute seule.'}</p>`}
+      : d.valide ? '<p class="qzd-envoi"><span class="gicon">task_alt</span> Réponse validée. Attends la correction.</p>'
+      : fini ? `<p class="qzd-envoi err"><span class="gicon">lock_clock</span> Temps écoulé${qzRepondue(q, rep) ? ' : ta réponse a été prise en compte.' : '.'}</p>`
+      : `<div class="qzd-valider"><button class="btn qz-go" id="qzdValider" onclick="qzDirectValider()" ${qzRepondue(q, rep) ? '' : 'disabled'}><span class="gicon">send</span> Valider ma réponse</button>
+        <p class="qzd-envoi" id="qzdEnvoi">${qzRepondue(q, rep) ? 'Quand tu es sûr(e) de toi, valide : tu ne pourras plus la modifier.' : qzDEConsigne(q)}</p></div>`}
   </div>`;
   qzChargerPhotos(root);
   if(typeof qzMonterInter === 'function') qzMonterInter(root);
@@ -557,10 +626,36 @@ function qzDirectEnvoyer(){
       if(e){ e.textContent = /close/i.test(error.message) ? 'Trop tard : la question est close.' : 'Réponse non envoyée : ' + error.message; e.classList.add('err'); }
       qzDirectEleveCharger(); return;
     }
-    if(e) e.innerHTML = '<span class="gicon">check_circle</span> Réponse envoyée : tu peux encore la modifier jusqu\'à la correction.';
+    if(e) e.innerHTML = qzRepondue(q, rep) ? 'Quand tu es sûr(e) de toi, valide : tu ne pourras plus la modifier.' : qzDEConsigne(q);
     try{ qzDE.ch.send({ type: 'broadcast', event: 'rep', payload: { e: currentUser.id } }); }catch(x){}
   }, 600);
+  const b = document.getElementById('qzdValider'), q = qzDE.etat && qzDE.etat.question;
+  if(b && q) b.disabled = !qzRepondue(q, qzP.reponses[q.id]);
 }
+// Ce qu'il manque pour pouvoir valider (vrai/faux : toutes les affirmations).
+function qzDEConsigne(q){ return q.type === 'vf' ? 'Réponds à toutes les affirmations, puis valide.' : q.type === 'qcm' && q.multiple ? 'Coche ta ou tes réponses, puis valide.' : 'Réponds, puis valide ta réponse.'; }
+async function qzDirectValider(){
+  const q = qzDE && qzDE.etat && qzDE.etat.question; if(!q || !qzP) return;
+  const rep = qzP.reponses[q.id];
+  if(!qzRepondue(q, rep)){ await niceAlert(qzDEConsigne(q)); return; }
+  clearTimeout(qzDE.envT);
+  const b = document.getElementById('qzdValider'); if(b) b.disabled = true;
+  const { error } = await sb.rpc('qz_direct_repondre', { p_id: qzDE.id, p_qid: q.id, p_reponse: rep, p_valider: true });
+  if(error){ await niceAlert(/close|écoulé/i.test(error.message) ? 'Trop tard : la question est close.' : error.message); qzDE.cle = ''; qzDirectEleveCharger(); return; }
+  try{ qzDE.ch.send({ type: 'broadcast', event: 'rep', payload: { e: currentUser.id } }); }catch(x){}
+  qzDE.etat = Object.assign({}, qzDE.etat, { valide: true, reponse: rep }); qzDE.cle = '';
+  qzDirectEleveRender();
+}
+// Minuteur côté élève (heure de fin donnée par le serveur, horloge recalée).
+function qzDEReste(){ const f = qzDE && qzDE.etat && qzDE.etat.fin_at ? Date.parse(qzDE.etat.fin_at) : NaN; return isNaN(f) ? null : Math.max(0, f - (Date.now() + (qzDE.decal || 0))); }
+function qzDEChronoTxt(r){ const s = Math.ceil(r / 1000); return `<span class="gicon">timer</span> ${s ? Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') : 'Temps écoulé'}`; }
+setInterval(() => {
+  if(!qzDE || !qzDE.etat || qzDE.etat.phase !== 'question' || !qzDVueActive()) return;
+  const r = qzDEReste(); if(r === null) return;
+  const el = document.getElementById('qzdEChrono');
+  if(r === 0 && el && !el.classList.contains('fini')){ if(qzP && qzP.reponses) qzDE.etat.reponse = qzP.reponses[qzDE.etat.qid]; qzDirectEleveRender(); return; }
+  if(el){ el.innerHTML = qzDEChronoTxt(r); el.classList.toggle('urgent', r <= 10000); }
+}, 500);
 function qzDirectEleveBilan(d, head){
   const b = d.bilan || { questions: [], reponses: {} }, qs = (b.questions || []).filter(q => q.type !== 'texte');
   qzP = { direct: true, apercu: false, data: { devoir: { id: 'direct', titre: d.titre } }, devoirId: 'direct-' + qzDE.id, questions: qs, reglages: {}, copie: null, reponses: b.reponses || {}, sorties: 0, log: [] };
@@ -668,6 +763,17 @@ function qzDirectEleveBilan(d, head){
     .qzd-eq{font-size:1.05rem;margin-top:10px;}
     .qzd-envoi{display:flex;align-items:center;gap:6px;justify-content:center;color:#1E7B34;font-weight:600;margin:12px 0;}
     .qzd-envoi.err{color:#a83c1f;}
+    .qzd-valider{display:flex;flex-direction:column;align-items:center;gap:4px;margin:14px 0 4px;}
+    .qzd-valider .qzd-envoi{margin:0;color:var(--ink-soft);font-weight:500;}
+    .qzd-e-chrono{display:flex;align-items:center;justify-content:center;gap:6px;margin:8px auto;font:700 1.6rem 'JetBrains Mono',monospace;color:#0C5BA0;}
+    .qzd-e-chrono.urgent{color:#D93025;} .qzd-e-chrono.fini{color:#a83c1f;font-size:1.1rem;}
+    .qzd-chrono{display:inline-flex;align-items:center;gap:6px;margin-left:auto;flex-wrap:wrap;}
+    .qzd-chrono-t{display:inline-flex;align-items:center;gap:4px;font:700 1.35rem 'JetBrains Mono',monospace;color:#0C5BA0;min-width:84px;}
+    .qzd-chrono.urgent .qzd-chrono-t{color:#D93025;} .qzd-chrono.fini .qzd-chrono-t{color:#a83c1f;font-size:1rem;}
+    .qzd-chrono-sel{font-size:.82rem;padding:3px 6px;border-radius:8px;border:1px solid var(--line,#D5DAE1);background:#fff;}
+    .qzd-phase.clos{color:#a83c1f;}
+    .qzd-brouillons,.qzd-tous{display:flex;align-items:center;gap:4px;justify-content:center;margin-top:6px;color:var(--ink-soft);font-size:.85rem;}
+    .qzd-tous{color:#1E7B34;font-weight:700;} .qzd-brouillons .gicon,.qzd-tous .gicon{font-size:1rem;}
     .qzd-verdict{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:14px;padding:12px;font:700 1.25rem 'Space Grotesk',sans-serif;color:#fff;margin:6px 0 4px;}
     .qzd-verdict .gicon{font-size:1.6rem;}
     .qzd-verdict.juste{background:#1E7B34;} .qzd-verdict.faux{background:#C62828;} .qzd-verdict.partiel{background:#E0A100;} .qzd-verdict.avoir,.qzd-verdict.vide{background:#5B6472;}

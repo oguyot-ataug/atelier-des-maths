@@ -199,8 +199,8 @@ function qzSonResultats(root){
   // Réponses prises en compte : copies envoyées, et aussi celles en cours si le professeur le demande.
   const pris = qzC.eleves.filter(e => { const c = qzC.copies.get(e.id); return c && (qzEstRendue(c) || qzC.sonEnCours); });
   root.innerHTML = `<span class="back-btn" onclick="qzCFermer()">← Interrogations en ligne</span>
-    <h1 style="margin:6px 0 2px;"><span class="gicon">how_to_vote</span> ${qzEsc(d.titre)}</h1>
-    <p class="hint" style="margin:0 0 10px;">${qzEsc(d.classes ? d.classes.nom : '')} · Sondage, sans note · <b>${envoyees.length}</b> réponse${envoyees.length > 1 ? 's' : ''} envoyée${envoyees.length > 1 ? 's' : ''}${enCours ? ` · ${enCours} en cours` : ''} sur ${qzC.eleves.length} élève${qzC.eleves.length > 1 ? 's' : ''}</p>
+    <h1 style="margin:6px 0 2px;"><span class="gicon" style="color:${QZ_MODES.sondage.c};">how_to_vote</span> ${qzEsc(d.titre)}</h1>
+    <p class="hint" style="margin:0 0 10px;">${qzModeBadge('sondage')} · ${qzEsc(d.classes ? d.classes.nom : '')} · <b>${envoyees.length}</b> réponse${envoyees.length > 1 ? 's' : ''} envoyée${envoyees.length > 1 ? 's' : ''}${enCours ? ` · ${enCours} en cours` : ''} sur ${qzC.eleves.length} élève${qzC.eleves.length > 1 ? 's' : ''}</p>
     <div class="qz-son-tools">
       <label class="qz-check"><input type="checkbox" ${noms ? 'checked' : ''} onchange="qzC.sonNoms=this.checked;qzCRender()"> Afficher les noms</label>
       ${enCours ? `<label class="qz-check"><input type="checkbox" ${qzC.sonEnCours ? 'checked' : ''} onchange="qzC.sonEnCours=this.checked;qzCRender()"> Compter aussi les réponses pas encore envoyées</label>` : ''}
@@ -248,7 +248,6 @@ function qzSonDirectDetail(q, reps){
 (function qzSonStyles(){
   const st = document.createElement('style');
   st.textContent = `
-    .qz-mode.sondage.on{border-color:#26AAB1;background:rgba(38,170,177,.08);} .qz-mode.sondage .gicon{color:#16767B;}
     .qz-son-puce{color:#8A919C;font-size:1.2rem;}
     .qz-son-autre-ed{color:var(--ink-soft);}
     .qz-son .qz-son-autre{align-items:center;flex-wrap:wrap;}
@@ -259,20 +258,20 @@ function qzSonDirectDetail(q, reps){
     .qz-son-liste{display:flex;flex-direction:column;gap:12px;}
     .qz-son-card{background:var(--paper,#fff);border:1px solid var(--line,#E3E6EB);border-radius:14px;padding:14px 16px;}
     .qz-son-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
-    .qz-son-n{margin-left:auto;font-weight:700;color:#16767B;font-size:.9rem;}
+    .qz-son-n{margin-left:auto;font-weight:700;color:#C25E00;font-size:.9rem;}
     .qz-son-bars{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
     .qz-son-bar{display:grid;grid-template-columns:minmax(120px,1.2fr) 2fr auto 52px;gap:10px;align-items:center;}
     .qz-son-bar .b{height:14px;border-radius:7px;background:rgba(28,43,57,.07);overflow:hidden;}
-    .qz-son-bar .b i{display:block;height:100%;background:#26AAB1;border-radius:7px;}
-    .qz-son-bar.top .b i{background:#16767B;}
+    .qz-son-bar .b i{display:block;height:100%;background:#E8913A;border-radius:7px;}
+    .qz-son-bar.top .b i{background:#C25E00;}
     .qz-son-bar .p{color:var(--ink-soft);font-size:.88rem;text-align:right;}
     .qz-son-qui{grid-column:1 / -1;color:var(--ink-soft);margin:-2px 0 4px;}
     .qz-son-txts{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
-    .qz-son-txts > div{background:rgba(38,170,177,.07);border-radius:10px;padding:7px 11px;}
-    .qz-son-t{margin:0;font-weight:700;font-size:.9rem;color:#16767B;background:none!important;padding:0!important;}
+    .qz-son-txts > div{background:rgba(232,145,58,.07);border-radius:10px;padding:7px 11px;}
+    .qz-son-t{margin:0;font-weight:700;font-size:.9rem;color:#C25E00;background:none!important;padding:0!important;}
     .qz-son-qui-liste{display:flex;flex-wrap:wrap;gap:6px;}
     .qz-son-el{display:inline-block;border-radius:999px;padding:3px 10px;font-size:.85rem;background:rgba(28,43,57,.06);color:#8A919C;}
-    .qz-son-el.ok{background:#16767B;color:#fff;} .qz-son-el.encours{background:rgba(38,170,177,.18);color:#16767B;}
+    .qz-son-el.ok{background:#C25E00;color:#fff;} .qz-son-el.encours{background:rgba(232,145,58,.18);color:#C25E00;}
     @media (max-width:640px){ .qz-son-bar{grid-template-columns:1fr auto 44px;} .qz-son-bar .l{grid-column:1 / -1;} }
   `;
   document.head.appendChild(st);

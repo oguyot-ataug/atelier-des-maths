@@ -1286,10 +1286,12 @@ async function renderDevoirsEleve(){
     } else if(d.type==='questionnaire'){
       // Questionnaire en ligne (questionnaires.js) : passation, puis résultats une fois publiés.
       const rendu_ = !!(rendu && rendu.est_rendu);
-      const sondage = d.qz_mode === 'sondage'; // sondage : ni correction ni résultats (questionnaires-sondage.js)
-      const label = sondage ? (rendu_ ? 'Revoir mes réponses' : 'Répondre au sondage') : d.qz_publie_at && rendu_ ? 'Voir mes résultats' : rendu_ ? 'Revoir ma copie' : rendu && rendu.a_reprendre ? 'Reprendre ma copie' : 'Ouvrir le questionnaire';
+      const sondage = d.qz_mode === 'sondage', entr = d.qz_mode === 'entrainement'; // sondage : ni correction ni résultats (questionnaires-sondage.js)
+      const label = sondage ? (rendu_ ? 'Revoir mes réponses' : 'Répondre au sondage') : entr ? (rendu_ ? 'Revoir mon entraînement' : 'M\'entraîner')
+        : d.qz_publie_at && rendu_ ? 'Voir mes résultats' : rendu_ ? 'Revoir ma copie' : rendu && rendu.a_reprendre ? 'Reprendre ma copie' : 'Commencer l\'interrogation';
+      const md = typeof qzMode === 'function' ? qzMode(d.qz_mode) : null;
       actionHtml = `<div class="tool-row" style="margin-top:4px;">
-        <button class="btn${rendu_ ? ' secondary' : ''}" onclick="qzOuvrir('${d.id}')"><span class=gicon>${sondage ? 'how_to_vote' : d.qz_publie_at && rendu_ ? 'grading' : 'quiz'}</span> ${label}</button>
+        <button class="btn${rendu_ ? ' secondary' : ''}" ${md && !rendu_ ? `style="background:${md.c};border-color:${md.c};"` : ''} onclick="qzOuvrir('${d.id}')"><span class=gicon>${d.qz_publie_at && rendu_ && !sondage && !entr ? 'grading' : md ? md.icon : 'quiz'}</span> ${label}</button>
         ${sondage ? (rendu_ ? '<span class="hint" style="margin:0;">Réponses envoyées, merci !</span>' : '') : rendu_ && !d.qz_publie_at ? '<span class="hint" style="margin:0;">En attente de la correction de votre professeur.</span>' : ''}
       </div>`;
     } else if(d.type==='programmation'){
@@ -1330,16 +1332,17 @@ async function renderDevoirsEleve(){
         <button class="btn secondary" onclick="submitDevoirFile('${d.id}')"><span class=gicon>upload_file</span> Rendre ce fichier</button>
       </div>`;
     }
-    const html = `<div class="tool-shell" style="margin-top:10px;">
+    const qzm = d.type==='questionnaire' && typeof qzMode==='function' ? d.qz_mode || 'maison' : null; // interrogation, entraînement, sondage : couleur et pastille du mode
+    const html = `<div class="tool-shell${qzm ? ' qz-mlisere' : ''}" style="margin-top:10px;${qzm ? '--m:' + qzMode(qzm).c + ';' : ''}">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span><b>${escapeHtml(d.titre)}</b>${dateStr?' · limite : '+dateStr:''} ${statusBadge}</span>
+        <span>${qzm ? qzModeBadge(qzm) + ' ' : ''}<b>${escapeHtml(d.titre)}</b>${dateStr?' · limite : '+dateStr:''} ${statusBadge}</span>
       </div>
       <p class="hint" style="margin:6px 0;">${escapeHtml(d.consigne)}</p>
       ${rendu && rendu.commentaire_prof ? `<p class="hint" style="margin:0 0 8px;"><b>Commentaire du prof :</b> ${escapeHtml(rendu.commentaire_prof)}</p>` : ''}
       ${actionHtml}
       <span class="hint" id="devoirSubmitStatus_${d.id}" style="margin:0;"></span>
     </div>`;
-    return { id: d.id, type: d.type, statut: devoirStatutInfo(!!(rendu && rendu.est_rendu), d.date_limite, !!(rendu && rendu.a_reprendre)).label, html };
+    return { id: d.id, type: d.type, qzMode: qzm, statut: devoirStatutInfo(!!(rendu && rendu.est_rendu), d.date_limite, !!(rendu && rendu.a_reprendre)).label, html };
   }));
   devoirsEleveCache = rows;
   renderDevoirsEleveFiltered();
@@ -1359,9 +1362,11 @@ function renderDevoirsEleveFiltered(){
   // soit séparé de l'attribution de devoirs type automatismes et objectif nombre".
   const interros = filtered.filter(d=>d.type==='questionnaire'), autres = filtered.filter(d=>d.type!=='questionnaire');
   const titre = (icon, t) => `<h2 style="margin:18px 0 0;font-size:1.15rem;"><span class=gicon style="vertical-align:middle;">${icon}</span> ${t}</h2>`;
-  el.innerHTML = !interros.length ? autres.map(d=>d.html).join('')
-    : titre('quiz', 'Interrogations en ligne') + interros.map(d=>d.html).join('')
-      + (autres.length ? titre('assignment', 'Devoirs') + autres.map(d=>d.html).join('') : '');
+  // Une section par mode (interrogations, entraînements, sondages), dans la couleur du mode.
+  const groupes = [['maison','classe'], ['entrainement'], ['sondage']].map(ks => interros.filter(d => ks.includes(d.qzMode || 'maison'))).filter(g => g.length);
+  const titreMode = k => typeof qzMode==='function' ? `<h2 style="margin:18px 0 0;font-size:1.15rem;color:${qzMode(k).c};"><span class=gicon style="vertical-align:middle;">${qzMode(k).icon}</span> ${qzMode(k).eleve}</h2>` : titre('quiz', 'Interrogations en ligne');
+  el.innerHTML = groupes.map(g => titreMode(['maison','classe'].includes(g[0].qzMode || 'maison') ? 'maison' : g[0].qzMode) + g.map(d=>d.html).join('')).join('')
+    + (autres.length ? (interros.length ? titre('assignment', 'Devoirs') : '') + autres.map(d=>d.html).join('') : '');
 }
 async function submitDevoirFile(devoirId){
   const status = document.getElementById('devoirSubmitStatus_'+devoirId);
