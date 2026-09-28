@@ -555,7 +555,7 @@ async function openEditProfModal(id){
    liées à CE prof précisément. */
 async function renderEditProfClasses(prof){
   const box = document.getElementById('editProfClassesList');
-  let allClassesQ = sb.from('classes').select('id,nom,niveau').order('nom');
+  let allClassesQ = sb.from('classes').select('id,nom,niveau').eq('groupe', false).order('nom'); // sans les groupes de remédiation (groupes.js)
   if(adminScopeUai()) allClassesQ = allClassesQ.eq('uai', adminScopeUai());
   const { data: allClasses } = await allClassesQ;
   const { data: myLinks } = await sb.from('class_teachers').select('class_id').eq('teacher_id', prof.id);
@@ -1024,7 +1024,7 @@ async function adminRefreshDropdowns(){
   const { data: profs } = await sb.from('profiles').select('id,nom,prenom,role').in('role',['prof','admin']);
   const { data: eleves } = await sb.from('profiles').select('id,nom,prenom').eq('role','eleve');
   const scope = adminScopeUai();
-  let classesQ = sb.from('classes').select('id,nom,niveau').order('nom');
+  let classesQ = sb.from('classes').select('id,nom,niveau').eq('groupe', false).order('nom');
   if(scope) classesQ = classesQ.eq('uai', scope);
   const { data: classesList } = await classesQ;
   const fillSelect = (id, items, label)=>{
@@ -1049,7 +1049,7 @@ async function adminRefreshListings(){
   // Date de dernière connexion (auth.users, normalement inaccessible via RLS classique) --
   // exposée uniquement à un admin via une fonction SECURITY DEFINER dédiée.
   const { data: lastSignIns } = await sb.rpc('get_last_sign_in_times');
-  let classesQ = sb.from('classes').select('id,nom,niveau,uai').order('nom');
+  let classesQ = sb.from('classes').select('id,nom,niveau,uai').eq('groupe', false).order('nom');
   if(scope) classesQ = classesQ.eq('uai', scope);
   const { data: classesList } = await classesQ;
   const { data: classTeachers } = await sb.from('class_teachers').select('class_id, teacher_id, profiles(nom,prenom,email)');
@@ -1496,7 +1496,7 @@ async function adminBulkEnsureClass(uai, classeNom, cache, etabCache, errors){
     }
     etabCache.add(uai);
   }
-  const { data: existing } = await sb.from('classes').select('id').eq('nom', classeNom).eq('uai', uai).maybeSingle();
+  const { data: existing } = await sb.from('classes').select('id').eq('nom', classeNom).eq('uai', uai).eq('groupe', false).maybeSingle();
   if(existing) return cache[cacheKey] = existing.id;
   const niveau = /^5/.test(classeNom) ? '5e' : '6e';
   const { data: created, error: createErr } = await sb.from('classes').insert({ nom: classeNom, niveau, uai }).select('id').single();

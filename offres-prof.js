@@ -58,8 +58,8 @@ async function offreLoad(role, licenceEtab){
       opOffre = data || null;
       if(!licenceEtab && opPayee(opOffre) && opOffre.offre === 'seul') offreNiveaux = opRevision(opOffre.niveaux || []);
     } else if(role === 'eleve'){
-      const { data } = await sb.from('class_students').select('classes(niveau,creee_par)').eq('student_id', currentUser.id);
-      const cls = (data || []).map(r => r.classes).filter(Boolean);
+      const { data } = await sb.from('class_students').select('classes(niveau,creee_par,groupe)').eq('student_id', currentUser.id);
+      const cls = (data || []).map(r => r.classes).filter(c => c && !c.groupe); // les groupes de remédiation ne comptent pas
       // Élève inscrit uniquement dans des classes créées en libre-service : niveaux de ses classes.
       if(cls.length && cls.every(c => c.creee_par)) offreNiveaux = opRevision([...new Set(cls.map(c => c.niveau).filter(Boolean))]);
     }

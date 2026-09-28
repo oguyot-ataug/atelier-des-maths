@@ -297,6 +297,10 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       showView('view-supervision'); setActiveTopnav('supervision');
       loadMyClasses();
     }
+    if(nav==='groupes'){
+      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      if(typeof grOuvrir==='function') grOuvrir();
+    }
     if(nav==='progression'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-progression'); setActiveTopnav('progression'); renderProgressionEditor();
@@ -348,6 +352,7 @@ function setActiveTopnav(key){
   else if(key==='famille') document.querySelector('.nav-links button[data-nav="famille"]')?.classList.add('active');
   else if(key==='supervision') document.querySelector('.nav-links button[data-nav="supervision"]').classList.add('active');
   else if(key==='progression') document.querySelector('.nav-links button[data-nav="progression"]').classList.add('active');
+  else if(key==='groupes') document.querySelector('.nav-links button[data-nav="groupes"]')?.classList.add('active');
   else if(key==='mesresultats') document.querySelector('.nav-links button[data-nav="mesresultats"]').classList.add('active');
   else if(key==='devoirsprof' || key==='questionnaires') document.querySelector(`.nav-links button[data-nav="${key}"]`)?.classList.add('active');
   else document.querySelector('.nav-links button[data-nav="home"]').classList.add('active');
@@ -429,7 +434,8 @@ async function applyCustomProgressionIfAny(lvl){
   } else if(currentUserRole==='eleve'){
     // Un élève n'a pas sa propre progression : on cherche celle du prof de sa classe
     // (première classe / premier prof trouvé si plusieurs -- cas rare de co-enseignement).
-    const { data: cs } = await sb.from('class_students').select('class_id').eq('student_id', currentUser.id).limit(1).maybeSingle();
+    const { data: lcs } = await sb.from('class_students').select('class_id, classes(groupe)').eq('student_id', currentUser.id);
+    const cs = (lcs || []).find(r => !(r.classes && r.classes.groupe)) || (lcs || [])[0]; // sa classe, pas un groupe de remédiation
     if(!cs) return;
     const { data: ct } = await sb.from('class_teachers').select('teacher_id').eq('class_id', cs.class_id).limit(1).maybeSingle();
     if(!ct) return;
@@ -2787,7 +2793,8 @@ function updateAddCahierButtonLabel(){
 }
 let accountClassesList = [];
 function populateAccountClassList(classesList){
-  accountClassesList = classesList.map(c=>({id:c.id, label:`${c.nom} (${c.niveau})`, niveau:c.niveau}));
+  // Groupes de remédiation (groupes.js) : marqués « groupe » dans le sélecteur ; groupes archivés masqués.
+  accountClassesList = classesList.filter(c=>!c.archive).map(c=>({id:c.id, label: c.groupe ? `${c.nom} · groupe (${c.niveau})` : `${c.nom} (${c.niveau})`, niveau:c.niveau, groupe:!!c.groupe}));
 }
 /* Le niveau de l'outil de correction suit la classe active -- signalé : "si je choisis la classe
    de 6V, il faudrait que ça modifie tout de suite le niveau dans la partie correction". Resté
@@ -2804,6 +2811,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.748', items:[
+    "Groupes de remédiation -- demandé : \"Un prof d'un établissement doit pouvoir constituer des groupes d'élèves pour faire des heures de rémédiation. Ces élèves peuvent provenir de sa classe ou des autres classes.\" Nouvelle page Outils prof › Groupes de remédiation : nom du groupe, niveau (proposé d'après les élèves), puis choix des élèves dans ses classes ou dans les autres classes de l'établissement (filtre par classe, recherche, « tout cocher »). Le groupe apparaît ensuite comme une classe dans le sélecteur (« … · groupe ») : devoirs, interrogations, entraînements, sondages, séances en direct, cahier, supervision fonctionnent avec lui. Les élèves gardent leur classe et retrouvent le travail du groupe dans « Mon travail ». Groupe modifiable à tout moment. Un groupe qui a déjà du travail est archivé plutôt que supprimé, et ses résultats sont gardés. Seuls les élèves de l'établissement du professeur sont proposés, et les groupes n'entrent pas dans les limites de l'offre Professeur seul.",
+  ]},
   { version:'2026-08-19.747', items:[
     "5e, Symétrie centrale, méthodes animées : construire un symétrique dans un quadrillage -- demandé : \"ajoute un pas à pas pour construire le symétrique d'un point dans un quadrillage. Puis d'un segment, puis d'une droite...\". Trois nouvelles méthodes, sans compas : on compte les carreaux pour aller du point à O (flèches bleues numérotées, carreau par carreau), puis on refait exactement le même déplacement depuis O (flèches orange) pour arriver sur le symétrique, et O est le milieu. Pour un segment : symétriques des deux extrémités, puis le segment image, de même longueur et parallèle. Pour une droite : deux points de la droite sur des nœuds du quadrillage, leurs symétriques, puis la droite image, parallèle à la première. Comme les autres méthodes : « Étape suivante », « Revoir depuis le début », ajout au cahier avec toutes les étapes.",
   ]},
@@ -4722,9 +4732,9 @@ async function loadMyClasses(){
   // je ne suis pas professeur dans ces classes" -- un précédent correctif n'avait traité que le
   // nouvel onglet "Mes classes" de Supervision, pas ce sélecteur, qui est la source commune de
   // currentClassId partout ailleurs.
-  const res = await sb.from('class_teachers').select('classes(id,nom,niveau)').eq('teacher_id', currentUser.id);
+  const res = await sb.from('class_teachers').select('classes(id,nom,niveau,groupe,archive)').eq('teacher_id', currentUser.id);
   let classesList = (res.data||[]).map(row=>row.classes).filter(Boolean), error = res.error;
-  classesList.sort((a,b)=>a.nom.localeCompare(b.nom));
+  classesList.sort((a,b)=>(!!a.groupe - !!b.groupe) || a.nom.localeCompare(b.nom)); // classes d'abord, puis les groupes
   populateAccountClassList(classesList);
   if(!accountClassesList.some(c=>c.id===currentClassId)){
     currentClassId = accountClassesList[0] ? accountClassesList[0].id : null;
@@ -5335,8 +5345,9 @@ async function syncUpdateEntryOrdre(id, ordre){
 /* ================= CÔTÉ ÉLÈVE : classes ================= */
 async function loadMyStudentClasses(){
   if(!currentUser) return;
-  const { data, error } = await sb.from('class_students').select('classes(id,nom,niveau)').eq('student_id', currentUser.id);
-  const classesList = (data||[]).map(row=>row.classes).filter(Boolean);
+  const { data, error } = await sb.from('class_students').select('classes(id,nom,niveau,groupe,archive)').eq('student_id', currentUser.id);
+  // Sa classe d'abord (classe active par défaut), puis ses groupes de remédiation.
+  const classesList = (data||[]).map(row=>row.classes).filter(Boolean).sort((a,b)=>!!a.groupe - !!b.groupe);
   populateAccountClassList(classesList);
   if(!currentClassId || !accountClassesList.some(c=>c.id===currentClassId)){
     currentClassId = classesList[0] ? classesList[0].id : null;
