@@ -448,7 +448,7 @@ async function qzDirectCode(code){
   if(error || !data){ await niceAlert((error && error.message) || 'Code inconnu.'); return; }
   qzDirectRejoindre(data);
 }
-// Menu S'entraîner › Séance en direct (code) : l'élève tape le code du tableau.
+// Page du code du tableau (ancien menu S'entraîner › Séance en direct ; le code se tape désormais en haut de « Mon travail »).
 function qzDirectCodePage(){
   if(qzDE) qzDirectEleveFermer();
   qzDirectBandeau([]);

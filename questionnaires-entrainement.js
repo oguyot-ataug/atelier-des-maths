@@ -115,7 +115,7 @@ function qzEntBilan(){
     <div class="qz-rendre-row">
       ${qzP.apercu ? (qzP.retourBanque ? '' : `<button class="btn secondary" onclick="qzApercu()"><span class="gicon">replay</span> Recommencer l'aperçu</button>`)
         : `<button class="btn" onclick="qzEntRecommencer()"><span class="gicon">replay</span> Refaire l'entraînement</button>`}
-      <button class="btn secondary" onclick="qzRetourEleve()">${qzP.apercu ? 'Retour' : '← Mes devoirs'}</button>
+      <button class="btn secondary" onclick="qzRetourEleve()">${qzP.apercu ? 'Retour' : '← Mon travail'}</button>
     </div>`;
   qzChargerPhotos(document.getElementById('qzRoot'));
   if(typeof qzMonterInter === 'function') qzMonterInter(document.getElementById('qzRoot'));

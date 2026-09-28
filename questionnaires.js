@@ -640,7 +640,7 @@ async function qzOuvrir(devoirId){
   const root = document.getElementById('qzRoot');
   root.innerHTML = '<p class="hint">Chargement…</p>';
   const { data, error } = await sb.rpc('qz_passer', { p_devoir: devoirId });
-  if(error){ root.innerHTML = `<p class="hint">${qzEsc(error.message)}</p><button class="btn secondary" data-qz-retour onclick="qzRetourEleve()">← Mes devoirs</button>`; return; }
+  if(error){ root.innerHTML = `<p class="hint">${qzEsc(error.message)}</p><button class="btn secondary" data-qz-retour onclick="qzRetourEleve()">← Mon travail</button>`; return; }
   qzPInit(data, false);
 }
 function qzApercu(){
@@ -672,7 +672,7 @@ function qzRetourEleve(){
 function qzEntete(sousTitre){
   const d = qzP.data.devoir;
   return `<div class="qz-top">
-    <button class="back-btn qz-back" onclick="qzRetourEleve()">← ${qzP.apercu ? 'Retour à l\'éditeur' : 'Mes devoirs'}</button>
+    <button class="back-btn qz-back" onclick="qzRetourEleve()">← ${qzP.apercu ? 'Retour à l\'éditeur' : 'Mon travail'}</button>
     ${qzP.apercu ? '<span class="qz-apercu-pill"><span class="gicon">visibility</span> Aperçu professeur : rien n\'est enregistré</span>' : ''}
   </div>
   <h1 class="qz-h1"><span class="gicon">quiz</span> ${qzEsc(d.titre)}</h1>

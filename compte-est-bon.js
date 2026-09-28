@@ -404,7 +404,7 @@ function cebRenderGame(){
           // (cebSaveAttempt n'est appelée que par cebFinish) et ne touche donc jamais un temps
           // déjà enregistré pour ce compte -- mais le bouton "Nouveau tirage" sortait quand même
           // l'élève du devoir vers un tirage libre sans rapport, d'où ce bouton de retour dédié.
-          ? `<button class="btn secondary" onclick="returnToDevoirsAfterCEB()">↩ Revenir à mes devoirs</button>`
+          ? `<button class="btn secondary" onclick="returnToDevoirsAfterCEB()">↩ Revenir à mon travail</button>`
           : `<button class="btn secondary" onclick="cebRenderSetup()">Nouveau tirage</button>`}
     </div>
     <div id="cebStepsBox" style="margin-top:22px;max-width:420px;margin-left:auto;margin-right:auto;"></div>
@@ -625,7 +625,7 @@ function cebRenderResult(best){
       ${(typeof devoirTestModeActive!=='undefined' && devoirTestModeActive)
         ? `<button class="btn" onclick="returnToDevoirCreationFromTest()">↩ Retour à la création du devoir</button>`
         : currentDevoirCEB
-          ? `<button class="btn" onclick="returnToDevoirsAfterCEB()">↩ Revenir à mes devoirs</button>`
+          ? `<button class="btn" onclick="returnToDevoirsAfterCEB()">↩ Revenir à mon travail</button>`
           : `<button class="btn" onclick="cebStartGame()">Compte suivant →</button>`}
       <button class="btn secondary" onclick="cebRenderSetup()"><span class="gicon">settings</span> Paramètres</button>
     </div>

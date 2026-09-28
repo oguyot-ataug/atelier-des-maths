@@ -1309,3 +1309,12 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
 .home-extras p{margin:0 0 12px;color:var(--ink-soft);font-size:.88rem;flex:1;}
 .home-extras-btns{display:flex;gap:8px;flex-wrap:wrap;}
 @media (max-width:900px){ .home-extras{grid-template-columns:1fr;} }
+
+/* « Mon travail » (élève) : rejoindre une séance en direct avec le code du tableau (devoirs.js). */
+.mt-direct{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0 6px;padding:12px 16px;border-radius:14px;background:rgba(217,48,37,.06);border:1px solid rgba(217,48,37,.22);max-width:760px;}
+.mt-direct > .gicon{font-size:1.6rem;color:#D93025;}
+.mt-direct-t{display:flex;flex-direction:column;flex:1;min-width:180px;}
+.mt-direct-t small{color:var(--ink-soft);}
+.mt-direct input{width:110px;font-size:1.15rem;letter-spacing:.2em;text-align:center;padding:8px 10px;border:1px solid var(--line,#D5DAE1);border-radius:10px;font-family:'JetBrains Mono',monospace;margin:0;}
+.mt-direct .btn{margin:0;}
+@media (max-width:520px){ .mt-direct input{flex:1;} }

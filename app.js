@@ -2537,8 +2537,8 @@ async function refreshAuthUI(){
     if(navCahier) navCahier.style.display = (accessBlocked || currentUserRole==='parent') ? 'none' : 'inline-block'; // accessible à tous les comptes connectés (prof, admin, élève), sauf accès bloqué
     if(navMesResultats) navMesResultats.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
     if(navMesDevoirs) navMesDevoirs.style.display = (!accessBlocked && currentUserRole==='eleve' && !isFamilleEnfant) ? 'inline-block' : 'none';
-    const navDirectCode = document.getElementById('navDirectCode'); // séance en direct : rejoindre avec le code du tableau
-    if(navDirectCode) navDirectCode.style.display = (!accessBlocked && currentUserRole==='eleve' && !isFamilleEnfant) ? '' : 'none';
+    const mtDirect = document.getElementById('mtDirect'); // séance en direct : code du tableau, en haut de « Mon travail »
+    if(mtDirect) mtDirect.style.display = (!accessBlocked && currentUserRole==='eleve' && !isFamilleEnfant) ? '' : 'none';
     const navFamille = document.getElementById('navFamille');
     if(navFamille) navFamille.style.display = currentUserRole==='parent' ? 'inline-block' : 'none';
     const nav4e = document.getElementById('nav4e'); // 4e en préparation : administrateurs seulement
@@ -2607,7 +2607,6 @@ async function refreshAuthUI(){
     if(navCahier) navCahier.style.display='none';
     if(navMesResultats) navMesResultats.style.display='none';
     if(navMesDevoirs) navMesDevoirs.style.display='none';
-    const navDirectCodeOut = document.getElementById('navDirectCode'); if(navDirectCodeOut) navDirectCodeOut.style.display='none';
     const navFamilleOut = document.getElementById('navFamille');
     if(navFamilleOut) navFamilleOut.style.display='none';
     const hadFamille = typeof familleNiveaux!=='undefined' && familleNiveaux!==null;
@@ -2805,6 +2804,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.745', items:[
+    "Menu des élèves : « Mes devoirs » devient « Mon travail » -- demandé : \"Le menu s'entrainer ne doit pas contenir Séance en direct. On va mettre cette fonctionnalité avec les devoirs. D'ailleurs j'aimerais renommer Devoirs\", puis \"Mon travail, c'est bien\". La page regroupe devoirs, interrogations, entraînements, sondages, et commence par un cadre « Séance en direct » où l'élève tape le code affiché au tableau. « Séance en direct (code) » disparaît du menu S'entraîner. Le bandeau qui annonce une séance ouverte ne change pas ; rien ne change non plus pour les comptes Famille, qui n'ont pas ce menu.",
+  ]},
   { version:'2026-08-19.744', items:[
     "Progression de 4e d'après le sommaire fourni -- demandé : \"Voici les chapitres de 4e\". Les 15 chapitres du manuel, avec leurs codes et leurs pages : N1 à N7 (relatifs, divisibilité, deux chapitres de fractions, puissances, calcul littéral, équations), G1 à G5 (triangles et parallèles, Pythagore, cosinus, translations, espace), D1 à D3 (proportionnalité, statistiques, probabilités). Répartis sur l'année en alternant les rubriques, dans l'ordre des prérequis (relatifs avant le calcul littéral, Pythagore avant le cosinus...), avec les vacances aux mêmes endroits que la 5e. L'algorithmique (A1) reste sur la page Programmation, comme en 6e et 5e. Toujours réservé aux administrateurs.",
   ]},
