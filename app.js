@@ -1082,8 +1082,18 @@ function cahierJouerEtape(film, i, fin, fige){
   if(!d || !panel){ if(fin) fin(0); return; }
   panel.classList.remove('cs-depart'); panel.querySelectorAll(':scope > .cs-dep').forEach(x=>x.remove());
   let v = panel.querySelector(':scope > svg.cs-vivant');
-  if(!v){ v = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); v.setAttribute('class', 'cs-vivant'); v.setAttribute('viewBox', d.anim.viewBox); panel.insertBefore(v, panel.firstChild); }
+  if(!v){
+    v = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); v.setAttribute('class', 'cs-vivant'); v.setAttribute('viewBox', d.anim.viewBox);
+    // Largeur/hauteur explicites (+ aspect-ratio) : sans elles, Safari (iPhone) peut donner une hauteur nulle
+    // à un SVG en width:100% / height:auto dans un conteneur flex -- la figure disparaissait sur smartphone.
+    const vb = String(d.anim.viewBox).split(/[\s,]+/).map(Number);
+    if(vb[2] > 0 && vb[3] > 0){ v.setAttribute('width', vb[2]); v.setAttribute('height', vb[3]); v.style.aspectRatio = vb[2] + ' / ' + vb[3]; }
+    panel.insertBefore(v, panel.firstChild);
+  }
   panel.classList.add('cs-anime');
+  // Filet de sécurité : si la figure redessinée n'a pas de taille à l'écran, on revient à l'image enregistrée.
+  requestAnimationFrame(() => { if(v.isConnected && panel.classList.contains('cs-on') && !film.classList.contains('cs-tout') && panel.getBoundingClientRect().width > 50 && v.getBoundingClientRect().height < 20){
+    film._csDemo = null; film.classList.remove('cs-a'); cahierEtape(film, Math.max(0, Number(film.dataset.csI)||0)); } });
   const n = Math.max(1, d.anim.n(i)), t0 = performance.now();
   if(fige){
     try{ v.innerHTML = d.anim.rendu(i, fige === 'depart' ? 0 : n); }catch(e){ panel.classList.remove('cs-anime'); v.remove(); return; }
@@ -2937,6 +2947,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.758', items:[
+    "Cahier sur smartphone : images des corrections et méthodes -- signalé : \"Sur smarphone dans le cahier, je n'ai pas l'image de l'exercice corrigé et pas les méthodes. Je l'ai bien sur ordinateur\". Les blocs d'une correction gardaient la taille réglée sur ordinateur, par exemple 814 pixels de large. Sur un téléphone, l'image centrée dans ce cadre tombait hors de l'écran. Désormais, à l'écran, un bloc ne dépasse plus la largeur du cahier et l'image s'y réduit. Un autre bloc trop large (figure, tableau) se fait défiler horizontalement. Sur ordinateur et à l'impression, les tailles réglées ne changent pas. Pour les méthodes pas à pas (constructions dans un quadrillage), la figure redessinée a maintenant une taille explicite : sur iPhone, elle pouvait s'afficher avec une hauteur nulle. Si elle ne s'affiche toujours pas, le cahier revient automatiquement aux images enregistrées.",
+  ]},
   { version:'2026-08-19.757', items:[
     "Pas à pas dans le cahier : départ de la figure initiale -- signalé : \"Quand on est dans le cahier, il part de là ! Il manque toute les premières étapes qui mènent à l'image 1\". Le lecteur du cahier ne s'ouvre plus sur la figure finale de l'étape 1. Il s'ouvre sur la figure de départ (quadrillage, points de départ et centre O), notée « Départ ». « Étape suivante » (ou un clic sur la figure) joue alors les mouvements de l'étape 1, puis ceux des étapes suivantes. « ‹ » permet de revenir jusqu'au départ, et « ▶ Animer » enchaîne tout depuis le début. Les figures du lecteur sont dessinées comme dans le chapitre, avec les mêmes polices. À l'impression et dans le PDF, rien ne change.",
   ]},

@@ -1335,13 +1335,25 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
 .cs-film .cs-panel{display:none !important;}
 .cs-film .cs-panel.cs-on{display:flex !important;flex-direction:column;align-items:flex-start;gap:8px !important;animation:csFondu .35s ease;}
 .cs-film .cs-panel img{width:100% !important;max-width:380px;}
+/* Signalé : "Sur smartphone dans le cahier, je n'ai pas l'image de l'exercice corrigé". Les blocs d'une
+   correction gardent la taille réglée sur ordinateur (ex. width:814px;height:195px;overflow:hidden) :
+   sur un écran étroit, l'image centrée dans ce cadre tombait hors de l'écran. À l'écran, un bloc ne
+   dépasse plus la largeur du cahier ; une image s'y réduit (hauteur ajustée) ; un autre bloc trop
+   large (figure, tableau) se fait défiler horizontalement. L'impression garde les tailles réglées. */
+@media screen{
+  .cahier-print-entry{min-width:0;max-width:100%;}
+  .cahier-print-entry > .nb-figure-row{max-width:100%;overflow-x:auto;}
+  .cahier-print-entry .nb-figure-row.disk-sync-target{max-width:100% !important;}
+  .cahier-print-entry .nb-figure-row.disk-sync-target[data-type="image"]{height:auto !important;}
+  .cahier-print-entry .nb-figure-row.disk-sync-target[data-type="image"] img{max-width:100% !important;height:auto !important;}
+}
 .cs-film .cs-panel > div{font-size:.95rem !important;}
 .cs-film.cs-tout .cs-panel{display:flex !important;flex-direction:row;align-items:center;animation:none;}
 .cs-film.cs-tout .cs-panel img{width:170px !important;}
 .cs-film.cs-tout .cs-panel > div{font-size:.8rem !important;}
 @keyframes csFondu{from{opacity:0;}to{opacity:1;}}
 .cs-film .cs-panel > svg.cs-vivant{display:none;}
-.cs-film .cs-panel.cs-anime > svg.cs-vivant{display:block;width:100%;max-width:380px;height:auto;background:#fff;border-radius:6px;border:1px solid rgba(28,43,57,.12);}
+.cs-film .cs-panel.cs-anime > svg.cs-vivant{display:block;width:100%;max-width:380px;height:auto;flex:none;align-self:stretch;background:#fff;border-radius:6px;border:1px solid rgba(28,43,57,.12);}
 .cs-film .cs-panel.cs-anime > img{display:none !important;}
 .cs-film .cs-panel.cs-depart > div:not(.cs-dep){display:none;}
 .cs-film .cs-panel > .cs-dep{font-size:.9rem !important;color:var(--ink-soft);font-style:italic;}
