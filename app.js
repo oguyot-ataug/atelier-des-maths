@@ -2568,7 +2568,7 @@ async function refreshAuthUI(){
       const showSubscribe = profile && profile.role==='prof' && profile.signup_status==='approved' && !currentEtabLicence;
       btnSubscribe.style.display = showSubscribe ? 'block' : 'none';
       btnSubscribe.innerHTML = (profile && (subscriptionExpired || profile.subscription_status==='trial'))
-        ? '<span class="gicon">credit_card</span> Choisir mon offre' : '<span class="gicon">workspace_premium</span> Mon abonnement et mes classes';
+        ? '<span class="gicon">credit_card</span> Choisir mon offre' : '<span class="gicon">workspace_premium</span> Mon abonnement'; // « Mes classes » = le suivi des classes (Outils prof)
     }
     const btnGenerateQuiz = document.getElementById('btnGenerateQuiz'), quizLoginHint = document.getElementById('quizLoginHint');
     if(btnGenerateQuiz) btnGenerateQuiz.style.display = 'inline-block';
@@ -2806,6 +2806,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.750', items:[
+    "Menu du compte : « Mon abonnement et mes classes » devient « Mon abonnement », pour ne plus se confondre avec Outils prof › Mes classes (réponse « oui » à la proposition de renommage). Dans cette page, la partie de l'offre Professeur seul où l'on crée ses classes et ses élèves s'appelle « Classes de mon offre » (« Groupes de mon offre » pour Professeur particulier), à ne pas confondre avec les groupes de remédiation.",
+  ]},
   { version:'2026-08-19.749', items:[
     "« Supervision » devient « Mes classes », avec les groupes dedans -- demandé : \"Renommer Supervision « mes classes » et insérer le module groupes dedans\". Menu Outils prof › Mes classes : onglets Comptes, Résultats, Devoirs et un nouvel onglet Groupes de remédiation (création, modification et suppression des groupes). Sur cet onglet, le sélecteur de classe active est masqué, puisqu'un groupe réunit des élèves de plusieurs classes. L'entrée séparée « Groupes de remédiation » du menu disparaît et son ancienne adresse ouvre l'onglet.",
   ]},

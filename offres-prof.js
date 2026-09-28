@@ -243,7 +243,7 @@ async function opRenderClasses(regime){
       <button class="btn secondary qz-mini" onclick="opImprimerIdents()"><span class="gicon">print</span> Imprimer les fiches</button>
       <button class="btn secondary qz-mini" onclick="opEtat.identsNeufs=[];opRenderClasses('${regime}')">Masquer</button></div>` : '';
   box.innerHTML = `<div class="tool-shell op-card">
-    <strong class="op-h"><span class="gicon">groups</span> ${regime === 'particulier' ? 'Mes groupes' : 'Mes classes'} ${jauge}</strong>
+    <strong class="op-h"><span class="gicon">groups</span> ${regime === 'particulier' ? 'Groupes de mon offre' : 'Classes de mon offre'} ${jauge}</strong>
     <p class="hint" style="margin:0 0 10px;">${regime === 'particulier'
       ? 'Créez autant de groupes que vous voulez (un élève seul ou plusieurs), dans la limite des élèves de votre offre.'
       : regime === 'essai' ? 'Pendant l\'essai : une classe de ' + max + ' élèves au plus.'
