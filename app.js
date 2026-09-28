@@ -1559,7 +1559,12 @@ function renderMathText(raw){
   text = text.replace(/\{\{(rouge|bleu|vert|orange)\|([^}]+)\}\}/g, (m,c,inner)=>`<span style="color:${COLOR_MAP[c]}">${inner}</span>`);
 
   // 1) explicit LaTeX between $...$
-  text = text.replace(/\$([^$]+)\$/g, (m,expr)=>protect(katexSpan(expr)));
+  // (les signes < et > ont été échappés plus haut pour le HTML : KaTeX doit les recevoir tels quels,
+  // sinon « $\frac{1}{3} > \frac{1}{2}$ » s'affichait en rouge -- KaTeX échappe lui-même son rendu)
+  text = text.replace(/\$([^$]+)\$/g, (m,expr)=>{
+    const brut = expr.replace(/&lt;/g,'<').replace(/&gt;/g,'>'), h = katexSpan(brut);
+    return protect(h === brut ? expr : h); // KaTeX indisponible : on garde le texte échappé
+  });
   // 2) sqrt(...) -- processed before fractions so "sqrt(2)/3" isn't mistaken for a fraction
   text = text.replace(/sqrt\(([^()]+)\)/g, (m,inner)=>protect(katexSpan(`\\sqrt{${cleanExpr(inner)}}`)));
   // 3) fractions with a parenthesised expression on one or both sides: (2*2)/(3*2), (2+1)/4, 3/(1+2)
@@ -2806,6 +2811,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.751', items:[
+    "Interrogations en ligne : ajout au cahier de l'élève -- demandé : \"Possibilité d'ajouter une interrogation en ligne au cahier de l'élève\". Nouveau bouton « Cahier » sur chaque interrogation donnée (Interrogations en ligne) : au choix, le sujet et sa correction (propositions justes cochées, vrai/faux, réponses attendues, attendus des questions ouvertes, explications) ou le sujet seul. Il suffit de choisir le chapitre du cahier et la date. L'entrée arrive dans le cahier de la classe ou du groupe concerné, comme une partie de cours, et s'imprime avec lui. Si l'interrogation n'est pas encore terminée, un avertissement prévient que les élèves verront la correction tout de suite.",
+    "Fix (tout le site) : une formule entre $…$ contenant les signes < ou > (ex. $\\frac{1}{3} > \\frac{1}{2}$) s'affichait en rouge au lieu d'être mise en forme.",
+  ]},
   { version:'2026-08-19.750', items:[
     "Menu du compte : « Mon abonnement et mes classes » devient « Mon abonnement », pour ne plus se confondre avec Outils prof › Mes classes (réponse « oui » à la proposition de renommage). Dans cette page, la partie de l'offre Professeur seul où l'on crée ses classes et ses élèves s'appelle « Classes de mon offre » (« Groupes de mon offre » pour Professeur particulier), à ne pas confondre avec les groupes de remédiation.",
   ]},

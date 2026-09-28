@@ -316,6 +316,7 @@ function qzInterrosHtml(liste){
       <span class="qz-i-act">
         <button class="btn qz-mini" onclick="qzOuvrirCorrection('${d.id}')">${qzEstEntrainement(r) || qzEstSondage(r) ? '<span class="gicon">insights</span> Résultats' : '<span class="gicon">fact_check</span> Corriger'}</button>
         <button class="btn secondary qz-mini" onclick="qzFormModifier('${d.id}')" title="Modifier"><span class="gicon">edit</span></button>
+        ${!qzEstSondage(r) && typeof qzCahierOuvrir === 'function' ? `<button class="btn secondary qz-mini" onclick="qzCahierOuvrir('${d.id}')" title="Ajouter au cahier de l'élève (le sujet, avec ou sans la correction)"><span class="gicon">menu_book</span> Cahier</button>` : ''}
         ${d.questionnaire_id ? `<button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${d.questionnaire_id}')" title="Séance en direct avec ces questions : une à une, sans note, réponses en direct"><span class="gicon">cast_for_education</span></button>
         <button class="btn secondary qz-mini" onclick="qzBanqueDonner('${d.questionnaire_id}')" title="Donner une copie à une autre classe"><span class="gicon">content_copy</span></button>
         <button class="btn secondary qz-mini" onclick="qzBanquePartager('${d.questionnaire_id}')" title="Partager le questionnaire avec des collègues (ils pourront le copier)"><span class="gicon">share</span></button>` : ''}
