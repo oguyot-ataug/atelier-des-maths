@@ -297,10 +297,6 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       showView('view-supervision'); setActiveTopnav('supervision');
       loadMyClasses();
     }
-    if(nav==='groupes'){
-      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
-      if(typeof grOuvrir==='function') grOuvrir();
-    }
     if(nav==='progression'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-progression'); setActiveTopnav('progression'); renderProgressionEditor();
@@ -352,7 +348,6 @@ function setActiveTopnav(key){
   else if(key==='famille') document.querySelector('.nav-links button[data-nav="famille"]')?.classList.add('active');
   else if(key==='supervision') document.querySelector('.nav-links button[data-nav="supervision"]').classList.add('active');
   else if(key==='progression') document.querySelector('.nav-links button[data-nav="progression"]').classList.add('active');
-  else if(key==='groupes') document.querySelector('.nav-links button[data-nav="groupes"]')?.classList.add('active');
   else if(key==='mesresultats') document.querySelector('.nav-links button[data-nav="mesresultats"]').classList.add('active');
   else if(key==='devoirsprof' || key==='questionnaires') document.querySelector(`.nav-links button[data-nav="${key}"]`)?.classList.add('active');
   else document.querySelector('.nav-links button[data-nav="home"]').classList.add('active');
@@ -2811,6 +2806,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.749', items:[
+    "« Supervision » devient « Mes classes », avec les groupes dedans -- demandé : \"Renommer Supervision « mes classes » et insérer le module groupes dedans\". Menu Outils prof › Mes classes : onglets Comptes, Résultats, Devoirs et un nouvel onglet Groupes de remédiation (création, modification et suppression des groupes). Sur cet onglet, le sélecteur de classe active est masqué, puisqu'un groupe réunit des élèves de plusieurs classes. L'entrée séparée « Groupes de remédiation » du menu disparaît et son ancienne adresse ouvre l'onglet.",
+  ]},
   { version:'2026-08-19.748', items:[
     "Groupes de remédiation -- demandé : \"Un prof d'un établissement doit pouvoir constituer des groupes d'élèves pour faire des heures de rémédiation. Ces élèves peuvent provenir de sa classe ou des autres classes.\" Nouvelle page Outils prof › Groupes de remédiation : nom du groupe, niveau (proposé d'après les élèves), puis choix des élèves dans ses classes ou dans les autres classes de l'établissement (filtre par classe, recherche, « tout cocher »). Le groupe apparaît ensuite comme une classe dans le sélecteur (« … · groupe ») : devoirs, interrogations, entraînements, sondages, séances en direct, cahier, supervision fonctionnent avec lui. Les élèves gardent leur classe et retrouvent le travail du groupe dans « Mon travail ». Groupe modifiable à tout moment. Un groupe qui a déjà du travail est archivé plutôt que supprimé, et ses résultats sont gardés. Seuls les élèves de l'établissement du professeur sont proposés, et les groupes n'entrent pas dans les limites de l'offre Professeur seul.",
   ]},
@@ -4920,6 +4918,9 @@ document.querySelectorAll('.sup-tab-btn').forEach(btn=>{
     btn.classList.add('active');
     document.getElementById('suppanel-'+btn.dataset.suptab).classList.add('active');
     if(btn.dataset.suptab==='classes') renderSupervisionDevoirsTab();
+    // Groupes de remédiation : pas liés à la classe active, le sélecteur de classe est masqué.
+    const picker = document.getElementById('supervisionClassPickerBox'); if(picker) picker.style.display = btn.dataset.suptab==='groupes' ? 'none' : '';
+    if(btn.dataset.suptab==='groupes' && typeof grAfficher==='function') grAfficher();
   });
 });
 /* Onglet "Devoirs" de Supervision : sessions Permis Rapporteur et devoirs de la classe ACTIVE --

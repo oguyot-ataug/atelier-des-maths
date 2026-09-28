@@ -21,12 +21,12 @@ const ROUTE_SIMPLE = {
   'view-admin':'admin', 'view-supervision':'supervision', 'view-mesresultats':'mesresultats',
   'view-ia':'ia', 'view-famille':'famille', 'view-abonnement':'abonnement', 'view-cgv':'cgv',
   'view-confidentialite':'confidentialite', 'view-mentions-legales':'mentions-legales',
-  'view-programmation':'programmation', 'view-qz-carnet':'carnet', 'view-qz-banque':'questionnaires', 'view-qz-form':'questionnaires', 'view-devoirs-prof':'devoirs', 'view-groupes':'groupes',
+  'view-programmation':'programmation', 'view-qz-carnet':'carnet', 'view-qz-banque':'questionnaires', 'view-qz-form':'questionnaires', 'view-devoirs-prof':'devoirs',
 };
 const ROUTE_LABELS = {
   cm:'Suivi', compte:'Objectif Nombre', correction:'Correction', evaluation:'Évaluation',
   tableau:'Tableau interactif', cahier:'Cahier élève', admin:'Administration',
-  supervision:'Supervision', mesresultats:'Mes résultats', ia:'Intelligence artificielle',
+  supervision:'Mes classes', mesresultats:'Mes résultats', ia:'Intelligence artificielle',
   famille:'Espace famille', abonnement:'Mon abonnement', cgv:'Conditions générales de vente', confidentialite:'Confidentialité',
   'mentions-legales':'Mentions légales', programmation:'Programmation', carnet:'Carnet de notes', questionnaires:'Interrogations en ligne', devoirs:'Devoirs en ligne', groupes:'Groupes de remédiation',
 };
@@ -186,7 +186,7 @@ function routerRestoreFromHash(){
         showView('view-devoirs-prof'); setActiveTopnav('devoirsprof'); if(typeof renderDevoirsProf==='function') renderDevoirsProf();
       } else if(key==='programmation'){
         if(typeof progOuvrir==='function') progOuvrir();
-      } else if(key==='groupes'){
+      } else if(key==='groupes'){ // ancienne page : c'est maintenant un onglet de « Mes classes »
         if(typeof grOuvrir==='function') grOuvrir();
       } else if(key==='questionnaires'){
         if(typeof qzBanqueOuvrir==='function') qzBanqueOuvrir();

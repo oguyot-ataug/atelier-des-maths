@@ -1,5 +1,6 @@
 /* =====================================================================
-   groupes.js -- Groupes de remédiation (Outils prof › Groupes de remédiation)
+   groupes.js -- Groupes de remédiation (onglet de Mes classes, ex-Supervision) -- demandé :
+   "Renommer Supervision « mes classes » et insérer le module groupes dedans".
 
    Demandé : "Un prof d'un établissement doit pouvoir constituer des groupes d'élèves pour faire des
    heures de rémédiation. Ces élèves peuvent provenir de sa classe ou des autres classes."
@@ -21,9 +22,14 @@ const GR_NIVEAUX = ['6e', '5e', '4e', '3e', 'cm1', 'cm2'];
 function grEsc(s){ return escapeHtml(String(s ?? '')); }
 function grNom(e){ return ((e.prenom || '') + ' ' + (e.nom || '')).trim() || '(sans nom)'; }
 
-async function grOuvrir(){
-  showView('view-groupes'); setActiveTopnav('groupes');
-  const root = document.getElementById('grRoot');
+// Ouvre Mes classes sur l'onglet Groupes de remédiation.
+function grOuvrir(){
+  showView('view-supervision'); setActiveTopnav('supervision');
+  const b = document.querySelector('.sup-tab-btn[data-suptab="groupes"]');
+  if(b) b.click(); else grAfficher();
+}
+async function grAfficher(){
+  const root = document.getElementById('grRoot'); if(!root) return;
   root.innerHTML = '<p class="hint">Chargement…</p>';
   grEtat = { groupes: [], possibles: [], edition: null };
   await grCharger();
@@ -51,9 +57,8 @@ function grRender(){
   const root = document.getElementById('grRoot'); if(!root || !grEtat) return;
   const ed = grEtat.edition;
   root.innerHTML = `
-    <span class="back-btn" onclick="showView('view-home');setActiveTopnav(null);">← Accueil</span>
-    <h1 style="margin:6px 0 4px;"><span class="gicon">group_add</span> Groupes de remédiation</h1>
-    <p style="color:var(--ink-soft);max-width:75ch;">Réunissez des élèves de vos classes ou des autres classes de l'établissement pour une heure de remédiation, d'approfondissement ou d'aide aux devoirs. Chaque groupe apparaît ensuite comme une classe dans vos outils : devoirs, interrogations et entraînements en ligne, séances en direct, cahier de corrections, supervision. Les élèves gardent leur classe et retrouvent le travail du groupe dans « Mon travail ».</p>
+    <h2 style="margin:0 0 4px;"><span class="gicon">group_add</span> Groupes de remédiation</h2>
+    <p style="color:var(--ink-soft);max-width:75ch;margin:0 0 12px;">Réunissez des élèves de vos classes ou des autres classes de l'établissement pour une heure de remédiation, d'approfondissement ou d'aide aux devoirs. Chaque groupe apparaît ensuite comme une classe dans vos outils : devoirs, interrogations et entraînements en ligne, séances en direct, cahier de corrections, onglets de Mes classes. Les élèves gardent leur classe et retrouvent le travail du groupe dans « Mon travail ».</p>
     ${grEtat.erreur ? `<p class="hint" style="color:#a83c1f;">${grEsc(grEtat.erreur)}</p>` : ''}
     ${ed ? grEditeurHtml(ed) : `<button class="btn" onclick="grNouveau()"><span class="gicon">add</span> Nouveau groupe</button>`}
     <h2 style="margin:22px 0 8px;font-size:1.15rem;">Mes groupes (${grEtat.groupes.length})</h2>
