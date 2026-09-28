@@ -164,6 +164,7 @@ serve(async (req) => {
         p_until: m.acces_until,
         p_test: isTest,
         p_details: { libelle: m.libelle || "", detail: m.detail || "", renonciation: m.renonciation || "" },
+        p_classes_sup: parseInt(m.classes_sup, 10) || 0,
       });
       if (error) return json({ error: error.message }, 500);
       const { data: fac, error: fErr } = await adminClient.rpc("prof_facturer", { p_session: session.id, p_client: clientDe(session) });
