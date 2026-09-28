@@ -299,8 +299,7 @@ function makeQgDemo(id, depart, etapes){
   let k = 0, raf = null;
   const svg = () => document.getElementById(id + 'Svg');
   function grille(){
-    let g = `<defs>${[QG_BLEU, QG_ORANGE].map((c, n) => `<marker id="${id}Pointe${n}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${c}"/></marker>`).join('')}</defs>`;
-    g += `<rect x="${QG_M}" y="${QG_M}" width="${QG_W * QG_C}" height="${QG_H * QG_C}" fill="#fff"/>`;
+    let g = `<rect x="${QG_M}" y="${QG_M}" width="${QG_W * QG_C}" height="${QG_H * QG_C}" fill="#fff"/>`;
     for(let i = 0; i <= QG_W; i++) g += `<line x1="${qgX(i)}" y1="${QG_M}" x2="${qgX(i)}" y2="${qgY(QG_H)}" stroke="#C9D6E6" stroke-width="1"/>`;
     for(let j = 0; j <= QG_H; j++) g += `<line x1="${QG_M}" y1="${qgY(j)}" x2="${qgX(QG_W)}" y2="${qgY(j)}" stroke="#C9D6E6" stroke-width="1"/>`;
     return g;
@@ -359,7 +358,7 @@ function makeQgDemo(id, depart, etapes){
     return '';
   }
   // Étape k affichée ; prog = avancement de l'animation de l'étape k (nombre d'éléments déjà tracés).
-  function rendu(kk, prog){
+  function dessin(kk, prog){
     let h = grille();
     const couches = [];
     depart.forEach(e => couches.push([e, 1, false]));
@@ -373,7 +372,10 @@ function makeQgDemo(id, depart, etapes){
     // Ordre : droites/segments, puis flèches, puis points (toujours lisibles au-dessus).
     const rang = { droite: 0, seg: 1, code: 2, fleche: 3, point: 4 };
     couches.sort((u, v) => rang[u[0].t] - rang[v[0].t]).forEach(([e, f, pale]) => { h += dessine(e, f, pale); });
-    svg().innerHTML = h;
+    return h;
+  }
+  function rendu(kk, prog){
+    svg().innerHTML = dessin(kk, prog);
     document.querySelectorAll(`#${id}Steps .step-item`).forEach(el => el.classList.toggle('done', Number(el.dataset.step) <= kk));
     const b = document.getElementById(id + 'Next');
     if(b){ b.disabled = kk >= etapes.length; b.textContent = kk >= etapes.length ? 'Terminé ✓' : 'Étape suivante →'; }
@@ -399,7 +401,11 @@ function makeQgDemo(id, depart, etapes){
   }
   function reset(){ cancelAnimationFrame(raf); k = 0; rendu(0, 0); }
   function goto(i){ cancelAnimationFrame(raf); k = i + 1; rendu(k, 99); }
-  return { init, next, reset, goto, steps: () => etapes.map(e => ({ note: qgNote(e.html) })), getIdx: () => k - 1 };
+  /* Dans le cahier, le lecteur pas à pas rejoue les mouvements de chaque étape (et pas seulement
+     l'image finale) : n(i) = nombre d'éléments animés de l'étape i (650 ms chacun), rendu(i, prog)
+     = contenu du SVG à cet instant. Voir cahierJouerEtape (app.js). */
+  const anim = { viewBox: `0 0 ${2 * QG_M + QG_W * QG_C} ${2 * QG_M + QG_H * QG_C}`, n: i => etapes[i].el.length, rendu: (i, prog) => dessin(i + 1, prog) };
+  return { init, next, reset, goto, anim, steps: () => etapes.map(e => ({ note: qgNote(e.html) })), getIdx: () => k - 1 };
 }
 const QG_DEMOS = {};
 (function qgScenarios(){
@@ -426,8 +432,11 @@ const QG_DEMOS = {};
     { html: `Je trace la droite (A'B') : c'est <b>(d')</b>, la symétrique de (d) par rapport à O. Elle est <b>parallèle à (d)</b> (si O était sur (d), (d') serait (d) elle-même).`, el: [{ t: 'droite', a: A3p, b: B3p, c: QG_ORANGE, nom: "(d')", pos: 0.14 }] },
   ]);
 })();
+const qgEnregistrer = id => { const d = QG_DEMOS[id]; registerGeoStepDemo(id + 'Svg', { steps: d.steps, getIdx: d.getIdx, goto: d.goto, anim: d.anim }); };
+// Enregistrées dès le chargement : le cahier peut rejouer les mouvements sans que le chapitre ait été ouvert.
+Object.keys(QG_DEMOS).forEach(qgEnregistrer);
 function qgInitTout(){
-  Object.keys(QG_DEMOS).forEach(id => { const d = QG_DEMOS[id]; d.init(); registerGeoStepDemo(id + 'Svg', { steps: d.steps, getIdx: d.getIdx, goto: d.goto }); });
+  Object.keys(QG_DEMOS).forEach(id => { QG_DEMOS[id].init(); qgEnregistrer(id); });
 }
 
 document.getElementById('methode-demo-symetrie').innerHTML = `

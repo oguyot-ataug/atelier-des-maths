@@ -1038,25 +1038,84 @@ function cahierAnimerEtapes(root){
     d.parentNode.insertBefore(bar, d);
   }); });
 }
-function cahierEtape(film, i){
+function cahierEtape(film, i, animer){
   const kids = Array.from(film.children), n = kids.length, bar = film.previousElementSibling;
   i = Math.max(0, Math.min(n-1, i)); film.dataset.csI = String(i);
-  kids.forEach((k,j)=>k.classList.toggle('cs-on', j===i));
+  cahierStopEtape(film);
+  kids.forEach((k,j)=>{ k.classList.toggle('cs-on', j===i); k.classList.remove('cs-anime'); const v = k.querySelector(':scope > svg.cs-vivant'); if(v) v.remove(); });
   if(bar){ bar.querySelector('.cs-n').textContent = `Étape ${i+1} / ${n}`; bar.querySelector('[data-cs="prev"]').disabled = i===0; bar.querySelector('[data-cs="next"]').disabled = i===n-1; }
+  if(animer) cahierJouerEtape(film, i);
+}
+/* Mouvements intermédiaires. Demandé : "ça ne montre pas toutes les étapes !" -> "Les mouvements
+   intermédiaires". Le cahier ne garde qu'une image par étape (c'est ce qui s'imprime) ; quand la
+   figure vient d'une démonstration qui sait se redessiner à tout instant (config.anim de
+   registerGeoStepDemo, ex. constructions dans un quadrillage), le lecteur retrouve cette démonstration
+   par le texte de ses étapes -- y compris pour les entrées déjà ajoutées -- et rejoue l'étape par-dessus
+   l'image : flèches qui avancent carreau par carreau, numéros, points qui apparaissent. */
+function cahierDemoDuFilm(film){
+  if(film._csDemo !== undefined) return film._csDemo;
+  const norm = t => String(t||'').replace(/\s+/g,' ').trim(), tmp = document.createElement('div');
+  const notes = Array.from(film.children).map(k => { const t = k.querySelector(':scope > div'); return norm((t ? t.textContent : '').replace(/^\s*Étape\s+\d+\.\s*/, '')); });
+  let trouve = null;
+  Object.values(window.GEO_STEP_DEMOS || {}).some(d => {
+    if(!d || !d.anim || typeof d.steps !== 'function') return false;
+    let st; try{ st = d.steps(); }catch(e){ return false; }
+    if(!st || st.length !== notes.length) return false;
+    const ok = st.every((x,i) => { tmp.innerHTML = x.note; return norm(tmp.textContent) === notes[i]; });
+    if(ok) trouve = d;
+    return ok;
+  });
+  if(trouve){ film._csDemo = trouve; film.classList.add('cs-a'); film.querySelectorAll(':scope > .cs-panel > img').forEach(im => { im.title = 'Cliquer pour rejouer les mouvements de cette étape'; }); }
+  return trouve; // pas mémorisé si absent : le chapitre peut s'enregistrer plus tard
+}
+function cahierStopEtape(film){ cancelAnimationFrame(film._csRaf); clearTimeout(film._csT); film._csRaf = film._csT = null; }
+// Rejoue l'étape i du film ; fin() est appelée une fois le mouvement terminé (ou tout de suite sans démonstration).
+function cahierJouerEtape(film, i, fin){
+  cahierStopEtape(film);
+  const d = cahierDemoDuFilm(film), panel = film.children[i];
+  if(!d || !panel){ if(fin) fin(0); return; }
+  let v = panel.querySelector(':scope > svg.cs-vivant');
+  if(!v){ v = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); v.setAttribute('class', 'cs-vivant'); v.setAttribute('viewBox', d.anim.viewBox); panel.insertBefore(v, panel.firstChild); }
+  panel.classList.add('cs-anime');
+  const n = Math.max(1, d.anim.n(i)), t0 = performance.now();
+  const tic = now => {
+    if(!v.isConnected){ cahierStopEtape(film); return; }
+    const p = Math.min(n, (now - t0) / 650);
+    try{ v.innerHTML = d.anim.rendu(i, p); }catch(e){ panel.classList.remove('cs-anime'); v.remove(); if(fin) fin(0); return; }
+    if(p < n) film._csRaf = requestAnimationFrame(tic); else if(fin) fin(1);
+  };
+  v.innerHTML = d.anim.rendu(i, 0);
+  film._csRaf = requestAnimationFrame(tic);
+}
+function cahierStopLecture(film, bar){
+  film._csLecture = false; cahierStopEtape(film);
+  const b = bar && bar.querySelector('[data-cs="play"]'); if(b) b.textContent = '▶ Animer';
 }
 document.addEventListener('click', e=>{
+  // Clic sur la figure d'une étape : on rejoue ses mouvements.
+  const fig = e.target.closest('.cs-film.cs-a .cs-panel.cs-on > img, .cs-film.cs-a .cs-panel.cs-on > svg.cs-vivant');
+  if(fig){ const film = fig.closest('.cs-film'); cahierStopLecture(film, film.previousElementSibling); cahierJouerEtape(film, Number(film.dataset.csI)||0); return; }
   const b = e.target.closest('.cs-bar [data-cs]'); if(!b) return;
   const bar = b.closest('.cs-bar'), film = bar.nextElementSibling; if(!film || !film.classList.contains('cs-film')) return;
   const i = Number(film.dataset.csI)||0, n = film.children.length, act = b.dataset.cs;
-  if(act!=='play' && film._csAnim){ clearInterval(film._csAnim); film._csAnim = null; bar.querySelector('[data-cs="play"]').textContent = '▶ Animer'; }
+  if(act==='play' && film._csLecture){ cahierStopLecture(film, bar); return; }
+  cahierStopLecture(film, bar);
   if(act==='prev') cahierEtape(film, i-1);
-  else if(act==='next') cahierEtape(film, i+1);
-  else if(act==='all'){ const tout = film.classList.toggle('cs-tout'); b.textContent = tout ? 'Une étape à la fois' : 'Tout voir'; bar.classList.toggle('cs-tout', tout); }
+  else if(act==='next') cahierEtape(film, i+1, true);
+  else if(act==='all'){ cahierEtape(film, i); const tout = film.classList.toggle('cs-tout'); b.textContent = tout ? 'Une étape à la fois' : 'Tout voir'; bar.classList.toggle('cs-tout', tout); }
   else if(act==='play'){
-    if(film._csAnim){ clearInterval(film._csAnim); film._csAnim = null; b.textContent = '▶ Animer'; return; }
     film.classList.remove('cs-tout'); bar.classList.remove('cs-tout'); bar.querySelector('[data-cs="all"]').textContent = 'Tout voir';
-    cahierEtape(film, i>=n-1 ? 0 : i); b.textContent = '⏸ Pause';
-    film._csAnim = setInterval(()=>{ const k = Number(film.dataset.csI)||0; if(k>=n-1 || !film.isConnected){ clearInterval(film._csAnim); film._csAnim = null; b.textContent = '▶ Animer'; return; } cahierEtape(film, k+1); }, 1600);
+    film._csLecture = true; b.textContent = '⏸ Pause';
+    // Chaque étape joue ses mouvements, puis courte pause avant la suivante (1,6 s par étape sans démonstration).
+    const suite = k => {
+      if(!film._csLecture || !film.isConnected) return;
+      cahierEtape(film, k);
+      cahierJouerEtape(film, k, anime => {
+        if(!film._csLecture) return;
+        film._csT = setTimeout(() => { if(k >= n-1) cahierStopLecture(film, bar); else suite(k+1); }, anime ? 1100 : 1600);
+      });
+    };
+    suite(i>=n-1 ? 0 : i);
   }
 });
 // Les cahiers sont rendus à plusieurs endroits (cahier de la classe, accordéon par jour, correction) :
@@ -2860,6 +2919,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.756', items:[
+    "Pas à pas dans le cahier : les mouvements de chaque étape -- signalé : \"ça ne montre pas toutes les étapes !\" (les mouvements intermédiaires). Pour les constructions dans un quadrillage (symétrie centrale en 5e : point, segment, droite), le lecteur du cahier rejoue maintenant chaque étape comme dans le chapitre. Les flèches avancent carreau par carreau, les carreaux se numérotent et les points apparaissent. « Étape suivante » joue les mouvements de l'étape. « ▶ Animer » enchaîne toutes les étapes avec leurs mouvements. Un clic sur la figure rejoue l'étape affichée. Cela marche aussi pour les constructions déjà ajoutées au cahier, sans avoir à les ajouter de nouveau. À l'impression et dans le PDF, rien ne change : une image finale par étape.",
+  ]},
   { version:'2026-08-19.755', items:[
     "Pas à pas dans le cahier -- signalé : \"On avait évoqué le fait de mettre les pas à pas dans le cahier (sauf à l'impression). j'ai inséré les constructions des symétriques dans un quadrillage mais on perd l'aspect animation\". À l'écran, chaque construction pas à pas du cahier devient un lecteur : une étape à la fois, avec « ‹ », « Étape suivante », « ▶ Animer » (les étapes défilent seules) et « Tout voir ». C'est aussi le cas des constructions déjà ajoutées. À l'impression et dans le PDF, toutes les étapes restent affichées l'une sous l'autre. Les images des nouvelles constructions ajoutées sont plus nettes, et les flèches du quadrillage (symétrie centrale) gardent leur pointe dans le cahier. Pour en profiter sur une construction déjà ajoutée, il faut la retirer puis l'ajouter de nouveau.",
   ]},
