@@ -2813,6 +2813,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.754', items:[
+    "Images des corrections et des évaluations : modifier avant d'insérer -- demandé : \"Dans les corrections d'exercices ou évaluations, on peut insérer des images. Permettre avant de les insérer d'écrire dessus, de recadrer, de la faire pivoter, de mettre du texte...\". Dans l'outil Image, un nouveau bouton « Modifier avant d'insérer » ouvre l'éditeur de la caméra : recadrer, faire pivoter, crayon, surligneur, texte (déplaçable, redimensionnable), 5 couleurs, annuler / effacer, luminosité, contraste, noir et blanc, « Document ». Un clic sur « Insérer dans la correction » place l'image modifiée. Le bouton marche aussi sur une image déjà insérée (rouverte depuis la correction) : elle est remplacée à sa place, et reste inchangée si l'on ferme l'éditeur sans insérer.",
+  ]},
   { version:'2026-08-19.753', items:[
     "Menu sur smartphone -- signalé : \"Sur smartphone, le menu commence à être interminable et peu lisible\". Accueil, 6e et 5e sont maintenant sur une seule ligne. « S'entraîner » et « Outils prof » deviennent des sections repliables, fermées par défaut : ouvrir l'une referme l'autre, et le menu reste ouvert. Leurs entrées s'affichent sur deux colonnes, avec une icône. Le sous-menu Évaluations est mis à plat, et les outils déjà présents dans S'entraîner ne sont plus répétés dans Outils prof. Menu fermé, un professeur voit six lignes au lieu d'une vingtaine. Sur ordinateur, les menus gagnent des icônes, et Mes classes et Ma progression passent en tête d'Outils prof.",
   ]},

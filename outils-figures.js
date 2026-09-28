@@ -49,6 +49,7 @@ document.body.insertAdjacentHTML('beforeend', `
       <div id="imageImportPreview" style="margin-top:4px;"></div>
       <div class="figure-toolbar" style="margin-top:10px;">
         <button type="button" class="btn" id="imageImportInsertBtn" onclick="insertImageBlock()" disabled>Insérer l'image</button>
+        <button type="button" class="btn secondary" id="imageImportEditBtn" onclick="imageOuvrirEditeur()" disabled title="Recadrer, faire pivoter, écrire ou dessiner dessus, ajouter du texte, régler la luminosité, puis insérer"><span class=gicon>edit</span> Modifier avant d'insérer</button>
         <button type="button" class="btn secondary" onclick="closeImageTool()">Fermer sans insérer</button>
       </div>
     </div>
@@ -841,6 +842,15 @@ function previewImportedImage(file){
   const blobUrl = URL.createObjectURL(file);
   document.getElementById('imageImportPreview').innerHTML = `<img src="${blobUrl}" style="max-width:100%;max-height:260px;display:block;margin:0 auto;border-radius:6px;border:1px solid rgba(28,43,57,.15);"/>`;
   document.getElementById('imageImportInsertBtn').disabled = false;
+  document.getElementById('imageImportEditBtn').disabled = false;
+}
+// Éditeur d'image (camera.js) : recadrer, pivoter, crayon, surligneur, texte, luminosité... puis insertion
+// dans la correction ; si on modifiait une image déjà insérée, elle est remplacée à sa place (editingBlock).
+function imageOuvrirEditeur(){
+  const source = imageImportFile || imageImportDataUri;
+  if(!source || typeof openImageEditor !== 'function') return;
+  document.getElementById('toolsModalOverlay').style.display = 'none'; document.getElementById('imagePanel').style.display = 'none';
+  openImageEditor(source);
 }
 function openImageTool(){
   hideAllToolContent();
@@ -850,6 +860,7 @@ function openImageTool(){
   imageImportFile = null;
   document.getElementById('imageImportPreview').innerHTML = '';
   document.getElementById('imageImportInsertBtn').disabled = true;
+  document.getElementById('imageImportEditBtn').disabled = true;
   document.getElementById('imageImportInput').value = '';
   document.getElementById('imagePanel').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
@@ -893,6 +904,7 @@ function reopenImageBlock(data){
   imageImportFile = null;
   document.getElementById('imageImportPreview').innerHTML = `<img src="${data.src}" style="max-width:100%;max-height:260px;display:block;margin:0 auto;border-radius:6px;border:1px solid rgba(28,43,57,.15);"/>`;
   document.getElementById('imageImportInsertBtn').disabled = false;
+  document.getElementById('imageImportEditBtn').disabled = false;
 }
 /* Icônes en trait fin (SVG), sobres et monochromes -- plus adaptées à un contexte professionnel
    que des émojis. Dupliquées telles quelles dans index.html pour la barre fixe de l'outil de

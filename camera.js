@@ -51,9 +51,13 @@ function camSurMobile(){
   return /Android|iPhone|iPad|iPod|Mobile/i.test(ua) || (/Macintosh/.test(ua) && (navigator.maxTouchPoints || 0) > 1);
 }
 
-function openCameraTool(){
+/* opts.fichier : éditeur seul, pour une image choisie dans l'outil Image (opts.source = File ou URL) --
+   demandé : "Dans les corrections d'exercices ou évaluations, on peut insérer des images. Permettre
+   avant de les insérer d'écrire dessus, de recadrer, de la faire pivoter, de mettre du texte..." */
+function openCameraTool(opts){
+  opts = opts || {};
   camFermer(true);
-  const local = camSurMobile();
+  const fichier = !!opts.fichier, local = fichier || camSurMobile();
   const code = camCode();
   cam = { code, local, frames: new Map(), img: null, rot: 0, frozen: false, connecte: false, derniere: 0,
     annots: [], sel: -1, outil: 'crayon', color: CAM_COULEURS[0], crop: { x: 0, y: 0, w: 1, h: 1 }, cropEdit: null, lum: 100, con: 100, gris: false, geste: null };
@@ -61,14 +65,14 @@ function openCameraTool(){
   if(!o){ o = document.createElement('div'); o.id = 'camOverlay'; document.body.appendChild(o); }
   o.className = 'cam-ov';
   o.innerHTML = `<div class="cam-box" id="camBox">
-    <div class="cam-head">${CAM_ICO(local ? 'photo_camera' : 'videocam')} <b>${local ? 'Photo' : 'Caméra du téléphone'}</b> ${local ? '' : '<span id="camEtat" class="cam-etat attente">En attente du téléphone…</span>'}
+    <div class="cam-head">${CAM_ICO(fichier ? 'imagesmode' : local ? 'photo_camera' : 'videocam')} <b>${fichier ? 'Modifier l\'image avant de l\'insérer' : local ? 'Photo' : 'Caméra du téléphone'}</b> ${local ? '' : '<span id="camEtat" class="cam-etat attente">En attente du téléphone…</span>'}
       <button type="button" class="cam-x" onclick="camFermer()" title="Fermer">${CAM_ICO('close')}</button></div>
     ${local ? `<div class="cam-pair cam-local" id="camPair">
       <input type="file" id="camPrise" accept="image/*" capture="environment" hidden onchange="camFichier(this)">
       <input type="file" id="camGalerie" accept="image/*" hidden onchange="camFichier(this)">
-      <p class="cam-big">Photographiez un cahier ou une copie</p>
-      <button type="button" class="btn cam-gros" onclick="document.getElementById('camPrise').click()">${CAM_ICO('photo_camera')} Prendre une photo</button>
-      <button type="button" class="btn secondary cam-gros" onclick="document.getElementById('camGalerie').click()">${CAM_ICO('photo_library')} Choisir une photo existante</button>
+      <p class="cam-big">${fichier ? 'Chargement de l\'image…' : 'Photographiez un cahier ou une copie'}</p>
+      ${fichier ? '' : `<button type="button" class="btn cam-gros" onclick="document.getElementById('camPrise').click()">${CAM_ICO('photo_camera')} Prendre une photo</button>`}
+      <button type="button" class="btn secondary cam-gros" onclick="document.getElementById('camGalerie').click()">${CAM_ICO('photo_library')} ${fichier ? 'Choisir une image' : 'Choisir une photo existante'}</button>
       <p class="hint">Vous pourrez ensuite la recadrer, l'éclaircir, l'annoter puis l'insérer dans la correction. Rien n'est enregistré tant que vous ne l'insérez pas.</p>
     </div>` : `<div class="cam-pair" id="camPair">
       <div class="cam-qr" id="camQr"></div>
@@ -89,7 +93,8 @@ function openCameraTool(){
     </div>
     <div class="cam-tools" id="camTools" hidden>
       <div class="cam-row">
-        ${local ? `<button type="button" class="btn secondary" onclick="document.getElementById('camPrise').click()" title="Prendre une autre photo">${CAM_ICO('photo_camera')} Autre photo</button>` : `<button type="button" class="btn secondary" id="camFigerBtn" onclick="camFiger()">${CAM_ICO('pause')} Figer</button>
+        ${fichier ? `<button type="button" class="btn secondary" onclick="document.getElementById('camGalerie').click()" title="Choisir une autre image">${CAM_ICO('photo_library')} Autre image</button>`
+          : local ? `<button type="button" class="btn secondary" onclick="document.getElementById('camPrise').click()" title="Prendre une autre photo">${CAM_ICO('photo_camera')} Autre photo</button>` : `<button type="button" class="btn secondary" id="camFigerBtn" onclick="camFiger()">${CAM_ICO('pause')} Figer</button>
         <button type="button" class="btn secondary" onclick="camPhoto()" title="Demande au téléphone une photo en pleine résolution, plus nette que l'image en direct">${CAM_ICO('photo_camera')} Photo nette</button>`}
         <button type="button" class="btn secondary" onclick="camPivoter()" title="Pivoter d'un quart de tour">${CAM_ICO('rotate_right')}</button>
         <span class="cam-sep"></span>
@@ -122,6 +127,7 @@ function openCameraTool(){
   camBrancherDessin();
   camMajOutils();
   window.addEventListener('resize', camRedessiner);
+  if(fichier){ cam.fichier = true; if(opts.source) camCharger(opts.source); return; }
   if(local){ // ouvre tout de suite l'appareil photo (on est encore dans le clic du professeur)
     cam.outil = 'crayon'; camMajOutils();
     try{ document.getElementById('camPrise').click(); }catch(e){}
@@ -145,9 +151,15 @@ function openCameraTool(){
 function camFichier(input){
   const f = input.files && input.files[0]; input.value = '';
   if(!cam || !f) return;
-  const u = URL.createObjectURL(f), src = new Image();
+  camCharger(f);
+}
+// Ouvre dans l'éditeur un fichier image ou une image déjà en ligne (URL du stockage, rouverte depuis la correction).
+function openImageEditor(source){ openCameraTool({ fichier: true, source }); }
+function camCharger(source){
+  const estFichier = typeof source !== 'string', u = estFichier ? URL.createObjectURL(source) : source, src = new Image();
+  if(!estFichier) src.crossOrigin = 'anonymous'; // image du stockage : nécessaire pour la recomposer
   src.onload = () => {
-    URL.revokeObjectURL(u);
+    if(estFichier) URL.revokeObjectURL(u);
     if(!cam) return;
     const k = Math.min(1, 2400 / Math.max(src.naturalWidth, src.naturalHeight));
     const cv = document.createElement('canvas'); cv.width = Math.round(src.naturalWidth * k); cv.height = Math.round(src.naturalHeight * k);
@@ -163,7 +175,7 @@ function camFichier(input){
     };
     im.src = cv.toDataURL('image/jpeg', 0.9);
   };
-  src.onerror = () => { URL.revokeObjectURL(u); niceAlert('Cette image n\'a pas pu être ouverte.'); };
+  src.onerror = () => { if(estFichier) URL.revokeObjectURL(u); niceAlert('Cette image n\'a pas pu être ouverte.'); };
   src.src = u;
 }
 
@@ -491,6 +503,7 @@ async function camInserer(){
     const url = sb.storage.from('cahier-images').getPublicUrl(path).data.publicUrl;
     const html = `<div style="text-align:center;padding:6px 0;"><img src="${url}" style="max-width:100%;max-height:400px;border-radius:6px;border:1px solid rgba(28,43,57,.15);" alt="Photo"/></div>`;
     addPendingBlock('image', html, { src: url }, 'reopenImageBlock');
+    cam.insere = true;
     btn.innerHTML = `${CAM_ICO('check')} Insérée`;
     if(cam && cam.local){ setTimeout(() => camFermer(), 700); return; } // sur téléphone : retour direct à la correction
     setTimeout(() => { if(document.getElementById('camInsBtn')){ btn.innerHTML = avant; btn.disabled = false; } }, 1600);
@@ -502,6 +515,8 @@ async function camInserer(){
 }
 function camFermer(silencieux){
   if(!cam){ const o = document.getElementById('camOverlay'); if(o) o.style.display = 'none'; return; }
+  // Éditeur ouvert sur une image déjà insérée, refermé sans insérer : l'image d'origine reste en place.
+  if(cam.fichier && !cam.insere && typeof cancelBlockEdit === 'function') cancelBlockEdit();
   try{ camEnvoyer('bye', {}); }catch(e){}
   clearInterval(cam.veille);
   try{ if(cam.ch) sb.removeChannel(cam.ch); }catch(e){}
