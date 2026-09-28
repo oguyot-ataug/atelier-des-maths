@@ -53,32 +53,45 @@ const CH5 = [
 ];
 
 /* Progression 4e -- demandé : "établir la progression de 4e. On peut s'inspirer de 6e/5e.
-   N'afficher le menu 4e qu'en mode administrateur." Même calendrier que la 5e (29 semaines,
-   mêmes fenêtres de vacances), rubriques alternées comme en 6e/5e, codes par rubrique (N, G,
-   D, P, M). Pas de manuel de référence : pas de pages (p vide, masqué à l'affichage). Aucun
-   cours pour l'instant : tous les chapitres apparaissent « À créer ». Niveau visible des seuls
-   administrateurs (menu, route #/niveau/4e et #/chapitre/4e/...), voir NIVEAUX_ADMIN. */
+   N'afficher le menu 4e qu'en mode administrateur.", puis le sommaire du manuel fourni (15
+   chapitres : codes et pages repris tels quels). Même calendrier que la 5e (29 semaines, mêmes
+   fenêtres de vacances, voir VACANCES['4e']) ; poids en semaines proportionnés au nombre de pages ;
+   rubriques alternées comme en 6e/5e, dans un ordre qui respecte les prérequis (relatifs avant
+   calcul littéral et équations, divisibilité avant fractions, Pythagore et racine carrée avant le
+   cosinus, agrandissement-réduction en G1 avant l'espace en G5). A1 (algorithmique et
+   programmation) n'est pas un chapitre de la frise, comme en 6e/5e : c'est la page Programmation.
+   Contenus du manuel, pour écrire les cours :
+   N1 additionner, soustraire, multiplier, diviser des relatifs, calculer, résoudre des problèmes ;
+   N2 multiples, diviseurs, critères de divisibilité, nombres premiers, problèmes ;
+   N3 fraction quotient, simplifier, même dénominateur, comparer, additionner et soustraire ;
+   N4 multiplier, diviser des fractions, priorités opératoires ; N5 puissances, puissances de 10,
+   notation scientifique ; N6 développer, factoriser, réduire, substituer, programmes de calcul,
+   produire une expression ; N7 tester une égalité, résoudre une équation, problèmes ;
+   G1 cas d'égalité des triangles, théorème de Thalès, droites parallèles ou non, agrandir et
+   réduire ; G2 racine carrée, vocabulaire du triangle rectangle, Pythagore et sa réciproque ;
+   G3 cosinus d'un angle, calculer angles et longueurs ; G4 définir et construire par translation,
+   propriétés ; G5 cônes et pyramides, représentations, patrons, aires et volumes, agrandir et
+   réduire, coordonnées ; D1 quatrième proportionnelle, proportionnalité et graphique,
+   pourcentages, vitesse-distance-temps, grandeurs composées ; D2 série statistique, médiane ;
+   D3 notion de probabilité, des fréquences aux probabilités.
+   Niveau visible des seuls administrateurs (menu, routes #/niveau/4e et #/chapitre/4e/...),
+   voir NIVEAUX_ADMIN. */
 const CH4 = [
- {n:1,code:'N1',cat:'N',t:'Opérations sur les nombres relatifs',s:2,p:'',d:'1-13 sept'},
- {n:2,code:'G1',cat:'G',t:'Théorème de Pythagore',s:2,p:'',d:'14-27 sept'},
- {n:3,code:'N2',cat:'N',t:'Fractions : produits, quotients et sommes',s:2,p:'',d:'28 sept-11 oct'},
- {n:4,code:'D1',cat:'D',t:'Statistiques',s:1,p:'',d:'2-8 nov'},
- {n:5,code:'N3',cat:'N',t:'Puissances',s:2,p:'',d:'9-22 nov'},
- {n:6,code:'G2',cat:'G',t:'Translations',s:1,p:'',d:'23-29 nov'},
- {n:7,code:'N4',cat:'N',t:'Calcul littéral : développer et factoriser',s:2,p:'',d:'30 nov-13 déc'},
- {n:8,code:'P1',cat:'P',t:'Proportionnalité et pourcentages',s:1,p:'',d:'4-10 jan'},
- {n:9,code:'G3',cat:'G',t:'Théorème de Thalès',s:2,p:'',d:'11-24 jan'},
- {n:10,code:'N5',cat:'N',t:'Équations',s:2,p:'',d:'25 jan-7 fév'},
- {n:11,code:'M1',cat:'M',t:'Vitesses et grandeurs composées',s:1,p:'',d:'8-14 fév'},
- {n:12,code:'G4',cat:'G',t:'Cosinus d\'un angle aigu',s:2,p:'',d:'8-21 mars'},
- {n:13,code:'D2',cat:'D',t:'Probabilités',s:1,p:'',d:'22-28 mars'},
- {n:14,code:'N6',cat:'N',t:'Nombres premiers',s:1,p:'',d:'29 mars-4 avr'},
- {n:15,code:'G5',cat:'G',t:'Pyramides et cônes',s:1,p:'',d:'5-11 avr'},
- {n:16,code:'P2',cat:'P',t:'Fonctions',s:2,p:'',d:'3-16 mai'},
- {n:17,code:'G6',cat:'G',t:'Triangles semblables',s:1,p:'',d:'17-23 mai'},
- {n:18,code:'N7',cat:'N',t:'Écriture scientifique',s:1,p:'',d:'24-30 mai'},
- {n:19,code:'G7',cat:'G',t:'Repérage dans l\'espace',s:1,p:'',d:'31 mai-6 juin'},
- {n:20,code:'P3',cat:'P',t:'Pourcentages et évolutions',s:1,p:'',d:'7-13 juin'},
+ {n:1,code:'N1',cat:'N',t:'Opérations sur les nombres relatifs',s:2,p:'3-13',d:'1-13 sept'},
+ {n:2,code:'G1',cat:'G',t:'Triangles et parallèles',s:2,p:'72-83',d:'14-27 sept'},
+ {n:3,code:'N2',cat:'N',t:'Divisibilité',s:1,p:'14-18',d:'28 sept-4 oct'},
+ {n:4,code:'G4',cat:'G',t:'Translations',s:1,p:'107-111',d:'5-11 oct'},
+ {n:5,code:'N3',cat:'N',t:'Fractions : comparaison et addition',s:2,p:'19-29',d:'2-15 nov'},
+ {n:6,code:'D2',cat:'D',t:'Statistiques',s:2,p:'138-145',d:'16-29 nov'},
+ {n:7,code:'N4',cat:'N',t:'Fractions : multiplication et division',s:2,p:'30-41',d:'30 nov-13 déc'},
+ {n:8,code:'G2',cat:'G',t:'Théorème de Pythagore',s:3,p:'84-97',d:'4-24 jan'},
+ {n:9,code:'N5',cat:'N',t:'Puissances',s:2,p:'42-49',d:'25 jan-7 fév'},
+ {n:10,code:'D3',cat:'D',t:'Probabilités',s:1,p:'146-153',d:'8-14 fév'},
+ {n:11,code:'N6',cat:'N',t:'Calcul littéral',s:3,p:'50-62',d:'8-28 mars'},
+ {n:12,code:'G3',cat:'G',t:'Cosinus',s:2,p:'98-106',d:'29 mars-11 avr'},
+ {n:13,code:'D1',cat:'D',t:'Proportionnalité',s:2,p:'125-137',d:'3-16 mai'},
+ {n:14,code:'N7',cat:'N',t:'Équations',s:2,p:'63-71',d:'17-30 mai'},
+ {n:15,code:'G5',cat:'G',t:'Espace',s:2,p:'112-124',d:'31 mai-13 juin'},
 ];
 
 /* Progression CM1, construite à partir du sommaire iParcours Maths CM1 fourni par l'utilisateur
@@ -127,7 +140,7 @@ function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserR
 const VACANCES = {
   '6e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:15,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '5e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:6,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:14,label:'Vacances de printemps · 17 avr → 3 mai'}],
-  '4e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:15,label:'Vacances de printemps · 17 avr → 3 mai'}],
+  '4e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:12,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'cm1':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:12,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:16,label:'Vacances de printemps · 17 avr → 3 mai'}],
 };
 /* Dates officielles 2026-2027 (arrêté du 22 octobre 2025, Journal officiel) pour l'éditeur
@@ -2792,6 +2805,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.744', items:[
+    "Progression de 4e d'après le sommaire fourni -- demandé : \"Voici les chapitres de 4e\". Les 15 chapitres du manuel, avec leurs codes et leurs pages : N1 à N7 (relatifs, divisibilité, deux chapitres de fractions, puissances, calcul littéral, équations), G1 à G5 (triangles et parallèles, Pythagore, cosinus, translations, espace), D1 à D3 (proportionnalité, statistiques, probabilités). Répartis sur l'année en alternant les rubriques, dans l'ordre des prérequis (relatifs avant le calcul littéral, Pythagore avant le cosinus...), avec les vacances aux mêmes endroits que la 5e. L'algorithmique (A1) reste sur la page Programmation, comme en 6e et 5e. Toujours réservé aux administrateurs.",
+  ]},
   { version:'2026-08-19.743', items:[
     "Questionnaires : mode « Sondage » -- demandé : \"permettre dans les questionnaires un mode sondage (pas de bonnes réponses attendues) : réponse libre ou listes (+autre)\". Nouveau mode dans l'éditeur, avec deux sortes de questions : « Choix dans une liste » (un seul ou plusieurs choix, et « Autre : … » où l'élève écrit sa réponse) et « Réponse libre » (quelques mots ou un paragraphe). Pas de points, de note, de correction ni de carnet. L'élève répond depuis Mes devoirs (« Répondre au sondage ») puis envoie ses réponses. Le professeur voit les résultats : nombre et pourcentage de chaque choix, réponses « Autre » et réponses libres, avec ou sans les noms, qui a répondu, et un export pour le tableur. Un sondage peut aussi se faire en séance en direct (résultats au tableau, sans juste/faux).",
     "Progression de 4e -- demandé : \"établir la progression de 4e. On peut s'inspirer de 6e/5e. N'afficher le menu 4e qu'en mode administrateur.\" 20 chapitres sur l'année (mêmes périodes et vacances que la 5e, rubriques alternées), tous « à venir ». Le menu 4e n'apparaît que pour les administrateurs ; pour les autres, les adresses de la 4e ramènent à la 6e. Liste provisoire, à ajuster à la progression fournie.",
