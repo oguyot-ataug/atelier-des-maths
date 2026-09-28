@@ -1343,6 +1343,10 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
 .cs-film .cs-panel > svg.cs-vivant{display:none;}
 .cs-film .cs-panel.cs-anime > svg.cs-vivant{display:block;width:100%;max-width:380px;height:auto;background:#fff;border-radius:6px;border:1px solid rgba(28,43,57,.12);}
 .cs-film .cs-panel.cs-anime > img{display:none !important;}
+.cs-film .cs-panel.cs-depart > div:not(.cs-dep){display:none;}
+.cs-film .cs-panel > .cs-dep{font-size:.9rem !important;color:var(--ink-soft);font-style:italic;}
+.cs-film.cs-tout .cs-panel > .cs-dep{display:none;}
+.cs-film.cs-tout .cs-panel.cs-depart > div:not(.cs-dep){display:block;}
 .cs-film.cs-a .cs-panel.cs-on > img,.cs-film.cs-a .cs-panel.cs-on > svg.cs-vivant{cursor:pointer;}
 .cs-film.cs-tout .cs-panel > svg.cs-vivant{display:none !important;}
 .cs-film.cs-tout .cs-panel.cs-anime > img{display:block !important;}
@@ -1350,6 +1354,8 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
   .cs-bar{display:none !important;}
   .cs-film .cs-panel > svg.cs-vivant{display:none !important;}
   .cs-film .cs-panel.cs-anime > img{display:block !important;}
+  .cs-film .cs-panel > .cs-dep{display:none !important;}
+  .cs-film .cs-panel.cs-depart > div:not(.cs-dep){display:block !important;}
   .cs-film .cs-panel{display:flex !important;flex-direction:row !important;align-items:center !important;animation:none !important;}
   .cs-film .cs-panel img{width:170px !important;}
   .cs-film .cs-panel > div{font-size:.8rem !important;}

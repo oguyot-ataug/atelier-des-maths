@@ -1036,15 +1036,20 @@ function cahierAnimerEtapes(root){
       <button type="button" data-cs="next" class="cs-main">Étape suivante ›</button><button type="button" data-cs="play" title="Faire défiler les étapes automatiquement">▶ Animer</button>
       <button type="button" data-cs="all" title="Afficher toutes les étapes l'une sous l'autre">Tout voir</button>`;
     d.parentNode.insertBefore(bar, d);
+    if(cahierDemoDuFilm(d)) cahierEtape(d, -1); // démonstration rejouable : on part de la figure de départ
   }); });
 }
 function cahierEtape(film, i, animer){
-  const kids = Array.from(film.children), n = kids.length, bar = film.previousElementSibling;
-  i = Math.max(0, Math.min(n-1, i)); film.dataset.csI = String(i);
+  const kids = Array.from(film.children), n = kids.length, bar = film.previousElementSibling, d = cahierDemoDuFilm(film);
+  // Avec une démonstration rejouable, le lecteur commence à la figure de départ (i = -1), avant l'étape 1.
+  const min = d ? -1 : 0;
+  i = Math.max(min, Math.min(n-1, i)); film.dataset.csI = String(i);
   cahierStopEtape(film);
-  kids.forEach((k,j)=>{ k.classList.toggle('cs-on', j===i); k.classList.remove('cs-anime'); const v = k.querySelector(':scope > svg.cs-vivant'); if(v) v.remove(); });
-  if(bar){ bar.querySelector('.cs-n').textContent = `Étape ${i+1} / ${n}`; bar.querySelector('[data-cs="prev"]').disabled = i===0; bar.querySelector('[data-cs="next"]').disabled = i===n-1; }
-  if(animer) cahierJouerEtape(film, i);
+  kids.forEach((k,j)=>{ k.classList.toggle('cs-on', j===Math.max(i,0)); k.classList.remove('cs-anime','cs-depart'); k.querySelectorAll(':scope > svg.cs-vivant, :scope > .cs-dep').forEach(x=>x.remove()); });
+  if(bar){ bar.querySelector('.cs-n').textContent = i<0 ? 'Départ' : `Étape ${i+1} / ${n}`; bar.querySelector('[data-cs="prev"]').disabled = i===min; bar.querySelector('[data-cs="next"]').disabled = i===n-1; }
+  if(!d) return;
+  if(i<0) cahierJouerEtape(film, 0, null, 'depart');
+  else cahierJouerEtape(film, i, null, animer ? '' : 'fin'); // même dessin que le chapitre (polices comprises), animé ou non
 }
 /* Mouvements intermédiaires. Demandé : "ça ne montre pas toutes les étapes !" -> "Les mouvements
    intermédiaires". Le cahier ne garde qu'une image par étape (c'est ce qui s'imprime) ; quand la
@@ -1070,14 +1075,26 @@ function cahierDemoDuFilm(film){
 }
 function cahierStopEtape(film){ cancelAnimationFrame(film._csRaf); clearTimeout(film._csT); film._csRaf = film._csT = null; }
 // Rejoue l'étape i du film ; fin() est appelée une fois le mouvement terminé (ou tout de suite sans démonstration).
-function cahierJouerEtape(film, i, fin){
+// fige = 'depart' (figure avant l'étape 1) ou 'fin' (étape i terminée) : dessin sans mouvement.
+function cahierJouerEtape(film, i, fin, fige){
   cahierStopEtape(film);
   const d = cahierDemoDuFilm(film), panel = film.children[i];
   if(!d || !panel){ if(fin) fin(0); return; }
+  panel.classList.remove('cs-depart'); panel.querySelectorAll(':scope > .cs-dep').forEach(x=>x.remove());
   let v = panel.querySelector(':scope > svg.cs-vivant');
   if(!v){ v = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); v.setAttribute('class', 'cs-vivant'); v.setAttribute('viewBox', d.anim.viewBox); panel.insertBefore(v, panel.firstChild); }
   panel.classList.add('cs-anime');
   const n = Math.max(1, d.anim.n(i)), t0 = performance.now();
+  if(fige){
+    try{ v.innerHTML = d.anim.rendu(i, fige === 'depart' ? 0 : n); }catch(e){ panel.classList.remove('cs-anime'); v.remove(); return; }
+    if(fige === 'depart'){
+      panel.classList.add('cs-depart');
+      const t = document.createElement('div'); t.className = 'cs-dep';
+      t.textContent = 'Figure de départ. Cliquez sur « Étape suivante » (ou sur la figure) pour voir la construction pas à pas, ou sur « ▶ Animer » pour tout enchaîner.';
+      panel.appendChild(t);
+    }
+    return;
+  }
   const tic = now => {
     if(!v.isConnected){ cahierStopEtape(film); return; }
     const p = Math.min(n, (now - t0) / 650);
@@ -1094,7 +1111,8 @@ function cahierStopLecture(film, bar){
 document.addEventListener('click', e=>{
   // Clic sur la figure d'une étape : on rejoue ses mouvements.
   const fig = e.target.closest('.cs-film.cs-a .cs-panel.cs-on > img, .cs-film.cs-a .cs-panel.cs-on > svg.cs-vivant');
-  if(fig){ const film = fig.closest('.cs-film'); cahierStopLecture(film, film.previousElementSibling); cahierJouerEtape(film, Number(film.dataset.csI)||0); return; }
+  if(fig){ const film = fig.closest('.cs-film'), k = Number(film.dataset.csI)||0; cahierStopLecture(film, film.previousElementSibling);
+    if(k<0) cahierEtape(film, 0, true); else cahierJouerEtape(film, k); return; }
   const b = e.target.closest('.cs-bar [data-cs]'); if(!b) return;
   const bar = b.closest('.cs-bar'), film = bar.nextElementSibling; if(!film || !film.classList.contains('cs-film')) return;
   const i = Number(film.dataset.csI)||0, n = film.children.length, act = b.dataset.cs;
@@ -1102,7 +1120,7 @@ document.addEventListener('click', e=>{
   cahierStopLecture(film, bar);
   if(act==='prev') cahierEtape(film, i-1);
   else if(act==='next') cahierEtape(film, i+1, true);
-  else if(act==='all'){ cahierEtape(film, i); const tout = film.classList.toggle('cs-tout'); b.textContent = tout ? 'Une étape à la fois' : 'Tout voir'; bar.classList.toggle('cs-tout', tout); }
+  else if(act==='all'){ cahierEtape(film, Math.max(i,0)); const tout = film.classList.toggle('cs-tout'); b.textContent = tout ? 'Une étape à la fois' : 'Tout voir'; bar.classList.toggle('cs-tout', tout); }
   else if(act==='play'){
     film.classList.remove('cs-tout'); bar.classList.remove('cs-tout'); bar.querySelector('[data-cs="all"]').textContent = 'Tout voir';
     film._csLecture = true; b.textContent = '⏸ Pause';
@@ -1115,7 +1133,7 @@ document.addEventListener('click', e=>{
         film._csT = setTimeout(() => { if(k >= n-1) cahierStopLecture(film, bar); else suite(k+1); }, anime ? 1100 : 1600);
       });
     };
-    suite(i>=n-1 ? 0 : i);
+    suite(i>=n-1 || i<0 ? 0 : i);
   }
 });
 // Les cahiers sont rendus à plusieurs endroits (cahier de la classe, accordéon par jour, correction) :
@@ -2919,6 +2937,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.757', items:[
+    "Pas à pas dans le cahier : départ de la figure initiale -- signalé : \"Quand on est dans le cahier, il part de là ! Il manque toute les premières étapes qui mènent à l'image 1\". Le lecteur du cahier ne s'ouvre plus sur la figure finale de l'étape 1. Il s'ouvre sur la figure de départ (quadrillage, points de départ et centre O), notée « Départ ». « Étape suivante » (ou un clic sur la figure) joue alors les mouvements de l'étape 1, puis ceux des étapes suivantes. « ‹ » permet de revenir jusqu'au départ, et « ▶ Animer » enchaîne tout depuis le début. Les figures du lecteur sont dessinées comme dans le chapitre, avec les mêmes polices. À l'impression et dans le PDF, rien ne change.",
+  ]},
   { version:'2026-08-19.756', items:[
     "Pas à pas dans le cahier : les mouvements de chaque étape -- signalé : \"ça ne montre pas toutes les étapes !\" (les mouvements intermédiaires). Pour les constructions dans un quadrillage (symétrie centrale en 5e : point, segment, droite), le lecteur du cahier rejoue maintenant chaque étape comme dans le chapitre. Les flèches avancent carreau par carreau, les carreaux se numérotent et les points apparaissent. « Étape suivante » joue les mouvements de l'étape. « ▶ Animer » enchaîne toutes les étapes avec leurs mouvements. Un clic sur la figure rejoue l'étape affichée. Cela marche aussi pour les constructions déjà ajoutées au cahier, sans avoir à les ajouter de nouveau. À l'impression et dans le PDF, rien ne change : une image finale par étape.",
   ]},
