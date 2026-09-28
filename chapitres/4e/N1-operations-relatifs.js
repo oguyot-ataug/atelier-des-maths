@@ -8,10 +8,12 @@
    ============================================================ */
 
 // Exemple rédigé : une ligne de calcul à gauche, ce qu'on fait à droite (comme les flèches du manuel).
+// Une ligne qui est une phrase (« Dans le triangle ABC… ») garde la police du texte ; seuls les calculs sont en chasse fixe.
 function r4Ex(titre, lignes){
-  return `<p class="example-title">${titre}</p>
+  const phrase = e => /[a-zàâçéèêëîïôûùüÿ]{4,}/i.test(e.replace(/<span class="tex">[\s\S]*?<\/span>/g, '').replace(/<[^>]+>/g, ''));
+  return `${titre ? `<p class="example-title">${titre}</p>` : ''}
 <div class="redaction-template" style="margin:0 0 16px;">${lignes.map(([e, c]) =>
-    `<div class="we-row"><span class="we-expr">${e}</span>${c ? `<span class="we-comment">${c}</span>` : ''}</div>`).join('')}</div>`;
+    `<div class="we-row"><span class="we-expr"${phrase(e) ? ' style="font-family:inherit;"' : ''}>${e}</span>${c ? `<span class="we-comment">${c}</span>` : ''}</div>`).join('')}</div>`;
 }
 const R4_REM = 'style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;"';
 const R4_BLEU = s => `<span style="color:#0C5BA0;font-weight:700;">${s}</span>`;
