@@ -39,6 +39,9 @@ const QZ_TYPES = [
   { id:'courte', label:'Réponse courte', icon:'short_text', aide:'Un mot ou une expression, comparée aux réponses acceptées.' },
   { id:'ouverte', label:'Question ouverte', icon:'edit_note', aide:'Rédaction (texte ou photo de la copie), corrigée avec les attendus et le barème.' },
   { id:'texte', label:'Texte / document', icon:'article', aide:'Énoncé commun ou document, sans réponse attendue.' },
+  // Mode sondage seulement (questionnaires-sondage.js) : pas de bonne réponse.
+  { id:'liste', label:'Choix dans une liste', icon:'checklist', aide:'Un ou plusieurs choix parmi une liste, avec « Autre : … » en option.', sondage:true },
+  { id:'libre', label:'Réponse libre', icon:'notes', aide:'L\'élève écrit ce qu\'il veut : quelques mots ou quelques phrases.', sondage:true },
 ];
 /* Types supplémentaires (questionnaires-interactif.js) : chacun déclare ici ses fonctions --
    nouvelle(q), corps(q) (éditeur), verifier(q), preparer(q) (champs publics dérivés à
@@ -153,6 +156,7 @@ function qzNoteAuto(q, rep){
 // (à regarder : question ouverte, nombre illisible) | 'vide'. Une question sans barème compte sur 1 point.
 function qzVerdict(q, rep){
   if(rep == null || rep === '' || (Array.isArray(rep) && !rep.length)) return 'vide';
+  if(qzX(q).sondage) return qzRepondue(q, rep) ? 'sondage' : 'vide'; // sondage : pas de bonne réponse
   if(qzManuel(q)) return 'avoir';
   const qq = qzMax(q) > 0 ? q : Object.assign({}, q, { points: 1 });
   const pts = qzNoteAuto(qq, rep), max = qzMax(qq);
@@ -253,11 +257,17 @@ async function qzEdEnregistrer(titre){
   return data.id;
 }
 function qzEdVerifier(){
-  const e = [], qs = qzEd.questions.filter(q => q.type !== 'texte');
+  const e = [], qs = qzEd.questions.filter(q => q.type !== 'texte'), sondage = qzEstSondage(qzEd.reglages);
   if(!qs.length) e.push('Ajoutez au moins une question au questionnaire.');
   qzEd.questions.forEach((q, i) => {
     const n = 'Question ' + (i + 1) + ' : ';
     if(!String(q.enonce || '').trim() && !q.image) e.push(n + 'écrivez l\'énoncé.');
+    if(q.type !== 'texte' && sondage !== !!qzType(q.type).sondage){
+      e.push(n + (sondage ? `en mode sondage, seules les questions « Choix dans une liste » et « Réponse libre » sont possibles (« ${qzType(q.type).label} » attend une bonne réponse).`
+        : `« ${qzType(q.type).label} » n'existe qu'en mode sondage : choisissez le mode « Sondage » ou changez de question.`));
+      return;
+    }
+    if(sondage){ if(qzX(q).verifier){ const m = qzX(q).verifier(q); if(m) e.push(n + m); } return; }
     if(q.type === 'qcm'){
       if((q.choix || []).filter(c => String(c.texte || '').trim()).length < 2) e.push(n + 'il faut au moins deux propositions.');
       if(!(q.choix || []).some(c => c.correct)) e.push(n + 'cochez la ou les bonnes réponses.');
@@ -293,7 +303,12 @@ function qzEdSet(id, champ, valeur, rerender){
   q[champ] = valeur;
   if(rerender) qzEdRender(); else { qzEdMajTotal(); qzEdMajApercu(id); }
 }
-function qzEdReglage(champ, valeur){ qzEd.reglages[champ] = valeur; qzEdRenderReglages(); qzEdMajTotal(); if(champ === 'mode' && typeof qzFormModeMaj === 'function') qzFormModeMaj(); }
+function qzEdReglage(champ, valeur){
+  const avant = qzEd.reglages.mode;
+  qzEd.reglages[champ] = valeur;
+  if(champ === 'mode' && (avant === 'sondage') !== (valeur === 'sondage')) return qzEdRender(), (typeof qzFormModeMaj === 'function' && qzFormModeMaj());
+  qzEdRenderReglages(); qzEdMajTotal(); if(champ === 'mode' && typeof qzFormModeMaj === 'function') qzFormModeMaj();
+}
 function qzEdDeplacer(id, sens){
   const i = qzEd.questions.findIndex(q => q.id === id), j = i + sens;
   if(i < 0 || j < 0 || j >= qzEd.questions.length) return;
@@ -351,7 +366,8 @@ async function qzEdImage(id, input){
 function qzEdMajTotal(){
   const el = document.getElementById('qzEdTotal'); if(!el || !qzEd) return;
   const n = qzEd.questions.filter(q => q.type !== 'texte').length, max = qzTotalMax(qzEd.questions);
-  el.innerHTML = qzEd.reglages.mode === 'direct' ? `${n} question${n > 1 ? 's' : ''} · <b>séance en direct, non notée</b>`
+  el.innerHTML = qzEstSondage(qzEd.reglages) ? `${n} question${n > 1 ? 's' : ''} · <b>sondage, sans note ni correction</b>`
+    : qzEd.reglages.mode === 'direct' ? `${n} question${n > 1 ? 's' : ''} · <b>séance en direct, non notée</b>`
     : qzEstEntrainement(qzEd.reglages) ? `${n} question${n > 1 ? 's' : ''} · <b>entraînement, non noté</b>`
     : `${n} question${n > 1 ? 's' : ''} · <b>${qzNum(max)} point${max > 1 ? 's' : ''}</b>${max ? ` · note ramenée sur ${qzEd.reglages.note_sur}` : ''}`;
   qzEd.questions.forEach(q => { const p = document.getElementById('qzEdPts_' + q.id); if(p) p.textContent = q.type === 'texte' ? '' : qzNum(qzMax(q)) + ' pt' + (qzMax(q) > 1 ? 's' : ''); });
@@ -377,6 +393,7 @@ function qzEdRenderReglages(){
       <button type="button" class="qz-mode${r.mode === 'maison' ? ' on' : ''}" onclick="qzEdReglage('mode','maison')"><span class="gicon">home</span><span><b>À la maison</b><small>Sans limite de temps, jusqu'à la date limite de l'interrogation.</small></span></button>
       <button type="button" class="qz-mode${r.mode === 'classe' ? ' on' : ''}" onclick="qzEdReglage('mode','classe')"><span class="gicon">timer</span><span><b>Interrogation en classe</b><small>Durée limitée, copie rendue automatiquement à la fin, sorties de la page signalées.</small></span></button>
       <button type="button" class="qz-mode${r.mode === 'entrainement' ? ' on' : ''}" onclick="qzEdReglage('mode','entrainement')"><span class="gicon">fitness_center</span><span><b>Entraînement / remédiation</b><small>Non noté : l'élève vérifie chaque réponse, réessaie, puis voit la correction. Peut être refait.</small></span></button>
+      <button type="button" class="qz-mode sondage${r.mode === 'sondage' ? ' on' : ''}" onclick="qzEdReglage('mode','sondage')"><span class="gicon">how_to_vote</span><span><b>Sondage</b><small>Pas de bonne réponse : choix dans une liste (avec « Autre ») ou réponse libre. Résultats en pourcentages, sans note.</small></span></button>
       ${qzEdDirectPossible() ? `<button type="button" class="qz-mode direct${r.mode === 'direct' ? ' on' : ''}" onclick="qzEdReglage('mode','direct')"><span class="gicon">cast_for_education</span><span><b>Séance en direct</b><small>Non noté : les questions une à une, à votre rythme ; les élèves répondent sur leur ordinateur, résultats et correction en direct.</small></span></button>` : ''}
     </div>
     ${r.mode === 'direct' ? `<div class="qz-reg-grid">
@@ -387,6 +404,10 @@ function qzEdRenderReglages(){
       <label class="qz-check"><input type="checkbox" ${r.melanger_choix ? 'checked' : ''} onchange="qzEdReglage('melanger_choix', this.checked)"> Mélanger les propositions des QCM</label>
     </div>
     <p class="hint" style="margin:6px 0 0;">Pas de note ni de carnet. Choisissez la classe, puis toute la classe ou un groupe d'élèves, et « Ouvrir la séance en direct » : le code à donner aux élèves s'affiche en grand, à projeter.</p>`
+    : r.mode === 'sondage' ? `<div class="qz-reg-grid">
+      <label class="qz-check"><input type="checkbox" ${r.melanger_questions ? 'checked' : ''} onchange="qzEdReglage('melanger_questions', this.checked)"> Mélanger l'ordre des questions</label>
+    </div>
+    <p class="hint" style="margin:6px 0 0;">Ajoutez des questions « Choix dans une liste » (un ou plusieurs choix, « Autre : … » en option) ou « Réponse libre ». L'élève envoie ses réponses sans voir de correction ; vous voyez les résultats de la classe (pourcentages, réponses écrites, avec ou sans les noms) et pouvez les exporter. Aussi possible en séance en direct.</p>`
     : r.mode === 'entrainement' ? `<div class="qz-reg-grid">
       <label>Essais par question <select onchange="qzEdReglage('essais', parseInt(this.value,10))">
         ${[[1, '1 (correction tout de suite)'], [2, '2'], [3, '3'], [0, 'illimités']].map(([v, l]) => `<option value="${v}"${Number(r.essais ?? 2) === v ? ' selected' : ''}>${l}</option>`).join('')}
@@ -485,7 +506,7 @@ function qzEdCorps(q){
         </select></label>`;
   }
   if(qzX(q).corps) specifique = qzX(q).corps(q);
-  const explication = q.type === 'texte' ? '' : `
+  const explication = q.type === 'texte' || qzX(q).sondage ? '' : `
     <label class="qz-lab">Explication montrée avec la correction <span class="hint" style="margin:0;">(facultatif)</span></label>
     <textarea rows="2" oninput="qzEdSet('${id}','explication',this.value)" placeholder="Méthode, rappel de cours…">${qzEsc(q.explication)}</textarea>`;
   return enonce + specifique + explication;
@@ -503,7 +524,7 @@ function qzEdRender(){
         <span class="qz-num">${numero}</span>
         <span class="qz-type-pill"><span class="gicon">${t.icon}</span> ${t.label}</span>
         <span class="qz-resume" id="qzEdResume_${q.id}">${qzEdResume(q)}</span>
-        ${q.type === 'texte' ? '' : `${qzEdCompSelect(q)}
+        ${q.type === 'texte' || qzX(q).sondage ? '' : `${qzEdCompSelect(q)}
           ${(qzManuel(q) && (q.criteres || []).length) || qzX(q).ptsFixes ? `<span class="qz-pts" id="qzEdPts_${q.id}">${qzNum(qzMax(q))} pts</span>`
             : `<span class="qz-pts-in"><input type="number" min="0" step="0.25" value="${q.points}" oninput="qzEdSet('${q.id}','points',parseFloat(this.value)||0)" title="Points"> pt</span>`}`}
         <span class="qz-actions">
@@ -518,18 +539,21 @@ function qzEdRender(){
     </div>`;
   }).join('') || '<p class="hint" style="margin:6px 0;">Aucune question pour l\'instant : choisissez un type ci-dessous.</p>';
   qzEdMajTotal();
+  const add = document.getElementById('qzEdAdd'), sondage = qzEstSondage(qzEd.reglages);
+  if(add) add.innerHTML = QZ_TYPES.filter(t => t.id === 'texte' || !!t.sondage === sondage).map(t => `<button type="button" class="qz-add" onclick="qzEdAjouter('${t.id}')" title="${qzEsc(t.aide)}"><span class="gicon">${t.icon}</span> ${t.label}</button>`).join('');
+  const gen = document.getElementById('qzEdGen'); if(gen) gen.style.display = sondage ? 'none' : ''; // l'IA génère des questions avec bonnes réponses
 }
 function qzEdHtml(){
   return `
     <div id="qzEdReglages"></div>
     <div class="qz-ed-bar"><span class="gicon">quiz</span> <span id="qzEdTotal"></span>
       <button type="button" class="btn secondary qz-mini" style="margin-left:auto;" onclick="qzImporterOuvrir()" title="Reprendre des questions de vos questionnaires ou de ceux de vos collègues"><span class="gicon">inventory_2</span> Importer des questions</button>
-      <button type="button" class="btn secondary qz-mini needs-ai-eval" onclick="qzGenOuvrir()"><span class="gicon">smart_toy</span> Générer avec l'IA</button>
+      <button type="button" class="btn secondary qz-mini needs-ai-eval" id="qzEdGen" onclick="qzGenOuvrir()"><span class="gicon">smart_toy</span> Générer avec l'IA</button>
       <button type="button" class="btn secondary qz-mini" onclick="qzApercu()"><span class="gicon">visibility</span> Tester comme un élève</button>
       <button type="button" class="btn secondary qz-mini" onclick="qzEnregistrerSeul()" title="Enregistrer maintenant dans « Mes questionnaires », même incomplet (c'est aussi fait automatiquement)"><span class="gicon">save</span> Enregistrer</button></div>
     <div id="qzEdListe"></div>
     <p class="hint" style="margin:12px 0 6px;font-weight:700;">Ajouter :</p>
-    <div class="qz-add-row">${QZ_TYPES.map(t => `<button type="button" class="qz-add" onclick="qzEdAjouter('${t.id}')" title="${qzEsc(t.aide)}"><span class="gicon">${t.icon}</span> ${t.label}</button>`).join('')}</div>`;
+    <div class="qz-add-row" id="qzEdAdd"></div>`;
 }
 function qzEdMonter(){
   const box = document.getElementById('qzfEditeur');
@@ -656,6 +680,7 @@ function qzEntete(sousTitre){
 }
 function qzRenderAccueil(){
   if(qzEstEntrainement(qzP.reglages)) return qzEntAccueil();
+  if(qzEstSondage(qzP.reglages)) return qzSonAccueil();
   const r = qzP.reglages, n = qzP.questions.filter(q => q.type !== 'texte').length, max = qzTotalMax(qzP.questions);
   document.getElementById('qzRoot').innerHTML = `${qzEntete()}
     <div class="qz-accueil">
@@ -707,6 +732,8 @@ function qzRenderPassation(){
       n++;
       if(qzEstEntrainement(qzP.reglages)) return qzEntBlocHtml(q, n, ctx);
       const comp = qzComp(q.competence);
+      if(qzEstSondage(qzP.reglages)) return `<div class="qz-q" id="qzQ_${q.id}" data-qid="${q.id}"><div class="qz-q-head"><span class="qz-q-num">${n}</span></div>
+        ${qzEnonceHtml(q)}<div class="qz-q-rep">${qzRenderSaisie(q, qzP.reponses[q.id], 'passer', ctx)}</div></div>`;
       return `<div class="qz-q" id="qzQ_${q.id}" data-qid="${q.id}">
         <div class="qz-q-head"><span class="qz-q-num">${n}</span><span class="qz-q-pts">${qzNum(qzMax(q))} pt${qzMax(q) > 1 ? 's' : ''}</span>${comp ? `<span class="qz-comp" style="--c:${comp.color}">${comp.label}</span>` : ''}</div>
         ${qzEnonceHtml(q)}
@@ -717,6 +744,8 @@ function qzRenderPassation(){
     <div class="qz-rendre-row" id="qzRendreRow">
       ${qzEstEntrainement(qzP.reglages) ? `<button class="btn qz-go" onclick="qzRendre(false)"><span class="gicon">flag</span> J'ai terminé</button>
       <span class="hint" style="margin:0;">Tu verras le bilan de ton entraînement.</span>`
+      : qzEstSondage(qzP.reglages) ? `<button class="btn qz-go" onclick="qzRendre(false)"><span class="gicon">send</span> Envoyer mes réponses</button>
+      <span class="hint" style="margin:0;">Tu pourras encore les relire avant de confirmer.</span>`
       : `<button class="btn qz-go" onclick="qzRendre(false)"><span class="gicon">send</span> Rendre ma copie</button>
       <span class="hint" style="margin:0;">Vous pourrez encore la relire avant de confirmer.</span>`}
     </div>`;
@@ -888,6 +917,9 @@ async function qzRendre(auto){
   if(!auto && qzEstEntrainement(qzP.reglages)){
     const reste = qzP.questions.filter(q => q.type !== 'texte' && !qzEntEtat(q).fini).length;
     if(reste && !(await niceConfirm(`${reste > 1 ? reste + ' questions ne sont pas terminées' : 'Une question n\'est pas terminée'}. Terminer quand même l'entraînement ?`))) return;
+  } else if(!auto && qzEstSondage(qzP.reglages)){
+    const num = qzNumeros(), vides = qzP.questions.filter(q => q.type !== 'texte' && !qzRepondue(q, qzP.reponses[q.id])).map(q => num[q.id]);
+    if(!(await niceConfirm((vides.length ? `Tu n'as pas répondu ${vides.length > 1 ? 'aux questions ' + vides.join(', ') : 'à la question ' + vides[0]}.\n\n` : '') + 'Envoyer tes réponses ? Tu ne pourras plus les modifier.'))) return;
   } else if(!auto){
     const qs = qzP.questions.filter(q => q.type !== 'texte'), num = qzNumeros();
     const vides = qs.filter(q => !qzRepondue(q, qzP.reponses[q.id])).map(q => num[q.id]);
@@ -895,7 +927,7 @@ async function qzRendre(auto){
       : 'Rendre votre copie ? Vous ne pourrez plus la modifier.';
     if(!(await niceConfirm(msg))) return;
   }
-  if(qzP.apercu){ qzPStop(); return qzEstEntrainement(qzP.reglages) ? qzEntBilan() : qzRenderApercuCorrige(); }
+  if(qzP.apercu){ qzPStop(); return qzEstEntrainement(qzP.reglages) ? qzEntBilan() : qzEstSondage(qzP.reglages) ? qzSonMerci() : qzRenderApercuCorrige(); }
   const ok = await qzSauver(true);
   if(!ok){ if(!auto) await niceAlert('La copie n\'a pas pu être envoyée. Vérifiez votre connexion puis réessayez.'); else setTimeout(() => qzRendre(true), 5000); return; }
   qzPStop();
@@ -904,6 +936,7 @@ async function qzRendre(auto){
 }
 function qzRenderRendue(auto){
   if(qzEstEntrainement(qzP.reglages)) return qzEntBilan();
+  if(qzEstSondage(qzP.reglages)) return qzSonMerci();
   const ctx = qzPCtx(), ordre = qzOrdre(qzP.questions, qzP.reglages, ctx.seed), num = qzNumeros();
   document.getElementById('qzRoot').innerHTML = `${qzEntete()}
     <div class="qz-done"><span class="gicon">task_alt</span><div><b>${auto ? 'Temps écoulé : votre copie a été rendue automatiquement.' : 'Copie rendue !'}</b>
@@ -1020,7 +1053,7 @@ async function qzOuvrirCorrection(devoirId, vue){
 // changé depuis -- ex. une réponse numérique rédigée « ... = 8 + 2 = 10 », comptée 0 avant que le
 // résultat final d'un calcul soit reconnu. Une copie devenue « à vérifier » garde sa note.
 async function qzCResync(){
-  if(qzEstEntrainement(qzC.reglages)) return; // rien n'est noté
+  if(qzEstEntrainement(qzC.reglages) || qzEstSondage(qzC.reglages)) return; // rien n'est noté
   const d = qzC.devoir, qz = qzC.qz;
   for(const c of qzC.copies.values()){
     if(c.total == null || !qzEstRendue(c)) continue;
@@ -1051,6 +1084,7 @@ function qzCStatsEleve(e){
 function qzCRender(){
   const root = document.getElementById('qzCorrRoot'); if(!root || !qzC) return;
   if(qzEstEntrainement(qzC.reglages)) return qzEntResultats(root);
+  if(qzEstSondage(qzC.reglages)) return qzSonResultats(root);
   const d = qzC.devoir, rendues = qzC.eleves.filter(e => { return qzEstRendue(qzC.copies.get(e.id)); });
   const aCorriger = rendues.filter(e => qzScoreCopie(qzC.qz.questions, qzC.copies.get(e.id), qzC.reglages).aCorriger).length;
   const encours = qzC.eleves.filter(e => { return !qzEstRendue(qzC.copies.get(e.id)) && qzC.copies.has(e.id); }).length;
@@ -1589,7 +1623,7 @@ async function qzCarnetCharger(){
     qzElevesDevoir({ class_id: qzK.classId }),
   ]);
   qzK.qz = new Map((qzs || []).map(q => [q.id, q]));
-  qzK.devoirs = (devoirs || []).filter(d => !qzEstEntrainement((qzK.qz.get(d.questionnaire_id) || {}).reglages)); // entraînements : non notés
+  qzK.devoirs = (devoirs || []).filter(d => { const reg = (qzK.qz.get(d.questionnaire_id) || {}).reglages; return !qzEstEntrainement(reg) && !qzEstSondage(reg); }); // entraînements, sondages : non notés
   qzK.eleves = eleves;
   qzK.copies = new Map((copies || []).map(c => [c.devoir_id + '|' + c.student_id, c]));
   qzCarnetRender();

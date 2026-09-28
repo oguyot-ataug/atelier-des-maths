@@ -54,7 +54,7 @@ function qzBanqueCarte(q, partage){
   return `<div class="qz-b-card">
     <div class="qz-b-head">
       <div><b>${qzEsc(q.titre || 'Sans titre')}</b>${brouillon ? ` <span class="qz-b-draft${incomplet ? ' inc' : ''}">${incomplet ? 'Brouillon à compléter' : 'Brouillon'}</span>` : ''}
-        <div class="hint" style="margin:2px 0 0;">${r.n} question${r.n > 1 ? 's' : ''} · ${qzNum(r.pts)} pts · ${reg.mode === 'direct' ? 'séance en direct' : reg.mode === 'entrainement' ? 'entraînement' : reg.mode === 'classe' ? 'en classe, ' + reg.duree + ' min' : 'à la maison'} · ${partage ? 'partagé par ' + qzEsc(q.auteur) : 'modifié le ' + new Date(q.updated_at).toLocaleDateString('fr-FR')}</div></div>
+        <div class="hint" style="margin:2px 0 0;">${r.n} question${r.n > 1 ? 's' : ''} · ${reg.mode === 'sondage' ? '' : qzNum(r.pts) + ' pts · '}${reg.mode === 'direct' ? 'séance en direct' : reg.mode === 'entrainement' ? 'entraînement' : reg.mode === 'sondage' ? 'sondage' : reg.mode === 'classe' ? 'en classe, ' + reg.duree + ' min' : 'à la maison'} · ${partage ? 'partagé par ' + qzEsc(q.auteur) : 'modifié le ' + new Date(q.updated_at).toLocaleDateString('fr-FR')}</div></div>
       ${!partage && (q.partage_etab || nbPartage) ? `<span class="qz-b-share"><span class="gicon">group</span> ${q.partage_etab ? 'Établissement' : ''}${q.partage_etab && nbPartage ? ' + ' : ''}${nbPartage ? nbPartage + ' collègue' + (nbPartage > 1 ? 's' : '') : ''}</span>` : ''}
     </div>
     <div class="qz-b-types">${Object.keys(r.types).map(t => `<span class="qz-type-pill"><span class="gicon">${qzType(t).icon}</span> ${qzType(t).label}${r.types[t] > 1 ? ' ×' + r.types[t] : ''}</span>`).join('')}</div>

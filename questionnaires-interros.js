@@ -213,9 +213,10 @@ async function qzFormEnregistrer(){
   let questionnaireId;
   try{ questionnaireId = await qzEdEnregistrer(titre); }catch(e){ st.textContent = e.message || String(e); reprendre(); return; }
   const payload = { teacher_id: currentUser.id, class_id: classId, titre, type: 'questionnaire', questionnaire_id: questionnaireId,
-    consigne: document.getElementById('qzfConsigne').value.trim() || 'Répondez aux questions.',
+    consigne: document.getElementById('qzfConsigne').value.trim() || (qzEd && qzEd.reglages.mode === 'sondage' ? 'Donne ton avis : pas de bonne ou de mauvaise réponse, réponds sincèrement.' : 'Répondez aux questions.'),
     date_depot: ouv ? new Date(ouv).toISOString() : null, date_limite: lim ? new Date(lim).toISOString() : null,
-    student_ids: qzF.cible === 'eleves' ? Array.from(qzF.eleves) : null };
+    student_ids: qzF.cible === 'eleves' ? Array.from(qzF.eleves) : null,
+    qz_mode: qzEd && qzEd.reglages.mode === 'sondage' ? 'sondage' : null }; // l'élève ne lit pas le questionnaire : « Répondre au sondage » dans Mes devoirs
   const { error } = qzF.devoirId ? await sb.from('devoirs').update(payload).eq('id', qzF.devoirId) : await sb.from('devoirs').insert(payload);
   if(error){ st.textContent = 'Erreur : ' + error.message; reprendre(); return; }
   if(auto && auto.cle){ try{ localStorage.removeItem(auto.cle); }catch(e){} }
@@ -290,7 +291,7 @@ async function qzInterrosCharger(){
     d._total = d.student_ids && d.student_ids.length ? d.student_ids.length : (taille[d.class_id] || 0);
     d._rendues = cp.filter(qzEstRendue).length;
     d._enCours = cp.length - d._rendues;
-    d._aCorriger = q && !qzEstEntrainement(reg) ? cp.filter(c => qzEstRendue(c) && qzScoreCopie(q.questions, c, reg).aCorriger).length : 0;
+    d._aCorriger = q && !qzEstEntrainement(reg) && !qzEstSondage(reg) ? cp.filter(c => qzEstRendue(c) && qzScoreCopie(q.questions, c, reg).aCorriger).length : 0;
   });
   qzB.interros = interros;
   if(typeof qzDirectsCharger === 'function') await qzDirectsCharger();
@@ -308,12 +309,12 @@ function qzInterrosHtml(liste){
   return `<div class="qz-i-liste">${liste.map(d => { const e = qzInterroEtat(d), r = d._reg || QZ_REGLAGES_DEFAUT;
     return `<div class="qz-i-row">
       <div class="qz-i-main"><b>${qzEsc(d.titre)}</b>${d._q && (d._q.partage_etab || (d._q.partage_profs || []).length) ? ' <span class="qz-b-share"><span class="gicon">group</span> partagé</span>' : ''}
-        <div class="hint" style="margin:2px 0 0;">${qzEsc(d.classes ? d.classes.nom : '')}${d.student_ids && d.student_ids.length ? ` · ${d.student_ids.length} élève${d.student_ids.length > 1 ? 's' : ''} choisi${d.student_ids.length > 1 ? 's' : ''}` : ''} · ${qzEstEntrainement(r) ? '<b style="color:#16767B;">entraînement, non noté</b>' : r.mode === 'classe' ? 'en classe, ' + r.duree + ' min' : 'à la maison'}${d.date_limite ? ' · limite le ' + new Date(d.date_limite).toLocaleDateString('fr-FR') : ''}</div></div>
+        <div class="hint" style="margin:2px 0 0;">${qzEsc(d.classes ? d.classes.nom : '')}${d.student_ids && d.student_ids.length ? ` · ${d.student_ids.length} élève${d.student_ids.length > 1 ? 's' : ''} choisi${d.student_ids.length > 1 ? 's' : ''}` : ''} · ${qzEstEntrainement(r) ? '<b style="color:#16767B;">entraînement, non noté</b>' : qzEstSondage(r) ? '<b style="color:#16767B;">sondage, sans note</b>' : r.mode === 'classe' ? 'en classe, ' + r.duree + ' min' : 'à la maison'}${d.date_limite ? ' · limite le ' + new Date(d.date_limite).toLocaleDateString('fr-FR') : ''}</div></div>
       <span class="qz-i-etat ${e.c}"><span class="gicon">${e.i}</span> ${e.t}</span>
-      <span class="qz-i-stat" title="${qzEstEntrainement(r) ? 'Entraînements terminés' : 'Copies rendues'}"><b>${d._rendues}</b>/${d._total} ${qzEstEntrainement(r) ? 'terminé' : 'rendue'}${d._rendues > 1 ? 's' : ''}${d._enCours ? ` · ${d._enCours} en cours` : ''}</span>
-      <span class="qz-i-stat${d._aCorriger ? ' warn' : ''}">${d._aCorriger ? `<b>${d._aCorriger}</b> à corriger` : d._rendues && !qzEstEntrainement(r) ? '✓ corrigé' : ''}</span>
+      <span class="qz-i-stat" title="${qzEstEntrainement(r) ? 'Entraînements terminés' : qzEstSondage(r) ? 'Réponses envoyées' : 'Copies rendues'}"><b>${d._rendues}</b>/${d._total} ${qzEstEntrainement(r) ? 'terminé' : qzEstSondage(r) ? 'réponse' : 'rendue'}${d._rendues > 1 ? 's' : ''}${d._enCours ? ` · ${d._enCours} en cours` : ''}</span>
+      <span class="qz-i-stat${d._aCorriger ? ' warn' : ''}">${d._aCorriger ? `<b>${d._aCorriger}</b> à corriger` : d._rendues && !qzEstEntrainement(r) && !qzEstSondage(r) ? '✓ corrigé' : ''}</span>
       <span class="qz-i-act">
-        <button class="btn qz-mini" onclick="qzOuvrirCorrection('${d.id}')">${qzEstEntrainement(r) ? '<span class="gicon">insights</span> Résultats' : '<span class="gicon">fact_check</span> Corriger'}</button>
+        <button class="btn qz-mini" onclick="qzOuvrirCorrection('${d.id}')">${qzEstEntrainement(r) || qzEstSondage(r) ? '<span class="gicon">insights</span> Résultats' : '<span class="gicon">fact_check</span> Corriger'}</button>
         <button class="btn secondary qz-mini" onclick="qzFormModifier('${d.id}')" title="Modifier"><span class="gicon">edit</span></button>
         ${d.questionnaire_id ? `<button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${d.questionnaire_id}')" title="Séance en direct avec ces questions : une à une, sans note, réponses en direct"><span class="gicon">cast_for_education</span></button>
         <button class="btn secondary qz-mini" onclick="qzBanqueDonner('${d.questionnaire_id}')" title="Donner une copie à une autre classe"><span class="gicon">content_copy</span></button>

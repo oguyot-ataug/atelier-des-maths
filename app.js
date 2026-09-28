@@ -52,6 +52,35 @@ const CH5 = [
  {n:19,code:'P2',cat:'P',t:'Fonctions',s:1,p:'150-155',d:'7-13 juin'},
 ];
 
+/* Progression 4e -- demandé : "établir la progression de 4e. On peut s'inspirer de 6e/5e.
+   N'afficher le menu 4e qu'en mode administrateur." Même calendrier que la 5e (29 semaines,
+   mêmes fenêtres de vacances), rubriques alternées comme en 6e/5e, codes par rubrique (N, G,
+   D, P, M). Pas de manuel de référence : pas de pages (p vide, masqué à l'affichage). Aucun
+   cours pour l'instant : tous les chapitres apparaissent « À créer ». Niveau visible des seuls
+   administrateurs (menu, route #/niveau/4e et #/chapitre/4e/...), voir NIVEAUX_ADMIN. */
+const CH4 = [
+ {n:1,code:'N1',cat:'N',t:'Opérations sur les nombres relatifs',s:2,p:'',d:'1-13 sept'},
+ {n:2,code:'G1',cat:'G',t:'Théorème de Pythagore',s:2,p:'',d:'14-27 sept'},
+ {n:3,code:'N2',cat:'N',t:'Fractions : produits, quotients et sommes',s:2,p:'',d:'28 sept-11 oct'},
+ {n:4,code:'D1',cat:'D',t:'Statistiques',s:1,p:'',d:'2-8 nov'},
+ {n:5,code:'N3',cat:'N',t:'Puissances',s:2,p:'',d:'9-22 nov'},
+ {n:6,code:'G2',cat:'G',t:'Translations',s:1,p:'',d:'23-29 nov'},
+ {n:7,code:'N4',cat:'N',t:'Calcul littéral : développer et factoriser',s:2,p:'',d:'30 nov-13 déc'},
+ {n:8,code:'P1',cat:'P',t:'Proportionnalité et pourcentages',s:1,p:'',d:'4-10 jan'},
+ {n:9,code:'G3',cat:'G',t:'Théorème de Thalès',s:2,p:'',d:'11-24 jan'},
+ {n:10,code:'N5',cat:'N',t:'Équations',s:2,p:'',d:'25 jan-7 fév'},
+ {n:11,code:'M1',cat:'M',t:'Vitesses et grandeurs composées',s:1,p:'',d:'8-14 fév'},
+ {n:12,code:'G4',cat:'G',t:'Cosinus d\'un angle aigu',s:2,p:'',d:'8-21 mars'},
+ {n:13,code:'D2',cat:'D',t:'Probabilités',s:1,p:'',d:'22-28 mars'},
+ {n:14,code:'N6',cat:'N',t:'Nombres premiers',s:1,p:'',d:'29 mars-4 avr'},
+ {n:15,code:'G5',cat:'G',t:'Pyramides et cônes',s:1,p:'',d:'5-11 avr'},
+ {n:16,code:'P2',cat:'P',t:'Fonctions',s:2,p:'',d:'3-16 mai'},
+ {n:17,code:'G6',cat:'G',t:'Triangles semblables',s:1,p:'',d:'17-23 mai'},
+ {n:18,code:'N7',cat:'N',t:'Écriture scientifique',s:1,p:'',d:'24-30 mai'},
+ {n:19,code:'G7',cat:'G',t:'Repérage dans l\'espace',s:1,p:'',d:'31 mai-6 juin'},
+ {n:20,code:'P3',cat:'P',t:'Pourcentages et évolutions',s:1,p:'',d:'7-13 juin'},
+];
+
 /* Progression CM1, construite à partir du sommaire iParcours Maths CM1 fourni par l'utilisateur
    (pages et numéros de séquence de calcul mental repris tels quels du document). Poids en
    semaines (s) proportionnés au nombre de séquences par chapitre. Mêmes fenêtres de vacances
@@ -90,11 +119,15 @@ const CHCM1 = [
 // Correspondance niveau -> programme -- remplace la ternaire "lvl==='6e'?CH6:CH5" codée en
 // dur, pour rester extensible à mesure que de nouveaux niveaux sont ajoutés (cm1 aujourd'hui,
 // cm2/4e/3e plus tard).
-const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, 'cm1': CHCM1 };
+const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, 'cm1': CHCM1 };
+// Niveaux en préparation, réservés aux administrateurs (menu masqué, routes refusées aux autres).
+const NIVEAUX_ADMIN = ['4e'];
+function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserRole === 'admin'; }
 
 const VACANCES = {
   '6e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:15,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '5e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:6,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:14,label:'Vacances de printemps · 17 avr → 3 mai'}],
+  '4e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:15,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'cm1':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:12,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:16,label:'Vacances de printemps · 17 avr → 3 mai'}],
 };
 /* Dates officielles 2026-2027 (arrêté du 22 octobre 2025, Journal officiel) pour l'éditeur
@@ -186,7 +219,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     document.querySelectorAll('.nav-dropdown.open').forEach(d=>d.classList.remove('open'));
     const nav = el.getAttribute('data-nav');
     if(nav==='home'){ showView('view-home'); setActiveTopnav(null); }
-    if(nav==='niveau'){ currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
+    if(nav==='niveau'){ if(!niveauVisible(el.getAttribute('data-lvl'))) return; currentLevel = el.getAttribute('data-lvl')||currentLevel; renderNiveau(currentLevel); showView('view-niveau'); setActiveTopnav(currentLevel); }
     if(nav==='cm'){ showView('view-cm'); setActiveTopnav('cm'); if(typeof refreshCMProgress==='function') refreshCMProgress(); if(typeof refreshCMRecords==='function') refreshCMRecords(); }
     // Visiteur non connecté : page de démonstration à la place de l'outil (demo.js).
     if((nav==='compte' || nav==='figure-sandbox' || nav==='tableau') && !currentUser && typeof showDemo==='function'){
@@ -289,6 +322,7 @@ function setActiveTopnav(key){
   document.querySelectorAll('.nav-links button').forEach(b=>b.classList.remove('active'));
   if(key==='6e') document.querySelector('.nav-links button[data-lvl="6e"]').classList.add('active');
   else if(key==='5e') document.querySelector('.nav-links button[data-lvl="5e"]').classList.add('active');
+  else if(key==='4e') document.querySelector('.nav-links button[data-lvl="4e"]')?.classList.add('active');
   else if(key==='cm1') document.querySelector('.nav-links button[data-lvl="cm1"]')?.classList.add('active');
   else if(key==='cm') document.querySelector('.nav-links button[data-nav="cm"]').classList.add('active');
   else if(key==='compte') document.querySelector('.nav-links button[data-nav="compte"]').classList.add('active');
@@ -631,7 +665,7 @@ function renderTheme(data, lvl){
         ${locked?'<span class="status lock-status"><span class=gicon>lock</span> '+lockedChapterLabel()+'</span>':(ready?'':'<span class="status">à venir</span>')}
         <div class="code">${c.code} · ch. ${c.n}</div>
         <div class="titre">${c.dispT||c.t}</div>
-        <div class="meta"><span>p. ${c.p}</span><span>${c.s} sem.</span></div>
+        <div class="meta">${c.p ? `<span>p. ${c.p}</span>` : ''}<span>${c.s} sem.</span></div>
       </div>`;
     });
     html += `</div></div>`;
@@ -745,7 +779,7 @@ function openChapitre(c, tab, lvlOverride){
   const lvl = lvlOverride || currentLevel;
   const chapView = document.getElementById('view-chapitre');
   chapView.classList.toggle('lvl-6e', lvl==='6e' || lvl==='cm1');
-  chapView.classList.toggle('lvl-5e', lvl==='5e');
+  chapView.classList.toggle('lvl-5e', lvl==='5e' || lvl==='4e'); // cycle 4 : même couleur
   const demo = DEMO_REGISTRY[lvl+'|'+c.t];
   currentChapterTitle = c.t;
   currentChapterCode = c.code;
@@ -754,7 +788,7 @@ function openChapitre(c, tab, lvlOverride){
   document.getElementById('chap-code-tag').style.background = CATS[c.cat].bg;
   document.getElementById('chap-code-tag').style.color = CATS[c.cat].text;
   document.getElementById('chap-title').textContent = c.t;
-  document.getElementById('chap-meta').textContent = `pages ${c.p} · ${c.s} semaine(s) · ${c.d}`;
+  document.getElementById('chap-meta').textContent = `${c.p ? 'pages ' + c.p + ' · ' : ''}${c.s} semaine(s) · ${c.d}`;
   // En-tête visible UNIQUEMENT à l'impression (voir @media print, styles.css) -- signalé :
   // "en haut de page à gauche : Chapitre 1... puis N1 - Nombres décimaux."
   // c.n n'est pas toujours transmis par l'appelant (ex. carte cliquée, reconstruite depuis
@@ -2494,6 +2528,8 @@ async function refreshAuthUI(){
     if(navDirectCode) navDirectCode.style.display = (!accessBlocked && currentUserRole==='eleve' && !isFamilleEnfant) ? '' : 'none';
     const navFamille = document.getElementById('navFamille');
     if(navFamille) navFamille.style.display = currentUserRole==='parent' ? 'inline-block' : 'none';
+    const nav4e = document.getElementById('nav4e'); // 4e en préparation : administrateurs seulement
+    if(nav4e) nav4e.style.display = (!accessBlocked && currentUserRole==='admin') ? '' : 'none';
     if(navAdmin){
       navAdmin.style.display = (!accessBlocked && (currentUserRole==='admin' || currentReferentEtab)) ? 'inline-block' : 'none';
       navAdmin.textContent = currentUserRole==='admin' ? 'Administration' : 'Mon établissement';
@@ -2567,6 +2603,7 @@ async function refreshAuthUI(){
     const navMesDevoirsBadgeOut = document.getElementById('navMesDevoirsBadge');
     if(navMesDevoirsBadgeOut) navMesDevoirsBadgeOut.style.display='none';
     if(navAdmin) navAdmin.style.display='none';
+    const nav4e = document.getElementById('nav4e'); if(nav4e) nav4e.style.display='none';
     const tbBtnAiOut = document.getElementById('tbBtnAi');
     if(tbBtnAiOut) tbBtnAiOut.style.display='none';
     const btnIaSettingsOut = document.getElementById('btnIaSettings');
@@ -2755,6 +2792,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.743', items:[
+    "Questionnaires : mode « Sondage » -- demandé : \"permettre dans les questionnaires un mode sondage (pas de bonnes réponses attendues) : réponse libre ou listes (+autre)\". Nouveau mode dans l'éditeur, avec deux sortes de questions : « Choix dans une liste » (un seul ou plusieurs choix, et « Autre : … » où l'élève écrit sa réponse) et « Réponse libre » (quelques mots ou un paragraphe). Pas de points, de note, de correction ni de carnet. L'élève répond depuis Mes devoirs (« Répondre au sondage ») puis envoie ses réponses. Le professeur voit les résultats : nombre et pourcentage de chaque choix, réponses « Autre » et réponses libres, avec ou sans les noms, qui a répondu, et un export pour le tableur. Un sondage peut aussi se faire en séance en direct (résultats au tableau, sans juste/faux).",
+    "Progression de 4e -- demandé : \"établir la progression de 4e. On peut s'inspirer de 6e/5e. N'afficher le menu 4e qu'en mode administrateur.\" 20 chapitres sur l'année (mêmes périodes et vacances que la 5e, rubriques alternées), tous « à venir ». Le menu 4e n'apparaît que pour les administrateurs ; pour les autres, les adresses de la 4e ramènent à la 6e. Liste provisoire, à ajuster à la progression fournie.",
+  ]},
   { version:'2026-08-19.742', items:[
     "Professeur seul : des classes en plus -- demandé : \"et si un prof seul a deux classes de 6e ? comment fait-il ?\". Dans « Mon abonnement », le professeur ajoute des classes en plus à 15 € chacune (30 élèves au plus), à répartir entre ses niveaux payés : deux 6e coûtent 39 + 15 = 54 €, deux 6e et une 5e 39 + 29 + 15 = 83 €. Ajout possible en cours d'année en payant la différence ; le nombre de classes permises s'affiche dans « Mes classes » et le serveur le vérifie. Prix « classe en plus » modifiable dans Administration › Offres profs ; page Tarifs, page Professeurs et conditions générales de vente (B1) mises à jour.",
   ]},

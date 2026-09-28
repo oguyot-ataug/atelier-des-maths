@@ -32,7 +32,7 @@ function qzDCanal(id){ return 'qzd-' + id; }
 function qzDVueActive(){ const v = document.getElementById('view-qz-direct'); return !!(v && v.classList.contains('active')); }
 
 function qzDVerdict(q, rep){ return qzVerdict(q, rep); } // questionnaires.js
-const QZD_VERDICTS = [['juste', 'Juste'], ['partiel', 'En partie'], ['faux', 'Faux'], ['avoir', 'À regarder']];
+const QZD_VERDICTS = [['juste', 'Juste'], ['partiel', 'En partie'], ['faux', 'Faux'], ['avoir', 'À regarder'], ['sondage', 'Sondage']];
 
 /* =====================================================================
    PROFESSEUR
@@ -213,7 +213,7 @@ function qzDirectPleinEcran(){
 }
 
 function qzDStats(q){
-  const m = qzD.reps.get(q.id) || new Map(), c = { juste: 0, partiel: 0, faux: 0, avoir: 0 };
+  const m = qzD.reps.get(q.id) || new Map(), c = { juste: 0, partiel: 0, faux: 0, avoir: 0, sondage: 0 };
   let n = 0;
   qzD.eleves.forEach(e => { if(!m.has(e.id)) return; const v = qzDVerdict(q, m.get(e.id)); if(v === 'vide') return; c[v]++; n++; });
   return { c, n, total: qzD.eleves.length, m };
@@ -237,6 +237,7 @@ function qzDirectMajPresence(){
 function qzDirectDetailHtml(q, s, corr){
   const reps = qzD.eleves.filter(e => s.m.has(e.id)).map(e => s.m.get(e.id)).filter(r => qzDVerdict(q, r) !== 'vide');
   if(!reps.length) return '';
+  if(qzX(q).sondage && typeof qzSonDirectDetail === 'function') return qzSonDirectDetail(q, reps);
   if(q.type === 'qcm'){
     const cnt = {}; reps.forEach(r => (Array.isArray(r) ? r : [r]).forEach(id => { cnt[id] = (cnt[id] || 0) + 1; }));
     return `<div class="qzd-det">${qzOrdreChoix(q, {}, null).map(ch => { const k = cnt[ch.id] || 0;
@@ -271,6 +272,7 @@ function qzDirectStatsHtml(q){
   let h = `<div class="qzd-compte"><div><b id="qzdNbRep">${s.n}</b> / ${s.total}</div><span>élève${s.n > 1 ? 's ont' : ' a'} répondu</span>
     <div class="qzd-prog"><i style="width:${qzDPct(s.n, s.total)}%"></i></div></div>`;
   if(!montrer) h += `<p class="qzd-cache"><span class="gicon">visibility_off</span> Résultats masqués jusqu'à la correction.</p>`;
+  else if(s.n && qzX(q).sondage) h += qzDirectDetailHtml(q, s, corr); // sondage : les choix, sans juste/faux
   else if(s.n){
     h += qzDBarre(s.c, s.n, true)
       + `<div class="qzd-leg">${QZD_VERDICTS.filter(([k]) => s.c[k]).map(([k, l]) => `<span class="${k}"><i></i>${l} <b>${qzDPct(s.c[k], s.n)} %</b> <small>(${s.c[k]})</small></span>`).join('')}</div>`
@@ -364,9 +366,13 @@ function qzDirectRender(){
 function qzDirectBilanHtml(){
   const lancees = qzD.etat.lancees || [], pages = qzD.pages.filter(p => lancees.includes(p.q.id));
   if(!pages.length) return '<p class="hint">Aucune question n\'a été posée pendant cette séance.</p><button class="btn secondary" onclick="qzDirectQuitter()">← Interrogations</button>';
-  const icone = { juste: 'check_circle', partiel: 'contrast', faux: 'cancel', avoir: 'help', vide: 'remove' };
+  const icone = { juste: 'check_circle', partiel: 'contrast', faux: 'cancel', avoir: 'help', vide: 'remove', sondage: 'how_to_vote' };
+  const notees = pages.filter(p => !qzX(p.q).sondage), sondage = notees.length < pages.length;
   const lignes = pages.map((p, k) => {
     const s = qzDStats(p.q), txt = String(p.q.enonce || '').replace(/\$/g, '').replace(/\s+/g, ' ').slice(0, 90);
+    if(qzX(p.q).sondage) return `<div class="qzd-bl son"><span class="qzd-bl-n">${qzD.pages.indexOf(p) + 1}</span><span class="qzd-bl-t">${qzEsc(txt) || qzType(p.q.type).label}</span>
+      <span class="qzd-bl-b">${s.n ? qzDirectDetailHtml(p.q, s, true) : '<span class="hint" style="margin:0;">aucune réponse</span>'}</span>
+      <span class="qzd-bl-p">sondage<small>${s.n}/${s.total}</small></span></div>`;
     return `<div class="qzd-bl"><span class="qzd-bl-n">${qzD.pages.indexOf(p) + 1}</span><span class="qzd-bl-t">${qzEsc(txt) || qzType(p.q.type).label}</span>
       <span class="qzd-bl-b">${s.n ? qzDBarre(s.c, s.n) : '<span class="hint" style="margin:0;">aucune réponse</span>'}</span>
       <span class="qzd-bl-p">${s.n ? `<b>${qzDPct(s.c.juste, s.n)} %</b> juste` : ''}<small>${s.n}/${s.total}</small></span></div>`;
@@ -374,13 +380,13 @@ function qzDirectBilanHtml(){
   const eleves = qzD.eleves.map(e => {
     const v = pages.map(p => qzDVerdict(p.q, (qzD.reps.get(p.q.id) || new Map()).get(e.id)));
     const j = v.filter(x => x === 'juste').length, rep = v.filter(x => x !== 'vide').length;
-    return `<tr><td>${qzEsc(e.label)}</td><td class="c"><b>${j}</b> / ${pages.length}</td><td class="c">${rep}</td>
+    return `<tr><td>${qzEsc(e.label)}</td><td class="c">${notees.length ? `<b>${j}</b> / ${notees.length}` : '—'}</td><td class="c">${rep}</td>
       <td>${v.map((x, k) => `<span class="gicon qzd-ic ${x}" title="Question ${qzD.pages.indexOf(pages[k]) + 1}">${icone[x]}</span>`).join('')}</td></tr>`;
   }).join('');
   return `<div id="qzdBilan">
     <h2 class="qzd-h2"><span class="gicon">insights</span> Bilan de la séance <span class="hint" style="font-weight:400;">(non noté)</span></h2>
     <div class="qzd-blist">${lignes}</div>
-    <div class="qzd-leg" style="margin:8px 0 18px;">${QZD_VERDICTS.map(([k, l]) => `<span class="${k}"><i></i>${l}</span>`).join('')}</div>
+    <div class="qzd-leg" style="margin:8px 0 18px;">${QZD_VERDICTS.filter(([k]) => k !== 'sondage' || sondage).map(([k, l]) => `<span class="${k}"><i></i>${l}</span>`).join('')}</div>
     <h3 class="qzd-h3">Par élève</h3>
     <div class="qzd-tab-wrap"><table class="qzd-tab"><thead><tr><th>Élève</th><th>Justes</th><th>Répondues</th><th>Question par question</th></tr></thead><tbody>${eleves}</tbody></table></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;">
@@ -510,7 +516,7 @@ function qzDirectEleveEntete(d){
 }
 function qzDVerdictHtml(v){
   const t = { juste: ['check_circle', 'Juste !'], partiel: ['contrast', 'En partie juste'], faux: ['cancel', 'Ce n\'est pas ça'],
-    avoir: ['help', 'Compare ta réponse avec la correction'], vide: ['remove_circle', 'Tu n\'as pas répondu'] }[v];
+    avoir: ['help', 'Compare ta réponse avec la correction'], vide: ['remove_circle', 'Tu n\'as pas répondu'], sondage: ['how_to_vote', 'Merci pour ta réponse !'] }[v];
   return `<div class="qzd-verdict ${v}"><span class="gicon">${t[0]}</span> ${t[1]}</div>`;
 }
 function qzDirectEleveRender(){
@@ -558,11 +564,11 @@ function qzDirectEnvoyer(){
 function qzDirectEleveBilan(d, head){
   const b = d.bilan || { questions: [], reponses: {} }, qs = (b.questions || []).filter(q => q.type !== 'texte');
   qzP = { direct: true, apercu: false, data: { devoir: { id: 'direct', titre: d.titre } }, devoirId: 'direct-' + qzDE.id, questions: qs, reglages: {}, copie: null, reponses: b.reponses || {}, sorties: 0, log: [] };
-  const v = qs.map(q => qzDVerdict(q, (b.reponses || {})[q.id])), j = v.filter(x => x === 'juste').length;
+  const v = qs.map(q => qzDVerdict(q, (b.reponses || {})[q.id])), j = v.filter(x => x === 'juste').length, nn = qs.filter(q => !qzX(q).sondage).length;
   const ctx = { reglages: {}, seed: null, pfx: 'p' };
   document.getElementById('qzDirectRoot').innerHTML = `<div class="qzd">${head}
-    <div class="qzd-attente" style="padding:22px 16px;"><span class="gicon">emoji_events</span><h2>${j} bonne${j > 1 ? 's' : ''} réponse${j > 1 ? 's' : ''} sur ${qs.length}</h2>
-      <p>C'était un entraînement : rien n'est noté. Relis la correction ci-dessous.</p></div>
+    <div class="qzd-attente" style="padding:22px 16px;"><span class="gicon">emoji_events</span><h2>${nn ? `${j} bonne${j > 1 ? 's' : ''} réponse${j > 1 ? 's' : ''} sur ${nn}` : 'Merci d\'avoir participé !'}</h2>
+      <p>${nn ? 'C\'était un entraînement : rien n\'est noté. Relis la correction ci-dessous.' : 'C\'était un sondage : il n\'y a ni bonne ni mauvaise réponse.'}</p></div>
     ${qs.map((q, k) => `<div class="qz-q qzd-eq">
       <div class="qz-q-head"><span class="qz-q-num">${k + 1}</span>${qzDVerdictHtml(v[k]).replace('qzd-verdict', 'qzd-verdict mini')}</div>
       ${qzEnonceHtml(q)}<div class="qz-q-rep">${qzRenderSaisie(q, (b.reponses || {})[q.id], 'corrige', ctx)}</div></div>`).join('')}
@@ -619,7 +625,8 @@ function qzDirectEleveBilan(d, head){
     .qzd-bar span{display:flex;align-items:center;justify-content:center;color:#fff;font:700 .78rem Inter,sans-serif;min-width:0;transition:flex .4s;}
     .qzd-bar.grand span{font-size:1rem;}
     .qzd-bar .juste,.qzd-leg .juste i{background:#1E7B34;} .qzd-bar .partiel,.qzd-leg .partiel i{background:#E0A100;}
-    .qzd-bar .faux,.qzd-leg .faux i{background:#C62828;} .qzd-bar .avoir,.qzd-leg .avoir i{background:#8A919C;}
+    .qzd-bar .faux,.qzd-leg .faux i{background:#C62828;} .qzd-bar .avoir,.qzd-leg .avoir i{background:#8A919C;} .qzd-bar .sondage,.qzd-leg .sondage i{background:#26AAB1;}
+    .qzd-bl.son{align-items:flex-start;} .qzd-bl.son .qzd-bl-b .qzd-det{margin:0;} .qzd-ic.sondage{color:#26AAB1;} .qzd-verdict.sondage{background:#16767B;}
     .qzd-leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.84rem;color:#4E5665;}
     .qzd-leg span{display:inline-flex;align-items:center;gap:5px;} .qzd-leg i{width:11px;height:11px;border-radius:3px;display:inline-block;}
     .qzd-leg small{color:#8A919C;}

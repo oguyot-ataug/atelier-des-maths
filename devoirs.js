@@ -1277,10 +1277,11 @@ async function renderDevoirsEleve(){
     } else if(d.type==='questionnaire'){
       // Questionnaire en ligne (questionnaires.js) : passation, puis résultats une fois publiés.
       const rendu_ = !!(rendu && rendu.est_rendu);
-      const label = d.qz_publie_at && rendu_ ? 'Voir mes résultats' : rendu_ ? 'Revoir ma copie' : rendu && rendu.a_reprendre ? 'Reprendre ma copie' : 'Ouvrir le questionnaire';
+      const sondage = d.qz_mode === 'sondage'; // sondage : ni correction ni résultats (questionnaires-sondage.js)
+      const label = sondage ? (rendu_ ? 'Revoir mes réponses' : 'Répondre au sondage') : d.qz_publie_at && rendu_ ? 'Voir mes résultats' : rendu_ ? 'Revoir ma copie' : rendu && rendu.a_reprendre ? 'Reprendre ma copie' : 'Ouvrir le questionnaire';
       actionHtml = `<div class="tool-row" style="margin-top:4px;">
-        <button class="btn${rendu_ ? ' secondary' : ''}" onclick="qzOuvrir('${d.id}')"><span class=gicon>${d.qz_publie_at && rendu_ ? 'grading' : 'quiz'}</span> ${label}</button>
-        ${rendu_ && !d.qz_publie_at ? '<span class="hint" style="margin:0;">En attente de la correction de votre professeur.</span>' : ''}
+        <button class="btn${rendu_ ? ' secondary' : ''}" onclick="qzOuvrir('${d.id}')"><span class=gicon>${sondage ? 'how_to_vote' : d.qz_publie_at && rendu_ ? 'grading' : 'quiz'}</span> ${label}</button>
+        ${sondage ? (rendu_ ? '<span class="hint" style="margin:0;">Réponses envoyées, merci !</span>' : '') : rendu_ && !d.qz_publie_at ? '<span class="hint" style="margin:0;">En attente de la correction de votre professeur.</span>' : ''}
       </div>`;
     } else if(d.type==='programmation'){
       // Progression lue dans prog_progress (ses propres lignes, RLS), commune aux défis faits hors devoir.
