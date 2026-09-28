@@ -244,9 +244,193 @@ document.getElementById('histoire-demo-symetrie').innerHTML = `
   Contrairement à beaucoup d'autres notions de ce cours, la symétrie n'a pas vraiment d'inventeur : elle est utilisée depuis la Préhistoire, bien avant d'être étudiée mathématiquement. On retrouve des motifs symétriques (par rotation, comme la symétrie centrale, ou par réflexion) dans des ornements vieux de plusieurs dizaines de milliers d'années, sur toutes les civilisations. Ce sont les mathématiciens grecs, notamment autour d'Euclide, qui commencent à étudier ces transformations de façon rigoureuse, en s'intéressant en particulier aux propriétés des figures régulières.
 </div>
 `;
+/* ================= Méthodes animées : symétrique dans un quadrillage =================
+   Demandé : "ajoute un pas à pas pour construire le symétrique d'un point dans un quadrillage.
+   Puis d'un segment, puis d'une droite". Sans compas : on compte les carreaux pour aller du point
+   au centre O (flèches bleues numérotées), puis on refait exactement le même déplacement en partant
+   de O (flèches orange) ; on arrive sur le symétrique. Segment : deux points puis le segment image ;
+   droite : deux points de la droite sur des nœuds du quadrillage, leurs symétriques, puis la droite
+   image (parallèle à la première). Même présentation que la méthode au compas (liste d'étapes,
+   « Étape suivante », « Revoir depuis le début ») et même enregistrement pour le cahier / le PDF
+   (registerGeoStepDemo). Coordonnées en carreaux : i vers la droite, j vers le bas. */
+const QG_C = 28, QG_M = 12, QG_W = 13, QG_H = 9; // taille d'un carreau, marge, nombre de carreaux
+const QG_BLEU = '#0C5BA0', QG_ORANGE = '#E35D3A', QG_ENCRE = '#1C1B2E';
+function qgX(i){ return QG_M + i * QG_C; }
+function qgY(j){ return QG_M + j * QG_C; }
+function qgMethodeHtml(id, titre){
+  return `<div class="sub-header" style="margin-top:26px;"><span class="letter">M</span><h4>${titre}</h4></div>
+<div class="figure-wrap" id="${id}Wrap">
+  <svg id="${id}Svg" viewBox="0 0 ${2 * QG_M + QG_W * QG_C} ${2 * QG_M + QG_H * QG_C}" style="width:100%;max-width:480px;display:block;margin:14px auto;"></svg>
+  <div class="step-list" id="${id}Steps"></div>
+  <div class="figure-toolbar">
+    <button class="btn" id="${id}Next" onclick="QG_DEMOS['${id}'].next()">Étape suivante →</button>
+    <button class="btn secondary" onclick="QG_DEMOS['${id}'].reset()">Revoir depuis le début</button>
+  </div>
+</div>`;
+}
+// Déplacement de P vers O, décomposé en un trajet horizontal puis vertical (flèches de comptage).
+function qgTrajet(P, O, couleur, depart){
+  const dx = O.i - P.i, dy = O.j - P.j, D = depart || P, el = [];
+  if(dx) el.push({ t: 'fleche', a: { i: D.i, j: D.j }, b: { i: D.i + dx, j: D.j }, c: couleur });
+  if(dy) el.push({ t: 'fleche', a: { i: D.i + dx, j: D.j }, b: { i: D.i + dx, j: D.j + dy }, c: couleur });
+  return el;
+}
+function qgDecrit(P, O){
+  const dx = O.i - P.i, dy = O.j - P.j, h = Math.abs(dx), v = Math.abs(dy), mots = [];
+  if(h) mots.push(`<b>${h} carreau${h > 1 ? 'x' : ''} vers la ${dx > 0 ? 'droite' : 'gauche'}</b>`);
+  if(v) mots.push(`<b>${v} carreau${v > 1 ? 'x' : ''} vers le ${dy > 0 ? 'bas' : 'haut'}</b>`);
+  return mots.join(' puis ');
+}
+function qgSym(P, O, nom){ return { i: 2 * O.i - P.i, j: 2 * O.j - P.j, nom }; }
+/* Étapes pour construire le symétrique P' de P : compter de P à O, puis refaire le trajet depuis O. */
+function qgEtapesPoint(P, O, nomP){
+  const Pp = qgSym(P, O, nomP + "'");
+  return [
+    { html: `Pour aller de <b>${nomP}</b> à <b>O</b>, je compte les carreaux : ${qgDecrit(P, O)}.`, el: qgTrajet(P, O, QG_BLEU) },
+    { html: `En partant de <b>O</b>, je refais <b>exactement le même déplacement</b> : ${qgDecrit(P, O)}.`, el: qgTrajet(P, O, QG_ORANGE, O) },
+    { html: `J'arrive sur <b>${nomP}'</b>, le symétrique de ${nomP} par rapport à O : <b>O est le milieu de [${nomP}${nomP}']</b>.`,
+      el: [{ t: 'point', p: Pp, c: QG_ORANGE }, { t: 'seg', a: P, b: Pp, c: '#9CA3AF', tirets: true }, { t: 'code', a: P, b: O }, { t: 'code', a: O, b: Pp }] },
+  ];
+}
+function qgNote(html){ return html.replace(/<[^>]+>/g, ''); }
+/* Fabrique d'une démonstration : scène initiale (éléments de départ) + étapes. Chaque étape anime
+   ses éléments l'un après l'autre (flèche qui avance carreau par carreau, point qui apparaît). */
+function makeQgDemo(id, depart, etapes){
+  let k = 0, raf = null;
+  const svg = () => document.getElementById(id + 'Svg');
+  function grille(){
+    let g = `<defs>${[QG_BLEU, QG_ORANGE].map((c, n) => `<marker id="${id}Pointe${n}" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${c}"/></marker>`).join('')}</defs>`;
+    g += `<rect x="${QG_M}" y="${QG_M}" width="${QG_W * QG_C}" height="${QG_H * QG_C}" fill="#fff"/>`;
+    for(let i = 0; i <= QG_W; i++) g += `<line x1="${qgX(i)}" y1="${QG_M}" x2="${qgX(i)}" y2="${qgY(QG_H)}" stroke="#C9D6E6" stroke-width="1"/>`;
+    for(let j = 0; j <= QG_H; j++) g += `<line x1="${QG_M}" y1="${qgY(j)}" x2="${qgX(QG_W)}" y2="${qgY(j)}" stroke="#C9D6E6" stroke-width="1"/>`;
+    return g;
+  }
+  // Droite passant par a et b, coupée aux bords du quadrillage.
+  function droiteBornee(a, b){
+    const x1 = qgX(a.i), y1 = qgY(a.j), dx = qgX(b.i) - x1, dy = qgY(b.j) - y1;
+    const ts = [];
+    const xmin = QG_M, xmax = qgX(QG_W), ymin = QG_M, ymax = qgY(QG_H);
+    if(dx){ ts.push((xmin - x1) / dx, (xmax - x1) / dx); }
+    if(dy){ ts.push((ymin - y1) / dy, (ymax - y1) / dy); }
+    const ok = ts.filter(t => { const x = x1 + t * dx, y = y1 + t * dy; return x >= xmin - 0.01 && x <= xmax + 0.01 && y >= ymin - 0.01 && y <= ymax + 0.01; }).sort((u, v) => u - v);
+    const t0 = ok[0], t1 = ok[ok.length - 1];
+    return [x1 + t0 * dx, y1 + t0 * dy, x1 + t1 * dx, y1 + t1 * dy];
+  }
+  function dessine(e, f, pale){
+    const op = pale ? ' opacity="0.45"' : '';
+    if(e.t === 'point'){
+      if(f < 0.5) return '';
+      const x = qgX(e.p.i), y = qgY(e.p.j), c = e.c || QG_ENCRE, d = 5;
+      const lx = e.lx != null ? e.lx : 7, ly = e.ly != null ? e.ly : -7;
+      return `<g><line x1="${x - d}" y1="${y - d}" x2="${x + d}" y2="${y + d}" stroke="${c}" stroke-width="2.2"/><line x1="${x - d}" y1="${y + d}" x2="${x + d}" y2="${y - d}" stroke="${c}" stroke-width="2.2"/>
+        <text x="${x + lx}" y="${y + ly}" font-family="Space Grotesk" font-size="15" font-weight="700" fill="${c}">${e.p.nom}</text></g>`;
+    }
+    if(e.t === 'fleche'){
+      const n = Math.abs(e.b.i - e.a.i) + Math.abs(e.b.j - e.a.j), si = Math.sign(e.b.i - e.a.i), sj = Math.sign(e.b.j - e.a.j);
+      const L = n * f, x1 = qgX(e.a.i), y1 = qgY(e.a.j), recul = f >= 1 ? 6 : 0; // la pointe s'arrête juste avant le nœud d'arrivée
+      const x2 = x1 + si * (L * QG_C - recul), y2 = y1 + sj * (L * QG_C - recul);
+      if(L <= 0.02) return '';
+      const m = e.c === QG_BLEU ? 0 : 1;
+      let h = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${e.c}" stroke-width="2.6" stroke-linecap="round" marker-end="url(#${id}Pointe${m})"${op}/>`;
+      for(let q = 1; q <= Math.floor(L + 1e-6); q++){ // numéro de chaque carreau franchi
+        const cx = x1 + si * (q - 0.5) * QG_C, cy = y1 + sj * (q - 0.5) * QG_C;
+        const ox = si ? 0 : (e.c === QG_BLEU ? -11 : 11), oy = si ? (e.c === QG_BLEU ? -7 : 16) : 4;
+        h += `<text x="${cx + ox}" y="${cy + oy}" text-anchor="middle" font-family="Space Grotesk" font-size="12" font-weight="700" fill="${e.c}"${op}>${q}</text>`;
+      }
+      return h;
+    }
+    if(e.t === 'seg'){
+      const x1 = qgX(e.a.i), y1 = qgY(e.a.j), x2 = x1 + (qgX(e.b.i) - x1) * f, y2 = y1 + (qgY(e.b.j) - y1) * f;
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${e.c || QG_ENCRE}" stroke-width="${e.tirets ? 1.4 : 2.4}"${e.tirets ? ' stroke-dasharray="5 4"' : ''}/>`;
+    }
+    if(e.t === 'droite'){
+      const [x1, y1, x2, y2] = droiteBornee(e.a, e.b), xm = x1 + (x2 - x1) * f, ym = y1 + (y2 - y1) * f;
+      return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${xm.toFixed(1)}" y2="${ym.toFixed(1)}" stroke="${e.c || QG_ENCRE}" stroke-width="2.2"/>
+        ${f >= 1 && e.nom ? `<text x="${(x1 + (x2 - x1) * (e.pos || 0.08)).toFixed(1)}" y="${(y1 + (y2 - y1) * (e.pos || 0.08) - 8).toFixed(1)}" font-family="Space Grotesk" font-size="15" font-weight="700" font-style="italic" fill="${e.c || QG_ENCRE}">${e.nom}</text>` : ''}`;
+    }
+    if(e.t === 'code'){
+      if(f < 1) return '';
+      const x1 = qgX(e.a.i), y1 = qgY(e.a.j), x2 = qgX(e.b.i), y2 = qgY(e.b.j), cx = (x1 + x2) / 2, cy = (y1 + y2) / 2;
+      const ang = Math.atan2(y2 - y1, x2 - x1) + 65 * Math.PI / 180, dx = Math.cos(ang) * 7, dy = Math.sin(ang) * 7;
+      return `<line x1="${cx - dx}" y1="${cy - dy}" x2="${cx + dx}" y2="${cy + dy}" stroke="${QG_ENCRE}" stroke-width="1.8"/>`;
+    }
+    return '';
+  }
+  // Étape k affichée ; prog = avancement de l'animation de l'étape k (nombre d'éléments déjà tracés).
+  function rendu(kk, prog){
+    let h = grille();
+    const couches = [];
+    depart.forEach(e => couches.push([e, 1, false]));
+    etapes.slice(0, kk).forEach((et, n) => {
+      const courante = n === kk - 1;
+      et.el.forEach((e, m) => {
+        const f = courante ? Math.max(0, Math.min(1, prog - m)) : 1;
+        couches.push([e, f, !courante && e.t === 'fleche']); // flèches des étapes passées : estompées
+      });
+    });
+    // Ordre : droites/segments, puis flèches, puis points (toujours lisibles au-dessus).
+    const rang = { droite: 0, seg: 1, code: 2, fleche: 3, point: 4 };
+    couches.sort((u, v) => rang[u[0].t] - rang[v[0].t]).forEach(([e, f, pale]) => { h += dessine(e, f, pale); });
+    svg().innerHTML = h;
+    document.querySelectorAll(`#${id}Steps .step-item`).forEach(el => el.classList.toggle('done', Number(el.dataset.step) <= kk));
+    const b = document.getElementById(id + 'Next');
+    if(b){ b.disabled = kk >= etapes.length; b.textContent = kk >= etapes.length ? 'Terminé ✓' : 'Étape suivante →'; }
+  }
+  function init(){
+    document.getElementById(id + 'Steps').innerHTML = etapes.map((e, n) => `<div class="step-item" data-step="${n + 1}"><div class="step-num">${n + 1}</div><div>${e.html}</div></div>`).join('');
+    k = 0; rendu(0, 0);
+  }
+  function next(){
+    if(k >= etapes.length) return;
+    cancelAnimationFrame(raf);
+    k++;
+    const n = etapes[k - 1].el.length, dur = 650 * n, t0 = performance.now(), b = document.getElementById(id + 'Next');
+    if(b) b.disabled = true;
+    const kk = k;
+    function frame(now){
+      if(kk !== k) return;
+      const prog = Math.min(n, (now - t0) / 650);
+      rendu(k, prog);
+      if(prog < n) raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+  }
+  function reset(){ cancelAnimationFrame(raf); k = 0; rendu(0, 0); }
+  function goto(i){ cancelAnimationFrame(raf); k = i + 1; rendu(k, 99); }
+  return { init, next, reset, goto, steps: () => etapes.map(e => ({ note: qgNote(e.html) })), getIdx: () => k - 1 };
+}
+const QG_DEMOS = {};
+(function qgScenarios(){
+  const O = { i: 6, j: 4, nom: 'O' };
+  const pointO = (lx, ly) => ({ t: 'point', p: O, lx, ly }); // étiquette placée là où ne passent ni flèches ni numéros
+  // Point : A(2 ; 1), A → O : 4 vers la droite, 3 vers le bas.
+  const A = { i: 2, j: 1, nom: 'A' };
+  QG_DEMOS.qgPoint = makeQgDemo('qgPoint', [pointO(-17, 19), { t: 'point', p: A, c: QG_BLEU, lx: -16, ly: -6 }], qgEtapesPoint(A, O, 'A'));
+  // Segment [AB] : A(2 ; 2), B(4 ; 7).
+  const A2 = { i: 2, j: 2, nom: 'A' }, B2 = { i: 4, j: 7, nom: 'B' };
+  const A2p = qgSym(A2, O, "A'"), B2p = qgSym(B2, O, "B'");
+  QG_DEMOS.qgSegment = makeQgDemo('qgSegment', [{ t: 'seg', a: A2, b: B2, c: QG_BLEU }, pointO(7, -8), { t: 'point', p: A2, c: QG_BLEU, lx: -16, ly: -6 }, { t: 'point', p: B2, c: QG_BLEU, lx: -16, ly: 4 }], [
+    { html: `<b>Symétrique de A</b> : de A à O, ${qgDecrit(A2, O)} ; depuis O, je refais le même déplacement et j'obtiens <b>A'</b>.`, el: qgTrajet(A2, O, QG_BLEU).concat(qgTrajet(A2, O, QG_ORANGE, O), [{ t: 'point', p: A2p, c: QG_ORANGE }]) },
+    { html: `<b>Symétrique de B</b> : de B à O, ${qgDecrit(B2, O)} ; depuis O, je refais le même déplacement et j'obtiens <b>B'</b>.`, el: qgTrajet(B2, O, QG_BLEU).concat(qgTrajet(B2, O, QG_ORANGE, O), [{ t: 'point', p: B2p, c: QG_ORANGE, lx: 7, ly: -7 }]) },
+    { html: `Je relie A' et B' : le symétrique du segment [AB] est le <b>segment [A'B']</b>. Il a la <b>même longueur</b> que [AB] et lui est <b>parallèle</b>.`, el: [{ t: 'seg', a: A2p, b: B2p, c: QG_ORANGE }] },
+  ]);
+  // Droite (d) passant par A(1 ; 5) et B(4 ; 7) ; O n'est pas sur (d).
+  const A3 = { i: 1, j: 5, nom: 'A' }, B3 = { i: 4, j: 7, nom: 'B' };
+  const A3p = qgSym(A3, O, "A'"), B3p = qgSym(B3, O, "B'");
+  QG_DEMOS.qgDroite = makeQgDemo('qgDroite', [{ t: 'droite', a: A3, b: B3, c: QG_BLEU, nom: '(d)', pos: 0.86 }, pointO(-17, -8)], [
+    { html: `Je choisis <b>deux points de la droite (d)</b> placés sur des nœuds du quadrillage (croisements des lignes) : <b>A</b> et <b>B</b>.`, el: [{ t: 'point', p: A3, c: QG_BLEU, lx: -6, ly: -10 }, { t: 'point', p: B3, c: QG_BLEU, lx: -6, ly: -10 }] },
+    { html: `<b>Symétrique de A</b> : de A à O, ${qgDecrit(A3, O)} ; depuis O, le même déplacement donne <b>A'</b>.`, el: qgTrajet(A3, O, QG_BLEU).concat(qgTrajet(A3, O, QG_ORANGE, O), [{ t: 'point', p: A3p, c: QG_ORANGE, lx: 6, ly: -9 }]) },
+    { html: `<b>Symétrique de B</b> : de B à O, ${qgDecrit(B3, O)} ; depuis O, le même déplacement donne <b>B'</b>.`, el: qgTrajet(B3, O, QG_BLEU).concat(qgTrajet(B3, O, QG_ORANGE, O), [{ t: 'point', p: B3p, c: QG_ORANGE, lx: -24, ly: -4 }]) },
+    { html: `Je trace la droite (A'B') : c'est <b>(d')</b>, la symétrique de (d) par rapport à O. Elle est <b>parallèle à (d)</b> (si O était sur (d), (d') serait (d) elle-même).`, el: [{ t: 'droite', a: A3p, b: B3p, c: QG_ORANGE, nom: "(d')", pos: 0.14 }] },
+  ]);
+})();
+function qgInitTout(){
+  Object.keys(QG_DEMOS).forEach(id => { const d = QG_DEMOS[id]; d.init(); registerGeoStepDemo(id + 'Svg', { steps: d.steps, getIdx: d.getIdx, goto: d.goto }); });
+}
+
 document.getElementById('methode-demo-symetrie').innerHTML = `
       <div class="sub-header"><span class="letter">M</span><h4>Construire le symétrique d'un point A, au compas et à la règle</h4></div>
-<div class="figure-wrap">
+<div class="figure-wrap" id="mMethodeCompas">
         <svg id="svgMethod" viewBox="0 0 400 260" style="width:100%;max-width:460px;display:block;margin:14px auto;">
           <line id="mTickO" class="pt-tick" stroke="#1C1B2E" stroke-width="2"/>
           <text x="207" y="122" font-family="Space Grotesk" font-size="13" fill="#1C1B2E">O</text>
@@ -272,6 +456,9 @@ document.getElementById('methode-demo-symetrie').innerHTML = `
           <button class="btn secondary" onclick="resetMethod()">Revoir depuis le début</button>
         </div>
       </div>
+${qgMethodeHtml('qgPoint', "Construire le symétrique d'un point dans un quadrillage")}
+${qgMethodeHtml('qgSegment', "Construire le symétrique d'un segment dans un quadrillage")}
+${qgMethodeHtml('qgDroite', "Construire le symétrique d'une droite dans un quadrillage")}
 `;
 document.getElementById('exos-demo-symetrie').innerHTML = `
       <div class="redaction-block">
@@ -763,7 +950,7 @@ function placeCompass(angle){
 
 function resetMethod(){
   methodStep=0;
-  document.querySelectorAll('.step-item').forEach(s=>s.classList.remove('done'));
+  document.querySelectorAll('#mMethodeCompas .step-item').forEach(s=>s.classList.remove('done'));
   ['mStep1','mRulerTool','mPencilTool','mArc','mCompass','mTickAprime','mStep3t','mCodeAO','mCodeOAprime'].forEach(id=>document.getElementById(id).setAttribute('opacity','0'));
   document.getElementById('mArc').setAttribute('points','');
   document.getElementById('btnMethodNext').disabled=false;
@@ -779,7 +966,7 @@ function nextMethodStep(){
     // long de la règle ("faire glisser le crayon lentement"), et le trait se dessine
     // progressivement à mesure qu'il avance -- plutôt que le trait complet et le crayon
     // n'apparaissant instantanément au point final, comme avant.
-    document.querySelector('#methode-demo-symetrie .step-item[data-step="1"]').classList.add('done');
+    document.querySelector('#mMethodeCompas .step-item[data-step="1"]').classList.add('done');
     document.getElementById('btnMethodNext').disabled=true;
     document.getElementById('mStep1').setAttribute('opacity','1');
     document.getElementById('mStep1').setAttribute('x2',mA.x); document.getElementById('mStep1').setAttribute('y2',mA.y);
@@ -802,7 +989,7 @@ function nextMethodStep(){
     // même temps (ordre demandé explicitement).
     document.getElementById('mRulerTool').setAttribute('opacity','0');
     document.getElementById('mPencilTool').setAttribute('opacity','0');
-    document.querySelector('#methode-demo-symetrie .step-item[data-step="2"]').classList.add('done');
+    document.querySelector('#mMethodeCompas .step-item[data-step="2"]').classList.add('done');
     document.getElementById('btnMethodNext').disabled=true;
     const target = mAngleA+Math.PI, arcStart = target-M_ARC_HALF_ANGLE, sweepEnd = target+M_ARC_HALF_ANGLE;
     // Balayage UNIQUE et continu de mAngleA jusqu'à sweepEnd (un peu au-delà de A', pas jusqu'à
@@ -846,11 +1033,11 @@ function mArcCrossingPoints(){
    utilisé à la fois par resetMethod() et par la reconstitution des étapes pour le cahier
    de l'élève / l'export PDF (voir registerGeoStepDemo ci-dessous). */
 function mRenderStepInstant(step){
-  document.querySelectorAll('.step-item').forEach(s=>s.classList.remove('done'));
+  document.querySelectorAll('#mMethodeCompas .step-item').forEach(s=>s.classList.remove('done'));
   document.getElementById('mStep1').setAttribute('opacity', step>=1?'1':'0');
   if(step>=1){
     document.getElementById('mStep1').setAttribute('x2',mStep1End.x.toFixed(1)); document.getElementById('mStep1').setAttribute('y2',mStep1End.y.toFixed(1));
-    document.querySelector('#methode-demo-symetrie .step-item[data-step="1"]').classList.add('done');
+    document.querySelector('#mMethodeCompas .step-item[data-step="1"]').classList.add('done');
   }
   // Règle + crayon : uniquement pendant l'étape 1 elle-même (comme le compas n'apparaît que
   // pendant l'étape 2) -- une fois la demi-droite tracée, seul le trait noir permanent reste.
@@ -860,7 +1047,7 @@ function mRenderStepInstant(step){
   document.getElementById('mArc').setAttribute('opacity', showArc?'1':'0');
   if(showArc){
     document.getElementById('mArc').setAttribute('points', mArcCrossingPoints());
-    document.querySelector('#methode-demo-symetrie .step-item[data-step="2"]').classList.add('done');
+    document.querySelector('#mMethodeCompas .step-item[data-step="2"]').classList.add('done');
   } else {
     document.getElementById('mArc').setAttribute('points','');
   }
@@ -888,7 +1075,7 @@ function mRenderStepInstant(step){
     const midAO = {x:(mA.x+O.x)/2, y:(mA.y+O.y)/2}, midOAprime = {x:(O.x+Aprime.x)/2, y:(O.y+Aprime.y)/2};
     setSlantTick(document.getElementById('mCodeAO'), midAO.x, midAO.y, mAngleA);
     setSlantTick(document.getElementById('mCodeOAprime'), midOAprime.x, midOAprime.y, mAngleA);
-    document.querySelector('#methode-demo-symetrie .step-item[data-step="3"]').classList.add('done');
+    document.querySelector('#mMethodeCompas .step-item[data-step="3"]').classList.add('done');
   }
   document.getElementById('btnMethodNext').disabled = (step===3);
   document.getElementById('btnMethodNext').textContent = step===3?'Terminé ✓':'Étape suivante →';
@@ -1030,7 +1217,7 @@ const symEx2Demo = makeRedactionStepDemo(SYM_EX2_ROWS, 'sym-ex2-display');
 
 
 DEMO_REGISTRY['5e|Symétrie centrale'] = { cours:'cours-demo-symetrie', methode:'methode-demo-symetrie', exos:'exos-demo-symetrie', histoire:'histoire-demo-symetrie',
-  init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); symEx1Demo.init(); symEx2Demo.reset(); registerGeoStepDemo('svgMethod', { steps:()=>M_STEPS, getIdx:()=>methodStep-1, goto:(i)=>mGotoStep(i) }); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); injectCourseAddButtons(document.getElementById('methode-demo-symetrie')); } };
+  init:()=>{ initPointDemo(); initTriDemo(); resetMethod(); initDroiteDemo(); initSegmentDemo(); initCercleDemo(); initPolygoneCodeDemo(); resetHexaDemo(); symEx1Demo.init(); symEx2Demo.reset(); qgInitTout(); registerGeoStepDemo('svgMethod', { steps:()=>M_STEPS, getIdx:()=>methodStep-1, goto:(i)=>mGotoStep(i) }); injectCourseAddButtons(document.getElementById('cours-demo-symetrie')); injectCourseAddButtons(document.getElementById('methode-demo-symetrie')); } };
 
 DEMO_QUIZZES['5e|Symétrie centrale'] = [
   {q:"O est le milieu de [AA']. Que peut-on dire de A' par rapport à A ?",
