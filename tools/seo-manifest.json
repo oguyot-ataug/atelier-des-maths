@@ -1,6 +1,6 @@
 {
  "/": {
-  "hash": "a9742bef5b370b2d48e09d216f8d687de7cd8f2f",
+  "hash": "0522ec328de010b2119ebd73d9f86764e9fa8367",
   "lastmod": "2026-09-28"
  },
  "/6e/nombres-entiers/": {
@@ -124,11 +124,15 @@
   "lastmod": "2026-09-28"
  },
  "/5e/pourcentages/": {
-  "hash": "041a65b7c3452b35e04cbd0d21d7af242e8c276e",
+  "hash": "ba696f0057b81b7edaf0ce2f0f7f57ab31a833ca",
+  "lastmod": "2026-09-28"
+ },
+ "/5e/aires/": {
+  "hash": "b9b56d97fe319a2226ebe3f1d99936d01da0500e",
   "lastmod": "2026-09-28"
  },
  "/5e/calcul-litteral/": {
-  "hash": "1218e42265469533886db59d23c1622c756c8eaa",
+  "hash": "b3b9c4bfdb0eb07561b132d1f4f04ab43f9ee4ac",
   "lastmod": "2026-09-28"
  },
  "/5e/equations/": {
@@ -136,7 +140,7 @@
   "lastmod": "2026-09-26"
  },
  "/5e/": {
-  "hash": "22a751ddddf2741cf5627207466d20565a078da0",
+  "hash": "9b72738bc22ae92abae6767f280e8a5601dc4f9b",
   "lastmod": "2026-09-28"
  },
  "/professeurs/": {
