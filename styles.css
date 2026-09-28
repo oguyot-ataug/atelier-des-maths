@@ -434,6 +434,7 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .we-expr{font-family:'JetBrains Mono',monospace;font-size:1.05rem;}
 .we-comment{color:var(--ink-soft);font-size:.85rem;text-align:right;flex:1;min-width:140px;}
 .we-row:last-child .we-expr{font-weight:700;color:var(--accent-orange);}
+.we-row:has(.tex .katex){padding:8px 0;} /* une fraction (ex. simplification en facteurs premiers, 4e) ne touche plus la ligne voisine */
 .step-display .step-note{font-family:'Inter',sans-serif;font-size:.9rem;color:var(--ink-soft);margin-top:12px;}
 .sub-header{display:flex;align-items:center;gap:10px;margin:24px 0 12px;}
 .sub-header:first-of-type{margin-top:4px;}
