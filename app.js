@@ -903,7 +903,7 @@ async function captureSceneFilmstrip(steps, gotoFn, captureFn, originalIdx){
     </div>`);
   }
   gotoFn(originalIdx);
-  return `<div style="display:flex;flex-direction:column;gap:14px;">${panels.join('')}</div>`;
+  return `<div class="cahier-film" style="display:flex;flex-direction:column;gap:14px;">${panels.join('')}</div>`;
 }
 /* Convertit un SVG en image PNG (data URI), rastérisée à une taille en pixels fixe
    et explicite (plutôt que de compter sur un <img> pour redimensionner un SVG, ce
@@ -1004,7 +1004,7 @@ async function captureGeoFilmstrip(svgEl, steps, gotoFn, originalIdx){
   const panels = [];
   for(let i=0;i<steps.length;i++){
     gotoFn(i, false);
-    const dataUri = await svgToRasterDataUri(svgEl, 170);
+    const dataUri = await svgToRasterDataUri(svgEl, 360); // 360 px : net aussi en lecture étape par étape (cahier à l'écran)
     const imgTag = dataUri
       ? `<img src="${dataUri}" style="width:170px;height:auto;border-radius:6px;border:1px solid rgba(28,43,57,.12);flex:none;display:block;" alt="Étape ${i+1}"/>`
       : `<div style="width:170px;height:100px;flex:none;background:#f2f2f2;border-radius:6px;border:1px solid rgba(28,43,57,.12);"></div>`;
@@ -1014,8 +1014,55 @@ async function captureGeoFilmstrip(svgEl, steps, gotoFn, originalIdx){
     </div>`);
   }
   gotoFn(originalIdx, false);
-  return `<div style="display:flex;flex-direction:column;gap:14px;">${panels.join('')}</div>`;
+  return `<div class="cahier-film" style="display:flex;flex-direction:column;gap:14px;">${panels.join('')}</div>`;
 }
+
+/* ---- Pas à pas dans le cahier : lecture étape par étape à l'écran ----
+   Demandé : "On avait évoqué le fait de mettre les pas à pas dans le cahier (sauf à l'impression).
+   j'ai inséré les constructions des symétriques dans un quadrillage mais on perd l'aspect animation".
+   L'ajout au cahier enregistre toujours toutes les étapes en images (captureGeoFilmstrip /
+   captureSceneFilmstrip) : c'est ce qui s'imprime. À l'écran, chaque suite d'étapes du cahier (y
+   compris celles ajoutées avant ce changement, reconnues à leurs vignettes « Étape n. ») devient un
+   lecteur : une étape à la fois, Précédente / Suivante, « Animer » (défilement automatique) et
+   « Tout voir ». L'impression et le PDF (fenêtre à part) gardent la colonne complète. */
+function cahierAnimerEtapes(root){
+  (root || document).querySelectorAll('.view .nb-body:not([data-cs-vu])').forEach(corps=>{ corps.dataset.csVu = '1'; corps.querySelectorAll('div').forEach(d=>{
+    const kids = Array.from(d.children);
+    if(kids.length < 2 || !kids.every(k => k.tagName==='DIV' && k.querySelector(':scope > img') && /^\s*Étape\s+\d+/.test(k.textContent||''))) return;
+    d.dataset.csFait = '1'; d.classList.add('cs-film'); d.dataset.csI = '0';
+    kids.forEach((k,i)=>{ k.classList.add('cs-panel'); k.classList.toggle('cs-on', i===0); });
+    const bar = document.createElement('div'); bar.className = 'cs-bar';
+    bar.innerHTML = `<button type="button" data-cs="prev" title="Étape précédente" disabled>‹</button><span class="cs-n">Étape 1 / ${kids.length}</span>
+      <button type="button" data-cs="next" class="cs-main">Étape suivante ›</button><button type="button" data-cs="play" title="Faire défiler les étapes automatiquement">▶ Animer</button>
+      <button type="button" data-cs="all" title="Afficher toutes les étapes l'une sous l'autre">Tout voir</button>`;
+    d.parentNode.insertBefore(bar, d);
+  }); });
+}
+function cahierEtape(film, i){
+  const kids = Array.from(film.children), n = kids.length, bar = film.previousElementSibling;
+  i = Math.max(0, Math.min(n-1, i)); film.dataset.csI = String(i);
+  kids.forEach((k,j)=>k.classList.toggle('cs-on', j===i));
+  if(bar){ bar.querySelector('.cs-n').textContent = `Étape ${i+1} / ${n}`; bar.querySelector('[data-cs="prev"]').disabled = i===0; bar.querySelector('[data-cs="next"]').disabled = i===n-1; }
+}
+document.addEventListener('click', e=>{
+  const b = e.target.closest('.cs-bar [data-cs]'); if(!b) return;
+  const bar = b.closest('.cs-bar'), film = bar.nextElementSibling; if(!film || !film.classList.contains('cs-film')) return;
+  const i = Number(film.dataset.csI)||0, n = film.children.length, act = b.dataset.cs;
+  if(act!=='play' && film._csAnim){ clearInterval(film._csAnim); film._csAnim = null; bar.querySelector('[data-cs="play"]').textContent = '▶ Animer'; }
+  if(act==='prev') cahierEtape(film, i-1);
+  else if(act==='next') cahierEtape(film, i+1);
+  else if(act==='all'){ const tout = film.classList.toggle('cs-tout'); b.textContent = tout ? 'Une étape à la fois' : 'Tout voir'; bar.classList.toggle('cs-tout', tout); }
+  else if(act==='play'){
+    if(film._csAnim){ clearInterval(film._csAnim); film._csAnim = null; b.textContent = '▶ Animer'; return; }
+    film.classList.remove('cs-tout'); bar.classList.remove('cs-tout'); bar.querySelector('[data-cs="all"]').textContent = 'Tout voir';
+    cahierEtape(film, i>=n-1 ? 0 : i); b.textContent = '⏸ Pause';
+    film._csAnim = setInterval(()=>{ const k = Number(film.dataset.csI)||0; if(k>=n-1 || !film.isConnected){ clearInterval(film._csAnim); film._csAnim = null; b.textContent = '▶ Animer'; return; } cahierEtape(film, k+1); }, 1600);
+  }
+});
+// Les cahiers sont rendus à plusieurs endroits (cahier de la classe, accordéon par jour, correction) :
+// on transforme chaque suite d'étapes dès qu'elle apparaît à l'écran.
+let csPlanifie = false;
+new MutationObserver(()=>{ if(csPlanifie) return; csPlanifie = true; requestAnimationFrame(()=>{ csPlanifie = false; cahierAnimerEtapes(document); }); }).observe(document.body, { childList:true, subtree:true });
 
 function makeStepDemo(steps, displayId){
   let idx = 0;
@@ -2813,6 +2860,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.755', items:[
+    "Pas à pas dans le cahier -- signalé : \"On avait évoqué le fait de mettre les pas à pas dans le cahier (sauf à l'impression). j'ai inséré les constructions des symétriques dans un quadrillage mais on perd l'aspect animation\". À l'écran, chaque construction pas à pas du cahier devient un lecteur : une étape à la fois, avec « ‹ », « Étape suivante », « ▶ Animer » (les étapes défilent seules) et « Tout voir ». C'est aussi le cas des constructions déjà ajoutées. À l'impression et dans le PDF, toutes les étapes restent affichées l'une sous l'autre. Les images des nouvelles constructions ajoutées sont plus nettes, et les flèches du quadrillage (symétrie centrale) gardent leur pointe dans le cahier. Pour en profiter sur une construction déjà ajoutée, il faut la retirer puis l'ajouter de nouveau.",
+  ]},
   { version:'2026-08-19.754', items:[
     "Images des corrections et des évaluations : modifier avant d'insérer -- demandé : \"Dans les corrections d'exercices ou évaluations, on peut insérer des images. Permettre avant de les insérer d'écrire dessus, de recadrer, de la faire pivoter, de mettre du texte...\". Dans l'outil Image, un nouveau bouton « Modifier avant d'insérer » ouvre l'éditeur de la caméra : recadrer, faire pivoter, crayon, surligneur, texte (déplaçable, redimensionnable), 5 couleurs, annuler / effacer, luminosité, contraste, noir et blanc, « Document ». Un clic sur « Insérer dans la correction » place l'image modifiée. Le bouton marche aussi sur une image déjà insérée (rouverte depuis la correction) : elle est remplacée à sa place, et reste inchangée si l'on ferme l'éditeur sans insérer.",
   ]},

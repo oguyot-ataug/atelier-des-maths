@@ -330,8 +330,10 @@ function makeQgDemo(id, depart, etapes){
       const L = n * f, x1 = qgX(e.a.i), y1 = qgY(e.a.j), recul = f >= 1 ? 6 : 0; // la pointe s'arrête juste avant le nœud d'arrivée
       const x2 = x1 + si * (L * QG_C - recul), y2 = y1 + sj * (L * QG_C - recul);
       if(L <= 0.02) return '';
-      const m = e.c === QG_BLEU ? 0 : 1;
-      let h = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${e.c}" stroke-width="2.6" stroke-linecap="round" marker-end="url(#${id}Pointe${m})"${op}/>`;
+      // Pointe dessinée (et non un marqueur SVG, perdu quand la figure devient une image dans le cahier).
+      const px = si, py = sj, qx = -py, qy = px, T = 9, W = 4.5;
+      let h = `<line x1="${x1}" y1="${y1}" x2="${x2 - px * T * 0.6}" y2="${y2 - py * T * 0.6}" stroke="${e.c}" stroke-width="2.6" stroke-linecap="round"${op}/>
+        <polygon points="${x2},${y2} ${x2 - px * T + qx * W},${y2 - py * T + qy * W} ${x2 - px * T - qx * W},${y2 - py * T - qy * W}" fill="${e.c}"${op}/>`;
       for(let q = 1; q <= Math.floor(L + 1e-6); q++){ // numéro de chaque carreau franchi
         const cx = x1 + si * (q - 0.5) * QG_C, cy = y1 + sj * (q - 0.5) * QG_C;
         const ox = si ? 0 : (e.c === QG_BLEU ? -11 : 11), oy = si ? (e.c === QG_BLEU ? -7 : 16) : 4;

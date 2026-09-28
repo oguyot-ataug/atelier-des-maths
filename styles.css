@@ -1324,3 +1324,25 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
 .mt-direct input{width:110px;font-size:1.15rem;letter-spacing:.2em;text-align:center;padding:8px 10px;border:1px solid var(--line,#D5DAE1);border-radius:10px;font-family:'JetBrains Mono',monospace;margin:0;}
 .mt-direct .btn{margin:0;}
 @media (max-width:520px){ .mt-direct input{flex:1;} }
+
+/* Pas à pas dans le cahier (app.js, cahierAnimerEtapes) : une étape à la fois à l'écran, toutes à l'impression. */
+.cs-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:6px 0 8px;}
+.cs-bar button{border:1px solid rgba(28,43,57,.15);background:#fff;border-radius:8px;padding:5px 10px;font:inherit;font-size:.82rem;cursor:pointer;color:var(--ink);}
+.cs-bar button.cs-main{background:#0D5BA3;border-color:#0D5BA3;color:#fff;font-weight:700;}
+.cs-bar button:disabled{opacity:.4;cursor:default;}
+.cs-bar .cs-n{font-weight:700;font-size:.85rem;min-width:84px;text-align:center;}
+.cs-bar.cs-tout .cs-n,.cs-bar.cs-tout [data-cs="prev"],.cs-bar.cs-tout [data-cs="next"]{display:none;}
+.cs-film .cs-panel{display:none !important;}
+.cs-film .cs-panel.cs-on{display:flex !important;flex-direction:column;align-items:flex-start;gap:8px !important;animation:csFondu .35s ease;}
+.cs-film .cs-panel img{width:100% !important;max-width:380px;}
+.cs-film .cs-panel > div{font-size:.95rem !important;}
+.cs-film.cs-tout .cs-panel{display:flex !important;flex-direction:row;align-items:center;animation:none;}
+.cs-film.cs-tout .cs-panel img{width:170px !important;}
+.cs-film.cs-tout .cs-panel > div{font-size:.8rem !important;}
+@keyframes csFondu{from{opacity:0;}to{opacity:1;}}
+@media print{
+  .cs-bar{display:none !important;}
+  .cs-film .cs-panel{display:flex !important;flex-direction:row !important;align-items:center !important;animation:none !important;}
+  .cs-film .cs-panel img{width:170px !important;}
+  .cs-film .cs-panel > div{font-size:.8rem !important;}
+}
