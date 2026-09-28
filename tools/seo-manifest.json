@@ -1,6 +1,6 @@
 {
  "/": {
-  "hash": "027cee346debb539e4c335bdd3d757bebe0085e0",
+  "hash": "00ffaf280391286cc67cbdab8ca7964288c83cad",
   "lastmod": "2026-09-28"
  },
  "/6e/nombres-entiers/": {
@@ -108,12 +108,16 @@
   "lastmod": "2026-09-26"
  },
  "/5e/parallelogrammes/": {
-  "hash": "6cb1ed856aab055ba4766275141397e2fbdd297d",
-  "lastmod": "2026-09-26"
+  "hash": "1a95e4f1139b98794f22fd6bfb7e3d2105b4803c",
+  "lastmod": "2026-09-28"
+ },
+ "/5e/statistiques/": {
+  "hash": "a15829a3b08add2b0f254181f52abaa4320f5e2d",
+  "lastmod": "2026-09-28"
  },
  "/5e/operations-sur-les-nombres-relatifs/": {
-  "hash": "d16cba8f8a34d5c8f6fd9e0fdb1e821a79cc0723",
-  "lastmod": "2026-09-26"
+  "hash": "4c52fa28bc97503ded04eef94ef61c2b728ec06f",
+  "lastmod": "2026-09-28"
  },
  "/5e/parallelogrammes-particuliers/": {
   "hash": "b95244c95e76e896d6d31d488c9dbb5199595ac5",
@@ -128,8 +132,8 @@
   "lastmod": "2026-09-26"
  },
  "/5e/": {
-  "hash": "716215ade2928029202d2ea59115be618460083c",
-  "lastmod": "2026-09-25"
+  "hash": "4554e465970bd34c5ea8842f1f845025ff262d2a",
+  "lastmod": "2026-09-28"
  },
  "/professeurs/": {
   "hash": "f775a4f1c5382beb75d85c92a045f669fce94ae7",
