@@ -168,6 +168,8 @@ function toggleMobileNav(){
   document.getElementById('navLinks').classList.toggle('open');
 }
 document.querySelectorAll('#navLinks button').forEach(b=>{
+  // Les intitulés de section (S'entraîner, Outils prof) ouvrent/ferment leur section sans refermer le menu mobile.
+  if(b.classList.contains('nav-dropdown-trigger') || b.classList.contains('nav-sub-trigger')) return;
   b.addEventListener('click', ()=>{ document.getElementById('navLinks').classList.remove('open'); });
 });
 
@@ -2811,6 +2813,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.753', items:[
+    "Menu sur smartphone -- signalé : \"Sur smartphone, le menu commence à être interminable et peu lisible\". Accueil, 6e et 5e sont maintenant sur une seule ligne. « S'entraîner » et « Outils prof » deviennent des sections repliables, fermées par défaut : ouvrir l'une referme l'autre, et le menu reste ouvert. Leurs entrées s'affichent sur deux colonnes, avec une icône. Le sous-menu Évaluations est mis à plat, et les outils déjà présents dans S'entraîner ne sont plus répétés dans Outils prof. Menu fermé, un professeur voit six lignes au lieu d'une vingtaine. Sur ordinateur, les menus gagnent des icônes, et Mes classes et Ma progression passent en tête d'Outils prof.",
+  ]},
   { version:'2026-08-19.752', items:[
     "Fix -- cahier : signalé \"Je ne peux pas faire remonter une interrogation sur un même jour dans le cahier. Les blocs semblent figer\". Deux causes. Les flèches ne déplaçaient un bloc qu'au sein du même chapitre : une interrogation rangée à part ne pouvait pas passer devant les cours du jour. Et un bloc ajouté après un premier réordonnancement repartait en fin de liste à chaque tri. Désormais, les flèches déplacent un bloc parmi tous ceux du même jour, quel que soit son chapitre. Toute la journée est renumérotée à chaque déplacement, donc l'ordre tient après rechargement. La date n'est plus répétée quand plusieurs chapitres se suivent le même jour. Étiquette « Interrogation » au lieu de « Exercice Interrogation ».",
   ]},

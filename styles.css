@@ -1081,21 +1081,27 @@ footer a:hover{color:var(--accent);}
     box-shadow:0 10px 20px rgba(28,43,57,.12);
   }
   .nav-links.open{display:flex;}
-  /* Sur mobile, les sous-menus restent toujours dépliés (pas de clic pour ouvrir) : le bouton
-     de groupe devient un simple intitulé de section, les options suivent en retrait. */
-  .nav-dropdown{display:contents;}
-  .nav-dropdown-trigger{font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;opacity:.55;pointer-events:none;padding-bottom:0;margin-top:6px;}
-  .nav-dropdown-trigger::after{display:none;}
-  .nav-dropdown-menu{
-    display:block !important;position:static;box-shadow:none;border:none;padding:0;margin:0 0 4px;
-    background:transparent;min-width:0;
-  }
-  .nav-dropdown-menu button{padding-left:22px;}
-  .nav-sub-trigger{pointer-events:none;opacity:.8;}
-  .nav-sub-trigger::after{display:none;}
-  .nav-sub-menu{display:block !important;margin-left:22px;}
-  .nav-sub-menu button{padding-left:14px;}
-  .nav-links button{width:100%;text-align:left;padding:12px 14px;font-size:.92rem;}
+  /* Signalé : "Sur smartphone, le menu commence à être interminable et peu lisible" (tous les
+     sous-menus dépliés les uns sous les autres). Désormais : Accueil / 6e / 5e sur une ligne,
+     puis des sections repliables (S'entraîner, Outils prof) fermées par défaut, dont les entrées
+     s'affichent sur deux colonnes, avec une icône ; le sous-menu Évaluations est mis à plat. */
+  .nav-links{flex-direction:row;flex-wrap:wrap;gap:6px;max-height:calc(100vh - 70px);overflow-y:auto;}
+  .nav-links > button{flex:1 1 100%;width:100%;text-align:left;padding:12px 14px;font-size:.95rem;border-radius:10px;}
+  .nav-links > button[data-nav="home"], .nav-links > button[data-nav="niveau"]{flex:1 1 0;min-width:0;text-align:center;padding:11px 6px;background:rgba(28,43,57,.05);font-weight:700;}
+  .nav-links > button[data-nav="home"].active, .nav-links > button[data-nav="niveau"].active{background:#0D5BA3;}
+  .nav-dropdown{display:block;flex:1 1 100%;width:100%;}
+  .nav-dropdown-trigger{display:flex !important;align-items:center;justify-content:space-between;width:100%;text-align:left;padding:12px 14px !important;font-size:.95rem !important;font-weight:700;border-radius:10px;background:rgba(28,43,57,.04);}
+  .nav-dropdown > .nav-dropdown-trigger::after{content:'▸';font-size:.9em;opacity:.6;transition:transform .15s;display:inline-block;}
+  .nav-dropdown.open > .nav-dropdown-trigger::after{transform:rotate(90deg);}
+  .nav-dropdown.open > .nav-dropdown-trigger{background:rgba(13,91,163,.09);color:#0D5BA3;}
+  .nav-dropdown-menu{display:none !important;position:static;box-shadow:none;border:none;padding:4px 0 6px;margin:0;background:transparent;min-width:0;}
+  .nav-dropdown.open .nav-dropdown-menu{display:grid !important;grid-template-columns:1fr 1fr;gap:4px;}
+  .nav-dropdown-menu button{width:100%;text-align:left;white-space:normal;padding:10px 10px !important;font-size:.86rem !important;line-height:1.25;border-radius:9px;background:#fff;border:1px solid rgba(28,43,57,.08);display:flex;align-items:center;gap:6px;}
+  .nav-dropdown-menu button .gicon{font-size:1.15rem;color:#0D5BA3;flex:none;}
+  .nav-dropdown-menu .nav-doublon{display:none !important;} /* déjà dans S'entraîner */
+  .nav-sub{display:contents;}
+  .nav-sub-trigger{display:none !important;}
+  .nav-sub-menu{display:contents !important;}
   .brand-mark{height:40px !important;}
 
   /* Barre d'onglets des chapitres (Cours/Méthode/Exercices/Quiz/Histoire) : 5 onglets ne
