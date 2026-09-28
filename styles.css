@@ -265,7 +265,12 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .nb-accordion-chevron.open{transform:rotate(180deg);}
 .nb-accordion-count{margin-left:auto;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.72rem;color:var(--ink-soft);}
 .nb-accordion-body{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 20px;}
-.nb-accordion-body.open{max-height:6000px;padding:14px 20px 18px;}
+/* Signalé : "Sur smartphone dans le cahier, je n'ai pas l'image de l'exercice corrigé et pas les méthodes".
+   Un jour ouvert était plafonné à 6000 px (reste de l'animation d'ouverture) : sur un téléphone, les
+   colonnes étroites allongent beaucoup le contenu (ex. une interrogation avec sa correction) et tout ce
+   qui venait après était coupé. Plus de plafond : le jour ouvert prend toute sa hauteur. */
+.nb-accordion-body.open{max-height:none;padding:14px 20px 18px;}
+@media (max-width:720px){ .nb-accordion-body{padding-left:10px;padding-right:10px;} .nb-accordion-body.open{padding:12px 10px 14px;} }
 .nb-ref{text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:1.5px;font-weight:700;font-family:'Space Grotesk',sans-serif;font-size:1rem;margin-bottom:6px;}
 .nb-ref-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
 .nb-remove-btn{

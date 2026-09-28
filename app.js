@@ -2947,6 +2947,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.759', items:[
+    "Cahier sur smartphone : la fin de la journée était coupée -- signalé : \"Toujours pas !\" (l'image de l'exercice corrigé et les méthodes absentes sur smartphone). La vraie cause : un jour ouvert du cahier était plafonné à 6000 pixels de haut, un reste de l'animation d'ouverture, et tout ce qui dépassait était masqué. Sur un téléphone, les colonnes étroites allongent beaucoup le contenu : une interrogation avec sa correction dépasse à elle seule ce plafond. Les exercices, images et méthodes placés après disparaissaient donc, alors que tout tenait sur ordinateur. Le plafond est supprimé : un jour ouvert s'affiche en entier, quelle que soit sa longueur. Sur téléphone, les marges intérieures du cahier sont aussi réduites, pour laisser plus de largeur au contenu.",
+  ]},
   { version:'2026-08-19.758', items:[
     "Cahier sur smartphone : images des corrections et méthodes -- signalé : \"Sur smarphone dans le cahier, je n'ai pas l'image de l'exercice corrigé et pas les méthodes. Je l'ai bien sur ordinateur\". Les blocs d'une correction gardaient la taille réglée sur ordinateur, par exemple 814 pixels de large. Sur un téléphone, l'image centrée dans ce cadre tombait hors de l'écran. Désormais, à l'écran, un bloc ne dépasse plus la largeur du cahier et l'image s'y réduit. Un autre bloc trop large (figure, tableau) se fait défiler horizontalement. Sur ordinateur et à l'impression, les tailles réglées ne changent pas. Pour les méthodes pas à pas (constructions dans un quadrillage), la figure redessinée a maintenant une taille explicite : sur iPhone, elle pouvait s'afficher avec une hauteur nulle. Si elle ne s'affiche toujours pas, le cahier revient automatiquement aux images enregistrées.",
   ]},
