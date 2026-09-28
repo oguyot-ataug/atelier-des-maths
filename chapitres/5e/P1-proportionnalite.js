@@ -3,8 +3,8 @@
    Fichier autonome -- voir la note dans chapitres/5e/G1-symetrie-centrale.js.
    Ne couvre que les sections « Tableau de proportionnalité » et « Caractérisation
    graphique » : la section « Pourcentage » du manuel (mêmes pages) est un chapitre
-   à part dans la progression (P1 Pourcentages, plus tard dans l'année) et sera
-   traitée séparément le moment venu.
+   à part dans la progression (P1 Pourcentages, plus tard dans l'année), traité dans
+   chapitres/5e/P1-pourcentages.js.
    ============================================================ */
 
 /* Petit traceur de graphique en repère (axes, quadrillage, points reliés en
