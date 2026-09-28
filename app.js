@@ -2811,6 +2811,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.752', items:[
+    "Fix -- cahier : signalé \"Je ne peux pas faire remonter une interrogation sur un même jour dans le cahier. Les blocs semblent figer\". Deux causes. Les flèches ne déplaçaient un bloc qu'au sein du même chapitre : une interrogation rangée à part ne pouvait pas passer devant les cours du jour. Et un bloc ajouté après un premier réordonnancement repartait en fin de liste à chaque tri. Désormais, les flèches déplacent un bloc parmi tous ceux du même jour, quel que soit son chapitre. Toute la journée est renumérotée à chaque déplacement, donc l'ordre tient après rechargement. La date n'est plus répétée quand plusieurs chapitres se suivent le même jour. Étiquette « Interrogation » au lieu de « Exercice Interrogation ».",
+  ]},
   { version:'2026-08-19.751', items:[
     "Interrogations en ligne : ajout au cahier de l'élève -- demandé : \"Possibilité d'ajouter une interrogation en ligne au cahier de l'élève\". Nouveau bouton « Cahier » sur chaque interrogation donnée (Interrogations en ligne) : au choix, le sujet et sa correction (propositions justes cochées, vrai/faux, réponses attendues, attendus des questions ouvertes, explications) ou le sujet seul. Il suffit de choisir le chapitre du cahier et la date. L'entrée arrive dans le cahier de la classe ou du groupe concerné, comme une partie de cours, et s'imprime avec lui. Si l'interrogation n'est pas encore terminée, un avertissement prévient que les élèves verront la correction tout de suite.",
     "Fix (tout le site) : une formule entre $…$ contenant les signes < ou > (ex. $\\frac{1}{3} > \\frac{1}{2}$) s'affichait en rouge au lieu d'être mise en forme.",
@@ -5388,12 +5391,17 @@ function sortCahierInPlace(){
   // critère garantit que les entrées d'une même date restent bien groupées par chapitre,
   // cohérent avec le regroupement visuel (groupedEntriesHTML) -- évite un même en-tête de
   // date dédoublé si des chapitres différents étaient mélangés au sein d'un même jour.
+  // Signalé ensuite : "Je ne peux pas faire remonter une interrogation sur un même jour dans le
+  // cahier. Les blocs semblent figer" -- un bloc ajouté après un premier réordonnancement (ordre
+  // NULL) partait en fin de liste, TOUTES dates confondues, et y retournait à chaque tri. La date
+  // passe donc en premier : l'ordre manuel ne départage que les blocs d'un même jour (c'est le
+  // seul déplacement permis), un bloc sans ordre se place en fin de sa journée.
   cahier.sort((a,b)=>{
+    const dateCmp = (a.date||'').localeCompare(b.date||'');
+    if(dateCmp!==0) return dateCmp;
     const oa = (a.ordre==null) ? Infinity : a.ordre;
     const ob = (b.ordre==null) ? Infinity : b.ordre;
     if(oa!==ob) return oa-ob;
-    const dateCmp = (a.date||'').localeCompare(b.date||'');
-    if(dateCmp!==0) return dateCmp;
     const chapCmp = (a.chapitre||'').localeCompare(b.chapitre||'');
     if(chapCmp!==0) return chapCmp;
     return (a.created_at||'').localeCompare(b.created_at||'');
@@ -5664,7 +5672,7 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
   // exo==='' : entrée sans étiquette (ex. en-tête d'évaluation ajoutée au cahier), distinct de
   // '-' (déjà utilisé par l'outil de correction pour "numéro non renseigné", qui affiche encore
   // "Exercice -").
-  const refLabel = e.exo==='' ? '' : e.exo==='Cours' ? 'Cours' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo));
+  const refLabel = e.exo==='' ? '' : e.exo==='Cours' ? 'Cours' : e.exo==='Interrogation' ? 'Interrogation' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo)); // Interrogation : questionnaires-cahier.js
   let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}</div>`;
   if(editable){
     // Le déplacement ne peut se faire QU'À L'INTÉRIEUR du même groupe (même date + même
@@ -5672,7 +5680,7 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
     // regroupement affiché par date. Signalé : "ça les met dans des ordres incompréhensibles".
     const prev = cahier[idx-1];
     const next = cahier[idx+1];
-    const sameGroup = (a,b) => a && b && (a.date||'')===(b.date||'') && (a.chapitre||'')===(b.chapitre||'');
+    const sameGroup = (a,b) => a && b && (a.date||'')===(b.date||''); // même jour, même si le chapitre diffère (ex. une interrogation)
     const canUp = sameGroup(e, prev);
     const canDown = sameGroup(e, next);
     html += `<span style="display:flex;gap:4px;align-items:center;">
@@ -5745,15 +5753,15 @@ async function moveCahierEntry(idx, direction){
   // n'échange jamais 2 entrées de groupes différents (même date + même chapitre requis) --
   // sinon le regroupement par date affiché se retrouve cassé.
   const a = cahier[idx], b = cahier[otherIdx];
-  if((a.date||'')!==(b.date||'') || (a.chapitre||'')!==(b.chapitre||'')) return;
-  // Backfill : si AUCUNE entrée n'a encore d'ordre explicite, fixe l'ordre actuel (déjà trié
-  // par date à ce stade) comme point de départ, pour toutes les entrées d'un coup.
-  if(cahier.every(e=>e.ordre==null)){
-    cahier.forEach((e,i)=>{ e.ordre = i; });
-  }
+  if((a.date||'')!==(b.date||'')) return; // déplacement dans la même journée seulement (chapitres différents permis)
+  // Numérote TOUS les blocs de cette journée dans l'ordre affiché avant l'échange : un bloc sans
+  // ordre (ajouté plus tard) reprenait sinon sa place en fin de journée au tri suivant.
+  const jour = a.date||'', modifies = new Set();
+  cahier.forEach((e,i)=>{ if((e.date||'')===jour && e.ordre!==i){ e.ordre = i; modifies.add(e); } });
   const tmp = cahier[idx].ordre;
   cahier[idx].ordre = cahier[otherIdx].ordre;
   cahier[otherIdx].ordre = tmp;
+  modifies.add(cahier[idx]); modifies.add(cahier[otherIdx]);
   [cahier[idx], cahier[otherIdx]] = [cahier[otherIdx], cahier[idx]];
   saveCahier();
   // Réaffiche IMMÉDIATEMENT depuis le tableau local (déjà à jour, pas besoin de resynchroniser
@@ -5766,8 +5774,7 @@ async function moveCahierEntry(idx, direction){
     // Sauvegarde serveur désormais ATTENDUE (jamais "tirée et oubliée") -- garantit qu'elle
     // est bien terminée avant toute resynchronisation future (ex. prochaine ouverture du
     // cahier), qui renverrait sinon encore l'ancien ordre.
-    if(cahier[idx].id) await syncUpdateEntryOrdre(cahier[idx].id, cahier[idx].ordre);
-    if(cahier[otherIdx].id) await syncUpdateEntryOrdre(cahier[otherIdx].id, cahier[otherIdx].ordre);
+    for(const e of modifies){ if(e.id) await syncUpdateEntryOrdre(e.id, e.ordre); }
   }
 }
 /* Regroupe par date + chapitre. Le chapitre s'affiche en "pied" de chaque groupe (aligné à
@@ -5775,12 +5782,14 @@ async function moveCahierEntry(idx, direction){
    possible en HTML/CSS standard pour du contenu qui varie (la coupure des pages n'est connue
    qu'à l'impression), ceci en est l'équivalent le plus proche réalisable. */
 function groupedEntriesHTML(entries, renderItem){
-  let html=''; let lastKey=null; let currentChapitre='';
+  let html=''; let lastKey=null; let currentChapitre=''; let lastDate=null;
   entries.forEach((e,i)=>{
     const key = (e.date||'')+'|'+(e.chapitre||'');
     if(key!==lastKey){
       if(lastKey!==null){ html += `<div class="nb-page-footer">${escapeHtml(currentChapitre)}</div><hr class="nb-daysep">`; }
-      html+=`<div class="nb-date-row"><div class="nb-date">${fmtDateFR(e.date)}</div></div>`;
+      // La date n'est répétée qu'au changement de jour (plusieurs chapitres le même jour, ex. une interrogation).
+      if((e.date||'')!==lastDate) html+=`<div class="nb-date-row"><div class="nb-date">${fmtDateFR(e.date)}</div></div>`;
+      lastDate = e.date||'';
       lastKey=key;
       currentChapitre = e.chapitre||'';
     }
