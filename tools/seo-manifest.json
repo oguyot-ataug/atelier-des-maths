@@ -1,6 +1,6 @@
 {
  "/": {
-  "hash": "31d19190554a08d136ea7a61587fb4132801619e",
+  "hash": "271e515ea190a4056ab345434d369a323cc8aed5",
   "lastmod": "2026-09-28"
  },
  "/6e/nombres-entiers/": {
@@ -144,11 +144,15 @@
   "lastmod": "2026-09-28"
  },
  "/5e/equations/": {
-  "hash": "9f1e1a693091615fd9cde65ca64e505f03286c19",
+  "hash": "e79092d1a66a99db331821f1173af5fc8472035a",
+  "lastmod": "2026-09-28"
+ },
+ "/5e/fonctions/": {
+  "hash": "7050738d9f410a513aa80e4c78317bb628dd7c99",
   "lastmod": "2026-09-28"
  },
  "/5e/": {
-  "hash": "7918d319c5b30462f1a85b6cf226dd5d1e7e80f3",
+  "hash": "4d9850e03b3b647d16a5877b041012bb1faf2dda",
   "lastmod": "2026-09-28"
  },
  "/professeurs/": {
