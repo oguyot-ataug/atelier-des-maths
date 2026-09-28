@@ -229,6 +229,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-evaluation'); setActiveTopnav('evaluation'); if(typeof initEvaluationView==='function') initEvaluationView();
     }
+    if(nav==='directcode'){ if(typeof qzDirectCodePage==='function') qzDirectCodePage(); }
     if(nav==='programmation'){ if(typeof progQuitterDevoir==='function') progQuitterDevoir(); if(typeof progOuvrir==='function') progOuvrir(); }
     if(nav==='tableau'){
       // Accessible aux élèves aussi (même esprit que figure-sandbox, un espace de
@@ -2469,6 +2470,8 @@ async function refreshAuthUI(){
     if(navCahier) navCahier.style.display = (accessBlocked || currentUserRole==='parent') ? 'none' : 'inline-block'; // accessible à tous les comptes connectés (prof, admin, élève), sauf accès bloqué
     if(navMesResultats) navMesResultats.style.display = (!accessBlocked && currentUserRole==='eleve') ? 'inline-block' : 'none';
     if(navMesDevoirs) navMesDevoirs.style.display = (!accessBlocked && currentUserRole==='eleve' && !isFamilleEnfant) ? 'inline-block' : 'none';
+    const navDirectCode = document.getElementById('navDirectCode'); // séance en direct : rejoindre avec le code du tableau
+    if(navDirectCode) navDirectCode.style.display = (!accessBlocked && currentUserRole==='eleve' && !isFamilleEnfant) ? '' : 'none';
     const navFamille = document.getElementById('navFamille');
     if(navFamille) navFamille.style.display = currentUserRole==='parent' ? 'inline-block' : 'none';
     if(navAdmin){
@@ -2534,6 +2537,7 @@ async function refreshAuthUI(){
     if(navCahier) navCahier.style.display='none';
     if(navMesResultats) navMesResultats.style.display='none';
     if(navMesDevoirs) navMesDevoirs.style.display='none';
+    const navDirectCodeOut = document.getElementById('navDirectCode'); if(navDirectCodeOut) navDirectCodeOut.style.display='none';
     const navFamilleOut = document.getElementById('navFamille');
     if(navFamilleOut) navFamilleOut.style.display='none';
     const hadFamille = typeof familleNiveaux!=='undefined' && familleNiveaux!==null;
@@ -2729,6 +2733,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.740', items:[
+    "Séance en direct : code au tableau et groupes -- demandé : \"on distribue à une classe entière ? C'est direct ou il y a un code ? Je préfère afficher un code au tableau ou choisir mes élèves dans la classe (on est parfois en groupe)\". En ouvrant une séance : la classe, puis toute la classe ou un groupe d'élèves cochés, puis comment ils rejoignent -- avec un code à 4 chiffres affiché en grand au tableau (par défaut : seuls les élèves présents qui tapent le code entrent) ou automatiquement par le bandeau. Côté élève : menu S'entraîner › Séance en direct (code), ou le code tapé directement dans le bandeau rouge. Le code reste visible en haut de l'écran du professeur pendant la séance ; un élève hors du groupe ne peut pas entrer, même avec le code.",
+    "« Séance en direct » dans les modes de l'interrogation -- demandé : \"la séance en direct pourrait s'afficher dans la zone de type d'activités\". Quatrième choix à côté de À la maison, Interrogation en classe et Entraînement : pas de dates ni de note, on choisit la classe (ou des élèves) et le bouton devient « Ouvrir la séance en direct ».",
+  ]},
   { version:'2026-08-19.739', items:[
     "Vidéo « La programmation par blocs » (2 min 16) -- demandé : \"fais la vidéo et ajoute-la aux nouveautés et sur l'atelier augmenté\". Dans les vignettes « Programmation par blocs » de l'accueil (professeurs et élèves) : le professeur donne trois défis en devoir, l'élève assemble ses blocs, se trompe de longueur, corrige grâce au conseil, construit un programme de calcul, puis la création libre et le suivi du professeur (réussite par défi, essais, temps, programme de l'élève en lecture seule).",
     "Programmation : après un programme de calcul réussi, le lutin ne redemande plus un nombre (seuls les tracés sont relancés pour être admirés) ; en passant à la création libre, le bandeau du devoir et la dernière réponse du lutin disparaissent.",

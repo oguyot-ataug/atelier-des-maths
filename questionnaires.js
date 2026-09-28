@@ -293,7 +293,7 @@ function qzEdSet(id, champ, valeur, rerender){
   q[champ] = valeur;
   if(rerender) qzEdRender(); else { qzEdMajTotal(); qzEdMajApercu(id); }
 }
-function qzEdReglage(champ, valeur){ qzEd.reglages[champ] = valeur; qzEdRenderReglages(); qzEdMajTotal(); }
+function qzEdReglage(champ, valeur){ qzEd.reglages[champ] = valeur; qzEdRenderReglages(); qzEdMajTotal(); if(champ === 'mode' && typeof qzFormModeMaj === 'function') qzFormModeMaj(); }
 function qzEdDeplacer(id, sens){
   const i = qzEd.questions.findIndex(q => q.id === id), j = i + sens;
   if(i < 0 || j < 0 || j >= qzEd.questions.length) return;
@@ -351,7 +351,8 @@ async function qzEdImage(id, input){
 function qzEdMajTotal(){
   const el = document.getElementById('qzEdTotal'); if(!el || !qzEd) return;
   const n = qzEd.questions.filter(q => q.type !== 'texte').length, max = qzTotalMax(qzEd.questions);
-  el.innerHTML = qzEstEntrainement(qzEd.reglages) ? `${n} question${n > 1 ? 's' : ''} · <b>entraînement, non noté</b>`
+  el.innerHTML = qzEd.reglages.mode === 'direct' ? `${n} question${n > 1 ? 's' : ''} · <b>séance en direct, non notée</b>`
+    : qzEstEntrainement(qzEd.reglages) ? `${n} question${n > 1 ? 's' : ''} · <b>entraînement, non noté</b>`
     : `${n} question${n > 1 ? 's' : ''} · <b>${qzNum(max)} point${max > 1 ? 's' : ''}</b>${max ? ` · note ramenée sur ${qzEd.reglages.note_sur}` : ''}`;
   qzEd.questions.forEach(q => { const p = document.getElementById('qzEdPts_' + q.id); if(p) p.textContent = q.type === 'texte' ? '' : qzNum(qzMax(q)) + ' pt' + (qzMax(q) > 1 ? 's' : ''); });
 }
@@ -366,6 +367,8 @@ function qzEdResume(q){
   return t ? qzMath(t.length > 110 ? t.slice(0, 110) + '…' : t) : '<i style="color:var(--ink-soft);">(énoncé à écrire)</i>';
 }
 
+// Une interrogation déjà donnée (devoir existant) ne devient pas une séance en direct.
+function qzEdDirectPossible(){ return typeof qzDirectLancer === 'function' && !(typeof qzF !== 'undefined' && qzF && qzF.devoirId); }
 function qzEdRenderReglages(){
   const box = document.getElementById('qzEdReglages'); if(!box || !qzEd) return;
   const r = qzEd.reglages;
@@ -374,8 +377,17 @@ function qzEdRenderReglages(){
       <button type="button" class="qz-mode${r.mode === 'maison' ? ' on' : ''}" onclick="qzEdReglage('mode','maison')"><span class="gicon">home</span><span><b>À la maison</b><small>Sans limite de temps, jusqu'à la date limite de l'interrogation.</small></span></button>
       <button type="button" class="qz-mode${r.mode === 'classe' ? ' on' : ''}" onclick="qzEdReglage('mode','classe')"><span class="gicon">timer</span><span><b>Interrogation en classe</b><small>Durée limitée, copie rendue automatiquement à la fin, sorties de la page signalées.</small></span></button>
       <button type="button" class="qz-mode${r.mode === 'entrainement' ? ' on' : ''}" onclick="qzEdReglage('mode','entrainement')"><span class="gicon">fitness_center</span><span><b>Entraînement / remédiation</b><small>Non noté : l'élève vérifie chaque réponse, réessaie, puis voit la correction. Peut être refait.</small></span></button>
+      ${qzEdDirectPossible() ? `<button type="button" class="qz-mode direct${r.mode === 'direct' ? ' on' : ''}" onclick="qzEdReglage('mode','direct')"><span class="gicon">cast_for_education</span><span><b>Séance en direct</b><small>Non noté : les questions une à une, à votre rythme ; les élèves répondent sur leur ordinateur, résultats et correction en direct.</small></span></button>` : ''}
     </div>
-    ${r.mode === 'entrainement' ? `<div class="qz-reg-grid">
+    ${r.mode === 'direct' ? `<div class="qz-reg-grid">
+      <label>Les élèves rejoignent <select onchange="qzEdReglage('acces', this.value)">
+        <option value="code"${r.acces !== 'auto' ? ' selected' : ''}>avec un code affiché au tableau</option>
+        <option value="auto"${r.acces === 'auto' ? ' selected' : ''}>automatiquement (bandeau, sans code)</option>
+      </select></label>
+      <label class="qz-check"><input type="checkbox" ${r.melanger_choix ? 'checked' : ''} onchange="qzEdReglage('melanger_choix', this.checked)"> Mélanger les propositions des QCM</label>
+    </div>
+    <p class="hint" style="margin:6px 0 0;">Pas de note ni de carnet. Choisissez la classe, puis toute la classe ou un groupe d'élèves, et « Ouvrir la séance en direct » : le code à donner aux élèves s'affiche en grand, à projeter.</p>`
+    : r.mode === 'entrainement' ? `<div class="qz-reg-grid">
       <label>Essais par question <select onchange="qzEdReglage('essais', parseInt(this.value,10))">
         ${[[1, '1 (correction tout de suite)'], [2, '2'], [3, '3'], [0, 'illimités']].map(([v, l]) => `<option value="${v}"${Number(r.essais ?? 2) === v ? ' selected' : ''}>${l}</option>`).join('')}
       </select></label>
@@ -1653,6 +1665,7 @@ function qzCarnetCompetences(body){
     .qz-mode b{display:block;font-family:'Space Grotesk',sans-serif;}
     .qz-mode small{display:block;color:var(--ink-soft);font-size:.78rem;line-height:1.35;margin-top:2px;}
     .qz-mode.on{border-color:#6B3FA0;background:#F4EFFA;box-shadow:0 0 0 3px rgba(107,63,160,.12);}
+    .qz-mode.direct .gicon{color:#D93025;} .qz-mode.direct.on{border-color:#D93025;background:#FFF1EF;box-shadow:0 0 0 3px rgba(217,48,37,.12);}
     .qz-reg-grid{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:6px 0;}
     .qz-reg-grid label{display:flex;align-items:center;gap:6px;font-size:.85rem;}
     .qz-check{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;cursor:pointer;}

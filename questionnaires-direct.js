@@ -37,37 +37,79 @@ const QZD_VERDICTS = [['juste', 'Juste'], ['partiel', 'En partie'], ['faux', 'Fa
 /* =====================================================================
    PROFESSEUR
    ===================================================================== */
-async function qzDirectLancer(questionnaireId){
+/* Demandé : "on distribue à une classe entière ? C'est direct ou il y a un code ? Je préfère afficher
+   un code au tableau ou choisir mes élèves dans la classe (on est parfois en groupe)". Chaque séance a
+   donc un code à 4 chiffres (créé par la base) ; au lancement, le professeur choisit la classe, toute
+   la classe ou les élèves du groupe, et comment ils rejoignent : avec le code affiché au tableau
+   (par défaut), ou automatiquement par le bandeau. `choix` (facultatif, depuis le mode « Séance en
+   direct » du formulaire) : { classId, studentIds, acces } -- la fenêtre de choix est alors sautée. */
+async function qzDirectLancer(questionnaireId, choix){
   const q = await qzBanqueSur(questionnaireId);
   if(!q){ await niceAlert('Questionnaire introuvable.'); return; }
   const questions = qzPreparer(JSON.parse(JSON.stringify(q.questions || [])));
   const nb = questions.filter(x => x.type !== 'texte').length;
   if(!nb){ await niceAlert('Ce questionnaire n\'a pas encore de question.'); return; }
-  const classId = await qzDirectChoixClasse(q.titre || 'Questionnaire', nb);
-  if(!classId) return;
-  // Une seule séance ouverte par classe : la précédente (oubliée ?) est close.
-  await sb.from('qz_direct').update({ ended_at: new Date().toISOString() }).eq('teacher_id', currentUser.id).eq('class_id', classId).is('ended_at', null);
-  const { data, error } = await sb.from('qz_direct').insert({ teacher_id: currentUser.id, class_id: classId, questionnaire_id: q.id || null,
-    titre: q.titre || 'Séance en direct', questions, etat: { phase: 'attente', total: nb, lancees: [] } }).select().single();
+  choix = choix || await qzDirectChoix(q.titre || 'Questionnaire', nb, (q.reglages || {}).acces);
+  if(!choix) return;
+  const studentIds = choix.studentIds && choix.studentIds.length ? choix.studentIds : null;
+  // Une seule séance ouverte par classe (ou par groupe) : la précédente (oubliée ?) est close.
+  let prec = sb.from('qz_direct').update({ ended_at: new Date().toISOString() }).eq('teacher_id', currentUser.id).eq('class_id', choix.classId).is('ended_at', null);
+  if(studentIds) prec = prec.overlaps('student_ids', studentIds); else prec = prec.is('student_ids', null);
+  await prec;
+  const { data, error } = await sb.from('qz_direct').insert({ teacher_id: currentUser.id, class_id: choix.classId, questionnaire_id: q.id || null,
+    titre: q.titre || 'Séance en direct', questions, student_ids: studentIds, acces: choix.acces === 'auto' ? 'auto' : 'code',
+    etat: { phase: 'attente', total: nb, lancees: [] } }).select().single();
   if(error || !data){ await niceAlert('La séance n\'a pas pu être créée : ' + ((error && error.message) || '?')); return; }
+  try{ localStorage.setItem('qzdAcces', data.acces); }catch(e){}
   qzDirectOuvrir(data.id);
 }
-function qzDirectChoixClasse(titre, nb){
+function qzDirectChoix(titre, nb, accesDefaut){
   const classes = accountClassesList || [];
   if(!classes.length){ niceAlert('Aucune classe sur votre compte.'); return Promise.resolve(null); }
+  let acces = accesDefaut || 'code'; try{ acces = accesDefaut || localStorage.getItem('qzdAcces') || 'code'; }catch(e){}
+  const st = { classId: classes.length === 1 ? classes[0].id : null, cible: 'classe', eleves: new Set(), acces, liste: [] };
   return new Promise(res => {
     const o = document.createElement('div'); o.className = 'qzd-ov';
-    o.innerHTML = `<div class="qzd-modal" role="dialog" aria-label="Séance en direct">
-      <h3><span class="gicon">cast_for_education</span> Séance en direct</h3>
-      <p style="margin:4px 0 8px;"><b>${qzEsc(titre)}</b> · ${nb} question${nb > 1 ? 's' : ''}</p>
-      <p class="hint" style="margin:0;">Les questions s'affichent une à une, à votre rythme. Chaque élève répond depuis son compte (ordinateur, tablette ou téléphone) ; vous voyez les réponses arriver en direct et vous affichez la correction quand vous voulez. <b>Rien n'est noté.</b></p>
-      <p style="margin:14px 0 6px;font-weight:600;">Avec quelle classe ?</p>
-      <div class="qz-k-chips">${classes.map(c => `<button type="button" class="qz-k-chip" data-id="${c.id}"><span class="gicon">groups</span> ${qzEsc(c.label)}</button>`).join('')}</div>
-      <div style="text-align:right;margin-top:10px;"><button type="button" class="btn secondary" data-x>Annuler</button></div></div>`;
-    document.body.appendChild(o);
+    const rendre = () => {
+      o.innerHTML = `<div class="qzd-modal" role="dialog" aria-label="Séance en direct">
+        <h3><span class="gicon">cast_for_education</span> Séance en direct</h3>
+        <p style="margin:4px 0 8px;"><b>${qzEsc(titre)}</b> · ${nb} question${nb > 1 ? 's' : ''}</p>
+        <p class="hint" style="margin:0;">Les questions s'affichent une à une, à votre rythme. Chaque élève répond depuis son compte (ordinateur ou tablette) ; vous voyez les réponses arriver en direct et vous affichez la correction quand vous voulez. <b>Rien n'est noté.</b></p>
+        <p class="qzd-m-lab">1. Avec quelle classe ?</p>
+        <div class="qz-k-chips">${classes.map(c => `<button type="button" class="qz-k-chip${st.classId === c.id ? ' on' : ''}" data-classe="${c.id}"><span class="gicon">groups</span> ${qzEsc(c.label)}</button>`).join('')}</div>
+        ${st.classId ? `<p class="qzd-m-lab">2. Qui participe ?</p>
+        <div class="qz-k-chips"><button type="button" class="qz-k-chip${st.cible === 'classe' ? ' on' : ''}" data-cible="classe"><span class="gicon">groups</span> Toute la classe</button>
+          <button type="button" class="qz-k-chip${st.cible === 'eleves' ? ' on' : ''}" data-cible="eleves"><span class="gicon">person</span> Un groupe : élèves choisis</button></div>
+        ${st.cible === 'eleves' ? `<div class="qz-bp-list qzd-m-eleves">${st.liste.length ? st.liste.map(e => `<label class="qz-check"><input type="checkbox" data-eleve="${e.id}" ${st.eleves.has(e.id) ? 'checked' : ''}> ${qzEsc(e.label)}</label>`).join('') : '<span class="hint" style="margin:0;">Chargement…</span>'}</div>
+          <p class="hint" style="margin:4px 0 0;"><span id="qzdMNb">${st.eleves.size}</span> élève(s) choisi(s) · <a href="#" data-tous>tous</a> · <a href="#" data-aucun>aucun</a></p>` : ''}
+        <p class="qzd-m-lab">3. Comment les élèves rejoignent-ils ?</p>
+        <div class="qzd-m-acces">
+          <button type="button" class="qzd-m-opt${st.acces === 'code' ? ' on' : ''}" data-acces="code"><span class="gicon">pin</span><span><b>Avec un code affiché au tableau</b><small>Menu S'entraîner › Séance en direct, ou le bandeau rouge : l'élève tape le code. Seuls les élèves présents entrent.</small></span></button>
+          <button type="button" class="qzd-m-opt${st.acces === 'auto' ? ' on' : ''}" data-acces="auto"><span class="gicon">bolt</span><span><b>Automatiquement</b><small>Un bandeau « Rejoindre » apparaît sur l'écran des élèves concernés, sans code.</small></span></button>
+        </div>` : ''}
+        <p class="hint qzd-m-err" id="qzdMErr" style="margin:10px 0 0;color:#a83c1f;"></p>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;"><button type="button" class="btn secondary" data-x>Annuler</button>
+          ${st.classId ? '<button type="button" class="btn" data-go><span class="gicon">play_arrow</span> Ouvrir la séance</button>' : ''}</div></div>`;
+    };
+    const charger = async () => { st.liste = []; rendre(); st.liste = await qzElevesDevoir({ class_id: st.classId }); if(o.isConnected) rendre(); };
+    rendre(); document.body.appendChild(o);
+    if(st.classId) qzElevesDevoir({ class_id: st.classId }).then(l => { st.liste = l; });
+    o.addEventListener('change', e => { const c = e.target.closest('[data-eleve]'); if(!c) return;
+      if(c.checked) st.eleves.add(c.dataset.eleve); else st.eleves.delete(c.dataset.eleve);
+      const n = o.querySelector('#qzdMNb'); if(n) n.textContent = st.eleves.size;
+      const er = o.querySelector('#qzdMErr'); if(er) er.textContent = ''; });
     o.addEventListener('click', e => {
-      const b = e.target.closest('[data-id]');
-      if(b){ o.remove(); res(b.dataset.id); } else if(e.target === o || e.target.closest('[data-x]')){ o.remove(); res(null); }
+      const t = e.target;
+      if(t === o || t.closest('[data-x]')){ o.remove(); res(null); return; }
+      const cl = t.closest('[data-classe]'); if(cl){ if(st.classId !== cl.dataset.classe){ st.classId = cl.dataset.classe; st.eleves = new Set(); charger(); } return; }
+      const ci = t.closest('[data-cible]'); if(ci){ st.cible = ci.dataset.cible; if(st.cible === 'eleves' && !st.liste.length) charger(); else rendre(); return; }
+      const ac = t.closest('[data-acces]'); if(ac){ st.acces = ac.dataset.acces; rendre(); return; }
+      if(t.closest('[data-tous]')){ e.preventDefault(); st.liste.forEach(x => st.eleves.add(x.id)); rendre(); return; }
+      if(t.closest('[data-aucun]')){ e.preventDefault(); st.eleves = new Set(); rendre(); return; }
+      if(t.closest('[data-go]')){
+        if(st.cible === 'eleves' && !st.eleves.size){ o.querySelector('#qzdMErr').textContent = 'Choisissez au moins un élève.'; return; }
+        o.remove(); res({ classId: st.classId, studentIds: st.cible === 'eleves' ? Array.from(st.eleves) : null, acces: st.acces });
+      }
     });
   });
 }
@@ -78,7 +120,7 @@ async function qzDirectOuvrir(id){
   root.innerHTML = '<p class="hint">Chargement…</p>';
   const { data: row, error } = await sb.from('qz_direct').select('*,classes(nom)').eq('id', id).single();
   if(error || !row){ root.innerHTML = `<p class="hint">Séance introuvable.</p><button class="btn secondary" onclick="qzDirectQuitter()">← Interrogations</button>`; return; }
-  const eleves = await qzElevesDevoir({ class_id: row.class_id });
+  const eleves = await qzElevesDevoir({ class_id: row.class_id, student_ids: row.student_ids });
   const pages = qzPages(row.questions || []).map(p => ({ docs: p.filter(x => x.type === 'texte'), q: p.find(x => x.type !== 'texte') })).filter(p => p.q);
   let pref = {}; try{ pref = JSON.parse(localStorage.getItem('qzdAffichage') || '{}') || {}; }catch(e){}
   qzD = { id, row, etat: row.etat || {}, pages, eleves, reps: new Map(), vus: new Map(), cacher: !!pref.cacher, noms: false, sig: '' };
@@ -270,7 +312,10 @@ function qzDirectRender(){
   else if(!p || e.phase === 'attente') corps = `<div class="qzd-attente">
       <span class="gicon">cast_for_education</span>
       <h2>Les élèves rejoignent la séance</h2>
-      <p>Sur leur compte, un bandeau <b>« Séance en direct »</b> apparaît : ils cliquent sur <b>Rejoindre</b>.</p>
+      ${qzD.row.acces === 'code' ? `<p>Sur leur compte : menu <b>S'entraîner › Séance en direct</b> (ou le bandeau rouge), puis ce code :</p>
+      <div class="qzd-code" aria-label="Code de la séance">${qzEsc(qzD.row.code || '')}</div>`
+      : '<p>Sur leur compte, un bandeau <b>« Séance en direct »</b> apparaît : ils cliquent sur <b>Rejoindre</b>.</p>'}
+      ${qzD.row.student_ids && qzD.row.student_ids.length ? `<p class="hint" style="margin:0 auto;text-align:center;">Groupe de ${qzD.row.student_ids.length} élève${qzD.row.student_ids.length > 1 ? 's' : ''} : ${qzEsc(qzD.eleves.map(e => e.prenom || e.label).join(', '))}</p>` : ''}
       <p class="qzd-grand" id="qzdPresence2"></p>
       <button class="btn qz-go" onclick="qzDirectAller(0)"><span class="gicon">play_arrow</span> Lancer la question 1</button></div>`;
   else {
@@ -301,6 +346,7 @@ function qzDirectRender(){
       ${fin ? '<span class="qzd-live fin">SÉANCE TERMINÉE</span>' : '<span class="qzd-live"><span class="dot"></span> EN DIRECT</span>'}
       <b class="qzd-titre">${qzEsc(qzD.row.titre)}</b><span class="hint" style="margin:0;">${qzEsc(classe)}</span>
       ${fin ? '' : '<span class="qzd-pill" id="qzdPresence"></span>'}
+      ${fin || qzD.row.acces !== 'code' ? '' : `<span class="qzd-pill code" title="Code à donner aux élèves">Code <b>${qzEsc(qzD.row.code || '')}</b></span>`}
       <span class="qzd-outils">
         ${fin ? '' : `<button type="button" class="qzd-tg${qzD.cacher ? ' on' : ''}" onclick="qzDirectBasculer('cacher')" title="Masquer les résultats tant que la correction n'est pas affichée (pour ne pas influencer la classe)"><span class="gicon">${qzD.cacher ? 'visibility_off' : 'visibility'}</span> ${qzD.cacher ? 'Résultats masqués' : 'Résultats visibles'}</button>
         <button type="button" class="qzd-tg${qzD.noms ? ' on' : ''}" onclick="qzDirectBasculer('noms')" title="Afficher qui a répondu (à éviter au vidéoprojecteur)"><span class="gicon">badge</span> Noms</button>`}
@@ -349,14 +395,14 @@ function qzDirectsHtml(){
   return `<p class="qz-i-sec"><span class="gicon" style="color:#D93025;">cast_for_education</span> En direct maintenant</p>
     <div class="qz-i-liste" style="margin-bottom:18px;">${l.map(d => { const e = d.etat || {};
       return `<div class="qz-i-row">
-        <div class="qz-i-main"><b>${qzEsc(d.titre)}</b><div class="hint" style="margin:2px 0 0;">${qzEsc(d.classes ? d.classes.nom : '')} · ${e.phase === 'attente' || !e.n ? 'pas encore commencée' : 'question ' + e.n + ' / ' + (e.total || '?')} · ouverte à ${new Date(d.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</div></div>
+        <div class="qz-i-main"><b>${qzEsc(d.titre)}</b><div class="hint" style="margin:2px 0 0;">${qzEsc(d.classes ? d.classes.nom : '')}${d.student_ids && d.student_ids.length ? ' (groupe de ' + d.student_ids.length + ')' : ''}${d.acces === 'code' ? ' · code <b>' + qzEsc(d.code || '') + '</b>' : ''} · ${e.phase === 'attente' || !e.n ? 'pas encore commencée' : 'question ' + e.n + ' / ' + (e.total || '?')} · ouverte à ${new Date(d.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</div></div>
         <span class="qz-i-act">
           <button class="btn qz-mini" onclick="qzDirectOuvrir('${d.id}')"><span class="gicon">play_arrow</span> Reprendre</button>
           <button class="btn secondary qz-mini" onclick="qzDirectClore('${d.id}')" title="Terminer cette séance"><span class="gicon">stop_circle</span> Terminer</button>
         </span></div>`; }).join('')}</div>`;
 }
 async function qzDirectsCharger(){
-  const { data } = await sb.from('qz_direct').select('id,titre,class_id,created_at,etat,classes(nom)').eq('teacher_id', currentUser.id).is('ended_at', null).order('created_at', { ascending: false });
+  const { data } = await sb.from('qz_direct').select('id,titre,class_id,created_at,etat,code,acces,student_ids,classes(nom)').eq('teacher_id', currentUser.id).is('ended_at', null).order('created_at', { ascending: false });
   if(typeof qzB !== 'undefined' && qzB) qzB.directs = data || [];
 }
 async function qzDirectClore(id){
@@ -379,10 +425,37 @@ async function qzDirectVeille(){
 function qzDirectBandeau(liste){
   let b = document.getElementById('qzdBandeau');
   if(!liste.length || (qzDE && qzDVueActive())){ if(b) b.remove(); return; }
+  const s = liste[0], code = s.acces === 'code' && !s.entre;
+  const sig = [s.id, code, qzDE && qzDE.id].join('|');
+  if(b && b.dataset.sig === sig) return; // ne pas effacer un code en cours de saisie
   if(!b){ b = document.createElement('div'); b.id = 'qzdBandeau'; b.className = 'qzd-bandeau'; document.body.appendChild(b); }
-  const s = liste[0];
+  b.dataset.sig = sig;
   b.innerHTML = `<span class="dot"></span><span class="t"><b>Séance en direct</b><span>${qzEsc(s.titre)}${s.classe ? ' · ' + qzEsc(s.classe) : ''}</span></span>
-    <button class="btn" onclick="qzDirectRejoindre('${s.id}')"><span class="gicon">login</span> ${qzDE && qzDE.id === s.id ? 'Revenir' : 'Rejoindre'}</button>`;
+    ${code ? `<form class="qzd-b-code" onsubmit="event.preventDefault();qzDirectCode(this.code.value)"><input name="code" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Code" aria-label="Code affiché au tableau"><button class="btn"><span class="gicon">login</span> Rejoindre</button></form>`
+      : `<button class="btn" onclick="qzDirectRejoindre('${s.id}')"><span class="gicon">login</span> ${qzDE && qzDE.id === s.id ? 'Revenir' : 'Rejoindre'}</button>`}`;
+}
+// Code affiché au tableau (bandeau ou page « Séance en direct »).
+async function qzDirectCode(code){
+  code = String(code || '').replace(/\D/g, '');
+  if(code.length < 4){ await niceAlert('Tape le code à 4 chiffres affiché au tableau.'); return; }
+  const { data, error } = await sb.rpc('qz_direct_rejoindre', { p_code: code });
+  if(error || !data){ await niceAlert((error && error.message) || 'Code inconnu.'); return; }
+  qzDirectRejoindre(data);
+}
+// Menu S'entraîner › Séance en direct (code) : l'élève tape le code du tableau.
+function qzDirectCodePage(){
+  if(qzDE) qzDirectEleveFermer();
+  qzDirectBandeau([]);
+  showView('view-qz-direct'); setActiveTopnav(null);
+  document.getElementById('qzDirectRoot').innerHTML = `<div class="qzd-attente qzd-code-page">
+    <span class="gicon">cast_for_education</span>
+    <h2>Rejoindre une séance en direct</h2>
+    <p>Tape le code affiché au tableau par ton professeur.</p>
+    <form onsubmit="event.preventDefault();qzDirectCode(this.code.value)">
+      <input name="code" class="qzd-code-in" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="0000" aria-label="Code de la séance">
+      <button class="btn qz-go"><span class="gicon">login</span> Rejoindre</button>
+    </form></div>`;
+  setTimeout(() => { const i = document.querySelector('.qzd-code-in'); if(i) i.focus(); }, 50);
 }
 setInterval(qzDirectVeille, 15000);
 document.addEventListener('visibilitychange', () => { if(!document.hidden) qzDirectVeille(); });
@@ -594,6 +667,21 @@ function qzDirectEleveBilan(d, head){
     .qzd-intro{display:flex;gap:10px;align-items:flex-start;background:rgba(217,48,37,.06);border:1px solid rgba(217,48,37,.2);border-radius:12px;padding:10px 14px;max-width:75ch;color:#20242E;font-size:.92rem;}
     .qzd-intro > .gicon{color:#D93025;}
     .qzd-btn .gicon{color:#D93025;}
+    .qzd-code{font:700 clamp(3.2rem,11vw,7rem)/1 'Space Grotesk',sans-serif;letter-spacing:.18em;color:#20242E;background:#FFF4F2;border:3px dashed #D93025;border-radius:22px;display:inline-block;padding:14px 18px 14px 34px;margin:8px 0 12px;}
+    .qzd-pill.code{background:rgba(217,48,37,.1);color:#B3261E;} .qzd-pill.code b{letter-spacing:.12em;}
+    .qzd-m-lab{margin:14px 0 6px;font-weight:600;}
+    .qz-k-chip.on{border-color:#D93025;background:#FFF1EF;color:#B3261E;}
+    .qzd-m-eleves{max-height:180px;overflow-y:auto;border:1px solid rgba(28,43,57,.15);border-radius:10px;padding:8px;margin-top:8px;}
+    .qzd-m-acces{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .qzd-m-opt{display:flex;gap:8px;align-items:flex-start;text-align:left;border:1.5px solid rgba(28,43,57,.15);background:#fff;border-radius:12px;padding:9px 10px;cursor:pointer;font:inherit;color:var(--ink);}
+    .qzd-m-opt .gicon{color:#D93025;font-size:22px;} .qzd-m-opt b{display:block;font-size:.9rem;} .qzd-m-opt small{display:block;color:var(--ink-soft);font-size:.76rem;line-height:1.3;margin-top:2px;}
+    .qzd-m-opt.on{border-color:#D93025;background:#FFF1EF;box-shadow:0 0 0 3px rgba(217,48,37,.12);}
+    .qzd-modal{max-height:calc(100vh - 32px);overflow-y:auto;}
+    .qzd-b-code{display:flex;gap:6px;align-items:center;margin:0;} .qzd-b-code input{width:84px;border:0;border-radius:10px;padding:8px 10px;font:700 1.05rem 'Space Grotesk',sans-serif;letter-spacing:.15em;text-align:center;}
+    .qzd-code-page form{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-top:12px;}
+    .qzd-code-in{width:200px;font:700 2.4rem 'Space Grotesk',sans-serif;letter-spacing:.25em;text-align:center;border:2px solid rgba(28,43,57,.2);border-radius:14px;padding:8px 10px;}
+    .qzd-code-in:focus{outline:none;border-color:#D93025;box-shadow:0 0 0 4px rgba(217,48,37,.15);}
+    @media (max-width:560px){ .qzd-m-acces{grid-template-columns:1fr;} }
     .qzd-verdict.mini{display:inline-flex;font:600 .82rem Inter,sans-serif;padding:3px 10px;border-radius:999px;margin:0;} .qzd-verdict.mini .gicon{font-size:1rem;}
   `;
   document.head.appendChild(st);

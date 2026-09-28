@@ -30,14 +30,14 @@ function qzFormHtml(){
       <div class="qz-f-grid">
         <label class="qz-f-full">Titre <input type="text" id="qzfTitre" placeholder="ex. Interro n°3 : les fractions"></label>
         <label>Classe <select id="qzfClasse" onchange="qzF.eleves=new Set();qzFormCible()">${classes.map(c => `<option value="${c.id}">${qzEsc(c.label)}</option>`).join('') || '<option value="">Aucune classe</option>'}</select></label>
-        <label>Ouverture <input type="date" id="qzfOuverture" title="Tant qu'aucune date n'est choisie, l'interrogation reste un brouillon invisible aux élèves"></label>
-        <label><span>Date limite <span style="font-weight:400;color:var(--ink-soft);">(facultative)</span></span><input type="date" id="qzfLimite"></label>
+        <label class="qzf-dates">Ouverture <input type="date" id="qzfOuverture" title="Tant qu'aucune date n'est choisie, l'interrogation reste un brouillon invisible aux élèves"></label>
+        <label class="qzf-dates"><span>Date limite <span style="font-weight:400;color:var(--ink-soft);">(facultative)</span></span><input type="date" id="qzfLimite"></label>
       </div>
-      <p class="hint" style="margin:4px 0 10px;">Sans date d'ouverture, l'interrogation reste un brouillon invisible aux élèves. Choisissez aujourd'hui pour l'ouvrir tout de suite (en classe, vous pouvez aussi la fermer à tout moment depuis la correction).</p>
+      <p class="hint qzf-dates" style="margin:4px 0 10px;">Sans date d'ouverture, l'interrogation reste un brouillon invisible aux élèves. Choisissez aujourd'hui pour l'ouvrir tout de suite (en classe, vous pouvez aussi la fermer à tout moment depuis la correction).</p>
       <div class="tool-row" id="qzfCibleMode" style="margin:0 0 6px;"></div>
       <div id="qzfEleves" style="display:none;"></div>
-      <p class="hint" style="margin:8px 0 0;font-weight:700;">Consigne</p>
-      <textarea id="qzfConsigne" rows="2" placeholder="Consigne (facultatif), ex. Calculatrice interdite. Justifiez vos réponses." style="width:100%;box-sizing:border-box;margin-top:6px;padding:8px;border-radius:8px;border:1px solid rgba(28,43,57,.2);font:inherit;"></textarea>
+      <p class="hint qzf-dates" style="margin:8px 0 0;font-weight:700;">Consigne</p>
+      <textarea class="qzf-dates" id="qzfConsigne" rows="2" placeholder="Consigne (facultatif), ex. Calculatrice interdite. Justifiez vos réponses." style="width:100%;box-sizing:border-box;margin-top:6px;padding:8px;border-radius:8px;border:1px solid rgba(28,43,57,.2);font:inherit;"></textarea>
     </div>
     <div class="tool-shell"><p class="example-title" style="margin:0 0 6px;"><span class="gicon" style="color:#6B3FA0;">edit_note</span> Les questions</p><div id="qzfEditeur"></div></div>
     <div class="tool-row" style="margin:0 0 30px;">
@@ -116,6 +116,7 @@ async function qzFormOuvrir(opts){
   }
   qzFormCible();
   qzEdMonter();
+  qzFormModeMaj();
   window.scrollTo(0, 0);
   qzAutoDemarrer(qzF.devoirId ? 'local' : 'db');
 }
@@ -189,7 +190,17 @@ window.addEventListener('beforeunload', ev => {
   if(qzAuto.mode === 'db' ? qzAutoEtat() !== qzAuto.dernier || qzAuto.enCours : qzAutoEtat() !== qzAuto.base){ ev.preventDefault(); ev.returnValue = ''; }
 });
 
+/* Mode « Séance en direct » (zone des modes de l'éditeur) -- demandé : "la séance en direct pourrait
+   s'afficher dans la zone de type d'activités". Pas de dates ni de consigne : le bouton ouvre la
+   séance tout de suite, avec la classe et le groupe choisis ici. */
+function qzFormModeMaj(){
+  if(!qzF || !qzEd) return;
+  const direct = qzEd.reglages.mode === 'direct', b = document.getElementById('qzfDonner');
+  document.querySelectorAll('#qzFormRoot .qzf-dates').forEach(el => { el.style.display = direct ? 'none' : ''; });
+  if(b && !qzF.devoirId) b.innerHTML = direct ? '<span class="gicon">cast_for_education</span> Ouvrir la séance en direct' : '<span class="gicon">send</span> Donner à la classe';
+}
 async function qzFormEnregistrer(){
+  if(qzEd && qzEd.reglages.mode === 'direct' && !qzF.devoirId) return qzFormDirect();
   const st = document.getElementById('qzfStatus');
   const titre = document.getElementById('qzfTitre').value.trim();
   const classId = document.getElementById('qzfClasse').value;
@@ -213,6 +224,19 @@ async function qzFormEnregistrer(){
   if(qzB) qzB.onglet = 'donnees';
   await qzBanqueOuvrir();
   await niceAlert(nouveau ? (ouv ? `« ${titre} » est donnée à la classe.` : `« ${titre} » est enregistrée en brouillon : choisissez une date d'ouverture pour la donner.`) : 'Interrogation modifiée.');
+}
+async function qzFormDirect(){
+  const st = document.getElementById('qzfStatus');
+  const titre = document.getElementById('qzfTitre').value.trim() || 'Séance en direct';
+  const classId = document.getElementById('qzfClasse').value;
+  if(!classId){ st.textContent = 'Choisissez la classe.'; return; }
+  if(qzF.cible === 'eleves' && !qzF.eleves.size){ st.textContent = 'Choisissez au moins un élève.'; return; }
+  st.textContent = 'Ouverture de la séance…';
+  const auto = qzAuto; if(auto){ clearInterval(auto.timer); if(auto.enCours) await auto.enCours; }
+  let questionnaireId;
+  try{ questionnaireId = await qzEdEnregistrer(titre); }catch(e){ st.textContent = e.message || String(e); if(auto && qzAuto === auto) auto.timer = setInterval(qzAutoTick, 2000); return; }
+  if(qzAuto === auto) qzAuto = null;
+  await qzDirectLancer(questionnaireId, { classId, studentIds: qzF.cible === 'eleves' ? Array.from(qzF.eleves) : null, acces: qzEd.reglages.acces === 'auto' ? 'auto' : 'code' });
 }
 // Bouton « Enregistrer » de l'éditeur : enregistre tout de suite (même incomplet).
 // Signalé : "J'ai pourtant cliqué sur Enregistrer mais rien ne se passe" -- le message s'affichait
