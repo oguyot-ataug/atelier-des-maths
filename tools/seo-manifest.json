@@ -1,7 +1,7 @@
 {
  "/": {
-  "hash": "603e03c749ef4aad2b34740a7ff2aa9cb827d497",
-  "lastmod": "2026-09-28"
+  "hash": "e250ab707ab60127936ecc1abf225424979298a6",
+  "lastmod": "2026-09-29"
  },
  "/6e/nombres-entiers/": {
   "hash": "fc55d4d99327ef543bf3f340c92e872d9aaea4c3",
@@ -52,12 +52,16 @@
   "lastmod": "2026-09-26"
  },
  "/6e/proprietes-des-triangles/": {
-  "hash": "a480f78af021bf47b6902113f2eb24c66e9106f8",
-  "lastmod": "2026-09-26"
+  "hash": "4433ba97df0874729f328dcc97b9bfa9d94d5913",
+  "lastmod": "2026-09-29"
+ },
+ "/6e/fractions-multiplication/": {
+  "hash": "a3683995811c2882dd3e414a6ec9b11f21b5f1c2",
+  "lastmod": "2026-09-29"
  },
  "/6e/proportionnalite/": {
-  "hash": "80e09fe86e63765fb38aed1c1034adc191b34d97",
-  "lastmod": "2026-09-26"
+  "hash": "4e76a062d67e4dc3f7546537838ff407d2f596a6",
+  "lastmod": "2026-09-29"
  },
  "/6e/aire-et-perimetre/": {
   "hash": "63b5562cb5a58e377beb384e8b61b2c699a77b94",
@@ -76,8 +80,8 @@
   "lastmod": "2026-09-28"
  },
  "/6e/": {
-  "hash": "38215498d4ecdad8b57e1d810d83cb44c39270b2",
-  "lastmod": "2026-09-28"
+  "hash": "385362d7a8ca95db609207fbbd2ff76774f2472a",
+  "lastmod": "2026-09-29"
  },
  "/5e/operations-sur-les-nombres-decimaux/": {
   "hash": "cacdbe57832cba317d742cd4c8f4015e86286233",
