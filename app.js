@@ -3072,6 +3072,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.815', items:[
+    '3e (administrateurs) : chapitre D2 « Fonctions linéaires et affines » -- cours (fonction affine : image, antécédent, droite, coefficient directeur et ordonnée à l\'origine ; fonction linéaire ; proportionnalité et pourcentages), 4 méthodes animées (droite réglable, tracé pas à pas, retrouver f à partir de deux images, calculateur de pourcentages), rédaction type, 9 exercices corrigés, quiz et histoire.',
+  ]},
   { version:'2026-08-19.814', items:[
     "3e (visible des administrateurs) : chapitre G4 « Trigonométrie » -- construit à partir des captures du manuel (p. 67-68), titres reformulés, exemples nouveaux, couleurs du manuel (hypoténuse bleu-vert, côté opposé rose, côté adjacent vert). Cours : définitions du sinus, du cosinus et de la tangente d'un angle aigu (SOH CAH TOA, bornes, opposé et adjacent qui dépendent de l'angle choisi), calculer une longueur avec le sinus puis de deux façons (Pythagore ou cosinus), calculer un angle avec la tangente, relations cos² + sin² = 1 et tan = sin / cos (avec leur justification). Méthode animée : un triangle rectangle réglable (les rapports ne dépendent que de l'angle ; opposé et adjacent s'échangent quand on change d'angle), un choix guidé de la bonne formule, calculer un angle avec arccos, la hauteur d'un arbre inaccessible. Rédaction type, 9 exercices corrigés (échelle, rampe d'accès…), quiz, un peu d'histoire (Hipparque et l'origine du mot sinus).",
   ]},
