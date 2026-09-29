@@ -3070,6 +3070,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.819', items:[
+    "Lecture à voix haute des définitions et propriétés -- signalé : « pour \"racine de a\", on entendra \"s q r t de a\" », « des rapports en géométrie type AM/AN, on entendra \"ame sur an\" et non pas \"A M sur A N\" ». La conversion des formules en français parlé est réécrite (un vrai petit analyseur au lieu d'une suite de remplacements), d'après les 172 formules et les 393 encadrés réellement présents dans tous les chapitres, du CM1 à la 3e. Les noms de points sont épelés (« A M sur A B égale A N sur A C », « M prime », « l'angle M O M prime ») ; racines (« racine carrée de a »), puissances quelconques (« 10 puissance moins n »), indices (« x 1 »), barres (« P de A barre »), fonctions (« f de x », « f est la fonction qui, à x, associe a x plus b ») ; les parenthèses autour d'un calcul sont dites (« k fois, ouvrez la parenthèse, a plus b, fermez la parenthèse ») ; les fractions complexes précisent « le tout sur ». Dans le texte : [AB] « le segment A B », (AB) « la droite A B », [OM) « la demi-droite O M », ∈ « appartient au », // « est parallèle à », cm² « centimètres carrés », 10³ « 10 au cube ». Corrigé au passage : les couleurs des formules étaient lues (« E7B34 »), une fraction contenant du texte était lue « dfrac… », les tableaux étaient lus d'une traite sans pause, et le texte est désormais calculé au moment de l'écoute (les icônes des autres boutons ne peuvent plus être lues).",
+  ]},
   { version:'2026-08-19.818', items:[
     "Ouverture de la vente de la 3e -- demandé : « Oui, ouvre la vente de la 3e. » La 3e peut maintenant être choisie et payée comme les autres niveaux : dans « Mon abonnement » (offre Professeur seul, et création de classes de 3e), et dans l'espace Famille (choix des niveaux et paiement ; la formule « Collège complet » couvre désormais vraiment les 4 niveaux). Côté serveur, les fonctions prof-offre et famille acceptent la 3e (redéployées à partir du code en production, seule la liste des niveaux change). Page Tarifs : plus aucun niveau n'est marqué « bientôt » (pastilles des licences établissement, calculateur, offre Famille « Collège complet »), et les textes mentionnent la 3e.",
   ]},
@@ -6746,15 +6749,15 @@ function injectReadAloudButtons(container){
   if(!container || !('speechSynthesis' in window)) return;
   container.querySelectorAll('.def-box').forEach(box=>{
     if(box.querySelector('.read-aloud-btn')) return;
-    const text = buildSpeechText(box).replace(/\s+/g, ' ').trim();
-    if(!text) return;
+    if(!speechFinal(buildSpeechText(box))) return;
     const btn=document.createElement('button');
     btn.type='button';
     btn.className='read-aloud-btn';
     btn.title='Écouter cette définition';
     btn.setAttribute('aria-label','Écouter cette définition');
     btn.innerHTML='<span class=gicon>volume_up</span>';
-    btn.onclick=(e)=>{ e.stopPropagation(); toggleReadAloud(btn, text); };
+    // Texte calculé au clic (formules déjà rendues, boutons ajoutés depuis ignorés).
+    btn.onclick=(e)=>{ e.stopPropagation(); toggleReadAloud(btn, speechFinal(buildSpeechText(box))); };
     box.appendChild(btn);
   });
 }
@@ -6856,61 +6859,229 @@ function closeZoomBox(){
 document.addEventListener('keydown', (e)=>{
   if(e.key==='Escape' && document.getElementById('zoomBoxOverlay').style.display==='flex') closeZoomBox();
 });
-/* Construit le texte à lire à voix haute en parcourant le DOM d'un bloc : le texte normal
-   est repris tel quel, mais chaque formule mathématique (.tex, une fois rendue par KaTeX)
-   est remplacée par sa source LaTeX brute (conservée dans data-tex-source par
-   renderStaticMath) convertie en français parlé via latexToSpeech -- lire directement le
-   HTML/MathML généré par KaTeX donne un résultat incompréhensible (fragments de glyphes,
-   numérateur et dénominateur d'une fraction lus à la suite sans "sur", etc.). */
+/* Construit le texte à lire à voix haute en parcourant le DOM d'un bloc : chaque formule
+   (.tex, dont renderStaticMath garde la source LaTeX dans data-tex-source, ou .katex rendu
+   ailleurs, dont la source est dans son annotation) est convertie en français parlé par
+   latexToSpeech ; le texte normal passe par texteToSpeech (noms de points épelés, [AB], (AB),
+   symboles…). Les boutons et icônes ne sont jamais lus, et les éléments de bloc (lignes,
+   cellules de tableau, puces) sont séparés par une pause -- sans quoi un tableau était lu d'une
+   traite (« PréfixetéragigamégakiloSymboleTGM… »). */
+const SPEECH_BLOCS = new Set(['P', 'DIV', 'LI', 'TR', 'BR', 'H1', 'H2', 'H3', 'H4', 'H5', 'UL', 'OL', 'TABLE', 'TBODY', 'THEAD']);
+// Le texte ordinaire de tout le bloc est converti d'un seul tenant (un nom en gras, « les segments
+// <b>[MB]</b> », dépend du mot qui le précède) ; les formules, déjà converties, y sont mises de côté
+// sous forme de marqueurs le temps de la conversion.
 function buildSpeechText(node){
+  const formules = [];
+  const brut = speechBrut(node, formules);
+  return texteToSpeech(brut).replace(/\u0001(\d+)\u0001/g, (m, k) => ' ' + formules[k] + ' ')
+    .replace(/(angles?(?: aigus?| droits?| obtus)?)\s+l'angle /g, '$1 ');
+}
+function speechBrut(node, formules){
   let out = '';
+  const formule = tex => { formules.push(latexToSpeech(tex)); return ' \u0001' + (formules.length - 1) + '\u0001 '; };
   node.childNodes.forEach(child=>{
     if(child.nodeType === Node.TEXT_NODE){
       out += child.nodeValue;
     } else if(child.nodeType === Node.ELEMENT_NODE){
-      if(child.classList && child.classList.contains('tex')){
+      const cl = child.classList;
+      if(cl.contains('tex')){
         const src = child.dataset.texSource;
-        out += ' ' + latexToSpeech(src !== undefined ? src : child.textContent) + ' ';
-      } else if(child.classList && child.classList.contains('read-aloud-btn')){
-        // le bouton lui-même (déjà présent lors d'un ré-appel) ne doit jamais être lu
+        out += formule(src !== undefined ? src : child.textContent);
+      } else if(cl.contains('katex')){
+        const ann = child.querySelector('annotation[encoding="application/x-tex"]');
+        out += formule(ann ? ann.textContent : child.textContent);
+      } else if(/^(BUTTON|SVG|svg|STYLE|SCRIPT|IMG)$/.test(child.tagName) || cl.contains('gicon') || cl.contains('lrn-bar')){
+        // boutons (écouter, loupe, apprendre, + Cahier), icônes et figures : jamais lus
       } else {
-        out += buildSpeechText(child);
+        const t = child.tagName;
+        out += speechBrut(child, formules) + (t === 'TD' || t === 'TH' ? ', ' : SPEECH_BLOCS.has(t) ? '. ' : '');
       }
     }
   });
   return out;
 }
-/* Convertit une source LaTeX (le sous-ensemble de commandes utilisé sur le site : \dfrac,
-   \times, \widehat, \text, \pi, \approx, exposants ^2/^3, virgule décimale {,}) en une
-   phrase française prononçable. Reste volontairement simple (regex, pas un vrai parseur
-   LaTeX) : le site n'utilise qu'un petit vocabulaire de commandes, toujours de la même
-   façon -- voir les usages réels relevés dans les .def-box de tous les chapitres avant
-   d'écrire cette fonction. */
-function latexToSpeech(tex){
-  let s = ' ' + tex + ' ';
-  // Fractions \dfrac{a}{b} -> "a sur b" ; en boucle pour gérer les fractions imbriquées,
-  // en traitant toujours la plus intérieure d'abord (sans accolades à l'intérieur).
-  const fracRe = /\\dfrac\{([^{}]*)\}\{([^{}]*)\}/;
-  let guard = 0;
-  while(fracRe.test(s) && guard < 20){ s = s.replace(fracRe, (m,a,b)=>` ${a} sur ${b} `); guard++; }
-  s = s.replace(/\\widehat\{([^{}]*)\}/g, ' angle $1 ');
-  s = s.replace(/\\text\{([^{}]*)\}/g, ' $1 ');
-  s = s.replace(/\^2/g, ' au carré ');
-  s = s.replace(/\^3/g, ' au cube ');
-  s = s.replace(/\{,\}/g, ',');
-  s = s.replace(/\\,/g, '');
-  s = s.replace(/\\times/g, ' fois ');
-  s = s.replace(/\\div/g, ' divisé par ');
-  s = s.replace(/\\approx/g, ' environ égal à ');
-  s = s.replace(/\\pi/g, ' pi ');
-  s = s.replace(/:/g, ' divisé par ');
-  // Nettoyage final : toute commande LaTeX non reconnue perd son backslash (reste lisible
-  // tel quel plutôt que de faire planter la synthèse vocale), puis on retire les accolades
-  // restantes et on normalise les espaces.
-  s = s.replace(/\\/g, '');
-  s = s.replace(/[{}]/g, '');
-  s = s.replace(/\s+/g, ' ').trim();
+/* Finition du texte complet : ponctuation propre (pas de « . . » ni d'espace avant une virgule). */
+function speechFinal(s){
+  return s.replace(/\s+/g, ' ').replace(/(^|[\s(])(l|d|j|m|n|s|t|c|qu|jusqu|lorsqu|puisqu)' /gi, "$1$2'").replace(/\s+([,.;:!?])/g, '$1').replace(/([.,;:!?])(?:\s*[.,])+/g, '$1').replace(/^[\s.,]+/, '').trim();
+}
+
+/* Lecture d'un nom de point ou de figure : lettres épelées une à une, primes dits « prime »
+   (« AM » -> « A M », « M′ » -> « M prime », « ABM'M » -> « A B M prime M »). Sans cela, la
+   synthèse vocale lit « AM » comme un mot (« ame ») et « AN » comme « an ». */
+function speechEpeler(nom){
+  return (String(nom).match(/[A-Za-z]|\d+|[′']|″/g) || []).map(c => c === '″' ? 'seconde' : /[′']/.test(c) ? 'prime' : c).join(' ');
+}
+// Mots français parfois écrits en capitales pour insister : lus normalement, jamais épelés.
+const SPEECH_MOTS_CAPITALES = new Set(['ET', 'OU', 'NON', 'OUI', 'SI', 'EST', 'LE', 'LA', 'LES', 'UN', 'UNE', 'DE', 'DES', 'PAS', 'NE', 'TOUT', 'TOUS', 'AU', 'AUX', 'EN', 'ON', 'IL', 'ELLE', 'ATTENTION', 'JAMAIS', 'TOUJOURS', 'SEUL', 'SEULE', 'MAIS']);
+const SPEECH_UNITES = { mm: 'millimètre', cm: 'centimètre', dm: 'décimètre', m: 'mètre', dam: 'décamètre', hm: 'hectomètre', km: 'kilomètre' };
+const SPEECH_EXPOSANTS = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-', 'ⁿ': 'n' };
+function speechPuissance(e){ // e : exposant déjà en texte (« 2 », « -3 », « n »)
+  if(e === '2') return ' au carré ';
+  if(e === '3') return ' au cube ';
+  return ' puissance ' + e.replace(/^-/, 'moins ') + ' ';
+}
+
+/* Texte ordinaire (hors formules). */
+function texteToSpeech(t){
+  let s = ' ' + t + ' ';
+  const L = 'A-Za-zÀ-ÿœŒ', P = "′'";
+  // Unités au carré / au cube : « cm² » -> « centimètres carrés ».
+  s = s.replace(/(\d[\d\s,]*)?\b(mm|cm|dm|dam|hm|km|m)([²³])(?![A-Za-z])/g, (m, n, u, e) => (n || '') + ' ' + SPEECH_UNITES[u] + 's ' + (e === '²' ? 'carrés' : 'cubes') + ' ');
+  // Exposants en caractères (« 10³ », « 10⁻³ », « k² »).
+  s = s.replace(/([0-9A-Za-z)])?([⁻]?[⁰¹²³⁴⁵⁶⁷⁸⁹ⁿ]+)/g, (m, b, e) => (b || '') + speechPuissance([...e].map(c => SPEECH_EXPOSANTS[c]).join('')));
+  // Indices en caractères et lettres de ronde (« ℱ₁ » -> « F 1 »).
+  s = s.replace(/[₀-₉]+/g, m => ' ' + [...m].map(c => c.charCodeAt(0) - 0x2080).join('') + ' ').replace(/ℱ/g, ' F ').replace(/𝒞/g, ' C ').replace(/𝒜/g, ' A ');
+  // « les droites (MN) et (BC) » : le second nom est déjà annoncé par « les droites ».
+  s = s.replace(/((?:droites|segments|demi-droites)\s+[\[(][A-Z′']+[\])]\s+et\s+)[\[(]([A-Z′']+)[\])]/g, (m, deb, nom) => deb + ' ' + speechEpeler(nom) + ' ');
+  // Demi-droites, segments, droites, notés avec des noms de points.
+  const nomRe = `[A-Z](?:[A-Z0-9]|[${P}])*`;
+  const objet = (mot, pluriel) => (m, avant, nom) => {
+    const prec = (avant || '').trim().toLowerCase();
+    const dejaNomme = /(segments?|droites?|demi-droites?|côtés?|diamètres?|rayons?|cordes?|diagonales?|cercles?|axes?|plans?)$/.test(prec);
+    return (avant || '') + (dejaNomme ? ' ' : ' le ' + mot + ' ') + speechEpeler(nom) + ' ';
+  };
+  s = s.replace(new RegExp(`(\\S*\\s*)\\[(${nomRe})\\)`, 'g'), (m, avant, nom) => objet('demi-droite')(m, avant, nom).replace(' le demi-droite ', ' la demi-droite '));
+  s = s.replace(new RegExp(`(\\S*\\s*)\\[(${nomRe})\\]`, 'g'), objet('segment'));
+  s = s.replace(new RegExp(`(\\S*\\s*)\\(([A-Z](?:[A-Z]|[${P}])+|[A-Z][${P}]?)\\)`, 'g'), (m, avant, nom) => {
+    const prec = (avant || '').trim();
+    if(/^[A-Za-z]{1,2}$/.test(avant || '')) return avant + ' de ' + speechEpeler(nom) + ' '; // P(A), f(x)… écrits en texte (collés à la parenthèse)
+    return objet(nom.replace(/[′']/g, '').length >= 2 ? 'droite' : '')(m, avant, nom).replace(' le droite ', ' la droite ').replace(' le  ', ' ');
+  });
+  s = s.replace(/\(([a-z][′']?)\)/g, (m, nom) => ' ' + speechEpeler(nom) + ' '); // (d), (d′) : droite d
+  s = s.replace(/\(([A-Z][a-z])\)/g, (m, nom) => ' ' + speechEpeler(nom) + ' '); // axe (Ox)
+  // Noms de points : groupes de capitales (et primes) lus lettre par lettre.
+  s = s.replace(new RegExp(`(?<![${L}0-9])([A-Z](?:[A-Z0-9]|[${P}](?![a-zà-ÿœ]))+|[A-Z][${P}](?![a-zà-ÿœ]))(?![a-zà-ÿœ])`, 'g'), (m, nom) =>
+    SPEECH_MOTS_CAPITALES.has(nom) ? nom.toLowerCase() : ' ' + speechEpeler(nom) + ' ');
+  // Quotients écrits avec une barre : « AM/AN » -> « A M sur A N », « 1/1000e » -> « 1 sur 1000e ».
+  s = s.replace(/([0-9A-Za-z])\s*\/\s*(?=[0-9A-Za-z])/g, '$1 sur ');
+  // Symboles.
+  s = s.replace(/\/\//g, ' est parallèle à ').replace(/⊥/g, ' est perpendiculaire à ')
+    .replace(/×/g, ' fois ').replace(/÷/g, ' divisé par ').replace(/≈/g, ' environ égal à ')
+    .replace(/≤|⩽/g, ' inférieur ou égal à ').replace(/≥|⩾/g, ' supérieur ou égal à ').replace(/≠/g, ' différent de ')
+    .replace(/∈/g, ' appartient à ').replace(/∉/g, ' n\'appartient pas à ').replace(/√/g, ' racine carrée de ')
+    .replace(/π/g, ' pi ').replace(/±/g, ' plus ou moins ').replace(/→|⟶|⟼|↦/g, ' donne ')
+    .replace(/(\d)\s*°/g, '$1 degrés').replace(/°/g, ' degrés ').replace(/%/g, ' pour cent ')
+    .replace(/(^|[\s(])[−-](?=\s*\d)/g, '$1 moins ').replace(/\s[−-]\s/g, ' moins ').replace(/\s=\s/g, ' égale ')
+    .replace(/\s<\s/g, ' inférieur à ').replace(/\s>\s/g, ' supérieur à ')
+    .replace(/\s\+\s/g, ' plus ');
+  // Articles contractés après les ajouts : « à le segment » -> « au segment ».
+  s = s.replace(/\s+/g, ' ').replace(/(^|\s)à le /g, '$1au ').replace(/(^|\s)de le /g, '$1du ');
   return s;
+}
+
+/* Convertit une source LaTeX en français parlé. Vrai petit analyseur (et non plus une suite de
+   remplacements) : fractions imbriquées ou contenant du texte, racines, puissances quelconques,
+   indices, couleurs (\textcolor ne doit pas faire lire « E7B34 »), noms de points épelés
+   (« AM » -> « A M »), fonctions (« f(x) » -> « f de x »), angles, barres… -- d'après les
+   formules réellement présentes dans les encadrés des chapitres (relevées sur tous les niveaux). */
+const SPEECH_CMD = {
+  times: ' fois ', cdot: ' fois ', div: ' divisé par ', pm: ' plus ou moins ', mp: ' moins ou plus ',
+  leqslant: ' inférieur ou égal à ', leq: ' inférieur ou égal à ', le: ' inférieur ou égal à ',
+  geqslant: ' supérieur ou égal à ', geq: ' supérieur ou égal à ', ge: ' supérieur ou égal à ',
+  neq: ' différent de ', ne: ' différent de ', approx: ' environ égal à ', simeq: ' environ égal à ',
+  in: ' appartient à ', notin: ' n\'appartient pas à ', infty: ' l\'infini ', pi: ' pi ', degree: ' degrés ',
+  ldots: ' etc. ', dots: ' etc. ', cdots: ' etc. ', parallel: ' est parallèle à ', perp: ' est perpendiculaire à ',
+  Rightarrow: ' donc ', Leftrightarrow: ' équivaut à ', rightarrow: ' donne ', to: ' donne ', mapsto: ' ⟼ ', longmapsto: ' ⟼ ',
+  alpha: ' alpha ', beta: ' bêta ', gamma: ' gamma ', delta: ' delta ', theta: ' thêta ', lambda: ' lambda ', mu: ' mu ', sigma: ' sigma ', omega: ' oméga ', varphi: ' phi ', phi: ' phi ',
+  Delta: ' delta ', '%': ' pour cent ', '{': ' ', '}': ' ', quad: ' ', qquad: ' ', ',': '', ';': ' ', ':': ' ', '!': '', ' ': ' ',
+};
+const SPEECH_FONCTIONS = { cos: 'cosinus', sin: 'sinus', tan: 'tangente', ln: 'logarithme', exp: 'exponentielle' };
+function latexToSpeech(tex){
+  const src = String(tex == null ? '' : tex);
+  let i = 0;
+  // Lit un argument : {groupe} ou un seul caractère / une seule commande.
+  function arg(){
+    while(src[i] === ' ') i++;
+    if(src[i] === '{'){
+      let d = 0, j = i;
+      for(; j < src.length; j++){ if(src[j] === '{' && src[j - 1] !== '\\') d++; else if(src[j] === '}' && src[j - 1] !== '\\'){ d--; if(!d) break; } }
+      const g = src.slice(i + 1, j); i = j + 1; return g;
+    }
+    if(src[i] === '\\'){ const m = /^\\([A-Za-z]+|.)/.exec(src.slice(i)); i += m[0].length; return m[0]; }
+    return src[i++] || '';
+  }
+  const sous = g => latexToSpeech(g);
+  const simple = g => /^\s*(-?[0-9]+(\\,[0-9]+)*(\{,\}[0-9]+)?|[A-Za-z]{1,3}|\\text\{[^{}]*\}|\\textcolor\{[^{}]*\}\{[A-Za-z0-9]\})\s*$/.test(g);
+  let out = '', dernier = ''; // dernier : nature du dernier élément lu ('lettre', 'paren', 'fin-paren', '')
+  while(i < src.length){
+    const c = src[i];
+    if(c === '\\'){
+      const m = /^\\([A-Za-z]+|.)/.exec(src.slice(i)); i += m[0].length;
+      const n = m[1];
+      if(n === 'frac' || n === 'dfrac' || n === 'tfrac'){
+        const a = arg(), b = arg(), A = sous(a), B = sous(b);
+        out += simple(a) && simple(b) ? ` ${A} sur ${B} ` : simple(a) ? ` ${A} sur, ${B}, ` : ` ${A}, le tout sur ${simple(b) ? B : ', ' + B + ','} `;
+        dernier = '';
+      } else if(n === 'sqrt'){
+        let idx = '';
+        if(src[i] === '['){ const j = src.indexOf(']', i); idx = src.slice(i + 1, j); i = j + 1; }
+        const g = arg();
+        out += (idx === '3' ? ' racine cubique de ' : idx ? ` racine ${sous(idx)}-ième de ` : ' racine carrée de ') + sous(g) + (simple(g) ? ' ' : ', ');
+        dernier = 'fin-paren';
+      } else if(n === 'textcolor' || n === 'colorbox'){ arg(); out += ' ' + sous(arg()) + ' '; dernier = 'lettre'; }
+      else if(n === 'color'){ arg(); }
+      else if(n === 'text' || n === 'textrm' || n === 'textbf' || n === 'textit' || n === 'mbox' || n === 'operatorname'){ out += ' ' + texteToSpeech(arg()) + ' '; dernier = ''; }
+      else if(n === 'mathcal' || n === 'mathbb' || n === 'mathrm' || n === 'mathbf' || n === 'mathit' || n === 'boxed'){ out += ' ' + sous(arg()) + ' '; dernier = 'lettre'; }
+      else if(n === 'widehat' || n === 'hat' || n === 'angle'){ const g = n === 'angle' ? '' : arg(); out += ' l\'angle ' + speechEpeler(g.replace(/[{}\\]/g, '')) + ' '; dernier = 'lettre'; }
+      else if(n === 'overline' || n === 'bar'){ out += ' ' + sous(arg()) + ' barre '; dernier = 'lettre'; }
+      else if(n === 'overrightarrow' || n === 'vec'){ out += ' le vecteur ' + sous(arg()) + ' '; dernier = 'lettre'; }
+      else if(n === 'underbrace' || n === 'overbrace'){
+        const g = arg(); let note = '';
+        while(src[i] === ' ') i++;
+        if(src[i] === '_' || src[i] === '^'){ i++; note = arg(); }
+        out += ' ' + sous(g) + (note ? ', soit ' + sous(note) + ', ' : ' '); dernier = '';
+      } else if(n === 'left' || n === 'right' || n === 'big' || n === 'Big' || n === 'bigl' || n === 'bigr' || n === 'displaystyle'){ /* le délimiteur qui suit est lu normalement */ }
+      else if(SPEECH_FONCTIONS[n]){ out += ' ' + SPEECH_FONCTIONS[n] + ' de '; while(src[i] === ' ') i++; if(src[i] === '('){ i++; dernier = 'fonction'; } else dernier = ''; }
+      else if(n in SPEECH_CMD){ out += SPEECH_CMD[n]; if(n !== ',' && n !== '!' && n !== ';' && n !== ' ') dernier = ''; }
+      else { out += ' ' + n + ' '; dernier = ''; }
+    } else if(c === '{'){ out += ' ' + sous(arg()) + ' '; }
+    else if(c === '}'){ i++; }
+    else if(c === '^'){
+      i++; const e = arg().replace(/\\,|\\;|\\!/g, '').trim();
+      const plat = e.replace(/\{,\}/g, ',');
+      out += (dernier === 'fin-paren' ? ', le tout' : '') + (/^-?[0-9a-z]$/i.test(plat) || /^-?[0-9]+$/.test(plat) ? speechPuissance(plat) : ' puissance ' + sous(e) + ', ');
+      dernier = '';
+    } else if(c === '_'){ i++; out += ' ' + sous(arg()) + ' '; dernier = 'lettre'; }
+    else if(/[A-Za-z]/.test(c)){
+      let j = i; while(j < src.length && /[A-Za-z]/.test(src[j])) j++;
+      let mot = src.slice(i, j); i = j;
+      while(src[i] === "'" || src[i] === '′'){ mot += "'"; i++; }
+      out += ' ' + speechEpeler(mot) + ' ';
+      if(src[i] === '(' && /^[A-Za-z]'*$/.test(mot)){ i++; out += ' de '; dernier = 'fonction'; } // f(x), P(A)
+      else dernier = 'lettre';
+    } else if(c === '('){
+      // Parenthèses autour d'un calcul : dites, comme on les dicte (sinon « k × (a + b) » serait lu
+      // « k fois a plus b »). Autour d'un seul terme, elles se taisent (« (cos A)² » : « le tout au carré »).
+      let d = 0, j = i;
+      for(; j < src.length; j++){ if(src[j] === '(') d++; else if(src[j] === ')'){ d--; if(!d) break; } }
+      const contenu = src.slice(i + 1, j).replace(/\\right\s*$/, '');
+      i = j + 1;
+      if(/[+=<>]|[^\s{(^]\s*-|\\(times|div|pm)/.test(contenu.replace(/\{[^{}]*\}/g, 'x'))){
+        out += ', ouvrez la parenthèse, ' + sous(contenu) + ', fermez la parenthèse, ';
+        dernier = '';
+      } else { out += ' ' + sous(contenu) + ' '; dernier = 'fin-paren'; }
+    }
+    else if(c === ')'){ // fin des arguments d'une fonction (« f(x) », « P(A) »)
+      i++; out += ' '; dernier = 'lettre';
+    }
+    else if(/[0-9]/.test(c)){
+      let j = i; while(j < src.length && (/[0-9]/.test(src[j]) || src.startsWith('{,}', j) || src.startsWith('\\,', j))) j += src.startsWith('{,}', j) || src.startsWith('\\,', j) ? (src[j] === '{' ? 3 : 2) : 1;
+      out += ' ' + src.slice(i, j).replace(/\{,\}/g, ',').replace(/\\,/g, '') + ' '; i = j; dernier = 'nombre';
+    }
+    else {
+      i++;
+      const op = { '+': ' plus ', '-': ' moins ', '=': ' égale ', '<': ' inférieur à ', '>': ' supérieur à ', ':': ' divisé par ', ';': ', ', ',': ', ', '|': ' ', '%': ' pour cent ', '!': ' factorielle ', '[': ' ', ']': ' ', "'": ' prime ', '′': ' prime ', '~': ' ' }[c];
+      out += op !== undefined ? op : ' ' + c + ' ';
+      if(c !== ' ') dernier = '';
+    }
+  }
+  // « x ⟼ ax + b » : « à x, on associe a x plus b » ; « f : x ⟼ … » : « f est la fonction qui, à x, associe … ».
+  if(out.includes('⟼')){
+    const [g, d] = out.split('⟼');
+    const k = g.indexOf(' divisé par ');
+    out = k >= 0 ? `${g.slice(0, k)} est la fonction qui, à ${g.slice(k + 12)}, associe ${d}` : `à ${g}, on associe ${d}`;
+  }
+  return out.replace(/\s+/g, ' ').replace(/\s+,/g, ',').replace(/,(\s*,)+/g, ',').replace(/^[\s,]+|[\s,]+$/g, '');
 }
 function toggleReadAloud(btn, text){
   // Un seul bloc lu à la fois : si on reclique sur le même bouton en cours de lecture, on
