@@ -20,7 +20,7 @@
    ===================================================================== */
 
 const OP_ORDRE = ['6e','5e','4e','3e'];
-const OP_DISPO = ['6e','5e']; // miroir de NIVEAUX_DISPONIBLES (fonction prof-offre)
+const OP_DISPO = ['6e','5e','4e']; // miroir de NIVEAUX_DISPONIBLES (fonction prof-offre)
 let opPrix = { seul_base:3900, seul_niveau:2900, seul_classe:1500, part_base:3900, part_eleve:2000, seul_eleves_max:30 };
 let opOffre = null;       // ligne prof_offres du professeur connecté
 let offreNiveaux = null;  // null : pas de restriction ; sinon niveaux ouverts (Professeur seul, ou élève d'une classe en libre-service)

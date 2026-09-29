@@ -16,7 +16,7 @@
    ===================================================================== */
 
 const FAM_ORDRE = ['6e','5e','4e','3e'];
-const FAM_DISPO = ['6e','5e']; // niveaux en ligne : miroir de NIVEAUX_DISPONIBLES (fonction famille)
+const FAM_DISPO = ['6e','5e','4e']; // niveaux en ligne : miroir de NIVEAUX_DISPONIBLES (fonction famille)
 const FAM_EXCLUSION_TEXTE = "Je certifie qu'aucun de mes enfants inscrits sur L'Atelier des Maths n'est scolarisé à l'Ensemble scolaire La Malgrange (Jarville-la-Malgrange), établissement où enseigne le concepteur du site, et je m'engage à ne pas créer de compte pour un enfant qui y serait scolarisé. Je reconnais qu'une fausse déclaration entraîne la fermeture des comptes sans remboursement.";
 // Prix affichés (en centimes, par nombre de niveaux) : lus dans famille_parametres, modifiables
 // dans Administration > Familles. Le montant réellement payé est toujours recalculé par le serveur.
@@ -112,7 +112,7 @@ function famPresentationHtml(){
   <div class="fam-offres">
     <div class="fam-offre"><b>1 niveau</b><span class="fam-prix">${famPrixTxt(famGrille['1'])}</span><small>par année scolaire</small></div>
     <div class="fam-offre"><b>2 niveaux</b><span class="fam-prix">${famPrixTxt(famGrille['2'])}</span><small>par année scolaire</small></div>
-    <div class="fam-offre"><b>Collège complet</b><span class="fam-prix">${famPrixTxt(famGrille['3'])}</span><small>dès que la 4e et la 3e seront en ligne</small></div>
+    <div class="fam-offre"><b>Collège complet</b><span class="fam-prix">${famPrixTxt(famGrille['3'])}</span><small>dès que la 3e sera en ligne</small></div>
   </div>
   <ul class="fam-points">
     <li><span class="gicon">group</span><span>Jusqu'à <b>4 comptes enfants</b> (des jumeaux ont chacun leur compte), gérés par vous.</span></li>
