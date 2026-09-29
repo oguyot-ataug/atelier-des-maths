@@ -130,6 +130,7 @@ async function qzDirectOuvrir(id){
   const { data: row, error } = await sb.from('qz_direct').select('*,classes(nom)').eq('id', id).single();
   if(error || !row){ root.innerHTML = `<p class="hint">Séance introuvable.</p><button class="btn secondary" onclick="qzDirectQuitter()">← Interrogations</button>`; return; }
   const eleves = await qzElevesDevoir({ class_id: row.class_id, student_ids: row.student_ids });
+  if(row.ended_at) row.questions = await qzDirectQuestionsAJour(row); // bilan : corrigé à jour
   const pages = qzPages(row.questions || []).map(p => ({ docs: p.filter(x => x.type === 'texte'), q: p.find(x => x.type !== 'texte') })).filter(p => p.q);
   let pref = {}; try{ pref = JSON.parse(localStorage.getItem('qzdAffichage') || '{}') || {}; }catch(e){}
   qzD = { id, row, etat: row.etat || {}, pages, eleves, reps: new Map(), valides: new Map(), vus: new Map(), cacher: !!pref.cacher, noms: false, sig: '', durees: {}, decal: 0 };
@@ -272,7 +273,7 @@ async function qzDirectNoter(id, auto){
   if(row.devoir_id){ if(!auto) qzOuvrirCorrection(row.devoir_id); return row.devoir_id; }
   if(!auto && !(await niceConfirm('Noter cette séance ? Une interrogation est créée avec les réponses des élèves (questions posées pendant la séance seulement), corrigée automatiquement. Vous vérifierez les copies avant de publier les notes.'))) return null;
   const lancees = (row.etat && row.etat.lancees) || [];
-  const questions = (row.questions || []).filter(q => q.type !== 'texte' && lancees.includes(q.id));
+  const questions = (await qzDirectQuestionsAJour(row)).filter(q => q.type !== 'texte' && lancees.includes(q.id));
   if(!questions.length){ await niceAlert('Aucune question n\'a été posée pendant cette séance : rien à noter.'); return null; }
   let reglages = { mode: 'direct' };
   if(row.questionnaire_id){ const { data: src } = await sb.from('questionnaires').select('reglages').eq('id', row.questionnaire_id).maybeSingle(); if(src && src.reglages) reglages = Object.assign({}, src.reglages, { mode: 'direct', brouillon: undefined, ferme: false }); }
@@ -286,7 +287,7 @@ async function qzDirectNoter(id, auto){
   (reps || []).forEach(r => { if(!parEleve.has(r.student_id)) parEleve.set(r.student_id, {}); parEleve.get(r.student_id)[r.qid] = r.reponse; });
   if(!parEleve.size){ await sb.from('questionnaires').delete().eq('id', qz.id); await niceAlert('Aucun élève n\'a répondu pendant cette séance : rien à noter.'); return null; }
   // Donnée aux seuls élèves qui ont participé : un absent ne doit pas pouvoir la passer après coup.
-  const { data: dv, error: e2 } = await sb.from('devoirs').insert({ teacher_id: currentUser.id, class_id: row.class_id, titre: row.titre || 'Séance en direct', type: 'questionnaire',
+  const { data: dv, error: e2 } = await sb.from('devoirs').insert({ teacher_id: currentUser.id, class_id: row.class_id, titre: (row.titre || 'Séance en direct') + ' (séance en direct du ' + jour + ')', type: 'questionnaire',
     questionnaire_id: qz.id, consigne: 'Séance en direct du ' + jour + '.', date_depot: row.created_at, date_limite: fin, student_ids: [...parEleve.keys()], qz_mode: qzModeCle('direct') }).select('id').single();
   if(e2 || !dv){ await sb.from('questionnaires').delete().eq('id', qz.id); await niceAlert('La séance n\'a pas pu être notée : ' + ((e2 && e2.message) || '?')); return null; }
   const copies = [...parEleve.entries()].map(([student_id, reponses]) => {
@@ -309,6 +310,46 @@ async function qzDirectNoter(id, auto){
     qzOuvrirCorrection(dv.id);
   }
   return dv.id;
+}
+/* Corrigé à jour -- signalé : « j'ai inversé diviseur et reste. Les élèves avaient bien répondu mais
+   ça a compté faux pour eux ! » La séance garde une copie des questions telles qu'au lancement ; une
+   séance terminée (bilan, notation) prend maintenant la version ACTUELLE du questionnaire d'origine
+   pour chaque question (même identifiant, même type) : corriger le questionnaire corrige la séance. */
+async function qzDirectQuestionsAJour(row){
+  const base = row.questions || [];
+  if(!row.questionnaire_id) return base;
+  const { data: src } = await sb.from('questionnaires').select('questions').eq('id', row.questionnaire_id).maybeSingle();
+  const parId = new Map(((src && src.questions) || []).map(q => [q.id, q]));
+  return base.map(q => { const n = parId.get(q.id); return n && n.type === q.type ? Object.assign({}, n, { duree_direct: q.duree_direct }) : q; });
+}
+// Annuler la notation d'une séance -- demandé : « Je dois pouvoir annuler une correction et la reprendre
+// à zéro ». L'interrogation créée par « Noter » (copies, notes, questionnaire généré) est supprimée ; la
+// séance, son bilan et les réponses des élèves restent : on peut corriger le questionnaire puis re-noter.
+async function qzDirectAnnulerNotation(id){
+  const { data: row } = await sb.from('qz_direct').select('id,titre,devoir_id').eq('id', id).single();
+  if(!row || !row.devoir_id){ await niceAlert('Cette séance n\'est pas notée.'); return false; }
+  const { data: dv } = await sb.from('devoirs').select('id,questionnaire_id,qz_publie_at').eq('id', row.devoir_id).maybeSingle();
+  if(!(await niceConfirm(`Annuler la notation de la séance « ${row.titre} » ?\n\nL'interrogation créée pour la noter est supprimée, avec les copies et les notes${dv && dv.qz_publie_at ? ' (déjà publiées : elles disparaissent du carnet et de l\'espace des élèves)' : ''}. La séance, son bilan et les réponses des élèves sont gardés : vous pourrez corriger le questionnaire puis cliquer à nouveau sur « Noter ».`))) return false;
+  if(dv){
+    const { error: e1 } = await sb.from('devoirs_rendus').delete().eq('devoir_id', dv.id);
+    const { error: e2 } = e1 ? { error: e1 } : await sb.from('devoirs').delete().eq('id', dv.id); // copies : supprimées avec
+    if(e2){ await niceAlert('Erreur : ' + e2.message); return false; }
+    if(dv.questionnaire_id){
+      const { count } = await sb.from('devoirs').select('id', { count: 'exact', head: true }).eq('questionnaire_id', dv.questionnaire_id);
+      const { count: nd } = await sb.from('qz_direct').select('id', { count: 'exact', head: true }).eq('questionnaire_id', dv.questionnaire_id);
+      if(!count && !nd) await sb.from('questionnaires').delete().eq('id', dv.questionnaire_id);
+    }
+  }
+  const { error } = await sb.from('qz_direct').update({ notee: false, devoir_id: null }).eq('id', id);
+  if(error){ await niceAlert('Erreur : ' + error.message); return false; }
+  if(qzD && qzD.id === id){ qzD.row.notee = false; qzD.row.devoir_id = null; }
+  return true;
+}
+async function qzDirectAnnulerNotationUI(id){
+  if(!(await qzDirectAnnulerNotation(id))) return;
+  if(qzD && qzD.id === id && document.getElementById('qzdBilan')) return qzDirectOuvrir(id);
+  if(qzB) qzB.onglet = 'donnees';
+  await qzBanqueOuvrir();
 }
 function qzDirectBasculer(k){
   if(!qzD) return;
@@ -510,13 +551,16 @@ function qzDirectBilanHtml(){
   return `<div id="qzdBilan">
     <h2 class="qzd-h2"><span class="gicon">insights</span> Bilan de la séance <span class="hint" style="font-weight:400;">(${qzD.row.devoir_id ? 'notée' : 'non notée'})</span></h2>
     ${qzD.row.devoir_id ? `<p class="qzd-intro" style="margin:0 0 14px;"><span class="gicon">grading</span><span>Séance notée : une interrogation a été créée avec les réponses des élèves. <b>Vérifiez les copies, puis publiez les résultats</b> pour envoyer les notes dans le carnet.</span></p>` : ''}
+    ${qzD.row.questionnaire_id ? `<p class="qzd-intro" style="margin:0 0 14px;"><span class="gicon">edit_note</span><span><b>Une erreur dans le corrigé ?</b> Modifiez le questionnaire d'origine : ${qzD.row.devoir_id ? 'ce bilan en tient compte. La séance est déjà notée : annulez la notation, puis notez-la à nouveau pour recorriger les copies' : 'ce bilan et la notation en tiennent compte'}.
+      <button class="btn secondary qz-mini" style="margin-left:6px;" onclick="qzBanqueReprendre('${qzD.row.questionnaire_id}')"><span class="gicon">edit</span> Modifier le questionnaire</button></span></p>` : ''}
     <div class="qzd-blist">${lignes}</div>
     <div class="qzd-leg" style="margin:8px 0 18px;">${QZD_VERDICTS.filter(([k]) => k !== 'sondage' || sondage).map(([k, l]) => `<span class="${k}"><i></i>${l}</span>`).join('')}</div>
     <h3 class="qzd-h3">Par élève</h3>
     <div class="qzd-tab-wrap"><table class="qzd-tab"><thead><tr><th>Élève</th><th>Justes</th><th>Répondues</th><th>Question par question</th></tr></thead><tbody>${eleves}</tbody></table></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;">
       <button class="btn secondary" onclick="qzDirectQuitter()">← Interrogations</button>
-      ${qzD.row.devoir_id ? `<button class="btn" onclick="qzOuvrirCorrection('${qzD.row.devoir_id}')"><span class="gicon">fact_check</span> Vérifier et publier les notes</button>`
+      ${qzD.row.devoir_id ? `<button class="btn" onclick="qzOuvrirCorrection('${qzD.row.devoir_id}')"><span class="gicon">fact_check</span> Vérifier et publier les notes</button>
+        <button class="btn secondary" style="color:#a83c1f;" onclick="qzDirectAnnulerNotationUI('${qzD.id}')" title="Supprime l'interrogation créée pour noter la séance (copies et notes) ; la séance et les réponses restent"><span class="gicon">undo</span> Annuler la notation</button>`
         : `<button class="btn" onclick="qzDirectNoterDepuisBilan()" title="Crée une interrogation notée avec les réponses des élèves"><span class="gicon">grading</span> Noter cette séance</button>`}
       ${qzD.row.questionnaire_id ? `<button class="btn secondary" onclick="qzDirectLancer('${qzD.row.questionnaire_id}')"><span class="gicon">replay</span> Nouvelle séance avec ce questionnaire</button>` : ''}
     </div></div>`;
@@ -566,9 +610,11 @@ function qzDirectsPassesHtml(f){
         <span class="qz-i-etat ${d.devoir_id ? 'ok' : 'brouillon'}"><span class="gicon">${d.devoir_id ? 'grading' : 'school'}</span> ${d.devoir_id ? 'Notée' : 'Non notée'}</span>
         <span class="qz-i-act">
           <button class="btn qz-mini" onclick="qzDirectOuvrir('${d.id}')"><span class="gicon">insights</span> Bilan</button>
-          ${d.devoir_id ? `<button class="btn secondary qz-mini" onclick="qzOuvrirCorrection('${d.devoir_id}')" title="Vérifier les copies et publier les notes"><span class="gicon">fact_check</span> Corriger</button>`
+          ${d.devoir_id ? `<button class="btn secondary qz-mini" onclick="qzOuvrirCorrection('${d.devoir_id}')" title="Vérifier les copies et publier les notes"><span class="gicon">fact_check</span> Corriger</button>
+            <button class="btn secondary qz-mini" onclick="qzDirectAnnulerNotationUI('${d.id}')" title="Annuler la notation : l'interrogation créée (copies, notes) est supprimée ; la séance et les réponses restent"><span class="gicon">undo</span></button>`
             : `<button class="btn secondary qz-mini" onclick="qzDirectNoter('${d.id}')" title="Créer une interrogation notée avec les réponses des élèves"><span class="gicon">grading</span> Noter</button>`}
-          ${d.questionnaire_id ? `<button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${d.questionnaire_id}')" title="Nouvelle séance en direct avec ce questionnaire"><span class="gicon">replay</span></button>` : ''}
+          ${d.questionnaire_id ? `<button class="btn secondary qz-mini" onclick="qzBanqueReprendre('${d.questionnaire_id}')" title="Modifier le questionnaire (corriger une erreur de corrigé : le bilan et la notation en tiennent compte)"><span class="gicon">edit</span></button>
+          <button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${d.questionnaire_id}')" title="Nouvelle séance en direct avec ce questionnaire"><span class="gicon">replay</span></button>` : ''}
           <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzDirectSupprimer('${d.id}')" title="Supprimer cette séance et ses réponses"><span class="gicon">delete</span></button>
         </span></div>`).join('')}</div>`;
 }

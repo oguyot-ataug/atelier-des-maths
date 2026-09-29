@@ -1062,13 +1062,14 @@ async function qzOuvrirCorrection(devoirId, vue){
   root.innerHTML = '<p class="hint">Chargement…</p>';
   const { data: devoir, error } = await sb.from('devoirs').select('*, classes(nom,niveau)').eq('id', devoirId).single();
   if(error || !devoir){ root.innerHTML = '<p class="hint">Interrogation introuvable.</p>'; return; }
-  const [{ data: qz }, { data: copies }, eleves] = await Promise.all([
+  const [{ data: qz }, { data: copies }, eleves, { data: direct }] = await Promise.all([
     sb.from('questionnaires').select('*').eq('id', devoir.questionnaire_id).maybeSingle(),
     sb.from('qz_copies').select('*').eq('devoir_id', devoirId),
     qzElevesDevoir(devoir),
+    sb.from('qz_direct').select('id').eq('devoir_id', devoirId).maybeSingle(),
   ]);
   if(!qz){ root.innerHTML = '<p class="hint">Questionnaire introuvable.</p>'; return; }
-  qzC = { devoir, qz, reglages: Object.assign({}, QZ_REGLAGES_DEFAUT, qz.reglages || {}), eleves,
+  qzC = { devoir, qz, directId: direct ? direct.id : null, reglages: Object.assign({}, QZ_REGLAGES_DEFAUT, qz.reglages || {}), eleves,
     copies: new Map((copies || []).map(c => [c.student_id, c])), vue: vue || 'copies', eleveSel: null, questionSel: null, saveT: {} };
   const premiere = eleves.find(e => { return qzEstRendue(qzC.copies.get(e.id)); });
   qzC.eleveSel = premiere ? premiere.id : (eleves[0] && eleves[0].id);
@@ -1136,11 +1137,37 @@ function qzCRender(){
       <span style="flex:1;"></span>
       <label class="qz-check" title="Cochée : QCM, nombres, points à placer... notés d'office. Décochée : vous notez chaque question (la correction automatique devient une proposition à accepter)."><input type="checkbox" ${qzCorrAuto(qzC.reglages) ? 'checked' : ''} onchange="qzCCorrAutoReglage(this.checked)"> Correction automatique</label>
       <label class="qz-check" title="Plus aucun élève ne peut commencer ; ceux qui ont commencé peuvent seulement rendre."><input type="checkbox" ${qzC.reglages.ferme ? 'checked' : ''} onchange="qzCFermerAcces(this.checked)"> Questionnaire fermé</label>
+      <button class="btn secondary" onclick="qzCRecorriger()" title="Efface toutes vos corrections (points, commentaires, propositions de l'IA) et recalcule les notes avec le corrigé actuel du questionnaire"><span class="gicon">restart_alt</span> Recorriger à zéro</button>
+      ${qzC.directId && typeof qzDirectAnnulerNotationUI === 'function' ? `<button class="btn secondary" style="color:#a83c1f;" onclick="qzDirectAnnulerNotationUI('${qzC.directId}')" title="Interrogation créée pour noter une séance en direct : la supprimer (copies, notes). La séance et les réponses restent."><span class="gicon">undo</span> Annuler la notation de la séance</button>` : ''}
       ${publie ? `<button class="btn secondary" onclick="qzCPublier(false)"><span class="gicon">visibility_off</span> Retirer la publication</button>`
         : `<button class="btn" onclick="qzCPublier(true)"><span class="gicon">publish</span> Publier les résultats</button>`}
     </div>
     <div id="qzCBody"></div>`;
   if(qzC.vue === 'copies') qzCRenderCopies(); else qzCRenderQuestions();
+}
+// Reprendre la correction à zéro -- demandé : « Je dois pouvoir annuler une correction et la reprendre à
+// zéro ». Toutes les corrections du professeur (et de l'IA) sont effacées ; chaque copie est recorrigée
+// automatiquement avec le corrigé ACTUEL du questionnaire (relu dans la base : modifié entre-temps ?).
+async function qzCRecorriger(){
+  if(!qzC) return;
+  const nb = [...qzC.copies.values()].filter(c => c.correction && Object.keys(c.correction).length).length;
+  if(!(await niceConfirm(`Recorriger toutes les copies à zéro ?\n\nLes notes sont recalculées avec le corrigé actuel du questionnaire.${nb ? ` Vos corrections à la main (points, commentaires, propositions de l'IA) sur ${nb} copie${nb > 1 ? 's' : ''} sont effacées.` : ''} Les questions ouvertes redeviennent « à corriger ».`))) return;
+  const { data: qz } = await sb.from('questionnaires').select('*').eq('id', qzC.qz.id).maybeSingle();
+  if(qz){ qzC.qz = qz; qzC.reglages = Object.assign({}, QZ_REGLAGES_DEFAUT, qz.reglages || {}); }
+  const d = qzC.devoir; let err = null;
+  for(const c of qzC.copies.values()){
+    Object.values(qzC.saveT || {}).forEach(clearTimeout);
+    c.correction = {};
+    if(!qzEstRendue(c)) continue;
+    const s = qzScoreCopie(qzC.qz.questions, c, qzC.reglages);
+    const val = { correction: {}, total: s.aCorriger ? null : s.total, note: s.aCorriger ? null : s.note, updated_at: new Date().toISOString() };
+    const { error } = await sb.from('qz_copies').update(val).eq('id', c.id);
+    if(error){ err = error; break; }
+    Object.assign(c, val);
+    if(d.qz_publie_at) await sb.from('devoirs_rendus').update({ note: !s.aCorriger && s.sur === 20 ? s.note : null }).eq('devoir_id', d.id).eq('student_id', c.student_id);
+  }
+  qzCRender();
+  await niceAlert(err ? 'Erreur : ' + err.message : 'Toutes les copies ont été recorrigées avec le corrigé actuel.');
 }
 function qzCVue(v){ qzC.vue = v; qzCRender(); }
 function qzCFermer(){ qzC = null; if(qzB) qzB.onglet = 'donnees'; qzBanqueOuvrir(); }
