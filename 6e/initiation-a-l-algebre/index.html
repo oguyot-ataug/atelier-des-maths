@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Initiation à l'algèbre – Cours de maths 6e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 6e : Initiation à l'algèbre. Qu'est-ce qu'un problème algébrique ?, Résoudre un problème algébrique. Définitions, figures interactives,…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/6e/initiation-a-l-algebre/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Initiation à l'algèbre – Cours de maths 6e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 6e : Initiation à l'algèbre. Qu'est-ce qu'un problème algébrique ?, Résoudre un problème algébrique. Définitions, figures interactives,…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/6e/initiation-a-l-algebre/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Initiation à l'algèbre (6e)","headline":"Initiation à l'algèbre – cours de mathématiques de 6e","description":"Cours de maths 6e : Initiation à l'algèbre. Qu'est-ce qu'un problème algébrique ?, Résoudre un problème algébrique. Définitions, figures interactives,…","url":"https://maths.latelieraugmente.fr/6e/initiation-a-l-algebre/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"6e (cycle 3, collège)","about":"Nombres et calculs","teaches":["Qu'est-ce qu'un problème algébrique ?","Résoudre un problème algébrique"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 6e","url":"https://maths.latelieraugmente.fr/6e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 6e","item":"https://maths.latelieraugmente.fr/6e/"},{"@type":"ListItem","position":3,"name":"Initiation à l'algèbre","item":"https://maths.latelieraugmente.fr/6e/initiation-a-l-algebre/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/6e/">Cours de maths 6e</a> › Initiation à l'algèbre</div>
+<h1>Initiation à l'algèbre</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span> Cours de mathématiques de 6e (sixième) · chapitre 18 · Qu'est-ce qu'un problème algébrique ? · Résoudre un problème algébrique</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/18-initiation-a-l-algebre/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Qu'est-ce qu'un problème algébrique ?</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">L'<b>algèbre</b> est un outil qui permet de résoudre des problèmes en raisonnant sur des nombres <b>sans connaître leur valeur</b> au départ. On représente ces nombres inconnus (par une barre, une boîte, un fruit sur une balance… et plus tard par une lettre), puis on raisonne jusqu'à les trouver.</div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Résoudre un problème algébrique</h3></div>
+<div class="sub-header"><span class="letter">A</span><h4>Avec un schéma en barres</h4></div>
+<p class="example-title">Exemple : Léa, Tom et Sam se partagent 150 billes. Tom a 25 billes de plus que Léa, et Sam a 10 billes de moins que Léa. Combien de billes chacun a-t-il ?</p>
+<svg viewBox="0 0 470 150" style="width:100%;max-width:500px;display:block;margin:8px auto;"><text x="100" y="36" text-anchor="end" font-family="Inter" font-size="13" fill="#1C1B2E">Léa</text><text x="100" y="78" text-anchor="end" font-family="Inter" font-size="13" fill="#1C1B2E">Tom</text><text x="100" y="120" text-anchor="end" font-family="Inter" font-size="13" fill="#1C1B2E">Sam</text><rect x="110" y="16" width="64" height="30" rx="3" fill="#0C5BA0" fill-opacity="0.25" stroke="#1C1B2E" stroke-width="1.3"></rect><text x="142" y="36" text-anchor="middle" font-family="Inter" font-size="12.5" font-weight="700" fill="#1C1B2E">?</text><rect x="110" y="58" width="64" height="30" rx="3" fill="#0C5BA0" fill-opacity="0.25" stroke="#1C1B2E" stroke-width="1.3"></rect><text x="142" y="78" text-anchor="middle" font-family="Inter" font-size="12.5" font-weight="700" fill="#1C1B2E">?</text><rect x="174" y="58" width="52" height="30" rx="3" fill="#1E7B34" fill-opacity="0.25" stroke="#1C1B2E" stroke-width="1.3"></rect><text x="200" y="78" text-anchor="middle" font-family="Inter" font-size="12.5" font-weight="700" fill="#1C1B2E">+ 25</text><rect x="110" y="100" width="64" height="30" rx="3" fill="#0C5BA0" fill-opacity="0.25" stroke="#1C1B2E" stroke-width="1.3"></rect><text x="142" y="120" text-anchor="middle" font-family="Inter" font-size="12.5" font-weight="700" fill="#1C1B2E">?</text><rect x="148" y="100" width="26" height="30" fill="#fff" stroke="#C0392B" stroke-width="1.3" stroke-dasharray="4 3"></rect><text x="161" y="148" text-anchor="middle" font-family="Inter" font-size="12" font-weight="700" fill="#C0392B">− 10</text><path d="M244,16 q14,0 14,14 v86 q0,14 -14,14" fill="none" stroke="#1C1B2E" stroke-width="1.3"></path><text x="266" y="78" font-family="Inter" font-size="14" font-weight="700" fill="#1C1B2E">150 billes</text></svg>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr" style="font-family:inherit;">3 barres + 25 − 10 = 150</span><span class="we-comment">On met les barres bout à bout : + 25 − 10, c'est + 15.</span></div><div class="we-row"><span class="we-expr" style="font-family:inherit;">3 barres = 150 − 15 = 135</span><span class="we-comment">On retire les 15 billes « en trop ».</span></div><div class="we-row"><span class="we-expr" style="font-family:inherit;">1 barre = 135 ÷ 3 = 45</span><span class="we-comment">Les trois barres sont égales : on partage en 3.</span></div><div class="we-row"><span class="we-expr" style="font-family:inherit;">Léa : 45 billes ; Tom : 45 + 25 = 70 billes ; Sam : 45 − 10 = 35 billes.</span><span class="we-comment">On calcule chaque part, et on vérifie : 45 + 70 + 35 = 150.</span></div></div>
+
+<div class="sub-header"><span class="letter">B</span><h4>Avec une balance</h4></div>
+<p class="example-title">Exemple : on a fait deux pesées. Toutes les oranges ont la même masse. Quelle est la masse d'une orange ? Celle du melon ?</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;">
+  <svg viewBox="-40 10 420 175" style="width:100%;max-width:320px;display:block;margin:0 auto;"><polygon points="142,170 198,170 170,92" fill="#4E5665"></polygon><line x1="50.0" y1="90.0" x2="290.0" y2="90.0" stroke="#4E5665" stroke-width="6" stroke-linecap="round"></line><line x1="50" y1="90" x2="50" y2="112" stroke="#8A93A3" stroke-width="1.2"></line><path d="M-8,112 q58,16 116,0" fill="#F6D58E" stroke="#C9A14A" stroke-width="1.5"></path><circle cx="12" cy="102" r="12" fill="#F39C12" stroke="#B9770E" stroke-width="1.2"></circle><path d="M10,90 q2,-6 7,-6" fill="none" stroke="#1E7B34" stroke-width="2"></path><circle cx="40" cy="102" r="12" fill="#F39C12" stroke="#B9770E" stroke-width="1.2"></circle><path d="M38,90 q2,-6 7,-6" fill="none" stroke="#1E7B34" stroke-width="2"></path><ellipse cx="78" cy="98" rx="22" ry="16" fill="#58A55C" stroke="#2E6B31" stroke-width="1.3"></ellipse><path d="M66,83 q-5,15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"></path><path d="M74,83 q-5,15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"></path><path d="M82,83 q5,15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"></path><path d="M90,83 q5,15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"></path><line x1="290" y1="90" x2="290" y2="112" stroke="#8A93A3" stroke-width="1.2"></line><path d="M232,112 q58,16 116,0" fill="#F6D58E" stroke="#C9A14A" stroke-width="1.5"></path><rect x="259" y="88" width="62" height="26" rx="4" fill="#fff" stroke="#1C1B2E" stroke-width="1.4"></rect><text x="290" y="106" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="700" fill="#1C1B2E">1,6 kg</text></svg>
+  <svg viewBox="-40 10 420 175" style="width:100%;max-width:320px;display:block;margin:0 auto;"><polygon points="142,170 198,170 170,92" fill="#4E5665"></polygon><line x1="50.0" y1="90.0" x2="290.0" y2="90.0" stroke="#4E5665" stroke-width="6" stroke-linecap="round"></line><line x1="50" y1="90" x2="50" y2="112" stroke="#8A93A3" stroke-width="1.2"></line><path d="M-8,112 q58,16 116,0" fill="#F6D58E" stroke="#C9A14A" stroke-width="1.5"></path><circle cx="-2" cy="102" r="12" fill="#F39C12" stroke="#B9770E" stroke-width="1.2"></circle><path d="M-4,90 q2,-6 7,-6" fill="none" stroke="#1E7B34" stroke-width="2"></path><circle cx="26" cy="102" r="12" fill="#F39C12" stroke="#B9770E" stroke-width="1.2"></circle><path d="M24,90 q2,-6 7,-6" fill="none" stroke="#1E7B34" stroke-width="2"></path><circle cx="54" cy="102" r="12" fill="#F39C12" stroke="#B9770E" stroke-width="1.2"></circle><path d="M52,90 q2,-6 7,-6" fill="none" stroke="#1E7B34" stroke-width="2"></path><ellipse cx="92" cy="98" rx="22" ry="16" fill="#58A55C" stroke="#2E6B31" stroke-width="1.3"></ellipse><path d="M80,83 q-5,15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"></path><path d="M88,83 q-5,15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"></path><path d="M96,83 q5,15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"></path><path d="M104,83 q5,15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"></path><line x1="290" y1="90" x2="290" y2="112" stroke="#8A93A3" stroke-width="1.2"></line><path d="M232,112 q58,16 116,0" fill="#F6D58E" stroke="#C9A14A" stroke-width="1.5"></path><rect x="259" y="88" width="62" height="26" rx="4" fill="#fff" stroke="#1C1B2E" stroke-width="1.4"></rect><text x="290" y="106" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="700" fill="#1C1B2E">1,85 kg</text></svg>
+</div>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr" style="font-family:inherit;">Dans la 2e pesée, « 2 oranges + 1 melon » pèsent 1,6 kg.</span><span class="we-comment">On remplace par la 1re pesée : il reste 1 orange + 1,6 kg = 1,85 kg.</span></div><div class="we-row"><span class="we-expr" style="font-family:inherit;">1 orange = 1,85 kg − 1,6 kg = 0,25 kg</span><span class="we-comment">Une orange pèse 0,25 kg, soit 250 g.</span></div><div class="we-row"><span class="we-expr" style="font-family:inherit;">1 melon = 1,6 kg − 2 × 0,25 kg = 1,1 kg</span><span class="we-comment">On revient à la 1re pesée.</span></div></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : une balance en équilibre reste en équilibre si l'on <b>retire (ou ajoute) la même masse des deux côtés</b>. C'est l'idée qui sert, plus tard, à résoudre les équations.</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : construire un schéma en barres, pas à pas</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  <svg id="al-barresSvg" viewBox="0 0 470 150" style="width:100%;max-width:500px;display:block;margin:8px auto;"><text x="100" y="36" text-anchor="end" font-family="Inter" font-size="13" fill="#1C1B2E">Léa</text><text x="100" y="78" text-anchor="end" font-family="Inter" font-size="13" fill="#1C1B2E">Tom</text><text x="100" y="120" text-anchor="end" font-family="Inter" font-size="13" fill="#1C1B2E">Sam</text><rect x="110" y="16" width="64" height="30" rx="3" fill="#0C5BA0" fill-opacity="0.25" stroke="#1C1B2E" stroke-width="1.3"></rect><text x="142" y="36" text-anchor="middle" font-family="Inter" font-size="12.5" font-weight="700" fill="#1C1B2E">?</text><rect x="110" y="58" width="64" height="30" rx="3" fill="#0C5BA0" fill-opacity="0.25" stroke="#1C1B2E" stroke-width="1.3"></rect><text x="142" y="78" text-anchor="middle" font-family="Inter" font-size="12.5" font-weight="700" fill="#1C1B2E">?</text><rect x="174" y="58" width="52" height="30" rx="3" fill="#1E7B34" fill-opacity="0.25" stroke="#1C1B2E" stroke-width="1.3"></rect><text x="200" y="78" text-anchor="middle" font-family="Inter" font-size="12.5" font-weight="700" fill="#1C1B2E">+ 25</text><rect x="110" y="100" width="64" height="30" rx="3" fill="#0C5BA0" fill-opacity="0.25" stroke="#1C1B2E" stroke-width="1.3"></rect><text x="142" y="120" text-anchor="middle" font-family="Inter" font-size="12.5" font-weight="700" fill="#1C1B2E">?</text><rect x="148" y="100" width="26" height="30" fill="#fff" stroke="#C0392B" stroke-width="1.3" stroke-dasharray="4 3"></rect><text x="161" y="148" text-anchor="middle" font-family="Inter" font-size="12" font-weight="700" fill="#C0392B">− 10</text><path d="M244,16 q14,0 14,14 v86 q0,14 -14,14" fill="none" stroke="#1C1B2E" stroke-width="1.3"></path><text x="266" y="78" font-family="Inter" font-size="14" font-weight="700" fill="#1C1B2E">150 billes</text></svg>
+  <div class="step-list" id="al-barresSteps"><div class="step-item done" data-step="1"><div class="step-num">1</div><div>On représente la part de Léa par une barre « ? ». Tom a la même barre plus 25 billes ; Sam a la même barre moins 10 billes. En tout : 150 billes.</div></div><div class="step-item" data-step="2"><div class="step-num">2</div><div>On met les trois barres bout à bout : trois barres « ? », plus 25, moins 10, font 150.</div></div><div class="step-item" data-step="3"><div class="step-num">3</div><div>+ 25 puis − 10, c'est + 15 en tout. Sans ces 15 billes, les trois barres valent 150 − 15 = 135.</div></div><div class="step-item" data-step="4"><div class="step-num">4</div><div>Les trois barres sont égales : chacune vaut 135 ÷ 3 = 45.</div></div><div class="step-item" data-step="5"><div class="step-num">5</div><div>Léa a 45 billes, Tom 70 et Sam 35. Vérification : 45 + 70 + 35 = 150.</div></div></div>
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : raisonner avec une balance, pas à pas</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  <svg id="al-balSvg" viewBox="-40 10 420 175" style="width:100%;max-width:340px;display:block;margin:8px auto;"><polygon points="142,170 198,170 170,92" fill="#4E5665"></polygon><line x1="50.0" y1="90.0" x2="290.0" y2="90.0" stroke="#4E5665" stroke-width="6" stroke-linecap="round"></line><line x1="50" y1="90" x2="50" y2="112" stroke="#8A93A3" stroke-width="1.2"></line><path d="M-8,112 q58,16 116,0" fill="#F6D58E" stroke="#C9A14A" stroke-width="1.5"></path><circle cx="12" cy="102" r="12" fill="#F39C12" stroke="#B9770E" stroke-width="1.2"></circle><path d="M10,90 q2,-6 7,-6" fill="none" stroke="#1E7B34" stroke-width="2"></path><circle cx="40" cy="102" r="12" fill="#F39C12" stroke="#B9770E" stroke-width="1.2"></circle><path d="M38,90 q2,-6 7,-6" fill="none" stroke="#1E7B34" stroke-width="2"></path><ellipse cx="78" cy="98" rx="22" ry="16" fill="#58A55C" stroke="#2E6B31" stroke-width="1.3"></ellipse><path d="M66,83 q-5,15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"></path><path d="M74,83 q-5,15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"></path><path d="M82,83 q5,15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"></path><path d="M90,83 q5,15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"></path><line x1="290" y1="90" x2="290" y2="112" stroke="#8A93A3" stroke-width="1.2"></line><path d="M232,112 q58,16 116,0" fill="#F6D58E" stroke="#C9A14A" stroke-width="1.5"></path><rect x="259" y="88" width="62" height="26" rx="4" fill="#fff" stroke="#1C1B2E" stroke-width="1.4"></rect><text x="290" y="106" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="700" fill="#1C1B2E">1,6 kg</text></svg>
+  <div class="step-list" id="al-balSteps"><div class="step-item done" data-step="1"><div class="step-num">1</div><div>Première pesée : 2 oranges et 1 melon pèsent 1,6 kg. (Toutes les oranges ont la même masse.)</div></div><div class="step-item" data-step="2"><div class="step-num">2</div><div>Deuxième pesée : 3 oranges et 1 melon pèsent 1,85 kg. Il y a juste une orange de plus.</div></div><div class="step-item" data-step="3"><div class="step-num">3</div><div>Dans la deuxième pesée, on remplace « 2 oranges et 1 melon » par ce qu'ils pèsent : 1,6 kg.</div></div><div class="step-item" data-step="4"><div class="step-num">4</div><div>Une orange pèse donc 1,85 − 1,6 = 0,25 kg.</div></div><div class="step-item" data-step="5"><div class="step-num">5</div><div>Le melon pèse 1,6 − (2 × 0,25) = 1,6 − 0,5 = 1,1 kg.</div></div></div>
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : équilibrer la balance</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <svg id="al-jeuSvg" viewBox="-40 10 420 175" style="width:100%;max-width:360px;display:block;margin:8px auto;"><polygon points="142,170 198,170 170,92" fill="#4E5665"></polygon><line x1="50.0" y1="90.0" x2="290.0" y2="90.0" stroke="#4E5665" stroke-width="6" stroke-linecap="round"></line><line x1="50" y1="90" x2="50" y2="112" stroke="#8A93A3" stroke-width="1.2"></line><path d="M-8,112 q58,16 116,0" fill="#F6D58E" stroke="#C9A14A" stroke-width="1.5"></path><rect x="-15" y="88" width="42" height="26" rx="4" fill="#FDF2D0" stroke="#1C1B2E" stroke-width="1.4"></rect><text x="6" y="106" text-anchor="middle" font-family="JetBrains Mono" font-size="11" font-weight="700" fill="#1C1B2E">?</text><rect x="29" y="88" width="42" height="26" rx="4" fill="#FDF2D0" stroke="#1C1B2E" stroke-width="1.4"></rect><text x="50" y="106" text-anchor="middle" font-family="JetBrains Mono" font-size="11" font-weight="700" fill="#1C1B2E">?</text><rect x="73" y="88" width="42" height="26" rx="4" fill="#fff" stroke="#1C1B2E" stroke-width="1.4"></rect><text x="94" y="106" text-anchor="middle" font-family="JetBrains Mono" font-size="11" font-weight="700" fill="#1C1B2E">4 kg</text><line x1="290" y1="90" x2="290" y2="112" stroke="#8A93A3" stroke-width="1.2"></line><path d="M232,112 q58,16 116,0" fill="#F6D58E" stroke="#C9A14A" stroke-width="1.5"></path><rect x="259" y="88" width="62" height="26" rx="4" fill="#fff" stroke="#1C1B2E" stroke-width="1.4"></rect><text x="290" y="106" text-anchor="middle" font-family="JetBrains Mono" font-size="13" font-weight="700" fill="#1C1B2E">14 kg</text></svg>
+  <div id="al-jeuEnonce" style="text-align:center;font-size:1.05rem;margin:4px 0;">À gauche : <b>2 boîtes « ? »</b> et un poids de <b>4 kg</b>. À droite : <b>14 kg</b>.</div>
+  
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Résoudre un problème avec un schéma en barres »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;">Je représente la quantité inconnue par une barre.</span><span class="we-comment">1. On choisit l'inconnue (la plus petite part, souvent).</span></div>
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;">J'écris ce que valent les barres ensemble, puis je retire ce qui dépasse.</span><span class="we-comment">2. On se ramène à des barres égales.</span></div>
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;">Je divise par le nombre de barres, puis je calcule chaque part.</span><span class="we-comment">3. On trouve la valeur d'une barre.</span></div>
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;">Je vérifie avec l'énoncé et je réponds par une phrase.</span><span class="we-comment">4. On contrôle le total.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Deux frères ont 26 ans à eux deux. L'aîné a 4 ans de plus que le cadet. Quel âge a chacun ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Un stylo et une gomme coûtent ensemble 3,20 €. Le stylo coûte 2 € de plus que la gomme. Quel est le prix de chacun ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    La somme de trois nombres entiers qui se suivent est 72. Quels sont ces nombres ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Sur une balance en équilibre, il y a 3 boîtes identiques et un poids de 2 kg d'un côté, et un poids de 11 kg de l'autre. Quelle est la masse d'une boîte ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Deux pesées : 2 cubes et 1 boule pèsent 10 kg ; 3 cubes et 1 boule pèsent 13 kg. Quelle est la masse d'un cube ? d'une boule ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 6</div>
+    Je pense à un nombre. Je le multiplie par 5, puis je retire 8. J'obtiens 37. Quel est mon nombre ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 7</div>
+    Un rectangle a un périmètre de 30 cm. Sa longueur mesure 3 cm de plus que sa largeur. Quelles sont ses dimensions ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 8</div>
+    Inès, Zoé et Lina se partagent 90 €. Zoé reçoit 10 € de plus qu'Inès, et Lina reçoit le double de ce que reçoit Inès. Combien reçoit chacune ?
+    
+    
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Le mot « algèbre » vient de l'arabe <i>al-jabr</i>, qui figure dans le titre d'un livre écrit vers 820 à Bagdad par le savant <b>Al-Khwârizmî</b>. <i>Al-jabr</i> signifie « la restauration » : c'est l'opération qui consiste à rééquilibrer une égalité, un peu comme on rééquilibre une balance. Le nom d'Al-Khwârizmî, lui, a donné le mot « algorithme ». Bien avant lui, le Grec <b>Diophante</b> d'Alexandrie (3e siècle) résolvait déjà des problèmes avec des nombres inconnus, et les Babyloniens savaient en résoudre il y a près de 4 000 ans. L'usage d'une lettre comme <i>x</i> pour l'inconnue ne s'est imposé qu'au 17e siècle, avec Descartes.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/18-initiation-a-l-algebre/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/6e/probabilites/">Probabilités</a></span>
+  <a href="/6e/">Tous les chapitres de 6e</a>
+  <span><a href="/6e/solides-et-volumes/">Solides et volumes</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

@@ -1,6 +1,6 @@
 {
  "/": {
-  "hash": "e250ab707ab60127936ecc1abf225424979298a6",
+  "hash": "fb8288e62097a6712faa3f1fd428f9e96b3bd309",
   "lastmod": "2026-09-29"
  },
  "/6e/nombres-entiers/": {
@@ -68,19 +68,23 @@
   "lastmod": "2026-09-27"
  },
  "/6e/probabilites/": {
-  "hash": "d432445c276befbebc8e05c7c98f25004c9bfa57",
-  "lastmod": "2026-09-28"
+  "hash": "26209db81c5604287451db7f128cefc5999a2436",
+  "lastmod": "2026-09-29"
+ },
+ "/6e/initiation-a-l-algebre/": {
+  "hash": "a77ceee9f48bba2a9f9de7ecfa92050f823fdd59",
+  "lastmod": "2026-09-29"
  },
  "/6e/solides-et-volumes/": {
-  "hash": "566b1c7ce990f5e8d4df2e5391fec27425c5e3ee",
-  "lastmod": "2026-09-28"
+  "hash": "afbe298a8c5ecf8a38309bd3f64a199b2abc5b8b",
+  "lastmod": "2026-09-29"
  },
  "/6e/heures-et-duree/": {
   "hash": "81d69fdd0546010be393c42b8e6bad1ce10d0392",
   "lastmod": "2026-09-28"
  },
  "/6e/": {
-  "hash": "385362d7a8ca95db609207fbbd2ff76774f2472a",
+  "hash": "47cf773fbc226abe6295cfe5157474a88dc31d4a",
   "lastmod": "2026-09-29"
  },
  "/5e/operations-sur-les-nombres-decimaux/": {
@@ -108,8 +112,8 @@
   "lastmod": "2026-09-27"
  },
  "/5e/proportionnalite/": {
-  "hash": "bbf874a0aecdcd2dd74243c13710e7625367579f",
-  "lastmod": "2026-09-26"
+  "hash": "533293b9e2146ebf4f685769021e89c04847d2ff",
+  "lastmod": "2026-09-29"
  },
  "/5e/nombres-relatifs/": {
   "hash": "fe5948e41a99d498513a9a2a849244204d1a5b4d",
