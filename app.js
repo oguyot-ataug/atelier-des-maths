@@ -1677,7 +1677,15 @@ async function exportCoursPDF(){
   // "ce n'est pas stable" -- symptôme caractéristique d'une dépendance au timing réseau.
   if(document.fonts && document.fonts.ready) await document.fonts.ready;
   hint.textContent='Génération du PDF en cours…';
-  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:1.5, useCORS:true, foreignObjectRendering:false, windowHeight:wrapper.scrollHeight}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
+  // html2canvas photographie la page EN TENANT COMPTE DU DÉFILEMENT : si l'on a fait défiler le
+  // chapitre avant de cliquer, tout le contenu est décalé d'autant (pages blanches au début,
+  // blocs coupés, sauts de page au mauvais endroit). Signalé : « C'est instable ! » (deux
+  // exports successifs, deux résultats différents selon l'endroit où l'on se trouvait).
+  // On remonte donc en haut le temps de la capture, puis on revient à la position de lecture.
+  const defilX = window.scrollX, defilY = window.scrollY;
+  window.scrollTo(0, 0);
+  const revenir = ()=>window.scrollTo(defilX, defilY);
+  html2pdf().set({margin:10, filename:title.replace(/[^\w-]+/g,'_')+'.pdf', html2canvas:{scale:1.5, useCORS:true, foreignObjectRendering:false, scrollX:0, scrollY:0, windowHeight:wrapper.scrollHeight}, jsPDF:{unit:'mm',format:'a4'}, pagebreak:{mode:['css']}})
     .from(wrapper).toPdf().get('pdf').then(pdf=>{
       // Pagination "page / total" -- html2pdf ne le fait pas nativement, on la tamponne
       // nous-mêmes via l'API jsPDF sous-jacente, une fois toutes les pages générées.
@@ -1689,8 +1697,8 @@ async function exportCoursPDF(){
         pdf.text(`${i} / ${total}`, pdf.internal.pageSize.getWidth()/2, pdf.internal.pageSize.getHeight()-6, {align:'center'});
       }
     }).save()
-    .then(()=>{ clip.remove(); hint.textContent='PDF téléchargé ✓'; setTimeout(()=>hint.textContent='',4000); })
-    .catch(()=>{ clip.remove(); hint.textContent="Échec de la génération dans ce navigateur, essayez Ctrl/Cmd+P pour imprimer à la place."; });
+    .then(()=>{ clip.remove(); revenir(); hint.textContent='PDF téléchargé ✓'; setTimeout(()=>hint.textContent='',4000); })
+    .catch(()=>{ clip.remove(); revenir(); hint.textContent="Échec de la génération dans ce navigateur, essayez Ctrl/Cmd+P pour imprimer à la place."; });
 }
 
 
@@ -3042,6 +3050,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.791', items:[
+    "Export PDF d'un cours instable -- signalé avec deux exports successifs du chapitre 6e G2 : « C'est instable ! » (l'un commençait par trois pages blanches, l'autre coupait les blocs au mauvais endroit). Cause : la capture de la page tenait compte de l'endroit où l'on avait fait défiler le chapitre avant de cliquer, et tout le contenu était décalé d'autant. La page est maintenant remontée tout en haut le temps de la capture, puis on revient à la position de lecture. Vérifié : trois exports lancés depuis le haut, le milieu et le bas du chapitre donnent exactement le même PDF (5 pages)."
+  ]},
   { version:'2026-08-19.790', items:[
     "6e, Droites parallèles et perpendiculaires, tableau des notations, dernière ligne -- signalé : « G ∈ (d) H ∉ (d) sont coupés (ça va à la ligne et c'est moche) » et « le dessin indique le point G mais avec un trait oblique au lieu d'un trait droit ; (d) n'est pas écrit sur le dessin ». Les deux notations ne sont plus coupées en fin de ligne, le point G est marqué d'un petit trait perpendiculaire à la droite, et la droite est nommée (d) sur la figure."
   ]},
