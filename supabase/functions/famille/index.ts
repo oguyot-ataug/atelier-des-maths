@@ -27,8 +27,8 @@ function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 }
 
-// Niveaux actuellement en ligne sur le site (à compléter quand la 3e sera prête).
-const NIVEAUX_DISPONIBLES = ["6e", "5e", "4e"];
+// Niveaux actuellement en ligne sur le site (la 3e est en vente depuis le build 818).
+const NIVEAUX_DISPONIBLES = ["6e", "5e", "4e", "3e"];
 const ORDRE = ["6e", "5e", "4e", "3e"];
 // Prix TTC en centimes selon le nombre de niveaux choisis (3 et plus : collège complet), lus dans
 // famille_parametres (modifiables par l'administrateur) ; un code promo peut fixer d'autres prix.

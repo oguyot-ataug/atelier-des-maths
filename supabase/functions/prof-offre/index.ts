@@ -26,7 +26,7 @@ const corsHeaders = {
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 }
-const NIVEAUX_DISPONIBLES = ["6e", "5e", "4e"];
+const NIVEAUX_DISPONIBLES = ["6e", "5e", "4e", "3e"];
 const ORDRE = ["6e", "5e", "4e", "3e"];
 const PRIX_DEFAUT = { seul_base: 3900, seul_niveau: 2900, seul_classe: 1500, part_base: 3900, part_eleve: 2000, seul_eleves_max: 30 };
 const MAX_GROUPES = 40, MAX_PLACES = 200, MAX_CLASSES_SUP = 12;
