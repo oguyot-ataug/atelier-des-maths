@@ -5670,9 +5670,37 @@ function figVersProgramme(){
     pointLibre(p);
   }
   function nouvelId(sh){ const id = 'o'+(++nObj); idObj.set(sh, id); return id; }
+  const anglesConstruits = new Set(); // « sommet|départ|arrivée » : codage déjà fait par le rapporteur
+  // Côté de départ d'un angle de mesure donnée (outil « Angle de mesure donnée ») : le segment
+  // [sommet, point de référence], retrouvé par la valeur/le codage de l'angle, sinon par le côté commun.
+  function refAngle(sh){
+    const v = sh.p1, n = sh.p2;
+    const marque = figState.shapes.find(x=>(x.type==='angle-value'||x.type==='code-angle') && x.vertex===v && x.p2===n);
+    if(marque) return marque.p1;
+    const cote = figState.shapes.find(x=>x!==sh && x.type==='segment' && (x.p1===v||x.p2===v) && x.p1!==n && x.p2!==n);
+    return cote ? (cote.p1===v ? cote.p2 : cote.p1) : null;
+  }
   function assurerObjet(sh){
     if(idObj.has(sh)) return idObj.get(sh);
     const t = sh.type;
+    if(t==='segment' && sh.angleDeg && !nomPt.has(sh.p2) && !sh.p2.def){
+      // Angle de mesure donnée : demi-droite au RAPPORTEUR depuis le côté de départ, puis report de
+      // la longueur du côté à la règle (le point est marqué, le trait n'est pas retracé).
+      const ref = refAngle(sh);
+      if(ref){
+        assurerPoint(sh.p1); assurerPoint(ref);
+        let d = ((sh.angleDeg % 360) + 360) % 360; if(d>180) d = 360-d;
+        if(d>=1 && d<=179){
+          const idR = 'o'+(++nObj);
+          prog.push(couleur(sh, {op:'angle', id:idR, vertex:sh.p1.label, from:ref.label, degrees:r1(d), direction:deg(sh.p2.x-sh.p1.x, sh.p2.y-sh.p1.y)}));
+          nomPt.set(sh.p2, sh.p2.label);
+          const id = nouvelId(sh);
+          prog.push({op:'segment_length', id, from:sh.p1.label, to:sh.p2.label, length:r1(Math.hypot(sh.p2.x-sh.p1.x, sh.p2.y-sh.p1.y)/cm), along:idR, show_length:false});
+          anglesConstruits.add(sh.p1.label+'|'+ref.label+'|'+sh.p2.label);
+          return id;
+        }
+      }
+    }
     if(t==='segment' || t==='vecteur'){
       // Segment de longueur donnée dont l'extrémité n'existe pas encore : la règle graduée la place.
       if(sh.lengthCm && !nomPt.has(sh.p2) && !sh.p2.def){
@@ -5710,6 +5738,7 @@ function figVersProgramme(){
     const t = sh.type;
     if(t==='code-droit'){ [sh.vertex, sh.p1, sh.p2].forEach(assurerPoint); prog.push({op:'mark_right_angle', vertex:sh.vertex.label, points:[sh.p1.label, sh.p2.label]}); }
     else if(t==='code-longueur'){ assurerPoint(sh.p1); assurerPoint(sh.p2); prog.push({op:'mark_equal', segments:[[sh.p1.label, sh.p2.label]], count:Math.min(3, sh.group||1)}); }
+    else if((t==='code-angle' || t==='angle-value') && anglesConstruits.has(sh.vertex.label+'|'+sh.p1.label+'|'+sh.p2.label)){ /* déjà codé par le rapporteur */ }
     else if(t==='code-angle'){ [sh.vertex, sh.p1, sh.p2].forEach(assurerPoint); prog.push({op:'mark_angle', vertex:sh.vertex.label, points:[sh.p1.label, sh.p2.label], value:false, count:Math.min(3, sh.group||1)}); }
     else if(t==='angle'){ [sh.vertex, sh.p1, sh.p2].forEach(assurerPoint); prog.push({op:'mark_angle', vertex:sh.vertex.label, points:[sh.p1.label, sh.p2.label]}); }
     else assurerObjet(sh);

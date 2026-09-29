@@ -436,10 +436,14 @@ function tbAiEvaluate(program, flips, allowed){
         const d1 = tbV.rot(u,th), d2 = tbV.rot(u,-th);
         let dv = tbAiPick([d1,d2], s.side||'up');
         if(!s.side && flips.has(i)) dv = (dv===d1 ? d2 : d1);
+        // « direction » (degrés) : côté imposé par une figure existante (Géométrie Interactive ->
+        // tableau), on garde la demi-droite la plus proche de cette direction.
+        const fixe = typeof s.direction==='number';
+        if(fixe){ const w = tbV.dir(num(i, s.direction, 'direction', -360, 360)); dv = tbV.dot(d1,w) >= tbV.dot(d2,w) ? d1 : d2; }
         const kind = s.kind || 'ray';
         if(!['line','ray'].includes(kind)) err(i, 'kind attendu : ray ou line');
         const o = register(i, s.id, linearObj(kind, A, dv));
-        if(!s.side) o.flipStep = i;
+        if(!s.side && !fixe) o.flipStep = i;
         const Mk = tbV.add(A, tbV.mul(dv, TB_PROT_RADIUS/TB_PX_PER_CM));
         hit(o,A); hit(o,Mk);
         let markName = null;
