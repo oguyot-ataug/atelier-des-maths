@@ -795,7 +795,8 @@ function openChapitre(c, tab, lvlOverride){
   const lvl = lvlOverride || currentLevel;
   const chapView = document.getElementById('view-chapitre');
   chapView.classList.toggle('lvl-6e', lvl==='6e' || lvl==='cm1');
-  chapView.classList.toggle('lvl-5e', lvl==='5e' || lvl==='4e'); // cycle 4 : même couleur
+  chapView.classList.toggle('lvl-5e', lvl==='5e');
+  chapView.classList.toggle('lvl-4e', lvl==='4e'); // 4e : sa propre couleur (bleu-vert), pour distinguer le niveau d'un coup d'œil
   const demo = DEMO_REGISTRY[lvl+'|'+c.t];
   currentChapterTitle = c.t;
   currentChapterCode = c.code;
@@ -1561,8 +1562,7 @@ async function exportCoursPDF(){
     // ramenait aussi la classe "view", porteuse d'une animation d'apparition en fondu
     // (opacity:0 -> 1 sur 0,35s), capturée en pleine animation par html2canvas et donnant un
     // rendu "voilé" (signalé : "ça paraît tout pâle, comme voilé").
-    wrapper.className = (realChapView.classList.contains('lvl-5e') ? 'lvl-5e' : '')
-      + (realChapView.classList.contains('lvl-6e') ? ' lvl-6e' : '');
+    wrapper.className = ['lvl-6e', 'lvl-5e', 'lvl-4e'].filter(c => realChapView.classList.contains(c)).join(' ');
   }
   wrapper.querySelectorAll('*').forEach(el=>{
     const cs = window.getComputedStyle(el);
@@ -2947,6 +2947,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.775', items:[
+    "4e : un code couleur propre -- demandé : \"on avait un code couleur pour les cours de 6e et un autre pour les 5e. Il faut aussi trouver un code couleur en 4e pour bien différencier au premier coup d'oeil sur quel niveau on se trouve.\" Les chapitres de 4e reprenaient le bleu de la 5e : ils ont désormais la troisième couleur du logo, un bleu-vert (sarcelle), assez foncé pour que le texte blanc reste lisible. Elle s'applique aux bandeaux des paragraphes, aux lettres A/B/M, à l'onglet actif, aux boutons, à la personnalisation des cours et aux blocs ajoutés au cahier. La 6e reste orange et la 5e bleue.",
+    "4e : chapitre D2 Statistiques -- demandé : \"Statistiques en 4e.\" (capture du manuel p. 138). Le cours suit le plan du manuel avec des exemples nouveaux : « La moyenne pondérée » (formule avec les effectifs ; les livres lus pendant l'été par les 24 élèves de 4e A, moyenne ≈ 2,7 ; une moyenne de notes avec coefficients) et « La médiane » (effectif impair : les temps de 9 nageurs, médiane 40 s ; effectif pair : les livres lus, médiane 2,5 ; la médiane est peu sensible aux valeurs extrêmes). Méthodes : la moyenne pondérée d'un tableau pas à pas (pointures de la 4e B), la médiane animée (les valeurs se rangent, puis on les écarte deux par deux jusqu'à la valeur centrale), rejouable dans le cahier, un outil où l'élève saisit sa propre série et obtient la rédaction de la moyenne et de la médiane, et un curseur qui change le temps du nageur le plus lent : la moyenne bouge, la médiane reste à 40 s. Viennent ensuite une rédaction type, 8 exercices corrigés (dont les salaires d'une entreprise et la moyenne de deux groupes à pondérer), un quiz de 7 questions et la page « Un peu d'histoire » (Tycho Brahe, Quetelet, Cournot et le mot « médiane », le salaire médian de l'INSEE). Tous les calculs ont été vérifiés. Au passage, sur téléphone, une formule ou un tableau trop large dans une rédaction ou une méthode pas à pas défile désormais dans son bloc au lieu de dépasser de l'écran (règle valable pour tous les chapitres)."
+  ]},
   { version:'2026-08-19.774', items:[
     "4e : chapitre N3 Fractions : comparaison et addition -- demandé : \"On avance en 4e.\" (captures du manuel p. 19-20). Le cours suit le plan du manuel avec des titres reformulés et des exemples nouveaux : « Un même quotient, plusieurs écritures » (multiplier ou diviser le haut et le bas par un même nombre relatif non nul, écrire un quotient avec un dénominateur positif ; mettre deux fractions au même dénominateur, dans les trois cas : un dénominateur multiple de l'autre, dénominateurs premiers entre eux, cas général par les listes de multiples ou par la décomposition en facteurs premiers), « Comparer deux fractions » (même dénominateur, puis dénominateurs différents, y compris avec des nombres négatifs) et « Additionner et soustraire des fractions » (même dénominateur, puis dénominateurs différents, avec un calcul contenant un entier). Méthodes : les multiples des deux dénominateurs qui s'écrivent en même temps jusqu'au premier multiple commun (dénominateurs au choix) ; des barres de fractions animées pas à pas, rejouables dans le cahier, qui montrent pourquoi 5/6 + 3/4 = 10/12 + 9/12 = 19/12 ; un outil qui rédige entièrement la comparaison, la somme ou la différence de deux fractions choisies par l'élève (avec une droite graduée pour la comparaison) ; un calcul à trois termes pas à pas. Viennent ensuite une rédaction type, 8 exercices corrigés, un quiz de 7 questions et la page « Un peu d'histoire » (papyrus Rhind et fractions égyptiennes, barre de fraction d'al-Hassar et de Fibonacci, origine des mots numérateur et dénominateur). Tous les calculs ont été vérifiés."
   ]},
@@ -4901,7 +4905,7 @@ function openBugReportModal(prefill){
 function openSuggestionModal(){
   const activeTab = document.querySelector('.tab-btn.active');
   const moduleLabel = activeTab ? activeTab.textContent.trim() : '';
-  const section = currentLevel==='5e' ? '5e · Chapitres' : '6e · Chapitres';
+  const section = (['5e', '4e'].includes(currentLevel) ? currentLevel : '6e') + ' · Chapitres';
   const chapitre = (currentChapterTitle||'') + (moduleLabel ? ' · '+moduleLabel : '');
   openBugReportModal({section, chapitre, reportType:'suggestion'});
 }
@@ -6809,8 +6813,7 @@ async function addSectionToCahier(headerEl){
   const wrapperHadId2 = wrapper.id;
   wrapper.id = 'view-chapitre';
   if(realChapView2){
-    wrapper.className = (realChapView2.classList.contains('lvl-5e') ? 'lvl-5e' : '')
-      + (realChapView2.classList.contains('lvl-6e') ? ' lvl-6e' : '');
+    wrapper.className = ['lvl-6e', 'lvl-5e', 'lvl-4e'].filter(c => realChapView2.classList.contains(c)).join(' ');
   }
   clip2.appendChild(wrapper);
   document.body.appendChild(clip2);
