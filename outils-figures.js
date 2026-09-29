@@ -508,10 +508,16 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryCercles" data-mode="cercle" onclick="setFigureMode(this.dataset.mode)" title="Cercle (dernier outil choisi dans ce groupe)">
           <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="12" y1="12" x2="12" y2="2" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="2" r="1.6" fill="currentColor"/></svg>
         </button>
-        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('cercles')" title="Cercle (centre+point) / Cercle (rayon donné)">▾</button>
+        <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('cercles')" title="Cercle (centre+point) / Arc de cercle / Arc de rayon donné / Cercle (rayon donné)">▾</button>
         <div id="figGroupCercles" class="fig-group-sub">
           <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle" onclick="selectFigSubTool('cercles', this)" title="Cercle (centre + un point sur le cercle)">
             <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.2"/><line x1="12" y1="12" x2="12" y2="2" stroke="currentColor" stroke-width="1"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="2" r="1.6" fill="currentColor"/></svg>
+          </button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="arc" onclick="selectFigSubTool('cercles', this)" title="Arc de cercle : centre, point de départ, point d'arrivée">
+            <svg viewBox="0 0 24 24" width="26" height="26"><path d="M4 16 A9 9 0 0 1 20 16" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/><line x1="12" y1="19" x2="4" y2="16" stroke="currentColor" stroke-width=".8" stroke-dasharray="1.5 1.5"/></svg>
+          </button>
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="arc-rayon" onclick="selectFigSubTool('cercles', this)" title="Arc de rayon donné (compas) : se tourne et s'allonge en mode Déplacer, pour couper un autre arc (médiatrice...)">
+            <svg viewBox="0 0 24 24" width="26" height="26"><path d="M4 15 A9 9 0 0 1 20 15" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="20" r="1.5" fill="currentColor"/><text x="12" y="13" font-size="6.5" font-family="JetBrains Mono" fill="currentColor" text-anchor="middle">cm</text></svg>
           </button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="cercle-rayon" onclick="selectFigSubTool('cercles', this)" title="Cercle de rayon donné (une fenêtre demande le rayon)">
             <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="10" cy="14" r="8" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="18" y="6" font-size="7" font-family="JetBrains Mono" fill="currentColor" text-anchor="middle">cm</text><line x1="10" y1="14" x2="18" y2="14" stroke="currentColor" stroke-width="1.2"/><circle cx="10" cy="14" r="1.6" fill="currentColor"/></svg>
@@ -519,7 +525,6 @@ document.body.insertAdjacentHTML('beforeend', `
         </div>
         </div>
 
-        <button type="button" class="fig-icon-btn fig-mode" data-mode="arc" onclick="setFigureMode('arc')" title="Arc de cercle">◡</button>
         <button type="button" class="fig-icon-btn fig-mode" data-mode="milieu" onclick="setFigureMode('milieu')" title="Milieu (cliquez le segment, ou ses 2 extrémités)">
           <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.3"/><circle cx="3" cy="12" r="1.8" fill="currentColor"/><circle cx="21" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
         </button>
@@ -625,6 +630,7 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="btn secondary" id="figLoadDevoirBtn" onclick="loadMyDevoirFigure()" style="display:none;"><span class=gicon>folder_open</span> Charger mon dernier rendu</button>
         <button type="button" class="btn" id="figSaveSandboxBtn" onclick="saveSandboxFigurePrompt()" style="display:none;"><span class=gicon>save</span> Enregistrer sous un nom</button>
         <button type="button" class="btn secondary" id="figLoadSandboxBtn" onclick="openSandboxFiguresModal()" style="display:none;"><span class=gicon>folder_open</span> Mes figures enregistrées</button>
+        <button type="button" class="btn secondary" id="figToTableauBtn" onclick="figConstruireAuTableau()" style="display:none;" title="Rejoue la construction de cette figure au tableau interactif, avec la règle, l'équerre, le compas… étape par étape"><span class=gicon>architecture</span> Construire au tableau avec les instruments</button>
         <button type="button" class="btn secondary" id="figCloseBtn" onclick="confirmAndCloseFigureTool()">Fermer sans insérer</button>
       </div>
     </div>
@@ -1006,6 +1012,8 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
   if(loadBtn) loadBtn.style.display = 'none';
   if(saveSandboxBtn) saveSandboxBtn.style.display = 'none';
   if(loadSandboxBtn) loadSandboxBtn.style.display = 'none';
+  const toTableauBtn = document.getElementById('figToTableauBtn');
+  if(toTableauBtn) toTableauBtn.style.display = 'none'; // affiché par la Géométrie Interactive (app.js)
   // Construction automatique/IA : visible par défaut (usage prof -- correction, évaluation),
   // masquée explicitement pour les contextes élève (bac à sable, devoir), qui doivent
   // construire la figure eux-mêmes plutôt que de la faire générer.
@@ -3749,7 +3757,8 @@ function setFigureMode(mode){
     'demi-droite':'Cliquez le point d\'origine du rayon, puis un second point donnant sa direction.',
     cercle:'Cliquez le centre, puis un point du cercle.',
     'cercle-rayon':'Cliquez le centre : le rayon exact (en cm) vous sera demandé.',
-    arc:'Cliquez le centre, puis le point de départ de l\'arc, puis un point donnant la direction d\'arrivée.',
+    arc:'Cliquez le centre, puis le point de départ de l\'arc (point existant ou nouveau), puis l\'endroit où l\'arc s\'arrête.',
+    'arc-rayon':'Cliquez le centre : l\'écartement du compas (en cm) vous sera demandé. L\'arc se tourne et s\'allonge ensuite en mode Déplacer.',
     milieu:'Cliquez deux points existants pour placer leur milieu.',
     angle:'Cliquez un point sur le premier côté, puis le sommet de l\'angle, puis un point sur le second côté.',
     perpendiculaire:'Cliquez directement sur une droite/un segment existant (ou deux points), puis le point par lequel doit passer la perpendiculaire.',
@@ -3784,7 +3793,7 @@ function svgCoordsFromEvent(svg, evt){
 }
 function findNearbyPoint(x,y){
   const thresh = 18; // légèrement augmenté (16->18) : plus tolérant, cohérent avec les formes
-  return figState.points.find(p=>Math.hypot(p.x-x,p.y-y)<thresh);
+  return figState.points.find(p=>(!p.hidden || figState.mode==='deplacer') && Math.hypot(p.x-x,p.y-y)<thresh);
 }
 function distToSegment(px,py,ax,ay,bx,by){
   const dx=bx-ax, dy=by-ay;
@@ -3814,6 +3823,106 @@ function circleRadius(s){
   if(s.p2) return Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y);
   return null;
 }
+/* ---- Arcs et intersections de courbes ----
+   Demandé : « dans la figure dynamique, il faudrait un outil supplémentaire pour former des arcs de
+   cercle : Centre, Point, Point ; Centre (longueur prédéfinie) pour les constructions de médiatrice
+   par exemple, avec la possibilité de le bouger pour intercepter deux arcs ».
+   - 'arc' (existant) : centre, point de départ (sur l'arc), point donnant la direction d'arrivée ;
+   - 'arc-rayon' (nouveau) : centre + rayon en cm (comme un écartement de compas), bornes angulaires
+     a1 < a2 (radians, repère de l'écran) ; en mode Déplacer, on le fait tourner autour du centre en
+     le tirant par son milieu, ou on l'allonge en tirant un de ses bouts ;
+   - un point peut être posé à l'intersection de deux arcs/cercles, ou d'un arc/cercle et d'une
+     droite (point « intersection-courbes », sans repère, qui suit les objets). */
+function figNormAngle(a){ while(a>Math.PI) a-=2*Math.PI; while(a<=-Math.PI) a+=2*Math.PI; return a; }
+// Description géométrique d'un objet : droite (avec ses bornes) ou cercle (avec son éventuel arc).
+function figCurve(s){
+  if(['segment','droite','demi-droite','mediatrice','perpendiculaire','parallele','bissectrice'].includes(s.type)){
+    const {p1,p2} = lineShapeEndpoints(s);
+    return {kind:'line', p1, p2, t0: (s.type==='segment'||s.type==='demi-droite') ? 0 : -Infinity, t1: s.type==='segment' ? 1 : Infinity};
+  }
+  if(s.type==='cercle'){ const r = circleRadius(s); return r ? {kind:'circle', c:s.p1, r} : null; }
+  if(s.type==='arc'){
+    const r = Math.hypot(s.p1.x-s.center.x, s.p1.y-s.center.y);
+    const a1 = Math.atan2(s.p1.y-s.center.y, s.p1.x-s.center.x);
+    const delta = figNormAngle(Math.atan2(s.p2.y-s.center.y, s.p2.x-s.center.x) - a1);
+    return {kind:'circle', c:s.center, r, a1: delta>=0 ? a1 : a1+delta, span: Math.abs(delta)};
+  }
+  if(s.type==='arc-rayon') return {kind:'circle', c:s.center, r:s.radius, a1:s.a1, span:s.a2-s.a1};
+  return null;
+}
+// Le point (x,y) de la courbe complète est-il dans les bornes de l'objet (segment, demi-droite, arc) ?
+function figOnCurveBounds(cv, x, y, tolPx){
+  if(cv.kind==='line'){
+    const dx=cv.p2.x-cv.p1.x, dy=cv.p2.y-cv.p1.y, L2=dx*dx+dy*dy||1, L=Math.sqrt(L2);
+    const t = ((x-cv.p1.x)*dx+(y-cv.p1.y)*dy)/L2, tol = (tolPx||0)/L;
+    return t>=cv.t0-tol && t<=cv.t1+tol;
+  }
+  if(cv.span==null) return true;
+  const rel = figNormAngle(Math.atan2(y-cv.c.y, x-cv.c.x) - cv.a1);
+  const relPos = rel<0 ? rel+2*Math.PI : rel, tol = (tolPx||0)/(cv.r||1);
+  return relPos <= cv.span+tol || relPos >= 2*Math.PI-tol;
+}
+function figDistToCurve(cv, x, y){
+  if(cv.kind==='line'){
+    const dx=cv.p2.x-cv.p1.x, dy=cv.p2.y-cv.p1.y, L2=dx*dx+dy*dy||1;
+    const t = Math.max(cv.t0, Math.min(cv.t1, ((x-cv.p1.x)*dx+(y-cv.p1.y)*dy)/L2));
+    return Math.hypot(x-(cv.p1.x+t*dx), y-(cv.p1.y+t*dy));
+  }
+  const dr = Math.abs(Math.hypot(x-cv.c.x, y-cv.c.y) - cv.r);
+  return figOnCurveBounds(cv, x, y, 0) ? dr : Infinity;
+}
+// Intersections des courbes COMPLÈTES (droites infinies, cercles entiers).
+function figIntersectCurves(a, b){
+  if(a.kind==='line' && b.kind==='line'){
+    const r = intersectLines({p1:a.p1,p2:a.p2}, {p1:b.p1,p2:b.p2});
+    return r ? [r] : [];
+  }
+  if(a.kind==='circle' && b.kind==='line') return figIntersectCurves(b, a);
+  if(a.kind==='line'){
+    const dx=a.p2.x-a.p1.x, dy=a.p2.y-a.p1.y, L=Math.hypot(dx,dy)||1, ux=dx/L, uy=dy/L;
+    const fx=a.p1.x-b.c.x, fy=a.p1.y-b.c.y, B=fx*ux+fy*uy, C=fx*fx+fy*fy-b.r*b.r, D=B*B-C;
+    if(D<0) return [];
+    const sq=Math.sqrt(D);
+    return [-B-sq, -B+sq].map(t=>({x:a.p1.x+t*ux, y:a.p1.y+t*uy}));
+  }
+  const dx=b.c.x-a.c.x, dy=b.c.y-a.c.y, d=Math.hypot(dx,dy);
+  if(d<1e-9 || d>a.r+b.r || d<Math.abs(a.r-b.r)) return [];
+  const l=(a.r*a.r-b.r*b.r+d*d)/(2*d), h=Math.sqrt(Math.max(0, a.r*a.r-l*l));
+  const mx=a.c.x+l*dx/d, my=a.c.y+l*dy/d;
+  return [{x:mx-h*dy/d, y:my+h*dx/d}, {x:mx+h*dy/d, y:my-h*dx/d}];
+}
+const FIG_CURVE_TYPES = ['segment','droite','demi-droite','mediatrice','perpendiculaire','parallele','bissectrice','cercle','arc','arc-rayon'];
+// Intersection de deux objets (dont au moins un cercle ou un arc) proche du clic : {s1, s2, x, y} ou null.
+function findCurveIntersectionNear(x, y){
+  const near = figState.shapes.filter(s=>FIG_CURVE_TYPES.includes(s.type)).map(s=>({s, cv:figCurve(s)}))
+    .filter(o=>o.cv && figDistToCurve(o.cv, x, y) < 16);
+  let best = null;
+  for(let i=0;i<near.length;i++) for(let j=i+1;j<near.length;j++){
+    if(near[i].cv.kind==='line' && near[j].cv.kind==='line') continue; // cas historique, géré à part
+    figIntersectCurves(near[i].cv, near[j].cv).forEach(q=>{
+      if(!figOnCurveBounds(near[i].cv, q.x, q.y, 6) || !figOnCurveBounds(near[j].cv, q.x, q.y, 6)) return;
+      const d = Math.hypot(q.x-x, q.y-y);
+      if(d<22 && (!best || d<best.d)) best = {d, s1:near[i].s, s2:near[j].s, x:q.x, y:q.y};
+    });
+  }
+  return best;
+}
+// Arc de rayon donné sous le clic (mode Déplacer) : 'a1' ou 'a2' près d'un bout, sinon 'body'.
+function findArcRayonHit(x, y){
+  let best = null;
+  figState.shapes.forEach(s=>{
+    if(s.type!=='arc-rayon') return;
+    const ends = {a1:s.a1, a2:s.a2};
+    for(const k in ends){
+      const ex = s.center.x+s.radius*Math.cos(ends[k]), ey = s.center.y+s.radius*Math.sin(ends[k]), d = Math.hypot(x-ex, y-ey);
+      if(d<14 && (!best || d<best.d)) best = {shape:s, part:k, d};
+    }
+    const cv = figCurve(s), d = figDistToCurve(cv, x, y);
+    if(d<12 && (!best || d+6<best.d)) best = {shape:s, part:'body', d:d+6};
+  });
+  return best;
+}
+let figDragArc = null;
 /* Intersection de deux droites INFINIES portées par s1(p1,p2) et s2(p1,p2) -- fonctionne
    quel que soit le type réel (segment/droite/demi-droite), puisque seule la direction
    compte ici, pas les bornes. Renvoie null si parallèles (pas d'intersection unique). */
@@ -3899,6 +4008,10 @@ function findNearbyShape(x,y){
       const r = circleRadius(s);
       match = r!=null && Math.abs(Math.hypot(x-s.p1.x, y-s.p1.y) - r) < thresh;
     }
+    else if(s.type==='arc' || s.type==='arc-rayon'){
+      const cv = figCurve(s);
+      match = !!cv && figDistToCurve(cv, x, y) < thresh;
+    }
     if(!match) return;
     // "Longueur" utilisée pour départager plusieurs formes qui se chevauchent (préfère la
     // plus spécifique) : le rayon pour un cercle (pas Infinity, qui empêchait TOUJOURS sa
@@ -3907,6 +4020,7 @@ function findNearbyShape(x,y){
     if(s.p1 && s.p2) len = Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y);
     else if(s.type==='mesure-distance-ligne') len = Math.hypot(s.refP2.x-s.refP1.x, s.refP2.y-s.refP1.y);
     else if(s.type==='cercle') len = circleRadius(s);
+    else if(s.type==='arc-rayon') len = s.radius;
     else if(['perpendiculaire','parallele'].includes(s.type)) len = 500; // droite infinie : longueur arbitraire mais FINIE (Infinity empêcherait toute sélection, même seule candidate)
     else len = Infinity;
     if(best===null || len < bestLen){ bestLen = len; best = s; }
@@ -4089,6 +4203,23 @@ async function handleRadiusCircleClick(x,y){
   figState.shapes.push(shape);
   renderFigureSvg();
 }
+async function handleRadiusArcClick(x,y){
+  let center = findNearbyPoint(x,y);
+  if(!center){ center = {label:nextPointLabel(), x, y}; figState.points.push(center); renderFigureSvg(); }
+  const result = await figMeasureModal({title:'Rayon de l\'arc (écartement du compas)', unit:'cm', defaultValue:4});
+  if(!result) return;
+  const cm = result.value;
+  if(!isFinite(cm) || cm<=0){ document.getElementById('figureHint').textContent = 'Rayon invalide.'; renderFigureSvg(); return; }
+  const withCompass = document.getElementById('compassToggle') && document.getElementById('compassToggle').checked;
+  // Arc de 100° tourné vers le haut : en mode Déplacer, on le fait tourner (tirer son milieu) ou on
+  // l'allonge (tirer un bout) pour qu'il coupe un autre arc.
+  const half = 50*Math.PI/180;
+  const shape = {type:'arc-rayon', center, radius:cm*SCALE_PX_PER_CM, radiusCm:cm, a1:-Math.PI/2-half, a2:-Math.PI/2+half, compass:withCompass};
+  if(result.showValue) shape.radiusLabel = cm+' cm';
+  figState.shapes.push(shape);
+  document.getElementById('figureHint').textContent = 'Arc tracé. En mode Déplacer : tirez son milieu pour le faire tourner, ou un bout pour l\'allonger. Outil Point : cliquez sur le croisement de deux arcs pour y placer un point.';
+  renderFigureSvg();
+}
 function recomputeDependents(){
   // les points construits (ex. un milieu, ou l'image d'une transformation) se recalculent à
   // partir des points dont ils dépendent, donc si on déplace un point d'origine, tout ce qui
@@ -4123,6 +4254,17 @@ function recomputeDependents(){
     } else if(p.def.type==='intersection'){
       const inter = intersectLines(p.def.s1, p.def.s2);
       if(inter){ p.x = inter.x; p.y = inter.y; }
+    } else if(p.def.type==='intersection-courbes'){
+      // Des deux intersections possibles, on garde celle qui est la plus proche de la position
+      // précédente : le point suit son croisement quand on déplace les objets.
+      const c1 = figCurve(p.def.s1), c2 = figCurve(p.def.s2);
+      const cands = c1 && c2 ? figIntersectCurves(c1, c2) : [];
+      if(cands.length){ const q = cands.reduce((m,c)=>Math.hypot(c.x-p.x,c.y-p.y)<Math.hypot(m.x-p.x,m.y-p.y)?c:m); p.x = q.x; p.y = q.y; }
+    } else if(p.def.type==='point-sur-arc'){
+      // Point auxiliaire (invisible) qui fixe la fin d'un arc « centre, point, point » : reste sur le cercle.
+      const {arc} = p.def; const r = Math.hypot(arc.p1.x-arc.center.x, arc.p1.y-arc.center.y);
+      const a = Math.atan2(p.y-arc.center.y, p.x-arc.center.x);
+      p.x = arc.center.x+r*Math.cos(a); p.y = arc.center.y+r*Math.sin(a);
     } else if(p.def.type==='polygone-regulier-cote-vertex'){
       const {p1, p2, index, n} = p.def;
       const pos = polygoneRegulierVertexPos(p1, p2, index, n);
@@ -4391,7 +4533,7 @@ function onFigureMouseDown(evt){
   if(measureShape){ figDragMeasure = measureShape; svg.style.cursor='grabbing'; evt.preventDefault(); return; }
   const lbl = findNearbyLabel(x,y);
   const p = findNearbyPoint(x,y);
-  const isMovableDependent = p && p.def && (p.def.type==='point-sur-droite' || p.def.type==='point-sur-cercle');
+  const isMovableDependent = p && p.def && (p.def.type==='point-sur-droite' || p.def.type==='point-sur-cercle' || p.def.type==='point-sur-arc');
   const pDraggable = p && (!p.def || isMovableDependent);
   if(lbl && pDraggable){
     // Les deux sont à portée du clic : on privilégie celui dont on est le plus PROCHE, avec
@@ -4405,6 +4547,14 @@ function onFigureMouseDown(evt){
   }
   if(lbl){ figDragLabel = lbl; svg.style.cursor='grabbing'; evt.preventDefault(); return; }
   if(pDraggable){ figDragPoint = p; svg.style.cursor='grabbing'; evt.preventDefault(); return; }
+  // Arc de rayon donné : on le fait tourner (milieu) ou on l'allonge (un bout). Un simple clic
+  // sans glisser ouvre l'éditeur de style, comme pour les autres objets.
+  const arcHit = findArcRayonHit(x,y);
+  if(arcHit){
+    pushFigHistory();
+    figDragArc = {shape:arcHit.shape, part:arcHit.part, start:Math.atan2(y-arcHit.shape.center.y, x-arcHit.shape.center.x), a1:arcHit.shape.a1, a2:arcHit.shape.a2, moved:false};
+    svg.style.cursor='grabbing'; evt.preventDefault(); return;
+  }
   // Ni un point, ni un label : un clic sur une forme (segment/droite/demi-droite/cercle/arc)
   // ouvre l'éditeur de style, plutôt que de ne rien faire.
   const shape = findNearbyShape(x,y);
@@ -4422,6 +4572,20 @@ function onFigureMouseDown(evt){
   }
 }
 function onFigureMouseMove(evt){
+  if(figDragArc){
+    const svg=document.getElementById('figureSvg');
+    const {x,y} = svgCoordsFromEvent(svg,evt);
+    const g = figDragArc, s = g.shape;
+    const d = figNormAngle(Math.atan2(y-s.center.y, x-s.center.x) - g.start);
+    if(Math.abs(d) > 0.01) g.moved = true;
+    const MIN = 0.12, MAX = 2*Math.PI-0.05;
+    if(g.part==='body'){ s.a1 = g.a1+d; s.a2 = g.a2+d; }
+    else if(g.part==='a1'){ s.a1 = Math.min(g.a2-MIN, Math.max(g.a2-MAX, g.a1+d)); }
+    else { s.a2 = Math.max(g.a1+MIN, Math.min(g.a1+MAX, g.a2+d)); }
+    recomputeDependents();
+    renderFigureSvg();
+    return;
+  }
   if(figDragMeasure){
     const svg=document.getElementById('figureSvg');
     const {x,y} = svgCoordsFromEvent(svg,evt);
@@ -4519,6 +4683,16 @@ function onFigureMouseMove(evt){
   renderFigureSvg();
 }
 function onFigureMouseUp(){
+  if(figDragArc && !figDragArc.moved){
+    const shape = figDragArc.shape;
+    figStyleModal(shape).then(result=>{
+      if(!result) return;
+      if(result.action==='delete') deleteObjectWithDependents(shape);
+      else if(result.action==='edit-measure') editShapeMeasure(shape, result.measure);
+      else if(result.action==='style'){ shape.strokeWidth = result.strokeWidth; shape.strokePattern = result.strokePattern; shape.strokeColor = result.strokeColor; renderFigureSvg(); }
+    });
+  }
+  figDragArc = null;
   figDragPoint = null; figDragLabel = null; figDragMeasure = null;
   const svg=document.getElementById('figureSvg');
   if(svg && figState.mode==='deplacer') svg.style.cursor='grab';
@@ -4753,6 +4927,13 @@ async function onFigureClick(evt){
         return;
       }
     }
+    const croisement = findCurveIntersectionNear(x,y);
+    if(croisement){
+      const {s1, s2} = croisement;
+      figState.points.push({label:nextPointLabel(), x:croisement.x, y:croisement.y, def:{type:'intersection-courbes', s1, s2}, dependsOn:[s1,s2]});
+      renderFigureSvg();
+      return;
+    }
     const shape = findNearbyShape(x,y);
     if(shape && ['segment','droite','demi-droite','mediatrice','perpendiculaire','parallele','bissectrice'].includes(shape.type)){
       const {p1,p2} = lineShapeEndpoints(shape);
@@ -4781,6 +4962,7 @@ async function onFigureClick(evt){
   }
   if(figState.mode==='segment-longueur'){ handleLengthSegmentClick(x,y); return; }
   if(figState.mode==='cercle-rayon'){ handleRadiusCircleClick(x,y); return; }
+  if(figState.mode==='arc-rayon'){ handleRadiusArcClick(x,y); return; }
   if(figState.mode==='perpendiculaire' || figState.mode==='parallele' || figState.mode==='mediatrice'){ handleLineToolClick(x,y); return; }
   if(figState.mode==='polygone'){ handlePolygoneClick(x,y); return; }
   if(figState.mode==='polygone-regulier'){ handlePolygoneRegulierClick(x,y); return; }
@@ -4848,8 +5030,15 @@ async function onFigureClick(evt){
     if(shape && ['droite','demi-droite','segment'].includes(shape.type)){ figState.selectedAxisShape = shape; figState.selected.push(shape.p1, shape.p2); renderFigureSvg(); return; }
   }
 
-  const canCreatePoint = ['segment','droite','demi-droite'].includes(figState.mode);
+  const canCreatePoint = ['segment','droite','demi-droite'].includes(figState.mode) || (figState.mode==='arc' && figState.selected.length<2);
   let near = findNearbyPoint(x,y);
+  if(!near && figState.mode==='arc' && figState.selected.length===2){
+    // 3e clic de l'arc : il ne donne que la direction d'arrivée. Sans point existant, on crée un point
+    // auxiliaire INVISIBLE sur le cercle (poignée qui sert à allonger l'arc en mode Déplacer).
+    const [c, a] = figState.selected, r = Math.hypot(a.x-c.x, a.y-c.y), ang = Math.atan2(y-c.y, x-c.x);
+    near = {label:'', x:c.x+r*Math.cos(ang), y:c.y+r*Math.sin(ang), hidden:true};
+    figState.points.push(near);
+  }
   if(!near && canCreatePoint){
     near = {label:nextPointLabel(), x, y};
     figState.points.push(near);
@@ -4894,7 +5083,9 @@ async function onFigureClick(evt){
       figState.shapes.push({type:figState.mode, vertex, p1, p2});
     } else if(figState.mode==='arc'){
       const [center,p1,p2] = figState.selected;
-      figState.shapes.push({type:'arc', center, p1, p2, compass:withCompass});
+      const arc = {type:'arc', center, p1, p2, compass:withCompass};
+      figState.shapes.push(arc);
+      if(p2.hidden){ p2.def = {type:'point-sur-arc', arc}; p2.dependsOn = [center, p1]; }
     } else if(figState.mode==='cercle'){
       const [a,b] = figState.selected;
       figState.shapes.push({type:'cercle', p1:a, p2:b, compass:withCompass});
@@ -5077,6 +5268,17 @@ function renderFigureSvg(){
       const {points} = angleArcPoints(s.center, s.p1, s.p2, r);
       html+=`<polyline points="${points}" fill="none" ${shapeStrokeAttrs(s,'#1F3A5C')}/>`;
       if(s.compass) html += compassGraphic(s.center, s.p1);
+    } else if(s.type==='arc-rayon'){
+      const n = Math.max(8, Math.ceil((s.a2-s.a1)/0.05)), pts = [];
+      for(let i=0;i<=n;i++){ const a = s.a1+(s.a2-s.a1)*i/n; pts.push(`${(s.center.x+s.radius*Math.cos(a)).toFixed(1)},${(s.center.y+s.radius*Math.sin(a)).toFixed(1)}`); }
+      html+=`<polyline points="${pts.join(' ')}" fill="none" ${shapeStrokeAttrs(s,'#1F3A5C')}/>`;
+      const bout = {x:s.center.x+s.radius*Math.cos(s.a2), y:s.center.y+s.radius*Math.sin(s.a2)};
+      if(s.compass) html += compassGraphic(s.center, bout);
+      if(s.radiusLabel){ const am=(s.a1+s.a2)/2; html+=`<text x="${(s.center.x+s.radius/2*Math.cos(am)).toFixed(1)}" y="${(s.center.y+s.radius/2*Math.sin(am)-6).toFixed(1)}" font-family="JetBrains Mono" font-size="9" fill="#5C5A78" text-anchor="middle">${s.radiusLabel}</text>`; }
+      if(figState.mode==='deplacer'){
+        // Poignées (écran seulement) : les deux bouts, pour allonger ; le milieu se tire pour tourner.
+        [s.a1, s.a2].forEach(a=>{ html+=`<circle cx="${(s.center.x+s.radius*Math.cos(a)).toFixed(1)}" cy="${(s.center.y+s.radius*Math.sin(a)).toFixed(1)}" r="3.2" fill="#fff" stroke="#1F3A5C" stroke-width="1" data-marker="hidden"/>`; });
+      }
     } else if(s.type==='angle'){
       const r=26;
       const {points,mid}=angleArcPoints(s.vertex,s.p1,s.p2,r);
@@ -5194,7 +5396,14 @@ function renderFigureSvg(){
     const defaultColor = isMovableDependent ? '#1F7A4D' : (p.def ? '#7A8A98' : '#1C1B2E');
     const baseColor = styledShape ? styledShape.strokeColor : defaultColor;
     const c = sel?'#E35D3A':baseColor;
-    if(p.def && p.def.type==='intersection'){
+    if(p.hidden){
+      // Point auxiliaire (fin d'un arc « centre, point, point ») : invisible, sauf une petite
+      // poignée en mode Déplacer pour allonger l'arc.
+      if(figState.mode==='deplacer') html+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.2" fill="#fff" stroke="#1F3A5C" stroke-width="1" data-marker="hidden"/>`;
+      return;
+    }
+    const debutArc = !linked.length && figState.shapes.find(s=>s.type==='arc' && s.p1===p);
+    if(p.def && (p.def.type==='intersection' || p.def.type==='intersection-courbes')){
       // Un point d'intersection n'a besoin d'aucun marqueur -- le croisement des deux objets
       // le repère déjà visuellement, un marqueur en plus ferait double emploi.
     } else if(p.def && p.def.type==='point-sur-droite'){
@@ -5207,11 +5416,11 @@ function renderFigureSvg(){
       const dx=lp2.x-lp1.x, dy=lp2.y-lp1.y, len=Math.hypot(dx,dy)||1;
       const nx=-dy/len, ny=dx/len;
       html+=`<line x1="${(p.x-nx*2.8).toFixed(1)}" y1="${(p.y-ny*2.8).toFixed(1)}" x2="${(p.x+nx*2.8).toFixed(1)}" y2="${(p.y+ny*2.8).toFixed(1)}" stroke="${c}" stroke-width="0.9"/>`;
-    } else if(p.def && p.def.type==='point-sur-cercle'){
+    } else if((p.def && p.def.type==='point-sur-cercle') || debutArc){
       // Trait perpendiculaire à la TANGENTE du cercle en ce point -- donc le long du rayon
-      // (direction centre -> point).
-      const {shape} = p.def;
-      const dx=p.x-shape.p1.x, dy=p.y-shape.p1.y, len=Math.hypot(dx,dy)||1;
+      // (direction centre -> point). Même repère pour le point de départ d'un arc.
+      const centre = debutArc ? debutArc.center : p.def.shape.p1;
+      const dx=p.x-centre.x, dy=p.y-centre.y, len=Math.hypot(dx,dy)||1;
       const nx=dx/len, ny=dy/len;
       html+=`<line x1="${(p.x-nx*2.8).toFixed(1)}" y1="${(p.y-ny*2.8).toFixed(1)}" x2="${(p.x+nx*2.8).toFixed(1)}" y2="${(p.y+ny*2.8).toFixed(1)}" stroke="${c}" stroke-width="0.9"/>`;
     } else {
@@ -5408,3 +5617,124 @@ function reopenFigure(data){
   };
   attach();
 })();
+
+
+/* =====================================================================
+   De la figure dynamique à la construction aux instruments -- demandé : « permettre de passer
+   d'une figure dynamique à une construction avec outil sur le tableau interactif ».
+   La figure est traduite en PROGRAMME DE CONSTRUCTION, le même format que « Construire avec l'IA »
+   (tableau-ia.js) : points, segments (de longueur donnée), droites, demi-droites, cercles et arcs
+   (compas), perpendiculaires et parallèles (équerre), médiatrices et bissectrices (compas), milieux
+   (règle graduée), intersections, codages. Le tableau calcule et anime ensuite les vrais gestes des
+   instruments, étape par étape (barre de lecture). Sans IA : la figure elle-même sert de modèle.
+   Les points obtenus autrement (images par une symétrie, sommets d'un polygone régulier...) sont
+   placés à leur position, comme des points donnés.
+   ===================================================================== */
+function figVersProgramme(){
+  const cm = SCALE_PX_PER_CM, prog = [], avert = [];
+  const nomPt = new Map(), idObj = new Map();
+  let origine = null, nObj = 0;
+  const pts = figState.points.filter(p=>!p.hidden);
+  const deg = (dx, dy) => Math.round(Math.atan2(-dy, dx)*180/Math.PI*10)/10; // repère du programme : y vers le haut
+  const r1 = v => Math.round(v*100)/100;
+  function couleur(sh, o){ if(sh && sh.strokeColor) o.color = sh.strokeColor; return o; }
+  function pointLibre(p){
+    if(!origine){ origine = p; prog.push({op:'point', name:p.label}); }
+    else prog.push({op:'point', name:p.label, from:origine.label, dx:r1((p.x-origine.x)/cm), dy:r1((origine.y-p.y)/cm)});
+  }
+  function assurerPoint(p){
+    if(!p || p.hidden || nomPt.has(p)) return;
+    nomPt.set(p, p.label);
+    const d = p.def;
+    if(!d){ pointLibre(p); return; }
+    if(d.type==='milieu'){ assurerPoint(d.a); assurerPoint(d.b); prog.push({op:'midpoint', name:p.label, of:[d.a.label, d.b.label]}); return; }
+    if(d.type==='intersection' || d.type==='intersection-courbes'){
+      const i1 = assurerObjet(d.s1), i2 = assurerObjet(d.s2);
+      if(i1 && i2){
+        const o = {op:'intersect', name:p.label, of:[i1, i2]};
+        const c1 = figCurve(d.s1), c2 = figCurve(d.s2), cands = c1 && c2 ? figIntersectCurves(c1, c2) : [];
+        const autre = cands.length>1 ? cands.reduce((m,c)=>Math.hypot(c.x-p.x,c.y-p.y)>Math.hypot(m.x-p.x,m.y-p.y)?c:m) : null;
+        if(autre){ const dx = p.x-autre.x, dy = p.y-autre.y; o.pick = Math.abs(dy)>=Math.abs(dx) ? (dy<0?'up':'down') : (dx<0?'left':'right'); }
+        prog.push(o); return;
+      }
+    }
+    if(d.type==='point-sur-droite' && ['segment','droite','demi-droite'].includes(d.shape.type)){
+      const id = assurerObjet(d.shape);
+      if(id){ const L = Math.hypot(d.shape.p2.x-d.shape.p1.x, d.shape.p2.y-d.shape.p1.y)/cm; prog.push({op:'point', name:p.label, on:id, at:r1(d.t*L)}); return; }
+    }
+    if(d.type==='point-sur-cercle' && d.shape.type==='cercle'){
+      const id = assurerObjet(d.shape);
+      if(id){ prog.push({op:'point', name:p.label, on:id, angle:deg(p.x-d.shape.p1.x, p.y-d.shape.p1.y)}); return; }
+    }
+    avert.push(p.label);
+    pointLibre(p);
+  }
+  function nouvelId(sh){ const id = 'o'+(++nObj); idObj.set(sh, id); return id; }
+  function assurerObjet(sh){
+    if(idObj.has(sh)) return idObj.get(sh);
+    const t = sh.type;
+    if(t==='segment' || t==='vecteur'){
+      // Segment de longueur donnée dont l'extrémité n'existe pas encore : la règle graduée la place.
+      if(sh.lengthCm && !nomPt.has(sh.p2) && !sh.p2.def){
+        assurerPoint(sh.p1); nomPt.set(sh.p2, sh.p2.label);
+        const id = nouvelId(sh);
+        prog.push(couleur(sh, {op:'segment_length', id, from:sh.p1.label, to:sh.p2.label, length:r1(sh.lengthCm), direction:deg(sh.p2.x-sh.p1.x, sh.p2.y-sh.p1.y), show_length:!!sh.lengthLabel}));
+        return id;
+      }
+      assurerPoint(sh.p1); assurerPoint(sh.p2);
+      const id = nouvelId(sh); prog.push(couleur(sh, {op:'segment', id, from:sh.p1.label, to:sh.p2.label})); return id;
+    }
+    if(t==='droite'){ assurerPoint(sh.p1); assurerPoint(sh.p2); const id = nouvelId(sh); prog.push(couleur(sh, {op:'line', id, through:[sh.p1.label, sh.p2.label]})); return id; }
+    if(t==='demi-droite'){ assurerPoint(sh.p1); assurerPoint(sh.p2); const id = nouvelId(sh); prog.push(couleur(sh, {op:'ray', id, from:sh.p1.label, through:sh.p2.label})); return id; }
+    if(t==='cercle'){
+      assurerPoint(sh.p1);
+      const o = {op:'circle', id:null, center:sh.p1.label, full:true};
+      if(sh.radius!=null) o.radius = r1(sh.radiusCm || sh.radius/cm); else { assurerPoint(sh.p2); o.radius_from = [sh.p1.label, sh.p2.label]; }
+      o.id = nouvelId(sh); prog.push(couleur(sh, o)); return o.id;
+    }
+    if(t==='arc'){ assurerPoint(sh.center); assurerPoint(sh.p1); const id = nouvelId(sh); prog.push(couleur(sh, {op:'circle', id, center:sh.center.label, radius_from:[sh.center.label, sh.p1.label]})); return id; }
+    if(t==='arc-rayon'){ assurerPoint(sh.center); const id = nouvelId(sh); prog.push(couleur(sh, {op:'circle', id, center:sh.center.label, radius:r1(sh.radiusCm || sh.radius/cm)})); return id; }
+    if(t==='perpendiculaire' || t==='parallele'){
+      assurerPoint(sh.refA); assurerPoint(sh.refB); assurerPoint(sh.through);
+      const id = nouvelId(sh);
+      prog.push(couleur(sh, {op: t==='perpendiculaire' ? 'perpendicular' : 'parallel', id, through:sh.through.label, to:[sh.refA.label, sh.refB.label], kind:'line'}));
+      return id;
+    }
+    if(t==='mediatrice'){ assurerPoint(sh.p1); assurerPoint(sh.p2); const id = nouvelId(sh); prog.push(couleur(sh, {op:'perpendicular_bisector', id, of:[sh.p1.label, sh.p2.label]})); return id; }
+    if(t==='bissectrice'){ assurerPoint(sh.p1); assurerPoint(sh.vertex); assurerPoint(sh.p2); const id = nouvelId(sh); prog.push(couleur(sh, {op:'angle_bisector', id, angle:[sh.p1.label, sh.vertex.label, sh.p2.label]})); return id; }
+    return null;
+  }
+  // Ordre de la figure : les objets dans l'ordre où ils ont été tracés, chacun précédé des points
+  // dont il a besoin ; puis les points restants (points libres isolés, milieux non reliés...).
+  figState.shapes.forEach(sh=>{
+    const t = sh.type;
+    if(t==='code-droit'){ [sh.vertex, sh.p1, sh.p2].forEach(assurerPoint); prog.push({op:'mark_right_angle', vertex:sh.vertex.label, points:[sh.p1.label, sh.p2.label]}); }
+    else if(t==='code-longueur'){ assurerPoint(sh.p1); assurerPoint(sh.p2); prog.push({op:'mark_equal', segments:[[sh.p1.label, sh.p2.label]], count:Math.min(3, sh.group||1)}); }
+    else if(t==='code-angle'){ [sh.vertex, sh.p1, sh.p2].forEach(assurerPoint); prog.push({op:'mark_angle', vertex:sh.vertex.label, points:[sh.p1.label, sh.p2.label], value:false, count:Math.min(3, sh.group||1)}); }
+    else if(t==='angle'){ [sh.vertex, sh.p1, sh.p2].forEach(assurerPoint); prog.push({op:'mark_angle', vertex:sh.vertex.label, points:[sh.p1.label, sh.p2.label]}); }
+    else assurerObjet(sh);
+  });
+  pts.forEach(assurerPoint);
+  return {programme: prog, approches: avert};
+}
+async function figConstruireAuTableau(){
+  if(!figState.points.some(p=>!p.hidden)){ await niceAlert('La figure est vide : tracez-la d\'abord.'); return; }
+  if(figState.points.some(p=>!p.hidden && !/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))){ await niceAlert('Chaque point doit être nommé par une lettre majuscule (ex. A, B, M) pour être construit au tableau.'); return; }
+  const {programme, approches} = figVersProgramme();
+  // La figure est gardée pour la retrouver en revenant à la Géométrie Interactive.
+  try{ sessionStorage.setItem('figSandboxRetour', JSON.stringify(serializeFigState(figState))); }catch(e){}
+  closeFigureTool();
+  const lien = document.querySelector('.nav-links [data-nav="tableau"], [data-nav="tableau"]');
+  if(lien) lien.click(); else { showView('view-tableau'); if(typeof initTableauView==='function') initTableauView(); }
+  if(typeof initTableauView==='function') initTableauView();
+  if(typeof tbClearAll==='function') tbClearAll(); // le contenu précédent reste accessible par « Annuler »
+  try{
+    tbAiLoadProgram(programme);
+    const msg = 'Construction prête : utilisez la barre verte (« Étape suivante ») pour la dérouler aux instruments.'
+      + (approches.length ? ' Les points '+approches.join(', ')+' sont placés directement (obtenus par une transformation).' : '');
+    if(typeof niceAlert==='function') niceAlert(msg);
+  } catch(e){
+    console.warn('Géométrie Interactive -> tableau : programme refusé', programme, e);
+    await niceAlert('Cette figure ne peut pas encore être construite aux instruments : '+(e && e.message ? e.message : e));
+  }
+}

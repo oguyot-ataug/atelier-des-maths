@@ -292,6 +292,20 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
           if(saveSandboxBtn) saveSandboxBtn.style.display = 'inline-flex';
           if(loadSandboxBtn) loadSandboxBtn.style.display = 'inline-flex';
         }
+        // Passage de la figure au tableau interactif, construite aux instruments (outils-figures.js).
+        const toTableauBtn = document.getElementById('figToTableauBtn');
+        if(toTableauBtn) toTableauBtn.style.display = 'inline-flex';
+        // Retour depuis le tableau : on retrouve la figure qu'on y a envoyée.
+        try{
+          const retour = sessionStorage.getItem('figSandboxRetour');
+          if(retour && typeof deserializeFigState==='function'){
+            sessionStorage.removeItem('figSandboxRetour');
+            const st = deserializeFigState(JSON.parse(retour));
+            figState.points = st.points; figState.shapes = st.shapes;
+            figState.nextLabel = figState.points.length;
+            renderFigureSvg();
+          }
+        }catch(e){ console.warn('Géométrie Interactive : figure du tableau non restaurée', e); }
       }
     }
     if(nav==='mentions-legales'){ showView('view-mentions-legales'); setActiveTopnav(null); }
@@ -3058,6 +3072,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.795', items:[
+    "Tableau interactif : repère automatique des points -- demandé : « la même politique avec le tableau interactif de géométrie sur la manière de coder un point. Prendre en compte qu'un point d'intersection n'a pas besoin d'être matérialisé et un sommet de polygone non plus. » Au moment de nommer un point, le nouveau choix « Auto » (proposé par défaut) donne une croix à un point libre, un petit trait perpendiculaire à un point posé sur un trait (droite, extrémité ou milieu d'un segment, arc de compas), et aucun repère à une intersection ou à un sommet de polygone. Le repère se met à jour tout seul : un point libre devient un petit trait dès qu'on trace une droite qui passe par lui. Les choix Croix, Trait et Aucun restent possibles pour imposer un repère. Les constructions animées du tableau suivent aussi cette règle.",
+    "Géométrie Interactive : arcs de cercle -- demandé : « un outil supplémentaire pour former des arcs de cercle : Centre, Point, Point ; Centre (longueur prédéfinie) pour les constructions de médiatrice par exemple, avec la possibilité de le bouger pour intercepter deux arcs ». Le groupe Cercles propose maintenant « Arc de cercle » (centre, point de départ, point d'arrivée : on peut cliquer dans le vide, et le point d'arrivée ne laisse pas de marque) et le nouvel « Arc de rayon donné » (on clique le centre, on donne l'écartement du compas en cm). En mode Déplacer, un arc de rayon donné se fait tourner autour de son centre en le tirant par le milieu, et s'allonge en tirant un de ses bouts. L'outil Point pose maintenant un point à l'intersection de deux arcs ou cercles, ou d'un arc et d'une droite : ce point n'a pas de repère et suit les objets quand on les déplace. Exemple : médiatrice de [AB] avec deux arcs de même rayon centrés en A et en B, les deux points d'intersection, puis la droite qui les relie.",
+    "Géométrie Interactive : nouveau bouton « Construire au tableau avec les instruments » -- demandé : « permettre de passer d'une figure dynamique à une construction avec outil sur le tableau interactif ». La figure est traduite en programme de construction, le même que celui de « Construire avec l'IA », mais sans IA : c'est la figure elle-même qui sert de modèle. Le tableau interactif s'ouvre et la barre verte déroule la construction étape par étape, avec les vrais gestes : règle graduée pour un segment de longueur donnée ou un milieu, compas pour les cercles et les arcs, équerre pour les perpendiculaires et les parallèles, compas pour la médiatrice et la bissectrice, points d'intersection, codages et couleurs. Les points obtenus par une transformation (symétrie, translation...) sont placés directement. En revenant à la Géométrie Interactive, on retrouve sa figure."
+  ]},
   { version:'2026-08-19.794', items:[
     "6e, Droites parallèles et perpendiculaires : constructions animées -- signalé sur la médiatrice : « Le trait commence en dehors de la règle ici », « il faut transformer les croix en simple trait quand la droite est tracée, pas avant » et « vérifier également que les outils disparaissent à la fin des tracés ». 1) Le trait de la médiatrice (cours et exercice 1) reste sur la règle : la règle est posée surtout d'un côté du milieu, et le trait, tracé symétriquement, en dépassait de l'autre côté. Les traits le long de la réquerre sont aussi raccourcis de quelques pixels à chaque bout (coins arrondis de l'outil). 2) Un point ne devient un petit trait que lorsque le crayon l'a atteint : pendant le tracé, il reste une croix. 3) Les huit constructions du chapitre (cours, méthode, exercices) ont été vérifiées étape par étape : à la dernière étape, plus aucun outil n'est affiché."
   ]},
@@ -8131,12 +8150,44 @@ function tbExtendToBoardEdge(origin, dir, W, H){
   if(!isFinite(tMax) || tMax<0) tMax = 0;
   return {x: origin.x+tMax*dir.x, y: origin.y+tMax*dir.y};
 }
+/* Repère automatique d'un point du tableau -- demandé : « la même politique [que dans les cours] avec
+   le tableau interactif de géométrie sur la manière de coder un point. Prendre en compte qu'un point
+   d'intersection n'a pas besoin d'être matérialisé et un sommet de polygone non plus. »
+   D'après les traits qui passent par le point (ou s'y arrêtent) :
+   - aucun trait : point libre -> croix ;
+   - un seul trait, ou plusieurs tous alignés (point sur une droite, extrémité d'un segment, milieu,
+     point sur un arc de compas) -> petit trait perpendiculaire à ce trait ;
+   - plusieurs traits de directions différentes (intersection, sommet d'un polygone) -> rien.
+   Recalculé à chaque rendu : un point libre devient un petit trait dès qu'on trace une droite qui
+   passe par lui. Le style choisi à la main (Croix, Trait, Aucun) reste prioritaire. */
+function tbAutoMark(pt){
+  const dirs = [];
+  tbInk.forEach(stroke=>{
+    const P = stroke.points; if(!P || P.length<2) return;
+    let best = null;
+    for(let i=0;i<P.length-1;i++){
+      const ax=P[i][0], ay=P[i][1], bx=P[i+1][0], by=P[i+1][1], dx=bx-ax, dy=by-ay, L2=dx*dx+dy*dy;
+      if(L2<1e-6) continue;
+      const t = Math.max(0, Math.min(1, ((pt.x-ax)*dx+(pt.y-ay)*dy)/L2));
+      const d = Math.hypot(pt.x-(ax+t*dx), pt.y-(ay+t*dy));
+      if(d<4 && (!best || d<best.d)) best = {d, dx, dy};
+    }
+    if(best){ const L = Math.hypot(best.dx, best.dy); dirs.push({x:best.dx/L, y:best.dy/L}); }
+  });
+  if(!dirs.length) return {kind:'cross'};
+  const aligned = dirs.every(u=>Math.abs(u.x*dirs[0].y-u.y*dirs[0].x) < 0.08);
+  return aligned ? {kind:'tick', angle:Math.atan2(dirs[0].x, -dirs[0].y)} : {kind:'none'};
+}
 function tbRender(){
   const W=900, H=560;
   const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.construction?'#9CA3AF':s.color}" stroke-width="${s.construction?'1.2':'2.4'}" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
   const pointsHtml = tbPoints.map(pt=>{
-    const mark = pt.markStyle==='none' ? ''
-      : (pt.radial || pt.markStyle==='tick')
+    // Sans style choisi (anciens tableaux, construction animée) ou en « Auto » : repère selon les traits.
+    const auto = !pt.radial && (!pt.markStyle || pt.markStyle==='auto') ? tbAutoMark(pt) : null;
+    if(auto && auto.kind==='tick') pt = Object.assign({}, pt, {angle:auto.angle});
+    const style = auto ? auto.kind : pt.markStyle;
+    const mark = style==='none' ? ''
+      : (pt.radial || style==='tick')
       ? `<line x1="${(pt.x-9*Math.cos(pt.angle)).toFixed(1)}" y1="${(pt.y-9*Math.sin(pt.angle)).toFixed(1)}" x2="${(pt.x+9*Math.cos(pt.angle)).toFixed(1)}" y2="${(pt.y+9*Math.sin(pt.angle)).toFixed(1)}" stroke="#1C1B2E" stroke-width="2.4"/>`
       : `<line x1="${pt.x-7}" y1="${pt.y-7}" x2="${pt.x+7}" y2="${pt.y+7}" stroke="#1C1B2E" stroke-width="2"/>
          <line x1="${pt.x-7}" y1="${pt.y+7}" x2="${pt.x+7}" y2="${pt.y-7}" stroke="#1C1B2E" stroke-width="2"/>`;
@@ -8446,18 +8497,19 @@ function tbOpenLetterPicker(currentLabel, currentStyle){
   return new Promise(resolve=>{
     const used = new Set(tbPoints.map(p=>p.label).filter(Boolean));
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(l=>!used.has(l) || l===currentLabel);
-    let style = currentStyle || 'cross';
+    let style = currentStyle || 'auto';
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.style.cssText = 'display:flex;z-index:200;';
     overlay.innerHTML = `<div style="background:#fff;border-radius:12px;padding:22px;max-width:360px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.25);">
       <h3 style="margin:0 0 10px;font-family:'Space Grotesk',sans-serif;">Nom du point</h3>
-      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px;">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;">
+        <button type="button" data-style="auto" title="Croix si le point est libre, petit trait s'il est sur une ligne, rien pour une intersection ou un sommet" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='auto'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='auto'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;"><span class=gicon>auto_awesome</span> Auto</button>
         <button type="button" data-style="cross" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='cross'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='cross'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;"><span class=gicon>close</span> Croix</button>
         <button type="button" data-style="tick" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='tick'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='tick'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;">／ Trait (crayon)</button>
         <button type="button" data-style="none" style="padding:8px 14px;border-radius:7px;border:1.5px solid ${style==='none'?'#0D5BA3':'rgba(28,43,57,.2)'};background:${style==='none'?'rgba(13,91,163,.1)':'#fff'};cursor:pointer;font-size:1.1rem;">• Aucun</button>
       </div>
-      <p style="margin:0 0 12px;font-size:.75rem;color:#6b7280;">« Aucun » sert à nommer une intersection ou un sommet déjà visible sans ajouter de repère en plus.</p>
+      <p style="margin:0 0 12px;font-size:.75rem;color:#6b7280;">« Auto » suit la convention : croix pour un point libre, petit trait pour un point sur une ligne, rien pour une intersection ou un sommet de polygone. Les autres choix imposent le repère.</p>
       <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:16px;">
         ${letters.map(l=>`<button type="button" data-letter="${l}" style="padding:10px 0;border-radius:7px;border:1.5px solid ${l===currentLabel?'#0D5BA3':'rgba(28,43,57,.2)'};background:${l===currentLabel?'#0D5BA3':'#fff'};color:${l===currentLabel?'#fff':'#1C1B2E'};font-weight:700;font-size:1.05rem;cursor:pointer;">${l}</button>`).join('')}
       </div>
@@ -8492,7 +8544,7 @@ function tbOpenLetterPicker(currentLabel, currentStyle){
 async function tbRenamePoint(id){
   const point = tbPoints.find(p=>p.id===id);
   if(!point) return;
-  const result = await tbOpenLetterPicker(point.label||'', point.markStyle||'cross');
+  const result = await tbOpenLetterPicker(point.label||'', point.markStyle||'auto');
   if(result===null) return;
   if(!result.label){ tbPoints = tbPoints.filter(p=>p.id!==id); } else { point.label = result.label; point.markStyle = result.style; }
   tbRender();
