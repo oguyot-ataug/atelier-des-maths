@@ -3072,6 +3072,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.803', items:[
+    "3e (visible des administrateurs) : chapitre G1 « Théorème de Thalès » -- construit à partir des captures du manuel (p. 39-40), titres reformulés, exemples et figures nouveaux. Cours : l'énoncé et ses trois configurations (réduction vue en 4e, agrandissement, « papillon »), calculer une longueur, prouver que deux droites ne sont pas parallèles, la réciproque et l'ordre des points (avec un contre-exemple : rapports égaux mais points dans un ordre différent). Longueurs indiquées par des arcs de cote comme dans le manuel ; points d'intersection et sommets non matérialisés. Méthode animée : M et N se déplacent sur les droites (curseurs, boutons Réduction / Agrandissement / Papillon / Même rapport, ordre différent), calcul pas à pas dans un papillon, réciproque pas à pas. Deux rédactions types, 8 exercices corrigés (dont l'étang, la rampe et le piège de l'ordre des points), quiz, un peu d'histoire.",
+  ]},
   { version:'2026-08-19.802', items:[
     "Interrogations en ligne : « Suivi des classes » et « Banque de questionnaires » -- demandé : « mes questionnaires au sens de Banque de questionnaires ? Oui avec suivi des classes ». Les onglets « Mes interrogations » et « Mes questionnaires » deviennent « Suivi des classes » (ce qui est donné, les copies, la correction, les séances en direct) et « Banque de questionnaires » (les modèles). Chaque classe reçoit maintenant sa propre copie du questionnaire : le modèle de la banque reste toujours modifiable (bouton « Modifier »), sans rien changer aux interrogations déjà données ni à leurs notes, et la banque ne montre plus les copies faites pour les classes (on les modifie depuis l'interrogation, crayon). Les interrogations existantes ont reçu leur copie : rien ne change pour les élèves.",
   ]},
