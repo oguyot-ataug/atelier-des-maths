@@ -3070,6 +3070,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.820', items:[
+    "Choix de la voix pour la lecture à voix haute -- demandé : « il peut y avoir une autre voix ? plus jeune plus sympa ? ». Nouveau bouton dans la barre du haut (à côté de « Aa ») : la liste des voix françaises de l'appareil, les plus naturelles en premier, chacune avec un bouton pour l'écouter ; réglage de la vitesse et de la hauteur (une voix un peu plus aiguë et plus rapide paraît plus jeune) ; réglages par défaut. Le choix est mémorisé sur l'appareil. Sans choix, la meilleure voix française disponible est prise automatiquement (voix « naturelles » d'abord), au lieu de la voix par défaut du système. Les voix dépendent du navigateur : Edge propose les plus naturelles (Denise, Vivienne, Éloïse…) ; sur Mac et iPhone, des voix « Améliorée » ou « Premium » se téléchargent dans les réglages d'accessibilité.",
+  ]},
   { version:'2026-08-19.819', items:[
     "Lecture à voix haute des définitions et propriétés -- signalé : « pour \"racine de a\", on entendra \"s q r t de a\" », « des rapports en géométrie type AM/AN, on entendra \"ame sur an\" et non pas \"A M sur A N\" ». La conversion des formules en français parlé est réécrite (un vrai petit analyseur au lieu d'une suite de remplacements), d'après les 172 formules et les 393 encadrés réellement présents dans tous les chapitres, du CM1 à la 3e. Les noms de points sont épelés (« A M sur A B égale A N sur A C », « M prime », « l'angle M O M prime ») ; racines (« racine carrée de a »), puissances quelconques (« 10 puissance moins n »), indices (« x 1 »), barres (« P de A barre »), fonctions (« f de x », « f est la fonction qui, à x, associe a x plus b ») ; les parenthèses autour d'un calcul sont dites (« k fois, ouvrez la parenthèse, a plus b, fermez la parenthèse ») ; les fractions complexes précisent « le tout sur ». Dans le texte : [AB] « le segment A B », (AB) « la droite A B », [OM) « la demi-droite O M », ∈ « appartient au », // « est parallèle à », cm² « centimètres carrés », 10³ « 10 au cube ». Corrigé au passage : les couleurs des formules étaient lues (« E7B34 »), une fraction contenant du texte était lue « dfrac… », les tableaux étaient lus d'une traite sans pause, et le texte est désormais calculé au moment de l'écoute (les icônes des autres boutons ne peuvent plus être lues).",
   ]},
@@ -7083,6 +7086,96 @@ function latexToSpeech(tex){
   }
   return out.replace(/\s+/g, ' ').replace(/\s+,/g, ',').replace(/,(\s*,)+/g, ',').replace(/^[\s,]+|[\s,]+$/g, '');
 }
+/* Choix de la voix -- demandé : « il peut y avoir une autre voix ? plus jeune plus sympa ? ». La
+   synthèse vocale est celle de l'appareil (API Web Speech, gratuite, sans service externe) : les
+   voix proposées dépendent donc du navigateur et du système (Edge : voix « Online (Natural) »,
+   Chrome : « Google français », Mac/iPhone : Amélie, Audrey, Thomas… à télécharger en « Premium »
+   ou « Améliorée » dans les réglages du système). Préférence personnelle sur cet appareil (voix,
+   vitesse, hauteur), comme la police OpenDyslexic ; à défaut, la meilleure voix française
+   disponible est choisie (voix naturelles d'abord). */
+const VOIX_CLE = 'lectureVoix';
+function voixPrefs(){
+  let p = {};
+  try{ p = JSON.parse(localStorage.getItem(VOIX_CLE) || '{}') || {}; }catch(e){}
+  return { nom: p.nom || '', vitesse: Number(p.vitesse) || 1, hauteur: Number(p.hauteur) || 1.05 };
+}
+function voixEnregistrer(p){ try{ localStorage.setItem(VOIX_CLE, JSON.stringify(p)); }catch(e){} }
+// Voix françaises disponibles, les plus naturelles en premier.
+function voixFrancaises(){
+  const note = v => /natural|neural|premium|enhanced|améliorée|online/i.test(v.name) ? 0 : /google/i.test(v.name) ? 1 : v.localService === false ? 2 : 3;
+  return (speechSynthesis.getVoices() || []).filter(v => /^fr(-|_|$)/i.test(v.lang))
+    .sort((a, b) => note(a) - note(b) || (/fr-FR/i.test(b.lang) - /fr-FR/i.test(a.lang)) || a.name.localeCompare(b.name));
+}
+function speechUtterance(text){
+  const u = new SpeechSynthesisUtterance(text), p = voixPrefs(), voix = voixFrancaises();
+  u.lang = 'fr-FR';
+  const v = voix.find(x => x.name === p.nom) || voix[0];
+  if(v){ u.voice = v; u.lang = v.lang; }
+  u.rate = p.vitesse; u.pitch = p.hauteur;
+  return u;
+}
+const VOIX_ESSAI = "Bonjour ! Dans un triangle rectangle, le carré de l'hypoténuse est égal à la somme des carrés des deux autres côtés.";
+function voixNomCourt(v){ return v.name.replace(/^Microsoft\s+/i, '').replace(/\s*-\s*(French|Français).*$/i, '').replace(/\s+Online\s*\((Natural|Neural)\)/i, '').replace(/\s*\((France|Canada|Belgium|Switzerland|Belgique|Suisse)\)/i, '').trim() || v.name; }
+function ouvrirReglageVoix(){
+  let ov = document.getElementById('voixOverlay');
+  if(!ov){
+    ov = document.createElement('div');
+    ov.id = 'voixOverlay'; ov.className = 'modal-overlay';
+    ov.onclick = e => { if(e.target === ov) fermerReglageVoix(); };
+    ov.innerHTML = `<div class="modal-card" style="max-width:480px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;"><span class="gicon">settings_voice</span> Voix de la lecture à voix haute</strong>
+        <button class="modal-close" onclick="fermerReglageVoix()" aria-label="Fermer"><span class="gicon">close</span></button>
+      </div>
+      <p class="hint" style="margin:0 0 10px;">Les voix proposées sont celles de cet appareil et de ce navigateur. Le choix est mémorisé sur cet appareil.</p>
+      <div id="voixListe" style="display:grid;gap:6px;max-height:40vh;overflow-y:auto;"></div>
+      <div style="display:grid;grid-template-columns:auto 1fr auto;gap:8px 10px;align-items:center;margin:14px 0 6px;">
+        <label for="voixVitesse">Vitesse</label><input id="voixVitesse" type="range" min="0.7" max="1.4" step="0.05" oninput="voixReglage()"><span id="voixVitesseV" style="font-family:'JetBrains Mono',monospace;"></span>
+        <label for="voixHauteur">Hauteur</label><input id="voixHauteur" type="range" min="0.7" max="1.5" step="0.05" oninput="voixReglage()"><span id="voixHauteurV" style="font-family:'JetBrains Mono',monospace;"></span>
+      </div>
+      <p class="hint" style="margin:0 0 10px;">Une voix plus aiguë et un peu plus rapide paraît souvent plus jeune.</p>
+      <div class="figure-toolbar" style="justify-content:flex-start;">
+        <button class="btn" onclick="voixEssayer()"><span class="gicon">play_arrow</span> Essayer</button>
+        <button class="btn secondary" onclick="voixParDefaut()">Réglages par défaut</button>
+      </div>
+      <p class="hint" id="voixAstuce" style="margin:10px 0 0;"></p>
+    </div>`;
+    document.body.appendChild(ov);
+  }
+  ov.style.display = 'flex';
+  voixAfficher();
+}
+function fermerReglageVoix(){ const ov = document.getElementById('voixOverlay'); if(ov) ov.style.display = 'none'; speechSynthesis.cancel(); }
+function voixAfficher(){
+  const p = voixPrefs(), voix = voixFrancaises(), liste = document.getElementById('voixListe');
+  if(!liste) return;
+  const choisie = (voix.find(v => v.name === p.nom) || voix[0] || {}).name;
+  liste.innerHTML = voix.length ? voix.map((v, k) => `<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;border:1.5px solid ${v.name === choisie ? 'var(--accent)' : 'rgba(28,43,57,.12)'};border-radius:10px;cursor:pointer;">
+      <input type="radio" name="voixChoix" value="${k}" ${v.name === choisie ? 'checked' : ''} onchange="voixChoisir(${k})">
+      <span style="flex:1;"><b>${escapeHtml(voixNomCourt(v))}</b> <small class="hint" style="margin:0;">${escapeHtml(v.lang)}${/natural|neural|premium|enhanced|améliorée|online/i.test(v.name) ? ' · naturelle' : ''}</small></span>
+      <button type="button" class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="event.preventDefault();voixChoisir(${k});voixEssayer()"><span class="gicon">play_arrow</span></button>
+    </label>`).join('') : '<p class="hint" style="margin:0;">Aucune voix française n\'est installée sur cet appareil.</p>';
+  document.getElementById('voixVitesse').value = p.vitesse; document.getElementById('voixHauteur').value = p.hauteur;
+  document.getElementById('voixVitesseV').textContent = '× ' + p.vitesse.toFixed(2).replace('.', ',');
+  document.getElementById('voixHauteurV').textContent = p.hauteur.toFixed(2).replace('.', ',');
+  const ua = navigator.userAgent;
+  document.getElementById('voixAstuce').innerHTML = /Edg\//.test(ua) ? 'Astuce : avec Edge, les voix « naturelles » (Denise, Vivienne, Éloïse…) sont les plus agréables.'
+    : /iPhone|iPad|Macintosh/.test(ua) ? 'Astuce : d\'autres voix plus naturelles se téléchargent dans Réglages › Accessibilité › Contenu énoncé › Voix (versions « Améliorée » ou « Premium »).'
+    : /Android/.test(ua) ? 'Astuce : d\'autres voix se téléchargent dans les paramètres Android (Synthèse vocale).'
+    : 'Astuce : le navigateur Edge propose des voix françaises très naturelles (Denise, Vivienne, Éloïse…).';
+}
+function voixChoisir(k){ const v = voixFrancaises()[k]; if(!v) return; const p = voixPrefs(); p.nom = v.name; voixEnregistrer(p); voixAfficher(); }
+function voixReglage(){
+  const p = voixPrefs(); p.vitesse = Number(document.getElementById('voixVitesse').value); p.hauteur = Number(document.getElementById('voixHauteur').value);
+  voixEnregistrer(p); voixAfficher();
+}
+function voixParDefaut(){ try{ localStorage.removeItem(VOIX_CLE); }catch(e){} voixAfficher(); }
+function voixEssayer(){ speechSynthesis.cancel(); speechSynthesis.speak(speechUtterance(VOIX_ESSAI)); }
+if('speechSynthesis' in window){
+  // La liste des voix arrive souvent après le chargement de la page (Chrome) : on la réaffiche.
+  speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', () => { const ov = document.getElementById('voixOverlay'); if(ov && ov.style.display !== 'none') voixAfficher(); });
+  const vb = document.getElementById('voixBtn'); if(vb) vb.style.display = '';
+}
 function toggleReadAloud(btn, text){
   // Un seul bloc lu à la fois : si on reclique sur le même bouton en cours de lecture, on
   // arrête ; sinon on coupe toute lecture en cours avant de démarrer la nouvelle.
@@ -7090,8 +7183,7 @@ function toggleReadAloud(btn, text){
   speechSynthesis.cancel();
   document.querySelectorAll('.read-aloud-btn.reading').forEach(b=>{ b.classList.remove('reading'); b.innerHTML='<span class=gicon>volume_up</span>'; });
   if(wasReading) return;
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'fr-FR';
+  const utter = speechUtterance(text);
   utter.onend = ()=>{ btn.classList.remove('reading'); btn.innerHTML='<span class=gicon>volume_up</span>'; };
   utter.onerror = ()=>{ btn.classList.remove('reading'); btn.innerHTML='<span class=gicon>volume_up</span>'; };
   btn.classList.add('reading');
