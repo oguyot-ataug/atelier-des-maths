@@ -162,7 +162,7 @@ const CHCM1 = [
 // cm2/4e/3e plus tard).
 const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, '3e': CH3, 'cm1': CHCM1 };
 // Niveaux en préparation, réservés aux administrateurs (menu masqué, routes refusées aux autres).
-const NIVEAUX_ADMIN = ['4e', '3e'];
+const NIVEAUX_ADMIN = ['3e']; // la 4e est publiée depuis le build 786
 function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserRole === 'admin'; }
 
 const VACANCES = {
@@ -407,6 +407,7 @@ document.addEventListener('click', (e)=>{
 const FREE_CHAPTERS = {
   '6e': ['Nombres entiers', 'Droites parallèles et perpendiculaires', 'Gestion de données', 'Aire et périmètre'],
   '5e': ['Opérations sur les nombres décimaux', 'Symétrie centrale', 'Proportionnalité', 'Statistiques'],
+  '4e': ['Opérations sur les nombres relatifs', 'Théorème de Pythagore', 'Statistiques', 'Translations'],
 };
 /* true tant qu'on ne sait pas encore si l'utilisateur a un compte actif valide (restreint
    par défaut, le temps que refreshAuthUI() détermine l'état réel de la session). */
@@ -2714,8 +2715,8 @@ async function refreshAuthUI(){
     if(mtDirect) mtDirect.style.display = (!accessBlocked && currentUserRole==='eleve' && !isFamilleEnfant) ? '' : 'none';
     const navFamille = document.getElementById('navFamille');
     if(navFamille) navFamille.style.display = currentUserRole==='parent' ? 'inline-block' : 'none';
-    ['nav4e', 'nav3e'].forEach(id => { const b = document.getElementById(id); // 4e et 3e en préparation : administrateurs seulement
-      if(b) b.style.display = (!accessBlocked && currentUserRole==='admin') ? '' : 'none'; });
+    const nav3e = document.getElementById('nav3e'); // 3e en préparation : administrateurs seulement
+    if(nav3e) nav3e.style.display = (!accessBlocked && currentUserRole==='admin') ? '' : 'none';
     if(navAdmin){
       navAdmin.style.display = (!accessBlocked && (currentUserRole==='admin' || currentReferentEtab)) ? 'inline-block' : 'none';
       navAdmin.textContent = currentUserRole==='admin' ? 'Administration' : 'Mon établissement';
@@ -2788,7 +2789,7 @@ async function refreshAuthUI(){
     const navMesDevoirsBadgeOut = document.getElementById('navMesDevoirsBadge');
     if(navMesDevoirsBadgeOut) navMesDevoirsBadgeOut.style.display='none';
     if(navAdmin) navAdmin.style.display='none';
-    ['nav4e', 'nav3e'].forEach(id => { const b = document.getElementById(id); if(b) b.style.display='none'; });
+    const nav3e = document.getElementById('nav3e'); if(nav3e) nav3e.style.display='none';
     const tbBtnAiOut = document.getElementById('tbBtnAi');
     if(tbBtnAiOut) tbBtnAiOut.style.display='none';
     const btnIaSettingsOut = document.getElementById('btnIaSettings');
@@ -2978,6 +2979,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.786', items:[
+    "La 4e est publiée -- demandé : « On peut publier 4e. Modifier aussi la page d'accueil. » Le menu 4e est visible de tous (il était réservé aux administrateurs) et ses 15 chapitres sont en ligne. Comme en 6e et en 5e, quatre chapitres sont en accès libre pour les visiteurs (Opérations sur les nombres relatifs, Théorème de Pythagore, Statistiques, Translations). Les autres sont ouverts aux comptes dont l'accès couvre la 4e. La 4e est ajoutée aux listes de niveaux des outils : classes (création, modification, import), outil de correction, TD référencés, Ma progression, évaluations et génération de questions par l'IA. Accueil : une carte « 4e » (15 chapitres, pastille « Nouveau », couleur bleu-vert de la 4e) rejoint celles de la 6e et de la 5e, et les textes de présentation (accueil, inscription professeur, titre et description pour Google) mentionnent la 4e. Référencement : une page indexable par chapitre de 4e et un sommaire /4e/ sont générés, et ajoutés au sitemap. La 3e reste réservée aux administrateurs."
+  ]},
   { version:'2026-08-19.785', items:[
     "4e : rédaction des calculs revue dans tous les chapitres -- demandé : « ne jamais mettre un signe = en début de ligne » et « on préfère toujours nommer un calcul (une expression) avec une lettre A = , B = ... et résoudre le calcul en colonne ». Chaque calcul est désormais nommé (A, B, C… ou le nom de la grandeur : h², t, MN² + NP²…) et écrit en colonne, une étape par ligne, le nom étant répété à chaque ligne : dans les cours, les méthodes, les rédactions types, les corrections des exercices et les outils qui rédigent eux-mêmes (fractions, calcul littéral, Pythagore, puissances…). Plus aucune ligne ne commence par « = ».",
     "4e, Statistiques, méthode « moyenne ou médiane ? » -- remarque : « tu parles de modifier le temps le moins bon et il se trouve qu'on peut le rapprocher de la médiane : dans ce cas il n'est plus le moins bon. Le but est de partir du temps le moins bon et de l'emmener vers un temps encore moins bon pour amener la moyenne sans toucher à la médiane. » Le curseur part maintenant du temps du nageur le plus lent (47 s) et ne peut que l'augmenter : le nageur reste le dernier, la médiane ne bouge pas (40 s) et l'on voit de combien la moyenne augmente.",

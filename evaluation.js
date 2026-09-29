@@ -56,6 +56,7 @@ document.getElementById('view-evaluation').innerHTML = `
         <select id="evalNiveau" onchange="renderEvalChapPicker(); scheduleEvalAutoSave();" style="margin-left:4px;">
           <option value="6e">6e</option>
           <option value="5e">5e</option>
+          <option value="4e">4e</option>
         </select>
       </label>
       <label class="hint" style="margin:0;">Classe(s) : <input type="text" id="evalClasses" placeholder="ex. 6e A, 6e B" style="width:140px;margin-left:4px;" oninput="scheduleEvalAutoSave()"></label>
@@ -519,7 +520,7 @@ function initEvaluationView(){
 }
 function renderEvalChapPicker(){
   const niveau = document.getElementById('evalNiveau').value;
-  const list = niveau==='6e' ? CH6 : CH5;
+  const list = CHAPITRES_BY_LEVEL[niveau] || CH6;
   const box = document.getElementById('evalChapPicker');
   const seen = new Set();
   box.innerHTML = list.filter(c=>{ if(seen.has(c.t)) return false; seen.add(c.t); return true; }).map(c=>`

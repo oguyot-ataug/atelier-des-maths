@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opérations sur les nombres relatifs – Cours de maths 4e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 4e : Opérations sur les nombres relatifs. Additionner et soustraire des nombres relatifs, Multiplier des nombres relatifs, L'inverse d'un…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/4e/operations-sur-les-nombres-relatifs/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Opérations sur les nombres relatifs – Cours de maths 4e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 4e : Opérations sur les nombres relatifs. Additionner et soustraire des nombres relatifs, Multiplier des nombres relatifs, L'inverse d'un…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/4e/operations-sur-les-nombres-relatifs/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Opérations sur les nombres relatifs (4e)","headline":"Opérations sur les nombres relatifs – cours de mathématiques de 4e","description":"Cours de maths 4e : Opérations sur les nombres relatifs. Additionner et soustraire des nombres relatifs, Multiplier des nombres relatifs, L'inverse d'un…","url":"https://maths.latelieraugmente.fr/4e/operations-sur-les-nombres-relatifs/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"4e (cycle 4, collège)","about":"Nombres et calculs","teaches":["Additionner et soustraire des nombres relatifs","Multiplier des nombres relatifs","L'inverse d'un nombre relatif","Diviser des nombres relatifs","Enchaîner les opérations : les priorités"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 4e","url":"https://maths.latelieraugmente.fr/4e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 4e","item":"https://maths.latelieraugmente.fr/4e/"},{"@type":"ListItem","position":3,"name":"Opérations sur les nombres relatifs","item":"https://maths.latelieraugmente.fr/4e/operations-sur-les-nombres-relatifs/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/4e/">Cours de maths 4e</a> › Opérations sur les nombres relatifs</div>
+<h1>Opérations sur les nombres relatifs</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span> Cours de mathématiques de 4e (quatrième) · chapitre 1 · Additionner et soustraire des nombres relatifs · Multiplier des nombres relatifs · L'inverse d'un nombre relatif · Diviser des nombres relatifs · Enchaîner les opérations : les priorités</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/4e/1-operations-sur-les-nombres-relatifs/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Additionner et soustraire des nombres relatifs</h3></div>
+
+<div class="sub-header"><span class="letter">A</span><h4>La somme de deux nombres relatifs</h4></div>
+<span class="prop-badge">Propriétés</span>
+<div class="def-box"><ul style="margin:0;padding-left:20px;line-height:1.8;">
+  <li>Deux nombres de <b>même signe</b> : leur somme garde ce <b>signe commun</b>, et sa distance à zéro est la <b>somme</b> des distances à zéro.</li>
+  <li>Deux nombres de <b>signes contraires</b> : leur somme prend le signe du nombre qui a la <b>plus grande distance à zéro</b>, et sa distance à zéro est la <b>différence</b> des distances à zéro.</li>
+</ul></div>
+<p class="example-title">Exemple 1 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">A = (−7) + (−4)</span><span class="we-comment">Les deux nombres sont négatifs : même signe.</span></div><div class="we-row"><span class="we-expr">A = −(7 + 4)</span><span class="we-comment">On additionne les distances à zéro et on garde le signe commun : −.</span></div><div class="we-row"><span class="we-expr">A = −11</span><span class="we-comment">On calcule.</span></div></div>
+<p class="example-title">Exemple 2 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">B = (+3,5) + (−9)</span><span class="we-comment">Un nombre positif et un nombre négatif : signes contraires.</span></div><div class="we-row"><span class="we-expr">B = −(9 − 3,5)</span><span class="we-comment">On soustrait les distances à zéro ; −9 a la plus grande distance à zéro, le résultat est négatif.</span></div><div class="we-row"><span class="we-expr">B = −5,5</span><span class="we-comment">On calcule.</span></div></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : la somme de deux nombres <b>opposés</b> est nulle. Par exemple : (−12,6) + (+12,6) = 0.</div>
+
+<div class="sub-header"><span class="letter">B</span><h4>Soustraire, c'est ajouter l'opposé</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">L'<b>opposé</b> d'un nombre relatif est le nombre qui a la <b>même distance à zéro</b> mais le <b>signe contraire</b>.</div>
+<p class="example-title">Exemple 1 :</p>
+<ul class="example-list"><li>Les opposés de −4,2 ; 17 ; −0,05 et 380 sont 4,2 ; −17 ; 0,05 et −380. Le nombre 0 est son propre opposé.</li></ul>
+<span class="prop-badge">Propriété</span>
+<div class="def-box"><b>Soustraire un nombre relatif revient à ajouter son opposé.</b></div>
+<p class="example-title">Exemple 2 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">C = (−8) − (−5)</span><span class="we-comment">On veut soustraire le nombre −5.</span></div><div class="we-row"><span class="we-expr">C = (−8) + (+5)</span><span class="we-comment">On ajoute l'opposé de −5, c'est-à-dire <span style="color:#0C5BA0;font-weight:700;">+5</span>.</span></div><div class="we-row"><span class="we-expr">C = −(8 − 5)</span><span class="we-comment">Signes contraires : on soustrait les distances à zéro, et −8 impose son signe.</span></div><div class="we-row"><span class="we-expr">C = −3</span><span class="we-comment">On calcule.</span></div></div>
+<p class="example-title">Exemple 3 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">D = 2 − 11</span><span class="we-comment">On soustrait 11 : on ajoute son opposé −11.</span></div><div class="we-row"><span class="we-expr">D = 2 + (−11)</span><span class="we-comment">Signes contraires : −11 a la plus grande distance à zéro.</span></div><div class="we-row"><span class="we-expr">D = −9</span><span class="we-comment">On calcule.</span></div></div>
+
+<div class="sub-header"><span class="letter">C</span><h4>Enchaîner des additions et des soustractions</h4></div>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">On remplace chaque soustraction par l'<b>addition de l'opposé</b>. On peut ensuite supprimer les signes d'addition et les parenthèses (on obtient une <b>somme algébrique</b>), puis <b>regrouper</b> les nombres positifs d'un côté et les nombres négatifs de l'autre.</div>
+<p class="example-title">Exemple 1 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">E = (−6) − (+2) + (−3) − (−10)</span></div><div class="we-row"><span class="we-expr">E = (−6) + (−2) + (−3) + (+10)</span><span class="we-comment">On transforme chaque soustraction en addition de l'opposé.</span></div><div class="we-row"><span class="we-expr">E = −6 − 2 − 3 + 10</span><span class="we-comment">On supprime les signes d'addition et les parenthèses.</span></div><div class="we-row"><span class="we-expr">E = −11 + 10</span><span class="we-comment">On regroupe les nombres négatifs : −6 − 2 − 3 = −11.</span></div><div class="we-row"><span class="we-expr">E = −1</span><span class="we-comment">On termine le calcul.</span></div></div>
+<p class="example-title">Exemple 2 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">F = 7,5 − 12 + 4 − 2,5</span><span class="we-comment">Somme algébrique déjà écrite sans parenthèses.</span></div><div class="we-row"><span class="we-expr">F = 7,5 + 4 − 12 − 2,5</span><span class="we-comment">On regroupe les nombres positifs, puis les nombres négatifs.</span></div><div class="we-row"><span class="we-expr">F = 11,5 − 14,5</span><span class="we-comment">On calcule chaque groupe.</span></div><div class="we-row"><span class="we-expr">F = −3</span><span class="we-comment">On termine le calcul.</span></div></div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Multiplier des nombres relatifs</h3></div>
+
+<div class="sub-header"><span class="letter">A</span><h4>La règle des signes</h4></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Le <b>produit</b> de deux nombres relatifs a pour distance à zéro le <b>produit des distances à zéro</b>. Il est :
+  <ul style="margin:6px 0 0;padding-left:20px;line-height:1.8;">
+    <li><b>positif</b> si les deux nombres sont de <b>même signe</b> ;</li>
+    <li><b>négatif</b> si les deux nombres sont de <b>signes contraires</b>.</li>
+  </ul>
+</div>
+<div style="display:flex;justify-content:center;margin:4px 0 18px;">
+  <table style="border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:1.05rem;text-align:center;background:#fff;">
+    <tbody><tr><th style="border:1px solid #C9D6E6;padding:6px 14px;background:#F4F5F8;">×</th><th style="border:1px solid #C9D6E6;padding:6px 14px;background:#F4F5F8;">+</th><th style="border:1px solid #C9D6E6;padding:6px 14px;background:#F4F5F8;">−</th></tr>
+    <tr><th style="border:1px solid #C9D6E6;padding:6px 14px;background:#F4F5F8;">+</th><td style="border:1px solid #C9D6E6;padding:6px 14px;color:#1E7B34;font-weight:700;">+</td><td style="border:1px solid #C9D6E6;padding:6px 14px;color:#C0392B;font-weight:700;">−</td></tr>
+    <tr><th style="border:1px solid #C9D6E6;padding:6px 14px;background:#F4F5F8;">−</th><td style="border:1px solid #C9D6E6;padding:6px 14px;color:#C0392B;font-weight:700;">−</td><td style="border:1px solid #C9D6E6;padding:6px 14px;color:#1E7B34;font-weight:700;">+</td></tr>
+  </tbody></table>
+</div>
+<p class="example-title">Exemple 1 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">G = (−6) × (−1,5)</span><span class="we-comment">Deux nombres négatifs : même signe.</span></div><div class="we-row"><span class="we-expr">G = 6 × 1,5</span><span class="we-comment">Le produit est positif : on multiplie les distances à zéro.</span></div><div class="we-row"><span class="we-expr">G = 9</span><span class="we-comment">On calcule.</span></div></div>
+<p class="example-title">Exemple 2 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">H = 0,4 × (−25)</span><span class="we-comment">Un nombre positif et un nombre négatif : signes contraires.</span></div><div class="we-row"><span class="we-expr">H = −(0,4 × 25)</span><span class="we-comment">Le produit est négatif.</span></div><div class="we-row"><span class="we-expr">H = −10</span><span class="we-comment">On calcule.</span></div></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Multiplier un nombre relatif par <b>−1</b> revient à prendre son <b>opposé</b> : pour tout nombre relatif <i>a</i>, (−1) × <i>a</i> = −<i>a</i>.</div>
+<p class="example-title">Exemple :</p>
+<ul class="example-list"><li>(−1) × 8,3 = −8,3 &nbsp;&nbsp;et&nbsp;&nbsp; (−1) × (−14) = 14.</li></ul>
+
+<div class="sub-header"><span class="letter">B</span><h4>Le signe d'un produit de plusieurs facteurs</h4></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Un produit de nombres relatifs (non nuls) est :
+  <ul style="margin:6px 0 0;padding-left:20px;line-height:1.8;">
+    <li><b>positif</b> s'il comporte un nombre <b>pair</b> de facteurs négatifs ;</li>
+    <li><b>négatif</b> s'il comporte un nombre <b>impair</b> de facteurs négatifs.</li>
+  </ul>
+</div>
+<p class="example-title">Exemple 1 :</p>
+<ul class="example-list"><li>Le produit I = (−3) × 8 × (−1,2) × (−5) × 2,5 comporte <b>trois</b> facteurs négatifs : c'est un nombre impair, donc I est <b>négatif</b>.</li></ul>
+<p class="example-title">Exemple 2 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">J = (−2,5) × (−7) × (−4) × 3 × (−2)</span><span class="we-comment">On détermine d'abord le signe du produit.</span></div><div class="we-row"><span class="we-expr">J = 2,5 × 7 × 4 × 3 × 2</span><span class="we-comment">Quatre facteurs négatifs : 4 est pair, donc J est positif.</span></div><div class="we-row"><span class="we-expr">J = (2,5 × 4) × (7 × 3 × 2)</span><span class="we-comment">On regroupe astucieusement les facteurs.</span></div><div class="we-row"><span class="we-expr">J = 10 × 42</span><span class="we-comment">On calcule chaque groupe.</span></div><div class="we-row"><span class="we-expr">J = 420</span><span class="we-comment">On termine le calcul.</span></div></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : si l'un des facteurs est égal à 0, le produit est nul, quels que soient les autres facteurs.</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>L'inverse d'un nombre relatif</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Deux nombres relatifs sont <b>inverses</b> l'un de l'autre lorsque leur <b>produit est égal à 1</b>.</div>
+<p class="example-title">Exemples :</p>
+<ul class="example-list">
+  <li>4 et 0,25 sont inverses car 4 × 0,25 = 1.</li>
+  <li>−5 et −0,2 sont inverses car (−5) × (−0,2) = 1.</li>
+  <li>L'inverse de −10 est −0,1 car (−10) × (−0,1) = 1.</li>
+</ul>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarques : deux nombres inverses ont toujours le <b>même signe</b> (leur produit, 1, est positif). Le nombre <b>0 n'a pas d'inverse</b>. L'inverse d'un nombre <i>a</i> non nul s'écrit <span class="tex" data-tex-source="\dfrac{1}{a}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mi>a</mi></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord mathnormal">a</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span> : par exemple, l'inverse de 8 est <span class="tex" data-tex-source="\dfrac{1}{8}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>8</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">8</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>, soit 0,125.</div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Attention : ne pas confondre l'<b>inverse</b> (le produit vaut 1) et l'<b>opposé</b> (la somme vaut 0). L'opposé de 4 est −4, son inverse est 0,25.</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Diviser des nombres relatifs</h3></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Le <b>quotient</b> de deux nombres relatifs (le diviseur n'étant pas nul) a pour distance à zéro le <b>quotient des distances à zéro</b>. Il est :
+  <ul style="margin:6px 0 0;padding-left:20px;line-height:1.8;">
+    <li><b>positif</b> si les deux nombres sont de <b>même signe</b> ;</li>
+    <li><b>négatif</b> si les deux nombres sont de <b>signes contraires</b>.</li>
+  </ul>
+</div>
+<p class="example-title">Exemple 1 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">K = (−72) ÷ 8</span><span class="we-comment">On détermine d'abord le signe du quotient : signes contraires.</span></div><div class="we-row"><span class="we-expr">K = −(72 ÷ 8)</span><span class="we-comment">Le quotient est négatif : on divise les distances à zéro.</span></div><div class="we-row"><span class="we-expr">K = −9</span><span class="we-comment">On calcule.</span></div></div>
+<p class="example-title">Exemple 2 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr"><span class="tex" data-tex-source="L = \dfrac{-4{,}2}{-0{,}6}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mo>−</mo><mn>4</mn><mo separator="true" lspace="0em" rspace="0em">,</mo><mn>2</mn></mrow><mrow><mo>−</mo><mn>0</mn><mo separator="true" lspace="0em" rspace="0em">,</mo><mn>6</mn></mrow></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal">L</span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">−</span><span class="mord">0</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">6</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">−</span><span class="mord">4</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">2</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span></span><span class="we-comment">On détermine d'abord le signe du quotient : deux nombres négatifs.</span></div><div class="we-row"><span class="we-expr"><span class="tex" data-tex-source="L = \dfrac{4{,}2}{0{,}6}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mn>4</mn><mo separator="true" lspace="0em" rspace="0em">,</mo><mn>2</mn></mrow><mrow><mn>0</mn><mo separator="true" lspace="0em" rspace="0em">,</mo><mn>6</mn></mrow></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal">L</span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">0</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">6</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">4</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">2</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span></span><span class="we-comment">Même signe : le quotient est positif.</span></div><div class="we-row"><span class="we-expr">L = 7</span><span class="we-comment">On calcule.</span></div></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarques :
+  <ul style="margin:6px 0 0;padding-left:20px;line-height:1.8;">
+    <li>La règle des signes est la <b>même</b> pour la division que pour la multiplication.</li>
+    <li>Le quotient de 0 par un nombre non nul est égal à 0 : pour tout nombre relatif <i>a</i> non nul, <span class="tex" data-tex-source="\dfrac{0}{a} = 0" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>0</mn><mi>a</mi></mfrac></mstyle><mo>=</mo><mn>0</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord mathnormal">a</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">0</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">0</span></span></span></span></span>. En revanche, on ne divise <b>jamais par 0</b>.</li>
+    <li>Diviser par un nombre non nul revient à <b>multiplier par son inverse</b> : (−3) ÷ 0,5 = (−3) × 2 = −6.</li>
+  </ul>
+</div>
+
+<div class="lesson-header"><span class="num">5</span><h3>Enchaîner les opérations : les priorités</h3></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Dans une suite d'opérations avec des nombres relatifs, on effectue <b>dans l'ordre</b> :
+  <ol style="margin:6px 0 0;padding-left:22px;line-height:1.8;">
+    <li>les calculs <b>entre parenthèses</b> ;</li>
+    <li>les <b>multiplications</b> et les <b>divisions</b> ;</li>
+    <li>les <b>additions</b> et les <b>soustractions</b>.</li>
+  </ol>
+</div>
+<p class="example-title">Exemple 1 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">M = 3 − 4 × <span style="color:#0C5BA0;font-weight:700;">(−5 + 2)</span></span><span class="we-comment">On repère le calcul prioritaire : la parenthèse.</span></div><div class="we-row"><span class="we-expr">M = 3 − <span style="color:#0C5BA0;font-weight:700;">4 × (−3)</span></span><span class="we-comment">On effectue ensuite la multiplication.</span></div><div class="we-row"><span class="we-expr">M = 3 − (−12)</span><span class="we-comment">Soustraire −12, c'est ajouter 12.</span></div><div class="we-row"><span class="we-expr">M = 3 + 12</span><span class="we-comment">On termine par l'addition.</span></div><div class="we-row"><span class="we-expr">M = 15</span></div></div>
+<p class="example-title">Exemple 2 :</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">N = <span style="color:#0C5BA0;font-weight:700;">(−18) ÷ (−3)</span> − <span style="color:#0C5BA0;font-weight:700;">2 × (−4)</span> + (−7)</span><span class="we-comment">Pas de parenthèse de calcul : on commence par la division et la multiplication.</span></div><div class="we-row"><span class="we-expr">N = 6 − (−8) + (−7)</span><span class="we-comment">On transforme les soustractions en additions de l'opposé.</span></div><div class="we-row"><span class="we-expr">N = 6 + 8 − 7</span><span class="we-comment">Somme algébrique : on calcule de gauche à droite.</span></div><div class="we-row"><span class="we-expr">N = 7</span></div></div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : calculer une somme algébrique</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <div class="step-display" id="r4-sommeDisplay"><div class="step-column"><div class="">S = (+4) − (−9) + (−12) − (+3,5)</div></div><div class="step-note">On part d'un enchaînement d'additions et de soustractions.</div></div>
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : trouver le signe d'un produit en comptant les facteurs négatifs</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <div id="r4-prodFacteurs" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:1.2rem;padding:18px 10px;background:#fff;border-radius:8px;border:1px solid rgba(28,43,57,.1);min-height:40px;"><span class="r4-f" data-i="0" style="padding:3px 7px;border-radius:8px;transition:background .25s,color .25s;">−2</span><span style="color:#6B6F7A;">×</span><span class="r4-f" data-i="1" style="padding:3px 7px;border-radius:8px;transition:background .25s,color .25s;">5</span><span style="color:#6B6F7A;">×</span><span class="r4-f" data-i="2" style="padding:3px 7px;border-radius:8px;transition:background .25s,color .25s;">(−0,5)</span><span style="color:#6B6F7A;">×</span><span class="r4-f" data-i="3" style="padding:3px 7px;border-radius:8px;transition:background .25s,color .25s;">(−4)</span><span style="color:#6B6F7A;">×</span><span class="r4-f" data-i="4" style="padding:3px 7px;border-radius:8px;transition:background .25s,color .25s;">3</span></div>
+  
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : calculer un quotient de nombres relatifs</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <div class="step-display" id="r4-quotientDisplay"><div class="step-column"><div class="">Q = (−6,3) ÷ (−0,9)</div></div><div class="step-note">On veut diviser deux nombres relatifs.</div></div>
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 4 : calculer une expression en respectant les priorités</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <div class="step-display" id="r4-prioritesDisplay"><div class="step-column"><div class="">T = 10 − 2 × <span style="color:#0C5BA0;font-weight:700;">(1 − 6)</span> ÷ (−5)</div></div><div class="step-note">On repère le calcul prioritaire : la parenthèse.</div></div>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Calculer un produit de plusieurs nombres relatifs »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">P = (−5) × 3 × (−0,2) × (−4)</span><span class="we-comment">On compte les facteurs négatifs : il y en a 3.</span></div>
+    <div class="we-row"><span class="we-expr">P = −(5 × 3 × 0,2 × 4)</span><span class="we-comment">3 est impair : le produit est négatif.</span></div>
+    <div class="we-row"><span class="we-expr">P = −((5 × 0,2) × (3 × 4))</span><span class="we-comment">On regroupe astucieusement.</span></div>
+    <div class="we-row"><span class="we-expr">P = −(1 × 12)</span><span class="we-comment">On calcule chaque groupe.</span></div>
+    <div class="we-row"><span class="we-expr">P = −12</span><span class="we-comment">On termine le calcul.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Calcule : A = (−13) + (−8) &nbsp;&nbsp; B = (+4,6) + (−10) &nbsp;&nbsp; C = (−2,7) − (−9)
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Écris sans parenthèses, puis calcule : D = (+5) − (+12) + (−3,5) − (−7,5)
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Calcule : E = (−9) × (−7) &nbsp;&nbsp; F = 1,5 × (−8) &nbsp;&nbsp; G = (−0,5) × (−0,5)
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Sans calculer, donne le signe de H = (−1) × (−2) × (−3) × … × (−9), le produit des nombres entiers de −1 à −9. Justifie.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Donne l'inverse de chaque nombre : 2 ; −0,5 ; 10 ; −4.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 6</div>
+    Calcule : I = (−56) ÷ (−7) &nbsp;&nbsp; J = 4,8 ÷ (−1,2) &nbsp;&nbsp; K = (−0,9) ÷ 0,3
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 7</div>
+    Calcule en respectant les priorités : L = −2 + 5 × (−3 − 1)
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 8</div>
+    Calcule en respectant les priorités : M = (−24) ÷ (−6) − 3 × (−2,5) − 10
+    
+    
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  La règle « moins par moins donne plus » est écrite pour la première fois par le mathématicien indien <b>Brahmagupta</b>, en 628 : il parle de « fortunes » (les nombres positifs) et de « dettes » (les nombres négatifs), et énonce que « le produit de deux dettes est une fortune ». En Europe, cette règle a longtemps paru mystérieuse : au début du 19e siècle, l'écrivain <b>Stendhal</b>, alors élève passionné de mathématiques, raconte dans ses souvenirs qu'aucun de ses professeurs n'arrivait à lui expliquer pourquoi « moins par moins donne plus ». La justification actuelle est simple : pour que la distributivité reste vraie avec les nombres négatifs, il faut que (−1) × (−1) = 1.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/4e/1-operations-sur-les-nombres-relatifs/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span></span>
+  <a href="/4e/">Tous les chapitres de 4e</a>
+  <span><a href="/4e/triangles-et-paralleles/">Triangles et parallèles</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>
