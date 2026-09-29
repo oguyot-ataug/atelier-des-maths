@@ -3042,6 +3042,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.790', items:[
+    "6e, Droites parallèles et perpendiculaires, tableau des notations, dernière ligne -- signalé : « G ∈ (d) H ∉ (d) sont coupés (ça va à la ligne et c'est moche) » et « le dessin indique le point G mais avec un trait oblique au lieu d'un trait droit ; (d) n'est pas écrit sur le dessin ». Les deux notations ne sont plus coupées en fin de ligne, le point G est marqué d'un petit trait perpendiculaire à la droite, et la droite est nommée (d) sur la figure."
+  ]},
   { version:'2026-08-19.789', items:[
     "Export PDF d'un cours -- signalé sur le chapitre 6e G2 Droites parallèles et perpendiculaires : « quand on lance l'impression/pdf, je perds des informations sur la page (plus de réquerre par exemple) », « les réquerres disparaissent sur le document » et « ça prend trop de place. Je ne peux pas distribuer autant de feuilles aux élèves ». Trois corrections, valables pour tous les chapitres. 1) La réquerre est une photo posée dans la figure : elle n'était pas chargée quand la figure était convertie en image pour le PDF (et pour le cahier de l'élève). Elle est maintenant intégrée à la figure avant la conversion. 2) Avant l'export ou l'impression, les démonstrations pas à pas sont avancées jusqu'à leur dernière étape (« On retire la réquerre »), et elles y restaient à l'écran : elles reviennent maintenant d'elles-mêmes à leur première étape une fois la capture terminée. 3) Mise en page plus compacte : les étapes d'une construction sont disposées en grille (4 vignettes par ligne, 3 pour les scènes plus larges comme le rapporteur), avec le texte de l'étape sous sa vignette, au lieu d'une étape par ligne ; les figures isolées sont limitées en hauteur ; les loupes de zoom ne sont plus imprimées. Pour ce chapitre (sans le paragraphe 1), le PDF passe de 9 à 5 pages."
   ]},

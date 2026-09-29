@@ -58,9 +58,9 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
     <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="25" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"/><line x1="25" y1="18" x2="25" y2="32" stroke="#1C1B2E" stroke-width="1.6"/><text x="19" y="14" font-size="13" font-style="italic">O</text><text x="122" y="18" font-size="13" font-style="italic">x</text></svg></td>
   </tr>
   <tr>
-    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">G ∈ (d)<br>H ∉ (d)</td>
+    <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;white-space:nowrap;">G ∈ (d)<br>H ∉ (d)</td>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Le point G <b>appartient</b> à la droite (d). Le point H <b>n'appartient pas</b> à la droite (d).</td>
-    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 60" style="width:130px;"><line x1="5" y1="35" x2="135" y2="35" stroke="#1C1B2E" stroke-width="1.6"/><line x1="55" y1="29" x2="55" y2="41" stroke="#1C1B2E" stroke-width="1.6" transform="rotate(-20 55 35)"/><text x="50" y="20" font-size="13" font-style="italic">G</text><line x1="93" y1="9" x2="101" y2="17" stroke="#1C1B2E" stroke-width="1.3"/><line x1="101" y1="9" x2="93" y2="17" stroke="#1C1B2E" stroke-width="1.3"/><text x="106" y="17" font-size="13" font-style="italic">H</text></svg></td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 60" style="width:130px;"><line x1="5" y1="35" x2="135" y2="35" stroke="#1C1B2E" stroke-width="1.6"/><line x1="55" y1="29" x2="55" y2="41" stroke="#1C1B2E" stroke-width="1.6"/><text x="50" y="20" font-size="13" font-style="italic">G</text><line x1="93" y1="9" x2="101" y2="17" stroke="#1C1B2E" stroke-width="1.3"/><line x1="101" y1="9" x2="93" y2="17" stroke="#1C1B2E" stroke-width="1.3"/><text x="106" y="17" font-size="13" font-style="italic">H</text><text x="112" y="53" font-size="12" fill="#1C1B2E">(d)</text></svg></td>
   </tr>
 </table>
 </div>
