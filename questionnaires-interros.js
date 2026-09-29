@@ -326,7 +326,7 @@ function qzInterrosHtml(liste){
 // Questionnaires enregistrés mais jamais donnés (brouillons), en tête de la page -- signalé : "Il
 // faut absolument que les interrogations sauvegardées soient visibles".
 function qzBrouillonsHtml(f){
-  const liste = (qzB.mes || []).filter(q => !(qzB.devoirs.get(q.id) || []).length)
+  const liste = (qzB.mes || []).filter(q => !(qzB.devoirs.get(q.id) || []).length && !(qzB.directParQ && qzB.directParQ.has(q.id))) // déjà utilisé en direct : rubrique « Séances en direct »
     .filter(q => !f || qzNormTexte((q.titre || '') + ' ' + (q.questions || []).map(x => x.enonce || '').join(' ')).includes(f));
   if(!liste.length) return '';
   return `<p class="qz-i-sec"><span class="gicon">save</span> Enregistrés, pas encore donnés (${liste.length})</p>
@@ -341,8 +341,7 @@ function qzBrouillonsHtml(f){
           <button class="btn secondary qz-mini" onclick="qzBanquePartager('${q.id}')" title="Partager avec des collègues (ils pourront le copier)"><span class="gicon">share</span> Partager</button>
           <button class="btn secondary qz-mini" onclick="qzBanqueApercu('${q.id}')" title="Aperçu"><span class="gicon">visibility</span></button>
           <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzBanqueSupprimer('${q.id}')" title="Supprimer"><span class="gicon">delete</span></button>
-        </span></div>`; }).join('')}</div>
-    <p class="qz-i-sec"><span class="gicon">assignment_turned_in</span> Données à une classe</p>`;
+        </span></div>`; }).join('')}</div>`; // le titre « Données à une classe » est ajouté par qzBanqueDonneesHtml
 }
 async function qzInterroSupprimer(id){
   const d = (qzB.interros || []).find(x => x.id === id); if(!d) return;

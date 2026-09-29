@@ -58,7 +58,7 @@ function qzBanqueCarte(q, partage){
       ${!partage && (q.partage_etab || nbPartage) ? `<span class="qz-b-share"><span class="gicon">group</span> ${q.partage_etab ? 'Établissement' : ''}${q.partage_etab && nbPartage ? ' + ' : ''}${nbPartage ? nbPartage + ' collègue' + (nbPartage > 1 ? 's' : '') : ''}</span>` : ''}
     </div>
     <div class="qz-b-types">${Object.keys(r.types).map(t => `<span class="qz-type-pill"><span class="gicon">${qzType(t).icon}</span> ${qzType(t).label}${r.types[t] > 1 ? ' ×' + r.types[t] : ''}</span>`).join('')}</div>
-    ${partage ? '' : `<div class="hint" style="margin:6px 0 0;">${dv.length ? 'Donné à : ' + dv.map(d => qzEsc((d.classes ? d.classes.nom + ' · ' : '') + d.titre)).join(' ; ') : 'Pas encore donné à une classe.'}</div>`}
+    ${partage ? '' : `<div class="hint" style="margin:6px 0 0;">${dv.length ? 'Donné à : ' + dv.map(d => qzEsc((d.classes ? d.classes.nom + ' · ' : '') + d.titre)).join(' ; ') : qzB.directParQ && qzB.directParQ.has(q.id) ? (s => 'Utilisé en direct le ' + new Date(s.created_at).toLocaleDateString('fr-FR') + (s.classes ? ' (' + qzEsc(s.classes.nom) + ')' : '') + '.')(qzB.directParQ.get(q.id)) : 'Pas encore donné à une classe.'}</div>`}
     <div class="qz-b-act">
       ${!partage && !dv.length ? `<button class="btn qz-mini" onclick="qzBanqueReprendre('${q.id}')" title="Continuer à préparer ce questionnaire"><span class="gicon">edit</span> Reprendre</button>` : ''}
       <button class="btn secondary qz-mini" onclick="qzBanqueApercu('${q.id}')"><span class="gicon">visibility</span> Aperçu</button>
@@ -81,16 +81,25 @@ function qzBanqueRender(){
     <p style="color:var(--ink-soft);max-width:75ch;">Des interrogations notées, à la manière de Google Forms, séparées des devoirs d'entraînement : créez-les, donnez-les à une classe (en classe, chronométrées, ou à la maison), corrigez-les copie par copie ou question par question, puis publiez les résultats. Vos questionnaires et ceux de vos collègues sont réutilisables : donner un questionnaire à une classe en crée une copie, le modifier ensuite ne change rien pour les autres classes. Pour en envoyer un à un collègue : bouton <b><span class="gicon" style="font-size:1rem;vertical-align:middle;">share</span> Partager</b> ; il le retrouve dans « Partagés avec moi » et peut le copier chez lui.</p>
     <div class="qz-legende">${[['maison', 'noté, à la maison ou en classe (chronométré)'], ['entrainement', 'non noté : l\'élève vérifie, réessaie, voit la correction'], ['sondage', 'pas de bonne réponse : avis, choix, réponses libres'], ['direct', 'en classe, question par question, au rythme du professeur']]
       .map(([k, t]) => `<span>${qzModeBadge(k, '')} <small>${t}</small></span>`).join('')}</div>
-    <p class="qzd-intro"><span class="gicon">cast_for_education</span><span><b>Nouveau : la séance en direct.</b> Bouton <b>En direct</b> sur un questionnaire : les questions s'affichent une à une au rythme du professeur, chaque élève répond depuis son compte, vous voyez en direct le pourcentage de réponses justes et fausses, puis vous affichez la correction. Toute la classe ou un groupe d'élèves ; ils entrent avec le code que vous affichez au tableau (ou automatiquement). Aussi dans le choix du mode d'une nouvelle interrogation. Rien n'est noté.</span></p>
+    <p class="qzd-intro"><span class="gicon">cast_for_education</span><span><b>Nouveau : la séance en direct.</b> Bouton <b>En direct</b> sur un questionnaire : les questions s'affichent une à une au rythme du professeur, chaque élève répond depuis son compte, vous voyez en direct le pourcentage de réponses justes et fausses, puis vous affichez la correction. Toute la classe ou un groupe d'élèves ; ils entrent avec le code que vous affichez au tableau (ou automatiquement). Aussi dans le choix du mode d'une nouvelle interrogation. Notée ou non, au choix : une séance notée devient une interrogation que vous vérifiez avant de publier les notes. Les séances terminées restent consultables (bilan) dans « Mes interrogations ».</span></p>
     <div class="qz-c-tools">
-      <div class="qz-tabs"><button class="${qzB.onglet === 'donnees' ? 'on' : ''}" onclick="qzB.onglet='donnees';qzBanqueRender()"><span class="gicon">assignment_turned_in</span> Mes interrogations (${(qzB.interros || []).length + qzB.mes.filter(q => !(qzB.devoirs.get(q.id) || []).length).length})</button>
+      <div class="qz-tabs"><button class="${qzB.onglet === 'donnees' ? 'on' : ''}" onclick="qzB.onglet='donnees';qzBanqueRender()"><span class="gicon">assignment_turned_in</span> Mes interrogations (${(qzB.interros || []).length + (qzB.directsPasses || []).length + qzB.mes.filter(q => !(qzB.devoirs.get(q.id) || []).length && !(qzB.directParQ && qzB.directParQ.has(q.id))).length})</button>
         <button class="${qzB.onglet === 'mes' ? 'on' : ''}" onclick="qzB.onglet='mes';qzBanqueRender()"><span class="gicon">person</span> Mes questionnaires (${qzB.mes.length})</button>
         <button class="${qzB.onglet === 'partages' ? 'on' : ''}" onclick="qzB.onglet='partages';qzBanqueRender()"><span class="gicon">group</span> Partagés avec moi (${qzB.partages.length})</button></div>
       <input type="search" class="qz-b-search" placeholder="Rechercher (titre, énoncé, auteur)…" value="${qzEsc(qzB.filtre)}" oninput="qzB.filtre=this.value;clearTimeout(qzB.t);qzB.t=setTimeout(()=>{qzBanqueRender();const i=document.querySelector('.qz-b-search');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}},250)">
       <button class="btn secondary" onclick="qzOuvrirCarnet()"><span class="gicon">menu_book</span> Carnet de notes</button>
       <button class="btn" onclick="qzBanqueNouveau()"><span class="gicon">add</span> Nouvelle interrogation</button>
     </div>
-    ${qzB.onglet === 'donnees' ? (typeof qzDirectsHtml === 'function' ? qzDirectsHtml() : '') + qzBrouillonsHtml(f) + qzInterrosHtml(interros) : `<div class="qz-b-grid">${liste.map(q => qzBanqueCarte(q, qzB.onglet !== 'mes')).join('') || `<p class="hint">${qzB.onglet === 'mes' ? (f ? 'Aucun questionnaire ne correspond.' : 'Aucun questionnaire pour l\'instant : créez-en un avec « Nouvelle interrogation ».') : 'Aucun questionnaire partagé avec vous pour l\'instant.'}</p>`}</div>`}`;
+    ${qzB.onglet === 'donnees' ? qzBanqueDonneesHtml(f, interros) : `<div class="qz-b-grid">${liste.map(q => qzBanqueCarte(q, qzB.onglet !== 'mes')).join('') || `<p class="hint">${qzB.onglet === 'mes' ? (f ? 'Aucun questionnaire ne correspond.' : 'Aucun questionnaire pour l\'instant : créez-en un avec « Nouvelle interrogation ».') : 'Aucun questionnaire partagé avec vous pour l\'instant.'}</p>`}</div>`}`;
+}
+// Onglet « Mes interrogations » : séances en direct (en cours, puis terminées), questionnaires pas
+// encore donnés, puis interrogations données à une classe.
+function qzBanqueDonneesHtml(f, interros){
+  const enCours = typeof qzDirectsHtml === 'function' ? qzDirectsHtml() : '';
+  const passees = typeof qzDirectsPassesHtml === 'function' ? qzDirectsPassesHtml(f) : '';
+  const brouillons = qzBrouillonsHtml(f);
+  const titreDonnees = enCours || brouillons || passees ? `<p class="qz-i-sec"><span class="gicon">assignment_turned_in</span> Données à une classe</p>` : '';
+  return enCours + brouillons + passees + titreDonnees + qzInterrosHtml(interros);
 }
 function qzBanqueTrouver(id){ return qzB && (qzB.mes.find(q => q.id === id) || qzB.partages.find(q => q.id === id)); }
 async function qzBanqueSur(id){

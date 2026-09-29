@@ -58,7 +58,7 @@ async function qzDirectLancer(questionnaireId, choix){
   if(studentIds) prec = prec.overlaps('student_ids', studentIds); else prec = prec.is('student_ids', null);
   await prec;
   const { data, error } = await sb.from('qz_direct').insert({ teacher_id: currentUser.id, class_id: choix.classId, questionnaire_id: q.id || null,
-    titre: q.titre || 'Séance en direct', questions, student_ids: studentIds, acces: choix.acces === 'auto' ? 'auto' : 'code',
+    titre: q.titre || 'Séance en direct', questions, student_ids: studentIds, acces: choix.acces === 'auto' ? 'auto' : 'code', notee: !!choix.notee,
     etat: { phase: 'attente', total: nb, lancees: [] } }).select().single();
   if(error || !data){ await niceAlert('La séance n\'a pas pu être créée : ' + ((error && error.message) || '?')); return; }
   try{ localStorage.setItem('qzdAcces', data.acces); }catch(e){}
@@ -68,14 +68,16 @@ function qzDirectChoix(titre, nb, accesDefaut){
   const classes = accountClassesList || [];
   if(!classes.length){ niceAlert('Aucune classe sur votre compte.'); return Promise.resolve(null); }
   let acces = accesDefaut || 'code'; try{ acces = accesDefaut || localStorage.getItem('qzdAcces') || 'code'; }catch(e){}
-  const st = { classId: classes.length === 1 ? classes[0].id : null, cible: 'classe', eleves: new Set(), acces, liste: [] };
+  // Notée ou non -- demandé : « une séance en direct devrait pouvoir être notée ou non ». Dernier choix mémorisé.
+  let notee = false; try{ notee = localStorage.getItem('qzdNotee') === '1'; }catch(e){}
+  const st = { classId: classes.length === 1 ? classes[0].id : null, cible: 'classe', eleves: new Set(), acces, notee, liste: [] };
   return new Promise(res => {
     const o = document.createElement('div'); o.className = 'qzd-ov';
     const rendre = () => {
       o.innerHTML = `<div class="qzd-modal" role="dialog" aria-label="Séance en direct">
         <h3><span class="gicon">cast_for_education</span> Séance en direct</h3>
         <p style="margin:4px 0 8px;"><b>${qzEsc(titre)}</b> · ${nb} question${nb > 1 ? 's' : ''}</p>
-        <p class="hint" style="margin:0;">Les questions s'affichent une à une, à votre rythme. Chaque élève répond depuis son compte (ordinateur ou tablette) ; vous voyez les réponses arriver en direct et vous affichez la correction quand vous voulez. <b>Rien n'est noté.</b></p>
+        <p class="hint" style="margin:0;">Les questions s'affichent une à une, à votre rythme. Chaque élève répond depuis son compte (ordinateur ou tablette) ; vous voyez les réponses arriver en direct et vous affichez la correction quand vous voulez. Notée ou non : vous choisissez ci-dessous.</p>
         <p class="qzd-m-lab">1. Avec quelle classe ?</p>
         <div class="qz-k-chips">${classes.map(c => `<button type="button" class="qz-k-chip${st.classId === c.id ? ' on' : ''}" data-classe="${c.id}"><span class="gicon">groups</span> ${qzEsc(c.label)}</button>`).join('')}</div>
         ${st.classId ? `<p class="qzd-m-lab">2. Qui participe ?</p>
@@ -87,6 +89,11 @@ function qzDirectChoix(titre, nb, accesDefaut){
         <div class="qzd-m-acces">
           <button type="button" class="qzd-m-opt${st.acces === 'code' ? ' on' : ''}" data-acces="code"><span class="gicon">pin</span><span><b>Avec un code affiché au tableau</b><small>En haut de la page « Mon travail », ou dans le bandeau rouge : l'élève tape le code. Seuls les élèves présents entrent.</small></span></button>
           <button type="button" class="qzd-m-opt${st.acces === 'auto' ? ' on' : ''}" data-acces="auto"><span class="gicon">bolt</span><span><b>Automatiquement</b><small>Un bandeau « Rejoindre » apparaît sur l'écran des élèves concernés, sans code.</small></span></button>
+        </div>
+        <p class="qzd-m-lab">4. La séance est-elle notée ?</p>
+        <div class="qzd-m-acces">
+          <button type="button" class="qzd-m-opt${!st.notee ? ' on' : ''}" data-notee="0"><span class="gicon">school</span><span><b>Non notée</b><small>Pour s'entraîner et corriger ensemble. Le bilan reste consultable ; vous pourrez encore décider de la noter après.</small></span></button>
+          <button type="button" class="qzd-m-opt${st.notee ? ' on' : ''}" data-notee="1"><span class="gicon">grading</span><span><b>Notée</b><small>À la fin, une interrogation est créée avec une copie par élève (ses réponses du direct, corrigées automatiquement). Vous vérifiez, puis vous publiez les notes, qui vont dans le carnet.</small></span></button>
         </div>` : ''}
         <p class="hint qzd-m-err" id="qzdMErr" style="margin:10px 0 0;color:#a83c1f;"></p>
         <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;"><button type="button" class="btn secondary" data-x>Annuler</button>
@@ -105,11 +112,12 @@ function qzDirectChoix(titre, nb, accesDefaut){
       const cl = t.closest('[data-classe]'); if(cl){ if(st.classId !== cl.dataset.classe){ st.classId = cl.dataset.classe; st.eleves = new Set(); charger(); } return; }
       const ci = t.closest('[data-cible]'); if(ci){ st.cible = ci.dataset.cible; if(st.cible === 'eleves' && !st.liste.length) charger(); else rendre(); return; }
       const ac = t.closest('[data-acces]'); if(ac){ st.acces = ac.dataset.acces; rendre(); return; }
+      const nt = t.closest('[data-notee]'); if(nt){ st.notee = nt.dataset.notee === '1'; try{ localStorage.setItem('qzdNotee', st.notee ? '1' : '0'); }catch(x){} rendre(); return; }
       if(t.closest('[data-tous]')){ e.preventDefault(); st.liste.forEach(x => st.eleves.add(x.id)); rendre(); return; }
       if(t.closest('[data-aucun]')){ e.preventDefault(); st.eleves = new Set(); rendre(); return; }
       if(t.closest('[data-go]')){
         if(st.cible === 'eleves' && !st.eleves.size){ o.querySelector('#qzdMErr').textContent = 'Choisissez au moins un élève.'; return; }
-        o.remove(); res({ classId: st.classId, studentIds: st.cible === 'eleves' ? Array.from(st.eleves) : null, acces: st.acces });
+        o.remove(); res({ classId: st.classId, studentIds: st.cible === 'eleves' ? Array.from(st.eleves) : null, acces: st.acces, notee: st.notee });
       }
     });
   });
@@ -239,14 +247,68 @@ async function qzDirectRelancer(){
 }
 async function qzDirectTerminer(){
   if(!qzD) return;
-  if(!(await niceConfirm('Terminer la séance ? Les élèves voient leur bilan (non noté) ; vous aussi.'))) return;
+  if(!(await niceConfirm(qzD.row.notee
+    ? 'Terminer la séance ? Les élèves voient leur bilan. Une interrogation notée est créée avec leurs réponses : vous la vérifiez, puis vous publiez les notes.'
+    : 'Terminer la séance ? Les élèves voient leur bilan (non noté) ; vous aussi.'))) return;
   const etat = Object.assign({}, qzD.etat, { phase: 'fin' }), fin = new Date().toISOString();
   const { error } = await sb.from('qz_direct').update({ etat, ended_at: fin, updated_at: fin }).eq('id', qzD.id);
   if(error){ await niceAlert('Erreur : ' + error.message); return; }
   qzD.etat = etat; qzD.row.ended_at = fin;
   try{ qzD.ch.send({ type: 'broadcast', event: 'etat', payload: { phase: 'fin' } }); }catch(e){}
   await qzDirectChargerReps(true);
+  if(qzD.row.notee && !qzD.row.devoir_id) await qzDirectNoter(qzD.id, true);
   qzDirectRender();
+}
+/* Séance notée -- demandé : « une séance en direct devrait pouvoir être notée ou non ». On réutilise le
+   circuit des interrogations : un questionnaire avec les SEULES questions posées pendant la séance
+   (copie de celles de la séance, avec leur corrigé), une interrogation (devoir) donnée à la classe ou
+   au groupe, et une copie rendue par élève ayant répondu, corrigée automatiquement. Le professeur
+   vérifie dans « Corriger » puis publie : les notes arrivent dans le carnet comme d'habitude.
+   Possible à la fin d'une séance notée (automatique) ou plus tard, depuis le bilan (« Noter cette séance »). */
+async function qzDirectNoter(id, auto){
+  let row = qzD && qzD.id === id ? qzD.row : null;
+  if(!row){ const { data } = await sb.from('qz_direct').select('*,classes(nom)').eq('id', id).single(); row = data; }
+  if(!row){ await niceAlert('Séance introuvable.'); return null; }
+  if(row.devoir_id){ if(!auto) qzOuvrirCorrection(row.devoir_id); return row.devoir_id; }
+  if(!auto && !(await niceConfirm('Noter cette séance ? Une interrogation est créée avec les réponses des élèves (questions posées pendant la séance seulement), corrigée automatiquement. Vous vérifierez les copies avant de publier les notes.'))) return null;
+  const lancees = (row.etat && row.etat.lancees) || [];
+  const questions = (row.questions || []).filter(q => q.type !== 'texte' && lancees.includes(q.id));
+  if(!questions.length){ await niceAlert('Aucune question n\'a été posée pendant cette séance : rien à noter.'); return null; }
+  let reglages = { mode: 'direct' };
+  if(row.questionnaire_id){ const { data: src } = await sb.from('questionnaires').select('reglages').eq('id', row.questionnaire_id).maybeSingle(); if(src && src.reglages) reglages = Object.assign({}, src.reglages, { mode: 'direct', brouillon: undefined, ferme: false }); }
+  const jour = new Date(row.created_at).toLocaleDateString('fr-FR');
+  const { data: qz, error: e1 } = await sb.from('questionnaires').insert({ teacher_id: currentUser.id, titre: (row.titre || 'Séance en direct') + ' (en direct du ' + jour + ')',
+    questions: JSON.parse(JSON.stringify(questions)), reglages }).select('id').single();
+  if(e1 || !qz){ await niceAlert('La séance n\'a pas pu être notée : ' + ((e1 && e1.message) || '?')); return null; }
+  const fin = row.ended_at || new Date().toISOString();
+  const { data: reps } = await sb.from('qz_direct_rep').select('qid,student_id,reponse').eq('direct_id', id);
+  const parEleve = new Map();
+  (reps || []).forEach(r => { if(!parEleve.has(r.student_id)) parEleve.set(r.student_id, {}); parEleve.get(r.student_id)[r.qid] = r.reponse; });
+  if(!parEleve.size){ await sb.from('questionnaires').delete().eq('id', qz.id); await niceAlert('Aucun élève n\'a répondu pendant cette séance : rien à noter.'); return null; }
+  // Donnée aux seuls élèves qui ont participé : un absent ne doit pas pouvoir la passer après coup.
+  const { data: dv, error: e2 } = await sb.from('devoirs').insert({ teacher_id: currentUser.id, class_id: row.class_id, titre: row.titre || 'Séance en direct', type: 'questionnaire',
+    questionnaire_id: qz.id, consigne: 'Séance en direct du ' + jour + '.', date_depot: row.created_at, date_limite: fin, student_ids: [...parEleve.keys()], qz_mode: qzModeCle('direct') }).select('id').single();
+  if(e2 || !dv){ await sb.from('questionnaires').delete().eq('id', qz.id); await niceAlert('La séance n\'a pas pu être notée : ' + ((e2 && e2.message) || '?')); return null; }
+  const copies = [...parEleve.entries()].map(([student_id, reponses]) => {
+    const s = qzScoreCopie(questions, { reponses, correction: {} }, reglages);
+    return { devoir_id: dv.id, student_id, started_at: row.created_at, submitted_at: fin, reponses, statut: 'rendue',
+      total: s.aCorriger ? null : s.total, note: s.aCorriger ? null : s.note, updated_at: fin };
+  });
+  if(copies.length){
+    const { error: e3 } = await sb.from('qz_copies').insert(copies);
+    if(e3){ await sb.from('devoirs').delete().eq('id', dv.id); await sb.from('questionnaires').delete().eq('id', qz.id); await niceAlert('Les copies n\'ont pas pu être créées : ' + e3.message); return null; }
+    // Ligne « rendu » (Mon travail de l'élève : « Revoir ma copie », puis « Voir mes résultats » une fois publiée).
+    const { error: e4 } = await sb.from('devoirs_rendus').insert(copies.map(c => ({ devoir_id: dv.id, student_id: c.student_id, type: 'questionnaire', est_rendu: true, submitted_at: fin })));
+    if(e4) console.warn('Séance en direct notée : lignes « rendu » non créées', e4);
+  }
+  await sb.from('qz_direct').update({ notee: true, devoir_id: dv.id }).eq('id', id);
+  row.notee = true; row.devoir_id = dv.id;
+  if(qzB && qzB.directsPasses){ const p = qzB.directsPasses.find(x => x.id === id); if(p){ p.notee = true; p.devoir_id = dv.id; } }
+  if(!auto){
+    await niceAlert(`Séance notée : ${copies.length} copie${copies.length > 1 ? 's' : ''} créée${copies.length > 1 ? 's' : ''}. Vérifiez-les, puis publiez les résultats pour envoyer les notes dans le carnet.`);
+    qzOuvrirCorrection(dv.id);
+  }
+  return dv.id;
 }
 function qzDirectBasculer(k){
   if(!qzD) return;
@@ -446,13 +508,16 @@ function qzDirectBilanHtml(){
       <td>${v.map((x, k) => `<span class="gicon qzd-ic ${x}" title="Question ${qzD.pages.indexOf(pages[k]) + 1}">${icone[x]}</span>`).join('')}</td></tr>`;
   }).join('');
   return `<div id="qzdBilan">
-    <h2 class="qzd-h2"><span class="gicon">insights</span> Bilan de la séance <span class="hint" style="font-weight:400;">(non noté)</span></h2>
+    <h2 class="qzd-h2"><span class="gicon">insights</span> Bilan de la séance <span class="hint" style="font-weight:400;">(${qzD.row.devoir_id ? 'notée' : 'non notée'})</span></h2>
+    ${qzD.row.devoir_id ? `<p class="qzd-intro" style="margin:0 0 14px;"><span class="gicon">grading</span><span>Séance notée : une interrogation a été créée avec les réponses des élèves. <b>Vérifiez les copies, puis publiez les résultats</b> pour envoyer les notes dans le carnet.</span></p>` : ''}
     <div class="qzd-blist">${lignes}</div>
     <div class="qzd-leg" style="margin:8px 0 18px;">${QZD_VERDICTS.filter(([k]) => k !== 'sondage' || sondage).map(([k, l]) => `<span class="${k}"><i></i>${l}</span>`).join('')}</div>
     <h3 class="qzd-h3">Par élève</h3>
     <div class="qzd-tab-wrap"><table class="qzd-tab"><thead><tr><th>Élève</th><th>Justes</th><th>Répondues</th><th>Question par question</th></tr></thead><tbody>${eleves}</tbody></table></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;">
       <button class="btn secondary" onclick="qzDirectQuitter()">← Interrogations</button>
+      ${qzD.row.devoir_id ? `<button class="btn" onclick="qzOuvrirCorrection('${qzD.row.devoir_id}')"><span class="gicon">fact_check</span> Vérifier et publier les notes</button>`
+        : `<button class="btn" onclick="qzDirectNoterDepuisBilan()" title="Crée une interrogation notée avec les réponses des élèves"><span class="gicon">grading</span> Noter cette séance</button>`}
       ${qzD.row.questionnaire_id ? `<button class="btn secondary" onclick="qzDirectLancer('${qzD.row.questionnaire_id}')"><span class="gicon">replay</span> Nouvelle séance avec ce questionnaire</button>` : ''}
     </div></div>`;
 }
@@ -470,14 +535,58 @@ function qzDirectsHtml(){
         </span></div>`; }).join('')}</div>`;
 }
 async function qzDirectsCharger(){
-  const { data } = await sb.from('qz_direct').select('id,titre,class_id,created_at,etat,code,acces,student_ids,classes(nom)').eq('teacher_id', currentUser.id).is('ended_at', null).order('created_at', { ascending: false });
-  if(typeof qzB !== 'undefined' && qzB) qzB.directs = data || [];
+  const [{ data }, { data: passes }] = await Promise.all([
+    sb.from('qz_direct').select('id,titre,class_id,created_at,etat,code,acces,student_ids,notee,devoir_id,classes(nom)').eq('teacher_id', currentUser.id).is('ended_at', null).order('created_at', { ascending: false }),
+    sb.from('qz_direct').select('id,titre,class_id,questionnaire_id,created_at,ended_at,etat,student_ids,notee,devoir_id,classes(nom)').eq('teacher_id', currentUser.id).not('ended_at', 'is', null).order('created_at', { ascending: false }).limit(200),
+  ]);
+  if(typeof qzB !== 'undefined' && qzB){
+    qzB.directs = data || [];
+    qzB.directsPasses = passes || [];
+    // Questionnaires déjà utilisés en direct : ils ne sont plus « pas encore donnés ».
+    qzB.directParQ = new Map();
+    [...(data || []), ...(passes || [])].forEach(d => { if(d.questionnaire_id && !qzB.directParQ.has(d.questionnaire_id)) qzB.directParQ.set(d.questionnaire_id, d); });
+  }
+}
+function qzDirectNoterDepuisBilan(){ if(qzD) qzDirectNoter(qzD.id, false); }
+function qzDirectResumeTxt(d){
+  const n = ((d.etat || {}).lancees || []).length;
+  return `${qzEsc(d.classes ? d.classes.nom : '')}${d.student_ids && d.student_ids.length ? ' (groupe de ' + d.student_ids.length + ')' : ''} · ${new Date(d.created_at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })} · ${n} question${n > 1 ? 's' : ''} posée${n > 1 ? 's' : ''}`;
+}
+/* Séances en direct terminées -- signalé : « j'ai 6V-Test en classe mais je ne comprends pas
+   l'affichage » : une séance terminée ne laissait aucune trace dans la liste (et son questionnaire
+   restait « pas encore donné »). On retrouve ici chaque séance, son bilan, et on peut la noter. */
+function qzDirectsPassesHtml(f){
+  const l = ((typeof qzB !== 'undefined' && qzB && qzB.directsPasses) || [])
+    .filter(d => !f || qzNormTexte((d.titre || '') + ' ' + (d.classes ? d.classes.nom : '')).includes(f));
+  if(!l.length) return '';
+  return `<p class="qz-i-sec"><span class="gicon" style="color:#D93025;">cast_for_education</span> Séances en direct terminées (${l.length})</p>
+    <div class="qz-i-liste" style="margin-bottom:18px;">${l.map(d => `<div class="qz-i-row qz-mlisere" style="--m:${qzMode('direct').c}">
+        <div class="qz-i-main">${qzModeBadge('direct', '')} <b>${qzEsc(d.titre)}</b>
+          <div class="hint" style="margin:2px 0 0;">${qzDirectResumeTxt(d)}</div></div>
+        <span class="qz-i-etat ${d.devoir_id ? 'ok' : 'brouillon'}"><span class="gicon">${d.devoir_id ? 'grading' : 'school'}</span> ${d.devoir_id ? 'Notée' : 'Non notée'}</span>
+        <span class="qz-i-act">
+          <button class="btn qz-mini" onclick="qzDirectOuvrir('${d.id}')"><span class="gicon">insights</span> Bilan</button>
+          ${d.devoir_id ? `<button class="btn secondary qz-mini" onclick="qzOuvrirCorrection('${d.devoir_id}')" title="Vérifier les copies et publier les notes"><span class="gicon">fact_check</span> Corriger</button>`
+            : `<button class="btn secondary qz-mini" onclick="qzDirectNoter('${d.id}')" title="Créer une interrogation notée avec les réponses des élèves"><span class="gicon">grading</span> Noter</button>`}
+          ${d.questionnaire_id ? `<button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${d.questionnaire_id}')" title="Nouvelle séance en direct avec ce questionnaire"><span class="gicon">replay</span></button>` : ''}
+          <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzDirectSupprimer('${d.id}')" title="Supprimer cette séance et ses réponses"><span class="gicon">delete</span></button>
+        </span></div>`).join('')}</div>`;
+}
+async function qzDirectSupprimer(id){
+  const d = ((qzB && qzB.directsPasses) || []).find(x => x.id === id); if(!d) return;
+  if(!(await niceConfirm(`Supprimer la séance « ${d.titre} » du ${new Date(d.created_at).toLocaleDateString('fr-FR')} et les réponses des élèves ?${d.devoir_id ? ' L\'interrogation notée qui en est issue reste dans « Données à une classe ».' : ''}`))) return;
+  await sb.from('qz_direct_rep').delete().eq('direct_id', id);
+  const { error } = await sb.from('qz_direct').delete().eq('id', id);
+  if(error){ await niceAlert('Erreur : ' + error.message); return; }
+  await qzDirectsCharger(); qzBanqueRender();
 }
 async function qzDirectClore(id){
   const fin = new Date().toISOString();
   await sb.from('qz_direct').update({ ended_at: fin, updated_at: fin, etat: Object.assign({}, ((qzB.directs || []).find(d => d.id === id) || {}).etat, { phase: 'fin' }) }).eq('id', id);
   try{ const ch = sb.channel(qzDCanal(id)); ch.subscribe(s => { if(s === 'SUBSCRIBED'){ ch.send({ type: 'broadcast', event: 'etat', payload: { phase: 'fin' } }); setTimeout(() => sb.removeChannel(ch), 1000); } }); }catch(e){}
-  await qzDirectsCharger(); qzBanqueRender();
+  const d = ((qzB && qzB.directs) || []).find(x => x.id === id);
+  if(d && d.notee && !d.devoir_id) await qzDirectNoter(id, true); // séance notée : l'interrogation est créée
+  await qzDirectsCharger(); if(qzB && d && d.notee) await qzInterrosCharger(); qzBanqueRender();
 }
 
 /* =====================================================================
