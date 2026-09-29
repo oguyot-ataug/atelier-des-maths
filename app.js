@@ -3072,6 +3072,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.804', items:[
+    "3e (visible des administrateurs) : chapitre N2 « Arithmétique » -- construit à partir des captures du manuel (p. 7-8), titres reformulés, exemples nouveaux (différents du manuel et du N2 de 4e). Cours : multiples et diviseurs, critères de divisibilité, nombres premiers (et les 25 inférieurs à 100), décomposition en produit de facteurs premiers (écriture avec puissances, unicité, décomposition progressive et « en échelle »), fractions irréductibles. Méthode animée : trois outils qui marchent sur n'importe quel nombre saisi (premier ou pas, avec les divisions essayées ; décomposition étape par étape en échelle ; fraction rendue irréductible avec les facteurs communs barrés), et un problème de partage type brevet pas à pas. Rédaction type, 8 exercices corrigés, quiz, un peu d'histoire (Goldbach, Mersenne).",
+  ]},
   { version:'2026-08-19.803', items:[
     "3e (visible des administrateurs) : chapitre G1 « Théorème de Thalès » -- construit à partir des captures du manuel (p. 39-40), titres reformulés, exemples et figures nouveaux. Cours : l'énoncé et ses trois configurations (réduction vue en 4e, agrandissement, « papillon »), calculer une longueur, prouver que deux droites ne sont pas parallèles, la réciproque et l'ordre des points (avec un contre-exemple : rapports égaux mais points dans un ordre différent). Longueurs indiquées par des arcs de cote comme dans le manuel ; points d'intersection et sommets non matérialisés. Méthode animée : M et N se déplacent sur les droites (curseurs, boutons Réduction / Agrandissement / Papillon / Même rapport, ordre différent), calcul pas à pas dans un papillon, réciproque pas à pas. Deux rédactions types, 8 exercices corrigés (dont l'étang, la rampe et le piège de l'ordre des points), quiz, un peu d'histoire.",
   ]},
