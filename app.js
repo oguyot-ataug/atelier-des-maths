@@ -3072,6 +3072,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.801', items:[
+    "Bilan des séances en direct : les réponses détaillées -- demandé : « même si la séance n'est pas notée, il serait intéressant de voir les réponses détaillées des élèves pour voir ce qui est mal réussi et pourquoi ». Dans le bilan, cliquer sur une question affiche l'énoncé, la répartition des réponses (choix cochés, nombres donnés avec les erreurs les plus fréquentes, affirmations bien jugées, pour « Associer » ce que les élèves ont mis en face de chaque étiquette), l'explication, puis les réponses des élèves corrigées, les réponses identiques regroupées avec les noms, les erreurs en premier. Cliquer sur un élève affiche toutes ses réponses, question par question.",
+  ]},
   { version:'2026-08-19.800', items:[
     "Séances en direct : plus de doublon après la suppression d'une séance notée -- signalé : « 6V-test apparaît deux fois ! » Supprimer (corbeille) l'interrogation créée par « Noter » laissait derrière elle le questionnaire généré pour la notation, qui s'affichait dans « Enregistrés, pas encore donnés » sous le même nom. La corbeille d'une telle interrogation fait maintenant « Annuler la notation » : l'interrogation et son questionnaire généré sont supprimés, la séance redevient non notée.",
   ]},

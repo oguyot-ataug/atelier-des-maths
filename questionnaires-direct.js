@@ -422,6 +422,13 @@ function qzDirectDetailHtml(q, s, corr){
     const l = Array.from(g.values()).sort((a, b) => b.n - a.n).slice(0, 10);
     return `<div class="qzd-det"><p class="qzd-det-t">Réponses données</p>${l.map(x => `<div class="qzd-ch${corr ? ' ' + x.v : ''}"><span class="l">${qzMath(x.txt)}${q.unite ? ' ' + qzEsc(q.unite) : ''}</span><span class="b"><i style="width:${qzDPct(x.n, reps.length)}%"></i></span><b>${x.n}</b></div>`).join('')}${g.size > 10 ? `<p class="hint" style="margin:4px 0 0;">… et ${g.size - 10} autre${g.size - 10 > 1 ? 's' : ''}.</p>` : ''}</div>`;
   }
+  if(q.type === 'associer' && typeof qziAsAttendus === 'function'){ // pour chaque étiquette : ce que les élèves ont mis en face
+    const att = qziAsAttendus(q), dt = new Map((q.droite || []).map(d => [d.id, qziAsTxt(d.texte)]));
+    return `<div class="qzd-det"><p class="qzd-det-t">Ce que les élèves ont associé</p>${(q.gauche || []).map(g => {
+      const cnt = new Map(); reps.forEach(r => { const t = r && r[g.id] ? dt.get(r[g.id]) || '?' : '(rien)'; cnt.set(t, (cnt.get(t) || 0) + 1); });
+      return `<div class="qzd-as-l"><span class="l">${qzMath(g.texte)} <span class="gicon" style="font-size:1rem;vertical-align:middle;">east</span></span><span class="qzd-as-c">${[...cnt.entries()].sort((a, b) => b[1] - a[1])
+        .map(([t, n]) => `<span class="${corr ? (t === att.get(g.id) ? 'juste' : 'faux') : ''}">${qzMath(t)} <b>${n}</b></span>`).join('')}</span></div>`; }).join('')}</div>`;
+  }
   if(q.type === 'ouverte'){
     return `<div class="qzd-det"><p class="qzd-det-t">Réponses (sans les noms)</p><div class="qzd-txts">${reps.slice(0, 40).map(r => {
       const t = r && typeof r === 'object' ? (r.texte || '') : String(r || ''), ph = r && r.photos ? r.photos.length : 0;
@@ -538,15 +545,18 @@ function qzDirectBilanHtml(){
     if(qzX(p.q).sondage) return `<div class="qzd-bl son"><span class="qzd-bl-n">${qzD.pages.indexOf(p) + 1}</span><span class="qzd-bl-t">${qzEsc(txt) || qzType(p.q.type).label}</span>
       <span class="qzd-bl-b">${s.n ? qzDirectDetailHtml(p.q, s, true) : '<span class="hint" style="margin:0;">aucune réponse</span>'}</span>
       <span class="qzd-bl-p">sondage<small>${s.n}/${s.total}</small></span></div>`;
-    return `<div class="qzd-bl"><span class="qzd-bl-n">${qzD.pages.indexOf(p) + 1}</span><span class="qzd-bl-t">${qzEsc(txt) || qzType(p.q.type).label}</span>
+    const ouv = qzD.bilanQ === p.q.id;
+    return `<div class="qzd-bl clic${ouv ? ' ouv' : ''}" onclick="qzDirectBilanQ('${p.q.id}')" title="Voir le détail des réponses"><span class="qzd-bl-n">${qzD.pages.indexOf(p) + 1}</span><span class="qzd-bl-t">${qzEsc(txt) || qzType(p.q.type).label}</span>
       <span class="qzd-bl-b">${s.n ? qzDBarre(s.c, s.n) : '<span class="hint" style="margin:0;">aucune réponse</span>'}</span>
-      <span class="qzd-bl-p">${s.n ? `<b>${qzDPct(s.c.juste, s.n)} %</b> juste` : ''}<small>${s.n}/${s.total}</small></span></div>`;
+      <span class="qzd-bl-p">${s.n ? `<b>${qzDPct(s.c.juste, s.n)} %</b> juste` : ''}<small>${s.n}/${s.total} <span class="gicon qzd-chev">${ouv ? 'expand_less' : 'expand_more'}</span></small></span></div>
+      ${ouv ? qzDirectBilanQHtml(p.q, s, qzD.pages.indexOf(p) + 1) : ''}`;
   }).join('');
   const eleves = qzD.eleves.map(e => {
     const v = pages.map(p => qzDVerdict(p.q, (qzD.reps.get(p.q.id) || new Map()).get(e.id)));
-    const j = v.filter(x => x === 'juste').length, rep = v.filter(x => x !== 'vide').length;
-    return `<tr><td>${qzEsc(e.label)}</td><td class="c">${notees.length ? `<b>${j}</b> / ${notees.length}` : '—'}</td><td class="c">${rep}</td>
-      <td>${v.map((x, k) => `<span class="gicon qzd-ic ${x}" title="Question ${qzD.pages.indexOf(pages[k]) + 1}">${icone[x]}</span>`).join('')}</td></tr>`;
+    const j = v.filter(x => x === 'juste').length, rep = v.filter(x => x !== 'vide').length, ouv = qzD.bilanE === e.id;
+    return `<tr class="clic${ouv ? ' ouv' : ''}" onclick="qzDirectBilanE('${e.id}')" title="Voir ses réponses"><td><span class="gicon qzd-chev">${ouv ? 'expand_less' : 'expand_more'}</span> ${qzEsc(e.label)}</td><td class="c">${notees.length ? `<b>${j}</b> / ${notees.length}` : '—'}</td><td class="c">${rep}</td>
+      <td>${v.map((x, k) => `<span class="gicon qzd-ic ${x}" title="Question ${qzD.pages.indexOf(pages[k]) + 1}">${icone[x]}</span>`).join('')}</td></tr>
+      ${ouv ? `<tr class="qzd-copie"><td colspan="4">${qzDirectBilanEHtml(e, pages)}</td></tr>` : ''}`;
   }).join('');
   return `<div id="qzdBilan">
     <h2 class="qzd-h2"><span class="gicon">insights</span> Bilan de la séance <span class="hint" style="font-weight:400;">(${qzD.row.devoir_id ? 'notée' : 'non notée'})</span></h2>
@@ -555,6 +565,7 @@ function qzDirectBilanHtml(){
       <button class="btn secondary qz-mini" style="margin-left:6px;" onclick="qzBanqueReprendre('${qzD.row.questionnaire_id}')"><span class="gicon">edit</span> Modifier le questionnaire</button></span></p>` : ''}
     <div class="qzd-blist">${lignes}</div>
     <div class="qzd-leg" style="margin:8px 0 18px;">${QZD_VERDICTS.filter(([k]) => k !== 'sondage' || sondage).map(([k, l]) => `<span class="${k}"><i></i>${l}</span>`).join('')}</div>
+    <p class="hint" style="margin:-10px 0 16px;"><span class="gicon" style="font-size:1rem;vertical-align:middle;">touch_app</span> Cliquez sur une question pour voir les réponses données (erreurs les plus fréquentes, réponse de chaque élève), ou sur un élève pour voir toutes ses réponses.</p>
     <h3 class="qzd-h3">Par élève</h3>
     <div class="qzd-tab-wrap"><table class="qzd-tab"><thead><tr><th>Élève</th><th>Justes</th><th>Répondues</th><th>Question par question</th></tr></thead><tbody>${eleves}</tbody></table></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;">
@@ -564,6 +575,46 @@ function qzDirectBilanHtml(){
         : `<button class="btn" onclick="qzDirectNoterDepuisBilan()" title="Crée une interrogation notée avec les réponses des élèves"><span class="gicon">grading</span> Noter cette séance</button>`}
       ${qzD.row.questionnaire_id ? `<button class="btn secondary" onclick="qzDirectLancer('${qzD.row.questionnaire_id}')"><span class="gicon">replay</span> Nouvelle séance avec ce questionnaire</button>` : ''}
     </div></div>`;
+}
+/* Réponses détaillées dans le bilan -- demandé : « même si la séance n'est pas notée, il serait
+   intéressant de voir les réponses détaillées des élèves pour voir ce qui est mal réussi et pourquoi ».
+   Une question : énoncé, répartition des réponses (erreurs les plus fréquentes), explication, puis la
+   réponse de chaque élève (fausses d'abord). Un élève : toutes ses réponses, question par question. */
+const QZD_ORDRE_V = { faux: 0, partiel: 1, avoir: 2, juste: 3, sondage: 4, vide: 5 };
+function qzDirectBilanQ(qid){ qzD.bilanQ = qzD.bilanQ === qid ? null : qid; qzDirectBilanMaj(); }
+function qzDirectBilanE(id){ qzD.bilanE = qzD.bilanE === id ? null : id; qzDirectBilanMaj(); }
+function qzDirectBilanMaj(){ qzDirectRender(); const r = document.getElementById('qzDirectRoot'); if(r && typeof qzChargerPhotos === 'function') qzChargerPhotos(r); }
+function qzDirectRepHtml(q, rep, pfx){
+  let h = ''; try{ h = qzRenderSaisie(q, rep, 'corrige', { reglages: {}, seed: null, pfx }); }catch(e){}
+  return `<div class="qzd-rep">${h || '<span class="hint" style="margin:0;">—</span>'}</div>`;
+}
+function qzDirectBilanQHtml(q, s, num){
+  const toutes = qzD.reps.get(q.id) || new Map(), sond = !!qzX(q).sondage;
+  // Réponses identiques regroupées (une seule fois, avec les noms) : 30 copies se lisent d'un coup d'œil.
+  const cle = r => { const n = x => Array.isArray(x) ? x.map(n).sort() : x && typeof x === 'object' ? Object.keys(x).sort().map(k => [k, n(x[k])]) : typeof x === 'string' ? x.trim() : x; return JSON.stringify(n(r)); };
+  const groupes = new Map();
+  qzD.eleves.forEach(e => { const r = toutes.get(e.id), v = qzDVerdict(q, r), k = v === 'vide' ? 'vide' : cle(r);
+    if(!groupes.has(k)) groupes.set(k, { r, v, noms: [] }); groupes.get(k).noms.push(e.label); });
+  const eleves = [...groupes.values()].sort((a, b) => (QZD_ORDRE_V[a.v] ?? 9) - (QZD_ORDRE_V[b.v] ?? 9) || b.noms.length - a.noms.length)
+    .map(g => ({ e: { label: g.noms.length > 1 ? g.noms.length + ' élèves' : g.noms[0] }, noms: g.noms, r: g.r, v: g.v }));
+  const libV = Object.fromEntries(QZD_VERDICTS.concat([['vide', 'Pas de réponse']]));
+  const repartition = qzDirectDetailHtml(q, s, !sond);
+  return `<div class="qzd-bl-det">
+    <div class="qzd-bl-enonce"><span class="qzd-det-t">Question ${num}</span>${qzEnonceHtml(q)}</div>
+    ${repartition ? `<div class="qzd-bl-rep">${repartition}</div>` : ''}
+    ${q.explication ? `<div class="qz-sol" style="margin:8px 0;"><span class="gicon">lightbulb</span> <div><b>Explication :</b> ${qzMath(q.explication).replace(/\n/g, '<br>')}</div></div>` : ''}
+    <p class="qzd-det-t" style="margin-top:12px;">Réponses des élèves <small style="text-transform:none;font-weight:400;">(réponses identiques regroupées, erreurs d'abord)</small></p>
+    <div class="qzd-reps">${eleves.map(({ e, noms, r, v }, i) => `<div class="qzd-rep-el ${v}">
+        <div class="qzd-rep-nom"><span class="gicon qzd-ic ${v}">${{ juste: 'check_circle', partiel: 'contrast', faux: 'cancel', avoir: 'help', vide: 'remove', sondage: 'how_to_vote' }[v]}</span> <b>${qzEsc(e.label)}</b> <small>${libV[v] || ''}</small>
+          ${noms.length > 1 ? `<div class="qzd-noms-g">${noms.map(qzEsc).join(', ')}</div>` : ''}</div>
+        ${v === 'vide' ? '' : qzDirectRepHtml(q, r, 'dq' + i + '_')}</div>`).join('')}</div>
+  </div>`;
+}
+function qzDirectBilanEHtml(e, pages){
+  return `<div class="qzd-bl-det" style="margin:0;">${pages.map((p, k) => {
+    const r = (qzD.reps.get(p.q.id) || new Map()).get(e.id), v = qzDVerdict(p.q, r);
+    return `<div class="qzd-rep-el ${v}"><div class="qzd-rep-nom"><b>Question ${qzD.pages.indexOf(p) + 1}</b> <small>${qzEsc(String(p.q.enonce || '').replace(/\$/g, '').replace(/\s+/g, ' ').slice(0, 90))}</small></div>
+      ${v === 'vide' ? '<span class="hint" style="margin:0;">Pas de réponse.</span>' : qzDirectRepHtml(p.q, r, 'de' + k + '_')}</div>`; }).join('')}</div>`;
 }
 // Liste des séances encore ouvertes (page Interrogations en ligne) : reprise après un rechargement.
 function qzDirectsHtml(){
@@ -909,6 +960,18 @@ function qzDirectEleveBilan(d, head){
     .qzd-tab-wrap{overflow-x:auto;} .qzd-tab{border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;font-size:.9rem;}
     .qzd-tab th,.qzd-tab td{padding:6px 12px;border-bottom:1px solid rgba(28,43,57,.07);text-align:left;white-space:nowrap;} .qzd-tab th{background:rgba(28,43,57,.04);font-size:.8rem;}
     .qzd-tab td.c{text-align:center;}
+    .qzd-bl.clic,.qzd-tab tr.clic{cursor:pointer;} .qzd-bl.clic:hover,.qzd-bl.ouv{border-color:#0C5BA0;} .qzd-tab tr.clic:hover td,.qzd-tab tr.ouv td{background:rgba(12,91,160,.05);}
+    .qzd-chev{font-size:1rem;vertical-align:middle;color:#8A919C;}
+    .qzd-bl-det{background:#fff;border:1px solid rgba(12,91,160,.25);border-radius:10px;padding:12px 14px;margin:-2px 0 6px;white-space:normal;}
+    .qzd-bl-det .qzd-det{margin-top:8px;} .qzd-bl-enonce .qz-enonce{margin:4px 0;}
+    .qzd-reps{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;}
+    .qzd-rep-el{border:1px solid rgba(28,43,57,.08);border-left:4px solid #C9CED6;border-radius:8px;padding:6px 10px;min-width:0;}
+    .qzd-rep-el.juste{border-left-color:#1E7B34;} .qzd-rep-el.faux{border-left-color:#C62828;} .qzd-rep-el.partiel{border-left-color:#E0A100;} .qzd-rep-el.avoir{border-left-color:#8A919C;} .qzd-rep-el.sondage{border-left-color:#26AAB1;}
+    .qzd-rep-nom{font-size:.88rem;margin-bottom:4px;} .qzd-rep-nom small{color:#8A919C;} .qzd-noms-g{font-size:.8rem;color:#5B6472;margin-top:2px;}
+    .qzd-rep{font-size:.88rem;} .qzd-rep .qz-input{max-width:100%;} .qzd-rep textarea{width:100%;}
+    .qzd-tab tr.qzd-copie td{white-space:normal;background:rgba(12,91,160,.03);} .qzd-tab tr.qzd-copie .qzd-bl-det{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px;}
+    .qzd-as-l{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:.9rem;} .qzd-as-l .l{min-width:70px;font-weight:600;}
+    .qzd-as-c{display:flex;gap:6px;flex-wrap:wrap;} .qzd-as-c span{background:rgba(28,43,57,.05);border-radius:999px;padding:2px 10px;} .qzd-as-c span.juste{background:#E3F2E6;color:#1E7B34;} .qzd-as-c span.faux{background:#FBE4E2;color:#A32020;}
     .qzd-ic{font-size:1.15rem;vertical-align:middle;} .qzd-ic.juste{color:#1E7B34;} .qzd-ic.faux{color:#C62828;} .qzd-ic.partiel{color:#E0A100;} .qzd-ic.avoir{color:#8A919C;} .qzd-ic.vide{color:#C9CED6;}
     .qzd-bandeau{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:380;display:flex;align-items:center;gap:12px;background:#D93025;color:#fff;border-radius:16px;padding:10px 12px 10px 16px;box-shadow:0 10px 30px rgba(217,48,37,.35);max-width:calc(100vw - 24px);animation:qzdEntree .4s ease-out;}
     @keyframes qzdEntree{from{transform:translate(-50%,30px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
