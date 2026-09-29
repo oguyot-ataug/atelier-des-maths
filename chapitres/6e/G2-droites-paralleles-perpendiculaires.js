@@ -490,11 +490,20 @@ function dpLigneVisible(l){
   const x1 = +l.getAttribute('x1'), y1 = +l.getAttribute('y1'), x2 = +l.getAttribute('x2'), y2 = +l.getAttribute('y2');
   return Math.hypot(x2 - x1, y2 - y1) > 2;
 }
+function dpDistSegment(x, y, l){
+  const x1 = +l.getAttribute('x1'), y1 = +l.getAttribute('y1'), x2 = +l.getAttribute('x2'), y2 = +l.getAttribute('y2');
+  const dx = x2 - x1, dy = y2 - y1, n2 = dx*dx + dy*dy || 1;
+  const t = Math.max(0, Math.min(1, ((x - x1)*dx + (y - y1)*dy) / n2));
+  return Math.hypot(x - (x1 + t*dx), y - (y1 + t*dy));
+}
 function dpMarqueSync(c){
   const g = c._dpCroix; if(!g) return;
   const x = parseFloat(c.getAttribute('cx')) || 0, y = parseFloat(c.getAttribute('cy')) || 0;
   const [l1, l2] = g.children, couleur = c.getAttribute('fill') || '#1C1B2E';
-  const support = dpSupports(c).find(dpLigneVisible);
+  // La droite doit être DÉJÀ TRACÉE jusqu'au point (signalé : « il faut le faire quand la droite est
+  // tracée, pas avant ») : pendant qu'un trait avance au crayon, le point reste une croix tant que le
+  // trait ne l'a pas atteint.
+  const support = dpSupports(c).find(l => dpLigneVisible(l) && dpDistSegment(x, y, l) < 2);
   if(support){
     // petit trait perpendiculaire à la droite qui porte le point
     const dx = +support.getAttribute('x2') - +support.getAttribute('x1'), dy = +support.getAttribute('y2') - +support.getAttribute('y1'), n = Math.hypot(dx, dy) || 1, t = 7;
@@ -777,7 +786,11 @@ function dpRenderMedMethode(animate){
   const pencil = document.getElementById('dp-mm-pencil'), pencilTip = document.getElementById('dp-mm-pencil-tip');
   const labelMed = document.getElementById('dp-mm-labelMed');
   if(s.phase==='traced' || s.phase==='clean'){
-    const medExt = dpExtend(dpMmMid, dpMmPerp, TB_RULER_L*rulerScale/2);
+    // Le trait reste sur la règle : elle va de 30 % de sa longueur avant le milieu à 70 % après
+    // (voir backOffset ci-dessus) -- un trait symétrique dépassait de la règle d'un côté (signalé :
+    // « Le trait commence en dehors de la règle ici »). Petite marge aux deux bouts.
+    const Lr = TB_RULER_L*rulerScale;
+    const medExt = {x1:dpMmMid.x-dpMmPerp.x*Lr*0.26, y1:dpMmMid.y-dpMmPerp.y*Lr*0.26, x2:dpMmMid.x+dpMmPerp.x*Lr*0.64, y2:dpMmMid.y+dpMmPerp.y*Lr*0.64};
     medLine.style.display='';
     angleMark.setAttribute('d', dpRightAngleMark(dpMmMid, {x:dpMmDir.x,y:dpMmDir.y}, {x:dpMmPerp.x,y:dpMmPerp.y}, 13));
     angleMark.style.display='';
@@ -1350,7 +1363,10 @@ function makeMedMethodeDemo(idPrefix, PA, PB, lengthCm, labelA, labelB){
     const pencil = document.getElementById(idPrefix+'-pencil'), pencilTip = document.getElementById(idPrefix+'-pencil-tip');
     const labelMed = document.getElementById(idPrefix+'-labelMed');
     if(s.phase==='traced' || s.phase==='clean'){
-      const medExt = dpExtend(mid, perp, TB_RULER_L*rulerScale/2);
+      // Trait sur la règle (qui va de 30 % avant le milieu à 70 % après) : même correction que la
+      // construction du cours (« Le trait commence en dehors de la règle »).
+      const Lr = TB_RULER_L*rulerScale;
+      const medExt = {x1:mid.x-perp.x*Lr*0.26, y1:mid.y-perp.y*Lr*0.26, x2:mid.x+perp.x*Lr*0.64, y2:mid.y+perp.y*Lr*0.64};
       medLine.style.display='';
       angleMark.setAttribute('d', dpRightAngleMark(mid, {x:dir.x,y:dir.y}, {x:perp.x,y:perp.y}, 13));
       angleMark.style.display='';
@@ -1551,6 +1567,9 @@ const DP_RQ_TOOL_LEN = 280, DP_RQ_TOOL_W = 82; // vraie proportion de l'image (4
 // place donc le tracé légèrement AU-DELÀ du bord visible, dans la marge transparente --
 // d'où le décalage signalé. La bonne distance centre->bord VISIBLE est plus petite.
 const DP_RQ_TOOL_VISIBLE_HALFW = (133-4)/138 * DP_RQ_TOOL_W / 2;
+// Demi-longueur d'un tracé le long de la réquerre : un peu moins que la demi-longueur de l'image
+// (coins arrondis et marge transparente) -- sinon le trait dépasse de l'outil à ses deux bouts.
+const DP_RQ_TRACE_HALF = DP_RQ_TOOL_LEN/2 - 14;
 // Le trait fin (repère 0) reste toujours sur (d) ; c'est un BORD du rectangle (décalé d'une demi-largeur) qui doit atteindre M.
 const dpRqpCenterDist = dpRqpFootDist - DP_RQ_TOOL_VISIBLE_HALFW;
 const DP_RQP_STEPS = [
@@ -1584,7 +1603,7 @@ function dpRenderRqPerp(animate){
   const lineDp = document.getElementById('dp-rqp-lineDp'), angleMark = document.getElementById('dp-rqp-angleMark'), labelDp = document.getElementById('dp-rqp-labelDp');
   const pencil = document.getElementById('dp-rqp-pencil'), pencilTip = document.getElementById('dp-rqp-pencil-tip');
   if(s.phase==='traced' || s.phase==='clean'){
-    const dpExt = dpExtend(dpRqpFoot, dpRqpPerp, Math.max(DP_RQ_TOOL_LEN/2, dpRqpTouchDist + 30));
+    const dpExt = dpExtend(dpRqpFoot, dpRqpPerp, DP_RQ_TRACE_HALF);
     angleMark.setAttribute('d', dpRightAngleMark(dpRqpFoot, {x:dpRqpDir.x,y:dpRqpDir.y}, {x:dpRqpPerp.x,y:dpRqpPerp.y}, 13));
     angleMark.style.display='';
     dpSetTxt(labelDp, {x:dpExt.x2+dpRqpDir.x*16, y:dpExt.y2+dpRqpDir.y*16}, 0, 0);
@@ -1678,7 +1697,7 @@ function dpRenderRqPara(animate){
   const pencil = document.getElementById('dp-rqa-pencil'), pencilTip = document.getElementById('dp-rqa-pencil-tip');
 
   const deltaVisible = (s.stage===1 && (s.phase==='traced'||s.phase==='clean')) || s.stage===2;
-  const deltaExt = dpExtend(dpRqaStage1EdgeAnchor, dpRqaPerp, DP_RQ_TOOL_LEN/2);
+  const deltaExt = dpExtend(dpRqaStage1EdgeAnchor, dpRqaPerp, DP_RQ_TRACE_HALF);
   if(deltaVisible){
     angleMark1.setAttribute('d', dpRightAngleMark(dpRqaFoot1, {x:dpRqaDir.x,y:dpRqaDir.y}, {x:dpRqaPerp.x,y:dpRqaPerp.y}, 13));
     angleMark1.style.display=''; labelDelta.style.display='';
@@ -1689,7 +1708,7 @@ function dpRenderRqPara(animate){
   }
 
   const dpVisible = s.stage===2 && (s.phase==='traced'||s.phase==='clean');
-  const dpExt = dpExtend(dpRqaStage2EdgeAnchor, dpRqaDir, DP_RQ_TOOL_LEN/2);
+  const dpExt = dpExtend(dpRqaStage2EdgeAnchor, dpRqaDir, DP_RQ_TRACE_HALF);
   if(dpVisible){
     angleMark2.setAttribute('d', dpRightAngleMark(DP_RQA_A, {x:dpRqaPerp.x,y:dpRqaPerp.y}, {x:dpRqaDir.x,y:dpRqaDir.y}, 13));
     angleMark2.style.display=''; labelDp.style.display='';
