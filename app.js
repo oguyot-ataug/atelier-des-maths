@@ -3072,6 +3072,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.800', items:[
+    "Séances en direct : plus de doublon après la suppression d'une séance notée -- signalé : « 6V-test apparaît deux fois ! » Supprimer (corbeille) l'interrogation créée par « Noter » laissait derrière elle le questionnaire généré pour la notation, qui s'affichait dans « Enregistrés, pas encore donnés » sous le même nom. La corbeille d'une telle interrogation fait maintenant « Annuler la notation » : l'interrogation et son questionnaire généré sont supprimés, la séance redevient non notée.",
+  ]},
   { version:'2026-08-19.799', items:[
     "Séances en direct : corriger une erreur de corrigé après coup -- signalé : « j'ai inversé diviseur et reste. Les élèves avaient bien répondu mais ça a compté faux pour eux ! » La séance gardait une copie figée des questions : modifier le questionnaire ne changeait rien. Une séance terminée utilise maintenant la version actuelle du questionnaire d'origine : bouton « Modifier le questionnaire » dans le bilan et dans la liste des séances terminées ; le bilan et la notation en tiennent compte.",
     "Annuler la notation d'une séance -- demandé : « Je dois pouvoir annuler une correction et la reprendre à zéro ». Bouton « Annuler la notation » (bilan, liste des séances, page Corriger) : l'interrogation créée par « Noter » est supprimée avec ses copies et ses notes ; la séance, son bilan et les réponses des élèves restent, et « Noter » recrée tout avec le corrigé à jour. L'interrogation créée porte maintenant un nom explicite : « … (séance en direct du jj/mm/aaaa) ».",

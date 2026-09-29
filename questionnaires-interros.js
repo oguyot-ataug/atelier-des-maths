@@ -345,6 +345,10 @@ function qzBrouillonsHtml(f){
 }
 async function qzInterroSupprimer(id){
   const d = (qzB.interros || []).find(x => x.id === id); if(!d) return;
+  // Interrogation créée par « Noter » une séance en direct : on annule la notation (le questionnaire
+  // généré part avec) -- signalé : « 6V-test apparaît deux fois ! » (il restait dans « pas encore donnés »).
+  const { data: direct } = await sb.from('qz_direct').select('id').eq('devoir_id', id).maybeSingle();
+  if(direct && typeof qzDirectAnnulerNotation === 'function'){ if(await qzDirectAnnulerNotation(direct.id)) await qzBanqueOuvrir(); return; }
   if(!(await niceConfirm(`Supprimer l'interrogation « ${d.titre} » et toutes les copies des élèves ? Le questionnaire reste dans « Mes questionnaires ».`))) return;
   const { error: e1 } = await sb.from('devoirs_rendus').delete().eq('devoir_id', id);
   const { error: e2 } = e1 ? { error: e1 } : await sb.from('devoirs').delete().eq('id', id);
