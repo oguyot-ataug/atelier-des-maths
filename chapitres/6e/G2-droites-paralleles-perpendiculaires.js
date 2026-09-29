@@ -464,6 +464,51 @@ function dpAnimateTrace(lineEl, pencilEl, pencilTipEl, start, end, pencilPerpDir
 }
 function dpSetLine(el, ext){ el.setAttribute('x1',ext.x1); el.setAttribute('y1',ext.y1); el.setAttribute('x2',ext.x2); el.setAttribute('y2',ext.y2); }
 function dpSetPt(el, p){ el.setAttribute('cx',p.x); el.setAttribute('cy',p.y); }
+/* Points dessinés selon la convention du cours (croix « point libre ») -- signalé : « dans les
+   figures dynamiques les points sont représentés par des gros points qui ne correspondent pas à la
+   syntaxe indiquée dans le haut du cours ». Chaque disque data-marker="cross" devient invisible
+   (mais reste la zone qu'on attrape pour déplacer le point, agrandie pour le doigt) et une croix de
+   la même couleur le suit : position, affichage, opacité. La croix porte data-marker="hidden" :
+   à l'impression et dans le cahier, c'est le disque lui-même qui est remplacé par une croix
+   (applyPrintMarkers, app.js), pour ne pas en dessiner deux. */
+const DP_NS = 'http://www.w3.org/2000/svg';
+function dpCroixSync(c, g){
+  const x = parseFloat(c.getAttribute('cx')) || 0, y = parseFloat(c.getAttribute('cy')) || 0, t = 5.5;
+  const [l1, l2] = g.children;
+  l1.setAttribute('x1', x - t); l1.setAttribute('y1', y - t); l1.setAttribute('x2', x + t); l1.setAttribute('y2', y + t);
+  l2.setAttribute('x1', x - t); l2.setAttribute('y1', y + t); l2.setAttribute('x2', x + t); l2.setAttribute('y2', y - t);
+  const st = c.style;
+  g.style.display = st.display === 'none' || c.getAttribute('display') === 'none' ? 'none' : '';
+  g.style.opacity = st.opacity !== '' ? st.opacity : (c.getAttribute('opacity') || '');
+  const couleur = c.getAttribute('fill') || '#1C1B2E';
+  l1.setAttribute('stroke', couleur); l2.setAttribute('stroke', couleur);
+}
+function dpCroixPoint(c){
+  if(c._dpCroix) return;
+  const g = document.createElementNS(DP_NS, 'g');
+  g.setAttribute('class', 'dp-croix'); g.setAttribute('data-marker', 'hidden'); g.setAttribute('pointer-events', 'none');
+  g.innerHTML = '<line stroke-width="1.9" stroke-linecap="round"/><line stroke-width="1.9" stroke-linecap="round"/>';
+  c.parentNode.insertBefore(g, c.nextSibling);
+  c._dpCroix = g;
+  c.setAttribute('fill-opacity', '0');
+  if(/cursor\s*:\s*grab/.test(c.getAttribute('style') || '')) c.setAttribute('r', '11'); // zone de prise
+  dpCroixSync(c, g);
+  new MutationObserver(()=>dpCroixSync(c, g)).observe(c, { attributes: true, attributeFilter: ['cx', 'cy', 'style', 'display', 'opacity', 'fill'] });
+}
+function dpCroixPoints(){
+  ['cours-demo-droites-paralleles', 'methode-demo-droites-paralleles', 'exos-demo-droites-paralleles'].forEach(id=>{
+    const root = document.getElementById(id); if(!root) return;
+    root.querySelectorAll('circle[data-marker="cross"]').forEach(dpCroixPoint);
+    if(root._dpCroixObs) return;
+    // Les figures redessinées plus tard (étapes, exercices) reçoivent aussi leurs croix.
+    root._dpCroixObs = new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{
+      if(n.nodeType !== 1) return;
+      if(n.matches && n.matches('circle[data-marker="cross"]')) dpCroixPoint(n);
+      if(n.querySelectorAll) n.querySelectorAll('circle[data-marker="cross"]').forEach(dpCroixPoint);
+    })));
+    root._dpCroixObs.observe(root, { childList: true, subtree: true });
+  });
+}
 function dpSetTxt(el, p, dx, dy){ el.setAttribute('x',p.x+dx); el.setAttribute('y',p.y+dy); }
 function dpMakeDraggable(circleEl, svg, getPoint, setPoint, onMove){
   let dragging=false;
@@ -1652,7 +1697,7 @@ function dpRegisterGeoDemos(){
   registerGeoStepDemo('dp-rqa-svg', { steps:()=>DP_RQA_STEPS, getIdx:()=>dpRqaIdx, goto:(i,animate)=>{ dpRqaIdx=i; dpRenderRqPara(animate); } });
 }
 DEMO_REGISTRY['6e|Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles', histoire:'histoire-demo-droites-paralleles',
-  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethAnimReset(); dpEx1Demo.reset(); dpEx2Demo.reset(); dpEx3Demo.reset(); dpRegisterGeoDemos(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); injectCourseAddButtons(document.getElementById('methode-demo-droites-paralleles')); } };
+  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethAnimReset(); dpEx1Demo.reset(); dpEx2Demo.reset(); dpEx3Demo.reset(); dpRegisterGeoDemos(); dpCroixPoints(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); injectCourseAddButtons(document.getElementById('methode-demo-droites-paralleles')); } };
 
 DEMO_QUIZZES['6e|Droites parallèles et perpendiculaires'] = [
   {q:"Que signifie (d) ⊥ (d') ?",

@@ -976,7 +976,7 @@ function applyPrintMarkers(clone){
     if(role === 'hidden'){ el.remove(); return; }
     if(role === 'cross'){
       const style = el.getAttribute('style') || '';
-      const isInvisible = /display\s*:\s*none/.test(style) || /opacity\s*:\s*0(?:[^.\d]|$)/.test(style) || el.getAttribute('opacity')==='0';
+      const isInvisible = /(^|;)\s*display\s*:\s*none/.test(style) || /(^|;)\s*opacity\s*:\s*0(?:[^.\d]|$)/.test(style) || el.getAttribute('opacity')==='0'; // « fill-opacity:0 » n'est PAS invisible : c'est un point dessiné en croix à l'écran (6e G2)
       if(isInvisible){ el.remove(); return; }
       const cx = parseFloat(el.getAttribute('cx')||0);
       const cy = parseFloat(el.getAttribute('cy')||0);
@@ -1524,8 +1524,14 @@ function compacterPourPdf(clone){
       if(texte && vignette !== texte){ texte.style.fontSize = '9px'; texte.style.lineHeight = '1.3'; }
     });
   });
+  // Hauteur limitée à 230 px en gardant les proportions : on fixe la LARGEUR (la largeur affichée
+  // à l'écran, réduite si la hauteur dépasserait 230 px). Laisser width:auto donnait l'image à sa
+  // taille réelle, deux fois plus grande que la figure (rastérisée ×2 pour la netteté) -- signalé :
+  // « Le premier tableau reste très grossier. Il est énorme par rapport au second tableau ».
   clone.querySelectorAll('img[alt="Figure"]').forEach(img=>{
-    img.style.width = 'auto'; img.style.maxWidth = '100%'; img.style.maxHeight = '230px';
+    const l = Number(img.dataset.largeur) || 0, r = Number(img.dataset.ratio) || 0;
+    if(!l || !r) return;
+    img.style.width = Math.round(Math.min(l, 230 / r)) + 'px'; img.style.maxWidth = '100%'; img.style.height = 'auto';
   });
 }
 async function exportCoursPDF(){
@@ -3050,6 +3056,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.792', items:[
+    "6e, Droites parallèles et perpendiculaires -- signalé sur un export PDF : « Le premier tableau reste très grossier. Il est énorme par rapport au second tableau » et « dans les figures dynamiques les points sont représentés par des gros points qui ne correspondent pas à la syntaxe indiquée dans le haut du cours ». 1) PDF : les petites figures (tableau des exemples de points) sortaient deux fois trop grandes depuis la limitation de hauteur des figures (build 789) ; elles gardent maintenant la taille qu'elles ont à l'écran, et seules les grandes figures sont réduites. Valable pour tous les chapitres. 2) Les points des figures du chapitre (M, N, A, B et les points qui tiennent la droite (d)) sont dessinés en croix, comme le « point libre (variante) » du cours, au lieu de gros disques de couleur ; on les attrape toujours au même endroit pour les déplacer (zone de prise un peu agrandie pour le doigt). Le PDF et le cahier les dessinent aussi en croix, sans doublon."
+  ]},
   { version:'2026-08-19.791', items:[
     "Export PDF d'un cours instable -- signalé avec deux exports successifs du chapitre 6e G2 : « C'est instable ! » (l'un commençait par trois pages blanches, l'autre coupait les blocs au mauvais endroit). Cause : la capture de la page tenait compte de l'endroit où l'on avait fait défiler le chapitre avant de cliquer, et tout le contenu était décalé d'autant. La page est maintenant remontée tout en haut le temps de la capture, puis on revient à la position de lecture. Vérifié : trois exports lancés depuis le haut, le milieu et le bas du chapitre donnent exactement le même PDF (5 pages)."
   ]},
@@ -6921,6 +6930,9 @@ async function expandStepDemosInClone(wrapper){
         img.src = dataUri;
         img.style.cssText = 'width:100%;max-width:'+Math.round(displayWidth)+'px;height:auto;display:block;margin:0 auto;';
         img.alt = 'Figure';
+        img.dataset.largeur = Math.round(displayWidth); // largeur affichée et proportions : voir compacterPourPdf
+        const vbF = (cloneSvg.getAttribute('viewBox') || '').trim().split(/\s+/).map(Number);
+        if(vbF[2] > 0 && vbF[3] > 0) img.dataset.ratio = vbF[3] / vbF[2];
         cloneSvg.replaceWith(img);
       } else {
         console.warn(`Cahier/PDF : rastérisation impossible pour ${label}, figure conservée telle quelle.`);
