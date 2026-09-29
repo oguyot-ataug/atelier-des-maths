@@ -68,7 +68,7 @@ document.getElementById('cours-demo-calcul-litteral-4e').innerHTML = `
 <ul class="example-list">
   <li>L'aire d'un carré de côté <i>t</i> est ${cl4Tex('\\mathcal{A} = t \\times t = t^2')} ; le volume d'un cube d'arête <i>k</i> est ${cl4Tex('\\mathcal{V} = k \\times k \\times k = k^3')}.</li>
 </ul>
-<div class="redaction-note" ${R4_REM}>Conventions d'écriture : on peut supprimer le signe × devant une lettre ou une parenthèse : ${cl4Tex('3 \\times x = 3x')}, ${cl4Tex('a \\times b = ab')}, ${cl4Tex('5 \\times (x + 2) = 5(x + 2)')}. Pour <b>calculer la valeur</b> d'une expression, on remplace la lettre par un nombre : pour <i>x</i> = 4, ${cl4Tex('3x^2 - 5 = 3 \\times 4^2 - 5 = 43')}.</div>
+<div class="redaction-note" ${R4_REM}>Conventions d'écriture : on peut supprimer le signe × devant une lettre ou une parenthèse : ${cl4Tex('3 \\times x = 3x')}, ${cl4Tex('a \\times b = ab')}, ${cl4Tex('5 \\times (x + 2) = 5(x + 2)')}. Pour <b>calculer la valeur</b> d'une expression, on remplace la lettre par un nombre : on note ${cl4Tex('A = 3x^2 - 5')} ; pour <i>x</i> = 4, ${cl4Tex('A = 3 \\times 4^2 - 5 = 43')}.</div>
 
 <div class="lesson-header"><span class="num">2</span><h3>La distributivité simple</h3></div>
 
@@ -79,9 +79,11 @@ document.getElementById('cours-demo-calcul-litteral-4e').innerHTML = `
 <div class="def-box">Pour tous nombres relatifs <i>k</i>, <i>a</i> et <i>b</i> :
   <div style="text-align:center;margin:8px 0 2px;line-height:2.4;">${cl4Tex(cl4K('k') + ' \\times (a + b) = ' + cl4K('k') + ' \\times a + ' + cl4K('k') + ' \\times b')}<br>${cl4Tex(cl4K('k') + ' \\times (a - b) = ' + cl4K('k') + ' \\times a - ' + cl4K('k') + ' \\times b')}</div></div>
 ${r4Ex('Exemple 1 : deux façons de calculer ' + cl4Tex('4 \\times (10 + 3)') + ' et ' + cl4Tex('-5 \\times (6 - 9)') + '.', [
-  [cl4Tex('4 \\times (10 + 3) = 4 \\times 13 = 52') + ' ou ' + cl4Tex('4 \\times 10 + 4 \\times 3 = 40 + 12 = 52'), 'Même résultat : on peut « distribuer » le 4.'],
-  [cl4Tex('-5 \\times (6 - 9) = -5 \\times (-3) = 15') + ' ou ' + cl4Tex('-5 \\times 6 - (-5) \\times 9 = -30 + 45 = 15'), ''],
-  ['Calcul mental : ' + cl4Tex('7 \\times 102 = 7 \\times 100 + 7 \\times 2 = 714'), 'La distributivité est très utile en calcul mental.'],
+  [cl4Tex('A = 4 \\times (10 + 3) = 4 \\times 13 = 52'), 'On calcule d\'abord la parenthèse…'],
+  [cl4Tex('A = 4 \\times 10 + 4 \\times 3 = 40 + 12 = 52'), '… ou on « distribue » le 4 : même résultat.'],
+  [cl4Tex('B = -5 \\times (6 - 9) = -5 \\times (-3) = 15'), ''],
+  [cl4Tex('B = -5 \\times 6 - (-5) \\times 9 = -30 + 45 = 15'), ''],
+  [cl4Tex('C = 7 \\times 102 = 7 \\times 100 + 7 \\times 2 = 714'), 'Calcul mental : la distributivité est très utile.'],
 ])}
 ${r4Ex('Exemple 2 : développer ' + cl4Tex('A = 5(x + 4)') + ', ' + cl4Tex('B = -2{,}5(y - 6)') + ' et ' + cl4Tex('C = 4t(3 - t)') + '.', [
   [cl4Tex('A = ' + cl4K('5') + ' \\times x + ' + cl4K('5') + ' \\times 4 = 5x + 20'), 'On distribue 5 à chaque terme de la parenthèse.'],
@@ -100,7 +102,7 @@ ${r4Ex('Exemples : factoriser ' + cl4Tex('D = 18x + 12') + ' et ' + cl4Tex('E = 
   [cl4Tex('D = ' + cl4K('6') + '(3x + 2)'), 'On le met en facteur.'],
   [cl4Tex('E = ' + cl4K('5a') + ' \\times 2a - ' + cl4K('5a') + ' \\times 3'), 'Le facteur commun est 5a : 10a² = 5a × 2a et 15a = 5a × 3.'],
   [cl4Tex('E = ' + cl4K('5a') + '(2a - 3)'), ''],
-  ['Calcul mental : ' + cl4Tex('37 \\times 13 + 37 \\times 87 = 37 \\times (13 + 87) = 3\\,700'), ''],
+  [cl4Tex('F = 37 \\times 13 + 37 \\times 87 = 37 \\times (13 + 87) = 3\\,700'), 'Calcul mental : on factorise par 37.'],
 ])}
 <div style="display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 16px;text-align:center;">
   <div><b>${cl4Tex('6(3x + 2)')}</b><br><span style="font-size:.85rem;color:#4E5665;">forme factorisée (un produit)</span></div>
@@ -194,7 +196,7 @@ function cl4Exo(n, enonce, lignes){
     ${enonce}
     <button type="button" class="exo-correction-toggle" data-target="cl4-correction-${n}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cl4-correction-${n}">
-      <div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
+      <div class="redaction-template">${lignes.flatMap(l => r4Colonne(l) || [l]).map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
     </div>
   </div>`;
 }
@@ -229,7 +231,7 @@ document.getElementById('exos-demo-calcul-litteral-4e').innerHTML = `
     cl4Tex('F = x^2 + 2x - 3x^2 + 3x = -2x^2 + 5x')])}
   ${cl4Exo(8, 'Programme de calcul : « Choisir un nombre. Lui ajouter 3. Multiplier le résultat par 4. Soustraire 12. » Léna affirme qu\'on obtient toujours le quadruple du nombre de départ. A-t-elle raison ?', [
     'On appelle <i>x</i> le nombre choisi. Le programme donne ' + cl4Tex('4(x + 3) - 12') + '.',
-    cl4Tex('4(x + 3) - 12 = 4x + 12 - 12 = 4x') + ' : on obtient bien le quadruple de <i>x</i>, <b>quel que soit</b> le nombre choisi. Léna a raison (et un exemple n\'aurait pas suffi à le prouver).'])}
+    cl4Tex('R = 4(x + 3) - 12 = 4x + 12 - 12 = 4x'), 'On obtient bien le quadruple de <i>x</i>, <b>quel que soit</b> le nombre choisi. Léna a raison (et un exemple n\'aurait pas suffi à le prouver).'])}
 </div>
 `;
 
@@ -260,10 +262,12 @@ function cl4Developper(){
   const detail = P.map((t, i) => { const m = cl4Mono(t, x), ts = t.c < 0 ? `(${m})` : m; return (i === 0 ? '' : ' + ') + cl4K(kP) + ' \\times ' + ts; }).join('');
   const brut = cl4Ecr(produits, x), red = cl4Reduire(produits, true), final = cl4Ecr(red, x);
   const lignes = [
-    [cl4Long(`${kP}(${cl4Ecr(P, x)}) = ${detail}`), 'On multiplie k par chaque terme de la parenthèse (règle des signes !).'],
-    [cl4Long(`= ${brut}`), 'On calcule chaque produit.'],
+    // L'expression est nommée A et le calcul écrit en colonne : jamais de « = » en début de ligne.
+    [cl4Long(`A = ${kP}(${cl4Ecr(P, x)})`), 'On nomme l\'expression à développer.'],
+    [cl4Long(`A = ${detail}`), 'On multiplie k par chaque terme de la parenthèse (règle des signes !).'],
+    [cl4Long(`A = ${brut}`), 'On calcule chaque produit.'],
   ];
-  if(final !== brut) lignes.push([cl4Long(`= ${final}`), 'On réduit.']);
+  if(final !== brut) lignes.push([cl4Long(`A = ${final}`), 'On réduit.']);
   // Vérification sur un exemple : les deux écritures donnent la même valeur.
   const v = 2, g = cl4Val([kt], v) * cl4Val(P, v), dr = cl4Val(red, v);
   const vP = cl4Val(P, v);
@@ -286,8 +290,9 @@ function cl4Factoriser(){
   const signe = T[1].c < 0 ? ' - ' : ' + ', q1 = cl4Mono(q[0], x), q2 = cl4Mono({ c: Math.abs(q[1].c), d: q[1].d }, x);
   const lignes = [
     [cl4Long(expl), `Le plus grand facteur commun est ${m ? `${g === 1 ? '' : g + ' × '}${x}${m > 1 ? '^' + m : ''}` : g} : ${g} divise ${Math.abs(T[0].c)} et ${Math.abs(T[1].c)}${m ? `, et ${x}${m > 1 ? '²' : ''} apparaît dans les deux termes` : ''}.`],
-    [cl4Long(`${cl4Ecr(T, x)} = ${cl4K(KT)} \\times ${q1.startsWith('-') ? '(' + q1 + ')' : q1}${signe}${cl4K(KT)} \\times ${q2}`), 'On fait apparaître le facteur commun dans chaque terme.'],
-    [cl4Tex(`= ${cl4K(KT)}(${q1}${signe}${q2})`), 'On le met en facteur.'],
+    [cl4Long(`A = ${cl4Ecr(T, x)}`), 'On nomme l\'expression à factoriser.'],
+    [cl4Long(`A = ${cl4K(KT)} \\times ${q1.startsWith('-') ? '(' + q1 + ')' : q1}${signe}${cl4K(KT)} \\times ${q2}`), 'On fait apparaître le facteur commun dans chaque terme.'],
+    [cl4Tex(`A = ${cl4K(KT)}(${q1}${signe}${q2})`), 'On le met en facteur.'],
     [`Vérification : en développant ${cl4Tex(`${KT}(${q1}${signe}${q2})`)}, on retrouve ${cl4Tex(cl4Ecr(q.map(t => ({ c: t.c * K.c, d: t.d + K.d })), x))}.`, ''],
   ];
   out.innerHTML = r4Ex('', lignes);
@@ -328,9 +333,9 @@ function cl4Tuiles(etape){
   const groupes = [...new Set(ordre.map(i => T[i].d))];
   const reg = groupes.map(d => T.filter(t => t.d === d)), regTex = cl4Ecr(ordre.map(i => T[i]), x);
   const facto = reg.map(g => { const d = g[0].d, s = g.map((t, j) => (j && t.c >= 0 ? ' + ' : j ? ' - ' : (t.c < 0 ? '-' : '')) + cl4Nb(Math.abs(t.c))).join(''); return d === 0 ? (g.length > 1 ? `(${s})` : s) : (g.length > 1 ? `(${s})${x}${d > 1 ? '^' + d : ''}` : cl4Mono(g[0], x)); }).join(' + ').replace(/\+ -/g, '- ');
-  const lignes = [[cl4Long(cl4Ecr(T, x)), 'L\'expression de départ.']];
-  if(etape >= 1) lignes.push([cl4Long('= ' + regTex), 'On regroupe les termes de même nature (même couleur).']);
-  if(etape >= 2){ lignes.push([cl4Long('= ' + facto), 'Dans chaque groupe, on additionne les coefficients.']); lignes.push([cl4Long('= ' + cl4Ecr(red, x)), red.length < T.length ? `Il reste ${red.length} terme${red.length > 1 ? 's' : ''} au lieu de ${T.length} : l'expression est réduite.` : 'Aucun terme ne pouvait être regroupé.']); }
+  const lignes = [[cl4Long('A = ' + cl4Ecr(T, x)), 'L\'expression de départ, nommée A.']];
+  if(etape >= 1) lignes.push([cl4Long('A = ' + regTex), 'On regroupe les termes de même nature (même couleur).']);
+  if(etape >= 2){ lignes.push([cl4Long('A = ' + facto), 'Dans chaque groupe, on additionne les coefficients.']); lignes.push([cl4Long('A = ' + cl4Ecr(red, x)), red.length < T.length ? `Il reste ${red.length} terme${red.length > 1 ? 's' : ''} au lieu de ${T.length} : l'expression est réduite.` : 'Aucun terme ne pouvait être regroupé.']); }
   res.innerHTML = r4Ex('', lignes);
   renderStaticMath(res);
   document.getElementById('cl4-rB1').disabled = etape >= 1; document.getElementById('cl4-rB2').disabled = etape >= 2;

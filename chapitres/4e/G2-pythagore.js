@@ -236,7 +236,7 @@ function py4Exo(n, enonce, lignes){
     ${enonce}
     <button type="button" class="exo-correction-toggle" data-target="py4-correction-${n}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="py4-correction-${n}">
-      <div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
+      <div class="redaction-template">${lignes.flatMap(l => r4Colonne(l) || [l]).map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
     </div>
   </div>`;
 }
@@ -269,14 +269,17 @@ document.getElementById('exos-demo-pythagore-4e').innerHTML = `
     py4Tex('EF^2 = 8^2 - 3{,}5^2 = 64 - 12{,}25 = 51{,}75'),
     py4Tex('EF = \\sqrt{51{,}75}') + ' cm, donc EF ≈ 7,2 cm.'])}
   ${py4Exo(6, 'Ces triangles sont-ils rectangles ? a) côtés 11 cm, 60 cm et 61 cm ; b) côtés 5 cm, 7 cm et 9 cm.', [
-    'a) Plus grand côté : 61. ' + py4Tex('61^2 = 3\\,721') + ' et ' + py4Tex('11^2 + 60^2 = 121 + 3\\,600 = 3\\,721') + '. Égalité : d\'après la réciproque du théorème de Pythagore, le triangle est rectangle.',
-    'b) Plus grand côté : 9. ' + py4Tex('9^2 = 81') + ' et ' + py4Tex('5^2 + 7^2 = 25 + 49 = 74') + '. Pas d\'égalité : le triangle n\'est pas rectangle (sinon on aurait l\'égalité de Pythagore).'])}
+    'a) Le plus grand côté mesure 61 cm. On calcule séparément :', py4Tex('A = 61^2 = 3\\,721'), py4Tex('B = 11^2 + 60^2 = 121 + 3\\,600 = 3\\,721'),
+    'A = B : d\'après la réciproque du théorème de Pythagore, le triangle est rectangle.',
+    'b) Le plus grand côté mesure 9 cm. On calcule séparément :', py4Tex('C = 9^2 = 81'), py4Tex('D = 5^2 + 7^2 = 25 + 49 = 74'),
+    'C ≠ D : le triangle n\'est pas rectangle (sinon on aurait l\'égalité de Pythagore).'])}
   ${py4Exo(7, 'Une échelle de 5 m est posée contre un mur vertical. Son pied est à 1,4 m du mur. À quelle hauteur l\'échelle touche-t-elle le mur ?', [
     'Le mur, le sol et l\'échelle forment un triangle rectangle (au pied du mur), dont l\'hypoténuse est l\'échelle.',
-    'D\'après le théorème de Pythagore : ' + py4Tex('h^2 = 5^2 - 1{,}4^2 = 25 - 1{,}96 = 23{,}04') + '.',
+    'On note <i>h</i> la hauteur cherchée. D\'après le théorème de Pythagore :', py4Tex('h^2 = 5^2 - 1{,}4^2 = 25 - 1{,}96 = 23{,}04'),
     py4Tex('h = \\sqrt{23{,}04} = 4{,}8') + ' : l\'échelle touche le mur à <b>4,8 m</b> de hauteur.'])}
   ${py4Exo(8, 'Pour vérifier que deux murs sont perpendiculaires, un maçon mesure 60 cm le long d\'un mur, 80 cm le long de l\'autre (à partir du coin), puis la distance entre les deux marques : il trouve 1 m. Les murs sont-ils perpendiculaires ?', [
-    'Le plus grand côté mesure 100 cm : ' + py4Tex('100^2 = 10\\,000') + ' et ' + py4Tex('60^2 + 80^2 = 3\\,600 + 6\\,400 = 10\\,000') + '.',
+    'Le plus grand côté mesure 100 cm. On calcule séparément :', py4Tex('A = 100^2 = 10\\,000'), py4Tex('B = 60^2 + 80^2 = 3\\,600 + 6\\,400 = 10\\,000'),
+    'A = B.',
     'D\'après la réciproque du théorème de Pythagore, le triangle est rectangle au coin : les murs sont perpendiculaires. (C\'est le triangle 3-4-5 agrandi 20 fois, la « règle du 3-4-5 » des maçons !)'])}
 </div>
 `;

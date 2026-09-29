@@ -62,7 +62,8 @@ document.getElementById('cours-demo-equations-4e').innerHTML = `
 <div class="def-box"><b>Résoudre</b> une équation, c'est trouver <b>toutes</b> les valeurs de l'inconnue pour lesquelles l'égalité est vraie. Ces valeurs sont les <b>solutions</b> de l'équation.</div>
 ${r4Ex('Exemple 2 : on considère l\'équation ' + eq4Tex('2x - 7 = -13') + '.', [
   ['Pour <i>x</i> = 3 : ' + eq4Tex('2 \\times 3 - 7 = -1') + ', et −1 ≠ −13 : l\'égalité est fausse.', '3 n\'est pas solution.'],
-  ['Pour <i>x</i> = −3 : ' + eq4Tex('2 \\times (-3) - 7 = -6 - 7 = -13') + ' : l\'égalité est vraie.', '−3 est solution.'],
+  ['Pour <i>x</i> = −3, on calcule le membre de gauche :', ''],
+  [eq4Tex('A = 2 \\times (-3) - 7 = -6 - 7 = -13'), 'L\'égalité est vraie : −3 est solution.'],
   ['On admet que cette équation n\'a qu\'une seule solution : −3.', 'Tester des valeurs au hasard n\'est pas une méthode : il faut une technique de résolution.'],
 ])}
 
@@ -105,7 +106,7 @@ ${r4Ex('Exemple 3 : résoudre ' + eq4Tex('-4x + 9 = 23') + '.', [
   [eq4Tex('\\dfrac{-4x}{' + eq4Op('-4') + '} = \\dfrac{14}{' + eq4Op('-4') + '}'), 'On divise par −4 (propriété 2) : attention au signe !'],
   [eq4Tex('x = -3{,}5'), '14 ÷ (−4) = −3,5 : la solution est −3,5.'],
 ])}
-<div class="redaction-note" ${R4_REM}>Vérification (toujours prudente !) : on remplace <i>x</i> par −3,5 dans le membre de gauche : ${eq4Tex('-4 \\times (-3{,}5) + 9 = 14 + 9 = 23')}. On obtient bien le membre de droite : −3,5 est la solution.</div>
+<div class="redaction-note" ${R4_REM}>Vérification (toujours prudente !) : on remplace <i>x</i> par −3,5 dans le membre de gauche : ${eq4Tex('A = -4 \\times (-3{,}5) + 9 = 14 + 9 = 23')}. On obtient bien le membre de droite : −3,5 est la solution.</div>
 ${r4Ex('Exemple 4 : quand l\'inconnue est dans les deux membres, ' + eq4Tex('5x - 3 = 2x + 9') + '.', [
   [eq4Tex('5x - 3 ' + eq4Op('- 2x') + ' = 2x + 9 ' + eq4Op('- 2x')), 'On soustrait 2x aux deux membres : l\'inconnue ne reste qu\'à gauche.'],
   [eq4Tex('3x - 3 = 9'), 'On réduit.'],
@@ -181,7 +182,7 @@ function eq4Exo(n, enonce, lignes){
     ${enonce}
     <button type="button" class="exo-correction-toggle" data-target="eq4-correction-${n}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="eq4-correction-${n}">
-      <div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
+      <div class="redaction-template">${lignes.flatMap(l => r4Colonne(l) || [l]).map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
     </div>
   </div>`;
 }

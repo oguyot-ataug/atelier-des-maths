@@ -57,9 +57,9 @@ document.getElementById('cours-demo-puissances-4e').innerHTML = `
 <span class="prop-badge">Règle de priorité</span>
 <div class="def-box">En l'absence de parenthèses, on calcule les <b>puissances en premier</b>, avant les multiplications, les divisions, les additions et les soustractions.</div>
 ${r4Ex('Exemples :', [
-  [pw4Tex('5 + 3 \\times 2^4 = 5 + 3 \\times 16 = 5 + 48 = 53'), 'La puissance d\'abord, puis la multiplication, puis l\'addition.'],
-  [pw4Tex('20 - 2 \\times 3^2 = 20 - 2 \\times 9 = 20 - 18 = 2'), ''],
-  [pw4Tex('(5 + 3)^2 = 8^2 = 64'), 'Avec des parenthèses, on calcule d\'abord ce qu\'elles contiennent.'],
+  [pw4Tex('A = 5 + 3 \\times 2^4 = 5 + 3 \\times 16 = 5 + 48 = 53'), 'La puissance d\'abord, puis la multiplication, puis l\'addition.'],
+  [pw4Tex('B = 20 - 2 \\times 3^2 = 20 - 2 \\times 9 = 20 - 18 = 2'), ''],
+  [pw4Tex('C = (5 + 3)^2 = 8^2 = 64'), 'Avec des parenthèses, on calcule d\'abord ce qu\'elles contiennent.'],
 ])}
 
 <div class="lesson-header"><span class="num">2</span><h3>Les puissances de 10</h3></div>
@@ -92,8 +92,8 @@ ${r4Ex('Exemples :', [
 <div class="def-box">Pour tous nombres entiers relatifs <i>m</i> et <i>p</i> :
   <div style="text-align:center;margin:8px 0 2px;line-height:2.6;">${pw4Tex('10^m \\times 10^p = 10^{m+p}')} &nbsp;&nbsp; et &nbsp;&nbsp; ${pw4Tex('\\dfrac{10^m}{10^p} = 10^{m-p}')}</div></div>
 ${r4Ex('Exemples :', [
-  [pw4Tex('10^5 \\times 10^{-8} = 10^{5 + (-8)} = 10^{-3}'), 'On additionne les exposants.'],
-  [pw4Tex('\\dfrac{10^4}{10^{-2}} = 10^{4 - (-2)} = 10^6'), 'On soustrait les exposants : attention au signe moins !'],
+  [pw4Tex('D = 10^5 \\times 10^{-8} = 10^{5 + (-8)} = 10^{-3}'), 'On additionne les exposants.'],
+  [pw4Tex('E = \\dfrac{10^4}{10^{-2}} = 10^{4 - (-2)} = 10^6'), 'On soustrait les exposants : attention au signe moins !'],
 ])}
 <div class="redaction-note" ${R4_REM}>Pourquoi ? ${pw4Tex('10^3 \\times 10^2 = (10 \\times 10 \\times 10) \\times (10 \\times 10)')} : il y a 3 + 2 = 5 facteurs 10, donc ${pw4Tex('10^5')}.</div>
 
@@ -189,7 +189,7 @@ function pw4Exo(n, enonce, lignes){
     ${enonce}
     <button type="button" class="exo-correction-toggle" data-target="pw4-correction-${n}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="pw4-correction-${n}">
-      <div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
+      <div class="redaction-template">${lignes.flatMap(l => r4Colonne(l) || [l]).map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
     </div>
   </div>`;
 }
@@ -216,19 +216,19 @@ document.getElementById('exos-demo-puissances-4e').innerHTML = `
     'Un milliard = ' + pw4Tex('10^9') + ' ; un dix-millième = ' + pw4Tex('10^{-4}') + '.'])}
   ${pw4Exo(4, 'Écris sous la forme ' + pw4Tex('10^n') + ' : ' + pw4Tex('10^6 \\times 10^{-9}') + ' ; ' + pw4Tex('10^{-2} \\times 10^{-5}') + ' ; ' + pw4Tex('\\dfrac{10^8}{10^3}') + ' ; ' + pw4Tex('\\dfrac{10^3}{10^{-4}}') + '.', [
     pw4Tex('10^6 \\times 10^{-9} = 10^{-3}') + ' ; ' + pw4Tex('10^{-2} \\times 10^{-5} = 10^{-7}') + '.',
-    pw4Tex('\\dfrac{10^8}{10^3} = 10^{8-3} = 10^5') + ' ; ' + pw4Tex('\\dfrac{10^3}{10^{-4}} = 10^{3-(-4)} = 10^7') + '.'])}
+    pw4Tex('C = \\dfrac{10^8}{10^3} = 10^{8-3} = 10^5'), pw4Tex('D = \\dfrac{10^3}{10^{-4}} = 10^{3-(-4)} = 10^7')])}
   ${pw4Exo(5, 'Donne l\'écriture décimale : ' + pw4Tex('4{,}56 \\times 10^3') + ' ; ' + pw4Tex('0{,}72 \\times 10^5') + ' ; ' + pw4Tex('351 \\times 10^{-4}') + ' ; ' + pw4Tex('6{,}2 \\times 10^{-2}') + '.', [
     '4 560 ; 72 000 (virgule décalée vers la droite, on complète par des zéros).',
     '0,035 1 ; 0,062 (virgule décalée vers la gauche).'])}
   ${pw4Exo(6, 'Donne l\'écriture scientifique : 45 000 ; 0,000 6 ; 236,1 ; 0,030 5 ; ' + pw4Tex('52 \\times 10^3') + ' ; ' + pw4Tex('0{,}8 \\times 10^{-5}') + '.', [
     '45 000 = ' + pw4Tex('4{,}5 \\times 10^4') + ' ; 0,000 6 = ' + pw4Tex('6 \\times 10^{-4}') + ' ; 236,1 = ' + pw4Tex('2{,}361 \\times 10^2') + ' ; 0,030 5 = ' + pw4Tex('3{,}05 \\times 10^{-2}') + '.',
-    pw4Tex('52 \\times 10^3 = 5{,}2 \\times 10^1 \\times 10^3 = 5{,}2 \\times 10^4') + ' ; ' + pw4Tex('0{,}8 \\times 10^{-5} = 8 \\times 10^{-1} \\times 10^{-5} = 8 \\times 10^{-6}') + '.'])}
+    pw4Tex('E = 52 \\times 10^3 = 5{,}2 \\times 10^1 \\times 10^3 = 5{,}2 \\times 10^4'), pw4Tex('F = 0{,}8 \\times 10^{-5} = 8 \\times 10^{-1} \\times 10^{-5} = 8 \\times 10^{-6}')])}
   ${pw4Exo(7, 'Convertis : 3,5 Go en octets ; 25 µm en mètres (écriture scientifique) ; 4 800 kW en MW.', [
     '3,5 Go = ' + pw4Tex('3{,}5 \\times 10^9') + ' octets = 3 500 000 000 octets.',
     '25 µm = ' + pw4Tex('25 \\times 10^{-6}') + ' m = ' + pw4Tex('2{,}5 \\times 10^{-5}') + ' m.',
     '4 800 kW = 4 800 × 10³ W = ' + pw4Tex('4{,}8 \\times 10^6') + ' W = 4,8 MW.'])}
   ${pw4Exo(8, 'La lumière parcourt environ ' + pw4Tex('3 \\times 10^5') + ' km par seconde, et la distance de la Terre au Soleil est d\'environ ' + pw4Tex('1{,}5 \\times 10^8') + ' km. Combien de temps la lumière du Soleil met-elle pour nous parvenir ?', [
-    'Durée = distance ÷ vitesse : ' + pw4Tex('\\dfrac{1{,}5 \\times 10^8}{3 \\times 10^5} = \\dfrac{1{,}5}{3} \\times 10^{8-5} = 0{,}5 \\times 10^3 = 500') + ' secondes.',
+    'Durée = distance ÷ vitesse, en secondes :', pw4Tex('t = \\dfrac{1{,}5 \\times 10^8}{3 \\times 10^5} = \\dfrac{1{,}5}{3} \\times 10^{8-5} = 0{,}5 \\times 10^3 = 500'),
     '500 s = 8 min 20 s : la lumière que nous voyons a quitté le Soleil il y a plus de 8 minutes !'])}
 </div>
 `;

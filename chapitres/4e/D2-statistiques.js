@@ -126,11 +126,11 @@ document.getElementById('methode-demo-statistiques-4e').innerHTML = `
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 4 : moyenne ou médiane ? L'effet d'une valeur extrême</h4></div>
 <div class="figure-wrap" style="margin-top:20px;">
-  <p class="interaction-hint" style="margin:6px 0;">Faites glisser le curseur pour changer le temps du nageur le plus lent : observez la moyenne (orange) et la médiane (verte).</p>
+  <p class="interaction-hint" style="margin:6px 0;">On part du nageur le plus lent (47 s) et on le rend <b>encore plus lent</b> en faisant glisser le curseur : il reste le dernier, et on observe la moyenne (orange) et la médiane (verte).</p>
   <svg id="st4-extSvg" viewBox="0 0 560 150" style="width:100%;max-width:600px;display:block;margin:8px auto;"></svg>
   <div style="display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;">
     <label for="st4-extVal">Temps du nageur le plus lent :</label>
-    <input id="st4-extVal" type="range" min="42" max="120" step="1" value="47" style="width:220px;" oninput="st4Extreme()">
+    <input id="st4-extVal" type="range" min="47" max="120" step="1" value="47" style="width:220px;" oninput="st4Extreme()">
     <b id="st4-extAff" style="font-family:'JetBrains Mono',monospace;">47 s</b>
   </div>
   <div id="st4-extRes" class="step-note" style="text-align:center;min-height:2.4em;margin-top:6px;"></div>
@@ -144,7 +144,7 @@ function st4Exo(n, enonce, lignes){
     ${enonce}
     <button type="button" class="exo-correction-toggle" data-target="st4-correction-${n}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="st4-correction-${n}">
-      <div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
+      <div class="redaction-template">${lignes.flatMap(l => r4Colonne(l) || [l]).map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
     </div>
   </div>`;
 }
@@ -301,7 +301,7 @@ function st4Extreme(){
   s += `<text x="552" y="102" text-anchor="end" font-size="11" fill="#4E5665">s</text>`;
   svg.innerHTML = s;
   document.getElementById('st4-extAff').textContent = lent + ' s';
-  document.getElementById('st4-extRes').innerHTML = `La médiane reste <b style="color:${ST4_VERT};">${st4Num(med)} s</b>, alors que la moyenne vaut <b style="color:${ST4_ORANGE};">${st4Arr(moy, 1).replace('= ', '')} s</b>.` + (lent >= 70 ? ' Une seule valeur extrême suffit à « tirer » la moyenne vers le haut.' : '');
+  document.getElementById('st4-extRes').innerHTML = `La médiane reste <b style="color:${ST4_VERT};">${st4Num(med)} s</b>, alors que la moyenne vaut <b style="color:${ST4_ORANGE};">${st4Arr(moy, 1).replace('= ', '')} s</b>.` + (lent === 47 ? ' Faites glisser le curseur vers la droite pour ralentir encore le dernier nageur.' : ` La moyenne a augmenté ${st4Arr(moy - 362 / 9, 1).replace('= ', 'de ').replace('≈ ', 'd\'environ ')} s, sans que la médiane bouge.` + (lent >= 70 ? ' Une seule valeur extrême suffit à « tirer » la moyenne vers le haut.' : ''));
 }
 
 DEMO_REGISTRY['4e|Statistiques'] = {

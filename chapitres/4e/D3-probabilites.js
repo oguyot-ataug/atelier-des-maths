@@ -186,7 +186,7 @@ function pr4Exo(n, enonce, lignes){
     ${enonce}
     <button type="button" class="exo-correction-toggle" data-target="pr4-correction-${n}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="pr4-correction-${n}">
-      <div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
+      <div class="redaction-template">${lignes.flatMap(l => r4Colonne(l) || [l]).map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
     </div>
   </div>`;
 }
@@ -212,7 +212,7 @@ document.getElementById('exos-demo-probabilites-4e').innerHTML = `
     'a) ' + pr4Tex('\\dfrac{1}{6}') + ' ; b) les nombres premiers sont 2, 3 et 5 : ' + pr4Tex('\\dfrac{3}{6} = \\dfrac{1}{2}') + ' ; c) 5 ou 6 : ' + pr4Tex('\\dfrac{2}{6} = \\dfrac{1}{3}') + '.'])}
   ${pr4Exo(3, 'Un sac contient 5 jetons jaunes, 3 noirs et 12 blancs. On tire un jeton au hasard. Calcule la probabilité de chaque couleur, puis vérifie que leur somme vaut 1.', [
     'Il y a 20 jetons. P(jaune) = ' + pr4Tex('\\dfrac{5}{20} = \\dfrac{1}{4}') + ' ; P(noir) = ' + pr4Tex('\\dfrac{3}{20}') + ' ; P(blanc) = ' + pr4Tex('\\dfrac{12}{20} = \\dfrac{3}{5}') + '.',
-    'Somme : ' + pr4Tex('\\dfrac{5}{20} + \\dfrac{3}{20} + \\dfrac{12}{20} = \\dfrac{20}{20} = 1') + '.'])}
+    'Somme des trois probabilités :', pr4Tex('S = \\dfrac{5}{20} + \\dfrac{3}{20} + \\dfrac{12}{20} = \\dfrac{20}{20} = 1')])}
   ${pr4Exo(4, 'Vrai ou faux ? a) « La probabilité d\'un évènement peut valoir 1,2. » b) « Si P(A) = 0,3, alors ' + pr4Tex('P(\\overline{A}) = 0{,}7') + '. » c) « J\'ai obtenu pile 5 fois de suite : au prochain lancer, face a plus de chances de sortir. »', [
     'a) Faux : une probabilité est toujours comprise entre 0 et 1.', 'b) Vrai : ' + pr4Tex('P(\\overline{A}) = 1 - 0{,}3 = 0{,}7') + '.',
     'c) Faux : la pièce n\'a pas de mémoire. À chaque lancer, pile et face ont toujours une chance sur deux.'])}

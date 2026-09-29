@@ -94,6 +94,34 @@ const CH4 = [
  {n:15,code:'G5',cat:'G',t:'Espace',s:2,p:'112-124',d:'31 mai-13 juin'},
 ];
 
+/* Progression 3e -- demandé : « voici les chapitres de 3e » (sommaire du manuel iParcours Maths 3e
+   fourni : 15 chapitres, codes et pages repris tels quels), mise en place comme la 4e. Même
+   calendrier que la 4e (29 semaines, mêmes fenêtres de vacances, voir VACANCES['3e']) ; poids en
+   semaines proportionnés au nombre de pages ; rubriques alternées (N, G, D) dans un ordre qui
+   respecte les prérequis : Thalès (G1) avant l'homothétie (G2) et la trigonométrie (G4), calcul
+   littéral (N4) avant les équations (N5), équations avant les fonctions (D1 puis D2), l'espace (G5)
+   en dernier car il réinvestit Thalès et les agrandissements-réductions. Tout est vu avant la
+   mi-juin : les « Exercices du Brevet » (p. 157) servent aux révisions de fin d'année. A1
+   (algorithmique et programmation) n'est pas un chapitre de la frise, comme en 6e/5e/4e : c'est la
+   page Programmation. Niveau visible des seuls administrateurs, voir NIVEAUX_ADMIN. */
+const CH3 = [
+ {n:1,code:'N1',cat:'N',t:'Nombres et calculs',s:1,p:'3-6',d:'1-6 sept'},
+ {n:2,code:'G1',cat:'G',t:'Théorème de Thalès',s:2,p:'39-48',d:'7-20 sept'},
+ {n:3,code:'N2',cat:'N',t:'Arithmétique',s:2,p:'7-14',d:'21 sept-4 oct'},
+ {n:4,code:'D3',cat:'D',t:'Grandeurs composées',s:1,p:'120-124',d:'5-11 oct'},
+ {n:5,code:'G3',cat:'G',t:'Rotation',s:1,p:'62-66',d:'2-8 nov'},
+ {n:6,code:'N3',cat:'N',t:'Puissances',s:1,p:'15-19',d:'9-15 nov'},
+ {n:7,code:'D4',cat:'D',t:'Statistiques',s:2,p:'125-137',d:'16-29 nov'},
+ {n:8,code:'N4',cat:'N',t:'Calcul littéral',s:2,p:'20-30',d:'30 nov-13 déc'},
+ {n:9,code:'G2',cat:'G',t:'Homothétie',s:2,p:'49-61',d:'4-17 jan'},
+ {n:10,code:'D5',cat:'D',t:'Probabilités',s:2,p:'138-149',d:'18-31 jan'},
+ {n:11,code:'N5',cat:'N',t:'Équations',s:2,p:'31-38',d:'1-14 fév'},
+ {n:12,code:'D1',cat:'D',t:'Généralités sur les fonctions',s:3,p:'90-104',d:'8-28 mars'},
+ {n:13,code:'G4',cat:'G',t:'Trigonométrie',s:2,p:'67-75',d:'29 mars-11 avr'},
+ {n:14,code:'D2',cat:'D',t:'Fonctions linéaires et affines',s:3,p:'105-119',d:'3-23 mai'},
+ {n:15,code:'G5',cat:'G',t:'Espace',s:3,p:'76-89',d:'24 mai-13 juin'},
+];
+
 /* Progression CM1, construite à partir du sommaire iParcours Maths CM1 fourni par l'utilisateur
    (pages et numéros de séquence de calcul mental repris tels quels du document). Poids en
    semaines (s) proportionnés au nombre de séquences par chapitre. Mêmes fenêtres de vacances
@@ -132,15 +160,16 @@ const CHCM1 = [
 // Correspondance niveau -> programme -- remplace la ternaire "lvl==='6e'?CH6:CH5" codée en
 // dur, pour rester extensible à mesure que de nouveaux niveaux sont ajoutés (cm1 aujourd'hui,
 // cm2/4e/3e plus tard).
-const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, 'cm1': CHCM1 };
+const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, '3e': CH3, 'cm1': CHCM1 };
 // Niveaux en préparation, réservés aux administrateurs (menu masqué, routes refusées aux autres).
-const NIVEAUX_ADMIN = ['4e'];
+const NIVEAUX_ADMIN = ['4e', '3e'];
 function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserRole === 'admin'; }
 
 const VACANCES = {
   '6e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:15,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '5e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:6,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:14,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '4e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:12,label:'Vacances de printemps · 17 avr → 3 mai'}],
+  '3e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:8,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:13,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'cm1':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:12,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:16,label:'Vacances de printemps · 17 avr → 3 mai'}],
 };
 /* Dates officielles 2026-2027 (arrêté du 22 octobre 2025, Journal officiel) pour l'éditeur
@@ -338,6 +367,7 @@ function setActiveTopnav(key){
   if(key==='6e') document.querySelector('.nav-links button[data-lvl="6e"]').classList.add('active');
   else if(key==='5e') document.querySelector('.nav-links button[data-lvl="5e"]').classList.add('active');
   else if(key==='4e') document.querySelector('.nav-links button[data-lvl="4e"]')?.classList.add('active');
+  else if(key==='3e') document.querySelector('.nav-links button[data-lvl="3e"]')?.classList.add('active');
   else if(key==='cm1') document.querySelector('.nav-links button[data-lvl="cm1"]')?.classList.add('active');
   else if(key==='cm') document.querySelector('.nav-links button[data-nav="cm"]').classList.add('active');
   else if(key==='compte') document.querySelector('.nav-links button[data-nav="compte"]').classList.add('active');
@@ -797,6 +827,7 @@ function openChapitre(c, tab, lvlOverride){
   chapView.classList.toggle('lvl-6e', lvl==='6e' || lvl==='cm1');
   chapView.classList.toggle('lvl-5e', lvl==='5e');
   chapView.classList.toggle('lvl-4e', lvl==='4e'); // 4e : sa propre couleur (bleu-vert), pour distinguer le niveau d'un coup d'œil
+  chapView.classList.toggle('lvl-3e', lvl==='3e'); // 3e : violet prune
   const demo = DEMO_REGISTRY[lvl+'|'+c.t];
   currentChapterTitle = c.t;
   currentChapterCode = c.code;
@@ -1562,7 +1593,7 @@ async function exportCoursPDF(){
     // ramenait aussi la classe "view", porteuse d'une animation d'apparition en fondu
     // (opacity:0 -> 1 sur 0,35s), capturée en pleine animation par html2canvas et donnant un
     // rendu "voilé" (signalé : "ça paraît tout pâle, comme voilé").
-    wrapper.className = ['lvl-6e', 'lvl-5e', 'lvl-4e'].filter(c => realChapView.classList.contains(c)).join(' ');
+    wrapper.className = ['lvl-6e', 'lvl-5e', 'lvl-4e', 'lvl-3e'].filter(c => realChapView.classList.contains(c)).join(' ');
   }
   wrapper.querySelectorAll('*').forEach(el=>{
     const cs = window.getComputedStyle(el);
@@ -2683,8 +2714,8 @@ async function refreshAuthUI(){
     if(mtDirect) mtDirect.style.display = (!accessBlocked && currentUserRole==='eleve' && !isFamilleEnfant) ? '' : 'none';
     const navFamille = document.getElementById('navFamille');
     if(navFamille) navFamille.style.display = currentUserRole==='parent' ? 'inline-block' : 'none';
-    const nav4e = document.getElementById('nav4e'); // 4e en préparation : administrateurs seulement
-    if(nav4e) nav4e.style.display = (!accessBlocked && currentUserRole==='admin') ? '' : 'none';
+    ['nav4e', 'nav3e'].forEach(id => { const b = document.getElementById(id); // 4e et 3e en préparation : administrateurs seulement
+      if(b) b.style.display = (!accessBlocked && currentUserRole==='admin') ? '' : 'none'; });
     if(navAdmin){
       navAdmin.style.display = (!accessBlocked && (currentUserRole==='admin' || currentReferentEtab)) ? 'inline-block' : 'none';
       navAdmin.textContent = currentUserRole==='admin' ? 'Administration' : 'Mon établissement';
@@ -2757,7 +2788,7 @@ async function refreshAuthUI(){
     const navMesDevoirsBadgeOut = document.getElementById('navMesDevoirsBadge');
     if(navMesDevoirsBadgeOut) navMesDevoirsBadgeOut.style.display='none';
     if(navAdmin) navAdmin.style.display='none';
-    const nav4e = document.getElementById('nav4e'); if(nav4e) nav4e.style.display='none';
+    ['nav4e', 'nav3e'].forEach(id => { const b = document.getElementById(id); if(b) b.style.display='none'; });
     const tbBtnAiOut = document.getElementById('tbBtnAi');
     if(tbBtnAiOut) tbBtnAiOut.style.display='none';
     const btnIaSettingsOut = document.getElementById('btnIaSettings');
@@ -2947,6 +2978,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.785', items:[
+    "4e : rédaction des calculs revue dans tous les chapitres -- demandé : « ne jamais mettre un signe = en début de ligne » et « on préfère toujours nommer un calcul (une expression) avec une lettre A = , B = ... et résoudre le calcul en colonne ». Chaque calcul est désormais nommé (A, B, C… ou le nom de la grandeur : h², t, MN² + NP²…) et écrit en colonne, une étape par ligne, le nom étant répété à chaque ligne : dans les cours, les méthodes, les rédactions types, les corrections des exercices et les outils qui rédigent eux-mêmes (fractions, calcul littéral, Pythagore, puissances…). Plus aucune ligne ne commence par « = ».",
+    "4e, Statistiques, méthode « moyenne ou médiane ? » -- remarque : « tu parles de modifier le temps le moins bon et il se trouve qu'on peut le rapprocher de la médiane : dans ce cas il n'est plus le moins bon. Le but est de partir du temps le moins bon et de l'emmener vers un temps encore moins bon pour amener la moyenne sans toucher à la médiane. » Le curseur part maintenant du temps du nageur le plus lent (47 s) et ne peut que l'augmenter : le nageur reste le dernier, la médiane ne bouge pas (40 s) et l'on voit de combien la moyenne augmente.",
+    "3e : progression mise en place, comme la 4e, à partir du sommaire du manuel fourni (« voici les chapitres de 3e ») : 15 chapitres sur 29 semaines, rubriques alternées et prérequis respectés (Thalès avant l'homothétie et la trigonométrie, calcul littéral avant les équations, équations avant les fonctions, l'espace en dernier) ; tout est vu avant la mi-juin pour laisser place aux révisions du brevet. Le menu 3e n'est visible que des administrateurs, et la 3e a sa propre couleur (violet prune) pour la distinguer d'un coup d'œil des 6e (orange), 5e (bleu) et 4e (bleu-vert)."
+  ]},
   { version:'2026-08-19.784', items:[
     "4e : chapitre G5 Espace -- demandé à partir des captures du manuel p. 112-114 (dernier chapitre de la progression de 4e). Le cours suit le plan du manuel avec des titres reformulés et des exemples nouveaux : « La pyramide » (vocabulaire sur une pyramide à base rectangulaire dessinée en 3D, avec la hauteur en violet et une arête latérale en orange ; tétraèdre, pyramide régulière ; patron d'une pyramide régulière à base carrée), « Le cône de révolution » (vocabulaire sur un cône en 3D ; patron d'un cône de rayon 2 cm et de génératrice 6 cm, dont le secteur mesure 120°), « Le volume d'une pyramide et d'un cône » (V = aire de la base × hauteur ÷ 3 ; pyramide : 40,5 m³ ; cône : 120π ≈ 377 cm³) et « Se repérer dans l'espace » (abscisse, ordonnée, cote, point M(3 ; 4 ; 2) dans un pavé). Les méthodes réutilisent le moteur 3D des chapitres de 5e et de 6e : 5 solides (pyramides, tétraèdre, cône) qu'on fait tourner au doigt avec leur hauteur ; le patron d'une pyramide qui se replie jusqu'à ce que les quatre triangles se rejoignent au sommet ; trois pyramides identiques qui se séparent d'un cube, pour comprendre le « divisé par 3 » ; le patron d'un cône réglable (rayon, génératrice) avec le calcul de l'angle ; un point M déplaçable dans un repère de l'espace qu'on peut faire tourner. Viennent ensuite une rédaction type (volume d'un cône), 8 exercices corrigés (dont la pyramide du Louvre), un quiz de 7 questions et la page « Un peu d'histoire » (Khéops, le papyrus de Moscou, Démocrite et Eudoxe, Archimède, la pyramide du Louvre). Tous les calculs ont été vérifiés. Les 15 chapitres de la progression de 4e ont désormais un cours."
   ]},
@@ -4932,7 +4968,7 @@ function openBugReportModal(prefill){
 function openSuggestionModal(){
   const activeTab = document.querySelector('.tab-btn.active');
   const moduleLabel = activeTab ? activeTab.textContent.trim() : '';
-  const section = (['5e', '4e'].includes(currentLevel) ? currentLevel : '6e') + ' · Chapitres';
+  const section = (['5e', '4e', '3e'].includes(currentLevel) ? currentLevel : '6e') + ' · Chapitres';
   const chapitre = (currentChapterTitle||'') + (moduleLabel ? ' · '+moduleLabel : '');
   openBugReportModal({section, chapitre, reportType:'suggestion'});
 }
@@ -6840,7 +6876,7 @@ async function addSectionToCahier(headerEl){
   const wrapperHadId2 = wrapper.id;
   wrapper.id = 'view-chapitre';
   if(realChapView2){
-    wrapper.className = ['lvl-6e', 'lvl-5e', 'lvl-4e'].filter(c => realChapView2.classList.contains(c)).join(' ');
+    wrapper.className = ['lvl-6e', 'lvl-5e', 'lvl-4e', 'lvl-3e'].filter(c => realChapView2.classList.contains(c)).join(' ');
   }
   clip2.appendChild(wrapper);
   document.body.appendChild(clip2);

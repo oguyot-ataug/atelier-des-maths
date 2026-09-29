@@ -31,11 +31,11 @@ ${r4Ex('Exemple 1 : calculer ' + mu4Tex('A = -\\dfrac{26}{45} \\times \\dfrac{27
   [mu4Tex('A = -\\dfrac{6}{25}'), 'On calcule : la fraction obtenue est irréductible.'],
 ])}
 ${r4Ex('Exemple 2 : un collège compte 630 élèves, dont les ' + mu4Tex('\\dfrac{4}{9}') + ' sont demi-pensionnaires. Combien y a-t-il de demi-pensionnaires ?', [
-  [mu4Tex('\\dfrac{4}{9} \\times 630 = \\dfrac{4 \\times 630}{9} = \\dfrac{4 \\times 9 \\times 70}{9} = 280'), 'On prend les 4/9 de 630 : 630 = 9 × 70.'],
+  [mu4Tex('N = \\dfrac{4}{9} \\times 630 = \\dfrac{4 \\times 630}{9} = \\dfrac{4 \\times 9 \\times 70}{9} = 280'), 'On prend les 4/9 de 630 : 630 = 9 × 70.'],
   ['Il y a 280 demi-pensionnaires.', 'On conclut par une phrase.'],
 ])}
 ${r4Ex('Exemple 3 : une fraction d\'une fraction. Léa mange les ' + mu4Tex('\\dfrac{2}{3}') + ' des ' + mu4Tex('\\dfrac{3}{4}') + ' restants d\'un gâteau.', [
-  [mu4Tex('\\dfrac{2}{3} \\times \\dfrac{3}{4} = \\dfrac{2 \\times 3}{3 \\times 2 \\times 2} = \\dfrac{1}{2}'), 'Elle a mangé la moitié du gâteau entier.'],
+  [mu4Tex('G = \\dfrac{2}{3} \\times \\dfrac{3}{4} = \\dfrac{2 \\times 3}{3 \\times 2 \\times 2} = \\dfrac{1}{2}'), 'Elle a mangé la moitié du gâteau entier.'],
 ])}
 
 <div class="sub-header"><span class="letter">B</span><h4>Les produits en croix</h4></div>
@@ -174,7 +174,7 @@ function mu4Exo(n, enonce, lignes){
     ${enonce}
     <button type="button" class="exo-correction-toggle" data-target="mu4-correction-${n}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="mu4-correction-${n}">
-      <div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
+      <div class="redaction-template">${lignes.flatMap(l => r4Colonne(l) || [l]).map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
     </div>
   </div>`;
 }
@@ -197,7 +197,7 @@ document.getElementById('exos-demo-fractions-mult-4e').innerHTML = `
     mu4Tex('C = \\dfrac{4 \\times 5 \\times 5}{3 \\times 5 \\times 4 \\times 2} = \\dfrac{5}{6}') + ' (deux facteurs négatifs : résultat positif).'])}
   ${mu4Exo(2, 'Un réservoir de 60 L est rempli aux ' + mu4Tex('\\dfrac{3}{4}') + '. On utilise les ' + mu4Tex('\\dfrac{2}{5}') + ' de son contenu. Combien de litres a-t-on utilisés ?', [
     'Contenu : ' + mu4Tex('\\dfrac{3}{4} \\times 60 = 45') + ' L. Litres utilisés : ' + mu4Tex('\\dfrac{2}{5} \\times 45 = 18') + ' L.',
-    'Autre méthode : on a utilisé les ' + mu4Tex('\\dfrac{2}{5} \\times \\dfrac{3}{4} = \\dfrac{6}{20} = \\dfrac{3}{10}') + ' du réservoir, soit ' + mu4Tex('\\dfrac{3}{10} \\times 60 = 18') + ' L.'])}
+    'Autre méthode : on calcule la fraction du réservoir utilisée,', mu4Tex('F = \\dfrac{2}{5} \\times \\dfrac{3}{4} = \\dfrac{6}{20} = \\dfrac{3}{10}'), 'soit ' + mu4Tex('\\dfrac{3}{10} \\times 60 = 18') + ' L.'])}
   ${mu4Exo(3, 'Donne l\'inverse de chacun de ces nombres : 7 ; ' + mu4Tex('-\\dfrac{3}{8}') + ' ; 0,25 ; −1. Lequel est égal à son inverse ?', [
     'Inverse de 7 : ' + mu4Tex('\\dfrac{1}{7}') + ' ; inverse de ' + mu4Tex('-\\dfrac{3}{8}') + ' : ' + mu4Tex('-\\dfrac{8}{3}') + '.',
     '0,25 = ' + mu4Tex('\\dfrac{1}{4}') + ', son inverse est 4. L\'inverse de −1 est −1 : −1 est égal à son inverse (comme 1).'])}
@@ -208,7 +208,7 @@ document.getElementById('exos-demo-fractions-mult-4e').innerHTML = `
   ${mu4Exo(5, 'Calcule ' + mu4Tex('G = \\dfrac{\\;\\dfrac{9}{14}\\;}{\\dfrac{15}{28}}') + ' et donne le résultat sous forme irréductible.', [
     mu4Tex('G = \\dfrac{9}{14} \\times \\dfrac{28}{15} = \\dfrac{3 \\times 3 \\times 2 \\times 14}{14 \\times 3 \\times 5} = \\dfrac{6}{5}')])}
   ${mu4Exo(6, 'Détermine le nombre <i>x</i> dans chaque cas : a) ' + mu4Tex('\\dfrac{x}{12} = \\dfrac{15}{20}') + ' ; b) ' + mu4Tex('\\dfrac{35}{x} = \\dfrac{14}{6}') + '.', [
-    'a) Produits en croix : ' + mu4Tex('20 \\times x = 12 \\times 15 = 180') + ', donc ' + mu4Tex('x = \\dfrac{180}{20} = 9') + '.',
+    'a) Produits en croix : ' + mu4Tex('20 \\times x = 12 \\times 15') + ', soit ' + mu4Tex('20x = 180') + ', donc ' + mu4Tex('x = \\dfrac{180}{20} = 9') + '.',
     'b) Produits en croix : ' + mu4Tex('35 \\times 6 = x \\times 14') + ', soit ' + mu4Tex('14x = 210') + ', donc ' + mu4Tex('x = \\dfrac{210}{14} = 15') + '.'])}
   ${mu4Exo(7, 'Ces fractions sont-elles égales ? a) ' + mu4Tex('\\dfrac{57}{76}') + ' et ' + mu4Tex('\\dfrac{45}{60}') + ' ; b) ' + mu4Tex('\\dfrac{23}{37}') + ' et ' + mu4Tex('\\dfrac{69}{112}') + '.', [
     'a) 57 × 60 = 3 420 et 76 × 45 = 3 420 : les produits en croix sont égaux, donc les fractions sont égales.',
@@ -339,12 +339,13 @@ function mu4Calculer(){
   if(![a, b, c0, d0].every(ok) || b === 0 || d0 === 0){ out.innerHTML = '<p class="hint" style="text-align:center;color:#a83c1f;">Écrivez des nombres entiers d\'au plus 3 chiffres, avec des dénominateurs non nuls.</p>'; return; }
   if(op === 'd' && c0 === 0){ out.innerHTML = '<p class="hint" style="text-align:center;color:#a83c1f;">On ne peut pas diviser par 0 : la fraction 0/' + d0 + ' n\'a pas d\'inverse.</p>'; return; }
   const fr = (n, d) => `\\dfrac{${n}}{${d}}`, par = (n, d) => (n < 0 || d < 0) ? `\\left(${fr(n, d)}\\right)` : fr(n, d);
-  const lignes = [[mu4Tex(`${fr(a, b)} ${op === 'x' ? '\\times' : '\\div'} ${par(c0, d0)}`), op === 'x' ? 'On veut calculer ce produit.' : 'On veut calculer ce quotient.']];
+  // Le calcul est nommé A et écrit en colonne : jamais de « = » en début de ligne.
+  const lignes = [[mu4Tex(`A = ${fr(a, b)} ${op === 'x' ? '\\times' : '\\div'} ${par(c0, d0)}`), op === 'x' ? 'On veut calculer ce produit.' : 'On veut calculer ce quotient.']];
   let c = c0, d = d0;
-  if(op === 'd'){ c = d0; d = c0; lignes.push([mu4Tex(`= ${fr(a, b)} \\times ${par(c, d)}`), `On multiplie par l'inverse de ${mu4Moins(c0)}/${mu4Moins(d0)}, qui est ${mu4Moins(c)}/${mu4Moins(d)}.`]); }
-  if(a === 0 || c === 0){ lignes.push([mu4Tex('= 0'), 'Un des facteurs est nul : le produit est nul.']); out.innerHTML = r4Ex('', lignes); renderStaticMath(out); return; }
+  if(op === 'd'){ c = d0; d = c0; lignes.push([mu4Tex(`A = ${fr(a, b)} \\times ${par(c, d)}`), `On multiplie par l'inverse de ${mu4Moins(c0)}/${mu4Moins(d0)}, qui est ${mu4Moins(c)}/${mu4Moins(d)}.`]); }
+  if(a === 0 || c === 0){ lignes.push([mu4Tex('A = 0'), 'Un des facteurs est nul : le produit est nul.']); out.innerHTML = r4Ex('', lignes); renderStaticMath(out); return; }
   const negs = [a, b, c, d].filter(v => v < 0).length, signe = negs % 2 ? '-' : '';
-  lignes.push([mu4Tex(`= ${signe}\\dfrac{${Math.abs(a)} \\times ${Math.abs(c)}}{${Math.abs(b)} \\times ${Math.abs(d)}}`), negs ? `${negs} nombre${negs > 1 ? 's' : ''} négatif${negs > 1 ? 's' : ''} : le résultat est ${negs % 2 ? 'négatif' : 'positif'}. On n'effectue pas encore les produits.` : 'On multiplie les numérateurs entre eux et les dénominateurs entre eux.']);
+  lignes.push([mu4Tex(`A = ${signe}\\dfrac{${Math.abs(a)} \\times ${Math.abs(c)}}{${Math.abs(b)} \\times ${Math.abs(d)}}`), negs ? `${negs} nombre${negs > 1 ? 's' : ''} négatif${negs > 1 ? 's' : ''} : le résultat est ${negs % 2 ? 'négatif' : 'positif'}. On n'effectue pas encore les produits.` : 'On multiplie les numérateurs entre eux et les dénominateurs entre eux.']);
   // Décomposition en facteurs premiers et simplification.
   const num = mu4Premiers(a).concat(mu4Premiers(c)), den = mu4Premiers(b).concat(mu4Premiers(d));
   const restD = [...den], barN = num.map(p => { const j = restD.indexOf(p); if(j >= 0){ restD.splice(j, 1); return true; } return false; });
@@ -353,10 +354,10 @@ function mu4Calculer(){
   const ecrire = (liste, barres) => liste.length ? liste.map((p, j) => barres[j] ? `\\cancel{${p}}` : p).join(' \\times ') : '1';
   const N = num.filter((p, j) => !barN[j]).reduce((x, y) => x * y, 1), D = den.filter((p, j) => !barD[j]).reduce((x, y) => x * y, 1);
   if(communs){
-    lignes.push([mu4Long(`= ${signe}\\dfrac{${ecrire(num, barN)}}{${ecrire(den, barD)}}`), `On décompose en facteurs premiers et on simplifie par les facteurs communs (${num.filter((p, j) => barN[j]).join(', ')}).`]);
-    lignes.push([mu4Tex(`= ${signe ? '-' : ''}${D === 1 ? N : fr(N, D)}`), D === 1 ? 'Le résultat est un nombre entier.' : 'On calcule : la fraction est irréductible.']);
+    lignes.push([mu4Long(`A = ${signe}\\dfrac{${ecrire(num, barN)}}{${ecrire(den, barD)}}`), `On décompose en facteurs premiers et on simplifie par les facteurs communs (${num.filter((p, j) => barN[j]).join(', ')}).`]);
+    lignes.push([mu4Tex(`A = ${signe ? '-' : ''}${D === 1 ? N : fr(N, D)}`), D === 1 ? 'Le résultat est un nombre entier.' : 'On calcule : la fraction est irréductible.']);
   } else {
-    lignes.push([mu4Tex(`= ${signe ? '-' : ''}${D === 1 ? N : fr(N, D)}`), 'Aucun facteur commun : on calcule, la fraction est déjà irréductible.']);
+    lignes.push([mu4Tex(`A = ${signe ? '-' : ''}${D === 1 ? N : fr(N, D)}`), 'Aucun facteur commun : on calcule, la fraction est déjà irréductible.']);
   }
   out.innerHTML = r4Ex('', lignes);
   renderStaticMath(out);

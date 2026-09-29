@@ -7,10 +7,40 @@
    Vocabulaire du manuel de 4e : « distance à zéro ».
    ============================================================ */
 
+/* Règle de rédaction (demandée : « ne jamais mettre un signe = en début de ligne » et « on préfère
+   toujours nommer un calcul avec une lettre A = , B = … et résoudre le calcul en colonne ») :
+   une ligne qui n'est QU'UN calcul nommé enchaîné, par exemple « GI² = 4,5² + 6² = 20,25 + 36 = 56,25 »,
+   est découpée en colonne : « GI² = 4,5² + 6² » / « GI² = 20,25 + 36 » / « GI² = 56,25 ». Le nom
+   (partie gauche) ne doit contenir aucune opération : un calcul non nommé reste tel quel. Renvoie la
+   liste des lignes, ou null si la ligne ne s'y prête pas. Utilisée par r4Ex et par les exercices
+   corrigés de tous les chapitres de 4e. */
+function r4Colonne(html){
+  const m = String(html).match(/^\s*<span class="tex"([^>]*)>([^<]*)<\/span>\s*$/);
+  if(!m) return null;
+  const src = m[2], parts = [], ops = [];
+  let prof = 0, deb = 0;
+  for(let i = 0; i < src.length; i++){
+    const ch = src[i];
+    if(ch === '{') prof++; else if(ch === '}') prof--;
+    else if(prof === 0){
+      const reste = src.slice(i);
+      const op = reste.startsWith(' = ') ? ' = ' : reste.startsWith(' \\approx ') ? ' \\approx ' : null;
+      if(op){ parts.push(src.slice(deb, i)); ops.push(op.trim()); i += op.length - 1; deb = i + 1; }
+    }
+  }
+  parts.push(src.slice(deb));
+  if(parts.length < 3) return null;
+  const nom = parts[0].trim();
+  const sommeCarres = /^[A-Z]{2}\^2 \+ [A-Z]{2}\^2$/.test(nom); // « MN² + NP² = … » (Pythagore)
+  if(!nom || !sommeCarres && /[+\-]|\\times|\\div|frac|\\cdot|\\,|\s[a-z]{3,}/.test(nom.replace(/^\\(cos|mathcal|widehat|overline)\b/, ''))) return null;
+  return parts.slice(1).map((e, k) => `<span class="tex"${m[1]}>${nom} ${ops[k]} ${e.trim()}</span>`);
+}
 // Exemple rédigé : une ligne de calcul à gauche, ce qu'on fait à droite (comme les flèches du manuel).
 // Une ligne qui est une phrase (« Dans le triangle ABC… ») garde la police du texte ; seuls les calculs sont en chasse fixe.
 function r4Ex(titre, lignes){
   const phrase = e => /[a-zàâçéèêëîïôûùüÿ]{4,}/i.test(e.replace(/<span class="tex">[\s\S]*?<\/span>/g, '').replace(/<[^>]+>/g, ''));
+  // Un calcul nommé enchaîné (« A = … = … ») est écrit en colonne, une égalité par ligne.
+  lignes = lignes.flatMap(([e, c]) => { const col = r4Colonne(e); return col ? col.map((x, i) => [x, i === 0 ? c : '']) : [[e, c]]; });
   return `${titre ? `<p class="example-title">${titre}</p>` : ''}
 <div class="redaction-template" style="margin:0 0 16px;">${lignes.map(([e, c]) =>
     `<div class="we-row"><span class="we-expr"${phrase(e) ? ' style="font-family:inherit;"' : ''}>${e}</span>${c ? `<span class="we-comment">${c}</span>` : ''}</div>`).join('')}</div>`;
@@ -245,7 +275,7 @@ function r4Exo(n, enonce, lignes){
     ${enonce}
     <button type="button" class="exo-correction-toggle" data-target="r4-correction-${n}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="r4-correction-${n}">
-      <div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr">${l}</span></div>`).join('')}</div>
+      <div class="redaction-template">${lignes.flatMap(l => r4Colonne(l) || [l]).map(l => `<div class="we-row"><span class="we-expr">${l}</span></div>`).join('')}</div>
     </div>
   </div>`;
 }

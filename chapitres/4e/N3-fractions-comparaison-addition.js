@@ -177,7 +177,7 @@ function f4Exo(n, enonce, lignes){
     ${enonce}
     <button type="button" class="exo-correction-toggle" data-target="f4-correction-${n}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="f4-correction-${n}">
-      <div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
+      <div class="redaction-template">${lignes.flatMap(l => r4Colonne(l) || [l]).map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
     </div>
   </div>`;
 }
@@ -218,11 +218,11 @@ document.getElementById('exos-demo-fractions-comp-4e').innerHTML = `
     f4Tex('E = \\dfrac{21}{30} - \\dfrac{16}{30} = \\dfrac{5}{30} = \\dfrac{1}{6}'),
     f4Tex('F = \\dfrac{-12}{6} + \\dfrac{5}{6} = -\\dfrac{7}{6}')])}
   ${f4Exo(7, 'Dans un collège, ' + f4Tex('\\dfrac{3}{8}') + ' des élèves viennent en bus, ' + f4Tex('\\dfrac{1}{3}') + ' à pied et les autres en voiture. a) Quelle fraction des élèves vient en voiture ? b) Le collège compte 480 élèves : combien viennent en voiture ?', [
-    'a) ' + f4Tex('1 - \\dfrac{3}{8} - \\dfrac{1}{3} = \\dfrac{24}{24} - \\dfrac{9}{24} - \\dfrac{8}{24} = \\dfrac{7}{24}') + ' : les ' + f4Tex('\\dfrac{7}{24}') + ' des élèves viennent en voiture.',
+    'a) On calcule la fraction des élèves qui viennent en voiture :', f4Tex('V = 1 - \\dfrac{3}{8} - \\dfrac{1}{3} = \\dfrac{24}{24} - \\dfrac{9}{24} - \\dfrac{8}{24} = \\dfrac{7}{24}'), 'Les ' + f4Tex('\\dfrac{7}{24}') + ' des élèves viennent en voiture.',
     'b) 480 ÷ 24 = 20 et 20 × 7 = 140 : <b>140 élèves</b> viennent en voiture.'])}
   ${f4Exo(8, 'Tom a écrit : ' + f4Tex('\\dfrac{2}{3} + \\dfrac{1}{4} = \\dfrac{3}{7}') + '. Explique son erreur et corrige-la.', [
     'Tom a additionné les numérateurs <b>et</b> les dénominateurs : c\'est faux. D\'ailleurs ' + f4Tex('\\dfrac{3}{7}') + ' est plus petit que ' + f4Tex('\\dfrac{2}{3}') + ', alors qu\'on a ajouté un nombre positif !',
-    'Correction : ' + f4Tex('\\dfrac{2}{3} + \\dfrac{1}{4} = \\dfrac{8}{12} + \\dfrac{3}{12} = \\dfrac{11}{12}') + '.'])}
+    'Correction :', f4Tex('T = \\dfrac{2}{3} + \\dfrac{1}{4} = \\dfrac{8}{12} + \\dfrac{3}{12} = \\dfrac{11}{12}')])}
 </div>
 `;
 
@@ -323,11 +323,13 @@ function f4Calculer(){
   if(![a, b, c, d].every(entier) || b === 0 || d === 0){ out.innerHTML = '<p class="hint" style="text-align:center;color:#a83c1f;">Écrivez des nombres entiers (dénominateurs non nuls, au plus 4 chiffres).</p>'; return; }
   const lignes = [], symb = { cmp: '\\text{ et }', '+': '+', '-': '-' }[op];
   const fr = (n, dd) => `\\dfrac{${n}}{${dd}}`;
-  lignes.push([f4Tex(`${fr(a, b)} ${symb} ${fr(c, d)}`), op === 'cmp' ? 'On veut comparer ces deux fractions.' : op === '+' ? 'On veut calculer cette somme.' : 'On veut calculer cette différence.']);
+  // Un calcul (somme, différence) est nommé A et écrit en colonne : jamais de « = » en début de ligne.
+  const nA = op === 'cmp' ? '' : 'A = ';
+  lignes.push([f4Tex(`${nA}${fr(a, b)} ${symb} ${fr(c, d)}`), op === 'cmp' ? 'On veut comparer ces deux fractions.' : op === '+' ? 'On veut calculer cette somme.' : 'On veut calculer cette différence.']);
   // 1. Dénominateurs positifs.
   if(b < 0 || d < 0){
     if(b < 0){ a = -a; b = -b; } if(d < 0){ c = -c; d = -d; }
-    lignes.push([f4Tex(`${fr(a, b)} ${symb} ${fr(c, d)}`), 'On multiplie le haut et le bas par −1 pour avoir des dénominateurs positifs.']);
+    lignes.push([f4Tex(`${nA}${fr(a, b)} ${symb} ${fr(c, d)}`), 'On multiplie le haut et le bas par −1 pour avoir des dénominateurs positifs.']);
   }
   // 2. Même dénominateur.
   const m = f4Ppcm(b, d), k1 = m / b, k2 = m / d, A = a * k1, C = c * k2;
@@ -335,8 +337,8 @@ function f4Calculer(){
   else {
     lignes.push([`Plus petit multiple commun de ${b} et ${d} : <b>${m}</b> = ${b} × ${k1} = ${d} × ${k2}.`, 'On cherche le dénominateur commun.']);
     const conv = (n, dd, k) => k === 1 ? fr(n, dd) : `\\dfrac{${n < 0 ? '(' + n + ')' : n} \\times ${k}}{${dd} \\times ${k}}`;
-    lignes.push([f4Tex(`${conv(a, b, k1)} ${symb} ${conv(c, d, k2)}`), 'On réduit au même dénominateur.']);
-    lignes.push([f4Tex(`${fr(A, m)} ${symb} ${fr(C, m)}`), 'On effectue les produits.']);
+    lignes.push([f4Tex(`${nA}${conv(a, b, k1)} ${symb} ${conv(c, d, k2)}`), 'On réduit au même dénominateur.']);
+    lignes.push([f4Tex(`${nA}${fr(A, m)} ${symb} ${fr(C, m)}`), 'On effectue les produits.']);
   }
   let conclusion = '';
   if(op === 'cmp'){
@@ -345,11 +347,11 @@ function f4Calculer(){
     conclusion = f4DroiteSvg(a / b, c / d, `${f4Moins(lire('f4-cA'))}/${f4Moins(lire('f4-cB'))}`, `${f4Moins(lire('f4-cC'))}/${f4Moins(lire('f4-cD'))}`);
   } else {
     const R = op === '+' ? A + C : A - C;
-    lignes.push([f4Tex(`\\dfrac{${A} ${op} ${C < 0 ? '(' + C + ')' : C}}{${m}} = ${fr(R, m)}`), op === '+' ? 'On additionne les numérateurs et on garde le dénominateur.' : 'On soustrait les numérateurs et on garde le dénominateur.']);
+    lignes.push([f4Tex(`A = \\dfrac{${A} ${op} ${C < 0 ? '(' + C + ')' : C}}{${m}}`), op === '+' ? 'On additionne les numérateurs et on garde le dénominateur.' : 'On soustrait les numérateurs et on garde le dénominateur.']);
     const g = f4Pgcd(R, m) || 1;
-    if(R === 0) lignes.push([f4Tex('= 0'), 'Le résultat est nul.']);
-    else if(g > 1) lignes.push([f4Tex(`= \\dfrac{${R} \\div ${g}}{${m} \\div ${g}} = ${f4T(R / g, m / g)}`), `On simplifie par ${g} : le résultat est irréductible.`]);
-    else lignes.push([f4Tex(`= ${f4T(R, m)}`), `${f4Moins(R)} et ${m} n'ont pas de diviseur commun : la fraction est irréductible.`]);
+    if(R === 0) lignes.push([f4Tex('A = 0'), 'Le résultat est nul.']);
+    else if(g > 1){ lignes.push([f4Tex(`A = ${fr(R, m)}`), '']); lignes.push([f4Tex(`A = \\dfrac{${R} \\div ${g}}{${m} \\div ${g}}`), `On simplifie par ${g}.`]); lignes.push([f4Tex(`A = ${f4T(R / g, m / g)}`), 'Le résultat est irréductible.']); }
+    else lignes.push([f4Tex(`A = ${f4T(R, m)}`), `${f4Moins(R)} et ${m} n'ont pas de diviseur commun : la fraction est irréductible.`]);
   }
   out.innerHTML = r4Ex('', lignes) + conclusion;
   renderStaticMath(out);
