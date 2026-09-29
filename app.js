@@ -3072,6 +3072,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.816', items:[
+    '3e (administrateurs) : chapitre G5 « Espace » -- dernier chapitre de 3e. Cours (sphère et boule, section d\'une sphère par un plan avec le rayon par Pythagore, repérage sur la Terre par latitude et longitude, volume de la boule, agrandissement et réduction : longueurs × k, aires × k², volumes × k³), 4 méthodes animées (plan de section réglable, globe où l\'on place un point ou une ville, volume d\'une boule pas à pas, cube agrandi ou réduit), rédaction type, 9 exercices corrigés, quiz et histoire (Ératosthène).',
+  ]},
   { version:'2026-08-19.815', items:[
     '3e (administrateurs) : chapitre D2 « Fonctions linéaires et affines » -- cours (fonction affine : image, antécédent, droite, coefficient directeur et ordonnée à l\'origine ; fonction linéaire ; proportionnalité et pourcentages), 4 méthodes animées (droite réglable, tracé pas à pas, retrouver f à partir de deux images, calculateur de pourcentages), rédaction type, 9 exercices corrigés, quiz et histoire.',
   ]},
