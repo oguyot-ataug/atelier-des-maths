@@ -1406,3 +1406,15 @@ button.btn.secondary.active{background:var(--accent);color:#fff;}
   .cs-film .cs-panel img{width:170px !important;}
   .cs-film .cs-panel > div{font-size:.8rem !important;}
 }
+
+/* Géométrie Interactive : plein écran et écran partagé (figure à gauche, tableau aux instruments à droite). */
+#toolsModalOverlay:fullscreen{background:#fff;padding:6px;align-items:stretch;}
+#toolsModalOverlay:fullscreen > .modal-card{width:100% !important;max-width:100% !important;max-height:100% !important;border-radius:0;box-shadow:none;}
+#toolsModalOverlay:fullscreen #figurePanel{max-width:none !important;max-height:none !important;}
+#toolsModalOverlay:fullscreen #figureSvg{width:min(98vw, calc(76vh * 1.5625)) !important;}
+body.fig-split #toolsModalOverlay{right:50%;background:#F4F6F9;padding:6px;align-items:stretch;}
+body.fig-split #toolsModalOverlay > .modal-card{width:100% !important;max-width:100% !important;max-height:100% !important;padding:10px;}
+body.fig-split #figurePanel{max-width:none !important;max-height:none !important;padding:4px !important;}
+body.fig-split #figureSvg{width:min(100%, calc(64vh * 1.5625)) !important;}
+body.fig-split #view-tableau{position:fixed;top:0;bottom:0;left:50%;right:0;z-index:99;overflow:auto;background:#fff;padding:10px 12px;margin:0;border-left:2px solid rgba(28,43,57,.15);}
+body.fig-split #view-tableau > .back-btn, body.fig-split #view-tableau > h1, body.fig-split #view-tableau > p.hint{display:none;}

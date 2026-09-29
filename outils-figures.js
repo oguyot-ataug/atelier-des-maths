@@ -478,6 +478,9 @@ document.body.insertAdjacentHTML('beforeend', `
       <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start;margin-bottom:8px;">
         <button type="button" class="fig-icon-btn fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')" title="Déplacer un point">✥</button>
         <button type="button" class="fig-icon-btn fig-mode" data-mode="point" onclick="setFigureMode('point')" title="Point">●</button>
+        <button type="button" class="fig-icon-btn fig-mode" data-mode="intersection" onclick="setFigureMode('intersection')" title="Point d'intersection : cliquez les deux objets qui se coupent">
+          <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="19" x2="21" y2="5" stroke="currentColor" stroke-width="1.3"/><line x1="3" y1="7" x2="21" y2="17" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="12" r="3.2" fill="none" stroke="#E35D3A" stroke-width="1.6"/></svg>
+        </button>
 
         <div class="fig-group-wrap">
         <button type="button" class="fig-icon-btn fig-mode" id="figPrimaryLignes" data-mode="segment" onclick="setFigureMode(this.dataset.mode)" title="Segment (dernier outil choisi dans ce groupe)">
@@ -604,6 +607,10 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="fig-icon-btn" onclick="undoFigure()" title="Annuler le dernier">↩︎</button>
         <button type="button" class="fig-icon-btn" onclick="redoFigure()" title="Rétablir">↪︎</button>
         <button type="button" class="fig-icon-btn" onclick="clearFigure()" title="Effacer tout"><span class=gicon>cleaning_services</span></button>
+        <div style="width:1px;align-self:stretch;background:rgba(28,43,57,.15);margin:0 2px;"></div>
+        <button type="button" class="fig-icon-btn" id="figFullscreenBtn" onclick="figToggleFullscreen()" title="Plein écran"><span class=gicon>fullscreen</span></button>
+        <button type="button" class="fig-icon-btn" id="figSplitBtn" onclick="figToggleSplit()" style="display:none;" title="Écran partagé : la figure à gauche, sa construction aux instruments à droite"><span class=gicon>vertical_split</span></button>
+        <button type="button" class="fig-icon-btn" id="figSplitRefreshBtn" onclick="figSplitActualiser()" style="display:none;border-color:#1F7A4D;color:#1F7A4D;" title="Actualiser la construction à droite (après avoir modifié la figure)"><span class=gicon>sync</span></button>
       </div>
       <div style="display:flex;gap:12px;align-items:stretch;">
         <!-- Zone principale : réglages contextuels (compas, codage) au-dessus, puis le
@@ -1014,6 +1021,8 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
   if(loadSandboxBtn) loadSandboxBtn.style.display = 'none';
   const toTableauBtn = document.getElementById('figToTableauBtn');
   if(toTableauBtn) toTableauBtn.style.display = 'none'; // affiché par la Géométrie Interactive (app.js)
+  const splitBtn = document.getElementById('figSplitBtn');
+  if(splitBtn) splitBtn.style.display = 'none'; // idem
   // Construction automatique/IA : visible par défaut (usage prof -- correction, évaluation),
   // masquée explicitement pour les contextes élève (bac à sable, devoir), qui doivent
   // construire la figure eux-mêmes plutôt que de la faire générer.
@@ -1025,6 +1034,8 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
   document.getElementById('figurePanel').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 function closeFigureTool(){
+  figQuitterSplit();
+  if(document.fullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
   document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('figurePanel').style.display='none';
   if(typeof currentDevoirSubmission!=='undefined') currentDevoirSubmission = null;
   if(typeof dsFigEnd==='function') dsFigEnd(); // fin de la séance de travail sur un devoir (suivi-devoirs.js)
@@ -3743,13 +3754,14 @@ function selectFigSubTool(name, btnEl){
   if(sub) sub.classList.remove('open');
 }
 function setFigureMode(mode){
-  figState.mode = mode; figState.selected = []; figState.refShape = null;
+  figState.mode = mode; figState.selected = []; figState.refShape = null; figInterPremier = null;
   if(mode!=='deplacer'){ const svg=document.getElementById('figureSvg'); if(svg) svg.style.cursor='crosshair'; }
   if(mode!=='polygone') figPolygonPts = [];
   document.querySelectorAll('.fig-mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
   document.querySelectorAll('.fig-group-sub.open').forEach(g=>g.classList.remove('open'));
   const hints = {
-    point:'Cliquez pour placer un point.',
+    point:'Cliquez pour placer un point (sur un objet, ou au croisement de deux objets pour un point d\'intersection).',
+    intersection:'Cliquez le premier objet (droite, segment, demi-droite, cercle, arc, médiatrice…), puis le second : le ou les points d\'intersection sont placés.',
     deplacer:'Faites glisser un point existant pour le déplacer (les points construits, comme un milieu, suivent automatiquement).',
     segment:'Cliquez deux points existants pour tracer le segment qui les relie.',
     'segment-longueur':'Cliquez le point de départ, puis un point donnant la direction : la longueur exacte (en cm) vous sera demandée.',
@@ -3769,7 +3781,7 @@ function setFigureMode(mode){
     triangle:'Cliquez 3 points existants pour tracer le triangle qui les relie.',
     polygone:'Cliquez les sommets un par un (points existants). Recliquez le tout premier point (une fois au moins 3 posés) pour refermer le polygone.',
     'polygone-regulier':'Cliquez 2 points existants : ils seront les 2 extrémités d\'un côté (fixe la longueur et l\'orientation) -- le nombre de côtés se règle dans le champ à côté.',
-    'angle-mesure':'Cliquez un point sur le premier côté, puis le sommet -- une fenêtre demande ensuite la mesure (en degrés) et le sens (horaire ou trigonométrique).',
+    'angle-mesure':'Cliquez un point du premier côté (ex. B), puis le sommet (ex. A) : une fenêtre demande la mesure et le sens. Le second côté est une demi-droite [Ay) : aucun point n\'est ajouté.',
     vecteur:'Cliquez deux points existants : l\'origine, puis l\'extrémité (avec la flèche).',
     'mesure-distance':'Cliquez directement un segment existant, ou deux points (un point puis une droite/segment/demi-droite donne la distance perpendiculaire) -- la distance affichée peut ensuite être déplacée (mode Déplacer), en restant toujours parallèle.',
     'symetrie-axiale':'Cliquez directement sur l\'axe de symétrie (droite, demi-droite, segment ou côté de polygone), puis le point à transformer.',
@@ -3793,7 +3805,7 @@ function svgCoordsFromEvent(svg, evt){
 }
 function findNearbyPoint(x,y){
   const thresh = 18; // légèrement augmenté (16->18) : plus tolérant, cohérent avec les formes
-  return figState.points.find(p=>(!p.hidden || figState.mode==='deplacer') && Math.hypot(p.x-x,p.y-y)<thresh);
+  return figState.points.find(p=>(!p.hidden || (figState.mode==='deplacer' && !(p.def && p.def.type==='angle-cote'))) && Math.hypot(p.x-x,p.y-y)<thresh);
 }
 function distToSegment(px,py,ax,ay,bx,by){
   const dx=bx-ax, dy=by-ay;
@@ -3898,7 +3910,9 @@ function findCurveIntersectionNear(x, y){
     .filter(o=>o.cv && figDistToCurve(o.cv, x, y) < 16);
   let best = null;
   for(let i=0;i<near.length;i++) for(let j=i+1;j<near.length;j++){
-    if(near[i].cv.kind==='line' && near[j].cv.kind==='line') continue; // cas historique, géré à part
+    // Deux droites « simples » (segment/droite/demi-droite) : cas historique, géré à part ; les
+    // autres paires de droites (médiatrice, perpendiculaire, parallèle, bissectrice) passent ici.
+    if(near[i].cv.kind==='line' && near[j].cv.kind==='line' && ['segment','droite','demi-droite'].includes(near[i].s.type) && ['segment','droite','demi-droite'].includes(near[j].s.type)) continue;
     figIntersectCurves(near[i].cv, near[j].cv).forEach(q=>{
       if(!figOnCurveBounds(near[i].cv, q.x, q.y, 6) || !figOnCurveBounds(near[j].cv, q.x, q.y, 6)) return;
       const d = Math.hypot(q.x-x, q.y-y);
@@ -4226,6 +4240,13 @@ function recomputeDependents(){
   // en découle suit automatiquement.
   figState.points.forEach(p=>{
     if(!p.def) return;
+    if(p.def.type==='angle-cote'){
+      // Second côté [Ay) d'un angle de mesure donnée : garde sa mesure quand on déplace A ou B.
+      const {vertex, ref, deg, sign, dist} = p.def;
+      const a = Math.atan2(ref.y-vertex.y, ref.x-vertex.x) + sign*deg*Math.PI/180;
+      p.x = vertex.x+dist*Math.cos(a); p.y = vertex.y+dist*Math.sin(a);
+      return;
+    }
     if(p.def.type==='milieu'){
       p.x = (p.def.a.x + p.def.b.x)/2;
       p.y = (p.def.a.y + p.def.b.y)/2;
@@ -4344,7 +4365,7 @@ function findNearbyMeasureLabel(x,y){
 function findEditableMeasure(shape){
   if(shape.type==='segment' && shape.lengthCm) return {type:'length', value:shape.lengthCm, unit:'cm'};
   if(shape.type==='cercle' && shape.radiusCm) return {type:'radius', value:shape.radiusCm, unit:'cm'};
-  if(shape.type==='segment' && shape.angleDeg!=null) return {type:'angle', value:shape.angleDeg, unit:'degrés'};
+  if((shape.type==='segment' || shape.type==='demi-droite') && shape.angleDeg!=null) return {type:'angle', value:shape.angleDeg, unit:'degrés'};
   return null;
 }
 function figStyleModal(shape){
@@ -4503,7 +4524,8 @@ async function editShapeMeasure(shape, measure){
     const angleDeg = result.value;
     if(!isFinite(angleDeg) || angleDeg<=0 || angleDeg>=360) return;
     const vertex = shape.p1; // p1 est toujours le sommet pour un segment créé par angle-mesure
-    const refPoint = angleShapeBefore ? angleShapeBefore.p1 : null;
+    const cote = shape.p2.def && shape.p2.def.type==='angle-cote' ? shape.p2.def : null;
+    const refPoint = angleShapeBefore ? angleShapeBefore.p1 : cote ? cote.ref : null;
     if(!refPoint) return; // pas assez d'info pour recalculer (aucune forme auxiliaire trouvée)
     pushFigHistory();
     const direction = result.direction || shape.angleDirection || 'horaire';
@@ -4511,6 +4533,7 @@ async function editShapeMeasure(shape, measure){
     const sign = direction==='trigo' ? -1 : 1;
     const newAngle = baseAngle + sign*angleDeg*Math.PI/180;
     const dist = Math.hypot(shape.p2.x-vertex.x, shape.p2.y-vertex.y);
+    if(cote){ cote.deg = angleDeg; cote.sign = sign; }
     shape.p2.x = vertex.x + dist*Math.cos(newAngle);
     shape.p2.y = vertex.y + dist*Math.sin(newAngle);
     shape.angleDeg = angleDeg;
@@ -4895,19 +4918,53 @@ async function handleAngleMesureClick(x,y){
   const sign = result.direction==='trigo' ? -1 : 1;
   const newAngle = baseAngle + sign*angleDeg*Math.PI/180;
   const dist = Math.max(40, Math.hypot(refPoint.x-vertex.x, refPoint.y-vertex.y));
-  const newPoint = {label:nextPointLabel(), x:vertex.x+dist*Math.cos(newAngle), y:vertex.y+dist*Math.sin(newAngle)};
+  // Second côté : la demi-droite [Ay), sans point C -- demandé : « je crée l'angle BAy de 60°.
+  // Ne pas placer de point C ! ». Son point directeur est invisible (il porte le nom y de la
+  // demi-droite) et recalculé pour garder la mesure quand on déplace A ou B.
+  const nomRayon = ['y','z','t','u','v','w'].find(n=>!figState.points.some(q=>q.label===n)) || 'y';
+  const newPoint = {label:nomRayon, x:vertex.x+dist*Math.cos(newAngle), y:vertex.y+dist*Math.sin(newAngle), hidden:true,
+    def:{type:'angle-cote', vertex, ref:refPoint, deg:angleDeg, sign, dist}, dependsOn:[vertex, refPoint]};
   figState.points.push(newPoint);
   // S'assure que le 1er côté (sommet<->référence) existe visuellement : s'il n'y avait pas
   // déjà de segment entre ces deux points (ex. refPoint venait d'être créé à la volée),
   // l'angle ne montrerait sinon qu'un seul côté.
-  const firstSideExists = figState.shapes.some(s=>s.type==='segment' && ((s.p1===vertex&&s.p2===refPoint)||(s.p1===refPoint&&s.p2===vertex)));
+  const firstSideExists = figState.shapes.some(s=>['segment','droite','demi-droite'].includes(s.type) && ((s.p1===vertex&&s.p2===refPoint)||(s.p1===refPoint&&s.p2===vertex)));
   if(!firstSideExists) figState.shapes.push({type:'segment', p1:vertex, p2:refPoint});
-  // angleDeg/angleDirection restent mémorisés sur ce segment, INDÉPENDAMMENT de l'affichage
-  // valeur/codage choisi -- permet de modifier l'angle plus tard même si ni l'un ni l'autre
-  // n'a été affiché au départ.
-  figState.shapes.push({type:'segment', p1:vertex, p2:newPoint, angleDeg, angleDirection:result.direction});
+  // angleDeg/angleDirection restent mémorisés sur la demi-droite, INDÉPENDAMMENT de l'affichage
+  // valeur/codage choisi -- permet de modifier l'angle plus tard.
+  figState.shapes.push({type:'demi-droite', p1:vertex, p2:newPoint, angleDeg, angleDirection:result.direction, rayLabel:nomRayon});
   if(result.showValue) figState.shapes.push({type:'angle-value', vertex, p1:refPoint, p2:newPoint, deg:angleDeg});
   if(result.showCode) figState.shapes.push({type:'code-angle', vertex, p1:refPoint, p2:newPoint, group:angleGroupFor(angleDeg)});
+  renderFigureSvg();
+}
+/* Outil « Point d'intersection » -- demandé : « permettre de placer un point d'intersection ».
+   On clique le premier objet (il se surligne), puis le second : chaque point où ils se coupent
+   (dans leurs bornes : un segment s'arrête à ses extrémités, un arc à ses bouts) est placé, sans
+   repère, et suit les objets quand on les déplace. Tous les objets « courbes » sont acceptés, y
+   compris médiatrice, perpendiculaire, parallèle et bissectrice. */
+let figInterPremier = null;
+function handleIntersectionClick(x, y){
+  const proches = figState.shapes.filter(sh=>FIG_CURVE_TYPES.includes(sh.type)).map(sh=>({sh, cv:figCurve(sh)}))
+    .filter(o=>o.cv && figDistToCurve(o.cv, x, y) < 18).sort((a, b)=>figDistToCurve(a.cv, x, y)-figDistToCurve(b.cv, x, y));
+  const hint = document.getElementById('figureHint');
+  if(!figInterPremier){
+    if(!proches.length){ hint.textContent = 'Cliquez sur un trait (droite, segment, cercle, arc…).'; return; }
+    figInterPremier = proches[0].sh;
+    hint.textContent = 'Cliquez maintenant le second objet.';
+    renderFigureSvg(); return;
+  }
+  const autre = proches.find(o=>o.sh!==figInterPremier);
+  if(!autre){ hint.textContent = 'Cliquez un second objet, différent du premier.'; return; }
+  const s1 = figInterPremier, s2 = autre.sh, c1 = figCurve(s1), c2 = autre.cv;
+  figInterPremier = null;
+  const pts = figIntersectCurves(c1, c2).filter(q=>isFinite(q.x) && figOnCurveBounds(c1, q.x, q.y, 2) && figOnCurveBounds(c2, q.x, q.y, 2));
+  const nouveaux = pts.filter(q=>!figState.points.some(p=>!p.hidden && Math.hypot(p.x-q.x, p.y-q.y) < 3));
+  if(!pts.length) hint.textContent = 'Ces deux objets ne se coupent pas (ou sont parallèles).';
+  else if(!nouveaux.length) hint.textContent = 'Il y a déjà un point à cette intersection.';
+  else {
+    nouveaux.forEach(q=>figState.points.push({label:nextPointLabel(), x:q.x, y:q.y, def:{type:'intersection-courbes', s1, s2}, dependsOn:[s1, s2]}));
+    hint.textContent = nouveaux.length>1 ? 'Deux points d\'intersection placés.' : 'Point d\'intersection placé.';
+  }
   renderFigureSvg();
 }
 async function onFigureClick(evt){
@@ -4960,6 +5017,7 @@ async function onFigureClick(evt){
     renderFigureSvg();
     return;
   }
+  if(figState.mode==='intersection'){ handleIntersectionClick(x,y); return; }
   if(figState.mode==='segment-longueur'){ handleLengthSegmentClick(x,y); return; }
   if(figState.mode==='cercle-rayon'){ handleRadiusCircleClick(x,y); return; }
   if(figState.mode==='arc-rayon'){ handleRadiusArcClick(x,y); return; }
@@ -5249,6 +5307,10 @@ function renderFigureSvg(){
       // au-delà de p2, dans cette même direction.
       const dx=s.p2.x-s.p1.x, dy=s.p2.y-s.p1.y; const len=Math.hypot(dx,dy)||1; const ext=400;
       html+=`<line x1="${s.p1.x}" y1="${s.p1.y}" x2="${s.p2.x+dx/len*ext}" y2="${s.p2.y+dy/len*ext}" ${shapeStrokeAttrs(s,'#1C1B2E')}/>`;
+      if(s.rayLabel){ // nom de la demi-droite [Ay) : la lettre y, posée le long du trait
+        const lx = s.p1.x+dx/len*(len+26)-dy/len*9, ly = s.p1.y+dy/len*(len+26)+dx/len*9;
+        html+=`<text x="${lx.toFixed(1)}" y="${(ly+3).toFixed(1)}" font-family="Space Grotesk" font-size="10" font-style="italic" font-weight="700" fill="#1C1B2E" text-anchor="middle">${s.rayLabel}</text>`;
+      }
     } else if(s.type==='cercle'){
       const hasFixedRadius = s.radius!=null;
       const r = hasFixedRadius ? s.radius : Math.hypot(s.p2.x-s.p1.x, s.p2.y-s.p1.y);
@@ -5399,7 +5461,7 @@ function renderFigureSvg(){
     if(p.hidden){
       // Point auxiliaire (fin d'un arc « centre, point, point ») : invisible, sauf une petite
       // poignée en mode Déplacer pour allonger l'arc.
-      if(figState.mode==='deplacer') html+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.2" fill="#fff" stroke="#1F3A5C" stroke-width="1" data-marker="hidden"/>`;
+      if(figState.mode==='deplacer' && !(p.def && p.def.type==='angle-cote')) html+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.2" fill="#fff" stroke="#1F3A5C" stroke-width="1" data-marker="hidden"/>`;
       return;
     }
     const debutArc = !linked.length && figState.shapes.find(s=>s.type==='arc' && s.p1===p);
@@ -5447,6 +5509,15 @@ function renderFigureSvg(){
     }
     html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="9" font-weight="700" fill="${sel?'#E35D3A':baseColor}">${p.label}</text>`;
   });
+  if(figInterPremier && figState.shapes.includes(figInterPremier)){
+    const cv = figCurve(figInterPremier);
+    if(cv && cv.kind==='line'){
+      const dx=cv.p2.x-cv.p1.x, dy=cv.p2.y-cv.p1.y, t0=Math.max(cv.t0,-60), t1=Math.min(cv.t1,60);
+      html+=`<line x1="${(cv.p1.x+t0*dx).toFixed(1)}" y1="${(cv.p1.y+t0*dy).toFixed(1)}" x2="${(cv.p1.x+t1*dx).toFixed(1)}" y2="${(cv.p1.y+t1*dy).toFixed(1)}" stroke="#E35D3A" stroke-width="5" stroke-opacity=".35" stroke-linecap="round" pointer-events="none"/>`;
+    } else if(cv){
+      html+=`<circle cx="${cv.c.x.toFixed(1)}" cy="${cv.c.y.toFixed(1)}" r="${cv.r.toFixed(1)}" fill="none" stroke="#E35D3A" stroke-width="5" stroke-opacity=".35" pointer-events="none"/>`;
+    }
+  }
   svg.innerHTML = html;
 }
 
@@ -5701,6 +5772,16 @@ function figVersProgramme(){
         }
       }
     }
+    if(t==='demi-droite' && sh.p2.def && sh.p2.def.type==='angle-cote'){
+      // Angle de mesure donnée sans point C : la demi-droite [Ay) est tracée au rapporteur.
+      const ref = sh.p2.def.ref;
+      assurerPoint(sh.p1); assurerPoint(ref);
+      let d = ((sh.angleDeg % 360) + 360) % 360; if(d>180) d = 360-d;
+      const id = nouvelId(sh);
+      prog.push(couleur(sh, {op:'angle', id, vertex:sh.p1.label, from:ref.label, degrees:r1(d), direction:deg(sh.p2.x-sh.p1.x, sh.p2.y-sh.p1.y)}));
+      anglesConstruits.add(sh.p1.label+'|'+ref.label+'|'+sh.p2.label);
+      return id;
+    }
     if(t==='segment' || t==='vecteur'){
       // Segment de longueur donnée dont l'extrémité n'existe pas encore : la règle graduée la place.
       if(sh.lengthCm && !nomPt.has(sh.p2) && !sh.p2.def){
@@ -5745,6 +5826,68 @@ function figVersProgramme(){
   });
   pts.forEach(assurerPoint);
   return {programme: prog, approches: avert};
+}
+/* Plein écran de la figure dynamique -- demandé : « permettre de se mettre en plein écran ». En
+   écran partagé, c'est toute la page (figure + tableau) qui passe en plein écran. */
+function figToggleFullscreen(){
+  if(document.fullscreenElement){ (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+  const el = document.body.classList.contains('fig-split') ? document.documentElement : document.getElementById('toolsModalOverlay');
+  const f = el.requestFullscreen || el.webkitRequestFullscreen;
+  if(f) f.call(el);
+}
+document.addEventListener('fullscreenchange', ()=>{
+  const b = document.getElementById('figFullscreenBtn');
+  if(b) b.innerHTML = document.fullscreenElement ? '<span class=gicon>fullscreen_exit</span>' : '<span class=gicon>fullscreen</span>';
+});
+/* Écran partagé -- demandé : « partager l'écran en deux : à gauche figure dynamique / à droite le
+   résultat avec les instruments de géométrie ». La figure garde la moitié gauche ; le tableau
+   interactif occupe la moitié droite et y reçoit le programme de construction de la figure (le
+   même que « Construire au tableau avec les instruments ») : la barre verte le déroule aux
+   instruments. Après avoir modifié la figure, « Actualiser » (flèches vertes) renvoie la nouvelle
+   version au tableau. */
+let figSplitVueAvant = null;
+function figRouvrirPanneau(){
+  document.getElementById('toolsModalOverlay').style.display = 'flex';
+  document.getElementById('figurePanel').style.display = 'block';
+  renderFigureSvg();
+}
+async function figToggleSplit(){
+  if(document.body.classList.contains('fig-split')){
+    const vue = figSplitVueAvant; figQuitterSplit();
+    if(vue && typeof showView==='function'){ showView(vue); figRouvrirPanneau(); }
+    return;
+  }
+  const active = document.querySelector('.view.active');
+  figSplitVueAvant = active ? active.id : null;
+  document.body.classList.add('fig-split');
+  if(typeof showView==='function') showView('view-tableau'); // referme l'outil : on le rouvre tel quel
+  if(typeof initTableauView==='function') initTableauView();
+  figRouvrirPanneau();
+  document.getElementById('figSplitRefreshBtn').style.display = 'inline-flex';
+  document.getElementById('figSplitBtn').classList.add('active');
+  document.getElementById('figSplitBtn').title = 'Quitter l\'écran partagé';
+  if(figState.points.some(p=>!p.hidden)) await figSplitActualiser();
+  else document.getElementById('figureHint').textContent = 'Écran partagé : tracez la figure, puis cliquez les flèches vertes pour la construire aux instruments à droite.';
+}
+function figQuitterSplit(){
+  if(!document.body.classList.contains('fig-split')) return;
+  document.body.classList.remove('fig-split');
+  const r = document.getElementById('figSplitRefreshBtn'); if(r) r.style.display = 'none';
+  const b = document.getElementById('figSplitBtn'); if(b){ b.classList.remove('active'); b.title = 'Écran partagé : la figure à gauche, sa construction aux instruments à droite'; }
+}
+async function figSplitActualiser(){
+  if(!figState.points.some(p=>!p.hidden)){ await niceAlert('La figure est vide : tracez-la d\'abord.'); return; }
+  if(figState.points.some(p=>!p.hidden && !/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))){ await niceAlert('Chaque point doit être nommé par une lettre majuscule (ex. A, B, M) pour être construit au tableau.'); return; }
+  const {programme, approches} = figVersProgramme();
+  if(typeof tbClearAll==='function') tbClearAll();
+  try{
+    tbAiLoadProgram(programme);
+    document.getElementById('figureHint').textContent = 'Construction prête à droite : « Étape suivante » (barre verte) la déroule aux instruments.'
+      + (approches.length ? ' Les points '+approches.join(', ')+' sont placés directement (obtenus par une transformation).' : '');
+  } catch(e){
+    console.warn('Écran partagé : programme refusé', programme, e);
+    await niceAlert('Cette figure ne peut pas encore être construite aux instruments : '+(e && e.message ? e.message : e));
+  }
 }
 async function figConstruireAuTableau(){
   if(!figState.points.some(p=>!p.hidden)){ await niceAlert('La figure est vide : tracez-la d\'abord.'); return; }

@@ -210,6 +210,7 @@ function showView(id){
   // le menu lui-même, sans qu'aucune erreur ne s'affiche (rien ne plante, l'overlay fait juste
   // écran).
   if(typeof closeAllToolPanels==='function') closeAllToolPanels();
+  if(id!=='view-tableau' && typeof figQuitterSplit==='function') figQuitterSplit(); // on quitte l'écran partagé figure / tableau
   // Coupe le décompte et le chrono qui défile d'un Objectif Nombre resté en cours si on change
   // de page par le menu sans avoir validé -- signalé : "faire attention que si on ferme un
   // compte en cours... ça ne remette pas le chrono à zéro". Sans ça, les intervalles
@@ -295,6 +296,8 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
         // Passage de la figure au tableau interactif, construite aux instruments (outils-figures.js).
         const toTableauBtn = document.getElementById('figToTableauBtn');
         if(toTableauBtn) toTableauBtn.style.display = 'inline-flex';
+        const splitBtn = document.getElementById('figSplitBtn');
+        if(splitBtn) splitBtn.style.display = 'inline-flex'; // écran partagé figure / instruments
         // Retour depuis le tableau : on retrouve la figure qu'on y a envoyée.
         try{
           const retour = sessionStorage.getItem('figSandboxRetour');
@@ -3070,6 +3073,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.821', items:[
+    "Géométrie Interactive -- demandé : « permettre de placer un point d'intersection », « permettre de se mettre en plein écran », « partager l'écran en deux : à gauche figure dynamique / à droite le résultat avec les instruments de géométrie », « quand je crée l'angle BAy de 60°, ne pas placer de point C ». (1) Nouvel outil « Point d'intersection » (à côté de Point) : on clique le premier objet (il se surligne), puis le second, et le ou les points où ils se coupent sont placés (deux points pour deux cercles), sans repère, et suivent les objets quand on les déplace. Tous les objets sont acceptés : segment, droite, demi-droite, cercle, arc, et désormais aussi médiatrice, perpendiculaire, parallèle et bissectrice -- leur croisement était impossible jusqu'ici, y compris avec l'outil Point, qui les reconnaît maintenant aussi. (2) Bouton plein écran dans la barre d'outils. (3) Bouton « Écran partagé » : la figure reste à gauche, le tableau interactif occupe la moitié droite et reçoit la construction de la figure, déroulée aux instruments par la barre verte ; après une modification de la figure, les flèches vertes (« Actualiser ») renvoient la nouvelle version. En plein écran, les deux moitiés passent en plein écran. (4) « Angle de mesure donnée » : on clique B puis le sommet A, et le second côté est la demi-droite [Ay), sans point C ; la lettre y est écrite le long de la demi-droite, l'angle garde sa mesure quand on déplace A ou B, reste modifiable, et se construit au tableau au rapporteur, sans point ajouté.",
+  ]},
   { version:'2026-08-19.820', items:[
     "Choix de la voix pour la lecture à voix haute -- demandé : « il peut y avoir une autre voix ? plus jeune plus sympa ? ». Nouveau bouton dans la barre du haut (à côté de « Aa ») : la liste des voix françaises de l'appareil, les plus naturelles en premier, chacune avec un bouton pour l'écouter ; réglage de la vitesse et de la hauteur (une voix un peu plus aiguë et plus rapide paraît plus jeune) ; réglages par défaut. Le choix est mémorisé sur l'appareil. Sans choix, la meilleure voix française disponible est prise automatiquement (voix « naturelles » d'abord), au lieu de la voix par défaut du système. Les voix dépendent du navigateur : Edge propose les plus naturelles (Denise, Vivienne, Éloïse…) ; sur Mac et iPhone, des voix « Améliorée » ou « Premium » se téléchargent dans les réglages d'accessibilité.",
   ]},
