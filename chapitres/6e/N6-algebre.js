@@ -46,29 +46,72 @@ const AL_BARRES_NOTES = [
   'Léa a 45 billes, Tom 70 et Sam 35. Vérification : 45 + 70 + 35 = 150.',
 ];
 
-/* ---- Balance (oranges et melon) ---- */
-function alFruit(type, x, y){
-  if(type === 'o') return `<circle cx="${x}" cy="${y - 12}" r="12" fill="#F39C12" stroke="#B9770E" stroke-width="1.2"/><path d="M${x - 2},${y - 24} q2,-6 7,-6" fill="none" stroke="${AL_VERT}" stroke-width="2"/>`;
-  if(type === 'm') return `<ellipse cx="${x}" cy="${y - 16}" rx="22" ry="16" fill="#58A55C" stroke="#2E6B31" stroke-width="1.3"/>` + [-12, -4, 4, 12].map(d => `<path d="M${x + d},${y - 31} q${d > 0 ? 5 : -5},15 0,30" fill="none" stroke="#2E6B31" stroke-width="1"/>`).join('');
-  return '';
+/* ---- Balance (même modèle que le chapitre Équations de 5e) ----
+   Le fléau est en bas, posé sur le pivot ; les plateaux reposent sur un court montant au-dessus de
+   chaque bras. Quand la balance penche, tout le fléau (plateaux et objets compris) pivote d'un bloc.
+   Objets : 'o' orange, 'm' melon, texte commençant par « ¤ » = boule de masse inconnue (le reste du
+   texte est écrit dessus), autre texte = poids marqué. Les dégradés ont un identifiant propre à chaque
+   figure (uid) : un dégradé défini dans un onglet masqué ne s'afficherait pas ailleurs. */
+const AL_MIDX = 200, AL_BEAMY = 150, AL_PANY = 105, AL_LEFTX = 90, AL_RIGHTX = 310;
+const AL_BAL_VB = '-20 -12 440 232';
+function alObjetTaille(o){
+  if(o === 'o') return { w: 30, h: 30 };
+  if(o === 'm') return { w: 50, h: 46 };
+  if(o.startsWith('¤')) return { w: 40, h: 38 };
+  return { w: Math.max(46, 8.5 * o.length + 16), h: 28 };
 }
-// Un texte commençant par « ¤ » est une boîte de masse inconnue (fond jaune), sinon un poids marqué.
-function alPoids(txt, x, y, w){ w = w || 60; const boite = txt.startsWith('¤'); if(boite) txt = txt.slice(1); return `<rect x="${x - w / 2 + 1}" y="${y - 26}" width="${w - 2}" height="26" rx="4" fill="${boite ? '#FDF2D0' : '#fff'}" stroke="${AL_ENCRE}" stroke-width="1.4"/><text x="${x}" y="${y - 8}" text-anchor="middle" font-family="JetBrains Mono" font-size="${w < 50 ? 11 : 13}" font-weight="700" fill="${AL_ENCRE}">${txt}</text>`; }
-// Balance : gauche = liste d'objets ('o', 'm', ou texte de poids), droite idem ; pente = inclinaison en degrés (négatif : gauche plus lourde).
-function alBalance(gauche, droite, pente, cx){
-  cx = cx || 170;
-  // pente < 0 : le côté gauche descend (plus lourd) ; pente > 0 : le côté droit descend.
-  const L = 120, a = (pente || 0) * Math.PI / 180, xg = cx - L * Math.cos(a), yg = 90 - L * Math.sin(a), xd = cx + L * Math.cos(a), yd = 90 + L * Math.sin(a);
-  const plateau = (x, y, objets) => {
-    let s = `<line x1="${x}" y1="${y}" x2="${x}" y2="${y + 22}" stroke="#8A93A3" stroke-width="1.2"/><path d="M${x - 58},${y + 22} q58,16 116,0" fill="#F6D58E" stroke="#C9A14A" stroke-width="1.5"/>`;
-    const serre = objets.length > 2; // beaucoup d'objets : boîtes plus étroites
-    const w = objets.map(o => (o === 'o' ? 28 : o === 'm' ? 48 : serre ? 44 : 64)), tot = w.reduce((t, v) => t + v, 0);
-    let xx = x - tot / 2;
-    objets.forEach((o, i) => { const c = xx + w[i] / 2; s += (o === 'o' || o === 'm') ? alFruit(o, c, y + 24) : alPoids(o, c, y + 24, w[i]); xx += w[i]; });
-    return s;
-  };
-  return `<polygon points="${cx - 28},170 ${cx + 28},170 ${cx},92" fill="#4E5665"/><line x1="${xg.toFixed(1)}" y1="${yg.toFixed(1)}" x2="${xd.toFixed(1)}" y2="${yd.toFixed(1)}" stroke="#4E5665" stroke-width="6" stroke-linecap="round"/>`
-    + plateau(xg, yg, gauche) + plateau(xd, yd, droite);
+function alObjet(o, x, base, uid){
+  if(o === 'o') return `<circle cx="${x}" cy="${base - 15}" r="15" fill="url(#${uid}-or)" stroke="#c96b12" stroke-width="1.3"/><path d="M${x + 1},${base - 29} q4,-7 10,-5 q-3,6 -10,5z" fill="#4C8C2B"/>`;
+  if(o === 'm') return `<ellipse cx="${x}" cy="${base - 23}" rx="25" ry="23" fill="url(#${uid}-ve)" stroke="#2f6d1c" stroke-width="1.4"/>`
+    + [-13, -5, 5, 13].map(d => `<path d="M${x + d * 0.35},${base - 45} Q${x + d * 1.45},${base - 23} ${x + d * 0.35},${base - 1}" fill="none" stroke="#2f6d1c" stroke-width="1.2" opacity=".55"/>`).join('');
+  if(o.startsWith('¤')){ const t = o.slice(1); return `<circle cx="${x}" cy="${base - 19}" r="19" fill="url(#${uid}-bo)" stroke="#2f6d1c" stroke-width="1.4"/><text x="${x}" y="${base - 14.5}" text-anchor="middle" font-size="${t.length > 3 ? 11 : 14}" font-weight="700" fill="#1C1B2E">${t}</text>`; }
+  const w = alObjetTaille(o).w;
+  return `<rect x="${x - w / 2}" y="${base - 28}" width="${w}" height="28" rx="4" fill="#fff" stroke="#1C1B2E" stroke-width="1.5"/><text x="${x}" y="${base - 9}" font-size="13" text-anchor="middle" font-weight="700" fill="#1C1B2E">${o}</text>`;
+}
+// Range les objets d'un plateau : les poids et le melon en bas, puis des rangées d'au plus 186 unités.
+const alRond = o => o === 'o' || o.startsWith('¤');
+function alRangees(objets){
+  const tous = objets.filter(o => !alRond(o)).concat(objets.filter(alRond)), r = [];
+  let ligne = [], larg = 0;
+  tous.forEach(o => { const w = alObjetTaille(o).w; if(ligne.length && larg + 4 + w > 186){ r.push(ligne); ligne = []; larg = 0; } larg += (ligne.length ? 4 : 0) + w; ligne.push(o); });
+  if(ligne.length) r.push(ligne);
+  return r;
+}
+function alRangeesLargeur(r){ return r.reduce((m, ligne) => Math.max(m, ligne.reduce((t, o) => t + alObjetTaille(o).w, 0) + 4 * (ligne.length - 1)), 0); }
+function alPlateau(cx, objets, demi, uid){
+  let s = `<rect x="${cx - 4}" y="${AL_PANY}" width="8" height="${AL_BEAMY - AL_PANY}" fill="#1C1B2E"/>`
+    + `<ellipse cx="${cx}" cy="${AL_PANY}" rx="${demi}" ry="12" fill="url(#${uid}-pl)" stroke="#C77D1E" stroke-width="1.5"/>`;
+  let base = AL_PANY - 5, centre = cx, dessous = null;
+  alRangees(objets).forEach(ligne => {
+    const t = ligne.map(alObjetTaille), larg = t.reduce((a, v) => a + v.w, 0) + 4 * (ligne.length - 1);
+    if(dessous){
+      // Rangée du dessus : centrée sur les boules de la rangée du dessous, posée dans leurs creux
+      // quand elles sont assez nombreuses pour la porter.
+      const ronds = dessous.pos.filter(q => alRond(q.o)), d = t[0].w;
+      if(ronds.length){ centre = (ronds[0].x + ronds[ronds.length - 1].x) / 2; }
+      base = ronds.length > ligne.length ? dessous.base - Math.sqrt(d * d - Math.pow((d + 4) / 2, 2)) : dessous.base - Math.max(...dessous.pos.map(q => alObjetTaille(q.o).h)) + 1;
+    }
+    let x = centre - larg / 2; const pos = [];
+    ligne.forEach((o, i) => { pos.push({ o, x: x + t[i].w / 2 }); s += alObjet(o, x + t[i].w / 2, base, uid); x += t[i].w + 4; });
+    dessous = { pos, base };
+  });
+  return s;
+}
+// pente en degrés : négative, la gauche descend (plus lourde) ; positive, la droite descend.
+function alBalance(gauche, droite, pente, uid){
+  uid = uid || 'alb';
+  const demi = Math.max(38, Math.max(alRangeesLargeur(alRangees(gauche)), alRangeesLargeur(alRangees(droite))) / 2 + 12);
+  return `<defs>
+    <radialGradient id="${uid}-bo" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="#C3EC94"/><stop offset="100%" stop-color="#4C8C2B"/></radialGradient>
+    <radialGradient id="${uid}-ve" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="#A8DC7A"/><stop offset="100%" stop-color="#3E7A22"/></radialGradient>
+    <radialGradient id="${uid}-or" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="#FFDCA8"/><stop offset="100%" stop-color="#E8952E"/></radialGradient>
+    <linearGradient id="${uid}-pl" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFDD86"/><stop offset="100%" stop-color="#F0A93A"/></linearGradient>
+  </defs>`
+    + `<polygon points="${AL_MIDX - 16},${AL_BEAMY + 34} ${AL_MIDX + 16},${AL_BEAMY + 34} ${AL_MIDX},${AL_BEAMY}" fill="#1C1B2E"/>`
+    + `<rect x="${AL_MIDX - 32}" y="${AL_BEAMY + 34}" width="64" height="8" rx="3" fill="#1C1B2E"/>`
+    + `<g transform="rotate(${(pente || 0).toFixed(2)} ${AL_MIDX} ${AL_BEAMY})">`
+    + `<line x1="${AL_LEFTX}" y1="${AL_BEAMY}" x2="${AL_RIGHTX}" y2="${AL_BEAMY}" stroke="#1C1B2E" stroke-width="6" stroke-linecap="round"/>`
+    + alPlateau(AL_LEFTX, gauche, demi, uid) + alPlateau(AL_RIGHTX, droite, demi, uid) + `</g>`;
 }
 const AL_BAL_STEPS = [
   { g: ['o', 'o', 'm'], d: ['1,6 kg'], note: 'Première pesée : 2 oranges et 1 melon pèsent 1,6 kg. (Toutes les oranges ont la même masse.)' },
@@ -97,8 +140,8 @@ ${alEx('', [
 <div class="sub-header"><span class="letter">B</span><h4>Avec une balance</h4></div>
 <p class="example-title">Exemple : on a fait deux pesées. Toutes les oranges ont la même masse. Quelle est la masse d'une orange ? Celle du melon ?</p>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;">
-  <svg viewBox="-40 10 420 175" style="width:100%;max-width:320px;display:block;margin:0 auto;">${alBalance(['o', 'o', 'm'], ['1,6 kg'], 0)}</svg>
-  <svg viewBox="-40 10 420 175" style="width:100%;max-width:320px;display:block;margin:0 auto;">${alBalance(['o', 'o', 'o', 'm'], ['1,85 kg'], 0)}</svg>
+  <svg viewBox="${AL_BAL_VB}" style="width:100%;max-width:320px;display:block;margin:0 auto;">${alBalance(['o', 'o', 'm'], ['1,6 kg'], 0, 'alc1')}</svg>
+  <svg viewBox="${AL_BAL_VB}" style="width:100%;max-width:320px;display:block;margin:0 auto;">${alBalance(['o', 'o', 'o', 'm'], ['1,85 kg'], 0, 'alc2')}</svg>
 </div>
 ${alEx('', [
   ['Dans la 2e pesée, « 2 oranges + 1 melon » pèsent 1,6 kg.', 'On remplace par la 1re pesée : il reste 1 orange + 1,6 kg = 1,85 kg.'],
@@ -125,18 +168,18 @@ document.getElementById('methode-demo-algebre-6e').innerHTML = `
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : raisonner avec une balance, pas à pas</h4></div>
 <div class="figure-wrap" style="margin-top:20px;">
-  <svg id="al-balSvg" viewBox="-40 10 420 175" style="width:100%;max-width:340px;display:block;margin:8px auto;"></svg>
+  <svg id="al-balSvg" viewBox="${AL_BAL_VB}" style="width:100%;max-width:340px;display:block;margin:8px auto;"></svg>
   <div class="step-list" id="al-balSteps"></div>
   <div class="figure-toolbar"><button class="btn" id="al-balNext" onclick="alBalDemo.next()">Étape suivante →</button><button class="btn secondary" onclick="alBalDemo.reset()">Revoir depuis le début</button></div>
 </div>
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : équilibrer la balance</h4></div>
 <div class="figure-wrap" style="margin-top:20px;">
-  <p class="interaction-hint" style="margin:6px 0;">Les boîtes « ? » ont toutes la même masse. Proposez une masse : la balance penche du côté le plus lourd. Trouvez la masse qui l'équilibre !</p>
-  <svg id="al-jeuSvg" viewBox="-40 10 420 175" style="width:100%;max-width:360px;display:block;margin:8px auto;"></svg>
+  <p class="interaction-hint" style="margin:6px 0;">Les boules vertes ont toutes la même masse, inconnue. Proposez une masse : la balance penche du côté le plus lourd. Trouvez la masse qui l'équilibre !</p>
+  <svg id="al-jeuSvg" viewBox="${AL_BAL_VB}" style="width:100%;max-width:360px;display:block;margin:8px auto;"></svg>
   <div id="al-jeuEnonce" style="text-align:center;font-size:1.05rem;margin:4px 0;"></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;">
-    <label>Masse d'une boîte : <input id="al-jeuVal" type="number" min="0" step="1" value="1" style="width:80px;padding:6px 8px;border-radius:8px;border:1px solid #C9D6E6;" onkeydown="if(event.key==='Enter') alJeuEssayer()"> kg</label>
+    <label>Masse d'une boule : <input id="al-jeuVal" type="number" min="0" step="1" value="1" style="width:80px;padding:6px 8px;border-radius:8px;border:1px solid #C9D6E6;" onkeydown="if(event.key==='Enter') alJeuEssayer()"> kg</label>
     <button class="btn" onclick="alJeuEssayer()">Peser</button>
     <button class="btn secondary" onclick="alJeuIndice()">Un indice</button>
     <button class="btn secondary" onclick="alJeuNouveau()">Nouvelle balance</button>
@@ -206,19 +249,19 @@ function alEtapes(svgId, listeId, btnId, n, dessiner, notes){
   return demo;
 }
 const alBarresDemo = alEtapes('al-barresSvg', 'al-barresSteps', 'al-barresNext', 5, alBarres, AL_BARRES_NOTES);
-const alBalDemo = alEtapes('al-balSvg', 'al-balSteps', 'al-balNext', AL_BAL_STEPS.length, k => alBalance(AL_BAL_STEPS[k].g, AL_BAL_STEPS[k].d, 0), AL_BAL_STEPS.map(e => e.note));
+const alBalDemo = alEtapes('al-balSvg', 'al-balSteps', 'al-balNext', AL_BAL_STEPS.length, k => alBalance(AL_BAL_STEPS[k].g, AL_BAL_STEPS[k].d, 0, 'albd'), AL_BAL_STEPS.map(e => e.note));
 
 /* ---- Méthode 3 : balance à équilibrer ---- */
 let alJeu = null, alJeuRaf = null, alPente = 0;
 function alJeuDessin(pente, essai){
   const g = Array.from({ length: alJeu.n }, () => '¤' + (essai == null ? '?' : essai + ' kg')).concat(alJeu.b ? [alJeu.b + ' kg'] : []);
-  document.getElementById('al-jeuSvg').innerHTML = alBalance(g.map(t => t), [alJeu.c + ' kg'], pente);
+  document.getElementById('al-jeuSvg').innerHTML = alBalance(g, [alJeu.c + ' kg'], pente, 'alj');
 }
 function alJeuNouveau(){
   const n = 2 + Math.floor(Math.random() * 3), x = 2 + Math.floor(Math.random() * 7), b = Math.floor(Math.random() * 6);
   alJeu = { n, x, b, c: n * x + b }; alPente = 0;
   alJeuDessin(0);
-  document.getElementById('al-jeuEnonce').innerHTML = `À gauche : <b>${n} boîtes « ? »</b>${b ? ` et un poids de <b>${b} kg</b>` : ''}. À droite : <b>${alJeu.c} kg</b>.`;
+  document.getElementById('al-jeuEnonce').innerHTML = `À gauche : <b>${n} boules vertes</b>${b ? ` et un poids de <b>${b} kg</b>` : ''}. À droite : <b>${alJeu.c} kg</b>.`;
   document.getElementById('al-jeuRes').textContent = '';
   document.getElementById('al-jeuVal').value = 1;
 }
@@ -230,13 +273,13 @@ function alJeuEssayer(){
   const f = now => { const t = Math.max(0, Math.min(1, (now - t0) / 600)); alPente = depart + (cible - depart) * (1 - Math.pow(1 - t, 3)); alJeuDessin(alPente, alNum(v)); if(t < 1) alJeuRaf = requestAnimationFrame(f); };
   alJeuRaf = requestAnimationFrame(f);
   document.getElementById('al-jeuRes').innerHTML = gauche === droite
-    ? `<b style="color:${AL_VERT};">Équilibre !</b> ${alJeu.n} × ${alNum(v)}${alJeu.b ? ' + ' + alJeu.b : ''} = ${alJeu.c}. Une boîte pèse <b>${alNum(v)} kg</b>.`
+    ? `<b style="color:${AL_VERT};">Équilibre !</b> ${alJeu.n} × ${alNum(v)}${alJeu.b ? ' + ' + alJeu.b : ''} = ${alJeu.c}. Une boule pèse <b>${alNum(v)} kg</b>.`
     : `À gauche : ${alJeu.n} × ${alNum(v)}${alJeu.b ? ' + ' + alJeu.b : ''} = ${alNum(gauche)} kg ; à droite : ${droite} kg. ${gauche > droite ? 'La gauche est <b>trop lourde</b> : essayez plus petit.' : 'La gauche est <b>trop légère</b> : essayez plus grand.'}`;
 }
 function alJeuIndice(){
   document.getElementById('al-jeuRes').innerHTML = alJeu.b
-    ? `Retirez ${alJeu.b} kg des deux côtés : il reste ${alJeu.n} boîtes = ${alJeu.c - alJeu.b} kg. Puis partagez en ${alJeu.n}.`
-    : `${alJeu.n} boîtes pèsent ${alJeu.c} kg : partagez ${alJeu.c} en ${alJeu.n}.`;
+    ? `Retirez ${alJeu.b} kg des deux côtés : il reste ${alJeu.n} boules = ${alJeu.c - alJeu.b} kg. Puis partagez en ${alJeu.n}.`
+    : `${alJeu.n} boules pèsent ${alJeu.c} kg : partagez ${alJeu.c} en ${alJeu.n}.`;
 }
 
 DEMO_REGISTRY["6e|Initiation à l'algèbre"] = {
