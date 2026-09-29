@@ -266,20 +266,25 @@ function ro3ConstrDessin(k){
   let h = '';
   if(k >= 1) h += g4Seg(O, dirM, RO3_ENCRE, 1.6);
   if(k >= 3) h += g4Seg(O, dirM2, RO3_ENCRE, 1.6);
-  if(k === 2 || k === 3){ // rapporteur : demi-disque centré en O, orienté selon [OM)
-    const R = 95, gr = [];
-    for(let d = 0; d <= 180; d += 10){ const t = (a0 + d) * Math.PI / 180, l = d % 30 === 0 ? 12 : 7;
-      gr.push(`<line x1="${(O[0] + R * Math.cos(t)).toFixed(1)}" y1="${(O[1] - R * Math.sin(t)).toFixed(1)}" x2="${(O[0] + (R - l) * Math.cos(t)).toFixed(1)}" y2="${(O[1] - (R - l) * Math.sin(t)).toFixed(1)}" stroke="#0C5BA0" stroke-width="1"/>`);
-      if(d % 30 === 0) gr.push(`<text x="${(O[0] + (R - 22) * Math.cos(t)).toFixed(1)}" y="${(O[1] - (R - 22) * Math.sin(t) + 4).toFixed(1)}" text-anchor="middle" font-size="9" fill="#0C5BA0">${d}</text>`); }
-    const p0 = [O[0] + R * Math.cos(a0 * Math.PI / 180), O[1] - R * Math.sin(a0 * Math.PI / 180)], p1 = [O[0] - R * Math.cos(a0 * Math.PI / 180), O[1] + R * Math.sin(a0 * Math.PI / 180)];
-    h += `<path d="M${p0[0].toFixed(1)},${p0[1].toFixed(1)} A${R},${R} 0 0 0 ${p1[0].toFixed(1)},${p1[1].toFixed(1)} Z" fill="rgba(12,91,160,.08)" stroke="#0C5BA0" stroke-width="1.2"/>` + gr.join('');
-    if(k === 3){ const t = (a0 + RO3_C_A) * Math.PI / 180; h += `<circle cx="${(O[0] + R * Math.cos(t)).toFixed(1)}" cy="${(O[1] - R * Math.sin(t)).toFixed(1)}" r="3" fill="${RO3_ROUGE}"/>`; }
+  // Instruments du site (rulerSVG / pencilSVG / protractorSVG / compassSVG, app.js).
+  const angOM = Math.atan2(M[1] - O[1], M[0] - O[0]) * 180 / Math.PI, angOM2 = Math.atan2(M2[1] - O[1], M2[0] - O[0]) * 180 / Math.PI;
+  if(k === 1){ // règle posée le long de [OM), bord gradué sur le trait, crayon au bout du trait
+    const sR = 300 / TB_RULER_L, recul = 20 * sR, t = angOM * Math.PI / 180;
+    h += `<g transform="translate(${(O[0] - Math.cos(t) * recul).toFixed(1)},${(O[1] - Math.sin(t) * recul).toFixed(1)}) rotate(${angOM.toFixed(1)}) scale(${sR.toFixed(3)})">${rulerSVG(true)}</g>`
+      + `<g transform="translate(${dirM[0].toFixed(1)},${dirM[1].toFixed(1)}) rotate(${(angOM - 35).toFixed(1)}) scale(0.7)">${pencilSVG('ro3-crayon')}</g>`;
+  }
+  if(k === 2 || k === 3){ // rapporteur : centre sur O, zéro sur [OM)
+    const R = 110, sP = R / TB_PROT_RADIUS, t = (a0 + RO3_C_A) * Math.PI / 180;
+    h += `<g transform="translate(${O[0]},${O[1]}) rotate(${angOM.toFixed(1)}) scale(${sP.toFixed(3)})">${protractorSVG()}</g>`;
+    // repère : un petit trait dans l'axe de la graduation 70° (pas de petit disque)
+    if(k === 3) h += `<line x1="${(O[0] + (R - 8) * Math.cos(t)).toFixed(1)}" y1="${(O[1] - (R - 8) * Math.sin(t)).toFixed(1)}" x2="${(O[0] + (R + 8) * Math.cos(t)).toFixed(1)}" y2="${(O[1] - (R + 8) * Math.sin(t)).toFixed(1)}" stroke="${RO3_ROUGE}" stroke-width="2.4"/>`;
   }
   if(k >= 4){ // arc de compas autour de la demi-droite image
     const t = (a0 + RO3_C_A) * Math.PI / 180, e = 0.28, q0 = [O[0] + r * Math.cos(t - e), O[1] - r * Math.sin(t - e)], q1 = [O[0] + r * Math.cos(t + e), O[1] - r * Math.sin(t + e)];
     h += `<path d="M${q0[0].toFixed(1)},${q0[1].toFixed(1)} A${r.toFixed(1)},${r.toFixed(1)} 0 0 0 ${q1[0].toFixed(1)},${q1[1].toFixed(1)}" fill="none" stroke="${RO3_ORANGE}" stroke-width="1.6"/>`;
-    if(k === 4){ // compas : pointe en O, mine en M'
-      h += `<line x1="${O[0]}" y1="${O[1]}" x2="${((O[0] + M2[0]) / 2 - 20).toFixed(1)}" y2="${((O[1] + M2[1]) / 2 - 40).toFixed(1)}" stroke="#6B7280" stroke-width="3" stroke-linecap="round"/><line x1="${((O[0] + M2[0]) / 2 - 20).toFixed(1)}" y1="${((O[1] + M2[1]) / 2 - 40).toFixed(1)}" x2="${M2[0].toFixed(1)}" y2="${M2[1].toFixed(1)}" stroke="#6B7280" stroke-width="3" stroke-linecap="round"/>`;
+    if(k === 4){ // compas du site : pointe sèche en O, mine en M′, charnière du côté qui reste dans le cadre
+      const leg = 0.7 * r + 30, hh = Math.sqrt(leg * leg - r * r / 4), t2 = angOM2 * Math.PI / 180, cx = (O[0] + M2[0]) / 2 + hh * Math.sin(t2);
+      h += `<g transform="translate(${O[0]},${O[1]}) rotate(${angOM2.toFixed(1)})${cx > 25 ? '' : ' scale(1,-1)'}">${compassSVG(r, leg)}</g>`;
     }
   }
   if(k >= 5){ h += ro3ArcAngle(O, M, RO3_C_A, 34, RO3_VIOLET, '70°') + g4Traits(O, M, 1, RO3_BLEU) + g4Traits(O, M2, 1, RO3_BLEU) + ro3Label(M2, -16, -6, 'M′', RO3_ROUGE); }

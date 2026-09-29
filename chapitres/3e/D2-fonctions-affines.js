@@ -260,7 +260,10 @@ let fa3TK = 0;
 function fa3TraceDessin(k){
   const pts = k >= 1 ? [{ x: 0, y: 3, nom: 'A' }, { x: 4, y: 1, nom: 'B' }] : [];
   if(k >= 3) pts.push({ x: -2, y: 4, nom: 'C', c: FA3_VERT });
-  const svg = fa3Fig(k >= 2 ? [{ a: -0.5, b: 3 }] : [], pts, -3, 5, -2, 6);
+  // Étape 2 : la règle du site (rulerSVG / pencilSVG, app.js) posée le long de (AB), crayon au bout du tracé.
+  const regle = R => { const P = [R.X(-3), R.Y(4.5)], Q = [R.X(5), R.Y(0.5)], ang = Math.atan2(Q[1] - P[1], Q[0] - P[0]) * 180 / Math.PI, sR = Math.hypot(Q[0] - P[0], Q[1] - P[1]) / TB_RULER_L;
+    return `<g transform="translate(${P[0].toFixed(1)},${P[1].toFixed(1)}) rotate(${ang.toFixed(1)}) scale(${sR.toFixed(3)})">${rulerSVG(true)}</g><g transform="translate(${R.X(4.6).toFixed(1)},${R.Y(0.7).toFixed(1)}) rotate(${(ang - 35).toFixed(1)}) scale(0.6)">${pencilSVG('fa3-crayon')}</g>`; };
+  const svg = fa3Fig(k >= 2 ? [{ a: -0.5, b: 3 }] : [], pts, -3, 5, -2, 6, k === 2 ? { extra: regle } : {});
   document.getElementById('fa3-traceSvg').innerHTML = svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
   document.getElementById('fa3-traceNote').textContent = FA3_T_NOTES[k];
 }

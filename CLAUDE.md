@@ -25,11 +25,11 @@ Project ID Supabase de ce dépôt : `rngzubhnypmistjsumpz`.
 
 ## Référencement : régénérer les pages statiques après toute modification d'un chapitre
 
-Les pages indexables par Google (`6e/<chapitre>/`, `5e/<chapitre>/`, `4e/<chapitre>/`, `6e/`, `5e/`, `4e/`,
+Les pages indexables par Google (`6e/<chapitre>/`, `5e/<chapitre>/`, `4e/<chapitre>/`, `3e/<chapitre>/`, `6e/`, `5e/`, `4e/`, `3e/`,
 `professeurs/`),
 `sitemap.xml` et `robots.txt` sont GÉNÉRÉES à partir du vrai contenu des chapitres par
 `tools/build-seo.js` (ne pas les modifier à la main). Après toute modification d'un fichier de
-`chapitres/`, d'un titre de chapitre (CH6/CH5/CH4 dans app.js) ou de la page professeurs, relancer :
+`chapitres/`, d'un titre de chapitre (CH6/CH5/CH4/CH3 dans app.js) ou de la page professeurs, relancer :
 
 ```
 (cd tools && npm install)   # une fois par session : KaTeX pour rendre les formules

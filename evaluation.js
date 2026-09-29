@@ -57,6 +57,7 @@ document.getElementById('view-evaluation').innerHTML = `
           <option value="6e">6e</option>
           <option value="5e">5e</option>
           <option value="4e">4e</option>
+          <option value="3e">3e</option>
         </select>
       </label>
       <label class="hint" style="margin:0;">Classe(s) : <input type="text" id="evalClasses" placeholder="ex. 6e A, 6e B" style="width:140px;margin-left:4px;" oninput="scheduleEvalAutoSave()"></label>

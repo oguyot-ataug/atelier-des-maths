@@ -9,8 +9,8 @@
    « Pour les professeurs », le sitemap.xml et le robots.txt.
 
    Fichiers produits (à committer avec le reste du site) :
-     6e/index.html, 5e/index.html, 4e/...    -- sommaire de chaque niveau
-     6e/<chapitre>/index.html, 5e/..., 4e/...  -- une page par chapitre ayant un vrai cours
+     6e/index.html, 5e/index.html, 4e/..., 3e/... -- sommaire de chaque niveau
+     6e/<chapitre>/index.html, 5e/..., 4e/..., 3e/... -- une page par chapitre ayant un vrai cours
      professeurs/index.html                  -- présentation des outils enseignants
      sitemap.xml, robots.txt
      assets/og-image.png                     -- image d'aperçu (créée seulement si absente)
@@ -31,11 +31,12 @@ const { chromium } = require('playwright');
 
 const ROOT = path.resolve(__dirname, '..');
 const SITE = 'https://maths.latelieraugmente.fr';
-const LEVELS = ['6e', '5e', '4e']; // la 3e (réservée aux administrateurs) n'a pas encore de pages
+const LEVELS = ['6e', '5e', '4e', '3e']; // la 3e est publiée depuis le build 817
 const LEVEL_INFO = {
-  '6e': { cycle: 'cycle 3', long: 'sixième', other: ['5e', '4e'] },
-  '5e': { cycle: 'cycle 4', long: 'cinquième', other: ['6e', '4e'] },
-  '4e': { cycle: 'cycle 4', long: 'quatrième', other: ['6e', '5e'] },
+  '6e': { cycle: 'cycle 3', long: 'sixième', other: ['5e', '4e', '3e'] },
+  '5e': { cycle: 'cycle 4', long: 'cinquième', other: ['6e', '4e', '3e'] },
+  '4e': { cycle: 'cycle 4', long: 'quatrième', other: ['6e', '5e', '3e'] },
+  '3e': { cycle: 'cycle 4', long: 'troisième', other: ['6e', '5e', '4e'] },
 };
 const CAT_LABEL = { N: 'Nombres et calculs', G: 'Géométrie', D: 'Données et probabilités', M: 'Grandeurs et mesures', P: 'Proportionnalité et fonctions' };
 const CAT_COLOR = { N: ['#FFD8B0', '#8A4210'], G: ['#B9E8C4', '#1F6B3A'], D: ['#BFDCFB', '#1A4E9E'], M: ['#DCC9F7', '#5B2F9E'], P: ['#FAC3DE', '#9E1F5E'] };
@@ -183,6 +184,7 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script
     <a href="/6e/">Cours 6e</a>
     <a href="/5e/">Cours 5e</a>
     <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
     <a href="/professeurs/">Professeurs</a>
     <a class="cta" href="/">Ouvrir l'application</a>
   </nav>
@@ -192,7 +194,7 @@ ${body}
 </main>
 <footer class="seo-foot">
   <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
-  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
   Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
 </footer>
 </body>
@@ -307,13 +309,13 @@ function teachersPage() {
   const body = `
 <div class="seo-crumbs"><a href="/">Accueil</a> › Pour les professeurs</div>
 <h1>Des outils pour enseigner les maths au collège</h1>
-<p class="seo-sub">L'Atelier des Maths accompagne les professeurs de mathématiques de 6e, de 5e et de 4e : en classe (projection, géométrie au tableau), pour les devoirs, les évaluations et le suivi des élèves. Conçu par un professeur de mathématiques, conforme au programme 2026.</p>
+<p class="seo-sub">L'Atelier des Maths accompagne les professeurs de mathématiques de 6e, de 5e, de 4e et de 3e : en classe (projection, géométrie au tableau), pour les devoirs, les évaluations et le suivi des élèves. Conçu par un professeur de mathématiques, conforme au programme 2026.</p>
 <div class="seo-feat">
 ${feats.map(f => `  <div><h3><span class="gicon">${f[0]}</span> ${esc(f[1])}</h3><p>${esc(f[2])}</p></div>`).join('\n')}
 </div>
 <section class="seo-section">
   <h2><span class="gicon">school</span> Pour vos élèves</h2>
-  <p>Chaque chapitre de <a href="/6e/" style="color:var(--accent);font-weight:600;">6e</a>, de <a href="/5e/" style="color:var(--accent);font-weight:600;">5e</a> et de <a href="/4e/" style="color:var(--accent);font-weight:600;">4e</a> propose un cours avec des figures manipulables, une méthode animée, des exercices de rédaction, un quiz différent à chaque essai et un peu d'histoire des mathématiques. Vous décidez, classe par classe et même élève par élève, quels outils d'intelligence artificielle leur sont ouverts.</p>
+  <p>Chaque chapitre de <a href="/6e/" style="color:var(--accent);font-weight:600;">6e</a>, de <a href="/5e/" style="color:var(--accent);font-weight:600;">5e</a>, de <a href="/4e/" style="color:var(--accent);font-weight:600;">4e</a> et de <a href="/3e/" style="color:var(--accent);font-weight:600;">3e</a> propose un cours avec des figures manipulables, une méthode animée, des exercices de rédaction, un quiz différent à chaque essai et un peu d'histoire des mathématiques. Vous décidez, classe par classe et même élève par élève, quels outils d'intelligence artificielle leur sont ouverts.</p>
 </section>
 <section class="seo-section">
   <h2><span class="gicon">key</span> Accès</h2>
@@ -331,7 +333,7 @@ async function ogImage(page, base) {
   await page.setContent(`<html><body style="margin:0;width:1200px;height:630px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 15% 0%,#FFFEFC 0%,#FDF9F6 60%);font-family:sans-serif;">
     <div style="text-align:center;">
       <img src="${base}/assets/logo-horizontal.png" style="width:620px;display:block;margin:0 auto 26px;">
-      <div style="font-size:40px;font-weight:700;color:#20242E;">Cours de maths 6e, 5e et 4e interactifs</div>
+      <div style="font-size:40px;font-weight:700;color:#20242E;">Cours de maths 6e, 5e, 4e et 3e interactifs</div>
       <div style="font-size:26px;color:#5B6472;margin-top:12px;">Figures manipulables · constructions animées · quiz · outils pour les professeurs</div>
     </div></body></html>`, { waitUntil: 'load' });
   await page.screenshot({ path: out });
@@ -397,7 +399,7 @@ async function ogImage(page, base) {
     newManifest[e.url] = { hash: e.hash, lastmod: old && old.hash === e.hash ? old.lastmod : today };
   }
   fs.writeFileSync(manifestPath, JSON.stringify(newManifest, null, 1) + '\n');
-  const prio = u => u === '/' ? '1.0' : /^\/(6e|5e|4e)\/$/.test(u) || u === '/professeurs/' ? '0.9' : '0.8';
+  const prio = u => u === '/' ? '1.0' : /^\/(6e|5e|4e|3e)\/$/.test(u) || u === '/professeurs/' ? '0.9' : '0.8';
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.map(e => `  <url><loc>${SITE}${e.url}</loc><lastmod>${newManifest[e.url].lastmod}</lastmod><priority>${prio(e.url)}</priority></url>`).join('\n')}

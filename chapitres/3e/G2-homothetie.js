@@ -241,7 +241,7 @@ function ho3VarPreset(v){ document.getElementById('ho3-k').value = v; ho3VarMaj(
 const HO3_C_O = [40, 110], HO3_C_U = 36; // 1 cm = 36 px, le long d'une demi-droite horizontale
 const HO3_C_NOTES = [
   'Les points O et M sont donnés, avec OM = 2 cm (des croix : ce sont des points libres du plan).',
-  '1. On trace la demi-droite [OM) : O et M sont maintenant des points de cette demi-droite.',
+  '1. On trace la demi-droite [OM) à la règle : O et M sont maintenant des points de cette demi-droite.',
   '2. On calcule la distance : OM′ = 2,5 × OM = 2,5 × 2 = 5 cm.',
   '3. On place la règle, le zéro sur O, le long de [OM), et on repère la graduation 5 cm.',
   '4. On place M′ à 5 cm de O sur [OM). La règle disparaît : M′ est l\'image de M.',
@@ -252,11 +252,12 @@ function ho3ConstrDessin(k){
   const O = HO3_C_O, u = HO3_C_U, M = [O[0] + 2 * u, O[1]], M2 = [O[0] + 5 * u, O[1]];
   let h = '';
   if(k >= 1) h += `<line x1="${O[0]}" y1="${O[1]}" x2="${O[0] + 11.5 * u}" y2="${O[1]}" stroke="${HO3_ENCRE}" stroke-width="1.6"/>`;
-  if(k === 3){ // règle graduée sous la demi-droite
-    h += `<rect x="${O[0] - 8}" y="${O[1] + 2}" width="${7 * u + 16}" height="34" fill="rgba(255,236,179,.85)" stroke="#C9A227" rx="3"/>`;
-    for(let mm = 0; mm <= 70; mm++){ const x = O[0] + mm * u / 10, L = mm % 10 === 0 ? 14 : mm % 5 === 0 ? 10 : 6; h += `<line x1="${x}" y1="${O[1] + 2}" x2="${x}" y2="${O[1] + 2 + L}" stroke="#6B5B1E" stroke-width="${mm % 10 === 0 ? 1.2 : .7}"/>`; if(mm % 10 === 0) h += `<text x="${x}" y="${O[1] + 30}" text-anchor="middle" font-size="10" fill="#6B5B1E">${mm / 10}</text>`; }
-    h += `<line x1="${M2[0]}" y1="${O[1] - 16}" x2="${M2[0]}" y2="${O[1] + 16}" stroke="${HO3_ROUGE}" stroke-width="2"/>`;
-  }
+  // Instruments du site (rulerSVG / pencilSVG, app.js) : règle graduée à l'échelle de la figure
+  // (rulerSVG compte 22 unités par cm, ici 1 cm = HO3_C_U px), bord gradué sur la demi-droite.
+  const sR = u / 22, regle = `<g transform="translate(${O[0]},${O[1]}) scale(${sR.toFixed(3)})">${rulerSVG(true)}</g>`;
+  const crayon = P => `<g transform="translate(${P[0]},${P[1]}) rotate(-35) scale(0.8)">${pencilSVG('ho3-crayon')}</g>`;
+  if(k === 1) h += regle + crayon([O[0] + 11.5 * u, O[1]]);
+  if(k === 3) h += regle + `<line x1="${M2[0]}" y1="${O[1] - 12}" x2="${M2[0]}" y2="${O[1]}" stroke="${HO3_ROUGE}" stroke-width="2"/>` + crayon(M2);
   if(k === 2 || k === 4) h += `<text x="${(O[0] + M2[0]) / 2}" y="${O[1] + 36}" text-anchor="middle" font-size="13" fill="${HO3_ROUGE}" font-weight="700">OM′ = 2,5 × 2 = 5 cm</text>`;
   if(k >= 4) h += ho3Tr(M2, O, HO3_ROUGE) + ro3Label(M2, 0, -12, 'M′', HO3_ROUGE, 15) + g4Traits(O, M, 1, HO3_BLEU);
   h += (k >= 1 ? ho3Tr(O, M) + ho3Tr(M, O) : ro3Croix(O) + ro3Croix(M)) + ro3Label(O, 0, -12, 'O', HO3_ENCRE, 15) + ro3Label(M, 0, -12, 'M', HO3_ENCRE, 15);

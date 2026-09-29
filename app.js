@@ -162,7 +162,7 @@ const CHCM1 = [
 // cm2/4e/3e plus tard).
 const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, '3e': CH3, 'cm1': CHCM1 };
 // Niveaux en préparation, réservés aux administrateurs (menu masqué, routes refusées aux autres).
-const NIVEAUX_ADMIN = ['3e']; // la 4e est publiée depuis le build 786
+const NIVEAUX_ADMIN = []; // la 4e est publiée depuis le build 786, la 3e depuis le build 817
 function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserRole === 'admin'; }
 
 const VACANCES = {
@@ -422,6 +422,7 @@ const FREE_CHAPTERS = {
   '6e': ['Nombres entiers', 'Droites parallèles et perpendiculaires', 'Gestion de données', 'Aire et périmètre'],
   '5e': ['Opérations sur les nombres décimaux', 'Symétrie centrale', 'Proportionnalité', 'Statistiques'],
   '4e': ['Opérations sur les nombres relatifs', 'Théorème de Pythagore', 'Statistiques', 'Translations'],
+  '3e': ['Nombres et calculs', 'Théorème de Thalès', 'Statistiques', 'Rotation'],
 };
 /* true tant qu'on ne sait pas encore si l'utilisateur a un compte actif valide (restreint
    par défaut, le temps que refreshAuthUI() détermine l'état réel de la session). */
@@ -2808,8 +2809,6 @@ async function refreshAuthUI(){
     if(mtDirect) mtDirect.style.display = (!accessBlocked && currentUserRole==='eleve' && !isFamilleEnfant) ? '' : 'none';
     const navFamille = document.getElementById('navFamille');
     if(navFamille) navFamille.style.display = currentUserRole==='parent' ? 'inline-block' : 'none';
-    const nav3e = document.getElementById('nav3e'); // 3e en préparation : administrateurs seulement
-    if(nav3e) nav3e.style.display = (!accessBlocked && currentUserRole==='admin') ? '' : 'none';
     if(navAdmin){
       navAdmin.style.display = (!accessBlocked && (currentUserRole==='admin' || currentReferentEtab)) ? 'inline-block' : 'none';
       navAdmin.textContent = currentUserRole==='admin' ? 'Administration' : 'Mon établissement';
@@ -2882,7 +2881,6 @@ async function refreshAuthUI(){
     const navMesDevoirsBadgeOut = document.getElementById('navMesDevoirsBadge');
     if(navMesDevoirsBadgeOut) navMesDevoirsBadgeOut.style.display='none';
     if(navAdmin) navAdmin.style.display='none';
-    const nav3e = document.getElementById('nav3e'); if(nav3e) nav3e.style.display='none';
     const tbBtnAiOut = document.getElementById('tbBtnAi');
     if(tbBtnAiOut) tbBtnAiOut.style.display='none';
     const btnIaSettingsOut = document.getElementById('btnIaSettings');
@@ -3072,6 +3070,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.817', items:[
+    "La 3e est publiée -- demandé : « Tous les chapitres sont faits. On peut publier. » Le menu 3e est visible de tous (il était réservé aux administrateurs) et ses 15 chapitres sont en ligne. Comme en 6e, 5e et 4e, quatre chapitres sont en accès libre pour les visiteurs (Nombres et calculs, Théorème de Thalès, Statistiques, Rotation) ; les autres sont ouverts aux comptes dont l'accès couvre la 3e. La 3e est ajoutée aux listes de niveaux des outils : classes (création, modification, import), outil de correction, TD référencés, Ma progression, évaluations et génération de questions par l'IA. Accueil : une carte « 3e » (15 chapitres, pastille « Nouveau », violet de la 3e) rejoint les trois autres (grille de 4 cartes, 2 × 2 sur écran moyen), et les textes de présentation et de référencement mentionnent la 3e. Référencement : une page indexable par chapitre de 3e et un sommaire /3e/ sont générés et ajoutés au sitemap. La vente de la 3e (abonnements, Famille, page Tarifs) n'est pas encore ouverte.",
+    "Constructions aux instruments du site -- signalé : « Parfois, en géométrie tu n'utilises pas les outils du site (règle, équerre, rapporteur). » Les constructions animées qui dessinaient leurs propres instruments utilisent désormais ceux du tableau interactif (même règle graduée, même rapporteur photographié, même compas, même crayon) : 3e Rotation (tracé de [OM) à la règle, rapporteur centré en O avec un petit trait de repère à 70° au lieu d'un petit disque, compas qui reporte OM), 3e Homothétie (règle graduée à l'échelle de la figure, zéro sur O, crayon sur la graduation 5 cm), 3e Fonctions linéaires et affines (la droite est tracée à la règle), 4e Translations (le compas prend l'écartement puis trace chaque arc ; A, B et M deviennent des croix, et M′, intersection des arcs, n'est plus marqué d'un disque).",
+  ]},
   { version:'2026-08-19.816', items:[
     '3e (administrateurs) : chapitre G5 « Espace » -- dernier chapitre de 3e. Cours (sphère et boule, section d\'une sphère par un plan avec le rayon par Pythagore, repérage sur la Terre par latitude et longitude, volume de la boule, agrandissement et réduction : longueurs × k, aires × k², volumes × k³), 4 méthodes animées (plan de section réglable, globe où l\'on place un point ou une ville, volume d\'une boule pas à pas, cube agrandi ou réduit), rédaction type, 9 exercices corrigés, quiz et histoire (Ératosthène).',
   ]},

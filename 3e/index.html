@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cours de maths 3e : les 15 chapitres du programme | L'Atelier des Maths</title>
+<meta name="description" content="Tous les cours de mathématiques de 3e (troisième, cycle 4) conformes au programme 2026 : nombres et calculs, théorème de thalès, arithmétique, grandeurs…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/3e/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Cours de maths 3e : les 15 chapitres du programme | L'Atelier des Maths">
+<meta property="og:description" content="Tous les cours de mathématiques de 3e (troisième, cycle 4) conformes au programme 2026 : nombres et calculs, théorème de thalès, arithmétique, grandeurs…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/3e/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Course","name":"Mathématiques 3e","description":"Tous les cours de mathématiques de 3e (troisième, cycle 4) conformes au programme 2026 : nombres et calculs, théorème de thalès, arithmétique, grandeurs…","url":"https://maths.latelieraugmente.fr/3e/","inLanguage":"fr","educationalLevel":"3e (cycle 4, collège)","isAccessibleForFree":true,"provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"hasPart":[{"@type":"LearningResource","name":"Nombres et calculs","url":"https://maths.latelieraugmente.fr/3e/nombres-et-calculs/"},{"@type":"LearningResource","name":"Théorème de Thalès","url":"https://maths.latelieraugmente.fr/3e/theoreme-de-thales/"},{"@type":"LearningResource","name":"Arithmétique","url":"https://maths.latelieraugmente.fr/3e/arithmetique/"},{"@type":"LearningResource","name":"Grandeurs composées","url":"https://maths.latelieraugmente.fr/3e/grandeurs-composees/"},{"@type":"LearningResource","name":"Rotation","url":"https://maths.latelieraugmente.fr/3e/rotation/"},{"@type":"LearningResource","name":"Puissances","url":"https://maths.latelieraugmente.fr/3e/puissances/"},{"@type":"LearningResource","name":"Statistiques","url":"https://maths.latelieraugmente.fr/3e/statistiques/"},{"@type":"LearningResource","name":"Calcul littéral","url":"https://maths.latelieraugmente.fr/3e/calcul-litteral/"},{"@type":"LearningResource","name":"Homothétie","url":"https://maths.latelieraugmente.fr/3e/homothetie/"},{"@type":"LearningResource","name":"Probabilités","url":"https://maths.latelieraugmente.fr/3e/probabilites/"},{"@type":"LearningResource","name":"Équations","url":"https://maths.latelieraugmente.fr/3e/equations/"},{"@type":"LearningResource","name":"Généralités sur les fonctions","url":"https://maths.latelieraugmente.fr/3e/generalites-sur-les-fonctions/"},{"@type":"LearningResource","name":"Trigonométrie","url":"https://maths.latelieraugmente.fr/3e/trigonometrie/"},{"@type":"LearningResource","name":"Fonctions linéaires et affines","url":"https://maths.latelieraugmente.fr/3e/fonctions-lineaires-et-affines/"},{"@type":"LearningResource","name":"Espace","url":"https://maths.latelieraugmente.fr/3e/espace/"}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 3e","item":"https://maths.latelieraugmente.fr/3e/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › Cours de maths 3e</div>
+<h1>Cours de maths 3e</h1>
+<p class="seo-sub">Les 15 chapitres de mathématiques de troisième (cycle 4), dans l'ordre de la progression de l'année et conformes au programme 2026. Chaque cours comprend les définitions et propriétés à retenir, des figures, une méthode animée, des exercices de rédaction et un peu d'histoire des mathématiques.</p>
+<div class="seo-cta">
+  <p>Dans l'application : <b>figures manipulables, constructions animées, quiz</b> et, pour les professeurs, outils de correction et devoirs en ligne.</p>
+  <a class="seo-btn" href="/#/niveau/3e">Ouvrir la 3e dans l'application</a>
+</div>
+<ul class="seo-list">
+  <li><a href="/3e/nombres-et-calculs/"><span class="num">1</span><span><b>Nombres et calculs</b><br><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span><span class="hint">Résoudre un problème · Les outils de calcul · Contrôler un résultat</span></span></a></li>
+  <li><a href="/3e/theoreme-de-thales/"><span class="num">2</span><span><b>Théorème de Thalès</b><br><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span><span class="hint">Le théorème de Thalès · La réciproque du théorème de Thalès</span></span></a></li>
+  <li><a href="/3e/arithmetique/"><span class="num">3</span><span><b>Arithmétique</b><br><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span><span class="hint">Multiples et diviseurs · Les critères de divisibilité · Les nombres premiers · La décomposition en produit de facteurs premiers</span></span></a></li>
+  <li><a href="/3e/grandeurs-composees/"><span class="num">4</span><span><b>Grandeurs composées</b><br><span class="seo-badge" style="background:#BFDCFB;color:#1A4E9E;">Données et probabilités</span><span class="hint">Les grandeurs quotients · Les grandeurs produits · Convertir des unités de grandeurs composées</span></span></a></li>
+  <li><a href="/3e/rotation/"><span class="num">5</span><span><b>Rotation</b><br><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span><span class="hint">Qu'est-ce qu'une rotation ? · L'image d'un point · Ce que conserve une rotation</span></span></a></li>
+  <li><a href="/3e/puissances/"><span class="num">6</span><span><b>Puissances</b><br><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span><span class="hint">Les puissances d'un nombre relatif · Les puissances de 10 · L'écriture scientifique</span></span></a></li>
+  <li><a href="/3e/statistiques/"><span class="num">7</span><span><b>Statistiques</b><br><span class="seo-badge" style="background:#BFDCFB;color:#1A4E9E;">Données et probabilités</span><span class="hint">L'histogramme · Les indicateurs de position · Un indicateur de dispersion : l'étendue</span></span></a></li>
+  <li><a href="/3e/calcul-litteral/"><span class="num">8</span><span><b>Calcul littéral</b><br><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span><span class="hint">Simplifier une expression · La simple distributivité · La double distributivité · La différence de deux carrés</span></span></a></li>
+  <li><a href="/3e/homothetie/"><span class="num">9</span><span><b>Homothétie</b><br><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span><span class="hint">L'homothétie</span></span></a></li>
+  <li><a href="/3e/probabilites/"><span class="num">10</span><span><b>Probabilités</b><br><span class="seo-badge" style="background:#BFDCFB;color:#1A4E9E;">Données et probabilités</span><span class="hint">Le langage des probabilités · Calculer des probabilités · Des fréquences aux probabilités</span></span></a></li>
+  <li><a href="/3e/equations/"><span class="num">11</span><span><b>Équations</b><br><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span><span class="hint">L'équation du premier degré · L'équation produit · L'équation x² = a · Résoudre un problème</span></span></a></li>
+  <li><a href="/3e/generalites-sur-les-fonctions/"><span class="num">12</span><span><b>Généralités sur les fonctions</b><br><span class="seo-badge" style="background:#BFDCFB;color:#1A4E9E;">Données et probabilités</span><span class="hint">Qu'est-ce qu'une fonction ? · La représentation graphique d'une fonction</span></span></a></li>
+  <li><a href="/3e/trigonometrie/"><span class="num">13</span><span><b>Trigonométrie</b><br><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span><span class="hint">Cosinus, sinus et tangente d'un angle aigu · Les relations trigonométriques</span></span></a></li>
+  <li><a href="/3e/fonctions-lineaires-et-affines/"><span class="num">14</span><span><b>Fonctions linéaires et affines</b><br><span class="seo-badge" style="background:#BFDCFB;color:#1A4E9E;">Données et probabilités</span><span class="hint">La fonction affine · La fonction linéaire · Proportionnalité et pourcentages</span></span></a></li>
+  <li><a href="/3e/espace/"><span class="num">15</span><span><b>Espace</b><br><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span><span class="hint">Sphère et boule · Se repérer sur une sphère · Volumes</span></span></a></li>
+</ul>
+<p style="margin-top:20px;">Voir aussi : <a href="/6e/" style="color:var(--accent);font-weight:600;">les cours de maths 6e</a> · <a href="/5e/" style="color:var(--accent);font-weight:600;">les cours de maths 5e</a> · <a href="/4e/" style="color:var(--accent);font-weight:600;">les cours de maths 4e</a> · <a href="/professeurs/" style="color:var(--accent);font-weight:600;">les outils pour les professeurs</a>.</p>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

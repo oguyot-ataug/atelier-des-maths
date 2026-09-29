@@ -135,19 +135,34 @@ function t4cDessine(e, f){
     const a1 = e.a0 + (e.a1 - e.a0) * f, r = e.r, rad = x => x * Math.PI / 180;
     const P0 = [e.o[0] + r * Math.cos(rad(e.a0)), e.o[1] + r * Math.sin(rad(e.a0))], P1 = [e.o[0] + r * Math.cos(rad(a1)), e.o[1] + r * Math.sin(rad(a1))];
     return `<path d="M${P0[0].toFixed(1)},${P0[1].toFixed(1)} A${r.toFixed(1)},${r.toFixed(1)} 0 0 1 ${P1[0].toFixed(1)},${P1[1].toFixed(1)}" fill="none" stroke="${e.c}" stroke-width="1.8"/>`
-      + (f < 1 ? `<line x1="${e.o[0]}" y1="${e.o[1]}" x2="${P1[0].toFixed(1)}" y2="${P1[1].toFixed(1)}" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="3 3"/>` : '');
+;
   }
-  if(e.t === 'point') return f > 0.5 ? g4Pt(e.p, e.c) + g4Nom(e.p, [e.p[0] - 20, e.p[1] + 30], e.nom, e.c) : '';
+  if(e.t === 'point') return f > 0.5 ? g4Nom(e.p, [e.p[0] - 20, e.p[1] + 30], e.nom, e.c) : ''; // point d'intersection des arcs : pas de marque
   if(e.t === 'fleche') return f >= 1 ? t4Fleche(e.a, e.b, e.c, 2.4) : '';
   return '';
 }
 function t4cRendu(kk, prog){
   let h = t4Fleche(T4C_A, T4C_B, G4_ENCRE, 2.2) + g4Seg(T4C_A, T4C_M, '#C9D6E6', 1.2, true)
-    + [T4C_A, T4C_B, T4C_M].map(p => g4Pt(p)).join('') + g4Nom(T4C_A, [T4C_A[0] + 20, T4C_A[1] + 30], 'A') + g4Nom(T4C_B, [T4C_B[0], T4C_B[1] + 30], 'B') + g4Nom(T4C_M, [T4C_M[0] + 30, T4C_M[1] - 10], 'M');
+    + [T4C_A, T4C_B, T4C_M].map(p => t4cCroix(p)).join('') + g4Nom(T4C_A, [T4C_A[0] + 20, T4C_A[1] + 30], 'A') + g4Nom(T4C_B, [T4C_B[0], T4C_B[1] + 30], 'B') + g4Nom(T4C_M, [T4C_M[0] + 30, T4C_M[1] - 10], 'M');
   T4C_ETAPES.slice(0, kk).forEach((et, n) => et.el.forEach((e, m) => { h += t4cDessine(e, n === kk - 1 ? Math.max(0, Math.min(1, prog - m)) : 1); }));
+  // Compas du site (compassSVG, app.js) pendant l'étape en cours : il prend un écartement, puis trace l'arc.
+  const et = T4C_ETAPES[kk - 1];
+  if(et){ const n = et.el.length, m = Math.min(n - 1, Math.floor(Math.max(0, prog))), e = et.el[m], f = Math.max(0, Math.min(1, prog - m));
+    if(e.t === 'seg' && e.w) h += t4cCompas(e.a, t4Ang(e.a, e.b), t4Dist(e.a, e.b));
+    else if(e.t === 'arc' && prog < n) h += t4cCompas(e.o, e.a0 + (e.a1 - e.a0) * f, e.r); }
   return h;
 }
 const T4C_VB = '20 60 330 260';
+// Point libre du plan : une croix (jamais de petit disque).
+const t4cCroix = (P, c) => `<path d="M${P[0] - 4},${P[1] - 4} L${P[0] + 4},${P[1] + 4} M${P[0] - 4},${P[1] + 4} L${P[0] + 4},${P[1] - 4}" stroke="${c || G4_ENCRE}" stroke-width="1.8" stroke-linecap="round"/>`;
+// Compas : pointe sèche en O, mine dans la direction ang (degrés, repère de l'écran) à la distance r ;
+// la charnière est placée du côté qui reste dans le cadre de la figure.
+function t4cCompas(O, ang, r){
+  const leg = 0.7 * r + 30, h = Math.sqrt(Math.max(leg * leg - r * r / 4, 4)), t = ang * Math.PI / 180;
+  const mid = [O[0] + r / 2 * Math.cos(t), O[1] + r / 2 * Math.sin(t)], haut = [mid[0] + h * Math.sin(t), mid[1] - h * Math.cos(t)];
+  const dedans = haut[0] > 30 && haut[0] < 340 && haut[1] > 70 && haut[1] < 310;
+  return `<g transform="translate(${O[0]},${O[1]}) rotate(${ang.toFixed(2)})${dedans ? '' : ' scale(1,-1)'}">${compassSVG(r, leg)}</g>`;
+}
 const t4CompasDemo = (function(){
   let k = 0, raf = null;
   const svg = () => document.getElementById('t4-compasSvg');

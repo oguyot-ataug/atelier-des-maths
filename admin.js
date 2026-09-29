@@ -81,7 +81,7 @@ MARTIN	Marie	6A	m.martin	soleil24"></textarea>
         <div class="nb-accordion-body" id="accCreerClasse">
           <div class="tool-row">
             <input type="text" id="adminNewClassNom" placeholder="Nom (ex. 5e-A)">
-            <select id="adminNewClassNiveau"><option value="6e">6e</option><option value="5e" selected>5e</option><option value="4e">4e</option></select>
+            <select id="adminNewClassNiveau"><option value="6e">6e</option><option value="5e" selected>5e</option><option value="4e">4e</option><option value="3e">3e</option></select>
             <input type="text" id="adminNewClassUai" placeholder="UAI de l'établissement">
             <button class="btn" onclick="adminCreateClass()">Créer la classe</button>
           </div>
@@ -1097,7 +1097,7 @@ async function adminRefreshListings(){
           <span class="hint" style="margin:0;">${s.cloturee?'clôturée':'active'}</span>
           ${s.cloturee?'':`<button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="adminCloturerPermisSession('${s.id}')">Clôturer</button>`}
         </div>`).join('') : '<p class="hint" style="margin:4px 0 0;">Aucune session pour l\'instant.</p>';
-      const color = c.niveau==='6e' ? '#FF8208' : c.niveau==='4e' ? '#0B7A83' : '#0C5BA0';
+      const color = c.niveau==='6e' ? '#FF8208' : c.niveau==='4e' ? '#0B7A83' : c.niveau==='3e' ? '#7A3E9D' : '#0C5BA0';
       const accId = 'accClasse'+idx;
       return `<div class="nb-accordion-section">
         <button type="button" class="nb-accordion-header" style="--acc-color:${color};--acc-bg:${color}0D;" onclick="toggleNbAccordion('${accId}')">
@@ -1107,7 +1107,7 @@ async function adminRefreshListings(){
         </button>
         <div class="nb-accordion-body" id="${accId}">
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;">
-            <label class="hint" style="margin:0;">Niveau : <select id="classNiveau_${c.id}"><option value="6e" ${c.niveau==='6e'?'selected':''}>6e</option><option value="5e" ${c.niveau==='5e'?'selected':''}>5e</option><option value="4e" ${c.niveau==='4e'?'selected':''}>4e</option></select></label>
+            <label class="hint" style="margin:0;">Niveau : <select id="classNiveau_${c.id}"><option value="6e" ${c.niveau==='6e'?'selected':''}>6e</option><option value="5e" ${c.niveau==='5e'?'selected':''}>5e</option><option value="4e" ${c.niveau==='4e'?'selected':''}>4e</option><option value="3e" ${c.niveau==='3e'?'selected':''}>3e</option></select></label>
             <label class="hint" style="margin:0;">UAI : <input type="text" id="classUai_${c.id}" value="${escapeHtml(c.uai||'')}" style="width:110px;" ${scope?'readonly':''}></label>
             <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="adminUpdateClassNiveauUai('${c.id}')">Enregistrer</button>
             <span class="hint" id="classSaveStatus_${c.id}" style="margin:0;"></span>
@@ -1498,7 +1498,7 @@ async function adminBulkEnsureClass(uai, classeNom, cache, etabCache, errors){
   }
   const { data: existing } = await sb.from('classes').select('id').eq('nom', classeNom).eq('uai', uai).eq('groupe', false).maybeSingle();
   if(existing) return cache[cacheKey] = existing.id;
-  const niveau = /^5/.test(classeNom) ? '5e' : /^4/.test(classeNom) ? '4e' : '6e';
+  const niveau = /^5/.test(classeNom) ? '5e' : /^4/.test(classeNom) ? '4e' : /^3/.test(classeNom) ? '3e' : '6e';
   const { data: created, error: createErr } = await sb.from('classes').insert({ nom: classeNom, niveau, uai }).select('id').single();
   if(createErr){ errors.push(`Classe "${classeNom}" : ${createErr.message}`); return cache[cacheKey] = null; }
   return cache[cacheKey] = created.id;

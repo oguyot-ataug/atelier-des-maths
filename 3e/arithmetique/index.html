@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arithmétique – Cours de maths 3e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 3e : Arithmétique. Multiples et diviseurs, Les critères de divisibilité, Les nombres premiers, La décomposition en produit de facteurs…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/3e/arithmetique/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Arithmétique – Cours de maths 3e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 3e : Arithmétique. Multiples et diviseurs, Les critères de divisibilité, Les nombres premiers, La décomposition en produit de facteurs…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/3e/arithmetique/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Arithmétique (3e)","headline":"Arithmétique – cours de mathématiques de 3e","description":"Cours de maths 3e : Arithmétique. Multiples et diviseurs, Les critères de divisibilité, Les nombres premiers, La décomposition en produit de facteurs…","url":"https://maths.latelieraugmente.fr/3e/arithmetique/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"3e (cycle 4, collège)","about":"Nombres et calculs","teaches":["Multiples et diviseurs","Les critères de divisibilité","Les nombres premiers","La décomposition en produit de facteurs premiers","Rendre une fraction irréductible"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 3e","url":"https://maths.latelieraugmente.fr/3e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 3e","item":"https://maths.latelieraugmente.fr/3e/"},{"@type":"ListItem","position":3,"name":"Arithmétique","item":"https://maths.latelieraugmente.fr/3e/arithmetique/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/3e/">Cours de maths 3e</a> › Arithmétique</div>
+<h1>Arithmétique</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span> Cours de mathématiques de 3e (troisième) · chapitre 3 · Multiples et diviseurs · Les critères de divisibilité · Les nombres premiers · La décomposition en produit de facteurs premiers · Rendre une fraction irréductible</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/3e/3-arithmetique/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Multiples et diviseurs</h3></div>
+<span class="def-badge">Définitions</span>
+<div class="def-box">Soient <i>a</i> et <i>b</i> deux nombres entiers positifs. <b>S'il existe</b> un nombre entier <i>q</i> tel que <b><i>a</i> = <i>b</i> × <i>q</i></b>, <b>alors</b> :
+  <ul style="margin:6px 0 0;padding-left:20px;line-height:1.8;"><li><i>a</i> est <b>divisible</b> par <i>b</i> ;</li><li><i>b</i> est un <b>diviseur</b> de <i>a</i> ;</li><li><i>a</i> est un <b>multiple</b> de <i>b</i>.</li></ul></div>
+<p class="example-title">Exemple : on sait que 2 491 = 47 × 53.</p>
+<ul class="example-list">
+  <li>2 491 est divisible par 53 ; 53 est un diviseur de 2 491 ; 2 491 est un multiple de 53.</li>
+  <li>Et aussi : 2 491 est divisible par 47 ; 47 est un diviseur de 2 491 ; 2 491 est un multiple de 47.</li>
+</ul>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : « <i>a</i> est divisible par <i>b</i> » veut dire que le <b>reste</b> de la division euclidienne de <i>a</i> par <i>b</i> est nul.</div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Les critères de divisibilité</h3></div>
+<span class="prop-badge">Règles</span>
+<div class="def-box"><ul style="margin:0;padding-left:20px;line-height:1.8;">
+  <li>Un nombre entier est <b>divisible par 2</b> si son chiffre des unités est 0, 2, 4, 6 ou 8.</li>
+  <li>Un nombre entier est <b>divisible par 5</b> si son chiffre des unités est 0 ou 5.</li>
+  <li>Un nombre entier est <b>divisible par 10</b> si son chiffre des unités est 0.</li>
+  <li>Un nombre entier est <b>divisible par 4</b> si le nombre formé par son chiffre des dizaines et son chiffre des unités (dans cet ordre) est un multiple de 4.</li>
+  <li>Un nombre entier est <b>divisible par 3</b> si la <b>somme de ses chiffres</b> est un multiple de 3.</li>
+  <li>Un nombre entier est <b>divisible par 9</b> si la <b>somme de ses chiffres</b> est un multiple de 9.</li>
+</ul></div>
+<p class="example-title">Exemple : le nombre 36 150 est-il divisible par 2, 5, 10, 4, 3 ou 9 ?</p>
+<ul class="example-list">
+  <li>Son chiffre des unités est 0 : 36 150 est <b>divisible par 2, par 5 et par 10</b>.</li>
+  <li>Le nombre formé par ses deux derniers chiffres est 50, qui n'est pas un multiple de 4 : 36 150 <b>n'est pas divisible par 4</b>.</li>
+  <li>La somme de ses chiffres est 3 + 6 + 1 + 5 + 0 = 15 : c'est un multiple de 3, mais pas de 9. Donc 36 150 est <b>divisible par 3</b> mais <b>pas par 9</b>.</li>
+</ul>
+
+<div class="lesson-header"><span class="num">3</span><h3>Les nombres premiers</h3></div>
+<div class="sub-header"><span class="letter">A</span><h4>Définition</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Un nombre entier est <b>premier</b> s'il possède <b>exactement deux diviseurs</b> : 1 et lui-même.</div>
+<p class="example-title">Remarques :</p>
+<ul class="example-list">
+  <li>1 n'a qu'un seul diviseur : il <b>n'est pas premier</b>.</li>
+  <li>2 est le <b>seul</b> nombre premier pair.</li>
+  <li>41 est premier : ses seuls diviseurs sont 1 et 41.</li>
+  <li>57 <b>n'est pas premier</b> (même s'il en a l'air) : 5 + 7 = 12, il est divisible par 3, et 57 = 3 × 19.</li>
+</ul>
+<div class="sub-header"><span class="letter">B</span><h4>Les nombres premiers inférieurs à 100</h4></div>
+<div class="def-box" style="text-align:center;">Il y en a <b>25</b> :<br><span style="font-family:'JetBrains Mono',monospace;line-height:1.9;">2 – 3 – 5 – 7 – 11 – 13 – 17 – 19 – 23 – 29 – 31 – 37 – 41 – 43 – 47<br>53 – 59 – 61 – 67 – 71 – 73 – 79 – 83 – 89 – 97</span></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Pour savoir si un nombre est premier, on essaie de le diviser par les nombres premiers 2, 3, 5, 7, 11… dans l'ordre. On peut s'arrêter dès que le carré du nombre premier essayé dépasse le nombre (outil dans l'onglet Méthode).</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>La décomposition en produit de facteurs premiers</h3></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Tout nombre entier <i>n</i> supérieur ou égal à 2 peut s'écrire comme un <b>produit de nombres premiers</b>. Écrite sous la forme <span class="tex" data-tex-source="n = p_1^{\,\alpha_1} \times p_2^{\,\alpha_2} \times \dots \times p_k^{\,\alpha_k}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><msubsup><mi>p</mi><mn>1</mn><mrow><mtext> </mtext><msub><mi>α</mi><mn>1</mn></msub></mrow></msubsup><mo>×</mo><msubsup><mi>p</mi><mn>2</mn><mrow><mtext> </mtext><msub><mi>α</mi><mn>2</mn></msub></mrow></msubsup><mo>×</mo><mo>⋯</mo><mo>×</mo><msubsup><mi>p</mi><mi>k</mi><mrow><mtext> </mtext><msub><mi>α</mi><mi>k</mi></msub></mrow></msubsup></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal">n</span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7463em;"><span style="top:-2.4337em;margin-left:0em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span><span style="top:-3.1449em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3173em;"><span style="top:-2.357em;margin-left:-0.0037em;margin-right:0.0714em;"><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mbin">×</span></span><span class="base"><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7463em;"><span style="top:-2.4337em;margin-left:0em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span><span style="top:-3.1449em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3173em;"><span style="top:-2.357em;margin-left:-0.0037em;margin-right:0.0714em;"><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mbin">×</span></span><span class="base"><span class="minner">⋯</span><span class="mbin">×</span></span><span class="base"><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7521em;"><span style="top:-2.3987em;margin-left:0em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span><span style="top:-3.1507em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3448em;"><span style="top:-2.3488em;margin-left:-0.0037em;margin-right:0.0714em;"><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>, cette écriture est <b>unique</b> (à l'ordre des facteurs près) : c'est la <b>décomposition en produit de facteurs premiers</b> de <i>n</i>.</div>
+<p class="example-title">Exemple : 700 = 7 × 100 = 7 × 4 × 25 = 7 × 2 × 2 × 5 × 5 = <span class="tex" data-tex-source="2^2 \times 5^2 \times 7" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>2</mn></msup><mo>×</mo><msup><mn>5</mn><mn>2</mn></msup><mo>×</mo><mn>7</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mbin">×</span></span><span class="base"><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mbin">×</span></span><span class="base"><span class="mord">7</span></span></span></span></span>. Les facteurs premiers de 700 sont 2, 5 et 7.</p>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : en général, on écrit les facteurs premiers dans l'<b>ordre croissant</b>.</div>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">Pour décomposer un nombre, on le divise <b>progressivement</b> par des nombres premiers (2, 3, 5, 7, 11…), en recommençant avec chaque quotient, jusqu'à obtenir 1.</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px 30px;align-items:center;justify-content:center;">
+  <div><p class="example-title">Exemple 1 : décomposer 4 862.</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">4 862 = 2 × 2 431</span><span class="we-comment">4 862 est pair.</span></div><div class="we-row"><span class="we-expr">4 862 = 2 × 11 × 221</span><span class="we-comment">2 431 n'est divisible ni par 3, ni par 5, ni par 7, mais 2 431 = 11 × 221.</span></div><div class="we-row"><span class="we-expr">4 862 = 2 × 11 × 13 × 17</span><span class="we-comment">221 = 13 × 17, et 13 et 17 sont premiers : on s'arrête.</span></div></div></div>
+  <div style="text-align:center;"><p class="example-title" style="margin-bottom:0;">Exemple 2 : 1 260 « en échelle »</p><table style="border-collapse:collapse;margin:8px auto;"><tbody><tr><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;text-align:right;border-right:2px solid #1C1B2E;">1 260</td><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;color:#0C5BA0;font-weight:700;">2</td></tr><tr><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;text-align:right;border-right:2px solid #1C1B2E;">630</td><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;color:#0C5BA0;font-weight:700;">2</td></tr><tr><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;text-align:right;border-right:2px solid #1C1B2E;">315</td><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;color:#0C5BA0;font-weight:700;">3</td></tr><tr><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;text-align:right;border-right:2px solid #1C1B2E;">105</td><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;color:#0C5BA0;font-weight:700;">3</td></tr><tr><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;text-align:right;border-right:2px solid #1C1B2E;">35</td><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;color:#0C5BA0;font-weight:700;">5</td></tr><tr><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;text-align:right;border-right:2px solid #1C1B2E;">7</td><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;color:#0C5BA0;font-weight:700;">7</td></tr>
+    <tr><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;text-align:right;border-right:2px solid #1C1B2E;">1</td><td></td></tr></tbody></table><p style="margin:0;">1 260 = <span class="tex" data-tex-source="2^{2} \times 3^{2} \times 5 \times 7" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>2</mn></msup><mo>×</mo><msup><mn>3</mn><mn>2</mn></msup><mo>×</mo><mn>5</mn><mo>×</mo><mn>7</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mbin">×</span></span><span class="base"><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mbin">×</span></span><span class="base"><span class="mord">5</span><span class="mbin">×</span></span><span class="base"><span class="mord">7</span></span></span></span></span></p></div>
+</div>
+
+<div class="lesson-header"><span class="num">5</span><h3>Rendre une fraction irréductible</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Une fraction est <b>irréductible</b> quand on ne peut plus la simplifier.</div>
+<p class="example-title">Exemples :</p>
+<ul class="example-list"><li><span class="tex" data-tex-source="\dfrac{14}{21}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>14</mn><mn>21</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">21</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">14</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span> n'est pas irréductible : <span class="tex" data-tex-source="\dfrac{14}{21} = \dfrac{2 \times 7}{3 \times 7} = \dfrac{2}{3}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>14</mn><mn>21</mn></mfrac></mstyle><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mn>2</mn><mo>×</mo><mn>7</mn></mrow><mrow><mn>3</mn><mo>×</mo><mn>7</mn></mrow></mfrac></mstyle><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>2</mn><mn>3</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">21</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">14</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">3</span><span class="mbin">×</span><span class="mord">7</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">2</span><span class="mbin">×</span><span class="mord">7</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">3</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">2</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>. En revanche, <span class="tex" data-tex-source="\dfrac{8}{15}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>8</mn><mn>15</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">15</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">8</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span> est irréductible (8 = 2³ et 15 = 3 × 5 n'ont aucun facteur commun).</li></ul>
+<span class="prop-badge">Méthode</span>
+<div class="def-box">On <b>décompose</b> le numérateur et le dénominateur en produits de facteurs premiers, puis on <b>simplifie</b> par tous les facteurs communs. Quand il n'en reste plus, la fraction est irréductible.</div>
+<p class="example-title">Exemple : rendre irréductible <span class="tex" data-tex-source="\dfrac{210}{1\,386}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>210</mn><mrow><mn>1</mn><mtext> </mtext><mn>386</mn></mrow></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">386</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">210</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>.</p>
+<div class="redaction-template" style="margin:0 0 16px;"><div class="we-row"><span class="we-expr">210 = 2 × 3 × 5 × 7 et 1 386 = 2 × 3 × 3 × 7 × 11</span><span class="we-comment">On décompose le numérateur et le dénominateur.</span></div><div class="we-row"><span class="we-expr"><span class="tex" data-tex-source="\dfrac{210}{1\,386} = \dfrac{\cancel{2} \times \cancel{3} \times 5 \times \cancel{7}}{\cancel{2} \times \cancel{3} \times 3 \times \cancel{7} \times 11}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>210</mn><mrow><mn>1</mn><mtext> </mtext><mn>386</mn></mrow></mfrac></mstyle><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><menclose notation="updiagonalstrike"><mn>2</mn></menclose><mo>×</mo><menclose notation="updiagonalstrike"><mn>3</mn></menclose><mo>×</mo><mn>5</mn><mo>×</mo><menclose notation="updiagonalstrike"><mn>7</mn></menclose></mrow><mrow><menclose notation="updiagonalstrike"><mn>2</mn></menclose><mo>×</mo><menclose notation="updiagonalstrike"><mn>3</mn></menclose><mo>×</mo><mn>3</mn><mo>×</mo><menclose notation="updiagonalstrike"><mn>7</mn></menclose><mo>×</mo><mn>11</mn></mrow></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">386</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">210</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8444em;"><span style="top:-3.0444em;"><span class="mord"><span class="mord">2</span></span></span><span class="svg-align" style="top:-2.8444em;"><span style="height:1.0444em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="1.0444em"><line x1="0" y1="100%" x2="100%" y2="0" stroke-width="0.046em"></line></svg></span></span></span><span class="vlist-s">​</span></span></span></span><span class="mbin">×</span><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8444em;"><span style="top:-3.0444em;"><span class="mord"><span class="mord">3</span></span></span><span class="svg-align" style="top:-2.8444em;"><span style="height:1.0444em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="1.0444em"><line x1="0" y1="100%" x2="100%" y2="0" stroke-width="0.046em"></line></svg></span></span></span><span class="vlist-s">​</span></span></span></span><span class="mbin">×</span><span class="mord">3</span><span class="mbin">×</span><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8444em;"><span style="top:-3.0444em;"><span class="mord"><span class="mord">7</span></span></span><span class="svg-align" style="top:-2.8444em;"><span style="height:1.0444em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="1.0444em"><line x1="0" y1="100%" x2="100%" y2="0" stroke-width="0.046em"></line></svg></span></span></span><span class="vlist-s">​</span></span></span></span><span class="mbin">×</span><span class="mord">11</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8444em;"><span style="top:-3.0444em;"><span class="mord"><span class="mord">2</span></span></span><span class="svg-align" style="top:-2.8444em;"><span style="height:1.0444em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="1.0444em"><line x1="0" y1="100%" x2="100%" y2="0" stroke-width="0.046em"></line></svg></span></span></span><span class="vlist-s">​</span></span></span></span><span class="mbin">×</span><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8444em;"><span style="top:-3.0444em;"><span class="mord"><span class="mord">3</span></span></span><span class="svg-align" style="top:-2.8444em;"><span style="height:1.0444em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="1.0444em"><line x1="0" y1="100%" x2="100%" y2="0" stroke-width="0.046em"></line></svg></span></span></span><span class="vlist-s">​</span></span></span></span><span class="mbin">×</span><span class="mord">5</span><span class="mbin">×</span><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8444em;"><span style="top:-3.0444em;"><span class="mord"><span class="mord">7</span></span></span><span class="svg-align" style="top:-2.8444em;"><span style="height:1.0444em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="1.0444em"><line x1="0" y1="100%" x2="100%" y2="0" stroke-width="0.046em"></line></svg></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span></span><span class="we-comment">On simplifie par les facteurs communs 2, 3 et 7.</span></div><div class="we-row"><span class="we-expr"><span class="tex" data-tex-source="\dfrac{210}{1\,386} = \dfrac{5}{3 \times 11} = \dfrac{5}{33}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>210</mn><mrow><mn>1</mn><mtext> </mtext><mn>386</mn></mrow></mfrac></mstyle><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>5</mn><mrow><mn>3</mn><mo>×</mo><mn>11</mn></mrow></mfrac></mstyle><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>5</mn><mn>33</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">386</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">210</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">3</span><span class="mbin">×</span><span class="mord">11</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">5</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">33</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">5</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span></span><span class="we-comment">Plus de facteur commun : la fraction est irréductible.</span></div></div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : un nombre est-il premier ?</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  
+  <div id="ar3-prResultat"><div style="line-height:1.9;margin:6px 0;"><div style="display:flex;gap:10px;justify-content:center;font-family:'JetBrains Mono',monospace;"><span>221 ÷ 2</span><span style="color:#8A919C;">reste 1</span></div><div style="display:flex;gap:10px;justify-content:center;font-family:'JetBrains Mono',monospace;"><span>221 ÷ 3</span><span style="color:#8A919C;">reste 2</span></div><div style="display:flex;gap:10px;justify-content:center;font-family:'JetBrains Mono',monospace;"><span>221 ÷ 5</span><span style="color:#8A919C;">reste 1</span></div><div style="display:flex;gap:10px;justify-content:center;font-family:'JetBrains Mono',monospace;"><span>221 ÷ 7</span><span style="color:#8A919C;">reste 4</span></div><div style="display:flex;gap:10px;justify-content:center;font-family:'JetBrains Mono',monospace;"><span>221 ÷ 11</span><span style="color:#8A919C;">reste 1</span></div><div style="display:flex;gap:10px;justify-content:center;font-family:'JetBrains Mono',monospace;"><span>221 ÷ 13</span><span style="color:#C0392B;">= 17 tombe juste</span></div></div><p style="text-align:center;margin:8px 0 0;"><b style="color:#C0392B;">221 n'est pas premier</b> : 221 = 13 × 17.</p></div>
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : décomposer un nombre, étape par étape</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  
+  <div style="display:flex;flex-wrap:wrap;gap:10px 30px;justify-content:center;align-items:flex-start;">
+    <div id="ar3-dcEchelle"><table style="border-collapse:collapse;margin:8px auto;"><tbody><tr><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;text-align:right;border-right:2px solid #1C1B2E;">3 780</td><td style="padding:4px 14px;font-family:'JetBrains Mono',monospace;font-size:1.05rem;"></td></tr>
+    </tbody></table></div>
+    <div id="ar3-dcTexte" style="max-width:420px;line-height:1.8;"><p style="margin:0;">On cherche le plus petit nombre premier qui divise 3 780.</p></div>
+  </div>
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : rendre une fraction irréductible</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;margin:10px 0;">
+    
+    <span style="font-size:1.4rem;">/</span>
+    
+    
+  </div>
+  <div id="ar3-frResultat" style="text-align:center;line-height:2;"><div>462 = 2 × 3 × 7 × 11 &nbsp;&nbsp; et &nbsp;&nbsp; 1 155 = 3 × 5 × 7 × 11</div><div>Facteurs communs : 3, 7, 11.</div><div style="font-size:1.1rem;"><span class="tex" data-tex-source="\dfrac{462}{1\,155} = \dfrac{2 \times \cancel{3} \times \cancel{7} \times \cancel{11}}{\cancel{3} \times 5 \times \cancel{7} \times \cancel{11}} = \dfrac{2}{5}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>462</mn><mrow><mn>1</mn><mtext> </mtext><mn>155</mn></mrow></mfrac></mstyle><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mn>2</mn><mo>×</mo><menclose notation="updiagonalstrike"><mn>3</mn></menclose><mo>×</mo><menclose notation="updiagonalstrike"><mn>7</mn></menclose><mo>×</mo><menclose notation="updiagonalstrike"><mn>11</mn></menclose></mrow><mrow><menclose notation="updiagonalstrike"><mn>3</mn></menclose><mo>×</mo><mn>5</mn><mo>×</mo><menclose notation="updiagonalstrike"><mn>7</mn></menclose><mo>×</mo><menclose notation="updiagonalstrike"><mn>11</mn></menclose></mrow></mfrac></mstyle><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>2</mn><mn>5</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">155</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">462</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8444em;"><span style="top:-3.0444em;"><span class="mord"><span class="mord">3</span></span></span><span class="svg-align" style="top:-2.8444em;"><span style="height:1.0444em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="1.0444em"><line x1="0" y1="100%" x2="100%" y2="0" stroke-width="0.046em"></line></svg></span></span></span><span class="vlist-s">​</span></span></span></span><span class="mbin">×</span><span class="mord">5</span><span class="mbin">×</span><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8444em;"><span style="top:-3.0444em;"><span class="mord"><span class="mord">7</span></span></span><span class="svg-align" style="top:-2.8444em;"><span style="height:1.0444em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="1.0444em"><line x1="0" y1="100%" x2="100%" y2="0" stroke-width="0.046em"></line></svg></span></span></span><span class="vlist-s">​</span></span></span></span><span class="mbin">×</span><span class="mord cancel-lap"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6444em;"><span style="top:-3em;"><span class="mord cancel-pad"><span class="mord">11</span></span></span><span class="svg-align" style="top:-3em;"><span style="height:0.6444em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.6444em"><line x1="0" y1="100%" x2="100%" y2="0" stroke-width="0.046em"></line></svg></span></span></span></span></span></span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">2</span><span class="mbin">×</span><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8444em;"><span style="top:-3.0444em;"><span class="mord"><span class="mord">3</span></span></span><span class="svg-align" style="top:-2.8444em;"><span style="height:1.0444em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="1.0444em"><line x1="0" y1="100%" x2="100%" y2="0" stroke-width="0.046em"></line></svg></span></span></span><span class="vlist-s">​</span></span></span></span><span class="mbin">×</span><span class="mord"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8444em;"><span style="top:-3.0444em;"><span class="mord"><span class="mord">7</span></span></span><span class="svg-align" style="top:-2.8444em;"><span style="height:1.0444em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="1.0444em"><line x1="0" y1="100%" x2="100%" y2="0" stroke-width="0.046em"></line></svg></span></span></span><span class="vlist-s">​</span></span></span></span><span class="mbin">×</span><span class="mord cancel-lap"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6444em;"><span style="top:-3em;"><span class="mord cancel-pad"><span class="mord">11</span></span></span><span class="svg-align" style="top:-3em;"><span style="height:0.6444em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.6444em"><line x1="0" y1="100%" x2="100%" y2="0" stroke-width="0.046em"></line></svg></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">5</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">2</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span></div></div>
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 4 : un problème de partage</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <div class="step-display" id="ar3-partageDisplay"><div class="step-column"><div class="">Le nombre de bouquets doit diviser 126 et 90.</div></div><div class="step-note">Toutes les fleurs sont utilisées et les bouquets sont identiques : chaque bouquet a autant de roses, et autant de tulipes.</div></div>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Décomposer un nombre en produit de facteurs premiers »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">2 772 = 2 × 1 386</span><span class="we-comment">1. On divise par le plus petit nombre premier possible (ici 2 : le nombre est pair).</span></div>
+    <div class="we-row"><span class="we-expr">2 772 = 2 × 2 × 693</span><span class="we-comment">2. On recommence avec le quotient.</span></div>
+    <div class="we-row"><span class="we-expr">2 772 = 2 × 2 × 3 × 3 × 77</span><span class="we-comment">3. 6 + 9 + 3 = 18 : divisible par 3, deux fois (693 = 3 × 231 = 3 × 3 × 77).</span></div>
+    <div class="we-row"><span class="we-expr">2 772 = 2 × 2 × 3 × 3 × 7 × 11</span><span class="we-comment">4. 77 = 7 × 11 : tous les facteurs sont premiers.</span></div>
+    <div class="we-row"><span class="we-expr">2 772 = <span class="tex" data-tex-source="2^2 \times 3^2 \times 7 \times 11" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>2</mn></msup><mo>×</mo><msup><mn>3</mn><mn>2</mn></msup><mo>×</mo><mn>7</mn><mo>×</mo><mn>11</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mbin">×</span></span><span class="base"><span class="mord"><span class="mord">3</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mbin">×</span></span><span class="base"><span class="mord">7</span><span class="mbin">×</span></span><span class="base"><span class="mord">11</span></span></span></span></span></span><span class="we-comment">5. On regroupe avec des puissances, facteurs dans l'ordre croissant.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    On sait que 3 233 = 53 × 61. Complète : 3 233 est … par 61 ; 53 est un … de 3 233 ; 3 233 est un … de 53. Le nombre 3 233 est-il premier ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    On considère le nombre 42▢6, où ▢ est un chiffre inconnu. Quelles valeurs peut prendre ▢ pour que ce nombre soit divisible par 9 ? par 4 ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Donne la liste de tous les diviseurs de 90.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Les nombres 187 ; 191 ; 221 et 391 sont-ils premiers ? Justifie.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Décompose en produit de facteurs premiers : 540 ; 2 940 ; 1 547.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 6</div>
+    Rends irréductible la fraction <span class="tex" data-tex-source="\dfrac{462}{1\,155}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>462</mn><mrow><mn>1</mn><mtext> </mtext><mn>155</mn></mrow></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">1</span><span class="mord">155</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">462</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 7</div>
+    Un collège organise une sortie avec 168 élèves de 4e et 120 élèves de 3e. On veut former des groupes, tous avec le même nombre d'élèves de 4e et le même nombre d'élèves de 3e, en répartissant tous les élèves. Quel est le plus grand nombre de groupes possible ? Combien d'élèves de chaque niveau par groupe ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 8</div>
+    Vrai ou faux ? Justifie. a) Le produit de deux nombres premiers est un nombre premier. b) Un nombre divisible par 2 et par 3 est divisible par 6. c) Un nombre divisible par 4 et par 6 est divisible par 24.
+    
+    
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  En 1742, le mathématicien <b>Christian Goldbach</b> écrit à Leonhard Euler : il lui semble que <b>tout nombre pair supérieur à 2 est la somme de deux nombres premiers</b> (4 = 2 + 2, 10 = 3 + 7 = 5 + 5, 100 = 3 + 97…). Les ordinateurs l'ont vérifié pour des milliards de milliards de nombres, mais personne n'a jamais réussi à le démontrer : c'est l'une des plus célèbres énigmes non résolues des mathématiques ! Autre chasse aux trésors : au 17e siècle, le moine <b>Marin Mersenne</b> étudie les nombres de la forme 2<sup>n</sup> − 1 (3, 7, 31, 127…), dont beaucoup sont premiers. C'est parmi eux qu'on trouve les records : en octobre 2024, le plus grand nombre premier connu, 2<sup>136 279 841</sup> − 1, comptait plus de 41 millions de chiffres.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/3e/3-arithmetique/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/3e/theoreme-de-thales/">Théorème de Thalès</a></span>
+  <a href="/3e/">Tous les chapitres de 3e</a>
+  <span><a href="/3e/grandeurs-composees/">Grandeurs composées</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

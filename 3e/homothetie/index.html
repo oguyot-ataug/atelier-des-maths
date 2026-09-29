@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Homothétie – Cours de maths 3e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 3e : Homothétie. L'homothétie. Définitions, figures interactives, méthode animée, exercices et un peu d'histoire.">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/3e/homothetie/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Homothétie – Cours de maths 3e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 3e : Homothétie. L'homothétie. Définitions, figures interactives, méthode animée, exercices et un peu d'histoire.">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/3e/homothetie/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Homothétie (3e)","headline":"Homothétie – cours de mathématiques de 3e","description":"Cours de maths 3e : Homothétie. L'homothétie. Définitions, figures interactives, méthode animée, exercices et un peu d'histoire.","url":"https://maths.latelieraugmente.fr/3e/homothetie/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"3e (cycle 4, collège)","about":"Géométrie","teaches":["L'homothétie"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 3e","url":"https://maths.latelieraugmente.fr/3e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 3e","item":"https://maths.latelieraugmente.fr/3e/"},{"@type":"ListItem","position":3,"name":"Homothétie","item":"https://maths.latelieraugmente.fr/3e/homothetie/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/3e/">Cours de maths 3e</a> › Homothétie</div>
+<h1>Homothétie</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span> Cours de mathématiques de 3e (troisième) · chapitre 9 · L'homothétie</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/3e/9-homothetie/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>L'homothétie</h3></div>
+
+<div class="sub-header"><span class="letter">A</span><h4>Agrandir et réduire à partir d'un point</h4></div>
+<svg viewBox="-10 74 264 211" style="width:100%;max-width:380px;display:block;margin:10px auto 14px;"><line x1="20.0" y1="230.0" x2="197.8" y2="91.7" stroke="#9AA3AF" stroke-width="1.3" stroke-dasharray="5 4"></line><polygon points="60.0,222.0 88.0,222.0 88.0,202.0 74.0,188.0 60.0,202.0" fill="rgba(12,91,160,.18)" stroke="#0C5BA0" stroke-width="2.2" stroke-linejoin="round"></polygon><polygon points="140.0,206.0 224.0,206.0 224.0,146.0 182.0,104.0 140.0,146.0" fill="rgba(224,123,0,.15)" stroke="#E07B00" stroke-width="2.2" stroke-linejoin="round"></polygon><line x1="41.0" y1="205.4" x2="53.0" y2="212.6" stroke="#9AA3AF" stroke-width="1.8"></line><line x1="95.0" y1="163.4" x2="107.0" y2="170.6" stroke="#9AA3AF" stroke-width="1.8"></line><line x1="149.0" y1="121.4" x2="161.0" y2="128.6" stroke="#9AA3AF" stroke-width="1.8"></line><line x1="23.7" y1="234.7" x2="16.3" y2="225.3" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="70.3" y1="183.3" x2="77.7" y2="192.7" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="178.3" y1="99.3" x2="185.7" y2="108.7" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><text x="14.0" y="248.0" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#1C1B2E">O</text><text x="62.0" y="182.0" text-anchor="middle" font-family="Space Grotesk" font-size="13" font-weight="700" fill="#1C1B2E">M</text><text x="168.0" y="98.0" text-anchor="middle" font-family="Space Grotesk" font-size="13" font-weight="700" fill="#1C1B2E">M′</text><text x="74.0" y="240.0" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#0C5BA0">ℱ₁</text><text x="180.0" y="250.0" text-anchor="middle" font-family="Space Grotesk" font-size="16" font-weight="700" fill="#E07B00">ℱ₂</text></svg>
+<ul class="example-list">
+  <li>La figure ℱ₂ est un <b>agrandissement</b> de rapport 3 de la figure ℱ₁. On dit que ℱ₂ est l'image de ℱ₁ par l'<b>homothétie de centre O et de rapport 3</b> : chaque point M de ℱ₁ a pour image le point M′ de la demi-droite [OM) trois fois plus loin de O (OM′ = 3 × OM).</li>
+  <li>Inversement, ℱ₁ est une <b>réduction</b> de rapport <span class="tex" data-tex-source="\dfrac{1}{3}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>3</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">3</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span> de ℱ₂ : c'est son image par l'homothétie de centre O et de rapport <span class="tex" data-tex-source="\dfrac{1}{3}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>3</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">3</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>.</li>
+</ul>
+
+<div class="sub-header"><span class="letter">B</span><h4>L'image d'un point</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Soit <i>k</i> un nombre positif. L'image du point M par l'homothétie de centre O et de rapport <i>k</i> est le point M′ tel que :
+  <ul style="margin:6px 0 0;padding-left:20px;line-height:1.8;"><li>M′ appartient à la demi-droite [OM) ;</li><li>OM′ = <i>k</i> × OM.</li></ul></div>
+<p class="example-title">Exemples :</p>
+<div style="display:flex;flex-wrap:wrap;gap:6px 24px;justify-content:center;align-items:flex-end;">
+  <figure style="margin:0;text-align:center;flex:1 1 240px;max-width:320px;"><svg viewBox="30 33 244 118" style="width:100%;max-width:300px;display:block;margin:10px auto 14px;"><line x1="60.0" y1="120.0" x2="248.6" y2="61.1" stroke="#9AA3AF" stroke-width="1.3" stroke-dasharray="5 4"></line><line x1="61.8" y1="125.7" x2="58.2" y2="114.3" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="138.2" y1="89.3" x2="141.8" y2="100.7" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="218.2" y1="64.3" x2="221.8" y2="75.7" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round"></line><text x="60.0" y="140.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">O</text><text x="140.0" y="115.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">M</text><text x="220.0" y="58.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#C0392B">M′</text></svg><figcaption class="hint" style="margin:-6px 0 0;"><i>k</i> = 2 : OM′ = 2 × OM (agrandissement)</figcaption></figure>
+  <figure style="margin:0;text-align:center;flex:1 1 240px;max-width:320px;"><svg viewBox="30 33 244 118" style="width:100%;max-width:300px;display:block;margin:10px auto 14px;"><line x1="60.0" y1="120.0" x2="168.6" y2="86.1" stroke="#9AA3AF" stroke-width="1.3" stroke-dasharray="5 4"></line><line x1="61.8" y1="125.7" x2="58.2" y2="114.3" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="138.2" y1="89.3" x2="141.8" y2="100.7" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="106.2" y1="99.3" x2="109.8" y2="110.7" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round"></line><text x="60.0" y="140.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">O</text><text x="140.0" y="115.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">M</text><text x="108.0" y="93.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#C0392B">M′</text></svg><figcaption class="hint" style="margin:-6px 0 0;"><i>k</i> = 0,6 : OM′ = 0,6 × OM (réduction)</figcaption></figure>
+</div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : si <i>k</i> est <b>négatif</b>, par exemple <i>k</i> = −1,5, on construit l'image M₁ de M par l'homothétie de centre O et de rapport 1,5, puis le symétrique M′ de M₁ par rapport à O. M′ est alors <b>de l'autre côté de O</b>, sur la droite (OM), et OM′ = 1,5 × OM.</div>
+<svg viewBox="-90 45 324 143" style="width:100%;max-width:360px;display:block;margin:10px auto 14px;"><line x1="-88.6" y1="166.4" x2="208.6" y2="73.6" stroke="#9AA3AF" stroke-width="1.3" stroke-dasharray="5 4"></line><line x1="178.2" y1="76.8" x2="181.8" y2="88.2" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><text x="180.0" y="70.5" text-anchor="middle" font-family="Space Grotesk" font-size="13" font-weight="700" fill="#9AA3AF">M₁</text><line x1="61.8" y1="125.7" x2="58.2" y2="114.3" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="138.2" y1="89.3" x2="141.8" y2="100.7" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="-58.2" y1="163.2" x2="-61.8" y2="151.8" stroke="#C0392B" stroke-width="1.8" stroke-linecap="round"></line><text x="60.0" y="140.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">O</text><text x="140.0" y="115.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">M</text><text x="-60.0" y="179.5" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#C0392B">M′</text></svg>
+
+<div class="sub-header"><span class="letter">C</span><h4>L'image d'un segment</h4></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Soient A, B et O trois points, et <i>k</i> un nombre positif. <b>Si</b> A′ et B′ sont les images respectives de A et B par l'homothétie de centre O et de rapport <i>k</i>, <b>alors</b> :
+  <ul style="margin:6px 0 0;padding-left:20px;line-height:1.8;"><li>A′B′ = <i>k</i> × AB ;</li><li>les segments [AB] et [A′B′] sont <b>parallèles</b>.</li></ul></div>
+<svg viewBox="0 34 290 186" style="width:100%;max-width:380px;display:block;margin:10px auto 14px;"><line x1="30.0" y1="190.0" x2="218.0" y2="49.0" stroke="#9AA3AF" stroke-width="1.3" stroke-dasharray="5 4"></line><line x1="30.0" y1="190.0" x2="265.0" y2="178.3" stroke="#9AA3AF" stroke-width="1.3" stroke-dasharray="5 4"></line><line x1="110.0" y1="130.0" x2="130.0" y2="185.0" stroke="#0C5BA0" stroke-width="2.4" stroke-linecap="round"></line><line x1="198.0" y1="64.0" x2="240.0" y2="179.5" stroke="#0C5BA0" stroke-width="2.4" stroke-linecap="round"></line><line x1="33.6" y1="194.8" x2="26.4" y2="185.2" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="106.4" y1="125.2" x2="113.6" y2="134.8" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="129.7" y1="179.0" x2="130.3" y2="191.0" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="194.4" y1="59.2" x2="201.6" y2="68.8" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="239.7" y1="173.5" x2="240.3" y2="185.5" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><text x="26.0" y="210.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">O</text><text x="106.0" y="120.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">A</text><text x="132.0" y="207.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">B</text><text x="194.0" y="54.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">A′</text><text x="244.0" y="201.5" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">B′</text></svg>
+<p class="example-title">Démonstration :</p>
+<ul class="example-list">
+  <li>Les points O, A, A′ d'une part, et O, B, B′ d'autre part, sont alignés dans le même ordre, et <span class="tex" data-tex-source="\dfrac{OA'}{OA} = \dfrac{OB'}{OB} = k" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mi>O</mi><msup><mi>A</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mrow><mi>O</mi><mi>A</mi></mrow></mfrac></mstyle><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mi>O</mi><msup><mi>B</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mrow><mi>O</mi><mi>B</mi></mrow></mfrac></mstyle><mo>=</mo><mi>k</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4289em;"><span style="top:-2.314em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal">A</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4289em;"><span style="top:-2.314em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">OB</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span></span>. D'après la <b>réciproque du théorème de Thalès</b>, les droites (AB) et (A′B′) sont parallèles.</li>
+  <li>On peut donc appliquer le <b>théorème de Thalès</b> dans les triangles OAB et OA′B′ : <span class="tex" data-tex-source="\dfrac{A'B'}{AB} = \dfrac{OA'}{OA} = k" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><msup><mi>A</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mi>B</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mrow><mi>A</mi><mi>B</mi></mrow></mfrac></mstyle><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mi>O</mi><msup><mi>A</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mrow><mi>O</mi><mi>A</mi></mrow></mfrac></mstyle><mo>=</mo><mi>k</mi></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4289em;"><span style="top:-2.314em;"><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4289em;"><span style="top:-2.314em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord mathnormal">A</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span></span></span></span></span>, donc A′B′ = <i>k</i> × AB.</li>
+</ul>
+
+<div class="sub-header"><span class="letter">D</span><h4>Ce que conserve (ou non) une homothétie</h4></div>
+<span class="prop-badge">Propriétés</span>
+<div class="def-box">L'homothétie <b>conserve</b> l'<b>alignement</b>, les <b>milieux</b> et la <b>mesure des angles</b>. Dans une homothétie de rapport <i>k</i> positif :
+  <ul style="margin:6px 0;padding-left:20px;line-height:1.8;"><li>les <b>longueurs</b> sont multipliées par <i>k</i> ;</li><li>les <b>aires</b> sont multipliées par <i>k</i>².</li></ul>
+  Si ℱ₂ est l'image de ℱ₁ : <b>si <i>k</i> &gt; 1</b>, ℱ₂ est un <b>agrandissement</b> de ℱ₁ ; <b>si 0 &lt; <i>k</i> &lt; 1</b>, ℱ₂ est une <b>réduction</b> de ℱ₁.</div>
+<p class="example-title">Exemple : le quadrilatère A′B′C′D′ est l'image de ABCD par l'homothétie de centre O et de rapport 2,5.</p>
+<svg viewBox="25 3 303 203" style="width:100%;max-width:440px;display:block;margin:10px auto 14px;"><line x1="55.0" y1="175.0" x2="267.5" y2="32.5" stroke="#D5DAE1" stroke-width="1" stroke-dasharray="5 4" stroke-linecap="round"></line><line x1="55.0" y1="175.0" x2="192.5" y2="42.5" stroke="#D5DAE1" stroke-width="1" stroke-dasharray="5 4" stroke-linecap="round"></line><line x1="55.0" y1="175.0" x2="212.5" y2="137.5" stroke="#D5DAE1" stroke-width="1" stroke-dasharray="5 4" stroke-linecap="round"></line><line x1="55.0" y1="175.0" x2="297.5" y2="82.5" stroke="#D5DAE1" stroke-width="1" stroke-dasharray="5 4" stroke-linecap="round"></line><polygon points="140.0,118.0 110.0,122.0 118.0,160.0 152.0,138.0" fill="rgba(12,91,160,.18)" stroke="#0C5BA0" stroke-width="2.2" stroke-linejoin="round"></polygon><polygon points="267.5,32.5 192.5,42.5 212.5,137.5 297.5,82.5" fill="rgba(30,123,52,.13)" stroke="#1E7B34" stroke-width="2.2" stroke-linejoin="round"></polygon><line x1="117.9" y1="127.7" x2="106.1" y2="135.3" stroke="#1C1B2E" stroke-width="1.8"></line><line x1="121.9" y1="146.7" x2="110.1" y2="154.3" stroke="#1C1B2E" stroke-width="1.8"></line><line x1="203.4" y1="62.4" x2="191.6" y2="70.1" stroke="#1C1B2E" stroke-width="1.8"></line><line x1="213.4" y1="109.9" x2="201.6" y2="117.6" stroke="#1C1B2E" stroke-width="1.8"></line><path d="M152.0,138.0 L145.8,127.7 A12,12 0 0 0 141.9,144.5 Z" fill="#1E7B34" fill-opacity=".45" stroke="#1E7B34" stroke-width="1.2"></path><path d="M297.5,82.5 L287.2,65.4 A20,20 0 0 0 280.7,93.4 Z" fill="#1E7B34" fill-opacity=".45" stroke="#1E7B34" stroke-width="1.2"></path><line x1="122.7" y1="114.3" x2="124.3" y2="126.1" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="225.5" y1="32.1" x2="227.0" y2="43.9" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="119.9" y1="139.8" x2="108.1" y2="142.2" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="208.4" y1="88.8" x2="196.6" y2="91.2" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="58.3" y1="180.0" x2="51.7" y2="170.0" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><text x="123.5" y="112.2" text-anchor="middle" font-family="Space Grotesk" font-size="12" font-weight="700" fill="#1C1B2E">K</text><text x="226.3" y="28.0" text-anchor="middle" font-family="Space Grotesk" font-size="13" font-weight="700" fill="#1C1B2E">K′</text><text x="104.0" y="145.0" text-anchor="middle" font-family="Space Grotesk" font-size="12" font-weight="700" fill="#1C1B2E">J</text><text x="188.5" y="94.0" text-anchor="middle" font-family="Space Grotesk" font-size="13" font-weight="700" fill="#1C1B2E">J′</text><text x="51.0" y="193.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">O</text><text x="147.8" y="110.2" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#1C1B2E">A</text><text x="97.3" y="119.1" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#1C1B2E">B</text><text x="111.6" y="178.6" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#1C1B2E">C</text><text x="166.8" y="145.4" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#1C1B2E">D</text><text x="275.3" y="24.7" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#1C1B2E">A′</text><text x="179.8" y="39.6" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#1C1B2E">B′</text><text x="206.1" y="156.1" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#1C1B2E">C′</text><text x="312.3" y="89.9" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#1C1B2E">D′</text></svg>
+<ul class="example-list">
+  <li>Les points B, K, A sont alignés, donc leurs images B′, K′, A′ sont aussi alignées.</li>
+  <li>J est le milieu du segment [BC], donc son image J′ est le milieu du segment [B′C′].</li>
+  <li>L'angle <span class="tex" data-tex-source="\widehat{A'D'C'}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><msup><mi>A</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mi>D</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mi>C</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6779em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6779em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6779em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span> est l'image de l'angle <span class="tex" data-tex-source="\widehat{ADC}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>A</mi><mi>D</mi><mi>C</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span> : ils ont la même mesure.</li>
+  <li>Les longueurs sont multipliées par 2,5 : par exemple, C′D′ = 2,5 × CD.</li>
+  <li>Les aires sont multipliées par <span class="tex" data-tex-source="2{,}5^2 = 6{,}25" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mo separator="true" lspace="0em" rspace="0em">,</mo><msup><mn>5</mn><mn>2</mn></msup><mo>=</mo><mn>6</mn><mo separator="true" lspace="0em" rspace="0em">,</mo><mn>25</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord">2</span><span class="mord"><span class="mpunct">,</span></span><span class="mord"><span class="mord">5</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">6</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">25</span></span></span></span></span> : l'aire de A′B′C′D′ est 6,25 fois celle de ABCD.</li>
+</ul>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Méthode 1 : faire varier le rapport</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <svg id="ho3-varSvg" viewBox="0 0 460 340" style="width:100%;max-width:470px;display:block;margin:8px auto;"><line x1="0.0" y1="422.2" x2="380.0" y2="-42.2" stroke="#9AA3AF" stroke-width="1.3" stroke-dasharray="5 4"></line><polygon points="250.0,160.0 310.0,160.0 310.0,110.0 280.0,80.0 250.0,110.0" fill="rgba(30,123,52,.15)" stroke="#1E7B34" stroke-width="2.2" stroke-linejoin="round"></polygon><polygon points="220.0,175.0 250.0,175.0 250.0,150.0 235.0,135.0 220.0,150.0" fill="rgba(12,91,160,.2)" stroke="#0C5BA0" stroke-width="2.2" stroke-linejoin="round"></polygon><line x1="194.6" y1="193.8" x2="185.4" y2="186.2" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="230.4" y1="131.2" x2="239.6" y2="138.8" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></line><line x1="275.4" y1="76.2" x2="284.6" y2="83.8" stroke="#1E7B34" stroke-width="1.8" stroke-linecap="round"></line><text x="292.0" y="74.0" text-anchor="middle" font-family="Space Grotesk" font-size="13" font-weight="700" fill="#1E7B34">A′</text><text x="180.0" y="208.0" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#1C1B2E">O</text><text x="245.0" y="127.0" text-anchor="middle" font-family="Space Grotesk" font-size="13" font-weight="700" fill="#0C5BA0">A</text></svg>
+  <div style="display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;max-width:470px;margin:0 auto;">
+    <span id="ho3-kVal" style="font-family:'JetBrains Mono',monospace;min-width:44px;">2</span>
+  </div>
+  <div id="ho3-varInfo" style="text-align:center;margin:10px 0 4px;line-height:1.9;">OA′ = 2 × OA<br>Agrandissement : les longueurs sont multipliées par 2, les aires par 2² = 4.</div>
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 2 : construire l'image d'un point à la règle</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <svg id="ho3-constrSvg" viewBox="0 0 470 170" style="width:100%;max-width:480px;display:block;margin:8px auto;"><path d="M35.5,105.5 L44.5,114.5 M35.5,114.5 L44.5,105.5" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></path><path d="M107.5,105.5 L116.5,114.5 M107.5,114.5 L116.5,105.5" stroke="#1C1B2E" stroke-width="1.8" stroke-linecap="round"></path><text x="40.0" y="98.0" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#1C1B2E">O</text><text x="112.0" y="98.0" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#1C1B2E">M</text></svg>
+  <div id="ho3-constrNote" class="step-note" style="text-align:center;min-height:2.6em;margin:6px 0;">Les points O et M sont donnés, avec OM = 2 cm (des croix : ce sont des points libres du plan).</div>
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 3 : pourquoi les aires sont multipliées par k²</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <svg id="ho3-aireSvg" viewBox="0 0 460 230" style="width:100%;max-width:460px;display:block;margin:8px auto;"><rect x="20" y="20" width="84" height="42" fill="rgba(12,91,160,.3)" stroke="#0C5BA0" stroke-width="2"></rect><text x="62" y="80" text-anchor="middle" font-size="12" fill="#4E5665">2 × 1</text><rect x="130" y="20" width="84" height="42" fill="rgba(30,123,52,.1)" stroke="#1E7B34" stroke-width="1"></rect><rect x="130" y="62" width="84" height="42" fill="rgba(30,123,52,.22)" stroke="#1E7B34" stroke-width="1"></rect><rect x="130" y="104" width="84" height="42" fill="rgba(30,123,52,.1)" stroke="#1E7B34" stroke-width="1"></rect><rect x="214" y="20" width="84" height="42" fill="rgba(30,123,52,.22)" stroke="#1E7B34" stroke-width="1"></rect><rect x="214" y="62" width="84" height="42" fill="rgba(30,123,52,.1)" stroke="#1E7B34" stroke-width="1"></rect><rect x="214" y="104" width="84" height="42" fill="rgba(30,123,52,.22)" stroke="#1E7B34" stroke-width="1"></rect><rect x="298" y="20" width="84" height="42" fill="rgba(30,123,52,.1)" stroke="#1E7B34" stroke-width="1"></rect><rect x="298" y="62" width="84" height="42" fill="rgba(30,123,52,.22)" stroke="#1E7B34" stroke-width="1"></rect><rect x="298" y="104" width="84" height="42" fill="rgba(30,123,52,.1)" stroke="#1E7B34" stroke-width="1"></rect><rect x="130" y="20" width="252" height="126" fill="none" stroke="#1E7B34" stroke-width="2.4"></rect><text x="256" y="164" text-anchor="middle" font-size="12" fill="#4E5665">6 × 3</text></svg>
+  <div id="ho3-aireInfo" style="text-align:center;margin:6px 0;line-height:1.9;">Rapport 3 : la longueur et la largeur sont multipliées par 3. Le grand rectangle contient <b>3 × 3 = 9</b> petits rectangles : l'aire est multipliée par 3² = 9.</div>
+  
+</div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode 4 : retrouver le centre et le rapport</h4></div>
+<div class="figure-wrap" style="margin-top:20px;">
+  
+  <div class="step-display" id="ho3-centreDisplay"><div class="step-column"><div class=""><span class="tex" data-tex-source="k = \dfrac{A'B'}{AB} = \dfrac{7{,}5}{3} = 2{,}5" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><msup><mi>A</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mi>B</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mrow><mi>A</mi><mi>B</mi></mrow></mfrac></mstyle><mo>=</mo><mstyle displaystyle="true" scriptlevel="0"><mfrac><mrow><mn>7</mn><mo separator="true" lspace="0em" rspace="0em">,</mo><mn>5</mn></mrow><mn>3</mn></mfrac></mstyle><mo>=</mo><mn>2</mn><mo separator="true" lspace="0em" rspace="0em">,</mo><mn>5</mn></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.4289em;"><span style="top:-2.314em;"><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">3</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">7</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">5</span></span></span></span><span class="vlist-s">​</span></span></span></span></span><span class="mrel">=</span></span><span class="base"><span class="mord">2</span><span class="mord"><span class="mpunct">,</span></span><span class="mord">5</span></span></span></span></span></div></div><div class="step-note">Les longueurs sont multipliées par k : on divise une longueur de l'image par la longueur correspondante.</div></div>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Calculer une longueur et une aire dans une homothétie »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;">A′B′C′ est l'image de ABC par l'homothétie de centre O et de rapport 3.</span><span class="we-comment">1. On cite l'homothétie et son rapport.</span></div>
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;">A′B′ = 3 × AB = 3 × 4 = 12 cm</span><span class="we-comment">2. Les longueurs sont multipliées par k.</span></div>
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;">Aire(A′B′C′) = 3² × Aire(ABC) = 9 × 6 = 54 cm²</span><span class="we-comment">3. Les aires sont multipliées par k².</span></div>
+    <div class="we-row"><span class="we-expr" style="font-family:inherit;">k = 3 &gt; 1 : A′B′C′ est un agrandissement de ABC.</span><span class="we-comment">4. On interprète le rapport.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    O et M sont deux points tels que OM = 4 cm. Où se trouve l'image M′ de M par l'homothétie de centre O et de rapport : a) 1,5 ? b) 0,25 ? c) −2 ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Le triangle A′B′C′ est l'image du triangle ABC par une homothétie de rapport positif. On sait que AB = 4 cm, A′B′ = 10 cm et BC = 6 cm. Quel est le rapport ? S'agit-il d'un agrandissement ou d'une réduction ? Calcule B′C′.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Une figure a une aire de 36 cm². Quelle est l'aire de son image par une homothétie de rapport 0,5 ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Par une homothétie de rapport positif, l'aire d'une figure est multipliée par 9. Quel est le rapport de l'homothétie ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Dans le triangle ABC, l'angle <span class="tex" data-tex-source="\widehat{ABC}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>A</mi><mi>B</mi><mi>C</mi></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.07153em;">BC</span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span> mesure 50°. A′B′C′ est son image par l'homothétie de centre O et de rapport 4. Que peut-on dire de l'angle <span class="tex" data-tex-source="\widehat{A'B'C'}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><msup><mi>A</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mi>B</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><msup><mi>C</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup></mrow><mo stretchy="true">^</mo></mover></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9833em;"><span style="top:-3em;"><span class="mord"><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6779em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6779em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6779em;"><span style="top:-2.989em;margin-right:0.05em;"><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span></span></span></span></span></span></span><span class="svg-align" style="top:-3.6833em;"><span style="height:0.3em;"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="0.3em" viewBox="0 0 2364 300" preserveAspectRatio="none"><path d="M1181 0h2l1171 176c6 0 10 5 10 11l-2 23c-1 6-5 10
+-11 10h-1L1182 67 15 220h-1c-6 0-10-4-11-10l-2-23c-1-6 4-11 10-11z"></path></svg></span></span></span></span></span></span></span></span></span></span> ? des droites (AB) et (A′B′) ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 6</div>
+    Une photo de 10 cm sur 15 cm est agrandie avec un rapport 3. Quelles sont les dimensions de l'agrandissement ? Par combien son aire est-elle multipliée ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 7</div>
+    Une maquette d'immeuble est réalisée à l'échelle 1/50 (réduction de rapport <span class="tex" data-tex-source="\dfrac{1}{50}" data-rendered="1"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mstyle displaystyle="true" scriptlevel="0"><mfrac><mn>1</mn><mn>50</mn></mfrac></mstyle></mrow></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="mord"><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3214em;"><span style="top:-2.314em;"><span class="mord"><span class="mord">50</span></span></span><span style="top:-3.677em;"><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span></span></span></span></span></span></span></span>). La maquette mesure 24 cm de haut. Quelle est la hauteur réelle de l'immeuble ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 8</div>
+    Quelle transformation déjà connue est l'homothétie de centre O et de rapport −1 ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 9</div>
+    Vrai ou faux ? Justifie. a) Une réduction de rapport 0,5 divise l'aire par 2. b) Une homothétie de rapport 3 conserve les longueurs. c) L'image d'un carré par une homothétie est un carré.
+    
+    
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  Vers 1603, l'astronome allemand <b>Christoph Scheiner</b> invente le <b>pantographe</b>, un assemblage de quatre règles articulées en parallélogramme. Une des extrémités est fixée (c'est le centre O de l'homothétie), on suit un dessin avec une pointe, et un crayon placé plus loin reproduit le dessin agrandi (ou réduit) : le crayon trace l'image de chaque point par une homothétie ! Cet instrument a servi pendant des siècles aux dessinateurs, aux graveurs et aux cartographes, et on l'utilise encore pour graver des clés ou des médailles. Le projecteur de cinéma, le vidéoprojecteur de la classe et même l'ombre de votre main sur un mur fonctionnent aussi comme des homothéties : la lampe joue le rôle du centre.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/3e/9-homothetie/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/3e/calcul-litteral/">Calcul littéral</a></span>
+  <a href="/3e/">Tous les chapitres de 3e</a>
+  <span><a href="/3e/probabilites/">Probabilités</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>
