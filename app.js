@@ -3072,6 +3072,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.805', items:[
+    "3e (visible des administrateurs) : chapitre D3 « Grandeurs composées » -- construit à partir de la capture du manuel (p. 120), titres reformulés, exemples nouveaux. Cours : grandeurs quotients (vitesse, masse volumique, débit, avec le piège 1 h 30 min = 1,5 h et la cohérence des unités), grandeurs produits (aire, énergie électrique en Wh et kWh), conversions d'unités (km/h ↔ m/s, kWh → Wmin, g/cm³ → kg/m³, astuce du 3,6). Méthode animée : une voiture qui roule (distance et durée réglables, conversion des minutes, vitesse calculée), un convertisseur km/h ↔ m/s, une cuve qui se remplit selon le débit, l'énergie d'une bouilloire et son coût annuel pas à pas. Rédaction type, 9 exercices corrigés (dont Usain Bolt et le piège de la vitesse moyenne sur un aller-retour), quiz, un peu d'histoire (le nœud marin).",
+  ]},
   { version:'2026-08-19.804', items:[
     "3e (visible des administrateurs) : chapitre N2 « Arithmétique » -- construit à partir des captures du manuel (p. 7-8), titres reformulés, exemples nouveaux (différents du manuel et du N2 de 4e). Cours : multiples et diviseurs, critères de divisibilité, nombres premiers (et les 25 inférieurs à 100), décomposition en produit de facteurs premiers (écriture avec puissances, unicité, décomposition progressive et « en échelle »), fractions irréductibles. Méthode animée : trois outils qui marchent sur n'importe quel nombre saisi (premier ou pas, avec les divisions essayées ; décomposition étape par étape en échelle ; fraction rendue irréductible avec les facteurs communs barrés), et un problème de partage type brevet pas à pas. Rédaction type, 8 exercices corrigés, quiz, un peu d'histoire (Goldbach, Mersenne).",
   ]},
