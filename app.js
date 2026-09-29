@@ -3072,6 +3072,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.802', items:[
+    "Interrogations en ligne : « Suivi des classes » et « Banque de questionnaires » -- demandé : « mes questionnaires au sens de Banque de questionnaires ? Oui avec suivi des classes ». Les onglets « Mes interrogations » et « Mes questionnaires » deviennent « Suivi des classes » (ce qui est donné, les copies, la correction, les séances en direct) et « Banque de questionnaires » (les modèles). Chaque classe reçoit maintenant sa propre copie du questionnaire : le modèle de la banque reste toujours modifiable (bouton « Modifier »), sans rien changer aux interrogations déjà données ni à leurs notes, et la banque ne montre plus les copies faites pour les classes (on les modifie depuis l'interrogation, crayon). Les interrogations existantes ont reçu leur copie : rien ne change pour les élèves.",
+  ]},
   { version:'2026-08-19.801', items:[
     "Bilan des séances en direct : les réponses détaillées -- demandé : « même si la séance n'est pas notée, il serait intéressant de voir les réponses détaillées des élèves pour voir ce qui est mal réussi et pourquoi ». Dans le bilan, cliquer sur une question affiche l'énoncé, la répartition des réponses (choix cochés, nombres donnés avec les erreurs les plus fréquentes, affirmations bien jugées, pour « Associer » ce que les élèves ont mis en face de chaque étiquette), l'explication, puis les réponses des élèves corrigées, les réponses identiques regroupées avec les noms, les erreurs en premier. Cliquer sur un élève affiche toutes ses réponses, question par question.",
   ]},

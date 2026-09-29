@@ -277,6 +277,7 @@ async function qzDirectNoter(id, auto){
   if(!questions.length){ await niceAlert('Aucune question n\'a été posée pendant cette séance : rien à noter.'); return null; }
   let reglages = { mode: 'direct' };
   if(row.questionnaire_id){ const { data: src } = await sb.from('questionnaires').select('reglages').eq('id', row.questionnaire_id).maybeSingle(); if(src && src.reglages) reglages = Object.assign({}, src.reglages, { mode: 'direct', brouillon: undefined, ferme: false }); }
+  reglages.copie_de = (reglages.copie_de) || row.questionnaire_id || 'seance'; // copie pour la classe : pas dans la banque
   const jour = new Date(row.created_at).toLocaleDateString('fr-FR');
   const { data: qz, error: e1 } = await sb.from('questionnaires').insert({ teacher_id: currentUser.id, titre: (row.titre || 'Séance en direct') + ' (en direct du ' + jour + ')',
     questions: JSON.parse(JSON.stringify(questions)), reglages }).select('id').single();

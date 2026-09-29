@@ -3,10 +3,11 @@
 
    Demandé : créer les questions « à la main, par l'IA, ou depuis une banque de questions, et
    partage possible avec un collègue ».
-   - Mes questionnaires (#view-qz-banque) : tous les questionnaires créés (y compris ceux dont le
-     devoir a été supprimé, ou enregistrés sans être donnés) ; aperçu, « Donner à une classe »
-     (une COPIE est donnée : modifier l'un ne change jamais les notes d'une autre classe),
-     dupliquer, partager, supprimer.
+   - Banque de questionnaires (onglet de #view-qz-banque) : les MODÈLES, toujours modifiables ;
+     aperçu, « Donner à une classe » (chaque interrogation reçoit sa propre COPIE, marquée
+     reglages.copie_de = modèle : modifier le modèle ne change jamais une interrogation déjà
+     donnée, ni ses notes), dupliquer, partager, supprimer. Les copies sont cachées de la banque
+     et se modifient depuis l'interrogation (« Suivi des classes », crayon).
    - Partage : avec tous les professeurs de l'établissement et/ou des collègues choisis (même
      d'un autre établissement, retrouvés par leur adresse). Les collègues reçoivent le
      questionnaire en lecture : ils le copient, le donnent à leurs classes, en importent des
@@ -27,11 +28,19 @@ async function qzBanqueCharger(){
   if(error) throw error;
   const ids = (mes || []).map(q => q.id);
   const { data: dv } = ids.length ? await sb.from('devoirs').select('id,titre,questionnaire_id,classes(nom)').in('questionnaire_id', ids) : { data: [] };
-  const devoirs = new Map();
-  (dv || []).forEach(d => { if(!devoirs.has(d.questionnaire_id)) devoirs.set(d.questionnaire_id, []); devoirs.get(d.questionnaire_id).push(d); });
-  qzB = Object.assign(qzB || { onglet: 'donnees', filtre: '' }, { mes: mes || [], partages: Array.isArray(partages) ? partages : [], devoirs });
+  // Chaque interrogation a SA copie du questionnaire (reglages.copie_de = modèle de la banque) : les
+  // interrogations sont rangées sous le modèle d'où elles viennent.
+  const devoirs = new Map(), modele = new Map((mes || []).map(q => [q.id, qzModeleDe(q)]));
+  (dv || []).forEach(d => { const k = modele.get(d.questionnaire_id) || d.questionnaire_id; if(!devoirs.has(k)) devoirs.set(k, []); devoirs.get(k).push(d); });
+  // Banque de questionnaires = les modèles seulement (pas les copies données à une classe).
+  const banque = (mes || []).filter(q => !qzEstCopieClasse(q));
+  const qDonnes = new Set((dv || []).map(d => d.questionnaire_id));
+  qzB = Object.assign(qzB || { onglet: 'donnees', filtre: '' }, { mes: mes || [], banque, qDonnes, partages: Array.isArray(partages) ? partages : [], devoirs });
   return qzB;
 }
+// Copie d'un questionnaire faite pour une classe (interrogation, séance notée) : cachée de la banque.
+function qzEstCopieClasse(q){ return !!(q && q.reglages && q.reglages.copie_de); }
+function qzModeleDe(q){ return (q && q.reglages && q.reglages.copie_de) || (q && q.id); }
 async function qzBanqueOuvrir(){
   if(typeof qzAutoArreter === 'function') await qzAutoArreter(true); // brouillon en cours d'édition (questionnaires-interros.js)
   showView('view-qz-banque'); setActiveTopnav('questionnaires');
@@ -60,7 +69,7 @@ function qzBanqueCarte(q, partage){
     <div class="qz-b-types">${Object.keys(r.types).map(t => `<span class="qz-type-pill"><span class="gicon">${qzType(t).icon}</span> ${qzType(t).label}${r.types[t] > 1 ? ' ×' + r.types[t] : ''}</span>`).join('')}</div>
     ${partage ? '' : `<div class="hint" style="margin:6px 0 0;">${dv.length ? 'Donné à : ' + dv.map(d => qzEsc((d.classes ? d.classes.nom + ' · ' : '') + d.titre)).join(' ; ') : qzB.directParQ && qzB.directParQ.has(q.id) ? (s => 'Utilisé en direct le ' + new Date(s.created_at).toLocaleDateString('fr-FR') + (s.classes ? ' (' + qzEsc(s.classes.nom) + ')' : '') + '.')(qzB.directParQ.get(q.id)) : 'Pas encore donné à une classe.'}</div>`}
     <div class="qz-b-act">
-      ${!partage && !dv.length ? `<button class="btn qz-mini" onclick="qzBanqueReprendre('${q.id}')" title="Continuer à préparer ce questionnaire"><span class="gicon">edit</span> Reprendre</button>` : ''}
+      ${!partage ? (servi => `<button class="btn qz-mini" onclick="qzBanqueReprendre('${q.id}')" title="${servi ? 'Modifier ce modèle : les interrogations déjà données (et leurs notes) ne changent pas' : 'Continuer à préparer ce questionnaire'}"><span class="gicon">edit</span> ${servi ? 'Modifier' : 'Reprendre'}</button>`)(dv.length || (qzB.directParQ && qzB.directParQ.has(q.id))) : ''}
       <button class="btn secondary qz-mini" onclick="qzBanqueApercu('${q.id}')"><span class="gicon">visibility</span> Aperçu</button>
       <button class="btn ${!partage && !dv.length ? 'secondary ' : ''}qz-mini" onclick="qzBanqueDonner('${q.id}')"><span class="gicon">assignment_add</span> Donner à une classe</button>
       <button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${q.id}')" title="Poser les questions une à une à toute la classe, sans note, et voir les réponses en direct"><span class="gicon">cast_for_education</span> En direct</button>
@@ -74,17 +83,17 @@ function qzBanqueRender(){
   const root = document.getElementById('qzBanqueRoot'); if(!root || !qzB) return;
   const f = qzNormTexte(qzB.filtre || '');
   const garde = q => !f || qzNormTexte((q.titre || '') + ' ' + (q.auteur || '') + ' ' + (q.questions || []).map(x => x.enonce || '').join(' ')).includes(f);
-  const liste = (qzB.onglet === 'mes' ? qzB.mes : qzB.partages).filter(garde);
+  const liste = (qzB.onglet === 'mes' ? qzB.banque || qzB.mes : qzB.partages).filter(garde);
   const interros = (qzB.interros || []).filter(d => !f || qzNormTexte((d.titre || '') + ' ' + (d.classes ? d.classes.nom : '')).includes(f));
   root.innerHTML = `<span class="back-btn" onclick="showView('view-home');setActiveTopnav(null);">← Accueil</span>
     <h1 style="margin:6px 0 4px;"><span class="gicon">quiz</span> Interrogations en ligne</h1>
-    <p style="color:var(--ink-soft);max-width:75ch;">Des interrogations notées, à la manière de Google Forms, séparées des devoirs d'entraînement : créez-les, donnez-les à une classe (en classe, chronométrées, ou à la maison), corrigez-les copie par copie ou question par question, puis publiez les résultats. Vos questionnaires et ceux de vos collègues sont réutilisables : donner un questionnaire à une classe en crée une copie, le modifier ensuite ne change rien pour les autres classes. Pour en envoyer un à un collègue : bouton <b><span class="gicon" style="font-size:1rem;vertical-align:middle;">share</span> Partager</b> ; il le retrouve dans « Partagés avec moi » et peut le copier chez lui.</p>
+    <p style="color:var(--ink-soft);max-width:75ch;">Des interrogations notées, à la manière de Google Forms, séparées des devoirs d'entraînement : créez-les, donnez-les à une classe (en classe, chronométrées, ou à la maison), corrigez-les copie par copie ou question par question, puis publiez les résultats. <b>Banque de questionnaires</b> : vos modèles, toujours modifiables et réutilisables ; chaque classe à qui vous en donnez un reçoit sa propre copie, donc modifier le modèle ne change rien aux interrogations déjà données. <b>Suivi des classes</b> : ce que vous avez donné, les copies rendues, la correction, les séances en direct. Pour en envoyer un à un collègue : bouton <b><span class="gicon" style="font-size:1rem;vertical-align:middle;">share</span> Partager</b> ; il le retrouve dans « Partagés avec moi » et peut le copier chez lui.</p>
     <div class="qz-legende">${[['maison', 'noté, à la maison ou en classe (chronométré)'], ['entrainement', 'non noté : l\'élève vérifie, réessaie, voit la correction'], ['sondage', 'pas de bonne réponse : avis, choix, réponses libres'], ['direct', 'en classe, question par question, au rythme du professeur']]
       .map(([k, t]) => `<span>${qzModeBadge(k, '')} <small>${t}</small></span>`).join('')}</div>
     <p class="qzd-intro"><span class="gicon">cast_for_education</span><span><b>Nouveau : la séance en direct.</b> Bouton <b>En direct</b> sur un questionnaire : les questions s'affichent une à une au rythme du professeur, chaque élève répond depuis son compte, vous voyez en direct le pourcentage de réponses justes et fausses, puis vous affichez la correction. Toute la classe ou un groupe d'élèves ; ils entrent avec le code que vous affichez au tableau (ou automatiquement). Aussi dans le choix du mode d'une nouvelle interrogation. Notée ou non, au choix : une séance notée devient une interrogation que vous vérifiez avant de publier les notes. Les séances terminées restent consultables (bilan) dans « Mes interrogations ».</span></p>
     <div class="qz-c-tools">
-      <div class="qz-tabs"><button class="${qzB.onglet === 'donnees' ? 'on' : ''}" onclick="qzB.onglet='donnees';qzBanqueRender()"><span class="gicon">assignment_turned_in</span> Mes interrogations (${(qzB.interros || []).length + (qzB.directsPasses || []).length + qzB.mes.filter(q => !(qzB.devoirs.get(q.id) || []).length && !(qzB.directParQ && qzB.directParQ.has(q.id))).length})</button>
-        <button class="${qzB.onglet === 'mes' ? 'on' : ''}" onclick="qzB.onglet='mes';qzBanqueRender()"><span class="gicon">person</span> Mes questionnaires (${qzB.mes.length})</button>
+      <div class="qz-tabs"><button class="${qzB.onglet === 'donnees' ? 'on' : ''}" onclick="qzB.onglet='donnees';qzBanqueRender()"><span class="gicon">assignment_turned_in</span> Suivi des classes (${(qzB.interros || []).length + (qzB.directsPasses || []).length + qzBrouillonsListe('').length})</button>
+        <button class="${qzB.onglet === 'mes' ? 'on' : ''}" onclick="qzB.onglet='mes';qzBanqueRender()"><span class="gicon">inventory_2</span> Banque de questionnaires (${(qzB.banque || qzB.mes).length})</button>
         <button class="${qzB.onglet === 'partages' ? 'on' : ''}" onclick="qzB.onglet='partages';qzBanqueRender()"><span class="gicon">group</span> Partagés avec moi (${qzB.partages.length})</button></div>
       <input type="search" class="qz-b-search" placeholder="Rechercher (titre, énoncé, auteur)…" value="${qzEsc(qzB.filtre)}" oninput="qzB.filtre=this.value;clearTimeout(qzB.t);qzB.t=setTimeout(()=>{qzBanqueRender();const i=document.querySelector('.qz-b-search');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length);}},250)">
       <button class="btn secondary" onclick="qzOuvrirCarnet()"><span class="gicon">menu_book</span> Carnet de notes</button>
@@ -92,7 +101,7 @@ function qzBanqueRender(){
     </div>
     ${qzB.onglet === 'donnees' ? qzBanqueDonneesHtml(f, interros) : `<div class="qz-b-grid">${liste.map(q => qzBanqueCarte(q, qzB.onglet !== 'mes')).join('') || `<p class="hint">${qzB.onglet === 'mes' ? (f ? 'Aucun questionnaire ne correspond.' : 'Aucun questionnaire pour l\'instant : créez-en un avec « Nouvelle interrogation ».') : 'Aucun questionnaire partagé avec vous pour l\'instant.'}</p>`}</div>`}`;
 }
-// Onglet « Mes interrogations » : séances en direct (en cours, puis terminées), questionnaires pas
+// Onglet « Suivi des classes » : séances en direct (en cours, puis terminées), questionnaires pas
 // encore donnés, puis interrogations données à une classe.
 function qzBanqueDonneesHtml(f, interros){
   const enCours = typeof qzDirectsHtml === 'function' ? qzDirectsHtml() : '';
@@ -120,7 +129,7 @@ async function qzBanqueApercu(id){
 async function qzBanqueDonner(id){
   const q = await qzBanqueSur(id);
   if(!q){ await niceAlert('Questionnaire introuvable.'); return; }
-  const libre = qzB && qzB.mes.some(x => x.id === id) && !(qzB.devoirs.get(id) || []).length;
+  const libre = qzB && qzB.mes.some(x => x.id === id) && !qzEstCopieClasse(q) && !(qzB.devoirs.get(id) || []).length;
   await qzFormOuvrir(libre ? { questionnaire: q } : { copieDe: q });
 }
 async function qzBanqueReprendre(id){
@@ -230,7 +239,7 @@ async function qzImporterOuvrir(){
   const courant = qzEd && qzEd.id;
   // Questionnaires complets -- signalé : "on retrouve les exercices qu'on peut importer un à un
   // mais pas en tant que questionnaire complet".
-  const complets = qzB.mes.filter(q => q.id !== courant).map(q => ({ q, auteur: '' })).concat(qzB.partages.map(q => ({ q, auteur: q.auteur })))
+  const complets = (qzB.banque || qzB.mes).filter(q => q.id !== courant).map(q => ({ q, auteur: '' })).concat(qzB.partages.map(q => ({ q, auteur: q.auteur })))
     .filter(x => (x.q.questions || []).length);
   complets.forEach(({ q, auteur }) => (q.questions || []).forEach(x => lignes.push({ q: x, qid: q.id, source: q.titre || 'Sans titre', auteur })));
   qzBI = { lignes, complets, choix: new Set(), filtre: '', type: '', comp: '', vue: 'questionnaires' };

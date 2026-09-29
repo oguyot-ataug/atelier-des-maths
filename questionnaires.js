@@ -576,7 +576,7 @@ function qzEdHtml(){
       <button type="button" class="btn secondary qz-mini" style="margin-left:auto;" onclick="qzImporterOuvrir()" title="Reprendre des questions de vos questionnaires ou de ceux de vos collègues"><span class="gicon">inventory_2</span> Importer des questions</button>
       <button type="button" class="btn secondary qz-mini needs-ai-eval" id="qzEdGen" onclick="qzGenOuvrir()"><span class="gicon">smart_toy</span> Générer avec l'IA</button>
       <button type="button" class="btn secondary qz-mini" onclick="qzApercu()"><span class="gicon">visibility</span> Tester comme un élève</button>
-      <button type="button" class="btn secondary qz-mini" onclick="qzEnregistrerSeul()" title="Enregistrer maintenant dans « Mes questionnaires », même incomplet (c'est aussi fait automatiquement)"><span class="gicon">save</span> Enregistrer</button></div>
+      <button type="button" class="btn secondary qz-mini" onclick="qzEnregistrerSeul()" title="Enregistrer maintenant, même incomplet (c'est aussi fait automatiquement)"><span class="gicon">save</span> Enregistrer</button></div>
     <div id="qzEdListe"></div>
     <p class="hint" style="margin:12px 0 6px;font-weight:700;">Ajouter :</p>
     <div class="qz-add-row" id="qzEdAdd"></div>`;

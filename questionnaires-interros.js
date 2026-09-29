@@ -25,7 +25,7 @@ function qzFormHtml(){
   const classes = accountClassesList || [];
   return `<span class="back-btn" onclick="qzFormFermer()">← Interrogations en ligne</span>
     <h1 style="margin:6px 0 4px;" id="qzfTitreH"><span class="gicon">quiz</span> Nouvelle interrogation</h1>
-    <p class="qz-auto" id="qzfAuto"><span class="gicon">cloud</span> Enregistrement automatique : le brouillon est gardé dans « Mes questionnaires » dès la première question.</p>
+    <p class="qz-auto" id="qzfAuto"><span class="gicon">cloud</span> Enregistrement automatique : le brouillon est gardé dans la banque de questionnaires dès la première question.</p>
     <div class="tool-shell qz-f">
       <div class="qz-f-grid">
         <label class="qz-f-full">Titre <input type="text" id="qzfTitre" placeholder="ex. Interro n°3 : les fractions"></label>
@@ -43,7 +43,7 @@ function qzFormHtml(){
     <div class="tool-row" style="margin:0 0 30px;">
       <button class="btn" id="qzfDonner" onclick="qzFormEnregistrer()"><span class="gicon">send</span> Donner à la classe</button>
       <button class="btn secondary" onclick="qzFormPartager()" title="Envoyer ce questionnaire à des collègues : ils le retrouvent dans « Partagés avec moi » et peuvent le copier"><span class="gicon">share</span> Partager avec un collègue</button>
-      <button class="btn secondary" id="qzfSauver" onclick="qzEnregistrerSeul()" title="Enregistrer maintenant dans « Mes questionnaires », sans le donner (c'est aussi fait automatiquement)"><span class="gicon">save</span> Enregistrer sans donner</button>
+      <button class="btn secondary" id="qzfSauver" onclick="qzEnregistrerSeul()" title="Enregistrer maintenant dans la banque de questionnaires, sans le donner (c'est aussi fait automatiquement)"><span class="gicon">save</span> Enregistrer sans donner</button>
       <button class="btn secondary" id="qzfFermer" onclick="qzFormFermer()">Fermer (le brouillon est gardé)</button>
       <span class="hint" id="qzfStatus" style="margin:0;"></span>
     </div>`;
@@ -110,6 +110,9 @@ async function qzFormOuvrir(opts){
   } else if(opts.copieDe){
     const q = opts.copieDe, reg = Object.assign({}, QZ_REGLAGES_DEFAUT, q.reglages || {}, { ferme: false });
     delete reg.brouillon;
+    // Copie pour une classe d'un de MES modèles : rattachée au modèle (cachée de la banque). Le
+    // questionnaire d'un collègue devient au contraire un nouveau modèle dans ma banque.
+    if(qzB && qzB.mes.some(x => x.id === q.id)) reg.copie_de = qzModeleDe(q); else delete reg.copie_de;
     qzEd = { id: null, questions: JSON.parse(JSON.stringify(q.questions || [])), reglages: reg };
     $('qzfTitre').value = q.titre || '';
     $('qzfStatus').textContent = `Questionnaire « ${q.titre || 'Sans titre'} » chargé (copie) : choisissez la classe et la date d'ouverture, adaptez-le si besoin.`;
@@ -181,7 +184,7 @@ function qzAutoSauver(a){
     if(r.error){ qzAutoInfo(`<span class="gicon" style="color:#a83c1f;">cloud_off</span> Enregistrement impossible (${qzEsc(r.error.message)}) : nouvel essai dans quelques secondes.`); return; }
     if(!qzEd.id && r.data) qzEd.id = r.data.id;
     a.dernier = etat;
-    qzAutoInfo(`<span class="gicon" style="color:#1E7B34;">cloud_done</span> Brouillon enregistré à ${heure} dans « Mes questionnaires »${aCompleter ? ' (encore incomplet : à terminer avant de le donner)' : ''}.`);
+    qzAutoInfo(`<span class="gicon" style="color:#1E7B34;">cloud_done</span> Brouillon enregistré à ${heure}${aCompleter ? ' (encore incomplet : à terminer avant de le donner)' : ''}.`);
   })().finally(() => { a.enCours = null; });
   return a.enCours;
 }
@@ -212,6 +215,15 @@ async function qzFormEnregistrer(){
   const reprendre = () => { if(auto && qzAuto === auto) auto.timer = setInterval(qzAutoTick, 2000); };
   let questionnaireId;
   try{ questionnaireId = await qzEdEnregistrer(titre); }catch(e){ st.textContent = e.message || String(e); reprendre(); return; }
+  // Nouvelle interrogation depuis un modèle de la banque : la classe reçoit SA copie (le modèle reste
+  // modifiable dans la banque sans toucher à cette interrogation) -- demandé : « mes questionnaires au
+  // sens de Banque de questionnaires ».
+  if(!qzF.devoirId && !(qzEd.reglages || {}).copie_de){
+    const reglages = Object.assign({}, qzEd.reglages, { copie_de: questionnaireId }); delete reglages.brouillon;
+    const { data: cp, error: ec } = await sb.from('questionnaires').insert({ teacher_id: currentUser.id, titre, questions: qzEd.questions, reglages }).select('id').single();
+    if(ec || !cp){ st.textContent = 'Erreur : ' + ((ec && ec.message) || '?'); reprendre(); return; }
+    questionnaireId = cp.id;
+  }
   const payload = { teacher_id: currentUser.id, class_id: classId, titre, type: 'questionnaire', questionnaire_id: questionnaireId,
     consigne: document.getElementById('qzfConsigne').value.trim() || (qzEd && qzEd.reglages.mode === 'sondage' ? 'Donne ton avis : pas de bonne ou de mauvaise réponse, réponds sincèrement.' : 'Répondez aux questions.'),
     date_depot: ouv ? new Date(ouv).toISOString() : null, date_limite: lim ? new Date(lim).toISOString() : null,
@@ -249,7 +261,7 @@ async function qzEnregistrerSeul(){
   if(qzAuto.enCours) await qzAuto.enCours;
   qzAuto.dernier = null; // enregistrer même sans modification
   await qzAutoSauver(qzAuto);
-  if(qzAuto && qzAuto.dernier) qzToast(`<span class="gicon">cloud_done</span> « ${qzEsc(qzAutoForm().titre || 'Sans titre')} » est enregistré dans vos questionnaires. Vous le retrouverez sur la page Interrogations en ligne (« Enregistrés, pas encore donnés »).`);
+  if(qzAuto && qzAuto.dernier) qzToast(`<span class="gicon">cloud_done</span> « ${qzEsc(qzAutoForm().titre || 'Sans titre')} » est enregistré dans votre banque de questionnaires. Vous le retrouverez sur la page Interrogations en ligne (« Enregistrés, pas encore donnés »).`);
   else qzToast('L\'enregistrement a échoué : vérifiez votre connexion puis réessayez.', 'err');
 }
 // Partager depuis le formulaire : enregistre d'abord (un questionnaire neuf n'existe pas encore).
@@ -304,8 +316,13 @@ function qzInterroEtat(d){
   if(new Date(d.date_depot) > now) return { t: 'Ouverture le ' + new Date(d.date_depot).toLocaleDateString('fr-FR'), c: 'prog', i: 'schedule' };
   return { t: 'Ouverte', c: 'ouverte', i: 'play_circle' };
 }
+// Modèle de la banque d'où vient une interrogation (s'il existe encore), sinon sa propre copie.
+function qzSourceInterro(d){
+  const m = d._q ? qzModeleDe(d._q) : d.questionnaire_id;
+  return (qzB.banque || qzB.mes || []).some(q => q.id === m) ? m : d.questionnaire_id;
+}
 function qzInterrosHtml(liste){
-  if(!liste.length) return `<p class="hint">Aucune interrogation pour l'instant : « Nouvelle interrogation » pour en créer une (ou « Donner à une classe » depuis Mes questionnaires).</p>`;
+  if(!liste.length) return `<p class="hint">Aucune interrogation pour l'instant : « Nouvelle interrogation » pour en créer une (ou « Donner à une classe » depuis la banque de questionnaires).</p>`;
   return `<div class="qz-i-liste">${liste.map(d => { const e = qzInterroEtat(d), r = d._reg || QZ_REGLAGES_DEFAUT;
     return `<div class="qz-i-row qz-mlisere" style="--m:${qzMode(r).c}">
       <div class="qz-i-main">${qzModeBadge(r)} <b>${qzEsc(d.titre)}</b>${d._q && (d._q.partage_etab || (d._q.partage_profs || []).length) ? ' <span class="qz-b-share"><span class="gicon">group</span> partagé</span>' : ''}
@@ -317,17 +334,24 @@ function qzInterrosHtml(liste){
         <button class="btn qz-mini" onclick="qzOuvrirCorrection('${d.id}')">${qzEstEntrainement(r) || qzEstSondage(r) ? '<span class="gicon">insights</span> Résultats' : '<span class="gicon">fact_check</span> Corriger'}</button>
         <button class="btn secondary qz-mini" onclick="qzFormModifier('${d.id}')" title="Modifier"><span class="gicon">edit</span></button>
         ${!qzEstSondage(r) && typeof qzCahierOuvrir === 'function' ? `<button class="btn secondary qz-mini" onclick="qzCahierOuvrir('${d.id}')" title="Ajouter au cahier de l'élève (le sujet, avec ou sans la correction)"><span class="gicon">menu_book</span> Cahier</button>` : ''}
-        ${d.questionnaire_id ? `<button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${d.questionnaire_id}')" title="Séance en direct avec ces questions : une à une, sans note, réponses en direct"><span class="gicon">cast_for_education</span></button>
-        <button class="btn secondary qz-mini" onclick="qzBanqueDonner('${d.questionnaire_id}')" title="Donner une copie à une autre classe"><span class="gicon">content_copy</span></button>
-        <button class="btn secondary qz-mini" onclick="qzBanquePartager('${d.questionnaire_id}')" title="Partager le questionnaire avec des collègues (ils pourront le copier)"><span class="gicon">share</span></button>` : ''}
+        ${d.questionnaire_id ? (src => `<button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${src}')" title="Séance en direct avec ces questions : une à une, sans note, réponses en direct"><span class="gicon">cast_for_education</span></button>
+        <button class="btn secondary qz-mini" onclick="qzBanqueDonner('${src}')" title="Donner une copie à une autre classe"><span class="gicon">content_copy</span></button>
+        <button class="btn secondary qz-mini" onclick="qzBanquePartager('${src}')" title="Partager le questionnaire avec des collègues (ils pourront le copier)"><span class="gicon">share</span></button>`)(qzSourceInterro(d)) : ''}
         <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzInterroSupprimer('${d.id}')" title="Supprimer"><span class="gicon">delete</span></button>
       </span></div>`; }).join('')}</div>`;
 }
 // Questionnaires enregistrés mais jamais donnés (brouillons), en tête de la page -- signalé : "Il
 // faut absolument que les interrogations sauvegardées soient visibles".
-function qzBrouillonsHtml(f){
-  const liste = (qzB.mes || []).filter(q => !(qzB.devoirs.get(q.id) || []).length && !(qzB.directParQ && qzB.directParQ.has(q.id))) // déjà utilisé en direct : rubrique « Séances en direct »
+// Pas encore donnés : les modèles jamais donnés ni utilisés en direct, et les copies préparées pour une
+// classe (« Donner à une classe » commencé, pas terminé) ; pas les copies d'interrogations supprimées.
+function qzBrouillonsListe(f){
+  return (qzB.mes || []).filter(q => typeof qzEstCopieClasse === 'function' && qzEstCopieClasse(q)
+      ? !(qzB.qDonnes && qzB.qDonnes.has(q.id)) && !!(q.reglages || {}).brouillon
+      : !(qzB.devoirs.get(q.id) || []).length && !(qzB.directParQ && qzB.directParQ.has(q.id))) // déjà utilisé en direct : rubrique « Séances en direct »
     .filter(q => !f || qzNormTexte((q.titre || '') + ' ' + (q.questions || []).map(x => x.enonce || '').join(' ')).includes(f));
+}
+function qzBrouillonsHtml(f){
+  const liste = qzBrouillonsListe(f);
   if(!liste.length) return '';
   return `<p class="qz-i-sec"><span class="gicon">save</span> Enregistrés, pas encore donnés (${liste.length})</p>
     <div class="qz-i-liste" style="margin-bottom:18px;">${liste.map(q => { const r = qzBanqueResume(q), b = (q.reglages || {}).brouillon;
@@ -349,10 +373,15 @@ async function qzInterroSupprimer(id){
   // généré part avec) -- signalé : « 6V-test apparaît deux fois ! » (il restait dans « pas encore donnés »).
   const { data: direct } = await sb.from('qz_direct').select('id').eq('devoir_id', id).maybeSingle();
   if(direct && typeof qzDirectAnnulerNotation === 'function'){ if(await qzDirectAnnulerNotation(direct.id)) await qzBanqueOuvrir(); return; }
-  if(!(await niceConfirm(`Supprimer l'interrogation « ${d.titre} » et toutes les copies des élèves ? Le questionnaire reste dans « Mes questionnaires ».`))) return;
+  const copie = d._q && qzEstCopieClasse(d._q);
+  if(!(await niceConfirm(`Supprimer l'interrogation « ${d.titre} » et toutes les copies des élèves ?${copie || !d._q ? ' Le modèle reste dans la banque de questionnaires.' : ' Le questionnaire reste dans la banque de questionnaires.'}`))) return;
   const { error: e1 } = await sb.from('devoirs_rendus').delete().eq('devoir_id', id);
   const { error: e2 } = e1 ? { error: e1 } : await sb.from('devoirs').delete().eq('id', id);
   if(e2){ await niceAlert('Erreur : ' + e2.message); return; }
+  if(copie){ // la copie propre à cette interrogation part avec elle (le modèle reste)
+    const { count } = await sb.from('devoirs').select('id', { count: 'exact', head: true }).eq('questionnaire_id', d._q.id);
+    if(!count) await sb.from('questionnaires').delete().eq('id', d._q.id);
+  }
   await qzBanqueOuvrir();
 }
 
