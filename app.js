@@ -1015,6 +1015,8 @@ function svgToRasterDataUri(svgEl, displayWidth){
     const vbAttr = svgEl.getAttribute('viewBox');
     const vbParts = vbAttr ? vbAttr.trim().split(/\s+/).map(Number) : [0,0,400,240];
     const vbW = vbParts[2] || 400, vbH = vbParts[3] || 240;
+    // Un chapitre peut mettre sa figure à jour juste avant la photo (ex. 6e G2 : repères des points).
+    (window.AVANT_CAPTURE_SVG || []).forEach(f=>{ try{ f(svgEl); } catch(e){ console.error('svgToRasterDataUri: AVANT_CAPTURE_SVG', e); } });
     const clone = svgEl.cloneNode(true);
     if(document.contains(svgEl)){
       try{ inlineComputedStyles(svgEl, clone); } catch(e){ console.error('svgToRasterDataUri: échec figement des styles', e); }
@@ -3056,6 +3058,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.793', items:[
+    "6e, Droites parallèles et perpendiculaires : notation des points -- demandé : « les points dessinés sur une droite se matérialisent par un petit trait perpendiculaire à la droite (pas par un petit disque ou une croix). On n'utilisera jamais le petit disque pour faire un point, et la croix sera uniquement prévue pour les points du plan qui n'appartiennent à aucun objet. » Figures du cours : l'exemple « point libre » en disque est retiré (le point libre est la croix), le trait de « point sur une droite » est exactement perpendiculaire, et les points E et F des figures (EF) et [EF) sont des petits traits. Figures animées (à l'écran, dans le PDF et le cahier) : un point posé sur une droite ou un segment est un petit trait perpendiculaire à cette droite, un point libre est une croix ; le repère change au fil de la construction (M est une croix tant que (d') n'est pas tracée, puis un petit trait sur (d')). Les extrémités d'un segment sont marquées d'un trait perpendiculaire au segment."
+  ]},
   { version:'2026-08-19.792', items:[
     "6e, Droites parallèles et perpendiculaires -- signalé sur un export PDF : « Le premier tableau reste très grossier. Il est énorme par rapport au second tableau » et « dans les figures dynamiques les points sont représentés par des gros points qui ne correspondent pas à la syntaxe indiquée dans le haut du cours ». 1) PDF : les petites figures (tableau des exemples de points) sortaient deux fois trop grandes depuis la limitation de hauteur des figures (build 789) ; elles gardent maintenant la taille qu'elles ont à l'écran, et seules les grandes figures sont réduites. Valable pour tous les chapitres. 2) Les points des figures du chapitre (M, N, A, B et les points qui tiennent la droite (d)) sont dessinés en croix, comme le « point libre (variante) » du cours, au lieu de gros disques de couleur ; on les attrape toujours au même endroit pour les déplacer (zone de prise un peu agrandie pour le doigt). Le PDF et le cahier les dessinent aussi en croix, sans doublon."
   ]},

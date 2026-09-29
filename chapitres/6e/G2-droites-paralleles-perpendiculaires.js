@@ -10,15 +10,13 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
 <div style="overflow-x:auto;">
 <table style="border-collapse:collapse;width:100%;font-size:.92rem;margin:0 0 18px;text-align:center;">
   <tr>
-    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><circle cx="35" cy="25" r="2.2"/><text x="42" y="20" font-size="14" font-style="italic">A</text></svg></td>
     <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="30" y1="20" x2="40" y2="30" stroke="#1C1B2E" stroke-width="1.3"/><line x1="40" y1="20" x2="30" y2="30" stroke="#1C1B2E" stroke-width="1.3"/><text x="44" y="20" font-size="14" font-style="italic">B</text></svg></td>
-    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="15" y1="35" x2="55" y2="15" stroke="#1C1B2E" stroke-width="1.6"/><line x1="32.2" y1="20.5" x2="37.8" y2="29.5" stroke="#1C1B2E" stroke-width="1.3"/><text x="32" y="10" font-size="14" font-style="italic">E</text></svg></td>
+    <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="15" y1="35" x2="55" y2="15" stroke="#1C1B2E" stroke-width="1.6"/><line x1="32.3" y1="19.6" x2="37.7" y2="30.4" stroke="#1C1B2E" stroke-width="1.3"/><text x="32" y="10" font-size="14" font-style="italic">E</text></svg></td>
     <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="10" y1="30" x2="35" y2="15" stroke="#1C1B2E" stroke-width="1.6"/><line x1="35" y1="15" x2="60" y2="30" stroke="#1C1B2E" stroke-width="1.6"/><text x="30" y="10" font-size="14" font-style="italic">C</text></svg></td>
     <td style="padding:10px 4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 70 50" style="width:64px;"><line x1="10" y1="15" x2="60" y2="35" stroke="#1C1B2E" stroke-width="1.6"/><line x1="10" y1="35" x2="60" y2="15" stroke="#1C1B2E" stroke-width="1.6"/><text x="38" y="14" font-size="14" font-style="italic">N</text></svg></td>
   </tr>
   <tr>
     <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">point libre</td>
-    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">point libre (variante)</td>
     <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">point sur une droite</td>
     <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">sommet d'un angle</td>
     <td style="padding:4px;border:1px solid rgba(28,43,57,.15);color:var(--ink-soft);font-size:.82rem;">intersection</td>
@@ -40,7 +38,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
   <tr>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">(EF)</td>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Se lit « droite (EF) ». C'est la droite qui passe par les points E et F, prolongée à l'infini des deux côtés.</td>
-    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="5" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"/><circle cx="35" cy="25" r="2.2"/><circle cx="105" cy="25" r="2.2"/><text x="31" y="14" font-size="13" font-style="italic">E</text><text x="101" y="14" font-size="13" font-style="italic">F</text></svg></td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="5" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"/><line x1="35" y1="19" x2="35" y2="31" stroke="#1C1B2E" stroke-width="1.6"/><line x1="105" y1="19" x2="105" y2="31" stroke="#1C1B2E" stroke-width="1.6"/><text x="31" y="14" font-size="13" font-style="italic">E</text><text x="101" y="14" font-size="13" font-style="italic">F</text></svg></td>
   </tr>
   <tr>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">(xy)</td>
@@ -50,7 +48,7 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
   <tr>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">[EF)</td>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);">Se lit « demi-droite [EF) ». C'est la demi-droite d'origine E qui passe par F, prolongée au-delà de F seulement.</td>
-    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="25" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"/><line x1="25" y1="18" x2="25" y2="32" stroke="#1C1B2E" stroke-width="1.6"/><circle cx="95" cy="25" r="2.2"/><text x="21" y="14" font-size="13" font-style="italic">E</text><text x="91" y="14" font-size="13" font-style="italic">F</text></svg></td>
+    <td style="padding:4px;border:1px solid rgba(28,43,57,.15);"><svg viewBox="0 0 140 50" style="width:130px;"><line x1="25" y1="25" x2="135" y2="25" stroke="#1C1B2E" stroke-width="1.6"/><line x1="25" y1="18" x2="25" y2="32" stroke="#1C1B2E" stroke-width="1.6"/><line x1="95" y1="19" x2="95" y2="31" stroke="#1C1B2E" stroke-width="1.6"/><text x="21" y="14" font-size="13" font-style="italic">E</text><text x="91" y="14" font-size="13" font-style="italic">F</text></svg></td>
   </tr>
   <tr>
     <td style="padding:8px;border:1px solid rgba(28,43,57,.15);font-family:'JetBrains Mono',monospace;">[Ox)</td>
@@ -464,43 +462,81 @@ function dpAnimateTrace(lineEl, pencilEl, pencilTipEl, start, end, pencilPerpDir
 }
 function dpSetLine(el, ext){ el.setAttribute('x1',ext.x1); el.setAttribute('y1',ext.y1); el.setAttribute('x2',ext.x2); el.setAttribute('y2',ext.y2); }
 function dpSetPt(el, p){ el.setAttribute('cx',p.x); el.setAttribute('cy',p.y); }
-/* Points dessinés selon la convention du cours (croix « point libre ») -- signalé : « dans les
-   figures dynamiques les points sont représentés par des gros points qui ne correspondent pas à la
-   syntaxe indiquée dans le haut du cours ». Chaque disque data-marker="cross" devient invisible
-   (mais reste la zone qu'on attrape pour déplacer le point, agrandie pour le doigt) et une croix de
-   la même couleur le suit : position, affichage, opacité. La croix porte data-marker="hidden" :
-   à l'impression et dans le cahier, c'est le disque lui-même qui est remplacé par une croix
-   (applyPrintMarkers, app.js), pour ne pas en dessiner deux. */
+/* Points dessinés selon la convention du cours -- demandé : « les points dessinés sur une droite se
+   matérialisent par un petit trait perpendiculaire à la droite (pas par un petit disque ou une croix).
+   On n'utilisera jamais le petit disque pour faire un point, et la croix sera uniquement prévue pour
+   les points du plan qui n'appartiennent à aucun objet. »
+   Chaque disque data-marker="cross" des figures devient invisible (il reste la zone qu'on attrape pour
+   déplacer le point, agrandie pour le doigt) et un repère le suit : petit trait perpendiculaire à la
+   droite (ou au segment) qui porte le point dès qu'elle est tracée, croix sinon. Exemple : M est une
+   croix tant que (d') n'est pas tracée, puis un petit trait sur (d'). Les extrémités et le milieu d'un
+   segment sont marqués d'un trait perpendiculaire au segment. Le disque passe en data-marker="hidden"
+   (retiré à l'impression) : c'est ce repère qui s'imprime, dans le PDF comme dans le cahier. */
 const DP_NS = 'http://www.w3.org/2000/svg';
-function dpCroixSync(c, g){
-  const x = parseFloat(c.getAttribute('cx')) || 0, y = parseFloat(c.getAttribute('cy')) || 0, t = 5.5;
-  const [l1, l2] = g.children;
-  l1.setAttribute('x1', x - t); l1.setAttribute('y1', y - t); l1.setAttribute('x2', x + t); l1.setAttribute('y2', y + t);
-  l2.setAttribute('x1', x - t); l2.setAttribute('y1', y + t); l2.setAttribute('x2', x + t); l2.setAttribute('y2', y - t);
+// Droites (ou segment) pouvant porter le point, dans l'ordre de préférence.
+function dpSupports(c){
+  const svg = c.ownerSVGElement, id = c.id || '';
+  if(!svg) return [];
+  const lignes = Array.from(svg.querySelectorAll('line[id]'));
+  if(/-(A|B|midpoint)$/.test(id) && !/rqa/.test(id) || /med[PQ]$/.test(id)) return lignes.filter(l => /-seg$|Seg$/.test(l.id));
+  if(/perpD[12]$|paraP[12]$/.test(id)) return lignes.filter(l => /[lL]ineD$/.test(l.id));
+  return ['Delta', 'Dp', 'Dpp'].map(k => lignes.find(l => new RegExp('[lL]ine' + k + '$').test(l.id))).filter(Boolean);
+}
+function dpLigneVisible(l){
+  for(let e = l; e && e.tagName !== 'svg'; e = e.parentNode){
+    if(e.style && (e.style.display === 'none' || e.style.opacity === '0')) return false;
+    if(e.getAttribute && (e.getAttribute('display') === 'none' || e.getAttribute('opacity') === '0')) return false;
+  }
+  const x1 = +l.getAttribute('x1'), y1 = +l.getAttribute('y1'), x2 = +l.getAttribute('x2'), y2 = +l.getAttribute('y2');
+  return Math.hypot(x2 - x1, y2 - y1) > 2;
+}
+function dpMarqueSync(c){
+  const g = c._dpCroix; if(!g) return;
+  const x = parseFloat(c.getAttribute('cx')) || 0, y = parseFloat(c.getAttribute('cy')) || 0;
+  const [l1, l2] = g.children, couleur = c.getAttribute('fill') || '#1C1B2E';
+  const support = dpSupports(c).find(dpLigneVisible);
+  if(support){
+    // petit trait perpendiculaire à la droite qui porte le point
+    const dx = +support.getAttribute('x2') - +support.getAttribute('x1'), dy = +support.getAttribute('y2') - +support.getAttribute('y1'), n = Math.hypot(dx, dy) || 1, t = 7;
+    const px = -dy / n * t, py = dx / n * t;
+    l1.setAttribute('x1', x - px); l1.setAttribute('y1', y - py); l1.setAttribute('x2', x + px); l1.setAttribute('y2', y + py);
+    l2.style.display = 'none';
+  } else {
+    const t = 5.5; // croix : point libre
+    l1.setAttribute('x1', x - t); l1.setAttribute('y1', y - t); l1.setAttribute('x2', x + t); l1.setAttribute('y2', y + t);
+    l2.setAttribute('x1', x - t); l2.setAttribute('y1', y + t); l2.setAttribute('x2', x + t); l2.setAttribute('y2', y - t);
+    l2.style.display = '';
+  }
   const st = c.style;
   g.style.display = st.display === 'none' || c.getAttribute('display') === 'none' ? 'none' : '';
   g.style.opacity = st.opacity !== '' ? st.opacity : (c.getAttribute('opacity') || '');
-  const couleur = c.getAttribute('fill') || '#1C1B2E';
   l1.setAttribute('stroke', couleur); l2.setAttribute('stroke', couleur);
 }
+function dpMarquesSvg(svg){ if(svg) svg.querySelectorAll('circle').forEach(c => { if(c._dpCroix) dpMarqueSync(c); }); }
 function dpCroixPoint(c){
   if(c._dpCroix) return;
   const g = document.createElementNS(DP_NS, 'g');
-  g.setAttribute('class', 'dp-croix'); g.setAttribute('data-marker', 'hidden'); g.setAttribute('pointer-events', 'none');
+  g.setAttribute('class', 'dp-croix'); g.setAttribute('pointer-events', 'none');
   g.innerHTML = '<line stroke-width="1.9" stroke-linecap="round"/><line stroke-width="1.9" stroke-linecap="round"/>';
   c.parentNode.insertBefore(g, c.nextSibling);
   c._dpCroix = g;
   c.setAttribute('fill-opacity', '0');
+  c.setAttribute('data-marker', 'hidden'); // à l'impression, c'est le repère g qui compte
   if(/cursor\s*:\s*grab/.test(c.getAttribute('style') || '')) c.setAttribute('r', '11'); // zone de prise
-  dpCroixSync(c, g);
-  new MutationObserver(()=>dpCroixSync(c, g)).observe(c, { attributes: true, attributeFilter: ['cx', 'cy', 'style', 'display', 'opacity', 'fill'] });
+  dpMarqueSync(c);
+  const svg = c.ownerSVGElement;
+  if(svg && !svg._dpMarquesObs){
+    // Toute modification de la figure (point déplacé, droite tracée ou effacée) remet les repères à jour.
+    svg._dpMarquesObs = new MutationObserver(ms => { if(ms.some(m => !(m.target.closest && m.target.closest('.dp-croix')))) dpMarquesSvg(svg); });
+    svg._dpMarquesObs.observe(svg, { attributes: true, subtree: true, attributeFilter: ['cx', 'cy', 'x1', 'y1', 'x2', 'y2', 'style', 'display', 'opacity', 'fill'] });
+  }
 }
 function dpCroixPoints(){
   ['cours-demo-droites-paralleles', 'methode-demo-droites-paralleles', 'exos-demo-droites-paralleles'].forEach(id=>{
     const root = document.getElementById(id); if(!root) return;
     root.querySelectorAll('circle[data-marker="cross"]').forEach(dpCroixPoint);
     if(root._dpCroixObs) return;
-    // Les figures redessinées plus tard (étapes, exercices) reçoivent aussi leurs croix.
+    // Les figures redessinées plus tard (étapes, exercices) reçoivent aussi leurs repères.
     root._dpCroixObs = new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{
       if(n.nodeType !== 1) return;
       if(n.matches && n.matches('circle[data-marker="cross"]')) dpCroixPoint(n);
@@ -509,6 +545,9 @@ function dpCroixPoints(){
     root._dpCroixObs.observe(root, { childList: true, subtree: true });
   });
 }
+// Captures du PDF et du cahier : la figure est photographiée juste après chaque changement d'étape,
+// avant que l'observateur ne passe -- on met les repères à jour à cet instant précis.
+(window.AVANT_CAPTURE_SVG = window.AVANT_CAPTURE_SVG || []).push(dpMarquesSvg);
 function dpSetTxt(el, p, dx, dy){ el.setAttribute('x',p.x+dx); el.setAttribute('y',p.y+dy); }
 function dpMakeDraggable(circleEl, svg, getPoint, setPoint, onMove){
   let dragging=false;
