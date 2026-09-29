@@ -989,8 +989,29 @@ function applyPrintMarkers(clone){
     }
   });
 }
+/* Les images insérées dans un SVG (ex. la réquerre, une photo PNG posée par <image href="assets/...">)
+   ne sont PAS chargées quand le SVG est lui-même affiché comme image (règle de sécurité des
+   navigateurs) : elles disparaissaient du cahier et du PDF -- signalé : « les réquerres disparaissent
+   sur le document ». On les remplace dans le clone par leur contenu en data URI (mis en cache). */
+const svgImagesCache = {};
+async function inlineSvgImages(clone){
+  const XLINK = 'http://www.w3.org/1999/xlink';
+  for(const im of Array.from(clone.querySelectorAll('image'))){
+    const href = im.getAttribute('href') || im.getAttributeNS(XLINK, 'href');
+    if(!href || href.startsWith('data:')) continue;
+    try{
+      if(!svgImagesCache[href]){
+        svgImagesCache[href] = fetch(new URL(href, location.href)).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.blob(); })
+          .then(blob=>new Promise((res, rej)=>{ const fr = new FileReader(); fr.onload = ()=>res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); }));
+      }
+      const data = await svgImagesCache[href];
+      im.setAttribute('href', data);
+      im.removeAttributeNS(XLINK, 'href');
+    } catch(e){ delete svgImagesCache[href]; console.warn('svgToRasterDataUri: image non intégrée', href, e); }
+  }
+}
 function svgToRasterDataUri(svgEl, displayWidth){
-  return new Promise((resolve)=>{
+  return new Promise(async (resolve)=>{
     const vbAttr = svgEl.getAttribute('viewBox');
     const vbParts = vbAttr ? vbAttr.trim().split(/\s+/).map(Number) : [0,0,400,240];
     const vbW = vbParts[2] || 400, vbH = vbParts[3] || 240;
@@ -1007,6 +1028,7 @@ function svgToRasterDataUri(svgEl, displayWidth){
     clone.setAttribute('width', vbW);
     clone.setAttribute('height', vbH);
     clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    try{ await inlineSvgImages(clone); } catch(e){ console.error('svgToRasterDataUri: échec intégration des images', e); }
     let svgDataUri;
     try{
       const svgString = new XMLSerializer().serializeToString(clone);
@@ -1350,34 +1372,52 @@ function getVisibleCoursContent(){
    après un export PDF (l'utilisateur peut cliquer "Recommencer" pour les réinitialiser). */
 function advanceAllStepDemosToEnd(container){
   const buttons = Array.from(container.querySelectorAll('button')).filter(b=>b.textContent.trim().startsWith('Étape suivante'));
+  const avances = [];
   for(const btn of buttons){
+    const wrap = btn.closest('.figure-wrap');
     for(let i=0;i<40;i++){
-      const wrap = btn.closest('.figure-wrap');
       const before = wrap ? wrap.innerHTML : null;
       btn.click();
       const after = wrap ? wrap.innerHTML : null;
       if(before===after) break; // plus aucun changement -- dernière étape déjà atteinte
+      if(wrap && !avances.includes(wrap)) avances.push(wrap);
     }
   }
+  return avances;
+}
+/* Remet à leur première étape les démonstrations que l'export ou l'impression a fait avancer --
+   signalé : « quand on lance l'impression/pdf, je perds des informations sur la page (plus de
+   réquerre par exemple) » : les figures restaient figées à leur dernière étape (« On retire la
+   réquerre »). On clique sur le bouton « Recommencer » de chacune, une fois la capture terminée. */
+function resetAdvancedStepDemos(wraps){
+  (wraps || []).forEach(wrap=>{
+    const btn = Array.from(wrap.querySelectorAll('button')).find(b=>b.textContent.trim().startsWith('Recommencer'));
+    if(btn) btn.click();
+  });
 }
 // Même mécanisme pour l'impression native (Ctrl/Cmd+P), pas seulement le bouton "Télécharger
 // en PDF" -- déroule les démos de la vue actuellement affichée avant que le navigateur ne
 // capture la page pour l'impression. IMPORTANT : reste synchrone (pas d'await/setTimeout) --
 // l'événement beforeprint n'attend JAMAIS la résolution d'une promesse avant de continuer,
 // une version asynchrone risquerait de ne pas avoir fini avant la capture réelle.
-window.addEventListener('beforeprint', ()=>{ advanceAllStepDemosToEnd(document.body); });
+let demosAvanceesImpression = [];
+window.addEventListener('beforeprint', ()=>{ demosAvanceesImpression = advanceAllStepDemosToEnd(document.body); });
+window.addEventListener('afterprint', ()=>{ resetAdvancedStepDemos(demosAvanceesImpression); demosAvanceesImpression = []; });
 async function advanceAllStepDemosToEndAsync(container){
   const buttons = Array.from(container.querySelectorAll('button')).filter(b=>b.textContent.trim().startsWith('Étape suivante'));
+  const avances = [];
   for(const btn of buttons){
+    const wrap = btn.closest('.figure-wrap');
     for(let i=0;i<40;i++){
-      const wrap = btn.closest('.figure-wrap');
       const before = wrap ? wrap.innerHTML : null;
       btn.click();
       const after = wrap ? wrap.innerHTML : null;
       if(before===after) break; // plus aucun changement -- dernière étape déjà atteinte
+      if(wrap && !avances.includes(wrap)) avances.push(wrap);
     }
     await new Promise(r=>setTimeout(r,0)); // laisse le navigateur respirer entre chaque démo, évite l'alerte "page ne répond pas"
   }
+  return avances;
 }
 // Option de masquage réservée aux profs/admins (signalé : "en mode connecté prof... une
 // option pour éditer les pdf en demandant quel contenu on veut masquer") -- les élèves n'ont
@@ -1467,6 +1507,27 @@ function blankOutSelectedBoxes(clone){
     }
   });
 }
+/* Mise en page compacte des figures pour le PDF -- signalé : « ça prend trop de place. Je ne peux
+   pas distribuer autant de feuilles aux élèves » (9 pages pour 5 paragraphes de 6e G2). Les étapes
+   d'une construction, jusqu'ici une par ligne (vignette + texte à côté), sont disposées en grille :
+   4 vignettes par ligne (3 pour les scènes plus larges, comme le rapporteur), le texte de l'étape
+   sous sa vignette. Les figures isolées sont limitées en hauteur. Ne concerne que le PDF : le cahier
+   de l'élève garde son lecteur étape par étape. */
+function compacterPourPdf(clone){
+  clone.querySelectorAll('.cahier-film').forEach(film=>{
+    const large = film.querySelector('img[style*="260px"]');
+    film.style.cssText = `display:grid;grid-template-columns:repeat(${large ? 3 : 4},minmax(0,1fr));gap:10px 12px;`;
+    Array.from(film.children).forEach(panneau=>{
+      panneau.style.cssText = 'display:flex;flex-direction:column;align-items:stretch;gap:4px;';
+      const vignette = panneau.firstElementChild, texte = panneau.lastElementChild;
+      if(vignette && vignette !== texte){ vignette.style.width = '100%'; vignette.style.height = vignette.tagName === 'IMG' ? 'auto' : '70px'; }
+      if(texte && vignette !== texte){ texte.style.fontSize = '9px'; texte.style.lineHeight = '1.3'; }
+    });
+  });
+  clone.querySelectorAll('img[alt="Figure"]').forEach(img=>{
+    img.style.width = 'auto'; img.style.maxWidth = '100%'; img.style.maxHeight = '230px';
+  });
+}
 async function exportCoursPDF(){
   if(typeof familleSansImpression==='function' && familleSansImpression()) return;
   const hint=document.getElementById('exportHint');
@@ -1477,13 +1538,13 @@ async function exportCoursPDF(){
   if(typeof html2pdf==='undefined'){ hint.textContent="La bibliothèque PDF n'a pas pu se charger (pas de connexion internet ?), utilisez Ctrl/Cmd+P pour imprimer à la place."; return; }
   const content = getVisibleCoursContent();
   const title = document.getElementById('chap-title').textContent || 'cours';
-  await advanceAllStepDemosToEndAsync(content);
+  const demosAvancees = await advanceAllStepDemosToEndAsync(content);
   const clone = content.cloneNode(true);
   clone.querySelectorAll(':scope > .cp-hidden').forEach(el=>el.remove()); // blocs masqués par le professeur (cours personnalisé)
   filterCoursByParagraph(clone);
   blankOutSelectedBoxes(clone);
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
-  clone.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar').forEach(el=>el.remove());
+  clone.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar, .zoom-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.lrn-active').forEach(el=>el.classList.remove('lrn-active')); // mode apprentissage : texte en clair
   clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
   // Réduction spécifique au PDF : .katex a font-size:1.18em globalement sur le site (voir
@@ -1495,7 +1556,9 @@ async function exportCoursPDF(){
   // environnant une fois exporté (signalé : "les exemples... sont écrits trop gros").
   clone.querySelectorAll('.we-expr').forEach(el=>{ el.style.fontSize='0.85em'; });
   clone.querySelectorAll('.interaction-hint').forEach(el=>el.remove());
-  await expandStepDemosInClone(clone);
+  try{ await expandStepDemosInClone(clone); }
+  finally{ resetAdvancedStepDemos(demosAvancees); } // la page affichée retrouve ses figures de départ
+  compacterPourPdf(clone);
   // Empêche un saut de page de couper un paragraphe (ou une formule) en deux au milieu d'une
   // phrase -- protégé dans tous les cas, pas seulement s'il contient une formule (signalé :
   // "le dernier texte est coupé").
@@ -2979,6 +3042,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.789', items:[
+    "Export PDF d'un cours -- signalé sur le chapitre 6e G2 Droites parallèles et perpendiculaires : « quand on lance l'impression/pdf, je perds des informations sur la page (plus de réquerre par exemple) », « les réquerres disparaissent sur le document » et « ça prend trop de place. Je ne peux pas distribuer autant de feuilles aux élèves ». Trois corrections, valables pour tous les chapitres. 1) La réquerre est une photo posée dans la figure : elle n'était pas chargée quand la figure était convertie en image pour le PDF (et pour le cahier de l'élève). Elle est maintenant intégrée à la figure avant la conversion. 2) Avant l'export ou l'impression, les démonstrations pas à pas sont avancées jusqu'à leur dernière étape (« On retire la réquerre »), et elles y restaient à l'écran : elles reviennent maintenant d'elles-mêmes à leur première étape une fois la capture terminée. 3) Mise en page plus compacte : les étapes d'une construction sont disposées en grille (4 vignettes par ligne, 3 pour les scènes plus larges comme le rapporteur), avec le texte de l'étape sous sa vignette, au lieu d'une étape par ligne ; les figures isolées sont limitées en hauteur ; les loupes de zoom ne sont plus imprimées. Pour ce chapitre (sans le paragraphe 1), le PDF passe de 9 à 5 pages."
+  ]},
   { version:'2026-08-19.788', items:[
     "3e (visible des seuls administrateurs) : chapitre N1 Nombres et calculs -- demandé : « le chapitre N1 n'a pas vraiment de cours », à partir des captures des fiches d'exercices du manuel p. 3-6 (« calculer pour résoudre des problèmes », « choisir la bonne solution », « répondre par Vrai ou Faux »). C'est un cours de rentrée sans notion nouvelle, construit à partir de ce que ces fiches mobilisent : « Résoudre un problème » (une démarche en quatre temps, sur l'exemple d'un jardin partagé à ensemencer ; justifier une affirmation vraie ou fausse : un contre-exemple suffit pour prouver qu'elle est fausse, un calcul ou un raisonnement général pour prouver qu'elle est vraie), « Les outils de calcul » (priorités, fractions dont la fraction d'une fraction, pourcentages et coefficient multiplicateur, évolution en pourcentage, puissances de 10, écriture scientifique et préfixes jusqu'au giga et à l'octet, racine carrée, comparer des nombres écrits sous des formes différentes) et « Contrôler un résultat » (arrondir selon la situation, ordre de grandeur). Méthodes animées : le carrelage d'une pièce avec les pertes et le nombre de paquets arrondi au-dessus ; un jeu « Vrai ou faux ? » de 14 affirmations avec leur justification ; deux évolutions successives en pourcentage (+20 % puis −20 % ne ramène pas au départ) ; les rebonds d'une balle qui remonte à une fraction de sa hauteur ; ranger des nombres écrits de façons différentes. Viennent ensuite une rédaction type (vrai ou faux, avec un peintre et ses pots de peinture), 8 exercices corrigés inspirés des fiches avec d'autres nombres, un quiz de 7 questions à choix multiples et la page « Un peu d'histoire » (les quatre étapes de George Pólya, l'origine du symbole %, le kibioctet). Tous les calculs ont été vérifiés. Les calculs nommés sont écrits en colonne."
   ]},
