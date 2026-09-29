@@ -202,22 +202,34 @@ QZ_EXT.associer = {
       <input type="text" value="${qzEsc(q.intrus)}" oninput="qzEdSet('${id}','intrus',this.value)" placeholder="ex. 0,2 ; 2">`;
   },
   verifier(q){ return (q.paires || []).filter(p => String(p.gauche).trim() && String(p.droite).trim()).length < 2 ? 'il faut au moins deux paires complètes.' : null; },
+  // Les étiquettes gardent leur identifiant tant que leur texte ne change pas, même si le professeur
+  // corrige une paire en échangeant deux textes : les réponses déjà données (qui désignent des
+  // étiquettes) restent lisibles et la copie se recorrige -- signalé : « Je n'arrive pas à faire que
+  // ça recorrige correctement » (paires « Reste / 7 » et « Diviseur / 5 » inversées puis corrigées).
   preparer(q){
     const ps = (q.paires || []).filter(p => String(p.gauche).trim() && String(p.droite).trim());
-    q.gauche = ps.map(p => ({ id: 'g' + p.id, texte: p.gauche }));
-    q.droite = qziMelanger(ps.map(p => ({ id: 'd' + p.id, texte: p.droite })).concat(qzListe(q.intrus).map((t, i) => ({ id: 'x' + i, texte: t }))));
+    const ids = (anciens, voulus) => { // voulus : [{ texte, prefere }] -> ids, en réutilisant les anciens par texte
+      const pris = new Set(), meme = (x, v) => !pris.has(x.id) && qziAsTxt(x.texte) === qziAsTxt(v.texte);
+      const out = voulus.map(v => { const a = anciens.find(x => x.id === v.prefere && meme(x, v)) || anciens.find(x => meme(x, v)); if(a){ pris.add(a.id); return a.id; } return null; });
+      return out.map((id, i) => id || (pris.has(voulus[i].prefere) ? voulus[i].prefere + qzId() : (pris.add(voulus[i].prefere), voulus[i].prefere)));
+    };
+    const gIds = ids(q.gauche || [], ps.map(p => ({ texte: p.gauche, prefere: 'g' + p.id })));
+    const dVoulus = ps.map(p => ({ texte: p.droite, prefere: 'd' + p.id })).concat(qzListe(q.intrus).map((t, i) => ({ texte: t, prefere: 'x' + i })));
+    const dIds = ids(q.droite || [], dVoulus);
+    q.gauche = ps.map((p, i) => ({ id: gIds[i], texte: p.gauche }));
+    q.droite = qziMelanger(dVoulus.map((v, i) => ({ id: dIds[i], texte: v.texte })));
     return q;
   },
   saisie(q, rep, mode){
     const r = qziObj(rep), pris = new Set(Object.values(r)), corr = mode === 'corrige';
-    const droite = new Map((q.droite || []).map(d => [d.id, d]));
-    const juste = g => r[g.id] && r[g.id] === 'd' + g.id.slice(1);
+    const droite = new Map((q.droite || []).map(d => [d.id, d])), att = qziAsAttendus(q);
+    const juste = g => qziAsJuste(q, r, g.id, att);
     return `<div class="qz-as"${mode === 'passer' ? ` data-qzi="associer" data-qid="${q.id}"` : ''}>
       ${(q.gauche || []).map(g => { const d = droite.get(r[g.id]);
-        const attendu = corr && !juste(g) && droite.get('d' + g.id.slice(1));
+        const attendu = corr && !juste(g) && att.get(g.id);
         return `<div class="qz-as-row"><div class="qz-as-g">${qzMath(g.texte)}</div><span class="gicon qz-as-fl">east</span>
           <div class="qz-as-slot${corr ? (juste(g) ? ' juste' : ' faux') : ''}" data-drop="${g.id}">${d ? qziChip(d, mode) : `<span class="qz-vide">${mode === 'passer' ? 'Déposer ici' : '—'}</span>`}</div>
-          ${attendu ? `<span class="qz-attendu">${qzMath(attendu.texte)}</span>` : ''}</div>`; }).join('')}
+          ${attendu ? `<span class="qz-attendu">${qzMath(attendu)}</span>` : ''}</div>`; }).join('')}
       ${mode === 'passer' ? `<div class="qz-pool" data-drop="__pool">${(q.droite || []).filter(d => !pris.has(d.id)).map(d => qziChip(d, mode)).join('') || '<span class="qz-vide">Toutes les étiquettes sont placées.</span>'}</div>
         <p class="hint" style="margin:4px 0 0;">Faites glisser chaque étiquette à sa place (ou touchez l'étiquette, puis sa place).</p>` : ''}
     </div>`;
@@ -232,9 +244,25 @@ QZ_EXT.associer = {
   auto(q, rep, max){
     const r = qziObj(rep), ps = (q.paires || []).filter(p => String(p.gauche).trim() && String(p.droite).trim());
     if(!ps.length) return 0;
-    return Math.round(max * ps.filter(p => r['g' + p.id] === 'd' + p.id).length / ps.length * 100) / 100;
+    const att = qziAsAttendus(q);
+    return Math.round(max * [...att.keys()].filter(gid => qziAsJuste(q, r, gid, att)).length / ps.length * 100) / 100;
   },
 };
+// Corrigé d'une question « associer » : étiquette de gauche (id) -> texte attendu à droite, lu dans
+// les paires. Comparaison par texte : la bonne étiquette est celle qui porte le bon texte.
+function qziAsTxt(t){ return String(t == null ? '' : t).trim(); }
+function qziAsAttendus(q){
+  const ps = (q.paires || []).filter(p => qziAsTxt(p.gauche) && qziAsTxt(p.droite)), g = q.gauche || [];
+  const m = new Map(), prises = new Set();
+  const choisir = p => { const a = g.find(x => !prises.has(x.id) && x.id === 'g' + p.id && qziAsTxt(x.texte) === qziAsTxt(p.gauche))
+    || g.find(x => !prises.has(x.id) && qziAsTxt(x.texte) === qziAsTxt(p.gauche)); if(a){ prises.add(a.id); m.set(a.id, qziAsTxt(p.droite)); return true; } return false; };
+  ps.filter(p => !choisir(p)).forEach(p => { const id = prises.has('g' + p.id) ? null : 'g' + p.id; if(id){ prises.add(id); m.set(id, qziAsTxt(p.droite)); } });
+  return m;
+}
+function qziAsJuste(q, r, gid, att){
+  const d = r[gid] && (q.droite || []).find(x => x.id === r[gid]);
+  return !!d && att.has(gid) && qziAsTxt(d.texte) === att.get(gid);
+}
 
 /* ---------------------------------------------------------------------
    Classer (glisser chaque étiquette dans sa catégorie)
