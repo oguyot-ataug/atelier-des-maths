@@ -3082,6 +3082,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.849', items:[
+    "Oliv'IA et RGPD : rappel de conservation des conversations. Demandé : « non pas [une suppression] automatique mais en alertant le professeur qu'il est temps de le faire ». La carte Oliv'IA (Mon compte › Intelligence artificielle) indique le nombre d'échanges conservés et la date du plus ancien. Au-delà de six mois, ou en juillet-août pour la fin de l'année scolaire, elle passe en alerte avec deux boutons : « Supprimer les échanges de plus de 6 mois » et « Tout supprimer », chacun avec confirmation. Un bandeau le rappelle aussi à la connexion (« Plus tard » le repousse d'une semaine). Rien n'est jamais supprimé sans l'action du professeur.",
+    "Oliv'IA : modèle de lettre d'information aux familles. Nouveau bouton dans la carte Oliv'IA : une lettre prête à imprimer, avec les classes déjà remplies et des passages surlignés à compléter directement (établissement, contact, signatures). Elle explique ce qu'est Oliv'IA, les données utilisées (la leçon et la question envoyées à Anthropic, sans nom ni classe ; les échanges conservés en Irlande et relus par le professeur), la durée de conservation, les droits des familles, et la possibilité de refuser sans conséquence. À faire valider par le chef d'établissement.",
+    "Page Confidentialité mise à jour : un paragraphe Oliv'IA (données transmises, conservation, qui lit les échanges, information de l'élève) et sa durée de conservation.",
+  ]},
   { version:'2026-08-19.848', items:[
     "Accueil : vidéo « Géométrie : écran partagé et projection » (1 min 42), dans une nouvelle vignette des outils pour les professeurs. Elle montre l'écran partagé de la Géométrie interactive : un segment tracé à la règle, un cercle au compas, un milieu, une perpendiculaire (l'équerre puis la règle contre elle), le choix des instruments et un point déplacé qui met la construction à jour aussitôt. Elle montre ensuite la fenêtre projetée, côte à côte : l'écran du professeur et le vidéoprojecteur, où une parallèle se construit en direct à l'équerre.",
   ]},

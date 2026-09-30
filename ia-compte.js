@@ -55,6 +55,7 @@ async function loadAiAccess(){
     }catch(e){ /* hors ligne : outils IA masqués */ }
   }
   applyAiAccessClasses();
+  if(aiAccess && (aiAccess.role==='prof' || aiAccess.role==='admin')) oliviaRappelConservation();
 }
 function clearAiAccess(){ aiAccess = null; applyAiAccessClasses(); }
 
@@ -228,6 +229,7 @@ async function renderIaPage(){
   document.getElementById('iaPeriod').value = iaPeriod;
   iaCountPicked();
   oliviaCompter();
+  oliviaConservationAfficher();
   iaLoadReport();
 
 }
@@ -582,6 +584,9 @@ function oliviaCarteHtml(hasKey, payerLabel){
       <span class="hint" id="olivMsg" style="margin:0;"></span>
     </div>
     <p class="hint" style="margin:8px 0 0;"><span class="gicon" style="font-size:1rem;vertical-align:middle;">science</span> Pour l'essayer vous-même : ouvrez un chapitre, elle apparaît en bas à droite (si « L'IA pour moi » est activée).</p>
+    <div id="olivConserv" class="oliv-conserv"></div>
+    <p style="margin:10px 0 0;"><button type="button" class="btn secondary" onclick="oliviaLettreFamilles()"><span class="gicon">mail</span> Lettre d'information aux familles</button>
+      <span class="hint" style="margin:0 0 0 6px;">modèle à compléter et à faire valider par votre chef d'établissement</span></p>
     <details style="margin-top:12px;" ontoggle="if(this.open) oliviaChargerConversations()">
       <summary style="cursor:pointer;font-weight:700;"><span class="gicon" style="vertical-align:middle;">forum</span> Compte rendu des conversations de mes élèves</summary>
       <div class="tool-row" style="margin:8px 0;">
@@ -662,4 +667,110 @@ function oliviaAfficherConversations(){
         <div class="oliv-conv-tete">${iaEsc(c[0].niveau||'')} · <b>${iaEsc(c[0].chapitre||'?')}</b> · ${new Date(c[0].created_at).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'})} · ${c.length} question${c.length>1?'s':''}</div>
         ${c.map(l=>`<div class="oliv-msg eleve"><div class="oliv-txt">${iaEsc(l.question).replace(/\n/g,'<br>')}</div></div><div class="oliv-msg oliv"><div class="oliv-txt">${fmt(l.reponse)}</div></div>`).join('')}
       </div>`).join('')}</details>`; }).join('');
+}
+
+/* ---- Conservation des conversations d'Oliv'IA ----
+   Demandé : « non pas [une suppression] automatique mais en alertant le professeur qu'il est temps de
+   le faire ». Les échanges sont gardés tant que le professeur ne les supprime pas ; au-delà de 6 mois
+   (ou en juillet-août, fin de l'année scolaire), un rappel s'affiche à la connexion et dans la carte
+   Oliv'IA, avec les boutons de suppression. */
+const OLIV_CONSERVATION_MOIS = 6;
+function oliviaLimiteConservation(){ const d = new Date(); d.setMonth(d.getMonth() - OLIV_CONSERVATION_MOIS); return d; }
+function oliviaFinAnnee(){ const m = new Date().getMonth(); return m === 6 || m === 7; } // juillet, août
+async function oliviaConservationEtat(){
+  const me = currentUser.id, lim = oliviaLimiteConservation().toISOString();
+  const [a, b, c] = await Promise.all([
+    sb.from('olivia_messages').select('id', {count:'exact', head:true}).eq('teacher_id', me).lt('created_at', lim),
+    sb.from('olivia_messages').select('id', {count:'exact', head:true}).eq('teacher_id', me),
+    sb.from('olivia_messages').select('created_at').eq('teacher_id', me).order('created_at', {ascending:true}).limit(1),
+  ]);
+  if(a.error || b.error) return null;
+  return { vieux: a.count || 0, total: b.count || 0, plusAncien: c.data && c.data[0] ? c.data[0].created_at : null };
+}
+function oliviaARappeler(e){ return !!e && (e.vieux > 0 || (oliviaFinAnnee() && e.total > 0)); }
+async function oliviaConservationAfficher(){
+  const box = document.getElementById('olivConserv'); if(!box) return;
+  const e = await oliviaConservationEtat();
+  if(!e){ box.innerHTML = ''; return; }
+  const date = e.plusAncien ? new Date(e.plusAncien).toLocaleDateString('fr-FR') : '';
+  const alerte = oliviaARappeler(e);
+  box.className = 'oliv-conserv' + (alerte ? ' alerte' : '');
+  box.innerHTML = `<b><span class="gicon" style="vertical-align:middle;">${alerte ? 'notification_important' : 'inventory_2'}</span> Conservation des conversations</b>
+    <span>${e.total ? `${e.total} échange${e.total>1?'s':''} conservé${e.total>1?'s':''}, le plus ancien du ${date}.` : 'Aucun échange conservé.'}
+    ${e.vieux ? ` <b>${e.vieux} ${e.vieux>1?'ont':'a'} plus de ${OLIV_CONSERVATION_MOIS} mois : il est temps de ${e.vieux>1?'les':'le'} supprimer.</b>` : alerte ? ' <b>L\'année scolaire est terminée : pensez à supprimer les échanges de l\'année.</b>' : ` Ils sont gardés jusqu'à ce que vous les supprimiez ; un rappel s'affiche au-delà de ${OLIV_CONSERVATION_MOIS} mois.`}</span>
+    ${e.total ? `<span class="oliv-conserv-btns">${e.vieux ? `<button type="button" class="btn" onclick="oliviaSupprimerConversations(true)"><span class="gicon">delete_sweep</span> Supprimer les échanges de plus de ${OLIV_CONSERVATION_MOIS} mois</button>` : ''}
+      <button type="button" class="btn secondary" style="color:#a83c1f;" onclick="oliviaSupprimerConversations(false)"><span class="gicon">delete</span> Tout supprimer</button></span>` : ''}`;
+}
+async function oliviaSupprimerConversations(seulementVieux){
+  const e = await oliviaConservationEtat(); if(!e) return;
+  const n = seulementVieux ? e.vieux : e.total; if(!n) return;
+  const ok = await niceConfirm(`Supprimer définitivement ${n} échange${n>1?'s':''} d'Oliv'IA ${seulementVieux ? `de plus de ${OLIV_CONSERVATION_MOIS} mois ` : ''}avec vos élèves ? Ils ne pourront pas être récupérés.`);
+  if(!ok) return;
+  let q = sb.from('olivia_messages').delete().eq('teacher_id', currentUser.id);
+  if(seulementVieux) q = q.lt('created_at', oliviaLimiteConservation().toISOString());
+  const { error } = await q;
+  if(error){ await niceAlert('Échec de la suppression : ' + error.message); return; }
+  try{ localStorage.removeItem('olivRappel:' + currentUser.id); }catch(err){}
+  document.getElementById('olivRappel')?.remove();
+  await oliviaConservationAfficher();
+  const box = document.getElementById('olivConv'); if(box && box.closest('details') && box.closest('details').open) oliviaChargerConversations();
+}
+// Rappel à la connexion (au plus une fois par semaine si le professeur choisit « Plus tard »).
+async function oliviaRappelConservation(){
+  if(document.getElementById('olivRappel')) return;
+  let plusTard = 0; try{ plusTard = +localStorage.getItem('olivRappel:' + currentUser.id) || 0; }catch(err){}
+  if(Date.now() < plusTard) return;
+  const e = await oliviaConservationEtat();
+  if(!oliviaARappeler(e)) return;
+  const b = document.createElement('div'); b.id = 'olivRappel'; b.className = 'oliv-rappel';
+  b.innerHTML = `<span class="oliv-mini">${typeof OLIV_AVATAR!=='undefined'?OLIV_AVATAR:''}</span>
+    <span><b>Oliv'IA : pensez à supprimer les anciennes conversations</b><small>${e.vieux ? `${e.vieux} échange${e.vieux>1?'s':''} de vos élèves ${e.vieux>1?'ont':'a'} plus de ${OLIV_CONSERVATION_MOIS} mois.` : 'L\'année scolaire est terminée.'} Ne gardez que ce qui est utile (RGPD).</small></span>
+    <button type="button" class="btn" onclick="document.getElementById('olivRappel').remove(); openIaPage(); setTimeout(()=>document.getElementById('olivConserv')?.scrollIntoView({block:'center'}), 900);">Voir</button>
+    <button type="button" class="btn secondary" onclick="try{localStorage.setItem('olivRappel:'+currentUser.id, Date.now()+7*24*3600e3);}catch(e){} document.getElementById('olivRappel').remove();">Plus tard</button>`;
+  document.body.appendChild(b);
+}
+
+/* ---- Lettre d'information aux familles (modèle) ----
+   Demandé : un modèle de note d'information aux familles pour Oliv'IA. Base légale : mission
+   d'intérêt public de l'établissement (pas de consentement) ; à faire valider par le chef
+   d'établissement. Les passages entre crochets sont modifiables directement dans la fenêtre. */
+function oliviaLettreFamilles(){
+  const w = window.open('', '_blank', 'width=860,height=900');
+  if(!w){ niceAlert('La fenêtre n\'a pas pu s\'ouvrir : autorisez les fenêtres surgissantes (pop-up) pour ce site.'); return; }
+  const classes = (typeof iaMyClasses!=='undefined' ? iaMyClasses : []).filter(c=>!c.groupe).map(c=>c.nom).join(', ');
+  const champ = t => `<span class="champ" contenteditable="true">${t}</span>`;
+  w.document.open();
+  w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Lettre aux familles -- Oliv'IA</title><style>
+    body{font-family:Arial,Helvetica,sans-serif;color:#20242E;max-width:720px;margin:24px auto;padding:0 24px;line-height:1.5;font-size:14px;}
+    h1{font-size:18px;margin:18px 0 10px;} h2{font-size:15px;margin:16px 0 4px;color:#1F7A4D;}
+    .champ{background:#FFF4D6;border-bottom:1px dashed #C9A227;padding:0 3px;} .aide{background:#EAF6EE;border:1px solid #BFE3CB;border-radius:8px;padding:8px 12px;font-size:12.5px;}
+    .barre{position:sticky;top:0;background:#fff;padding:8px 0;display:flex;gap:8px;align-items:center;border-bottom:1px solid #eee;}
+    button{font:inherit;padding:6px 12px;border-radius:8px;border:1px solid #1F7A4D;background:#1F7A4D;color:#fff;cursor:pointer;}
+    ul{margin:4px 0;padding-left:20px;} .sign{display:flex;justify-content:space-between;margin-top:28px;}
+    @media print{.barre,.aide{display:none;} .champ{background:none;border:0;padding:0;}}
+  </style></head><body>
+  <div class="barre"><button onclick="print()">Imprimer / enregistrer en PDF</button><span style="font-size:12px;color:#5B6472;">Cliquez sur les passages surlignés pour les compléter.</span></div>
+  <p class="aide">Modèle proposé par L'Atelier des Maths, à faire valider par votre chef d'établissement (responsable du traitement) et, si besoin, par le délégué à la protection des données (DPO) de votre académie. Il n'a pas valeur de conseil juridique.</p>
+  <p>${champ('[Nom de l\'établissement]')}<br>${champ('[Adresse]')}</p>
+  <p style="text-align:right;">${champ('[Ville]')}, le ${champ(new Date().toLocaleDateString('fr-FR'))}</p>
+  <p>Aux familles des élèves de ${champ(classes || '[classe]')}</p>
+  <h1>Objet : Oliv'IA, une aide par intelligence artificielle sur les leçons de mathématiques</h1>
+  <p>Madame, Monsieur,</p>
+  <p>En mathématiques, votre enfant utilise le site <b>L'Atelier des Maths</b> (maths.latelieraugmente.fr), avec un compte créé par son professeur. Ce site propose <b>Oliv'IA</b>, une « petite robote » qui utilise l'intelligence artificielle pour <b>réexpliquer les leçons autrement</b>, donner d'autres exemples et <b>des indices sur les exercices, sans jamais donner les réponses</b>. Son utilisation est <b>facultative</b> : elle n'est proposée qu'aux élèves pour lesquels le professeur l'a activée, et seulement sur les pages de cours.</p>
+  <h2>Quelles informations sont utilisées ?</h2>
+  <ul>
+    <li>Pour produire une réponse, le <b>texte de la leçon affichée</b> et la <b>question écrite par l'élève</b> sont envoyés à la société <b>Anthropic</b> (intelligence artificielle Claude), aux États-Unis. <b>Ni le nom, ni l'identifiant, ni la classe de l'élève ne sont transmis.</b></li>
+    <li>Les échanges (questions et réponses) sont <b>conservés sur les serveurs du site, dans l'Union européenne (Irlande)</b>, pour que le professeur puisse les relire et repérer les notions qui posent difficulté. Seuls l'élève et son professeur y ont accès.</li>
+    <li>Ils sont <b>supprimés par le professeur</b> ${champ('au plus tard six mois après leur création, et en fin d\'année scolaire')}.</li>
+    <li>Oliv'IA <b>ne note pas</b> les élèves et ne prend <b>aucune décision</b> les concernant. Il est indiqué à l'élève qu'il échange avec une intelligence artificielle, qui peut se tromper.</li>
+  </ul>
+  <h2>Un conseil à transmettre à votre enfant</h2>
+  <p>Ne rien écrire de personnel dans ses questions (nom, adresse, informations sur la famille…) : Oliv'IA n'en a pas besoin pour l'aider.</p>
+  <h2>Vos droits</h2>
+  <p>Ce traitement relève de la mission d'enseignement de l'établissement (article 6.1.e du Règlement général sur la protection des données). Le responsable du traitement est ${champ('le chef d\'établissement')} ; L'Atelier Augmenté, éditeur du site, agit comme sous-traitant. Vous pouvez demander l'accès aux échanges de votre enfant, leur rectification ou leur effacement, et vous opposer à l'utilisation d'Oliv'IA en vous adressant à ${champ('[contact : secrétariat, professeur ou délégué à la protection des données de l\'académie]')}. Vous pouvez également adresser une réclamation à la CNIL (www.cnil.fr).</p>
+  <p><b>Si vous ne souhaitez pas que votre enfant utilise Oliv'IA</b>, il suffit de le signaler à son professeur de mathématiques : cela n'a aucune conséquence sur sa scolarité ni sur l'accès au reste du site.</p>
+  <p>Nous vous prions d'agréer, Madame, Monsieur, l'expression de nos salutations distinguées.</p>
+  <div class="sign"><span>Le professeur de mathématiques<br>${champ('[Nom]')}</span><span>Le chef d'établissement<br>${champ('[Nom]')}</span></div>
+  </body></html>`);
+  w.document.close();
 }

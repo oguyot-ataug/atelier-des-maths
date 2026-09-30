@@ -1505,3 +1505,10 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .oliv-conv{margin:8px 0;padding:8px;background:#F6FAF7;border-radius:10px;display:flex;flex-direction:column;gap:6px;}
 .oliv-conv-tete{font-size:.8rem;color:#4E5665;}
 @media print{.oliv-lanceur,.oliv-panneau,.oliv-sel{display:none !important;}}
+
+.oliv-conserv{margin-top:12px;padding:10px 12px;border-radius:10px;background:rgba(28,43,57,.04);display:flex;flex-direction:column;gap:6px;font-size:.9rem;}
+.oliv-conserv.alerte{background:#FFF4E5;border:1px solid #F3C27A;}
+.oliv-conserv-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.oliv-rappel{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9500;display:flex;align-items:center;gap:10px;max-width:min(720px, calc(100vw - 24px));background:#fff;border:1.5px solid #F3C27A;border-radius:14px;padding:10px 14px;box-shadow:0 10px 30px rgba(28,43,57,.2);font-family:'Space Grotesk',Arial,sans-serif;}
+.oliv-rappel > span:nth-child(2){display:flex;flex-direction:column;flex:1;} .oliv-rappel small{color:#5B6472;}
+.oliv-rappel .oliv-mini svg{width:40px;height:40px;}
