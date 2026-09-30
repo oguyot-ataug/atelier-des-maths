@@ -107,7 +107,8 @@ function qzcImprimer(de, a, noms){
 async function qzcGerer(classId, apres){
   const classes = (typeof accountClassesList !== 'undefined' ? accountClassesList : []) || [];
   if(!classes.length){ await niceAlert('Aucune classe sur votre compte.'); return; }
-  const st = { classId: classId || classes[0].id, eleves: [], num: new Map(), charge: false, err: '' };
+  const cur = typeof currentClassId !== 'undefined' && classes.some(c => c.id === currentClassId) ? currentClassId : null;
+  const st = { classId: classId || cur || classes[0].id, eleves: [], num: new Map(), charge: false, err: '' };
   const o = document.createElement('div'); o.className = 'qzd-ov';
   const lire = () => { o.querySelectorAll('[data-num]').forEach(i => { const v = parseInt(i.value, 10); if(v > 0) st.num.set(i.dataset.num, v); else st.num.delete(i.dataset.num); }); };
   const rendre = () => {

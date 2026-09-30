@@ -3088,6 +3088,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.855', items:[
+    "Cartes flashcode : accès direct depuis le menu Outils prof › « Cartes flashcode (numéros, impression) ». Demandé : « Comment j'associe les flashcodes, où je les vois ? » La fenêtre s'ouvre sur la classe active : numéros des élèves (à la main ou « Numéroter 1, 2, 3… »), puis impression des planches. Elle restait accessible aussi depuis le lancement d'une séance avec les cartes et le bouton « Cartes » pendant la séance.",
+  ]},
   { version:'2026-08-19.854', items:[
     "Classes du primaire. Demandé : « Pour créer une classe, dans le menu, je n'ai que 6e à 3e. Prévoir aussi CE2, CM1, CM2. » Administration : la création et la modification d'une classe proposent CE2, CM1 et CM2 (rubrique Primaire), en plus de 6e à 3e. L'import en masse reconnaît aussi les classes nommées « CE2… », « CM1… », « CM2… ». Les groupes de remédiation proposent les mêmes niveaux. Élèves d'une classe du primaire : accès aux chapitres de leur niveau et du niveau précédent (un CM2 voit le CM2 et le CM1), comme au collège.",
     "Administration : création d'un compte avec un UAI encore inconnu. L'établissement est désormais créé automatiquement. Avant, la fiche du compte était refusée et un compte de connexion à moitié créé bloquait tout nouvel essai (« identifiant déjà utilisé »). Si la fiche ne peut pas être enregistrée, le compte est maintenant annulé aussitôt.",
