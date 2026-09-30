@@ -349,6 +349,10 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       showView('view-supervision'); setActiveTopnav('supervision');
       loadMyClasses();
     }
+    if(nav==='classe'){
+      if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      showView('view-classe'); setActiveTopnav(null); if(typeof renderClasseOutils==='function') renderClasseOutils();
+    }
     if(nav==='progression'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-progression'); setActiveTopnav('progression'); renderProgressionEditor();
@@ -3082,6 +3086,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.850', items:[
+    "Nouveau menu Outils prof › Outils de classe. Demandé : « la roue de la chance : tirage au sort d'un élève. S'il a été tiré, il disparaît de la roue. Réinitialisation possible » et « un compte à rebours déplaçable ou seul à l'écran sous forme de sablier ».",
+    "Roue de la chance : les élèves de la classe choisie (ou une liste libre de noms ou d'équipes) sur une roue colorée. « Lancer » la fait tourner, avec des cliquetis qui ralentissent ; le prénom tiré s'affiche en grand, puis l'élève sort de la roue et rejoint la liste « Déjà passés ». On peut remettre un élève, tout réinitialiser, décocher les absents, et passer en plein écran pour projeter. Le tirage est équitable, et la roue de chaque classe est mémorisée sur l'ordinateur d'une séance à l'autre.",
+    "Compte à rebours : durées rapides (1 à 15 min) ou durée libre. Il s'affiche au choix dans une petite fenêtre déplaçable, qui reste à l'écran quand on change de page (cours, géométrie…) et garde sa place, ou seul à l'écran en plein écran, sous forme de sablier dont le sable s'écoule. Pause, recommencer, +1 min. À la fin, les chiffres clignotent en rouge et un carillon retentit (désactivable).",
+  ]},
   { version:'2026-08-19.849', items:[
     "Oliv'IA et RGPD : rappel de conservation des conversations. Demandé : « non pas [une suppression] automatique mais en alertant le professeur qu'il est temps de le faire ». La carte Oliv'IA (Mon compte › Intelligence artificielle) indique le nombre d'échanges conservés et la date du plus ancien. Au-delà de six mois, ou en juillet-août pour la fin de l'année scolaire, elle passe en alerte avec deux boutons : « Supprimer les échanges de plus de 6 mois » et « Tout supprimer », chacun avec confirmation. Un bandeau le rappelle aussi à la connexion (« Plus tard » le repousse d'une semaine). Rien n'est jamais supprimé sans l'action du professeur.",
     "Oliv'IA : modèle de lettre d'information aux familles. Nouveau bouton dans la carte Oliv'IA : une lettre prête à imprimer, avec les classes déjà remplies et des passages surlignés à compléter directement (établissement, contact, signatures). Elle explique ce qu'est Oliv'IA, les données utilisées (la leçon et la question envoyées à Anthropic, sans nom ni classe ; les échanges conservés en Irlande et relus par le professeur), la durée de conservation, les droits des familles, et la possibilité de refuser sans conséquence. À faire valider par le chef d'établissement.",

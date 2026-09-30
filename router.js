@@ -19,14 +19,14 @@ const ROUTE_SIMPLE = {
   'view-cm':'cm', 'view-compte':'compte', 'view-correction':'correction',
   'view-evaluation':'evaluation', 'view-tableau':'tableau', 'view-cahier-eleve':'cahier',
   'view-admin':'admin', 'view-supervision':'supervision', 'view-mesresultats':'mesresultats',
-  'view-ia':'ia', 'view-famille':'famille', 'view-abonnement':'abonnement', 'view-cgv':'cgv',
+  'view-ia':'ia', 'view-classe':'classe', 'view-famille':'famille', 'view-abonnement':'abonnement', 'view-cgv':'cgv',
   'view-confidentialite':'confidentialite', 'view-mentions-legales':'mentions-legales',
   'view-programmation':'programmation', 'view-qz-carnet':'carnet', 'view-qz-banque':'questionnaires', 'view-qz-form':'questionnaires', 'view-devoirs-prof':'devoirs',
 };
 const ROUTE_LABELS = {
   cm:'Suivi', compte:'Objectif Nombre', correction:'Correction', evaluation:'Évaluation',
   tableau:'Tableau interactif', cahier:'Cahier élève', admin:'Administration',
-  supervision:'Mes classes', mesresultats:'Mes résultats', ia:'Intelligence artificielle',
+  supervision:'Mes classes', mesresultats:'Mes résultats', ia:'Intelligence artificielle', classe:'Outils de classe',
   famille:'Espace famille', abonnement:'Mon abonnement', cgv:'Conditions générales de vente', confidentialite:'Confidentialité',
   'mentions-legales':'Mentions légales', programmation:'Programmation', carnet:'Carnet de notes', questionnaires:'Interrogations en ligne', devoirs:'Devoirs en ligne', groupes:'Groupes de remédiation',
 };
@@ -34,7 +34,7 @@ const ROUTE_LABELS = {
    gestionnaire de clic data-nav de app.js -- ne pas les dupliquer ailleurs. */
 const ROUTE_AUTH = {
   correction:['prof','admin'], evaluation:['prof','admin'],
-  admin:['admin'], supervision:['prof','admin'], mesresultats:['eleve'], ia:['prof','admin'],
+  admin:['admin'], supervision:['prof','admin'], mesresultats:['eleve'], ia:['prof','admin'], classe:['prof','admin'],
   carnet:['prof','admin'], questionnaires:['prof','admin'], devoirs:['prof','admin'], groupes:['prof','admin'],
 };
 
@@ -171,6 +171,8 @@ function routerRestoreFromHash(){
         showView('view-admin'); setActiveTopnav('admin');
       } else if(key==='supervision'){
         showView('view-supervision'); setActiveTopnav('supervision'); renderSupervision(); renderSupervisionCeb();
+      } else if(key==='classe'){
+        showView('view-classe'); setActiveTopnav(null); if(typeof renderClasseOutils==='function') renderClasseOutils();
       } else if(key==='ia'){
         showView('view-ia'); setActiveTopnav(null); if(typeof renderIaPage==='function') renderIaPage();
       } else if(key==='famille'){
