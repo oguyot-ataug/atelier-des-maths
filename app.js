@@ -921,7 +921,8 @@ function openChapitre(c, tab, lvlOverride){
   if(currentUserRole==='eleve' && c && isChapterLocked(lvl, c.t)){ onLockedChapterClick(); return; }
   const chapView = document.getElementById('view-chapitre');
   chapView.classList.toggle('lvl-6e', lvl==='6e');
-  chapView.classList.toggle('lvl-cm', niveauPrimaire(lvl)); // CM1, CM2 : vert (école)
+  chapView.classList.toggle('lvl-cm', lvl==='cm1');  // CM1 : vert
+  chapView.classList.toggle('lvl-cm2', lvl==='cm2'); // CM2 : vert émeraude foncé
   chapView.classList.toggle('lvl-5e', lvl==='5e');
   chapView.classList.toggle('lvl-4e', lvl==='4e'); // 4e : sa propre couleur (bleu-vert), pour distinguer le niveau d'un coup d'œil
   chapView.classList.toggle('lvl-3e', lvl==='3e'); // 3e : violet prune
@@ -1762,7 +1763,7 @@ async function exportCoursPDF(){
     // ramenait aussi la classe "view", porteuse d'une animation d'apparition en fondu
     // (opacity:0 -> 1 sur 0,35s), capturée en pleine animation par html2canvas et donnant un
     // rendu "voilé" (signalé : "ça paraît tout pâle, comme voilé").
-    wrapper.className = ['lvl-cm', 'lvl-6e', 'lvl-5e', 'lvl-4e', 'lvl-3e'].filter(c => realChapView.classList.contains(c)).join(' ');
+    wrapper.className = ['lvl-cm', 'lvl-cm2', 'lvl-6e', 'lvl-5e', 'lvl-4e', 'lvl-3e'].filter(c => realChapView.classList.contains(c)).join(' ');
   }
   wrapper.querySelectorAll('*').forEach(el=>{
     const cs = window.getComputedStyle(el);
@@ -3153,6 +3154,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.874', items:[
+    "Le CM2 a maintenant sa propre couleur, un vert émeraude foncé, pour le distinguer du CM1 (vert) : carte de l'accueil, bandeaux de leçon, onglets et boutons des chapitres, et badge du niveau dans l'administration. Demandé : « Oui, mets le CM2 en vert émeraude foncé ».",
+  ]},
   { version:'2026-08-19.873', items:[
     "CM1 et CM2 intégrés à tout le site. Demandé : « Il faut ensuite s'occuper de tout ce qui concerne le CM1 sur le site... Y compris dans admin, dans les interrogations, IA ». Menu principal : boutons CM1 et CM2 avant la 6e ; accueil : deux cartes CM1 et CM2 ; chapitres de l'école en vert (comme dans l'administration), titres et fil d'Ariane écrits « CM1 », « CM2 » ; premiers chapitres de chaque domaine en accès libre, comme au collège.",
     "Outils du professeur : CM1 et CM2 ajoutés aux choix de niveau de l'outil de correction, des exercices de TD, de « Ma progression », de « Créer une évaluation », du générateur de questions d'interrogation (qui prend maintenant le niveau de la classe, CM compris) et du formulaire de suggestion (tous les niveaux). Une classe de CM1 règle automatiquement l'outil de correction sur les chapitres de CM1, et le cahier range ses corrections sous les bons chapitres.",
@@ -7833,7 +7837,7 @@ async function addSectionToCahier(headerEl){
   const wrapperHadId2 = wrapper.id;
   wrapper.id = 'view-chapitre';
   if(realChapView2){
-    wrapper.className = ['lvl-cm', 'lvl-6e', 'lvl-5e', 'lvl-4e', 'lvl-3e'].filter(c => realChapView2.classList.contains(c)).join(' ');
+    wrapper.className = ['lvl-cm', 'lvl-cm2', 'lvl-6e', 'lvl-5e', 'lvl-4e', 'lvl-3e'].filter(c => realChapView2.classList.contains(c)).join(' ');
   }
   clip2.appendChild(wrapper);
   document.body.appendChild(clip2);

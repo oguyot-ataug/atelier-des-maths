@@ -969,7 +969,7 @@ function adminRenderAccountsListing(){
   // Niveaux et classes -- demandé : « Comment je vois qu'un professeur est rattaché à un niveau ou
   // plusieurs ? » Un professeur est rattaché à un niveau par ses classes (Mes classes / « Modifier le
   // compte ») : une pastille par niveau, avec le nom des classes au survol ; pour un élève, sa classe.
-  const NIV_COUL = { CE2:'#2E7D32', CM1:'#2E7D32', CM2:'#2E7D32', '6e':'#FF8208', '5e':'#0C5BA0', '4e':'#0B7A83', '3e':'#7A3E9D' };
+  const NIV_COUL = { CE2:'#2E7D32', CM1:'#2E7D32', CM2:'#1B5E20', '6e':'#FF8208', '5e':'#0C5BA0', '4e':'#0B7A83', '3e':'#7A3E9D' };
   const niveauxCell = p => {
     const cls = classIdsOf(p).map(cid=>classById.get(cid)).filter(Boolean).filter(c=>!c.groupe);
     if(!cls.length) return '<span class="hint">aucune classe</span>';
@@ -1120,7 +1120,7 @@ async function adminRefreshListings(){
           <span class="hint" style="margin:0;">${s.cloturee?'clôturée':'active'}</span>
           ${s.cloturee?'':`<button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="adminCloturerPermisSession('${s.id}')">Clôturer</button>`}
         </div>`).join('') : '<p class="hint" style="margin:4px 0 0;">Aucune session pour l\'instant.</p>';
-      const color = ADMIN_PRIMAIRE.includes(c.niveau) ? '#2E7D32' : c.niveau==='6e' ? '#FF8208' : c.niveau==='4e' ? '#0B7A83' : c.niveau==='3e' ? '#7A3E9D' : '#0C5BA0';
+      const color = c.niveau==='CM2' ? '#1B5E20' : ADMIN_PRIMAIRE.includes(c.niveau) ? '#2E7D32' : c.niveau==='6e' ? '#FF8208' : c.niveau==='4e' ? '#0B7A83' : c.niveau==='3e' ? '#7A3E9D' : '#0C5BA0';
       const accId = 'accClasse'+idx;
       return `<div class="nb-accordion-section">
         <button type="button" class="nb-accordion-header" style="--acc-color:${color};--acc-bg:${color}0D;" onclick="toggleNbAccordion('${accId}')">
