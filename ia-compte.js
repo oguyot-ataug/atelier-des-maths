@@ -20,6 +20,7 @@ const IA_FEATURE_LABELS = {
   'evaluation': 'Évaluation (exercices proposés)',
   'figure': 'Figure (interprétation d\'énoncé)',
   'tableau-ia': 'Construction géométrique (tableau / animation)',
+  'olivia': 'Oliv\'IA (aide sur les cours)',
 };
 const IA_STUDENT_FEATURES = [
   {key:'quiz', label:'Quiz IA sur les chapitres'},
@@ -43,6 +44,7 @@ function applyAiAccessClasses(){
     if(a.features.tableau) on.add('ai-tableau');
   }
   AI_BODY_CLASSES.forEach(c=>document.body.classList.toggle(c, on.has(c)));
+  if(typeof oliviaMaj==='function') oliviaMaj(); // Oliv'IA (olivia.js) : accès recalculé
 }
 async function loadAiAccess(){
   aiAccess = null;
@@ -102,8 +104,8 @@ async function renderIaPage(){
   root.innerHTML = '<p class="hint">Chargement…</p>';
   const [{ data: s }, { data: cls }, { data: acc }, { data: use30 }] = await Promise.all([
     sb.from('teacher_ai_settings').select('*').eq('teacher_id', currentUser.id).maybeSingle(),
-    sb.from('class_teachers').select('classes(id,nom,niveau)').eq('teacher_id', currentUser.id),
-    sb.from('student_ai_access').select('student_id,enabled,quota').eq('teacher_id', currentUser.id),
+    sb.from('class_teachers').select('classes(id,nom,niveau,groupe)').eq('teacher_id', currentUser.id),
+    sb.from('student_ai_access').select('student_id,enabled,quota,olivia').eq('teacher_id', currentUser.id),
     sb.rpc('ai_usage_report', {p_from: new Date(Date.now()-30*24*3600e3).toISOString(), p_to: new Date(Date.now()+24*3600e3).toISOString(), p_scope:'me'}),
   ]);
   await loadAiAccess(); // mode de clé et présence de la clé d'établissement
@@ -205,8 +207,9 @@ async function renderIaPage(){
         <span class="hint" id="iaSettingsMsg" style="margin:0;"></span>
       </div>
     </div>
+    ${oliviaCarteHtml(hasKey, payerLabel)}
     <div class="tool-shell ia-card">
-      <strong class="ia-h"><span class="gicon">query_stats</span> 4. Rapport d'utilisation</strong>
+      <strong class="ia-h"><span class="gicon">query_stats</span> 5. Rapport d'utilisation</strong>
       <div class="tool-row" style="margin:8px 0;">
         <select id="iaPeriod" onchange="iaPeriod=this.value; iaLoadReport()">
           <option value="7j">7 derniers jours</option>
@@ -224,6 +227,7 @@ async function renderIaPage(){
     ${isAdmin ? `<p class="hint" style="margin:0 0 16px;"><span class="gicon">admin_panel_settings</span> Le choix « clé du site / clé personnelle » de chaque professeur se règle dans <a href="#/admin" onclick="event.preventDefault(); showView('view-admin'); setActiveTopnav('admin'); document.querySelector('#adminTabs [data-admin-tab=ia]')?.click();">Administration &gt; IA</a>.</p>` : ''}`;
   document.getElementById('iaPeriod').value = iaPeriod;
   iaCountPicked();
+  oliviaCompter();
   iaLoadReport();
 
 }
@@ -538,4 +542,124 @@ function iaExportCsv(){
   a.href = URL.createObjectURL(blob);
   a.download = 'rapport-ia-'+iaPeriod+'.csv';
   a.click();
+}
+
+/* ---- Oliv'IA (olivia.js) : réglages du professeur et compte rendu des conversations ----
+   Demandé : « paramétrable par le prof au niveau de la disponibilité des élèves (on pourrait le
+   limiter aux élèves les plus en difficulté) », « élève par élève et/ou remédiation », « le prof
+   doit pouvoir avoir un compte-rendu des conversations ». Réglages indépendants des autres outils
+   IA : olivia_mode (off / all / selected), olivia_daily_quota, student_ai_access.olivia. */
+function oliviaCarteHtml(hasKey, payerLabel){
+  const mode = iaSettings.olivia_mode || 'off', q = iaSettings.olivia_daily_quota, dis = hasKey ? '' : 'disabled';
+  const byClass = new Map();
+  iaStudents.forEach(st=>{ if(!byClass.has(st.class_id)) byClass.set(st.class_id, []); byClass.get(st.class_id).push(st); });
+  const cls = new Map(iaMyClasses.map(c=>[c.id, c]));
+  // Groupes de remédiation d'abord : c'est le cas d'usage visé (élèves en difficulté).
+  const blocs = [...byClass.entries()].sort((a,b)=>(cls.get(b[0])||{}).groupe - (cls.get(a[0])||{}).groupe);
+  const picker = !iaStudents.length ? '<p class="hint">Aucun élève dans vos classes.</p>' : blocs.map(([cid, list])=>{ const c = cls.get(cid) || {};
+    return `<div class="oliv-bloc">
+      <div class="oliv-bloc-tete"><b>${iaEsc(list[0].classe)}</b>${c.groupe ? ' <span class="oliv-tag">groupe de remédiation</span>' : ''}
+        <button type="button" class="btn secondary" style="padding:3px 10px;font-size:.78rem;" onclick="oliviaCocherClasse('${cid}',true)" ${dis}>Tout le groupe</button>
+        <button type="button" class="btn secondary" style="padding:3px 10px;font-size:.78rem;" onclick="oliviaCocherClasse('${cid}',false)" ${dis}>Personne</button></div>
+      <div class="oliv-bloc-eleves">${list.map(st=>{ const a = iaStudentAccess.get(st.id);
+        return `<label><input type="checkbox" class="olivPick" data-id="${st.id}" data-class="${cid}" ${a&&a.olivia?'checked':''} ${dis} onchange="oliviaSynchro(this)"> ${iaEsc(st.nom)} ${iaEsc(st.prenom)}</label>`; }).join('')}</div></div>`; }).join('');
+  return `<div class="tool-shell ia-card" style="${hasKey?'':'opacity:.55;'}">
+    <strong class="ia-h" style="display:flex;align-items:center;gap:8px;"><span class="oliv-carte-avatar">${typeof OLIV_AVATAR!=='undefined'?OLIV_AVATAR:''}</span> 4. Oliv'IA, la petite robote qui aide à apprendre</strong>
+    <p class="hint" style="margin:6px 0 8px;">Sur les pages de cours (Cours, Méthodes, Exercices), les élèves autorisés peuvent demander à Oliv'IA une autre explication, un autre exemple ou un coup de pouce pour démarrer un exercice. Elle ne donne pas la réponse des exercices et refuse les questions hors sujet. Ses réponses sont payées par ${payerLabel}.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:6px 18px;">
+      <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="olivMode" value="off" ${mode==='off'?'checked':''} ${dis} onchange="oliviaModeUI()"> Désactivée</label>
+      <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="olivMode" value="all" ${mode==='all'?'checked':''} ${dis} onchange="oliviaModeUI()"> <b>Tous</b> les élèves de mes classes</label>
+      <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="olivMode" value="selected" ${mode==='selected'?'checked':''} ${dis} onchange="oliviaModeUI()"> <b>Seulement les élèves que je choisis</b> (élève par élève ou par groupe de remédiation)</label>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;">
+      <span>Au plus</span><input type="number" id="olivQuota" min="0" max="200" value="${q==null?'':q}" placeholder="∞" style="width:80px;" ${dis}><span>questions par élève et par jour</span><span class="hint" style="margin:0;">(vide = sans limite)</span>
+    </div>
+    <div id="olivPicker" style="display:${mode==='selected'?'block':'none'};margin-top:10px;">
+      <p class="hint" style="margin:0 0 6px;" id="olivCompte"></p>${picker}
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;">
+      <button class="btn" onclick="oliviaEnregistrer()" ${dis}>Enregistrer les réglages d'Oliv'IA</button>
+      <span class="hint" id="olivMsg" style="margin:0;"></span>
+    </div>
+    <p class="hint" style="margin:8px 0 0;"><span class="gicon" style="font-size:1rem;vertical-align:middle;">science</span> Pour l'essayer vous-même : ouvrez un chapitre, elle apparaît en bas à droite (si « L'IA pour moi » est activée).</p>
+    <details style="margin-top:12px;" ontoggle="if(this.open) oliviaChargerConversations()">
+      <summary style="cursor:pointer;font-weight:700;"><span class="gicon" style="vertical-align:middle;">forum</span> Compte rendu des conversations de mes élèves</summary>
+      <div class="tool-row" style="margin:8px 0;">
+        <select id="olivConvPeriode" onchange="oliviaChargerConversations()"><option value="7">7 derniers jours</option><option value="30">30 derniers jours</option><option value="365">Depuis un an</option></select>
+        <input type="search" id="olivConvCherche" placeholder="Élève ou chapitre…" oninput="oliviaAfficherConversations()" style="min-width:200px;">
+      </div>
+      <div id="olivConv"><p class="hint">Chargement…</p></div>
+    </details>
+  </div>`;
+}
+function oliviaModeUI(){
+  const m = (document.querySelector('input[name=olivMode]:checked')||{}).value;
+  const p = document.getElementById('olivPicker'); if(p) p.style.display = m==='selected' ? 'block' : 'none';
+}
+// Un même élève peut figurer dans sa classe et dans un groupe : ses cases restent identiques.
+function oliviaSynchro(c){ document.querySelectorAll('.olivPick[data-id="'+c.dataset.id+'"]').forEach(x=>{ x.checked = c.checked; }); oliviaCompter(); }
+function oliviaCocherClasse(cid, on){ document.querySelectorAll('.olivPick[data-class="'+cid+'"]').forEach(c=>{ c.checked = on; oliviaSynchro(c); }); }
+function oliviaCompter(){
+  const el = document.getElementById('olivCompte'); if(!el) return;
+  const ids = new Set([...document.querySelectorAll('.olivPick:checked')].map(c=>c.dataset.id)), tous = new Set([...document.querySelectorAll('.olivPick')].map(c=>c.dataset.id));
+  el.textContent = ids.size+' élève'+(ids.size>1?'s':'')+' sur '+tous.size+' '+(ids.size>1?'ont':'a')+' accès à Oliv\'IA.';
+}
+async function oliviaEnregistrer(){
+  const msg = document.getElementById('olivMsg');
+  const mode = (document.querySelector('input[name=olivMode]:checked')||{}).value || 'off';
+  const qv = document.getElementById('olivQuota').value.trim();
+  const row = { olivia_mode: mode, olivia_daily_quota: qv==='' ? null : Math.max(0, Math.min(200, parseInt(qv,10)||0)), updated_at: new Date().toISOString() };
+  msg.textContent = 'Enregistrement…';
+  const { data: existing } = await sb.from('teacher_ai_settings').select('teacher_id').eq('teacher_id', currentUser.id).maybeSingle();
+  const { error } = existing
+    ? await sb.from('teacher_ai_settings').update(row).eq('teacher_id', currentUser.id)
+    : await sb.from('teacher_ai_settings').insert({teacher_id: currentUser.id, ...row});
+  if(error){ msg.innerHTML = '<span style="color:#B3261E;">Erreur : '+iaEsc(error.message)+'</span>'; return; }
+  const parEleve = new Map();
+  document.querySelectorAll('.olivPick').forEach(c=>{ parEleve.set(c.dataset.id, (parEleve.get(c.dataset.id)||false) || c.checked); });
+  const sel = [...parEleve.entries()].map(([id, on])=>({teacher_id: currentUser.id, student_id: id, olivia: on, updated_at: new Date().toISOString()}));
+  if(sel.length){
+    const { error: e2 } = await sb.from('student_ai_access').upsert(sel, {onConflict:'teacher_id,student_id'});
+    if(e2){ msg.innerHTML = '<span style="color:#B3261E;">Réglages enregistrés, mais échec pour les élèves choisis : '+iaEsc(e2.message)+'</span>'; return; }
+    sel.forEach(r=>iaStudentAccess.set(r.student_id, Object.assign({}, iaStudentAccess.get(r.student_id)||{}, r)));
+  }
+  Object.assign(iaSettings, row);
+  const n = sel.filter(r=>r.olivia).length;
+  msg.innerHTML = '<span style="color:#1F7A4D;"><span class="gicon">check</span> '+(mode==='off' ? 'Oliv\'IA est désactivée pour vos élèves.' : mode==='all' ? 'Oliv\'IA est ouverte à tous vos élèves.' : 'Oliv\'IA est ouverte à '+n+' élève'+(n>1?'s':'')+'.')+'</span>';
+}
+let oliviaConvLignes = [];
+async function oliviaChargerConversations(){
+  const box = document.getElementById('olivConv'); if(!box) return;
+  box.innerHTML = '<p class="hint">Chargement…</p>';
+  const jours = parseInt((document.getElementById('olivConvPeriode')||{}).value||'7', 10);
+  const { data, error } = await sb.from('olivia_messages').select('conversation_id,student_id,class_id,niveau,chapitre,onglet,question,reponse,created_at')
+    .eq('teacher_id', currentUser.id).gte('created_at', new Date(Date.now()-jours*24*3600e3).toISOString()).order('created_at', {ascending:true}).limit(1000);
+  if(error){ box.innerHTML = '<p class="hint">Erreur : '+iaEsc(error.message)+'</p>'; return; }
+  oliviaConvLignes = data || [];
+  oliviaAfficherConversations();
+}
+function oliviaAfficherConversations(){
+  const box = document.getElementById('olivConv'); if(!box) return;
+  const noms = new Map(iaStudents.map(s=>[s.id, s]));
+  const nom = id => { const s = noms.get(id); return s ? s.nom+' '+s.prenom : (id===currentUser.id ? 'Vous (essai)' : 'Élève'); };
+  const f = ((document.getElementById('olivConvCherche')||{}).value||'').trim().toLowerCase();
+  // Regroupement : élève → conversations (une par chapitre ouvert), dans l'ordre des échanges.
+  const parEleve = new Map();
+  oliviaConvLignes.forEach(l=>{
+    const n = nom(l.student_id);
+    if(f && !(n+' '+(l.chapitre||'')).toLowerCase().includes(f)) return;
+    if(!parEleve.has(l.student_id)) parEleve.set(l.student_id, new Map());
+    const convs = parEleve.get(l.student_id);
+    if(!convs.has(l.conversation_id)) convs.set(l.conversation_id, []);
+    convs.get(l.conversation_id).push(l);
+  });
+  if(!parEleve.size){ box.innerHTML = '<p class="hint">Aucune conversation sur cette période.</p>'; return; }
+  const fmt = t => typeof oliviaFormat==='function' ? oliviaFormat(t) : iaEsc(t);
+  box.innerHTML = [...parEleve.entries()].sort((a,b)=>nom(a[0]).localeCompare(nom(b[0]))).map(([sid, convs])=>{
+    const nbQ = [...convs.values()].reduce((s,c)=>s+c.length, 0);
+    return `<details class="oliv-conv-eleve"><summary><b>${iaEsc(nom(sid))}</b> <span class="hint" style="margin:0;">${noms.get(sid) ? iaEsc(noms.get(sid).classe) + ' · ' : ''}${nbQ} question${nbQ>1?'s':''} · ${convs.size} conversation${convs.size>1?'s':''}</span></summary>
+      ${[...convs.values()].reverse().map(c=>`<div class="oliv-conv">
+        <div class="oliv-conv-tete">${iaEsc(c[0].niveau||'')} · <b>${iaEsc(c[0].chapitre||'?')}</b> · ${new Date(c[0].created_at).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'})} · ${c.length} question${c.length>1?'s':''}</div>
+        ${c.map(l=>`<div class="oliv-msg eleve"><div class="oliv-txt">${iaEsc(l.question).replace(/\n/g,'<br>')}</div></div><div class="oliv-msg oliv"><div class="oliv-txt">${fmt(l.reponse)}</div></div>`).join('')}
+      </div>`).join('')}</details>`; }).join('');
 }

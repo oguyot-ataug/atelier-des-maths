@@ -205,6 +205,7 @@ document.querySelectorAll('#navLinks button').forEach(b=>{
 /* ======================= ROUTER ======================= */
 function showView(id){
   if(typeof FIG_PROJ!=='undefined' && FIG_PROJ && id!=='view-tableau') return; // fenêtre de projection : rien d'autre que le tableau
+  if(typeof oliviaMaj==='function') setTimeout(oliviaMaj, 30); // Oliv'IA : seulement sur les pages de cours
   // Sécurité : si un outil (figure, texte, probabilités...) ou l'éditeur de formule était resté
   // ouvert (overlay plein écran) au moment de changer de page via le menu, on le referme -- sans
   // ça, l'overlay reste actif par-dessus la nouvelle page et bloque tous les clics, y compris sur
@@ -3081,6 +3082,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.841', items:[
+    "Nouveau : Oliv'IA, la petite robote qui aide à apprendre. Demandé : « Un petit chatbot IA "Oliv'IA". Son but, sur les cours, donner des explications supplémentaires si un élève le sollicite […] paramétrable par le prof au niveau de la disponibilité des élèves ». Sur les pages de chapitre (Cours, Méthodes, Exercices), un élève autorisé voit Oliv'IA en bas à droite. Il lui pose sa question, ou sélectionne un passage du cours et clique sur « Demander à Oliv'IA ». Elle répond en s'appuyant sur le cours affiché : autre explication, autre exemple, formules bien écrites. Sur les exercices, elle guide par des indices et des questions, sans jamais donner la réponse. Elle refuse poliment les questions hors sujet. Une conversation par chapitre, avec des suggestions de relance (« Je n'ai pas compris », « Un autre exemple », « Pose-moi une question »).",
+    "Oliv'IA, côté professeur (Mon compte › Intelligence artificielle, nouvelle carte 4) : désactivée, ouverte à tous vos élèves, ou seulement aux élèves choisis, élève par élève ou d'un clic pour tout un groupe de remédiation. Un quota de questions par élève et par jour (10 par défaut) permet de maîtriser le coût, payé comme les autres outils IA et visible dans le rapport d'utilisation. Le compte rendu des conversations montre, pour chaque élève et chaque chapitre, ses questions et les réponses d'Oliv'IA (7 jours, 30 jours ou un an), avec une recherche par élève ou chapitre. Les élèves sont prévenus que leur professeur peut relire leurs échanges. Tout est revérifié par le serveur (droit d'accès, quota) : masquer le bouton ne suffit pas.",
+  ]},
   { version:'2026-08-19.840', items:[
     "CM1, Construction de figures : le rectangle se construit comme en classe. Signalé : « Les équerres ont rarement le 0 juste dans l'angle. Il est légèrement décalé. Donc il faut faire des perpendiculaires et seulement après prendre les mesures à la règle. » L'équerre ne sert plus qu'à tracer les angles droits, en A puis en B, avec des traits un peu plus longs que 3 cm. Les 3 cm se mesurent ensuite à la règle, le 0 sur le sommet, pour placer D puis C. On relie enfin D et C. Sur la figure finale, les bouts de trait en trop restent en traits de construction.",
   ]},

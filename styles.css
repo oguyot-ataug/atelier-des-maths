@@ -1450,3 +1450,54 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 #figProjAttente b{font-size:1.4rem;color:#1F7A4D;}
 #figProjAttente small{color:#6B6F7A;}
 #figProjBtn.active{background:#1F7A4D;color:#fff;border-color:#1F7A4D;}
+
+/* ---------- Oliv'IA (olivia.js) ---------- */
+.oliv-lanceur{position:fixed;right:18px;bottom:18px;z-index:9000;display:flex;align-items:center;gap:6px;border:0;background:none;padding:0;cursor:pointer;}
+.oliv-lanceur svg{width:64px;height:64px;filter:drop-shadow(0 4px 10px rgba(28,43,57,.25));transition:transform .2s;}
+.oliv-lanceur:hover svg{transform:translateY(-3px) rotate(-4deg);}
+.oliv-lanceur-bulle{order:-1;background:#fff;border:1.5px solid #1F7A4D;color:#1F7A4D;font-weight:700;font-size:.85rem;border-radius:14px 14px 4px 14px;padding:6px 10px;box-shadow:0 2px 8px rgba(28,43,57,.12);}
+.oliv-oeil{transform-box:fill-box;transform-origin:center;animation:olivCligne 4.5s infinite;}
+@keyframes olivCligne{0%,92%,100%{transform:scaleY(1);}95%{transform:scaleY(.1);}}
+.oliv-feuille{transform-box:fill-box;transform-origin:10% 100%;}
+.reflechit .oliv-feuille, .oliv-lanceur:hover .oliv-feuille{animation:olivFeuille .8s ease-in-out infinite alternate;}
+@keyframes olivFeuille{from{transform:rotate(-12deg);}to{transform:rotate(12deg);}}
+.oliv-panneau{position:fixed;right:18px;bottom:18px;z-index:9001;width:min(380px, calc(100vw - 24px));height:min(560px, calc(100vh - 90px));display:flex;flex-direction:column;background:#fff;border:1.5px solid rgba(31,122,77,.35);border-radius:18px;box-shadow:0 12px 36px rgba(28,43,57,.25);overflow:hidden;font-family:'Space Grotesk',Arial,sans-serif;}
+.oliv-tete{display:flex;align-items:center;gap:8px;padding:8px 10px;background:linear-gradient(135deg,#1F7A4D,#2E9E6A);color:#fff;}
+.oliv-tete-avatar svg{width:40px;height:40px;background:#fff;border-radius:50%;padding:2px;}
+.oliv-tete-nom{flex:1;display:flex;flex-direction:column;line-height:1.15;}
+.oliv-tete-nom small{opacity:.85;font-size:.75rem;}
+.oliv-x{background:rgba(255,255,255,.15);border:0;color:#fff;border-radius:50%;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.oliv-x:hover{background:rgba(255,255,255,.3);}
+.oliv-fil{flex:1;overflow-y:auto;position:relative;padding:12px;background:#F6FAF7;display:flex;flex-direction:column;gap:10px;}
+.oliv-msg{display:flex;gap:6px;align-items:flex-end;max-width:100%;}
+.oliv-msg.eleve{justify-content:flex-end;}
+.oliv-msg .oliv-txt{padding:8px 11px;border-radius:14px;font-size:.92rem;line-height:1.45;max-width:85%;overflow-wrap:anywhere;}
+.oliv-msg.oliv .oliv-txt{background:#fff;border:1px solid rgba(31,122,77,.2);border-bottom-left-radius:4px;color:#20242E;}
+.oliv-msg.eleve .oliv-txt{background:#1F7A4D;color:#fff;border-bottom-right-radius:4px;}
+.oliv-mini svg{width:26px;height:26px;flex:none;}
+.oliv-cite{display:block;font-style:italic;opacity:.85;font-size:.82rem;margin-bottom:4px;}
+.oliv-erreur{color:#A83C1F;}
+.oliv-points i{display:inline-block;width:7px;height:7px;margin:0 2px;border-radius:50%;background:#1F7A4D;animation:olivPoint 1s infinite ease-in-out;}
+.oliv-points i:nth-child(2){animation-delay:.15s;} .oliv-points i:nth-child(3){animation-delay:.3s;}
+@keyframes olivPoint{0%,80%,100%{opacity:.25;transform:translateY(0);}40%{opacity:1;transform:translateY(-4px);}}
+.oliv-suggest{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding:6px 10px 2px;scrollbar-width:thin;}
+.oliv-suggest .oliv-chip{flex:none;}
+.oliv-chip{border:1px solid rgba(31,122,77,.4);background:#fff;color:#1F7A4D;border-radius:14px;padding:4px 10px;font-size:.78rem;cursor:pointer;}
+.oliv-chip:hover{background:rgba(31,122,77,.08);}
+.oliv-saisie{display:flex;gap:6px;padding:8px 10px;align-items:flex-end;}
+.oliv-saisie textarea{flex:1;resize:none;border:1px solid rgba(28,43,57,.2);border-radius:12px;padding:8px 10px;font:inherit;font-size:.9rem;}
+.oliv-saisie .btn{padding:8px 12px;}
+.oliv-pied{margin:0;padding:0 10px 8px;font-size:.7rem;color:#6B6F7A;}
+.oliv-sel{position:absolute;z-index:9002;display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #1F7A4D;color:#1F7A4D;font-weight:700;font-size:.82rem;border-radius:16px;padding:4px 10px 4px 4px;box-shadow:0 4px 12px rgba(28,43,57,.2);cursor:pointer;}
+.oliv-sel .oliv-mini svg{width:24px;height:24px;}
+.oliv-carte-avatar svg{width:34px;height:34px;}
+.oliv-bloc{border:1px solid rgba(28,43,57,.12);border-radius:10px;margin-bottom:8px;overflow:hidden;}
+.oliv-bloc-tete{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 10px;background:rgba(28,43,57,.04);}
+.oliv-tag{font-size:.72rem;background:rgba(31,122,77,.12);color:#1F7A4D;border-radius:8px;padding:1px 7px;}
+.oliv-bloc-eleves{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:2px 12px;padding:8px 10px;font-size:.88rem;}
+.oliv-bloc-eleves label{display:flex;align-items:center;gap:6px;}
+.oliv-conv-eleve{border:1px solid rgba(28,43,57,.12);border-radius:10px;padding:6px 10px;margin-bottom:6px;}
+.oliv-conv-eleve summary{cursor:pointer;}
+.oliv-conv{margin:8px 0;padding:8px;background:#F6FAF7;border-radius:10px;display:flex;flex-direction:column;gap:6px;}
+.oliv-conv-tete{font-size:.8rem;color:#4E5665;}
+@media print{.oliv-lanceur,.oliv-panneau,.oliv-sel{display:none !important;}}
