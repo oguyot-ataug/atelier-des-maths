@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Initiation à la pensée informatique – Cours de maths 6e | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths 6e : Initiation à la pensée informatique. Instruction et séquence d'instructions, Entrées et sorties, Répéter une séquence d'instructions.…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/6e/initiation-a-la-pensee-informatique/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Initiation à la pensée informatique – Cours de maths 6e | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths 6e : Initiation à la pensée informatique. Instruction et séquence d'instructions, Entrées et sorties, Répéter une séquence d'instructions.…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/6e/initiation-a-la-pensee-informatique/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Initiation à la pensée informatique (6e)","headline":"Initiation à la pensée informatique – cours de mathématiques de 6e","description":"Cours de maths 6e : Initiation à la pensée informatique. Instruction et séquence d'instructions, Entrées et sorties, Répéter une séquence d'instructions.…","url":"https://maths.latelieraugmente.fr/6e/initiation-a-la-pensee-informatique/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"6e (cycle 3, collège)","about":"Données et probabilités","teaches":["Instruction et séquence d'instructions","Entrées et sorties","Répéter une séquence d'instructions"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques 6e","url":"https://maths.latelieraugmente.fr/6e/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths 6e","item":"https://maths.latelieraugmente.fr/6e/"},{"@type":"ListItem","position":3,"name":"Initiation à la pensée informatique","item":"https://maths.latelieraugmente.fr/6e/initiation-a-la-pensee-informatique/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/6e/">Cours de maths 6e</a> › Initiation à la pensée informatique</div>
+<h1>Initiation à la pensée informatique</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#BFDCFB;color:#1A4E9E;">Données et probabilités</span> Cours de mathématiques de 6e (sixième) · chapitre 21 · Instruction et séquence d'instructions · Entrées et sorties · Répéter une séquence d'instructions</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/21-initiation-a-la-pensee-informatique/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Instruction et séquence d'instructions</h3></div>
+<span class="def-badge">Définitions</span>
+<div class="def-box">
+  Une <b>instruction</b> est un ordre simple et précis, qu'on peut exécuter sans avoir à réfléchir : « avancer d'une case », « ajouter 2 », « tourner à droite ».<br>
+  Une <b>séquence d'instructions</b> est une suite d'instructions exécutées <b>les unes après les autres, dans l'ordre</b>. Un <b>programme</b> est une séquence d'instructions écrite pour accomplir une tâche.
+</div>
+<p class="example-title">Exemple : le robot part de la case D (flèche vers la droite). Où arrive-t-il ?</p>
+<div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;">
+  <div class="pi-pile"><span class="pi-bloc ev">quand le drapeau est cliqué</span><span class="pi-bloc mv">avancer de <b class="pi-n">3</b></span><span class="pi-bloc mv">tourner à gauche ↺</span><span class="pi-bloc mv">avancer de <b class="pi-n">2</b></span></div>
+  <div class="figure-wrap" style="max-width:260px;margin:0;"><svg viewBox="0 0 192 132" style="width:100%;display:block;"><line x1="6" y1="6" x2="6" y2="126" stroke="#DDE3EA"></line><line x1="36" y1="6" x2="36" y2="126" stroke="#DDE3EA"></line><line x1="66" y1="6" x2="66" y2="126" stroke="#DDE3EA"></line><line x1="96" y1="6" x2="96" y2="126" stroke="#DDE3EA"></line><line x1="126" y1="6" x2="126" y2="126" stroke="#DDE3EA"></line><line x1="156" y1="6" x2="156" y2="126" stroke="#DDE3EA"></line><line x1="186" y1="6" x2="186" y2="126" stroke="#DDE3EA"></line><line x1="6" y1="6" x2="186" y2="6" stroke="#DDE3EA"></line><line x1="6" y1="36" x2="186" y2="36" stroke="#DDE3EA"></line><line x1="6" y1="66" x2="186" y2="66" stroke="#DDE3EA"></line><line x1="6" y1="96" x2="186" y2="96" stroke="#DDE3EA"></line><line x1="6" y1="126" x2="186" y2="126" stroke="#DDE3EA"></line><polyline points="21,111 111,111 111,51" fill="none" stroke="#4C97FF" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"></polyline><polygon points="111.0,40.0 113.9,47.0 121.5,47.6 115.7,52.5 117.5,59.9 111.0,56.0 104.5,59.9 106.3,52.5 100.5,47.6 108.1,47.0" fill="#FFB400" stroke="#C68A00" stroke-width="1"></polygon><g transform="translate(21.0,111.0) rotate(0)"><circle r="12" fill="#FF8208" stroke="#fff" stroke-width="2"></circle><polygon points="8.399999999999999,0 -4.199999999999999,-6 -4.199999999999999,6" fill="#fff"></polygon></g><text x="21" y="135" font-size="10" text-anchor="middle" fill="#5B6472" font-family="Space Grotesk">D</text></svg></div>
+</div>
+<ul class="example-list">
+  <li>Il avance de 3 cases vers la droite, se tourne vers le haut, puis avance de 2 cases : il arrive sur l'étoile.</li>
+  <li><b>L'ordre compte</b> : « tourner à gauche » puis « avancer de 3 », puis « avancer de 2 » ne mène pas au même endroit !</li>
+</ul>
+
+<div class="lesson-header"><span class="num">2</span><h3>Entrées et sorties</h3></div>
+<span class="def-badge">Définitions</span>
+<div class="def-box">
+  Les <b>entrées</b> d'un programme sont les données qu'on lui fournit au départ (un nombre choisi, une longueur…). Les <b>sorties</b> sont les résultats qu'il donne à la fin (un nombre affiché, une figure tracée…). Avec les mêmes entrées, un programme donne toujours les mêmes sorties.
+</div>
+<p class="example-title">Exemple : un programme de calcul. Choisis le nombre d'entrée et exécute-le.</p>
+<div class="figure-wrap">
+  <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;">
+    <div class="pi-pile"><span class="pi-bloc ev">demander un nombre (entrée)</span><span class="pi-bloc op">ajouter <b class="pi-n">2</b></span><span class="pi-bloc op">multiplier par <b class="pi-n">4</b></span><span class="pi-bloc op">retirer <b class="pi-n">3</b></span><span class="pi-bloc ev">afficher le résultat (sortie)</span></div>
+    <div style="flex:1;min-width:220px;">
+      
+      
+      <table class="pi-suivi" id="piCalcTable"><tbody><tr><th>Instruction</th><th>Valeur</th></tr></tbody></table>
+      <p class="hint" id="piCalcSortie" style="margin:8px 0 0;">Clique sur « Instruction suivante » pour exécuter le programme.</p>
+    </div>
+  </div>
+</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Répéter une séquence d'instructions</h3></div>
+<span class="prop-badge">Règle</span>
+<div class="def-box">Quand une même séquence d'instructions revient plusieurs fois, on l'écrit <b>une seule fois</b> dans une <b>boucle</b> « répéter … fois ». Le programme est plus court, et on fait moins d'erreurs en l'écrivant.</div>
+<p class="example-title">Exemple : ces deux programmes tracent le même carré de 3 cases de côté.</p>
+<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
+  <div class="pi-pile"><span class="pi-bloc mv">avancer de <b class="pi-n">3</b></span><span class="pi-bloc mv">tourner à droite ↻</span><span class="pi-bloc mv">avancer de <b class="pi-n">3</b></span><span class="pi-bloc mv">tourner à droite ↻</span><span class="pi-bloc mv">avancer de <b class="pi-n">3</b></span><span class="pi-bloc mv">tourner à droite ↻</span><span class="pi-bloc mv">avancer de <b class="pi-n">3</b></span><span class="pi-bloc mv">tourner à droite ↻</span></div>
+  <span style="font:700 1.4rem 'Space Grotesk',sans-serif;color:#5B6472;">=</span>
+  <div class="pi-pile"><div class="pi-boucle"><span class="pi-bloc ct">répéter <b class="pi-n">4</b> fois</span><div class="pi-corps"><span class="pi-bloc mv">avancer de <b class="pi-n">3</b></span><span class="pi-bloc mv">tourner à droite ↻</span></div></div></div>
+  <div class="figure-wrap" style="max-width:200px;margin:0;"><svg viewBox="0 0 162 162" style="width:100%;display:block;"><line x1="6" y1="6" x2="6" y2="156" stroke="#DDE3EA"></line><line x1="36" y1="6" x2="36" y2="156" stroke="#DDE3EA"></line><line x1="66" y1="6" x2="66" y2="156" stroke="#DDE3EA"></line><line x1="96" y1="6" x2="96" y2="156" stroke="#DDE3EA"></line><line x1="126" y1="6" x2="126" y2="156" stroke="#DDE3EA"></line><line x1="156" y1="6" x2="156" y2="156" stroke="#DDE3EA"></line><line x1="6" y1="6" x2="156" y2="6" stroke="#DDE3EA"></line><line x1="6" y1="36" x2="156" y2="36" stroke="#DDE3EA"></line><line x1="6" y1="66" x2="156" y2="66" stroke="#DDE3EA"></line><line x1="6" y1="96" x2="156" y2="96" stroke="#DDE3EA"></line><line x1="6" y1="126" x2="156" y2="126" stroke="#DDE3EA"></line><line x1="6" y1="156" x2="156" y2="156" stroke="#DDE3EA"></line><polyline points="51,51 141,51 141,141 51,141 51,51" fill="none" stroke="#4C97FF" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"></polyline><g transform="translate(51.0,51.0) rotate(0)"><circle r="12" fill="#FF8208" stroke="#fff" stroke-width="2"></circle><polygon points="8.399999999999999,0 -4.199999999999999,-6 -4.199999999999999,6" fill="#fff"></polygon></g><text x="51" y="75" font-size="10" text-anchor="middle" fill="#5B6472" font-family="Space Grotesk">D</text></svg></div>
+</div>
+<ul class="example-list">
+  <li>Le premier programme a 8 instructions ; le second n'en a que 3 : la boucle, et les deux instructions répétées 4 fois.</li>
+  <li>Pour exécuter une boucle <b>à la main</b>, on compte les tours : tour 1, tour 2, tour 3, tour 4, puis on passe à la suite du programme.</li>
+</ul>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Exécuter un programme à la main</h4></div>
+<p style="margin:6px 0;">On exécute les instructions une par une, dans l'ordre, en notant à chaque étape ce qui a changé dans un <b>tableau de suivi</b>. Pour une boucle, on note le numéro du tour.</p>
+<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+  <div class="pi-pile"><span class="pi-bloc va">mettre <b>nombre</b> à <b class="pi-n">1</b></span><div class="pi-boucle"><span class="pi-bloc ct">répéter <b class="pi-n">4</b> fois</span><div class="pi-corps"><span class="pi-bloc op">multiplier <b>nombre</b> par <b class="pi-n">3</b></span></div></div><span class="pi-bloc ev">afficher <b>nombre</b></span></div>
+  <table class="pi-suivi" style="min-width:240px;"><tbody><tr><th>Étape</th><th>nombre</th></tr>
+    <tr><td>Départ</td><td>1</td></tr><tr><td>Tour 1</td><td>3</td></tr><tr><td>Tour 2</td><td>9</td></tr><tr><td>Tour 3</td><td>27</td></tr><tr><td>Tour 4</td><td>81</td></tr><tr><td><b>Sortie</b></td><td><b>81</b></td></tr></tbody></table>
+</div>
+
+<div class="sub-header" style="margin-top:22px;"><span class="letter">M</span><h4>Programmer le chemin d'un robot</h4></div>
+<p style="margin:6px 0;">Clique sur les blocs pour écrire le programme, puis sur <b>▶ Exécuter</b>. Le robot laisse une trace : c'est le chemin construit par le programme.</p>
+<div class="figure-wrap pi-robot">
+  
+  <p class="pi-consigne" id="piConsigne">Amène le robot sur l'étoile.</p>
+  <div class="pi-zone">
+    <div class="pi-palette">
+      <b>Blocs</b>
+      
+      
+      
+      
+      <p class="hint" style="margin:6px 0 0;">Dans le programme : ▲ ▼ changent les nombres, ✕ enlève un bloc. Un nouveau bloc se place dans la boucle ouverte (bordure orange) ; clique sur « fin de la boucle » pour en sortir.</p>
+    </div>
+    <div class="pi-prog"><b>Programme</b> <span class="hint" id="piNbBlocs" style="margin:0;">(0 bloc)</span><div id="piProg"><div class="pi-bloc ev">quand le drapeau est cliqué</div></div></div>
+    <div class="pi-scene"><div id="piGrille"><svg viewBox="0 0 368 280" style="width:100%;max-width:368px;display:block;margin:0 auto;"><line x1="8" y1="8" x2="8" y2="272" stroke="#DDE3EA"></line><line x1="52" y1="8" x2="52" y2="272" stroke="#DDE3EA"></line><line x1="96" y1="8" x2="96" y2="272" stroke="#DDE3EA"></line><line x1="140" y1="8" x2="140" y2="272" stroke="#DDE3EA"></line><line x1="184" y1="8" x2="184" y2="272" stroke="#DDE3EA"></line><line x1="228" y1="8" x2="228" y2="272" stroke="#DDE3EA"></line><line x1="272" y1="8" x2="272" y2="272" stroke="#DDE3EA"></line><line x1="316" y1="8" x2="316" y2="272" stroke="#DDE3EA"></line><line x1="360" y1="8" x2="360" y2="272" stroke="#DDE3EA"></line><line x1="8" y1="8" x2="360" y2="8" stroke="#DDE3EA"></line><line x1="8" y1="52" x2="360" y2="52" stroke="#DDE3EA"></line><line x1="8" y1="96" x2="360" y2="96" stroke="#DDE3EA"></line><line x1="8" y1="140" x2="360" y2="140" stroke="#DDE3EA"></line><line x1="8" y1="184" x2="360" y2="184" stroke="#DDE3EA"></line><line x1="8" y1="228" x2="360" y2="228" stroke="#DDE3EA"></line><line x1="8" y1="272" x2="360" y2="272" stroke="#DDE3EA"></line><polygon points="206.0,58.0 210.2,68.2 221.2,69.1 212.8,76.2 215.4,86.9 206.0,81.2 196.6,86.9 199.2,76.2 190.8,69.1 201.8,68.2" fill="#FFB400" stroke="#C68A00" stroke-width="1"></polygon><circle cx="30" cy="206" r="5" fill="none" stroke="#FF8208" stroke-width="2"></circle><g transform="translate(30.0,206.0) rotate(0)"><circle r="16" fill="#FF8208" stroke="#fff" stroke-width="2"></circle><polygon points="11.2,0 -5.6,-8 -5.6,8" fill="#fff"></polygon></g></svg></div>
+      
+      
+    </div>
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Rédaction type : « Exécuter un programme de calcul »</h3>
+  <div class="redaction-template">
+    <div class="we-row"><span class="we-expr">Entrée : on choisit <span class="fill">...</span>.</span><span class="we-comment">On écrit le nombre de départ.</span></div>
+    <div class="we-row"><span class="we-expr">On exécute chaque instruction dans l'ordre : <span class="fill">... + 2 = ...</span> ; <span class="fill">... × 4 = ...</span> ; …</span><span class="we-comment">Une ligne par instruction (ou un tableau de suivi).</span></div>
+    <div class="we-row"><span class="we-expr">Sortie : le programme affiche <span class="fill">...</span>.</span><span class="we-comment">Conclusion.</span></div>
+  </div>
+</div>
+<div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card"><div class="num">Exercice 1</div>
+    Voici des phrases. Lesquelles sont des instructions qu'un robot peut exécuter sans réfléchir ?<br>
+    a) Avance de 2 cases. &nbsp; b) Va quelque part de joli. &nbsp; c) Tourne à droite. &nbsp; d) Trouve le chemin le plus court. &nbsp; e) Multiplie le nombre par 5.
+  </div>
+  <div class="exo-card"><div class="num">Exercice 2</div>
+    Exécute ce programme de calcul avec 7, puis avec 0 : « Choisir un nombre ; lui ajouter 2 ; multiplier le résultat par 4 ; retirer 3 ; afficher le résultat ». Présente tes calculs dans un tableau de suivi.
+  </div>
+  <div class="exo-card"><div class="num">Exercice 3</div>
+    <div class="pi-pile"><span class="pi-bloc va">mettre <b>nombre</b> à <b class="pi-n">2</b></span><div class="pi-boucle"><span class="pi-bloc ct">répéter <b class="pi-n">3</b> fois</span><div class="pi-corps"><span class="pi-bloc op">ajouter <b class="pi-n">5</b> à <b>nombre</b></span></div></div><span class="pi-bloc ev">afficher <b>nombre</b></span></div>
+    Quel nombre ce programme affiche-t-il ? Combien afficherait-il si on remplaçait « répéter 3 fois » par « répéter 10 fois » ?
+  </div>
+  <div class="exo-card"><div class="num">Exercice 4</div>
+    Sur un quadrillage, un robot part d'une case, tourné vers la droite. Écris un programme qui lui fait tracer un rectangle de 4 cases de long et 2 cases de large, en revenant à son point de départ. Réécris-le ensuite avec une boucle « répéter ».
+  </div>
+  <div class="exo-card"><div class="num">Exercice 5</div>
+    Ce programme doit tracer un escalier de 3 marches, mais il contient une erreur :
+    <div class="pi-pile"><div class="pi-boucle"><span class="pi-bloc ct">répéter <b class="pi-n">3</b> fois</span><div class="pi-corps"><span class="pi-bloc mv">avancer de <b class="pi-n">1</b></span><span class="pi-bloc mv">tourner à gauche ↺</span><span class="pi-bloc mv">avancer de <b class="pi-n">1</b></span><span class="pi-bloc mv">tourner à gauche ↺</span></div></div></div>
+    Exécute-le à la main sur un quadrillage : que trace-t-il ? Corrige-le.
+  </div>
+  <div class="exo-card"><div class="num">Exercice 6</div>
+    Avec l'outil « Programmation par blocs » du site (menu S'entraîner), programme le lutin pour qu'il trace un triangle équilatéral : « répéter 3 fois : avancer de 100, tourner de 120° ». Pourquoi tourne-t-on de 120° et pas de 60° ?
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire</div>
+  <p style="margin:0 0 12px;">En <b>1801</b>, le tisserand lyonnais <b>Joseph-Marie Jacquard</b> invente un métier à tisser commandé par des <b>cartes perforées</b> : chaque carte est une instruction (quels fils lever), et la suite des cartes forme le programme du motif. On peut changer de motif en changeant de cartes, sans toucher à la machine.</p>
+  <p style="margin:0 0 12px;">Vers <b>1843</b>, l'Anglaise <b>Ada Lovelace</b> écrit, pour la « machine analytique » imaginée par Charles Babbage, une suite d'instructions qui calcule des nombres (les nombres de Bernoulli), avec des étapes répétées. On la considère souvent comme la première personne à avoir écrit un programme informatique. Un langage de programmation porte aujourd'hui son nom : Ada.</p>
+  <p style="margin:0 0 12px;">En <b>1967</b>, Seymour Papert et ses collègues créent le langage <b>Logo</b> pour les enfants : on y commande une « tortue » avec « AVANCE 50 », « TOURNE DROITE 90 », « RÉPÈTE 4 [ … ] » — exactement comme le robot de ce chapitre. En <b>2007</b>, au MIT, l'équipe de Mitchel Resnick lance <b>Scratch</b>, où l'on programme en emboîtant des blocs de couleur, sans rien taper au clavier.</p>
+  <p style="margin:0;">Le mot <b>algorithme</b> vient du nom du savant <b>al-Khwârizmî</b>, qui vivait à Bagdad au IX<sup>e</sup> siècle et décrivait des méthodes de calcul pas à pas.</p>
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/6e/21-initiation-a-la-pensee-informatique/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/6e/heures-et-duree/">Heures et durée</a></span>
+  <a href="/6e/">Tous les chapitres de 6e</a>
+  <span></span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
+  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

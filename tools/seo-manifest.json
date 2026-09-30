@@ -1,6 +1,6 @@
 {
  "/": {
-  "hash": "55440a15560d12cae8e344896864a56757215d68",
+  "hash": "8b77cb713e645e8409032ea387ff3962d1bfc3ff",
   "lastmod": "2026-09-30"
  },
  "/6e/nombres-entiers/": {
@@ -80,11 +80,15 @@
   "lastmod": "2026-09-29"
  },
  "/6e/heures-et-duree/": {
-  "hash": "3a04275816fc3994d7b73e2e3eb5b44bf0ea373e",
-  "lastmod": "2026-09-29"
+  "hash": "4e829ef931d770c11385bc4b92741bc436c8ede9",
+  "lastmod": "2026-09-30"
+ },
+ "/6e/initiation-a-la-pensee-informatique/": {
+  "hash": "fd3d6d33e1cd330b48579eeadb191537b24724f6",
+  "lastmod": "2026-09-30"
  },
  "/6e/": {
-  "hash": "51a5da21ed61e25585baa0271ded69e03ffa9e95",
+  "hash": "57e9fe0689e3a5c23fbc2124934762ebd256227b",
   "lastmod": "2026-09-30"
  },
  "/5e/operations-sur-les-nombres-decimaux/": {

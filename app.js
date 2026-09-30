@@ -28,6 +28,7 @@ const CH6 = [
  {n:18,code:'N6',cat:'N',t:'Initiation à l\'algèbre',s:1,p:'60-63',d:'24-30 mai'},
  {n:19,code:'G7',cat:'G',t:'Solides et volumes',s:1,p:'126-129',d:'31 mai-6 juin'},
  {n:20,code:'M2',cat:'M',t:'Heures et durée',s:1,p:'138-143',d:'7-13 juin'},
+ {n:21,code:'D4',cat:'D',t:'Initiation à la pensée informatique',s:1,p:'',d:'14-20 juin'},
 ];
 
 const CH5 = [
@@ -3091,6 +3092,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.862', items:[
+    "6e : nouveau chapitre « Initiation à la pensée informatique » (D4, en fin d'année). Demandé : « Crée le chapitre pensée informatique pour la 6e », objectif du programme du cycle 3 qui n'avait pas encore de chapitre.",
+    "Cours : instruction et séquence d'instructions (l'ordre compte, exemple d'un robot sur quadrillage) ; entrées et sorties, avec un programme de calcul qu'on exécute pas à pas en choisissant l'entrée (tableau de suivi) ; répétition, avec la boucle « répéter 4 fois » qui trace un carré en 3 blocs au lieu de 8. Les programmes sont dessinés en blocs aux couleurs de Scratch.",
+    "Méthode : exécuter un programme à la main (tableau de suivi, tours de boucle), et un robot programmable par blocs (avancer de n cases, tourner à gauche ou à droite, répéter n fois), avec exécution animée ou pas à pas et 4 défis : atteindre l'étoile, contourner des murs, tracer un escalier puis un carré avec peu de blocs (la boucle devient nécessaire).",
+    "Exercices (6, dont un avec l'outil Programmation par blocs du site), un peu d'histoire (Jacquard, Ada Lovelace, Logo, Scratch, al-Khwârizmî) et un quiz.",
+  ]},
   { version:'2026-08-19.861', items:[
     "Administration › Comptes : nouvelle colonne « Niveaux · classes ». Demandé : « Comment je vois qu'un professeur est rattaché à un niveau ou plusieurs ? » Pour chaque professeur, une pastille par niveau de ses classes (6e, 5e, CM1…, avec « ×2 » s'il a deux classes du même niveau), et le nom des classes au survol ; « aucune classe » sinon. Pour un élève : sa classe. Les groupes de remédiation ne comptent pas.",
   ]},
