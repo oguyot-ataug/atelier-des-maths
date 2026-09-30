@@ -623,12 +623,12 @@ document.body.insertAdjacentHTML('beforeend', `
              bloc codage ne s'affiche que lorsque le mode "Coder" est actif, pour ne pas
              prendre de place le reste du temps. -->
         <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
-          <div class="tool-row" style="margin:0 0 6px;align-items:center;">
+          <div class="tool-row" id="figSplitCompasLigne" style="margin:0 0 6px;align-items:center;">
             <button type="button" id="compassToggleBtn" class="fig-icon-btn" style="width:32px;height:32px;font-size:.95rem;" onclick="toggleCompassMode()" title="Simuler un compas (pour Cercle/Arc)">
               <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 3 L6 20 M12 3 L18 20" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"/><circle cx="12" cy="3" r="1.6" fill="currentColor"/></svg>
             </button>
             <input type="checkbox" id="compassToggle" style="display:none;">
-            <span class="hint" style="margin:0;">Compas (Cercle/Arc)</span>
+            <span class="hint" id="figCompasTexte" style="margin:0;">Compas (Cercle/Arc)</span>
           </div>
           <svg id="figureSvg" viewBox="0 0 500 320" onclick="onFigureClick(event)" onwheel="onFigureWheel(event)"
                style="width:min(90vw, 1000px, calc(62vh * 1.5625));aspect-ratio:500/320;display:block;margin:0 auto;background:#fff;border:1px solid rgba(28,43,57,.15);border-radius:8px;cursor:crosshair;"></svg>
@@ -5873,7 +5873,52 @@ document.addEventListener('fullscreenchange', ()=>{
    même que « Construire au tableau avec les instruments ») : la barre verte le déroule aux
    instruments. Après avoir modifié la figure, « Actualiser » (flèches vertes) renvoie la nouvelle
    version au tableau. */
-let figSplitVueAvant = null;
+let figSplitVueAvant = null, figSplitOutilsHome = null;
+/* Mise en page de l'écran partagé : les deux zones de dessin ont la même hauteur (toute la hauteur
+   disponible sous la barre d'outils de la figure) et commencent à la même hauteur à l'écran. */
+function figSplitAligner(){
+  if(!document.body.classList.contains('fig-split')) return;
+  const svg = document.getElementById('figureSvg'), panel = document.getElementById('figurePanel'), vt = document.getElementById('view-tableau'), bw = document.getElementById('tbBoardWrap');
+  if(!svg || !panel || !vt || !bw) return;
+  const bas = 118; // place gardée sous la figure : aide + boutons Enregistrer / Fermer
+  const top = svg.getBoundingClientRect().top;
+  const largeurG = svg.parentNode.getBoundingClientRect().width;
+  const h = Math.max(220, Math.min(window.innerHeight - top - bas, largeurG / 1.5625));
+  svg.style.setProperty('width', (h*1.5625).toFixed(0)+'px', 'important');
+  const largeurD = vt.clientWidth - 30;
+  const wD = Math.min(largeurD, h*900/560);
+  bw.style.width = wD.toFixed(0)+'px';
+  vt.style.paddingTop = Math.max(10, top - (bw.getBoundingClientRect().top - vt.getBoundingClientRect().top) + 10 - 10) + 'px';
+  // Ajustement exact : le haut du tableau sur le haut de la figure.
+  const ecart = svg.getBoundingClientRect().top - bw.getBoundingClientRect().top;
+  vt.style.paddingTop = (parseFloat(vt.style.paddingTop) + ecart) + 'px';
+}
+window.addEventListener('resize', ()=>requestAnimationFrame(figSplitAligner));
+document.addEventListener('fullscreenchange', ()=>setTimeout(figSplitAligner, 120));
+/* « Ajouter au cahier » (écran partagé) : la figure construite aux instruments, avec son bouton
+   « Voir la construction pas à pas », entre dans le cahier de la classe choisie -- comme le
+   bouton « + Cahier » d'une partie de cours. */
+async function figSplitAjouterCahier(){
+  if(currentUserRole!=='prof' && currentUserRole!=='admin'){ await niceAlert('Le cahier est réservé aux professeurs.'); return; }
+  if(!currentClassId){ await niceAlert('Choisissez d\'abord une classe (menu Outils prof) pour ajouter au cahier.'); return; }
+  while(figLive.occupe) await new Promise(r=>setTimeout(r, 100));
+  if(typeof tbAiFinishPlan==='function') await tbAiFinishPlan();
+  const html = typeof tbAiFigureBlockHtml==='function' ? tbAiFigureBlockHtml() : null;
+  if(!html){ await niceAlert('La construction est vide : tracez d\'abord la figure.'); return; }
+  const titre = await nicePrompt('Titre de cette construction dans le cahier :', 'Construction');
+  if(titre===null || titre===undefined) return;
+  const classe = (typeof accountClassesList!=='undefined' ? accountClassesList : []).find(c=>c.id===currentClassId);
+  const entry = {niveau: (classe && classe.niveau) || currentLevel || '5e', chapitre: '', exo: 'Construction', titre: String(titre).trim() || 'Construction', date: todayISO(), raw: '', html};
+  cahier.push(entry); sortCahierInPlace(); saveCahier();
+  if(document.getElementById('cahierList')) renderCahier();
+  const b = document.getElementById('tbSplitCahierBtn');
+  if(b){ const old = b.innerHTML; b.innerHTML = '<span class="gicon">check</span> Ajouté au cahier'; setTimeout(()=>{ b.innerHTML = old; }, 1800); }
+  if(isSyncEnabled()){
+    const res = await syncAddEntry(entry);
+    if(res.ok){ entry.id = res.id; saveCahier(); }
+    else if(!res.offline) await niceAlert('Ajouté localement, mais la synchronisation a échoué : '+(res.error||'erreur inconnue')+'.');
+  }
+}
 function figRouvrirPanneau(){
   document.getElementById('toolsModalOverlay').style.display = 'flex';
   document.getElementById('figurePanel').style.display = 'block';
@@ -5892,7 +5937,11 @@ async function figToggleSplit(){
   if(typeof initTableauView==='function') initTableauView();
   figRouvrirPanneau();
   document.getElementById('figSplitRefreshBtn').style.display = 'inline-flex';
-  figSplitOutilsInit(); document.getElementById('figSplitOutils').style.display = 'flex';
+  figSplitOutilsInit();
+  const outils = document.getElementById('figSplitOutils'), ligne = document.getElementById('figSplitCompasLigne');
+  outils.style.display = 'flex'; outils.style.margin = '0';
+  if(ligne && outils.parentNode!==ligne){ figSplitOutilsHome = [outils.parentNode, outils.nextSibling]; ligne.appendChild(outils); }
+  requestAnimationFrame(figSplitAligner);
   document.getElementById('figSplitBtn').classList.add('active');
   document.getElementById('figSplitBtn').title = 'Quitter l\'écran partagé';
   // La figure déjà tracée est reconstruite d'un coup ; ensuite, chaque nouvel objet se construit
@@ -5906,7 +5955,11 @@ function figQuitterSplit(){
   if(!document.body.classList.contains('fig-split')) return;
   document.body.classList.remove('fig-split');
   const r = document.getElementById('figSplitRefreshBtn'); if(r) r.style.display = 'none';
-  const o = document.getElementById('figSplitOutils'); if(o) o.style.display = 'none';
+  const o = document.getElementById('figSplitOutils');
+  if(o){ o.style.display = 'none'; o.style.margin = '0 0 6px'; if(figSplitOutilsHome){ figSplitOutilsHome[0].insertBefore(o, figSplitOutilsHome[1]); figSplitOutilsHome = null; } }
+  const svg = document.getElementById('figureSvg'); if(svg){ svg.style.removeProperty('width'); svg.style.width = 'min(90vw, 1000px, calc(62vh * 1.5625))'; }
+  const bw = document.getElementById('tbBoardWrap'); if(bw){ bw.style.width = ''; }
+  const vt = document.getElementById('view-tableau'); if(vt) vt.style.paddingTop = '';
   const b = document.getElementById('figSplitBtn'); if(b){ b.classList.remove('active'); b.title = 'Écran partagé : la figure à gauche, sa construction aux instruments à droite'; }
 }
 /* Construction EN DIRECT -- demandé : « l'idée est de voir les constructions se faire en direct avec
