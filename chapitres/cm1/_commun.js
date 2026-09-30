@@ -37,27 +37,31 @@ function cm1Tableau(entetes, lignes, opts){
 }
 // Exercices avec correction dépliable ; redaction = { titre, lignes: [[expression, commentaire]...] } (facultatif).
 function cm1Exos(slug, liste, redaction){
+  // slug unique par chapitre ET par niveau (en CM2 : préfixe « c2- ») : il sert aux id des corrections.
   return (redaction ? `<div class="redaction-block"><h3>${redaction.titre}</h3><div class="redaction-template">${redaction.lignes.map(([e, c]) => `<div class="we-row"><span class="we-expr">${e}</span><span class="we-comment">${c}</span></div>`).join('')}</div></div>` : '')
     + `<div class="redaction-block"><h3>Exercices</h3>${liste.map(([e, c], i) => `<div class="exo-card"><div class="num">Exercice ${i + 1}</div>${e}
       <button type="button" class="exo-correction-toggle" data-target="cm1-${slug}-c${i + 1}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
       <div class="exo-correction" id="cm1-${slug}-c${i + 1}"><p style="margin:0;">${c}</p></div></div>`).join('')}</div>`;
 }
 function cm1Histoire(titre, paras){ return `<div class="history-box"><div class="history-title"><span class=gicon>history_edu</span> ${titre}</div>${paras.map(p => `<p style="margin:0 0 12px;">${p}</p>`).join('')}</div>`; }
-function cm1Conteneurs(slug){
+function cm1Conteneurs(slug, niveau){
+  niveau = niveau || 'cm1';
   [['panel-cours', 'cours'], ['panel-methode', 'methode'], ['panel-exercices', 'exos'], ['panel-histoire', 'histoire']].forEach(([p, k]) => {
-    const id = k + '-demo-cm1-' + slug; if(document.getElementById(id)) return;
+    const id = k + '-demo-' + niveau + '-' + slug; if(document.getElementById(id)) return;
     const panel = document.getElementById(p); if(!panel) return;
     const d = document.createElement('div'); d.id = id; d.style.display = 'none'; panel.appendChild(d);
   });
 }
+// o.niveau : 'cm1' (par défaut) ou 'cm2' -- mêmes outils pour les deux années du cours moyen.
 function cm1Chapitre(o){
-  cm1Conteneurs(o.slug);
-  const id = k => k + '-demo-cm1-' + o.slug;
+  const niv = o.niveau || 'cm1';
+  cm1Conteneurs(o.slug, niv);
+  const id = k => k + '-demo-' + niv + '-' + o.slug;
   const poser = (k, html) => { const el = document.getElementById(id(k)); if(el) el.innerHTML = html || ''; };
   poser('cours', o.cours); poser('methode', o.methode); poser('exos', o.exos); poser('histoire', o.histoire);
   (o.demos || []).forEach(([k, steps]) => { CM1_DEMOS[k] = makeStepDemo(steps, 'cm1d-' + k); });
-  if(o.quiz) DEMO_QUIZZES['cm1|' + o.titre] = o.quiz;
-  DEMO_REGISTRY['cm1|' + o.titre] = { cours: id('cours'), methode: id('methode'), exos: id('exos'), histoire: id('histoire'),
+  if(o.quiz) DEMO_QUIZZES[niv + '|' + o.titre] = o.quiz;
+  DEMO_REGISTRY[niv + '|' + o.titre] = { cours: id('cours'), methode: id('methode'), exos: id('exos'), histoire: id('histoire'),
     init: () => {
       ['cours', 'methode', 'exos', 'histoire'].forEach(k => { const el = document.getElementById(id(k)); if(el && typeof renderStaticMath === 'function') renderStaticMath(el); });
       ['cours', 'methode'].forEach(k => { const el = document.getElementById(id(k)); if(el && typeof injectCourseAddButtons === 'function') injectCourseAddButtons(el); });
@@ -96,3 +100,15 @@ function cm1Graduation(max, n, points, opts){
 }
 // Fraction écrite « en étage » sans KaTeX (lisible partout, y compris dans les tableaux).
 function cm1Frac(a, b){ return `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">${a}</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">${b}</span></span>`; }
+// Opération posée alignée sur la virgule : lignes = [[signe, 'chiffres']], la dernière est le résultat ;
+// un 3e élément vrai dans une ligne trace un trait au-dessus d'elle (produits partiels) ;
+// retenues = chaîne alignée à droite (espaces = pas de retenue). Commune au CM1 et au CM2.
+function cm1Posee(lignes, retenues){
+  const larg = Math.max(...lignes.map(l => l[1].length), retenues ? retenues.length : 0);
+  const cell = (c, st) => `<td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;${st || ''}">${c === ' ' ? '' : c}</td>`;
+  let h = '<table style="border-collapse:collapse;margin:8px auto;">';
+  if(retenues) h += `<tr><td></td>${retenues.padStart(larg).split('').map(c => cell(c, 'font-size:.75rem;color:#E35D3A;')).join('')}</tr>`;
+  lignes.forEach(([s, n, trait], i) => { const res = i === lignes.length - 1;
+    h += `<tr style="${res || trait ? 'border-top:2px solid #1F3A5C;' : ''}">${cell(s, 'color:#E35D3A;')}${n.padStart(larg).split('').map(c => cell(c, res ? 'color:#2E9C6A;' : '')).join('')}</tr>`; });
+  return h + '</table>';
+}

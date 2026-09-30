@@ -163,10 +163,43 @@ const CHCM1 = [
  {n:23,code:'D4',cat:'D',t:'Initiation à la pensée informatique',s:1,p:'',d:'25-31 mai'},
 ];
 
+/* Progression CM2 -- notre propre manuel, construite sur le programme du cycle 3 (partie CM2) :
+   entiers d'au plus 6 chiffres en périodes 1-2 (jusqu'à 999 999 999 à partir de la période 3),
+   fractions et décimaux dès la période 1 (décimaux jusqu'aux millièmes, dénominateurs ≤ 60),
+   probabilités au plus tard en période 2, pas de tableau de conversion ni de proportionnalité,
+   pas de rapporteur (le degré est introduit à partir de l'angle droit). Rubriques alternées. */
+const CHCM2 = [
+ {n:1,code:'N1',cat:'N',t:'Nombres entiers (révisions jusqu\'à 999 999)',s:1,p:'',d:'7-13 sept'},
+ {n:2,code:'N2',cat:'N',t:'Fractions',s:1,p:'',d:'14-20 sept'},
+ {n:3,code:'G1',cat:'G',t:'Droites, segments et cercles',s:1,p:'',d:'21-27 sept'},
+ {n:4,code:'N3',cat:'N',t:'Nombres décimaux jusqu\'aux millièmes',s:2,p:'',d:'28 sept-11 oct'},
+ {n:5,code:'M1',cat:'M',t:'Longueurs, masses, contenances',s:1,p:'',d:'12-16 oct'},
+ {n:6,code:'N4',cat:'N',t:'Addition et soustraction',s:1,p:'',d:'3-8 nov'},
+ {n:7,code:'G2',cat:'G',t:'Figures planes',s:2,p:'',d:'9-22 nov'},
+ {n:8,code:'N5',cat:'N',t:'Multiplication',s:2,p:'',d:'23 nov-6 déc'},
+ {n:9,code:'D1',cat:'D',t:'Probabilités',s:1,p:'',d:'7-13 déc'},
+ {n:10,code:'N6',cat:'N',t:'Fractions : comparer et calculer',s:1,p:'',d:'14-18 déc'},
+ {n:11,code:'N7',cat:'N',t:'Grands nombres jusqu\'à 999 999 999',s:1,p:'',d:'5-11 jan'},
+ {n:12,code:'M2',cat:'M',t:'Aires',s:1,p:'',d:'12-18 jan'},
+ {n:13,code:'N8',cat:'N',t:'Multiples et diviseurs',s:1,p:'',d:'19-25 jan'},
+ {n:14,code:'D2',cat:'D',t:'Organisation et gestion de données',s:1,p:'',d:'26 jan-1 fév'},
+ {n:15,code:'N9',cat:'N',t:'Division',s:2,p:'',d:'2-15 fév'},
+ {n:16,code:'N10',cat:'N',t:'Résolution de problèmes',s:2,p:'',d:'9-22 mars'},
+ {n:17,code:'G3',cat:'G',t:'Programmes de construction',s:1,p:'',d:'23-29 mars'},
+ {n:18,code:'D3',cat:'D',t:'Proportionnalité',s:1,p:'',d:'30 mars-5 avr'},
+ {n:19,code:'G4',cat:'G',t:'Symétrie axiale',s:1,p:'',d:'6-12 avr'},
+ {n:20,code:'M3',cat:'M',t:'Angles',s:1,p:'',d:'13-17 avr'},
+ {n:21,code:'N11',cat:'N',t:'Procédures de calcul mental',s:1,p:'',d:'4-10 mai'},
+ {n:22,code:'G5',cat:'G',t:'Solides et repérage dans l\'espace',s:1,p:'',d:'11-17 mai'},
+ {n:23,code:'N12',cat:'N',t:'Algèbre',s:1,p:'',d:'18-24 mai'},
+ {n:24,code:'M4',cat:'M',t:'Heures et durées',s:1,p:'',d:'25-31 mai'},
+ {n:25,code:'D4',cat:'D',t:'Pensée informatique',s:1,p:'',d:'1-7 juin'},
+];
+
 // Correspondance niveau -> programme -- remplace la ternaire "lvl==='6e'?CH6:CH5" codée en
 // dur, pour rester extensible à mesure que de nouveaux niveaux sont ajoutés (cm1 aujourd'hui,
 // cm2/4e/3e plus tard).
-const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, '3e': CH3, 'cm1': CHCM1 };
+const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, '3e': CH3, 'cm1': CHCM1, 'cm2': CHCM2 };
 // Niveaux en préparation, réservés aux administrateurs (menu masqué, routes refusées aux autres).
 const NIVEAUX_ADMIN = []; // la 4e est publiée depuis le build 786, la 3e depuis le build 817
 function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserRole === 'admin'; }
@@ -177,6 +210,7 @@ const VACANCES = {
   '4e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:12,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '3e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:8,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:13,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'cm1':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:9,label:'Vacances de Noël · 19 déc → 4 jan'},{after:15,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:19,label:'Vacances de printemps · 17 avr → 3 mai'}],
+  'cm2':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:10,label:'Vacances de Noël · 19 déc → 4 jan'},{after:15,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:20,label:'Vacances de printemps · 17 avr → 3 mai'}],
 };
 /* Dates officielles 2026-2027 (arrêté du 22 octobre 2025, Journal officiel) pour l'éditeur
    de progression personnalisée ("Ma progression") : Toussaint et Noël sont communes aux
@@ -3097,6 +3131,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.869', items:[
+    "CM2 : nouvelle progression annuelle en 25 chapitres, conforme au programme du cycle 3 (partie CM2) : nombres de 6 chiffres au plus en périodes 1 et 2, puis jusqu'à 999 999 999 ; décimaux jusqu'aux millièmes ; fractions de dénominateur 60 au plus ; probabilités au plus tard en période 2 ; ni tableau de conversion ni tableau de proportionnalité ; pas de rapporteur. Demandé : « Ensuite tu peux attaquer le CM2 ».",
+    "CM2, périodes 1 et 2 : dix chapitres, chacun avec cours, méthode animée, exercices corrigés, histoire et quiz. « Nombres entiers (révisions jusqu'à 999 999) », « Fractions » (partager, mesurer, écrire autrement une fraction supérieure à 1), « Droites, segments et cercles » (notations expliquées, perpendiculaires, parallèles, cercle et disque), « Nombres décimaux jusqu'aux millièmes », « Longueurs, masses, contenances » (conversions justifiées par une phrase), « Addition et soustraction » (décimaux, estimation, parenthèses), « Figures planes », « Multiplication » (décimal × entier posée), « Probabilités » (a chances sur b, arbre, tableau des sommes de deux dés, atelier de lancers) et « Fractions : comparer et calculer ».",
+  ]},
   { version:'2026-08-19.868', items:[
     "Référencement Google étendu au CM1 : une page par chapitre (23 pages, adresse /cm1/nom-du-chapitre/), un sommaire /cm1/, le lien « Cours CM1 » dans l'en-tête et le pied des pages publiques, et le sitemap mis à jour. Le lien « CM1 (aperçu) » du pied de page de l'application devient « Cours de maths CM1 ». Demandé : « étends le référencement Google au CM1 ».",
   ]},
