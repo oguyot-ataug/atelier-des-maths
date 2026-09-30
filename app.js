@@ -3088,6 +3088,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.856', items:[
+    "Cartes flashcode : le bouton est maintenant dans « Mes classes » (onglet Comptes, à droite du filtre), pour la classe active, et non plus dans le menu Outils prof. Demandé : « Je pense qu'il faut mettre le menu cartes flashcode dans \u00ab Mes classes \u00bb ».",
+  ]},
   { version:'2026-08-19.855', items:[
     "Cartes flashcode : accès direct depuis le menu Outils prof › « Cartes flashcode (numéros, impression) ». Demandé : « Comment j'associe les flashcodes, où je les vois ? » La fenêtre s'ouvre sur la classe active : numéros des élèves (à la main ou « Numéroter 1, 2, 3… »), puis impression des planches. Elle restait accessible aussi depuis le lancement d'une séance avec les cartes et le bouton « Cartes » pendant la séance.",
   ]},
