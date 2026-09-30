@@ -3082,6 +3082,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.845', items:[
+    "Accueil : vidéo de présentation d'Oliv'IA (1 min 24), dans une nouvelle vignette « Oliv'IA, l'aide sur les cours » en tête des outils pour les professeurs. On y voit le professeur ouvrir Oliv'IA à un groupe de remédiation, puis une élève de 6e sélectionner la propriété d'égalité des fractions : Oliv'IA la réexplique avec une pizza, lui pose une petite question pour vérifier, puis l'aide sur un exercice par des indices, sans donner la réponse. Pour finir, le professeur relit la conversation.",
+  ]},
   { version:'2026-08-19.844', items:[
     "Oliv'IA a un nouveau visage : Olive-robot. Choisie parmi les propositions (« J'adore Olive-robot pour Oliv'IA »), c'est une olive verte avec sa feuille, de grands yeux qui clignent, des joues roses et deux petits bras articulés. Elle agite le bras quand on passe la souris sur elle, et sa feuille bouge pendant qu'elle réfléchit. Même personnage partout : le bouton, l'en-tête du chat, les réponses et la carte Oliv'IA des réglages du professeur.",
   ]},
