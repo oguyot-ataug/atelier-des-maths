@@ -200,7 +200,7 @@ function qzFormModeMaj(){
   if(!qzF || !qzEd) return;
   const direct = qzEd.reglages.mode === 'direct', b = document.getElementById('qzfDonner');
   document.querySelectorAll('#qzFormRoot .qzf-dates').forEach(el => { el.style.display = direct ? 'none' : ''; });
-  if(b && !qzF.devoirId) b.innerHTML = direct ? '<span class="gicon">cast_for_education</span> Ouvrir la séance en direct' : '<span class="gicon">send</span> Donner à la classe';
+  if(b && !qzF.devoirId) b.innerHTML = direct ? '<span class="gicon">bolt</span> Lancer les questions flash' : '<span class="gicon">send</span> Donner à la classe';
 }
 async function qzFormEnregistrer(){
   if(qzEd && qzEd.reglages.mode === 'direct' && !qzF.devoirId) return qzFormDirect();
@@ -240,7 +240,7 @@ async function qzFormEnregistrer(){
 }
 async function qzFormDirect(){
   const st = document.getElementById('qzfStatus');
-  const titre = document.getElementById('qzfTitre').value.trim() || 'Séance en direct';
+  const titre = document.getElementById('qzfTitre').value.trim() || 'Questions flash';
   const classId = document.getElementById('qzfClasse').value;
   if(!classId){ st.textContent = 'Choisissez la classe.'; return; }
   if(qzF.cible === 'eleves' && !qzF.eleves.size){ st.textContent = 'Choisissez au moins un élève.'; return; }
@@ -334,7 +334,7 @@ function qzInterrosHtml(liste){
         <button class="btn qz-mini" onclick="qzOuvrirCorrection('${d.id}')">${qzEstEntrainement(r) || qzEstSondage(r) ? '<span class="gicon">insights</span> Résultats' : '<span class="gicon">fact_check</span> Corriger'}</button>
         <button class="btn secondary qz-mini" onclick="qzFormModifier('${d.id}')" title="Modifier"><span class="gicon">edit</span></button>
         ${!qzEstSondage(r) && typeof qzCahierOuvrir === 'function' ? `<button class="btn secondary qz-mini" onclick="qzCahierOuvrir('${d.id}')" title="Ajouter au cahier de l'élève (le sujet, avec ou sans la correction)"><span class="gicon">menu_book</span> Cahier</button>` : ''}
-        ${d.questionnaire_id ? (src => `<button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${src}')" title="Séance en direct avec ces questions : une à une, sans note, réponses en direct"><span class="gicon">cast_for_education</span></button>
+        ${d.questionnaire_id ? (src => `<button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${src}')" title="Questions flash avec ces questions : une à une, sans note, réponses en direct"><span class="gicon">bolt</span></button>
         <button class="btn secondary qz-mini" onclick="qzBanqueDonner('${src}')" title="Donner une copie à une autre classe"><span class="gicon">content_copy</span></button>
         <button class="btn secondary qz-mini" onclick="qzBanquePartager('${src}')" title="Partager le questionnaire avec des collègues (ils pourront le copier)"><span class="gicon">share</span></button>`)(qzSourceInterro(d)) : ''}
         <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzInterroSupprimer('${d.id}')" title="Supprimer"><span class="gicon">delete</span></button>
@@ -361,7 +361,7 @@ function qzBrouillonsHtml(f){
         <span class="qz-i-act">
           <button class="btn qz-mini" onclick="qzBanqueReprendre('${q.id}')"><span class="gicon">edit</span> Reprendre</button>
           <button class="btn secondary qz-mini" onclick="qzBanqueDonner('${q.id}')"><span class="gicon">assignment_add</span> Donner à une classe</button>
-          <button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${q.id}')" title="Séance en direct : les questions une à une, sans note, réponses en direct"><span class="gicon">cast_for_education</span> En direct</button>
+          <button class="btn secondary qz-mini qzd-btn" onclick="qzDirectLancer('${q.id}')" title="Questions flash : les questions une à une, sans note, réponses en direct"><span class="gicon">bolt</span> Questions flash</button>
           <button class="btn secondary qz-mini" onclick="qzBanquePartager('${q.id}')" title="Partager avec des collègues (ils pourront le copier)"><span class="gicon">share</span> Partager</button>
           <button class="btn secondary qz-mini" onclick="qzBanqueApercu('${q.id}')" title="Aperçu"><span class="gicon">visibility</span></button>
           <button class="btn secondary qz-mini" style="color:#a83c1f;" onclick="qzBanqueSupprimer('${q.id}')" title="Supprimer"><span class="gicon">delete</span></button>

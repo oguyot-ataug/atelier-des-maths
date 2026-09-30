@@ -68,7 +68,7 @@ async function qzCahierOuvrir(devoirId){
   qzCahierModal({ titre: d.titre, consigne: d.consigne, questions: q.questions, class_id: d.class_id, classes: d.classes, fini,
     exo: 'Interrogation', chapDefaut: 'Interrogations', alerte: 'Cette interrogation n\'est pas encore terminée : les élèves verront la correction dans leur cahier dès maintenant.' });
 }
-/* Séance en direct -- signalé : « Pour les Séances en direct, je ne peux pas les insérer dans le cahier ».
+/* Questions flash (ex-« séance en direct ») -- signalé : « Pour les Séances en direct, je ne peux pas les insérer dans le cahier ».
    Même fenêtre que pour une interrogation : les questions réellement posées pendant la séance (toutes
    si elle n'a pas commencé), avec le corrigé à jour, datées du jour de la séance. */
 async function qzDirectCahierOuvrir(id){
@@ -81,7 +81,8 @@ async function qzDirectCahierOuvrir(id){
   if(!garde.some(x => x.type !== 'texte')){ await niceAlert('Cette séance n\'a pas de question.'); return; }
   const d = new Date(row.created_at), iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   qzCahierModal({ titre: row.titre, consigne: '', questions: garde, class_id: row.class_id, classes: row.classes, fini: !!row.ended_at, date: iso,
-    exo: 'Séance en direct', chapDefaut: 'Séances en direct', alerte: 'Cette séance n\'est pas terminée : les élèves verront la correction dans leur cahier dès maintenant.' });
+    // Notées, elles sont devenues une interrogation : on les range comme telle.
+    exo: row.devoir_id ? 'Interrogation' : 'Questions flash', chapDefaut: row.devoir_id ? 'Interrogations' : 'Questions flash', alerte: 'Cette séance n\'est pas terminée : les élèves verront la correction dans leur cahier dès maintenant.' });
 }
 // Fenêtre commune : sujet seul ou avec correction, chapitre et date, puis insertion dans cahier_entries.
 function qzCahierModal(m){

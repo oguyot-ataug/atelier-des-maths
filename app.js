@@ -3073,6 +3073,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.832', items:[
+    "« Séance en direct » devient « Questions flash », partout : bouton sur les questionnaires, mode de l'éditeur, fenêtre de lancement, listes « Questions flash en cours » et « Questions flash terminées », bandeau et code côté élève, page d'accueil, entrées du cahier. Nouveau logo : un éclair. Des questions flash notées deviennent une interrogation : ajoutées au cahier, elles y sont rangées comme « Interrogation ». L'entrée déjà ajoutée au cahier a été renommée.",
+    "Résumé pour le cahier de textes : les interrogations et les questions flash ne sont plus dans « Exercices ». Elles ont chacune leur rubrique, avec sa couleur et son logo : 📝 Interrogation en violet, ⚡ Questions flash en rouge, à côté du Cours en bleu et des Exercices en orange.",
+  ]},
   { version:'2026-08-19.831', items:[
     "Résumé pour le cahier de textes : numéros de paragraphe et sous-paragraphes. Demandé : « Pour les cours : mettre le numéro du paragraphe et les sous paragraphes aussi ». Chaque partie de cours apparaît avec son numéro (« 1. Décrire une série statistique ») et ses sous-paragraphes en dessous (« A. Les mots des statistiques », « B. Les fréquences »). Un sous-paragraphe ajouté seul se range sous son paragraphe, et les méthodes sont regroupées sous « Méthodes ». Un même paragraphe ajouté deux fois n'apparaît qu'une fois.",
   ]},
@@ -6193,7 +6197,7 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
   // exo==='' : entrée sans étiquette (ex. en-tête d'évaluation ajoutée au cahier), distinct de
   // '-' (déjà utilisé par l'outil de correction pour "numéro non renseigné", qui affiche encore
   // "Exercice -").
-  const refLabel = e.exo==='' ? '' : e.exo==='Cours' ? 'Cours' : e.exo==='Interrogation' ? 'Interrogation' : e.exo==='Séance en direct' ? 'Séance en direct' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo)); // Interrogation : questionnaires-cahier.js
+  const refLabel = e.exo==='' ? '' : e.exo==='Cours' ? 'Cours' : e.exo==='Interrogation' ? 'Interrogation' : (e.exo==='Questions flash' || e.exo==='Séance en direct') ? 'Questions flash' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo)); // Interrogation : questionnaires-cahier.js
   let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}</div>`;
   if(editable){
     // Le déplacement ne peut se faire QU'À L'INTÉRIEUR du même groupe (même date + même
@@ -6761,7 +6765,7 @@ function resumeSeanceContenu(date){
   entries.forEach(e=>{
     const nom = String(e.chapitre||'').replace(/^[A-Z]{1,3}\d+[a-z]?\s*·\s*/, '').trim() || 'Chapitre non précisé';
     let c = chapitres.find(x=>x.nom===nom);
-    if(!c){ c = {nom, cours:[], exos:[]}; chapitres.push(c); }
+    if(!c){ c = {nom, cours:[], exos:[], interros:[], flash:[]}; chapitres.push(c); }
     const titre = String(e.titre||'').replace(/\s+/g, ' ').trim();
     const court = t => t.length > 110 ? t.slice(0, 107).replace(/\s+\S*$/, '') + '…' : t;
     if(e.exo==='Cours') resumeCoursTitres(e, titre).forEach(it=>{
@@ -6772,14 +6776,16 @@ function resumeSeanceContenu(date){
       c.cours.push(it);
     });
     else if(e.exo==='TD') c.exos.push(titre || 'Exercices');
-    else if(e.exo==='Interrogation' || e.exo==='Séance en direct') c.exos.push(e.exo + (titre ? ' : '+court(titre) : ''));
+    // Interrogations et questions flash : rubriques à part, jamais dans « Exercices ».
+    else if(e.exo==='Interrogation') c.interros.push(court(titre) || 'Interrogation');
+    else if(e.exo==='Questions flash' || e.exo==='Séance en direct') c.flash.push(court(titre) || 'Questions flash');
     else if(e.exo==='Construction') c.exos.push('Construction' + (titre && titre!=='Construction' ? ' : '+court(titre) : ''));
     else {
       const num = String(e.exo||'').trim(), n = num && num!=='-' ? 'Exercice '+num : 'Exercice';
       c.exos.push(n + (titre ? ' : '+court(titre) : ''));
     }
   });
-  const BLEU = '#0C5BA0', ORANGE = '#C45F00', ENCRE = '#20242E';
+  const BLEU = '#0C5BA0', ORANGE = '#C45F00', VIOLET = '#6B3FA0', ROUGE = '#C62828', ENCRE = '#20242E';
   const esc = t => escapeHtml(t);
   let html = '', txt = '';
   chapitres.forEach((c, i)=>{
@@ -6789,10 +6795,12 @@ function resumeSeanceContenu(date){
       html += `<p style="margin:4px 0 2px;font-weight:bold;color:${BLEU};">Cours</p><ul style="margin:0 0 6px;padding-left:22px;color:${BLEU};">${c.cours.map(it=>`<li>${esc(it.t)}${it.subs.length ? `<ul style="margin:2px 0 0;padding-left:20px;list-style:circle;">${it.subs.map(u=>`<li>${esc(u)}</li>`).join('')}</ul>` : ''}</li>`).join('')}</ul>`;
       txt += 'Cours :\n' + c.cours.map(it=>'  - '+it.t + it.subs.map(u=>'\n      '+u).join('')).join('\n') + '\n';
     }
-    if(c.exos.length){
-      html += `<p style="margin:4px 0 2px;font-weight:bold;color:${ORANGE};">Exercices</p><ul style="margin:0 0 6px;padding-left:22px;color:${ORANGE};">${c.exos.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
-      txt += 'Exercices :\n' + c.exos.map(t=>'  - '+t).join('\n') + '\n';
-    }
+    // Rubriques simples : Exercices (orange), Interrogation (violet, 📝), Questions flash (rouge, ⚡).
+    [[c.exos, 'Exercices', ORANGE, ''], [c.interros, 'Interrogation', VIOLET, '📝 '], [c.flash, 'Questions flash', ROUGE, '⚡ ']].forEach(([l, nomR, coul, logo])=>{
+      if(!l.length) return;
+      html += `<p style="margin:4px 0 2px;font-weight:bold;color:${coul};">${logo}${nomR}</p><ul style="margin:0 0 6px;padding-left:22px;color:${coul};">${l.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
+      txt += logo + nomR + ' :\n' + l.map(t=>'  - '+t).join('\n') + '\n';
+    });
   });
   return {html, txt, vide: !entries.length};
 }

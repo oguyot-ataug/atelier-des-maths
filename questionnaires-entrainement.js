@@ -164,7 +164,7 @@ function qzEntResultats(root){
     <p class="hint" style="margin:10px 0 0;">✓ juste du premier coup · ✓2 juste au 2e essai · ✗ pas réussie · ? question ouverte à regarder · — pas faite. Pour une remédiation, donnez de nouveau ce questionnaire en entraînement aux élèves concernés (« Élèves choisis »).</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
       ${d.questionnaire_id ? `<button class="btn secondary" onclick="qzBanqueDonner('${d.questionnaire_id}')"><span class="gicon">content_copy</span> Donner à d'autres élèves</button>
-      <button class="btn secondary qzd-btn" onclick="qzDirectLancer('${d.questionnaire_id}')"><span class="gicon">cast_for_education</span> En direct avec ces questions</button>` : ''}
+      <button class="btn secondary qzd-btn" onclick="qzDirectLancer('${d.questionnaire_id}')"><span class="gicon">bolt</span> Questions flash avec ces questions</button>` : ''}
     </div>`;
 }
 

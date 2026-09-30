@@ -81,14 +81,14 @@ document.getElementById('view-devoirs-prof').innerHTML = `
 document.getElementById('view-devoirs-eleve').innerHTML = `
   <span class="back-btn" data-nav="home">← Accueil</span>
   <h1 style="margin:6px 0 4px;"><span class=gicon>assignment</span> Mon travail</h1>
-  <p style="color:var(--ink-soft);max-width:70ch;">Le travail proposé par vos professeurs : devoirs, interrogations, entraînements, sondages et séances en direct.</p>
+  <p style="color:var(--ink-soft);max-width:70ch;">Le travail proposé par vos professeurs : devoirs, interrogations, entraînements, sondages et questions flash.</p>
   <!-- Séance en direct -- demandé : "Le menu s'entrainer ne doit pas contenir Séance en direct. On va mettre
        cette fonctionnalité avec les devoirs." Code affiché au tableau (questionnaires-direct.js) ; masqué
        pour les comptes Famille (pas de classe), voir refreshAuthUI. -->
   <form class="mt-direct" id="mtDirect" onsubmit="event.preventDefault();qzDirectCode(this.code.value)">
-    <span class="gicon">cast_for_education</span>
-    <span class="mt-direct-t"><b>Séance en direct</b><small>Tape le code affiché au tableau par ton professeur.</small></span>
-    <input name="code" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Code" aria-label="Code de la séance en direct">
+    <span class="gicon">bolt</span>
+    <span class="mt-direct-t"><b>Questions flash</b><small>Tape le code affiché au tableau par ton professeur.</small></span>
+    <input name="code" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Code" aria-label="Code des questions flash">
     <button class="btn"><span class="gicon">login</span> Rejoindre</button>
   </form>
   <div class="tool-row" style="margin:10px 0;">

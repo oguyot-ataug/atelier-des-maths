@@ -214,7 +214,7 @@ function qzSonResultats(root){
     <p class="hint" style="margin:6px 0 0;"><span class="qz-son-el ok">envoyé</span> <span class="qz-son-el encours">commencé</span> <span class="qz-son-el vide">pas encore ouvert</span></p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
       ${d.questionnaire_id ? `<button class="btn secondary" onclick="qzBanqueDonner('${d.questionnaire_id}')"><span class="gicon">content_copy</span> Donner à une autre classe</button>
-      <button class="btn secondary qzd-btn" onclick="qzDirectLancer('${d.questionnaire_id}')"><span class="gicon">cast_for_education</span> Sondage en direct</button>` : ''}
+      <button class="btn secondary qzd-btn" onclick="qzDirectLancer('${d.questionnaire_id}')"><span class="gicon">bolt</span> Sondage en direct</button>` : ''}
     </div>`;
   qzChargerPhotos(root);
 }
