@@ -3131,6 +3131,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.871', items:[
+    "CM2, période 4 : cinq nouveaux chapitres. « Résolution de problèmes » (les 4 phases, comparaison multiplicative, parties-tout, plusieurs étapes, dénombrement, optimisation, chercher toutes les solutions avec ordre). « Programmes de construction » (suivre un programme instruction par instruction avec la figure qui se construit, vocabulaire, écrire son propre programme). « Proportionnalité » (fois plus, fois moins, addition, passage par 1, uniquement par des phrases). « Symétrie axiale » (axe vertical, horizontal et diagonal du quadrillage, axes des figures usuelles) avec un atelier à compléter pour chaque type d'axe. « Angles » (notation de l'angle ABC, le degré à partir de l'angle droit, somme, multiple, moitié par pliage) avec un atelier de gabarits 90°, 45° et 30° à assembler.",
+  ]},
   { version:'2026-08-19.870', items:[
     "CM2, période 3 : cinq nouveaux chapitres. « Grands nombres jusqu'à 999 999 999 » (classe des millions). « Aires » (cm², dm², m², conversions en raisonnant, aire du carré et du rectangle, figures composées). « Multiples et diviseurs » (critères par 2, 5 et 10, tous les diviseurs d'un nombre, diviseurs et multiples communs) avec un tableau de 1 à 100 où l'on colore les multiples d'un ou deux nombres. « Organisation et gestion de données » (diagramme circulaire, points dans un repère, courbe, données réelles). « Division » (partage ou groupement, division euclidienne, division décimale par un diviseur à un chiffre, ÷ 10, 100, 1 000, ÷ 4 et ÷ 8 de tête, interpréter le reste), avec les divisions posées de l'outil du site.",
   ]},
