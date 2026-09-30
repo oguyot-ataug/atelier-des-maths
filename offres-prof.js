@@ -60,8 +60,11 @@ async function offreLoad(role, licenceEtab){
     } else if(role === 'eleve'){
       const { data } = await sb.from('class_students').select('classes(niveau,creee_par,groupe)').eq('student_id', currentUser.id);
       const cls = (data || []).map(r => r.classes).filter(c => c && !c.groupe); // les groupes de remédiation ne comptent pas
-      // Élève inscrit uniquement dans des classes créées en libre-service : niveaux de ses classes.
-      if(cls.length && cls.every(c => c.creee_par)) offreNiveaux = opRevision([...new Set(cls.map(c => c.niveau).filter(Boolean))]);
+      // Niveaux de ses classes (et le niveau inférieur en révision). D'abord réservé aux classes créées
+      // en libre-service ; signalé ensuite : « Mes élèves inscrits ont accès à tous les niveaux. Ce
+      // n'est pas trop normal. » -- la règle vaut donc pour tous les élèves, établissement compris.
+      const niv = [...new Set(cls.map(c => c.niveau).filter(n => OP_ORDRE.includes(n)))];
+      if(niv.length) offreNiveaux = opRevision(niv);
     }
   }catch(e){ /* hors ligne */ }
 }

@@ -3073,6 +3073,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.834', items:[
+    "Élèves : accès limité au niveau de leur classe. Signalé : « Mes élèves inscrits ont accès à tous les niveaux. Ce n'est pas trop normal. » Jusqu'ici, seuls les élèves des classes créées en libre-service étaient limités. Désormais, tout élève (classes de l'établissement comprises) a accès aux chapitres du niveau de sa classe et du niveau précédent, pour réviser : un élève de 5e voit la 5e et la 6e, un élève de 6e la 6e. Les groupes de remédiation ne comptent pas, et les chapitres gratuits restent ouverts à tous. Un chapitre d'un autre niveau s'affiche verrouillé (« hors du niveau de ta classe »). Rien ne change pour les professeurs.",
+  ]},
   { version:'2026-08-19.833', items:[
     "Résumé pour le cahier de textes dans l'ordre du cahier. Demandé : « Peux-tu respecter l'ordre du cahier pour faire le cahier de texte ? ». Le résumé suit maintenant les blocs du jour dans l'ordre où ils sont rangés dans le cahier, y compris après un déplacement à la main. Un titre « Chapitre : » apparaît à chaque changement de chapitre. Une rubrique (Cours, Exercices, 📝 Interrogation, ⚡ Questions flash) apparaît à chaque changement de type : un cours, puis des exercices, puis la suite du cours donnent Cours / Exercices / Cours, comme dans la séance.",
   ]},
