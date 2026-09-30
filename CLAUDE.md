@@ -42,3 +42,19 @@ construction ») n'a pas de page : elle apparaît automatiquement dès que son c
 Ne JAMAIS retirer de `index.html` la balise `<meta name="google-site-verification" ...>` : elle
 prouve à Google Search Console que le site nous appartient (validée le 26/09/2026) ; sans elle,
 l'accès au suivi de l'indexation est perdu.
+
+## Programmes officiels : quel texte pour quel niveau
+
+Nouveaux programmes (cycle 3 : CM1, CM2, 6e ; cycle 4 : 5e, 4e, 3e), avec une entrée en vigueur échelonnée :
+
+- **CM1, CM2, 6e** : nouveau programme du cycle 3, en vigueur. Chapitres de CM1 et de 6e contrôlés
+  (builds 858-859), chapitre 6e « Initiation à la pensée informatique » ajouté (build 862).
+- **5e** : nouveau programme du cycle 4, en vigueur dès l'année 2026-2027. Chapitres contrôlés et
+  complétés, chapitre « Pensée informatique et programmation » ajouté (build 863).
+- **4e** : le nouveau programme ne prend effet qu'en **septembre 2027**. D'ici là, garder l'ancien
+  programme ; faire le contrôle de conformité de la 4e avant la rentrée 2027.
+- **3e** : le nouveau programme ne prend effet qu'en **septembre 2028**. D'ici là, garder l'ancien
+  programme (et le brevet correspondant) ; contrôle de la 3e avant la rentrée 2028.
+
+Le texte du nouveau programme du cycle 4 (annexe 2) couvre déjà 4e et 3e : on peut s'en servir pour
+préparer ces mises à jour, sans les publier avant la date d'effet.
