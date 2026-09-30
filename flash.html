@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1C2230">
+<title>Lecture des cartes flashcode · L'Atelier des Maths</title>
+<link rel="icon" href="assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script defer src="vendor/zxing/zxing-reader.js"></script>
+<style>
+  *{box-sizing:border-box;} [hidden]{display:none!important;} html,body{margin:0;height:100%;background:#1C2230;color:#fff;font-family:Inter,system-ui,sans-serif;}
+  body{display:flex;flex-direction:column;}
+  header{display:flex;align-items:center;gap:10px;padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));}
+  header img{height:28px;background:#fff;border-radius:8px;padding:3px 6px;}
+  header b{font-family:'Space Grotesk',sans-serif;font-size:1rem;}
+  #etat{margin-left:auto;font-size:.76rem;font-weight:700;border-radius:999px;padding:4px 10px;background:#FFF4E6;color:#B8511F;white-space:nowrap;}
+  #etat.ok{background:#EAF6EC;color:#1E7B34;}
+  #info{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 14px 8px;font-family:'Space Grotesk',sans-serif;}
+  #info .q{font-size:1rem;color:#C9D6E6;} #info .n{font-size:1.9rem;font-weight:700;} #info .n b{color:#5DD27A;}
+  main{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;background:#000;}
+  video{width:100%;height:100%;object-fit:contain;}
+  #calque{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+  #message{position:absolute;left:12px;right:12px;top:12px;text-align:center;background:rgba(28,34,48,.88);border-radius:12px;padding:10px 12px;font-weight:600;}
+  .panneau{background:#fff;color:#20242E;border-radius:16px;padding:22px;margin:18px;max-width:420px;text-align:center;}
+  .panneau h1{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin:0 0 10px;}
+  .panneau p{color:#4E5665;line-height:1.45;margin:0 0 14px;}
+  input{font:700 1.6rem 'Space Grotesk',monospace;letter-spacing:4px;text-align:center;width:100%;padding:10px;border:2px solid #C9D2DE;border-radius:12px;text-transform:uppercase;}
+  button{font:600 1rem Inter,sans-serif;border:none;border-radius:12px;padding:12px 16px;cursor:pointer;}
+  .primaire{background:#0C5BA0;color:#fff;width:100%;margin-top:12px;}
+  footer{padding:8px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom));}
+  #manquent{font-size:.9rem;color:#E9EDF3;line-height:1.5;max-height:4.6em;overflow:auto;margin-bottom:8px;}
+  #manquent .m{display:inline-block;min-width:30px;text-align:center;background:#C62828;border-radius:6px;padding:0 5px;margin:0 3px 3px 0;font-weight:700;}
+  #manquent .ok{color:#5DD27A;font-weight:700;}
+  .boutons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .boutons button{background:rgba(255,255,255,.12);color:#fff;}
+  .err{color:#a83c1f;font-weight:600;}
+</style>
+</head>
+<body>
+<header><img src="assets/logo-header.png" alt=""><b>Cartes flashcode</b><span id="etat">Pas encore relié</span></header>
+<div id="info" hidden><span class="q" id="infoQ"></span><span class="n" id="infoN"></span></div>
+<main id="main"></main>
+<footer id="barre" hidden>
+  <div id="manquent"></div>
+  <div class="boutons"><button id="bTorche" onclick="torche()" hidden>🔦 Lampe</button><button onclick="changerCamera()">🔄 Caméra</button></div>
+</footer>
+<script>
+/* Lecture des cartes flashcode (voir flashcartes.js) : la caméra du téléphone lit toutes les cartes
+   visibles à la fois et envoie les numéros et les lettres lus à l'ordinateur du professeur, par un
+   canal temps réel dont le nom est le code affiché sur l'ordinateur. Pas de connexion au site :
+   c'est l'ordinateur qui enregistre les réponses ; rien n'est gardé sur le téléphone. */
+const SUPABASE_URL = 'https://rngzubhnypmistjsumpz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJuZ3p1YmhueXBtaXN0anN1bXB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MTExNjEsImV4cCI6MjEwMDM4NzE2MX0.V56LFlb1ITWPmoO-DwLw3coeS7epY9NM5K2Waj03pac';
+const ALPHA = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/;
+const CARTE = /^AM-(\d{1,3})-([ABCD])$/;
+let sb, ch, flux, video, calque, code, facing = 'environment', verrou = null;
+let pc = null;                 // état reçu de l'ordinateur : { cle, phase, n, total, lus:{num:L}, attendus:[num], lettres }
+let mes = new Map();           // cartes lues par ce téléphone pour la question en cours : numéro → lettre
+let vues = [];                 // dernières positions dessinées
+let dernierEnvoi = 0;
+const $ = id => document.getElementById(id);
+function etat(t, cls){ const e = $('etat'); e.textContent = t; e.className = cls || ''; }
+
+function accueil(msg){
+  $('main').innerHTML = `<div class="panneau"><h1>Relier ce téléphone</h1>
+    <p>Tapez le code affiché sur l'ordinateur (Questions flash › séance avec les cartes › « Relier le téléphone »).</p>
+    <input id="saisie" maxlength="9" autocomplete="off" autocapitalize="characters" placeholder="ABCD-EFGH">
+    ${msg ? `<p class="err" style="margin-top:10px;">${msg}</p>` : ''}
+    <button class="primaire" onclick="validerCode()">Continuer</button></div>`;
+}
+function validerCode(){
+  const c = ($('saisie').value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if(!ALPHA.test(c)) return accueil('Code incomplet ou incorrect.');
+  history.replaceState(null, '', '?c=' + c); preparer(c);
+}
+function preparer(c){
+  code = c;
+  $('main').innerHTML = `<div class="panneau"><h1>Prêt à lire les cartes</h1>
+    <p>Autorisez l'accès à l'appareil photo. Visez les cartes levées : toutes celles que le téléphone voit sont lues en même temps. Approchez-vous si une carte reste rouge sur l'écran de la classe.</p>
+    <button class="primaire" onclick="demarrer()">Démarrer la lecture</button></div>`;
+}
+async function ouvrirCamera(){
+  if(flux) flux.getTracks().forEach(t => t.stop());
+  flux = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1080 } } });
+  video.srcObject = flux; await video.play().catch(() => {});
+  const t = flux.getVideoTracks()[0], cap = t.getCapabilities ? t.getCapabilities() : {};
+  $('bTorche').hidden = !cap.torch;
+}
+async function demarrer(){
+  $('main').innerHTML = '<video id="video" playsinline muted autoplay></video><canvas id="calque"></canvas><div id="message">Connexion à l\'ordinateur…</div>';
+  video = $('video'); calque = $('calque');
+  try{ await ouvrirCamera(); }
+  catch(e){ $('main').innerHTML = `<div class="panneau"><h1>Caméra inaccessible</h1><p>${e && e.name === 'NotAllowedError' ? 'L\'accès à l\'appareil photo a été refusé : autorisez-le dans les réglages du navigateur, puis rechargez la page.' : 'Impossible d\'ouvrir l\'appareil photo sur ce téléphone.'}</p><button class="primaire" onclick="location.reload()">Réessayer</button></div>`; return; }
+  $('barre').hidden = false;
+  try{ verrou = await navigator.wakeLock.request('screen'); }catch(e){}
+  document.addEventListener('visibilitychange', async () => { if(!document.hidden){ try{ verrou = await navigator.wakeLock.request('screen'); }catch(e){} } });
+  ZXingWASM.prepareZXingModule({ overrides: { locateFile: (p, pre) => p.endsWith('.wasm') ? 'vendor/zxing/' + p : pre + p } });
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  ch = sb.channel('qzc-' + code, { config: { broadcast: { self: false } } })
+    .on('broadcast', { event: 'etat' }, ({ payload }) => recu(payload || {}))
+    .subscribe(s => { if(s === 'SUBSCRIBED') bonjour(); });
+  setInterval(bonjour, 4000);
+  setInterval(renvoyer, 1500);
+  lire();
+}
+function bonjour(){ try{ if(ch) ch.send({ type: 'broadcast', event: 'hello', payload: {} }); }catch(e){} }
+function recu(p){
+  if(p.phase === 'ferme'){ pc = null; etat('Séance fermée'); message('La séance a été fermée sur l\'ordinateur.'); majInfo(); return; }
+  if(!pc || pc.cle !== p.cle) mes = new Map(); // nouvelle question (ou reposée) : on repart de zéro
+  pc = p; etat('Relié', 'ok'); majInfo(); dessiner();
+}
+function message(t){ const m = $('message'); if(!m) return; m.hidden = !t; m.textContent = t || ''; }
+function majInfo(){
+  $('info').hidden = !pc;
+  if(!pc) return;
+  const nb = pc.attendus.length, lus = pc.attendus.filter(n => pc.lus[n]).length;
+  $('infoQ').textContent = pc.phase === 'attente' ? 'En attente' : pc.phase === 'fin' ? 'Séance terminée' : 'Question ' + pc.n + ' / ' + pc.total;
+  $('infoN').innerHTML = pc.phase === 'attente' || pc.phase === 'fin' ? '' : `<b>${lus}</b> / ${nb}`;
+  message(pc.phase === 'attente' ? 'La question n\'est pas encore lancée sur l\'ordinateur.' : pc.phase === 'correction' ? 'Correction affichée : les réponses sont closes.'
+    : pc.phase === 'close' ? 'Temps écoulé : les réponses sont closes.' : pc.phase === 'fin' ? 'Séance terminée. Merci !' : '');
+  const manq = pc.attendus.filter(n => !pc.lus[n]);
+  $('manquent').innerHTML = pc.phase !== 'question' ? (pc.sans ? `${pc.sans} élève(s) sans numéro de carte.` : '')
+    : !nb ? 'Aucun numéro de carte attribué dans cette classe (sur l\'ordinateur : « Cartes »).'
+    : manq.length ? 'Manquent : ' + manq.map(n => `<span class="m">${n}</span>`).join('') : '<span class="ok">✓ Toutes les cartes sont lues</span>';
+}
+// Boucle de lecture : une image de la caméra, toutes les cartes qu'elle contient.
+const toile = document.createElement('canvas'), ctx = toile.getContext('2d', { willReadFrequently: true });
+async function lire(){
+  try{
+    if(video && video.readyState >= 2 && video.videoWidth && !document.hidden){
+      const w = video.videoWidth, h = video.videoHeight;
+      if(toile.width !== w){ toile.width = w; toile.height = h; }
+      ctx.drawImage(video, 0, 0, w, h);
+      const res = await ZXingWASM.readBarcodes(ctx.getImageData(0, 0, w, h), { formats: ['QRCode'], tryHarder: true, maxNumberOfSymbols: 255 });
+      traiter(res, w, h);
+    }
+  }catch(e){ console.warn(e); }
+  setTimeout(lire, 40);
+}
+function traiter(res, w, h){
+  vues = []; let nouveau = false;
+  res.forEach(r => {
+    const m = r.isValid && CARTE.exec(r.text || ''); if(!m) return;
+    const n = Number(m[1]), L = m[2];
+    vues.push({ n, L, p: r.position, w, h });
+    if(pc && pc.phase === 'question' && mes.get(n) !== L){ mes.set(n, L); nouveau = true; }
+  });
+  if(nouveau){ if(navigator.vibrate) navigator.vibrate(25); envoyer(); }
+  dessiner();
+}
+// Cartes lues ici mais pas encore enregistrées par l'ordinateur.
+function aEnvoyer(){ return pc ? [...mes.entries()].filter(([n, L]) => pc.attendus.includes(n) && QL(L) < pc.lettres && pc.lus[n] !== L) : []; }
+function QL(L){ return 'ABCD'.indexOf(L); }
+function envoyer(){
+  const l = aEnvoyer(); if(!l.length || !ch || !pc || pc.phase !== 'question') return;
+  dernierEnvoi = Date.now();
+  try{ ch.send({ type: 'broadcast', event: 'lu', payload: { cle: pc.cle, l } }); }catch(e){}
+}
+function renvoyer(){ if(Date.now() - dernierEnvoi > 1200) envoyer(); }
+// Contour de chaque carte vue : vert = enregistrée, orange = en cours d'envoi, rouge = carte inconnue.
+function dessiner(){
+  if(!calque || !video) return;
+  const W = calque.clientWidth, H = calque.clientHeight, dpr = window.devicePixelRatio || 1;
+  if(calque.width !== Math.round(W * dpr) || calque.height !== Math.round(H * dpr)){ calque.width = Math.round(W * dpr); calque.height = Math.round(H * dpr); }
+  const c = calque.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
+  vues.forEach(v => {
+    const k = Math.min(W / v.w, H / v.h), ox = (W - v.w * k) / 2, oy = (H - v.h * k) / 2;
+    const pts = [v.p.topLeft, v.p.topRight, v.p.bottomRight, v.p.bottomLeft].map(q => [ox + q.x * k, oy + q.y * k]);
+    const connu = pc && pc.attendus.includes(v.n) && QL(v.L) < pc.lettres, ok = pc && pc.lus[v.n] === v.L;
+    const coul = !pc || pc.phase !== 'question' ? '#8A919C' : !connu ? '#E53935' : ok ? '#43A047' : '#FFA000';
+    c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath();
+    c.fillStyle = coul + '55'; c.fill(); c.lineWidth = 3; c.strokeStyle = coul; c.stroke();
+    const cx = pts.reduce((s, p) => s + p[0], 0) / 4, cy = pts.reduce((s, p) => s + p[1], 0) / 4;
+    const t = v.n + ' ' + v.L; c.font = '700 16px Inter,sans-serif'; const tw = c.measureText(t).width;
+    const ty = Math.max(12, Math.min(...pts.map(p => p[1])) - 14);
+    c.fillStyle = coul; c.fillRect(cx - tw / 2 - 5, ty - 11, tw + 10, 22); c.fillStyle = '#fff'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(t, cx, ty + 1);
+  });
+}
+async function changerCamera(){ facing = facing === 'environment' ? 'user' : 'environment'; try{ await ouvrirCamera(); }catch(e){} }
+let torcheOn = false;
+async function torche(){ const t = flux && flux.getVideoTracks()[0]; if(!t) return; torcheOn = !torcheOn; try{ await t.applyConstraints({ advanced: [{ torch: torcheOn }] }); }catch(e){} }
+
+window.addEventListener('DOMContentLoaded', () => {
+  const c = (new URLSearchParams(location.search).get('c') || '').toUpperCase();
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ $('main').innerHTML = '<div class="panneau"><h1>Navigateur non compatible</h1><p>Ouvrez cette page avec le navigateur habituel du téléphone (Safari, Chrome…).</p></div>'; return; }
+  if(ALPHA.test(c)) preparer(c); else accueil(c ? 'Ce code n\'est pas valable.' : '');
+});
+</script>
+</body>
+</html>

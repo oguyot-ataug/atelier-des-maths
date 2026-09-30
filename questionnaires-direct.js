@@ -47,18 +47,25 @@ async function qzDirectLancer(questionnaireId, choix){
   const q = await qzBanqueSur(questionnaireId);
   if(!q){ await niceAlert('Questionnaire introuvable.'); return; }
   const defaut = Number((q.reglages || {}).duree_direct) || 0; // minuteur par défaut du questionnaire
-  const questions = qzPreparer(JSON.parse(JSON.stringify(q.questions || []))).map(x => x.type === 'texte' || x.duree_direct != null ? x : Object.assign(x, { duree_direct: defaut }));
-  const nb = questions.filter(x => x.type !== 'texte').length;
+  let questions = qzPreparer(JSON.parse(JSON.stringify(q.questions || []))).map(x => x.type === 'texte' || x.duree_direct != null ? x : Object.assign(x, { duree_direct: defaut }));
+  let nb = questions.filter(x => x.type !== 'texte').length;
   if(!nb){ await niceAlert('Ce questionnaire n\'a pas encore de question.'); return; }
   choix = choix || await qzDirectChoix(q.titre || 'Questionnaire', nb, (q.reglages || {}).acces);
   if(!choix) return;
+  // Cartes flashcode (flashcartes.js) : seules les questions qui se répondent par une lettre A à D.
+  if(choix.acces === 'cartes'){
+    const f = qzcFiltrer(questions);
+    if(!f.gardees){ await niceAlert('Aucune question de ce questionnaire ne se répond avec les cartes. Il faut des QCM à une seule bonne réponse et 4 propositions au plus (A, B, C, D), ou des vrai/faux à une seule affirmation (A = Vrai, B = Faux).'); return; }
+    if(f.sautees && !(await niceConfirm(`${f.sautees} question${f.sautees > 1 ? 's ne se répondent' : ' ne se répond'} pas avec les cartes (seuls les QCM à une bonne réponse et 4 propositions au plus, et les vrai/faux à une affirmation, conviennent) : ${f.sautees > 1 ? 'elles seront sautées' : 'elle sera sautée'}. Continuer avec ${f.gardees} question${f.gardees > 1 ? 's' : ''} ?`))) return;
+    questions = f.questions; nb = f.gardees;
+  }
   const studentIds = choix.studentIds && choix.studentIds.length ? choix.studentIds : null;
   // Une seule séance ouverte par classe (ou par groupe) : la précédente (oubliée ?) est close.
   let prec = sb.from('qz_direct').update({ ended_at: new Date().toISOString() }).eq('teacher_id', currentUser.id).eq('class_id', choix.classId).is('ended_at', null);
   if(studentIds) prec = prec.overlaps('student_ids', studentIds); else prec = prec.is('student_ids', null);
   await prec;
   const { data, error } = await sb.from('qz_direct').insert({ teacher_id: currentUser.id, class_id: choix.classId, questionnaire_id: q.id || null,
-    titre: q.titre || 'Questions flash', questions, student_ids: studentIds, acces: choix.acces === 'auto' ? 'auto' : 'code', notee: !!choix.notee,
+    titre: q.titre || 'Questions flash', questions, student_ids: studentIds, acces: ['auto', 'cartes'].includes(choix.acces) ? choix.acces : 'code', notee: !!choix.notee,
     etat: { phase: 'attente', total: nb, lancees: [] } }).select().single();
   if(error || !data){ await niceAlert('La séance n\'a pas pu être créée : ' + ((error && error.message) || '?')); return; }
   try{ localStorage.setItem('qzdAcces', data.acces); }catch(e){}
@@ -77,7 +84,7 @@ function qzDirectChoix(titre, nb, accesDefaut){
       o.innerHTML = `<div class="qzd-modal" role="dialog" aria-label="Questions flash">
         <h3><span class="gicon">bolt</span> Questions flash</h3>
         <p style="margin:4px 0 8px;"><b>${qzEsc(titre)}</b> · ${nb} question${nb > 1 ? 's' : ''}</p>
-        <p class="hint" style="margin:0;">Les questions s'affichent une à une, à votre rythme. Chaque élève répond depuis son compte (ordinateur ou tablette) ; vous voyez les réponses arriver en direct et vous affichez la correction quand vous voulez. Notée ou non : vous choisissez ci-dessous.</p>
+        <p class="hint" style="margin:0;">Les questions s'affichent une à une, à votre rythme. Chaque élève répond depuis son compte (ordinateur ou tablette), ou en levant une carte flashcode ; vous voyez les réponses arriver en direct et vous affichez la correction quand vous voulez. Notée ou non : vous choisissez ci-dessous.</p>
         <p class="qzd-m-lab">1. Avec quelle classe ?</p>
         <div class="qz-k-chips">${classes.map(c => `<button type="button" class="qz-k-chip${st.classId === c.id ? ' on' : ''}" data-classe="${c.id}"><span class="gicon">groups</span> ${qzEsc(c.label)}</button>`).join('')}</div>
         ${st.classId ? `<p class="qzd-m-lab">2. Qui participe ?</p>
@@ -89,7 +96,9 @@ function qzDirectChoix(titre, nb, accesDefaut){
         <div class="qzd-m-acces">
           <button type="button" class="qzd-m-opt${st.acces === 'code' ? ' on' : ''}" data-acces="code"><span class="gicon">pin</span><span><b>Avec un code affiché au tableau</b><small>En haut de la page « Mon travail », ou dans le bandeau rouge : l'élève tape le code. Seuls les élèves présents entrent.</small></span></button>
           <button type="button" class="qzd-m-opt${st.acces === 'auto' ? ' on' : ''}" data-acces="auto"><span class="gicon">bolt</span><span><b>Automatiquement</b><small>Un bandeau « Rejoindre » apparaît sur l'écran des élèves concernés, sans code.</small></span></button>
+          <button type="button" class="qzd-m-opt qzd-m-large${st.acces === 'cartes' ? ' on' : ''}" data-acces="cartes"><span class="gicon">qr_code_2</span><span><b>Sans ordinateur : cartes flashcode</b><small>Chaque élève lève sa carte A, B, C ou D ; vous les lisez toutes avec votre téléphone. Pour les QCM (une bonne réponse, 4 propositions au plus) et les vrai/faux à une affirmation.</small></span></button>
         </div>
+        ${st.acces === 'cartes' ? `<p class="hint" style="margin:6px 0 0;"><a href="#" data-cartes><span class="gicon" style="font-size:1rem;vertical-align:middle;">qr_code_2</span> Numéros des cartes et impression des planches</a></p>` : ''}
         <p class="qzd-m-lab">4. La séance est-elle notée ?</p>
         <div class="qzd-m-acces">
           <button type="button" class="qzd-m-opt${!st.notee ? ' on' : ''}" data-notee="0"><span class="gicon">school</span><span><b>Non notée</b><small>Pour s'entraîner et corriger ensemble. Le bilan reste consultable ; vous pourrez encore décider de la noter après.</small></span></button>
@@ -111,6 +120,7 @@ function qzDirectChoix(titre, nb, accesDefaut){
       if(t === o || t.closest('[data-x]')){ o.remove(); res(null); return; }
       const cl = t.closest('[data-classe]'); if(cl){ if(st.classId !== cl.dataset.classe){ st.classId = cl.dataset.classe; st.eleves = new Set(); charger(); } return; }
       const ci = t.closest('[data-cible]'); if(ci){ st.cible = ci.dataset.cible; if(st.cible === 'eleves' && !st.liste.length) charger(); else rendre(); return; }
+      if(t.closest('[data-cartes]')){ e.preventDefault(); qzcGerer(st.classId); return; }
       const ac = t.closest('[data-acces]'); if(ac){ st.acces = ac.dataset.acces; rendre(); return; }
       const nt = t.closest('[data-notee]'); if(nt){ st.notee = nt.dataset.notee === '1'; try{ localStorage.setItem('qzdNotee', st.notee ? '1' : '0'); }catch(x){} rendre(); return; }
       if(t.closest('[data-tous]')){ e.preventDefault(); st.liste.forEach(x => st.eleves.add(x.id)); rendre(); return; }
@@ -144,9 +154,11 @@ async function qzDirectOuvrir(id){
     .subscribe();
   qzD.poll = setInterval(() => { if(qzD && !document.hidden && qzDVueActive()){ qzDirectChargerReps(); qzDirectMajPresence(); } }, 4000);
   await qzDirectChargerReps(true);
+  if(row.acces === 'cartes' && typeof qzcOuvrir === 'function') await qzcOuvrir();
   qzDirectRender();
 }
 function qzDirectFermerProf(){
+  if(typeof qzcFermer === 'function') qzcFermer();
   if(!qzD) return;
   clearInterval(qzD.poll); clearTimeout(qzD.repT);
   try{ if(qzD.ch) sb.removeChannel(qzD.ch); }catch(e){}
@@ -242,6 +254,7 @@ async function qzDirectRelancer(){
   const n = (qzD.reps.get(qid) || new Map()).size;
   if(n && !(await niceConfirm(`Effacer les ${n} réponse${n > 1 ? 's' : ''} à cette question et la reposer ?`))) return;
   await sb.from('qz_direct_rep').delete().eq('direct_id', qzD.id).eq('qid', qid);
+  if(typeof qzcRaz === 'function') qzcRaz(); // cartes : le téléphone oublie les cartes déjà lues
   qzD.reps.delete(qid); if(qzD.valides) qzD.valides.delete(qid);
   const d = qzD.etat.duree || 0;
   await qzDirectEtat(Object.assign({}, qzD.etat, { phase: 'question' }, d ? { chrono: d } : { fin_at: null }));
@@ -466,8 +479,10 @@ function qzDirectMajStats(){
   if(!qzD) return;
   const i = qzDirectIndex(), box = document.getElementById('qzdRes');
   if(qzD.etat.phase === 'fin' || qzD.row.ended_at){ if(document.getElementById('qzdBilan')) qzDirectRender(); return; }
-  if(box && i >= 0) box.innerHTML = qzDirectStatsHtml(qzD.pages[i].q);
+  const cartes = typeof qzcActif === 'function' && qzcActif();
+  if(box && i >= 0) box.innerHTML = cartes ? qzcResHtml(qzD.pages[i].q) : qzDirectStatsHtml(qzD.pages[i].q);
   qzDirectMajNav(); qzDirectMajPresence();
+  if(cartes) qzcApresRendu();
 }
 function qzDirectNavHtml(){
   const cur = qzDirectIndex(), lancees = qzD.etat.lancees || [];
@@ -481,8 +496,10 @@ function qzDirectRender(){
   const root = document.getElementById('qzDirectRoot'); if(!root || !qzD) return;
   const e = qzD.etat, fin = e.phase === 'fin' || !!qzD.row.ended_at, i = qzDirectIndex(), p = qzD.pages[i];
   const classe = qzD.row.classes ? qzD.row.classes.nom : '';
+  const cartes = typeof qzcActif === 'function' && qzcActif() && !!qzc;
   let corps;
   if(fin) corps = qzDirectBilanHtml();
+  else if(cartes && (!p || e.phase === 'attente')) corps = qzcAttenteHtml();
   else if(!p || e.phase === 'attente') corps = `<div class="qzd-attente">
       <span class="gicon">bolt</span>
       <h2>Les élèves rejoignent la séance</h2>
@@ -494,7 +511,7 @@ function qzDirectRender(){
       <button class="btn qz-go" onclick="qzDirectAller(0)"><span class="gicon">play_arrow</span> Lancer la question 1</button></div>`;
   else {
     const corr = e.phase === 'correction', der = i === qzD.pages.length - 1;
-    corps = `<div class="qzd-main">
+    corps = cartes ? qzcMainHtml(i, p) + qzDirectActHtml(i, corr, der) : `<div class="qzd-main">
       <div class="qzd-q">
         <div class="qzd-qhead"><span class="qzd-num">Question ${i + 1} / ${qzD.pages.length}</span>
           <span class="qz-type-pill"><span class="gicon">${qzType(p.q.type).icon}</span> ${qzType(p.q.type).label}</span>
@@ -504,8 +521,12 @@ function qzDirectRender(){
         <div class="qz-q" id="qzdQ_${p.q.id}">${qzEnonceHtml(p.q)}<div class="qz-q-rep">${qzRenderSaisie(p.q, corr ? qzDirectBonneReponse(p.q) : null, corr ? 'corrige' : 'lecture', { reglages: {}, seed: null, pfx: 'd' })}</div></div>
       </div>
       <div class="qzd-res" id="qzdRes">${qzDirectStatsHtml(p.q)}</div>
-    </div>
-    <div class="qzd-act">
+    </div>` + qzDirectActHtml(i, corr, der);
+  }
+  qzDirectRenderFin(root, fin, classe, corps, cartes);
+}
+function qzDirectActHtml(i, corr, der){
+  return `<div class="qzd-act">
       ${i > 0 ? `<button class="btn secondary" onclick="qzDirectAller(${i - 1})"><span class="gicon">arrow_back</span> Précédente</button>` : ''}
       <button class="btn secondary" onclick="qzDirectRelancer()" title="Effacer les réponses à cette question et la reposer"><span class="gicon">restart_alt</span> Reposer</button>
       <span style="flex:1"></span>
@@ -514,16 +535,18 @@ function qzDirectRender(){
               : `<button class="btn qz-go" onclick="qzDirectSuivante()">Question suivante <span class="gicon">arrow_forward</span></button>`}`
       : `<button class="btn qz-go" onclick="qzDirectCorriger()"><span class="gicon">fact_check</span> Afficher la correction</button>`}
     </div>`;
-  }
+}
+function qzDirectRenderFin(root, fin, classe, corps, cartes){
   root.innerHTML = `<div class="qzd">
     <div class="qzd-top">
       <button class="back-btn qz-back" onclick="qzDirectQuitter()">← Interrogations</button>
       ${fin ? '<span class="qzd-live fin">SÉANCE TERMINÉE</span>' : '<span class="qzd-live"><span class="dot"></span> EN DIRECT</span>'}
       <b class="qzd-titre">${qzEsc(qzD.row.titre)}</b><span class="hint" style="margin:0;">${qzEsc(classe)}</span>
-      ${fin ? '' : '<span class="qzd-pill" id="qzdPresence"></span>'}
+      ${fin || cartes ? '' : '<span class="qzd-pill" id="qzdPresence"></span>'}
       ${fin || qzD.row.acces !== 'code' ? '' : `<span class="qzd-pill code" title="Code à donner aux élèves">Code <b>${qzEsc(qzD.row.code || '')}</b></span>`}
       <span class="qzd-outils">
-        ${fin ? '' : `<button type="button" class="qzd-tg${qzD.cacher ? ' on' : ''}" onclick="qzDirectBasculer('cacher')" title="Masquer les résultats tant que la correction n'est pas affichée (pour ne pas influencer la classe)"><span class="gicon">${qzD.cacher ? 'visibility_off' : 'visibility'}</span> ${qzD.cacher ? 'Résultats masqués' : 'Résultats visibles'}</button>
+        ${fin || !cartes ? '' : qzcOutilsHtml()}
+        ${fin || cartes ? '' : `<button type="button" class="qzd-tg${qzD.cacher ? ' on' : ''}" onclick="qzDirectBasculer('cacher')" title="Masquer les résultats tant que la correction n'est pas affichée (pour ne pas influencer la classe)"><span class="gicon">${qzD.cacher ? 'visibility_off' : 'visibility'}</span> ${qzD.cacher ? 'Résultats masqués' : 'Résultats visibles'}</button>
         <button type="button" class="qzd-tg${qzD.noms ? ' on' : ''}" onclick="qzDirectBasculer('noms')" title="Afficher qui a répondu (à éviter au vidéoprojecteur)"><span class="gicon">badge</span> Noms</button>`}
         <button type="button" class="qzd-tg" onclick="qzDirectPleinEcran()" title="Plein écran (vidéoprojecteur)"><span class="gicon">fullscreen</span></button>
         ${fin ? '' : `<button type="button" class="qzd-tg stop" onclick="qzDirectTerminer()"><span class="gicon">stop_circle</span> Terminer</button>`}
@@ -534,6 +557,7 @@ function qzDirectRender(){
   qzDirectMajPresence();
   qzChargerPhotos(root);
   if(typeof qzMonterInter === 'function') qzMonterInter(root);
+  if(cartes) qzcApresRendu();
 }
 // Bilan de fin de séance (non noté) : réussite par question, puis par élève.
 function qzDirectBilanHtml(){
@@ -1009,6 +1033,7 @@ function qzDirectEleveBilan(d, head){
     .qzd-m-acces{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
     .qzd-m-opt{display:flex;gap:8px;align-items:flex-start;text-align:left;border:1.5px solid rgba(28,43,57,.15);background:#fff;border-radius:12px;padding:9px 10px;cursor:pointer;font:inherit;color:var(--ink);}
     .qzd-m-opt .gicon{color:#D93025;font-size:22px;} .qzd-m-opt b{display:block;font-size:.9rem;} .qzd-m-opt small{display:block;color:var(--ink-soft);font-size:.76rem;line-height:1.3;margin-top:2px;}
+    .qzd-m-large{grid-column:1 / -1;}
     .qzd-m-opt.on{border-color:#D93025;background:#FFF1EF;box-shadow:0 0 0 3px rgba(217,48,37,.12);}
     .qzd-modal{max-height:calc(100vh - 32px);overflow-y:auto;}
     .qzd-b-code{display:flex;gap:6px;align-items:center;margin:0;} .qzd-b-code input{width:84px;border:0;border-radius:10px;padding:8px 10px;font:700 1.05rem 'Space Grotesk',sans-serif;letter-spacing:.15em;text-align:center;}

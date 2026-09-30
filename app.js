@@ -205,6 +205,7 @@ document.querySelectorAll('#navLinks button').forEach(b=>{
 /* ======================= ROUTER ======================= */
 function showView(id){
   if(typeof FIG_PROJ!=='undefined' && FIG_PROJ && id!=='view-tableau') return; // fenêtre de projection : rien d'autre que le tableau
+  if(typeof QZC_PROJ!=='undefined' && QZC_PROJ) return; // projection des Questions flash (cartes) : rien d'autre
   if(typeof oliviaMaj==='function') setTimeout(oliviaMaj, 30); // Oliv'IA : seulement sur les pages de cours
   if(id!=='view-classe' && typeof clBruit!=='undefined' && clBruit.actif) clBruitArreter(); // jauge de bruit : micro coupé en quittant la page
   // Sécurité : si un outil (figure, texte, probabilités...) ou l'éditeur de formule était resté
@@ -3087,6 +3088,13 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.853', items:[
+    "Questions flash au primaire, sans ordinateur : les cartes flashcode. Demandé : « Les enfants n'ont pas d'ordinateur donc il faudrait qu'ils répondent à des questionnaires type A, B, C ou D en montrant un flashcode [...] le professeur des écoles pourrait alors prendre son téléphone et lire tous les flashcodes de la classe ».",
+    "Au lancement d'une séance de Questions flash, choisir « Sans ordinateur : cartes flashcode » (aussi dans les réglages du questionnaire). Les questions qui se répondent par une lettre sont gardées : QCM à une bonne réponse et 4 propositions au plus (A, B, C, D dans l'ordre de l'éditeur), et vrai/faux à une affirmation (A = Vrai, B = Faux). Les autres sont sautées, après confirmation. Le reste de la création est inchangé, et la séance peut être notée comme d'habitude.",
+    "Cartes : chaque élève a quatre cartes (A, B, C, D) avec la lettre écrite en grand au centre du flashcode et un petit numéro en dessous. Planches à imprimer, 4 cartes par page A4 (une page par numéro). Les cartes ne portent pas de nom : chaque année, on réattribue simplement les numéros aux élèves (bouton « Cartes » : numérotation automatique par ordre alphabétique ou à la main). Le prénom peut être ajouté à l'impression, en option.",
+    "Téléphone : le professeur scanne le code affiché sur l'ordinateur ; la page de lecture s'ouvre, sans connexion au site. Le téléphone lit en même temps toutes les cartes qu'il voit (contour vert : réponse enregistrée) et affiche les numéros qui manquent. Si un élève montre une autre carte, sa réponse est remplacée tant que la question est ouverte.",
+    "Écran dupliqué : la question et la grille des numéros, en vert les cartes lues, en rouge celles qui ne l'ont pas encore été, sans aucun résultat. Écran étendu : le bouton « Projection » ouvre la question et la grille dans une fenêtre à glisser sur le vidéoprojecteur ; l'écran du professeur montre alors les résultats (répartition A, B, C, D, juste ou faux, lettre de chaque élève).",
+  ]},
   { version:'2026-08-19.852', items:[
     "Outils de classe : les blocs se déplacent et s'agrandissent. Demandé : « Permettre de déplacer les blocs, de les agrandir, de les positionner automatiquement 2 sur totalité écran / 3 ou 4 ou plus ».",
     "Disposition automatique : on coche les blocs à afficher (roue, compte à rebours, feu, jauge) et on choisit un modèle selon leur nombre. Pour 2 blocs : côte à côte, un grand et un petit, ou l'un sous l'autre. Pour 3 : un grand et deux petits, 3 colonnes, ou 2 en haut et 1 en bas. Pour 4 et plus : mosaïque, un grand et les autres à côté, ou en colonnes. Les futurs outils s'ajouteront aux modèles automatiquement.",

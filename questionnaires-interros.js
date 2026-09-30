@@ -249,7 +249,7 @@ async function qzFormDirect(){
   let questionnaireId;
   try{ questionnaireId = await qzEdEnregistrer(titre); }catch(e){ st.textContent = e.message || String(e); if(auto && qzAuto === auto) auto.timer = setInterval(qzAutoTick, 2000); return; }
   if(qzAuto === auto) qzAuto = null;
-  await qzDirectLancer(questionnaireId, { classId, studentIds: qzF.cible === 'eleves' ? Array.from(qzF.eleves) : null, acces: qzEd.reglages.acces === 'auto' ? 'auto' : 'code' });
+  await qzDirectLancer(questionnaireId, { classId, studentIds: qzF.cible === 'eleves' ? Array.from(qzF.eleves) : null, acces: ['auto', 'cartes'].includes(qzEd.reglages.acces) ? qzEd.reglages.acces : 'code' });
 }
 // Bouton « Enregistrer » de l'éditeur : enregistre tout de suite (même incomplet).
 // Signalé : "J'ai pourtant cliqué sur Enregistrer mais rien ne se passe" -- le message s'affichait

@@ -420,8 +420,9 @@ function qzEdRenderReglages(){
     </div>
     ${r.mode === 'direct' ? `<div class="qz-reg-grid">
       <label>Les élèves rejoignent <select onchange="qzEdReglage('acces', this.value)">
-        <option value="code"${r.acces !== 'auto' ? ' selected' : ''}>avec un code affiché au tableau</option>
+        <option value="code"${r.acces !== 'auto' && r.acces !== 'cartes' ? ' selected' : ''}>avec un code affiché au tableau</option>
         <option value="auto"${r.acces === 'auto' ? ' selected' : ''}>automatiquement (bandeau, sans code)</option>
+        <option value="cartes"${r.acces === 'cartes' ? ' selected' : ''}>sans ordinateur : cartes flashcode (QCM A à D)</option>
       </select></label>
       <label class="qz-check"><input type="checkbox" ${r.melanger_choix ? 'checked' : ''} onchange="qzEdReglage('melanger_choix', this.checked)"> Mélanger les propositions des QCM</label>
       ${typeof QZD_DUREES !== 'undefined' ? `<label title="Temps laissé aux élèves pour chaque question ; réglable question par question (en-tête de chaque question) et pendant la séance">Minuteur par défaut <select onchange="qzEdReglage('duree_direct', parseInt(this.value,10)||0)">
