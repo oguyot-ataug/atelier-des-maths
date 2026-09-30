@@ -1,221 +1,98 @@
 /* ============================================================
-   CHAPITRE : Nombres entiers (CM1, N1)
-   Fichier autonome -- voir la note dans chapitres/5e/G1-symetrie-centrale.js.
-   Premier cours du niveau CM1 : lecture/écriture, décomposition, chiffre des/nombre de,
-   comparaison et rangement des nombres entiers jusqu'à 999 999 (2 classes : milliers et
-   unités -- la classe des millions arrive dans un chapitre ultérieur, cohérent avec le
-   sommaire du programme).
+   CHAPITRE : Nombres entiers jusqu'à 9 999 (CM1, N1, période 1)
+   Programme du cycle 3 : « pendant les deux premières périodes de l'année, [on se limite] aux
+   nombres entiers s'écrivant avec au plus quatre chiffres » ; les nombres de 5 ou 6 chiffres
+   sont dans le chapitre « Grands nombres jusqu'à 999 999 » (période 3).
+   Objectifs : relations entre unités de numération, valeur des chiffres selon leur position,
+   diverses représentations d'un nombre, comparer / encadrer / intercaler / ranger, demi-droite
+   graduée.
    ============================================================ */
-document.getElementById('cours-demo-cm1-nombres-entiers').innerHTML = `
-<div class="lesson-header"><span class="num">1</span><h3>Lire et écrire un grand nombre</h3></div>
-<span class="def-badge">Vocabulaire</span>
-<div class="def-box">
-  <ul style="margin:0;padding-left:20px;line-height:1.8;">
-    <li>Un <b>chiffre</b> est l'un des dix symboles 0, 1, 2, 3, 4, 5, 6, 7, 8, 9.</li>
-    <li>Un <b>nombre</b> s'écrit avec un ou plusieurs chiffres, assemblés dans un certain ordre.</li>
-  </ul>
-</div>
-<span class="prop-badge">Règle</span>
-<div class="def-box">Pour lire facilement un grand nombre, on le sépare en <b>tranches de trois chiffres</b>, en partant de la droite. Chaque tranche s'appelle une <b>classe</b>.</div>
-<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
-  Astuce : forme des paquets de 3 chiffres en partant de la <b>droite</b> du nombre -- le dernier paquet, tout à gauche, peut avoir moins de 3 chiffres.
-</div>
-<p class="example-title">Exemple : 724916 s'écrit 724 916.</p>
-<p class="hint" style="margin:10px 0 6px;">On peut s'aider d'un tableau de numération :</p>
-<div style="overflow-x:auto;">
-<table style="border-collapse:collapse;width:100%;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.85rem;margin:0 0 16px;">
-  <tr>
-    <th colspan="3" style="background:var(--accent-orange);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Classe des mille</th>
-    <th colspan="3" style="background:var(--accent-orange);color:#fff;padding:6px;border:1px solid rgba(28,43,57,.2);font-family:'Space Grotesk',sans-serif;">Classe des unités</th>
-  </tr>
-  <tr>
-    <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(255,130,8,.08);">C</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(255,130,8,.08);">D</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(255,130,8,.08);">U</th>
-    <th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(255,130,8,.08);">C</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(255,130,8,.08);">D</th><th style="padding:4px;border:1px solid rgba(28,43,57,.2);background:rgba(255,130,8,.08);">U</th>
-  </tr>
-  <tr>
-    <td style="padding:10px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">7</td>
-    <td style="padding:10px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">2</td>
-    <td style="padding:10px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">4</td>
-    <td style="padding:10px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">9</td>
-    <td style="padding:10px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">1</td>
-    <td style="padding:10px;border:1px solid rgba(28,43,57,.2);font-weight:700;font-family:'Space Grotesk',sans-serif;font-size:1.05rem;">6</td>
-  </tr>
-</table>
-</div>
-<ul class="example-list">
-  <li>Ce nombre se lit : <b>sept-cent-vingt-quatre-mille-neuf-cent-seize</b>.</li>
-  <li>On l'écrit avec un petit espace entre chaque classe : 724 916 (jamais de point ni de virgule).</li>
-</ul>
+function cm1neDemiDroite(){
+  // Demi-droite graduée de 3 000 à 4 000, de 100 en 100 ; A = 3 400, B = 3 750 (entre deux graduations).
+  const x = v => 30 + (v - 3000) * 0.46;
+  let s = '<svg viewBox="0 0 520 90" style="width:100%;max-width:560px;display:block;margin:6px auto;"><line x1="20" y1="45" x2="505" y2="45" stroke="#1F3A5C" stroke-width="2"/>';
+  for(let v = 3000; v <= 4000; v += 50){ const g = v % 100 === 0; s += `<line x1="${x(v)}" y1="${g ? 36 : 40}" x2="${x(v)}" y2="${g ? 54 : 50}" stroke="#1F3A5C" stroke-width="${g ? 1.6 : 1}"/>`; if(v % 500 === 0) s += `<text x="${x(v)}" y="72" font-size="12" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">${v === 3000 ? '3 000' : v === 3500 ? '3 500' : '4 000'}</text>`; }
+  [[3400, 'A', '#E35D3A'], [3750, 'B', '#2EA8C9']].forEach(([v, n, c]) => { s += `<circle cx="${x(v)}" cy="45" r="5" fill="${c}"/><text x="${x(v)}" y="24" font-size="14" font-weight="700" text-anchor="middle" fill="${c}" font-family="Space Grotesk">${n}</text>`; });
+  return s + '</svg>';
+}
+cm1Chapitre({
+  titre: 'Nombres entiers jusqu\'à 9 999', slug: 'nombres-entiers',
+  cours: `
+${cm1Lecon(1, 'Chiffres, nombres et unités de numération')}
+${cm1Def(`<ul style="margin:0;padding-left:20px;line-height:1.8;"><li>Un <b>chiffre</b> est l'un des dix symboles 0, 1, 2, 3, 4, 5, 6, 7, 8, 9.</li><li>Un <b>nombre</b> s'écrit avec un ou plusieurs chiffres. La <b>position</b> d'un chiffre donne sa valeur.</li></ul>`, 'Vocabulaire')}
+${cm1Regle(`<b>10 unités = 1 dizaine</b> &nbsp;·&nbsp; <b>10 dizaines = 1 centaine</b> &nbsp;·&nbsp; <b>10 centaines = 1 millier</b><br>Donc 1 millier = 10 centaines = 100 dizaines = 1 000 unités.`)}
+${cm1Exemple('Exemple : le nombre 7 249 dans le tableau de numération.')}
+${cm1Tableau(['Unités de mille', 'Centaines', 'Dizaines', 'Unités'], [['<b>7</b>', '<b>2</b>', '<b>4</b>', '<b>9</b>']])}
+<ul class="example-list"><li>Il se lit et s'écrit en lettres : <b>sept-mille-deux-cent-quarante-neuf</b> (on met des traits d'union entre tous les mots).</li><li>À partir de 4 chiffres, on laisse un petit espace entre les mille et le reste : 7 249.</li></ul>
 
-<div class="lesson-header"><span class="num">2</span><h3>Décomposer un nombre</h3></div>
-<span class="prop-badge">Règle</span>
-<div class="def-box">Décomposer un nombre, c'est l'écrire comme une <b>somme</b> qui montre la valeur de chaque chiffre selon sa position.</div>
-<p class="example-title">Reprenons 724 916 :</p>
-<ul class="example-list">
-  <li>Décomposition par classes :<br>
-    724 916 = <b>724</b> mille + <b>916</b> unités
-  </li>
-  <li>Décomposition complète (addition) :<br>
-    724 916 = 700 000 + 20 000 + 4 000 + 900 + 10 + 6
-  </li>
-  <li>Décomposition multiplicative :<br>
-    724 916 = (7 × 100 000) + (2 × 10 000) + (4 × 1 000) + (9 × 100) + (1 × 10) + (6 × 1)
-  </li>
-</ul>
+${cm1Lecon(2, 'Décomposer un nombre')}
+${cm1Regle('Décomposer un nombre, c\'est l\'écrire comme une <b>somme</b> qui montre la valeur de chaque chiffre.')}
+${cm1Exemple('Avec 7 249 :', ['7 249 = 7 000 + 200 + 40 + 9', '7 249 = (7 × 1 000) + (2 × 100) + (4 × 10) + 9', '7 249 = 72 centaines et 49 unités = 724 dizaines et 9 unités'])}
 
-<div class="lesson-header"><span class="num">3</span><h3>« Le chiffre des... » et « le nombre de... »</h3></div>
-<span class="prop-badge">Règle</span>
-<div class="def-box">
-  <b>Le chiffre des</b> unités (ou dizaines, centaines...) est le seul chiffre situé à cette position.<br>
-  <b>Le nombre de</b> dizaines (ou centaines, mille...) compte combien de fois cette unité est contenue en entier dans le nombre -- on « efface » mentalement les chiffres à sa droite.
-</div>
-<p class="example-title">Toujours avec 724 916 :</p>
-<ul class="example-list">
-  <li>7 est le chiffre des centaines de mille &nbsp;·&nbsp; 2 est le chiffre des dizaines de mille &nbsp;·&nbsp; 4 est le chiffre des unités de mille</li>
-  <li>9 est le chiffre des centaines &nbsp;·&nbsp; 1 est le chiffre des dizaines &nbsp;·&nbsp; 6 est le chiffre des unités</li>
-  <li>Le <b>nombre de centaines</b> de 724 916 est <b>7 249</b> (on efface les 2 derniers chiffres, 1 et 6).</li>
-  <li>Le <b>nombre de mille</b> de 724 916 est <b>724</b>.</li>
-</ul>
-<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
-  Attention à ne pas confondre : le <b>chiffre</b> des mille de 724 916 est 4, alors que le <b>nombre</b> de mille est 724 !
-</div>
+${cm1Lecon(3, '« Le chiffre des… » et « le nombre de… »')}
+${cm1Regle('<b>Le chiffre des</b> centaines est le seul chiffre écrit à cette place.<br><b>Le nombre de</b> centaines compte toutes les centaines contenues dans le nombre : on « cache » les chiffres à sa droite.')}
+${cm1Exemple('Avec 7 249 :', ['Le <b>chiffre</b> des centaines est <b>2</b>.', 'Le <b>nombre</b> de centaines est <b>72</b> (on cache 4 et 9).', 'Le <b>nombre</b> de dizaines est <b>724</b>.'])}
+${cm1Astuce('Attention à ne pas confondre : le chiffre des centaines de 7 249 est 2, mais le nombre de centaines est 72.')}
 
-<div class="lesson-header"><span class="num">4</span><h3>Comparer deux nombres</h3></div>
-<span class="prop-badge">Règle</span>
-<div class="def-box">
-  Pour comparer deux nombres entiers, on compare d'abord leur <b>nombre de chiffres</b> : celui qui en a le plus est le plus grand.<br>
-  S'ils ont le même nombre de chiffres, on compare les chiffres un par un, en partant de la <b>gauche</b>.
-</div>
-<p class="example-title">Exemples :</p>
-<ul class="example-list">
-  <li>52 480 < 137 026 &nbsp;<span class="hint" style="margin:0;">(52 480 a 5 chiffres, 137 026 en a 6 : il est donc plus grand)</span></li>
-  <li>384 250 > 384 097 &nbsp;<span class="hint" style="margin:0;">(mêmes centaines de mille, dizaines de mille et unités de mille : 384 -- on compare ensuite 250 et 097, et 250 > 097)</span></li>
-</ul>
-<div class="def-box" style="margin-top:12px;">
-  <b>a &lt; b</b> se lit « a est <b>plus petit que</b> b », ou « a est <b>inférieur à</b> b ».<br>
-  <b>a &gt; b</b> se lit « a est <b>plus grand que</b> b », ou « a est <b>supérieur à</b> b ».
-</div>
+${cm1Lecon(4, 'Placer des nombres sur une demi-droite graduée')}
+${cm1Regle('Sur une demi-droite graduée, les nombres sont rangés du plus petit au plus grand, avec des écarts réguliers. Pour lire un point, on cherche d\'abord <b>la valeur d\'un écart</b> entre deux graduations.')}
+<div class="figure-wrap">${cm1neDemiDroite()}</div>
+${cm1Exemple('Lecture de la demi-droite :', ['Entre 3 000 et 3 500, il y a 5 grands écarts : un grand écart vaut 100 (et un petit écart 50).', 'Le point A est à 4 grands écarts après 3 000 : il est à <b>3 400</b>.', 'Le point B est entre 3 700 et 3 800, au milieu : il est à <b>3 750</b>.'])}
 
-<div class="lesson-header"><span class="num">5</span><h3>Ranger des nombres</h3></div>
-<span class="prop-badge">Règle</span>
-<div class="def-box">
-  Ranger des nombres dans l'<b>ordre croissant</b>, c'est les ranger du plus petit au plus grand.<br>
-  Ranger des nombres dans l'<b>ordre décroissant</b>, c'est les ranger du plus grand au plus petit.
-</div>
-<p class="example-title">Range dans l'ordre croissant : 45 610 &nbsp;·&nbsp; 6 980 &nbsp;·&nbsp; 45 106 &nbsp;·&nbsp; 128 400</p>
-<p style="margin:6px 0 0;font-family:'JetBrains Mono',monospace;">6 980 &lt; 45 106 &lt; 45 610 &lt; 128 400</p>
-`;
+${cm1Lecon(5, 'Comparer, encadrer, intercaler')}
+${cm1Regle('Pour comparer deux nombres entiers : celui qui a <b>le plus de chiffres</b> est le plus grand. S\'ils ont autant de chiffres, on compare les chiffres un par un <b>en partant de la gauche</b>.')}
+${cm1Def('<b>a &lt; b</b> se lit « a est <b>inférieur à</b> b » (plus petit) ; <b>a &gt; b</b> se lit « a est <b>supérieur à</b> b » (plus grand) ; <b>a = b</b> se lit « a est <b>égal à</b> b ».', 'Symboles')}
+${cm1Exemple('Exemples :', ['985 &lt; 1 204 : 985 a 3 chiffres, 1 204 en a 4.', '4 518 &gt; 4 381 : même chiffre des mille (4), puis 5 &gt; 3 aux centaines.', '<b>Encadrer</b> 4 518 entre deux milliers : 4 000 &lt; 4 518 &lt; 5 000. Entre deux centaines : 4 500 &lt; 4 518 &lt; 4 600.', '<b>Intercaler</b> un nombre entre 2 760 et 2 770 : par exemple 2 765, car 2 760 &lt; 2 765 &lt; 2 770. On dit que 2 765 est <b>compris entre</b> 2 760 et 2 770.'])}
 
-document.getElementById('methode-demo-cm1-nombres-entiers').innerHTML = `
-<div class="sub-header"><span class="letter">M</span><h4>Comment lire un grand nombre ?</h4></div>
-<div class="figure-wrap">
-  <p class="hint interaction-hint" style="margin-top:6px;">Clique sur « Étape suivante » pour découvrir comment lire 517 328, petit bout par petit bout.</p>
-  <div class="step-display" id="cm1ne-lireDisplay"></div>
-  <div class="figure-toolbar">
-    <button class="btn" onclick="cm1neLireDemo.next()">Étape suivante →</button>
-    <button class="btn secondary" onclick="cm1neLireDemo.reset()">Recommencer</button>
-  </div>
-</div>
-
-<div class="sub-header"><span class="letter">M</span><h4>Comment comparer deux nombres ?</h4></div>
-<div class="figure-wrap">
-  <p class="hint interaction-hint" style="margin-top:6px;">Entre 68 450 et 68 540, lequel est le plus grand ? Clique sur « Étape suivante » pour le découvrir.</p>
-  <div class="step-display" id="cm1ne-comparerDisplay"></div>
-  <div class="figure-toolbar">
-    <button class="btn" onclick="cm1neComparerDemo.next()">Étape suivante →</button>
-    <button class="btn secondary" onclick="cm1neComparerDemo.reset()">Recommencer</button>
-  </div>
-</div>
-`;
-
-document.getElementById('exos-demo-cm1-nombres-entiers').innerHTML = `
-<div class="redaction-block">
-  <h3>Rédaction type : « Décomposer un nombre »</h3>
-  <div class="redaction-template">
-    <div class="we-row"><span class="we-expr">306 254</span><span class="we-comment">Je repère les deux tranches : 306 et 254.</span></div>
-    <div class="we-row"><span class="we-expr">= 300 000 + 6 000 + 200 + 50 + 4</span><span class="we-comment">Je décompose selon la valeur de chaque chiffre.</span></div>
-  </div>
-</div>
-<div class="redaction-block">
-  <h3>Exercices</h3>
-  <div class="exo-card">
-    <div class="num">Exercice 1</div>
-    Écris en chiffres le nombre : quatre-cent-douze-mille-sept-cent-trois.
-    <button type="button" class="exo-correction-toggle" data-target="cm1ne-correction-1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="cm1ne-correction-1">
-      <p style="margin:0;">quatre-cent-douze-mille-sept-cent-trois s'écrit : <b>412 703</b>.</p>
-    </div>
-  </div>
-  <div class="exo-card">
-    <div class="num">Exercice 2</div>
-    Décompose le nombre 583 940 (comme dans l'exemple du cours).
-    <button type="button" class="exo-correction-toggle" data-target="cm1ne-correction-2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="cm1ne-correction-2">
-      <p style="margin:0;">583 940 = 500 000 + 80 000 + 3 000 + 900 + 40</p>
-    </div>
-  </div>
-  <div class="exo-card">
-    <div class="num">Exercice 3</div>
-    Dans le nombre 271 806 : quel est le chiffre des centaines ? Quel est le nombre de centaines ?
-    <button type="button" class="exo-correction-toggle" data-target="cm1ne-correction-3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="cm1ne-correction-3">
-      <p style="margin:0;">Le chiffre des centaines est <b>8</b>.<br>Le nombre de centaines est <b>2 718</b> (on efface les 2 derniers chiffres, 0 et 6).</p>
-    </div>
-  </div>
-  <div class="exo-card">
-    <div class="num">Exercice 4</div>
-    Range dans l'ordre décroissant : 90 415 &nbsp;·&nbsp; 9 999 &nbsp;·&nbsp; 90 145 &nbsp;·&nbsp; 104 200
-    <button type="button" class="exo-correction-toggle" data-target="cm1ne-correction-4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="cm1ne-correction-4">
-      <p style="margin:0;">104 200 &gt; 90 415 &gt; 90 145 &gt; 9 999</p>
-    </div>
-  </div>
-  <div class="exo-card">
-    <div class="num">Exercice 5</div>
-    Attention au piège ! Compare 74 500 et 8 900 en expliquant ta méthode.
-    <button type="button" class="exo-correction-toggle" data-target="cm1ne-correction-5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-    <div class="exo-correction" id="cm1ne-correction-5">
-      <p style="margin:0;">74 500 a 5 chiffres, 8 900 en a seulement 4 : 74 500 est donc bien le plus grand, même si 8 900 « commence » par un chiffre plus grand (8 &gt; 7). On ne compare jamais le premier chiffre avant d'avoir vérifié que les deux nombres ont bien le même nombre de chiffres !<br><b>74 500 &gt; 8 900</b></p>
-    </div>
-  </div>
-</div>
-`;
-
-document.getElementById('histoire-demo-cm1-nombres-entiers').innerHTML = `
-<div class="history-box">
-  <div class="history-title"><span class=gicon>history_edu</span> Un peu d'histoire : comment écrivait-on les nombres avant ?</div>
-  On n'a pas toujours écrit les nombres comme aujourd'hui ! Il y a environ 5 000 ans, en Égypte ancienne, on dessinait un petit rond pour 1, un fer à cheval pour 10, une corde enroulée pour 100... Pour écrire un nombre, il fallait dessiner chaque symbole autant de fois que nécessaire : pour écrire 23, on dessinait 2 fers à cheval et 3 petits ronds. Ça marchait, mais pour de très grands nombres, il fallait dessiner énormément de symboles !<br><br>
-  Plus tard, les Romains ont inventé leurs propres symboles : I pour 1, V pour 5, X pour 10, L pour 50, C pour 100... Tu as sans doute déjà vu ces lettres sur une horloge, ou pour écrire le nom d'un roi (Louis XIV, par exemple). Mais ce système restait compliqué : pour écrire 1 998, il fallait écrire MCMXCVIII !<br><br>
-  Notre façon d'écrire les nombres aujourd'hui vient de l'Inde, il y a plus de 1 500 ans, puis a voyagé jusqu'en Europe grâce aux savants arabes -- c'est pour ça qu'on parle de « chiffres arabes ». Son astuce géniale : la <b>position</b> de chaque chiffre indique sa valeur (unités, dizaines, centaines...). Avec seulement 10 symboles (0 à 9), on peut écrire n'importe quel nombre, aussi grand soit-il, sans jamais avoir besoin d'en inventer de nouveaux !
-</div>
-`;
-
-/* Méthodes animées, langage volontairement simple (public CM1). */
-const CM1NE_LIRE_STEPS = [
-  {expr:'517328', note:"On sépare le nombre en tranches de 3 chiffres, en partant de la droite."},
-  {expr:'517 328', note:'On obtient deux tranches : 517 et 328.'},
-  {expr:'<span class="hl">517</span> 328', note:'La tranche de gauche, c\'est la classe des mille : on dit « cinq-cent-dix-sept mille ».'},
-  {expr:'517 <span class="hl">328</span>', note:'La tranche de droite, c\'est la classe des unités : on dit « trois-cent-vingt-huit ».'},
-  {expr:'517 328', note:'On lit le nombre en entier : cinq-cent-dix-sept-mille-trois-cent-vingt-huit.'},
-];
-const cm1neLireDemo = makeStepDemo(CM1NE_LIRE_STEPS, 'cm1ne-lireDisplay');
-
-const CM1NE_COMPARER_STEPS = [
-  {expr:'68 450   et   68 540', note:'On compte le nombre de chiffres de chaque nombre : 5 chiffres chacun. On continue.'},
-  {expr:'<span class="hl">68</span> 450   et   <span class="hl">68</span> 540', note:'Les deux premiers chiffres sont identiques (6 et 8). On continue à comparer, chiffre par chiffre, vers la droite.'},
-  {expr:'68 <span class="hl">4</span>50   et   68 <span class="hl">5</span>40', note:'Le chiffre suivant est différent : 4 et 5. Comme 4 est plus petit que 5, on peut déjà conclure.'},
-  {expr:'68 450 < 68 540', note:'Donc 68 450 est plus petit que 68 540 !'},
-];
-const cm1neComparerDemo = makeStepDemo(CM1NE_COMPARER_STEPS, 'cm1ne-comparerDisplay');
-
-DEMO_QUIZZES['cm1|Nombres entiers'] = [
-  {q:"Comment écrit-on en chiffres quatre-cent-douze-mille-sept-cent-trois ?",
-   opts:["412 703","4 127 03","400 12 703"], correct:0},
-  {q:"Dans le nombre 724 916, quel est le chiffre des centaines ?",
-   opts:["7","9","6"], correct:1},
-  {q:"Pour comparer deux nombres entiers, que doit-on regarder en premier ?",
-   opts:["Le tout premier chiffre à gauche","Le nombre de chiffres","La couleur de l'écriture"], correct:1},
-];
-
-DEMO_REGISTRY['cm1|Nombres entiers'] = { cours:'cours-demo-cm1-nombres-entiers', methode:'methode-demo-cm1-nombres-entiers', exos:'exos-demo-cm1-nombres-entiers', histoire:'histoire-demo-cm1-nombres-entiers',
-  init:()=>{ cm1neLireDemo.reset(); cm1neComparerDemo.reset(); } };
+${cm1Lecon(6, 'Ranger des nombres')}
+${cm1Regle('<b>Ordre croissant</b> : du plus petit au plus grand. <b>Ordre décroissant</b> : du plus grand au plus petit.')}
+${cm1Exemple('Range dans l\'ordre croissant : 3 061 · 3 610 · 360 · 3 106', ['360 &lt; 3 061 &lt; 3 106 &lt; 3 610'])}
+`,
+  methode: `
+${cm1Demo('ne-lire', 'Lire et écrire un nombre de 4 chiffres', 'Comment lire 6 085 ? Clique sur « Étape suivante ».')}
+${cm1Demo('ne-comparer', 'Comparer deux nombres', 'Entre 5 306 et 5 360, lequel est le plus grand ?')}
+${cm1Demo('ne-graduer', 'Trouver le nombre qui correspond à un point sur une demi-droite graduée', 'Sur une demi-droite, 2 000 et 3 000 sont séparés par 10 écarts. Où est le point C, placé à 7 écarts après 2 000 ?')}
+`,
+  demos: [
+    ['ne-lire', [
+      { expr: '6085', note: 'On compte les chiffres : il y en a 4. Le premier chiffre (à gauche) est celui des unités de mille.' },
+      { expr: '<span class="hl">6</span> 085', note: 'On laisse un espace après les mille : 6 085. On lit d\'abord « six-mille ».' },
+      { expr: '6 <span class="hl">0</span>85', note: 'Le chiffre des centaines est 0 : il n\'y a pas de centaines, on ne dit rien.' },
+      { expr: '6 0<span class="hl">85</span>', note: 'Il reste 85 : « quatre-vingt-cinq ».' },
+      { expr: '6 085 : six-mille-quatre-vingt-cinq', note: 'On lit le nombre en entier. Le 0 est indispensable : sans lui, on lirait 685 !' },
+    ]],
+    ['ne-comparer', [
+      { expr: '5 306   et   5 360', note: 'Les deux nombres ont 4 chiffres : on compare chiffre par chiffre, en partant de la gauche.' },
+      { expr: '<span class="hl">5</span> 306   et   <span class="hl">5</span> 360', note: 'Unités de mille : 5 et 5, égalité. On continue.' },
+      { expr: '5 <span class="hl">3</span>06   et   5 <span class="hl">3</span>60', note: 'Centaines : 3 et 3, égalité. On continue.' },
+      { expr: '5 3<span class="hl">0</span>6   et   5 3<span class="hl">6</span>0', note: 'Dizaines : 0 et 6. 0 est plus petit que 6 : on peut conclure.' },
+      { expr: '5 306 &lt; 5 360', note: '5 306 est inférieur à 5 360.' },
+    ]],
+    ['ne-graduer', [
+      { expr: '3 000 − 2 000 = 1 000', note: 'On calcule l\'écart entre les deux nombres écrits : 1 000.' },
+      { expr: '1 000 ÷ 10 = 100', note: 'Cet écart est partagé en 10 écarts égaux : chaque écart vaut 100.' },
+      { expr: '2 000 + 7 × 100 = 2 700', note: 'Le point C est 7 écarts après 2 000 : il est à 2 700.' },
+    ]],
+  ],
+  exos: cm1Exos('ne', [
+    ['Écris en chiffres : cinq-mille-quarante-huit.', '5 048 (il n\'y a pas de centaines : on écrit 0 au rang des centaines).'],
+    ['Écris en lettres : 3 907.', 'trois-mille-neuf-cent-sept.'],
+    ['Décompose 8 506 de deux façons.', '8 506 = 8 000 + 500 + 6 = (8 × 1 000) + (5 × 100) + 6.'],
+    ['Dans 4 730 : quel est le chiffre des dizaines ? le nombre de dizaines ? le nombre de centaines ?', 'Chiffre des dizaines : 3. Nombre de dizaines : 473. Nombre de centaines : 47.'],
+    ['Complète avec &lt;, &gt; ou = : 6 099 … 6 100 &nbsp;·&nbsp; 870 … 1 002 &nbsp;·&nbsp; 3 450 … 3 405', '6 099 &lt; 6 100 &nbsp;·&nbsp; 870 &lt; 1 002 &nbsp;·&nbsp; 3 450 &gt; 3 405'],
+    ['Encadre 2 836 entre deux milliers, puis entre deux centaines consécutives.', '2 000 &lt; 2 836 &lt; 3 000 et 2 800 &lt; 2 836 &lt; 2 900.'],
+    ['Range dans l\'ordre décroissant : 1 570 · 1 507 · 7 015 · 157 · 5 170', '7 015 &gt; 5 170 &gt; 1 570 &gt; 1 507 &gt; 157'],
+    ['Sur une demi-droite graduée, 4 000 et 5 000 sont séparés par 10 écarts égaux. Quel nombre correspond à la 6<sup>e</sup> graduation après 4 000 ?', 'Un écart vaut 1 000 ÷ 10 = 100, donc 4 000 + 6 × 100 = 4 600.'],
+  ], { titre: 'Rédaction type : « Décomposer un nombre »', lignes: [['6 358', 'Je repère le chiffre de chaque rang : 6 mille, 3 centaines, 5 dizaines, 8 unités.'], ['= 6 000 + 300 + 50 + 8', 'J\'écris la valeur de chaque chiffre.']] }),
+  histoire: cm1Histoire('Un peu d\'histoire : l\'invention du zéro', [
+    'Pour écrire 6 085, on a besoin d\'un chiffre qui veut dire « rien à cette place » : le <b>zéro</b>. Il n\'a pas toujours existé ! Les Babyloniens, il y a près de 4 000 ans, laissaient simplement un espace vide… ce qui créait beaucoup de confusions.',
+    'Ce sont des savants de l\'<b>Inde</b> qui, vers le V<sup>e</sup> siècle, ont fait du zéro un vrai chiffre. En 628, le mathématicien <b>Brahmagupta</b> explique même comment calculer avec lui.',
+    'Le zéro arrive en Europe grâce aux savants arabes (le mot « zéro » vient de l\'arabe <i>sifr</i>, « le vide ») et au livre de <b>Fibonacci</b> en 1202. Avec dix chiffres et le principe de position, on peut écrire tous les nombres.',
+  ]),
+  quiz: [
+    { q: 'Comment écrit-on en chiffres « deux-mille-trente » ?', opts: ['2 300', '2 030', '203'], correct: 1 },
+    { q: 'Dans 5 862, quel est le nombre de centaines ?', opts: ['8', '58', '586'], correct: 1 },
+    { q: '1 millier, c\'est…', opts: ['10 dizaines', '100 dizaines', '1 000 dizaines'], correct: 1 },
+    { q: 'Quel nombre est compris entre 3 490 et 3 510 ?', opts: ['3 409', '3 500', '3 590'], correct: 1 },
+  ],
+});

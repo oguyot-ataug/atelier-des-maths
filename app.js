@@ -135,28 +135,32 @@ const CH3 = [
    à l'interface pour la plupart des chapitres (seul N1 a un vrai contenu de cours pour
    l'instant) : sert de base pour une future implémentation. */
 const CHCM1 = [
- {n:1,code:'N1',cat:'N',t:'Nombres entiers',s:2,p:'4-15',d:'7-20 sept'},
- {n:2,code:'G1',cat:'G',t:'Droites parallèles et perpendiculaires',s:1,p:'116-121',d:'21-27 sept'},
- {n:3,code:'N2',cat:'N',t:'Opérations sur les nombres entiers',s:2,p:'16-25',d:'28 sept-11 oct'},
- {n:4,code:'G2',cat:'G',t:'Construction de figures',s:2,p:'122-133',d:'2-15 nov'},
- {n:5,code:'N3',cat:'N',t:'Fractions',s:1,p:'26-33',d:'16-22 nov'},
- {n:6,code:'M1',cat:'M',t:'Longueurs, masses, contenances',s:1,p:'90-93',d:'23-29 nov'},
- {n:7,code:'N4',cat:'N',t:'Fractions (comparaison et opérations)',s:2,p:'34-43',d:'30 nov-13 déc'},
- {n:8,code:'G3',cat:'G',t:'Symétrie axiale',s:1,p:'134-137',d:'4-10 jan'},
- {n:9,code:'N5',cat:'N',t:'Nombres décimaux',s:2,p:'44-53',d:'11-24 jan'},
- {n:10,code:'M2',cat:'M',t:'Périmètres',s:1,p:'94-99',d:'25-31 jan'},
- {n:11,code:'N6',cat:'N',t:'Opérations sur les nombres décimaux',s:1,p:'54-60',d:'1-7 fév'},
- {n:12,code:'D1',cat:'D',t:'Organisation et gestion de données',s:1,p:'146-149',d:'8-14 fév'},
- {n:13,code:'N7',cat:'N',t:'Procédures de calcul mental',s:1,p:'61-69',d:'8-14 mars'},
- {n:14,code:'G4',cat:'G',t:'Solides',s:1,p:'138-145',d:'15-21 mars'},
- {n:15,code:'N8',cat:'N',t:'Résolution de problèmes',s:2,p:'70-83',d:'22 mars-4 avr'},
- {n:16,code:'M3',cat:'M',t:'Aires',s:1,p:'100-105',d:'5-11 avr'},
- {n:17,code:'D2',cat:'D',t:'Probabilités',s:1,p:'150-153',d:'3-9 mai'},
- {n:18,code:'N9',cat:'N',t:'Algèbre',s:1,p:'84-89',d:'10-16 mai'},
- {n:19,code:'M4',cat:'M',t:'Angles',s:1,p:'106-109',d:'17-23 mai'},
- {n:20,code:'D3',cat:'D',t:'Proportionnalité',s:1,p:'154-157',d:'24-30 mai'},
- {n:21,code:'M5',cat:'M',t:'Heures et durées',s:1,p:'110-115',d:'31 mai-6 juin'},
- {n:22,code:'D4',cat:'D',t:'Initiation à la pensée informatique',s:1,p:'158-160',d:'7-13 juin'},
+ // Progression revue avec le programme du cycle 3 -- demandé : « Est-ce la bonne progression ? » :
+ // entiers d'au plus 4 chiffres en périodes 1-2 (5-6 chiffres à partir de la période 3), fractions
+ // dès la période 1, étude des décimaux dès la période 2. Notre propre manuel : pas de pages.
+ {n:1,code:'N1',cat:'N',t:'Nombres entiers jusqu\'à 9 999',s:1,p:'',d:'7-13 sept'},
+ {n:2,code:'N2',cat:'N',t:'Fractions',s:1,p:'',d:'14-20 sept'},
+ {n:3,code:'G1',cat:'G',t:'Droites parallèles et perpendiculaires',s:1,p:'',d:'21-27 sept'},
+ {n:4,code:'N3',cat:'N',t:'Opérations sur les nombres entiers',s:2,p:'',d:'28 sept-11 oct'},
+ {n:5,code:'M1',cat:'M',t:'Longueurs, masses, contenances',s:1,p:'',d:'12-16 oct'},
+ {n:6,code:'N4',cat:'N',t:'Nombres décimaux',s:2,p:'',d:'3-15 nov'},
+ {n:7,code:'G2',cat:'G',t:'Construction de figures',s:2,p:'',d:'16-29 nov'},
+ {n:8,code:'N5',cat:'N',t:'Fractions (comparaison et opérations)',s:2,p:'',d:'30 nov-13 déc'},
+ {n:9,code:'D1',cat:'D',t:'Organisation et gestion de données',s:1,p:'',d:'14-18 déc'},
+ {n:10,code:'N6',cat:'N',t:'Grands nombres jusqu\'à 999 999',s:1,p:'',d:'5-11 jan'},
+ {n:11,code:'N7',cat:'N',t:'Opérations sur les nombres décimaux',s:1,p:'',d:'12-18 jan'},
+ {n:12,code:'G3',cat:'G',t:'Symétrie axiale',s:1,p:'',d:'19-25 jan'},
+ {n:13,code:'M2',cat:'M',t:'Périmètres',s:1,p:'',d:'26 jan-1 fév'},
+ {n:14,code:'N8',cat:'N',t:'Procédures de calcul mental',s:1,p:'',d:'2-8 fév'},
+ {n:15,code:'D2',cat:'D',t:'Probabilités',s:1,p:'',d:'9-15 fév'},
+ {n:16,code:'N9',cat:'N',t:'Résolution de problèmes',s:2,p:'',d:'9-22 mars'},
+ {n:17,code:'G4',cat:'G',t:'Solides',s:1,p:'',d:'23-29 mars'},
+ {n:18,code:'M3',cat:'M',t:'Aires',s:1,p:'',d:'30 mars-5 avr'},
+ {n:19,code:'D3',cat:'D',t:'Proportionnalité',s:1,p:'',d:'6-12 avr'},
+ {n:20,code:'N10',cat:'N',t:'Algèbre',s:1,p:'',d:'4-10 mai'},
+ {n:21,code:'M4',cat:'M',t:'Angles',s:1,p:'',d:'11-17 mai'},
+ {n:22,code:'M5',cat:'M',t:'Heures et durées',s:1,p:'',d:'18-24 mai'},
+ {n:23,code:'D4',cat:'D',t:'Initiation à la pensée informatique',s:1,p:'',d:'25-31 mai'},
 ];
 
 // Correspondance niveau -> programme -- remplace la ternaire "lvl==='6e'?CH6:CH5" codée en
@@ -172,7 +176,7 @@ const VACANCES = {
   '5e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:6,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:14,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '4e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:12,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '3e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:8,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:13,label:'Vacances de printemps · 17 avr → 3 mai'}],
-  'cm1':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:12,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:16,label:'Vacances de printemps · 17 avr → 3 mai'}],
+  'cm1':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:9,label:'Vacances de Noël · 19 déc → 4 jan'},{after:15,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:19,label:'Vacances de printemps · 17 avr → 3 mai'}],
 };
 /* Dates officielles 2026-2027 (arrêté du 22 octobre 2025, Journal officiel) pour l'éditeur
    de progression personnalisée ("Ma progression") : Toussaint et Noël sont communes aux
@@ -3093,6 +3097,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.864', items:[
+    "CM1 : nouvelle progression annuelle en 23 chapitres, dans l'ordre de l'année et conforme au programme du cycle 3 (nombres de 4 chiffres au plus en périodes 1 et 2, grands nombres en période 3, décimaux jusqu'aux centièmes, pas de tableau de conversion ni de proportionnalité). Demandé : « Il n'y a pas besoin des pages du manuel car on crée notre propre manuel complet. Avance ». Les chapitres arrivent au fur et à mesure ; ceux pas encore écrits restent « en construction ».",
+    "CM1 : « Nombres entiers jusqu'à 9 999 » réécrit (unités de numération, décomposer, chiffre des / nombre de, demi-droite graduée, comparer, encadrer, intercaler, ranger) ; l'ancien cours sur les nombres jusqu'à 999 999 devient le chapitre « Grands nombres jusqu'à 999 999 » (période 3).",
+    "CM1 : nouveaux chapitres « Fractions » (partage, numérateur et dénominateur, fractions et unité, décomposer 7/4 = 1 + 3/4, demi-droite graduée, fraction d'une quantité) et « Longueurs, masses, contenances » (mesurer à la règle, préfixes kilo, déci, centi, milli en couleur, ordres de grandeur, conversions justifiées par une phrase). Chacun avec cours, méthode animée, exercices corrigés, histoire et quiz.",
+    "CM1, période 2 : nouveaux chapitres « Nombres décimaux » (dixièmes et centièmes, écriture à virgule, décomposer, demi-droite graduée, comparer sans tomber dans le piège 5,7 / 5,62), « Fractions (comparaison et opérations) » (fractions égales, comparer, additionner et soustraire avec le même dénominateur) et « Organisation et gestion de données » (tableaux, tableau à double entrée, diagramme en barres, graphique).",
+  ]},
   { version:'2026-08-19.863', items:[
     "5e : chapitres vérifiés avec le nouveau programme du cycle 4, qui s'applique en 5e dès cette année. Demandé : « Le programme de 5e se met à jour dès cette année. » La plupart des nouveautés étaient déjà traitées (division par un décimal, fractions de dénominateurs quelconques, puissances et carrés de 1 à 12, hauteurs et médianes, aire du disque et volume du cylindre, fonctions et tableaux de valeurs). Compléments ajoutés là où un objectif manquait.",
     "Nouveau chapitre « Pensée informatique et programmation » (D3, en fin d'année) : entrées, sorties et variable (la réponse saisie), formules écrites en blocs emboîtés (le bloc intérieur joue le rôle des parenthèses), boucle « répéter n fois ». Atelier interactif : 4 programmes dont on modifie les paramètres, on donne les entrées, on prévoit la sortie puis on l'exécute pas à pas (tableau de suivi). Exercices, histoire (Fortran, Grace Hopper) et quiz.",
