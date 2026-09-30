@@ -3073,6 +3073,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.828', items:[
+    "Cahier de corrections, « Modifier » -- signalé : « quand on fait modifier, il recrée systématiquement une nouvelle entrée en base. Je me suis trompé de classe, je clique sur modifier, je change la classe. Mais l'exercice se retrouve dans les deux classes. » Cause : changer de classe active recharge le cahier de la nouvelle classe ; l'exercice en cours de modification n'y figurant pas, l'enregistrement le prenait pour un nouvel exercice et l'ajoutait, sans toucher à l'original. Désormais, « Enregistrer la modification » met toujours à jour la même ligne en base. Si la classe active a changé entre-temps, une confirmation propose de déplacer l'exercice (« Déplacer cet exercice de 6V vers 6O ? ») : il quitte l'ancienne classe et rejoint la nouvelle, sans doublon ; annuler laisse tout en l'état.",
+  ]},
   { version:'2026-08-19.827', items:[
     "Écran partagé : déplacer un point ne rejoue plus la construction -- signalé : « si je déplace un point, la figure avec les outils recommence depuis le début ». Quand on déplace un point (ou un arc), qu'on efface un objet ou qu'on annule, le tableau est désormais reconstruit instantanément et sans aucun instrument visible : les gestes sont calculés sans animation ni affichage intermédiaire, puis seul le résultat s'affiche (environ 0,2 s). Pendant un glissé, le tableau suit le point en continu, sans attendre qu'on le relâche. Seuls les nouveaux objets sont construits aux instruments ; « Rejouer » (flèche verte) et la barre de lecture permettent toujours de revoir toute la construction.",
   ]},
@@ -5877,6 +5880,7 @@ function saveCahier(){
   try{ localStorage.setItem('mathcollege_cahier', JSON.stringify(cahier)); }catch(e){ /* stockage indisponible dans ce contexte */ }
 }
 let cahier = loadCahier();
+let editingEntryClassId = null; // classe active au moment où la modification a commencé
 let editingEntryId = null; // id STABLE (pas un index de tableau -- un index capturé au clic
                             // sur "Modifier" peut devenir invalide si `cahier` est retrié avant
                             // le clic sur "Enregistrer", menant à écraser la MAUVAISE entrée)
@@ -6038,23 +6042,34 @@ async function addToCahier(){
     rows: JSON.parse(JSON.stringify(corRows)),
     cellBorders: JSON.parse(JSON.stringify(corCellBorders)),
   };
-  let oldServerId = null;
+  let oldServerId = null, deplacement = false;
   if(editingEntryId!==null){
+    // Classe active changée pendant la modification (signalé : « je me suis trompé de classe, je
+    // clique sur modifier, je change la classe. Mais l'exercice se retrouve dans les deux
+    // classes ») : c'est un DÉPLACEMENT de la même ligne, jamais un nouvel ajout.
+    if(editingEntryClassId && editingEntryClassId!==currentClassId && editingEntryId){
+      const de = (accountClassesList.find(c=>c.id===editingEntryClassId)||{}).label || 'l\'ancienne classe';
+      const vers = (accountClassesList.find(c=>c.id===currentClassId)||{}).label || 'la classe active';
+      if(!(await niceConfirm(`Déplacer cet exercice de ${escapeHtml(de)} vers ${escapeHtml(vers)} ?`))) return;
+      deplacement = true;
+    }
+    if(deplacement) entry.ordre = null; // son rang manuel n'a pas de sens dans l'autre classe
     // Recherche fraîche de la position ACTUELLE de l'entrée éditée, par son id stable -- ne
     // JAMAIS faire confiance à un index capturé plus tôt (voir commentaire sur editingEntryId).
     const idx = cahier.findIndex(e=>e.id===editingEntryId);
     if(idx!==-1){
       oldServerId = cahier[idx].id || null;
-      entry.ordre = cahier[idx].ordre; // reporte l'ordre manuel existant, sinon perdu à chaque
+      if(!deplacement) entry.ordre = cahier[idx].ordre; // reporte l'ordre manuel existant, sinon perdu à chaque
                                         // modification (l'entrée retombait tout en bas --
                                         // sortCahierInPlace place les entrées sans ordre en dernier)
       cahier[idx] = entry;
     } else {
-      // L'entrée éditée a disparu du tableau local entre-temps (rare -- ex. rechargement) :
-      // on traite ça comme un ajout classique plutôt que de risquer d'écraser une autre entrée.
+      // L'entrée éditée n'est plus dans la liste chargée (autre classe affichée, rechargement) :
+      // elle garde son id en base -- mise à jour de la MÊME ligne, pas un doublon.
+      oldServerId = editingEntryId || null;
       cahier.push(entry);
     }
-    editingEntryId = null;
+    editingEntryId = null; editingEntryClassId = null;
     updateAddCahierButtonLabel();
     document.getElementById('btnCancelEdit').style.display = 'none';
   } else {
@@ -6067,7 +6082,7 @@ async function addToCahier(){
   if(isSyncEnabled()){
     if(oldServerId){
       entry.id = oldServerId;
-      const res = await syncUpdateEntry(oldServerId, entry);
+      const res = await syncUpdateEntry(oldServerId, deplacement ? {...entry, class_id: currentClassId} : entry);
       if(!res.ok && !res.offline){ await niceAlert("<span class=gicon>warning</span> Enregistré localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez l'adresse du script et le code secret dans la configuration de synchronisation."); }
     } else {
       const res = await syncAddEntry(entry);
@@ -6117,13 +6132,14 @@ async function editCahierEntry(i){
   }
   renderCorrectionPreview();
   editingEntryId = e.id;
+  editingEntryClassId = currentClassId; // pour reconnaître un changement de classe avant l'enregistrement
   document.getElementById('btnAddCahier').innerHTML = '<span class=gicon>save</span> Enregistrer la modification';
   document.getElementById('btnCancelEdit').style.display = 'inline-block';
   document.getElementById('correctionForm').scrollIntoView({behavior:'smooth', block:'start'});
   document.getElementById('correctionInput').focus();
 }
 function cancelEditCahier(){
-  editingEntryId = null;
+  editingEntryId = null; editingEntryClassId = null;
   updateAddCahierButtonLabel();
   document.getElementById('btnCancelEdit').style.display = 'none';
   clearCorrectionInput();
