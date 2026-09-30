@@ -5831,8 +5831,11 @@ function figVersProgramme(){
       if(sh.radius!=null) o.radius = r1(sh.radiusCm || sh.radius/cm); else { assurerPoint(sh.p2); o.radius_from = [sh.p1.label, sh.p2.label]; }
       o.id = nouvelId(sh); prog.push(couleur(sh, o)); return o.id;
     }
-    if(t==='arc'){ assurerPoint(sh.center); assurerPoint(sh.p1); const id = nouvelId(sh); prog.push(couleur(sh, {op:'circle', id, center:sh.center.label, radius_from:[sh.center.label, sh.p1.label]})); return id; }
-    if(t==='arc-rayon'){ assurerPoint(sh.center); const id = nouvelId(sh); prog.push(couleur(sh, {op:'circle', id, center:sh.center.label, radius:r1(sh.radiusCm || sh.radius/cm)})); return id; }
+    // Arcs : seul l'arc est tracé au compas (« arc » en degrés, repère mathématique -- l'écran a
+    // son axe y vers le bas, d'où le changement de signe des angles).
+    const arcDeg = sh => { const cv = figCurve(sh); if(!cv || cv.span==null) return null; const d = v=>Math.round(v*180/Math.PI*10)/10; return [d(-(cv.a1+cv.span)), d(-cv.a1)]; };
+    if(t==='arc'){ assurerPoint(sh.center); assurerPoint(sh.p1); const id = nouvelId(sh); prog.push(couleur(sh, {op:'circle', id, center:sh.center.label, radius_from:[sh.center.label, sh.p1.label], arc:arcDeg(sh)})); return id; }
+    if(t==='arc-rayon'){ assurerPoint(sh.center); const id = nouvelId(sh); prog.push(couleur(sh, {op:'circle', id, center:sh.center.label, radius:r1(sh.radiusCm || sh.radius/cm), arc:arcDeg(sh)})); return id; }
     if(t==='perpendiculaire' || t==='parallele'){
       assurerPoint(sh.refA); assurerPoint(sh.refB); assurerPoint(sh.through);
       const id = nouvelId(sh);
@@ -5887,7 +5890,10 @@ function figSplitAligner(){
   const barreBas = barres.length ? barres[barres.length-1] : null;
   const bas = (aide ? aide.offsetHeight + 8 : 24) + (barreBas ? barreBas.offsetHeight + 18 : 60) + 14, top = svg.getBoundingClientRect().top;
   const wG = Math.floor(svg.parentNode.getBoundingClientRect().width);
-  const h = Math.max(240, Math.floor(window.innerHeight - top - bas));
+  // À droite, sous le tableau : la barre de lecture et les boutons Enregistrer / Cahier.
+  const barre = document.getElementById('tbAiPlaybackBar'), actions = document.getElementById('tbSplitActions');
+  const basD = (barre ? Math.max(barre.offsetHeight, 48) + 10 : 0) + (actions ? Math.max(actions.offsetHeight, 40) + 10 : 0) + 14;
+  const h = Math.max(240, Math.floor(window.innerHeight - top - Math.max(bas, basD)));
   // Figure : la zone visible prend le format du cadre (même centre, même largeur en unités).
   const ancienRatio = figVBRatio;
   figVBRatio = h/wG;
@@ -6057,8 +6063,9 @@ async function figLiveSync(rapide){
   const vitesse = tbAiSpeed;
   try{
     if(prolonge && figLive.cles.length){
+      const dejaJoue = Math.min(figLive.nActions, typeof tbAiPlanIndex==='number' ? tbAiPlanIndex : figLive.nActions); // « Précédent » a pu défaire des étapes
       tbAiLoadProgram(programme, figSplitOutils(), {center:centre, keepZoom:true});
-      tbAiPlanIndex = Math.min(figLive.nActions, tbAiPlan.actions.length);
+      tbAiPlanIndex = Math.min(dejaJoue, tbAiPlan.actions.length);
     } else {
       // Reconstruction complète, instantanée (sauf au tout premier objet, qui se construit en direct).
       tbClearAll();

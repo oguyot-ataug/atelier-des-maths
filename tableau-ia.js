@@ -361,7 +361,16 @@ function tbAiEvaluate(program, flips, allowed){
           if(r>17) err(i, 'écartement trop grand pour le compas (17 cm max)');
         } else r = num(i, s.radius, 'rayon', 0.2, 15);
         need(i,'compas');
-        const o = register(i, s.id, {kind:'circle', c:C, r, hits:[], full:!!s.full, centerName: from ? null : s.center, showLen: s.show_length!==false});
+        // Arc de cercle (« arc »: [départ, arrivée] en degrés, repère mathématique, sens direct) :
+        // le compas ne trace que cet arc (demandé : « j'ai fait un arc de cercle, il a tracé le cercle complet »).
+        let arc = null;
+        if(s.arc!==undefined){
+          if(!Array.isArray(s.arc) || s.arc.length!==2 || !s.arc.every(v=>typeof v==='number' && isFinite(v))) err(i, '« arc » attendu : [angle de départ, angle d\'arrivée] en degrés');
+          let a0 = s.arc[0]*Math.PI/180, a1 = s.arc[1]*Math.PI/180;
+          while(a1<=a0) a1 += 2*Math.PI;
+          arc = [a0, a1];
+        }
+        const o = register(i, s.id, {kind:'circle', c:C, r, hits:[], full:!!s.full && !arc, arc, centerName: from ? null : s.center, showLen: s.show_length!==false});
         actions.push({op:'circle', C, r, from, obj:o, gtool: from ? null : openTool(i,r,true), style:s.style});
         break;
       }
@@ -938,6 +947,7 @@ async function tbAiTakeOpening(rPx, fromPts, gtool){
 /* Fenêtres d'arc (angles mathématiques) autour des points qui seront trouvés sur ce cercle --
    "il n'est pas nécessaire de faire un cercle complet : un arc suffit". */
 function tbAiArcWindows(o, half){
+  if(o.arc) return [o.arc.slice()];
   if(o.full || !o.hits.length) return [[Math.PI/2, Math.PI/2+2*Math.PI]];
   const h = (half||20)*Math.PI/180;
   const ws = o.hits.map(a=>[a-h, a+h]).sort((x,y)=>x[0]-y[0]);
@@ -1226,7 +1236,7 @@ const tbAiSteps = {
   },
   async circle(a){
     const S = tbAiPlan.S, C = S(a.C), rPx = a.r*TB_PX_PER_CM;
-    const style = a.style || ((a.obj.full || !a.obj.hits.length) ? 'final' : 'construction');
+    const style = a.style || ((a.obj.full || a.obj.arc || !a.obj.hits.length) ? 'final' : 'construction');
     const cp = await tbAiTakeOpening(rPx, a.from ? [S(a.from[0]), S(a.from[1])] : null, a.gtool);
     if(!a.from) await tbAiPutAway('regle_grad','requerre2');
     await tbAiCompassArcs(cp, C, rPx, tbAiArcWindows(a.obj), style);
@@ -1381,6 +1391,7 @@ OPÉRATIONS DISPONIBLES :
 - {"op":"ray","id":"d","from":"A","through":"B"} : DEMI-DROITE [AB), partant exactement de A et dépassant B. Ou {"op":"ray","id":"d","from":"A","direction":60}.
 - {"op":"perpendicular","id":"d1","through":"A","to":["A","B"],"kind":"ray","side":"up"} : PERPENDICULAIRE À L'ÉQUERRE à la droite (AB) (ou "to":"d" pour une droite déjà nommée) passant par A. Option "tool" : "equerre", "requerre" ou "compas" pour imposer l'instrument quand l'énoncé le précise (ex. « à la réquerre », « à la règle et au compas ») ; sinon ne la mets pas. "kind" : "line" (droite), "ray" (demi-droite qui part de la droite de référence), "segment" (segment du point jusqu'au pied, point hors de la droite). "side" (up/down/left/right) : de quel côté part la demi-droite quand le point est SUR la droite. "foot":"H" pour nommer le pied de la perpendiculaire quand le point est hors de la droite.
 - {"op":"parallel","id":"d2","through":"M","to":["A","B"]} : PARALLÈLE à (AB) passant par M (équerre qui glisse le long de la règle, réquerre, ou parallélogramme au compas). "kind":"line" par défaut. Même option "tool" que ci-dessus.
+- {"op":"circle","id":"c1","center":"B","radius":7,"arc":[0,90]} : "arc" (facultatif) ne trace que l'arc de l'angle 0° à 90° (degrés, sens inverse des aiguilles d'une montre, 0° vers la droite).
 - {"op":"circle","id":"c1","center":"B","radius":7} : COMPAS de centre B, écartement 7 cm pris sur la règle. Ou "radius_from":["A","C"] pour reporter la longueur AC (écartement pris directement sur la figure). S'il sert à trouver un point (intersection), seul un petit arc est tracé ; sinon le cercle complet ("full":true pour forcer le cercle complet).
 - {"op":"intersect","name":"C","of":["d1","c1"],"pick":"up"} : on marque le point d'intersection de deux objets (droites, demi-droites, segments, cercles). "pick" (up/down/left/right) choisit l'intersection s'il y en a deux (par défaut : celle du haut).
 - {"op":"midpoint","name":"I","of":["A","B"]} : MILIEU mesuré à la règle.
