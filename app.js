@@ -3097,6 +3097,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.866', items:[
+    "CM1, période 4 : quatre nouveaux chapitres. « Résolution de problèmes » (les 6 étapes, schémas en barres pour chercher un tout ou une partie, comparer, multiplier, partager, grouper, problèmes à étapes, reste d'une division à interpréter). « Solides » (cube, pavé droit, prisme, pyramide, cylindre, cône, boule dessinés avec arêtes cachées en pointillés ; faces, arêtes, sommets ; patrons du cube). « Aires » (comparer, compter des carreaux et demi-carreaux, cm², périmètre et aire à ne pas confondre ; les formules restent pour le CM2). « Proportionnalité » (fois plus, addition, passage par l'unité, situations non proportionnelles ; sans tableau, comme le demande le programme).",
+  ]},
   { version:'2026-08-19.865', items:[
     "CM1, période 3 : cinq nouveaux chapitres, chacun avec cours, méthode animée, exercices corrigés, histoire et quiz. « Opérations sur les nombres décimaux » (additions et soustractions posées en alignant les virgules, × 10 et ÷ 10 en suivant le glissement des chiffres, ordre de grandeur). « Symétrie axiale » (pliage, axes des figures usuelles, quadrillage) avec un atelier où l'élève colorie les cases pour compléter un dessin, puis vérifie. « Périmètres » (polygone, carré, rectangle, unités à harmoniser). « Procédures de calcul mental » (± 9, 11, 19, décomposer, × 10, 100, 1 000, × 4, × 5) avec un atelier de 10 calculs tirés au hasard. « Probabilités » (impossible, peu probable, une chance sur deux, probable, certain) avec un atelier de tirage de billes dans un sac.",
   ]},
