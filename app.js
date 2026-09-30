@@ -3081,6 +3081,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.840', items:[
+    "CM1, Construction de figures : le rectangle se construit comme en classe. Signalé : « Les équerres ont rarement le 0 juste dans l'angle. Il est légèrement décalé. Donc il faut faire des perpendiculaires et seulement après prendre les mesures à la règle. » L'équerre ne sert plus qu'à tracer les angles droits, en A puis en B, avec des traits un peu plus longs que 3 cm. Les 3 cm se mesurent ensuite à la règle, le 0 sur le sommet, pour placer D puis C. On relie enfin D et C. Sur la figure finale, les bouts de trait en trop restent en traits de construction.",
+  ]},
   { version:'2026-08-19.839', items:[
     "CM1, Construction de figures : corrections signalées. L'arc EF se note maintenant avec un petit arc au-dessus des lettres. Dans le polygone, l'angle codé en E est bien placé entre les côtés [EA] et [ED]. Dans la construction du rectangle, l'équerre posée en B a un côté sur le segment [AB]. Dans les constructions, les points A et B n'apparaissent qu'avec le segment tracé à la règle, plus avant. Dans la construction du triangle équilatéral, une étape montre d'abord la prise de la longueur AB au compas (pointe sèche sur A, mine sur B), avant les deux arcs.",
   ]},

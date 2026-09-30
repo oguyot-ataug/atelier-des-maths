@@ -247,30 +247,42 @@ const cf1CercleDemo = cf1Etapes('cf1Cercle', [
 
 // M2 : tracer un rectangle de 5 cm sur 3 cm (règle et équerre).
 const CF1_R_A = [70, 200], CF1_R_B = [70 + 5 * CF1_CM, 200], CF1_R_D = [70, 200 - 3 * CF1_CM], CF1_R_C = [70 + 5 * CF1_CM, 200 - 3 * CF1_CM];
+/* Signalé : « Les équerres ont rarement le 0 juste dans l'angle. Il est légèrement décalé. Donc il
+   faut faire des perpendiculaires et seulement après prendre les mesures à la règle. » L'équerre ne
+   sert qu'à tracer les angles droits (des traits plus longs que nécessaire) ; les 3 cm se mesurent
+   ensuite à la règle, 0 sur le sommet. Les bouts de trait en trop restent en traits de construction. */
+const CF1_R_PERP = 4.5 * CF1_CM; // longueur des perpendiculaires tracées à l'équerre (plus de 3 cm)
 const cf1RectDemo = cf1Etapes('cf1Rect', [
   'On veut tracer un rectangle ABCD de longueur 5 cm et de largeur 3 cm.',
   '1. Avec la règle, on trace le segment [AB] de 5 cm : A sur le 0, B sur le 5.',
-  '2. On pose l\'équerre : son angle droit sur A, un côté le long de [AB]. On trace le long de l\'autre côté un segment de 3 cm : c\'est [AD].',
-  '3. On fait de même en B : l\'angle droit de l\'équerre sur B, un côté le long de [BA]. On trace [BC] de 3 cm le long de l\'autre côté.',
-  '4. Avec la règle, on relie D et C.',
-  '5. Le rectangle ABCD est tracé : quatre angles droits, et des côtés de 5 cm et de 3 cm.',
+  '2. On pose l\'équerre : son angle droit sur A, un côté le long de [AB]. On trace un trait le long de l\'autre côté, un peu plus long que 3 cm. On ne mesure pas avec l\'équerre : son 0 n\'est souvent pas pile dans l\'angle.',
+  '3. On mesure avec la règle, le 0 sur A, le long de ce trait : on place D à 3 cm.',
+  '4. On fait de même en B : l\'angle droit de l\'équerre sur B, un côté le long de [BA]. On trace un trait le long de l\'autre côté.',
+  '5. Avec la règle, le 0 sur B, on place C à 3 cm.',
+  '6. Avec la règle, on relie D et C.',
+  '7. Le rectangle ABCD est tracé : quatre angles droits, et des côtés de 5 cm et de 3 cm. Les bouts de trait en trop sont des traits de construction.',
 ], k => {
-  const A = CF1_R_A, B = CF1_R_B, C = CF1_R_C, D = CF1_R_D;
+  const A = CF1_R_A, B = CF1_R_B, C = CF1_R_C, D = CF1_R_D, hA = [A[0], A[1] - CF1_R_PERP], hB = [B[0], B[1] - CF1_R_PERP];
   let h = '';
   if(k >= 1) h += cf1Seg(A, B, CF1_ENCRE, 2.2);
-  if(k >= 2) h += cf1Seg(A, D, CF1_ENCRE, 2.2);
-  if(k >= 3) h += cf1Seg(B, C, CF1_ENCRE, 2.2);
-  if(k >= 4) h += cf1Seg(D, C, CF1_ENCRE, 2.2);
+  // Perpendiculaires tracées à l'équerre : en entier tant qu'on construit, puis le côté en gras et le reste en trait fin.
+  if(k >= 2) h += k >= 7 ? cf1Seg(D, hA, CF1_GRIS, 1.2) + cf1Seg(A, D, CF1_ENCRE, 2.2) : cf1Seg(A, hA, CF1_ENCRE, 2);
+  if(k >= 4) h += k >= 7 ? cf1Seg(C, hB, CF1_GRIS, 1.2) + cf1Seg(B, C, CF1_ENCRE, 2.2) : cf1Seg(B, hB, CF1_ENCRE, 2);
+  if(k >= 6) h += cf1Seg(D, C, CF1_ENCRE, 2.2);
+  if(k >= 3 && k < 6) h += cf1Trait(D, [0, 1], CF1_ROUGE);
+  if(k >= 5 && k < 6) h += cf1Trait(C, [0, 1], CF1_ROUGE);
   if(k === 1) h += cf1Regle(A, 0) + cf1Crayon(B, 0);
-  if(k === 2) h += cf1Equerre(A, -90) + cf1Crayon(D, 0);
-  // En B, l'équerre tournée d'un demi-tour : son grand côté le long de [BA], son petit côté monte le long de [BC].
-  if(k === 3) h += cf1Equerre(B, 180) + cf1Crayon(C, 0);
-  if(k === 4) h += cf1Regle(D, 0) + cf1Crayon(C, 0);
-  if(k >= 5) h += [[A, B, D], [B, C, A], [C, D, B], [D, A, C]].map(([S, P, Q]) => cf1AngleDroit(S, P, Q, CF1_VERT)).join('')
+  if(k === 2) h += cf1Equerre(A, -90) + cf1Crayon(hA, 0);
+  if(k === 3) h += cf1Regle(A, -90) + cf1Crayon(D, 0);
+  // En B, l'équerre tournée d'un demi-tour : son grand côté le long de [BA], son petit côté monte.
+  if(k === 4) h += cf1Equerre(B, 180) + cf1Crayon(hB, 0);
+  if(k === 5) h += cf1Regle(B, -90) + cf1Crayon(C, 0);
+  if(k === 6) h += cf1Regle(D, 0) + cf1Crayon(C, 0);
+  if(k >= 7) h += [[A, B, D], [B, C, A], [C, D, B], [D, A, C]].map(([S, P, Q]) => cf1AngleDroit(S, P, Q, CF1_VERT)).join('')
     + cf1Lab([(A[0] + B[0]) / 2, A[1]], 0, 20, '5 cm', CF1_ROUGE, 12) + cf1Lab([B[0], (B[1] + C[1]) / 2], 26, 4, '3 cm', CF1_ROUGE, 12);
   if(k >= 1) h += cf1Lab(A, -12, 16, 'A') + cf1Lab(B, 12, 16, 'B'); // A et B naissent avec le segment tracé à la règle
-  if(k >= 2) h += cf1Lab(D, -12, -4, 'D');
-  if(k >= 3) h += cf1Lab(C, 12, -4, 'C');
+  if(k >= 3) h += cf1Lab(D, -12, -4, 'D');
+  if(k >= 5) h += cf1Lab(C, 12, -4, 'C');
   return h;
 });
 
