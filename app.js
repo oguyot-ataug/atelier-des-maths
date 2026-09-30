@@ -438,6 +438,9 @@ function isChapterFree(lvl, titre){ return (FREE_CHAPTERS[lvl]||[]).includes(tit
    même principe, avec offreNiveaux. */
 function offreHorsNiveau(lvl){ return typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux) && !offreNiveaux.includes(lvl); }
 function isChapterLocked(lvl, titre){
+  // Élève hors du niveau de sa classe : verrouillé même si le chapitre est gratuit pour les visiteurs
+  // (signalé : « Certains chapitres des classes supérieures sont visibles »).
+  if(!restrictedVisitor && currentUserRole==='eleve' && offreHorsNiveau(lvl)) return true;
   if(isChapterFree(lvl, titre)) return false;
   if(restrictedVisitor) return true;
   if(offreHorsNiveau(lvl)) return true;
@@ -842,6 +845,8 @@ let currentChapterLevel = null;
 
 function openChapitre(c, tab, lvlOverride){
   const lvl = lvlOverride || currentLevel;
+  // Élève : un chapitre hors de son niveau reste fermé aussi par un lien direct (adresse, recherche…).
+  if(currentUserRole==='eleve' && c && isChapterLocked(lvl, c.t)){ onLockedChapterClick(); return; }
   const chapView = document.getElementById('view-chapitre');
   chapView.classList.toggle('lvl-6e', lvl==='6e' || lvl==='cm1');
   chapView.classList.toggle('lvl-5e', lvl==='5e');
@@ -3073,6 +3078,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.835', items:[
+    "Élèves : les chapitres gratuits des autres niveaux sont aussi verrouillés. Signalé : « Certains chapitres des classes supérieures sont visibles ». Les quatre chapitres ouverts aux visiteurs de chaque niveau restaient ouverts aux élèves. Pour un élève, seuls comptent maintenant le niveau de sa classe et le niveau précédent. Un lien direct vers un chapitre d'un autre niveau (adresse, recherche) est bloqué aussi. Sur les cartes verrouillées, le libellé « hors du niveau de ta classe » est sur sa propre ligne et ne chevauche plus le numéro du chapitre.",
+  ]},
   { version:'2026-08-19.834', items:[
     "Élèves : accès limité au niveau de leur classe. Signalé : « Mes élèves inscrits ont accès à tous les niveaux. Ce n'est pas trop normal. » Jusqu'ici, seuls les élèves des classes créées en libre-service étaient limités. Désormais, tout élève (classes de l'établissement comprises) a accès aux chapitres du niveau de sa classe et du niveau précédent, pour réviser : un élève de 5e voit la 5e et la 6e, un élève de 6e la 6e. Les groupes de remédiation ne comptent pas, et les chapitres gratuits restent ouverts à tous. Un chapitre d'un autre niveau s'affiche verrouillé (« hors du niveau de ta classe »). Rien ne change pour les professeurs.",
   ]},

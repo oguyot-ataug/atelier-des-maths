@@ -629,6 +629,9 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 .chap-card.locked{opacity:.55;cursor:pointer;filter:grayscale(.4);}
 .chap-card.locked:hover{transform:none;box-shadow:none;}
 .chap-card .status.lock-status{background:rgba(28,43,57,.12);color:var(--ink-soft);}
+/* Libellé long (« hors du niveau de ta classe ») : sur sa propre ligne, il ne chevauche plus le code du chapitre. */
+.chap-card .status.lock-status{position:static;display:inline-flex;align-items:center;gap:3px;margin:0 0 6px;}
+.chap-card .status.lock-status .gicon{font-size:.8rem;}
 
 /* timeline view */
 .timeline{position:relative; padding-left:20px; border-left:2px solid rgba(28,43,57,.12);}
