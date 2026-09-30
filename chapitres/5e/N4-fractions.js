@@ -70,6 +70,8 @@ document.getElementById('cours-demo-fractions-5e').innerHTML = `
 <p style="margin:4px 0 4px;"><span class="tex">\\dfrac{5}{6} = \\dfrac{5 \\times 3}{6 \\times 3} = \\dfrac{15}{18}</span> et <span class="tex">\\dfrac{7}{9} = \\dfrac{7 \\times 2}{9 \\times 2} = \\dfrac{14}{18}</span>.</p>
 <p style="margin:4px 0 4px;">Or, 15 &gt; 14.</p>
 <p style="margin:4px 0 12px;">Donc <span class="tex">\\dfrac{15}{18} > \\dfrac{14}{18}</span>, donc <span class="tex">\\dfrac{5}{6} > \\dfrac{7}{9}</span>.</p>
+<span class="prop-badge">Règle 3</span>
+<div class="def-box">Deux fractions qui ont le <b>même numérateur</b> : la plus grande est celle qui a le <b>plus petit dénominateur</b> (on partage en moins de parts, donc les parts sont plus grandes). Par exemple <span class="tex">\\dfrac{8}{12} > \\dfrac{8}{21}</span>.</div>
 
 
 <div class="lesson-header"><span class="num">3</span><h3>Addition et soustraction de fractions</h3></div>

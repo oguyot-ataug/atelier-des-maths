@@ -343,6 +343,25 @@ document.getElementById('cours-demo-droites-remarquables-5e').innerHTML = `
 <div class="def-box">Les trois médianes d'un triangle sont <b>concourantes</b> en un point qui est le <b>centre de gravité</b> de ce triangle.</div>
 <div class="figure-wrap">${drBuildCentroidSvg(DR_T_DEF, 380, 230)}</div>
 <p style="margin:10px 0 12px;">Le centre de gravité est toujours situé à l'intérieur du triangle, quels que soient ses angles.</p>
+
+<div class="sub-header"><span class="letter">E</span><h4>Une médiane partage le triangle en deux triangles de même aire</h4></div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Dans un triangle ABC, la médiane issue de A partage le triangle en <b>deux triangles de même aire</b>.</div>
+<p class="example-title">Démonstration</p>
+<ul class="example-list">
+  <li>Soit M le milieu de [BC] et H le pied de la hauteur issue de A. Les triangles ABM et AMC ont la <b>même hauteur</b> [AH].</li>
+  <li>Leurs bases [BM] et [MC] ont la <b>même longueur</b>, car M est le milieu de [BC].</li>
+  <li>Aire(ABM) = <span class="tex">\\dfrac{BM \\times AH}{2}</span> et Aire(AMC) = <span class="tex">\\dfrac{MC \\times AH}{2}</span>. Comme BM = MC, les deux aires sont égales.</li>
+</ul>
+<svg viewBox="0 0 320 170" style="width:100%;max-width:340px;display:block;margin:6px auto 12px;">
+  <polygon points="40,150 160,150 120,25" fill="rgba(46,168,201,.22)"/><polygon points="160,150 280,150 120,25" fill="rgba(248,175,35,.28)"/>
+  <polygon points="40,150 280,150 120,25" fill="none" stroke="#1F3A5C" stroke-width="2"/>
+  <line x1="120" y1="25" x2="160" y2="150" stroke="#E35D3A" stroke-width="2.4"/>
+  <line x1="120" y1="25" x2="120" y2="150" stroke="#1F3A5C" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <path d="M120 140h10v10" fill="none" stroke="#1F3A5C" stroke-width="1.2"/>
+  <line x1="97" y1="145" x2="103" y2="155" stroke="#1F3A5C" stroke-width="1.6"/><line x1="217" y1="145" x2="223" y2="155" stroke="#1F3A5C" stroke-width="1.6"/>
+  <g font-family="Space Grotesk" font-size="14" fill="#1F3A5C"><text x="28" y="164">B</text><text x="276" y="164">C</text><text x="114" y="18">A</text><text x="156" y="167">M</text><text x="113" y="167">H</text></g>
+</svg>
 `;
 document.getElementById('dr-ortho-def-wrap').innerHTML = drBuildOrthocenterSvg(DR_T_DEF, 380, 230) + "<p class=\"hint\" style=\"text-align:center;\">Triangle à angles aigus : H est à l'intérieur.</p>";
 document.getElementById('dr-ortho-obtus-wrap').innerHTML = drBuildOrthocenterSvg(drTranslateTri(DR_T_OBTUS,0,62), 380, 300) + "<p class=\"hint\" style=\"text-align:center;\">Triangle avec un angle obtus : H est à l'extérieur.</p>";

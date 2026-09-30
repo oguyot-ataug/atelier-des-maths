@@ -51,6 +51,7 @@ const CH5 = [
  {n:17,code:'G7',cat:'G',t:'Représentation de l\'espace',s:1,p:'114-123',d:'24-30 mai'},
  {n:18,code:'N6',cat:'N',t:'Équations',s:1,p:'52-57',d:'31 mai-6 juin'},
  {n:19,code:'P2',cat:'P',t:'Fonctions',s:1,p:'150-155',d:'7-13 juin'},
+ {n:20,code:'D3',cat:'D',t:'Pensée informatique et programmation',s:1,p:'',d:'14-20 juin'},
 ];
 
 /* Progression 4e -- demandé : "établir la progression de 4e. On peut s'inspirer de 6e/5e.
@@ -3092,6 +3093,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.863', items:[
+    "5e : chapitres vérifiés avec le nouveau programme du cycle 4, qui s'applique en 5e dès cette année. Demandé : « Le programme de 5e se met à jour dès cette année. » La plupart des nouveautés étaient déjà traitées (division par un décimal, fractions de dénominateurs quelconques, puissances et carrés de 1 à 12, hauteurs et médianes, aire du disque et volume du cylindre, fonctions et tableaux de valeurs). Compléments ajoutés là où un objectif manquait.",
+    "Nouveau chapitre « Pensée informatique et programmation » (D3, en fin d'année) : entrées, sorties et variable (la réponse saisie), formules écrites en blocs emboîtés (le bloc intérieur joue le rôle des parenthèses), boucle « répéter n fois ». Atelier interactif : 4 programmes dont on modifie les paramètres, on donne les entrées, on prévoit la sortie puis on l'exécute pas à pas (tableau de suivi). Exercices, histoire (Fortran, Grace Hopper) et quiz.",
+    "Opérations : « traduire un programme de calcul en une seule expression », avec les parenthèses indispensables et le vocabulaire (somme, différence, produit, termes, facteurs). Calcul littéral : 10³ = 1 000 ; un contre-exemple suffit à montrer qu'une affirmation est fausse ; démontrer une propriété par le calcul littéral (la somme de trois entiers consécutifs est un multiple de 3). Fractions : comparer deux fractions de même numérateur. Droites remarquables : une médiane partage le triangle en deux triangles de même aire, avec la démonstration.",
+    "Équations : le programme de 5e se limite aux équations x + b = c et ax = c, résolues avec l'opération inverse (remarque ajoutée). L'exemple de balance 3x + 15 = 60 et l'exercice 6 sont signalés « pour aller plus loin (programme de 4e) ».",
+  ]},
   { version:'2026-08-19.862', items:[
     "6e : nouveau chapitre « Initiation à la pensée informatique » (D4, en fin d'année). Demandé : « Crée le chapitre pensée informatique pour la 6e », objectif du programme du cycle 3 qui n'avait pas encore de chapitre.",
     "Cours : instruction et séquence d'instructions (l'ordre compte, exemple d'un robot sur quadrillage) ; entrées et sorties, avec un programme de calcul qu'on exécute pas à pas en choisissant l'entrée (tableau de suivi) ; répétition, avec la boucle « répéter 4 fois » qui trace un carré en 3 blocs au lieu de 8. Les programmes sont dessinés en blocs aux couleurs de Scratch.",

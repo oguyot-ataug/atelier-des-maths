@@ -40,6 +40,7 @@ document.getElementById('cours-demo-equations-5e').innerHTML = `
 <p style="margin:2px 0 14px;">Quand <span class="tex">x = 7</span>, l'égalité est vérifiée puisque <span class="tex">7 + 9 = 16</span>. Donc 7 est solution de cette équation.</p>
 
 <div class="lesson-header"><span class="num">2</span><h3>Résolution d'équations du premier degré</h3></div>
+<p class="hint" style="margin:4px 0 8px;">Programme de 5e : équations du type <span class="tex">x + b = c</span> et <span class="tex">ax = c</span>, résolues avec l'opération inverse. Les équations du type <span class="tex">ax + b = c</span> seront étudiées en 4e.</p>
 <span class="prop-badge">Propriété 1</span>
 <div class="def-box">Une équation du premier degré a <b>une unique solution</b>.</div>
 
@@ -56,6 +57,8 @@ document.getElementById('cours-demo-equations-5e').innerHTML = `
     <button class="btn secondary" onclick="eqAbDemo.reset()">Recommencer</button>
   </div>
 </div>
+
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Remarque : c'est l'<b>opération inverse</b>. Dans <span class="tex">x + 12 = 25</span>, on cherche le nombre auquel on ajoute 12 pour obtenir 25 : <span class="tex">x = 25 - 12 = 13</span>.</div>
 
 <div class="sub-header"><span class="letter">B</span><h4>Équations du type <span class="tex">ax = c</span></h4></div>
 <span class="prop-badge">Propriété 3</span>
@@ -418,7 +421,7 @@ document.getElementById('methode-demo-equations-5e').innerHTML = `
   </div>
 </div>
 
-<p class="example-title" style="margin-top:26px;">On complexifie encore : boules et masses ensemble</p>
+<p class="example-title" style="margin-top:26px;">Pour aller plus loin (programme de 4e) : boules et masses ensemble</p>
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:0;">Cliquez sur "Étape suivante" pour dérouler le raisonnement.</p>
   <div id="eqBal3Wrap"></div>
@@ -499,7 +502,7 @@ document.getElementById('exos-demo-equations-5e').innerHTML = `
     Résous l'équation <span class="tex">\\dfrac{x}{5} = 1,8</span>, en détaillant chaque étape.
   </div>
   <div class="exo-card">
-    <div class="num">Exercice 6</div>
+    <div class="num">Exercice 6 <span class="hint" style="margin:0;font-weight:400;">(pour aller plus loin : certaines pesées donnent des équations de 4e)</span></div>
     Toutes les balances suivantes sont à l'équilibre. Pour chaque pesée, écris l'équation correspondante (on pose <span class="tex">x</span> la masse de la boule) et calcule sa solution.
     <div style="display:flex;flex-wrap:wrap;gap:24px;margin-top:12px;">
       <div style="flex:1;min-width:260px;text-align:center;">

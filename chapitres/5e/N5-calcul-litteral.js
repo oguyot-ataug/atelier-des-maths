@@ -79,6 +79,8 @@ document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
   <tr><th style="padding:5px;border:1px solid rgba(28,43,57,.2);background:rgba(31,58,92,.06);">a²</th><td style="padding:5px;border:1px solid rgba(28,43,57,.2);">1</td><td style="padding:5px;border:1px solid rgba(28,43,57,.2);">4</td><td style="padding:5px;border:1px solid rgba(28,43,57,.2);">9</td><td style="padding:5px;border:1px solid rgba(28,43,57,.2);">16</td><td style="padding:5px;border:1px solid rgba(28,43,57,.2);">25</td><td style="padding:5px;border:1px solid rgba(28,43,57,.2);">36</td><td style="padding:5px;border:1px solid rgba(28,43,57,.2);">49</td><td style="padding:5px;border:1px solid rgba(28,43,57,.2);">64</td><td style="padding:5px;border:1px solid rgba(28,43,57,.2);">81</td><td style="padding:5px;border:1px solid rgba(28,43,57,.2);">100</td><td style="padding:5px;border:1px solid rgba(28,43,57,.2);">121</td><td style="padding:5px;border:1px solid rgba(28,43,57,.2);">144</td></tr>
 </table>
 
+<p style="margin:0 0 14px;">À retenir aussi : <span class="tex">10^3 = 10 \\times 10 \\times 10 = 1\\,000</span> (un cube de 10 cm d'arête a un volume de 1 000 cm³, soit 1 L).</p>
+
 <div class="lesson-header"><span class="num">2</span><h3>Valeur d'une expression littérale</h3></div>
 <span class="prop-badge">Règle</span>
 <div class="def-box">Pour calculer la <b>valeur d'une expression littérale</b> par substitution, on remplace chaque lettre par une valeur numérique donnée.</div>
@@ -117,6 +119,17 @@ document.getElementById('cours-demo-calcul-litteral-5e').innerHTML = `
     <button class="btn secondary" onclick="clEqDemo.reset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header" style="margin-top:16px;"><span class="letter">A</span><h4>Un contre-exemple suffit pour montrer qu'une affirmation est fausse</h4></div>
+<p style="margin:6px 0;"><b>Affirmation</b> : « pour tout nombre <span class="tex">x</span>, <span class="tex">2x^2 = (2x)^2</span> ». Pour <span class="tex">x = 3</span> : <span class="tex">2 \\times 3^2 = 18</span> mais <span class="tex">(2 \\times 3)^2 = 36</span>. Une seule valeur pour laquelle l'égalité est fausse (un <b>contre-exemple</b>) suffit : l'affirmation est <b>fausse</b>.</p>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Attention : vérifier une égalité sur quelques exemples ne suffit pas pour montrer qu'elle est vraie pour <b>tous</b> les nombres. Pour cela, il faut une démonstration.</div>
+<div class="sub-header" style="margin-top:16px;"><span class="letter">B</span><h4>Démontrer une propriété avec le calcul littéral</h4></div>
+<p style="margin:6px 0;"><b>Propriété</b> : « la somme de trois nombres entiers consécutifs est toujours un multiple de 3 ».</p>
+<ul class="example-list">
+  <li>On appelle <span class="tex">n</span> le plus petit des trois nombres : les trois nombres sont <span class="tex">n</span>, <span class="tex">n + 1</span> et <span class="tex">n + 2</span>.</li>
+  <li>Leur somme : <span class="tex">n + (n + 1) + (n + 2) = 3n + 3 = 3(n + 1)</span>.</li>
+  <li><span class="tex">3(n + 1)</span> est un multiple de 3, quel que soit <span class="tex">n</span> : la propriété est démontrée (et pas seulement vérifiée sur des exemples).</li>
+</ul>
 
 <div class="lesson-header"><span class="num">4</span><h3>Distributivité simple</h3></div>
 

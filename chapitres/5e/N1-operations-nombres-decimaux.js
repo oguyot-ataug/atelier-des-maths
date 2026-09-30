@@ -54,6 +54,14 @@ document.getElementById('cours-demo-decimaux').innerHTML = `
         Remarque : dans une suite d'opérations avec des parenthèses imbriquées (ou des crochets), on commence par effectuer les calculs dans les parenthèses <b>les plus intérieures</b>.
       </div>
 
+      <div class="sub-header" style="margin-top:16px;"><span class="letter">C</span><h4>Traduire un programme de calcul en une seule expression</h4></div>
+      <p style="margin:6px 0;"><b>Programme</b> : « Choisir un nombre ; lui ajouter 4 ; multiplier le résultat par 3 ; soustraire 5. »</p>
+      <ul class="example-list">
+        <li>Avec 2 : on calcule <span class="tex">2 + 4 = 6</span>, puis <span class="tex">6 \\times 3 = 18</span>, puis <span class="tex">18 - 5 = 13</span>.</li>
+        <li>En une seule expression : <span class="tex">(2 + 4) \\times 3 - 5 = 13</span>. Les <b>parenthèses sont indispensables</b> : sans elles, <span class="tex">2 + 4 \\times 3 - 5 = 9</span>, car la multiplication est prioritaire.</li>
+        <li>Nommer le calcul : <span class="tex">(2 + 4) \\times 3 - 5</span> est une <b>différence</b> ; son premier terme <span class="tex">(2 + 4) \\times 3</span> est un <b>produit</b> dont les facteurs sont <span class="tex">(2 + 4)</span> et 3.</li>
+      </ul>
+
       <div class="lesson-header"><span class="num">3</span><h3>Division euclidienne</h3></div>
       <span class="prop-badge">Règle</span>
       <div class="def-box">Dans une division euclidienne, on a toujours : <b>dividende = (diviseur × quotient) + reste</b>, avec <b>reste &lt; diviseur</b>.</div>
