@@ -3097,6 +3097,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.865', items:[
+    "CM1, période 3 : cinq nouveaux chapitres, chacun avec cours, méthode animée, exercices corrigés, histoire et quiz. « Opérations sur les nombres décimaux » (additions et soustractions posées en alignant les virgules, × 10 et ÷ 10 en suivant le glissement des chiffres, ordre de grandeur). « Symétrie axiale » (pliage, axes des figures usuelles, quadrillage) avec un atelier où l'élève colorie les cases pour compléter un dessin, puis vérifie. « Périmètres » (polygone, carré, rectangle, unités à harmoniser). « Procédures de calcul mental » (± 9, 11, 19, décomposer, × 10, 100, 1 000, × 4, × 5) avec un atelier de 10 calculs tirés au hasard. « Probabilités » (impossible, peu probable, une chance sur deux, probable, certain) avec un atelier de tirage de billes dans un sac.",
+  ]},
   { version:'2026-08-19.864', items:[
     "CM1 : nouvelle progression annuelle en 23 chapitres, dans l'ordre de l'année et conforme au programme du cycle 3 (nombres de 4 chiffres au plus en périodes 1 et 2, grands nombres en période 3, décimaux jusqu'aux centièmes, pas de tableau de conversion ni de proportionnalité). Demandé : « Il n'y a pas besoin des pages du manuel car on crée notre propre manuel complet. Avance ». Les chapitres arrivent au fur et à mesure ; ceux pas encore écrits restent « en construction ».",
     "CM1 : « Nombres entiers jusqu'à 9 999 » réécrit (unités de numération, décomposer, chiffre des / nombre de, demi-droite graduée, comparer, encadrer, intercaler, ranger) ; l'ancien cours sur les nombres jusqu'à 999 999 devient le chapitre « Grands nombres jusqu'à 999 999 » (période 3).",
