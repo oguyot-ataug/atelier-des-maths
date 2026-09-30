@@ -3073,6 +3073,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.833', items:[
+    "Résumé pour le cahier de textes dans l'ordre du cahier. Demandé : « Peux-tu respecter l'ordre du cahier pour faire le cahier de texte ? ». Le résumé suit maintenant les blocs du jour dans l'ordre où ils sont rangés dans le cahier, y compris après un déplacement à la main. Un titre « Chapitre : » apparaît à chaque changement de chapitre. Une rubrique (Cours, Exercices, 📝 Interrogation, ⚡ Questions flash) apparaît à chaque changement de type : un cours, puis des exercices, puis la suite du cours donnent Cours / Exercices / Cours, comme dans la séance.",
+  ]},
   { version:'2026-08-19.832', items:[
     "« Séance en direct » devient « Questions flash », partout : bouton sur les questionnaires, mode de l'éditeur, fenêtre de lancement, listes « Questions flash en cours » et « Questions flash terminées », bandeau et code côté élève, page d'accueil, entrées du cahier. Nouveau logo : un éclair. Des questions flash notées deviennent une interrogation : ajoutées au cahier, elles y sont rangées comme « Interrogation ». L'entrée déjà ajoutée au cahier a été renommée.",
     "Résumé pour le cahier de textes : les interrogations et les questions flash ne sont plus dans « Exercices ». Elles ont chacune leur rubrique, avec sa couleur et son logo : 📝 Interrogation en violet, ⚡ Questions flash en rouge, à côté du Cours en bleu et des Exercices en orange.",
@@ -6759,47 +6762,60 @@ function resumeParagrapheParent(e, sousTitre){
   }catch(err){}
   return null;
 }
+/* Demandé ensuite : « Peux-tu respecter l'ordre du cahier pour faire le cahier de texte ? ». Le résumé
+   suit l'ordre des blocs du cahier ce jour-là : un nouveau « Chapitre : » dès que le chapitre change, une
+   nouvelle rubrique (Cours, Exercices, Interrogation, Questions flash) dès que le type de bloc change. */
 function resumeSeanceContenu(date){
+  if(typeof sortCahierInPlace === 'function') sortCahierInPlace();
   const entries = cahier.filter(e=>e.date===date);
-  const chapitres = [];
+  const blocs = [], coursVus = new Map(); // coursVus : chapitre → paragraphes déjà listés (doublons)
+  const court = t => t.length > 110 ? t.slice(0, 107).replace(/\s+\S*$/, '') + '…' : t;
   entries.forEach(e=>{
     const nom = String(e.chapitre||'').replace(/^[A-Z]{1,3}\d+[a-z]?\s*·\s*/, '').trim() || 'Chapitre non précisé';
-    let c = chapitres.find(x=>x.nom===nom);
-    if(!c){ c = {nom, cours:[], exos:[], interros:[], flash:[]}; chapitres.push(c); }
     const titre = String(e.titre||'').replace(/\s+/g, ' ').trim();
-    const court = t => t.length > 110 ? t.slice(0, 107).replace(/\s+\S*$/, '') + '…' : t;
-    if(e.exo==='Cours') resumeCoursTitres(e, titre).forEach(it=>{
-      // Même paragraphe ajouté deux fois, ou sous-paragraphe déjà listé sous son paragraphe : une seule ligne.
-      const deja = c.cours.find(x=>x.t===it.t);
-      if(deja){ it.subs.forEach(u=>{ if(!deja.subs.includes(u)) deja.subs.push(u); }); return; }
-      if(!it.subs.length && c.cours.some(x=>x.subs.includes(it.t))) return;
-      c.cours.push(it);
-    });
-    else if(e.exo==='TD') c.exos.push(titre || 'Exercices');
+    const type = e.exo==='Cours' ? 'cours' : e.exo==='Interrogation' ? 'interro' : (e.exo==='Questions flash' || e.exo==='Séance en direct') ? 'flash' : 'exos';
+    let c = blocs[blocs.length-1];
+    if(!c || c.nom!==nom){ c = {nom, rubs:[]}; blocs.push(c); }
+    let r = c.rubs[c.rubs.length-1];
+    const rubrique = ()=>{ if(!r || r.type!==type){ r = {type, items:[]}; c.rubs.push(r); } return r; };
+    if(type==='cours'){
+      if(!coursVus.has(nom)) coursVus.set(nom, []);
+      const vus = coursVus.get(nom);
+      resumeCoursTitres(e, titre).forEach(it=>{
+        // Même paragraphe déjà listé ce jour-là : ses nouveaux sous-paragraphes le rejoignent.
+        const deja = vus.find(x=>x.t===it.t);
+        if(deja){ it.subs.forEach(u=>{ if(!deja.subs.includes(u)) deja.subs.push(u); }); return; }
+        if(!it.subs.length && vus.some(x=>x.subs.includes(it.t))) return;
+        vus.push(it); rubrique().items.push(it);
+      });
+    }
     // Interrogations et questions flash : rubriques à part, jamais dans « Exercices ».
-    else if(e.exo==='Interrogation') c.interros.push(court(titre) || 'Interrogation');
-    else if(e.exo==='Questions flash' || e.exo==='Séance en direct') c.flash.push(court(titre) || 'Questions flash');
-    else if(e.exo==='Construction') c.exos.push('Construction' + (titre && titre!=='Construction' ? ' : '+court(titre) : ''));
+    else if(type==='interro') rubrique().items.push(court(titre) || 'Interrogation');
+    else if(type==='flash') rubrique().items.push(court(titre) || 'Questions flash');
+    else if(e.exo==='TD') rubrique().items.push(titre || 'Exercices');
+    else if(e.exo==='Construction') rubrique().items.push('Construction' + (titre && titre!=='Construction' ? ' : '+court(titre) : ''));
     else {
       const num = String(e.exo||'').trim(), n = num && num!=='-' ? 'Exercice '+num : 'Exercice';
-      c.exos.push(n + (titre ? ' : '+court(titre) : ''));
+      rubrique().items.push(n + (titre ? ' : '+court(titre) : ''));
     }
   });
-  const BLEU = '#0C5BA0', ORANGE = '#C45F00', VIOLET = '#6B3FA0', ROUGE = '#C62828', ENCRE = '#20242E';
-  const esc = t => escapeHtml(t);
+  // Cours (bleu), Exercices (orange), Interrogation (violet, 📝), Questions flash (rouge, ⚡).
+  const STYLE = { cours: ['Cours', '#0C5BA0', ''], exos: ['Exercices', '#C45F00', ''], interro: ['Interrogation', '#6B3FA0', '📝 '], flash: ['Questions flash', '#C62828', '⚡ '] };
+  const ENCRE = '#20242E', esc = t => escapeHtml(t);
   let html = '', txt = '';
-  chapitres.forEach((c, i)=>{
+  blocs.forEach((c, i)=>{
     html += `<p style="margin:${i ? '14px' : '0'} 0 4px;font-weight:bold;color:${ENCRE};">Chapitre : ${esc(c.nom)}</p>`;
     txt += (i ? '\n' : '') + 'Chapitre : ' + c.nom + '\n';
-    if(c.cours.length){
-      html += `<p style="margin:4px 0 2px;font-weight:bold;color:${BLEU};">Cours</p><ul style="margin:0 0 6px;padding-left:22px;color:${BLEU};">${c.cours.map(it=>`<li>${esc(it.t)}${it.subs.length ? `<ul style="margin:2px 0 0;padding-left:20px;list-style:circle;">${it.subs.map(u=>`<li>${esc(u)}</li>`).join('')}</ul>` : ''}</li>`).join('')}</ul>`;
-      txt += 'Cours :\n' + c.cours.map(it=>'  - '+it.t + it.subs.map(u=>'\n      '+u).join('')).join('\n') + '\n';
-    }
-    // Rubriques simples : Exercices (orange), Interrogation (violet, 📝), Questions flash (rouge, ⚡).
-    [[c.exos, 'Exercices', ORANGE, ''], [c.interros, 'Interrogation', VIOLET, '📝 '], [c.flash, 'Questions flash', ROUGE, '⚡ ']].forEach(([l, nomR, coul, logo])=>{
-      if(!l.length) return;
-      html += `<p style="margin:4px 0 2px;font-weight:bold;color:${coul};">${logo}${nomR}</p><ul style="margin:0 0 6px;padding-left:22px;color:${coul};">${l.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
-      txt += logo + nomR + ' :\n' + l.map(t=>'  - '+t).join('\n') + '\n';
+    c.rubs.forEach(r=>{
+      if(!r.items.length) return;
+      const [nomR, coul, logo] = STYLE[r.type];
+      const li = r.type==='cours'
+        ? r.items.map(it=>`<li>${esc(it.t)}${it.subs.length ? `<ul style="margin:2px 0 0;padding-left:20px;list-style:circle;">${it.subs.map(u=>`<li>${esc(u)}</li>`).join('')}</ul>` : ''}</li>`).join('')
+        : r.items.map(t=>`<li>${esc(t)}</li>`).join('');
+      html += `<p style="margin:4px 0 2px;font-weight:bold;color:${coul};">${logo}${nomR}</p><ul style="margin:0 0 6px;padding-left:22px;color:${coul};">${li}</ul>`;
+      txt += logo + nomR + ' :\n' + (r.type==='cours'
+        ? r.items.map(it=>'  - '+it.t + it.subs.map(u=>'\n      '+u).join('')).join('\n')
+        : r.items.map(t=>'  - '+t).join('\n')) + '\n';
     });
   });
   return {html, txt, vide: !entries.length};
