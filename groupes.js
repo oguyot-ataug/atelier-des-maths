@@ -18,7 +18,7 @@
    ===================================================================== */
 
 let grEtat = null; // { groupes, possibles, edition:{ id, nom, niveau, niveauAuto, sel:Set, cherche, classe } | null }
-const GR_NIVEAUX = ['6e', '5e', '4e', '3e', 'cm1', 'cm2'];
+const GR_NIVEAUX = ['CE2', 'CM1', 'CM2', '6e', '5e', '4e', '3e'];
 function grEsc(s){ return escapeHtml(String(s ?? '')); }
 function grNom(e){ return ((e.prenom || '') + ' ' + (e.nom || '')).trim() || '(sans nom)'; }
 

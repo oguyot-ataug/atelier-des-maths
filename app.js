@@ -3088,6 +3088,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.854', items:[
+    "Classes du primaire. Demandé : « Pour créer une classe, dans le menu, je n'ai que 6e à 3e. Prévoir aussi CE2, CM1, CM2. » Administration : la création et la modification d'une classe proposent CE2, CM1 et CM2 (rubrique Primaire), en plus de 6e à 3e. L'import en masse reconnaît aussi les classes nommées « CE2… », « CM1… », « CM2… ». Les groupes de remédiation proposent les mêmes niveaux. Élèves d'une classe du primaire : accès aux chapitres de leur niveau et du niveau précédent (un CM2 voit le CM2 et le CM1), comme au collège.",
+    "Administration : création d'un compte avec un UAI encore inconnu. L'établissement est désormais créé automatiquement. Avant, la fiche du compte était refusée et un compte de connexion à moitié créé bloquait tout nouvel essai (« identifiant déjà utilisé »). Si la fiche ne peut pas être enregistrée, le compte est maintenant annulé aussitôt.",
+  ]},
   { version:'2026-08-19.853', items:[
     "Questions flash au primaire, sans ordinateur : les cartes flashcode. Demandé : « Les enfants n'ont pas d'ordinateur donc il faudrait qu'ils répondent à des questionnaires type A, B, C ou D en montrant un flashcode [...] le professeur des écoles pourrait alors prendre son téléphone et lire tous les flashcodes de la classe ».",
     "Au lancement d'une séance de Questions flash, choisir « Sans ordinateur : cartes flashcode » (aussi dans les réglages du questionnaire). Les questions qui se répondent par une lettre sont gardées : QCM à une bonne réponse et 4 propositions au plus (A, B, C, D dans l'ordre de l'éditeur), et vrai/faux à une affirmation (A = Vrai, B = Faux). Les autres sont sautées, après confirmation. Le reste de la création est inchangé, et la séance peut être notée comme d'habitude.",

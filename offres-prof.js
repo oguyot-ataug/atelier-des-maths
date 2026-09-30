@@ -64,7 +64,10 @@ async function offreLoad(role, licenceEtab){
       // en libre-service ; signalé ensuite : « Mes élèves inscrits ont accès à tous les niveaux. Ce
       // n'est pas trop normal. » -- la règle vaut donc pour tous les élèves, établissement compris.
       const niv = [...new Set(cls.map(c => c.niveau).filter(n => OP_ORDRE.includes(n)))];
-      if(niv.length) offreNiveaux = opRevision(niv);
+      // Primaire (CE2, CM1, CM2) : son niveau et le précédent (clés de chapitres en minuscules : 'cm1').
+      const PRIM = ['ce2', 'cm1', 'cm2'], prim = [...new Set(cls.map(c => String(c.niveau || '').toLowerCase()).filter(n => PRIM.includes(n)))];
+      const primRev = PRIM.filter(n => prim.some(p => p === n || PRIM.indexOf(p) - 1 === PRIM.indexOf(n)));
+      if(niv.length || prim.length) offreNiveaux = opRevision(niv).concat(primRev);
     }
   }catch(e){ /* hors ligne */ }
 }

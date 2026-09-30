@@ -1,3 +1,11 @@
+/* Niveaux des classes -- demandé : « Pour créer une classe, dans le menu, je n'ai que 6e à 3e.
+   Prévoir aussi CE2, CM1, CM2. » Le primaire est enregistré en majuscules (CE2, CM1, CM2). */
+const ADMIN_PRIMAIRE = ['CE2', 'CM1', 'CM2'];
+const ADMIN_NIVEAUX = ADMIN_PRIMAIRE.concat(['6e', '5e', '4e', '3e']);
+function adminNiveauxOptions(sel){
+  return `<optgroup label="Primaire">${ADMIN_PRIMAIRE.map(n => `<option value="${n}" ${n === sel ? 'selected' : ''}>${n}</option>`).join('')}</optgroup>`
+    + `<optgroup label="Collège">${['6e', '5e', '4e', '3e'].map(n => `<option value="${n}" ${n === sel ? 'selected' : ''}>${n}</option>`).join('')}</optgroup>`;
+}
 /* =====================================================================
    ADMIN.JS — Panneau Administration (L'Atelier des Maths)
    Extrait de index.html (markup) et app.js (logique) pour alléger ces
@@ -61,7 +69,7 @@ document.getElementById('view-admin').innerHTML = `
           <p class="hint" id="adminBulkScopeNote" style="display:none;margin:0 0 8px;padding:6px 10px;background:rgba(31,122,77,.08);border-radius:6px;"></p>
           <p class="hint" style="margin:0 0 8px;">Collez une liste, une ligne par élève, colonnes dans cet ordre (copier-coller direct depuis un tableur, ou séparateur « ; ») :<br>
             <b>NOM</b> · <b>Prénom</b> · <b>Classe</b> · <b>identifiant</b> <i>(facultatif)</i> · <b>mot de passe</b> <i>(facultatif)</i><span id="adminBulkUaiCol"> · <b>UAI</b></span><br>
-            Identifiant vide : il est fabriqué automatiquement sur le modèle <span class="hint-mono">p.nom</span> (ex. <span class="hint-mono">e.viard</span>). Mot de passe vide : l'élève reçoit un lien d'invitation personnel et choisit lui-même son mot de passe. La classe est créée si elle n'existe pas encore (niveau déduit du nom : « 5… » = 5e, sinon 6e). Une ligne d'en-tête « NOM ; Prénom ; … » est ignorée.<br>
+            Identifiant vide : il est fabriqué automatiquement sur le modèle <span class="hint-mono">p.nom</span> (ex. <span class="hint-mono">e.viard</span>). Mot de passe vide : l'élève reçoit un lien d'invitation personnel et choisit lui-même son mot de passe. La classe est créée si elle n'existe pas encore (niveau déduit du nom : « CE2… », « CM1… », « CM2… », « 5… » = 5e, « 4… », « 3… », sinon 6e). Une ligne d'en-tête « NOM ; Prénom ; … » est ignorée.<br>
             <b>Homonymes</b> : un identifiant n'existe qu'une fois sur tout le site. S'il est déjà pris, un chiffre est ajouté (<span class="hint-mono">e.viard2</span>, <span class="hint-mono">e.viard3</span>…). Si un élève de même nom et prénom existe déjà dans l'établissement, il est considéré comme déjà inscrit (simplement rattaché à la classe), sauf si vous indiquez que c'est un autre élève. Tout est vérifié et affiché <b>avant</b> la création.</p>
           <textarea id="adminBulkStudents" rows="6" style="width:100%;font-family:'JetBrains Mono',monospace;font-size:.85rem;padding:8px;border-radius:6px;border:1px solid rgba(28,43,57,.2);" placeholder="DUPONT	Jean	6A
 MARTIN	Marie	6A	m.martin	soleil24"></textarea>
@@ -81,7 +89,7 @@ MARTIN	Marie	6A	m.martin	soleil24"></textarea>
         <div class="nb-accordion-body" id="accCreerClasse">
           <div class="tool-row">
             <input type="text" id="adminNewClassNom" placeholder="Nom (ex. 5e-A)">
-            <select id="adminNewClassNiveau"><option value="6e">6e</option><option value="5e" selected>5e</option><option value="4e">4e</option><option value="3e">3e</option></select>
+            <select id="adminNewClassNiveau">${adminNiveauxOptions('5e')}</select>
             <input type="text" id="adminNewClassUai" placeholder="UAI de l'établissement">
             <button class="btn" onclick="adminCreateClass()">Créer la classe</button>
           </div>
@@ -1097,7 +1105,7 @@ async function adminRefreshListings(){
           <span class="hint" style="margin:0;">${s.cloturee?'clôturée':'active'}</span>
           ${s.cloturee?'':`<button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="adminCloturerPermisSession('${s.id}')">Clôturer</button>`}
         </div>`).join('') : '<p class="hint" style="margin:4px 0 0;">Aucune session pour l\'instant.</p>';
-      const color = c.niveau==='6e' ? '#FF8208' : c.niveau==='4e' ? '#0B7A83' : c.niveau==='3e' ? '#7A3E9D' : '#0C5BA0';
+      const color = ADMIN_PRIMAIRE.includes(c.niveau) ? '#2E7D32' : c.niveau==='6e' ? '#FF8208' : c.niveau==='4e' ? '#0B7A83' : c.niveau==='3e' ? '#7A3E9D' : '#0C5BA0';
       const accId = 'accClasse'+idx;
       return `<div class="nb-accordion-section">
         <button type="button" class="nb-accordion-header" style="--acc-color:${color};--acc-bg:${color}0D;" onclick="toggleNbAccordion('${accId}')">
@@ -1107,7 +1115,7 @@ async function adminRefreshListings(){
         </button>
         <div class="nb-accordion-body" id="${accId}">
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;">
-            <label class="hint" style="margin:0;">Niveau : <select id="classNiveau_${c.id}"><option value="6e" ${c.niveau==='6e'?'selected':''}>6e</option><option value="5e" ${c.niveau==='5e'?'selected':''}>5e</option><option value="4e" ${c.niveau==='4e'?'selected':''}>4e</option><option value="3e" ${c.niveau==='3e'?'selected':''}>3e</option></select></label>
+            <label class="hint" style="margin:0;">Niveau : <select id="classNiveau_${c.id}">${adminNiveauxOptions(c.niveau)}</select></label>
             <label class="hint" style="margin:0;">UAI : <input type="text" id="classUai_${c.id}" value="${escapeHtml(c.uai||'')}" style="width:110px;" ${scope?'readonly':''}></label>
             <button class="btn secondary" style="padding:3px 10px;font-size:.75rem;" onclick="adminUpdateClassNiveauUai('${c.id}')">Enregistrer</button>
             <span class="hint" id="classSaveStatus_${c.id}" style="margin:0;"></span>
@@ -1498,7 +1506,8 @@ async function adminBulkEnsureClass(uai, classeNom, cache, etabCache, errors){
   }
   const { data: existing } = await sb.from('classes').select('id').eq('nom', classeNom).eq('uai', uai).eq('groupe', false).maybeSingle();
   if(existing) return cache[cacheKey] = existing.id;
-  const niveau = /^5/.test(classeNom) ? '5e' : /^4/.test(classeNom) ? '4e' : /^3/.test(classeNom) ? '3e' : '6e';
+  const niveau = /^ce\s*2/i.test(classeNom) ? 'CE2' : /^cm\s*1/i.test(classeNom) ? 'CM1' : /^cm\s*2/i.test(classeNom) ? 'CM2'
+    : /^5/.test(classeNom) ? '5e' : /^4/.test(classeNom) ? '4e' : /^3/.test(classeNom) ? '3e' : '6e';
   const { data: created, error: createErr } = await sb.from('classes').insert({ nom: classeNom, niveau, uai }).select('id').single();
   if(createErr){ errors.push(`Classe "${classeNom}" : ${createErr.message}`); return cache[cacheKey] = null; }
   return cache[cacheKey] = created.id;
