@@ -60,6 +60,8 @@ function cvChiffres(n){
   return t;
 }
 // Nombre au hasard : entre 1 et max, avec au plus `dec` décimales (sans zéro final inutile).
+// Programme : au CM1, décimaux jusqu'aux centièmes ; au CM2, jusqu'aux millièmes.
+function cvDecOk(n){ const r = cvRang(), max = r === 0 ? 2 : r === 1 ? 3 : 6; return n.d === '0' || n.e >= -max; }
 function cvNombreAlea(max, dec){
   const nd = cvAlea(0, dec), ent = cvAlea(nd ? 0 : 1, max);
   let frac = ''; for(let i = 0; i < nd; i++) frac += String(i === nd - 1 ? cvAlea(1, 9) : cvAlea(0, 9));
@@ -69,9 +71,9 @@ function cvNombreAlea(max, dec){
 /* ----------------------------------------- Page ----------------------------------------- */
 const CV_OUTILS = [
   { id: 'glisse', titre: '× et ÷ par 10, 100, 1000', icone: 'swap_horiz', coul: '#D32F2F', des: 'Le chiffre des unités est en rouge : fais glisser le nombre pour l\'amener sur la dizaine, la centaine…', des6: true, des2: 'CM1' },
-  { id: 'unites', titre: 'Unités : m, g, L', icone: 'straighten', coul: '#0C5BA0', des: 'Longueurs, masses, contenances. Le nombre est placé dans le tableau : déplace la virgule jusqu\'à la bonne unité.', des2: 'CM1' },
+  { id: 'unites', titre: 'Unités : m, g, L', icone: 'straighten', coul: '#0C5BA0', des: 'Longueurs, masses, contenances. Au CM : on part de la relation entre les unités (1 m = 100 cm). Au collège : on déplace la virgule dans le tableau.', des2: 'CM1' },
   { id: 'aires', titre: 'Aires', icone: 'crop_square', coul: '#1F7A4D', des: 'm², cm², ha… Deux colonnes par unité : la virgule saute de deux en deux.', des2: '6e' },
-  { id: 'volumes', titre: 'Volumes', icone: 'view_in_ar', coul: '#7B3FA0', des: 'm³, dm³, cm³ et les litres. Trois colonnes par unité.', des2: '6e' },
+  { id: 'volumes', titre: 'Volumes', icone: 'view_in_ar', coul: '#7B3FA0', des: 'm³, dm³, cm³ et les litres. Trois colonnes par unité.', des2: '5e' },
 ];
 function cvNiveauDefaut(){
   try{ const s = localStorage.getItem('cvNiveau'); if(CV_NIVEAUX.includes(s)) return s; }catch(e){}
@@ -95,10 +97,23 @@ function renderConvertisseur(){
     return;
   }
   const o = CV_OUTILS.find(x => x.id === cv.outil);
-  root.innerHTML = `${niv}<div class="cv-tete"><button type="button" class="btn secondary" onclick="cvOuvrir(null)"><span class="gicon">arrow_back</span> Tous les convertisseurs</button>
-    <h2 style="--c:${o.coul}"><span class="gicon">${o.icone}</span> ${o.titre}</h2></div><div id="cvOutil"></div>`;
+  root.innerHTML = `${niv}<div id="cvPlein"><div class="cv-tete"><button type="button" class="btn secondary cv-hors-plein" onclick="cvOuvrir(null)"><span class="gicon">arrow_back</span> Tous les convertisseurs</button>
+    <h2 style="--c:${o.coul}"><span class="gicon">${o.icone}</span> ${o.titre}</h2>
+    <button type="button" class="btn secondary cv-plein-btn" onclick="cvPleinEcran()" title="Plein écran (vidéoprojecteur) -- Échap pour sortir"><span class="gicon" id="cvPleinIco">fullscreen</span> <span id="cvPleinTxt">Plein écran</span></button></div><div id="cvOutil"></div></div>`;
   if(cv.outil === 'glisse') gaRendre(); else tcRendre();
 }
+// Demandé : « Permettre le plein écran. » L'outil ouvert (titre, tableau, flèches) occupe tout l'écran
+// et grossit pour être lu au fond de la classe ; Échap ou le bouton pour sortir.
+function cvPleinEcran(){
+  const el = document.getElementById('cvPlein'); if(!el) return;
+  if(document.fullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  else { const f = el.requestFullscreen || el.webkitRequestFullscreen; if(f) f.call(el); }
+}
+document.addEventListener('fullscreenchange', () => {
+  const on = !!(document.fullscreenElement && document.fullscreenElement.id === 'cvPlein');
+  const i = document.getElementById('cvPleinIco'), t = document.getElementById('cvPleinTxt');
+  if(i) i.textContent = on ? 'fullscreen_exit' : 'fullscreen'; if(t) t.textContent = on ? 'Quitter le plein écran' : 'Plein écran';
+});
 function cvChoisirNiveau(n){
   cv.niveau = n; try{ localStorage.setItem('cvNiveau', n); }catch(e){}
   if(cv.ga) cv.ga.ex = null; if(cv.tc) cv.tc.ex = null;
@@ -111,7 +126,7 @@ function cvOuvrir(id){
     const g = id === 'aires' ? 'aire' : id === 'volumes' ? 'volume' : ((cv.tc && CV_TABLES[cv.tc.g] && !['aire', 'volume'].includes(cv.tc.g)) ? cv.tc.g : 'longueur');
     tcInit(g);
   }
-  if(id === 'glisse' && !cv.ga) cv.ga = { n: cvLire('34,5'), k: 2, s: 0, ex: null, score: [0, 0] };
+  if(id === 'glisse' && (!cv.ga || cv.ga.embed)) cv.ga = { n: cvLire('34,5'), k: 2, s: 0, ex: null, score: [0, 0] };
   renderConvertisseur();
   document.getElementById('convertisseurRoot')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
@@ -120,8 +135,11 @@ function cvOuvrir(id){
 const GA_PMAX = 5, GA_PMIN = -4, GA_W = 62;
 const GA_RANGS = { 5: ['CM', 'centaines de mille'], 4: ['DM', 'dizaines de mille'], 3: ['UM', 'unités de mille'], 2: ['C', 'centaines'], 1: ['D', 'dizaines'], 0: ['U', 'unités'],
   '-1': ['d', 'dixièmes'], '-2': ['c', 'centièmes'], '-3': ['m', 'millièmes'], '-4': ['dm', 'dix-millièmes'] };
+// Programme du cycle 3 (BO) : CM1 « multiplier un nombre entier par 10, 100 ou 1 000, multiplier un
+// nombre décimal par 10, diviser un nombre décimal par 10 » ; CM2 : × et ÷ par 10, 100, 1 000 des
+// décimaux ; 6e : « multiplier par 0,1, par 0,01 et par 0,001 ».
 function gaOps(){
-  const l = [1, 2, 3].map(k => ({ k, txt: '× ' + '1' + '0'.repeat(k) })).concat([1, 2, 3].map(k => ({ k: -k, txt: '÷ ' + '1' + '0'.repeat(k) })));
+  const l = [1, 2, 3].map(k => ({ k, txt: '× ' + '1' + '0'.repeat(k) })).concat((cvRang() === 0 ? [1] : [1, 2, 3]).map(k => ({ k: -k, txt: '÷ ' + '1' + '0'.repeat(k) })));
   if(cvRang() >= 2) [1, 2, 3].forEach(k => l.push({ k: -k, txt: '× 0,' + '0'.repeat(k - 1) + '1', mul: true }));
   return l;
 }
@@ -129,22 +147,22 @@ function gaOpTxt(g){ return g.op ? g.op.txt : (g.k > 0 ? '× 1' + '0'.repeat(g.k
 function gaCol(p){ return GA_PMAX - p; }
 function gaTient(n, s){ return cvChiffres(n).every(t => t.p + s <= GA_PMAX && t.p + s >= GA_PMIN); }
 function gaRendre(){
-  const box = document.getElementById('cvOutil'); if(!box) return;
-  const g = cv.ga, ex = g.ex;
+  const g = cv.ga, box = document.getElementById(g.embed ? 'tcGlisse' : 'cvOutil'); if(!box) return;
+  const ex = g.ex;
   const ops = gaOps();
-  box.innerHTML = `<div class="cv-carte">
-    <div class="cv-mode">${ex ? `<span class="cv-ex-t"><span class="gicon">fitness_center</span> Exercice</span> <span class="cv-score">${g.score[0]} / ${g.score[1]}</span>
+  box.innerHTML = `<div class="${g.embed ? 'cv-integre' : 'cv-carte'}">
+    ${g.embed ? '' : `<div class="cv-mode">${ex ? `<span class="cv-ex-t"><span class="gicon">fitness_center</span> Exercice</span> <span class="cv-score">${g.score[0]} / ${g.score[1]}</span>
         <button type="button" class="btn secondary" onclick="gaLibre()">Mode libre</button>`
       : `<label>Nombre <input type="text" inputmode="decimal" id="gaNombre" value="${cvEcrire(g.n).replace(/ /g, '')}" onchange="gaNombre(this.value)" style="width:120px;"></label>
         <span class="cv-ops">${ops.map(op => `<button type="button" class="${gaOpTxt(g) === op.txt ? 'on' : ''}" onclick="gaOp(${op.k},'${op.txt}')">${op.txt}</button>`).join('')}</span>
-        <button type="button" class="btn" onclick="gaExercice()"><span class="gicon">fitness_center</span> Exercice</button>`}</div>
+        <button type="button" class="btn" onclick="gaExercice()"><span class="gicon">fitness_center</span> Exercice</button>`}</div>`}
     <p class="cv-consigne" id="gaConsigne"></p>
     <div class="cv-glisse"><button type="button" class="cv-fleche" onclick="gaBouger(1)" title="Faire glisser vers la gauche (× 10)" aria-label="Glisser à gauche">◀</button>
       <div class="cv-defil"><div class="cv-ga-tab" id="gaTab" style="width:${(GA_PMAX - GA_PMIN + 1) * GA_W}px"></div></div>
       <button type="button" class="cv-fleche" onclick="gaBouger(-1)" title="Faire glisser vers la droite (÷ 10)" aria-label="Glisser à droite">▶</button></div>
     <p class="cv-aide">Flèches ◀ ▶ (ou touches ← → du clavier) : le nombre glisse d'une colonne. La virgule, elle, ne bouge jamais.</p>
     <div class="cv-res" id="gaRes"></div>
-    ${ex ? `<div class="cv-rep"><label>${cvEcrire(g.n)} ${gaOpTxt(g)} = <input type="text" inputmode="decimal" id="gaRep" style="width:140px;" onkeydown="if(event.key==='Enter')gaVerifier()" ${ex.fait ? 'disabled' : ''}></label>
+    ${ex && !g.embed ? `<div class="cv-rep"><label>${cvEcrire(g.n)} ${gaOpTxt(g)} = <input type="text" inputmode="decimal" id="gaRep" style="width:140px;" onkeydown="if(event.key==='Enter')gaVerifier()" ${ex.fait ? 'disabled' : ''}></label>
       ${ex.fait ? `<button type="button" class="btn" onclick="gaExercice()">Suivant <span class="gicon">arrow_forward</span></button>` : `<button type="button" class="btn" onclick="gaVerifier()">Vérifier</button>`}<span id="gaVerdict" class="cv-verdict ${ex.ok === true ? 'ok' : ex.ok === false ? 'ko' : ''}">${ex.msg || ''}</span></div>` : ''}
   </div>`;
   gaTableau(true);
@@ -184,10 +202,10 @@ function gaTableau(init){
   if(r){
     const ok = g.s === g.k;
     r.className = 'cv-res' + (ok ? ' ok' : '');
-    r.innerHTML = ok ? (g.ex && !g.ex.fait ? '<span class="gicon">check_circle</span> Le chiffre rouge est à la bonne place : lis le nombre obtenu et écris-le ci-dessous.'
-        : `<span class="gicon">check_circle</span> ${cvEcrire(g.n)} ${gaOpTxt(g)} = <b>${cvEcrire(val)}</b>`)
+    r.innerHTML = ok ? (g.cache ? '<span class="gicon">check_circle</span> Le chiffre rouge est à la bonne place : lis le nombre obtenu et écris la conversion ci-dessous.' : g.ex && !g.ex.fait ? '<span class="gicon">check_circle</span> Le chiffre rouge est à la bonne place : lis le nombre obtenu et écris-le ci-dessous.'
+        : `<span class="gicon">check_circle</span> ${cvEcrire(g.n)} ${gaOpTxt(g)} = <b>${cvEcrire(val)}</b>${g.suite ? g.suite(val) : ''}`)
       : g.s === 0 ? 'Utilise les flèches pour faire glisser le nombre.'
-      : `Le chiffre rouge est dans la colonne des ${cvEsc(GA_RANGS[g.s] ? GA_RANGS[g.s][1] : '')}${g.ex && !g.ex.fait ? '' : ` : le nombre vaut maintenant ${cvEcrire(val)}`}. ${Math.abs(g.s) > Math.abs(g.k) || Math.sign(g.s) !== Math.sign(g.k) ? 'Trop loin ou mauvais sens !' : 'Continue…'}`;
+      : `Le chiffre rouge est dans la colonne des ${cvEsc(GA_RANGS[g.s] ? GA_RANGS[g.s][1] : '')}${(g.ex && !g.ex.fait) || g.cache ? '' : ` : le nombre vaut maintenant ${cvEcrire(val)}`}. ${Math.abs(g.s) > Math.abs(g.k) || Math.sign(g.s) !== Math.sign(g.k) ? 'Trop loin ou mauvais sens !' : 'Continue…'}`;
   }
 }
 function gaBouger(d){
@@ -205,11 +223,10 @@ function gaLibre(){ cv.ga.ex = null; cv.ga.s = 0; gaRendre(); }
 function gaExercice(){
   const g = cv.ga, r = cvRang();
   for(let essai = 0; essai < 50; essai++){
-    let ops = gaOps();
-    if(r === 0) ops = ops.filter(o => !o.mul && o.k !== -3);
-    const op = cvPioche(ops);
-    const n = r === 0 ? (op.k < 0 ? cvNombreAlea(999, 0) : cvNombreAlea(99, 1)) : r === 1 ? cvNombreAlea(999, 2) : cvNombreAlea(9999, 3);
-    if(n.d === '0' || !gaTient(n, 0) || !gaTient(n, op.k)) continue;
+    const op = cvPioche(gaOps());
+    // CM1 : × 10, 100, 1 000 sur des entiers ; × 10 et ÷ 10 aussi sur des décimaux (un chiffre après la virgule).
+    const n = r === 0 ? (op.k > 1 ? cvNombreAlea(999, 0) : cvNombreAlea(99, 1)) : r === 1 ? cvNombreAlea(999, 2) : cvNombreAlea(9999, 3);
+    if(n.d === '0' || !gaTient(n, 0) || !gaTient(n, op.k) || !cvDecOk(n) || !cvDecOk(cvDecaler(n, op.k))) continue;
     Object.assign(g, { n, k: op.k, op, s: 0, ex: { fait: false } });
     gaRendre(); document.getElementById('gaRep')?.focus(); return;
   }
@@ -240,7 +257,7 @@ function cvTableGroupes(groupes, n, extra){
 }
 const CV_TABLES = {
   longueur: { nom: 'Longueurs', cols: cvTableSimple(['km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm']) },
-  masse: { nom: 'Masses', cols: [{ u: 't', g: 't' }, { u: 'q', g: 'q' }, { u: null, g: '' }].concat(cvTableSimple(['kg', 'hg', 'dag', 'g', 'dg', 'cg', 'mg'])) },
+  masse: { nom: 'Masses', cols: [{ u: 't', g: 't' }, { u: null, g: '' }, { u: null, g: '' }].concat(cvTableSimple(['kg', 'hg', 'dag', 'g', 'dg', 'cg', 'mg'])) },
   contenance: { nom: 'Contenances', cols: cvTableSimple(['hL', 'daL', 'L', 'dL', 'cL', 'mL']) },
   aire: { nom: 'Aires', cols: cvTableGroupes(['km²', 'hm²', 'dam²', 'm²', 'dm²', 'cm²', 'mm²'], 2, { 'hm²': [null, 'ha'], 'dam²': [null, 'a'], 'm²': [null, 'ca'] }), alias: { ha: 'hm²', a: 'dam²', ca: 'm²' } },
   volume: { nom: 'Volumes', cols: cvTableGroupes(['m³', 'dm³', 'cm³', 'mm³'], 3, { 'dm³': ['hL', 'daL', 'L'], 'cm³': ['dL', 'cL', 'mL'] }) },
@@ -265,7 +282,52 @@ function tcInit(g){
   cv.tc = { g, n: cvLire(g === 'volume' ? '2,5' : '3,45'), src: d[0], tgt: d[1], v: cvColUnite(g, d[0]), ex: null, score: (cv.tc && cv.tc.score) || [0, 0] };
   void t; void u;
 }
+/* Programme du cycle 3 : « au cours moyen, les élèves n'utilisent pas de tableaux pour effectuer des
+   conversions ; ils s'appuient sur les relations connues entre les unités en jeu, comme par exemple :
+   3,5 mètres est égal à 350 centimètres, car 1 mètre est égal à 100 centimètres. » Au CM1 et au CM2,
+   l'outil Unités présente donc les unités (préfixes en couleur, × 10 d'une unité à la suivante), écrit la
+   relation (1 m = 100 cm, donc 3,45 m = 3,45 × 100 cm) et fait le calcul avec le glisse-nombre. Le
+   tableau où l'on déplace la virgule est réservé au collège. */
+function tcCoursMoyen(){ return cvRang() <= 1 && !['aire', 'volume'].includes(cv.tc.g); }
+function tcRelation(){
+  const tc = cv.tc, a = cvColUnite(tc.g, tc.src), b = cvColUnite(tc.g, tc.tgt), k = b - a, p = '1' + '0'.repeat(Math.abs(k));
+  const P = x => x.replace(/\B(?=(\d{3})+(?!\d))/g, '\u202f');
+  if(k === 0) return { k, html: 'Les deux unités sont les mêmes.' };
+  return { k, html: k > 0
+    ? `<b>1 ${cvUniteHtml(tc.src)} = ${P(p)} ${cvUniteHtml(tc.tgt)}</b>, donc ${cvEcrire(tc.n)} ${cvUniteHtml(tc.src)} = ${cvEcrire(tc.n)} × ${P(p)} ${cvUniteHtml(tc.tgt)}.`
+    : `<b>${P(p)} ${cvUniteHtml(tc.src)} = 1 ${cvUniteHtml(tc.tgt)}</b>, donc ${cvEcrire(tc.n)} ${cvUniteHtml(tc.src)} = ${cvEcrire(tc.n)} ÷ ${P(p)} ${cvUniteHtml(tc.tgt)}.` };
+}
+function tcRendreCM(){
+  const box = document.getElementById('cvOutil'); if(!box) return;
+  const tc = cv.tc, ex = tc.ex, us = cvUnites(tc.g);
+  const opt = sel => us.map(([u]) => `<option value="${cvEsc(u)}" ${u === sel ? 'selected' : ''}>${cvEsc(u)}</option>`).join('');
+  const rel = tcRelation(), unites = CV_TABLES[tc.g].cols.filter(c => c.u);
+  box.innerHTML = `<div class="cv-carte">
+    <div class="cv-onglets">${['longueur', 'masse', 'contenance'].map(g => `<button type="button" class="${g === tc.g ? 'on' : ''}" onclick="tcGrandeur('${g}')">${CV_TABLES[g].nom} (${{ longueur: 'm', masse: 'g', contenance: 'L' }[g]})</button>`).join('')}</div>
+    <div class="cv-mode">${ex ? `<span class="cv-ex-t"><span class="gicon">fitness_center</span> Exercice</span> <span class="cv-score">${tc.score[0]} / ${tc.score[1]}</span>
+        <button type="button" class="btn secondary" onclick="tcLibre()">Mode libre</button>`
+      : `<label>Convertir <input type="text" inputmode="decimal" id="tcNombre" value="${cvEcrire(tc.n).replace(/\u202f/g, '')}" onchange="tcNombre(this.value)" style="width:110px;"></label>
+        <select onchange="tcUnite('src',this.value)">${opt(tc.src)}</select> <span>en</span> <select onchange="tcUnite('tgt',this.value)">${opt(tc.tgt)}</select>
+        <button type="button" class="btn" onclick="tcExercice()"><span class="gicon">fitness_center</span> Exercice</button>`}</div>
+    <p class="cv-consigne">Convertir <b>${cvEcrire(tc.n)} ${cvUniteHtml(tc.src)}</b> en <b>${cvUniteHtml(tc.tgt)}</b>.</p>
+    <div class="cv-chaine">${unites.map((c, i) => `${i ? '<span class="cv-fois">× 10 ▸</span>' : ''}<span class="cv-maillon${c.u === tc.src ? ' src' : ''}${c.u === tc.tgt ? ' tgt' : ''}">${cvUniteHtml(c.u)}</span>`).join('')}</div>
+    <p class="cv-aide" style="margin-top:2px;">D'une unité à la suivante (vers la droite), on multiplie par 10. Les préfixes : <b style="color:${CV_PREF_COUL.k}">kilo</b> = 1 000, <b style="color:${CV_PREF_COUL.h}">hecto</b> = 100, <b style="color:${CV_PREF_COUL.da}">déca</b> = 10, <b style="color:${CV_PREF_COUL.d}">déci</b> = un dixième, <b style="color:${CV_PREF_COUL.c}">centi</b> = un centième, <b style="color:${CV_PREF_COUL.m}">milli</b> = un millième.</p>
+    <div class="cv-relation"><span class="gicon">lightbulb</span> <span>${rel.html}</span></div>
+    ${rel.k ? '<div id="tcGlisse"></div>' : ''}
+    ${ex ? `<div class="cv-rep"><label>${cvEcrire(tc.n)} ${cvUniteHtml(tc.src)} = <input type="text" inputmode="decimal" id="tcRep" style="width:140px;" onkeydown="if(event.key==='Enter')tcVerifier()" ${ex.fait ? 'disabled' : ''}> ${cvUniteHtml(tc.tgt)}</label>
+      ${ex.fait ? `<button type="button" class="btn" onclick="tcExercice()">Suivant <span class="gicon">arrow_forward</span></button>` : `<button type="button" class="btn" onclick="tcVerifier()">Vérifier</button>`}<span class="cv-verdict ${ex.ok === true ? 'ok' : ex.ok === false ? 'ko' : ''}">${ex.msg || ''}</span></div>` : ''}
+  </div>`;
+  if(rel.k){
+    const src = tc.src, tgt = tc.tgt, n = tc.n;
+    cv.ga = { embed: true, n, k: rel.k, s: 0, ex: null, score: [0, 0], cache: !!(ex && !ex.fait),
+      op: { k: rel.k, txt: (rel.k > 0 ? '× 1' : '÷ 1') + '0'.repeat(Math.abs(rel.k)) },
+      suite: v => `, donc ${cvEcrire(n)} ${cvUniteHtml(src)} = <b>${cvEcrire(v)}</b> ${cvUniteHtml(tgt)}` };
+    if(gaTient(n, 0) && gaTient(n, rel.k)) gaRendre();
+    else document.getElementById('tcGlisse').innerHTML = `<div class="cv-res ok">${cvEcrire(n)} ${cvUniteHtml(src)} = <b>${cvEcrire(cvDecaler(n, rel.k))}</b> ${cvUniteHtml(tgt)}</div>`;
+  }
+}
 function tcRendre(){
+  if(tcCoursMoyen()) return tcRendreCM();
   const box = document.getElementById('cvOutil'); if(!box) return;
   const tc = cv.tc, ex = tc.ex, us = cvUnites(tc.g);
   const opt = sel => us.map(([u]) => `<option value="${cvEsc(u)}" ${u === sel ? 'selected' : ''}>${cvEsc(u)}</option>`).join('');
@@ -277,6 +339,7 @@ function tcRendre(){
         <select onchange="tcUnite('src',this.value)">${opt(tc.src)}</select> <span>en</span> <select onchange="tcUnite('tgt',this.value)">${opt(tc.tgt)}</select>
         <button type="button" class="btn" onclick="tcExercice()"><span class="gicon">fitness_center</span> Exercice</button>`}</div>
     <p class="cv-consigne" id="tcConsigne"></p>
+    ${tc.g === 'aire' || tc.g === 'volume' ? '' : `<div class="cv-relation"><span class="gicon">lightbulb</span> <span>${tcRelation().html}</span></div>`}
     <div class="cv-glisse"><button type="button" class="cv-fleche" onclick="tcBouger(-1)" title="Virgule vers la gauche" aria-label="Virgule à gauche">◀</button>
       <div class="cv-defil"><div class="cv-tc" id="tcTab"></div></div>
       <button type="button" class="cv-fleche" onclick="tcBouger(1)" title="Virgule vers la droite" aria-label="Virgule à droite">▶</button></div>
@@ -356,16 +419,17 @@ const CV_POOLS = {
   volume: [['m³', 'dm³', 'cm³', 'L', 'mL'], ['m³', 'dm³', 'cm³', 'mm³', 'hL', 'L', 'dL', 'cL', 'mL']],
 };
 function tcExercice(){
-  const tc = cv.tc, r = cvRang(), avance = tc.g === 'aire' || tc.g === 'volume' ? r >= 3 : r >= 1;
+  const tc = cv.tc, r = cvRang(), avance = tc.g === 'aire' ? r >= 3 : tc.g === 'volume' ? r >= 4 : r >= 1;
   const pool = CV_POOLS[tc.g][avance ? 1 : 0];
   for(let essai = 0; essai < 80; essai++){
     const a = cvPioche(pool), b = cvPioche(pool); if(a === b) continue;
     const ca = cvColUnite(tc.g, a), cb = cvColUnite(tc.g, b), ecart = Math.abs(ca - cb);
-    if(ecart > (tc.g === 'volume' ? 6 : tc.g === 'aire' ? 4 : r === 0 ? 3 : 6)) continue;
+    if(ecart > (tc.g === 'volume' ? 6 : tc.g === 'aire' ? 4 : r <= 1 ? 3 : 6)) continue;
     const n = r === 0 ? cvNombreAlea(ca < cb ? 99 : 9999, ca < cb ? 1 : 0) : cvNombreAlea(999, r >= 2 ? 3 : 2);
     if(n.d === '0') continue;
     const res = cvDecaler(n, cb - ca), txt = cvEcrire(res).replace(/[^\d]/g, '');
-    if(txt.length > 9) continue;
+    if(txt.length > 9 || !cvDecOk(n) || !cvDecOk(res)) continue;
+    if(r <= 1 && !['aire', 'volume'].includes(tc.g) && (!gaTient(n, 0) || !gaTient(n, cb - ca))) continue;
     Object.assign(tc, { n, src: a, tgt: b, v: ca, ex: { fait: false } });
     tcRendre(); document.getElementById('tcRep')?.focus(); return;
   }
@@ -377,6 +441,7 @@ function tcVerifier(){
   ex.fait = true; ex.ok = cvEgal(rep, att); tc.score[1]++; if(ex.ok) tc.score[0]++;
   ex.msg = ex.ok ? '✔ Bravo !' : `✘ La bonne réponse est ${cvEcrire(att)} ${cvEsc(tc.tgt)}.`;
   tc.v = cvColUnite(tc.g, tc.tgt); tcRendre();
+  if(tcCoursMoyen() && cv.ga && cv.ga.embed){ cv.ga.s = cv.ga.k; gaTableau(false); }
   const i = document.getElementById('tcRep'); if(i) i.value = cvEcrire(rep);
 }
 document.addEventListener('keydown', e => {
@@ -442,6 +507,17 @@ document.addEventListener('keydown', e => {
     .cv-tok.tc{top:52px;font-size:2.2rem;} .cv-tc.groupes .cv-tok.tc{top:60px;} .cv-tc.lignex .cv-tok.tc{top:84px;}
     .cv-tc.groupes .cv-tc-virg{top:52px;} .cv-tc.lignex .cv-tc-virg{top:76px;} .cv-tc-virg{top:46px;}
     @media (max-width:640px){ .cv-fleche{width:44px;height:44px;} }
+    .cv-plein-btn{margin-left:auto;}
+    #cvPlein:fullscreen{background:#FBF8F3;overflow:auto;padding:2vh 3vw;box-sizing:border-box;}
+    #cvPlein:fullscreen .cv-hors-plein{display:none;}
+    #cvPlein:fullscreen #cvOutil{zoom:1.35;} @media (min-width:1600px){ #cvPlein:fullscreen #cvOutil{zoom:1.7;} } @media (min-width:2200px){ #cvPlein:fullscreen #cvOutil{zoom:2.2;} }
+    .cv-chaine{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:6px 0;}
+    .cv-maillon{border:2px solid rgba(28,43,57,.15);border-radius:10px;padding:5px 12px;font-size:1.15rem;background:#fff;}
+    .cv-maillon.src{border-color:#D32F2F;box-shadow:0 0 0 3px rgba(211,47,47,.15);} .cv-maillon.tgt{border-color:#F2A900;background:rgba(255,193,7,.16);}
+    .cv-fois{font-size:.72rem;color:#8A919C;white-space:nowrap;}
+    .cv-relation{display:flex;align-items:center;gap:8px;background:rgba(12,91,160,.06);border-left:4px solid #0C5BA0;border-radius:10px;padding:10px 14px;margin:10px 0;font-size:1.08rem;}
+    .cv-relation .gicon{color:#E0A100;}
+    .cv-integre{border-top:1px dashed rgba(28,43,57,.15);margin-top:6px;padding-top:4px;}
   `;
   document.head.appendChild(st);
 })();

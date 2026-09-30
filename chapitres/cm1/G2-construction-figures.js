@@ -114,9 +114,9 @@ function cf1ArcNom(t){ return `<span style="display:inline-block;position:relati
 const CF1_V_O = [150, 118], CF1_V_R = 82;
 const CF1_VOC = {
   centre: [CF1_ROUGE, 'Le <b>centre</b> O est au milieu : tous les points du cercle sont à la même distance de O.'],
-  rayon: [CF1_BLEU, 'Un <b>rayon</b> relie le centre à un point du cercle : [OR] est un rayon. Tous les rayons d\'un cercle ont la même longueur.'],
-  diametre: [CF1_VERT, 'Un <b>diamètre</b> relie deux points du cercle en passant par le centre : [AB] est un diamètre. Il mesure deux rayons.'],
-  corde: [CF1_ORANGE, 'Une <b>corde</b> relie deux points du cercle, sans forcément passer par le centre : [EF] est une corde.'],
+  rayon: [CF1_BLEU, 'Un <b>rayon</b> relie le centre à un point du cercle : le segment [OR] est un rayon. Tous les rayons d\'un cercle ont la même longueur.'],
+  diametre: [CF1_VERT, 'Un <b>diamètre</b> relie deux points du cercle en passant par le centre : le segment [AB] est un diamètre. Il mesure deux rayons.'],
+  corde: [CF1_ORANGE, 'Une <b>corde</b> relie deux points du cercle, sans forcément passer par le centre : le segment [EF] est une corde.'],
   arc: [CF1_VIOLET, 'Un <b>arc</b> est un morceau du cercle : l\'arc ' + cf1ArcNom('EF') + ' est la partie du cercle entre E et F.'],
 };
 function cf1Voc(v){
@@ -154,10 +154,10 @@ ${cf1Tableau(['Un point et un segment', 'Une droite', 'Des points alignés'], [c
 <span class="def-badge">Vocabulaire</span>
 <div class="def-box">
   • Des points sont <b>alignés</b> s'ils sont sur une même droite. On le vérifie avec la règle.<br>
-  • Le <b>milieu</b> d'un segment est le point du segment qui est à la même distance de ses deux extrémités. Sur la figure, M est le milieu de [GH] : GM = MH.
+  • Le <b>milieu</b> d'un segment est le point du segment qui est à la même distance de ses deux extrémités. Sur la figure, M est le milieu du segment [GH] : GM = MH.
 </div>
 <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
-  Les petits traits identiques sur [GM] et [MH] sont un <b>codage</b> : ils disent que les deux longueurs sont égales.
+  Les petits traits identiques sur les segments [GM] et [MH] sont un <b>codage</b> : ils disent que les deux longueurs sont égales.
 </div>
 
 <div class="sub-header"><span class="letter">B</span><h4>Les polygones</h4></div>
@@ -255,9 +255,9 @@ const CF1_R_PERP = 4.5 * CF1_CM; // longueur des perpendiculaires tracées à l'
 const cf1RectDemo = cf1Etapes('cf1Rect', [
   'On veut tracer un rectangle ABCD de longueur 5 cm et de largeur 3 cm.',
   '1. Avec la règle, on trace le segment [AB] de 5 cm : A sur le 0, B sur le 5.',
-  '2. On pose l\'équerre : son angle droit sur A, un côté le long de [AB]. On trace un trait le long de l\'autre côté, un peu plus long que 3 cm. On ne mesure pas avec l\'équerre : son 0 n\'est souvent pas pile dans l\'angle.',
+  '2. On pose l\'équerre : son angle droit sur A, un côté le long du segment [AB]. On trace un trait le long de l\'autre côté, un peu plus long que 3 cm. On ne mesure pas avec l\'équerre : son 0 n\'est souvent pas pile dans l\'angle.',
   '3. On mesure avec la règle, le 0 sur A, le long de ce trait : on place D à 3 cm.',
-  '4. On fait de même en B : l\'angle droit de l\'équerre sur B, un côté le long de [BA]. On trace un trait le long de l\'autre côté.',
+  '4. On fait de même en B : l\'angle droit de l\'équerre sur B, un côté le long du segment [BA]. On trace un trait le long de l\'autre côté.',
   '5. Avec la règle, le 0 sur B, on place C à 3 cm.',
   '6. Avec la règle, on relie D et C.',
   '7. Le rectangle ABCD est tracé : quatre angles droits, et des côtés de 5 cm et de 3 cm. Les bouts de trait en trop sont des traits de construction.',
@@ -294,7 +294,7 @@ const cf1TriDemo = cf1Etapes('cf1Tri', [
   '2. On prend la longueur AB au compas : pointe sèche sur A, on écarte jusqu\'à ce que la mine soit sur B.',
   '3. Sans changer l\'écartement, pointe sèche sur A, on trace un petit arc au-dessus du segment : ses points sont à 4 cm de A.',
   '4. Même écartement, pointe sèche sur B : on trace un deuxième arc qui coupe le premier.',
-  '5. Le point où les deux arcs se coupent est à 4 cm de A et à 4 cm de B : c\'est C. On trace [AC] et [BC] à la règle.',
+  '5. Le point où les deux arcs se coupent est à 4 cm de A et à 4 cm de B : c\'est C. On trace les segments [AC] et [BC] à la règle.',
   '6. Le triangle ABC est équilatéral : AB = AC = BC = 4 cm.',
 ], k => {
   const A = CF1_T_A, B = CF1_T_B, C = CF1_T_C, r = 4 * CF1_CM;
@@ -398,11 +398,11 @@ document.getElementById('exos-demo-cm1-construction-figures').innerHTML = `
   <h3>Exercices</h3>
   ${cf1Exo(1, 'Observe la figure. a) Comment s\'appelle le trait bleu ? b) Comment s\'appelle le trait vert ? c) Cite trois points alignés. d) Le point K est-il sur la droite verte ?', [
     'a) Le trait bleu s\'arrête en A et en B : c\'est le segment [AB].',
-    'b) Le trait vert continue des deux côtés : c\'est une droite. On peut la nommer (EF), (EG) ou (FG).',
+    'b) Le trait vert continue des deux côtés : c\'est une droite. On peut la nommer droite (EF), droite (EG) ou droite (FG).',
     'c) E, F et G sont alignés : ils sont sur la même droite.',
     'd) Non : K n\'est pas sur la droite verte. E, F et K ne sont pas alignés.'], cf1ExoFig1())}
-  ${cf1Exo(2, 'Voici un cercle de centre O. a) Cite un rayon. b) Cite un diamètre. c) Cite une corde qui n\'est pas un diamètre. d) Le rayon mesure 3 cm : combien mesure le diamètre [AB] ?', [
-    'a) [OC] est un rayon : il va du centre O à un point du cercle.',
+  ${cf1Exo(2, 'Voici un cercle de centre O. a) Cite un rayon. b) Cite un diamètre. c) Cite une corde qui n\'est pas un diamètre. d) Le rayon mesure 3 cm : combien mesure le diamètre (le segment [AB]) ?', [
+    'a) Le segment [OC] est un rayon : il va du centre O à un point du cercle.',
     'b) [AB] est un diamètre : il relie deux points du cercle en passant par O.',
     'c) [DE] est une corde : elle relie deux points du cercle sans passer par O.',
     'd) Le diamètre mesure deux rayons : 2 × 3 cm = 6 cm. Donc AB = 6 cm.'], cf1ExoFig2())}
@@ -436,8 +436,8 @@ document.getElementById('exos-demo-cm1-construction-figures').innerHTML = `
     'On doit citer les sommets dans l\'ordre du tour, dans un sens ou dans l\'autre, en partant de n\'importe quel sommet.',
     'NOPM, PONM et OPMN conviennent.',
     'MOPN ne convient pas : après M, on ne peut pas aller directement en O (M est relié à N et à P).'])}
-  ${cf1Exo(10, 'Programme de construction : trace un segment [AB] de 6 cm et place son milieu M. Trace le cercle de centre M qui passe par A. a) Quel est le rayon du cercle ? b) Le cercle passe-t-il par B ? c) Que représente [AB] pour ce cercle ?', [
-    'M est le milieu de [AB] : MA = MB = 6 cm ÷ 2 = 3 cm.',
+  ${cf1Exo(10, 'Programme de construction : trace un segment [AB] de 6 cm et place son milieu M. Trace le cercle de centre M qui passe par A. a) Quel est le rayon du cercle ? b) Le cercle passe-t-il par B ? c) Que représente le segment [AB] pour ce cercle ?', [
+    'M est le milieu du segment [AB] : MA = MB = 6 cm ÷ 2 = 3 cm.',
     'a) Le cercle de centre M passe par A : son rayon est MA = 3 cm.',
     'b) MB = 3 cm aussi : B est à 3 cm du centre, donc B est sur le cercle.',
     'c) [AB] relie deux points du cercle en passant par le centre M : c\'est un diamètre (6 cm, deux rayons).'], '', cf1ExoFig10())}
