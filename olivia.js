@@ -20,20 +20,19 @@
    DEMO_REGISTRY, renderMathText) et d'ia-compte.js (aiAccess).
    ===================================================================== */
 
-const OLIV_AVATAR = `<svg viewBox="0 0 64 64" aria-hidden="true">
-  <line x1="32" y1="15" x2="32" y2="7" stroke="#2C5A2E" stroke-width="2.2" stroke-linecap="round"/>
-  <g class="oliv-feuille"><path d="M33 7 C 38 1.5, 45 3, 47 6.5 C 41.5 9.5, 37 9.5, 33 7 Z" fill="#6A994E"/>
-  <ellipse cx="30" cy="6.5" rx="3.3" ry="4.2" fill="#4F6B2A"/></g>
-  <rect x="5" y="27" width="6" height="12" rx="3" fill="#1F7A4D"/>
-  <rect x="53" y="27" width="6" height="12" rx="3" fill="#1F7A4D"/>
-  <rect x="10" y="15" width="44" height="36" rx="16" fill="#E8F3EC" stroke="#1F7A4D" stroke-width="2.5"/>
-  <rect x="16" y="22" width="32" height="18" rx="9" fill="#1C2B39"/>
-  <ellipse class="oliv-oeil" cx="25" cy="30" rx="3.2" ry="4" fill="#7CF0C0"/>
-  <ellipse class="oliv-oeil" cx="39" cy="30" rx="3.2" ry="4" fill="#7CF0C0"/>
-  <path d="M27.5 35.5 Q32 39 36.5 35.5" stroke="#7CF0C0" stroke-width="2" fill="none" stroke-linecap="round"/>
-  <circle cx="16" cy="43" r="3" fill="#F4A7B9" opacity=".85"/>
-  <circle cx="48" cy="43" r="3" fill="#F4A7B9" opacity=".85"/>
-  <path d="M23 51 h18 v5 a4 4 0 0 1 -4 4 h-10 a4 4 0 0 1 -4 -4 z" fill="#1F7A4D"/>
+// Personnage choisi (« J'adore Olive-robot pour Oliv'IA ») : une olive verte avec sa feuille,
+// de grands yeux (qui clignent), des joues roses et deux petits bras articulés.
+const OLIV_AVATAR = `<svg viewBox="0 0 120 120" aria-hidden="true">
+  <path d="M60 20 q-2 -9 4 -14" stroke="#4F6B2A" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path class="oliv-feuille" d="M64 8 C 74 -1, 88 3, 92 10 C 82 16, 72 15, 64 8 Z" fill="#7BAE4F" stroke="#4F6B2A" stroke-width="1.5"/>
+  <ellipse cx="60" cy="64" rx="36" ry="44" fill="#8DB84A" stroke="#4F6B2A" stroke-width="3.5"/>
+  <ellipse cx="46" cy="42" rx="9" ry="14" fill="#fff" opacity=".35" transform="rotate(-20 46 42)"/>
+  <path d="M26 70 q-14 4 -16 16" stroke="#4F6B2A" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="10" cy="87" r="4.5" fill="#4F6B2A"/>
+  <g class="oliv-bras"><path d="M94 70 q14 -2 17 -14" stroke="#4F6B2A" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="111" cy="55" r="4.5" fill="#4F6B2A"/></g>
+  <g class="oliv-oeil"><circle cx="46" cy="60" r="12" fill="#fff" stroke="#2C3A1A" stroke-width="2.5"/><circle cx="48" cy="62" r="6" fill="#1C2B39"/><circle cx="50" cy="59.5" r="2" fill="#fff"/></g>
+  <g class="oliv-oeil"><circle cx="74" cy="60" r="12" fill="#fff" stroke="#2C3A1A" stroke-width="2.5"/><circle cx="76" cy="62" r="6" fill="#1C2B39"/><circle cx="78" cy="59.5" r="2" fill="#fff"/></g>
+  <path d="M50 82 Q60 90 70 82" stroke="#2C3A1A" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <circle cx="36" cy="80" r="5" fill="#F4A7B9" opacity=".9"/><circle cx="84" cy="80" r="5" fill="#F4A7B9" opacity=".9"/>
 </svg>`;
 
 let oliv = { ouvert: false, chapKey: '', conv: null, hist: [], occupe: false, focus: '' };

@@ -1458,7 +1458,10 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .oliv-lanceur-bulle{order:-1;background:#fff;border:1.5px solid #1F7A4D;color:#1F7A4D;font-weight:700;font-size:.85rem;border-radius:14px 14px 4px 14px;padding:6px 10px;box-shadow:0 2px 8px rgba(28,43,57,.12);}
 .oliv-oeil{transform-box:fill-box;transform-origin:center;animation:olivCligne 4.5s infinite;}
 @keyframes olivCligne{0%,92%,100%{transform:scaleY(1);}95%{transform:scaleY(.1);}}
-.oliv-feuille{transform-box:fill-box;transform-origin:10% 100%;}
+.oliv-feuille{transform-box:fill-box;transform-origin:0% 50%;}
+.oliv-bras{transform-box:fill-box;transform-origin:0% 100%;}
+.oliv-lanceur:hover .oliv-bras{animation:olivCoucou .5s ease-in-out 3 alternate;}
+@keyframes olivCoucou{from{transform:rotate(0);}to{transform:rotate(-18deg);}}
 .reflechit .oliv-feuille, .oliv-lanceur:hover .oliv-feuille{animation:olivFeuille .8s ease-in-out infinite alternate;}
 @keyframes olivFeuille{from{transform:rotate(-12deg);}to{transform:rotate(12deg);}}
 .oliv-panneau{position:fixed;right:18px;bottom:18px;z-index:9001;width:min(380px, calc(100vw - 24px));height:min(560px, calc(100vh - 90px));display:flex;flex-direction:column;background:#fff;border:1.5px solid rgba(31,122,77,.35);border-radius:18px;box-shadow:0 12px 36px rgba(28,43,57,.25);overflow:hidden;font-family:'Space Grotesk',Arial,sans-serif;}
