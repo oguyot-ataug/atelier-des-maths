@@ -610,6 +610,7 @@ document.body.insertAdjacentHTML('beforeend', `
         <div style="width:1px;align-self:stretch;background:rgba(28,43,57,.15);margin:0 2px;"></div>
         <button type="button" class="fig-icon-btn" id="figFullscreenBtn" onclick="figToggleFullscreen()" title="Plein écran"><span class=gicon>fullscreen</span></button>
         <button type="button" class="fig-icon-btn" id="figSplitBtn" onclick="figToggleSplit()" style="display:none;" title="Écran partagé : la figure à gauche, sa construction aux instruments à droite"><span class=gicon>vertical_split</span></button>
+        <button type="button" class="fig-icon-btn" id="figProjBtn" onclick="figToggleProjection()" style="display:none;" title="Projeter la construction aux instruments dans une fenêtre à part (second écran, vidéoprojecteur)"><span class=gicon>cast</span></button>
         <button type="button" class="fig-icon-btn" id="figSplitRefreshBtn" onclick="figSplitActualiser()" style="display:none;border-color:#1F7A4D;color:#1F7A4D;" title="Rejouer toute la construction aux instruments, depuis le début"><span class=gicon>replay</span></button>
       </div>
       <div id="figSplitOutils" style="display:none;flex-wrap:wrap;gap:4px 12px;align-items:center;margin:0 0 6px;font-size:.8rem;">
@@ -1027,6 +1028,8 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
   if(toTableauBtn) toTableauBtn.style.display = 'none'; // affiché par la Géométrie Interactive (app.js)
   const splitBtn = document.getElementById('figSplitBtn');
   if(splitBtn) splitBtn.style.display = 'none'; // idem
+  const projBtn = document.getElementById('figProjBtn');
+  if(projBtn) projBtn.style.display = 'none'; // idem
   // Construction automatique/IA : visible par défaut (usage prof -- correction, évaluation),
   // masquée explicitement pour les contextes élève (bac à sable, devoir), qui doivent
   // construire la figure eux-mêmes plutôt que de la faire générer.
@@ -5532,7 +5535,7 @@ function renderFigureSvg(){
     }
   }
   svg.innerHTML = html;
-  if(document.body.classList.contains('fig-split')) figLivePlanifier();
+  if(figLiveActif()) figLivePlanifier();
 }
 
 /* ---- construction à partir d'un énoncé (mini-langage reconnu) ---- */
@@ -6018,9 +6021,9 @@ function figLiveCentre(origine){
 // de l'écran montrent la même chose.
 function figLiveCadrer(){
   if(typeof tbZoomFit!=='function' || typeof TB_AI_REGION==='undefined') return;
-  const vb = document.getElementById('figureSvg').viewBox.baseVal, k = TB_PX_PER_CM/SCALE_PX_PER_CM;
-  const cx = (TB_AI_REGION.x0+TB_AI_REGION.x1)/2, cy = (TB_AI_REGION.y0+TB_AI_REGION.y1)/2, w = vb.width*k/2, h = vb.height*k/2;
-  if(typeof tbVueRatio!=='undefined' && tbVueRatio){
+  const cadre = figLive.cadre || (FIG_PROJ ? null : figLiveCadreCm()); if(!cadre) return;
+  const cx = (TB_AI_REGION.x0+TB_AI_REGION.x1)/2, cy = (TB_AI_REGION.y0+TB_AI_REGION.y1)/2, w = cadre.w*TB_PX_PER_CM/2, h = cadre.h*TB_PX_PER_CM/2;
+  if(typeof tbVueRatio!=='undefined' && tbVueRatio && !FIG_PROJ){
     // Format imposé : le zoom se règle sur la largeur, pour que les deux moitiés montrent la même zone.
     tbZoom = Math.max(0.2, Math.min(TB_ZOOM_MAX, 900/(2*w))); tbViewCenter = {x:cx, y:cy};
     tbRender(); if(typeof tbUpdateZoomLabel==='function') tbUpdateZoomLabel(); return;
@@ -6044,69 +6047,167 @@ async function figSplitOutilsChange(){
   try{ localStorage.setItem(typeof TB_AI_TOOLS_KEY!=='undefined' ? TB_AI_TOOLS_KEY : 'tbAiTools', JSON.stringify(outils)); }catch(e){}
   document.querySelectorAll('#tbAiToolChecks input[type=checkbox]').forEach(c=>{ c.checked = outils.includes(c.value); });
   if(!outils.length){ document.getElementById('figureHint').textContent = 'Cochez au moins un instrument.'; return; }
-  figLive.cles = []; figLive.nActions = 0; figLive.centreCle = '';
-  await figLiveSync(true);
+  await figLiveSync(true, {reset:true});
 }
-async function figLiveSync(rapide){
-  if(!document.body.classList.contains('fig-split') || typeof tbAiLoadProgram!=='function') return;
-  if(figLive.occupe){ figLive.encore = true; return; }
-  const hint = document.getElementById('figureHint');
+/* La construction en direct se fait en deux temps : figLiveSync (côté figure) traduit la figure en
+   message { programme, outils, centre, cadre } ; figLiveAppliquer le joue sur un tableau. Le même
+   message sert à l'écran partagé (tableau de cette page) et à la fenêtre de projection (tableau de
+   l'autre fenêtre, voir plus bas). */
+function figLiveActif(){ return document.body.classList.contains('fig-split') || figProjOuverte(); }
+function figLiveCadreCm(){ const vb = document.getElementById('figureSvg').viewBox.baseVal; return {w: vb.width/SCALE_PX_PER_CM, h: vb.height/SCALE_PX_PER_CM}; }
+function figLiveMessage(t){ if(FIG_PROJ) return; const h = document.getElementById('figureHint'); if(h) h.textContent = t; }
+function figLiveDiffuser(msg){
+  if(figProjOuverte()) figProjEnvoyer(Object.assign({type:'prog', vitesse: tbAiSpeed}, msg));
+  if(document.body.classList.contains('fig-split')) return figLiveAppliquer(msg);
+}
+function figLiveMessageFigure(opts){
   const visibles = figState.points.filter(p=>!p.hidden);
-  if(!visibles.length){ if(figLive.cles.length){ tbClearAll(); tbAiPlaybackHide(); figLive.cles = []; figLive.nActions = 0; } return; }
-  if(visibles.some(p=>!/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))){ hint.textContent = 'Pour la construction en direct, chaque point doit être nommé par une lettre majuscule.'; return; }
-  let programme;
-  try{ programme = figVersProgramme().programme; }catch(e){ return; }
+  if(!visibles.length) return {vide:true};
+  if(visibles.some(p=>!/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))) return {erreur:'Pour la construction en direct, chaque point doit être nommé par une lettre majuscule.'};
+  const programme = figVersProgramme().programme;
   const origine = figState.points.find(p=>p.label===programme[0].name);
-  const centre = figLiveCentre(origine), centreCle = centre.x+'|'+centre.y;
+  return Object.assign({programme, outils: figSplitOutils(), centre: figLiveCentre(origine), cadre: figLiveCadreCm()}, opts||{});
+}
+async function figLiveSync(rapide, opts){
+  if(!figLiveActif() || typeof tbAiLoadProgram!=='function') return;
+  let msg;
+  try{ msg = figLiveMessageFigure(Object.assign({rapide:!!rapide}, opts||{})); }catch(e){ return; }
+  if(msg.erreur){ figLiveMessage(msg.erreur); return; }
+  return figLiveDiffuser(msg);
+}
+async function figLiveAppliquer(msg){
+  if(typeof tbAiLoadProgram!=='function') return;
+  if(figLive.occupe){ figLive.suivant = msg; return; }
+  if(msg.reset || msg.rejouer){ figLive.cles = []; figLive.nActions = 0; figLive.centreCle = ''; }
+  if(msg.vide){ if(figLive.cles.length || msg.reset){ tbClearAll(); tbAiPlaybackHide(); } figLive.cles = []; figLive.nActions = 0; return; }
+  const programme = msg.programme, centre = msg.centre, centreCle = centre.x+'|'+centre.y;
+  figLive.cadre = msg.cadre;
   const cles = programme.map(o=>JSON.stringify(o));
-  const prolonge = centreCle===figLive.centreCle && figLive.cles.length<=cles.length && figLive.cles.every((k,i)=>k===cles[i]);
+  const prolonge = !msg.rejouer && centreCle===figLive.centreCle && figLive.cles.length<=cles.length && figLive.cles.every((k,i)=>k===cles[i]);
   if(prolonge && cles.length===figLive.cles.length) return; // rien de nouveau à construire
   figLive.occupe = true;
   const vitesse = tbAiSpeed;
+  if(FIG_PROJ && msg.vitesse) tbAiSpeed = msg.vitesse; // fenêtre de projection : vitesse choisie par le professeur
   try{
     if(prolonge && figLive.cles.length){
       const dejaJoue = Math.min(figLive.nActions, typeof tbAiPlanIndex==='number' ? tbAiPlanIndex : figLive.nActions); // « Précédent » a pu défaire des étapes
-      tbAiLoadProgram(programme, figSplitOutils(), {center:centre, keepZoom:true});
+      tbAiLoadProgram(programme, msg.outils, {center:centre, keepZoom:true});
       tbAiPlanIndex = Math.min(dejaJoue, tbAiPlan.actions.length);
     } else {
-      // Reconstruction complète, instantanée (sauf au tout premier objet, qui se construit en direct).
+      // Reconstruction complète, instantanée (sauf au tout premier objet, qui se construit en direct,
+      // et quand on rejoue tout depuis le début).
       tbClearAll();
-      tbAiLoadProgram(programme, figSplitOutils(), {center:centre, keepZoom:true});
+      tbAiLoadProgram(programme, msg.outils, {center:centre, keepZoom:true});
       figLiveCadrer();
-      if(rapide || figLive.cles.length)tbAiSilent = true;
+      if(!msg.rejouer && (msg.rapide || figLive.cles.length)) tbAiSilent = true;
     }
     tbAiPlaybackUpdateUI();
     while(tbAiPlan && tbAiPlanIndex < tbAiPlan.actions.length) await tbAiPlaybackNext();
     figLive.cles = cles; figLive.nActions = tbAiPlan ? tbAiPlan.actions.length : 0; figLive.centreCle = centreCle;
   } catch(e){
     console.warn('Construction en direct : programme refusé', programme, e);
-    hint.textContent = 'Cette étape ne peut pas encore être construite aux instruments' + (e && e.message ? ' : '+e.message : '') + '.';
+    figLiveMessage('Cette étape ne peut pas encore être construite aux instruments' + (e && e.message ? ' : '+e.message : '') + '.');
     figLive.cles = []; figLive.nActions = 0; figLive.centreCle = '';
   } finally {
     tbAiSpeed = vitesse;
     if(tbAiSilent){ tbAiSilent = false; tbRender(); if(typeof tbAiPlaybackUpdateUI==='function') tbAiPlaybackUpdateUI(); }
     figLive.occupe = false;
-    if(figLive.encore){ figLive.encore = false; figLiveSync(false); }
+    if(figLive.suivant){ const m = figLive.suivant; figLive.suivant = null; figLiveAppliquer(m); }
   }
 }
+/* Fenêtre de projection -- demandé : « En mode écran étendu avec un vidéoprojecteur, mettre la
+   construction avec outils dans une fenêtre déplaçable sur l'autre écran. Ainsi le prof construit sur
+   son écran en mode géométrie dynamique et les élèves voient le résultat avec les outils de
+   construction. » Le bouton ouvre une vraie fenêtre du navigateur (le site avec ?proj=construction),
+   qui ne montre que le tableau aux instruments, sur toute sa surface : on la fait glisser sur l'écran
+   du vidéoprojecteur (et on la met en plein écran d'un double-clic). Les deux fenêtres se parlent par
+   un BroadcastChannel : la figure envoie chaque nouvelle version, la projection la construit en direct. */
+const FIG_PROJ = new URLSearchParams(location.search).get('proj') === 'construction';
+let figProjWin = null, figProjCanalObj = null, figProjVeille = null;
+function figProjCanal(){
+  if(!figProjCanalObj && typeof BroadcastChannel!=='undefined'){
+    figProjCanalObj = new BroadcastChannel('atelier-construction');
+    figProjCanalObj.onmessage = e => figProjRecu(e.data || {});
+  }
+  return figProjCanalObj;
+}
+function figProjOuverte(){ return !FIG_PROJ && !!(figProjWin && !figProjWin.closed); }
+function figProjEnvoyer(m){ const c = figProjCanal(); if(c) c.postMessage(m); }
+function figProjBouton(){
+  const b = document.getElementById('figProjBtn'); if(!b) return;
+  const on = figProjOuverte();
+  b.classList.toggle('active', on);
+  b.title = on ? 'Fermer la fenêtre de projection' : 'Projeter la construction aux instruments dans une fenêtre à part (second écran, vidéoprojecteur)';
+  const o = document.getElementById('figSplitOutils');
+  if(o && !document.body.classList.contains('fig-split')) o.style.display = on ? 'flex' : 'none';
+}
+async function figToggleProjection(){
+  if(figProjOuverte()){ figProjWin.close(); figProjWin = null; figProjBouton(); return; }
+  if(typeof BroadcastChannel==='undefined'){ await niceAlert('Ce navigateur ne permet pas la fenêtre de projection.'); return; }
+  figProjCanal();
+  figProjWin = window.open(location.pathname + '?proj=construction', 'atelierConstruction', 'width=1100,height=720,resizable=yes');
+  if(!figProjWin){ await niceAlert('La fenêtre n\'a pas pu s\'ouvrir : autorisez les fenêtres surgissantes (pop-up) pour ce site.'); return; }
+  figSplitOutilsInit();
+  figProjBouton();
+  const h = document.getElementById('figureHint');
+  if(h) h.textContent = 'Fenêtre de projection ouverte : faites-la glisser sur l\'écran du vidéoprojecteur (double-clic dedans : plein écran). Chaque objet tracé ici s\'y construit en direct aux instruments.';
+  clearInterval(figProjVeille);
+  figProjVeille = setInterval(()=>{ if(!figProjOuverte()){ clearInterval(figProjVeille); figProjWin = null; figProjBouton(); } }, 800);
+}
+// Messages reçus : côté figure, la projection demande l'état (à son ouverture ou rechargement) ;
+// côté projection, une nouvelle version de la construction à jouer.
+function figProjRecu(m){
+  if(!FIG_PROJ){
+    if(m.type==='pret' && figProjOuverte()){
+      let msg; try{ msg = figLiveMessageFigure({rapide:true, reset:true}); }catch(e){ return; }
+      if(!msg.erreur) figProjEnvoyer(Object.assign({type:'prog', vitesse: tbAiSpeed}, msg));
+    }
+    return;
+  }
+  if(m.type==='prog'){ figProjAttente(!!m.vide); figLiveAppliquer(m); }
+}
+// Côté projection : le tableau remplit toute la fenêtre.
+function figProjTaille(){
+  const bw = document.getElementById('tbBoardWrap'), svg = document.getElementById('tbSvg');
+  if(!bw) return;
+  tbVueRatio = window.innerHeight / window.innerWidth;
+  if(svg){ svg.style.width = '100vw'; svg.style.height = '100vh'; }
+  tbRender();
+  if(figLive.cadre) figLiveCadrer();
+}
+function figProjAttente(on){
+  let a = document.getElementById('figProjAttente');
+  if(!on){ if(a) a.remove(); return; }
+  if(a) return;
+  a = document.createElement('div'); a.id = 'figProjAttente';
+  a.innerHTML = '<b>Construction aux instruments</b><span>En attente de la figure… Tracez-la dans la Géométrie interactive, sur l\'autre fenêtre.</span><small>Double-clic : plein écran</small>';
+  document.body.appendChild(a);
+}
+function figProjDemarrer(){
+  document.body.classList.add('fig-proj');
+  document.title = 'Construction aux instruments -- projection';
+  if(typeof showView==='function') showView('view-tableau');
+  if(typeof initTableauView==='function') initTableauView();
+  if(typeof tbAiMargeDroite!=='undefined') tbAiMargeDroite = 2.5;
+  figProjTaille();
+  figProjAttente(true);
+  window.addEventListener('resize', ()=>requestAnimationFrame(figProjTaille));
+  document.addEventListener('dblclick', ()=>{
+    if(document.fullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    else { const el = document.documentElement, f = el.requestFullscreen || el.webkitRequestFullscreen; if(f) f.call(el); }
+  });
+  figProjCanal();
+  figProjEnvoyer({type:'pret'});
+}
+if(FIG_PROJ) window.addEventListener('load', ()=>setTimeout(figProjDemarrer, 50));
 // Rejoue toute la construction depuis le début, à la vitesse normale.
 async function figSplitActualiser(){
   if(!figState.points.some(p=>!p.hidden)){ await niceAlert('La figure est vide : tracez-la d\'abord.'); return; }
-  if(figLive.occupe) return;
-  figLive.cles = []; figLive.nActions = 0; figLive.centreCle = '';
-  tbClearAll();
-  const visibles = figState.points.filter(p=>!p.hidden);
-  if(visibles.some(p=>!/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))){ await niceAlert('Chaque point doit être nommé par une lettre majuscule (ex. A, B, M) pour être construit au tableau.'); return; }
-  const {programme} = figVersProgramme();
-  const origine = figState.points.find(p=>p.label===programme[0].name), centre = figLiveCentre(origine);
-  figLive.occupe = true;
-  try{
-    tbAiLoadProgram(programme, figSplitOutils(), {center:centre, keepZoom:true});
-    figLiveCadrer();
-    while(tbAiPlan && tbAiPlanIndex < tbAiPlan.actions.length) await tbAiPlaybackNext();
-    figLive.cles = programme.map(o=>JSON.stringify(o)); figLive.nActions = tbAiPlan.actions.length; figLive.centreCle = centre.x+'|'+centre.y;
-  } catch(e){ await niceAlert('Cette figure ne peut pas encore être construite aux instruments : '+(e && e.message ? e.message : e)); }
-  finally { figLive.occupe = false; }
+  if(figLive.occupe && document.body.classList.contains('fig-split')) return;
+  let msg;
+  try{ msg = figLiveMessageFigure({rejouer:true}); }catch(e){ await niceAlert('Cette figure ne peut pas encore être construite aux instruments : '+(e && e.message ? e.message : e)); return; }
+  if(msg.erreur){ await niceAlert('Chaque point doit être nommé par une lettre majuscule (ex. A, B, M) pour être construit au tableau.'); return; }
+  await figLiveDiffuser(msg);
 }
 async function figConstruireAuTableau(){
   if(!figState.points.some(p=>!p.hidden)){ await niceAlert('La figure est vide : tracez-la d\'abord.'); return; }

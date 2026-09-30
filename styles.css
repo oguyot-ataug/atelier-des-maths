@@ -1438,3 +1438,15 @@ body.fig-split #tbBoardWrap{margin:0 auto;}
 body.fig-split #figToTableauBtn, body.fig-split #figCompasTexte{display:none !important;}
 body.fig-split #figurePanel .figure-toolbar{margin-top:6px !important;}
 body.fig-split #figureHint{margin:4px 0 0 !important;min-height:1.2em;}
+
+/* Fenêtre de projection de la construction aux instruments (outils-figures.js, ?proj=construction) :
+   seul le tableau, sur toute la fenêtre. */
+body.fig-proj{overflow:hidden !important;background:#fff !important;}
+body.fig-proj *{visibility:hidden !important;}
+body.fig-proj #tbBoardWrap, body.fig-proj #tbBoardWrap *, body.fig-proj #figProjAttente, body.fig-proj #figProjAttente *{visibility:visible !important;}
+body.fig-proj #tbBoardWrap{position:fixed !important;inset:0 !important;width:100vw !important;height:100vh !important;z-index:2147483000;border:0 !important;border-radius:0 !important;background:#fff;}
+body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !important;}
+#figProjAttente{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2147483001;display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;font-family:'Space Grotesk',Arial,sans-serif;color:#20242E;background:rgba(255,255,255,.92);padding:22px 30px;border-radius:14px;border:1px solid rgba(28,43,57,.12);}
+#figProjAttente b{font-size:1.4rem;color:#1F7A4D;}
+#figProjAttente small{color:#6B6F7A;}
+#figProjBtn.active{background:#1F7A4D;color:#fff;border-color:#1F7A4D;}

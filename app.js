@@ -204,6 +204,7 @@ document.querySelectorAll('#navLinks button').forEach(b=>{
 
 /* ======================= ROUTER ======================= */
 function showView(id){
+  if(typeof FIG_PROJ!=='undefined' && FIG_PROJ && id!=='view-tableau') return; // fenêtre de projection : rien d'autre que le tableau
   // Sécurité : si un outil (figure, texte, probabilités...) ou l'éditeur de formule était resté
   // ouvert (overlay plein écran) au moment de changer de page via le menu, on le referme -- sans
   // ça, l'overlay reste actif par-dessus la nouvelle page et bloque tous les clics, y compris sur
@@ -298,6 +299,8 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
         if(toTableauBtn) toTableauBtn.style.display = 'inline-flex';
         const splitBtn = document.getElementById('figSplitBtn');
         if(splitBtn) splitBtn.style.display = 'inline-flex'; // écran partagé figure / instruments
+        const projBtn = document.getElementById('figProjBtn');
+        if(projBtn){ projBtn.style.display = 'inline-flex'; if(typeof figProjBouton==='function') figProjBouton(); } // fenêtre de projection
         // Retour depuis le tableau : on retrouve la figure qu'on y a envoyée.
         try{
           const retour = sessionStorage.getItem('figSandboxRetour');
@@ -3078,6 +3081,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.837', items:[
+    "Géométrie interactive : fenêtre de projection de la construction aux instruments. Demandé : « En mode écran étendu avec un vidéoprojecteur, mettre la construction avec outils dans une fenêtre déplaçable sur l'autre écran. Ainsi le prof construit sur son écran en mode géométrie dynamique et les élèves voient le résultat avec les outils de construction. » Nouveau bouton « Projeter » (icône de diffusion) dans la barre de la figure. Il ouvre une vraie fenêtre du navigateur qui ne montre que le tableau, sur toute sa surface : on la fait glisser sur l'écran du vidéoprojecteur, puis un double-clic la met en plein écran. Chaque objet tracé dans la figure s'y construit en direct aux instruments, avec les instruments cochés et à la vitesse choisie. Un point déplacé redessine la construction d'un coup. « Rejouer » recommence toute la construction depuis le début. Recharger ou rouvrir la fenêtre reprend la figure en cours. Le bouton, en vert tant que la fenêtre est ouverte, la referme. L'écran partagé reste disponible et fonctionne comme avant.",
+  ]},
   { version:'2026-08-19.836', items:[
     "Cahier : un seul jour ouvert à la fois. Demandé : « quand on ouvre un accordéon peut-on fermer les autres directement ? Et rester sur le même accordéon quand on déplace un exercice ». Ouvrir un jour referme les autres. Le jour ouvert est mémorisé : monter ou descendre un exercice le laisse ouvert, à la même hauteur de page, au lieu de revenir au jour le plus récent en bas du cahier.",
   ]},
