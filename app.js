@@ -3078,6 +3078,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.836', items:[
+    "Cahier : un seul jour ouvert à la fois. Demandé : « quand on ouvre un accordéon peut-on fermer les autres directement ? Et rester sur le même accordéon quand on déplace un exercice ». Ouvrir un jour referme les autres. Le jour ouvert est mémorisé : monter ou descendre un exercice le laisse ouvert, à la même hauteur de page, au lieu de revenir au jour le plus récent en bas du cahier.",
+  ]},
   { version:'2026-08-19.835', items:[
     "Élèves : les chapitres gratuits des autres niveaux sont aussi verrouillés. Signalé : « Certains chapitres des classes supérieures sont visibles ». Les quatre chapitres ouverts aux visiteurs de chaque niveau restaient ouverts aux élèves. Pour un élève, seuls comptent maintenant le niveau de sa classe et le niveau précédent. Un lien direct vers un chapitre d'un autre niveau (adresse, recherche) est bloqué aussi. Sur les cartes verrouillées, le libellé « hors du niveau de ta classe » est sur sa propre ligne et ne chevauche plus le numéro du chapitre.",
   ]},
@@ -6307,8 +6310,13 @@ async function moveCahierEntry(idx, direction){
   // depuis le serveur) -- corrige "à chaque fois la page se recharge et tout se mélange", qui
   // venait d'une re-synchronisation (renderCahierEleve) écrasant ce changement local par
   // d'anciennes données avant que la sauvegarde serveur n'ait eu le temps de se terminer.
+  nbAccJour = jour; // le jour de l'exercice déplacé reste ouvert, à la même hauteur de page
+  const y = window.scrollY, book = document.getElementById('cahierEleveBook'), yBook = book ? book.scrollTop : 0;
   renderCahierEleveLocal();
   if(document.getElementById('cahierList')) renderCahier();
+  window.scrollTo(0, y);
+  // renderCahierEleveLocal descend le cahier tout en bas (image suivante) : on le remet où il était.
+  requestAnimationFrame(()=>{ if(book) book.scrollTop = yBook; window.scrollTo(0, y); });
   if(isSyncEnabled()){
     // Sauvegarde serveur désormais ATTENDUE (jamais "tirée et oubliée") -- garantit qu'elle
     // est bien terminée avant toute resynchronisation future (ex. prochaine ouverture du
@@ -6357,6 +6365,27 @@ function groupedByChapitreHTML(entries, renderItem){
    date" (alternative à un simple agrandissement de la hauteur, plus utile à mesure que le
    cahier se remplit sur toute une année). Section la plus récente ouverte par défaut, les
    autres repliées. */
+/* Demandé : « quand on ouvre un accordéon peut-on fermer les autres directement ? Et rester sur le même
+   accordéon quand on déplace un exercice (monter ou descendre) ». Un seul jour ouvert à la fois ; le jour
+   ouvert est mémorisé (nbAccJour) et reste ouvert quand le cahier se réaffiche. null : jour le plus récent
+   (par défaut) ; '' : tout replié. */
+let nbAccJour = null;
+function nbAccEstOuvert(date, idx, dernier, dates){
+  if(nbAccJour === '') return false;
+  if(nbAccJour && dates.includes(nbAccJour)) return date === nbAccJour;
+  return idx === dernier;
+}
+// Ferme tous les autres jours de la même liste.
+function nbAccFermerAutres(body){
+  const liste = body.closest('.nb-accordion-section') && body.closest('.nb-accordion-section').parentElement;
+  if(!liste) return;
+  liste.querySelectorAll(':scope > .nb-accordion-section > .nb-accordion-body.open').forEach(b=>{
+    if(b === body) return;
+    b.classList.remove('open');
+    const ch = b.previousElementSibling && b.previousElementSibling.querySelector('.nb-accordion-chevron');
+    if(ch) ch.classList.remove('open');
+  });
+}
 function groupedEntriesAccordionHTML(entries, renderItem){
   const dateGroups = [];
   entries.forEach(e=>{
@@ -6365,13 +6394,13 @@ function groupedEntriesAccordionHTML(entries, renderItem){
     if(!grp){ grp = {date:d, entries:[]}; dateGroups.push(grp); }
     grp.entries.push(e);
   });
-  const mostRecentIdx = dateGroups.length-1;
+  const mostRecentIdx = dateGroups.length-1, dates = dateGroups.map(g=>g.date);
   return dateGroups.map((grp, idx)=>{
-    const isOpen = idx===mostRecentIdx;
+    const isOpen = nbAccEstOuvert(grp.date, idx, mostRecentIdx, dates);
     const accId = 'nbacc-'+idx;
     const inner = groupedByChapitreHTML(grp.entries, renderItem);
     return `<div class="nb-accordion-section">
-      <div class="nb-accordion-header" role="button" tabindex="0" onclick="toggleNbAccordion('${accId}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleNbAccordion('${accId}');}">
+      <div class="nb-accordion-header" role="button" tabindex="0" onclick="toggleNbAccordion('${accId}','${grp.date}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleNbAccordion('${accId}','${grp.date}');}">
         <span class="gicon nb-accordion-chevron${isOpen?' open':''}">expand_more</span>
         <span>${fmtDateFR(grp.date)}</span>
         <span class="nb-accordion-count">(${grp.entries.length})</span>
@@ -6382,9 +6411,11 @@ function groupedEntriesAccordionHTML(entries, renderItem){
     </div>`;
   }).join('');
 }
-function toggleNbAccordion(id){
+function toggleNbAccordion(id, date){
   const body = document.getElementById(id);
   const isOpen = body.classList.toggle('open');
+  if(isOpen) nbAccFermerAutres(body);
+  nbAccJour = isOpen ? (date||null) : '';
   const chevron = body.previousElementSibling.querySelector('.nb-accordion-chevron');
   chevron.classList.toggle('open', isOpen);
 }
@@ -6394,8 +6425,10 @@ function toggleNbAccordion(id){
 function lazyGroupedEntriesAccordionHTML(editable){
   cahierEditableMode = editable;
   const mostRecentIdx = cahierDatesList.length-1;
+  // Jour mémorisé : seulement s'il est déjà chargé (sinon, rien ne lancerait son chargement).
+  const dates = cahierDatesList.map(g=>g.date).filter(d=>d!==nbAccJour || cahierLoadedDates.has(d));
   return cahierDatesList.map((grp, idx)=>{
-    const isOpen = idx===mostRecentIdx;
+    const isOpen = nbAccEstOuvert(grp.date, idx, mostRecentIdx, dates);
     const accId = 'nbacc-'+idx;
     const loaded = cahierLoadedDates.has(grp.date);
     const inner = loaded
@@ -6422,10 +6455,13 @@ async function expandCahierDay(accId, date){
   if(body.classList.contains('open')){
     body.classList.remove('open');
     chevron.classList.remove('open');
+    nbAccJour = '';
     return;
   }
   body.classList.add('open');
   chevron.classList.add('open');
+  nbAccFermerAutres(body);
+  nbAccJour = date;
   if(!cahierLoadedDates.has(date)){
     body.innerHTML = '<p class="hint" style="padding:8px;">Chargement…</p>';
     const entries = await fetchCahierEntriesForDate(date);
