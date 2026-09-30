@@ -133,9 +133,9 @@ function oliviaRendreFil(){
   if(sug){
     const onglet = oliviaOnglet();
     const idees = oliv.hist.length
-      ? ['Je n\'ai pas compris, tu peux réexpliquer ?', 'Donne-moi un autre exemple', 'Pose-moi une petite question pour vérifier']
-      : onglet === 'exercices' ? ['Aide-moi à démarrer un exercice', 'Quelle méthode utiliser ?'] : ['Explique-moi l\'essentiel du cours', 'Donne-moi un exemple', 'À quoi ça sert ?'];
-    sug.innerHTML = oliv.occupe ? '' : idees.map(t => `<button type="button" class="oliv-chip" onclick="oliviaEnvoyer(${JSON.stringify(t).replace(/"/g, '&quot;')})">${oliviaEsc(t)}</button>`).join('');
+      ? [['Réexplique-moi', 'Je n\'ai pas compris, tu peux réexpliquer autrement ?'], ['Un autre exemple', 'Donne-moi un autre exemple'], ['Teste-moi', 'Pose-moi une petite question pour vérifier que j\'ai compris']]
+      : onglet === 'exercices' ? [['Aide pour démarrer', 'Aide-moi à démarrer un exercice'], ['Quelle méthode ?', 'Quelle méthode faut-il utiliser ?']] : [['L\'essentiel', 'Explique-moi l\'essentiel du cours'], ['Un exemple', 'Donne-moi un exemple'], ['À quoi ça sert ?', 'À quoi ça sert, ce chapitre ?']];
+    sug.innerHTML = oliv.occupe ? '' : idees.map(([court, t]) => `<button type="button" class="oliv-chip" title="${oliviaEsc(t)}" onclick="oliviaEnvoyer(${JSON.stringify(t).replace(/"/g, '&quot;')})">${oliviaEsc(court)}</button>`).join('');
   }
   const b = document.getElementById('olivEnvoyer'); if(b) b.disabled = oliv.occupe;
 }
