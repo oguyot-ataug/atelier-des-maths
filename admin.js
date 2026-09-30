@@ -184,6 +184,7 @@ MARTIN	Marie	6A	m.martin	soleil24"></textarea>
     <div class="tool-shell">
       <button class="btn secondary" style="float:right;" onclick="adminRefreshEtablissements()"><span class=gicon>refresh</span> Actualiser</button>
       <p class="hint" style="margin:6px 0 14px;clear:right;max-width:80ch;">« Clé IA du site » : l'établissement peut utiliser votre clé (son référent y met alors les collègues de son choix), dans la limite d'un <b>budget mensuel</b> facultatif (vide = sans plafond ; une fois atteint, l'IA sur la clé du site s'arrête jusqu'au mois suivant pour cet établissement).<br>Pour chaque établissement (UAI) : son <b>référent</b> (un professeur de l'établissement, qui gère alors lui-même comptes, classes, imports et inscriptions de son établissement depuis « Mon établissement ») et sa <b>licence établissement</b> (tant qu'elle court, tous ses professeurs ont accès au site sans abonnement individuel).</p>
+      <p class="hint" style="margin:0 0 8px;"><span class=gicon style="font-size:1rem;vertical-align:middle;">save</span> Chaque modification est enregistrée automatiquement (« ✓ enregistré » s'affiche sous l'UAI).</p>
       <div id="adminEtabListing" class="hint">Chargement…</div>
     </div>
   </div>
@@ -330,25 +331,24 @@ async function adminRefreshEtablissements(){
   const today = new Date().toISOString().slice(0,10);
   const spent = {};
   await Promise.all(etabs.map(async e=>{ const { data } = await sb.rpc('etab_ai_status', {p_uai: e.uai}); spent[e.uai] = data ? data.spent_month : 0; }));
-  box.innerHTML = `<div style="overflow-x:auto;"><table class="sup-table"><thead><tr><th>UAI</th><th>Nom</th><th>Référent</th><th>Licence jusqu'au</th><th>Note (facture, bon de commande…)</th><th>Clé IA du site</th><th>Clé IA étab.</th><th>Profs · élèves · classes</th><th></th></tr></thead><tbody>
+  box.innerHTML = `<div style="overflow-x:auto;"><table class="sup-table"><thead><tr><th>UAI</th><th>Nom</th><th>Référent</th><th>Licence jusqu'au</th><th>Note (facture, bon de commande…)</th><th>Clé IA du site</th><th>Clé IA étab.</th><th>Profs · élèves · classes</th></tr></thead><tbody>
     ${etabs.map(e=>{
       const profsHere = (staff||[]).filter(p=>p.uai===e.uai && p.role==='prof');
       const nbEleves = (eleves||[]).filter(p=>p.uai===e.uai).length, nbClasses = (cls||[]).filter(c=>c.uai===e.uai).length;
       const active = e.licence_until && e.licence_until >= today;
       const k = e.uai.replace(/[^A-Za-z0-9]/g,'');
       return `<tr>
-        <td class="hint-mono">${escapeHtml(e.uai)}</td>
-        <td><input type="text" id="etabNom_${k}" value="${escapeHtml(e.nom||'')}" style="min-width:180px;"></td>
-        <td><select id="etabRef_${k}"><option value="">— aucun —</option>${profsHere.map(p=>`<option value="${p.id}" ${p.id===e.referent_id?'selected':''}>${escapeHtml(profileDisplayName(p)||p.id)}</option>`).join('')}</select>
+        <td class="hint-mono" style="white-space:nowrap;">${escapeHtml(e.uai)}<div id="etabMsg_${k}" class="hint" style="margin:2px 0 0;font-family:inherit;"></div></td>
+        <td><input type="text" id="etabNom_${k}" value="${escapeHtml(e.nom||'')}" style="min-width:180px;" onchange="adminSaveEtablissement('${escapeHtml(e.uai)}')"></td>
+        <td><select id="etabRef_${k}" onchange="adminSaveEtablissement('${escapeHtml(e.uai)}')"><option value="">— aucun —</option>${profsHere.map(p=>`<option value="${p.id}" ${p.id===e.referent_id?'selected':''}>${escapeHtml(profileDisplayName(p)||p.id)}</option>`).join('')}</select>
           ${!profsHere.length ? '<div class="hint" style="margin:2px 0 0;">aucun professeur rattaché à cet UAI</div>' : ''}</td>
-        <td><input type="date" id="etabLic_${k}" value="${e.licence_until||''}"> ${e.licence_until ? `<div class="hint" style="margin:2px 0 0;color:${active?'#1F7A4D':'#a83c1f'};">${active?'active':'expirée'}</div>` : ''}</td>
-        <td><input type="text" id="etabNote_${k}" value="${escapeHtml(e.licence_note||'')}" style="min-width:160px;"></td>
-        <td style="white-space:nowrap;"><label style="display:flex;align-items:center;gap:5px;"><input type="checkbox" id="etabSite_${k}" ${e.site_key_allowed?'checked':''}> autorisée</label>
-          <label class="hint" style="margin:3px 0 0;display:flex;align-items:center;gap:4px;">budget <input type="number" id="etabCap_${k}" min="0" step="0.5" value="${e.site_key_monthly_cap!=null?e.site_key_monthly_cap:''}" placeholder="∞" style="width:70px;"> $/mois</label>
+        <td><input type="date" id="etabLic_${k}" value="${e.licence_until||''}" onchange="adminSaveEtablissement('${escapeHtml(e.uai)}')"> ${e.licence_until ? `<div class="hint" style="margin:2px 0 0;color:${active?'#1F7A4D':'#a83c1f'};">${active?'active':'expirée'}</div>` : ''}</td>
+        <td><input type="text" id="etabNote_${k}" value="${escapeHtml(e.licence_note||'')}" style="min-width:160px;" onchange="adminSaveEtablissement('${escapeHtml(e.uai)}')"></td>
+        <td style="white-space:nowrap;"><label style="display:flex;align-items:center;gap:5px;"><input type="checkbox" id="etabSite_${k}" ${e.site_key_allowed?'checked':''} onchange="adminSaveEtablissement('${escapeHtml(e.uai)}')"> autorisée</label>
+          <label class="hint" style="margin:3px 0 0;display:flex;align-items:center;gap:4px;">budget <input type="number" id="etabCap_${k}" min="0" step="0.5" value="${e.site_key_monthly_cap!=null?e.site_key_monthly_cap:''}" placeholder="∞" style="width:70px;" onchange="adminSaveEtablissement('${escapeHtml(e.uai)}')"> $/mois</label>
           <div class="hint" style="margin:2px 0 0;">ce mois-ci : ${adminFmtUsd(spent[e.uai])}</div></td>
         <td>${e.ai_key_last4 ? '<span class="hint-mono">…'+escapeHtml(e.ai_key_last4)+'</span>' : '<span class="hint">aucune</span>'}</td>
         <td>${profsHere.length} · ${nbEleves} · ${nbClasses}</td>
-        <td style="white-space:nowrap;"><button class="btn" style="padding:4px 12px;font-size:.8rem;" onclick="adminSaveEtablissement('${escapeHtml(e.uai)}')">Enregistrer</button> <span class="hint" id="etabMsg_${k}" style="margin:0;"></span></td>
       </tr>`;
     }).join('')}
   </tbody></table></div>`;
@@ -367,9 +367,8 @@ async function adminSaveEtablissement(uai){
   msg.textContent = 'Enregistrement…';
   const { error } = await sb.from('etablissements').update(row).eq('uai', uai);
   if(error){ msg.innerHTML = '<span style="color:#a83c1f;">'+escapeHtml(/referent_id/.test(error.message) ? 'ce professeur est déjà référent d\'un autre établissement' : error.message)+'</span>'; return; }
-  msg.textContent = '✓';
-  setTimeout(()=>{ if(msg.isConnected) msg.textContent=''; }, 2000);
-  adminRefreshEtablissements();
+  msg.innerHTML = '<span style="color:#1F7A4D;font-weight:600;">✓ enregistré</span>';
+  setTimeout(()=>{ if(msg.isConnected) msg.textContent=''; }, 2500);
 }
 
 document.body.insertAdjacentHTML('beforeend', `

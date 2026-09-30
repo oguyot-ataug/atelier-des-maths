@@ -3091,6 +3091,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.860', items:[
+    "Administration › Établissements : les modifications s'enregistrent automatiquement. Signalé : « je ne peux pas sauvegarder les noms des référents établissements ». Le bouton « Enregistrer » était tout à droite d'un tableau plus large que l'écran, invisible sans faire défiler vers la droite. Désormais, chaque changement (nom, référent, licence, note, clé IA du site, budget) est enregistré dès qu'on le fait, et « ✓ enregistré » s'affiche sous l'UAI (ou le message d'erreur, par exemple si ce professeur est déjà référent d'un autre établissement).",
+  ]},
   { version:'2026-08-19.859', items:[
     "6e : chapitres vérifiés avec le nouveau programme du cycle 3. Demandé : « Oui, fais le même contrôle pour la 6e. » Rien de hors programme majeur (pas de produit en croix en proportionnalité, pas d'aire du triangle ni du disque, pas de lettres formelles en algèbre ; volumes par comptage de cubes). Compléments ajoutés là où un objectif manquait.",
     "Nombres décimaux : nouveau paragraphe « Encadrer et intercaler » (encadrement à l'unité, au dixième ; intercaler entre 4,6 et 4,7).",
