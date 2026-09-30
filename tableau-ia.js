@@ -499,7 +499,7 @@ function tbAiEvaluate(program, flips, allowed){
 }
 
 /* Longueur tracée des objets linéaires, arcs de compas, puis mise en page à l'échelle réelle. */
-function tbAiFinalize(ev){
+function tbAiFinalize(ev, opts){
   const allObjs = new Set(ev.objs.values());
   ev.actions.forEach(a=>{ ['obj','ca','cb','c0','cP','cQ','cM','cB'].forEach(k=>{ if(a[k]) allObjs.add(a[k]); }); });
   allObjs.forEach(o=>{
@@ -525,7 +525,10 @@ function tbAiFinalize(ev){
   if(maxX-minX > wCm || maxY-minY > hCm){
     throw new TbAiError('figure trop grande pour le tableau ('+(maxX-minX).toFixed(1)+' cm × '+(maxY-minY).toFixed(1)+' cm, maximum '+wCm.toFixed(0)+' × '+hCm.toFixed(0)+' cm)');
   }
-  const mx=(minX+maxX)/2, my=(minY+maxY)/2, cx=(R.x0+R.x1)/2, cy=(R.y0+R.y1)/2;
+  // Centre imposé (écran partagé de la Géométrie Interactive) : le cadrage suit la zone de dessin
+  // de la figure et ne bouge plus quand on ajoute un objet -- les tracés déjà faits restent en place.
+  const centre = opts && opts.center;
+  const mx = centre ? centre.x : (minX+maxX)/2, my = centre ? centre.y : (minY+maxY)/2, cx=(R.x0+R.x1)/2, cy=(R.y0+R.y1)/2;
   const S = p=>({x: cx+(p.x-mx)*TB_PX_PER_CM, y: cy-(p.y-my)*TB_PX_PER_CM});
   const named = [...ev.pts.values()];
   const cen = named.length ? S({x:named.reduce((a,p)=>a+p.x,0)/named.length, y:named.reduce((a,p)=>a+p.y,0)/named.length}) : {x:cx,y:cy};
@@ -543,12 +546,12 @@ function tbAiFinalize(ev){
   return {actions: ev.actions, S, centroid: cen, lengths: ev.lengths, future, screenBox};
 }
 
-function tbAiCompile(program, allowed){
+function tbAiCompile(program, allowed, opts){
   if(!Array.isArray(program) || !program.length) throw new TbAiError('réponse vide ou pas une liste d\'étapes');
   if(program.length>TB_AI_MAX_STEPS) throw new TbAiError('trop d\'étapes ('+program.length+', maximum '+TB_AI_MAX_STEPS+')');
   const flips = new Set();
   for(let attempt=0; attempt<8; attempt++){
-    try{ return tbAiFinalize(tbAiEvaluate(program, flips, allowed)); }
+    try{ return tbAiFinalize(tbAiEvaluate(program, flips, allowed), opts); }
     catch(e){ if(e && e.tbAiFlip!==undefined && !flips.has(e.tbAiFlip)){ flips.add(e.tbAiFlip); continue; } throw e; }
   }
   throw new TbAiError('construction impossible (intersections introuvables)');
@@ -1495,9 +1498,9 @@ function tbAiPlaybackRestart(){
   tbAiPlaybackUpdateUI();
 }
 /* Charge un programme déjà écrit (utilisé par tbAiGenerate, et pratique pour tester). */
-function tbAiLoadProgram(program, tools){
+function tbAiLoadProgram(program, tools, opts){
   const allowed = new Set((tools && tools.length ? tools : Object.keys(TB_AI_TOOL_NAMES)).filter(t=>TB_AI_TOOL_NAMES[t]));
-  const plan = tbAiCompile(program, allowed);
+  const plan = tbAiCompile(program, allowed, opts);
   tbAiAllowed = allowed;
   tbAiPlan = plan;
   plan.program = program; plan.tools = [...allowed];
@@ -1506,7 +1509,7 @@ function tbAiLoadProgram(program, tools){
   // un peu trop petites") -- les outils, à la même échelle, restent justes.
   // Zoom limité (~×1,6) : au-delà, règle et réquerre remplissent tout l'écran et le geste
   // devient illisible.
-  if(typeof tbZoomFit==='function' && plan.screenBox){
+  if(typeof tbZoomFit==='function' && plan.screenBox && !(opts && opts.keepZoom)){
     const b = plan.screenBox, cx = (b.x0+b.x1)/2, cy = (b.y0+b.y1)/2;
     const w = Math.max(b.x1-b.x0, 560), h = Math.max(b.y1-b.y0, 350);
     tbZoomFit({x0:cx-w/2, x1:cx+w/2, y0:cy-h/2, y1:cy+h/2});

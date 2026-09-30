@@ -610,7 +610,7 @@ document.body.insertAdjacentHTML('beforeend', `
         <div style="width:1px;align-self:stretch;background:rgba(28,43,57,.15);margin:0 2px;"></div>
         <button type="button" class="fig-icon-btn" id="figFullscreenBtn" onclick="figToggleFullscreen()" title="Plein écran"><span class=gicon>fullscreen</span></button>
         <button type="button" class="fig-icon-btn" id="figSplitBtn" onclick="figToggleSplit()" style="display:none;" title="Écran partagé : la figure à gauche, sa construction aux instruments à droite"><span class=gicon>vertical_split</span></button>
-        <button type="button" class="fig-icon-btn" id="figSplitRefreshBtn" onclick="figSplitActualiser()" style="display:none;border-color:#1F7A4D;color:#1F7A4D;" title="Actualiser la construction à droite (après avoir modifié la figure)"><span class=gicon>sync</span></button>
+        <button type="button" class="fig-icon-btn" id="figSplitRefreshBtn" onclick="figSplitActualiser()" style="display:none;border-color:#1F7A4D;color:#1F7A4D;" title="Rejouer toute la construction aux instruments, depuis le début"><span class=gicon>replay</span></button>
       </div>
       <div style="display:flex;gap:12px;align-items:stretch;">
         <!-- Zone principale : réglages contextuels (compas, codage) au-dessus, puis le
@@ -5519,6 +5519,7 @@ function renderFigureSvg(){
     }
   }
   svg.innerHTML = html;
+  if(document.body.classList.contains('fig-split')) figLivePlanifier();
 }
 
 /* ---- construction à partir d'un énoncé (mini-langage reconnu) ---- */
@@ -5866,8 +5867,12 @@ async function figToggleSplit(){
   document.getElementById('figSplitRefreshBtn').style.display = 'inline-flex';
   document.getElementById('figSplitBtn').classList.add('active');
   document.getElementById('figSplitBtn').title = 'Quitter l\'écran partagé';
-  if(figState.points.some(p=>!p.hidden)) await figSplitActualiser();
-  else document.getElementById('figureHint').textContent = 'Écran partagé : tracez la figure, puis cliquez les flèches vertes pour la construire aux instruments à droite.';
+  // La figure déjà tracée est reconstruite d'un coup ; ensuite, chaque nouvel objet se construit
+  // en direct aux instruments.
+  figLive = {cles:[], nActions:0, centreCle:'', occupe:false, encore:false};
+  if(typeof tbClearAll==='function') tbClearAll();
+  document.getElementById('figureHint').textContent = 'Écran partagé : chaque objet tracé ici se construit en direct aux instruments, à droite.';
+  await figLiveSync(true);
 }
 function figQuitterSplit(){
   if(!document.body.classList.contains('fig-split')) return;
@@ -5875,19 +5880,94 @@ function figQuitterSplit(){
   const r = document.getElementById('figSplitRefreshBtn'); if(r) r.style.display = 'none';
   const b = document.getElementById('figSplitBtn'); if(b){ b.classList.remove('active'); b.title = 'Écran partagé : la figure à gauche, sa construction aux instruments à droite'; }
 }
+/* Construction EN DIRECT -- demandé : « l'idée est de voir les constructions se faire en direct avec
+   les outils lorsqu'on fabrique la figure sur la partie interactive ». Après chaque modification
+   (petit délai, pour ne pas réagir à chaque image d'un glissé), la figure est retraduite en programme
+   de construction et comparée à ce qui est déjà construit au tableau :
+   - objets ajoutés (le nouveau programme prolonge l'ancien) : seules les nouvelles étapes sont
+     jouées aux instruments, à la vitesse choisie dans la barre verte ;
+   - point déplacé, objet effacé, annulation : le tableau est reconstruit instantanément.
+   Le cadrage du tableau suit la zone de dessin de la figure (centre imposé) : il ne change pas
+   quand on ajoute un objet, donc ce qui est déjà tracé reste en place. */
+let figLive = {cles:[], nActions:0, centreCle:'', occupe:false, encore:false};
+let figLiveTimer = null;
+function figLivePlanifier(){
+  clearTimeout(figLiveTimer);
+  figLiveTimer = setTimeout(()=>{ if(!figDragPoint && !figDragArc) figLiveSync(false); else figLivePlanifier(); }, 450);
+}
+function figLiveCentre(origine){
+  const vb = document.getElementById('figureSvg').viewBox.baseVal, cm = SCALE_PX_PER_CM;
+  return {x: Math.round((vb.x+vb.width/2-origine.x)/cm*100)/100, y: Math.round((origine.y-(vb.y+vb.height/2))/cm*100)/100};
+}
+// Cadrage du tableau = zone de dessin de la figure (même centre, même étendue) : les deux moitiés
+// de l'écran montrent la même chose.
+function figLiveCadrer(){
+  if(typeof tbZoomFit!=='function' || typeof TB_AI_REGION==='undefined') return;
+  const vb = document.getElementById('figureSvg').viewBox.baseVal, k = TB_PX_PER_CM/SCALE_PX_PER_CM;
+  const cx = (TB_AI_REGION.x0+TB_AI_REGION.x1)/2, cy = (TB_AI_REGION.y0+TB_AI_REGION.y1)/2, w = vb.width*k/2+8, h = vb.height*k/2+8;
+  tbZoomFit({x0:cx-w, x1:cx+w, y0:cy-h, y1:cy+h});
+}
+async function figLiveSync(rapide){
+  if(!document.body.classList.contains('fig-split') || typeof tbAiLoadProgram!=='function') return;
+  if(figLive.occupe){ figLive.encore = true; return; }
+  const hint = document.getElementById('figureHint');
+  const visibles = figState.points.filter(p=>!p.hidden);
+  if(!visibles.length){ if(figLive.cles.length){ tbClearAll(); tbAiPlaybackHide(); figLive.cles = []; figLive.nActions = 0; } return; }
+  if(visibles.some(p=>!/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))){ hint.textContent = 'Pour la construction en direct, chaque point doit être nommé par une lettre majuscule.'; return; }
+  let programme;
+  try{ programme = figVersProgramme().programme; }catch(e){ return; }
+  const origine = figState.points.find(p=>p.label===programme[0].name);
+  const centre = figLiveCentre(origine), centreCle = centre.x+'|'+centre.y;
+  const cles = programme.map(o=>JSON.stringify(o));
+  const prolonge = centreCle===figLive.centreCle && figLive.cles.length<=cles.length && figLive.cles.every((k,i)=>k===cles[i]);
+  if(prolonge && cles.length===figLive.cles.length) return; // rien de nouveau à construire
+  figLive.occupe = true;
+  const vitesse = tbAiSpeed;
+  try{
+    if(prolonge && figLive.cles.length){
+      tbAiLoadProgram(programme, null, {center:centre, keepZoom:true});
+      tbAiPlanIndex = Math.min(figLive.nActions, tbAiPlan.actions.length);
+    } else {
+      // Reconstruction complète, instantanée (sauf au tout premier objet, qui se construit en direct).
+      tbClearAll();
+      tbAiLoadProgram(programme, null, {center:centre, keepZoom:true});
+      figLiveCadrer();
+      if(rapide || figLive.cles.length) tbAiSpeed = 0.001;
+    }
+    tbAiPlaybackUpdateUI();
+    while(tbAiPlan && tbAiPlanIndex < tbAiPlan.actions.length){
+      if(tbAiSpeed<0.01 && tbAiPlanIndex>=figLive.nActions && prolonge) tbAiSpeed = vitesse;
+      await tbAiPlaybackNext();
+    }
+    figLive.cles = cles; figLive.nActions = tbAiPlan ? tbAiPlan.actions.length : 0; figLive.centreCle = centreCle;
+  } catch(e){
+    console.warn('Construction en direct : programme refusé', programme, e);
+    hint.textContent = 'Cette étape ne peut pas encore être construite aux instruments' + (e && e.message ? ' : '+e.message : '') + '.';
+    figLive.cles = []; figLive.nActions = 0; figLive.centreCle = '';
+  } finally {
+    tbAiSpeed = vitesse;
+    figLive.occupe = false;
+    if(figLive.encore){ figLive.encore = false; figLiveSync(false); }
+  }
+}
+// Rejoue toute la construction depuis le début, à la vitesse normale.
 async function figSplitActualiser(){
   if(!figState.points.some(p=>!p.hidden)){ await niceAlert('La figure est vide : tracez-la d\'abord.'); return; }
-  if(figState.points.some(p=>!p.hidden && !/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))){ await niceAlert('Chaque point doit être nommé par une lettre majuscule (ex. A, B, M) pour être construit au tableau.'); return; }
-  const {programme, approches} = figVersProgramme();
-  if(typeof tbClearAll==='function') tbClearAll();
+  if(figLive.occupe) return;
+  figLive.cles = []; figLive.nActions = 0; figLive.centreCle = '';
+  tbClearAll();
+  const visibles = figState.points.filter(p=>!p.hidden);
+  if(visibles.some(p=>!/^[A-Z][A-Za-z0-9']{0,3}$/.test(p.label||''))){ await niceAlert('Chaque point doit être nommé par une lettre majuscule (ex. A, B, M) pour être construit au tableau.'); return; }
+  const {programme} = figVersProgramme();
+  const origine = figState.points.find(p=>p.label===programme[0].name), centre = figLiveCentre(origine);
+  figLive.occupe = true;
   try{
-    tbAiLoadProgram(programme);
-    document.getElementById('figureHint').textContent = 'Construction prête à droite : « Étape suivante » (barre verte) la déroule aux instruments.'
-      + (approches.length ? ' Les points '+approches.join(', ')+' sont placés directement (obtenus par une transformation).' : '');
-  } catch(e){
-    console.warn('Écran partagé : programme refusé', programme, e);
-    await niceAlert('Cette figure ne peut pas encore être construite aux instruments : '+(e && e.message ? e.message : e));
-  }
+    tbAiLoadProgram(programme, null, {center:centre, keepZoom:true});
+    figLiveCadrer();
+    while(tbAiPlan && tbAiPlanIndex < tbAiPlan.actions.length) await tbAiPlaybackNext();
+    figLive.cles = programme.map(o=>JSON.stringify(o)); figLive.nActions = tbAiPlan.actions.length; figLive.centreCle = centre.x+'|'+centre.y;
+  } catch(e){ await niceAlert('Cette figure ne peut pas encore être construite aux instruments : '+(e && e.message ? e.message : e)); }
+  finally { figLive.occupe = false; }
 }
 async function figConstruireAuTableau(){
   if(!figState.points.some(p=>!p.hidden)){ await niceAlert('La figure est vide : tracez-la d\'abord.'); return; }
