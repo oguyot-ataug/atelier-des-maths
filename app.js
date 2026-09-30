@@ -206,6 +206,7 @@ document.querySelectorAll('#navLinks button').forEach(b=>{
 function showView(id){
   if(typeof FIG_PROJ!=='undefined' && FIG_PROJ && id!=='view-tableau') return; // fenêtre de projection : rien d'autre que le tableau
   if(typeof oliviaMaj==='function') setTimeout(oliviaMaj, 30); // Oliv'IA : seulement sur les pages de cours
+  if(id!=='view-classe' && typeof clBruit!=='undefined' && clBruit.actif) clBruitArreter(); // jauge de bruit : micro coupé en quittant la page
   // Sécurité : si un outil (figure, texte, probabilités...) ou l'éditeur de formule était resté
   // ouvert (overlay plein écran) au moment de changer de page via le menu, on le referme -- sans
   // ça, l'overlay reste actif par-dessus la nouvelle page et bloque tous les clics, y compris sur
@@ -3086,6 +3087,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.851', items:[
+    "Outils de classe : feu de consigne. Un feu tricolore à projeter indique le niveau de voix attendu : rouge « Silence », orange « On chuchote », vert « Travail en groupe ». Une option ajoute « ✋ Je lève la main pour parler ». Plein écran pour le vidéoprojecteur, et la dernière consigne est mémorisée.",
+    "Outils de classe : jauge de bruit. Le micro de l'ordinateur mesure le niveau sonore de la classe, avec une aiguille sur un cadran vert, orange et rouge. Le seuil à ne pas dépasser suit la consigne du feu (plus bas pour « Silence », plus haut pour « Travail en groupe »). Au-delà du seuil pendant plus d'une seconde et demie, la jauge passe en alerte (« Trop de bruit ! », fond qui clignote, petit signal sonore désactivable). La sensibilité du micro est réglable. Le son est analysé uniquement sur l'ordinateur : rien n'est enregistré ni envoyé, et le micro est coupé dès qu'on quitte la page.",
+  ]},
   { version:'2026-08-19.850', items:[
     "Nouveau menu Outils prof › Outils de classe. Demandé : « la roue de la chance : tirage au sort d'un élève. S'il a été tiré, il disparaît de la roue. Réinitialisation possible » et « un compte à rebours déplaçable ou seul à l'écran sous forme de sablier ».",
     "Roue de la chance : les élèves de la classe choisie (ou une liste libre de noms ou d'équipes) sur une roue colorée. « Lancer » la fait tourner, avec des cliquetis qui ralentissent ; le prénom tiré s'affiche en grand, puis l'élève sort de la roue et rejoint la liste « Déjà passés ». On peut remettre un élève, tout réinitialiser, décocher les absents, et passer en plein écran pour projeter. Le tirage est équitable, et la roue de chaque classe est mémorisée sur l'ordinateur d'une séance à l'autre.",

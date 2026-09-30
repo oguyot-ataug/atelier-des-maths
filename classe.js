@@ -71,9 +71,123 @@ function renderClasseOutils(){
         <button type="button" class="btn" onclick="clMinLancer('sablier')"><span class="gicon">hourglass_bottom</span> Sablier plein écran</button>
       </div>
     </section>
+
+    <section class="cl-bloc" id="clBlocFeu">
+      <h2><span class="gicon">traffic</span> Feu de consigne</h2>
+      <p class="hint" style="margin:0 0 10px;">Le niveau de voix attendu, à projeter. La jauge de bruit suit la consigne choisie.</p>
+      <div class="cl-ligne" id="clFeuChoix"></div>
+      <div class="cl-ligne">
+        <label class="hint" style="margin:0;display:flex;gap:6px;align-items:center;"><input type="checkbox" id="clFeuMain" onchange="clFeu.main=this.checked;clFeuDessiner()"> ✋ Lever la main pour parler</label>
+        <button type="button" class="btn secondary" onclick="clPleinEcran('clBlocFeu')" title="Plein écran (à projeter)"><span class="gicon">fullscreen</span></button>
+      </div>
+      <div class="cl-feu-affiche" id="clFeuAffiche"></div>
+    </section>
+
+    <section class="cl-bloc" id="clBlocBruit">
+      <h2><span class="gicon">graphic_eq</span> Jauge de bruit</h2>
+      <p class="hint" style="margin:0 0 10px;">Le micro de l'ordinateur mesure le niveau sonore de la classe. <b>Le son est analysé sur cet ordinateur : rien n'est enregistré ni envoyé.</b></p>
+      <div class="cl-ligne">
+        <button type="button" class="btn" id="clBruitBtn" onclick="clBruitBasculer()"><span class="gicon">mic</span> Activer le micro</button>
+        <button type="button" class="btn secondary" onclick="clPleinEcran('clBlocBruit')" title="Plein écran (à projeter)"><span class="gicon">fullscreen</span></button>
+      </div>
+      <div class="cl-ligne">
+        <label class="hint" style="margin:0;display:flex;gap:6px;align-items:center;">Sensibilité du micro <input type="range" id="clBruitSens" min="-20" max="20" value="${clBruit.sens}" oninput="clBruit.sens=+this.value;clBruitSauver()"></label>
+        <label class="hint" style="margin:0;display:flex;gap:6px;align-items:center;"><input type="checkbox" id="clBruitSon" ${clBruit.son ? 'checked' : ''} onchange="clBruit.son=this.checked;clBruitSauver()"> Signal sonore si trop fort</label>
+      </div>
+      <div class="cl-bruit-zone"><svg id="clBruitSvg" viewBox="-120 -112 240 132"></svg>
+        <div class="cl-bruit-etat" id="clBruitEtat">Micro éteint</div>
+        <div class="hint" id="clBruitSeuilTxt" style="margin:0;text-align:center;"></div>
+      </div>
+    </section>
   </div>`;
   clRoueCharger(sel);
+  clFeuDessiner(); clBruitDessiner(0);
 }
+
+/* ------------------------------ Feu de consigne ------------------------------
+   Demandé : « Feu de consigne / Jauge de bruit ». Trois niveaux de voix sur un feu tricolore
+   (rouge : silence, orange : chuchoter, vert : travail en groupe), plus « Lever la main pour
+   parler ». Le seuil de la jauge de bruit dépend de la consigne affichée. */
+const CL_CONSIGNES = [
+  { cle: 'silence', feu: 0, titre: 'Silence', sous: 'On travaille seul, sans bruit.', icone: 'volume_off', coul: '#C62828', seuil: 35 },
+  { cle: 'chuchoter', feu: 1, titre: 'On chuchote', sous: 'Voix très basse, avec son voisin seulement.', icone: 'hearing', coul: '#E08A00', seuil: 55 },
+  { cle: 'groupe', feu: 2, titre: 'Travail en groupe', sous: 'Voix normale, sans crier.', icone: 'groups', coul: '#1F7A4D', seuil: 72 },
+];
+let clFeu = { cle: 'silence', main: false };
+try{ Object.assign(clFeu, JSON.parse(localStorage.getItem('clFeu') || '{}') || {}); }catch(e){}
+function clConsigne(){ return CL_CONSIGNES.find(c => c.cle === clFeu.cle) || CL_CONSIGNES[0]; }
+function clFeuChoisir(cle){ clFeu.cle = cle; try{ localStorage.setItem('clFeu', JSON.stringify(clFeu)); }catch(e){} clFeuDessiner(); clBruitDessiner(clBruit.niveau || 0); }
+function clFeuDessiner(){
+  const c = clConsigne(), ch = document.getElementById('clFeuChoix');
+  if(ch) ch.innerHTML = CL_CONSIGNES.map(k => `<button type="button" class="btn ${k.cle === c.cle ? '' : 'secondary'}" style="${k.cle === c.cle ? 'background:' + k.coul + ';border-color:' + k.coul + ';' : ''}" onclick="clFeuChoisir('${k.cle}')"><span class="gicon">${k.icone}</span> ${k.titre}</button>`).join('');
+  const m = document.getElementById('clFeuMain'); if(m) m.checked = clFeu.main;
+  const a = document.getElementById('clFeuAffiche'); if(!a) return;
+  const lampe = (i, coul) => `<circle cx="40" cy="${40 + i * 70}" r="26" fill="${i === c.feu ? coul : '#2B3440'}" ${i === c.feu ? 'class="cl-feu-allume" style="color:' + coul + '"' : ''}/>`;
+  a.innerHTML = `<svg class="cl-feu-svg" viewBox="0 0 80 220" aria-hidden="true"><rect x="4" y="4" width="72" height="212" rx="18" fill="#1C2B39"/>
+      ${lampe(0, '#E53935')}${lampe(1, '#FFA000')}${lampe(2, '#43A047')}</svg>
+    <div class="cl-feu-texte" style="color:${c.coul};"><span class="gicon">${c.icone}</span><b>${c.titre}</b><small>${c.sous}</small>
+      ${clFeu.main ? '<span class="cl-feu-main">✋ Je lève la main pour parler</span>' : ''}</div>`;
+}
+
+/* ------------------------------- Jauge de bruit ------------------------------- */
+let clBruit = { actif: false, flux: null, ctx: null, an: null, raf: null, niveau: 0, sens: 0, son: true, depuis: 0, alerte: false, dernierBip: 0 };
+try{ const m = JSON.parse(localStorage.getItem('clBruit') || '{}') || {}; if(typeof m.sens === 'number') clBruit.sens = m.sens; if(typeof m.son === 'boolean') clBruit.son = m.son; }catch(e){}
+function clBruitSauver(){ try{ localStorage.setItem('clBruit', JSON.stringify({ sens: clBruit.sens, son: clBruit.son })); }catch(e){} }
+async function clBruitBasculer(){
+  if(clBruit.actif){ clBruitArreter(); return; }
+  try{
+    clBruit.flux = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+  }catch(e){ await niceAlert('Le micro n\'est pas accessible : autorisez-le pour ce site dans le navigateur (icône à gauche de l\'adresse).'); return; }
+  clBruit.ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const src = clBruit.ctx.createMediaStreamSource(clBruit.flux);
+  clBruit.an = clBruit.ctx.createAnalyser(); clBruit.an.fftSize = 2048; src.connect(clBruit.an);
+  clBruit.actif = true; clBruit.depuis = 0; clBruit.niveau = 0;
+  const b = document.getElementById('clBruitBtn'); if(b) b.innerHTML = '<span class="gicon">mic_off</span> Arrêter le micro';
+  const buf = new Float32Array(clBruit.an.fftSize);
+  const boucle = () => {
+    if(!clBruit.actif) return;
+    clBruit.an.getFloatTimeDomainData(buf);
+    let q = 0; for(let i = 0; i < buf.length; i++) q += buf[i] * buf[i];
+    const db = 20 * Math.log10(Math.sqrt(q / buf.length) + 1e-9);          // environ -90 (silence) à 0 dB
+    const brut = Math.max(0, Math.min(100, (db + 70) * 100 / 60 + clBruit.sens * 1.5));
+    clBruit.niveau = clBruit.niveau * 0.85 + brut * 0.15;                      // aiguille lissée
+    clBruitDessiner(clBruit.niveau);
+    clBruit.raf = requestAnimationFrame(boucle);
+  };
+  boucle();
+}
+function clBruitArreter(){
+  clBruit.actif = false; cancelAnimationFrame(clBruit.raf);
+  if(clBruit.flux) clBruit.flux.getTracks().forEach(t => t.stop());
+  if(clBruit.ctx) clBruit.ctx.close().catch(() => {});
+  clBruit.flux = clBruit.ctx = clBruit.an = null; clBruit.niveau = 0; clBruit.alerte = false;
+  const b = document.getElementById('clBruitBtn'); if(b) b.innerHTML = '<span class="gicon">mic</span> Activer le micro';
+  clBruitDessiner(0);
+}
+function clBruitDessiner(v){
+  const svg = document.getElementById('clBruitSvg');
+  if(!svg){ if(clBruit.actif && !document.getElementById('view-classe')?.classList.contains('active')) clBruitArreter(); return; }
+  const c = clConsigne(), seuil = c.seuil, R = 100;
+  const pt = (val, r) => { const a = Math.PI * (1 - val / 100); return [r * Math.cos(a), -r * Math.sin(a)]; };
+  const arc = (v0, v1, coul) => { const [x0, y0] = pt(v0, R), [x1, y1] = pt(v1, R); return `<path d="M${x0.toFixed(1)},${y0.toFixed(1)} A${R},${R} 0 0 1 ${x1.toFixed(1)},${y1.toFixed(1)}" stroke="${coul}" stroke-width="18" fill="none"/>`; };
+  const s1 = Math.max(5, seuil - 15);
+  const [nx, ny] = pt(v, 84), [tx, ty] = pt(seuil, R + 13), [tx2, ty2] = pt(seuil, R - 13);
+  svg.innerHTML = arc(0, s1, '#43A047') + arc(s1, seuil, '#FFA000') + arc(seuil, 100, '#E53935')
+    + `<line x1="${tx.toFixed(1)}" y1="${ty.toFixed(1)}" x2="${tx2.toFixed(1)}" y2="${ty2.toFixed(1)}" stroke="#20242E" stroke-width="3"/>`
+    + `<line x1="0" y1="0" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="#20242E" stroke-width="5" stroke-linecap="round"/><circle r="9" fill="#20242E"/>`;
+  // Trop fort pendant plus d'une seconde et demie : la jauge passe en alerte.
+  const trop = clBruit.actif && v > seuil, now = performance.now();
+  if(trop){ if(!clBruit.depuis) clBruit.depuis = now; } else clBruit.depuis = 0;
+  const alerte = trop && now - clBruit.depuis > 1500;
+  if(alerte && !clBruit.alerte && clBruit.son && now - clBruit.dernierBip > 6000){ clCarillon([523, 392]); clBruit.dernierBip = now; }
+  clBruit.alerte = alerte;
+  const bloc = document.getElementById('clBlocBruit'); if(bloc) bloc.classList.toggle('cl-bruit-alerte', alerte);
+  const e = document.getElementById('clBruitEtat');
+  if(e){ e.textContent = !clBruit.actif ? 'Micro éteint' : alerte ? 'Trop de bruit !' : v > seuil - 15 ? 'Attention…' : 'C\'est bien !';
+    e.style.color = !clBruit.actif ? '#5B6472' : alerte ? '#C62828' : v > seuil - 15 ? '#E08A00' : '#1F7A4D'; }
+  const t = document.getElementById('clBruitSeuilTxt'); if(t) t.innerHTML = `Consigne : <b style="color:${c.coul}">${c.titre}</b> (le trait noir marque le niveau à ne pas dépasser)`;
+}
+
 
 /* ---------------------------- Roue de la chance ---------------------------- */
 function clRoueCle(){ return 'clRoue:' + (currentUser ? currentUser.id : 'anon') + ':' + clRoue.classe; }
