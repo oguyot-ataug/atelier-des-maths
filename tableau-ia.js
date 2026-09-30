@@ -499,13 +499,16 @@ function tbAiEvaluate(program, flips, allowed){
 }
 
 /* Longueur tracée des objets linéaires, arcs de compas, puis mise en page à l'échelle réelle. */
+// Débord d'une droite au-delà de ses points (cm) : plus long en écran partagé de la Géométrie
+// Interactive, où la droite de la figure traverse toute la zone de dessin.
+let tbAiMargeDroite = 2.5;
 function tbAiFinalize(ev, opts){
   const allObjs = new Set(ev.objs.values());
   ev.actions.forEach(a=>{ ['obj','ca','cb','c0','cP','cQ','cM','cB'].forEach(k=>{ if(a[k]) allObjs.add(a[k]); }); });
   allObjs.forEach(o=>{
     if(o.kind==='circle') return;
     const hs = o.hits.length ? o.hits : [0];
-    const lo = Math.min(...hs), hi = Math.max(...hs), M = 2.5;
+    const lo = Math.min(...hs), hi = Math.max(...hs), M = tbAiMargeDroite;
     if(o.kind==='segment'){ o.e0 = 0; o.e1 = o.t1; }
     else if(o.kind==='ray'){ o.e0 = 0; o.e1 = Math.max(hi+M, 6); }
     else {
@@ -1141,50 +1144,53 @@ const tbAiSteps = {
       if(Math.hypot(far.x-H.x, far.y-H.y) > 1) dS = tbV.norm({x:far.x-H.x, y:far.y-H.y});
     }
     if(a.method==='requerre') return tbAiPerpRequerre(a, H, nS, dS);
-    // Équerre -- demandé : « pour le tracé de perpendiculaire, il faut poser l'équerre et faire
-    // glisser la règle dessus. Le crayon glisse le long de l'équerre. S'il s'agit de faire un angle
-    // droit pour un triangle rectangle, l'équerre suffit », et jamais de prolongement à la règle
-    // (« on ne fait jamais ça »).
-    // - point SUR la droite : l'équerre seule, un côté de l'angle droit sur la droite, le sommet
-    //   de l'angle droit sur le point ;
-    // - point HORS de la droite : la règle est posée le long de la droite, l'équerre s'appuie
-    //   contre elle et glisse jusqu'à ce que son autre côté passe par le point.
-    // Le crayon trace le long de l'équerre, et seulement le long de l'équerre.
+    // Équerre -- demandé : « il faut poser l'équerre et faire glisser la règle dessus », « il faut
+    // que la règle vienne se poser le long de l'équerre pour le tracé de part et d'autre de la
+    // droite (AB) », « s'il s'agit de faire un angle droit pour un triangle rectangle, l'équerre
+    // suffit », et jamais un bout de trait à l'équerre prolongé ensuite à la règle.
+    // 1. L'équerre glisse le long de la droite (un côté de l'angle droit posé dessus) jusqu'au pied H.
+    // 2. Droite perpendiculaire : la règle vient se poser contre l'autre côté de l'équerre, et le
+    //    crayon trace d'un seul trait, le long de la règle, de part et d'autre de la droite.
+    //    Demi-droite / segment (angle droit d'un triangle rectangle) : le crayon suit l'équerre.
     // leg1 de l'équerre = leg0 tourné de +90° à l'écran : (x,y) -> (-y,x).
     const leg0OnLine = (-dS.y*nS.x + dS.x*nS.y) > 0;
     const ang = leg0OnLine ? tbAiVecAng(dS) : tbAiVecAng(nS);
     const legMax = leg0OnLine ? TB_EQUERRE_LEGY-8 : TB_EQUERRE_LEGX-12;
+    const surDroite = leg0OnLine ? dS : tbAiDirDeg(ang+90); // côté de l'équerre posé sur la droite
     const ex = tbAiExtent(a.obj);
     const M = a.M ? S(a.M) : null, dM = M ? Math.hypot(M.x-H.x, M.y-H.y) : 0;
-    const surLaDroite = dM < 2;
-    if(surLaDroite || !tbAiAllowed.has('regle')){
-      const start = tbAiAt(H, dS, 70);
-      await tbAiBring('equerre', {x:start.x, y:start.y, angle:ang});
-      await tbAiSleep(200);
-      await tbAiMoveTool(tbAiFindTool('equerre'), {x:H.x, y:H.y}, 650);
-    } else {
-      // Règle le long de la droite, du côté opposé à l'équerre, bord gradué sur la droite ; elle
-      // couvre le trajet de l'équerre (départ à 120 px du pied, arrivée au pied).
-      const start = tbAiAt(H, dS, 120);
-      let ar = tbAiVecAng({x:-nS.x, y:-nS.y})-90; // corps de la règle (y local) du côté opposé à l'équerre
-      const rd = tbAiDirDeg(ar), mid = tbAiAt(H, dS, 60);
-      await tbAiBring('regle_grad', {x:mid.x-rd.x*TB_RULER_L/2, y:mid.y-rd.y*TB_RULER_L/2, angle:ar});
-      await tbAiSleep(250);
-      await tbAiBring('equerre', {x:start.x, y:start.y, angle:ang});
-      await tbAiSleep(250);
-      await tbAiMoveTool(tbAiFindTool('equerre'), {x:H.x, y:H.y}, 1100); // l'équerre glisse contre la règle
-    }
-    if(ex){
-      // Le long de l'équerre seulement : du pied jusqu'au bout du côté (ou au-delà du point s'il
-      // est plus loin que l'équerre -- seul cas où la règle prend le relais).
+    const start = tbAiAt(H, dS, 90);
+    await tbAiBring('equerre', {x:start.x, y:start.y, angle:ang});
+    await tbAiSleep(200);
+    await tbAiMoveTool(tbAiFindTool('equerre'), {x:H.x, y:H.y}, 900);
+    const deuxCotes = ex && a.obj.kind==='line' && (tbAiAllowed.has('regle') || tbAiAllowed.has('requerre'));
+    if(deuxCotes){
+      const L = Math.hypot(ex.b.x-ex.a.x, ex.b.y-ex.a.y);
+      const type = tbAiAllowed.has('regle') && (L<=TB_AI_RULER_MAX || !tbAiAllowed.has('requerre')) ? 'regle_grad' : 'requerre2';
+      const Lt = type==='regle_grad' ? TB_RULER_L : TB_REQ2_L, bord = type==='regle_grad' ? 0 : 4;
+      // Règle le long de la perpendiculaire, son corps du côté opposé à l'équerre : son bord
+      // s'appuie contre le côté de l'équerre.
+      let ar = tbAiVecAng(nS);
+      if(tbAiDirDeg(ar+90).x*surDroite.x + tbAiDirDeg(ar+90).y*surDroite.y > 0) ar += 180;
+      const rd = tbAiDirDeg(ar), corps = tbAiDirDeg(ar+90), m = {x:(ex.a.x+ex.b.x)/2, y:(ex.a.y+ex.b.y)/2};
+      await tbAiBring(type, {x:m.x-rd.x*Lt/2-corps.x*bord, y:m.y-rd.y*Lt/2-corps.y*bord, angle:ar}, 800);
+      await tbAiSleep(350);
+      await tbAiPutAway('equerre');
+      // Un seul trait, le long de la règle (en plusieurs poses seulement s'il dépasse la règle).
+      const maxL = type==='regle_grad' ? TB_AI_RULER_MAX : TB_AI_REQ_MAX;
+      if(L<=maxL) await tbAiTraceLine(ex.a, ex.b, a.style);
+      else await tbAiRuledStroke(ex.a, ex.b, a.style);
+    } else if(ex){
+      // Le long de l'équerre seulement : du pied jusqu'au bout du côté (ou jusqu'au point s'il est
+      // plus loin que l'équerre -- seul cas où la règle prend le relais).
       const s1 = Math.min(ex.t1, legMax);
       if(s1>1) await tbAiTraceLine(H, tbAiAt(H, nS, s1), a.style);
-      if(!surLaDroite && dM > s1+2){
+      if(dM > s1+2){
         await tbAiPutAway('equerre','crayon');
         await tbAiRuledStroke(tbAiAt(H, nS, s1), tbAiAt(H, nS, dM+30), a.style);
       }
     }
-    if(a.footName){ await tbAiPutAway('equerre','regle_grad'); await tbAiMark(H, a.footName); }
+    if(a.footName){ await tbAiPutAway('equerre','regle_grad','requerre2'); await tbAiMark(H, a.footName); }
     await tbAiPutAwayAll();
     tbAiCodeRightAngle(H, dS, nS);
     tbRender();

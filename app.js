@@ -3073,6 +3073,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.825', items:[
+    "Écran partagé et perpendiculaire -- signalé : « c'est encore pire, il reste beaucoup de place », « les figures ne correspondent pas car seule l'équerre a été posée pour la perpendiculaire. Il faut que la règle vienne se poser le long de l'équerre pour le tracé de part et d'autre de la droite (AB) ». (1) Place : la figure et le tableau prennent maintenant toute la hauteur disponible (au lieu du format d'une page), avec le même format et le même cadrage des deux côtés -- sur un écran 1920 × 1080 en plein écran, chaque zone passe d'environ 580 à 870 pixels de haut. Le tableau accepte pour cela un format de zone visible libre. (2) Perpendiculaire à l'équerre : l'équerre glisse le long de la droite jusqu'au pied, la règle vient se poser contre l'équerre, l'équerre est retirée et le crayon trace d'un seul trait, le long de la règle, de part et d'autre de la droite. Pour une demi-droite ou un segment (angle droit d'un triangle rectangle), l'équerre seule suffit, comme avant. (3) En écran partagé, les droites dépassent de 6 cm de part et d'autre de leurs points au tableau (2,5 cm ailleurs), pour mieux correspondre à la figure où elles traversent toute la zone de dessin.",
+  ]},
   { version:'2026-08-19.824', items:[
     "Géométrie Interactive, écran partagé : mise en page épurée -- demandé : « à droite, au final, je n'ai besoin que de la fenêtre qui s'anime et une sauvegarde ou ajouter au cahier. Pas plus. » À droite, il ne reste que le tableau qui s'anime, avec en dessous « Enregistrer en image » et « Ajouter au cahier » (palette d'instruments, réglages, historique, bouton plein écran du tableau et barre de lecture sont masqués dans ce mode). « Ajouter au cahier » range la figure construite dans le cahier de la classe choisie, avec son bouton « Voir la construction pas à pas » -- un titre est demandé. À gauche, la ligne « Instruments » rejoint le bouton du compas et « Construire au tableau » disparaît (c'est déjà en direct). Les deux zones de dessin ont maintenant la même taille et commencent à la même hauteur, recalculées au passage en plein écran et quand la fenêtre change de taille.",
   ]},
@@ -8220,9 +8223,15 @@ function tbToggleHistoryPanel(){
    gestes à la souris/au doigt restent exacts (conversion via getScreenCTM, voir tbSvgPoint). */
 let tbZoom = 1, tbViewCenter = null;
 const TB_ZOOM_MAX = 3;
+/* Format de la zone visible : 900 × 560 par défaut ; tbVueRatio (hauteur / largeur) le remplace
+   quand le tableau doit remplir un cadre d'une autre forme (écran partagé de la Géométrie
+   Interactive, où il occupe toute la hauteur de sa moitié d'écran). */
+let tbVueRatio = null;
 function tbViewBox(){
-  const W = 900, H = 560, w = W/tbZoom, h = H/tbZoom, c = tbViewCenter || {x:W/2, y:H/2};
-  return [Math.max(0, Math.min(W-w, c.x-w/2)), Math.max(0, Math.min(H-h, c.y-h/2)), w, h];
+  const W = 900, H = 560, w = W/tbZoom, h = tbVueRatio ? w*tbVueRatio : H/tbZoom, c = tbViewCenter || {x:W/2, y:H/2};
+  const y = h > H ? c.y-h/2 : Math.max(0, Math.min(H-h, c.y-h/2));
+  const x = w > W ? c.x-w/2 : Math.max(0, Math.min(W-w, c.x-w/2));
+  return [x, y, w, h];
 }
 function tbContentBox(){
   const xs = [], ys = [];
@@ -8249,8 +8258,9 @@ function tbZoomFit(box){
   box = box || tbContentBox();
   if(!box){ tbZoomReset(); return; }
   const w = Math.max(60, box.x1-box.x0), h = Math.max(60, box.y1-box.y0);
-  tbZoom = Math.max(1, Math.min(TB_ZOOM_MAX, Math.floor(Math.min(900/w, 560/h)*20)/20));
-  tbViewCenter = tbZoom===1 ? null : {x:(box.x0+box.x1)/2, y:(box.y0+box.y1)/2};
+  const Hv = tbVueRatio ? 900*tbVueRatio : 560;
+  tbZoom = Math.max(1, Math.min(TB_ZOOM_MAX, Math.floor(Math.min(900/w, Hv/h)*20)/20));
+  tbViewCenter = tbZoom===1 && !tbVueRatio ? null : {x:(box.x0+box.x1)/2, y:(box.y0+box.y1)/2};
   tbRender(); tbUpdateZoomLabel();
 }
 function tbZoomReset(){ tbZoom = 1; tbViewCenter = null; tbRender(); tbUpdateZoomLabel(); }

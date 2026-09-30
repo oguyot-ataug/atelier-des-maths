@@ -4305,7 +4305,9 @@ let figDragMeasure = null;
    svgCoordsFromEvent) reste correcte quel que soit le viewBox courant -- aucune autre partie
    du code (clics, glissements...) n'a besoin d'être adaptée. */
 let figViewBox = {x:0, y:0, w:500, h:320};
+let figVBRatio = 320/500; // hauteur / largeur de la zone visible (autre en écran partagé)
 function resetFigViewBox(){
+  figVBRatio = 320/500;
   figViewBox = {x:0, y:0, w:500, h:320};
   const svg = document.getElementById('figureSvg');
   if(svg) svg.setAttribute('viewBox', '0 0 500 320');
@@ -4316,7 +4318,7 @@ function onFigureWheel(evt){
   const {x:mx, y:my} = svgCoordsFromEvent(svg, evt);
   const factor = evt.deltaY < 0 ? 0.9 : 1.1; // molette vers le haut = zoom avant (rétrécit le viewBox)
   const newW = Math.max(120, Math.min(1600, figViewBox.w*factor));
-  const newH = newW*(320/500); // garde toujours le ratio d'aspect d'origine (500:320)
+  const newH = newW*figVBRatio; // garde toujours le format de la zone (500:320, ou celui de l'écran partagé)
   // Zoom centré sur le curseur : le point sous la souris reste au même endroit à l'écran.
   const relX = (mx-figViewBox.x)/figViewBox.w, relY = (my-figViewBox.y)/figViewBox.h;
   figViewBox = {x:mx-relX*newW, y:my-relY*newH, w:newW, h:newH};
@@ -5878,20 +5880,37 @@ let figSplitVueAvant = null, figSplitOutilsHome = null;
    disponible sous la barre d'outils de la figure) et commencent à la même hauteur à l'écran. */
 function figSplitAligner(){
   if(!document.body.classList.contains('fig-split')) return;
-  const svg = document.getElementById('figureSvg'), panel = document.getElementById('figurePanel'), vt = document.getElementById('view-tableau'), bw = document.getElementById('tbBoardWrap');
-  if(!svg || !panel || !vt || !bw) return;
-  const bas = 118; // place gardée sous la figure : aide + boutons Enregistrer / Fermer
-  const top = svg.getBoundingClientRect().top;
-  const largeurG = svg.parentNode.getBoundingClientRect().width;
-  const h = Math.max(220, Math.min(window.innerHeight - top - bas, largeurG / 1.5625));
-  svg.style.setProperty('width', (h*1.5625).toFixed(0)+'px', 'important');
-  const largeurD = vt.clientWidth - 30;
-  const wD = Math.min(largeurD, h*900/560);
-  bw.style.width = wD.toFixed(0)+'px';
-  vt.style.paddingTop = Math.max(10, top - (bw.getBoundingClientRect().top - vt.getBoundingClientRect().top) + 10 - 10) + 'px';
-  // Ajustement exact : le haut du tableau sur le haut de la figure.
+  const svg = document.getElementById('figureSvg'), vt = document.getElementById('view-tableau'), bw = document.getElementById('tbBoardWrap');
+  if(!svg || !vt || !bw) return;
+  // Toute la hauteur disponible : sous la barre d'outils de la figure, jusqu'aux boutons du bas.
+  const aide = document.getElementById('figureHint'), barres = document.querySelectorAll('#figurePanel > .figure-toolbar');
+  const barreBas = barres.length ? barres[barres.length-1] : null;
+  const bas = (aide ? aide.offsetHeight + 8 : 24) + (barreBas ? barreBas.offsetHeight + 18 : 60) + 14, top = svg.getBoundingClientRect().top;
+  const wG = Math.floor(svg.parentNode.getBoundingClientRect().width);
+  const h = Math.max(240, Math.floor(window.innerHeight - top - bas));
+  // Figure : la zone visible prend le format du cadre (même centre, même largeur en unités).
+  const ancienRatio = figVBRatio;
+  figVBRatio = h/wG;
+  const cy = figViewBox.y + figViewBox.h/2;
+  figViewBox = {x:figViewBox.x, y:cy - figViewBox.w*figVBRatio/2, w:figViewBox.w, h:figViewBox.w*figVBRatio};
+  svg.setAttribute('viewBox', `${figViewBox.x} ${figViewBox.y} ${figViewBox.w} ${figViewBox.h}`);
+  svg.style.setProperty('width', wG+'px', 'important');
+  svg.style.aspectRatio = wG+' / '+h;
+  // Tableau : même hauteur, toute la largeur de sa moitié, même format de zone visible.
+  const wD = Math.floor(vt.clientWidth - 26);
+  bw.style.width = wD+'px';
+  if(typeof tbVueRatio!=='undefined'){ tbVueRatio = h/wD; if(typeof tbRender==='function') tbRender(); }
+  const svgT = document.getElementById('tbSvg'); if(svgT) svgT.style.height = h+'px';
+  // Le haut du tableau sur le haut de la figure.
+  vt.style.paddingTop = '10px';
   const ecart = svg.getBoundingClientRect().top - bw.getBoundingClientRect().top;
-  vt.style.paddingTop = (parseFloat(vt.style.paddingTop) + ecart) + 'px';
+  vt.style.paddingTop = (10 + ecart) + 'px';
+  requestAnimationFrame(()=>{ const e2 = svg.getBoundingClientRect().top - bw.getBoundingClientRect().top; if(Math.abs(e2) > 0.5) vt.style.paddingTop = (parseFloat(vt.style.paddingTop) + e2) + 'px'; });
+  // Format changé : le tableau reprend le cadrage de la figure (reconstruction instantanée).
+  if(Math.abs(ancienRatio - figVBRatio) > 1e-3 && typeof figLive!=='undefined' && figLive.cles.length){
+    figLive.cles = []; figLive.nActions = 0; figLive.centreCle = '';
+    figLiveSync(true);
+  } else if(typeof figLiveCadrer==='function') figLiveCadrer();
 }
 window.addEventListener('resize', ()=>requestAnimationFrame(figSplitAligner));
 document.addEventListener('fullscreenchange', ()=>setTimeout(figSplitAligner, 120));
@@ -5933,6 +5952,7 @@ async function figToggleSplit(){
   const active = document.querySelector('.view.active');
   figSplitVueAvant = active ? active.id : null;
   document.body.classList.add('fig-split');
+  if(typeof tbAiMargeDroite!=='undefined') tbAiMargeDroite = 6;
   if(typeof showView==='function') showView('view-tableau'); // referme l'outil : on le rouvre tel quel
   if(typeof initTableauView==='function') initTableauView();
   figRouvrirPanneau();
@@ -5941,7 +5961,7 @@ async function figToggleSplit(){
   const outils = document.getElementById('figSplitOutils'), ligne = document.getElementById('figSplitCompasLigne');
   outils.style.display = 'flex'; outils.style.margin = '0';
   if(ligne && outils.parentNode!==ligne){ figSplitOutilsHome = [outils.parentNode, outils.nextSibling]; ligne.appendChild(outils); }
-  requestAnimationFrame(figSplitAligner);
+  requestAnimationFrame(figSplitAligner); setTimeout(figSplitAligner, 400); // second passage : mise en page stabilisée
   document.getElementById('figSplitBtn').classList.add('active');
   document.getElementById('figSplitBtn').title = 'Quitter l\'écran partagé';
   // La figure déjà tracée est reconstruite d'un coup ; ensuite, chaque nouvel objet se construit
@@ -5954,10 +5974,15 @@ async function figToggleSplit(){
 function figQuitterSplit(){
   if(!document.body.classList.contains('fig-split')) return;
   document.body.classList.remove('fig-split');
+  if(typeof tbAiMargeDroite!=='undefined') tbAiMargeDroite = 2.5;
   const r = document.getElementById('figSplitRefreshBtn'); if(r) r.style.display = 'none';
   const o = document.getElementById('figSplitOutils');
   if(o){ o.style.display = 'none'; o.style.margin = '0 0 6px'; if(figSplitOutilsHome){ figSplitOutilsHome[0].insertBefore(o, figSplitOutilsHome[1]); figSplitOutilsHome = null; } }
-  const svg = document.getElementById('figureSvg'); if(svg){ svg.style.removeProperty('width'); svg.style.width = 'min(90vw, 1000px, calc(62vh * 1.5625))'; }
+  const svg = document.getElementById('figureSvg');
+  if(svg){ svg.style.removeProperty('width'); svg.style.width = 'min(90vw, 1000px, calc(62vh * 1.5625))'; svg.style.aspectRatio = '500/320';
+    figVBRatio = 320/500; const cy = figViewBox.y + figViewBox.h/2; figViewBox = {x:figViewBox.x, y:cy-figViewBox.w*figVBRatio/2, w:figViewBox.w, h:figViewBox.w*figVBRatio};
+    svg.setAttribute('viewBox', `${figViewBox.x} ${figViewBox.y} ${figViewBox.w} ${figViewBox.h}`); }
+  if(typeof tbVueRatio!=='undefined'){ tbVueRatio = null; const st = document.getElementById('tbSvg'); if(st) st.style.height = ''; if(typeof tbZoomReset==='function') tbZoomReset(); }
   const bw = document.getElementById('tbBoardWrap'); if(bw){ bw.style.width = ''; }
   const vt = document.getElementById('view-tableau'); if(vt) vt.style.paddingTop = '';
   const b = document.getElementById('figSplitBtn'); if(b){ b.classList.remove('active'); b.title = 'Écran partagé : la figure à gauche, sa construction aux instruments à droite'; }
@@ -5986,8 +6011,13 @@ function figLiveCentre(origine){
 function figLiveCadrer(){
   if(typeof tbZoomFit!=='function' || typeof TB_AI_REGION==='undefined') return;
   const vb = document.getElementById('figureSvg').viewBox.baseVal, k = TB_PX_PER_CM/SCALE_PX_PER_CM;
-  const cx = (TB_AI_REGION.x0+TB_AI_REGION.x1)/2, cy = (TB_AI_REGION.y0+TB_AI_REGION.y1)/2, w = vb.width*k/2+8, h = vb.height*k/2+8;
-  tbZoomFit({x0:cx-w, x1:cx+w, y0:cy-h, y1:cy+h});
+  const cx = (TB_AI_REGION.x0+TB_AI_REGION.x1)/2, cy = (TB_AI_REGION.y0+TB_AI_REGION.y1)/2, w = vb.width*k/2, h = vb.height*k/2;
+  if(typeof tbVueRatio!=='undefined' && tbVueRatio){
+    // Format imposé : le zoom se règle sur la largeur, pour que les deux moitiés montrent la même zone.
+    tbZoom = Math.max(0.2, Math.min(TB_ZOOM_MAX, 900/(2*w))); tbViewCenter = {x:cx, y:cy};
+    tbRender(); if(typeof tbUpdateZoomLabel==='function') tbUpdateZoomLabel(); return;
+  }
+  tbZoomFit({x0:cx-w-8, x1:cx+w+8, y0:cy-h-8, y1:cy+h+8});
 }
 /* Instruments autorisés pour la construction à droite -- demandé : « permettre de choisir les
    outils qui serviront (réquerre, équerre...) ». Même mémoire que les cases de « Construire avec
