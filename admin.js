@@ -966,6 +966,21 @@ function adminRenderAccountsListing(){
     const d = new Date(t);
     return `<span class="hint">${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span>`;
   };
+  // Niveaux et classes -- demandé : « Comment je vois qu'un professeur est rattaché à un niveau ou
+  // plusieurs ? » Un professeur est rattaché à un niveau par ses classes (Mes classes / « Modifier le
+  // compte ») : une pastille par niveau, avec le nom des classes au survol ; pour un élève, sa classe.
+  const NIV_COUL = { CE2:'#2E7D32', CM1:'#2E7D32', CM2:'#2E7D32', '6e':'#FF8208', '5e':'#0C5BA0', '4e':'#0B7A83', '3e':'#7A3E9D' };
+  const niveauxCell = p => {
+    const cls = classIdsOf(p).map(cid=>classById.get(cid)).filter(Boolean).filter(c=>!c.groupe);
+    if(!cls.length) return '<span class="hint">aucune classe</span>';
+    if(p.role==='eleve') return cls.map(c=>`<span class="hint" style="margin:0;">${escapeHtml(c.nom)}</span>`).join(', ');
+    const parNiv = new Map(); cls.forEach(c=>{ const n = c.niveau || '?'; if(!parNiv.has(n)) parNiv.set(n, []); parNiv.get(n).push(c.nom); });
+    const ordre = ['CE2','CM1','CM2','6e','5e','4e','3e'];
+    return [...parNiv.entries()].sort((a,b)=>ordre.indexOf(a[0])-ordre.indexOf(b[0])).map(([n, noms])=>{
+      const col = NIV_COUL[n] || '#5B6472';
+      return `<span class="sup-score-pill" style="background:${col}1A;color:${col};margin:1px 3px 1px 0;" title="${escapeHtml(noms.join(', '))}">${escapeHtml(n)}${noms.length>1?' ×'+noms.length:''}</span>`;
+    }).join('');
+  };
   const rowHTML = p => {
     const safeName = escapeHtml(profileDisplayName(p)||p.email||'').replace(/'/g,"\\'");
     const editBtn = `<button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openEditProfModal('${p.id}')"><span class=gicon>build</span></button>`;
@@ -976,6 +991,7 @@ function adminRenderAccountsListing(){
       <td style="width:24px;"><input type="checkbox" class="adminAccCheckbox" value="${p.id}"></td>
       <td style="font-weight:600;">${escapeHtml(profileDisplayName(p)||'(sans nom)')}${p.role==='admin'?' <span class="hint">[admin]</span>':''}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">${escapeHtml(loginIdentifiant(p.email))}</td>
+      <td>${niveauxCell(p)}</td>
       <td>${subscriptionBadge(p)}</td>
       <td>${lastLoginCell(p)}</td>
       <td style="text-align:right;white-space:nowrap;">
@@ -994,7 +1010,7 @@ function adminRenderAccountsListing(){
         <span class="nb-accordion-count">${list.length}${list.length!==total?'/'+total:''}</span>
       </button>
       <div class="nb-accordion-body open" id="${id}">
-        ${list.length ? `<table class="sup-table"><thead><tr><th></th><th>Nom</th><th>Identifiant</th><th>Statut</th><th>Dernière connexion</th><th style="text-align:right;">Actions</th></tr></thead><tbody>${list.map(rowHTML).join('')}</tbody></table>` : '<div class="hint">aucun</div>'}
+        ${list.length ? `<table class="sup-table"><thead><tr><th></th><th>Nom</th><th>Identifiant</th><th title="Niveaux des classes du professeur (survol : noms des classes)">Niveaux · classes</th><th>Statut</th><th>Dernière connexion</th><th style="text-align:right;">Actions</th></tr></thead><tbody>${list.map(rowHTML).join('')}</tbody></table>` : '<div class="hint">aucun</div>'}
       </div>
     </div>
   `;

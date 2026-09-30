@@ -3091,6 +3091,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.861', items:[
+    "Administration › Comptes : nouvelle colonne « Niveaux · classes ». Demandé : « Comment je vois qu'un professeur est rattaché à un niveau ou plusieurs ? » Pour chaque professeur, une pastille par niveau de ses classes (6e, 5e, CM1…, avec « ×2 » s'il a deux classes du même niveau), et le nom des classes au survol ; « aucune classe » sinon. Pour un élève : sa classe. Les groupes de remédiation ne comptent pas.",
+  ]},
   { version:'2026-08-19.860', items:[
     "Administration › Établissements : les modifications s'enregistrent automatiquement. Signalé : « je ne peux pas sauvegarder les noms des référents établissements ». Le bouton « Enregistrer » était tout à droite d'un tableau plus large que l'écran, invisible sans faire défiler vers la droite. Désormais, chaque changement (nom, référent, licence, note, clé IA du site, budget) est enregistré dès qu'on le fait, et « ✓ enregistré » s'affiche sous l'UAI (ou le message d'erreur, par exemple si ce professeur est déjà référent d'un autre établissement).",
   ]},
