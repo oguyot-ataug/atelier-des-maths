@@ -3154,6 +3154,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.876', items:[
+    "Interrogations générées par IA : les types de questions cochés sont maintenant respectés. Signalé : « il ne tient pas compte des types de questions cochées. J'avais essayé en cochant uniquement QCM et il a généré des questions de tout ordre ». L'IA ne reçoit plus que les modèles des types cochés, avec une consigne explicite (« toutes les questions sont des QCM » quand un seul type est coché), et toute question d'un autre type est écartée à la réception.",
+  ]},
   { version:'2026-08-19.875', items:[
     "Offres pour l'école (CM1, CM2), aux tarifs validés -- demandé : « Un peu moins cher je pense non ? » puis « Oui, je valide ces tarifs, vas-y ». Professeur des écoles : 29 € par an pour une classe de 30 élèves, CM1 et CM2 compris (double niveau), + 10 € par classe en plus, dans « Mon abonnement » (case « CM1 et CM2 (école) ») ; les classes créées sont enregistrées en « CM1 » ou « CM2 ». Offre Famille : 25 € pour le CM1 ou le CM2, 39 € pour les deux, en plus des niveaux de collège éventuels ; le niveau précédent reste ouvert en révision (6e → CM2 → CM1). Licence établissement : 2,50 € par élève de CM1 ou de CM2 dans les devis et factures. Tous ces prix sont modifiables dans l'administration (offres professeur, Familles, Facturation > Mes informations).",
     "Paiements : les fonctions de paiement (offre professeur, offre Famille) et d'activation après paiement acceptent maintenant le CM1 et le CM2 ; la page publique des tarifs présente l'offre Professeur des écoles, les prix Famille de l'école, la licence école à 2,50 € par élève et le calculateur avec les effectifs de CM. Les groupes de remédiation d'une classe de CM1 ou de CM2 s'enregistrent désormais sans erreur.",

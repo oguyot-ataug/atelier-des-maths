@@ -1565,27 +1565,37 @@ async function qzGenerer(){
   if(!chap && !theme){ status.textContent = 'Choisissez un chapitre ou écrivez un thème.'; return; }
   if(!types.length){ status.textContent = 'Cochez au moins un type de question.'; return; }
   const noms = { qcm: 'QCM', vf: 'vrai/faux', numerique: 'réponse numérique', courte: 'réponse courte', ouverte: 'question ouverte rédigée' };
-  const prompt = `Tu es ${iaEnseignant(niveau)}. Rédige une interrogation pour une classe de ${niveauLabel(niveau)}, conforme au programme officiel. ${iaContexteNiveau(niveau)}${niveauPrimaire(niveau) ? ' Les élèves de l\'école n\'ont souvent pas d\'ordinateur et répondent avec des cartes A, B, C, D : privilégie des QCM à 4 choix au plus.' : ''}
+  // Seuls les formats des types cochés sont montrés à l'IA (signalé : « il ne tient pas compte des types
+  // de questions cochées » -- avec les 5 formats en exemple, elle en utilisait d'autres), et les
+  // questions d'un autre type sont écartées à la réception.
+  const FORMATS = {
+    qcm: '{"type":"qcm","enonce":"...","points":1,"competence":"calculer","multiple":false,"choix":[{"texte":"...","correct":true},{"texte":"...","correct":false},{"texte":"...","correct":false}],"explication":"..."}',
+    vf: '{"type":"vf","enonce":"Vrai ou faux ?","points":2,"competence":"raisonner","items":[{"texte":"affirmation","vrai":true},{"texte":"affirmation","vrai":false}],"explication":"..."}',
+    numerique: '{"type":"numerique","enonce":"...","points":1,"competence":"calculer","reponses":"0,75 ; 3/4","tolerance":"","unite":"","explication":"..."}',
+    courte: '{"type":"courte","enonce":"...","points":1,"competence":"communiquer","reponses":"réponse ; variante acceptée","explication":"..."}',
+    ouverte: '{"type":"ouverte","enonce":"...","competence":"raisonner","attendus":"corrigé détaillé","criteres":[{"texte":"critère","points":1},{"texte":"critère","points":1}],"explication":"..."}',
+  };
+  const consigneTypes = types.length === 1
+    ? `TOUTES les questions sont de type « ${noms[types[0]]} » (champ "type" = "${types[0]}") : aucun autre type n'est accepté.`
+    : `Types autorisés, et UNIQUEMENT ceux-là : ${types.map(t => noms[t] + ' ("' + t + '")').join(', ')} (varie entre ces types). Aucun autre type n'est accepté.`;
+  const prompt = `Tu es ${iaEnseignant(niveau)}. Rédige une interrogation pour une classe de ${niveauLabel(niveau)}, conforme au programme officiel. ${iaContexteNiveau(niveau)}${niveauPrimaire(niveau) && types.includes('qcm') ? ' Les élèves de l\'école n\'ont souvent pas d\'ordinateur et répondent avec des cartes A, B, C, D : les QCM ont 4 choix au plus.' : ''}
 ${chap ? `Chapitre : ${chap}.` : ''}${theme ? `\nThème ou notions : ${theme}.` : ''}
-Nombre de questions : ${nb}. Difficulté : ${diff}. Types autorisés : ${types.map(t => noms[t]).join(', ')} (varie les types).
+Nombre de questions : ${nb}. Difficulté : ${diff}.
+${consigneTypes}
 ${consignes ? `Consignes du professeur : ${consignes}\n` : ''}
 Pour aller à la ligne dans un texte (ex. avant « (a) », « (b) »), mets un vrai saut de ligne JSON, c'est-à-dire \\n avec un seul antislash, jamais \\\\n.
-Une question « réponse numérique » ne demande QUE un résultat (un nombre à taper, sans phrase ni calcul à écrire) ; dès que l'élève doit montrer une méthode (« utilise la distributivité », « justifie », « explique », « détaille »), c'est une question ouverte, avec ses attendus et ses critères.
-Écriture des maths : fractions a/b (ex. 3/4), puissances x^2, racines sqrt(2), virgule décimale (2,5) ; ou LaTeX entre $...$ si nécessaire. Pas de figure à dessiner.
+${types.includes('numerique') ? `Une question « réponse numérique » ne demande QUE un résultat (un nombre à taper, sans phrase ni calcul à écrire)${types.includes('ouverte') ? ' ; dès que l\'élève doit montrer une méthode (« justifie », « explique », « détaille »), c\'est une question ouverte, avec ses attendus et ses critères' : ''}.\n` : ''}Écriture des maths : fractions a/b (ex. 3/4), puissances x^2, racines sqrt(2), virgule décimale (2,5) ; ou LaTeX entre $...$ si nécessaire. Pas de figure à dessiner.
 Pour chaque question, indique la compétence travaillée parmi : chercher, modeliser, representer, raisonner, calculer, communiquer ; et une courte explication (méthode) montrée à l'élève avec la correction.
-Réponds UNIQUEMENT par un tableau JSON valide, sans texte autour, dont chaque élément suit l'un de ces formats :
-{"type":"qcm","enonce":"...","points":1,"competence":"calculer","multiple":false,"choix":[{"texte":"...","correct":true},{"texte":"...","correct":false},{"texte":"...","correct":false}],"explication":"..."}
-{"type":"vf","enonce":"Vrai ou faux ?","points":2,"competence":"raisonner","items":[{"texte":"affirmation","vrai":true},{"texte":"affirmation","vrai":false}],"explication":"..."}
-{"type":"numerique","enonce":"...","points":1,"competence":"calculer","reponses":"0,75 ; 3/4","tolerance":"","unite":"","explication":"..."}
-{"type":"courte","enonce":"...","points":1,"competence":"communiquer","reponses":"réponse ; variante acceptée","explication":"..."}
-{"type":"ouverte","enonce":"...","competence":"raisonner","attendus":"corrigé détaillé","criteres":[{"texte":"critère","points":1},{"texte":"critère","points":1}],"explication":"..."}`;
+Réponds UNIQUEMENT par un tableau JSON valide, sans texte autour, dont chaque élément suit ${types.length === 1 ? 'ce format' : 'l\'un de ces formats'} :
+${types.map(t => FORMATS[t]).join('\n')}`;
   btn.disabled = true; status.textContent = 'L\'IA rédige les questions… (jusqu\'à une minute)';
   try{
     const raw = await callClaude(prompt, 4000, { feature: 'qz-generation', chapitre: chap || null, niveau });
     const liste = qzJson(raw);
     if(!Array.isArray(liste) || !liste.length) throw new Error('aucune question reçue');
-    const qs = liste.map(qzGenNormaliser).filter(Boolean);
-    if(!qs.length) throw new Error('questions inutilisables');
+    const toutes = liste.map(qzGenNormaliser).filter(Boolean);
+    const qs = toutes.filter(q => types.includes(q.type)); // filet de sécurité : jamais un type non coché
+    if(!qs.length) throw new Error(toutes.length ? 'l\'IA n\'a proposé que des types non cochés : relancez la génération' : 'questions inutilisables');
     if(!qzEd) qzEdReset();
     qzEd.questions.push(...qs);
     qzEdOuverte = null;
