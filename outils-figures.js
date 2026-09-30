@@ -612,6 +612,10 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="fig-icon-btn" id="figSplitBtn" onclick="figToggleSplit()" style="display:none;" title="Écran partagé : la figure à gauche, sa construction aux instruments à droite"><span class=gicon>vertical_split</span></button>
         <button type="button" class="fig-icon-btn" id="figSplitRefreshBtn" onclick="figSplitActualiser()" style="display:none;border-color:#1F7A4D;color:#1F7A4D;" title="Rejouer toute la construction aux instruments, depuis le début"><span class=gicon>replay</span></button>
       </div>
+      <div id="figSplitOutils" style="display:none;flex-wrap:wrap;gap:4px 12px;align-items:center;margin:0 0 6px;font-size:.8rem;">
+        <span class="hint" style="margin:0;font-weight:700;">Instruments :</span>
+        ${[['regle','Règle graduée'],['equerre','Équerre'],['requerre','Réquerre'],['compas','Compas'],['rapporteur','Rapporteur']].map(([v,t])=>`<label class="hint" style="margin:0;display:flex;align-items:center;gap:4px;"><input type="checkbox" value="${v}" checked onchange="figSplitOutilsChange()"> ${t}</label>`).join('')}
+      </div>
       <div style="display:flex;gap:12px;align-items:stretch;">
         <!-- Zone principale : réglages contextuels (compas, codage) au-dessus, puis le
              canevas -- toujours visible sous la barre d'outils, jamais caché derrière elle.
@@ -4815,13 +4819,20 @@ function createMidpoint(a, b){
   figState.points.push(mid);
   // Retire un éventuel segment/droite/demi-droite existant EXACTEMENT entre a et b (dans un
   // sens ou l'autre) : remplacé par ses deux moitiés, pas ajouté en plus.
-  const originalIdx = figState.shapes.findIndex(s=>
-    ['segment','droite','demi-droite'].includes(s.type) &&
-    ((s.p1===a && s.p2===b) || (s.p1===b && s.p2===a))
-  );
-  if(originalIdx !== -1) figState.shapes.splice(originalIdx, 1);
-  figState.shapes.push({type:'segment', p1:a, p2:mid});
-  figState.shapes.push({type:'segment', p1:mid, p2:b});
+  // Les deux moitiés prennent la PLACE du segment d'origine (et non la fin de la liste) et sont
+  // marquées « moitie » : la construction aux instruments y voit toujours le segment [AB], suivi
+  // du seul placement du milieu (signalé : en écran partagé, « placement du milieu C de [AB] :
+  // la construction repart de zéro »). Une droite ou une demi-droite reste entière (elle était
+  // remplacée à tort par deux segments).
+  const lignes = figState.shapes.filter(s=>['segment','droite','demi-droite'].includes(s.type) && ((s.p1===a && s.p2===b) || (s.p1===b && s.p2===a)));
+  const seg = lignes.find(s=>s.type==='segment');
+  if(seg){
+    const i = figState.shapes.indexOf(seg);
+    figState.shapes.splice(i, 1, Object.assign({}, seg, {p1:a, p2:mid, moitie:true}), Object.assign({}, seg, {p1:mid, p2:b, moitie:true}));
+  } else if(!lignes.length){
+    figState.shapes.push({type:'segment', p1:a, p2:mid, moitie:true});
+    figState.shapes.push({type:'segment', p1:mid, p2:b, moitie:true});
+  }
   figState.selected = [];
   renderFigureSvg();
 }
@@ -5752,9 +5763,25 @@ function figVersProgramme(){
     const cote = figState.shapes.find(x=>x!==sh && x.type==='segment' && (x.p1===v||x.p2===v) && x.p1!==n && x.p2!==n);
     return cote ? (cote.p1===v ? cote.p2 : cote.p1) : null;
   }
+  // Moitiés d'un segment coupé par l'outil Milieu : {autre, a, b} si sh en est une, sinon null.
+  function moitieDe(sh){
+    if(!sh.moitie || sh.type!=='segment') return null;
+    const m = [sh.p1, sh.p2].find(q=>q.def && q.def.type==='milieu' && (q.def.a===sh.p1 || q.def.a===sh.p2 || q.def.b===sh.p1 || q.def.b===sh.p2));
+    if(!m) return null;
+    const bout = sh.p1===m ? sh.p2 : sh.p1, loin = m.def.a===bout ? m.def.b : m.def.a;
+    const autre = figState.shapes.find(x=>x!==sh && x.moitie && x.type==='segment' && ((x.p1===m && x.p2===loin) || (x.p2===m && x.p1===loin)));
+    return autre ? {autre, a:m.def.a, b:m.def.b} : null;
+  }
   function assurerObjet(sh){
     if(idObj.has(sh)) return idObj.get(sh);
     const t = sh.type;
+    const moitie = moitieDe(sh);
+    if(moitie){
+      assurerPoint(moitie.a); assurerPoint(moitie.b);
+      const id = nouvelId(sh); idObj.set(moitie.autre, id);
+      prog.push(couleur(sh, {op:'segment', id, from:moitie.a.label, to:moitie.b.label}));
+      return id;
+    }
     if(t==='segment' && sh.angleDeg && !nomPt.has(sh.p2) && !sh.p2.def){
       // Angle de mesure donnée : demi-droite au RAPPORTEUR depuis le côté de départ, puis report de
       // la longueur du côté à la règle (le point est marqué, le trait n'est pas retracé).
@@ -5865,6 +5892,7 @@ async function figToggleSplit(){
   if(typeof initTableauView==='function') initTableauView();
   figRouvrirPanneau();
   document.getElementById('figSplitRefreshBtn').style.display = 'inline-flex';
+  figSplitOutilsInit(); document.getElementById('figSplitOutils').style.display = 'flex';
   document.getElementById('figSplitBtn').classList.add('active');
   document.getElementById('figSplitBtn').title = 'Quitter l\'écran partagé';
   // La figure déjà tracée est reconstruite d'un coup ; ensuite, chaque nouvel objet se construit
@@ -5878,6 +5906,7 @@ function figQuitterSplit(){
   if(!document.body.classList.contains('fig-split')) return;
   document.body.classList.remove('fig-split');
   const r = document.getElementById('figSplitRefreshBtn'); if(r) r.style.display = 'none';
+  const o = document.getElementById('figSplitOutils'); if(o) o.style.display = 'none';
   const b = document.getElementById('figSplitBtn'); if(b){ b.classList.remove('active'); b.title = 'Écran partagé : la figure à gauche, sa construction aux instruments à droite'; }
 }
 /* Construction EN DIRECT -- demandé : « l'idée est de voir les constructions se faire en direct avec
@@ -5907,6 +5936,26 @@ function figLiveCadrer(){
   const cx = (TB_AI_REGION.x0+TB_AI_REGION.x1)/2, cy = (TB_AI_REGION.y0+TB_AI_REGION.y1)/2, w = vb.width*k/2+8, h = vb.height*k/2+8;
   tbZoomFit({x0:cx-w, x1:cx+w, y0:cy-h, y1:cy+h});
 }
+/* Instruments autorisés pour la construction à droite -- demandé : « permettre de choisir les
+   outils qui serviront (réquerre, équerre...) ». Même mémoire que les cases de « Construire avec
+   l'IA » ; changer d'instruments reconstruit la figure avec les nouveaux gestes. */
+function figSplitOutils(){
+  const cases = [...document.querySelectorAll('#figSplitOutils input[type=checkbox]')];
+  return cases.filter(c=>c.checked).map(c=>c.value);
+}
+function figSplitOutilsInit(){
+  let memo = null;
+  try{ memo = JSON.parse(localStorage.getItem(typeof TB_AI_TOOLS_KEY!=='undefined' ? TB_AI_TOOLS_KEY : 'tbAiTools') || 'null'); }catch(e){}
+  if(Array.isArray(memo) && memo.length) document.querySelectorAll('#figSplitOutils input[type=checkbox]').forEach(c=>{ c.checked = memo.includes(c.value); });
+}
+async function figSplitOutilsChange(){
+  const outils = figSplitOutils();
+  try{ localStorage.setItem(typeof TB_AI_TOOLS_KEY!=='undefined' ? TB_AI_TOOLS_KEY : 'tbAiTools', JSON.stringify(outils)); }catch(e){}
+  document.querySelectorAll('#tbAiToolChecks input[type=checkbox]').forEach(c=>{ c.checked = outils.includes(c.value); });
+  if(!outils.length){ document.getElementById('figureHint').textContent = 'Cochez au moins un instrument.'; return; }
+  figLive.cles = []; figLive.nActions = 0; figLive.centreCle = '';
+  await figLiveSync(true);
+}
 async function figLiveSync(rapide){
   if(!document.body.classList.contains('fig-split') || typeof tbAiLoadProgram!=='function') return;
   if(figLive.occupe){ figLive.encore = true; return; }
@@ -5925,12 +5974,12 @@ async function figLiveSync(rapide){
   const vitesse = tbAiSpeed;
   try{
     if(prolonge && figLive.cles.length){
-      tbAiLoadProgram(programme, null, {center:centre, keepZoom:true});
+      tbAiLoadProgram(programme, figSplitOutils(), {center:centre, keepZoom:true});
       tbAiPlanIndex = Math.min(figLive.nActions, tbAiPlan.actions.length);
     } else {
       // Reconstruction complète, instantanée (sauf au tout premier objet, qui se construit en direct).
       tbClearAll();
-      tbAiLoadProgram(programme, null, {center:centre, keepZoom:true});
+      tbAiLoadProgram(programme, figSplitOutils(), {center:centre, keepZoom:true});
       figLiveCadrer();
       if(rapide || figLive.cles.length) tbAiSpeed = 0.001;
     }
@@ -5962,7 +6011,7 @@ async function figSplitActualiser(){
   const origine = figState.points.find(p=>p.label===programme[0].name), centre = figLiveCentre(origine);
   figLive.occupe = true;
   try{
-    tbAiLoadProgram(programme, null, {center:centre, keepZoom:true});
+    tbAiLoadProgram(programme, figSplitOutils(), {center:centre, keepZoom:true});
     figLiveCadrer();
     while(tbAiPlan && tbAiPlanIndex < tbAiPlan.actions.length) await tbAiPlaybackNext();
     figLive.cles = programme.map(o=>JSON.stringify(o)); figLive.nActions = tbAiPlan.actions.length; figLive.centreCle = centre.x+'|'+centre.y;
