@@ -14,7 +14,9 @@
    comme pour les évaluations et le cahier.
    ===================================================================== */
 
-const FAC_NIVEAUX = ['6e','5e','4e','3e'];
+const FAC_NIVEAUX = ['cm1','cm2','6e','5e','4e','3e'];
+const FAC_ECOLE = ['cm1','cm2']; // tarif école par élève (prix.ecole), quel que soit le nombre de niveaux de collège
+const facLib = n => typeof niveauLabel === 'function' ? niveauLabel(n) : n;
 const FAC_STATUTS = {
   emis:    { label:'Émis',             color:'#0C5BA0' },
   accepte: { label:'Commande reçue',   color:'#1F7A4D' },
@@ -41,6 +43,7 @@ function facPrix(nbNiveaux){
   const p = (facState.emetteur && facState.emetteur.prix) || {1:4, 2:3.5, 3:3.5, 4:3};
   return Number(p[String(Math.min(4, Math.max(1, nbNiveaux)))]) || 0;
 }
+function facPrixEcole(){ const p = (facState.emetteur && facState.emetteur.prix) || {}; return p.ecole != null ? Number(p.ecole) : 2.5; }
 
 /* ---------- Panneau ---------- */
 function facPanelHtml(){
@@ -67,6 +70,7 @@ function facPanelHtml(){
           <label>2 niveaux<input type="number" step="0.05" min="0" id="facEmP2"></label>
           <label>3 niveaux<input type="number" step="0.05" min="0" id="facEmP3"></label>
           <label>4 niveaux (collège complet)<input type="number" step="0.05" min="0" id="facEmP4"></label>
+          <label>École : CM1, CM2 (par élève)<input type="number" step="0.05" min="0" id="facEmP5"></label>
           <label>Validité des devis (jours)<input type="number" min="1" id="facEmValid"></label>
           <label>Délai de paiement (jours)<input type="number" min="0" id="facEmDelai"></label>
         </div>
@@ -104,7 +108,7 @@ function facPanelHtml(){
           <label class="hint" style="margin:0;">Année scolaire <select id="facAnnee" onchange="facRenderTotal()">${annees.map((a,i)=>`<option value="${i}">${a.label}</option>`).join('')}</select></label>
         </div>
         <div class="fac-levels">
-          ${FAC_NIVEAUX.map(n=>`<label class="fac-level"><span><input type="checkbox" id="facLv_${n}" onchange="facRenderTotal()"> ${n}</span><input type="number" min="0" step="1" id="facEff_${n}" placeholder="élèves" oninput="facRenderTotal()"></label>`).join('')}
+          ${FAC_NIVEAUX.map(n=>`<label class="fac-level"><span><input type="checkbox" id="facLv_${n}" onchange="facRenderTotal()"> ${facLib(n)}</span><input type="number" min="0" step="1" id="facEff_${n}" placeholder="élèves" oninput="facRenderTotal()"></label>`).join('')}
         </div>
 
         <p class="fac-step">3. Autres lignes <span class="hint" style="font-weight:400;">(formation, remise « établissement pilote » en prix négatif…)</span></p>
@@ -216,7 +220,7 @@ function facFillEmetteur(){
   const set = (id, v)=>{ const el = document.getElementById(id); if(el) el.value = v == null ? '' : v; };
   set('facEmNom', e.nom); set('facEmEnseigne', e.enseigne); set('facEmSiret', e.siret); set('facEmEmail', e.email);
   set('facEmTel', e.telephone); set('facEmAdresse', e.adresse); set('facEmIban', e.iban); set('facEmBic', e.bic);
-  set('facEmTva', e.mention_tva); set('facEmP1', p['1']); set('facEmP2', p['2']); set('facEmP3', p['3']); set('facEmP4', p['4']);
+  set('facEmTva', e.mention_tva); set('facEmP1', p['1']); set('facEmP2', p['2']); set('facEmP3', p['3']); set('facEmP4', p['4']); set('facEmP5', p.ecole != null ? p.ecole : 2.5);
   set('facEmValid', e.validite_devis_jours); set('facEmDelai', e.delai_paiement_jours);
   const missing = ['nom','siret','adresse'].filter(k=>!(e[k]||'').trim());
   document.getElementById('facEmetteurWarn').textContent = missing.length ? 'à compléter avant le premier devis' : '';
@@ -228,7 +232,7 @@ async function facSaveEmetteur(){
   const row = {
     nom: v('facEmNom'), enseigne: v('facEmEnseigne'), siret: v('facEmSiret').replace(/\s+/g,''), email: v('facEmEmail'),
     telephone: v('facEmTel'), adresse: v('facEmAdresse'), iban: v('facEmIban').replace(/\s+/g,' ').toUpperCase(), bic: v('facEmBic').toUpperCase(),
-    mention_tva: v('facEmTva'), prix: {1:num('facEmP1'), 2:num('facEmP2'), 3:num('facEmP3'), 4:num('facEmP4')},
+    mention_tva: v('facEmTva'), prix: {1:num('facEmP1'), 2:num('facEmP2'), 3:num('facEmP3'), 4:num('facEmP4'), ecole:num('facEmP5')},
     validite_devis_jours: parseInt(v('facEmValid'),10) || 30, delai_paiement_jours: parseInt(v('facEmDelai'),10) || 30,
     updated_at: new Date().toISOString(),
   };
@@ -305,9 +309,9 @@ async function facSaveClient(){
 function facLicenceLines(){
   const annee = facAnneesScolaires()[parseInt(document.getElementById('facAnnee').value,10) || 0];
   const lv = FAC_NIVEAUX.filter(n=>document.getElementById('facLv_'+n).checked).map(n=>({ n, eff: Math.max(0, parseInt(document.getElementById('facEff_'+n).value,10) || 0) })).filter(x=>x.eff > 0);
-  const pu = facPrix(lv.length);
+  const pu = facPrix(lv.filter(x=>!FAC_ECOLE.includes(x.n)).length), puEcole = facPrixEcole();
   return { annee, niveaux: lv.map(x=>x.n), effectifs: Object.fromEntries(lv.map(x=>[x.n, x.eff])),
-    lignes: lv.map(x=>({ designation:`Licence établissement L'Atelier des Maths ${annee.label} – niveau ${x.n}`, detail:`${x.eff} élèves, licences professeurs incluses`, qte:x.eff, unite:'élève', pu })) };
+    lignes: lv.map(x=>({ designation:`Licence établissement L'Atelier des Maths ${annee.label} – niveau ${facLib(x.n)}`, detail:`${x.eff} élèves, licences professeurs incluses`, qte:x.eff, unite:'élève', pu: FAC_ECOLE.includes(x.n) ? puEcole : pu })) };
 }
 function facAddExtra(){ facState.extra.push({ designation:'', qte:1, pu:0 }); facRenderExtra(); facRenderTotal(); }
 function facRenderExtra(){
@@ -332,7 +336,7 @@ function facRenderTotal(){
   const total = lignes.reduce((t,l)=>t + facLineTotal(l), 0);
   box.innerHTML = `<table class="fac-recap"><tr><th>Désignation</th><th>Qté</th><th>Prix unitaire</th><th>Montant</th></tr>
     ${lignes.map(l=>`<tr><td>${facEsc(l.designation)}${l.detail ? `<div class="hint" style="margin:0;">${facEsc(l.detail)}</div>` : ''}</td><td>${l.qte}</td><td>${facMoney(l.pu)}</td><td>${facMoney(facLineTotal(l))}</td></tr>`).join('')}
-    <tr class="tot"><td colspan="3">Total${niveaux.length ? ` · tarif ${niveaux.length === 4 ? 'collège complet' : niveaux.length + ' niveau' + (niveaux.length > 1 ? 'x' : '')}` : ''}</td><td>${facMoney(total)}</td></tr></table>`;
+    <tr class="tot"><td colspan="3">Total${niveaux.length ? ` · ${[ (n => n ? 'tarif ' + (n === 4 ? 'collège complet' : n + ' niveau' + (n > 1 ? 'x' : '') + ' de collège') : '')(niveaux.filter(n=>!FAC_ECOLE.includes(n)).length), niveaux.some(n=>FAC_ECOLE.includes(n)) ? 'tarif école' : '' ].filter(Boolean).join(' + ')}` : ''}</td><td>${facMoney(total)}</td></tr></table>`;
 }
 
 /* ---------- Émission ---------- */
@@ -657,7 +661,7 @@ function facDocHtml(d){
       <div class="ttl"><h1>${titre}</h1><div>N° <b>${facEsc(d.numero)}</b><br>Date : ${facDate(d.date_emission)}${particulier && d.type === 'facture' ? '<br><b style="color:#1F7A4D;">Acquittée</b>' : ''}${d.type === 'devis' && d.date_validite ? '<br>Valable jusqu\'au ' + facDate(d.date_validite) : ''}${d.type === 'facture' && d.date_echeance ? '<br>Échéance : ' + facDate(d.date_echeance) : ''}</div></div>
     </div>
     <div class="dest"><div class="lbl">${d.type === 'devis' ? 'Établissement' : 'Facturé à'}</div>${destinataire}${cli.adresse ? '<br>' + nl(cli.adresse) : ''}${contactClient}${ids ? '<br>' + ids : ''}</div>
-    <div class="obj"><img class="logo-adm" src="${facLogo('logo-header.png')}" alt="L'Atelier des Maths"><div><b>Objet :</b> L'Atelier des Maths (maths.latelieraugmente.fr) – ${particulier ? 'offre Famille' : 'licence établissement'}${periode ? ', ' + periode : ''}${(d.niveaux||[]).length ? ' – niveaux ' + d.niveaux.join(', ') : ''}.</div></div>
+    <div class="obj"><img class="logo-adm" src="${facLogo('logo-header.png')}" alt="L'Atelier des Maths"><div><b>Objet :</b> L'Atelier des Maths (maths.latelieraugmente.fr) – ${particulier ? 'offre Famille' : 'licence établissement'}${periode ? ', ' + periode : ''}${(d.niveaux||[]).length ? ' – niveaux ' + d.niveaux.map(facLib).join(', ') : ''}.</div></div>
     <table><tr><th>Désignation</th><th class="n">Quantité</th><th class="n">Prix unitaire</th><th class="n">Montant</th></tr>${lignes}</table>
     <table class="tot"><tr class="big"><td>${d.type === 'avoir' ? 'Total de l\'avoir' : d.type === 'devis' ? 'Total' : particulier ? 'Total payé' : 'Net à payer'}</td><td class="n">${facMoney(d.total)}</td></tr></table>
     ${em.mention_tva ? `<div class="tva">${facEsc(em.mention_tva)}</div>` : ''}

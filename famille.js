@@ -15,14 +15,17 @@
      verrouillage des chapitres dans app.js (isChapterLocked).
    ===================================================================== */
 
-const FAM_ORDRE = ['6e','5e','4e','3e'];
-const FAM_DISPO = ['6e','5e','4e','3e']; // niveaux en ligne : miroir de NIVEAUX_DISPONIBLES (fonction famille)
+const FAM_ORDRE = ['cm1','cm2','6e','5e','4e','3e'];
+const FAM_DISPO = ['cm1','cm2','6e','5e','4e','3e']; // niveaux en ligne : miroir de NIVEAUX_DISPONIBLES (fonction famille)
+const famLib = n => typeof niveauLabel === 'function' ? niveauLabel(n) : n;
 const FAM_EXCLUSION_TEXTE = "Je certifie qu'aucun de mes enfants inscrits sur L'Atelier des Maths n'est scolarisé à l'Ensemble scolaire La Malgrange (Jarville-la-Malgrange), établissement où enseigne le concepteur du site, et je m'engage à ne pas créer de compte pour un enfant qui y serait scolarisé. Je reconnais qu'une fausse déclaration entraîne la fermeture des comptes sans remboursement.";
 // Prix affichés (en centimes, par nombre de niveaux) : lus dans famille_parametres, modifiables
 // dans Administration > Familles. Le montant réellement payé est toujours recalculé par le serveur.
-let famGrille = { '1':3500, '2':5500, '3':6900 };
+// École : ecole1 (CM1 ou CM2) / ecole2 (CM1 + CM2), en plus des niveaux de collège éventuels.
+let famGrille = { '1':3500, '2':5500, '3':6900, ecole1:2500, ecole2:3900 };
+const famGrilleDe = p => Object.assign({ ecole1:2500, ecole2:3900 }, p || {});
 async function famChargerGrille(){
-  try{ const { data } = await sb.from('famille_parametres').select('prix').eq('id', 1).maybeSingle(); if(data && data.prix) famGrille = data.prix; }catch(e){}
+  try{ const { data } = await sb.from('famille_parametres').select('prix').eq('id', 1).maybeSingle(); if(data && data.prix) famGrille = famGrilleDe(data.prix); }catch(e){}
 }
 function famPrixTxt(c){ return (c/100).toFixed(2).replace('.',',').replace(',00','') + ' €'; }
 // Liens publics vers l'offre (bandeau de l'accueil, « Je suis parent » dans le menu de connexion) :
@@ -31,7 +34,7 @@ let famPublique = false;
 async function famAppliquerVisibilite(){
   try{
     const { data } = await sb.from('famille_parametres').select('prix,publique').eq('id', 1).maybeSingle();
-    if(data){ famPublique = !!data.publique; if(data.prix) famGrille = data.prix; }
+    if(data){ famPublique = !!data.publique; if(data.prix) famGrille = famGrilleDe(data.prix); }
   }catch(e){}
   famMajLiens();
 }
@@ -44,7 +47,7 @@ function famMajLiens(){
   if(btn) btn.style.display = famPublique ? 'flex' : 'none';
   const cta = document.getElementById('famHomeCta'), prix = document.getElementById('famHomePrix');
   if(cta) cta.innerHTML = role === 'parent' ? 'Mon Espace famille <span class="gicon">arrow_forward</span>' : 'Découvrir l\'offre Famille <span class="gicon">arrow_forward</span>';
-  if(prix) prix.textContent = role === 'parent' ? '' : 'À partir de ' + famPrixTxt(famGrille['1']) + ' par année scolaire.';
+  if(prix) prix.textContent = role === 'parent' ? '' : 'À partir de ' + famPrixTxt(Math.min(famGrille['1'], famGrille.ecole1)) + ' par année scolaire.';
 }
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(famAppliquerVisibilite, 0)); else setTimeout(famAppliquerVisibilite, 0);
 function famFinAnnee(){ const d = new Date(), y = d.getFullYear(); return (d.getMonth()+1 >= 6 ? y+1 : y)+'-08-31'; }
@@ -107,12 +110,14 @@ function famPresentationHtml(){
   return `
   <div class="fam-hero">
     <h1 style="margin:0 0 6px;"><span class="gicon">family_restroom</span> L'Atelier des Maths en famille</h1>
-    <p style="margin:0;max-width:72ch;">Les cours, méthodes et exercices du collège, les automatismes et Objectif Nombre, avec un compte pour chaque enfant et un suivi pour vous.</p>
+    <p style="margin:0;max-width:72ch;">Les cours, méthodes et exercices du CM1 à la 3e, les automatismes et Objectif Nombre, avec un compte pour chaque enfant et un suivi pour vous.</p>
   </div>
   <div class="fam-offres">
     <div class="fam-offre"><b>1 niveau</b><span class="fam-prix">${famPrixTxt(famGrille['1'])}</span><small>par année scolaire</small></div>
     <div class="fam-offre"><b>2 niveaux</b><span class="fam-prix">${famPrixTxt(famGrille['2'])}</span><small>par année scolaire</small></div>
     <div class="fam-offre"><b>Collège complet</b><span class="fam-prix">${famPrixTxt(famGrille['3'])}</span><small>de la 6e à la 3e</small></div>
+    <div class="fam-offre"><b>École : CM1 ou CM2</b><span class="fam-prix">${famPrixTxt(famGrille.ecole1)}</span><small>par année scolaire</small></div>
+    <div class="fam-offre"><b>CM1 et CM2</b><span class="fam-prix">${famPrixTxt(famGrille.ecole2)}</span><small>par année scolaire</small></div>
   </div>
   <ul class="fam-points">
     <li><span class="gicon">group</span><span>Jusqu'à <b>4 comptes enfants</b> (des jumeaux ont chacun leur compte), gérés par vous.</span></li>
@@ -272,11 +277,11 @@ function famAccesHtml(fam, active){
   const ouverts = active ? ((famState && famState.niveaux_ouverts) || []) : [];
   const revision = ouverts.filter(n=>!(fam.niveaux||[]).includes(n));
   const statut = active
-    ? `<p style="margin:6px 0;"><span class="fam-badge" style="background:#1E7B34;">Accès en cours</span> jusqu'au <b>${famDate(fam.acces_until)}</b> : ${(fam.niveaux||[]).join(', ')}${revision.length?' <span class="hint">(+ '+revision.join(', ')+' en révision)</span>':''}</p>`
+    ? `<p style="margin:6px 0;"><span class="fam-badge" style="background:#1E7B34;">Accès en cours</span> jusqu'au <b>${famDate(fam.acces_until)}</b> : ${(fam.niveaux||[]).map(famLib).join(', ')}${revision.length?' <span class="hint">(+ '+revision.map(famLib).join(', ')+' en révision)</span>':''}</p>`
     : `<p style="margin:6px 0;"><span class="fam-badge" style="background:#8A5A00;">Pas d'accès en cours</span> Vos enfants ne voient que les chapitres gratuits.</p>`;
   const cases = FAM_ORDRE.map(n=>{
     const dispo = FAM_DISPO.includes(n), deja = actuels.includes(n);
-    return `<label class="fam-niv ${dispo?'':'off'}"><input type="checkbox" class="famNiv" value="${n}" ${deja?'checked disabled':''} ${dispo?'':'disabled'} onchange="famMajPrix()"> ${n}${deja?' <small>inclus</small>':dispo?'':' <small>bientôt</small>'}</label>`;
+    return `<label class="fam-niv ${dispo?'':'off'}"><input type="checkbox" class="famNiv" value="${n}" ${deja?'checked disabled':''} ${dispo?'':'disabled'} onchange="famMajPrix()"> ${famLib(n)}${deja?' <small>inclus</small>':dispo?'':' <small>bientôt</small>'}</label>`;
   }).join('');
   const anneeLabel = (parseInt(fin.slice(0,4),10)-1)+'-'+fin.slice(0,4);
   return `
@@ -295,7 +300,7 @@ function famAccesHtml(fam, active){
     <button class="btn" id="famPayBtn" onclick="famPayer()" disabled><span class="gicon">credit_card</span> Payer par carte</button>
     <span class="hint" id="famPayMsg" style="display:block;margin-top:6px;"></span>
     <p class="hint" style="margin:8px 0 0;">Paiement unique et sécurisé (Stripe), <b>sans reconduction automatique</b> : rien ne sera prélevé l'an prochain sans votre accord. Facture émise par L'Atelier Augmenté, disponible ci-dessous. En cas de litige, après nous avoir écrit, vous pouvez recourir gratuitement au médiateur de la consommation CM2C (<a href="https://www.cm2c.net/declarer-un-litige.php" target="_blank" rel="noopener">cm2c.net</a>, 49 rue de Ponthieu, 75008 Paris) ; voir les <a href="#/cgv">CGV</a>.${fam.montant_paye_centimes && memePeriode ? ' Déjà payé pour cette année : '+famEuros(fam.montant_paye_centimes)+'.' : ''}</p>
-    ${famData.pay.length ? `<details style="margin-top:8px;"><summary class="hint">Historique des paiements</summary><table class="fam-table" style="margin-top:6px;"><tr><th>Date</th><th>Niveaux</th><th>Montant</th><th>Accès jusqu'au</th></tr>${famData.pay.map(p=>`<tr><td>${famDate(p.created_at)}</td><td>${(p.niveaux||[]).join(', ')}</td><td>${famEuros(p.montant_centimes)}${p.test?' <span class="fam-badge" style="background:#6A4FB3;">test</span>':''}</td><td>${famDate(p.acces_until)}</td></tr>`).join('')}</table></details>` : ''}
+    ${famData.pay.length ? `<details style="margin-top:8px;"><summary class="hint">Historique des paiements</summary><table class="fam-table" style="margin-top:6px;"><tr><th>Date</th><th>Niveaux</th><th>Montant</th><th>Accès jusqu'au</th></tr>${famData.pay.map(p=>`<tr><td>${famDate(p.created_at)}</td><td>${(p.niveaux||[]).map(famLib).join(', ')}</td><td>${famEuros(p.montant_centimes)}${p.test?' <span class="fam-badge" style="background:#6A4FB3;">test</span>':''}</td><td>${famDate(p.acces_until)}</td></tr>`).join('')}</table></details>` : ''}
   </div>`;
 }
 // Prix calculé par le serveur (tarifs en vigueur, code promo, ce qui a déjà été payé cette année) :
@@ -316,7 +321,7 @@ async function famMajPrix(){
   if(cm) cm.innerHTML = famData.code ? (d.code ? '<span style="color:#1E7B34;"><span class="gicon">check_circle</span> '+famEsc(d.code_libelle || 'Code appliqué')+'</span>' : '<span style="color:#B3261E;">'+famEsc(d.code_msg || 'Code non valable.')+'</span>') : '';
   const barre = d.prix_formule < d.prix_liste ? `<s class="hint">${famPrixTxt(d.prix_liste)}</s> ` : '';
   el.innerHTML = `<div class="fam-total">Total : ${d.deja ? '' : barre}<b>${famPrixTxt(d.montant)}</b></div>
-    <div class="hint">${d.niveaux.join(', ')} · accès jusqu'au <b>${famDate(d.acces_until)}</b>${d.deja ? ` · formule ${barre}${famPrixTxt(d.prix_formule)} − ${famPrixTxt(d.deja)} déjà payés` : ''}${d.code ? ' · code <b>'+famEsc(d.code)+'</b>' : ''}</div>`;
+    <div class="hint">${d.niveaux.map(famLib).join(', ')} · accès jusqu'au <b>${famDate(d.acces_until)}</b>${d.deja ? ` · formule ${barre}${famPrixTxt(d.prix_formule)} − ${famPrixTxt(d.deja)} déjà payés` : ''}${d.code ? ' · code <b>'+famEsc(d.code)+'</b>' : ''}</div>`;
   if(btn) btn.disabled = d.montant <= 0;
 }
 function famAppliquerCode(){
@@ -366,8 +371,8 @@ function famEnfantsHtml(enfants, active){
       </div>
       <div class="fam-row">
         <label class="hint">Classe <select onchange="famReglage('${e.enfant_id}', {niveau:this.value})">
-          <option value="">–</option>${FAM_ORDRE.map(n=>`<option value="${n}" ${e.niveau===n?'selected':''}>${n}</option>`).join('')}</select></label>
-        <span class="hint">Collège : ${e.hors_college ? 'hors collège' : famEsc(e.uai)}</span>
+          <option value="">–</option>${FAM_ORDRE.map(n=>`<option value="${n}" ${e.niveau===n?'selected':''}>${famLib(n)}</option>`).join('')}</select></label>
+        <span class="hint">Établissement : ${e.hors_college ? 'non scolarisé' : famEsc(e.uai)}</span>
       </div>
       <div class="fam-actions">
         <button class="btn secondary" onclick="famMdp('${e.enfant_id}', '${famEsc(e.prenom).replace(/'/g,"\\'")}')"><span class="gicon">key</span> Nouveau mot de passe</button>
@@ -386,11 +391,11 @@ function famEnfantsHtml(enfants, active){
       <summary><span class="gicon">person_add</span> Ajouter un enfant</summary>
       <div class="fam-form">
         <label>Prénom<input type="text" id="famEnfPrenom" oninput="famSuggestIdent()"></label>
-        <label>Classe<select id="famEnfNiveau"><option value="">–</option>${FAM_ORDRE.map(n=>`<option value="${n}">${n}</option>`).join('')}</select></label>
+        <label>Classe<select id="famEnfNiveau"><option value="">–</option>${FAM_ORDRE.map(n=>`<option value="${n}">${famLib(n)}</option>`).join('')}</select></label>
         <label>Identifiant de connexion<input type="text" id="famEnfIdent" autocomplete="off" oninput="this.dataset.touched=1"><small>Lettres, chiffres, point ou tiret.</small></label>
         <label>Mot de passe (6 caractères minimum)<input type="text" id="famEnfPassword" autocomplete="off"><small>Notez-le : c'est vous qui le transmettez à votre enfant.</small></label>
-        <label class="wide">Collège fréquenté : code UAI<input type="text" id="famEnfUai" maxlength="8" style="text-transform:uppercase;" placeholder="ex. 0541234X"><small>Il figure sur les courriers et le site du collège, ou dans l'<a href="https://www.education.gouv.fr/annuaire" target="_blank" rel="noopener">annuaire de l'Éducation nationale</a>.</small></label>
-        <label class="fam-check wide"><input type="checkbox" id="famEnfHors" onchange="document.getElementById('famEnfUai').disabled=this.checked"> <span>Mon enfant n'est pas scolarisé au collège (instruction en famille, CNED, école primaire…).</span></label>
+        <label class="wide">École ou collège fréquenté : code UAI<input type="text" id="famEnfUai" maxlength="8" style="text-transform:uppercase;" placeholder="ex. 0541234X"><small>Il figure sur les courriers et le site de l'établissement, ou dans l'<a href="https://www.education.gouv.fr/annuaire" target="_blank" rel="noopener">annuaire de l'Éducation nationale</a>.</small></label>
+        <label class="fam-check wide"><input type="checkbox" id="famEnfHors" onchange="document.getElementById('famEnfUai').disabled=this.checked"> <span>Mon enfant n'est pas scolarisé dans un établissement (instruction en famille, CNED…).</span></label>
       </div>
       <button class="btn" onclick="famAjouterEnfant()"><span class="gicon">add</span> Créer le compte</button>
       <span class="hint" id="famEnfMsg" style="display:block;margin-top:6px;"></span>
@@ -411,7 +416,7 @@ async function famAjouterEnfant(){
   const body = { action:'enfant-creer', prenom: v('famEnfPrenom'), identifiant: v('famEnfIdent'), password: document.getElementById('famEnfPassword').value,
     niveau: v('famEnfNiveau') || null, hors_college: document.getElementById('famEnfHors').checked, uai: v('famEnfUai').toUpperCase() };
   if(!body.prenom) return famMsg('famEnfMsg', 'Indiquez le prénom de l\'enfant.');
-  if(!body.hors_college && !/^[0-9]{7}[A-Z]$/.test(body.uai)) return famMsg('famEnfMsg', 'Indiquez le code UAI du collège (7 chiffres et une lettre), ou cochez « pas scolarisé au collège ».');
+  if(!body.hors_college && !/^[0-9]{7}[A-Z]$/.test(body.uai)) return famMsg('famEnfMsg', 'Indiquez le code UAI de l\'école ou du collège (7 chiffres et une lettre), ou cochez « pas scolarisé dans un établissement ».');
   famMsg('famEnfMsg', 'Création…', true);
   try{
     const r = await famCall(body);
@@ -651,7 +656,7 @@ async function famAdminRefresh(){
     sb.from('famille_codes_promo').select('*').order('created_at', {ascending:false}),
   ]);
   famAdminCodes = codes || [];
-  const grille = (param && param.prix) || famGrille;
+  const grille = famGrilleDe((param && param.prix) || famGrille);
   const usages = new Map(); (pays||[]).filter(p=>!p.test && p.promo_code).forEach(p=>usages.set(p.promo_code, (usages.get(p.promo_code)||0)+1));
   const eur = c => c==null ? '' : (c/100).toFixed(2).replace('.',',').replace(',00','');
   const today = new Date().toISOString().slice(0,10);
@@ -690,6 +695,8 @@ async function famAdminRefresh(){
         <label class="hint">1 niveau <input type="number" id="famTarif1" min="1" step="0.01" value="${eur(grille['1'])}" style="width:80px;"> €</label>
         <label class="hint">2 niveaux <input type="number" id="famTarif2" min="1" step="0.01" value="${eur(grille['2'])}" style="width:80px;"> €</label>
         <label class="hint">Collège complet <input type="number" id="famTarif3" min="1" step="0.01" value="${eur(grille['3'])}" style="width:80px;"> €</label>
+        <label class="hint">École, CM1 ou CM2 <input type="number" id="famTarif4" min="1" step="0.01" value="${eur(grille.ecole1)}" style="width:80px;"> €</label>
+        <label class="hint">CM1 et CM2 <input type="number" id="famTarif5" min="1" step="0.01" value="${eur(grille.ecole2)}" style="width:80px;"> €</label>
         <button class="btn" onclick="famAdminTarifs()">Enregistrer</button>
         <span class="hint" id="famTarifMsg"></span>
       </div>
@@ -703,7 +710,7 @@ async function famAdminRefresh(){
     </div>
     <div class="tool-shell fam-card">
       <strong class="fam-h"><span class="gicon">block</span> Établissements exclus de l'offre Famille</strong>
-      <p class="hint" style="margin:4px 0 8px;">Un parent ne peut pas créer de compte enfant en déclarant l'un de ces collèges (message neutre, la liste n'est jamais montrée).</p>
+      <p class="hint" style="margin:4px 0 8px;">Un parent ne peut pas créer de compte enfant en déclarant l'un de ces établissements (message neutre, la liste n'est jamais montrée).</p>
       ${(excl||[]).map(x=>`<div class="fam-row" style="margin:4px 0;"><code>${famEsc(x.uai)}</code> <span class="hint">${famEsc(x.motif||'')}</span> <button class="btn secondary" style="padding:2px 10px;font-size:.78rem;" onclick="famAdminExclRetirer('${famEsc(x.uai)}')">Retirer</button></div>`).join('')}
       <div class="fam-row" style="margin-top:8px;"><input type="text" id="famExclUai" maxlength="8" placeholder="UAI" style="width:110px;text-transform:uppercase;"> <input type="text" id="famExclMotif" placeholder="motif (facultatif)" style="flex:1;min-width:180px;"> <button class="btn" onclick="famAdminExclAjouter()">Ajouter</button></div>
       <span class="hint" id="famExclMsg" style="display:block;margin-top:6px;"></span>
@@ -722,7 +729,7 @@ async function famAdminPublique(cb){
 }
 async function famAdminTarifs(){
   const v = i => Math.round(parseFloat(String(document.getElementById('famTarif'+i).value).replace(',','.'))*100);
-  const prix = { '1': v(1), '2': v(2), '3': v(3) };
+  const prix = { '1': v(1), '2': v(2), '3': v(3), ecole1: v(4), ecole2: v(5) };
   if(Object.values(prix).some(x=>!(x >= 50))) return famMsg('famTarifMsg', 'Prix invalides.');
   const { error } = await sb.from('famille_parametres').update({ prix, updated_at: new Date().toISOString() }).eq('id', 1);
   if(error) return famMsg('famTarifMsg', error.message);

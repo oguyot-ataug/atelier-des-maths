@@ -130,7 +130,7 @@ serve(async (req) => {
       const session = event.data.object;
       const m = session.metadata;
       if (session.payment_status !== "paid") return json({ received: true, famille: "non payé" });
-      const niveaux = String(m.niveaux || "").split(",").filter((n: string) => ["6e", "5e", "4e", "3e"].includes(n));
+      const niveaux = String(m.niveaux || "").split(",").filter((n: string) => ["cm1", "cm2", "6e", "5e", "4e", "3e"].includes(n));
       const { error } = await adminClient.rpc("famille_activer", {
         p_session: session.id,
         p_parent: m.parent_id,
@@ -153,7 +153,7 @@ serve(async (req) => {
       const session = event.data.object;
       const m = session.metadata;
       if (session.payment_status !== "paid") return json({ received: true, prof: "non payé" });
-      const niveaux = String(m.niveaux || "").split(",").filter((n: string) => ["6e", "5e", "4e", "3e"].includes(n));
+      const niveaux = String(m.niveaux || "").split(",").filter((n: string) => ["cm1", "cm2", "6e", "5e", "4e", "3e"].includes(n));
       const { error } = await adminClient.rpc("prof_activer", {
         p_session: session.id,
         p_prof: m.prof_id,

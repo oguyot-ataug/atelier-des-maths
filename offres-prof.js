@@ -19,9 +19,14 @@
    concernés.
    ===================================================================== */
 
-const OP_ORDRE = ['6e','5e','4e','3e'];
-const OP_DISPO = ['6e','5e','4e','3e']; // miroir de NIVEAUX_DISPONIBLES (fonction prof-offre)
-let opPrix = { seul_base:3900, seul_niveau:2900, seul_classe:1500, part_base:3900, part_eleve:2000, seul_eleves_max:30 };
+const OP_ORDRE = ['cm1','cm2','6e','5e','4e','3e'];
+const OP_DISPO = ['cm1','cm2','6e','5e','4e','3e']; // miroir de NIVEAUX_DISPONIBLES (fonction prof-offre)
+const OP_ECOLE = ['cm1','cm2']; // vendus ensemble (classes à double niveau) : une formule « école »
+let opPrix = { seul_base:3900, seul_niveau:2900, seul_classe:1500, ecole_base:2900, ecole_classe:1000, part_base:3900, part_eleve:2000, seul_eleves_max:30 };
+const opLib = n => typeof niveauLabel === 'function' ? niveauLabel(n) : n;
+// Classes comprises : une par niveau de collège, une pour l'école (CM1 + CM2) -- même calcul que la fonction prof-offre.
+function opClassesDe(niveaux, sup){ const n = niveaux || []; return n.filter(x => !OP_ECOLE.includes(x)).length + (n.some(x => OP_ECOLE.includes(x)) ? 1 : 0) + (sup || 0); }
+function opPrixClasse(niveaux){ return (niveaux || []).some(x => !OP_ECOLE.includes(x)) ? opPrix.seul_classe : opPrix.ecole_classe; }
 let opOffre = null;       // ligne prof_offres du professeur connecté
 let offreNiveaux = null;  // null : pas de restriction ; sinon niveaux ouverts (Professeur seul, ou élève d'une classe en libre-service)
 let opEtat = null;        // { choix:'seul'|'particulier', niveaux:Set, classesSup, places, devis, identsNeufs:[] }
@@ -37,7 +42,7 @@ function opRevision(niv){
   niv.forEach(n => { const i = OP_ORDRE.indexOf(n); if(i > 0) s.add(OP_ORDRE[i-1]); });
   return OP_ORDRE.filter(n => s.has(n));
 }
-function opNbClasses(o){ return (o && o.offre === 'seul') ? (o.niveaux || []).length + (o.classes_sup || 0) : 0; }
+function opNbClasses(o){ return (o && o.offre === 'seul') ? opClassesDe(o.niveaux, o.classes_sup) : 0; }
 function opPayee(o){ return !!(o && o.offre && o.acces_until && o.acces_until >= opAujourdhui()); }
 
 async function opChargerPrix(){
@@ -113,7 +118,7 @@ async function renderAbonnement(){
   }
   let statut;
   if(currentEtabLicence) statut = `<div class="op-statut ok"><span class="gicon">apartment</span><div><b>Licence de votre établissement</b> jusqu'au ${opDate(currentEtabLicence)} : vous n'avez rien à payer. Vos classes sont gérées par le référent de l'établissement.</div></div>`;
-  else if(payee) statut = `<div class="op-statut ok"><span class="gicon">verified</span><div><b>${o.offre === 'seul' ? 'Professeur seul · ' + (o.niveaux || []).join(', ') + ' · ' + opNbClasses(o) + ' classe' + (opNbClasses(o) > 1 ? 's' : '') : 'Professeur particulier · ' + o.places + ' élève' + (o.places > 1 ? 's' : '')}</b>${o.stripe_test ? ' <span class="op-badge">test</span>' : ''}<br>Jusqu'au ${opDate(o.acces_until)} (paiement unique, sans reconduction).${o.offre === 'seul' ? ' Cours ouverts : ' + opRevision(o.niveaux || []).join(', ') + '.' : ''}</div></div>`;
+  else if(payee) statut = `<div class="op-statut ok"><span class="gicon">verified</span><div><b>${o.offre === 'seul' ? 'Professeur seul · ' + (o.niveaux || []).map(opLib).join(', ') + ' · ' + opNbClasses(o) + ' classe' + (opNbClasses(o) > 1 ? 's' : '') : 'Professeur particulier · ' + o.places + ' élève' + (o.places > 1 ? 's' : '')}</b>${o.stripe_test ? ' <span class="op-badge">test</span>' : ''}<br>Jusqu'au ${opDate(o.acces_until)} (paiement unique, sans reconduction).${o.offre === 'seul' ? ' Cours ouverts : ' + opRevision(o.niveaux || []).map(opLib).join(', ') + '.' : ''}</div></div>`;
   else if(essai) { const j = Math.max(0, Math.ceil((new Date(prof.subscription_expires_at) - new Date()) / 86400000));
     statut = `<div class="op-statut essai"><span class="gicon">hourglass_top</span><div><b>Essai gratuit : encore ${j} jour${j > 1 ? 's' : ''}</b> (jusqu'au ${opDate(prof.subscription_expires_at)}). Pour essayer avec vos élèves : une classe de ${opPrix.seul_eleves_max} élèves au plus. Choisissez ensuite votre offre.</div></div>`; }
   else if(gere) statut = `<div class="op-statut ok"><span class="gicon">verified</span><div><b>Compte actif</b>, géré par l'administrateur du site : vos classes sont créées pour vous.</div></div>`;
@@ -129,7 +134,7 @@ async function renderAbonnement(){
     ${peutPayer ? opOffresHtml(o, payee) : ''}
     ${peutClasses ? '<div id="opClasses"><p class="hint">Chargement de vos classes…</p></div>' : ''}
     ${opFacturesHtml()}
-    <p class="hint" style="margin:18px 0 0;">Tout le collège ? La <a href="tarifs/">licence établissement</a> couvre tous les professeurs et tous les élèves des niveaux choisis. Conditions : <a href="#/cgv">conditions générales de vente</a>.</p>`;
+    <p class="hint" style="margin:18px 0 0;">Tout l'établissement ? La <a href="tarifs/">licence établissement</a> couvre tous les professeurs et tous les élèves des niveaux choisis. Conditions : <a href="#/cgv">conditions générales de vente</a>.</p>`;
   if(peutPayer) opMajDevis();
   if(peutClasses) opRenderClasses(payee ? o.offre : 'essai');
   if(new URLSearchParams(location.search).get('abonnement') === 'succes') opAttendreActivation();
@@ -156,7 +161,9 @@ function opOffresHtml(o, payee){
   const e = opEtat, P = opPrix;
   const bloque = t => payee && o.offre !== t; // changer d'offre en cours d'année : par e-mail
   const deja = payee && o.offre === 'seul' ? (o.niveaux || []) : [];
-  const niv = OP_ORDRE.map(n => {
+  const ecolePaye = OP_ECOLE.some(n => deja.includes(n)), ecoleOn = OP_ECOLE.some(n => e.niveaux.has(n));
+  const niv = `<label class="op-niv"><input type="checkbox" ${ecoleOn || ecolePaye ? 'checked' : ''} ${ecolePaye ? 'disabled' : ''} onchange="opNiveau('ecole',this.checked)"> CM1 et CM2 <small>(école${ecolePaye ? ', compris' : ''})</small></label>`
+    + OP_ORDRE.filter(n => !OP_ECOLE.includes(n)).map(n => {
     const dispo = OP_DISPO.includes(n), paye = deja.includes(n);
     return `<label class="op-niv${!dispo ? ' off' : ''}"><input type="checkbox" ${e.niveaux.has(n) || paye ? 'checked' : ''} ${!dispo || paye ? 'disabled' : ''} onchange="opNiveau('${n}',this.checked)"> ${n}${paye ? ' <small>(compris)</small>' : !dispo ? ' <small>(bientôt)</small>' : ''}</label>`;
   }).join('');
@@ -164,22 +171,22 @@ function opOffresHtml(o, payee){
     <strong class="op-h"><span class="gicon">shopping_cart</span> ${payee ? 'Compléter mon offre' : 'Choisir mon offre'} <span class="hint" style="font-weight:400;">· année scolaire, jusqu'au 31 août</span></strong>
     <div class="op-choix">
       <button type="button" class="op-offre${e.choix === 'seul' ? ' on' : ''}" ${bloque('seul') ? 'disabled' : ''} onclick="opChoix('seul')">
-        <span class="gicon">school</span><span><b class="t">Professeur seul</b><small>Pour vos classes au collège : <b>${opEur(P.seul_base)}</b> par an pour un niveau (une classe de ${P.seul_eleves_max} élèves), <b>+${opEur(P.seul_niveau)}</b> par niveau en plus, <b>+${opEur(P.seul_classe)}</b> par classe en plus d'un même niveau. Tous les outils du professeur.</small></span></button>
+        <span class="gicon">school</span><span><b class="t">Professeur seul</b><small>Au collège : <b>${opEur(P.seul_base)}</b> par an pour un niveau (une classe de ${P.seul_eleves_max} élèves), <b>+${opEur(P.seul_niveau)}</b> par niveau en plus, <b>+${opEur(P.seul_classe)}</b> par classe en plus. À l'école : <b>${opEur(P.ecole_base)}</b> par an pour une classe de CM1 et CM2 (double niveau compris), <b>+${opEur(P.ecole_classe)}</b> par classe en plus. Tous les outils du professeur.</small></span></button>
       <button type="button" class="op-offre${e.choix === 'particulier' ? ' on' : ''}" ${bloque('particulier') ? 'disabled' : ''} onclick="opChoix('particulier')">
         <span class="gicon">groups</span><span><b class="t">Professeur particulier</b><small>Cours particuliers et soutien, seul ou en groupe : <b>${opEur(P.part_base)}</b> par an <b>+ ${opEur(P.part_eleve)}</b> par élève. Groupes libres, tous niveaux.</small></span></button>
     </div>
     ${e.choix === 'seul' ? `<p class="op-lab">Niveaux :</p><div class="op-nivs">${niv}</div>
-      <p class="hint" style="margin:4px 0 0;">Chaque niveau comprend une classe de ${P.seul_eleves_max} élèves et ouvre aussi le niveau inférieur en révision (ex. 5e → 6e).</p>
-      <p class="op-lab">Classes en plus <span class="hint" style="font-weight:400;margin:0;">(ex. deux classes de 6e : 1 classe en plus) · ${opEur(P.seul_classe)} chacune</span></p>
+      <p class="hint" style="margin:4px 0 0;">Chaque niveau de collège comprend une classe de ${P.seul_eleves_max} élèves et ouvre aussi le niveau inférieur en révision (ex. 5e → 6e, 6e → CM2). « CM1 et CM2 » comprend une classe, simple ou double niveau.</p>
+      <p class="op-lab">Classes en plus <span class="hint" style="font-weight:400;margin:0;">(ex. deux classes de 6e : 1 classe en plus) · ${opEur(opPrixClasse(Array.from(e.niveaux)))} chacune</span></p>
       <div class="op-places"><button type="button" class="btn secondary qz-mini" onclick="opClassesSup(-1)" ${e.classesSup <= (payee && o.offre === 'seul' ? (o.classes_sup || 0) : 0) ? 'disabled' : ''}>−</button>
         <b class="op-nb" id="opClassesSup">${e.classesSup}</b>
         <button type="button" class="btn secondary qz-mini" onclick="opClassesSup(1)" ${e.classesSup >= 12 ? 'disabled' : ''}>+</button>
-        <span class="hint" style="margin:0;">soit <b id="opNbClasses">${e.niveaux.size + e.classesSup}</b> classe(s) de ${P.seul_eleves_max} élèves en tout, à répartir entre vos niveaux</span></div>`
+        <span class="hint" style="margin:0;">soit <b id="opNbClasses">${opClassesDe(Array.from(e.niveaux), e.classesSup)}</b> classe(s) de ${P.seul_eleves_max} élèves en tout, à répartir entre vos niveaux</span></div>`
     : `<p class="op-lab">Nombre d'élèves :</p><div class="op-places"><input type="number" id="opPlaces" min="${payee && o.offre === 'particulier' ? o.places : 1}" max="200" value="${e.places}" oninput="opPlaces(this.value)">
       <span class="hint" style="margin:0;">${payee && o.offre === 'particulier' ? 'vous en avez ' + o.places + ' : ajoutez-en autant que nécessaire' : 'vous pourrez en ajouter en cours d\'année'}</span></div>`}
     <div class="op-devis" id="opDevis"></div>
     <label class="op-check"><input type="checkbox" id="opEngagement"><span>${e.choix === 'seul'
-      ? 'J\'utilise cette offre avec <b>mes élèves de collège</b>, dans le cadre de mon enseignement. Pour des cours particuliers ou du soutien rémunéré, je choisis l\'offre Professeur particulier.'
+      ? 'J\'utilise cette offre avec <b>mes élèves</b> (école ou collège), dans le cadre de mon enseignement. Pour des cours particuliers ou du soutien rémunéré, je choisis l\'offre Professeur particulier.'
       : 'J\'utilise ces comptes pour <b>mes élèves de cours particuliers ou de soutien</b>, un compte par élève, dans la limite des élèves payés.'}</span></label>
     <label class="op-check"><input type="checkbox" id="opRenonciation"><span>Je demande l'accès immédiat et renonce à mon droit de rétractation (paiement unique, sans reconduction). J'accepte les <a href="#/cgv" target="_blank">conditions générales de vente</a>.</span></label>
     <button class="btn op-payer" id="opPayer" onclick="opPayer()" disabled><span class="gicon">credit_card</span> Payer</button>
@@ -187,7 +194,7 @@ function opOffresHtml(o, payee){
   </div>`;
 }
 function opChoix(t){ opEtat.choix = t; opEtat.devis = null; renderAbonnementPartiel(); }
-function opNiveau(n, on){ if(on) opEtat.niveaux.add(n); else opEtat.niveaux.delete(n); const t = document.getElementById('opNbClasses'); if(t) t.textContent = opEtat.niveaux.size + opEtat.classesSup; opMajDevis(); }
+function opNiveau(n, on){ (n === 'ecole' ? OP_ECOLE : [n]).forEach(x => { if(on) opEtat.niveaux.add(x); else opEtat.niveaux.delete(x); }); renderAbonnementPartiel(); }
 function opClassesSup(d){ opEtat.classesSup = Math.max(0, Math.min(12, opEtat.classesSup + d)); renderAbonnementPartiel(); }
 let opPlacesT = null;
 function opPlaces(v){ opEtat.places = Math.max(1, Math.min(200, parseInt(v, 10) || 1)); clearTimeout(opPlacesT); opPlacesT = setTimeout(opMajDevis, 350); }
@@ -253,7 +260,7 @@ async function opRenderClasses(regime){
     <p class="hint" style="margin:0 0 10px;">${regime === 'particulier'
       ? 'Créez autant de groupes que vous voulez (un élève seul ou plusieurs), dans la limite des élèves de votre offre.'
       : regime === 'essai' ? 'Pendant l\'essai : une classe de ' + max + ' élèves au plus.'
-      : 'Votre offre comprend ' + permises + ' classe' + (permises > 1 ? 's' : '') + ' de ' + max + ' élèves au plus, dans les niveaux ' + (opOffre.niveaux || []).join(', ') + '.'} Vos élèves se connectent avec leur identifiant et leur mot de passe (menu Se connecter).</p>
+      : 'Votre offre comprend ' + permises + ' classe' + (permises > 1 ? 's' : '') + ' de ' + max + ' élèves au plus, dans les niveaux ' + (opOffre.niveaux || []).map(opLib).join(', ') + '.'} Vos élèves se connectent avec leur identifiant et leur mot de passe (menu Se connecter).</p>
     ${neufs}
     ${(classes || []).map(c => { const el = parClasse.get(c.id) || [];
       return `<div class="op-classe">
@@ -271,10 +278,10 @@ async function opRenderClasses(regime){
           <span class="hint" id="opAjoutMsg_${c.id}" style="margin:0;"></span>
         </div></div>`; }).join('') || '<p class="hint">Aucune classe pour l\'instant.</p>'}
     ${peutCreerClasse ? `<div class="op-nouvelle"><input type="text" id="opNomClasse" placeholder="${regime === 'particulier' ? 'Nom du groupe (ex. Brevet mardi)' : 'Nom de la classe (ex. 6e B)'}" maxlength="40">
-      <select id="opNivClasse">${(regime === 'seul' ? nivPossibles : OP_DISPO).map(n => `<option value="${n}">${n}</option>`).join('')}</select>
+      <select id="opNivClasse">${(regime === 'seul' ? nivPossibles : OP_DISPO).map(n => `<option value="${n}">${opLib(n)}</option>`).join('')}</select>
       <button class="btn secondary" onclick="opCreerClasse('${regime}')"><span class="gicon">add</span> ${regime === 'particulier' ? 'Nouveau groupe' : 'Nouvelle classe'}</button>
       <span class="hint" id="opClasseMsg" style="margin:0;"></span></div>`
-    : regime === 'seul' ? `<p class="hint" style="margin:8px 0 0;">Toutes les classes de votre offre sont créées : ajoutez une classe (${opEur(opPrix.seul_classe)}) ou un niveau dans « Compléter mon offre » ci-dessus.</p>`
+    : regime === 'seul' ? `<p class="hint" style="margin:8px 0 0;">Toutes les classes de votre offre sont créées : ajoutez une classe (${opEur(opPrixClasse(opOffre.niveaux))}) ou un niveau dans « Compléter mon offre » ci-dessus.</p>`
     : regime === 'essai' ? '<p class="hint" style="margin:8px 0 0;">Une seule classe pendant l\'essai.</p>' : ''}
   </div>`;
 }
@@ -467,6 +474,8 @@ async function opAdminRefresh(){
         <label class="hint">Prof seul, 1<sup>er</sup> niveau <input type="number" id="opPx1" step="0.01" min="1" value="${eurIn(P.seul_base)}" style="width:80px;"> €</label>
         <label class="hint">niveau en plus <input type="number" id="opPx2" step="0.01" min="0" value="${eurIn(P.seul_niveau)}" style="width:80px;"> €</label>
         <label class="hint">classe en plus <input type="number" id="opPx6" step="0.01" min="0" value="${eurIn(P.seul_classe)}" style="width:80px;"> €</label>
+        <label class="hint">École (CM1 + CM2), une classe <input type="number" id="opPx7" step="0.01" min="0" value="${eurIn(P.ecole_base)}" style="width:80px;"> €</label>
+        <label class="hint">classe d'école en plus <input type="number" id="opPx8" step="0.01" min="0" value="${eurIn(P.ecole_classe)}" style="width:80px;"> €</label>
         <label class="hint">élèves par classe <input type="number" id="opPx5" step="1" min="1" value="${P.seul_eleves_max}" style="width:60px;"></label>
         <label class="hint">Particulier, forfait <input type="number" id="opPx3" step="0.01" min="0" value="${eurIn(P.part_base)}" style="width:80px;"> €</label>
         <label class="hint">par élève <input type="number" id="opPx4" step="0.01" min="0" value="${eurIn(P.part_eleve)}" style="width:80px;"> €</label>
@@ -480,7 +489,7 @@ async function opAdminTest(profId, cb){
 }
 async function opAdminPrix(){
   const c = id => Math.round(parseFloat(String(document.getElementById(id).value).replace(',', '.')) * 100);
-  const prix = { seul_base: c('opPx1'), seul_niveau: c('opPx2'), seul_classe: c('opPx6'), part_base: c('opPx3'), part_eleve: c('opPx4'), seul_eleves_max: Math.max(1, parseInt(document.getElementById('opPx5').value, 10) || 30) };
+  const prix = { seul_base: c('opPx1'), seul_niveau: c('opPx2'), seul_classe: c('opPx6'), ecole_base: c('opPx7'), ecole_classe: c('opPx8'), part_base: c('opPx3'), part_eleve: c('opPx4'), seul_eleves_max: Math.max(1, parseInt(document.getElementById('opPx5').value, 10) || 30) };
   if(Object.values(prix).some(v => !(v >= 0))){ opMsg('opPxMsg', 'Montants invalides.'); return; }
   const { error } = await sb.from('prof_parametres').update({ prix, updated_at: new Date().toISOString() }).eq('id', 1);
   if(error){ opMsg('opPxMsg', 'Erreur : ' + error.message); return; }

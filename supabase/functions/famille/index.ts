@@ -27,9 +27,18 @@ function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 }
 
-// Niveaux actuellement en ligne sur le site (la 3e est en vente depuis le build 818).
-const NIVEAUX_DISPONIBLES = ["6e", "5e", "4e", "3e"];
-const ORDRE = ["6e", "5e", "4e", "3e"];
+// Niveaux actuellement en ligne sur le site (la 3e est en vente depuis le build 818, le CM1 et le
+// CM2 depuis le build 875).
+const NIVEAUX_DISPONIBLES = ["cm1", "cm2", "6e", "5e", "4e", "3e"];
+const ORDRE = ["cm1", "cm2", "6e", "5e", "4e", "3e"];
+const ECOLE = ["cm1", "cm2"];
+const lib = (n: string) => /^cm/.test(n) ? n.toUpperCase() : n;
+// École (tarifs validés : « Un peu moins cher je pense non ? ») : 25 € pour le CM1 ou le CM2, 39 € pour
+// les deux (clés ecole1 / ecole2 de famille_parametres), en plus des niveaux de collège éventuels.
+function prixEcole(grille: Record<string, number>, n: number): number {
+  if (n <= 0) return 0;
+  return Number(grille[n >= 2 ? "ecole2" : "ecole1"] ?? (n >= 2 ? 3900 : 2500));
+}
 // Prix TTC en centimes selon le nombre de niveaux choisis (3 et plus : collège complet), lus dans
 // famille_parametres (modifiables par l'administrateur) ; un code promo peut fixer d'autres prix.
 function prixDe(grille: Record<string, number>, n: number): number {
@@ -121,7 +130,7 @@ serve(async (req) => {
       const hors = body.hors_college === true;
       if (hors) return { uai: null, hors: true };
       const uai = String(body.uai || "").trim().toUpperCase();
-      if (!/^[0-9]{7}[A-Z]$/.test(uai)) return { error: "Le code UAI du collège comporte 7 chiffres suivis d'une lettre (ex. 0541234X)." };
+      if (!/^[0-9]{7}[A-Z]$/.test(uai)) return { error: "Le code UAI de l'établissement (école ou collège) comporte 7 chiffres suivis d'une lettre (ex. 0541234X)." };
       const { data: exclu } = await admin.from("famille_exclusions").select("uai").eq("uai", uai).maybeSingle();
       if (exclu) return { error: "L'offre Famille n'est pas proposée aux élèves de cet établissement. Leur professeur peut leur donner accès au site dans le cadre de la classe." };
       return { uai, hors: false };
@@ -213,7 +222,7 @@ serve(async (req) => {
 
     // ---------- Paiement (Stripe Checkout, paiement unique) ----------
     if (action === "devis" || action === "paiement") {
-      const demandes: string[] = Array.isArray(body.niveaux) ? body.niveaux.map(String) : [];
+      const demandes: string[] = Array.isArray(body.niveaux) ? body.niveaux.map((n: unknown) => String(n).toLowerCase()) : [];
       const choisis = ORDRE.filter((n) => demandes.includes(n) && NIVEAUX_DISPONIBLES.includes(n));
       const today = new Date().toISOString().slice(0, 10);
       const { data: param } = await admin.from("famille_parametres").select("prix").eq("id", 1).maybeSingle();
@@ -245,9 +254,10 @@ serve(async (req) => {
       const actuels: string[] = memePeriode ? (famille.niveaux || []) : [];
       const total = ORDRE.filter((n) => choisis.includes(n) || actuels.includes(n));
       const deja = memePeriode ? famille.montant_paye_centimes || 0 : 0;
-      const prixListe = prixDe(grilleListe, total.length);
+      const nCollege = total.filter((n) => !ECOLE.includes(n)).length, nEcole = total.filter((n) => ECOLE.includes(n)).length;
+      const prixListe = prixDe(grilleListe, nCollege) + prixEcole(grilleListe, nEcole);
       let prixFormule = prixListe;
-      if (promo?.prix) prixFormule = prixDe(promo.prix, total.length);
+      if (promo?.prix) prixFormule = prixDe(promo.prix, nCollege) + prixEcole(Object.assign({}, grilleListe, promo.prix), nEcole);
       else if (promo?.remise_pct) prixFormule = Math.round(prixListe * (100 - promo.remise_pct) / 100);
       const montant = Math.max(0, prixFormule - deja);
       const anneeLabel = promo?.fin_acces ? "jusqu'au " + fin.split("-").reverse().join("/") : "année " + (parseInt(fin.slice(0, 4), 10) - 1) + "-" + fin.slice(0, 4);
@@ -267,10 +277,10 @@ serve(async (req) => {
       if (test && !stripeKey.startsWith("sk_test_")) return json({ error: "Mode test : STRIPE_TEST_SECRET_KEY doit être une clé de test (sk_test_…)." }, 500);
       const origin = /^https:\/\/[a-z0-9.-]+$/i.test(String(body.origin || "")) || /^http:\/\/localhost(:\d+)?$/.test(String(body.origin || ""))
         ? String(body.origin) : "https://maths.latelieraugmente.fr";
-      const libelleFacture = "L'Atelier des Maths – offre Famille " + total.join(", ") + " – " + anneeLabel + (deja ? " (complément)" : "");
+      const libelleFacture = "L'Atelier des Maths – offre Famille " + total.map(lib).join(", ") + " – " + anneeLabel + (deja ? " (complément)" : "");
       const libelle = (test ? "[TEST] " : "") + libelleFacture;
-      const revision = ORDRE.filter((n, i) => !total.includes(n) && i < 3 && total.includes(ORDRE[i + 1]));
-      const detailFacture = "Accès aux cours, exercices et suivi pour " + total.join(", ") + (revision.length ? " (+ " + revision.join(", ") + " en révision)" : "") +
+      const revision = ORDRE.filter((n, i) => !total.includes(n) && i < ORDRE.length - 1 && total.includes(ORDRE[i + 1]));
+      const detailFacture = "Accès aux cours, exercices et suivi pour " + total.map(lib).join(", ") + (revision.length ? " (+ " + revision.map(lib).join(", ") + " en révision)" : "") +
         " du " + today.split("-").reverse().join("/") + " au " + fin.split("-").reverse().join("/") + ". Paiement unique, sans reconduction." +
         (deja ? " Complément : formule " + (prixFormule / 100).toFixed(2).replace(".", ",") + " € − " + (deja / 100).toFixed(2).replace(".", ",") + " € déjà payés." : "") +
         (promo ? " Code promo " + promo.code + " (prix habituel " + (prixListe / 100).toFixed(2).replace(".", ",") + " €)." : "");
@@ -286,7 +296,7 @@ serve(async (req) => {
       p.set("line_items[0][price_data][unit_amount]", String(montant));
       p.set("line_items[0][price_data][product_data][name]", libelle);
       p.set("line_items[0][price_data][product_data][description]",
-        "Accès aux cours, exercices et suivi pour " + total.join(", ") + " (et le niveau inférieur en révision) jusqu'au " + fin.split("-").reverse().join("/") + ". Paiement unique, sans reconduction.");
+        "Accès aux cours, exercices et suivi pour " + total.map(lib).join(", ") + " (et le niveau inférieur en révision) jusqu'au " + fin.split("-").reverse().join("/") + ". Paiement unique, sans reconduction.");
       const meta: Record<string, string> = { kind: "famille", parent_id: user.id, niveaux: total.join(","), montant: String(montant), acces_until: fin, renonciation, test: test ? "1" : "0",
         promo: promo ? promo.code : "", libelle: libelleFacture.slice(0, 480), detail: detailFacture.slice(0, 480) };
       for (const [k, v] of Object.entries(meta)) { p.set("metadata[" + k + "]", v); p.set("payment_intent_data[metadata][" + k + "]", v); }

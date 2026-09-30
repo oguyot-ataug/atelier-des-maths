@@ -10,6 +10,9 @@
 //    deux classes de 6e ?") ou Professeur particulier (39 € + 20 € par élève, groupes libres). Paiement
 //    unique Stripe Checkout jusqu'au 31/08 de l'année scolaire (à partir de juin : l'année suivante),
 //    compléments à la différence ; l'activation et la facture sont faites par stripe-webhook.
+//    École (demandé : « Un peu moins cher je pense non ? », tarifs validés) : pour un professeur des
+//    écoles, CM1 et CM2 sont vendus ensemble (classes à double niveau) : 29 € par an pour une classe
+//    de 30 élèves, + 10 € par classe en plus (ecole_base / ecole_classe, modifiables par l'administrateur).
 //  - classe-creer / classe-renommer / classe-supprimer, eleve-creer / eleve-supprimer : classes du
 //    professeur (classes.creee_par) et comptes élèves identifiant@mathcollege.local.
 //    Pendant l'essai de 15 jours : 1 classe de 30 élèves au plus.
@@ -26,9 +29,16 @@ const corsHeaders = {
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 }
-const NIVEAUX_DISPONIBLES = ["6e", "5e", "4e", "3e"];
-const ORDRE = ["6e", "5e", "4e", "3e"];
-const PRIX_DEFAUT = { seul_base: 3900, seul_niveau: 2900, seul_classe: 1500, part_base: 3900, part_eleve: 2000, seul_eleves_max: 30 };
+const NIVEAUX_DISPONIBLES = ["cm1", "cm2", "6e", "5e", "4e", "3e"];
+const ORDRE = ["cm1", "cm2", "6e", "5e", "4e", "3e"];
+const ECOLE = ["cm1", "cm2"]; // vendus ensemble : une seule formule « école »
+const PRIX_DEFAUT = { seul_base: 3900, seul_niveau: 2900, seul_classe: 1500, ecole_base: 2900, ecole_classe: 1000, part_base: 3900, part_eleve: 2000, seul_eleves_max: 30 };
+// Libellé d'un niveau : « cm1 » → « CM1 ».
+const lib = (n: string) => /^cm/.test(n) ? n.toUpperCase() : n;
+// Classes comprises dans une offre Professeur seul : une par niveau de collège, une pour l'école (CM1 + CM2), plus les classes en plus.
+function classesComprises(niveaux: string[], sup: number): number {
+  return niveaux.filter((n) => !ECOLE.includes(n)).length + (niveaux.some((n) => ECOLE.includes(n)) ? 1 : 0) + (sup || 0);
+}
 const MAX_GROUPES = 40, MAX_PLACES = 200, MAX_CLASSES_SUP = 12;
 
 function finAnneeScolaire(d = new Date()): string {
@@ -76,14 +86,17 @@ serve(async (req) => {
       const deja = memePeriode ? offre.montant_paye_centimes || 0 : 0;
       let niveaux: string[] = [], places = 0, classesSup = 0, prix = 0, lignes: string[] = [];
       if (type === "seul") {
-        const demandes: string[] = Array.isArray(body.niveaux) ? body.niveaux.map(String) : [];
+        const demandes: string[] = Array.isArray(body.niveaux) ? body.niveaux.map((n: unknown) => String(n).toLowerCase()) : [];
+        if (demandes.some((n) => ECOLE.includes(n))) demandes.push(...ECOLE); // CM1 et CM2 : toujours ensemble
         const actuels: string[] = memePeriode ? offre.niveaux || [] : [];
         niveaux = ORDRE.filter((n) => (demandes.includes(n) && NIVEAUX_DISPONIBLES.includes(n)) || actuels.includes(n));
+        const college = niveaux.filter((n) => !ECOLE.includes(n)), ecole = niveaux.some((n) => ECOLE.includes(n));
         const supActuelles = memePeriode ? offre.classes_sup || 0 : 0;
         classesSup = niveaux.length ? Math.max(supActuelles, Math.min(MAX_CLASSES_SUP, parseInt(body.classes_sup, 10) || 0)) : 0;
-        prix = niveaux.length ? P.seul_base + P.seul_niveau * (niveaux.length - 1) + P.seul_classe * classesSup : 0;
-        lignes = niveaux.map((n, i) => n + " : " + eur(i ? P.seul_niveau : P.seul_base));
-        if (classesSup) lignes.push(classesSup + " classe" + (classesSup > 1 ? "s" : "") + " en plus × " + eur(P.seul_classe));
+        const prixClasse = college.length ? P.seul_classe : P.ecole_classe; // classe en plus : tarif école si l'offre n'a que l'école
+        prix = (college.length ? P.seul_base + P.seul_niveau * (college.length - 1) : 0) + (ecole ? P.ecole_base : 0) + prixClasse * classesSup;
+        lignes = (ecole ? ["CM1 et CM2 (école) : " + eur(P.ecole_base)] : []).concat(college.map((n, i) => n + " : " + eur(i ? P.seul_niveau : P.seul_base)));
+        if (classesSup) lignes.push(classesSup + " classe" + (classesSup > 1 ? "s" : "") + " en plus × " + eur(prixClasse));
       } else {
         const actuelles = memePeriode ? offre.places || 0 : 0;
         places = Math.max(actuelles, Math.min(MAX_PLACES, parseInt(body.places, 10) || 0));
@@ -105,11 +118,11 @@ serve(async (req) => {
       if (test && !stripeKey.startsWith("sk_test_")) return json({ error: "Mode test : STRIPE_TEST_SECRET_KEY doit être une clé de test (sk_test_…)." }, 500);
       const origin = /^https:\/\/[a-z0-9.-]+$/i.test(String(body.origin || "")) || /^http:\/\/localhost(:\d+)?$/.test(String(body.origin || ""))
         ? String(body.origin) : "https://maths.latelieraugmente.fr";
-      const nbClasses = niveaux.length + classesSup;
-      const nomOffre = type === "seul" ? "Professeur seul " + niveaux.join(", ") + (classesSup ? " (" + nbClasses + " classes)" : "") : "Professeur particulier, " + places + " élève" + (places > 1 ? "s" : "");
+      const nbClasses = classesComprises(niveaux, classesSup);
+      const nomOffre = type === "seul" ? "Professeur seul " + niveaux.map(lib).join(", ") + (classesSup ? " (" + nbClasses + " classes)" : "") : "Professeur particulier, " + places + " élève" + (places > 1 ? "s" : "");
       const libelleFacture = "L'Atelier des Maths – " + nomOffre + " – " + annee + (deja ? " (complément)" : "");
       const detail = (type === "seul"
-        ? "Cours, outils du professeur et comptes élèves pour " + niveaux.join(", ") + " (" + nbClasses + " classe" + (nbClasses > 1 ? "s" : "") + " de " + P.seul_eleves_max + " élèves au plus)"
+        ? "Cours, outils du professeur et comptes élèves pour " + niveaux.map(lib).join(", ") + " (" + nbClasses + " classe" + (nbClasses > 1 ? "s" : "") + " de " + P.seul_eleves_max + " élèves au plus)"
         : "Cours et outils du professeur, groupes d'élèves (" + places + " élève" + (places > 1 ? "s" : "") + " au plus)") +
         " du " + today.split("-").reverse().join("/") + " au " + fin.split("-").reverse().join("/") + ". Paiement unique, sans reconduction." +
         (deja ? " Complément : " + eur(prix) + " − " + eur(deja) + " déjà payés." : "");
@@ -153,17 +166,19 @@ serve(async (req) => {
 
     if (action === "classe-creer") {
       const nom = String(body.nom || "").trim().slice(0, 40);
-      const niveau = ORDRE.includes(body.niveau) ? body.niveau : null;
+      const demande = String(body.niveau || "").toLowerCase();
+      const niveau = ORDRE.includes(demande) ? demande : null;
       if (!nom) return json({ error: "Donnez un nom à la classe (ex. 6e B)." }, 400);
-      if (!niveau || !NIVEAUX_DISPONIBLES.includes(niveau)) return json({ error: "Choisissez le niveau (" + NIVEAUX_DISPONIBLES.join(" ou ") + ")." }, 400);
+      if (!niveau || !NIVEAUX_DISPONIBLES.includes(niveau)) return json({ error: "Choisissez le niveau (" + NIVEAUX_DISPONIBLES.map(lib).join(", ") + ")." }, 400);
       if (regime === "essai" && classes.length >= 1) return json({ error: "Pendant l'essai : une classe. Choisissez une offre pour en créer d'autres." }, 400);
       if (regime === "seul") {
-        if (!(offre.niveaux || []).includes(niveau)) return json({ error: "Votre offre ne comprend pas la " + niveau + " : ajoutez ce niveau dans « Mon abonnement »." }, 400);
-        const permises = (offre.niveaux || []).length + (offre.classes_sup || 0);
-        if (classes.length >= permises) return json({ error: "Votre offre comprend " + permises + " classe" + (permises > 1 ? "s" : "") + " : ajoutez une classe dans « Mon abonnement » (" + eur(P.seul_classe) + ")." }, 400);
+        if (!(offre.niveaux || []).includes(niveau)) return json({ error: "Votre offre ne comprend pas le niveau " + lib(niveau) + " : ajoutez-le dans « Mon abonnement »." }, 400);
+        const permises = classesComprises(offre.niveaux || [], offre.classes_sup || 0);
+        const prixClasse = (offre.niveaux || []).some((n: string) => !ECOLE.includes(n)) ? P.seul_classe : P.ecole_classe;
+        if (classes.length >= permises) return json({ error: "Votre offre comprend " + permises + " classe" + (permises > 1 ? "s" : "") + " : ajoutez une classe dans « Mon abonnement » (" + eur(prixClasse) + ")." }, 400);
       }
       if (regime === "particulier" && classes.length >= MAX_GROUPES) return json({ error: "Nombre maximal de groupes atteint." }, 400);
-      const { data: c, error } = await admin.from("classes").insert({ nom, niveau, uai: regime === "particulier" ? null : profile.uai, creee_par: user.id }).select("id").single();
+      const { data: c, error } = await admin.from("classes").insert({ nom, niveau: lib(niveau), uai: regime === "particulier" ? null : profile.uai, creee_par: user.id }).select("id").single();
       if (error) return json({ error: error.message }, 400);
       const { error: e2 } = await admin.from("class_teachers").insert({ class_id: c.id, teacher_id: user.id });
       if (e2) { await admin.from("classes").delete().eq("id", c.id); return json({ error: e2.message }, 400); }

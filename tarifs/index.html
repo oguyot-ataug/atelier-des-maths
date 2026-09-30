@@ -173,6 +173,8 @@
 <header class="t-top">
   <a href="/"><img src="/assets/logo-header.png" alt="L'Atelier des Maths"></a>
   <nav>
+    <a href="/cm1/">CM1</a>
+    <a href="/cm2/">CM2</a>
     <a href="/6e/">6e</a>
     <a href="/5e/">5e</a>
     <a href="/professeurs/">Professeurs</a>
@@ -182,8 +184,8 @@
 
 <main class="t-wrap">
   <section class="t-hero">
-    <h1>Des tarifs simples,<br>pour un professeur ou tout un collège</h1>
-    <p>Cours, outils de classe, devoirs, évaluations et cahier de corrections pour la 6e, la 5e, la 4e et la 3e.</p>
+    <h1>Des tarifs simples,<br>pour un professeur ou tout un établissement</h1>
+    <p>Cours, outils de classe, devoirs, évaluations et cahier de corrections du CM1 à la 3e : CM1, CM2, 6e, 5e, 4e et 3e.</p>
     <div class="t-free-students"><span class="gicon">school</span> Les élèves de vos classes n'ont jamais rien à payer</div>
     <div class="t-tabs">
       <a href="#professeurs">Professeur</a>
@@ -216,13 +218,29 @@
         <a class="t-btn" href="/">Essayer 15 jours</a>
       </article>
 
+      <article class="t-card featured">
+        <span class="t-flag" style="background:#2E7D32;">À l'école</span>
+        <h3>Professeur des écoles</h3>
+        <p class="t-for">Votre classe de CM1, de CM2 ou à double niveau, avec tous les outils du professeur.</p>
+        <div class="t-price">29 €<small>/ an</small></div>
+        <div class="t-price-note">CM1 et CM2 compris · <b>+ 10 €</b> par classe en plus</div>
+        <ul class="t-list">
+          <li><span class="gicon">check_circle</span><span><b>1 classe de 30 élèves</b>, simple ou double niveau, que vous créez vous-même (identifiants et mots de passe)</span></li>
+          <li><span class="gicon">check_circle</span>Les 23 chapitres du CM1 et les 25 chapitres du CM2 : cours, méthodes animées, ateliers, exercices et quiz</li>
+          <li><span class="gicon">check_circle</span>Questions flash avec les cartes flashcode A, B, C, D : les élèves répondent sans ordinateur</li>
+          <li><span class="gicon">check_circle</span>Outils de classe, devoirs, évaluations, cahier de la classe</li>
+          <li class="plus"><span class="gicon">smart_toy</span>IA avec votre propre clé, ou avec le pack IA ci-dessous</li>
+        </ul>
+        <a class="t-btn" href="/" style="background:#2E7D32;">Essayer 15 jours</a>
+      </article>
+
       <article class="t-card">
         <h3>Professeur particulier</h3>
         <p class="t-for">Cours particuliers et soutien, seul ou en petits groupes, tous niveaux.</p>
         <div class="t-price">39 €<small>/ an</small></div>
         <div class="t-price-note"><b>+ 20 €</b> par élève et par an · places ajoutables en cours d'année</div>
         <ul class="t-list">
-          <li><span class="gicon">check_circle</span><span><b>Groupes libres</b> : un élève seul ou plusieurs, de la 6e à la 3e</span></li>
+          <li><span class="gicon">check_circle</span><span><b>Groupes libres</b> : un élève seul ou plusieurs, du CM1 à la 3e</span></li>
           <li><span class="gicon">check_circle</span>Un compte par élève, créé par vous</li>
           <li><span class="gicon">check_circle</span>Devoirs corrigés tout seuls, entraînements, suivi de chaque élève</li>
           <li><span class="gicon">check_circle</span>Tous les cours et tous les outils du professeur</li>
@@ -234,7 +252,7 @@
 
     <div class="t-note orange">
       <span class="gicon">info</span>
-      <div><b>Toutes vos classes, ou toute l'équipe de maths ?</b> La <a href="#etablissements">licence établissement</a> couvre tous les professeurs et tous les élèves des niveaux choisis, à partir de 3 € par élève. L'offre Professeur seul est réservée à vos élèves de collège ; les cours particuliers et le soutien rémunéré relèvent de l'offre Professeur particulier.</div>
+      <div><b>Toutes vos classes, ou toute l'équipe de maths ?</b> La <a href="#etablissements">licence établissement</a> couvre tous les professeurs et tous les élèves des niveaux choisis, à partir de 2,50 € par élève à l'école et de 3 € au collège. Les offres Professeur seul et Professeur des écoles sont réservées à vos élèves ; les cours particuliers et le soutien rémunéré relèvent de l'offre Professeur particulier.</div>
     </div>
 
     <div class="t-ia">
@@ -299,6 +317,14 @@
         <div class="t-unit">par élève et par an</div>
         <div class="t-ex">ex. 500 élèves : <b>1 500 €</b></div>
       </article>
+      <article class="t-level">
+        <span class="t-flag" style="background:#2E7D32;">École</span>
+        <h3>CM1 et CM2</h3>
+        <div class="t-chips"><span class="t-chip" style="background:#2E7D32;color:#fff;">CM1</span><span class="t-chip" style="background:#1B5E20;color:#fff;">CM2</span></div>
+        <div class="t-price">2,50 €</div>
+        <div class="t-unit">par élève et par an</div>
+        <div class="t-ex">ex. 90 élèves de CM1 et CM2 : <b>225 €</b></div>
+      </article>
     </div>
 
     <div class="t-calc" id="calcul">
@@ -306,6 +332,8 @@
         <h3><span class="gicon">calculate</span> Estimez le prix pour votre établissement</h3>
         <p class="hint2">Cochez les niveaux et indiquez le nombre d'élèves de chacun.</p>
         <div class="t-calc-rows">
+          <div class="t-calc-lvl"><label><input type="checkbox" data-lvl="cm1"> CM1</label><input type="number" min="0" step="1" value="45" data-n="cm1" aria-label="Élèves de CM1"></div>
+          <div class="t-calc-lvl"><label><input type="checkbox" data-lvl="cm2"> CM2</label><input type="number" min="0" step="1" value="45" data-n="cm2" aria-label="Élèves de CM2"></div>
           <div class="t-calc-lvl on"><label><input type="checkbox" data-lvl="6e" checked> 6e</label><input type="number" min="0" step="1" value="125" data-n="6e" aria-label="Élèves de 6e"></div>
           <div class="t-calc-lvl on"><label><input type="checkbox" data-lvl="5e" checked> 5e</label><input type="number" min="0" step="1" value="125" data-n="5e" aria-label="Élèves de 5e"></div>
           <div class="t-calc-lvl"><label><input type="checkbox" data-lvl="4e"> 4e</label><input type="number" min="0" step="1" value="125" data-n="4e" aria-label="Élèves de 4e"></div>
@@ -379,6 +407,20 @@
         <div class="t-price">69 €<small>/ année scolaire</small></div>
         <div class="t-price-note">les 4 niveaux, pour tous les enfants</div>
       </article>
+      <article class="t-card">
+        <span class="t-flag" style="background:#2E7D32;">École</span>
+        <h3>CM1 ou CM2</h3>
+        <p class="t-for">Un enfant à l'école élémentaire.</p>
+        <div class="t-price">25 €<small>/ année scolaire</small></div>
+        <div class="t-price-note">+ le CM1 en révision pour un enfant de CM2</div>
+      </article>
+      <article class="t-card">
+        <span class="t-flag" style="background:#1B5E20;">École</span>
+        <h3>CM1 et CM2</h3>
+        <p class="t-for">Deux enfants à l'école, ou un enfant du CM1 au CM2.</p>
+        <div class="t-price">39 €<small>/ année scolaire</small></div>
+        <div class="t-price-note">s'ajoute aux niveaux de collège d'un frère ou d'une sœur</div>
+      </article>
     </div>
     <ul class="t-list" style="max-width:760px;margin:18px auto 0;">
       <li><span class="gicon">check_circle</span>Cours, méthodes animées, exercices, quiz, automatismes et Objectif Nombre</li>
@@ -399,12 +441,12 @@
         <thead><tr><th></th><th class="hl">Professeur seul</th><th>Professeur particulier</th><th>Établissement</th></tr></thead>
         <tbody>
           <tr class="grp"><td colspan="4">En classe</td></tr>
-          <tr><td>Cours, méthodes animées, exercices</td><td class="part hl">Niveaux choisis (+ révision)</td><td class="yes">6e, 5e, 4e et 3e</td><td class="yes">Niveaux de la licence</td></tr>
+          <tr><td>Cours, méthodes animées, exercices</td><td class="part hl">Niveaux choisis (+ révision)</td><td class="yes">Du CM1 à la 3e</td><td class="yes">Niveaux de la licence</td></tr>
           <tr><td>Quiz et mode apprentissage des définitions</td><td class="yes hl">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Tableau interactif (règle, équerre, compas, rapporteur)</td><td class="yes hl">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Outil de correction à projeter, caméra</td><td class="yes hl">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr class="grp"><td colspan="4">Classes et élèves</td></tr>
-          <tr><td>Classes avec comptes élèves</td><td class="part hl">1 classe de 30 par niveau, + 15 € par classe en plus</td><td class="part">Groupes libres, élèves payés</td><td class="yes">Illimitées</td></tr>
+          <tr><td>Classes avec comptes élèves</td><td class="part hl">1 classe de 30 par niveau (école : CM1 + CM2), classes en plus 15 € (école : 10 €)</td><td class="part">Groupes libres, élèves payés</td><td class="yes">Illimitées</td></tr>
           <tr><td>Cahier de corrections de la classe</td><td class="yes hl">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Devoirs, interrogations en ligne, séances en direct</td><td class="yes hl">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
           <tr><td>Résultats, médailles, temps de travail réel</td><td class="yes hl">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
@@ -445,9 +487,10 @@
     <details><summary>Que se passe-t-il à la fin des 15 jours d'essai ?</summary><p>Pendant l'essai, vous pouvez créer une classe de 30 élèves pour essayer avec eux. À la fin, vous choisissez votre offre dans « Mon abonnement ». Sans offre, l'accès est suspendu : votre classe, vos cours personnalisés et vos évaluations restent enregistrés et redeviennent utilisables dès que vous choisissez une offre.</p></details>
     <details><summary>J'ai deux classes du même niveau : comment faire ?</summary><p>Ajoutez une classe en plus dans « Mon abonnement » : 15 € par classe. Deux classes de 6e reviennent à 39 + 15 = 54 € pour l'année ; chaque classe compte jusqu'à 30 élèves.</p></details>
     <details><summary>J'enseigne sur deux niveaux : que choisir ?</summary><p>L'offre Professeur seul comprend une classe de 30 élèves par niveau : 39 € pour le premier niveau, 29 € par niveau en plus (68 € pour la 6e et la 5e). Chaque classe en plus coûte 15 € : avec deux classes de 6e et une de 5e, 39 + 29 + 15 = 83 €. Vous pouvez ajouter un niveau ou une classe en cours d'année en payant seulement la différence. Pour toutes les classes et tous les collègues, la licence établissement est plus avantageuse.</p></details>
-    <details><summary>Je donne des cours particuliers : quelle offre ?</summary><p>L'offre Professeur particulier : 39 € par an, plus 20 € par élève. Vous créez un compte par élève et autant de groupes que vous voulez, et vous ajoutez des élèves en cours d'année. L'offre Professeur seul, elle, est réservée à vos élèves de collège : elle ne doit pas servir à des cours particuliers ou à du soutien rémunéré.</p></details>
+    <details><summary>Je suis professeur des écoles : que choisir ?</summary><p>L'offre Professeur des écoles : 29 € par an pour une classe de 30 élèves, CM1 et CM2 compris, ce qui couvre aussi les classes à double niveau. Chaque classe en plus coûte 10 €. Pour toute l'école, la licence établissement revient à 2,50 € par élève de CM1 et de CM2.</p></details>
+    <details><summary>Je donne des cours particuliers : quelle offre ?</summary><p>L'offre Professeur particulier : 39 € par an, plus 20 € par élève. Vous créez un compte par élève et autant de groupes que vous voulez, et vous ajoutez des élèves en cours d'année. Les offres Professeur seul et Professeur des écoles, elles, sont réservées à vos élèves : elles ne doivent pas servir à des cours particuliers ou à du soutien rémunéré.</p></details>
     <details><summary>Mon établissement prend une licence : que devient mon abonnement ?</summary><p>La licence établissement couvre tous les professeurs de mathématiques de l'établissement. Un abonnement individuel en cours n'a plus besoin d'être renouvelé.</p></details>
-    <details><summary>Comment est calculé le prix établissement ?</summary><p>Comme pour un manuel numérique : l'établissement choisit les niveaux et paie pour les élèves de ces niveaux. Le prix par élève baisse avec le nombre de niveaux : 4 € pour un niveau, 3,50 € pour deux ou trois, 3 € pour le collège complet. Une licence professeur est offerte par tranche de 20 élèves. Les outils communs (correction, cahier, devoirs, évaluations) servent pour toutes les classes.</p></details>
+    <details><summary>Comment est calculé le prix établissement ?</summary><p>Comme pour un manuel numérique : l'établissement choisit les niveaux et paie pour les élèves de ces niveaux. Le prix par élève baisse avec le nombre de niveaux : 4 € pour un niveau, 3,50 € pour deux ou trois, 3 € pour le collège complet ; à l'école, 2,50 € par élève de CM1 ou de CM2. Une licence professeur est offerte par tranche de 20 élèves. Les outils communs (correction, cahier, devoirs, évaluations) servent pour toutes les classes.</p></details>
     <details><summary>L'IA est-elle obligatoire ?</summary><p>Non. Tout le site fonctionne sans IA. Elle aide à proposer des exercices, construire des figures ou créer des quiz. Chaque professeur choisit : sa propre clé, la clé de l'établissement ou le pack IA. La consommation est toujours affichée en détail.</p></details>
     <details><summary>Comment un établissement paie-t-il ?</summary><p>Toujours sur devis. Un établissement public passe un bon de commande, reçoit la facture sur Chorus Pro et paie par mandat administratif. Un établissement privé reçoit une facture PDF au nom de son organisme de gestion et paie par virement ou par carte.</p></details>
     <details><summary>Les effectifs changent en cours d'année : que se passe-t-il ?</summary><p>La licence est calculée sur les effectifs de la rentrée et ne bouge plus jusqu'à l'année suivante. Un élève arrivé en cours d'année est inclus sans supplément.</p></details>
@@ -456,7 +499,7 @@
   <section class="t-contact">
     <div>
       <h2>Un devis pour votre établissement ?</h2>
-      <p>Indiquez le nom de l'établissement, public ou privé, son numéro UAI, les niveaux et les effectifs : vous recevez un devis rapidement.</p>
+      <p>École ou collège : indiquez le nom de l'établissement, public ou privé, son numéro UAI, les niveaux et les effectifs : vous recevez un devis rapidement.</p>
     </div>
     <a class="t-btn" href="mailto:contact@latelieraugmente.fr?subject=Devis%20L%27Atelier%20des%20Maths">Demander un devis</a>
   </section>
@@ -471,19 +514,19 @@
   var PRIX = {1:4, 2:3.5, 3:3.5, 4:3};
   var fmt = function(n){ return n.toLocaleString('fr-FR', {minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2}).replace(/\u202f/g, '\u00a0') + '\u00a0€'; };
   function upd(){
-    var lv = 0, eleves = 0;
+    var lv = 0, eleves = 0, ecole = 0; // collège : prix selon le nombre de niveaux ; école (CM1, CM2) : 2,50 € par élève
     root.querySelectorAll('.t-calc-lvl').forEach(function(box){
       var cb = box.querySelector('input[type=checkbox]'), n = Math.max(0, parseInt(box.querySelector('input[type=number]').value, 10) || 0);
       box.classList.toggle('on', cb.checked);
-      if(cb.checked){ lv++; eleves += n; }
+      if(cb.checked){ if(/^cm/.test(cb.getAttribute('data-lvl'))) ecole += n; else { lv++; eleves += n; } }
     });
     var tot = document.getElementById('calcTotal'), det = document.getElementById('calcDet'), cmp = document.getElementById('calcCmp');
-    if(!lv || !eleves){ tot.textContent = '—'; det.textContent = 'Cochez au moins un niveau avec des élèves.'; cmp.textContent = ''; return; }
-    var p = PRIX[lv], total = Math.round(eleves * p * 100) / 100, profs = Math.floor(eleves / 20);
+    if(!eleves && !ecole){ tot.textContent = '—'; det.textContent = 'Cochez au moins un niveau avec des élèves.'; cmp.textContent = ''; return; }
+    var p = lv ? PRIX[lv] : 0, total = Math.round((eleves * p + ecole * 2.5) * 100) / 100, profs = Math.floor((eleves + ecole) / 20);
     tot.textContent = fmt(total);
-    det.innerHTML = 'par an · ' + eleves + ' élève' + (eleves > 1 ? 's' : '') + ' à ' + fmt(p) + (lv === 4 ? ' (collège complet)' : '') +
+    det.innerHTML = 'par an · ' + [eleves ? eleves + ' élève' + (eleves > 1 ? 's' : '') + ' de collège à ' + fmt(p) + (lv === 4 ? ' (collège complet)' : '') : '', ecole ? ecole + ' élève' + (ecole > 1 ? 's' : '') + ' de CM à ' + fmt(2.5) : ''].filter(Boolean).join(' + ') +
       '<br>' + (profs ? profs + ' licence' + (profs > 1 ? 's' : '') + ' professeur offerte' + (profs > 1 ? 's' : '') : 'à partir de 20 élèves : licences professeurs offertes');
-    cmp.textContent = 'Pour comparaison, un manuel numérique à 7 € par élève : ' + fmt(eleves * 7) + '.';
+    cmp.textContent = 'Pour comparaison, un manuel numérique à 7 € par élève : ' + fmt((eleves + ecole) * 7) + '.';
   }
   root.addEventListener('input', upd); root.addEventListener('change', upd); upd();
 })();
