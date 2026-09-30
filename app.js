@@ -3082,6 +3082,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.848', items:[
+    "Accueil : vidéo « Géométrie : écran partagé et projection » (1 min 42), dans une nouvelle vignette des outils pour les professeurs. Elle montre l'écran partagé de la Géométrie interactive : un segment tracé à la règle, un cercle au compas, un milieu, une perpendiculaire (l'équerre puis la règle contre elle), le choix des instruments et un point déplacé qui met la construction à jour aussitôt. Elle montre ensuite la fenêtre projetée, côte à côte : l'écran du professeur et le vidéoprojecteur, où une parallèle se construit en direct à l'équerre.",
+  ]},
   { version:'2026-08-19.847', items:[
     "Construction aux instruments : perpendiculaire ou parallèle à une demi-droite d'angle. Signalé : « La dernière perpendiculaire n'a pas été tracée » (message « point y inconnu »). Quand la droite de référence est la demi-droite [Ay) d'un angle de mesure donnée, construite sans point, la construction aux instruments s'appuie maintenant sur la demi-droite elle-même : la perpendiculaire (ou la parallèle) se trace à l'équerre comme les autres.",
   ]},
