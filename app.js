@@ -3081,6 +3081,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.839', items:[
+    "CM1, Construction de figures : corrections signalées. L'arc EF se note maintenant avec un petit arc au-dessus des lettres. Dans le polygone, l'angle codé en E est bien placé entre les côtés [EA] et [ED]. Dans la construction du rectangle, l'équerre posée en B a un côté sur le segment [AB]. Dans les constructions, les points A et B n'apparaissent qu'avec le segment tracé à la règle, plus avant. Dans la construction du triangle équilatéral, une étape montre d'abord la prise de la longueur AB au compas (pointe sèche sur A, mine sur B), avant les deux arcs.",
+  ]},
   { version:'2026-08-19.838', items:[
     "CM1 : nouveau chapitre G2 « Construction de figures », d'après la page de cours du manuel, avec des exemples originaux. Comme demandé (« peut-être faut-il reparler des bases avec le vocabulaire géométrique »), il commence par le vocabulaire : point, segment, droite, points alignés, milieu, codage, puis les polygones (côtés, sommets, angles, comment les nommer). Il continue avec le cercle et le disque (vocabulaire interactif : centre, rayon, diamètre, corde, arc ; le diamètre vaut deux rayons), puis les triangles particuliers (rectangle, isocèle, équilatéral) et les quadrilatères particuliers (rectangle, losange, carré). Méthodes animées avec les instruments du site : tracer un cercle au compas, un rectangle avec la règle et l'équerre, un triangle équilatéral avec la règle et le compas. Un jeu permet de reconnaître une figure à son codage. Le chapitre compte aussi 10 exercices corrigés, un quiz et un encadré d'histoire (le premier problème des Éléments d'Euclide).",
   ]},

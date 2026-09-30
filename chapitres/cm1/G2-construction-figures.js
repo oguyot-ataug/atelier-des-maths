@@ -101,19 +101,23 @@ function cf1FigPolygone(){
   let h = cf1Poly(P, CF1_BLEU, 'rgba(12,91,160,.07)', 2.4);
   h += P.map((Q, i) => { const u = cf1Unit(C, Q); return cf1Lab(Q, u[0] * 15, u[1] * 15 + 5, n[i], CF1_BLEU); }).join('');
   h += cf1Seg(P[0], P[1], CF1_VERT, 4.5) + cf1Lab([130, 150], 0, 22, 'un côté', CF1_VERT, 13);
-  h += `<circle cx="${P[2][0]}" cy="${P[2][1]}" r="6" fill="none" stroke="${CF1_ROUGE}" stroke-width="2"/>` + cf1Lab(P[2], 50, 5, 'un sommet', CF1_ROUGE, 13);
-  h += cf1Arc(P[4], 20, -12, 55, CF1_ORANGE, 2.4) + cf1Lab(P[4], -2, -30, 'un angle', CF1_ORANGE, 13);
+  h += `<circle cx="${P[2][0]}" cy="${P[2][1]}" r="6" fill="none" stroke="${CF1_ROUGE}" stroke-width="2"/>` + cf1Lab(P[2], 62, 5, 'un sommet', CF1_ROUGE, 13);
+  // Angle en E, entre les côtés [EA] et [ED] (angles calculés sur la figure, repère mathématique).
+  const angE = Q => Math.atan2(-(Q[1] - P[4][1]), Q[0] - P[4][0]) * 180 / Math.PI;
+  h += cf1Arc(P[4], 20, angE(P[0]), angE(P[3]), CF1_ORANGE, 2.4) + cf1Lab(P[4], -6, -26, 'un angle', CF1_ORANGE, 13);
   return cf1Svg(h, '0 0 320 190', 340);
 }
 
 // Vocabulaire du cercle, interactif : un clic sur un mot le colorie sur la figure.
+// Notation d'un arc : un petit arc de cercle au-dessus des deux lettres (arc EF).
+function cf1ArcNom(t){ return `<span style="display:inline-block;position:relative;padding-top:.45em;line-height:1;"><svg viewBox="0 0 20 6" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:.5em;overflow:visible;"><path d="M1,5.5 Q10,-2 19,5.5" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke"/></svg>${t}</span>`; }
 const CF1_V_O = [150, 118], CF1_V_R = 82;
 const CF1_VOC = {
   centre: [CF1_ROUGE, 'Le <b>centre</b> O est au milieu : tous les points du cercle sont à la même distance de O.'],
   rayon: [CF1_BLEU, 'Un <b>rayon</b> relie le centre à un point du cercle : [OR] est un rayon. Tous les rayons d\'un cercle ont la même longueur.'],
   diametre: [CF1_VERT, 'Un <b>diamètre</b> relie deux points du cercle en passant par le centre : [AB] est un diamètre. Il mesure deux rayons.'],
   corde: [CF1_ORANGE, 'Une <b>corde</b> relie deux points du cercle, sans forcément passer par le centre : [EF] est une corde.'],
-  arc: [CF1_VIOLET, 'Un <b>arc</b> est un morceau du cercle : l\'arc EF est la partie du cercle entre E et F.'],
+  arc: [CF1_VIOLET, 'Un <b>arc</b> est un morceau du cercle : l\'arc ' + cf1ArcNom('EF') + ' est la partie du cercle entre E et F.'],
 };
 function cf1Voc(v){
   const O = CF1_V_O, r = CF1_V_R, A = cf1Pc(O, r, 205), B = cf1Pc(O, r, 25), R = cf1Pc(O, r, 112), E = cf1Pc(O, r, 245), F = cf1Pc(O, r, 310);
@@ -247,7 +251,7 @@ const cf1RectDemo = cf1Etapes('cf1Rect', [
   'On veut tracer un rectangle ABCD de longueur 5 cm et de largeur 3 cm.',
   '1. Avec la règle, on trace le segment [AB] de 5 cm : A sur le 0, B sur le 5.',
   '2. On pose l\'équerre : son angle droit sur A, un côté le long de [AB]. On trace le long de l\'autre côté un segment de 3 cm : c\'est [AD].',
-  '3. On fait de même en B : l\'angle droit de l\'équerre sur B, un côté le long de (AB). On trace [BC] de 3 cm.',
+  '3. On fait de même en B : l\'angle droit de l\'équerre sur B, un côté le long de [BA]. On trace [BC] de 3 cm le long de l\'autre côté.',
   '4. Avec la règle, on relie D et C.',
   '5. Le rectangle ABCD est tracé : quatre angles droits, et des côtés de 5 cm et de 3 cm.',
 ], k => {
@@ -259,11 +263,12 @@ const cf1RectDemo = cf1Etapes('cf1Rect', [
   if(k >= 4) h += cf1Seg(D, C, CF1_ENCRE, 2.2);
   if(k === 1) h += cf1Regle(A, 0) + cf1Crayon(B, 0);
   if(k === 2) h += cf1Equerre(A, -90) + cf1Crayon(D, 0);
-  if(k === 3) h += cf1Equerre(B, -90) + cf1Crayon(C, 0);
+  // En B, l'équerre tournée d'un demi-tour : son grand côté le long de [BA], son petit côté monte le long de [BC].
+  if(k === 3) h += cf1Equerre(B, 180) + cf1Crayon(C, 0);
   if(k === 4) h += cf1Regle(D, 0) + cf1Crayon(C, 0);
   if(k >= 5) h += [[A, B, D], [B, C, A], [C, D, B], [D, A, C]].map(([S, P, Q]) => cf1AngleDroit(S, P, Q, CF1_VERT)).join('')
     + cf1Lab([(A[0] + B[0]) / 2, A[1]], 0, 20, '5 cm', CF1_ROUGE, 12) + cf1Lab([B[0], (B[1] + C[1]) / 2], 26, 4, '3 cm', CF1_ROUGE, 12);
-  h += cf1Lab(A, -12, 16, 'A') + cf1Lab(B, 12, 16, 'B');
+  if(k >= 1) h += cf1Lab(A, -12, 16, 'A') + cf1Lab(B, 12, 16, 'B'); // A et B naissent avec le segment tracé à la règle
   if(k >= 2) h += cf1Lab(D, -12, -4, 'D');
   if(k >= 3) h += cf1Lab(C, 12, -4, 'C');
   return h;
@@ -273,26 +278,29 @@ const cf1RectDemo = cf1Etapes('cf1Rect', [
 const CF1_T_A = [90, 215], CF1_T_B = [90 + 4 * CF1_CM, 215], CF1_T_C = [90 + 2 * CF1_CM, 215 - 4 * CF1_CM * Math.sqrt(3) / 2];
 const cf1TriDemo = cf1Etapes('cf1Tri', [
   'On veut tracer un triangle équilatéral ABC de côté 4 cm : ses trois côtés mesurent 4 cm.',
-  '1. Avec la règle, on trace le segment [AB] de 4 cm.',
-  '2. On écarte le compas de 4 cm. Pointe sèche sur A, on trace un petit arc au-dessus du segment : ses points sont à 4 cm de A.',
-  '3. Même écartement, pointe sèche sur B : on trace un deuxième arc qui coupe le premier.',
-  '4. Le point où les deux arcs se coupent est à 4 cm de A et à 4 cm de B : c\'est C. On trace [AC] et [BC] à la règle.',
-  '5. Le triangle ABC est équilatéral : AB = AC = BC = 4 cm.',
+  '1. Avec la règle, on trace le segment [AB] de 4 cm : A sur le 0, B sur le 4.',
+  '2. On prend la longueur AB au compas : pointe sèche sur A, on écarte jusqu\'à ce que la mine soit sur B.',
+  '3. Sans changer l\'écartement, pointe sèche sur A, on trace un petit arc au-dessus du segment : ses points sont à 4 cm de A.',
+  '4. Même écartement, pointe sèche sur B : on trace un deuxième arc qui coupe le premier.',
+  '5. Le point où les deux arcs se coupent est à 4 cm de A et à 4 cm de B : c\'est C. On trace [AC] et [BC] à la règle.',
+  '6. Le triangle ABC est équilatéral : AB = AC = BC = 4 cm.',
 ], k => {
   const A = CF1_T_A, B = CF1_T_B, C = CF1_T_C, r = 4 * CF1_CM;
   let h = '';
   if(k >= 1) h += cf1Seg(A, B, CF1_ENCRE, 2.2);
-  if(k >= 2) h += cf1Arc(A, r, 45, 75, CF1_ORANGE, 1.8);
-  if(k >= 3) h += cf1Arc(B, r, 105, 135, CF1_ORANGE, 1.8);
-  if(k >= 4) h += cf1Seg(A, C, CF1_ENCRE, 2.2) + cf1Seg(B, C, CF1_ENCRE, 2.2);
+  if(k >= 3) h += cf1Arc(A, r, 45, 75, CF1_ORANGE, 1.8);
+  if(k >= 4) h += cf1Arc(B, r, 105, 135, CF1_ORANGE, 1.8);
+  if(k >= 5) h += cf1Seg(A, C, CF1_ENCRE, 2.2) + cf1Seg(B, C, CF1_ENCRE, 2.2);
   if(k === 1) h += cf1Regle(A, 0) + cf1Crayon(B, 0);
-  if(k === 2) h += cf1Compas(A, r, 60);
-  if(k === 3) h += cf1Compas(B, r, 120, true);
+  if(k === 2) h += cf1Compas(A, r, 0);
+  if(k === 3) h += cf1Compas(A, r, 60);
+  if(k === 4) h += cf1Compas(B, r, 120, true);
   // Règle posée de C vers A (graduation 0 sur C) : son corps reste à l'extérieur du triangle.
-  if(k === 4){ const ang = Math.atan2(A[1] - C[1], A[0] - C[0]) * 180 / Math.PI; h += cf1Regle(C, ang) + cf1Crayon(A, 0); }
-  if(k >= 5) h += cf1Traits(A, B, 2, CF1_ORANGE) + cf1Traits(A, C, 2, CF1_ORANGE) + cf1Traits(B, C, 2, CF1_ORANGE);
-  h += cf1Lab(A, -12, 16, 'A') + cf1Lab(B, 12, 16, 'B');
-  if(k >= 4) h += cf1Lab(C, 16, -12, 'C');
+  if(k === 5){ const ang = Math.atan2(A[1] - C[1], A[0] - C[0]) * 180 / Math.PI; h += cf1Regle(C, ang) + cf1Crayon(A, 0); }
+  if(k >= 6) h += cf1Traits(A, B, 2, CF1_ORANGE) + cf1Traits(A, C, 2, CF1_ORANGE) + cf1Traits(B, C, 2, CF1_ORANGE);
+  // A et B n'existent qu'une fois le segment tracé à la règle.
+  if(k >= 1) h += cf1Lab(A, -12, 16, 'A') + cf1Lab(B, 12, 16, 'B');
+  if(k >= 5) h += cf1Lab(C, 16, -12, 'C');
   return h;
 });
 
