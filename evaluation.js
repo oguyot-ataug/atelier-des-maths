@@ -54,6 +54,8 @@ document.getElementById('view-evaluation').innerHTML = `
     <div class="tool-row" style="margin-bottom:10px;">
       <label class="hint" style="margin:0;">Niveau :
         <select id="evalNiveau" onchange="renderEvalChapPicker(); scheduleEvalAutoSave();" style="margin-left:4px;">
+          <option value="cm1">CM1</option>
+          <option value="cm2">CM2</option>
           <option value="6e">6e</option>
           <option value="5e">5e</option>
           <option value="4e">4e</option>
@@ -534,7 +536,7 @@ function getSelectedEvalChapitres(){
   return Array.from(document.querySelectorAll('.evalChapCheck:checked')).map(el=>el.value);
 }
 function evaluationPrompt(niveau, chapitres, nbExo, duree, questionCours){
-  return `Tu es un professeur de mathématiques qui prépare une évaluation pour une classe de ${niveau}.
+  return `Tu es un ${typeof iaEnseignant==='function' ? iaEnseignant(niveau) : 'professeur de mathématiques'} qui prépare une évaluation pour une classe de ${typeof niveauLabel==='function' ? niveauLabel(niveau) : niveau}. ${typeof iaContexteNiveau==='function' ? iaContexteNiveau(niveau) : ''}
 Chapitres concernés : ${chapitres.join(', ')}.
 Durée prévue : ${duree} minutes. Rédige exactement ${nbExo} énoncés d'exercices${questionCours ? ', le PREMIER étant une question de cours (restituer une définition, une propriété ou une méthode vue en classe, sans aucun calcul)' : ''}, variés et progressifs (du plus simple au plus complexe), correspondant aux chapitres indiqués, adaptés au niveau ${niveau}.
 

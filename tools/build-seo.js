@@ -31,13 +31,14 @@ const { chromium } = require('playwright');
 
 const ROOT = path.resolve(__dirname, '..');
 const SITE = 'https://maths.latelieraugmente.fr';
-const LEVELS = ['cm1', '6e', '5e', '4e', '3e']; // la 3e est publiée depuis le build 817, le CM1 depuis le build 868
+const LEVELS = ['cm1', 'cm2', '6e', '5e', '4e', '3e']; // la 3e est publiée depuis le build 817, le CM1 depuis le build 868, le CM2 depuis le build 873
 const LEVEL_INFO = {
-  'cm1': { cycle: 'cycle 3', long: 'cours moyen 1re année', label: 'CM1', ecole: 'école élémentaire', other: ['6e', '5e', '4e', '3e'] },
-  '6e': { cycle: 'cycle 3', long: 'sixième', label: '6e', ecole: 'collège', other: ['cm1', '5e', '4e', '3e'] },
-  '5e': { cycle: 'cycle 4', long: 'cinquième', label: '5e', ecole: 'collège', other: ['cm1', '6e', '4e', '3e'] },
-  '4e': { cycle: 'cycle 4', long: 'quatrième', label: '4e', ecole: 'collège', other: ['cm1', '6e', '5e', '3e'] },
-  '3e': { cycle: 'cycle 4', long: 'troisième', label: '3e', ecole: 'collège', other: ['cm1', '6e', '5e', '4e'] },
+  'cm1': { cycle: 'cycle 3', long: 'cours moyen 1re année', label: 'CM1', ecole: 'école élémentaire', other: ['cm2', '6e', '5e', '4e', '3e'] },
+  'cm2': { cycle: 'cycle 3', long: 'cours moyen 2e année', label: 'CM2', ecole: 'école élémentaire', other: ['cm1', '6e', '5e', '4e', '3e'] },
+  '6e': { cycle: 'cycle 3', long: 'sixième', label: '6e', ecole: 'collège', other: ['cm1', 'cm2', '5e', '4e', '3e'] },
+  '5e': { cycle: 'cycle 4', long: 'cinquième', label: '5e', ecole: 'collège', other: ['cm1', 'cm2', '6e', '4e', '3e'] },
+  '4e': { cycle: 'cycle 4', long: 'quatrième', label: '4e', ecole: 'collège', other: ['cm1', 'cm2', '6e', '5e', '3e'] },
+  '3e': { cycle: 'cycle 4', long: 'troisième', label: '3e', ecole: 'collège', other: ['cm1', 'cm2', '6e', '5e', '4e'] },
 };
 const lab = lvl => (LEVEL_INFO[lvl] || {}).label || lvl;
 const CAT_LABEL = { N: 'Nombres et calculs', G: 'Géométrie', D: 'Données et probabilités', M: 'Grandeurs et mesures', P: 'Proportionnalité et fonctions' };
@@ -184,6 +185,7 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script
   <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
   <nav>
     <a href="/cm1/">Cours CM1</a>
+    <a href="/cm2/">Cours CM2</a>
     <a href="/6e/">Cours 6e</a>
     <a href="/5e/">Cours 5e</a>
     <a href="/4e/">Cours 4e</a>
@@ -197,7 +199,7 @@ ${body}
 </main>
 <footer class="seo-foot">
   <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
-  <a href="/cm1/">Cours de maths CM1</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
   Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
 </footer>
 </body>
@@ -402,7 +404,7 @@ async function ogImage(page, base) {
     newManifest[e.url] = { hash: e.hash, lastmod: old && old.hash === e.hash ? old.lastmod : today };
   }
   fs.writeFileSync(manifestPath, JSON.stringify(newManifest, null, 1) + '\n');
-  const prio = u => u === '/' ? '1.0' : /^\/(cm1|6e|5e|4e|3e)\/$/.test(u) || u === '/professeurs/' ? '0.9' : '0.8';
+  const prio = u => u === '/' ? '1.0' : /^\/(cm1|cm2|6e|5e|4e|3e)\/$/.test(u) || u === '/professeurs/' ? '0.9' : '0.8';
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.map(e => `  <url><loc>${SITE}${e.url}</loc><lastmod>${newManifest[e.url].lastmod}</lastmod><priority>${prio(e.url)}</priority></url>`).join('\n')}

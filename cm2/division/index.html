@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Division – Cours de maths CM2 | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CM2 : Division. Les deux sens de la division, La division euclidienne, La division décimale, Diviser par 10, 100, 1 000, Diviser par 4 ou par…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/cm2/division/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Division – Cours de maths CM2 | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CM2 : Division. Les deux sens de la division, La division euclidienne, La division décimale, Diviser par 10, 100, 1 000, Diviser par 4 ou par…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/cm2/division/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Division (CM2)","headline":"Division – cours de mathématiques de CM2","description":"Cours de maths CM2 : Division. Les deux sens de la division, La division euclidienne, La division décimale, Diviser par 10, 100, 1 000, Diviser par 4 ou par…","url":"https://maths.latelieraugmente.fr/cm2/division/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CM2 (cycle 3, école élémentaire)","about":"Nombres et calculs","teaches":["Les deux sens de la division","La division euclidienne","La division décimale","Diviser par 10, 100, 1 000","Diviser par 4 ou par 8 de tête"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CM2","url":"https://maths.latelieraugmente.fr/cm2/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CM2","item":"https://maths.latelieraugmente.fr/cm2/"},{"@type":"ListItem","position":3,"name":"Division","item":"https://maths.latelieraugmente.fr/cm2/division/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/cm2/">Cours CM2</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/cm2/">Cours de maths CM2</a> › Division</div>
+<h1>Division</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span> Cours de mathématiques de CM2 (cours moyen 2e année) · chapitre 15 · Les deux sens de la division · La division euclidienne · La division décimale · Diviser par 10, 100, 1 000 · Diviser par 4 ou par 8 de tête</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/cm2/15-division/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Les deux sens de la division</h3></div>
+<p class="example-title">La division répond à deux types de questions :</p><ul class="example-list"><li><b>Partage</b> : « On partage 84 bonbons entre 4 enfants. Combien chacun en reçoit-il ? » → 84 ÷ 4 = 21 bonbons par enfant (la valeur d'une part).</li><li><b>Groupement</b> : « On range 84 œufs dans des boîtes de 6. Combien de boîtes ? » → 84 ÷ 6 = 14 boîtes (le nombre de parts).</li></ul>
+
+<div class="lesson-header"><span class="num">2</span><h3>La division euclidienne</h3></div>
+<span class="def-badge">Définition</span><div class="def-box">Effectuer la <b>division euclidienne</b> de 587 par 9, c'est trouver le <b>quotient</b> q et le <b>reste</b> r tels que : 587 = (9 × q) + r, avec r plus petit que 9.</div>
+<div class="figure-wrap"><div style="margin:10px 0;padding:14px 0;"><div style="display:flex;gap:18px;align-items:stretch;font-family:'JetBrains Mono',monospace;font-size:1.05rem;">
+    <table style="border-collapse:collapse;"><tbody><tr><td style="width:16px;text-align:center;"></td><td style="width:22px;text-align:center;padding:2px 0;font-weight:700;">5</td><td style="width:22px;text-align:center;padding:2px 0;font-weight:700;">8</td><td style="width:22px;text-align:center;padding:2px 0;font-weight:700;">7</td></tr><tr><td style="width:16px;text-align:center;border-bottom:1.5px solid #1C1B2E;">−</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;">5</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;">4</td><td style="width:22px;text-align:center;padding:2px 0;"></td></tr><tr><td style="width:16px;text-align:center;"></td><td style="width:22px;text-align:center;padding:2px 0;"></td><td style="width:22px;text-align:center;padding:2px 0;">4</td><td style="width:22px;text-align:center;padding:2px 0;">7</td></tr><tr><td style="width:16px;text-align:center;border-bottom:1.5px solid #1C1B2E;">−</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;"></td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;">4</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;">5</td></tr><tr><td style="width:16px;text-align:center;"></td><td style="width:22px;text-align:center;padding:2px 0;"></td><td style="width:22px;text-align:center;padding:2px 0;"></td><td style="width:22px;text-align:center;padding:2px 0;">2</td></tr></tbody></table>
+    <div style="border-left:1.5px solid #1C1B2E;">
+      <div style="padding:2px 0 2px 14px;">9</div>
+      <div style="border-top:1.5px solid #1C1B2E;padding:6px 0 0 14px;">65</div>
+    </div>
+  </div></div>
+  <p class="hint" style="margin:0;">587 = 9 × 65 + 2, avec 2 &lt; 9</p></div>
+<p class="example-title">Résultat :</p><ul class="example-list"><li>587 = (9 × 65) + 2 : le quotient est <b>65</b>, le reste est <b>2</b>.</li><li>Vérification : 9 × 65 = 585 et 585 + 2 = 587. ✔</li><li>Estimation : 9 × 60 = 540 et 9 × 70 = 630 : le quotient est entre 60 et 70.</li></ul>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">Le reste doit toujours être <b>plus petit que le diviseur</b>. Sinon, c'est qu'on pouvait encore en mettre une fois de plus au quotient.</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>La division décimale</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Quand le reste n'est pas nul, on peut <b>continuer la division</b> : on place une <b>virgule au quotient</b> quand on abaisse le premier chiffre après la virgule du dividende (on écrit des zéros : 17 = 17,00).</div>
+<div class="figure-wrap" style="display:flex;gap:30px;flex-wrap:wrap;justify-content:center;"><div style="margin:10px 0;padding:14px 0;">
+    <div style="display:flex;gap:18px;align-items:stretch;font-family:'JetBrains Mono',monospace;font-size:1.05rem;">
+    <table style="border-collapse:collapse;"><tbody><tr><td style="width:16px;text-align:center;"></td><td style="width:22px;text-align:center;padding:2px 0;font-weight:700;">1</td><td style="width:22px;text-align:center;padding:2px 0;font-weight:700;">7</td><td style="width:22px;text-align:center;padding:2px 0;font-weight:700;"></td><td style="width:22px;text-align:center;padding:2px 0;font-weight:700;"></td></tr><tr><td style="width:16px;text-align:center;border-bottom:1.5px solid #1C1B2E;">−</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;">1</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;">6</td><td style="width:22px;text-align:center;padding:2px 0;"></td><td style="width:22px;text-align:center;padding:2px 0;"></td></tr><tr><td style="width:16px;text-align:center;"></td><td style="width:22px;text-align:center;padding:2px 0;"></td><td style="width:22px;text-align:center;padding:2px 0;">1</td><td style="width:22px;text-align:center;padding:2px 0;">0</td><td style="width:22px;text-align:center;padding:2px 0;"></td></tr><tr><td style="width:16px;text-align:center;border-bottom:1.5px solid #1C1B2E;">−</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;"></td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;"></td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;">8</td><td style="width:22px;text-align:center;padding:2px 0;"></td></tr><tr><td style="width:16px;text-align:center;"></td><td style="width:22px;text-align:center;padding:2px 0;"></td><td style="width:22px;text-align:center;padding:2px 0;"></td><td style="width:22px;text-align:center;padding:2px 0;">2</td><td style="width:22px;text-align:center;padding:2px 0;">0</td></tr><tr><td style="width:16px;text-align:center;border-bottom:1.5px solid #1C1B2E;">−</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;"></td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;"></td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;">2</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;">0</td></tr><tr><td style="width:16px;text-align:center;"></td><td style="width:22px;text-align:center;padding:2px 0;"></td><td style="width:22px;text-align:center;padding:2px 0;"></td><td style="width:22px;text-align:center;padding:2px 0;"></td><td style="width:22px;text-align:center;padding:2px 0;">0</td></tr></tbody></table>
+    <div style="border-left:1.5px solid #1C1B2E;">
+      <div style="padding:2px 0 2px 14px;">4</div>
+      <div style="border-top:1.5px solid #1C1B2E;padding:6px 0 0 14px;">4,25</div>
+    </div>
+  </div>
+  </div><div style="margin:10px 0;padding:14px 0;">
+    <div style="display:flex;gap:18px;align-items:stretch;font-family:'JetBrains Mono',monospace;font-size:1.05rem;">
+    <table style="border-collapse:collapse;"><tbody><tr><td style="width:16px;text-align:center;"></td><td style="width:22px;text-align:center;padding:2px 0;font-weight:700;">2</td><td style="width:22px;text-align:center;padding:2px 0;font-weight:700;border-right:1px dashed rgba(28,43,57,.45);">5</td><td style="width:22px;text-align:center;padding:2px 0;font-weight:700;">8</td></tr><tr><td style="width:16px;text-align:center;border-bottom:1.5px solid #1C1B2E;">−</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;">2</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;border-right:1px dashed rgba(28,43,57,.45);">4</td><td style="width:22px;text-align:center;padding:2px 0;"></td></tr><tr><td style="width:16px;text-align:center;"></td><td style="width:22px;text-align:center;padding:2px 0;"></td><td style="width:22px;text-align:center;padding:2px 0;border-right:1px dashed rgba(28,43,57,.45);">1</td><td style="width:22px;text-align:center;padding:2px 0;">8</td></tr><tr><td style="width:16px;text-align:center;border-bottom:1.5px solid #1C1B2E;">−</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;"></td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;border-right:1px dashed rgba(28,43,57,.45);">1</td><td style="width:22px;text-align:center;padding:2px 0;border-bottom:1.5px solid #1C1B2E;">8</td></tr><tr><td style="width:16px;text-align:center;"></td><td style="width:22px;text-align:center;padding:2px 0;"></td><td style="width:22px;text-align:center;padding:2px 0;border-right:1px dashed rgba(28,43,57,.45);"></td><td style="width:22px;text-align:center;padding:2px 0;">0</td></tr></tbody></table>
+    <div style="border-left:1.5px solid #1C1B2E;">
+      <div style="padding:2px 0 2px 14px;">6</div>
+      <div style="border-top:1.5px solid #1C1B2E;padding:6px 0 0 14px;">4,3</div>
+    </div>
+  </div>
+  </div></div>
+<p class="example-title">Résultats :</p><ul class="example-list"><li>17 ÷ 4 = <b>4,25</b> (vérification : 4 × 4,25 = 17).</li><li>25,8 ÷ 6 = <b>4,3</b> (vérification : 6 × 4,3 = 25,8).</li></ul>
+
+<div class="lesson-header"><span class="num">4</span><h3>Diviser par 10, 100, 1 000</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Diviser par 10, 100 ou 1 000, c'est rendre le nombre 10, 100 ou 1 000 fois plus petit : chaque chiffre glisse de <b>1, 2 ou 3 rangs vers la droite</b>.</div>
+<p class="example-title">Exemples (chiffre des unités de départ en rouge) :</p><ul class="example-list"><li>4<b style="color:#E35D3A;">5</b> ÷ 10 = 4,5</li><li><b style="color:#E35D3A;">7</b>,2 ÷ 100 = 0,072</li><li>38<b style="color:#E35D3A;">0</b> ÷ 1 000 = 0,38</li></ul>
+
+<div class="lesson-header"><span class="num">5</span><h3>Diviser par 4 ou par 8 de tête</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Diviser par 4, c'est prendre la <b>moitié de la moitié</b> : 96 ÷ 4 → 48 → <b>24</b>.<br>Diviser par 8, c'est prendre trois fois la moitié : 120 ÷ 8 → 60 → 30 → <b>15</b>.</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Interpréter le reste</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-c2-dv-reste"><div class="step-column"><div class="">150 ÷ 45</div></div><div class="step-note">On cherche combien de groupes de 45 : c'est une division (groupement).</div></div></div>
+<div class="sub-header"><span class="letter">M</span><h4>Partager une somme d'argent</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-c2-dv-dec"><div class="step-column"><div class="">58 ÷ 4</div></div><div class="step-note">On partage 58 € en 4 parts égales : division décimale.</div></div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Rédaction type : « Division euclidienne »</h3><div class="redaction-template"><div class="we-row"><span class="we-expr">587 = (9 × 65) + 2</span><span class="we-comment">J'écris l'égalité : dividende = (diviseur × quotient) + reste.</span></div><div class="we-row"><span class="we-expr">2 &lt; 9</span><span class="we-comment">Je vérifie que le reste est plus petit que le diviseur.</span></div></div></div><div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>Pose et effectue la division euclidienne : 745 ÷ 6 · 1 208 ÷ 7
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Pose et effectue jusqu'aux centièmes : 23 ÷ 4 · 9 ÷ 8 (jusqu'aux millièmes) · 37,2 ÷ 3
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>Calcule : 56 ÷ 10 · 3,4 ÷ 10 · 250 ÷ 100 · 8 ÷ 1 000
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>Calcule de tête : 64 ÷ 4 · 200 ÷ 8 · 36 ÷ 4 · 88 ÷ 8
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>Partage ou groupement ? a) 96 cartes pour 8 joueurs : combien chacun ? b) 96 cartes par paquets de 8 : combien de paquets ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 6</div>Un ruban de 7 m est coupé en 4 morceaux égaux. Longueur d'un morceau ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 7</div>On range 200 livres sur des étagères de 30 livres. Combien d'étagères faut-il ? Combien de livres sur la dernière ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 8</div>Trouve le nombre : si je le multiplie par 6, j'obtiens 45.
+      
+      </div></div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : la division « à la française »</div><p style="margin:0 0 12px;">La façon de poser la division a beaucoup varié selon les pays et les époques. En France, on place le diviseur à droite du dividende, avec une « potence » ; aux États-Unis, on écrit le diviseur à gauche, sous une sorte de toit !</p><p style="margin:0 0 12px;">Au Moyen Âge, la division était considérée comme l'opération la plus difficile : on raconte qu'il fallait aller dans une université italienne pour apprendre à la faire.</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/cm2/15-division/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/cm2/organisation-et-gestion-de-donnees/">Organisation et gestion de données</a></span>
+  <a href="/cm2/">Tous les chapitres de CM2</a>
+  <span><a href="/cm2/resolution-de-problemes/">Résolution de problèmes</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

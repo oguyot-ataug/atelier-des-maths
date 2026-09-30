@@ -1435,7 +1435,7 @@ function qzIaPrompt(q, rep, nbPhotos){
     ? `Barème (${qzNum(max)} points) :\n${q.criteres.map(k => `- [${k.id}] ${k.texte} : ${qzNum(Number(k.points) || 0)} pt`).join('\n')}`
     : `Barème : la question est notée sur ${qzNum(max)} point${max > 1 ? 's' : ''} (utilise des multiples de 0,25).`;
   const texte = (rep && typeof rep === 'object' ? rep.texte : rep) || '';
-  return `Tu es professeur de mathématiques dans un collège français (classe de ${niveau}). Tu corriges la réponse d'un élève à une question ouverte d'une interrogation.
+  return `Tu es ${iaEnseignant(niveau)}${niveauPrimaire(niveauCle(niveau) || niveau) ? '' : ' (classe de ' + niveau + ')'}. ${iaContexteNiveau(niveau)} Tu corriges la réponse d'un élève à une question ouverte d'une interrogation.
 
 Énoncé : ${q.enonce || '(voir document)'}
 
@@ -1532,7 +1532,7 @@ function qzGenChapitres(n){
 }
 function qzGenOuvrir(){
   const classe = (accountClassesList || []).find(c => c.id === (document.getElementById('qzfClasse') || {}).value);
-  const niveau = classe && ['5e', '4e', '3e'].includes(classe.niveau) ? classe.niveau : '6e';
+  const niveau = (classe && niveauCle(classe.niveau)) || '6e';
   let o = document.getElementById('qzGenOverlay');
   if(!o){ o = document.createElement('div'); o.id = 'qzGenOverlay'; o.className = 'modal-overlay'; o.style.zIndex = '400'; document.body.appendChild(o);
     o.addEventListener('click', ev => { if(ev.target === o) o.style.display = 'none'; }); }
@@ -1541,7 +1541,7 @@ function qzGenOuvrir(){
       <button class="modal-close" onclick="document.getElementById('qzGenOverlay').style.display='none'"><span class="gicon">close</span></button></div>
     <p class="hint" style="margin:6px 0 12px;">Les questions sont ajoutées au questionnaire : relisez-les et modifiez-les avant de le donner.</p>
     <div class="qz-gen-grid">
-      <label>Niveau <select id="qzGenNiveau" onchange="document.getElementById('qzGenChap').innerHTML='<option value=&quot;&quot;>(thème libre)</option>'+qzGenChapitres(this.value)"><option value="6e"${niveau === '6e' ? ' selected' : ''}>6e</option><option value="5e"${niveau === '5e' ? ' selected' : ''}>5e</option><option value="4e"${niveau === '4e' ? ' selected' : ''}>4e</option><option value="3e"${niveau === '3e' ? ' selected' : ''}>3e</option></select></label>
+      <label>Niveau <select id="qzGenNiveau" onchange="document.getElementById('qzGenChap').innerHTML='<option value=&quot;&quot;>(thème libre)</option>'+qzGenChapitres(this.value)">${NIVEAUX_ORDRE.map(n => `<option value="${n}"${niveau === n ? ' selected' : ''}>${niveauLabel(n)}</option>`).join('')}</select></label>
       <label>Chapitre <select id="qzGenChap"><option value="">(thème libre)</option>${qzGenChapitres(niveau)}</select></label>
       <label style="grid-column:1/-1;">Thème ou notions précises <input type="text" id="qzGenTheme" placeholder="ex. comparer des fractions de même dénominateur"></label>
       <label>Nombre de questions <input type="number" id="qzGenNb" min="1" max="15" value="6"></label>
@@ -1565,7 +1565,7 @@ async function qzGenerer(){
   if(!chap && !theme){ status.textContent = 'Choisissez un chapitre ou écrivez un thème.'; return; }
   if(!types.length){ status.textContent = 'Cochez au moins un type de question.'; return; }
   const noms = { qcm: 'QCM', vf: 'vrai/faux', numerique: 'réponse numérique', courte: 'réponse courte', ouverte: 'question ouverte rédigée' };
-  const prompt = `Tu es professeur de mathématiques dans un collège français. Rédige une interrogation pour une classe de ${niveau}, conforme au programme officiel.
+  const prompt = `Tu es ${iaEnseignant(niveau)}. Rédige une interrogation pour une classe de ${niveauLabel(niveau)}, conforme au programme officiel. ${iaContexteNiveau(niveau)}${niveauPrimaire(niveau) ? ' Les élèves de l\'école n\'ont souvent pas d\'ordinateur et répondent avec des cartes A, B, C, D : privilégie des QCM à 4 choix au plus.' : ''}
 ${chap ? `Chapitre : ${chap}.` : ''}${theme ? `\nThème ou notions : ${theme}.` : ''}
 Nombre de questions : ${nb}. Difficulté : ${diff}. Types autorisés : ${types.map(t => noms[t]).join(', ')} (varie les types).
 ${consignes ? `Consignes du professeur : ${consignes}\n` : ''}

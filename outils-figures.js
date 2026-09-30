@@ -5948,7 +5948,7 @@ async function figSplitAjouterCahier(){
   const titre = await nicePrompt('Titre de cette construction dans le cahier :', 'Construction');
   if(titre===null || titre===undefined) return;
   const classe = (typeof accountClassesList!=='undefined' ? accountClassesList : []).find(c=>c.id===currentClassId);
-  const entry = {niveau: (classe && classe.niveau) || currentLevel || '5e', chapitre: '', exo: 'Construction', titre: String(titre).trim() || 'Construction', date: todayISO(), raw: '', html};
+  const entry = {niveau: (classe && (niveauCle(classe.niveau) || classe.niveau)) || currentLevel || '5e', chapitre: '', exo: 'Construction', titre: String(titre).trim() || 'Construction', date: todayISO(), raw: '', html};
   cahier.push(entry); sortCahierInPlace(); saveCahier();
   if(document.getElementById('cahierList')) renderCahier();
   const b = document.getElementById('tbSplitCahierBtn');

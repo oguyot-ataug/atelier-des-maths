@@ -200,6 +200,23 @@ const CHCM2 = [
 // dur, pour rester extensible à mesure que de nouveaux niveaux sont ajoutés (cm1 aujourd'hui,
 // cm2/4e/3e plus tard).
 const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, '3e': CH3, 'cm1': CHCM1, 'cm2': CHCM2 };
+// Tous les niveaux ayant des chapitres, dans l'ordre de la scolarité (école puis collège).
+const NIVEAUX_ORDRE = ['cm1', 'cm2', '6e', '5e', '4e', '3e'];
+// Libellé affiché d'un niveau de chapitres : 'cm1' → « CM1 » (les clés de chapitres sont en minuscules).
+function niveauLabel(l){ return /^c[em]\d/i.test(l || '') ? String(l).toUpperCase() : (l || ''); }
+// Niveau d'une classe (« CM1 », « 6e »…) → clé des chapitres (« cm1 », « 6e ») ; null si le niveau n'a pas de chapitres.
+function niveauCle(n){ const k = /^c[em]\d/i.test(n || '') ? String(n).toLowerCase() : n; return CHAPITRES_BY_LEVEL[k] ? k : null; }
+function niveauPrimaire(l){ return /^c[em]\d/i.test(l || ''); }
+/* Consignes données à l'IA (quiz, évaluations, interrogations) : pour l'école, rappel des limites du
+   programme du cycle 3 à ce niveau, pour que les énoncés restent faisables par des enfants. */
+function iaEnseignant(n){ return niveauPrimaire(niveauCle(n) || n) ? 'professeur des écoles en France (classe de ' + niveauLabel(niveauCle(n) || n) + ')' : 'professeur de mathématiques dans un collège français'; }
+function iaContexteNiveau(n){
+  const k = niveauCle(n) || String(n || '').toLowerCase();
+  const commun = ' Phrases courtes et vocabulaire simple, adaptés à des enfants ; pas de calculatrice ; pas de tableau de conversion ni de tableau de proportionnalité (on raisonne par des phrases : « 3 fois plus… ») ; pas de lettre pour une inconnue (utiliser ■ ou …) sauf en CM2 dans les formules simples ; les notations de géométrie sont toujours expliquées (« le segment [AB] »).';
+  if(k === 'cm1') return 'Élèves de CM1 (école élémentaire, cycle 3, 9-10 ans). Nombres entiers jusqu\'à 999 999 (au plus 4 chiffres en début d\'année), nombres décimaux jusqu\'aux centièmes seulement, fractions de dénominateur au plus 20 (ou 100 pour les fractions décimales), angles comparés sans mesure en degrés.' + commun;
+  if(k === 'cm2') return 'Élèves de CM2 (école élémentaire, cycle 3, 10-11 ans). Nombres entiers jusqu\'à 999 999 999, nombres décimaux jusqu\'aux millièmes, fractions de dénominateur au plus 60 (ou 100 et 1 000 pour les fractions décimales), multiplication d\'un décimal par un entier uniquement, division par un diviseur à un chiffre, degrés à partir de l\'angle droit (90°) mais pas de rapporteur, probabilités sous la forme « a chances sur b ».' + commun;
+  return '';
+}
 // Niveaux en préparation, réservés aux administrateurs (menu masqué, routes refusées aux autres).
 const NIVEAUX_ADMIN = []; // la 4e est publiée depuis le build 786, la 3e depuis le build 817
 function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserRole === 'admin'; }
@@ -438,7 +455,7 @@ function setActiveTopnav(key){
   else if(key==='5e') document.querySelector('.nav-links button[data-lvl="5e"]').classList.add('active');
   else if(key==='4e') document.querySelector('.nav-links button[data-lvl="4e"]')?.classList.add('active');
   else if(key==='3e') document.querySelector('.nav-links button[data-lvl="3e"]')?.classList.add('active');
-  else if(key==='cm1') document.querySelector('.nav-links button[data-lvl="cm1"]')?.classList.add('active');
+  else if(key==='cm1' || key==='cm2') document.querySelector(`.nav-links button[data-lvl="${key}"]`)?.classList.add('active');
   else if(key==='cm') document.querySelector('.nav-links button[data-nav="cm"]').classList.add('active');
   else if(key==='compte') document.querySelector('.nav-links button[data-nav="compte"]').classList.add('active');
   else if(key==='correction') document.querySelector('.nav-links button[data-nav="correction"]').classList.add('active');
@@ -479,6 +496,8 @@ const FREE_CHAPTERS = {
   '5e': ['Opérations sur les nombres décimaux', 'Symétrie centrale', 'Proportionnalité', 'Statistiques'],
   '4e': ['Opérations sur les nombres relatifs', 'Théorème de Pythagore', 'Statistiques', 'Translations'],
   '3e': ['Nombres et calculs', 'Théorème de Thalès', 'Statistiques', 'Rotation'],
+  'cm1': ['Nombres entiers jusqu\'à 9 999', 'Droites parallèles et perpendiculaires', 'Organisation et gestion de données', 'Longueurs, masses, contenances'],
+  'cm2': ['Nombres entiers (révisions jusqu\'à 999 999)', 'Droites, segments et cercles', 'Probabilités', 'Longueurs, masses, contenances'],
 };
 /* true tant qu'on ne sait pas encore si l'utilisateur a un compte actif valide (restreint
    par défaut, le temps que refreshAuthUI() détermine l'état réel de la session). */
@@ -517,7 +536,7 @@ function onLockedChapterClick(){
   openProfSignupModal();
 }
 function renderNiveau(lvl){
-  document.getElementById('niveau-title').textContent = 'Progression de '+lvl;
+  document.getElementById('niveau-title').textContent = 'Progression de '+niveauLabel(lvl);
   const data = CHAPITRES_BY_LEVEL[lvl] || CH6;
   renderTheme(data, lvl);
   renderFrise(data, lvl);
@@ -901,7 +920,8 @@ function openChapitre(c, tab, lvlOverride){
   // Élève : un chapitre hors de son niveau reste fermé aussi par un lien direct (adresse, recherche…).
   if(currentUserRole==='eleve' && c && isChapterLocked(lvl, c.t)){ onLockedChapterClick(); return; }
   const chapView = document.getElementById('view-chapitre');
-  chapView.classList.toggle('lvl-6e', lvl==='6e' || lvl==='cm1');
+  chapView.classList.toggle('lvl-6e', lvl==='6e');
+  chapView.classList.toggle('lvl-cm', niveauPrimaire(lvl)); // CM1, CM2 : vert (école)
   chapView.classList.toggle('lvl-5e', lvl==='5e');
   chapView.classList.toggle('lvl-4e', lvl==='4e'); // 4e : sa propre couleur (bleu-vert), pour distinguer le niveau d'un coup d'œil
   chapView.classList.toggle('lvl-3e', lvl==='3e'); // 3e : violet prune
@@ -1398,7 +1418,8 @@ async function generateQuiz(){
   const courseText = (content.innerText || content.textContent || '').trim();
   if(!courseText){ area.innerHTML = '<p class="hint">Aucun contenu de cours disponible pour ce chapitre.</p>'; return; }
   area.innerHTML = '<p class="hint">Génération du quiz en cours…</p>';
-  const prompt = `Tu es un professeur de mathématiques en collège français. Voici le cours d'un chapitre :
+  const prompt = `Tu es ${iaEnseignant(currentChapterLevel)}. ${iaContexteNiveau(currentChapterLevel)}
+Voici le cours d'un chapitre :
 
 ${courseText.slice(0,6000)}
 
@@ -1741,7 +1762,7 @@ async function exportCoursPDF(){
     // ramenait aussi la classe "view", porteuse d'une animation d'apparition en fondu
     // (opacity:0 -> 1 sur 0,35s), capturée en pleine animation par html2canvas et donnant un
     // rendu "voilé" (signalé : "ça paraît tout pâle, comme voilé").
-    wrapper.className = ['lvl-6e', 'lvl-5e', 'lvl-4e', 'lvl-3e'].filter(c => realChapView.classList.contains(c)).join(' ');
+    wrapper.className = ['lvl-cm', 'lvl-6e', 'lvl-5e', 'lvl-4e', 'lvl-3e'].filter(c => realChapView.classList.contains(c)).join(' ');
   }
   wrapper.querySelectorAll('*').forEach(el=>{
     const cs = window.getComputedStyle(el);
@@ -3123,14 +3144,21 @@ function populateAccountClassList(classesList){
 function syncCorNiveauToClass(){
   const found = accountClassesList.find(c=>c.id===currentClassId);
   const sel = document.getElementById('corNiveau');
-  if(!found || !sel || sel.value===found.niveau) return;
-  if(![...sel.options].some(o=>o.value===found.niveau)) return;
-  sel.value = found.niveau;
+  const niv = found && (niveauCle(found.niveau) || found.niveau); // classe « CM1 » → chapitres « cm1 »
+  if(!found || !sel || sel.value===niv) return;
+  if(![...sel.options].some(o=>o.value===niv)) return;
+  sel.value = niv;
   fillCorChapitres();
   if(typeof renderCorrectionPreview==='function') renderCorrectionPreview();
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.873', items:[
+    "CM1 et CM2 intégrés à tout le site. Demandé : « Il faut ensuite s'occuper de tout ce qui concerne le CM1 sur le site... Y compris dans admin, dans les interrogations, IA ». Menu principal : boutons CM1 et CM2 avant la 6e ; accueil : deux cartes CM1 et CM2 ; chapitres de l'école en vert (comme dans l'administration), titres et fil d'Ariane écrits « CM1 », « CM2 » ; premiers chapitres de chaque domaine en accès libre, comme au collège.",
+    "Outils du professeur : CM1 et CM2 ajoutés aux choix de niveau de l'outil de correction, des exercices de TD, de « Ma progression », de « Créer une évaluation », du générateur de questions d'interrogation (qui prend maintenant le niveau de la classe, CM compris) et du formulaire de suggestion (tous les niveaux). Une classe de CM1 règle automatiquement l'outil de correction sur les chapitres de CM1, et le cahier range ses corrections sous les bons chapitres.",
+    "IA : pour le CM1 et le CM2, les consignes données à l'IA (quiz du chapitre, évaluations, interrogations, correction des réponses rédigées) parlent d'un professeur des écoles et rappellent les limites du programme (taille des nombres, décimaux jusqu'aux centièmes ou millièmes, dénominateurs, pas de tableau de conversion ni de proportionnalité, pas de rapporteur, vocabulaire simple) ; au CM, le générateur privilégie les QCM à 4 choix, compatibles avec les cartes flashcode A, B, C, D. Oliv'IA reçoit le niveau « CM1 » ou « CM2 » pour adapter ses explications.",
+    "Référencement Google : 25 pages de chapitres de CM2 et un sommaire /cm2/, liens CM2 dans l'en-tête et le pied des pages publiques ; titre et description de l'accueil mentionnent maintenant « du CM1 à la 3e ».",
+  ]},
   { version:'2026-08-19.872', items:[
     "CM2, période 5 : les cinq derniers chapitres ; les 25 chapitres du CM2 ont maintenant tous leur cours. « Procédures de calcul mental » (moitiés des impairs, fractions usuelles en écriture décimale, ± 9, 19, 99, 30 × 400, × 5, × 50, ÷ 4, ÷ 8) avec un atelier de 7 séries de calculs. « Solides et repérage dans l'espace » (polyèdres et nature des faces, perspective, patrons de cube et de pavé, assemblages de cubes dessinés en relief, décrire un chemin). « Algèbre » (égalités à trous comme 178 − … = 6 × 8, lettres pour les nombres, prix = (N × 12) + 5, problèmes algébriques, suites évolutives, programmes de calcul). « Heures et durées » (secondes, conversions en base 60, frise) avec un atelier pour régler les aiguilles à la seconde près. « Pensée informatique » : le robot ne se déplace plus avec des flèches mais en s'orientant (avancer, tourner à gauche ou à droite, répéter), 4 défis de livreur dans un quartier, programmes de calcul en blocs et suites dans un tableur.",
   ]},
@@ -5422,7 +5450,7 @@ function openBugReportModal(prefill){
 function openSuggestionModal(){
   const activeTab = document.querySelector('.tab-btn.active');
   const moduleLabel = activeTab ? activeTab.textContent.trim() : '';
-  const section = (['5e', '4e', '3e'].includes(currentLevel) ? currentLevel : '6e') + ' · Chapitres';
+  const section = (NIVEAUX_ORDRE.includes(currentLevel) ? niveauLabel(currentLevel) : '6e') + ' · Chapitres';
   const chapitre = (currentChapterTitle||'') + (moduleLabel ? ' · '+moduleLabel : '');
   openBugReportModal({section, chapitre, reportType:'suggestion'});
 }
@@ -5431,7 +5459,7 @@ function closeBugReportModal(){
 }
 document.getElementById('bugReportSection') && document.getElementById('bugReportSection').addEventListener('change', (e)=>{
   const row = document.getElementById('bugReportChapterRow');
-  row.style.display = (e.target.value==='6e · Chapitres' || e.target.value==='5e · Chapitres') ? 'block' : 'none';
+  row.style.display = / · Chapitres$/.test(e.target.value) ? 'block' : 'none';
 });
 async function submitBugReport(){
   const section = document.getElementById('bugReportSection').value;
@@ -7805,7 +7833,7 @@ async function addSectionToCahier(headerEl){
   const wrapperHadId2 = wrapper.id;
   wrapper.id = 'view-chapitre';
   if(realChapView2){
-    wrapper.className = ['lvl-6e', 'lvl-5e', 'lvl-4e', 'lvl-3e'].filter(c => realChapView2.classList.contains(c)).join(' ');
+    wrapper.className = ['lvl-cm', 'lvl-6e', 'lvl-5e', 'lvl-4e', 'lvl-3e'].filter(c => realChapView2.classList.contains(c)).join(' ');
   }
   clip2.appendChild(wrapper);
   document.body.appendChild(clip2);

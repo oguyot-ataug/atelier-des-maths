@@ -177,7 +177,7 @@ async function oliviaEnvoyer(texte){
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
       body: JSON.stringify({ feature: 'olivia', question: q, focus: entree.focus || undefined, onglet: oliviaOnglet(), contexte: oliviaContexte(),
         historique: oliv.hist.filter(e => e !== entree && e.r && !e.erreur).slice(-6).map(e => ({ q: e.q, r: e.r })),
-        conversationId: oliv.conv, chapitre: currentChapterTitle || null, niveau: currentChapterLevel || null }),
+        conversationId: oliv.conv, chapitre: currentChapterTitle || null, niveau: currentChapterLevel ? niveauLabel(currentChapterLevel) : null }),
     });
     const data = await res.json();
     if(data.error) throw new Error(data.error);

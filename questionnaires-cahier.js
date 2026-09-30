@@ -86,7 +86,7 @@ async function qzDirectCahierOuvrir(id){
 }
 // Fenêtre commune : sujet seul ou avec correction, chapitre et date, puis insertion dans cahier_entries.
 function qzCahierModal(m){
-  const d = m, niveau = (d.classes && d.classes.niveau) || '5e';
+  const d = m, niveau = (d.classes && (niveauCle(d.classes.niveau) || d.classes.niveau)) || '5e';
   const chaps = (typeof CHAPITRES_BY_LEVEL !== 'undefined' && CHAPITRES_BY_LEVEL[niveau]) || [];
   const fini = m.fini;
   const o = document.createElement('div'); o.className = 'qzd-ov';

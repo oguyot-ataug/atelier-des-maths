@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Longueurs, masses, contenances – Cours de maths CM2 | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CM2 : Longueurs, masses, contenances. Les unités et les préfixes, Convertir en raisonnant, Estimer des mesures, Calculer avec des mesures.…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/cm2/longueurs-masses-contenances/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Longueurs, masses, contenances – Cours de maths CM2 | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CM2 : Longueurs, masses, contenances. Les unités et les préfixes, Convertir en raisonnant, Estimer des mesures, Calculer avec des mesures.…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/cm2/longueurs-masses-contenances/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Longueurs, masses, contenances (CM2)","headline":"Longueurs, masses, contenances – cours de mathématiques de CM2","description":"Cours de maths CM2 : Longueurs, masses, contenances. Les unités et les préfixes, Convertir en raisonnant, Estimer des mesures, Calculer avec des mesures.…","url":"https://maths.latelieraugmente.fr/cm2/longueurs-masses-contenances/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CM2 (cycle 3, école élémentaire)","about":"Grandeurs et mesures","teaches":["Les unités et les préfixes","Convertir en raisonnant","Estimer des mesures","Calculer avec des mesures"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CM2","url":"https://maths.latelieraugmente.fr/cm2/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CM2","item":"https://maths.latelieraugmente.fr/cm2/"},{"@type":"ListItem","position":3,"name":"Longueurs, masses, contenances","item":"https://maths.latelieraugmente.fr/cm2/longueurs-masses-contenances/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/cm2/">Cours CM2</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/cm2/">Cours de maths CM2</a> › Longueurs, masses, contenances</div>
+<h1>Longueurs, masses, contenances</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#DCC9F7;color:#5B2F9E;">Grandeurs et mesures</span> Cours de mathématiques de CM2 (cours moyen 2e année) · chapitre 5 · Les unités et les préfixes · Convertir en raisonnant · Estimer des mesures · Calculer avec des mesures</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/cm2/5-longueurs-masses-contenances/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Les unités et les préfixes</h3></div>
+<span class="def-badge">Préfixes</span><div class="def-box">Les unités de longueur (mètre), de masse (gramme) et de contenance (litre) utilisent les mêmes <b>préfixes</b> :<br>
+<b style="color:#7A4FC0;">kilo</b> = 1 000 fois plus · <b style="color:#9E1F5E;">hecto</b> = 100 fois plus · <b style="color:#B8962E;">déca</b> = 10 fois plus · <b style="color:#2EA8C9;">déci</b> = 10 fois moins · <b style="color:#2E9C6A;">centi</b> = 100 fois moins · <b style="color:#E35D3A;">milli</b> = 1 000 fois moins.</div>
+<div style="overflow-x:auto;margin:6px 0 14px;"><table style="border-collapse:collapse;text-align:center;font-size:.95rem;">
+    <tbody><tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:#1F3A5C;color:#fff;font-family:'Space Grotesk',sans-serif;"><b style="color:#fff;">km</b></th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:#1F3A5C;color:#fff;font-family:'Space Grotesk',sans-serif;">hm</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:#1F3A5C;color:#fff;font-family:'Space Grotesk',sans-serif;">dam</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:#1F3A5C;color:#fff;font-family:'Space Grotesk',sans-serif;"><b>m</b></th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:#1F3A5C;color:#fff;font-family:'Space Grotesk',sans-serif;">dm</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:#1F3A5C;color:#fff;font-family:'Space Grotesk',sans-serif;">cm</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:#1F3A5C;color:#fff;font-family:'Space Grotesk',sans-serif;">mm</th></tr>
+    <tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">1 000 m</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">100 m</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">10 m</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">1 m</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">0,1 m</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">0,01 m</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">0,001 m</td></tr></tbody></table></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Ce tableau sert à <b>présenter</b> les unités, pas à convertir. Les unités les plus utilisées sont en gras dans la vie courante : km, m, cm, mm ; kg, g, mg et la tonne (1 t = 1 000 kg) ; L, cL, mL.</div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Convertir en raisonnant</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">On part d'une relation connue entre les deux unités et on multiplie ou on divise.</div>
+<p class="example-title">Exemples :</p><ul class="example-list"><li>3,5 m = 350 cm, car 1 m = 100 cm et 3,5 × 100 = 350.</li><li>2,4 kg = 2 400 g, car 1 kg = 1 000 g.</li><li>75 cL = 0,75 L, car 100 cL = 1 L : 75 cL, c'est 75 centièmes de litre.</li><li>850 m = 0,85 km, car 1 000 m = 1 km.</li><li>1,2 t = 1 200 kg, car 1 t = 1 000 kg.</li><li>500 mg = 0,5 g, car 1 000 mg = 1 g.</li></ul>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">Pour vérifier, on se demande si le résultat est logique : une unité plus petite donne un nombre plus grand. 3,5 m → 350 cm : le nombre augmente, car le centimètre est plus petit que le mètre.</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Estimer des mesures</h3></div>
+<div style="overflow-x:auto;margin:6px 0 14px;"><table style="border-collapse:collapse;text-align:center;font-size:.95rem;">
+    <tbody><tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:#2EA8C9;color:#fff;font-family:'Space Grotesk',sans-serif;">Objet</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:#2EA8C9;color:#fff;font-family:'Space Grotesk',sans-serif;">Estimation</th></tr>
+    <tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">longueur d'une voiture</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">environ 4,5 m</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">distance Paris-Marseille</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">environ 780 km</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">masse d'un éléphant</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">environ 5 t</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">masse d'une feuille de papier</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">environ 5 g</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">contenance d'une baignoire</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">environ 150 L</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">contenance d'un verre</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">environ 20 cL</td></tr></tbody></table></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Avant de répondre à un problème, on se demande si la mesure trouvée est plausible : « une voiture de 45 m », ce n'est pas possible !</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Calculer avec des mesures</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Pour additionner ou comparer des mesures, on les exprime d'abord <b>dans la même unité</b>.</div>
+<p class="example-title">1,5 kg de farine + 750 g de sucre :</p><ul class="example-list"><li>1,5 kg = 1 500 g ; 1 500 g + 750 g = <b>2 250 g</b>, soit 2,25 kg.</li></ul>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Convertir un nombre décimal</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-c2-lmc-conv"><div class="step-column"><div class="">1 m = 100 cm</div></div><div class="step-note">Relation connue.</div></div></div>
+<div class="sub-header"><span class="letter">M</span><h4>Résoudre un problème de contenance</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-c2-lmc-pb"><div class="step-column"><div class="">1,5 L = 150 cL</div></div><div class="step-note">Même unité que les verres : 1 L = 100 cL.</div></div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Rédaction type : « Convertir »</h3><div class="redaction-template"><div class="we-row"><span class="we-expr">1 kg = 1 000 g</span><span class="we-comment">J'écris la relation connue.</span></div><div class="we-row"><span class="we-expr">2,4 kg = 2,4 × 1 000 g = 2 400 g</span><span class="we-comment">Je calcule.</span></div><div class="we-row"><span class="we-expr">Le nombre a augmenté : c'est logique, le gramme est plus petit.</span><span class="we-comment">Je vérifie.</span></div></div></div><div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>Convertis : 2,5 km en m · 0,7 m en cm · 45 mm en cm · 3 m 8 cm en m.
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Convertis : 1,25 kg en g · 800 g en kg · 3 500 kg en t · 2 g en mg.
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>Convertis : 0,5 L en cL · 330 mL en L · 2,4 L en mL.
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>Quelle unité ? La masse d'un camion · la contenance d'une cuillère · l'épaisseur d'une pièce · la masse d'un comprimé.
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>Range du plus léger au plus lourd : 1,2 kg · 1 150 g · 1 kg 30 g · 0,95 kg
+      
+      </div><div class="exo-card"><div class="num">Exercice 6</div>Est-ce plausible ? Une porte de 2 m · un chat de 40 kg · une piscine de 50 L · une randonnée de 12 km.
+      
+      </div><div class="exo-card"><div class="num">Exercice 7</div>Un sac contient 2,5 kg de pommes de terre. On en utilise 800 g. Quelle masse reste-t-il ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 8</div>Un ruban mesure 3,6 m. On le coupe en 4 morceaux de même longueur. Longueur d'un morceau en cm ?
+      
+      </div></div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : le kilogramme de platine</div><p style="margin:0 0 12px;">En 1799, on fabrique à Paris un cylindre de platine qui pèse exactement <b>un kilogramme</b> : c'est le « kilogramme étalon ». Pendant plus de 200 ans, toutes les balances du monde ont été réglées à partir de lui !</p><p style="margin:0 0 12px;">Depuis 2019, le kilogramme n'est plus défini par un objet, mais par une constante de la physique, qui ne peut ni s'user ni se perdre.</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/cm2/5-longueurs-masses-contenances/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/cm2/nombres-decimaux-jusqu-aux-milliemes/">Nombres décimaux jusqu'aux millièmes</a></span>
+  <a href="/cm2/">Tous les chapitres de CM2</a>
+  <span><a href="/cm2/addition-et-soustraction/">Addition et soustraction</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

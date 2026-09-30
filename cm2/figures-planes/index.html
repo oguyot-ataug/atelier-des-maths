@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figures planes – Cours de maths CM2 | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CM2 : Figures planes. Polygones et codages, Les triangles particuliers, Les quadrilatères particuliers, Pentagones et hexagones. Définitions,…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/cm2/figures-planes/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Figures planes – Cours de maths CM2 | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CM2 : Figures planes. Polygones et codages, Les triangles particuliers, Les quadrilatères particuliers, Pentagones et hexagones. Définitions,…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/cm2/figures-planes/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Figures planes (CM2)","headline":"Figures planes – cours de mathématiques de CM2","description":"Cours de maths CM2 : Figures planes. Polygones et codages, Les triangles particuliers, Les quadrilatères particuliers, Pentagones et hexagones. Définitions,…","url":"https://maths.latelieraugmente.fr/cm2/figures-planes/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CM2 (cycle 3, école élémentaire)","about":"Géométrie","teaches":["Polygones et codages","Les triangles particuliers","Les quadrilatères particuliers","Pentagones et hexagones"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CM2","url":"https://maths.latelieraugmente.fr/cm2/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CM2","item":"https://maths.latelieraugmente.fr/cm2/"},{"@type":"ListItem","position":3,"name":"Figures planes","item":"https://maths.latelieraugmente.fr/cm2/figures-planes/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/cm2/">Cours CM2</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/cm2/">Cours de maths CM2</a> › Figures planes</div>
+<h1>Figures planes</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span> Cours de mathématiques de CM2 (cours moyen 2e année) · chapitre 7 · Polygones et codages · Les triangles particuliers · Les quadrilatères particuliers · Pentagones et hexagones</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/cm2/7-figures-planes/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Polygones et codages</h3></div>
+<span class="def-badge">Définition</span><div class="def-box">Un <b>polygone</b> est une figure fermée formée de segments : ses <b>côtés</b>. Les extrémités des côtés sont les <b>sommets</b>. Un polygone à 3 côtés est un <b>triangle</b>, à 4 côtés un <b>quadrilatère</b>, à 5 côtés un <b>pentagone</b>, à 6 côtés un <b>hexagone</b>.</div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Codages : des <b>petits traits identiques</b> sur des côtés signifient que ces côtés ont la même longueur ; un <b>petit carré</b> indique un angle droit. On nomme un polygone en lisant ses sommets dans l'ordre : le quadrilatère ABCD a pour côtés [AB], [BC], [CD] et [DA], et pour diagonales [AC] et [BD].</div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Les triangles particuliers</h3></div>
+<div class="figure-wrap" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"><div style="text-align:center;width:128px;"><svg viewBox="0 0 120 100" style="width:118px;"><polygon points="15,85 65,85 15,25" fill="#2EA8C9" fill-opacity=".2" stroke="#1F3A5C" stroke-width="2.2"></polygon><polyline points="26,85 26,74 15,74" fill="none" stroke="#E35D3A" stroke-width="1.6"></polyline></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;font-size:.92rem;">triangle rectangle</div></div><div style="text-align:center;width:128px;"><svg viewBox="0 0 120 100" style="width:118px;"><polygon points="20,88 100,88 60,12" fill="#7A4FC0" fill-opacity=".2" stroke="#1F3A5C" stroke-width="2.2"></polygon><line x1="34.7" y1="47.2" x2="45.3" y2="52.8" stroke="#E35D3A" stroke-width="1.8"></line><line x1="74.7" y1="52.8" x2="85.3" y2="47.2" stroke="#E35D3A" stroke-width="1.8"></line></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;font-size:.92rem;">triangle isocèle</div></div><div style="text-align:center;width:128px;"><svg viewBox="0 0 120 100" style="width:118px;"><polygon points="18,88 102,88 60,15" fill="#E35D3A" fill-opacity=".2" stroke="#1F3A5C" stroke-width="2.2"></polygon><line x1="32.9" y1="50.0" x2="43.3" y2="56.0" stroke="#E35D3A" stroke-width="1.8"></line><line x1="34.7" y1="47.0" x2="45.1" y2="53.0" stroke="#E35D3A" stroke-width="1.8"></line><line x1="76.7" y1="56.0" x2="87.1" y2="50.0" stroke="#E35D3A" stroke-width="1.8"></line><line x1="74.9" y1="53.0" x2="85.3" y2="47.0" stroke="#E35D3A" stroke-width="1.8"></line><line x1="58.3" y1="82.0" x2="58.3" y2="94.0" stroke="#E35D3A" stroke-width="1.8"></line><line x1="61.8" y1="82.0" x2="61.8" y2="94.0" stroke="#E35D3A" stroke-width="1.8"></line></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;font-size:.92rem;">triangle équilatéral</div></div></div>
+<span class="def-badge">Définition</span><div class="def-box"><ul style="margin:0;padding-left:18px;line-height:1.9;"><li>Un <b>triangle rectangle</b> a un angle droit.</li><li>Un <b>triangle isocèle</b> a deux côtés de même longueur (et deux angles égaux).</li><li>Un <b>triangle équilatéral</b> a ses trois côtés de même longueur (et ses trois angles égaux).</li></ul></div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Les quadrilatères particuliers</h3></div>
+<div class="figure-wrap" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"><div style="text-align:center;width:128px;"><svg viewBox="0 0 120 100" style="width:118px;"><polygon points="25,15 95,15 95,85 25,85" fill="#2E9C6A" fill-opacity=".2" stroke="#1F3A5C" stroke-width="2.2"></polygon><polyline points="36,85 36,74 25,74" fill="none" stroke="#E35D3A" stroke-width="1.6"></polyline><polyline points="84,15 84,26 95,26" fill="none" stroke="#E35D3A" stroke-width="1.6"></polyline><line x1="60.0" y1="9.0" x2="60.0" y2="21.0" stroke="#E35D3A" stroke-width="1.8"></line><line x1="101.0" y1="50.0" x2="89.0" y2="50.0" stroke="#E35D3A" stroke-width="1.8"></line><line x1="60.0" y1="91.0" x2="60.0" y2="79.0" stroke="#E35D3A" stroke-width="1.8"></line><line x1="19.0" y1="50.0" x2="31.0" y2="50.0" stroke="#E35D3A" stroke-width="1.8"></line></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;font-size:.92rem;">carré</div></div><div style="text-align:center;width:128px;"><svg viewBox="0 0 120 100" style="width:118px;"><polygon points="8,25 112,25 112,80 8,80" fill="#B8962E" fill-opacity=".2" stroke="#1F3A5C" stroke-width="2.2"></polygon><polyline points="19,80 19,69 8,69" fill="none" stroke="#E35D3A" stroke-width="1.6"></polyline><polyline points="101,25 101,36 112,36" fill="none" stroke="#E35D3A" stroke-width="1.6"></polyline></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;font-size:.92rem;">rectangle</div></div><div style="text-align:center;width:128px;"><svg viewBox="0 0 120 100" style="width:118px;"><polygon points="60,8 105,50 60,92 15,50" fill="#9E1F5E" fill-opacity=".2" stroke="#1F3A5C" stroke-width="2.2"></polygon><line x1="86.6" y1="24.6" x2="78.4" y2="33.4" stroke="#E35D3A" stroke-width="1.8"></line><line x1="86.6" y1="75.4" x2="78.4" y2="66.6" stroke="#E35D3A" stroke-width="1.8"></line><line x1="33.4" y1="75.4" x2="41.6" y2="66.6" stroke="#E35D3A" stroke-width="1.8"></line><line x1="33.4" y1="24.6" x2="41.6" y2="33.4" stroke="#E35D3A" stroke-width="1.8"></line></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;font-size:.92rem;">losange</div></div><div style="text-align:center;width:128px;"><svg viewBox="0 0 120 100" style="width:118px;"><polygon points="35,22 85,22 110,80 10,80" fill="#2EA8C9" fill-opacity=".2" stroke="#1F3A5C" stroke-width="2.2"></polygon></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;font-size:.92rem;">trapèze</div></div><div style="text-align:center;width:128px;"><svg viewBox="0 0 120 100" style="width:118px;"><polygon points="15,22 70,22 108,80 15,80" fill="#7A4FC0" fill-opacity=".2" stroke="#1F3A5C" stroke-width="2.2"></polygon><polyline points="26,80 26,69 15,69" fill="none" stroke="#E35D3A" stroke-width="1.6"></polyline><polyline points="26,22 26,33 15,33" fill="none" stroke="#E35D3A" stroke-width="1.6"></polyline></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;font-size:.92rem;">trapèze rectangle</div></div></div>
+<div style="overflow-x:auto;margin:6px 0 14px;"><table style="border-collapse:collapse;text-align:center;font-size:.95rem;">
+    <tbody><tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Figure</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Côtés</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Angles</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Côtés opposés</th></tr>
+    <tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"><b>Rectangle</b></td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">côtés opposés de même longueur</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">4 angles droits</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">parallèles</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"><b>Losange</b></td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">4 côtés de même longueur</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">angles opposés égaux</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">parallèles</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"><b>Carré</b></td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">4 côtés de même longueur</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">4 angles droits</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">parallèles</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"><b>Trapèze</b></td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">—</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">—</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">au moins deux côtés parallèles</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"><b>Trapèze rectangle</b></td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">—</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">2 angles droits</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">deux côtés parallèles</td></tr></tbody></table></div>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">Un carré est à la fois un rectangle (4 angles droits) et un losange (4 côtés égaux) !</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Pentagones et hexagones</h3></div>
+<div class="figure-wrap" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;"><div style="text-align:center;width:128px;"><svg viewBox="0 0 120 100" style="width:118px;"><polygon points="60,8 106,42 88,92 32,92 14,42" fill="#2E9C6A" fill-opacity=".2" stroke="#1F3A5C" stroke-width="2.2"></polygon></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;font-size:.92rem;">pentagone</div></div><div style="text-align:center;width:128px;"><svg viewBox="0 0 120 100" style="width:118px;"><polygon points="35,10 85,10 110,50 85,90 35,90 10,50" fill="#E35D3A" fill-opacity=".2" stroke="#1F3A5C" stroke-width="2.2"></polygon></svg><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#1F3A5C;font-size:.92rem;">hexagone</div></div></div>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Quand tous les côtés et tous les angles sont égaux, on dit que le polygone est <b>régulier</b> : les nids d'abeilles sont formés d'hexagones réguliers.</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Construire un triangle connaissant ses trois côtés</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-c2-fp-tri"><div class="step-column"><div class="">Je trace le segment [AB] de 6 cm.</div></div><div class="step-note">On commence par le côté le plus long, à la règle graduée.</div></div></div>
+<div class="sub-header"><span class="letter">M</span><h4>Construire un rectangle</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-c2-fp-rect"><div class="step-column"><div class="">Je trace le segment [EF] de 5 cm.</div></div><div class="step-note">Premier côté.</div></div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>Quel triangle a trois côtés de même longueur ? Quel quadrilatère a quatre côtés de même longueur mais pas d'angle droit ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Je suis un quadrilatère avec 4 angles droits et 4 côtés égaux. Qui suis-je ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>Je suis un quadrilatère qui a seulement deux côtés parallèles et deux angles droits. Qui suis-je ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>Construis un triangle isocèle ABC tel que AB = AC = 5 cm et BC = 4 cm.
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>Construis un carré de 4,5 cm de côté et trace ses diagonales. Que remarques-tu ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 6</div>Combien de côtés a un hexagone ? un pentagone ? Dessine-en un de chaque.
+      
+      </div><div class="exo-card"><div class="num">Exercice 7</div>Vrai ou faux ? « Un rectangle est un losange. » « Un carré est un rectangle. »
+      
+      </div></div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : les pavages de l'Alhambra</div><p style="margin:0 0 12px;">Au palais de l'<b>Alhambra</b>, à Grenade en Espagne, construit au XIV<sup>e</sup> siècle, les murs sont couverts de mosaïques faites de triangles, de carrés, d'hexagones et d'étoiles qui s'emboîtent sans laisser de trou.</p><p style="margin:0 0 12px;">Ces pavages ont inspiré, 600 ans plus tard, l'artiste néerlandais <b>M. C. Escher</b>, célèbre pour ses dessins où des oiseaux ou des poissons s'emboîtent parfaitement.</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/cm2/7-figures-planes/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/cm2/addition-et-soustraction/">Addition et soustraction</a></span>
+  <a href="/cm2/">Tous les chapitres de CM2</a>
+  <span><a href="/cm2/multiplication/">Multiplication</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

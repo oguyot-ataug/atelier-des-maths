@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programmes de construction – Cours de maths CM2 | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CM2 : Programmes de construction. Qu'est-ce qu'un programme de construction ?, Le vocabulaire des instructions, Écrire un programme.…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/cm2/programmes-de-construction/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Programmes de construction – Cours de maths CM2 | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CM2 : Programmes de construction. Qu'est-ce qu'un programme de construction ?, Le vocabulaire des instructions, Écrire un programme.…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/cm2/programmes-de-construction/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Programmes de construction (CM2)","headline":"Programmes de construction – cours de mathématiques de CM2","description":"Cours de maths CM2 : Programmes de construction. Qu'est-ce qu'un programme de construction ?, Le vocabulaire des instructions, Écrire un programme.…","url":"https://maths.latelieraugmente.fr/cm2/programmes-de-construction/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CM2 (cycle 3, école élémentaire)","about":"Géométrie","teaches":["Qu'est-ce qu'un programme de construction ?","Le vocabulaire des instructions","Écrire un programme"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CM2","url":"https://maths.latelieraugmente.fr/cm2/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CM2","item":"https://maths.latelieraugmente.fr/cm2/"},{"@type":"ListItem","position":3,"name":"Programmes de construction","item":"https://maths.latelieraugmente.fr/cm2/programmes-de-construction/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/cm2/">Cours CM2</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/cm2/">Cours de maths CM2</a> › Programmes de construction</div>
+<h1>Programmes de construction</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span> Cours de mathématiques de CM2 (cours moyen 2e année) · chapitre 17 · Qu'est-ce qu'un programme de construction ? · Le vocabulaire des instructions · Écrire un programme</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/cm2/17-programmes-de-construction/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Qu'est-ce qu'un programme de construction ?</h3></div>
+<span class="def-badge">Définition</span><div class="def-box">Un <b>programme de construction</b> est une suite d'<b>instructions</b> numérotées, dans l'ordre, qui permettent à quelqu'un de construire une figure <b>sans la voir</b>. Chaque instruction utilise le vocabulaire de la géométrie et précise les mesures.</div>
+<p class="example-title">Exemple :</p><ul class="example-list"><li><b>1.</b> Trace le segment [AB] de 5 cm.</li><li><b>2.</b> Trace la droite perpendiculaire au segment [AB] passant par B, et place le point C sur cette droite à 3 cm de B.</li><li><b>3.</b> Termine le rectangle ABCD.</li><li><b>4.</b> Place le point I, milieu du segment [AB].</li><li><b>5.</b> Trace le cercle de centre A qui passe par I.</li></ul>
+<div class="figure-wrap"><svg viewBox="-60 20 400 230" style="width:100%;max-width:400px;display:block;margin:0 auto;"><line x1="40" y1="150" x2="220" y2="150" stroke="#1F3A5C" stroke-width="2.2"></line><text x="24" y="166" font-size="14" font-weight="700" fill="#1F3A5C" font-family="Space Grotesk">A</text><text x="224" y="166" font-size="14" font-weight="700" fill="#1F3A5C" font-family="Space Grotesk">B</text><line x1="220" y1="150" x2="220" y2="42" stroke="#1F3A5C" stroke-width="2.2"></line><polyline points="209,150 209,139 220,139" fill="none" stroke="#E35D3A" stroke-width="1.6"></polyline><text x="224" y="40" font-size="14" font-weight="700" fill="#1F3A5C" font-family="Space Grotesk">C</text><polyline points="220,42 40,42 40,150" fill="none" stroke="#1F3A5C" stroke-width="2.2"></polyline><text x="24" y="40" font-size="14" font-weight="700" fill="#1F3A5C" font-family="Space Grotesk">D</text><circle cx="130" cy="150" r="3.5" fill="#E35D3A"></circle><text x="126" y="168" font-size="14" font-weight="700" fill="#1F3A5C" font-family="Space Grotesk">I</text><circle cx="40" cy="150" r="90" fill="none" stroke="#2EA8C9" stroke-width="2"></circle></svg></div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Le vocabulaire des instructions</h3></div>
+<div style="overflow-x:auto;margin:6px 0 14px;"><table style="border-collapse:collapse;text-align:center;font-size:.95rem;">
+    <tbody><tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:#2EA8C9;color:#fff;font-family:'Space Grotesk',sans-serif;">Verbe</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:#2EA8C9;color:#fff;font-family:'Space Grotesk',sans-serif;">Exemple</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:#2EA8C9;color:#fff;font-family:'Space Grotesk',sans-serif;">Instrument</th></tr>
+    <tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Trace</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Trace le segment [EF] de 4 cm. · Trace la droite (EF).</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">règle (graduée)</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Place</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Place le point M sur le segment [EF] à 1 cm de E. · Place le milieu I du segment [EF].</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">règle graduée</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Trace la perpendiculaire / la parallèle</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Trace la droite perpendiculaire à la droite (d) passant par A.</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">équerre (et règle)</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Trace le cercle</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Trace le cercle de centre O et de rayon 2 cm. · … qui passe par le point P.</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">compas</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Code</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">Code les angles droits et les longueurs égales.</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">—</td></tr></tbody></table></div>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">Un bon programme est <b>précis</b> (toutes les mesures sont données), <b>ordonné</b> (on ne peut pas utiliser un point avant de l'avoir placé) et <b>complet</b> (rien ne manque pour refaire exactement la figure).</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Écrire un programme</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Pour écrire le programme d'une figure : on observe la figure, on repère par quoi commencer (souvent le plus grand segment), on décrit chaque étape avec un verbe d'action, puis on <b>teste</b> son programme en le donnant à quelqu'un d'autre.</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Suivre le programme pas à pas</h4></div>
+<div class="figure-wrap"><div id="c2pc-fig"><svg viewBox="-60 20 400 230" style="width:100%;max-width:400px;display:block;margin:0 auto;"></svg></div><p id="c2pc-txt" style="text-align:center;min-height:44px;margin:8px 0;">Clique sur « Étape suivante » pour exécuter la première instruction.</p>
+</div>
+<div class="sub-header"><span class="letter">M</span><h4>Écrire le programme d'un triangle isocèle</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-c2-pc-ecrire"><div class="step-column"><div class="">1. Trace le segment [FG] de 4 cm.</div></div><div class="step-note">On commence par la base, dont on connaît la longueur.</div></div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>Suis ce programme : 1. Trace un segment [RS] de 6 cm. 2. Place le milieu M du segment [RS]. 3. Trace le cercle de centre M qui passe par R. Que remarques-tu pour le point S ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Suis ce programme : 1. Trace un carré ABCD de 4 cm de côté. 2. Trace ses diagonales ; elles se coupent en O. 3. Trace le cercle de centre O qui passe par A.
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>Ce programme est-il complet ? « 1. Trace un segment [AB]. 2. Trace un cercle de centre A. »
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>Remets dans l'ordre : a) Trace le segment [AC]. b) Trace le segment [AB] de 5 cm. c) Place le point C à 3 cm de B sur la perpendiculaire au segment [AB] passant par B.
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>Écris un programme pour construire un rectangle de 6 cm sur 2 cm avec ses diagonales.
+      
+      </div><div class="exo-card"><div class="num">Exercice 6</div>Écris un programme pour construire deux cercles de même centre O, de rayons 2 cm et 4 cm.
+      
+      </div></div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : construire à la règle et au compas</div><p style="margin:0 0 12px;">Les géomètres grecs n'utilisaient que deux outils : la <b>règle</b> (sans graduations !) et le <b>compas</b>. Dans les <i>Éléments</i>, Euclide décrit chaque construction comme un programme : « Sur une droite donnée, construire un triangle équilatéral… ».</p><p style="margin:0 0 12px;">Ils se sont posé des défis restés célèbres, comme couper un angle en trois parts égales à la règle et au compas. On a prouvé en 1837 que c'est impossible !</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/cm2/17-programmes-de-construction/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/cm2/resolution-de-problemes/">Résolution de problèmes</a></span>
+  <a href="/cm2/">Tous les chapitres de CM2</a>
+  <span><a href="/cm2/proportionnalite/">Proportionnalité</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

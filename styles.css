@@ -9,6 +9,7 @@
   --accent-orange:#FF8208;
   --accent-teal:#26AAB1;
   --accent-4e:#0B7A83; /* bleu-vert du logo, foncé pour rester lisible en texte blanc : couleur de la 4e */
+  --accent-cm:#2E7D32; /* vert : couleur de l'école (CM1, CM2), comme dans l'administration */
   --accent-3e:#7A3E9D; /* violet prune, lisible en texte blanc : couleur de la 3e */
   --accent-yellow:#F8AF23;
   --white:#FFFFFF;
@@ -545,7 +546,7 @@ main{max-width:1080px;margin:0 auto;padding:40px 24px 100px;}
 }
 .hero-figure{aspect-ratio:1/1; display:flex;align-items:center;justify-content:center;}
 
-.level-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:10px;}
+.level-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:10px;}
 @media (max-width:1100px){ .level-grid{grid-template-columns:repeat(2,1fr);} }
 /* Pastille « Nouveau » d'un niveau qui vient d'ouvrir (4e, build 786). */
 .level-card .lvl-new{position:absolute;top:14px;right:14px;z-index:1;font-family:'Space Grotesk',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:var(--accent-4e);padding:3px 9px;border-radius:999px;}
@@ -1615,3 +1616,17 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .cl-bloc:fullscreen .cl-bruit-etat{font-size:4.5rem;}
 .cl-bruit-alerte{animation:clAlerteFond 1s ease-in-out infinite alternate;}
 @keyframes clAlerteFond{from{background:#fff;}to{background:#FDE3E3;}}
+
+/* CM1 et CM2 : même dominance de couleur, en vert (école). */
+#view-chapitre.lvl-cm .tab-btn.active{border-bottom-color:var(--accent-cm);}
+#view-chapitre.lvl-cm button.btn:not(.secondary):not(.orange){background:var(--accent-cm);}
+#view-chapitre.lvl-cm .lesson-header{background:var(--accent-cm);}
+#view-chapitre.lvl-cm .lesson-header .num{color:var(--accent-cm);}
+#view-chapitre.lvl-cm .sub-header .letter{background:var(--accent-cm);}
+#view-chapitre.lvl-cm .cp-chip-edit{background:var(--accent-cm);}
+#view-chapitre.lvl-cm .cp-eb:hover{border-color:var(--accent-cm);}
+#view-chapitre.lvl-cm .cp-form{border-color:var(--accent-cm);}
+#view-chapitre.lvl-cm .cp-fig-handle{fill:rgba(46,125,50,.14);stroke:rgba(46,125,50,.5);}
+.level-card.cm{border-top:3px solid var(--accent-cm);}
+.level-card.cm::before{content:""; position:absolute; right:-30px; top:-30px; width:120px;height:120px;border-radius:50%;background:radial-gradient(circle, rgba(46,125,50,.16), transparent 70%);}
+.level-card.cm .lvl-new{background:var(--accent-cm);}

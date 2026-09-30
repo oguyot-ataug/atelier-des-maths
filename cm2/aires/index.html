@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aires – Cours de maths CM2 | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CM2 : Aires. Aire et unités d'aire, Convertir des aires en raisonnant, Aire du rectangle et du carré, Aire de figures composées. Définitions,…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/cm2/aires/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Aires – Cours de maths CM2 | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CM2 : Aires. Aire et unités d'aire, Convertir des aires en raisonnant, Aire du rectangle et du carré, Aire de figures composées. Définitions,…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/cm2/aires/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Aires (CM2)","headline":"Aires – cours de mathématiques de CM2","description":"Cours de maths CM2 : Aires. Aire et unités d'aire, Convertir des aires en raisonnant, Aire du rectangle et du carré, Aire de figures composées. Définitions,…","url":"https://maths.latelieraugmente.fr/cm2/aires/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CM2 (cycle 3, école élémentaire)","about":"Grandeurs et mesures","teaches":["Aire et unités d'aire","Convertir des aires en raisonnant","Aire du rectangle et du carré","Aire de figures composées"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CM2","url":"https://maths.latelieraugmente.fr/cm2/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CM2","item":"https://maths.latelieraugmente.fr/cm2/"},{"@type":"ListItem","position":3,"name":"Aires","item":"https://maths.latelieraugmente.fr/cm2/aires/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/cm2/">Cours CM2</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/cm2/">Cours de maths CM2</a> › Aires</div>
+<h1>Aires</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#DCC9F7;color:#5B2F9E;">Grandeurs et mesures</span> Cours de mathématiques de CM2 (cours moyen 2e année) · chapitre 12 · Aire et unités d'aire · Convertir des aires en raisonnant · Aire du rectangle et du carré · Aire de figures composées</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/cm2/12-aires/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Aire et unités d'aire</h3></div>
+<span class="def-badge">Définition</span><div class="def-box">L'<b>aire</b> d'une figure mesure la <b>surface</b> qu'elle occupe. On la mesure en comptant combien de fois une <b>unité d'aire</b> y est contenue.<br>1 <b>cm²</b> (centimètre carré) est l'aire d'un carré de 1 cm de côté ; 1 <b>dm²</b> celle d'un carré de 1 dm de côté ; 1 <b>m²</b> celle d'un carré de 1 m de côté.</div>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">L'aire mesure l'intérieur (en cm², m²…), le périmètre mesure le contour (en cm, m…). Ce sont deux grandeurs différentes.</div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Convertir des aires en raisonnant</h3></div>
+<div class="figure-wrap"><svg viewBox="0 0 220 220" style="width:200px;display:block;margin:0 auto;"><rect x="10" y="10" width="200" height="200" fill="#2EA8C9" fill-opacity=".1" stroke="#1F3A5C" stroke-width="2"></rect><line x1="30" y1="10" x2="30" y2="210" stroke="#9BB0C4" stroke-width=".7"></line><line x1="10" y1="30" x2="210" y2="30" stroke="#9BB0C4" stroke-width=".7"></line><line x1="50" y1="10" x2="50" y2="210" stroke="#9BB0C4" stroke-width=".7"></line><line x1="10" y1="50" x2="210" y2="50" stroke="#9BB0C4" stroke-width=".7"></line><line x1="70" y1="10" x2="70" y2="210" stroke="#9BB0C4" stroke-width=".7"></line><line x1="10" y1="70" x2="210" y2="70" stroke="#9BB0C4" stroke-width=".7"></line><line x1="90" y1="10" x2="90" y2="210" stroke="#9BB0C4" stroke-width=".7"></line><line x1="10" y1="90" x2="210" y2="90" stroke="#9BB0C4" stroke-width=".7"></line><line x1="110" y1="10" x2="110" y2="210" stroke="#9BB0C4" stroke-width=".7"></line><line x1="10" y1="110" x2="210" y2="110" stroke="#9BB0C4" stroke-width=".7"></line><line x1="130" y1="10" x2="130" y2="210" stroke="#9BB0C4" stroke-width=".7"></line><line x1="10" y1="130" x2="210" y2="130" stroke="#9BB0C4" stroke-width=".7"></line><line x1="150" y1="10" x2="150" y2="210" stroke="#9BB0C4" stroke-width=".7"></line><line x1="10" y1="150" x2="210" y2="150" stroke="#9BB0C4" stroke-width=".7"></line><line x1="170" y1="10" x2="170" y2="210" stroke="#9BB0C4" stroke-width=".7"></line><line x1="10" y1="170" x2="210" y2="170" stroke="#9BB0C4" stroke-width=".7"></line><line x1="190" y1="10" x2="190" y2="210" stroke="#9BB0C4" stroke-width=".7"></line><line x1="10" y1="190" x2="210" y2="190" stroke="#9BB0C4" stroke-width=".7"></line><rect x="10" y="10" width="20" height="20" fill="#E35D3A" fill-opacity=".7"></rect></svg><p class="hint" style="margin:4px 0 0;">Un carré de 1 dm de côté (10 cm) contient 10 lignes de 10 carrés de 1 cm² : 1 dm² = 100 cm².</p></div>
+<span class="prop-badge">À retenir</span><div class="def-box"><b>1 dm² = 100 cm²</b> · <b>1 m² = 100 dm²</b> = 10 000 cm²</div>
+<p class="example-title">Exemples :</p><ul class="example-list"><li>3 dm² = 3 × 100 cm² = 300 cm².</li><li>2,5 m² = 2,5 × 100 dm² = 250 dm².</li><li>700 cm² = 7 dm², car 100 cm² = 1 dm².</li></ul>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Attention : 1 dm = 10 cm, mais 1 dm² = 100 cm² ! Pour les aires, on passe d'une unité à la suivante en multipliant par <b>100</b>.</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Aire du rectangle et du carré</h3></div>
+<div class="figure-wrap" style="display:flex;gap:26px;flex-wrap:wrap;justify-content:center;align-items:center;"><svg viewBox="0 0 156 112" style="width:156px;max-width:100%;display:inline-block;vertical-align:middle;"><rect x="1" y="1" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="23" y="1" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="45" y="1" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="67" y="1" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="89" y="1" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="111" y="1" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="133" y="1" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="1" y="23" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="23" y="23" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="45" y="23" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="67" y="23" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="89" y="23" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="111" y="23" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="133" y="23" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="1" y="45" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="23" y="45" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="45" y="45" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="67" y="45" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="89" y="45" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="111" y="45" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="133" y="45" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="1" y="67" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="23" y="67" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="45" y="67" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="67" y="67" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="89" y="67" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="111" y="67" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="133" y="67" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="1" y="89" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="23" y="89" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="45" y="89" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="67" y="89" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="89" y="89" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="111" y="89" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="133" y="89" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="23" y="23" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="45" y="23" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="67" y="23" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="89" y="23" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="111" y="23" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="23" y="45" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="45" y="45" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="67" y="45" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="89" y="45" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="111" y="45" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="23" y="67" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="45" y="67" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="67" y="67" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="89" y="67" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="111" y="67" width="22" height="22" fill="#2EA8C9" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect></svg><svg viewBox="0 0 112 112" style="width:112px;max-width:100%;display:inline-block;vertical-align:middle;"><rect x="1" y="1" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="23" y="1" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="45" y="1" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="67" y="1" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="89" y="1" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="1" y="23" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="23" y="23" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="45" y="23" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="67" y="23" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="89" y="23" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="1" y="45" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="23" y="45" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="45" y="45" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="67" y="45" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="89" y="45" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="1" y="67" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="23" y="67" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="45" y="67" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="67" y="67" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="89" y="67" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="1" y="89" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="23" y="89" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="45" y="89" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="67" y="89" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="89" y="89" width="22" height="22" fill="#fff" stroke="#B9C7D6" stroke-width=".8"></rect><rect x="23" y="23" width="22" height="22" fill="#2E9C6A" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="45" y="23" width="22" height="22" fill="#2E9C6A" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="67" y="23" width="22" height="22" fill="#2E9C6A" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="23" y="45" width="22" height="22" fill="#2E9C6A" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="45" y="45" width="22" height="22" fill="#2E9C6A" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="67" y="45" width="22" height="22" fill="#2E9C6A" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="23" y="67" width="22" height="22" fill="#2E9C6A" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="45" y="67" width="22" height="22" fill="#2E9C6A" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect><rect x="67" y="67" width="22" height="22" fill="#2E9C6A" fill-opacity=".55" stroke="#1F3A5C" stroke-width=".6"></rect></svg></div>
+<span class="prop-badge">Règle</span><div class="def-box">Un rectangle de 5 cm sur 3 cm contient 3 lignes de 5 carrés de 1 cm² : son aire est 5 × 3 = 15 cm².<br><b>Aire du rectangle = longueur × largeur</b> · <b>Aire du carré = côté × côté</b><br>Les deux longueurs doivent être dans la <b>même unité</b>.</div>
+<p class="example-title">Exemples :</p><ul class="example-list"><li>Un carré de 3 cm de côté : 3 × 3 = <b>9 cm²</b>.</li><li>Une chambre rectangulaire de 4 m sur 3,5 m : 4 × 3,5 = <b>14 m²</b>.</li><li>Un rectangle de 2 dm sur 15 cm : 2 dm = 20 cm, donc 20 × 15 = <b>300 cm²</b>.</li></ul>
+
+<div class="lesson-header"><span class="num">4</span><h3>Aire de figures composées</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Pour une figure faite de plusieurs rectangles, on la <b>découpe</b> en rectangles, on calcule l'aire de chacun et on <b>additionne</b>. On peut aussi calculer l'aire d'un grand rectangle et <b>enlever</b> ce qui manque.</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Calculer l'aire d'un rectangle</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-c2-ai-rect"><div class="step-column"><div class="">Longueur 25 m, largeur 12 m</div></div><div class="step-note">Même unité : le mètre.</div></div></div>
+<div class="sub-header"><span class="letter">M</span><h4>Calculer l'aire d'une figure en L</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-c2-ai-L"><div class="step-column"><div class="">Rectangle : 6 × 2 = 12 cm²</div></div><div class="step-note">On découpe la figure : d'abord le rectangle.</div></div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Rédaction type : « Aire d'un rectangle »</h3><div class="redaction-template"><div class="we-row"><span class="we-expr">A = L × l</span><span class="we-comment">J'écris la règle.</span></div><div class="we-row"><span class="we-expr">A = 9 cm × 4 cm = 36 cm²</span><span class="we-comment">Je remplace et je calcule.</span></div><div class="we-row"><span class="we-expr">L'aire est 36 cm².</span><span class="we-comment">Je conclus avec l'unité d'aire.</span></div></div></div><div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>Calcule l'aire : rectangle de 8 cm sur 5 cm · carré de 7 cm de côté · rectangle de 2,5 m sur 4 m.
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Convertis : 5 dm² en cm² · 3 m² en dm² · 600 cm² en dm² · 1,5 m² en dm².
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>Quelle unité choisir (cm², dm², m²) ? L'aire d'un timbre · d'une salle de classe · d'une feuille de cahier.
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>Un carré a une aire de 36 cm². Combien mesure son côté ? Quel est son périmètre ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>Un rectangle a une aire de 24 cm² et une longueur de 8 cm. Quelle est sa largeur ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 6</div>Trouve deux rectangles de même aire (24 cm²) mais de périmètres différents.
+      
+      </div><div class="exo-card"><div class="num">Exercice 7</div>Une pièce de 5 m sur 4 m doit être carrelée. Une boîte de carrelage couvre 2 m². Combien de boîtes faut-il ?
+      
+      </div></div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : l'are et l'hectare</div><p style="margin:0 0 12px;">Quand le système métrique est créé en 1795, on invente aussi une unité pour mesurer les terrains : l'<b>are</b>, l'aire d'un carré de 10 m de côté (100 m²). L'<b>hectare</b> vaut 100 ares : c'est à peu près la surface d'un terrain de football et demi.</p><p style="margin:0 0 12px;">Les agriculteurs parlent encore aujourd'hui en hectares pour mesurer leurs champs.</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/cm2/12-aires/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/cm2/grands-nombres-jusqu-a-999-999-999/">Grands nombres jusqu'à 999 999 999</a></span>
+  <a href="/cm2/">Tous les chapitres de CM2</a>
+  <span><a href="/cm2/multiples-et-diviseurs/">Multiples et diviseurs</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/cm2/">Cours de maths CM2</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

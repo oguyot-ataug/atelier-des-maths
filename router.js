@@ -89,10 +89,10 @@ function routerUpdateBreadcrumb(){
   const id = activeView.id;
   const parts = [{label:'Accueil', route:'#/'}];
   if(id==='view-niveau'){
-    parts.push({label:currentLevel, route:null});
+    parts.push({label:niveauLabel(currentLevel), route:null});
   } else if(id==='view-chapitre'){
     const lvl = currentChapterLevel || currentLevel;
-    parts.push({label:lvl, route:'#/niveau/'+lvl});
+    parts.push({label:niveauLabel(lvl), route:'#/niveau/'+lvl});
     parts.push({label:currentChapterTitle||'', route:null});
     const tabBtn = document.querySelector('.tab-btn.active');
     if(tabBtn){

@@ -25,11 +25,11 @@ Project ID Supabase de ce dépôt : `rngzubhnypmistjsumpz`.
 
 ## Référencement : régénérer les pages statiques après toute modification d'un chapitre
 
-Les pages indexables par Google (`cm1/<chapitre>/`, `6e/<chapitre>/`, `5e/<chapitre>/`, `4e/<chapitre>/`, `3e/<chapitre>/`, `cm1/`, `6e/`, `5e/`, `4e/`, `3e/`,
+Les pages indexables par Google (`cm1/<chapitre>/`, `cm2/<chapitre>/`, `6e/<chapitre>/`, `5e/<chapitre>/`, `4e/<chapitre>/`, `3e/<chapitre>/`, `cm1/`, `cm2/`, `6e/`, `5e/`, `4e/`, `3e/`,
 `professeurs/`),
 `sitemap.xml` et `robots.txt` sont GÉNÉRÉES à partir du vrai contenu des chapitres par
 `tools/build-seo.js` (ne pas les modifier à la main). Après toute modification d'un fichier de
-`chapitres/`, d'un titre de chapitre (CHCM1/CH6/CH5/CH4/CH3 dans app.js) ou de la page professeurs, relancer :
+`chapitres/`, d'un titre de chapitre (CHCM1/CHCM2/CH6/CH5/CH4/CH3 dans app.js) ou de la page professeurs, relancer :
 
 ```
 (cd tools && npm install)   # une fois par session : KaTeX pour rendre les formules
@@ -48,7 +48,11 @@ l'accès au suivi de l'indexation est perdu.
 Nouveaux programmes (cycle 3 : CM1, CM2, 6e ; cycle 4 : 5e, 4e, 3e), avec une entrée en vigueur échelonnée :
 
 - **CM1, CM2, 6e** : nouveau programme du cycle 3, en vigueur. Chapitres de CM1 et de 6e contrôlés
-  (builds 858-859), chapitre 6e « Initiation à la pensée informatique » ajouté (build 862).
+  (builds 858-859), chapitre 6e « Initiation à la pensée informatique » ajouté (build 862). CM1 réécrit
+  en entier (23 chapitres, builds 864-867) et CM2 créé (25 chapitres, builds 869-872), en suivant la
+  partie CM1 / CM2 du programme : les chapitres du CM utilisent les outils de `chapitres/cm1/_commun.js`
+  (cm1Chapitre avec `niveau: 'cm2'` pour le CM2). Au CM : ni tableau de conversion ni tableau de
+  proportionnalité, pas de rapporteur, notations de géométrie toujours expliquées.
 - **5e** : nouveau programme du cycle 4, en vigueur dès l'année 2026-2027. Chapitres contrôlés et
   complétés, chapitre « Pensée informatique et programmation » ajouté (build 863).
 - **4e** : le nouveau programme ne prend effet qu'en **septembre 2027**. D'ici là, garder l'ancien
