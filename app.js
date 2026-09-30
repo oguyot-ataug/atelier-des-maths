@@ -351,6 +351,9 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
       showView('view-supervision'); setActiveTopnav('supervision');
       loadMyClasses();
     }
+    if(nav==='convertisseur'){
+      showView('view-convertisseur'); setActiveTopnav(null); if(typeof renderConvertisseur==='function') renderConvertisseur();
+    }
     if(nav==='classe'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
       showView('view-classe'); setActiveTopnav(null); if(typeof renderClasseOutils==='function') renderClasseOutils();
@@ -3088,6 +3091,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.857', items:[
+    "Nouveau menu S'entraîner › Convertisseur. Demandé : « plusieurs tuiles de conversion, avec des outils pour comprendre [...] multiplier par 10, 100, 1000 : on repère le chiffre des unités en rouge et on a des flèches droite gauche pour faire glisser le nombre [...] les préfixes en couleur, conversions aire, conversions volumes ». Un choix de niveau (CM1, CM2, 6e à 3e) règle la difficulté des exercices ; il est mémorisé.",
+    "× et ÷ par 10, 100, 1000 : tableau de numération à virgule fixe. Le chiffre des unités du nombre est en rouge ; avec les flèches ◀ ▶ (ou les touches du clavier), le nombre glisse d'une colonne. Pour × 100, on amène le chiffre rouge dans la colonne des centaines (encadrée). Les zéros à ajouter apparaissent en orange et les zéros devenus inutiles s'estompent. À partir de la 6e : aussi × 0,1, × 0,01, × 0,001.",
+    "Unités (longueurs en m, masses en g avec la tonne et le quintal, contenances en L), aires (deux colonnes par unité, avec ha, a, ca) et volumes (trois colonnes par unité, avec les litres sous les dm³ et les cm³) : le nombre est placé avec son chiffre des unités en rouge dans la colonne de son unité, et l'on déplace la virgule jusqu'à la colonne de l'unité voulue. Préfixes en couleur : k rouge, h orange, da jaune, d vert, c bleu, m violet. Bouton « Montrer » pour voir la virgule se déplacer.",
+    "Chaque outil a un mode libre (on choisit le nombre, l'opération ou les unités) et un mode exercice tiré au hasard selon le niveau, avec le score de la série.",
+  ]},
   { version:'2026-08-19.856', items:[
     "Cartes flashcode : le bouton est maintenant dans « Mes classes » (onglet Comptes, à droite du filtre), pour la classe active, et non plus dans le menu Outils prof. Demandé : « Je pense qu'il faut mettre le menu cartes flashcode dans \u00ab Mes classes \u00bb ».",
   ]},
