@@ -64,9 +64,30 @@ async function qzCahierOuvrir(devoirId){
   if(error || !d){ await niceAlert('Interrogation introuvable.'); return; }
   const { data: q } = await sb.from('questionnaires').select('titre,questions,reglages').eq('id', d.questionnaire_id).maybeSingle();
   if(!q || !(q.questions || []).length){ await niceAlert('Ce questionnaire n\'a pas de question.'); return; }
-  const niveau = (d.classes && d.classes.niveau) || '5e';
-  const chaps = (typeof CHAPITRES_BY_LEVEL !== 'undefined' && CHAPITRES_BY_LEVEL[niveau]) || [];
   const fini = !!d.qz_publie_at || (d.date_limite && new Date(d.date_limite) < new Date());
+  qzCahierModal({ titre: d.titre, consigne: d.consigne, questions: q.questions, class_id: d.class_id, classes: d.classes, fini,
+    exo: 'Interrogation', chapDefaut: 'Interrogations', alerte: 'Cette interrogation n\'est pas encore terminée : les élèves verront la correction dans leur cahier dès maintenant.' });
+}
+/* Séance en direct -- signalé : « Pour les Séances en direct, je ne peux pas les insérer dans le cahier ».
+   Même fenêtre que pour une interrogation : les questions réellement posées pendant la séance (toutes
+   si elle n'a pas commencé), avec le corrigé à jour, datées du jour de la séance. */
+async function qzDirectCahierOuvrir(id){
+  const { data: row, error } = await sb.from('qz_direct').select('*,classes(nom,niveau)').eq('id', id).single();
+  if(error || !row){ await niceAlert('Séance introuvable.'); return; }
+  const questions = typeof qzDirectQuestionsAJour === 'function' ? await qzDirectQuestionsAJour(row) : (row.questions || []);
+  const lancees = (row.etat && row.etat.lancees) || [];
+  // Pages (documents + question) : on garde celles dont la question a été posée.
+  const garde = lancees.length ? qzPages(questions).filter(p => p.some(x => x.type !== 'texte' && lancees.includes(x.id))).flat() : questions;
+  if(!garde.some(x => x.type !== 'texte')){ await niceAlert('Cette séance n\'a pas de question.'); return; }
+  const d = new Date(row.created_at), iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  qzCahierModal({ titre: row.titre, consigne: '', questions: garde, class_id: row.class_id, classes: row.classes, fini: !!row.ended_at, date: iso,
+    exo: 'Séance en direct', chapDefaut: 'Séances en direct', alerte: 'Cette séance n\'est pas terminée : les élèves verront la correction dans leur cahier dès maintenant.' });
+}
+// Fenêtre commune : sujet seul ou avec correction, chapitre et date, puis insertion dans cahier_entries.
+function qzCahierModal(m){
+  const d = m, niveau = (d.classes && d.classes.niveau) || '5e';
+  const chaps = (typeof CHAPITRES_BY_LEVEL !== 'undefined' && CHAPITRES_BY_LEVEL[niveau]) || [];
+  const fini = m.fini;
   const o = document.createElement('div'); o.className = 'qzd-ov';
   o.innerHTML = `<div class="qzd-modal" role="dialog" aria-label="Ajouter au cahier">
     <h3><span class="gicon">menu_book</span> Ajouter au cahier de l'élève</h3>
@@ -76,13 +97,13 @@ async function qzCahierOuvrir(devoirId){
       <button type="button" class="qzd-m-opt on" data-corr="1"><span class="gicon">fact_check</span><span><b>Le sujet et sa correction</b><small>Bonnes réponses, attendus des questions ouvertes et explications.</small></span></button>
       <button type="button" class="qzd-m-opt" data-corr="0"><span class="gicon">description</span><span><b>Le sujet seul</b><small>Les questions, sans les réponses.</small></span></button>
     </div>
-    <p class="hint qzc-alerte" style="margin:8px 0 0;color:#a83c1f;${fini ? 'display:none;' : ''}"><span class="gicon" style="font-size:1rem;vertical-align:middle;">warning</span> Cette interrogation n'est pas encore terminée : les élèves verront la correction dans leur cahier dès maintenant.</p>
+    <p class="hint qzc-alerte" style="margin:8px 0 0;color:#a83c1f;${fini ? 'display:none;' : ''}"><span class="gicon" style="font-size:1rem;vertical-align:middle;">warning</span> ${qzEsc(m.alerte)}</p>
     <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;">
       <label class="hint" style="display:flex;flex-direction:column;gap:4px;margin:0;font-weight:600;">Chapitre du cahier
-        <select class="qzc-chap" style="padding:6px 8px;border-radius:8px;"><option value="">Interrogations (sans chapitre)</option>
+        <select class="qzc-chap" style="padding:6px 8px;border-radius:8px;"><option value="">${qzEsc(m.chapDefaut)} (sans chapitre)</option>
           ${chaps.map(c => `<option value="${qzEsc(c.code + ' · ' + c.t)}">${qzEsc(c.code + ' · ' + c.t)}</option>`).join('')}</select></label>
       <label class="hint" style="display:flex;flex-direction:column;gap:4px;margin:0;font-weight:600;">Date
-        <input type="date" class="qzc-date" value="${todayISO()}" style="padding:6px 8px;border-radius:8px;"></label>
+        <input type="date" class="qzc-date" value="${m.date || todayISO()}" style="padding:6px 8px;border-radius:8px;"></label>
     </div>
     <p class="hint qzc-err" style="margin:10px 0 0;color:#a83c1f;"></p>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;"><button type="button" class="btn secondary" data-x>Annuler</button>
@@ -97,9 +118,9 @@ async function qzCahierOuvrir(devoirId){
       o.querySelector('.qzc-alerte').style.display = corr && !fini ? '' : 'none'; return; }
     if(t.closest('[data-go]')){
       const b = t.closest('[data-go]'); b.disabled = true;
-      const entry = { niveau, chapitre: o.querySelector('.qzc-chap').value || 'Interrogations', exo: 'Interrogation',
+      const entry = { niveau, chapitre: o.querySelector('.qzc-chap').value || m.chapDefaut, exo: m.exo,
         titre: d.titre + (corr ? ' (correction)' : ''), date: o.querySelector('.qzc-date').value || todayISO(), raw: '',
-        html: qzcHtml(d.titre, d.consigne, q.questions, corr) };
+        html: qzcHtml(d.titre, d.consigne, m.questions, corr) };
       const { data: ins, error: er } = await sb.from('cahier_entries').insert(Object.assign({ class_id: d.class_id }, entry)).select('id').single();
       if(er){ o.querySelector('.qzc-err').textContent = /row-level security/.test(er.message) ? 'Vous n\'êtes pas professeur de cette classe.' : er.message; b.disabled = false; return; }
       // Classe active : le cahier affiché est mis à jour tout de suite.

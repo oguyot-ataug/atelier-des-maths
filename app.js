@@ -3073,6 +3073,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.830', items:[
+    "Séances en direct : ajout au cahier de l'élève. Signalé : « Pour les Séances en direct, je ne peux pas les insérer dans le cahier ». Un bouton « Cahier » est maintenant sur chaque séance en direct terminée (Interrogations en ligne), et un bouton « Ajouter au cahier » en bas de son bilan. Comme pour une interrogation, vous choisissez le sujet avec sa correction (bonnes réponses, explications) ou le sujet seul, puis le chapitre du cahier et la date. Seules les questions réellement posées pendant la séance sont reprises, et la date proposée est celle de la séance. L'entrée apparaît dans le cahier comme « Séance en direct » et figure dans le résumé du jour pour le cahier de textes. Les interrogations y figurent aussi désormais sous leur vrai nom, et non plus comme « Exercice Interrogation ».",
+  ]},
   { version:'2026-08-19.829', items:[
     "Cahier : résumé de la séance pour le cahier de textes -- demandé : « un bouton visible par le professeur qui récapitule ce qui a été fait pour permettre un copier coller vers le cahier de texte de classe (école directe ou autre). Mettre en forme avec des couleurs pour cours et exercices. Pour le cours, ne mettre que les titres. Préciser à chaque début de résumé quel est le chapitre travaillé ». Dans le cahier, chaque jour a un nouveau bouton (à côté du PDF), visible seulement par les professeurs. Il ouvre le résumé de la séance : pour chaque chapitre travaillé, « Chapitre : … » en tête, puis le cours en bleu (titres seulement) et les exercices en orange (numéro, page et intitulé, raccourci s'il est très long). Le résumé reste modifiable dans la fenêtre avant d'être copié ; « Copier (avec les couleurs) » garde la mise en forme au collage (École Directe, Pronote…), « Copier en texte simple » donne une version sans mise en forme.",
   ]},
@@ -6187,7 +6190,7 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
   // exo==='' : entrée sans étiquette (ex. en-tête d'évaluation ajoutée au cahier), distinct de
   // '-' (déjà utilisé par l'outil de correction pour "numéro non renseigné", qui affiche encore
   // "Exercice -").
-  const refLabel = e.exo==='' ? '' : e.exo==='Cours' ? 'Cours' : e.exo==='Interrogation' ? 'Interrogation' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo)); // Interrogation : questionnaires-cahier.js
+  const refLabel = e.exo==='' ? '' : e.exo==='Cours' ? 'Cours' : e.exo==='Interrogation' ? 'Interrogation' : e.exo==='Séance en direct' ? 'Séance en direct' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo)); // Interrogation : questionnaires-cahier.js
   let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}</div>`;
   if(editable){
     // Le déplacement ne peut se faire QU'À L'INTÉRIEUR du même groupe (même date + même
@@ -6717,6 +6720,7 @@ function resumeSeanceContenu(date){
     const court = t => t.length > 110 ? t.slice(0, 107).replace(/\s+\S*$/, '') + '…' : t;
     if(e.exo==='Cours'){ if(titre && !c.cours.includes(titre)) c.cours.push(titre); }
     else if(e.exo==='TD') c.exos.push(titre || 'Exercices');
+    else if(e.exo==='Interrogation' || e.exo==='Séance en direct') c.exos.push(e.exo + (titre ? ' : '+court(titre) : ''));
     else if(e.exo==='Construction') c.exos.push('Construction' + (titre && titre!=='Construction' ? ' : '+court(titre) : ''));
     else {
       const num = String(e.exo||'').trim(), n = num && num!=='-' ? 'Exercice '+num : 'Exercice';

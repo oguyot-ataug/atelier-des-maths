@@ -574,6 +574,7 @@ function qzDirectBilanHtml(){
       ${qzD.row.devoir_id ? `<button class="btn" onclick="qzOuvrirCorrection('${qzD.row.devoir_id}')"><span class="gicon">fact_check</span> Vérifier et publier les notes</button>
         <button class="btn secondary" style="color:#a83c1f;" onclick="qzDirectAnnulerNotationUI('${qzD.id}')" title="Supprime l'interrogation créée pour noter la séance (copies et notes) ; la séance et les réponses restent"><span class="gicon">undo</span> Annuler la notation</button>`
         : `<button class="btn" onclick="qzDirectNoterDepuisBilan()" title="Crée une interrogation notée avec les réponses des élèves"><span class="gicon">grading</span> Noter cette séance</button>`}
+      <button class="btn secondary" onclick="qzDirectCahierOuvrir('${qzD.id}')" title="Ajouter les questions posées (et leur correction) au cahier de l'élève"><span class="gicon">menu_book</span> Ajouter au cahier</button>
       ${qzD.row.questionnaire_id ? `<button class="btn secondary" onclick="qzDirectLancer('${qzD.row.questionnaire_id}')"><span class="gicon">replay</span> Nouvelle séance avec ce questionnaire</button>` : ''}
     </div></div>`;
 }
@@ -662,6 +663,7 @@ function qzDirectsPassesHtml(f){
         <span class="qz-i-etat ${d.devoir_id ? 'ok' : 'brouillon'}"><span class="gicon">${d.devoir_id ? 'grading' : 'school'}</span> ${d.devoir_id ? 'Notée' : 'Non notée'}</span>
         <span class="qz-i-act">
           <button class="btn qz-mini" onclick="qzDirectOuvrir('${d.id}')"><span class="gicon">insights</span> Bilan</button>
+          <button class="btn secondary qz-mini" onclick="qzDirectCahierOuvrir('${d.id}')" title="Ajouter les questions de la séance (et leur correction) au cahier de l'élève"><span class="gicon">menu_book</span> Cahier</button>
           ${d.devoir_id ? `<button class="btn secondary qz-mini" onclick="qzOuvrirCorrection('${d.devoir_id}')" title="Vérifier les copies et publier les notes"><span class="gicon">fact_check</span> Corriger</button>
             <button class="btn secondary qz-mini" onclick="qzDirectAnnulerNotationUI('${d.id}')" title="Annuler la notation : l'interrogation créée (copies, notes) est supprimée ; la séance et les réponses restent"><span class="gicon">undo</span></button>`
             : `<button class="btn secondary qz-mini" onclick="qzDirectNoter('${d.id}')" title="Créer une interrogation notée avec les réponses des élèves"><span class="gicon">grading</span> Noter</button>`}
