@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Construction de figures – Cours de maths CM1 | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CM1 : Construction de figures. Le vocabulaire de la géométrie, Le cercle, Des triangles particuliers, Des quadrilatères particuliers.…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/cm1/construction-de-figures/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Construction de figures – Cours de maths CM1 | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CM1 : Construction de figures. Le vocabulaire de la géométrie, Le cercle, Des triangles particuliers, Des quadrilatères particuliers.…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/cm1/construction-de-figures/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Construction de figures (CM1)","headline":"Construction de figures – cours de mathématiques de CM1","description":"Cours de maths CM1 : Construction de figures. Le vocabulaire de la géométrie, Le cercle, Des triangles particuliers, Des quadrilatères particuliers.…","url":"https://maths.latelieraugmente.fr/cm1/construction-de-figures/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CM1 (cycle 3, école élémentaire)","about":"Géométrie","teaches":["Le vocabulaire de la géométrie","Le cercle","Des triangles particuliers","Des quadrilatères particuliers"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CM1","url":"https://maths.latelieraugmente.fr/cm1/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CM1","item":"https://maths.latelieraugmente.fr/cm1/"},{"@type":"ListItem","position":3,"name":"Construction de figures","item":"https://maths.latelieraugmente.fr/cm1/construction-de-figures/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/cm1/">Cours de maths CM1</a> › Construction de figures</div>
+<h1>Construction de figures</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#B9E8C4;color:#1F6B3A;">Géométrie</span> Cours de mathématiques de CM1 (cours moyen 1re année) · chapitre 7 · Le vocabulaire de la géométrie · Le cercle · Des triangles particuliers · Des quadrilatères particuliers</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/cm1/7-construction-de-figures/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Le vocabulaire de la géométrie</h3></div>
+<div class="sub-header"><span class="letter">A</span><h4>Points, segments et droites</h4></div>
+<span class="def-badge">Vocabulaire</span>
+<div class="def-box">
+  • Un <b>point</b> se dessine avec une petite croix et se nomme avec une lettre majuscule : le point P.<br>
+  • Le <b>segment [AB]</b> est le trait droit qui va du point A au point B. A et B sont ses <b>extrémités</b>. On peut mesurer sa longueur : on écrit AB = 6 cm.<br>
+  • La <b>droite (EF)</b> passe par les points E et F. Une droite n'a pas de fin : on n'en trace qu'un morceau. On peut aussi la nommer avec une lettre minuscule : la droite (d).
+</div>
+<div style="overflow-x:auto;"><table style="border-collapse:collapse;width:100%;text-align:center;margin:10px 0 16px;table-layout:fixed;">
+    <tbody><tr><td style="padding:6px;border:1px solid rgba(28,43,57,.15);background:rgba(31,122,77,.10);font-weight:700;">Un point et un segment</td><td style="padding:6px;border:1px solid rgba(28,43,57,.15);background:rgba(31,122,77,.10);font-weight:700;">Une droite</td><td style="padding:6px;border:1px solid rgba(28,43,57,.15);background:rgba(31,122,77,.10);font-weight:700;">Des points alignés</td></tr>
+    <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;"><svg viewBox="0 0 210 105" style="width:100%;max-width:220px;display:block;margin:8px auto;"><line x1="45.0" y1="20.0" x2="55.0" y2="30.0" stroke="#D93025" stroke-width="2" stroke-linecap="round"></line><line x1="45.0" y1="30.0" x2="55.0" y2="20.0" stroke="#D93025" stroke-width="2" stroke-linecap="round"></line><text x="50.0" y="15.0" font-size="15" font-weight="700" fill="#D93025" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">P</text><line x1="40.0" y1="70.0" x2="170.0" y2="70.0" stroke="#0C5BA0" stroke-width="2.4" stroke-linecap="round"></line><line x1="40.0" y1="64.0" x2="40.0" y2="76.0" stroke="#0C5BA0" stroke-width="2" stroke-linecap="round"></line><line x1="170.0" y1="64.0" x2="170.0" y2="76.0" stroke="#0C5BA0" stroke-width="2" stroke-linecap="round"></line><text x="40.0" y="94.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">A</text><text x="170.0" y="94.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">B</text><text x="105.0" y="60.0" font-size="13" font-weight="700" fill="#0C5BA0" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">[AB]</text></svg></td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;"><svg viewBox="0 0 210 105" style="width:100%;max-width:220px;display:block;margin:8px auto;"><line x1="13.4" y1="91.8" x2="206.6" y2="24.2" stroke="#1F7A4D" stroke-width="2.4" stroke-linecap="round"></line><line x1="68.0" y1="66.3" x2="72.0" y2="77.7" stroke="#1F7A4D" stroke-width="2" stroke-linecap="round"></line><line x1="148.0" y1="38.3" x2="152.0" y2="49.7" stroke="#1F7A4D" stroke-width="2" stroke-linecap="round"></line><text x="68.0" y="94.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">E</text><text x="154.0" y="66.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">F</text><text x="192.6" y="16.2" font-size="13" font-weight="700" fill="#1F7A4D" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">(d)</text><text x="8" y="16" font-size="11" fill="#9AA3AF">… elle continue des deux côtés …</text></svg></td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;"><svg viewBox="0 0 210 105" style="width:100%;max-width:220px;display:block;margin:8px auto;"><line x1="30.0" y1="60.0" x2="180.0" y2="60.0" stroke="#E07B00" stroke-width="2.4" stroke-linecap="round"></line><line x1="30.0" y1="54.0" x2="30.0" y2="66.0" stroke="#E07B00" stroke-width="2" stroke-linecap="round"></line><line x1="105.0" y1="54.0" x2="105.0" y2="66.0" stroke="#E07B00" stroke-width="2" stroke-linecap="round"></line><line x1="180.0" y1="54.0" x2="180.0" y2="66.0" stroke="#E07B00" stroke-width="2" stroke-linecap="round"></line><line x1="65.5" y1="54.0" x2="69.5" y2="66.0" stroke="#E07B00" stroke-width="1.8" stroke-linecap="round"></line><line x1="140.5" y1="54.0" x2="144.5" y2="66.0" stroke="#E07B00" stroke-width="1.8" stroke-linecap="round"></line><text x="30.0" y="84.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">G</text><text x="105.0" y="84.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">M</text><text x="180.0" y="84.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">H</text><line x1="115.0" y1="20.0" x2="125.0" y2="30.0" stroke="#D93025" stroke-width="2" stroke-linecap="round"></line><line x1="115.0" y1="30.0" x2="125.0" y2="20.0" stroke="#D93025" stroke-width="2" stroke-linecap="round"></line><text x="132.0" y="19.0" font-size="15" font-weight="700" fill="#D93025" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">K</text></svg></td></tr>
+    <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;font-size:.9rem;">Le point P et le segment [AB].</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;font-size:.9rem;">La droite (d), qu'on peut aussi appeler (EF).</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;font-size:.9rem;">G, M et H sont <b>alignés</b> ; K ne l'est pas avec eux.</td></tr></tbody></table></div>
+<span class="def-badge">Vocabulaire</span>
+<div class="def-box">
+  • Des points sont <b>alignés</b> s'ils sont sur une même droite. On le vérifie avec la règle.<br>
+  • Le <b>milieu</b> d'un segment est le point du segment qui est à la même distance de ses deux extrémités. Sur la figure, M est le milieu du segment [GH] : GM = MH.
+</div>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
+  Les petits traits identiques sur les segments [GM] et [MH] sont un <b>codage</b> : ils disent que les deux longueurs sont égales.
+</div>
+
+<div class="sub-header"><span class="letter">B</span><h4>Les polygones</h4></div>
+<span class="def-badge">Vocabulaire</span>
+<div class="def-box">Un <b>polygone</b> est une figure fermée dont le contour est fait de segments : ce sont ses <b>côtés</b>. Les extrémités des côtés sont les <b>sommets</b>. Deux côtés qui se suivent forment un <b>angle</b>.</div>
+<div class="figure-wrap"><svg viewBox="0 0 320 190" style="width:100%;max-width:340px;display:block;margin:8px auto;"><polygon points="60.0,150.0 200.0,150.0 230.0,70.0 140.0,25.0 40.0,75.0" fill="rgba(12,91,160,.07)" stroke="#0C5BA0" stroke-width="2.4" stroke-linejoin="round"></polygon><text x="47.9" y="163.9" font-size="15" font-weight="700" fill="#0C5BA0" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">A</text><text x="211.5" y="164.7" font-size="15" font-weight="700" fill="#0C5BA0" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">B</text><text x="244.5" y="71.2" font-size="15" font-weight="700" fill="#0C5BA0" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">C</text><text x="141.1" y="15.0" font-size="15" font-weight="700" fill="#0C5BA0" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">D</text><text x="25.3" y="76.9" font-size="15" font-weight="700" fill="#0C5BA0" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">E</text><line x1="60.0" y1="150.0" x2="200.0" y2="150.0" stroke="#1F7A4D" stroke-width="4.5" stroke-linecap="round"></line><text x="130.0" y="172.0" font-size="13" font-weight="700" fill="#1F7A4D" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">un côté</text><circle cx="230" cy="70" r="6" fill="none" stroke="#D93025" stroke-width="2"></circle><text x="292.0" y="75.0" font-size="13" font-weight="700" fill="#D93025" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">un sommet</text><path d="M45.2,94.3 A20.0,20.0 0 0 0 57.9,66.1" fill="none" stroke="#E07B00" stroke-width="2.4" stroke-linecap="round"></path><text x="34.0" y="49.0" font-size="13" font-weight="700" fill="#E07B00" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">un angle</text></svg>
+  <p class="hint" style="margin:4px 0 0;text-align:center;">Le polygone ABCDE a 5 côtés, 5 sommets et 5 angles.</p></div>
+<div class="redaction-note" style="background:rgba(12,91,160,.06);border-color:rgba(12,91,160,.2);color:#0C3D6B;">
+  Pour nommer un polygone, on cite ses sommets <b>dans l'ordre</b>, en faisant le tour de la figure : ABCDE, ou BCDEA. Mais pas ACBDE !<br>
+  Un polygone à 3 côtés est un <b>triangle</b> ; un polygone à 4 côtés est un <b>quadrilatère</b>.
+</div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Le cercle</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Le <b>cercle de centre O et de rayon 2 cm</b> est formé de tous les points qui se trouvent <b>à 2 cm</b> du point O.<br>
+Le <b>disque</b> de centre O et de rayon 2 cm est formé de tous les points qui se trouvent <b>à 2 cm au plus</b> de O : c'est le cercle et tout l'intérieur.</div>
+<div class="figure-wrap">
+  
+  <svg id="cf1-vocSvg" viewBox="0 0 300 240" style="width:100%;max-width:320px;display:block;margin:6px auto;"><circle cx="150.0" cy="118.0" r="82.0" fill="none" stroke="#20242E" stroke-width="2"></circle><line x1="75.7" y1="152.7" x2="224.3" y2="83.3" stroke="#9AA3AF" stroke-width="1.8" stroke-linecap="round"></line><line x1="150.0" y1="118.0" x2="119.3" y2="42.0" stroke="#9AA3AF" stroke-width="1.8" stroke-linecap="round"></line><line x1="115.3" y1="192.3" x2="202.7" y2="180.8" stroke="#9AA3AF" stroke-width="1.8" stroke-linecap="round"></line><line x1="70.2" y1="155.2" x2="81.1" y2="150.1" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="61.2" y="164.4" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">A</text><line x1="229.8" y1="80.8" x2="218.9" y2="85.9" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="238.8" y="81.6" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">B</text><line x1="117.0" y1="36.4" x2="121.5" y2="47.5" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="113.3" y="32.1" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">R</text><line x1="112.8" y1="197.8" x2="117.9" y2="186.9" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="108.6" y="211.8" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">E</text><line x1="206.6" y1="185.4" x2="198.9" y2="176.2" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="213.0" y="198.1" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">F</text><line x1="145.0" y1="113.0" x2="155.0" y2="123.0" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><line x1="145.0" y1="123.0" x2="155.0" y2="113.0" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="140.0" y="138.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">O</text></svg>
+  <p class="hint" id="cf1-vocNote" style="text-align:center;margin:0;">Clique sur un mot pour le voir sur le cercle.</p>
+</div>
+<span class="prop-badge">À retenir</span>
+<div class="def-box">Le diamètre d'un cercle mesure <b>deux fois</b> son rayon : diamètre = 2 × rayon.<br>
+Un cercle de rayon 2 cm a donc un diamètre de 4 cm.</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Des triangles particuliers</h3></div>
+<div class="def-box">Un <b>triangle</b> est un polygone qui a 3 côtés. Il a 3 sommets et 3 angles.</div>
+<div style="overflow-x:auto;"><table style="border-collapse:collapse;width:100%;text-align:center;margin:10px 0 16px;table-layout:fixed;">
+    <tbody><tr><td style="padding:6px;border:1px solid rgba(28,43,57,.15);background:rgba(31,122,77,.10);font-weight:700;">Triangle rectangle</td><td style="padding:6px;border:1px solid rgba(28,43,57,.15);background:rgba(31,122,77,.10);font-weight:700;">Triangle isocèle</td><td style="padding:6px;border:1px solid rgba(28,43,57,.15);background:rgba(31,122,77,.10);font-weight:700;">Triangle équilatéral</td></tr>
+    <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;"><svg viewBox="0 0 220 160" style="width:100%;max-width:200px;display:block;margin:8px auto;"><polygon points="55.0,118.0 170.0,118.0 55.0,38.0" fill="rgba(12,91,160,.06)" stroke="#1F7A4D" stroke-width="2.2" stroke-linejoin="round"></polygon><polyline points="65.0,118.0 65.0,108.0 55.0,108.0" fill="none" stroke="#20242E" stroke-width="1.8"></polyline></svg></td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;"><svg viewBox="0 0 220 160" style="width:100%;max-width:200px;display:block;margin:8px auto;"><polygon points="110.0,25.0 68.0,122.0 152.0,122.0" fill="rgba(12,91,160,.06)" stroke="#0C5BA0" stroke-width="2.2" stroke-linejoin="round"></polygon><line x1="95.3" y1="74.0" x2="82.7" y2="73.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="135.7" y1="69.3" x2="126.3" y2="77.7" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line></svg></td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;"><svg viewBox="0 0 220 160" style="width:100%;max-width:200px;display:block;margin:8px auto;"><polygon points="60.0,110.0 160.0,110.0 110.0,23.4" fill="rgba(12,91,160,.06)" stroke="#E07B00" stroke-width="2.2" stroke-linejoin="round"></polygon><line x1="105.5" y1="104.0" x2="109.5" y2="116.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="110.5" y1="104.0" x2="114.5" y2="116.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="132.1" y1="73.6" x2="140.4" y2="64.1" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="129.6" y1="69.3" x2="137.9" y2="59.8" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="92.4" y1="65.8" x2="80.1" y2="63.3" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="89.9" y1="70.1" x2="77.6" y2="67.6" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line></svg></td></tr>
+    <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;font-size:.9rem;">Un triangle <b>rectangle</b> a <span style="color:#1F7A4D;">un angle droit</span>.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;font-size:.9rem;">Un triangle <b>isocèle</b> a <span style="color:#0C5BA0;">deux côtés de même longueur</span>.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;font-size:.9rem;">Un triangle <b>équilatéral</b> a <span style="color:#E07B00;">trois côtés de même longueur</span>.</td></tr></tbody></table></div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Des quadrilatères particuliers</h3></div>
+<div class="def-box">Un <b>quadrilatère</b> est un polygone qui a 4 côtés. Il a 4 sommets et 4 angles.</div>
+<div style="overflow-x:auto;"><table style="border-collapse:collapse;width:100%;text-align:center;margin:10px 0 16px;table-layout:fixed;">
+    <tbody><tr><td style="padding:6px;border:1px solid rgba(28,43,57,.15);background:rgba(31,122,77,.10);font-weight:700;">Rectangle</td><td style="padding:6px;border:1px solid rgba(28,43,57,.15);background:rgba(31,122,77,.10);font-weight:700;">Losange</td><td style="padding:6px;border:1px solid rgba(28,43,57,.15);background:rgba(31,122,77,.10);font-weight:700;">Carré</td></tr>
+    <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;"><svg viewBox="0 0 220 160" style="width:100%;max-width:200px;display:block;margin:8px auto;"><polygon points="42.0,44.0 178.0,44.0 178.0,116.0 42.0,116.0" fill="rgba(12,91,160,.06)" stroke="#1F7A4D" stroke-width="2.2" stroke-linejoin="round"></polygon><polyline points="52.0,44.0 52.0,54.0 42.0,54.0" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><polyline points="178.0,54.0 168.0,54.0 168.0,44.0" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><polyline points="168.0,116.0 168.0,106.0 178.0,106.0" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><polyline points="42.0,106.0 52.0,106.0 52.0,116.0" fill="none" stroke="#20242E" stroke-width="1.8"></polyline></svg></td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;"><svg viewBox="0 0 220 160" style="width:100%;max-width:200px;display:block;margin:8px auto;"><polygon points="110.0,30.0 188.0,80.0 110.0,130.0 32.0,80.0" fill="rgba(12,91,160,.06)" stroke="#0C5BA0" stroke-width="2.2" stroke-linejoin="round"></polygon><line x1="150.6" y1="48.9" x2="147.4" y2="61.1" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="153.9" y1="109.0" x2="144.1" y2="101.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="69.4" y1="111.1" x2="72.6" y2="98.9" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="66.1" y1="51.0" x2="75.9" y2="59.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line></svg></td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;"><svg viewBox="0 0 220 160" style="width:100%;max-width:200px;display:block;margin:8px auto;"><polygon points="64.0,34.0 156.0,34.0 156.0,126.0 64.0,126.0" fill="rgba(12,91,160,.06)" stroke="#E07B00" stroke-width="2.2" stroke-linejoin="round"></polygon><polyline points="74.0,34.0 74.0,44.0 64.0,44.0" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><line x1="108.0" y1="28.0" x2="112.0" y2="40.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><polyline points="156.0,44.0 146.0,44.0 146.0,34.0" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><line x1="162.0" y1="78.0" x2="150.0" y2="82.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><polyline points="146.0,126.0 146.0,116.0 156.0,116.0" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><line x1="112.0" y1="132.0" x2="108.0" y2="120.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><polyline points="64.0,116.0 74.0,116.0 74.0,126.0" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><line x1="58.0" y1="82.0" x2="70.0" y2="78.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line></svg></td></tr>
+    <tr><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;font-size:.9rem;">Un <b>rectangle</b> a <span style="color:#1F7A4D;">quatre angles droits</span>.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;font-size:.9rem;">Un <b>losange</b> a <span style="color:#0C5BA0;">quatre côtés de même longueur</span>.</td><td style="padding:8px;border:1px solid rgba(28,43,57,.15);vertical-align:top;font-size:.9rem;">Un <b>carré</b> a <span style="color:#E07B00;">quatre angles droits et quatre côtés de même longueur</span>.</td></tr></tbody></table></div>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
+  Un carré a quatre angles droits : c'est donc aussi un rectangle. Il a quatre côtés de même longueur : c'est aussi un losange !
+</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Tracer un cercle au compas</h4></div>
+<div class="figure-wrap">
+  
+  <svg id="cf1CercleSvg" viewBox="0 0 400 250" style="width:100%;max-width:400px;display:block;margin:6px auto;background:#fff;"><line x1="195.0" y1="125.0" x2="205.0" y2="135.0" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><line x1="195.0" y1="135.0" x2="205.0" y2="125.0" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="188.0" y="148.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">O</text></svg>
+  <p class="step-note" id="cf1CercleNote" style="text-align:center;min-height:2.6em;">On veut tracer le cercle de centre O et de rayon 3 cm. Le point O est placé.</p>
+  
+</div>
+<div class="sub-header"><span class="letter">M</span><h4>Tracer un rectangle avec la règle et l'équerre</h4></div>
+<div class="figure-wrap">
+  
+  <svg id="cf1RectSvg" viewBox="0 0 330 240" style="width:100%;max-width:380px;display:block;margin:6px auto;background:#fff;"></svg>
+  <p class="step-note" id="cf1RectNote" style="text-align:center;min-height:2.6em;">On veut tracer un rectangle ABCD de longueur 5 cm et de largeur 3 cm.</p>
+  
+</div>
+<div class="sub-header"><span class="letter">M</span><h4>Tracer un triangle équilatéral avec la règle et le compas</h4></div>
+<div class="figure-wrap">
+  
+  <svg id="cf1TriSvg" viewBox="0 0 330 250" style="width:100%;max-width:380px;display:block;margin:6px auto;background:#fff;"></svg>
+  <p class="step-note" id="cf1TriNote" style="text-align:center;min-height:2.6em;">On veut tracer un triangle équilatéral ABC de côté 4 cm : ses trois côtés mesurent 4 cm.</p>
+  
+</div>
+<div class="sub-header"><span class="letter">M</span><h4>Jeu : reconnais la figure grâce à son codage</h4></div>
+<div class="figure-wrap">
+  <svg id="cf1-jeuSvg" viewBox="0 0 220 160" style="width:100%;max-width:260px;display:block;margin:6px auto;background:#fff;"><polygon points="130.9,134.4 148.2,36.0 54.3,70.2" fill="rgba(12,91,160,.06)" stroke="#0C5BA0" stroke-width="2.2" stroke-linejoin="round"></polygon><line x1="132.9" y1="88.6" x2="145.4" y2="86.7" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="133.7" y1="83.7" x2="146.2" y2="81.8" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="107.5" y1="57.2" x2="99.7" y2="47.3" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="102.8" y1="58.9" x2="95.0" y2="49.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="93.0" y1="94.8" x2="88.3" y2="106.6" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="96.8" y1="98.0" x2="92.2" y2="109.8" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line></svg>
+  
+  <p class="step-note" id="cf1-jeuNote" style="text-align:center;">Regarde bien les codages. Quelle est cette figure ?</p>
+  
+</div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block">
+  <h3>Exercices</h3>
+  <div class="exo-card">
+    <div class="num">Exercice 1</div>
+    Observe la figure. a) Comment s'appelle le trait bleu ? b) Comment s'appelle le trait vert ? c) Cite trois points alignés. d) Le point K est-il sur la droite verte ?<svg viewBox="0 0 250 160" style="width:100%;max-width:280px;display:block;margin:8px auto;"><line x1="30.0" y1="40.0" x2="150.0" y2="40.0" stroke="#0C5BA0" stroke-width="2.4" stroke-linecap="round"></line><line x1="30.0" y1="34.0" x2="30.0" y2="46.0" stroke="#0C5BA0" stroke-width="2" stroke-linecap="round"></line><line x1="150.0" y1="34.0" x2="150.0" y2="46.0" stroke="#0C5BA0" stroke-width="2" stroke-linecap="round"></line><text x="30.0" y="30.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">A</text><text x="150.0" y="30.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">B</text><line x1="16.1" y1="127.5" x2="223.9" y2="62.5" stroke="#1F7A4D" stroke-width="2.4" stroke-linecap="round"></line><line x1="38.2" y1="114.3" x2="41.8" y2="125.7" stroke="#1F7A4D" stroke-width="2" stroke-linecap="round"></line><line x1="118.2" y1="89.3" x2="121.8" y2="100.7" stroke="#1F7A4D" stroke-width="2" stroke-linecap="round"></line><line x1="198.2" y1="64.3" x2="201.8" y2="75.7" stroke="#1F7A4D" stroke-width="2" stroke-linecap="round"></line><text x="36.0" y="142.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">E</text><text x="118.0" y="117.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">F</text><text x="200.0" y="92.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">G</text><line x1="185.0" y1="125.0" x2="195.0" y2="135.0" stroke="#D93025" stroke-width="2" stroke-linecap="round"></line><line x1="185.0" y1="135.0" x2="195.0" y2="125.0" stroke="#D93025" stroke-width="2" stroke-linecap="round"></line><text x="202.0" y="135.0" font-size="15" font-weight="700" fill="#D93025" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">K</text></svg>
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 2</div>
+    Voici un cercle de centre O. a) Cite un rayon. b) Cite un diamètre. c) Cite une corde qui n'est pas un diamètre. d) Le rayon mesure 3 cm : combien mesure le diamètre (le segment [AB]) ?<svg viewBox="0 0 260 200" style="width:100%;max-width:260px;display:block;margin:8px auto;"><circle cx="130.0" cy="100.0" r="70.0" fill="none" stroke="#20242E" stroke-width="2"></circle><line x1="64.2" y1="76.1" x2="195.8" y2="123.9" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><line x1="130.0" y1="100.0" x2="148.1" y2="32.4" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><line x1="106.1" y1="165.8" x2="165.0" y2="160.6" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><line x1="58.6" y1="74.0" x2="69.9" y2="78.1" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="50.1" y="75.9" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">A</text><line x1="201.4" y1="126.0" x2="190.1" y2="121.9" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="209.9" y="134.1" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">B</text><line x1="149.7" y1="26.6" x2="146.6" y2="38.2" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="152.0" y="22.9" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">C</text><line x1="104.0" y1="171.4" x2="108.1" y2="160.1" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="100.9" y="184.9" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">D</text><line x1="168.0" y1="165.8" x2="162.0" y2="155.4" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="172.5" y="178.6" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">E</text><line x1="125.0" y1="95.0" x2="135.0" y2="105.0" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><line x1="125.0" y1="105.0" x2="135.0" y2="95.0" stroke="#20242E" stroke-width="2" stroke-linecap="round"></line><text x="142.0" y="118.0" font-size="15" font-weight="700" fill="#20242E" text-anchor="middle" font-family="Space Grotesk, Arial, sans-serif">O</text></svg>
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 3</div>
+    Complète. a) Un cercle a un rayon de 7 cm : son diamètre mesure … cm. b) Un cercle a un diamètre de 10 cm : son rayon mesure … cm. c) Une roue de vélo a un diamètre de 60 cm : quel est son rayon ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 4</div>
+    Le point P est à 3 cm de O, le point Q à 5 cm de O et le point R à 2 cm de O. On trace le cercle de centre O et de rayon 3 cm. a) Quel point est sur le cercle ? b) Quels points sont dans le disque ? c) Quel point est à l'extérieur ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 5</div>
+    Regarde les codages. Quelle est la nature de chaque triangle ?<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;"><div style="text-align:center;min-width:130px;"><svg viewBox="0 0 220 160" style="width:100%;max-width:170px;display:block;margin:8px auto;"><polygon points="133.2,30.2 54.2,100.3 130.3,135.8" fill="rgba(12,91,160,.06)" stroke="#0C5BA0" stroke-width="2.2" stroke-linejoin="round"></polygon><line x1="99.2" y1="68.4" x2="88.2" y2="62.1" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="137.8" y1="81.2" x2="125.7" y2="84.8" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line></svg><b>Figure 1</b></div><div style="text-align:center;min-width:130px;"><svg viewBox="0 0 220 160" style="width:100%;max-width:170px;display:block;margin:8px auto;"><polygon points="174.7,63.1 66.6,23.8 147.3,138.3" fill="rgba(12,91,160,.06)" stroke="#1F7A4D" stroke-width="2.2" stroke-linejoin="round"></polygon><polyline points="165.3,59.7 161.9,69.1 171.3,72.5" fill="none" stroke="#20242E" stroke-width="1.8"></polyline></svg><b>Figure 2</b></div><div style="text-align:center;min-width:130px;"><svg viewBox="0 0 220 160" style="width:100%;max-width:170px;display:block;margin:8px auto;"><polygon points="71.8,36.0 89.1,134.4 165.7,70.2" fill="rgba(12,91,160,.06)" stroke="#E07B00" stroke-width="2.2" stroke-linejoin="round"></polygon><line x1="85.6" y1="79.7" x2="74.5" y2="85.8" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="86.5" y1="84.7" x2="75.3" y2="90.7" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="120.1" y1="100.6" x2="130.9" y2="107.2" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="124.0" y1="97.4" x2="134.7" y2="104.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="120.9" y1="60.2" x2="121.3" y2="47.6" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="116.2" y1="58.5" x2="116.6" y2="45.9" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line></svg><b>Figure 3</b></div></div>
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 6</div>
+    Sans dessiner, trouve la nature de chaque triangle. a) ABC : AB = 5 cm, BC = 5 cm et AC = 5 cm. b) DEF : DE = 4 cm, DF = 4 cm et EF = 6 cm. c) GHI a un angle droit en H. d) JKL : JK = 3 cm, KL = 4 cm et JL = 6 cm, sans angle droit.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 7</div>
+    Regarde les codages. Quelle est la nature de chaque quadrilatère ?<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px;"><div style="text-align:center;min-width:130px;"><svg viewBox="0 0 220 160" style="width:100%;max-width:170px;display:block;margin:8px auto;"><polygon points="110.0,30.0 188.0,80.0 110.0,130.0 32.0,80.0" fill="rgba(12,91,160,.06)" stroke="#0C5BA0" stroke-width="2.2" stroke-linejoin="round"></polygon><line x1="150.6" y1="48.9" x2="147.4" y2="61.1" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="153.9" y1="109.0" x2="144.1" y2="101.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="69.4" y1="111.1" x2="72.6" y2="98.9" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><line x1="66.1" y1="51.0" x2="75.9" y2="59.0" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line></svg><b>Figure 1</b></div><div style="text-align:center;min-width:130px;"><svg viewBox="0 0 220 160" style="width:100%;max-width:170px;display:block;margin:8px auto;"><polygon points="82.5,21.0 169.0,52.5 137.5,139.0 51.0,107.5" fill="rgba(12,91,160,.06)" stroke="#E07B00" stroke-width="2.2" stroke-linejoin="round"></polygon><polyline points="91.9,24.5 88.5,33.9 79.1,30.4" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><line x1="125.9" y1="30.5" x2="125.6" y2="43.1" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><polyline points="165.5,61.9 156.1,58.5 159.6,49.1" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><line x1="159.5" y1="95.9" x2="146.9" y2="95.6" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><polyline points="128.1,135.5 131.5,126.1 140.9,129.6" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><line x1="94.1" y1="129.5" x2="94.4" y2="116.9" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line><polyline points="54.5,98.1 63.9,101.5 60.4,110.9" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><line x1="60.5" y1="64.1" x2="73.1" y2="64.4" stroke="#20242E" stroke-width="1.8" stroke-linecap="round"></line></svg><b>Figure 2</b></div><div style="text-align:center;min-width:130px;"><svg viewBox="0 0 220 160" style="width:100%;max-width:170px;display:block;margin:8px auto;"><polygon points="186.2,90.6 58.4,137.1 33.8,69.4 161.6,22.9" fill="rgba(12,91,160,.06)" stroke="#1F7A4D" stroke-width="2.2" stroke-linejoin="round"></polygon><polyline points="176.8,94.0 173.4,84.6 182.8,81.2" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><polyline points="55.0,127.7 64.4,124.3 67.8,133.7" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><polyline points="43.2,66.0 46.6,75.4 37.2,78.8" fill="none" stroke="#20242E" stroke-width="1.8"></polyline><polyline points="165.0,32.3 155.6,35.7 152.2,26.3" fill="none" stroke="#20242E" stroke-width="1.8"></polyline></svg><b>Figure 3</b></div></div>
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 8</div>
+    Vrai ou faux ? a) Un carré est un rectangle. b) Un rectangle est toujours un carré. c) Un losange a toujours quatre angles droits. d) Un triangle équilatéral est aussi isocèle.
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 9</div>
+    Léo a tracé un quadrilatère et l'a nommé MNOP en faisant le tour. Parmi ces noms, lesquels désignent aussi son quadrilatère : NOPM, MOPN, PONM, OPMN ?
+    
+    
+  </div>
+  <div class="exo-card">
+    <div class="num">Exercice 10</div>
+    Programme de construction : trace un segment [AB] de 6 cm et place son milieu M. Trace le cercle de centre M qui passe par A. a) Quel est le rayon du cercle ? b) Le cercle passe-t-il par B ? c) Que représente le segment [AB] pour ce cercle ?
+    
+    
+  </div>
+</div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box">
+  <div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : le premier problème d'Euclide</div>
+  Il y a environ 2 300 ans, à Alexandrie, en Égypte, un savant grec nommé <b>Euclide</b> a écrit un livre de géométrie célèbre : <i>Les Éléments</i>. Pendant plus de 2 000 ans, c'est avec ce livre qu'on a appris la géométrie dans le monde entier !<br><br>
+  Et sais-tu quel est le tout premier problème de ce livre ? <b>Construire un triangle équilatéral</b>… exactement comme dans la méthode de ce chapitre : on trace un segment, puis deux cercles de même rayon centrés sur ses extrémités, et on relie le point où ils se coupent.<br><br>
+  Euclide n'utilisait que deux instruments : une règle <b>sans graduations</b> et un compas. Pas d'équerre ni de rapporteur ! Le mot « diamètre » vient d'ailleurs du grec : <i>dia</i> veut dire « à travers » et <i>metron</i> « mesure » : le diamètre, c'est la mesure qui traverse le cercle.
+</div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/cm1/7-construction-de-figures/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/cm1/nombres-decimaux/">Nombres décimaux</a></span>
+  <a href="/cm1/">Tous les chapitres de CM1</a>
+  <span><a href="/cm1/fractions-comparaison-et-operations/">Fractions (comparaison et opérations)</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

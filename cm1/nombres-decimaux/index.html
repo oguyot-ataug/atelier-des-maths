@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nombres décimaux – Cours de maths CM1 | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CM1 : Nombres décimaux. Dixièmes et centièmes, L'écriture à virgule, Décomposer un nombre décimal, Placer des nombres décimaux sur une…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/cm1/nombres-decimaux/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Nombres décimaux – Cours de maths CM1 | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CM1 : Nombres décimaux. Dixièmes et centièmes, L'écriture à virgule, Décomposer un nombre décimal, Placer des nombres décimaux sur une…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/cm1/nombres-decimaux/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Nombres décimaux (CM1)","headline":"Nombres décimaux – cours de mathématiques de CM1","description":"Cours de maths CM1 : Nombres décimaux. Dixièmes et centièmes, L'écriture à virgule, Décomposer un nombre décimal, Placer des nombres décimaux sur une…","url":"https://maths.latelieraugmente.fr/cm1/nombres-decimaux/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CM1 (cycle 3, école élémentaire)","about":"Nombres et calculs","teaches":["Dixièmes et centièmes","L'écriture à virgule","Décomposer un nombre décimal","Placer des nombres décimaux sur une demi-droite graduée","Comparer, ranger, encadrer"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CM1","url":"https://maths.latelieraugmente.fr/cm1/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CM1","item":"https://maths.latelieraugmente.fr/cm1/"},{"@type":"ListItem","position":3,"name":"Nombres décimaux","item":"https://maths.latelieraugmente.fr/cm1/nombres-decimaux/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/cm1/">Cours de maths CM1</a> › Nombres décimaux</div>
+<h1>Nombres décimaux</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span> Cours de mathématiques de CM1 (cours moyen 1re année) · chapitre 6 · Dixièmes et centièmes · L'écriture à virgule · Décomposer un nombre décimal · Placer des nombres décimaux sur une demi-droite graduée · Comparer, ranger, encadrer</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/cm1/6-nombres-decimaux/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Dixièmes et centièmes</h3></div>
+<span class="def-badge">Définition</span><div class="def-box"><ul style="margin:0;padding-left:18px;line-height:1.9;"><li>Quand on partage une unité en 10 parts égales, chaque part est <b>un dixième</b> : <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">1</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">10</span></span>.</li>
+<li>Quand on partage une unité en 100 parts égales, chaque part est <b>un centième</b> : <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">1</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">100</span></span>.</li></ul></div>
+<span class="prop-badge">Règle</span><div class="def-box"><b>1 unité = 10 dixièmes</b> &nbsp;·&nbsp; <b>1 dixième = 10 centièmes</b> &nbsp;·&nbsp; donc 1 unité = 100 centièmes.</div>
+<div class="figure-wrap"><svg viewBox="0 0 314 40" style="width:46%;max-width:314px;display:inline-block;vertical-align:middle;"><rect x="3" y="3" width="30" height="34" fill="#E35D3A" fill-opacity="0.75" stroke="#1F3A5C" stroke-width="1.4"></rect><rect x="33" y="3" width="30" height="34" fill="#E35D3A" fill-opacity="0.75" stroke="#1F3A5C" stroke-width="1.4"></rect><rect x="63" y="3" width="30" height="34" fill="#E35D3A" fill-opacity="0.75" stroke="#1F3A5C" stroke-width="1.4"></rect><rect x="93" y="3" width="30" height="34" fill="#fff" fill-opacity="1" stroke="#1F3A5C" stroke-width="1.4"></rect><rect x="123" y="3" width="30" height="34" fill="#fff" fill-opacity="1" stroke="#1F3A5C" stroke-width="1.4"></rect><rect x="153" y="3" width="30" height="34" fill="#fff" fill-opacity="1" stroke="#1F3A5C" stroke-width="1.4"></rect><rect x="183" y="3" width="30" height="34" fill="#fff" fill-opacity="1" stroke="#1F3A5C" stroke-width="1.4"></rect><rect x="213" y="3" width="30" height="34" fill="#fff" fill-opacity="1" stroke="#1F3A5C" stroke-width="1.4"></rect><rect x="243" y="3" width="30" height="34" fill="#fff" fill-opacity="1" stroke="#1F3A5C" stroke-width="1.4"></rect><rect x="273" y="3" width="30" height="34" fill="#fff" fill-opacity="1" stroke="#1F3A5C" stroke-width="1.4"></rect></svg><p class="hint" style="margin:6px 0 0;">L'unité est partagée en 10 : on a colorié <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">3</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">10</span></span> (trois dixièmes).</p></div>
+
+<div class="lesson-header"><span class="num">2</span><h3>L'écriture à virgule</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Un <b>nombre décimal</b> peut s'écrire avec une <b>virgule</b>. La virgule sépare la <b>partie entière</b> (à gauche) de la <b>partie décimale</b> (à droite).<br>
+<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">3</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">10</span></span> = 0,3 &nbsp;·&nbsp; <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">7</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">100</span></span> = 0,07 &nbsp;·&nbsp; 2 + <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">45</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">100</span></span> = 2,45</div>
+<p class="example-title">Le nombre 32,58 dans le tableau de numération :</p>
+<div style="overflow-x:auto;margin:6px 0 14px;"><table style="border-collapse:collapse;text-align:center;font-size:.95rem;">
+    <tbody><tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Dizaines</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Unités</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">,</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Dixièmes</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Centièmes</th></tr>
+    <tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"><b>3</b></td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"><b>2</b></td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"><b>,</b></td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"><b>5</b></td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"><b>8</b></td></tr></tbody></table></div>
+<ul class="example-list"><li>Partie entière : <b>32</b> ; partie décimale : <b>58</b> (centièmes).</li><li>Il se lit : « trente-deux <b>virgule</b> cinquante-huit » ou « trente-deux <b>unités et</b> cinquante-huit <b>centièmes</b> ».</li></ul>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">Le premier chiffre après la virgule est le chiffre des <b>dixièmes</b>, le deuxième est celui des <b>centièmes</b>.</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Décomposer un nombre décimal</h3></div>
+<p class="example-title">Avec 32,58 :</p><ul class="example-list"><li>32,58 = 30 + 2 + <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">5</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">10</span></span> + <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">8</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">100</span></span></li><li>32,58 = 32 + <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">58</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">100</span></span></li><li>32,58 = <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">3258</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">100</span></span> (3 258 centièmes)</li></ul>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">Un zéro à la fin de la partie décimale ne change pas le nombre : 4,50 = 4,5 (5 dixièmes = 50 centièmes). Et 7 = 7,0 = 7,00.</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Placer des nombres décimaux sur une demi-droite graduée</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Pour placer des dixièmes, on partage chaque unité en <b>10 parts égales</b> : chaque petit écart vaut 0,1.</div>
+<div class="figure-wrap"><svg viewBox="0 0 490 86" style="width:100%;max-width:490px;display:block;margin:6px auto;"><line x1="20" y1="45" x2="482" y2="45" stroke="#1F3A5C" stroke-width="2"></line><polygon points="482,45 474,40 474,50" fill="#1F3A5C"></polygon><line x1="30" y1="34" x2="30" y2="56" stroke="#1F3A5C" stroke-width="1.8"></line><text x="30" y="74" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">0</text><line x1="51" y1="39" x2="51" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="72" y1="39" x2="72" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="93" y1="39" x2="93" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="114" y1="39" x2="114" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="135" y1="39" x2="135" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="156" y1="39" x2="156" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="177" y1="39" x2="177" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="198" y1="39" x2="198" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="219" y1="39" x2="219" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="240" y1="34" x2="240" y2="56" stroke="#1F3A5C" stroke-width="1.8"></line><text x="240" y="74" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">1</text><line x1="261" y1="39" x2="261" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="282" y1="39" x2="282" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="303" y1="39" x2="303" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="324" y1="39" x2="324" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="345" y1="39" x2="345" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="366" y1="39" x2="366" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="387" y1="39" x2="387" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="408" y1="39" x2="408" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="429" y1="39" x2="429" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="450" y1="34" x2="450" y2="56" stroke="#1F3A5C" stroke-width="1.8"></line><text x="450" y="74" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">2</text><circle cx="114" cy="45" r="5" fill="#E35D3A"></circle><text x="114" y="24" font-size="14" font-weight="700" text-anchor="middle" fill="#E35D3A" font-family="Space Grotesk">A</text><circle cx="387" cy="45" r="5" fill="#2EA8C9"></circle><text x="387" y="24" font-size="14" font-weight="700" text-anchor="middle" fill="#2EA8C9" font-family="Space Grotesk">B</text></svg></div>
+<p class="example-title">Lecture :</p><ul class="example-list"><li>A est 4 petits écarts après 0 : A correspond à <b>0,4</b>.</li><li>B est 7 petits écarts après 1 : B correspond à <b>1,7</b>.</li></ul>
+
+<div class="lesson-header"><span class="num">5</span><h3>Comparer, ranger, encadrer</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Pour comparer deux nombres décimaux :<ol style="margin:4px 0 0;padding-left:20px;line-height:1.8;"><li>on compare d'abord les <b>parties entières</b> ;</li><li>si elles sont égales, on compare les chiffres des <b>dixièmes</b>, puis ceux des <b>centièmes</b>.</li></ol></div>
+<p class="example-title">Exemples :</p><ul class="example-list"><li>12,3 &gt; 9,87 car 12 &gt; 9 (partie entière).</li><li>5,62 &lt; 5,7 car 6 dixièmes &lt; 7 dixièmes.</li><li>Encadrer 5,62 entre deux entiers qui se suivent : 5 &lt; 5,62 &lt; 6.</li></ul>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">Attention au piège : 5,7 n'est pas plus petit que 5,62 parce que « 7 &lt; 62 » ! On compare rang par rang : on peut écrire 5,7 = 5,70, et 70 centièmes &gt; 62 centièmes.</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Passer d'une fraction décimale à l'écriture à virgule</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-dec-ecrire"><div class="step-column"><div class=""><span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">347</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">100</span></span> : 347 centièmes</div></div><div class="step-note">On lit la fraction : 347 centièmes.</div></div></div>
+<div class="sub-header"><span class="letter">M</span><h4>Comparer deux nombres décimaux</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-dec-comparer"><div class="step-column"><div class="">3,8   et   3,75</div></div><div class="step-note">On compare d'abord les parties entières.</div></div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Rédaction type : « Comparer deux nombres décimaux »</h3><div class="redaction-template"><div class="we-row"><span class="we-expr">6,4 et 6,38</span><span class="we-comment">Même partie entière (6).</span></div><div class="we-row"><span class="we-expr">4 dixièmes &gt; 3 dixièmes</span><span class="we-comment">Je compare les dixièmes.</span></div><div class="we-row"><span class="we-expr">donc 6,4 &gt; 6,38</span><span class="we-comment">Je conclus.</span></div></div></div><div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>Écris avec une virgule : <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">6</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">10</span></span> · <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">23</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">100</span></span> · <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">5</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">100</span></span> · <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">128</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">10</span></span> · <span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">409</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">100</span></span>
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Écris sous forme de fraction décimale : 0,9 · 1,25 · 0,04
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>Dans 64,37 : quel est le chiffre des dixièmes ? des centièmes ? des unités ? Quelle est la partie entière ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>Décompose 8,56 en utilisant des fractions décimales.
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>Complète avec &lt;, &gt; ou = : 4,3 … 4,28 &nbsp;·&nbsp; 0,7 … 0,70 &nbsp;·&nbsp; 12,05 … 12,5 &nbsp;·&nbsp; 9,99 … 10
+      
+      </div><div class="exo-card"><div class="num">Exercice 6</div>Range dans l'ordre croissant : 2,4 · 2,04 · 2,45 · 4,2 · 2
+      
+      </div><div class="exo-card"><div class="num">Exercice 7</div>Encadre entre deux entiers consécutifs : 7,6 · 0,38 · 15,02
+      
+      </div><div class="exo-card"><div class="num">Exercice 8</div>Quels nombres correspondent aux points C et D ?<svg viewBox="0 0 490 86" style="width:100%;max-width:490px;display:block;margin:6px auto;"><line x1="20" y1="45" x2="482" y2="45" stroke="#1F3A5C" stroke-width="2"></line><polygon points="482,45 474,40 474,50" fill="#1F3A5C"></polygon><line x1="30" y1="34" x2="30" y2="56" stroke="#1F3A5C" stroke-width="1.8"></line><text x="30" y="74" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">0</text><line x1="51" y1="39" x2="51" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="72" y1="39" x2="72" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="93" y1="39" x2="93" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="114" y1="39" x2="114" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="135" y1="39" x2="135" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="156" y1="39" x2="156" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="177" y1="39" x2="177" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="198" y1="39" x2="198" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="219" y1="39" x2="219" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="240" y1="34" x2="240" y2="56" stroke="#1F3A5C" stroke-width="1.8"></line><text x="240" y="74" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">1</text><line x1="261" y1="39" x2="261" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="282" y1="39" x2="282" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="303" y1="39" x2="303" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="324" y1="39" x2="324" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="345" y1="39" x2="345" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="366" y1="39" x2="366" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="387" y1="39" x2="387" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="408" y1="39" x2="408" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="429" y1="39" x2="429" y2="51" stroke="#1F3A5C" stroke-width="1"></line><line x1="450" y1="34" x2="450" y2="56" stroke="#1F3A5C" stroke-width="1.8"></line><text x="450" y="74" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">2</text><circle cx="219" cy="45" r="5" fill="#E35D3A"></circle><text x="219" y="24" font-size="14" font-weight="700" text-anchor="middle" fill="#E35D3A" font-family="Space Grotesk">C</text><circle cx="303" cy="45" r="5" fill="#2EA8C9"></circle><text x="303" y="24" font-size="14" font-weight="700" text-anchor="middle" fill="#2EA8C9" font-family="Space Grotesk">D</text></svg>
+      
+      </div></div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : Simon Stevin et la virgule</div><p style="margin:0 0 12px;">Pendant longtemps, on n'écrivait les parties d'unité qu'avec des fractions. En 1585, le savant flamand <b>Simon Stevin</b> publie un petit livre, <i>La Disme</i>, où il explique comment calculer très simplement avec des dixièmes, des centièmes, des millièmes.</p><p style="margin:0 0 12px;">Sa notation était compliquée : il écrivait de petits numéros entourés après chaque chiffre ! Quelques années plus tard, d'autres savants comme <b>John Napier</b> ont proposé d'utiliser un simple point ou une virgule.</p><p style="margin:0 0 12px;">Aujourd'hui encore, les pays n'ont pas tous choisi le même signe : en France on écrit 3,5 avec une virgule, mais au Royaume-Uni ou aux États-Unis on écrit 3.5 avec un point.</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/cm1/6-nombres-decimaux/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/cm1/longueurs-masses-contenances/">Longueurs, masses, contenances</a></span>
+  <a href="/cm1/">Tous les chapitres de CM1</a>
+  <span><a href="/cm1/construction-de-figures/">Construction de figures</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

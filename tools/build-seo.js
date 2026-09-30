@@ -31,13 +31,15 @@ const { chromium } = require('playwright');
 
 const ROOT = path.resolve(__dirname, '..');
 const SITE = 'https://maths.latelieraugmente.fr';
-const LEVELS = ['6e', '5e', '4e', '3e']; // la 3e est publiée depuis le build 817
+const LEVELS = ['cm1', '6e', '5e', '4e', '3e']; // la 3e est publiée depuis le build 817, le CM1 depuis le build 868
 const LEVEL_INFO = {
-  '6e': { cycle: 'cycle 3', long: 'sixième', other: ['5e', '4e', '3e'] },
-  '5e': { cycle: 'cycle 4', long: 'cinquième', other: ['6e', '4e', '3e'] },
-  '4e': { cycle: 'cycle 4', long: 'quatrième', other: ['6e', '5e', '3e'] },
-  '3e': { cycle: 'cycle 4', long: 'troisième', other: ['6e', '5e', '4e'] },
+  'cm1': { cycle: 'cycle 3', long: 'cours moyen 1re année', label: 'CM1', ecole: 'école élémentaire', other: ['6e', '5e', '4e', '3e'] },
+  '6e': { cycle: 'cycle 3', long: 'sixième', label: '6e', ecole: 'collège', other: ['cm1', '5e', '4e', '3e'] },
+  '5e': { cycle: 'cycle 4', long: 'cinquième', label: '5e', ecole: 'collège', other: ['cm1', '6e', '4e', '3e'] },
+  '4e': { cycle: 'cycle 4', long: 'quatrième', label: '4e', ecole: 'collège', other: ['cm1', '6e', '5e', '3e'] },
+  '3e': { cycle: 'cycle 4', long: 'troisième', label: '3e', ecole: 'collège', other: ['cm1', '6e', '5e', '4e'] },
 };
+const lab = lvl => (LEVEL_INFO[lvl] || {}).label || lvl;
 const CAT_LABEL = { N: 'Nombres et calculs', G: 'Géométrie', D: 'Données et probabilités', M: 'Grandeurs et mesures', P: 'Proportionnalité et fonctions' };
 const CAT_COLOR = { N: ['#FFD8B0', '#8A4210'], G: ['#B9E8C4', '#1F6B3A'], D: ['#BFDCFB', '#1A4E9E'], M: ['#DCC9F7', '#5B2F9E'], P: ['#FAC3DE', '#9E1F5E'] };
 
@@ -181,6 +183,7 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script
 <header class="seo-top">
   <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
   <nav>
+    <a href="/cm1/">Cours CM1</a>
     <a href="/6e/">Cours 6e</a>
     <a href="/5e/">Cours 5e</a>
     <a href="/4e/">Cours 4e</a>
@@ -193,8 +196,8 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script
 ${body}
 </main>
 <footer class="seo-foot">
-  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour le collège ·
-  <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
   Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
 </footer>
 </body>
@@ -206,11 +209,11 @@ const crumbsLd = items => ({ '@type': 'BreadcrumbList', itemListElement: items.m
 
 // ---------- page d'un chapitre ----------
 function chapterPage(ch, prev, next) {
-  const lvl = ch.lvl, info = LEVEL_INFO[lvl];
+  const lvl = ch.lvl, info = LEVEL_INFO[lvl], L = lab(lvl);
   const url = '/' + lvl + '/' + slugify(ch.t) + '/';
   const topics = ch.headings.slice(0, 5);
-  const description = cut(`Cours de maths ${lvl} : ${ch.t}. ` + (topics.length ? topics.join(', ') + '. ' : '') + 'Définitions, figures interactives, méthode animée, exercices et un peu d\'histoire.', 158);
-  const title = `${ch.t} – Cours de maths ${lvl} | L'Atelier des Maths`;
+  const description = cut(`Cours de maths ${L} : ${ch.t}. ` + (topics.length ? topics.join(', ') + '. ' : '') + 'Définitions, figures interactives, méthode animée, exercices et un peu d\'histoire.', 158);
+  const title = `${ch.t} – Cours de maths ${L} | L'Atelier des Maths`;
   const [bg, fg] = CAT_COLOR[ch.cat] || ['#eee', '#333'];
   const S = ch.sections;
   const section = (key, icon, h2, intro) => S[key] ? `
@@ -220,16 +223,16 @@ function chapterPage(ch, prev, next) {
   ${S[key]}
 </section>` : '';
   const jsonld = { '@context': 'https://schema.org', '@graph': [
-    { '@type': 'LearningResource', name: `${ch.t} (${lvl})`, headline: `${ch.t} – cours de mathématiques de ${lvl}`, description, url: SITE + url,
-      inLanguage: 'fr', learningResourceType: ['Cours', 'Exercices'], educationalLevel: `${lvl} (${info.cycle}, collège)`,
+    { '@type': 'LearningResource', name: `${ch.t} (${L})`, headline: `${ch.t} – cours de mathématiques de ${L}`, description, url: SITE + url,
+      inLanguage: 'fr', learningResourceType: ['Cours', 'Exercices'], educationalLevel: `${L} (${info.cycle}, ${info.ecole})`,
       about: CAT_LABEL[ch.cat], teaches: topics, isAccessibleForFree: true, audience: { '@type': 'EducationalAudience', educationalRole: 'student' },
-      publisher: PUBLISHER, isPartOf: { '@type': 'Course', name: `Mathématiques ${lvl}`, url: SITE + '/' + lvl + '/', provider: PUBLISHER } },
-    crumbsLd([['Accueil', '/'], [`Cours de maths ${lvl}`, '/' + lvl + '/'], [ch.t, url]]),
+      publisher: PUBLISHER, isPartOf: { '@type': 'Course', name: `Mathématiques ${L}`, url: SITE + '/' + lvl + '/', provider: PUBLISHER } },
+    crumbsLd([['Accueil', '/'], [`Cours de maths ${L}`, '/' + lvl + '/'], [ch.t, url]]),
   ] };
   const body = `
-<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/${lvl}/">Cours de maths ${lvl}</a> › ${esc(ch.t)}</div>
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/${lvl}/">Cours de maths ${L}</a> › ${esc(ch.t)}</div>
 <h1>${esc(ch.t)}</h1>
-<p class="seo-sub"><span class="seo-badge" style="background:${bg};color:${fg};">${esc(CAT_LABEL[ch.cat] || '')}</span> Cours de mathématiques de ${lvl} (${info.long}) · chapitre ${ch.n}${topics.length ? ' · ' + esc(topics.join(' · ')) : ''}</p>
+<p class="seo-sub"><span class="seo-badge" style="background:${bg};color:${fg};">${esc(CAT_LABEL[ch.cat] || '')}</span> Cours de mathématiques de ${L} (${info.long}) · chapitre ${ch.n}${topics.length ? ' · ' + esc(topics.join(' · ')) : ''}</p>
 <div class="seo-cta">
   <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
   <a class="seo-btn" href="${appUrl(lvl, ch)}">Ouvrir le chapitre interactif</a>
@@ -244,7 +247,7 @@ ${section('histoire', 'history_edu', 'Un peu d\'histoire', '')}
 </div>
 <nav class="seo-nav">
   <span>${prev ? `← <a href="/${lvl}/${slugify(prev.t)}/">${esc(prev.t)}</a>` : ''}</span>
-  <a href="/${lvl}/">Tous les chapitres de ${lvl}</a>
+  <a href="/${lvl}/">Tous les chapitres de ${L}</a>
   <span>${next ? `<a href="/${lvl}/${slugify(next.t)}/">${esc(next.t)}</a> →` : ''}</span>
 </nav>`;
   return { url, html: layout({ title, description, canonical: url, jsonld, body }) };
@@ -252,24 +255,24 @@ ${section('histoire', 'history_edu', 'Un peu d\'histoire', '')}
 
 // ---------- sommaire d'un niveau ----------
 function levelPage(lvl, all, published) {
-  const info = LEVEL_INFO[lvl];
+  const info = LEVEL_INFO[lvl], L = lab(lvl);
   const url = '/' + lvl + '/';
   const chs = all.filter(c => c.lvl === lvl);
   const n = chs.filter(c => published.has(c)).length;
-  const title = `Cours de maths ${lvl} : les ${chs.length} chapitres du programme | L'Atelier des Maths`;
-  const description = cut(`Tous les cours de mathématiques de ${lvl} (${info.long}, ${info.cycle}) conformes au programme 2026 : ` + chs.slice(0, 6).map(c => c.t.toLowerCase()).join(', ') + '… Figures interactives, méthodes animées, exercices et quiz.', 158);
+  const title = `Cours de maths ${L} : les ${chs.length} chapitres du programme | L'Atelier des Maths`;
+  const description = cut(`Tous les cours de mathématiques de ${L} (${info.long}, ${info.cycle}) conformes au programme 2026 : ` + chs.slice(0, 6).map(c => c.t.toLowerCase()).join(', ') + '… Figures interactives, méthodes animées, exercices et quiz.', 158);
   const jsonld = { '@context': 'https://schema.org', '@graph': [
-    { '@type': 'Course', name: `Mathématiques ${lvl}`, description, url: SITE + url, inLanguage: 'fr', educationalLevel: `${lvl} (${info.cycle}, collège)`, isAccessibleForFree: true, provider: PUBLISHER,
+    { '@type': 'Course', name: `Mathématiques ${L}`, description, url: SITE + url, inLanguage: 'fr', educationalLevel: `${L} (${info.cycle}, ${info.ecole})`, isAccessibleForFree: true, provider: PUBLISHER,
       hasPart: chs.filter(c => published.has(c)).map(c => ({ '@type': 'LearningResource', name: c.t, url: SITE + '/' + lvl + '/' + slugify(c.t) + '/' })) },
-    crumbsLd([['Accueil', '/'], [`Cours de maths ${lvl}`, url]]),
+    crumbsLd([['Accueil', '/'], [`Cours de maths ${L}`, url]]),
   ] };
   const body = `
-<div class="seo-crumbs"><a href="/">Accueil</a> › Cours de maths ${lvl}</div>
-<h1>Cours de maths ${lvl}</h1>
+<div class="seo-crumbs"><a href="/">Accueil</a> › Cours de maths ${L}</div>
+<h1>Cours de maths ${L}</h1>
 <p class="seo-sub">Les ${chs.length} chapitres de mathématiques de ${info.long} (${info.cycle}), dans l'ordre de la progression de l'année et conformes au programme 2026. Chaque cours comprend les définitions et propriétés à retenir, des figures, une méthode animée, des exercices de rédaction et un peu d'histoire des mathématiques.</p>
 <div class="seo-cta">
   <p>Dans l'application : <b>figures manipulables, constructions animées, quiz</b> et, pour les professeurs, outils de correction et devoirs en ligne.</p>
-  <a class="seo-btn" href="/#/niveau/${lvl}">Ouvrir la ${lvl} dans l'application</a>
+  <a class="seo-btn" href="/#/niveau/${lvl}">Ouvrir les cours de ${L} dans l'application</a>
 </div>
 <ul class="seo-list">
 ${chs.map(c => {
@@ -280,7 +283,7 @@ ${chs.map(c => {
       : `  <li><span class="soon"><span class="num">${c.n}</span><span><b>${esc(c.t)}</b><br>${badge}<span class="hint">cours en préparation</span></span></span></li>`;
   }).join('\n')}
 </ul>
-<p style="margin-top:20px;">Voir aussi : ${info.other.map(o => `<a href="/${o}/" style="color:var(--accent);font-weight:600;">les cours de maths ${o}</a>`).join(' · ')} · <a href="/professeurs/" style="color:var(--accent);font-weight:600;">les outils pour les professeurs</a>.</p>`;
+<p style="margin-top:20px;">Voir aussi : ${info.other.map(o => `<a href="/${o}/" style="color:var(--accent);font-weight:600;">les cours de maths ${lab(o)}</a>`).join(' · ')} · <a href="/professeurs/" style="color:var(--accent);font-weight:600;">les outils pour les professeurs</a>.</p>`;
   return { url, html: layout({ title, description, canonical: url, jsonld, body, ogType: 'website' }), n };
 }
 
@@ -399,7 +402,7 @@ async function ogImage(page, base) {
     newManifest[e.url] = { hash: e.hash, lastmod: old && old.hash === e.hash ? old.lastmod : today };
   }
   fs.writeFileSync(manifestPath, JSON.stringify(newManifest, null, 1) + '\n');
-  const prio = u => u === '/' ? '1.0' : /^\/(6e|5e|4e|3e)\/$/.test(u) || u === '/professeurs/' ? '0.9' : '0.8';
+  const prio = u => u === '/' ? '1.0' : /^\/(cm1|6e|5e|4e|3e)\/$/.test(u) || u === '/professeurs/' ? '0.9' : '0.8';
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${entries.map(e => `  <url><loc>${SITE}${e.url}</loc><lastmod>${newManifest[e.url].lastmod}</lastmod><priority>${prio(e.url)}</priority></url>`).join('\n')}

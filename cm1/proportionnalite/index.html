@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proportionnalité – Cours de maths CM1 | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CM1 : Proportionnalité. Une situation de proportionnalité, Raisonner avec « fois plus », Raisonner en additionnant, Passer par l'unité,…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/cm1/proportionnalite/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Proportionnalité – Cours de maths CM1 | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CM1 : Proportionnalité. Une situation de proportionnalité, Raisonner avec « fois plus », Raisonner en additionnant, Passer par l'unité,…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/cm1/proportionnalite/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Proportionnalité (CM1)","headline":"Proportionnalité – cours de mathématiques de CM1","description":"Cours de maths CM1 : Proportionnalité. Une situation de proportionnalité, Raisonner avec « fois plus », Raisonner en additionnant, Passer par l'unité,…","url":"https://maths.latelieraugmente.fr/cm1/proportionnalite/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CM1 (cycle 3, école élémentaire)","about":"Données et probabilités","teaches":["Une situation de proportionnalité","Raisonner avec « fois plus »","Raisonner en additionnant","Passer par l'unité","Attention : tout n'est pas proportionnel !"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CM1","url":"https://maths.latelieraugmente.fr/cm1/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CM1","item":"https://maths.latelieraugmente.fr/cm1/"},{"@type":"ListItem","position":3,"name":"Proportionnalité","item":"https://maths.latelieraugmente.fr/cm1/proportionnalite/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/cm1/">Cours de maths CM1</a> › Proportionnalité</div>
+<h1>Proportionnalité</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#BFDCFB;color:#1A4E9E;">Données et probabilités</span> Cours de mathématiques de CM1 (cours moyen 1re année) · chapitre 19 · Une situation de proportionnalité · Raisonner avec « fois plus » · Raisonner en additionnant · Passer par l'unité · Attention : tout n'est pas proportionnel !</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/cm1/19-proportionnalite/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Une situation de proportionnalité</h3></div>
+<span class="def-badge">Définition</span><div class="def-box">Deux quantités sont <b>proportionnelles</b> si, quand l'une est multipliée (ou divisée) par un nombre, l'autre est multipliée (ou divisée) par <b>le même nombre</b>.</div>
+<p class="example-title">Au marché, 1 kg de pommes coûte 3 €.</p><ul class="example-list"><li>2 kg coûtent 2 fois plus : 2 × 3 = 6 €.</li><li>5 kg coûtent 5 fois plus : 5 × 3 = 15 €.</li><li>Le prix est <b>proportionnel</b> à la masse de pommes.</li></ul>
+
+<div class="lesson-header"><span class="num">2</span><h3>Raisonner avec « fois plus »</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Si une quantité est <b>2 fois, 3 fois, 10 fois plus grande</b>, l'autre aussi est 2 fois, 3 fois, 10 fois plus grande.</div>
+<p class="example-title">Pour faire 4 crêpes, il faut 1 œuf. Combien d'œufs faut-il pour 12 crêpes ?</p><ul class="example-list"><li>12 crêpes, c'est <span style="color:#E35D3A;font-weight:700;">3 fois plus</span> que 4 crêpes (3 × 4 = 12).</li><li>Il faut donc <span style="color:#E35D3A;font-weight:700;">3 fois plus</span> d'œufs : 3 × 1 = <b>3 œufs</b>.</li></ul>
+<span class="prop-badge">Et aussi</span><div class="def-box">Cela marche aussi pour « fois moins » : 10 stylos coûtent 20 €, donc 5 stylos (2 fois moins) coûtent 2 fois moins : 20 ÷ 2 = <b>10 €</b>.</div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Raisonner en additionnant</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Si on connaît les valeurs pour deux quantités, on connaît la valeur pour leur <b>somme</b> : on additionne.</div>
+<p class="example-title">3 cahiers coûtent 6 € et 2 cahiers coûtent 4 €. Combien coûtent 5 cahiers ?</p><ul class="example-list"><li>5 cahiers = 3 cahiers + 2 cahiers.</li><li>Donc le prix de 5 cahiers = 6 € + 4 € = <b>10 €</b>.</li></ul>
+
+<div class="lesson-header"><span class="num">4</span><h3>Passer par l'unité</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Quand les « fois plus » ne sont pas simples, on cherche d'abord la valeur pour <b>1</b>, puis on multiplie.</div>
+<p class="example-title">4 places de cinéma coûtent 28 €. Combien coûtent 7 places ?</p><ul class="example-list"><li>1 place coûte 4 fois moins que 4 places : 28 ÷ 4 = 7 €.</li><li>7 places coûtent 7 fois plus qu'une place : 7 × 7 = <b>49 €</b>.</li></ul>
+
+<div class="lesson-header"><span class="num">5</span><h3>Attention : tout n'est pas proportionnel !</h3></div>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">À 10 ans, Hugo mesure 1,40 m. À 20 ans, mesurera-t-il 2,80 m ? Non ! La taille n'est <b>pas proportionnelle</b> à l'âge. Avant de raisonner, on se demande toujours si la situation est vraiment proportionnelle.</div>
+<p class="example-title">D'autres situations non proportionnelles :</p><ul class="example-list"><li>le prix d'un paquet de 3 yaourts en promotion « le 3<sup>e</sup> offert » ;</li><li>la durée pour faire cuire 2 œufs durs (pas 2 fois plus longue que pour 1 œuf !).</li></ul>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Adapter une recette</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-pp-recette"><div class="step-column"><div class="">18 personnes = 3 × 6 personnes</div></div><div class="step-note">On compare le nombre de personnes : 18, c'est 3 fois plus que 6.</div></div></div>
+<div class="sub-header"><span class="letter">M</span><h4>Passer par l'unité</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-pp-unite"><div class="step-column"><div class="">8 n'est pas un nombre de « fois » simple de 5</div></div><div class="step-note">On ne peut pas passer facilement de 5 à 8 en multipliant : on passe par 1 baguette.</div></div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Rédaction type : « Raisonner sans tableau »</h3><div class="redaction-template"><div class="we-row"><span class="we-expr">15 = 3 × 5</span><span class="we-comment">15 objets, c'est 3 fois plus que 5 objets.</span></div><div class="we-row"><span class="we-expr">3 × 4 € = 12 €</span><span class="we-comment">Donc le prix est 3 fois plus grand.</span></div><div class="we-row"><span class="we-expr">15 objets coûtent 12 €.</span><span class="we-comment">Je conclus.</span></div></div></div><div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>Un paquet de gâteaux coûte 2 €. Combien coûtent 4 paquets ? 10 paquets ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Pour 2 personnes, il faut 250 g de pâtes. Combien en faut-il pour 6 personnes ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>8 cahiers coûtent 12 €. Combien coûtent 4 cahiers ? 12 cahiers ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>Une voiture consomme 6 L d'essence pour 100 km. Combien consomme-t-elle pour 300 km ? pour 50 km ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>3 kg d'oranges coûtent 6 €. Combien coûtent 7 kg ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 6</div>Est-ce une situation de proportionnalité ? a) le prix de timbres identiques et leur nombre · b) la pointure et l'âge d'un enfant · c) la distance parcourue à vitesse constante et la durée.
+      
+      </div><div class="exo-card"><div class="num">Exercice 7</div>Pour 4 crêpes il faut 100 g de farine. Léo dit : « Pour 8 crêpes, il faut 104 g de farine, car j'ai ajouté 4. » Qu'en penses-tu ?
+      
+      </div></div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : la règle de trois</div><p style="margin:0 0 12px;">Les problèmes de proportionnalité sont parmi les plus anciens : les marchands de Babylone, d'Égypte, de Chine ou d'Inde calculaient déjà des prix de marchandises en fonction de leur quantité.</p><p style="margin:0 0 12px;">Au Moyen Âge, en Europe, les manuels de commerce enseignaient la <b>règle de trois</b> : « si 3 aunes de drap coûtent 12 sous, combien coûtent 5 aunes ? ». On passait par la valeur d'une aune… exactement comme toi avec le « passage par l'unité » !</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/cm1/19-proportionnalite/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/cm1/aires/">Aires</a></span>
+  <a href="/cm1/">Tous les chapitres de CM1</a>
+  <span><a href="/cm1/algebre/">Algèbre</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

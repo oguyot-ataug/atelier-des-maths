@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Résolution de problèmes – Cours de maths CM1 | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CM1 : Résolution de problèmes. Les étapes pour résoudre un problème, Chercher un tout ou une partie, Comparer deux quantités, Problèmes de…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/cm1/resolution-de-problemes/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Résolution de problèmes – Cours de maths CM1 | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CM1 : Résolution de problèmes. Les étapes pour résoudre un problème, Chercher un tout ou une partie, Comparer deux quantités, Problèmes de…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/cm1/resolution-de-problemes/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Résolution de problèmes (CM1)","headline":"Résolution de problèmes – cours de mathématiques de CM1","description":"Cours de maths CM1 : Résolution de problèmes. Les étapes pour résoudre un problème, Chercher un tout ou une partie, Comparer deux quantités, Problèmes de…","url":"https://maths.latelieraugmente.fr/cm1/resolution-de-problemes/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CM1 (cycle 3, école élémentaire)","about":"Nombres et calculs","teaches":["Les étapes pour résoudre un problème","Chercher un tout ou une partie","Comparer deux quantités","Problèmes de multiplication et de division","Problèmes à plusieurs étapes"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CM1","url":"https://maths.latelieraugmente.fr/cm1/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CM1","item":"https://maths.latelieraugmente.fr/cm1/"},{"@type":"ListItem","position":3,"name":"Résolution de problèmes","item":"https://maths.latelieraugmente.fr/cm1/resolution-de-problemes/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/cm1/">Cours de maths CM1</a> › Résolution de problèmes</div>
+<h1>Résolution de problèmes</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span> Cours de mathématiques de CM1 (cours moyen 1re année) · chapitre 16 · Les étapes pour résoudre un problème · Chercher un tout ou une partie · Comparer deux quantités · Problèmes de multiplication et de division · Problèmes à plusieurs étapes</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/cm1/16-resolution-de-problemes/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Les étapes pour résoudre un problème</h3></div>
+<span class="prop-badge">Méthode</span><div class="def-box"><ol style="margin:0;padding-left:20px;line-height:1.9;">
+<li><b>Je lis</b> l'énoncé en entier, deux fois, et je l'explique avec mes mots.</li>
+<li><b>Je repère la question</b> : qu'est-ce que je cherche ?</li>
+<li><b>Je trie les données</b> : quelles informations sont utiles ?</li>
+<li><b>Je fais un schéma</b> (en barres) pour voir ce que je connais et ce que je cherche.</li>
+<li><b>Je calcule</b>, en écrivant l'opération.</li>
+<li><b>Je vérifie</b> que le résultat est possible, puis <b>j'écris une phrase réponse</b>.</li></ol></div>
+
+<div class="lesson-header"><span class="num">2</span><h3>Chercher un tout ou une partie</h3></div>
+<p class="example-title">Une école a 128 filles et 115 garçons. Combien y a-t-il d'élèves ?</p>
+<svg viewBox="0 -14 340 94" style="width:100%;max-width:340px;display:block;margin:6px auto;"><path d="M10 30 Q10 18 22 18 L160 18 Q170 18 170 8 Q170 18 180 18 L318 18 Q330 18 330 30" fill="none" stroke="#1F3A5C" stroke-width="1.5"></path><text x="170" y="2" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">? élèves</text><rect x="10" y="36" width="166.4" height="32" fill="#2EA8C9" fill-opacity="0.35" stroke="#1F3A5C" stroke-width="1.6"></rect><text x="93.2" y="57" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">128</text><rect x="176.4" y="36" width="153.60000000000002" height="32" fill="#2E9C6A" fill-opacity="0.35" stroke="#1F3A5C" stroke-width="1.6"></rect><text x="253.20000000000002" y="57" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">115</text></svg>
+<ul class="example-list"><li>On connaît les deux parties, on cherche le tout : <b>addition</b>. 128 + 115 = 243. Il y a 243 élèves.</li></ul>
+<p class="example-title">Un livre a 250 pages. Nina en a lu 175. Combien lui en reste-t-il à lire ?</p>
+<svg viewBox="0 -14 340 94" style="width:100%;max-width:340px;display:block;margin:6px auto;"><path d="M10 30 Q10 18 22 18 L160 18 Q170 18 170 8 Q170 18 180 18 L318 18 Q330 18 330 30" fill="none" stroke="#1F3A5C" stroke-width="1.5"></path><text x="170" y="2" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">250 pages</text><rect x="10" y="36" width="224" height="32" fill="#2EA8C9" fill-opacity="0.35" stroke="#1F3A5C" stroke-width="1.6"></rect><text x="122" y="57" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">175 lues</text><rect x="234" y="36" width="96" height="32" fill="#fff" fill-opacity="1" stroke="#E35D3A" stroke-width="1.6" stroke-dasharray="6 4"></rect><text x="282" y="57" font-size="13" text-anchor="middle" fill="#E35D3A" font-family="Space Grotesk" font-weight="700">?</text></svg>
+<ul class="example-list"><li>On connaît le tout et une partie, on cherche l'autre partie : <b>soustraction</b>. 250 − 175 = 75. Il lui reste 75 pages.</li></ul>
+
+<div class="lesson-header"><span class="num">3</span><h3>Comparer deux quantités</h3></div>
+<p class="example-title">Paul a 36 cartes. Léa en a 18 de plus que Paul. Combien Léa a-t-elle de cartes ?</p>
+<svg viewBox="0 -14 324 108" style="width:100%;max-width:324px;display:block;margin:6px auto;"><rect x="10" y="6" width="192" height="32" fill="#2EA8C9" fill-opacity="0.35" stroke="#1F3A5C" stroke-width="1.6"></rect><text x="106" y="27" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">Paul : 36</text><rect x="10" y="50" width="192" height="32" fill="#2E9C6A" fill-opacity="0.35" stroke="#1F3A5C" stroke-width="1.6"></rect><text x="106" y="71" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">Léa : 36</text><rect x="202" y="50" width="96" height="32" fill="#7A4FC0" fill-opacity="0.35" stroke="#1F3A5C" stroke-width="1.6"></rect><text x="250" y="71" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">+ 18</text></svg>
+<ul class="example-list"><li>Léa a « autant que Paul, et 18 de plus » : 36 + 18 = 54. Léa a 54 cartes.</li></ul>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">« De plus » ne veut pas toujours dire addition ! « Paul a 36 cartes, il en a 18 de plus que Léa » : c'est Léa qui en a moins, 36 − 18 = 18. Le schéma évite ce piège.</div>
+
+<div class="lesson-header"><span class="num">4</span><h3>Problèmes de multiplication et de division</h3></div>
+<p class="example-title">Plusieurs fois la même quantité : 6 boîtes de 24 crayons. Combien de crayons ?</p>
+<svg viewBox="0 -14 327.20000000000005 94" style="width:100%;max-width:327.20000000000005px;display:block;margin:6px auto;"><path d="M10 30 Q10 18 22 18 L153.60000000000002 18 Q163.60000000000002 18 163.60000000000002 8 Q163.60000000000002 18 173.60000000000002 18 L305.20000000000005 18 Q317.20000000000005 18 317.20000000000005 30" fill="none" stroke="#1F3A5C" stroke-width="1.5"></path><text x="163.60000000000002" y="2" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">? crayons</text><rect x="10" y="36" width="51.2" height="32" fill="#2EA8C9" fill-opacity="0.35" stroke="#1F3A5C" stroke-width="1.6"></rect><text x="35.6" y="57" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">24</text><rect x="61.2" y="36" width="51.2" height="32" fill="#2EA8C9" fill-opacity="0.35" stroke="#1F3A5C" stroke-width="1.6"></rect><text x="86.80000000000001" y="57" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">24</text><rect x="112.4" y="36" width="51.2" height="32" fill="#2EA8C9" fill-opacity="0.35" stroke="#1F3A5C" stroke-width="1.6"></rect><text x="138" y="57" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">24</text><rect x="163.60000000000002" y="36" width="51.2" height="32" fill="#2EA8C9" fill-opacity="0.35" stroke="#1F3A5C" stroke-width="1.6"></rect><text x="189.20000000000002" y="57" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">24</text><rect x="214.8" y="36" width="51.2" height="32" fill="#2EA8C9" fill-opacity="0.35" stroke="#1F3A5C" stroke-width="1.6"></rect><text x="240.4" y="57" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">24</text><rect x="266" y="36" width="51.2" height="32" fill="#2EA8C9" fill-opacity="0.35" stroke="#1F3A5C" stroke-width="1.6"></rect><text x="291.6" y="57" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">24</text></svg>
+<ul class="example-list"><li>6 fois 24 : <b>multiplication</b>. 6 × 24 = 144. Il y a 144 crayons.</li></ul>
+<p class="example-title">Partage : on partage 96 billes entre 4 enfants. Combien chacun en reçoit-il ?</p>
+<svg viewBox="0 -14 327.20000000000005 94" style="width:100%;max-width:327.20000000000005px;display:block;margin:6px auto;"><path d="M10 30 Q10 18 22 18 L153.60000000000002 18 Q163.60000000000002 18 163.60000000000002 8 Q163.60000000000002 18 173.60000000000002 18 L305.20000000000005 18 Q317.20000000000005 18 317.20000000000005 30" fill="none" stroke="#1F3A5C" stroke-width="1.5"></path><text x="163.60000000000002" y="2" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">96 billes</text><rect x="10" y="36" width="76.80000000000001" height="32" fill="#fff" fill-opacity="1" stroke="#E35D3A" stroke-width="1.6" stroke-dasharray="6 4"></rect><text x="48.400000000000006" y="57" font-size="13" text-anchor="middle" fill="#E35D3A" font-family="Space Grotesk" font-weight="700">?</text><rect x="86.80000000000001" y="36" width="76.80000000000001" height="32" fill="#fff" fill-opacity="1" stroke="#E35D3A" stroke-width="1.6" stroke-dasharray="6 4"></rect><text x="125.20000000000002" y="57" font-size="13" text-anchor="middle" fill="#E35D3A" font-family="Space Grotesk" font-weight="700">?</text><rect x="163.60000000000002" y="36" width="76.80000000000001" height="32" fill="#fff" fill-opacity="1" stroke="#E35D3A" stroke-width="1.6" stroke-dasharray="6 4"></rect><text x="202.00000000000003" y="57" font-size="13" text-anchor="middle" fill="#E35D3A" font-family="Space Grotesk" font-weight="700">?</text><rect x="240.40000000000003" y="36" width="76.80000000000001" height="32" fill="#fff" fill-opacity="1" stroke="#E35D3A" stroke-width="1.6" stroke-dasharray="6 4"></rect><text x="278.80000000000007" y="57" font-size="13" text-anchor="middle" fill="#E35D3A" font-family="Space Grotesk" font-weight="700">?</text></svg>
+<ul class="example-list"><li>On cherche la valeur d'une part : <b>division</b>. 96 ÷ 4 = 24. Chacun reçoit 24 billes.</li></ul>
+<p class="example-title">Groupement : 150 œufs à ranger dans des boîtes de 6. Combien de boîtes ?</p><ul class="example-list"><li>On cherche combien de fois 6 il y a dans 150 : <b>division</b>. 150 ÷ 6 = 25. Il faut 25 boîtes.</li></ul>
+
+<div class="lesson-header"><span class="num">5</span><h3>Problèmes à plusieurs étapes</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Certains problèmes demandent <b>plusieurs calculs</b>. On cherche d'abord une <b>question intermédiaire</b> utile, puis on répond à la question posée.</div>
+<p class="example-title">Tom achète 3 cahiers à 2 € et un stylo à 4 €. Il paie avec un billet de 20 €. Combien lui rend-on ?</p><ul class="example-list"><li>Question intermédiaire : combien coûtent les cahiers ? 3 × 2 = 6 €.</li><li>Combien dépense-t-il en tout ? 6 + 4 = 10 €.</li><li>Combien lui rend-on ? 20 − 10 = 10 €. On lui rend 10 €.</li></ul>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Résoudre un problème en suivant les étapes</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-rp-etapes"><div class="step-column"><div class="">Je cherche : le nombre de joueurs de tennis.</div></div><div class="step-note">On repère la question.</div></div></div>
+<div class="sub-header"><span class="letter">M</span><h4>Division avec reste : interpréter le résultat</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-rp-division"><div class="step-column"><div class="">100 ÷ 8</div></div><div class="step-note">On cherche combien de groupes de 8 on peut faire avec 100 élèves : c'est une division.</div></div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Rédaction type d'un problème</h3><div class="redaction-template"><div class="we-row"><span class="we-expr">Je cherche…</span><span class="we-comment">J'écris ce que je cherche.</span></div><div class="we-row"><span class="we-expr">Calcul : 6 × 24 = 144</span><span class="we-comment">J'écris l'opération et son résultat.</span></div><div class="we-row"><span class="we-expr">Il y a 144 crayons.</span><span class="we-comment">Je réponds par une phrase, avec l'unité.</span></div></div></div><div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>Un fermier a 245 poules et 78 canards. Combien a-t-il de volailles ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Un avion peut transporter 186 passagers. 159 places sont occupées. Combien de places sont libres ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>Emma a 1 450 €. Elle a 380 € de moins que son frère. Combien a son frère ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>Une boîte contient 12 œufs. Combien d'œufs y a-t-il dans 25 boîtes ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>On range 84 livres sur 7 étagères, autant sur chacune. Combien de livres par étagère ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 6</div>Pour une fête, on prévoit 3 gâteaux pour 8 personnes. Il y a 40 invités. Combien de gâteaux faut-il ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 7</div>Au cinéma, une place adulte coûte 9 € et une place enfant 6 €. Combien paie une famille de 2 adultes et 3 enfants ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 8</div>On a 75 photos à coller dans un album, 6 par page. Combien de pages faut-il ?
+      
+      </div></div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : Polya et l'art de résoudre</div><p style="margin:0 0 12px;">Les plus anciens problèmes de mathématiques connus ont près de 4 000 ans : ils sont écrits sur des tablettes d'argile en Mésopotamie et sur des papyrus en Égypte. On y partage du pain, on calcule des récoltes, on mesure des champs.</p><p style="margin:0 0 12px;">En 1945, le mathématicien hongrois <b>George Pólya</b> publie un livre célèbre, <i>Comment poser et résoudre un problème</i>. Il y propose 4 étapes : comprendre le problème, trouver un plan, le mettre en œuvre, vérifier. Ce sont presque les mêmes que dans ce chapitre !</p><p style="margin:0 0 12px;">Les <b>schémas en barres</b> sont très utilisés à Singapour, dont les élèves sont parmi les meilleurs du monde en résolution de problèmes.</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/cm1/16-resolution-de-problemes/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/cm1/probabilites/">Probabilités</a></span>
+  <a href="/cm1/">Tous les chapitres de CM1</a>
+  <span><a href="/cm1/solides/">Solides</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

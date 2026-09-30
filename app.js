@@ -3097,6 +3097,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.868', items:[
+    "Référencement Google étendu au CM1 : une page par chapitre (23 pages, adresse /cm1/nom-du-chapitre/), un sommaire /cm1/, le lien « Cours CM1 » dans l'en-tête et le pied des pages publiques, et le sitemap mis à jour. Le lien « CM1 (aperçu) » du pied de page de l'application devient « Cours de maths CM1 ». Demandé : « étends le référencement Google au CM1 ».",
+  ]},
   { version:'2026-08-19.867', items:[
     "CM1, période 5 : les quatre derniers chapitres de l'année. « Algèbre » (suites de motifs, de nombres et de figures en allumettes, le signe = qui veut dire « vaut autant que », nombre caché, balance en équilibre, programmes de calcul à remonter). « Angles » (sommet et côtés, angle droit vérifié à l'équerre, aigu, obtus, gabarit) avec un curseur pour ouvrir un angle et le classer. « Heures et durées » (horloge à aiguilles, unités et conversions en phrases, instant ou durée, frise avec bonds jusqu'à l'heure pile) avec un atelier « lis l'heure ». « Initiation à la pensée informatique » (coder un déplacement avec des flèches, boucle « répéter », bug) avec un robot à programmer et 4 défis. Les 23 chapitres de CM1 ont maintenant tous leur cours.",
   ]},

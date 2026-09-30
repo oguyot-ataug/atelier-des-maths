@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Probabilités – Cours de maths CM1 | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CM1 : Probabilités. Le hasard, Le vocabulaire des chances, Comparer les chances. Définitions, figures interactives, méthode animée, exercices…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/cm1/probabilites/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Probabilités – Cours de maths CM1 | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CM1 : Probabilités. Le hasard, Le vocabulaire des chances, Comparer les chances. Définitions, figures interactives, méthode animée, exercices…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/cm1/probabilites/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Probabilités (CM1)","headline":"Probabilités – cours de mathématiques de CM1","description":"Cours de maths CM1 : Probabilités. Le hasard, Le vocabulaire des chances, Comparer les chances. Définitions, figures interactives, méthode animée, exercices…","url":"https://maths.latelieraugmente.fr/cm1/probabilites/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CM1 (cycle 3, école élémentaire)","about":"Données et probabilités","teaches":["Le hasard","Le vocabulaire des chances","Comparer les chances"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CM1","url":"https://maths.latelieraugmente.fr/cm1/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CM1","item":"https://maths.latelieraugmente.fr/cm1/"},{"@type":"ListItem","position":3,"name":"Probabilités","item":"https://maths.latelieraugmente.fr/cm1/probabilites/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/cm1/">Cours de maths CM1</a> › Probabilités</div>
+<h1>Probabilités</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#BFDCFB;color:#1A4E9E;">Données et probabilités</span> Cours de mathématiques de CM1 (cours moyen 1re année) · chapitre 15 · Le hasard · Le vocabulaire des chances · Comparer les chances</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/cm1/15-probabilites/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Le hasard</h3></div>
+<span class="def-badge">Définition</span><div class="def-box">Une expérience est <b>due au hasard</b> quand on ne peut pas savoir à l'avance ce qui va se passer, même si on connaît tous les résultats possibles. Exemples : lancer une pièce, lancer un dé, tirer une bille dans un sac sans regarder.</div>
+<p class="example-title">Quand on lance un dé à 6 faces :</p><ul class="example-list"><li>les résultats possibles sont 1, 2, 3, 4, 5 et 6 ;</li><li>on ne peut pas savoir lequel va sortir.</li></ul>
+
+<div class="lesson-header"><span class="num">2</span><h3>Le vocabulaire des chances</h3></div>
+<div style="display:flex;align-items:stretch;gap:0;flex-wrap:wrap;justify-content:center;margin:8px 0;font-family:'Space Grotesk',sans-serif;font-size:.9rem;text-align:center;">
+<div style="flex:1;min-width:100px;padding:10px 6px;background:#8A2E1C;color:#fff;font-weight:700;">impossible</div><div style="flex:1;min-width:100px;padding:10px 6px;background:#E35D3A;color:#fff;font-weight:700;">peu probable</div><div style="flex:1;min-width:100px;padding:10px 6px;background:#B8962E;color:#fff;font-weight:700;">une chance sur deux</div><div style="flex:1;min-width:100px;padding:10px 6px;background:#2EA8C9;color:#fff;font-weight:700;">probable</div><div style="flex:1;min-width:100px;padding:10px 6px;background:#2E9C6A;color:#fff;font-weight:700;">certain</div></div>
+<div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--ink-soft);"><span>← ne peut jamais arriver</span><span>arrive à coup sûr →</span></div>
+<span class="def-badge">Vocabulaire</span><div class="def-box"><ul style="margin:0;padding-left:18px;line-height:1.9;">
+<li><b>Impossible</b> : cela ne peut pas arriver. <i>Obtenir 7 avec un dé à 6 faces.</i></li>
+<li><b>Certain</b> : cela arrive à coup sûr. <i>Obtenir un nombre plus petit que 10 avec un dé.</i></li>
+<li><b>Possible</b> : cela peut arriver (ou pas). <i>Obtenir 4 avec un dé.</i></li>
+<li><b>Probable</b> : cela a beaucoup de chances d'arriver. <i>Obtenir un nombre plus grand que 1 avec un dé.</i></li>
+<li><b>Peu probable</b> : cela a peu de chances d'arriver. <i>Obtenir 6 avec un dé.</i></li>
+<li><b>Une chance sur deux</b> : autant de chances que cela arrive ou non. <i>Obtenir « pile » en lançant une pièce.</i></li></ul></div>
+
+<div class="lesson-header"><span class="num">3</span><h3>Comparer les chances</h3></div>
+<div class="figure-wrap" style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;"><div style="text-align:center;"><svg viewBox="0 0 120 120" style="width:110px;display:inline-block;vertical-align:middle;"><path d="M20 38 Q60 20 100 38 L108 104 Q60 118 12 104 Z" fill="#F3E3C3" stroke="#8A6A2E" stroke-width="2"></path><circle cx="32" cy="58" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="51" cy="58" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="70" cy="58" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="89" cy="58" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="32" cy="80" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="51" cy="80" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="70" cy="80" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="89" cy="80" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle></svg><div class="hint" style="margin:0;">Sac 1</div></div><div style="text-align:center;"><svg viewBox="0 0 120 120" style="width:110px;display:inline-block;vertical-align:middle;"><path d="M20 38 Q60 20 100 38 L108 104 Q60 118 12 104 Z" fill="#F3E3C3" stroke="#8A6A2E" stroke-width="2"></path><circle cx="32" cy="58" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="51" cy="58" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="70" cy="58" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="89" cy="58" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="32" cy="80" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="51" cy="80" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="70" cy="80" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="89" cy="80" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle></svg><div class="hint" style="margin:0;">Sac 2</div></div><div style="text-align:center;"><svg viewBox="0 0 120 120" style="width:110px;display:inline-block;vertical-align:middle;"><path d="M20 38 Q60 20 100 38 L108 104 Q60 118 12 104 Z" fill="#F3E3C3" stroke="#8A6A2E" stroke-width="2"></path><circle cx="32" cy="58" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="51" cy="58" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="70" cy="58" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="89" cy="58" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="32" cy="80" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="51" cy="80" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="70" cy="80" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="89" cy="80" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle></svg><div class="hint" style="margin:0;">Sac 3</div></div></div>
+<p class="example-title">On tire une bille sans regarder :</p><ul class="example-list"><li>Sac 1 (7 rouges, 1 bleue) : tirer une rouge est <b>probable</b> ; tirer une bleue est <b>peu probable</b>.</li><li>Sac 2 (4 rouges, 4 bleues) : on a <b>une chance sur deux</b> de tirer une rouge.</li><li>Sac 3 (8 bleues) : tirer une bleue est <b>certain</b> ; tirer une rouge est <b>impossible</b>.</li></ul>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">« Probable » ne veut pas dire « certain » : avec le sac 1, on peut quand même tirer la bille bleue ! Essaie dans l'atelier de l'onglet Méthode.</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Utiliser le bon mot</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-pr-de"><div class="step-column"><div class="">Résultats possibles : 1, 2, 3, 4, 5, 6</div></div><div class="step-note">On écrit d'abord tous les résultats possibles.</div></div></div>
+<div class="sub-header"><span class="letter">A</span><h4>Atelier : tirer des billes dans un sac</h4></div>
+<div class="figure-wrap" style="text-align:center;">
+<div id="pr-zone"><div style="display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap;"><svg viewBox="0 0 120 120" style="width:130px;display:inline-block;vertical-align:middle;"><path d="M20 38 Q60 20 100 38 L108 104 Q60 118 12 104 Z" fill="#F3E3C3" stroke="#8A6A2E" stroke-width="2"></path><circle cx="32" cy="58" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="51" cy="58" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="70" cy="58" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="89" cy="58" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="32" cy="80" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="51" cy="80" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="70" cy="80" r="8" fill="#E35D3A" stroke="#1F3A5C" stroke-width="1"></circle><circle cx="89" cy="80" r="8" fill="#2EA8C9" stroke="#1F3A5C" stroke-width="1"></circle></svg>
+    <div style="text-align:left;"><div><b>0</b> tirage(s) (on remet la bille dans le sac à chaque fois)</div>
+    <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">rouge : <b>0</b>
+      </div><div style="display:flex;align-items:center;gap:8px;margin:4px 0;">bleue : <b>0</b>
+      </div></div></div>
+    </div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>On lance un dé à 6 faces. Pour chaque événement, choisis : impossible, possible ou certain. a) obtenir 5 · b) obtenir 0 · c) obtenir un nombre entre 1 et 6.
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Dans un sac il y a 9 billes vertes et 1 bille rouge. Tirer une bille verte est-il probable ou peu probable ? Et une rouge ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>On lance une pièce de monnaie. Quelle est la chance d'obtenir « face » ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>Invente un sac de billes dans lequel tirer une bille bleue est impossible.
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>Invente un sac de 10 billes dans lequel on a une chance sur deux de tirer une rouge.
+      
+      </div><div class="exo-card"><div class="num">Exercice 6</div>Une roue est partagée en 8 parts égales : 6 jaunes et 2 bleues. Sur quelle couleur la flèche a-t-elle le plus de chances de s'arrêter ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 7</div>Tom dit : « J'ai tiré 3 fois une bille rouge, la prochaine sera sûrement bleue. » A-t-il raison ?
+      
+      </div></div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : Pascal, Fermat et les jeux de dés</div><p style="margin:0 0 12px;">En 1654, un joueur, le <b>chevalier de Méré</b>, pose une question à <b>Blaise Pascal</b> : comment partager équitablement l'argent d'une partie de dés interrompue avant la fin ?</p><p style="margin:0 0 12px;">Pascal échange des lettres avec un autre mathématicien, <b>Pierre de Fermat</b>. Ensemble, ils inventent une façon de mesurer les chances : c'est la naissance du <b>calcul des probabilités</b>.</p><p style="margin:0 0 12px;">Aujourd'hui, les probabilités servent partout : prévisions météo (« 70 % de risque de pluie »), médecine, jeux, assurances…</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/cm1/15-probabilites/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/cm1/procedures-de-calcul-mental/">Procédures de calcul mental</a></span>
+  <a href="/cm1/">Tous les chapitres de CM1</a>
+  <span><a href="/cm1/resolution-de-problemes/">Résolution de problèmes</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>

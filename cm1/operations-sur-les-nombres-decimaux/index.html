@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opérations sur les nombres décimaux – Cours de maths CM1 | L'Atelier des Maths</title>
+<meta name="description" content="Cours de maths CM1 : Opérations sur les nombres décimaux. Additionner des nombres décimaux, Soustraire des nombres décimaux, Calculer en ligne, Multiplier…">
+<link rel="canonical" href="https://maths.latelieraugmente.fr/cm1/operations-sur-les-nombres-decimaux/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="L'Atelier des Maths">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="Opérations sur les nombres décimaux – Cours de maths CM1 | L'Atelier des Maths">
+<meta property="og:description" content="Cours de maths CM1 : Opérations sur les nombres décimaux. Additionner des nombres décimaux, Soustraire des nombres décimaux, Calculer en ligne, Multiplier…">
+<meta property="og:url" content="https://maths.latelieraugmente.fr/cm1/operations-sur-les-nombres-decimaux/">
+<meta property="og:image" content="https://maths.latelieraugmente.fr/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C5BA0">
+<link rel="icon" type="image/png" href="/assets/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .seo-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 20px;background:rgba(253,249,246,.95);border-bottom:1px solid rgba(28,43,57,.08);position:sticky;top:0;z-index:5;}
+  .seo-top img{height:40px;display:block;}
+  .seo-top nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+  .seo-top nav a{padding:7px 12px;border-radius:8px;font-weight:600;font-size:.92rem;color:var(--ink);}
+  .seo-top nav a:hover{background:rgba(12,91,160,.07);}
+  .seo-top nav a.cta{background:var(--accent);color:#fff;}
+  .seo-wrap{max-width:920px;margin:0 auto;padding:18px 16px 40px;}
+  .seo-crumbs{font-size:.85rem;color:var(--ink-soft);margin:4px 0 14px;}
+  .seo-crumbs a{text-decoration:underline;text-underline-offset:2px;}
+  .seo-wrap h1{font-size:2rem;margin:0 0 6px;line-height:1.15;}
+  .seo-sub{color:var(--ink-soft);margin:0 0 16px;font-size:1.02rem;}
+  .seo-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700;margin-right:6px;vertical-align:middle;}
+  .seo-cta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;background:rgba(12,91,160,.06);border:1px solid rgba(12,91,160,.18);border-radius:12px;padding:14px 16px;margin:14px 0 24px;}
+  .seo-cta p{margin:0;flex:1;min-width:220px;}
+  .seo-btn{display:inline-block;background:var(--accent);color:#fff !important;font-weight:700;padding:10px 16px;border-radius:9px;white-space:nowrap;}
+  .seo-btn.alt{background:#fff;color:var(--accent) !important;border:1px solid rgba(12,91,160,.35);}
+  .seo-section{background:var(--white);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px;margin:0 0 22px;overflow-x:auto;}
+  .seo-section > h2{margin:0 0 12px;font-size:1.35rem;display:flex;align-items:center;gap:8px;}
+  .seo-section svg{max-width:100%;height:auto;}
+  .seo-list{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+  .seo-list li a, .seo-list li > span{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--white);box-shadow:var(--shadow);}
+  .seo-list li a:hover{outline:2px solid rgba(12,91,160,.25);}
+  .seo-list .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem;min-width:2ch;color:var(--accent);}
+  .seo-list .soon{opacity:.6;}
+  .seo-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .seo-nav a{font-weight:600;color:var(--accent);}
+  .seo-feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:0 0 22px;}
+  .seo-feat div{background:var(--white);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;}
+  .seo-feat h3{margin:0 0 6px;font-size:1.05rem;display:flex;gap:8px;align-items:center;}
+  .seo-feat p{margin:0;font-size:.93rem;color:var(--ink-soft);line-height:1.5;}
+  .seo-foot{max-width:920px;margin:0 auto;padding:18px 16px 30px;font-size:.85rem;color:var(--ink-soft);border-top:1px solid rgba(28,43,57,.08);}
+  .seo-foot a{text-decoration:underline;text-underline-offset:2px;}
+  @media (max-width:600px){ .seo-wrap h1{font-size:1.55rem;} .seo-section{padding:14px 12px;} .seo-top{padding:10px 12px;} }
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LearningResource","name":"Opérations sur les nombres décimaux (CM1)","headline":"Opérations sur les nombres décimaux – cours de mathématiques de CM1","description":"Cours de maths CM1 : Opérations sur les nombres décimaux. Additionner des nombres décimaux, Soustraire des nombres décimaux, Calculer en ligne, Multiplier…","url":"https://maths.latelieraugmente.fr/cm1/operations-sur-les-nombres-decimaux/","inLanguage":"fr","learningResourceType":["Cours","Exercices"],"educationalLevel":"CM1 (cycle 3, école élémentaire)","about":"Nombres et calculs","teaches":["Additionner des nombres décimaux","Soustraire des nombres décimaux","Calculer en ligne","Multiplier et diviser par 10","Vérifier avec un ordre de grandeur"],"isAccessibleForFree":true,"audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"},"isPartOf":{"@type":"Course","name":"Mathématiques CM1","url":"https://maths.latelieraugmente.fr/cm1/","provider":{"@type":"Organization","name":"L'Atelier des Maths","url":"https://maths.latelieraugmente.fr/","logo":"https://maths.latelieraugmente.fr/assets/logo-icon.png"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://maths.latelieraugmente.fr/"},{"@type":"ListItem","position":2,"name":"Cours de maths CM1","item":"https://maths.latelieraugmente.fr/cm1/"},{"@type":"ListItem","position":3,"name":"Opérations sur les nombres décimaux","item":"https://maths.latelieraugmente.fr/cm1/operations-sur-les-nombres-decimaux/"}]}]}</script>
+</head>
+<body>
+<header class="seo-top">
+  <a href="/" aria-label="L'Atelier des Maths, accueil"><img src="/assets/logo-horizontal.png" alt="L'Atelier des Maths" width="115" height="40"></a>
+  <nav>
+    <a href="/cm1/">Cours CM1</a>
+    <a href="/6e/">Cours 6e</a>
+    <a href="/5e/">Cours 5e</a>
+    <a href="/4e/">Cours 4e</a>
+    <a href="/3e/">Cours 3e</a>
+    <a href="/professeurs/">Professeurs</a>
+    <a class="cta" href="/">Ouvrir l'application</a>
+  </nav>
+</header>
+<main class="seo-wrap">
+
+<div class="seo-crumbs"><a href="/">Accueil</a> › <a href="/cm1/">Cours de maths CM1</a> › Opérations sur les nombres décimaux</div>
+<h1>Opérations sur les nombres décimaux</h1>
+<p class="seo-sub"><span class="seo-badge" style="background:#FFD8B0;color:#8A4210;">Nombres et calculs</span> Cours de mathématiques de CM1 (cours moyen 1re année) · chapitre 11 · Additionner des nombres décimaux · Soustraire des nombres décimaux · Calculer en ligne · Multiplier et diviser par 10 · Vérifier avec un ordre de grandeur</p>
+<div class="seo-cta">
+  <p><b>Version interactive :</b> dans l'application, les points des figures se déplacent, les figures se construisent pas à pas à la règle et au compas et un quiz s'invente à chaque essai.</p>
+  <a class="seo-btn" href="/#/chapitre/cm1/11-operations-sur-les-nombres-decimaux/cours">Ouvrir le chapitre interactif</a>
+</div>
+
+<section class="seo-section" id="cours">
+  <h2><span class="gicon">menu_book</span> Le cours</h2>
+  
+  <div class="lesson-header"><span class="num">1</span><h3>Additionner des nombres décimaux</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">On additionne les chiffres <b>de même rang</b> : les centièmes avec les centièmes, les dixièmes avec les dixièmes, les unités avec les unités…<br>Pour poser l'opération, on <b>aligne les virgules</b> les unes sous les autres.</div>
+<p class="example-title">Exemple : 14,65 + 3,8</p>
+<div class="figure-wrap"><table style="border-collapse:collapse;margin:8px auto;"><tbody><tr><td></td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;font-size:.75rem;color:#E35D3A;"></td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;font-size:.75rem;color:#E35D3A;">1</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;font-size:.75rem;color:#E35D3A;"></td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;font-size:.75rem;color:#E35D3A;"></td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;font-size:.75rem;color:#E35D3A;"></td></tr><tr style=""><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#E35D3A;"></td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">1</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">4</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">,</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">6</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">5</td></tr><tr style=""><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#E35D3A;">+</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;"></td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">3</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">,</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">8</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">0</td></tr><tr style="border-top:2px solid #1F3A5C;"><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#E35D3A;"></td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#2E9C6A;">1</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#2E9C6A;">8</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#2E9C6A;">,</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#2E9C6A;">4</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#2E9C6A;">5</td></tr></tbody></table></div>
+<ul class="example-list"><li>On complète 3,8 en 3,80 pour que les deux nombres aient autant de chiffres après la virgule.</li><li>6 dixièmes + 8 dixièmes = 14 dixièmes = 1 unité et 4 dixièmes : on écrit 4 et on retient 1 aux unités.</li><li>La virgule du résultat est placée sous les autres virgules.</li></ul>
+
+<div class="lesson-header"><span class="num">2</span><h3>Soustraire des nombres décimaux</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Comme pour l'addition : on <b>aligne les virgules</b> et on complète par des zéros si besoin, puis on soustrait rang par rang, en commençant par la droite.</div>
+<p class="example-title">Exemple : 9,3 − 4,75</p>
+<div class="figure-wrap"><table style="border-collapse:collapse;margin:8px auto;"><tbody><tr style=""><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#E35D3A;"></td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">9</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">,</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">3</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">0</td></tr><tr style=""><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#E35D3A;">−</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">4</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">,</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">7</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;">5</td></tr><tr style="border-top:2px solid #1F3A5C;"><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#E35D3A;"></td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#2E9C6A;">4</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#2E9C6A;">,</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#2E9C6A;">5</td><td style="width:22px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:700;padding:2px 0;color:#2E9C6A;">5</td></tr></tbody></table></div>
+<ul class="example-list"><li>9,3 = 9,30 : on écrit le 0 des centièmes pour pouvoir soustraire.</li><li>On vérifie avec une addition : 4,55 + 4,75 = 9,30. ✔</li></ul>
+
+<div class="lesson-header"><span class="num">3</span><h3>Calculer en ligne</h3></div>
+<p class="example-title">On peut calculer sans poser en décomposant :</p><ul class="example-list"><li>2,5 + 1,5 = 2 + 1 + 0,5 + 0,5 = 3 + 1 = <b>4</b></li><li>6,4 − 0,2 = <b>6,2</b> (4 dixièmes − 2 dixièmes = 2 dixièmes)</li><li>3,7 + 0,3 = <b>4</b> (7 dixièmes + 3 dixièmes = 10 dixièmes = 1 unité)</li></ul>
+
+<div class="lesson-header"><span class="num">4</span><h3>Multiplier et diviser par 10</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Multiplier par 10, c'est rendre le nombre <b>10 fois plus grand</b> : chaque chiffre prend une valeur 10 fois plus grande, il <b>glisse d'un rang vers la gauche</b>.<br>
+Diviser par 10, c'est rendre le nombre <b>10 fois plus petit</b> : chaque chiffre <b>glisse d'un rang vers la droite</b>.</div>
+<div style="overflow-x:auto;margin:6px 0 14px;"><table style="border-collapse:collapse;text-align:center;font-size:.95rem;">
+    <tbody><tr><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Dizaines</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Unités</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">,</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Dixièmes</th><th style="padding:6px 10px;border:1px solid rgba(28,43,57,.2);background:var(--accent-orange);color:#fff;font-family:'Space Grotesk',sans-serif;">Centièmes</th></tr>
+    <tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"></td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"><b style="color:#E35D3A;">4</b></td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">,</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">2</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">7</td></tr><tr><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">4</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"><b style="color:#E35D3A;">2</b></td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">,</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);">7</td><td style="padding:8px 10px;border:1px solid rgba(28,43,57,.2);"></td></tr></tbody></table></div>
+<p class="example-title">Lecture :</p><ul class="example-list"><li>4,27 × 10 = <b>42,7</b> : le chiffre 4 était aux unités, il passe aux dizaines.</li><li>42,7 ÷ 10 = <b>4,27</b> : chaque chiffre revient d'un rang vers la droite.</li><li>3 ÷ 10 = <b>0,3</b> (3 unités = 30 dixièmes, et 30 dixièmes ÷ 10 = 3 dixièmes).</li></ul>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">Repère le <b>chiffre des unités</b> (en rouge) : c'est lui qu'on suit quand le nombre glisse. Tu peux t'entraîner avec l'outil <b>Convertisseur → Glisse-nombre</b> du menu S'entraîner.</div>
+
+<div class="lesson-header"><span class="num">5</span><h3>Vérifier avec un ordre de grandeur</h3></div>
+<span class="prop-badge">Règle</span><div class="def-box">Avant de calculer, on peut <b>estimer</b> le résultat avec des nombres entiers proches : 14,65 + 3,8, c'est à peu près 15 + 4 = 19. Le résultat 18,45 est bien proche de 19 : il est plausible.</div>
+</section>
+
+<section class="seo-section" id="methode">
+  <h2><span class="gicon">draw</span> Méthode</h2>
+  <p class="hint" style="margin:-4px 0 12px;">Dans l'application, cette méthode est animée étape par étape (règle, équerre, compas, rapporteur).</p>
+  <div class="sub-header"><span class="letter">M</span><h4>Poser une addition de nombres décimaux</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-od-add"><div class="step-column"><div class="">27,4 ≈ 27 et 5,68 ≈ 6 → environ 33</div></div><div class="step-note">On estime d'abord l'ordre de grandeur du résultat.</div></div></div>
+<div class="sub-header"><span class="letter">M</span><h4>Résoudre un problème de monnaie</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-od-sous"><div class="step-column"><div class="">20 − 12,45</div></div><div class="step-note">On cherche ce qui reste : c'est une soustraction.</div></div></div>
+<div class="sub-header"><span class="letter">M</span><h4>Multiplier un nombre décimal par 10</h4></div><div class="figure-wrap">
+    <div class="step-display" id="cm1d-od-dix"><div class="step-column"><div class="">0,<b style="color:#E35D3A;">5</b>6</div></div><div class="step-note">On suit le chiffre 5 (en rouge) : pour l'instant, c'est le chiffre des dixièmes (le chiffre des unités est 0).</div></div></div>
+</section>
+
+<section class="seo-section" id="exercices">
+  <h2><span class="gicon">edit</span> Exercices et rédaction</h2>
+  
+  <div class="redaction-block"><h3>Rédaction type : « Poser une soustraction décimale »</h3><div class="redaction-template"><div class="we-row"><span class="we-expr">12 − 3,6 ≈ 12 − 4 = 8</span><span class="we-comment">J'estime le résultat.</span></div><div class="we-row"><span class="we-expr">12,0 − 3,6 = 8,4</span><span class="we-comment">J'aligne les virgules et je complète par un 0.</span></div><div class="we-row"><span class="we-expr">Vérification : 8,4 + 3,6 = 12</span><span class="we-comment">Je vérifie avec une addition.</span></div></div></div><div class="redaction-block"><h3>Exercices</h3><div class="exo-card"><div class="num">Exercice 1</div>Calcule en ligne : 3,5 + 2,5 &nbsp;·&nbsp; 7,8 − 0,5 &nbsp;·&nbsp; 1,25 + 0,75 &nbsp;·&nbsp; 10 − 0,1
+      
+      </div><div class="exo-card"><div class="num">Exercice 2</div>Pose et calcule : 45,7 + 12,85 &nbsp;·&nbsp; 6,09 + 13,4
+      
+      </div><div class="exo-card"><div class="num">Exercice 3</div>Pose et calcule : 36,5 − 14,28 &nbsp;·&nbsp; 50 − 7,35
+      
+      </div><div class="exo-card"><div class="num">Exercice 4</div>Calcule : 3,4 × 10 &nbsp;·&nbsp; 0,7 × 10 &nbsp;·&nbsp; 58 ÷ 10 &nbsp;·&nbsp; 6,2 ÷ 10
+      
+      </div><div class="exo-card"><div class="num">Exercice 5</div>Donne un ordre de grandeur, puis calcule : 19,8 + 30,15.
+      
+      </div><div class="exo-card"><div class="num">Exercice 6</div>Problème : Maïa mesure 1,38 m. Son frère mesure 0,25 m de plus. Quelle est la taille de son frère ?
+      
+      </div><div class="exo-card"><div class="num">Exercice 7</div>Problème : au marché, j'achète des pommes pour 3,60 € et du fromage pour 5,85 €. Je paie avec un billet de 10 €. Combien me rend-on ?
+      
+      </div></div>
+</section>
+
+<section class="seo-section" id="histoire">
+  <h2><span class="gicon">history_edu</span> Un peu d'histoire</h2>
+  
+  <div class="history-box"><div class="history-title"><span class="gicon">history_edu</span> Un peu d'histoire : l'euro et ses centimes</div><p style="margin:0 0 12px;">Quand tu paies 12,45 €, tu utilises des nombres décimaux sans y penser : 45 centimes, ce sont 45 <b>centièmes</b> d'euro.</p><p style="margin:0 0 12px;">La France a été l'un des premiers pays à utiliser une monnaie <b>décimale</b> : en 1795, le franc est partagé en 100 centimes. Avant, une livre valait 20 sous et un sou valait 12 deniers… les calculs de monnaie étaient bien plus difficiles !</p><p style="margin:0 0 12px;">Depuis 2002, l'<b>euro</b> est lui aussi partagé en 100 centimes, dans une vingtaine de pays d'Europe.</p></div>
+</section>
+<div class="seo-cta">
+  <p>Pour s'entraîner : <b>quiz générés à chaque essai</b>, figures manipulables et constructions animées.</p>
+  <a class="seo-btn" href="/#/chapitre/cm1/11-operations-sur-les-nombres-decimaux/quiz">Faire le quiz</a>
+</div>
+<nav class="seo-nav">
+  <span>← <a href="/cm1/grands-nombres-jusqu-a-999-999/">Grands nombres jusqu'à 999 999</a></span>
+  <a href="/cm1/">Tous les chapitres de CM1</a>
+  <span><a href="/cm1/symetrie-axiale/">Symétrie axiale</a> →</span>
+</nav>
+</main>
+<footer class="seo-foot">
+  <a href="/">L'Atelier des Maths</a> · cours de mathématiques interactifs pour l'école et le collège ·
+  <a href="/cm1/">Cours de maths CM1</a> · <a href="/6e/">Cours de maths 6e</a> · <a href="/5e/">Cours de maths 5e</a> · <a href="/4e/">Cours de maths 4e</a> · <a href="/3e/">Cours de maths 3e</a> · <a href="/professeurs/">Pour les professeurs</a><br>
+  Une production de <a href="https://www.latelieraugmente.fr" rel="noopener">L'Atelier Augmenté</a> · Programme de mathématiques B.O. 2026.
+</footer>
+</body>
+</html>
