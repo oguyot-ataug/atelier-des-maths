@@ -3073,6 +3073,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.827', items:[
+    "Écran partagé : déplacer un point ne rejoue plus la construction -- signalé : « si je déplace un point, la figure avec les outils recommence depuis le début ». Quand on déplace un point (ou un arc), qu'on efface un objet ou qu'on annule, le tableau est désormais reconstruit instantanément et sans aucun instrument visible : les gestes sont calculés sans animation ni affichage intermédiaire, puis seul le résultat s'affiche (environ 0,2 s). Pendant un glissé, le tableau suit le point en continu, sans attendre qu'on le relâche. Seuls les nouveaux objets sont construits aux instruments ; « Rejouer » (flèche verte) et la barre de lecture permettent toujours de revoir toute la construction.",
+  ]},
   { version:'2026-08-19.826', items:[
     "Écran partagé et arcs -- demandé : « remettre ce menu car il est utile » (barre de lecture), signalé : « j'ai fait un arc de cercle, il a tracé le cercle complet ». (1) La barre de lecture (Depuis le début, Précédent, Étape suivante, Lecture, vitesse) revient à droite, sous le tableau, au-dessus de « Enregistrer en image » / « Ajouter au cahier » ; la place est réservée dans le calcul de la hauteur. Si l'on revient en arrière avec « Précédent » puis qu'on ajoute un objet, les étapes défaites sont rejouées avant le nouvel objet. (2) Arcs : le tableau sait maintenant tracer un arc de cercle (nouvelle option « arc » des constructions, angles de départ et d'arrivée) ; un arc de la Géométrie Interactive (« Arc de cercle » ou « Arc de rayon donné ») est tracé au compas sur la même portion, au lieu d'un cercle complet. « Construire avec l'IA » peut aussi l'utiliser.",
   ]},
@@ -7548,7 +7551,7 @@ function tbPushHistory(){
   tbHistory.push(snap);
   if(tbHistory.length>60) tbHistory.shift(); else tbHistoryIndex++;
   tbUpdateHistoryButtons();
-  tbRenderHistoryPanel();
+  if(!(typeof tbAiSilent!=='undefined' && tbAiSilent)) tbRenderHistoryPanel();
 }
 function tbRestoreSnapshot(snap){
   const s = JSON.parse(snap);
@@ -8541,6 +8544,7 @@ function tbAutoMark(pt){
   return aligned ? {kind:'tick', angle:Math.atan2(dirs[0].x, -dirs[0].y)} : {kind:'none'};
 }
 function tbRender(){
+  if(typeof tbAiSilent!=='undefined' && tbAiSilent) return; // reconstruction instantanée : un seul affichage à la fin
   const W=900, H=560;
   const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.construction?'#9CA3AF':s.color}" stroke-width="${s.construction?'1.2':'2.4'}" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
   const pointsHtml = tbPoints.map(pt=>{

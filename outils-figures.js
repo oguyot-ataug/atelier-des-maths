@@ -6004,9 +6004,11 @@ function figQuitterSplit(){
    quand on ajoute un objet, donc ce qui est déjà tracé reste en place. */
 let figLive = {cles:[], nActions:0, centreCle:'', occupe:false, encore:false};
 let figLiveTimer = null;
+// Après un clic : court délai. Pendant un glissé : le tableau suit le point (reconstruction
+// instantanée) à intervalles réguliers, sans attendre qu'on le relâche.
 function figLivePlanifier(){
   clearTimeout(figLiveTimer);
-  figLiveTimer = setTimeout(()=>{ if(!figDragPoint && !figDragArc) figLiveSync(false); else figLivePlanifier(); }, 450);
+  figLiveTimer = setTimeout(()=>figLiveSync(false), (figDragPoint || figDragArc) ? 120 : 350);
 }
 function figLiveCentre(origine){
   const vb = document.getElementById('figureSvg').viewBox.baseVal, cm = SCALE_PX_PER_CM;
@@ -6071,13 +6073,10 @@ async function figLiveSync(rapide){
       tbClearAll();
       tbAiLoadProgram(programme, figSplitOutils(), {center:centre, keepZoom:true});
       figLiveCadrer();
-      if(rapide || figLive.cles.length) tbAiSpeed = 0.001;
+      if(rapide || figLive.cles.length)tbAiSilent = true;
     }
     tbAiPlaybackUpdateUI();
-    while(tbAiPlan && tbAiPlanIndex < tbAiPlan.actions.length){
-      if(tbAiSpeed<0.01 && tbAiPlanIndex>=figLive.nActions && prolonge) tbAiSpeed = vitesse;
-      await tbAiPlaybackNext();
-    }
+    while(tbAiPlan && tbAiPlanIndex < tbAiPlan.actions.length) await tbAiPlaybackNext();
     figLive.cles = cles; figLive.nActions = tbAiPlan ? tbAiPlan.actions.length : 0; figLive.centreCle = centreCle;
   } catch(e){
     console.warn('Construction en direct : programme refusé', programme, e);
@@ -6085,6 +6084,7 @@ async function figLiveSync(rapide){
     figLive.cles = []; figLive.nActions = 0; figLive.centreCle = '';
   } finally {
     tbAiSpeed = vitesse;
+    if(tbAiSilent){ tbAiSilent = false; tbRender(); if(typeof tbAiPlaybackUpdateUI==='function') tbAiPlaybackUpdateUI(); }
     figLive.occupe = false;
     if(figLive.encore){ figLive.encore = false; figLiveSync(false); }
   }

@@ -573,8 +573,13 @@ function tbAiCompile(program, allowed, opts){
 let tbAiPlan = null;
 let tbAiSpeed = 1;
 function tbAiSetSpeed(v){ tbAiSpeed = parseFloat(v)||1; }
-function tbAiSleep(ms){ return new Promise(r=>setTimeout(r, ms*tbAiSpeed)); }
+/* Mode silencieux : les gestes sont calculés sans animation ni affichage intermédiaire (reconstruction
+   instantanée du tableau quand on déplace un point de la figure en écran partagé -- signalé : « si je
+   déplace un point, la figure avec les outils recommence depuis le début »). */
+let tbAiSilent = false;
+function tbAiSleep(ms){ return tbAiSilent ? Promise.resolve() : new Promise(r=>setTimeout(r, ms*tbAiSpeed)); }
 function tbAiTween(target, props, ms){
+  if(tbAiSilent){ for(const k in props) target[k] = props[k]; return Promise.resolve(); }
   ms = Math.max(1, ms*tbAiSpeed);
   const start = {}; for(const k in props) start[k] = target[k];
   return new Promise(res=>{
