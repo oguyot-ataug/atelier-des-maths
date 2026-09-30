@@ -3082,6 +3082,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.847', items:[
+    "Construction aux instruments : perpendiculaire ou parallèle à une demi-droite d'angle. Signalé : « La dernière perpendiculaire n'a pas été tracée » (message « point y inconnu »). Quand la droite de référence est la demi-droite [Ay) d'un angle de mesure donnée, construite sans point, la construction aux instruments s'appuie maintenant sur la demi-droite elle-même : la perpendiculaire (ou la parallèle) se trace à l'équerre comme les autres.",
+  ]},
   { version:'2026-08-19.846', items:[
     "Construction aux instruments (écran partagé, fenêtre de projection, tableau) : le repère de l'angle ne reste plus affiché. Signalé : « Il y a toujours un point qui s'affiche pour faire l'angle dans la partie outils. » Le petit repère posé à la graduation du rapporteur (46°, par exemple) ne sert qu'à guider la règle : il est effacé dès que la demi-droite est tracée. Un repère qui porte un nom (le sommet C d'un triangle, par exemple) reste affiché.",
   ]},

@@ -5840,9 +5840,21 @@ function figVersProgramme(){
     if(t==='arc'){ assurerPoint(sh.center); assurerPoint(sh.p1); const id = nouvelId(sh); prog.push(couleur(sh, {op:'circle', id, center:sh.center.label, radius_from:[sh.center.label, sh.p1.label], arc:arcDeg(sh)})); return id; }
     if(t==='arc-rayon'){ assurerPoint(sh.center); const id = nouvelId(sh); prog.push(couleur(sh, {op:'circle', id, center:sh.center.label, radius:r1(sh.radiusCm || sh.radius/cm), arc:arcDeg(sh)})); return id; }
     if(t==='perpendiculaire' || t==='parallele'){
-      assurerPoint(sh.refA); assurerPoint(sh.refB); assurerPoint(sh.through);
+      // Droite de référence passant par le point caché d'un angle (demi-droite [Ay) sans point y --
+      // signalé : « la dernière perpendiculaire n'a pas été tracée ») : on désigne la demi-droite
+      // elle-même (identifiant de l'objet déjà construit), le point y n'existant pas au tableau.
+      const cache = q => q && q.hidden && q.def && q.def.type==='angle-cote';
+      let to;
+      if(cache(sh.refA) || cache(sh.refB)){
+        const y = cache(sh.refB) ? sh.refB : sh.refA, autre = y===sh.refB ? sh.refA : sh.refB;
+        const rayon = figState.shapes.find(r=>r.type==='demi-droite' && r.p2===y && (r.p1===autre || y.def.vertex===autre));
+        const idR = rayon ? assurerObjet(rayon) : null;
+        if(!idR) return null;
+        to = idR;
+      } else { assurerPoint(sh.refA); assurerPoint(sh.refB); to = [sh.refA.label, sh.refB.label]; }
+      assurerPoint(sh.through);
       const id = nouvelId(sh);
-      prog.push(couleur(sh, {op: t==='perpendiculaire' ? 'perpendicular' : 'parallel', id, through:sh.through.label, to:[sh.refA.label, sh.refB.label], kind:'line'}));
+      prog.push(couleur(sh, {op: t==='perpendiculaire' ? 'perpendicular' : 'parallel', id, through:sh.through.label, to, kind:'line'}));
       return id;
     }
     if(t==='mediatrice'){ assurerPoint(sh.p1); assurerPoint(sh.p2); const id = nouvelId(sh); prog.push(couleur(sh, {op:'perpendicular_bisector', id, of:[sh.p1.label, sh.p2.label]})); return id; }
