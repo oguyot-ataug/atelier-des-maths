@@ -3082,6 +3082,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.846', items:[
+    "Construction aux instruments (écran partagé, fenêtre de projection, tableau) : le repère de l'angle ne reste plus affiché. Signalé : « Il y a toujours un point qui s'affiche pour faire l'angle dans la partie outils. » Le petit repère posé à la graduation du rapporteur (46°, par exemple) ne sert qu'à guider la règle : il est effacé dès que la demi-droite est tracée. Un repère qui porte un nom (le sommet C d'un triangle, par exemple) reste affiché.",
+  ]},
   { version:'2026-08-19.845', items:[
     "Accueil : vidéo de présentation d'Oliv'IA (1 min 24), dans une nouvelle vignette « Oliv'IA, l'aide sur les cours » en tête des outils pour les professeurs. On y voit le professeur ouvrir Oliv'IA à un groupe de remédiation, puis une élève de 6e sélectionner la propriété d'égalité des fractions : Oliv'IA la réexplique avec une pizza, lui pose une petite question pour vérifier, puis l'aide sur un exercice par des indices, sans donner la réponse. Pour finir, le professeur relit la conversation.",
   ]},

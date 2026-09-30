@@ -1332,6 +1332,10 @@ const tbAiSteps = {
     await tbAiPutAway('rapporteur');
     const ex = tbAiExtent(a.obj);
     if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
+    // Repère sans nom : il n'a servi qu'à guider la règle -- signalé : « il y a toujours un point
+    // qui s'affiche pour faire l'angle ». On l'efface une fois la demi-droite tracée (un repère
+    // nommé, ex. le point C d'un triangle, reste).
+    if(!mkPt.label){ const k = tbPoints.indexOf(mkPt); if(k>=0) tbPoints.splice(k,1); }
     await tbAiPutAwayAll();
     tbAiCodeAngle(A, tbAiUnit(A,B), dS, tbAiFmtDeg(a.deg), 1);
     tbRender();
