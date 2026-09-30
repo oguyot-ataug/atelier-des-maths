@@ -57,6 +57,27 @@ document.getElementById('cours-demo-probabilites').innerHTML = `
 <ul class="example-list">
   <li>On lance un dé à jouer à quatre faces. Chaque face a autant de chance de tomber.<br>La probabilité de « <i>Obtenir un nombre pair.</i> » est :<br><span class="tex">2</span> chances sur <span class="tex">4</span> ; ou <span class="tex">\\dfrac{2}{4} = \\dfrac{1}{2}</span> ; ou <span class="tex">0{,}5</span> ; ou <span class="tex">50\\,\\%</span>.</li>
 </ul>
+
+<div class="lesson-header"><span class="num">3</span><h3>Fréquence et probabilité</h3></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Quand on <b>répète</b> une expérience aléatoire, la <b>fréquence</b> d'un résultat est le quotient <span class="tex">\\dfrac{\\text{nombre de fois où il est obtenu}}{\\text{nombre total d'essais}}</span>.</div>
+<span class="prop-badge">Propriété</span>
+<div class="def-box">Plus on répète l'expérience, plus la fréquence d'un résultat se <b>rapproche</b> de sa probabilité. Sur peu d'essais, elle peut en être assez éloignée : le dé « ne se souvient pas » des lancers précédents.</div>
+<p class="example-title">Simulation : on lance un dé équilibré et on compte les « 6 ». La probabilité d'obtenir 6 est <span class="tex">\\dfrac{1}{6} \\approx 0{,}17</span>.</p>
+<div class="figure-wrap">
+  <div class="figure-toolbar" style="justify-content:center;flex-wrap:wrap;">
+    <button class="btn" onclick="d2Simuler(10)">Lancer 10 fois</button>
+    <button class="btn" onclick="d2Simuler(100)">100 fois</button>
+    <button class="btn" onclick="d2Simuler(1000)">1 000 fois</button>
+    <button class="btn secondary" onclick="d2Simuler(0)">Remettre à zéro</button>
+  </div>
+  <div id="d2SimRes" style="text-align:center;margin-top:10px;font-size:1.05rem;">Aucun lancer pour l'instant.</div>
+  <div style="height:14px;border-radius:99px;background:rgba(28,43,57,.08);margin:10px auto 0;max-width:420px;position:relative;overflow:hidden;">
+    <i id="d2SimBar" style="display:block;height:100%;width:0;background:#2EA8C9;transition:width .4s;"></i>
+    <span style="position:absolute;top:0;bottom:0;left:16.67%;border-left:2px dashed #E35D3A;" title="probabilité 1/6"></span>
+  </div>
+  <p class="hint" style="text-align:center;margin:6px 0 0;">Trait rouge : la probabilité <span class="tex">\\dfrac{1}{6}</span>. Barre bleue : la fréquence observée des « 6 ».</p>
+</div>
 `;
 
 document.getElementById('methode-demo-probabilites').innerHTML = `
@@ -142,3 +163,14 @@ DEMO_REGISTRY['6e|Probabilités'] = {
   }
 };
 
+
+/* Approche fréquentiste (programme de 6e : « comparer des résultats d'une expérience aléatoire répétée
+   à une probabilité calculée ») : lancers d'un dé simulés, fréquence des 6 comparée à 1/6. */
+let d2Sim = { n: 0, six: 0 };
+function d2Simuler(k){
+  if(!k) d2Sim = { n: 0, six: 0 };
+  for(let i = 0; i < k; i++){ d2Sim.n++; if(Math.floor(Math.random() * 6) === 5) d2Sim.six++; }
+  const f = d2Sim.n ? d2Sim.six / d2Sim.n : 0, r = document.getElementById('d2SimRes'), b = document.getElementById('d2SimBar');
+  if(r) r.innerHTML = d2Sim.n ? `<b>${d2Sim.n.toLocaleString('fr-FR')}</b> lancers, <b>${d2Sim.six.toLocaleString('fr-FR')}</b> fois le 6 : fréquence ≈ <b>${f.toFixed(3).replace('.', ',')}</b> (probabilité ≈ 0,167)` : 'Aucun lancer pour l\'instant.';
+  if(b) b.style.width = Math.min(100, f * 100) + '%';
+}

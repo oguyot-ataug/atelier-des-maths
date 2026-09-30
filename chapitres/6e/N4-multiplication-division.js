@@ -293,7 +293,7 @@ document.getElementById('exos-demo-multiplication-division-6e').innerHTML = `
   <h3>Exercices</h3>
   <div class="exo-card">
     <div class="num">Exercice 1</div>
-    Calcule sans poser d'opération : 7,3 &times; 100 ; 512 ÷ 1 000 ; 9,4 &times; 0,01 ; 6 ÷ 0,1.
+    Calcule sans poser d'opération : 7,3 &times; 100 ; 512 ÷ 1 000 ; 9,4 &times; 0,01 ; 6 &times; 0,1.
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>

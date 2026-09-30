@@ -3091,6 +3091,15 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.859', items:[
+    "6e : chapitres vérifiés avec le nouveau programme du cycle 3. Demandé : « Oui, fais le même contrôle pour la 6e. » Rien de hors programme majeur (pas de produit en croix en proportionnalité, pas d'aire du triangle ni du disque, pas de lettres formelles en algèbre ; volumes par comptage de cubes). Compléments ajoutés là où un objectif manquait.",
+    "Nombres décimaux : nouveau paragraphe « Encadrer et intercaler » (encadrement à l'unité, au dixième ; intercaler entre 4,6 et 4,7).",
+    "Fractions : nombres et partage : nouveau paragraphe « Nombre mixte » (17/5 = 3 + 2/5 = 3,4 ; dans l'autre sens 2 + 3/4 = 11/4 ; encadrer et ranger des fractions grâce au nombre mixte).",
+    "Construction de triangles : remarque « trois longueurs ne permettent pas toujours de construire un triangle » (2, 3 et 7 cm : les arcs ne se coupent pas).",
+    "Probabilités : nouveau paragraphe « Fréquence et probabilité » (approche fréquentiste), avec une simulation de 10, 100 ou 1 000 lancers de dé : la fréquence des 6 se rapproche de 1/6.",
+    "Gestion de données : nouveau paragraphe « Mener une enquête » (étapes, tableau de données) et « Filtrer un tableau selon un critère ».",
+    "Multiplication et division : l'exercice 1 demandait 6 ÷ 0,1 ; la division par un décimal n'est pas au programme de 6e (seulement la multiplication par 0,1, 0,01, 0,001 et son lien avec la division par 10, 100, 1 000) : remplacé par 6 × 0,1.",
+  ]},
   { version:'2026-08-19.858', items:[
     "Convertisseur : bouton « Plein écran » sur chaque outil (titre, tableau et flèches sur tout l'écran, agrandis pour le vidéoprojecteur ; Échap pour sortir). Demandé : « Permettre le plein écran. »",
     "Convertisseur, vérifié avec le programme officiel du cycle 3 : au CM1 et au CM2, les élèves ne convertissent pas avec un tableau ; ils s'appuient sur les relations entre les unités (« 3,5 mètres est égal à 350 centimètres, car 1 mètre est égal à 100 centimètres »). À ces niveaux, l'outil Unités montre donc la chaîne des unités (× 10 de l'une à la suivante, préfixes en couleur), écrit la relation (1 m = 100 cm, donc 3,45 m = 3,45 × 100 cm) et fait le calcul avec le glisse-nombre, que le programme cite. Le tableau où l'on déplace la virgule est réservé au collège, où la relation reste aussi affichée.",

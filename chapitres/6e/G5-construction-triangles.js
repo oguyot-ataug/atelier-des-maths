@@ -186,6 +186,9 @@ document.getElementById('methode-demo-construction-triangles').innerHTML = `
     <button class="btn secondary" onclick="triAReset()">Revoir depuis le début</button>
   </div>
 </div>
+<div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
+  Attention : trois longueurs ne permettent pas toujours de construire un triangle. Avec des côtés de 2 cm, 3 cm et 7 cm, les deux arcs de cercle ne se coupent pas : 2 + 3 = 5 cm, c'est trop court pour « rejoindre » les extrémités du côté de 7 cm. Pour que le triangle existe, <b>la plus grande longueur doit être plus petite que la somme des deux autres</b>.
+</div>
 
 <div class="sub-header"><span class="letter">B</span><h4>Connaissant la longueur de deux côtés et la mesure de l'angle délimité par ces côtés</h4></div>
 <p style="margin:4px 0 8px;"><b>Exemple</b> : construis un triangle DEF tel que DE = 6 cm, DF = 5 cm et <span class="tex">\\widehat{EDF} = 50°</span>.</p>

@@ -122,6 +122,30 @@ document.getElementById('cours-demo-gestion-donnees').innerHTML = `
 <ul class="example-list">
   <li>On peut voir que plus de la moitié de la population en 2022 se trouve en Asie car le secteur orange mesure plus de 180°.</li>
 </ul>
+
+<div class="lesson-header"><span class="num">3</span><h3>Mener une enquête</h3></div>
+<span class="def-badge">Méthode</span>
+<div class="def-box">
+  Pour mener une <b>enquête statistique</b> :
+  <ul style="margin:8px 0 0;padding-left:20px;line-height:1.8;">
+    <li>on choisit la <b>question</b> étudiée et les personnes (ou les objets) interrogés ;</li>
+    <li>on <b>recueille les données</b> (questionnaire, relevés, mesures) ;</li>
+    <li>on les <b>consigne dans un tableau</b> : une ligne par personne, une colonne par caractère étudié ;</li>
+    <li>on les <b>représente</b> (diagramme) et on les <b>interprète</b>.</li>
+  </ul>
+</div>
+<p class="example-title">Exemple : enquête « Comment viens-tu au collège ? » dans un groupe de six élèves.</p>
+<div style="overflow-x:auto;margin:10px 0;"><table style="border-collapse:collapse;font-family:'Inter',sans-serif;font-size:.92rem;min-width:360px;">
+  <thead><tr style="background:#1F3A5C;color:#fff;"><th style="padding:8px 10px;text-align:left;">Élève</th><th style="padding:8px 10px;text-align:right;">Durée du trajet</th><th style="padding:8px 10px;text-align:left;">Moyen de transport</th><th style="padding:8px 10px;text-align:left;">Petit-déjeuner</th></tr></thead>
+  <tbody><tr style="background:rgba(248,175,35,.30);"><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">Léa</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);text-align:right;">8 min</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">vélo</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">oui</td></tr><tr><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">Tom</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);text-align:right;">25 min</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">bus</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">non</td></tr><tr><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">Inès</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);text-align:right;">12 min</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">à pied</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">oui</td></tr><tr style="background:rgba(248,175,35,.30);"><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">Hugo</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);text-align:right;">15 min</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">vélo</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">non</td></tr><tr><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">Zoé</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);text-align:right;">30 min</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">voiture</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">oui</td></tr><tr><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">Sam</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);text-align:right;">5 min</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">à pied</td><td style="padding:7px 10px;border-bottom:1px solid rgba(28,43,57,.12);">oui</td></tr></tbody></table></div>
+<div class="sub-header" style="margin-top:12px;"><span class="letter">A</span><h4>Filtrer un tableau selon un critère</h4></div>
+<span class="prop-badge">Règle</span>
+<div class="def-box"><b>Filtrer</b> un tableau, c'est ne garder que les lignes qui vérifient un <b>critère</b> choisi. On peut ensuite compter ces lignes ou comparer leurs valeurs.</div>
+<ul class="example-list">
+  <li>Critère « vient à vélo » : on ne garde que les lignes surlignées, Léa et Hugo. <b>2 élèves sur 6</b> viennent à vélo.</li>
+  <li>Critère « trajet de plus de 10 min » : Tom, Inès, Hugo et Zoé, soit <b>4 élèves</b>. Parmi eux, qui prend un petit-déjeuner ? Inès et Zoé.</li>
+</ul>
+<p class="hint" style="margin:6px 0 12px;">Un tableur fait la même chose automatiquement avec l'outil « Filtre » : on choisit la colonne et le critère.</p>
 `;
 
 document.getElementById('methode-demo-gestion-donnees').innerHTML = `

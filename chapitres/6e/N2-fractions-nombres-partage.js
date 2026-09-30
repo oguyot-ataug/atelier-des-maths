@@ -27,6 +27,19 @@ document.getElementById('cours-demo-fractions-partage').innerHTML = `
   <li><span class="tex">\\dfrac{1}{3}</span> est le nombre qui, multiplié par 3, donne 1 : <span class="tex">\\dfrac{1}{3} \\times 3 = 1</span>. La division 1 : 3 ne se termine jamais ; on peut seulement écrire <span class="tex">\\dfrac{1}{3} \\approx 0{,}33</span> : la fraction <span class="tex">\\dfrac{1}{3}</span> est donc un <b>nombre non décimal</b>.</li>
 </ul>
 
+<div class="sub-header" style="margin-top:16px;"><span class="letter">D</span><h4>Nombre mixte</h4></div>
+<span class="def-badge">Définition</span>
+<div class="def-box">Une fraction plus grande que 1 peut s'écrire comme la somme d'un <b>nombre entier</b> et d'une <b>fraction plus petite que 1</b> : c'est l'écriture en <b>nombre mixte</b>. Par exemple <span class="tex">\\dfrac{7}{4} = 1 + \\dfrac{3}{4}</span>, que l'on note aussi <span class="tex">1\\dfrac{3}{4}</span> (« un et trois quarts »).</div>
+<p class="example-title">Exemple : écris <span class="tex">\\dfrac{17}{5}</span> sous forme de nombre mixte, puis sous forme décimale.</p>
+<ul class="example-list">
+  <li>Dans 17 cinquièmes, combien de fois 5 cinquièmes (c'est-à-dire 1) ? 17 = 3 × 5 + 2 : il y a 3 unités et il reste 2 cinquièmes.</li>
+  <li>Donc <span class="tex">\\dfrac{17}{5} = 3 + \\dfrac{2}{5}</span>, soit <span class="tex">3\\dfrac{2}{5}</span>. Comme <span class="tex">\\dfrac{2}{5} = 0{,}4</span>, on a aussi <span class="tex">\\dfrac{17}{5} = 3{,}4</span>.</li>
+  <li>Dans l'autre sens : <span class="tex">2 + \\dfrac{3}{4} = \\dfrac{8}{4} + \\dfrac{3}{4} = \\dfrac{11}{4}</span>.</li>
+</ul>
+<div class="redaction-note" style="background:rgba(31,58,92,.07);border-color:rgba(31,58,92,.25);color:#12253A;">
+  Remarque : l'écriture en nombre mixte permet d'encadrer la fraction par deux entiers consécutifs : <span class="tex">3 &lt; \\dfrac{17}{5} &lt; 4</span>. Elle aide aussi à ranger des fractions : <span class="tex">\\dfrac{17}{5} = 3\\dfrac{2}{5}</span> est plus petit que <span class="tex">\\dfrac{15}{4} = 3\\dfrac{3}{4}</span>, car <span class="tex">\\dfrac{2}{5} &lt; \\dfrac{3}{4}</span>.
+</div>
+
 <div class="lesson-header"><span class="num">2</span><h3>Égalité de fractions</h3></div>
 <span class="prop-badge">Propriété</span>
 <div class="def-box">
