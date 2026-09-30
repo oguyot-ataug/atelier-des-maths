@@ -3097,6 +3097,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.867', items:[
+    "CM1, période 5 : les quatre derniers chapitres de l'année. « Algèbre » (suites de motifs, de nombres et de figures en allumettes, le signe = qui veut dire « vaut autant que », nombre caché, balance en équilibre, programmes de calcul à remonter). « Angles » (sommet et côtés, angle droit vérifié à l'équerre, aigu, obtus, gabarit) avec un curseur pour ouvrir un angle et le classer. « Heures et durées » (horloge à aiguilles, unités et conversions en phrases, instant ou durée, frise avec bonds jusqu'à l'heure pile) avec un atelier « lis l'heure ». « Initiation à la pensée informatique » (coder un déplacement avec des flèches, boucle « répéter », bug) avec un robot à programmer et 4 défis. Les 23 chapitres de CM1 ont maintenant tous leur cours.",
+  ]},
   { version:'2026-08-19.866', items:[
     "CM1, période 4 : quatre nouveaux chapitres. « Résolution de problèmes » (les 6 étapes, schémas en barres pour chercher un tout ou une partie, comparer, multiplier, partager, grouper, problèmes à étapes, reste d'une division à interpréter). « Solides » (cube, pavé droit, prisme, pyramide, cylindre, cône, boule dessinés avec arêtes cachées en pointillés ; faces, arêtes, sommets ; patrons du cube). « Aires » (comparer, compter des carreaux et demi-carreaux, cm², périmètre et aire à ne pas confondre ; les formules restent pour le CM2). « Proportionnalité » (fois plus, addition, passage par l'unité, situations non proportionnelles ; sans tableau, comme le demande le programme).",
   ]},
