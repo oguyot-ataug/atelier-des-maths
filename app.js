@@ -3073,6 +3073,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.829', items:[
+    "Cahier : résumé de la séance pour le cahier de textes -- demandé : « un bouton visible par le professeur qui récapitule ce qui a été fait pour permettre un copier coller vers le cahier de texte de classe (école directe ou autre). Mettre en forme avec des couleurs pour cours et exercices. Pour le cours, ne mettre que les titres. Préciser à chaque début de résumé quel est le chapitre travaillé ». Dans le cahier, chaque jour a un nouveau bouton (à côté du PDF), visible seulement par les professeurs. Il ouvre le résumé de la séance : pour chaque chapitre travaillé, « Chapitre : … » en tête, puis le cours en bleu (titres seulement) et les exercices en orange (numéro, page et intitulé, raccourci s'il est très long). Le résumé reste modifiable dans la fenêtre avant d'être copié ; « Copier (avec les couleurs) » garde la mise en forme au collage (École Directe, Pronote…), « Copier en texte simple » donne une version sans mise en forme.",
+  ]},
   { version:'2026-08-19.828', items:[
     "Cahier de corrections, « Modifier » -- signalé : « quand on fait modifier, il recrée systématiquement une nouvelle entrée en base. Je me suis trompé de classe, je clique sur modifier, je change la classe. Mais l'exercice se retrouve dans les deux classes. » Cause : changer de classe active recharge le cahier de la nouvelle classe ; l'exercice en cours de modification n'y figurant pas, l'enregistrement le prenait pour un nouvel exercice et l'ajoutait, sans toucher à l'original. Désormais, « Enregistrer la modification » met toujours à jour la même ligne en base. Si la classe active a changé entre-temps, une confirmation propose de déplacer l'exercice (« Déplacer cet exercice de 6V vers 6O ? ») : il quitte l'ancienne classe et rejoint la nouvelle, sans doublon ; annuler laisse tout en l'état.",
   ]},
@@ -6349,6 +6352,7 @@ function groupedEntriesAccordionHTML(entries, renderItem){
         <span>${fmtDateFR(grp.date)}</span>
         <span class="nb-accordion-count">(${grp.entries.length})</span>
         <button type="button" class="nb-pdf-day-btn" onclick="event.stopPropagation(); exportCahierDayAsPDF('${grp.date}')" title="Générer un PDF de ce jour"><span class=gicon>picture_as_pdf</span></button>
+        ${nbResumeDayBtn(grp.date)}
       </div>
       <div class="nb-accordion-body${isOpen?' open':''}" id="${accId}">${inner}</div>
     </div>`;
@@ -6379,6 +6383,7 @@ function lazyGroupedEntriesAccordionHTML(editable){
         <span>${fmtDateFR(grp.date)}</span>
         <span class="nb-accordion-count">(${grp.count})</span>
         <button type="button" class="nb-pdf-day-btn" onclick="event.stopPropagation(); exportCahierDayAsPDF('${grp.date}')" title="Générer un PDF de ce jour"><span class=gicon>picture_as_pdf</span></button>
+        ${nbResumeDayBtn(grp.date)}
       </div>
       <div class="nb-accordion-body${isOpen?' open':''}" id="${accId}">${inner}</div>
     </div>`;
@@ -6680,6 +6685,106 @@ function downloadCahierElevePDF(){ exportCahierAsPDF(); }
 // générer en pdf le contenu du jour". Réutilise le même gabarit d'impression que
 // exportCahierAsPDF(). S'assure d'abord que le contenu de ce jour est bien chargé (le
 // chargement paresseux ne charge par défaut que le jour le plus récent).
+/* ---- Résumé d'une séance pour le cahier de textes -- demandé : « un bouton visible par le
+   professeur qui récapitule ce qui a été fait pour permettre un copier coller vers le cahier de
+   texte de classe (école directe ou autre). Mettre en forme avec des couleurs pour cours et
+   exercices. Pour le cours, ne mettre que les titres. Préciser à chaque début de résumé quel est
+   le chapitre travaillé ». ---- */
+function nbResumeDayBtn(date){
+  if(currentUserRole!=='prof' && currentUserRole!=='admin') return '';
+  return `<button type="button" class="nb-pdf-day-btn nb-resume-day-btn" onclick="event.stopPropagation(); resumeCahierJour('${date}')" title="Résumé de la séance à copier dans le cahier de textes (École Directe…)"><span class=gicon>content_paste</span></button>`;
+}
+async function assurerJourCahierCharge(date){
+  if(isSyncEnabled() && !cahierLoadedDates.has(date)){
+    const entries = await fetchCahierEntriesForDate(date);
+    if(entries){
+      const existingIds = new Set(cahier.map(e=>e.id));
+      entries.forEach(e=>{ if(!existingIds.has(e.id)) cahier.push(e); });
+      sortCahierInPlace();
+      cahierLoadedDates.add(date);
+      saveCahier();
+    }
+  }
+}
+function resumeSeanceContenu(date){
+  const entries = cahier.filter(e=>e.date===date);
+  const chapitres = [];
+  entries.forEach(e=>{
+    const nom = String(e.chapitre||'').replace(/^[A-Z]{1,3}\d+[a-z]?\s*·\s*/, '').trim() || 'Chapitre non précisé';
+    let c = chapitres.find(x=>x.nom===nom);
+    if(!c){ c = {nom, cours:[], exos:[]}; chapitres.push(c); }
+    const titre = String(e.titre||'').replace(/\s+/g, ' ').trim();
+    const court = t => t.length > 110 ? t.slice(0, 107).replace(/\s+\S*$/, '') + '…' : t;
+    if(e.exo==='Cours'){ if(titre && !c.cours.includes(titre)) c.cours.push(titre); }
+    else if(e.exo==='TD') c.exos.push(titre || 'Exercices');
+    else if(e.exo==='Construction') c.exos.push('Construction' + (titre && titre!=='Construction' ? ' : '+court(titre) : ''));
+    else {
+      const num = String(e.exo||'').trim(), n = num && num!=='-' ? 'Exercice '+num : 'Exercice';
+      c.exos.push(n + (titre ? ' : '+court(titre) : ''));
+    }
+  });
+  const BLEU = '#0C5BA0', ORANGE = '#C45F00', ENCRE = '#20242E';
+  const esc = t => escapeHtml(t);
+  let html = '', txt = '';
+  chapitres.forEach((c, i)=>{
+    html += `<p style="margin:${i ? '14px' : '0'} 0 4px;font-weight:bold;color:${ENCRE};">Chapitre : ${esc(c.nom)}</p>`;
+    txt += (i ? '\n' : '') + 'Chapitre : ' + c.nom + '\n';
+    if(c.cours.length){
+      html += `<p style="margin:4px 0 2px;font-weight:bold;color:${BLEU};">Cours</p><ul style="margin:0 0 6px;padding-left:22px;color:${BLEU};">${c.cours.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
+      txt += 'Cours :\n' + c.cours.map(t=>'  - '+t).join('\n') + '\n';
+    }
+    if(c.exos.length){
+      html += `<p style="margin:4px 0 2px;font-weight:bold;color:${ORANGE};">Exercices</p><ul style="margin:0 0 6px;padding-left:22px;color:${ORANGE};">${c.exos.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
+      txt += 'Exercices :\n' + c.exos.map(t=>'  - '+t).join('\n') + '\n';
+    }
+  });
+  return {html, txt, vide: !entries.length};
+}
+async function resumeCahierJour(date){
+  await assurerJourCahierCharge(date);
+  const r = resumeSeanceContenu(date);
+  if(r.vide){ await niceAlert('Rien dans le cahier ce jour-là.'); return; }
+  const ov = document.createElement('div');
+  ov.className = 'modal-overlay'; ov.id = 'resumeSeanceOverlay';
+  ov.innerHTML = `<div class="modal-card" style="max-width:640px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <strong style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;"><span class="gicon">content_paste</span> Résumé de la séance du ${fmtDateFR(date).replace(/^./, c=>c.toLowerCase())}</strong>
+      <button class="modal-close" onclick="document.getElementById('resumeSeanceOverlay').remove()" aria-label="Fermer"><span class="gicon">close</span></button>
+    </div>
+    <p class="hint" style="margin:0 0 10px;">À coller dans le cahier de textes de la classe (École Directe, Pronote…). Le texte reste modifiable ici avant de le copier.</p>
+    <div id="resumeSeanceApercu" contenteditable="true" style="border:1px solid rgba(28,43,57,.18);border-radius:10px;padding:12px 14px;max-height:52vh;overflow:auto;font-family:Arial,sans-serif;font-size:14px;line-height:1.5;background:#fff;">${r.html}</div>
+    <div class="figure-toolbar" style="margin-top:12px;justify-content:flex-start;">
+      <button class="btn" onclick="copierResumeSeance(true)"><span class="gicon">content_copy</span> Copier (avec les couleurs)</button>
+      <button class="btn secondary" onclick="copierResumeSeance(false)">Copier en texte simple</button>
+      <span id="resumeSeanceStatut" class="hint" style="margin:0;align-self:center;"></span>
+    </div>
+  </div>`;
+  ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); });
+  document.body.appendChild(ov);
+  window._resumeSeanceTexte = r.txt;
+}
+async function copierResumeSeance(avecCouleurs){
+  const apercu = document.getElementById('resumeSeanceApercu'), statut = document.getElementById('resumeSeanceStatut');
+  if(!apercu) return;
+  const html = apercu.innerHTML, texte = apercu.innerText.replace(/\n{3,}/g, '\n\n').trim();
+  let ok = false;
+  try{
+    if(avecCouleurs && window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){
+      await navigator.clipboard.write([new ClipboardItem({'text/html': new Blob([html], {type:'text/html'}), 'text/plain': new Blob([texte], {type:'text/plain'})})]);
+      ok = true;
+    } else if(!avecCouleurs && navigator.clipboard && navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(texte); ok = true;
+    }
+  }catch(e){ ok = false; }
+  if(!ok){
+    // Repli : sélection de l'aperçu et copie classique (garde la mise en forme).
+    const sel = window.getSelection(), range = document.createRange();
+    range.selectNodeContents(apercu); sel.removeAllRanges(); sel.addRange(range);
+    try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
+    sel.removeAllRanges();
+  }
+  if(statut) statut.textContent = ok ? '✓ Copié : collez-le dans le cahier de textes.' : 'Copie impossible : sélectionnez le texte ci-dessus et faites Ctrl+C.';
+}
 async function exportCahierDayAsPDF(date){
   if(isSyncEnabled() && !cahierLoadedDates.has(date)){
     const entries = await fetchCahierEntriesForDate(date);
