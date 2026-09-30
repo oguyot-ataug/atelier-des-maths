@@ -3073,6 +3073,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.831', items:[
+    "Résumé pour le cahier de textes : numéros de paragraphe et sous-paragraphes. Demandé : « Pour les cours : mettre le numéro du paragraphe et les sous paragraphes aussi ». Chaque partie de cours apparaît avec son numéro (« 1. Décrire une série statistique ») et ses sous-paragraphes en dessous (« A. Les mots des statistiques », « B. Les fréquences »). Un sous-paragraphe ajouté seul se range sous son paragraphe, et les méthodes sont regroupées sous « Méthodes ». Un même paragraphe ajouté deux fois n'apparaît qu'une fois.",
+  ]},
   { version:'2026-08-19.830', items:[
     "Séances en direct : ajout au cahier de l'élève. Signalé : « Pour les Séances en direct, je ne peux pas les insérer dans le cahier ». Un bouton « Cahier » est maintenant sur chaque séance en direct terminée (Interrogations en ligne), et un bouton « Ajouter au cahier » en bas de son bilan. Comme pour une interrogation, vous choisissez le sujet avec sa correction (bonnes réponses, explications) ou le sujet seul, puis le chapitre du cahier et la date. Seules les questions réellement posées pendant la séance sont reprises, et la date proposée est celle de la séance. L'entrée apparaît dans le cahier comme « Séance en direct » et figure dans le résumé du jour pour le cahier de textes. Les interrogations y figurent aussi désormais sous leur vrai nom, et non plus comme « Exercice Interrogation ».",
   ]},
@@ -6709,6 +6712,49 @@ async function assurerJourCahierCharge(date){
     }
   }
 }
+/* Titres d'une partie de cours pour le résumé -- demandé : « Pour les cours : mettre le numéro du
+   paragraphe et les sous paragraphes aussi ». On relit les titres dans le HTML figé de l'entrée :
+   « 1. Titre » (.lesson-header) puis ses sous-paragraphes « A. Titre » (.sub-header) ; une méthode
+   (lettre M) garde son seul titre (« Méthode 1 : … »). Sans titre lisible : le titre de l'entrée. */
+function resumeCoursTitres(e, titre){
+  const tpl = document.createElement('template');
+  tpl.innerHTML = e.html || '';
+  const texte = el=>{ if(!el) return ''; const c = el.cloneNode(true); c.querySelectorAll('.katex-mathml, .gicon').forEach(x=>x.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
+  const out = [];
+  tpl.content.querySelectorAll('.lesson-header, .sub-header').forEach(h=>{
+    const t = texte(h.querySelector('h3,h4')); if(!t) return;
+    if(h.classList.contains('lesson-header')){
+      const n = texte(h.querySelector('.num'));
+      out.push({t: (n ? n + '. ' : '') + t, subs: []});
+    } else {
+      const l = texte(h.querySelector('.letter'));
+      const u = l && l !== 'M' && !/^M(é|e)thode/i.test(t) && l.length <= 3 ? l + '. ' + t : t; // M : méthode
+      if(out.length) out[out.length-1].subs.push(u);
+      else { const par = resumeParagrapheParent(e, t); out.push(par ? {t: par, subs: [u]} : {t: u, subs: []}); }
+    }
+  });
+  return out.length ? out : (titre ? [{t: titre, subs: []}] : []);
+}
+// Sous-paragraphe (ou méthode) ajouté seul : on retrouve son paragraphe « 2. Titre » dans le cours du
+// chapitre (conteneur du DEMO_REGISTRY), pour l'écrire sous son paragraphe dans le résumé.
+function resumeParagrapheParent(e, sousTitre){
+  try{
+    const chap = String(e.chapitre||'').replace(/^[A-Z]{1,3}\d+[a-z]?\s*·\s*/, '').trim();
+    const reg = typeof DEMO_REGISTRY !== 'undefined' && DEMO_REGISTRY[e.niveau + '|' + chap];
+    const norm = t => String(t||'').replace(/\s+/g, ' ').trim();
+    // Rubrique « Méthodes » du chapitre (à part du cours) : les méthodes sont regroupées sous ce titre.
+    const meth = reg && reg.methode && document.getElementById(reg.methode);
+    if(meth && [...meth.querySelectorAll('.sub-header h4')].some(h=>norm(h.textContent) === sousTitre)) return 'Méthodes';
+    const cont = reg && reg.cours && document.getElementById(reg.cours);
+    if(!cont) return null;
+    let par = null;
+    for(const h of cont.querySelectorAll('.lesson-header, .sub-header')){
+      if(h.classList.contains('lesson-header')){ const n = h.querySelector('.num'), t = h.querySelector('h3'); par = (n ? norm(n.textContent) + '. ' : '') + norm(t && t.textContent); }
+      else if(par && norm((h.querySelector('h4')||{}).textContent) === sousTitre) return par;
+    }
+  }catch(err){}
+  return null;
+}
 function resumeSeanceContenu(date){
   const entries = cahier.filter(e=>e.date===date);
   const chapitres = [];
@@ -6718,7 +6764,13 @@ function resumeSeanceContenu(date){
     if(!c){ c = {nom, cours:[], exos:[]}; chapitres.push(c); }
     const titre = String(e.titre||'').replace(/\s+/g, ' ').trim();
     const court = t => t.length > 110 ? t.slice(0, 107).replace(/\s+\S*$/, '') + '…' : t;
-    if(e.exo==='Cours'){ if(titre && !c.cours.includes(titre)) c.cours.push(titre); }
+    if(e.exo==='Cours') resumeCoursTitres(e, titre).forEach(it=>{
+      // Même paragraphe ajouté deux fois, ou sous-paragraphe déjà listé sous son paragraphe : une seule ligne.
+      const deja = c.cours.find(x=>x.t===it.t);
+      if(deja){ it.subs.forEach(u=>{ if(!deja.subs.includes(u)) deja.subs.push(u); }); return; }
+      if(!it.subs.length && c.cours.some(x=>x.subs.includes(it.t))) return;
+      c.cours.push(it);
+    });
     else if(e.exo==='TD') c.exos.push(titre || 'Exercices');
     else if(e.exo==='Interrogation' || e.exo==='Séance en direct') c.exos.push(e.exo + (titre ? ' : '+court(titre) : ''));
     else if(e.exo==='Construction') c.exos.push('Construction' + (titre && titre!=='Construction' ? ' : '+court(titre) : ''));
@@ -6734,8 +6786,8 @@ function resumeSeanceContenu(date){
     html += `<p style="margin:${i ? '14px' : '0'} 0 4px;font-weight:bold;color:${ENCRE};">Chapitre : ${esc(c.nom)}</p>`;
     txt += (i ? '\n' : '') + 'Chapitre : ' + c.nom + '\n';
     if(c.cours.length){
-      html += `<p style="margin:4px 0 2px;font-weight:bold;color:${BLEU};">Cours</p><ul style="margin:0 0 6px;padding-left:22px;color:${BLEU};">${c.cours.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
-      txt += 'Cours :\n' + c.cours.map(t=>'  - '+t).join('\n') + '\n';
+      html += `<p style="margin:4px 0 2px;font-weight:bold;color:${BLEU};">Cours</p><ul style="margin:0 0 6px;padding-left:22px;color:${BLEU};">${c.cours.map(it=>`<li>${esc(it.t)}${it.subs.length ? `<ul style="margin:2px 0 0;padding-left:20px;list-style:circle;">${it.subs.map(u=>`<li>${esc(u)}</li>`).join('')}</ul>` : ''}</li>`).join('')}</ul>`;
+      txt += 'Cours :\n' + c.cours.map(it=>'  - '+it.t + it.subs.map(u=>'\n      '+u).join('')).join('\n') + '\n';
     }
     if(c.exos.length){
       html += `<p style="margin:4px 0 2px;font-weight:bold;color:${ORANGE};">Exercices</p><ul style="margin:0 0 6px;padding-left:22px;color:${ORANGE};">${c.exos.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`;
