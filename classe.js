@@ -27,7 +27,8 @@ function renderClasseOutils(){
   const classes = (typeof accountClassesList !== 'undefined' ? accountClassesList : []);
   const sel = clRoue.classe || (typeof currentClassId !== 'undefined' && currentClassId) || (classes[0] && classes[0].id) || 'libre';
   root.innerHTML = `
-  <div class="cl-grille">
+  <div class="cl-barre" id="clBarre"></div>
+  <div class="cl-scene" id="clScene">
     <section class="cl-bloc" id="clBlocRoue">
       <h2><span class="gicon">casino</span> La roue de la chance</h2>
       <p class="hint" style="margin:0 0 10px;">Tirage au sort d'un élève : une fois tiré, il sort de la roue.</p>
@@ -102,6 +103,7 @@ function renderClasseOutils(){
   </div>`;
   clRoueCharger(sel);
   clFeuDessiner(); clBruitDessiner(0);
+  clDispoInit();
 }
 
 /* ------------------------------ Feu de consigne ------------------------------
@@ -303,7 +305,7 @@ function clMinPause(){
 }
 function clMinRemettre(){ clMin.marche = false; clearInterval(clMin.t); clMin.reste = clMin.duree; clMin.fini = false; clMinMaj(); }
 function clMinAjouter(sec){ if(clMin.marche) clMin.fin += sec * 1000; else clMin.reste += sec; clMin.duree = Math.max(clMin.duree, Math.ceil(clMin.marche ? (clMin.fin - Date.now()) / 1000 : clMin.reste)); clMin.fini = false; clMinMaj(); }
-function clMinFermer(){ clMin.marche = false; clearInterval(clMin.t); clMin.mode = null; document.getElementById('clMinFlottant')?.remove(); document.getElementById('clMinPlein')?.remove(); if(document.fullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+function clMinFermer(){ clMin.marche = false; clearInterval(clMin.t); clMin.mode = null; document.getElementById('clMinFlottant')?.remove(); document.getElementById('clMinPlein')?.remove(); if(document.fullscreenElement && document.fullscreenElement.id === 'clMinPlein') (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
 function clMinTic(){
   if(clMin.marche){
     clMin.reste = Math.max(0, (clMin.fin - Date.now()) / 1000);
@@ -326,7 +328,7 @@ function clMinAfficher(){
         <button type="button" onclick="clMin.mode='sablier';clMinAfficher()" title="Sablier plein écran"><span class="gicon">fullscreen</span></button>
         <button type="button" onclick="clMinFermer()" title="Fermer"><span class="gicon">close</span></button></div>
       <div class="cl-min-chiffres" id="clMinChiffres"></div><div class="cl-min-btns" id="clMinBtns"></div>`;
-    document.body.appendChild(w);
+    (document.fullscreenElement || document.body).appendChild(w);
     clDeplacable(w, w.querySelector('.cl-min-poignee'));
   } else if(clMin.mode === 'sablier'){
     const o = document.createElement('div'); o.id = 'clMinPlein'; o.className = 'cl-min-plein';
@@ -366,6 +368,145 @@ function clSablierSvg(frac, coule){
     <rect x="12" y="2" width="76" height="7" rx="3" fill="#8B5E34"/><rect x="12" y="91" width="76" height="7" rx="3" fill="#8B5E34"/>
   </svg>`;
 }
+
+/* ------------------------------- Disposition des blocs -------------------------------
+   Demandé : « Permettre de déplacer les blocs, de les agrandir, de les positionner automatiquement
+   2 sur totalité écran / 3 ou 4 ou plus si à venir. »
+   - Les blocs sont posés sur une « scène » (la page, ou tout l'écran avec « Projeter ») ; positions
+     en % de la scène : la même disposition s'adapte à l'ordinateur comme au vidéoprojecteur.
+   - Disposition automatique : on coche les blocs à afficher et on choisit un modèle selon leur
+     nombre (côte à côte, 1 grand + 2, 2×2...). Glisser un bloc par son titre sur un autre les échange.
+   - Disposition libre : dès qu'on tire le coin d'un bloc, chacun se déplace et s'agrandit librement
+     (aimanté au pourcent). « Ranger automatiquement » revient au modèle.
+   - Le contenu grandit avec le bloc (container queries, styles.css). Nouveau bloc = une section
+     de plus dans renderClasseOutils + une entrée dans CL_BLOCS : les modèles se calculent pour n blocs. */
+const CL_BLOCS = [
+  { id: 'clBlocRoue', nom: 'Roue' },
+  { id: 'clBlocMinuteur', nom: 'Compte à rebours' },
+  { id: 'clBlocFeu', nom: 'Feu de consigne' },
+  { id: 'clBlocBruit', nom: 'Jauge de bruit' },
+];
+let clDispo = { ordre: CL_BLOCS.map(b => b.id), caches: [], mode: 'auto', modele: {}, pos: {} }, clDispoZ = 5;
+try{ const d = JSON.parse(localStorage.getItem('clDispo') || 'null'); if(d && Array.isArray(d.ordre)) clDispo = Object.assign(clDispo, d); }catch(e){}
+function clDispoSauver(){ try{ localStorage.setItem('clDispo', JSON.stringify(clDispo)); }catch(e){} }
+function clBorne(v, a, b){ return Math.max(a, Math.min(b, v)); }
+function clDispoVisibles(){
+  CL_BLOCS.forEach(b => { if(!clDispo.ordre.includes(b.id)) clDispo.ordre.push(b.id); });   // bloc ajouté dans une version future
+  clDispo.ordre = clDispo.ordre.filter(id => CL_BLOCS.some(b => b.id === id));
+  return clDispo.ordre.filter(id => !clDispo.caches.includes(id));
+}
+// Rectangles [x, y, largeur, hauteur] en % de la scène.
+function clGrille(n, cols){
+  const rows = Math.ceil(n / cols), r = [];
+  for(let i = 0; i < n; i++){ const l = Math.floor(i / cols), dans = l === rows - 1 ? n - l * cols : cols, k = i - l * cols;
+    r.push([k * 100 / dans, l * 100 / rows, 100 / dans, 100 / rows]); }
+  return r;
+}
+function clGrandPlus(n, part){ const r = [[0, 0, part, 100]], m = n - 1; for(let i = 0; i < m; i++) r.push([part, i * 100 / m, 100 - part, 100 / m]); return r; }
+function clModeles(n){
+  if(n <= 1) return [{ nom: 'Tout l\'écran', r: [[0, 0, 100, 100]] }];
+  if(n === 2) return [{ nom: 'Côte à côte', r: clGrille(2, 2) }, { nom: 'Un grand, un petit', r: [[0, 0, 64, 100], [64, 0, 36, 100]] }, { nom: 'L\'un sous l\'autre', r: clGrille(2, 1) }];
+  if(n === 3) return [{ nom: '1 grand + 2', r: clGrandPlus(3, 58) }, { nom: '3 colonnes', r: clGrille(3, 3) }, { nom: '2 en haut, 1 en bas', r: [[0, 0, 50, 55], [50, 0, 50, 55], [0, 55, 100, 45]] }];
+  const cols = Math.ceil(Math.sqrt(n)), l = [{ nom: 'Mosaïque', r: clGrille(n, cols) }, { nom: '1 grand + ' + (n - 1), r: clGrandPlus(n, 60) }];
+  const c2 = n === 4 ? 4 : (Math.ceil(n / 2) !== cols ? Math.ceil(n / 2) : Math.ceil(n / 3));
+  l.push({ nom: c2 === n ? n + ' colonnes' : 'Sur ' + Math.ceil(n / c2) + ' lignes', r: clGrille(n, c2) });
+  return l;
+}
+function clDispoRects(){
+  const vis = clDispoVisibles();
+  if(clDispo.mode === 'libre') return vis.map((id, i) => clDispo.pos[id] || [25 + i * 3, 20 + i * 3, 46, 56]);
+  const ms = clModeles(vis.length); return (ms[clDispo.modele[vis.length] || 0] || ms[0]).r;
+}
+function clDispoPoser(el, [x, y, w, h]){
+  Object.assign(el.style, { left: `calc(${x}% + 7px)`, top: `calc(${y}% + 7px)`, width: `calc(${w}% - 14px)`, height: `calc(${h}% - 14px)` });
+}
+function clDispoAppliquer(){
+  const scene = document.getElementById('clScene'); if(!scene) return;
+  const vis = clDispoVisibles(), rects = clDispoRects();
+  CL_BLOCS.forEach(b => { const el = document.getElementById(b.id); if(!el) return;
+    const i = vis.indexOf(b.id); el.hidden = i < 0; el.style.order = i; if(i >= 0) clDispoPoser(el, rects[i]);
+    if(clDispo.mode !== 'libre') el.style.zIndex = ''; });
+  scene.classList.toggle('cl-libre', clDispo.mode === 'libre');
+  scene.classList.toggle('cl-vide', !vis.length);
+  clBarreDessiner();
+}
+function clBarreDessiner(){
+  const b = document.getElementById('clBarre'); if(!b) return;
+  const n = clDispoVisibles().length, ms = clModeles(n), libre = clDispo.mode === 'libre', cur = libre ? -1 : (clDispo.modele[n] || 0);
+  const vignette = m => `<svg viewBox="0 0 40 24" width="44" height="26" aria-hidden="true">${m.r.map(([x, y, w, h]) => `<rect x="${(x * .4 + .8).toFixed(1)}" y="${(y * .24 + .8).toFixed(1)}" width="${(w * .4 - 1.6).toFixed(1)}" height="${(h * .24 - 1.6).toFixed(1)}" rx="1.5"/>`).join('')}</svg>`;
+  b.innerHTML = `<div class="cl-barre-groupe"><span class="cl-barre-titre">Blocs affichés</span>
+      ${clDispo.ordre.map(id => { const d = CL_BLOCS.find(x => x.id === id), on = !clDispo.caches.includes(id);
+        return `<button type="button" class="cl-puce ${on ? 'on' : ''}" onclick="clDispoBasculer('${id}')" title="${on ? 'Masquer' : 'Afficher'} ce bloc"><span class="gicon">${on ? 'check_box' : 'check_box_outline_blank'}</span> ${d.nom}</button>`; }).join('')}</div>
+    <div class="cl-barre-groupe"><span class="cl-barre-titre">Disposition${n ? ` (${n} bloc${n > 1 ? 's' : ''})` : ''}</span>
+      ${n ? ms.map((m, i) => `<button type="button" class="cl-modele ${i === cur ? 'on' : ''}" onclick="clDispoModele(${i})" title="${m.nom}">${vignette(m)}</button>`).join('') : ''}
+      ${libre ? `<span class="cl-libre-etiq"><span class="gicon">open_with</span> Disposition libre</span>
+        <button type="button" class="btn secondary" onclick="clDispoModele(${clDispo.modele[n] || 0})"><span class="gicon">auto_awesome_mosaic</span> Ranger automatiquement</button>` : ''}</div>
+    <button type="button" class="btn" onclick="clPleinEcran('clScene')" title="Les blocs affichés, sur tout l'écran (vidéoprojecteur)" ${n ? '' : 'disabled'}><span class="gicon">fullscreen</span> Projeter la disposition</button>
+    <p class="hint cl-barre-aide">Glissez un bloc par son titre ${libre ? 'pour le déplacer' : 'sur un autre pour les échanger'} ; tirez son coin <b>◢</b> pour l'agrandir${libre ? '' : ' (passe en disposition libre)'}.</p>`;
+}
+function clDispoBasculer(id){
+  const i = clDispo.caches.indexOf(id);
+  if(i >= 0){ clDispo.caches.splice(i, 1); if(clDispo.mode === 'libre' && !clDispo.pos[id]) clDispo.pos[id] = [27, 22, 46, 56]; }
+  else { clDispo.caches.push(id); if(id === 'clBlocBruit' && clBruit.actif) clBruitArreter(); }
+  clDispoSauver(); clDispoAppliquer();
+}
+function clDispoModele(i){ clDispo.mode = 'auto'; clDispo.modele[clDispoVisibles().length] = i; clDispoSauver(); clDispoAppliquer(); }
+// Passage en disposition libre : chaque bloc garde la place qu'il avait dans le modèle.
+function clDispoLibre(){
+  const vis = clDispoVisibles(), r = clDispoRects();
+  vis.forEach((id, i) => { clDispo.pos[id] = r[i].map(v => Math.round(v * 10) / 10); });
+  clDispo.mode = 'libre';
+}
+function clDispoInit(){
+  const scene = document.getElementById('clScene'); if(!scene) return;
+  CL_BLOCS.forEach(b => { const el = document.getElementById(b.id); if(!el) return;
+    const h2 = el.querySelector('h2'); h2.classList.add('cl-titre-poignee'); h2.title = 'Glisser pour déplacer le bloc';
+    h2.insertAdjacentHTML('afterbegin', '<span class="gicon cl-grip">drag_indicator</span>');
+    h2.insertAdjacentHTML('beforeend', `<button type="button" class="cl-masquer" title="Masquer ce bloc" onclick="clDispoBasculer('${b.id}')"><span class="gicon">close</span></button>`);
+    el.insertAdjacentHTML('beforeend', '<span class="cl-taille" title="Tirer pour agrandir ou réduire"></span>');
+    h2.addEventListener('pointerdown', e => clDispoGlisser(e, el, 'deplacer'));
+    el.querySelector('.cl-taille').addEventListener('pointerdown', e => clDispoGlisser(e, el, 'taille'));
+  });
+  scene.insertAdjacentHTML('beforeend', '<button type="button" class="cl-scene-quitter" onclick="clPleinEcran(\'clScene\')" title="Quitter le plein écran (Échap)"><span class="gicon">fullscreen_exit</span></button>');
+  clDispoAppliquer();
+}
+function clDispoGlisser(e, el, quoi){
+  if(e.button !== 0 || e.target.closest('button,input,select,textarea') || window.matchMedia('(max-width:760px)').matches) return;
+  const scene = document.getElementById('clScene'), R = scene.getBoundingClientRect(), id = el.id, x0 = e.clientX, y0 = e.clientY;
+  e.preventDefault();
+  if(quoi === 'taille' && clDispo.mode !== 'libre'){ clDispoLibre(); clDispoAppliquer(); }
+  const libre = clDispo.mode === 'libre', p0 = libre ? (clDispo.pos[id] || clDispoRects()[clDispoVisibles().indexOf(id)]).slice() : null;
+  el.classList.add('cl-saisi'); if(libre) el.style.zIndex = ++clDispoZ;
+  let cible = null; const sy0 = window.scrollY;
+  const bouge = ev => {
+    // Près du haut ou du bas de la fenêtre, la page défile pour atteindre les autres blocs.
+    if(!document.fullscreenElement){ if(ev.clientY > window.innerHeight - 50) window.scrollBy(0, 18); else if(ev.clientY < 50) window.scrollBy(0, -18); }
+    const ey = ev.clientY - y0 + window.scrollY - sy0;
+    const dx = (ev.clientX - x0) * 100 / R.width, dy = ey * 100 / R.height;
+    if(libre){
+      const p = p0.slice();
+      if(quoi === 'deplacer'){ p[0] = clBorne(Math.round(p0[0] + dx), 0, 100 - p[2]); p[1] = clBorne(Math.round(p0[1] + dy), 0, 100 - p[3]); }
+      else { p[2] = clBorne(Math.round(p0[2] + dx), 16, 100 - p[0]); p[3] = clBorne(Math.round(p0[3] + dy), 18, 100 - p[1]); }
+      clDispo.pos[id] = p; clDispoPoser(el, p);
+    } else {
+      el.style.transform = `translate(${ev.clientX - x0}px, ${ey}px)`;
+      const sous = document.elementsFromPoint(ev.clientX, ev.clientY).map(n => n.closest && n.closest('.cl-bloc')).find(n => n && n !== el) || null;
+      if(cible !== sous){ if(cible) cible.classList.remove('cl-cible'); cible = sous; if(cible) cible.classList.add('cl-cible'); }
+    }
+  };
+  const fin = () => {
+    window.removeEventListener('pointermove', bouge); window.removeEventListener('pointerup', fin); window.removeEventListener('pointercancel', fin);
+    el.classList.remove('cl-saisi'); el.style.transform = '';
+    if(cible){ cible.classList.remove('cl-cible'); const o = clDispo.ordre, a = o.indexOf(id), b = o.indexOf(cible.id); [o[a], o[b]] = [o[b], o[a]]; }
+    clDispoSauver(); clDispoAppliquer();
+  };
+  window.addEventListener('pointermove', bouge); window.addEventListener('pointerup', fin); window.addEventListener('pointercancel', fin);
+}
+// La petite fenêtre du compte à rebours suit le plein écran (sinon elle serait cachée derrière).
+document.addEventListener('fullscreenchange', () => {
+  const w = document.getElementById('clMinFlottant'), hote = document.fullscreenElement && document.fullscreenElement.id !== 'clMinPlein' ? document.fullscreenElement : document.body;
+  if(w && w.parentNode !== hote) hote.appendChild(w);
+});
 
 /* --------------------------------- Utilitaires --------------------------------- */
 function clDeplacable(el, poignee){

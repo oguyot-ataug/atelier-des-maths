@@ -3087,6 +3087,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.852', items:[
+    "Outils de classe : les blocs se déplacent et s'agrandissent. Demandé : « Permettre de déplacer les blocs, de les agrandir, de les positionner automatiquement 2 sur totalité écran / 3 ou 4 ou plus ».",
+    "Disposition automatique : on coche les blocs à afficher (roue, compte à rebours, feu, jauge) et on choisit un modèle selon leur nombre. Pour 2 blocs : côte à côte, un grand et un petit, ou l'un sous l'autre. Pour 3 : un grand et deux petits, 3 colonnes, ou 2 en haut et 1 en bas. Pour 4 et plus : mosaïque, un grand et les autres à côté, ou en colonnes. Les futurs outils s'ajouteront aux modèles automatiquement.",
+    "On glisse un bloc par son titre sur un autre pour les échanger. En tirant le coin d'un bloc, on passe en disposition libre : chaque bloc se déplace et se redimensionne où l'on veut. « Ranger automatiquement » revient au modèle. La croix d'un bloc le masque.",
+    "« Projeter la disposition » affiche les blocs choisis sur tout l'écran, pour le vidéoprojecteur. Le contenu grandit avec le bloc (roue, chiffres, feu, jauge). La petite fenêtre du compte à rebours reste visible en plein écran. La disposition est mémorisée sur l'ordinateur.",
+  ]},
   { version:'2026-08-19.851', items:[
     "Outils de classe : feu de consigne. Un feu tricolore à projeter indique le niveau de voix attendu : rouge « Silence », orange « On chuchote », vert « Travail en groupe ». Une option ajoute « ✋ Je lève la main pour parler ». Plein écran pour le vidéoprojecteur, et la dernière consigne est mémorisée.",
     "Outils de classe : jauge de bruit. Le micro de l'ordinateur mesure le niveau sonore de la classe, avec une aiguille sur un cadran vert, orange et rouge. Le seuil à ne pas dépasser suit la consigne du feu (plus bas pour « Silence », plus haut pour « Travail en groupe »). Au-delà du seuil pendant plus d'une seconde et demie, la jauge passe en alerte (« Trop de bruit ! », fond qui clignote, petit signal sonore désactivable). La sensibilité du micro est réglable. Le son est analysé uniquement sur l'ordinateur : rien n'est enregistré ni envoyé, et le micro est coupé dès qu'on quitte la page.",
