@@ -45,7 +45,7 @@ ${cm1Exemple('Lecture :', ['Ligne « Cantine », colonne « Garçons » : <b>9</
 
 ${cm1Lecon(3, 'Le diagramme en barres')}
 ${cm1Regle('Dans un <b>diagramme en barres</b>, la <b>hauteur</b> de chaque barre représente une quantité. On la lit sur l\'axe vertical gradué.')}
-<div class="figure-wrap">${barres(FRUITS, 2, 10, { titreAxe: 'Nombre d\'élèves' })}</div>
+${ce2AnimDiagramme('cm1-do-diag', { donnees: FRUITS.map(([l, v], i) => [l, v, ['#E35D3A', '#E9C46A', '#2E9C6A', '#7A4FC0', '#2EA8C9'][i % 5]]), max: 10, pas: 2, titre: 'Nombre d\'élèves' })}
 ${cm1Exemple('Lecture :', ['La barre la plus haute est celle de la fraise : c\'est le fruit préféré (9 élèves).', 'La barre « Pomme » monte à 8 : 8 élèves préfèrent la pomme.', 'La barre « Kiwi » s\'arrête au milieu entre 2 et 4 : elle vaut 3.'])}
 ${cm1Astuce('Avant de lire un diagramme, on regarde <b>de combien en combien</b> est graduée l\'échelle (ici de 2 en 2).')}
 
@@ -73,12 +73,18 @@ ${cm1Demo('do-tab', 'Compléter un tableau à double entrée', 'Dans une école,
     ]],
   ],
   exos: cm1Exos('do', [
-    [`Voici les notes d'un jeu de fléchettes : 5 · 3 · 5 · 1 · 3 · 5 · 2 · 5 · 3. Range ces données dans un tableau (points / nombre de lancers).`, `${cm1Tableau(['Points', '1', '2', '3', '5', 'Total'], [['Nombre de lancers', '1', '1', '3', '4', '9']])}`],
-    ['Dans le tableau à double entrée du cours : combien de filles mangent à la maison ? Combien d\'élèves en tout mangent à la maison ?', '3 filles mangent à la maison. 8 élèves (3 + 5) mangent à la maison.'],
-    [`Lis le diagramme :${barres([['Lun', 12], ['Mar', 18], ['Mer', 6], ['Jeu', 15], ['Ven', 20]], 5, 20, { titreAxe: 'Livres empruntés', coul: '#7A4FC0' })}Combien de livres ont été empruntés mardi ? Quel jour en a-t-on emprunté le moins ?`, 'Mardi : 18 livres (entre 15 et 20, un peu avant 20). Le moins : mercredi (6 livres).'],
-    ['Avec le même diagramme : combien de livres ont été empruntés dans la semaine ?', '12 + 18 + 6 + 15 + 20 = 71 livres.'],
-    ['Trace un diagramme en barres (1 carreau pour 1 élève) pour : Chat 7 · Chien 9 · Poisson 2 · Lapin 4.', 'Quatre barres de même largeur, de hauteurs 7, 9, 2 et 4 carreaux, avec le nom de l\'animal sous chaque barre et un axe gradué de 1 en 1.'],
-    ['Avec le graphique des températures : à quelle heure faisait-il 11 °C ? De combien de degrés la température a-t-elle monté entre 8 h et 14 h ?', 'À 18 h. Elle est passée de 6 °C à 17 °C : 17 − 6 = 11 degrés.'],
+    [`Voici les points d'un jeu de fléchettes : 5 ; 3 ; 5 ; 1 ; 3 ; 5 ; 2 ; 5 ; 3. Range ces données dans un tableau (points et nombre de lancers).`,
+      cm1Redac('Tableau des lancers', cm1Tableau(['Points', '1', '2', '3', '5', 'Total'], [['Nombre de lancers', '1', '1', '3', '4', '9']]), 'Il y a eu 9 lancers ; le score le plus fréquent est 5 points (4 lancers).')],
+    ['Dans le tableau à double entrée du cours, combien de filles mangent à la maison ? Combien d\'élèves en tout mangent à la maison ?',
+      cm1Redac('Filles qui mangent à la maison', 'Ligne « maison », colonne « filles » : 3', '3 filles mangent à la maison.') + cm1Redac('Élèves qui mangent à la maison', '3 + 5 = 8', '8 élèves mangent à la maison.')],
+    [`Lis le diagramme :${barres([['Lun', 12], ['Mar', 18], ['Mer', 6], ['Jeu', 15], ['Ven', 20]], 5, 20, { titreAxe: 'Livres empruntés', coul: '#7A4FC0' })}Combien de livres ont été empruntés mardi ? Quel jour en a-t-on emprunté le moins ?`,
+      cm1Redac('Livres empruntés mardi', 'La barre de mardi s\'arrête un peu avant 20 : à 18.', '18 livres ont été empruntés mardi.') + cm1Redac('Jour avec le moins d\'emprunts', 'La barre la plus courte est celle de mercredi : 6.', 'C\'est mercredi qu\'on a emprunté le moins de livres.')],
+    ['Avec le même diagramme, combien de livres ont été empruntés dans la semaine ?',
+      cm1Redac('Livres de la semaine', ['12 + 18 + 6 + 15 + 20', '71'], '71 livres ont été empruntés dans la semaine.')],
+    ['Trace un diagramme en barres (1 carreau pour 1 élève) avec ces données : chat 7 ; chien 9 ; poisson 2 ; lapin 4.',
+      cm1Redac('Construction', { suite: ['Je trace un axe vertical gradué de 1 en 1 jusqu\'à 10.', 'Je dessine 4 barres de même largeur, de hauteurs 7, 9, 2 et 4 carreaux.', 'J\'écris le nom de l\'animal sous chaque barre.'] }, 'La barre la plus haute est celle du chien : c\'est l\'animal préféré.')],
+    ['Avec le graphique des températures, à quelle heure faisait-il 11 °C ? De combien de degrés la température a-t-elle monté entre 8 h et 14 h ?',
+      cm1Redac('Heure à 11 °C', 'Je cherche 11 sur l\'axe vertical, puis le point de la courbe.', 'Il faisait 11 °C à 18 h.') + cm1Redac('Hausse de température', '17 − 6 = 11', 'La température a monté de 11 degrés entre 8 h et 14 h.')],
   ], { titre: 'Rédaction type : « Lire un graphique »', lignes: [['Je repère 12 h sur l\'axe horizontal.', 'Je monte jusqu\'au point de la courbe.'], ['Je lis 14 sur l\'axe vertical.', 'Je vais horizontalement jusqu\'à l\'axe.'], ['À 12 h, il faisait 14 °C.', 'Je réponds par une phrase.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : Florence Nightingale et ses diagrammes', [
     'Les premiers diagrammes en barres ont été dessinés par l\'Écossais <b>William Playfair</b> en 1786, pour montrer le commerce de son pays. Avant lui, les données étaient seulement écrites dans de longs tableaux.',

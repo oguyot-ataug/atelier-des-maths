@@ -41,7 +41,7 @@ ${schema([[['175 lues', 70, BL], ['?', 30, 'x']]], '250 pages')}
 
 ${cm1Lecon(3, 'Comparer deux quantités')}
 ${cm1Exemple('Paul a 36 cartes. Léa en a 18 de plus que Paul. Combien Léa a-t-elle de cartes ?')}
-${schema([[['Paul : 36', 60, BL]], [['Léa : 36', 60, VE], ['+ 18', 30, VI]]], null, 95)}
+${ce2AnimBarres('cm1-rp-comp', { unite: 3, lignes: [['Paul', [[36, '36', BL, 'Paul a 36 cartes.']]], ['Léa', [[36, '36', VE, 'Léa en a autant que Paul…'], [18, '18', VI, '… et encore 18.']]]], total: '? cartes', totalTexte: 'Léa a 36 + 18 = <b>54 cartes</b>.' })}
 <ul class="example-list"><li>Léa a « autant que Paul, et 18 de plus » : 36 + 18 = 54. Léa a 54 cartes.</li></ul>
 ${cm1Astuce('« De plus » ne veut pas toujours dire addition ! « Paul a 36 cartes, il en a 18 de plus que Léa » : c\'est Léa qui en a moins, 36 − 18 = 18. Le schéma évite ce piège.')}
 
@@ -52,6 +52,7 @@ ${schema([[['24', 16, BL], ['24', 16, BL], ['24', 16, BL], ['24', 16, BL], ['24'
 ${cm1Exemple('Partage : on partage 96 billes entre 4 enfants. Combien chacun en reçoit-il ?')}
 ${schema([[['?', 24, 'x'], ['?', 24, 'x'], ['?', 24, 'x'], ['?', 24, 'x']]], '96 billes', 96)}
 <ul class="example-list"><li>On cherche la valeur d'une part : <b>division</b>. 96 ÷ 4 = 24. Chacun reçoit 24 billes.</li></ul>
+${ce2AnimPartage('cm1-rp-partage', { legende: 'Un partage équitable, avec de plus petits nombres : 24 billes entre 4 enfants.', presets: [{ nom: '24 billes, 4 enfants', total: 24, parts: 4, etiq: 'enfant', objets: 'billes', fin: 'Chaque enfant reçoit <b>6 billes</b> : 24 ÷ 4 = 6.' }] })}
 ${cm1Exemple('Groupement : 150 œufs à ranger dans des boîtes de 6. Combien de boîtes ?', ['On cherche combien de fois 6 il y a dans 150 : <b>division</b>. 150 ÷ 6 = 25. Il faut 25 boîtes.'])}
 
 ${cm1Lecon(5, 'Problèmes à plusieurs étapes')}
@@ -65,7 +66,7 @@ ${cm1Demo('rp-division', 'Division avec reste : interpréter le résultat', '100
   demos: [
     ['rp-etapes', [
       { expr: 'Je cherche : le nombre de joueurs de tennis.', note: 'On repère la question.' },
-      { expr: 'Tout : 1 250 · foot : 480 · basket : 325', note: 'On trie les données utiles.' },
+      { expr: 'Tout : 1 250 ; foot : 480 ; basket : 325', note: 'On trie les données utiles.' },
       { expr: schema([[['480', 38, BL], ['325', 26, VE], ['? tennis', 36, 'x']]], '1 250 adhérents'), note: 'Le schéma montre qu\'on connaît le tout et deux parties.' },
       { expr: '480 + 325 = 805', note: 'Question intermédiaire : combien font du foot ou du basket ?' },
       { expr: '1 250 − 805 = 445', note: 'On enlève cette partie du tout.' },
@@ -79,14 +80,22 @@ ${cm1Demo('rp-division', 'Division avec reste : interpréter le résultat', '100
     ]],
   ],
   exos: cm1Exos('rp', [
-    ['Un fermier a 245 poules et 78 canards. Combien a-t-il de volailles ?', '245 + 78 = 323. Il a 323 volailles.'],
-    ['Un avion peut transporter 186 passagers. 159 places sont occupées. Combien de places sont libres ?', '186 − 159 = 27. Il reste 27 places libres.'],
-    ['Emma a 1 450 €. Elle a 380 € de moins que son frère. Combien a son frère ?', 'Le frère a plus : 1 450 + 380 = 1 830. Son frère a 1 830 €.'],
-    ['Une boîte contient 12 œufs. Combien d\'œufs y a-t-il dans 25 boîtes ?', '25 × 12 = 300. Il y a 300 œufs.'],
-    ['On range 84 livres sur 7 étagères, autant sur chacune. Combien de livres par étagère ?', '84 ÷ 7 = 12. Il y a 12 livres par étagère.'],
-    ['Pour une fête, on prévoit 3 gâteaux pour 8 personnes. Il y a 40 invités. Combien de gâteaux faut-il ?', '40 personnes, c\'est 5 fois 8 personnes (40 ÷ 8 = 5), donc 5 × 3 = 15 gâteaux.'],
-    ['Au cinéma, une place adulte coûte 9 € et une place enfant 6 €. Combien paie une famille de 2 adultes et 3 enfants ?', 'Adultes : 2 × 9 = 18 €. Enfants : 3 × 6 = 18 €. Total : 18 + 18 = 36 €.'],
-    ['On a 75 photos à coller dans un album, 6 par page. Combien de pages faut-il ?', '75 = 6 × 12 + 3 : 12 pages pleines et 3 photos restantes, donc il faut 13 pages.'],
+    ['Un fermier a 245 poules et 78 canards. Combien a-t-il de volailles ?',
+      cm1Redac('Nombre de volailles', '245 + 78 = 323', 'Le fermier a 323 volailles.')],
+    ['Un avion peut transporter 186 passagers. 159 places sont occupées. Combien de places sont libres ?',
+      cm1Redac('Places libres', '186 − 159 = 27', 'Il reste 27 places libres.')],
+    ['Emma a 1 450 €. Elle a 380 € de moins que son frère. Combien a son frère ?',
+      cm1Redac('Argent du frère', '1 450 + 380 = 1 830', 'Emma a moins que son frère, donc son frère a plus : il a 1 830 €.')],
+    ['Une boîte contient 12 œufs. Combien d\'œufs y a-t-il dans 25 boîtes ?',
+      cm1Redac('Nombre d\'œufs', '25 × 12 = 300', 'Il y a 300 œufs dans 25 boîtes.')],
+    ['On range 84 livres sur 7 étagères, autant sur chacune. Combien de livres y a-t-il par étagère ?',
+      cm1Redac('Livres par étagère', '84 ÷ 7 = 12', 'Il y a 12 livres sur chaque étagère.')],
+    ['Pour une fête, on prévoit 3 gâteaux pour 8 personnes. Il y a 40 invités. Combien de gâteaux faut-il ?',
+      cm1Redac('Groupes de 8 personnes', '40 ÷ 8 = 5', '40 personnes, c\'est 5 groupes de 8 personnes.') + cm1Redac('Nombre de gâteaux', '5 × 3 = 15', 'Il faut 15 gâteaux.')],
+    ['Au cinéma, une place adulte coûte 9 € et une place enfant 6 €. Combien paie une famille de 2 adultes et 3 enfants ?',
+      cm1Redac('Prix total', ['2 × 9 + 3 × 6', '18 + 18', '36'], 'La famille paie 36 €.')],
+    ['On a 75 photos à coller dans un album, 6 par page. Combien de pages faut-il ?',
+      cm1Redac('Pages pleines', '75 = 6 × 12 + 3', 'On remplit 12 pages et il reste 3 photos.') + cm1Redac('Nombre de pages', '12 + 1 = 13', 'Il faut une page de plus pour les 3 dernières photos : il faut 13 pages.')],
   ], { titre: 'Rédaction type d\'un problème', lignes: [['Je cherche…', 'J\'écris ce que je cherche.'], ['Calcul : 6 × 24 = 144', 'J\'écris l\'opération et son résultat.'], ['Il y a 144 crayons.', 'Je réponds par une phrase, avec l\'unité.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : Polya et l\'art de résoudre', [
     'Les plus anciens problèmes de mathématiques connus ont près de 4 000 ans : ils sont écrits sur des tablettes d\'argile en Mésopotamie et sur des papyrus en Égypte. On y partage du pain, on calcule des récoltes, on mesure des champs.',

@@ -41,6 +41,8 @@ ${cm1Regle('On choisit une <b>unité d\'aire</b> (par exemple un carreau) et on 
 <div style="text-align:center;">${quad(5, 4, FIG_T.pleines, FIG_T.demis, '#E35D3A')}<div class="hint" style="margin:0;">Figure C : 4 carreaux + 4 demis = 6 carreaux</div></div></div>
 ${cm1Exemple('Pour la figure A, un rectangle, on n\'est pas obligé de compter un par un :', ['il y a 3 lignes de 5 carreaux, donc 3 × 5 = <b>15 carreaux</b>.'])}
 
+${cmAnimPaver('cm1-ai-paver', { presets: [{ nom: '5 sur 3', l: 3, c: 5 }, { nom: '4 sur 4', l: 4, c: 4 }, { nom: '7 sur 2', l: 2, c: 7 }] })}
+
 ${cm1Lecon(4, 'Le centimètre carré')}
 ${cm1Def('Le <b>centimètre carré</b> (on écrit <b>1 cm²</b>) est l\'aire d\'un carré de 1 cm de côté.')}
 <div class="figure-wrap"><svg viewBox="0 0 170 90" style="width:200px;"><rect x="20" y="20" width="50" height="50" fill="#7A4FC0" fill-opacity=".3" stroke="#1F3A5C" stroke-width="2"/><text x="45" y="50" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">1 cm²</text><text x="45" y="86" font-size="11" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">1 cm</text><text x="80" y="49" font-size="11" fill="#1F3A5C" font-family="Space Grotesk">1 cm</text></svg></div>
@@ -48,8 +50,8 @@ ${cm1Exemple('Exemples :', ['un rectangle de 4 cm sur 2 cm contient 2 lignes de 
 
 ${cm1Lecon(5, 'Périmètre et aire : deux grandeurs différentes')}
 <div class="figure-wrap" style="display:flex;gap:26px;flex-wrap:wrap;justify-content:center;align-items:center;">
-<div style="text-align:center;">${quad(6, 4, rectCases(1, 1, 4, 2), [], '#2EA8C9')}<div class="hint" style="margin:0;">aire 8 carreaux · périmètre 12</div></div>
-<div style="text-align:center;">${quad(10, 3, rectCases(1, 1, 8, 1), [], '#2E9C6A')}<div class="hint" style="margin:0;">aire 8 carreaux · périmètre 18</div></div></div>
+<div style="text-align:center;">${quad(6, 4, rectCases(1, 1, 4, 2), [], '#2EA8C9')}<div class="hint" style="margin:0;">aire : 8 carreaux ; périmètre : 12</div></div>
+<div style="text-align:center;">${quad(10, 3, rectCases(1, 1, 8, 1), [], '#2E9C6A')}<div class="hint" style="margin:0;">aire : 8 carreaux ; périmètre : 18</div></div></div>
 ${cm1Regle('Deux figures peuvent avoir la <b>même aire</b> et des <b>périmètres différents</b> (et inversement). L\'aire et le périmètre ne se mesurent pas avec les mêmes unités : cm pour le périmètre, cm² pour l\'aire.')}
 `,
   methode: `
@@ -71,13 +73,20 @@ ${cm1Demo('ai-cm2', 'Trouver l\'aire d\'un rectangle en cm²', 'Un rectangle mes
     ]],
   ],
   exos: cm1Exos('ai', [
-    [`Quelle est l'aire de cette figure (en carreaux) ?<div style="margin:6px 0;">${quad(7, 5, [[1, 1], [2, 1], [3, 1], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [1, 3], [2, 3]], [], '#7A4FC0')}</div>`, '10 carreaux.'],
-    [`Quelle est l'aire de cette figure ?<div style="margin:6px 0;">${quad(6, 4, [[1, 1], [2, 1], [1, 2], [2, 2], [3, 2]], [[3, 1, 'bg'], [4, 2, 'bg']], '#2EA8C9')}</div>`, '5 carreaux entiers + 2 demi-carreaux = 5 + 1 = 6 carreaux.'],
-    ['Un rectangle fait 4 carreaux de long et 3 carreaux de large. Quelle est son aire ? son périmètre (en côtés de carreau) ?', 'Aire : 3 × 4 = 12 carreaux. Périmètre : 4 + 3 + 4 + 3 = 14.'],
-    ['Dessine sur ton cahier deux figures différentes qui ont chacune une aire de 6 carreaux.', 'Par exemple un rectangle de 3 sur 2 et un rectangle de 6 sur 1 (ou une forme en L de 6 carreaux).'],
-    ['Quelle est l\'aire d\'un carré de 5 cm de côté ?', '5 lignes de 5 carrés de 1 cm² : 5 × 5 = 25 cm².'],
-    ['Vrai ou faux ? « Si deux figures ont la même aire, elles ont le même périmètre. »', 'Faux : un rectangle de 4 sur 2 et un rectangle de 8 sur 1 ont la même aire (8) mais des périmètres différents (12 et 18).'],
-    ['Quelle unité choisir : cm ou cm² ? Le tour d\'une photo · la surface d\'un timbre · la longueur d\'un crayon.', 'cm · cm² · cm.'],
+    [`Quelle est l'aire de cette figure (en carreaux) ?<div style="margin:6px 0;">${quad(7, 5, [[1, 1], [2, 1], [3, 1], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [1, 3], [2, 3]], [], '#7A4FC0')}</div>`,
+      cm1Redac('Aire de la figure', ['3 + 5 + 2', '10'], 'L\'aire de la figure est 10 carreaux (3 carreaux en haut, 5 au milieu, 2 en bas).')],
+    [`Quelle est l'aire de cette figure ?<div style="margin:6px 0;">${quad(6, 4, [[1, 1], [2, 1], [1, 2], [2, 2], [3, 2]], [[3, 1, 'bg'], [4, 2, 'bg']], '#2EA8C9')}</div>`,
+      cm1Redac('Aire de la figure', ['5 + 1', '6'], 'Il y a 5 carreaux entiers et 2 demi-carreaux, qui font 1 carreau : l\'aire est 6 carreaux.')],
+    ['Un rectangle fait 4 carreaux de long et 3 carreaux de large. Quelle est son aire ? Quel est son périmètre (en côtés de carreau) ?',
+      cm1Redac('Aire du rectangle', '3 × 4 = 12', 'L\'aire du rectangle est 12 carreaux.') + cm1Redac('Périmètre du rectangle', '4 + 3 + 4 + 3 = 14', 'Le périmètre est 14 côtés de carreau.')],
+    ['Dessine sur ton cahier deux figures différentes qui ont chacune une aire de 6 carreaux.',
+      cm1Redac('Deux figures de 6 carreaux', { suite: ['un rectangle de 3 sur 2 : 3 × 2 = 6', 'un rectangle de 6 sur 1 : 6 × 1 = 6'] }, 'Ces deux rectangles ont la même aire, 6 carreaux, mais pas la même forme.')],
+    ['Quelle est l\'aire d\'un carré de 5 cm de côté ?',
+      cm1Redac('Aire du carré', '5 × 5 = 25', 'On peut ranger 5 lignes de 5 carrés de 1 cm² : l\'aire du carré est 25 cm².')],
+    ['Vrai ou faux ? « Si deux figures ont la même aire, elles ont le même périmètre. »',
+      cm1Redac('Contre-exemple', { suite: ['rectangle de 4 sur 2 : aire 8, périmètre 12', 'rectangle de 8 sur 1 : aire 8, périmètre 18'] }, 'Faux : ces deux rectangles ont la même aire mais pas le même périmètre.')],
+    [`Quelle unité choisir : cm ou cm² ?${cm1Liste(['le tour d\'une photo', 'la surface d\'un timbre', 'la longueur d\'un crayon'])}`,
+      cm1Redac('Choix des unités', { suite: ['le tour d\'une photo : cm (un périmètre)', 'la surface d\'un timbre : cm² (une aire)', 'la longueur d\'un crayon : cm (une longueur)'] }, 'On utilise les cm pour les longueurs et les cm² pour les aires.')],
   ], { titre: 'Rédaction type : « Aire d\'un rectangle en cm² »', lignes: [['3 lignes de 7 carrés de 1 cm²', 'Je pave le rectangle.'], ['3 × 7 = 21', 'Je calcule.'], ['L\'aire est 21 cm².', 'Je conclus avec l\'unité.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : mesurer les champs', [
     'Mesurer des aires a d\'abord servi à mesurer des <b>champs</b> : pour les partager, les vendre, ou calculer l\'impôt. Dans l\'Égypte ancienne, après chaque crue du Nil, les arpenteurs recalculaient l\'aire des terres de chaque paysan.',

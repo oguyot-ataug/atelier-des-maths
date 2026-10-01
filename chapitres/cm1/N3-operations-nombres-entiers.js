@@ -54,7 +54,7 @@ document.getElementById('cours-demo-cm1-operations-nombres-entiers').innerHTML =
   </ul>
 </div>
 <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
-  Astuce : avant de poser un calcul, on peut <b>estimer</b> le résultat pour vérifier ensuite qu'il est raisonnable. Exemple : pour 802 + 99, comme 802 est proche de 800 et 99 est proche de 100, le résultat doit être proche de 800 + 100 = <b>900</b> (et 802 + 99 = 901, c'est cohérent !).
+  Astuce : avant de poser un calcul, on peut <b>estimer</b> le résultat pour vérifier ensuite qu'il est raisonnable. Pour 802 + 99, 802 est proche de 800 et 99 est proche de 100 :${cm1Liste(['estimation : 800 + 100 = <b>900</b>', 'calcul exact : 802 + 99 = 901', 'les deux sont proches : le résultat est cohérent.'])}
 </div>
 
 <div class="lesson-header"><span class="num">2</span><h3>L'addition posée</h3></div>
@@ -92,7 +92,7 @@ ${cm1opRowsTable([
   {cells:['6','8','0'], bar:true, label:'← 34 × 20 (chiffre des dizaines de 23)'},
   {cells:['7','8','2'], color:'var(--accent-orange)', big:true, label:'← 102 + 680'},
 ])}
-<p class="hint" style="text-align:center;margin:0 0 10px;">34 × 3 = 102 &nbsp;·&nbsp; 34 × 20 = 680 &nbsp;·&nbsp; 102 + 680 = 782. Le résultat s'appelle le <b>produit</b>.</p>
+${cm1Liste(['34 × 3 = 102', '34 × 20 = 680', '102 + 680 = 782'])}<p class="hint" style="text-align:center;margin:0 0 10px;">Le résultat, 782, s'appelle le <b>produit</b>.</p>
 
 <div class="lesson-header"><span class="num">5</span><h3>La division euclidienne posée</h3></div>
 <span class="prop-badge">Méthode</span>
@@ -113,6 +113,7 @@ ${divisionPoseeHTML(computeDivisionPosee(587,9))}
 <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
   « 42 est un multiple de 7 » et « 7 est un diviseur de 42 » décrivent le <b>même</b> fait, vu de deux côtés différents !
 </div>
+${ce2AnimSauts('cm1-op-multiples', { legende: 'Les multiples de 7 : on avance de 7 en 7 à partir de 0.', presets: [{ nom: 'Multiples de 7', depart: 0, sauts: [[7, '+ 7'], [7, '+ 7'], [7, '+ 7'], [7, '+ 7'], [7, '+ 7'], [7, '+ 7']], min: 0, max: 48, fin: '0, 7, 14, 21, 28, 35, 42 : 42 est un multiple de 7, car 42 = 6 × 7.' }, { nom: 'Multiples de 6 et 56', depart: 0, sauts: [[6, '+ 6'], [6, '+ 6'], [6, '+ 6'], [6, '+ 6'], [6, '+ 6'], [6, '+ 6'], [6, '+ 6'], [6, '+ 6'], [6, '+ 6'], [6, '+ 6']], min: 0, max: 64, fin: 'On passe par 54, puis par 60 : on ne tombe jamais sur 56. 56 n\'est pas un multiple de 6.' }] })}
 
 <div class="lesson-header"><span class="num">7</span><h3>Critères de divisibilité</h3></div>
 <span class="prop-badge">Règles</span>
@@ -182,52 +183,34 @@ document.getElementById('exos-demo-cm1-operations-nombres-entiers').innerHTML = 
   <h3>Exercices</h3>
   <div class="exo-card">
     <div class="num">Exercice 1</div>
-    Pose et effectue l'addition 467 + 385.
+    Un cinéma a accueilli 467 spectateurs samedi et 385 dimanche. Combien de spectateurs a-t-il accueillis pendant le week-end ?
     <button type="button" class="exo-correction-toggle" data-target="cm1op-correction-1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1op-correction-1">
-      ${cm1opRowsTable([
-        {cells:['1','1',''], small:true},
-        {cells:['4','6','7']},
-        {cells:['3','8','5'], sign:'+', bar:true},
-        {cells:['8','5','2'], color:'var(--accent-orange)', big:true},
-      ])}
-      <p style="margin:0;text-align:center;">467 + 385 = <b>852</b></p>
+      ${cm1Redac('Nombre de spectateurs', { pose: cm1opRowsTable([{cells:['1','1',''], small:true}, {cells:['4','6','7']}, {cells:['3','8','5'], sign:'+', bar:true}, {cells:['8','5','2'], color:'var(--accent-orange)', big:true}]) }, 'Le cinéma a accueilli 852 spectateurs pendant le week-end.')}
     </div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
-    Pose et effectue la soustraction 542 − 267.
+    Un livre a 542 pages. Lina en a déjà lu 267. Combien de pages lui reste-t-il à lire ?
     <button type="button" class="exo-correction-toggle" data-target="cm1op-correction-2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1op-correction-2">
-      ${cm1opRowsTable([
-        {cells:['','+10','+10'], small:true},
-        {cells:['5','4','2']},
-        {cells:[cm1opCompPrefix('2'), cm1opCompPrefix('6'), '7'], sign:'−', bar:true},
-        {cells:['2','7','5'], color:'var(--accent-orange)', big:true},
-      ])}
-      <p style="margin:0;text-align:center;">542 − 267 = <b>275</b></p>
+      ${cm1Redac('Pages restantes', { pose: cm1opRowsTable([{cells:['','+10','+10'], small:true}, {cells:['5','4','2']}, {cells:[cm1opCompPrefix('2'), cm1opCompPrefix('6'), '7'], sign:'−', bar:true}, {cells:['2','7','5'], color:'var(--accent-orange)', big:true}]) }, 'Il reste 275 pages à lire à Lina.')}
     </div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
-    Pose et effectue la multiplication 213 × 4.
+    Un carton contient 213 crayons. Combien de crayons y a-t-il dans 4 cartons ?
     <button type="button" class="exo-correction-toggle" data-target="cm1op-correction-3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1op-correction-3">
-      ${cm1opRowsTable([
-        {cells:['2','1','3']},
-        {cells:['','','4'], sign:'×', bar:true},
-        {cells:['8','5','2'], color:'var(--accent-orange)', big:true, label:'← 213 × 4'},
-      ])}
-      <p style="margin:0;text-align:center;">213 × 4 = <b>852</b></p>
+      ${cm1Redac('Nombre de crayons', { pose: cm1opRowsTable([{cells:['2','1','3']}, {cells:['','','4'], sign:'×', bar:true}, {cells:['8','5','2'], color:'var(--accent-orange)', big:true}]) }, 'Il y a 852 crayons dans 4 cartons.')}
     </div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
-    Pose et effectue la division euclidienne 438 ÷ 6. Vérifie ton résultat.
+    On range 438 œufs dans des boîtes de 6. Combien de boîtes remplit-on ? Vérifie ton résultat.
     <button type="button" class="exo-correction-toggle" data-target="cm1op-correction-4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1op-correction-4">
-      ${divisionPoseeHTML(computeDivisionPosee(438,6))}
-      <p style="margin:0;">Vérification : 6 × 73 = 438, et 438 + 0 = <b>438</b>. ✓</p>
+      ${cm1Redac('Nombre de boîtes', { pose: divisionPoseeHTML(computeDivisionPosee(438, 6)) }, 'Le quotient est 73 et le reste est 0 : on remplit 73 boîtes.') + cm1Redac('Vérification', '6 × 73 = 438', 'On retrouve bien 438 œufs : le résultat est juste.')}
     </div>
   </div>
   <div class="exo-card">
@@ -235,20 +218,15 @@ document.getElementById('exos-demo-cm1-operations-nombres-entiers').innerHTML = 
     Cite 5 multiples de 6. Le nombre 56 est-il un multiple de 6 ? Justifie.
     <button type="button" class="exo-correction-toggle" data-target="cm1op-correction-5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1op-correction-5">
-      <p style="margin:0 0 8px;">5 multiples de 6 (parmi d'autres réponses possibles) : 6, 12, 18, 24, 30.</p>
-      <p style="margin:0;">56 n'est pas un multiple de 6 : dans la table de 6, on trouve 54 (6 × 9) puis 60 (6 × 10), mais jamais 56. Autrement dit, la division de 56 par 6 n'a pas un reste nul (56 = 6 × 9 + 2).</p>
+      ${cm1Redac('Cinq multiples de 6', { suite: ['6 × 1 = 6', '6 × 2 = 12', '6 × 3 = 18', '6 × 4 = 24', '6 × 5 = 30'] }, '6, 12, 18, 24 et 30 sont des multiples de 6.') + cm1Redac('56 est-il un multiple de 6 ?', { suite: ['6 × 9 = 54', '6 × 10 = 60', '56 = 6 × 9 + 2'] }, 'Le reste de la division de 56 par 6 est 2, pas 0 : 56 n\'est pas un multiple de 6.')}
     </div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 6</div>
-    Parmi ces nombres, lesquels sont divisibles par 2 ? par 5 ? par 10 ? &nbsp;340 &nbsp;·&nbsp; 125 &nbsp;·&nbsp; 612 &nbsp;·&nbsp; 1 000 &nbsp;·&nbsp; 87
+    Parmi ces nombres, lesquels sont divisibles par 2 ? par 5 ? par 10 ?${cm1Liste(['340', '125', '612', '1 000', '87'])}
     <button type="button" class="exo-correction-toggle" data-target="cm1op-correction-6" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1op-correction-6">
-      <ul style="margin:0;padding-left:20px;line-height:1.8;">
-        <li>Divisibles par <b>2</b> (chiffre des unités pair) : 340, 612, 1 000.</li>
-        <li>Divisibles par <b>5</b> (chiffre des unités 0 ou 5) : 340, 125, 1 000.</li>
-        <li>Divisibles par <b>10</b> (chiffre des unités 0) : 340, 1 000.</li>
-      </ul>
+      ${cm1Redac('Divisibles par 2', 'Chiffre des unités 0, 2, 4, 6 ou 8.', '340, 612 et 1 000 sont divisibles par 2.') + cm1Redac('Divisibles par 5', 'Chiffre des unités 0 ou 5.', '340, 125 et 1 000 sont divisibles par 5.') + cm1Redac('Divisibles par 10', 'Chiffre des unités 0.', '340 et 1 000 sont divisibles par 10. 87 n\'est divisible ni par 2, ni par 5, ni par 10.')}
     </div>
   </div>
   <div class="exo-card">
@@ -441,4 +419,4 @@ DEMO_QUIZZES['cm1|Opérations sur les nombres entiers'] = [
 // Opération posée animée sur les nombres de l'élève (chapitres/cm1/_anims.js).
 document.getElementById('methode-demo-cm1-operations-nombres-entiers').insertAdjacentHTML('beforeend', `<div class="sub-header"><span class="letter">M</span><h4>À toi : une opération posée, pas à pas</h4></div>${cm1AnimOperation('cm1-op-ent', { a: '623', op: '−', b: '148', ops: ['+', '−', '×'] })}`);
 DEMO_REGISTRY['cm1|Opérations sur les nombres entiers'] = { cours:'cours-demo-cm1-operations-nombres-entiers', methode:'methode-demo-cm1-operations-nombres-entiers', exos:'exos-demo-cm1-operations-nombres-entiers', histoire:'histoire-demo-cm1-operations-nombres-entiers',
-  init:()=>{ cm1opAdditionDemo.reset(); cm1opSoustractionDemo.reset(); cm1opMultiplicationDemo.reset(); cm1opDivisionReset(); cmAnimDessiner('cm1-op-ent'); } };
+  init:()=>{ cm1opAdditionDemo.reset(); cm1opSoustractionDemo.reset(); cm1opMultiplicationDemo.reset(); cm1opDivisionReset(); cmAnimDessiner('cm1-op-ent'); cmAnimDessiner('cm1-op-multiples'); } };

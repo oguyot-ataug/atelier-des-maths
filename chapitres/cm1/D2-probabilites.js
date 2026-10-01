@@ -50,6 +50,7 @@ ${cm1Def(`<ul style="margin:0;padding-left:18px;line-height:1.9;">
 <li><b>Une chance sur deux</b> : autant de chances que cela arrive ou non. <i>Obtenir « pile » en lançant une pièce.</i></li></ul>`, 'Vocabulaire')}
 
 ${cm1Lecon(3, 'Comparer les chances')}
+${cmAnimTirages('cm1-pr-tirages', { presets: [{ nom: '9 vertes, 1 rouge', billes: [['verte', 9, '#2E9C6A'], ['rouge', 1, '#E35D3A']], n: 40 }, { nom: '5 rouges, 5 bleues', billes: [['rouge', 5, '#E35D3A'], ['bleue', 5, '#2EA8C9']], n: 40, fin: 'Autant de rouges que de bleues dans le sac : chaque couleur a une chance sur deux, et elles sortent à peu près aussi souvent.' }] })}
 <div class="figure-wrap" style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;">${SACS.map(s => `<div style="text-align:center;">${sacSVG(s.billes, 110)}<div class="hint" style="margin:0;">${s.nom}</div></div>`).join('')}</div>
 ${cm1Exemple('On tire une bille sans regarder :', ['Sac 1 (7 rouges, 1 bleue) : tirer une rouge est <b>probable</b> ; tirer une bleue est <b>peu probable</b>.', 'Sac 2 (4 rouges, 4 bleues) : on a <b>une chance sur deux</b> de tirer une rouge.', 'Sac 3 (8 bleues) : tirer une bleue est <b>certain</b> ; tirer une rouge est <b>impossible</b>.'])}
 ${cm1Astuce('« Probable » ne veut pas dire « certain » : avec le sac 1, on peut quand même tirer la bille bleue ! Essaie dans l\'atelier de l\'onglet Méthode.')}
@@ -69,13 +70,20 @@ ${cm1Sous('A', 'Atelier : tirer des billes dans un sac')}
     ]],
   ],
   exos: cm1Exos('pr', [
-    ['On lance un dé à 6 faces. Pour chaque événement, choisis : impossible, possible ou certain. a) obtenir 5 · b) obtenir 0 · c) obtenir un nombre entre 1 et 6.', 'a) possible · b) impossible · c) certain.'],
-    ['Dans un sac il y a 9 billes vertes et 1 bille rouge. Tirer une bille verte est-il probable ou peu probable ? Et une rouge ?', 'Tirer une verte est probable ; tirer la rouge est peu probable (mais possible !).'],
-    ['On lance une pièce de monnaie. Quelle est la chance d\'obtenir « face » ?', 'Une chance sur deux : il y a deux côtés, pile et face, qui ont autant de chances de sortir.'],
-    ['Invente un sac de billes dans lequel tirer une bille bleue est impossible.', 'Par exemple un sac qui ne contient que des billes rouges et vertes, sans aucune bille bleue.'],
-    ['Invente un sac de 10 billes dans lequel on a une chance sur deux de tirer une rouge.', '5 billes rouges et 5 billes d\'autres couleurs.'],
-    ['Une roue est partagée en 8 parts égales : 6 jaunes et 2 bleues. Sur quelle couleur la flèche a-t-elle le plus de chances de s\'arrêter ?', 'Sur le jaune : 6 parts sur 8, c\'est probable ; le bleu est peu probable.'],
-    ['Tom dit : « J\'ai tiré 3 fois une bille rouge, la prochaine sera sûrement bleue. » A-t-il raison ?', 'Non : chaque tirage est dû au hasard, le sac « ne se souvient pas » des tirages précédents.'],
+    [`On lance un dé à 6 faces. Pour chaque événement, choisis : impossible, possible ou certain.${cm1Liste(['obtenir 5', 'obtenir 0', 'obtenir un nombre entre 1 et 6'])}`,
+      cm1Redac('Obtenir 5', '5 est sur une des faces.', 'C\'est possible.') + cm1Redac('Obtenir 0', 'Aucune face ne porte 0.', 'C\'est impossible.') + cm1Redac('Obtenir un nombre entre 1 et 6', 'Toutes les faces portent un nombre entre 1 et 6.', 'C\'est certain.')],
+    ['Dans un sac, il y a 9 billes vertes et 1 bille rouge. Tirer une bille verte est-il probable ou peu probable ? Et une rouge ?',
+      cm1Redac('Bille verte', '9 billes sur 10 sont vertes.', 'Tirer une bille verte est probable.') + cm1Redac('Bille rouge', '1 bille sur 10 est rouge.', 'Tirer la bille rouge est peu probable, mais possible.')],
+    ['On lance une pièce de monnaie. Quelle est la chance d\'obtenir « face » ?',
+      cm1Redac('Chance d\'obtenir face', 'Deux côtés : pile et face, qui ont autant de chances de sortir.', 'On a une chance sur deux d\'obtenir « face ».')],
+    ['Invente un sac de billes dans lequel tirer une bille bleue est impossible.',
+      cm1Redac('Un sac possible', 'Aucune bille bleue dans le sac.', 'Par exemple, un sac qui ne contient que des billes rouges et vertes.')],
+    ['Invente un sac de 10 billes dans lequel on a une chance sur deux de tirer une bille rouge.',
+      cm1Redac('Un sac possible', '5 + 5 = 10', 'Par exemple, 5 billes rouges et 5 billes d\'autres couleurs.')],
+    ['Une roue est partagée en 8 parts égales : 6 jaunes et 2 bleues. Sur quelle couleur la flèche a-t-elle le plus de chances de s\'arrêter ?',
+      cm1Redac('Comparer les chances', '6 parts jaunes contre 2 parts bleues', 'La flèche a plus de chances de s\'arrêter sur le jaune : c\'est probable, le bleu est peu probable.')],
+    ['Tom dit : « J\'ai tiré 3 fois une bille rouge, la prochaine sera sûrement bleue. » A-t-il raison ?',
+      cm1Redac('Réponse', 'Chaque tirage dépend du hasard ; le sac ne se souvient pas des tirages précédents.', 'Non : Tom n\'a pas raison.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : Pascal, Fermat et les jeux de dés', [
     'En 1654, un joueur, le <b>chevalier de Méré</b>, pose une question à <b>Blaise Pascal</b> : comment partager équitablement l\'argent d\'une partie de dés interrompue avant la fin ?',

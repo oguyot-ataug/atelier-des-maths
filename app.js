@@ -3293,6 +3293,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.903', date:'2026-10-01', items:[
+    'CM1 : reprise pédagogique des 23 chapitres, comme au CE2. Toutes les corrections sont rédigées (titre souligné, calcul en ligne ou « A = » en colonne avec le résultat encadré, phrase de conclusion), un seul calcul par ligne, plus de « a) b) c) » devant les questions.',
+    'CM1 : nouvelles animations dans les cours (matériel de numération, demi-droites graduées, glisse-nombre avec virgule, fractions égales et additions de fractions, partage, schémas en barres, règle, balance, verres, compas, angle, horloge et frise du temps, paver un rectangle, report des côtés, symétrie sur quadrillage, tirages au hasard, tracé de parallèles à l\'équerre).',
+    'CM1 « Droites parallèles et perpendiculaires » : les exercices corrigés, qui manquaient, sont arrivés.',
+  ] },
   { version:'2026-08-19.902', date:'2026-10-01', items:[
     'CE2 (en préparation) : reprise pédagogique des 24 chapitres. Une vingtaine de nouvelles animations : sauts sur une droite (calcul mental, rendre la monnaie, durées), schémas en barres qui se construisent, rangées de jetons, glisse-nombre, horloge dont les aiguilles tournent, règle, partage équitable, diagramme en barres, compas, angle qui s\'ouvre, balance, verres qu\'on remplit, fractions égales, addition de fractions, arbre des possibilités, polygone, matériel de numération, bande unité pliée, symétrie sur quadrillage, report des côtés au compas.',
     'Toutes les corrections des exercices sont rédigées : titre souligné qui reprend la question, calcul (en colonne « A = … » avec le résultat encadré quand il ne tient pas sur une ligne), puis phrase de conclusion. Un seul calcul par ligne.',

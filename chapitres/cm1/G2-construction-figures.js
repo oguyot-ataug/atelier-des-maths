@@ -185,6 +185,8 @@ Le <b>disque</b> de centre O et de rayon 2 cm est formé de tous les points qui 
 <div class="def-box">Le diamètre d'un cercle mesure <b>deux fois</b> son rayon : diamètre = 2 × rayon.<br>
 Un cercle de rayon 2 cm a donc un diamètre de 4 cm.</div>
 
+${ce2AnimCompas('cm1-cf-compas', { presets: [{ nom: 'Rayon 3 cm', r: 3 }, { nom: 'Rayon 4 cm', r: 4 }, { nom: 'Rayon 5 cm', r: 5 }] })}
+
 <div class="lesson-header"><span class="num">3</span><h3>Des triangles particuliers</h3></div>
 <div class="def-box">Un <b>triangle</b> est un polygone qui a 3 côtés. Il a 3 sommets et 3 angles.</div>
 ${cf1Tableau(['Triangle rectangle', 'Triangle isocèle', 'Triangle équilatéral'],
@@ -355,13 +357,14 @@ ${cf1MethodeHtml('cf1Tri', 'Tracer un triangle équilatéral avec la règle et l
 `;
 
 /* ---------------- Exercices ---------------- */
+// lignes : la correction rédigée (cm1Redac), ou une liste de lignes.
 function cf1Exo(n, enonce, lignes, fig, figCorr){
   return `<div class="exo-card">
     <div class="num">Exercice ${n}</div>
     ${enonce}${fig || ''}
     <button type="button" class="exo-correction-toggle" data-target="cf1-correction-${n}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cf1-correction-${n}">
-      <div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>
+      ${typeof lignes === 'string' ? lignes : `<div class="redaction-template">${lignes.map(l => `<div class="we-row"><span class="we-expr" style="font-family:inherit;">${l}</span></div>`).join('')}</div>`}
       ${figCorr || ''}
     </div>
   </div>`;
@@ -396,51 +399,48 @@ function cf1ExoFig10(){
 document.getElementById('exos-demo-cm1-construction-figures').innerHTML = `
 <div class="redaction-block">
   <h3>Exercices</h3>
-  ${cf1Exo(1, 'Observe la figure. a) Comment s\'appelle le trait bleu ? b) Comment s\'appelle le trait vert ? c) Cite trois points alignés. d) Le point K est-il sur la droite verte ?', [
-    'a) Le trait bleu s\'arrête en A et en B : c\'est le segment [AB].',
-    'b) Le trait vert continue des deux côtés : c\'est une droite. On peut la nommer droite (EF), droite (EG) ou droite (FG).',
-    'c) E, F et G sont alignés : ils sont sur la même droite.',
-    'd) Non : K n\'est pas sur la droite verte. E, F et K ne sont pas alignés.'], cf1ExoFig1())}
-  ${cf1Exo(2, 'Voici un cercle de centre O. a) Cite un rayon. b) Cite un diamètre. c) Cite une corde qui n\'est pas un diamètre. d) Le rayon mesure 3 cm : combien mesure le diamètre (le segment [AB]) ?', [
-    'a) Le segment [OC] est un rayon : il va du centre O à un point du cercle.',
-    'b) [AB] est un diamètre : il relie deux points du cercle en passant par O.',
-    'c) [DE] est une corde : elle relie deux points du cercle sans passer par O.',
-    'd) Le diamètre mesure deux rayons : 2 × 3 cm = 6 cm. Donc AB = 6 cm.'], cf1ExoFig2())}
-  ${cf1Exo(3, 'Complète. a) Un cercle a un rayon de 7 cm : son diamètre mesure … cm. b) Un cercle a un diamètre de 10 cm : son rayon mesure … cm. c) Une roue de vélo a un diamètre de 60 cm : quel est son rayon ?', [
-    'a) 2 × 7 cm = 14 cm : le diamètre mesure 14 cm.',
-    'b) Le rayon est la moitié du diamètre : 10 cm ÷ 2 = 5 cm.',
-    'c) 60 cm ÷ 2 = 30 cm : le rayon de la roue mesure 30 cm (du moyeu au pneu).'])}
-  ${cf1Exo(4, 'Le point P est à 3 cm de O, le point Q à 5 cm de O et le point R à 2 cm de O. On trace le cercle de centre O et de rayon 3 cm. a) Quel point est sur le cercle ? b) Quels points sont dans le disque ? c) Quel point est à l\'extérieur ?', [
-    'a) P est à 3 cm de O, exactement le rayon : P est sur le cercle.',
-    'b) P et R sont à 3 cm au plus de O : ils sont dans le disque (R est à l\'intérieur, P sur le bord).',
-    'c) Q est à 5 cm de O, plus que 3 cm : il est à l\'extérieur.'], '', cf1ExoFig4())}
-  ${cf1Exo(5, 'Regarde les codages. Quelle est la nature de chaque triangle ?', [
-    'Figure 1 : deux côtés sont codés pareil, c\'est un triangle isocèle.',
-    'Figure 2 : un petit carré code un angle droit, c\'est un triangle rectangle.',
-    'Figure 3 : les trois côtés sont codés pareil, c\'est un triangle équilatéral.'], cf1ExoFigNature(['triangle isocèle', 'triangle rectangle', 'triangle équilatéral'], [25, 200, 80], [CF1_BLEU, CF1_VERT, CF1_ORANGE]))}
-  ${cf1Exo(6, 'Sans dessiner, trouve la nature de chaque triangle. a) ABC : AB = 5 cm, BC = 5 cm et AC = 5 cm. b) DEF : DE = 4 cm, DF = 4 cm et EF = 6 cm. c) GHI a un angle droit en H. d) JKL : JK = 3 cm, KL = 4 cm et JL = 6 cm, sans angle droit.', [
-    'a) Trois côtés de même longueur : ABC est équilatéral.',
-    'b) Deux côtés de même longueur (DE = DF) : DEF est isocèle.',
-    'c) Un angle droit : GHI est rectangle.',
-    'd) Trois longueurs différentes et pas d\'angle droit : JKL n\'est pas un triangle particulier.'])}
-  ${cf1Exo(7, 'Regarde les codages. Quelle est la nature de chaque quadrilatère ?', [
-    'Figure 1 : quatre côtés codés pareil, sans angle droit codé : c\'est un losange.',
-    'Figure 2 : quatre angles droits et quatre côtés codés pareil : c\'est un carré.',
-    'Figure 3 : quatre angles droits : c\'est un rectangle.'], cf1ExoFigNature(['losange', 'carré', 'rectangle'], [0, 20, 160], [CF1_BLEU, CF1_ORANGE, CF1_VERT]))}
-  ${cf1Exo(8, 'Vrai ou faux ? a) Un carré est un rectangle. b) Un rectangle est toujours un carré. c) Un losange a toujours quatre angles droits. d) Un triangle équilatéral est aussi isocèle.', [
-    'a) Vrai : un carré a quatre angles droits.',
-    'b) Faux : un rectangle de 5 cm sur 3 cm n\'a pas ses quatre côtés de même longueur.',
-    'c) Faux : un losange a quatre côtés de même longueur, mais ses angles ne sont pas forcément droits (s\'ils le sont, c\'est un carré).',
-    'd) Vrai : il a trois côtés de même longueur, donc il en a au moins deux.'])}
-  ${cf1Exo(9, 'Léo a tracé un quadrilatère et l\'a nommé MNOP en faisant le tour. Parmi ces noms, lesquels désignent aussi son quadrilatère : NOPM, MOPN, PONM, OPMN ?', [
-    'On doit citer les sommets dans l\'ordre du tour, dans un sens ou dans l\'autre, en partant de n\'importe quel sommet.',
-    'NOPM, PONM et OPMN conviennent.',
-    'MOPN ne convient pas : après M, on ne peut pas aller directement en O (M est relié à N et à P).'])}
-  ${cf1Exo(10, 'Programme de construction : trace un segment [AB] de 6 cm et place son milieu M. Trace le cercle de centre M qui passe par A. a) Quel est le rayon du cercle ? b) Le cercle passe-t-il par B ? c) Que représente le segment [AB] pour ce cercle ?', [
-    'M est le milieu du segment [AB] : MA = MB = 6 cm ÷ 2 = 3 cm.',
-    'a) Le cercle de centre M passe par A : son rayon est MA = 3 cm.',
-    'b) MB = 3 cm aussi : B est à 3 cm du centre, donc B est sur le cercle.',
-    'c) [AB] relie deux points du cercle en passant par le centre M : c\'est un diamètre (6 cm, deux rayons).'], '', cf1ExoFig10())}
+  ${cf1Exo(1, `Observe la figure.${cm1Liste(['Comment s\'appelle le trait bleu ?', 'Comment s\'appelle le trait vert ?', 'Cite trois points alignés.', 'Le point K est-il sur la droite verte ?'])}`,
+    cm1Redac('Le trait bleu', 'Il s\'arrête en A et en B.', 'Le trait bleu est le segment [AB].')
+    + cm1Redac('Le trait vert', 'Il continue des deux côtés.', 'Le trait vert est une droite : on peut la nommer droite (EF), droite (EG) ou droite (FG).')
+    + cm1Redac('Points alignés', 'E, F et G sont sur la même droite.', 'Les points E, F et G sont alignés.')
+    + cm1Redac('Le point K', 'K n\'est pas sur la droite verte.', 'Non : E, F et K ne sont pas alignés.'), cf1ExoFig1())}
+  ${cf1Exo(2, `Voici un cercle de centre O.${cm1Liste(['Cite un rayon.', 'Cite un diamètre.', 'Cite une corde qui n\'est pas un diamètre.', 'Le rayon mesure 3 cm : combien mesure le diamètre [AB] ?'])}`,
+    cm1Redac('Un rayon', '[OC] va du centre O à un point du cercle.', 'Le segment [OC] est un rayon.')
+    + cm1Redac('Un diamètre', '[AB] relie deux points du cercle en passant par O.', '[AB] est un diamètre.')
+    + cm1Redac('Une corde', '[DE] relie deux points du cercle sans passer par O.', '[DE] est une corde.')
+    + cm1Redac('Longueur du diamètre', '2 × 3 cm = 6 cm', 'Le diamètre mesure deux rayons : AB = 6 cm.'), cf1ExoFig2())}
+  ${cf1Exo(3, `Complète.${cm1Liste(['Un cercle a un rayon de 7 cm : son diamètre mesure … cm.', 'Un cercle a un diamètre de 10 cm : son rayon mesure … cm.', 'Une roue de vélo a un diamètre de 60 cm : quel est son rayon ?'])}`,
+    cm1Redac('Diamètre du premier cercle', '2 × 7 cm = 14 cm', 'Le diamètre mesure 14 cm.')
+    + cm1Redac('Rayon du deuxième cercle', '10 cm ÷ 2 = 5 cm', 'Le rayon est la moitié du diamètre : il mesure 5 cm.')
+    + cm1Redac('Rayon de la roue', '60 cm ÷ 2 = 30 cm', 'Le rayon de la roue mesure 30 cm, du moyeu au pneu.'))}
+  ${cf1Exo(4, `Le point P est à 3 cm de O, le point Q à 5 cm de O et le point R à 2 cm de O. On trace le cercle de centre O et de rayon 3 cm.${cm1Liste(['Quel point est sur le cercle ?', 'Quels points sont dans le disque ?', 'Quel point est à l\'extérieur ?'])}`,
+    cm1Redac('Point sur le cercle', 'OP = 3 cm, exactement le rayon', 'Le point P est sur le cercle.')
+    + cm1Redac('Points dans le disque', 'OR = 2 cm et OP = 3 cm : pas plus que le rayon', 'R est à l\'intérieur du disque et P sur son bord : les deux sont dans le disque.')
+    + cm1Redac('Point à l\'extérieur', 'OQ = 5 cm, plus que le rayon', 'Le point Q est à l\'extérieur du disque.'), '', cf1ExoFig4())}
+  ${cf1Exo(5, 'Regarde les codages. Quelle est la nature de chaque triangle ?',
+    cm1Redac('Figure 1', 'Deux côtés sont codés pareil.', 'C\'est un triangle isocèle.')
+    + cm1Redac('Figure 2', 'Un petit carré code un angle droit.', 'C\'est un triangle rectangle.')
+    + cm1Redac('Figure 3', 'Les trois côtés sont codés pareil.', 'C\'est un triangle équilatéral.'), cf1ExoFigNature(['triangle isocèle', 'triangle rectangle', 'triangle équilatéral'], [25, 200, 80], [CF1_BLEU, CF1_VERT, CF1_ORANGE]))}
+  ${cf1Exo(6, `Sans dessiner, trouve la nature de chaque triangle.${cm1Liste(['ABC : AB = 5 cm, BC = 5 cm et AC = 5 cm.', 'DEF : DE = 4 cm, DF = 4 cm et EF = 6 cm.', 'GHI a un angle droit en H.', 'JKL : JK = 3 cm, KL = 4 cm et JL = 6 cm, sans angle droit.'])}`,
+    cm1Redac('Triangle ABC', 'Trois côtés de même longueur', 'ABC est un triangle équilatéral.')
+    + cm1Redac('Triangle DEF', 'DE = DF', 'DEF a deux côtés de même longueur : c\'est un triangle isocèle.')
+    + cm1Redac('Triangle GHI', 'Un angle droit en H', 'GHI est un triangle rectangle.')
+    + cm1Redac('Triangle JKL', 'Trois longueurs différentes et pas d\'angle droit', 'JKL n\'est pas un triangle particulier.'))}
+  ${cf1Exo(7, 'Regarde les codages. Quelle est la nature de chaque quadrilatère ?',
+    cm1Redac('Figure 1', 'Quatre côtés codés pareil, pas d\'angle droit codé.', 'C\'est un losange.')
+    + cm1Redac('Figure 2', 'Quatre angles droits et quatre côtés codés pareil.', 'C\'est un carré.')
+    + cm1Redac('Figure 3', 'Quatre angles droits.', 'C\'est un rectangle.'), cf1ExoFigNature(['losange', 'carré', 'rectangle'], [0, 20, 160], [CF1_BLEU, CF1_ORANGE, CF1_VERT]))}
+  ${cf1Exo(8, `Vrai ou faux ?${cm1Liste(['Un carré est un rectangle.', 'Un rectangle est toujours un carré.', 'Un losange a toujours quatre angles droits.', 'Un triangle équilatéral est aussi isocèle.'])}`,
+    cm1Redac('Un carré est un rectangle', 'Un carré a quatre angles droits.', 'Vrai.')
+    + cm1Redac('Un rectangle est toujours un carré', 'Un rectangle de 5 cm sur 3 cm n\'a pas quatre côtés égaux.', 'Faux.')
+    + cm1Redac('Un losange a toujours quatre angles droits', 'Ses côtés sont égaux, mais ses angles ne sont pas forcément droits.', 'Faux (s\'il a quatre angles droits, c\'est un carré).')
+    + cm1Redac('Un triangle équilatéral est isocèle', 'Il a trois côtés égaux, donc au moins deux.', 'Vrai.'))}
+  ${cf1Exo(9, 'Léo a tracé un quadrilatère et l\'a nommé MNOP en faisant le tour. Parmi ces noms, lesquels désignent aussi son quadrilatère : NOPM, MOPN, PONM, OPMN ?',
+    cm1Redac('Noms possibles', 'On cite les sommets dans l\'ordre du tour, dans un sens ou dans l\'autre.', 'NOPM, PONM et OPMN conviennent. MOPN ne convient pas : après M, on ne peut pas aller directement en O, car M est relié à N et à P.'))}
+  ${cf1Exo(10, `Programme de construction : trace un segment [AB] de 6 cm et place son milieu M. Trace le cercle de centre M qui passe par A.${cm1Liste(['Quel est le rayon du cercle ?', 'Le cercle passe-t-il par B ?', 'Que représente le segment [AB] pour ce cercle ?'])}`,
+    cm1Redac('Rayon du cercle', '6 cm ÷ 2 = 3 cm', 'M est le milieu de [AB], donc MA = 3 cm : le rayon du cercle est 3 cm.')
+    + cm1Redac('Le point B', 'MB = 3 cm', 'B est à 3 cm du centre : B est sur le cercle.')
+    + cm1Redac('Le segment [AB]', 'Il relie deux points du cercle en passant par le centre M.', '[AB] est un diamètre du cercle : il mesure 6 cm, deux rayons.'), '', cf1ExoFig10())}
 </div>
 `;
 
@@ -464,4 +464,4 @@ DEMO_QUIZZES['cm1|Construction de figures'] = [
 ];
 
 DEMO_REGISTRY['cm1|Construction de figures'] = { cours: 'cours-demo-cm1-construction-figures', methode: 'methode-demo-cm1-construction-figures', exos: 'exos-demo-cm1-construction-figures', histoire: 'histoire-demo-cm1-construction-figures',
-  init: () => { cf1Voc(null); cf1CercleDemo.reset(); cf1RectDemo.reset(); cf1TriDemo.reset(); cf1JeuNouveau(); } };
+  init: () => { cf1Voc(null); cf1CercleDemo.reset(); cf1RectDemo.reset(); cf1TriDemo.reset(); cf1JeuNouveau(); cmAnimDessiner('cm1-cf-compas'); } };

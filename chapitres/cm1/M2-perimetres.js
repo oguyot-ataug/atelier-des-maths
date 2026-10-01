@@ -41,6 +41,7 @@ ${cm1Regle('<b>Rectangle</b> : il a 2 longueurs et 2 largeurs.<br>Périmètre du
 
 ${cm1Lecon(4, 'Comparer des périmètres')}
 ${cm1Regle('Pour comparer deux périmètres sans les calculer, on peut <b>reporter les côtés</b> bout à bout sur une droite, avec un <b>compas</b> ou une bande de papier : le contour le plus long est celui qui a le plus grand périmètre.')}
+${ce2AnimReport('cm1-pe-report')}
 ${cm1Astuce('Deux figures peuvent avoir le même périmètre sans avoir la même forme : un carré de 4 cm de côté et un rectangle de 6 cm sur 2 cm ont tous les deux un périmètre de 16 cm.')}
 `,
   methode: `
@@ -61,14 +62,24 @@ ${cm1Demo('pe-unite', 'Calculer un périmètre avec des unités différentes', '
     ]],
   ],
   exos: cm1Exos('pe', [
-    ['Calcule le périmètre d\'un triangle dont les côtés mesurent 6 cm, 8 cm et 10 cm.', '6 + 8 + 10 = 24. Le périmètre est 24 cm.'],
-    ['Calcule le périmètre d\'un carré de 9 cm de côté.', '4 × 9 = 36. Le périmètre est 36 cm.'],
-    ['Calcule le périmètre d\'un rectangle de 15 cm de long et 6 cm de large.', '2 × 15 + 2 × 6 = 30 + 12 = 42. Le périmètre est 42 cm.'],
-    ['Un hexagone (6 côtés) a tous ses côtés de 5 cm. Quel est son périmètre ?', '6 × 5 = 30. Le périmètre est 30 cm.'],
-    ['Un carré a un périmètre de 28 cm. Combien mesure son côté ?', '28 ÷ 4 = 7 (car 4 × 7 = 28). Le côté mesure 7 cm.'],
-    ['Calcule le périmètre d\'un rectangle de 2 m de long et 60 cm de large.', '2 m = 200 cm. 2 × 200 + 2 × 60 = 400 + 120 = 520 cm (soit 5 m 20 cm).'],
-    ['Problème : on veut entourer un enclos rectangulaire de 25 m sur 18 m avec du grillage. Quelle longueur de grillage faut-il ?', '2 × 25 + 2 × 18 = 50 + 36 = 86. Il faut 86 m de grillage.'],
-    ['Trace deux figures différentes ayant chacune un périmètre de 20 carreaux sur ton cahier.', 'Par exemple un carré de 5 carreaux de côté, et un rectangle de 7 carreaux sur 3 carreaux (7 + 3 + 7 + 3 = 20).'],
+    ['Calcule le périmètre d\'un triangle dont les côtés mesurent 6 cm, 8 cm et 10 cm.',
+      cm1Redac('Périmètre du triangle', { nom: 'P', lignes: ['6 cm + 8 cm + 10 cm', '24 cm'] }, 'Le périmètre du triangle est 24 cm.')],
+    ['Calcule le périmètre d\'un carré de 9 cm de côté.',
+      cm1Redac('Périmètre du carré', '4 × 9 cm = 36 cm', 'Le périmètre du carré est 36 cm.')],
+    ['Calcule le périmètre d\'un rectangle de 15 cm de long et 6 cm de large.',
+      cm1Redac('Périmètre du rectangle', { nom: 'P', lignes: ['2 × 15 cm + 2 × 6 cm', '30 cm + 12 cm', '42 cm'] }, 'Le périmètre du rectangle est 42 cm.')],
+    ['Un hexagone a ses 6 côtés de 5 cm. Quel est son périmètre ?',
+      cm1Redac('Périmètre de l\'hexagone', '6 × 5 cm = 30 cm', 'Le périmètre de l\'hexagone est 30 cm.')],
+    ['Un carré a un périmètre de 28 cm. Combien mesure son côté ?',
+      cm1Redac('Côté du carré', { suite: ['4 × 7 = 28', '28 ÷ 4 = 7'] }, 'Le côté du carré mesure 7 cm.')],
+    ['Calcule le périmètre d\'un rectangle de 2 m de long et 60 cm de large.',
+      cm1Redac('Longueur en cm', '2 m = 200 cm', 'On met les deux longueurs dans la même unité.')
+      + cm1Redac('Périmètre du rectangle', { nom: 'P', lignes: ['2 × 200 cm + 2 × 60 cm', '400 cm + 120 cm', '520 cm'] }, 'Le périmètre est 520 cm, c\'est-à-dire 5 m 20 cm.')],
+    ['On veut entourer un enclos rectangulaire de 25 m sur 18 m avec du grillage. Quelle longueur de grillage faut-il ?',
+      cm1Redac('Longueur de grillage', { nom: 'P', lignes: ['2 × 25 m + 2 × 18 m', '50 m + 36 m', '86 m'] }, 'Il faut 86 m de grillage.')],
+    ['Trace deux figures différentes ayant chacune un périmètre de 20 carreaux sur ton cahier.',
+      cm1Redac('Un carré', '5 + 5 + 5 + 5 = 20', 'Un carré de 5 carreaux de côté a un périmètre de 20 carreaux.')
+      + cm1Redac('Un rectangle', '7 + 3 + 7 + 3 = 20', 'Un rectangle de 7 carreaux sur 3 carreaux a aussi un périmètre de 20 carreaux.')],
   ], { titre: 'Rédaction type : « Périmètre d\'un rectangle »', lignes: [['P = 2 × 8 cm + 2 × 3 cm', 'J\'écris le calcul : 2 longueurs et 2 largeurs.'], ['P = 16 cm + 6 cm = 22 cm', 'Je calcule.'], ['Le périmètre est 22 cm.', 'Je conclus avec l\'unité.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : les arpenteurs', [
     'Le mot <b>périmètre</b> vient du grec : <i>peri</i> veut dire « autour » et <i>metron</i> veut dire « mesure ». C\'est donc « la mesure autour ».',

@@ -61,6 +61,14 @@ document.getElementById('cours-demo-cm1-droites-paralleles').innerHTML = `
 </div>
 <span class="prop-badge">Méthode</span>
 <div class="def-box">On utilise une règle et une équerre pour vérifier que deux droites sont parallèles : on fait glisser l'équerre le long d'une règle fixe, sans jamais la faire tourner -- si son bord reste tout le temps sur les deux droites, elles sont parallèles.</div>
+${ce2Film('cm1-dp-paral', { duree: 8000, legende: 'La règle ne bouge pas ; l\'équerre glisse contre elle, sans tourner.', film: { w: 460, h: 220, scenes: [
+  { de: 0, a: .1, dessin: k => `<g opacity="${k}"><rect x="20" y="170" width="420" height="26" fill="#FFF3D6" stroke="#C9A24A"/>${ce2T(230, 213, 'règle fixe', { t: 12, c: '#8A6D1F' })}</g>`, texte: 'Je pose la règle et je la tiens bien.' },
+  { de: .12, a: .25, dessin: k => `<g opacity="${k}"><polygon points="100,170 100,40 175,170" fill="#9BB7D4" fill-opacity=".45" stroke="#6B88A8" stroke-width="1.5"/></g>`, texte: 'Je pose l\'équerre contre la règle : son angle droit est sur le bord de la règle.' },
+  { de: .26, a: .4, dessin: k => k < 1 ? '' : `<line x1="100" y1="20" x2="100" y2="170" stroke="#E35D3A" stroke-width="3"/>`, texte: 'Je trace une première droite le long de l\'équerre.' },
+  { de: .42, a: .72, dessin: k => k >= 1 ? '' : `<polygon points="${100 + 200 * k},170 ${100 + 200 * k},40 ${175 + 200 * k},170" fill="#9BB7D4" fill-opacity=".45" stroke="#6B88A8" stroke-width="1.5"/>`, texte: 'Je fais glisser l\'équerre le long de la règle, sans la faire tourner.' },
+  { de: .72, a: .73, dessin: () => `<polygon points="300,170 300,40 375,170" fill="#9BB7D4" fill-opacity=".45" stroke="#6B88A8" stroke-width="1.5"/>` },
+  { de: .76, a: .9, dessin: k => `<line x1="300" y1="${170 - 150 * k}" x2="300" y2="170" stroke="#E35D3A" stroke-width="3"/>`, texte: 'Je trace une deuxième droite.' },
+  { de: .93, a: 1, dessin: k => `<path d="M100 170 h12 v-12 h-12 M300 170 h12 v-12 h-12" fill="none" stroke="#2E9C6A" stroke-width="2" opacity="${k}"/>`, texte: 'Les deux droites rouges sont perpendiculaires à la règle : elles sont <b>parallèles</b> entre elles.' }] } })}
 `;
 
 document.getElementById('methode-demo-cm1-droites-paralleles').innerHTML = `
@@ -85,12 +93,22 @@ document.getElementById('methode-demo-cm1-droites-paralleles').innerHTML = `
 </div>
 `;
 
-document.getElementById('exos-demo-cm1-droites-paralleles').innerHTML = `
-<div class="placeholder-box">
-  <strong>Exercices en construction</strong>
-  Les exercices corrigés de ce chapitre arrivent dans une prochaine session.
-</div>
-`;
+document.getElementById('exos-demo-cm1-droites-paralleles').innerHTML = cm1Exos('dp', [
+  ['ABCD est un rectangle. Cite deux côtés perpendiculaires, puis deux côtés parallèles.',
+    cm1Redac('Côtés perpendiculaires', 'Les côtés [AB] et [BC] se coupent en B en formant un angle droit.', 'Les côtés [AB] et [BC] sont perpendiculaires.')
+    + cm1Redac('Côtés parallèles', 'Les côtés [AB] et [DC] ne se coupent jamais, même prolongés.', 'Les côtés [AB] et [DC] sont parallèles.')],
+  ['Trace une droite, appelée (d), et place un point A qui n\'est pas sur (d). Trace la droite perpendiculaire à (d) qui passe par A.',
+    cm1Redac('Méthode', { suite: ['Je pose un côté de l\'angle droit de l\'équerre le long de (d).', 'Je fais glisser l\'équerre le long de (d) jusqu\'à ce que l\'autre côté touche A.', 'Je trace le long de ce côté, puis je code l\'angle droit.'] }, 'La droite tracée passe par A et coupe (d) en formant un angle droit : elle est perpendiculaire à (d).')],
+  ['Trace une droite (d) et place un point B qui n\'est pas sur (d). Trace la droite parallèle à (d) qui passe par B.',
+    cm1Redac('Méthode', { suite: ['Je pose l\'équerre contre (d) et je place la règle contre l\'autre côté de l\'angle droit.', 'Je tiens la règle sans la bouger et je fais glisser l\'équerre jusqu\'à B.', 'Je trace le long de l\'équerre.'] }, 'La droite tracée passe par B et ne coupera jamais (d) : elle est parallèle à (d).')],
+  ['Les droites (d1) et (d2) sont toutes les deux perpendiculaires à la droite (d). Que peut-on dire de (d1) et de (d2) ?',
+    cm1Redac('Position de (d1) et (d2)', 'Deux droites perpendiculaires à une même droite', 'Les droites (d1) et (d2) sont parallèles entre elles.')],
+  ['Dans la classe, trouve deux bords parallèles et deux bords perpendiculaires.',
+    cm1Redac('Bords parallèles', '', 'Par exemple, les deux grands bords d\'une feuille de cahier sont parallèles.')
+    + cm1Redac('Bords perpendiculaires', '', 'Par exemple, deux bords voisins de la table forment un angle droit : ils sont perpendiculaires. Je vérifie avec l\'équerre.')],
+  ['Deux droites qui se coupent sont-elles toujours perpendiculaires ?',
+    cm1Redac('Droites qui se coupent', 'Elles sont perpendiculaires seulement si elles forment un angle droit.', 'Non : deux droites qui se coupent sont sécantes, mais elles ne sont perpendiculaires que si elles forment un angle droit.')],
+]);
 
 /* Aide animée "perpendiculaire ou non", avec un vrai diagramme SVG qui évolue à chaque étape
    (makeSingleStepDemo : l'étape courante remplace la précédente, comme pour une figure qui se
@@ -189,4 +207,4 @@ DEMO_QUIZZES['cm1|Droites parallèles et perpendiculaires'] = [
 ];
 
 DEMO_REGISTRY['cm1|Droites parallèles et perpendiculaires'] = { cours:'cours-demo-cm1-droites-paralleles', methode:'methode-demo-cm1-droites-paralleles', exos:'exos-demo-cm1-droites-paralleles', histoire:'histoire-demo-cm1-droites-paralleles',
-  init:()=>{ cm1dpPerpOuiDemo.reset(); cm1dpPerpNonDemo.reset(); } };
+  init:()=>{ cm1dpPerpOuiDemo.reset(); cm1dpPerpNonDemo.reset(); cmAnimDessiner('cm1-dp-paral'); } };

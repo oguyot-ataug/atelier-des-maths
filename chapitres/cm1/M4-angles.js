@@ -39,6 +39,8 @@ ${cm1Lecon(3, 'Angles aigus et angles obtus')}
 <div style="text-align:center;">${angleSVG(130, { w: 220, ox: 110, coul: '#7A4FC0' })}<div><b style="color:#7A4FC0;">angle obtus</b></div></div></div>
 ${cm1Def('<ul style="margin:0;padding-left:18px;line-height:1.9;"><li>Un angle <b>aigu</b> est plus petit qu\'un angle droit.</li><li>Un angle <b>obtus</b> est plus grand qu\'un angle droit (mais ses côtés ne sont pas alignés).</li></ul>', 'Vocabulaire')}
 
+${ce2AnimAngle('cm1-an-angle')}
+
 ${cm1Lecon(4, 'Comparer des angles')}
 ${cm1Regle('Pour comparer deux angles, on peut <b>reproduire</b> l\'un sur un papier calque (ou fabriquer un <b>gabarit</b> en papier) et le <b>superposer</b> à l\'autre, en faisant coïncider les sommets et un côté. L\'angle le plus grand est celui dont l\'écartement est le plus grand.')}
 ${cm1Exemple('Angles dans les figures :', ['un carré et un rectangle ont 4 angles droits ;', 'un triangle rectangle a un angle droit ;', 'dans un triangle, il y a au plus un angle obtus.'])}
@@ -58,12 +60,18 @@ ${cm1Sous('A', 'Atelier : ouvre l\'angle')}
     ]],
   ],
   exos: cm1Exos('an', [
-    [`Aigu, droit ou obtus ?<div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0;">${[110, 25, 90, 70, 150].map((d, i) => `<div style="text-align:center;">${angleSVG(d, { w: 170, h: 130, ox: d > 90 ? 95 : 35, oy: 115, L: 75, coul: '#1F3A5C' })}<div>${'abcde'[i]})</div></div>`).join('')}</div>`, 'a) obtus · b) aigu · c) droit · d) aigu · e) obtus.'],
-    ['Combien d\'angles droits a un rectangle ? un carré ?', '4 et 4.'],
-    ['Trace un angle aigu, un angle droit et un angle obtus. Vérifie chacun avec ton équerre.', 'L\'angle aigu est à l\'intérieur de l\'équerre, le droit est exactement sur le coin, l\'obtus dépasse.'],
-    ['Cherche dans la classe : un angle droit, un angle aigu, un angle obtus.', 'Exemples : le coin d\'une feuille (droit), les aiguilles d\'une horloge à 1 h (aigu), un livre bien ouvert (obtus).'],
-    ['Les aiguilles d\'une horloge forment-elles un angle aigu, droit ou obtus à 3 h ? à 5 h ? à 2 h ?', '3 h : droit · 5 h : obtus · 2 h : aigu.'],
-    ['Vrai ou faux ? « Si je prolonge les côtés d\'un angle, l\'angle devient plus grand. »', 'Faux : la taille d\'un angle ne dépend que de l\'écartement de ses côtés, pas de leur longueur.'],
+    [`Ces angles sont-ils aigus, droits ou obtus ?<div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0;">${[110, 25, 90, 70, 150].map((d, i) => `<div style="text-align:center;">${angleSVG(d, { w: 170, h: 130, ox: d > 90 ? 95 : 35, oy: 115, L: 75, coul: '#1F3A5C' })}<div><b>${'ABCDE'[i]}</b></div></div>`).join('')}</div>`,
+      cm1Redac('Nature des angles', { suite: ['A : plus grand qu\'un angle droit, obtus', 'B : plus petit qu\'un angle droit, aigu', 'C : exactement sur le coin de l\'équerre, droit', 'D : plus petit qu\'un angle droit, aigu', 'E : plus grand qu\'un angle droit, obtus'] }, 'Les angles B et D sont aigus, l\'angle C est droit, les angles A et E sont obtus.')],
+    ['Combien d\'angles droits a un rectangle ? et un carré ?',
+      cm1Redac('Angles droits', { suite: ['rectangle : 4 angles droits', 'carré : 4 angles droits'] }, 'Un rectangle et un carré ont chacun 4 angles droits.')],
+    ['Trace un angle aigu, un angle droit et un angle obtus. Vérifie chacun avec ton équerre.',
+      cm1Redac('Vérification avec l\'équerre', { suite: ['l\'angle aigu tient à l\'intérieur du coin de l\'équerre ;', 'l\'angle droit est exactement sur le coin ;', 'l\'angle obtus dépasse le coin.'] }, 'Chaque angle est bien classé.')],
+    ['Cherche dans la classe un angle droit, un angle aigu et un angle obtus.',
+      cm1Redac('Angles de la classe', '', 'Par exemple : le coin d\'une feuille forme un angle droit ; les aiguilles d\'une horloge à 1 h, un angle aigu ; un livre bien ouvert, un angle obtus.')],
+    [`Les aiguilles d'une horloge forment-elles un angle aigu, droit ou obtus ?${cm1Liste(['à 3 h', 'à 5 h', 'à 2 h'])}`,
+      cm1Redac('Angles des aiguilles', { suite: ['3 h : un quart de tour, angle droit', '5 h : plus qu\'un quart de tour, angle obtus', '2 h : moins qu\'un quart de tour, angle aigu'] }, 'À 3 h l\'angle est droit, à 5 h il est obtus, à 2 h il est aigu.')],
+    ['Vrai ou faux ? « Si je prolonge les côtés d\'un angle, l\'angle devient plus grand. »',
+      cm1Redac('Réponse', 'La taille d\'un angle dépend seulement de l\'écartement de ses côtés.', 'Faux : prolonger les côtés ne change pas l\'angle.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : l\'équerre des bâtisseurs', [
     'Dès l\'Antiquité, les bâtisseurs avaient besoin d\'angles droits pour que les murs tiennent debout. Les Égyptiens utilisaient une corde à <b>13 nœuds</b> régulièrement espacés : en formant un triangle de côtés 3, 4 et 5 intervalles, ils obtenaient un angle droit parfait !',

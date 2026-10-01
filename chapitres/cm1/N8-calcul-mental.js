@@ -46,10 +46,11 @@ cm1Chapitre({
   titre: 'Procédures de calcul mental', slug: 'calcul-mental',
   cours: `
 ${cm1Lecon(1, 'Ce qu\'il faut savoir par cœur')}
-${cm1Regle('<ul style="margin:0;padding-left:18px;line-height:1.9;"><li>les <b>tables d\'addition</b> et de <b>multiplication</b> ;</li><li>les <b>doubles</b> et <b>moitiés</b> usuels : double de 15 = 30, moitié de 50 = 25, moitié de 30 = 15… ;</li><li>les <b>compléments</b> : à 10 (7 + 3), à 100 (65 + 35), à 1 000 (750 + 250).</li></ul>', 'Faits numériques')}
+${cm1Regle('<ul style="margin:0;padding-left:18px;line-height:1.9;"><li>les <b>tables d\'addition</b> et de <b>multiplication</b> ;</li><li>les <b>doubles</b> et <b>moitiés</b> usuels (le double de 15 est 30, la moitié de 50 est 25…) ;</li><li>les <b>compléments</b> à 10, à 100, à 1 000 :' + cm1Liste(['7 + 3 = 10', '65 + 35 = 100', '750 + 250 = 1 000']) + '</li></ul>', 'Faits numériques')}
 
 ${cm1Lecon(2, 'Ajouter ou soustraire 9, 11, 19, 21')}
 ${cm1Regle('Pour ajouter 9, on ajoute 10 puis on enlève 1. Pour ajouter 11, on ajoute 10 puis on ajoute 1.')}
+${ce2AnimSauts('cm1-cm-sauts', { presets: [{ nom: '47 + 9', depart: 47, sauts: [[10, '+ 10'], [-1, '− 1']], min: 40, max: 62, fin: '47 + 9 = <b>56</b> : on ajoute 10, puis on enlève 1.' }, { nom: '85 − 19', depart: 85, sauts: [[-20, '− 20'], [1, '+ 1']], min: 60, max: 90, fin: '85 − 19 = <b>66</b> : on enlève 20, puis on rajoute 1.' }, { nom: '368 − 99', depart: 368, sauts: [[-100, '− 100'], [1, '+ 1']], min: 250, max: 380, fin: '368 − 99 = <b>269</b>.' }] })}
 ${cm1Exemple('Exemples :', ['47 + 9 = 47 + 10 − 1 = 57 − 1 = <b>56</b>', '136 + 11 = 136 + 10 + 1 = <b>147</b>', '85 − 19 = 85 − 20 + 1 = 65 + 1 = <b>66</b>', '240 + 21 = 240 + 20 + 1 = <b>261</b>'])}
 
 ${cm1Lecon(3, 'Décomposer pour calculer')}
@@ -58,6 +59,7 @@ ${cm1Exemple('On décompose un nombre pour faire des calculs plus simples :', ['
 ${cm1Lecon(4, 'Multiplier par 10, 100, 1 000 (nombres entiers)')}
 ${cm1Regle('Multiplier un nombre entier par 10, c\'est rendre chaque chiffre 10 fois plus grand : les unités deviennent des dizaines… On écrit donc <b>un 0</b> à droite. Par 100 : <b>deux 0</b>. Par 1 000 : <b>trois 0</b>.')}
 ${cm1Exemple('Exemples :', ['36 × 10 = <b>360</b> (36 unités deviennent 36 dizaines)', '36 × 100 = <b>3 600</b>', '36 × 1 000 = <b>36 000</b>'])}
+${cmAnimGlisseDec('cm1-cm-glisse', { presets: [{ nom: '36 × 100', n: '36', f: 100, op: '×' }, { nom: '2,5 × 10', n: '2,5', f: 10, op: '×' }, { nom: '5,4 ÷ 10', n: '5,4', f: 10, op: '÷' }, { nom: '27 ÷ 10', n: '27', f: 10, op: '÷' }] })}
 ${cm1Astuce('Cette astuce « j\'ajoute des zéros » ne marche <b>que pour les nombres entiers</b> ! Pour 2,5 × 10, on n\'écrit pas 2,50 : chaque chiffre glisse d\'un rang, et 2,5 × 10 = <b>25</b>.')}
 
 ${cm1Lecon(5, 'Décimaux : × 10 et ÷ 10')}
@@ -87,13 +89,25 @@ ${cm1Sous('A', 'Atelier : 10 calculs pour t\'entraîner')}
     ]],
   ],
   exos: cm1Exos('cm', [
-    ['Calcule : 56 + 9 &nbsp;·&nbsp; 124 + 11 &nbsp;·&nbsp; 73 − 19 &nbsp;·&nbsp; 250 − 21', '65 · 135 · 54 · 229'],
-    ['Complète : 38 + … = 100 &nbsp;·&nbsp; 450 + … = 1 000 &nbsp;·&nbsp; 6 + … = 10', '62 · 550 · 4'],
-    ['Calcule : double de 45 &nbsp;·&nbsp; moitié de 90 &nbsp;·&nbsp; moitié de 70 &nbsp;·&nbsp; double de 125', '90 · 45 · 35 · 250'],
-    ['Calcule : 52 × 10 &nbsp;·&nbsp; 7 × 1 000 &nbsp;·&nbsp; 40 × 100 &nbsp;·&nbsp; 125 × 10', '520 · 7 000 · 4 000 · 1 250'],
-    ['Calcule : 3,8 × 10 &nbsp;·&nbsp; 0,6 × 10 &nbsp;·&nbsp; 45 ÷ 10 &nbsp;·&nbsp; 1,2 ÷ 10', '38 · 6 · 4,5 · 0,12'],
-    ['Calcule en expliquant ta méthode : 25 × 4 &nbsp;·&nbsp; 64 × 5 &nbsp;·&nbsp; 18 × 11', '25 × 4 : double de 25 = 50, double de 50 = 100. · 64 × 5 : 640, moitié 320. · 18 × 11 = 180 + 18 = 198.'],
-    ['Calcule : 12 × 7 en décomposant 12 en 10 + 2.', '10 × 7 + 2 × 7 = 70 + 14 = 84.'],
+    [`Calcule de tête en passant par la dizaine.${cm1Liste(['56 + 9', '124 + 11', '73 − 19', '250 − 21'])}`,
+      cm1Redac('56 + 9', ['56 + 10 − 1', '66 − 1', '65'], '56 + 9 donne 65.')
+      + cm1Redac('124 + 11', { nom: 'B', lignes: ['124 + 10 + 1', '134 + 1', '135'] }, '124 + 11 donne 135.')
+      + cm1Redac('73 − 19', { nom: 'C', lignes: ['73 − 20 + 1', '53 + 1', '54'] }, '73 − 19 donne 54.')
+      + cm1Redac('250 − 21', { nom: 'D', lignes: ['250 − 20 − 1', '230 − 1', '229'] }, '250 − 21 donne 229.')],
+    [`Complète.${cm1Liste(['38 + … = 100', '450 + … = 1 000', '6 + … = 10'])}`,
+      cm1Redac('Compléments', { suite: ['38 + 62 = 100', '450 + 550 = 1 000', '6 + 4 = 10'] }, 'Les nombres manquants sont 62, 550 et 4.')],
+    [`Calcule.${cm1Liste(['le double de 45', 'la moitié de 90', 'la moitié de 70', 'le double de 125'])}`,
+      cm1Redac('Doubles et moitiés', { suite: ['45 + 45 = 90', '45 + 45 = 90', '35 + 35 = 70', '125 + 125 = 250'] }, 'Le double de 45 est 90, la moitié de 90 est 45, la moitié de 70 est 35 et le double de 125 est 250.')],
+    ['Une boîte contient 52 crayons. Combien y a-t-il de crayons dans 10 boîtes ? dans 100 boîtes ?',
+      cm1Redac('Crayons dans 10 boîtes', '52 × 10 = 520', 'Il y a 520 crayons dans 10 boîtes.') + cm1Redac('Crayons dans 100 boîtes', '52 × 100 = 5 200', 'Il y a 5 200 crayons dans 100 boîtes.')],
+    [`Calcule.${cm1Liste(['3,8 × 10', '0,6 × 10', '45 ÷ 10', '1,2 ÷ 10'])}`,
+      cm1Redac('Multiplier et diviser par 10', { suite: ['3,8 × 10 = 38', '0,6 × 10 = 6', '45 ÷ 10 = 4,5', '1,2 ÷ 10 = 0,12'] }, 'Chaque chiffre glisse d\'un rang : vers la gauche pour × 10, vers la droite pour ÷ 10.')],
+    [`Calcule en expliquant ta méthode.${cm1Liste(['25 × 4', '64 × 5', '18 × 11'])}`,
+      cm1Redac('25 × 4 : le double du double', { suite: ['2 × 25 = 50', '2 × 50 = 100'] }, '25 × 4 donne 100.')
+      + cm1Redac('64 × 5 : × 10 puis la moitié', { suite: ['64 × 10 = 640', 'la moitié de 640 est 320'] }, '64 × 5 donne 320.')
+      + cm1Redac('18 × 11 : × 10 puis on ajoute 18', ['180 + 18', '198'], '18 × 11 donne 198.')],
+    ['Un car a 12 rangées de 7 places. Combien de places y a-t-il ? Calcule en décomposant 12.',
+      cm1Redac('Nombre de places', ['10 × 7 + 2 × 7', '70 + 14', '84'], 'Il y a 84 places dans le car.')],
   ], { titre: 'Rédaction type : « Expliquer un calcul mental »', lignes: [['47 + 19', 'J\'ajoute 20 (c\'est plus facile)…'], ['= 47 + 20 − 1 = 67 − 1 = 66', '… puis j\'enlève 1, car 19 = 20 − 1.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : les calculateurs prodiges', [
     'Avant les calculatrices, savoir calculer de tête était très utile aux marchands. Certaines personnes étaient capables de calculs extraordinaires : au XIX<sup>e</sup> siècle, <b>Jacques Inaudi</b>, un jeune berger, faisait de tête des multiplications de nombres à 10 chiffres et donnait des spectacles dans toute l\'Europe.',

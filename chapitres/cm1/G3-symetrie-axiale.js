@@ -69,6 +69,9 @@ ${cm1Astuce('Une figure peut avoir <b>aucun</b>, <b>un</b> ou <b>plusieurs</b> a
 
 ${cm1Lecon(3, 'Compléter une figure sur quadrillage')}
 ${cm1Regle('Sur un quadrillage, chaque point et son symétrique sont <b>à la même distance de l\'axe</b>, de part et d\'autre, sur la même ligne perpendiculaire à l\'axe. On <b>compte les carreaux</b> jusqu\'à l\'axe, puis on compte autant de carreaux de l\'autre côté.')}
+${ce2AnimSymQuad('cm1-sy-quad', { presets: [
+  { nom: 'Drapeau (axe horizontal)', n: 8, m: 8, pts: [[2, 4], [2, 1], [6, 2], [3, 3], [3, 4]], axe: { h: 4 } },
+  { nom: 'Flèche (axe vertical)', n: 10, m: 7, pts: [[1, 3], [3, 1], [3, 2], [4, 2], [4, 5], [3, 5], [3, 6]], axe: { v: 5 } }] })}
 ${cm1Exemple('Exemple :', ['Un sommet est à 3 carreaux à gauche de l\'axe vertical : son symétrique est à 3 carreaux à droite, sur la même ligne.', 'Un point situé sur l\'axe est son propre symétrique.'])}
 ${cm1Rem('La figure symétrique a la même forme et les mêmes dimensions que la figure de départ, mais elle est « retournée », comme dans un miroir.')}
 `,
@@ -88,12 +91,18 @@ ${cm1Sous('A', 'Atelier : complète le dessin par symétrie')}
     ]],
   ],
   exos: cm1Exos('sy', [
-    ['Combien d\'axes de symétrie ont ces lettres : A · B · H · N · O ?', 'A : 1 (vertical) · B : 1 (horizontal) · H : 2 · N : aucun · O : 2 (dans la police habituelle ; un cercle parfait en aurait une infinité).'],
-    ['Un losange a-t-il des axes de symétrie ? Lesquels ?', 'Oui, 2 : ce sont ses deux diagonales.'],
-    ['Sur ton cahier, trace un axe vertical. Place un point B à 5 carreaux à gauche de l\'axe. Construis son symétrique B\'. À combien de carreaux de B est B\' ?', 'B\' est à 5 carreaux à droite de l\'axe, sur la même ligne ; donc B et B\' sont à 10 carreaux l\'un de l\'autre.'],
-    ['Un point C est sur l\'axe de symétrie. Où est son symétrique ?', 'Il est confondu avec C : un point de l\'axe est son propre symétrique.'],
-    ['Dans l\'atelier de l\'onglet Méthode, complète les trois dessins (sapin, papillon, maison) et vérifie.', 'Le bouton « Vérifier » affiche en vert les cases justes, en rouge les cases en trop et en rose les cases oubliées.'],
-    ['Vrai ou faux ? « La figure symétrique d\'un triangle est un triangle de même taille. »', 'Vrai : la symétrie conserve la forme et les longueurs.'],
+    [`Combien d'axes de symétrie a chacune de ces lettres ?${cm1Liste(['A', 'B', 'H', 'N', 'O'])}`,
+      cm1Redac('Axes de symétrie des lettres', { suite: ['A : 1 axe vertical', 'B : 1 axe horizontal', 'H : 2 axes', 'N : aucun axe', 'O : 2 axes'] }, 'A et B ont un axe, H et O en ont deux, N n\'en a pas (un cercle parfait en aurait une infinité).')],
+    ['Un losange a-t-il des axes de symétrie ? Lesquels ?',
+      cm1Redac('Axes du losange', 'En pliant le long d\'une diagonale, les deux moitiés se superposent.', 'Oui : un losange a 2 axes de symétrie, ses deux diagonales.')],
+    ['Sur ton cahier, trace un axe vertical. Place un point B à 5 carreaux à gauche de l\'axe. Construis son symétrique B\'. À combien de carreaux de B est B\' ?',
+      cm1Redac('Distance entre B et B\'', '5 + 5 = 10', 'B\' est à 5 carreaux à droite de l\'axe, sur la même ligne : B et B\' sont à 10 carreaux l\'un de l\'autre.')],
+    ['Un point C est sur l\'axe de symétrie. Où est son symétrique ?',
+      cm1Redac('Symétrique de C', 'C est à 0 carreau de l\'axe.', 'Le symétrique de C est C lui-même : un point de l\'axe est son propre symétrique.')],
+    ['Dans l\'atelier de l\'onglet Méthode, complète les trois dessins (sapin, papillon, maison) et vérifie.',
+      cm1Redac('Vérification', { suite: ['Je compte les carreaux entre chaque case et l\'axe.', 'Je colorie la case à la même distance, de l\'autre côté.'] }, 'Le bouton « Vérifier » affiche en vert les cases justes, en rouge les cases en trop et en rose les cases oubliées.')],
+    ['Vrai ou faux ? « La figure symétrique d\'un triangle est un triangle de même taille. »',
+      cm1Redac('Réponse', 'La symétrie conserve la forme et les longueurs.', 'Vrai : le symétrique d\'un triangle est un triangle de même taille.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : la symétrie dans l\'art', [
     'Les hommes utilisent la symétrie depuis la Préhistoire : on la trouve sur des poteries, des tissus, des mosaïques. Les <b>Grecs</b> la considéraient comme un signe de beauté et d\'harmonie.',

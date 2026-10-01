@@ -106,8 +106,11 @@ document.getElementById('cours-demo-cm1-grands-nombres').innerHTML = `
   Ranger des nombres dans l'<b>ordre croissant</b>, c'est les ranger du plus petit au plus grand.<br>
   Ranger des nombres dans l'<b>ordre décroissant</b>, c'est les ranger du plus grand au plus petit.
 </div>
-<p class="example-title">Range dans l'ordre croissant : 45 610 &nbsp;·&nbsp; 6 980 &nbsp;·&nbsp; 45 106 &nbsp;·&nbsp; 128 400</p>
+<p class="example-title">Range dans l'ordre croissant : 45 610 ; 6 980 ; 45 106 ; 128 400.</p>
 <p style="margin:6px 0 0;font-family:'JetBrains Mono',monospace;">6 980 &lt; 45 106 &lt; 45 610 &lt; 128 400</p>
+${ce2AnimSauts('cm1-gn-sauts', { legende: 'Les grands nombres sur une droite : on avance de 10 000 en 10 000, puis on franchit 100 000.', presets: [
+  { nom: 'De 10 000 en 10 000', depart: 60000, sauts: [[10000, '+ 10 000'], [10000, '+ 10 000'], [10000, '+ 10 000'], [10000, '+ 10 000']], min: 55000, max: 105000, fin: '60 000, 70 000, 80 000, 90 000, <b>100 000</b> : 10 dizaines de mille font une centaine de mille.' },
+  { nom: 'Après 99 999', depart: 99997, sauts: [[1, '+ 1'], [1, '+ 1'], [1, '+ 1']], min: 99995, max: 100002, fin: '99 999 + 1 = <b>100 000</b> (cent-mille) : le nombre passe à 6 chiffres.' }] })}
 `;
 
 document.getElementById('methode-demo-cm1-grands-nombres').innerHTML = `
@@ -147,31 +150,31 @@ document.getElementById('exos-demo-cm1-grands-nombres').innerHTML = `
     Écris en chiffres le nombre : quatre-cent-douze-mille-sept-cent-trois.
     <button type="button" class="exo-correction-toggle" data-target="cm1gn-correction-1" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1gn-correction-1">
-      <p style="margin:0;">quatre-cent-douze-mille-sept-cent-trois s'écrit : <b>412 703</b>.</p>
+      ${cm1Redac('Le nombre en chiffres', { suite: ['classe des mille : quatre-cent-douze, 412', 'classe des unités : sept-cent-trois, 703'] }, 'Le nombre s\'écrit 412 703.')}
     </div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 2</div>
-    Décompose le nombre 583 940 (comme dans l'exemple du cours).
+    Décompose le nombre 583 940 selon la valeur de chaque chiffre.
     <button type="button" class="exo-correction-toggle" data-target="cm1gn-correction-2" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1gn-correction-2">
-      <p style="margin:0;">583 940 = 500 000 + 80 000 + 3 000 + 900 + 40</p>
+      ${cm1Redac('Décomposition de 583 940', '583 940 = 500 000 + 80 000 + 3 000 + 900 + 40', 'Chaque terme donne la valeur d\'un chiffre ; le 0 des unités ne donne rien.')}
     </div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 3</div>
-    Dans le nombre 271 806 : quel est le chiffre des centaines ? Quel est le nombre de centaines ?
+    Dans le nombre 271 806, quel est le chiffre des centaines ? Quel est le nombre de centaines ?
     <button type="button" class="exo-correction-toggle" data-target="cm1gn-correction-3" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1gn-correction-3">
-      <p style="margin:0;">Le chiffre des centaines est <b>8</b>.<br>Le nombre de centaines est <b>2 718</b> (on efface les 2 derniers chiffres, 0 et 6).</p>
+      ${cm1Redac('Chiffre des centaines', '271 <b>8</b>06 : le 3<sup>e</sup> chiffre en partant de la droite', 'Le chiffre des centaines de 271 806 est 8.') + cm1Redac('Nombre de centaines', '271 806 = 2 718 centaines et 6 unités', 'Le nombre de centaines de 271 806 est 2 718.')}
     </div>
   </div>
   <div class="exo-card">
     <div class="num">Exercice 4</div>
-    Range dans l'ordre décroissant : 90 415 &nbsp;·&nbsp; 9 999 &nbsp;·&nbsp; 90 145 &nbsp;·&nbsp; 104 200
+    Range dans l'ordre décroissant : 90 415 ; 9 999 ; 90 145 ; 104 200.
     <button type="button" class="exo-correction-toggle" data-target="cm1gn-correction-4" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1gn-correction-4">
-      <p style="margin:0;">104 200 &gt; 90 415 &gt; 90 145 &gt; 9 999</p>
+      ${cm1Redac('Ordre décroissant', '104 200 &gt; 90 415 &gt; 90 145 &gt; 9 999', 'Le plus grand nombre est 104 200 (6 chiffres) et le plus petit est 9 999 (4 chiffres).')}
     </div>
   </div>
   <div class="exo-card">
@@ -179,7 +182,7 @@ document.getElementById('exos-demo-cm1-grands-nombres').innerHTML = `
     Attention au piège ! Compare 74 500 et 8 900 en expliquant ta méthode.
     <button type="button" class="exo-correction-toggle" data-target="cm1gn-correction-5" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
     <div class="exo-correction" id="cm1gn-correction-5">
-      <p style="margin:0;">74 500 a 5 chiffres, 8 900 en a seulement 4 : 74 500 est donc bien le plus grand, même si 8 900 « commence » par un chiffre plus grand (8 &gt; 7). On ne compare jamais le premier chiffre avant d'avoir vérifié que les deux nombres ont bien le même nombre de chiffres !<br><b>74 500 &gt; 8 900</b></p>
+      ${cm1Redac('Comparaison', { suite: ['74 500 a 5 chiffres.', '8 900 a 4 chiffres.'] }, 'Donc 74 500 &gt; 8 900, même si 8 900 commence par un chiffre plus grand : on vérifie d\'abord le nombre de chiffres.')}
     </div>
   </div>
 </div>
@@ -222,5 +225,5 @@ DEMO_QUIZZES['cm1|Grands nombres jusqu\'à 999 999'] = [
 ];
 
 DEMO_REGISTRY['cm1|Grands nombres jusqu\'à 999 999'] = { cours:'cours-demo-cm1-grands-nombres', methode:'methode-demo-cm1-grands-nombres', exos:'exos-demo-cm1-grands-nombres', histoire:'histoire-demo-cm1-grands-nombres',
-  init:()=>{ cm1gnLireDemo.reset(); cm1gnComparerDemo.reset(); } };
+  init:()=>{ cm1gnLireDemo.reset(); cm1gnComparerDemo.reset(); cmAnimDessiner('cm1-gn-sauts'); } };
 

@@ -45,7 +45,8 @@ ${cm1Regle('<ul style="margin:0;padding-left:18px;line-height:1.9;"><li>La <b st
 ${cm1Rem('Une journée dure 24 heures, mais la petite aiguille ne fait que 12 heures : elle fait <b>deux tours</b> par jour. L\'après-midi, on ajoute 12 : 3 h de l\'après-midi = 15 h. On dit aussi « 4 h moins 20 » pour 3 h 40.')}
 
 ${cm1Lecon(2, 'Unités de durée')}
-${cm1Regle('1 minute (min) = 60 secondes (s) &nbsp;·&nbsp; 1 heure (h) = 60 min &nbsp;·&nbsp; 1 jour = 24 h<br>1 semaine = 7 jours &nbsp;·&nbsp; 1 année = 12 mois = 365 jours (366 les années bissextiles) &nbsp;·&nbsp; 1 siècle = 100 ans', 'À retenir')}
+${cm1Regle(cm1Liste(['1 minute (min) = 60 secondes (s)', '1 heure (h) = 60 min', '1 jour = 24 h', '1 semaine = 7 jours', '1 année = 12 mois = 365 jours (366 les années bissextiles)', '1 siècle = 100 ans']), 'À retenir')}
+${ce2AnimHorloge('cm1-hd-horloge', { presets: [{ nom: 'Un quart d\'heure', de: [9, 0], a: [9, 15] }, { nom: 'Une heure', de: [9, 0], a: [10, 0], fin: 'Un tour complet de la grande aiguille : <b>1 h = 60 min</b>.' }] })}
 ${cm1Exemple('Convertir en raisonnant :', ['2 h = 2 × 60 min = <b>120 min</b>.', '1 h 15 min = 60 min + 15 min = <b>75 min</b>.', '90 min = 60 min + 30 min = <b>1 h 30 min</b>.', '3 min = 3 × 60 s = <b>180 s</b>.'])}
 ${cm1Astuce('Attention : 1 h 30 min n\'est pas 1,30 h ! Une heure a 60 minutes, pas 100.')}
 
@@ -53,6 +54,7 @@ ${cm1Lecon(3, 'Instant et durée')}
 ${cm1Def('Un <b>instant</b> (ou horaire) dit <b>quand</b> quelque chose se passe : « le film commence à 14 h 30 ».<br>Une <b>durée</b> dit <b>combien de temps</b> cela dure : « le film dure 1 h 45 min ».')}
 
 ${cm1Lecon(4, 'Calculer une durée avec une frise')}
+${ce2AnimSauts('cm1-hd-frise', { legende: 'Sur la frise : un bond jusqu\'à l\'heure pile, des bonds d\'une heure, puis le reste.', presets: [{ nom: 'De 17 h 40 à 19 h 05', depart: 17 * 60 + 40, sauts: [[20, '+ 20 min'], [60, '+ 1 h'], [5, '+ 5 min']], min: 17 * 60 + 30, max: 19 * 60 + 15, fmt: ce2Heure, fin: '20 min + 1 h + 5 min = <b>1 h 25 min</b>.' }, { nom: 'De 15 h 30, cuire 45 min', depart: 15 * 60 + 30, sauts: [[30, '+ 30 min'], [15, '+ 15 min']], min: 15 * 60 + 20, max: 16 * 60 + 25, fmt: ce2Heure, fin: 'Le gâteau sort à <b>16 h 15</b>.' }] })}
 ${cm1Regle('Pour calculer une durée, on fait des <b>bonds</b> sur une frise : d\'abord jusqu\'à l\'<b>heure pile</b>, puis les heures entières, puis les minutes restantes.')}
 ${cm1Exemple('Un film commence à 14 h 35 et finit à 16 h 20. Combien de temps dure-t-il ?')}
 ${frise([['14 h 35', '15 h', '25 min'], ['15 h', '16 h', '1 h'], ['16 h', '16 h 20', '20 min']])}
@@ -80,14 +82,23 @@ ${cm1Sous('A', 'Atelier : lis l\'heure')}
     ]],
   ],
   exos: cm1Exos('hd', [
-    [`Quelle heure est-il (le matin) ?<div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;">${[[7, 15], [10, 45], [2, 5], [11, 30]].map(([h, m], i) => `<div style="text-align:center;">${horloge(h, m, 100)}<div>${'abcd'[i]})</div></div>`).join('')}</div>`, 'a) 7 h 15 · b) 10 h 45 (11 h moins le quart) · c) 2 h 05 · d) 11 h 30.'],
-    ['Écris l\'heure de l\'après-midi : 3 h 20 · 6 h 45 · 11 h 10.', '15 h 20 · 18 h 45 · 23 h 10.'],
-    ['Complète : 3 h = … min &nbsp;·&nbsp; 2 min = … s &nbsp;·&nbsp; 2 jours = … h &nbsp;·&nbsp; 3 semaines = … jours', '180 min · 120 s · 48 h · 21 jours.'],
-    ['Convertis en heures et minutes : 80 min · 150 min · 65 min.', '1 h 20 min · 2 h 30 min · 1 h 05 min.'],
-    ['Instant ou durée ? « La cantine ouvre à 11 h 45 » · « Le match dure 90 minutes » · « Je dors 10 heures ».', 'instant · durée · durée.'],
-    ['Un dessin animé commence à 17 h 40 et finit à 19 h 05. Quelle est sa durée ?', '17 h 40 → 18 h : 20 min ; 18 h → 19 h : 1 h ; 19 h → 19 h 05 : 5 min. Durée : 1 h 25 min.'],
-    ['Un gâteau doit cuire 45 minutes. Il est enfourné à 15 h 30. À quelle heure faut-il le sortir ?', '15 h 30 + 30 min = 16 h ; + 15 min = 16 h 15.'],
-    ['En quel siècle sommes-nous ? En quel siècle a eu lieu la Révolution française (1789) ?', 'Au XXI<sup>e</sup> siècle (années 2001 à 2100). 1789 est au XVIII<sup>e</sup> siècle.'],
+    [`Quelle heure est-il (le matin) ?<div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;">${[[7, 15], [10, 45], [2, 5], [11, 30]].map(([h, m], i) => `<div style="text-align:center;">${horloge(h, m, 100)}<div><b>${'ABCD'[i]}</b></div></div>`).join('')}</div>`,
+      cm1Redac('Lecture des horloges', { suite: ['A : 7 h 15', 'B : 10 h 45, onze heures moins le quart', 'C : 2 h 05', 'D : 11 h 30'] }, 'La petite aiguille donne l\'heure, la grande les minutes.')],
+    [`Écris ces heures de l'après-midi sur 24 heures.${cm1Liste(['3 h 20', '6 h 45', '11 h 10'])}`,
+      cm1Redac('Heures de l\'après-midi', { suite: ['12 h + 3 h 20 = 15 h 20', '12 h + 6 h 45 = 18 h 45', '12 h + 11 h 10 = 23 h 10'] }, 'L\'après-midi, on ajoute 12 h : 15 h 20, 18 h 45 et 23 h 10.')],
+    [`Convertis.${cm1Liste(['3 h en min', '2 min en s', '2 jours en h', '3 semaines en jours'])}`,
+      cm1Redac('Conversions', { suite: ['3 h = 3 × 60 min = 180 min', '2 min = 2 × 60 s = 120 s', '2 jours = 2 × 24 h = 48 h', '3 semaines = 3 × 7 jours = 21 jours'] }, 'On part chaque fois d\'une relation connue, puis on multiplie.')],
+    [`Convertis en heures et minutes.${cm1Liste(['80 min', '150 min', '65 min'])}`,
+      cm1Redac('Conversions', { suite: ['80 min = 60 min + 20 min = 1 h 20 min', '150 min = 120 min + 30 min = 2 h 30 min', '65 min = 60 min + 5 min = 1 h 05 min'] }, 'On enlève des paquets de 60 minutes : chacun fait une heure.')],
+    [`Instant ou durée ?${cm1Liste(['« La cantine ouvre à 11 h 45. »', '« Le match dure 90 minutes. »', '« Je dors 10 heures. »'])}`,
+      cm1Redac('Instant ou durée', { suite: ['11 h 45 : un instant', '90 minutes : une durée', '10 heures de sommeil : une durée'] }, 'Un instant dit « quand » ; une durée dit « combien de temps ».')],
+    ['Un dessin animé commence à 17 h 40 et finit à 19 h 05. Quelle est sa durée ?',
+      cm1Redac('Les bonds', { suite: ['17 h 40 → 18 h : 20 min', '18 h → 19 h : 1 h', '19 h → 19 h 05 : 5 min'] }, '')
+      + cm1Redac('Durée du dessin animé', '20 min + 1 h + 5 min = 1 h 25 min', 'Le dessin animé dure 1 h 25 min.')],
+    ['Un gâteau doit cuire 45 minutes. Il est enfourné à 15 h 30. À quelle heure faut-il le sortir ?',
+      cm1Redac('Heure de sortie', { suite: ['15 h 30 + 30 min = 16 h', '16 h + 15 min = 16 h 15'] }, 'Il faut sortir le gâteau à 16 h 15.')],
+    ['En quel siècle sommes-nous ? En quel siècle a eu lieu la Révolution française (1789) ?',
+      cm1Redac('Notre siècle', 'années 2001 à 2100', 'Nous sommes au XXI<sup>e</sup> siècle.') + cm1Redac('La Révolution française', 'années 1701 à 1800', '1789 est au XVIII<sup>e</sup> siècle.')],
   ], { titre: 'Rédaction type : « Calculer une durée »', lignes: [['8 h 40 → 9 h : 20 min', 'Je fais un bond jusqu\'à l\'heure pile.'], ['9 h → 10 h 15 : 1 h 15 min', 'Je continue jusqu\'à l\'heure de fin.'], ['Durée : 20 min + 1 h 15 min = 1 h 35 min', 'J\'additionne les bonds.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : pourquoi 60 minutes ?', [
     'Pourquoi une heure a-t-elle 60 minutes, et pas 100 ? C\'est un héritage des <b>Babyloniens</b>, il y a 4 000 ans : ils comptaient en base 60, car 60 se partage facilement en 2, 3, 4, 5, 6, 10, 12, 15, 20 et 30.',

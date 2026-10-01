@@ -490,3 +490,77 @@ function ce2AnimReport(id, o){
       return { scene: `<svg viewBox="0 0 580 270" class="cma-svg" style="max-width:580px;">${s}</svg>`, texte };
     } });
 }
+
+/* ---------------- Glisse-nombre avec virgule : × ou ÷ 10, 100, 1 000 (CM1, CM2) ----------------
+   presets : [{ nom, n: '4,27', f: 10, op: '×' | '÷' }]. Les chiffres glissent de rang en rang ; la
+   virgule reste en place ; les zéros nécessaires apparaissent en rouge. */
+function cmAnimGlisseDec(id, o){
+  const P = o.presets, RANGS = [3, 2, 1, 0, -1, -2, -3], NOMS = { 3: 'milliers', 2: 'centaines', 1: 'dizaines', 0: 'unités', '-1': 'dixièmes', '-2': 'centièmes', '-3': 'millièmes' };
+  return ce2Film(id, { duree: 7500, legende: o.legende || 'La virgule ne bouge pas : ce sont les chiffres qui glissent vers la gauche (×) ou vers la droite (÷).', controles: a => ce2Choix(id, P, a),
+    film: a => {
+      const p = P[a.etat.p], [e, d = ''] = String(p.n).split(','), dec = Math.round(Math.log10(p.f)), sh = p.op === '÷' ? -dec : dec;
+      const ent = e.replace(/^0+/, ''), zeroDepart = !ent; // « 0,56 » : le 0 des unités ne glisse pas, il s'efface
+      const chiffres = [...ent].map((c, i) => ({ c, r: ent.length - 1 - i })).concat([...d].map((c, i) => ({ c, r: -1 - i })));
+      const CW = 70, X0 = 14, VG = 18, colX = r => X0 + (3 - r) * CW + CW / 2 + (r < 0 ? VG : 0), W = X0 * 2 + 7 * CW + VG;
+      const occ = new Set(chiffres.map(x => x.r + sh)), hi = Math.max(...occ), lo = Math.min(...occ), zeros = [];
+      for(let r = Math.min(lo, 0); r <= Math.max(hi, 0); r++) if(!occ.has(r) && (r >= 0 || r > lo)) zeros.push(r);
+      // Résultat écrit : chiffres décalés et zéros utiles (à gauche de la virgule jusqu'aux unités, entre les chiffres).
+      const res = {}; chiffres.forEach(x => res[x.r + sh] = x.c); zeros.forEach(r => res[r] = '0');
+      const rs = Object.keys(res).map(Number), top = Math.max(...rs, 0), bas = Math.min(...rs, 0);
+      let txt = ''; for(let r = top; r >= bas; r--){ txt += res[r] ?? '0'; if(r === 0 && bas < 0) txt += ','; if(r === 3 && top >= 3) txt += ' '; }
+      let fond = '';
+      RANGS.forEach(r => { const x = colX(r) - CW / 2; fond += `<rect x="${x}" y="20" width="${CW}" height="30" fill="${r >= 0 ? CE2C.encre : CE2C.violet}" stroke="#fff"/>` + ce2T(x + CW / 2, 40, NOMS[r], { c: '#fff', t: 11 }) + `<rect x="${x}" y="50" width="${CW}" height="56" fill="#fff" stroke="${CE2C.encre}"/>`; });
+      fond += ce2T(colX(0) + CW / 2 + VG / 2, 92, ',', { t: 34, g: 700, c: CE2C.rouge });
+      const lu = p.op === '÷' ? 'plus petite' : 'plus grande', sens = p.op === '÷' ? 'la droite' : 'la gauche';
+      return { w: W, h: 150, scenes: [
+        { de: 0, a: .1, dessin: () => fond, texte: `Voici <b>${p.n}</b> dans le tableau.` },
+        { de: 0, a: .11, dessin: k => k < 1 ? (zeroDepart ? ce2T(colX(0), 90, '0', { t: 32, g: 700 }) : '') + chiffres.map(x => ce2T(colX(x.r), 90, x.c, { t: 32, g: 700 })).join('') : '' },
+        { de: .12, a: .62, dessin: k => (zeroDepart ? ce2T(colX(0), 90, '0', { t: 32, g: 700, op: 1 - k }) : '') + chiffres.map(x => ce2T(ce2Mix(colX(x.r), colX(x.r + sh), k), 90, x.c, { t: 32, g: 700 })).join(''), texte: `${p.op === '÷' ? 'On divise' : 'On multiplie'} par ${ce2Nb(p.f)} : chaque chiffre prend une valeur ${ce2Nb(p.f)} fois ${lu} et glisse de ${dec} rang${dec > 1 ? 's' : ''} vers ${sens}.` },
+        { de: .66, a: .8, dessin: k => zeros.map(r => ce2T(colX(r), 90, '0', { t: 32, g: 700, c: CE2C.rouge, op: k })).join(''), texte: zeros.length ? 'On écrit les zéros nécessaires (en rouge).' : 'Aucun zéro à ajouter.' },
+        { de: .84, a: 1, dessin: k => ce2T(W / 2, 140, `${p.n} ${p.op} ${ce2Nb(p.f)} = ${txt}`, { t: 18, c: CE2C.vert, op: k }), texte: `<b>${p.n} ${p.op} ${ce2Nb(p.f)} = ${txt}</b>` },
+      ] };
+    } });
+}
+
+/* ---------------- Paver un rectangle avec des carrés unités, ligne par ligne (aires) ----------------
+   presets : [{ nom, l: lignes, c: colonnes, unite: 'carreaux' | 'cm²' }] */
+function cmAnimPaver(id, o){
+  const P = o.presets;
+  return ce2Film(id, { duree: 8000, legende: o.legende || 'On recouvre le rectangle de carrés unités, ligne par ligne, puis on compte.', controles: a => ce2Choix(id, P, a),
+    film: a => {
+      const p = P[a.etat.p], K = Math.min(40, 360 / p.c), X0 = 20, Y0 = 16, W = X0 * 2 + p.c * K + 60, H = Y0 * 2 + p.l * K + 30, u = p.unite || 'carreaux';
+      const sc = [{ de: 0, a: .08, dessin: k => `<rect x="${X0}" y="${Y0}" width="${p.c * K}" height="${p.l * K}" fill="none" stroke="${CE2C.encre}" stroke-width="2.5" opacity="${k}"/>`, texte: `Un rectangle de ${p.c} sur ${p.l}${u === 'cm²' ? ' cm' : ' carreaux'}.` }];
+      for(let i = 0; i < p.l; i++){ const [de, fin] = ce2Creneau(i, p.l, .1, .85);
+        sc.push({ de, a: fin, dessin: k => { let s = ''; const n = Math.round(p.c * k); for(let j = 0; j < n; j++) s += `<rect x="${X0 + j * K + 1}" y="${Y0 + i * K + 1}" width="${K - 2}" height="${K - 2}" fill="${i % 2 ? CE2C.bleu : CE2C.vert}" fill-opacity=".45" stroke="${CE2C.encre}" stroke-width=".8"/>`; return s + (k >= 1 ? ce2T(X0 + p.c * K + 30, Y0 + i * K + K / 2 + 5, p.c, { t: 13, c: CE2C.gris }) : ''); },
+          texte: `${i + 1} ligne${i ? 's' : ''} de ${p.c} ${u === 'cm²' ? 'carrés de 1 cm²' : 'carreaux'} : ${i ? Array(i + 1).fill(p.c).join(' + ') + ' = ' : ''}${(i + 1) * p.c}.` });
+      }
+      sc.push({ de: .9, a: 1, texte: `${p.l} lignes de ${p.c} : ${p.l} × ${p.c} = <b>${p.l * p.c} ${u}</b>. C'est l'aire du rectangle.` });
+      return { w: W, h: H, scenes: sc };
+    } });
+}
+
+/* ---------------- Tirages au hasard dans un sac (probabilités) ----------------
+   presets : [{ nom, billes: [[couleur, nombre, code couleur]], n: nombre de tirages }]. Tirages
+   pseudo-aléatoires mais toujours les mêmes à la relecture (graine fixe). */
+function cmAnimTirages(id, o){
+  const P = o.presets;
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: 10000, legende: o.legende || 'On tire une bille au hasard, on note sa couleur, on la remet dans le sac… et on recommence.', controles: a => ce2Choix(id, P, a),
+    dessin: (t, a) => {
+      const p = P[a.etat.p], N = p.n || 40, total = p.billes.reduce((s, b) => s + b[1], 0);
+      let g = 12345 + a.etat.p * 77; const rnd = () => (g = (g * 1103515245 + 12345) % 2147483648) / 2147483648;
+      const tirs = Array.from({ length: N }, () => { let r = rnd() * total; for(const b of p.billes){ if(r < b[1]) return b; r -= b[1]; } return p.billes[0]; });
+      const fait = Math.floor(cmPhase(t, .05, .95) * N + 1e-6), compte = p.billes.map(b => tirs.slice(0, fait).filter(x => x === b).length);
+      let s = `<path d="M30 70 Q30 40 60 40 H140 Q170 40 170 70 V170 Q170 190 150 190 H50 Q30 190 30 170 Z" fill="#E9DCC5" stroke="#8A6D1F" stroke-width="2"/>`;
+      let k = 0; p.billes.forEach(([nom, nb, c]) => { for(let i = 0; i < nb; i++, k++) s += `<circle cx="${52 + (k % 6) * 19}" cy="${80 + Math.floor(k / 6) * 19}" r="8" fill="${c}" stroke="${CE2C.encre}" stroke-width=".8"/>`; });
+      if(fait > 0){ const d = tirs[fait - 1]; s += `<circle cx="215" cy="70" r="14" fill="${d[2]}" stroke="${CE2C.encre}" stroke-width="1.4"/>` + ce2T(215, 105, 'tirée', { t: 11, c: CE2C.gris }); }
+      const X0 = 270, maxH = 140, maxC = Math.max(N * .8, 1);
+      p.billes.forEach(([nom, nb, c], i) => { const h = compte[i] / maxC * maxH, x = X0 + i * 70;
+        s += `<rect x="${x}" y="${190 - h}" width="44" height="${h}" fill="${c}" fill-opacity=".85" stroke="${CE2C.encre}"/>` + ce2T(x + 22, 186 - h, compte[i], { t: 13 }) + ce2T(x + 22, 208, nom, { t: 12, g: 500 }); });
+      s += `<line x1="${X0 - 8}" y1="190" x2="${X0 + p.billes.length * 70}" y2="190" stroke="${CE2C.encre}" stroke-width="1.5"/>`;
+      const texte = fait === 0 ? `Dans le sac : ${p.billes.map(b => `${b[1]} ${b[0]}${b[1] > 1 ? 's' : ''}`).join(', ')}.`
+        : t < .95 ? `${fait} tirage${fait > 1 ? 's' : ''} : ${p.billes.map((b, i) => `${compte[i]} ${b[0]}${compte[i] > 1 ? 's' : ''}`).join(', ')}.`
+        : (p.fin || `Après ${N} tirages : ${p.billes.map((b, i) => `${compte[i]} ${b[0]}${compte[i] > 1 ? 's' : ''}`).join(', ')}. La couleur qui a le plus de billes sort le plus souvent… mais pas à tous les coups !`);
+      return { scene: `<svg viewBox="0 0 ${Math.max(480, X0 + p.billes.length * 70 + 10)} 220" class="cma-svg" style="max-width:520px;">${s}</svg>`, texte };
+    } });
+}
