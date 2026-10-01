@@ -1698,3 +1698,9 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .cor-mod:has(input:checked){border-color:var(--accent-orange);background:rgba(255,130,8,.1);font-weight:600;}
 .nb-modalite{display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:1px 8px;border-radius:999px;font-size:.72rem;font-weight:600;vertical-align:middle;color:var(--c);background:color-mix(in srgb, var(--c) 10%, #fff);border:1px solid color-mix(in srgb, var(--c) 35%, #fff);}
 .nb-modalite .gicon{font-size:.9rem;}
+.nb-mod-choix{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px;}
+.nb-mod-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;font:600 .74rem inherit;font-family:inherit;cursor:pointer;color:#7A8492;background:#fff;border:1px dashed rgba(28,43,57,.25);}
+.nb-mod-chip .gicon{font-size:.95rem;}
+.nb-mod-chip:hover{color:var(--c);border-color:var(--c);}
+.nb-mod-chip.on{color:#fff;background:var(--c);border:1px solid var(--c);}
+@media print{ .nb-mod-chip:not(.on){display:none;} }

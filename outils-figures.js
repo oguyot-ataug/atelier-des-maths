@@ -569,7 +569,7 @@ document.body.insertAdjacentHTML('beforeend', `
         </button>
         <button type="button" class="fig-group-corner" onclick="event.stopPropagation(); toggleFigGroup('polygones')" title="Triangle / Polygone / Polygone régulier">▾</button>
         <div id="figGroupPolygones" class="fig-group-sub">
-          <button type="button" class="fig-icon-btn fig-mode" data-mode="triangle" onclick="selectFigSubTool('polygones', this)" title="Triangle (3 points existants)">
+          <button type="button" class="fig-icon-btn fig-mode" data-mode="triangle" onclick="selectFigSubTool('polygones', this)" title="Triangle (3 sommets : points existants ou clics dans le plan)">
             <svg viewBox="0 0 24 24" width="18" height="18"><polygon points="12,3 21,20 3,20" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
           </button>
           <button type="button" class="fig-icon-btn fig-mode" data-mode="polygone" onclick="selectFigSubTool('polygones', this)" title="Polygone (nombre de sommets libre, refermer sur le 1er point)">
@@ -3786,10 +3786,10 @@ function setFigureMode(mode){
     mediatrice:'Cliquez directement sur un segment existant (ou ses deux extrémités) pour tracer sa médiatrice.',
     bissectrice:'Cliquez un point sur le premier côté, puis le sommet de l\'angle, puis un point sur le second côté.',
     code:'Choisissez le type de codage ci-dessus, puis cliquez sur le segment ou l\'angle concerné.',
-    triangle:'Cliquez 3 points existants pour tracer le triangle qui les relie.',
+    triangle:'Cliquez les 3 sommets : des points existants, ou n\'importe où dans le plan (le point est créé).',
     polygone:'Cliquez les sommets un par un : un point existant, ou n\'importe où dans le plan (le point est créé). Recliquez le tout premier point (au moins 3 sommets) pour refermer le polygone.',
     renommer:'Cliquez un point (ou son nom) pour le renommer.',
-    'polygone-regulier':'Cliquez 2 points existants : ils seront les 2 extrémités d\'un côté (fixe la longueur et l\'orientation) -- le nombre de côtés se règle dans le champ à côté.',
+    'polygone-regulier':'Cliquez 2 points (existants, ou n\'importe où dans le plan) : ils seront les 2 extrémités d\'un côté (fixe la longueur et l\'orientation) -- le nombre de côtés se règle dans le champ à côté.',
     'angle-mesure':'Cliquez un point du premier côté (ex. B), puis le sommet (ex. A) : une fenêtre demande la mesure et le sens. Le second côté est une demi-droite [Ay) : aucun point n\'est ajouté.',
     vecteur:'Cliquez deux points existants : l\'origine, puis l\'extrémité (avec la flèche).',
     'mesure-distance':'Cliquez directement un segment existant, ou deux points (un point puis une droite/segment/demi-droite donne la distance perpendiculaire) -- la distance affichée peut ensuite être déplacée (mode Déplacer), en restant toujours parallèle.',
@@ -4880,14 +4880,15 @@ function handlePolygoneClick(x,y){
    les N-1 sommets restants sont calculés par répartition angulaire égale autour du centre,
    puis reliés en un polygone fermé. */
 function handlePolygoneRegulierClick(x,y){
+  // Les deux extrémités du côté : points existants, ou créés au clic n'importe où dans le plan.
   if(!figState.selected.length){
-    const pt = findNearbyPoint(x,y);
-    if(pt){ figState.selected.push(pt); renderFigureSvg(); }
+    const pt = findNearbyPoint(x,y) || figPlacerPoint(x,y);
+    figState.selected.push(pt); renderFigureSvg();
     return;
   }
   const p1 = figState.selected[0];
-  const p2 = findNearbyPoint(x,y);
-  if(!p2 || p2===p1) return;
+  const p2 = findNearbyPoint(x,y) || figPlacerPoint(x,y);
+  if(p2===p1) return;
   figState.selected = [];
   const raw = document.getElementById('polygonSidesInput').value;
   const n = parseInt(raw, 10);
@@ -5139,6 +5140,8 @@ async function onFigureClick(evt){
     near = {label:nextPointLabel(), x, y};
     figState.points.push(near);
   }
+  // Triangle : comme le polygone, un clic n'importe où dans le plan crée le sommet (accroché à un objet s'il y en a un).
+  if(!near && figState.mode==='triangle') near = figPlacerPoint(x,y);
   if(!near || figState.selected.includes(near)) return;
   figState.selected.push(near);
   const neededMap = {angle:3, bissectrice:3, arc:3, triangle:3, 'symetrie-axiale':3, translation:3};

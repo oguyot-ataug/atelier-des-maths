@@ -3236,6 +3236,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.885', date: '2026-10-01', items: [
+    "Outil de correction : dans le cahier de corrections, sous chaque exercice, trois vignettes cliquables « Correction du travail maison », « En classe entière », « En autonomie » : un clic change le type de correction sans rééditer l'exercice (re-cliquer la vignette active la retire). Enregistré aussitôt ; le résumé du jour pour le cahier de textes suit.",
+    "Géométrie dynamique : le triangle et le polygone régulier se construisent aussi en cliquant n'importe où dans le plan (sommets créés au clic, ou accrochés à un objet), comme le polygone."
+  ]},
   { version: '2026-08-19.884', date: '2026-10-01', items: [
     "Outil de correction : trois cases sous le titre de l'exercice, « Correction du travail maison », « En classe entière », « En autonomie » (un seul choix, ou aucun ; le choix est gardé d'un exercice à l'autre). Dans le cahier, l'exercice porte une étiquette de couleur ; dans le résumé du jour pour le cahier de textes, les exercices sont rangés en rubriques séparées : « 🏠 Correction du travail maison », « Exercices en classe entière », « Exercices en autonomie ».",
     "Géométrie dynamique : nouvel outil « Renommer » (A→B, à côté de l'outil Point) : on clique un point ou son nom, puis on tape le nouveau nom (1 à 4 caractères ; un nom déjà pris est refusé). Le double-clic en mode Déplacer fait la même chose.",
@@ -6575,7 +6579,10 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
   // '-' (déjà utilisé par l'outil de correction pour "numéro non renseigné", qui affiche encore
   // "Exercice -").
   const refLabel = e.exo==='' ? '' : e.exo==='Cours' ? 'Cours' : e.exo==='Interrogation' ? 'Interrogation' : (e.exo==='Questions flash' || e.exo==='Séance en direct') ? 'Questions flash' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo)); // Interrogation : questionnaires-cahier.js
-  let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}${e.modalite ? ' '+modaliteBadge(e.modalite) : ''}</div>`;
+  // Vignettes de modalité cliquables (professeur, exercices seulement) -- demandé : « changer le type de
+  // correction sans les rééditer, juste par des vignettes cliquables dans le bilan en dessous ».
+  const modEditable = editable && !['', 'Cours', 'Interrogation', 'Questions flash', 'Séance en direct'].includes(e.exo);
+  let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}${e.modalite && !modEditable ? ' '+modaliteBadge(e.modalite) : ''}</div>`;
   if(editable){
     // Le déplacement ne peut se faire QU'À L'INTÉRIEUR du même groupe (même date + même
     // chapitre) -- au-delà, ça mélangerait des exercices de jours différents et casserait le
@@ -6596,6 +6603,7 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
     </span>`;
   }
   html += `</div>`;
+  if(modEditable) html += `<div class="nb-mod-choix">${Object.entries(COR_MODALITES).map(([k, d])=>`<button type="button" class="nb-mod-chip${e.modalite===k ? ' on' : ''}" style="--c:${d[2]}" onclick="changeCahierEntryModalite(${idx}, '${k}')" title="${e.modalite===k ? 'Retirer' : 'Marquer'} : ${d[0]}"><span class="gicon">${d[1]}</span> ${d[0]}</button>`).join('')}</div>`;
   html += `<div class="nb-body">${e.html!=null ? e.html : renderMathText(e.raw)}</div>`;
   if(e.figure) html += `<div class="nb-figure-row">${e.figure}</div>`;
   html += `</div>`;
@@ -6605,6 +6613,19 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
 // volontairement séparée de editCahierEntry/addToCahier (qui reconstruisent le contenu depuis
 // les blocs de correction, risqué pour un Cours qui n'a pas cette structure). Demandé :
 // "permettre de modifier la date pour le cours et les exercices déjà posés".
+// Change UNIQUEMENT la modalité (travail maison / classe entière / autonomie) ; re-cliquer la vignette active la retire.
+async function changeCahierEntryModalite(idx, m){
+  const e = cahier[idx]; if(!e) return;
+  const avant = e.modalite || null, apres = avant===m ? null : m;
+  e.modalite = apres; saveCahier(); renderCahier();
+  if(isSyncEnabled() && e.id){
+    const res = await syncUpdateEntry(e.id, {modalite: apres});
+    if(!res.ok && !res.offline){
+      e.modalite = avant; saveCahier(); renderCahier();
+      await niceAlert("<span class=gicon>warning</span> Échec de la synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Le type de correction n'a pas été changé.");
+    }
+  }
+}
 async function changeCahierEntryDate(idx, newDate){
   const e = cahier[idx];
   if(!e || !newDate || e.date===newDate) return;
