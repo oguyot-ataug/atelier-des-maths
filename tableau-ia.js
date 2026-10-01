@@ -558,8 +558,28 @@ function tbAiFinalize(ev, opts){
   return {actions: ev.actions, S, centroid: cen, lengths: ev.lengths, future, screenBox};
 }
 
+/* Médiatrice sans compas -- signalé : « si je décoche compas, il ne sait pas tracer la médiatrice ».
+   Avec la règle graduée et l'équerre (ou la réquerre) : on place le milieu à la règle (s'il n'existe
+   pas déjà), puis on trace la perpendiculaire en ce milieu à l'équerre. */
+function tbAiSansCompas(program, allowed){
+  if(!allowed || allowed.has('compas') || !allowed.has('regle') || !(allowed.has('equerre') || allowed.has('requerre'))) return program;
+  if(!program.some(s=>s && s.op==='perpendicular_bisector')) return program;
+  const noms = new Set(); program.forEach(s=>{ if(s && typeof s.name==='string') noms.add(s.name); (Array.isArray(s && s.points) ? s.points : []).forEach(n=>noms.add(n)); });
+  const libre = ()=>{ for(const n of ['I','M','J','K','N','O','L','H','Q','R','S','T','U','V','W','X','Y','Z']) if(!noms.has(n)){ noms.add(n); return n; } return null; };
+  const out = [];
+  program.forEach(s=>{
+    if(!s || s.op!=='perpendicular_bisector' || !Array.isArray(s.of) || s.of.length!==2 || (Array.isArray(s.points) && s.points.some(Boolean))){ out.push(s); return; }
+    const [a, b] = s.of, deja = out.find(t=>t && t.op==='midpoint' && Array.isArray(t.of) && ((t.of[0]===a && t.of[1]===b) || (t.of[0]===b && t.of[1]===a)));
+    let m = deja ? deja.name : null;
+    if(!m){ m = libre(); if(!m){ out.push(s); return; } out.push({op:'midpoint', name:m, of:[a, b]}); }
+    const seg = out.find(t=>t && (t.op==='segment' || t.op==='line') && ((t.from===a && t.to===b) || (t.from===b && t.to===a) || (Array.isArray(t.through) && t.through.includes(a) && t.through.includes(b))) && t.id);
+    out.push(Object.assign({op:'perpendicular', id:s.id, through:m, to: seg ? seg.id : [a, b], kind:'line'}, s.color ? {color:s.color} : {}, s.style ? {style:s.style} : {}));
+  });
+  return out;
+}
 function tbAiCompile(program, allowed, opts){
   if(!Array.isArray(program) || !program.length) throw new TbAiError('réponse vide ou pas une liste d\'étapes');
+  program = tbAiSansCompas(program, allowed);
   // Limite pensée pour les programmes écrits par l'IA ; la construction en direct d'une figure (Géométrie interactive) passe sa propre limite.
   const maxEtapes = (opts && opts.maxSteps) || TB_AI_MAX_STEPS;
   if(program.length>maxEtapes) throw new TbAiError('trop d\'étapes ('+program.length+', maximum '+maxEtapes+')');

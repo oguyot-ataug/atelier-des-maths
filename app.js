@@ -3250,6 +3250,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.896', date: '2026-10-01', items: [
+    "Construction aux instruments sans compas : la médiatrice d'un segment se construit avec la règle graduée et l'équerre (ou la réquerre) — on place le milieu à la règle (il reçoit un nom, par exemple I, s'il n'existait pas), puis on trace la perpendiculaire en ce milieu à l'équerre, avec le codage de l'angle droit. Signalé : « si je décoche compas, il ne sait pas tracer la médiatrice »."
+  ]},
   { version: '2026-08-19.895', date: '2026-10-01', items: [
     "Construction aux instruments : un segment dont on a placé le milieu, puis sa médiatrice — la médiatrice apparaissait d'un coup, sans instruments, et en revenant en arrière elle passait avant le milieu. Le milieu est maintenant construit juste après son segment : la médiatrice s'ajoute ensuite au compas, dans le bon ordre."
   ]},
