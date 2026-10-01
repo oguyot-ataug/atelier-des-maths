@@ -3796,9 +3796,9 @@ function setFigureMode(mode){
     'angle-mesure':'Cliquez un point du premier côté (ex. B), puis le sommet (ex. A) : une fenêtre demande la mesure et le sens. Le second côté est une demi-droite [Ay) : aucun point n\'est ajouté.',
     vecteur:'Cliquez deux points existants : l\'origine, puis l\'extrémité (avec la flèche).',
     'mesure-distance':'Cliquez directement un segment existant, ou deux points (un point puis une droite/segment/demi-droite donne la distance perpendiculaire) -- la distance affichée peut ensuite être déplacée (mode Déplacer), en restant toujours parallèle.',
-    'symetrie-axiale':'Cliquez directement sur l\'axe de symétrie (droite, demi-droite, segment ou côté de polygone), puis le point à transformer.',
-    'symetrie-centrale':'Cliquez le centre de symétrie, puis le point à transformer.',
-    translation:'Cliquez les deux points qui définissent le vecteur de translation, puis le point à déplacer.',
+    'symetrie-axiale':'Cliquez directement sur l\'axe de symétrie (droite, demi-droite, segment ou côté de polygone), puis le point ou l\'objet à transformer (segment, droite, cercle, arc, polygone : cliquez un de ses côtés).',
+    'symetrie-centrale':'Cliquez le centre de symétrie, puis le point ou l\'objet à transformer (segment, droite, cercle, arc, polygone : cliquez un de ses côtés).',
+    translation:'Cliquez les deux points qui définissent le vecteur de translation, puis le point ou l\'objet à déplacer.',
   };
   document.getElementById('figureHint').textContent = hints[mode] || '';
   renderFigureSvg();
@@ -4743,9 +4743,9 @@ async function figRenommerPoint(p){
   for(;;){
     const n = await nicePrompt(msg, p.label);
     if(n == null) return;
-    const v = String(n).trim().replace(/'/g, '′');
+    const v = String(n).trim().replace(/[′’]/g, "'");
     if(!v || v === p.label) return;
-    if(!/^[A-Za-zÀ-ÿ0-9′″]{1,4}$/.test(v)){ msg = 'Nom invalide (1 à 4 caractères : lettres, chiffres, prime \'). Nouveau nom du point ' + p.label + ' :'; continue; }
+    if(!/^[A-Za-zÀ-ÿ0-9′″']{1,4}$/.test(v)){ msg = 'Nom invalide (1 à 4 caractères : lettres, chiffres, prime \'). Nouveau nom du point ' + p.label + ' :'; continue; }
     if(figState.points.some(q => q !== p && q.label === v)){ msg = 'Le nom ' + v + ' est déjà pris. Nouveau nom du point ' + p.label + ' :'; continue; }
     p.label = v; renderFigureSvg(); return;
   }
@@ -5145,6 +5145,13 @@ async function onFigureClick(evt){
   }
   // Triangle : comme le polygone, un clic n'importe où dans le plan crée le sommet (accroché à un objet s'il y en a un).
   if(!near && figState.mode==='triangle') near = figPlacerPoint(x,y);
+  // Symétries et translation : après l'axe / le centre / le vecteur, un clic sur un OBJET le transforme
+  // tout entier (demandé : « il doit pouvoir faire des symétries axiales ou centrales de n'importe quel objet »).
+  const avantObjet = {'symetrie-axiale':2, 'symetrie-centrale':1, translation:2}[figState.mode];
+  if(!near && avantObjet!==undefined && figState.selected.length===avantObjet){
+    const sh = findNearbyShape(x,y);
+    if(sh){ figTransformerObjet(sh); return; }
+  }
   if(!near || figState.selected.includes(near)) return;
   figState.selected.push(near);
   const neededMap = {angle:3, bissectrice:3, arc:3, triangle:3, 'symetrie-axiale':3, translation:3};
@@ -6115,6 +6122,74 @@ function figLiveCadrer(){
 /* Instruments autorisés pour la construction à droite -- demandé : « permettre de choisir les
    outils qui serviront (réquerre, équerre...) ». Même mémoire que les cases de « Construire avec
    l'IA » ; changer d'instruments reconstruit la figure avec les nouveaux gestes. */
+/* ---- Image d'un point ou d'un objet par la transformation en cours (symétrie axiale, centrale,
+   translation) : les points images sont des points construits (ils suivent les points d'origine), nommés
+   avec un prime (A → A'), réutilisés si l'image existe déjà ; l'objet image est du même type. ---- */
+function figTransfoParams(){
+  const sel = figState.selected, m = figState.mode;
+  if(m==='symetrie-axiale') return {type:m, axisP1:sel[0], axisP2:sel[1], extra:figState.selectedAxisShape};
+  if(m==='symetrie-centrale') return {type:m, center:sel[0]};
+  if(m==='translation') return {type:m, vecP1:sel[0], vecP2:sel[1], extra:figState.selectedVectorShape};
+  return null;
+}
+function figTransfoPos(T, q){
+  if(T.type==='symetrie-centrale') return [2*T.center.x-q.x, 2*T.center.y-q.y];
+  if(T.type==='translation') return [q.x+(T.vecP2.x-T.vecP1.x), q.y+(T.vecP2.y-T.vecP1.y)];
+  const a=T.axisP1, b=T.axisP2, dx=b.x-a.x, dy=b.y-a.y, l2=dx*dx+dy*dy||1, t=((q.x-a.x)*dx+(q.y-a.y)*dy)/l2;
+  return [2*(a.x+t*dx)-q.x, 2*(a.y+t*dy)-q.y];
+}
+function figImagePoint(T, q){
+  const meme = d => d && d.type===T.type && d.m===q && (T.type==='symetrie-centrale' ? d.center===T.center : T.type==='translation' ? d.vecP1===T.vecP1 && d.vecP2===T.vecP2 : d.axisP1===T.axisP1 && d.axisP2===T.axisP2);
+  const deja = figState.points.find(p=>meme(p.def)); if(deja) return deja;
+  const [x, y] = figTransfoPos(T, q);
+  const def = T.type==='symetrie-centrale' ? {type:T.type, center:T.center, m:q} : T.type==='translation' ? {type:T.type, vecP1:T.vecP1, vecP2:T.vecP2, m:q} : {type:T.type, axisP1:T.axisP1, axisP2:T.axisP2, m:q};
+  const dependsOn = (T.type==='symetrie-centrale' ? [T.center, q] : T.type==='translation' ? [T.vecP1, T.vecP2, q] : [T.axisP1, T.axisP2, q]).concat(T.extra ? [T.extra] : []);
+  let label = '';
+  if(!q.hidden){ const prime = (q.label||'') + "'"; label = /^[A-Z][A-Za-z0-9']{0,3}$/.test(prime) && !figState.points.some(p=>p.label===prime) ? prime : nextPointLabel(); }
+  const img = {label, x, y, def, dependsOn}; if(q.hidden) img.hidden = true;
+  figState.points.push(img);
+  return img;
+}
+// Polygone : composante connexe de segments où chaque sommet a exactement deux côtés.
+function figPolygoneDe(seg){
+  const segs = figState.shapes.filter(s=>s.type==='segment'), comp = new Set([seg]), file = [seg];
+  while(file.length){ const s0 = file.pop(); segs.forEach(t=>{ if(!comp.has(t) && [t.p1,t.p2].some(p=>p===s0.p1||p===s0.p2)){ comp.add(t); file.push(t); } }); }
+  const deg = new Map(); comp.forEach(t=>[t.p1,t.p2].forEach(p=>deg.set(p,(deg.get(p)||0)+1)));
+  return comp.size>=3 && [...deg.values()].every(v=>v===2) ? [...comp] : [seg];
+}
+function figTransformerObjet(sh){
+  const T = figTransfoParams(); if(!T) return;
+  const hint = document.getElementById('figureHint');
+  const objets = sh.type==='segment' ? figPolygoneDe(sh) : [sh];
+  let fait = 0;
+  objets.forEach(o=>{
+    const I = q => figImagePoint(T, q), base = {}; ['strokeColor','strokeWidth','strokePattern','compass'].forEach(k=>{ if(o[k]!==undefined) base[k] = o[k]; });
+    if(['segment','droite','demi-droite','vecteur'].includes(o.type)){
+      const a = I(o.p1), b = I(o.p2);
+      if(!figState.shapes.some(t=>t.type===o.type && t.p1===a && t.p2===b)) figState.shapes.push(Object.assign({type:o.type, p1:a, p2:b}, base));
+      fait++;
+    } else if(o.type==='cercle'){
+      const c = I(o.p1);
+      figState.shapes.push(o.p2 ? Object.assign({type:'cercle', p1:c, p2:I(o.p2)}, base) : Object.assign({type:'cercle', p1:c, radius:o.radius, radiusCm:o.radiusCm, angle:o.angle||0}, base));
+      fait++;
+    } else if(o.type==='arc'){
+      // La symétrie axiale retourne le sens de l'arc : on échange ses extrémités.
+      const c = I(o.center), a = I(o.p1), b = I(o.p2), axiale = T.type==='symetrie-axiale';
+      figState.shapes.push(Object.assign({type:'arc', center:c, p1: axiale ? b : a, p2: axiale ? a : b}, base));
+      fait++;
+    } else if(o.type==='arc-rayon'){
+      const c = I(o.center); let a1 = o.a1, a2 = o.a2;
+      if(T.type==='symetrie-centrale'){ a1 += Math.PI; a2 += Math.PI; }
+      else if(T.type==='symetrie-axiale'){ const th = Math.atan2(T.axisP2.y-T.axisP1.y, T.axisP2.x-T.axisP1.x); [a1, a2] = [2*th-o.a2, 2*th-o.a1]; }
+      figState.shapes.push(Object.assign({}, o, {center:c, a1, a2}));
+      fait++;
+    }
+  });
+  figState.selectedAxisShape = null; figState.selectedVectorShape = null; figState.selected = [];
+  if(hint) hint.textContent = fait ? (objets.length>1 ? 'Polygone transformé : ses '+objets.length+' côtés et leurs sommets.' : 'Objet transformé.') + ' Cliquez un autre axe / centre pour recommencer.'
+    : 'Cet objet ne se transforme pas encore directement : transformez ses points, puis tracez l\'objet image.';
+  renderFigureSvg();
+}
 /* Noms des points masqués -- demandé : « permettre de masquer les labels des points dans les deux cas »
    (figure et construction aux instruments). */
 function figBasculerNoms(){
@@ -6189,13 +6264,13 @@ async function figLiveAppliquer(msg){
   try{
     if(prolonge && figLive.cles.length){
       const dejaJoue = Math.min(figLive.nActions, typeof tbAiPlanIndex==='number' ? tbAiPlanIndex : figLive.nActions); // « Précédent » a pu défaire des étapes
-      tbAiLoadProgram(programme, msg.outils, {center:centre, keepZoom:true});
+      tbAiLoadProgram(programme, msg.outils, {center:centre, keepZoom:true, maxSteps:400});
       tbAiPlanIndex = Math.min(dejaJoue, tbAiPlan.actions.length);
     } else {
       // Reconstruction complète, instantanée (sauf au tout premier objet, qui se construit en direct,
       // et quand on rejoue tout depuis le début).
       tbClearAll();
-      tbAiLoadProgram(programme, msg.outils, {center:centre, keepZoom:true});
+      tbAiLoadProgram(programme, msg.outils, {center:centre, keepZoom:true, maxSteps:400});
       figLiveCadrer();
       if(!msg.rejouer && (msg.rapide || figLive.cles.length)) tbAiSilent = true;
     }

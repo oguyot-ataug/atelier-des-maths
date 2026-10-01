@@ -560,7 +560,9 @@ function tbAiFinalize(ev, opts){
 
 function tbAiCompile(program, allowed, opts){
   if(!Array.isArray(program) || !program.length) throw new TbAiError('réponse vide ou pas une liste d\'étapes');
-  if(program.length>TB_AI_MAX_STEPS) throw new TbAiError('trop d\'étapes ('+program.length+', maximum '+TB_AI_MAX_STEPS+')');
+  // Limite pensée pour les programmes écrits par l'IA ; la construction en direct d'une figure (Géométrie interactive) passe sa propre limite.
+  const maxEtapes = (opts && opts.maxSteps) || TB_AI_MAX_STEPS;
+  if(program.length>maxEtapes) throw new TbAiError('trop d\'étapes ('+program.length+', maximum '+maxEtapes+')');
   const flips = new Set();
   for(let attempt=0; attempt<8; attempt++){
     try{ return tbAiFinalize(tbAiEvaluate(program, flips, allowed), opts); }

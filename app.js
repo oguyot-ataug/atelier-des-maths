@@ -3250,6 +3250,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.894', date: '2026-10-01', items: [
+    "Géométrie interactive : symétrie axiale, symétrie centrale et translation de n'importe quel objet, pas seulement d'un point. Après avoir choisi l'axe (ou le centre, ou le vecteur), un clic sur un segment, une droite, une demi-droite, un vecteur, un cercle ou un arc le transforme tout entier ; un clic sur un côté d'un polygone (triangle, quadrilatère…) transforme tout le polygone. Les images des points s'appellent A', B', C'… et suivent la figure quand on déplace les points.",
+    "Construction aux instruments : ces images sont construites au compas (et à la règle pour la symétrie centrale), objet par objet ; la construction en direct d'une figure n'est plus limitée à 25 étapes.",
+    "Renommer un point : le prime s'écrit avec l'apostrophe (A'), compris par la construction aux instruments."
+  ]},
   { version: '2026-08-19.893', date: '2026-10-01', items: [
     "Construction aux instruments (écran partagé, fenêtre projetée, tableau) : tracés plus fins, d'une épaisseur constante à l'écran même quand le tableau est zoomé ; repères des points et noms plus discrets.",
     "Codage des milieux : seulement si la case « Coder les milieux » est cochée (barre des instruments de l'écran partagé) ; les petits traits de longueurs égales sont fins et inclinés, pour ne pas les confondre avec des points.",
