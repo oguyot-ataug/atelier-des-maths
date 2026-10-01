@@ -2567,6 +2567,11 @@ function toggleDyslexicFont(){
 })();
 
 let changePasswordMandatory = false;
+/* Vrai dès qu'un nouveau mot de passe est envoyé, jusqu'au rechargement de la page -- signalé : à la
+   première connexion, « elle a modifié et la fenêtre s'est à nouveau affichée ». sb.auth.updateUser
+   déclenche onAuthStateChange (USER_UPDATED) → refreshAuthUI relisait le profil AVANT que
+   must_change_password ne passe à false, et rouvrait la fenêtre obligatoire. */
+let mdpJusteChange = false;
 /* Ouvre la modale de changement de mot de passe -- soit librement (accessible à tout moment
    depuis le menu du compte), soit de façon OBLIGATOIRE (première connexion, ou après une
    réinitialisation par un administrateur), auquel cas elle ne peut pas être fermée sans
@@ -2593,9 +2598,13 @@ async function submitChangePassword(){
   if(!pass1 || pass1.length<6){ status.textContent = 'Le mot de passe doit contenir au moins 6 caractères.'; return; }
   if(pass1 !== pass2){ status.textContent = 'Les deux mots de passe ne correspondent pas.'; return; }
   status.textContent = 'Enregistrement…';
+  mdpJusteChange = true;
   const { error } = await sb.auth.updateUser({ password: pass1 });
-  if(error){ status.textContent = 'Erreur : '+error.message; return; }
-  if(currentUser) await sb.from('profiles').update({ must_change_password: false }).eq('id', currentUser.id);
+  if(error){ mdpJusteChange = false; status.textContent = 'Erreur : '+error.message; return; }
+  if(currentUser){
+    const { error: e2 } = await sb.from('profiles').update({ must_change_password: false }).eq('id', currentUser.id);
+    if(e2) console.warn('must_change_password non remis à false :', e2.message);
+  }
   status.textContent = 'Mot de passe changé avec succès.';
   changePasswordMandatory = false;
   setTimeout(()=>{ document.getElementById('changePasswordModalOverlay').style.display = 'none'; }, 900);
@@ -2937,7 +2946,7 @@ async function refreshAuthUI(){
     // Première connexion (ou tout compte créé/réinitialisé par un administrateur) : la
     // modale de changement de mot de passe s'ouvre automatiquement, sans possibilité de
     // l'ignorer, tant que le mot de passe n'a pas été changé.
-    if(profile && profile.must_change_password) openChangePasswordModal(true);
+    if(profile && profile.must_change_password && !mdpJusteChange) openChangePasswordModal(true);
     // Retour du lien « mot de passe oublié » reçu par e-mail.
     if(/[?&]reinit=1/.test(location.search)) ouvrirReinitialisation();
 
@@ -3154,6 +3163,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.877', items:[
+    "Première connexion : après le choix du nouveau mot de passe, la fenêtre ne se rouvre plus. Signalé : « elle a modifié et la fenêtre s'est à nouveau affichée... on a actualisé la page ». Le changement de mot de passe relançait la mise à jour de l'affichage du compte, qui relisait le profil avant qu'il soit marqué « mot de passe changé » et rouvrait la fenêtre obligatoire ; elle ne s'ouvre plus une fois le mot de passe enregistré.",
+  ]},
   { version:'2026-08-19.876', items:[
     "Interrogations générées par IA : les types de questions cochés sont maintenant respectés. Signalé : « il ne tient pas compte des types de questions cochées. J'avais essayé en cochant uniquement QCM et il a généré des questions de tout ordre ». L'IA ne reçoit plus que les modèles des types cochés, avec une consigne explicite (« toutes les questions sont des QCM » quand un seul type est coché), et toute question d'un autre type est écartée à la réception.",
   ]},
