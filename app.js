@@ -3236,6 +3236,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.883', date: '2026-10-01', items: [
+    "Accueil : vidéo « Cartes flashcode, sans ordinateur » (1 min 58), dans les outils pour les professeurs. On y voit le lancement des Questions flash avec les cartes, la numérotation des élèves et l'impression des planches, puis le téléphone relié qui lit les cartes levées de toute la classe : la grille passe au vert en direct, les résultats s'affichent sur l'écran du professeur, la correction, et un élève qui change de carte."
+  ]},
   { version: '2026-08-19.882', date: '2026-10-01', items: [
     "Ma progression : bouton « Ajouter un événement » (voyage scolaire, semaine des maths, évaluations communes…). L'événement est un bloc comme les chapitres : on le déplace, on l'étire, on le renomme ou on le supprime, et les chapitres suivants se décalent. Il apparaît aussi dans la frise de la classe et dans le PDF.",
     "Ma progression : un chapitre qui se termine juste avant des vacances ne passe plus sous le bandeau ; on peut de nouveau attraper sa poignée pour changer sa durée."
