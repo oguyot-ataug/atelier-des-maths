@@ -62,3 +62,20 @@ Nouveaux programmes (cycle 3 : CM1, CM2, 6e ; cycle 4 : 5e, 4e, 3e), avec une en
 
 Le texte du nouveau programme du cycle 4 (annexe 2) couvre déjà 4e et 3e : on peut s'en servir pour
 préparer ces mises à jour, sans les publier avant la date d'effet.
+
+## Rédaction pédagogique (chapitres du primaire, demandé le 01/10/2026)
+
+« Je préfère quand tu te comportes comme un fin pédagogue » :
+
+- **Animations** pour illustrer un maximum (lecteur commun `cmAnim`, `chapitres/cm1/_anims.js` ;
+  animations du CE2 dans `chapitres/ce2/_anims.js` : sauts sur une droite, schémas en barres, jetons,
+  glisse-nombre, horloge, règle, partage, diagramme, compas, angle, balance, verres, fractions…).
+- **Jamais plusieurs calculs sur une même ligne** (une liste `cm1Liste`, ou `{ suite: [...] }`).
+- **Pas de numérotation « 1. », « 2. »** devant les questions, surtout si elles commencent par un nombre
+  ou un calcul (listes à puces ; le quiz affiche « Question 1 » au-dessus de l'énoncé).
+- **Fractions toujours en LaTeX**, jamais « a/b » : `cm1Frac(a, b)` dans les cours, quiz, corrections ;
+  dans les dessins SVG, fraction en étage ; les questions flash « 3/4 » sont converties à l'affichage.
+- **Tous les exercices de l'onglet Exercices ont une réponse rédigée** avec `cm1Redac(titre, calcul,
+  phrase)` : un titre souligné qui reprend la question (« Âge de mamie : ») ; le calcul sur une ligne
+  s'il tient, sinon « A = … » développé en colonne avec le résultat encadré ; puis une phrase de
+  conclusion, systématiquement.

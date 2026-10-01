@@ -25,10 +25,16 @@ function fpQuestions(lvl, titre){
   const quiz = (typeof DEMO_QUIZZES !== 'undefined' && DEMO_QUIZZES[cle]) || [];
   return quiz.filter(x => x.opts && x.opts.length <= 4).map(x => ({ q: x.q, r: x.opts, ok: x.correct }));
 }
+// Fractions écrites « a/b » dans les questions → LaTeX (demandé : « ne pas écrire les fractions a/b
+// mais toujours en LaTeX, y compris dans les flashs »). « ?/8 » et « …/10 » (numérateur à trouver)
+// aussi. Les formules déjà en $…$ ne sont pas touchées.
+function fpTex(s){
+  return String(s).split('$').map((p, i) => i % 2 ? p : p.replace(/(\d+|\?|…)\/(\d+)/g, (m, a, b) => '$\\dfrac{' + (a === '…' ? '\\ldots' : a) + '}{' + b + '}$')).join('$');
+}
 // Au format des questionnaires (QCM à une bonne réponse : compatible avec les cartes A à D).
 function fpVersQuestionnaire(liste){
-  return liste.map((x, i) => ({ id: 'fp' + i, type: 'qcm', enonce: x.q, points: 1, competence: '',
-    choix: x.r.map((t, j) => ({ id: 'fp' + i + 'c' + j, texte: t, correct: j === x.ok })) }));
+  return liste.map((x, i) => ({ id: 'fp' + i, type: 'qcm', enonce: fpTex(x.q), points: 1, competence: '',
+    choix: x.r.map((t, j) => ({ id: 'fp' + i + 'c' + j, texte: fpTex(t), correct: j === x.ok })) }));
 }
 
 // Appelée à chaque ouverture de chapitre (app.js › openChapitre).
@@ -56,7 +62,7 @@ function fpOuvrir(lvl, titre){
       <h3><span class="gicon">qr_code_2</span> Questions flash : ${qzEsc(titre)}</h3>
       <p class="hint" style="margin:4px 0 10px;">Des questions prêtes sur ce chapitre. Les élèves répondent en levant leur carte <b>A, B, C ou D</b> ; vous lisez les cartes avec votre téléphone et vous voyez les réponses en direct. Décochez les questions que vous ne voulez pas poser.</p>
       <div class="fp-liste">${liste.map((x, i) => `<label class="fp-q${gardees.has(i) ? '' : ' off'}"><input type="checkbox" data-i="${i}" ${gardees.has(i) ? 'checked' : ''}>
-        <span><b>${i + 1}. ${qzEsc(x.q)}</b><span class="fp-r">${x.r.map((t, j) => `<span class="${j === x.ok ? 'ok' : ''}">${FP_LETTRES[j]}. ${qzEsc(t)}</span>`).join('')}</span></span></label>`).join('')}</div>
+        <span><b>${qzMath(fpTex(x.q))}</b><span class="fp-r">${x.r.map((t, j) => `<span class="${j === x.ok ? 'ok' : ''}"><span class="fp-l">${FP_LETTRES[j]}</span> ${qzMath(fpTex(t))}</span>`).join('')}</span></span></label>`).join('')}</div>
       <p class="hint" style="margin:8px 0 0;">${gardees.size} question${gardees.size > 1 ? 's' : ''} retenue${gardees.size > 1 ? 's' : ''}.</p>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;"><button type="button" class="btn secondary" data-x>Annuler</button>
         <button type="button" class="btn" data-go ${gardees.size ? '' : 'disabled'}><span class="gicon">play_arrow</span> Choisir la classe et lancer</button></div></div>`;
@@ -82,6 +88,8 @@ function fpOuvrir(lvl, titre){
     .fp-q{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid #E3E7EE;border-radius:10px;cursor:pointer;}
     .fp-q.off{opacity:.5;} .fp-q input{margin-top:4px;}
     .fp-r{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:4px;font-size:.88rem;color:#5B6472;}
-    .fp-r .ok{color:#1E7A4F;font-weight:700;}`;
+    .fp-r .ok{color:#1E7A4F;font-weight:700;}
+    .fp-l{display:inline-block;min-width:18px;height:18px;line-height:18px;text-align:center;border-radius:4px;background:#EEF1F5;font:700 .72rem 'Space Grotesk',sans-serif;color:#1F3A5C;}
+    .fp-r .ok .fp-l{background:#1E7A4F;color:#fff;}`;
   document.head.appendChild(st);
 })();

@@ -836,6 +836,7 @@ button.btn:disabled{opacity:.4;cursor:not-allowed;}
   flex:1;min-width:220px;padding:10px 12px;border-radius:8px;border:1px solid rgba(28,43,57,.2);font-family:'JetBrains Mono',monospace;font-size:.85rem;
 }
 .quiz-q{border-top:1px solid rgba(28,43,57,.1);padding:16px 0;}
+.quiz-num{font:600 .72rem 'Space Grotesk',sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin-bottom:4px;}
 .quiz-opt{
   display:block;width:100%;text-align:left;padding:10px 14px;margin:6px 0;border-radius:8px;
   border:1px solid rgba(28,43,57,.15);background:var(--paper);cursor:pointer;font-family:'Inter',sans-serif;font-size:.9rem;
@@ -1796,3 +1797,23 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .cma-op td.cma-res{color:#2E9C6A;}
 .cma-op td.cma-fin{font-size:1.25rem;}
 .cma-op td.cma-lab{width:auto;padding-left:14px;text-align:left;font:500 .8rem Inter,sans-serif;color:#5B6472;white-space:nowrap;}
+
+/* Rédaction des réponses (cm1Redac, chapitres/cm1/_commun.js) : titre souligné, calcul (en ligne,
+   ou « A = » en colonne avec le résultat encadré), puis phrase de conclusion. */
+.cm-redac{margin:4px 0 14px;line-height:1.5;}
+.cm-redac:last-child{margin-bottom:2px;}
+.cm-redac-titre{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;font-weight:600;margin-bottom:4px;}
+.cm-redac-ligne{margin:3px 0 3px 18px;}
+.cm-redac-col{border-collapse:collapse;margin:2px 0 4px 18px;}
+.cm-redac-col td{padding:2px 4px;vertical-align:middle;}
+.cm-redac-col td:first-child{font-weight:600;padding-left:0;}
+.cm-redac-pose{margin:2px 0 4px 18px;display:inline-block;}
+.cm-redac-pose table{margin:4px 0 !important;}
+.cm-encadre{display:inline-block;border:2px solid #1F3A5C;border-radius:3px;padding:1px 8px;font-weight:700;}
+.cm-redac-phrase{margin:4px 0 0;}
+.cm-liste{list-style:none;padding-left:4px;margin:6px 0;}
+.cm-liste li{margin:7px 0;padding-left:16px;position:relative;}
+.cm-liste li::before{content:'•';position:absolute;left:0;color:#E35D3A;font-weight:700;}
+/* Fractions en LaTeX (cm1Frac) au primaire : un peu d'air au-dessus et au-dessous, pour que deux
+   lignes contenant des fractions en étage ne se touchent pas. */
+.lvl-ce2 span.tex, .lvl-cm span.tex, .lvl-cm2 span.tex, .quiz-q span.tex, .fp-modal .katex{display:inline-block;margin:3px 0;}

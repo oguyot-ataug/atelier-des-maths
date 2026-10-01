@@ -31,12 +31,14 @@ cm1Chapitre({
 ${cm1Lecon(1, 'Les angles')}
 ${cm1Def('Deux côtés qui partent d\'un même sommet forment un <b>angle</b>. L\'<b>équerre</b> a un <b>angle droit</b> : c\'est le « coin » de l\'équerre.')}
 <div class="figure-wrap" style="text-align:center;">${fig('un angle <b>droit</b>', angle(90, '#E35D3A', true))}${fig('un angle <b>aigu</b> : plus petit qu\'un angle droit', angle(45, '#2EA8C9'))}${fig('un angle <b>obtus</b> : plus grand qu\'un angle droit', angle(130, '#7A4FC0'))}</div>
+${ce2AnimAngle('ce2-ac-angle')}
 ${cm1Regle('Pour <b>vérifier</b> un angle droit, on place le coin de l\'équerre sur le sommet et un côté de l\'équerre le long d\'un côté de l\'angle. Si l\'autre côté de l\'angle est contre l\'autre côté de l\'équerre, l\'angle est droit. On le <b>code</b> par un petit carré.')}
 
 ${cm1Lecon(2, 'Le cercle')}
 ${cm1Def(`<ul style="margin:0;padding-left:20px;line-height:1.8;"><li>Le <b>cercle</b> est la ligne que trace le compas. Tous ses points sont à la même distance d'un point, son <b>centre</b>.</li><li>Un <b>rayon</b> est un segment qui va du centre à un point du cercle.</li><li>Un <b>diamètre</b> est un segment qui passe par le centre et relie deux points du cercle : il mesure <b>2 rayons</b>.</li><li>Le <b>disque</b> est la surface à l'intérieur du cercle.</li></ul>`, 'Vocabulaire')}
 <div class="figure-wrap" style="text-align:center;">${CERCLE}</div>
 ${cm1Regle('Pour tracer un cercle de <b>rayon 4 cm</b> : on écarte le compas de 4 cm sur la règle (pointe sur le 0, mine sur le 4), on pique la pointe sur le centre et on tourne sans changer l\'écartement.')}
+${ce2AnimCompas('ce2-ac-compas', { presets: [{ nom: 'Rayon 3 cm', r: 3 }, { nom: 'Rayon 4 cm', r: 4 }, { nom: 'Rayon 5 cm', r: 5 }] })}
 
 ${cm1Lecon(3, 'Construire sur papier uni')}
 ${cm1Regle('Pour construire un <b>rectangle</b> de 7 cm sur 3 cm, on utilise la <b>règle</b> pour les longueurs et l\'<b>équerre</b> pour les angles droits.')}
@@ -62,11 +64,16 @@ ${cm1Demo('ce2-ac-tri', 'Construire un triangle rectangle', 'Construis un triang
     ]],
   ],
   exos: cm1Exos('ce2-ac', [
-    ['Un angle est plus petit qu\'un angle droit. Comment s\'appelle-t-il ? et s\'il est plus grand ?', 'Un angle aigu ; un angle obtus.'],
-    ['Un cercle a un rayon de 5 cm. Combien mesure son diamètre ?', '10 cm (2 rayons).'],
-    ['Un cercle a un diamètre de 8 cm. Quel écartement donner au compas pour le tracer ?', '4 cm (le rayon, la moitié du diamètre).'],
-    ['Construis un carré de 6 cm de côté, puis un cercle de rayon 4 cm dont le centre est un sommet du carré.', 'Carré avec règle et équerre ; pointe du compas sur un sommet, écartement 4 cm.'],
-    ['Cherche dans la classe trois angles droits.', 'Le coin d\'une feuille, d\'une table, d\'une fenêtre…'],
+    ['Un angle est plus petit qu\'un angle droit. Comment s\'appelle-t-il ? Et s\'il est plus grand qu\'un angle droit ?',
+      cm1Redac('Angle plus petit qu\'un angle droit', '', 'C\'est un angle aigu.') + cm1Redac('Angle plus grand qu\'un angle droit', '', 'C\'est un angle obtus.')],
+    ['Un cercle a un rayon de 5 cm. Combien mesure son diamètre ?',
+      cm1Redac('Diamètre du cercle', '5 cm + 5 cm = 10 cm', 'Le diamètre du cercle mesure 10 cm : c\'est 2 rayons.')],
+    ['Un cercle a un diamètre de 8 cm. Quel écartement faut-il donner au compas pour le tracer ?',
+      cm1Redac('Écartement du compas', '8 cm = 4 cm + 4 cm', 'L\'écartement est le rayon, la moitié du diamètre : il faut écarter le compas de 4 cm.')],
+    ['Construis un carré de 6 cm de côté, puis un cercle de rayon 4 cm dont le centre est un sommet du carré.',
+      cm1Redac('Construction', { suite: ['Je trace un côté de 6 cm.', 'Je trace les angles droits avec l\'équerre, puis les autres côtés de 6 cm.', 'J\'écarte le compas de 4 cm, je pique sur un sommet et je trace le cercle.'] }, 'J\'obtiens un carré de 6 cm de côté et un cercle de rayon 4 cm centré sur un de ses sommets.')],
+    ['Cherche dans la classe trois angles droits.',
+      cm1Redac('Angles droits de la classe', '', 'Par exemple : le coin d\'une feuille, le coin d\'une table, le coin d\'une fenêtre. Je vérifie chacun avec l\'équerre.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : la corde à 13 nœuds', [
     'Pour faire des angles droits sans équerre, les bâtisseurs du Moyen Âge utilisaient une <b>corde à 13 nœuds</b>, régulièrement espacés. En la tendant pour former un triangle de 3, 4 et 5 intervalles, ils obtenaient un <b>angle droit</b> parfait pour construire les cathédrales.',

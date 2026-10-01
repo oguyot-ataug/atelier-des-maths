@@ -17,7 +17,8 @@ const TROIS = svg(560, 110,
   + `<line x1="340" y1="75" x2="550" y2="30" ${T}/>` + croix(390, 64, 'D', -4, 18) + croix(490, 43, 'E', -4, 18) + `<text x="450" y="100" font-size="13" text-anchor="middle" fill="#5B6472">la droite (DE)</text>`);
 const MILIEU = svg(400, 90, `<line x1="40" y1="45" x2="360" y2="45" ${T}/>` + croix(40, 45, 'A', -6, -10) + croix(360, 45, 'B', -6, -10) + croix(200, 45, 'I', -6, -10)
   + `<path d="M115 39 L125 51 M275 39 L285 51" stroke="#2E9C6A" stroke-width="2"/><text x="120" y="75" font-size="13" text-anchor="middle" fill="#2E9C6A">5 cm</text><text x="280" y="75" font-size="13" text-anchor="middle" fill="#2E9C6A">5 cm</text>`);
-const ALIGNES = svg(420, 120, `<line x1="20" y1="100" x2="400" y2="20" stroke="#2EA8C9" stroke-width="1.5" stroke-dasharray="6 4"/>` + croix(70, 90, 'M') + croix(200, 62, 'N') + croix(330, 35, 'P') + croix(250, 100, 'R'));
+// Points pour l'animation « points alignés » (M, N, P sur une même droite, R en dehors).
+const ALIGNES_PTS = croix(70, 90, 'M') + croix(200, 62, 'N') + croix(330, 35, 'P') + croix(250, 100, 'R');
 cm1Chapitre({
   niveau: 'ce2', titre: 'Points, droites, segments', slug: 'points-droites-segments',
   cours: `
@@ -31,12 +32,17 @@ ${cm1Rem('Les crochets [ ] montrent que le segment <b>s\'arrête</b> à ses extr
 
 ${cm1Lecon(2, 'Points alignés')}
 ${cm1Def('Des points sont <b>alignés</b> quand on peut tracer une même droite qui passe par tous ces points.')}
-<div class="figure-wrap">${ALIGNES}<p class="hint" style="margin:4px 0 0;">M, N et P sont alignés. R n'est pas sur la droite : M, N et R ne sont pas alignés.</p></div>
+${ce2Film('ce2-pd-align', { duree: 7000, legende: 'On pose le bord de la règle sur deux points, puis on regarde le troisième.', film: { w: 420, h: 130, scenes: [
+  { de: 0, a: .1, dessin: k => `<g opacity="${k}">${ALIGNES_PTS}</g>`, texte: 'Les points M, N, P et R sont-ils alignés ?' },
+  { de: .12, a: .4, dessin: k => `<g transform="rotate(-12.1 200 62)"><rect x="${ce2Mix(-400, 20, k)}" y="62" width="380" height="26" fill="#FFF3D6" fill-opacity=".85" stroke="#C9A24A"/></g>`, texte: 'Je pose le bord de la règle contre M et N.' },
+  { de: .45, a: .6, dessin: k => `<circle cx="330" cy="35" r="${12 * k}" fill="none" stroke="#2E9C6A" stroke-width="3"/>`, texte: 'P touche aussi le bord de la règle : <b>M, N et P sont alignés</b>.' },
+  { de: .7, a: .85, dessin: k => `<circle cx="250" cy="100" r="${12 * k}" fill="none" stroke="#E35D3A" stroke-width="3"/>`, texte: 'R n\'est pas contre la règle : <b>M, N et R ne sont pas alignés</b>.' }] } })}
 ${cm1Astuce('Pour vérifier : on pose le bord de la règle sur deux des points et on regarde si le troisième est contre la règle.')}
 
 ${cm1Lecon(3, 'Le milieu d\'un segment')}
 ${cm1Def('Le <b>milieu</b> d\'un segment est le point du segment qui est <b>à la même distance</b> des deux extrémités. Il partage le segment en deux segments de même longueur.')}
 <div class="figure-wrap">${MILIEU}<p class="hint" style="margin:4px 0 0;">Le segment [AB] mesure 10 cm : son milieu I est à 5 cm de A et à 5 cm de B. Les petits traits verts indiquent que les deux longueurs sont égales.</p></div>
+${ce2AnimRegle('ce2-pd-regle', { legende: 'Tracer un segment à la règle, puis placer son milieu.', presets: [{ nom: 'Segment de 7 cm', cm: 7, mm: 0 }, { nom: 'Milieu d\'un segment de 8 cm', cm: 8, mm: 0, milieu: true }] })}
 `,
   methode: `
 ${cm1Demo('ce2-pd-tracer', 'Tracer un segment de longueur donnée', 'Trace un segment [AB] de 7 cm.')}
@@ -47,20 +53,27 @@ ${cm1Demo('ce2-pd-milieu', 'Placer le milieu d\'un segment', 'Le segment [AB] me
       { expr: 'Je marque le point A.', note: 'Une petite croix, puis la lettre A.' },
       { expr: 'Je pose la règle : le 0 sur le point A.', note: 'Attention : le 0 n\'est pas toujours au bord de la règle.' },
       { expr: 'Je marque le point B en face du 7.', note: 'Je tiens bien la règle, sans qu\'elle glisse.' },
-      { expr: 'Je trace le trait de A à B, puis je vérifie : 7 cm ✔', note: 'Le segment [AB] mesure 7 cm.' },
+      { expr: 'Je trace le trait de A à B.', note: 'Le long de la règle, sans la faire glisser.' },
+      { expr: 'Je vérifie : [AB] mesure 7 cm ✔', note: '' },
     ]],
     ['ce2-pd-milieu', [
-      { expr: '8 ÷ 2 = 4 : le milieu est à 4 cm de A', note: 'Le milieu est à la moitié de la longueur.' },
+      { expr: 'La moitié de 8 cm, c\'est 4 cm.', note: 'Le milieu est à la moitié de la longueur.' },
       { expr: 'Je pose le 0 de la règle sur A, le long du segment.', note: 'La règle suit exactement le segment.' },
       { expr: 'Je marque I en face du 4.', note: 'Je vérifie : de I à B, il y a aussi 4 cm ✔' },
+      { expr: 'Je code : un petit trait sur [AI] et un sur [IB].', note: 'Les deux longueurs sont égales.' },
     ]],
   ],
   exos: cm1Exos('ce2-pd', [
-    ['Trace un segment [EF] de 6 cm, puis place son milieu M.', 'M est à 3 cm de E et à 3 cm de F.'],
-    ['Quelle est la différence entre un segment et une droite ?', 'Un segment s\'arrête à ses deux extrémités (on peut le mesurer) ; une droite continue sans fin des deux côtés.'],
-    ['Place trois points alignés A, B, C, puis un point D qui n\'est pas aligné avec A et B.', 'A, B, C sur une même droite tracée à la règle ; D en dehors de cette droite.'],
-    ['Un segment mesure 12 cm. À quelle distance de chaque extrémité est son milieu ?', 'À 6 cm (la moitié de 12).'],
-    ['Combien de segments peux-tu tracer qui relient deux des trois points A, B, C (non alignés) ?', 'Trois segments : [AB], [BC] et [AC] (cela forme un triangle).'],
+    ['Trace un segment [EF] de 6 cm, puis place son milieu M. À quelle distance de E se trouve M ?',
+      cm1Redac('Distance de E à M', '6 cm = 3 cm + 3 cm', 'Le milieu M est à 3 cm de E (et à 3 cm de F).')],
+    ['Quelle est la différence entre un segment et une droite ?',
+      cm1Redac('Segment et droite', '', 'Un segment s\'arrête à ses deux extrémités : on peut mesurer sa longueur. Une droite ne s\'arrête jamais, des deux côtés : on ne peut pas la mesurer.')],
+    ['Place trois points alignés A, B et C, puis un point D qui n\'est pas aligné avec A et B. Comment vérifies-tu ?',
+      cm1Redac('Vérification', '', 'Je pose le bord de la règle sur A et B : C touche la règle, donc A, B et C sont alignés. D ne touche pas la règle, donc A, B et D ne sont pas alignés.')],
+    ['Un segment mesure 12 cm. À quelle distance de chaque extrémité est son milieu ?',
+      cm1Redac('Distance du milieu aux extrémités', '12 cm = 6 cm + 6 cm', 'Le milieu est à 6 cm de chaque extrémité.')],
+    ['Trois points A, B et C ne sont pas alignés. Combien de segments peux-tu tracer qui relient deux de ces points ?',
+      cm1Redac('Nombre de segments', '[AB], [BC] et [AC]', 'On peut tracer 3 segments : ils forment un triangle.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : les points d\'Euclide', [
     'Il y a plus de 2 000 ans, le savant grec <b>Euclide</b> a écrit un grand livre de géométrie, les <i>Éléments</i>. Il y explique qu\'un point « n\'a pas de taille » et qu\'une ligne « a une longueur mais pas d\'épaisseur ». Son livre a servi à apprendre la géométrie pendant plus de 2 000 ans !',

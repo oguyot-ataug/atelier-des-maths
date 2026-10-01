@@ -16,7 +16,7 @@ cm1Chapitre({
 ${cm1Lecon(1, 'Euros et centimes')}
 ${cm1Regle('<b>1 euro = 100 centimes</b>. On écrit 1 € = 100 c.')}
 <div class="figure-wrap" style="text-align:center;">${piece('1 c', CUIVRE, 30)}${piece('2 c', CUIVRE, 33)}${piece('5 c', CUIVRE, 36)}${piece('10 c', OR, 34)}${piece('20 c', OR, 38)}${piece('50 c', OR, 42)}${piece('1 €', '#C9CBCF', 42)}${piece('2 €', '#E2C36B', 46)}<br>${billet(5, '#8E9AA8')}${billet(10, '#C0645A')}${billet(20, '#4F7CC0')}${billet(50, '#E08A3C')}</div>
-${cm1Rem('Dix pièces de 1 € valent 10 € ; dix billets de 10 € valent 100 € ; dix pièces de 10 centimes valent 1 €.')}
+${cm1Rem(`Les échanges :${cm1Liste(['dix pièces de 1 € valent 10 € ;', 'dix billets de 10 € valent 100 € ;', 'dix pièces de 10 centimes valent 1 €.'])}`)}
 
 ${cm1Lecon(2, 'Écrire un prix avec une virgule')}
 ${cm1Regle('Dans un prix, <b>la virgule se place juste après le chiffre des euros</b>. Après la virgule, il y a toujours <b>deux chiffres</b> : ce sont les centimes.')}
@@ -35,7 +35,9 @@ ${cm1Rem('Pour ajouter un prix « rond » comme 68 €, on peut l\'écrire 68,00
 
 ${cm1Lecon(4, 'Rendre la monnaie')}
 ${cm1Regle('Pour rendre la monnaie, on <b>complète</b> le prix jusqu\'à la somme donnée, par petits ajouts.')}
-${cm1Exemple('Un achat de 3,68 € payé avec un billet de 5 € :', ['de 3,68 € à 4 € : il faut 32 centimes (car 68 + 32 = 100) ;', 'de 4 € à 5 € : il faut 1 € ;', 'on rend 1 € et 32 centimes, soit <b>1,32 €</b>.'])}
+${ce2AnimSauts('ce2-mo-rendre-anim', { legende: 'On avance du prix jusqu\'à la somme donnée : les sauts, c\'est la monnaie qu\'on rend.', presets: [
+  { nom: '3,68 € payé avec 5 €', depart: 368, sauts: [[32, '+ 32 c', 'De 3,68 € à 4 € : 32 centimes, car 68 + 32 = 100.'], [100, '+ 1 €', 'De 4 € à 5 € : 1 €.']], min: 340, max: 520, fmt: ce2Euros, fin: 'On rend 1 € et 32 centimes : <b>1,32 €</b>.' },
+  { nom: '7,40 € payé avec 10 €', depart: 740, sauts: [[60, '+ 60 c', 'De 7,40 € à 8 € : 60 centimes, car 40 + 60 = 100.'], [200, '+ 2 €', 'De 8 € à 10 € : 2 €.']], min: 700, max: 1040, fmt: ce2Euros, fin: 'On rend 2 € et 60 centimes : <b>2,60 €</b>.' }] })}
 `,
   methode: `
 ${cm1Demo('ce2-mo-rendre', 'Rendre la monnaie', 'Léa achète un livre à 7,40 €. Elle paie avec un billet de 10 €. Combien lui rend-on ?')}
@@ -45,22 +47,31 @@ ${cm1Demo('ce2-mo-payer', 'Payer une somme avec le moins de pièces possible', '
     ['ce2-mo-rendre', [
       { expr: '7,40 € → 8 € : + 60 centimes', note: '40 + 60 = 100 centimes, c\'est 1 €.' },
       { expr: '8 € → 10 € : + 2 €', note: 'On arrive à la somme donnée.' },
-      { expr: 'On rend 2 € et 60 centimes : 2,60 €', note: 'On vérifie : 7,40 + 2,60 = 10 ✔' },
+      { expr: 'On rend 2 € et 60 centimes : 2,60 €.', note: '' },
+      { expr: '7,40 € + 2,60 € = 10 € ✔', note: 'On vérifie avec une addition.' },
     ]],
     ['ce2-mo-payer', [
       { expr: '8,75 € = 8 € + 75 centimes', note: 'On s\'occupe d\'abord des euros, puis des centimes.' },
       { expr: '8 € = 5 € + 2 € + 1 €', note: 'Un billet de 5 €, une pièce de 2 €, une pièce de 1 €.' },
       { expr: '75 c = 50 c + 20 c + 5 c', note: 'Trois pièces.' },
-      { expr: '6 pièces et billets en tout', note: 'Il n\'y a pas plus court.' },
+      { expr: 'On donne 6 billets et pièces en tout.', note: 'On ne peut pas en donner moins.' },
     ]],
   ],
   exos: cm1Exos('ce2-mo', [
-    ['Écris en chiffres : six euros et trente centimes · six euros et trois centimes.', '6,30 € · 6,03 €.'],
-    ['Combien de centimes dans 4 € ? dans 2,50 € ?', '400 centimes · 250 centimes.'],
-    ['Pose et calcule : 12,45 € + 8,30 €.', '20,75 €.'],
-    ['Pose et calcule : 43,45 € + 68 €.', '43,45 + 68,00 = 111,45 €.'],
-    ['Un cahier coûte 2,85 €. Tu paies avec 5 €. Combien te rend-on ?', '2,15 € (15 c pour aller à 3 €, puis 2 €).'],
-    ['Avec quelles pièces peux-tu payer 1,35 € ?', 'Par exemple 1 € + 20 c + 10 c + 5 c.'],
+    [`Écris ces prix en chiffres.${cm1Liste(['six euros et trente centimes', 'six euros et trois centimes'])}`,
+      cm1Redac('Six euros et trente centimes', '6 euros et 30 centimes', 'Ce prix s\'écrit 6,30 €.')
+      + cm1Redac('Six euros et trois centimes', '6 euros et 03 centimes', 'Ce prix s\'écrit 6,03 € : il faut deux chiffres après la virgule.')],
+    ['Ines a 4 € dans sa tirelire. Combien cela fait-il de centimes ? Et pour 2,50 € ?',
+      cm1Redac('4 € en centimes', '4 × 100 = 400', '4 € font 400 centimes.')
+      + cm1Redac('2,50 € en centimes', '200 + 50 = 250', '2,50 € font 250 centimes.')],
+    ['Un livre coûte 12,45 € et un cahier 8,30 €. Combien coûtent-ils ensemble ?',
+      cm1Redac('Prix total', { pose: cm1Posee([[' ', '12,45'], ['+', '8,30'], [' ', '20,75']], '1    ') }, 'Le livre et le cahier coûtent 20,75 € ensemble.')],
+    ['Maman achète une veste à 43,45 € et des chaussures à 68 €. Combien dépense-t-elle ?',
+      cm1Redac('Dépense de maman', { pose: cm1Posee([[' ', '43,45'], ['+', '68,00'], [' ', '111,45']], '11    ') }, 'Maman dépense 111,45 €.')],
+    ['Un cahier coûte 2,85 €. Tu paies avec un billet de 5 €. Combien la marchande te rend-elle ?',
+      cm1Redac('Monnaie rendue', { suite: ['De 2,85 € à 3 € : 15 centimes', 'De 3 € à 5 € : 2 €'] }, 'La marchande me rend 2 € et 15 centimes, c\'est-à-dire 2,15 €.')],
+    ['Avec quelles pièces peux-tu payer exactement 1,35 € ?',
+      cm1Redac('Pièces pour 1,35 €', '1 € + 20 c + 10 c + 5 c = 1,35 €', 'Je peux payer avec une pièce de 1 €, une de 20 c, une de 10 c et une de 5 c.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : l\'euro', [
     'Les pièces et les billets en <b>euros</b> sont arrivés dans les porte-monnaie le <b>1<sup>er</sup> janvier 2002</b>. Avant, en France, on payait en <b>francs</b>. Aujourd\'hui, une vingtaine de pays d\'Europe utilisent l\'euro : chaque pays a dessiné le côté « face » de ses pièces.',

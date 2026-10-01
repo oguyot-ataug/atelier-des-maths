@@ -31,14 +31,14 @@ ${cm1Tableau(['Moyen de transport', 'À pied', 'Vélo', 'Voiture', 'Bus'], [['No
 
 ${cm1Lecon(2, 'Le diagramme en barres')}
 ${cm1Regle('Dans un <b>diagramme en barres</b>, chaque réponse a sa barre. <b>Plus la barre est haute, plus l\'effectif est grand.</b> On lit la hauteur sur l\'<b>axe vertical</b>, qui est gradué avec une échelle régulière (ici de 2 en 2).')}
-${diagramme(TRANSPORT, 12, 2, 'Comment viens-tu à l\'école ?')}
-${cm1Exemple('On lit :', ['Le moyen de transport le plus utilisé est la <b>voiture</b> (10 élèves).', '3 élèves viennent à vélo.', 'En tout : 8 + 3 + 10 + 5 = <b>26 élèves</b>.'])}
+${ce2AnimDiagramme('ce2-dg-anim', { donnees: TRANSPORT, max: 12, pas: 2, titre: 'Comment viens-tu à l\'école ?', fin: 'La barre la plus haute est celle de la voiture : c\'est le moyen de transport le plus utilisé.' })}
+${cm1Exemple('On lit :', ['Le moyen de transport le plus utilisé est la <b>voiture</b> : 10 élèves.', '3 élèves viennent à vélo.', 'En tout, il y a 8 + 3 + 10 + 5 = <b>26 élèves</b>.'])}
 ${cm1Astuce('Pour graduer l\'axe vertical, on choisit un <b>pas</b> adapté aux nombres : de 1 en 1 pour de petits effectifs, de 10 en 10 ou de 20 en 20 pour de grands effectifs.')}
 
 ${cm1Lecon(3, 'Le tableau à double entrée')}
 ${cm1Regle('Un <b>tableau à double entrée</b> range les données selon <b>deux critères</b> : un pour les lignes, un pour les colonnes. Les <b>totaux</b> s\'obtiennent en additionnant une ligne ou une colonne.')}
 ${cm1Tableau(['', 'Filles', 'Garçons', 'Total'], [['À pied', '65', '77', '<b>142</b>'], ['En vélo', '29', '18', '<b>47</b>'], ['En voiture', '0', '24', '<b>24</b>'], ['En bus', '28', '17', '<b>45</b>'], ['<b>Total</b>', '<b>122</b>', '<b>136</b>', '<b>258</b>']])}
-<p class="hint" style="text-align:center;">77 garçons viennent à pied. 142 élèves viennent à pied en tout, donc 142 − 77 = 65 filles.</p>
+${cm1Exemple('On lit :', ['77 garçons viennent à pied.', '142 élèves viennent à pied en tout.', 'Donc 142 − 77 = 65 filles viennent à pied.'])}
 `,
   methode: `
 ${cm1Demo('ce2-dg-barre', 'Compléter un diagramme en barres', 'Les 175 élèves d\'une école habitent dans quatre villes. Alphaville : 78, Bêtaville : 13, Gammaville : 32. Trace la barre de Deltaville.')}
@@ -52,11 +52,16 @@ ${cm1Demo('ce2-dg-barre', 'Compléter un diagramme en barres', 'Les 175 élèves
     ]],
   ],
   exos: cm1Exos('ce2-dg', [
-    ['Dans le diagramme du cours, combien d\'élèves viennent en bus ?', '5 élèves.'],
-    ['Combien d\'élèves de plus viennent en voiture qu\'à pied ?', '10 − 8 = 2 élèves de plus.'],
-    ['Dans le tableau à double entrée, combien de filles viennent en bus ?', '28 filles.'],
-    ['Dans une classe : 6 élèves ont 0 frère ou sœur, 11 en ont 1, 7 en ont 2, 3 en ont 3. Combien d\'élèves dans la classe ?', '6 + 11 + 7 + 3 = 27 élèves.'],
-    ['Pour ces données (6, 11, 7, 3), quel pas choisirais-tu pour graduer l\'axe vertical ?', 'De 1 en 1 ou de 2 en 2, jusqu\'à 12.'],
+    ['D\'après le diagramme du cours, combien d\'élèves viennent en bus ?',
+      cm1Redac('Élèves qui viennent en bus', 'La barre « Bus » monte jusqu\'à 5.', '5 élèves viennent en bus.')],
+    ['D\'après le diagramme du cours, combien d\'élèves de plus viennent en voiture qu\'à pied ?',
+      cm1Redac('Différence voiture et à pied', '10 − 8 = 2', '2 élèves de plus viennent en voiture.')],
+    ['D\'après le tableau à double entrée du cours, combien de filles viennent en bus ?',
+      cm1Redac('Filles qui viennent en bus', 'Ligne « En bus », colonne « Filles » : 28', '28 filles viennent en bus.')],
+    ['Dans une classe, 6 élèves n\'ont pas de frère ni de sœur, 11 en ont 1, 7 en ont 2 et 3 en ont 3. Combien y a-t-il d\'élèves dans la classe ?',
+      cm1Redac('Nombre d\'élèves', ['6 + 11 + 7 + 3', '27'], 'Il y a 27 élèves dans la classe.')],
+    ['Pour faire le diagramme en barres de l\'exercice précédent (6, 11, 7 et 3), quel pas choisirais-tu pour graduer l\'axe vertical ?',
+      cm1Redac('Choix du pas', 'Le plus grand effectif est 11.', 'Je gradue de 1 en 1 (ou de 2 en 2) jusqu\'à 12 : toutes les barres tiennent et on lit facilement leur hauteur.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le premier diagramme en barres', [
     'C\'est l\'Écossais <b>William Playfair</b> qui a dessiné l\'un des premiers diagrammes en barres, en <b>1786</b>, pour montrer le commerce de son pays avec les autres. Avant, les nombres étaient seulement écrits dans de longs tableaux.',

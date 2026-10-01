@@ -44,6 +44,7 @@ cm1Chapitre({
   cours: `
 ${cm1Lecon(1, 'Les polygones')}
 ${cm1Def('Un <b>polygone</b> est une figure fermée dont le tour est fait de <b>segments</b>. Ces segments sont les <b>côtés</b> ; les points où deux côtés se rejoignent sont les <b>sommets</b>. Un polygone a autant de sommets que de côtés.')}
+${ce2AnimPolygone('ce2-po-anim', {})}
 <div class="figure-wrap">${FAMILLE}</div>
 ${cm1Rem('Un disque n\'est pas un polygone : son tour n\'est pas fait de segments.')}
 
@@ -71,18 +72,24 @@ ${cm1Demo('ce2-po-nature', 'Justifier la nature d\'un quadrilatère', 'Un quadri
   demos: [
     ['ce2-po-nature', [
       { expr: 'Il a 4 angles droits.', note: 'On vérifie avec l\'équerre.' },
-      { expr: 'Ses côtés ne sont pas tous de même longueur (6 cm et 4 cm).', note: '' },
-      { expr: 'Ce n\'est pas un carré : un carré a 4 côtés de même longueur.', note: 'Une propriété qui manque suffit.' },
-      { expr: 'C\'est un rectangle : 4 angles droits, côtés opposés de même longueur.', note: 'Sa longueur est 6 cm, sa largeur 4 cm.' },
+      { expr: 'Ses côtés mesurent 6 cm et 4 cm : ils ne sont pas tous égaux.', note: '' },
+      { expr: 'Ce n\'est pas un carré.', note: 'Un carré a 4 côtés de même longueur : une propriété qui manque suffit.' },
+      { expr: 'C\'est un rectangle.', note: '4 angles droits, côtés opposés de même longueur. Sa longueur est 6 cm, sa largeur 4 cm.' },
     ]],
   ],
   exos: cm1Exos('ce2-po', [
-    ['Comment appelle-t-on un polygone à 5 côtés ? à 6 côtés ?', 'Un pentagone ; un hexagone.'],
-    ['Combien de sommets a un hexagone ?', '6 sommets (autant que de côtés).'],
-    ['Un quadrilatère a 4 côtés de 5 cm, mais pas d\'angle droit. Comment s\'appelle-t-il ?', 'Un losange.'],
-    ['Pourquoi un losange qui n\'a pas d\'angle droit n\'est-il pas un carré ?', 'Parce qu\'un carré a 4 angles droits.'],
-    ['Dessine un rectangle sur papier quadrillé, trace ses deux diagonales et code-le.', 'Un petit carré à chaque coin, les côtés opposés codés par les mêmes traits.'],
-    ['Un rectangle a une longueur de 9 cm et une largeur de 5 cm. Quelles sont les longueurs de ses 4 côtés ?', '9 cm, 5 cm, 9 cm et 5 cm.'],
+    ['Comment appelle-t-on un polygone à 5 côtés ? Et un polygone à 6 côtés ?',
+      cm1Redac('Polygone à 5 côtés', '', 'Un polygone à 5 côtés s\'appelle un pentagone.') + cm1Redac('Polygone à 6 côtés', '', 'Un polygone à 6 côtés s\'appelle un hexagone.')],
+    ['Combien de sommets a un hexagone ?',
+      cm1Redac('Sommets d\'un hexagone', '6 côtés, donc 6 sommets', 'Un hexagone a 6 sommets : un polygone a autant de sommets que de côtés.')],
+    ['Un quadrilatère a 4 côtés de 5 cm, mais aucun angle droit. Comment s\'appelle-t-il ?',
+      cm1Redac('Nom du quadrilatère', '4 côtés de même longueur, pas d\'angle droit', 'Ce quadrilatère est un losange (ce n\'est pas un carré, car il n\'a pas d\'angle droit).')],
+    ['Pourquoi un losange qui n\'a pas d\'angle droit n\'est-il pas un carré ?',
+      cm1Redac('Losange et carré', '', 'Un carré a 4 angles droits. Ce losange n\'en a pas : ce n\'est donc pas un carré.')],
+    ['Dessine un rectangle sur papier quadrillé, trace ses deux diagonales et code-le.',
+      cm1Redac('Codage du rectangle', '', 'Je code un petit carré à chacun des 4 coins (angles droits) et le même nombre de petits traits sur les côtés opposés, qui ont la même longueur.')],
+    ['Un rectangle a une longueur de 9 cm et une largeur de 5 cm. Quelles sont les longueurs de ses 4 côtés ?',
+      cm1Redac('Longueurs des côtés', '9 cm, 5 cm, 9 cm et 5 cm', 'Les côtés opposés d\'un rectangle ont la même longueur : deux côtés mesurent 9 cm et deux côtés mesurent 5 cm.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : des noms grecs', [
     'Les noms des polygones viennent du <b>grec ancien</b> : <i>poly</i> veut dire « plusieurs » et <i>gonia</i> « angle ». <i>Penta</i> veut dire cinq, <i>hexa</i> six. Le mot <b>quadrilatère</b>, lui, vient du latin : « quatre côtés ».',

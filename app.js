@@ -1524,13 +1524,16 @@ function renderQuizHTML(bank, prefixHtml){
   currentQuizBank = bank;
   let html = prefixHtml || '';
   bank.forEach((item,qi)=>{
-    html+=`<div class="quiz-q"><div style="font-weight:600;margin-bottom:8px;">${qi+1}. ${item.q}</div>`;
+    // « Question 1 » au-dessus de l'énoncé, et non « 1. » devant -- demandé : ne pas numéroter « 1. »,
+    // « 2. » devant une question, surtout si elle commence par un nombre ou un calcul.
+    html+=`<div class="quiz-q"><div class="quiz-num">Question ${qi+1}</div><div style="font-weight:600;margin-bottom:8px;">${item.q}</div>`;
     item.opts.forEach((o,oi)=>{
       html+=`<button class="quiz-opt" onclick="answerQuiz(this,${qi},${oi})">${o}</button>`;
     });
     html+='</div>';
   });
   area.innerHTML=html;
+  renderStaticMath(area); // fractions en LaTeX (cm1Frac) dans les questions et les réponses
 }
 function generateDemoQuiz(){
   const bank = DEMO_QUIZZES[currentChapterLevel+'|'+currentChapterTitle] || DEMO_QUIZZES['5e|Symétrie centrale'];
@@ -3290,6 +3293,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.902', date:'2026-10-01', items:[
+    'CE2 (en préparation) : reprise pédagogique des 24 chapitres. Une vingtaine de nouvelles animations : sauts sur une droite (calcul mental, rendre la monnaie, durées), schémas en barres qui se construisent, rangées de jetons, glisse-nombre, horloge dont les aiguilles tournent, règle, partage équitable, diagramme en barres, compas, angle qui s\'ouvre, balance, verres qu\'on remplit, fractions égales, addition de fractions, arbre des possibilités, polygone, matériel de numération, bande unité pliée, symétrie sur quadrillage, report des côtés au compas.',
+    'Toutes les corrections des exercices sont rédigées : titre souligné qui reprend la question, calcul (en colonne « A = … » avec le résultat encadré quand il ne tient pas sur une ligne), puis phrase de conclusion. Un seul calcul par ligne.',
+    'Primaire : les fractions s\'écrivent partout en LaTeX (cours, quiz, questions flash) ; les quiz n\'affichent plus « 1. » devant les questions, mais « Question 1 » au-dessus.',
+  ] },
   { version:'2026-08-19.901', date:'2026-10-01', items:[
     'Questions flash prêtes au primaire : sur chaque chapitre du CE2, du CM1 et du CM2, le professeur a un bouton « Questions flash (cartes) ». Il voit 6 à 8 questions prêtes (bonne réponse en vert), décoche celles qu\'il ne veut pas, choisit sa classe et lance la séance : les élèves répondent en levant leur carte flashcode A, B, C ou D.',
   ] },

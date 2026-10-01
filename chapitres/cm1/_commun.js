@@ -42,8 +42,33 @@ function cm1Exos(slug, liste, redaction){
   return (redaction ? `<div class="redaction-block"><h3>${redaction.titre}</h3><div class="redaction-template">${redaction.lignes.map(([e, c]) => `<div class="we-row"><span class="we-expr">${e}</span><span class="we-comment">${c}</span></div>`).join('')}</div></div>` : '')
     + `<div class="redaction-block"><h3>Exercices</h3>${liste.map(([e, c], i) => `<div class="exo-card"><div class="num">Exercice ${i + 1}</div>${e}
       <button type="button" class="exo-correction-toggle" data-target="cm1-${slug}-c${i + 1}" onclick="toggleExoCorrection(this)" title="Voir la correction" aria-label="Voir la correction"><span class="gicon">expand_more</span></button>
-      <div class="exo-correction" id="cm1-${slug}-c${i + 1}"><p style="margin:0;">${c}</p></div></div>`).join('')}</div>`;
+      <div class="exo-correction" id="cm1-${slug}-c${i + 1}"><div>${c}</div></div></div>`).join('')}</div>`;
 }
+/* Rédaction d'une réponse -- demandé : « Commencer par un titre qui reprend la demande de l'énoncé
+   (" Âge de mamie : ") souligné. Puis un calcul. Si le calcul tient sur une ligne, on peut le garder
+   ainsi, sinon on écrira A = ou B = et on développera le calcul en colonne. On en encadrera le
+   résultat. Ensuite on conclut systématiquement. » Et : « ne jamais écrire plusieurs calculs sur une
+   même ligne ».
+   calc : une chaîne (calcul sur une seule ligne) ; un tableau de chaînes (calcul en colonne « A = … »,
+   la dernière ligne, le résultat, est encadrée) ; ou { nom: 'B', lignes: [...] } pour une autre
+   lettre ; { pose: html } pour une opération posée (cm1Posee), suivie au besoin de ses lignes ;
+   { suite: [...] } pour plusieurs calculs courts, chacun sur sa ligne. Plusieurs blocs à la suite :
+   un tableau de ces objets. */
+function cm1Redac(titre, calc, phrase){
+  const un = x => {
+    if(x == null || x === '') return '';
+    if(typeof x === 'string') return `<div class="cm-redac-ligne">${x}</div>`;
+    if(x.suite) return x.suite.map(l => `<div class="cm-redac-ligne">${l}</div>`).join(''); // plusieurs calculs, un par ligne
+    const lignes = Array.isArray(x) ? x : (x.lignes || []), nom = (!Array.isArray(x) && x.nom) || 'A';
+    return (x.pose ? `<div class="cm-redac-pose">${x.pose}</div>` : '')
+      + (lignes.length ? `<table class="cm-redac-col">${lignes.map((l, i) => `<tr><td>${nom}</td><td>=</td><td>${i === lignes.length - 1 ? `<span class="cm-encadre">${l}</span>` : l}</td></tr>`).join('')}</table>` : '');
+  };
+  const calcs = Array.isArray(calc) && calc.some(x => typeof x === 'object' && x !== null) ? calc : [calc];
+  return `<div class="cm-redac"><div class="cm-redac-titre">${titre} :</div>${calcs.map(un).join('')}${phrase ? `<p class="cm-redac-phrase">${phrase}</p>` : ''}</div>`;
+}
+// Liste sans numéro (une question ou un calcul par ligne) -- demandé : pas de « 1. », « 2. » devant
+// une question, surtout s'il est suivi d'un nombre ou d'un calcul.
+function cm1Liste(items){ return `<ul class="cm-liste">${items.map(x => `<li>${x}</li>`).join('')}</ul>`; }
 function cm1Histoire(titre, paras){ return `<div class="history-box"><div class="history-title"><span class=gicon>history_edu</span> ${titre}</div>${paras.map(p => `<p style="margin:0 0 12px;">${p}</p>`).join('')}</div>`; }
 function cm1Conteneurs(slug, niveau){
   niveau = niveau || 'cm1';
@@ -61,7 +86,9 @@ function cm1Chapitre(o){
   const poser = (k, html) => { const el = document.getElementById(id(k)); if(el) el.innerHTML = html || ''; };
   poser('cours', o.cours); poser('methode', o.methode); poser('exos', o.exos); poser('histoire', o.histoire);
   (o.demos || []).forEach(([k, steps]) => { CM1_DEMOS[k] = makeStepDemo(steps, 'cm1d-' + k); });
-  if(o.quiz) DEMO_QUIZZES[niv + '|' + o.titre] = o.quiz;
+  // Une fraction écrite « 3/4 » dans un quiz s'affiche en LaTeX (demandé : jamais « a/b »).
+  const frac = t => String(t).replace(/(\d+)\/(\d+)/g, (m, a, b) => cm1Frac(a, b));
+  if(o.quiz) DEMO_QUIZZES[niv + '|' + o.titre] = o.quiz.map(x => Object.assign({}, x, { q: frac(x.q), opts: x.opts.map(frac) }));
   if(o.flash) CM_FLASH[niv + '|' + o.titre] = o.flash; // questions prêtes pour les Questions flash (cartes A à D)
   DEMO_REGISTRY[niv + '|' + o.titre] = { cours: id('cours'), methode: id('methode'), exos: id('exos'), histoire: id('histoire'),
     init: () => {
@@ -90,19 +117,25 @@ function cm1Disque(n, k, opts){
   return s + '</svg>';
 }
 // Demi-droite graduée : de 0 à max unités, chaque unité partagée en n ; points = [[valeurNumérique, nom, couleur]].
-// etiquettes(v) renvoie le texte sous une graduation (par défaut : les entiers).
+// etiquettes(i) renvoie le texte sous la graduation i (par défaut : les entiers), ou [a, b] pour une fraction.
 function cm1Graduation(max, n, points, opts){
   opts = opts || {}; const U = opts.unite || Math.min(150, 440 / max), W = 40 + max * U + 30;
-  let s = `<svg viewBox="0 0 ${W} 86" style="width:100%;max-width:${W}px;display:block;margin:6px auto;"><line x1="20" y1="45" x2="${W - 8}" y2="45" stroke="#1F3A5C" stroke-width="2"/><polygon points="${W - 8},45 ${W - 16},40 ${W - 16},50" fill="#1F3A5C"/>`;
+  let s = `<svg viewBox="0 0 ${W} 94" style="width:100%;max-width:${W}px;display:block;margin:6px auto;"><line x1="20" y1="45" x2="${W - 8}" y2="45" stroke="#1F3A5C" stroke-width="2"/><polygon points="${W - 8},45 ${W - 16},40 ${W - 16},50" fill="#1F3A5C"/>`;
   for(let i = 0; i <= max * n; i++){ const x = 30 + i * U / n, g = i % n === 0;
     s += `<line x1="${x}" y1="${g ? 34 : 39}" x2="${x}" y2="${g ? 56 : 51}" stroke="#1F3A5C" stroke-width="${g ? 1.8 : 1}"/>`;
     const lab = opts.etiquettes ? opts.etiquettes(i) : (g ? String(i / n) : '');
-    if(lab) s += `<text x="${x}" y="74" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">${lab}</text>`; }
+    // [a, b] : fraction écrite en étage (jamais « a/b »).
+    if(Array.isArray(lab)) s += `<text x="${x}" y="70" font-size="12" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">${lab[0]}</text><line x1="${x - 7}" y1="74" x2="${x + 7}" y2="74" stroke="#1F3A5C" stroke-width="1.2"/><text x="${x}" y="87" font-size="12" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">${lab[1]}</text>`;
+    else if(lab) s += `<text x="${x}" y="74" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">${lab}</text>`; }
   (points || []).forEach(([v, nom, c]) => { const x = 30 + v * U; s += `<circle cx="${x}" cy="45" r="5" fill="${c || '#E35D3A'}"/><text x="${x}" y="24" font-size="14" font-weight="700" text-anchor="middle" fill="${c || '#E35D3A'}" font-family="Space Grotesk">${nom}</text>`; });
   return s + '</svg>';
 }
-// Fraction écrite « en étage » sans KaTeX (lisible partout, y compris dans les tableaux).
-function cm1Frac(a, b){ return `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 2px;font-weight:600;"><span style="padding:0 3px;">${a}</span><span style="border-top:1.6px solid currentColor;padding:0 3px;">${b}</span></span>`; }
+// Fraction écrite en LaTeX (demandé : « ne pas écrire les fractions a/b mais toujours en LaTeX ») :
+// rendue par KaTeX (renderStaticMath) à l'ouverture du chapitre, dans les étapes des méthodes,
+// les quiz et le texte des animations.
+function cm1Frac(a, b){ return `<span class="tex">\\dfrac{${a}}{${b}}</span>`; }
+// Formule LaTeX quelconque dans le cours (ex. cm1Tex('\\dfrac{1}{2} = \\dfrac{5}{10}')).
+function cm1Tex(src){ return `<span class="tex">${src}</span>`; }
 // Opération posée alignée sur la virgule : lignes = [[signe, 'chiffres']], la dernière est le résultat ;
 // un 3e élément vrai dans une ligne trace un trait au-dessus d'elle (produits partiels) ;
 // retenues = chaîne alignée à droite (espaces = pas de retenue). Commune au CM1 et au CM2.

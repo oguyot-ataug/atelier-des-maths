@@ -6,16 +6,6 @@
    780 cL = 7 L + 80 cL. Sans écriture à virgule ni tableau de conversion.
    ============================================================ */
 (() => {
-// Balance de Roberval penchée du côté le plus lourd (gauche si g > d).
-function balance(gauche, droite, g, d){
-  const pente = g > d ? 10 : g < d ? -10 : 0;
-  // Plateau suspendu sous l'extrémité du fléau, l'objet posé dessus, son nom en dessous.
-  const plateau = (x, y, lab, c, r) => `<line x1="${x - 30}" y1="${y + 50}" x2="${x}" y2="${y}" stroke="#1F3A5C" stroke-width="1.2"/><line x1="${x + 30}" y1="${y + 50}" x2="${x}" y2="${y}" stroke="#1F3A5C" stroke-width="1.2"/><circle cx="${x}" cy="${y + 50 - r}" r="${r}" fill="${c}" stroke="#1F3A5C" stroke-width="1.2"/><path d="M${x - 50} ${y + 50} H${x + 50} L${x + 38} ${y + 60} H${x - 38} Z" fill="#C9CBCF" stroke="#1F3A5C" stroke-width="1.5"/><text x="${x}" y="${y + 78}" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700">${lab}</text>`;
-  return `<svg viewBox="0 0 300 170" style="width:300px;max-width:100%;display:block;margin:6px auto;">
-  <path d="M120 165 H180 L165 145 H135 Z" fill="#8A6D1F"/><line x1="150" y1="145" x2="150" y2="40" stroke="#8A6D1F" stroke-width="6"/>
-  ${plateau(70, 40 + pente, gauche, '#9BC53D', 12)}${plateau(230, 40 - pente, droite, '#F4A23B', 15)}
-  <line x1="70" y1="${40 + pente}" x2="230" y2="${40 - pente}" stroke="#8A6D1F" stroke-width="6" stroke-linecap="round"/><circle cx="150" cy="40" r="6" fill="#1F3A5C"/></svg>`;
-}
 cm1Chapitre({
   niveau: 'ce2', titre: 'Masses et contenances', slug: 'masses-contenances',
   cours: `
@@ -25,13 +15,15 @@ ${cm1Tableau(['Unité', 'Symbole', 'Pour peser…'], [
   ['le kilogramme', '<b>kg</b>', 'un dictionnaire (environ 1 kg), un enfant, un seau d\'eau'],
   ['le gramme', '<b>g</b>', 'une feuille de papier (environ 5 g), une pomme (environ 150 g)'],
 ])}
-${cm1Regle('<b>1 kg = 1 000 g</b> · <b>1 t = 1 000 kg</b>')}
-${cm1Exemple('Changer d\'unité :', ['3 kg = 3 000 g', '5 462 g = 5 000 g + 462 g = <b>5 kg et 462 g</b>', '2 t = 2 000 kg ; 5 350 kg = <b>5 t et 350 kg</b>'])}
+${cm1Regle(cm1Liste(['<b>1 kg = 1 000 g</b>', '<b>1 t = 1 000 kg</b>']))}
+${cm1Exemple('Changer d\'unité :', ['3 kg = 3 000 g', '5 462 g = 5 000 g + 462 g = <b>5 kg et 462 g</b>', '2 t = 2 000 kg', '5 350 kg = 5 000 kg + 350 kg = <b>5 t et 350 kg</b>'])}
 
 ${cm1Lecon(2, 'Comparer des masses')}
 ${cm1Regle('Sur une <b>balance à plateaux</b> (balance de Roberval), le plateau qui <b>descend</b> porte l\'objet le plus <b>lourd</b>. Si la balance est en équilibre, les deux objets ont la même masse.')}
-${balance('pomme', 'orange', 1, 2)}
-<p class="hint" style="text-align:center;">L'orange est plus lourde que la pomme.</p>
+${ce2AnimBalance('ce2-mc-balance', { presets: [
+  { nom: 'Pomme et orange', g: ['la pomme', 150, '#9BC53D', '150 g'], d: ['l\'orange', 200, '#F4A23B', '200 g'], montrer: true, fem: true },
+  { nom: '1 kg et 800 g', g: ['la farine', 1000, '#C9A24A', '1 kg'], d: ['le sucre', 800, '#8E9AA8', '800 g'], montrer: true, fem: true, fin: '1 kg = 1 000 g, et 1 000 g &gt; 800 g.' },
+  { nom: 'Équilibre', g: ['le paquet', 500, '#7A4FC0', '500 g'], d: ['les poids', 500, '#5B6472', '500 g'], montrer: true }] })}
 ${cm1Astuce('Pour comparer 2 kg et 1 800 g, on met tout dans la même unité : 2 kg = 2 000 g, et 2 000 g &gt; 1 800 g.')}
 
 ${cm1Lecon(3, 'Les contenances')}
@@ -41,17 +33,19 @@ ${cm1Tableau(['Unité', 'Symbole', 'Exemple'], [
   ['le décilitre', '<b>dL</b>', 'un verre : environ 2 dL'],
   ['le centilitre', '<b>cL</b>', 'une canette : 33 cL ; une cuillère : environ 1 cL'],
 ])}
-${cm1Regle('<b>1 L = 10 dL = 100 cL</b> · <b>1 dL = 10 cL</b>')}
+${cm1Regle(cm1Liste(['<b>1 L = 10 dL = 100 cL</b>', '<b>1 dL = 10 cL</b>']))}
+${ce2AnimVerser('ce2-mc-verser', {})}
 ${cm1Exemple('Exemples :', ['3 L = 30 dL = 300 cL', '780 cL = 700 cL + 80 cL = <b>7 L et 80 cL</b>', 'Une bouteille d\'un demi-litre contient 50 cL.'])}
 `,
   methode: `
-${cm1Demo('ce2-mc-ranger', 'Ranger des masses', 'Range du plus léger au plus lourd : 1 kg 200 g · 950 g · 2 kg · 1 050 g.')}
+${cm1Demo('ce2-mc-ranger', 'Ranger des masses', 'Range du plus léger au plus lourd : 1 kg 200 g ; 950 g ; 2 kg ; 1 050 g.')}
 ${cm1Demo('ce2-mc-verres', 'Remplir avec des verres', 'Une bouteille contient 1 L. Combien de verres de 20 cL peut-on remplir ?')}
 `,
   demos: [
     ['ce2-mc-ranger', [
       { expr: 'On met tout en grammes.', note: 'Pour comparer, il faut la même unité.' },
-      { expr: '1 kg 200 g = 1 200 g · 950 g · 2 kg = 2 000 g · 1 050 g', note: '1 kg = 1 000 g.' },
+      { expr: '1 kg 200 g = 1 200 g', note: '1 kg = 1 000 g.' },
+      { expr: '2 kg = 2 000 g', note: '950 g et 1 050 g sont déjà en grammes.' },
       { expr: '950 g &lt; 1 050 g &lt; 1 kg 200 g &lt; 2 kg', note: '' },
     ]],
     ['ce2-mc-verres', [
@@ -61,12 +55,23 @@ ${cm1Demo('ce2-mc-verres', 'Remplir avec des verres', 'Une bouteille contient 1 
     ]],
   ],
   exos: cm1Exos('ce2-mc', [
-    ['Complète : 4 kg = … g · 6 000 g = … kg · 3 t = … kg.', '4 000 g · 6 kg · 3 000 kg.'],
-    ['Écris en kg et g : 2 750 g · 1 080 g.', '2 kg et 750 g · 1 kg et 80 g.'],
-    ['Quelle unité choisir : un éléphant · un crayon · un sac de pommes de terre ?', 't (ou kg) · g · kg.'],
-    ['Complète : 2 L = … cL · 5 L = … dL · 450 cL = … L et … cL.', '200 cL · 50 dL · 4 L et 50 cL.'],
-    ['Un paquet de farine pèse 1 kg. On en utilise 250 g. Quelle masse reste-t-il ?', '1 000 g − 250 g = 750 g.'],
-    ['Une carafe contient 1 L. On verse 3 verres de 25 cL. Combien reste-t-il ?', '3 × 25 = 75 cL ; 100 − 75 = 25 cL.'],
+    [`Convertis ces masses.${cm1Liste(['4 kg en g', '6 000 g en kg', '3 t en kg'])}`,
+      cm1Redac('4 kg en g', '4 × 1 000 g = 4 000 g', '4 kg, c\'est 4 000 g.')
+      + cm1Redac('6 000 g en kg', '6 000 g = 6 × 1 000 g', '6 000 g, c\'est 6 kg.')
+      + cm1Redac('3 t en kg', '3 × 1 000 kg = 3 000 kg', '3 t, c\'est 3 000 kg.')],
+    ['Un sac de pommes de terre pèse 2 750 g. Écris sa masse en kilogrammes et grammes.',
+      cm1Redac('Masse du sac', '2 750 g = 2 000 g + 750 g', 'Le sac pèse 2 kg et 750 g.')],
+    [`Quelle unité choisir pour peser chacun de ces objets ?${cm1Liste(['un éléphant', 'un crayon', 'un sac de pommes de terre'])}`,
+      cm1Redac('Choix des unités', { suite: ['un éléphant : la tonne (t)', 'un crayon : le gramme (g)', 'un sac de pommes de terre : le kilogramme (kg)'] }, 'On choisit l\'unité qui donne un nombre facile à dire.')],
+    [`Convertis ces contenances.${cm1Liste(['2 L en cL', '5 L en dL', '450 cL en L et cL'])}`,
+      cm1Redac('2 L en cL', '2 × 100 cL = 200 cL', '2 L, c\'est 200 cL.')
+      + cm1Redac('5 L en dL', '5 × 10 dL = 50 dL', '5 L, c\'est 50 dL.')
+      + cm1Redac('450 cL en L et cL', '450 cL = 400 cL + 50 cL', '450 cL, c\'est 4 L et 50 cL.')],
+    ['Un paquet de farine pèse 1 kg. On en utilise 250 g pour un gâteau. Quelle masse de farine reste-t-il ?',
+      cm1Redac('Farine restante', ['1 000 g − 250 g', '750 g'], 'Il reste 750 g de farine.')],
+    ['Une carafe contient 1 L d\'eau. On remplit 3 verres de 25 cL. Combien d\'eau reste-t-il dans la carafe ?',
+      cm1Redac('Eau versée', ['3 × 25 cL', '75 cL'], 'On a versé 75 cL.')
+      + cm1Redac('Eau restante', { nom: 'B', lignes: ['100 cL − 75 cL', '25 cL'] }, 'Il reste 25 cL d\'eau dans la carafe.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le kilogramme', [
     'Pendant plus de 100 ans, le kilogramme a été défini par un petit <b>cylindre de métal</b> gardé sous trois cloches de verre, près de Paris : le « grand K ». Toutes les balances du monde étaient réglées sur lui. Depuis <b>2019</b>, le kilogramme est défini grâce à la physique, sans objet.',

@@ -7,7 +7,7 @@
    Un lecteur commun : cmAnim(id, { dessin(t, a) → { scene, texte }, duree, controles(a), legende }).
    t va de 0 à 1 (Lecture / Pause, curseur) ; les réglages (boutons) changent a.etat et relancent.
    Le dessin est lancé à l'ouverture du chapitre (cm1Chapitre › init, comme les pliages de patrons).
-   Dépend de _commun.js (cm1Frac) ; chargé juste après lui.
+   Dépend de _commun.js (cm1Frac, rendue par KaTeX à chaque image) ; chargé juste après lui.
    ============================================================ */
 const CM_ANIMS = {};
 const cmBorne = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -28,6 +28,7 @@ function cmAnimDessiner(id, ctrl){
   const r = a.dessin(a.t, a);
   box.querySelector('.cma-scene').innerHTML = r.scene;
   box.querySelector('.cma-texte').innerHTML = r.texte || '';
+  if(typeof renderStaticMath === 'function'){ renderStaticMath(box.querySelector('.cma-texte')); if(r.scene.indexOf('class="tex"') >= 0) renderStaticMath(box.querySelector('.cma-scene')); } // fractions (cm1Frac)
   box.querySelector('input[type=range]').value = Math.round(a.t * 1000);
   box.querySelector('.cma-jouer').innerHTML = a.anim ? '<span class="gicon">pause</span> Pause' : a.t >= 1 ? '<span class="gicon">replay</span> Rejouer' : '<span class="gicon">play_arrow</span> Lecture';
 }

@@ -23,8 +23,6 @@ function quad(n, m, formes, ax, ay){
   if(ay != null) s += `<line x1="-6" y1="${ay * k}" x2="${n * k + 6}" y2="${ay * k}" ${AXE}/>`;
   return `<svg viewBox="-8 -8 ${n * k + 16} ${m * k + 16}" style="width:${n * k + 16}px;max-width:100%;display:inline-block;vertical-align:middle;margin:6px;">${s}</svg>`;
 }
-const SAPIN = [[5, 1], [5, 7], [2, 7], [4, 5], [2, 5], [5, 1]].map(([x, y]) => [x, y]);
-const SAPIN_IM = SAPIN.map(([x, y]) => [10 - x, y]);
 cm1Chapitre({
   niveau: 'ce2', titre: 'La symétrie', slug: 'symetrie',
   cours: `
@@ -40,7 +38,10 @@ ${cm1AnimSymetrie('ce2-sym', { axes: ['vertical', 'horizontal'] })}
 
 ${cm1Lecon(3, 'Compléter une figure sur quadrillage')}
 ${cm1Regle('Pour compléter une figure par symétrie, chaque sommet a son <b>image de l\'autre côté de l\'axe</b>, <b>à la même distance</b> de l\'axe (on compte les carreaux), sur la même ligne du quadrillage.')}
-<div class="figure-wrap" style="text-align:center;">${quad(10, 8, [[SAPIN, '#2E9C6A'], [SAPIN_IM, '#2E9C6A', true]], 5)}<p class="hint" style="margin:4px 0 0;">Le point à 3 carreaux à gauche de l'axe a son image à 3 carreaux à droite.</p></div>
+${ce2AnimSymQuad('ce2-sy-quad-anim', { presets: [
+  { nom: 'Sapin (axe vertical)', n: 10, m: 8, pts: [[5, 1], [5, 7], [2, 7], [4, 5], [2, 5]], axe: { v: 5 } },
+  { nom: 'Drapeau (axe horizontal)', n: 8, m: 8, pts: [[2, 4], [2, 1], [6, 2], [3, 3], [3, 4]], axe: { h: 4 } },
+  { nom: 'Flèche (axe vertical)', n: 10, m: 7, pts: [[1, 3], [3, 1], [3, 2], [4, 2], [4, 5], [3, 5], [3, 6]], axe: { v: 5 } }] })}
 `,
   methode: `
 ${cm1Demo('ce2-sy-quad', 'Compléter une figure par symétrie (axe horizontal)', 'Complète le drapeau pour qu\'il soit symétrique par rapport à l\'axe horizontal.')}
@@ -53,11 +54,16 @@ ${cm1Demo('ce2-sy-quad', 'Compléter une figure par symétrie (axe horizontal)',
     ]],
   ],
   exos: cm1Exos('ce2-sy', [
-    ['Combien d\'axes de symétrie a un carré ?', '4 axes : 2 qui passent par les milieux des côtés et les 2 diagonales.'],
-    ['Quelles lettres ont un axe de symétrie vertical : M, N, T, S, V ?', 'M, T et V.'],
-    ['Quelles lettres ont un axe de symétrie horizontal : C, D, E, K, Z ?', 'C, D, E et K.'],
-    ['Un rectangle a-t-il des diagonales qui sont des axes de symétrie ?', 'Non : seulement les 2 droites qui passent par les milieux des côtés.'],
-    ['Sur ton cahier, dessine la moitié d\'un papillon le long d\'un axe vertical, puis complète-le par symétrie.', 'Chaque point à la même distance de l\'axe, de l\'autre côté.'],
+    ['Combien d\'axes de symétrie a un carré ?',
+      cm1Redac('Axes du carré', { suite: ['2 axes qui passent par les milieux des côtés', '2 axes qui sont les diagonales'] }, 'Un carré a 4 axes de symétrie.')],
+    ['Parmi les lettres M, N, T, S et V, lesquelles ont un axe de symétrie vertical ?',
+      cm1Redac('Lettres avec un axe vertical', 'M, T et V se superposent quand on les plie de haut en bas.', 'Les lettres M, T et V ont un axe de symétrie vertical.')],
+    ['Parmi les lettres C, D, E, K et Z, lesquelles ont un axe de symétrie horizontal ?',
+      cm1Redac('Lettres avec un axe horizontal', 'C, D, E et K se superposent quand on les plie de gauche à droite.', 'Les lettres C, D, E et K ont un axe de symétrie horizontal.')],
+    ['Les diagonales d\'un rectangle qui n\'est pas un carré sont-elles des axes de symétrie ?',
+      cm1Redac('Diagonales du rectangle', 'Si on plie le long d\'une diagonale, les deux moitiés ne se superposent pas.', 'Non : un rectangle a seulement 2 axes de symétrie, qui passent par les milieux des côtés.')],
+    ['Sur ton cahier, dessine la moitié d\'un papillon le long d\'un axe vertical, puis complète-le par symétrie.',
+      cm1Redac('Méthode', { suite: ['Je compte les carreaux entre chaque sommet et l\'axe.', 'Je place l\'image de l\'autre côté, à la même distance, sur la même ligne.', 'Je relie les images dans le même ordre.'] }, 'Mon papillon est symétrique : si je plie le long de l\'axe, les deux ailes se superposent.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : la symétrie dans la nature et l\'art', [
     'La <b>symétrie</b> est partout dans la nature : les ailes des papillons, les feuilles, le visage. Les architectes l\'utilisent depuis l\'Antiquité : la façade du château de <b>Versailles</b>, les temples grecs ou le <b>Taj Mahal</b> en Inde sont construits de part et d\'autre d\'un axe.',

@@ -13,15 +13,20 @@ ${cm1Def(`<ul style="margin:0;padding-left:20px;line-height:1.8;"><li>Dans <b>12
 
 ${cm1Lecon(2, 'Poser une addition')}
 ${cm1Regle('On écrit les nombres <b>les uns sous les autres</b> : unités sous les unités, dizaines sous les dizaines… On calcule en commençant par <b>la colonne des unités</b>, à droite. Quand une colonne dépasse 9, on écrit le chiffre des unités et on <b>retient</b> la dizaine dans la colonne suivante.')}
-<div class="figure-wrap">${cm1Posee([[' ', '2 476'], ['+', '1 358'], [' ', '3 834']], '  11 ')}<p class="hint" style="margin:4px 0 0;">6 + 8 = 14 : j'écris 4, je retiens 1 · 1 + 7 + 5 = 13 : j'écris 3, je retiens 1 · 1 + 4 + 3 = 8 · 2 + 1 = 3.</p></div>
+<div class="figure-wrap">${cm1Posee([[' ', '2 476'], ['+', '1 358'], [' ', '3 834']], '  11 ')}
+${cm1Liste(['Unités : 6 + 8 = 14. J\'écris 4, je retiens 1.', 'Dizaines : 1 + 7 + 5 = 13. J\'écris 3, je retiens 1.', 'Centaines : 1 + 4 + 3 = 8. J\'écris 8.', 'Milliers : 2 + 1 = 3. J\'écris 3.'])}</div>
+${cm1AnimOperation('ce2-op-add', { a: '2476', op: '+', b: '1358', ops: ['+'], legende: 'Tape tes propres nombres (jusqu\'à 10 000), puis « Calculer » : l\'addition se déroule colonne par colonne.' })}
 
 ${cm1Lecon(3, 'Poser une soustraction')}
 ${cm1Regle('On écrit <b>le plus grand nombre en haut</b>. On calcule colonne par colonne, de droite à gauche. Quand le chiffre du haut est trop petit, on ajoute <b>10 en haut</b> et on ajoute <b>1 en bas, dans la colonne suivante</b> : la différence ne change pas.')}
-${cm1AnimOperation('ce2-op-as', { a: '623', op: '−', b: '148', ops: ['+', '−'], legende: 'Tape tes propres nombres (jusqu\'à 10 000), choisis + ou −, puis « Calculer » : le calcul se déroule colonne par colonne.' })}
+${cm1AnimOperation('ce2-op-as', { a: '623', op: '−', b: '148', ops: ['−', '+'], legende: 'Tape tes propres nombres (jusqu\'à 10 000), puis « Calculer » : le calcul se déroule colonne par colonne.' })}
 ${cm1Astuce('Pour vérifier une soustraction, on fait une addition : 475 + 148 doit redonner 623.')}
 
 ${cm1Lecon(4, 'Calculer de tête quand c\'est facile')}
-${cm1Rem('On ne pose pas toujours l\'opération ! 2 500 + 1 500 = 4 000 ou 3 000 − 1 = 2 999 se calculent de tête. On pose quand les nombres sont « difficiles ».')}
+${cm1Regle(`On ne pose pas toujours l'opération ! Ces calculs se font de tête :${cm1Liste(['2 500 + 1 500 = 4 000', '3 000 − 1 = 2 999', '4 990 + 10 = 5 000'])}On pose quand les nombres sont « difficiles ».`)}
+${ce2AnimSauts('ce2-as-tete', { presets: [
+  { nom: '2 500 + 1 500', depart: 2500, sauts: [[500, '+ 500'], [1000, '+ 1 000']], min: 2000, max: 4500, fin: 'J\'ajoute 500 pour arriver au millier, puis encore 1 000 : 2 500 + 1 500 = 4 000.' },
+  { nom: '3 000 − 1', depart: 3000, sauts: [[-1, '− 1']], min: 2990, max: 3005, fin: 'Un pas en arrière : 3 000 − 1 = 2 999.' }] })}
 `,
   methode: `
 ${cm1Demo('ce2-as-pb', 'Résoudre un problème avec une soustraction', 'Une école a 1 250 livres. Elle en prête 387. Combien en reste-t-il à la bibliothèque ?')}
@@ -30,17 +35,23 @@ ${cm1Demo('ce2-as-pb', 'Résoudre un problème avec une soustraction', 'Une éco
     ['ce2-as-pb', [
       { expr: 'Il reste : 1 250 − 387', note: 'On enlève les livres prêtés : c\'est une soustraction.' },
       { expr: cm1Posee([[' ', '1 250'], ['−', '387'], [' ', '863']]), note: 'On pose : le plus grand nombre en haut, unités sous unités.' },
-      { expr: 'Vérification : 863 + 387 = 1 250 ✔', note: 'L\'addition redonne le nombre de départ.' },
+      { expr: '863 + 387 = 1 250 ✔', note: 'On vérifie : l\'addition redonne le nombre de départ.' },
       { expr: 'Il reste 863 livres.', note: 'On répond par une phrase.' },
     ]],
   ],
   exos: cm1Exos('ce2-as', [
-    ['Pose et calcule : 3 547 + 2 685.', '6 232.'],
-    ['Pose et calcule : 5 000 − 1 368.', '3 632.'],
-    ['Quelle est la somme de 1 205 et de 798 ?', '2 003.'],
-    ['Quelle est la différence entre 4 200 et 1 750 ?', '2 450.'],
-    ['Calcule de tête : 3 400 + 600 · 7 000 − 2 000 · 5 999 + 1.', '4 000 · 5 000 · 6 000.'],
-    ['Léo a 2 350 points au jeu. Il en gagne 875. Combien en a-t-il maintenant ?', '2 350 + 875 = 3 225 points.'],
+    ['Au zoo, 3 547 visiteurs sont venus samedi et 2 685 dimanche. Combien de visiteurs sont venus pendant le week-end ?',
+      cm1Redac('Nombre de visiteurs', { pose: cm1Posee([[' ', '3 547'], ['+', '2 685'], [' ', '6 232']], '1 11 ') }, '6 232 visiteurs sont venus pendant le week-end.')],
+    ['Un fermier a 5 000 € dans sa caisse. Il achète un tracteur d\'occasion à 1 368 €. Combien d\'argent lui reste-t-il ?',
+      cm1Redac('Argent restant', { pose: cm1Posee([[' ', '5 000'], ['−', '1 368'], [' ', '3 632']]) }, 'Il reste 3 632 € au fermier.')],
+    ['Quelle est la somme de 1 205 et de 798 ?',
+      cm1Redac('Somme de 1 205 et de 798', { pose: cm1Posee([[' ', '1 205'], ['+', '798'], [' ', '2 003']], '1 11 ') }, 'La somme de 1 205 et de 798 est 2 003.')],
+    ['Quelle est la différence entre 4 200 et 1 750 ?',
+      cm1Redac('Différence entre 4 200 et 1 750', { pose: cm1Posee([[' ', '4 200'], ['−', '1 750'], [' ', '2 450']]) }, 'La différence entre 4 200 et 1 750 est 2 450.')],
+    [`Calcule de tête.${cm1Liste(['3 400 + 600', '7 000 − 2 000', '5 999 + 1'])}`,
+      cm1Redac('Calculs de tête', { suite: ['3 400 + 600 = 4 000', '7 000 − 2 000 = 5 000', '5 999 + 1 = 6 000'] }, 'Ces trois calculs donnent des milliers « ronds » : on n\'a pas besoin de les poser.')],
+    ['Léo a 2 350 points à un jeu. Il en gagne 875. Combien de points a-t-il maintenant ?',
+      cm1Redac('Points de Léo', { pose: cm1Posee([[' ', '2 350'], ['+', '875'], [' ', '3 225']], '1 1  ') }, 'Léo a maintenant 3 225 points.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : les signes + et −', [
     'Les signes <b>+</b> et <b>−</b> sont assez récents : ils apparaissent dans un livre de calcul allemand en <b>1489</b>. Avant, on écrivait les mots en entier, ou des abréviations comme « p » pour <i>plus</i> et « m » pour <i>minus</i> (moins).',

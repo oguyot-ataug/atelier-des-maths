@@ -7,48 +7,26 @@
    (3 pantalons × 7 tee-shirts) ou arbre (le clown : 2 chapeaux, 3 tee-shirts, 2 pantalons).
    ============================================================ */
 (() => {
-// Barres « fois plus » : une barre de base, une barre faite de n fois la base.
-function foisPlus(n, base, lab1, lab2){
-  const w = 70; let s = `<text x="70" y="25" font-size="13" text-anchor="end" fill="#1F3A5C" font-weight="600">${lab1}</text><rect x="80" y="8" width="${w}" height="26" fill="#E9C46A" fill-opacity=".5" stroke="#1F3A5C" stroke-width="1.5"/><text x="${80 + w / 2}" y="26" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700">${base}</text>`;
-  s += `<text x="70" y="65" font-size="13" text-anchor="end" fill="#1F3A5C" font-weight="600">${lab2}</text>`;
-  for(let i = 0; i < n; i++) s += `<rect x="${80 + i * w}" y="48" width="${w}" height="26" fill="#2EA8C9" fill-opacity=".3" stroke="#1F3A5C" stroke-width="1.5"/><text x="${80 + i * w + w / 2}" y="66" font-size="13" text-anchor="middle" fill="#1F3A5C" font-weight="700">${base}</text>`;
-  return `<svg viewBox="0 0 ${90 + n * w} 80" style="width:100%;max-width:${90 + n * w}px;display:block;margin:6px auto;">${s}</svg>`;
-}
-// Arbre des costumes du clown : 2 chapeaux × 3 tee-shirts × 2 pantalons.
-function arbre(){
-  const CH = [['rouge', '#D62828'], ['bleu', '#2E6FD6']], TS = [['violet', '#7A4FC0'], ['noir', '#222'], ['jaune', '#E9B21A']], PA = [['gris', '#888'], ['vert', '#2E9C6A']];
-  const H = 12 * 22 + 10; let s = '', y = 16;
-  const pt = (x, y, c, t) => `<circle cx="${x}" cy="${y}" r="6" fill="${c}"/><text x="${x + 10}" y="${y + 4}" font-size="12" fill="#1F3A5C">${t}</text>`;
-  CH.forEach(([n1, c1], i) => {
-    const y1 = 16 + (i * 6 + 2.5) * 22;
-    TS.forEach(([n2, c2], j) => {
-      const y2 = 16 + (i * 6 + j * 2 + 0.5) * 22;
-      PA.forEach(([n3, c3], k) => { const y3 = 16 + (i * 6 + j * 2 + k) * 22; s += `<line x1="300" y1="${y2}" x2="364" y2="${y3}" stroke="#B8C2CE"/>` + pt(370, y3, c3, 'pantalon ' + n3); });
-      s += `<line x1="200" y1="${y1}" x2="244" y2="${y2}" stroke="#B8C2CE"/>` + pt(250, y2, c2, n2);
-    });
-    s += `<line x1="10" y1="${H / 2 - 5}" x2="104" y2="${y1}" stroke="#B8C2CE"/>` + pt(110, y1, c1, 'chapeau ' + n1);
-  });
-  return `<svg viewBox="0 0 480 ${H}" style="width:100%;max-width:480px;display:block;margin:6px auto;">${s}</svg>`;
-}
 cm1Chapitre({
   niveau: 'ce2', titre: 'Problèmes multiplicatifs', slug: 'problemes-multiplicatifs',
   cours: `
 ${cm1Lecon(1, 'Chercher le tout ou une part')}
 ${cm1Regle('Quand on connaît <b>le nombre de parts</b> et <b>la valeur d\'une part</b>, on trouve le tout par une <b>multiplication</b>. Quand on connaît le tout et le nombre de parts égales, on trouve une part par une <b>division</b> (en s\'aidant des tables).')}
-${cm1Exemple('Exemples :', ['8 paquets de 125 feuilles : 8 × 125 = <b>1 000 feuilles</b>.', '6 dictionnaires coûtent 72 € : 72 ÷ 6 = <b>12 €</b> chacun, car 6 × 12 = 72.'])}
+${cm1Exemple('Exemples :', ['8 paquets de 125 feuilles : 8 × 125 = <b>1 000 feuilles</b>.', '6 dictionnaires coûtent 72 € : 72 ÷ 6 = <b>12 €</b> chacun.', 'On vérifie : 6 × 12 = 72.'])}
+${ce2AnimPartage('ce2-pm-partage', { legende: 'Un jeton = 1 €. On distribue les 72 € un par un entre les 6 dictionnaires.', presets: [{ nom: '72 € pour 6 dictionnaires', total: 72, parts: 6, etiq: 'livre', objets: 'euros', fin: 'Chaque dictionnaire reçoit 12 jetons : il coûte <b>12 €</b>, car 72 ÷ 6 = 12.' }] })}
 
 ${cm1Lecon(2, '« Fois plus », « fois moins »')}
 ${cm1Regle('« <b>4 fois plus</b> cher » : on <b>multiplie</b> par 4. « <b>4 fois moins</b> cher » : on <b>divise</b> par 4. Ne pas confondre avec « 4 € <b>de plus</b> » (on ajoute 4) !')}
 ${cm1Exemple('Une trottinette coûte 4 fois plus cher qu\'un casque. Le casque coûte 32 €.')}
-${foisPlus(4, '32 €', 'Casque', 'Trottinette')}
-<p class="hint" style="text-align:center;">La trottinette coûte 4 × 32 = <b>128 €</b>. (Si elle coûtait 4 € de plus, elle coûterait 36 €.)</p>
+${ce2AnimBarres('ce2-pm-fois', { unite: 1, lignes: [['Casque', [[70, '32 €', '#E9C46A', 'Le casque coûte 32 €.']]], ['Trottinette', [[70, '32 €', '#2EA8C9', '4 fois plus cher : la barre de la trottinette, c\'est 4 barres du casque.'], [70, '32 €', '#2EA8C9', ''], [70, '32 €', '#2EA8C9', ''], [70, '32 €', '#2EA8C9', '']]]], total: '? €', totalTexte: 'La trottinette coûte 4 × 32 = <b>128 €</b>. (Avec 4 € de plus, elle coûterait 36 €.)' })}
+
 
 ${cm1Lecon(3, 'Compter toutes les possibilités')}
 ${cm1Regle('Pour compter toutes les façons d\'associer des objets, on fait un <b>tableau</b> (2 sortes d\'objets) ou un <b>arbre</b> (3 sortes ou plus). Le nombre de possibilités s\'obtient par une <b>multiplication</b>.')}
 ${cm1Exemple('Une poupée a 3 pantalons et 7 tee-shirts : un tableau de 3 lignes et 7 colonnes a 3 × 7 = <b>21 cases</b>, donc 21 tenues.')}
 ${cm1Exemple('Un clown a 2 chapeaux, 3 tee-shirts et 2 pantalons :')}
-${arbre()}
-<p class="hint" style="text-align:center;">On compte les branches au bout de l'arbre : 2 × 3 × 2 = <b>12 costumes</b>.</p>
+${ce2AnimArbre('ce2-pm-arbre', { niveaux: [{ nom: 'Chapeau', choix: [['chapeau rouge', '#D62828'], ['chapeau bleu', '#2E6FD6']] }, { nom: 'Tee-shirt', choix: [['violet', '#7A4FC0'], ['noir', '#222'], ['jaune', '#E9B21A']] }, { nom: 'Pantalon', choix: [['pantalon gris', '#888'], ['pantalon vert', '#2E9C6A']] }], fin: 'On compte les branches au bout de l\'arbre : 2 × 3 × 2 = <b>12 costumes</b>.' })}
+
 `,
   methode: `
 ${cm1Demo('ce2-pm-moins', 'Résoudre un problème « fois moins »', 'Un vélo coûte 240 €. Un ballon coûte 8 fois moins cher. Combien coûte le ballon ?')}
@@ -57,7 +35,8 @@ ${cm1Demo('ce2-pm-tableau', 'Compter des menus avec un tableau', 'À la cantine,
   demos: [
     ['ce2-pm-moins', [
       { expr: '« 8 fois moins cher » : on divise par 8.', note: 'Le vélo vaut 8 fois le prix du ballon.' },
-      { expr: '8 × 30 = 240, donc 240 ÷ 8 = 30', note: 'Je cherche « 8 fois combien font 240 ? »' },
+      { expr: '8 × 30 = 240', note: 'Je cherche « 8 fois combien font 240 ? »' },
+      { expr: '240 ÷ 8 = 30', note: '' },
       { expr: 'Le ballon coûte 30 €.', note: 'Vérification : 8 × 30 = 240 ✔' },
     ]],
     ['ce2-pm-tableau', [
@@ -67,12 +46,18 @@ ${cm1Demo('ce2-pm-tableau', 'Compter des menus avec un tableau', 'À la cantine,
     ]],
   ],
   exos: cm1Exos('ce2-pm', [
-    ['Un carnet coûte 3 €. Combien coûtent 25 carnets ?', '25 × 3 = 75 €.'],
-    ['Paul a 9 ans. Son grand-père a 7 fois plus. Quel âge a son grand-père ?', '9 × 7 = 63 ans.'],
-    ['Un livre coûte 18 €. Un magazine coûte 3 fois moins cher. Combien coûte le magazine ?', '18 ÷ 3 = 6 €.'],
-    ['Léa a 12 billes. Tom en a 3 de plus. Hugo en a 3 fois plus que Léa. Combien en ont Tom et Hugo ?', 'Tom : 15 · Hugo : 36.'],
-    ['On a 4 sortes de pain et 5 sortes de fromage. Combien de sandwichs différents (un pain, un fromage) ?', '4 × 5 = 20 sandwichs.'],
-    ['Une glace : 2 cornets, 3 parfums, 2 sauces. Combien de glaces différentes ?', '2 × 3 × 2 = 12 glaces.'],
+    ['Un carnet coûte 3 €. Combien coûtent 25 carnets ?',
+      cm1Redac('Prix de 25 carnets', '25 × 3 = 75', '25 carnets coûtent 75 €.')],
+    ['Paul a 9 ans. Son grand-père a 7 fois plus. Quel âge a son grand-père ?',
+      cm1Redac('Âge du grand-père', '9 × 7 = 63', 'Le grand-père de Paul a 63 ans.')],
+    ['Un livre coûte 18 €. Un magazine coûte 3 fois moins cher. Combien coûte le magazine ?',
+      cm1Redac('Prix du magazine', { suite: ['3 × 6 = 18', '18 ÷ 3 = 6'] }, 'Le magazine coûte 6 €.')],
+    ['Léa a 12 billes. Tom en a 3 de plus. Hugo en a 3 fois plus que Léa. Combien de billes ont Tom et Hugo ?',
+      cm1Redac('Billes de Tom', '12 + 3 = 15', 'Tom a 15 billes.') + cm1Redac('Billes de Hugo', '12 × 3 = 36', 'Hugo a 36 billes.')],
+    ['On a 4 sortes de pain et 5 sortes de fromage. Combien de sandwichs différents peut-on faire avec un pain et un fromage ?',
+      cm1Redac('Nombre de sandwichs', '4 × 5 = 20', 'On peut faire 20 sandwichs différents (un tableau de 4 lignes et 5 colonnes).')],
+    ['Une glace se compose d\'un cornet (2 sortes), d\'un parfum (3 sortes) et d\'une sauce (2 sortes). Combien de glaces différentes peut-on faire ?',
+      cm1Redac('Nombre de glaces', ['2 × 3 × 2', '6 × 2', '12'], 'On peut faire 12 glaces différentes (on peut le vérifier avec un arbre).')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : les arbres de choix', [
     'Les <b>arbres</b> servent à compter les possibilités depuis longtemps. Au XVII<sup>e</sup> siècle, les mathématiciens français <b>Blaise Pascal</b> et <b>Pierre de Fermat</b> s\'écrivaient des lettres pour résoudre des problèmes de jeux de dés : ils devaient compter tous les cas possibles. C\'est le début du calcul des probabilités.',

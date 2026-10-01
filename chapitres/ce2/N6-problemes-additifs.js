@@ -26,22 +26,23 @@ cm1Chapitre({
 ${cm1Lecon(1, 'Chercher le tout ou une partie')}
 ${cm1Regle('Quand on connaît les <b>parties</b>, on trouve le <b>tout</b> par une <b>addition</b>. Quand on connaît le tout et une partie, on trouve l\'autre partie par une <b>soustraction</b>.')}
 ${cm1Exemple('Dans une école, il y a 1 245 élèves. 618 sont des filles. Combien y a-t-il de garçons ?')}
-${barres([['Élèves', [[180, '618 filles', J], [170, '? garçons', '#fff']]]], '1 245 élèves')}
-<p class="hint" style="text-align:center;">On cherche une partie : 1 245 − 618 = <b>627 garçons</b>.</p>
+${ce2AnimBarres('ce2-pa-tout', { unite: 1, lignes: [['Élèves', [[180, '618 filles', J, 'Les filles : 618 élèves.'], [170, '? garçons', '#fff', 'Les garçons : c\'est ce qu\'on cherche.']]]], total: '1 245 élèves', totalTexte: 'Le tout : 1 245 élèves.', solution: { ligne: 0, part: 1, texte: '627 garçons', phrase: 'On cherche une partie : 1 245 − 618 = <b>627</b>. Il y a 627 garçons.' } })}
 
 ${cm1Lecon(2, 'Une transformation : ce qui change')}
 ${cm1Regle('Une quantité <b>augmente</b> ou <b>diminue</b>. On peut dessiner un <b>axe</b> : on part d\'un nombre, on avance (on gagne) ou on recule (on perd).')}
-${cm1Exemple('Sarah avait 3 500 points. Elle en perd 750. Combien en a-t-elle maintenant ?', ['Elle perd : on recule de 750 sur l\'axe.', '3 500 − 750 = <b>2 750 points</b>.'])}
+${cm1Exemple('Sarah avait 3 500 points. Elle en perd 750. Combien en a-t-elle maintenant ?')}
+${ce2AnimSauts('ce2-pa-transfo', { presets: [
+  { nom: 'Sarah perd 750 points', depart: 3500, sauts: [[-500, '− 500'], [-250, '− 250']], min: 2500, max: 3700, fin: 'Elle perd 750 points (500 puis 250) : 3 500 − 750 = <b>2 750</b>. Sarah a 2 750 points.' },
+  { nom: 'Le car : − 15 puis + 9', depart: 48, sauts: [[-15, '− 15', '15 passagers descendent : il en reste 33.'], [9, '+ 9', '9 passagers montent : il y en a 42.']], min: 25, max: 55, fin: 'Il y a <b>42 passagers</b> dans le car.' }] })}
 
 ${cm1Lecon(3, 'Comparer : « de plus », « de moins »')}
 ${cm1Regle('« Lucie a 75 billes <b>de plus</b> que Léo » : Lucie a autant de billes que Léo, <b>et encore 75</b>. On dessine les deux barres l\'une sous l\'autre.')}
-${barres([['Léo', [[190, '188 billes', B]]], ['Lucie', [[190, '188', B], [80, '75', J]]]])}
+${ce2AnimBarres('ce2-pa-comp-anim', { lignes: [['Léo', [[190, '188 billes', B, 'Léo a 188 billes.']]], ['Lucie', [[190, '188', B, 'Lucie a autant de billes que Léo…'], [80, '75', J, '… et encore 75 : 75 billes de plus.']]]] })}
 ${cm1Astuce('« De plus » ne veut pas toujours dire « addition » ! Si « Léo a 75 billes de moins que Lucie, qui en a 263 », on calcule 263 − 75. Le schéma aide à choisir.')}
 
 ${cm1Lecon(4, 'Les problèmes en deux étapes')}
 ${cm1Regle('Certains problèmes demandent <b>deux calculs</b>. On cherche d\'abord ce qui manque, puis on répond à la question.')}
-${barres([['Léo', [[190, '188', B]]], ['Lucie', [[190, '188', B], [80, '75', J]]]], '? billes en tout', 1)}
-<p class="hint" style="text-align:center;">1<sup>re</sup> étape : Lucie a 188 + 75 = 263 billes. 2<sup>e</sup> étape : en tout, 188 + 263 = <b>451 billes</b>.</p>
+${ce2AnimBarres('ce2-pa-deux-anim', { lignes: [['Léo', [[190, '188', B, 'Léo a 188 billes.']]], ['Lucie', [[190, '188', B, 'Lucie en a 75 de plus.'], [80, '75', J, '1<sup>re</sup> étape : Lucie a 188 + 75 = 263 billes.']]]], total: '? billes en tout', totalTexte: '2<sup>e</sup> étape : en tout, 188 + 263 = <b>451 billes</b>.' })}
 `,
   methode: `
 ${cm1Demo('ce2-pa-comp', 'Résoudre un problème de comparaison', 'Un vélo coûte 285 €. Une trottinette coûte 97 € de moins. Combien coûte la trottinette ?')}
@@ -54,18 +55,26 @@ ${cm1Demo('ce2-pa-deux', 'Résoudre un problème en deux étapes', 'Un car part 
       { expr: 'La trottinette coûte 188 €.', note: '' },
     ]],
     ['ce2-pa-deux', [
-      { expr: '1<sup>re</sup> étape : 48 − 15 = 33', note: 'Après la descente de 15 passagers.' },
-      { expr: '2<sup>e</sup> étape : 33 + 9 = 42', note: 'Puis 9 passagers montent.' },
-      { expr: 'Il y a 42 passagers dans le car.', note: 'On vérifie que c\'est raisonnable : 48 − 6 = 42 ✔' },
+      { expr: '48 − 15 = 33', note: '1<sup>re</sup> étape : 15 passagers descendent.' },
+      { expr: '33 + 9 = 42', note: '2<sup>e</sup> étape : 9 passagers montent.' },
+      { expr: 'Il y a 42 passagers dans le car.', note: 'On vérifie que c\'est raisonnable : moins de passagers montent qu\'il n\'en descend.' },
     ]],
   ],
   exos: cm1Exos('ce2-pa', [
-    ['Une bibliothèque a 2 350 livres pour enfants et 4 120 livres pour adultes. Combien de livres en tout ?', '2 350 + 4 120 = 6 470 livres.'],
-    ['Un fermier a 1 200 poules. Il en vend 375. Combien lui en reste-t-il ?', '1 200 − 375 = 825 poules.'],
-    ['Paul mesure 132 cm. Sa sœur mesure 18 cm de plus. Combien mesure sa sœur ?', '132 + 18 = 150 cm.'],
-    ['Un jeu coûte 45,50 €, un livre 12,30 €. Combien coûtent-ils ensemble ?', '57,80 €.'],
-    ['Léa a 245 images. Tom en a 60 de moins. Combien d\'images ont-ils à eux deux ?', 'Tom : 245 − 60 = 185. En tout : 245 + 185 = 430 images.'],
-    ['Au départ, il y a 1 500 € dans la caisse. On paie 380 € puis on reçoit 250 €. Combien y a-t-il maintenant ?', '1 500 − 380 = 1 120 ; 1 120 + 250 = 1 370 €.'],
+    ['Une bibliothèque a 2 350 livres pour enfants et 4 120 livres pour adultes. Combien de livres a-t-elle en tout ?',
+      cm1Redac('Nombre de livres', ['2 350 + 4 120', '6 470'], 'La bibliothèque a 6 470 livres en tout.')],
+    ['Un fermier a 1 200 poules. Il en vend 375. Combien lui en reste-t-il ?',
+      cm1Redac('Poules restantes', { pose: cm1Posee([[' ', '1 200'], ['−', '375'], [' ', '825']]) }, 'Il reste 825 poules au fermier.')],
+    ['Paul mesure 132 cm. Sa sœur mesure 18 cm de plus. Combien mesure sa sœur ?',
+      cm1Redac('Taille de la sœur', '132 + 18 = 150', 'La sœur de Paul mesure 150 cm.')],
+    ['Un jeu coûte 45,50 € et un livre 12,30 €. Combien coûtent-ils ensemble ?',
+      cm1Redac('Prix total', { pose: cm1Posee([[' ', '45,50'], ['+', '12,30'], [' ', '57,80']]) }, 'Le jeu et le livre coûtent 57,80 € ensemble.')],
+    ['Léa a 245 images. Tom en a 60 de moins. Combien d\'images ont-ils à eux deux ?',
+      cm1Redac('Images de Tom', ['245 − 60', '185'], 'Tom a 185 images.')
+      + cm1Redac('Images à eux deux', { nom: 'B', lignes: ['245 + 185', '430'] }, 'À eux deux, Léa et Tom ont 430 images.')],
+    ['Au début de la journée, il y a 1 500 € dans la caisse. On paie 380 €, puis on reçoit 250 €. Combien y a-t-il maintenant dans la caisse ?',
+      cm1Redac('Argent après le paiement', ['1 500 − 380', '1 120'], 'Après le paiement, il reste 1 120 €.')
+      + cm1Redac('Argent à la fin', { nom: 'B', lignes: ['1 120 + 250', '1 370'] }, 'Il y a maintenant 1 370 € dans la caisse.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : les schémas en barres', [
     'Les <b>schémas en barres</b> sont très utilisés à <b>Singapour</b>, un pays d\'Asie où les élèves sont très forts en problèmes. On les y appelle la « méthode du modèle ». Aujourd\'hui, on les utilise dans les classes du monde entier.',

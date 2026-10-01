@@ -9,7 +9,7 @@
 (() => {
 const F = cm1Frac;
 // Étiquettes d'une graduation en n-ièmes : les entiers, et les fractions k/n entre 0 et 1.
-const etq = n => i => i % n === 0 ? String(i / n) : (n <= 4 && i < n ? `${i}/${n}` : '');
+const etq = n => i => i % n === 0 ? String(i / n) : (n <= 4 && i < n ? [i, n] : '');
 // Bande (segment épais) de longueur v unités au-dessus d'une graduation.
 function mesure(max, n, v, coul, U){
   U = U || 400 / max;
@@ -22,6 +22,7 @@ cm1Chapitre({
   cours: `
 ${cm1Lecon(1, 'Partager une unité de longueur')}
 ${cm1Regle('On choisit une <b>unité</b> : une bande de papier, par exemple. En la pliant en deux, puis encore en deux, on la partage en <b>4 quarts</b>. On peut alors graduer une règle en <b>quarts d\'unité</b>.')}
+${ce2AnimBandeUnite('ce2-fl-bande', {})}
 <div class="figure-wrap">${cm1Graduation(2, 4, [], { etiquettes: etq(4), unite: 200 })}<p class="hint" style="margin:4px 0 0;">Une règle graduée en quarts d'unité : entre 0 et 1, il y a 4 intervalles égaux.</p></div>
 ${cm1Rem('Sur du papier quadrillé, si l\'unité mesure 10 carreaux, chaque carreau est un <b>dixième</b> d\'unité : on gradue facilement en dixièmes.')}
 
@@ -33,36 +34,43 @@ ${cm1Rem(`Quand le bout tombe entre deux graduations, on dit par exemple : « la
 
 ${cm1Lecon(3, 'Des fractions au même endroit')}
 ${cm1Regle(`Sur une règle graduée en dixièmes, la moitié de l'unité tombe sur la 5<sup>e</sup> graduation : ${F(1, 2)} = ${F(5, 10)}. Deux fractions égales sont <b>au même endroit</b> sur la règle.`)}
-<div class="figure-wrap">${cm1Graduation(1, 10, [[0.5, '1/2 = 5/10', '#E35D3A'], [0.2, '1/5 = 2/10', '#7A4FC0']], { etiquettes: i => i === 0 || i === 10 ? String(i / 10) : `${i}/10`, unite: 440 })}</div>
+<div class="figure-wrap">${cm1Graduation(1, 10, [[0.5, 'A', '#E35D3A'], [0.2, 'B', '#7A4FC0']], { etiquettes: i => i === 0 || i === 10 ? String(i / 10) : [i, 10], unite: 440 })}
+<p class="hint" style="margin:4px 0 0;">A est au milieu : ${F(1, 2)} = ${F(5, 10)}. B est à la 2<sup>e</sup> graduation : ${F(1, 5)} = ${F(2, 10)}.</p></div>
 ${cm1Astuce(`Pour tracer 1 u + ${F(1, 5)} u avec une règle en dixièmes : ${F(1, 5)} = ${F(2, 10)}, donc on va jusqu'à la 2<sup>e</sup> graduation après le 1.`)}
 
 ${cm1Lecon(4, 'Ranger des fractions sur la règle')}
 ${cm1Regle(`Plus une fraction est <b>à droite</b> sur la règle, plus elle est <b>grande</b>. ${F(1, 4)} &lt; ${F(2, 4)} &lt; ${F(3, 4)} &lt; 1.`)}
 `,
   methode: `
-${cm1Demo('ce2-fl-tracer', 'Tracer un segment de longueur donnée', 'Avec une règle graduée en dixièmes d\'unité, trace un segment de 2 u + 3/5 u.')}
+${cm1Demo('ce2-fl-tracer', 'Tracer un segment de longueur donnée', `Avec une règle graduée en dixièmes d'unité, trace un segment de 2 u + ${F(3, 5)} u.`)}
 `,
   demos: [
     ['ce2-fl-tracer', [
-      { expr: `${F(3, 5)} = ${F(6, 10)}`, note: 'Des cinquièmes deux fois plus grands que des dixièmes : on prend deux fois plus de dixièmes.' },
+      { expr: `${F(3, 5)} = ${F(6, 10)}`, note: 'Des dixièmes sont deux fois plus petits que des cinquièmes : on en prend deux fois plus.' },
       { expr: 'Je pars du 0, je vais jusqu\'au 2, puis encore 6 graduations.', note: '' },
-      { expr: cm1Graduation(3, 10, [[2.6, '2 u + 6/10 u', '#E35D3A']], { etiquettes: i => i % 10 === 0 ? String(i / 10) : '', unite: 140 }), note: 'Le segment s\'arrête à la 6<sup>e</sup> graduation après le 2.' },
+      { expr: cm1Graduation(3, 10, [[2.6, 'S', '#E35D3A']], { etiquettes: i => i % 10 === 0 ? String(i / 10) : '', unite: 140 }), note: 'Le segment s\'arrête au point S, à la 6<sup>e</sup> graduation après le 2.' },
+      { expr: `Le segment mesure 2 u + ${F(6, 10)} u, c'est-à-dire 2 u + ${F(3, 5)} u.`, note: '' },
     ]],
   ],
   exos: cm1Exos('ce2-fl', [
-    ['Sur une règle graduée en quarts, où se trouve un demi ?', `Sur la 2<sup>e</sup> graduation : ${F(1, 2)} = ${F(2, 4)}.`],
-    [`Une bande mesure ${F(4, 4)} d'unité. Que peux-tu dire ?`, 'Elle mesure exactement 1 unité.'],
-    ['Avec une règle en dixièmes, comment tracer un segment d\'un demi d\'unité ?', `${F(1, 2)} = ${F(5, 10)} : on va jusqu'à la 5<sup>e</sup> graduation.`],
-    [`Range : ${F(5, 8)}, ${F(1, 8)}, ${F(7, 8)}, ${F(3, 8)}.`, `${F(1, 8)} &lt; ${F(3, 8)} &lt; ${F(5, 8)} &lt; ${F(7, 8)}.`],
-    ['Une bande va du 0 jusqu\'à la 3<sup>e</sup> graduation après le 1, sur une règle en quarts. Quelle est sa longueur ?', `1 u + ${F(3, 4)} u.`],
+    ['Sur une règle graduée en quarts d\'unité, où se trouve un demi ?',
+      cm1Redac('Position d\'un demi', `${F(1, 2)} = ${F(2, 4)}`, 'Un demi se trouve sur la 2<sup>e</sup> graduation après le 0.')],
+    [`Une bande mesure ${F(4, 4)} d'unité. Que peux-tu dire de sa longueur ?`,
+      cm1Redac('Longueur de la bande', `${F(4, 4)} = 1`, 'La bande mesure exactement 1 unité : on a pris les 4 quarts.')],
+    ['Avec une règle graduée en dixièmes, comment tracer un segment d\'un demi d\'unité ?',
+      cm1Redac('Un demi en dixièmes', `${F(1, 2)} = ${F(5, 10)}`, 'Je pars du 0 et je vais jusqu\'à la 5<sup>e</sup> graduation.')],
+    [`Range ces longueurs de la plus petite à la plus grande : ${F(5, 8)} u ; ${F(1, 8)} u ; ${F(7, 8)} u ; ${F(3, 8)} u.`,
+      cm1Redac('Rangement', `${F(1, 8)} &lt; ${F(3, 8)} &lt; ${F(5, 8)} &lt; ${F(7, 8)}`, 'Ce sont des huitièmes : la plus petite longueur a le moins de parts, la plus grande en a le plus.')],
+    ['Sur une règle graduée en quarts, une bande va du 0 jusqu\'à la 3<sup>e</sup> graduation après le 1. Quelle est sa longueur ?',
+      cm1Redac('Longueur de la bande', `1 u + ${F(3, 4)} u`, `La bande mesure 1 unité et ${F(3, 4)} d'unité.`)],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le pouce et ses fractions', [
     'Dans certains pays, comme les États-Unis, on mesure encore en <b>pouces</b> (environ 2 cm et demi). Les règles y sont graduées en <b>demis, quarts, huitièmes et seizièmes de pouce</b> : les fractions servent tous les jours aux menuisiers !',
   ]),
   quiz: [
-    { q: 'Sur une règle graduée en quarts, la 3e graduation après le 0, c\'est…', opts: ['3/4 d\'unité', '1/3 d\'unité', '3 unités'], correct: 0 },
-    { q: '1/2 unité = … dixièmes d\'unité', opts: ['2', '5', '10'], correct: 1 },
-    { q: 'Quelle fraction est la plus grande ?', opts: ['2/6', '5/6', '3/6'], correct: 1 },
+    { q: 'Sur une règle graduée en quarts, la 3<sup>e</sup> graduation après le 0, c\'est…', opts: [`${F(3, 4)} d'unité`, `${F(1, 3)} d'unité`, '3 unités'], correct: 0 },
+    { q: `${F(1, 2)} unité = … dixièmes d'unité`, opts: ['2', '5', '10'], correct: 1 },
+    { q: 'Quelle fraction est la plus grande ?', opts: [F(2, 6), F(5, 6), F(3, 6)], correct: 1 },
   ],
   flash: [
     { q: 'Une unité partagée en 4 parts égales : chaque part est…', r: ['un demi', 'un tiers', 'un quart', 'un dixième'], ok: 2 },
