@@ -3250,6 +3250,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.893', date: '2026-10-01', items: [
+    "Construction aux instruments (écran partagé, fenêtre projetée, tableau) : tracés plus fins, d'une épaisseur constante à l'écran même quand le tableau est zoomé ; repères des points et noms plus discrets.",
+    "Codage des milieux : seulement si la case « Coder les milieux » est cochée (barre des instruments de l'écran partagé) ; les petits traits de longueurs égales sont fins et inclinés, pour ne pas les confondre avec des points.",
+    "Géométrie interactive : nouveau bouton pour masquer les noms des points, sur la figure et sur la construction aux instruments.",
+    "Symétrique d'un point, image par une translation : construits aux instruments au lieu d'être posés directement. Symétrie centrale : demi-droite qui passe par le centre, puis report de la longueur au compas ; symétrie axiale : deux arcs de compas centrés sur l'axe ; translation : parallélogramme au compas."
+  ]},
   { version: '2026-08-19.892', date: '2026-10-01', items: [
     "CM1 et CM2 : nouvelles animations dans les cours et les méthodes (Lecture / Pause, curseur, explication qui suit chaque étape).",
     "Fractions (CM1 et CM2) : l'unité (bande ou disque) se partage en parts égales, puis les parts se colorient une à une ; on règle soi-même le nombre de parts et de parts coloriées (jusqu'à deux unités, pour les fractions plus grandes que 1).",
@@ -8211,6 +8217,7 @@ function tbNearestGridVertex(pt){
   return null;
 }
 let tbPoints = [];  // points nommés posés au tap du crayon {id, x, y, label}
+let tbNomsMasques = false; // noms des points masqués (construction en direct : bouton « Noms » de la Géométrie interactive)
 /* Historique pour annuler/rétablir : une pile d'instantanés complets de l'état du tableau.
    tbHistoryIndex pointe sur l'instantané ACTUELLEMENT affiché -- annuler recule d'un cran,
    rétablir avance d'un cran. Toute nouvelle action après un "annuler" écrase le futur (comme
@@ -9222,7 +9229,7 @@ function tbAutoMark(pt){
 function tbRender(){
   if(typeof tbAiSilent!=='undefined' && tbAiSilent) return; // reconstruction instantanée : un seul affichage à la fin
   const W=900, H=560;
-  const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.construction?'#9CA3AF':s.color}" stroke-width="${s.construction?'1.2':'2.4'}" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
+  const inkHtml = tbInk.map(s=>`<polyline points="${s.points.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${s.construction?'#9CA3AF':s.color}" stroke-width="${s.construction?'1':'1.7'}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`).join(''); // signalé : « le tracé doit être plus fin » (épaisseur fixe à l'écran, même zoomé)
   const pointsHtml = tbPoints.map(pt=>{
     // Sans style choisi (anciens tableaux, construction animée) ou en « Auto » : repère selon les traits.
     const auto = !pt.radial && (!pt.markStyle || pt.markStyle==='auto') ? tbAutoMark(pt) : null;
@@ -9230,9 +9237,9 @@ function tbRender(){
     const style = auto ? auto.kind : pt.markStyle;
     const mark = style==='none' ? ''
       : (pt.radial || style==='tick')
-      ? `<line x1="${(pt.x-9*Math.cos(pt.angle)).toFixed(1)}" y1="${(pt.y-9*Math.sin(pt.angle)).toFixed(1)}" x2="${(pt.x+9*Math.cos(pt.angle)).toFixed(1)}" y2="${(pt.y+9*Math.sin(pt.angle)).toFixed(1)}" stroke="#1C1B2E" stroke-width="2.4"/>`
-      : `<line x1="${pt.x-7}" y1="${pt.y-7}" x2="${pt.x+7}" y2="${pt.y+7}" stroke="#1C1B2E" stroke-width="2"/>
-         <line x1="${pt.x-7}" y1="${pt.y+7}" x2="${pt.x+7}" y2="${pt.y-7}" stroke="#1C1B2E" stroke-width="2"/>`;
+      ? `<line x1="${(pt.x-6*Math.cos(pt.angle)).toFixed(1)}" y1="${(pt.y-6*Math.sin(pt.angle)).toFixed(1)}" x2="${(pt.x+6*Math.cos(pt.angle)).toFixed(1)}" y2="${(pt.y+6*Math.sin(pt.angle)).toFixed(1)}" stroke="#1C1B2E" stroke-width="1.4" vector-effect="non-scaling-stroke"/>`
+      : `<line x1="${pt.x-5}" y1="${pt.y-5}" x2="${pt.x+5}" y2="${pt.y+5}" stroke="#1C1B2E" stroke-width="1.4" vector-effect="non-scaling-stroke"/>
+         <line x1="${pt.x-5}" y1="${pt.y+5}" x2="${pt.x+5}" y2="${pt.y-5}" stroke="#1C1B2E" stroke-width="1.4" vector-effect="non-scaling-stroke"/>`;
     const ldx = pt.labelDx!==undefined ? pt.labelDx : 11, ldy = pt.labelDy!==undefined ? pt.labelDy : -8;
     const lx = pt.x+ldx, ly = pt.y+ldy;
     return `<g data-role="point" data-id="${pt.id}" style="cursor:pointer;">
@@ -9240,7 +9247,7 @@ function tbRender(){
     <circle cx="${pt.x}" cy="${pt.y}" r="20" fill="transparent" pointer-events="all"/>
   </g>
   <g data-role="pointLabel" data-id="${pt.id}" style="cursor:move;">
-    <text x="${lx}" y="${ly}" font-size="16" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#1C1B2E">${escapeHtml(pt.label||'')}</text>
+    ${typeof tbNomsMasques!=='undefined' && tbNomsMasques ? '' : `<text x="${lx}" y="${ly}" font-size="15" font-weight="700" font-family="'Space Grotesk',sans-serif" fill="#1C1B2E">${escapeHtml(pt.label||'')}</text>`}
     <rect x="${lx-4}" y="${ly-16}" width="24" height="22" fill="transparent" pointer-events="all"/>
   </g>`;
   }).join('');
@@ -9265,13 +9272,14 @@ function tbRender(){
       // Traits FINS, perpendiculaires à l'angle du crayon au moment de la pose -- c'est
       // l'utilisateur qui, en inclinant le crayon pour qu'il suive le trait à coder, "dessine"
       // lui-même l'inclinaison du codage, plutôt qu'un calcul automatique sur le trait.
-      const perpX = -Math.sin(rad), perpY = Math.cos(rad), alongX = Math.cos(rad), alongY = Math.sin(rad);
-      const spacing = 5, tickLen = 7;
+      // Inclinés d'environ 60° sur le trait (signalé : « ils doivent être fins et inclinés pour ne pas les confondre avec des points »).
+      const inc = rad + Math.PI/3, perpX = Math.cos(inc), perpY = Math.sin(inc), alongX = Math.cos(rad), alongY = Math.sin(rad);
+      const spacing = 4.5, tickLen = 6;
       let lines = '';
       for(let i=0;i<c.count;i++){
         const off = (i-(c.count-1)/2)*spacing;
         const cx = c.x+alongX*off, cy = c.y+alongY*off;
-        lines += `<line x1="${(cx-perpX*tickLen).toFixed(1)}" y1="${(cy-perpY*tickLen).toFixed(1)}" x2="${(cx+perpX*tickLen).toFixed(1)}" y2="${(cy+perpY*tickLen).toFixed(1)}" stroke="#1C1B2E" stroke-width="1.2"/>`;
+        lines += `<line x1="${(cx-perpX*tickLen).toFixed(1)}" y1="${(cy-perpY*tickLen).toFixed(1)}" x2="${(cx+perpX*tickLen).toFixed(1)}" y2="${(cy+perpY*tickLen).toFixed(1)}" stroke="#1C1B2E" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
       }
       return `<g data-role="codage" data-id="${c.id}" style="cursor:pointer;">${lines}<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="14" fill="transparent" pointer-events="all"/></g>`;
     } else if(c.kind==='circle'){

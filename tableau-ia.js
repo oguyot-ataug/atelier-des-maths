@@ -825,7 +825,9 @@ function tbAiCodeAngle(V, d1, d2, text, count){
   tbTexts.push({id:tbTextNextId++, x:V.x+bx*dist-w/2, y:V.y+by*dist+fs/2-2, text, fontSize:fs});
 }
 /* Traits de longueurs égales au milieu de [P,Q] (écran). */
+let tbAiCodagesMilieux = true; // construction en direct : seulement si « Coder les milieux » est coché
 function tbAiCodeTicks(P, Q, count){
+  if(!tbAiCodagesMilieux) return;
   tbCodages.push({id:tbCodageNextId++, kind:'tick', x:(P.x+Q.x)/2, y:(P.y+Q.y)/2, angle:tbAiAng(P,Q), count:count||1});
 }
 const tbAiUnit = (from,to)=>{ const dx=to.x-from.x, dy=to.y-from.y, l=Math.hypot(dx,dy)||1; return {x:dx/l, y:dy/l}; };
@@ -1551,6 +1553,9 @@ function tbAiPlaybackRestart(){
 }
 /* Charge un programme déjà écrit (utilisé par tbAiGenerate, et pratique pour tester). */
 function tbAiLoadProgram(program, tools, opts){
+  // Options d'affichage passées avec les instruments par la Géométrie interactive (écran partagé, projection).
+  tbAiCodagesMilieux = !(tools || []).includes('sans-codages');
+  tbNomsMasques = (tools || []).includes('sans-noms');
   const allowed = new Set((tools && tools.length ? tools : Object.keys(TB_AI_TOOL_NAMES)).filter(t=>TB_AI_TOOL_NAMES[t]));
   const plan = tbAiCompile(program, allowed, opts);
   tbAiAllowed = allowed;

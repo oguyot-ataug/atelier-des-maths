@@ -610,6 +610,7 @@ document.body.insertAdjacentHTML('beforeend', `
         <button type="button" class="fig-icon-btn" onclick="clearFigure()" title="Effacer tout"><span class=gicon>cleaning_services</span></button>
         <div style="width:1px;align-self:stretch;background:rgba(28,43,57,.15);margin:0 2px;"></div>
         <button type="button" class="fig-icon-btn" id="figFullscreenBtn" onclick="figToggleFullscreen()" title="Plein écran"><span class=gicon>fullscreen</span></button>
+        <button type="button" class="fig-icon-btn" id="figNomsBtn" onclick="figBasculerNoms()" title="Masquer les noms des points (ici et sur la construction aux instruments)"><span class=gicon>label_off</span></button>
         <button type="button" class="fig-icon-btn" id="figSplitBtn" onclick="figToggleSplit()" style="display:none;" title="Écran partagé : la figure à gauche, sa construction aux instruments à droite"><span class=gicon>vertical_split</span></button>
         <button type="button" class="fig-icon-btn" id="figProjBtn" onclick="figToggleProjection()" style="display:none;" title="Projeter la construction aux instruments dans une fenêtre à part (second écran, vidéoprojecteur)"><span class=gicon>cast</span></button>
         <button type="button" class="fig-icon-btn" id="figSplitRefreshBtn" onclick="figSplitActualiser()" style="display:none;border-color:#1F7A4D;color:#1F7A4D;" title="Rejouer toute la construction aux instruments, depuis le début"><span class=gicon>replay</span></button>
@@ -617,6 +618,8 @@ document.body.insertAdjacentHTML('beforeend', `
       <div id="figSplitOutils" style="display:none;flex-wrap:wrap;gap:4px 12px;align-items:center;margin:0 0 6px;font-size:.8rem;">
         <span class="hint" style="margin:0;font-weight:700;">Instruments :</span>
         ${[['regle','Règle graduée'],['equerre','Équerre'],['requerre','Réquerre'],['compas','Compas'],['rapporteur','Rapporteur']].map(([v,t])=>`<label class="hint" style="margin:0;display:flex;align-items:center;gap:4px;"><input type="checkbox" value="${v}" checked onchange="figSplitOutilsChange()"> ${t}</label>`).join('')}
+        <span class="hint" style="margin:0 0 0 8px;font-weight:700;">Affichage :</span>
+        <label class="hint" style="margin:0;display:flex;align-items:center;gap:4px;" title="Petits traits obliques de longueurs égales sur les deux moitiés d'un segment coupé par son milieu"><input type="checkbox" id="figCoderMilieux" onchange="figSplitOutilsChange()"> Coder les milieux</label>
       </div>
       <div style="display:flex;gap:12px;align-items:stretch;">
         <!-- Zone principale : réglages contextuels (compas, codage) au-dessus, puis le
@@ -5548,7 +5551,7 @@ function renderFigureSvg(){
       html+=`<line x1="${(p.x-nx*2.8).toFixed(1)}" y1="${(p.y-ny*2.8).toFixed(1)}" x2="${(p.x+nx*2.8).toFixed(1)}" y2="${(p.y+ny*2.8).toFixed(1)}" stroke="${c}" stroke-width="0.9"/>`;
     }
     }
-    html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="9" font-weight="700" fill="${sel?'#E35D3A':baseColor}">${p.label}</text>`;
+    if(!figState.nomsMasques) html+=`<text x="${p.x+(p.labelDx??9)}" y="${p.y+(p.labelDy??-9)}" font-family="Space Grotesk" font-size="9" font-weight="700" fill="${sel?'#E35D3A':baseColor}">${p.label}</text>`;
   });
   if(figInterPremier && figState.shapes.includes(figInterPremier)){
     const cv = figCurve(figInterPremier);
@@ -5783,6 +5786,43 @@ function figVersProgramme(){
     if(d.type==='point-sur-cercle' && d.shape.type==='cercle'){
       const id = assurerObjet(d.shape);
       if(id){ prog.push({op:'point', name:p.label, on:id, angle:deg(p.x-d.shape.p1.x, p.y-d.shape.p1.y)}); return; }
+    }
+    // Images par une transformation : construites aux instruments, pas posées directement -- signalé :
+    // « I est le symétrique de B par rapport à F. Il a été placé directement sans construction avec
+    // outils (demi-droite puis report au compas) ». Traits de construction fins (style « construction »).
+    const arcAutour = (c, q, demi) => { const a = deg(q.x-c.x, q.y-c.y); return [r1(a-(demi||22)), r1(a+(demi||22))]; };
+    const idAide = () => 'k'+(++nObj);
+    if(d.type==='symetrie-centrale' && d.center && d.m){
+      assurerPoint(d.m); assurerPoint(d.center);
+      // Demi-droite [MO) au-delà du centre, puis report de la longueur MO au compas depuis O.
+      const ray = idAide(), cer = idAide();
+      prog.push({op:'ray', id:ray, from:d.m.label, through:d.center.label, style:'construction'});
+      prog.push({op:'circle', id:cer, center:d.center.label, radius_from:[d.center.label, d.m.label], arc:arcAutour(d.center, p), style:'construction'});
+      prog.push({op:'intersect', name:p.label, of:[ray, cer]});
+      return;
+    }
+    if(d.type==='symetrie-axiale' && d.axisP1 && d.axisP2 && d.m){
+      assurerPoint(d.m); assurerPoint(d.axisP1); assurerPoint(d.axisP2);
+      // Deux arcs de compas centrés sur deux points de l'axe, passant par M : ils se recoupent en M'.
+      const c1 = idAide(), c2 = idAide();
+      prog.push({op:'circle', id:c1, center:d.axisP1.label, radius_from:[d.axisP1.label, d.m.label], arc:arcAutour(d.axisP1, p), style:'construction'});
+      prog.push({op:'circle', id:c2, center:d.axisP2.label, radius_from:[d.axisP2.label, d.m.label], arc:arcAutour(d.axisP2, p), style:'construction'});
+      prog.push({op:'intersect', name:p.label, of:[c1, c2]});
+      return;
+    }
+    if(d.type==='translation' && d.vecP1 && d.vecP2 && d.m){
+      assurerPoint(d.m); assurerPoint(d.vecP1); assurerPoint(d.vecP2);
+      // Parallélogramme au compas : M' est à la distance AB de M et à la distance AM de B.
+      const c1 = idAide(), c2 = idAide();
+      prog.push({op:'circle', id:c1, center:d.m.label, radius_from:[d.vecP1.label, d.vecP2.label], arc:arcAutour(d.m, p), style:'construction'});
+      prog.push({op:'circle', id:c2, center:d.vecP2.label, radius_from:[d.vecP1.label, d.m.label], arc:arcAutour(d.vecP2, p), style:'construction'});
+      // Le bon des deux points d'intersection : celui du côté de l'image réelle.
+      const o = {op:'intersect', name:p.label, of:[c1, c2]};
+      const autre = figIntersectCurves({kind:'circle', c:d.m, r:Math.hypot(d.vecP2.x-d.vecP1.x, d.vecP2.y-d.vecP1.y)}, {kind:'circle', c:d.vecP2, r:Math.hypot(d.m.x-d.vecP1.x, d.m.y-d.vecP1.y)})
+        .reduce((m,c)=>!m || Math.hypot(c.x-p.x,c.y-p.y)>Math.hypot(m.x-p.x,m.y-p.y)?c:m, null);
+      if(autre){ const dx = p.x-autre.x, dy = p.y-autre.y; o.pick = Math.abs(dy)>=Math.abs(dx) ? (dy<0?'up':'down') : (dx<0?'left':'right'); }
+      prog.push(o);
+      return;
     }
     avert.push(p.label);
     pointLibre(p);
@@ -6075,20 +6115,36 @@ function figLiveCadrer(){
 /* Instruments autorisés pour la construction à droite -- demandé : « permettre de choisir les
    outils qui serviront (réquerre, équerre...) ». Même mémoire que les cases de « Construire avec
    l'IA » ; changer d'instruments reconstruit la figure avec les nouveaux gestes. */
+/* Noms des points masqués -- demandé : « permettre de masquer les labels des points dans les deux cas »
+   (figure et construction aux instruments). */
+function figBasculerNoms(){
+  figState.nomsMasques = !figState.nomsMasques;
+  const b = document.getElementById('figNomsBtn');
+  if(b){ b.classList.toggle('active', !!figState.nomsMasques); b.innerHTML = `<span class=gicon>${figState.nomsMasques ? 'label' : 'label_off'}</span>`; b.title = figState.nomsMasques ? 'Afficher les noms des points' : 'Masquer les noms des points (ici et sur la construction aux instruments)'; }
+  renderFigureSvg();
+  if(typeof figLiveActif==='function' && figLiveActif()) figLiveSync(true, {reset:true});
+}
 function figSplitOutils(){
-  const cases = [...document.querySelectorAll('#figSplitOutils input[type=checkbox]')];
-  return cases.filter(c=>c.checked).map(c=>c.value);
+  const cases = [...document.querySelectorAll('#figSplitOutils input[type=checkbox][value]')];
+  const l = cases.filter(c=>c.checked).map(c=>c.value);
+  // Options d'affichage du tableau, transmises avec les instruments (ignorées comme instruments).
+  const cm = document.getElementById('figCoderMilieux'); if(!(cm && cm.checked)) l.push('sans-codages');
+  if(figState.nomsMasques) l.push('sans-noms');
+  return l;
 }
 function figSplitOutilsInit(){
   let memo = null;
   try{ memo = JSON.parse(localStorage.getItem(typeof TB_AI_TOOLS_KEY!=='undefined' ? TB_AI_TOOLS_KEY : 'tbAiTools') || 'null'); }catch(e){}
-  if(Array.isArray(memo) && memo.length) document.querySelectorAll('#figSplitOutils input[type=checkbox]').forEach(c=>{ c.checked = memo.includes(c.value); });
+  if(Array.isArray(memo) && memo.length){
+    document.querySelectorAll('#figSplitOutils input[type=checkbox][value]').forEach(c=>{ c.checked = memo.includes(c.value); });
+    const cm = document.getElementById('figCoderMilieux'); if(cm) cm.checked = !memo.includes('sans-codages');
+  }
 }
 async function figSplitOutilsChange(){
   const outils = figSplitOutils();
   try{ localStorage.setItem(typeof TB_AI_TOOLS_KEY!=='undefined' ? TB_AI_TOOLS_KEY : 'tbAiTools', JSON.stringify(outils)); }catch(e){}
   document.querySelectorAll('#tbAiToolChecks input[type=checkbox]').forEach(c=>{ c.checked = outils.includes(c.value); });
-  if(!outils.length){ document.getElementById('figureHint').textContent = 'Cochez au moins un instrument.'; return; }
+  if(!outils.some(o=>typeof TB_AI_TOOL_NAMES==='undefined' || TB_AI_TOOL_NAMES[o])){ document.getElementById('figureHint').textContent = 'Cochez au moins un instrument.'; return; }
   await figLiveSync(true, {reset:true});
 }
 /* La construction en direct se fait en deux temps : figLiveSync (côté figure) traduit la figure en
