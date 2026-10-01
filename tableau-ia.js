@@ -868,7 +868,7 @@ function tbAiClip(p, u, t0, t1){
 function tbAiExtent(o){
   const S = tbAiPlan.S, pS = S(o.p), uS = tbAiSd(o.u);
   const r = tbAiClip(pS, uS, o.e0*TB_PX_PER_CM, o.e1*TB_PX_PER_CM);
-  return r ? {a:tbAiAt(pS,uS,r[0]), b:tbAiAt(pS,uS,r[1]), pS, uS, t0:r[0], t1:r[1]} : null;
+  return r ? {a:tbAiAt(pS,uS,r[0]), b:tbAiAt(pS,uS,r[1]), pS, uS, t0:r[0], t1:r[1], kind:o.kind, hits:(o.hits||[]).filter(h=>typeof h==='number').map(h=>h*TB_PX_PER_CM-r[0])} : null; // hits : abscisses (px) depuis a
 }
 /* Règle (ou réquerre) posée avec son bord de tracé sur la droite (from,to), centrée sur la
    portion à tracer, le corps de l'outil du côté opposé à la figure (pour ne pas la masquer). */
@@ -885,16 +885,34 @@ function tbAiRulerThrough(from, to, type){
    (plus longue) ; si même la réquerre ne suffit pas, elle coulisse le long du tracé et le
    crayon reprend là où il s'était arrêté. "skip" = [s0,s1] (px depuis from) : portion déjà
    tracée (ex. le long de l'équerre), que le crayon ne repasse pas. */
-async function tbAiRuledStroke(from, to, style, skip){
+/* Trait tracé le long d'une règle (ou de la réquerre). La règle ne glisse JAMAIS pour prolonger un trait --
+   demandé : « lorsqu'on trace le long de la règle, la règle ne doit pas glisser pour prolonger des traits ».
+   Une droite ou une demi-droite (ex : son étendue, passée par l'appelant) plus longue que l'instrument est
+   tracée sur la seule longueur de l'instrument, posé une fois : centré sur les points qui la définissent
+   (droite), ou à partir de son origine (demi-droite). Un segment plus long que la règle passe à la réquerre
+   si elle est permise ; sinon, en dernier recours, on repose la règle. */
+async function tbAiRuledStroke(from, to, style, skip, ex){
   const len = Math.hypot(to.x-from.x, to.y-from.y);
   if(len<1) return;
   const canR = tbAiAllowed.has('regle'), canQ = tbAiAllowed.has('requerre');
   const type = (canR && (len<=TB_AI_RULER_MAX || !canQ)) ? 'regle_grad' : 'requerre2';
   await tbAiPutAway(type==='regle_grad' ? 'requerre2' : 'regle_grad', 'equerre', 'rapporteur', 'compas');
   const maxL = type==='regle_grad' ? TB_AI_RULER_MAX : TB_AI_REQ_MAX;
-  const n = Math.ceil(len/maxL), u = {x:(to.x-from.x)/len, y:(to.y-from.y)/len};
+  const u = {x:(to.x-from.x)/len, y:(to.y-from.y)/len};
+  let w0 = 0, w1 = len;
+  if(ex && ex.kind!=='segment' && len>maxL){
+    if(ex.kind==='ray'){ w0 = 0; w1 = maxL; }
+    else {
+      // Centre : les points qui définissent l'objet (sinon le milieu de l'étendue).
+      let c = len/2;
+      const hits = ex.hits && ex.hits.length ? ex.hits : null;
+      if(hits){ c = (Math.min(...hits)+Math.max(...hits))/2; }
+      w0 = Math.max(0, Math.min(len-maxL, c-maxL/2)); w1 = w0+maxL;
+    }
+  }
+  const n = ex && ex.kind!=='segment' ? 1 : Math.ceil((w1-w0)/maxL);
   for(let k=0;k<n;k++){
-    const c0 = len*k/n, c1 = len*(k+1)/n;
+    const c0 = w0+(w1-w0)*k/n, c1 = w0+(w1-w0)*(k+1)/n;
     const tool = tbAiFindTool(type);
     await tbAiBring(type, tbAiRulerThrough(tbAiAt(from,u,c0), tbAiAt(from,u,c1), type), tool ? 700 : 550);
     const pieces = skip ? [[c0, Math.min(c1, skip[0])], [Math.max(c0, skip[1]), c1]] : [[c0,c1]];
@@ -1055,7 +1073,7 @@ async function tbAiPerpRequerre(a, H, nS, dS){
     if(s1>s0+1) await tbAiTraceLine(tbAiAt(ex.pS,ex.uS,s0), tbAiAt(ex.pS,ex.uS,s1), a.style);
     if(ex.t1>s1+2 || ex.t0<s0-2){
       await tbAiPutAway('requerre2','crayon');
-      await tbAiRuledStroke(ex.a, ex.b, a.style, [s0-ex.t0, s1-ex.t0]);
+      await tbAiRuledStroke(ex.a, ex.b, a.style, [s0-ex.t0, s1-ex.t0], ex);
     }
   }
   if(a.footName){ await tbAiPutAway('requerre2','regle_grad'); await tbAiMark(H, a.footName); }
@@ -1082,7 +1100,7 @@ async function tbAiPerpCompas(a){
   await tbAiPutAway('compas');
   await tbAiMark(S(a.K), '');
   const ex = tbAiExtent(a.obj);
-  if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
+  if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style, null, ex);
   if(a.footName){ await tbAiPutAway('regle_grad','requerre2'); await tbAiMark(H, a.footName); }
   await tbAiPutAwayAll();
   const uS = tbAiSd(a.uRef);
@@ -1108,7 +1126,7 @@ async function tbAiParaRequerre(a){
   await tbAiTraceLine(tbAiAt(ex.pS,ex.uS,s0), tbAiAt(ex.pS,ex.uS,s1), a.style);
   if(ex.t1>s1+2 || ex.t0<s0-2){
     await tbAiPutAway('requerre2','crayon');
-    await tbAiRuledStroke(ex.a, ex.b, a.style, [s0-ex.t0, s1-ex.t0]);
+    await tbAiRuledStroke(ex.a, ex.b, a.style, [s0-ex.t0, s1-ex.t0], ex);
   }
   await tbAiPutAwayAll();
 }
@@ -1123,7 +1141,7 @@ async function tbAiParaCompas(a){
   await tbAiPutAway('compas');
   await tbAiMark(S(a.N), '');
   const ex = tbAiExtent(a.obj);
-  if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
+  if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style, null, ex);
   await tbAiPutAwayAll();
 }
 
@@ -1156,13 +1174,13 @@ const tbAiSteps = {
   /* Droite : prolongée de part et d'autre des points qui la définissent. */
   async line(a){
     const ex = tbAiExtent(a.obj);
-    if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
+    if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style, null, ex);
     await tbAiPutAwayAll();
   },
   /* Demi-droite : part exactement de son origine, dépasse le point par lequel elle passe. */
   async ray(a){
     const ex = tbAiExtent(a.obj);
-    if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
+    if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style, null, ex);
     await tbAiPutAwayAll();
   },
   /* Perpendiculaire à l'équerre : un côté de l'angle droit posé SUR la partie déjà tracée de la
@@ -1218,7 +1236,7 @@ const tbAiSteps = {
       // Un seul trait, le long de la règle (en plusieurs poses seulement s'il dépasse la règle).
       const maxL = type==='regle_grad' ? TB_AI_RULER_MAX : TB_AI_REQ_MAX;
       if(L<=maxL) await tbAiTraceLine(ex.a, ex.b, a.style);
-      else await tbAiRuledStroke(ex.a, ex.b, a.style);
+      else await tbAiRuledStroke(ex.a, ex.b, a.style, null, ex);
     } else if(ex){
       // Le long de l'équerre seulement : du pied jusqu'au bout du côté (ou jusqu'au point s'il est
       // plus loin que l'équerre -- seul cas où la règle prend le relais).
@@ -1298,7 +1316,7 @@ const tbAiSteps = {
     await tbAiMark(S(a.E), a.names[0]||'');
     await tbAiMark(S(a.F), a.names[1]||'');
     const ex = tbAiExtent(a.obj);
-    if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
+    if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style, null, ex);
     await tbAiPutAwayAll();
     const As = S(a.A), Bs = S(a.B), I = S(tbV.mid(a.A,a.B));
     if(tbAiAlreadyTraced(As,Bs)){
@@ -1325,7 +1343,7 @@ const tbAiSteps = {
     await tbAiPutAway('compas');
     await tbAiMark(S(a.K), '');
     const ex = tbAiExtent(a.obj);
-    if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
+    if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style, null, ex);
     await tbAiPutAwayAll();
     // Les deux angles égaux, codés à l'identique (arc barré).
     const As = S(a.A), dK = tbAiUnit(As, S(a.K));
@@ -1355,7 +1373,7 @@ const tbAiSteps = {
     tbAiClearHighlights();
     await tbAiPutAway('rapporteur');
     const ex = tbAiExtent(a.obj);
-    if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style);
+    if(ex) await tbAiRuledStroke(ex.a, ex.b, a.style, null, ex);
     // Repère sans nom : il n'a servi qu'à guider la règle -- signalé : « il y a toujours un point
     // qui s'affiche pour faire l'angle ». On l'efface une fois la demi-droite tracée (un repère
     // nommé, ex. le point C d'un triangle, reste).

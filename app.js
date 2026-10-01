@@ -3250,6 +3250,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.897', date: '2026-10-01', items: [
+    "Construction aux instruments : la règle ne glisse plus pour prolonger un trait. Une droite (ou une demi-droite, une perpendiculaire, une parallèle, une médiatrice…) plus longue que la règle est tracée sur la longueur de la règle, posée une seule fois : centrée sur les points qui définissent la droite, ou à partir de l'origine pour une demi-droite. Demandé : « lorsqu'on trace le long de la règle, la règle ne doit pas glisser pour prolonger des traits »."
+  ]},
   { version: '2026-08-19.896', date: '2026-10-01', items: [
     "Construction aux instruments sans compas : la médiatrice d'un segment se construit avec la règle graduée et l'équerre (ou la réquerre) — on place le milieu à la règle (il reçoit un nom, par exemple I, s'il n'existait pas), puis on trace la perpendiculaire en ce milieu à l'équerre, avec le codage de l'angle droit. Signalé : « si je décoche compas, il ne sait pas tracer la médiatrice »."
   ]},
