@@ -3250,6 +3250,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.891', date: '2026-10-01', items: [
+    "CM1 et CM2, solides : animation du pliage d'un patron en 3D. On choisit l'un des 11 patrons du cube (croix, T, escalier, 3-3…), on clique sur « Plier » (ou on fait glisser le curseur) et les faces se replient autour de leurs charnières jusqu'à fermer le cube ; on fait glisser le dessin pour tourner autour. En CM2, aussi deux patrons du pavé de 4 cm × 2 cm × 1 cm (faces identiques de même couleur).",
+    "Définition du patron : seules des figures qui sont vraiment des patrons y apparaissent. La figure de 6 carrés qui n'en est pas un est passée dans une remarque « Attention », avec son propre pliage : en fin de pliage, les deux faces qui se superposent deviennent rouges (« ce n'est pas un patron »)."
+  ]},
   { version: '2026-08-19.890', date: '2026-10-01', items: [
     "Outils de classe : chaque bloc a un bouton « survol » (⧉) dans son titre. La roue de la chance, le feu de consigne et la jauge de bruit passent alors dans une petite fenêtre flottante, visible sur toutes les pages du site (cours, géométrie, correction…), avec tout leur état (roue en cours, micro allumé). On la déplace par son titre et on l'agrandit par son coin ; position et taille sont mémorisées. Le même bouton (ou la puce « en survol » de la barre) la remet dans la page des outils. Pour le compte à rebours, le bouton lance sa fenêtre flottante.",
     "La jauge de bruit en survol continue d'écouter quand on change de page ; dans la page des outils seulement, le micro se coupe toujours en la quittant."

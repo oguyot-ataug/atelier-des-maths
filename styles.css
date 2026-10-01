@@ -1748,3 +1748,14 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .cl-bloc:fullscreen .cl-survol-btn{display:none;}
 .cl-puce-survol{background:rgba(12,91,160,.1) !important;color:#0C5BA0 !important;}
 @media print{ .cl-survol{display:none !important;} }
+
+/* Pliage animé d'un patron (chapitres CM : cm1Pliage) */
+.cm-pliage{text-align:center;}
+.cmp-modeles{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:8px;}
+.cmp-mod{border:1.5px solid rgba(28,43,57,.15);background:#fff;border-radius:999px;padding:4px 12px;font:600 .8rem 'Space Grotesk',sans-serif;cursor:pointer;color:#1F3A5C;}
+.cmp-mod.on{background:#1F3A5C;color:#fff;border-color:#1F3A5C;}
+.cmp-svg{width:100%;max-width:420px;height:280px;display:block;margin:0 auto;cursor:grab;touch-action:none;}
+.cmp-barre{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;margin-top:6px;}
+.cmp-barre input[type=range]{width:200px;}
+.cmp-msg{min-width:220px;font-size:.9rem;}
+.redaction-note .cm-pliage{background:#fff;border-radius:12px;padding:8px;margin-top:6px;}

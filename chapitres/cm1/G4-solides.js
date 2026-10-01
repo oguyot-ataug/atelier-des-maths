@@ -50,9 +50,13 @@ ${cm1Lecon(3, 'Le patron d\'un solide')}
 ${cm1Def('Un <b>patron</b> est une figure plane, en un seul morceau, qu\'on peut découper et plier pour fabriquer le solide, sans que des faces se chevauchent.')}
 <div class="figure-wrap" style="display:flex;gap:30px;flex-wrap:wrap;justify-content:center;align-items:center;">
 <div style="text-align:center;">${patron(CROIX, '#2EA8C9', 110)}<div class="hint" style="margin:0;">Patron d'un cube : 6 carrés</div></div>
-<div style="text-align:center;">${patron([[0, 1], [1, 0], [1, 1], [1, 2], [1, 3], [2, 1]], '#2E9C6A', 70)}<div class="hint" style="margin:0;">Un autre patron du cube</div></div>
-<div style="text-align:center;">${patron([[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1]], '#E35D3A', 110)}<div class="hint" style="margin:0;">Pas un patron : deux faces se superposent</div></div></div>
-${cm1Astuce('Il existe <b>11 patrons différents</b> du cube ! Pour vérifier, imagine le pliage : chaque carré doit trouver sa place sans en recouvrir un autre.')}
+<div style="text-align:center;">${patron([[0, 1], [1, 0], [1, 1], [1, 2], [1, 3], [2, 1]], '#2E9C6A', 70)}<div class="hint" style="margin:0;">Un autre patron du cube</div></div></div>
+${cm1Sous('A', 'Plier un patron de cube')}
+${cm1Pliage('cm1-cube', { modeles: CM_CUBE_PATRONS.map(m => ({ nom: m.nom, faces: cmCube(m.cases) })), legende: 'Choisis un des <b>11 patrons du cube</b>, puis clique sur « Plier ». Fais glisser le dessin pour tourner autour du cube.' })}
+${cm1Astuce('Il existe <b>11 patrons différents</b> du cube : ils sont tous ci-dessus. Pour vérifier, imagine le pliage : chaque carré doit trouver sa place sans en recouvrir un autre.')}
+${cm1Rem(`<b>Attention :</b> 6 carrés en un seul morceau ne forment pas toujours un patron. Avec la figure ci-dessous, deux faces se retrouvent au même endroit et il manque une face au cube. Plie-la pour le voir.
+<div style="text-align:center;margin:8px 0 4px;">${patron([[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1]], '#E35D3A', 110)}</div>
+${cm1Pliage('cm1-cube-faux', { modeles: [{ nom: 'Pas un patron', faces: cmCube([[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1]]) }], legende: 'Les deux faces qui se superposent deviennent rouges.' })}`)}
 `,
   methode: `
 ${cm1Demo('so-compter', 'Compter les faces, arêtes et sommets d\'un pavé droit', 'Prends une boîte (un pavé droit) et compte ses faces, ses arêtes et ses sommets.')}

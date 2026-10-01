@@ -47,7 +47,16 @@ ${cm1Rem('Sur un dessin en perspective, on ne voit pas toutes les faces : certai
 ${cm1Lecon(3, 'Patrons du cube et du pavé')}
 ${cm1Def('Un <b>patron</b> est une figure plane, d\'un seul morceau, qu\'on plie pour obtenir le solide sans que les faces se chevauchent.')}
 <div class="figure-wrap">${patronPave()}<p class="hint" style="margin:4px 0 0;">Patron d'un pavé de 4 cm × 2 cm × 1 cm : les faces de même couleur sont identiques et se retrouvent face à face.</p></div>
+${cm1Sous('A', 'Plier un patron de cube')}
+${cm1Pliage('cm2-cube', { modeles: CM_CUBE_PATRONS.map(m => ({ nom: m.nom, faces: cmCube(m.cases) })), legende: 'Les <b>11 patrons du cube</b> : choisis-en un, puis clique sur « Plier ». Fais glisser le dessin pour tourner autour du cube.' })}
+${cm1Sous('B', 'Plier un patron de pavé')}
+${cm1Pliage('cm2-pave', { modeles: [
+  { nom: 'Patron du cours', faces: [[2, 0, 4, 2], [2, 2, 4, 1], [2, 3, 4, 2], [2, 5, 4, 1], [0, 2, 2, 1], [6, 2, 2, 1]], couleurs: ['#2E9C6A', '#2EA8C9', '#2E9C6A', '#2EA8C9', '#E35D3A', '#E35D3A'] },
+  { nom: 'Un autre patron', faces: [[1, 1, 4, 2], [1, 3, 4, 1], [1, 4, 4, 2], [1, 0, 4, 1], [0, 1, 1, 2], [5, 1, 1, 2]], couleurs: ['#2E9C6A', '#2EA8C9', '#2E9C6A', '#2EA8C9', '#E35D3A', '#E35D3A'] },
+], legende: 'Pavé de 4 cm × 2 cm × 1 cm : les faces de même couleur sont identiques et se retrouvent face à face une fois le pavé fermé.' })}
 ${cm1Astuce('Pour vérifier un patron de pavé : il y a 6 faces, elles vont par <b>paires identiques</b>, et deux côtés qui se collent ont la même longueur.')}
+${cm1Rem(`<b>Attention :</b> 6 faces en un seul morceau ne forment pas toujours un patron. Avec cette figure de 6 carrés, deux faces se superposent en pliant : ce n'est <b>pas</b> un patron du cube.
+${cm1Pliage('cm2-cube-faux', { modeles: [{ nom: 'Pas un patron', faces: cmCube([[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1]]) }], legende: 'Plie-la : les deux faces qui se superposent deviennent rouges.' })}`)}
 
 ${cm1Lecon(4, 'Assemblages de cubes')}
 <div class="figure-wrap" style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;align-items:center;">${cubes([[2, 1], [1, 1]])}${cubes([[3, 2, 1], [2, 1, 0], [1, 0, 0]])}</div>
