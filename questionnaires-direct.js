@@ -43,8 +43,10 @@ const QZD_VERDICTS = [['juste', 'Juste'], ['partiel', 'En partie'], ['faux', 'Fa
    la classe ou les élèves du groupe, et comment ils rejoignent : avec le code affiché au tableau
    (par défaut), ou automatiquement par le bandeau. `choix` (facultatif, depuis le mode « Séance en
    direct » du formulaire) : { classId, studentIds, acces } -- la fenêtre de choix est alors sautée. */
+// questionnaireId peut aussi être un questionnaire tout prêt { titre, questions, reglages } (questions
+// flash d'un chapitre du primaire, flash-prets.js) : il n'est alors pas lu dans la banque.
 async function qzDirectLancer(questionnaireId, choix){
-  const q = await qzBanqueSur(questionnaireId);
+  const q = questionnaireId && typeof questionnaireId === 'object' ? questionnaireId : await qzBanqueSur(questionnaireId);
   if(!q){ await niceAlert('Questionnaire introuvable.'); return; }
   const defaut = Number((q.reglages || {}).duree_direct) || 0; // minuteur par défaut du questionnaire
   let questions = qzPreparer(JSON.parse(JSON.stringify(q.questions || []))).map(x => x.type === 'texte' || x.duree_direct != null ? x : Object.assign(x, { duree_direct: defaut }));

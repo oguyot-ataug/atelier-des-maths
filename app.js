@@ -1094,6 +1094,8 @@ function openChapitre(c, tab, lvlOverride){
   if(demo) injectZoomButtons(document.getElementById(demo.exos));
   // Cours personnalisés (cours-perso.js) : version du professeur ou de l'établissement.
   if(typeof cpOnChapterOpen==='function') cpOnChapterOpen(demo||null);
+  // Questions flash prêtes (flash-prets.js) : bouton pour le professeur, au primaire.
+  if(typeof fpMaj==='function') fpMaj(lvl, c.t);
   showView('view-chapitre');
 }
 document.querySelectorAll('.tab-btn').forEach(btn=>{
@@ -3288,6 +3290,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.901', date:'2026-10-01', items:[
+    'Questions flash prêtes au primaire : sur chaque chapitre du CE2, du CM1 et du CM2, le professeur a un bouton « Questions flash (cartes) ». Il voit 6 à 8 questions prêtes (bonne réponse en vert), décoche celles qu\'il ne veut pas, choisit sa classe et lance la séance : les élèves répondent en levant leur carte flashcode A, B, C ou D.',
+  ] },
   { version:'2026-08-19.900', date:'2026-10-01', items:[
     'CE2 (en préparation, visible des administrateurs) : les 10 derniers chapitres — La multiplication posée, Masses et contenances, La division, La symétrie, Procédures de calcul mental, Comparer et additionner des fractions, Les solides (avec le pliage des 11 patrons du cube), Le périmètre, Problèmes multiplicatifs, Problèmes en plusieurs étapes. Les 24 chapitres du CE2 sont écrits.',
   ] },
