@@ -5862,6 +5862,11 @@ function figVersProgramme(){
       assurerPoint(moitie.a); assurerPoint(moitie.b);
       const id = nouvelId(sh); idObj.set(moitie.autre, id);
       prog.push(couleur(sh, {op:'segment', id, from:moitie.a.label, to:moitie.b.label}));
+      // Le milieu juste après son segment, à sa place dans l'ordre de construction -- signalé : avec un
+      // milieu, la médiatrice tracée ensuite passait AVANT le milieu (construite d'un coup, sans
+      // instruments, et dans le mauvais ordre en revenant en arrière).
+      const m = [sh.p1, sh.p2, moitie.autre.p1, moitie.autre.p2].find(q=>q.def && q.def.type==='milieu');
+      if(m) assurerPoint(m);
       return id;
     }
     if(t==='segment' && sh.angleDeg && !nomPt.has(sh.p2) && !sh.p2.def){

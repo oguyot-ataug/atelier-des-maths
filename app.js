@@ -3250,6 +3250,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.895', date: '2026-10-01', items: [
+    "Construction aux instruments : un segment dont on a placé le milieu, puis sa médiatrice — la médiatrice apparaissait d'un coup, sans instruments, et en revenant en arrière elle passait avant le milieu. Le milieu est maintenant construit juste après son segment : la médiatrice s'ajoute ensuite au compas, dans le bon ordre."
+  ]},
   { version: '2026-08-19.894', date: '2026-10-01', items: [
     "Géométrie interactive : symétrie axiale, symétrie centrale et translation de n'importe quel objet, pas seulement d'un point. Après avoir choisi l'axe (ou le centre, ou le vecteur), un clic sur un segment, une droite, une demi-droite, un vecteur, un cercle ou un arc le transforme tout entier ; un clic sur un côté d'un polygone (triangle, quadrilatère…) transforme tout le polygone. Les images des points s'appellent A', B', C'… et suivent la figure quand on déplace les points.",
     "Construction aux instruments : ces images sont construites au compas (et à la règle pour la symétrie centrale), objet par objet ; la construction en direct d'une figure n'est plus limitée à 25 étapes.",
