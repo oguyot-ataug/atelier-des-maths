@@ -1685,3 +1685,8 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .pe-etirer::after{content:"";position:absolute;left:50%;bottom:2px;width:34px;height:4px;margin-left:-17px;border-radius:3px;background:color-mix(in srgb, var(--c) 55%, #fff);}
 .pe-bloc:hover .pe-etirer::after, .pe-bloc.sel .pe-etirer::after{background:var(--c);}
 @media (max-width:600px){ .pe-axe{width:46px;} .pe-bloc{left:4px;right:4px;} .pe-outils{top:60px;} }
+
+/* Événements de la progression (voyage, semaine des maths…) */
+.pe-bloc.evt{background:repeating-linear-gradient(135deg,#ECEFF1 0 10px,#E3E8EB 10px 20px);border-style:dashed;}
+.pe-evt-ic{font-size:1rem;color:#546E7A;vertical-align:-3px;margin-right:2px;}
+.tl-item.tl-evt{cursor:default;background:#ECEFF1;border-style:dashed;font-style:italic;}

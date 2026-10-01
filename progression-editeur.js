@@ -52,6 +52,7 @@ function peCalendrier(){
 }
 function peLundi(i){ return i < pe.weeks.length ? pe.weeks[i] : peAdd(pe.weeks[pe.weeks.length - 1], 7 * (i - pe.weeks.length + 1)); }
 function peY(off){ const i = Math.min(Math.floor(off), pe.weekY.length - 1); return pe.weekY[i] + (off - i) * PE_H; }
+function peYFin(off){ return (off === Math.floor(off) && off > 0) ? peY(off - 1) + PE_H : peY(off); } // bas d'un bloc : fin de sa semaine, avant un éventuel bandeau de vacances
 function peOffDeY(y){ // inverse de peY (approché à l'intérieur d'une semaine)
   let i = 0; while(i + 1 < pe.weekY.length && pe.weekY[i + 1] <= y) i++;
   return i + Math.max(0, Math.min(1, (y - pe.weekY[i]) / PE_H));
@@ -100,10 +101,10 @@ function peRender(){
   const bandes = pe.bands.map(b => `<div class="pe-vac" style="top:${pe.weekY[b.avant] - PE_VAC + 3}px;height:${PE_VAC - 6}px;"><span class="gicon">beach_access</span><b>${escapeHtml(b.vac.label)}</b><span class="pe-vac-dates">${formatDateRangeFr(peJour(b.vac.debut), peJour(b.vac.fin))}</span></div>`).join('');
   const finAnnee = `<div class="pe-fin" style="top:${pe.weekY[dispo]}px;">Fin de l'année · vendredi 2 juillet</div>` + (fin > dispo ? `<div class="pe-hors" style="top:${pe.weekY[dispo]}px;height:${peY(fin) - pe.weekY[dispo]}px;"></div>` : '');
   const blocs = progEditorItems.map((it, i) => {
-    const c = (CATS[it.cat] || {}).text || '#999', h = peY(it._off + it._d) - peY(it._off) - 3, nom = it.nomPerso || it.titre;
-    return `<div class="pe-bloc${pe.sel === i ? ' sel' : ''}${h < 30 ? ' mini' : ''}" data-i="${i}" style="top:${peY(it._off) + 1}px;height:${h}px;--c:${c};" onclick="peSelect(${i})" tabindex="0" onkeydown="peClavier(event,${i})">
+    const c = it.evt ? PE_EVT_COUL : (CATS[it.cat] || {}).text || '#999', h = peYFin(it._off + it._d) - peY(it._off) - 3, nom = it.nomPerso || it.titre;
+    return `<div class="pe-bloc${it.evt ? ' evt' : ''}${pe.sel === i ? ' sel' : ''}${h < 30 ? ' mini' : ''}" data-i="${i}" style="top:${peY(it._off) + 1}px;height:${h}px;--c:${c};" onclick="peSelect(${i})" tabindex="0" onkeydown="peClavier(event,${i})">
       <span class="pe-poignee" title="Glisser pour déplacer le chapitre" onpointerdown="peDebutDeplacer(event,${i})">⠿</span>
-      <div class="pe-txt"><b class="${it.nomPerso ? 'perso' : ''}">${escapeHtml(nom)}</b> <span class="pe-code">${escapeHtml(it.code || '')}</span>
+      <div class="pe-txt">${it.evt ? '<span class="gicon pe-evt-ic">event</span>' : ''}<b class="${it.nomPerso && !it.evt ? 'perso' : ''}">${escapeHtml(nom)}</b> <span class="pe-code">${escapeHtml(it.evt ? 'événement' : (it.code || ''))}</span>
         <div class="pe-dates">${formatDateRangeFr(it.dateDebut, it.dateFin)} · ${String(it._d).replace('.', ',')} sem.</div></div>
       <span class="pe-etirer" title="Tirer pour allonger ou raccourcir" onpointerdown="peDebutEtirer(event,${i})"></span>
     </div>`;
@@ -114,13 +115,14 @@ function peRender(){
     <div class="pe-barre">
       <span class="pe-total ${fin > dispo ? 'trop' : ''}"><span class="gicon">${fin > dispo ? 'warning' : 'event_available'}</span>
         ${String(Math.round((fin - pe.start) * 2) / 2).replace('.', ',')} semaines de cours sur ${String(dispo - pe.start).replace('.', ',')} disponibles · fin le <b>${peTxt(peDateFin(fin))}</b>${fin > dispo ? ' : raccourcissez des chapitres' : fin < dispo ? ' · ' + String(dispo - fin).replace('.', ',') + ' sem. libre(s)' : ''}</span>
+      <button class="btn secondary" onclick="peAjouterEvt()" title="Voyage scolaire, semaine des maths, évaluations communes…"><span class="gicon">add</span> Ajouter un événement</button>
       <label class="hint" style="margin:0;display:flex;align-items:center;gap:6px;">Premier chapitre le <select onchange="pe.start=parseFloat(this.value);peRender()">${debutOpts}</select></label>
     </div>
     <div class="pe-outils">${s ? `<b>${escapeHtml(s.nomPerso || s.titre)}</b>
         <button class="btn secondary" onclick="peDeplacer(${pe.sel},-1)" ${pe.sel === 0 ? 'disabled' : ''} title="Avancer dans l'année">▲</button>
         <button class="btn secondary" onclick="peDeplacer(${pe.sel},1)" ${pe.sel === progEditorItems.length - 1 ? 'disabled' : ''} title="Reculer dans l'année">▼</button>
         <span class="pe-duree"><button class="btn secondary" onclick="peDuree(${pe.sel},-.5)" ${s._d <= .5 ? 'disabled' : ''}>−</button> ${String(s._d).replace('.', ',')} sem. <button class="btn secondary" onclick="peDuree(${pe.sel},.5)">+</button></span>
-        <button class="btn secondary" onclick="peRenommer(${pe.sel})"><span class="gicon">edit</span> Renommer</button>`
+        <button class="btn secondary" onclick="peRenommer(${pe.sel})"><span class="gicon">edit</span> Renommer</button>${s.evt ? `<button class="btn secondary" onclick="peSupprimer(${pe.sel})"><span class="gicon">delete</span> Supprimer</button>` : ''}`
       : '<span class="hint" style="margin:0;"><span class="gicon">touch_app</span> Glissez la poignée ⠿ pour déplacer un chapitre, tirez le bas d\'un bloc pour changer sa durée, ou cliquez un bloc pour le régler au demi-semaine près.</span>'}</div>
     <div class="pe-zone" style="height:${H}px;"><div class="pe-axe">${axe}</div><div class="pe-piste">${finAnnee}${blocs}</div>${bandes}</div>`;
 }
@@ -129,15 +131,38 @@ function peDeplacer(i, d){ const j = i + d, t = progEditorItems; if(j < 0 || j >
 function peDuree(i, d){ const it = progEditorItems[i]; it._d = Math.max(.5, Math.min(12, it._d + d)); peRender(); }
 async function peRenommer(i){
   const it = progEditorItems[i];
+  if(it.evt){
+    const n = await nicePrompt('Nom de l\'événement :', it.nomPerso);
+    if(n && n.trim()){ it.nomPerso = n.trim().slice(0, 80); peRender(); }
+    return;
+  }
   const n = await nicePrompt('Nom du chapitre dans votre progression (laisser vide pour le nom d\'origine) :', it.nomPerso || it.titre);
   if(n === null || n === undefined) return;
   it.nomPerso = (n.trim() && n.trim() !== it.titre) ? n.trim() : ''; peRender();
+}
+/* Événements (voyage scolaire, semaine des maths, évaluations…) : des blocs sans chapitre, qui
+   prennent leur place dans l'année comme les autres et décalent les chapitres suivants. Enregistrés
+   dans la table progressions avec chapitre_titre « evt:… » et leur nom dans nom_perso. */
+const PE_EVT_COUL = '#546E7A';
+async function peAjouterEvt(){
+  const n = await nicePrompt('Nom de l\'événement (ex. « Voyage en Espagne », « Semaine des maths ») :', '');
+  if(!n || !n.trim()) return;
+  const it = { titre: 'evt:' + Date.now().toString(36), nomPerso: n.trim().slice(0, 80), evt: true, code: '', cat: 'E', p: '', s: 1, _d: 1 };
+  const k = pe.sel >= 0 ? pe.sel + 1 : progEditorItems.length;
+  progEditorItems.splice(k, 0, it); pe.sel = k; peRender();
+  const el = document.querySelector(`#progressionList .pe-bloc[data-i="${k}"]`); if(el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+async function peSupprimer(i){
+  const it = progEditorItems[i]; if(!it || !it.evt) return;
+  if(!(await niceConfirm('Retirer l\'événement « ' + it.nomPerso + ' » de la progression ?'))) return;
+  progEditorItems.splice(i, 1); pe.sel = -1; peRender();
 }
 function peClavier(e, i){
   if(e.key === 'ArrowUp' && e.altKey){ e.preventDefault(); peDeplacer(i, -1); }
   else if(e.key === 'ArrowDown' && e.altKey){ e.preventDefault(); peDeplacer(i, 1); }
   else if(e.key === '+' || e.key === '='){ e.preventDefault(); peDuree(i, .5); }
   else if(e.key === '-'){ e.preventDefault(); peDuree(i, -.5); }
+  else if((e.key === 'Delete' || e.key === 'Backspace') && progEditorItems[i].evt){ e.preventDefault(); peSupprimer(i); }
   else if(e.key === 'Enter'){ e.preventDefault(); peSelect(i); }
 }
 /* Glisser : la poignée déplace le bloc (les autres se réorganisent en direct) ; la languette du

@@ -570,9 +570,10 @@ async function applyCustomProgressionIfAny(lvl){
   const defaultData = CHAPITRES_BY_LEVEL[lvl] || CH6;
   const merged = rows.map(r=>{
     const base = defaultData.find(c=>c.t===r.chapitre_titre);
-    if(!base) return null;
     const dd = r.date_debut ? new Date(r.date_debut+'T00:00:00') : null;
     const df = r.date_fin ? new Date(r.date_fin+'T00:00:00') : null;
+    if(progEstEvt(r.chapitre_titre)) return { evt: true, t: r.chapitre_titre, dispT: r.nom_perso || 'Événement', code: '', cat: 'E', p: '', s: '', d: (dd&&df) ? formatDateRangeFr(dd,df) : '' };
+    if(!base) return null;
     // dispT (nom affiché) est distinct de t (jamais modifié : c'est la clé de recherche dans
     // DEMO_REGISTRY, utilisée par openChapitre -- la renommer casserait l'ouverture du chapitre).
     return Object.assign({}, base, { d: (dd&&df) ? formatDateRangeFr(dd,df) : base.d, dispT: r.nom_perso || base.t });
@@ -583,6 +584,7 @@ async function applyCustomProgressionIfAny(lvl){
   if(currentLevel===lvl){ renderTheme(merged, lvl); renderFrise(merged, lvl); }
 }
 /* ---- Éditeur de progression personnalisée ("Ma progression") ---- */
+function progEstEvt(t){ return typeof t === 'string' && t.startsWith('evt:'); } // événement ajouté par le prof (voyage, semaine des maths…)
 let progEditorItems = [];
 let progEditIdx = -1; // index de la carte actuellement en mode édition (-1 = aucune)
 let progUserZone = 'B';
@@ -601,6 +603,8 @@ async function renderProgressionEditor(){
   if(rows && rows.length){
     progEditorItems = rows.map(r=>{
       const base = defaultData.find(c=>c.t===r.chapitre_titre) || {};
+      if(progEstEvt(r.chapitre_titre)) return { titre: r.chapitre_titre, nomPerso: r.nom_perso || 'Événement', evt: true, code: '', cat: 'E', p: '', s: 1,
+        dateDebut: r.date_debut ? new Date(r.date_debut+'T00:00:00') : null, dateFin: r.date_fin ? new Date(r.date_fin+'T00:00:00') : null };
       return {
         titre: r.chapitre_titre, nomPerso: r.nom_perso||'', code: base.code||'', cat: base.cat||'N', p: base.p||'', s: base.s||1,
         dateDebut: r.date_debut ? new Date(r.date_debut+'T00:00:00') : null,
@@ -784,6 +788,11 @@ async function saveProgression(){
     date_debut: it.dateDebut ? progIsoLocal(it.dateDebut) : null,
     date_fin: it.dateFin ? progIsoLocal(it.dateFin) : null,
   }));
+  // Les événements retirés dans l'éditeur doivent disparaître : on efface ceux qui ne sont plus là.
+  const evts = progEditorItems.filter(it => it.evt).map(it => it.titre);
+  let del = sb.from('progressions').delete().eq('owner_id', currentUser.id).eq('niveau', lvl).like('chapitre_titre', 'evt:%');
+  if(evts.length) del = del.not('chapitre_titre', 'in', '(' + evts.map(t => '"' + t + '"').join(',') + ')');
+  await del;
   const { error } = await sb.from('progressions').upsert(rows, { onConflict: 'owner_id,niveau,chapitre_titre' });
   status.textContent = error ? 'Erreur : '+error.message : '✓ Progression enregistrée.';
 }
@@ -893,9 +902,12 @@ function progressionPdf(){
   const perso = data.some(c => c.dispT);
   const COUL = { N:'#FF8208', G:'#2E9C6A', D:'#0C5BA0', M:'#7A4FC0', P:'#C2185B' };
   let lignes = '', semaines = 0;
+  let num = 0;
   data.forEach((c, i) => {
+    if(c.evt){ lignes += `<tr class="evt"><td class="n"></td><td><span class="dom" style="border-color:#546E7A;color:#546E7A;">Événement</span></td><td class="t"><b>${esc(c.dispT)}</b></td><td class="c"></td><td class="c">${esc(c.d)}</td></tr>`; return; }
+    num++;
     semaines += Number(c.s) || 0;
-    lignes += `<tr><td class="n">${i + 1}</td><td><span class="dom" style="border-color:${COUL[c.cat] || '#999'};color:${COUL[c.cat] || '#555'};">${esc((CATS[c.cat] || {}).label || '')}</span></td>
+    lignes += `<tr><td class="n">${num}</td><td><span class="dom" style="border-color:${COUL[c.cat] || '#999'};color:${COUL[c.cat] || '#555'};">${esc((CATS[c.cat] || {}).label || '')}</span></td>
       <td class="t"><b>${esc(c.dispT || c.t)}</b> <span class="code">${esc(c.code)}</span></td><td class="c">${c.s ? esc(c.s) + ' sem.' : ''}</td><td class="c">${esc(c.d)}</td></tr>`;
     const v = vac.find(v => v.after === c.n);
     if(v) lignes += `<tr class="vac"><td colspan="5">${esc(v.label)}</td></tr>`;
@@ -915,11 +927,12 @@ function progressionPdf(){
   td.n{width:8mm;text-align:center;font-weight:700;color:#5B6472;} td.c{white-space:nowrap;text-align:center;} td.t .code{color:#8A94A3;font-size:8.5pt;margin-left:2mm;}
   .dom{display:inline-block;border:1.5px solid;border-radius:10px;padding:.3mm 2.5mm;font-size:8.5pt;font-weight:700;white-space:nowrap;}
   tr.vac td{background:#FFF4E5;color:#8A4210;font-weight:700;text-align:center;font-size:9.5pt;padding:1.6mm;}
+  tr.evt td{background:#ECEFF1;font-style:italic;}
   tr{page-break-inside:avoid;}
   .pied{margin-top:5mm;color:#8A94A3;font-size:8.5pt;display:flex;justify-content:space-between;}
 </style></head><body>
 <h1>${esc(titre)}</h1>
-<p class="sous">Année scolaire ${y}-${y + 1} · ${data.length} chapitres · ${semaines} semaines${perso ? ' · progression personnalisée' : ''}</p>
+<p class="sous">Année scolaire ${y}-${y + 1} · ${data.filter(c => !c.evt).length} chapitres · ${semaines} semaines${perso ? ' · progression personnalisée' : ''}</p>
 <table><thead><tr><th>N°</th><th>Domaine</th><th>Chapitre</th><th style="text-align:center;">Durée</th><th style="text-align:center;">Dates</th></tr></thead><tbody>${lignes}</tbody></table>
 <div class="pied"><span>L'Atelier des Maths · maths.latelieraugmente.fr</span><span>Programme B.O. 2026</span></div>
 <script>window.onload=function(){setTimeout(function(){window.print();},250);};<\/script>
@@ -932,6 +945,7 @@ function renderFrise(data, lvl){
   const vac = VACANCES[lvl];
   const now = new Date();
   data.forEach((c,i)=>{
+    if(c.evt){ html += `<div class="tl-item tl-evt"><span class="dot" style="background:#546E7A"></span><span class="titre"><span class="gicon">event</span> ${escapeHtml(c.dispT)}</span><span class="dates">${c.d}</span></div>`; return; }
     const endDate = friseEndDate(c.d);
     const done = endDate && endDate < now;
     // Indépendant de la progression calendaire ci-dessus : est-ce que le contenu du
@@ -951,7 +965,7 @@ function renderFrise(data, lvl){
   html += '</div>';
   const box=document.getElementById('niveau-frise');
   box.innerHTML=html;
-  box.querySelectorAll('.tl-item').forEach(card=>{
+  box.querySelectorAll('.tl-item:not(.tl-evt)').forEach(card=>{
     card.addEventListener('click',()=>{
       if(card.classList.contains('locked')){ onLockedChapterClick(); return; }
       openChapitre({code:card.dataset.code,cat:card.dataset.cat,t:card.dataset.t,p:card.dataset.p,s:card.dataset.s,d:card.dataset.d});
@@ -3222,6 +3236,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.882', date: '2026-10-01', items: [
+    "Ma progression : bouton « Ajouter un événement » (voyage scolaire, semaine des maths, évaluations communes…). L'événement est un bloc comme les chapitres : on le déplace, on l'étire, on le renomme ou on le supprime, et les chapitres suivants se décalent. Il apparaît aussi dans la frise de la classe et dans le PDF.",
+    "Ma progression : un chapitre qui se termine juste avant des vacances ne passe plus sous le bandeau ; on peut de nouveau attraper sa poignée pour changer sa durée."
+  ]},
   { version: '2026-08-19.881', date: '2026-10-01', items: [
     "Ma progression : les vacances sont bien plus visibles sur la frise (bandeau orange qui traverse toute la largeur, avec le nom et les dates des vacances)."
   ]},
