@@ -868,7 +868,54 @@ function formatDateRangeFr(debut, fin){
   if(sameMonth) return `${debut.getDate()}-${finStr}`;
   return `${debut.getDate()} ${FR_MONTHS_REV[debut.getMonth()]}-${finStr}`;
 }
+/* Progression affichée (par défaut, ou personnalisée par le professeur) : sert au PDF ci-dessous. */
+let progressionAffichee = null;
+/* Enregistrer la progression en PDF -- demandé : « peux-tu faire un bouton d'enregistrement PDF des
+   progressions ». Une page A4 propre (numéro, domaine, chapitre, durée, dates, vacances), ouverte dans
+   une fenêtre d'impression : « Enregistrer au format PDF » du navigateur, comme pour le cahier. */
+function progressionPdf(){
+  const pa = progressionAffichee; if(!pa) return;
+  const { data, lvl } = pa, vac = VACANCES[lvl] || [];
+  const esc = x => String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const d = new Date(), y = d.getMonth() + 1 >= 7 ? d.getFullYear() : d.getFullYear() - 1;
+  const perso = data.some(c => c.dispT);
+  const COUL = { N:'#FF8208', G:'#2E9C6A', D:'#0C5BA0', M:'#7A4FC0', P:'#C2185B' };
+  let lignes = '', semaines = 0;
+  data.forEach((c, i) => {
+    semaines += Number(c.s) || 0;
+    lignes += `<tr><td class="n">${i + 1}</td><td><span class="dom" style="border-color:${COUL[c.cat] || '#999'};color:${COUL[c.cat] || '#555'};">${esc((CATS[c.cat] || {}).label || '')}</span></td>
+      <td class="t"><b>${esc(c.dispT || c.t)}</b> <span class="code">${esc(c.code)}</span></td><td class="c">${c.s ? esc(c.s) + ' sem.' : ''}</td><td class="c">${esc(c.d)}</td></tr>`;
+    const v = vac.find(v => v.after === c.n);
+    if(v) lignes += `<tr class="vac"><td colspan="5">${esc(v.label)}</td></tr>`;
+  });
+  const titre = `Progression de mathématiques · ${niveauLabel(lvl)}`;
+  const w = window.open('', '_blank', 'width=900,height=700');
+  if(!w){ niceAlert('Le navigateur a bloqué la fenêtre : autorisez les fenêtres surgissantes pour ce site, puis recommencez.'); return; }
+  w.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>${esc(titre)}</title>
+<style>
+  @page{size:A4;margin:14mm 12mm;}
+  body{font-family:Inter,Arial,Helvetica,sans-serif;color:#1C2B39;margin:0;font-size:11pt;}
+  h1{font-family:'Space Grotesk',Arial,sans-serif;font-size:18pt;margin:0 0 2mm;}
+  .sous{color:#5B6472;font-size:10pt;margin:0 0 5mm;}
+  table{width:100%;border-collapse:collapse;}
+  th{background:#1F3A5C;color:#fff;font-size:9.5pt;text-align:left;padding:2.2mm 2mm;}
+  td{border-bottom:1px solid #E1E6EC;padding:2mm;vertical-align:middle;font-size:10pt;}
+  td.n{width:8mm;text-align:center;font-weight:700;color:#5B6472;} td.c{white-space:nowrap;text-align:center;} td.t .code{color:#8A94A3;font-size:8.5pt;margin-left:2mm;}
+  .dom{display:inline-block;border:1.5px solid;border-radius:10px;padding:.3mm 2.5mm;font-size:8.5pt;font-weight:700;white-space:nowrap;}
+  tr.vac td{background:#FFF4E5;color:#8A4210;font-weight:700;text-align:center;font-size:9.5pt;padding:1.6mm;}
+  tr{page-break-inside:avoid;}
+  .pied{margin-top:5mm;color:#8A94A3;font-size:8.5pt;display:flex;justify-content:space-between;}
+</style></head><body>
+<h1>${esc(titre)}</h1>
+<p class="sous">Année scolaire ${y}-${y + 1} · ${data.length} chapitres · ${semaines} semaines${perso ? ' · progression personnalisée' : ''}</p>
+<table><thead><tr><th>N°</th><th>Domaine</th><th>Chapitre</th><th style="text-align:center;">Durée</th><th style="text-align:center;">Dates</th></tr></thead><tbody>${lignes}</tbody></table>
+<div class="pied"><span>L'Atelier des Maths · maths.latelieraugmente.fr</span><span>Programme B.O. 2026</span></div>
+<script>window.onload=function(){setTimeout(function(){window.print();},250);};<\/script>
+</body></html>`);
+  w.document.close();
+}
 function renderFrise(data, lvl){
+  progressionAffichee = { data, lvl };
   let html = '<div class="timeline">';
   const vac = VACANCES[lvl];
   const now = new Date();
@@ -3163,6 +3210,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.878', items:[
+    "Progressions : bouton « Enregistrer en PDF » sur la page de chaque niveau (CM1 à 3e). Demandé : « peux-tu faire un bouton d'enregistrement PDF des progressions ». Une page A4 propre : numéro, domaine en couleur, chapitre et son code, durée, dates, bandeaux de vacances, nombre total de semaines ; la fenêtre d'impression s'ouvre (choisir « Enregistrer au format PDF »). Pour un professeur qui a personnalisé sa progression (« Ma progression »), c'est sa propre progression qui est enregistrée, avec ses noms de chapitres et ses dates.",
+  ]},
   { version:'2026-08-19.877', items:[
     "Première connexion : après le choix du nouveau mot de passe, la fenêtre ne se rouvre plus. Signalé : « elle a modifié et la fenêtre s'est à nouveau affichée... on a actualisé la page ». Le changement de mot de passe relançait la mise à jour de l'affichage du compte, qui relisait le profil avant qu'il soit marqué « mot de passe changé » et rouvrait la fenêtre obligatoire ; elle ne s'ouvre plus une fois le mot de passe enregistré.",
   ]},
