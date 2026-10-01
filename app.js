@@ -138,29 +138,31 @@ const CHCM1 = [
  // Progression revue avec le programme du cycle 3 -- demandé : « Est-ce la bonne progression ? » :
  // entiers d'au plus 4 chiffres en périodes 1-2 (5-6 chiffres à partir de la période 3), fractions
  // dès la période 1, étude des décimaux dès la période 2. Notre propre manuel : pas de pages.
- {n:1,code:'N1',cat:'N',t:'Nombres entiers jusqu\'à 9 999',s:1,p:'',d:'7-13 sept'},
- {n:2,code:'N2',cat:'N',t:'Fractions',s:1,p:'',d:'14-20 sept'},
- {n:3,code:'G1',cat:'G',t:'Droites parallèles et perpendiculaires',s:1,p:'',d:'21-27 sept'},
- {n:4,code:'N3',cat:'N',t:'Opérations sur les nombres entiers',s:2,p:'',d:'28 sept-11 oct'},
+ // Calendrier de l'école -- demandé : « Du 1er septembre 2026 au vendredi 2 juillet » (rentrée le mardi
+ // 1er septembre, dernière semaine du 28 juin au 2 juillet) ; mêmes vacances que le collège.
+ {n:1,code:'N1',cat:'N',t:'Nombres entiers jusqu\'à 9 999',s:2,p:'',d:'1-11 sept'},
+ {n:2,code:'N2',cat:'N',t:'Fractions',s:1,p:'',d:'14-18 sept'},
+ {n:3,code:'G1',cat:'G',t:'Droites parallèles et perpendiculaires',s:1,p:'',d:'21-25 sept'},
+ {n:4,code:'N3',cat:'N',t:'Opérations sur les nombres entiers',s:2,p:'',d:'28 sept-9 oct'},
  {n:5,code:'M1',cat:'M',t:'Longueurs, masses, contenances',s:1,p:'',d:'12-16 oct'},
- {n:6,code:'N4',cat:'N',t:'Nombres décimaux',s:2,p:'',d:'3-15 nov'},
- {n:7,code:'G2',cat:'G',t:'Construction de figures',s:2,p:'',d:'16-29 nov'},
- {n:8,code:'N5',cat:'N',t:'Fractions (comparaison et opérations)',s:2,p:'',d:'30 nov-13 déc'},
+ {n:6,code:'N4',cat:'N',t:'Nombres décimaux',s:2,p:'',d:'2-13 nov'},
+ {n:7,code:'G2',cat:'G',t:'Construction de figures',s:2,p:'',d:'16-27 nov'},
+ {n:8,code:'N5',cat:'N',t:'Fractions (comparaison et opérations)',s:2,p:'',d:'30 nov-11 déc'},
  {n:9,code:'D1',cat:'D',t:'Organisation et gestion de données',s:1,p:'',d:'14-18 déc'},
- {n:10,code:'N6',cat:'N',t:'Grands nombres jusqu\'à 999 999',s:1,p:'',d:'5-11 jan'},
- {n:11,code:'N7',cat:'N',t:'Opérations sur les nombres décimaux',s:1,p:'',d:'12-18 jan'},
- {n:12,code:'G3',cat:'G',t:'Symétrie axiale',s:1,p:'',d:'19-25 jan'},
- {n:13,code:'M2',cat:'M',t:'Périmètres',s:1,p:'',d:'26 jan-1 fév'},
- {n:14,code:'N8',cat:'N',t:'Procédures de calcul mental',s:1,p:'',d:'2-8 fév'},
- {n:15,code:'D2',cat:'D',t:'Probabilités',s:1,p:'',d:'9-15 fév'},
- {n:16,code:'N9',cat:'N',t:'Résolution de problèmes',s:2,p:'',d:'9-22 mars'},
- {n:17,code:'G4',cat:'G',t:'Solides',s:1,p:'',d:'23-29 mars'},
- {n:18,code:'M3',cat:'M',t:'Aires',s:1,p:'',d:'30 mars-5 avr'},
- {n:19,code:'D3',cat:'D',t:'Proportionnalité',s:1,p:'',d:'6-12 avr'},
- {n:20,code:'N10',cat:'N',t:'Algèbre',s:1,p:'',d:'4-10 mai'},
- {n:21,code:'M4',cat:'M',t:'Angles',s:1,p:'',d:'11-17 mai'},
- {n:22,code:'M5',cat:'M',t:'Heures et durées',s:1,p:'',d:'18-24 mai'},
- {n:23,code:'D4',cat:'D',t:'Initiation à la pensée informatique',s:1,p:'',d:'25-31 mai'},
+ {n:10,code:'N6',cat:'N',t:'Grands nombres jusqu\'à 999 999',s:1,p:'',d:'4-8 jan'},
+ {n:11,code:'N7',cat:'N',t:'Opérations sur les nombres décimaux',s:2,p:'',d:'11-22 jan'},
+ {n:12,code:'G3',cat:'G',t:'Symétrie axiale',s:1,p:'',d:'25-29 jan'},
+ {n:13,code:'M2',cat:'M',t:'Périmètres',s:1,p:'',d:'1-5 fév'},
+ {n:14,code:'N8',cat:'N',t:'Procédures de calcul mental',s:1,p:'',d:'8-12 fév'},
+ {n:15,code:'D2',cat:'D',t:'Probabilités',s:1,p:'',d:'15-19 fév'},
+ {n:16,code:'N9',cat:'N',t:'Résolution de problèmes',s:2,p:'',d:'8-19 mars'},
+ {n:17,code:'G4',cat:'G',t:'Solides',s:1,p:'',d:'22-26 mars'},
+ {n:18,code:'M3',cat:'M',t:'Aires',s:2,p:'',d:'29 mars-9 avr'},
+ {n:19,code:'D3',cat:'D',t:'Proportionnalité',s:1,p:'',d:'12-16 avr'},
+ {n:20,code:'N10',cat:'N',t:'Algèbre',s:2,p:'',d:'3-14 mai'},
+ {n:21,code:'M4',cat:'M',t:'Angles',s:2,p:'',d:'17-28 mai'},
+ {n:22,code:'M5',cat:'M',t:'Heures et durées',s:2,p:'',d:'31 mai-11 juin'},
+ {n:23,code:'D4',cat:'D',t:'Initiation à la pensée informatique',s:3,p:'',d:'14 juin-2 juil'},
 ];
 
 /* Progression CM2 -- notre propre manuel, construite sur le programme du cycle 3 (partie CM2) :
@@ -169,31 +171,32 @@ const CHCM1 = [
    probabilités au plus tard en période 2, pas de tableau de conversion ni de proportionnalité,
    pas de rapporteur (le degré est introduit à partir de l'angle droit). Rubriques alternées. */
 const CHCM2 = [
- {n:1,code:'N1',cat:'N',t:'Nombres entiers (révisions jusqu\'à 999 999)',s:1,p:'',d:'7-13 sept'},
- {n:2,code:'N2',cat:'N',t:'Fractions',s:1,p:'',d:'14-20 sept'},
- {n:3,code:'G1',cat:'G',t:'Droites, segments et cercles',s:1,p:'',d:'21-27 sept'},
- {n:4,code:'N3',cat:'N',t:'Nombres décimaux jusqu\'aux millièmes',s:2,p:'',d:'28 sept-11 oct'},
+ // Calendrier de l'école : du mardi 1er septembre 2026 au vendredi 2 juillet 2027 (voir CHCM1).
+ {n:1,code:'N1',cat:'N',t:'Nombres entiers (révisions jusqu\'à 999 999)',s:2,p:'',d:'1-11 sept'},
+ {n:2,code:'N2',cat:'N',t:'Fractions',s:1,p:'',d:'14-18 sept'},
+ {n:3,code:'G1',cat:'G',t:'Droites, segments et cercles',s:1,p:'',d:'21-25 sept'},
+ {n:4,code:'N3',cat:'N',t:'Nombres décimaux jusqu\'aux millièmes',s:2,p:'',d:'28 sept-9 oct'},
  {n:5,code:'M1',cat:'M',t:'Longueurs, masses, contenances',s:1,p:'',d:'12-16 oct'},
- {n:6,code:'N4',cat:'N',t:'Addition et soustraction',s:1,p:'',d:'3-8 nov'},
- {n:7,code:'G2',cat:'G',t:'Figures planes',s:2,p:'',d:'9-22 nov'},
- {n:8,code:'N5',cat:'N',t:'Multiplication',s:2,p:'',d:'23 nov-6 déc'},
- {n:9,code:'D1',cat:'D',t:'Probabilités',s:1,p:'',d:'7-13 déc'},
+ {n:6,code:'N4',cat:'N',t:'Addition et soustraction',s:1,p:'',d:'2-6 nov'},
+ {n:7,code:'G2',cat:'G',t:'Figures planes',s:2,p:'',d:'9-20 nov'},
+ {n:8,code:'N5',cat:'N',t:'Multiplication',s:2,p:'',d:'23 nov-4 déc'},
+ {n:9,code:'D1',cat:'D',t:'Probabilités',s:1,p:'',d:'7-11 déc'},
  {n:10,code:'N6',cat:'N',t:'Fractions : comparer et calculer',s:1,p:'',d:'14-18 déc'},
- {n:11,code:'N7',cat:'N',t:'Grands nombres jusqu\'à 999 999 999',s:1,p:'',d:'5-11 jan'},
- {n:12,code:'M2',cat:'M',t:'Aires',s:1,p:'',d:'12-18 jan'},
- {n:13,code:'N8',cat:'N',t:'Multiples et diviseurs',s:1,p:'',d:'19-25 jan'},
- {n:14,code:'D2',cat:'D',t:'Organisation et gestion de données',s:1,p:'',d:'26 jan-1 fév'},
- {n:15,code:'N9',cat:'N',t:'Division',s:2,p:'',d:'2-15 fév'},
- {n:16,code:'N10',cat:'N',t:'Résolution de problèmes',s:2,p:'',d:'9-22 mars'},
- {n:17,code:'G3',cat:'G',t:'Programmes de construction',s:1,p:'',d:'23-29 mars'},
- {n:18,code:'D3',cat:'D',t:'Proportionnalité',s:1,p:'',d:'30 mars-5 avr'},
- {n:19,code:'G4',cat:'G',t:'Symétrie axiale',s:1,p:'',d:'6-12 avr'},
- {n:20,code:'M3',cat:'M',t:'Angles',s:1,p:'',d:'13-17 avr'},
- {n:21,code:'N11',cat:'N',t:'Procédures de calcul mental',s:1,p:'',d:'4-10 mai'},
- {n:22,code:'G5',cat:'G',t:'Solides et repérage dans l\'espace',s:1,p:'',d:'11-17 mai'},
- {n:23,code:'N12',cat:'N',t:'Algèbre',s:1,p:'',d:'18-24 mai'},
- {n:24,code:'M4',cat:'M',t:'Heures et durées',s:1,p:'',d:'25-31 mai'},
- {n:25,code:'D4',cat:'D',t:'Pensée informatique',s:1,p:'',d:'1-7 juin'},
+ {n:11,code:'N7',cat:'N',t:'Grands nombres jusqu\'à 999 999 999',s:1,p:'',d:'4-8 jan'},
+ {n:12,code:'M2',cat:'M',t:'Aires',s:2,p:'',d:'11-22 jan'},
+ {n:13,code:'N8',cat:'N',t:'Multiples et diviseurs',s:1,p:'',d:'25-29 jan'},
+ {n:14,code:'D2',cat:'D',t:'Organisation et gestion de données',s:1,p:'',d:'1-5 fév'},
+ {n:15,code:'N9',cat:'N',t:'Division',s:2,p:'',d:'8-19 fév'},
+ {n:16,code:'N10',cat:'N',t:'Résolution de problèmes',s:2,p:'',d:'8-19 mars'},
+ {n:17,code:'G3',cat:'G',t:'Programmes de construction',s:1,p:'',d:'22-26 mars'},
+ {n:18,code:'D3',cat:'D',t:'Proportionnalité',s:1,p:'',d:'29 mars-2 avr'},
+ {n:19,code:'G4',cat:'G',t:'Symétrie axiale',s:1,p:'',d:'5-9 avr'},
+ {n:20,code:'M3',cat:'M',t:'Angles',s:1,p:'',d:'12-16 avr'},
+ {n:21,code:'N11',cat:'N',t:'Procédures de calcul mental',s:1,p:'',d:'3-7 mai'},
+ {n:22,code:'G5',cat:'G',t:'Solides et repérage dans l\'espace',s:2,p:'',d:'10-21 mai'},
+ {n:23,code:'N12',cat:'N',t:'Algèbre',s:2,p:'',d:'24 mai-4 juin'},
+ {n:24,code:'M4',cat:'M',t:'Heures et durées',s:2,p:'',d:'7-18 juin'},
+ {n:25,code:'D4',cat:'D',t:'Pensée informatique',s:2,p:'',d:'21 juin-2 juil'},
 ];
 
 // Correspondance niveau -> programme -- remplace la ternaire "lvl==='6e'?CH6:CH5" codée en
@@ -830,7 +833,9 @@ function friseEndDate(dStr){
   const day = parseInt(m[1],10);
   const key = m[2].toLowerCase();
   let monIdx = null;
-  for(const k in FR_MONTHS){ if(key.startsWith(k) || k.startsWith(key.slice(0,3))){ monIdx=FR_MONTHS[k]; break; } }
+  // D'abord le mois exact (« juil » ne doit pas être pris pour « juin », qui commence aussi par « jui »).
+  for(const k in FR_MONTHS){ if(key.startsWith(k)){ monIdx=FR_MONTHS[k]; break; } }
+  if(monIdx===null) for(const k in FR_MONTHS){ if(k.startsWith(key.slice(0,3))){ monIdx=FR_MONTHS[k]; break; } }
   if(monIdx===null) return null;
   const year = monIdx>=8 ? FRISE_YEAR_START : FRISE_YEAR_START+1;
   return new Date(year, monIdx, day, 23, 59, 59);
@@ -853,7 +858,9 @@ function friseStartDate(dStr){
   }
   if(!key) return null;
   let monIdx = null;
-  for(const k in FR_MONTHS){ if(key.startsWith(k) || k.startsWith(key.slice(0,3))){ monIdx=FR_MONTHS[k]; break; } }
+  // D'abord le mois exact (« juil » ne doit pas être pris pour « juin », qui commence aussi par « jui »).
+  for(const k in FR_MONTHS){ if(key.startsWith(k)){ monIdx=FR_MONTHS[k]; break; } }
+  if(monIdx===null) for(const k in FR_MONTHS){ if(k.startsWith(key.slice(0,3))){ monIdx=FR_MONTHS[k]; break; } }
   if(monIdx===null) return null;
   const year = monIdx>=8 ? FRISE_YEAR_START : FRISE_YEAR_START+1;
   return new Date(year, monIdx, day, 0, 0, 0);
@@ -3210,6 +3217,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.879', items:[
+    "Progressions de CM1 et de CM2 ajustées au calendrier de l'école : du mardi 1er septembre 2026 au vendredi 2 juillet 2027 (36 semaines, mêmes vacances). Demandé : « Pour les progressions de CM1 et CM2, ajuster les dates. Du 1er septembre 2026 au vendredi 2 juillet ». Les semaines en plus sont réparties sur les chapitres qui en ont le plus besoin (nombres jusqu'à 9 999 avec la semaine de rentrée, opérations sur les décimaux, aires, et toute la fin d'année jusqu'au 2 juillet) ; frise, cartes de l'accueil et PDF des progressions suivent. Correction au passage : une date en « juil » était lue comme « juin ».",
+  ]},
   { version:'2026-08-19.878', items:[
     "Progressions : bouton « Enregistrer en PDF » sur la page de chaque niveau (CM1 à 3e). Demandé : « peux-tu faire un bouton d'enregistrement PDF des progressions ». Une page A4 propre : numéro, domaine en couleur, chapitre et son code, durée, dates, bandeaux de vacances, nombre total de semaines ; la fenêtre d'impression s'ouvre (choisir « Enregistrer au format PDF »). Pour un professeur qui a personnalisé sa progression (« Ma progression »), c'est sa propre progression qui est enregistrée, avec ses noms de chapitres et ses dates.",
   ]},
