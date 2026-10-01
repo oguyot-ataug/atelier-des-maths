@@ -1704,3 +1704,6 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .nb-mod-chip:hover{color:var(--c);border-color:var(--c);}
 .nb-mod-chip.on{color:#fff;background:var(--c);border:1px solid var(--c);}
 @media print{ .nb-mod-chip:not(.on){display:none;} }
+.nb-date-row .nb-resume-cor-btn{font-size:.78rem;padding:4px 10px;margin-left:auto;}
+.nb-date-row:has(.nb-resume-cor-btn){display:flex;align-items:center;gap:10px;}
+@media print{ .nb-resume-cor-btn{display:none !important;} }

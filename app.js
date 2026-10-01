@@ -3236,6 +3236,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.886', date: '2026-10-01', items: [
+    "Outil de correction : le bouton « Résumé pour le cahier de textes » est aussi dans le cahier de corrections, en face de chaque date. Il ouvre le même résumé de la séance (cours, correction du travail maison, exercices en classe entière, en autonomie…) à copier dans École Directe, Pronote ou autre."
+  ]},
   { version: '2026-08-19.885', date: '2026-10-01', items: [
     "Outil de correction : dans le cahier de corrections, sous chaque exercice, trois vignettes cliquables « Correction du travail maison », « En classe entière », « En autonomie » : un clic change le type de correction sans rééditer l'exercice (re-cliquer la vignette active la retire). Enregistré aussitôt ; le résumé du jour pour le cahier de textes suit.",
     "Géométrie dynamique : le triangle et le polygone régulier se construisent aussi en cliquant n'importe où dans le plan (sommets créés au clic, ou accrochés à un objet), comme le polygone."
@@ -6709,14 +6712,14 @@ async function moveCahierEntry(idx, direction){
    droite), plutôt qu'en haut à côté de la date -- un vrai pied de PAGE physique n'est pas
    possible en HTML/CSS standard pour du contenu qui varie (la coupure des pages n'est connue
    qu'à l'impression), ceci en est l'équivalent le plus proche réalisable. */
-function groupedEntriesHTML(entries, renderItem){
+function groupedEntriesHTML(entries, renderItem, dateExtra){
   let html=''; let lastKey=null; let currentChapitre=''; let lastDate=null;
   entries.forEach((e,i)=>{
     const key = (e.date||'')+'|'+(e.chapitre||'');
     if(key!==lastKey){
       if(lastKey!==null){ html += `<div class="nb-page-footer">${escapeHtml(currentChapitre)}</div><hr class="nb-daysep">`; }
       // La date n'est répétée qu'au changement de jour (plusieurs chapitres le même jour, ex. une interrogation).
-      if((e.date||'')!==lastDate) html+=`<div class="nb-date-row"><div class="nb-date">${fmtDateFR(e.date)}</div></div>`;
+      if((e.date||'')!==lastDate) html+=`<div class="nb-date-row"><div class="nb-date">${fmtDateFR(e.date)}</div>${dateExtra && e.date ? dateExtra(e.date) : ''}</div>`;
       lastDate = e.date||'';
       lastKey=key;
       currentChapitre = e.chapitre||'';
@@ -6932,7 +6935,7 @@ function renderCahier(){
         <button class="remove" style="color:var(--accent);" onclick="editCahierEntry(${cahier.indexOf(e)})">Modifier</button>
         <button class="remove" onclick="removeCahierEntry(${cahier.indexOf(e)})">Retirer</button>
       </div>
-    </div>`);
+    </div>`, date=>`<button type="button" class="btn secondary nb-resume-cor-btn" onclick="resumeCahierJour('${date}')" title="Résumé de la séance à copier dans le cahier de textes (École Directe, Pronote…)"><span class="gicon">content_paste</span> Résumé pour le cahier de textes</button>`);
 }
 let cahierFilterFrom = null, cahierFilterTo = null;
 let cahierFilterChapitre = '';
