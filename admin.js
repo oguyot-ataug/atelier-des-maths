@@ -403,6 +403,12 @@ document.body.insertAdjacentHTML('beforeend', `
       <p class="hint" style="margin:0 0 6px;">Classes rattachées (établissement) :</p>
       <div id="editProfClassesList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;max-height:160px;overflow:auto;"></div>
     </div>
+    <div id="editProfNiveauxBox" style="display:none;background:rgba(31,122,77,.06);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+      <p style="margin:0 0 4px;font-weight:600;"><span class=gicon>menu_book</span> Niveaux accessibles</p>
+      <p class="hint" style="margin:0 0 8px;">Le professeur voit les niveaux de ses classes et le niveau précédent (révision). Cochez les niveaux à lui ouvrir <b>en plus</b> (par exemple pour préparer l'an prochain). Sans aucune classe, il voit tout.</p>
+      <div id="editProfNiveauxList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      <p class="hint" id="editProfNiveauxAuto" style="margin:8px 0 0;"></p>
+    </div>
     <div id="editProfAiBox" style="display:none;background:rgba(13,91,163,.05);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
       <p style="margin:0 0 6px;font-weight:600;"><span class=gicon>smart_toy</span> Intelligence artificielle : clé utilisée</p>
       <label style="display:flex;align-items:center;gap:8px;margin:4px 0;"><input type="radio" name="editProfAiKey" value="site"> Clé du site (payée par l'administrateur)</label>
@@ -544,6 +550,18 @@ async function openEditProfModal(id){
     uaiClassesBox.style.display = '';
     await renderEditProfClasses(prof);
   }
+  // Niveaux ouverts en plus (comptes gérés par l'établissement, offres-prof.js : offreSource 'classes').
+  const nivBox = document.getElementById('editProfNiveauxBox');
+  nivBox.style.display = prof.role==='prof' ? '' : 'none';
+  if(prof.role==='prof'){
+    const extra = new Set(prof.niveaux_extra || []);
+    document.getElementById('editProfNiveauxList').innerHTML = OP_ORDRE.map(n=>`<label style="display:inline-flex;align-items:center;gap:5px;background:#fff;padding:5px 10px;border-radius:20px;font-size:.85rem;cursor:pointer;border:1px solid rgba(28,43,57,.12);"><input type="checkbox" class="editProfNivCheck" value="${n}" ${extra.has(n)?'checked':''}> ${niveauLabel(n)}</label>`).join('');
+    const { data: liens } = await sb.from('class_teachers').select('classes(niveau)').eq('teacher_id', id);
+    const niv = [...new Set((liens||[]).map(r=>r.classes && String(r.classes.niveau||'').toLowerCase()).filter(n=>OP_ORDRE.includes(n)))];
+    document.getElementById('editProfNiveauxAuto').textContent = niv.length
+      ? 'Par ses classes : ' + opRevision(niv).map(niveauLabel).join(', ') + '.'
+      : 'Aucune classe de CM1 à 3e : tous les niveaux sont visibles.';
+  }
   // Clé IA (professeurs seulement : l'administrateur utilise toujours la clé du site).
   const aiBox = document.getElementById('editProfAiBox');
   const aiBoxShown = prof.role==='prof' && !adminScopeUai(); // choix de clé : administrateur général
@@ -596,6 +614,10 @@ async function saveEditProfModal(){
   // n'a ni l'un ni l'autre (sa classe se gère via class_students, ailleurs dans le panneau).
   if(editProfTargetRole!=='eleve'){
     patch.uai = document.getElementById('editProfUai').value.trim() || null;
+  }
+  if(editProfTargetRole==='prof'){
+    const extra = Array.from(document.querySelectorAll('.editProfNivCheck:checked')).map(el=>el.value);
+    patch.niveaux_extra = extra.length ? extra : null;
   }
   const { error } = await sb.from('profiles').update(patch).eq('id', editProfTargetId);
   if(error){ status.textContent = 'Erreur : '+error.message; return; }

@@ -522,12 +522,13 @@ function isChapterLocked(lvl, titre){
   return typeof familleNiveaux!=='undefined' && Array.isArray(familleNiveaux) && !familleNiveaux.includes(lvl);
 }
 function lockedChapterLabel(){
-  if(!restrictedVisitor && typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux)) return currentUserRole==='prof' ? 'hors de votre offre' : 'hors du niveau de ta classe';
+  if(!restrictedVisitor && typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux)) return currentUserRole==='prof' ? (typeof offreSource!=='undefined' && offreSource==='classes' ? 'hors de vos classes' : 'hors de votre offre') : 'hors du niveau de ta classe';
   return (typeof familleNiveaux!=='undefined' && Array.isArray(familleNiveaux) && !restrictedVisitor) ? 'hors de votre accès Famille' : 'réservé aux inscrits';
 }
 function onLockedChapterClick(){
   if(!restrictedVisitor && typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux)){
-    if(currentUserRole==='prof' && typeof openAbonnement==='function') openAbonnement();
+    if(currentUserRole==='prof' && typeof offreSource!=='undefined' && offreSource==='classes') niceAlert('Ce niveau ne fait pas partie de vos classes : vous voyez les niveaux de vos classes et le niveau précédent. Pour ouvrir un autre niveau (par exemple pour préparer l\'an prochain), demandez au référent de votre établissement ou à l\'administrateur.');
+    else if(currentUserRole==='prof' && typeof openAbonnement==='function') openAbonnement();
     else niceAlert('Ce niveau ne fait pas partie de ta classe. Tu peux travailler les chapitres de ton niveau et du niveau précédent.');
     return;
   }
@@ -3236,6 +3237,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.888', date: '2026-10-01', items: [
+    "Niveaux accessibles aux professeurs des établissements -- signalé : « ma collègue qui a juste des cours de 6e et 5e a accès à tous ». Un professeur dont le compte est géré par l'établissement voit maintenant les niveaux de ses classes et le niveau précédent en révision (classes de 6e et 5e : CM2, 6e et 5e) ; les autres chapitres portent « hors de vos classes ». Sans aucune classe, ou pendant l'essai gratuit, tout reste visible. Les professeurs avec une offre « Professeur seul » gardent les niveaux de leur offre.",
+    "Administration (et référent d'établissement) : dans la fenêtre de modification d'un professeur, « Niveaux accessibles » rappelle les niveaux donnés par ses classes et permet d'ouvrir des niveaux en plus (par exemple pour préparer l'an prochain). Le professeur ne peut pas changer ce réglage lui-même."
+  ]},
   { version: '2026-08-19.887', date: '2026-10-01', items: [
     "Aide pour les professeurs : un bouton « ? » en bas à gauche lance une visite guidée de la page ouverte. Chaque étape est une petite fenêtre posée à côté de l'élément expliqué, mis en lumière (Précédent / Suivant, flèches du clavier, Échap pour fermer).",
     "Pages couvertes : accueil, outil de correction, Ma progression, page d'un niveau, chapitre, Mes classes, interrogations en ligne (et leur préparation), Questions flash, devoirs, création d'une évaluation, tableau interactif, outils de classe, et la Géométrie interactive quand elle est ouverte.",

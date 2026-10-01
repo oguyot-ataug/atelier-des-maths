@@ -29,6 +29,7 @@ function opClassesDe(niveaux, sup){ const n = niveaux || []; return n.filter(x =
 function opPrixClasse(niveaux){ return (niveaux || []).some(x => !OP_ECOLE.includes(x)) ? opPrix.seul_classe : opPrix.ecole_classe; }
 let opOffre = null;       // ligne prof_offres du professeur connecté
 let offreNiveaux = null;  // null : pas de restriction ; sinon niveaux ouverts (Professeur seul, ou élève d'une classe en libre-service)
+let offreSource = null;   // 'offre' (Professeur seul payé) | 'classes' (compte géré : niveaux de ses classes) | 'eleve'
 let opEtat = null;        // { choix:'seul'|'particulier', niveaux:Set, classesSup, places, devis, identsNeufs:[] }
 
 function opEur(c){ return (c/100).toFixed(2).replace('.',',').replace(',00','') + ' €'; }
@@ -53,7 +54,7 @@ opChargerPrix();
 /* Appelée par refreshAuthUI (app.js) : offre du professeur, ou niveaux de l'élève. */
 let opEtatUid = null;
 async function offreLoad(role, licenceEtab){
-  opOffre = null; offreNiveaux = null;
+  opOffre = null; offreNiveaux = null; offreSource = null;
   // Changement de compte dans le même onglet : ne rien garder de l'autre compte (identifiants créés...).
   if(opEtatUid !== (currentUser ? currentUser.id : null)){ opEtat = null; opEtatUid = currentUser ? currentUser.id : null; }
   if(!currentUser) return;
@@ -61,7 +62,23 @@ async function offreLoad(role, licenceEtab){
     if(role === 'prof'){
       const { data } = await sb.from('prof_offres').select('*').eq('prof_id', currentUser.id).maybeSingle();
       opOffre = data || null;
-      if(!licenceEtab && opPayee(opOffre) && opOffre.offre === 'seul') offreNiveaux = opRevision(opOffre.niveaux || []);
+      if(!licenceEtab && opPayee(opOffre) && opOffre.offre === 'seul'){ offreNiveaux = opRevision(opOffre.niveaux || []); offreSource = 'offre'; }
+      else if(!opPayee(opOffre)){
+        // Compte géré par l'établissement (licence, ou créé par l'administrateur) -- signalé : « ma collègue
+        // qui a juste des cours de 6e et 5e a accès à tous ». Niveaux de ses classes (groupes compris) et le
+        // niveau inférieur en révision, plus les niveaux ouverts à la main dans l'Administration
+        // (profiles.niveaux_extra). Sans aucune classe : pas de restriction.
+        const [{ data: liens }, { data: prof }] = await Promise.all([
+          sb.from('class_teachers').select('classes(niveau)').eq('teacher_id', currentUser.id),
+          sb.from('profiles').select('niveaux_extra,subscription_status').eq('id', currentUser.id).maybeSingle(),
+        ]);
+        const niv = [...new Set((liens || []).map(r => r.classes && String(r.classes.niveau || '').toLowerCase()).filter(n => OP_ORDRE.includes(n)))];
+        if(niv.length && !(prof && prof.subscription_status === 'trial')){ // pendant l'essai gratuit : tout reste visible
+          const extra = ((prof && prof.niveaux_extra) || []).filter(n => OP_ORDRE.includes(n));
+          const ouverts = new Set(opRevision(niv).concat(extra));
+          offreNiveaux = OP_ORDRE.filter(n => ouverts.has(n)); offreSource = 'classes';
+        }
+      }
     } else if(role === 'eleve'){
       const { data } = await sb.from('class_students').select('classes(niveau,creee_par,groupe)').eq('student_id', currentUser.id);
       const cls = (data || []).map(r => r.classes).filter(c => c && !c.groupe); // les groupes de remédiation ne comptent pas
@@ -72,11 +89,11 @@ async function offreLoad(role, licenceEtab){
       // Primaire (CE2, CM1, CM2) : son niveau et le précédent (clés de chapitres en minuscules : 'cm1').
       const PRIM = ['ce2', 'cm1', 'cm2'], prim = [...new Set(cls.map(c => String(c.niveau || '').toLowerCase()).filter(n => PRIM.includes(n)))];
       const primRev = PRIM.filter(n => prim.some(p => p === n || PRIM.indexOf(p) - 1 === PRIM.indexOf(n)));
-      if(niv.length || prim.length) offreNiveaux = opRevision(niv).concat(primRev);
+      if(niv.length || prim.length){ offreNiveaux = opRevision(niv).concat(primRev); offreSource = 'eleve'; }
     }
   }catch(e){ /* hors ligne */ }
 }
-function offreClear(){ opOffre = null; offreNiveaux = null; opEtat = null; opEtatUid = null; opFactures = []; }
+function offreClear(){ opOffre = null; offreNiveaux = null; offreSource = null; opEtat = null; opEtatUid = null; opFactures = []; }
 
 async function opCall(body){
   const { data:{ session } } = await sb.auth.getSession();
