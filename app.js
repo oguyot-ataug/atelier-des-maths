@@ -3288,6 +3288,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.900', date:'2026-10-01', items:[
+    'CE2 (en préparation, visible des administrateurs) : les 10 derniers chapitres — La multiplication posée, Masses et contenances, La division, La symétrie, Procédures de calcul mental, Comparer et additionner des fractions, Les solides (avec le pliage des 11 patrons du cube), Le périmètre, Problèmes multiplicatifs, Problèmes en plusieurs étapes. Les 24 chapitres du CE2 sont écrits.',
+  ] },
   { version:'2026-08-19.899', date:'2026-10-01', items:[
     'CE2 (en préparation, visible des administrateurs) : 8 nouveaux chapitres — Les longueurs, La multiplication, Polygones et quadrilatères, Problèmes additifs, L\'heure et les durées, Fractions et mesure de longueurs, Tableaux et diagrammes en barres, Angle droit, cercle et constructions.',
     'Chaque chapitre CE2 a ses figures (règle graduée, horloges, axes du temps, schémas en barres, diagrammes, codages), une méthode animée, des exercices corrigés, un quiz et une série de questions flash prêtes.',
