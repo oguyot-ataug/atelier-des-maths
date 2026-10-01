@@ -1545,17 +1545,17 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .cl-scene:fullscreen .cl-scene-quitter{display:block;}
 .cl-scene:fullscreen .cl-bloc > p.hint{display:none;}
 @container (max-height:430px){ .cl-bloc > p.hint{display:none;} }
-.cl-scene .cl-roue-cadre{width:max(150px,min(56cqw,calc(100cqh - 170px)));}
-.cl-scene .cl-roue-gagnant{font-size:clamp(1.8rem,7cqmin,5rem);}
+.cl-scene .cl-roue-cadre, .cl-survol .cl-roue-cadre{width:max(150px,min(56cqw,calc(100cqh - 170px)));}
+.cl-scene .cl-roue-gagnant, .cl-survol .cl-roue-gagnant{font-size:clamp(1.8rem,7cqmin,5rem);}
 .cl-scene .cl-roue-tires{max-height:none;}
-.cl-scene .cl-min-apercu{font-size:clamp(2.4rem,16cqmin,11rem);}
-.cl-scene .cl-feu-svg{height:max(110px,min(calc(100cqh - 180px),40cqw));}
+.cl-scene .cl-min-apercu, .cl-survol .cl-min-apercu{font-size:clamp(2.4rem,16cqmin,11rem);}
+.cl-scene .cl-feu-svg, .cl-survol .cl-feu-svg{height:max(110px,min(calc(100cqh - 180px),40cqw));}
 .cl-scene .cl-feu-texte .gicon{font-size:clamp(2.2rem,11cqmin,8rem);}
 .cl-scene .cl-feu-texte b{font-size:clamp(1.5rem,8cqmin,6rem);}
 .cl-scene .cl-feu-texte small{font-size:clamp(.95rem,3.4cqmin,2.2rem);}
-.cl-scene .cl-feu-main{font-size:clamp(1rem,3.8cqmin,2.4rem);}
-.cl-scene #clBruitSvg{width:max(180px,min(92cqw,calc((100cqh - 250px) * 1.8)));}
-.cl-scene .cl-bruit-etat{font-size:clamp(1.4rem,7cqmin,5rem);}
+.cl-scene .cl-feu-main, .cl-survol .cl-feu-main{font-size:clamp(1rem,3.8cqmin,2.4rem);}
+.cl-scene #clBruitSvg, .cl-survol #clBruitSvg{width:max(180px,min(92cqw,calc((100cqh - 250px) * 1.8)));}
+.cl-scene .cl-bruit-etat, .cl-survol .cl-bruit-etat{font-size:clamp(1.4rem,7cqmin,5rem);}
 .cl-bloc:fullscreen{padding:28px;overflow:auto;}
 .cl-bloc h2{margin:0 0 4px;font-size:1.25rem;display:flex;align-items:center;gap:8px;}
 .cl-ligne{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0;}
@@ -1733,3 +1733,18 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 
 /* Élève : niveaux qui ne sont pas les siens (niveauxMenusMaj) */
 .niveau-masque{display:none !important;}
+
+/* Blocs des outils de classe en survol, sur toutes les pages (classe.js : clSurvolBasculer) */
+.cl-survol{position:fixed;z-index:8500;display:flex;resize:both;overflow:hidden;min-width:220px;min-height:170px;max-width:calc(100vw - 8px);max-height:calc(100vh - 8px);border-radius:16px;box-shadow:0 14px 38px rgba(28,43,57,.30);background:#fff;}
+.cl-survol > .cl-bloc{position:relative;flex:1;min-width:0;box-sizing:border-box;overflow:auto;container-type:size;padding:10px 14px 16px;border:2px solid #1C2B39;border-radius:16px;}
+.cl-survol .cl-titre-poignee{cursor:move;}
+.cl-survol .cl-taille,.cl-survol .cl-masquer{display:none;}
+.cl-survol .cl-bloc > p.hint{display:none;}
+.cl-survol .cl-bloc h2{font-size:1rem;}
+.cl-survol-saisi{opacity:.92;user-select:none;}
+.cl-survol-btn{margin-left:auto;border:0;background:none;cursor:pointer;color:#0C5BA0;padding:2px;border-radius:6px;line-height:0;}
+.cl-survol-btn:hover{background:rgba(12,91,160,.1);}
+.cl-survol-btn + .cl-masquer{margin-left:0;}
+.cl-bloc:fullscreen .cl-survol-btn{display:none;}
+.cl-puce-survol{background:rgba(12,91,160,.1) !important;color:#0C5BA0 !important;}
+@media print{ .cl-survol{display:none !important;} }

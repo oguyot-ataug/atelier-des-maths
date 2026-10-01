@@ -267,7 +267,7 @@ function showView(id){
   if(typeof FIG_PROJ!=='undefined' && FIG_PROJ && id!=='view-tableau') return; // fenêtre de projection : rien d'autre que le tableau
   if(typeof QZC_PROJ!=='undefined' && QZC_PROJ) return; // projection des Questions flash (cartes) : rien d'autre
   if(typeof oliviaMaj==='function') setTimeout(oliviaMaj, 30); // Oliv'IA : seulement sur les pages de cours
-  if(id!=='view-classe' && typeof clBruit!=='undefined' && clBruit.actif) clBruitArreter(); // jauge de bruit : micro coupé en quittant la page
+  if(id!=='view-classe' && typeof clBruit!=='undefined' && clBruit.actif && !(typeof clSurvol!=='undefined' && clSurvol.has('clBlocBruit'))) clBruitArreter(); // jauge de bruit : micro coupé en quittant la page (sauf jauge en survol)
   // Sécurité : si un outil (figure, texte, probabilités...) ou l'éditeur de formule était resté
   // ouvert (overlay plein écran) au moment de changer de page via le menu, on le referme -- sans
   // ça, l'overlay reste actif par-dessus la nouvelle page et bloque tous les clics, y compris sur
@@ -3250,6 +3250,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.890', date: '2026-10-01', items: [
+    "Outils de classe : chaque bloc a un bouton « survol » (⧉) dans son titre. La roue de la chance, le feu de consigne et la jauge de bruit passent alors dans une petite fenêtre flottante, visible sur toutes les pages du site (cours, géométrie, correction…), avec tout leur état (roue en cours, micro allumé). On la déplace par son titre et on l'agrandit par son coin ; position et taille sont mémorisées. Le même bouton (ou la puce « en survol » de la barre) la remet dans la page des outils. Pour le compte à rebours, le bouton lance sa fenêtre flottante.",
+    "La jauge de bruit en survol continue d'écouter quand on change de page ; dans la page des outils seulement, le micro se coupe toujours en la quittant."
+  ]},
   { version: '2026-08-19.889', date: '2026-10-01', items: [
     "Élèves : les menus et les cartes des autres niveaux sont masqués. Demandé : « je préfère qu'un collégien ne voie pas les menus des autres niveaux sauf le niveau précédent si le niveau est au collège ». Un élève voit son niveau et le niveau précédent seulement s'il est du même établissement : 5e → 6e et 5e ; 6e → 6e seulement (le CM2 est à l'école) ; CM2 → CM1 et CM2.",
     "Même règle pour les professeurs des établissements (« un établissement est soit une école, soit un collège ») : un professeur de 6e et 5e voit 6e et 5e, sans le CM2. Les niveaux en plus restent réglables dans l'Administration."

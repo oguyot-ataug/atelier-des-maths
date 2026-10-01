@@ -101,6 +101,8 @@ function renderClasseOutils(){
       </div>
     </section>
   </div>`;
+  // Blocs en survol (fenêtres flottantes) : ils gardent leur état ; la copie neuve de la page est retirée.
+  clSurvol.forEach(id => { const neuf = root.querySelector('#' + id); if(neuf) neuf.remove(); });
   clRoueCharger(sel);
   clFeuDessiner(); clBruitDessiner(0);
   clDispoInit();
@@ -393,7 +395,7 @@ function clBorne(v, a, b){ return Math.max(a, Math.min(b, v)); }
 function clDispoVisibles(){
   CL_BLOCS.forEach(b => { if(!clDispo.ordre.includes(b.id)) clDispo.ordre.push(b.id); });   // bloc ajouté dans une version future
   clDispo.ordre = clDispo.ordre.filter(id => CL_BLOCS.some(b => b.id === id));
-  return clDispo.ordre.filter(id => !clDispo.caches.includes(id));
+  return clDispo.ordre.filter(id => !clDispo.caches.includes(id) && !clSurvol.has(id));
 }
 // Rectangles [x, y, largeur, hauteur] en % de la scène.
 function clGrille(n, cols){
@@ -423,7 +425,7 @@ function clDispoPoser(el, [x, y, w, h]){
 function clDispoAppliquer(){
   const scene = document.getElementById('clScene'); if(!scene) return;
   const vis = clDispoVisibles(), rects = clDispoRects();
-  CL_BLOCS.forEach(b => { const el = document.getElementById(b.id); if(!el) return;
+  CL_BLOCS.forEach(b => { const el = document.getElementById(b.id); if(!el || clSurvol.has(b.id)) return; // en survol : sa fenêtre le gère
     const i = vis.indexOf(b.id); el.hidden = i < 0; el.style.order = i; if(i >= 0) clDispoPoser(el, rects[i]);
     if(clDispo.mode !== 'libre') el.style.zIndex = ''; });
   scene.classList.toggle('cl-libre', clDispo.mode === 'libre');
@@ -436,6 +438,7 @@ function clBarreDessiner(){
   const vignette = m => `<svg viewBox="0 0 40 24" width="44" height="26" aria-hidden="true">${m.r.map(([x, y, w, h]) => `<rect x="${(x * .4 + .8).toFixed(1)}" y="${(y * .24 + .8).toFixed(1)}" width="${(w * .4 - 1.6).toFixed(1)}" height="${(h * .24 - 1.6).toFixed(1)}" rx="1.5"/>`).join('')}</svg>`;
   b.innerHTML = `<div class="cl-barre-groupe"><span class="cl-barre-titre">Blocs affichés</span>
       ${clDispo.ordre.map(id => { const d = CL_BLOCS.find(x => x.id === id), on = !clDispo.caches.includes(id);
+        if(clSurvol.has(id)) return `<button type="button" class="cl-puce on cl-puce-survol" onclick="clSurvolRentrer('${id}')" title="En survol sur toutes les pages : cliquer pour le remettre ici"><span class="gicon">picture_in_picture_alt</span> ${d.nom} (en survol)</button>`;
         return `<button type="button" class="cl-puce ${on ? 'on' : ''}" onclick="clDispoBasculer('${id}')" title="${on ? 'Masquer' : 'Afficher'} ce bloc"><span class="gicon">${on ? 'check_box' : 'check_box_outline_blank'}</span> ${d.nom}</button>`; }).join('')}</div>
     <div class="cl-barre-groupe"><span class="cl-barre-titre">Disposition${n ? ` (${n} bloc${n > 1 ? 's' : ''})` : ''}</span>
       ${n ? ms.map((m, i) => `<button type="button" class="cl-modele ${i === cur ? 'on' : ''}" onclick="clDispoModele(${i})" title="${m.nom}">${vignette(m)}</button>`).join('') : ''}
@@ -445,6 +448,7 @@ function clBarreDessiner(){
     <p class="hint cl-barre-aide">Glissez un bloc par son titre ${libre ? 'pour le déplacer' : 'sur un autre pour les échanger'} ; tirez son coin <b>◢</b> pour l'agrandir${libre ? '' : ' (passe en disposition libre)'}.</p>`;
 }
 function clDispoBasculer(id){
+  if(clSurvol.has(id)){ clSurvolRentrer(id); return; }
   const i = clDispo.caches.indexOf(id);
   if(i >= 0){ clDispo.caches.splice(i, 1); if(clDispo.mode === 'libre' && !clDispo.pos[id]) clDispo.pos[id] = [27, 22, 46, 56]; }
   else { clDispo.caches.push(id); if(id === 'clBlocBruit' && clBruit.actif) clBruitArreter(); }
@@ -459,10 +463,10 @@ function clDispoLibre(){
 }
 function clDispoInit(){
   const scene = document.getElementById('clScene'); if(!scene) return;
-  CL_BLOCS.forEach(b => { const el = document.getElementById(b.id); if(!el) return;
+  CL_BLOCS.forEach(b => { const el = document.getElementById(b.id); if(!el || clSurvol.has(b.id)) return;
     const h2 = el.querySelector('h2'); h2.classList.add('cl-titre-poignee'); h2.title = 'Glisser pour déplacer le bloc';
     h2.insertAdjacentHTML('afterbegin', '<span class="gicon cl-grip">drag_indicator</span>');
-    h2.insertAdjacentHTML('beforeend', `<button type="button" class="cl-masquer" title="Masquer ce bloc" onclick="clDispoBasculer('${b.id}')"><span class="gicon">close</span></button>`);
+    h2.insertAdjacentHTML('beforeend', `<button type="button" class="cl-survol-btn" title="${b.id === 'clBlocMinuteur' ? 'Lancer le compte à rebours dans une petite fenêtre, visible sur toutes les pages' : 'Garder en survol : une petite fenêtre visible sur toutes les pages du site'}" onclick="clSurvolBasculer('${b.id}')"><span class="gicon">picture_in_picture_alt</span></button><button type="button" class="cl-masquer" title="Masquer ce bloc" onclick="clDispoBasculer('${b.id}')"><span class="gicon">close</span></button>`);
     el.insertAdjacentHTML('beforeend', '<span class="cl-taille" title="Tirer pour agrandir ou réduire"></span>');
     h2.addEventListener('pointerdown', e => clDispoGlisser(e, el, 'deplacer'));
     el.querySelector('.cl-taille').addEventListener('pointerdown', e => clDispoGlisser(e, el, 'taille'));
@@ -471,6 +475,7 @@ function clDispoInit(){
   clDispoAppliquer();
 }
 function clDispoGlisser(e, el, quoi){
+  if(el.closest('.cl-survol')) return; // bloc en survol : il se déplace avec sa fenêtre (clSurvolGlisser)
   if(e.button !== 0 || e.target.closest('button,input,select,textarea') || window.matchMedia('(max-width:760px)').matches) return;
   const scene = document.getElementById('clScene'), R = scene.getBoundingClientRect(), id = el.id, x0 = e.clientX, y0 = e.clientY;
   e.preventDefault();
@@ -506,6 +511,63 @@ function clDispoGlisser(e, el, quoi){
 document.addEventListener('fullscreenchange', () => {
   const w = document.getElementById('clMinFlottant'), hote = document.fullscreenElement && document.fullscreenElement.id !== 'clMinPlein' ? document.fullscreenElement : document.body;
   if(w && w.parentNode !== hote) hote.appendChild(w);
+});
+
+/* ------------------------------ Survol sur toutes les pages ------------------------------
+   Demandé : « Pour les tuiles Compte à rebours, feu… leur permettre de se mettre en survol sur
+   n'importe quelle page. » Le bouton ⧉ du titre d'un bloc le sort de la page des outils de classe :
+   le bloc lui-même (avec son état : roue en cours, micro allumé…) part dans une petite fenêtre
+   flottante, déplaçable par son titre et redimensionnable par son coin, qui reste affichée quand on
+   change de page (cours, géométrie, correction…). Le même bouton (ou la puce « en survol » de la
+   barre) le remet à sa place. Position et taille de chaque fenêtre mémorisées sur l'appareil.
+   Le compte à rebours a déjà sa fenêtre flottante : le bouton la lance. */
+const clSurvol = new Set();
+const CL_SURVOL_TAILLE = { clBlocRoue: [400, 470], clBlocFeu: [320, 430], clBlocBruit: [330, 380] };
+let clSurvolPos = {}; try{ clSurvolPos = JSON.parse(localStorage.getItem('clSurvolPos') || '{}') || {}; }catch(e){}
+function clSurvolSauver(){ try{ localStorage.setItem('clSurvolPos', JSON.stringify(clSurvolPos)); }catch(e){} }
+function clSurvolBasculer(id){
+  if(id === 'clBlocMinuteur'){ clMinLancer('flottant'); return; }
+  if(clSurvol.has(id)){ clSurvolRentrer(id); return; }
+  const el = document.getElementById(id); if(!el) return;
+  const [w0, h0] = CL_SURVOL_TAILLE[id] || [340, 400], n = clSurvol.size;
+  const p = clSurvolPos[id] || { x: window.innerWidth - w0 - 24 - n * 30, y: 90 + n * 30, w: w0, h: h0 };
+  const w = document.createElement('div'); w.className = 'cl-survol'; w.id = 'clSurvol_' + id;
+  w.style.width = Math.min(p.w, window.innerWidth - 16) + 'px'; w.style.height = Math.min(p.h, window.innerHeight - 16) + 'px';
+  w.style.left = clBorne(p.x, 0, window.innerWidth - 120) + 'px'; w.style.top = clBorne(p.y, 0, window.innerHeight - 60) + 'px';
+  el.removeAttribute('style'); el.hidden = false; el.classList.remove('cl-saisi', 'cl-cible');
+  w.appendChild(el);
+  (document.fullscreenElement || document.body).appendChild(w);
+  clSurvol.add(id);
+  const b = el.querySelector('.cl-survol-btn'); if(b){ b.title = 'Remettre dans la page des outils de classe'; b.innerHTML = '<span class="gicon">close_fullscreen</span>'; }
+  w.addEventListener('pointerdown', e => { if(e.target.closest('h2')) clSurvolGlisser(e, w, id); });
+  if(window.ResizeObserver) new ResizeObserver(() => { if(!w.isConnected) return; const q = clSurvolPos[id] || {}; clSurvolPos[id] = { x: w.offsetLeft, y: w.offsetTop, w: w.offsetWidth, h: w.offsetHeight }; if(q.w !== w.offsetWidth || q.h !== w.offsetHeight) clSurvolSauver(); }).observe(w);
+  clDispoAppliquer();
+}
+function clSurvolRentrer(id){
+  const w = document.getElementById('clSurvol_' + id), el = document.getElementById(id), scene = document.getElementById('clScene');
+  if(el){
+    const b = el.querySelector('.cl-survol-btn'); if(b){ b.title = 'Garder en survol : une petite fenêtre visible sur toutes les pages du site'; b.innerHTML = '<span class="gicon">picture_in_picture_alt</span>'; }
+    if(scene) scene.insertBefore(el, scene.querySelector('.cl-scene-quitter')); else el.remove();
+  }
+  if(w) w.remove();
+  clSurvol.delete(id);
+  if(id === 'clBlocBruit' && clBruit.actif && !document.getElementById('view-classe')?.classList.contains('active')) clBruitArreter();
+  clDispoAppliquer();
+}
+function clSurvolGlisser(e, w, id){
+  if(e.button !== 0 || e.target.closest('button,input,select,textarea')) return;
+  e.preventDefault();
+  const dx = e.clientX - w.offsetLeft, dy = e.clientY - w.offsetTop;
+  w.classList.add('cl-survol-saisi');
+  const bouge = ev => { w.style.left = clBorne(ev.clientX - dx, 0, window.innerWidth - 80) + 'px'; w.style.top = clBorne(ev.clientY - dy, 0, window.innerHeight - 40) + 'px'; };
+  const fin = () => { window.removeEventListener('pointermove', bouge); window.removeEventListener('pointerup', fin); w.classList.remove('cl-survol-saisi');
+    clSurvolPos[id] = { x: w.offsetLeft, y: w.offsetTop, w: w.offsetWidth, h: w.offsetHeight }; clSurvolSauver(); };
+  window.addEventListener('pointermove', bouge); window.addEventListener('pointerup', fin);
+}
+// Les fenêtres en survol suivent le plein écran (sinon elles seraient cachées derrière).
+document.addEventListener('fullscreenchange', () => {
+  const hote = document.fullscreenElement && !document.fullscreenElement.classList.contains('cl-bloc') && document.fullscreenElement.id !== 'clMinPlein' ? document.fullscreenElement : document.body;
+  document.querySelectorAll('.cl-survol').forEach(w => { if(w.parentNode !== hote && !w.contains(document.fullscreenElement)) hote.appendChild(w); });
 });
 
 /* --------------------------------- Utilitaires --------------------------------- */
