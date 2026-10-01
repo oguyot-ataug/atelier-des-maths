@@ -3236,6 +3236,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.884', date: '2026-10-01', items: [
+    "Outil de correction : trois cases sous le titre de l'exercice, « Correction du travail maison », « En classe entière », « En autonomie » (un seul choix, ou aucun ; le choix est gardé d'un exercice à l'autre). Dans le cahier, l'exercice porte une étiquette de couleur ; dans le résumé du jour pour le cahier de textes, les exercices sont rangés en rubriques séparées : « 🏠 Correction du travail maison », « Exercices en classe entière », « Exercices en autonomie ».",
+    "Géométrie dynamique : nouvel outil « Renommer » (A→B, à côté de l'outil Point) : on clique un point ou son nom, puis on tape le nouveau nom (1 à 4 caractères ; un nom déjà pris est refusé). Le double-clic en mode Déplacer fait la même chose.",
+    "Géométrie dynamique : le polygone se construit maintenant en cliquant n'importe où dans le plan : chaque clic hors d'un point existant crée le sommet (sur un objet, il y est accroché). Le tracé en cours apparaît en pointillés, et le premier sommet est entouré pour refermer le polygone."
+  ]},
   { version: '2026-08-19.883', date: '2026-10-01', items: [
     "Accueil : vidéo « Cartes flashcode, sans ordinateur » (1 min 58), dans les outils pour les professeurs. On y voit le lancement des Questions flash avec les cartes, la numérotation des élèves et l'impression des planches, puis le téléphone relié qui lit les cartes levées de toute la classe : la grille passe au vert en direct, les résultats s'affichent sur l'écran du professeur, la correction, et un élève qui change de carte."
   ]},
@@ -6136,7 +6141,7 @@ let cahierShowAll = false;
 let cahierDatesList = [];           // [{date, count}] -- squelette léger de l'accordéon
 let cahierLoadedDates = new Set();  // dates dont le contenu complet est déjà dans `cahier`
 let cahierEditableMode = false;     // mémorisé pour le rendu différé d'un jour déplié
-const CAHIER_COLS_LEGERES = 'id,class_id,niveau,chapitre,exo,titre,date,raw,html,figure,created_at,ordre';
+const CAHIER_COLS_LEGERES = 'id,class_id,niveau,chapitre,exo,titre,date,raw,html,figure,created_at,ordre,modalite';
 // Ne récupère que les dates (avec un compte d'entrées par jour) -- construit le squelette de
 // l'accordéon sans charger aucun contenu. Quasi gratuit même sur une année entière (juste des
 // chaînes de date, aucune colonne lourde).
@@ -6402,6 +6407,7 @@ async function addToCahier(){
     chapitre: document.getElementById('corChapitre').value,
     exo: document.getElementById('corExoNum').value || '-',
     titre: document.getElementById('corTitre').value.trim(),
+    modalite: corModalite(),
     // Date vide = brouillon (voir startBrouillon) -- ne retombe PLUS sur aujourd'hui par défaut,
     // signalé : "un bouton brouillons... qui annule la date par défaut". Reste null tant que le
     // prof n'a pas explicitement choisi une date, plutôt que de silencieusement la fixer.
@@ -6468,6 +6474,7 @@ async function editCahierEntry(i){
   document.getElementById('corChapitre').value = e.chapitre;
   document.getElementById('corExoNum').value = e.exo==='-'?'':e.exo;
   document.getElementById('corTitre').value = e.titre||'';
+  corModalite(e.modalite||null);
   // Reste vide pour un brouillon (e.date null) -- ne retombe plus sur aujourd'hui, sinon
   // rouvrir un brouillon lui assignait silencieusement une date et le faisait sortir des
   // brouillons sans que le prof l'ait demandé.
@@ -6514,6 +6521,19 @@ function cancelEditCahier(){
   document.getElementById('btnCancelEdit').style.display = 'none';
   clearCorrectionInput();
 }
+/* Modalité de l'exercice (outil de correction) : correction du travail maison, en classe entière ou en
+   autonomie -- un seul choix, ou aucun. Gardée d'un exercice à l'autre (souvent la même pendant une séance). */
+const COR_MODALITES = { maison: ['Correction du travail maison', 'home', '#8A4B08'], classe: ['En classe entière', 'groups', '#0C5BA0'], autonomie: ['En autonomie', 'person', '#2E7D32'] };
+function corModalite(v){
+  const cases = document.querySelectorAll('#corModalites input');
+  if(v !== undefined){ cases.forEach(c=>{ c.checked = c.value===v; }); return v; }
+  const c = [...cases].find(x=>x.checked); return c ? c.value : null;
+}
+function corChoisirModalite(el){ if(el.checked) document.querySelectorAll('#corModalites input').forEach(c=>{ if(c!==el) c.checked = false; }); }
+function modaliteBadge(m){
+  const d = COR_MODALITES[m]; if(!d) return '';
+  return `<span class="nb-modalite" style="--c:${d[2]}"><span class="gicon">${d[1]}</span> ${d[0]}</span>`;
+}
 function clearCorrectionInput(){
   document.getElementById('correctionInput').value='';
   document.getElementById('corExoNum').value='';
@@ -6555,7 +6575,7 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
   // '-' (déjà utilisé par l'outil de correction pour "numéro non renseigné", qui affiche encore
   // "Exercice -").
   const refLabel = e.exo==='' ? '' : e.exo==='Cours' ? 'Cours' : e.exo==='Interrogation' ? 'Interrogation' : (e.exo==='Questions flash' || e.exo==='Séance en direct') ? 'Questions flash' : (e.exo==='TD' ? 'TD' : ('Exercice '+e.exo)); // Interrogation : questionnaires-cahier.js
-  let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}</div>`;
+  let html = `<div class="cahier-print-entry"><div class="nb-ref-row"><div class="nb-ref">${refLabel}${e.titre?' : '+escapeHtml(e.titre):''}${e.modalite ? ' '+modaliteBadge(e.modalite) : ''}</div>`;
   if(editable){
     // Le déplacement ne peut se faire QU'À L'INTÉRIEUR du même groupe (même date + même
     // chapitre) -- au-delà, ça mélangerait des exercices de jours différents et casserait le
@@ -7160,7 +7180,7 @@ function resumeSeanceContenu(date){
   entries.forEach(e=>{
     const nom = String(e.chapitre||'').replace(/^[A-Z]{1,3}\d+[a-z]?\s*·\s*/, '').trim() || 'Chapitre non précisé';
     const titre = String(e.titre||'').replace(/\s+/g, ' ').trim();
-    const type = e.exo==='Cours' ? 'cours' : e.exo==='Interrogation' ? 'interro' : (e.exo==='Questions flash' || e.exo==='Séance en direct') ? 'flash' : 'exos';
+    const type = e.exo==='Cours' ? 'cours' : e.exo==='Interrogation' ? 'interro' : (e.exo==='Questions flash' || e.exo==='Séance en direct') ? 'flash' : (COR_MODALITES[e.modalite] ? 'exos-' + e.modalite : 'exos');
     let c = blocs[blocs.length-1];
     if(!c || c.nom!==nom){ c = {nom, rubs:[]}; blocs.push(c); }
     let r = c.rubs[c.rubs.length-1];
@@ -7187,7 +7207,8 @@ function resumeSeanceContenu(date){
     }
   });
   // Cours (bleu), Exercices (orange), Interrogation (violet, 📝), Questions flash (rouge, ⚡).
-  const STYLE = { cours: ['Cours', '#0C5BA0', ''], exos: ['Exercices', '#C45F00', ''], interro: ['Interrogation', '#6B3FA0', '📝 '], flash: ['Questions flash', '#C62828', '⚡ '] };
+  const STYLE = { cours: ['Cours', '#0C5BA0', ''], exos: ['Exercices', '#C45F00', ''], interro: ['Interrogation', '#6B3FA0', '📝 '], flash: ['Questions flash', '#C62828', '⚡ '],
+    'exos-maison': ['Correction du travail maison', '#8A4B08', '🏠 '], 'exos-classe': ['Exercices en classe entière', '#C45F00', ''], 'exos-autonomie': ['Exercices en autonomie', '#2E7D32', ''] };
   const ENCRE = '#20242E', esc = t => escapeHtml(t);
   let html = '', txt = '';
   blocs.forEach((c, i)=>{

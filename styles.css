@@ -1690,3 +1690,11 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .pe-bloc.evt{background:repeating-linear-gradient(135deg,#ECEFF1 0 10px,#E3E8EB 10px 20px);border-style:dashed;}
 .pe-evt-ic{font-size:1rem;color:#546E7A;vertical-align:-3px;margin-right:2px;}
 .tl-item.tl-evt{cursor:default;background:#ECEFF1;border-style:dashed;font-style:italic;}
+
+/* Outil de correction : modalité de l'exercice (travail maison, classe entière, autonomie) */
+.cor-modalites{gap:8px;align-items:center;}
+.cor-mod{display:inline-flex;align-items:center;gap:5px;border:1.5px solid rgba(28,43,57,.15);border-radius:999px;padding:4px 12px;font-size:.85rem;cursor:pointer;background:#fff;}
+.cor-mod .gicon{font-size:1.05rem;}
+.cor-mod:has(input:checked){border-color:var(--accent-orange);background:rgba(255,130,8,.1);font-weight:600;}
+.nb-modalite{display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:1px 8px;border-radius:999px;font-size:.72rem;font-weight:600;vertical-align:middle;color:var(--c);background:color-mix(in srgb, var(--c) 10%, #fff);border:1px solid color-mix(in srgb, var(--c) 35%, #fff);}
+.nb-modalite .gicon{font-size:.9rem;}

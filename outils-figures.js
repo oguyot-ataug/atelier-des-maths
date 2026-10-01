@@ -478,6 +478,7 @@ document.body.insertAdjacentHTML('beforeend', `
       <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start;margin-bottom:8px;">
         <button type="button" class="fig-icon-btn fig-mode" data-mode="deplacer" onclick="setFigureMode('deplacer')" title="Déplacer un point">✥</button>
         <button type="button" class="fig-icon-btn fig-mode" data-mode="point" onclick="setFigureMode('point')" title="Point">●</button>
+        <button type="button" class="fig-icon-btn fig-mode" data-mode="renommer" onclick="setFigureMode('renommer')" title="Renommer un point : cliquez le point (ou son nom)" style="font-size:.72rem;font-weight:800;">A→B</button>
         <button type="button" class="fig-icon-btn fig-mode" data-mode="intersection" onclick="setFigureMode('intersection')" title="Point d'intersection : cliquez les deux objets qui se coupent">
           <svg viewBox="0 0 24 24" width="20" height="20"><line x1="3" y1="19" x2="21" y2="5" stroke="currentColor" stroke-width="1.3"/><line x1="3" y1="7" x2="21" y2="17" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="12" r="3.2" fill="none" stroke="#E35D3A" stroke-width="1.6"/></svg>
         </button>
@@ -3786,7 +3787,8 @@ function setFigureMode(mode){
     bissectrice:'Cliquez un point sur le premier côté, puis le sommet de l\'angle, puis un point sur le second côté.',
     code:'Choisissez le type de codage ci-dessus, puis cliquez sur le segment ou l\'angle concerné.',
     triangle:'Cliquez 3 points existants pour tracer le triangle qui les relie.',
-    polygone:'Cliquez les sommets un par un (points existants). Recliquez le tout premier point (une fois au moins 3 posés) pour refermer le polygone.',
+    polygone:'Cliquez les sommets un par un : un point existant, ou n\'importe où dans le plan (le point est créé). Recliquez le tout premier point (au moins 3 sommets) pour refermer le polygone.',
+    renommer:'Cliquez un point (ou son nom) pour le renommer.',
     'polygone-regulier':'Cliquez 2 points existants : ils seront les 2 extrémités d\'un côté (fixe la longueur et l\'orientation) -- le nombre de côtés se règle dans le champ à côté.',
     'angle-mesure':'Cliquez un point du premier côté (ex. B), puis le sommet (ex. A) : une fenêtre demande la mesure et le sens. Le second côté est une demi-droite [Ay) : aucun point n\'est ajouté.',
     vecteur:'Cliquez deux points existants : l\'origine, puis l\'extrémité (avec la flèche).',
@@ -4732,6 +4734,19 @@ function onFigureMouseUp(){
 /* Double-clic sur un point (ou directement son label) pour le renommer -- fonctionne quel
    que soit le mode d'outil actif (pas seulement "Déplacer"), puisque renommer un point ne
    modifie aucune construction, juste son étiquette. */
+/* Renommer un point : 1 à 4 caractères (lettres, chiffres, primes), nom libre dans la figure. */
+async function figRenommerPoint(p){
+  let msg = 'Nouveau nom du point ' + p.label + ' :';
+  for(;;){
+    const n = await nicePrompt(msg, p.label);
+    if(n == null) return;
+    const v = String(n).trim().replace(/'/g, '′');
+    if(!v || v === p.label) return;
+    if(!/^[A-Za-zÀ-ÿ0-9′″]{1,4}$/.test(v)){ msg = 'Nom invalide (1 à 4 caractères : lettres, chiffres, prime \'). Nouveau nom du point ' + p.label + ' :'; continue; }
+    if(figState.points.some(q => q !== p && q.label === v)){ msg = 'Le nom ' + v + ' est déjà pris. Nouveau nom du point ' + p.label + ' :'; continue; }
+    p.label = v; renderFigureSvg(); return;
+  }
+}
 function figPointActionsModal(point){
   return new Promise(resolve=>{
     const overlay = document.createElement('div');
@@ -4784,9 +4799,8 @@ async function onFigureDblClick(evt){
   if(result.action==='delete'){
     deleteObjectWithDependents(p);
   } else if(result.action==='rename'){
-    const newLabel = await nicePrompt('Nouveau nom du point :', p.label);
-    if(newLabel && newLabel.trim()) p.label = newLabel.trim();
-    renderFigureSvg();
+    pushFigHistory();
+    await figRenommerPoint(p);
   }
 }
 /* Crée le milieu de [a,b] : le point lui-même, ET les deux moitiés comme de VRAIS segments
@@ -4847,8 +4861,9 @@ function createMidpoint(a, b){
    paire consécutive, plus un dernier qui revient au point de départ. */
 let figPolygonPts = [];
 function handlePolygoneClick(x,y){
-  const pt = findNearbyPoint(x,y);
-  if(!pt) return;
+  // Demandé : « créer un polygone progressivement en cliquant sur des points du plan même s'ils ne
+  // sont pas existants » -- un clic hors d'un point existant crée le sommet (comme l'outil Point).
+  const pt = findNearbyPoint(x,y) || figPlacerPoint(x,y);
   if(figPolygonPts.length>=3 && pt===figPolygonPts[0]){
     for(let i=0;i<figPolygonPts.length;i++){
       const a=figPolygonPts[i], b=figPolygonPts[(i+1)%figPolygonPts.length];
@@ -4983,6 +4998,47 @@ function handleIntersectionClick(x, y){
   }
   renderFigureSvg();
 }
+/* Place un point au clic, comme l'outil Point : sur un objet (point lié), au croisement de deux objets
+   (intersection), ou libre. Renvoie le point créé (sans rendu : à l'appelant de redessiner). */
+function figPlacerPoint(x, y){
+  const twoShapes = findTwoNearbyLineShapes(x,y);
+  if(twoShapes){
+    const [s1,s2] = twoShapes;
+    const inter = intersectLines(s1,s2);
+    if(inter){
+      figState.points.push({label:nextPointLabel(), x:inter.x, y:inter.y, def:{type:'intersection', s1, s2}, dependsOn:[s1,s2]});
+      return figState.points[figState.points.length-1];
+    }
+  }
+  const croisement = findCurveIntersectionNear(x,y);
+  if(croisement){
+    const {s1, s2} = croisement;
+    figState.points.push({label:nextPointLabel(), x:croisement.x, y:croisement.y, def:{type:'intersection-courbes', s1, s2}, dependsOn:[s1,s2]});
+    return figState.points[figState.points.length-1];
+  }
+  const shape = findNearbyShape(x,y);
+  if(shape && ['segment','droite','demi-droite','mediatrice','perpendiculaire','parallele','bissectrice'].includes(shape.type)){
+    const {p1,p2} = lineShapeEndpoints(shape);
+    const dx=p2.x-p1.x, dy=p2.y-p1.y, len2=dx*dx+dy*dy||1;
+    const t = clampTForShapeType(((x-p1.x)*dx+(y-p1.y)*dy)/len2, shape.type);
+    const hasRealPoints = ['segment','droite','demi-droite'].includes(shape.type);
+    const dependsOn = hasRealPoints ? [shape.p1, shape.p2, shape] : [shape];
+    figState.points.push({label:nextPointLabel(), x:p1.x+t*dx, y:p1.y+t*dy, def:{type:'point-sur-droite', shape, t}, dependsOn});
+    return figState.points[figState.points.length-1];
+  }
+  if(shape && shape.type==='cercle'){
+    const r = circleRadius(shape);
+    const refAngle = shape.radius!=null ? (shape.angle||0) : Math.atan2(shape.p2.y-shape.p1.y, shape.p2.x-shape.p1.x);
+    const clickAngle = Math.atan2(y-shape.p1.y, x-shape.p1.x);
+    const offset = clickAngle - refAngle;
+    const deps = [shape.p1, shape].filter(Boolean);
+    if(shape.p2) deps.push(shape.p2);
+    figState.points.push({label:nextPointLabel(), x:shape.p1.x+r*Math.cos(clickAngle), y:shape.p1.y+r*Math.sin(clickAngle), def:{type:'point-sur-cercle', shape, offset}, dependsOn:deps});
+    return figState.points[figState.points.length-1];
+  }
+  figState.points.push({label:nextPointLabel(), x, y});
+  return figState.points[figState.points.length-1];
+}
 async function onFigureClick(evt){
   if(figState.mode==='deplacer') return; // géré par mousedown/mousemove
   pushFigHistory();
@@ -4990,47 +5046,13 @@ async function onFigureClick(evt){
   const {x,y} = svgCoordsFromEvent(svg,evt);
   if(figState.mode==='point'){
     if(findNearbyPoint(x,y)) return;
-    const twoShapes = findTwoNearbyLineShapes(x,y);
-    if(twoShapes){
-      const [s1,s2] = twoShapes;
-      const inter = intersectLines(s1,s2);
-      if(inter){
-        figState.points.push({label:nextPointLabel(), x:inter.x, y:inter.y, def:{type:'intersection', s1, s2}, dependsOn:[s1,s2]});
-        renderFigureSvg();
-        return;
-      }
-    }
-    const croisement = findCurveIntersectionNear(x,y);
-    if(croisement){
-      const {s1, s2} = croisement;
-      figState.points.push({label:nextPointLabel(), x:croisement.x, y:croisement.y, def:{type:'intersection-courbes', s1, s2}, dependsOn:[s1,s2]});
-      renderFigureSvg();
-      return;
-    }
-    const shape = findNearbyShape(x,y);
-    if(shape && ['segment','droite','demi-droite','mediatrice','perpendiculaire','parallele','bissectrice'].includes(shape.type)){
-      const {p1,p2} = lineShapeEndpoints(shape);
-      const dx=p2.x-p1.x, dy=p2.y-p1.y, len2=dx*dx+dy*dy||1;
-      const t = clampTForShapeType(((x-p1.x)*dx+(y-p1.y)*dy)/len2, shape.type);
-      const hasRealPoints = ['segment','droite','demi-droite'].includes(shape.type);
-      const dependsOn = hasRealPoints ? [shape.p1, shape.p2, shape] : [shape];
-      figState.points.push({label:nextPointLabel(), x:p1.x+t*dx, y:p1.y+t*dy, def:{type:'point-sur-droite', shape, t}, dependsOn});
-      renderFigureSvg();
-      return;
-    }
-    if(shape && shape.type==='cercle'){
-      const r = circleRadius(shape);
-      const refAngle = shape.radius!=null ? (shape.angle||0) : Math.atan2(shape.p2.y-shape.p1.y, shape.p2.x-shape.p1.x);
-      const clickAngle = Math.atan2(y-shape.p1.y, x-shape.p1.x);
-      const offset = clickAngle - refAngle;
-      const deps = [shape.p1, shape].filter(Boolean);
-      if(shape.p2) deps.push(shape.p2);
-      figState.points.push({label:nextPointLabel(), x:shape.p1.x+r*Math.cos(clickAngle), y:shape.p1.y+r*Math.sin(clickAngle), def:{type:'point-sur-cercle', shape, offset}, dependsOn:deps});
-      renderFigureSvg();
-      return;
-    }
-    figState.points.push({label:nextPointLabel(), x, y});
+    figPlacerPoint(x, y);
     renderFigureSvg();
+    return;
+  }
+  if(figState.mode==='renommer'){
+    const p = findNearbyLabel(x,y) || findNearbyPoint(x,y);
+    if(p) await figRenommerPoint(p);
     return;
   }
   if(figState.mode==='intersection'){ handleIntersectionClick(x,y); return; }
@@ -5533,6 +5555,11 @@ function renderFigureSvg(){
     } else if(cv){
       html+=`<circle cx="${cv.c.x.toFixed(1)}" cy="${cv.c.y.toFixed(1)}" r="${cv.r.toFixed(1)}" fill="none" stroke="#E35D3A" stroke-width="5" stroke-opacity=".35" pointer-events="none"/>`;
     }
+  }
+  if(figState.mode==='polygone' && figPolygonPts.length){
+    const pp = figPolygonPts.filter(q=>figState.points.includes(q));
+    if(pp.length>1) html+=`<polyline points="${pp.map(q=>q.x.toFixed(1)+','+q.y.toFixed(1)).join(' ')}" fill="none" stroke="#E35D3A" stroke-width="1.2" stroke-dasharray="4 3" pointer-events="none"/>`;
+    pp.forEach((q,i)=>{ html+=`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r="${i===0 && pp.length>=3 ? 6 : 3.5}" fill="${i===0 && pp.length>=3 ? 'rgba(227,93,58,.18)' : 'none'}" stroke="#E35D3A" stroke-width="1.1" pointer-events="none"/>`; });
   }
   svg.innerHTML = html;
   if(figLiveActif()) figLivePlanifier();
