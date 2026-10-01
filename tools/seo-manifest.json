@@ -1,6 +1,6 @@
 {
  "/": {
-  "hash": "be6113dff30b39497f07a00e9c2f88d90bb92e75",
+  "hash": "ccd34a5c8e5d20b6c30965bc68e85b117bb234c5",
   "lastmod": "2026-10-01"
  },
  "/cm1/nombres-entiers-jusqu-a-9-999/": {
@@ -8,16 +8,16 @@
   "lastmod": "2026-09-30"
  },
  "/cm1/fractions/": {
-  "hash": "eb7ed936663113b1be8913499f6f0cac6f74c577",
-  "lastmod": "2026-09-30"
+  "hash": "d6aae85873c6d46c61ede181fecd0445c57e4e57",
+  "lastmod": "2026-10-01"
  },
  "/cm1/droites-paralleles-et-perpendiculaires/": {
   "hash": "c87bb54dfd9cae6488732f13942ad1c6e487a2dc",
   "lastmod": "2026-09-30"
  },
  "/cm1/operations-sur-les-nombres-entiers/": {
-  "hash": "faf9e1866fe54ce1bdfcffae6ecfcbba357ff4a1",
-  "lastmod": "2026-09-30"
+  "hash": "282e5fd0a1750da85583fb948aa88d59890c8f51",
+  "lastmod": "2026-10-01"
  },
  "/cm1/longueurs-masses-contenances/": {
   "hash": "774e6d89dc1c466ec66191163e21a5d8bb9519b0",
@@ -44,16 +44,16 @@
   "lastmod": "2026-09-30"
  },
  "/cm1/operations-sur-les-nombres-decimaux/": {
-  "hash": "742f1521c1e11d5f17bb876962418fd733cb84aa",
-  "lastmod": "2026-09-30"
+  "hash": "01f5a175762071a468ec536f315fcd8c06a24eef",
+  "lastmod": "2026-10-01"
  },
  "/cm1/symetrie-axiale/": {
-  "hash": "5de3130fe41897d8bc249f50d2ce65392133bd5d",
-  "lastmod": "2026-09-30"
+  "hash": "f8b06965c751cb9d625f682cd8eab144cb68cf97",
+  "lastmod": "2026-10-01"
  },
  "/cm1/perimetres/": {
-  "hash": "aa872624f772bbd570d56c03f230f749837bd22a",
-  "lastmod": "2026-09-30"
+  "hash": "53d5f4e5fd8a417d0552f37bd89562f7c93d2a5d",
+  "lastmod": "2026-10-01"
  },
  "/cm1/procedures-de-calcul-mental/": {
   "hash": "5ab4fd290c2e0d7dcf8286b7c98ca017621c22f5",
@@ -72,8 +72,8 @@
   "lastmod": "2026-10-01"
  },
  "/cm1/aires/": {
-  "hash": "9da3b0a0427cdb51a94ffe23e6ce2a58dc40b686",
-  "lastmod": "2026-09-30"
+  "hash": "7e475e28d9918c109c6e3bfea2742a3ce8e1c8e1",
+  "lastmod": "2026-10-01"
  },
  "/cm1/proportionnalite/": {
   "hash": "f350418c7ca16568da5180d36936815ff8b95831",
@@ -104,8 +104,8 @@
   "lastmod": "2026-09-30"
  },
  "/cm2/fractions/": {
-  "hash": "6e73a397b3cb00af6f1dfd893c5448fcd0b84330",
-  "lastmod": "2026-09-30"
+  "hash": "0e0df54ee4c741533e618ef2ea110bc1a67fe031",
+  "lastmod": "2026-10-01"
  },
  "/cm2/droites-segments-et-cercles/": {
   "hash": "9efe1bf381531218005e428d9bbf4c52730b9869",
@@ -120,16 +120,16 @@
   "lastmod": "2026-09-30"
  },
  "/cm2/addition-et-soustraction/": {
-  "hash": "37dd1563b6739f99409c7754ef2c40509ffa7e13",
-  "lastmod": "2026-09-30"
+  "hash": "b64a8466a80d772caf423c2ee24b758a4ba60d60",
+  "lastmod": "2026-10-01"
  },
  "/cm2/figures-planes/": {
   "hash": "6534b1fafb008aa33a14c39d2b0e685088a1f2c1",
   "lastmod": "2026-09-30"
  },
  "/cm2/multiplication/": {
-  "hash": "ed0642e77b38b287bb39fc97d4354d6db4ef1ce3",
-  "lastmod": "2026-09-30"
+  "hash": "87a25c34e3c6c4ba5bd6d5ff1e23d1016d9e9bd1",
+  "lastmod": "2026-10-01"
  },
  "/cm2/probabilites/": {
   "hash": "0a267d81561a0b6974412c80a78e17f41f0f181b",
@@ -144,8 +144,8 @@
   "lastmod": "2026-09-30"
  },
  "/cm2/aires/": {
-  "hash": "5fbccac7c090fcc51825e0a0c684740d0148eac7",
-  "lastmod": "2026-09-30"
+  "hash": "a77f86f5105e1299f9fdd0ac3f69ce1230d9f9ec",
+  "lastmod": "2026-10-01"
  },
  "/cm2/multiples-et-diviseurs/": {
   "hash": "4c1ea934db3f5fc47372081bb9123d7960acde30",
@@ -172,8 +172,8 @@
   "lastmod": "2026-09-30"
  },
  "/cm2/symetrie-axiale/": {
-  "hash": "20fd9a53f83aebcd6d281fcedcd9f4a678520c78",
-  "lastmod": "2026-09-30"
+  "hash": "2d5385bda4c73ba1f1644c5e0df4b911418a2b1c",
+  "lastmod": "2026-10-01"
  },
  "/cm2/angles/": {
   "hash": "e5d19a017adc5107b8ec28c93a80bbfa89ce6759",
