@@ -36,6 +36,8 @@ ${cm1Lecon(3, 'Aire du rectangle et du carré')}
 ${cm1Regle('Un rectangle de 5 cm sur 3 cm contient 3 lignes de 5 carrés de 1 cm² : son aire est 5 × 3 = 15 cm².<br><b>Aire du rectangle = longueur × largeur</b> · <b>Aire du carré = côté × côté</b><br>Les deux longueurs doivent être dans la <b>même unité</b>.')}
 ${cm1Exemple('Exemples :', ['Un carré de 3 cm de côté : 3 × 3 = <b>9 cm²</b>.', 'Une chambre rectangulaire de 4 m sur 3,5 m : 4 × 3,5 = <b>14 m²</b>.', 'Un rectangle de 2 dm sur 15 cm : 2 dm = 20 cm, donc 20 × 15 = <b>300 cm²</b>.'])}
 
+${cm1AnimAire('cm2-aire', { modeles: [0, 1, 2] })}
+
 ${cm1Lecon(4, 'Aire de figures composées')}
 ${cm1Regle('Pour une figure faite de plusieurs rectangles, on la <b>découpe</b> en rectangles, on calcule l\'aire de chacun et on <b>additionne</b>. On peut aussi calculer l\'aire d\'un grand rectangle et <b>enlever</b> ce qui manque.')}
 `,

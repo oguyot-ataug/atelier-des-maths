@@ -18,6 +18,8 @@ ${cm1Def(`<div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
 <ul style="margin:0;padding-left:18px;line-height:1.8;"><li>Le <b style="color:#2EA8C9;">dénominateur</b> (en bas) dit en combien de parts égales on a partagé l'unité : 4.</li><li>Le <b style="color:#E35D3A;">numérateur</b> (en haut) dit combien de parts on prend : 3.</li></ul></div>`, 'Vocabulaire')}
 ${cm1Astuce('Les parts doivent être <b>égales</b> ! Une pizza coupée en 4 morceaux de tailles différentes n\'est pas partagée en quarts.')}
 
+${cm1AnimFraction('cm1-frac', { n: 5, k: 3 })}
+
 ${cm1Lecon(2, 'Lire et écrire une fraction')}
 ${cm1Tableau(['Fraction', 'Se lit', 'Représentation'], [
   [F(1, 2), 'un demi', cm1Disque(2, 1, { taille: 54 })],

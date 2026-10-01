@@ -438,5 +438,7 @@ DEMO_QUIZZES['cm1|Opérations sur les nombres entiers'] = [
    opts:["Oui, car son chiffre des unités est 0","Non, car il n'est pas dans la table de 10","Oui, car il est pair"], correct:0},
 ];
 
+// Opération posée animée sur les nombres de l'élève (chapitres/cm1/_anims.js).
+document.getElementById('methode-demo-cm1-operations-nombres-entiers').insertAdjacentHTML('beforeend', `<div class="sub-header"><span class="letter">M</span><h4>À toi : une opération posée, pas à pas</h4></div>${cm1AnimOperation('cm1-op-ent', { a: '623', op: '−', b: '148', ops: ['+', '−', '×'] })}`);
 DEMO_REGISTRY['cm1|Opérations sur les nombres entiers'] = { cours:'cours-demo-cm1-operations-nombres-entiers', methode:'methode-demo-cm1-operations-nombres-entiers', exos:'exos-demo-cm1-operations-nombres-entiers', histoire:'histoire-demo-cm1-operations-nombres-entiers',
-  init:()=>{ cm1opAdditionDemo.reset(); cm1opSoustractionDemo.reset(); cm1opMultiplicationDemo.reset(); cm1opDivisionReset(); } };
+  init:()=>{ cm1opAdditionDemo.reset(); cm1opSoustractionDemo.reset(); cm1opMultiplicationDemo.reset(); cm1opDivisionReset(); cmAnimDessiner('cm1-op-ent'); } };

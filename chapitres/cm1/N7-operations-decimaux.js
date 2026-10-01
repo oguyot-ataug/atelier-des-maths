@@ -46,6 +46,8 @@ ${cm1Lecon(5, 'Vérifier avec un ordre de grandeur')}
 ${cm1Regle('Avant de calculer, on peut <b>estimer</b> le résultat avec des nombres entiers proches : 14,65 + 3,8, c\'est à peu près 15 + 4 = 19. Le résultat 18,45 est bien proche de 19 : il est plausible.')}
 `,
   methode: `
+${cm1Sous('M', 'À toi : une opération posée, pas à pas')}
+${cm1AnimOperation('cm1-op-dec', { a: '27,4', op: '+', b: '5,68', ops: ['+', '−'] })}
 ${cm1Demo('od-add', 'Poser une addition de nombres décimaux', 'Calcule 27,4 + 5,68.')}
 ${cm1Demo('od-sous', 'Résoudre un problème de monnaie', 'Léo a 20 €. Il achète un livre à 12,45 €. Combien lui rend-on ?')}
 ${cm1Demo('od-dix', 'Multiplier un nombre décimal par 10', 'Calcule 0,56 × 10.')}

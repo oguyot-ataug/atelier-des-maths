@@ -32,6 +32,8 @@ ${cm1Lecon(4, 'Décomposer pour calculer mentalement')}
 ${cm1Exemple('On utilise la distributivité (sans la nommer) :', ['23 × 12 = 23 × 10 + 23 × 2 = 230 + 46 = <b>276</b>', '45 × 99 = 45 × 100 − 45 = 4 500 − 45 = <b>4 455</b>', '2,5 × 4 = 10 ; 1,5 × 6 = 9 ; 0,25 × 8 = 2'])}
 `,
   methode: `
+${cm1Sous('M', 'À toi : une opération posée, pas à pas')}
+${cm1AnimOperation('cm2-op-mul', { a: '12,8', op: '×', b: '24', ops: ['×'], legende: 'Tape un nombre (entier ou décimal) et un entier de 3 chiffres au plus, puis « Calculer ». Les résultats intermédiaires apparaissent un par un.' })}
 ${cm1Demo('c2-mu-dec', 'Poser la multiplication d\'un décimal par un entier', 'Calcule 12,8 × 24.')}
 ${cm1Demo('c2-mu-pb', 'Résoudre un problème', 'Un croissant coûte 1,35 €. Combien coûtent 12 croissants ?')}
 `,

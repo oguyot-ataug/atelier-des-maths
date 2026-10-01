@@ -65,6 +65,8 @@ ${cm1Lecon(3, 'Sur quadrillage : axe diagonal')}
 <div class="figure-wrap">${diag()}</div>
 ${cm1Regle('Quand l\'axe suit une <b>diagonale des carreaux</b>, on se déplace perpendiculairement à l\'axe, c\'est-à-dire <b>en diagonale</b>, de carreau en carreau. Le point A est à 1,5 diagonale de carreau de l\'axe : A\' est à 1,5 diagonale de l\'autre côté.<br>Astuce : A est à 1 carreau du bord gauche et 4 carreaux du haut ; A\' est à 4 carreaux du bord gauche et 1 carreau du haut : on échange les deux nombres.', 'Méthode')}
 
+${cm1AnimSymetrie('cm2-sym', { axes: ['vertical', 'horizontal', 'diagonal'] })}
+
 ${cm1Lecon(4, 'Axes de symétrie des figures usuelles')}
 ${cm1Tableau(['Figure', 'Nombre d\'axes', 'Lesquels'], [['Triangle isocèle', '1', 'la droite qui passe par le sommet principal et le milieu de la base'], ['Triangle équilatéral', '3', 'une par sommet'], ['Rectangle', '2', 'les droites qui passent par les milieux des côtés opposés'], ['Losange', '2', 'ses diagonales'], ['Carré', '4', 'ses 2 diagonales et les 2 droites qui passent par les milieux des côtés opposés'], ['Cercle', 'une infinité', 'toutes les droites qui passent par le centre']], { coul: '#2EA8C9' })}
 `,

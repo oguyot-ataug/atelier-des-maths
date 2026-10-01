@@ -31,6 +31,8 @@ ${cm1Lecon(5, 'Calcul mental avec les décimaux')}
 ${cm1Exemple('Exemples :', ['4,7 + 3 = 7,7 et 12,35 − 2 = 10,35 : on n\'ajoute qu\'aux unités.', '8,6 + 2 = 10,6 (8 + 2 = 10).', '2,6 + 3,7 = 5 + 1,3 = 6,3 (unités ensemble, dixièmes ensemble : 6 + 7 = 13 dixièmes).', '5 − 0,4 = 4,6 (1 unité = 10 dixièmes).'])}
 `,
   methode: `
+${cm1Sous('M', 'À toi : une opération posée, pas à pas')}
+${cm1AnimOperation('cm2-op-as', { a: '40', op: '−', b: '12,68', ops: ['+', '−'] })}
 ${cm1Demo('c2-as-pose', 'Poser une soustraction avec des zéros', 'Calcule 40 − 12,68.')}
 ${cm1Demo('c2-as-par', 'Calculer avec des parenthèses', 'Calcule 72 − (18,5 + 3,5) et 72 − 18,5 + 3,5. Compare.')}
 `,

@@ -66,7 +66,7 @@ function cm1Chapitre(o){
       ['cours', 'methode', 'exos', 'histoire'].forEach(k => { const el = document.getElementById(id(k)); if(el && typeof renderStaticMath === 'function') renderStaticMath(el); });
       ['cours', 'methode'].forEach(k => { const el = document.getElementById(id(k)); if(el && typeof injectCourseAddButtons === 'function') injectCourseAddButtons(el); });
       (o.demos || []).forEach(([k]) => CM1_DEMOS[k].reset());
-      ['cours', 'methode', 'exos'].forEach(k => { const el = document.getElementById(id(k)); if(el) el.querySelectorAll('.cm-pliage').forEach(b => cmPliageDessiner(b.dataset.pliage)); });
+      ['cours', 'methode', 'exos'].forEach(k => { const el = document.getElementById(id(k)); if(el) el.querySelectorAll('.cm-pliage').forEach(b => cmPliageDessiner(b.dataset.pliage)); if(typeof cmAnimDessiner === 'function') el.querySelectorAll('.cm-anim').forEach(b => cmAnimDessiner(b.dataset.anim)); });
       if(o.init) o.init();
     } };
 }

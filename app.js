@@ -3250,6 +3250,14 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.892', date: '2026-10-01', items: [
+    "CM1 et CM2 : nouvelles animations dans les cours et les méthodes (Lecture / Pause, curseur, explication qui suit chaque étape).",
+    "Fractions (CM1 et CM2) : l'unité (bande ou disque) se partage en parts égales, puis les parts se colorient une à une ; on règle soi-même le nombre de parts et de parts coloriées (jusqu'à deux unités, pour les fractions plus grandes que 1).",
+    "Opérations posées (CM1 : opérations sur les entiers et sur les décimaux ; CM2 : addition et soustraction, multiplication) : l'élève tape ses propres nombres et le calcul se déroule colonne par colonne, avec les retenues, la soustraction par compensation (« +10 » en haut, « 1+ » en bas, comme dans le cours), les virgules alignées et les zéros ajoutés en gris ; pour la multiplication, les résultats intermédiaires et le décalage, puis la virgule.",
+    "Symétrie axiale (CM1 et CM2) : on plie la feuille le long de l'axe et la figure vient se poser sur son symétrique, puis chaque point est relié à son symétrique ; plusieurs figures, axe vertical ou horizontal (et oblique en CM2).",
+    "Aires (CM1 et CM2) : découper et recomposer : l'escalier qui devient un rectangle, le parallélogramme dont on déplace un triangle, le triangle rectangle moitié d'un rectangle.",
+    "Périmètre (CM1) : une ficelle fait le tour du rectangle, du triangle ou de la figure en L, puis se déroule le long d'une règle graduée pour lire la longueur totale."
+  ]},
   { version: '2026-08-19.891', date: '2026-10-01', items: [
     "CM1 et CM2, solides : animation du pliage d'un patron en 3D. On choisit l'un des 11 patrons du cube (croix, T, escalier, 3-3…), on clique sur « Plier » (ou on fait glisser le curseur) et les faces se replient autour de leurs charnières jusqu'à fermer le cube ; on fait glisser le dessin pour tourner autour. En CM2, aussi deux patrons du pavé de 4 cm × 2 cm × 1 cm (faces identiques de même couleur).",
     "Définition du patron : seules des figures qui sont vraiment des patrons y apparaissent. La figure de 6 carrés qui n'en est pas un est passée dans une remarque « Attention », avec son propre pliage : en fin de pliage, les deux faces qui se superposent deviennent rouges (« ce n'est pas un patron »)."

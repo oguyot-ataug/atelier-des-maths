@@ -23,6 +23,8 @@ ${cm1Lecon(1, 'Une fraction pour partager')}
 ${cm1Def(`Quand on partage une unité en <b>parts égales</b>, le <b>dénominateur</b> indique le nombre de parts et le <b>numérateur</b> le nombre de parts prises.<div style="margin:8px 0;">${cm1Bande(6, 5)}</div>On a colorié ${F(5, 6)} de la bande : « cinq sixièmes ».`)}
 ${cm1Rem(`Les fractions décimales ont pour dénominateur 10, 100 ou 1 000 : ${F(7, 10)} (sept dixièmes), ${F(7, 100)} (sept centièmes), ${F(7, 1000)} (sept millièmes).`)}
 
+${cm1AnimFraction('cm2-frac', { n: 4, k: 7, forme: 'disque' })}
+
 ${cm1Lecon(2, 'Une fraction pour mesurer')}
 ${cm1Regle(`Quand une longueur ne contient pas un nombre entier de fois l'unité, on partage l'unité en parts égales et on compte les parts.`)}
 <div class="figure-wrap">${mesure(4, 7)}</div>

@@ -31,6 +31,8 @@ ${cm1Astuce('Ne confonds pas : le <b>périmètre</b> mesure le <b>contour</b> (u
 ${cm1Lecon(2, 'Comparer des aires sans mesurer')}
 ${cm1Regle('Pour comparer deux aires, on peut <b>superposer</b> les figures (celle qui est entièrement recouverte a la plus petite aire), ou <b>découper</b> une figure et <b>recoller</b> les morceaux autrement : la forme change, mais l\'aire reste la même.')}
 
+${cm1AnimAire('cm1-aire', { modeles: [2, 0] })}
+
 ${cm1Lecon(3, 'Mesurer une aire en comptant des carreaux')}
 ${cm1Regle('On choisit une <b>unité d\'aire</b> (par exemple un carreau) et on compte combien de fois elle est contenue dans la figure. Deux demi-carreaux font un carreau.')}
 <div class="figure-wrap" style="display:flex;gap:26px;flex-wrap:wrap;justify-content:center;align-items:center;">

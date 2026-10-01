@@ -26,6 +26,8 @@ ${cm1Lecon(1, 'Qu\'est-ce que le périmètre ?')}
 ${cm1Def('Le <b>périmètre</b> d\'une figure est la <b>longueur de son contour</b> : c\'est la distance parcourue quand on fait le tour complet de la figure.')}
 ${cm1Rem('Imagine une fourmi qui part d\'un coin d\'une figure et en fait le tour en suivant les bords : la distance qu\'elle parcourt est le périmètre.')}
 
+${cm1AnimPerimetre('cm1-perim')}
+
 ${cm1Lecon(2, 'Périmètre d\'un polygone')}
 ${cm1Regle('Pour calculer le périmètre d\'un polygone, on <b>additionne les longueurs de tous ses côtés</b>, exprimées dans la <b>même unité</b>.')}
 <div class="figure-wrap">${polygone()}</div>

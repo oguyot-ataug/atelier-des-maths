@@ -1759,3 +1759,25 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .cmp-barre input[type=range]{width:200px;}
 .cmp-msg{min-width:220px;font-size:.9rem;}
 .redaction-note .cm-pliage{background:#fff;border-radius:12px;padding:8px;margin-top:6px;}
+
+/* Animations des cours de CM (chapitres/cm1/_anims.js) */
+.cm-anim{text-align:center;}
+.cma-ctrl .cmp-modeles{align-items:center;}
+.cma-pm{display:inline-flex;align-items:center;gap:4px;font:600 .82rem 'Space Grotesk',sans-serif;color:#1F3A5C;margin:0 6px;}
+.cma-pm button{width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(28,43,57,.2);background:#fff;font-weight:700;cursor:pointer;}
+.cma-pm button:disabled{opacity:.35;cursor:default;}
+.cma-pm b{min-width:20px;text-align:center;font-size:1rem;}
+.cma-scene{min-height:120px;display:flex;align-items:center;justify-content:center;}
+.cma-svg{width:100%;height:auto;display:block;margin:6px auto;}
+.cma-texte{min-height:2.6em;margin:6px auto 0;max-width:640px;font-size:.98rem;line-height:1.45;color:#20242E;}
+.cma-num{display:inline-block;background:#FF8208;color:#fff;border-radius:999px;padding:0 8px;font-size:.75rem;font-weight:700;margin-right:4px;}
+.cma-saisie{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin-bottom:6px;}
+.cma-saisie input{width:110px;text-align:center;font:700 1.05rem 'JetBrains Mono',monospace;padding:6px;border-radius:8px;border:1.5px solid rgba(28,43,57,.2);}
+.cma-saisie select{font:700 1.1rem 'JetBrains Mono',monospace;padding:5px 8px;border-radius:8px;}
+.cma-op{border-collapse:collapse;margin:8px auto;}
+.cma-op td{width:30px;height:30px;text-align:center;font:700 1.15rem 'JetBrains Mono',monospace;line-height:1;padding:2px 0;transition:background .3s;}
+.cma-op td.cma-sg{color:#E35D3A;width:26px;}
+.cma-op td.cma-ret{font-size:.72rem;color:#E35D3A;height:16px;}
+.cma-op td.cma-res{color:#2E9C6A;}
+.cma-op td.cma-fin{font-size:1.25rem;}
+.cma-op td.cma-lab{width:auto;padding-left:14px;text-align:left;font:500 .8rem Inter,sans-serif;color:#5B6472;white-space:nowrap;}

@@ -60,6 +60,8 @@ ${cm1Lecon(1, 'Figures symétriques par pliage')}
 ${cm1Def('Deux figures sont <b>symétriques par rapport à une droite</b> si, en pliant le long de cette droite, elles se <b>superposent exactement</b>. Cette droite s\'appelle l\'<b>axe de symétrie</b>.')}
 ${cm1Rem('On peut vérifier avec un <b>papier calque</b> : on décalque une figure, on retourne le calque en le pliant le long de l\'axe, et on regarde si elle recouvre l\'autre.')}
 
+${cm1AnimSymetrie('cm1-sym', { axes: ['vertical', 'horizontal'] })}
+
 ${cm1Lecon(2, 'Axe(s) de symétrie d\'une figure')}
 ${cm1Def('Une droite est un <b>axe de symétrie d\'une figure</b> si, en pliant la figure le long de cette droite, les deux moitiés se superposent.')}
 <div class="figure-wrap">${figAxes()}</div>
