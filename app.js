@@ -645,7 +645,10 @@ function buildProgressionDisplayList(){
   while(vIdx < vacances.length){ out.push({ type:'vacances', vac:vacances[vIdx] }); vIdx++; }
   return out;
 }
+// Échelle de temps verticale (progression-editeur.js) ; l'ancienne liste de cartes reste ci-dessous
+// en secours si ce fichier n'est pas chargé.
 function renderProgressionList(){
+  if(typeof peRender === 'function') return peRender();
   const box = document.getElementById('progressionList');
   const display = buildProgressionDisplayList();
   box.innerHTML = display.map(entry=>{
@@ -769,6 +772,7 @@ function progDragEnd(e){
   e.currentTarget.classList.remove('dragging');
   document.querySelectorAll('.prog-card.drag-over').forEach(el=>el.classList.remove('drag-over'));
 }
+function progIsoLocal(d){ return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 async function saveProgression(){
   const lvl = document.getElementById('progNiveauSelect').value;
   const status = document.getElementById('progStatus');
@@ -776,8 +780,9 @@ async function saveProgression(){
   const rows = progEditorItems.map((it,i)=>({
     owner_id: currentUser.id, niveau: lvl, chapitre_titre: it.titre, ordre: i,
     nom_perso: it.nomPerso || null,
-    date_debut: it.dateDebut ? it.dateDebut.toISOString().slice(0,10) : null,
-    date_fin: it.dateFin ? it.dateFin.toISOString().slice(0,10) : null,
+    // Date LOCALE : toISOString() passe en UTC et donnait la veille en heure française.
+    date_debut: it.dateDebut ? progIsoLocal(it.dateDebut) : null,
+    date_fin: it.dateFin ? progIsoLocal(it.dateFin) : null,
   }));
   const { error } = await sb.from('progressions').upsert(rows, { onConflict: 'owner_id,niveau,chapitre_titre' });
   status.textContent = error ? 'Erreur : '+error.message : '✓ Progression enregistrée.';
@@ -3217,6 +3222,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.880', date: '2026-10-01', items: [
+    "Ma progression : nouvel éditeur sur une échelle de temps verticale. Chaque chapitre est un bloc : on le glisse par sa poignée ⠿ pour changer l'ordre, on tire son bord inférieur pour l'allonger ou le raccourcir (par demi-semaine), et toutes les dates se recalculent automatiquement.",
+    "Les vacances de la zone choisie apparaissent sur la frise ; un compteur indique le nombre de semaines utilisées et passe en rouge si la progression dépasse la fin de l'année (vendredi 2 juillet).",
+    "Barre d'outils du chapitre sélectionné : ▲ ▼ pour le déplacer, − / + pour sa durée, Renommer ; choix de la date de début du premier chapitre ; raccourcis clavier (Alt+↑/↓, +/−).",
+    "Correction : les dates enregistrées d'une progression personnelle pouvaient être décalées d'un jour."
+  ]},
   { version:'2026-08-19.879', items:[
     "Progressions de CM1 et de CM2 ajustées au calendrier de l'école : du mardi 1er septembre 2026 au vendredi 2 juillet 2027 (36 semaines, mêmes vacances). Demandé : « Pour les progressions de CM1 et CM2, ajuster les dates. Du 1er septembre 2026 au vendredi 2 juillet ». Les semaines en plus sont réparties sur les chapitres qui en ont le plus besoin (nombres jusqu'à 9 999 avec la semaine de rentrée, opérations sur les décimaux, aires, et toute la fin d'année jusqu'au 2 juillet) ; frise, cartes de l'accueil et PDF des progressions suivent. Correction au passage : une date en « juil » était lue comme « juin ».",
   ]},
