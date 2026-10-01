@@ -13,6 +13,7 @@
    notations géométriques toujours explicitées (« le segment [AB] ») ; langage simple.
    ============================================================ */
 const CM1_DEMOS = {};
+const CM_FLASH = {}; // « niveau|titre » → [{ q, r:[réponses A à D], ok:indice }] (voir flash-prets.js)
 function cm1Lecon(n, titre){ return `<div class="lesson-header"><span class="num">${n}</span><h3>${titre}</h3></div>`; }
 function cm1Sous(l, titre){ return `<div class="sub-header"><span class="letter">${l}</span><h4>${titre}</h4></div>`; }
 function cm1Def(html, badge){ return `<span class="def-badge">${badge || 'Définition'}</span><div class="def-box">${html}</div>`; }
@@ -61,6 +62,7 @@ function cm1Chapitre(o){
   poser('cours', o.cours); poser('methode', o.methode); poser('exos', o.exos); poser('histoire', o.histoire);
   (o.demos || []).forEach(([k, steps]) => { CM1_DEMOS[k] = makeStepDemo(steps, 'cm1d-' + k); });
   if(o.quiz) DEMO_QUIZZES[niv + '|' + o.titre] = o.quiz;
+  if(o.flash) CM_FLASH[niv + '|' + o.titre] = o.flash; // questions prêtes pour les Questions flash (cartes A à D)
   DEMO_REGISTRY[niv + '|' + o.titre] = { cours: id('cours'), methode: id('methode'), exos: id('exos'), histoire: id('histoire'),
     init: () => {
       ['cours', 'methode', 'exos', 'histoire'].forEach(k => { const el = document.getElementById(id(k)); if(el && typeof renderStaticMath === 'function') renderStaticMath(el); });

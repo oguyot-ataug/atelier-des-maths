@@ -54,7 +54,7 @@ document.getElementById('view-evaluation').innerHTML = `
     <div class="tool-row" style="margin-bottom:10px;">
       <label class="hint" style="margin:0;">Niveau :
         <select id="evalNiveau" onchange="renderEvalChapPicker(); scheduleEvalAutoSave();" style="margin-left:4px;">
-          <option value="cm1">CM1</option>
+          <option value="ce2">CE2</option><option value="cm1">CM1</option>
           <option value="cm2">CM2</option>
           <option value="6e">6e</option>
           <option value="5e">5e</option>

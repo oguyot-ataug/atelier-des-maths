@@ -165,6 +165,40 @@ const CHCM1 = [
  {n:23,code:'D4',cat:'D',t:'Initiation à la pensée informatique',s:3,p:'',d:'14 juin-2 juil'},
 ];
 
+/* Progression CE2 -- demandé : « Voici le programme du cycle 2. On essaie de construire le CE2 ? »
+   Notre propre manuel, construit sur l'annexe 4 (programme de mathématiques du cycle 2, partie CE2) :
+   entiers jusqu'à 10 000 (au plus tard en période 2), fractions inférieures ou égales à 1 de
+   dénominateur au plus 12, fractions d'une unité de longueur à partir de la période 3, multiplication
+   posée en période 4, addition posée de montants en euros en période 2 et soustraction en période 4,
+   pas de calculatrice, pas de tableau de conversion, durées en heures et minutes. Rubriques alternées.
+   Calendrier de l'école : du mardi 1er septembre 2026 au vendredi 2 juillet 2027 (comme le CM). */
+const CHCE2 = [
+ {n:1,code:'N1',cat:'N',t:'Nombres jusqu\'à 10 000',s:2,p:'',d:'1-11 sept'},
+ {n:2,code:'N2',cat:'N',t:'Tables d\'addition et de multiplication',s:1,p:'',d:'14-18 sept'},
+ {n:3,code:'G1',cat:'G',t:'Points, droites, segments',s:1,p:'',d:'21-25 sept'},
+ {n:4,code:'N3',cat:'N',t:'Addition et soustraction posées',s:2,p:'',d:'28 sept-9 oct'},
+ {n:5,code:'M1',cat:'M',t:'La monnaie',s:1,p:'',d:'12-16 oct'},
+ {n:6,code:'N4',cat:'N',t:'Fractions égales',s:1,p:'',d:'2-6 nov'},
+ {n:7,code:'M2',cat:'M',t:'Les longueurs',s:2,p:'',d:'9-20 nov'},
+ {n:8,code:'N5',cat:'N',t:'La multiplication',s:2,p:'',d:'23 nov-4 déc'},
+ {n:9,code:'G2',cat:'G',t:'Polygones et quadrilatères',s:2,p:'',d:'7-18 déc'},
+ {n:10,code:'N6',cat:'N',t:'Problèmes additifs',s:1,p:'',d:'4-8 jan'},
+ {n:11,code:'M3',cat:'M',t:'L\'heure et les durées',s:2,p:'',d:'11-22 jan'},
+ {n:12,code:'N7',cat:'N',t:'Fractions et mesure de longueurs',s:2,p:'',d:'25 jan-5 fév'},
+ {n:13,code:'D1',cat:'D',t:'Tableaux et diagrammes en barres',s:1,p:'',d:'8-12 fév'},
+ {n:14,code:'G3',cat:'G',t:'Angle droit, cercle et constructions',s:1,p:'',d:'15-19 fév'},
+ {n:15,code:'N8',cat:'N',t:'La multiplication posée',s:2,p:'',d:'8-19 mars'},
+ {n:16,code:'M4',cat:'M',t:'Masses et contenances',s:1,p:'',d:'22-26 mars'},
+ {n:17,code:'N9',cat:'N',t:'La division',s:1,p:'',d:'29 mars-2 avr'},
+ {n:18,code:'G4',cat:'G',t:'La symétrie',s:1,p:'',d:'5-9 avr'},
+ {n:19,code:'N10',cat:'N',t:'Procédures de calcul mental',s:1,p:'',d:'12-16 avr'},
+ {n:20,code:'N11',cat:'N',t:'Comparer et additionner des fractions',s:2,p:'',d:'3-14 mai'},
+ {n:21,code:'G5',cat:'G',t:'Les solides',s:2,p:'',d:'17-28 mai'},
+ {n:22,code:'M5',cat:'M',t:'Le périmètre',s:1,p:'',d:'31 mai-4 juin'},
+ {n:23,code:'N12',cat:'N',t:'Problèmes multiplicatifs',s:2,p:'',d:'7-18 juin'},
+ {n:24,code:'N13',cat:'N',t:'Problèmes en plusieurs étapes',s:2,p:'',d:'21 juin-2 juil'},
+];
+
 /* Progression CM2 -- notre propre manuel, construite sur le programme du cycle 3 (partie CM2) :
    entiers d'au plus 6 chiffres en périodes 1-2 (jusqu'à 999 999 999 à partir de la période 3),
    fractions et décimaux dès la période 1 (décimaux jusqu'aux millièmes, dénominateurs ≤ 60),
@@ -202,9 +236,9 @@ const CHCM2 = [
 // Correspondance niveau -> programme -- remplace la ternaire "lvl==='6e'?CH6:CH5" codée en
 // dur, pour rester extensible à mesure que de nouveaux niveaux sont ajoutés (cm1 aujourd'hui,
 // cm2/4e/3e plus tard).
-const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, '3e': CH3, 'cm1': CHCM1, 'cm2': CHCM2 };
+const CHAPITRES_BY_LEVEL = { '6e': CH6, '5e': CH5, '4e': CH4, '3e': CH3, 'ce2': CHCE2, 'cm1': CHCM1, 'cm2': CHCM2 };
 // Tous les niveaux ayant des chapitres, dans l'ordre de la scolarité (école puis collège).
-const NIVEAUX_ORDRE = ['cm1', 'cm2', '6e', '5e', '4e', '3e'];
+const NIVEAUX_ORDRE = ['ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'];
 // Libellé affiché d'un niveau de chapitres : 'cm1' → « CM1 » (les clés de chapitres sont en minuscules).
 function niveauLabel(l){ return /^c[em]\d/i.test(l || '') ? String(l).toUpperCase() : (l || ''); }
 // Niveau d'une classe (« CM1 », « 6e »…) → clé des chapitres (« cm1 », « 6e ») ; null si le niveau n'a pas de chapitres.
@@ -216,12 +250,13 @@ function iaEnseignant(n){ return niveauPrimaire(niveauCle(n) || n) ? 'professeur
 function iaContexteNiveau(n){
   const k = niveauCle(n) || String(n || '').toLowerCase();
   const commun = ' Phrases courtes et vocabulaire simple, adaptés à des enfants ; pas de calculatrice ; pas de tableau de conversion ni de tableau de proportionnalité (on raisonne par des phrases : « 3 fois plus… ») ; pas de lettre pour une inconnue (utiliser ■ ou …) sauf en CM2 dans les formules simples ; les notations de géométrie sont toujours expliquées (« le segment [AB] »).';
+  if(k === 'ce2') return 'Élèves de CE2 (école élémentaire, cycle 2, 8-9 ans). Nombres entiers jusqu\'à 10 000 seulement ; fractions inférieures ou égales à 1, de dénominateur au plus 12 (égalités, comparaison, addition et soustraction de même dénominateur) ; nombres à virgule seulement pour les prix en euros ; multiplication posée d\'un nombre de 2 ou 3 chiffres par un nombre de 1 ou 2 chiffres ; division seulement par son sens (partage, « combien de fois »), sans division posée ; durées en heures et minutes ; unités m, dm, cm, mm, km, g, kg, t, L, dL, cL, conversions par les relations entre unités.' + commun;
   if(k === 'cm1') return 'Élèves de CM1 (école élémentaire, cycle 3, 9-10 ans). Nombres entiers jusqu\'à 999 999 (au plus 4 chiffres en début d\'année), nombres décimaux jusqu\'aux centièmes seulement, fractions de dénominateur au plus 20 (ou 100 pour les fractions décimales), angles comparés sans mesure en degrés.' + commun;
   if(k === 'cm2') return 'Élèves de CM2 (école élémentaire, cycle 3, 10-11 ans). Nombres entiers jusqu\'à 999 999 999, nombres décimaux jusqu\'aux millièmes, fractions de dénominateur au plus 60 (ou 100 et 1 000 pour les fractions décimales), multiplication d\'un décimal par un entier uniquement, division par un diviseur à un chiffre, degrés à partir de l\'angle droit (90°) mais pas de rapporteur, probabilités sous la forme « a chances sur b ».' + commun;
   return '';
 }
 // Niveaux en préparation, réservés aux administrateurs (menu masqué, routes refusées aux autres).
-const NIVEAUX_ADMIN = []; // la 4e est publiée depuis le build 786, la 3e depuis le build 817
+const NIVEAUX_ADMIN = ['ce2']; // CE2 en préparation (administrateurs) ; la 4e est publiée depuis le build 786, la 3e depuis le build 817
 function niveauVisible(lvl){ return !NIVEAUX_ADMIN.includes(lvl) || currentUserRole === 'admin'; }
 
 const VACANCES = {
@@ -229,6 +264,7 @@ const VACANCES = {
   '5e':[{after:3,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:6,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:14,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '4e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:7,label:'Vacances de Noël · 19 déc → 4 jan'},{after:10,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:12,label:'Vacances de printemps · 17 avr → 3 mai'}],
   '3e':[{after:4,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:8,label:'Vacances de Noël · 19 déc → 4 jan'},{after:11,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:13,label:'Vacances de printemps · 17 avr → 3 mai'}],
+  'ce2':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:9,label:'Vacances de Noël · 19 déc → 4 jan'},{after:14,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:19,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'cm1':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:9,label:'Vacances de Noël · 19 déc → 4 jan'},{after:15,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:19,label:'Vacances de printemps · 17 avr → 3 mai'}],
   'cm2':[{after:5,label:'Vacances de Toussaint · 17 oct → 2 nov'},{after:10,label:'Vacances de Noël · 19 déc → 4 jan'},{after:15,label:'Vacances d\'hiver · 20 fév → 8 mars'},{after:20,label:'Vacances de printemps · 17 avr → 3 mai'}],
 };
@@ -458,7 +494,7 @@ function setActiveTopnav(key){
   else if(key==='5e') document.querySelector('.nav-links button[data-lvl="5e"]').classList.add('active');
   else if(key==='4e') document.querySelector('.nav-links button[data-lvl="4e"]')?.classList.add('active');
   else if(key==='3e') document.querySelector('.nav-links button[data-lvl="3e"]')?.classList.add('active');
-  else if(key==='cm1' || key==='cm2') document.querySelector(`.nav-links button[data-lvl="${key}"]`)?.classList.add('active');
+  else if(key==='ce2' || key==='cm1' || key==='cm2') document.querySelector(`.nav-links button[data-lvl="${key}"]`)?.classList.add('active');
   else if(key==='cm') document.querySelector('.nav-links button[data-nav="cm"]').classList.add('active');
   else if(key==='compte') document.querySelector('.nav-links button[data-nav="compte"]').classList.add('active');
   else if(key==='correction') document.querySelector('.nav-links button[data-nav="correction"]').classList.add('active');
@@ -499,6 +535,7 @@ const FREE_CHAPTERS = {
   '5e': ['Opérations sur les nombres décimaux', 'Symétrie centrale', 'Proportionnalité', 'Statistiques'],
   '4e': ['Opérations sur les nombres relatifs', 'Théorème de Pythagore', 'Statistiques', 'Translations'],
   '3e': ['Nombres et calculs', 'Théorème de Thalès', 'Statistiques', 'Rotation'],
+  'ce2': ['Nombres jusqu\'à 10 000', 'Points, droites, segments', 'Tableaux et diagrammes en barres', 'La monnaie'],
   'cm1': ['Nombres entiers jusqu\'à 9 999', 'Droites parallèles et perpendiculaires', 'Organisation et gestion de données', 'Longueurs, masses, contenances'],
   'cm2': ['Nombres entiers (révisions jusqu\'à 999 999)', 'Droites, segments et cercles', 'Probabilités', 'Longueurs, masses, contenances'],
 };
@@ -517,7 +554,7 @@ function isChapterFree(lvl, titre){ return (FREE_CHAPTERS[lvl]||[]).includes(tit
 function niveauxMenusMaj(){
   const lim = currentUserRole==='eleve' && typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux) ? offreNiveaux : null;
   document.querySelectorAll('[data-nav="niveau"][data-lvl]').forEach(el=>{
-    const cache = !!lim && !lim.includes(el.dataset.lvl);
+    const cache = (!!lim && !lim.includes(el.dataset.lvl)) || !niveauVisible(el.dataset.lvl); // + niveaux en préparation (administrateurs)
     el.classList.toggle('niveau-masque', cache);
   });
 }
@@ -1007,6 +1044,7 @@ function openChapitre(c, tab, lvlOverride){
   chapView.classList.toggle('lvl-6e', lvl==='6e');
   chapView.classList.toggle('lvl-cm', lvl==='cm1');  // CM1 : vert
   chapView.classList.toggle('lvl-cm2', lvl==='cm2'); // CM2 : vert émeraude foncé
+  chapView.classList.toggle('lvl-ce2', lvl==='ce2'); // CE2 : vert tilleul
   chapView.classList.toggle('lvl-5e', lvl==='5e');
   chapView.classList.toggle('lvl-4e', lvl==='4e'); // 4e : sa propre couleur (bleu-vert), pour distinguer le niveau d'un coup d'œil
   chapView.classList.toggle('lvl-3e', lvl==='3e'); // 3e : violet prune
@@ -3250,6 +3288,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.898', date: '2026-10-01', items: [
+    "CE2 en préparation (visible des administrateurs seulement) : progression de 24 chapitres construite sur le programme du cycle 2 (partie CE2), du 1er septembre 2026 au 2 juillet 2027, et six premiers chapitres : Nombres jusqu'à 10 000, Tables d'addition et de multiplication, Points, droites, segments, Addition et soustraction posées, La monnaie, Fractions égales. Couleur du CE2 : vert tilleul."
+  ]},
   { version: '2026-08-19.897', date: '2026-10-01', items: [
     "Construction aux instruments : la règle ne glisse plus pour prolonger un trait. Une droite (ou une demi-droite, une perpendiculaire, une parallèle, une médiatrice…) plus longue que la règle est tracée sur la longueur de la règle, posée une seule fois : centrée sur les points qui définissent la droite, ou à partir de l'origine pour une demi-droite. Demandé : « lorsqu'on trace le long de la règle, la règle ne doit pas glisser pour prolonger des traits »."
   ]},

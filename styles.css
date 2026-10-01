@@ -10,7 +10,8 @@
   --accent-teal:#26AAB1;
   --accent-4e:#0B7A83; /* bleu-vert du logo, foncé pour rester lisible en texte blanc : couleur de la 4e */
   --accent-cm:#2E7D32; /* vert : couleur du CM1 (et de l'école dans l'administration) */
-  --accent-cm2:#1B5E20; /* vert émeraude foncé : couleur du CM2 */
+  --accent-cm2:#1B5E20;
+  --accent-ce2:#558B2F; /* vert tilleul : couleur du CE2 */ /* vert émeraude foncé : couleur du CM2 */
   --accent-3e:#7A3E9D; /* violet prune, lisible en texte blanc : couleur de la 3e */
   --accent-yellow:#F8AF23;
   --white:#FFFFFF;
@@ -1645,6 +1646,20 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .level-card.cm2{border-top-color:var(--accent-cm2);}
 .level-card.cm2::before{background:radial-gradient(circle, rgba(27,94,32,.16), transparent 70%);}
 .level-card.cm2 .lvl-new{background:var(--accent-cm2);}
+
+/* CE2 : vert tilleul. */
+#view-chapitre.lvl-ce2 .tab-btn.active{border-bottom-color:var(--accent-ce2);}
+#view-chapitre.lvl-ce2 button.btn:not(.secondary):not(.orange){background:var(--accent-ce2);}
+#view-chapitre.lvl-ce2 .lesson-header{background:var(--accent-ce2);}
+#view-chapitre.lvl-ce2 .lesson-header .num{color:var(--accent-ce2);}
+#view-chapitre.lvl-ce2 .sub-header .letter{background:var(--accent-ce2);}
+#view-chapitre.lvl-ce2 .cp-chip-edit{background:var(--accent-ce2);}
+#view-chapitre.lvl-ce2 .cp-eb:hover{border-color:var(--accent-ce2);}
+#view-chapitre.lvl-ce2 .cp-form{border-color:var(--accent-ce2);}
+#view-chapitre.lvl-ce2 .cp-fig-handle{fill:rgba(85,139,47,.14);stroke:rgba(85,139,47,.5);}
+.level-card.ce2{border-top-color:var(--accent-ce2);}
+.level-card.ce2::before{background:radial-gradient(circle, rgba(85,139,47,.16), transparent 70%);}
+.level-card.ce2 .lvl-new{background:var(--accent-ce2);}
 
 /* ---- « Ma progression » : échelle de temps verticale (progression-editeur.js) ---- */
 .pe-barre{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;margin:0 0 8px;}
