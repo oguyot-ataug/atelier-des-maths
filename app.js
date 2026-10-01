@@ -511,6 +511,16 @@ function isChapterFree(lvl, titre){ return (FREE_CHAPTERS[lvl]||[]).includes(tit
    comme pour un visiteur (sauf les chapitres gratuits). */
 /* Offre Professeur seul (et élèves des classes créées en libre-service, voir offres-prof.js) :
    même principe, avec offreNiveaux. */
+/* Élève : les menus et les cartes des niveaux qui ne sont pas les siens (son niveau et le précédent,
+   dans le même établissement) sont masqués -- demandé : « je préfère qu'un collégien ne voie pas les
+   menus des autres niveaux sauf le niveau précédent si le niveau est au collège ». */
+function niveauxMenusMaj(){
+  const lim = currentUserRole==='eleve' && typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux) ? offreNiveaux : null;
+  document.querySelectorAll('[data-nav="niveau"][data-lvl]').forEach(el=>{
+    const cache = !!lim && !lim.includes(el.dataset.lvl);
+    el.classList.toggle('niveau-masque', cache);
+  });
+}
 function offreHorsNiveau(lvl){ return typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux) && !offreNiveaux.includes(lvl); }
 function isChapterLocked(lvl, titre){
   // Élève hors du niveau de sa classe : verrouillé même si le chapitre est gratuit pour les visiteurs
@@ -2749,6 +2759,8 @@ async function globalSignIn(){
 async function globalSignOut(){
   await sb.auth.signOut();
   currentUser = null; currentUserRole = null; currentClassId = null; currentReferentEtab = null; currentEtabLicence = null;
+  if(typeof offreClear==='function') offreClear();
+  niveauxMenusMaj();
   refreshAuthUI();
 }
 /* Inscription en libre-service pour les professeurs (accès réservé aux adresses
@@ -2925,6 +2937,7 @@ async function refreshAuthUI(){
     const prevOffreNiveaux = JSON.stringify(typeof offreNiveaux!=='undefined' ? offreNiveaux : null);
     if(typeof offreLoad==='function') await offreLoad(currentUserRole, !!currentEtabLicence);
     const offreChanged = prevOffreNiveaux !== JSON.stringify(typeof offreNiveaux!=='undefined' ? offreNiveaux : null);
+    niveauxMenusMaj();
 
     loggedOutEl.style.display='none'; loggedInEl.style.display='block';
     const prenomTrim = profile && profile.prenom ? profile.prenom.trim() : '';
@@ -3237,6 +3250,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.889', date: '2026-10-01', items: [
+    "Élèves : les menus et les cartes des autres niveaux sont masqués. Demandé : « je préfère qu'un collégien ne voie pas les menus des autres niveaux sauf le niveau précédent si le niveau est au collège ». Un élève voit son niveau et le niveau précédent seulement s'il est du même établissement : 5e → 6e et 5e ; 6e → 6e seulement (le CM2 est à l'école) ; CM2 → CM1 et CM2.",
+    "Même règle pour les professeurs des établissements (« un établissement est soit une école, soit un collège ») : un professeur de 6e et 5e voit 6e et 5e, sans le CM2. Les niveaux en plus restent réglables dans l'Administration."
+  ]},
   { version: '2026-08-19.888', date: '2026-10-01', items: [
     "Niveaux accessibles aux professeurs des établissements -- signalé : « ma collègue qui a juste des cours de 6e et 5e a accès à tous ». Un professeur dont le compte est géré par l'établissement voit maintenant les niveaux de ses classes et le niveau précédent en révision (classes de 6e et 5e : CM2, 6e et 5e) ; les autres chapitres portent « hors de vos classes ». Sans aucune classe, ou pendant l'essai gratuit, tout reste visible. Les professeurs avec une offre « Professeur seul » gardent les niveaux de leur offre.",
     "Administration (et référent d'établissement) : dans la fenêtre de modification d'un professeur, « Niveaux accessibles » rappelle les niveaux donnés par ses classes et permet d'ouvrir des niveaux en plus (par exemple pour préparer l'an prochain). Le professeur ne peut pas changer ce réglage lui-même."

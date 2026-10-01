@@ -559,7 +559,7 @@ async function openEditProfModal(id){
     const { data: liens } = await sb.from('class_teachers').select('classes(niveau)').eq('teacher_id', id);
     const niv = [...new Set((liens||[]).map(r=>r.classes && String(r.classes.niveau||'').toLowerCase()).filter(n=>OP_ORDRE.includes(n)))];
     document.getElementById('editProfNiveauxAuto').textContent = niv.length
-      ? 'Par ses classes : ' + opRevision(niv).map(niveauLabel).join(', ') + '.'
+      ? 'Par ses classes : ' + opRevisionEtab(niv).map(niveauLabel).join(', ') + '.'
       : 'Aucune classe de CM1 à 3e : tous les niveaux sont visibles.';
   }
   // Clé IA (professeurs seulement : l'administrateur utilise toujours la clé du site).

@@ -38,6 +38,17 @@ function opDate(s){ return s ? new Date(String(s).length===10 ? s+'T00:00:00' : 
 function opIdent(email){ return email && email.endsWith('@mathcollege.local') ? email.slice(0, -'@mathcollege.local'.length) : (email||''); }
 function opAujourdhui(){ return new Date().toISOString().slice(0,10); }
 // Niveaux ouverts : ceux payés (ou de la classe), plus le niveau inférieur en révision.
+/* Révision dans le même établissement -- demandé : « un établissement est soit une école, soit un
+   collège (et plus tard un lycée) » : le niveau précédent n'est ouvert que s'il est du même type
+   (5e → 6e, CM2 → CM1, mais 6e → rien : le CM2 est à l'école). Pour les élèves et les professeurs
+   des établissements ; l'offre « Professeur seul » garde opRevision. */
+const OP_ETAB = { ce2:'ecole', cm1:'ecole', cm2:'ecole', '6e':'college', '5e':'college', '4e':'college', '3e':'college' };
+const OP_ORDRE_ETAB = ['ce2','cm1','cm2','6e','5e','4e','3e'];
+function opRevisionEtab(niv){
+  const s = new Set(niv);
+  niv.forEach(n => { const i = OP_ORDRE_ETAB.indexOf(n), p = OP_ORDRE_ETAB[i-1]; if(i > 0 && OP_ETAB[p] === OP_ETAB[n]) s.add(p); });
+  return OP_ORDRE_ETAB.filter(n => s.has(n));
+}
 function opRevision(niv){
   const s = new Set(niv);
   niv.forEach(n => { const i = OP_ORDRE.indexOf(n); if(i > 0) s.add(OP_ORDRE[i-1]); });
@@ -75,7 +86,7 @@ async function offreLoad(role, licenceEtab){
         const niv = [...new Set((liens || []).map(r => r.classes && String(r.classes.niveau || '').toLowerCase()).filter(n => OP_ORDRE.includes(n)))];
         if(niv.length && !(prof && prof.subscription_status === 'trial')){ // pendant l'essai gratuit : tout reste visible
           const extra = ((prof && prof.niveaux_extra) || []).filter(n => OP_ORDRE.includes(n));
-          const ouverts = new Set(opRevision(niv).concat(extra));
+          const ouverts = new Set(opRevisionEtab(niv).concat(extra));
           offreNiveaux = OP_ORDRE.filter(n => ouverts.has(n)); offreSource = 'classes';
         }
       }
@@ -85,11 +96,8 @@ async function offreLoad(role, licenceEtab){
       // Niveaux de ses classes (et le niveau inférieur en révision). D'abord réservé aux classes créées
       // en libre-service ; signalé ensuite : « Mes élèves inscrits ont accès à tous les niveaux. Ce
       // n'est pas trop normal. » -- la règle vaut donc pour tous les élèves, établissement compris.
-      const niv = [...new Set(cls.map(c => c.niveau).filter(n => OP_ORDRE.includes(n)))];
-      // Primaire (CE2, CM1, CM2) : son niveau et le précédent (clés de chapitres en minuscules : 'cm1').
-      const PRIM = ['ce2', 'cm1', 'cm2'], prim = [...new Set(cls.map(c => String(c.niveau || '').toLowerCase()).filter(n => PRIM.includes(n)))];
-      const primRev = PRIM.filter(n => prim.some(p => p === n || PRIM.indexOf(p) - 1 === PRIM.indexOf(n)));
-      if(niv.length || prim.length){ offreNiveaux = opRevision(niv).concat(primRev); offreSource = 'eleve'; }
+      const niv = [...new Set(cls.map(c => String(c.niveau || '').toLowerCase()).filter(n => OP_ETAB[n]))];
+      if(niv.length){ offreNiveaux = opRevisionEtab(niv); offreSource = 'eleve'; }
     }
   }catch(e){ /* hors ligne */ }
 }
