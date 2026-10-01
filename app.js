@@ -3236,6 +3236,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.887', date: '2026-10-01', items: [
+    "Aide pour les professeurs : un bouton « ? » en bas à gauche lance une visite guidée de la page ouverte. Chaque étape est une petite fenêtre posée à côté de l'élément expliqué, mis en lumière (Précédent / Suivant, flèches du clavier, Échap pour fermer).",
+    "Pages couvertes : accueil, outil de correction, Ma progression, page d'un niveau, chapitre, Mes classes, interrogations en ligne (et leur préparation), Questions flash, devoirs, création d'une évaluation, tableau interactif, outils de classe, et la Géométrie interactive quand elle est ouverte.",
+    "À la première visite d'une page, une bulle propose la visite (« Voir » / « Plus tard ») ; elle ne revient plus ensuite. Les élèves ne voient ni le bouton ni la bulle."
+  ]},
   { version: '2026-08-19.886', date: '2026-10-01', items: [
     "Outil de correction : le bouton « Résumé pour le cahier de textes » est aussi dans le cahier de corrections, en face de chaque date. Il ouvre le même résumé de la séance (cours, correction du travail maison, exercices en classe entière, en autonomie…) à copier dans École Directe, Pronote ou autre."
   ]},

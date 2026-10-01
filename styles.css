@@ -1707,3 +1707,26 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .nb-date-row .nb-resume-cor-btn{font-size:.78rem;padding:4px 10px;margin-left:auto;}
 .nb-date-row:has(.nb-resume-cor-btn){display:flex;align-items:center;gap:10px;}
 @media print{ .nb-resume-cor-btn{display:none !important;} }
+
+/* Aide contextuelle des professeurs (aide.js) */
+#aideBtn{position:fixed;left:18px;bottom:18px;z-index:9800;width:44px;height:44px;border-radius:50%;border:0;background:#0C5BA0;color:#fff;font:800 22px 'Space Grotesk',Arial,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(12,91,160,.35);transition:transform .15s;}
+#aideBtn:hover{transform:scale(1.08);}
+#aideBtn[hidden]{display:none;}
+#aideBulle{position:fixed;left:18px;bottom:74px;z-index:9800;width:min(300px, calc(100vw - 36px));background:#fff;border:1.5px solid rgba(12,91,160,.3);border-radius:14px;padding:12px 14px;box-shadow:0 12px 30px rgba(28,43,57,.2);display:flex;flex-direction:column;gap:6px;font-size:.88rem;animation:aideApparait .3s ease-out;}
+#aideBulle::after{content:'';position:absolute;left:14px;bottom:-8px;width:14px;height:14px;background:#fff;border-right:1.5px solid rgba(12,91,160,.3);border-bottom:1.5px solid rgba(12,91,160,.3);transform:rotate(45deg);}
+#aideBulle b{font-family:'Space Grotesk',Arial,sans-serif;color:#0C5BA0;}
+#aideBulle div{display:flex;gap:8px;margin-top:4px;}
+#aideBulle .btn{font-size:.8rem;padding:5px 12px;}
+@keyframes aideApparait{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+#aideVoile{position:fixed;inset:0;z-index:9900;}
+#aideTrou{position:fixed;border-radius:10px;box-shadow:0 0 0 9999px rgba(20,28,40,.55);outline:3px solid #FF8208;transition:all .3s ease;pointer-events:none;}
+#aideCarte{position:fixed;background:#fff;border-radius:14px;padding:12px 16px 14px;box-shadow:0 14px 40px rgba(0,0,0,.3);transition:top .3s ease, left .3s ease;font-size:.92rem;line-height:1.45;}
+#aideCarte h3{margin:6px 0 4px;font-family:'Space Grotesk',Arial,sans-serif;font-size:1.05rem;color:#20242E;}
+#aideCarte p{margin:0 0 10px;color:#3A4250;}
+.aide-tete{display:flex;align-items:center;gap:8px;font-size:.75rem;color:#7A8492;}
+.aide-num{background:#FF8208;color:#fff;font-weight:700;border-radius:999px;padding:1px 8px;}
+.aide-page{font-weight:600;}
+.aide-x{margin-left:auto;border:0;background:none;font-size:1rem;color:#7A8492;cursor:pointer;}
+.aide-pied{display:flex;justify-content:space-between;gap:8px;}
+.aide-pied .btn{font-size:.82rem;padding:6px 12px;}
+@media print{ #aideBtn, #aideBulle, #aideVoile{display:none !important;} }
