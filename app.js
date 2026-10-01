@@ -3222,6 +3222,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version: '2026-08-19.881', date: '2026-10-01', items: [
+    "Ma progression : les vacances sont bien plus visibles sur la frise (bandeau orange qui traverse toute la largeur, avec le nom et les dates des vacances)."
+  ]},
   { version: '2026-08-19.880', date: '2026-10-01', items: [
     "Ma progression : nouvel éditeur sur une échelle de temps verticale. Chaque chapitre est un bloc : on le glisse par sa poignée ⠿ pour changer l'ordre, on tire son bord inférieur pour l'allonger ou le raccourcir (par demi-semaine), et toutes les dates se recalculent automatiquement.",
     "Les vacances de la zone choisie apparaissent sur la frise ; un compteur indique le nombre de semaines utilisées et passe en rouge si la progression dépasse la fin de l'année (vendredi 2 juillet).",

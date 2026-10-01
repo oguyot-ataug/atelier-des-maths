@@ -14,7 +14,7 @@
    Les données restent celles de l'ancien éditeur (progEditorItems et saveProgression, app.js) :
    seules les dates de début et de fin sont recalculées à chaque modification.
    ===================================================================== */
-const PE_H = 44, PE_VAC = 30;             // hauteur d'une semaine de classe, d'un bandeau de vacances (px)
+const PE_H = 44, PE_VAC = 50;             // hauteur d'une semaine de classe, d'un bandeau de vacances (px)
 const PE_FIN_ANNEE = '2027-07-02';        // dernier jour de classe affiché (vendredi 2 juillet 2027)
 let pe = { weeks: [], bands: [], weekY: [], start: 0, sel: -1, drag: null };
 
@@ -97,7 +97,7 @@ function peRender(){
     const nouveauMois = i === 0 || l0.getMonth() !== (i === 1 ? 8 : pe.weeks[i - 1].getMonth());
     axe += `<div class="pe-sem${nouveauMois ? ' mois' : ''}" style="top:${pe.weekY[i]}px;height:${PE_H}px;">${nouveauMois ? `<b>${mois[l.getMonth()]}</b>` : ''}<span>${l.getDate()}</span></div>`;
   });
-  const bandes = pe.bands.map(b => `<div class="pe-vac" style="top:${pe.weekY[b.avant] - PE_VAC}px;height:${PE_VAC}px;"><span class="gicon">beach_access</span> ${escapeHtml(b.vac.label)} · ${formatDateRangeFr(peJour(b.vac.debut), peJour(b.vac.fin))}</div>`).join('');
+  const bandes = pe.bands.map(b => `<div class="pe-vac" style="top:${pe.weekY[b.avant] - PE_VAC + 3}px;height:${PE_VAC - 6}px;"><span class="gicon">beach_access</span><b>${escapeHtml(b.vac.label)}</b><span class="pe-vac-dates">${formatDateRangeFr(peJour(b.vac.debut), peJour(b.vac.fin))}</span></div>`).join('');
   const finAnnee = `<div class="pe-fin" style="top:${pe.weekY[dispo]}px;">Fin de l'année · vendredi 2 juillet</div>` + (fin > dispo ? `<div class="pe-hors" style="top:${pe.weekY[dispo]}px;height:${peY(fin) - pe.weekY[dispo]}px;"></div>` : '');
   const blocs = progEditorItems.map((it, i) => {
     const c = (CATS[it.cat] || {}).text || '#999', h = peY(it._off + it._d) - peY(it._off) - 3, nom = it.nomPerso || it.titre;
@@ -122,7 +122,7 @@ function peRender(){
         <span class="pe-duree"><button class="btn secondary" onclick="peDuree(${pe.sel},-.5)" ${s._d <= .5 ? 'disabled' : ''}>−</button> ${String(s._d).replace('.', ',')} sem. <button class="btn secondary" onclick="peDuree(${pe.sel},.5)">+</button></span>
         <button class="btn secondary" onclick="peRenommer(${pe.sel})"><span class="gicon">edit</span> Renommer</button>`
       : '<span class="hint" style="margin:0;"><span class="gicon">touch_app</span> Glissez la poignée ⠿ pour déplacer un chapitre, tirez le bas d\'un bloc pour changer sa durée, ou cliquez un bloc pour le régler au demi-semaine près.</span>'}</div>
-    <div class="pe-zone" style="height:${H}px;"><div class="pe-axe">${axe}</div><div class="pe-piste">${bandes}${finAnnee}${blocs}</div></div>`;
+    <div class="pe-zone" style="height:${H}px;"><div class="pe-axe">${axe}</div><div class="pe-piste">${finAnnee}${blocs}</div>${bandes}</div>`;
 }
 function peSelect(i){ if(pe.drag) return; pe.sel = pe.sel === i ? -1 : i; peRender(); }
 function peDeplacer(i, d){ const j = i + d, t = progEditorItems; if(j < 0 || j >= t.length) return; [t[i], t[j]] = [t[j], t[i]]; pe.sel = j; peRender(); }
