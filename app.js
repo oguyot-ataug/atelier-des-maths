@@ -3288,6 +3288,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.899', date:'2026-10-01', items:[
+    'CE2 (en préparation, visible des administrateurs) : 8 nouveaux chapitres — Les longueurs, La multiplication, Polygones et quadrilatères, Problèmes additifs, L\'heure et les durées, Fractions et mesure de longueurs, Tableaux et diagrammes en barres, Angle droit, cercle et constructions.',
+    'Chaque chapitre CE2 a ses figures (règle graduée, horloges, axes du temps, schémas en barres, diagrammes, codages), une méthode animée, des exercices corrigés, un quiz et une série de questions flash prêtes.',
+  ] },
   { version: '2026-08-19.898', date: '2026-10-01', items: [
     "CE2 en préparation (visible des administrateurs seulement) : progression de 24 chapitres construite sur le programme du cycle 2 (partie CE2), du 1er septembre 2026 au 2 juillet 2027, et six premiers chapitres : Nombres jusqu'à 10 000, Tables d'addition et de multiplication, Points, droites, segments, Addition et soustraction posées, La monnaie, Fractions égales. Couleur du CE2 : vert tilleul."
   ]},
