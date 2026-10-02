@@ -331,6 +331,7 @@ function qzInterrosHtml(liste){
       <span class="qz-i-stat" title="${qzEstEntrainement(r) ? 'Entraînements terminés' : qzEstSondage(r) ? 'Réponses envoyées' : 'Copies rendues'}"><b>${d._rendues}</b>/${d._total} ${qzEstEntrainement(r) ? 'terminé' : qzEstSondage(r) ? 'réponse' : 'rendue'}${d._rendues > 1 ? 's' : ''}${d._enCours ? ` · ${d._enCours} en cours` : ''}</span>
       <span class="qz-i-stat${d._aCorriger ? ' warn' : ''}">${d._aCorriger ? `<b>${d._aCorriger}</b> à corriger` : d._rendues && !qzEstEntrainement(r) && !qzEstSondage(r) ? '✓ corrigé' : ''}</span>
       <span class="qz-i-act">
+        ${!qzEstSondage(r) && typeof qzSuiviOuvrir === 'function' ? `<button class="btn qz-mini" style="background:#C0392B;" onclick="qzSuiviOuvrir('${d.id}')" title="Voir en direct ce que font les élèves : progression, réponses, sorties de la page"><span class="gicon">live_tv</span> Suivi en direct</button>` : ''}
         <button class="btn qz-mini" onclick="qzOuvrirCorrection('${d.id}')">${qzEstEntrainement(r) || qzEstSondage(r) ? '<span class="gicon">insights</span> Résultats' : '<span class="gicon">fact_check</span> Corriger'}</button>
         <button class="btn secondary qz-mini" onclick="qzFormModifier('${d.id}')" title="Modifier"><span class="gicon">edit</span></button>
         ${!qzEstSondage(r) && typeof qzCahierOuvrir === 'function' ? `<button class="btn secondary qz-mini" onclick="qzCahierOuvrir('${d.id}')" title="Ajouter au cahier de l'élève (le sujet, avec ou sans la correction)"><span class="gicon">menu_book</span> Cahier</button>` : ''}

@@ -3296,6 +3296,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.916', date:'2026-10-02', items:[
+    'Interrogations en ligne : nouveau bouton « Suivi en direct ». Une vignette par élève (pas commencé, en cours, inactif, rendu), avec sa progression, la question où il en est, le temps passé, ses sorties de la page (alerte immédiate) et une pastille juste / faux / à vérifier par question. Un clic sur un élève montre sa copie qui se remplit en direct ; la vue « Par question » donne la part de réponses justes et les erreurs les plus fréquentes.',
+    'Interrogations en ligne : l\'élève lit sur sa page « Ton professeur peut suivre ton travail en direct ».',
+  ] },
   { version:'2026-08-19.915', date:'2026-10-02', items:[
     'Nouveau : la session COURS en direct. Depuis le Cahier de corrections (classe choisie), « Session COURS en direct » : le professeur choisit des éléments du cahier (cours, corrections, constructions) et ouvre la session, avec un code à 4 chiffres. Les élèves tapent le code en haut de « Mon travail » et voient en plein écran l\'élément montré, avec l\'écoute, la loupe et le mode apprentissage ; ils peuvent revoir les éléments déjà montrés, jamais les suivants.',
     'Session COURS : télécommande du professeur (éléments un par un, aperçu, liste de la classe : présent, absent, sorti). Quand un élève change d\'onglet, quitte la fenêtre ou sort du plein écran, son nom passe au rouge chez le professeur (nombre de sorties et heure de la dernière) avec une alerte, et l\'élève voit « Reste avec la classe ! » avant de reprendre.',

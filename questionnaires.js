@@ -753,6 +753,7 @@ function qzRenderPassation(){
       <span id="qzChrono" class="qz-chrono"></span>
     </div>
     <div id="qzSortieMsg" class="qz-sortie" style="display:none;"></div>
+    ${!qzP.apercu && !qzEstSondage(qzP.reglages) ? '<p class="qz-suivi-note"><span class="gicon">visibility</span> Ton professeur peut suivre ton travail en direct.</p>' : ''}
     ${qzP.data.devoir.consigne ? `<p class="qz-consigne">${qzMath(qzP.data.devoir.consigne)}</p>` : ''}
     ${qzP.reglages.une_par_une ? '<div class="qz-nav" id="qzNav"></div>' : ''}
     <div class="qz-questions${qzP.reglages.une_par_une ? ' une' : ''}">${qzPages(ordre).map((page, ip) => `<div class="qz-page" data-page="${ip}">${page.map(q => {
@@ -936,6 +937,7 @@ async function qzSauver(rendre){
   const { data, error } = await sb.rpc('qz_enregistrer', { p_copie: qzP.copie.id, p_reponses: qzP.reponses, p_sorties: qzP.sorties, p_log: qzP.log.length ? qzP.log : null, p_rendre: !!rendre });
   if(error){ qzSaveMsg('Non enregistré : ' + error.message, true); return false; }
   qzP.sale = false;
+  qzPSignal('maj');
   if(data && data.now) qzP.decalage = new Date(data.now).getTime() - Date.now();
   qzSaveMsg('✓ Enregistré à ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }));
   return true;
@@ -1008,10 +1010,18 @@ function qzRenderResultats(){
 }
 
 // Chrono, enregistrement périodique, sorties de page.
+// Suivi en direct par le professeur (questionnaires-suivi.js) : canal « qzs-<devoir> » ; l'élève y
+// signale chaque enregistrement (maj) et chaque sortie de la page (sortie), le professeur relit la copie.
+function qzPSignal(event, payload){
+  if(!qzP || !qzP.chS) return;
+  try{ qzP.chS.send({ type: 'broadcast', event, payload: Object.assign({ e: currentUser && currentUser.id }, payload || {}) }); }catch(e){}
+}
 function qzPStart(){
   qzPStop();
+  if(!qzP.apercu && !qzP.direct && qzP.devoirId && typeof sb !== 'undefined' && sb){ try{ qzP.chS = sb.channel('qzs-' + qzP.devoirId).subscribe(); }catch(e){} }
   qzP.onVis = () => {
     if(!qzP || !qzP.copie || qzP.copie.statut !== 'en_cours') return;
+    qzPSignal('sortie', { dehors: !!document.hidden });
     if(document.hidden){ qzP.sortieDebut = Date.now(); }
     else if(qzP.sortieDebut){
       const duree = Math.round((Date.now() - qzP.sortieDebut) / 1000); qzP.sortieDebut = null;
@@ -1035,6 +1045,7 @@ function qzPStop(){
   if(qzP.onVis) document.removeEventListener('visibilitychange', qzP.onVis);
   if(qzP.onUnload) window.removeEventListener('beforeunload', qzP.onUnload);
   qzP.onVis = qzP.onUnload = null;
+  if(qzP.chS){ const ch = qzP.chS; qzP.chS = null; setTimeout(() => { try{ sb.removeChannel(ch); }catch(e){} }, 1500); }
 }
 function qzTick(){
   if(!qzP || !qzP.copie) return;
