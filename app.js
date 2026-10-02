@@ -3293,6 +3293,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.911', date:'2026-10-02', items:[
+    '6e, Droites parallèles et perpendiculaires : nouvelle animation « Sur un quadrillage, sans équerre : la méthode du L ». Sur une droite oblique qui ne suit pas les diagonales des carreaux, on lit le déplacement d\'un nœud à un autre (un L : horizontal en orange, vertical en bleu) ; le L glisse jusqu\'au point M puis tombe sur le dos (quart de tour) : il donne le déplacement de la perpendiculaire. Trois droites au choix.',
+  ] },
   { version:'2026-08-19.910', date:'2026-10-02', items:[
     'Construction aux instruments : une demi-droite trop longue pour la règle est tracée le long de la réquerre (utilisée comme règle, elle est plus longue), depuis son origine jusqu\'au-delà du point à atteindre. Sans réquerre, la règle est posée pour finir juste après ce point. Proposé : « ou utiliser la réquerre (comme règle pas comme équerre) ».',
   ] },

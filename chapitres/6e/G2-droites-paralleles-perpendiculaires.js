@@ -115,6 +115,10 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
   </div>
 </div>
 
+<p class="example-title" style="margin-top:16px;">Sur un quadrillage, sans équerre : la méthode du « L »</p>
+<p class="hint" style="margin:4px 0 8px;">Quand la droite (d) est oblique sans suivre les diagonales des carreaux, on lit sur (d) le déplacement d'un nœud à un autre (un « L ») ; le L qui tombe sur le dos donne le déplacement de la perpendiculaire.</p>
+${dpAnimL('dp-perp-L')}
+
 <div class="lesson-header"><span class="num">3</span><h3>Droites parallèles</h3></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Deux droites sont <b>parallèles</b> si elles ne sont pas sécantes. On note (d) // (d').</div>
@@ -1755,7 +1759,7 @@ function dpRegisterGeoDemos(){
   registerGeoStepDemo('dp-rqa-svg', { steps:()=>DP_RQA_STEPS, getIdx:()=>dpRqaIdx, goto:(i,animate)=>{ dpRqaIdx=i; dpRenderRqPara(animate); } });
 }
 DEMO_REGISTRY['6e|Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles', histoire:'histoire-demo-droites-paralleles',
-  init:()=>{ initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethAnimReset(); dpEx1Demo.reset(); dpEx2Demo.reset(); dpEx3Demo.reset(); dpRegisterGeoDemos(); dpCroixPoints(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); injectCourseAddButtons(document.getElementById('methode-demo-droites-paralleles')); } };
+  init:()=>{ cmAnimDessiner('dp-perp-L'); initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethAnimReset(); dpEx1Demo.reset(); dpEx2Demo.reset(); dpEx3Demo.reset(); dpRegisterGeoDemos(); dpCroixPoints(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); injectCourseAddButtons(document.getElementById('methode-demo-droites-paralleles')); } };
 
 DEMO_QUIZZES['6e|Droites parallèles et perpendiculaires'] = [
   {q:"Que signifie (d) ⊥ (d') ?",
@@ -1765,3 +1769,91 @@ DEMO_QUIZZES['6e|Droites parallèles et perpendiculaires'] = [
   {q:"La médiatrice d'un segment [AB] est...",
    opts:["la droite (AB) elle-même","la droite perpendiculaire à [AB] passant par son milieu","le milieu de [AB]"], correct:1},
 ];
+
+/* Perpendiculaire sur quadrillage, méthode du « L » -- demandé : « Sur la droite, on trouve deux points
+   qui sont des sommets du quadrillage. On regarde le déplacement horizontal et vertical pour passer d'un
+   point à un autre. L'idée est de symboliser ce déplacement par une sorte de L. Ce L va tomber sur le
+   dos... ce qui va symboliser le déplacement de la perpendiculaire. » Le L (horizontal en orange,
+   vertical en bleu) glisse jusqu'à M puis tourne d'un quart de tour autour de M : l'horizontal devient
+   vertical, le vertical devient horizontal (dans l'autre sens). Lecteur commun cmAnim (chapitres/cm1/_anims.js). */
+function dpAnimL(id){
+  // P, Q : deux nœuds de (d) ; M : le point. Coordonnées en carreaux (y vers le bas).
+  const PRESETS = [
+    { nom: '3 → et 1 ↑', P: [2, 7], Q: [5, 6], M: [10, 10] },
+    { nom: '1 → et 2 ↑', P: [3, 9], Q: [4, 7], M: [9, 8] },
+    { nom: '3 → et 2 ↓', P: [1, 2], Q: [4, 4], M: [9, 5] },
+  ];
+  const K = 28, O = 20, NX = 15, NY = 11, W = NX * K + 2 * O, H = NY * K + 2 * O;
+  const X = v => O + v * K, Y = v => O + v * K;
+  const OR = '#E35D3A', BL = '#2EA8C9', VE = '#2E9C6A', EN = '#1F3A5C';
+  const mots = (n, axe) => `${Math.abs(n)} carreau${Math.abs(n) > 1 ? 'x' : ''} ${axe === 'x' ? (n > 0 ? 'vers la droite' : 'vers la gauche') : (n > 0 ? 'vers le bas' : 'vers le haut')}`;
+  // Morceau visible d'une droite (point, direction) dans le quadrillage.
+  const clip = (p, d) => { let t0 = -1e9, t1 = 1e9; [[0, NX], [0, NY]].forEach(([mn, mx], i) => { if(d[i] === 0) return; const a = (mn - p[i]) / d[i], b = (mx - p[i]) / d[i]; t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b)); }); return [[p[0] + t0 * d[0], p[1] + t0 * d[1]], [p[0] + t1 * d[0], p[1] + t1 * d[1]]]; };
+  const trait = (a, b, c, l, k, extra) => `<line x1="${X(a[0])}" y1="${Y(a[1])}" x2="${X(a[0] + (b[0] - a[0]) * (k == null ? 1 : k))}" y2="${Y(a[1] + (b[1] - a[1]) * (k == null ? 1 : k))}" stroke="${c}" stroke-width="${l}" stroke-linecap="round"${extra || ''}/>`;
+  const croix = (p, c) => `<path d="M${X(p[0]) - 5},${Y(p[1]) - 5} L${X(p[0]) + 5},${Y(p[1]) + 5} M${X(p[0]) - 5},${Y(p[1]) + 5} L${X(p[0]) + 5},${Y(p[1]) - 5}" stroke="${c}" stroke-width="2" stroke-linecap="round"/>`;
+  // Point sur une droite : petit trait perpendiculaire à la droite.
+  const tic = (p, d, c) => { const L = Math.hypot(d[0], d[1]), n = [-d[1] / L * 6, d[0] / L * 6]; return `<line x1="${X(p[0]) - n[0]}" y1="${Y(p[1]) - n[1]}" x2="${X(p[0]) + n[0]}" y2="${Y(p[1]) + n[1]}" stroke="${c}" stroke-width="2.2" stroke-linecap="round"/>`; };
+  const fleche = (a, b, c) => { const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, x = X(b[0]), y = Y(b[1]);
+    return `<polygon points="${x},${y} ${x - ux * 9 - uy * 5},${y - uy * 9 + ux * 5} ${x - ux * 9 + uy * 5},${y - uy * 9 - ux * 5}" fill="${c}"/>`; };
+  // Le L posé au point S : jambe horizontale (a carreaux), puis verticale (b carreaux) ; k1, k2 : avancement.
+  const leL = (S, a, b, k1, k2, nums) => {
+    const C = [S[0] + a, S[1]], E = [S[0] + a, S[1] + b];
+    let g = trait(S, C, OR, 4, k1) + (k1 >= 1 ? fleche(S, C, OR) : '');
+    if(k2 > 0) g += trait(C, E, BL, 4, k2) + (k2 >= 1 ? fleche(C, E, BL) : '');
+    if(nums){
+      g += ce2T(X(S[0] + a / 2), Y(S[1]) + (b < 0 ? 18 : -8), Math.abs(a), { c: OR, t: 15, op: k1 });
+      if(k2 > 0) g += ce2T(X(S[0] + a) + (a > 0 ? 12 : -12), Y(S[1] + b / 2) + 5, Math.abs(b), { c: BL, t: 15, op: k2 });
+    }
+    return g;
+  };
+  return cmAnim(id, {
+    etat: { p: 0 }, duree: 14000,
+    legende: 'Choisis une droite (d), puis Lecture. Orange : le déplacement horizontal ; bleu : le déplacement vertical.',
+    controles: a => `<div class="cmp-modeles">${PRESETS.map((q, i) => cmBtn(id, 'p', i, q.nom, a.etat.p === i)).join('')}</div>`,
+    dessin: (t, an) => {
+      const pr = PRESETS[an.etat.p], P = pr.P, Q = pr.Q, M = pr.M, a = Q[0] - P[0], b = Q[1] - P[1];
+      const d = [a, b], dp = [b, -a];                       // quart de tour : (x, y) → (y, −x)
+      const N = [M[0] + dp[0], M[1] + dp[1]];
+      const ph = (x, y) => cmDoux(cmPhase(t, x, y));
+      const k1 = ph(.06, .16), k2a = ph(.18, .27), k2b = ph(.27, .36), k3 = ph(.40, .52), k4 = ph(.56, .72), k5 = ph(.76, .88), k6 = ph(.9, .97);
+      let g = '';
+      for(let i = 0; i <= NX; i++) g += `<line x1="${X(i)}" y1="${Y(0)}" x2="${X(i)}" y2="${Y(NY)}" stroke="#C9DCEB" stroke-width="1"/>`;
+      for(let j = 0; j <= NY; j++) g += `<line x1="${X(0)}" y1="${Y(j)}" x2="${X(NX)}" y2="${Y(j)}" stroke="#C9DCEB" stroke-width="1"/>`;
+      const [d0, d1] = clip(P, d);
+      g += trait(d0, d1, EN, 2.2) + ce2T(X(d1[0]) - 16, Y(d1[1]) + (b < 0 ? 18 : -8), '(d)', { c: EN, t: 15 });
+      g += croix(M, OR) + ce2T(X(M[0]) + 12, Y(M[1]) + 18, 'M', { c: EN, t: 15 });
+      if(k1 > 0) g += `<g opacity="${k1}">${tic(P, d, EN)}${tic(Q, d, EN)}<circle cx="${X(P[0])}" cy="${Y(P[1])}" r="9" fill="none" stroke="${VE}" stroke-width="2"/><circle cx="${X(Q[0])}" cy="${Y(Q[1])}" r="9" fill="none" stroke="${VE}" stroke-width="2"/></g>`;
+      // Le L lu sur (d), qui reste en pâle une fois parti vers M.
+      if(k2a > 0) g += `<g opacity="${k3 > 0 ? .3 : 1}">${leL(P, a, b, k2a, k2b, k3 === 0)}</g>`;
+      // Le L qui glisse jusqu'à M, puis tombe sur le dos (rotation d'un quart de tour autour de M).
+      if(k3 > 0 && k5 === 0){
+        const S = [P[0] + (M[0] - P[0]) * k3, P[1] + (M[1] - P[1]) * k3];
+        const rot = k4 > 0 ? ` transform="rotate(${-90 * k4} ${X(M[0])} ${Y(M[1])})"` : '';
+        g += `<g${rot}>${leL(S, a, b, 1, 1, k4 === 0 && k3 >= 1)}</g>`;
+        if(k4 >= 1) g += ce2T(X(M[0]) - 14, Y(M[1] - a / 2) + 5, Math.abs(a), { c: OR, t: 15 }) + ce2T(X(N[0] + (M[0] - N[0]) / 2), Y(N[1]) - 9, Math.abs(b), { c: BL, t: 15 });
+      }
+      // La perpendiculaire (MN), puis le codage de l'angle droit.
+      if(k5 > 0){
+        g += `<g opacity="${1 - k5 * .7}"><line x1="${X(M[0])}" y1="${Y(M[1])}" x2="${X(M[0])}" y2="${Y(M[1] - a)}" stroke="${OR}" stroke-width="4" stroke-linecap="round"/><line x1="${X(M[0])}" y1="${Y(M[1] - a)}" x2="${X(N[0])}" y2="${Y(N[1])}" stroke="${BL}" stroke-width="4" stroke-linecap="round"/></g>`;
+        const [e0, e1] = clip(M, dp), m = [(e0[0] + e1[0]) / 2, (e0[1] + e1[1]) / 2];
+        g += trait(m, e0, OR, 2.2, k5) + trait(m, e1, OR, 2.2, k5);
+        g += tic(N, dp, EN) + ce2T(X(N[0]) + 12, Y(N[1]) - 8, 'N', { c: EN, t: 15, op: k5 }) + (k5 >= 1 ? (() => { const e = Math.hypot(e1[0] - N[0], e1[1] - N[1]) > Math.hypot(e0[0] - N[0], e0[1] - N[1]) ? e1 : e0, m2 = e === e1 ? e0 : e1, ux = (m2[0] - e[0]), uy = (m2[1] - e[1]), L = Math.hypot(ux, uy) || 1;
+          return ce2T(X(e[0]) + ux / L * 22 + 16, Y(e[1]) + uy / L * 22 + 5, "(d')", { c: OR, t: 15 }); })() : '');
+      }
+      if(k6 > 0){
+        // Pied de la perpendiculaire et petit carré de l'angle droit.
+        const L2 = a * a + b * b, s = ((M[0] - P[0]) * a + (M[1] - P[1]) * b) / L2, Hp = [P[0] + s * a, P[1] + s * b];
+        const u = [a / Math.sqrt(L2) * .45, b / Math.sqrt(L2) * .45], v0 = [M[0] - Hp[0], M[1] - Hp[1]], vl = Math.hypot(v0[0], v0[1]) || 1, v = [v0[0] / vl * .45, v0[1] / vl * .45];
+        const c1 = [Hp[0] + u[0], Hp[1] + u[1]], c2 = [Hp[0] + u[0] + v[0], Hp[1] + u[1] + v[1]], c3 = [Hp[0] + v[0], Hp[1] + v[1]];
+        g += `<path d="M${X(c1[0])},${Y(c1[1])} L${X(c2[0])},${Y(c2[1])} L${X(c3[0])},${Y(c3[1])}" fill="none" stroke="${EN}" stroke-width="1.6" opacity="${k6}"/>`;
+      }
+      const texte = t < .06 ? 'Une droite (d), oblique, qui ne suit pas les diagonales des carreaux, et un point M.'
+        : t < .18 ? 'Sur (d), on repère deux points placés sur des <b>nœuds</b> du quadrillage.'
+        : t < .40 ? `Pour aller de l'un à l'autre : <b style="color:${OR}">${mots(a, 'x')}</b>, puis <b style="color:${BL}">${mots(b, 'y')}</b>. Ce déplacement dessine un « L ».`
+        : t < .56 ? 'On fait glisser le L jusqu\'au point M.'
+        : t < .76 ? 'Le L <b>tombe sur le dos</b> : il tourne d\'un quart de tour autour de M.'
+        : t < .9 ? `Nouveau déplacement depuis M : <b style="color:${OR}">${mots(-a, 'y')}</b>, puis <b style="color:${BL}">${mots(b, 'x')}</b>. On arrive en N : la droite (MN) est la perpendiculaire (d') à (d) passant par M.`
+        : `L'horizontal est devenu vertical, le vertical est devenu horizontal, dans l'autre sens : (d') ⊥ (d). On code l'angle droit.`;
+      return { scene: `<svg viewBox="0 0 ${W} ${H}" class="cma-svg" style="max-width:${Math.round(W * 1.35)}px;">${g}</svg>`, texte };
+    } });
+}
