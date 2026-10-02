@@ -112,7 +112,13 @@ function olivDecorer(demo){
     #view-cm > h1{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
     #view-cm > h1::after{content:'Muscle ton jeu !';display:flex;align-items:center;min-height:58px;padding-left:64px;background:${olivPoseUrl('muscle')} no-repeat left center/58px;color:#3E5A1E;font:800 1rem 'Space Grotesk',sans-serif;}
     .fp-modal h3::after{content:'';display:inline-block;width:40px;height:40px;margin:-10px 0 -10px 8px;vertical-align:middle;background:${olivPoseUrl('muscle')} no-repeat center/contain;}
+    /* Cahier : jours qui contiennent du cours (app.js, nbOlivCours) */
+    .nb-oliv-cours{display:inline-flex;align-items:center;gap:4px;margin-left:4px;vertical-align:middle;}
+    .nb-oliv-cours::before{content:'';width:34px;height:34px;margin:-10px 0;flex:none;background:${olivPoseUrl('savoir')} no-repeat center/contain;}
+    .nb-oliv-cours::after{content:'Cours !';white-space:nowrap;background:#fff;color:#3E5A1E;border:2px solid #8DB84A;border-radius:10px 10px 10px 3px;padding:0 8px;font:700 .72rem 'Space Grotesk',sans-serif;line-height:1.5;}
     @media (max-width:560px){ .oliv-deco .oliv-b::after{display:none;} .oliv-deco .oliv-sh::after{display:none;} }
+    @media (max-width:560px){ .nb-oliv-cours::after{display:none;} }
+    @media print{ .nb-oliv-cours{display:none !important;} }
     @media print{ .oliv-deco .oliv-b::before, .oliv-deco .oliv-b::after, .oliv-deco .oliv-sh::before, .oliv-deco .oliv-sh::after, .oliv-deco .oliv-haut::before{display:none !important;} .oliv-deco .oliv-b{margin-top:0;} }
   `;
   document.head.appendChild(st);

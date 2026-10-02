@@ -3300,6 +3300,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.923', date:'2026-10-02', items:[
+    'Cahier : à côté de la date, une petite Oliv\'IA (doigt levé, « Cours ! ») signale les jours qui contiennent une partie de cours, pour retrouver d\'un coup d\'œil ce qu\'il faut revoir. Le repère n\'apparaît ni à l\'impression ni dans les PDF.',
+  ] },
   { version:'2026-08-19.922', date:'2026-10-02', items:[
     'Session COURS : les parties de cours sont maintenant vivantes. Animations (Lecture, curseur, réglages), démos pas à pas et figures manipulables fonctionnent comme dans le chapitre, chez l\'élève comme dans la télécommande. Cela vaut pour les parties ajoutées avec « Ajouter une partie de cours » et pour celles venues du cahier (+ Cahier). Si une partie n\'est plus retrouvée dans le chapitre, sa copie figée reste affichée.',
   ] },
@@ -6367,11 +6370,11 @@ async function fetchCahierDatesList(){
   // mettre de date". Ne doivent jamais apparaître dans le cahier normal (vu aussi par les
   // élèves) ni dans son accordéon par date -- seulement via "Récupérer un brouillon", voir
   // fetchCahierBrouillons plus bas.
-  const { data, error } = await sb.from('cahier_entries').select('date').eq('class_id', currentClassId).not('date', 'is', null);
+  const { data, error } = await sb.from('cahier_entries').select('date,exo').eq('class_id', currentClassId).not('date', 'is', null);
   if(error){ console.error('fetch dates list failed', error); return []; }
-  const counts = new Map();
-  data.forEach(r=>{ const d=r.date||''; counts.set(d, (counts.get(d)||0)+1); });
-  return Array.from(counts.entries()).map(([date,count])=>({date,count})).sort((a,b)=>a.date.localeCompare(b.date));
+  const counts = new Map(), cours = new Set();
+  data.forEach(r=>{ const d=r.date||''; counts.set(d, (counts.get(d)||0)+1); if(r.exo==='Cours') cours.add(d); });
+  return Array.from(counts.entries()).map(([date,count])=>({date,count,cours:cours.has(date)})).sort((a,b)=>a.date.localeCompare(b.date));
 }
 // Récupère le contenu complet (colonnes légères, jamais blocksData/rows/cellBorders -- voir
 // fetchCahierEntryEditData plus bas) d'UN SEUL jour. Appelée au dépli d'une section de
@@ -6981,6 +6984,10 @@ function nbAccFermerAutres(body){
     if(ch) ch.classList.remove('open');
   });
 }
+/* Repère d'Oliv'IA sur les jours du cahier qui contiennent du cours -- demandé : « au niveau des dates du
+   cahier de l'élève, mettre un repère avec Oliv'IA sur les jours qui contiennent des séances de cours ».
+   Élément vide dessiné en CSS (olivia-deco.js) : rien à l'impression ni dans les PDF. */
+function nbOlivCours(oui){ return oui ? '<span class="nb-oliv-cours" title="Ce jour-là, il y a du cours à revoir" aria-label="Jour de cours"></span>' : ''; }
 function groupedEntriesAccordionHTML(entries, renderItem){
   const dateGroups = [];
   entries.forEach(e=>{
@@ -6997,7 +7004,7 @@ function groupedEntriesAccordionHTML(entries, renderItem){
     return `<div class="nb-accordion-section">
       <div class="nb-accordion-header" role="button" tabindex="0" onclick="toggleNbAccordion('${accId}','${grp.date}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleNbAccordion('${accId}','${grp.date}');}">
         <span class="gicon nb-accordion-chevron${isOpen?' open':''}">expand_more</span>
-        <span>${fmtDateFR(grp.date)}</span>
+        <span>${fmtDateFR(grp.date)}</span>${nbOlivCours(grp.entries.some(e=>e.exo==='Cours'))}
         <span class="nb-accordion-count">(${grp.entries.length})</span>
         <button type="button" class="nb-pdf-day-btn" onclick="event.stopPropagation(); exportCahierDayAsPDF('${grp.date}')" title="Générer un PDF de ce jour"><span class=gicon>picture_as_pdf</span></button>
         ${nbResumeDayBtn(grp.date)}
@@ -7032,7 +7039,7 @@ function lazyGroupedEntriesAccordionHTML(editable){
     return `<div class="nb-accordion-section">
       <div class="nb-accordion-header" role="button" tabindex="0" onclick="expandCahierDay('${accId}','${grp.date}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();expandCahierDay('${accId}','${grp.date}');}">
         <span class="gicon nb-accordion-chevron${isOpen?' open':''}">expand_more</span>
-        <span>${fmtDateFR(grp.date)}</span>
+        <span>${fmtDateFR(grp.date)}</span>${nbOlivCours(grp.cours || (cahierLoadedDates.has(grp.date) && cahier.some(e=>e.date===grp.date && e.exo==='Cours')))}
         <span class="nb-accordion-count">(${grp.count})</span>
         <button type="button" class="nb-pdf-day-btn" onclick="event.stopPropagation(); exportCahierDayAsPDF('${grp.date}')" title="Générer un PDF de ce jour"><span class=gicon>picture_as_pdf</span></button>
         ${nbResumeDayBtn(grp.date)}
