@@ -3293,6 +3293,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.908', date:'2026-10-02', items:[
+    'Géométrie interactive, symétries et translation : en cliquant un côté d\'un polygone, le site demande s\'il faut transformer le polygone entier (« Le triangle ABC entier ») ou seulement le côté cliqué. Signalé : « on peut se demander si je cherche à construire le symétrique du triangle ou uniquement le côté cliqué ».',
+  ] },
   { version:'2026-08-19.907', date:'2026-10-02', items:[
     'Géométrie interactive, construction aux instruments : le symétrique d\'un point par rapport à un autre se construit aussi sans compas (demi-droite, puis report de la longueur à la règle graduée). Signalé : « je trace un segment [AB] et je construis le symétrique de A par rapport à B : le tracé aux instruments ne se fait pas ».',
     'Géométrie interactive : en transformant un segment [AB] par la symétrie de centre B, l\'image de B est B lui-même (avant, un point B\' confondu avec B bloquait la construction aux instruments).',

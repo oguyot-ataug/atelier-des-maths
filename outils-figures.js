@@ -6168,10 +6168,31 @@ function figPolygoneDe(seg){
   const deg = new Map(); comp.forEach(t=>[t.p1,t.p2].forEach(p=>deg.set(p,(deg.get(p)||0)+1)));
   return comp.size>=3 && [...deg.values()].every(v=>v===2) ? [...comp] : [seg];
 }
-function figTransformerObjet(sh){
+// Sommets d'un polygone (composante de figPolygoneDe), dans l'ordre du contour.
+function figSommetsPolygone(segs){
+  const out = [segs[0].p1, segs[0].p2];
+  while(out.length < segs.length){
+    const der = out[out.length-1], av = out[out.length-2];
+    const s = segs.find(t=>(t.p1===der && t.p2!==av) || (t.p2===der && t.p1!==av));
+    if(!s) break;
+    out.push(s.p1===der ? s.p2 : s.p1);
+  }
+  return out;
+}
+/* Clic sur un côté d'un polygone -- signalé : « on peut se demander si je cherche à construire le
+   symétrique du triangle ou uniquement le côté cliqué ». On demande : le polygone entier, ou ce côté. */
+async function figTransformerObjet(sh){
   const T = figTransfoParams(); if(!T) return;
   const hint = document.getElementById('figureHint');
-  const objets = sh.type==='segment' ? figPolygoneDe(sh) : [sh];
+  let objets = sh.type==='segment' ? figPolygoneDe(sh) : [sh];
+  if(objets.length>1 && typeof niceModal==='function'){
+    const noms = figSommetsPolygone(objets).map(q=>q.label||'').join('');
+    const sorte = {3:'le triangle', 4:'le quadrilatère', 5:'le pentagone', 6:'l\'hexagone'}[objets.length] || 'le polygone';
+    const quoi = await niceModal({message:`Transformer ${sorte} ${noms} entier, ou seulement le côté [${sh.p1.label||''}${sh.p2.label||''}] ?`,
+      buttons:[{label:'Annuler', value:null, secondary:true}, {label:`Seulement le côté [${sh.p1.label||''}${sh.p2.label||''}]`, value:'cote', secondary:true}, {label:`${sorte.charAt(0).toUpperCase() + sorte.slice(1)} ${noms} entier`, value:'tout'}]});
+    if(!quoi){ renderFigureSvg(); return; }
+    if(quoi==='cote') objets = [sh];
+  }
   let fait = 0;
   objets.forEach(o=>{
     const I = q => figImagePoint(T, q), base = {}; ['strokeColor','strokeWidth','strokePattern','compass'].forEach(k=>{ if(o[k]!==undefined) base[k] = o[k]; });
