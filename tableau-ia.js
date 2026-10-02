@@ -921,7 +921,14 @@ async function tbAiRuledStroke(from, to, style, skip, ex){
   const u = {x:(to.x-from.x)/len, y:(to.y-from.y)/len};
   let w0 = 0, w1 = len;
   if(ex && ex.kind!=='segment' && len>maxL){
-    if(ex.kind==='ray'){ w0 = 0; w1 = maxL; }
+    if(ex.kind==='ray'){
+      // Depuis l'origine, sauf si un point à atteindre (intersection avec un arc...) tombe au-delà de la
+      // règle : la règle est alors posée pour finir juste après lui -- signalé : « le trait de construction
+      // de la demi-droite [AC) est trop court donc l'intersection avec l'arc n'est pas visible »
+      // (symétrique de A par rapport à C : A' est à deux fois AC de l'origine).
+      const loin = ex.hits && ex.hits.length ? Math.max(...ex.hits) : 0;
+      w1 = Math.min(len, Math.max(maxL, loin + 40)); w0 = Math.max(0, w1 - maxL);
+    }
     else {
       // Centre : les points qui définissent l'objet (sinon le milieu de l'étendue).
       let c = len/2;

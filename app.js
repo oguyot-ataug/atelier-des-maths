@@ -3293,6 +3293,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.909', date:'2026-10-02', items:[
+    'Construction aux instruments : une demi-droite plus longue que la règle est tracée là où elle doit couper un arc ou une autre ligne (la règle, posée une seule fois, finit juste après le point à atteindre). Signalé : « le trait de construction de la demi-droite [AC) est trop court donc l\'intersection avec l\'arc n\'est pas visible » (symétrique d\'un point par rapport à un autre).',
+  ] },
   { version:'2026-08-19.908', date:'2026-10-02', items:[
     'Géométrie interactive, symétries et translation : en cliquant un côté d\'un polygone, le site demande s\'il faut transformer le polygone entier (« Le triangle ABC entier ») ou seulement le côté cliqué. Signalé : « on peut se demander si je cherche à construire le symétrique du triangle ou uniquement le côté cliqué ».',
   ] },
