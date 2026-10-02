@@ -290,7 +290,7 @@ function qzcAttenteHtml(){
     ${qzcGrilleHtml(null, false)}
     <button class="btn qz-go" onclick="qzDirectAller(0)"><span class="gicon">play_arrow</span> Lancer la question 1</button></div>`;
 }
-function qzcQuestionHtml(p, corr){
+function qzcCarteQuestionHtml(p, corr){
   const vf = p.q.type === 'vf';
   return `${p.docs.map(d => `<div class="qz-doc">${qzEnonceHtml(d)}</div>`).join('')}
     <div class="qz-q">${qzEnonceHtml(p.q)}${vf ? `<p class="qzc-aff">${qzMath(p.q.items[0].texte)}</p>` : ''}</div>
@@ -303,7 +303,7 @@ function qzcMainHtml(i, p){
       <div class="qzd-qhead"><span class="qzd-num">Question ${i + 1} / ${qzD.pages.length}</span>
         ${corr ? '<span class="qzd-phase corr"><span class="gicon">fact_check</span> Correction affichée</span>' : qzDReste() === 0 ? '<span class="qzd-phase clos"><span class="gicon">lock_clock</span> Réponses closes</span>' : '<span class="qzd-phase"><span class="dot"></span> Levez vos cartes !</span>'}
         ${corr ? '' : qzDMinuteurHtml(p.q)}</div>
-      ${qzcQuestionHtml(p, corr)}
+      ${qzcCarteQuestionHtml(p, corr)}
     </div>
     <div class="qzd-res" id="qzdRes">${qzcResHtml(p.q)}</div></div>`;
 }
@@ -359,7 +359,7 @@ function qzcProjEnvoyer(m){
   const reps = p ? qzD.reps.get(p.q.id) || new Map() : new Map();
   const tuiles = qzcEleves().filter(x => x.n).map(({ e, n }) => ({ n, p: e.prenom || e.label, lu: !!(p && qzcLettre(p.q, reps.get(e.id))) }));
   c.postMessage({ type: 'etat', titre: qzD.row.titre || '', fin, attente, n: i + 1, total: qzD.pages.length,
-    corr: qzD.etat.phase === 'correction', html: p && !attente && !fin ? qzcQuestionHtml(p, qzD.etat.phase === 'correction') : '', tuiles });
+    corr: qzD.etat.phase === 'correction', html: p && !attente && !fin ? qzcCarteQuestionHtml(p, qzD.etat.phase === 'correction') : '', tuiles });
 }
 function qzcProjRecu(m){
   const r = document.getElementById('qzcProj'); if(!r) return;

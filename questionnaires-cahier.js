@@ -40,6 +40,8 @@ function qzcQuestionHtml(q, n, corr){
   } else if(typeof QZ_EXT !== 'undefined' && QZ_EXT[q.type]){
     // Types interactifs (figure, axe, association…) : même rendu que la correction en ligne, figé.
     try{ corps = `<div style="margin-top:6px;">${qzRenderSaisie(q, null, corr ? 'corrige' : 'lecture', { reglages: {}, seed: null, pfx: 'c' })}</div>`; }catch(e){ corps = ''; }
+    // Pas de réponse d'élève dans le cahier : la légende « juste / faux » du tracé n'a pas lieu d'être.
+    corps = corps.replace(/<p class="hint qzt-leg">[\s\S]*?<\/p>/g, '');
   }
   const sol = corr ? qzcSolution(q) : null;
   return `<div style="${S}">

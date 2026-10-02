@@ -3300,6 +3300,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.924', date:'2026-10-02', items:[
+    'Correction : « Ajouter au cahier » une interrogation en ligne (ou des questions flash) ne faisait plus rien. Deux fonctions portaient le même nom (cahier et cartes flashcode) et la seconde remplaçait la première. Les tracés sur quadrillage arrivent dans le cahier avec la figure attendue, sans la légende « juste / faux » qui n\'y a pas de sens.',
+  ] },
   { version:'2026-08-19.923', date:'2026-10-02', items:[
     'Cahier : à côté de la date, une petite Oliv\'IA (doigt levé, « Cours ! ») signale les jours qui contiennent une partie de cours, pour retrouver d\'un coup d\'œil ce qu\'il faut revoir. Le repère n\'apparaît ni à l\'impression ni dans les PDF.',
   ] },
