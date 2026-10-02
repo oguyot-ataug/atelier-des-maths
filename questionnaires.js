@@ -1548,7 +1548,7 @@ function qzGenOuvrir(){
       <label>Difficulté <select id="qzGenDiff"><option value="progressive">progressive</option><option value="facile">facile</option><option value="moyenne">moyenne</option><option value="difficile">difficile</option></select></label>
     </div>
     <p class="qz-lab" style="margin-top:10px;">Types de questions</p>
-    <div class="qz-gen-types">${QZ_TYPES.filter(t => t.id !== 'texte').map(t => `<label class="qz-check"><input type="checkbox" value="${t.id}" ${t.id !== 'courte' ? 'checked' : ''}> ${t.label}</label>`).join('')}</div>
+    <div class="qz-gen-types">${QZ_TYPES.filter(t => t.id !== 'texte' && !t.sansIA).map(t => `<label class="qz-check"><input type="checkbox" value="${t.id}" ${t.id !== 'courte' ? 'checked' : ''}> ${t.label}</label>`).join('')}</div>
     <label class="qz-lab" style="margin-top:10px;">Consignes pour l'IA <span class="hint" style="margin:0;">(facultatif)</span></label>
     <textarea id="qzGenConsignes" rows="2" style="width:100%;box-sizing:border-box;" placeholder="ex. contexte de la vie courante, sans calculatrice, une question de réflexion à la fin…"></textarea>
     <div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap;"><button class="btn" id="qzGenBtn" onclick="qzGenerer()"><span class="gicon">auto_awesome</span> Générer</button><span id="qzGenStatus" class="hint" style="margin:0;"></span></div>
@@ -1608,7 +1608,7 @@ ${types.map(t => FORMATS[t]).join('\n')}`;
 }
 // Réponse de l'IA → question au format de l'éditeur (champs vérifiés, identifiants neufs).
 function qzGenNormaliser(x){
-  if(!x || !QZ_TYPES.some(t => t.id === x.type) || x.type === 'texte') return null;
+  if(!x || !QZ_TYPES.some(t => t.id === x.type && !t.sansIA) || x.type === 'texte') return null;
   x = JSON.parse(JSON.stringify(x), (k, v) => typeof v === 'string' ? qzSauts(v) : v);
   const q = qzEdNouvelle(x.type);
   q.enonce = String(x.enonce || '').trim();

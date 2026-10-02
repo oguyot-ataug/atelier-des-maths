@@ -416,6 +416,7 @@ function qzDirectDetailHtml(q, s, corr){
   const reps = qzD.eleves.filter(e => s.m.has(e.id)).map(e => s.m.get(e.id)).filter(r => qzDVerdict(q, r) !== 'vide');
   if(!reps.length) return '';
   if(qzX(q).sondage && typeof qzSonDirectDetail === 'function') return qzSonDirectDetail(q, reps);
+  if(qzX(q).directDetail) return qzX(q).directDetail(q, reps, corr);
   if(q.type === 'qcm'){
     const cnt = {}; reps.forEach(r => (Array.isArray(r) ? r : [r]).forEach(id => { cnt[id] = (cnt[id] || 0) + 1; }));
     return `<div class="qzd-det">${qzOrdreChoix(q, {}, null).map(ch => { const k = cnt[ch.id] || 0;

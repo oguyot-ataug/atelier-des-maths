@@ -3293,6 +3293,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.905', date:'2026-10-02', items:[
+    'Interrogations en ligne et questions flash : nouveau type de question « Tracé sur quadrillage ». L\'élève place des points sur les nœuds, puis trace droites, segments ou demi-droites entre deux points ; pour une symétrie, il place seulement les points demandés.',
+    'Le professeur dessine ce que voit l\'élève et ce qui est attendu, ou choisit un modèle (droite parallèle, droite perpendiculaire, symétrique de points), avec une figure différente pour chaque élève en option.',
+    'Correction automatique sur les propriétés du tracé (une droite juste passe par les bons points, quels que soient ceux choisis) ; en séance en direct, la mosaïque des tracés de la classe s\'affiche.',
+  ] },
   { version:'2026-08-19.904', date:'2026-10-02', items:[
     'CM2 : reprise pédagogique des 25 chapitres. Tous les exercices ont une réponse rédigée (titre souligné, calcul, résultat encadré, phrase de conclusion).',
     'CM2 : un seul calcul par ligne, des listes à puces sans numéros, et des fractions toujours écrites en étage.',
