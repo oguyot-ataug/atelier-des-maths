@@ -1094,6 +1094,8 @@ function openChapitre(c, tab, lvlOverride){
   if(demo) injectZoomButtons(document.getElementById(demo.exos));
   // Cours personnalisés (cours-perso.js) : version du professeur ou de l'établissement.
   if(typeof cpOnChapterOpen==='function') cpOnChapterOpen(demo||null);
+  // Petites vignettes d'Oliv'IA (olivia-deco.js) : « À savoir ! », « Muscle ton jeu ! »…
+  if(typeof olivDecorer==='function') olivDecorer(demo||null);
   // Questions flash prêtes (flash-prets.js) : bouton pour le professeur, au primaire.
   if(typeof fpMaj==='function') fpMaj(lvl, c.t);
   showView('view-chapitre');
@@ -1778,6 +1780,7 @@ async function exportCoursPDF(){
   blankOutSelectedBoxes(clone);
   clone.querySelectorAll('.add-to-cahier-btn').forEach(el=>el.remove());
   clone.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar, .zoom-btn').forEach(el=>el.remove());
+  clone.querySelectorAll('.oliv-b, .oliv-sh, .oliv-haut').forEach(el=>{ el.classList.remove('oliv-b','oliv-sh','oliv-haut',...[...el.classList].filter(c=>c.startsWith('oliv-'))); delete el.dataset.oliv; }); // vignettes d'Oliv'IA
   clone.querySelectorAll('.lrn-active').forEach(el=>el.classList.remove('lrn-active')); // mode apprentissage : texte en clair
   clone.querySelectorAll('.figure-toolbar').forEach(el=>el.remove());
   // Réduction spécifique au PDF : .katex a font-size:1.18em globalement sur le site (voir
@@ -3293,6 +3296,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.914', date:'2026-10-02', items:[
+    'La petite Oliv\'IA s\'invite dans les chapitres, avec une bulle : le doigt levé sur les définitions (« À savoir ! ») et les règles ou propriétés (« Retiens bien ! »), la loupe sur les méthodes (« Suis la méthode ! »), les muscles en tête des exercices (« Muscle ton jeu ! »), le chapeau d\'exploratrice et le parchemin dans l\'histoire (« Il était une fois… »), le point d\'interrogation sur le quiz (« À toi de jouer ! »). Aussi sur la page Automatismes et dans les questions flash prêtes. Pas dans les PDF ni dans le cahier.',
+  ] },
   { version:'2026-08-19.913', date:'2026-10-02', items:[
     '6e, Droites parallèles et perpendiculaires, onglet Méthode : nouvelle méthode en premier, « tracer une parallèle sur un quadrillage, sans équerre (la méthode du L) » : le L lu sur (d) glisse jusqu\'au point M sans tourner, et le même déplacement donne un deuxième point de la parallèle. Trois droites au choix.',
     '6e, Droites parallèles et perpendiculaires : la méthode « tracer une perpendiculaire à l\'équerre et à la règle » de l\'onglet Méthode, identique à la construction du cours, est retirée.',
@@ -8184,6 +8190,7 @@ async function addSectionToCahier(headerEl){
   }
   wrapper.querySelectorAll('.add-to-cahier-btn').forEach(b=>b.remove());
   wrapper.querySelectorAll('.read-aloud-btn, .learn-btn, .lrn-bar').forEach(b=>b.remove());
+  wrapper.querySelectorAll('.oliv-b, .oliv-sh, .oliv-haut').forEach(el=>{ el.classList.remove('oliv-b','oliv-sh','oliv-haut',...[...el.classList].filter(c=>c.startsWith('oliv-'))); delete el.dataset.oliv; }); // vignettes d'Oliv'IA
   wrapper.querySelectorAll('.lrn-active').forEach(el=>el.classList.remove('lrn-active'));
   wrapper.querySelectorAll('.figure-toolbar').forEach(b=>b.remove());
   wrapper.querySelectorAll('.interaction-hint').forEach(b=>b.remove());
