@@ -1,0 +1,614 @@
+/* =====================================================================
+   cours-exos.js -- Exercices à faire pendant une session COURS, suivis en direct, et prise en main
+   à distance.
+
+   Demandé : « étape 3 go ! Possibilité de donner également des exercices de tout type (figure
+   dynamique, programmation par blocs...). Est-il possible d'aider à distance les jeunes en prenant
+   la main sur leur exercice ».
+
+   - Un élément « exercice » s'ajoute à la session (à la préparation, ou en cours de séance depuis la
+     télécommande) : un questionnaire de la banque (tous les types de questions : QCM, nombre, figure
+     dynamique, tracé sur quadrillage, repère…), un défi de programmation par blocs, ou une figure à
+     construire (énoncé + figure de départ facultative).
+     Élément : { titre, html:'', exo:{ type:'qz', questions } | { type:'prog', defi } }.
+   - Élève : il fait l'exercice dans le plein écran de la session (l'éditeur de blocs et l'outil de
+     figure s'ouvrent par-dessus, sans quitter le plein écran) ; tout est enregistré au fil de l'eau
+     (cours_direct_travail) ; « Lever la main » prévient le professeur.
+   - Professeur : une vignette par élève (pastille par question, défi réussi, en train d'écrire,
+     main levée) ; un clic → sa copie en direct (figure comprise, pendant qu'il la construit) ou son
+     programme en direct. « Prendre la main » : l'écran de l'élève est verrouillé et il voit le
+     professeur compléter sa copie, construire dans sa figure ou modifier son programme (le lutin
+     part aussi chez lui) ; « Rendre la main » : l'élève reprend, avec les modifications.
+
+   Base : table cours_direct_travaux (direct_id, item, student_id, reponses) ; l'élève écrit par la
+   fonction cours_direct_travail (session ouverte, élément déjà donné), le professeur directement
+   (RLS : sa session). Le corrigé n'est jamais envoyé aux élèves (cours_direct_etat le retire).
+   Temps réel (canal cd-<id>) : trav (élève → prof), pilote et main (prof → élève), aide. Les
+   messages ne portent que « qui » et « quel élément » : chacun relit la base, seule source de vérité.
+
+   Dépend de cours-direct.js (cdP, cdE, cdToast…), questionnaires*.js (qzRenderSaisie, qzVerdict…),
+   programmation.js / prog-defis.js (prog, progOuvrir, progDefi…), outils-figures.js, cours-perso.js.
+   ===================================================================== */
+
+const cx = { prog: null, figQid: null, figT: null, vueAvant: null };
+const CX_COUL = { juste: '#1F7A4D', partiel: '#C77D1E', faux: '#9E1F5E', avoir: '#3A6EA5', sondage: '#3A6EA5', vide: '#D5DBE3' };
+const cxClone = o => o == null ? o : JSON.parse(JSON.stringify(o));
+const cxCtx = pfx => ({ reglages: {}, seed: null, pfx });
+function cxEnvoyer(ch, event, payload){ try{ ch.send({ type: 'broadcast', event, payload }); }catch(e){} }
+function cxNbQuestions(it){ return ((it.exo && it.exo.questions) || []).filter(q => q.type !== 'texte'); }
+
+/* =====================================================================
+   CHOIX D'UN EXERCICE (préparation ou en cours de séance)
+   ===================================================================== */
+function cxChoisir(){
+  return new Promise(resolve => {
+    let o = document.getElementById('cxChoix');
+    if(!o){ o = document.createElement('div'); o.id = 'cxChoix'; o.className = 'modal-overlay'; document.body.appendChild(o); }
+    o.style.zIndex = '9400';
+    const st = { onglet: 'qz', qzs: null, filtre: '', fig: { enonce: 'Construis…', figure: null } };
+    let fini = false, veille = null;
+    const fin = v => { if(fini) return; fini = true; clearInterval(veille); o.style.display = 'none'; resolve(v); };
+    const charger = async () => {
+      const { data } = await sb.from('questionnaires').select('id,titre,questions,reglages').eq('teacher_id', currentUser.id).order('updated_at', { ascending: false });
+      st.qzs = (data || []).filter(q => !(q.reglages && q.reglages.copie_de) && (q.questions || []).some(x => x.type !== 'texte'));
+      rendre();
+    };
+    const rendre = () => {
+      const f = st.filtre.trim().toLowerCase();
+      const corps = st.onglet === 'qz'
+        ? `<input type="search" id="cxFiltre" placeholder="Chercher un questionnaire…" value="${cdEsc(st.filtre)}" style="width:100%;margin-bottom:8px;">
+           <div class="cx-ch-liste">${st.qzs == null ? '<p class="hint">Chargement de votre banque…</p>'
+             : st.qzs.filter(q => !f || (q.titre || '').toLowerCase().includes(f)).map(q => { const qs = q.questions.filter(x => x.type !== 'texte');
+               const types = [...new Set(qs.map(x => (typeof qzType === 'function' ? qzType(x.type).label : x.type)))].slice(0, 4).join(', ');
+               return `<button class="cx-ch-it" data-qz="${q.id}"><b>${cdEsc(q.titre || 'Sans titre')}</b><small>${qs.length} question${qs.length > 1 ? 's' : ''} · ${cdEsc(types)}</small></button>`; }).join('')
+               || '<p class="hint">Aucun questionnaire dans votre banque. Créez-en un dans « Questionnaires » : tous les types de questions s\'y trouvent (figure dynamique, tracé sur quadrillage, repère…).</p>'}</div>`
+        : st.onglet === 'prog'
+        ? `<div class="cx-ch-liste">${typeof PROG_DEFIS === 'undefined' ? '<p class="hint">Défis indisponibles.</p>' : PROG_DEFIS.map(d =>
+            `<button class="cx-ch-it" data-prog="${d.id}"><b>${cdEsc(d.titre)}</b><small>${d.niveau} · ${d.trace ? 'Tracé' : 'Calcul'} · ${cdEsc(String(d.enonce).replace(/<[^>]+>/g, ''))}</small></button>`).join('')}</div>`
+        : `<label class="cd-lab" style="align-items:flex-start;flex-direction:column;">Énoncé<textarea id="cxFigEnonce" rows="3" style="width:100%;">${cdEsc(st.fig.enonce)}</textarea></label>
+           <div style="margin:8px 0;">${st.fig.figure && typeof qziFigHtml === 'function' ? qziFigHtml(st.fig.figure, 'Figure de départ') : '<p class="hint" style="margin:4px 0;">Sans figure de départ, l\'élève part d\'une page blanche.</p>'}
+             <button class="btn secondary" id="cxFigBtn"><span class="gicon">draw</span> ${st.fig.figure ? 'Modifier' : 'Construire'} la figure de départ</button>
+             ${st.fig.figure ? '<button class="btn secondary" id="cxFigSuppr"><span class="gicon">delete</span></button>' : ''}</div>
+           <div style="text-align:right;"><button class="btn" id="cxFigOk"><span class="gicon">add</span> Ajouter cet exercice</button></div>`;
+      o.innerHTML = `<div class="modal-card cx-ch">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b class="cd-h"><span class="gicon">edit_square</span> Exercice à faire en direct</b>
+          <button class="modal-close" id="cxChFermer"><span class="gicon">close</span></button></div>
+        <p class="hint" style="margin:6px 0 10px;">Les élèves le font sur leur écran ; vous suivez leur travail en direct et vous pouvez prendre la main pour aider.</p>
+        <div class="cx-onglets">
+          <button data-o="qz" class="${st.onglet === 'qz' ? 'on' : ''}"><span class="gicon">quiz</span> Questionnaire de ma banque</button>
+          <button data-o="prog" class="${st.onglet === 'prog' ? 'on' : ''}"><span class="gicon">extension</span> Programmation par blocs</button>
+          <button data-o="fig" class="${st.onglet === 'fig' ? 'on' : ''}"><span class="gicon">architecture</span> Figure à construire</button></div>
+        <div class="cx-ch-corps">${corps}</div></div>`;
+      o.querySelector('#cxChFermer').onclick = () => fin(null);
+      o.querySelectorAll('.cx-onglets button').forEach(b => b.onclick = () => { st.onglet = b.dataset.o; rendre(); });
+      const fl = o.querySelector('#cxFiltre'); if(fl){ fl.oninput = () => { st.filtre = fl.value; const p = fl.selectionStart; rendre(); const n = o.querySelector('#cxFiltre'); n.focus(); n.setSelectionRange(p, p); }; }
+      o.querySelectorAll('[data-qz]').forEach(b => b.onclick = () => {
+        const q = st.qzs.find(x => x.id === b.dataset.qz); if(!q) return;
+        fin({ titre: 'Exercice : ' + (q.titre || 'questionnaire'), chapitre: '', html: '', prog: null, exo: { type: 'qz', questions: qzPreparer(cxClone(q.questions)) } });
+      });
+      o.querySelectorAll('[data-prog]').forEach(b => b.onclick = () => {
+        const d = progDefiParId(b.dataset.prog); if(!d) return;
+        fin({ titre: 'Programmation : ' + d.titre, chapitre: '', html: '', prog: null, exo: { type: 'prog', defi: d.id } });
+      });
+      const te = o.querySelector('#cxFigEnonce'); if(te) te.oninput = () => { st.fig.enonce = te.value; };
+      const fb = o.querySelector('#cxFigBtn');
+      if(fb) fb.onclick = () => {
+        if(typeof cpFigOpenEditor !== 'function') return;
+        o.style.display = 'none';
+        cpFigOpenEditor(st.fig.figure ? { f: st.fig.figure.f, vb: st.fig.figure.vb } : null, fig => { st.fig.figure = { f: fig.f, vb: fig.vb }; o.style.display = 'flex'; rendre(); });
+        clearInterval(veille);
+        veille = setInterval(() => { const t = document.getElementById('toolsModalOverlay'); if(!fini && (!t || t.style.display === 'none')){ clearInterval(veille); o.style.display = 'flex'; } }, 400);
+      };
+      const fs = o.querySelector('#cxFigSuppr'); if(fs) fs.onclick = () => { st.fig.figure = null; rendre(); };
+      const fo = o.querySelector('#cxFigOk');
+      if(fo) fo.onclick = () => {
+        const enonce = st.fig.enonce.trim(); if(!enonce){ niceAlert('Écrivez l\'énoncé de la construction.'); return; }
+        const q = { id: 'fig' + Date.now().toString(36), type: 'figure', enonce, points: 2, attendus: '', criteres: [], figure: st.fig.figure, figure_corrige: null };
+        fin({ titre: 'Figure : ' + enonce.replace(/\s+/g, ' ').slice(0, 50) + (enonce.length > 50 ? '…' : ''), chapitre: '', html: '', prog: null, exo: { type: 'qz', questions: [q] } });
+      };
+    };
+    o.style.display = 'flex';
+    rendre(); charger();
+  });
+}
+// Télécommande : ajouter un exercice pendant la séance (il devient le dernier élément).
+async function cxProfAjouter(){
+  if(!cdP) return;
+  const it = await cxChoisir(); if(!it || !cdP) return;
+  const items = cdP.items.concat(it);
+  const { error } = await sb.from('cours_direct').update({ items }).eq('id', cdP.id);
+  if(error){ niceAlert('Exercice non ajouté : ' + error.message); return; }
+  cdP.items = items;
+  if(await niceConfirm('Exercice ajouté à la fin de la session. Le donner aux élèves maintenant ?')) cdProfAller(items.length - 1);
+  else cdProfRendre();
+}
+
+/* =====================================================================
+   PROFESSEUR : suivi en direct
+   ===================================================================== */
+function cxProfTrav(k){ if(!cdP.trav) cdP.trav = new Map(); if(!cdP.trav.has(k)) cdP.trav.set(k, new Map()); return cdP.trav.get(k); }
+function cxProfItem(){ return cdP ? cdP.items[cdP.etat.idx || 0] : null; }
+async function cxProfCharger(k, eleveId){
+  if(!cdP) return;
+  let r = sb.from('cours_direct_travaux').select('student_id,reponses,updated_at').eq('direct_id', cdP.id).eq('item', k);
+  if(eleveId) r = r.eq('student_id', eleveId);
+  const { data } = await r;
+  if(!cdP) return;
+  const m = cxProfTrav(k);
+  (data || []).forEach(x => {
+    if(cdP.main && cdP.main.e === x.student_id && cdP.main.k === k) return; // le professeur écrit : sa version fait foi
+    const avant = m.get(x.student_id);
+    m.set(x.student_id, Object.assign({}, avant, { rep: x.reponses || {}, t: Date.parse(x.updated_at) }));
+  });
+}
+function cxProfTick(){ const it = cxProfItem(); if(it && it.exo){ const k = cdP.etat.idx || 0; cxProfCharger(k).then(() => cxProfMaj()); } }
+async function cxProfRecu(p){
+  if(!cdP || !p || !p.e) return;
+  await cxProfCharger(p.k, p.e);
+  const m = cxProfTrav(p.k), x = m.get(p.e); if(x) x.vu = Date.now();
+  if(p.k === (cdP.etat.idx || 0)) cxProfMaj(p.e);
+  if(cx.prog && cx.prog.role === 'prof' && cx.prog.e === p.e && cx.prog.k === p.k && cx.prog.mode === 'regarder' && x && x.rep && x.rep.programme) progCharger(x.rep.programme);
+}
+function cxProfAide(p){
+  if(!cdP || !p || !p.e) return;
+  if(!cdP.aides) cdP.aides = new Set();
+  if(p.on){
+    cdP.aides.add(p.e);
+    const el = cdP.eleves.find(x => x.id === p.e);
+    cdToast(`<span class="gicon">front_hand</span> <b>${cdEsc(el ? (el.prenom || el.label) : 'Un élève')}</b> lève la main.`);
+    const t = document.querySelector('.cd-toast:last-of-type'); if(t) t.style.background = '#1F3A5C';
+  } else cdP.aides.delete(p.e);
+  cxProfMaj();
+}
+// Scène de la télécommande quand l'élément en cours est un exercice.
+function cxProfMonter(k, it){
+  const c = document.getElementById('cdProfContenu'); if(!c) return;
+  const d = it.exo.type === 'prog' && typeof progDefiParId === 'function' ? progDefiParId(it.exo.defi) : null;
+  const apercu = it.exo.type === 'prog'
+    ? `<div class="cx-consigne">${d ? d.enonce : 'Défi introuvable.'}</div>`
+    : `<details class="cx-apercu"><summary>Voir l'exercice et son corrigé (${cxNbQuestions(it).length} question${cxNbQuestions(it).length > 1 ? 's' : ''})</summary>${it.exo.questions.map(q => q.type === 'texte'
+        ? `<div class="qz-doc">${qzEnonceHtml(q)}</div>` : `<div class="qz-q">${qzEnonceHtml(q)}<div class="qz-q-rep">${qzRenderSaisie(q, undefined, 'corrige', cxCtx('k'))}</div></div>`).join('')}</details>`;
+  c.innerHTML = `${apercu}<div class="cx-resume" id="cxResume"></div><div class="cx-grille" id="cxGrille"></div><div class="cx-detail" id="cxDetail"></div>`;
+  if(typeof qzChargerPhotos === 'function') qzChargerPhotos(c);
+  if(typeof qzMonterInter === 'function') qzMonterInter(c);
+  cxProfMaj();
+  cxProfCharger(k).then(() => cxProfMaj());
+}
+function cxEtatEleve(k, e){
+  const x = cxProfTrav(k).get(e), m = cdP.membres && cdP.membres.get(e);
+  return { x, rep: (x && x.rep) || null, ecrit: !!(x && x.vu && Date.now() - x.vu < 15000), aide: !!(cdP.aides && cdP.aides.has(e)),
+    main: !!(cdP.main && cdP.main.e === e && cdP.main.k === k), present: !!(m && !m.dehors && Date.now() - Date.parse(m.vu_at) < 60000), dehors: !!(m && m.dehors) };
+}
+function cxProfMaj(seul){
+  const it = cxProfItem(); if(!it || !it.exo) return;
+  const k = cdP.etat.idx || 0, g = document.getElementById('cxGrille'); if(!g) return;
+  const qs = it.exo.type === 'qz' ? cxNbQuestions(it) : [], d = it.exo.type === 'prog' ? progDefiParId(it.exo.defi) : null;
+  let commence = 0, fini = 0, aides = 0;
+  g.innerHTML = cdP.eleves.map(e => {
+    const s = cxEtatEleve(k, e.id), rep = s.rep || {};
+    let corps, ok = false;
+    if(it.exo.type === 'qz'){
+      const rep2 = qs.map(q => rep[q.id]), nb = rep2.filter((r, i) => qzRepondue(qs[i], r)).length;
+      if(nb) commence++; ok = !!rep._fini || (qs.length && nb === qs.length); if(ok) fini++;
+      corps = `<div class="cx-pastilles">${qs.map((q, i) => { const v = qzVerdict(q, rep2[i]); return `<i title="Question ${i + 1}" style="background:${CX_COUL[v] || CX_COUL.vide}"></i>`; }).join('')}</div>
+        <small>${nb} / ${qs.length} répondue${nb > 1 ? 's' : ''}${rep._fini ? ' · <b>a terminé</b>' : ''}</small>`;
+    } else {
+      if(s.rep) commence++; ok = !!rep.reussi; if(ok) fini++;
+      corps = `<small>${ok ? '<b style="color:#1F7A4D;">Défi réussi</b>' : s.rep ? `${rep.blocs || 0} bloc${rep.blocs > 1 ? 's' : ''} · ${rep.essais || 0} vérification${rep.essais > 1 ? 's' : ''}` : 'pas commencé'}</small>`;
+    }
+    if(s.aide) aides++;
+    const cls = [s.aide ? 'aide' : '', s.main ? 'main' : '', s.dehors ? 'dehors' : '', ok ? 'ok' : '', cdP.selEx === e.id ? 'sel' : '', !s.present && !s.rep ? 'absent' : ''].join(' ');
+    return `<button class="cx-t ${cls}" onclick="cxProfVoir('${e.id}')"><span class="cx-t-nom">${cdEsc(e.label)}${s.ecrit ? ' <span class="cx-ecrit" title="en train de travailler"></span>' : ''}${s.aide ? ' <span class="gicon" title="Main levée">front_hand</span>' : ''}${s.main ? ' <span class="gicon" title="Vous avez la main">pan_tool_alt</span>' : ''}</span>${corps}
+      ${s.dehors ? '<small class="cx-rouge">SORTI de la page</small>' : ''}</button>`;
+  }).join('') || '<p class="hint">Aucun élève dans cette classe.</p>';
+  const r = document.getElementById('cxResume');
+  if(r) r.innerHTML = `<b>${commence}</b> / ${cdP.eleves.length} ont commencé · <b>${fini}</b> ${it.exo.type === 'prog' ? 'ont réussi' : 'ont terminé'}${aides ? ` · <b class="cx-bleu"><span class="gicon">front_hand</span> ${aides} main${aides > 1 ? 's' : ''} levée${aides > 1 ? 's' : ''}</b>` : ''}
+    ${it.exo.type === 'qz' ? '<span class="cx-leg"><i style="background:#1F7A4D"></i>juste <i style="background:#C77D1E"></i>en partie <i style="background:#9E1F5E"></i>faux <i style="background:#3A6EA5"></i>à regarder <i style="background:#D5DBE3"></i>pas répondu</span>' : ''}`;
+  if(cdP.selEx && (!seul || seul === cdP.selEx) && !(cdP.main && cdP.main.e === cdP.selEx)) cxProfDetail();
+}
+function cxProfVoir(e){
+  if(!cdP) return;
+  if(cdP.main && cdP.main.e !== e) cxRelacher();
+  cdP.selEx = cdP.selEx === e && !cdP.main ? null : e;
+  cxProfMaj(); if(!cdP.selEx){ const d = document.getElementById('cxDetail'); if(d) d.innerHTML = ''; }
+  else document.getElementById('cxDetail')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+function cxProfDetail(){
+  const box = document.getElementById('cxDetail'), it = cxProfItem(); if(!box || !it || !it.exo || !cdP.selEx) return;
+  const k = cdP.etat.idx || 0, e = cdP.eleves.find(x => x.id === cdP.selEx), s = cxEtatEleve(k, cdP.selEx), rep = s.rep || {};
+  const tete = `<div class="cx-d-tete"><b>${cdEsc(e ? e.label : '')}</b>${s.aide ? ' <span class="cx-bleu"><span class="gicon">front_hand</span> main levée</span>' : ''}
+      <span style="flex:1"></span>
+      ${it.exo.type === 'prog' ? `<button class="btn secondary" onclick="cxProfProg('regarder')"><span class="gicon">visibility</span> Voir son programme en direct</button>` : ''}
+      ${s.main ? `<button class="btn" style="background:#1F7A4D;" onclick="cxRelacher()"><span class="gicon">pan_tool</span> Rendre la main</button>`
+        : `<button class="btn" style="background:#E35D3A;" onclick="${it.exo.type === 'prog' ? 'cxProfProg(\'main\')' : 'cxPrendre()'}"><span class="gicon">pan_tool_alt</span> Prendre la main</button>`}
+      <button class="modal-close" onclick="cxProfVoir('${cdP.selEx}')" title="Fermer"><span class="gicon">close</span></button></div>`;
+  if(it.exo.type === 'prog'){
+    box.innerHTML = `${tete}<p>${rep.reussi ? '<b style="color:#1F7A4D;">Défi réussi.</b>' : s.rep ? 'Défi pas encore réussi.' : 'Pas encore commencé.'} ${rep.blocs ? `${rep.blocs} bloc${rep.blocs > 1 ? 's' : ''} posé${rep.blocs > 1 ? 's' : ''}.` : ''}</p>
+      ${rep.msg ? `<div class="cx-msg"><span class="gicon">info</span> Dernière vérification : ${cdEsc(rep.msg)}</div>` : ''}`;
+    return;
+  }
+  const qs = it.exo.questions, tenu = s.main;
+  const reps = tenu && qzP && qzP.cours && qzP.prof ? qzP.reponses : rep;
+  let n = 0;
+  box.innerHTML = `${tete}${tenu ? '<p class="cx-tenu"><span class="gicon">pan_tool_alt</span> Vous avez la main : ce que vous faites ici apparaît en direct sur l\'écran de l\'élève, qui ne peut plus rien modifier. Rendez-lui la main ensuite.</p>' : ''}
+    ${qs.map(q => {
+      if(q.type === 'texte') return `<div class="qz-doc">${qzEnonceHtml(q)}</div>`;
+      const v = qzVerdict(q, reps[q.id]); n++;
+      return `<div class="qz-q" id="${tenu ? 'qzQ_' + q.id : ''}" data-qid="${q.id}"><div class="cx-qn">Question ${n} <span class="cx-v" style="background:${CX_COUL[v]}">${{ juste: 'juste', partiel: 'en partie', faux: 'faux', avoir: 'à regarder', sondage: 'réponse', vide: 'pas de réponse' }[v]}</span></div>
+        ${qzEnonceHtml(q)}<div class="qz-q-rep">${qzRenderSaisie(q, reps[q.id], tenu ? 'passer' : 'corrige', cxCtx(tenu ? 'p' : 'c'))}</div></div>`;
+    }).join('')}`;
+  if(typeof qzChargerPhotos === 'function') qzChargerPhotos(box);
+  if(typeof qzMonterInter === 'function') qzMonterInter(box);
+}
+// Prise en main d'une copie (questionnaire, figure comprise).
+async function cxPrendre(){
+  if(!cdP || !cdP.selEx) return;
+  const k = cdP.etat.idx || 0, e = cdP.selEx, it = cxProfItem(); if(!it || !it.exo) return;
+  if(cdP.main) cxRelacher();
+  cxEnvoyer(cdP.ch, 'main', { e, k, on: true });
+  if(cdP.aides) cdP.aides.delete(e);
+  const box = document.getElementById('cxDetail'); if(box) box.insertAdjacentHTML('afterbegin', '<p class="hint">Prise en main…</p>');
+  await new Promise(r => setTimeout(r, 700)); // l'élève enregistre ce qu'il était en train de faire
+  cdP.main = null; await cxProfCharger(k, e);
+  if(!cdP || cdP.selEx !== e) return;
+  cdP.main = { e, k };
+  const rep = cxClone((cxProfTrav(k).get(e) || {}).rep || {});
+  qzP = { direct: true, cours: true, prof: true, e, k, apercu: false, data: { devoir: { id: 'cours', titre: it.titre } }, devoirId: 'cours-' + cdP.id,
+    questions: it.exo.questions, reglages: {}, copie: null, reponses: rep, sorties: 0, log: [] };
+  cxProfMaj(); cxProfDetail();
+}
+function cxRelacher(){
+  if(!cdP || !cdP.main) return;
+  const { e, k } = cdP.main;
+  if(qzP && qzP.cours && qzP.prof){
+    if(cx.figQid && typeof closeFigureTool === 'function'){ const t = document.getElementById('toolsModalOverlay'); if(t && t.style.display !== 'none') closeFigureTool(); }
+    cxProfEnvoi(true); qzP = null;
+  }
+  cdP.main = null;
+  cxEnvoyer(cdP.ch, 'main', { e, k, on: false });
+  cxProfMaj(); cxProfDetail();
+}
+// Le professeur écrit dans la copie de l'élève : enregistré (RLS : sa session), puis signalé.
+function cxProfEnvoi(tout_de_suite){
+  if(!cdP || !cdP.main || !qzP || !qzP.prof) return;
+  const { e, k } = cdP.main, rep = cxClone(qzP.reponses);
+  const x = cxProfTrav(k).get(e) || {}; cxProfTrav(k).set(e, Object.assign(x, { rep, t: Date.now() }));
+  clearTimeout(cdP.envT);
+  const go = () => cxProfSauver(e, k, rep);
+  if(tout_de_suite) go(); else cdP.envT = setTimeout(go, 400);
+  cxProfMaj(e);
+}
+async function cxProfSauver(e, k, rep){
+  if(!cdP) return;
+  const { error } = await sb.from('cours_direct_travaux').upsert({ direct_id: cdP.id, item: k, student_id: e, reponses: rep, updated_at: new Date().toISOString() }, { onConflict: 'direct_id,item,student_id' });
+  if(error){ cdToast('<span class="gicon">error</span> Modification non enregistrée : ' + cdEsc(error.message)); return; }
+  cxEnvoyer(cdP.ch, 'pilote', { e, k });
+}
+
+/* ---------- Programmation : le professeur regarde ou prend la main ---------- */
+async function cxProfProg(mode){
+  if(!cdP || !cdP.selEx) return;
+  const k = cdP.etat.idx || 0, e = cdP.selEx, it = cxProfItem(); if(!it || !it.exo || it.exo.type !== 'prog') return;
+  await cxProfCharger(k, e);
+  const rep = (cxProfTrav(k).get(e) || {}).rep || {};
+  cx.prog = { role: 'prof', e, k, mode: 'regarder', defi: it.exo.defi };
+  if(!(await cxProgOuvrir(it.exo.defi, rep.programme))) return;
+  prog.lecture = { cours: true }; // rien n'est enregistré dans la progression du professeur
+  const v = document.getElementById('progVerif'); if(v) v.hidden = true;
+  if(mode === 'main') cxProgMain(true); else cxBandeau();
+}
+function cxProgMain(on){
+  if(!cx.prog || cx.prog.role !== 'prof' || !cdP) return;
+  const { e, k } = cx.prog;
+  if(on){ cdP.main = { e, k }; if(cdP.aides) cdP.aides.delete(e); cx.prog.mode = 'main'; cxEnvoyer(cdP.ch, 'main', { e, k, on: true }); }
+  else { cxProgEnvoi(true); cdP.main = null; cx.prog.mode = 'regarder'; cxEnvoyer(cdP.ch, 'main', { e, k, on: false }); }
+  cxBandeau();
+}
+function cxProgEnvoi(tout_de_suite){
+  if(!cx.prog || !prog || !prog.ws) return;
+  clearTimeout(cx.prog.envT);
+  const go = () => {
+    if(!cx.prog || !prog || !prog.ws) return;
+    if(cx.prog.role === 'prof'){
+      if(cx.prog.mode !== 'main' || !cdP) return;
+      const { e, k } = cx.prog, avant = (cxProfTrav(k).get(e) || {}).rep || {};
+      const rep = Object.assign({}, avant, { programme: progProgramme(), blocs: cxBlocs() });
+      cxProfTrav(k).set(e, { rep, t: Date.now() });
+      cxProfSauver(e, k, rep);
+    } else if(cx.prog.mode === 'travail' && cdE){
+      const k = cx.prog.k, avant = cdE.trav.get(k) || {};
+      cdE.trav.set(k, Object.assign({}, avant, { programme: progProgramme(), blocs: cxBlocs() }));
+      cxEleveSauver(k);
+    }
+  };
+  if(tout_de_suite) go(); else cx.prog.envT = setTimeout(go, cx.prog.role === 'prof' ? 400 : 700);
+}
+function cxBlocs(){ try{ return prog.ws.getAllBlocks(false).filter(b => !b.isShadow()).length; }catch(e){ return 0; } }
+
+/* =====================================================================
+   ÉLÈVE
+   ===================================================================== */
+async function cxEleveTravaux(){
+  if(!cdE || cdE.trav) return;
+  cdE.trav = new Map();
+  const { data } = await sb.from('cours_direct_travaux').select('item,reponses').eq('direct_id', cdE.id).eq('student_id', currentUser.id);
+  (data || []).forEach(x => cdE.trav.set(x.item, x.reponses || {}));
+}
+function cxEleveTete(k, it){
+  const tenu = cdE.main === k;
+  return `<div class="cx-e-barre">${tenu ? '<span class="cx-tenu"><span class="gicon">pan_tool_alt</span> Ton professeur a pris la main pour t\'aider : regarde !</span>'
+      : `<span class="cx-e-chip"><span class="gicon">edit_square</span> Exercice à faire</span><span class="hint" id="cxSave" style="margin:0;"></span><span style="flex:1"></span>
+        <button class="btn secondary${cdE.aide ? ' cx-leve' : ''}" onclick="cxEleveAide()"><span class="gicon">front_hand</span> ${cdE.aide ? 'Main levée : ton professeur arrive' : 'Lever la main'}</button>`}</div>`;
+}
+// Remplit #cdEleveContenu quand l'élément affiché est un exercice.
+async function cxEleveMonter(k, it){
+  await cxEleveTravaux();
+  const c = document.getElementById('cdEleveContenu'); if(!c || !cdE) return;
+  cdE.cxMonte = k;
+  const rep = cdE.trav.get(k) || {}, tenu = cdE.main === k;
+  if(it.exo.type === 'prog'){
+    if(qzP && qzP.cours) qzP = null;
+    const d = typeof progDefiParId === 'function' ? progDefiParId(it.exo.defi) : null;
+    c.innerHTML = `${cxEleveTete(k, it)}<div class="cx-consigne">${d ? d.enonce : 'Défi introuvable.'}</div>
+      <p>${rep.reussi ? '<b style="color:#1F7A4D;">Bravo, défi réussi !</b> Tu peux encore améliorer ton programme.' : rep.programme ? 'Ton programme est enregistré : continue !' : 'Construis ton programme avec les blocs, puis clique sur « Vérifier mon programme ».'}</p>
+      <button class="btn" onclick="cxEleveProg()"><span class="gicon">extension</span> ${rep.programme ? 'Reprendre mon programme' : 'Ouvrir l\'éditeur de blocs'}</button>`;
+    return;
+  }
+  const qs = it.exo.questions;
+  qzP = { direct: true, cours: true, k, apercu: false, data: { devoir: { id: 'cours', titre: it.titre } }, devoirId: 'cours-' + cdE.id,
+    questions: qs, reglages: {}, copie: null, reponses: cxClone(rep), sorties: 0, log: [] };
+  let n = 0;
+  c.innerHTML = `${cxEleveTete(k, it)}${qs.map(q => q.type === 'texte' ? `<div class="qz-doc">${qzEnonceHtml(q)}</div>`
+      : `<div class="qz-q" id="qzQ_${q.id}" data-qid="${q.id}"><div class="cx-qn">Question ${++n}</div>${qzEnonceHtml(q)}<div class="qz-q-rep">${qzRenderSaisie(q, qzP.reponses[q.id], tenu ? 'lecture' : 'passer', cxCtx('p'))}</div></div>`).join('')}
+    ${tenu ? '' : `<div class="cx-fin"><button class="btn${rep._fini ? ' secondary' : ''}" onclick="cxEleveFini()"><span class="gicon">${rep._fini ? 'undo' : 'task_alt'}</span> ${rep._fini ? 'Finalement, je continue' : 'J\'ai terminé'}</button></div>`}`;
+  if(typeof qzChargerPhotos === 'function') qzChargerPhotos(c);
+  if(typeof qzMonterInter === 'function') qzMonterInter(c);
+}
+// Appelé par qzModifie (questionnaires.js) quand qzP.cours.
+function cxModifie(){
+  if(!qzP || !qzP.cours) return;
+  if(qzP.prof) return cxProfEnvoi();
+  if(!cdE || cdE.main === qzP.k) return;
+  const k = qzP.k, avant = cdE.trav.get(k) || {};
+  cdE.trav.set(k, Object.assign(cxClone(qzP.reponses), avant._fini ? { _fini: true } : {}));
+  const s = document.getElementById('cxSave'); if(s) s.textContent = 'Enregistrement…';
+  clearTimeout(cdE.saveT); cdE.saveT = setTimeout(() => cxEleveSauver(k), 700);
+}
+async function cxEleveSauver(k){
+  if(!cdE) return;
+  clearTimeout(cdE.saveT); cdE.saveT = null;
+  const { error } = await sb.rpc('cours_direct_travail', { p_id: cdE.id, p_item: k, p_reponses: cdE.trav.get(k) || {} });
+  const s = document.getElementById('cxSave');
+  if(error){ if(s) s.textContent = 'Non enregistré : ' + error.message; return; }
+  if(s) s.textContent = 'Enregistré';
+  cxEnvoyer(cdE.ch, 'trav', { e: currentUser.id, k });
+}
+function cxEleveFini(){
+  if(!cdE || !cdE.d) return;
+  const k = cdE.vue, rep = Object.assign({}, cdE.trav.get(k) || {});
+  if(rep._fini) delete rep._fini; else rep._fini = true;
+  cdE.trav.set(k, rep); cxEleveSauver(k);
+  cxEleveMonter(k, cdE.d.items[k]);
+}
+function cxEleveAide(){
+  if(!cdE) return;
+  cdE.aide = !cdE.aide;
+  cxEnvoyer(cdE.ch, 'aide', { e: currentUser.id, on: cdE.aide });
+  cxEleveRafraichir();
+}
+function cxEleveRafraichir(){
+  if(!cdE || !cdE.d) return;
+  if(cx.prog && cx.prog.role === 'eleve') return cxBandeau();
+  const it = cdE.d.items[cdE.vue]; if(it && it.exo) cxEleveMonter(cdE.vue, it);
+}
+// Messages du professeur.
+async function cxEleveMain(p){
+  if(!cdE || !p || p.e !== currentUser.id) return;
+  const it = cdE.d && cdE.d.items[p.k];
+  if(p.on){
+    if(cdE.saveT) await cxEleveSauver(qzP && qzP.cours ? qzP.k : p.k);
+    if(cx.prog && cx.prog.role === 'eleve'){ clearTimeout(cx.prog.envT); if(cx.prog.mode === 'travail') cxProgEnvoi(true); }
+    cdE.main = p.k; cdE.aide = false;
+    if(cx.figQid && typeof closeFigureTool === 'function'){ const t = document.getElementById('toolsModalOverlay'); if(t && t.style.display !== 'none') closeFigureTool(); }
+    if(it && it.exo && it.exo.type === 'prog'){
+      if(cdE.vue !== p.k){ cdE.vue = p.k; cdEleveRendre(); }
+      if(!cx.prog) await cxEleveProg();
+      if(cx.prog){ cx.prog.mode = 'verrou'; cxBandeau(); }
+      return;
+    }
+    if(cdE.vue !== p.k){ cdE.vue = p.k; cdEleveRendre(); } else cxEleveRafraichir();
+  } else {
+    cdE.main = null;
+    await cxElevePilote({ e: p.e, k: p.k });
+    if(cx.prog && cx.prog.role === 'eleve'){ cx.prog.mode = 'travail'; cxBandeau(); }
+    else cxEleveRafraichir();
+    cdToast('<span class="gicon">pan_tool</span> À toi de jouer : tu as de nouveau la main.');
+    const t = document.querySelector('.cd-toast:last-of-type'); if(t) t.style.background = '#1F7A4D';
+  }
+}
+async function cxElevePilote(p){
+  if(!cdE || !p || p.e !== currentUser.id) return;
+  if(p.lancer){ if(cx.prog && cx.prog.role === 'eleve' && typeof progLancer === 'function') cxLancerOrig(); return; }
+  const { data } = await sb.from('cours_direct_travaux').select('reponses').eq('direct_id', cdE.id).eq('item', p.k).eq('student_id', currentUser.id).maybeSingle();
+  if(!data || !cdE) return;
+  cdE.trav.set(p.k, data.reponses || {});
+  if(cx.prog && cx.prog.role === 'eleve' && cx.prog.k === p.k){ if(data.reponses && data.reponses.programme) progCharger(data.reponses.programme); return; }
+  if(cdE.vue === p.k) cxEleveRafraichir();
+}
+async function cxEleveProg(){
+  if(!cdE || !cdE.d) return;
+  const k = cdE.vue, it = cdE.d.items[k]; if(!it || !it.exo || it.exo.type !== 'prog') return;
+  cx.prog = { role: 'eleve', k, mode: cdE.main === k ? 'verrou' : 'travail', defi: it.exo.defi };
+  const rep = cdE.trav.get(k) || {};
+  await cxProgOuvrir(it.exo.defi, rep.programme || null);
+}
+
+/* ---------- Éditeur de blocs dans la session (élève et professeur) ---------- */
+async function cxProgOuvrir(defiId, programme){
+  const vue = document.querySelector('.view.active');
+  cx.vueAvant = vue && vue.id !== 'view-programmation' ? vue.id : cx.vueAvant;
+  document.body.classList.add('cd-travail');
+  cxBandeau('<span class="cd-b-t">Chargement de l\'éditeur de blocs…</span>');
+  if(typeof progOuvrir !== 'function'){ cxQuitterProg(); return false; }
+  await progOuvrir({});
+  if(!cx.prog) return false;
+  if(!prog || !prog.ws || !progDefiParId(defiId)){ const r = cx.prog.role; cxQuitterProg(); if(r) niceAlert('L\'éditeur de blocs n\'a pas pu être chargé (connexion ?).'); return false; }
+  progDefi(defiId);
+  ['progTabs', 'progListe'].forEach(id => { const el = document.getElementById(id); if(el) el.hidden = true; });
+  progCharger(programme || progDepartDefaut());
+  prog.scene.reset(); prog.scene.fond(); progMajPos();
+  cxBandeau();
+  return true;
+}
+function cxQuitterProg(){
+  if(!cx.prog && !document.body.classList.contains('cd-travail')) return;
+  const p = cx.prog;
+  if(p){
+    if(p.role === 'eleve' && p.mode === 'travail') cxProgEnvoi(true);
+    if(p.role === 'prof'){ if(p.mode === 'main') cxProgMain(false); if(prog) prog.lecture = null; }
+  }
+  cx.prog = null;
+  if(typeof progArreter === 'function') progArreter();
+  document.body.classList.remove('cd-travail');
+  ['cxBandeau', 'cxVoile'].forEach(id => { const el = document.getElementById(id); if(el) el.remove(); });
+  if(cx.vueAvant && typeof showView === 'function') showView(cx.vueAvant);
+  cx.vueAvant = null;
+  if(p && p.role === 'eleve' && cdE) cdEleveRendre();
+  if(p && p.role === 'prof' && cdP){ cxProfMaj(); cxProfDetail(); }
+}
+function cxBandeau(msg){
+  let b = document.getElementById('cxBandeau');
+  if(!b){ b = document.createElement('div'); b.id = 'cxBandeau'; document.body.appendChild(b); }
+  const p = cx.prog;
+  let voile = null;
+  if(msg || !p) b.innerHTML = msg || '';
+  else if(p.role === 'prof'){
+    const e = cdP && cdP.eleves.find(x => x.id === p.e), nom = cdEsc(e ? e.label : 'élève');
+    b.innerHTML = p.mode === 'main'
+      ? `<span class="cd-b-t"><span class="gicon">pan_tool_alt</span> Vous avez la main sur le programme de ${nom}</span><span class="cd-b-h">Il voit vos modifications ; 🏁 lance aussi le lutin chez lui.</span>
+         <button class="go" onclick="cxProgMain(false)"><span class="gicon">pan_tool</span> Rendre la main</button><button onclick="cxQuitterProg()"><span class="gicon">close</span> Télécommande</button>`
+      : `<span class="cd-b-t"><span class="gicon">visibility</span> Programme de ${nom}, en direct</span>
+         <button class="go" style="background:#E35D3A;" onclick="cxProgMain(true)"><span class="gicon">pan_tool_alt</span> Prendre la main</button><button onclick="cxQuitterProg()"><span class="gicon">close</span> Télécommande</button>`;
+    if(p.mode === 'regarder') voile = 'Vous regardez : prenez la main pour modifier.';
+  } else {
+    b.innerHTML = p.mode === 'verrou'
+      ? `<span class="cd-b-t"><span class="gicon">pan_tool_alt</span> Ton professeur a pris la main pour t'aider : regarde !</span>`
+      : `<span class="cd-b-t">${cdEsc(cdE && cdE.d ? cdE.d.titre : '')} · exercice</span>
+         <button onclick="cxEleveAide()"${cdE && cdE.aide ? ' class="go" style="background:#3A6EA5;"' : ''}><span class="gicon">front_hand</span> ${cdE && cdE.aide ? 'Main levée' : 'Lever la main'}</button>
+         <button onclick="cxQuitterProg()"><span class="gicon">arrow_back</span> Revenir au cours</button>`;
+    if(p.mode === 'verrou') voile = 'Ton professeur modifie ton programme.';
+  }
+  let v = document.getElementById('cxVoile');
+  if(voile){ if(!v){ v = document.createElement('div'); v.id = 'cxVoile'; document.body.appendChild(v); } v.innerHTML = `<span>${voile}</span>`; }
+  else if(v) v.remove();
+}
+
+/* ---------- Branchements sur les outils existants ---------- */
+// Programmation : chaque modification part (élève au travail, professeur qui a la main) ; 🏁 du
+// professeur lance aussi le lutin chez l'élève ; une vérification de l'élève est transmise.
+let cxLancerOrig = null;
+(function cxBrancher(){
+  if(typeof progModifie === 'function'){
+    const o = progModifie;
+    progModifie = function(){ const r = o.apply(this, arguments); if(cx.prog && prog && !prog.chargement && (cx.prog.mode === 'travail' || cx.prog.mode === 'main')) cxProgEnvoi(); return r; };
+  }
+  if(typeof progLancer === 'function'){
+    const o = progLancer; cxLancerOrig = function(){ return o.apply(this, arguments); };
+    progLancer = function(){ if(cx.prog && cx.prog.role === 'prof' && cx.prog.mode === 'main' && cdP) cxEnvoyer(cdP.ch, 'pilote', { e: cx.prog.e, k: cx.prog.k, lancer: true }); return o.apply(this, arguments); };
+  }
+  if(typeof progVerifier === 'function'){
+    const o = progVerifier;
+    progVerifier = async function(){
+      const r = await o.apply(this, arguments);
+      if(cx.prog && cx.prog.role === 'eleve' && cx.prog.mode === 'travail' && cdE){
+        const k = cx.prog.k, avant = cdE.trav.get(k) || {}, res = document.querySelector('#progVerifMsg .prog-res');
+        cdE.trav.set(k, Object.assign({}, avant, { programme: progProgramme(), blocs: cxBlocs(), essais: (avant.essais || 0) + 1,
+          reussi: !!avant.reussi || !!(res && res.classList.contains('ok')), msg: res ? res.textContent.trim() : '' }));
+        cxEleveSauver(k);
+      }
+      return r;
+    };
+  }
+  // Figure dynamique d'une question : la construction part pendant qu'on la fait.
+  if(typeof qziFigOuvrir === 'function'){
+    const o = qziFigOuvrir;
+    qziFigOuvrir = function(qid){
+      if(qzP && qzP.cours){ if(!qzP.prof && cdE && cdE.main === qzP.k) return; cx.figQid = qid; }
+      return o.apply(this, arguments);
+    };
+  }
+  if(typeof renderFigureSvg === 'function'){
+    const o = renderFigureSvg;
+    renderFigureSvg = function(){ const r = o.apply(this, arguments); if(cx.figQid) cxFigChange(); return r; };
+  }
+  if(typeof closeFigureTool === 'function'){
+    const o = closeFigureTool;
+    closeFigureTool = function(){ if(cx.figQid){ clearTimeout(cx.figT); cx.figQid = null; } return o.apply(this, arguments); };
+  }
+})();
+function cxFigChange(){
+  clearTimeout(cx.figT);
+  cx.figT = setTimeout(() => {
+    const qid = cx.figQid; if(!qid || !qzP || !qzP.cours || typeof serializeFigState !== 'function') return;
+    const t = document.getElementById('toolsModalOverlay'); if(!t || t.style.display === 'none') return;
+    const vb = [figViewBox.x, figViewBox.y, figViewBox.w, figViewBox.h].map(v => Math.round(v * 10) / 10);
+    qzP.reponses[qid] = { f: serializeFigState(figState), vb };
+    cxModifie();
+  }, 600);
+}
+
+(function cxStyles(){
+  const st = document.createElement('style');
+  st.textContent = `
+    .cx-ch{max-width:680px;width:94vw;max-height:88vh;display:flex;flex-direction:column;}
+    .cx-onglets{display:flex;gap:4px;background:#EEF1F5;border-radius:10px;padding:3px;flex-wrap:wrap;margin-bottom:10px;}
+    .cx-onglets button{border:0;background:none;border-radius:8px;padding:6px 12px;font:700 .85rem 'Space Grotesk',sans-serif;cursor:pointer;display:inline-flex;gap:4px;align-items:center;color:var(--ink);}
+    .cx-onglets button.on{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.12);}
+    .cx-ch-corps{overflow:auto;flex:1;min-height:160px;}
+    .cx-ch-liste{display:flex;flex-direction:column;gap:6px;}
+    .cx-ch-it{display:flex;flex-direction:column;gap:2px;text-align:left;border:1.5px solid rgba(28,43,57,.12);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;color:var(--ink);}
+    .cx-ch-it:hover{border-color:#1F3A5C;} .cx-ch-it small{color:var(--ink-soft);font-size:.78rem;}
+    .cd-exos{margin-top:8px;} .cd-exos > b{display:block;color:#1F3A5C;margin:4px 0;}
+    .cd-exo{display:flex;align-items:center;gap:6px;padding:4px 2px;} .cd-exo .gicon{color:#E35D3A;font-size:18px;}
+    .cd-exo button{margin-left:auto;border:0;background:none;cursor:pointer;color:var(--ink-soft);display:flex;}
+    .cx-apercu{background:#F6F8FB;border-radius:10px;padding:6px 10px;margin-bottom:10px;} .cx-apercu summary{cursor:pointer;font-weight:700;color:#1F3A5C;}
+    .cx-consigne{background:#F6F8FB;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:1.02rem;}
+    .cx-resume{display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center;font-family:'Space Grotesk',sans-serif;margin:4px 0 8px;}
+    .cx-leg{display:inline-flex;gap:4px;align-items:center;font:500 .75rem Inter,sans-serif;color:var(--ink-soft);margin-left:auto;} .cx-leg i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-left:6px;}
+    .cx-bleu{color:#3A6EA5;} .cx-bleu .gicon,.cx-rouge .gicon{font-size:17px;vertical-align:middle;} .cx-rouge{color:#C0392B;font-weight:800;}
+    .cx-grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;}
+    .cx-t{display:flex;flex-direction:column;gap:5px;text-align:left;border:2px solid rgba(28,43,57,.1);background:#fff;border-radius:12px;padding:8px 10px;cursor:pointer;font:inherit;color:var(--ink);}
+    .cx-t small{color:var(--ink-soft);font-size:.76rem;}
+    .cx-t.sel{border-color:#1F3A5C;box-shadow:0 0 0 3px rgba(31,58,92,.15);} .cx-t.ok{border-left:6px solid #1F7A4D;} .cx-t.absent{opacity:.6;}
+    .cx-t.aide{background:#EAF1FA;border-color:#3A6EA5;} .cx-t.aide .gicon{color:#3A6EA5;animation:cdClign 1s infinite;}
+    .cx-t.main{border-color:#E35D3A;} .cx-t.dehors{background:#FBECEA;}
+    .cx-t-nom{font-weight:800;font-family:'Space Grotesk',sans-serif;display:flex;align-items:center;gap:4px;} .cx-t-nom .gicon{font-size:17px;color:#E35D3A;}
+    .cx-ecrit{width:9px;height:9px;border-radius:50%;background:#2E9C6A;display:inline-block;animation:cdClign 1.2s infinite;}
+    .cx-pastilles{display:flex;gap:3px;flex-wrap:wrap;} .cx-pastilles i{width:14px;height:14px;border-radius:4px;display:inline-block;}
+    .cx-detail:not(:empty){margin-top:12px;border:2px solid #1F3A5C;border-radius:12px;padding:10px 14px;background:#fff;}
+    .cx-d-tete{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-family:'Space Grotesk',sans-serif;} .cx-d-tete > b{font-size:1.1rem;}
+    .cx-qn{font:800 .85rem 'Space Grotesk',sans-serif;color:#1F3A5C;margin-bottom:4px;display:flex;gap:8px;align-items:center;}
+    .cx-v{color:#fff;border-radius:999px;padding:1px 8px;font-size:.72rem;}
+    .cx-tenu{display:flex;gap:6px;align-items:center;background:#FDEEE9;color:#A8421F;border-radius:10px;padding:8px 12px;font-weight:700;margin:0 0 8px;}
+    .cx-msg{background:#F6F8FB;border-radius:10px;padding:8px 12px;display:flex;gap:6px;}
+    .cx-e-barre{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;} .cx-e-barre .cx-tenu{flex:1;margin:0;}
+    .cx-e-chip{display:inline-flex;gap:4px;align-items:center;background:#E35D3A;color:#fff;border-radius:999px;padding:4px 12px;font-weight:700;font-size:.85rem;}
+    .cx-leve{background:#3A6EA5 !important;color:#fff !important;border-color:#3A6EA5 !important;}
+    #cdEleve .qz-q{background:#fff;border:1px solid rgba(28,43,57,.1);border-radius:12px;padding:12px 14px;margin-bottom:12px;}
+    .cx-fin{text-align:center;margin:14px 0 30px;}
+    body.cd-travail #cdEleve, body.cd-travail #cdProf{display:none !important;}
+    #cxBandeau{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:9700;display:flex;gap:8px;align-items:center;background:rgba(31,58,92,.96);color:#fff;padding:8px 12px;border-radius:14px;font-family:'Space Grotesk',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.25);flex-wrap:wrap;justify-content:center;max-width:94vw;}
+    #cxBandeau:empty{display:none;}
+    #cxBandeau button{border:0;border-radius:10px;background:rgba(255,255,255,.16);color:#fff;font:700 .9rem 'Space Grotesk',sans-serif;padding:6px 12px;cursor:pointer;display:inline-flex;gap:4px;align-items:center;}
+    #cxBandeau button.go{background:#2E9C6A;} #cxBandeau .gicon{font-size:18px;vertical-align:middle;}
+    body.cd-travail #view-programmation{padding-top:58px;}
+    body.cd-travail .topbar, body.cd-travail #breadcrumb, body.cd-travail footer, body.cd-travail .site-footer{display:none !important;}
+    #cxVoile{position:fixed;inset:0;z-index:9650;background:rgba(255,255,255,.08);cursor:not-allowed;display:flex;align-items:flex-end;justify-content:center;padding-bottom:18px;}
+    #cxVoile span{background:#E35D3A;color:#fff;border-radius:999px;padding:6px 14px;font:700 .9rem 'Space Grotesk',sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.2);}
+    body.cd-eleve-ouvert #toolsModalOverlay, body.cd-prof-ouvert #toolsModalOverlay{z-index:9300 !important;}
+    body.cd-eleve-ouvert #figFullscreenBtn{display:none !important;}
+    body.cd-eleve-ouvert #niceModalOverlay, body.cd-prof-ouvert #niceModalOverlay, body.cd-travail #niceModalOverlay{z-index:9800 !important;}
+    body.cd-travail .cd-toast, body.cd-eleve-ouvert .cd-toast{z-index:9900;}
+  `;
+  document.head.appendChild(st);
+})();

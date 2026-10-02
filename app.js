@@ -3296,6 +3296,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.919', date:'2026-10-02', items:[
+    'Session COURS : des exercices à faire en direct. À la préparation, ou pendant la séance (« Ajouter un exercice » dans la télécommande) : un questionnaire de votre banque (tous les types de questions, figure dynamique et tracé sur quadrillage compris), un défi de programmation par blocs, ou une figure à construire. Les élèves le font dans le plein écran de la session ; tout est enregistré au fil de l\'eau.',
+    'Suivi en direct dans la télécommande : une vignette par élève (une pastille par question : juste, en partie, faux, à regarder ; défi réussi ; en train de travailler ; main levée). Un clic : sa copie en direct, sa figure pendant qu\'il la construit, son programme. L\'élève peut « Lever la main ».',
+    'Prendre la main : l\'écran de l\'élève se verrouille et il voit en direct le professeur compléter sa copie, construire dans sa figure ou modifier son programme (le lutin part aussi chez lui). « Rendre la main » : l\'élève reprend avec les modifications.',
+  ] },
   { version:'2026-08-19.918', date:'2026-10-02', items:[
     'Devoirs en ligne (automatismes, Objectif Nombre, programmation) : nouveau bouton « Suivi en direct ». Une vignette par élève : au travail (sur quelle séquence, quel compte, quel défi), en pause, sorti de la page (alerte immédiate), pas commencé ou tout fait ; temps de travail réel, nombre de séances et une pastille par élément du devoir (meilleur score, compte trouvé ou non, défi terminé). Un clic : le détail de l\'élève, avec ses derniers calculs pour Objectif Nombre.',
   ] },

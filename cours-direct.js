@@ -66,7 +66,7 @@ async function cdPreparer(){
     if(choix !== 'neuf') return;
   }
   const fin = todayISO(), d0 = new Date(); d0.setDate(d0.getDate() - 14);
-  const st = { du: d0.toISOString().slice(0, 10), au: fin, entrees: [], choisies: new Set(), titre: 'Cours du ' + new Date().toLocaleDateString('fr-FR') };
+  const st = { du: d0.toISOString().slice(0, 10), au: fin, entrees: [], choisies: new Set(), exos: [], titre: 'Cours du ' + new Date().toLocaleDateString('fr-FR') };
   let o = document.getElementById('cdPrepOverlay');
   if(!o){ o = document.createElement('div'); o.id = 'cdPrepOverlay'; o.className = 'modal-overlay'; o.style.zIndex = '400'; document.body.appendChild(o); }
   const charger = async () => {
@@ -86,18 +86,22 @@ async function cdPreparer(){
       <div class="cd-dates"><label>Du <input type="date" id="cdPrepDu" value="${st.du}"></label><label>au <input type="date" id="cdPrepAu" value="${st.au}"></label>
         <button type="button" class="btn secondary" id="cdPrepCharger"><span class="gicon">refresh</span> Afficher</button></div>
       <div class="cd-liste">${msg || ([...parJour.entries()].map(([j, es]) => `<div class="cd-jour"><b>${new Date(j + 'T12:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</b>
-        ${es.map(e => `<label class="cd-entree"><input type="checkbox" data-id="${e.id}" ${st.choisies.has(e.id) ? 'checked' : ''}> ${cdEsc(cdTitreEntree(e))}${cdProgDe(e.html) ? ' <span class="cd-tag"><span class="gicon">architecture</span> construction</span>' : ''}${e.chapitre ? ` <small>${cdEsc(e.chapitre)}</small>` : ''}</label>`).join('')}</div>`).join('') || '<p class="hint">Aucune entrée du cahier sur cette période.</p>')}</div>
+        ${es.map(e => `<label class="cd-entree"><input type="checkbox" data-id="${e.id}" ${st.choisies.has(e.id) ? 'checked' : ''}> ${cdEsc(cdTitreEntree(e))}${cdProgDe(e.html) ? ' <span class="cd-tag"><span class="gicon">architecture</span> construction</span>' : ''}${e.chapitre ? ` <small>${cdEsc(e.chapitre)}</small>` : ''}</label>`).join('')}</div>`).join('') || '<p class="hint">Aucune entrée du cahier sur cette période.</p>')}
+        ${st.exos.length ? `<div class="cd-exos"><b>Exercices à faire (après les éléments du cahier)</b>${st.exos.map((x, k) => `<div class="cd-exo"><span class="gicon">edit_square</span> ${cdEsc(x.titre)}<button type="button" data-exo="${k}" title="Retirer"><span class="gicon">close</span></button></div>`).join('')}</div>` : ''}</div>
+      <div style="margin-top:8px;"><button type="button" class="btn secondary" id="cdPrepExo"><span class="gicon">add</span> Ajouter un exercice à faire (questionnaire, figure dynamique, programmation…)</button></div>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;"><span class="hint" style="margin:auto auto auto 0;" id="cdPrepNb"></span>
         <button class="btn secondary" onclick="document.getElementById('cdPrepOverlay').style.display='none'">Annuler</button>
         <button class="btn" id="cdPrepGo"><span class="gicon">play_arrow</span> Ouvrir la session</button></div></div>`;
-    const nb = () => { const n = st.choisies.size, el = document.getElementById('cdPrepNb'); if(el) el.textContent = n ? n + ' élément' + (n > 1 ? 's' : '') + ' choisi' + (n > 1 ? 's' : '') : 'Aucun élément choisi'; };
+    const nb = () => { const n = st.choisies.size + st.exos.length, el = document.getElementById('cdPrepNb'); if(el) el.textContent = n ? n + ' élément' + (n > 1 ? 's' : '') + ' choisi' + (n > 1 ? 's' : '') : 'Aucun élément choisi'; };
     nb();
     o.querySelectorAll('input[data-id]').forEach(c => c.onchange = () => { if(c.checked) st.choisies.add(c.dataset.id); else st.choisies.delete(c.dataset.id); nb(); });
+    o.querySelectorAll('[data-exo]').forEach(b => b.onclick = () => { st.exos.splice(+b.dataset.exo, 1); rendre(); });
+    document.getElementById('cdPrepExo').onclick = async () => { o.style.display = 'none'; const it = typeof cxChoisir === 'function' ? await cxChoisir() : null; o.style.display = 'flex'; if(it){ st.exos.push(it); rendre(); } };
     document.getElementById('cdPrepTitre').oninput = e => { st.titre = e.target.value; };
     document.getElementById('cdPrepCharger').onclick = () => { st.du = document.getElementById('cdPrepDu').value; st.au = document.getElementById('cdPrepAu').value; charger(); };
     document.getElementById('cdPrepGo').onclick = async () => {
-      const items = st.entrees.filter(e => st.choisies.has(e.id)).map(cdItemDe);
-      if(!items.length){ await niceAlert('Choisissez au moins un élément du cahier.'); return; }
+      const items = st.entrees.filter(e => st.choisies.has(e.id)).map(cdItemDe).concat(st.exos);
+      if(!items.length){ await niceAlert('Choisissez au moins un élément du cahier ou un exercice.'); return; }
       o.style.display = 'none';
       cdCreer(st.titre.trim() || 'Cours', items);
     };
@@ -123,12 +127,15 @@ async function cdProfOuvrir(row){
   cdP.ch = sb.channel(cdCanal(row.id), { config: { broadcast: { self: false } } })
     .on('broadcast', { event: 'sortie' }, ({ payload }) => cdProfSortie(payload))
     .on('broadcast', { event: 'ici' }, () => cdProfMembres())
+    .on('broadcast', { event: 'trav' }, ({ payload }) => { if(typeof cxProfRecu === 'function') cxProfRecu(payload); })
+    .on('broadcast', { event: 'aide' }, ({ payload }) => { if(typeof cxProfAide === 'function') cxProfAide(payload); })
     .subscribe();
   cdP.timer = setInterval(cdProfMembres, 5000);
   cdProfRendre(); cdProfMembres();
 }
 function cdProfFermer(silencieux){
   if(!cdP) return;
+  if(typeof cxRelacher === 'function'){ cxRelacher(); cxQuitterProg(); }
   clearInterval(cdP.timer);
   try{ sb.removeChannel(cdP.ch); }catch(e){}
   cdQuitterTableau();
@@ -154,6 +161,8 @@ async function cdProfEtat(etat){
 function cdProfAller(i){
   if(!cdP) return;
   i = Math.max(0, Math.min(cdP.items.length - 1, i));
+  if(typeof cxRelacher === 'function'){ cxRelacher(); cxQuitterProg(); }
+  cdP.selEx = null;
   cdQuitterTableau();
   cdProfEtat({ idx: i, etape: null });
 }
@@ -162,6 +171,7 @@ async function cdProfMembres(){
   const { data } = await sb.from('cours_direct_membres').select('student_id,vu_at,dehors,sorties,sortie_at').eq('direct_id', cdP.id);
   cdP.membres = new Map((data || []).map(m => [m.student_id, m]));
   cdProfRendreClasse();
+  if(typeof cxProfTick === 'function') cxProfTick();
 }
 function cdProfSortie(p){
   if(!cdP || !p || !p.e) return;
@@ -203,17 +213,19 @@ function cdProfRendre(){
       <div class="cd-p-act"><button class="btn secondary" onclick="cdProfFermer()" title="Fermer la télécommande sans terminer (la session continue)"><span class="gicon">minimize</span> Réduire</button>
         <button class="btn" style="background:#C0392B;" onclick="cdProfTerminer()"><span class="gicon">stop</span> Terminer</button></div></div>
     <div class="cd-p-corps">
-      <div class="cd-p-items">${cdP.items.map((x, k) => `<button class="cd-item${k === i ? ' on' : ''}${k < i ? ' vu' : ''}" onclick="cdProfAller(${k})"><span>${k + 1}</span> ${cdEsc(x.titre)}${x.prog ? ' <span class="gicon">architecture</span>' : ''}</button>`).join('')}</div>
+      <div class="cd-p-items">${cdP.items.map((x, k) => `<button class="cd-item${k === i ? ' on' : ''}${k < i ? ' vu' : ''}" onclick="cdProfAller(${k})"><span>${k + 1}</span> ${cdEsc(x.titre)}${x.prog ? ' <span class="gicon">architecture</span>' : ''}${x.exo ? ' <span class="gicon" style="color:#E35D3A;">edit_square</span>' : ''}</button>`).join('')}
+        <button class="cd-item cd-ajout" onclick="cxProfAjouter()"><span class="gicon">add</span> Ajouter un exercice</button></div>
       <div class="cd-p-scene">
         <div class="cd-nav"><button class="btn secondary" onclick="cdProfAller(${i - 1})" ${i ? '' : 'disabled'}><span class="gicon">arrow_back</span> Précédent</button>
           ${it.prog ? `<button class="btn" style="background:#1F7A4D;" onclick="cdProfTableau()"><span class="gicon">architecture</span> Dérouler la construction au tableau</button>` : ''}
           <button class="btn" onclick="cdProfAller(${i + 1})" ${i < cdP.items.length - 1 ? '' : 'disabled'}>Suivant <span class="gicon">arrow_forward</span></button></div>
         <div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}</div>
-        <div class="cd-contenu" id="cdProfContenu">${it.html || ''}</div></div>
+        <div class="cd-contenu" id="cdProfContenu">${it.exo ? '' : it.html || ''}</div></div>
       <div class="cd-p-classe"><div class="cd-p-resume" id="cdProfResume"></div><div id="cdProfClasse"></div></div>
     </div>`;
   const c = document.getElementById('cdProfContenu');
-  if(c){ c.querySelectorAll('[data-tbprog]').forEach(x => x.remove()); if(typeof cahierOutilsCours === 'function') cahierOutilsCours(c); }
+  if(c && it.exo){ if(typeof cxProfMonter === 'function') cxProfMonter(i, it); }
+  else if(c){ c.querySelectorAll('[data-tbprog]').forEach(x => x.remove()); if(typeof cahierOutilsCours === 'function') cahierOutilsCours(c); }
   cdProfRendreClasse();
 }
 
@@ -304,6 +316,8 @@ async function cdEleveOuvrir(id){
   cdPleinEcran();
   cdE.ch = sb.channel(cdCanal(id), { config: { broadcast: { self: false } } })
     .on('broadcast', { event: 'etat' }, ({ payload }) => { if(payload && payload.fin) return cdEleveFin(); cdEleveCharger(); })
+    .on('broadcast', { event: 'pilote' }, ({ payload }) => { if(typeof cxElevePilote === 'function') cxElevePilote(payload); })
+    .on('broadcast', { event: 'main' }, ({ payload }) => { if(typeof cxEleveMain === 'function') cxEleveMain(payload); })
     .subscribe(s => { if(s === 'SUBSCRIBED'){ try{ cdE.ch.send({ type: 'broadcast', event: 'ici', payload: { e: currentUser.id } }); }catch(e){} } });
   cdE.timer = setInterval(() => { if(cdE) sb.rpc('cours_direct_signal', { p_id: cdE.id, p_dehors: cdE.dehors }); }, 20000);
   document.addEventListener('visibilitychange', cdSurVisibilite);
@@ -314,6 +328,8 @@ async function cdEleveOuvrir(id){
 }
 function cdEleveFermer(silencieux){
   if(!cdE) return;
+  if(typeof cxQuitterProg === 'function'){ cxQuitterProg(); if(cdE.saveT && typeof cxModifie === 'function') clearTimeout(cdE.saveT); }
+  if(qzP && qzP.cours){ const t = document.getElementById('toolsModalOverlay'); if(t && t.style.display !== 'none' && typeof closeFigureTool === 'function') closeFigureTool(); qzP = null; }
   clearInterval(cdE.timer); clearTimeout(cdE.blurT);
   try{ sb.removeChannel(cdE.ch); }catch(e){}
   document.removeEventListener('visibilitychange', cdSurVisibilite);
@@ -338,6 +354,8 @@ async function cdEleveCharger(){
   const avant = cdE.d;
   cdE.d = data;
   if(!avant || avant.idx !== data.idx) cdE.vue = data.idx; // le professeur avance : on le suit
+  // Exercice en cours sur l'écran : on ne le redessine pas (la saisie en cours serait perdue).
+  if(avant && avant.idx === data.idx && avant.n === data.n && (data.items[cdE.vue] || {}).exo && cdE.cxMonte === cdE.vue) return;
   const it = data.items[data.idx] || {}, etape = data.etat && data.etat.etape;
   // Construction déroulée par le professeur : tableau en plein écran, à la même étape.
   if(it.prog && etape != null && cdE.vue === data.idx){
@@ -351,21 +369,26 @@ async function cdEleveCharger(){
 function cdEleveRendre(){
   const o = document.getElementById('cdEleve'); if(!o || !cdE || !cdE.d) return;
   const d = cdE.d, k = cdE.vue, it = d.items[k] || {};
+  cdE.cxMonte = null;
+  if(typeof cx !== 'undefined' && cx.prog && cx.prog.role === 'eleve' && cx.prog.k !== k) cxQuitterProg();
+  if(!it.exo && qzP && qzP.cours) qzP = null;
   o.innerHTML = `<div class="cd-e-tete"><span class="cd-e-titre">${cdEsc(d.titre)}</span>
       <span class="cd-e-nav"><button onclick="cdEleveVoir(${k - 1})" ${k ? '' : 'disabled'} title="Élément précédent"><span class="gicon">arrow_back</span></button>
       <b>${k + 1} / ${d.n}</b><button onclick="cdEleveVoir(${k + 1})" ${k < d.idx ? '' : 'disabled'} title="Élément suivant"><span class="gicon">arrow_forward</span></button></span>
       ${k !== d.idx ? `<button class="cd-e-direct" onclick="cdEleveVoir(${d.idx})"><span class="gicon">cast</span> Revenir au direct</button>` : '<span class="cd-e-live"><span class="dot"></span> En direct</span>'}</div>
     <div class="cd-e-corps"><div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}</div>
-      <div class="cd-contenu" id="cdEleveContenu">${it.html || ''}</div></div>
+      <div class="cd-contenu" id="cdEleveContenu">${it.exo ? '' : it.html || ''}</div></div>
     ${cdE.dehors ? `<div class="cd-e-retour"><div><span class="gicon">front_hand</span><h2>Reste avec la classe !</h2><p>Tu as quitté la page du cours : ton professeur en est informé.</p><button class="btn" onclick="cdEleveRevenir()">Je reviens au cours</button></div></div>` : ''}`;
   const c = document.getElementById('cdEleveContenu');
-  if(c){ c.querySelectorAll('[data-tbprog]').forEach(b => b.remove()); if(typeof cahierOutilsCours === 'function') cahierOutilsCours(c); }
+  if(c && it.exo){ if(!cdE.dehors && typeof cxEleveMonter === 'function') cxEleveMonter(k, it); }
+  else if(c){ c.querySelectorAll('[data-tbprog]').forEach(b => b.remove()); if(typeof cahierOutilsCours === 'function') cahierOutilsCours(c); }
 }
 function cdEleveVoir(k){ if(!cdE || !cdE.d) return; cdE.vue = Math.max(0, Math.min(cdE.d.idx, k)); cdEleveRendre(); }
 function cdEleveFin(){
   if(!cdE) return;
   const o = document.getElementById('cdEleve');
   cdQuitterTableau();
+  if(typeof cxQuitterProg === 'function') cxQuitterProg();
   if(document.fullscreenElement){ try{ document.exitFullscreen(); }catch(e){} }
   const id = cdE.id; cdEleveFermer(true);
   if(o){ o.style.display = 'flex'; o.innerHTML = `<div class="cd-e-msg"><span class="gicon">school</span><h2>La session est terminée</h2><p>Retrouve ces éléments dans ton cahier.</p><button class="btn" onclick="document.getElementById('cdEleve').style.display='none'">Fermer</button></div>`; }
@@ -377,7 +400,7 @@ function cdSignaler(dehors, motif){
   cdE.dehors = dehors;
   sb.rpc('cours_direct_signal', { p_id: cdE.id, p_dehors: dehors });
   try{ cdE.ch.send({ type: 'broadcast', event: 'sortie', payload: { e: currentUser.id, dehors, motif } }); }catch(e){}
-  if(dehors){ cdQuitterTableau(); cdEleveRendre(); }
+  if(dehors){ cdQuitterTableau(); if(typeof cxQuitterProg === 'function') cxQuitterProg(); cdEleveRendre(); }
 }
 function cdSurVisibilite(){ if(document.visibilityState === 'hidden') cdSignaler(true, 'autre onglet ou application'); }
 function cdSurBlur(){ if(!cdE) return; clearTimeout(cdE.blurT); cdE.blurT = setTimeout(() => { if(cdE && !document.hasFocus()) cdSignaler(true, 'fenêtre quittée'); }, 1500); }
@@ -427,7 +450,7 @@ document.addEventListener('DOMContentLoaded', cdBoutonMaj);
     .cd-item{display:flex;gap:6px;align-items:flex-start;width:100%;text-align:left;border:0;background:none;padding:7px 8px;border-radius:8px;cursor:pointer;font:600 .85rem Inter,sans-serif;color:var(--ink);}
     .cd-item > span:first-child{min-width:22px;height:22px;border-radius:50%;background:#E8ECF2;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;}
     .cd-item.vu{color:var(--ink-soft);} .cd-item.on{background:#1F3A5C;color:#fff;} .cd-item.on > span:first-child{background:#fff;color:#1F3A5C;}
-    .cd-item .gicon{font-size:16px;color:#1F7A4D;}
+    .cd-item .gicon{font-size:16px;color:#1F7A4D;} .cd-ajout{margin-top:6px;border:1.5px dashed rgba(28,43,57,.25);color:#1F3A5C;justify-content:center;}
     .cd-p-scene{overflow:auto;background:#fff;border:1px solid rgba(28,43,57,.1);border-radius:12px;padding:12px 16px;}
     .cd-nav{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px;}
     .cd-item-titre{font:800 1.05rem 'Space Grotesk',sans-serif;color:#1F3A5C;margin:4px 0 10px;} .cd-item-titre small{font-weight:600;color:var(--ink-soft);font-size:.8rem;}

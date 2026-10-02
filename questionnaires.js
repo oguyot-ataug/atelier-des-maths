@@ -851,7 +851,7 @@ function qzRepondue(q, rep){
   if(qzX(q).repondue) return qzX(q).repondue(q, rep);
   return String(rep).trim() !== '';
 }
-function qzModifie(){ if(qzP && qzP.direct){ if(typeof qzDirectEnvoyer === 'function') qzDirectEnvoyer(); return; } qzP.sale = true; qzMajProgress(); qzSaveMsg('Modifications non enregistrées…'); clearTimeout(qzP.saveT); qzP.saveT = setTimeout(qzSauver, 1500); }
+function qzModifie(){ if(qzP && qzP.cours){ if(typeof cxModifie === 'function') cxModifie(); return; } if(qzP && qzP.direct){ if(typeof qzDirectEnvoyer === 'function') qzDirectEnvoyer(); return; } qzP.sale = true; qzMajProgress(); qzSaveMsg('Modifications non enregistrées…'); clearTimeout(qzP.saveT); qzP.saveT = setTimeout(qzSauver, 1500); }
 function qzSaisieQcm(qid, cid, coche, multiple){
   if(!qzP) return;
   if(multiple){ const a = new Set(Array.isArray(qzP.reponses[qid]) ? qzP.reponses[qid] : []); if(coche) a.add(cid); else a.delete(cid); qzP.reponses[qid] = Array.from(a); }

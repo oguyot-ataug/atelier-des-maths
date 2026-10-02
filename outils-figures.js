@@ -1046,7 +1046,8 @@ function openFigureTool(){hideAllToolContent(); document.getElementById('toolsMo
 }
 function closeFigureTool(){
   figQuitterSplit();
-  if(document.fullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+  // Session COURS : la page entière est en plein écran (cours-direct.js) -- on y reste.
+  if(document.fullscreenElement && !(document.fullscreenElement === document.documentElement && document.body.classList.contains('cd-eleve-ouvert'))) (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
   document.getElementById('toolsModalOverlay').style.display='none'; document.getElementById('figurePanel').style.display='none';
   if(typeof currentDevoirSubmission!=='undefined') currentDevoirSubmission = null;
   if(typeof dsFigEnd==='function') dsFigEnd(); // fin de la séance de travail sur un devoir (suivi-devoirs.js)
