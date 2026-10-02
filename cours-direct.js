@@ -45,7 +45,11 @@ function cdProgDe(html){
 }
 function cdItemDe(e){
   const html = (e.html != null ? e.html : renderMathText(e.raw || '')) + (e.figure ? `<div class="nb-figure-row">${e.figure}</div>` : '');
-  return { titre: cdTitreEntree(e), chapitre: e.chapitre || '', html, prog: cdProgDe(html) };
+  const it = { titre: cdTitreEntree(e), chapitre: e.chapitre || '', html, prog: cdProgDe(html) };
+  // Partie de cours ajoutée par « + Cahier » : retrouvée dans son chapitre pour être montrée vivante.
+  const m = e.exo === 'Cours' && /^\s*([^·]+?)\s*·\s*(.+)$/.exec(e.chapitre || '');
+  if(m && e.titre) it.src = { lvl: e.niveau || '', code: m[1], t: m[2].trim(), titre: e.titre };
+  return it;
 }
 
 /* =====================================================================
@@ -141,7 +145,7 @@ async function cdProfOuvrir(row){
 }
 function cdProfFermer(silencieux){
   if(!cdP) return;
-  if(typeof cxRelacher === 'function'){ cxRelacher(); cxQuitterProg(); }
+  if(typeof cxRelacher === 'function'){ cxRelacher(); cxQuitterProg(); cxVivantRestaurer(); }
   clearInterval(cdP.timer);
   try{ sb.removeChannel(cdP.ch); }catch(e){}
   cdQuitterTableau();
@@ -213,6 +217,7 @@ function cdProfRendreClasse(){
 function cdProfRendre(){
   const v = document.getElementById('cdProf'); if(!v || !cdP) return;
   const i = cdP.etat.idx || 0, it = cdP.items[i] || {};
+  if(typeof cxVivantRestaurer === 'function') cxVivantRestaurer();
   v.innerHTML = `<div class="cd-p-tete">
       <div><div class="cd-p-titre">${cdEsc(cdP.titre)}</div><div class="hint" style="margin:0;">Session COURS en direct · élément ${i + 1} / ${cdP.items.length}</div></div>
       <div class="cd-code" title="À afficher au tableau : les élèves le tapent en haut de « Mon travail »">Code <b>${cdEsc(cdP.code)}</b></div>
@@ -232,7 +237,7 @@ function cdProfRendre(){
     </div>`;
   const c = document.getElementById('cdProfContenu');
   if(c && it.exo){ if(typeof cxProfMonter === 'function') cxProfMonter(i, it); }
-  else if(c){ c.querySelectorAll('[data-tbprog]').forEach(x => x.remove()); if(typeof cahierOutilsCours === 'function') cahierOutilsCours(c); }
+  else if(c){ c.querySelectorAll('[data-tbprog]').forEach(x => x.remove()); if(typeof cahierOutilsCours === 'function') cahierOutilsCours(c); if(it.src && typeof cxMonterVivant === 'function') cxMonterVivant(c, it.src); }
   cdProfRendreClasse();
 }
 
@@ -336,6 +341,7 @@ async function cdEleveOuvrir(id){
 }
 function cdEleveFermer(silencieux){
   if(!cdE) return;
+  if(typeof cxVivantRestaurer === 'function') cxVivantRestaurer();
   if(typeof cxQuitterProg === 'function'){ cxQuitterProg(); if(cdE.saveT && typeof cxModifie === 'function') clearTimeout(cdE.saveT); }
   if(qzP && qzP.cours){ const t = document.getElementById('toolsModalOverlay'); if(t && t.style.display !== 'none' && typeof closeFigureTool === 'function') closeFigureTool(); qzP = null; }
   clearInterval(cdE.timer); clearTimeout(cdE.blurT);
@@ -383,6 +389,7 @@ function cdEleveRendre(){
   const o = document.getElementById('cdEleve'); if(!o || !cdE || !cdE.d) return;
   const d = cdE.d, k = cdE.vue, it = d.items[k] || {};
   if(it.leger){ cdEleveElement(k); }
+  if(typeof cxVivantRestaurer === 'function') cxVivantRestaurer();
   cdE.cxMonte = null;
   if(typeof cx !== 'undefined' && cx.prog && cx.prog.role === 'eleve' && cx.prog.k !== k) cxQuitterProg();
   if(!it.exo && qzP && qzP.cours) qzP = null;
@@ -396,7 +403,7 @@ function cdEleveRendre(){
   const c = document.getElementById('cdEleveContenu');
   if(it.leger) return;
   if(c && it.exo){ if(!cdE.dehors && typeof cxEleveMonter === 'function') cxEleveMonter(k, it); }
-  else if(c){ c.querySelectorAll('[data-tbprog]').forEach(b => b.remove()); if(typeof cahierOutilsCours === 'function') cahierOutilsCours(c); }
+  else if(c){ c.querySelectorAll('[data-tbprog]').forEach(b => b.remove()); if(typeof cahierOutilsCours === 'function') cahierOutilsCours(c); if(it.src && !cdE.dehors && typeof cxMonterVivant === 'function') cxMonterVivant(c, it.src); }
 }
 // Élément déjà montré, relu à la demande (l'état ne renvoie en entier que l'élément en cours).
 async function cdEleveElement(k){

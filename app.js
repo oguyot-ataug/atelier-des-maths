@@ -1036,10 +1036,13 @@ let currentChapterTitle = null;
 let currentChapterCode = null;
 let currentChapterLevel = null;
 
-function openChapitre(c, tab, lvlOverride){
+// opts.silencieux : chapitre préparé sans être affiché (session COURS, cours-exos.js : ses parties y
+// sont montrées vivantes, animations comprises) ; renvoie la fin du chargement du cours personnalisé.
+function openChapitre(c, tab, lvlOverride, opts){
   const lvl = lvlOverride || currentLevel;
+  const silencieux = !!(opts && opts.silencieux);
   // Élève : un chapitre hors de son niveau reste fermé aussi par un lien direct (adresse, recherche…).
-  if(currentUserRole==='eleve' && c && isChapterLocked(lvl, c.t)){ onLockedChapterClick(); return; }
+  if(!silencieux && currentUserRole==='eleve' && c && isChapterLocked(lvl, c.t)){ onLockedChapterClick(); return; }
   const chapView = document.getElementById('view-chapitre');
   chapView.classList.toggle('lvl-6e', lvl==='6e');
   chapView.classList.toggle('lvl-cm', lvl==='cm1');  // CM1 : vert
@@ -1093,12 +1096,13 @@ function openChapitre(c, tab, lvlOverride){
   // exercices. Fix universel ici, au lieu de modifier chaque fichier de chapitre un par un.
   if(demo) injectZoomButtons(document.getElementById(demo.exos));
   // Cours personnalisés (cours-perso.js) : version du professeur ou de l'établissement.
-  if(typeof cpOnChapterOpen==='function') cpOnChapterOpen(demo||null);
+  const cpFin = typeof cpOnChapterOpen==='function' ? cpOnChapterOpen(demo||null) : null;
   // Petites vignettes d'Oliv'IA (olivia-deco.js) : « À savoir ! », « Muscle ton jeu ! »…
   if(typeof olivDecorer==='function') olivDecorer(demo||null);
   // Questions flash prêtes (flash-prets.js) : bouton pour le professeur, au primaire.
   if(typeof fpMaj==='function') fpMaj(lvl, c.t);
-  showView('view-chapitre');
+  if(!silencieux) showView('view-chapitre');
+  return cpFin;
 }
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
@@ -3296,6 +3300,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.922', date:'2026-10-02', items:[
+    'Session COURS : les parties de cours sont maintenant vivantes. Animations (Lecture, curseur, réglages), démos pas à pas et figures manipulables fonctionnent comme dans le chapitre, chez l\'élève comme dans la télécommande. Cela vaut pour les parties ajoutées avec « Ajouter une partie de cours » et pour celles venues du cahier (+ Cahier). Si une partie n\'est plus retrouvée dans le chapitre, sa copie figée reste affichée.',
+  ] },
   { version:'2026-08-19.921', date:'2026-10-02', items:[
     'Session COURS : « Ajouter une partie de cours », à la préparation ou pendant la séance depuis la télécommande. On choisit le niveau, le chapitre, puis les parties du cours ou des méthodes (les mêmes qu\'avec « + Cahier » ; votre cours personnalisé est respecté). Dans la préparation, les ajouts (parties de cours et exercices) se rangent avec les flèches.',
     'Session COURS plus légère : chaque élève ne reçoit en entier que l\'élément en cours ; un élément précédent n\'est chargé que s\'il revient dessus.',

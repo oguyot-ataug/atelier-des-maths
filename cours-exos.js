@@ -170,7 +170,9 @@ function cxChoisirCours(){
         const items = [];
         for(const i of [...st.choisies].sort((a, b) => a - b)){
           const p = st.parties[i];
-          try{ const r = await sectionVersHtml(p.h); items.push({ titre: /^(méthode|cours)\b/i.test(r.titre) ? r.titre : (p.onglet === 'Méthode' ? 'Méthode : ' : 'Cours : ') + r.titre, chapitre: `${c.code} · ${c.t}`, html: r.html, prog: cdProgDe(r.html) }); }
+          const n = st.parties.filter(x => x.onglet === p.onglet).indexOf(p);
+          try{ const r = await sectionVersHtml(p.h); items.push({ titre: /^(méthode|cours)\b/i.test(r.titre) ? r.titre : (p.onglet === 'Méthode' ? 'Méthode : ' : 'Cours : ') + r.titre, chapitre: `${c.code} · ${c.t}`, html: r.html, prog: cdProgDe(r.html),
+            src: { lvl: st.lvl, code: c.code, t: c.t, onglet: p.onglet === 'Méthode' ? 'methode' : 'cours', n, titre: p.titre } }); }
           catch(e){ console.warn('partie de cours', e); }
         }
         fin(items);
@@ -179,6 +181,63 @@ function cxChoisirCours(){
     o.style.display = 'flex';
     if(st.code) charger(); else rendre();
   });
+}
+/* ---------- Parties de cours vivantes (demandé : « fais en sorte que les animations fonctionnent aussi
+   dans la session ») ----------
+   La copie figée (html de l'élément) s'affiche d'abord ; puis le chapitre est préparé sans être affiché
+   (openChapitre silencieux, cours personnalisé compris) et les VRAIS blocs de la partie sont déplacés
+   dans la session : animations, démos pas à pas, figures manipulables y marchent comme dans le cours.
+   Ils retournent à leur place (repères laissés dans le chapitre) dès qu'on change d'élément. Hors du
+   chapitre, les couleurs du niveau (#view-chapitre.lvl-…) sont reprises en ligne. Si la partie n'est
+   pas retrouvée (cours modifié, chapitre absent), la copie figée reste. */
+const cxViv = { places: [], jeton: 0 };
+function cxVivantRestaurer(){
+  cxViv.jeton++;
+  cxViv.places.forEach(({ n, p }) => { if(p.parentNode) p.replaceWith(n); else n.remove(); });
+  cxViv.places = [];
+}
+function cxChapitreDe(src){
+  const ok = (l, x) => x.code === src.code && (!src.t || x.t === src.t) && DEMO_REGISTRY[l + '|' + x.t];
+  const niveaux = [src.lvl].concat(Object.keys(CHAPITRES_BY_LEVEL).filter(l => l !== src.lvl));
+  for(const l of niveaux){ const c = (CHAPITRES_BY_LEVEL[l] || []).find(x => ok(l, x)); if(c) return { lvl: l, c, demo: DEMO_REGISTRY[l + '|' + c.t] }; }
+  return null;
+}
+async function cxMonterVivant(host, src){
+  if(typeof openChapitre !== 'function' || typeof DEMO_REGISTRY === 'undefined') return false;
+  cxVivantRestaurer();
+  const jeton = cxViv.jeton, ch = cxChapitreDe(src); if(!ch) return false;
+  const boite = k => document.getElementById(ch.demo[k]);
+  const pret = currentChapterLevel === ch.lvl && currentChapterTitle === ch.c.t && boite('cours') && boite('cours').children.length;
+  if(!pret){
+    // Le chapitre visible (s'il y en a un) n'est pas touché : seule la vue cachée est préparée.
+    try{ await openChapitre(ch.c, 'cours', ch.lvl, { silencieux: true }); }catch(e){ console.warn('partie vivante', e); return false; }
+  }
+  if(jeton !== cxViv.jeton || !host.isConnected) return false;
+  const titre = h => ((h.querySelector('h3,h4') || {}).textContent || '').trim();
+  let h = null;
+  for(const k of src.onglet ? [src.onglet] : ['cours', 'methode']){
+    const box = boite(k); if(!box) continue;
+    const hs = [...box.querySelectorAll('.lesson-header, .sub-header')].filter(x => !x.classList.contains('cp-hidden') && !x.closest('.cp-hidden'));
+    h = src.n != null && hs[src.n] && titre(hs[src.n]) === src.titre ? hs[src.n] : hs.find(x => titre(x) === src.titre);
+    if(h) break;
+  }
+  if(!h) return false;
+  const lecon = h.classList.contains('lesson-header'), noeuds = [h];
+  for(let n = h.nextElementSibling; n; n = n.nextElementSibling){
+    if(n.classList.contains('lesson-header') || (!lecon && n.classList.contains('sub-header'))) break;
+    if(!n.classList.contains('cp-hidden')) noeuds.push(n);
+  }
+  // Couleurs du niveau, calculées tant que les blocs sont encore dans le chapitre.
+  const fige = (el, props) => { const cs = getComputedStyle(el); props.forEach(p => el.style.setProperty(p, cs.getPropertyValue(p), 'important')); };
+  noeuds.forEach(x => {
+    if(x.dataset.cdFige) return; x.dataset.cdFige = '1';
+    [x, ...x.querySelectorAll('*')].filter(e => e.matches('.lesson-header, .lesson-header .num, .sub-header .letter')).forEach(e => fige(e, ['color', 'background-color', 'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color']));
+  });
+  const essai = document.createElement('button'); essai.className = 'btn'; noeuds[0].parentNode.appendChild(essai);
+  const coul = getComputedStyle(essai).backgroundColor; essai.remove();
+  host.innerHTML = ''; host.classList.add('cd-vivant'); host.style.setProperty('--cd-btn', coul);
+  noeuds.forEach(n => { const p = document.createComment('session COURS'); n.parentNode.insertBefore(p, n); cxViv.places.push({ n, p }); host.appendChild(n); });
+  return true;
 }
 // Télécommande : ajouter un exercice ou une partie de cours pendant la séance (à la fin de la session :
 // les numéros des éléments déjà donnés ne changent pas, le travail des élèves y reste rattaché).
@@ -638,7 +697,9 @@ function cxFigChange(){
     .cx-onglets button.on{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.12);}
     .cx-ch-corps{overflow:auto;flex:1;min-height:160px;}
     .cx-ch-liste{display:flex;flex-direction:column;gap:6px;}
-    .cx-co-sel{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;} .cx-co-sel select{flex:1;min-width:120px;} .cx-co-sel select:first-child{flex:0 0 90px;}
+    .cd-vivant button.btn:not(.secondary):not(.orange){background:var(--cd-btn) !important;border-color:var(--cd-btn) !important;}
+    .cd-vivant .add-to-cahier-btn, .cd-vivant .cp-eb, .cd-vivant .cp-chip-edit{display:none !important;}
+        .cx-co-sel{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;} .cx-co-sel select{flex:1;min-width:120px;} .cx-co-sel select:first-child{flex:0 0 90px;}
     .cx-co-liste{border:1px solid rgba(28,43,57,.12);border-radius:10px;padding:8px 10px;background:#fff;}
     .cx-co-onglet{display:block;color:#1F3A5C;margin:6px 0 2px;font-family:'Space Grotesk',sans-serif;}
     .cx-co-p{display:block;padding:4px 2px;cursor:pointer;font-weight:700;} .cx-co-p.sous{font-weight:500;padding-left:22px;} .cx-co-p small{color:var(--ink-soft);font-weight:500;}

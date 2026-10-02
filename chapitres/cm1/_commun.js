@@ -157,6 +157,8 @@ function cm1Posee(lignes, retenues){
    elles passent en rouge : la figure n'est pas un patron.
    cm1Pliage(id, { modeles: [{ nom, faces, couleurs? }], legende? }) renvoie le bloc HTML ; le dessin
    est lancé à l'ouverture du chapitre (cm1Chapitre › init). ---- */
+// Le bloc vivant (dans le chapitre, ou montré dans une session COURS), pas une copie figée du cahier.
+function cmBoiteVivante(sel){ const l = document.querySelectorAll(sel); return [...l].find(b => b.closest('#view-chapitre, .cd-vivant')) || l[0] || null; }
 const CM_PLIAGES = {};
 const CM_PLIAGE_COUL = ['#2EA8C9', '#E35D3A', '#2E9C6A', '#F2A93B', '#7A4FC0', '#C2185B'];
 function cmCube(cases){ return cases.map(([x, y]) => [x, y, 1, 1]); }
@@ -227,7 +229,7 @@ function cmProj(st, p, cx, cy){ // vue : rotation autour de la verticale (yaw), 
   return [xr, -(yr * se + z * ce) + 0, -yr * ce + z * se]; // [écran x, écran y (vers le bas), profondeur vers l'œil]
 }
 function cmPliageDessiner(id){
-  const st = CM_PLIAGES[id], box = document.querySelector(`.cm-pliage[data-pliage="${id}"]`); if(!st || !box) return;
+  const st = CM_PLIAGES[id], box = cmBoiteVivante(`.cm-pliage[data-pliage="${id}"]`); if(!st || !box) return;
   const svg = box.querySelector('.cmp-svg'), F = cmPliagePrep(st.modeles[st.m]);
   // Centre : celui du patron à plat ; cadre fixe pour tout le pliage (pas de zoom qui saute).
   const xs = F.flatMap(f => [f.x, f.x + f.w]), ys = F.flatMap(f => [f.y, f.y + f.h]);

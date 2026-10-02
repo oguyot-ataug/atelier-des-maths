@@ -23,7 +23,7 @@ function cmAnim(id, o){
     ${o.legende ? `<p class="hint" style="margin:4px 0 0;">${o.legende}</p>` : ''}</div>`;
 }
 function cmAnimDessiner(id, ctrl){
-  const a = CM_ANIMS[id], box = document.querySelector(`.cm-anim[data-anim="${id}"]`); if(!a || !box) return;
+  const a = CM_ANIMS[id], box = cmBoiteVivante(`.cm-anim[data-anim="${id}"]`); if(!a || !box) return;
   if(ctrl !== false && a.controles) box.querySelector('.cma-ctrl').innerHTML = a.controles(a);
   const r = a.dessin(a.t, a);
   box.querySelector('.cma-scene').innerHTML = r.scene;
