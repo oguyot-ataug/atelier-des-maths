@@ -22,7 +22,8 @@ function qzcSolution(q){
 }
 // Corps d'une question pour le cahier : propositions / affirmations écrites, et la solution si demandée.
 function qzcQuestionHtml(q, n, corr){
-  const S = 'margin:8px 0 14px;padding:10px 12px;border:1px solid #D9DEE6;border-radius:10px;background:#fff;';
+  // Vignettes compactes, deux par ligne (qzcHtml) -- signalé : « l'ajout au cahier est énorme ».
+  const S = 'padding:8px 10px;border:1px solid #D9DEE6;border-radius:10px;background:#fff;min-width:0;break-inside:avoid;page-break-inside:avoid;';
   const num = `<span style="display:inline-block;min-width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background:#6B3FA0;color:#fff;font-weight:700;font-size:.8rem;margin-right:6px;">${n}</span>`;
   const pts = qzMax(q) ? `<span style="color:#6B6F7A;font-size:.8rem;">(${qzNum(qzMax(q))} pt${qzMax(q) > 1 ? 's' : ''})</span>` : '';
   let corps = '';
@@ -41,12 +42,13 @@ function qzcQuestionHtml(q, n, corr){
     // Types interactifs (figure, axe, association…) : même rendu que la correction en ligne, figé.
     try{ corps = `<div style="margin-top:6px;">${qzRenderSaisie(q, null, corr ? 'corrige' : 'lecture', { reglages: {}, seed: null, pfx: 'c' })}</div>`; }catch(e){ corps = ''; }
     // Pas de réponse d'élève dans le cahier : la légende « juste / faux » du tracé n'a pas lieu d'être.
-    corps = corps.replace(/<p class="hint qzt-leg">[\s\S]*?<\/p>/g, '');
+    corps = corps.replace(/<p class="hint qzt-leg">[\s\S]*?<\/p>/g, '')
+      .replace(/(<svg[^>]*?)style="max-width:\d+px;"/g, '$1style="width:100%;max-width:100%;height:auto;"'); // la figure suit la largeur de la vignette
   }
   const sol = corr ? qzcSolution(q) : null;
   return `<div style="${S}">
-    <div style="margin-bottom:4px;">${num}${pts}</div>
-    ${qzEnonceHtml(q)}
+    <div style="margin-bottom:2px;">${num}${pts}</div>
+    <div style="font-size:.92em;">${qzEnonceHtml(q)}</div>
     ${corps}
     ${sol ? `<div style="margin-top:8px;padding:6px 10px;border-radius:8px;background:#EAF6EE;color:#1E5E30;"><b>${q.type === 'ouverte' ? 'Attendus' : 'Réponse'} :</b> ${sol}</div>` : ''}
     ${corr && q.explication ? `<div style="margin-top:6px;padding:6px 10px;border-radius:8px;background:#FFF7E6;color:#6B4A00;"><b>Explication :</b> ${qzMath(q.explication)}</div>` : ''}
@@ -57,7 +59,9 @@ function qzcHtml(titre, consigne, questions, corr){
   return `<div style="border-left:4px solid #6B3FA0;padding-left:12px;">
     <h3 style="margin:0 0 4px;color:#6B3FA0;">${qzEsc(titre)}${corr ? ' — correction' : ''}</h3>
     ${consigne ? `<p style="margin:0 0 8px;color:#4E5665;">${qzMath(consigne)}</p>` : ''}
-    ${(questions || []).map(q => q.type === 'texte' ? `<div style="margin:8px 0;padding:8px 12px;background:#F4F5F8;border-radius:8px;">${qzEnonceHtml(q)}</div>` : qzcQuestionHtml(q, ++n, corr)).join('')}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px;align-items:start;margin-top:8px;">
+    ${(questions || []).map(q => q.type === 'texte' ? `<div style="grid-column:1/-1;padding:8px 12px;background:#F4F5F8;border-radius:8px;">${qzEnonceHtml(q)}</div>` : qzcQuestionHtml(q, ++n, corr)).join('')}
+    </div>
   </div>`;
 }
 

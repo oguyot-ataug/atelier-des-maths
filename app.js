@@ -3300,6 +3300,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.925', date:'2026-10-02', items:[
+    'Interrogation ajoutée au cahier : les questions sont des vignettes compactes, deux par ligne (une seule sur téléphone) ; les figures (tracés sur quadrillage…) suivent la largeur de la vignette. Une vignette n\'est jamais coupée entre deux pages à l\'impression.',
+  ] },
   { version:'2026-08-19.924', date:'2026-10-02', items:[
     'Correction : « Ajouter au cahier » une interrogation en ligne (ou des questions flash) ne faisait plus rien. Deux fonctions portaient le même nom (cahier et cartes flashcode) et la seconde remplaçait la première. Les tracés sur quadrillage arrivent dans le cahier avec la figure attendue, sans la légende « juste / faux » qui n\'y a pas de sens.',
   ] },
