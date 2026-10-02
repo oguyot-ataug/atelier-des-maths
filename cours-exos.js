@@ -111,17 +111,89 @@ function cxChoisir(){
     rendre(); charger();
   });
 }
-// Télécommande : ajouter un exercice pendant la séance (il devient le dernier élément).
-async function cxProfAjouter(){
-  if(!cdP) return;
-  const it = await cxChoisir(); if(!it || !cdP) return;
-  const items = cdP.items.concat(it);
+/* ---------- Partie de cours d'un chapitre (demandé : « permettre d'ajouter une partie de cours ») ----------
+   Niveau → chapitre → parties du cours et des méthodes (les mêmes que « + Cahier » : un titre de leçon
+   ou un sous-titre et ce qui le suit). Le chapitre est ouvert derrière la fenêtre (cours personnalisé
+   du professeur compris), chaque partie est recopiée par sectionVersHtml (app.js). Renvoie une liste
+   d'éléments (vide si annulé). */
+function cxChoisirCours(){
+  return new Promise(resolve => {
+    let o = document.getElementById('cxCours');
+    if(!o){ o = document.createElement('div'); o.id = 'cxCours'; o.className = 'modal-overlay'; document.body.appendChild(o); }
+    o.style.zIndex = '9400';
+    const vue = document.querySelector('.view.active'), vueAvant = vue ? vue.id : null;
+    const niveaux = ['ce2', 'cm1', 'cm2', '6e', '5e', '4e', '3e'].filter(l => typeof niveauVisible !== 'function' || niveauVisible(l));
+    const chapitres = l => (CHAPITRES_BY_LEVEL[l] || []).filter(c => DEMO_REGISTRY[l + '|' + c.t]);
+    const st = { lvl: niveaux.includes(currentChapterLevel) ? currentChapterLevel : (niveaux.includes('6e') ? '6e' : niveaux[0]), code: null, parties: [], choisies: new Set(), occupe: false };
+    if(niveaux.includes(currentChapterLevel) && chapitres(currentChapterLevel).some(c => c.code === currentChapterCode)) st.code = currentChapterCode;
+    let fini = false;
+    const fin = v => { if(fini) return; fini = true; o.style.display = 'none'; if(vueAvant && typeof showView === 'function') showView(vueAvant); resolve(v || []); };
+    const nomNiv = l => ({ ce2: 'CE2', cm1: 'CM1', cm2: 'CM2' })[l] || l;
+    const charger = () => {
+      st.parties = []; st.choisies = new Set();
+      const c = chapitres(st.lvl).find(x => x.code === st.code); if(!c){ rendre(); return; }
+      try{ openChapitre(c, 'cours', st.lvl); }catch(e){ console.warn(e); }
+      const demo = DEMO_REGISTRY[st.lvl + '|' + c.t];
+      [['cours', 'Cours'], ['methode', 'Méthode']].forEach(([k, nom]) => {
+        const box = demo && document.getElementById(demo[k]); if(!box) return;
+        box.querySelectorAll('.lesson-header, .sub-header').forEach(h => {
+          if(h.classList.contains('cp-hidden') || h.closest('.cp-hidden')) return;
+          const t = h.querySelector('h3,h4'); if(!t || !t.textContent.trim()) return;
+          st.parties.push({ h, onglet: nom, titre: t.textContent.trim(), lecon: h.classList.contains('lesson-header') });
+        });
+      });
+      rendre();
+    };
+    const rendre = () => {
+      const chs = chapitres(st.lvl);
+      let onglet = '';
+      o.innerHTML = `<div class="modal-card cx-ch">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b class="cd-h"><span class="gicon">menu_book</span> Partie de cours</b>
+          <button class="modal-close" id="cxCoFermer"><span class="gicon">close</span></button></div>
+        <p class="hint" style="margin:6px 0 10px;">Choisissez le chapitre, puis les parties à montrer (cours ou méthodes). Elles sont ajoutées dans cet ordre. Si vous avez personnalisé le cours de ce chapitre, c'est votre version qui est reprise.</p>
+        <div class="cx-co-sel"><select id="cxCoNiv">${niveaux.map(l => `<option value="${l}"${l === st.lvl ? ' selected' : ''}>${nomNiv(l)}</option>`).join('')}</select>
+          <select id="cxCoCh"><option value="">Choisir un chapitre…</option>${chs.map(c => `<option value="${cdEsc(c.code)}"${c.code === st.code ? ' selected' : ''}>${cdEsc(c.code)} · ${cdEsc(c.t)}</option>`).join('')}</select></div>
+        <div class="cx-ch-corps cx-co-liste">${!st.code ? '<p class="hint">Choisissez un chapitre.</p>' : st.parties.length ? st.parties.map((p, i) => `${p.onglet !== onglet ? `<b class="cx-co-onglet">${(onglet = p.onglet)}</b>` : ''}
+            <label class="cx-co-p${p.lecon ? '' : ' sous'}"><input type="checkbox" data-i="${i}"${st.choisies.has(i) ? ' checked' : ''}> ${cdEsc(p.titre)}${p.lecon ? ' <small>(toute la partie)</small>' : ''}</label>`).join('')
+          : '<p class="hint">Ce chapitre n\'a pas encore de cours découpé en parties.</p>'}</div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;align-items:center;"><span class="hint" style="margin:auto auto auto 0;" id="cxCoNb"></span>
+          <button class="btn secondary" id="cxCoAnnuler">Annuler</button><button class="btn" id="cxCoOk"><span class="gicon">add</span> Ajouter</button></div></div>`;
+      const nb = () => { const n = st.choisies.size, el = o.querySelector('#cxCoNb'); if(el) el.textContent = n ? n + ' partie' + (n > 1 ? 's' : '') + ' choisie' + (n > 1 ? 's' : '') : ''; const b = o.querySelector('#cxCoOk'); if(b) b.disabled = !n || st.occupe; };
+      nb();
+      o.querySelector('#cxCoFermer').onclick = o.querySelector('#cxCoAnnuler').onclick = () => fin([]);
+      o.querySelector('#cxCoNiv').onchange = e => { st.lvl = e.target.value; st.code = null; st.parties = []; st.choisies = new Set(); rendre(); };
+      o.querySelector('#cxCoCh').onchange = e => { st.code = e.target.value || null; charger(); };
+      o.querySelectorAll('input[data-i]').forEach(c => c.onchange = () => { if(c.checked) st.choisies.add(+c.dataset.i); else st.choisies.delete(+c.dataset.i); nb(); });
+      o.querySelector('#cxCoOk').onclick = async () => {
+        const c = chapitres(st.lvl).find(x => x.code === st.code); if(!c || !st.choisies.size) return;
+        st.occupe = true; nb(); o.querySelector('#cxCoOk').innerHTML = 'Préparation…';
+        const items = [];
+        for(const i of [...st.choisies].sort((a, b) => a - b)){
+          const p = st.parties[i];
+          try{ const r = await sectionVersHtml(p.h); items.push({ titre: /^(méthode|cours)\b/i.test(r.titre) ? r.titre : (p.onglet === 'Méthode' ? 'Méthode : ' : 'Cours : ') + r.titre, chapitre: `${c.code} · ${c.t}`, html: r.html, prog: cdProgDe(r.html) }); }
+          catch(e){ console.warn('partie de cours', e); }
+        }
+        fin(items);
+      };
+    };
+    o.style.display = 'flex';
+    if(st.code) charger(); else rendre();
+  });
+}
+// Télécommande : ajouter un exercice ou une partie de cours pendant la séance (à la fin de la session :
+// les numéros des éléments déjà donnés ne changent pas, le travail des élèves y reste rattaché).
+async function cxProfAjouterItems(nouveaux, quoi){
+  if(!cdP || !nouveaux.length) return;
+  const items = cdP.items.concat(nouveaux);
   const { error } = await sb.from('cours_direct').update({ items }).eq('id', cdP.id);
-  if(error){ niceAlert('Exercice non ajouté : ' + error.message); return; }
+  if(error){ niceAlert(quoi + ' non ajouté : ' + error.message); return; }
   cdP.items = items;
-  if(await niceConfirm('Exercice ajouté à la fin de la session. Le donner aux élèves maintenant ?')) cdProfAller(items.length - 1);
+  const premier = items.length - nouveaux.length;
+  if(await niceConfirm(`${quoi} ajouté${nouveaux.length > 1 ? 's' : ''} à la fin de la session. ${nouveaux.length > 1 ? 'Montrer le premier' : 'Le montrer'} aux élèves maintenant ?`)) cdProfAller(premier);
   else cdProfRendre();
 }
+async function cxProfAjouter(){ if(!cdP) return; const it = await cxChoisir(); if(it) cxProfAjouterItems([it], 'Exercice'); }
+async function cxProfAjouterCours(){ if(!cdP) return; const its = await cxChoisirCours(); if(its.length) cxProfAjouterItems(its, its.length > 1 ? 'Parties de cours' : 'Partie de cours'); }
 
 /* =====================================================================
    PROFESSEUR : suivi en direct
@@ -566,11 +638,15 @@ function cxFigChange(){
     .cx-onglets button.on{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.12);}
     .cx-ch-corps{overflow:auto;flex:1;min-height:160px;}
     .cx-ch-liste{display:flex;flex-direction:column;gap:6px;}
+    .cx-co-sel{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;} .cx-co-sel select{flex:1;min-width:120px;} .cx-co-sel select:first-child{flex:0 0 90px;}
+    .cx-co-liste{border:1px solid rgba(28,43,57,.12);border-radius:10px;padding:8px 10px;background:#fff;}
+    .cx-co-onglet{display:block;color:#1F3A5C;margin:6px 0 2px;font-family:'Space Grotesk',sans-serif;}
+    .cx-co-p{display:block;padding:4px 2px;cursor:pointer;font-weight:700;} .cx-co-p.sous{font-weight:500;padding-left:22px;} .cx-co-p small{color:var(--ink-soft);font-weight:500;}
     .cx-ch-it{display:flex;flex-direction:column;gap:2px;text-align:left;border:1.5px solid rgba(28,43,57,.12);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;color:var(--ink);}
     .cx-ch-it:hover{border-color:#1F3A5C;} .cx-ch-it small{color:var(--ink-soft);font-size:.78rem;}
     .cd-exos{margin-top:8px;} .cd-exos > b{display:block;color:#1F3A5C;margin:4px 0;}
     .cd-exo{display:flex;align-items:center;gap:6px;padding:4px 2px;} .cd-exo .gicon{color:#E35D3A;font-size:18px;}
-    .cd-exo button{margin-left:auto;border:0;background:none;cursor:pointer;color:var(--ink-soft);display:flex;}
+    .cd-exo small{color:var(--ink-soft);} .cd-exo-act{margin-left:auto;display:flex;gap:2px;} .cd-exo-act button{border:0;background:none;cursor:pointer;color:var(--ink-soft);display:flex;padding:2px;} .cd-exo-act button:disabled{opacity:.3;cursor:default;} .cd-exo-act .gicon{font-size:17px;color:inherit !important;}
     .cx-apercu{background:#F6F8FB;border-radius:10px;padding:6px 10px;margin-bottom:10px;} .cx-apercu summary{cursor:pointer;font-weight:700;color:#1F3A5C;}
     .cx-consigne{background:#F6F8FB;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:1.02rem;}
     .cx-resume{display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center;font-family:'Space Grotesk',sans-serif;margin:4px 0 8px;}

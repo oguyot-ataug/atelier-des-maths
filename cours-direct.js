@@ -87,8 +87,10 @@ async function cdPreparer(){
         <button type="button" class="btn secondary" id="cdPrepCharger"><span class="gicon">refresh</span> Afficher</button></div>
       <div class="cd-liste">${msg || ([...parJour.entries()].map(([j, es]) => `<div class="cd-jour"><b>${new Date(j + 'T12:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</b>
         ${es.map(e => `<label class="cd-entree"><input type="checkbox" data-id="${e.id}" ${st.choisies.has(e.id) ? 'checked' : ''}> ${cdEsc(cdTitreEntree(e))}${cdProgDe(e.html) ? ' <span class="cd-tag"><span class="gicon">architecture</span> construction</span>' : ''}${e.chapitre ? ` <small>${cdEsc(e.chapitre)}</small>` : ''}</label>`).join('')}</div>`).join('') || '<p class="hint">Aucune entrée du cahier sur cette période.</p>')}
-        ${st.exos.length ? `<div class="cd-exos"><b>Exercices à faire (après les éléments du cahier)</b>${st.exos.map((x, k) => `<div class="cd-exo"><span class="gicon">edit_square</span> ${cdEsc(x.titre)}<button type="button" data-exo="${k}" title="Retirer"><span class="gicon">close</span></button></div>`).join('')}</div>` : ''}</div>
-      <div style="margin-top:8px;"><button type="button" class="btn secondary" id="cdPrepExo"><span class="gicon">add</span> Ajouter un exercice à faire (questionnaire, figure dynamique, programmation…)</button></div>
+        ${st.exos.length ? `<div class="cd-exos"><b>Ajouts (après les éléments du cahier)</b>${st.exos.map((x, k) => `<div class="cd-exo"><span class="gicon"${x.exo ? '' : ' style="color:#1F7A4D;"'}>${x.exo ? 'edit_square' : 'menu_book'}</span> ${cdEsc(x.titre)}${x.chapitre ? ` <small>${cdEsc(x.chapitre)}</small>` : ''}
+          <span class="cd-exo-act"><button type="button" data-monte="${k}" title="Monter" ${k ? '' : 'disabled'}><span class="gicon">arrow_upward</span></button><button type="button" data-descend="${k}" title="Descendre" ${k < st.exos.length - 1 ? '' : 'disabled'}><span class="gicon">arrow_downward</span></button><button type="button" data-exo="${k}" title="Retirer"><span class="gicon">close</span></button></span></div>`).join('')}</div>` : ''}</div>
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="btn secondary" id="cdPrepCours"><span class="gicon">menu_book</span> Ajouter une partie de cours</button>
+        <button type="button" class="btn secondary" id="cdPrepExo"><span class="gicon">edit_square</span> Ajouter un exercice à faire</button></div>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;"><span class="hint" style="margin:auto auto auto 0;" id="cdPrepNb"></span>
         <button class="btn secondary" onclick="document.getElementById('cdPrepOverlay').style.display='none'">Annuler</button>
         <button class="btn" id="cdPrepGo"><span class="gicon">play_arrow</span> Ouvrir la session</button></div></div>`;
@@ -96,6 +98,10 @@ async function cdPreparer(){
     nb();
     o.querySelectorAll('input[data-id]').forEach(c => c.onchange = () => { if(c.checked) st.choisies.add(c.dataset.id); else st.choisies.delete(c.dataset.id); nb(); });
     o.querySelectorAll('[data-exo]').forEach(b => b.onclick = () => { st.exos.splice(+b.dataset.exo, 1); rendre(); });
+    const echange = (i, j) => { const x = st.exos[i]; st.exos[i] = st.exos[j]; st.exos[j] = x; rendre(); };
+    o.querySelectorAll('[data-monte]').forEach(b => b.onclick = () => echange(+b.dataset.monte, +b.dataset.monte - 1));
+    o.querySelectorAll('[data-descend]').forEach(b => b.onclick = () => echange(+b.dataset.descend, +b.dataset.descend + 1));
+    document.getElementById('cdPrepCours').onclick = async () => { o.style.display = 'none'; const its = typeof cxChoisirCours === 'function' ? await cxChoisirCours() : []; o.style.display = 'flex'; if(its.length){ st.exos.push(...its); rendre(); } };
     document.getElementById('cdPrepExo').onclick = async () => { o.style.display = 'none'; const it = typeof cxChoisir === 'function' ? await cxChoisir() : null; o.style.display = 'flex'; if(it){ st.exos.push(it); rendre(); } };
     document.getElementById('cdPrepTitre').oninput = e => { st.titre = e.target.value; };
     document.getElementById('cdPrepCharger').onclick = () => { st.du = document.getElementById('cdPrepDu').value; st.au = document.getElementById('cdPrepAu').value; charger(); };
@@ -214,7 +220,8 @@ function cdProfRendre(){
         <button class="btn" style="background:#C0392B;" onclick="cdProfTerminer()"><span class="gicon">stop</span> Terminer</button></div></div>
     <div class="cd-p-corps">
       <div class="cd-p-items">${cdP.items.map((x, k) => `<button class="cd-item${k === i ? ' on' : ''}${k < i ? ' vu' : ''}" onclick="cdProfAller(${k})"><span>${k + 1}</span> ${cdEsc(x.titre)}${x.prog ? ' <span class="gicon">architecture</span>' : ''}${x.exo ? ' <span class="gicon" style="color:#E35D3A;">edit_square</span>' : ''}</button>`).join('')}
-        <button class="cd-item cd-ajout" onclick="cxProfAjouter()"><span class="gicon">add</span> Ajouter un exercice</button></div>
+        <button class="cd-item cd-ajout" onclick="cxProfAjouterCours()"><span class="gicon">menu_book</span> Ajouter une partie de cours</button>
+        <button class="cd-item cd-ajout" onclick="cxProfAjouter()"><span class="gicon">edit_square</span> Ajouter un exercice</button></div>
       <div class="cd-p-scene">
         <div class="cd-nav"><button class="btn secondary" onclick="cdProfAller(${i - 1})" ${i ? '' : 'disabled'}><span class="gicon">arrow_back</span> Précédent</button>
           ${it.prog ? `<button class="btn" style="background:#1F7A4D;" onclick="cdProfTableau()"><span class="gicon">architecture</span> Dérouler la construction au tableau</button>` : ''}
@@ -353,6 +360,10 @@ async function cdEleveCharger(){
   const { data, error } = await sb.rpc('cours_direct_etat', { p_id: cdE.id });
   if(error || !data){ if(cdE) document.getElementById('cdEleve').innerHTML = `<div class="cd-e-msg"><p>${cdEsc(error ? error.message : 'Session introuvable.')}</p><button class="btn" onclick="cdEleveFermer()">Fermer</button></div>`; return; }
   if(data.fin) return cdEleveFin();
+  // Seul l'élément en cours arrive en entier ; les précédents déjà relus restent en mémoire.
+  if(!cdE.cache) cdE.cache = new Map();
+  data.items = (data.items || []).map((x, k) => x && x.leger && cdE.cache.has(k) ? cdE.cache.get(k) : x);
+  data.items.forEach((x, k) => { if(x && !x.leger) cdE.cache.set(k, x); });
   const avant = cdE.d;
   cdE.d = data;
   if(!avant || avant.idx !== data.idx) cdE.vue = data.idx; // le professeur avance : on le suit
@@ -371,6 +382,7 @@ async function cdEleveCharger(){
 function cdEleveRendre(){
   const o = document.getElementById('cdEleve'); if(!o || !cdE || !cdE.d) return;
   const d = cdE.d, k = cdE.vue, it = d.items[k] || {};
+  if(it.leger){ cdEleveElement(k); }
   cdE.cxMonte = null;
   if(typeof cx !== 'undefined' && cx.prog && cx.prog.role === 'eleve' && cx.prog.k !== k) cxQuitterProg();
   if(!it.exo && qzP && qzP.cours) qzP = null;
@@ -379,11 +391,25 @@ function cdEleveRendre(){
       <b>${k + 1} / ${d.n}</b><button onclick="cdEleveVoir(${k + 1})" ${k < d.idx ? '' : 'disabled'} title="Élément suivant"><span class="gicon">arrow_forward</span></button></span>
       ${k !== d.idx ? `<button class="cd-e-direct" onclick="cdEleveVoir(${d.idx})"><span class="gicon">cast</span> Revenir au direct</button>` : '<span class="cd-e-live"><span class="dot"></span> En direct</span>'}</div>
     <div class="cd-e-corps"><div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}</div>
-      <div class="cd-contenu" id="cdEleveContenu">${it.exo ? '' : it.html || ''}</div></div>
+      <div class="cd-contenu" id="cdEleveContenu">${it.leger ? '<p class="hint">Chargement…</p>' : it.exo ? '' : it.html || ''}</div></div>
     ${cdE.dehors ? `<div class="cd-e-retour"><div><span class="gicon">front_hand</span><h2>Reste avec la classe !</h2><p>Tu as quitté la page du cours : ton professeur en est informé.</p><button class="btn" onclick="cdEleveRevenir()">Je reviens au cours</button></div></div>` : ''}`;
   const c = document.getElementById('cdEleveContenu');
+  if(it.leger) return;
   if(c && it.exo){ if(!cdE.dehors && typeof cxEleveMonter === 'function') cxEleveMonter(k, it); }
   else if(c){ c.querySelectorAll('[data-tbprog]').forEach(b => b.remove()); if(typeof cahierOutilsCours === 'function') cahierOutilsCours(c); }
+}
+// Élément déjà montré, relu à la demande (l'état ne renvoie en entier que l'élément en cours).
+async function cdEleveElement(k){
+  if(!cdE || (cdE.charge && cdE.charge.has(k))) return;
+  if(!cdE.charge) cdE.charge = new Set();
+  cdE.charge.add(k);
+  const { data, error } = await sb.rpc('cours_direct_element', { p_id: cdE.id, p_k: k });
+  if(cdE && cdE.charge) cdE.charge.delete(k);
+  if(!cdE || !cdE.d) return;
+  if(error || !data){ const c = document.getElementById('cdEleveContenu'); if(c && cdE.vue === k) c.innerHTML = `<p class="hint">${cdEsc(error ? error.message : 'Élément introuvable.')}</p>`; return; }
+  if(!cdE.cache) cdE.cache = new Map();
+  cdE.cache.set(k, data); cdE.d.items[k] = data;
+  if(cdE.vue === k) cdEleveRendre();
 }
 function cdEleveVoir(k){ if(!cdE || !cdE.d) return; cdE.vue = Math.max(0, Math.min(cdE.d.idx, k)); cdEleveRendre(); }
 function cdEleveFin(){

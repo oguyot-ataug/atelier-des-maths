@@ -3296,6 +3296,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.921', date:'2026-10-02', items:[
+    'Session COURS : « Ajouter une partie de cours », à la préparation ou pendant la séance depuis la télécommande. On choisit le niveau, le chapitre, puis les parties du cours ou des méthodes (les mêmes qu\'avec « + Cahier » ; votre cours personnalisé est respecté). Dans la préparation, les ajouts (parties de cours et exercices) se rangent avec les flèches.',
+    'Session COURS plus légère : chaque élève ne reçoit en entier que l\'élément en cours ; un élément précédent n\'est chargé que s\'il revient dessus.',
+  ] },
   { version:'2026-08-19.920', date:'2026-10-02', items:[
     'Session COURS : quand le professeur en ouvre une, ses élèves voient un bandeau « Ton professeur a ouvert une session COURS » avec un bouton « Rejoindre » : on entre d\'un clic, sans code, et on revient facilement après avoir rechargé la page. Le code au tableau marche toujours.',
     'Mon travail : le champ du code s\'appelle maintenant « Séance en direct » (questions flash ou cours).',
@@ -8196,6 +8200,33 @@ async function expandStepDemosInClone(wrapper){
   }
 }
 async function addSectionToCahier(headerEl){
+  const { titre, html } = await sectionVersHtml(headerEl);
+  const niveauSel = document.getElementById('corNiveau');
+  const entry = {
+    niveau: niveauSel ? niveauSel.value : '5e',
+    chapitre: currentChapterCode ? `${currentChapterCode} · ${currentChapterTitle}` : (currentChapterTitle || ''),
+    exo: 'Cours',
+    titre: titre,
+    date: todayISO(),
+    raw: '',
+    html,
+  };
+  cahier.push(entry);
+  sortCahierInPlace();
+  saveCahier();
+  if(document.getElementById('cahierList')) renderCahier();
+  const btn = headerEl.querySelector('.add-to-cahier-btn');
+  if(btn){ const old=btn.textContent; btn.textContent='✓ Ajouté'; setTimeout(()=>btn.textContent=old,1600); }
+  if(isSyncEnabled()){
+    const res = await syncAddEntry(entry);
+    if(res.ok){ entry.id = res.id; saveCahier(); }
+    else if(!res.offline){ await niceAlert("<span class=gicon>warning</span> Ajouté localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez la configuration de synchronisation (adresse + code secret) dans l'outil prof."); }
+  }
+}
+/* Une partie du cours (titre de leçon ou sous-titre, et tout ce qui suit jusqu'au titre suivant) →
+   { titre, html } autonome : boutons retirés, animations à étapes dépliées, couleurs du niveau figées.
+   Utilisée pour le cahier (+ Cahier) et pour les sessions COURS (cours-exos.js). */
+async function sectionVersHtml(headerEl){
   const isLesson = headerEl.classList.contains('lesson-header');
   const titleEl = headerEl.querySelector('h3,h4');
   const titre = titleEl ? titleEl.textContent.trim() : 'Cours';
@@ -8248,28 +8279,7 @@ async function addSectionToCahier(headerEl){
   wrapper.id = wrapperHadId2;
   wrapper.className = '';
   clip2.remove();
-
-  const niveauSel = document.getElementById('corNiveau');
-  const entry = {
-    niveau: niveauSel ? niveauSel.value : '5e',
-    chapitre: currentChapterCode ? `${currentChapterCode} · ${currentChapterTitle}` : (currentChapterTitle || ''),
-    exo: 'Cours',
-    titre: titre,
-    date: todayISO(),
-    raw: '',
-    html: wrapper.innerHTML,
-  };
-  cahier.push(entry);
-  sortCahierInPlace();
-  saveCahier();
-  if(document.getElementById('cahierList')) renderCahier();
-  const btn = headerEl.querySelector('.add-to-cahier-btn');
-  if(btn){ const old=btn.textContent; btn.textContent='✓ Ajouté'; setTimeout(()=>btn.textContent=old,1600); }
-  if(isSyncEnabled()){
-    const res = await syncAddEntry(entry);
-    if(res.ok){ entry.id = res.id; saveCahier(); }
-    else if(!res.offline){ await niceAlert("<span class=gicon>warning</span> Ajouté localement, mais échec de synchronisation avec le serveur : "+(res.error||'erreur inconnue')+". Vérifiez la configuration de synchronisation (adresse + code secret) dans l'outil prof."); }
-  }
+  return { titre, html: wrapper.innerHTML };
 }
 
 renderCahier();
