@@ -115,10 +115,6 @@ document.getElementById('cours-demo-droites-paralleles').innerHTML = `
   </div>
 </div>
 
-<p class="example-title" style="margin-top:16px;">Sur un quadrillage, sans équerre : la méthode du « L »</p>
-<p class="hint" style="margin:4px 0 8px;">Quand la droite (d) est oblique sans suivre les diagonales des carreaux, on lit sur (d) le déplacement d'un nœud à un autre (un « L ») ; le L qui tombe sur le dos donne le déplacement de la perpendiculaire.</p>
-${dpAnimL('dp-perp-L')}
-
 <div class="lesson-header"><span class="num">3</span><h3>Droites parallèles</h3></div>
 <span class="def-badge">Définition</span>
 <div class="def-box">Deux droites sont <b>parallèles</b> si elles ne sont pas sécantes. On note (d) // (d').</div>
@@ -343,6 +339,10 @@ document.getElementById('methode-demo-droites-paralleles').innerHTML = `
     <button class="btn secondary" onclick="dpMethAnimReset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : tracer une perpendiculaire sur un quadrillage, sans équerre (la méthode du « L »)</h4></div>
+<p class="hint" style="margin:4px 0 8px;">Quand la droite (d) est oblique sans suivre les diagonales des carreaux, on lit sur (d) le déplacement d'un nœud à un autre (un « L ») ; le L qui tombe sur le dos donne le déplacement de la perpendiculaire.</p>
+${dpAnimL('dp-perp-L')}
 `;
 
 document.getElementById('exos-demo-droites-paralleles').innerHTML = `
