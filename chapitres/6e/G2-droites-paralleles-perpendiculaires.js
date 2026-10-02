@@ -313,32 +313,9 @@ document.getElementById('histoire-demo-droites-paralleles').innerHTML = `
 `;
 
 document.getElementById('methode-demo-droites-paralleles').innerHTML = `
-<div class="sub-header"><span class="letter">M</span><h4>Méthode : tracer une perpendiculaire à l'équerre et à la règle</h4></div>
-<p class="example-title">Construction à la règle et à l'équerre :</p>
-<div class="figure-wrap">
-  <svg id="dp-methAnimSvg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
-    <line id="dp-mA-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
-    <circle id="dp-mA-M" r="5" fill="#E35D3A" data-marker="cross"/>
-    <text id="dp-mA-labelM" font-style="italic" font-size="14">M</text>
-    <g id="dp-mA-equerre" style="display:none;">
-      ${equerreSVG(TB_EQUERRE_LEGX, TB_EQUERRE_LEGY)}
-    </g>
-    <polygon id="dp-mA-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
-    <polygon id="dp-mA-pencil-tip" fill="#3A2A1A" style="display:none;"/>
-    <g id="dp-mA-ruler" style="display:none;">
-      ${rulerSVG(true)}
-    </g>
-    <line id="dp-mA-lineDp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
-    <path id="dp-mA-angleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3" style="display:none;"/>
-    <text id="dp-mA-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C">(d)</text>
-    <text id="dp-mA-labelDp" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A" style="display:none;">(d')</text>
-  </svg>
-  <p class="hint" id="dp-mA-note" style="text-align:center;margin-top:8px;"></p>
-  <div class="figure-toolbar">
-    <button class="btn" onclick="dpMethAnimNext()">Étape suivante →</button>
-    <button class="btn secondary" onclick="dpMethAnimReset()">Recommencer</button>
-  </div>
-</div>
+<div class="sub-header"><span class="letter">M</span><h4>Méthode : tracer une parallèle sur un quadrillage, sans équerre (la méthode du « L »)</h4></div>
+<p class="hint" style="margin:4px 0 8px;">On lit sur (d) le déplacement d'un nœud du quadrillage à un autre (un « L ») ; le même déplacement, refait depuis M, donne un deuxième point de la parallèle.</p>
+${dpAnimL('dp-para-L', 'para')}
 
 <div class="sub-header"><span class="letter">M</span><h4>Méthode : tracer une perpendiculaire sur un quadrillage, sans équerre (la méthode du « L »)</h4></div>
 <p class="hint" style="margin:4px 0 8px;">Quand la droite (d) est oblique sans suivre les diagonales des carreaux, on lit sur (d) le déplacement d'un nœud à un autre (un « L ») ; le L qui tombe sur le dos donne le déplacement de la perpendiculaire.</p>
@@ -959,138 +936,6 @@ function dpRenderPerpMethode(animate){
 function dpPerpMethodeNext(){ if(dpPmIdx<DP_PM_STEPS.length-1){ dpPmIdx++; dpRenderPerpMethode(DP_PM_STEPS[dpPmIdx].phase==='traced'); } }
 function dpPerpMethodeReset(){ dpPmIdx=0; dpRenderPerpMethode(false); }
 
-/* ---- Copie de la construction ci-dessus, pour l'onglet Methode (meme figure, etat independant) ---- */
-const DP_MA_D1={x:70,y:70}, DP_MA_D2={x:330,y:150}, DP_MA_M={x:230,y:50};
-const dpMaDir = dpDir(DP_MA_D1, DP_MA_D2);
-let dpMaPerp = {x:-dpMaDir.y, y:dpMaDir.x};
-const dpMaFoot = dpIntersect(DP_MA_D1, dpMaDir, DP_MA_M, dpMaPerp);
-if(dpMaPerp.x*(DP_MA_M.x-dpMaFoot.x) + dpMaPerp.y*(DP_MA_M.y-dpMaFoot.y) < 0){ dpMaPerp = {x:-dpMaPerp.x, y:-dpMaPerp.y}; }
-const dpMaFootDist = Math.hypot(dpMaFoot.x-DP_MA_D1.x, dpMaFoot.y-DP_MA_D1.y);
-const dpMaTouchDist = Math.hypot(DP_MA_M.x-dpMaFoot.x, DP_MA_M.y-dpMaFoot.y);
-const DP_MA_STEPS = [
-  {dist: 40, phase:'slide', note:"On place un côté de l'angle droit de l'équerre sur la droite (d)."},
-  {dist: 95, phase:'slide', note:"On fait glisser l'équerre le long de (d), sans la faire tourner."},
-  {dist: dpMaFootDist, phase:'slide', note:"On arrête de glisser dès que l'autre côté de l'équerre touche le point M."},
-  {dist: dpMaFootDist, phase:'ruler', note:"On pose la règle le long de ce côté de l'équerre : elle est sécante à la droite (d)."},
-  {dist: dpMaFootDist, phase:'removed', note:"On retire l'équerre : seule la règle reste en place."},
-  {dist: dpMaFootDist, phase:'traced', note:"On trace la droite le long de la règle, et on nomme (d') en codant l'angle droit."},
-  {dist: dpMaFootDist, phase:'clean', note:"On retire la règle : (d) et (d') sont perpendiculaires."},
-];
-let dpMaIdx = 0;
-function dpRenderMethAnim(animate){
-  dpAnimationToken++; // invalide toute animation en cours d'une étape précédente
-  const s = DP_MA_STEPS[dpMaIdx];
-  // Échelle UNIQUE partagée entre l'équerre et la règle -- avant, chacune calculait la sienne
-  // séparément, ce qui les rendait de tailles incohérentes l'une par rapport à l'autre (bug
-  // signalé : "les outils semblent trop petits", et la règle qui paraissait décalée).
-  const rulerScale = Math.max(0.44, (dpMaTouchDist+50)/TB_RULER_L, (dpMaTouchDist+18)/TB_EQUERRE_LEGY);
-  const dExt = dpExtend({x:(DP_MA_D1.x+DP_MA_D2.x)/2,y:(DP_MA_D1.y+DP_MA_D2.y)/2}, dpMaDir, 260);
-  dpSetLine(document.getElementById('dp-mA-lineD'), dExt);
-  dpSetPt(document.getElementById('dp-mA-M'), DP_MA_M);
-  dpSetTxt(document.getElementById('dp-mA-labelM'), DP_MA_M, 8, -10);
-  dpSetTxt(document.getElementById('dp-mA-labelD'), {x:DP_MA_D2.x+dpMaDir.x*24+dpMaPerp.x*16, y:DP_MA_D2.y+dpMaDir.y*24+dpMaPerp.y*16}, 0, 0);
-  const pos = {x:DP_MA_D1.x+dpMaDir.x*s.dist, y:DP_MA_D1.y+dpMaDir.y*s.dist};
-  const equerre = document.getElementById('dp-mA-equerre');
-  const lineDp = document.getElementById('dp-mA-lineDp'), angleMark = document.getElementById('dp-mA-angleMark'), ruler = document.getElementById('dp-mA-ruler');
-  const pencil = document.getElementById('dp-mA-pencil'), pencilTip = document.getElementById('dp-mA-pencil-tip');
-
-  // dpMaPerp peut avoir été RETOURNÉ (pour toujours pointer côté M) par rapport à la
-  // perpendiculaire "par défaut" -- ce retournement doit être répercuté à la fois sur l'équerre
-  // ET sur la règle, sinon l'une des deux se retrouve du mauvais côté et chevauche l'autre (bug
-  // signalé : la règle chevauchait l'équerre).
-  const defaultPerpX = -dpMaDir.y, defaultPerpY = dpMaDir.x;
-  const mirrored = (dpMaPerp.x*defaultPerpX + dpMaPerp.y*defaultPerpY) < 0;
-
-  if(s.phase==='removed' || s.phase==='traced' || s.phase==='clean'){
-    equerre.style.display='none';
-  } else {
-    // Le petit côté de l'équerre (TB_EQUERRE_LEGY à l'échelle 1) doit toujours atteindre M avec
-    // un peu de marge, quelle que soit sa distance à la droite -- sinon l'équerre reste trop
-    // petite et ne "touche" jamais M. Quand M est de l'autre côté, on tourne de 180° (en
-    // utilisant -dir plutôt que dir -- le grand côté reste sur la MÊME droite (d), une droite
-    // n'ayant pas de sens unique) plutôt que d'appliquer un miroir par échelle : ce dernier
-    // inversait toute la forme (pas seulement le texte), donnant cet aspect "à l'envers" signalé.
-    const dirUsed = mirrored ? {x:-dpMaDir.x, y:-dpMaDir.y} : dpMaDir;
-    const angDeg = Math.atan2(dirUsed.y, dirUsed.x)*180/Math.PI;
-    const eqScale = rulerScale;
-    equerre.setAttribute('transform', `translate(${pos.x},${pos.y}) rotate(${angDeg.toFixed(2)}) scale(${eqScale.toFixed(3)})`);
-    equerre.style.display='';
-  }
-
-  // La règle (vraie forme du tableau interactif) a son bord gradué exactement sur l'axe local
-  // y=0 -- il suffit de la poser sur un point de la droite perpendiculaire recherchée, tournée
-  // pour que cet axe corresponde à "perp" : le bord gradué se retrouve alors automatiquement
-  // du côté de l'équerre (contre son petit côté), le corps de la règle s'étendant de l'autre
-  // côté, sans jamais recouvrir l'équerre. Même échelle que l'équerre (calculée en haut de la
-  // fonction), pour qu'elles soient toujours cohérentes l'une avec l'autre -- et le même miroir
-  // que l'équerre pour que le corps s'étende toujours du bon côté (loin d'elle).
-  if(s.phase==='ruler' || s.phase==='removed' || s.phase==='traced'){
-    // Quand l'équerre est en miroir, la règle doit basculer du même côté pour ne jamais la
-    // chevaucher (bug signalé) -- SANS jamais inverser son texte (un miroir par échelle rendait
-    // les numéros illisibles à l'envers, second bug signalé). On choisit à la place la rotation
-    // OPPOSÉE (+180°) dans ce cas : la règle est alors posée en partant d'au-delà de M et
-    // "recule" jusqu'avant le pied -- même ligne, même côté correct, texte toujours lisible.
-    // dpMaPerp pointe déjà toujours vers M (réglé une fois pour toutes dans les constantes du
-    // fichier) -- la règle n'a donc PAS besoin d'une logique liée au miroir de l'équerre : ce
-    // miroir ne concerne que l'orientation propre de l'équerre (une contrainte différente,
-    // sans rapport). Utiliser la même rotation "retournée" ici avait pour effet de faire
-    // basculer aussi le côté épais de la règle du MAUVAIS côté (vérifié numériquement : le
-    // point intérieur de l'équerre tombait alors DANS le rectangle de la règle) -- d'où le vrai
-    // chevauchement signalé.
-    const rAngDeg = Math.atan2(dpMaPerp.y, dpMaPerp.x)*180/Math.PI;
-    const backOffset = TB_RULER_L*rulerScale*0.22;
-    const rStart = {x:dpMaFoot.x-dpMaPerp.x*backOffset, y:dpMaFoot.y-dpMaPerp.y*backOffset};
-    ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAngDeg.toFixed(2)}) scale(${rulerScale.toFixed(3)})`);
-    ruler.style.display='';
-  } else {
-    ruler.style.display='none';
-  }
-
-  const labelDp = document.getElementById('dp-mA-labelDp');
-  if(s.phase==='traced' || s.phase==='clean'){
-    // La perpendiculaire doit clairement DÉPASSER M, pas s'arrêter dessus (bug signalé : le
-    // dépassement précédent ne faisait que 1-2 unités, invisible sous le point M lui-même).
-    // Le tracé ne doit pas non plus commencer EN DEHORS de la règle côté proche (bug signalé) --
-    // on reste nettement à l'intérieur de sa portée (la règle recule de TB_RULER_L*rulerScale*0.22
-    // avant le pied ; on s'arrête ici à 60% de cette distance, avec de la marge des deux côtés).
-    const nearLen = TB_RULER_L*rulerScale*0.22*0.6;
-    const farLen = dpMaTouchDist+35;
-    const dpExt = {
-      x1: dpMaFoot.x-dpMaPerp.x*nearLen, y1: dpMaFoot.y-dpMaPerp.y*nearLen,
-      x2: dpMaFoot.x+dpMaPerp.x*farLen, y2: dpMaFoot.y+dpMaPerp.y*farLen
-    };
-    lineDp.style.display='';
-    angleMark.setAttribute('d', dpRightAngleMark(dpMaFoot, {x:dpMaDir.x,y:dpMaDir.y}, {x:dpMaPerp.x,y:dpMaPerp.y}, 13));
-    angleMark.style.display='';
-    dpSetTxt(labelDp, {x:dpExt.x2+dpMaDir.x*16, y:dpExt.y2+dpMaDir.y*16}, 0, 0);
-    labelDp.style.display='';
-    if(s.phase==='traced'){
-      pencil.style.display=''; pencilTip.style.display='';
-      if(animate){
-        dpAnimateTrace(lineDp, pencil, pencilTip, {x:dpExt.x1,y:dpExt.y1}, {x:dpExt.x2,y:dpExt.y2}, dpMaDir, 900);
-      } else {
-        dpSetLine(lineDp, dpExt);
-        const tipPoint = {x:dpExt.x2, y:dpExt.y2};
-        const pencilShapes = dpPencilPolygons(tipPoint, dpMaPerp, dpMaDir);
-        pencil.setAttribute('points', pencilShapes.body);
-        pencilTip.setAttribute('points', pencilShapes.tip);
-      }
-    } else {
-      dpSetLine(lineDp, dpExt);
-      pencil.style.display='none';
-      pencilTip.style.display='none';
-    }
-  } else {
-    lineDp.style.display='none';
-    pencil.style.display='none';
-    pencilTip.style.display='none';
-    angleMark.style.display='none';
-    labelDp.style.display='none';
-  }
-  document.getElementById('dp-mA-note').textContent = s.note;
-}
-function dpMethAnimNext(){ if(dpMaIdx<DP_MA_STEPS.length-1){ dpMaIdx++; dpRenderMethAnim(DP_MA_STEPS[dpMaIdx].phase==='traced'); } }
-function dpMethAnimReset(){ dpMaIdx=0; dpRenderMethAnim(false); }
 
 /* ---- Construction pas à pas : parallèle à l'équerre ---- */
 const DP_PAM_P1={x:60,y:165}, DP_PAM_P2={x:300,y:85}, DP_PAM_N={x:216,y:223};
@@ -1759,7 +1604,7 @@ function dpRegisterGeoDemos(){
   registerGeoStepDemo('dp-rqa-svg', { steps:()=>DP_RQA_STEPS, getIdx:()=>dpRqaIdx, goto:(i,animate)=>{ dpRqaIdx=i; dpRenderRqPara(animate); } });
 }
 DEMO_REGISTRY['6e|Droites parallèles et perpendiculaires'] = { cours:'cours-demo-droites-paralleles', methode:'methode-demo-droites-paralleles', exos:'exos-demo-droites-paralleles', histoire:'histoire-demo-droites-paralleles',
-  init:()=>{ cmAnimDessiner('dp-perp-L'); initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpMethAnimReset(); dpEx1Demo.reset(); dpEx2Demo.reset(); dpEx3Demo.reset(); dpRegisterGeoDemos(); dpCroixPoints(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); injectCourseAddButtons(document.getElementById('methode-demo-droites-paralleles')); } };
+  init:()=>{ cmAnimDessiner('dp-para-L'); cmAnimDessiner('dp-perp-L'); initPerpDemo(); initParaDemo(); initMedDemo(); dpPerpMethodeReset(); dpParaMethodeReset(); dpMedMethodeReset(); dpRqPerpReset(); dpRqParaReset(); dpEx1Demo.reset(); dpEx2Demo.reset(); dpEx3Demo.reset(); dpRegisterGeoDemos(); dpCroixPoints(); injectCourseAddButtons(document.getElementById('cours-demo-droites-paralleles')); injectCourseAddButtons(document.getElementById('methode-demo-droites-paralleles')); } };
 
 DEMO_QUIZZES['6e|Droites parallèles et perpendiculaires'] = [
   {q:"Que signifie (d) ⊥ (d') ?",
@@ -1776,12 +1621,13 @@ DEMO_QUIZZES['6e|Droites parallèles et perpendiculaires'] = [
    dos... ce qui va symboliser le déplacement de la perpendiculaire. » Le L (horizontal en orange,
    vertical en bleu) glisse jusqu'à M puis tourne d'un quart de tour autour de M : l'horizontal devient
    vertical, le vertical devient horizontal (dans l'autre sens). Lecteur commun cmAnim (chapitres/cm1/_anims.js). */
-function dpAnimL(id){
+function dpAnimL(id, mode){
+  const para = mode === 'para';
   // P, Q : deux nœuds de (d) ; M : le point. Coordonnées en carreaux (y vers le bas).
   const PRESETS = [
-    { nom: '3 → et 1 ↑', P: [2, 7], Q: [5, 6], M: [10, 10] },
-    { nom: '1 → et 2 ↑', P: [3, 9], Q: [4, 7], M: [9, 8] },
-    { nom: '3 → et 2 ↓', P: [1, 2], Q: [4, 4], M: [9, 5] },
+    { nom: '3 → et 1 ↑', P: [2, 7], Q: [5, 6], M: para ? [6, 9] : [10, 10] },
+    { nom: '1 → et 2 ↑', P: [3, 9], Q: [4, 7], M: para ? [8, 9] : [9, 8] },
+    { nom: '3 → et 2 ↓', P: [1, 2], Q: [4, 4], M: para ? [3, 8] : [9, 5] },
   ];
   const K = 28, O = 20, NX = 15, NY = 11, W = NX * K + 2 * O, H = NY * K + 2 * O;
   const X = v => O + v * K, Y = v => O + v * K;
@@ -1807,15 +1653,15 @@ function dpAnimL(id){
     return g;
   };
   return cmAnim(id, {
-    etat: { p: 0 }, duree: 14000,
+    etat: { p: 0 }, duree: para ? 11000 : 14000,
     legende: 'Choisis une droite (d), puis Lecture. Orange : le déplacement horizontal ; bleu : le déplacement vertical.',
     controles: a => `<div class="cmp-modeles">${PRESETS.map((q, i) => cmBtn(id, 'p', i, q.nom, a.etat.p === i)).join('')}</div>`,
     dessin: (t, an) => {
       const pr = PRESETS[an.etat.p], P = pr.P, Q = pr.Q, M = pr.M, a = Q[0] - P[0], b = Q[1] - P[1];
-      const d = [a, b], dp = [b, -a];                       // quart de tour : (x, y) → (y, −x)
+      const d = [a, b], dp = para ? [a, b] : [b, -a];       // parallèle : même L ; perpendiculaire : quart de tour (x, y) → (y, −x)
       const N = [M[0] + dp[0], M[1] + dp[1]];
       const ph = (x, y) => cmDoux(cmPhase(t, x, y));
-      const k1 = ph(.06, .16), k2a = ph(.18, .27), k2b = ph(.27, .36), k3 = ph(.40, .52), k4 = ph(.56, .72), k5 = ph(.76, .88), k6 = ph(.9, .97);
+      const k1 = ph(.06, .16), k2a = ph(.18, .27), k2b = ph(.27, .36), k3 = ph(.40, .52), k4 = para ? 0 : ph(.56, .72), k5 = para ? ph(.58, .76) : ph(.76, .88), k6 = para ? 0 : ph(.9, .97);
       let g = '';
       for(let i = 0; i <= NX; i++) g += `<line x1="${X(i)}" y1="${Y(0)}" x2="${X(i)}" y2="${Y(NY)}" stroke="#C9DCEB" stroke-width="1"/>`;
       for(let j = 0; j <= NY; j++) g += `<line x1="${X(0)}" y1="${Y(j)}" x2="${X(NX)}" y2="${Y(j)}" stroke="#C9DCEB" stroke-width="1"/>`;
@@ -1834,7 +1680,8 @@ function dpAnimL(id){
       }
       // La perpendiculaire (MN), puis le codage de l'angle droit.
       if(k5 > 0){
-        g += `<g opacity="${1 - k5 * .7}"><line x1="${X(M[0])}" y1="${Y(M[1])}" x2="${X(M[0])}" y2="${Y(M[1] - a)}" stroke="${OR}" stroke-width="4" stroke-linecap="round"/><line x1="${X(M[0])}" y1="${Y(M[1] - a)}" x2="${X(N[0])}" y2="${Y(N[1])}" stroke="${BL}" stroke-width="4" stroke-linecap="round"/></g>`;
+        g += para ? `<g opacity="${1 - k5 * .7}">${leL(M, a, b, 1, 1, true)}</g>`
+          : `<g opacity="${1 - k5 * .7}"><line x1="${X(M[0])}" y1="${Y(M[1])}" x2="${X(M[0])}" y2="${Y(M[1] - a)}" stroke="${OR}" stroke-width="4" stroke-linecap="round"/><line x1="${X(M[0])}" y1="${Y(M[1] - a)}" x2="${X(N[0])}" y2="${Y(N[1])}" stroke="${BL}" stroke-width="4" stroke-linecap="round"/></g>`;
         const [e0, e1] = clip(M, dp), m = [(e0[0] + e1[0]) / 2, (e0[1] + e1[1]) / 2];
         g += trait(m, e0, OR, 2.2, k5) + trait(m, e1, OR, 2.2, k5);
         g += tic(N, dp, EN) + ce2T(X(N[0]) + 12, Y(N[1]) - 8, 'N', { c: EN, t: 15, op: k5 }) + (k5 >= 1 ? (() => { const e = Math.hypot(e1[0] - N[0], e1[1] - N[1]) > Math.hypot(e0[0] - N[0], e0[1] - N[1]) ? e1 : e0, m2 = e === e1 ? e0 : e1, ux = (m2[0] - e[0]), uy = (m2[1] - e[1]), L = Math.hypot(ux, uy) || 1;
@@ -1846,6 +1693,15 @@ function dpAnimL(id){
         const u = [a / Math.sqrt(L2) * .45, b / Math.sqrt(L2) * .45], v0 = [M[0] - Hp[0], M[1] - Hp[1]], vl = Math.hypot(v0[0], v0[1]) || 1, v = [v0[0] / vl * .45, v0[1] / vl * .45];
         const c1 = [Hp[0] + u[0], Hp[1] + u[1]], c2 = [Hp[0] + u[0] + v[0], Hp[1] + u[1] + v[1]], c3 = [Hp[0] + v[0], Hp[1] + v[1]];
         g += `<path d="M${X(c1[0])},${Y(c1[1])} L${X(c2[0])},${Y(c2[1])} L${X(c3[0])},${Y(c3[1])}" fill="none" stroke="${EN}" stroke-width="1.6" opacity="${k6}"/>`;
+      }
+      if(para){
+        const texte = t < .06 ? 'Une droite (d), oblique, et un point M qui n\'est pas sur (d).'
+          : t < .18 ? 'Sur (d), on repère deux points placés sur des <b>nœuds</b> du quadrillage.'
+          : t < .40 ? `Pour aller de l'un à l'autre : <b style="color:${OR}">${mots(a, 'x')}</b>, puis <b style="color:${BL}">${mots(b, 'y')}</b>. Ce déplacement dessine un « L ».`
+          : t < .58 ? 'On fait glisser le L jusqu\'au point M, <b>sans le faire tourner</b>.'
+          : t < .8 ? `Depuis M, le même déplacement : <b style="color:${OR}">${mots(a, 'x')}</b>, puis <b style="color:${BL}">${mots(b, 'y')}</b>. On arrive en N : on trace la droite (MN).`
+          : 'Le même L, dans le même sens : la droite (d\') = (MN) est parallèle à (d). On note (d\') // (d).';
+        return { scene: `<svg viewBox="0 0 ${W} ${H}" class="cma-svg" style="max-width:${Math.round(W * 1.35)}px;">${g}</svg>`, texte };
       }
       const texte = t < .06 ? 'Une droite (d), oblique, qui ne suit pas les diagonales des carreaux, et un point M.'
         : t < .18 ? 'Sur (d), on repère deux points placés sur des <b>nœuds</b> du quadrillage.'

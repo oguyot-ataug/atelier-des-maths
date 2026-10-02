@@ -3293,6 +3293,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.913', date:'2026-10-02', items:[
+    '6e, Droites parallèles et perpendiculaires, onglet Méthode : nouvelle méthode en premier, « tracer une parallèle sur un quadrillage, sans équerre (la méthode du L) » : le L lu sur (d) glisse jusqu\'au point M sans tourner, et le même déplacement donne un deuxième point de la parallèle. Trois droites au choix.',
+    '6e, Droites parallèles et perpendiculaires : la méthode « tracer une perpendiculaire à l\'équerre et à la règle » de l\'onglet Méthode, identique à la construction du cours, est retirée.',
+  ] },
   { version:'2026-08-19.912', date:'2026-10-02', items:[
     '6e, Droites parallèles et perpendiculaires : l\'animation de la méthode du « L » passe dans l\'onglet Méthode (« Méthode : tracer une perpendiculaire sur un quadrillage, sans équerre »), à la suite de la méthode à l\'équerre et à la règle.',
   ] },
