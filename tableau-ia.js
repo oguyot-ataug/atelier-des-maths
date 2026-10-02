@@ -915,7 +915,12 @@ async function tbAiRuledStroke(from, to, style, skip, ex){
   const len = Math.hypot(to.x-from.x, to.y-from.y);
   if(len<1) return;
   const canR = tbAiAllowed.has('regle'), canQ = tbAiAllowed.has('requerre');
-  const type = (canR && (len<=TB_AI_RULER_MAX || !canQ)) ? 'regle_grad' : 'requerre2';
+  // Demi-droite : la longueur utile va de l'origine au point le plus loin à atteindre (intersection
+  // avec un arc...). Si la règle ne suffit pas, la réquerre, plus longue, sert de règle -- proposé :
+  // « ou utiliser la réquerre (comme règle, pas comme équerre) ».
+  const loin = ex && ex.kind==='ray' && ex.hits && ex.hits.length ? Math.max(...ex.hits) : 0;
+  const utile = ex && ex.kind==='ray' ? Math.min(len, loin + 40) : len;
+  const type = (canR && (utile<=TB_AI_RULER_MAX || !canQ)) ? 'regle_grad' : 'requerre2';
   await tbAiPutAway(type==='regle_grad' ? 'requerre2' : 'regle_grad', 'equerre', 'rapporteur', 'compas');
   const maxL = type==='regle_grad' ? TB_AI_RULER_MAX : TB_AI_REQ_MAX;
   const u = {x:(to.x-from.x)/len, y:(to.y-from.y)/len};
@@ -926,8 +931,7 @@ async function tbAiRuledStroke(from, to, style, skip, ex){
       // règle : la règle est alors posée pour finir juste après lui -- signalé : « le trait de construction
       // de la demi-droite [AC) est trop court donc l'intersection avec l'arc n'est pas visible »
       // (symétrique de A par rapport à C : A' est à deux fois AC de l'origine).
-      const loin = ex.hits && ex.hits.length ? Math.max(...ex.hits) : 0;
-      w1 = Math.min(len, Math.max(maxL, loin + 40)); w0 = Math.max(0, w1 - maxL);
+      w1 = Math.min(len, Math.max(maxL, utile)); w0 = Math.max(0, w1 - maxL);
     }
     else {
       // Centre : les points qui définissent l'objet (sinon le milieu de l'étendue).

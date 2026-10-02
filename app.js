@@ -3293,6 +3293,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.910', date:'2026-10-02', items:[
+    'Construction aux instruments : une demi-droite trop longue pour la règle est tracée le long de la réquerre (utilisée comme règle, elle est plus longue), depuis son origine jusqu\'au-delà du point à atteindre. Sans réquerre, la règle est posée pour finir juste après ce point. Proposé : « ou utiliser la réquerre (comme règle pas comme équerre) ».',
+  ] },
   { version:'2026-08-19.909', date:'2026-10-02', items:[
     'Construction aux instruments : une demi-droite plus longue que la règle est tracée là où elle doit couper un arc ou une autre ligne (la règle, posée une seule fois, finit juste après le point à atteindre). Signalé : « le trait de construction de la demi-droite [AC) est trop court donc l\'intersection avec l\'arc n\'est pas visible » (symétrique d\'un point par rapport à un autre).',
   ] },
