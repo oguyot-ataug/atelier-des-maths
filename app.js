@@ -3296,6 +3296,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.915', date:'2026-10-02', items:[
+    'Nouveau : la session COURS en direct. Depuis le Cahier de corrections (classe choisie), « Session COURS en direct » : le professeur choisit des éléments du cahier (cours, corrections, constructions) et ouvre la session, avec un code à 4 chiffres. Les élèves tapent le code en haut de « Mon travail » et voient en plein écran l\'élément montré, avec l\'écoute, la loupe et le mode apprentissage ; ils peuvent revoir les éléments déjà montrés, jamais les suivants.',
+    'Session COURS : télécommande du professeur (éléments un par un, aperçu, liste de la classe : présent, absent, sorti). Quand un élève change d\'onglet, quitte la fenêtre ou sort du plein écran, son nom passe au rouge chez le professeur (nombre de sorties et heure de la dernière) avec une alerte, et l\'élève voit « Reste avec la classe ! » avant de reprendre.',
+    'Session COURS : une construction aux instruments du cahier se déroule en direct sur les ordinateurs des élèves. Le professeur clique « Dérouler la construction au tableau » ; chaque étape qu\'il joue est rejouée en même temps chez les élèves, en plein écran.',
+  ] },
   { version:'2026-08-19.914', date:'2026-10-02', items:[
     'La petite Oliv\'IA s\'invite dans les chapitres, avec une bulle : le doigt levé sur les définitions (« À savoir ! ») et les règles ou propriétés (« Retiens bien ! »), la loupe sur les méthodes (« Suis la méthode ! »), les muscles en tête des exercices (« Muscle ton jeu ! »), le chapeau d\'exploratrice et le parchemin dans l\'histoire (« Il était une fois… »), le point d\'interrogation sur le quiz (« À toi de jouer ! »). Aussi sur la page Automatismes et dans les questions flash prêtes. Pas dans les PDF ni dans le cahier.',
   ] },
@@ -7204,6 +7209,7 @@ async function removeCahierEntryFromNotebook(i, btn){
 }
 async function renderCahierEleve(){
   populateCahierChapitreFilter();
+  if(typeof cdBoutonMaj==='function') cdBoutonMaj(); // Session COURS en direct (cours-direct.js), professeurs
   const btnShowAll = document.getElementById('btnCahierShowAll');
   if(btnShowAll) btnShowAll.style.display = (currentUserRole==='prof'||currentUserRole==='admin') ? '' : 'none';
   if(!currentClassId){
