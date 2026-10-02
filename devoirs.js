@@ -538,6 +538,7 @@ async function refreshDevoirsProfListing(){
       <span><b>${escapeHtml(d.titre)}</b> · ${escapeHtml(d.classes ? d.classes.nom+' ('+d.classes.niveau+')' : '')} · ${depotDetail}${cibleDetail}<span class="devoir-row-type"><span class=gicon style="font-size:1rem;vertical-align:middle;">${t?t.icon:'assignment'}</span> ${devoirTypeLabel(d.type)}</span><span class="hint" style="margin:0;">${typeDetail}</span>${dateStr?' · limite : '+dateStr:''} · ${nbRendus||0}/${totalEleves||0} rendu(s)</span>
       <span style="display:flex;gap:6px;flex:none;">
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="editDevoirPrompt('${d.id}')"><span class=gicon>edit</span> Éditer</button>
+        ${['automatismes','compte_est_bon','programmation'].includes(d.type) && typeof dvSuiviOuvrir==='function' ? `<button class="btn" style="font-size:.72rem;padding:4px 8px;background:#C0392B;" onclick="dvSuiviOuvrir('${d.id}')" title="Voir en direct qui travaille, sur quoi, et avec quels résultats"><span class=gicon>live_tv</span> Suivi en direct</button>` : ''}
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span> Voir les rendus</button>
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="deleteDevoirPrompt('${d.id}')"><span class=gicon>delete</span> Supprimer</button>
       </span>

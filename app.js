@@ -3296,6 +3296,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.918', date:'2026-10-02', items:[
+    'Devoirs en ligne (automatismes, Objectif Nombre, programmation) : nouveau bouton « Suivi en direct ». Une vignette par élève : au travail (sur quelle séquence, quel compte, quel défi), en pause, sorti de la page (alerte immédiate), pas commencé ou tout fait ; temps de travail réel, nombre de séances et une pastille par élément du devoir (meilleur score, compte trouvé ou non, défi terminé). Un clic : le détail de l\'élève, avec ses derniers calculs pour Objectif Nombre.',
+  ] },
   { version:'2026-08-19.917', date:'2026-10-02', items:[
     'Suivi en direct d\'une interrogation : bouton « Projeter » pour montrer au tableau, en grand et sans aucun nom, la réponse d\'un élève à une question (dans sa copie) ou les résultats de la classe à une question avec ses erreurs fréquentes (vue Par question). La correction ne s\'affiche que si on la demande ; la projection se met à jour en direct.',
   ] },

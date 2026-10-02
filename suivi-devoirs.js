@@ -30,6 +30,16 @@ function dsEnabled(){
     && !(typeof devoirTestModeActive!=='undefined' && devoirTestModeActive);
 }
 
+/* Suivi en direct par le professeur (devoirs-suivi.js) : canal « dvs-<devoir> » ; chaque
+   enregistrement (maj) et chaque sortie de la page (sortie) y est signalé. */
+const dsCanaux = new Map();
+function dsSignal(devoirId, event, payload){
+  if(!devoirId || typeof sb === 'undefined' || !sb) return;
+  try{
+    if(!dsCanaux.has(devoirId)) dsCanaux.set(devoirId, sb.channel('dvs-' + devoirId).subscribe());
+    dsCanaux.get(devoirId).send({ type: 'broadcast', event, payload: Object.assign({ e: currentUser && currentUser.id }, payload || {}) });
+  }catch(e){}
+}
 /* Ouvre une séance. isActive() dit si l'activité est à l'écran. */
 function dsStart(kind, devoirId, item, isActive){
   if(!dsEnabled() || !devoirId) return null;
@@ -41,6 +51,7 @@ function dsStart(kind, devoirId, item, isActive){
     .then(({ data, error })=>{ if(error) throw error; s.id = data.id; })
     .catch(e=>{ console.warn('suivi devoir :', e); s.failed = true; });
   dsOpen.add(s);
+  s.pending.then(()=>dsSignal(devoirId, 'maj'));
   return s;
 }
 function dsTick(s, now){
@@ -66,6 +77,7 @@ async function dsFlush(s){
   s.flushed = key;
   const { error } = await sb.from('devoir_sessions').update({ active_ms: ms, actions: s.actions, statut: s.statut }).eq('id', s.id);
   if(error){ console.warn('suivi devoir :', error); s.flushed = -1; }
+  else dsSignal(s.devoirId, 'maj');
 }
 /* Ferme une séance : 'terminee' (validée, rendue) ou 'abandonnee' (quittée sans finir). */
 function dsEnd(s, statut){
@@ -86,6 +98,7 @@ function dsOnInput(){ dsLastInput = performance.now(); dsOpen.forEach(s=>{ s.sin
 document.addEventListener('visibilitychange', ()=>{
   const now = performance.now();
   dsOpen.forEach(s=>{ dsTick(s, now); if(document.visibilityState==='hidden') dsFlush(s); });
+  new Set([...dsOpen].map(s=>s.devoirId)).forEach(id=>dsSignal(id, 'sortie', { dehors: document.visibilityState==='hidden' }));
   if(document.visibilityState==='visible') dsOnInput(); // revenir sur l'onglet = reprendre
 });
 
