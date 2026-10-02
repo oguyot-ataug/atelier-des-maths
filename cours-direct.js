@@ -314,6 +314,7 @@ async function cdEleveOuvrir(id){
   o.style.display = 'flex';
   document.body.classList.add('cd-eleve-ouvert');
   cdPleinEcran();
+  cdInvitation([]);
   cdE.ch = sb.channel(cdCanal(id), { config: { broadcast: { self: false } } })
     .on('broadcast', { event: 'etat' }, ({ payload }) => { if(payload && payload.fin) return cdEleveFin(); cdEleveCharger(); })
     .on('broadcast', { event: 'pilote' }, ({ payload }) => { if(typeof cxElevePilote === 'function') cxElevePilote(payload); })
@@ -341,6 +342,7 @@ function cdEleveFermer(silencieux){
   document.body.classList.remove('cd-eleve-ouvert');
   if(document.fullscreenElement){ try{ document.exitFullscreen(); }catch(e){} }
   cdE = null;
+  setTimeout(cdVeille, 300);
 }
 function cdPleinEcran(){
   const el = document.documentElement, f = el.requestFullscreen || el.webkitRequestFullscreen;
@@ -426,6 +428,36 @@ async function cdEleveRevenir(){
     return orig.apply(this, arguments);
   };
 })();
+/* ---------- Bandeau « Session COURS » chez l'élève ----------
+   Demandé : afficher dans « Mon travail » un bandeau « Ton professeur a ouvert une session COURS :
+   Rejoindre » (entrée d'un clic, sans code ; retour facile après un rechargement). Vérifié toutes les
+   15 s tant que la page est visible, comme celui des questions flash (questionnaires-direct.js). */
+async function cdVeille(){
+  const dedans = cdE && document.getElementById('cdEleve') && document.getElementById('cdEleve').style.display !== 'none';
+  if(typeof sb === 'undefined' || !sb || !currentUser || currentUserRole !== 'eleve' || document.hidden || dedans){ cdInvitation([]); return; }
+  const { data, error } = await sb.rpc('cours_direct_actives');
+  cdInvitation(!error && Array.isArray(data) ? data : []);
+}
+function cdInvitation(liste){
+  let b = document.getElementById('cdInvit');
+  if(!liste.length){ if(b) b.remove(); return; }
+  const s = liste[0];
+  if(!b){ b = document.createElement('div'); b.id = 'cdInvit'; document.body.appendChild(b); }
+  b.style.bottom = document.getElementById('qzdBandeau') ? '84px' : '18px';
+  if(b.dataset.id === s.id) return;
+  b.dataset.id = s.id;
+  b.innerHTML = `<span class="gicon">cast_for_education</span><span class="t"><b>Ton professeur a ouvert une session COURS</b><span>${cdEsc(s.titre)}${s.classe ? ' · ' + cdEsc(s.classe) : ''}</span></span>
+    <button class="btn" onclick="cdRejoindreId('${s.id}')"><span class="gicon">login</span> Rejoindre</button>`;
+}
+async function cdRejoindreId(id){
+  const { data, error } = await sb.rpc('cours_direct_rejoindre_id', { p_id: id });
+  if(error || !data){ await niceAlert((error && error.message) || 'Session introuvable.'); cdVeille(); return; }
+  cdInvitation([]);
+  cdEleveOuvrir(data);
+}
+setInterval(cdVeille, 15000);
+document.addEventListener('visibilitychange', () => { if(!document.hidden) cdVeille(); });
+document.addEventListener('DOMContentLoaded', () => setTimeout(cdVeille, 2500));
 document.addEventListener('DOMContentLoaded', cdBoutonMaj);
 
 (function cdStyles(){
@@ -461,6 +493,9 @@ document.addEventListener('DOMContentLoaded', cdBoutonMaj);
     .cd-el.present .cd-pastille{background:#2E9C6A;} .cd-el.perdu .cd-pastille{background:#E9C46A;}
     .cd-el.dehors{background:#FBECEA;} .cd-el.dehors .cd-pastille{background:#C0392B;animation:cdClign 1s infinite;} .cd-el.dehors small{color:#C0392B;font-weight:700;}
     @keyframes cdClign{50%{opacity:.25;}}
+    #cdInvit{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:381;display:flex;align-items:center;gap:12px;background:#1F3A5C;color:#fff;border-radius:16px;padding:10px 12px 10px 16px;box-shadow:0 10px 30px rgba(31,58,92,.35);max-width:calc(100vw - 24px);font-family:Inter,sans-serif;}
+    #cdInvit > .gicon{font-size:1.6rem;} #cdInvit .t{display:flex;flex-direction:column;line-height:1.25;min-width:0;}
+    #cdInvit .t span{font-size:.85rem;opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;} #cdInvit .btn{background:#fff;color:#1F3A5C;white-space:nowrap;margin:0;}
     .cd-toast{position:fixed;right:18px;bottom:18px;z-index:9500;background:#C0392B;color:#fff;padding:10px 16px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);transform:translateY(20px);opacity:0;transition:.3s;font-family:Inter,sans-serif;}
     .cd-toast.on{transform:none;opacity:1;} .cd-toast .gicon{vertical-align:middle;}
     @media (max-width:900px){ .cd-p-corps{grid-template-columns:1fr;} }

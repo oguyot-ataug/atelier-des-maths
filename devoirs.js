@@ -87,8 +87,8 @@ document.getElementById('view-devoirs-eleve').innerHTML = `
        pour les comptes Famille (pas de classe), voir refreshAuthUI. -->
   <form class="mt-direct" id="mtDirect" onsubmit="event.preventDefault();qzDirectCode(this.code.value)">
     <span class="gicon">bolt</span>
-    <span class="mt-direct-t"><b>Questions flash</b><small>Tape le code affiché au tableau par ton professeur.</small></span>
-    <input name="code" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Code" aria-label="Code des questions flash">
+    <span class="mt-direct-t"><b>Séance en direct</b><small>Tape le code affiché au tableau (questions flash ou cours).</small></span>
+    <input name="code" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="Code" aria-label="Code de la séance en direct">
     <button class="btn"><span class="gicon">login</span> Rejoindre</button>
   </form>
   <div class="tool-row" style="margin:10px 0;">
