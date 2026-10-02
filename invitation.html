@@ -94,7 +94,8 @@ async function init(){
     });
     const data = await res.json();
     if(data.alreadyUsed){
-      titleEl.textContent = data.nom ? `${data.nom}, vous avez déjà activé votre compte !` : 'Compte déjà activé !';
+      const prenom = (data.prenom || '').trim() || (data.nom || '').trim(); // le prénom, sinon le nom
+      titleEl.textContent = prenom ? `${prenom}, vous avez déjà activé votre compte !` : 'Compte déjà activé !';
       subtitleEl.textContent = 'Votre identifiant de connexion est :';
       identifiantValue.textContent = data.identifiant;
       alreadyUsedZone.style.display = 'block';
@@ -105,7 +106,8 @@ async function init(){
       subtitleEl.textContent = data.error;
       return;
     }
-    titleEl.textContent = data.nom ? `Bienvenue, ${data.nom} !` : 'Bienvenue !';
+    const prenom = (data.prenom || '').trim() || (data.nom || '').trim(); // le prénom, sinon le nom
+    titleEl.textContent = prenom ? `Bienvenue, ${prenom} !` : 'Bienvenue !';
     subtitleEl.textContent = 'Choisissez votre mot de passe pour activer votre compte.';
     formZone.style.display = 'block';
   }catch(err){

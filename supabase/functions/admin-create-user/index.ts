@@ -74,12 +74,13 @@ serve(async (req) => {
       const { data: invit } = await adminClient
         .from("invitations").select("user_id, expires_at, used_at").eq("token", token).single();
       if (!invit) return json({ error: "Ce lien n'existe pas ou n'est plus valide." }, 404);
-      const { data: prof } = await adminClient.from("profiles").select("nom, email").eq("id", invit.user_id).single();
+      const { data: prof } = await adminClient.from("profiles").select("nom, prenom, email").eq("id", invit.user_id).single();
       if (invit.used_at) {
-        return json({ alreadyUsed: true, nom: prof?.nom || null, identifiant: loginIdentifiant(prof?.email) });
+        return json({ alreadyUsed: true, nom: prof?.nom || null, prenom: prof?.prenom || null, identifiant: loginIdentifiant(prof?.email) });
       }
       if (new Date(invit.expires_at) < new Date()) return json({ error: "Ce lien a expiré. Contactez votre professeur pour en obtenir un nouveau." }, 400);
-      return json({ success: true, nom: prof?.nom || null });
+      // prenom : la page d'invitation dit « Bienvenue, <prénom> ! » (demandé le 02/10/2026)
+      return json({ success: true, nom: prof?.nom || null, prenom: prof?.prenom || null });
     }
 
     if (action === "consume-invitation") {

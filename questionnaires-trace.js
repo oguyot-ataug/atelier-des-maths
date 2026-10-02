@@ -63,7 +63,11 @@ function qztGenerer(gen, c, seed){
   const r = qztAlea(seed), ent = (a, b) => a + Math.floor(r() * (b - a + 1)), dans = p => p[0] >= 0 && p[0] <= c.l && p[1] >= 0 && p[1] <= c.h;
   const pick = t => t[Math.floor(r() * t.length)];
   if(gen.modele === 'parallele' || gen.modele === 'perpendiculaire'){
-    const dirs = gen.obliques === false ? [[1, 0], [0, 1]] : [[1, 0], [0, 1], [1, 1], [1, -1], [2, 1], [1, 2], [2, -1], [1, -2]];
+    // obliques : seulement selon les diagonales des carreaux si gen.diagonales (case cochée par défaut),
+    // sinon aussi les pentes « 2 carreaux pour 1 »
+    const dirs = gen.obliques === false ? [[1, 0], [0, 1]]
+      : gen.diagonales !== false ? [[1, 0], [0, 1], [1, 1], [1, -1]]
+      : [[1, 0], [0, 1], [1, 1], [1, -1], [2, 1], [1, 2], [2, -1], [1, -2]];
     const n = gen.n == 2 ? 2 : 1, noms = ['A', 'B'], sous = ['₁', '₂'];
     for(let essai = 0; essai < 300; essai++){
       const d = pick(dirs), P0 = [ent(Math.floor(c.l / 4), Math.ceil(3 * c.l / 4)), ent(Math.floor(c.h / 4), Math.ceil(3 * c.h / 4))];
@@ -253,7 +257,7 @@ function qztBarre(q, u, rep){
 }
 QZ_EXT.trace = {
   nouvelle(q){
-    q.grille = { l: 14, h: 10 }; q.gen = { modele: 'parallele', n: 1, obliques: true, varie: true };
+    q.grille = { l: 14, h: 10 }; q.gen = { modele: 'parallele', n: 1, obliques: true, diagonales: true, varie: true };
     const g = qztGenerer(q.gen, qztConf(q), Math.floor(Math.random() * 1e6)) || { figure: [], solution: [], enonce: '' };
     q.figure = g.figure; q.solution = g.solution; q.enonce = g.enonce; q.points = 1;
   },
@@ -381,7 +385,8 @@ function qztEditeurHtml(q){
        <label>axe <select onchange="qztEdGen('${id}','axe',this.value)">${[['hasard', 'au hasard'], ['vertical', 'vertical'], ['horizontal', 'horizontal'], ['oblique', 'oblique (diagonale des carreaux)']].map(([v, t]) => `<option value="${v}"${(g.axe || 'hasard') === v ? ' selected' : ''}>${t}</option>`).join('')}</select></label>
        <label class="qz-check"><input type="checkbox" ${g.relier ? 'checked' : ''} onchange="qztEdGen('${id}','relier',this.checked)"> relier les points (figure)</label>`
     : modele ? `<label>droites à tracer <select onchange="qztEdGen('${id}','n',parseInt(this.value,10))"><option value="1"${g.n != 2 ? ' selected' : ''}>une : (d₁) par A</option><option value="2"${g.n == 2 ? ' selected' : ''}>deux : (d₁) par A, (d₂) par B</option></select></label>
-       <label class="qz-check"><input type="checkbox" ${g.obliques !== false ? 'checked' : ''} onchange="qztEdGen('${id}','obliques',this.checked)"> droite (d) parfois oblique</label>` : '';
+       <label class="qz-check"><input type="checkbox" ${g.obliques !== false ? 'checked' : ''} onchange="qztEdGen('${id}','obliques',this.checked)"> droite (d) parfois oblique</label>
+       ${g.obliques !== false ? `<label class="qz-check"><input type="checkbox" ${g.diagonales !== false ? 'checked' : ''} onchange="qztEdGen('${id}','diagonales',this.checked)"> obliques uniquement sur les diagonales des carreaux</label>` : ''}` : '';
   return `<span class="qz-lab">Tracé sur quadrillage <span class="hint" style="margin:0;">(l'élève place des points sur les nœuds, puis trace droites, segments ou demi-droites entre deux points ; corrigé automatiquement)</span></span>
     <div class="qz-reg-grid">
       <label>Modèle <select onchange="qztEdModele('${id}',this.value)"><option value=""${!modele ? ' selected' : ''}>Libre : je dessine la figure et l'attendu</option>
@@ -414,7 +419,7 @@ function qztEdGrille(id, k, v){ const q = qzEdQ(id); if(!q) return; q.grille = O
 function qztEdModele(id, m){
   const q = qzEdQ(id); if(!q) return;
   if(!m){ q.gen = null; return qzEdRender(); } // on garde la figure actuelle, modifiable à la main
-  q.gen = Object.assign({ n: 1, obliques: true, varie: true, axe: 'hasard', relier: false }, q.gen && q.gen.modele === m ? q.gen : {}, { modele: m });
+  q.gen = Object.assign({ n: 1, obliques: true, diagonales: true, varie: true, axe: 'hasard', relier: false }, q.gen && q.gen.modele === m ? q.gen : {}, { modele: m });
   qztEdTirer(id);
 }
 function qztEdGen(id, k, v){ const q = qzEdQ(id); if(!q || !q.gen) return; q.gen[k] = v; if(k === 'varie') return qzEdRender(); qztEdTirer(id); }
