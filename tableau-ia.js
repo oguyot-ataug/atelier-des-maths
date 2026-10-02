@@ -224,7 +224,9 @@ function tbAiEvaluate(program, flips, allowed){
       }
       case 'segment_length': {
         const A = P(i,s.from); newName(i,s.to);
-        const L = num(i, s.length, 'longueur', 0.2, 15);
+        // length_from : longueur reportée, mesurée entre deux points déjà construits (report à la règle).
+        const L = Array.isArray(s.length_from) && s.length_from.length===2 ? tbV.dist(P(i,s.length_from[0]), P(i,s.length_from[1])) : num(i, s.length, 'longueur', 0.2, 15);
+        if(L<0.05 || L>15) err(i, 'longueur à reporter hors limites ('+Math.round(L*10)/10+' cm)');
         let u, along = null;
         if(s.along!==undefined){
           along = objs.get(s.along);
@@ -562,7 +564,9 @@ function tbAiFinalize(ev, opts){
    Avec la règle graduée et l'équerre (ou la réquerre) : on place le milieu à la règle (s'il n'existe
    pas déjà), puis on trace la perpendiculaire en ce milieu à l'équerre. */
 function tbAiSansCompas(program, allowed){
-  if(!allowed || allowed.has('compas') || !allowed.has('regle') || !(allowed.has('equerre') || allowed.has('requerre'))) return program;
+  if(!allowed || allowed.has('compas') || !allowed.has('regle')) return program;
+  program = tbAiSymSansCompas(program);
+  if(!(allowed.has('equerre') || allowed.has('requerre'))) return program;
   if(!program.some(s=>s && s.op==='perpendicular_bisector')) return program;
   const noms = new Set(); program.forEach(s=>{ if(s && typeof s.name==='string') noms.add(s.name); (Array.isArray(s && s.points) ? s.points : []).forEach(n=>noms.add(n)); });
   const libre = ()=>{ for(const n of ['I','M','J','K','N','O','L','H','Q','R','S','T','U','V','W','X','Y','Z']) if(!noms.has(n)){ noms.add(n); return n; } return null; };
@@ -575,6 +579,22 @@ function tbAiSansCompas(program, allowed){
     const seg = out.find(t=>t && (t.op==='segment' || t.op==='line') && ((t.from===a && t.to===b) || (t.from===b && t.to===a) || (Array.isArray(t.through) && t.through.includes(a) && t.through.includes(b))) && t.id);
     out.push(Object.assign({op:'perpendicular', id:s.id, through:m, to: seg ? seg.id : [a, b], kind:'line'}, s.color ? {color:s.color} : {}, s.style ? {style:s.style} : {}));
   });
+  return out;
+}
+/* Symétrique d'un point sans compas -- signalé : « je trace un segment [AB] et je construis le
+   symétrique de A par rapport à B : le tracé aux instruments ne se fait pas » (compas décoché). La
+   construction « demi-droite [MO), puis report de OM au compas depuis O » devient « demi-droite [MO),
+   puis report de la longueur OM à la règle graduée depuis O, sur la demi-droite ». */
+function tbAiSymSansCompas(program){
+  const out = [];
+  for(let k = 0; k < program.length; k++){
+    const s = program[k], n = program[k+1];
+    const ray = s && s.op==='circle' && Array.isArray(s.radius_from) && s.radius_from[0]===s.center && n && n.op==='intersect' && n.name && Array.isArray(n.of) && n.of.includes(s.id)
+      ? out.find(t=>t && t.op==='ray' && t.id===n.of.find(x=>x!==s.id) && t.from===s.radius_from[1] && t.through===s.center) : null;
+    if(!ray){ out.push(s); continue; }
+    out.push({op:'segment_length', from:s.center, to:n.name, length_from:[s.center, s.radius_from[1]], along:ray.id, show_length:false, style:s.style||'construction'});
+    k++; // l'intersection est remplacée par le report
+  }
   return out;
 }
 function tbAiCompile(program, allowed, opts){

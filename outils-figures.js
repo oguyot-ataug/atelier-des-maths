@@ -5799,6 +5799,8 @@ function figVersProgramme(){
     // outils (demi-droite puis report au compas) ». Traits de construction fins (style « construction »).
     const arcAutour = (c, q, demi) => { const a = deg(q.x-c.x, q.y-c.y); return [r1(a-(demi||22)), r1(a+(demi||22))]; };
     const idAide = () => 'k'+(++nObj);
+    // Image confondue avec son point (figure enregistrée avant la correction de figImagePoint) : posée telle quelle.
+    if(['symetrie-centrale','symetrie-axiale','translation'].includes(d.type) && d.m && Math.hypot(p.x-d.m.x, p.y-d.m.y)<1e-6){ pointLibre(p); return; }
     if(d.type==='symetrie-centrale' && d.center && d.m){
       assurerPoint(d.m); assurerPoint(d.center);
       // Demi-droite [MO) au-delà du centre, puis report de la longueur MO au compas depuis O.
@@ -6144,6 +6146,10 @@ function figTransfoPos(T, q){
   return [2*(a.x+t*dx)-q.x, 2*(a.y+t*dy)-q.y];
 }
 function figImagePoint(T, q){
+  // Point invariant (le centre d'une symétrie centrale, un point de l'axe) : son image est lui-même.
+  // Signalé : symétrique du segment [AB] par rapport à B -- l'image B' de B, confondue avec B, se
+  // construisait par une demi-droite [BB) et la construction aux instruments s'arrêtait.
+  { const [x0, y0] = figTransfoPos(T, q); if(Math.hypot(x0-q.x, y0-q.y)<1e-6) return q; }
   const meme = d => d && d.type===T.type && d.m===q && (T.type==='symetrie-centrale' ? d.center===T.center : T.type==='translation' ? d.vecP1===T.vecP1 && d.vecP2===T.vecP2 : d.axisP1===T.axisP1 && d.axisP2===T.axisP2);
   const deja = figState.points.find(p=>meme(p.def)); if(deja) return deja;
   const [x, y] = figTransfoPos(T, q);

@@ -3293,6 +3293,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.907', date:'2026-10-02', items:[
+    'Géométrie interactive, construction aux instruments : le symétrique d\'un point par rapport à un autre se construit aussi sans compas (demi-droite, puis report de la longueur à la règle graduée). Signalé : « je trace un segment [AB] et je construis le symétrique de A par rapport à B : le tracé aux instruments ne se fait pas ».',
+    'Géométrie interactive : en transformant un segment [AB] par la symétrie de centre B, l\'image de B est B lui-même (avant, un point B\' confondu avec B bloquait la construction aux instruments).',
+    'Cahier : sur les définitions, règles et propriétés recopiées du cours, les mêmes outils que dans le cours (écoute, mode apprentissage, loupe). Remarque d\'un élève, déçu de ne pas pouvoir les utiliser dans le cahier.',
+    'Cahier : bouton « Revoir dans le cours » sur chaque partie de cours, qui ouvre directement le chapitre sans repasser par le menu.',
+  ] },
   { version:'2026-08-19.906', date:'2026-10-02', items:[
     'Tracé sur quadrillage : nouvelle case « obliques uniquement sur les diagonales des carreaux » pour les modèles parallèle et perpendiculaire (cochée par défaut).',
     'Page d\'activation du compte (lien d\'invitation) : « Bienvenue, » suivi du prénom, et non plus du nom.',
@@ -6750,6 +6756,8 @@ function entryRowsHTML(e, idx, editable, showRemoveBtn){
   }
   html += `</div>`;
   if(modEditable) html += `<div class="nb-mod-choix">${Object.entries(COR_MODALITES).map(([k, d])=>`<button type="button" class="nb-mod-chip${e.modalite===k ? ' on' : ''}" style="--c:${d[2]}" onclick="changeCahierEntryModalite(${idx}, '${k}')" title="${e.modalite===k ? 'Retirer' : 'Marquer'} : ${d[0]}"><span class="gicon">${d[1]}</span> ${d[0]}</button>`).join('')}</div>`;
+  // Partie de cours : lien direct vers le chapitre (sauf dans l'impression, où idx n'est pas donné).
+  if(e.exo==='Cours' && e.chapitre && idx!==undefined && cahierChapitreDe(e)) html += `<button type="button" class="nb-cours-lien" onclick="cahierOuvrirCours(${idx})" title="Ouvrir ce chapitre à l'onglet Cours"><span class=gicon>menu_book</span> Revoir dans le cours</button>`;
   html += `<div class="nb-body">${e.html!=null ? e.html : renderMathText(e.raw)}</div>`;
   if(e.figure) html += `<div class="nb-figure-row">${e.figure}</div>`;
   html += `</div>`;
@@ -7542,6 +7550,40 @@ function injectCourseAddButtons(container){
   injectZoomButtons(container);
   if(typeof injectLearnButtons==='function') injectLearnButtons(container); // apprentissage.js
 }
+/* Cahier de l'élève : les mêmes outils que dans le cours sur les définitions, règles et propriétés
+   recopiées (écoute, mode apprentissage, loupe) -- remarque d'un élève : « déçu de ne pas pouvoir
+   utiliser les outils sur les définitions » du cahier, qui obligeait à repasser par le menu pour
+   retrouver le cours. Le HTML enregistré peut contenir d'anciens boutons loupe sans action : ils
+   sont retirés, puis les boutons sont injectés comme dans le cours. Branché par un observateur sur
+   le cahier (#cahierEleveContent), qui couvre tous ses affichages (jour déplié, filtres...). */
+// Chapitre d'une entrée de cours (« N3 · Les fractions ») : cherché au niveau de l'entrée, puis aux autres.
+function cahierChapitreDe(e){
+  const code = String(e.chapitre||'').split(' · ')[0].trim(), titre = String(e.chapitre||'').split(' · ').slice(1).join(' · ').trim();
+  if(!code) return null;
+  const niveaux = [e.niveau].concat(NIVEAUX_ORDRE.filter(n=>n!==e.niveau)).filter(n=>CHAPITRES_BY_LEVEL[n]);
+  for(const n of niveaux){
+    const c = CHAPITRES_BY_LEVEL[n].find(x=>x.code===code && (!titre || x.t===titre));
+    if(c) return {c, n};
+  }
+  return null;
+}
+function cahierOuvrirCours(idx){
+  const e = cahier[idx], r = e && cahierChapitreDe(e);
+  if(r) openChapitre(r.c, 'cours', r.n);
+}
+function cahierOutilsCours(root){
+  if(!root) return;
+  root.querySelectorAll('.zoom-btn, .read-aloud-btn, .learn-btn').forEach(b=>{ if(!b.onclick) b.remove(); });
+  injectReadAloudButtons(root);
+  injectZoomButtons(root);
+  if(typeof injectLearnButtons==='function') injectLearnButtons(root);
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const root = document.getElementById('cahierEleveContent');
+  if(!root || typeof MutationObserver==='undefined') return;
+  let t = null;
+  new MutationObserver(()=>{ clearTimeout(t); t = setTimeout(()=>cahierOutilsCours(root), 60); }).observe(root, {childList:true, subtree:true});
+});
 /* Lecture à voix haute des définitions (accessibilité, même esprit que le sélecteur de
    police OpenDyslexic). Branché sur le même point d'entrée que les boutons "+ Cahier"
    (injectCourseAddButtons), donc actif automatiquement sur tous les chapitres existants
