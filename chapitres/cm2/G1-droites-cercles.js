@@ -47,6 +47,7 @@ ${cm1Lecon(3, 'Le cercle et le disque')}
 <div class="figure-wrap">${cercle()}</div>
 ${cm1Def('<ul style="margin:0;padding-left:18px;line-height:1.9;"><li>Le <b>cercle de centre O et de rayon 3 cm</b> est formé de <b>tous les points situés à 3 cm du point O</b>.</li><li>Le <b>disque</b> de centre O et de rayon 3 cm est formé de tous les points situés à <b>3 cm ou moins</b> du point O : c\'est la surface à l\'intérieur du cercle, bord compris.</li><li>Un <b>rayon</b> est un segment qui joint le centre à un point du cercle, comme le segment [OM].</li><li>Un <b>diamètre</b> est un segment qui joint deux points du cercle en passant par le centre, comme le segment [AB]. Sa longueur est le double du rayon.</li></ul>')}
 ${cm1Regle('Pour tracer un cercle de centre O et de rayon 3 cm : on écarte le compas de 3 cm sur la règle, on pique la pointe sur O et on tourne.', 'Avec le compas')}
+${ce2AnimCompas('c2-g1-compas', { presets: [{ nom: 'Rayon 3 cm', r: 3 }, { nom: 'Rayon 2 cm', r: 2 }, { nom: 'Rayon 4 cm', r: 4 }] })}
 `,
   methode: `
 ${cm1Demo('c2-g1-perp', 'Tracer la perpendiculaire à une droite passant par un point', 'Trace la droite perpendiculaire à la droite (d) passant par le point A.')}
@@ -66,13 +67,20 @@ ${cm1Demo('c2-g1-para', 'Tracer la parallèle à une droite passant par un point
     ]],
   ],
   exos: cm1Exos('c2g1', [
-    ['Écris avec les bons symboles : la droite qui passe par E et F · le segment d\'extrémités E et F · la demi-droite d\'origine E qui passe par F · la longueur du segment d\'extrémités E et F.', '(EF) · [EF] · [EF) · EF.'],
-    ['Place trois points R, S, T alignés, puis un point U qui n\'est pas sur la droite (RS).', 'R, S, T sur une même droite tracée à la règle ; U en dehors.'],
-    ['Trace une droite (d), un point A hors de (d), puis la droite perpendiculaire à (d) passant par A.', 'Avec l\'équerre : un côté de l\'angle droit sur (d), l\'autre passant par A.'],
-    ['Trace un cercle de centre O et de rayon 4 cm. Quelle est la longueur d\'un diamètre ?', '8 cm (le double du rayon).'],
-    ['Un point M est à 2 cm du centre d\'un cercle de rayon 3 cm. Est-il sur le cercle, dans le disque, en dehors ?', 'Il est dans le disque, à l\'intérieur du cercle (2 cm &lt; 3 cm).'],
-    ['Place deux points A et B à 5 cm l\'un de l\'autre. Trouve les points situés à la fois à 3 cm de A et à 4 cm de B.', 'On trace le cercle de centre A et de rayon 3 cm et le cercle de centre B et de rayon 4 cm : les deux points d\'intersection conviennent.'],
-    ['Vrai ou faux ? « Deux droites qui ne se coupent pas sur ma feuille sont parallèles. »', 'Faux : elles peuvent se couper plus loin, en dehors de la feuille. Il faut vérifier que l\'écart reste constant (ou utiliser l\'équerre).'],
+    [`Écris avec les bons symboles.${cm1Liste(['la droite qui passe par E et F', 'le segment d\'extrémités E et F', 'la demi-droite d\'origine E qui passe par F', 'la longueur du segment d\'extrémités E et F'])}`,
+      cm1Redac('Notations', { suite: ['droite : (EF)', 'segment : [EF]', 'demi-droite : [EF)', 'longueur : EF'] }, 'Parenthèses pour la droite, crochets pour le segment, un crochet et une parenthèse pour la demi-droite, rien pour la longueur.')],
+    ['Place trois points R, S, T alignés, puis un point U qui n\'est pas sur la droite (RS).',
+      cm1Redac('Points alignés', '', 'Je trace une droite à la règle et j\'y place R, S et T : ils sont alignés. Je place U en dehors de cette droite.')],
+    ['Trace une droite (d), un point A hors de (d), puis la droite perpendiculaire à (d) passant par A.',
+      cm1Redac('Tracé de la perpendiculaire', '', 'Je pose un côté de l\'angle droit de l\'équerre sur (d), je la fais glisser jusqu\'à ce que l\'autre côté passe par A, puis je trace et je code l\'angle droit.')],
+    ['Trace un cercle de centre O et de rayon 4 cm. Quelle est la longueur d\'un diamètre ?',
+      cm1Redac('Longueur d\'un diamètre', '4 × 2 = 8', 'Un diamètre mesure 8 cm : c\'est le double du rayon.')],
+    ['Un point M est à 2 cm du centre d\'un cercle de rayon 3 cm. Est-il sur le cercle, dans le disque, en dehors ?',
+      cm1Redac('Position du point M', '2 cm &lt; 3 cm', 'M est plus près du centre que le cercle : il est dans le disque, à l\'intérieur du cercle.')],
+    ['Place deux points A et B à 5 cm l\'un de l\'autre. Trouve les points situés à la fois à 3 cm de A et à 4 cm de B.',
+      cm1Redac('Points cherchés', '', 'Je trace le cercle de centre A et de rayon 3 cm, puis le cercle de centre B et de rayon 4 cm. Les deux points où ils se coupent conviennent.')],
+    ['Vrai ou faux ? « Deux droites qui ne se coupent pas sur ma feuille sont parallèles. »',
+      cm1Redac('Vrai ou faux', '', 'C\'est faux : elles peuvent se couper plus loin, en dehors de la feuille. Il faut vérifier que l\'écart reste le même, ou utiliser l\'équerre.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : Euclide et ses Éléments', [
     'Vers 300 avant notre ère, à Alexandrie, le savant grec <b>Euclide</b> écrit les <i>Éléments</i>, un livre qui rassemble toute la géométrie connue. Il commence par définir le point, la droite, le cercle…',

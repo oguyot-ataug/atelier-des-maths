@@ -83,7 +83,7 @@ cm1Chapitre({
   niveau: 'cm2', titre: 'Pensée informatique', slug: 'pensee-informatique',
   cours: `
 ${cm1Lecon(1, 'Se déplacer en s\'orientant')}
-${cm1Regle(`Au CM1, le robot se déplaçait avec des flèches (↑ → ↓ ←). Au CM2, il se déplace <b>comme toi</b> : il regarde dans une direction et obéit à trois instructions :<br>${Bav(2)} avance de 2 cases <b>devant lui</b> · ${Bg} tourne d'un quart de tour vers sa gauche <b>sur place</b> · ${Bd} tourne d'un quart de tour vers sa droite.`)}
+${cm1Regle(`Au CM1, le robot se déplaçait avec des flèches (↑ → ↓ ←). Au CM2, il se déplace <b>comme toi</b> : il regarde dans une direction et obéit à trois instructions  :${cm1Liste([`${Bav(2)} avance de 2 cases <b>devant lui</b> ;`, `${Bg} tourne d'un quart de tour vers sa gauche <b>sur place</b> ;`, `${Bd} tourne d'un quart de tour vers sa droite.`])}`)}
 ${cm1Astuce('« À gauche » dépend de l\'orientation du robot ! Si le robot regarde vers le bas de l\'écran, sa gauche est à droite de l\'écran. Mets-toi à sa place : tourne ta feuille ou ton corps.')}
 
 ${cm1Lecon(2, 'Répéter : la boucle')}
@@ -118,13 +118,23 @@ ${cm1Sous('A', 'Atelier : programme le livreur')}
     ]],
   ],
   exos: cm1Exos('c2pi', [
-    ['Le robot regarde vers la droite. Il exécute : tourner à gauche · tourner à gauche. Vers où regarde-t-il ?', 'Vers la gauche (il a fait un demi-tour).'],
-    ['Écris un programme avec une boucle pour tracer un rectangle de 4 cases sur 2.', 'répéter 2 fois (avancer de 4 · tourner à droite · avancer de 2 · tourner à droite).'],
-    ['Que trace : répéter 3 fois (avancer de 2 · tourner à gauche · avancer de 2 · tourner à droite) ?', 'Un escalier de 3 marches (qui monte vers la gauche du robot).'],
-    ['Programme de calcul : choisir un nombre · le multiplier par 3 · ajouter 4 · multiplier par 2. Exécute-le avec 1, 5 et 10.', '1 → 3 → 7 → 14 · 5 → 15 → 19 → 38 · 10 → 30 → 34 → 68.'],
-    ['Avec ce même programme, quel nombre a été choisi si on obtient 50 ?', 'On remonte : 50 ÷ 2 = 25 ; 25 − 4 = 21 ; 21 ÷ 3 = 7.'],
-    ['Suite dans un tableur : A1 = 2 et « = A1 × 3 » recopiée vers le bas. Écris les 5 premiers termes.', '2 · 6 · 18 · 54 · 162.'],
-    ['Dans l\'atelier, réussis les 4 défis. Pour le défi 4, écris un programme de 3 blocs.', 'Défi 3 : répéter 6 fois (avancer de 1 · tourner à droite · avancer de 1 · tourner à gauche). Défi 4 : répéter 4 fois (avancer de 4 · tourner à gauche) : le livreur regarde vers la droite et le pâté de maisons est au-dessus de lui.'],
+    [`Le robot regarde vers la droite. Il exécute ce programme. Vers où regarde-t-il ?${cm1Liste(['tourner à gauche', 'tourner à gauche'])}`,
+      cm1Redac('Direction du robot', { suite: ['droite → haut', 'haut → gauche'] }, 'Le robot regarde vers la gauche : il a fait un demi-tour.')],
+    ['Écris un programme avec une boucle pour tracer un rectangle de 4 cases sur 2.',
+      cm1Redac('Programme du rectangle', { suite: ['répéter 2 fois :', '&emsp;avancer de 4', '&emsp;tourner à droite', '&emsp;avancer de 2', '&emsp;tourner à droite'] }, 'La boucle trace deux fois une longueur et une largeur : on obtient le rectangle.')],
+    [`Que trace ce programme ?${cm1Liste(['répéter 3 fois : avancer de 2, tourner à gauche, avancer de 2, tourner à droite'])}`,
+      cm1Redac('Figure tracée', '', 'Il trace un escalier de 3 marches, qui monte vers la gauche du robot.')],
+    [`Programme de calcul :${cm1Liste(['choisir un nombre', 'le multiplier par 3', 'ajouter 4', 'multiplier par 2'])}Exécute-le avec 1, 5 et 10.`,
+      cm1Redac('Avec 1', { suite: ['1 × 3 = 3', '3 + 4 = 7', '7 × 2 = 14'] }, 'Avec 1, on obtient 14.')
+      + cm1Redac('Avec 5', { suite: ['5 × 3 = 15', '15 + 4 = 19', '19 × 2 = 38'] }, 'Avec 5, on obtient 38.')
+      + cm1Redac('Avec 10', { suite: ['10 × 3 = 30', '30 + 4 = 34', '34 × 2 = 68'] }, 'Avec 10, on obtient 68.')],
+    ['Avec ce même programme, quel nombre a été choisi si on obtient 50 ?',
+      cm1Redac('Nombre choisi', { suite: ['50 ÷ 2 = 25', '25 − 4 = 21', '21 ÷ 3 = 7'] }, 'On remonte le programme avec les opérations inverses : le nombre choisi était 7.')],
+    ['Suite dans un tableur : A1 = 2 et « = A1 × 3 » recopiée vers le bas. Écris les 5 premiers termes.',
+      cm1Redac('Termes de la suite', { suite: ['2 × 3 = 6', '6 × 3 = 18', '18 × 3 = 54', '54 × 3 = 162'] }, 'Les 5 premiers termes sont 2 ; 6 ; 18 ; 54 et 162.')],
+    ['Dans l\'atelier, réussis les 4 défis. Pour le défi 4, écris un programme de 3 blocs.',
+      cm1Redac('Défi 3', { suite: ['répéter 6 fois :', '&emsp;avancer de 1', '&emsp;tourner à droite', '&emsp;avancer de 1', '&emsp;tourner à gauche'] }, 'Le robot monte l\'escalier marche par marche.')
+      + cm1Redac('Défi 4', { suite: ['répéter 4 fois :', '&emsp;avancer de 4', '&emsp;tourner à gauche'] }, 'Le livreur fait le tour du pâté de maisons, qui est au-dessus de lui quand il regarde vers la droite.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : la tortue Logo', [
     'En 1967, le chercheur <b>Seymour Papert</b> invente le langage <b>Logo</b> pour les enfants. Ils programment une petite tortue, parfois un vrai robot posé sur le sol, avec des ordres comme « AVANCE 50 », « TOURNE DROITE 90 ».',

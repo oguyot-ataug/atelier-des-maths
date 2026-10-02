@@ -33,6 +33,7 @@ ${cm1Lecon(1, 'Recueillir et organiser des données')}
 ${cm1Def('Une enquête permet de <b>recueillir des données</b> sur un <b>caractère</b> : il peut être <b>qualitatif</b> (moyen de transport, couleur, sport) ou <b>quantitatif</b> (âge, taille, nombre de frères et sœurs). On les organise dans un <b>tableau</b>.')}
 ${cm1Exemple('Enquête : « Comment viens-tu à l\'école ? » (24 élèves)')}
 ${cm1Tableau(['Moyen de transport', ...TRANSPORT.map(t => t[0]), 'Total'], [['Nombre d\'élèves', ...TRANSPORT.map(t => t[1]), '<b>24</b>']])}
+${ce2AnimDiagramme('c2-do-diag', { donnees: [['À pied', 12, '#2E9C6A'], ['Vélo', 6, '#E9C46A'], ['Bus', 4, '#2EA8C9'], ['Voiture', 2, '#E35D3A']], max: 12, pas: 2, titre: 'Comment viens-tu à l\'école ?', fin: 'La barre « à pied » est la plus haute : c\'est la moitié de la classe.' })}
 
 ${cm1Lecon(2, 'Le diagramme circulaire')}
 <div class="figure-wrap">${camembert(TRANSPORT, 24)}</div>
@@ -44,7 +45,8 @@ ${cm1Exemple('On mesure chaque semaine la hauteur d\'une plante :')}
 ${cm1Tableau(['Semaine', ...PLANTE.map(p => p[0])], [['Hauteur (cm)', ...PLANTE.map(p => p[1])]])}
 <div class="figure-wrap">${repere(PLANTE, true)}</div>
 ${cm1Regle('Chaque colonne du tableau donne un <b>point</b> : on se place sur l\'axe horizontal (la semaine), puis on monte jusqu\'à la hauteur lue sur l\'axe vertical. En reliant les points, on obtient une <b>courbe</b> qui montre l\'évolution.')}
-${cm1Exemple('Lecture :', ['La plante grandit vite jusqu\'à la semaine 5 (2 à 3 cm par semaine), puis de plus en plus lentement (1 cm par semaine).', 'Entre la semaine 2 et la semaine 5, elle a grandi de 15 − 7 = 8 cm.'])}
+${cm1Exemple('Lecture :', ['La plante grandit vite jusqu\'à la semaine 5 (2 à 3 cm par semaine), puis de plus en plus lentement (1 cm par semaine).'])}
+${cm1Redac('Croissance entre les semaines 2 et 5', '15 − 7 = 8', 'Entre la semaine 2 et la semaine 5, la plante a grandi de 8 cm.')}
 `,
   methode: `
 ${cm1Demo('c2-do-circ', 'Lire un diagramme circulaire', 'Dans une école de 200 élèves, le secteur « cantine » occupe les trois quarts du disque. Combien d\'élèves mangent à la cantine ?')}
@@ -64,12 +66,22 @@ ${cm1Demo('c2-do-pts', 'Placer un point dans un repère', 'Place le point qui co
     ]],
   ],
   exos: cm1Exos('c2do', [
-    ['Dans le diagramme circulaire du cours, quelle fraction de la classe vient en bus ? en voiture ?', '4 sur 24, soit un sixième ; 2 sur 24, soit un douzième.'],
-    ['Enquête sur les animaux : chat 9, chien 8, poisson 3, aucun 4. Fais un tableau et calcule le total. Quelle fraction des élèves a un chat ?', 'Total : 24 ; chat : 9 sur 24 (soit 3 sur 8).'],
-    ['Avec les mêmes données, trace un diagramme en barres (1 carreau pour 1 élève).', 'Quatre barres de hauteurs 9, 8, 3 et 4 carreaux, avec le nom des animaux et un axe gradué.'],
-    ['Dans le graphique de la plante, quelle était sa hauteur à la semaine 4 ? Pendant quelle semaine a-t-elle le plus grandi ?', '12 cm ; elle a le plus grandi (+ 3 cm) entre les semaines 1 et 2, 2 et 3, et 4 et 5.'],
-    ['Place dans un repère les points (1 ; 5), (2 ; 8), (3 ; 8), (4 ; 12).', 'Pour chaque point : avancer sur l\'axe horizontal, puis monter jusqu\'à la valeur donnée.'],
-    ['Température moyenne en France : 1950 : 11,8 °C · 1980 : 12,0 °C · 2000 : 12,6 °C · 2020 : 13,4 °C. Que remarques-tu ? De combien la température a-t-elle augmenté entre 1950 et 2020 ?', 'Elle augmente de plus en plus (réchauffement climatique) : 13,4 − 11,8 = 1,6 °C.'],
+    ['Dans le diagramme circulaire du cours, quelle fraction de la classe vient en bus ? en voiture ?',
+      cm1Redac('En bus', `4 sur 24, c'est ${cm1Frac(4, 24)} = ${cm1Frac(1, 6)}`, 'Un sixième de la classe vient en bus.')
+      + cm1Redac('En voiture', `2 sur 24, c'est ${cm1Frac(2, 24)} = ${cm1Frac(1, 12)}`, 'Un douzième de la classe vient en voiture.')],
+    ['Enquête sur les animaux : chat 9, chien 8, poisson 3, aucun 4. Fais un tableau et calcule le total. Quelle fraction des élèves a un chat ?',
+      cm1Redac('Nombre d\'élèves', ['9 + 8 + 3 + 4', '17 + 7', '24'], 'Il y a 24 élèves en tout.')
+      + cm1Redac('Élèves qui ont un chat', `${cm1Frac(9, 24)} = ${cm1Frac(3, 8)}`, 'Les trois huitièmes des élèves ont un chat.')],
+    ['Avec les mêmes données, trace un diagramme en barres (1 carreau pour 1 élève).',
+      cm1Redac('Diagramme en barres', '', 'On trace quatre barres de 9, 8, 3 et 4 carreaux de haut, avec le nom des animaux sous les barres et un axe gradué.')],
+    ['Dans le graphique de la plante, quelle était sa hauteur à la semaine 4 ? Pendant quelle semaine a-t-elle le plus grandi ?',
+      cm1Redac('Hauteur à la semaine 4', '', 'À la semaine 4, la plante mesurait 12 cm.')
+      + cm1Redac('Plus forte croissance', '', 'Elle a le plus grandi, de 3 cm, entre les semaines 1 et 2, 2 et 3, et 4 et 5.')],
+    [`Place dans un repère ces points.${cm1Liste(['(1 ; 5)', '(2 ; 8)', '(3 ; 8)', '(4 ; 12)'])}`,
+      cm1Redac('Méthode', '', 'Pour chaque point, on avance sur l\'axe horizontal jusqu\'au premier nombre, puis on monte jusqu\'au second.')],
+    [`Température moyenne en France :${cm1Liste(['1950 : 11,8 °C', '1980 : 12,0 °C', '2000 : 12,6 °C', '2020 : 13,4 °C'])}Que remarques-tu ? De combien la température a-t-elle augmenté entre 1950 et 2020 ?`,
+      cm1Redac('Évolution', '', 'La température augmente, et de plus en plus vite : c\'est le réchauffement climatique.')
+      + cm1Redac('Augmentation de 1950 à 2020', '13,4 − 11,8 = 1,6', 'La température moyenne a augmenté de 1,6 °C.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le premier diagramme circulaire', [
     'Le premier diagramme circulaire connu a été dessiné en 1801 par l\'Écossais <b>William Playfair</b>, pour montrer la part de chaque pays dans l\'empire turc.',

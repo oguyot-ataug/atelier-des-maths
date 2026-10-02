@@ -45,9 +45,10 @@ ${cm1Def('Lors d\'une expérience aléatoire, les <b>issues</b> sont tous les r�
 ${cm1Exemple('On lance un dé à 6 faces :', ['les issues sont 1, 2, 3, 4, 5, 6 ;', 'l\'évènement « obtenir un nombre pair » est réalisé par les issues 2, 4 et 6.'])}
 
 ${cm1Lecon(2, 'a chances sur b')}
-${cm1Regle('Quand toutes les issues ont la même chance de sortir (on dit qu\'elles sont <b>équiprobables</b>), la probabilité d\'un évènement s\'exprime par « <b>a chances sur b</b> » :<br>a = nombre d\'issues qui réalisent l\'évènement ; b = nombre total d\'issues.')}
+${cm1Regle(`Quand toutes les issues ont la même chance de sortir (on dit qu'elles sont <b>équiprobables</b>), la probabilité d'un évènement s'exprime par « <b>a chances sur b</b> » :${cm1Liste(['a est le nombre d\'issues qui réalisent l\'évènement ;', 'b est le nombre total d\'issues.'])}`)}
 ${cm1Exemple('Avec un dé à 6 faces bien équilibré :', ['« obtenir 5 » : <b>1 chance sur 6</b> ;', '« obtenir un nombre pair » : <b>3 chances sur 6</b> (autant que 1 chance sur 2) ;', '« obtenir un nombre plus grand que 4 » (5 ou 6) : <b>2 chances sur 6</b>.'])}
 ${cm1Astuce('Ce n\'est pas parce qu\'il y a deux issues que chacune a une chance sur deux ! Dans un sac de 3 billes rouges et 1 bleue, il y a deux couleurs possibles, mais on a <b>3 chances sur 4</b> de tirer une rouge et seulement 1 chance sur 4 de tirer la bleue.')}
+${cmAnimTirages('c2-pr-tirages', { presets: [{ nom: '3 rouges, 1 bleue', billes: [['rouge', 3, '#E35D3A'], ['bleue', 1, '#2EA8C9']], n: 40, fin: 'Les rouges sortent environ 3 fois sur 4 : deux couleurs possibles, mais pas une chance sur deux !' }, { nom: '1 rouge, 1 bleue', billes: [['rouge', 1, '#E35D3A'], ['bleue', 1, '#2EA8C9']], n: 40 }] })}
 
 ${cm1Lecon(3, 'Le hasard n\'a pas de mémoire')}
 ${cm1Regle('Si on relance un dé, il « ne se souvient pas » des lancers précédents : après trois 6 de suite, on a toujours 1 chance sur 6 d\'obtenir 6 au lancer suivant. On dit que les lancers sont <b>indépendants</b>.')}
@@ -58,7 +59,7 @@ ${cm1Exemple('On lance deux fois une pièce (P = pile, F = face). L\'arbre montr
 <ul class="example-list"><li>Il y a 4 issues : PP, PF, FP, FF.</li><li>« Obtenir une fois pile et une fois face » : PF ou FP, soit <b>2 chances sur 4</b>.</li></ul>
 ${cm1Exemple('On lance deux dés et on additionne. Le tableau à double entrée montre les 36 issues :')}
 <div class="figure-wrap">${tableSommes(s => s === 7)}</div>
-<ul class="example-list"><li>La somme 7 apparaît 6 fois : <b>6 chances sur 36</b>. La somme 2 n\'apparaît qu\'une fois : 1 chance sur 36. Le 7 est la somme la plus probable !</li></ul>
+<ul class="example-list"><li>La somme 7 apparaît 6 fois : <b>6 chances sur 36</b>.</li><li>La somme 2 n\'apparaît qu\'une fois : 1 chance sur 36.</li><li>Le 7 est la somme la plus probable !</li></ul>
 `,
   methode: `
 ${cm1Demo('c2-pr-urne', 'Calculer « a chances sur b »', 'Un sac contient 5 billes rouges, 3 vertes et 2 jaunes. On tire une bille au hasard. Quelle est la probabilité de tirer une verte ?')}
@@ -75,13 +76,25 @@ ${cm1Sous('A', 'Atelier : lancer deux dés')}
     ]],
   ],
   exos: cm1Exos('c2pr', [
-    ['On lance un dé à 6 faces. Donne la probabilité de : obtenir 3 · obtenir un nombre impair · obtenir un multiple de 3 · obtenir 7.', '1 chance sur 6 · 3 chances sur 6 · 2 chances sur 6 (3 et 6) · 0 chance sur 6 (impossible).'],
-    ['Une roue a 8 secteurs égaux : 4 bleus, 3 rouges, 1 vert. Quelle couleur est la plus probable ? Donne la probabilité de chaque couleur.', 'Bleu : 4 chances sur 8 ; rouge : 3 chances sur 8 ; vert : 1 chance sur 8. Le bleu est le plus probable.'],
-    ['Lina dit : « Demain, soit il pleut, soit il ne pleut pas : il y a une chance sur deux qu\'il pleuve. » A-t-elle raison ?', 'Non : deux issues ne sont pas forcément équiprobables.'],
-    ['Après 5 « face » de suite, a-t-on plus de chances d\'obtenir « pile » au 6e lancer ?', 'Non : toujours 1 chance sur 2, la pièce ne se souvient pas des lancers précédents.'],
-    ['On lance deux pièces. Avec un arbre, donne toutes les issues et la probabilité d\'obtenir deux « face ».', 'PP, PF, FP, FF : 1 chance sur 4.'],
-    ['Avec le tableau des sommes de deux dés : probabilité d\'obtenir une somme de 10 ? une somme de 12 ?', 'Somme 10 : (4 ; 6), (5 ; 5), (6 ; 4) → 3 chances sur 36. Somme 12 : 1 chance sur 36.'],
-    ['Au restaurant scolaire : entrée (salade ou soupe) et dessert (fruit, yaourt ou gâteau). Combien de menus différents ? Si on choisit au hasard, quelle chance d\'avoir « soupe + gâteau » ?', '2 × 3 = 6 menus ; 1 chance sur 6.'],
+    [`On lance un dé à 6 faces. Donne la probabilité de chaque évènement.${cm1Liste(['obtenir 3', 'obtenir un nombre impair', 'obtenir un multiple de 3', 'obtenir 7'])}`,
+      cm1Redac('Obtenir 3', '', 'Une seule issue convient : on a 1 chance sur 6.')
+      + cm1Redac('Obtenir un nombre impair', '', 'Les issues 1, 3 et 5 conviennent : on a 3 chances sur 6.')
+      + cm1Redac('Obtenir un multiple de 3', '', 'Les issues 3 et 6 conviennent : on a 2 chances sur 6.')
+      + cm1Redac('Obtenir 7', '', 'Aucune issue ne convient : on a 0 chance sur 6, c\'est impossible.')],
+    ['Une roue a 8 secteurs égaux : 4 bleus, 3 rouges, 1 vert. Quelle couleur est la plus probable ? Donne la probabilité de chaque couleur.',
+      cm1Redac('Probabilités', { suite: ['bleu : 4 chances sur 8', 'rouge : 3 chances sur 8', 'vert : 1 chance sur 8'] }, 'Le bleu est la couleur la plus probable.')],
+    ['Lina dit : « Demain, soit il pleut, soit il ne pleut pas : il y a une chance sur deux qu\'il pleuve. » A-t-elle raison ?',
+      cm1Redac('Avis sur Lina', '', 'Non : il y a deux issues, mais elles n\'ont pas forcément la même chance de se produire.')],
+    ['Après 5 « face » de suite, a-t-on plus de chances d\'obtenir « pile » au 6<sup>e</sup> lancer ?',
+      cm1Redac('6<sup>e</sup> lancer', '', 'Non : on a toujours 1 chance sur 2, car la pièce ne se souvient pas des lancers précédents.')],
+    ['On lance deux pièces. Avec un arbre, donne toutes les issues et la probabilité d\'obtenir deux « face ».',
+      cm1Redac('Issues', { suite: ['PP', 'PF', 'FP', 'FF'] }, 'Il y a 4 issues et une seule donne deux « face » : on a 1 chance sur 4.')],
+    ['Avec le tableau des sommes de deux dés : probabilité d\'obtenir une somme de 10 ? une somme de 12 ?',
+      cm1Redac('Somme 10', { suite: ['4 + 6', '5 + 5', '6 + 4'] }, 'La somme 10 apparaît 3 fois : on a 3 chances sur 36.')
+      + cm1Redac('Somme 12', '6 + 6', 'La somme 12 n\'apparaît qu\'une fois : on a 1 chance sur 36.')],
+    ['Au restaurant scolaire : entrée (salade ou soupe) et dessert (fruit, yaourt ou gâteau). Combien de menus différents ? Si on choisit au hasard, quelle chance d\'avoir « soupe + gâteau » ?',
+      cm1Redac('Nombre de menus', '2 × 3 = 6', 'Il y a 6 menus différents.')
+      + cm1Redac('Soupe et gâteau', '', 'Un seul menu sur les 6 convient : on a 1 chance sur 6.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le problème du duc de Toscane', [
     'Vers 1620, le duc de Toscane remarque en jouant qu\'avec trois dés, la somme 10 sort plus souvent que la somme 9, alors qu\'il y a autant de façons de les écrire comme somme de trois nombres. Il demande l\'explication au célèbre savant <b>Galilée</b>.',

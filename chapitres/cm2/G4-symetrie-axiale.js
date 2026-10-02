@@ -60,10 +60,12 @@ ${cm1Regle('Un point et son symétrique sont à la <b>même distance de l\'axe</
 
 ${cm1Lecon(2, 'Sur quadrillage : axe vertical ou horizontal')}
 ${cm1Regle('On compte les carreaux entre le point et l\'axe, <b>sur la ligne perpendiculaire à l\'axe</b> (horizontale si l\'axe est vertical, verticale si l\'axe est horizontal), puis on compte autant de carreaux de l\'autre côté.')}
+${ce2AnimSymQuad('c2-sy-quad', { presets: [{ nom: 'Axe vertical', n: 10, m: 7, pts: [[1, 1], [3, 1], [3, 4], [1, 5]], axe: { v: 5 } }, { nom: 'Axe horizontal', n: 8, m: 8, pts: [[1, 1], [5, 1], [3, 3]], axe: { h: 4 } }] })}
 
 ${cm1Lecon(3, 'Sur quadrillage : axe diagonal')}
 <div class="figure-wrap">${diag()}</div>
-${cm1Regle('Quand l\'axe suit une <b>diagonale des carreaux</b>, on se déplace perpendiculairement à l\'axe, c\'est-à-dire <b>en diagonale</b>, de carreau en carreau. Le point A est à 1,5 diagonale de carreau de l\'axe : A\' est à 1,5 diagonale de l\'autre côté.<br>Astuce : A est à 1 carreau du bord gauche et 4 carreaux du haut ; A\' est à 4 carreaux du bord gauche et 1 carreau du haut : on échange les deux nombres.', 'Méthode')}
+${cm1Regle('Quand l\'axe suit une <b>diagonale des carreaux</b>, on se déplace perpendiculairement à l\'axe, c\'est-à-dire <b>en diagonale</b>, de carreau en carreau. Le point A est à 1,5 diagonale de carreau de l\'axe : A\' est à 1,5 diagonale de l\'autre côté.', 'Méthode')}
+${cm1Astuce(`On peut aussi compter les carreaux :${cm1Liste(['A est à 1 carreau du bord gauche et à 4 carreaux du haut ;', 'A\' est à 4 carreaux du bord gauche et à 1 carreau du haut ;', 'on a échangé les deux nombres.'])}`)}
 
 ${cm1AnimSymetrie('cm2-sym', { axes: ['vertical', 'horizontal', 'diagonal'] })}
 
@@ -86,12 +88,18 @@ ${cm1Demo('c2-sy-pt', 'Construire le symétrique d\'un point sans quadrillage', 
     ]],
   ],
   exos: cm1Exos('c2sy', [
-    ['Dans l\'atelier, complète les trois figures (axe vertical, horizontal, diagonal) et vérifie.', 'Le bouton « Vérifier » montre en vert les cases justes, en rouge les cases en trop et en rose les cases oubliées.'],
-    ['Combien d\'axes de symétrie a un triangle équilatéral ? un losange ? un carré ?', '3 · 2 · 4.'],
-    ['Sur papier quadrillé, trace un axe qui suit une diagonale des carreaux, du coin en haut à gauche vers le bas à droite. Place un point B à 3 carreaux à droite d\'un point O de l\'axe. Où est son symétrique B\' ?', 'B\' est à 3 carreaux en dessous du point O : avec cet axe diagonal, « à droite » et « en dessous » s\'échangent.'],
-    ['Le segment [AB] mesure 4 cm. Combien mesure son symétrique [A\'B\'] ?', '4 cm : la symétrie conserve les longueurs.'],
-    ['Un triangle a une aire de 12 cm². Quelle est l\'aire de son symétrique ?', '12 cm² : la symétrie conserve les aires.'],
-    ['Trace un segment [CD] et une droite (d) qui ne le coupe pas. Construis le symétrique du segment [CD] par rapport à (d).', 'On construit les symétriques C\' et D\' des deux extrémités, puis on trace le segment [C\'D\'].'],
+    ['Dans l\'atelier, complète les trois figures (axe vertical, horizontal, diagonal) et vérifie.',
+      cm1Redac('Vérification', '', 'Le bouton « Vérifier » montre en vert les cases justes, en rouge les cases en trop et en rose les cases oubliées.')],
+    ['Combien d\'axes de symétrie a un triangle équilatéral ? un losange ? un carré ?',
+      cm1Redac('Axes de symétrie', '', 'Le triangle équilatéral a 3 axes de symétrie, le losange en a 2 (ses diagonales) et le carré en a 4.')],
+    ['Sur papier quadrillé, trace un axe qui suit une diagonale des carreaux, du coin en haut à gauche vers le bas à droite. Place un point B à 3 carreaux à droite d\'un point O de l\'axe. Où est son symétrique B\' ?',
+      cm1Redac('Position de B\'', '', 'B\' est à 3 carreaux en dessous du point O : avec cet axe diagonal, « à droite » et « en dessous » s\'échangent.')],
+    ['Le segment [AB] mesure 4 cm. Combien mesure son symétrique [A\'B\'] ?',
+      cm1Redac('Longueur de [A\'B\']', '', 'Le segment [A\'B\'] mesure aussi 4 cm : la symétrie conserve les longueurs.')],
+    ['Un triangle a une aire de 12 cm². Quelle est l\'aire de son symétrique ?',
+      cm1Redac('Aire du symétrique', '', 'Son symétrique a aussi une aire de 12 cm² : la symétrie conserve les aires.')],
+    ['Trace un segment [CD] et une droite (d) qui ne le coupe pas. Construis le symétrique du segment [CD] par rapport à (d).',
+      cm1Redac('Construction', { suite: ['symétrique de C : C\'', 'symétrique de D : D\''] }, 'Je construis C\' et D\' avec l\'équerre et la règle, puis je trace le segment [C\'D\'] : c\'est le symétrique de [CD].')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : la symétrie dans les jardins à la française', [
     'Au XVII<sup>e</sup> siècle, le jardinier <b>André Le Nôtre</b> dessine les jardins de Versailles et de Vaux-le-Vicomte. Tout y est symétrique par rapport à une grande allée centrale : parterres, bassins, statues.',

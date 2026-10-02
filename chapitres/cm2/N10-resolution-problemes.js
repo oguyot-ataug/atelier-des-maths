@@ -31,7 +31,7 @@ ${cm1Astuce('Ne choisis jamais l\'opération à cause d\'un mot ! « Léa a 45 �
 
 ${cm1Lecon(2, 'Comparaison multiplicative : « fois plus », « fois moins »')}
 ${cm1Exemple('Un vélo coûte 240 €. Une trottinette coûte 4 fois moins cher. Quel est le prix de la trottinette ?')}
-${schema([[['vélo : 240 €', 100, B]], [['?', 25, 'x']]])}
+${ce2AnimBarres('c2-rp-fois', { unite: 1, lignes: [['Vélo', [[80, '60 €', '#2EA8C9', 'Le prix du vélo, 240 €, partagé en 4 parts égales…'], [80, '60 €', '#2EA8C9', ''], [80, '60 €', '#2EA8C9', ''], [80, '60 €', '#2EA8C9', '… chaque part vaut 240 ÷ 4 = 60 €.']]], ['Trottinette', [[80, '?', '#E9C46A', 'La trottinette coûte 4 fois moins : une seule part.']]]], solution: { ligne: 1, part: 0, texte: '60 €', phrase: 'La trottinette coûte <b>60 €</b>.' } })}
 <ul class="example-list"><li>« 4 fois moins » : on partage 240 en 4. 240 ÷ 4 = <b>60 €</b>.</li><li>À l'inverse, « le vélo coûte 4 fois plus que la trottinette » : 60 × 4 = 240.</li></ul>
 
 ${cm1Lecon(3, 'Problèmes « parties-tout » multiplicatifs')}
@@ -40,14 +40,19 @@ ${cm1Exemple('Une salle a 18 rangées de 24 fauteuils. Combien de fauteuils ?', 
 ${cm1Lecon(4, 'Problèmes à plusieurs étapes')}
 ${cm1Exemple('Un club achète 12 ballons à 15,50 € et 3 filets à 42 €. Il paie avec 7 billets de 50 €. Combien lui rend-on ?')}
 ${schema([[['ballons : 12 × 15,50', 60, B], ['filets : 3 × 42', 40, V]]], 'dépense ?')}
-<ul class="example-list"><li>Ballons : 12 × 15,50 = 186 €. Filets : 3 × 42 = 126 €.</li><li>Dépense : 186 + 126 = 312 €. Paiement : 7 × 50 = 350 €.</li><li>Rendu : 350 − 312 = <b>38 €</b>. Plausible : on rend moins que ce qu'on a donné.</li></ul>
+${cm1Redac('Prix des ballons', '12 × 15,50 = 186', 'Les ballons coûtent 186 €.')}
+${cm1Redac('Prix des filets', '3 × 42 = 126', 'Les filets coûtent 126 €.')}
+${cm1Redac('Dépense', '186 + 126 = 312', 'Le club dépense 312 €.')}
+${cm1Redac('Paiement', '7 × 50 = 350', 'Le club donne 350 €.')}
+${cm1Redac('Monnaie rendue', '350 − 312 = 38', 'On rend 38 € au club : c\'est plausible, moins que ce qu\'il a donné.')}
 ${cm1Rem('Vérifier la vraisemblance fait partie de la résolution : un rendu négatif, un nombre de personnes à virgule, une voiture de 400 m… doivent alerter.')}
 
 ${cm1Lecon(5, 'Dénombrer')}
 ${cm1Exemple('Menu : 3 entrées, 4 plats. Combien de repas différents (une entrée + un plat) ?', ['Pour chaque entrée, on peut choisir 4 plats : 3 × 4 = <b>12 repas</b>. Un <b>arbre</b> ou un <b>tableau</b> permet de les lister tous sans en oublier.'])}
+${ce2AnimArbre('c2-rp-arbre', { niveaux: [{ nom: 'Entrée', choix: [['salade', '#2E9C6A'], ['soupe', '#E9C46A'], ['melon', '#E35D3A']] }, { nom: 'Plat', choix: [['poisson', '#2EA8C9'], ['poulet', '#C9A24A'], ['pâtes', '#7A4FC0'], ['omelette', '#5B6472']] }], fin: '3 entrées, et 4 plats pour chacune : 3 × 4 = <b>12 repas</b>.' })}
 
 ${cm1Lecon(6, 'Optimiser')}
-${cm1Exemple('Les stylos sont vendus à 1,20 € l\'unité ou 5 € le lot de 5. Quel est le prix le plus bas pour 12 stylos ?', ['2 lots (10 stylos) + 2 stylos : 10 + 2,40 = <b>12,40 €</b>.', '3 lots (15 stylos) : 15 €. 12 stylos à l\'unité : 14,40 €.', 'Le moins cher est 12,40 €.'])}
+${cm1Exemple('Les stylos sont vendus à 1,20 € l\'unité ou 5 € le lot de 5. Quel est le prix le plus bas pour 12 stylos ?', ['2 lots (10 stylos) + 2 stylos : 10 + 2,40 = <b>12,40 €</b>.', '3 lots (15 stylos) : 15 €.', '12 stylos à l\'unité : 12 × 1,20 = 14,40 €.', 'Le moins cher est 12,40 €.'])}
 `,
   methode: `
 ${cm1Demo('c2-rp-comp', 'Comparaison multiplicative', 'Julie a 36 billes, c\'est 3 fois plus que Hugo. Combien Hugo a-t-il de billes ?')}
@@ -68,14 +73,25 @@ ${cm1Demo('c2-rp-algo', 'Chercher toutes les solutions', 'De combien de façons 
     ]],
   ],
   exos: cm1Exos('c2rp', [
-    ['Un paquet de 6 yaourts coûte 3,30 €. Combien coûtent 5 paquets ? Combien y a-t-il de yaourts ?', '5 × 3,30 = 16,50 € ; 5 × 6 = 30 yaourts.'],
-    ['La tour Eiffel mesure 330 m. Une maison mesure 10 m. Combien de fois la tour est-elle plus haute ?', '330 ÷ 10 = 33 fois plus haute.'],
-    ['Paul pèse 38 kg ; il pèse 7 kg de plus que sa sœur. Combien pèse sa sœur ?', '38 − 7 = 31 kg.'],
-    ['Une école de 336 élèves a 14 classes de même effectif. Combien d\'élèves par classe ?', '336 ÷ 14 = 24 élèves.'],
-    ['Avec 3 t-shirts (rouge, bleu, vert) et 2 shorts (noir, blanc), combien de tenues différentes ?', '3 × 2 = 6 tenues.'],
-    ['Au cinéma : 8 € la place, ou carte de 10 places à 65 €. Quel est le prix le plus bas pour 13 places ?', '1 carte + 3 places : 65 + 24 = 89 € (13 places à l\'unité : 104 € ; 2 cartes : 130 €).'],
-    ['Un fermier a des poules et des lapins : 10 têtes et 32 pattes. Combien de lapins ?', 'Si 10 poules : 20 pattes, il manque 12 pattes ; chaque lapin ajoute 2 pattes : 6 lapins (et 4 poules). Vérif : 24 + 8 = 32.'],
-    ['Pour une sortie, 5 accompagnateurs et 142 élèves prennent des cars de 50 places. Combien de cars ?', '147 personnes ; 147 = 50 × 2 + 47 : il faut 3 cars.'],
+    ['Un paquet de 6 yaourts coûte 3,30 €. Combien coûtent 5 paquets ? Combien y a-t-il de yaourts ?',
+      cm1Redac('Prix de 5 paquets', '5 × 3,30 = 16,50', '5 paquets coûtent 16,50 €.') + cm1Redac('Nombre de yaourts', '5 × 6 = 30', 'Il y a 30 yaourts.')],
+    ['La tour Eiffel mesure 330 m. Une maison mesure 10 m. Combien de fois la tour est-elle plus haute ?',
+      cm1Redac('Comparaison', '330 ÷ 10 = 33', 'La tour Eiffel est 33 fois plus haute que la maison.')],
+    ['Paul pèse 38 kg ; il pèse 7 kg de plus que sa sœur. Combien pèse sa sœur ?',
+      cm1Redac('Masse de la sœur', '38 − 7 = 31', 'C\'est Paul le plus lourd : sa sœur pèse 31 kg.')],
+    ['Une école de 336 élèves a 14 classes de même effectif. Combien y a-t-il d\'élèves par classe ?',
+      cm1Redac('Élèves par classe', '336 ÷ 14 = 24', 'Il y a 24 élèves par classe.')],
+    ['Avec 3 tee-shirts (rouge, bleu, vert) et 2 shorts (noir, blanc), combien de tenues différentes peut-on faire ?',
+      cm1Redac('Nombre de tenues', '3 × 2 = 6', 'On peut faire 6 tenues différentes.')],
+    ['Au cinéma, la place coûte 8 €, ou la carte de 10 places 65 €. Quel est le prix le plus bas pour 13 places ?',
+      cm1Redac('1 carte et 3 places', ['65 + 3 × 8', '65 + 24', '89'], 'Avec une carte et 3 places, on paie 89 €.')
+      + cm1Redac('Les autres possibilités', { suite: ['13 places à l\'unité : 13 × 8 = 104', '2 cartes : 2 × 65 = 130'] }, 'Le prix le plus bas est 89 €.')],
+    ['Un fermier a des poules et des lapins : 10 têtes et 32 pattes. Combien a-t-il de lapins ?',
+      cm1Redac('Si les 10 animaux étaient des poules', '10 × 2 = 20', 'Il y aurait 20 pattes.')
+      + cm1Redac('Pattes qui manquent', '32 − 20 = 12', 'Il manque 12 pattes ; chaque lapin a 2 pattes de plus qu\'une poule.')
+      + cm1Redac('Nombre de lapins', '12 ÷ 2 = 6', 'Il y a 6 lapins (et 4 poules). Vérification : 6 × 4 + 4 × 2 = 32.')],
+    ['Pour une sortie, 5 accompagnateurs et 142 élèves prennent des cars de 50 places. Combien faut-il de cars ?',
+      cm1Redac('Nombre de personnes', '142 + 5 = 147', 'Il y a 147 personnes.') + cm1Redac('Nombre de cars', '147 = (50 × 2) + 47', '2 cars ne suffisent pas, il reste 47 personnes : il faut 3 cars.')],
   ], { titre: 'Rédaction type', lignes: [['Je cherche le prix de la trottinette.', 'Comprendre.'], ['240 ÷ 4 = 60', 'Modéliser et calculer.'], ['La trottinette coûte 60 €.', 'Répondre ; 60 &lt; 240 : plausible.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : les problèmes de récréation', [
     'Au VIII<sup>e</sup> siècle, le savant <b>Alcuin</b>, conseiller de Charlemagne, écrit des « problèmes pour aiguiser l\'esprit des jeunes ». Le plus célèbre : comment faire traverser une rivière à un loup, une chèvre et un chou, sans jamais laisser le loup seul avec la chèvre, ni la chèvre avec le chou ?',

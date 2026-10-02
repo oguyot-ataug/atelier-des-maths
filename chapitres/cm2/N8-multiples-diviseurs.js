@@ -36,12 +36,13 @@ ${cm1Rem('Pour les autres diviseurs (3, 4, 6, 7, 8, 9), on utilise ses <b>tables
 
 ${cm1Lecon(3, 'Trouver tous les diviseurs d\'un nombre')}
 ${cm1Regle('On cherche les <b>produits</b> égaux à ce nombre, en essayant 1, 2, 3… dans l\'ordre, jusqu\'à ce que les facteurs se répètent.')}
-${cm1Exemple('Les diviseurs de 24 :', ['24 = 1 × 24 = 2 × 12 = 3 × 8 = 4 × 6 (ensuite 5 ne marche pas, et 6 × 4 est déjà trouvé).', 'Les diviseurs de 24 sont : <b>1, 2, 3, 4, 6, 8, 12, 24</b>.'])}
+${cm1Exemple('Les diviseurs de 24 :', ['24 = 1 × 24', '24 = 2 × 12', '24 = 3 × 8', '24 = 4 × 6', 'ensuite 5 ne marche pas, et 6 × 4 est déjà trouvé ;', 'les diviseurs de 24 sont : <b>1, 2, 3, 4, 6, 8, 12, 24</b>.'])}
 
 ${cm1Lecon(4, 'Diviseurs communs, multiples communs')}
 ${cm1Exemple('Diviseurs communs à 18 et 24 :', ['diviseurs de 18 : 1, 2, 3, 6, 9, 18 ;', 'diviseurs de 24 : 1, 2, 3, 4, 6, 8, 12, 24 ;', 'diviseurs communs : <b>1, 2, 3, 6</b>.'])}
 ${cm1Exemple('Multiples communs à 4 et 6 :', ['multiples de 4 : 4, 8, <b>12</b>, 16, 20, <b>24</b>, 28… ;', 'multiples de 6 : 6, <b>12</b>, 18, <b>24</b>, 30… ;', 'multiples communs : <b>12, 24, 36…</b> Le plus petit est 12.'])}
-${cm1Astuce('Ces outils servent pour les fractions : pour additionner 1/4 + 1/6, on écrit les deux fractions en douzièmes, car 12 est un multiple commun de 4 et 6.')}
+${cm1Astuce(`Ces outils servent pour les fractions : pour additionner ${cm1Frac(1, 4)} + ${cm1Frac(1, 6)}, on écrit les deux fractions en douzièmes, car 12 est un multiple commun de 4 et 6.`)}
+${ce2AnimSauts('c2-md-communs', { legende: 'Les multiples de 4 (sauts de 4), puis ceux de 6 (sauts de 6) : où se retrouvent-ils ?', presets: [{ nom: 'Multiples de 4', depart: 0, sauts: [[4, '+ 4'], [4, '+ 4'], [4, '+ 4'], [4, '+ 4'], [4, '+ 4'], [4, '+ 4']], min: 0, max: 26, fin: '0, 4, 8, <b>12</b>, 16, 20, <b>24</b>.' }, { nom: 'Multiples de 6', depart: 0, sauts: [[6, '+ 6'], [6, '+ 6'], [6, '+ 6'], [6, '+ 6']], min: 0, max: 26, fin: '0, 6, <b>12</b>, 18, <b>24</b> : 12 et 24 sont des multiples communs de 4 et de 6 ; le plus petit est 12.' }] })}
 `,
   methode: `
 ${cm1Demo('c2-md-div', 'Trouver tous les diviseurs de 30', 'Cherche tous les diviseurs de 30.')}
@@ -59,13 +60,27 @@ ${cm1Sous('A', 'Atelier : les multiples dans le tableau de 1 à 100')}
     ]],
   ],
   exos: cm1Exos('c2md', [
-    ['Parmi 45, 62, 80, 115, 238, 1 000 : lesquels sont divisibles par 2 ? par 5 ? par 10 ?', 'Par 2 : 62, 80, 238, 1 000. Par 5 : 45, 80, 115, 1 000. Par 10 : 80, 1 000.'],
-    ['Vrai ou faux ? 7 est un diviseur de 56 · 48 est un multiple de 9 · 3 est un diviseur de 81.', 'Vrai (7 × 8) · Faux (9 × 5 = 45, 9 × 6 = 54) · Vrai (3 × 27).'],
-    ['Donne tous les diviseurs de 12, de 20 et de 29.', '12 : 1, 2, 3, 4, 6, 12 · 20 : 1, 2, 4, 5, 10, 20 · 29 : 1, 29.'],
-    ['Donne quatre diviseurs de 100.', 'Par exemple 1, 2, 4, 5, 10, 20, 25, 50, 100.'],
-    ['Quels sont les diviseurs communs à 16 et 24 ?', '1, 2, 4, 8.'],
-    ['Donne trois multiples communs à 3 et 5, puis le plus petit multiple commun à 6 et 8.', '15, 30, 45 ; 24.'],
-    ['On veut ranger 24 billes dans des sachets contenant tous le même nombre de billes, sans en laisser. Quelles sont toutes les possibilités ?', 'Autant de possibilités que de diviseurs de 24 : 1 sachet de 24, 2 de 12, 3 de 8, 4 de 6, 6 de 4, 8 de 3, 12 de 2, 24 de 1.'],
+    [`Parmi ces nombres, lesquels sont divisibles par 2 ? par 5 ? par 10 ?${cm1Liste(['45', '62', '80', '115', '238', '1 000'])}`,
+      cm1Redac('Divisibles par 2', 'Chiffre des unités pair', '62, 80, 238 et 1 000 sont divisibles par 2.')
+      + cm1Redac('Divisibles par 5', 'Chiffre des unités 0 ou 5', '45, 80, 115 et 1 000 sont divisibles par 5.')
+      + cm1Redac('Divisibles par 10', 'Chiffre des unités 0', '80 et 1 000 sont divisibles par 10.')],
+    [`Vrai ou faux ?${cm1Liste(['7 est un diviseur de 56.', '48 est un multiple de 9.', '3 est un diviseur de 81.'])}`,
+      cm1Redac('7 et 56', '56 = 7 × 8', 'Vrai : 7 est un diviseur de 56.')
+      + cm1Redac('48 et 9', { suite: ['9 × 5 = 45', '9 × 6 = 54'] }, 'Faux : 48 n\'est pas dans la table de 9.')
+      + cm1Redac('3 et 81', '81 = 3 × 27', 'Vrai : 3 est un diviseur de 81.')],
+    [`Donne tous les diviseurs de ces nombres.${cm1Liste(['12', '20', '29'])}`,
+      cm1Redac('Diviseurs de 12', { suite: ['12 = 1 × 12', '12 = 2 × 6', '12 = 3 × 4'] }, 'Les diviseurs de 12 sont 1, 2, 3, 4, 6 et 12.')
+      + cm1Redac('Diviseurs de 20', { suite: ['20 = 1 × 20', '20 = 2 × 10', '20 = 4 × 5'] }, 'Les diviseurs de 20 sont 1, 2, 4, 5, 10 et 20.')
+      + cm1Redac('Diviseurs de 29', '29 = 1 × 29', 'Les seuls diviseurs de 29 sont 1 et 29.')],
+    ['Donne quatre diviseurs de 100.',
+      cm1Redac('Diviseurs de 100', { suite: ['100 = 1 × 100', '100 = 2 × 50', '100 = 4 × 25', '100 = 10 × 10'] }, 'Par exemple 1, 2, 4 et 25 sont des diviseurs de 100 (et aussi 5, 10, 20, 50, 100).')],
+    ['Quels sont les diviseurs communs à 16 et 24 ?',
+      cm1Redac('Diviseurs de chaque nombre', { suite: ['16 : 1, 2, 4, 8, 16', '24 : 1, 2, 3, 4, 6, 8, 12, 24'] }, 'Les diviseurs communs à 16 et 24 sont 1, 2, 4 et 8.')],
+    ['Donne trois multiples communs à 3 et 5, puis le plus petit multiple commun à 6 et 8.',
+      cm1Redac('Multiples communs à 3 et 5', { suite: ['3 × 5 = 15', '3 × 10 = 30', '3 × 15 = 45'] }, '15, 30 et 45 sont des multiples communs à 3 et 5.')
+      + cm1Redac('Plus petit multiple commun à 6 et 8', { suite: ['multiples de 6 : 6, 12, 18, 24…', 'multiples de 8 : 8, 16, 24…'] }, 'Le plus petit multiple commun à 6 et 8 est 24.')],
+    ['On veut ranger 24 billes dans des sachets contenant tous le même nombre de billes, sans en laisser. Quelles sont toutes les possibilités ?',
+      cm1Redac('Diviseurs de 24', { suite: ['24 = 1 × 24', '24 = 2 × 12', '24 = 3 × 8', '24 = 4 × 6'] }, 'On peut faire 1 sachet de 24, 2 de 12, 3 de 8, 4 de 6, 6 de 4, 8 de 3, 12 de 2 ou 24 sachets d\'une bille.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le crible d\'Ératosthène', [
     'Il y a plus de 2 200 ans, le savant grec <b>Ératosthène</b> a inventé une méthode pour trouver les nombres qui n\'ont que deux diviseurs (1 et eux-mêmes), appelés <b>nombres premiers</b> : 2, 3, 5, 7, 11, 13…',

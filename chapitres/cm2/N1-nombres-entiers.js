@@ -11,14 +11,14 @@ cm1Chapitre({
   niveau: 'cm2', titre: 'Nombres entiers (révisions jusqu\'à 999 999)', slug: 'nombres-entiers',
   cours: `
 ${cm1Lecon(1, 'La classe des mille et la classe des unités')}
-${cm1Regle('10 unités = 1 dizaine · 10 dizaines = 1 centaine · 10 centaines = 1 millier (1 unité de mille)<br>10 milliers = 1 dizaine de mille · 10 dizaines de mille = 1 centaine de mille')}
+${cm1Regle(cm1Liste(['10 unités = 1 dizaine', '10 dizaines = 1 centaine', '10 centaines = 1 millier (1 unité de mille)', '10 milliers = 1 dizaine de mille', '10 dizaines de mille = 1 centaine de mille']))}
 ${cm1Tableau(['Centaines de mille', 'Dizaines de mille', 'Unités de mille', 'Centaines', 'Dizaines', 'Unités'], [['<b>4</b>', '<b>0</b>', '<b>7</b>', '<b>2</b>', '<b>5</b>', '<b>3</b>']])}
-${cm1Exemple('Le nombre 407 253 :', ['On sépare les chiffres par <b>classes</b> de trois, en partant de la droite : 407 | 253.', 'Il se lit : <b>quatre-cent-sept-mille-deux-cent-cinquante-trois</b>.', 'Décomposition : 407 253 = 400 000 + 7 000 + 200 + 50 + 3 = (4 × 100 000) + (7 × 1 000) + (2 × 100) + (5 × 10) + 3.'])}
+${cm1Exemple('Le nombre 407 253 :', ['On sépare les chiffres par <b>classes</b> de trois, en partant de la droite : 407 | 253.', 'Il se lit : <b>quatre-cent-sept-mille-deux-cent-cinquante-trois</b>.', 'Décomposition : 407 253 = 400 000 + 7 000 + 200 + 50 + 3.', 'Avec des multiplications : 407 253 = (4 × 100 000) + (7 × 1 000) + (2 × 100) + (5 × 10) + 3.'])}
 ${cm1Astuce('« mille » est invariable : on écrit trois-mille, jamais « trois-milles ».')}
 
 ${cm1Lecon(2, 'Chiffre des… et nombre de…')}
 ${cm1Regle('Le <b>chiffre des</b> milliers est le chiffre écrit au rang des milliers. Le <b>nombre de</b> milliers est le nombre formé par ce chiffre et tous ceux écrits à sa gauche.')}
-${cm1Exemple('Dans 407 253 :', ['le chiffre des milliers est <b>7</b> ; le nombre de milliers est <b>407</b> ;', 'le chiffre des centaines est <b>2</b> ; le nombre de centaines est <b>4 072</b>.'])}
+${cm1Exemple('Dans 407 253 :', ['le chiffre des milliers est <b>7</b> ;', 'le nombre de milliers est <b>407</b> ;', 'le chiffre des centaines est <b>2</b> ;', 'le nombre de centaines est <b>4 072</b>.'])}
 
 ${cm1Lecon(3, 'Comparer, encadrer, ranger')}
 ${cm1Regle('Le nombre qui a le plus de chiffres est le plus grand. À nombre de chiffres égal, on compare les chiffres de même rang en partant de la gauche.')}
@@ -28,6 +28,7 @@ ${cm1Lecon(4, 'Demi-droite graduée')}
 ${cm1Regle('Pour repérer un point, on cherche la valeur d\'un écart entre deux graduations : on divise l\'écart entre deux nombres connus par le nombre d\'intervalles.')}
 <div class="figure-wrap">${cm1Graduation(2, 10, [[0.3, 'A', '#E35D3A'], [1.6, 'B', '#2EA8C9']], { unite: 210, etiquettes: i => i === 0 ? '200 000' : i === 10 ? '300 000' : i === 20 ? '400 000' : '' })}</div>
 ${cm1Exemple('Lecture :', ['Entre 200 000 et 300 000, il y a 10 écarts : un écart vaut 10 000.', 'A correspond à 230 000 et B à 360 000.'])}
+${ce2AnimSauts('c2-ne-sauts', { legende: 'De 10 000 en 10 000 sur la demi-droite.', presets: [{ nom: 'Jusqu\'au point A', depart: 200000, sauts: [[10000, '+ 10 000'], [10000, '+ 10 000'], [10000, '+ 10 000']], min: 195000, max: 245000, fin: '3 écarts de 10 000 après 200 000 : A correspond à <b>230 000</b>.' }, { nom: 'Arrondir 186 540', depart: 186000, sauts: [[500, '+ 500', 'Le milieu entre 186 000 et 187 000 est 186 500.'], [40, '+ 40', '186 540 est après le milieu.']], min: 185900, max: 187100, fin: '186 540 est plus proche de 187 000 : arrondi au millier, <b>187 000</b>.' }] })}
 `,
   methode: `
 ${cm1Demo('c2-ne-lire', 'Écrire en chiffres un nombre dicté', 'Écris en chiffres : « six-cent-mille-quarante ».')}
@@ -48,13 +49,24 @@ ${cm1Demo('c2-ne-arrondi', 'Arrondir un nombre', 'Arrondis 186 540 au millier pr
     ]],
   ],
   exos: cm1Exos('c2ne', [
-    ['Écris en lettres : 305 060 · 780 900', 'trois-cent-cinq-mille-soixante · sept-cent-quatre-vingt-mille-neuf-cents.'],
-    ['Écris en chiffres : quatre-vingt-dix-mille-sept · deux-cent-mille-trois-cents.', '90 007 · 200 300.'],
-    ['Dans 652 418 : chiffre des dizaines de mille ? nombre de milliers ? nombre de centaines ?', '5 · 652 · 6 524.'],
-    ['Décompose 508 031 avec des multiplications par 100 000, 10 000, 1 000…', '(5 × 100 000) + (8 × 1 000) + (3 × 10) + 1.'],
-    ['Range dans l\'ordre croissant : 99 999 · 100 010 · 100 001 · 90 999 · 101 000', '90 999 &lt; 99 999 &lt; 100 001 &lt; 100 010 &lt; 101 000'],
-    ['Encadre 473 280 entre deux dizaines de mille consécutives, puis arrondis-le à la dizaine de mille.', '470 000 &lt; 473 280 &lt; 480 000 ; arrondi : 470 000 (473 280 &lt; 475 000).'],
-    ['Quel nombre est 10 000 de plus que 395 600 ? 1 000 de moins que 400 200 ?', '405 600 · 399 200.'],
+    [`Écris ces nombres en lettres.${cm1Liste(['305 060', '780 900'])}`,
+      cm1Redac('305 060 en lettres', 'classe des mille : 305 ; classe des unités : 060', 'On écrit : trois-cent-cinq-mille-soixante.')
+      + cm1Redac('780 900 en lettres', 'classe des mille : 780 ; classe des unités : 900', 'On écrit : sept-cent-quatre-vingt-mille-neuf-cents.')],
+    [`Écris ces nombres en chiffres.${cm1Liste(['quatre-vingt-dix-mille-sept', 'deux-cent-mille-trois-cents'])}`,
+      cm1Redac('Quatre-vingt-dix-mille-sept', '90 | 007', 'Ce nombre s\'écrit 90 007.') + cm1Redac('Deux-cent-mille-trois-cents', '200 | 300', 'Ce nombre s\'écrit 200 300.')],
+    [`Réponds aux questions sur le nombre 652 418.${cm1Liste(['Quel est son chiffre des dizaines de mille ?', 'Quel est son nombre de milliers ?', 'Quel est son nombre de centaines ?'])}`,
+      cm1Redac('Chiffre des dizaines de mille', '6<b>5</b>2 418', 'Le chiffre des dizaines de mille est 5.')
+      + cm1Redac('Nombre de milliers', '652 418 = 652 milliers et 418 unités', 'Le nombre de milliers est 652.')
+      + cm1Redac('Nombre de centaines', '652 418 = 6 524 centaines et 18 unités', 'Le nombre de centaines est 6 524.')],
+    ['Décompose 508 031 avec des multiplications par 100 000, 10 000, 1 000…',
+      cm1Redac('Décomposition de 508 031', '508 031 = (5 × 100 000) + (8 × 1 000) + (3 × 10) + 1', 'Les chiffres 0 ne donnent rien dans la décomposition.')],
+    ['Range dans l\'ordre croissant : 99 999 ; 100 010 ; 100 001 ; 90 999 ; 101 000.',
+      cm1Redac('Ordre croissant', '90 999 &lt; 99 999 &lt; 100 001 &lt; 100 010 &lt; 101 000', 'Les nombres à 5 chiffres sont les plus petits ; le plus grand est 101 000.')],
+    ['Encadre 473 280 entre deux dizaines de mille consécutives, puis arrondis-le à la dizaine de mille.',
+      cm1Redac('Encadrement', '470 000 &lt; 473 280 &lt; 480 000', '473 280 est compris entre 470 000 et 480 000.')
+      + cm1Redac('Arrondi', '473 280 &lt; 475 000', '473 280 est avant le milieu, 475 000 : l\'arrondi à la dizaine de mille est 470 000.')],
+    ['Quel nombre est 10 000 de plus que 395 600 ? Quel nombre est 1 000 de moins que 400 200 ?',
+      cm1Redac('10 000 de plus que 395 600', '395 600 + 10 000 = 405 600', 'C\'est 405 600.') + cm1Redac('1 000 de moins que 400 200', '400 200 − 1 000 = 399 200', 'C\'est 399 200.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : les chiffres « arabes » viennent d\'Inde', [
     'Nos dix chiffres ont été inventés en <b>Inde</b> vers le V<sup>e</sup> siècle, avec le principe de position et le zéro. Ils ont été transmis par les savants arabes, comme <b>al-Khwârizmî</b>, d\'où leur nom de « chiffres arabes ».',

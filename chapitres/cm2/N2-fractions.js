@@ -28,6 +28,7 @@ ${cm1AnimFraction('cm2-frac', { n: 4, k: 7, forme: 'disque' })}
 ${cm1Lecon(2, 'Une fraction pour mesurer')}
 ${cm1Regle(`Quand une longueur ne contient pas un nombre entier de fois l'unité, on partage l'unité en parts égales et on compte les parts.`)}
 <div class="figure-wrap">${mesure(4, 7)}</div>
+${ce2AnimBandeUnite('c2-fr-bande', { presets: [{ nom: 'Sept quarts', q: 7 }, { nom: 'Trois quarts', q: 3 }, { nom: 'Cinq quarts', q: 5 }] })}
 ${cm1Exemple('Mesure du segment [AB] avec l\'unité u :', [`L'unité u est partagée en 4 parts égales (des quarts).`, `Le segment [AB] mesure 7 quarts de u : [AB] = ${F(7, 4)} u, c'est-à-dire 1 u + ${F(3, 4)} u.`])}
 
 ${cm1Lecon(3, 'Fractions supérieures à 1')}
@@ -40,11 +41,14 @@ ${cm1Lecon(4, 'Fractions sur une demi-droite graduée')}
 ${cm1Exemple('Chaque unité est partagée en 6 : un petit écart vaut un sixième.', [`A correspond à ${F(5, 6)}.`, `B correspond à 2 + ${F(1, 6)}, soit ${F(13, 6)}.`, `C correspond à ${F(9, 6)} : c'est aussi 1 + ${F(3, 6)}, ou 1 + ${F(1, 2)}.`])}
 
 ${cm1Lecon(5, 'Fraction d\'une quantité')}
-${cm1Regle(`Pour calculer les ${F(2, 3)} de 12 € : un tiers de 12 €, c'est 12 ÷ 3 = 4 € ; deux tiers, c'est 2 × 4 = <b>8 €</b>.`)}
+${cm1Regle(`Pour calculer les ${F(2, 3)} de 12 €, on cherche d'abord un tiers, puis on en prend deux.`)}
+${ce2AnimPartage('c2-fr-partage', { legende: 'Un jeton = 1 €. On partage 12 € en 3 parts égales.', presets: [{ nom: '12 € en 3', total: 12, parts: 3, objets: 'euros', fin: `Chaque part vaut 4 € : un tiers de 12 €, c'est 4 €. Deux tiers : 2 × 4 = <b>8 €</b>.` }] })}
+${cm1Redac(`Un tiers de 12 €`, '12 ÷ 3 = 4', `${F(1, 3)} de 12 €, c'est 4 €.`)}
+${cm1Redac(`Deux tiers de 12 €`, '2 × 4 = 8', `${F(2, 3)} de 12 €, c'est 8 €.`)}
 `,
   methode: `
-${cm1Demo('c2-fr-ecrire', 'Écrire une fraction supérieure à 1 autrement', 'Écris 29/6 sous la forme d\'un entier plus une fraction inférieure à 1, puis encadre-la.')}
-${cm1Demo('c2-fr-une', 'Écrire un entier plus une fraction comme une seule fraction', 'Écris 4 + 5/7 sous la forme d\'une seule fraction.')}
+${cm1Demo('c2-fr-ecrire', 'Écrire une fraction supérieure à 1 autrement', `Écris ${F(29, 6)} sous la forme d'un entier plus une fraction inférieure à 1, puis encadre-la.`)}
+${cm1Demo('c2-fr-une', 'Écrire un entier plus une fraction comme une seule fraction', `Écris 4 + ${F(5, 7)} sous la forme d'une seule fraction.`)}
 `,
   demos: [
     ['c2-fr-ecrire', [
@@ -60,15 +64,29 @@ ${cm1Demo('c2-fr-une', 'Écrire un entier plus une fraction comme une seule frac
     ]],
   ],
   exos: cm1Exos('c2fr', [
-    [`Écris en lettres : ${F(4, 9)} · ${F(11, 12)} · ${F(3, 1000)} · ${F(25, 60)}`, 'quatre neuvièmes · onze douzièmes · trois millièmes · vingt-cinq soixantièmes.'],
-    [`Quelle fraction de la bande est coloriée ?<div style="margin:6px 0;">${cm1Bande(8, 3)}</div>`, `${F(3, 8)}.`],
-    [`Écris comme un entier plus une fraction inférieure à 1 : ${F(13, 4)} · ${F(23, 5)} · ${F(50, 12)}`, `3 + ${F(1, 4)} · 4 + ${F(3, 5)} · 4 + ${F(2, 12)}`],
-    [`Écris sous la forme d'une seule fraction : 2 + ${F(1, 3)} · 5 + ${F(3, 4)} · 1 + ${F(7, 10)}`, `${F(7, 3)} · ${F(23, 4)} · ${F(17, 10)}`],
-    [`Encadre entre deux entiers consécutifs : ${F(19, 6)} · ${F(40, 9)} · ${F(7, 8)}`, `3 &lt; ${F(19, 6)} &lt; 4 · 4 &lt; ${F(40, 9)} &lt; 5 · 0 &lt; ${F(7, 8)} &lt; 1`],
-    [`Quelles fractions correspondent aux points D et E ?${cm1Graduation(2, 5, [[3 / 5, 'D', '#E35D3A'], [8 / 5, 'E', '#2EA8C9']], { unite: 200 })}`, `D : ${F(3, 5)} · E : ${F(8, 5)} = 1 + ${F(3, 5)}.`],
-    [`Calcule : les ${F(3, 4)} de 100 m · les ${F(2, 5)} de 35 € · les ${F(5, 6)} de 42 élèves.`, '75 m (100 ÷ 4 = 25, 3 × 25) · 14 € (35 ÷ 5 = 7, 2 × 7) · 35 élèves (42 ÷ 6 = 7, 5 × 7).'],
-    [`Avec l'unité u partagée en 3, un segment mesure 11 tiers de u. Écris sa mesure de deux façons.`, `${F(11, 3)} u = 3 u + ${F(2, 3)} u.`],
-  ], { titre: 'Rédaction type : « Fraction d\'une quantité »', lignes: [[`${F(3, 5)} de 40 €`, 'Je cherche d\'abord un cinquième.'], ['40 ÷ 5 = 8 ; 3 × 8 = 24', 'Un cinquième vaut 8 €, trois cinquièmes valent 24 €.'], [`${F(3, 5)} de 40 € = 24 €`, 'Je conclus.']] }),
+    [`Écris ces fractions en lettres.${cm1Liste([F(4, 9), F(11, 12), F(3, 1000), F(25, 60)])}`,
+      cm1Redac('Les fractions en lettres', { suite: [`${F(4, 9)} : quatre neuvièmes`, `${F(11, 12)} : onze douzièmes`, `${F(3, 1000)} : trois millièmes`, `${F(25, 60)} : vingt-cinq soixantièmes`] }, 'On lit le numérateur, puis le dénominateur avec « ième ».')],
+    [`Quelle fraction de la bande est coloriée ?<div style="margin:6px 0;">${cm1Bande(8, 3)}</div>`,
+      cm1Redac('Fraction coloriée', '3 parts coloriées sur 8 parts égales', `On a colorié ${F(3, 8)} de la bande.`)],
+    [`Écris chaque fraction comme un entier plus une fraction inférieure à 1.${cm1Liste([F(13, 4), F(23, 5), F(50, 12)])}`,
+      cm1Redac(F(13, 4), `${F(12, 4)} + ${F(1, 4)} = 3 + ${F(1, 4)}`, `${F(13, 4)} = 3 + ${F(1, 4)}.`)
+      + cm1Redac(F(23, 5), `${F(20, 5)} + ${F(3, 5)} = 4 + ${F(3, 5)}`, `${F(23, 5)} = 4 + ${F(3, 5)}.`)
+      + cm1Redac(F(50, 12), `${F(48, 12)} + ${F(2, 12)} = 4 + ${F(2, 12)}`, `${F(50, 12)} = 4 + ${F(2, 12)}.`)],
+    [`Écris sous la forme d'une seule fraction.${cm1Liste([`2 + ${F(1, 3)}`, `5 + ${F(3, 4)}`, `1 + ${F(7, 10)}`])}`,
+      cm1Redac(`2 + ${F(1, 3)}`, `${F(6, 3)} + ${F(1, 3)} = ${F(7, 3)}`, `2 + ${F(1, 3)} s'écrit ${F(7, 3)}.`)
+      + cm1Redac(`5 + ${F(3, 4)}`, `${F(20, 4)} + ${F(3, 4)} = ${F(23, 4)}`, `5 + ${F(3, 4)} s'écrit ${F(23, 4)}.`)
+      + cm1Redac(`1 + ${F(7, 10)}`, `${F(10, 10)} + ${F(7, 10)} = ${F(17, 10)}`, `1 + ${F(7, 10)} s'écrit ${F(17, 10)}.`)],
+    [`Encadre chaque fraction entre deux entiers consécutifs.${cm1Liste([F(19, 6), F(40, 9), F(7, 8)])}`,
+      cm1Redac('Encadrements', { suite: [`3 &lt; ${F(19, 6)} &lt; 4`, `4 &lt; ${F(40, 9)} &lt; 5`, `0 &lt; ${F(7, 8)} &lt; 1`] }, `${F(19, 6)} = 3 + ${F(1, 6)}, ${F(40, 9)} = 4 + ${F(4, 9)}, et ${F(7, 8)} est inférieure à 1.`)],
+    [`Quelles fractions correspondent aux points D et E ?${cm1Graduation(2, 5, [[3 / 5, 'D', '#E35D3A'], [8 / 5, 'E', '#2EA8C9']], { unite: 200 })}`,
+      cm1Redac('Points D et E', { suite: ['un petit écart : un cinquième', `D : 3 petits écarts, ${F(3, 5)}`, `E : 8 petits écarts, ${F(8, 5)}`] }, `D correspond à ${F(3, 5)} et E à ${F(8, 5)}, c'est-à-dire 1 + ${F(3, 5)}.`)],
+    [`Calcule.${cm1Liste([`les ${F(3, 4)} de 100 m`, `les ${F(2, 5)} de 35 €`, `les ${F(5, 6)} de 42 élèves`])}`,
+      cm1Redac(`${F(3, 4)} de 100 m`, { suite: ['100 ÷ 4 = 25', '3 × 25 = 75'] }, `Les ${F(3, 4)} de 100 m, c'est 75 m.`)
+      + cm1Redac(`${F(2, 5)} de 35 €`, { suite: ['35 ÷ 5 = 7', '2 × 7 = 14'] }, `Les ${F(2, 5)} de 35 €, c'est 14 €.`)
+      + cm1Redac(`${F(5, 6)} de 42 élèves`, { suite: ['42 ÷ 6 = 7', '5 × 7 = 35'] }, `Les ${F(5, 6)} de 42 élèves, c'est 35 élèves.`)],
+    ['L\'unité u est partagée en 3. Un segment mesure 11 tiers de u. Écris sa mesure de deux façons.',
+      cm1Redac('Mesure du segment', `${F(11, 3)} u = ${F(9, 3)} u + ${F(2, 3)} u = 3 u + ${F(2, 3)} u`, `Le segment mesure ${F(11, 3)} u, c'est-à-dire 3 u et ${F(2, 3)} de u.`)],
+  ], { titre: 'Rédaction type : « Fraction d\'une quantité »', lignes: [[`${F(3, 5)} de 40 €`, 'Je cherche d\'abord un cinquième.'], ['40 ÷ 5 = 8', 'Un cinquième vaut 8 €.'], ['3 × 8 = 24', 'Trois cinquièmes valent 24 €.'], [`${F(3, 5)} de 40 € = 24 €`, 'Je conclus.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : les fractions des Babyloniens', [
     'Il y a 4 000 ans, les <b>Babyloniens</b> comptaient en base 60. Ils écrivaient leurs fractions avec des dénominateurs 60, 3 600… comme nos minutes et nos secondes : une demi-heure, c\'est 30 soixantièmes d\'heure !',
     'C\'est pour cela que 60 est si pratique : il se partage en 2, 3, 4, 5, 6, 10, 12, 15, 20 et 30 parts égales. Au CM2, tu rencontreras des fractions jusqu\'à des soixantièmes.',

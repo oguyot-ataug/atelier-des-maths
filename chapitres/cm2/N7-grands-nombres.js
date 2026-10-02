@@ -11,7 +11,8 @@ cm1Chapitre({
   niveau: 'cm2', titre: 'Grands nombres jusqu\'à 999 999 999', slug: 'grands-nombres',
   cours: `
 ${cm1Lecon(1, 'La classe des millions')}
-${cm1Regle('10 centaines de mille = 1 <b>million</b> (1 000 000) · 10 millions = 1 dizaine de millions · 10 dizaines de millions = 1 centaine de millions')}
+${cm1Regle(cm1Liste(['10 centaines de mille = 1 <b>million</b> (1 000 000)', '10 millions = 1 dizaine de millions', '10 dizaines de millions = 1 centaine de millions']))}
+${ce2AnimSauts('c2-gn-sauts', { legende: 'Franchir le million : 999 999 + 1.', presets: [{ nom: 'Après 999 998', depart: 999998, sauts: [[1, '+ 1'], [1, '+ 1']], min: 999996, max: 1000002, fin: '999 999 + 1 = <b>1 000 000</b> : un million, le premier nombre à 7 chiffres.' }, { nom: 'De 100 000 en 100 000', depart: 10000000, sauts: [[100000, '+ 100 000'], [100000, '+ 100 000'], [100000, '+ 100 000'], [100000, '+ 100 000']], min: 9950000, max: 10450000, fin: '4 écarts de 100 000 après 10 000 000 : <b>10 400 000</b>, c\'est le point A.' }] })}
 ${cm1Tableau(['<span style="font-size:.78rem;">Classe des millions</span>', '', '', '<span style="font-size:.78rem;">Classe des mille</span>', '', '', '<span style="font-size:.78rem;">Classe des unités</span>', '', ''], [
   ['c', 'd', 'u', 'c', 'd', 'u', 'c', 'd', 'u'],
   ['<b>3</b>', '<b>0</b>', '<b>5</b>', '<b>0</b>', '<b>6</b>', '<b>2</b>', '<b>8</b>', '<b>0</b>', '<b>0</b>'],
@@ -20,7 +21,7 @@ ${cm1Exemple('Le nombre 305 062 800 :', ['On le découpe en classes de 3 chiffre
 ${cm1Astuce('« million » est un nom : il prend un « s » au pluriel (trois-cent-cinq-millions), contrairement à « mille ».')}
 
 ${cm1Lecon(2, 'Chiffre des… et nombre de…')}
-${cm1Exemple('Dans 305 062 800 :', ['le chiffre des millions est <b>5</b> ; le nombre de millions est <b>305</b> ;', 'le chiffre des dizaines de mille est <b>6</b> ; le nombre de milliers est <b>305 062</b>.'])}
+${cm1Exemple('Dans 305 062 800 :', ['le chiffre des millions est <b>5</b> ;', 'le nombre de millions est <b>305</b> ;', 'le chiffre des dizaines de mille est <b>6</b> ;', 'le nombre de milliers est <b>305 062</b>.'])}
 
 ${cm1Lecon(3, 'Comparer, encadrer, arrondir')}
 ${cm1Regle('Comme pour les nombres plus petits : d\'abord le nombre de chiffres, puis les chiffres de même rang en partant de la gauche.')}
@@ -48,13 +49,25 @@ ${cm1Demo('c2-gn-ranger', 'Comparer deux grands nombres', 'Compare 708 650 000 e
     ]],
   ],
   exos: cm1Exos('c2gn', [
-    ['Écris en lettres : 7 450 000 · 230 008 015', 'sept-millions-quatre-cent-cinquante-mille · deux-cent-trente-millions-huit-mille-quinze.'],
-    ['Écris en chiffres : six-cents-millions · douze-millions-quatre-vingt-mille-deux · neuf-cent-mille-neuf.', '600 000 000 · 12 080 002 · 900 009'],
-    ['Dans 614 507 392 : chiffre des dizaines de millions ? nombre de millions ? chiffre des centaines de mille ?', '1 · 614 · 5'],
-    ['Complète : 1 million = … milliers = … centaines de mille.', '1 000 milliers = 10 centaines de mille.'],
-    ['Range dans l\'ordre décroissant : 99 999 999 · 100 000 100 · 100 001 000 · 9 999 999', '100 001 000 &gt; 100 000 100 &gt; 99 999 999 &gt; 9 999 999'],
-    ['Encadre 67 348 125 entre deux millions consécutifs, puis arrondis-le au million.', '67 000 000 &lt; 67 348 125 &lt; 68 000 000 ; arrondi : 67 000 000.'],
-    ['La Terre est à environ 149 600 000 km du Soleil. Écris ce nombre en lettres et arrondis-le à la dizaine de millions.', 'cent-quarante-neuf-millions-six-cent-mille ; arrondi : 150 000 000 km.'],
+    [`Écris ces nombres en lettres.${cm1Liste(['7 450 000', '230 008 015'])}`,
+      cm1Redac('7 450 000 en lettres', '7 | 450 | 000', 'On écrit : sept-millions-quatre-cent-cinquante-mille.')
+      + cm1Redac('230 008 015 en lettres', '230 | 008 | 015', 'On écrit : deux-cent-trente-millions-huit-mille-quinze.')],
+    [`Écris ces nombres en chiffres.${cm1Liste(['six-cents-millions', 'douze-millions-quatre-vingt-mille-deux', 'neuf-cent-mille-neuf'])}`,
+      cm1Redac('Les nombres en chiffres', { suite: ['600 | 000 | 000', '12 | 080 | 002', '900 | 009'] }, 'Ces nombres s\'écrivent 600 000 000, 12 080 002 et 900 009.')],
+    [`Réponds aux questions sur le nombre 614 507 392.${cm1Liste(['Quel est son chiffre des dizaines de millions ?', 'Quel est son nombre de millions ?', 'Quel est son chiffre des centaines de mille ?'])}`,
+      cm1Redac('Chiffre des dizaines de millions', '6<b>1</b>4 507 392', 'Le chiffre des dizaines de millions est 1.')
+      + cm1Redac('Nombre de millions', '614 507 392 = 614 millions et 507 392 unités', 'Le nombre de millions est 614.')
+      + cm1Redac('Chiffre des centaines de mille', '614 <b>5</b>07 392', 'Le chiffre des centaines de mille est 5.')],
+    ['Complète : 1 million = … milliers = … centaines de mille.',
+      cm1Redac('Un million', { suite: ['1 000 000 = 1 000 × 1 000', '1 000 000 = 10 × 100 000'] }, '1 million, c\'est 1 000 milliers, ou 10 centaines de mille.')],
+    ['Range dans l\'ordre décroissant : 99 999 999 ; 100 000 100 ; 100 001 000 ; 9 999 999.',
+      cm1Redac('Ordre décroissant', '100 001 000 &gt; 100 000 100 &gt; 99 999 999 &gt; 9 999 999', 'Les nombres à 9 chiffres sont les plus grands ; le plus petit, 9 999 999, n\'a que 7 chiffres.')],
+    ['Encadre 67 348 125 entre deux millions consécutifs, puis arrondis-le au million.',
+      cm1Redac('Encadrement', '67 000 000 &lt; 67 348 125 &lt; 68 000 000', '67 348 125 est compris entre 67 millions et 68 millions.')
+      + cm1Redac('Arrondi', '67 348 125 &lt; 67 500 000', 'Il est avant le milieu : arrondi au million, il vaut 67 000 000.')],
+    ['La Terre est à environ 149 600 000 km du Soleil. Écris ce nombre en lettres et arrondis-le à la dizaine de millions.',
+      cm1Redac('En lettres', '149 | 600 | 000', 'On écrit : cent-quarante-neuf-millions-six-cent-mille.')
+      + cm1Redac('Arrondi', '149 600 000 &gt; 145 000 000', 'Il est après le milieu entre 140 et 150 millions : arrondi, la distance est de 150 000 000 km.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : le mot « million »', [
     'Le mot <b>million</b> vient de l\'italien <i>millione</i>, « un grand millier ». Il apparaît en Italie au XIII<sup>e</sup> siècle, à l\'époque de Marco Polo, qui racontait les richesses immenses de la Chine.',

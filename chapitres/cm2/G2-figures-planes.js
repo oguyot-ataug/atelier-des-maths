@@ -29,6 +29,7 @@ cm1Chapitre({
 ${cm1Lecon(1, 'Polygones et codages')}
 ${cm1Def('Un <b>polygone</b> est une figure fermée formée de segments : ses <b>côtés</b>. Les extrémités des côtés sont les <b>sommets</b>. Un polygone à 3 côtés est un <b>triangle</b>, à 4 côtés un <b>quadrilatère</b>, à 5 côtés un <b>pentagone</b>, à 6 côtés un <b>hexagone</b>.')}
 ${cm1Rem('Codages : des <b>petits traits identiques</b> sur des côtés signifient que ces côtés ont la même longueur ; un <b>petit carré</b> indique un angle droit. On nomme un polygone en lisant ses sommets dans l\'ordre : le quadrilatère ABCD a pour côtés [AB], [BC], [CD] et [DA], et pour diagonales [AC] et [BD].')}
+${ce2AnimPolygone('c2-fp-poly', {})}
 
 ${cm1Lecon(2, 'Les triangles particuliers')}
 <div class="figure-wrap" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">${FIGS.rect}${FIGS.iso}${FIGS.equi}</div>
@@ -68,13 +69,22 @@ ${cm1Demo('c2-fp-rect', 'Construire un rectangle', 'Construis le rectangle EFGH 
     ]],
   ],
   exos: cm1Exos('c2fp', [
-    ['Quel triangle a trois côtés de même longueur ? Quel quadrilatère a quatre côtés de même longueur mais pas d\'angle droit ?', 'Le triangle équilatéral ; le losange.'],
-    ['Je suis un quadrilatère avec 4 angles droits et 4 côtés égaux. Qui suis-je ?', 'Un carré.'],
-    ['Je suis un quadrilatère qui a seulement deux côtés parallèles et deux angles droits. Qui suis-je ?', 'Un trapèze rectangle.'],
-    ['Construis un triangle isocèle ABC tel que AB = AC = 5 cm et BC = 4 cm.', 'Tracer [BC] de 4 cm, puis deux arcs de rayon 5 cm centrés en B et en C : A est à leur intersection.'],
-    ['Construis un carré de 4,5 cm de côté et trace ses diagonales. Que remarques-tu ?', 'Les diagonales ont la même longueur, se coupent en leur milieu et sont perpendiculaires.'],
-    ['Combien de côtés a un hexagone ? un pentagone ? Dessine-en un de chaque.', '6 côtés ; 5 côtés.'],
-    ['Vrai ou faux ? « Un rectangle est un losange. » « Un carré est un rectangle. »', 'Faux (ses côtés ne sont pas tous égaux, sauf si c\'est un carré) · Vrai.'],
+    ['Quel triangle a trois côtés de même longueur ? Quel quadrilatère a quatre côtés de même longueur mais pas d\'angle droit ?',
+      cm1Redac('Triangle', '', 'Le triangle qui a trois côtés de même longueur est le triangle équilatéral.')
+      + cm1Redac('Quadrilatère', '', 'Le quadrilatère qui a quatre côtés de même longueur sans angle droit est le losange.')],
+    ['Je suis un quadrilatère avec 4 angles droits et 4 côtés égaux. Qui suis-je ?',
+      cm1Redac('Devinette', '', 'Avec 4 angles droits et 4 côtés égaux, c\'est un carré.')],
+    ['Je suis un quadrilatère qui a seulement deux côtés parallèles et deux angles droits. Qui suis-je ?',
+      cm1Redac('Devinette', '', 'Deux côtés parallèles et deux angles droits : c\'est un trapèze rectangle.')],
+    ['Construis un triangle isocèle ABC tel que AB = AC = 5 cm et BC = 4 cm.',
+      cm1Redac('Programme de construction', { suite: ['je trace [BC] de 4 cm', 'arc de centre B, rayon 5 cm', 'arc de centre C, rayon 5 cm'] }, 'Le point A est à l\'intersection des deux arcs ; je trace [AB] et [AC] et je code les côtés égaux.')],
+    ['Construis un carré de 4,5 cm de côté et trace ses diagonales. Que remarques-tu ?',
+      cm1Redac('Diagonales du carré', '', 'Les diagonales ont la même longueur, se coupent en leur milieu et sont perpendiculaires.')],
+    ['Combien de côtés a un hexagone ? un pentagone ? Dessine-en un de chaque.',
+      cm1Redac('Nombre de côtés', '', 'Un hexagone a 6 côtés et un pentagone a 5 côtés.')],
+    ['Vrai ou faux ? « Un rectangle est un losange. » « Un carré est un rectangle. »',
+      cm1Redac('Un rectangle est un losange', '', 'C\'est faux : ses côtés ne sont pas tous égaux, sauf si c\'est un carré.')
+      + cm1Redac('Un carré est un rectangle', '', 'C\'est vrai : un carré a 4 angles droits.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : les pavages de l\'Alhambra', [
     'Au palais de l\'<b>Alhambra</b>, à Grenade en Espagne, construit au XIV<sup>e</sup> siècle, les murs sont couverts de mosaïques faites de triangles, de carrés, d\'hexagones et d\'étoiles qui s\'emboîtent sans laisser de trou.',

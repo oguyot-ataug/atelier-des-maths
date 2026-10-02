@@ -3293,6 +3293,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.904', date:'2026-10-02', items:[
+    'CM2 : reprise pédagogique des 25 chapitres. Tous les exercices ont une réponse rédigée (titre souligné, calcul, résultat encadré, phrase de conclusion).',
+    'CM2 : un seul calcul par ligne, des listes à puces sans numéros, et des fractions toujours écrites en étage.',
+    'CM2 : nouvelles animations (glisse-nombre décimal, sauts sur la droite, balance, schémas en barres, arbre, pavage, horloge, compas, angles, polygones, symétrie, tirages, diagramme).',
+  ] },
   { version:'2026-08-19.903', date:'2026-10-01', items:[
     'CM1 : reprise pédagogique des 23 chapitres, comme au CE2. Toutes les corrections sont rédigées (titre souligné, calcul en ligne ou « A = » en colonne avec le résultat encadré, phrase de conclusion), un seul calcul par ligne, plus de « a) b) c) » devant les questions.',
     'CM1 : nouvelles animations dans les cours (matériel de numération, demi-droites graduées, glisse-nombre avec virgule, fractions égales et additions de fractions, partage, schémas en barres, règle, balance, verres, compas, angle, horloge et frise du temps, paver un rectangle, report des côtés, symétrie sur quadrillage, tirages au hasard, tracé de parallèles à l\'équerre).',

@@ -42,12 +42,14 @@ ${cm1Def('Cet angle a pour <b>sommet</b> le point B et pour <b>côtés</b> les d
 ${cm1Rem('Rappel : un angle <b>aigu</b> est plus petit qu\'un angle droit ; un angle <b>obtus</b> est plus grand qu\'un angle droit mais ses côtés ne sont pas alignés.')}
 
 ${cm1Lecon(2, 'Le degré')}
-${cm1Regle('On mesure les angles en <b>degrés</b> (°). Un <b>angle droit mesure 90°</b>.<br>La moitié d\'un angle droit mesure 45° ; le tiers d\'un angle droit mesure 30° ; deux angles droits côte à côte forment un angle plat de 180°.')}
-${cm1Exemple('Exemples :', ['un angle de 60° est aigu (60 &lt; 90) ; un angle de 120° est obtus (90 &lt; 120 &lt; 180) ;', 'chaque angle d\'un triangle équilatéral mesure 60° ; les angles d\'un carré mesurent 90°.'])}
+${cm1Regle('On mesure les angles en <b>degrés</b> (°). Un <b>angle droit mesure 90°</b>.')}
+${cm1Liste(['la moitié d\'un angle droit mesure 45° ;', 'le tiers d\'un angle droit mesure 30° ;', 'deux angles droits côte à côte forment un angle plat de 180°.'])}
+${ce2AnimAngle('c2-an-angle')}
+${cm1Exemple('Exemples :', ['un angle de 60° est aigu, car 60 est plus petit que 90 ;', 'un angle de 120° est obtus, car 120 est compris entre 90 et 180 ;', 'chaque angle d\'un triangle équilatéral mesure 60° ;', 'les angles d\'un carré mesurent 90°.'])}
 ${cm1Astuce('Au CM2, on ne mesure pas encore avec un rapporteur : on compare avec des gabarits (angle droit, moitié, tiers).')}
 
 ${cm1Lecon(3, 'Comparer, additionner, partager des angles')}
-${cm1Regle('<ul style="margin:0;padding-left:18px;line-height:1.9;"><li><b>Comparer</b> : on superpose les angles (calque, gabarit) en faisant coïncider le sommet et un côté.</li><li><b>Additionner</b> : on place deux angles côte à côte, avec le même sommet et un côté commun : 45° + 30° = 75°.</li><li><b>Multiplier</b> : on reporte plusieurs fois le même angle : 3 fois 30° = 90°.</li><li><b>Partager en deux</b> : on découpe l\'angle et on le <b>plie</b> en faisant coïncider ses deux côtés ; le pli partage l\'angle en deux angles égaux.</li></ul>')}
+${cm1Regle(cm1Liste(['<b>Comparer</b> : on superpose les angles (calque, gabarit) en faisant coïncider le sommet et un côté.', '<b>Additionner</b> : on place deux angles côte à côte, avec le même sommet et un côté commun. Par exemple, 45° et 30° font 75°.', '<b>Multiplier</b> : on reporte plusieurs fois le même angle. Par exemple, 3 fois 30° font 90°.', '<b>Partager en deux</b> : on découpe l\'angle et on le <b>plie</b> en faisant coïncider ses deux côtés ; le pli partage l\'angle en deux angles égaux.']))}
 `,
   methode: `
 ${cm1Demo('c2-an-pli', 'Construire la moitié d\'un angle par pliage', 'Comment obtenir un angle de 45° à partir d\'une feuille de papier ?')}
@@ -61,17 +63,27 @@ ${cm1Sous('A', 'Atelier : assemble des gabarits d\'angles')}
       { expr: 'Le coin d\'une feuille : un angle droit (90°).', note: 'On part d\'un angle qu\'on connaît.' },
       { expr: 'Je plie en faisant coïncider les deux bords du coin.', note: 'Les deux côtés de l\'angle se superposent.' },
       { expr: 'Le pli partage l\'angle droit en deux angles égaux.', note: 'Chacun est la moitié de 90°.' },
-      { expr: '90° ÷ 2 = 45°', note: 'On a construit un angle de 45°. En repliant encore : 22,5° !' },
+      { expr: '90° ÷ 2 = 45°', note: 'On a construit un angle de 45°. En repliant encore, on obtient 22,5° !' },
     ]],
   ],
   exos: cm1Exos('c2an', [
-    ['Nomme de deux façons l\'angle de sommet E dont les côtés passent par D et F.', 'L\'angle DEF ou l\'angle FED.'],
-    ['Aigu, droit ou obtus ? 35° · 90° · 100° · 89° · 170°', 'aigu · droit · obtus · aigu · obtus.'],
-    ['Calcule : la moitié d\'un angle droit · le tiers d\'un angle droit · un angle droit et demi.', '45° · 30° · 135°.'],
-    ['Avec des gabarits de 30° et de 45°, comment obtenir 75° ? 60° ? 105° ?', '45° + 30° · 30° + 30° · 45° + 30° + 30°.'],
-    ['Quelle est la mesure de chaque angle d\'un triangle équilatéral ? d\'un rectangle ?', '60° · 90°.'],
-    ['Quel angle forment les aiguilles d\'une horloge à 3 h ? à 1 h ? à 5 h ?', '90° · 30° (le tiers d\'un angle droit) · 150°.'],
-    ['Plie une feuille pour obtenir un angle de 45°, puis un angle de 22,5°.', 'Plier le coin (90°) en deux : 45° ; replier encore en deux : 22,5°.'],
+    ['Nomme de deux façons l\'angle de sommet E dont les côtés passent par D et F.',
+      cm1Redac('Nom de l\'angle', '', 'Cet angle s\'appelle l\'angle DEF ou l\'angle FED : la lettre du sommet E est au milieu.')],
+    [`Aigu, droit ou obtus ?${cm1Liste(['35°', '90°', '100°', '89°', '170°'])}`,
+      cm1Redac('Nature des angles', '', '35° et 89° sont des angles aigus, car ils mesurent moins de 90°. 90° est un angle droit. 100° et 170° sont des angles obtus, car ils mesurent entre 90° et 180°.')],
+    [`Calcule.${cm1Liste(['la moitié d\'un angle droit', 'le tiers d\'un angle droit', 'un angle droit et demi'])}`,
+      cm1Redac('Moitié d\'un angle droit', '90 ÷ 2 = 45', 'La moitié d\'un angle droit mesure 45°.')
+      + cm1Redac('Tiers d\'un angle droit', '90 ÷ 3 = 30', 'Le tiers d\'un angle droit mesure 30°.')
+      + cm1Redac('Un angle droit et demi', '90 + 45 = 135', 'Un angle droit et demi mesure 135°.')],
+    [`Avec des gabarits de 30° et de 45°, comment obtenir ces angles ?${cm1Liste(['75°', '60°', '105°'])}`,
+      cm1Redac('Assemblages', { suite: ['45 + 30 = 75', '30 + 30 = 60', '45 + 30 + 30 = 105'] }, 'On place côte à côte un gabarit de 45° et un de 30° pour 75°, deux gabarits de 30° pour 60°, et un gabarit de 45° avec deux de 30° pour 105°.')],
+    ['Quelle est la mesure de chaque angle d\'un triangle équilatéral ? d\'un rectangle ?',
+      cm1Redac('Angles', '', 'Chaque angle d\'un triangle équilatéral mesure 60°. Chaque angle d\'un rectangle est droit : il mesure 90°.')],
+    ['Quel angle forment les aiguilles d\'une horloge à 3 h ? à 1 h ? à 5 h ?',
+      cm1Redac('Angle pour une heure', '90 ÷ 3 = 30', 'Entre deux nombres du cadran, il y a 30°, car 3 heures font un angle droit.')
+      + cm1Redac('Angles des aiguilles', { suite: ['3 × 30 = 90', '1 × 30 = 30', '5 × 30 = 150'] }, 'À 3 h, l\'angle mesure 90° ; à 1 h, 30° ; à 5 h, 150°.')],
+    ['Plie une feuille pour obtenir un angle de 45°, puis un angle de 22,5°.',
+      cm1Redac('Pliages', { suite: ['90 ÷ 2 = 45', '45 ÷ 2 = 22,5'] }, 'On plie le coin de la feuille (90°) en deux pour obtenir 45°, puis on replie encore en deux pour obtenir 22,5°.')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : pourquoi 360 degrés ?', [
     'Les <b>Babyloniens</b> partageaient le tour complet en <b>360 degrés</b>. Pourquoi 360 ? Peut-être parce que l\'année compte environ 360 jours : le Soleil semble avancer d\'un degré par jour dans le ciel. Et 360 se partage en beaucoup de parts égales : 2, 3, 4, 5, 6, 8, 9, 10, 12…',
