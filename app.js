@@ -3296,6 +3296,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.917', date:'2026-10-02', items:[
+    'Suivi en direct d\'une interrogation : bouton « Projeter » pour montrer au tableau, en grand et sans aucun nom, la réponse d\'un élève à une question (dans sa copie) ou les résultats de la classe à une question avec ses erreurs fréquentes (vue Par question). La correction ne s\'affiche que si on la demande ; la projection se met à jour en direct.',
+  ] },
   { version:'2026-08-19.916', date:'2026-10-02', items:[
     'Interrogations en ligne : nouveau bouton « Suivi en direct ». Une vignette par élève (pas commencé, en cours, inactif, rendu), avec sa progression, la question où il en est, le temps passé, ses sorties de la page (alerte immédiate) et une pastille juste / faux / à vérifier par question. Un clic sur un élève montre sa copie qui se remplit en direct ; la vue « Par question » donne la part de réponses justes et les erreurs les plus fréquentes.',
     'Interrogations en ligne : l\'élève lit sur sa page « Ton professeur peut suivre ton travail en direct ».',

@@ -44,6 +44,7 @@ function qzSuiviFermer(){
   if(!qzS) return;
   clearInterval(qzS.timer); clearTimeout(qzS.bientot);
   try{ sb.removeChannel(qzS.ch); }catch(e){}
+  qzSuiviProjFermer();
   const v = document.getElementById('qzSuivi'); if(v) v.style.display = 'none';
   document.body.classList.remove('qzs-ouvert');
   qzS = null;
@@ -109,7 +110,8 @@ function qzSuiviCopieHtml(e){
   const ctx = { reglages: qzS.reglages, seed: null, pfx: 'k' }, qe = qzS.encours.get(e.id);
   return qzS.qs.map(q => { const v = qzSuiviVerdict(q, c);
     return `<div class="qz-q corr qzs-q${q.id === qe && !qzEstRendue(c) ? ' cur' : ''}"><div class="qz-q-head"><span class="qz-q-num">${qzS.num[q.id]}</span>
-      <span class="qzs-v" style="--c:${QZS_VERD[v][0]}">${QZS_VERD[v][1]}</span>${q.id === qe && !qzEstRendue(c) ? '<span class="qzs-ici"><span class="gicon">edit</span> en train de répondre</span>' : ''}</div>
+      <span class="qzs-v" style="--c:${QZS_VERD[v][0]}">${QZS_VERD[v][1]}</span>${q.id === qe && !qzEstRendue(c) ? '<span class="qzs-ici"><span class="gicon">edit</span> en train de répondre</span>' : ''}
+      ${v !== 'vide' ? `<button type="button" class="qzs-proj-btn" onclick="qzSuiviProjeter({type:'copie', e:'${e.id}', q:'${q.id}'})" title="Montrer cette réponse au tableau, sans le nom de l'élève"><span class="gicon">cast</span> Projeter</button>` : ''}</div>
       ${qzEnonceHtml(q)}<div class="qz-q-rep">${v === 'vide' ? '<p class="hint" style="margin:0;">Pas encore de réponse.</p>' : qzRenderSaisie(q, (c.reponses || {})[q.id], 'corrige', ctx)}</div></div>`; }).join('');
 }
 // Vue par question : réponses, part de justes, réponses fausses les plus fréquentes.
@@ -130,6 +132,7 @@ function qzSuiviQuestionsHtml(){
     const barre = ['juste', 'partiel', 'faux', 'avoir', 'sondage'].filter(k => cpt[k]).map(k => `<i style="width:${cpt[k] / Math.max(1, tot) * 100}%;background:${QZS_VERD[k][0]}" title="${cpt[k]} ${QZS_VERD[k][1]}"></i>`).join('');
     const top = [...fausses.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3);
     return `<div class="qzs-qr"><div class="qzs-qr-h"><span class="qz-q-num">${qzS.num[q.id]}</span><span class="qzs-qr-e">${qzMath(String(q.enonce || '').replace(/\s+/g, ' ').slice(0, 140))}</span>
+        ${rep ? `<button type="button" class="qzs-proj-btn" onclick="qzSuiviProjeter({type:'question', q:'${q.id}'})" title="Montrer au tableau les résultats de la classe et les erreurs fréquentes, sans aucun nom"><span class="gicon">cast</span> Projeter</button>` : ''}
         <span class="qzs-qr-n"><b>${rep}</b> / ${tot} réponse${rep > 1 ? 's' : ''}${cpt.juste + cpt.partiel + cpt.faux ? ` · <b style="color:#2E9C6A;">${Math.round(cpt.juste / Math.max(1, cpt.juste + cpt.partiel + cpt.faux) * 100)} %</b> justes` : ''}</span></div>
       <div class="qzs-barre">${barre}</div>
       ${top.length ? `<div class="qzs-err"><span class="gicon">error</span> Erreurs fréquentes : ${top.map(([t, n]) => `<span>${qzMath(t)} <b>×${n}</b></span>`).join('')}</div>` : ''}</div>`;
@@ -157,7 +160,51 @@ function qzSuiviRendre(){
     </div>
     <p class="qzs-leg">${['juste', 'partiel', 'faux', 'avoir', 'vide'].map(k => `<span><i style="background:${QZS_VERD[k][0]}"></i>${QZS_VERD[k][1]}</span>`).join('')}<span class="hint" style="margin:0;">Correction automatique provisoire, visible de vous seul.</span></p>`;
   const nv = v.querySelector('.qzs-copie'); if(nv) nv.scrollTop = scroll;
+  if(qzS.proj) qzSuiviProjRendre();
   if(typeof qzChargerPhotos === 'function') try{ qzChargerPhotos(v); }catch(e){}
+}
+
+/* ---------- Projection au tableau, anonyme ----------
+   Demandé : « projeter anonymement une copie ou une erreur fréquente au tableau ». Plein écran, en
+   grand, sans aucun nom ; mis à jour en direct ; la correction n'apparaît que si on la demande. */
+function qzSuiviProjeter(p){
+  if(!qzS) return;
+  qzS.proj = Object.assign({ corr: false }, p);
+  let o = document.getElementById('qzsProj');
+  if(!o){ o = document.createElement('div'); o.id = 'qzsProj'; document.body.appendChild(o); }
+  o.style.display = 'flex';
+  qzSuiviProjRendre();
+  const f = o.requestFullscreen || o.webkitRequestFullscreen;
+  if(f && !document.fullscreenElement){ try{ const r = f.call(o); if(r && r.catch) r.catch(() => {}); }catch(e){} }
+}
+function qzSuiviProjFermer(){
+  const o = document.getElementById('qzsProj'); if(o) o.style.display = 'none';
+  if(document.fullscreenElement && document.fullscreenElement.id === 'qzsProj'){ try{ document.exitFullscreen(); }catch(e){} }
+  if(qzS) qzS.proj = null;
+}
+function qzSuiviProjCorr(){ if(qzS && qzS.proj){ qzS.proj.corr = !qzS.proj.corr; qzSuiviProjRendre(); } }
+function qzSuiviProjRendre(){
+  const o = document.getElementById('qzsProj'); if(!o || !qzS || !qzS.proj) return;
+  const p = qzS.proj, q = qzS.qs.find(x => x.id === p.q); if(!q) return qzSuiviProjFermer();
+  const ctx = { reglages: qzS.reglages, seed: null, pfx: 'p' };
+  let corps = '';
+  if(p.type === 'copie'){
+    const c = qzS.copies.get(p.e), rep = c && c.reponses ? c.reponses[q.id] : undefined, v = qzSuiviVerdict(q, c);
+    corps = `<div class="qzs-p-sous">La réponse d'un élève de la classe</div>
+      ${p.corr ? `<span class="qzs-v" style="--c:${QZS_VERD[v][0]}">${QZS_VERD[v][1]}</span>` : ''}
+      <div class="qz-q-rep">${rep === undefined ? '<p class="hint">Pas encore de réponse.</p>' : qzRenderSaisie(q, rep, p.corr ? 'corrige' : 'lecture', ctx)}</div>`;
+  } else {
+    const tmp = document.createElement('div'); tmp.innerHTML = qzSuiviQuestionsHtml();
+    const bloc = [...tmp.querySelectorAll('.qzs-qr')][qzS.qs.indexOf(q)];
+    if(bloc){ bloc.querySelectorAll('.qzs-proj-btn, .qzs-qr-e, .qz-q-num').forEach(x => x.remove()); }
+    corps = `<div class="qzs-p-sous">Les réponses de la classe</div>${bloc ? bloc.innerHTML : ''}
+      ${p.corr && !['ouverte', 'figure'].includes(q.type) ? `<div class="qz-q-rep">${qzRenderSaisie(q, undefined, 'corrige', ctx)}</div>` : ''}`;
+  }
+  o.innerHTML = `<div class="qzs-p-barre"><span>Question ${qzS.num[q.id]}</span>
+      <button onclick="qzSuiviProjCorr()"><span class="gicon">${p.corr ? 'visibility_off' : 'fact_check'}</span> ${p.corr ? 'Masquer la correction' : 'Montrer la correction'}</button>
+      <button onclick="qzSuiviProjFermer()"><span class="gicon">close</span> Fermer</button></div>
+    <div class="qzs-p-corps"><div class="qzs-p-enonce">${qzEnonceHtml(q)}</div>${corps}</div>`;
+  if(typeof qzChargerPhotos === 'function') try{ qzChargerPhotos(o); }catch(e){}
 }
 
 (function qzsStyles(){
@@ -193,6 +240,15 @@ function qzSuiviRendre(){
     .qzs-err{font-size:.85rem;color:#8a1f1f;display:flex;gap:8px;flex-wrap:wrap;align-items:center;} .qzs-err .gicon{font-size:17px;} .qzs-err span{background:#FBECEA;border-radius:8px;padding:1px 8px;}
     .qzs-leg{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:0;padding:6px 18px 10px;font-size:.8rem;} .qzs-leg i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px;}
     @media (max-width:900px){ .qzs-corps.avec-copie{grid-template-columns:1fr;} }
+    .qzs-proj-btn{margin-left:auto;border:1.5px solid #1F3A5C;background:#fff;color:#1F3A5C;border-radius:999px;padding:3px 10px;font:700 .78rem 'Space Grotesk',sans-serif;cursor:pointer;display:inline-flex;gap:4px;align-items:center;} .qzs-proj-btn .gicon{font-size:16px;}
+    .qzs-qr-h .qzs-proj-btn{margin-left:8px;}
+    #qzsProj{position:fixed;inset:0;z-index:9600;background:#fff;display:none;flex-direction:column;}
+    .qzs-p-barre{display:flex;gap:10px;align-items:center;padding:10px 18px;background:#1F3A5C;color:#fff;font:800 1.1rem 'Space Grotesk',sans-serif;}
+    .qzs-p-barre span:first-child{margin-right:auto;} .qzs-p-barre button{border:0;border-radius:10px;background:rgba(255,255,255,.16);color:#fff;font:700 .9rem 'Space Grotesk',sans-serif;padding:6px 12px;cursor:pointer;display:inline-flex;gap:4px;align-items:center;}
+    .qzs-p-corps{flex:1;overflow:auto;padding:24px max(24px, calc((100vw - 1100px) / 2));font-size:1.45rem;}
+    .qzs-p-corps .qz-choix, .qzs-p-corps input{font-size:1.3rem;} .qzs-p-corps .qzt-svg, .qzs-p-corps .qz-place svg{max-width:820px;}
+    .qzs-p-enonce{margin-bottom:18px;font-weight:600;} .qzs-p-sous{font:800 1rem 'Space Grotesk',sans-serif;color:#7A4FC0;text-transform:uppercase;letter-spacing:.04em;margin:6px 0 10px;}
+    .qzs-p-corps .qzs-barre{height:26px;border-radius:10px;} .qzs-p-corps .qzs-err{font-size:1.3rem;} .qzs-p-corps .qzs-qr-n{font-size:1.1rem;}
     .qz-suivi-note{display:flex;align-items:center;gap:6px;font-size:.82rem;color:#1F3A5C;background:#EEF4FA;border-radius:10px;padding:6px 10px;margin:0 0 10px;} .qz-suivi-note .gicon{font-size:18px;}
   `;
   document.head.appendChild(st);
