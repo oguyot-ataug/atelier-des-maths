@@ -13,8 +13,8 @@ document.getElementById('view-devoirs-prof').innerHTML = `
   <p style="color:var(--ink-soft);max-width:70ch;">Proposez un travail à faire à une classe -- un fichier ou une figure à rendre, une figure à compléter, une ou plusieurs séquences d'automatismes, un défi Objectif Nombre ou des défis de programmation par blocs.</p>
   <p class="hint" style="margin:0 0 12px;max-width:75ch;"><span class=gicon style="font-size:1rem;vertical-align:middle;color:#6B3FA0;">quiz</span> Les interrogations notées (questionnaires en ligne) ont leur propre page : <a href="#" onclick="event.preventDefault();qzBanqueOuvrir();">L'Atelier du prof › Évaluations › Interrogations en ligne</a>.</p>
 
-  <div class="tool-shell devoir-zone-create">
-    <p class="example-title devoir-zone-title" style="margin-bottom:6px;" id="devoirCreateTitle"><span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir</p>
+  <div class="tool-shell devoir-zone-create replie">
+    <p class="example-title devoir-zone-title" style="margin-bottom:6px;cursor:pointer;" id="devoirCreateTitle" onclick="devoirZoneCreation()" title="Ouvrir / replier le formulaire"><span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir</p>
     <div class="tool-row">
       <input type="text" id="devoirNewTitre" placeholder="Titre (ex. Exercice 4 p.32)" style="min-width:220px;">
       <select id="devoirNewClasse" onchange="onDevoirNewClasseChange()"></select>
@@ -465,7 +465,13 @@ async function editDevoirPrompt(devoirId){
   document.getElementById('devoirCreateStatus').textContent = '';
   renderDevoirTargetModePicker();
   renderDevoirTypePicker();
+  devoirZoneCreation(true);
   document.querySelector('.devoir-zone-create').scrollIntoView({behavior:'smooth', block:'start'});
+}
+// Formulaire « Nouveau devoir » replié par défaut (la page se lit d'abord comme une liste, rangée par classe).
+function devoirZoneCreation(ouvrir){
+  const z = document.querySelector('.devoir-zone-create'); if(!z) return;
+  z.classList.toggle('replie', ouvrir === undefined ? !z.classList.contains('replie') : !ouvrir);
 }
 /* Remise à zéro pure du formulaire (aucune navigation) -- utilisée par cancelDevoirEdit ET par
    renderDevoirsProf (pour effacer un éventuel état d'édition laissé par une édition abandonnée
@@ -484,6 +490,7 @@ function resetDevoirFormState(){
   document.getElementById('devoirCreateTitle').innerHTML = '<span class=gicon style="color:var(--accent);">add_circle</span> Nouveau devoir';
   document.getElementById('devoirCreateBtn').textContent = 'Assigner ce devoir';
   document.getElementById('devoirCancelEditBtn').style.display = 'none';
+  devoirZoneCreation(false);
 }
 /* Édition ouverte depuis Supervision (supEditDevoirAndOpen, app.js) : où revenir après
    "Annuler la modification" ou un enregistrement réussi. */
@@ -510,18 +517,25 @@ function devoirTypeLabel(type){ const t = DEVOIR_TYPES.find(t=>t.id===type) || (
 async function refreshDevoirsProfListing(){
   const el = document.getElementById('devoirsProfListing');
   const { data: devoirsList, error } = await sb.from('devoirs')
-    .select('id,titre,consigne,date_depot,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_rounds,prog_defis,student_ids,qz_publie_at,questionnaire_id,classes(nom,niveau)')
+    .select('id,titre,consigne,date_depot,date_limite,created_at,class_id,type,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_rounds,prog_defis,student_ids,qz_publie_at,questionnaire_id,archive_at,classes(nom,niveau)')
     .eq('teacher_id', currentUser.id).neq('type','questionnaire').order('created_at',{ascending:false});
   if(error){ el.textContent = 'Erreur : '+error.message; return; }
   if(!devoirsList || !devoirsList.length){ el.innerHTML = '<p class="hint">Aucun devoir assigné pour l\'instant.</p>'; return; }
   // Nombre de rendus / nombre d'élèves concernés (toute la classe, ou la sélection d'élèves
   // ciblée par ce devoir -- signalé : "permettre d'assigner à la classe ou quelques élèves").
-  const rows = await Promise.all(devoirsList.map(async d=>{
+  // Décomptes en deux requêtes pour toute la liste (au lieu de deux par devoir).
+  const classIds = [...new Set(devoirsList.map(d=>d.class_id))];
+  const [{ data: cs }, { data: rr }] = await Promise.all([
+    sb.from('class_students').select('class_id').in('class_id', classIds),
+    sb.from('devoirs_rendus').select('devoir_id').in('devoir_id', devoirsList.map(d=>d.id)).eq('est_rendu', true),
+  ]);
+  const taille = {}, rendus = {};
+  (cs||[]).forEach(r=>{ taille[r.class_id] = (taille[r.class_id]||0)+1; });
+  (rr||[]).forEach(r=>{ rendus[r.devoir_id] = (rendus[r.devoir_id]||0)+1; });
+  const rows = devoirsList.map(d=>{
     const cible = d.student_ids && d.student_ids.length;
-    let totalEleves;
-    if(cible){ totalEleves = d.student_ids.length; }
-    else { const { count } = await sb.from('class_students').select('*',{count:'exact',head:true}).eq('class_id', d.class_id); totalEleves = count; }
-    const { count: nbRendus } = await sb.from('devoirs_rendus').select('*',{count:'exact',head:true}).eq('devoir_id', d.id).eq('est_rendu', true);
+    const totalEleves = cible ? d.student_ids.length : (taille[d.class_id]||0);
+    const nbRendus = rendus[d.id]||0;
     const dateStr = d.date_limite ? new Date(d.date_limite).toLocaleDateString('fr-FR') : '';
     const typeDetail = d.type==='automatismes' ? ` · ${(d.automatismes_sequences||[]).length} séquence(s)`
       : d.type==='compte_est_bon' ? ` · ${(d.ceb_rounds||[]).length||1} compte(s), ${d.ceb_n_large??2} grand(s) nombre(s), ${d.ceb_timer_on?'chronométré':'illimité'}`
@@ -540,11 +554,12 @@ async function refreshDevoirsProfListing(){
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="editDevoirPrompt('${d.id}')"><span class=gicon>edit</span> Éditer</button>
         ${['automatismes','compte_est_bon','programmation'].includes(d.type) && typeof dvSuiviOuvrir==='function' ? `<button class="btn" style="font-size:.72rem;padding:4px 8px;background:#C0392B;" onclick="dvSuiviOuvrir('${d.id}')" title="Voir en direct qui travaille, sur quoi, et avec quels résultats"><span class=gicon>live_tv</span> Suivi en direct</button>` : ''}
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;" onclick="openDevoirSubmissions('${d.id}')"><span class=gicon>visibility</span> Voir les rendus</button>
+        ${typeof dvlArchiveBtn==='function' ? dvlArchiveBtn(d) : ''}
         <button class="btn secondary" style="font-size:.72rem;padding:4px 8px;color:#a83c1f;" onclick="deleteDevoirPrompt('${d.id}')"><span class=gicon>delete</span> Supprimer</button>
       </span>
     </div>`;
-  }));
-  el.innerHTML = rows.join('');
+  });
+  if(typeof dvlAfficher==='function') dvlAfficher(el, devoirsList, rows); else el.innerHTML = rows.join('');
 }
 async function deleteDevoirPrompt(devoirId){
   if(!(await niceConfirm('Supprimer ce devoir et tous ses rendus ?'))) return;

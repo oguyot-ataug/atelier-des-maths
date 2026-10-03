@@ -3314,6 +3314,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.937', date:'2026-10-03', items:[
+    'Devoirs en ligne rangés comme les interrogations : une pastille par classe (la classe active par défaut), une section par classe, « Archiver » sur chaque devoir et « Archiver les terminés » (date limite passée) ; les archives restent consultables en bas de chaque classe. Le formulaire « Nouveau devoir » est replié (un clic l\'ouvre)',
+    'Bilan de la classe en tableau, comme un carnet de notes : une ligne par élève, une colonne par devoir et par interrogation de la période (trimestre ou année) : automatismes, comptes trouvés, défis réussis, rendus, notes ; retards encadrés ; travaux faits, réussite moyenne, moyenne /20 et moyenne de la classe. Imprimable et exportable en CSV',
+    'Appréciations de fin de période dans le bilan : rédigées par l\'IA à partir des seuls résultats (élèves anonymisés), puis modifiables ; visibles uniquement par l\'enseignant'
+  ]},
   { version:'2026-08-19.936', date:'2026-10-03', items:[
     'Suivi en direct des devoirs : la dernière activité s\'écrit « il y a 5 min », « aujourd\'hui à 14:05 », « hier à 9:27 » ou « le 28/09 à 11:27 » (au lieu de « il y a 29850447 min » quand l\'élève n\'avait que des résultats d\'automatismes) ; les longs temps de travail s\'écrivent en heures (« 2 h 05 »)'
   ]},
