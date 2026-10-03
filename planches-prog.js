@@ -37,6 +37,9 @@ function plProgApercu(d){
   const Y = y => -y;
   let s = `<svg viewBox="-240 -180 480 360" style="width:100%;max-width:300px;display:block;margin:4px auto;background:#fff;border:1px solid #DCE3EA;border-radius:8px;">`;
   (d.decor || []).forEach(o => {
+    if(o.grad){ const L = Math.hypot(o.x2 - o.x1, o.y2 - o.y1), ux = (o.x2 - o.x1) / L, uy = (o.y2 - o.y1) / L;
+      for(let i = 0; i <= Math.floor(L / o.pas); i++){ const h = i % 5 ? 5 : 9, px = o.x1 + ux * i * o.pas, py = o.y1 + uy * i * o.pas; s += `<line x1="${px - uy * h}" y1="${Y(py + ux * h)}" x2="${px + uy * h}" y2="${Y(py - ux * h)}" stroke="#1F3A5C" stroke-width="${i % 5 ? 1.5 : 2.5}"/>`; }
+      return; }
     if(o.point) s += `<path d="M${o.x - 6},${Y(o.y) - 6} L${o.x + 6},${Y(o.y) + 6} M${o.x - 6},${Y(o.y) + 6} L${o.x + 6},${Y(o.y) - 6}" stroke="#1F3A5C" stroke-width="3"/>`;
     else s += `<line x1="${o.x1}" y1="${Y(o.y1)}" x2="${o.x2}" y2="${Y(o.y2)}" stroke="${o.pointille ? '#E35D3A' : '#1F3A5C'}" stroke-width="${o.pointille ? 4 : 3.5}"${o.pointille ? ' stroke-dasharray="12 10"' : ''} stroke-linecap="round"/>`;
     if(o.nom){ const lx = o.point ? o.x + 10 : o.lx != null ? o.lx : o.x2 + 6, ly = o.point ? o.y + 12 : o.ly != null ? o.ly : o.y2 + 8; s += `<text x="${lx}" y="${Y(ly)}" font-size="24" font-weight="700" fill="${o.pointille ? '#C04A28' : '#1F3A5C'}" font-family="Space Grotesk">${o.nom}</text>`; }

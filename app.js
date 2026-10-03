@@ -3327,6 +3327,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.958', date:'2026-10-03', items:[
+    'Nouveau défi CM1 « La perpendiculaire : compte les graduations » : la droite (d) est graduée (un petit trait tous les 10 pas, un grand tous les 50 pas) ; on ne dit pas à quelle distance est A, il faut compter avant d\'y aller sans tracer, puis tracer la perpendiculaire (aussi dans Mon TD)',
+  ] },
   { version:'2026-08-19.957', date:'2026-10-03', items:[
     'Lutin olive : stylo levé, l\'olive est seule (sans crayon)',
   ] },

@@ -188,6 +188,12 @@ class ProgScene {
     // Décor d'un défi : droites données (trait plein) et droites à tracer (pointillés), avec leur nom ;
     // { x1, y1, x2, y2, nom, pointille, point } -- point : un point marqué d'une croix, nommé.
     (this.decor || []).forEach(o => {
+      if(o.grad){ // graduation le long d'une droite : petit trait tous les « pas », grand trait tous les 5 pas
+        const L = Math.hypot(o.x2 - o.x1, o.y2 - o.y1), ux = (o.x2 - o.x1) / L, uy = (o.y2 - o.y1) / L, n = Math.floor(L / o.pas);
+        x.strokeStyle = '#1F3A5C'; x.lineCap = 'butt';
+        for(let i = 0; i <= n; i++){ const g = i % 5 === 0, h = g ? 7 : 4, px = o.x1 + ux * i * o.pas, py = o.y1 + uy * i * o.pas; x.lineWidth = g ? 1.8 : 1.1; x.beginPath(); x.moveTo(px - uy * h, py + ux * h); x.lineTo(px + uy * h, py - ux * h); x.stroke(); }
+        return;
+      }
       if(o.point){ x.strokeStyle = '#1F3A5C'; x.lineWidth = 2; x.beginPath(); x.moveTo(o.x - 5, o.y - 5); x.lineTo(o.x + 5, o.y + 5); x.moveTo(o.x - 5, o.y + 5); x.lineTo(o.x + 5, o.y - 5); x.stroke(); }
       else { x.setLineDash(o.pointille ? [7, 6] : []); x.lineWidth = o.pointille ? 2.5 : 2.2; x.strokeStyle = o.pointille ? 'rgba(227,93,58,.75)' : '#1F3A5C'; x.lineCap = 'round';
         x.beginPath(); x.moveTo(o.x1, o.y1); x.lineTo(o.x2, o.y2); x.stroke(); x.setLineDash([]); }
