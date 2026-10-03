@@ -1824,3 +1824,16 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .nb-cours-lien{display:inline-flex;align-items:center;gap:4px;margin:2px 0 6px;border:1.5px solid var(--accent-blue,#0C5BA0);background:#fff;color:var(--accent-blue,#0C5BA0);border-radius:999px;padding:3px 11px;font-weight:700;font-size:.82rem;cursor:pointer;}
 .nb-cours-lien .gicon{font-size:17px;}
 @media print{ .nb-cours-lien{display:none;} }
+
+/* Outils du chapitre : une ligne, des couleurs (Personnaliser, Suggérer, Exporter en PDF, Planches, Questions flash) */
+.chap-outils{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:8px 0 16px;}
+.chap-outils .cp-bar{margin:0;}
+.chap-outils #chapSuggestRow{margin:0;}
+.chap-export{display:inline-flex;align-items:center;gap:8px;}
+#view-chapitre:not([data-onglet="cours"]) .chap-export{display:none;}
+.btn.secondary.cp-btn{background:#EEF4FB;border-color:#B9CFE8;color:#2A5A8C;}
+.btn.secondary.chap-btn-sugg{background:#FFF6E5;border-color:#F2CD86;color:#8A5A00;}
+.btn.secondary.chap-btn-pdf{background:#FDEEE9;border-color:#F3B7A6;color:#B3452C;}
+.btn.secondary.pl-bouton{background:#EAF7EF;border-color:#9ED3B4;color:#1F7A4D;}
+.btn.secondary.fp-bouton{background:#F4F0FC;border-color:#C9B5EE;color:#5B3A99;}
+.chap-outils .btn.secondary:hover, .btn.secondary.pl-bouton:hover, .btn.secondary.fp-bouton:hover{filter:brightness(.97);}

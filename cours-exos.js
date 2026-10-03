@@ -409,8 +409,9 @@ function cxProfDetailFaire(){
       ${rep._mot && rep._mot.t ? `<div class="cx-mot cx-mot-envoye">${cxMotHtml(rep._mot, true)}<button class="btn secondary td-mini" onclick="cxProfMot(true)" title="Retirer le mot de son écran"><span class="gicon">delete</span></button></div>` : ''}</div>`;
   if(it.exo.type === 'td'){
     const tenu = s.main, r = rep.res;
+    const xc = cxTdExo(it);
     box.innerHTML = `${tete}${tenu ? '<p class="cx-tenu"><span class="gicon">pan_tool_alt</span> Vous avez la main : ce que vous faites ici apparaît en direct sur l\'écran de l\'élève. Rendez-lui la main ensuite.</p>' : ''}
-      <p class="hint" style="margin:4px 0;">${r ? `Dernière vérification : ${r.juste} / ${r.total} juste${r.juste > 1 ? 's' : ''}.` : rep.etat ? 'Pas encore vérifié.' : 'Pas encore commencé.'}</p><div class="cx-td" id="cxTdProf"></div>`;
+      <p class="hint" style="margin:4px 0;">${r ? `Dernière vérification : ${r.juste} / ${r.total} juste${r.juste > 1 ? 's' : ''}.` : rep.etat ? 'Pas encore vérifié.' : 'Pas encore commencé.'}</p>${xc && xc.consigne ? `<div class="cx-consigne">${xc.consigne}</div>` : ''}<div class="cx-td" id="cxTdProf"></div>`;
     const x = cxTdExo(it), zone = box.querySelector('#cxTdProf');
     if(!x || !plNum(zone, x, { etat: rep.etat, res: tenu ? null : r, lecture: !tenu, onChange: tenu ? e => cxTdProfChange(e) : null })) zone.innerHTML = it.html || '';
     return;
@@ -569,7 +570,7 @@ function cxEleveTd(k, it, c){
   const rep = cdE.trav.get(k) || {}, tenu = cdE.main === k, x = cxTdExo(it);
   const corr = it.corr && cdE.d && cdE.d.idx === k && cdE.d.etat && cdE.d.etat.corr;
   if(typeof plClavier !== 'undefined') plClavier.fermer();
-  c.innerHTML = `${cxEleveTete(k, it)}<div class="cx-td" id="cxTdEl"></div>
+  c.innerHTML = `${cxEleveTete(k, it)}${x && x.consigne ? `<div class="cx-consigne">${x.consigne}</div>` : ''}<div class="cx-td" id="cxTdEl"></div>
     ${tenu ? '' : `<div class="pn-actions"><button class="btn cx-td-verif" onclick="cxEleveTdVerifier()"><span class="gicon">task_alt</span> Vérifier ma réponse</button>
       <button class="btn secondary" onclick="cxEleveTdEffacer()"><span class="gicon">ink_eraser</span> Effacer</button></div>`}
     <div class="pn-bilan ${rep.res ? (rep.res.juste === rep.res.total ? 'ok' : 'ko') : ''}" id="cxTdBilan">${rep.res && typeof plNumBilan === 'function' ? plNumBilan(rep.res) : ''}</div>

@@ -1100,6 +1100,7 @@ function openChapitre(c, tab, lvlOverride, opts){
   const wantTab = tab||'cours';
   document.querySelector(`.tab-btn[data-tab="${wantTab}"]`).classList.add('active');
   document.getElementById('panel-'+wantTab).classList.add('active');
+  document.getElementById('view-chapitre').dataset.onglet = wantTab; // « Exporter en PDF » : onglet Cours seulement
 
   document.getElementById('quizArea').innerHTML='';
   if(demo) demo.init();
@@ -1124,6 +1125,7 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+    document.getElementById('view-chapitre').dataset.onglet = btn.dataset.tab;
   });
 });
 
@@ -3327,6 +3329,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.962', date:'2026-10-03', items:[
+    'Session COURS : la consigne des exercices de TD s\'affiche sur la copie de l\'élève (et dans la vue détaillée du professeur)',
+    'Chapitre : « Personnaliser cet onglet », « Suggérer une amélioration » et « Exporter en PDF » (onglet Cours) sur une seule ligne, en couleur ; « Planches à imprimer » (vert) et « Questions flash » (violet) en couleur',
+    'Questions flash : « Essayer » (le professeur passe les questions retenues lui-même, une par une, avant la classe) et « Enregistrer dans ma banque » (un questionnaire de la banque, sur tous ses appareils, réutilisable) ; fenêtre en couleur',
+  ] },
   { version:'2026-08-19.961', date:'2026-10-03', items:[
     'Questions flash du CM2 : 265 questions (au lieu de 150) et du CE2 : 205 (au lieu de 156), rangées par leçon du cours ; chaque leçon en a au moins deux',
   ] },
