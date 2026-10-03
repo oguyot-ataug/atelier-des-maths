@@ -3327,6 +3327,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.949', date:'2026-10-03', items:[
+    'CM1 Droites parallèles et perpendiculaires : la droite tracée se nomme (d\') (puis (d\'\') pour la parallèle par deux perpendiculaires), comme en 6e, au lieu de (p) et (e) ; la figure « perpendiculaire passant par un point » n\'est plus coupée en haut',
+  ] },
   { version:'2026-08-19.948', date:'2026-10-03', items:[
     'Notations (CE2, CM1, CM2) : plus jamais « [AB] = 6 cm » -- [AB] est le segment, sa longueur s\'écrit AB ; les consignes disent « le segment [AB] mesure… », « je trace le segment [AC] » (au CM, les symboles sont toujours explicités)',
     'CM1 Longueurs : les deux règles graduées d\'un même exercice ont la même échelle ; les dessins des planches (règles, balances, quadrillages, figures) ne sont plus réduits à 66 px de haut',

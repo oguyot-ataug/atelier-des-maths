@@ -106,7 +106,7 @@ function cm1dpMethodes(){
 <div class="sub-header"><span class="letter">M</span><h4>Tracer la droite perpendiculaire à une droite passant par un point (à l'équerre)</h4></div>
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:6px;">Clique sur « Étape suivante » : l'équerre glisse le long de la droite (d) jusqu'au point M.</p>
-  ${dpPerpMethodeSVGBlock('cm1dp-pm', '(d)', '(p)', 'M')}
+  ${dpPerpMethodeSVGBlock('cm1dp-pm', '(d)', "(d')", 'M')}
   <div class="figure-toolbar"><button class="btn" onclick="cm1dpPm.next()">Étape suivante →</button><button class="btn secondary" onclick="cm1dpPm.reset()">Recommencer</button></div>
 </div>
 ${cm1Astuce('Le point peut aussi être <b>sur</b> la droite (d) : on fait glisser l\'équerre jusqu\'à ce que son angle droit soit sur le point, puis on trace le long de l\'autre côté.')}
@@ -126,29 +126,29 @@ ${cm1Rem('Au CM1, il faut surtout savoir <b>reconnaître</b> et <b>vérifier</b>
 ${dpAnimL('cm1dp-para-L', 'para')}
 <p class="example-title">Avec la règle et l'équerre qui glisse :</p>
 <div class="figure-wrap">
-  ${dpParaMethodeSVGBlock('cm1dp-pam', '0 0 400 430', '(d)', '(e)', 'N')}
+  ${dpParaMethodeSVGBlock('cm1dp-pam', '0 0 400 430', '(d)', "(d')", 'N')}
   <div class="figure-toolbar"><button class="btn" onclick="cm1dpPam.next()">Étape suivante →</button><button class="btn secondary" onclick="cm1dpPam.reset()">Recommencer</button></div>
 </div>
 `;
-  cm1dpPm = makePerpMethodeDemo('cm1dp-pm', { x: 60, y: 175 }, { x: 330, y: 120 }, { x: 230, y: 40 }, [
+  cm1dpPm = makePerpMethodeDemo('cm1dp-pm', { x: 50, y: 215 }, { x: 330, y: 160 }, { x: 225, y: 88 }, [
     'Je pose un côté de l\'angle droit de l\'équerre le long de la droite (d).',
     'Je fais glisser l\'équerre le long de la droite (d), sans la faire tourner.',
     'Je m\'arrête quand l\'autre côté de l\'angle droit touche le point M.',
     'Je pose la règle le long de ce côté de l\'équerre.',
     'J\'enlève l\'équerre ; la règle reste bien en place.',
-    'Je trace la droite le long de la règle et je code l\'angle droit : c\'est la droite (p).',
-    'La droite (p) passe par M et elle est perpendiculaire à la droite (d).']);
-  cm1dpPam = makeParaMethodeDemo('cm1dp-pam', { x: 60, y: 165 }, { x: 300, y: 85 }, { x: 216, y: 223 }, '(d)', '(e)', 'N');
+    'Je trace la droite le long de la règle et je code l\'angle droit : c\'est la droite (d\').',
+    'La droite (d\') passe par M et elle est perpendiculaire à la droite (d).']);
+  cm1dpPam = makeParaMethodeDemo('cm1dp-pam', { x: 60, y: 165 }, { x: 300, y: 85 }, { x: 216, y: 223 }, '(d)', "(d')", 'N');
   cm1dpDblDemo = makeSingleStepDemo(CM1DP_DBL_STEPS, 'cm1dp-dblDisplay');
   registerGeoStepDemo('cm1dp-pmSvg', { steps: () => cm1dpPm.steps(), getIdx: () => cm1dpPm.getIdx(), goto: (i, a) => cm1dpPm.goto(i, a) });
 }
-/* Parallèle par double perpendiculaire : (d) et N ; la perpendiculaire (p) à (d) passant par N ; la
-   perpendiculaire à (p) passant par N : elle est parallèle à (d). Figures calculées (cm1dpFig). */
+/* Parallèle par double perpendiculaire : (d) et N ; la perpendiculaire (d') à (d) passant par N ; la
+   perpendiculaire (d'') à (d') passant par N : elle est parallèle à (d). Figures calculées (cm1dpFig). */
 const CM1DP_DBL_STEPS = [
   { expr: cm1dpFig({ w: 360, h: 220, d: [[30, 170], [330, 110]], M: [190, 50], nomM: 'N', taille: 340 }), note: 'Une droite (d) et un point N qui n\'est pas sur la droite (d).' },
-  { expr: cm1dpFig({ w: 360, h: 220, d: [[30, 170], [330, 110]], M: [190, 50], nomM: 'N', sol: 'perp', nomSol: '(p)', taille: 340 }), note: 'Avec l\'équerre, je trace la droite (p) perpendiculaire à la droite (d) passant par N.' },
-  { expr: cm1dpFig({ w: 360, h: 220, d: [[30, 170], [330, 110]], M: [190, 50], nomM: 'N', sol: 'para', constr: true, nomConstr: '(p)', nomSol: '(e)', taille: 340 }), note: 'Je trace la droite (e) perpendiculaire à la droite (p), passant aussi par N.' },
-  { expr: cm1dpFig({ w: 360, h: 220, d: [[30, 170], [330, 110]], M: [190, 50], nomM: 'N', sol: 'para', constr: true, nomConstr: '(p)', nomSol: '(e)', taille: 340 }), note: 'Les droites (d) et (e) sont toutes les deux perpendiculaires à la droite (p) : elles sont <b>parallèles</b>.' },
+  { expr: cm1dpFig({ w: 360, h: 220, d: [[30, 170], [330, 110]], M: [190, 50], nomM: 'N', sol: 'perp', nomSol: "(d')", taille: 340 }), note: 'Avec l\'équerre, je trace la droite (d\') perpendiculaire à la droite (d) passant par N.' },
+  { expr: cm1dpFig({ w: 360, h: 220, d: [[30, 170], [330, 110]], M: [190, 50], nomM: 'N', sol: 'para', constr: true, nomConstr: "(d')", nomSol: "(d'')", taille: 340 }), note: 'Je trace la droite (d\'\') perpendiculaire à la droite (d\'), passant aussi par N.' },
+  { expr: cm1dpFig({ w: 360, h: 220, d: [[30, 170], [330, 110]], M: [190, 50], nomM: 'N', sol: 'para', constr: true, nomConstr: "(d')", nomSol: "(d'')", taille: 340 }), note: 'Les droites (d) et (d\'\') sont toutes les deux perpendiculaires à la droite (d\') : elles sont <b>parallèles</b>.' },
 ];
 
 document.getElementById('exos-demo-cm1-droites-paralleles').innerHTML = cm1Exos('dp', [
@@ -158,7 +158,7 @@ document.getElementById('exos-demo-cm1-droites-paralleles').innerHTML = cm1Exos(
   ['Trace une droite, appelée (d), et place un point A qui n\'est pas sur la droite (d). Trace la droite perpendiculaire à la droite (d) qui passe par A.',
     cm1Redac('Méthode', { suite: ['Je pose un côté de l\'angle droit de l\'équerre le long de (d).', 'Je fais glisser l\'équerre le long de (d) jusqu\'à ce que l\'autre côté touche A.', 'Je trace le long de ce côté, puis je code l\'angle droit.'] }, 'La droite tracée passe par A et coupe la droite (d) en formant un angle droit : elle est perpendiculaire à la droite (d).', cm1dpFig({ w: 260, h: 160, d: [[10, 130], [250, 80]], M: [150, 30], nomM: 'A', sol: 'perp', taille: 260 }))],
   ['<b>Pour aller plus loin</b> (CM2) : trace une droite (d) et place un point B qui n\'est pas sur la droite (d). Trace la droite parallèle à la droite (d) qui passe par B.',
-    cm1Redac('Méthode avec deux perpendiculaires', { suite: ['Je trace la droite (p) perpendiculaire à la droite (d) passant par B.', 'Je trace la droite perpendiculaire à la droite (p) passant par B.'] }, 'Les deux droites sont perpendiculaires à la droite (p) : la droite tracée est parallèle à la droite (d).', cm1dpFig({ w: 260, h: 160, d: [[10, 130], [250, 80]], M: [150, 35], nomM: 'B', sol: 'para', constr: true, nomConstr: '(p)', taille: 260 }))],
+    cm1Redac('Méthode avec deux perpendiculaires', { suite: ['Je trace la droite (d\') perpendiculaire à la droite (d) passant par B.', 'Je trace la droite (d\'\') perpendiculaire à la droite (d\') passant par B.'] }, 'Les droites (d) et (d\'\') sont perpendiculaires à la droite (d\') : la droite (d\'\') est parallèle à la droite (d).', cm1dpFig({ w: 260, h: 160, d: [[10, 130], [250, 80]], M: [150, 35], nomM: 'B', sol: 'para', constr: true, nomConstr: "(d')", nomSol: "(d'')", taille: 260 }))],
   ['Les droites (d1) et (d2) sont toutes les deux perpendiculaires à la droite (d). Que peut-on dire de (d1) et de (d2) ?',
     cm1Redac('Position de (d1) et (d2)', 'Deux droites perpendiculaires à une même droite', 'Les droites (d1) et (d2) sont parallèles entre elles.', `<svg viewBox="0 0 240 130" style="width:220px;display:block;"><line x1="10" y1="100" x2="230" y2="100" stroke="#1F3A5C" stroke-width="2"/><line x1="80" y1="10" x2="80" y2="125" stroke="#E35D3A" stroke-width="2"/><line x1="160" y1="10" x2="160" y2="125" stroke="#2EA8C9" stroke-width="2"/><path d="M80,91 h9 v9 M160,91 h9 v9" fill="none" stroke="#1F3A5C" stroke-width="1.4"/><text x="215" y="94" font-size="13" font-weight="700" fill="#1F3A5C" font-family="Space Grotesk">(d)</text><text x="58" y="22" font-size="13" font-weight="700" fill="#E35D3A" font-family="Space Grotesk">(d1)</text><text x="166" y="22" font-size="13" font-weight="700" fill="#2EA8C9" font-family="Space Grotesk">(d2)</text></svg>`)],
   ['Dans la classe, trouve deux bords parallèles et deux bords perpendiculaires.',
@@ -275,10 +275,10 @@ function cm1dpFig(o){
   if(o.M){
     const M = o.M, n0 = [-u[1], u[0]], t = (M[0] - P[0]) * u[0] + (M[1] - P[1]) * u[1], Hh = [P[0] + u[0] * t, P[1] + u[1] * t];
     const dM = Math.hypot(M[0] - Hh[0], M[1] - Hh[1]), n = dM > .5 ? [(M[0] - Hh[0]) / dM, (M[1] - Hh[1]) / dM] : n0;
-    if(o.sol === 'perp'){ s += ligne(M, n, '#E35D3A', 2.2) + coin(Hh, u, n); const e = [M[0] + n[0] * 26, M[1] + n[1] * 26]; s += txt(Math.min(W - 16, Math.max(16, e[0] + 22)), Math.max(14, e[1]), o.nomSol || '(p)', '#E35D3A'); }
+    if(o.sol === 'perp'){ s += ligne(M, n, '#E35D3A', 2.2) + coin(Hh, u, n); const e = [M[0] + n[0] * 26, M[1] + n[1] * 26]; s += txt(Math.min(W - 16, Math.max(16, e[0] + 22)), Math.max(14, e[1]), o.nomSol || "(d')", '#E35D3A'); }
     if(o.sol === 'para'){
       if(o.constr){ s += ligne(M, n, '#7A8BA0', 1.4, ' stroke-dasharray="5 4"') + coin(Hh, u, n) + coin(M, u, [-n[0], -n[1]]); if(o.nomConstr){ const e = [Hh[0] - n[0] * 26, Hh[1] - n[1] * 26]; s += txt(Math.min(W - 16, Math.max(16, e[0] + 18)), Math.min(H - 6, Math.max(14, e[1])), o.nomConstr, '#7A8BA0'); } }
-      s += ligne(M, u, '#E35D3A', 2.2) + txt(Math.min(W - 18, Math.max(18, M[0] + u[0] * 120)), Math.max(14, M[1] + u[1] * 120 - 10), o.nomSol || '(e)', '#E35D3A');
+      s += ligne(M, u, '#E35D3A', 2.2) + txt(Math.min(W - 18, Math.max(18, M[0] + u[0] * 120)), Math.max(14, M[1] + u[1] * 120 - 10), o.nomSol || "(d')", '#E35D3A');
     }
     s += `<path d="M${M[0] - 5},${M[1] - 5} L${M[0] + 5},${M[1] + 5} M${M[0] - 5},${M[1] + 5} L${M[0] + 5},${M[1] - 5}" stroke="#1F3A5C" stroke-width="2"/>` + txt(M[0] - 12, M[1] - 8, o.nomM || 'M', '#1F3A5C', true);
   }
@@ -325,7 +325,7 @@ function cm1dpRect(){ return `<svg class="pl-libre" viewBox="0 0 170 104" style=
         { etoiles: 3, col: 1, consigne: 'Pour aller plus loin : trace la droite parallèle à la droite (d) passant par le point N, sur le quadrillage.', eleve: F(G3), corr: F(Object.assign({ sol: 'para' }, G3)) },
         { etoiles: 3, col: 1, cahier: true, consigne: 'Sur une feuille blanche, construis un rectangle ABCD de 6 cm de long et 3 cm de large, avec ta règle et ton équerre.',
           corr: cm1Redac('Construction du rectangle ABCD', { suite: ['Je trace le segment [AB] de 6 cm.', 'En A et en B, je trace les perpendiculaires au segment [AB] et j\'y place D et C à 3 cm.', 'Je trace le segment [DC].'] }, 'ABCD a quatre angles droits : c\'est un rectangle de 6 cm sur 3 cm.', cm1dpRect()) },
-        { etoiles: 3, consigne: 'Pour aller plus loin : trace la droite parallèle à la droite (d) passant par le point N (avec deux perpendiculaires, ou avec la règle et l\'équerre qui glisse).', eleve: F(Object.assign({ taille: 300 }, U3)), corr: F(Object.assign({ taille: 300, sol: 'para', constr: true, nomConstr: '(p)' }, U3)) },
+        { etoiles: 3, consigne: 'Pour aller plus loin : trace la droite parallèle à la droite (d) passant par le point N (avec deux perpendiculaires, ou avec la règle et l\'équerre qui glisse).', eleve: F(Object.assign({ taille: 300 }, U3)), corr: F(Object.assign({ taille: 300, sol: 'para', constr: true, nomConstr: "(d')", nomSol: "(d'')" }, U3)) },
       ] },
   ];
 })();
