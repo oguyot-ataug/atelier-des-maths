@@ -193,7 +193,7 @@ function ce2AnimRegle(id, o){
         { de: 0, a: .15, dessin: k => `<g transform="translate(0 ${(1 - k) * 40})" opacity="${k}">${ce2Regle(X0, Y + 4, 10, K)}</g>`, texte: 'Je pose la règle.' },
         { de: .16, a: .24, dessin: k => croix(X0, 'A', CE2C.rouge, k), texte: 'Je marque le point A en face du <b>0</b> de la règle.' },
         { de: .26, a: .7, dessin: k => `<line x1="${X0}" y1="${Y}" x2="${X0 + L * k}" y2="${Y}" stroke="${CE2C.encre}" stroke-width="3"/><circle cx="${X0 + L * k}" cy="${Y}" r="3.5" fill="${CE2C.rouge}"/>`, texte: k => `Je trace le long de la règle, sans la faire glisser : ${lu(k)}.` },
-        { de: .72, a: .8, dessin: k => croix(X0 + L, 'B', CE2C.rouge, k), texte: p.texteB || `Je m'arrête en face de la bonne graduation : <b>[AB] mesure ${lu(1)}</b>${p.mm ? `, c'est-à-dire ${p.cm * 10 + p.mm} mm` : ''}.` },
+        { de: .72, a: .8, dessin: k => croix(X0 + L, 'B', CE2C.rouge, k), texte: p.texteB || `Je m'arrête en face de la bonne graduation : <b>le segment [AB] mesure ${lu(1)}</b>${p.mm ? `, c'est-à-dire ${p.cm * 10 + p.mm} mm` : ''}.` },
       ];
       if(p.milieu) sc.push({ de: .84, a: .97, dessin: k => croix(X0 + L / 2, 'I', CE2C.vert, k) + `<path d="M${X0 + L / 4 - 4} ${Y + 7} L${X0 + L / 4 + 4} ${Y - 7} M${X0 + 3 * L / 4 - 4} ${Y + 7} L${X0 + 3 * L / 4 + 4} ${Y - 7}" stroke="${CE2C.vert}" stroke-width="2" opacity="${k}"/>`, texte: `La moitié de ${p.cm} cm, c'est ${p.cm / 2} cm : le milieu I est en face du ${cmNb(p.cm / 2)}. Les petits traits verts montrent les deux longueurs égales.` });
       return { w: W, h: 130, scenes: sc };

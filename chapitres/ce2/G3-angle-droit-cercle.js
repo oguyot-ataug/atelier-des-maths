@@ -52,15 +52,15 @@ ${cm1Demo('ce2-ac-tri', 'Construire un triangle rectangle', 'Construis un triang
   demos: [
     ['ce2-ac-rect', [
       { expr: 'Je trace le segment [AB] de 7 cm.', note: 'Le 0 de la règle sur A, B en face du 7.' },
-      { expr: 'En A et en B, je trace un angle droit avec l\'équerre.', note: 'Le coin de l\'équerre sur le point, un côté le long de [AB].' },
+      { expr: 'En A et en B, je trace un angle droit avec l\'équerre.', note: 'Le coin de l\'équerre sur le point, un côté le long du segment [AB].' },
       { expr: 'Sur ces deux traits, je place D et C à 3 cm de A et de B.', note: 'La largeur est 3 cm.' },
-      { expr: 'Je trace [DC], puis je vérifie : [DC] mesure 7 cm ✔', note: 'Je code les 4 angles droits.' },
+      { expr: 'Je trace le segment [DC], puis je vérifie : il mesure 7 cm ✔', note: 'Je code les 4 angles droits.' },
     ]],
     ['ce2-ac-tri', [
       { expr: 'Je trace un segment [AB] de 10 cm.', note: '' },
       { expr: 'En A, je trace un angle droit avec l\'équerre.', note: '' },
       { expr: 'Sur ce trait, je place C à 4 cm de A.', note: '' },
-      { expr: 'Je trace [BC] : le triangle ABC est rectangle en A.', note: 'Je code l\'angle droit en A.' },
+      { expr: 'Je trace le segment [BC] : le triangle ABC est rectangle en A.', note: 'Je code l\'angle droit en A.' },
     ]],
   ],
   exos: cm1Exos('ce2-ac', [

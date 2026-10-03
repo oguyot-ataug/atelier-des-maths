@@ -3327,6 +3327,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.948', date:'2026-10-03', items:[
+    'Notations (CE2, CM1, CM2) : plus jamais « [AB] = 6 cm » -- [AB] est le segment, sa longueur s\'écrit AB ; les consignes disent « le segment [AB] mesure… », « je trace le segment [AC] » (au CM, les symboles sont toujours explicités)',
+    'CM1 Longueurs : les deux règles graduées d\'un même exercice ont la même échelle ; les dessins des planches (règles, balances, quadrillages, figures) ne sont plus réduits à 66 px de haut',
+    'CM1 Droites parallèles et perpendiculaires, onglet Méthodes : les constructions de la 6e -- perpendiculaire passant par un point à l\'équerre (pas à pas), méthode du « L » sur quadrillage ; « pour aller plus loin » (attendu au CM2) : parallèle par deux perpendiculaires, sur quadrillage, et à la règle et à l\'équerre qui glisse',
+    'CM1 Droites parallèles et perpendiculaires : cours complété (tracer la perpendiculaire passant par un point ; deux perpendiculaires à une même droite sont parallèles), corrections illustrées, 2 planches (reconnaître ; tracer une perpendiculaire)',
+  ] },
   { version:'2026-08-19.947', date:'2026-10-03', items:[
     'Corrections rédigées illustrées (CM1) : la correction d\'un problème peut montrer un dessin -- frise des bonds pour une durée, journée en deux lignes (matin / après-midi) avec « + 12 », paquets de 60 min, frise des siècles, schémas en barres, règle graduée, axe pour ranger des masses, figures cotées, quadrillages',
     'CM1 Longueurs, masses, contenances : 3 planches (mesurer et convertir des longueurs ; masses et contenances avec balances ; problèmes de mesures)',

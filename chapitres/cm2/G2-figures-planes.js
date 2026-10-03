@@ -59,7 +59,7 @@ ${cm1Demo('c2-fp-rect', 'Construire un rectangle', 'Construis le rectangle EFGH 
       { expr: 'Je trace le segment [AB] de 6 cm.', note: 'On commence par le côté le plus long, à la règle graduée.' },
       { expr: 'Je trace un arc de cercle de centre A et de rayon 4 cm.', note: 'Le point C est à 4 cm de A : il est sur le cercle de centre A et de rayon 4 cm.' },
       { expr: 'Je trace un arc de cercle de centre B et de rayon 5 cm.', note: 'Le point C est aussi à 5 cm de B.' },
-      { expr: 'C est à l\'intersection des deux arcs ; je trace [AC] et [BC].', note: 'On vérifie les longueurs à la règle et on code si besoin.' },
+      { expr: 'C est à l\'intersection des deux arcs ; je trace les segments [AC] et [BC].', note: 'On vérifie les longueurs à la règle et on code si besoin.' },
     ]],
     ['c2-fp-rect', [
       { expr: 'Je trace le segment [EF] de 5 cm.', note: 'Premier côté.' },
@@ -77,7 +77,7 @@ ${cm1Demo('c2-fp-rect', 'Construire un rectangle', 'Construis le rectangle EFGH 
     ['Je suis un quadrilatère qui a seulement deux côtés parallèles et deux angles droits. Qui suis-je ?',
       cm1Redac('Devinette', '', 'Deux côtés parallèles et deux angles droits : c\'est un trapèze rectangle.')],
     ['Construis un triangle isocèle ABC tel que AB = AC = 5 cm et BC = 4 cm.',
-      cm1Redac('Programme de construction', { suite: ['je trace [BC] de 4 cm', 'arc de centre B, rayon 5 cm', 'arc de centre C, rayon 5 cm'] }, 'Le point A est à l\'intersection des deux arcs ; je trace [AB] et [AC] et je code les côtés égaux.')],
+      cm1Redac('Programme de construction', { suite: ['je trace le segment [BC] de 4 cm', 'arc de centre B, rayon 5 cm', 'arc de centre C, rayon 5 cm'] }, 'Le point A est à l\'intersection des deux arcs ; je trace les segments [AB] et [AC] et je code les côtés égaux.')],
     ['Construis un carré de 4,5 cm de côté et trace ses diagonales. Que remarques-tu ?',
       cm1Redac('Diagonales du carré', '', 'Les diagonales ont la même longueur, se coupent en leur milieu et sont perpendiculaires.')],
     ['Combien de côtés a un hexagone ? un pentagone ? Dessine-en un de chaque.',

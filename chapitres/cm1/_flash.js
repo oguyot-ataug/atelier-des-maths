@@ -323,7 +323,7 @@ const F = {
     { q: "Pour reporter une longueur sans la mesurer, on utilise…", r: ["le compas", "l'équerre", "la gomme", "le crayon seul"], ok: 0 },
     { q: "« Trace le cercle de centre O et de rayon 3 cm » : écartement du compas ?", r: ["3 cm", "6 cm", "1,5 cm", "9 cm"], ok: 0 },
     { q: "Dans un programme de construction, l'ordre des étapes…", r: ["est important", "n'a aucune importance", "est alphabétique", "est au hasard"], ok: 0 },
-    { q: "« Place I, milieu de [AB] », avec AB = 10 cm. AI = …", r: ["5 cm", "10 cm", "20 cm", "2 cm"], ok: 0 },
+    { q: "« Place I, milieu du segment [AB] », qui mesure 10 cm. Le segment [AI] mesure …", r: ["5 cm", "10 cm", "20 cm", "2 cm"], ok: 0 },
   ],
   "cm2|Symétrie axiale": [
     { q: "Combien d'axes de symétrie a un triangle équilatéral ?", r: ["1", "2", "3", "0"], ok: 2 },

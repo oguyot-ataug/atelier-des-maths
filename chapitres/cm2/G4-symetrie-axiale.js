@@ -99,7 +99,7 @@ ${cm1Demo('c2-sy-pt', 'Construire le symétrique d\'un point sans quadrillage', 
     ['Un triangle a une aire de 12 cm². Quelle est l\'aire de son symétrique ?',
       cm1Redac('Aire du symétrique', '', 'Son symétrique a aussi une aire de 12 cm² : la symétrie conserve les aires.')],
     ['Trace un segment [CD] et une droite (d) qui ne le coupe pas. Construis le symétrique du segment [CD] par rapport à (d).',
-      cm1Redac('Construction', { suite: ['symétrique de C : C\'', 'symétrique de D : D\''] }, 'Je construis C\' et D\' avec l\'équerre et la règle, puis je trace le segment [C\'D\'] : c\'est le symétrique de [CD].')],
+      cm1Redac('Construction', { suite: ['symétrique de C : C\'', 'symétrique de D : D\''] }, 'Je construis C\' et D\' avec l\'équerre et la règle, puis je trace le segment [C\'D\'] : c\'est le symétrique du segment [CD].')],
   ]),
   histoire: cm1Histoire('Un peu d\'histoire : la symétrie dans les jardins à la française', [
     'Au XVII<sup>e</sup> siècle, le jardinier <b>André Le Nôtre</b> dessine les jardins de Versailles et de Vaux-le-Vicomte. Tout y est symétrique par rapport à une grande allée centrale : parterres, bassins, statues.',

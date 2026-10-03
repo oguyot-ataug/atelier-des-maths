@@ -87,7 +87,7 @@ ${cm1Regle('Pour trouver un bug, on exécute le programme <b>pas à pas</b>, ave
 
 ${cm1Lecon(4, 'D\'autres programmes')}
 ${cm1Exemple('Un programme de calcul est aussi une suite d\'instructions :', ['« Choisis un nombre → ajoute 5 → multiplie par 2 ». Avec 3 : 3 + 5 = 8, puis 8 × 2 = 16.'])}
-${cm1Exemple('Un programme de construction aussi :', ['« Trace un segment [AB] de 5 cm. Trace la droite perpendiculaire à [AB] passant par A… » : chaque étape doit être claire et dans le bon ordre.'])}
+${cm1Exemple('Un programme de construction aussi :', ['« Trace un segment [AB] de 5 cm. Trace la droite perpendiculaire au segment [AB] passant par A… » : chaque étape doit être claire et dans le bon ordre.'])}
 `,
   methode: `
 ${cm1Demo('pi-lire', 'Lire un programme et prévoir l\'arrivée', 'Le robot part de la case en bas à gauche. Programme : répéter 3 fois → puis ↑ ↑ puis ←. Où arrive-t-il ?')}

@@ -35,6 +35,8 @@ document.getElementById('cours-demo-cm1-droites-paralleles').innerHTML = `
 <div class="redaction-note" style="background:rgba(227,93,58,.07);border-color:rgba(227,93,58,.25);color:#8A2E1C;">
   Le petit carré dessiné à l'intersection de deux droites est le symbole de l'<b>angle droit</b> : il indique que les droites sont perpendiculaires.
 </div>
+<span class="prop-badge">Tracer</span>
+<div class="def-box">Pour tracer la droite <b>perpendiculaire</b> à une droite (d) <b>passant par un point</b> M, on fait glisser l'équerre le long de la droite (d) jusqu'à ce que l'autre côté de l'angle droit touche M, puis on trace le long de ce côté. Sur un quadrillage, on peut aussi suivre les lignes des carreaux (ou utiliser la méthode du « L »). <i>Voir l'onglet Méthodes.</i></div>
 
 <div class="lesson-header"><span class="num">2</span><h3>Droites parallèles</h3></div>
 <span class="def-badge">Vocabulaire</span>
@@ -60,6 +62,7 @@ document.getElementById('cours-demo-cm1-droites-paralleles').innerHTML = `
 </table>
 </div>
 <span class="prop-badge">Méthode</span>
+<div class="def-box">Deux droites <b>perpendiculaires à une même droite</b> sont parallèles entre elles. On peut aussi vérifier que l'<b>écart</b> entre les deux droites reste toujours le même.</div>
 <div class="def-box">On utilise une règle et une équerre pour vérifier que deux droites sont parallèles : on fait glisser l'équerre le long d'une règle fixe, sans jamais la faire tourner -- si son bord reste tout le temps sur les deux droites, elles sont parallèles.</div>
 ${ce2Film('cm1-dp-paral', { duree: 8000, legende: 'La règle ne bouge pas ; l\'équerre glisse contre elle, sans tourner.', film: { w: 460, h: 220, scenes: [
   { de: 0, a: .1, dessin: k => `<g opacity="${k}"><rect x="20" y="170" width="420" height="26" fill="#FFF3D6" stroke="#C9A24A"/>${ce2T(230, 213, 'règle fixe', { t: 12, c: '#8A6D1F' })}</g>`, texte: 'Je pose la règle et je la tiens bien.' },
@@ -71,7 +74,15 @@ ${ce2Film('cm1-dp-paral', { duree: 8000, legende: 'La règle ne bouge pas ; l\'�
   { de: .93, a: 1, dessin: k => `<path d="M100 170 h12 v-12 h-12 M300 170 h12 v-12 h-12" fill="none" stroke="#2E9C6A" stroke-width="2" opacity="${k}"/>`, texte: 'Les deux droites rouges sont perpendiculaires à la règle : elles sont <b>parallèles</b> entre elles.' }] } })}
 `;
 
-document.getElementById('methode-demo-cm1-droites-paralleles').innerHTML = `
+/* Méthodes -- demandé : « mettre les méthodes de construction (6e) en méthodes de ce chapitre CM1 ».
+   Au CM1 : tracer la perpendiculaire à une droite passant par un point est attendu (on en a besoin
+   pour construire un rectangle ou un triangle rectangle sur papier uni) ; la parallèle passant par
+   un point est « pour aller plus loin » (attendue au CM2). Les outils animés viennent du chapitre de
+   6e (chargé après ce fichier) : la page est donc écrite une fois tous les scripts chargés. */
+let cm1dpPm = null, cm1dpPam = null, cm1dpDblDemo = null;
+function cm1dpMethodes(){
+  const el = document.getElementById('methode-demo-cm1-droites-paralleles'); if(!el) return;
+  el.innerHTML = `
 <div class="sub-header"><span class="letter">M</span><h4>Aide animée : ces deux droites sont-elles perpendiculaires ?</h4></div>
 <div class="figure-wrap">
   <p class="hint interaction-hint" style="margin-top:6px;">Clique sur « Étape suivante » pour voir comment l'équerre permet de vérifier.</p>
@@ -91,18 +102,65 @@ document.getElementById('methode-demo-cm1-droites-paralleles').innerHTML = `
     <button class="btn secondary" onclick="cm1dpPerpNonDemo.reset()">Recommencer</button>
   </div>
 </div>
+
+<div class="sub-header"><span class="letter">M</span><h4>Tracer la droite perpendiculaire à une droite passant par un point (à l'équerre)</h4></div>
+<div class="figure-wrap">
+  <p class="hint interaction-hint" style="margin-top:6px;">Clique sur « Étape suivante » : l'équerre glisse le long de la droite (d) jusqu'au point M.</p>
+  ${dpPerpMethodeSVGBlock('cm1dp-pm', '(d)', '(p)', 'M')}
+  <div class="figure-toolbar"><button class="btn" onclick="cm1dpPm.next()">Étape suivante →</button><button class="btn secondary" onclick="cm1dpPm.reset()">Recommencer</button></div>
+</div>
+${cm1Astuce('Le point peut aussi être <b>sur</b> la droite (d) : on fait glisser l\'équerre jusqu\'à ce que son angle droit soit sur le point, puis on trace le long de l\'autre côté.')}
+
+<div class="sub-header"><span class="letter">M</span><h4>Tracer une perpendiculaire sur un quadrillage, sans équerre (la méthode du « L »)</h4></div>
+<p class="hint" style="margin:4px 0 8px;">On lit sur la droite (d) le déplacement d'un nœud du quadrillage à un autre (un « L ») ; le L qui tombe sur le dos donne le déplacement de la perpendiculaire.</p>
+${dpAnimL('cm1dp-perp-L')}
+
+<div class="sub-header"><span class="letter">+</span><h4>Pour aller plus loin : tracer la droite parallèle à une droite passant par un point</h4></div>
+${cm1Rem('Au CM1, il faut surtout savoir <b>reconnaître</b> et <b>vérifier</b> que deux droites sont parallèles. Les tracés qui suivent seront travaillés au CM2.')}
+<p class="example-title">Avec deux perpendiculaires (le plus simple) :</p>
+<div class="figure-wrap">
+  <div class="step-display" id="cm1dp-dblDisplay" style="text-align:center;"></div>
+  <div class="figure-toolbar"><button class="btn" onclick="cm1dpDblDemo.next()">Étape suivante →</button><button class="btn secondary" onclick="cm1dpDblDemo.reset()">Recommencer</button></div>
+</div>
+<p class="example-title">Sur un quadrillage (la méthode du « L ») :</p>
+${dpAnimL('cm1dp-para-L', 'para')}
+<p class="example-title">Avec la règle et l'équerre qui glisse :</p>
+<div class="figure-wrap">
+  ${dpParaMethodeSVGBlock('cm1dp-pam', '0 0 400 430', '(d)', '(e)', 'N')}
+  <div class="figure-toolbar"><button class="btn" onclick="cm1dpPam.next()">Étape suivante →</button><button class="btn secondary" onclick="cm1dpPam.reset()">Recommencer</button></div>
+</div>
 `;
+  cm1dpPm = makePerpMethodeDemo('cm1dp-pm', { x: 60, y: 175 }, { x: 330, y: 120 }, { x: 230, y: 40 }, [
+    'Je pose un côté de l\'angle droit de l\'équerre le long de la droite (d).',
+    'Je fais glisser l\'équerre le long de la droite (d), sans la faire tourner.',
+    'Je m\'arrête quand l\'autre côté de l\'angle droit touche le point M.',
+    'Je pose la règle le long de ce côté de l\'équerre.',
+    'J\'enlève l\'équerre ; la règle reste bien en place.',
+    'Je trace la droite le long de la règle et je code l\'angle droit : c\'est la droite (p).',
+    'La droite (p) passe par M et elle est perpendiculaire à la droite (d).']);
+  cm1dpPam = makeParaMethodeDemo('cm1dp-pam', { x: 60, y: 165 }, { x: 300, y: 85 }, { x: 216, y: 223 }, '(d)', '(e)', 'N');
+  cm1dpDblDemo = makeSingleStepDemo(CM1DP_DBL_STEPS, 'cm1dp-dblDisplay');
+  registerGeoStepDemo('cm1dp-pmSvg', { steps: () => cm1dpPm.steps(), getIdx: () => cm1dpPm.getIdx(), goto: (i, a) => cm1dpPm.goto(i, a) });
+}
+/* Parallèle par double perpendiculaire : (d) et N ; la perpendiculaire (p) à (d) passant par N ; la
+   perpendiculaire à (p) passant par N : elle est parallèle à (d). Figures calculées (cm1dpFig). */
+const CM1DP_DBL_STEPS = [
+  { expr: cm1dpFig({ w: 360, h: 220, d: [[30, 170], [330, 110]], M: [190, 50], nomM: 'N', taille: 340 }), note: 'Une droite (d) et un point N qui n\'est pas sur la droite (d).' },
+  { expr: cm1dpFig({ w: 360, h: 220, d: [[30, 170], [330, 110]], M: [190, 50], nomM: 'N', sol: 'perp', nomSol: '(p)', taille: 340 }), note: 'Avec l\'équerre, je trace la droite (p) perpendiculaire à la droite (d) passant par N.' },
+  { expr: cm1dpFig({ w: 360, h: 220, d: [[30, 170], [330, 110]], M: [190, 50], nomM: 'N', sol: 'para', constr: true, nomConstr: '(p)', nomSol: '(e)', taille: 340 }), note: 'Je trace la droite (e) perpendiculaire à la droite (p), passant aussi par N.' },
+  { expr: cm1dpFig({ w: 360, h: 220, d: [[30, 170], [330, 110]], M: [190, 50], nomM: 'N', sol: 'para', constr: true, nomConstr: '(p)', nomSol: '(e)', taille: 340 }), note: 'Les droites (d) et (e) sont toutes les deux perpendiculaires à la droite (p) : elles sont <b>parallèles</b>.' },
+];
 
 document.getElementById('exos-demo-cm1-droites-paralleles').innerHTML = cm1Exos('dp', [
   ['ABCD est un rectangle. Cite deux côtés perpendiculaires, puis deux côtés parallèles.',
     cm1Redac('Côtés perpendiculaires', 'Les côtés [AB] et [BC] se coupent en B en formant un angle droit.', 'Les côtés [AB] et [BC] sont perpendiculaires.')
-    + cm1Redac('Côtés parallèles', 'Les côtés [AB] et [DC] ne se coupent jamais, même prolongés.', 'Les côtés [AB] et [DC] sont parallèles.')],
-  ['Trace une droite, appelée (d), et place un point A qui n\'est pas sur (d). Trace la droite perpendiculaire à (d) qui passe par A.',
-    cm1Redac('Méthode', { suite: ['Je pose un côté de l\'angle droit de l\'équerre le long de (d).', 'Je fais glisser l\'équerre le long de (d) jusqu\'à ce que l\'autre côté touche A.', 'Je trace le long de ce côté, puis je code l\'angle droit.'] }, 'La droite tracée passe par A et coupe (d) en formant un angle droit : elle est perpendiculaire à (d).')],
-  ['Trace une droite (d) et place un point B qui n\'est pas sur (d). Trace la droite parallèle à (d) qui passe par B.',
-    cm1Redac('Méthode', { suite: ['Je pose l\'équerre contre (d) et je place la règle contre l\'autre côté de l\'angle droit.', 'Je tiens la règle sans la bouger et je fais glisser l\'équerre jusqu\'à B.', 'Je trace le long de l\'équerre.'] }, 'La droite tracée passe par B et ne coupera jamais (d) : elle est parallèle à (d).')],
+    + cm1Redac('Côtés parallèles', 'Les côtés [AB] et [DC] ne se coupent jamais, même prolongés.', 'Les côtés [AB] et [DC] sont parallèles.', cm1dpRect())],
+  ['Trace une droite, appelée (d), et place un point A qui n\'est pas sur la droite (d). Trace la droite perpendiculaire à la droite (d) qui passe par A.',
+    cm1Redac('Méthode', { suite: ['Je pose un côté de l\'angle droit de l\'équerre le long de (d).', 'Je fais glisser l\'équerre le long de (d) jusqu\'à ce que l\'autre côté touche A.', 'Je trace le long de ce côté, puis je code l\'angle droit.'] }, 'La droite tracée passe par A et coupe la droite (d) en formant un angle droit : elle est perpendiculaire à la droite (d).', cm1dpFig({ w: 260, h: 160, d: [[10, 130], [250, 80]], M: [150, 30], nomM: 'A', sol: 'perp', taille: 260 }))],
+  ['<b>Pour aller plus loin</b> (CM2) : trace une droite (d) et place un point B qui n\'est pas sur la droite (d). Trace la droite parallèle à la droite (d) qui passe par B.',
+    cm1Redac('Méthode avec deux perpendiculaires', { suite: ['Je trace la droite (p) perpendiculaire à la droite (d) passant par B.', 'Je trace la droite perpendiculaire à la droite (p) passant par B.'] }, 'Les deux droites sont perpendiculaires à la droite (p) : la droite tracée est parallèle à la droite (d).', cm1dpFig({ w: 260, h: 160, d: [[10, 130], [250, 80]], M: [150, 35], nomM: 'B', sol: 'para', constr: true, nomConstr: '(p)', taille: 260 }))],
   ['Les droites (d1) et (d2) sont toutes les deux perpendiculaires à la droite (d). Que peut-on dire de (d1) et de (d2) ?',
-    cm1Redac('Position de (d1) et (d2)', 'Deux droites perpendiculaires à une même droite', 'Les droites (d1) et (d2) sont parallèles entre elles.')],
+    cm1Redac('Position de (d1) et (d2)', 'Deux droites perpendiculaires à une même droite', 'Les droites (d1) et (d2) sont parallèles entre elles.', `<svg viewBox="0 0 240 130" style="width:220px;display:block;"><line x1="10" y1="100" x2="230" y2="100" stroke="#1F3A5C" stroke-width="2"/><line x1="80" y1="10" x2="80" y2="125" stroke="#E35D3A" stroke-width="2"/><line x1="160" y1="10" x2="160" y2="125" stroke="#2EA8C9" stroke-width="2"/><path d="M80,91 h9 v9 M160,91 h9 v9" fill="none" stroke="#1F3A5C" stroke-width="1.4"/><text x="215" y="94" font-size="13" font-weight="700" fill="#1F3A5C" font-family="Space Grotesk">(d)</text><text x="58" y="22" font-size="13" font-weight="700" fill="#E35D3A" font-family="Space Grotesk">(d1)</text><text x="166" y="22" font-size="13" font-weight="700" fill="#2EA8C9" font-family="Space Grotesk">(d2)</text></svg>`)],
   ['Dans la classe, trouve deux bords parallèles et deux bords perpendiculaires.',
     cm1Redac('Bords parallèles', '', 'Par exemple, les deux grands bords d\'une feuille de cahier sont parallèles.')
     + cm1Redac('Bords perpendiculaires', '', 'Par exemple, deux bords voisins de la table forment un angle droit : ils sont perpendiculaires. Je vérifie avec l\'équerre.')],
@@ -197,6 +255,81 @@ document.getElementById('histoire-demo-cm1-droites-paralleles').innerHTML = `
 </div>
 `;
 
+
+/* ---- Figures calculées (corrections, planches) ----
+   cm1dpFig({ w, h, k (quadrillage, en px), d: [P, Q] (deux points de la droite (d)), nomD, M, nomM,
+   sol: 'perp' | 'para' (la droite cherchée, en rouge), nomSol, constr (parallèle : la perpendiculaire
+   de construction en pointillés), taille (largeur affichée) }). */
+function cm1dpFig(o){
+  const W = o.w, H = o.h, [P, Q] = o.d, L = Math.hypot(Q[0] - P[0], Q[1] - P[1]), u = [(Q[0] - P[0]) / L, (Q[1] - P[1]) / L];
+  // Droite (point, direction) coupée au bord de la figure.
+  const ligne = (A, v, c, l, extra) => { let t0 = -1e9, t1 = 1e9; [[0, W], [0, H]].forEach(([mn, mx], i) => { if(Math.abs(v[i]) < 1e-9) return; const a = (mn - A[i]) / v[i], b = (mx - A[i]) / v[i]; t0 = Math.max(t0, Math.min(a, b)); t1 = Math.min(t1, Math.max(a, b)); });
+    return `<line x1="${(A[0] + v[0] * t0).toFixed(1)}" y1="${(A[1] + v[1] * t0).toFixed(1)}" x2="${(A[0] + v[0] * t1).toFixed(1)}" y2="${(A[1] + v[1] * t1).toFixed(1)}" stroke="${c}" stroke-width="${l}"${extra || ''}/>`; };
+  const txt = (x, y, t, c, it) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="14" font-weight="700" fill="${c}" font-family="Space Grotesk"${it ? ' font-style="italic"' : ''} text-anchor="middle">${t}</text>`;
+  const coin = (Hh, a, b) => { const z = 9; return `<path d="M${(Hh[0] + a[0] * z).toFixed(1)},${(Hh[1] + a[1] * z).toFixed(1)} L${(Hh[0] + a[0] * z + b[0] * z).toFixed(1)},${(Hh[1] + a[1] * z + b[1] * z).toFixed(1)} L${(Hh[0] + b[0] * z).toFixed(1)},${(Hh[1] + b[1] * z).toFixed(1)}" fill="none" stroke="#1F3A5C" stroke-width="1.5"/>`; };
+  let s = `<svg class="pl-libre" viewBox="0 0 ${W} ${H}" style="width:${o.taille || W}px;max-width:100%;display:inline-block;vertical-align:middle;background:#fff;overflow:hidden;">`;
+  if(o.k){ for(let x = 0; x <= W; x += o.k) s += `<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#C9DCEB" stroke-width="1"/>`; for(let y = 0; y <= H; y += o.k) s += `<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#C9DCEB" stroke-width="1"/>`; }
+  s += ligne(P, u, '#1F3A5C', 2);
+  const fin = u[0] >= 0 ? Q : P;
+  s += txt(Math.min(W - 18, Math.max(18, fin[0] + 4)), fin[1] + (u[1] * (u[0] >= 0 ? 1 : -1) > 0 ? 20 : -10), o.nomD || '(d)', '#1F3A5C');
+  if(o.M){
+    const M = o.M, n0 = [-u[1], u[0]], t = (M[0] - P[0]) * u[0] + (M[1] - P[1]) * u[1], Hh = [P[0] + u[0] * t, P[1] + u[1] * t];
+    const dM = Math.hypot(M[0] - Hh[0], M[1] - Hh[1]), n = dM > .5 ? [(M[0] - Hh[0]) / dM, (M[1] - Hh[1]) / dM] : n0;
+    if(o.sol === 'perp'){ s += ligne(M, n, '#E35D3A', 2.2) + coin(Hh, u, n); const e = [M[0] + n[0] * 26, M[1] + n[1] * 26]; s += txt(Math.min(W - 16, Math.max(16, e[0] + 22)), Math.max(14, e[1]), o.nomSol || '(p)', '#E35D3A'); }
+    if(o.sol === 'para'){
+      if(o.constr){ s += ligne(M, n, '#7A8BA0', 1.4, ' stroke-dasharray="5 4"') + coin(Hh, u, n) + coin(M, u, [-n[0], -n[1]]); if(o.nomConstr){ const e = [Hh[0] - n[0] * 26, Hh[1] - n[1] * 26]; s += txt(Math.min(W - 16, Math.max(16, e[0] + 18)), Math.min(H - 6, Math.max(14, e[1])), o.nomConstr, '#7A8BA0'); } }
+      s += ligne(M, u, '#E35D3A', 2.2) + txt(Math.min(W - 18, Math.max(18, M[0] + u[0] * 120)), Math.max(14, M[1] + u[1] * 120 - 10), o.nomSol || '(e)', '#E35D3A');
+    }
+    s += `<path d="M${M[0] - 5},${M[1] - 5} L${M[0] + 5},${M[1] + 5} M${M[0] - 5},${M[1] + 5} L${M[0] + 5},${M[1] - 5}" stroke="#1F3A5C" stroke-width="2"/>` + txt(M[0] - 12, M[1] - 8, o.nomM || 'M', '#1F3A5C', true);
+  }
+  return s + '</svg>';
+}
+// Deux droites qui se coupent au centre : angles (en degrés) de chacune ; ou parallèles (ecart en px).
+function cm1dpPaire(a1, a2, ecart){
+  const r = Math.PI / 180, c = [60, 42], v1 = [Math.cos(a1 * r), Math.sin(a1 * r)], v2 = [Math.cos(a2 * r), Math.sin(a2 * r)];
+  const seg = (A, v, col) => `<line x1="${(A[0] - v[0] * 52).toFixed(1)}" y1="${(A[1] - v[1] * 52).toFixed(1)}" x2="${(A[0] + v[0] * 52).toFixed(1)}" y2="${(A[1] + v[1] * 52).toFixed(1)}" stroke="${col}" stroke-width="2.5" stroke-linecap="round"/>`;
+  const A2 = ecart ? [c[0] - v1[1] * ecart, c[1] + v1[0] * ecart] : c, A1 = ecart ? [c[0] + v1[1] * ecart, c[1] - v1[0] * ecart] : c;
+  return `<svg class="pl-libre" viewBox="0 0 120 84" style="width:110px;display:block;margin:0 auto;">${seg(A1, v1, '#2E9C6A')}${seg(A2, v2, '#2EA8C9')}</svg>`;
+}
+function cm1dpRect(){ return `<svg class="pl-libre" viewBox="0 0 170 104" style="width:150px;display:inline-block;vertical-align:middle;"><rect x="22" y="18" width="126" height="66" fill="#2EA8C9" fill-opacity=".1" stroke="#1F3A5C" stroke-width="2"/>${[[22, 18, 'A', -9, -4], [148, 18, 'B', 9, -4], [148, 84, 'C', 9, 14], [22, 84, 'D', -9, 14]].map(([x, y, t, dx, dy]) => `<text x="${x + dx}" y="${y + dy}" font-size="13" font-weight="700" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">${t}</text>`).join('')}<path d="M22,28 h10 v-10 M138,18 v10 h10 M148,74 h-10 v10 M32,84 v-10 h-10" fill="none" stroke="#1F3A5C" stroke-width="1.3"/></svg>`; }
+
+/* Planches d'exercices imprimables (planches.js), aussi faisables à l'écran quand on entoure. */
+(() => {
+  const ouiNon = (fig, r) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${fig}${r ? plEntoure(r) : '<b>oui · non</b>'}</span>`;
+  const PERP = [[20, 110, 'oui'], [0, 78, 'non'], [-35, 55, 'oui'], [40, 100, 'non']], PARA = [[15, 15, 'oui', 16], [-20, -11, 'non', 14], [70, 70, 'oui', 18], [0, 8, 'non', 16]];
+  const RECT = [['Les côtés [AB] et [BC] sont ', 'perpendiculaires'], ['Les côtés [AB] et [DC] sont ', 'parallèles'], ['Les côtés [AD] et [BC] sont ', 'parallèles'], ['Les côtés [DC] et [CB] sont ', 'perpendiculaires']];
+  const VF = [['Deux droites perpendiculaires forment quatre angles droits. ', 'vrai'], ['Deux droites qui se coupent sont toujours perpendiculaires. ', 'faux'], ['Deux droites parallèles ne se coupent jamais. ', 'vrai'], ['Deux droites perpendiculaires à une même droite sont parallèles. ', 'vrai']];
+  const F = o => cm1dpFig(Object.assign({ taille: 175 }, o));
+  const G1 = { w: 192, h: 128, k: 16, d: [[16, 96], [176, 96]], M: [112, 32] }, G2 = { w: 192, h: 128, k: 16, d: [[16, 112], [112, 80]], M: [96, 32] }, G3 = { w: 192, h: 128, k: 16, d: [[16, 112], [80, 48]], M: [128, 112], nomM: 'N' };
+  const U1 = { w: 240, h: 125, d: [[10, 110], [230, 65]], M: [130, 25], nomM: 'A' }, U2 = { w: 240, h: 125, d: [[10, 30], [230, 100]], M: [120, 65], nomM: 'B' }, U3 = { w: 340, h: 120, d: [[10, 100], [330, 70]], M: [190, 25], nomM: 'N' };
+  PLANCHES['cm1|Droites parallèles et perpendiculaires'] = [
+    { titre: 'Reconnaître des droites perpendiculaires et parallèles', duree: '30 min',
+      attendus: ['Reconnaître et vérifier à l\'équerre que deux droites sont perpendiculaires', 'Reconnaître que deux droites sont parallèles'],
+      exos: [
+        { etoiles: 1, consigne: 'Ces deux droites sont-elles perpendiculaires ? Vérifie avec ton équerre, puis entoure.',
+          eleve: plGrille(PERP.map(([a, b]) => ouiNon(cm1dpPaire(a, b))), 4), corr: plGrille(PERP.map(([a, b, r]) => ouiNon(cm1dpPaire(a, b), r)), 4) },
+        { etoiles: 1, consigne: 'Ces deux droites sont-elles parallèles ? Imagine-les prolongées, puis entoure.',
+          eleve: plGrille(PARA.map(([a, b, , e]) => ouiNon(cm1dpPaire(a, b, e))), 4), corr: plGrille(PARA.map(([a, b, r, e]) => ouiNon(cm1dpPaire(a, b, e), r)), 4) },
+        { etoiles: 2, col: 1, consigne: `ABCD est un rectangle. Entoure le bon mot.<div style="margin:3px 0;">${cm1dpRect()}</div>`,
+          eleve: plListe(RECT.map(([t]) => t + '<b>perpendiculaires · parallèles</b>')), corr: plListe(RECT.map(([t, r]) => t + plEntoure(r))) },
+        { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+          eleve: plListe(VF.map(([t]) => t + '<b>vrai · faux</b>')), corr: plListe(VF.map(([t, r]) => t + plEntoure(r))) },
+      ] },
+    { titre: 'Tracer une droite perpendiculaire', duree: '35 min',
+      attendus: ['Tracer, sur quadrillage et à l\'équerre, la droite perpendiculaire à une droite passant par un point', 'Pour aller plus loin : tracer la droite parallèle passant par un point'],
+      exos: [
+        { etoiles: 1, col: 1, consigne: 'Trace la droite perpendiculaire à la droite (d) passant par le point M, en suivant les lignes du quadrillage.', eleve: F(G1), corr: F(Object.assign({ sol: 'perp' }, G1)) },
+        { etoiles: 2, col: 1, consigne: 'Trace la droite perpendiculaire à la droite (d) passant par le point M (pense au « L » qui tombe sur le dos).', eleve: F(G2), corr: F(Object.assign({ sol: 'perp' }, G2)) },
+        { etoiles: 2, consigne: 'Avec ton équerre, trace la droite perpendiculaire à la droite (d) passant par le point A, puis celle passant par le point B. Code les angles droits.',
+          eleve: plGrille([F(Object.assign({ taille: 200 }, U1)), F(Object.assign({ taille: 200 }, U2))], 2), corr: plGrille([F(Object.assign({ sol: 'perp', taille: 200 }, U1)), F(Object.assign({ sol: 'perp', taille: 200 }, U2))], 2) },
+        { etoiles: 3, col: 1, consigne: 'Pour aller plus loin : trace la droite parallèle à la droite (d) passant par le point N, sur le quadrillage.', eleve: F(G3), corr: F(Object.assign({ sol: 'para' }, G3)) },
+        { etoiles: 3, col: 1, cahier: true, consigne: 'Sur une feuille blanche, construis un rectangle ABCD de 6 cm de long et 3 cm de large, avec ta règle et ton équerre.',
+          corr: cm1Redac('Construction du rectangle ABCD', { suite: ['Je trace le segment [AB] de 6 cm.', 'En A et en B, je trace les perpendiculaires au segment [AB] et j\'y place D et C à 3 cm.', 'Je trace le segment [DC].'] }, 'ABCD a quatre angles droits : c\'est un rectangle de 6 cm sur 3 cm.', cm1dpRect()) },
+        { etoiles: 3, consigne: 'Pour aller plus loin : trace la droite parallèle à la droite (d) passant par le point N (avec deux perpendiculaires, ou avec la règle et l\'équerre qui glisse).', eleve: F(Object.assign({ taille: 300 }, U3)), corr: F(Object.assign({ taille: 300, sol: 'para', constr: true, nomConstr: '(p)' }, U3)) },
+      ] },
+  ];
+})();
+
 DEMO_QUIZZES['cm1|Droites parallèles et perpendiculaires'] = [
   {q:"Que forment deux droites perpendiculaires en se coupant ?",
    opts:["Quatre angles droits","Deux droites parallèles","Un seul point sans angle"], correct:0},
@@ -207,4 +340,5 @@ DEMO_QUIZZES['cm1|Droites parallèles et perpendiculaires'] = [
 ];
 
 DEMO_REGISTRY['cm1|Droites parallèles et perpendiculaires'] = { cours:'cours-demo-cm1-droites-paralleles', methode:'methode-demo-cm1-droites-paralleles', exos:'exos-demo-cm1-droites-paralleles', histoire:'histoire-demo-cm1-droites-paralleles',
-  init:()=>{ cm1dpPerpOuiDemo.reset(); cm1dpPerpNonDemo.reset(); cmAnimDessiner('cm1-dp-paral'); } };
+  init:()=>{ cm1dpPerpOuiDemo.reset(); cm1dpPerpNonDemo.reset(); cmAnimDessiner('cm1-dp-paral'); if(cm1dpPm){ cm1dpPm.reset(); cm1dpPam.reset(); cm1dpDblDemo.reset(); cmAnimDessiner('cm1dp-perp-L'); cmAnimDessiner('cm1dp-para-L'); } } };
+document.addEventListener('DOMContentLoaded', cm1dpMethodes);

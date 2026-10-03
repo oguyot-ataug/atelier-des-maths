@@ -937,6 +937,150 @@ function dpPerpMethodeNext(){ if(dpPmIdx<DP_PM_STEPS.length-1){ dpPmIdx++; dpRen
 function dpPerpMethodeReset(){ dpPmIdx=0; dpRenderPerpMethode(false); }
 
 
+/* Fabrique généralisée à partir de dpRenderPerpMethode (même logique, déjà déboguée : équerre
+   retournée quand M est de l'autre côté, règle et équerre à la même échelle) -- points, étiquettes
+   et textes en argument, id préfixés par idPrefix. Sert aussi au CM1 (Droites parallèles et
+   perpendiculaires › Méthodes). notes : 7 textes pour remplacer ceux de la 6e. */
+function dpPerpMethodeSVGBlock(idPrefix, labelD, labelDp, labelPt){
+  return `<svg id="${idPrefix}Svg" viewBox="0 0 400 240" style="width:100%;max-width:460px;display:block;margin:0 auto;background:var(--white);border-radius:8px;">
+    <line id="${idPrefix}-lineD" stroke="#1F3A5C" stroke-width="1.8"/>
+    <circle id="${idPrefix}-M" r="5" fill="#E35D3A" data-marker="cross"/>
+    <text id="${idPrefix}-labelM" font-style="italic" font-size="14">${labelPt}</text>
+    <g id="${idPrefix}-equerre" style="display:none;">${equerreSVG(TB_EQUERRE_LEGX, TB_EQUERRE_LEGY)}</g>
+    <polygon id="${idPrefix}-pencil" fill="#E8A33D" stroke="#8A5A1A" stroke-width="1" style="display:none;"/>
+    <polygon id="${idPrefix}-pencil-tip" fill="#3A2A1A" style="display:none;"/>
+    <g id="${idPrefix}-ruler" style="display:none;">${rulerSVG(true)}</g>
+    <line id="${idPrefix}-lineDp" stroke="#E35D3A" stroke-width="1.8" style="display:none;"/>
+    <path id="${idPrefix}-angleMark" fill="none" stroke="#1C1B2E" stroke-width="1.3" style="display:none;"/>
+    <text id="${idPrefix}-labelD" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#1F3A5C">${labelD}</text>
+    <text id="${idPrefix}-labelDp" font-family="'Space Grotesk',sans-serif" font-size="14" fill="#E35D3A" style="display:none;">${labelDp}</text>
+  </svg>
+  <p class="hint" id="${idPrefix}-note" style="text-align:center;margin-top:8px;"></p>`;
+}
+function makePerpMethodeDemo(idPrefix, D1, D2, M, notes){
+  const dir = dpDir(D1, D2);
+  let perp = {x:-dir.y, y:dir.x};
+  const foot = dpIntersect(D1, dir, M, perp);
+  if(perp.x*(M.x-foot.x) + perp.y*(M.y-foot.y) < 0){ perp = {x:-perp.x, y:-perp.y}; }
+  const footDist = Math.hypot(foot.x-D1.x, foot.y-D1.y);
+  const touchDist = Math.hypot(M.x-foot.x, M.y-foot.y);
+  const steps = DP_PM_STEPS.map((s, i) => ({ dist: i === 0 ? 40 : i === 1 ? Math.min(95, footDist * .6) : footDist, phase: s.phase, note: (notes && notes[i]) || s.note }));
+  let idx = 0;
+  function render(animate){
+    dpAnimationToken++; // invalide toute animation en cours d'une étape précédente
+    const s = steps[idx];
+    // Échelle UNIQUE partagée entre l'équerre et la règle -- avant, chacune calculait la sienne
+    // séparément, ce qui les rendait de tailles incohérentes l'une par rapport à l'autre (bug
+    // signalé : "les outils semblent trop petits", et la règle qui paraissait décalée).
+    const rulerScale = Math.max(0.44, (touchDist+50)/TB_RULER_L, (touchDist+18)/TB_EQUERRE_LEGY);
+    const dExt = dpExtend({x:(D1.x+D2.x)/2,y:(D1.y+D2.y)/2}, dir, 260);
+    dpSetLine(document.getElementById(idPrefix+'-lineD'), dExt);
+    dpSetPt(document.getElementById(idPrefix+'-M'), M);
+    dpSetTxt(document.getElementById(idPrefix+'-labelM'), M, 8, -10);
+    dpSetTxt(document.getElementById(idPrefix+'-labelD'), {x:D2.x+dir.x*24+perp.x*16, y:D2.y+dir.y*24+perp.y*16}, 0, 0);
+    const pos = {x:D1.x+dir.x*s.dist, y:D1.y+dir.y*s.dist};
+    const equerre = document.getElementById(idPrefix+'-equerre');
+    const lineDp = document.getElementById(idPrefix+'-lineDp'), angleMark = document.getElementById(idPrefix+'-angleMark'), ruler = document.getElementById(idPrefix+'-ruler');
+    const pencil = document.getElementById(idPrefix+'-pencil'), pencilTip = document.getElementById(idPrefix+'-pencil-tip');
+
+    // perp peut avoir été RETOURNÉ (pour toujours pointer côté M) par rapport à la
+    // perpendiculaire "par défaut" -- ce retournement doit être répercuté à la fois sur l'équerre
+    // ET sur la règle, sinon l'une des deux se retrouve du mauvais côté et chevauche l'autre (bug
+    // signalé : la règle chevauchait l'équerre).
+    const defaultPerpX = -dir.y, defaultPerpY = dir.x;
+    const mirrored = (perp.x*defaultPerpX + perp.y*defaultPerpY) < 0;
+
+    if(s.phase==='removed' || s.phase==='traced' || s.phase==='clean'){
+      equerre.style.display='none';
+    } else {
+      // Le petit côté de l'équerre (TB_EQUERRE_LEGY à l'échelle 1) doit toujours atteindre M avec
+      // un peu de marge, quelle que soit sa distance à la droite -- sinon l'équerre reste trop
+      // petite et ne "touche" jamais M. Quand M est de l'autre côté, on tourne de 180° (en
+      // utilisant -dir plutôt que dir -- le grand côté reste sur la MÊME droite (d), une droite
+      // n'ayant pas de sens unique) plutôt que d'appliquer un miroir par échelle : ce dernier
+      // inversait toute la forme (pas seulement le texte), donnant cet aspect "à l'envers" signalé.
+      const dirUsed = mirrored ? {x:-dir.x, y:-dir.y} : dir;
+      const angDeg = Math.atan2(dirUsed.y, dirUsed.x)*180/Math.PI;
+      const eqScale = rulerScale;
+      equerre.setAttribute('transform', `translate(${pos.x},${pos.y}) rotate(${angDeg.toFixed(2)}) scale(${eqScale.toFixed(3)})`);
+      equerre.style.display='';
+    }
+
+    // La règle (vraie forme du tableau interactif) a son bord gradué exactement sur l'axe local
+    // y=0 -- il suffit de la poser sur un point de la droite perpendiculaire recherchée, tournée
+    // pour que cet axe corresponde à "perp" : le bord gradué se retrouve alors automatiquement
+    // du côté de l'équerre (contre son petit côté), le corps de la règle s'étendant de l'autre
+    // côté, sans jamais recouvrir l'équerre. Même échelle que l'équerre (calculée en haut de la
+    // fonction), pour qu'elles soient toujours cohérentes l'une avec l'autre -- et le même miroir
+    // que l'équerre pour que le corps s'étende toujours du bon côté (loin d'elle).
+    if(s.phase==='ruler' || s.phase==='removed' || s.phase==='traced'){
+      // Quand l'équerre est en miroir, la règle doit basculer du même côté pour ne jamais la
+      // chevaucher (bug signalé) -- SANS jamais inverser son texte (un miroir par échelle rendait
+      // les numéros illisibles à l'envers, second bug signalé). On choisit à la place la rotation
+      // OPPOSÉE (+180°) dans ce cas : la règle est alors posée en partant d'au-delà de M et
+      // "recule" jusqu'avant le pied -- même ligne, même côté correct, texte toujours lisible.
+      // perp pointe déjà toujours vers M (réglé une fois pour toutes dans les constantes du
+      // fichier) -- la règle n'a donc PAS besoin d'une logique liée au miroir de l'équerre : ce
+      // miroir ne concerne que l'orientation propre de l'équerre (une contrainte différente,
+      // sans rapport). Utiliser la même rotation "retournée" ici avait pour effet de faire
+      // basculer aussi le côté épais de la règle du MAUVAIS côté (vérifié numériquement : le
+      // point intérieur de l'équerre tombait alors DANS le rectangle de la règle) -- d'où le vrai
+      // chevauchement signalé.
+      const rAngDeg = Math.atan2(perp.y, perp.x)*180/Math.PI;
+      const backOffset = TB_RULER_L*rulerScale*0.22;
+      const rStart = {x:foot.x-perp.x*backOffset, y:foot.y-perp.y*backOffset};
+      ruler.setAttribute('transform', `translate(${rStart.x},${rStart.y}) rotate(${rAngDeg.toFixed(2)}) scale(${rulerScale.toFixed(3)})`);
+      ruler.style.display='';
+    } else {
+      ruler.style.display='none';
+    }
+
+    const labelDp = document.getElementById(idPrefix+'-labelDp');
+    if(s.phase==='traced' || s.phase==='clean'){
+      // La perpendiculaire doit clairement DÉPASSER M, pas s'arrêter dessus (bug signalé : le
+      // dépassement précédent ne faisait que 1-2 unités, invisible sous le point M lui-même).
+      // Le tracé ne doit pas non plus commencer EN DEHORS de la règle côté proche (bug signalé) --
+      // on reste nettement à l'intérieur de sa portée (la règle recule de TB_RULER_L*rulerScale*0.22
+      // avant le pied ; on s'arrête ici à 60% de cette distance, avec de la marge des deux côtés).
+      const nearLen = TB_RULER_L*rulerScale*0.22*0.6;
+      const farLen = touchDist+35;
+      const dpExt = {
+        x1: foot.x-perp.x*nearLen, y1: foot.y-perp.y*nearLen,
+        x2: foot.x+perp.x*farLen, y2: foot.y+perp.y*farLen
+      };
+      lineDp.style.display='';
+      angleMark.setAttribute('d', dpRightAngleMark(foot, {x:dir.x,y:dir.y}, {x:perp.x,y:perp.y}, 13));
+      angleMark.style.display='';
+      dpSetTxt(labelDp, {x:dpExt.x2+dir.x*16, y:dpExt.y2+dir.y*16}, 0, 0);
+      labelDp.style.display='';
+      if(s.phase==='traced'){
+        pencil.style.display=''; pencilTip.style.display='';
+        if(animate){
+          dpAnimateTrace(lineDp, pencil, pencilTip, {x:dpExt.x1,y:dpExt.y1}, {x:dpExt.x2,y:dpExt.y2}, dir, 900);
+        } else {
+          dpSetLine(lineDp, dpExt);
+          const tipPoint = {x:dpExt.x2, y:dpExt.y2};
+          const pencilShapes = dpPencilPolygons(tipPoint, perp, dir);
+          pencil.setAttribute('points', pencilShapes.body);
+          pencilTip.setAttribute('points', pencilShapes.tip);
+        }
+      } else {
+        dpSetLine(lineDp, dpExt);
+        pencil.style.display='none';
+        pencilTip.style.display='none';
+      }
+    } else {
+      lineDp.style.display='none';
+      pencil.style.display='none';
+      pencilTip.style.display='none';
+      angleMark.style.display='none';
+      labelDp.style.display='none';
+    }
+    document.getElementById(idPrefix+'-note').textContent = s.note;
+  }
+  return { next(){ if(idx<steps.length-1){ idx++; render(steps[idx].phase==='traced'); } }, reset(){ idx=0; render(false); }, steps:()=>steps, getIdx:()=>idx, goto(i,animate){ idx=i; render(animate); } };
+}
+
 /* ---- Construction pas à pas : parallèle à l'équerre ---- */
 const DP_PAM_P1={x:60,y:165}, DP_PAM_P2={x:300,y:85}, DP_PAM_N={x:216,y:223};
 const dpPamDir = dpDir(DP_PAM_P1, DP_PAM_P2);

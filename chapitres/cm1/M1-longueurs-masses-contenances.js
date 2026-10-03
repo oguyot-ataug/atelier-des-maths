@@ -21,7 +21,7 @@ function regle(){
 const P = (t, c) => `<b style="color:${c};">${t}</b>`;
 // Planches : une case à remplir (pointillés) et la réponse du corrigé.
 const B = n => plPointilles(n || 4), R = v => plRep(String(v));
-const regleExo = (mm, nom, rep) => `<span style="display:flex;flex-direction:column;align-items:center;width:100%;">${cm1RegleGraduee(mm, nom)}<span>[${nom}] = ${rep ? R(Math.floor(mm / 10)) : B(2)} cm ${rep ? R(mm % 10) : B(2)} mm = ${rep ? R(mm) : B(3)} mm</span></span>`;
+const regleExo = (mm, nom, rep) => `<span style="display:flex;flex-direction:column;align-items:center;width:100%;">${cm1RegleGraduee(mm, nom, { n: 8 })}<span>Le segment [${nom}] mesure ${rep ? R(Math.floor(mm / 10)) : B(2)} cm ${rep ? R(mm % 10) : B(2)} mm, soit ${rep ? R(mm) : B(3)} mm.</span></span>`;
 const balExo = (obj, masses, coul, rep, tot) => `<span style="display:flex;flex-direction:column;align-items:center;">${cm1Balance(obj, masses, { coul, largeur: 200 })}<span>${obj} : ${rep ? R(tot) : B(4)} g</span></span>`;
 const KILO = P('kilo', '#7A4FC0'), DECI = P('déci', '#2EA8C9'), CENTI = P('centi', '#2E9C6A'), MILLI = P('milli', '#E35D3A');
 cm1Chapitre({
@@ -99,7 +99,7 @@ ${cm1Demo('lmc-cont', 'Résoudre un problème de contenance', 'Une bouteille con
     ['Range du plus léger au plus lourd : 1 kg 200 g ; 1 020 g ; 2 kg ; 1 002 g.',
       cm1Redac('Les masses en grammes', { suite: ['1 kg 200 g = 1 200 g', '2 kg = 2 000 g'] }, 'Du plus léger au plus lourd : 1 002 g, 1 020 g, 1 kg 200 g, 2 kg.', cm1Axe(1000, 2000, 50, 200, [[1002, '1 002 g'], [1200, '1 kg 200 g'], [2000, '2 kg']], { fmt: v => (v + ' g').replace(/(\d)(\d{3}) g/, '$1 $2 g') }) + '<div class="hint" style="margin:0;">1 020 g est juste à droite de 1 002 g : tous deux sont un tout petit peu plus que 1 kg.</div>')],
     ['Trace un segment [CD] de 6 cm 5 mm. Combien mesure-t-il en millimètres ?',
-      cm1Redac('Longueur de [CD] en mm', ['60 mm + 5 mm', '65 mm'], 'Le segment [CD] mesure 65 mm.', cm1RegleGraduee(65, 'CD', { largeur: '300px' }))],
+      cm1Redac('Longueur du segment [CD] en mm', ['60 mm + 5 mm', '65 mm'], 'Le segment [CD] mesure 65 mm.', cm1RegleGraduee(65, 'CD', { largeur: '300px' }))],
     ['Un cycliste parcourt 2 km 800 m le matin et 1 km 500 m l\'après-midi. Quelle distance a-t-il parcourue, en mètres ?',
       cm1Redac('Distance parcourue', ['2 800 m + 1 500 m', '4 300 m'], 'Le cycliste a parcouru 4 300 m, c\'est-à-dire 4 km 300 m.', cm1Paquets([[2800, 'matin', '2 800 m'], [1500, 'après-midi', '1 500 m']], { L: 400, accolade: '4 300 m' }))],
   ], { titre: 'Rédaction type : « Convertir »', lignes: [['1 kg = 1 000 g', 'J\'écris la relation connue.'], ['5 kg = 5 × 1 000 g = 5 000 g', 'Je multiplie et je conclus.']] }),

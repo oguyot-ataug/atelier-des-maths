@@ -62,7 +62,7 @@ ${cm1Demo('c2-pc-ecrire', 'Écrire le programme d\'un triangle isocèle', 'Écri
     [`Ce programme est-il complet ?${cm1Liste(['Trace un segment [AB].', 'Trace un cercle de centre A.'])}`,
       cm1Redac('Programme complet ?', '', 'Non : il manque la longueur du segment [AB] et le rayon du cercle.')],
     [`Remets ces instructions dans l\'ordre.${cm1Liste(['a) Trace le segment [AC].', 'b) Trace le segment [AB] de 5 cm.', 'c) Place le point C à 3 cm de B sur la perpendiculaire au segment [AB] passant par B.'])}`,
-      cm1Redac('Ordre des instructions', '', 'L\'ordre est b, puis c, puis a : on ne peut pas tracer [AC] avant d\'avoir placé C. On obtient un triangle rectangle en B.')],
+      cm1Redac('Ordre des instructions', '', 'L\'ordre est b, puis c, puis a : on ne peut pas tracer le segment [AC] avant d\'avoir placé C. On obtient un triangle rectangle en B.')],
     ['Écris un programme pour construire un rectangle de 6 cm sur 2 cm avec ses diagonales.',
       cm1Redac('Programme du rectangle', { suite: ['Trace le segment [AB] de 6 cm.', 'Trace les perpendiculaires au segment [AB] en A et en B.', 'Place D et C à 2 cm de A et de B, du même côté.', 'Trace le segment [DC].', 'Trace les diagonales [AC] et [BD].'] }, 'Ce programme est précis, ordonné et complet : on peut le donner à un camarade pour le tester.')],
     ['Écris un programme pour construire deux cercles de même centre O, de rayons 2 cm et 4 cm.',

@@ -54,13 +54,13 @@ ${cm1Demo('ce2-pd-milieu', 'Placer le milieu d\'un segment', 'Le segment [AB] me
       { expr: 'Je pose la règle : le 0 sur le point A.', note: 'Attention : le 0 n\'est pas toujours au bord de la règle.' },
       { expr: 'Je marque le point B en face du 7.', note: 'Je tiens bien la règle, sans qu\'elle glisse.' },
       { expr: 'Je trace le trait de A à B.', note: 'Le long de la règle, sans la faire glisser.' },
-      { expr: 'Je vérifie : [AB] mesure 7 cm ✔', note: '' },
+      { expr: 'Je vérifie : le segment [AB] mesure 7 cm ✔', note: '' },
     ]],
     ['ce2-pd-milieu', [
       { expr: 'La moitié de 8 cm, c\'est 4 cm.', note: 'Le milieu est à la moitié de la longueur.' },
       { expr: 'Je pose le 0 de la règle sur A, le long du segment.', note: 'La règle suit exactement le segment.' },
       { expr: 'Je marque I en face du 4.', note: 'Je vérifie : de I à B, il y a aussi 4 cm ✔' },
-      { expr: 'Je code : un petit trait sur [AI] et un sur [IB].', note: 'Les deux longueurs sont égales.' },
+      { expr: 'Je code : un petit trait sur le segment [AI] et un sur le segment [IB].', note: 'Les deux longueurs sont égales.' },
     ]],
   ],
   exos: cm1Exos('ce2-pd', [

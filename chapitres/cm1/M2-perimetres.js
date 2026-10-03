@@ -23,13 +23,13 @@ function rect(l, L, u, c){
 function polyFig(P, L, opts){
   opts = opts || {}; const xs = P.map(p => p[0]), ys = P.map(p => p[1]), x0 = Math.min(...xs) - 40, y0 = Math.min(...ys) - 24, W = Math.max(...xs) - x0 + 40, H = Math.max(...ys) - y0 + 26;
   const cx = xs.reduce((a, b) => a + b) / P.length, cy = ys.reduce((a, b) => a + b) / P.length;
-  let s = `<svg viewBox="${x0} ${y0} ${W} ${H}" style="width:${opts.largeur || Math.min(W, 220)}px;max-width:100%;display:inline-block;vertical-align:middle;"><polygon points="${P.map(p => p.join(',')).join(' ')}" fill="${opts.c || '#2EA8C9'}" fill-opacity=".12" stroke="${opts.trait || '#E35D3A'}" stroke-width="2.5" stroke-linejoin="round"/>`;
+  let s = `<svg class="pl-libre" viewBox="${x0} ${y0} ${W} ${H}" style="width:${opts.largeur || Math.min(W, 220)}px;max-width:100%;display:inline-block;vertical-align:middle;"><polygon points="${P.map(p => p.join(',')).join(' ')}" fill="${opts.c || '#2EA8C9'}" fill-opacity=".12" stroke="${opts.trait || '#E35D3A'}" stroke-width="2.5" stroke-linejoin="round"/>`;
   P.forEach((p, i) => { const q = P[(i + 1) % P.length], mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2, d = Math.hypot(mx - cx, my - cy) || 1;
     if(L[i]) s += `<text x="${(mx + (mx - cx) / d * 22).toFixed(1)}" y="${(my + (my - cy) / d * 16 + 4).toFixed(1)}" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">${L[i]}</text>`; });
   return s + '</svg>';
 }
 const regPts = (n, r) => Array.from({ length: n }, (_, i) => { const a = -Math.PI / 2 + Math.PI / n + 2 * Math.PI * i / n; return [+(r + r * Math.cos(a)).toFixed(1), +(r + r * Math.sin(a)).toFixed(1)]; });
-const regFig = (n, lab) => polyFig(regPts(n, 46), Array.from({ length: n }, (_, i) => i === Math.floor(n / 2) - (n % 2 ? 0 : 1) ? lab : ''), { largeur: 120, c: '#7A4FC0' });
+const regFig = (n, lab) => polyFig(regPts(n, 46), Array.from({ length: n }, (_, i) => i === Math.floor(n / 2) - (n % 2 ? 0 : 1) ? lab : ''), { largeur: 96, c: '#7A4FC0' });
 const rectFig = (w, h, lw, lh, o) => polyFig([[0, 0], [w, 0], [w, h], [0, h]], ['', lh, lw, ''], o);
 const B = n => plPointilles(n || 4), R = v => plRep(String(v));
 // Figures sur quadrillage (planches) : le contour en trait épais.
@@ -38,7 +38,7 @@ const FP = { A: cm1Rect(1, 1, 3, 2), B: [[1, 1], [1, 2], [1, 3], [2, 3], [3, 3]]
 const quadEx = (rep) => plGrille(Object.entries(FP).map(([n, c]) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${quadP(5, 5, c)}<span><b>${n}</b> : ${rep ? R(cm1QuadPerim(c)) : B(2)}</span></span>`), 3);
 // Jardin carré avec un portail (correction illustrée).
 function jardin(){
-  return `<svg viewBox="0 0 200 150" style="width:170px;max-width:100%;display:block;"><rect x="40" y="20" width="110" height="110" fill="#8DB84A" fill-opacity=".25"/><path d="M110 130 L40 130 L40 20 L150 20 L150 130 L128 130" fill="none" stroke="#E35D3A" stroke-width="3"/><line x1="110" y1="130" x2="128" y2="130" stroke="#4E5665" stroke-width="2" stroke-dasharray="3 2"/>`
+  return `<svg class="pl-libre" viewBox="0 0 200 150" style="width:170px;max-width:100%;display:block;"><rect x="40" y="20" width="110" height="110" fill="#8DB84A" fill-opacity=".25"/><path d="M110 130 L40 130 L40 20 L150 20 L150 130 L128 130" fill="none" stroke="#E35D3A" stroke-width="3"/><line x1="110" y1="130" x2="128" y2="130" stroke="#4E5665" stroke-width="2" stroke-dasharray="3 2"/>`
     + `<text x="119" y="146" font-size="11" text-anchor="middle" fill="#4E5665" font-family="Space Grotesk" font-weight="700">portail 1 m</text><text x="95" y="14" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">9 m</text><text x="160" y="80" font-size="13" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">9 m</text></svg>`;
 }
 cm1Chapitre({
@@ -114,8 +114,8 @@ ${cm1Demo('pe-unite', 'Calculer un périmètre avec des unités différentes', '
       exos: [
         { etoiles: 1, col: 1, consigne: 'Quel est le périmètre de chaque figure, en côtés de carreau ?', eleve: quadEx(), corr: quadEx(1) },
         { etoiles: 1, col: 1, consigne: 'Calcule le périmètre de chaque polygone.',
-          eleve: plGrille([polyFig([[0, 90], [70, 0], [130, 90]], ['5 cm', '4 cm', '6 cm'], { largeur: 140 }) + `<span>P = ${B()} cm</span>`, polyFig([[20, 0], [110, 0], [140, 80], [0, 80]], ['4 cm', '3 cm', '6 cm', '3 cm'], { largeur: 150 }) + `<span>P = ${B()} cm</span>`], 1),
-          corr: plGrille([polyFig([[0, 90], [70, 0], [130, 90]], ['5 cm', '4 cm', '6 cm'], { largeur: 140 }) + `<span>P = ${R(15)} cm</span>`, polyFig([[20, 0], [110, 0], [140, 80], [0, 80]], ['4 cm', '3 cm', '6 cm', '3 cm'], { largeur: 150 }) + `<span>P = ${R(16)} cm</span>`], 1) },
+          eleve: plGrille([polyFig([[0, 90], [70, 0], [130, 90]], ['5 cm', '4 cm', '6 cm'], { largeur: 118 }) + `<span>P = ${B()} cm</span>`, polyFig([[20, 0], [110, 0], [140, 80], [0, 80]], ['4 cm', '3 cm', '6 cm', '3 cm'], { largeur: 125 }) + `<span>P = ${B()} cm</span>`], 1),
+          corr: plGrille([polyFig([[0, 90], [70, 0], [130, 90]], ['5 cm', '4 cm', '6 cm'], { largeur: 118 }) + `<span>P = ${R(15)} cm</span>`, polyFig([[20, 0], [110, 0], [140, 80], [0, 80]], ['4 cm', '3 cm', '6 cm', '3 cm'], { largeur: 125 }) + `<span>P = ${R(16)} cm</span>`], 1) },
         { etoiles: 2, col: 1, consigne: 'Calcule le périmètre.',
           eleve: plListe(['un carré de 6 cm de côté : %1 cm', 'un carré de 15 m de côté : %1 m', 'un rectangle de 8 cm sur 3 cm : %1 cm', 'un rectangle de 20 m sur 12 m : %1 m'].map(t => t.replace('%1', B()))),
           corr: plListe([['un carré de 6 cm de côté : ', 24, ' cm'], ['un carré de 15 m de côté : ', 60, ' m'], ['un rectangle de 8 cm sur 3 cm : ', 22, ' cm'], ['un rectangle de 20 m sur 12 m : ', 64, ' m']].map(([a, b, c]) => a + R(b) + c)) },

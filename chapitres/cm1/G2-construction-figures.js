@@ -405,9 +405,9 @@ document.getElementById('exos-demo-cm1-construction-figures').innerHTML = `
     + cm1Redac('Points alignés', 'E, F et G sont sur la même droite.', 'Les points E, F et G sont alignés.')
     + cm1Redac('Le point K', 'K n\'est pas sur la droite verte.', 'Non : E, F et K ne sont pas alignés.'), cf1ExoFig1())}
   ${cf1Exo(2, `Voici un cercle de centre O.${cm1Liste(['Cite un rayon.', 'Cite un diamètre.', 'Cite une corde qui n\'est pas un diamètre.', 'Le rayon mesure 3 cm : combien mesure le diamètre [AB] ?'])}`,
-    cm1Redac('Un rayon', '[OC] va du centre O à un point du cercle.', 'Le segment [OC] est un rayon.')
-    + cm1Redac('Un diamètre', '[AB] relie deux points du cercle en passant par O.', '[AB] est un diamètre.')
-    + cm1Redac('Une corde', '[DE] relie deux points du cercle sans passer par O.', '[DE] est une corde.')
+    cm1Redac('Un rayon', 'Le segment [OC] va du centre O à un point du cercle.', 'Le segment [OC] est un rayon.')
+    + cm1Redac('Un diamètre', 'Le segment [AB] relie deux points du cercle en passant par O.', 'Le segment [AB] est un diamètre.')
+    + cm1Redac('Une corde', 'Le segment [DE] relie deux points du cercle sans passer par O.', 'Le segment [DE] est une corde.')
     + cm1Redac('Longueur du diamètre', '2 × 3 cm = 6 cm', 'Le diamètre mesure deux rayons : AB = 6 cm.'), cf1ExoFig2())}
   ${cf1Exo(3, `Complète.${cm1Liste(['Un cercle a un rayon de 7 cm : son diamètre mesure … cm.', 'Un cercle a un diamètre de 10 cm : son rayon mesure … cm.', 'Une roue de vélo a un diamètre de 60 cm : quel est son rayon ?'])}`,
     cm1Redac('Diamètre du premier cercle', '2 × 7 cm = 14 cm', 'Le diamètre mesure 14 cm.')
@@ -438,9 +438,9 @@ document.getElementById('exos-demo-cm1-construction-figures').innerHTML = `
   ${cf1Exo(9, 'Léo a tracé un quadrilatère et l\'a nommé MNOP en faisant le tour. Parmi ces noms, lesquels désignent aussi son quadrilatère : NOPM, MOPN, PONM, OPMN ?',
     cm1Redac('Noms possibles', 'On cite les sommets dans l\'ordre du tour, dans un sens ou dans l\'autre.', 'NOPM, PONM et OPMN conviennent. MOPN ne convient pas : après M, on ne peut pas aller directement en O, car M est relié à N et à P.'))}
   ${cf1Exo(10, `Programme de construction : trace un segment [AB] de 6 cm et place son milieu M. Trace le cercle de centre M qui passe par A.${cm1Liste(['Quel est le rayon du cercle ?', 'Le cercle passe-t-il par B ?', 'Que représente le segment [AB] pour ce cercle ?'])}`,
-    cm1Redac('Rayon du cercle', '6 cm ÷ 2 = 3 cm', 'M est le milieu de [AB], donc MA = 3 cm : le rayon du cercle est 3 cm.')
+    cm1Redac('Rayon du cercle', '6 cm ÷ 2 = 3 cm', 'M est le milieu du segment [AB], donc le segment [MA] mesure 3 cm : le rayon du cercle est 3 cm.')
     + cm1Redac('Le point B', 'MB = 3 cm', 'B est à 3 cm du centre : B est sur le cercle.')
-    + cm1Redac('Le segment [AB]', 'Il relie deux points du cercle en passant par le centre M.', '[AB] est un diamètre du cercle : il mesure 6 cm, deux rayons.'), '', cf1ExoFig10())}
+    + cm1Redac('Le segment [AB]', 'Il relie deux points du cercle en passant par le centre M.', 'Le segment [AB] est un diamètre du cercle : il mesure 6 cm, deux rayons.'), '', cf1ExoFig10())}
 </div>
 `;
 

@@ -29,7 +29,7 @@ ${cm1Lecon(2, 'Une fraction pour mesurer')}
 ${cm1Regle(`Quand une longueur ne contient pas un nombre entier de fois l'unité, on partage l'unité en parts égales et on compte les parts.`)}
 <div class="figure-wrap">${mesure(4, 7)}</div>
 ${ce2AnimBandeUnite('c2-fr-bande', { presets: [{ nom: 'Sept quarts', q: 7 }, { nom: 'Trois quarts', q: 3 }, { nom: 'Cinq quarts', q: 5 }] })}
-${cm1Exemple('Mesure du segment [AB] avec l\'unité u :', [`L'unité u est partagée en 4 parts égales (des quarts).`, `Le segment [AB] mesure 7 quarts de u : [AB] = ${F(7, 4)} u, c'est-à-dire 1 u + ${F(3, 4)} u.`])}
+${cm1Exemple('Mesure du segment [AB] avec l\'unité u :', [`L'unité u est partagée en 4 parts égales (des quarts).`, `Le segment [AB] mesure 7 quarts de u, c'est-à-dire ${F(7, 4)} u, soit 1 u + ${F(3, 4)} u.`])}
 
 ${cm1Lecon(3, 'Fractions supérieures à 1')}
 ${cm1Regle(`<b>De la fraction à l'entier + fraction :</b> ${F(17, 5)} = ${F(15, 5)} + ${F(2, 5)} = <b>3 + ${F(2, 5)}</b> (dans 17 cinquièmes, il y a 3 fois 5 cinquièmes, et il en reste 2).<br>

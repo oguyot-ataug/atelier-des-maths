@@ -145,7 +145,7 @@ function cm1Paquets(parts, opts){
   opts = opts || {};
   const tot = parts.reduce((a, p) => a + p[0], 0), X0 = opts.titre ? (opts.xt || 96) : 4, L = opts.L || 380, ech = opts.echelle || tot;
   const Lr = L * tot / ech, W = X0 + L + 6, H = opts.accolade ? 86 : 52;
-  let s = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;display:block;margin:2px 0;">` + (opts.titre ? cmT(X0 - 10, 25, opts.titre, { a: 'end', fs: 13 }) : '');
+  let s = `<svg class="pl-libre" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;display:block;margin:2px 0;">` + (opts.titre ? cmT(X0 - 10, 25, opts.titre, { a: 'end', fs: 13 }) : '');
   let x = X0;
   parts.forEach(([v, haut, bas, coul], i) => {
     const w = L * v / ech, c = coul || (i < parts.length - 1 || opts.uni ? '#CFE8F3' : '#FBE0D6');
@@ -162,7 +162,7 @@ function cm1Paquets(parts, opts){
 function cm1Quad(w, h, cases, opts){
   opts = opts || {}; const k = opts.k || 20, c = opts.c || '#2EA8C9', on = new Set((cases || []).map(([x, y]) => x + ',' + y));
   const W = w * k + 2, H = h * k + 2;
-  let s = `<svg viewBox="0 0 ${W} ${H}" style="width:${opts.largeur || W}px;max-width:100%;display:inline-block;vertical-align:middle;">`;
+  let s = `<svg class="pl-libre" viewBox="0 0 ${W} ${H}" style="width:${opts.largeur || W}px;max-width:100%;display:inline-block;vertical-align:middle;">`;
   for(let y = 0; y < h; y++) for(let x = 0; x < w; x++){ const p = on.has(x + ',' + y); s += `<rect x="${1 + x * k}" y="${1 + y * k}" width="${k}" height="${k}" fill="${p ? c : '#fff'}" fill-opacity="${p ? .6 : 1}" stroke="#B9C7D6" stroke-width=".8"/>`; }
   (opts.demis || []).forEach(([x, y, co]) => { const X = 1 + x * k, Y = 1 + y * k;
     const pts = { hg: [[X, Y], [X + k, Y], [X, Y + k]], hd: [[X, Y], [X + k, Y], [X + k, Y + k]], bg: [[X, Y], [X, Y + k], [X + k, Y + k]], bd: [[X + k, Y], [X + k, Y + k], [X, Y + k]] }[co];
@@ -184,7 +184,7 @@ function cm1Rect(x0, y0, l, h){ const r = []; for(let y = y0; y < y0 + h; y++) f
 // etiq ; points [[valeur, nom]].
 function cm1Axe(min, max, pas, etiq, points, opts){
   opts = opts || {}; const L = opts.L || 460, W = L + 60, px = v => 30 + L * (v - min) / (max - min);
-  let s = `<svg viewBox="0 0 ${W} 76" style="width:100%;max-width:${W}px;display:block;margin:2px 0;"><line x1="20" y1="44" x2="${W - 10}" y2="44" stroke="#1F3A5C" stroke-width="2"/><polygon points="${W - 10},44 ${W - 18},39 ${W - 18},49" fill="#1F3A5C"/>`;
+  let s = `<svg class="pl-libre" viewBox="0 0 ${W} 76" style="width:100%;max-width:${W}px;display:block;margin:2px 0;"><line x1="20" y1="44" x2="${W - 10}" y2="44" stroke="#1F3A5C" stroke-width="2"/><polygon points="${W - 10},44 ${W - 18},39 ${W - 18},49" fill="#1F3A5C"/>`;
   for(let v = min; v <= max + 1e-9; v += pas){ const e = Math.abs((v - min) / etiq - Math.round((v - min) / etiq)) < 1e-6; s += `<line x1="${px(v)}" y1="${e ? 36 : 40}" x2="${px(v)}" y2="${e ? 52 : 48}" stroke="#1F3A5C" stroke-width="${e ? 1.6 : 1}"/>` + (e ? cmT(px(v), 68, (opts.fmt || String)(v), { fs: 11, fw: 600, c: '#4E5665' }) : ''); }
   (points || []).forEach(([v, nom], i) => { s += `<circle cx="${px(v)}" cy="44" r="5" fill="#E35D3A"/>` + cmT(px(v), i % 2 && opts.alterne ? 30 : 28, nom, { fs: 12, c: '#E35D3A' }); });
   return s + '</svg>';
@@ -192,7 +192,7 @@ function cm1Axe(min, max, pas, etiq, points, opts){
 // Balance à plateaux en équilibre : un objet à gauche, des masses marquées à droite.
 function cm1Balance(objet, masses, opts){
   opts = opts || {};
-  let s = `<svg viewBox="0 0 280 112" style="width:${opts.largeur || 220}px;max-width:100%;display:inline-block;vertical-align:middle;">`;
+  let s = `<svg class="pl-libre" viewBox="0 0 280 112" style="width:${opts.largeur || 220}px;max-width:100%;display:inline-block;vertical-align:middle;">`;
   s += `<polygon points="128,106 152,106 140,38" fill="#8E9AA8"/><line x1="36" y1="38" x2="244" y2="38" stroke="#4E5665" stroke-width="4" stroke-linecap="round"/><circle cx="140" cy="38" r="4" fill="#4E5665"/>`;
   s += `<path d="M6 76 L80 76 L72 86 L14 86 Z" fill="#C8D1DC" stroke="#4E5665"/><path d="M160 76 L274 76 L266 86 L168 86 Z" fill="#C8D1DC" stroke="#4E5665"/>`
     + `<line x1="36" y1="38" x2="12" y2="76" stroke="#4E5665"/><line x1="36" y1="38" x2="74" y2="76" stroke="#4E5665"/><line x1="244" y1="38" x2="166" y2="76" stroke="#4E5665"/><line x1="244" y1="38" x2="268" y2="76" stroke="#4E5665"/>`;
@@ -203,8 +203,8 @@ function cm1Balance(objet, masses, opts){
 }
 // Règle graduée (cm et mm) avec un segment posé dessus, de 0 à mm millimètres ; nom : « AB ».
 function cm1RegleGraduee(mm, nom, opts){
-  opts = opts || {}; const u = 40, x0 = 16, n = Math.max(6, Math.ceil(mm / 10) + 1), W = x0 * 2 + n * u, a = (nom || 'AB')[0], b = (nom || 'AB')[1];
-  let s = `<svg viewBox="0 0 ${W} 92" style="width:${opts.largeur || '100%'};max-width:${W}px;display:block;margin:2px ${opts.largeur ? '0' : 'auto'};">`;
+  opts = opts || {}; const u = 40, x0 = 16, n = opts.n || Math.max(6, Math.ceil(mm / 10) + 1), W = x0 * 2 + n * u, a = (nom || 'AB')[0], b = (nom || 'AB')[1];
+  let s = `<svg class="pl-libre" viewBox="0 0 ${W} 92" style="width:${opts.largeur || '100%'};max-width:${W}px;display:block;margin:2px ${opts.largeur ? '0' : 'auto'};">`;
   s += `<line x1="${x0}" y1="16" x2="${x0 + mm * u / 10}" y2="16" stroke="#E35D3A" stroke-width="3"/><circle cx="${x0}" cy="16" r="3" fill="#E35D3A"/><circle cx="${x0 + mm * u / 10}" cy="16" r="3" fill="#E35D3A"/>` + cmT(x0, 10, a, { fs: 12, c: '#E35D3A' }) + cmT(x0 + mm * u / 10, 10, b, { fs: 12, c: '#E35D3A' });
   s += `<rect x="${x0 - 10}" y="24" width="${n * u + 20}" height="56" rx="5" fill="#FFF6D6" stroke="#B8962E"/>`;
   for(let i = 0; i <= n * 10; i++){ const x = x0 + i * u / 10, h = i % 10 === 0 ? 18 : i % 5 === 0 ? 12 : 7;
