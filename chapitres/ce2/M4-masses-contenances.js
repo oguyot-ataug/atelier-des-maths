@@ -82,13 +82,15 @@ ${cm1Demo('ce2-mc-verres', 'Remplir avec des verres', 'Une bouteille contient 1 
     { q: 'Pour peser un camion, on utilise…', opts: ['le gramme', 'la tonne', 'le litre'], correct: 1 },
   ],
   flash: [
-    { q: '2 kg = …', r: ['20 g', '200 g', '2 000 g', '20 000 g'], ok: 2 },
-    { q: '1 t = …', r: ['100 kg', '1 000 kg', '10 kg', '10 000 kg'], ok: 1 },
-    { q: '1 L = … dL', r: ['10', '100', '1 000', '1'], ok: 0 },
-    { q: '3 L = … cL', r: ['30', '300', '3 000', '13'], ok: 1 },
-    { q: 'Quelle masse est la plus grande ?', r: ['900 g', '1 kg 50 g', '1 kg', '999 g'], ok: 1 },
-    { q: 'Quelle est la masse d\'une pomme ?', r: ['150 g', '150 kg', '15 t', '1 g'], ok: 0 },
-    { q: '520 cL = …', r: ['52 L', '5 L et 20 cL', '50 L et 2 cL', '5 L et 2 cL'], ok: 1 },
+    { l: 1, q: '2 kg = …', r: ['20 g', '200 g', '2 000 g', '20 000 g'], ok: 2 },
+    { l: 1, q: '1 t = …', r: ['100 kg', '1 000 kg', '10 kg', '10 000 kg'], ok: 1 },
+    { l: 3, q: '1 L = … dL', r: ['10', '100', '1 000', '1'], ok: 0 },
+    { l: 3, q: '3 L = … cL', r: ['30', '300', '3 000', '13'], ok: 1 },
+    { l: 2, q: 'Quelle masse est la plus grande ?', r: ['900 g', '1 kg 50 g', '1 kg', '999 g'], ok: 1 },
+    { l: 2, q: 'Quelle est la masse d\'une pomme ?', r: ['150 g', '150 kg', '15 t', '1 g'], ok: 0 },
+    { l: 3, q: '520 cL = …', r: ['52 L', '5 L et 20 cL', '50 L et 2 cL', '5 L et 2 cL'], ok: 1 },
+    { l: 2, q: "Sur une balance à plateaux, le plateau le plus lourd…", r: ["descend", "monte", "reste en haut", "disparaît"], ok: 0 },
+    { l: 1, q: "3 kg = …", r: ["30 g", "300 g", "3 000 g", "3 g"], ok: 2 },
   ],
 });
 })();

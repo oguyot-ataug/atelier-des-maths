@@ -85,12 +85,14 @@ ${cm1Demo('ce2-pa-deux', 'Résoudre un problème en deux étapes', 'Un car part 
     { q: 'Il y a 500 élèves, dont 260 filles. Combien de garçons ?', opts: ['240', '260', '760'], correct: 0 },
   ],
   flash: [
-    { q: 'Paul a 125 €. Il dépense 40 €. Combien lui reste-t-il ?', r: ['165 €', '85 €', '75 €', '95 €'], ok: 1 },
-    { q: 'Léa a 50 billes, Tom 20 de plus. Combien Tom a-t-il de billes ?', r: ['30', '60', '70', '100'], ok: 2 },
-    { q: 'Une classe de 28 élèves compte 15 filles. Combien de garçons ?', r: ['13', '15', '43', '17'], ok: 0 },
-    { q: 'Un pull coûte 30 €, un tee-shirt 12 € de moins. Le tee-shirt coûte…', r: ['42 €', '18 €', '12 €', '20 €'], ok: 1 },
-    { q: 'Le train part avec 300 voyageurs. 120 descendent, 50 montent. Combien sont dans le train ?', r: ['230', '130', '470', '180'], ok: 0 },
-    { q: 'Ana a 40 images, Bob 10 de plus. Combien en ont-ils ensemble ?', r: ['50', '80', '90', '100'], ok: 2 },
+    { l: 2, q: 'Paul a 125 €. Il dépense 40 €. Combien lui reste-t-il ?', r: ['165 €', '85 €', '75 €', '95 €'], ok: 1 },
+    { l: 3, q: 'Léa a 50 billes, Tom 20 de plus. Combien Tom a-t-il de billes ?', r: ['30', '60', '70', '100'], ok: 2 },
+    { l: 1, q: 'Une classe de 28 élèves compte 15 filles. Combien de garçons ?', r: ['13', '15', '43', '17'], ok: 0 },
+    { l: 3, q: 'Un pull coûte 30 €, un tee-shirt 12 € de moins. Le tee-shirt coûte…', r: ['42 €', '18 €', '12 €', '20 €'], ok: 1 },
+    { l: 4, q: 'Le train part avec 300 voyageurs. 120 descendent, 50 montent. Combien sont dans le train ?', r: ['230', '130', '470', '180'], ok: 0 },
+    { l: 4, q: 'Ana a 40 images, Bob 10 de plus. Combien en ont-ils ensemble ?', r: ['50', '80', '90', '100'], ok: 2 },
+    { l: 1, q: "Dans un bus : 12 adultes et 25 enfants. Combien de passagers ?", r: ["37", "13", "27", "47"], ok: 0 },
+    { l: 2, q: "Tom avait 15 billes ; il en gagne 8. Il en a maintenant…", r: ["23", "7", "15", "32"], ok: 0 },
   ],
 });
 })();

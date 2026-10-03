@@ -64,12 +64,14 @@ ${cm1Demo('ce2-pe-jardin', 'Résoudre un problème de clôture', 'Un jardin rect
     { q: 'Un rectangle de 5 cm sur 2 cm a pour périmètre…', opts: ['7 cm', '10 cm', '14 cm'], correct: 2 },
   ],
   flash: [
-    { q: 'Périmètre d\'un carré de 4 cm de côté ?', r: ['8 cm', '12 cm', '16 cm', '20 cm'], ok: 2 },
-    { q: 'Périmètre d\'un rectangle de 6 cm sur 3 cm ?', r: ['9 cm', '18 cm', '12 cm', '15 cm'], ok: 1 },
-    { q: 'Périmètre d\'un triangle de côtés 2 cm, 3 cm, 4 cm ?', r: ['7 cm', '9 cm', '24 cm', '10 cm'], ok: 1 },
-    { q: 'Le périmètre d\'une figure, c\'est…', r: ['son intérieur', 'la longueur de son contour', 'son plus grand côté', 'son nombre de sommets'], ok: 1 },
-    { q: 'Pour comparer des périmètres sans règle graduée, on utilise…', r: ['le compas', 'la balance', 'l\'équerre seule', 'le verre gradué'], ok: 0 },
-    { q: 'Un carré a un périmètre de 20 cm. Son côté mesure…', r: ['4 cm', '5 cm', '10 cm', '80 cm'], ok: 1 },
+    { l: 3, q: 'Périmètre d\'un carré de 4 cm de côté ?', r: ['8 cm', '12 cm', '16 cm', '20 cm'], ok: 2 },
+    { l: 3, q: 'Périmètre d\'un rectangle de 6 cm sur 3 cm ?', r: ['9 cm', '18 cm', '12 cm', '15 cm'], ok: 1 },
+    { l: 3, q: 'Périmètre d\'un triangle de côtés 2 cm, 3 cm, 4 cm ?', r: ['7 cm', '9 cm', '24 cm', '10 cm'], ok: 1 },
+    { l: 1, q: 'Le périmètre d\'une figure, c\'est…', r: ['son intérieur', 'la longueur de son contour', 'son plus grand côté', 'son nombre de sommets'], ok: 1 },
+    { l: 2, q: 'Pour comparer des périmètres sans règle graduée, on utilise…', r: ['le compas', 'la balance', 'l\'équerre seule', 'le verre gradué'], ok: 0 },
+    { l: 3, q: 'Un carré a un périmètre de 20 cm. Son côté mesure…', r: ['4 cm', '5 cm', '10 cm', '80 cm'], ok: 1 },
+    { l: 1, q: "Pour poser une clôture autour d'un jardin, on a besoin…", r: ["du périmètre", "de l'aire", "du nombre de fleurs", "de la hauteur"], ok: 0 },
+    { l: 2, q: "Avec le compas, on reporte…", r: ["les côtés bout à bout sur une droite", "un cercle", "les angles", "la couleur"], ok: 0 },
   ],
 });
 })();

@@ -72,12 +72,14 @@ ${cm1Demo('ce2-dg-barre', 'Compléter un diagramme en barres', 'Les 175 élèves
     { q: 'Total d\'une colonne : 12, 8 et 5. Le total est…', opts: ['20', '25', '30'], correct: 1 },
   ],
   flash: [
-    { q: 'À pied : 8 · Vélo : 3 · Voiture : 10 · Bus : 5. Quel transport est le plus utilisé ?', r: ['à pied', 'vélo', 'voiture', 'bus'], ok: 2 },
-    { q: 'Dans un diagramme en barres, la barre la plus courte montre…', r: ['le plus petit effectif', 'le plus grand effectif', 'le total', 'la moyenne'], ok: 0 },
-    { q: 'Le total des effectifs 8, 3, 10 et 5 est…', r: ['21', '26', '28', '31'], ok: 1 },
-    { q: 'Pour des effectifs entre 0 et 100, quel pas choisir sur l\'axe ?', r: ['1 en 1', '20 en 20', '100 en 100', '1 000 en 1 000'], ok: 1 },
-    { q: '142 élèves à pied, dont 77 garçons. Combien de filles ?', r: ['65', '75', '219', '55'], ok: 0 },
-    { q: 'Un effectif, c\'est…', r: ['une couleur', 'un nombre de personnes ou d\'objets', 'une barre', 'une ligne'], ok: 1 },
+    { l: 1, q: 'À pied : 8 · Vélo : 3 · Voiture : 10 · Bus : 5. Quel transport est le plus utilisé ?', r: ['à pied', 'vélo', 'voiture', 'bus'], ok: 2 },
+    { l: 2, q: 'Dans un diagramme en barres, la barre la plus courte montre…', r: ['le plus petit effectif', 'le plus grand effectif', 'le total', 'la moyenne'], ok: 0 },
+    { l: 1, q: 'Le total des effectifs 8, 3, 10 et 5 est…', r: ['21', '26', '28', '31'], ok: 1 },
+    { l: 2, q: 'Pour des effectifs entre 0 et 100, quel pas choisir sur l\'axe ?', r: ['1 en 1', '20 en 20', '100 en 100', '1 000 en 1 000'], ok: 1 },
+    { l: 3, q: '142 élèves à pied, dont 77 garçons. Combien de filles ?', r: ['65', '75', '219', '55'], ok: 0 },
+    { l: 1, q: 'Un effectif, c\'est…', r: ['une couleur', 'un nombre de personnes ou d\'objets', 'une barre', 'une ligne'], ok: 1 },
+    { l: 3, q: "Un tableau à double entrée se lit avec…", r: ["une ligne et une colonne", "deux lignes", "un seul nombre", "une couleur"], ok: 0 },
+    { l: 2, q: "Dans un diagramme en barres, deux barres de même hauteur montrent…", r: ["le même effectif", "des effectifs différents", "le total", "une erreur"], ok: 0 },
   ],
 });
 })();

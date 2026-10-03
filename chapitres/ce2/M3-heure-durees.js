@@ -88,12 +88,14 @@ ${cm1Demo('ce2-hd-depart', 'Trouver une heure de départ', 'Lucie est sortie pen
     { q: 'De 9 h 40 à 10 h 10, il s\'écoule…', opts: ['30 minutes', '70 minutes', '1 heure'], correct: 0 },
   ],
   flash: [
-    { q: 'Une demi-heure, c\'est…', r: ['15 min', '30 min', '50 min', '60 min'], ok: 1 },
-    { q: '3 heures de l\'après-midi, c\'est…', r: ['13 h', '15 h', '16 h', '3 h'], ok: 1 },
-    { q: 'Combien de minutes dans 2 h ?', r: ['100', '120', '200', '60'], ok: 1 },
-    { q: 'De 8 h 30 à 8 h 50, il s\'écoule…', r: ['20 min', '30 min', '50 min', '80 min'], ok: 0 },
-    { q: 'Sept heures moins le quart, c\'est…', r: ['7 h 15', '6 h 45', '7 h 45', '6 h 15'], ok: 1 },
-    { q: 'Le film commence à 14 h et dure 1 h 30. Il finit à…', r: ['15 h', '15 h 30', '15 h 50', '16 h 30'], ok: 1 },
+    { l: 2, q: 'Une demi-heure, c\'est…', r: ['15 min', '30 min', '50 min', '60 min'], ok: 1 },
+    { l: 1, q: '3 heures de l\'après-midi, c\'est…', r: ['13 h', '15 h', '16 h', '3 h'], ok: 1 },
+    { l: 2, q: 'Combien de minutes dans 2 h ?', r: ['100', '120', '200', '60'], ok: 1 },
+    { l: 3, q: 'De 8 h 30 à 8 h 50, il s\'écoule…', r: ['20 min', '30 min', '50 min', '80 min'], ok: 0 },
+    { l: 1, q: 'Sept heures moins le quart, c\'est…', r: ['7 h 15', '6 h 45', '7 h 45', '6 h 15'], ok: 1 },
+    { l: 3, q: 'Le film commence à 14 h et dure 1 h 30. Il finit à…', r: ['15 h', '15 h 30', '15 h 50', '16 h 30'], ok: 1 },
+    { l: 1, q: "La grande aiguille est sur le 6 : il est … minutes.", r: ["6", "30", "15", "60"], ok: 1 },
+    { l: 3, q: "De 10 h à 11 h 15, il s'écoule…", r: ["15 min", "1 h 15 min", "75 h", "1 h 50 min"], ok: 1 },
   ],
 });
 })();

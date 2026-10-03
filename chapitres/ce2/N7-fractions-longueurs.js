@@ -73,12 +73,14 @@ ${cm1Demo('ce2-fl-tracer', 'Tracer un segment de longueur donnée', `Avec une r�
     { q: 'Quelle fraction est la plus grande ?', opts: [F(2, 6), F(5, 6), F(3, 6)], correct: 1 },
   ],
   flash: [
-    { q: 'Une unité partagée en 4 parts égales : chaque part est…', r: ['un demi', 'un tiers', 'un quart', 'un dixième'], ok: 2 },
-    { q: '1/2 unité = … dixièmes d\'unité', r: ['2', '5', '10', '1'], ok: 1 },
-    { q: '4/4 d\'unité, c\'est…', r: ['4 unités', '1 unité', '1/4 d\'unité', '0'], ok: 1 },
-    { q: 'Quelle longueur est la plus grande ?', r: ['3/10 u', '7/10 u', '5/10 u', '1/10 u'], ok: 1 },
-    { q: '1/5 unité = … dixièmes d\'unité', r: ['1', '2', '5', '10'], ok: 1 },
-    { q: 'Deux unités et un quart s\'écrit…', r: ['2 u + 1/4 u', '1/4 u', '2/4 u', '4 u + 1/2 u'], ok: 0 },
+    { l: 1, q: 'Une unité partagée en 4 parts égales : chaque part est…', r: ['un demi', 'un tiers', 'un quart', 'un dixième'], ok: 2 },
+    { l: 3, q: '1/2 unité = … dixièmes d\'unité', r: ['2', '5', '10', '1'], ok: 1 },
+    { l: 1, q: '4/4 d\'unité, c\'est…', r: ['4 unités', '1 unité', '1/4 d\'unité', '0'], ok: 1 },
+    { l: 4, q: 'Quelle longueur est la plus grande ?', r: ['3/10 u', '7/10 u', '5/10 u', '1/10 u'], ok: 1 },
+    { l: 3, q: '1/5 unité = … dixièmes d\'unité', r: ['1', '2', '5', '10'], ok: 1 },
+    { l: 2, q: 'Deux unités et un quart s\'écrit…', r: ['2 u + 1/4 u', '1/4 u', '2/4 u', '4 u + 1/2 u'], ok: 0 },
+    { l: 2, q: "Règle graduée en dixièmes : 7 graduations après 0, c'est…", r: ["7/10 u", "10/7 u", "7 u", "1/7 u"], ok: 0 },
+    { l: 4, q: "Quelle longueur est la plus petite ?", r: ["1/2 u", "1/4 u", "3/4 u", "1 u"], ok: 1 },
   ],
 });
 })();

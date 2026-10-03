@@ -66,12 +66,14 @@ ${cm1Demo('ce2-fc-gateau', 'Résoudre un problème avec des fractions', 'Marc a 
     { q: `Entre ${F(5, 12)} et ${F(5, 8)}, la plus grande est…`, opts: [F(5, 12), F(5, 8), 'elles sont égales'], correct: 1 },
   ],
   flash: [
-    { q: '3/7 + 2/7 = …', r: ['5/14', '5/7', '6/7', '1/7'], ok: 1 },
-    { q: '9/10 − 4/10 = …', r: ['5/10', '5/0', '13/10', '4/10'], ok: 0 },
-    { q: 'Quelle fraction est la plus grande ?', r: ['2/9', '7/9', '5/9', '1/9'], ok: 1 },
-    { q: 'Quelle fraction est la plus grande ?', r: ['3/4', '3/8', '3/12', '3/10'], ok: 0 },
-    { q: '1/2 + 1/4 = …', r: ['2/6', '2/4', '3/4', '1/8'], ok: 2 },
-    { q: 'On a mangé 3/10 du gâteau. Que reste-t-il ?', r: ['3/10', '7/10', '10/10', '1/10'], ok: 1 },
+    { l: 2, q: '3/7 + 2/7 = …', r: ['5/14', '5/7', '6/7', '1/7'], ok: 1 },
+    { l: 2, q: '9/10 − 4/10 = …', r: ['5/10', '5/0', '13/10', '4/10'], ok: 0 },
+    { l: 1, q: 'Quelle fraction est la plus grande ?', r: ['2/9', '7/9', '5/9', '1/9'], ok: 1 },
+    { l: 1, q: 'Quelle fraction est la plus grande ?', r: ['3/4', '3/8', '3/12', '3/10'], ok: 0 },
+    { l: 2, q: '1/2 + 1/4 = …', r: ['2/6', '2/4', '3/4', '1/8'], ok: 2 },
+    { l: 2, q: 'On a mangé 3/10 du gâteau. Que reste-t-il ?', r: ['3/10', '7/10', '10/10', '1/10'], ok: 1 },
+    { l: 1, q: "Quelle fraction est la plus petite ?", r: ["1/3", "1/5", "1/2", "1/4"], ok: 1 },
+    { l: 1, q: "5/8 … 3/8", r: ["<", ">", "="], ok: 1 },
   ],
 });
 })();

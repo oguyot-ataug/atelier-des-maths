@@ -75,12 +75,14 @@ ${cm1Demo('ce2-dv-groupes', 'Trouver le nombre de parts', 'On range 40 élèves 
     { q: '3 enfants se partagent 18 bonbons. Chacun en a…', opts: ['15', '6', '21'], correct: 1 },
   ],
   flash: [
-    { q: '35 ÷ 5 = …', r: ['5', '6', '7', '8'], ok: 2 },
-    { q: '48 ÷ 6 = …', r: ['6', '7', '8', '9'], ok: 2 },
-    { q: '7 × 13 = 91, donc 91 ÷ 13 = …', r: ['7', '13', '78', '104'], ok: 0 },
-    { q: '4 amis se partagent 20 €. Chacun reçoit…', r: ['4 €', '5 €', '16 €', '24 €'], ok: 1 },
-    { q: 'Avec 30 œufs, combien de boîtes de 6 ?', r: ['4', '5', '6', '24'], ok: 1 },
-    { q: '100 ÷ 10 = …', r: ['1', '10', '90', '1 000'], ok: 1 },
+    { l: 3, q: '35 ÷ 5 = …', r: ['5', '6', '7', '8'], ok: 2 },
+    { l: 3, q: '48 ÷ 6 = …', r: ['6', '7', '8', '9'], ok: 2 },
+    { l: 3, q: '7 × 13 = 91, donc 91 ÷ 13 = …', r: ['7', '13', '78', '104'], ok: 0 },
+    { l: 1, q: '4 amis se partagent 20 €. Chacun reçoit…', r: ['4 €', '5 €', '16 €', '24 €'], ok: 1 },
+    { l: 2, q: 'Avec 30 œufs, combien de boîtes de 6 ?', r: ['4', '5', '6', '24'], ok: 1 },
+    { l: 3, q: '100 ÷ 10 = …', r: ['1', '10', '90', '1 000'], ok: 1 },
+    { l: 1, q: "24 billes partagées entre 3 enfants : chacun en a…", r: ["6", "8", "21", "27"], ok: 1 },
+    { l: 2, q: "Combien de groupes de 4 avec 28 élèves ?", r: ["6", "7", "8", "24"], ok: 1 },
   ],
 });
 })();

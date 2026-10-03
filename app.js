@@ -3327,6 +3327,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.961', date:'2026-10-03', items:[
+    'Questions flash du CM2 : 265 questions (au lieu de 150) et du CE2 : 205 (au lieu de 156), rangées par leçon du cours ; chaque leçon en a au moins deux',
+  ] },
   { version:'2026-08-19.960', date:'2026-10-03', items:[
     'Session COURS (tous niveaux) : équipes -- bouton « Équipes » dans la télécommande : équipes de 2 à 6, tirées au sort parmi les élèves en classe (un élève connecté par équipe : son ordinateur sert à toute l\'équipe) ou faites à la main ; on change à tout moment',
     'Session COURS : « pas d\'ordinateur, plus de batterie ? » -- sur chaque élève de la liste, un bouton pour le faire travailler sur l\'ordinateur d\'un camarade connecté, à tout moment ; bandeau chez l\'élève (« Vous êtes 2 sur cet ordinateur : toi et Tom ») ; le bilan de la séance donne aux coéquipiers les résultats de leur ordinateur (« en équipe »)',

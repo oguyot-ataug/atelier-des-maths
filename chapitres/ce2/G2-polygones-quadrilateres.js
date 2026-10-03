@@ -100,12 +100,14 @@ ${cm1Demo('ce2-po-nature', 'Justifier la nature d\'un quadrilatère', 'Un quadri
     { q: 'Un triangle rectangle a…', opts: ['un angle droit', 'trois angles droits', 'quatre côtés'], correct: 0 },
   ],
   flash: [
-    { q: 'Un hexagone a combien de côtés ?', r: ['4', '5', '6', '8'], ok: 2 },
-    { q: 'Quelle figure a 4 angles droits et 4 côtés de même longueur ?', r: ['le rectangle', 'le losange', 'le carré', 'le triangle'], ok: 2 },
-    { q: 'Le segment qui relie deux sommets opposés d\'un rectangle est…', r: ['un côté', 'une diagonale', 'un rayon', 'une largeur'], ok: 1 },
-    { q: 'Un pentagone a combien de sommets ?', r: ['4', '5', '6', '10'], ok: 1 },
-    { q: 'Que veut dire un petit carré dans un coin de figure ?', r: ['un angle droit', 'un milieu', 'un côté égal', 'un sommet'], ok: 0 },
-    { q: 'Vrai ou faux : un carré est aussi un rectangle.', r: ['Vrai', 'Faux'], ok: 0 },
+    { l: 1, q: 'Un hexagone a combien de côtés ?', r: ['4', '5', '6', '8'], ok: 2 },
+    { l: 2, q: 'Quelle figure a 4 angles droits et 4 côtés de même longueur ?', r: ['le rectangle', 'le losange', 'le carré', 'le triangle'], ok: 2 },
+    { l: 3, q: 'Le segment qui relie deux sommets opposés d\'un rectangle est…', r: ['un côté', 'une diagonale', 'un rayon', 'une largeur'], ok: 1 },
+    { l: 1, q: 'Un pentagone a combien de sommets ?', r: ['4', '5', '6', '10'], ok: 1 },
+    { l: 4, q: 'Que veut dire un petit carré dans un coin de figure ?', r: ['un angle droit', 'un milieu', 'un côté égal', 'un sommet'], ok: 0 },
+    { l: 2, q: 'Vrai ou faux : un carré est aussi un rectangle.', r: ['Vrai', 'Faux'], ok: 0 },
+    { l: 4, q: "Un triangle rectangle a…", r: ["un angle droit", "deux angles droits", "4 côtés", "aucun angle"], ok: 0 },
+    { l: 3, q: "Le plus grand côté d'un rectangle s'appelle…", r: ["la longueur", "la largeur", "la diagonale", "le sommet"], ok: 0 },
   ],
 });
 })();

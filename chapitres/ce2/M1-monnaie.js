@@ -82,12 +82,14 @@ ${cm1Demo('ce2-mo-payer', 'Payer une somme avec le moins de pièces possible', '
     { q: 'Un objet coûte 3,60 €. On paie avec 5 €. On rend…', opts: ['1,40 €', '2,40 €', '1,60 €'], correct: 0 },
   ],
   flash: [
-    { q: 'Quatre euros et sept centimes s\'écrit…', r: ['4,7 €', '4,70 €', '4,07 €', '47 €'], ok: 2 },
-    { q: 'Combien de centimes dans 3 € ?', r: ['3', '30', '300', '3 000'], ok: 2 },
-    { q: '2,50 € + 1,50 € = …', r: ['3 €', '3,50 €', '4 €', '4,50 €'], ok: 2 },
-    { q: 'Un achat de 6,20 € payé avec 10 €. On rend…', r: ['3,80 €', '4,80 €', '3,20 €', '4,20 €'], ok: 0 },
-    { q: 'Combien de pièces de 20 c pour faire 1 € ?', r: ['2', '4', '5', '10'], ok: 2 },
-    { q: 'Quel prix est le plus grand ?', r: ['5,09 €', '5,90 €', '5,19 €', '5,15 €'], ok: 1 },
+    { l: 2, q: 'Quatre euros et sept centimes s\'écrit…', r: ['4,7 €', '4,70 €', '4,07 €', '47 €'], ok: 2 },
+    { l: 1, q: 'Combien de centimes dans 3 € ?', r: ['3', '30', '300', '3 000'], ok: 2 },
+    { l: 3, q: '2,50 € + 1,50 € = …', r: ['3 €', '3,50 €', '4 €', '4,50 €'], ok: 2 },
+    { l: 4, q: 'Un achat de 6,20 € payé avec 10 €. On rend…', r: ['3,80 €', '4,80 €', '3,20 €', '4,20 €'], ok: 0 },
+    { l: 1, q: 'Combien de pièces de 20 c pour faire 1 € ?', r: ['2', '4', '5', '10'], ok: 2 },
+    { l: 2, q: 'Quel prix est le plus grand ?', r: ['5,09 €', '5,90 €', '5,19 €', '5,15 €'], ok: 1 },
+    { l: 3, q: "3,20 € + 1,80 € = …", r: ["4 €", "5 €", "4,100 €", "5,10 €"], ok: 1 },
+    { l: 4, q: "Un achat de 3,50 € payé avec 5 €. On rend…", r: ["1,50 €", "2,50 €", "8,50 €", "1,05 €"], ok: 0 },
   ],
 });
 })();

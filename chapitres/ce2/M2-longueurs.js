@@ -90,12 +90,15 @@ ${cm1Demo('ce2-lo-comp', 'Comparer des longueurs', 'Qui a sauté le plus loin : 
     { q: 'Pour mesurer la distance entre deux villes, on utilise…', opts: ['le km', 'le cm', 'le mm'], correct: 0 },
   ],
   flash: [
-    { q: '1 cm = …', r: ['10 mm', '100 mm', '1 000 mm', '1 mm'], ok: 0 },
-    { q: '3 m = …', r: ['30 cm', '300 cm', '3 000 cm', '3 cm'], ok: 1 },
-    { q: '2 km = …', r: ['200 m', '2 000 m', '20 m', '20 000 m'], ok: 1 },
-    { q: '6 cm et 2 mm = …', r: ['8 mm', '62 mm', '602 mm', '26 mm'], ok: 1 },
-    { q: 'Quelle unité pour mesurer un crayon ?', r: ['km', 'm', 'cm', 'kg'], ok: 2 },
-    { q: 'Quelle longueur est la plus grande ?', r: ['1 m', '95 cm', '9 dm', '990 mm'], ok: 0 },
+    { l: 1, q: '1 cm = …', r: ['10 mm', '100 mm', '1 000 mm', '1 mm'], ok: 0 },
+    { l: 2, q: '3 m = …', r: ['30 cm', '300 cm', '3 000 cm', '3 cm'], ok: 1 },
+    { l: 2, q: '2 km = …', r: ['200 m', '2 000 m', '20 m', '20 000 m'], ok: 1 },
+    { l: 3, q: '6 cm et 2 mm = …', r: ['8 mm', '62 mm', '602 mm', '26 mm'], ok: 1 },
+    { l: 4, q: 'Quelle unité pour mesurer un crayon ?', r: ['km', 'm', 'cm', 'kg'], ok: 2 },
+    { l: 2, q: 'Quelle longueur est la plus grande ?', r: ['1 m', '95 cm', '9 dm', '990 mm'], ok: 0 },
+    { l: 3, q: "Pour mesurer un segment, je place le 0 de la règle…", r: ["sur une extrémité", "au milieu", "n'importe où", "sur le 1"], ok: 0 },
+    { l: 4, q: "La longueur d'une voiture est d'environ…", r: ["4 cm", "4 m", "4 km", "40 m"], ok: 1 },
+    { l: 1, q: "1 m = … cm", r: ["10", "100", "1 000", "1"], ok: 1 },
   ],
 });
 })();

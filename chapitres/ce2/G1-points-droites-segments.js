@@ -84,12 +84,15 @@ ${cm1Demo('ce2-pd-milieu', 'Placer le milieu d\'un segment', 'Le segment [AB] me
     { q: 'Des points sont alignés quand…', opts: ['ils sont sur une même droite', 'ils sont proches', 'ils ont le même nom'], correct: 0 },
   ],
   flash: [
-    { q: 'Quel objet s\'arrête à ses deux extrémités ?', r: ['une droite', 'un segment', 'un point', 'aucun'], ok: 1 },
-    { q: 'Le milieu d\'un segment de 8 cm est à … de chaque extrémité.', r: ['2 cm', '4 cm', '8 cm', '16 cm'], ok: 1 },
-    { q: 'Comment marque-t-on un point ?', r: ['avec un rond plein', 'avec une petite croix', 'avec un trait', 'avec une flèche'], ok: 1 },
-    { q: '(DE) désigne…', r: ['un segment', 'une droite', 'un point', 'une longueur'], ok: 1 },
-    { q: 'Pour tracer un segment de 5 cm, je pose sur le premier point…', r: ['le bord de la règle', 'le 0 de la règle', 'le 5 de la règle', 'le 1 de la règle'], ok: 1 },
-    { q: 'Vrai ou faux : on peut mesurer la longueur d\'une droite.', r: ['Vrai', 'Faux'], ok: 1 },
+    { l: 1, q: 'Quel objet s\'arrête à ses deux extrémités ?', r: ['une droite', 'un segment', 'un point', 'aucun'], ok: 1 },
+    { l: 3, q: 'Le milieu d\'un segment de 8 cm est à … de chaque extrémité.', r: ['2 cm', '4 cm', '8 cm', '16 cm'], ok: 1 },
+    { l: 1, q: 'Comment marque-t-on un point ?', r: ['avec un rond plein', 'avec une petite croix', 'avec un trait', 'avec une flèche'], ok: 1 },
+    { l: 1, q: '(DE) désigne…', r: ['un segment', 'une droite', 'un point', 'une longueur'], ok: 1 },
+    { l: 1, q: 'Pour tracer un segment de 5 cm, je pose sur le premier point…', r: ['le bord de la règle', 'le 0 de la règle', 'le 5 de la règle', 'le 1 de la règle'], ok: 1 },
+    { l: 1, q: 'Vrai ou faux : on peut mesurer la longueur d\'une droite.', r: ['Vrai', 'Faux'], ok: 1 },
+    { l: 2, q: "Trois points sont alignés quand…", r: ["ils sont sur une même droite", "ils forment un triangle", "ils sont rouges", "ils sont loin"], ok: 0 },
+    { l: 2, q: "Pour vérifier que des points sont alignés, on utilise…", r: ["la règle", "le compas", "la gomme", "un verre"], ok: 0 },
+    { l: 3, q: "Le milieu d'un segment de 10 cm est à … de chaque extrémité.", r: ["5 cm", "10 cm", "20 cm", "2 cm"], ok: 0 },
   ],
 });
 })();

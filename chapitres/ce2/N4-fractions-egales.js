@@ -71,12 +71,14 @@ ${cm1Demo('ce2-fe-trier', 'Trouver les fractions égales à un demi', `Parmi ${F
     { q: 'Une fraction égale à 1 :', opts: [F(5, 5), F(1, 5), F(4, 5)], correct: 0 },
   ],
   flash: [
-    { q: 'Quelle fraction est égale à un demi ?', r: ['2/3', '3/6', '3/4', '1/3'], ok: 1 },
-    { q: '1/2 = ?/10', r: ['2', '4', '5', '10'], ok: 2 },
-    { q: '3/4 = ?/8', r: ['3', '4', '6', '7'], ok: 2 },
-    { q: 'Dans 3/4, le dénominateur est…', r: ['3', '4', '7', '1'], ok: 1 },
-    { q: 'Quelle fraction est égale à 1 ?', r: ['1/8', '8/8', '7/8', '4/8'], ok: 1 },
-    { q: 'Vrai ou faux : 2/4 = 1/2', r: ['Vrai', 'Faux'], ok: 0 },
+    { l: 3, q: 'Quelle fraction est égale à un demi ?', r: ['2/3', '3/6', '3/4', '1/3'], ok: 1 },
+    { l: 3, q: '1/2 = ?/10', r: ['2', '4', '5', '10'], ok: 2 },
+    { l: 2, q: '3/4 = ?/8', r: ['3', '4', '6', '7'], ok: 2 },
+    { l: 1, q: 'Dans 3/4, le dénominateur est…', r: ['3', '4', '7', '1'], ok: 1 },
+    { l: 1, q: 'Quelle fraction est égale à 1 ?', r: ['1/8', '8/8', '7/8', '4/8'], ok: 1 },
+    { l: 3, q: 'Vrai ou faux : 2/4 = 1/2', r: ['Vrai', 'Faux'], ok: 0 },
+    { l: 1, q: "Un gâteau partagé en 6 parts égales ; on en prend 1. C'est…", r: ["1/6 du gâteau", "6/1 du gâteau", "1/5 du gâteau", "5/6 du gâteau"], ok: 0 },
+    { l: 2, q: "2/3 = ?/6", r: ["2", "3", "4", "6"], ok: 2 },
   ],
 });
 })();

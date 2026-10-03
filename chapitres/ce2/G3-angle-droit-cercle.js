@@ -84,12 +84,14 @@ ${cm1Demo('ce2-ac-tri', 'Construire un triangle rectangle', 'Construis un triang
     { q: 'Pour vérifier un angle droit, on utilise…', opts: ['le compas', 'l\'équerre', 'la gomme'], correct: 1 },
   ],
   flash: [
-    { q: 'Un angle plus petit qu\'un angle droit est…', r: ['droit', 'aigu', 'obtus', 'plat'], ok: 1 },
-    { q: 'Le diamètre d\'un cercle de rayon 4 cm mesure…', r: ['2 cm', '4 cm', '8 cm', '16 cm'], ok: 2 },
-    { q: 'Quel instrument trace un cercle ?', r: ['la règle', 'l\'équerre', 'le compas', 'la gomme'], ok: 2 },
-    { q: 'Le segment qui va du centre à un point du cercle est…', r: ['un diamètre', 'un rayon', 'un côté', 'une diagonale'], ok: 1 },
-    { q: 'Combien d\'angles droits a un rectangle ?', r: ['1', '2', '3', '4'], ok: 3 },
-    { q: 'Le coin d\'une feuille de papier forme un angle…', r: ['aigu', 'obtus', 'droit', 'plat'], ok: 2 },
+    { l: 1, q: 'Un angle plus petit qu\'un angle droit est…', r: ['droit', 'aigu', 'obtus', 'plat'], ok: 1 },
+    { l: 2, q: 'Le diamètre d\'un cercle de rayon 4 cm mesure…', r: ['2 cm', '4 cm', '8 cm', '16 cm'], ok: 2 },
+    { l: 2, q: 'Quel instrument trace un cercle ?', r: ['la règle', 'l\'équerre', 'le compas', 'la gomme'], ok: 2 },
+    { l: 2, q: 'Le segment qui va du centre à un point du cercle est…', r: ['un diamètre', 'un rayon', 'un côté', 'une diagonale'], ok: 1 },
+    { l: 1, q: 'Combien d\'angles droits a un rectangle ?', r: ['1', '2', '3', '4'], ok: 3 },
+    { l: 1, q: 'Le coin d\'une feuille de papier forme un angle…', r: ['aigu', 'obtus', 'droit', 'plat'], ok: 2 },
+    { l: 3, q: "Pour tracer un angle droit sur papier blanc, on utilise…", r: ["l'équerre", "le compas", "la gomme", "un verre"], ok: 0 },
+    { l: 3, q: "Pour tracer un carré sur papier uni, il faut…", r: ["la règle et l'équerre", "le compas seul", "une gomme", "rien"], ok: 0 },
   ],
 });
 })();

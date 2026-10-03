@@ -85,12 +85,14 @@ ${cm1Demo('ce2-so-justifier', 'Justifier la nature d\'un solide', 'Un solide a 5
     { q: 'Les faces d\'une pyramide (sauf la base) sont des…', opts: ['carrés', 'triangles', 'rectangles'], correct: 1 },
   ],
   flash: [
-    { q: 'Combien d\'arêtes a un cube ?', r: ['6', '8', '12', '4'], ok: 2 },
-    { q: 'Combien de sommets a un pavé ?', r: ['6', '8', '12', '4'], ok: 1 },
-    { q: 'Une boîte de conserve a la forme…', r: ['d\'un cône', 'd\'un cylindre', 'd\'une boule', 'd\'un pavé'], ok: 1 },
-    { q: 'Sur un dessin en perspective, les arêtes cachées sont…', r: ['en rouge', 'en pointillés', 'effacées', 'en gras'], ok: 1 },
-    { q: 'Combien de carrés dans un patron de cube ?', r: ['4', '5', '6', '8'], ok: 2 },
-    { q: 'Combien de faces a une pyramide à base carrée ?', r: ['4', '5', '6', '8'], ok: 1 },
+    { l: 2, q: 'Combien d\'arêtes a un cube ?', r: ['6', '8', '12', '4'], ok: 2 },
+    { l: 2, q: 'Combien de sommets a un pavé ?', r: ['6', '8', '12', '4'], ok: 1 },
+    { l: 1, q: 'Une boîte de conserve a la forme…', r: ['d\'un cône', 'd\'un cylindre', 'd\'une boule', 'd\'un pavé'], ok: 1 },
+    { l: 1, q: 'Sur un dessin en perspective, les arêtes cachées sont…', r: ['en rouge', 'en pointillés', 'effacées', 'en gras'], ok: 1 },
+    { l: 3, q: 'Combien de carrés dans un patron de cube ?', r: ['4', '5', '6', '8'], ok: 2 },
+    { l: 2, q: 'Combien de faces a une pyramide à base carrée ?', r: ['4', '5', '6', '8'], ok: 1 },
+    { l: 1, q: "Un ballon a la forme…", r: ["d'une boule", "d'un cube", "d'un cône", "d'un pavé"], ok: 0 },
+    { l: 3, q: "Un patron, c'est…", r: ["une figure qu'on plie pour fabriquer le solide", "une face", "une arête", "un dessin en perspective"], ok: 0 },
   ],
 });
 })();

@@ -73,12 +73,15 @@ ${cm1Demo('ce2-pet-courses', 'Un problème de courses en trois étapes', 'Inès 
     { q: 'Après avoir calculé, on vérifie…', opts: ['que le résultat est possible', 'que le nombre est pair', 'rien'], correct: 0 },
   ],
   flash: [
-    { q: '2 paquets de 5 gâteaux et 3 gâteaux seuls : combien de gâteaux ?', r: ['10', '13', '15', '30'], ok: 1 },
-    { q: '20 € − 7,50 € = …', r: ['12,50 €', '13,50 €', '12,05 €', '27,50 €'], ok: 0 },
-    { q: '4 tables de 6 et 2 tables de 4 : combien de places ?', r: ['16', '24', '32', '48'], ok: 2 },
-    { q: 'J\'ai 30 €. J\'achète 2 livres à 8 €. Il me reste…', r: ['14 €', '22 €', '16 €', '20 €'], ok: 0 },
-    { q: 'Quelle étape vient juste après « Comprendre » ?', r: ['Répondre', 'Modéliser', 'Calculer', 'Vérifier'], ok: 1 },
-    { q: '5 € − 1,25 € = …', r: ['3,75 €', '4,25 €', '3,25 €', '4,75 €'], ok: 0 },
+    { l: 2, q: '2 paquets de 5 gâteaux et 3 gâteaux seuls : combien de gâteaux ?', r: ['10', '13', '15', '30'], ok: 1 },
+    { l: 3, q: '20 € − 7,50 € = …', r: ['12,50 €', '13,50 €', '12,05 €', '27,50 €'], ok: 0 },
+    { l: 2, q: '4 tables de 6 et 2 tables de 4 : combien de places ?', r: ['16', '24', '32', '48'], ok: 2 },
+    { l: 2, q: 'J\'ai 30 €. J\'achète 2 livres à 8 €. Il me reste…', r: ['14 €', '22 €', '16 €', '20 €'], ok: 0 },
+    { l: 1, q: 'Quelle étape vient juste après « Comprendre » ?', r: ['Répondre', 'Modéliser', 'Calculer', 'Vérifier'], ok: 1 },
+    { l: 3, q: '5 € − 1,25 € = …', r: ['3,75 €', '4,25 €', '3,25 €', '4,75 €'], ok: 0 },
+    { l: 4, q: "Pour vérifier 30 − 16 = 14, on calcule…", r: ["14 + 16", "30 + 14", "16 − 14", "30 × 14"], ok: 0 },
+    { l: 4, q: "On trouve qu'un élève mesure 13 m : le résultat est…", r: ["invraisemblable : il faut vérifier", "juste", "très précis", "normal"], ok: 0 },
+    { l: 1, q: "Pour résoudre un problème, on commence par…", r: ["comprendre l'énoncé", "calculer", "écrire la réponse", "vérifier"], ok: 0 },
   ],
 });
 })();
