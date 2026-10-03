@@ -455,6 +455,7 @@ document.querySelectorAll('[data-nav]').forEach(el=>{
     }
     if(nav==='simulateur'){
       if(currentUserRole!=='prof' && currentUserRole!=='admin'){ toggleAccountMenu(); return; }
+      if(SIMU || SIMPROF){ niceAlert('Vous êtes déjà dans le simulateur : impossible d\'en ouvrir un autre ici.'); return; }
       if(typeof simOuvrir==='function') simOuvrir();
     }
     if(nav==='progression'){
@@ -3326,6 +3327,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.944', date:'2026-10-03', items:[
+    'Interrogations : après avoir rendu sa copie, l\'élève ne revoit plus ses réponses tant que toute la classe n\'a pas rendu (ou que le professeur n\'a pas fermé l\'interrogation ou publié les résultats) : un voisin ne peut plus les lire. Un bouton « Revoir mes réponses » revérifie',
+    'Simulateur : impossible d\'ouvrir un simulateur depuis une fenêtre du simulateur (l\'entrée du menu y est masquée)'
+  ]},
   { version:'2026-08-19.943', date:'2026-10-03', items:[
     'Simulateur : tout se passe dans une classe de simulation à vous (« Simulation », au niveau choisi). Dans la fenêtre professeur du simulateur, c\'est la seule classe visible ; ailleurs sur le site (listes de classes, interrogations, devoirs, questions flash), elle n\'apparaît jamais. Les élèves fictifs n\'y sont que dans cette classe',
     'Simulateur : avec 2 élèves, la fenêtre professeur n\'attend plus que ces 2 élèves (seuls les élèves de la simulation en cours apparaissent) ; la poubelle supprime aussi la classe de simulation et tout ce qu\'elle contient'

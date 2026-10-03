@@ -77,6 +77,7 @@ async function simAppel(body){
   return data;
 }
 async function simOuvrir(){
+  if(typeof SIMU !== 'undefined' && (SIMU || SIMPROF)) return; // pas de simulateur dans le simulateur
   showView('view-simulateur'); if(typeof setActiveTopnav === 'function') setActiveTopnav(null);
   const root = document.getElementById('simRoot');
   root.innerHTML = '<p class="hint">Chargement…</p>';
@@ -174,7 +175,7 @@ function simArreter(){ const sc = document.getElementById('simScene'); if(sc) sc
 (function(){
   const st = document.createElement('style');
   st.textContent = `
-    html.simu-frame #aideBtn, html.simu-frame #aideBulle{display:none !important;}
+    html.simu-frame #aideBtn, html.simu-frame #aideBulle, html.simu-frame [data-nav="simulateur"]{display:none !important;}
     #view-simulateur{max-width:none;}
     #view-simulateur:fullscreen{background:var(--bg, #FBF8F2);overflow:auto;padding:12px;}
     .sim-prep{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px 18px;background:#fff;border:1px solid rgba(28,43,57,.1);border-radius:14px;padding:12px 16px;margin:10px 0 14px;}

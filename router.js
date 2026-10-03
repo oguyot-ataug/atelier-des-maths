@@ -193,7 +193,8 @@ function routerRestoreFromHash(){
       } else if(key==='programmation'){
         if(typeof progOuvrir==='function') progOuvrir();
       } else if(key==='simulateur'){
-        if(typeof simOuvrir==='function') simOuvrir();
+        if(typeof SIMU !== 'undefined' && (SIMU || SIMPROF)){ showView('view-home'); setActiveTopnav(null); } // pas de simulateur dans le simulateur
+        else if(typeof simOuvrir==='function') simOuvrir();
       } else if(key==='groupes'){ // ancienne page : c'est maintenant un onglet de « Mes classes »
         if(typeof grOuvrir==='function') grOuvrir();
       } else if(key==='questionnaires'){

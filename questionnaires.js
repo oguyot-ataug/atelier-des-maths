@@ -971,9 +971,27 @@ function qzRenderRendue(auto){
   document.getElementById('qzRoot').innerHTML = `${qzEntete()}
     <div class="qz-done"><span class="gicon">task_alt</span><div><b>${auto ? 'Temps écoulé : votre copie a été rendue automatiquement.' : 'Copie rendue !'}</b>
       <p>Votre note et la correction apparaîtront ici quand votre professeur publiera les résultats.</p></div></div>
-    <p class="hint">Rappel de vos réponses :</p>
+    <div id="qzRappel"><p class="hint">Vérification…</p></div>`;
+  qzRappelReponses(ctx, ordre, num);
+}
+/* Rappel des réponses -- signalé : « à la fin d'une évaluation, le jeune ne doit pas voir [ses
+   réponses] tant que tous les élèves n'ont pas rendu : un élève proche peut voir les réponses ».
+   Affiché seulement quand toute la classe a rendu, que l'interrogation est fermée ou les résultats
+   publiés (qz_tous_rendus, côté serveur) ; sinon, un bouton pour revérifier. */
+async function qzRappelReponses(ctx, ordre, num){
+  const box = document.getElementById('qzRappel'); if(!box || !qzP) return;
+  let ok = !!qzP.apercu;
+  if(!ok){ try{ const { data } = await sb.rpc('qz_tous_rendus', { p_devoir: qzP.devoirId }); ok = data === true; }catch(e){ ok = false; } }
+  if(!qzP || !document.getElementById('qzRappel')) return;
+  if(!ok){
+    box.innerHTML = `<div class="qz-attente"><span class="gicon">visibility_off</span><div><b>Tes réponses restent cachées pour l'instant.</b>
+      <p>Elles s'afficheront quand toute la classe aura rendu sa copie. En attendant, ne montre pas ton travail à tes voisins.</p>
+      <button class="btn secondary qz-mini" onclick="qzRenderRendue()"><span class="gicon">refresh</span> Revoir mes réponses</button></div></div>`;
+    return;
+  }
+  box.innerHTML = `<p class="hint">Rappel de vos réponses :</p>
     <div class="qz-questions">${ordre.filter(q => q.type !== 'texte').map(q => `<div class="qz-q lecture"><div class="qz-q-head"><span class="qz-q-num">${num[q.id]}</span></div>${qzEnonceHtml(q)}<div class="qz-q-rep">${qzRenderSaisie(q, qzP.reponses[q.id], 'lecture', ctx)}</div></div>`).join('')}</div>`;
-  qzChargerPhotos(document.getElementById('qzRoot'));
+  qzChargerPhotos(box);
 }
 // Aperçu professeur : correction automatique immédiate, pour vérifier réponses et barème.
 function qzRenderApercuCorrige(){
@@ -1984,6 +2002,8 @@ function qzCarnetCompetences(body){
     .qz-k-chip:hover{border-color:#6B3FA0;background:#F4EFFA;}
     .qz-k-chip.on{background:#6B3FA0;border-color:#6B3FA0;color:#fff;} .qz-k-chip.on .gicon{color:#fff;}
     .qz-k-absent{display:inline-flex;align-items:center;gap:8px;}
+    .qz-attente{display:flex;gap:12px;align-items:flex-start;background:#F3F5F8;border:1px solid rgba(28,43,57,.12);border-radius:14px;padding:12px 16px;margin:12px 0;}
+    .qz-attente > .gicon{font-size:28px;color:#5B6472;} .qz-attente p{margin:4px 0 8px;}
     .qz-k-coef{display:block;margin:4px auto 0;border:1px solid rgba(107,63,160,.35);background:#F4EFFA;color:#6B3FA0;border-radius:6px;font:700 .7rem Inter,sans-serif;padding:1px 7px;cursor:pointer;}
     .qz-k-moy{font-weight:800;}
     .qz-k-lab{font-size:.8rem;color:var(--ink-soft);}
