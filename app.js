@@ -3314,6 +3314,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.936', date:'2026-10-03', items:[
+    'Suivi en direct des devoirs : la dernière activité s\'écrit « il y a 5 min », « aujourd\'hui à 14:05 », « hier à 9:27 » ou « le 28/09 à 11:27 » (au lieu de « il y a 29850447 min » quand l\'élève n\'avait que des résultats d\'automatismes) ; les longs temps de travail s\'écrivent en heures (« 2 h 05 »)'
+  ]},
   { version:'2026-08-19.935', date:'2026-10-03', items:[
     'Niveaux accessibles des professeurs gérés par l\'établissement : un professeur sans aucune classe ne voit plus tous les niveaux, seulement ceux cochés dans l\'Administration (aucun coché : aucun niveau). Avec des classes, rien ne change ; pendant l\'essai gratuit, tout reste visible'
   ]},

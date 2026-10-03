@@ -93,11 +93,25 @@ function dvSItemEtat(eid, it){
   if(!ss.length) return { c: '#D5DBE3', t: 'pas commencé', n: 0 };
   return ss.some(r => r.statut === 'terminee') ? { c: '#2E9C6A', t: 'terminé', n: ss.length } : { c: '#E9C46A', t: 'commencé', n: ss.length };
 }
-function dvSDuree(ms){ const m = Math.floor(ms / 60000), s = Math.floor(ms / 1000) % 60; return m ? `${m} min${s ? ' ' + String(s).padStart(2, '0') + ' s' : ''}` : `${s} s`; }
+function dvSDuree(ms){ const m = Math.floor(ms / 60000), s = Math.floor(ms / 1000) % 60; if(m >= 60) return `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')}`; return m ? `${m} min${s ? ' ' + String(s).padStart(2, '0') + ' s' : ''}` : `${s} s`; }
+// « il y a 5 min », « il y a 3 h », « hier à 14:05 », « le 28/09 à 10:20 ».
+function dvSQuand(t){
+  const d = Date.now() - t, h = new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  if(d < 60000) return 'à l\'instant';
+  if(d < 3600000) return `il y a ${Math.floor(d / 60000)} min`;
+  const hier = new Date(); hier.setHours(0, 0, 0, 0); const debutJour = hier.getTime(); hier.setDate(hier.getDate() - 1);
+  if(t >= debutJour) return `aujourd'hui à ${h}`;
+  if(t >= hier.getTime()) return `hier à ${h}`;
+  return `le ${new Date(t).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })} à ${h}`;
+}
 function dvSEleve(e){
   const now = Date.now(), ss = dvS.sessions.filter(r => r.student_id === e.id);
   const enCours = ss.filter(r => r.statut === 'en_cours').sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at))[0];
-  const derniere = ss.reduce((m, r) => Math.max(m, Date.parse(r.updated_at || r.started_at)), 0);
+  // Dernière trace de travail : séances, mais aussi résultats d'automatismes ou d'Objectif Nombre
+  // (signalé : « dernière activité il y a 29850447 min » quand seuls des résultats existaient).
+  const t = d => { const v = Date.parse(d || ''); return isNaN(v) ? 0 : v; };
+  const derniere = Math.max(0, ...ss.map(r => t(r.updated_at || r.started_at)),
+    ...dvS.cm.filter(r => r.student_id === e.id).map(r => t(r.created_at)), ...dvS.ceb.filter(r => r.student_id === e.id).map(r => t(r.created_at)));
   const recent = enCours && now - Date.parse(enCours.updated_at) < 45000;
   const fait = dvS.items.length && dvS.items.every(it => dvSItemEtat(e.id, it).n > 0);
   const etat = dvS.dehors.get(e.id) && enCours ? 'dehors' : recent ? 'encours' : enCours && now - Date.parse(enCours.updated_at) < 600000 ? 'inactif' : !ss.length && !dvS.cm.some(r => r.student_id === e.id) && !dvS.ceb.some(r => r.student_id === e.id) ? 'absent' : fait ? 'rendue' : 'pause';
@@ -108,7 +122,7 @@ function dvSTuile(e){
   const x = dvSEleve(e);
   const info = x.etat === 'absent' ? 'pas commencé' : x.etat === 'dehors' ? 'SORTI de la page'
     : x.etat === 'encours' ? `travaille${x.it ? ' : ' + x.it.label : ''}` : x.etat === 'inactif' ? `en pause${x.it ? ' (' + x.it.label + ')' : ''}`
-    : x.etat === 'rendue' ? 'tout fait' : `dernière activité il y a ${dvSDuree(Date.now() - x.derniere)}`;
+    : x.etat === 'rendue' ? 'tout fait' : x.derniere ? `dernière activité ${dvSQuand(x.derniere)}` : 'commencé';
   const faits = dvS.items.filter(it => dvSItemEtat(e.id, it).n > 0).length, N = dvS.items.length;
   const pas = dvS.items.map(it => { const s = dvSItemEtat(e.id, it); return `<i style="background:${s.c}" title="${escapeHtml(it.label)} : ${s.t}${s.n > 1 ? ' (' + s.n + ' essais)' : ''}"${x.enCours && x.it === it && x.etat === 'encours' ? ' class="cur"' : ''}></i>`; }).join('');
   return `<button type="button" class="qzs-t ${x.etat === 'pause' ? 'rendue' : x.etat}${dvS.sel === e.id ? ' sel' : ''}" onclick="dvSuiviVoir('${e.id}')">
