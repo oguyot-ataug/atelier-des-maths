@@ -61,9 +61,9 @@ ${cm1Demo('c2-g1-para', 'Tracer la parallèle à une droite passant par un point
       { expr: 'Je code l\'angle droit.', note: 'Petit carré à l\'intersection des deux droites.' },
     ]],
     ['c2-g1-para', [
-      { expr: 'Je trace la perpendiculaire (p) à (d) passant par B.', note: 'Avec l\'équerre, comme dans la méthode précédente.' },
-      { expr: 'Je trace la perpendiculaire à (p) passant par B.', note: 'On replace l\'équerre, cette fois le long de (p).' },
-      { expr: 'Cette droite est parallèle à (d).', note: 'Deux droites perpendiculaires à une même droite (p) sont parallèles.' },
+      { expr: 'Je trace la perpendiculaire (d\') à (d) passant par B.', note: 'Avec l\'équerre, comme dans la méthode précédente.' },
+      { expr: 'Je trace la perpendiculaire (d\'\') à (d\') passant par B.', note: 'On replace l\'équerre, cette fois le long de (d\').' },
+      { expr: 'La droite (d\'\') est parallèle à (d).', note: 'Deux droites perpendiculaires à une même droite (d\') sont parallèles.' },
     ]],
   ],
   exos: cm1Exos('c2g1', [

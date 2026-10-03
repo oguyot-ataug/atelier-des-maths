@@ -102,7 +102,7 @@ function plNumAnalyser(x){
       const rep = plNumNorm(r.textContent); if(!rep) return null;
       const large = tr.classList.contains('pl-pts') && /[a-z]/i.test(rep);
       tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"></button>`;
-      cibles.push({ type: 'txt', id, rep });
+      cibles.push({ type: 'txt', id, rep, maj: /^[A-ZÉÈ]/.test(r.textContent.trim()) }); // réponse en majuscule (nom de point…) : clavier en majuscules
     }
   }
   // 3. Figures blanches dans l'énoncé, coloriées dans le corrigé.
@@ -181,7 +181,7 @@ function plNum(root, x, o){
     sel = id; afficher();
     if(!id){ plClavier.fermer(); return; }
     const c = M.cibles.find(z => z.id === id || z.id + 'n' === id || z.id + 'd' === id);
-    plClavier.mode = c && c.type === 'txt' && /[a-zé]/i.test(c.rep) ? 'abc' : '123';
+    plClavier.mode = c && c.type === 'txt' && /[a-zé]/i.test(c.rep) ? 'abc' : '123'; plClavier.maj = !!(c && c.maj);
     plClavier.ouvrir(touche);
   };
   const touche = t => {
@@ -346,10 +346,11 @@ function plNumBilan(res){
 
 /* ---------- Clavier virtuel (chiffres, signes, lettres) ---------- */
 const plClavier = {
-  el: null, cb: null, mode: '123',
+  el: null, cb: null, mode: '123', maj: false,
   ouvrir(cb){ this.cb = cb; if(!this.el){ this.el = document.createElement('div'); this.el.id = 'plClavier'; document.body.appendChild(this.el);
       this.el.addEventListener('pointerdown', e => { const b = e.target.closest('button'); if(!b) return; e.preventDefault();
         if(b.dataset.m){ this.mode = b.dataset.m; this.rendre(); return; }
+        if(b.dataset.maj){ this.maj = !this.maj; this.rendre(); return; }
         if(b.dataset.k === 'fermer'){ if(this.cb) this.cb('ok-fin'); this.fermer(); return; }
         if(this.cb) this.cb(b.dataset.k); }); }
     const h = document.fullscreenElement && document.fullscreenElement !== document.documentElement ? document.fullscreenElement : document.body;
@@ -362,15 +363,15 @@ const plClavier = {
     const k = (t, l, cl) => `<button type="button" data-k="${t}" class="${cl || ''}">${l || t}</button>`;
     const lignes = this.mode === '123'
       ? [['7', '8', '9', '&lt;'], ['4', '5', '6', '='], ['1', '2', '3', '&gt;'], ['0', ',']]
-      : ['azertyuiop', 'qsdfghjklm', 'wxcvbné', 'èàêç\''].map(l => l.split(''));
+      : ['azertyuiop', 'qsdfghjklm', 'wxcvbné', 'èàêç\''].map(l => l.split('').map(c => this.maj ? c.toUpperCase() : c));
     this.el.innerHTML = `<div class="pn-cl-lignes">${lignes.map(l => `<div class="pn-cl-l">${l.map(t => k(t === '&lt;' ? '<' : t === '&gt;' ? '>' : t, t)).join('')}</div>`).join('')}
-      <div class="pn-cl-l">${this.mode === 'abc' ? k(' ', 'espace', 'pn-cl-large') : ''}${k('⌫', '<span class="gicon">backspace</span>', 'pn-cl-gris')}
+      <div class="pn-cl-l">${this.mode === 'abc' ? `<button type="button" data-maj="1" class="pn-cl-gris${this.maj ? ' pn-cl-on' : ''}" title="Majuscules">⇧ ${this.maj ? 'ABC' : 'abc'}</button>` + k(' ', 'espace', 'pn-cl-large') : ''}${k('⌫', '<span class="gicon">backspace</span>', 'pn-cl-gris')}
         <button type="button" data-m="${this.mode === '123' ? 'abc' : '123'}" class="pn-cl-gris">${this.mode === '123' ? 'abc' : '123'}</button>${k('ok', '<span class="gicon">keyboard_return</span>', 'pn-cl-ok')}${k('fermer', '<span class="gicon">keyboard_hide</span>', 'pn-cl-gris')}</div></div>`;
   }
 };
 function plClavierPhysique(e){
   if(!plClavier.cb || e.ctrlKey || e.metaKey || e.altKey) return;
-  const t = e.key === 'Backspace' ? '⌫' : e.key === 'Enter' || e.key === 'Tab' ? 'ok' : e.key === 'Escape' ? 'fermer' : e.key.length === 1 ? e.key.toLowerCase() : null;
+  const t = e.key === 'Backspace' ? '⌫' : e.key === 'Enter' || e.key === 'Tab' ? 'ok' : e.key === 'Escape' ? 'fermer' : e.key.length === 1 ? e.key : null;
   if(!t) return;
   if(document.activeElement && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
   e.preventDefault(); e.stopPropagation();
@@ -408,7 +409,7 @@ function plClavierPhysique(e){
     #plClavier{ display:none; position:fixed; left:50%; bottom:12px; transform:translateX(-50%); z-index:9700; background:#1F3A5C; border-radius:18px; padding:10px; box-shadow:0 10px 30px rgba(0,0,0,.3); touch-action:none; user-select:none; }
     .pn-cl-lignes{ display:flex; flex-direction:column; gap:6px; } .pn-cl-l{ display:flex; gap:6px; justify-content:center; }
     #plClavier button{ min-width:52px; height:52px; border:0; border-radius:12px; background:#fff; color:#1F3A5C; font:700 1.35rem 'Space Grotesk',Arial,sans-serif; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; padding:0 10px; }
-    #plClavier button:active{ transform:scale(.95); } #plClavier .pn-cl-gris{ background:#DCE4EE; font-size:1rem; } #plClavier .pn-cl-ok{ background:#F08A3C; color:#fff; } #plClavier .pn-cl-large{ min-width:200px; font-size:1rem; }
+    #plClavier button:active{ transform:scale(.95); } #plClavier .pn-cl-gris{ background:#DCE4EE; font-size:1rem; } #plClavier .pn-cl-on{ background:#3A6EA5; color:#fff; } #plClavier .pn-cl-ok{ background:#F08A3C; color:#fff; } #plClavier .pn-cl-large{ min-width:200px; font-size:1rem; }
     @media (max-width:600px){ #plClavier button{ min-width:30px; height:44px; font-size:1.1rem; padding:0 6px; } #plClavier{ padding:6px; width:calc(100vw - 16px); box-sizing:border-box; } .pn-cl-l{ gap:4px; } }
     .pn-ex .pl-papier{ display:none; } /* ce qui ne sert que sur la feuille (ligne pour écrire…) */
     .pn-ex svg.pn-x{ width:min(100%, 520px) !important; height:auto !important; max-height:none !important; touch-action:manipulation; cursor:pointer; }

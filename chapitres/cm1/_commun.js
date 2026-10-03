@@ -88,7 +88,7 @@ function cm1Chapitre(o){
   const id = k => k + '-demo-' + niv + '-' + o.slug;
   const poser = (k, html) => { const el = document.getElementById(id(k)); if(el) el.innerHTML = html || ''; };
   poser('cours', o.cours); poser('methode', o.methode); poser('exos', o.exos); poser('histoire', o.histoire);
-  (o.demos || []).forEach(([k, steps]) => { CM1_DEMOS[k] = makeStepDemo(steps, 'cm1d-' + k); });
+  (o.demos || []).forEach(([k, steps]) => { CM1_DEMOS[k] = makeStepDemo(steps, 'cm1d-' + k); CM1_DEMOS[k].steps = steps; }); // steps : les dessins des étapes y sont ajoutés (_demos-figs.js)
   // Une fraction écrite « 3/4 » dans un quiz s'affiche en LaTeX (demandé : jamais « a/b »).
   const frac = t => String(t).replace(/(\d+)\/(\d+)/g, (m, a, b) => cm1Frac(a, b));
   if(o.quiz) DEMO_QUIZZES[niv + '|' + o.titre] = o.quiz.map(x => Object.assign({}, x, { q: frac(x.q), opts: x.opts.map(frac) }));
@@ -104,6 +104,57 @@ function cm1Chapitre(o){
     } };
 }
 /* ---- Petites figures SVG réutilisables ---- */
+/* Dessin des méthodes pas à pas (demandé : « il y a des consignes sans illustrations ; c'est compliqué »).
+   cmFig({ w, h, k, grille, px }, items) : si k est donné, les coordonnées sont en carreaux (quadrillage
+   dessiné si grille ≠ false). Items :
+   ['l', x1, y1, x2, y2, o]   segment (o.c couleur, o.w épaisseur, o.d pointillés, o.f flèche au bout)
+   ['p', x, y, nom, o]        point nommé (o.dx, o.dy : décalage du nom)
+   ['pg', [[x, y]…], o]       polygone (o.f remplissage, o.op opacité)
+   ['c', x, y, r, o]          cercle (r dans la même unité)
+   ['r', x, y, w, h, o]       rectangle (carreau colorié…)
+   ['t', x, y, texte, o]      texte (o.fs taille en px, o.a ancrage)
+   ['ad', x, y, ux, uy, vx, vy] angle droit en (x, y) entre les directions u et v
+   ['cd', x1, y1, x2, y2, n]  codage : n petits traits au milieu du segment
+   ['acc', x1, x2, y, texte]  accolade horizontale de x1 à x2 (au-dessus si o.haut) avec un texte
+   ['raw', '<path …/>']       morceau de SVG tel quel (dessin libre, en pixels) */
+const CMF_K = '#1F3A5C', CMF_R = '#E35D3A', CMF_B = '#2EA8C9', CMF_V = '#2E9C6A', CMF_VI = '#7A4FC0', CMF_O = '#F2A93B';
+function cmFig(o, items){
+  const k = o.k || 1, m = o.m == null ? (o.k ? 10 : 0) : o.m, X = x => m + x * k, W = o.k ? 2 * m + o.w * k : o.w, H = o.k ? 2 * m + o.h * k : o.h;
+  let s = `<svg class="pl-libre" viewBox="0 0 ${W} ${H}" style="width:${o.px || W}px;max-width:100%;display:inline-block;vertical-align:middle;">`;
+  if(o.k && o.grille !== false){ for(let i = 0; i <= o.w; i++) s += `<line x1="${X(i)}" y1="${X(0)}" x2="${X(i)}" y2="${X(o.h)}" stroke="#C6D2DE" stroke-width=".8"/>`; for(let j = 0; j <= o.h; j++) s += `<line x1="${X(0)}" y1="${X(j)}" x2="${X(o.w)}" y2="${X(j)}" stroke="#C6D2DE" stroke-width=".8"/>`; }
+  const T = (x, y, t, q) => `<text x="${x}" y="${y}" font-size="${(q && q.fs) || 13}" text-anchor="${(q && q.a) || 'middle'}" fill="${(q && q.c) || CMF_K}" font-family="Space Grotesk" font-weight="700">${t}</text>`;
+  (items || []).filter(Boolean).forEach(it => { const [t] = it, q = it[it.length - 1] && typeof it[it.length - 1] === 'object' && !Array.isArray(it[it.length - 1]) ? it[it.length - 1] : {};
+    if(t === 'l'){ const [, x1, y1, x2, y2] = it, c = q.c || CMF_K; s += `<line x1="${X(x1)}" y1="${X(y1)}" x2="${X(x2)}" y2="${X(y2)}" stroke="${c}" stroke-width="${q.w || 2.2}"${q.d ? ' stroke-dasharray="6 4"' : ''} stroke-linecap="round"/>`;
+      if(q.f){ const a = Math.atan2(X(y2) - X(y1), X(x2) - X(x1)), L = 9; s += `<polygon points="${X(x2)},${X(y2)} ${X(x2) - L * Math.cos(a - .45)},${X(y2) - L * Math.sin(a - .45)} ${X(x2) - L * Math.cos(a + .45)},${X(y2) - L * Math.sin(a + .45)}" fill="${c}"/>`; } }
+    else if(t === 'p'){ const [, x, y, n] = it, c = q.c || CMF_K; s += `<circle cx="${X(x)}" cy="${X(y)}" r="${q.r || 3.6}" fill="${c}"/>` + (n ? T(X(x) + (q.dx == null ? 9 : q.dx), X(y) + (q.dy == null ? -7 : q.dy), n, { c, fs: q.fs || 14 }) : ''); }
+    else if(t === 'pg'){ const [, pts] = it; s += `<polygon points="${pts.map(([x, y]) => X(x) + ',' + X(y)).join(' ')}" fill="${q.f || 'none'}" fill-opacity="${q.op || .35}" stroke="${q.c || CMF_K}" stroke-width="${q.w || 2.2}" stroke-linejoin="round"${q.d ? ' stroke-dasharray="6 4"' : ''}/>`; }
+    else if(t === 'c'){ const [, x, y, r] = it; s += `<circle cx="${X(x)}" cy="${X(y)}" r="${r * k}" fill="${q.f || 'none'}" fill-opacity="${q.op || .3}" stroke="${q.c || CMF_K}" stroke-width="${q.w || 2.2}"${q.d ? ' stroke-dasharray="6 4"' : ''}/>`; }
+    else if(t === 'r'){ const [, x, y, w, h] = it; s += `<rect x="${X(x)}" y="${X(y)}" width="${w * k}" height="${h * k}" fill="${q.f || CMF_B}" fill-opacity="${q.op || .55}" stroke="${q.c || CMF_K}" stroke-width="${q.w || 1}"${q.rx ? ` rx="${q.rx}"` : ''}/>`; }
+    else if(t === 't'){ const [, x, y, txt] = it; s += T(X(x), X(y), txt, q); }
+    else if(t === 'ad'){ const [, x, y, ux, uy, vx, vy] = it, e = 10, nu = Math.hypot(ux, uy), nv = Math.hypot(vx, vy), a = [ux / nu * e, uy / nu * e], b = [vx / nv * e, vy / nv * e];
+      s += `<polyline points="${X(x) + a[0]},${X(y) + a[1]} ${X(x) + a[0] + b[0]},${X(y) + a[1] + b[1]} ${X(x) + b[0]},${X(y) + b[1]}" fill="none" stroke="${q.c || CMF_R}" stroke-width="1.8"/>`; }
+    else if(t === 'cd'){ const [, x1, y1, x2, y2, n] = it, mx = (X(x1) + X(x2)) / 2, my = (X(y1) + X(y2)) / 2, l = Math.hypot(X(x2) - X(x1), X(y2) - X(y1)), ux = (X(x2) - X(x1)) / l, uy = (X(y2) - X(y1)) / l;
+      for(let i = 0; i < (n || 1); i++){ const d = (i - ((n || 1) - 1) / 2) * 4; s += `<line x1="${mx + ux * d - uy * 6}" y1="${my + uy * d + ux * 6}" x2="${mx + ux * d + uy * 6}" y2="${my + uy * d - ux * 6}" stroke="${q.c || CMF_R}" stroke-width="1.8"/>`; } }
+    else if(t === 'raw') s += it[1]; // morceau de SVG déjà écrit (arc de compas…), en pixels
+    else if(t === 'acc'){ const [, x1, x2, y, txt] = it, Y = X(y), sg = q.haut ? -1 : 1, a = X(x1) + 2, b = X(x2) - 2, mi = (a + b) / 2, c = q.c || CMF_VI;
+      s += `<path d="M${a} ${Y} Q${a} ${Y + 6 * sg} ${a + 8} ${Y + 6 * sg} L${mi - 6} ${Y + 6 * sg} L${mi} ${Y + 12 * sg} L${mi + 6} ${Y + 6 * sg} L${b - 8} ${Y + 6 * sg} Q${b} ${Y + 6 * sg} ${b} ${Y}" fill="none" stroke="${c}" stroke-width="1.8"/>` + (txt ? T(mi, Y + (q.haut ? -18 : 27), txt, { c, fs: q.fs || 13 }) : ''); }
+  });
+  return s + '</svg>';
+}
+// Droite des nombres avec des sauts (calcul mental, durées…) : de min à max, graduations tous les pas ;
+// depart, sauts = [[valeur, étiquette]] (négatif = vers la gauche) ; o.etiq : nombres écrits tous les etiq.
+function cmSauts(min, max, depart, sauts, o){
+  o = o || {}; const L = o.L || 440, W = L + 60, px = v => 30 + L * (v - min) / (max - min), pas = o.pas || (max - min) / 10;
+  let s = `<svg class="pl-libre" viewBox="0 0 ${W} 112" style="width:${o.px || W}px;max-width:100%;display:inline-block;vertical-align:middle;"><line x1="20" y1="80" x2="${W - 10}" y2="80" stroke="${CMF_K}" stroke-width="2"/><polygon points="${W - 10},80 ${W - 18},75 ${W - 18},85" fill="${CMF_K}"/>`;
+  for(let v = min; v <= max + 1e-9; v += pas) s += `<line x1="${px(v)}" y1="74" x2="${px(v)}" y2="86" stroke="${CMF_K}" stroke-width="1.2"/>`;
+  const marques = new Set([depart]); let v = depart;
+  (sauts || []).forEach(([d, lab], i) => { const a = px(v), b = px(v + d), h = 24 + 10 * (i % 2), c = d > 0 ? CMF_V : CMF_R;
+    s += `<path d="M${a} 76 Q${(a + b) / 2} ${76 - h * 2} ${b} 76" fill="none" stroke="${c}" stroke-width="2.2"/><polygon points="${b},76 ${b - (d > 0 ? 9 : -9)},70 ${b - (d > 0 ? 4 : -4)},66" fill="${c}"/>`
+      + `<text x="${(a + b) / 2}" y="${74 - h}" font-size="14" text-anchor="middle" fill="${c}" font-family="Space Grotesk" font-weight="700">${lab}</text>`; v += d; marques.add(v); });
+  [...marques].forEach((x, i) => { s += `<circle cx="${px(x)}" cy="80" r="4" fill="${i === marques.size - 1 && sauts && sauts.length ? CMF_R : CMF_K}"/><text x="${px(x)}" y="104" font-size="13" text-anchor="middle" fill="${CMF_K}" font-family="Space Grotesk" font-weight="700">${(o.fmt || (n => String(n).replace('.', ',')))(x)}</text>`; });
+  return s + '</svg>';
+}
+
 // Bande (rectangle) partagée en n parts égales dont k sont coloriées ; plusieurs bandes si k > n.
 function cm1Bande(n, k, opts){
   opts = opts || {}; const L = opts.largeur || 240, H = 34, c = opts.coul || '#E35D3A';

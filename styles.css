@@ -1840,3 +1840,9 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 
 /* Dessin d'une correction rédigée placé à droite du texte (planches) */
 .cm-fig-d{ float:right; margin:0 0 2px 8px; } .cm-fig-d svg{ max-width:none !important; } .cm-redac::after{ content:''; display:block; clear:both; }
+
+/* Méthode pas à pas avec un dessin qui évolue à chaque étape */
+.step-avec-fig{ display:flex; gap:22px; align-items:center; flex-wrap:wrap; }
+.step-avec-fig > .step-column{ flex:1 1 260px; }
+.step-fig{ flex:0 1 auto; max-width:100%; text-align:center; }
+.step-fig svg{ max-width:100%; height:auto; }

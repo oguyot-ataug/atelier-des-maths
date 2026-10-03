@@ -1451,6 +1451,12 @@ document.addEventListener('click', e=>{
 let csPlanifie = false;
 new MutationObserver(()=>{ if(csPlanifie) return; csPlanifie = true; requestAnimationFrame(()=>{ csPlanifie = false; cahierAnimerEtapes(document); }); }).observe(document.body, { childList:true, subtree:true });
 
+// Dessin d'une méthode pas à pas (demandé : « il y a des consignes sans illustrations, c'est compliqué ») :
+// une étape peut porter fig (le dessin à cette étape) ; sinon on garde le dernier dessin donné.
+function stepAvecFig(col, steps, idx){
+  let fig = null; for(let i = idx; i >= 0 && fig == null; i--) if(steps[i].fig != null) fig = steps[i].fig;
+  return fig ? `<div class="step-avec-fig">${col}<div class="step-fig">${fig}</div></div>` : col;
+}
 function makeStepDemo(steps, displayId){
   let idx = 0;
   function render(){
@@ -1462,7 +1468,7 @@ function makeStepDemo(steps, displayId){
       const isFinal = atEnd && i===idx;
       return `<div class="${isFinal?'step-final':''}">${s.expr}</div>`;
     }).join('');
-    el.innerHTML = `<div class="step-column">${lines}</div><div class="step-note">${steps[idx].note}</div>`;
+    el.innerHTML = stepAvecFig(`<div class="step-column">${lines}</div>`, steps, idx) + `<div class="step-note">${steps[idx].note}</div>`;
     renderStaticMath(el);
   }
   return {
@@ -1482,7 +1488,7 @@ function makeSingleStepDemo(steps, displayId){
     const el = document.getElementById(displayId);
     if(!el) return;
     el._stepDemoSteps = steps;
-    el.innerHTML = `<div class="step-column"><div>${steps[idx].expr}</div></div><div class="step-note">${steps[idx].note}</div>`;
+    el.innerHTML = stepAvecFig(`<div class="step-column"><div>${steps[idx].expr}</div></div>`, steps, idx) + `<div class="step-note">${steps[idx].note}</div>`;
     renderStaticMath(el);
   }
   return {
@@ -3329,6 +3335,11 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.970', date:'2026-10-03', items:[
+    "Méthodes pas à pas du CE2, du CM1 et du CM2 : 97 méthodes qui n'étaient qu'en texte ont maintenant un dessin qui évolue à chaque étape, à droite des lignes (quadrillage pour la symétrie et les constructions, compas, équerre, droite numérique avec les sauts du calcul mental, frise du temps, horloges, bandes et disques de fractions, schémas en barres, tableaux de numération, pièces et billets, verres et bouteille, robot…).",
+    "Planches à l'écran : le clavier virtuel a une touche majuscule (⇧) ; il passe tout seul en majuscules quand la réponse est un nom de point. Le clavier de l'ordinateur garde aussi les majuscules. Une réponse en minuscule reste acceptée.",
+    "CM2, méthode « Tracer la parallèle » : la perpendiculaire s'appelle (d') et la parallèle (d''), jamais (p)."
+  ] },
   { version:'2026-08-19.969', date:'2026-10-03', items:[
     "Planches CM1 à l'écran (au tableau, en projection, en session COURS) : 232 exercices se font maintenant à l'écran, contre 204. Nouveaux outils : tracer les barres d'un diagramme ; tracer des segments sur un quadrillage (reproduire une figure, la compléter par symétrie, terminer un carré) ; colorier ou entourer des carreaux précis ; placer des points nommés (symétrique d'un point, fraction sur une demi-droite) ; tracer une bande d'une longueur donnée ; placer les aiguilles d'une horloge ; programmer le robot avec les flèches ; remplir case par case le résultat d'une opération posée.",
     "Les exercices « Pose et calcule dans le quadrillage » ont une version écran : l'opération est déjà posée et l'élève remplit le résultat (pour la division : le quotient et le reste). Sur papier, rien ne change.",

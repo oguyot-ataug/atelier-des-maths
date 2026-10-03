@@ -83,12 +83,13 @@ ${cm1Sous('A', 'Atelier : complète le dessin par symétrie')}
 <div class="figure-toolbar"><button class="btn" onclick="cm1SyVerifier()">Vérifier</button><button class="btn secondary" onclick="cm1SyEffacer()">Effacer</button></div></div>
 `,
   demos: [
-    ['sy-point', [
-      { expr: 'A : 4 carreaux à gauche de l\'axe', note: 'On compte les carreaux entre le point A et l\'axe, sur la ligne horizontale qui passe par A.' },
-      { expr: 'A\' : sur la même ligne', note: 'L\'axe est vertical : le symétrique est sur la même ligne horizontale.' },
-      { expr: 'A\' : 4 carreaux à droite de l\'axe', note: 'On compte le même nombre de carreaux de l\'autre côté de l\'axe.' },
-      { expr: 'A et A\' sont symétriques.', note: 'Vérification : en pliant le long de l\'axe, A tombe sur A\'.' },
-    ]],
+    ['sy-point', (() => { const ax = ['l', 5, -0.3, 5, 5.3, { c: CMF_R, d: true, w: 2.6 }], A = ['p', 1, 2, 'A', { dx: -14 }], f = l => cmFig({ w: 10, h: 5, k: 30 }, [ax, ['t', 5.25, 0.55, '(d)', { c: CMF_R, a: 'start' }], A].concat(l));
+      return [
+      { expr: 'A : 4 carreaux à gauche de l\'axe', note: 'On compte les carreaux entre le point A et l\'axe, sur la ligne horizontale qui passe par A.', fig: f([['acc', 1, 5, 2.25, '4 carreaux', { c: CMF_B }]]) },
+      { expr: 'A\' : sur la même ligne', note: 'L\'axe est vertical : le symétrique est sur la même ligne horizontale.', fig: f([['acc', 1, 5, 2.25, '4', { c: CMF_B }], ['l', 0, 2, 10, 2, { c: CMF_VI, d: true, w: 1.6 }]]) },
+      { expr: 'A\' : 4 carreaux à droite de l\'axe', note: 'On compte le même nombre de carreaux de l\'autre côté de l\'axe.', fig: f([['acc', 1, 5, 2.25, '4', { c: CMF_B }], ['acc', 5, 9, 2.25, '4 carreaux', { c: CMF_V }], ['l', 0, 2, 10, 2, { c: CMF_VI, d: true, w: 1.6 }], ['p', 9, 2, 'A\'', { c: CMF_V, dx: 12 }]]) },
+      { expr: 'A et A\' sont symétriques.', note: 'Vérification : en pliant le long de l\'axe, A tombe sur A\'.', fig: f([['l', 1, 2, 9, 2, { c: CMF_VI, w: 1.6 }], ['cd', 1, 2, 5, 2, 2], ['cd', 5, 2, 9, 2, 2], ['ad', 5, 2, 1, 0, 0, -1], ['p', 9, 2, 'A\'', { c: CMF_V, dx: 12 }]]) },
+      ]; })()],
   ],
   exos: cm1Exos('sy', [
     [`Combien d'axes de symétrie a chacune de ces lettres ?${cm1Liste(['A', 'B', 'H', 'N', 'O'])}`,
