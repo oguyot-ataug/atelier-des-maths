@@ -3310,6 +3310,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.932', date:'2026-10-03', items:[
+    'Interrogations en ligne : « Rattrapage des absents » dans la page de correction. On coche les élèves absents : eux seuls peuvent commencer l\'interrogation, même fermée ou déjà publiée, avec le même sujet et le même chronomètre (il part quand l\'élève commence). Plus besoin de créer une copie du devoir',
+    'Interrogation déjà publiée : l\'élève en rattrapage voit sa note et la correction après « Publier les rattrapages » ; la liste des interrogations signale les rattrapages en cours'
+  ]},
   { version:'2026-08-19.931', date:'2026-10-03', items:[
     'Interrogations en ligne, onglet « Suivi des classes » : rangé par classe (une pastille par classe, la classe active par défaut, ou toutes les classes), interrogations et questions flash mêlées des plus récentes aux plus anciennes',
     'Archivage : bouton « Archiver » sur chaque interrogation ou séance de questions flash, et « Archiver les terminées » par classe (résultats publiés, interrogations fermées, questions flash terminées). Les archives restent consultables en bas de chaque classe ; rien ne change pour les élèves',

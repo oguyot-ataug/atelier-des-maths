@@ -1080,7 +1080,7 @@ async function renderDevoirsEleve(){
   const classIds = (accountClassesList||[]).map(c=>c.id);
   if(!classIds.length){ devoirsEleveCache = []; el.innerHTML = '<p class="hint">Aucune classe associée à ce compte.</p>'; return; }
   const { data: devoirsListRaw, error } = await sb.from('devoirs')
-    .select('id,titre,consigne,date_depot,date_limite,teacher_id,type,figure_depart,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_timer_duration,ceb_rounds,prog_defis,student_ids,qz_publie_at,profiles(nom)')
+    .select('id,titre,consigne,date_depot,date_limite,teacher_id,type,figure_depart,automatismes_sequences,ceb_n_large,ceb_timer_on,ceb_timer_duration,ceb_rounds,prog_defis,student_ids,qz_publie_at,qz_rattrapage,profiles(nom)')
     .in('class_id', classIds).order('date_limite',{ascending:true, nullsFirst:false});
   if(error){ devoirsEleveCache = []; el.innerHTML = 'Erreur : '+error.message; return; }
   const now = new Date();
@@ -1287,6 +1287,8 @@ async function renderDevoirsEleve(){
     } else if(d.type==='questionnaire'){
       // Questionnaire en ligne (questionnaires.js) : passation, puis résultats une fois publiés.
       const rendu_ = !!(rendu && rendu.est_rendu);
+      // Rattrapage d'une interrogation déjà publiée : la note n'arrive qu'après « Publier les rattrapages ».
+      if(d.qz_publie_at && (d.qz_rattrapage || []).includes(currentUser.id)) d = Object.assign({}, d, { qz_publie_at: null });
       const sondage = d.qz_mode === 'sondage', entr = d.qz_mode === 'entrainement'; // sondage : ni correction ni résultats (questionnaires-sondage.js)
       const label = sondage ? (rendu_ ? 'Revoir mes réponses' : 'Répondre au sondage') : entr ? (rendu_ ? 'Revoir mon entraînement' : 'M\'entraîner')
         : d.qz_publie_at && rendu_ ? 'Voir mes résultats' : rendu_ ? 'Revoir ma copie' : rendu && rendu.a_reprendre ? 'Reprendre ma copie' : 'Commencer l\'interrogation';

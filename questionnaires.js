@@ -1116,7 +1116,7 @@ async function qzElevesDevoir(devoir){
 function qzCQuestions(){ return (qzC.qz.questions || []).filter(q => q.type !== 'texte'); }
 function qzCStatsEleve(e){
   const c = qzC.copies.get(e.id);
-  if(!c) return { etat: 'absent', label: 'Pas commencé' };
+  if(!c) return { etat: 'absent', label: qzCRattrapage().includes(e.id) ? 'Rattrapage ouvert' : 'Pas commencé' };
   if(!qzEstRendue(c)) return { etat: 'encours', label: 'En cours', c };
   const s = qzScoreCopie(qzC.qz.questions, c, qzC.reglages);
   return { etat: s.aCorriger ? 'acorriger' : 'corrige', label: s.aCorriger ? `${s.aCorriger} à corriger` : qzNum(s.note) + ' / ' + s.sur, c, s };
@@ -1148,6 +1148,9 @@ function qzCRender(){
       </div>
       <span style="flex:1;"></span>
       <label class="qz-check" title="Cochée : QCM, nombres, points à placer... notés d'office. Décochée : vous notez chaque question (la correction automatique devient une proposition à accepter)."><input type="checkbox" ${qzCorrAuto(qzC.reglages) ? 'checked' : ''} onchange="qzCCorrAutoReglage(this.checked)"> Correction automatique</label>
+      ${(() => { const abs = qzC.eleves.filter(e => !qzC.copies.has(e.id)).length, r = qzCRattrapage().length;
+        return abs || r ? `<button class="btn secondary" onclick="qzCRattrapageOuvrir()" title="Rouvrir l'interrogation pour les élèves absents seulement, même fermée ou publiée"><span class="gicon">event_repeat</span> Rattrapage des absents${r ? ` (${r})` : ''}</button>` : ''; })()}
+      ${qzCRattrapesAPublier().length && publie ? `<button class="btn" onclick="qzCPublierRattrapages()" title="Copies de rattrapage rendues : les élèves verront leur note et la correction"><span class="gicon">publish</span> Publier les rattrapages (${qzCRattrapesAPublier().length})</button>` : ''}
       <label class="qz-check" title="Plus aucun élève ne peut commencer ; ceux qui ont commencé peuvent seulement rendre."><input type="checkbox" ${qzC.reglages.ferme ? 'checked' : ''} onchange="qzCFermerAcces(this.checked)"> Questionnaire fermé</label>
       <button class="btn secondary" onclick="qzCRecorriger()" title="Efface toutes vos corrections (points, commentaires, propositions de l'IA) et recalcule les notes avec le corrigé actuel du questionnaire"><span class="gicon">restart_alt</span> Recorriger à zéro</button>
       ${qzC.directId && typeof qzDirectAnnulerNotationUI === 'function' ? `<button class="btn secondary" style="color:#a83c1f;" onclick="qzDirectAnnulerNotationUI('${qzC.directId}')" title="Interrogation créée pour noter des questions flash : la supprimer (copies, notes). La séance et les réponses restent."><span class="gicon">undo</span> Annuler la notation de la séance</button>` : ''}
@@ -1390,6 +1393,59 @@ function qzCRenderQuestions(){
   qzChargerPhotos(body);
 }
 function qzCQuestion(id){ qzC.questionSel = id; qzCRenderQuestions(); }
+/* Rattrapage des absents -- demandé : « Pour les élèves absents, je suis obligé de créer une copie du
+   devoir et leur attribuer la copie. Il serait plus simple de pouvoir uniquement réouvrir l'interrogation. »
+   devoirs.qz_rattrapage : les élèves qui peuvent encore commencer, même si l'interrogation est fermée ou
+   ses résultats publiés (qz_commencer, qz_enregistrer). Même sujet, même chrono que la classe (il part
+   quand l'élève commence), même correction. Si les résultats sont déjà publiés, l'élève ne voit sa note
+   qu'après « Publier les rattrapages » (qz_passer), qui le retire de la liste. */
+function qzCRattrapage(){ return (qzC && qzC.devoir && qzC.devoir.qz_rattrapage) || []; }
+function qzCRattrapesAPublier(){ return qzCRattrapage().filter(id => qzEstRendue(qzC.copies.get(id))); }
+async function qzCRattrapageSauver(ids){
+  const v = ids.length ? ids : null;
+  const { error } = await sb.from('devoirs').update({ qz_rattrapage: v }).eq('id', qzC.devoir.id);
+  if(error){ await niceAlert('Erreur : ' + error.message); return false; }
+  qzC.devoir.qz_rattrapage = v; return true;
+}
+async function qzCRattrapageOuvrir(){
+  const r = new Set(qzCRattrapage());
+  const abs = qzC.eleves.filter(e => !qzC.copies.has(e.id) || r.has(e.id));
+  if(!abs.length){ await niceAlert('Tous les élèves ont déjà une copie. Pour laisser un élève reprendre la sienne : « Rouvrir la copie » sur sa copie.'); return; }
+  let o = document.getElementById('qzRattOverlay');
+  if(!o){ o = document.createElement('div'); o.id = 'qzRattOverlay'; o.className = 'modal-overlay'; document.body.appendChild(o); }
+  const r0 = qzC.reglages;
+  o.innerHTML = `<div class="modal-card" style="max-width:520px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;"><b style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;"><span class="gicon">event_repeat</span> Rattrapage des absents</b>
+      <button class="modal-close" onclick="document.getElementById('qzRattOverlay').style.display='none'"><span class="gicon">close</span></button></div>
+    <p class="hint" style="margin:6px 0 10px;">Les élèves cochés retrouvent l'interrogation dans « Mon travail » et peuvent la commencer${r0.ferme ? ', même si elle est fermée' : ''}${qzC.devoir.qz_publie_at ? ', même si les résultats sont publiés' : ''}. Les autres élèves n'y ont pas accès.${r0.mode === 'classe' ? ` Le chronomètre (${r0.duree} min) part quand l'élève commence.` : ''}${qzC.devoir.qz_publie_at ? ' Une fois sa copie rendue et corrigée, « Publier les rattrapages » lui montre sa note.' : ''}</p>
+    <div style="display:flex;flex-direction:column;gap:4px;max-height:50vh;overflow:auto;">${abs.map(e => `<label class="qz-check"><input type="checkbox" data-ratt="${e.id}" ${r.has(e.id) || !r.size ? 'checked' : ''}> ${qzEsc(e.label)}${qzC.copies.has(e.id) ? ' <small class="hint" style="margin:0;">(a commencé)</small>' : ''}</label>`).join('')}</div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
+      ${r.size ? '<button class="btn secondary" id="qzRattFin" style="margin-right:auto;">Fermer le rattrapage</button>' : ''}
+      <button class="btn secondary" onclick="document.getElementById('qzRattOverlay').style.display='none'">Annuler</button>
+      <button class="btn" id="qzRattOk"><span class="gicon">lock_open</span> Ouvrir pour ces élèves</button></div></div>`;
+  o.style.display = 'flex';
+  o.querySelector('#qzRattOk').onclick = async () => {
+    const ids = [...o.querySelectorAll('[data-ratt]')].filter(c => c.checked).map(c => c.dataset.ratt);
+    // Les élèves déjà en rattrapage dont la copie attend la publication restent dans la liste.
+    const garder = qzCRattrapesAPublier().filter(id => !ids.includes(id));
+    if(await qzCRattrapageSauver(ids.concat(garder))){ o.style.display = 'none'; qzCRender(); }
+  };
+  const f = o.querySelector('#qzRattFin');
+  if(f) f.onclick = async () => { if(await qzCRattrapageSauver(qzCRattrapesAPublier())){ o.style.display = 'none'; qzCRender(); } };
+}
+async function qzCPublierRattrapages(){
+  const ids = qzCRattrapesAPublier(), cps = ids.map(id => qzC.copies.get(id));
+  const inc = cps.filter(c => qzScoreCopie(qzC.qz.questions, c, qzC.reglages).aCorriger).length;
+  if(inc){ await niceAlert(`${inc} copie${inc > 1 ? 's' : ''} de rattrapage ${inc > 1 ? 'ont' : 'a'} encore des questions à corriger.`); return; }
+  if(!(await niceConfirm(`Publier ${ids.length > 1 ? 'les ' + ids.length + ' copies' : 'la copie'} de rattrapage ? ${ids.length > 1 ? 'Les élèves verront leur' : 'L\'élève verra sa'} note et la correction.`))) return;
+  for(const c of cps){
+    const s = qzScoreCopie(qzC.qz.questions, c, qzC.reglages), maj = { total: s.total, note: s.note };
+    if(c.statut !== 'rendue'){ maj.statut = 'rendue'; maj.submitted_at = c.deadline_at; }
+    await sb.from('qz_copies').update(maj).eq('id', c.id); Object.assign(c, maj);
+    await sb.from('devoirs_rendus').update({ note: s.sur === 20 ? s.note : null }).eq('devoir_id', qzC.devoir.id).eq('student_id', c.student_id);
+  }
+  if(await qzCRattrapageSauver(qzCRattrapage().filter(id => !ids.includes(id)))) qzCRender();
+}
 async function qzCPublier(publier){
   const rendues = qzC.eleves.map(e => qzC.copies.get(e.id)).filter(c => qzEstRendue(c));
   if(publier){
@@ -1411,6 +1467,7 @@ async function qzCPublier(publier){
   const { error } = await sb.from('devoirs').update({ qz_publie_at: at }).eq('id', qzC.devoir.id);
   if(error){ await niceAlert('Erreur : ' + error.message); return; }
   qzC.devoir.qz_publie_at = at;
+  if(publier && qzCRattrapesAPublier().length) await qzCRattrapageSauver(qzCRattrapage().filter(id => !qzEstRendue(qzC.copies.get(id))));
   qzCRender();
 }
 

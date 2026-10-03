@@ -287,7 +287,7 @@ function qzToast(html, genre){
    Onglet « Interrogations données »
    --------------------------------------------------------------------- */
 async function qzInterrosCharger(){
-  const { data: dv } = await sb.from('devoirs').select('id,titre,class_id,date_depot,date_limite,created_at,student_ids,qz_publie_at,questionnaire_id,archive_at,classes(nom,niveau)')
+  const { data: dv } = await sb.from('devoirs').select('id,titre,class_id,date_depot,date_limite,created_at,student_ids,qz_publie_at,questionnaire_id,archive_at,qz_rattrapage,classes(nom,niveau)')
     .eq('teacher_id', currentUser.id).eq('type', 'questionnaire').order('created_at', { ascending: false });
   const interros = dv || [], ids = interros.map(d => d.id), classIds = Array.from(new Set(interros.map(d => d.class_id)));
   const [{ data: copies }, { data: cs }] = await Promise.all([
@@ -328,7 +328,7 @@ function qzInterrosHtml(liste){
 function qzInterroLigne(d){ const e = qzInterroEtat(d), r = d._reg || QZ_REGLAGES_DEFAUT;
     return `<div class="qz-i-row qz-mlisere" style="--m:${qzMode(r).c}">
       <div class="qz-i-main">${qzModeBadge(r)} <b>${qzEsc(d.titre)}</b>${d._q && (d._q.partage_etab || (d._q.partage_profs || []).length) ? ' <span class="qz-b-share"><span class="gicon">group</span> partagé</span>' : ''}
-        <div class="hint" style="margin:2px 0 0;">${qzEsc(d.classes ? d.classes.nom : '')}${d.student_ids && d.student_ids.length ? ` · ${d.student_ids.length} élève${d.student_ids.length > 1 ? 's' : ''} choisi${d.student_ids.length > 1 ? 's' : ''}` : ''}${d.date_limite ? ' · limite le ' + new Date(d.date_limite).toLocaleDateString('fr-FR') : ''}</div></div>
+        <div class="hint" style="margin:2px 0 0;">${qzEsc(d.classes ? d.classes.nom : '')}${d.student_ids && d.student_ids.length ? ` · ${d.student_ids.length} élève${d.student_ids.length > 1 ? 's' : ''} choisi${d.student_ids.length > 1 ? 's' : ''}` : ''}${d.date_limite ? ' · limite le ' + new Date(d.date_limite).toLocaleDateString('fr-FR') : ''}${d.qz_rattrapage && d.qz_rattrapage.length ? ` · <b style="color:#B8511F;"><span class="gicon" style="font-size:15px;vertical-align:middle;">event_repeat</span> rattrapage : ${d.qz_rattrapage.length} élève${d.qz_rattrapage.length > 1 ? 's' : ''}</b>` : ''}</div></div>
       <span class="qz-i-etat ${e.c}"><span class="gicon">${e.i}</span> ${e.t}</span>
       <span class="qz-i-stat" title="${qzEstEntrainement(r) ? 'Entraînements terminés' : qzEstSondage(r) ? 'Réponses envoyées' : 'Copies rendues'}"><b>${d._rendues}</b>/${d._total} ${qzEstEntrainement(r) ? 'terminé' : qzEstSondage(r) ? 'réponse' : 'rendue'}${d._rendues > 1 ? 's' : ''}${d._enCours ? ` · ${d._enCours} en cours` : ''}</span>
       <span class="qz-i-stat${d._aCorriger ? ' warn' : ''}">${d._aCorriger ? `<b>${d._aCorriger}</b> à corriger` : d._rendues && !qzEstEntrainement(r) && !qzEstSondage(r) ? '✓ corrigé' : ''}</span>
