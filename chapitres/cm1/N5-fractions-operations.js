@@ -81,3 +81,56 @@ ${cm1Demo('fo-probleme', 'Résoudre un problème avec des fractions', `Lundi, Pa
   ],
 });
 })();
+
+/* ---- Planches d'exercices imprimables (planches.js) ---- */
+(() => {
+const R = v => plRep(String(v)), F = cm1Frac, C = plCase(), Fr = plFrac();
+const lt = '&lt;', gt = '&gt;';
+const bande = (n, k, c) => cm1Bande(n, k, { largeur: 150, coul: c });
+const ligne = (...h) => `<span style="display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap;">${h.join(' ')}</span>`;
+PLANCHES['cm1|Fractions (comparaison et opérations)'] = [
+  { titre: 'Fractions égales, comparer des fractions', duree: '35 min',
+    attendus: ['Reconnaître et écrire des fractions égales', 'Comparer une fraction à 1', 'Comparer et ranger des fractions de même dénominateur'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Les deux bandes ont la même partie coloriée. Complète l\'égalité.',
+        eleve: plGrille([[2, 1, 4], [3, 1, 6], [5, 2, 10]].map(([n, k, m]) => ligne(`<span style="display:flex;flex-direction:column;gap:2px;">${bande(n, k)}${bande(m, k * m / n, '#2EA8C9')}</span>`, F(k, n), '=', Fr)), 1),
+        corr: plGrille([[2, 1, 4], [3, 1, 6], [5, 2, 10]].map(([n, k, m]) => ligne(`<span style="display:flex;flex-direction:column;gap:2px;">${bande(n, k)}${bande(m, k * m / n, '#2EA8C9')}</span>`, F(k, n), '=', R(F(k * m / n, m)))), 1) },
+      { etoiles: 1, col: 1, consigne: 'Complète les égalités.',
+        eleve: plListe([`${F(1, 2)} = ${Fr} (dénominateur 10)`, `${F(3, 4)} = ${Fr} (dénominateur 8)`, `${F(2, 5)} = ${Fr} (dénominateur 10)`, `1 = ${Fr} (dénominateur 6)`]),
+        corr: plListe([`${F(1, 2)} = ${R(F(5, 10))}`, `${F(3, 4)} = ${R(F(6, 8))}`, `${F(2, 5)} = ${R(F(4, 10))}`, `1 = ${R(F(6, 6))}`]) },
+      { etoiles: 1, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
+        eleve: plListe([`${F(3, 4)} ${C} 1`, `${F(7, 5)} ${C} 1`, `${F(6, 6)} ${C} 1`, `${F(9, 10)} ${C} 1`]),
+        corr: plListe([`${F(3, 4)} ${R(lt)} 1`, `${F(7, 5)} ${R(gt)} 1`, `${F(6, 6)} ${R('=')} 1`, `${F(9, 10)} ${R(lt)} 1`]) },
+      { etoiles: 2, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
+        eleve: plListe([`${F(3, 8)} ${C} ${F(5, 8)}`, `${F(7, 10)} ${C} ${F(4, 10)}`, `${F(1, 3)} ${C} ${F(1, 5)}`, `${F(5, 6)} ${C} ${F(7, 4)}`]),
+        corr: plListe([`${F(3, 8)} ${R(lt)} ${F(5, 8)}`, `${F(7, 10)} ${R(gt)} ${F(4, 10)}`, `${F(1, 3)} ${R(gt)} ${F(1, 5)}`, `${F(5, 6)} ${R(lt)} ${F(7, 4)}`]) },
+      { etoiles: 2, consigne: `Range ces fractions dans l\'ordre croissant : ${F(5, 4)} ; ${F(1, 4)} ; ${F(7, 4)} ; ${F(3, 4)} ; ${F(4, 4)}.`,
+        eleve: `<p style="text-align:center;">${[Fr, Fr, Fr, Fr, Fr].join(' &lt; ')}</p>`,
+        corr: `<p style="text-align:center;">${[[1, 4], [3, 4], [4, 4], [5, 4], [7, 4]].map(([a, b]) => R(F(a, b))).join(' &lt; ')}</p>` },
+      { etoiles: 3, col: 1, cahier: true, consigne: `Tom a mangé ${F(3, 8)} d\'une pizza, Léa ${F(2, 4)} d\'une pizza de la même taille. Qui en a mangé le plus ?`,
+        corr: cm1Redac('Comparaison', { suite: [`${F(2, 4)} = ${F(4, 8)}`, `${F(4, 8)} &gt; ${F(3, 8)}`] }, 'Léa a mangé le plus de pizza.', `<span class="cm-fig-d">${cm1Disque(8, 3, { taille: 60 })} ${cm1Disque(4, 2, { taille: 60, coul: '#E35D3A' })}</span>`) },
+      { etoiles: 3, col: 1, cahier: true, consigne: `Trouve trois fractions égales à ${F(1, 2)}. Dessine-les avec des bandes.`,
+        corr: cm1Redac('Fractions égales à un demi', { suite: [`${F(1, 2)} = ${F(2, 4)}`, `${F(1, 2)} = ${F(3, 6)}`, `${F(1, 2)} = ${F(5, 10)}`] }, 'Le numérateur est la moitié du dénominateur : la bande est coloriée à moitié.', `<span class="cm-fig-d" style="display:inline-flex;flex-direction:column;gap:2px;">${cm1Bande(4, 2, { largeur: 110 })}${cm1Bande(6, 3, { largeur: 110 })}${cm1Bande(10, 5, { largeur: 110 })}</span>`) },
+    ] },
+  { titre: 'Additionner et soustraire des fractions', duree: '35 min',
+    attendus: ['Additionner et soustraire des fractions de même dénominateur', 'Décomposer une fraction en un entier et une fraction plus petite que 1'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule. Aide-toi des bandes.',
+        eleve: plGrille([[2, 1, 5], [3, 4, 8], [1, 2, 4]].map(([a, b, n]) => ligne(cm1Bande(n, a + b, { largeur: 110 }), `${F(a, n)} + ${F(b, n)} =`, Fr)), 1),
+        corr: plGrille([[2, 1, 5], [3, 4, 8], [1, 2, 4]].map(([a, b, n]) => ligne(cm1Bande(n, a + b, { largeur: 110 }), `${F(a, n)} + ${F(b, n)} =`, R(F(a + b, n)))), 1) },
+      { etoiles: 1, col: 1, consigne: 'Calcule.',
+        eleve: plListe([`${F(5, 6)} − ${F(2, 6)} = ${Fr}`, `${F(7, 10)} − ${F(3, 10)} = ${Fr}`, `${F(4, 4)} − ${F(1, 4)} = ${Fr}`, `${F(9, 5)} − ${F(4, 5)} = ${Fr}`]),
+        corr: plListe([`${F(5, 6)} − ${F(2, 6)} = ${R(F(3, 6))}`, `${F(7, 10)} − ${F(3, 10)} = ${R(F(4, 10))}`, `${F(4, 4)} − ${F(1, 4)} = ${R(F(3, 4))}`, `${F(9, 5)} − ${F(4, 5)} = ${R(F(5, 5))}`]) },
+      { etoiles: 2, col: 1, consigne: 'Complète pour obtenir 1.',
+        eleve: plListe([`${F(3, 8)} + ${Fr} = 1`, `${F(2, 5)} + ${Fr} = 1`, `${F(1, 3)} + ${Fr} = 1`, `${F(7, 10)} + ${Fr} = 1`]),
+        corr: plListe([`${F(3, 8)} + ${R(F(5, 8))} = 1`, `${F(2, 5)} + ${R(F(3, 5))} = 1`, `${F(1, 3)} + ${R(F(2, 3))} = 1`, `${F(7, 10)} + ${R(F(3, 10))} = 1`]) },
+      { etoiles: 2, col: 1, consigne: 'Écris chaque fraction comme un entier plus une fraction plus petite que 1.',
+        eleve: plListe([`${F(7, 4)} = ${plPointilles(2)} + ${Fr}`, `${F(9, 5)} = ${plPointilles(2)} + ${Fr}`, `${F(11, 3)} = ${plPointilles(2)} + ${Fr}`, `${F(13, 10)} = ${plPointilles(2)} + ${Fr}`]),
+        corr: plListe([`${F(7, 4)} = ${R(1)} + ${R(F(3, 4))}`, `${F(9, 5)} = ${R(1)} + ${R(F(4, 5))}`, `${F(11, 3)} = ${R(3)} + ${R(F(2, 3))}`, `${F(13, 10)} = ${R(1)} + ${R(F(3, 10))}`]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: `Une bouteille contient 1 L d\'eau. Le matin, on en boit ${F(2, 10)} ; le midi, ${F(5, 10)}. Quelle fraction de la bouteille a été bue ? Quelle fraction reste-t-il ?`,
+        corr: cm1Redac('Eau bue', `${F(2, 10)} + ${F(5, 10)} = ${F(7, 10)}`, `On a bu ${F(7, 10)} de la bouteille.`, cm1Bande(10, 7, { largeur: 140 })) + cm1Redac('Eau restante', `${F(10, 10)} − ${F(7, 10)} = ${F(3, 10)}`, `Il reste ${F(3, 10)} de la bouteille.`) },
+      { etoiles: 3, col: 1, cahier: true, consigne: `Un chemin mesure 1 km, c\'est-à-dire 1 000 m. Zoé a parcouru ${F(3, 4)} du chemin. Quelle fraction du chemin lui reste-t-il ? Combien de mètres ?`,
+        corr: cm1Redac('Fraction restante', `${F(4, 4)} − ${F(3, 4)} = ${F(1, 4)}`, `Il reste ${F(1, 4)} du chemin.`) + cm1Redac('Distance restante', '1 000 m ÷ 4 = 250 m', 'Il reste 250 m à parcourir.', cm1Bande(4, 3, { largeur: 140 })) },
+    ] },
+];
+})();

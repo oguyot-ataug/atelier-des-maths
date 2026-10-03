@@ -101,3 +101,67 @@ ${cm1Demo('od-dix', 'Multiplier un nombre décimal par 10', 'Calcule 0,56 × 10.
   ],
 });
 })();
+
+/* ---- Planches d'exercices imprimables (planches.js) ---- */
+(() => {
+const B = n => plPointilles(n || 4), R = v => plRep(String(v)), C = plCase();
+// Opération posée alignée sur la virgule ; res vide = à calculer.
+function pd(lignes, res){
+  const all = lignes.map(l => l[1]).concat(res ? [res] : []), sp = s => s.split(',');
+  const I = Math.max(...all.map(s => sp(s)[0].length)), D = Math.max(...all.map(s => (sp(s)[1] || '').length));
+  const al = s => { const [i, d] = sp(s); return i.padStart(I, ' ') + (D ? (d != null ? ',' + d.padEnd(D, ' ') : ' '.repeat(D + 1)) : ''); };
+  const W = I + (D ? D + 1 : 0);
+  return cm1Posee(lignes.map(([o, n]) => [o, al(n)]).concat([[' ', res ? al(res) : ' '.repeat(W)]]));
+}
+const duo = l => `<div style="display:flex;justify-content:space-around;align-items:flex-start;gap:8px;flex-wrap:wrap;">${l.join('')}</div>`;
+const grille = () => cm1Quad(9, 6, [], { k: 17, largeur: 153 });
+const tab = (ent, lignes) => `<table class="pl-tab"><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
+PLANCHES['cm1|Opérations sur les nombres décimaux'] = [
+  { titre: 'Additionner et soustraire des nombres décimaux', duree: '35 min',
+    attendus: ['Calculer en ligne avec des nombres décimaux', 'Poser une addition et une soustraction en alignant les virgules'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Calcule en ligne.',
+        eleve: plListe(['2,5 + 1,3 = ' + B(), '4,7 + 0,3 = ' + B(), '6,8 − 2,5 = ' + B(), '10 − 0,4 = ' + B()]),
+        corr: plListe(['2,5 + 1,3 = ' + R('3,8'), '4,7 + 0,3 = ' + R(5), '6,8 − 2,5 = ' + R('4,3'), '10 − 0,4 = ' + R('9,6')]) },
+      { etoiles: 1, col: 1, consigne: 'Complète pour arriver au nombre entier.',
+        eleve: plListe(['0,6 + ' + B() + ' = 1', '2,3 + ' + B() + ' = 3', '0,25 + ' + B() + ' = 1', '4,9 + ' + B() + ' = 5']),
+        corr: plListe(['0,6 + ' + R('0,4') + ' = 1', '2,3 + ' + R('0,7') + ' = 3', '0,25 + ' + R('0,75') + ' = 1', '4,9 + ' + R('0,1') + ' = 5']) },
+      { etoiles: 2, col: 1, consigne: 'Calcule ces additions.',
+        eleve: duo([pd([[' ', '12,5'], ['+', '3,75']]), pd([[' ', '8,07'], ['+', '14,6']])]),
+        corr: duo([pd([[' ', '12,5'], ['+', '3,75']], '16,25'), pd([[' ', '8,07'], ['+', '14,6']], '22,67')]) },
+      { etoiles: 2, col: 1, consigne: 'Calcule ces soustractions. Complète avec des zéros si besoin.',
+        eleve: duo([pd([[' ', '15,8'], ['−', '6,35']]), pd([[' ', '20'], ['−', '7,4']])]),
+        corr: duo([pd([[' ', '15,80'], ['−', '6,35']], '9,45'), pd([[' ', '20,0'], ['−', '7,4']], '12,6')]) },
+      { etoiles: 2, consigne: 'Pose et calcule dans le quadrillage. Aligne bien les virgules.',
+        eleve: duo(['<span style="text-align:center;">37,4 + 5,86<br>' + grille() + '</span>', '<span style="text-align:center;">52,3 − 18,75<br>' + grille() + '</span>', '<span style="text-align:center;">4,5 + 12,05 + 0,8<br>' + grille() + '</span>']),
+        corr: duo([pd([[' ', '37,40'], ['+', '5,86']], '43,26'), pd([[' ', '52,30'], ['−', '18,75']], '33,55'), pd([[' ', '4,50'], ['+', '12,05'], ['+', '0,80']], '17,35')]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Lina achète un livre à 12,50 € et un stylo à 3,75 €. Elle paie avec un billet de 20 €. Combien lui rend-on ?',
+        corr: cm1Redac('Prix des achats', '12,50 € + 3,75 € = 16,25 €', 'Les achats coûtent 16,25 €.') + cm1Redac('Monnaie rendue', '20 € − 16,25 € = 3,75 €', 'On rend 3,75 € à Lina.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Tom a calculé : 8,5 + 3,9 = 47,5. Montre avec un ordre de grandeur qu\'il s\'est trompé, puis corrige.',
+        corr: cm1Redac('Ordre de grandeur', '8 + 4 = 12', 'Le résultat doit être proche de 12, pas de 47,5 : Tom s\'est trompé.') + cm1Redac('Calcul exact', '8,5 + 3,9 = 12,4', 'Le bon résultat est 12,4.') },
+    ] },
+  { titre: 'Multiplier et diviser par 10, ordre de grandeur', duree: '30 min',
+    attendus: ['Multiplier et diviser un nombre décimal par 10', 'Vérifier un calcul avec un ordre de grandeur'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Multiplie par 10 : chaque chiffre glisse d\'un rang vers la gauche.',
+        eleve: plListe(['4,27 × 10 = ' + B(), '0,56 × 10 = ' + B(), '12,5 × 10 = ' + B(), '0,8 × 10 = ' + B()]),
+        corr: plListe(['4,27 × 10 = ' + R('42,7'), '0,56 × 10 = ' + R('5,6'), '12,5 × 10 = ' + R(125), '0,8 × 10 = ' + R(8)]) },
+      { etoiles: 1, col: 1, consigne: 'Divise par 10 : chaque chiffre glisse d\'un rang vers la droite.',
+        eleve: plListe(['42,7 ÷ 10 = ' + B(), '3 ÷ 10 = ' + B(), '56 ÷ 10 = ' + B(), '0,9 ÷ 10 = ' + B()]),
+        corr: plListe(['42,7 ÷ 10 = ' + R('4,27'), '3 ÷ 10 = ' + R('0,3'), '56 ÷ 10 = ' + R('5,6'), '0,9 ÷ 10 = ' + R('0,09')]) },
+      { etoiles: 2, consigne: 'Complète le tableau.',
+        eleve: tab(['Nombre', '2,4', '0,7', '15', '30,6'], [['× 10', B(3), B(3), B(3), B(3)], ['÷ 10', B(3), B(3), B(3), B(3)]]),
+        corr: tab(['Nombre', '2,4', '0,7', '15', '30,6'], [['× 10', R(24), R(7), R(150), R(306)], ['÷ 10', R('0,24'), R('0,07'), R('1,5'), R('3,06')]]) },
+      { etoiles: 2, col: 1, consigne: 'Complète.',
+        eleve: plListe([B(3) + ' × 10 = 35', B(3) + ' ÷ 10 = 0,7', '6,4 × ' + B(3) + ' = 64', '81 ÷ ' + B(3) + ' = 8,1']),
+        corr: plListe([R('3,5') + ' × 10 = 35', R(7) + ' ÷ 10 = 0,7', '6,4 × ' + R(10) + ' = 64', '81 ÷ ' + R(10) + ' = 8,1']) },
+      { etoiles: 2, col: 1, consigne: 'Sans calculer exactement, entoure l\'ordre de grandeur du résultat.',
+        eleve: plListe(['19,8 + 30,4 : <b>5 · 50 · 500</b>', '99,5 − 48,9 : <b>5 · 50 · 150</b>', '7,1 + 2,95 : <b>1 · 10 · 100</b>', '201,3 − 0,9 : <b>2 · 20 · 200</b>']),
+        corr: plListe([['19,8 + 30,4 : ', '50'], ['99,5 − 48,9 : ', '50'], ['7,1 + 2,95 : ', '10'], ['201,3 − 0,9 : ', '200']].map(([t, r]) => t + plEntoure(r))) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Un paquet de 10 cahiers coûte 18,50 €. Combien coûte un cahier ?',
+        corr: cm1Redac('Prix d\'un cahier', '18,50 € ÷ 10 = 1,85 €', 'Un cahier coûte 1,85 €.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Une ficelle mesure 2,5 m. Combien mesurent 10 ficelles mises bout à bout ? Écris le résultat en mètres, puis en centimètres.',
+        corr: cm1Redac('Longueur de 10 ficelles', '2,5 m × 10 = 25 m', '10 ficelles mesurent 25 m.') + cm1Redac('En centimètres', '1 m = 100 cm, donc 25 m = 2 500 cm', '10 ficelles mesurent 2 500 cm.') },
+    ] },
+];
+})();

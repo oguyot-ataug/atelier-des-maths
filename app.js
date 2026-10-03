@@ -3329,6 +3329,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.966', date:'2026-10-03', items:[
+    "Planches CM1 : nouvelles planches imprimables avec corrigés pour « Fractions (comparaison et opérations) » (fractions égales et comparaison ; additionner et soustraire), « Organisation et gestion de données » (tableaux ; diagrammes en barres et graphiques), « Grands nombres jusqu'à 999 999 » et « Opérations sur les nombres décimaux » (opérations posées alignées sur la virgule, × 10 et ÷ 10, ordre de grandeur)."
+  ] },
   { version:'2026-08-19.965', date:'2026-10-03', items:[
     "Planches CM1 : nouvelles planches imprimables avec corrigés pour « Nombres entiers jusqu'à 9 999 » (2 planches), « Opérations sur les nombres entiers » (3 planches : addition et soustraction, multiplication, division et critères de divisibilité), « Nombres décimaux » (2 planches) et « Construction de figures » (2 planches : segments, milieu et cercle ; triangles et quadrilatères particuliers).",
     "Planches : les grands nombres ne se coupent plus en fin de ligne ; tableaux à compléter ; dessin d'une correction rédigée placé à droite du texte quand il est petit."

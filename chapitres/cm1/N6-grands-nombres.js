@@ -227,3 +227,59 @@ DEMO_QUIZZES['cm1|Grands nombres jusqu\'à 999 999'] = [
 DEMO_REGISTRY['cm1|Grands nombres jusqu\'à 999 999'] = { cours:'cours-demo-cm1-grands-nombres', methode:'methode-demo-cm1-grands-nombres', exos:'exos-demo-cm1-grands-nombres', histoire:'histoire-demo-cm1-grands-nombres',
   init:()=>{ cm1gnLireDemo.reset(); cm1gnComparerDemo.reset(); cmAnimDessiner('cm1-gn-sauts'); } };
 
+
+/* ---- Planches d'exercices imprimables (planches.js) ---- */
+(() => {
+const B = n => plPointilles(n || 5), R = v => plRep(String(v)), C = plCase();
+const lt = '&lt;', gt = '&gt;';
+const tab = (ent, lignes) => `<table class="pl-tab"><tr>${ent.map(e => `<th>${e}</th>`).join('')}</tr>${lignes.map(l => `<tr>${l.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
+const ENT = ['Nombre', 'c. de mille', 'd. de mille', 'u. de mille', 'centaines', 'dizaines', 'unités'];
+PLANCHES['cm1|Grands nombres jusqu\'à 999 999'] = [
+  { titre: 'Lire, écrire et décomposer les grands nombres', duree: '35 min',
+    attendus: ['Lire et écrire les nombres jusqu\'à 999 999, en chiffres et en lettres', 'Décomposer un nombre ; « le chiffre des… » et « le nombre de… »'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Écris en chiffres. Laisse un espace entre la classe des mille et celle des unités.',
+        eleve: plListe(['quarante-cinq-mille-deux-cent-trois : ' + B(), 'cent-vingt-mille-six-cents : ' + B(), 'trois-cent-mille-quatre-vingts : ' + B(), 'neuf-cent-neuf-mille-neuf : ' + B()]),
+        corr: plListe(['quarante-cinq-mille-deux-cent-trois : ' + R('45 203'), 'cent-vingt-mille-six-cents : ' + R('120 600'), 'trois-cent-mille-quatre-vingts : ' + R('300 080'), 'neuf-cent-neuf-mille-neuf : ' + R('909 009')]) },
+      { etoiles: 1, col: 1, consigne: 'Écris en lettres.',
+        eleve: plListe(['18 500 : ' + B(18), '206 040 : ' + B(18), '700 015 : ' + B(18)]),
+        corr: plListe(['18 500 : ' + R('dix-huit-mille-cinq-cents'), '206 040 : ' + R('deux-cent-six-mille-quarante'), '700 015 : ' + R('sept-cent-mille-quinze')]) },
+      { etoiles: 1, consigne: 'Place chaque chiffre dans le tableau de numération.',
+        eleve: tab(ENT, ['352 718', '140 905', '608 030'].map(n => [`<b>${n}</b>`, B(1), B(1), B(1), B(1), B(1), B(1)])),
+        corr: tab(ENT, ['352 718', '140 905', '608 030'].map(n => [`<b>${n}</b>`, ...n.replace(' ', '').padStart(6, ' ').split('').map(c => c === ' ' ? '' : R(c))])) },
+      { etoiles: 2, col: 1, consigne: 'Décompose.',
+        eleve: plListe(['264 315 = ' + B(4) + ' + ' + B(4) + ' + ' + B(3) + ' + ' + B(2) + ' + ' + B(2) + ' + ' + B(1), '507 080 = ' + B(4) + ' + ' + B(3) + ' + ' + B(2)]),
+        corr: plListe(['264 315 = ' + R('200 000') + ' + ' + R('60 000') + ' + ' + R('4 000') + ' + ' + R(300) + ' + ' + R(10) + ' + ' + R(5), '507 080 = ' + R('500 000') + ' + ' + R('7 000') + ' + ' + R(80)]) },
+      { etoiles: 2, col: 1, consigne: 'Dans le nombre 485 260, quel est…',
+        eleve: plListe(['le chiffre des milliers ? ' + B(1), 'le nombre de milliers ? ' + B(2), 'le chiffre des centaines ? ' + B(1), 'le nombre de centaines ? ' + B(3)]),
+        corr: plListe(['le chiffre des milliers ? ' + R(5), 'le nombre de milliers ? ' + R(485), 'le chiffre des centaines ? ' + R(2), 'le nombre de centaines ? ' + R('4 852')]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Écris le plus grand nombre de 6 chiffres tous différents. Puis le plus petit.',
+        corr: cm1Redac('Le plus grand', 'Je prends les chiffres du plus grand au plus petit : 987 654', 'Le plus grand nombre est 987 654.') + cm1Redac('Le plus petit', 'Il ne commence pas par 0 : 102 345', 'Le plus petit nombre est 102 345.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Un stade a 81 338 places. Écris ce nombre en lettres, puis donne son nombre de milliers.',
+        corr: cm1Redac('En lettres', '81 338', 'On écrit : quatre-vingt-un-mille-trois-cent-trente-huit.') + cm1Redac('Nombre de milliers', '81 338 = 81 milliers et 338 unités', 'Le nombre de milliers est 81.') },
+    ] },
+  { titre: 'Comparer, ranger et placer les grands nombres', duree: '30 min',
+    attendus: ['Comparer et ranger des nombres jusqu\'à 999 999', 'Encadrer un nombre', 'Repérer un nombre sur une demi-droite graduée'],
+    exos: [
+      { etoiles: 1, col: 1, consigne: 'Complète avec &lt;, &gt; ou =.',
+        eleve: plListe([`45 300 ${C} 45 030`, `99 999 ${C} 100 000`, `512 400 ${C} 521 400`, `70 007 ${C} 70 070`]),
+        corr: plListe([`45 300 ${R(gt)} 45 030`, `99 999 ${R(lt)} 100 000`, `512 400 ${R(lt)} 521 400`, `70 007 ${R(lt)} 70 070`]) },
+      { etoiles: 1, col: 1, consigne: 'Encadre entre deux dizaines de mille qui se suivent.',
+        eleve: plListe([`${B()} &lt; 63 810 &lt; ${B()}`, `${B()} &lt; 148 200 &lt; ${B()}`, `${B()} &lt; 9 500 &lt; ${B()}`]),
+        corr: plListe([`${R('60 000')} &lt; 63 810 &lt; ${R('70 000')}`, `${R('140 000')} &lt; 148 200 &lt; ${R('150 000')}`, `${R(0)} &lt; 9 500 &lt; ${R('10 000')}`]) },
+      { etoiles: 2, consigne: 'De 400 000 à 500 000, il y a 10 écarts égaux. Quel nombre correspond à chaque point ?',
+        eleve: cm1Axe(400000, 500000, 10000, 100000, [[420000, 'A'], [470000, 'B'], [455000, 'C']], { fmt: v => v.toLocaleString('fr-FR') }) + `<div style="display:flex;gap:30px;justify-content:center;"><span>A : ${B()}</span><span>B : ${B()}</span><span>C : ${B()}</span></div>`,
+        corr: cm1Axe(400000, 500000, 10000, 100000, [[420000, 'A'], [470000, 'B'], [455000, 'C']], { fmt: v => v.toLocaleString('fr-FR') }) + `<div style="display:flex;gap:30px;justify-content:center;"><span>A : ${R('420 000')}</span><span>B : ${R('470 000')}</span><span>C : ${R('455 000')}</span></div>` },
+      { etoiles: 2, col: 1, consigne: 'Range dans l\'ordre décroissant : 205 000 ; 250 000 ; 25 000 ; 200 500 ; 520 000.',
+        eleve: `<p>${[1, 2, 3, 4, 5].map(() => B(5)).join(' &gt; ')}</p>`,
+        corr: `<p>${['520 000', '250 000', '205 000', '200 500', '25 000'].map(R).join(' &gt; ')}</p>` },
+      { etoiles: 2, col: 1, consigne: 'Complète.',
+        eleve: plListe(['le nombre juste après 99 999 : ' + B(), '1 000 de plus que 245 600 : ' + B(), '10 000 de moins que 380 000 : ' + B(), '100 000 de plus que 900 000 : ' + B()]),
+        corr: plListe(['le nombre juste après 99 999 : ' + R('100 000'), '1 000 de plus que 245 600 : ' + R('246 600'), '10 000 de moins que 380 000 : ' + R('370 000'), '100 000 de plus que 900 000 : ' + R('1 000 000')]) },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Lyon compte environ 522 000 habitants, Marseille 873 000 et Toulouse 504 000. Range ces villes de la plus peuplée à la moins peuplée.',
+        corr: cm1Redac('Comparaison', '873 000 &gt; 522 000 &gt; 504 000', 'Marseille est la plus peuplée, puis Lyon, puis Toulouse.') },
+      { etoiles: 3, col: 1, cahier: true, consigne: 'Je suis un nombre compris entre 600 000 et 700 000. Mon chiffre des unités de mille est 8 ; tous mes autres chiffres sont des 0, sauf celui des centaines de mille. Qui suis-je ?',
+        corr: cm1Redac('Le nombre mystère', { suite: ['Entre 600 000 et 700 000 : le chiffre des centaines de mille est 6.', 'Le chiffre des unités de mille est 8, les autres sont des 0.'] }, 'Je suis 608 000.') },
+    ] },
+];
+})();

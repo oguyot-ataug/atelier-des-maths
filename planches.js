@@ -546,7 +546,7 @@ const PL_CSS = `
   .pl-cahier{ display:flex; align-items:center; gap:6px; margin-top:2px; }
   .pl-exos{ display:grid; grid-template-columns:1fr 1fr; gap:6px 8px; grid-auto-flow:row dense; }
   .pl-exos > .pl-exo{ grid-column:1 / -1; margin:0; } .pl-exos > .pl-exo.pl-demi{ grid-column:auto; }
-  .pl-demi .pl-liste{ columns:1; }
+  .pl-demi .pl-liste, .pl-col1 .pl-liste{ columns:1; }
   .pl-corrige{ font-size:.9em; } .pl-corrige .pl-exo{ padding:4px 10px 5px; } .pl-corrige .cm-redac{ margin:1px 0 3px; line-height:1.3; }
   .pl-ref{ font:700 10pt 'Space Grotesk',Arial,sans-serif; color:#1F3A5C; border:1.5px solid #1F3A5C; border-radius:6px; padding:1px 8px; }
   .pl-corrige .pl-ref{ color:#1F7A4D; border-color:#1F7A4D; }
