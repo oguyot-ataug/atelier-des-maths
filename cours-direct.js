@@ -170,7 +170,8 @@ async function cdProfEtat(etat){
   cdProfRendre();
   const { error } = await sb.from('cours_direct').update({ etat: cdP.etat }).eq('id', cdP.id);
   if(error){ niceAlert('Changement non enregistré : ' + error.message); return; }
-  try{ cdP.ch.send({ type: 'broadcast', event: 'etat', payload: cdP.etat }); }catch(e){}
+  const diffuse = Object.assign({}, cdP.etat); delete diffuse.equipes; delete diffuse.liens; // les équipes : seulement par cours_direct_etat (chaque élève, la sienne)
+  try{ cdP.ch.send({ type: 'broadcast', event: 'etat', payload: diffuse }); }catch(e){}
 }
 function cdProfAller(i){
   if(!cdP) return;
@@ -213,7 +214,9 @@ function cdProfRendreClasse(){
     const etat = !m ? 'absent' : m.dehors ? 'dehors' : (now - Date.parse(m.vu_at) > 60000 ? 'perdu' : 'present');
     if(etat === 'present') presents++; if(etat === 'dehors') dehors++;
     const info = !m ? 'pas encore entré' : etat === 'dehors' ? 'SORTI de la page' : etat === 'perdu' ? 'plus de nouvelles' : 'présent';
-    return `<div class="cd-el ${etat}"><span class="cd-pastille"></span><span class="cd-nom">${cdEsc(e.label)}</span><small>${info}${m && m.sorties ? ` · ${m.sorties} sortie${m.sorties > 1 ? 's' : ''} (dernière à ${hh(m.sortie_at)})` : ''}</small></div>`;
+    const eq = typeof cdEqDe === 'function' ? cdEqDe(e.id) : null;
+    return `<div class="cd-el ${etat}"><span class="cd-pastille"></span><span class="cd-nom">${cdEsc(e.label)}</span><small>${info}${m && m.sorties ? ` · ${m.sorties} sortie${m.sorties > 1 ? 's' : ''} (dernière à ${hh(m.sortie_at)})` : ''}</small>${eq ? cdEqInfo(e.id) : ''}
+      ${typeof cdEqRejoindreChoix === 'function' ? (eq ? `<button class="cd-eq-btn x" onclick="cdEqDetacher('${e.id}')" title="Ne plus travailler en équipe"><span class="gicon">group_remove</span></button>` : `<button class="cd-eq-btn" onclick="cdEqRejoindreChoix('${e.id}', this)" title="Pas d'ordinateur ? Travailler sur l'ordinateur d'un camarade"><span class="gicon">group_add</span></button>`) : ''}</div>`;
   }).join('') || '<p class="hint">Aucun élève dans cette classe.</p>';
   const r = document.getElementById('cdProfResume');
   if(r) r.innerHTML = `<b>${presents}</b> / ${cdP.eleves.length} présent${presents > 1 ? 's' : ''}${dehors ? ` · <b class="cd-rouge">${dehors} sorti${dehors > 1 ? 's' : ''}</b>` : ''}`;
@@ -239,7 +242,7 @@ function cdProfRendre(){
           <button class="btn" onclick="cdProfAller(${i + 1})" ${i < cdP.items.length - 1 ? '' : 'disabled'}>Suivant <span class="gicon">arrow_forward</span></button></div>
         <div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}</div>
         <div class="cd-contenu" id="cdProfContenu">${it.exo ? '' : it.corr && cdP.etat.corr ? it.corr : it.html || ''}</div></div>
-      <div class="cd-p-classe"><div class="cd-p-resume" id="cdProfResume"></div><div id="cdProfClasse"></div></div>
+      <div class="cd-p-classe"><div class="cd-p-resume" id="cdProfResume"></div>${typeof cdEqOuvrir === 'function' ? `<button class="btn secondary td-mini cd-eq-ouvrir" onclick="cdEqOuvrir()" title="Équipes de 2, 3, 4… tirées au sort ou faites à la main"><span class="gicon">groups</span> Équipes${(cdP.etat.equipes || []).length ? ` (${cdP.etat.equipes.length})` : ''}</button>` : ''}<div id="cdProfClasse"></div></div>
     </div>`;
   const c = document.getElementById('cdProfContenu');
   if(c && it.exo){ if(typeof cxProfMonter === 'function') cxProfMonter(i, it); }
@@ -379,6 +382,7 @@ async function cdEleveCharger(){
   data.items.forEach((x, k) => { if(x && !x.leger) cdE.cache.set(k, x); });
   const avant = cdE.d;
   cdE.d = data;
+  if(typeof cdEleveEquipe === 'function') cdEleveEquipe();
   if(!avant || avant.idx !== data.idx) cdE.vue = data.idx; // le professeur avance : on le suit
   // Exercice en cours sur l'écran : on ne le redessine pas (la saisie en cours serait perdue).
   const corrBouge = !!(avant && avant.etat && avant.etat.corr) !== !!(data.etat && data.etat.corr) && ((data.items[cdE.vue] || {}).exo || {}).type === 'td';
@@ -405,9 +409,11 @@ function cdEleveRendre(){
       <span class="cd-e-nav"><button onclick="cdEleveVoir(${k - 1})" ${k ? '' : 'disabled'} title="Élément précédent"><span class="gicon">arrow_back</span></button>
       <b>${k + 1} / ${d.n}</b><button onclick="cdEleveVoir(${k + 1})" ${k < d.idx ? '' : 'disabled'} title="Élément suivant"><span class="gicon">arrow_forward</span></button></span>
       ${k !== d.idx ? `<button class="cd-e-direct" onclick="cdEleveVoir(${d.idx})"><span class="gicon">cast</span> Revenir au direct</button>` : '<span class="cd-e-live"><span class="dot"></span> En direct</span>'}</div>
+    <div id="cdEqBandeau" hidden></div>
     <div class="cd-e-corps"><div class="cd-item-titre">${cdEsc(it.titre || '')}${it.chapitre ? ` <small>${cdEsc(it.chapitre)}</small>` : ''}</div>
       <div class="cd-contenu" id="cdEleveContenu">${it.leger ? '<p class="hint">Chargement…</p>' : it.exo ? '' : it.corr && k === d.idx && d.etat && d.etat.corr ? '<div class="cd-corr-montree"><span class="gicon">fact_check</span> Correction</div>' + it.corr : it.html || ''}</div></div>
     ${cdE.dehors ? `<div class="cd-e-retour"><div><span class="gicon">front_hand</span><h2>Reste avec la classe !</h2><p>Tu as quitté la page du cours : ton professeur en est informé.</p><button class="btn" onclick="cdEleveRevenir()">Je reviens au cours</button></div></div>` : ''}`;
+  if(typeof cdEleveEquipe === 'function') cdEleveEquipe();
   const c = document.getElementById('cdEleveContenu');
   if(it.leger) return;
   if(c && it.exo){ if(!cdE.dehors && typeof cxEleveMonter === 'function') cxEleveMonter(k, it); }

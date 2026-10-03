@@ -58,6 +58,10 @@ function cdBilanRendre(o, row, seances, eleves, membres, travaux){
   const hh = d => d ? new Date(d).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '';
   const date = new Date(row.created_at).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
   // Élèves de la classe, puis ceux qui seraient entrés sans y être (changement de classe…).
+  // Équipes (cours-equipes.js) : un élève sans travail à lui reçoit celui de l'ordinateur de son équipe.
+  const via = typeof cdEqPostes === 'function' ? cdEqPostes(row.etat) : new Map();
+  const repDe = (k, id) => { const r = T.get(k + '|' + id); if(r || !via.has(id)) return { r }; const r2 = T.get(k + '|' + via.get(id)); return { r: r2, eq: !!r2 }; };
+  const nomDe = id => { const e = eleves.find(x => x.id === id); return e ? (e.prenom || e.label) : ''; };
   const lignes = eleves.map(e => ({ id: e.id, nom: e.label })).concat(membres.filter(m => !eleves.some(e => e.id === m.student_id)).map(m => ({ id: m.student_id, nom: 'Élève' })));
   const parEx = exos.map(() => ({ ok: 0, commence: 0 }));
   let entres = 0, mainsTot = 0, sortiesTot = 0, motsTot = 0;
@@ -66,8 +70,8 @@ function cdBilanRendre(o, row, seances, eleves, membres, travaux){
     let mains = 0, mots = 0;
     items.forEach((_, k) => { const r = T.get(k + '|' + e.id); if(r){ mains += r._mains || 0; if(r._mot && r._mot.t) mots++; } });
     mainsTot += mains; motsTot += mots; sortiesTot += (m && m.sorties) || 0;
-    const cases = exos.map(({ it, k }, i) => { const c = cdBilanCase(it, T.get(k + '|' + e.id)); if(c.cl !== 'vide') parEx[i].commence++; if(c.ok) parEx[i].ok++; return `<td class="cdb-c ${c.cl}">${c.txt}</td>`; }).join('');
-    return `<tr class="${m ? '' : 'cdb-absent'}"><th>${cdEsc(e.nom)}</th><td>${m ? hh(m.joined_at) : '<span class="cdb-gris">pas entré</span>'}</td>${cases}
+    const cases = exos.map(({ it, k }, i) => { const x = repDe(k, e.id), c = cdBilanCase(it, x.r); if(c.cl !== 'vide') parEx[i].commence++; if(c.ok) parEx[i].ok++; return `<td class="cdb-c ${c.cl}">${c.txt}${x.eq ? '<small class="cdb-eq"> en équipe</small>' : ''}</td>`; }).join('');
+    return `<tr class="${m || via.has(e.id) ? '' : 'cdb-absent'}"><th>${cdEsc(e.nom)}</th><td>${m ? hh(m.joined_at) : via.has(e.id) ? `<span class="cdb-eq">avec ${cdEsc(nomDe(via.get(e.id)))}</span>` : '<span class="cdb-gris">pas entré</span>'}</td>${cases}
       <td class="cdb-n">${mains ? `<span class="gicon">front_hand</span> ${mains}` : ''}</td><td class="cdb-n">${mots ? `<span class="gicon">chat</span> ${mots}` : ''}</td>
       <td class="cdb-n ${m && m.sorties ? 'cdb-rouge' : ''}">${m && m.sorties ? `${m.sorties} <small>(dernière à ${hh(m.sortie_at)})</small>` : ''}</td></tr>`;
   }).join('');
@@ -105,6 +109,7 @@ const CDB_CSS = `
   .cdb-c.ok{background:#E3F4EA;color:#1F7A4D;font-weight:700;} .cdb-c.moyen{background:#FDF1DF;color:#A0620F;font-weight:700;} .cdb-c.ko{background:#FBE7EE;color:#9E1F5E;font-weight:700;} .cdb-c.vide{color:#9AA3AF;}
   .cdb-absent th, .cdb-absent td{color:#9AA3AF;} .cdb-gris{color:#9AA3AF;} .cdb-rouge{color:#C0392B;font-weight:700;} .cdb-n .gicon{font-size:15px;vertical-align:middle;}
   .cdb-leg .cdb-c{display:inline-block;padding:0 6px;border-radius:5px;}
+  .cdb-eq{color:#3A6EA5;font-weight:600;font-size:.85em;}
 `;
 (function(){ const st = document.createElement('style'); st.textContent = CDB_CSS + `
   .cdb{max-width:1100px;width:96vw;max-height:90vh;overflow:auto;}

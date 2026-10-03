@@ -3327,6 +3327,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.960', date:'2026-10-03', items:[
+    'Session COURS (tous niveaux) : équipes -- bouton « Équipes » dans la télécommande : équipes de 2 à 6, tirées au sort parmi les élèves en classe (un élève connecté par équipe : son ordinateur sert à toute l\'équipe) ou faites à la main ; on change à tout moment',
+    'Session COURS : « pas d\'ordinateur, plus de batterie ? » -- sur chaque élève de la liste, un bouton pour le faire travailler sur l\'ordinateur d\'un camarade connecté, à tout moment ; bandeau chez l\'élève (« Vous êtes 2 sur cet ordinateur : toi et Tom ») ; le bilan de la séance donne aux coéquipiers les résultats de leur ordinateur (« en équipe »)',
+    'Questions flash : choix de la partie du cours (une leçon ou tout le chapitre) ; génération de questions par l\'IA sur la partie choisie (option IA du professeur), gardées pour la fois suivante',
+    'Questions flash du CM1 : 270 questions (au lieu de 138), rangées par leçon ; chaque leçon en a au moins deux',
+  ] },
   { version:'2026-08-19.959', date:'2026-10-03', items:[
     'Mon TD, défis de programmation : bouton « Session » -- le défi devient un exercice de la session COURS en cours (chaque élève sur son écran, suivi en direct, prendre la main), ou ouvre la prochaine session',
     'Défis CM1 : le lutin est Oliv\'IA (avec son crayon) partout, en session comme dans L\'Atelier',
