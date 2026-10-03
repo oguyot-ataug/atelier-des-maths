@@ -78,13 +78,14 @@ async function offreLoad(role, licenceEtab){
         // Compte géré par l'établissement (licence, ou créé par l'administrateur) -- signalé : « ma collègue
         // qui a juste des cours de 6e et 5e a accès à tous ». Niveaux de ses classes (groupes compris) et le
         // niveau inférieur en révision, plus les niveaux ouverts à la main dans l'Administration
-        // (profiles.niveaux_extra). Sans aucune classe : pas de restriction.
+        // (profiles.niveaux_extra). Sans aucune classe : seulement les niveaux ouverts à la main (demandé :
+        // « sans classe : seulement les niveaux cochés » ; aucun coché = aucun niveau).
         const [{ data: liens }, { data: prof }] = await Promise.all([
           sb.from('class_teachers').select('classes(niveau)').eq('teacher_id', currentUser.id),
           sb.from('profiles').select('niveaux_extra,subscription_status').eq('id', currentUser.id).maybeSingle(),
         ]);
         const niv = [...new Set((liens || []).map(r => r.classes && String(r.classes.niveau || '').toLowerCase()).filter(n => OP_ORDRE.includes(n)))];
-        if(niv.length && !(prof && prof.subscription_status === 'trial')){ // pendant l'essai gratuit : tout reste visible
+        if(!(prof && prof.subscription_status === 'trial')){ // pendant l'essai gratuit : tout reste visible
           const extra = ((prof && prof.niveaux_extra) || []).filter(n => OP_ORDRE.includes(n));
           const ouverts = new Set(opRevisionEtab(niv).concat(extra));
           offreNiveaux = OP_ORDRE.filter(n => ouverts.has(n)); offreSource = 'classes';

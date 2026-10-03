@@ -405,7 +405,7 @@ document.body.insertAdjacentHTML('beforeend', `
     </div>
     <div id="editProfNiveauxBox" style="display:none;background:rgba(31,122,77,.06);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
       <p style="margin:0 0 4px;font-weight:600;"><span class=gicon>menu_book</span> Niveaux accessibles</p>
-      <p class="hint" style="margin:0 0 8px;">Le professeur voit les niveaux de ses classes et le niveau précédent (révision). Cochez les niveaux à lui ouvrir <b>en plus</b> (par exemple pour préparer l'an prochain). Sans aucune classe, il voit tout.</p>
+      <p class="hint" style="margin:0 0 8px;">Le professeur voit les niveaux de ses classes et le niveau précédent (révision). Cochez les niveaux à lui ouvrir <b>en plus</b> (par exemple pour préparer l'an prochain). Sans aucune classe, il ne voit <b>que les niveaux cochés</b>.</p>
       <div id="editProfNiveauxList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
       <p class="hint" id="editProfNiveauxAuto" style="margin:8px 0 0;"></p>
     </div>
@@ -560,7 +560,7 @@ async function openEditProfModal(id){
     const niv = [...new Set((liens||[]).map(r=>r.classes && String(r.classes.niveau||'').toLowerCase()).filter(n=>OP_ORDRE.includes(n)))];
     document.getElementById('editProfNiveauxAuto').textContent = niv.length
       ? 'Par ses classes : ' + opRevisionEtab(niv).map(niveauLabel).join(', ') + '.'
-      : 'Aucune classe de CM1 à 3e : tous les niveaux sont visibles.';
+      : 'Aucune classe de CM1 à 3e : il voit seulement les niveaux cochés ci-dessus' + (extra.size ? '.' : ' (aucun pour l\'instant).');
   }
   // Clé IA (professeurs seulement : l'administrateur utilise toujours la clé du site).
   const aiBox = document.getElementById('editProfAiBox');

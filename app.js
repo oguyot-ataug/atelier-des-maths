@@ -573,7 +573,7 @@ function lockedChapterLabel(){
 }
 function onLockedChapterClick(){
   if(!restrictedVisitor && typeof offreNiveaux!=='undefined' && Array.isArray(offreNiveaux)){
-    if(currentUserRole==='prof' && typeof offreSource!=='undefined' && offreSource==='classes') niceAlert('Ce niveau ne fait pas partie de vos classes : vous voyez les niveaux de vos classes et le niveau précédent. Pour ouvrir un autre niveau (par exemple pour préparer l\'an prochain), demandez au référent de votre établissement ou à l\'administrateur.');
+    if(currentUserRole==='prof' && typeof offreSource!=='undefined' && offreSource==='classes') niceAlert('Ce niveau ne fait pas partie de vos classes : vous voyez les niveaux de vos classes et le niveau précédent (sans classe : les niveaux ouverts par l\'établissement). Pour ouvrir un autre niveau (par exemple pour préparer l\'an prochain), demandez au référent de votre établissement ou à l\'administrateur.');
     else if(currentUserRole==='prof' && typeof openAbonnement==='function') openAbonnement();
     else niceAlert('Ce niveau ne fait pas partie de ta classe. Tu peux travailler les chapitres de ton niveau et du niveau précédent.');
     return;
@@ -3314,6 +3314,9 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.935', date:'2026-10-03', items:[
+    'Niveaux accessibles des professeurs gérés par l\'établissement : un professeur sans aucune classe ne voit plus tous les niveaux, seulement ceux cochés dans l\'Administration (aucun coché : aucun niveau). Avec des classes, rien ne change ; pendant l\'essai gratuit, tout reste visible'
+  ]},
   { version:'2026-08-19.934', date:'2026-10-03', items:[
     'Programmation par blocs en plein écran : l\'outil prend toute la largeur de l\'écran (la scène du lutin s\'agrandit aussi) et les blocs sont un peu plus gros'
   ]},
