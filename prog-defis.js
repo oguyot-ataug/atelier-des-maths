@@ -1,5 +1,5 @@
 /* =====================================================================
-   prog-defis.js -- Défis de programmation (6e / 5e), vérifiés automatiquement, et devoirs.
+   prog-defis.js -- Défis de programmation (CM1, 6e, 5e), vérifiés automatiquement, et devoirs.
 
    Chaque défi : un énoncé, une aide, éventuellement une liste de blocs autorisés, et une
    vérification :
@@ -9,6 +9,9 @@
    - « dire » : le programme est lancé avec plusieurs réponses aux questions « demander », et la
      dernière phrase dite doit être le résultat attendu.
    « exige » : blocs indispensables (ex. « répéter » pour le carré).
+   - « surPlace » (CM1) : le lutin part d'un point imposé (« depart ») ; la scène montre un décor
+     (« decor » : la droite (d) en trait plein, les droites à tracer en pointillés) ; chaque segment de
+     « cibles » doit être repassé au bon endroit, et rien d'autre ne doit être tracé.
 
    Progression : table prog_progress (programme, réussi, tentatives) ; devoirs de type
    « programmation » (devoirs.prog_defis) : liste réduite aux défis du devoir, devoir rendu quand
@@ -19,7 +22,35 @@
 const PROG_BLOCS_TRACE = ['sc_drapeau', 'sc_avancer', 'sc_tourner_d', 'sc_tourner_g', 'sc_aller', 'sc_orienter', 'sc_stylo_bas', 'sc_stylo_haut', 'sc_stylo_couleur', 'sc_stylo_taille', 'sc_effacer', 'sc_repeter', 'sc_attendre'];
 const PROG_BLOCS_CALCUL = ['sc_drapeau', 'sc_demander', 'sc_reponse', 'sc_dire', 'sc_plus', 'sc_moins', 'sc_fois', 'sc_div', 'sc_regrouper', 'variables'];
 const PROG_POLY = (n, c) => t => { t.bas(); for(let i = 0; i < n; i++){ t.av(c); t.td(360 / n); } };
-const PROG_DEFIS = [
+// CM1, Droites parallèles et perpendiculaires (demandé : « comment tracer une perpendiculaire déjà présente
+// et une parallèle, dessinées en pointillés ; au départ le curseur placé sur la droite (d) »).
+const PROG_CM1_D = { x1: -235, y1: -80, x2: 235, y2: -80, nom: '(d)', lx: 205, ly: -100 };
+const PROG_CM1_OBL = (() => { const a = 20 * Math.PI / 180, c = Math.cos(a), s = Math.sin(a); return { c, s, d: { x1: -235 * c - (-100), y1: -235 * s - 100, x2: 235 * c - (-100), y2: 235 * s - 100 } }; })();
+const PROG_DEFIS_CM1 = [
+  { id: 'cm1-perp', niveau: 'CM1', titre: 'La perpendiculaire', blocs: PROG_BLOCS_TRACE, depart: { x: -60, y: -80, dir: 90 },
+    decor: [PROG_CM1_D, { x1: -60, y1: -80, x2: -60, y2: 100, nom: "(d')", pointille: true, lx: -52, ly: 92 }, { point: true, x: -60, y: -80, nom: 'A' }],
+    cibles: [{ x1: -60, y1: -80, x2: -60, y2: 100 }],
+    enonce: 'Le lutin est sur la droite (d), au point A. Fais-lui tracer la <b>droite (d\') perpendiculaire à (d)</b>, sur les pointillés : elle mesure <b>180 pas</b>.',
+    aide: 'Le lutin regarde le long de la droite (d). Pour partir à angle droit, il tourne de 90° (à gauche, vers le haut). Stylo en position d\'écriture, puis avancer de 180.' },
+  { id: 'cm1-para', niveau: 'CM1', titre: 'La parallèle', blocs: PROG_BLOCS_TRACE, depart: { x: -160, y: -80, dir: 90 },
+    decor: [PROG_CM1_D, { x1: -160, y1: 60, x2: 160, y2: 60, nom: "(d'')", pointille: true, lx: 168, ly: 54 }, { point: true, x: -160, y: -80, nom: 'B' }],
+    cibles: [{ x1: -160, y1: 60, x2: 160, y2: 60 }],
+    enonce: 'Le lutin est sur la droite (d), au point B. Fais-lui tracer la <b>droite (d\'\') parallèle à (d)</b>, sur les pointillés (<b>140 pas</b> plus haut, <b>320 pas</b> de long), <b>sans tracer le chemin pour y aller</b>.',
+    aide: 'Stylo relevé : tourne de 90° vers le haut et avance de 140 (une perpendiculaire). Tourne encore de 90° pour regarder de nouveau dans le sens de (d) : tu es parallèle à (d) ! Stylo en position d\'écriture, avance de 320.' },
+  { id: 'cm1-equerre', niveau: 'CM1', titre: 'L\'équerre penchée', blocs: PROG_BLOCS_TRACE, depart: { x: -100 * PROG_CM1_OBL.c + 100, y: -100 * PROG_CM1_OBL.s - 100, dir: 70 },
+    decor: (() => { const { c, s, d } = PROG_CM1_OBL, A = [-100 * c + 100, -100 * s - 100], n = [-s, c], P = [A[0] + n[0] * 120, A[1] + n[1] * 120], Q = [P[0] + c * 200, P[1] + s * 200];
+      return [Object.assign({ nom: '(d)', lx: 175, ly: -100 }, d), { x1: A[0], y1: A[1], x2: P[0], y2: P[1], pointille: true, nom: "(d')", lx: P[0] - 34, ly: P[1] - 4 }, { x1: P[0], y1: P[1], x2: Q[0], y2: Q[1], pointille: true, nom: "(d'')", lx: Q[0] + 6, ly: Q[1] + 4 }, { point: true, x: A[0], y: A[1], nom: 'C' }]; })(),
+    cibles: (() => { const { c, s } = PROG_CM1_OBL, A = [-100 * c + 100, -100 * s - 100], n = [-s, c], P = [A[0] + n[0] * 120, A[1] + n[1] * 120], Q = [P[0] + c * 200, P[1] + s * 200];
+      return [{ x1: A[0], y1: A[1], x2: P[0], y2: P[1] }, { x1: P[0], y1: P[1], x2: Q[0], y2: Q[1] }]; })(),
+    enonce: 'Cette fois, la droite (d) est penchée. Le lutin est au point C et regarde le long de (d). Trace la <b>perpendiculaire (d\')</b> (120 pas), puis la <b>parallèle (d\'\')</b> à (d) (200 pas), sur les pointillés.',
+    aide: 'On ne s\'occupe pas de la pente : le lutin tourne toujours de 90° par rapport à là où il regarde. Tourner à gauche de 90°, avancer de 120, tourner à droite de 90°, avancer de 200.' },
+  { id: 'cm1-rectangle', niveau: 'CM1', titre: 'Le rectangle posé sur (d)', blocs: PROG_BLOCS_TRACE, depart: { x: -120, y: -80, dir: 90 },
+    decor: [PROG_CM1_D, { x1: -120, y1: -80, x2: 120, y2: -80, pointille: true }, { x1: 120, y1: -80, x2: 120, y2: 40, pointille: true }, { x1: 120, y1: 40, x2: -120, y2: 40, pointille: true }, { x1: -120, y1: 40, x2: -120, y2: -80, pointille: true }, { point: true, x: -120, y: -80, nom: 'D' }],
+    cibles: [{ x1: -120, y1: -80, x2: 120, y2: -80 }, { x1: 120, y1: -80, x2: 120, y2: 40 }, { x1: 120, y1: 40, x2: -120, y2: 40 }, { x1: -120, y1: 40, x2: -120, y2: -80 }],
+    enonce: 'Trace le <b>rectangle</b> en pointillés, posé sur la droite (d) : <b>240 pas</b> de long, <b>120 pas</b> de large. Ses côtés sont perpendiculaires ou parallèles à (d).',
+    aide: 'Avancer de 240, tourner de 90° à gauche, avancer de 120, tourner de 90° à gauche… « répéter 2 fois » peut t\'aider.' },
+];
+const PROG_DEFIS = PROG_DEFIS_CM1.concat([
   { id: 'segment', niveau: '6e', titre: 'Premier trait', blocs: PROG_BLOCS_TRACE,
     enonce: 'Fais tracer au lutin un <b>segment de 150 pas</b>.',
     aide: 'Pose « stylo en position d\'écriture » sous le drapeau, puis « avancer de 150 pas ». Clique sur 🏁 pour essayer.',
@@ -80,7 +111,7 @@ const PROG_DEFIS = [
     enonce: 'Avec une <b>variable</b> et une <b>boucle</b>, calcule 1 + 2 + 3 + … + 100, puis fais <b>dire le résultat</b>.',
     aide: 'Deux variables : « nombre » (de 1 à 100) et « somme ». À chaque tour : ajouter « nombre » à « somme », puis ajouter 1 à « nombre ».',
     tests: [[]], attendu: () => 5050 },
-];
+]);
 function progDefiParId(id){ return PROG_DEFIS.find(d => d.id === id) || null; }
 function progModeleSegments(d, entrees){ if(!d || !d.trace) return null; const t = new ProgTortue(); d.trace(t, entrees || (d.tests && d.tests[0]) || []); return t.segments; }
 
@@ -131,6 +162,16 @@ function progMemeFigure(eleve, ref){
   }
   return false;
 }
+// Défis « sur place » (CM1) : chaque cible repassée au bon endroit, et aucun trait ailleurs.
+function progSurPlace(eleve, cibles){
+  const A = progFusionner(eleve), TOL = 4, L = s => Math.hypot(s.x2 - s.x1, s.y2 - s.y1);
+  if(!A.length) return 'Le lutin n\'a rien tracé : as-tu mis le stylo en position d\'écriture ?';
+  const surLigne = (s, c) => { const l = L(c), ux = (c.x2 - c.x1) / l, uy = (c.y2 - c.y1) / l, d = (x, y) => Math.abs((x - c.x1) * uy - (y - c.y1) * ux);
+    if(d(s.x1, s.y1) > TOL || d(s.x2, s.y2) > TOL) return null; const p = [(s.x1 - c.x1) * ux + (s.y1 - c.y1) * uy, (s.x2 - c.x1) * ux + (s.y2 - c.y1) * uy]; return [Math.min(...p), Math.max(...p), l]; };
+  for(const s of A){ const k = cibles.map(c => surLigne(s, c)).find(r => r && r[0] > -TOL && r[1] < r[2] + TOL); if(!k) return 'Un de tes traits n\'est pas sur les pointillés (ou il dépasse). Relève le stylo pour te déplacer sans tracer.'; }
+  for(const c of cibles){ if(!A.some(s => { const r = surLigne(s, c); return r && r[0] < TOL && r[1] > r[2] - TOL; })) return 'Il manque un trait : tous les pointillés doivent être repassés, en entier.'; }
+  return null;
+}
 // Indice quand la figure ne correspond pas.
 function progIndiceTrace(eleve, ref){
   const A = progFusionner(eleve), B = progFusionner(ref), L = s => Math.hypot(s.x2 - s.x1, s.y2 - s.y1);
@@ -155,11 +196,13 @@ async function progVerifierDefi(d, ws){
   const exige = (d.exige || []).filter(e => Array.isArray(e) ? !e.some(x => nb[x]) : !nb[e]);
   const tests = d.tests || [[]];
   for(const entrees of tests){
-    const m = new ProgMachine({ scene: null, reponses: entrees.slice(), max: 200000 });
+    const m = new ProgMachine({ scene: null, reponses: entrees.slice(), max: 200000, depart: d.depart || null });
     try{ await m.lancer(ws); }
     catch(e){ return { ok: false, message: e instanceof ProgErreur ? e.message : 'Ton programme s\'arrête sur une erreur : ' + e.message }; }
     const avec = entrees.length ? ` (avec ${entrees.map(progFmt).join(' puis ')})` : '';
-    if(d.trace){
+    if(d.cibles){
+      const err = progSurPlace(m.t.segments, d.cibles); if(err) return { ok: false, message: err };
+    } else if(d.trace){
       const ref = progModeleSegments(d, entrees);
       if(!progMemeFigure(m.t.segments, ref)) return { ok: false, message: progIndiceTrace(m.t.segments, ref) + (tests.length > 1 ? avec : '') };
     } else {
@@ -228,7 +271,7 @@ function progListeRender(){
   el.innerHTML = liste.map((d, i) => {
     const s = progSuivi[d.id] || {}, titreNiv = !prog.devoir && d.niveau !== niv ? `<p class="prog-niv">${(niv = d.niveau)}</p>` : '';
     return `${titreNiv}<button type="button" class="prog-item${prog.defi && prog.defi.id === d.id ? ' on' : ''}${s.reussi ? ' ok' : ''}" onclick="progDefi('${d.id}')">
-      <span class="n">${s.reussi ? '<span class="gicon">check</span>' : i + 1}</span><span class="t">${progEsc(d.titre)}<small>${d.trace ? 'Tracé' : 'Calcul'}${s.tentatives ? ' · ' + s.tentatives + ' essai' + (s.tentatives > 1 ? 's' : '') : ''}</small></span></button>`;
+      <span class="n">${s.reussi ? '<span class="gicon">check</span>' : i + 1}</span><span class="t">${progEsc(d.titre)}<small>${d.trace || d.cibles ? 'Tracé' : 'Calcul'}${s.tentatives ? ' · ' + s.tentatives + ' essai' + (s.tentatives > 1 ? 's' : '') : ''}</small></span></button>`;
   }).join('');
   const b = document.getElementById('progDevoirBandeau');
   if(prog.devoir){ const n = liste.filter(x => (progSuivi[x.id] || {}).reussi).length;
@@ -254,6 +297,7 @@ function progDefi(id){
   v.innerHTML = `<button type="button" class="btn prog-verif-btn" onclick="progVerifier()"><span class="gicon">task_alt</span> Vérifier mon programme</button><div id="progVerifMsg"></div>`;
   document.getElementById('progModeleLbl').hidden = !d.trace;
   prog.scene.modele = d.trace && prog.modele ? progModeleSegments(d) : null;
+  prog.scene.decor = d.decor || null; prog.scene.depart = d.depart || null;
   prog.scene.reset(); prog.scene.fond(); progMajPos();
   document.getElementById('progSortie').hidden = true;
   progListeRender();
@@ -279,7 +323,7 @@ async function progVerifier(){
   msg.innerHTML = `<div class="prog-res ${r.ok ? 'ok' : 'ko'}"><span class="gicon">${r.ok ? 'celebration' : 'info'}</span> ${progEsc(r.message)}</div>
     ${r.ok ? (() => { const l = progDefisVisibles(), i = l.findIndex(x => x.id === d.id), n = l.slice(i + 1).find(x => !(progSuivi[x.id] || {}).reussi) || l.find(x => !(progSuivi[x.id] || {}).reussi);
       return n ? `<button type="button" class="btn qz-mini" style="margin-top:8px;" onclick="progDefi('${n.id}')">Défi suivant : ${progEsc(n.titre)} <span class="gicon">arrow_forward</span></button>` : '<p class="hint" style="margin:8px 0 0;">Tous les défis sont réussis. Bravo !</p>'; })() : ''}`;
-  if(r.ok && d.trace) progLancer(); // un tracé se redessine ; un calcul redemanderait un nombre
+  if(r.ok && (d.trace || d.cibles)) progLancer(); // un tracé se redessine ; un calcul redemanderait un nombre
   if(premiere && prog.devoir) await progDevoirRendre();
   progListeRender();
   const c = document.querySelector('.prog-c-head b'); if(r.ok && c && !document.querySelector('.prog-c-ok')) c.insertAdjacentHTML('afterend', '<span class="prog-c-ok"><span class="gicon">check_circle</span> Réussi</span>');
@@ -317,6 +361,7 @@ function progLecture(){
   b.innerHTML = `<span class="gicon">visibility</span> Programme de ${progEsc(v.nom)} · lecture seule`;
   document.getElementById('progVerif').hidden = true; document.getElementById('progModeleLbl').hidden = !d.trace;
   prog.scene.modele = d.trace && prog.modele ? progModeleSegments(d) : null;
+  prog.scene.decor = d.decor || null; prog.scene.depart = d.depart || null;
   prog.scene.reset(); prog.scene.fond(); progMajPos();
   document.getElementById('progSortie').hidden = true;
 }

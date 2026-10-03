@@ -145,7 +145,8 @@ function progVariablesFlyout(ws){
    Tortue (géométrie commune au lutin et aux figures de référence des défis)
    --------------------------------------------------------------------- */
 class ProgTortue {
-  constructor(){ this.x = 0; this.y = 0; this.dir = 90; this.stylo = false; this.couleur = '#1C2230'; this.taille = 2; this.segments = []; }
+  // dep : départ imposé par un défi { x, y, dir } (CM1 : le lutin part d'un point de la droite (d)).
+  constructor(dep){ this.x = dep ? dep.x : 0; this.y = dep ? dep.y : 0; this.dir = dep ? dep.dir : 90; this.stylo = false; this.couleur = '#1C2230'; this.taille = 2; this.segments = []; }
   pas(d){ const r = this.dir * Math.PI / 180; return [this.x + d * Math.sin(r), this.y + d * Math.cos(r)]; }
   av(d){ const [x, y] = this.pas(d); this.vers(x, y); return this; }
   vers(x, y){ if(this.stylo && (x !== this.x || y !== this.y)) this.segments.push({ x1: this.x, y1: this.y, x2: x, y2: y, c: this.couleur, t: this.taille }); this.x = x; this.y = y; return this; }
@@ -167,7 +168,7 @@ class ProgScene {
     [this.cFond, this.cStylo, this.cLutin] = root.querySelectorAll('canvas');
     [this.cFond, this.cStylo, this.cLutin].forEach(c => { c.width = PROG_W * PROG_R; c.height = PROG_H * PROG_R; });
     this.bulleEl = root.querySelector('.prog-bulle'); this.demandeEl = root.querySelector('.prog-demande');
-    this.grille = false; this.modele = null; this.t = new ProgTortue();
+    this.grille = false; this.modele = null; this.decor = null; this.depart = null; this.t = new ProgTortue();
     this.fond(); this.lutin();
   }
   ctx(c){ const x = c.getContext('2d'); x.setTransform(PROG_R, 0, 0, -PROG_R, PROG_W / 2 * PROG_R, PROG_H / 2 * PROG_R); return x; }
@@ -184,6 +185,15 @@ class ProgScene {
       for(let j = -100; j <= 100; j += 100) if(j) x.fillText(String(j), 3, -j - 3);
       x.restore();
     }
+    // Décor d'un défi : droites données (trait plein) et droites à tracer (pointillés), avec leur nom ;
+    // { x1, y1, x2, y2, nom, pointille, point } -- point : un point marqué d'une croix, nommé.
+    (this.decor || []).forEach(o => {
+      if(o.point){ x.strokeStyle = '#1F3A5C'; x.lineWidth = 2; x.beginPath(); x.moveTo(o.x - 5, o.y - 5); x.lineTo(o.x + 5, o.y + 5); x.moveTo(o.x - 5, o.y + 5); x.lineTo(o.x + 5, o.y - 5); x.stroke(); }
+      else { x.setLineDash(o.pointille ? [7, 6] : []); x.lineWidth = o.pointille ? 2.5 : 2.2; x.strokeStyle = o.pointille ? 'rgba(227,93,58,.75)' : '#1F3A5C'; x.lineCap = 'round';
+        x.beginPath(); x.moveTo(o.x1, o.y1); x.lineTo(o.x2, o.y2); x.stroke(); x.setLineDash([]); }
+      if(o.nom){ x.save(); x.scale(1, -1); x.fillStyle = o.pointille ? '#C04A28' : '#1F3A5C'; x.font = 'bold 14px "Space Grotesk", Inter, sans-serif';
+        const lx = o.point ? o.x + 8 : o.lx != null ? o.lx : o.x2 + 6, ly = o.point ? o.y + 10 : o.ly != null ? o.ly : o.y2 + 8; x.fillText(o.nom, lx, -ly); x.restore(); }
+    });
     if(this.modele){
       x.setLineDash([6, 5]); x.lineWidth = 3; x.strokeStyle = 'rgba(255,130,8,.45)'; x.lineCap = 'round';
       this.modele.forEach(s => { x.beginPath(); x.moveTo(s.x1, s.y1); x.lineTo(s.x2, s.y2); x.stroke(); });
@@ -216,7 +226,7 @@ class ProgScene {
       this.annulerDemande = () => { f.hidden = true; ok(''); };
     });
   }
-  reset(){ this.t = new ProgTortue(); this.effacer(); this.bulle(null); if(this.annulerDemande){ this.annulerDemande(); this.annulerDemande = null; } this.lutin(); }
+  reset(){ this.t = new ProgTortue(this.depart); this.effacer(); this.bulle(null); if(this.annulerDemande){ this.annulerDemande(); this.annulerDemande = null; } this.lutin(); }
 }
 
 /* ---------------------------------------------------------------------
@@ -229,7 +239,7 @@ class ProgMachine {
   // opts : { scene, vitesse, ws (surbrillance), reponses (tableau : réponses automatiques aux « demander »), max }
   constructor(opts){
     Object.assign(this, { scene: null, vitesse: 'normal', ws: null, reponses: null, max: 300000 }, opts);
-    this.t = this.scene ? this.scene.t : new ProgTortue();
+    this.t = this.scene ? this.scene.t : new ProgTortue(this.depart);
     this.dits = []; this.questions = []; this.reponse = ''; this.nb = 0; this.arrete = false; this.vars = {};
   }
   arreter(){ this.arrete = true; if(this.scene && this.scene.annulerDemande) this.scene.annulerDemande(); }
@@ -468,7 +478,7 @@ function progMode(m){
   prog.ws.updateToolbox(progToolbox(null));
   let json = null; try{ json = JSON.parse(localStorage.getItem('progLibre:' + ((currentUser && currentUser.id) || 'anon')) || 'null'); }catch(e){}
   progCharger(json || progDepartDefaut());
-  prog.scene.modele = null; prog.scene.reset(); prog.scene.fond(); progMajPos();
+  prog.scene.modele = null; prog.scene.decor = null; prog.scene.depart = null; prog.scene.reset(); prog.scene.fond(); progMajPos();
 }
 function progDepartDefaut(){ return { blocks: { languageVersion: 0, blocks: [{ type: 'sc_drapeau', x: 40, y: 40 }] } }; }
 function progCharger(json){

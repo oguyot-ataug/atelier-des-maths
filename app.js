@@ -3327,6 +3327,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.954', date:'2026-10-03', items:[
+    'Programmation par blocs : 4 défis CM1 -- « La perpendiculaire », « La parallèle », « L\'équerre penchée », « Le rectangle posé sur (d) » : le lutin part d\'un point de la droite (d), les droites à tracer sont en pointillés ; vérification au bon endroit (rien tracé en dehors des pointillés), avec un indice si ce n\'est pas juste ; utilisables en devoir',
+    'CM1 Droites parallèles et perpendiculaires, onglet Méthodes : « À l\'ordinateur : programme le lutin », un bouton par défi',
+  ] },
   { version:'2026-08-19.953', date:'2026-10-03', items:[
     'Oliv\'IA, deux nouvelles poses : la randonneuse au sac à dos pour « Pour aller plus loin » (« En route vers le CM2 ! » au CM1, « vers la 6e » au CM2), et la petite super-héroïne à cape pour les défis (exercices ★★★, « Défi ! »)',
     'Planches et Mon TD : la vignette apparaît dans la ligne du titre de l\'exercice ; méthodes : en tête des encadrés « Pour aller plus loin »',
