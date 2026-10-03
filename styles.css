@@ -1804,6 +1804,8 @@ body.fig-proj #tbSvg{display:block;width:100vw !important;height:100vh !importan
 .cm-redac:last-child{margin-bottom:2px;}
 .cm-redac-titre{text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1.5px;font-weight:600;margin-bottom:4px;}
 .cm-redac-ligne{margin:3px 0 3px 18px;}
+.cm-redac-fig{margin:4px 0 6px 18px;max-width:100%;overflow-x:auto;}
+.cm-redac-fig svg{max-width:100%;height:auto;}
 .cm-redac-col{border-collapse:collapse;margin:2px 0 4px 18px;}
 .cm-redac-col td{padding:2px 4px;vertical-align:middle;}
 .cm-redac-col td:first-child{font-weight:600;padding-left:0;}

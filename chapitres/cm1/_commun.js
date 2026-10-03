@@ -55,7 +55,9 @@ function cm1Exos(slug, liste, redaction){
    lettre ; { pose: html } pour une opération posée (cm1Posee), suivie au besoin de ses lignes ;
    { suite: [...] } pour plusieurs calculs courts, chacun sur sa ligne. Plusieurs blocs à la suite :
    un tableau de ces objets. */
-function cm1Redac(titre, calc, phrase){
+// fig (facultatif) : un dessin qui montre la correction (frise, schéma en barres, figure…), placé
+// sous le titre, avant les calculs -- demandé : « mieux représenter la correction par des dessins ».
+function cm1Redac(titre, calc, phrase, fig){
   const un = x => {
     if(x == null || x === '') return '';
     if(typeof x === 'string') return `<div class="cm-redac-ligne">${x}</div>`;
@@ -65,7 +67,7 @@ function cm1Redac(titre, calc, phrase){
       + (lignes.length ? `<table class="cm-redac-col">${lignes.map((l, i) => `<tr><td>${nom}</td><td>=</td><td>${i === lignes.length - 1 ? `<span class="cm-encadre">${l}</span>` : l}</td></tr>`).join('')}</table>` : '');
   };
   const calcs = Array.isArray(calc) && calc.some(x => typeof x === 'object' && x !== null) ? calc : [calc];
-  return `<div class="cm-redac"><div class="cm-redac-titre">${titre} :</div>${calcs.map(un).join('')}${phrase ? `<p class="cm-redac-phrase">${phrase}</p>` : ''}</div>`;
+  return `<div class="cm-redac"><div class="cm-redac-titre">${titre} :</div>${fig ? `<div class="cm-redac-fig">${fig}</div>` : ''}${calcs.map(un).join('')}${phrase ? `<p class="cm-redac-phrase">${phrase}</p>` : ''}</div>`;
 }
 // Liste sans numéro (une question ou un calcul par ligne) -- demandé : pas de « 1. », « 2. » devant
 // une question, surtout s'il est suivi d'un nombre ou d'un calcul.
@@ -131,6 +133,84 @@ function cm1Graduation(max, n, points, opts){
     else if(lab) s += `<text x="${x}" y="74" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk">${lab}</text>`; }
   (points || []).forEach(([v, nom, c]) => { const x = 30 + v * U; s += `<circle cx="${x}" cy="45" r="5" fill="${c || '#E35D3A'}"/><text x="${x}" y="24" font-size="14" font-weight="700" text-anchor="middle" fill="${c || '#E35D3A'}" font-family="Space Grotesk">${nom}</text>`; });
   return s + '</svg>';
+}
+/* ---- Dessins des corrections rédigées et des planches (demandé : « mieux représenter la correction
+   par des dessins ») ---- */
+const cmT = (x, y, t, o) => `<text x="${x}" y="${y}" font-size="${(o && o.fs) || 12}" text-anchor="${(o && o.a) || 'middle'}" fill="${(o && o.c) || '#1F3A5C'}" font-family="Space Grotesk" font-weight="${(o && o.fw) || 700}">${t}</text>`;
+// Une quantité en paquets (schéma en barres) : parts [valeur, texte dans la case, texte sous la case,
+// couleur] ; la largeur suit la valeur. opts : titre (à gauche), L (largeur), echelle (valeur qui
+// occupe L : deux barres dessinées avec la même échelle se comparent), uni (une seule couleur),
+// accolade (texte sous toute la barre).
+function cm1Paquets(parts, opts){
+  opts = opts || {};
+  const tot = parts.reduce((a, p) => a + p[0], 0), X0 = opts.titre ? (opts.xt || 96) : 4, L = opts.L || 380, ech = opts.echelle || tot;
+  const Lr = L * tot / ech, W = X0 + L + 6, H = opts.accolade ? 86 : 52;
+  let s = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;display:block;margin:2px 0;">` + (opts.titre ? cmT(X0 - 10, 25, opts.titre, { a: 'end', fs: 13 }) : '');
+  let x = X0;
+  parts.forEach(([v, haut, bas, coul], i) => {
+    const w = L * v / ech, c = coul || (i < parts.length - 1 || opts.uni ? '#CFE8F3' : '#FBE0D6');
+    s += `<rect x="${x + 1}" y="6" width="${Math.max(1, w - 2)}" height="28" rx="4" fill="${c}" stroke="#1F3A5C" stroke-width="1.5"${haut === '?' ? ' stroke-dasharray="4 3"' : ''}/>` + (haut ? cmT(x + w / 2, 25, haut, { fs: 12, c: haut === '?' ? '#E35D3A' : '#1F3A5C' }) : '') + (bas ? cmT(x + w / 2, 48, bas, { fs: 11, c: '#1F7A4D' }) : '');
+    x += w;
+  });
+  if(opts.accolade){ const m = X0 + Lr / 2; s += `<path d="M${X0 + 2} 52 Q${X0 + 2} 58 ${X0 + 10} 58 L${m - 6} 58 L${m} 64 L${m + 6} 58 L${X0 + Lr - 10} 58 Q${X0 + Lr - 2} 58 ${X0 + Lr - 2} 52" fill="none" stroke="#7A4FC0" stroke-width="1.5"/>` + cmT(m, 80, opts.accolade, { fs: 12, c: '#7A4FC0' }); }
+  return s + '</svg>';
+}
+// Quadrillage : cases [[x, y]] coloriées (opts.c), les autres blanches -- chaque case n'est dessinée
+// qu'une fois, pour qu'une planche « colorie » puisse se faire à l'écran (planches-num.js).
+// opts : demis [[x, y, coin]] (coin hg, hd, bg, bd : le triangle colorié), k (taille d'un carreau),
+// contour (trait épais autour de la figure), cote (étiquettes de côtés : [[x, y, 'texte']] en carreaux).
+function cm1Quad(w, h, cases, opts){
+  opts = opts || {}; const k = opts.k || 20, c = opts.c || '#2EA8C9', on = new Set((cases || []).map(([x, y]) => x + ',' + y));
+  const W = w * k + 2, H = h * k + 2;
+  let s = `<svg viewBox="0 0 ${W} ${H}" style="width:${opts.largeur || W}px;max-width:100%;display:inline-block;vertical-align:middle;">`;
+  for(let y = 0; y < h; y++) for(let x = 0; x < w; x++){ const p = on.has(x + ',' + y); s += `<rect x="${1 + x * k}" y="${1 + y * k}" width="${k}" height="${k}" fill="${p ? c : '#fff'}" fill-opacity="${p ? .6 : 1}" stroke="#B9C7D6" stroke-width=".8"/>`; }
+  (opts.demis || []).forEach(([x, y, co]) => { const X = 1 + x * k, Y = 1 + y * k;
+    const pts = { hg: [[X, Y], [X + k, Y], [X, Y + k]], hd: [[X, Y], [X + k, Y], [X + k, Y + k]], bg: [[X, Y], [X, Y + k], [X + k, Y + k]], bd: [[X + k, Y], [X + k, Y + k], [X, Y + k]] }[co];
+    s += `<polygon points="${pts.map(p => p.join(',')).join(' ')}" fill="${c}" fill-opacity=".6" stroke="#1F3A5C" stroke-width=".8"/>`; });
+  if(opts.contour && !(opts.demis || []).length){
+    const tr = (a, b, d, e) => `<line x1="${1 + a * k}" y1="${1 + b * k}" x2="${1 + d * k}" y2="${1 + e * k}" stroke="${opts.contour === true ? '#1F3A5C' : opts.contour}" stroke-width="2.6" stroke-linecap="round"/>`;
+    on.forEach(z => { const [x, y] = z.split(',').map(Number);
+      if(!on.has(x + ',' + (y - 1))) s += tr(x, y, x + 1, y); if(!on.has(x + ',' + (y + 1))) s += tr(x, y + 1, x + 1, y + 1);
+      if(!on.has((x - 1) + ',' + y)) s += tr(x, y, x, y + 1); if(!on.has((x + 1) + ',' + y)) s += tr(x + 1, y, x + 1, y + 1); });
+  }
+  (opts.textes || []).forEach(([x, y, t]) => { s += cmT(1 + x * k, 1 + y * k + 5, t, { fs: Math.max(11, k * .6) }); });
+  return s + '</svg>';
+}
+// Périmètre (en côtés de carreau) d'une figure faite de cases entières.
+function cm1QuadPerim(cases){ const on = new Set(cases.map(([x, y]) => x + ',' + y)); let p = 0; cases.forEach(([x, y]) => { [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach(([a, b]) => { if(!on.has((x + a) + ',' + (y + b))) p++; }); }); return p; }
+// Cases d'un rectangle de l × h carreaux, coin en haut à gauche (x0, y0).
+function cm1Rect(x0, y0, l, h){ const r = []; for(let y = y0; y < y0 + h; y++) for(let x = x0; x < x0 + l; x++) r.push([x, y]); return r; }
+// Axe gradué pour ranger des mesures : de min à max, graduations tous les pas, étiquette tous les
+// etiq ; points [[valeur, nom]].
+function cm1Axe(min, max, pas, etiq, points, opts){
+  opts = opts || {}; const L = opts.L || 460, W = L + 60, px = v => 30 + L * (v - min) / (max - min);
+  let s = `<svg viewBox="0 0 ${W} 76" style="width:100%;max-width:${W}px;display:block;margin:2px 0;"><line x1="20" y1="44" x2="${W - 10}" y2="44" stroke="#1F3A5C" stroke-width="2"/><polygon points="${W - 10},44 ${W - 18},39 ${W - 18},49" fill="#1F3A5C"/>`;
+  for(let v = min; v <= max + 1e-9; v += pas){ const e = Math.abs((v - min) / etiq - Math.round((v - min) / etiq)) < 1e-6; s += `<line x1="${px(v)}" y1="${e ? 36 : 40}" x2="${px(v)}" y2="${e ? 52 : 48}" stroke="#1F3A5C" stroke-width="${e ? 1.6 : 1}"/>` + (e ? cmT(px(v), 68, (opts.fmt || String)(v), { fs: 11, fw: 600, c: '#4E5665' }) : ''); }
+  (points || []).forEach(([v, nom], i) => { s += `<circle cx="${px(v)}" cy="44" r="5" fill="#E35D3A"/>` + cmT(px(v), i % 2 && opts.alterne ? 30 : 28, nom, { fs: 12, c: '#E35D3A' }); });
+  return s + '</svg>';
+}
+// Balance à plateaux en équilibre : un objet à gauche, des masses marquées à droite.
+function cm1Balance(objet, masses, opts){
+  opts = opts || {};
+  let s = `<svg viewBox="0 0 280 112" style="width:${opts.largeur || 220}px;max-width:100%;display:inline-block;vertical-align:middle;">`;
+  s += `<polygon points="128,106 152,106 140,38" fill="#8E9AA8"/><line x1="36" y1="38" x2="244" y2="38" stroke="#4E5665" stroke-width="4" stroke-linecap="round"/><circle cx="140" cy="38" r="4" fill="#4E5665"/>`;
+  s += `<path d="M6 76 L80 76 L72 86 L14 86 Z" fill="#C8D1DC" stroke="#4E5665"/><path d="M160 76 L274 76 L266 86 L168 86 Z" fill="#C8D1DC" stroke="#4E5665"/>`
+    + `<line x1="36" y1="38" x2="12" y2="76" stroke="#4E5665"/><line x1="36" y1="38" x2="74" y2="76" stroke="#4E5665"/><line x1="244" y1="38" x2="166" y2="76" stroke="#4E5665"/><line x1="244" y1="38" x2="268" y2="76" stroke="#4E5665"/>`;
+  s += `<ellipse cx="43" cy="62" rx="32" ry="14" fill="${opts.coul || '#8DB84A'}" stroke="#4E5665"/>` + cmT(43, 67, objet, { fs: 14 });
+  const n = masses.length, w = Math.min(40, 108 / n);
+  masses.forEach((m, i) => { const big = /kg/.test(m), h = big ? 26 : 20, x = 217 - (n * w) / 2 + i * w; s += `<rect x="${x + 1}" y="${76 - h}" width="${w - 2}" height="${h}" rx="3" fill="${big ? '#4E5665' : '#B8962E'}"/>` + cmT(x + w / 2, 76 - h / 2 + 5, m, { fs: 13, c: '#fff' }); });
+  return s + '</svg>';
+}
+// Règle graduée (cm et mm) avec un segment posé dessus, de 0 à mm millimètres ; nom : « AB ».
+function cm1RegleGraduee(mm, nom, opts){
+  opts = opts || {}; const u = 40, x0 = 16, n = Math.max(6, Math.ceil(mm / 10) + 1), W = x0 * 2 + n * u, a = (nom || 'AB')[0], b = (nom || 'AB')[1];
+  let s = `<svg viewBox="0 0 ${W} 92" style="width:${opts.largeur || '100%'};max-width:${W}px;display:block;margin:2px ${opts.largeur ? '0' : 'auto'};">`;
+  s += `<line x1="${x0}" y1="16" x2="${x0 + mm * u / 10}" y2="16" stroke="#E35D3A" stroke-width="3"/><circle cx="${x0}" cy="16" r="3" fill="#E35D3A"/><circle cx="${x0 + mm * u / 10}" cy="16" r="3" fill="#E35D3A"/>` + cmT(x0, 10, a, { fs: 12, c: '#E35D3A' }) + cmT(x0 + mm * u / 10, 10, b, { fs: 12, c: '#E35D3A' });
+  s += `<rect x="${x0 - 10}" y="24" width="${n * u + 20}" height="56" rx="5" fill="#FFF6D6" stroke="#B8962E"/>`;
+  for(let i = 0; i <= n * 10; i++){ const x = x0 + i * u / 10, h = i % 10 === 0 ? 18 : i % 5 === 0 ? 12 : 7;
+    s += `<line x1="${x}" y1="24" x2="${x}" y2="${24 + h}" stroke="#5B4A12" stroke-width="${i % 10 === 0 ? 1.3 : .7}"/>`;
+    if(i % 10 === 0) s += cmT(x, 58, i / 10, { fs: 11, fw: 500, c: '#5B4A12' }); }
+  return s + cmT(x0 + n * u, 74, 'cm', { fs: 10, fw: 500, a: 'end', c: '#5B4A12' }) + '</svg>';
 }
 // Fraction écrite en LaTeX (demandé : « ne pas écrire les fractions a/b mais toujours en LaTeX ») :
 // rendue par KaTeX (renderStaticMath) à l'ouverture du chapitre, dans les étapes des méthodes,

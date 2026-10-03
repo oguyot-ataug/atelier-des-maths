@@ -3327,6 +3327,12 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.947', date:'2026-10-03', items:[
+    'Corrections rédigées illustrées (CM1) : la correction d\'un problème peut montrer un dessin -- frise des bonds pour une durée, journée en deux lignes (matin / après-midi) avec « + 12 », paquets de 60 min, frise des siècles, schémas en barres, règle graduée, axe pour ranger des masses, figures cotées, quadrillages',
+    'CM1 Longueurs, masses, contenances : 3 planches (mesurer et convertir des longueurs ; masses et contenances avec balances ; problèmes de mesures)',
+    'CM1 Périmètres : 2 planches (le périmètre d\'une figure ; périmètre du carré et du rectangle) ; CM1 Aires : 2 planches (mesurer une aire en carreaux, colorier une aire donnée ; le cm², aire et périmètre)',
+    'Exercices à l\'écran : « 1 000 » et « 1000 » sont acceptés pareil',
+  ] },
   { version:'2026-08-19.946', date:'2026-10-03', items:[
     'CM1 Heures et durées : un petit dessin du moment de la journée sous les horloges (soleil levant, soleil haut, coucher de soleil, lune et étoiles, avec « le matin », « l\'après-midi », « le soir », « la nuit ») ; l\'atelier « Lis l\'heure » demande l\'heure sur 24 heures en s\'aidant du dessin ; l\'exercice de lecture mêle matin et après-midi',
     'CM1 Heures et durées : 3 planches d\'exercices (lire l\'heure le matin et l\'après-midi ; unités et conversions ; calculer une durée, une heure de fin ou de début), dans Mon TD et faisables à l\'écran (horloges, cases avec le clavier, choix à entourer)',

@@ -21,6 +21,14 @@ const rectCases = (x0, y0, w, h) => { const r = []; for(let y = y0; y < y0 + h; 
 const FIG_A = rectCases(1, 1, 5, 3);
 const FIG_B = [[1, 1], [2, 1], [1, 2], [2, 2], [3, 2], [4, 2], [1, 3], [2, 3], [3, 3], [4, 3], [5, 3], [6, 3], [4, 1]];
 const FIG_T = { pleines: [[1, 2], [2, 2], [3, 2], [2, 1]], demis: [[0, 2, 'bd'], [4, 2, 'bg'], [1, 1, 'bd'], [3, 1, 'bg']] };
+// Planches : une case à remplir et la réponse ; figures sur quadrillage (chaque case dessinée une fois,
+// pour pouvoir colorier à l'écran).
+const B = n => plPointilles(n || 3), R = v => plRep(String(v));
+const q = (w, h, cases, o) => cm1Quad(w, h, cases, Object.assign({ k: 14, c: '#7A4FC0' }, o || {}));
+const FA = { A: cm1Rect(1, 1, 3, 2), B: [[1, 1], [1, 2], [1, 3], [2, 3], [3, 3], [2, 2], [4, 3]], C: [[1, 1], [2, 1], [3, 1], [4, 1], [2, 2], [3, 2], [2, 3], [3, 3]] };
+const DEMI = [{ p: cm1Rect(1, 2, 3, 1).concat([[2, 1]]), d: [[1, 1, 'bd'], [3, 1, 'bg']], a: 5 }, { p: cm1Rect(1, 1, 2, 2), d: [[3, 1, 'hg'], [3, 2, 'bg'], [0, 1, 'bd'], [0, 2, 'hd']], a: 6 }];
+const figTxt = (fig, txt) => `<span style="display:flex;flex-direction:column;align-items:center;gap:2px;">${fig}<span>${txt}</span></span>`;
+const AP = [cm1Rect(1, 1, 4, 2), [[1, 1], [2, 1], [1, 2], [2, 2], [3, 2], [4, 2], [4, 1], [1, 3]], cm1Rect(1, 1, 6, 1)];
 cm1Chapitre({
   titre: 'Aires', slug: 'aires',
   cours: `
@@ -78,13 +86,13 @@ ${cm1Demo('ai-cm2', 'Trouver l\'aire d\'un rectangle en cm²', 'Un rectangle mes
     [`Quelle est l'aire de cette figure ?<div style="margin:6px 0;">${quad(6, 4, [[1, 1], [2, 1], [1, 2], [2, 2], [3, 2]], [[3, 1, 'bg'], [4, 2, 'bg']], '#2EA8C9')}</div>`,
       cm1Redac('Aire de la figure', ['5 + 1', '6'], 'Il y a 5 carreaux entiers et 2 demi-carreaux, qui font 1 carreau : l\'aire est 6 carreaux.')],
     ['Un rectangle fait 4 carreaux de long et 3 carreaux de large. Quelle est son aire ? Quel est son périmètre (en côtés de carreau) ?',
-      cm1Redac('Aire du rectangle', '3 × 4 = 12', 'L\'aire du rectangle est 12 carreaux.') + cm1Redac('Périmètre du rectangle', '4 + 3 + 4 + 3 = 14', 'Le périmètre est 14 côtés de carreau.')],
+      cm1Redac('Aire du rectangle', '3 × 4 = 12', 'L\'aire du rectangle est 12 carreaux.', cm1Quad(6, 5, cm1Rect(1, 1, 4, 3), { k: 18, contour: '#E35D3A', c: '#2EA8C9' })) + cm1Redac('Périmètre du rectangle', '4 + 3 + 4 + 3 = 14', 'Le périmètre est 14 côtés de carreau.')],
     ['Dessine sur ton cahier deux figures différentes qui ont chacune une aire de 6 carreaux.',
-      cm1Redac('Deux figures de 6 carreaux', { suite: ['un rectangle de 3 sur 2 : 3 × 2 = 6', 'un rectangle de 6 sur 1 : 6 × 1 = 6'] }, 'Ces deux rectangles ont la même aire, 6 carreaux, mais pas la même forme.')],
+      cm1Redac('Deux figures de 6 carreaux', { suite: ['un rectangle de 3 sur 2 : 3 × 2 = 6', 'un rectangle de 6 sur 1 : 6 × 1 = 6'] }, 'Ces deux rectangles ont la même aire, 6 carreaux, mais pas la même forme.', cm1Quad(13, 4, cm1Rect(1, 1, 3, 2).concat(cm1Rect(6, 1, 6, 1)), { k: 18, c: '#2E9C6A' }))],
     ['Quelle est l\'aire d\'un carré de 5 cm de côté ?',
-      cm1Redac('Aire du carré', '5 × 5 = 25', 'On peut ranger 5 lignes de 5 carrés de 1 cm² : l\'aire du carré est 25 cm².')],
+      cm1Redac('Aire du carré', '5 × 5 = 25', 'On peut ranger 5 lignes de 5 carrés de 1 cm² : l\'aire du carré est 25 cm².', cm1Quad(5, 5, cm1Rect(0, 0, 5, 5), { k: 20, c: '#7A4FC0' }))],
     ['Vrai ou faux ? « Si deux figures ont la même aire, elles ont le même périmètre. »',
-      cm1Redac('Contre-exemple', { suite: ['rectangle de 4 sur 2 : aire 8, périmètre 12', 'rectangle de 8 sur 1 : aire 8, périmètre 18'] }, 'Faux : ces deux rectangles ont la même aire mais pas le même périmètre.')],
+      cm1Redac('Contre-exemple', { suite: ['rectangle de 4 sur 2 : aire 8, périmètre 12', 'rectangle de 8 sur 1 : aire 8, périmètre 18'] }, 'Faux : ces deux rectangles ont la même aire mais pas le même périmètre.', cm1Quad(15, 4, cm1Rect(1, 1, 4, 2).concat(cm1Rect(6, 2, 8, 1)), { k: 16, contour: '#E35D3A', c: '#2EA8C9' }))],
     [`Quelle unité choisir : cm ou cm² ?${cm1Liste(['le tour d\'une photo', 'la surface d\'un timbre', 'la longueur d\'un crayon'])}`,
       cm1Redac('Choix des unités', { suite: ['le tour d\'une photo : cm (un périmètre)', 'la surface d\'un timbre : cm² (une aire)', 'la longueur d\'un crayon : cm (une longueur)'] }, 'On utilise les cm pour les longueurs et les cm² pour les aires.')],
   ], { titre: 'Rédaction type : « Aire d\'un rectangle en cm² »', lignes: [['3 lignes de 7 carrés de 1 cm²', 'Je pave le rectangle.'], ['3 × 7 = 21', 'Je calcule.'], ['L\'aire est 21 cm².', 'Je conclus avec l\'unité.']] }),
@@ -92,6 +100,53 @@ ${cm1Demo('ai-cm2', 'Trouver l\'aire d\'un rectangle en cm²', 'Un rectangle mes
     'Mesurer des aires a d\'abord servi à mesurer des <b>champs</b> : pour les partager, les vendre, ou calculer l\'impôt. Dans l\'Égypte ancienne, après chaque crue du Nil, les arpenteurs recalculaient l\'aire des terres de chaque paysan.',
     'Autrefois en France, on utilisait l\'<b>arpent</b> ou le <b>journal</b> : la surface qu\'un paysan pouvait labourer en une journée ! Avec le système métrique, on a créé l\'<b>are</b> (l\'aire d\'un carré de 10 m de côté) et l\'<b>hectare</b>, encore utilisés pour les terrains.',
   ]),
+  // Planches d'exercices imprimables (planches.js), aussi faisables à l'écran (planches-num.js).
+  planches: [
+    { titre: 'Mesurer une aire en carreaux', duree: '30 min',
+      attendus: ['Comprendre l\'aire comme la mesure d\'une surface', 'Mesurer une aire en comptant des carreaux et des demi-carreaux'],
+      exos: [
+        { etoiles: 1, col: 1, consigne: 'Quelle est l\'aire de chaque figure, en carreaux ?',
+          eleve: plGrille(Object.entries(FA).map(([n, c]) => figTxt(q(6, 5, c), `<b>${n}</b> : ${B(2)}`)), 3),
+          corr: plGrille(Object.entries(FA).map(([n, c]) => figTxt(q(6, 5, c), `<b>${n}</b> : ${R(c.length)}`)), 3) },
+        { etoiles: 2, col: 1, consigne: 'Deux demi-carreaux font un carreau. Quelle est l\'aire de chaque figure ?',
+          eleve: plGrille(DEMI.map(f => figTxt(q(5, 4, f.p, { demis: f.d, c: '#E35D3A' }), `${B(2)} carreaux`)), 2),
+          corr: plGrille(DEMI.map(f => figTxt(q(5, 4, f.p, { demis: f.d, c: '#E35D3A' }), `${R(f.a)} carreaux`)), 2) },
+        { etoiles: 2, col: 1, consigne: 'Colorie une figure qui a l\'aire demandée.',
+          eleve: plGrille([figTxt(q(6, 4, []), '7 carreaux'), figTxt(q(6, 4, []), '10 carreaux')], 2),
+          corr: plGrille([figTxt(q(6, 4, cm1Rect(1, 1, 3, 2).concat([[4, 1]]), { c: '#2E9C6A' }), '7 carreaux'), figTxt(q(6, 4, cm1Rect(1, 1, 5, 2), { c: '#2E9C6A' }), '10 carreaux')], 2) },
+        { etoiles: 2, col: 1, consigne: 'Pour un rectangle, on compte les lignes.',
+          eleve: plGrille([[5, 3], [6, 2]].map(([l, h]) => figTxt(q(l + 2, h + 2, cm1Rect(1, 1, l, h), { c: '#2EA8C9' }), `${B(2)} lignes de ${B(2)} carreaux : ${B(2)} carreaux`)), 1),
+          corr: plGrille([[5, 3], [6, 2]].map(([l, h]) => figTxt(q(l + 2, h + 2, cm1Rect(1, 1, l, h), { c: '#2EA8C9' }), `${R(h)} lignes de ${R(l)} carreaux : ${R(l * h)} carreaux`)), 1) },
+        { etoiles: 2, col: 1, consigne: `Observe ces deux figures.<div style="display:flex;gap:16px;align-items:flex-end;margin:3px 0;"><span style="text-align:center;">${q(8, 3, cm1Rect(1, 1, 6, 1), { contour: '#E35D3A', c: '#2EA8C9' })}<br><b>A</b></span><span style="text-align:center;">${q(5, 5, cm1Rect(1, 1, 3, 3), { contour: '#E35D3A', c: '#2EA8C9' })}<br><b>B</b></span></div>`,
+          eleve: plListe(['La plus grande aire : <b>A · B</b>', 'Le plus grand périmètre : <b>A · B</b>']),
+          corr: plListe([`La plus grande aire : ${plEntoure('B')} (9 carreaux contre 6)`, `Le plus grand périmètre : ${plEntoure('A')} (14 contre 12)`]) },
+        { etoiles: 3, col: 1, cahier: true, consigne: 'Sur ton cahier, dessine deux figures différentes qui ont chacune une aire de 8 carreaux.',
+          corr: cm1Redac('Deux figures de 8 carreaux', { suite: ['un rectangle : 2 lignes de 4 carreaux, 2 × 4 = 8', 'une figure en L : 3 + 3 + 2 = 8'] }, 'Les deux figures ont la même aire, 8 carreaux, mais pas la même forme.', cm1Quad(11, 5, cm1Rect(1, 1, 4, 2).concat([[6, 1], [7, 1], [8, 1], [6, 2], [7, 2], [8, 2], [6, 3], [7, 3]]), { k: 14, c: '#2E9C6A', contour: '#1F3A5C' })) },
+      ] },
+    { titre: 'Le centimètre carré, aire et périmètre', duree: '35 min',
+      attendus: ['Utiliser le centimètre carré (cm²)', 'Distinguer l\'aire et le périmètre d\'une figure'],
+      exos: [
+        { etoiles: 1, col: 1, consigne: 'Chaque carreau a une aire de 1 cm². Quelle est l\'aire de chaque figure ?',
+          eleve: plGrille([cm1Rect(1, 1, 3, 3), [[1, 1], [2, 1], [3, 1], [4, 1], [1, 2], [1, 3], [2, 3], [3, 3], [4, 3], [4, 2]]].map((c, i) => figTxt(q(6, 5, c, { c: '#2E9C6A' }), `<b>${'AB'[i]}</b> : ${B(2)} cm²`)), 2),
+          corr: plGrille([cm1Rect(1, 1, 3, 3), [[1, 1], [2, 1], [3, 1], [4, 1], [1, 2], [1, 3], [2, 3], [3, 3], [4, 3], [4, 2]]].map((c, i) => figTxt(q(6, 5, c, { c: '#2E9C6A' }), `<b>${'AB'[i]}</b> : ${R(c.length)} cm²`)), 2) },
+        { etoiles: 2, col: 1, consigne: 'Imagine le rectangle pavé de carrés de 1 cm². Quelle est son aire ?',
+          eleve: plListe(['un rectangle de 4 cm sur 3 cm : %1 cm²', 'un carré de 5 cm de côté : %1 cm²', 'un rectangle de 7 cm sur 2 cm : %1 cm²', 'un rectangle de 10 cm sur 4 cm : %1 cm²'].map(t => t.replace('%1', B()))),
+          corr: plListe([['un rectangle de 4 cm sur 3 cm : ', 12], ['un carré de 5 cm de côté : ', 25], ['un rectangle de 7 cm sur 2 cm : ', 14], ['un rectangle de 10 cm sur 4 cm : ', 40]].map(([a, b]) => a + R(b) + ' cm²')) },
+        { etoiles: 2, consigne: 'Pour chaque figure, donne son aire (en carreaux) et son périmètre (en côtés de carreau).',
+          eleve: plGrille(AP.map((c, i) => figTxt(q(8, 5, c, { contour: '#E35D3A', c: '#2EA8C9' }), `<b>${'ABC'[i]}</b> : aire ${B(2)}, périmètre ${B(2)}`)), 3),
+          corr: plGrille(AP.map((c, i) => figTxt(q(8, 5, c, { contour: '#E35D3A', c: '#2EA8C9' }), `<b>${'ABC'[i]}</b> : aire ${R(c.length)}, périmètre ${R(cm1QuadPerim(c))}`)), 3) },
+        { etoiles: 2, col: 1, consigne: 'Quelle unité choisir ? Entoure.',
+          eleve: plListe(['le tour d\'un cahier : <b>cm · cm²</b>', 'la surface d\'une carte postale : <b>cm · cm²</b>', 'la longueur d\'une règle : <b>cm · cm²</b>', 'la surface d\'un écran : <b>cm · cm²</b>']),
+          corr: plListe([['le tour d\'un cahier : ', 'cm'], ['la surface d\'une carte postale : ', 'cm²'], ['la longueur d\'une règle : ', 'cm'], ['la surface d\'un écran : ', 'cm²']].map(([t, u]) => t + plEntoure(u))) },
+        { etoiles: 2, col: 1, consigne: 'Vrai ou faux ? Entoure.',
+          eleve: plListe(['Une aire se mesure en cm². <b>vrai · faux</b>', '1 cm², c\'est l\'aire d\'un carré de 1 cm de côté. <b>vrai · faux</b>', 'Deux figures de même aire ont le même périmètre. <b>vrai · faux</b>', 'Un rectangle de 4 sur 2 carreaux a une aire de 12 carreaux. <b>vrai · faux</b>']),
+          corr: plListe([['Une aire se mesure en cm². ', 'vrai'], ['1 cm², c\'est l\'aire d\'un carré de 1 cm de côté. ', 'vrai'], ['Deux figures de même aire ont le même périmètre. ', 'faux'], ['Un rectangle de 4 sur 2 carreaux a une aire de 12 carreaux. ', 'faux']].map(([t, r]) => t + plEntoure(r))) },
+        { etoiles: 3, col: 1, cahier: true, consigne: 'Une tablette de chocolat a 4 rangées de 6 carrés. Combien a-t-elle de carrés ? Léa mange une rangée : combien en reste-t-il ?',
+          corr: cm1Redac('Carrés de la tablette', '4 × 6 = 24', '') + cm1Redac('Carrés restants', '24 − 6 = 18', 'La tablette a 24 carrés ; il en reste 18.', cm1Quad(6, 4, cm1Rect(0, 1, 6, 3), { k: 18, c: '#8B5A2B' })) },
+        { etoiles: 3, col: 1, cahier: true, consigne: 'Le sol d\'une salle de bain est un rectangle de 5 m sur 3 m. On le couvre de dalles carrées de 1 m de côté. Combien faut-il de dalles ?',
+          corr: cm1Redac('Nombre de dalles', '3 × 5 = 15', 'Il faut 15 dalles : l\'aire du sol est 15 m².', cm1Quad(5, 3, cm1Rect(0, 0, 5, 3), { k: 22, c: '#2EA8C9' })) },
+      ] },
+  ],
   quiz: [
     { q: 'L\'aire d\'une figure mesure…', opts: ['son contour', 'sa surface', 'sa hauteur'], correct: 1 },
     { q: 'Deux demi-carreaux font…', opts: ['un carreau', 'deux carreaux', 'un quart de carreau'], correct: 0 },

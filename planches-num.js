@@ -25,8 +25,8 @@
 
 const plNumCache = new Map();
 // Normalisation d'une réponse : espaces, casse, ponctuation finale ; un nombre perd ses zéros de tête
-// (« 05 » minutes = « 5 »).
-const plNumNorm = s => { const t = String(s ?? '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''); return /^\d+$/.test(t) ? String(+t) : t; };
+// (« 05 » minutes = « 5 ») et ses espaces (« 1 200 » = « 1200 »).
+const plNumNorm = s => { const t = String(s ?? '').replace(/[\u00a0\u202f]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase().replace(/[.!]$/, '').replace(/’/g, '\''), n = t.replace(/(\d) (?=\d)/g, '$1'); return /^\d+$/.test(n) ? String(+n) : t; };
 // Fraction écrite en LaTeX dans un bout de corrigé : [numérateur, dénominateur] ou null.
 function plNumFracDe(el){
   const t = el.querySelector('.tex'), m = t && /\\[dt]?frac\{([^}]*)\}\{([^}]*)\}/.exec(t.textContent);

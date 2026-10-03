@@ -39,16 +39,55 @@ function horloge(h, m, taille, opts){
   s += `<line x1="60" y1="60" x2="${(cx + 44 * Math.sin(am)).toFixed(1)}" y2="${(cy - 44 * Math.cos(am)).toFixed(1)}" stroke="#2EA8C9" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="60" r="3.5" fill="#1F3A5C"/>`;
   return s + '</svg>';
 }
-// Frise de durée : de (h1,m1) à (h2,m2) avec bonds.
-function frise(bonds){
+// Frise de durée : bonds [de, à, étiquette] de gauche à droite ; opts.recul : les flèches reculent
+// (heure de début : on part de la fin).
+function frise(bonds, opts){
+  opts = opts || {};
   const W = 120 + bonds.length * 150; let s = `<svg viewBox="0 0 ${W} 92" style="width:100%;max-width:${W}px;display:block;margin:6px auto;"><line x1="20" y1="60" x2="${W - 20}" y2="60" stroke="#1F3A5C" stroke-width="2"/>`;
   let x = 60;
   bonds.forEach(([de, a, lab], i) => {
-    const x2 = x + 150; if(i === 0) s += `<line x1="${x}" y1="52" x2="${x}" y2="68" stroke="#1F3A5C" stroke-width="2"/><text x="${x}" y="84" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">${de}</text>`;
-    s += `<line x1="${x2}" y1="52" x2="${x2}" y2="68" stroke="#1F3A5C" stroke-width="2"/><text x="${x2}" y="84" font-size="13" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">${a}</text>`;
-    s += `<path d="M${x + 4} 52 Q${(x + x2) / 2} 10 ${x2 - 4} 52" fill="none" stroke="#E35D3A" stroke-width="2"/><polygon points="${x2 - 4},52 ${x2 - 12},44 ${x2 - 2},42" fill="#E35D3A"/><text x="${(x + x2) / 2}" y="26" font-size="13" text-anchor="middle" fill="#E35D3A" font-family="Space Grotesk" font-weight="700">${lab}</text>`;
+    const x2 = x + 150; if(i === 0) s += `<line x1="${x}" y1="52" x2="${x}" y2="68" stroke="#1F3A5C" stroke-width="2"/><text x="${x}" y="84" font-size="16" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">${de}</text>`;
+    s += `<line x1="${x2}" y1="52" x2="${x2}" y2="68" stroke="#1F3A5C" stroke-width="2"/><text x="${x2}" y="84" font-size="16" text-anchor="middle" fill="#1F3A5C" font-family="Space Grotesk" font-weight="700">${a}</text>`;
+    s += `<path d="M${x + 4} 52 Q${(x + x2) / 2} 10 ${x2 - 4} 52" fill="none" stroke="#E35D3A" stroke-width="2"/>`
+      + (opts.recul ? `<polygon points="${x + 4},52 ${x + 12},44 ${x + 2},42" fill="#E35D3A"/>` : `<polygon points="${x2 - 4},52 ${x2 - 12},44 ${x2 - 2},42" fill="#E35D3A"/>`)
+      + `<text x="${(x + x2) / 2}" y="26" font-size="16" text-anchor="middle" fill="#E35D3A" font-family="Space Grotesk" font-weight="700">${lab}</text>`;
     x = x2; });
   return s + '</svg>';
+}
+/* Dessins des corrections rédigées (demandé : « mieux représenter la correction par des dessins »). */
+const T = (x, y, t, o) => `<text x="${x}" y="${y}" font-size="${(o && o.fs) || 12}" text-anchor="${(o && o.a) || 'middle'}" fill="${(o && o.c) || '#1F3A5C'}" font-family="Space Grotesk" font-weight="700">${t}</text>`;
+// La journée sur deux lignes : le matin (0 h → 12 h) au-dessus, l'après-midi et le soir (12 h → 24 h)
+// en dessous, comme les deux tours de la petite aiguille. marks : [h24, m, étiquette] ; opts.lien :
+// une flèche « + 12 » relie l'heure lue sur l'horloge à l'heure de l'après-midi.
+function journee(marks, opts){
+  opts = opts || {};
+  const X0 = 150, L = 440, W = X0 + L + 30, Y = [44, 112], px = (h, m) => X0 + L * ((h % 12) + m / 60) / 12;
+  let s = `<svg viewBox="0 0 ${W} 140" style="width:100%;max-width:${W}px;display:block;">`;
+  [['le matin', '#FDF3D7', 0], ['l\'après-midi, le soir', '#E4EEFA', 12]].forEach(([nom, f, h0], r) => {
+    const y = Y[r]; s += `<rect x="${X0 - 6}" y="${y - 16}" width="${L + 12}" height="24" rx="6" fill="${f}"/>` + T(X0 - 14, y, nom, { a: 'end', fs: 12, c: '#4E5665' }) + `<line x1="${X0}" y1="${y}" x2="${X0 + L}" y2="${y}" stroke="#1F3A5C" stroke-width="2"/>`;
+    for(let h = 0; h <= 12; h++){ const x = X0 + L * h / 12; s += `<line x1="${x}" y1="${y - 5}" x2="${x}" y2="${y + 5}" stroke="#1F3A5C" stroke-width="${h % 3 ? 1 : 2}"/>`; if(h % 3 === 0) s += T(x, y + 20, (h0 + h) + ' h', { fs: 11, c: '#4E5665' }); }
+  });
+  marks.forEach(([h, m, lab]) => {
+    const x = px(h, m), r = h >= 12 ? 1 : 0, y = Y[r];
+    if(opts.lien && r === 1){ s += `<circle cx="${x}" cy="${Y[0]}" r="4" fill="#fff" stroke="#E35D3A" stroke-width="2"/><line x1="${x}" y1="${Y[0] + 6}" x2="${x}" y2="${y - 9}" stroke="#E35D3A" stroke-width="1.6" stroke-dasharray="3 2"/><polygon points="${x},${y - 5} ${x - 4},${y - 12} ${x + 4},${y - 12}" fill="#E35D3A"/>` + T(x + 5, (Y[0] + y) / 2 + 4, '+ 12', { a: 'start', fs: 11, c: '#E35D3A' }); }
+    s += `<circle cx="${x}" cy="${y}" r="5" fill="#E35D3A"/>` + (opts.lien && r === 1 ? T(x - 8, y - 7, lab || hh(h, m), { a: 'end', fs: 12 }) : T(x, y - 9, lab || hh(h, m), { fs: 12 }));
+  });
+  return s + '</svg>';
+}
+const paquets = cm1Paquets; // une durée en paquets (schéma en barres)
+// Siècles : chaque case dure 100 ans ; on place une année dans la bonne case.
+function siecles(marques){
+  const S = [[17, 'XVII'], [18, 'XVIII'], [19, 'XIX'], [20, 'XX'], [21, 'XXI']], w = 110, X0 = 10, W = X0 + w * S.length + 10;
+  let s = `<svg viewBox="0 0 ${W} 86" style="width:100%;max-width:${W}px;display:block;">`;
+  S.forEach(([n, r], i) => { const x = X0 + i * w; s += `<rect x="${x}" y="30" width="${w}" height="26" fill="${i % 2 ? '#E4EEFA' : '#FDF3D7'}" stroke="#1F3A5C" stroke-width="1.2"/>` + T(x + w / 2, 48, r + '<tspan font-size="8" dy="-5">e</tspan>', { fs: 13 }) + T(x + w / 2, 72, `${(n - 1) * 100 + 1} → ${n * 100}`, { fs: 10, c: '#4E5665' }); });
+  marques.forEach(a => { const x = X0 + (a - 1601) / 500 * w * S.length; s += `<line x1="${x}" y1="18" x2="${x}" y2="58" stroke="#E35D3A" stroke-width="2.5"/>` + T(x, 13, a, { fs: 12, c: '#E35D3A' }); });
+  return s + '</svg>';
+}
+// Instant (un point sur la frise du temps) et durée (un intervalle).
+function instantDuree(){
+  return `<svg viewBox="0 0 420 70" style="width:100%;max-width:420px;display:block;"><line x1="10" y1="40" x2="410" y2="40" stroke="#1F3A5C" stroke-width="2"/><polygon points="410,40 402,35 402,45" fill="#1F3A5C"/>`
+    + `<circle cx="90" cy="40" r="6" fill="#E35D3A"/>` + T(90, 24, 'un instant : 11 h 45', { c: '#E35D3A' }) + T(90, 62, '« quand ? »', { fs: 11, c: '#4E5665' })
+    + `<line x1="240" y1="40" x2="370" y2="40" stroke="#2EA8C9" stroke-width="7" stroke-linecap="round"/>` + T(305, 24, 'une durée : 90 min', { c: '#2EA8C9' }) + T(305, 62, '« combien de temps ? »', { fs: 11, c: '#4E5665' }) + '</svg>';
 }
 const hh = (h, m) => `${h} h ${String(m).padStart(2, '0')}`;
 // Planches : une heure ou une durée à compléter (deux cases), et la réponse du corrigé.
@@ -117,22 +156,22 @@ ${cm1Sous('A', 'Atelier : lis l\'heure')}
   ],
   exos: cm1Exos('hd', [
     [`Quelle heure est-il ? Regarde le petit dessin : matin ou après-midi ?<div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;">${[[7, 15, 7.25], [10, 45, 10.75], [2, 5, 14.1], [6, 30, 18.5]].map(([h, m, h24], i) => `<div style="text-align:center;">${horloge(h, m, 100, { h24 })}<div><b>${'ABCD'[i]}</b></div></div>`).join('')}</div>`,
-      cm1Redac('Lecture des horloges', { suite: ['A : 7 h 15 (le matin)', 'B : 10 h 45, onze heures moins le quart (le matin)', 'C : 2 h 05 l\'après-midi, donc 14 h 05', 'D : 6 h 30 le soir, donc 18 h 30'] }, 'La petite aiguille donne l\'heure, la grande les minutes ; l\'après-midi et le soir, on ajoute 12.')],
+      cm1Redac('Lecture des horloges', { suite: ['A : 7 h 15 (le matin)', 'B : 10 h 45, onze heures moins le quart (le matin)', 'C : 2 h 05 l\'après-midi, donc 14 h 05', 'D : 6 h 30 le soir, donc 18 h 30'] }, 'La petite aiguille donne l\'heure, la grande les minutes ; l\'après-midi et le soir, on ajoute 12.', journee([[7, 15, 'A'], [10, 45, 'B'], [14, 5, 'C'], [18, 30, 'D']], { lien: true }))],
     [`Écris ces heures de l'après-midi sur 24 heures.${cm1Liste(['3 h 20', '6 h 45', '11 h 10'])}`,
-      cm1Redac('Heures de l\'après-midi', { suite: ['12 h + 3 h 20 = 15 h 20', '12 h + 6 h 45 = 18 h 45', '12 h + 11 h 10 = 23 h 10'] }, 'L\'après-midi, on ajoute 12 h : 15 h 20, 18 h 45 et 23 h 10.')],
+      cm1Redac('Heures de l\'après-midi', { suite: ['12 h + 3 h 20 = 15 h 20', '12 h + 6 h 45 = 18 h 45', '12 h + 11 h 10 = 23 h 10'] }, 'L\'après-midi, on ajoute 12 h : 15 h 20, 18 h 45 et 23 h 10.', journee([[15, 20], [18, 45], [23, 10]], { lien: true }))],
     [`Convertis.${cm1Liste(['3 h en min', '2 min en s', '2 jours en h', '3 semaines en jours'])}`,
-      cm1Redac('Conversions', { suite: ['3 h = 3 × 60 min = 180 min', '2 min = 2 × 60 s = 120 s', '2 jours = 2 × 24 h = 48 h', '3 semaines = 3 × 7 jours = 21 jours'] }, 'On part chaque fois d\'une relation connue, puis on multiplie.')],
+      cm1Redac('Conversions', { suite: ['3 h = 3 × 60 min = 180 min', '2 min = 2 × 60 s = 120 s', '2 jours = 2 × 24 h = 48 h', '3 semaines = 3 × 7 jours = 21 jours'] }, 'On part chaque fois d\'une relation connue, puis on multiplie.', paquets([[60, '1 h', '60 min'], [60, '1 h', '60 min'], [60, '1 h', '60 min']], { titre: '3 h', uni: true }) + paquets([[24, '1 jour', '24 h'], [24, '1 jour', '24 h']], { titre: '2 jours', uni: true }))],
     [`Convertis en heures et minutes.${cm1Liste(['80 min', '150 min', '65 min'])}`,
-      cm1Redac('Conversions', { suite: ['80 min = 60 min + 20 min = 1 h 20 min', '150 min = 120 min + 30 min = 2 h 30 min', '65 min = 60 min + 5 min = 1 h 05 min'] }, 'On enlève des paquets de 60 minutes : chacun fait une heure.')],
+      cm1Redac('Conversions', { suite: ['80 min = 60 min + 20 min = 1 h 20 min', '150 min = 120 min + 30 min = 2 h 30 min', '65 min = 60 min + 5 min = 1 h 05 min'] }, 'On enlève des paquets de 60 minutes : chacun fait une heure.', paquets([[60, '60 min', '1 h'], [20, '20', '20 min']], { titre: '80 min', L: 240 }) + paquets([[60, '60 min', '1 h'], [60, '60 min', '1 h'], [30, '30', '30 min']], { titre: '150 min', L: 450 }) + paquets([[60, '60 min', '1 h'], [5, '', '5']], { titre: '65 min', L: 195 }))],
     [`Instant ou durée ?${cm1Liste(['« La cantine ouvre à 11 h 45. »', '« Le match dure 90 minutes. »', '« Je dors 10 heures. »'])}`,
-      cm1Redac('Instant ou durée', { suite: ['11 h 45 : un instant', '90 minutes : une durée', '10 heures de sommeil : une durée'] }, 'Un instant dit « quand » ; une durée dit « combien de temps ».')],
+      cm1Redac('Instant ou durée', { suite: ['11 h 45 : un instant', '90 minutes : une durée', '10 heures de sommeil : une durée'] }, 'Un instant dit « quand » ; une durée dit « combien de temps ».', instantDuree())],
     ['Un dessin animé commence à 17 h 40 et finit à 19 h 05. Quelle est sa durée ?',
-      cm1Redac('Les bonds', { suite: ['17 h 40 → 18 h : 20 min', '18 h → 19 h : 1 h', '19 h → 19 h 05 : 5 min'] }, '')
+      cm1Redac('Les bonds', { suite: ['17 h 40 → 18 h : 20 min', '18 h → 19 h : 1 h', '19 h → 19 h 05 : 5 min'] }, '', frise([['17 h 40', '18 h', '20 min'], ['18 h', '19 h', '1 h'], ['19 h', '19 h 05', '5 min']]))
       + cm1Redac('Durée du dessin animé', '20 min + 1 h + 5 min = 1 h 25 min', 'Le dessin animé dure 1 h 25 min.')],
     ['Un gâteau doit cuire 45 minutes. Il est enfourné à 15 h 30. À quelle heure faut-il le sortir ?',
-      cm1Redac('Heure de sortie', { suite: ['15 h 30 + 30 min = 16 h', '16 h + 15 min = 16 h 15'] }, 'Il faut sortir le gâteau à 16 h 15.')],
+      cm1Redac('Heure de sortie', { suite: ['15 h 30 + 30 min = 16 h', '16 h + 15 min = 16 h 15'] }, 'Il faut sortir le gâteau à 16 h 15.', frise([['15 h 30', '16 h', '+ 30 min'], ['16 h', '16 h 15', '+ 15 min']]))],
     ['En quel siècle sommes-nous ? En quel siècle a eu lieu la Révolution française (1789) ?',
-      cm1Redac('Notre siècle', 'années 2001 à 2100', 'Nous sommes au XXI<sup>e</sup> siècle.') + cm1Redac('La Révolution française', 'années 1701 à 1800', '1789 est au XVIII<sup>e</sup> siècle.')],
+      cm1Redac('Notre siècle', 'années 2001 à 2100', 'Nous sommes au XXI<sup>e</sup> siècle.', siecles([1789, 2026])) + cm1Redac('La Révolution française', 'années 1701 à 1800', '1789 est au XVIII<sup>e</sup> siècle.')],
   ], { titre: 'Rédaction type : « Calculer une durée »', lignes: [['8 h 40 → 9 h : 20 min', 'Je fais un bond jusqu\'à l\'heure pile.'], ['9 h → 10 h 15 : 1 h 15 min', 'Je continue jusqu\'à l\'heure de fin.'], ['Durée : 20 min + 1 h 15 min = 1 h 35 min', 'J\'additionne les bonds.']] }),
   histoire: cm1Histoire('Un peu d\'histoire : pourquoi 60 minutes ?', [
     'Pourquoi une heure a-t-elle 60 minutes, et pas 100 ? C\'est un héritage des <b>Babyloniens</b>, il y a 4 000 ans : ils comptaient en base 60, car 60 se partage facilement en 2, 3, 4, 5, 6, 10, 12, 15, 20 et 30.',
@@ -165,8 +204,8 @@ ${cm1Sous('A', 'Atelier : lis l\'heure')}
         { etoiles: 2, col: 1, consigne: 'Le matin, l\'après-midi, le soir ou la nuit ? Entoure.',
           eleve: plListe([`Il est 7 h : <b>le matin · le soir</b>`, `Il est 14 h 30 : <b>le matin · l'après-midi</b>`, `Il est 23 h : <b>l'après-midi · la nuit</b>`, `Il est 19 h 15 : <b>le matin · le soir</b>`]),
           corr: plListe([`Il est 7 h : ${plEntoure('le matin')}`, `Il est 14 h 30 : ${plEntoure('l\'après-midi')}`, `Il est 23 h : ${plEntoure('la nuit')}`, `Il est 19 h 15 : ${plEntoure('le soir')}`]) },
-        { etoiles: 3, col: 1, cahier: true, consigne: `Le réveil de Lina sonne à l'heure ci-dessous. Elle part pour l'école 50 minutes plus tard. À quelle heure part-elle ?<div style="margin-top:4px;">${horloge(6, 55, 70, { h24: 6.92 })}</div>`,
-          corr: cm1Redac('Heure du réveil', '', 'Le réveil sonne à 6 h 55, le matin.') + cm1Redac('Heure de départ', { suite: ['6 h 55 + 5 min = 7 h', '7 h + 45 min = 7 h 45'] }, 'Lina part pour l\'école à 7 h 45.') },
+        { etoiles: 3, cahier: true, consigne: `<div style="display:flex;gap:14px;align-items:center;"><span>Le réveil de Lina sonne à l'heure ci-contre. Elle part pour l'école 50 minutes plus tard. À quelle heure part-elle ?</span>${horloge(6, 55, 64, { h24: 6.92 })}</div>`,
+          corr: cm1Redac('Heure de départ', '6 h 55 + 5 min + 45 min = 7 h 45', 'Le réveil sonne à 6 h 55 (le matin) ; Lina part pour l\'école à 7 h 45.', frise([['6 h 55', '7 h', '+ 5 min'], ['7 h', '7 h 45', '+ 45 min']])) },
       ] },
     { titre: 'Unités de durée et conversions', duree: '30 min',
       attendus: ['Connaître les relations entre les unités de durée', 'Convertir des durées sans tableau, en raisonnant'],
@@ -187,9 +226,9 @@ ${cm1Sous('A', 'Atelier : lis l\'heure')}
           eleve: plListe(['Une récréation dure 15 <b>min · h</b>', 'Un film dure 2 <b>h · jours</b>', 'Les vacances d\'été durent 8 <b>jours · semaines</b>', 'Un clignement d\'yeux dure 1 <b>s · min</b>']),
           corr: plListe([['Une récréation dure 15 ', 'min'], ['Un film dure 2 ', 'h'], ['Les vacances d\'été durent 8 ', 'semaines'], ['Un clignement d\'yeux dure 1 ', 's']].map(([t, u]) => t + plEntoure(u))) },
         { etoiles: 3, col: 1, cahier: true, consigne: 'Tom dit : « 1 h 30 min, c\'est 130 minutes. » A-t-il raison ? Explique.',
-          corr: cm1Redac('Conversion de 1 h 30 min', { suite: ['1 h = 60 min', '60 min + 30 min = 90 min'] }, 'Tom a tort : 1 h 30 min, c\'est 90 minutes, car une heure a 60 minutes, pas 100.') },
+          corr: cm1Redac('Conversion de 1 h 30 min', { suite: ['1 h = 60 min', '60 min + 30 min = 90 min'] }, 'Tom a tort : 1 h 30 min, c\'est 90 minutes, car une heure a 60 minutes, pas 100.', paquets([[60, '1 h = 60 min'], [30, '30 min']], { titre: '1 h 30 min', L: 260 })) },
         { etoiles: 3, col: 1, cahier: true, consigne: 'Un bébé dort 16 heures par jour. Combien de minutes dort-il chaque jour ? Combien d\'heures dort-il en une semaine ?',
-          corr: cm1Redac('Sommeil d\'une journée', '16 × 60 min = 960 min', 'Le bébé dort 960 minutes par jour.') + cm1Redac('Sommeil d\'une semaine', '16 h × 7 = 112 h', 'Le bébé dort 112 heures en une semaine.') },
+          corr: cm1Redac('Sommeil d\'une journée', '16 × 60 min = 960 min', 'Le bébé dort 960 minutes par jour.') + cm1Redac('Sommeil d\'une semaine', '16 h × 7 = 112 h', 'Le bébé dort 112 heures en une semaine.', paquets(Array.from({ length: 7 }, () => [16, '16 h']), { titre: '7 jours', uni: true, L: 330 })) },
       ] },
     { titre: 'Calculer une durée, une heure de fin ou de début', duree: '35 min',
       attendus: ['Calculer une durée avec une frise (bond jusqu\'à l\'heure pile)', 'Calculer une heure de fin ou de début'],
@@ -209,10 +248,10 @@ ${cm1Sous('A', 'Atelier : lis l\'heure')}
         { etoiles: 2, col: 1, consigne: `Voici les horaires du bus. Calcule la durée de chaque trajet.<table style="border-collapse:collapse;margin:4px 0;font-size:.95em;"><tr>${['Gare', 'École', 'Piscine', 'Stade'].map(x => `<th style="border:1px solid #8A93A3;padding:2px 8px;">${x}</th>`).join('')}</tr><tr>${['7 h 45', '8 h 05', '8 h 20', '8 h 50'].map(x => `<td style="border:1px solid #8A93A3;padding:2px 8px;text-align:center;">${x}</td>`).join('')}</tr></table>`,
           eleve: plListe([`De la gare à l'école : ${plPointilles(3)} min`, `De l'école au stade : ${plPointilles(3)} min`, `De la gare au stade : ${DB()}`]),
           corr: plListe([`De la gare à l'école : ${plRep('20')} min`, `De l'école au stade : ${plRep('45')} min`, `De la gare au stade : ${DR(1, 5)}`]) },
-        { etoiles: 3, col: 1, cahier: true, consigne: `Le film commence à l'heure ci-dessous. Il dure 1 h 50 min. À quelle heure finit-il ?<div style="margin-top:4px;">${horloge(8, 25, 70, { h24: 20.42 })}</div>`,
-          corr: cm1Redac('Heure du début', '', 'C\'est le soir : le film commence à 20 h 25.') + cm1Redac('Heure de fin', { suite: ['20 h 25 + 1 h = 21 h 25', '21 h 25 + 35 min = 22 h', '22 h + 15 min = 22 h 15'] }, 'Le film finit à 22 h 15.') },
+        { etoiles: 3, col: 1, cahier: true, consigne: `<div style="display:flex;gap:10px;align-items:center;"><span>Le film commence à l'heure ci-contre. Il dure 1 h 50 min. À quelle heure finit-il ?</span>${horloge(8, 25, 60, { h24: 20.42 })}</div>`,
+          corr: cm1Redac('Heure de fin', '20 h 25 + 1 h 50 min = 22 h 15', 'C\'est le soir : le film commence à 20 h 25 et finit à 22 h 15.', frise([['20 h 25', '21 h 25', '+ 1 h'], ['21 h 25', '22 h', '+ 35 min'], ['22 h', '22 h 15', '+ 15 min']])) },
         { etoiles: 3, col: 1, cahier: true, consigne: 'Emma part de chez elle à 13 h 40 et arrive chez sa mamie à 16 h 15. Combien de temps a duré son trajet ?',
-          corr: cm1Redac('Les bonds', { suite: ['13 h 40 → 14 h : 20 min', '14 h → 16 h : 2 h', '16 h → 16 h 15 : 15 min'] }, '') + cm1Redac('Durée du trajet', '20 min + 2 h + 15 min = 2 h 35 min', 'Le trajet d\'Emma a duré 2 h 35 min.') },
+          corr: cm1Redac('Durée du trajet', '20 min + 2 h + 15 min = 2 h 35 min', 'Le trajet d\'Emma a duré 2 h 35 min.', frise([['13 h 40', '14 h', '20 min'], ['14 h', '16 h', '2 h'], ['16 h', '16 h 15', '15 min']])) },
       ] },
   ],
 });
