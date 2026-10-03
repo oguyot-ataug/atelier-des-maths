@@ -3335,6 +3335,10 @@ function syncCorNiveauToClass(){
 }
 /* ================= Signalement de bug / amélioration ================= */
 const CHANGELOG_DATA = [
+  { version:'2026-08-19.974', date:'2026-10-03', items:[
+    "Planches 6e « Droites parallèles et perpendiculaires » : 8 planches au lieu de 2 (40 exercices) : position relative de deux droites, notations et programmes de construction (compléter, remettre dans l'ordre, choisir la figure, écrire), perpendiculaires et parallèles sur quadrillage (plusieurs cas, dans un triangle, dans un quadrilatère) et à l'équerre, propriétés et démonstrations, médiatrice (codages, phrases, propriété), les trois médiatrices d'un triangle, reproduction d'une figure.",
+    "Planches à l'écran : nouvel outil pour tracer plusieurs droites sur un même quadrillage (deux points touchés = une droite). Clavier virtuel : parenthèses et crochets pour écrire (AB), [AB] et [AB)."
+  ] },
   { version:'2026-08-19.973', date:'2026-10-03', items:[
     "Planches : les pointillés de réponse sont maintenant à la taille de la réponse attendue (calculée d'après le corrigé, avec une marge pour l'écriture), sur papier, dans Mon TD et en projection ; à l'écran, la case de réponse aussi.",
     "Clavier virtuel : touches + − × (décompositions, calculs) et trait d'union (nombres en lettres : « deux-mille-quarante-huit »). Un calcul écrit avec ou sans espaces est accepté."

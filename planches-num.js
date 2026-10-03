@@ -103,7 +103,7 @@ function plNumAnalyser(x){
       const large = tr.classList.contains('pl-pts') && /[a-z]/i.test(rep);
       const lg = r.textContent.replace(/\s+/g, ' ').trim().length; // case à la taille de la réponse attendue
       tr.outerHTML = `<button type="button" class="pn-case${large ? ' pn-large' : ''}${tr.classList.contains('pl-case-seule') ? ' pn-signe' : ''}" data-pn="${id}" data-pnv="${id}"${!tr.classList.contains('pl-case-seule') && lg > 4 ? ` style="min-width:${Math.min(320, lg * 11 + 16)}px"` : ''}></button>`;
-      cibles.push({ type: 'txt', id, rep, maj: /^[A-ZÉÈ]/.test(r.textContent.trim()) }); // réponse en majuscule (nom de point…) : clavier en majuscules
+      cibles.push({ type: 'txt', id, rep, maj: /^[(\[]?[A-ZÉÈ]/.test(r.textContent.trim()) }); // réponse en majuscule (nom de point…) : clavier en majuscules
     }
   }
   // 3. Figures blanches dans l'énoncé, coloriées dans le corrigé.
@@ -331,6 +331,24 @@ const PLX = {
     barre: (C, st, id) => plxBarreFleches(id, st),
     juste: (C, st) => { if(C.att) return st.p === C.att; const r = plxRobot(C, st.p), f = r.c[r.c.length - 1]; return r.ok && f[0] === C.but[0] && f[1] === C.but[1]; }
   },
+  // Plusieurs droites sur un quadrillage : on touche deux nœuds, la droite passe par eux (coupée au bord).
+  // { k, ox, oy, w, h, att: [{ p: [x, y], v: [dx, dy] }] } en carreaux.
+  droites: {
+    tap(C, st, x, y){ const n = plxNoeud(C, x, y); if(!n) return; st.l = st.l || [];
+      if(!st.a){ st.a = n; return; } if(st.a[0] === n[0] && st.a[1] === n[1]){ st.a = null; return; }
+      const sur = (L, q) => (L[2] - L[0]) * (q[1] - L[1]) - (L[3] - L[1]) * (q[0] - L[0]) === 0;
+      const k = st.l.findIndex(L => sur(L, st.a) && sur(L, n));
+      if(k >= 0) st.l.splice(k, 1); else st.l.push([st.a[0], st.a[1], n[0], n[1]]); st.a = null; },
+    action(C, st, a){ if(a === 'vide'){ st.l = []; st.a = null; } },
+    dessin: (C, st) => { const P = (i, j) => [C.ox + i * C.k, C.oy + j * C.k]; let s = '';
+      for(let i = 0; i <= C.w; i++) for(let j = 0; j <= C.h; j++){ const [x, y] = P(i, j); s += `<circle cx="${x}" cy="${y}" r="${C.k * .14}" fill="#3A6EA5" fill-opacity=".22"/>`; }
+      (st.l || []).forEach(([a, b, c, d], i) => { const v = [c - a, d - b]; let t0 = -1e9, t1 = 1e9; [[0, C.w], [0, C.h]].forEach(([mn, mx], q) => { if(!v[q]) return; const u = ([a, b][q]), e1 = (mn - u) / v[q], e2 = (mx - u) / v[q]; t0 = Math.max(t0, Math.min(e1, e2)); t1 = Math.min(t1, Math.max(e1, e2)); });
+        const p = P(a + v[0] * t0, b + v[1] * t0), q = P(a + v[0] * t1, b + v[1] * t1); s += `<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${['#2E9C6A', '#E35D3A', '#7A4FC0', '#2EA8C9'][i % 4]}" stroke-width="2.4"/>`; });
+      if(st.a){ const [x, y] = P(...st.a); s += `<circle cx="${x}" cy="${y}" r="${C.k * .22}" fill="#E35D3A"/>`; } return s; },
+    barre: (C, st, id) => `<span class="pn-xaide">Touche deux points du quadrillage : la droite passe par eux.</span>` + plxBtn(id, 'vide', 'Effacer les droites'),
+    juste: (C, st) => { const l = st.l || []; if(l.length !== C.att.length) return false;
+      return C.att.every(({ p, v }) => l.some(([a, b, c, d]) => (c - a) * v[1] - (d - b) * v[0] === 0 && (c - a) * (p[1] - b) - (d - b) * (p[0] - a) === 0)); }
+  },
   fleches: {
     action(C, st, a){ plxActionFleches(st, a); },
     texte: (C, st) => st.p ? plxFleches(st.p) : '&nbsp;',
@@ -364,7 +382,7 @@ const plClavier = {
     const k = (t, l, cl) => `<button type="button" data-k="${t}" class="${cl || ''}">${l || t}</button>`;
     const lignes = this.mode === '123'
       ? [['7', '8', '9', '&lt;'], ['4', '5', '6', '='], ['1', '2', '3', '&gt;'], ['0', ',', '+', '−', '×']]
-      : ['azertyuiop', 'qsdfghjklm', 'wxcvbné', 'èàêç\'-'].map(l => l.split('').map(c => this.maj ? c.toUpperCase() : c));
+      : ['azertyuiop', 'qsdfghjklm', 'wxcvbné', 'èàêç\'-()[]'].map(l => l.split('').map(c => this.maj ? c.toUpperCase() : c));
     this.el.innerHTML = `<div class="pn-cl-lignes">${lignes.map(l => `<div class="pn-cl-l">${l.map(t => k(t === '&lt;' ? '<' : t === '&gt;' ? '>' : t, t)).join('')}</div>`).join('')}
       <div class="pn-cl-l">${this.mode === 'abc' ? `<button type="button" data-maj="1" class="pn-cl-gris${this.maj ? ' pn-cl-on' : ''}" title="Majuscules">⇧ ${this.maj ? 'ABC' : 'abc'}</button>` + k(' ', 'espace', 'pn-cl-large') : ''}${k('⌫', '<span class="gicon">backspace</span>', 'pn-cl-gris')}
         <button type="button" data-m="${this.mode === '123' ? 'abc' : '123'}" class="pn-cl-gris">${this.mode === '123' ? 'abc' : '123'}</button>${k('ok', '<span class="gicon">keyboard_return</span>', 'pn-cl-ok')}${k('fermer', '<span class="gicon">keyboard_hide</span>', 'pn-cl-gris')}</div></div>`;
